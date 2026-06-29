@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { Check, ClipboardList, PenTool, Layers, LayoutList, Info, HelpCircle } from "lucide-react";
 
-// 백만원 단위 포맷팅 헬퍼 함수
+// 백만원 단위 포맷팅 헬퍼 함수 (소수점 첫째자리까지 표현)
 const formatToMillionWon = (value) => {
-  if (value === undefined || value === null || isNaN(value)) return "0";
-  return Math.round(value / 1000000).toLocaleString();
+  if (value === undefined || value === null || isNaN(value)) return "0.0";
+  return (value / 1000000).toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
 };
 
 // 천 단위 구분 쉼표 포맷팅 헬퍼 함수

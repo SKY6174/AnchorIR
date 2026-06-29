@@ -62,10 +62,10 @@ const INITIAL_MEMBERS = [
   { id: "m-42", name: "최주명", role: "연구원", grade: "연구원", dept: "울산늘봄누리센터", phoneOffice: "052-230-0419", phoneMobile: "010-9385-5959", email: "jmchoi@uc.ac.kr", room: "연구원실/N-105", hireDate: "2026-03-01" }
 ];
 
-// 백만원 단위 포맷팅 헬퍼 함수
+// 백만원 단위 포맷팅 헬퍼 함수 (소수점 첫째자리까지 표현)
 const formatToMillionWon = (value) => {
-  if (value === undefined || value === null || isNaN(value)) return "0";
-  return Math.round(value / 1000000).toLocaleString();
+  if (value === undefined || value === null || isNaN(value)) return "0.0";
+  return (value / 1000000).toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
 };
 
 // 5개년 연쇄 잔액 이월(Carry Over) 계산 함수
