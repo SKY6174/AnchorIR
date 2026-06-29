@@ -193,8 +193,8 @@ export default function ProgramProgressManager({ projects, selectedYear }) {
                   <tr>
                     <th style={{ width: "80px" }}>ID</th>
                     <th style={{ width: "230px" }}>세부 프로그램명</th>
-                    <th style={{ width: "110px" }}>담당연구원</th>
-                    <th style={{ width: "160px" }}>운영 예산 (배정/집행)</th>
+                    <th style={{ width: "140px" }}>담당연구원</th>
+                    <th style={{ width: "130px" }}>운영 예산 (배정/집행)</th>
                     <th style={{ width: "340px", textAlign: "center" }}>
                       2차년도 Timeline
                       {/* 연도 구분 줄 (상위 2분할: 2026년 10개월 / 2027년 2개월) */}
@@ -226,7 +226,7 @@ export default function ProgramProgressManager({ projects, selectedYear }) {
                           <td style={{ fontWeight: "700", whiteSpace: "normal", wordBreak: "keep-all" }}>
                             {prog.title}
                           </td>
-                          <td style={{ fontWeight: "700", color: "var(--accent-color)" }}>
+                          <td style={{ fontWeight: "700", color: "var(--accent-color)", whiteSpace: "nowrap" }}>
                             <div style={{ display: "flex", alignItems: "center", gap: "0.25rem" }}>
                               <User size={12} />
                               <span>{prog.assignee || "미배정"}</span>
