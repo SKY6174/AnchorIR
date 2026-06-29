@@ -225,17 +225,20 @@ export default function KPIOverview({ projects, currentRole, selectedYear = 2 })
             </ResponsiveContainer>
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "0.4rem", marginTop: "0.5rem", fontSize: "0.75rem" }}>
-            {pieData.map((item, index) => (
-              <div key={item.name} style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: "0.3rem" }}>
-                  <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: COLORS[index] }} />
-                  <span style={{ color: "var(--text-secondary-dark)" }}>{item.name}</span>
+            {pieData.map((item, index) => {
+              const totalBudgetInMillion = totalBudget / 1000000;
+              return (
+                <div key={item.name} style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "0.3rem" }}>
+                    <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: COLORS[index] }} />
+                    <span style={{ color: "var(--text-secondary-dark)" }}>{item.name}</span>
+                  </div>
+                  <span style={{ fontFamily: "var(--font-data)", fontWeight: "700" }}>
+                    {totalBudgetInMillion > 0 ? ((item.value / totalBudgetInMillion) * 100).toFixed(1) : "0.0"}%
+                  </span>
                 </div>
-                <span style={{ fontFamily: "var(--font-data)", fontWeight: "700" }}>
-                  {totalBudget > 0 ? ((item.value / totalBudget) * 100).toFixed(1) : "0.0"}%
-                </span>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </div>

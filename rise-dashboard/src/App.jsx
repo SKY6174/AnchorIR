@@ -719,7 +719,7 @@ export default function App() {
 
         {activeTab === "dashboard" && (
           <div>
-            <KPIOverview projects={projects} currentRole={currentRole} />
+            <KPIOverview projects={projects} currentRole={currentRole} selectedYear={selectedYear} />
             <ExcelUploader onUpdateData={handleUpdateData} projects={projects} selectedYear={selectedYear} />
           </div>
         )}
