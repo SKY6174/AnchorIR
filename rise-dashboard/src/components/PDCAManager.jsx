@@ -113,6 +113,7 @@ export default function PDCAManager({
   projects,
   currentRole,
   onUpdateProgramDetails,
+  onAddProgram,
   selectedYear,
   selectedUnitId,
   setSelectedUnitId,
@@ -121,6 +122,13 @@ export default function PDCAManager({
 }) {
   const [viewMode, setViewMode] = useState("unit"); // "unit" (단위과제별) 또는 "all" (전체)
   const [feedbackMsg, setFeedbackMsg] = useState("");
+
+  // 프로그램 신규 추가용 모달 상태
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [newProgTitle, setNewProgTitle] = useState("");
+  const [newProgAssignee, setNewProgAssignee] = useState("");
+  const [newProgBudget, setNewProgBudget] = useState("");
+  const [newProgCarry, setNewProgCarry] = useState("");
 
   // P 단계 기획 및 재원 배정용 상태 (본예산 및 이월예산 구분)
   const [inputTimeline, setInputTimeline] = useState("");
@@ -494,6 +502,36 @@ export default function PDCAManager({
     setTimeout(() => setFeedbackMsg(""), 3000);
   };
 
+  // 프로그램 추가 처리 핸들러
+  const handleCreateProgram = (e) => {
+    e.preventDefault();
+    if (!selectedUnitId) {
+      alert("단위과제를 먼저 선택해 주세요.");
+      return;
+    }
+    if (!newProgTitle.trim()) {
+      alert("프로그램명을 입력해 주세요.");
+      return;
+    }
+
+    const budgetVal = parseFloat(newProgBudget) || 0;
+    const carryVal = parseFloat(newProgCarry) || 0;
+
+    if (onAddProgram) {
+      onAddProgram(selectedUnitId, newProgTitle.trim(), newProgAssignee.trim(), budgetVal, carryVal);
+    }
+
+    // 모달 상태 초기화 및 닫기
+    setShowAddModal(false);
+    setNewProgTitle("");
+    setNewProgAssignee("");
+    setNewProgBudget("");
+    setNewProgCarry("");
+
+    setFeedbackMsg("신규 프로그램이 성공적으로 생성 및 추가되었습니다.");
+    setTimeout(() => setFeedbackMsg(""), 3000);
+  };
+
   // C 단계 실적 입력 (성과사항 서술 및 만족도 기입)
   const handleUpdateCDetails = (e) => {
     e.preventDefault();
@@ -645,6 +683,28 @@ export default function PDCAManager({
                 ))
               )}
             </div>
+            
+            {/* 프로그램 신규 생성 추가 버튼 */}
+            {currentRole.rank <= 2 && (
+              <button
+                type="button"
+                className="btn-primary"
+                onClick={() => setShowAddModal(true)}
+                style={{
+                  marginTop: "0.5rem",
+                  width: "100%",
+                  justifyContent: "center",
+                  background: "linear-gradient(135deg, #2563eb, #1d4ed8)",
+                  fontWeight: "700",
+                  fontSize: "0.78rem",
+                  padding: "0.5rem",
+                  borderRadius: "0.4rem",
+                  boxShadow: "0 4px 10px rgba(37,99,235,0.2)"
+                }}
+              >
+                + 신규 프로그램 추가
+              </button>
+            )}
           </div>
 
           {/* 우측: 프로그램 편집 패널 */}
@@ -1231,6 +1291,123 @@ export default function PDCAManager({
           <span style={{ fontSize: "0.9rem", color: "var(--text-secondary-dark)", fontWeight: "600", lineHeight: "1.4" }}>{feedbackMsg}</span>
         </div>
       )}
+      {/* 신규 프로그램 추가 모달 팝업 */}
+      {showAddModal && (
+        <div style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          width: "100vw",
+          height: "100vh",
+          backgroundColor: "rgba(0, 0, 0, 0.75)",
+          backdropFilter: "blur(4px)",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          zIndex: 9999
+        }}>
+          <div className="glass-card" style={{
+            width: "480px",
+            padding: "1.5rem",
+            borderRadius: "1rem",
+            border: "1px solid var(--border-color-dark)",
+            display: "flex",
+            flexDirection: "column",
+            gap: "1rem",
+            boxShadow: "0 20px 40px rgba(0,0,0,0.5)"
+          }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid var(--border-color-dark)", paddingBottom: "0.5rem" }}>
+              <h3 style={{ fontSize: "1.05rem", fontWeight: "800", color: "white" }}>신규 프로그램 생성 등록</h3>
+              <button 
+                type="button" 
+                onClick={() => setShowAddModal(false)}
+                style={{ background: "transparent", border: "none", color: "var(--text-secondary-dark)", cursor: "pointer", fontSize: "1.2rem" }}
+              >
+                &times;
+              </button>
+            </div>
+
+            <form onSubmit={handleCreateProgram} style={{ display: "flex", flexDirection: "column", gap: "0.8rem" }}>
+              <div>
+                <label style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)", display: "block", marginBottom: "0.25rem" }}>프로그램명 *</label>
+                <input 
+                  type="text" 
+                  required 
+                  className="user-selector" 
+                  placeholder="예: 지산학 네트워크 활성화 포럼 운영" 
+                  value={newProgTitle} 
+                  onChange={(e) => setNewProgTitle(e.target.value)} 
+                  style={{ width: "100%", padding: "0.4rem", fontSize: "0.8rem" }} 
+                />
+              </div>
+
+              <div>
+                <label style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)", display: "block", marginBottom: "0.25rem" }}>담당 실무자</label>
+                <input 
+                  type="text" 
+                  className="user-selector" 
+                  placeholder="예: 정자윤 연구원 (미입력 시 '미지정')" 
+                  value={newProgAssignee} 
+                  onChange={(e) => setNewProgAssignee(e.target.value)} 
+                  style={{ width: "100%", padding: "0.4rem", fontSize: "0.8rem" }} 
+                />
+              </div>
+
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem" }}>
+                <div>
+                  <label style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)", display: "block", marginBottom: "0.25rem" }}>2차년도 배정 본예산 (백만원)</label>
+                  <input 
+                    type="text" 
+                    className="user-selector" 
+                    placeholder="예: 15.0" 
+                    value={newProgBudget} 
+                    onChange={(e) => setNewProgBudget(e.target.value.replace(/[^0-9.]/g, ""))} 
+                    style={{ width: "100%", padding: "0.4rem", fontSize: "0.8rem" }} 
+                  />
+                </div>
+                <div>
+                  <label style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)", display: "block", marginBottom: "0.25rem" }}>2차년도 이월 예산액 (백만원)</label>
+                  <input 
+                    type="text" 
+                    className="user-selector" 
+                    placeholder={selectedYear === 1 ? "1차년도 불가" : "예: 5.0"} 
+                    disabled={selectedYear === 1}
+                    value={selectedYear === 1 ? "0.0" : newProgCarry} 
+                    onChange={(e) => setNewProgCarry(e.target.value.replace(/[^0-9.]/g, ""))} 
+                    style={{ 
+                      width: "100%", 
+                      padding: "0.4rem", 
+                      fontSize: "0.8rem",
+                      background: selectedYear === 1 ? "rgba(255,255,255,0.02)" : "#18181b",
+                      color: selectedYear === 1 ? "rgba(255,255,255,0.2)" : "white",
+                      cursor: selectedYear === 1 ? "not-allowed" : "text"
+                    }} 
+                  />
+                </div>
+              </div>
+
+              <div style={{ display: "flex", gap: "0.5rem", marginTop: "0.8rem" }}>
+                <button 
+                  type="button" 
+                  className="btn-primary" 
+                  onClick={() => setShowAddModal(false)}
+                  style={{ flex: 1, justifyContent: "center", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", color: "white" }}
+                >
+                  취소
+                </button>
+                <button 
+                  type="submit" 
+                  className="btn-primary" 
+                  style={{ flex: 2, justifyContent: "center", background: "var(--accent-color)" }}
+                >
+                  프로그램 등록 생성
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
       <style>{`
         @keyframes centerToastPop {
           from { transform: translate(-50%, -40%) scale(0.85); opacity: 0; }
