@@ -737,7 +737,7 @@ export default function App() {
                     <th>과제/부서</th>
                     <th>담당 센터장/팀장</th>
                     <th>{selectedYear}차년도 본예산 (백만원)</th>
-                    <th>{selectedYear}차년도 이월예산 (백만원)</th>
+                    {selectedYear >= 2 && <th>{selectedYear - 1}차년도 이월예산 (백만원)</th>}
                     <th>총 배정액 (백만원)</th>
                     <th>누적 집행실적 (백만원)</th>
                     <th>집행률</th>
@@ -747,8 +747,10 @@ export default function App() {
                   {projects.flatMap((p) =>
                     p.units.map((u) => {
                       const yData = u.years?.[selectedYear] || { budget_main: 0, spent_main: 0, budget_carry: 0, spent_carry: 0 };
-                      const totalBudget = (yData.budget_main || 0) + (yData.budget_carry || 0);
-                      const totalSpent = (yData.spent_main || 0) + (yData.spent_carry || 0);
+                      const budgetCarryVal = selectedYear === 1 ? 0 : (yData.budget_carry || 0);
+                      const spentCarryVal = selectedYear === 1 ? 0 : (yData.spent_carry || 0);
+                      const totalBudget = (yData.budget_main || 0) + budgetCarryVal;
+                      const totalSpent = (yData.spent_main || 0) + spentCarryVal;
                       const rate = totalBudget > 0 ? (totalSpent / totalBudget) * 100 : 0;
                       return (
                         <tr 
@@ -770,9 +772,11 @@ export default function App() {
                           <td style={{ fontFamily: "var(--font-data)" }}>
                             {formatToMillionWon(yData.budget_main)}
                           </td>
-                          <td style={{ fontFamily: "var(--font-data)" }}>
-                            {formatToMillionWon(yData.budget_carry)}
-                          </td>
+                          {selectedYear >= 2 && (
+                            <td style={{ fontFamily: "var(--font-data)" }}>
+                              {formatToMillionWon(budgetCarryVal)}
+                            </td>
+                          )}
                           <td style={{ fontFamily: "var(--font-data)", fontWeight: "700" }}>
                             {formatToMillionWon(totalBudget)}
                           </td>

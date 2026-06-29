@@ -29,10 +29,10 @@ export default function KPIOverview({ projects, currentRole, selectedYear = 2 })
   }, 0);
   const rateMain = totalBudgetMain > 0 ? (totalSpentMain / totalBudgetMain) * 100 : 0;
 
-  const totalBudgetCarry = projects.reduce((sum, p) => {
+  const totalBudgetCarry = selectedYear === 1 ? 0 : projects.reduce((sum, p) => {
     return sum + p.units.reduce((s, u) => s + (u.years?.[selectedYear]?.budget_carry || 0), 0);
   }, 0);
-  const totalSpentCarry = projects.reduce((sum, p) => {
+  const totalSpentCarry = selectedYear === 1 ? 0 : projects.reduce((sum, p) => {
     return sum + p.units.reduce((s, u) => s + (u.years?.[selectedYear]?.spent_carry || 0), 0);
   }, 0);
   const rateCarry = totalBudgetCarry > 0 ? (totalSpentCarry / totalBudgetCarry) * 100 : 0;
@@ -121,7 +121,7 @@ export default function KPIOverview({ projects, currentRole, selectedYear = 2 })
             </div>
             <div style={{ display: "flex", justifyContent: "space-between", borderTop: "1px solid rgba(255,255,255,0.1)", paddingTop: "0.2rem", marginTop: "0.1rem" }}>
               <span>본예산 계: {formatToMillionWon(totalBudgetMain)}백만원</span>
-              <span>이월비: {formatToMillionWon(totalBudgetCarry)}백만원</span>
+              {selectedYear >= 2 && <span>{selectedYear - 1}차년도 이월비: {formatToMillionWon(totalBudgetCarry)}백만원</span>}
             </div>
           </div>
         </div>
@@ -137,16 +137,18 @@ export default function KPIOverview({ projects, currentRole, selectedYear = 2 })
           <div className="kpi-subtext">집행률: {rateMain.toFixed(1)}% (배정: {formatToMillionWon(totalBudgetMain)}백만원)</div>
         </div>
 
-        <div className="glass-card">
-          <div className="kpi-header">
-            <span>{selectedYear}차년도 이월사업비 집행</span>
-            <TrendingUp size={16} className="badge-yellow" />
+        {selectedYear >= 2 && (
+          <div className="glass-card">
+            <div className="kpi-header">
+              <span>{selectedYear - 1}차년도 이월사업비 집행</span>
+              <TrendingUp size={16} className="badge-yellow" />
+            </div>
+            <div className="kpi-value" style={{ color: "var(--warning-color)", fontSize: "1.45rem" }}>
+              {formatToMillionWon(totalSpentCarry)} 백만원
+            </div>
+            <div className="kpi-subtext">집행률: {rateCarry.toFixed(1)}% (배정: {formatToMillionWon(totalBudgetCarry)}백만원)</div>
           </div>
-          <div className="kpi-value" style={{ color: "var(--warning-color)", fontSize: "1.45rem" }}>
-            {formatToMillionWon(totalSpentCarry)} 백만원
-          </div>
-          <div className="kpi-subtext">집행률: {rateCarry.toFixed(1)}% (배정: {formatToMillionWon(totalBudgetCarry)}백만원)</div>
-        </div>
+        )}
 
         <div className="glass-card">
           <div className="kpi-header">
@@ -184,8 +186,8 @@ export default function KPIOverview({ projects, currentRole, selectedYear = 2 })
                 <Legend verticalAlign="top" height={36} fontSize={11} />
                 <Bar dataKey="본예산" fill="#1e3a8a" radius={[3, 3, 0, 0]} />
                 <Bar dataKey="본집행" fill="#3b82f6" radius={[3, 3, 0, 0]} />
-                <Bar dataKey="이월예산" fill="#064e3b" radius={[3, 3, 0, 0]} />
-                <Bar dataKey="이월집행" fill="#10b981" radius={[3, 3, 0, 0]} />
+                {selectedYear >= 2 && <Bar dataKey="이월예산" name={`${selectedYear - 1}차년도 이월예산`} fill="#064e3b" radius={[3, 3, 0, 0]} />}
+                {selectedYear >= 2 && <Bar dataKey="이월집행" name={`${selectedYear - 1}차년도 이월집행`} fill="#10b981" radius={[3, 3, 0, 0]} />}
               </BarChart>
             </ResponsiveContainer>
           </div>

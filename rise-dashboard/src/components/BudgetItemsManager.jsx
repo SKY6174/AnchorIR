@@ -191,6 +191,9 @@ export default function BudgetItemsManager({ projects, currentRole, onUpdateBudg
 
   // 선택된 단위가 바뀔 때 혹은 연차가 바뀔 때 사용자가 편집하던 값 초기화 (백만원 단위로 환산하여 Input 기본값 제공)
   useEffect(() => {
+    if (selectedYear === 1) {
+      setSubTab("main");
+    }
     if (!activeUnit) return;
     const init = {};
     const details = activeUnit.budgetDetails || {};
@@ -412,23 +415,25 @@ export default function BudgetItemsManager({ projects, currentRole, onUpdateBudg
                   >
                     본사업비
                   </button>
-                  <button
-                    type="button"
-                    onClick={() => setSubTab("carry")}
-                    style={{
-                      border: "none",
-                      padding: "0.4rem 1rem",
-                      borderRadius: "0.35rem",
-                      fontSize: "0.75rem",
-                      fontWeight: "700",
-                      cursor: "pointer",
-                      background: subTab === "carry" ? "var(--accent-color)" : "transparent",
-                      color: subTab === "carry" ? "white" : "var(--text-secondary-dark)",
-                      transition: "all 0.2s ease"
-                    }}
-                  >
-                    이월사업비
-                  </button>
+                  {selectedYear >= 2 && (
+                    <button
+                      type="button"
+                      onClick={() => setSubTab("carry")}
+                      style={{
+                        border: "none",
+                        padding: "0.4rem 1rem",
+                        borderRadius: "0.35rem",
+                        fontSize: "0.75rem",
+                        fontWeight: "700",
+                        cursor: "pointer",
+                        background: subTab === "carry" ? "var(--accent-color)" : "transparent",
+                        color: subTab === "carry" ? "white" : "var(--text-secondary-dark)",
+                        transition: "all 0.2s ease"
+                      }}
+                    >
+                      이월사업비
+                    </button>
+                  )}
                 </div>
               </div>
               
@@ -436,7 +441,7 @@ export default function BudgetItemsManager({ projects, currentRole, onUpdateBudg
                 {subTab === "main" ? (
                   <span>본예산 한도: <strong style={{ color: "white" }}>{formatToMillionWon(activeUnit.years?.[selectedYear]?.budget_main)} 백만원</strong></span>
                 ) : (
-                  <span>이월예산 한도: <strong style={{ color: "white" }}>{formatToMillionWon(activeUnit.years?.[selectedYear]?.budget_carry)} 백만원</strong></span>
+                  <span>{selectedYear - 1}차년도 이월예산 한도: <strong style={{ color: "white" }}>{formatToMillionWon(activeUnit.years?.[selectedYear]?.budget_carry)} 백만원</strong></span>
                 )}
               </div>
             </div>
@@ -487,9 +492,9 @@ export default function BudgetItemsManager({ projects, currentRole, onUpdateBudg
                     ) : (
                       <tr>
                         <th>비목명</th>
-                        <th style={{ width: "180px" }}>이월예산 배정 (백만원)</th>
-                        <th>이월비 집행 (백만원)</th>
-                        <th>이월비 잔액 (백만원)</th>
+                        <th style={{ width: "180px" }}>{selectedYear - 1}차년도 이월예산 배정 (백만원)</th>
+                        <th>{selectedYear - 1}차년도 이월비 집행 (백만원)</th>
+                        <th>{selectedYear - 1}차년도 이월비 잔액 (백만원)</th>
                       </tr>
                     )}
                   </thead>
@@ -560,7 +565,7 @@ export default function BudgetItemsManager({ projects, currentRole, onUpdateBudg
                     {subTab === "main" ? (
                       <span>본예산 한도 범위 내에서 각각 조율해야 합니다.</span>
                     ) : (
-                      <span>이월비 한도 범위 내에서 각각 조율해야 합니다.</span>
+                      <span>{selectedYear - 1}차년도 이월비 한도 범위 내에서 각각 조율해야 합니다.</span>
                     )}
                   </div>
                   <button type="submit" className="btn-primary">
