@@ -7,6 +7,39 @@ const formatToMillionWon = (value) => {
   return Math.round(value / 1000000).toLocaleString();
 };
 
+// 천 단위 구분 쉼표 포맷팅 헬퍼 함수
+const formatNumberWithCommas = (value) => {
+  if (value === undefined || value === null) return "";
+  const clean = String(value).replace(/[^0-9]/g, "");
+  if (!clean) return "";
+  return Number(clean).toLocaleString("ko-KR");
+};
+
+const parseNumberFromCommas = (value) => {
+  if (!value) return 0;
+  return parseInt(String(value).replace(/,/g, ""), 10) || 0;
+};
+
+// "YYYY-MM-DD ~ YYYY-MM-DD" 포맷 파서
+const parseTimelineDates = (timelineStr) => {
+  if (!timelineStr || !timelineStr.includes("~")) return { start: "", end: "" };
+  const parts = timelineStr.split("~").map((p) => p.trim());
+  
+  const toYYYYMMDD = (str) => {
+    if (!str) return "";
+    if (/^\d{4}-\d{2}-\d{2}$/.test(str)) return str;
+    const dotted = str.replace(/\./g, "-");
+    if (/^\d{4}-\d{2}-\d{2}$/.test(dotted)) return dotted;
+    if (/^\d{4}-\d{2}$/.test(dotted)) return `${dotted}-01`;
+    return dotted;
+  };
+  
+  return {
+    start: toYYYYMMDD(parts[0]),
+    end: toYYYYMMDD(parts[1] || parts[0])
+  };
+};
+
 /**
  * PDCAManager Component
  * 프로그램별 PDCA(Plan-Do-Check-Act) 단계 관리, 기획수립(Timeline, 대상, 부서),
@@ -27,6 +60,8 @@ export default function PDCAManager({
 
   // P 단계 기획 및 재원 배정용 상태
   const [inputTimeline, setInputTimeline] = useState("");
+  const [inputStartDate, setInputStartDate] = useState("");
+  const [inputEndDate, setInputEndDate] = useState("");
   const [inputTargetAudience, setInputTargetAudience] = useState("");
   const [inputCoopDept, setInputCoopDept] = useState("");
   const [inputBudgetNational, setInputBudgetNational] = useState("");
@@ -90,16 +125,21 @@ export default function PDCAManager({
       if (prog) {
         const py = prog.years?.[selectedYear] || {};
         setInputTimeline(prog.timeline || "");
+        
+        const { start, end } = parseTimelineDates(prog.timeline || "");
+        setInputStartDate(start);
+        setInputEndDate(end);
+
         setInputTargetAudience(prog.targetAudience || "");
         setInputCoopDept(prog.coopDept || "");
         
-        setInputBudgetNational(py.budget_national !== undefined ? String(Math.round(py.budget_national / 1000)) : "0");
-        setInputBudgetCity(py.budget_city !== undefined ? String(Math.round(py.budget_city / 1000)) : "0");
-        setInputBudgetExternal(py.budget_external !== undefined ? String(Math.round(py.budget_external / 1000)) : "0");
+        setInputBudgetNational(py.budget_national !== undefined ? formatNumberWithCommas(Math.round(py.budget_national / 1000)) : "0");
+        setInputBudgetCity(py.budget_city !== undefined ? formatNumberWithCommas(Math.round(py.budget_city / 1000)) : "0");
+        setInputBudgetExternal(py.budget_external !== undefined ? formatNumberWithCommas(Math.round(py.budget_external / 1000)) : "0");
 
-        setInputSpentNational(String(py.spent_national ?? 0));
-        setInputSpentCity(String(py.spent_city ?? 0));
-        setInputSpentExternal(String(py.spent_external ?? 0));
+        setInputSpentNational(formatNumberWithCommas(py.spent_national ?? 0));
+        setInputSpentCity(formatNumberWithCommas(py.spent_city ?? 0));
+        setInputSpentExternal(formatNumberWithCommas(py.spent_external ?? 0));
 
         setInputParticipants(String(prog.participants ?? 0));
         setInputSatisfaction(String(prog.satisfaction ?? 0));
@@ -112,6 +152,8 @@ export default function PDCAManager({
       }
     } else {
       setInputTimeline("");
+      setInputStartDate("");
+      setInputEndDate("");
       setInputTargetAudience("");
       setInputCoopDept("");
       setInputBudgetNational("");
@@ -128,6 +170,21 @@ export default function PDCAManager({
       setInputActionItem("");
     }
   }, [selectedProgId, selectedYear]);
+
+  // 추진일정 변경 이벤트 핸들러
+  const handleTimelineChange = (start, end) => {
+    setInputStartDate(start);
+    setInputEndDate(end);
+    if (start && end) {
+      setInputTimeline(`${start} ~ ${end}`);
+    } else if (start) {
+      setInputTimeline(`${start} ~`);
+    } else if (end) {
+      setInputTimeline(`~ ${end}`);
+    } else {
+      setInputTimeline("");
+    }
+  };
 
   // 프로그램 선택 시 모든 기획/환류/재원 상태 로드
   const handleSelectProgram = (prog) => {
@@ -209,11 +266,11 @@ export default function PDCAManager({
     e.preventDefault();
     if (!activeProg) return;
 
-    const bNational = parseInt(inputBudgetNational, 10) * 1000;
-    const bCity = parseInt(inputBudgetCity, 10) * 1000;
-    const bExternal = parseInt(inputBudgetExternal, 10) * 1000;
+    const bNational = parseNumberFromCommas(inputBudgetNational) * 1000;
+    const bCity = parseNumberFromCommas(inputBudgetCity) * 1000;
+    const bExternal = parseNumberFromCommas(inputBudgetExternal) * 1000;
 
-    if (isNaN(bNational) || bNational < 0 || isNaN(bCity) || bCity < 0 || isNaN(bExternal) || bExternal < 0) {
+    if (bNational < 0 || bCity < 0 || bExternal < 0) {
       alert("배정 예산은 0원 이상의 올바른 숫자 형식이어야 합니다.");
       return;
     }
@@ -241,11 +298,11 @@ export default function PDCAManager({
     e.preventDefault();
     if (!activeProg) return;
 
-    const sNational = parseInt(inputSpentNational, 10);
-    const sCity = parseInt(inputSpentCity, 10);
-    const sExternal = parseInt(inputSpentExternal, 10);
+    const sNational = parseNumberFromCommas(inputSpentNational);
+    const sCity = parseNumberFromCommas(inputSpentCity);
+    const sExternal = parseNumberFromCommas(inputSpentExternal);
 
-    if (isNaN(sNational) || sNational < 0 || isNaN(sCity) || sCity < 0 || isNaN(sExternal) || sExternal < 0) {
+    if (sNational < 0 || sCity < 0 || sExternal < 0) {
       alert("집행액은 0원 이상의 올바른 숫자 형식이어야 합니다.");
       return;
     }
@@ -488,21 +545,37 @@ export default function PDCAManager({
                       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "0.4rem" }}>
                         <div>
                           <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)" }}>국고 예산 (천원)</span>
-                          <input type="text" className="user-selector" value={inputBudgetNational} onChange={(e) => setInputBudgetNational(e.target.value)} style={{ padding: "0.2rem 0.4rem", fontSize: "0.75rem" }} />
+                          <input type="text" className="user-selector" value={inputBudgetNational} onChange={(e) => setInputBudgetNational(formatNumberWithCommas(e.target.value))} style={{ padding: "0.2rem 0.4rem", fontSize: "0.75rem" }} />
                         </div>
                         <div>
                           <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)" }}>지자체 시비 (천원)</span>
-                          <input type="text" className="user-selector" value={inputBudgetCity} onChange={(e) => setInputBudgetCity(e.target.value)} style={{ padding: "0.2rem 0.4rem", fontSize: "0.75rem" }} />
+                          <input type="text" className="user-selector" value={inputBudgetCity} onChange={(e) => setInputBudgetCity(formatNumberWithCommas(e.target.value))} style={{ padding: "0.2rem 0.4rem", fontSize: "0.75rem" }} />
                         </div>
                         <div>
                           <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)" }}>외부사업비 (천원)</span>
-                          <input type="text" className="user-selector" value={inputBudgetExternal} onChange={(e) => setInputBudgetExternal(e.target.value)} style={{ padding: "0.2rem 0.4rem", fontSize: "0.75rem" }} />
+                          <input type="text" className="user-selector" value={inputBudgetExternal} onChange={(e) => setInputBudgetExternal(formatNumberWithCommas(e.target.value))} style={{ padding: "0.2rem 0.4rem", fontSize: "0.75rem" }} />
                         </div>
                       </div>
 
                       <div>
-                        <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)" }}>추진 일정 (Timeline)</span>
-                        <input type="text" className="user-selector" placeholder="예: 2026.03 ~ 2026.08" value={inputTimeline} onChange={(e) => setInputTimeline(e.target.value)} style={{ padding: "0.25rem 0.4rem", fontSize: "0.75rem" }} />
+                        <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)", display: "block", marginBottom: "0.15rem" }}>추진 일정 (Timeline)</span>
+                        <div style={{ display: "grid", gridTemplateColumns: "1fr auto 1fr", gap: "0.4rem", alignItems: "center" }}>
+                          <input
+                            type="date"
+                            className="user-selector"
+                            value={inputStartDate}
+                            onChange={(e) => handleTimelineChange(e.target.value, inputEndDate)}
+                            style={{ padding: "0.2rem 0.4rem", fontSize: "0.75rem", background: "#18181b", color: "white", border: "1px solid var(--border-color-dark)", borderRadius: "0.25rem", width: "100%" }}
+                          />
+                          <span style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)" }}>~</span>
+                          <input
+                            type="date"
+                            className="user-selector"
+                            value={inputEndDate}
+                            onChange={(e) => handleTimelineChange(inputStartDate, e.target.value)}
+                            style={{ padding: "0.2rem 0.4rem", fontSize: "0.75rem", background: "#18181b", color: "white", border: "1px solid var(--border-color-dark)", borderRadius: "0.25rem", width: "100%" }}
+                          />
+                        </div>
                       </div>
                       <div>
                         <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)" }}>참여 대상 (Target)</span>
@@ -525,15 +598,15 @@ export default function PDCAManager({
                       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "0.4rem" }}>
                         <div>
                           <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)" }}>국고 집행</span>
-                          <input type="text" className="user-selector" value={inputSpentNational} onChange={(e) => setInputSpentNational(e.target.value)} style={{ padding: "0.2rem 0.4rem", fontSize: "0.75rem" }} />
+                          <input type="text" className="user-selector" value={inputSpentNational} onChange={(e) => setInputSpentNational(formatNumberWithCommas(e.target.value))} style={{ padding: "0.2rem 0.4rem", fontSize: "0.75rem" }} />
                         </div>
                         <div>
                           <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)" }}>시비 집행</span>
-                          <input type="text" className="user-selector" value={inputSpentCity} onChange={(e) => setInputSpentCity(e.target.value)} style={{ padding: "0.2rem 0.4rem", fontSize: "0.75rem" }} />
+                          <input type="text" className="user-selector" value={inputSpentCity} onChange={(e) => setInputSpentCity(formatNumberWithCommas(e.target.value))} style={{ padding: "0.2rem 0.4rem", fontSize: "0.75rem" }} />
                         </div>
                         <div>
                           <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)" }}>외부 집행</span>
-                          <input type="text" className="user-selector" value={inputSpentExternal} onChange={(e) => setInputSpentExternal(e.target.value)} style={{ padding: "0.2rem 0.4rem", fontSize: "0.75rem" }} />
+                          <input type="text" className="user-selector" value={inputSpentExternal} onChange={(e) => setInputSpentExternal(formatNumberWithCommas(e.target.value))} style={{ padding: "0.2rem 0.4rem", fontSize: "0.75rem" }} />
                         </div>
                       </div>
                       <button type="submit" className="btn-primary" style={{ marginTop: "0.2rem" }}>D 집행 실적 저장</button>
