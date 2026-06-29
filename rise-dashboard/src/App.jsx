@@ -402,6 +402,37 @@ export default function App() {
     if (cached) {
       try {
         const loaded = JSON.parse(cached);
+        // [자동 동기화] mockData.js의 initialProjectsData로부터 각 과제의 최신 프로그램 목록을 조회하여 캐시 데이터와 머지합니다.
+        loaded.forEach((strategy) => {
+          strategy.units.forEach((unit) => {
+            const sourceUnit = initialProjectsData
+              ?.flatMap(s => s.units)
+              ?.find(u => u.id === unit.id);
+              
+            if (sourceUnit && sourceUnit.programs) {
+              const mergedPrograms = sourceUnit.programs.map((sourceProg) => {
+                const cachedProg = unit.programs?.find(cp => cp.id === sourceProg.id);
+                if (cachedProg) {
+                  return {
+                    ...sourceProg,
+                    pdca: cachedProg.pdca || sourceProg.pdca,
+                    years: cachedProg.years || sourceProg.years
+                  };
+                }
+                return sourceProg;
+              });
+              unit.programs = mergedPrograms;
+              
+              if (unit.id === "A-1-나") {
+                unit.budget = sourceUnit.budget;
+                unit.spent = sourceUnit.spent;
+                unit.budget_2026 = sourceUnit.budget_2026;
+                unit.spent_2026 = sourceUnit.spent_2026;
+              }
+            }
+          });
+        });
+        
         // 캐시 데이터가 존재해도 최신 5개년 프로그램 기획 예산을 단위과제 비목 및 통계로 강제 롤업 싱크
         loaded.forEach((p) => {
           p.units.forEach((u) => {
