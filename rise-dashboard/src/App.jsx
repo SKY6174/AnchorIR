@@ -792,6 +792,18 @@ export default function App() {
                     py.budget_carry = (py.budget_carry_national || 0) + (py.budget_carry_city || 0) + (py.budget_carry_external || 0);
                   }
 
+                  // 프로그램 최상위 레거시 필드도 현재 5개년 연도 정보 기준으로 일치화 (P 단계 입력이 진짜)
+                  if (selectedYear === 2) {
+                    prog.budget_2026 = py.budget_main;
+                    prog.budget_2025_carry = py.budget_carry;
+                    prog.budget = prog.budget_2026 + prog.budget_2025_carry;
+                  } else if (selectedYear === 1) {
+                    prog.budget_2025_carry = 0;
+                    prog.budget = py.budget_main;
+                  } else {
+                    prog.budget = py.budget_main + py.budget_carry;
+                  }
+
                   // D단계 집행액 세부 재원 갱신
                   if (updatedFields.spent_national !== undefined) py.spent_national = Math.min(updatedFields.spent_national, py.budget_national || 0);
                   if (updatedFields.spent_city !== undefined) py.spent_city = Math.min(updatedFields.spent_city, py.budget_city || 0);
@@ -799,6 +811,18 @@ export default function App() {
                   
                   // 세부 재원 집행액의 합으로 총 본집행액(spent_main) 동기화
                   py.spent_main = (py.spent_national || 0) + (py.spent_city || 0) + (py.spent_external || 0);
+
+                  // 프로그램 최상위 집행액 레거시 필드 동기화 (D 단계 입력이 진짜)
+                  if (selectedYear === 2) {
+                    prog.spent_2026 = py.spent_main;
+                    prog.spent_2025_carry = py.spent_carry || 0;
+                    prog.spent = prog.spent_2026 + prog.spent_2025_carry;
+                  } else if (selectedYear === 1) {
+                    prog.spent_2025_carry = 0;
+                    prog.spent = py.spent_main;
+                  } else {
+                    prog.spent = py.spent_main + (py.spent_carry || 0);
+                  }
 
                   // 비목별 이원화 예산 갱신
                   if (updatedFields.budget_categories !== undefined) {
