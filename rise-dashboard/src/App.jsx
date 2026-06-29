@@ -546,13 +546,27 @@ export default function App() {
 
                 const py = prog.years[selectedYear];
                 if (py) {
-                  // P단계 예산 배정액 세부 재원 갱신
+                  // P단계 예산 배정액 세부 재원 갱신 (본예산 및 이월예산 구분)
                   if (updatedFields.budget_national !== undefined) py.budget_national = updatedFields.budget_national;
                   if (updatedFields.budget_city !== undefined) py.budget_city = updatedFields.budget_city;
                   if (updatedFields.budget_external !== undefined) py.budget_external = updatedFields.budget_external;
                   
+                  if (updatedFields.budget_carry_national !== undefined) py.budget_carry_national = updatedFields.budget_carry_national;
+                  if (updatedFields.budget_carry_city !== undefined) py.budget_carry_city = updatedFields.budget_carry_city;
+                  if (updatedFields.budget_carry_external !== undefined) py.budget_carry_external = updatedFields.budget_carry_external;
+
                   // 세부 재원 예산의 합으로 총 본예산(budget_main) 동기화
                   py.budget_main = (py.budget_national || 0) + (py.budget_city || 0) + (py.budget_external || 0);
+
+                  // 세부 재원 이월예산의 합으로 총 이월예산(budget_carry) 동기화 (1차년도 제외)
+                  if (selectedYear === 1) {
+                    py.budget_carry_national = 0;
+                    py.budget_carry_city = 0;
+                    py.budget_carry_external = 0;
+                    py.budget_carry = 0;
+                  } else {
+                    py.budget_carry = (py.budget_carry_national || 0) + (py.budget_carry_city || 0) + (py.budget_carry_external || 0);
+                  }
 
                   // D단계 집행액 세부 재원 갱신
                   if (updatedFields.spent_national !== undefined) py.spent_national = Math.min(updatedFields.spent_national, py.budget_national || 0);
@@ -571,29 +585,39 @@ export default function App() {
                 // 프로그램 5개년 이월 잔액 재계산
                 recalculateCarryOver(prog.years);
 
-                // 이월비 결과에 맞춰 세부 재원의 이월 배정액 비율 재조정
-                [1, 2, 3, 4, 5].forEach((yr) => {
-                  const y = prog.years[yr];
-                  const isExternalSub = prog.id.endsWith("-2") || prog.id.includes("위탁") || prog.title.includes("위탁") || prog.title.includes("협력");
-                  if (isExternalSub) {
-                    y.budget_carry_external = y.budget_carry || 0;
-                    y.budget_carry_national = 0;
-                    y.budget_carry_city = 0;
-                  } else {
-                    y.budget_carry_national = Math.round((y.budget_carry || 0) * 0.5);
-                    y.budget_carry_city = (y.budget_carry || 0) - y.budget_carry_national;
-                    y.budget_carry_external = 0;
-                  }
-                });
+                // 수동 이월 배정 기입이 포함되지 않은 경우에만 예산 이월비 자동 재조정
+                if (updatedFields.budget_carry_national === undefined) {
+                  [1, 2, 3, 4, 5].forEach((yr) => {
+                    if (yr !== selectedYear) {
+                      const y = prog.years[yr];
+                      const isExternalSub = prog.id.endsWith("-2") || prog.id.includes("위탁") || prog.title.includes("위탁") || prog.title.includes("협력");
+                      if (isExternalSub) {
+                        y.budget_carry_external = y.budget_carry || 0;
+                        y.budget_carry_national = 0;
+                        y.budget_carry_city = 0;
+                      } else {
+                        y.budget_carry_national = Math.round((y.budget_carry || 0) * 0.5);
+                        y.budget_carry_city = (y.budget_carry || 0) - y.budget_carry_national;
+                        y.budget_carry_external = 0;
+                      }
+                    }
+                  });
+                }
               }
             });
             
-            // 해당 단위과제의 프로그램 집행액 합산을 비목(교육∙연구 프로그램 개발∙운영비)에 동적으로 반영
+            // 해당 단위과제의 프로그램 예산 및 집행액 합산을 비목(교육∙연구 프로그램 개발∙운영비)에 동적으로 반영
+            const progBudgetTotalMain = u.programs.reduce((sum, pr) => sum + (pr.years[selectedYear]?.budget_main || 0), 0);
+            const progBudgetTotalCarry = u.programs.reduce((sum, pr) => sum + (pr.years[selectedYear]?.budget_carry || 0), 0);
+            
             const progSpentTotalMain = u.programs.reduce((sum, pr) => sum + (pr.years[selectedYear]?.spent_main || 0), 0);
             const progSpentTotalCarry = u.programs.reduce((sum, pr) => sum + (pr.years[selectedYear]?.spent_carry || 0), 0);
             
             const targetDetail = u.budgetDetails["교육∙연구 프로그램 개발∙운영비"];
             if (targetDetail && targetDetail.years[selectedYear]) {
+              targetDetail.years[selectedYear].budget_main = progBudgetTotalMain;
+              targetDetail.years[selectedYear].budget_carry = progBudgetTotalCarry;
+              
               targetDetail.years[selectedYear].spent_main = Math.min(progSpentTotalMain, targetDetail.years[selectedYear].budget_main || 0);
               targetDetail.years[selectedYear].spent_carry = Math.min(progSpentTotalCarry, targetDetail.years[selectedYear].budget_carry || 0);
             }

@@ -113,22 +113,29 @@ export default function PDCAManager({
   const [viewMode, setViewMode] = useState("unit"); // "unit" (단위과제별) 또는 "all" (전체)
   const [feedbackMsg, setFeedbackMsg] = useState("");
 
-  // P 단계 기획 및 재원 배정용 상태
+  // P 단계 기획 및 재원 배정용 상태 (본예산 및 이월예산 구분)
   const [inputTimeline, setInputTimeline] = useState("");
   const [inputStartDate, setInputStartDate] = useState("");
   const [inputEndDate, setInputEndDate] = useState("");
   const [inputTargetAudience, setInputTargetAudience] = useState("");
   const [inputCoopDept, setInputCoopDept] = useState("");
+  
+  // 본예산 재원 상태
   const [inputBudgetNational, setInputBudgetNational] = useState("");
   const [inputBudgetCity, setInputBudgetCity] = useState("");
   const [inputBudgetExternal, setInputBudgetExternal] = useState("");
 
-  // 이원화 비목별 예산용 상태 (최대 4칸)
+  // 이월예산 재원 상태 (신설)
+  const [inputBudgetCarryNational, setInputBudgetCarryNational] = useState("");
+  const [inputBudgetCarryCity, setInputBudgetCarryCity] = useState("");
+  const [inputBudgetCarryExternal, setInputBudgetCarryExternal] = useState("");
+
+  // 이원화 비목별 예산용 상태 (본예산/이월예산 구분, 최대 4칸)
   const [inputBudgetCategories, setInputBudgetCategories] = useState([
-    { category: "", budget: "" },
-    { category: "", budget: "" },
-    { category: "", budget: "" },
-    { category: "", budget: "" }
+    { category: "", budget: "", budget_carry: "" },
+    { category: "", budget: "", budget_carry: "" },
+    { category: "", budget: "", budget_carry: "" },
+    { category: "", budget: "", budget_carry: "" }
   ]);
 
   // 월별 PDCA 일정 관리용 상태 (26.3월 ~ 27.2월, 12칸)
@@ -200,17 +207,30 @@ export default function PDCAManager({
         setInputTargetAudience(prog.targetAudience || "");
         setInputCoopDept(prog.coopDept || "");
         
+        // 본예산 로드
         setInputBudgetNational(py.budget_national !== undefined ? formatNumberWithCommas(Math.round(py.budget_national / 1000)) : "0");
         setInputBudgetCity(py.budget_city !== undefined ? formatNumberWithCommas(Math.round(py.budget_city / 1000)) : "0");
         setInputBudgetExternal(py.budget_external !== undefined ? formatNumberWithCommas(Math.round(py.budget_external / 1000)) : "0");
 
-        // 비목 예산 바인딩 (4칸 구성)
+        // 이월예산 로드 (1차년도 제외)
+        if (selectedYear === 1) {
+          setInputBudgetCarryNational("0");
+          setInputBudgetCarryCity("0");
+          setInputBudgetCarryExternal("0");
+        } else {
+          setInputBudgetCarryNational(py.budget_carry_national !== undefined ? formatNumberWithCommas(Math.round(py.budget_carry_national / 1000)) : "0");
+          setInputBudgetCarryCity(py.budget_carry_city !== undefined ? formatNumberWithCommas(Math.round(py.budget_carry_city / 1000)) : "0");
+          setInputBudgetCarryExternal(py.budget_carry_external !== undefined ? formatNumberWithCommas(Math.round(py.budget_carry_external / 1000)) : "0");
+        }
+
+        // 비목 예산 바인딩 (본예산 + 이월예산, 4칸 구성)
         const loadedCategories = (py.budget_categories || []).map((c) => ({
           category: c.category || "",
-          budget: c.budget !== undefined ? formatNumberWithCommas(Math.round(c.budget / 1000)) : ""
+          budget: c.budget !== undefined ? formatNumberWithCommas(Math.round(c.budget / 1000)) : "",
+          budget_carry: selectedYear === 1 ? "0" : (c.budget_carry !== undefined ? formatNumberWithCommas(Math.round(c.budget_carry / 1000)) : "")
         }));
         while (loadedCategories.length < 4) {
-          loadedCategories.push({ category: "", budget: "" });
+          loadedCategories.push({ category: "", budget: "", budget_carry: "" });
         }
         setInputBudgetCategories(loadedCategories);
 
@@ -240,11 +260,14 @@ export default function PDCAManager({
       setInputBudgetNational("");
       setInputBudgetCity("");
       setInputBudgetExternal("");
+      setInputBudgetCarryNational("");
+      setInputBudgetCarryCity("");
+      setInputBudgetCarryExternal("");
       setInputBudgetCategories([
-        { category: "", budget: "" },
-        { category: "", budget: "" },
-        { category: "", budget: "" },
-        { category: "", budget: "" }
+        { category: "", budget: "", budget_carry: "" },
+        { category: "", budget: "", budget_carry: "" },
+        { category: "", budget: "", budget_carry: "" },
+        { category: "", budget: "", budget_carry: "" }
       ]);
       setInputMonthlyPDCA(Array(12).fill(""));
       setInputSpentNational("");
@@ -368,7 +391,11 @@ export default function PDCAManager({
     const bCity = parseNumberFromCommas(inputBudgetCity) * 1000;
     const bExternal = parseNumberFromCommas(inputBudgetExternal) * 1000;
 
-    if (bNational < 0 || bCity < 0 || bExternal < 0) {
+    const bCarryNational = selectedYear === 1 ? 0 : (parseNumberFromCommas(inputBudgetCarryNational) * 1000);
+    const bCarryCity = selectedYear === 1 ? 0 : (parseNumberFromCommas(inputBudgetCarryCity) * 1000);
+    const bCarryExternal = selectedYear === 1 ? 0 : (parseNumberFromCommas(inputBudgetCarryExternal) * 1000);
+
+    if (bNational < 0 || bCity < 0 || bExternal < 0 || bCarryNational < 0 || bCarryCity < 0 || bCarryExternal < 0) {
       alert("배정 예산은 0원 이상의 올바른 숫자 형식이어야 합니다.");
       return;
     }
@@ -379,12 +406,13 @@ export default function PDCAManager({
       return;
     }
 
-    // 비목별 예산 데이터 조립 및 복원
+    // 비목별 예산 데이터 조립 및 복원 (본예산 및 이월예산 구분)
     const categoriesToSave = inputBudgetCategories
       .filter((c) => c.category && c.category !== "선택 안 함")
       .map((c) => ({
         category: c.category,
-        budget: parseNumberFromCommas(c.budget) * 1000
+        budget: parseNumberFromCommas(c.budget) * 1000,
+        budget_carry: selectedYear === 1 ? 0 : (parseNumberFromCommas(c.budget_carry) * 1000)
       }));
 
     onUpdateProgramDetails(activeProg.unitId, activeProg.id, {
@@ -394,6 +422,9 @@ export default function PDCAManager({
       budget_national: bNational,
       budget_city: bCity,
       budget_external: bExternal,
+      budget_carry_national: bCarryNational,
+      budget_carry_city: bCarryCity,
+      budget_carry_external: bCarryExternal,
       budget_categories: categoriesToSave
     });
 
@@ -654,18 +685,75 @@ export default function PDCAManager({
                       {/* 1영역: 재원별 예산 */}
                       <div>
                         <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)", display: "block", marginBottom: "0.15rem" }}>재원별 예산 배정 (천원 단위)</span>
-                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "0.4rem" }}>
-                          <div>
-                            <span style={{ fontSize: "0.6rem", color: "var(--text-secondary-dark)" }}>국고 예산</span>
-                            <input type="text" className="user-selector" value={inputBudgetNational} onChange={(e) => setInputBudgetNational(formatNumberWithCommas(e.target.value))} style={{ padding: "0.2rem 0.4rem", fontSize: "0.7rem" }} />
+                        <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
+                          {/* 본예산 */}
+                          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "0.4rem" }}>
+                            <div>
+                              <span style={{ fontSize: "0.6rem", color: "var(--text-secondary-dark)" }}>국고 본예산</span>
+                              <input type="text" className="user-selector" value={inputBudgetNational} onChange={(e) => setInputBudgetNational(formatNumberWithCommas(e.target.value))} style={{ padding: "0.2rem 0.4rem", fontSize: "0.7rem" }} />
+                            </div>
+                            <div>
+                              <span style={{ fontSize: "0.6rem", color: "var(--text-secondary-dark)" }}>지자체 시비 본예산</span>
+                              <input type="text" className="user-selector" value={inputBudgetCity} onChange={(e) => setInputBudgetCity(formatNumberWithCommas(e.target.value))} style={{ padding: "0.2rem 0.4rem", fontSize: "0.7rem" }} />
+                            </div>
+                            <div>
+                              <span style={{ fontSize: "0.6rem", color: "var(--text-secondary-dark)" }}>외부사업비 본예산</span>
+                              <input type="text" className="user-selector" value={inputBudgetExternal} onChange={(e) => setInputBudgetExternal(formatNumberWithCommas(e.target.value))} style={{ padding: "0.2rem 0.4rem", fontSize: "0.7rem" }} />
+                            </div>
                           </div>
-                          <div>
-                            <span style={{ fontSize: "0.6rem", color: "var(--text-secondary-dark)" }}>지자체 시비</span>
-                            <input type="text" className="user-selector" value={inputBudgetCity} onChange={(e) => setInputBudgetCity(formatNumberWithCommas(e.target.value))} style={{ padding: "0.2rem 0.4rem", fontSize: "0.7rem" }} />
-                          </div>
-                          <div>
-                            <span style={{ fontSize: "0.6rem", color: "var(--text-secondary-dark)" }}>외부사업비</span>
-                            <input type="text" className="user-selector" value={inputBudgetExternal} onChange={(e) => setInputBudgetExternal(formatNumberWithCommas(e.target.value))} style={{ padding: "0.2rem 0.4rem", fontSize: "0.7rem" }} />
+                          {/* 이월예산 (1차년도 비활성화) */}
+                          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "0.4rem" }}>
+                            <div>
+                              <span style={{ fontSize: "0.6rem", color: selectedYear === 1 ? "rgba(255,255,255,0.15)" : "var(--text-secondary-dark)" }}>국고 이월예산</span>
+                              <input
+                                type="text"
+                                className="user-selector"
+                                disabled={selectedYear === 1}
+                                value={selectedYear === 1 ? "0" : inputBudgetCarryNational}
+                                onChange={(e) => setInputBudgetCarryNational(formatNumberWithCommas(e.target.value))}
+                                style={{
+                                  padding: "0.2rem 0.4rem",
+                                  fontSize: "0.7rem",
+                                  background: selectedYear === 1 ? "rgba(255,255,255,0.02)" : "#18181b",
+                                  color: selectedYear === 1 ? "rgba(255,255,255,0.2)" : "white",
+                                  cursor: selectedYear === 1 ? "not-allowed" : "text"
+                                }}
+                              />
+                            </div>
+                            <div>
+                              <span style={{ fontSize: "0.6rem", color: selectedYear === 1 ? "rgba(255,255,255,0.15)" : "var(--text-secondary-dark)" }}>지자체 시비 이월예산</span>
+                              <input
+                                type="text"
+                                className="user-selector"
+                                disabled={selectedYear === 1}
+                                value={selectedYear === 1 ? "0" : inputBudgetCarryCity}
+                                onChange={(e) => setInputBudgetCarryCity(formatNumberWithCommas(e.target.value))}
+                                style={{
+                                  padding: "0.2rem 0.4rem",
+                                  fontSize: "0.7rem",
+                                  background: selectedYear === 1 ? "rgba(255,255,255,0.02)" : "#18181b",
+                                  color: selectedYear === 1 ? "rgba(255,255,255,0.2)" : "white",
+                                  cursor: selectedYear === 1 ? "not-allowed" : "text"
+                                }}
+                              />
+                            </div>
+                            <div>
+                              <span style={{ fontSize: "0.6rem", color: selectedYear === 1 ? "rgba(255,255,255,0.15)" : "var(--text-secondary-dark)" }}>외부사업비 이월예산</span>
+                              <input
+                                type="text"
+                                className="user-selector"
+                                disabled={selectedYear === 1}
+                                value={selectedYear === 1 ? "0" : inputBudgetCarryExternal}
+                                onChange={(e) => setInputBudgetCarryExternal(formatNumberWithCommas(e.target.value))}
+                                style={{
+                                  padding: "0.2rem 0.4rem",
+                                  fontSize: "0.7rem",
+                                  background: selectedYear === 1 ? "rgba(255,255,255,0.02)" : "#18181b",
+                                  color: selectedYear === 1 ? "rgba(255,255,255,0.2)" : "white",
+                                  cursor: selectedYear === 1 ? "not-allowed" : "text"
+                                }}
+                              />
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -675,7 +763,7 @@ export default function PDCAManager({
                         <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)", display: "block", marginBottom: "0.2rem" }}>비목별 예산 배정 (천원 단위, 최대 4개)</span>
                         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.4rem" }}>
                           {inputBudgetCategories.map((item, idx) => (
-                            <div key={idx} style={{ display: "flex", gap: "0.3rem", alignItems: "center" }}>
+                            <div key={idx} style={{ display: "grid", gridTemplateColumns: "1.2fr 1fr 1fr", gap: "0.2rem", alignItems: "center" }}>
                               <select
                                 className="user-selector"
                                 value={item.category}
@@ -684,7 +772,7 @@ export default function PDCAManager({
                                   newCats[idx].category = e.target.value;
                                   setInputBudgetCategories(newCats);
                                 }}
-                                style={{ width: "95px", fontSize: "0.7rem", padding: "0.2rem" }}
+                                style={{ fontSize: "0.7rem", padding: "0.2rem", width: "100%" }}
                               >
                                 {BUDGET_CATEGORIES_OPTIONS.map((opt) => (
                                   <option key={opt} value={opt === "선택 안 함" ? "" : opt}>
@@ -695,14 +783,34 @@ export default function PDCAManager({
                               <input
                                 type="text"
                                 className="user-selector"
-                                placeholder="금액"
+                                placeholder="본예산"
                                 value={item.budget}
                                 onChange={(e) => {
                                   const newCats = [...inputBudgetCategories];
                                   newCats[idx].budget = formatNumberWithCommas(e.target.value);
                                   setInputBudgetCategories(newCats);
                                 }}
-                                style={{ flexGrow: 1, fontSize: "0.7rem", padding: "0.2rem 0.4rem" }}
+                                style={{ fontSize: "0.7rem", padding: "0.2rem 0.4rem", width: "100%" }}
+                              />
+                              <input
+                                type="text"
+                                className="user-selector"
+                                placeholder="이월비"
+                                disabled={selectedYear === 1}
+                                value={selectedYear === 1 ? "0" : item.budget_carry}
+                                onChange={(e) => {
+                                  const newCats = [...inputBudgetCategories];
+                                  newCats[idx].budget_carry = formatNumberWithCommas(e.target.value);
+                                  setInputBudgetCategories(newCats);
+                                }}
+                                style={{
+                                  fontSize: "0.7rem",
+                                  padding: "0.2rem 0.4rem",
+                                  width: "100%",
+                                  background: selectedYear === 1 ? "rgba(255,255,255,0.02)" : "#18181b",
+                                  color: selectedYear === 1 ? "rgba(255,255,255,0.2)" : "white",
+                                  cursor: selectedYear === 1 ? "not-allowed" : "text"
+                                }}
                               />
                             </div>
                           ))}
