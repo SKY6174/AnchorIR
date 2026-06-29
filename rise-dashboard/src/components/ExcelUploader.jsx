@@ -179,8 +179,11 @@ export default function ExcelUploader({ onUpdateData, projects, selectedYear = 2
     const ws = XLSX.utils.json_to_sheet(data);
     XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
     
-    const wbout = XLSX.write(wb, { bookType: "xlsx", type: "binary" });
-    const blob = new Blob([s2ab(wbout)], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+    // type: "array"를 사용하여 라이브러리가 원시 ArrayBuffer(Uint8Array) 바이트 배열을 직접 리턴하게 합니다.
+    // 이는 기존 binary 문자열 인코딩 및 s2ab(string to ArrayBuffer) 과정에서 한글명(프로그램/과제명)이 손상되어
+    // 정상적인 엑셀 파일이 아닌 깨진 파일로 다운로드되던 결함을 완벽히 패치합니다.
+    const wbout = XLSX.write(wb, { bookType: "xlsx", type: "array" });
+    const blob = new Blob([wbout], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
