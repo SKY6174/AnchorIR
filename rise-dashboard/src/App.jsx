@@ -317,7 +317,17 @@ function formatDataToMultiYear(data) {
 
 export default function App() {
   const [currentUser, setCurrentUser] = useState(null);
-  const [projects, setProjects] = useState(() => formatDataToMultiYear(initialProjectsData));
+  const [projects, setProjects] = useState(() => {
+    const cached = localStorage.getItem("rise_projects_data");
+    if (cached) {
+      try {
+        return JSON.parse(cached);
+      } catch (e) {
+        console.error("Failed to parse cached projects data:", e);
+      }
+    }
+    return formatDataToMultiYear(initialProjectsData);
+  });
   const [activeTab, setActiveTab] = useState("dashboard");
   const [darkMode, setDarkMode] = useState(true);
 
@@ -395,6 +405,11 @@ export default function App() {
       document.body.classList.add("light-mode");
     }
   }, [darkMode]);
+
+  // projects 상태 변경 시 localStorage 자동 기입 (새로고침 휘발 방지 우회책)
+  useEffect(() => {
+    localStorage.setItem("rise_projects_data", JSON.stringify(projects));
+  }, [projects]);
 
   /* 
    * [성과지표 자동 연계 UX 로직]
@@ -812,6 +827,27 @@ export default function App() {
             <span style={{ fontSize: "0.85rem", color: "var(--text-secondary-dark)", marginRight: "1rem" }}>
               반갑습니다, <strong>{currentUser.name}</strong> 님
             </span>
+            <button
+              onClick={() => {
+                if (window.confirm("기획 및 입력하신 모든 로컬 변경 예산/상태 데이터를 초기 mockData 상태로 복원하시겠습니까?")) {
+                  localStorage.removeItem("rise_projects_data");
+                  window.location.reload();
+                }
+              }}
+              style={{
+                fontSize: "0.7rem",
+                padding: "0.25rem 0.6rem",
+                borderRadius: "0.25rem",
+                background: "rgba(239, 68, 68, 0.15)",
+                color: "#f87171",
+                border: "1px solid rgba(239, 68, 68, 0.3)",
+                marginRight: "0.5rem",
+                cursor: "pointer",
+                fontWeight: "700"
+              }}
+            >
+              데이터 초기화
+            </button>
             <button className="theme-toggle-btn" onClick={() => setDarkMode(!darkMode)}>
               {darkMode ? <Sun size={18} /> : <Moon size={18} />}
             </button>
