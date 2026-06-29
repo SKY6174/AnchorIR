@@ -541,6 +541,7 @@ export default function App() {
                 if (updatedFields.improvePlan !== undefined) prog.improvePlan = updatedFields.improvePlan;
                 if (updatedFields.deficiency !== undefined) prog.deficiency = updatedFields.deficiency;
                 if (updatedFields.actionItem !== undefined) prog.actionItem = updatedFields.actionItem;
+                if (updatedFields.achievements !== undefined) prog.achievements = updatedFields.achievements;
 
                 const py = prog.years[selectedYear];
                 if (py) {

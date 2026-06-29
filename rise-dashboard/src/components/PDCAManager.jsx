@@ -76,6 +76,7 @@ export default function PDCAManager({
   // C 단계 실적용 상태 (집행액 제외, 이수인원 및 만족도만 관리)
   const [inputParticipants, setInputParticipants] = useState("");
   const [inputSatisfaction, setInputSatisfaction] = useState("");
+  const [inputAchievements, setInputAchievements] = useState(""); // 신규 성과사항 필드 추가
 
   // A 단계 2분할 환류 방안용 상태
   const [inputEvalType, setInputEvalType] = useState("우수"); // "우수" 또는 "미흡"
@@ -143,6 +144,7 @@ export default function PDCAManager({
 
         setInputParticipants(String(prog.participants ?? 0));
         setInputSatisfaction(String(prog.satisfaction ?? 0));
+        setInputAchievements(prog.achievements || "");
 
         setInputEvalType(prog.evalType || "우수");
         setInputExcellent(prog.excellent || "");
@@ -164,6 +166,7 @@ export default function PDCAManager({
       setInputSpentExternal("");
       setInputParticipants("");
       setInputSatisfaction("");
+      setInputAchievements("");
       setInputExcellent("");
       setInputImprovePlan("");
       setInputDeficiency("");
@@ -225,22 +228,38 @@ export default function PDCAManager({
           return;
         }
       } else if (stage === "d") {
-        // D 완료 검증: 실제 예산 집행이 한 푼이라도 있어야 함
+        // D 완료 검증: 실제 예산 집행과 최종 이수인원이 기재되었는지만 확인!
         if (spentMain <= 0) {
-          alert(`[검증 실패] D(Do) 단계를 완료하려면 실제 세부 집행 실적이 기재되어야 합니다. (현재 집행액 합계: 0원)`);
+          alert(`[검증 실패] D(Do) 단계를 완료하려면 실제 세부 집행 실적이 기재되어야 합니다.`);
+          return;
+        }
+        if (participants <= 0) {
+          alert(`[검증 실패] D(Do) 단계를 완료하려면 최종 이수인원(0명 초과)이 기재되어야 합니다.`);
           return;
         }
       } else if (stage === "c") {
-        // C 완료 검증: 실집행액은 검증에서 제외, 이수인원과 만족도 점수가 기재되었는지만 확인!
-        if (participants <= 0 || satisfaction <= 0) {
-          alert(`[검증 실패] C(Check) 단계를 완료하려면 이수인원(0명 초과)과 만족도(0% 초과)가 반드시 기재되어야 합니다.`);
+        // C 완료 검증: 성과사항 서술이 비어있지 않고, 만족도가 0점 초과여야 함
+        const achievements = activeProg.achievements || "";
+        if (!achievements.trim()) {
+          alert(`[검증 실패] C(Check) 단계를 완료하려면 성과사항이 기입되어야 합니다.`);
+          return;
+        }
+        if (satisfaction <= 0) {
+          alert(`[검증 실패] C(Check) 단계를 완료하려면 만족도(0점 초과)가 기재되어야 합니다.`);
           return;
         }
       } else if (stage === "a") {
-        // A 완료 검증: 자체평가 및 환류 방안 중 최소 하나 기재 필수
-        if (!excellent.trim() && !improvePlan.trim() && !deficiency.trim() && !actionItem.trim()) {
-          alert(`[검증 실패] A(Act) 단계를 완료하려면 자체평가 및 환류 방안(우수한 점, 발전방안, 미비점, 개선사항) 중 최소 하나를 입력해 주셔야 합니다.`);
-          return;
+        // A 완료 검증: 우수/미흡 평가 구분에 따른 2가지 세부 사항 기재 필수
+        if (evalType === "우수") {
+          if (!excellent.trim() || !improvePlan.trim()) {
+            alert(`[검증 실패] A(Act) 우수 프로그램 상태를 완료하려면 '우수한 점'과 '발전방안'을 모두 기입해 주셔야 합니다.`);
+            return;
+          }
+        } else {
+          if (!deficiency.trim() || !actionItem.trim()) {
+            alert(`[검증 실패] A(Act) 미흡 프로그램 상태를 완료하려면 '미비점'과 '개선사항'을 모두 기입해 주셔야 합니다.`);
+            return;
+          }
         }
       }
     }
@@ -286,7 +305,9 @@ export default function PDCAManager({
     setTimeout(() => setFeedbackMsg(""), 3000);
   };
 
-  // D 단계 세부 재원별 집행 실적 입력 (한도 검사 포함)
+
+
+  // D 단계 집행 및 실적 등록 (재원별 집행 및 이수인원 기입)
   const handleUpdateBudget = (e) => {
     e.preventDefault();
     if (!activeProg) return;
@@ -294,75 +315,81 @@ export default function PDCAManager({
     const sNational = parseNumberFromCommas(inputSpentNational);
     const sCity = parseNumberFromCommas(inputSpentCity);
     const sExternal = parseNumberFromCommas(inputSpentExternal);
-
-    if (sNational < 0 || sCity < 0 || sExternal < 0) {
-      alert("집행액은 0원 이상의 올바른 숫자 형식이어야 합니다.");
-      return;
-    }
+    const parsedParticipants = parseInt(inputParticipants, 10);
 
     const py = activeProg.years?.[selectedYear] || {};
-    const bNational = py.budget_national || 0;
-    const bCity = py.budget_city || 0;
-    const bExternal = py.budget_external || 0;
+    const limitNational = py.budget_national || 0;
+    const limitCity = py.budget_city || 0;
+    const limitExternal = py.budget_external || 0;
 
-    // 개별 재원별 배정 예산 초과 방지 밸리데이션
-    if (sNational > bNational) {
-      alert(`[오류] 국고 집행액(${formatToMillionWon(sNational)}백만원)이 배정된 국고 예산 한도(${formatToMillionWon(bNational)}백만원)를 초과할 수 없습니다.`);
+    if (sNational > limitNational) {
+      alert(`[한도 초과] 국고 집행액(${sNational.toLocaleString()}원)은 배정 예산(${limitNational.toLocaleString()}원)을 초과할 수 없습니다.`);
       return;
     }
-    if (sCity > bCity) {
-      alert(`[오류] 시비 집행액(${formatToMillionWon(sCity)}백만원)이 배정된 시비 예산 한도(${formatToMillionWon(bCity)}백만원)를 초과할 수 없습니다.`);
+    if (sCity > limitCity) {
+      alert(`[한도 초과] 시비 집행액(${sCity.toLocaleString()}원)은 배정 예산(${limitCity.toLocaleString()}원)을 초과할 수 없습니다.`);
       return;
     }
-    if (sExternal > bExternal) {
-      alert(`[오류] 외부사업비 집행액(${formatToMillionWon(sExternal)}백만원)이 배정된 외부 예산 한도(${formatToMillionWon(bExternal)}백만원)를 초과할 수 없습니다.`);
+    if (sExternal > limitExternal) {
+      alert(`[한도 초과] 외부사업비 집행액(${sExternal.toLocaleString()}원)은 배정 예산(${limitExternal.toLocaleString()}원)을 초과할 수 없습니다.`);
+      return;
+    }
+    if (isNaN(parsedParticipants) || parsedParticipants < 0) {
+      alert("올바른 형식의 최종 이수인원(명)을 입력해 주세요.");
       return;
     }
 
     onUpdateProgramDetails(activeProg.unitId, activeProg.id, {
       spent_national: sNational,
       spent_city: sCity,
-      spent_external: sExternal
+      spent_external: sExternal,
+      participants: parsedParticipants
     });
 
-    setFeedbackMsg("D 단계 재원별 집행 실적이 안전하게 대시보드 모델에 연동되었습니다.");
+    setFeedbackMsg("D 단계 집행 실적 및 이수인원이 안전하게 저장되었습니다.");
     setTimeout(() => setFeedbackMsg(""), 3000);
   };
 
-  // C 단계 실적 입력 (실집행액 제외, 이수인원/만족도 기입)
+  // C 단계 실적 입력 (성과사항 서술 및 만족도 기입)
   const handleUpdateCDetails = (e) => {
     e.preventDefault();
     if (!activeProg) return;
 
-    const parsedParticipants = parseInt(inputParticipants, 10);
     const parsedSatisfaction = parseFloat(inputSatisfaction);
 
-    if (isNaN(parsedParticipants) || parsedParticipants < 0) {
-      alert("올바른 숫자 형식의 이수인원을 입력해주세요.");
+    if (!inputAchievements.trim()) {
+      alert("성과사항을 서술해 주세요.");
       return;
     }
     if (isNaN(parsedSatisfaction) || parsedSatisfaction < 0 || parsedSatisfaction > 100) {
-      alert("만족도는 0~100 사이의 숫자로 입력해주세요.");
+      alert("만족도는 0~100 사이의 숫자로 입력해 주세요.");
       return;
     }
 
     onUpdateProgramDetails(activeProg.unitId, activeProg.id, {
-      participants: parsedParticipants,
+      achievements: inputAchievements,
       satisfaction: parsedSatisfaction
     });
 
-    setFeedbackMsg("C 단계 성과 실적(이수인원, 만족도)이 안전하게 저장되었습니다.");
+    setFeedbackMsg("C 단계 성과 실적(성과사항, 만족도)이 안전하게 저장되었습니다.");
     setTimeout(() => setFeedbackMsg(""), 3000);
   };
 
-  // A 단계자체 평가 및 환류 2분할 방안 저장
+  // A 단계 자체 평가 및 환류 2분할 방안 저장
   const handleUpdateA = (e) => {
     e.preventDefault();
     if (!activeProg) return;
 
-    if (!inputExcellent.trim() && !inputImprovePlan.trim() && !inputDeficiency.trim() && !inputActionItem.trim()) {
-      alert("자체평가 및 환류 방안(우수한 점, 발전방안, 미비점, 개선사항) 중 최소 하나 이상을 기입해 주세요.");
-      return;
+    if (inputEvalType === "우수") {
+      if (!inputExcellent.trim() || !inputImprovePlan.trim()) {
+        alert("우수 프로그램 환류 사항(우수한 점 및 발전방안)을 모두 기재해 주세요.");
+        return;
+      }
+    } else {
+      if (!inputDeficiency.trim() || !inputActionItem.trim()) {
+        alert("미흡 프로그램 환류 사항(미비점 및 개선사항)을 모두 기재해 주세요.");
+        return;
+      }
     }
 
     onUpdateProgramDetails(activeProg.unitId, activeProg.id, {
@@ -579,23 +606,27 @@ export default function PDCAManager({
                 {/* D 단계: 세부 재원별 집행 등록 */}
                 {(isResearcher || currentRole.rank <= 2) && (
                   <form onSubmit={handleUpdateBudget} style={{ padding: "0.75rem", background: "rgba(59,130,246,0.03)", border: "1px solid rgba(59,130,246,0.15)", borderRadius: "0.5rem" }}>
-                    <h4 style={{ fontSize: "0.8rem", fontWeight: "800", marginBottom: "0.5rem", color: "var(--accent-color)" }}>D 단계: 세부 재원별 본집행액 입력</h4>
+                    <h4 style={{ fontSize: "0.8rem", fontWeight: "800", marginBottom: "0.5rem", color: "var(--accent-color)" }}>D 단계: 세부 재원별 본집행액 및 실적 입력</h4>
                     <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
-                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "0.4rem" }}>
+                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: "0.4rem" }}>
                         <div>
-                          <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)" }}>국고 집행</span>
+                          <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)" }}>국고 집행 (천원)</span>
                           <input type="text" className="user-selector" value={inputSpentNational} onChange={(e) => setInputSpentNational(formatNumberWithCommas(e.target.value))} style={{ padding: "0.2rem 0.4rem", fontSize: "0.75rem" }} />
                         </div>
                         <div>
-                          <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)" }}>시비 집행</span>
+                          <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)" }}>시비 집행 (천원)</span>
                           <input type="text" className="user-selector" value={inputSpentCity} onChange={(e) => setInputSpentCity(formatNumberWithCommas(e.target.value))} style={{ padding: "0.2rem 0.4rem", fontSize: "0.75rem" }} />
                         </div>
                         <div>
-                          <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)" }}>외부 집행</span>
+                          <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)" }}>외부 집행 (천원)</span>
                           <input type="text" className="user-selector" value={inputSpentExternal} onChange={(e) => setInputSpentExternal(formatNumberWithCommas(e.target.value))} style={{ padding: "0.2rem 0.4rem", fontSize: "0.75rem" }} />
                         </div>
+                        <div>
+                          <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)" }}>이수인원 (명)</span>
+                          <input type="text" className="user-selector" value={inputParticipants} onChange={(e) => setInputParticipants(e.target.value)} style={{ padding: "0.2rem 0.4rem", fontSize: "0.75rem" }} />
+                        </div>
                       </div>
-                      <button type="submit" className="btn-primary" style={{ marginTop: "0.2rem" }}>D 집행 실적 저장</button>
+                      <button type="submit" className="btn-primary" style={{ marginTop: "0.2rem" }}>D 집행 실적 및 인원 저장</button>
                     </div>
                   </form>
                 )}
@@ -605,13 +636,13 @@ export default function PDCAManager({
                   <form onSubmit={handleUpdateCDetails} style={{ padding: "0.75rem", background: "rgba(16,185,129,0.03)", border: "1px solid rgba(16,185,129,0.15)", borderRadius: "0.5rem" }}>
                     <h4 style={{ fontSize: "0.8rem", fontWeight: "800", marginBottom: "0.5rem", color: "var(--success-color)" }}>C 단계: 운영 성과 실적 입력</h4>
                     <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-                      <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
-                        <input type="text" className="user-selector" placeholder="이수인원 수" value={inputParticipants} onChange={(e) => setInputParticipants(e.target.value)} style={{ flexGrow: 1 }} />
-                        <span style={{ fontSize: "0.75rem", width: "45px" }}>이수(명)</span>
+                      <div>
+                        <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)" }}>성과사항 (정성/정량적 성과 서술)</span>
+                        <textarea className="user-selector" rows={3} value={inputAchievements} onChange={(e) => setInputAchievements(e.target.value)} placeholder="프로그램 운영을 통해 달성한 주요 성과 사항을 서술해 주세요." style={{ width: "100%", fontSize: "0.75rem", padding: "0.3rem", background: "#18181b", color: "white", border: "1px solid var(--border-color-dark)", borderRadius: "0.25rem" }} />
                       </div>
                       <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
-                        <input type="text" className="user-selector" placeholder="만족도" value={inputSatisfaction} onChange={(e) => setInputSatisfaction(e.target.value)} style={{ flexGrow: 1 }} />
-                        <span style={{ fontSize: "0.75rem", width: "45px" }}>만족(%)</span>
+                        <span style={{ fontSize: "0.75rem", width: "140px", color: "var(--text-secondary-dark)" }}>만족도 (점 / 100점):</span>
+                        <input type="text" className="user-selector" placeholder="예: 95" value={inputSatisfaction} onChange={(e) => setInputSatisfaction(e.target.value)} style={{ flexGrow: 1 }} />
                       </div>
                       <button type="submit" className="btn-primary" style={{ background: "var(--success-color)" }}>C 성과 적용</button>
                     </div>
@@ -635,28 +666,33 @@ export default function PDCAManager({
                       </label>
                     </div>
 
-                    <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
-                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem" }}>
-                        <div>
-                          <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)" }}>우수한 점</span>
-                          <textarea className="user-selector" rows={2} value={inputExcellent} onChange={(e) => setInputExcellent(e.target.value)} placeholder="프로그램 운영 중 창출된 우수한 성과 및 성료 요인을 기록하세요." style={{ width: "100%", fontSize: "0.75rem", padding: "0.3rem" }} />
-                        </div>
-                        <div>
-                          <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)" }}>발전방안</span>
-                          <textarea className="user-selector" rows={2} value={inputImprovePlan} onChange={(e) => setInputImprovePlan(e.target.value)} placeholder="우수한 성과를 타 프로그램으로 확산하거나 차년도에 더욱 발전시킬 방안을 기입하세요." style={{ width: "100%", fontSize: "0.75rem", padding: "0.3rem" }} />
-                        </div>
-                      </div>
-                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem" }}>
-                        <div>
-                          <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)" }}>미비점</span>
-                          <textarea className="user-selector" rows={2} value={inputDeficiency} onChange={(e) => setInputDeficiency(e.target.value)} placeholder="운영상의 한계, 예산 집행 차질, 혹은 목표 달성 미달의 주원인을 파악하여 입력하세요." style={{ width: "100%", fontSize: "0.75rem", padding: "0.3rem" }} />
-                        </div>
-                        <div>
-                          <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)" }}>개선사항</span>
-                          <textarea className="user-selector" rows={2} value={inputActionItem} onChange={(e) => setInputActionItem(e.target.value)} placeholder="발견된 미비점을 극복하고 차년도 계획 시 보완 및 구조조정할 대책을 기입하세요." style={{ width: "100%", fontSize: "0.75rem", padding: "0.3rem" }} />
+                    {inputEvalType === "우수" ? (
+                      <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
+                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem" }}>
+                          <div>
+                            <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)" }}>우수한 점</span>
+                            <textarea className="user-selector" rows={2} value={inputExcellent} onChange={(e) => setInputExcellent(e.target.value)} placeholder="프로그램 운영 중 창출된 우수한 성과 및 성료 요인을 기록하세요." style={{ width: "100%", fontSize: "0.75rem", padding: "0.3rem", background: "#18181b", color: "white", border: "1px solid var(--border-color-dark)", borderRadius: "0.25rem" }} />
+                          </div>
+                          <div>
+                            <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)" }}>발전방안</span>
+                            <textarea className="user-selector" rows={2} value={inputImprovePlan} onChange={(e) => setInputImprovePlan(e.target.value)} placeholder="우수한 성과를 타 프로그램으로 확산하거나 차년도에 더욱 발전시킬 방안을 기입하세요." style={{ width: "100%", fontSize: "0.75rem", padding: "0.3rem", background: "#18181b", color: "white", border: "1px solid var(--border-color-dark)", borderRadius: "0.25rem" }} />
+                          </div>
                         </div>
                       </div>
-                    </div>
+                    ) : (
+                      <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
+                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem" }}>
+                          <div>
+                            <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)" }}>미비점</span>
+                            <textarea className="user-selector" rows={2} value={inputDeficiency} onChange={(e) => setInputDeficiency(e.target.value)} placeholder="운영상의 한계, 예산 집행 차질, 혹은 목표 달성 미달의 주원인을 파악하여 입력하세요." style={{ width: "100%", fontSize: "0.75rem", padding: "0.3rem", background: "#18181b", color: "white", border: "1px solid var(--border-color-dark)", borderRadius: "0.25rem" }} />
+                          </div>
+                          <div>
+                            <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)" }}>개선사항</span>
+                            <textarea className="user-selector" rows={2} value={inputActionItem} onChange={(e) => setInputActionItem(e.target.value)} placeholder="발견된 미비점을 극복하고 차년도 계획 시 보완 및 구조조정할 대책을 기입하세요." style={{ width: "100%", fontSize: "0.75rem", padding: "0.3rem", background: "#18181b", color: "white", border: "1px solid var(--border-color-dark)", borderRadius: "0.25rem" }} />
+                          </div>
+                        </div>
+                      </div>
+                    )}
                     <button type="submit" className="btn-primary" style={{ marginTop: "0.5rem", background: "var(--warning-color)" }}>A 환류 방안 저장</button>
                   </form>
                 )}
