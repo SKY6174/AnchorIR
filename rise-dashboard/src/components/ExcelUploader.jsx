@@ -46,7 +46,7 @@ export default function ExcelUploader({ onUpdateData, projects, selectedYear = 2
         // 엑셀 컬럼 헤더(키) 값을 검사하여 예산인지 KPI인지 판별
         if (json.length > 0) {
           const keys = Object.keys(json[0]).map((k) => k.trim());
-          if (keys.includes("프로그램ID") && (keys.includes("2026년본사업비_집행") || keys.includes("2025년이월비_집행"))) {
+          if (keys.includes("프로그램ID") && (keys.includes("국고_본예산") || keys.includes("국고_이월예산"))) {
             isBudgetUpdate = true;
           } else if (keys.includes("세부항목ID") && keys.includes("실적값(현재값)")) {
             isKpiUpdate = true;
@@ -126,14 +126,57 @@ export default function ExcelUploader({ onUpdateData, projects, selectedYear = 2
       projects.forEach((p) => {
         p.units.forEach((u) => {
           u.programs.forEach((prog) => {
+            const py = prog.years?.[selectedYear] || {};
+            
+            // 10대 표준 비목 매핑용 오브젝트 생성 및 초기화
+            const catMap = {};
+            const standardCategories = [
+              "인건비", "장학금", "프로그램개발운영비", "환경개선비", 
+              "실험실습장비비", "지역연계협업비", "기업지원협력비", 
+              "성과활용확산비", "기타운영경비", "간접비"
+            ];
+            standardCategories.forEach(cat => {
+              catMap[`${cat}_본예산`] = 0;
+              catMap[`${cat}_이월비`] = 0;
+            });
+            
+            // 기존 프로그램에 저장된 비목 정보 백만원 단위로 변환해 매핑 (0원 초과분만 적용하기 위해)
+            if (py.budget_categories && Array.isArray(py.budget_categories)) {
+              py.budget_categories.forEach(c => {
+                let catLabel = c.category;
+                // DB의 전체 비목명을 엑셀용 축약 라벨로 매핑
+                if (catLabel === "교육∙연구 프로그램 개발∙운영비") catLabel = "프로그램개발운영비";
+                if (catLabel === "교육∙연구 환경개선비") catLabel = "환경개선비";
+                if (catLabel === "실험∙실습장비 및 기자재 구입∙운영비") catLabel = "실험실습장비비";
+                if (catLabel === "지역 연계∙협업 지원비") catLabel = "지역연계협업비";
+                if (catLabel === "기업 지원∙협력 활동비") catLabel = "기업지원협력비";
+                if (catLabel === "성과 활용∙확산 지원비") catLabel = "성과활용확산비";
+                if (catLabel === "그 밖의 사업운영경비") catLabel = "기타운영경비";
+                
+                if (standardCategories.includes(catLabel)) {
+                  catMap[`${catLabel}_본예산`] = c.budget !== undefined ? c.budget / 1000000 : 0;
+                  catMap[`${catLabel}_이월비`] = c.budget_carry !== undefined ? c.budget_carry / 1000000 : 0;
+                }
+              });
+            }
+
             data.push({
               "단위과제ID": u.id,
               "프로그램ID": prog.id,
               "프로그램명": prog.title,
-              "2026년본사업비_배정": prog.budget_2026 || 0,
-              "2026년본사업비_집행": prog.spent_2026 || 0,
-              "2025년이월비_배정": prog.budget_2025_carry || 0,
-              "2025년이월비_집행": prog.spent_2025_carry || 0
+              
+              // 재원별 본예산 배정 정보 (백만원)
+              "국고_본예산": py.budget_national !== undefined ? py.budget_national / 1000000 : 0,
+              "지자체시비_본예산": py.budget_city !== undefined ? py.budget_city / 1000000 : 0,
+              "외부사업비_본예산": py.budget_external !== undefined ? py.budget_external / 1000000 : 0,
+              
+              // 재원별 이월예산 배정 정보 (백만원)
+              "국고_이월예산": py.budget_carry_national !== undefined ? py.budget_carry_national / 1000000 : 0,
+              "지자체시비_이월예산": py.budget_carry_city !== undefined ? py.budget_carry_city / 1000000 : 0,
+              "외부사업비_이월예산": py.budget_carry_external !== undefined ? py.budget_carry_external / 1000000 : 0,
+              
+              // 비목별 예산 필드 나열
+              ...catMap
             });
           });
         });
