@@ -1111,6 +1111,47 @@ export default function PDCAManager({
           )}
         </div>
       )}
+      {/* 프리미엄 토스트 피드백 알림 (새로고침/저장 피드백) */}
+      {feedbackMsg && (
+        <div style={{
+          position: "fixed",
+          top: "1.5rem",
+          right: "1.5rem",
+          zIndex: 99999,
+          background: "rgba(24, 24, 27, 0.95)",
+          border: "1px solid rgba(16, 185, 129, 0.4)",
+          borderRadius: "0.5rem",
+          padding: "0.8rem 1.2rem",
+          boxShadow: "0 10px 30px rgba(0, 0, 0, 0.5), 0 0 15px rgba(16, 185, 129, 0.15)",
+          display: "flex",
+          alignItems: "center",
+          gap: "0.6rem",
+          animation: "toastSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
+          color: "white",
+          fontSize: "0.85rem",
+          fontWeight: "700"
+        }}>
+          <div style={{
+            width: "18px",
+            height: "18px",
+            borderRadius: "50%",
+            background: "var(--success-color)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            color: "#18181b"
+          }}>
+            <Check size={12} strokeWidth={4} />
+          </div>
+          <span>{feedbackMsg}</span>
+        </div>
+      )}
+      <style>{`
+        @keyframes toastSlideIn {
+          from { transform: translateX(120%); opacity: 0; }
+          to { transform: translateX(0); opacity: 1; }
+        }
+      `}</style>
     </div>
   );
 }
