@@ -561,6 +561,11 @@ export default function App() {
                   
                   // 세부 재원 집행액의 합으로 총 본집행액(spent_main) 동기화
                   py.spent_main = (py.spent_national || 0) + (py.spent_city || 0) + (py.spent_external || 0);
+
+                  // 비목별 이원화 예산 갱신
+                  if (updatedFields.budget_categories !== undefined) {
+                    py.budget_categories = updatedFields.budget_categories;
+                  }
                 }
                 
                 // 프로그램 5개년 이월 잔액 재계산

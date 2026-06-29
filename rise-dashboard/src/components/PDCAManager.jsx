@@ -40,6 +40,61 @@ const parseTimelineDates = (timelineStr) => {
   };
 };
 
+const MONTHS_LIST = ["26.3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월", "27.1월", "2월"];
+
+const BUDGET_CATEGORIES_OPTIONS = [
+  "선택 안 함",
+  "인건비",
+  "운영비",
+  "여비/수당",
+  "재료비/기자재비",
+  "간접비",
+  "기타"
+];
+
+const parseTimelineToMonths = (timelineStr) => {
+  const defaultValue = Array(12).fill("");
+  if (!timelineStr) return defaultValue;
+
+  if (timelineStr.includes(",")) {
+    const parts = timelineStr.split(",");
+    if (parts.length === 12) {
+      return parts.map(p => ["P", "D", "C", "A"].includes(p.trim()) ? p.trim() : "");
+    }
+  }
+
+  const dates = parseTimelineDates(timelineStr);
+  if (dates.start && dates.end) {
+    try {
+      const startMonth = parseInt(dates.start.split("-")[1], 10);
+      const endMonth = parseInt(dates.end.split("-")[1], 10);
+
+      const getMonthIndex = (m) => {
+        if (m >= 3 && m <= 12) return m - 3;
+        if (m === 1 || m === 2) return m + 9;
+        return -1;
+      };
+
+      const startIndex = getMonthIndex(startMonth);
+      const endIndex = getMonthIndex(endMonth);
+
+      if (startIndex !== -1 && endIndex !== -1) {
+        const arr = Array(12).fill("");
+        const start = Math.min(startIndex, endIndex);
+        const end = Math.max(startIndex, endIndex);
+        for (let i = start; i <= end; i++) {
+          arr[i] = "P";
+        }
+        return arr;
+      }
+    } catch (e) {
+      console.error("Parse timeline to months error:", e);
+    }
+  }
+
+  return defaultValue;
+};
+
 /**
  * PDCAManager Component
  * 프로그램별 PDCA(Plan-Do-Check-Act) 단계 관리, 기획수립(Timeline, 대상, 부서),
@@ -67,6 +122,17 @@ export default function PDCAManager({
   const [inputBudgetNational, setInputBudgetNational] = useState("");
   const [inputBudgetCity, setInputBudgetCity] = useState("");
   const [inputBudgetExternal, setInputBudgetExternal] = useState("");
+
+  // 이원화 비목별 예산용 상태 (최대 4칸)
+  const [inputBudgetCategories, setInputBudgetCategories] = useState([
+    { category: "", budget: "" },
+    { category: "", budget: "" },
+    { category: "", budget: "" },
+    { category: "", budget: "" }
+  ]);
+
+  // 월별 PDCA 일정 관리용 상태 (26.3월 ~ 27.2월, 12칸)
+  const [inputMonthlyPDCA, setInputMonthlyPDCA] = useState(Array(12).fill(""));
 
   // D 단계 집행 실적용 상태 (재원별 분리)
   const [inputSpentNational, setInputSpentNational] = useState("");
@@ -138,6 +204,19 @@ export default function PDCAManager({
         setInputBudgetCity(py.budget_city !== undefined ? formatNumberWithCommas(Math.round(py.budget_city / 1000)) : "0");
         setInputBudgetExternal(py.budget_external !== undefined ? formatNumberWithCommas(Math.round(py.budget_external / 1000)) : "0");
 
+        // 비목 예산 바인딩 (4칸 구성)
+        const loadedCategories = (py.budget_categories || []).map((c) => ({
+          category: c.category || "",
+          budget: c.budget !== undefined ? formatNumberWithCommas(Math.round(c.budget / 1000)) : ""
+        }));
+        while (loadedCategories.length < 4) {
+          loadedCategories.push({ category: "", budget: "" });
+        }
+        setInputBudgetCategories(loadedCategories);
+
+        // 월별 PDCA일정 바인딩
+        setInputMonthlyPDCA(parseTimelineToMonths(prog.timeline || ""));
+
         setInputSpentNational(formatNumberWithCommas(py.spent_national ?? 0));
         setInputSpentCity(formatNumberWithCommas(py.spent_city ?? 0));
         setInputSpentExternal(formatNumberWithCommas(py.spent_external ?? 0));
@@ -161,6 +240,13 @@ export default function PDCAManager({
       setInputBudgetNational("");
       setInputBudgetCity("");
       setInputBudgetExternal("");
+      setInputBudgetCategories([
+        { category: "", budget: "" },
+        { category: "", budget: "" },
+        { category: "", budget: "" },
+        { category: "", budget: "" }
+      ]);
+      setInputMonthlyPDCA(Array(12).fill(""));
       setInputSpentNational("");
       setInputSpentCity("");
       setInputSpentExternal("");
@@ -174,7 +260,7 @@ export default function PDCAManager({
     }
   }, [selectedProgId, selectedYear]);
 
-  // 추진일정 변경 이벤트 핸들러
+  // 추진일정 변경 이벤트 핸들러 (기존 호환 유지)
   const handleTimelineChange = (start, end) => {
     setInputStartDate(start);
     setInputEndDate(end);
@@ -287,18 +373,28 @@ export default function PDCAManager({
       return;
     }
 
-    if (!inputTimeline.trim() || !inputTargetAudience.trim() || !inputCoopDept.trim()) {
-      alert("Timeline, 참여대상, 연계부서 기획 정보를 기입해주세요.");
+    const hasAnyMonthlyTimeline = inputMonthlyPDCA.some((m) => m !== "");
+    if (!hasAnyMonthlyTimeline || !inputTargetAudience.trim() || !inputCoopDept.trim()) {
+      alert("최소 한 달 이상의 월별 PDCA 일정을 지정하고, 참여대상 및 연계부서 기획 정보를 기입해주세요.");
       return;
     }
 
+    // 비목별 예산 데이터 조립 및 복원
+    const categoriesToSave = inputBudgetCategories
+      .filter((c) => c.category && c.category !== "선택 안 함")
+      .map((c) => ({
+        category: c.category,
+        budget: parseNumberFromCommas(c.budget) * 1000
+      }));
+
     onUpdateProgramDetails(activeProg.unitId, activeProg.id, {
-      timeline: inputTimeline,
+      timeline: inputMonthlyPDCA.join(","), // 12개월 쉼표 직렬화 저장
       targetAudience: inputTargetAudience,
       coopDept: inputCoopDept,
       budget_national: bNational,
       budget_city: bCity,
-      budget_external: bExternal
+      budget_external: bExternal,
+      budget_categories: categoriesToSave
     });
 
     setFeedbackMsg("P 단계 기획 정보 및 세부 재원별 예산 배정이 적용되었습니다.");
@@ -555,49 +651,131 @@ export default function PDCAManager({
                     <h4 style={{ fontSize: "0.8rem", fontWeight: "800", marginBottom: "0.6rem", color: "var(--accent-color)" }}>P 단계: 예산 기획 및 세부 추진계획</h4>
                     <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
                       
-                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "0.4rem" }}>
-                        <div>
-                          <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)" }}>국고 예산 (천원)</span>
-                          <input type="text" className="user-selector" value={inputBudgetNational} onChange={(e) => setInputBudgetNational(formatNumberWithCommas(e.target.value))} style={{ padding: "0.2rem 0.4rem", fontSize: "0.75rem" }} />
-                        </div>
-                        <div>
-                          <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)" }}>지자체 시비 (천원)</span>
-                          <input type="text" className="user-selector" value={inputBudgetCity} onChange={(e) => setInputBudgetCity(formatNumberWithCommas(e.target.value))} style={{ padding: "0.2rem 0.4rem", fontSize: "0.75rem" }} />
-                        </div>
-                        <div>
-                          <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)" }}>외부사업비 (천원)</span>
-                          <input type="text" className="user-selector" value={inputBudgetExternal} onChange={(e) => setInputBudgetExternal(formatNumberWithCommas(e.target.value))} style={{ padding: "0.2rem 0.4rem", fontSize: "0.75rem" }} />
+                      {/* 1영역: 재원별 예산 */}
+                      <div>
+                        <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)", display: "block", marginBottom: "0.15rem" }}>재원별 예산 배정 (천원 단위)</span>
+                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "0.4rem" }}>
+                          <div>
+                            <span style={{ fontSize: "0.6rem", color: "var(--text-secondary-dark)" }}>국고 예산</span>
+                            <input type="text" className="user-selector" value={inputBudgetNational} onChange={(e) => setInputBudgetNational(formatNumberWithCommas(e.target.value))} style={{ padding: "0.2rem 0.4rem", fontSize: "0.7rem" }} />
+                          </div>
+                          <div>
+                            <span style={{ fontSize: "0.6rem", color: "var(--text-secondary-dark)" }}>지자체 시비</span>
+                            <input type="text" className="user-selector" value={inputBudgetCity} onChange={(e) => setInputBudgetCity(formatNumberWithCommas(e.target.value))} style={{ padding: "0.2rem 0.4rem", fontSize: "0.7rem" }} />
+                          </div>
+                          <div>
+                            <span style={{ fontSize: "0.6rem", color: "var(--text-secondary-dark)" }}>외부사업비</span>
+                            <input type="text" className="user-selector" value={inputBudgetExternal} onChange={(e) => setInputBudgetExternal(formatNumberWithCommas(e.target.value))} style={{ padding: "0.2rem 0.4rem", fontSize: "0.7rem" }} />
+                          </div>
                         </div>
                       </div>
 
-                      <div>
-                        <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)", display: "block", marginBottom: "0.15rem" }}>추진 일정 (Timeline)</span>
-                        <div style={{ display: "grid", gridTemplateColumns: "1fr auto 1fr", gap: "0.4rem", alignItems: "center" }}>
-                          <input
-                            type="date"
-                            className="user-selector"
-                            value={inputStartDate}
-                            onChange={(e) => handleTimelineChange(e.target.value, inputEndDate)}
-                            style={{ padding: "0.2rem 0.4rem", fontSize: "0.75rem", background: "#18181b", color: "white", border: "1px solid var(--border-color-dark)", borderRadius: "0.25rem", width: "100%" }}
-                          />
-                          <span style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)" }}>~</span>
-                          <input
-                            type="date"
-                            className="user-selector"
-                            value={inputEndDate}
-                            onChange={(e) => handleTimelineChange(inputStartDate, e.target.value)}
-                            style={{ padding: "0.2rem 0.4rem", fontSize: "0.75rem", background: "#18181b", color: "white", border: "1px solid var(--border-color-dark)", borderRadius: "0.25rem", width: "100%" }}
-                          />
+                      {/* 2영역: 비목별 예산 */}
+                      <div style={{ borderTop: "1px solid var(--border-color-dark)", paddingTop: "0.4rem" }}>
+                        <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)", display: "block", marginBottom: "0.2rem" }}>비목별 예산 배정 (천원 단위, 최대 4개)</span>
+                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.4rem" }}>
+                          {inputBudgetCategories.map((item, idx) => (
+                            <div key={idx} style={{ display: "flex", gap: "0.3rem", alignItems: "center" }}>
+                              <select
+                                className="user-selector"
+                                value={item.category}
+                                onChange={(e) => {
+                                  const newCats = [...inputBudgetCategories];
+                                  newCats[idx].category = e.target.value;
+                                  setInputBudgetCategories(newCats);
+                                }}
+                                style={{ width: "95px", fontSize: "0.7rem", padding: "0.2rem" }}
+                              >
+                                {BUDGET_CATEGORIES_OPTIONS.map((opt) => (
+                                  <option key={opt} value={opt === "선택 안 함" ? "" : opt}>
+                                    {opt}
+                                  </option>
+                                ))}
+                              </select>
+                              <input
+                                type="text"
+                                className="user-selector"
+                                placeholder="금액"
+                                value={item.budget}
+                                onChange={(e) => {
+                                  const newCats = [...inputBudgetCategories];
+                                  newCats[idx].budget = formatNumberWithCommas(e.target.value);
+                                  setInputBudgetCategories(newCats);
+                                }}
+                                style={{ flexGrow: 1, fontSize: "0.7rem", padding: "0.2rem 0.4rem" }}
+                              />
+                            </div>
+                          ))}
                         </div>
                       </div>
-                      <div>
-                        <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)" }}>참여 대상 (Target)</span>
-                        <input type="text" className="user-selector" placeholder="예: 재학생 및 매칭기업 임직원" value={inputTargetAudience} onChange={(e) => setInputTargetAudience(e.target.value)} style={{ padding: "0.25rem 0.4rem", fontSize: "0.75rem" }} />
+
+                      {/* 월별 추진 일정 (PDCA) */}
+                      <div style={{ borderTop: "1px solid var(--border-color-dark)", paddingTop: "0.4rem" }}>
+                        <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)", display: "block", marginBottom: "0.25rem" }}>
+                          월별 추진 일정 (PDCA)
+                        </span>
+                        <div style={{ display: "grid", gridTemplateColumns: "repeat(12, 1fr)", gap: "0.2rem", overflowX: "auto", paddingBottom: "0.3rem" }}>
+                          {MONTHS_LIST.map((month, idx) => {
+                            const val = inputMonthlyPDCA[idx] || "";
+                            // 인라인 색상 매칭 헬퍼
+                            const getPDCAColor = (v) => {
+                              if (v === "P") return "#2563eb";
+                              if (v === "D") return "#10b981";
+                              if (v === "C") return "#f59e0b";
+                              if (v === "A") return "#d946ef";
+                              return "transparent";
+                            };
+                            const bg = getPDCAColor(val);
+                            return (
+                              <div key={month} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.15rem", minWidth: "32px" }}>
+                                <span style={{ fontSize: "0.6rem", color: "var(--text-secondary-dark)", whiteSpace: "nowrap" }}>
+                                  {month}
+                                </span>
+                                <select
+                                  className="user-selector"
+                                  value={val}
+                                  onChange={(e) => {
+                                    const newPDCA = [...inputMonthlyPDCA];
+                                    newPDCA[idx] = e.target.value;
+                                    setInputMonthlyPDCA(newPDCA);
+                                  }}
+                                  style={{
+                                    width: "100%",
+                                    fontSize: "0.65rem",
+                                    padding: "0.15rem 0.05rem",
+                                    textAlign: "center",
+                                    background: bg !== "transparent" ? bg : "#18181b",
+                                    color: bg !== "transparent" ? "white" : "var(--text-secondary-dark)",
+                                    border: "1px solid var(--border-color-dark)",
+                                    borderRadius: "0.2rem",
+                                    cursor: "pointer",
+                                    fontWeight: bg !== "transparent" ? "800" : "normal",
+                                    outline: "none"
+                                  }}
+                                >
+                                  <option value="" style={{ background: "#18181b", color: "white" }}>-</option>
+                                  <option value="P" style={{ background: "#2563eb", color: "white" }}>P</option>
+                                  <option value="D" style={{ background: "#10b981", color: "white" }}>D</option>
+                                  <option value="C" style={{ background: "#f59e0b", color: "white" }}>C</option>
+                                  <option value="A" style={{ background: "#d946ef", color: "white" }}>A</option>
+                                </select>
+                              </div>
+                            );
+                          })}
+                        </div>
                       </div>
-                      <div>
-                        <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)" }}>연계 부서 (Cooperation Dept)</span>
-                        <input type="text" className="user-selector" placeholder="예: ICC센터 및 지역 협의체" value={inputCoopDept} onChange={(e) => setInputCoopDept(e.target.value)} style={{ padding: "0.25rem 0.4rem", fontSize: "0.75rem" }} />
+
+                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.4rem" }}>
+                        <div>
+                          <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)" }}>참여 대상 (Target)</span>
+                          <input type="text" className="user-selector" placeholder="예: 재학생" value={inputTargetAudience} onChange={(e) => setInputTargetAudience(e.target.value)} style={{ padding: "0.25rem 0.4rem", fontSize: "0.75rem" }} />
+                        </div>
+                        <div>
+                          <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)" }}>연계 부서 (Cooperation Dept)</span>
+                          <input type="text" className="user-selector" placeholder="예: ICC센터" value={inputCoopDept} onChange={(e) => setInputCoopDept(e.target.value)} style={{ padding: "0.25rem 0.4rem", fontSize: "0.75rem" }} />
+                        </div>
                       </div>
+                      
                       <button type="submit" className="btn-primary" style={{ marginTop: "0.3rem" }}>P 기획 정보 저장</button>
                     </div>
                   </form>
