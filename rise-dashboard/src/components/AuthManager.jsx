@@ -230,7 +230,7 @@ export default function AuthManager({ onLoginSuccess }) {
               <User size={16} style={{ position: "absolute", left: "1rem", top: "50%", transform: "translateY(-50%)", color: "var(--text-secondary-dark)" }} />
               <input
                 type="text"
-                placeholder="아이디 (기본계정: director / hq_head / researcher)"
+                placeholder="아이디"
                 className="user-selector"
                 style={{ paddingLeft: "2.5rem" }}
                 value={userId}
@@ -242,7 +242,7 @@ export default function AuthManager({ onLoginSuccess }) {
               <Lock size={16} style={{ position: "absolute", left: "1rem", top: "50%", transform: "translateY(-50%)", color: "var(--text-secondary-dark)" }} />
               <input
                 type="password"
-                placeholder="비밀번호 (기본: 1234)"
+                placeholder="비밀번호"
                 className="user-selector"
                 style={{ paddingLeft: "2.5rem" }}
                 value={userPw}
