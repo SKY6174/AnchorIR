@@ -46,7 +46,7 @@ const BUDGET_CATEGORIES_OPTIONS = [
   { value: "", label: "선택 안 함" },
   { value: "인건비", label: "인건비" },
   { value: "장학금", label: "장학금" },
-  { value: "교육∙연구 프로그램 개발∙운영비", label: "교육∙연구 프로그램비" },
+  { value: "교육∙연구 프로그램 개발∙운영비", label: "프로그램개발운영비" },
   { value: "교육∙연구 환경개선비", label: "환경개선비" },
   { value: "실험∙실습장비 및 기자재 구입∙운영비", label: "실험실습장비비" },
   { value: "지역 연계∙협업 지원비", label: "지역연계협업비" },
