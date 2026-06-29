@@ -413,21 +413,36 @@ export default function App() {
               const mergedPrograms = sourceUnit.programs.map((sourceProg) => {
                 const cachedProg = unit.programs?.find(cp => cp.id === sourceProg.id);
                 if (cachedProg) {
+                  const updatedYears = { ...cachedProg.years };
+                  if (updatedYears[2]) {
+                    updatedYears[2].budget_main = sourceProg.budget_2026 || 0;
+                  }
+                  if (updatedYears[1]) {
+                    updatedYears[1].budget_main = Math.round((sourceProg.budget_2026 || 0) * 0.9);
+                  }
+                  [3, 4, 5].forEach((yr) => {
+                    if (updatedYears[yr]) {
+                      const factor = yr === 3 ? 1.1 : yr === 4 ? 1.2 : 1.3;
+                      updatedYears[yr].budget_main = Math.round((sourceProg.budget_2026 || 0) * factor);
+                    }
+                  });
                   return {
                     ...sourceProg,
                     pdca: cachedProg.pdca || sourceProg.pdca,
-                    years: cachedProg.years || sourceProg.years
+                    years: updatedYears
                   };
                 }
                 return sourceProg;
               });
               unit.programs = mergedPrograms;
               
-              if (unit.id === "A-1-나") {
+              if (unit.id === "A-1-나" || unit.id === "A-1-가") {
                 unit.budget = sourceUnit.budget;
                 unit.spent = sourceUnit.spent;
                 unit.budget_2026 = sourceUnit.budget_2026;
                 unit.spent_2026 = sourceUnit.spent_2026;
+                unit.budget_2025_carry = sourceUnit.budget_2025_carry || 0;
+                unit.spent_2025_carry = sourceUnit.spent_2025_carry || 0;
               }
             }
           });
