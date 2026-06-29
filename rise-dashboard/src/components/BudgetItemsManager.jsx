@@ -220,6 +220,81 @@ export default function BudgetItemsManager({ projects, currentRole, onUpdateBudg
     }));
   };
 
+  // 포커스 아웃 시 실시간 예산 연동 및 유동성 검사 저장 핸들러
+  const handleInputBlur = (bName, field, rawValue) => {
+    if (!activeUnit) return;
+    const valInMillion = parseInt(rawValue || "0", 10);
+    if (isNaN(valInMillion) || valInMillion < 0) {
+      alert("올바른 숫자를 백만원 단위로 입력해 주세요.");
+      const detailYear = activeUnit.budgetDetails[bName]?.years?.[selectedYear] || {};
+      setEditedBudgets(prev => ({
+        ...prev,
+        [bName]: {
+          ...prev[bName],
+          [field]: Math.round((detailYear[field] || 0) / 1000000).toString()
+        }
+      }));
+      return;
+    }
+
+    const byteValue = valInMillion * 1000000;
+    const detailYear = activeUnit.budgetDetails[bName]?.years?.[selectedYear] || {};
+    const currentSpent = detailYear[field === "budget_main" ? "spent_main" : "spent_carry"] || 0;
+
+    if (byteValue < currentSpent) {
+      alert("수정하려는 예산이 현재 누적 집행액보다 크거나 같아야 합니다.");
+      setEditedBudgets(prev => ({
+        ...prev,
+        [bName]: {
+          ...prev[bName],
+          [field]: Math.round((detailYear[field] || 0) / 1000000).toString()
+        }
+      }));
+      return;
+    }
+
+    let newTotal = 0;
+    for (const key of Object.keys(activeUnit.budgetDetails)) {
+      if (key === bName) {
+        newTotal += byteValue;
+      } else {
+        const otherYearDet = activeUnit.budgetDetails[key].years?.[selectedYear] || {};
+        newTotal += (otherYearDet[field] || 0);
+      }
+    }
+
+    const unitYear = activeUnit.years?.[selectedYear] || {};
+    const limit = field === "budget_main" ? (unitYear.budget_main || 0) : (unitYear.budget_carry || 0);
+    const limitLabel = field === "budget_main" ? "본예산" : "이월예산";
+
+    if (newTotal > limit) {
+      alert(`수정한 ${limitLabel} 총합(${newTotal.toLocaleString()}원)이 해당 단위과제 ${limitLabel} 한도(${limit.toLocaleString()}원)를 초과합니다.`);
+      setEditedBudgets(prev => ({
+        ...prev,
+        [bName]: {
+          ...prev[bName],
+          [field]: Math.round((detailYear[field] || 0) / 1000000).toString()
+        }
+      }));
+      return;
+    }
+
+    const parsedDetails = {
+      [bName]: {
+        years: {
+          [selectedYear]: {
+            [field]: byteValue,
+            [field === "budget_main" ? "spent_main" : "spent_carry"]: currentSpent
+          }
+        }
+      }
+    };
+
+    onUpdateBudgetDetails(activeUnit.id, parsedDetails);
+    setFeedback(`'${bName}'의 예산 배정이 실시간 적용되었습니다.`);
+    setTimeout(() => setFeedback(""), 3000);
+  };
+
   // 예산 배정액 적용 처리 핸들러
   const handleSaveBudgetDetails = (e) => {
     e.preventDefault();
@@ -478,16 +553,16 @@ export default function BudgetItemsManager({ projects, currentRole, onUpdateBudg
             </div>
 
             {/* 편집 및 조회 테이블 (서브탭별로 다른 열을 노출함) */}
-            <form onSubmit={handleSaveBudgetDetails}>
-              <div className="table-panel" style={{ maxHeight: "300px", overflowY: "auto", overflowX: "auto", width: "100%", marginBottom: "1.5rem" }}>
-                <table className="custom-table" style={{ fontSize: "0.75rem" }}>
+            <form onSubmit={e => e.preventDefault()}>
+              <div className="table-panel" style={{ overflowX: "auto", marginBottom: "1rem" }}>
+                <table className="custom-table" style={{ fontSize: "0.8rem", minWidth: "600px" }}>
                   <thead>
                     {subTab === "main" ? (
                       <tr>
                         <th>비목명</th>
-                        <th style={{ width: "180px" }}>본예산 배정 (백만원)</th>
-                        <th>본사업비 집행 (백만원)</th>
-                        <th>본사업비 잔액 (백만원)</th>
+                        <th style={{ width: "180px" }}>{selectedYear}차년도 본예산 배정 (백만원)</th>
+                        <th>{selectedYear}차년도 본집행 (백만원)</th>
+                        <th>{selectedYear}차년도 본사업비 잔액 (백만원)</th>
                       </tr>
                     ) : (
                       <tr>
@@ -507,22 +582,34 @@ export default function BudgetItemsManager({ projects, currentRole, onUpdateBudg
                       const balanceMain = (yearDet.budget_main || 0) - (yearDet.spent_main || 0);
                       const balanceCarry = (yearDet.budget_carry || 0) - (yearDet.spent_carry || 0);
 
+                      const isEduProg = bName === "교육∙연구 프로그램 개발∙운영비";
+
                       return (
-                        <tr key={bName}>
-                          <td style={{ fontWeight: "700" }}>{bName}</td>
+                        <tr key={bName} style={{ background: isEduProg ? "rgba(59, 130, 246, 0.02)" : "inherit" }}>
+                          <td style={{ fontWeight: "700" }}>
+                            {bName}
+                            {isEduProg && (
+                              <span style={{ fontSize: "0.65rem", color: "var(--accent-color)", display: "block", fontWeight: "normal", marginTop: "0.15rem" }}>
+                                * 세부 프로그램 기획(P)의 배정액 합계로 자동 동기화됩니다.
+                              </span>
+                            )}
+                          </td>
                           {subTab === "main" ? (
                             <>
                               <td>
-                                {isEditable ? (
+                                {isEditable && !isEduProg ? (
                                   <input
                                     type="text"
                                     className="user-selector"
                                     style={{ padding: "0.2rem 0.4rem", width: "100%" }}
                                     value={editedBudgets[bName]?.budget_main ?? (yearDet.budget_main || 0).toString()}
                                     onChange={e => handleBudgetChange(bName, "budget_main", e.target.value)}
+                                    onBlur={e => handleInputBlur(bName, "budget_main", e.target.value)}
                                   />
                                 ) : (
-                                  <span>{formatToMillionWon(yearDet.budget_main)} 백만원</span>
+                                  <span style={{ color: isEduProg ? "var(--accent-color)" : "inherit", fontWeight: isEduProg ? "800" : "normal" }}>
+                                    {formatToMillionWon(yearDet.budget_main)} 백만원
+                                  </span>
                                 )}
                               </td>
                               <td style={{ fontFamily: "var(--font-data)" }}>{formatToMillionWon(yearDet.spent_main)} 백만원</td>
@@ -533,16 +620,19 @@ export default function BudgetItemsManager({ projects, currentRole, onUpdateBudg
                           ) : (
                             <>
                               <td>
-                                {isEditable ? (
+                                {isEditable && !isEduProg ? (
                                   <input
                                     type="text"
                                     className="user-selector"
                                     style={{ padding: "0.2rem 0.4rem", width: "100%" }}
                                     value={editedBudgets[bName]?.budget_carry ?? (yearDet.budget_carry || 0).toString()}
                                     onChange={e => handleBudgetChange(bName, "budget_carry", e.target.value)}
+                                    onBlur={e => handleInputBlur(bName, "budget_carry", e.target.value)}
                                   />
                                 ) : (
-                                  <span>{formatToMillionWon(yearDet.budget_carry)} 백만원</span>
+                                  <span style={{ color: isEduProg ? "var(--accent-color)" : "inherit", fontWeight: isEduProg ? "800" : "normal" }}>
+                                    {formatToMillionWon(yearDet.budget_carry)} 백만원
+                                  </span>
                                 )}
                               </td>
                               <td style={{ fontFamily: "var(--font-data)" }}>{formatToMillionWon(yearDet.spent_carry)} 백만원</td>
@@ -563,15 +653,14 @@ export default function BudgetItemsManager({ projects, currentRole, onUpdateBudg
                   <div style={{ display: "flex", alignItems: "center", gap: "0.4rem", fontSize: "0.8rem", color: "var(--text-secondary-dark)" }}>
                     <Info size={14} />
                     {subTab === "main" ? (
-                      <span>본예산 한도 범위 내에서 각각 조율해야 합니다.</span>
+                      <span>본예산 한도 범위 내에서 조율 시 실시간 자동 저장됩니다.</span>
                     ) : (
-                      <span>{selectedYear - 1}차년도 이월비 한도 범위 내에서 각각 조율해야 합니다.</span>
+                      <span>{selectedYear - 1}차년도 이월비 한도 범위 내에서 조율 시 실시간 자동 저장됩니다.</span>
                     )}
                   </div>
-                  <button type="submit" className="btn-primary">
-                    <FileEdit size={16} />
-                    <span>재원별 배정액 적용</span>
-                  </button>
+                  <div style={{ fontSize: "0.75rem", color: "var(--success-color)", fontWeight: "700" }}>
+                    ✓ 포커스 아웃 시 자동 세이브됨
+                  </div>
                 </div>
               ) : (
                 <div style={{ display: "flex", alignItems: "center", gap: "0.4rem", fontSize: "0.8rem", color: "var(--text-secondary-dark)", background: "rgba(255,255,255,0.02)", padding: "0.75rem", borderRadius: "0.5rem", border: "1px solid var(--border-color-dark)" }}>

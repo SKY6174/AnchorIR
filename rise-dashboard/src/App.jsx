@@ -300,6 +300,38 @@ function formatDataToMultiYear(data) {
         };
       });
 
+      // 3.5. 교육∙연구 프로그램 개발∙운영비 비목에 세부 프로그램(newPrograms) 예산의 5개년 합산을 강제 롤업 연동
+      const progBudgetCategory = "교육∙연구 프로그램 개발∙운영비";
+      if (newBudgetDetails[progBudgetCategory]) {
+        [1, 2, 3, 4, 5].forEach((yr) => {
+          const totalProgBudgetMain = newPrograms.reduce((sum, pr) => sum + (pr.years?.[yr]?.budget_main || 0), 0);
+          const totalProgBudgetCarry = newPrograms.reduce((sum, pr) => sum + (pr.years?.[yr]?.budget_carry || 0), 0);
+          const totalProgSpentMain = newPrograms.reduce((sum, pr) => sum + (pr.years?.[yr]?.spent_main || 0), 0);
+          const totalProgSpentCarry = newPrograms.reduce((sum, pr) => sum + (pr.years?.[yr]?.spent_carry || 0), 0);
+
+          newBudgetDetails[progBudgetCategory].years[yr] = {
+            budget_main: totalProgBudgetMain,
+            budget_carry: totalProgBudgetCarry,
+            spent_main: totalProgSpentMain,
+            spent_carry: totalProgSpentCarry
+          };
+        });
+
+        // 롤업된 비목의 이월 잔액 5개년 연쇄 재계산
+        recalculateCarryOver(newBudgetDetails[progBudgetCategory].years);
+      }
+
+      // 3.6. 롤업된 데이터를 바탕으로 단위과제 전체 연도별(unitYears) 총예산/총집행액 누적합 재집계
+      [1, 2, 3, 4, 5].forEach((yr) => {
+        unitYears[yr] = {
+          budget_main: Object.values(newBudgetDetails).reduce((sum, b) => sum + (b.years?.[yr]?.budget_main || 0), 0),
+          budget_carry: Object.values(newBudgetDetails).reduce((sum, b) => sum + (b.years?.[yr]?.budget_carry || 0), 0),
+          spent_main: Object.values(newBudgetDetails).reduce((sum, b) => sum + (b.years?.[yr]?.spent_main || 0), 0),
+          spent_carry: Object.values(newBudgetDetails).reduce((sum, b) => sum + (b.years?.[yr]?.spent_carry || 0), 0)
+        };
+      });
+      recalculateCarryOver(unitYears);
+
       return {
         ...u,
         years: unitYears,
@@ -321,7 +353,40 @@ export default function App() {
     const cached = localStorage.getItem("rise_projects_data");
     if (cached) {
       try {
-        return JSON.parse(cached);
+        const loaded = JSON.parse(cached);
+        // 캐시 데이터가 존재해도 최신 5개년 프로그램 기획 예산을 단위과제 비목 및 통계로 강제 롤업 싱크
+        loaded.forEach((p) => {
+          p.units.forEach((u) => {
+            const progBudgetCategory = "교육∙연구 프로그램 개발∙운영비";
+            if (u.budgetDetails && u.budgetDetails[progBudgetCategory]) {
+              [1, 2, 3, 4, 5].forEach((yr) => {
+                const totalProgBudgetMain = u.programs.reduce((sum, pr) => sum + (pr.years?.[yr]?.budget_main || 0), 0);
+                const totalProgBudgetCarry = u.programs.reduce((sum, pr) => sum + (pr.years?.[yr]?.budget_carry || 0), 0);
+                const totalProgSpentMain = u.programs.reduce((sum, pr) => sum + (pr.years?.[yr]?.spent_main || 0), 0);
+                const totalProgSpentCarry = u.programs.reduce((sum, pr) => sum + (pr.years?.[yr]?.spent_carry || 0), 0);
+
+                u.budgetDetails[progBudgetCategory].years[yr] = {
+                  budget_main: totalProgBudgetMain,
+                  budget_carry: totalProgBudgetCarry,
+                  spent_main: totalProgSpentMain,
+                  spent_carry: totalProgSpentCarry
+                };
+              });
+              recalculateCarryOver(u.budgetDetails[progBudgetCategory].years);
+            }
+
+            // 단위과제 연도별 전체 집행액/예산 재집계 및 이월 계산
+            [1, 2, 3, 4, 5].forEach((yr) => {
+              if (!u.years[yr]) u.years[yr] = {};
+              u.years[yr].spent_main = Object.values(u.budgetDetails).reduce((sum, b) => sum + (b.years?.[yr]?.spent_main || 0), 0);
+              u.years[yr].spent_carry = Object.values(u.budgetDetails).reduce((sum, b) => sum + (b.years?.[yr]?.spent_carry || 0), 0);
+              u.years[yr].budget_main = Object.values(u.budgetDetails).reduce((sum, b) => sum + (b.years?.[yr]?.budget_main || 0), 0);
+              u.years[yr].budget_carry = Object.values(u.budgetDetails).reduce((sum, b) => sum + (b.years?.[yr]?.budget_carry || 0), 0);
+            });
+            recalculateCarryOver(u.years);
+          });
+        });
+        return loaded;
       } catch (e) {
         console.error("Failed to parse cached projects data:", e);
       }
