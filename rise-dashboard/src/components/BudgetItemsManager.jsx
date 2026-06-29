@@ -8,30 +8,36 @@ const formatToMillionWon = (value) => {
   return Math.round(value / 1000000).toLocaleString();
 };
 
-// Recharts x축 긴 라벨용 커스텀 틱 컴포넌트 (2줄 표출)
+// 긴 비목명을 3줄로 분리하기 위한 헬퍼 함수
+const splitLabel = (val) => {
+  const mappings = {
+    "교육∙연구 프로그램 개발∙운영비": ["교육∙연구", "프로그램 개발", "∙운영비"],
+    "실험∙실습장비 및 기자재 구입∙운영비": ["실험∙실습장비", "및 기자재", "구입∙운영비"],
+    "지역 연계∙협업 지원비": ["지역 연계", "∙협업 지원비"],
+    "기업 지원∙협력 활동비": ["기업 지원", "∙협력 활동비"],
+    "성과 활용∙확산 지원비": ["성과 활용", "∙확산 지원비"],
+    "그 밖의 사업운영경비": ["그 밖의", "사업운영경비"],
+    "교육∙연구 환경개선비": ["교육∙연구", "환경개선비"]
+  };
+  return mappings[val] || [val];
+};
+
+// Recharts x축 긴 라벨용 커스텀 틱 컴포넌트 (최대 3줄 표출 및 간격 조정)
 const CustomizedAxisTick = (props) => {
   const { x, y, payload } = props;
   const val = payload.value;
   if (!val) return null;
 
-  let line1 = val;
-  let line2 = "";
-
-  if (val.length > 5) {
-    const splitIndex = val.indexOf("·") > 0 
-      ? val.indexOf("·") + 1 
-      : val.indexOf(" ") > 0 
-      ? val.indexOf(" ") + 1 
-      : 5;
-    line1 = val.substring(0, splitIndex).trim();
-    line2 = val.substring(splitIndex).trim();
-  }
+  const lines = splitLabel(val);
 
   return (
     <g transform={`translate(${x},${y})`}>
-      <text x={0} y={0} dy={15} textAnchor="middle" fill="var(--text-secondary-dark)" style={{ fontSize: "0.65rem", fontWeight: "600", lineHeight: "1.4" }}>
-        <tspan x={0} dy="0">{line1}</tspan>
-        {line2 && <tspan x={0} dy="13">{line2}</tspan>}
+      <text x={0} y={0} dy={22} textAnchor="middle" fill="var(--text-secondary-dark)" style={{ fontSize: "0.62rem", fontWeight: "600", lineHeight: "1.4" }}>
+        {lines.map((line, idx) => (
+          <tspan key={idx} x={0} dy={idx === 0 ? 0 : 11}>
+            {line}
+          </tspan>
+        ))}
       </text>
     </g>
   );
@@ -189,17 +195,11 @@ export default function BudgetItemsManager({ projects, currentRole, onUpdateBudg
             "본예산": Math.round((detYear.budget_main || 0) / 1000000),
             "본집행": Math.round((detYear.spent_main || 0) / 1000000)
           };
-        } else if (subTab === "carry") {
+        } else {
           return {
             name: key,
             "이월예산": Math.round((detYear.budget_carry || 0) / 1000000),
             "이월집행": Math.round((detYear.spent_carry || 0) / 1000000)
-          };
-        } else {
-          return {
-            name: key,
-            "전체예산": Math.round(((detYear.budget_main || 0) + (detYear.budget_carry || 0)) / 1000000),
-            "전체집행": Math.round(((detYear.spent_main || 0) + (detYear.spent_carry || 0)) / 1000000)
           };
         }
       })
@@ -320,42 +320,23 @@ export default function BudgetItemsManager({ projects, currentRole, onUpdateBudg
                   >
                     이월사업비
                   </button>
-                  <button
-                    type="button"
-                    onClick={() => setSubTab("total")}
-                    style={{
-                      border: "none",
-                      padding: "0.4rem 1rem",
-                      borderRadius: "0.35rem",
-                      fontSize: "0.75rem",
-                      fontWeight: "700",
-                      cursor: "pointer",
-                      background: subTab === "total" ? "var(--accent-color)" : "transparent",
-                      color: subTab === "total" ? "white" : "var(--text-secondary-dark)",
-                      transition: "all 0.2s ease"
-                    }}
-                  >
-                    전체예산
-                  </button>
                 </div>
               </div>
               
               <div style={{ display: "flex", gap: "1rem", marginTop: "0.8rem", fontSize: "0.8rem", color: "var(--text-secondary-dark)" }}>
                 {subTab === "main" ? (
                   <span>본예산 한도: <strong style={{ color: "white" }}>{formatToMillionWon(activeUnit.years?.[selectedYear]?.budget_main)} 백만원</strong></span>
-                ) : subTab === "carry" ? (
-                  <span>이월예산 한도: <strong style={{ color: "white" }}>{formatToMillionWon(activeUnit.years?.[selectedYear]?.budget_carry)} 백만원</strong></span>
                 ) : (
-                  <span>전체예산 한도: <strong style={{ color: "white" }}>{formatToMillionWon((activeUnit.years?.[selectedYear]?.budget_main || 0) + (activeUnit.years?.[selectedYear]?.budget_carry || 0))} 백만원</strong></span>
+                  <span>이월예산 한도: <strong style={{ color: "white" }}>{formatToMillionWon(activeUnit.years?.[selectedYear]?.budget_carry)} 백만원</strong></span>
                 )}
               </div>
             </div>
 
             {/* 재원 구분별 막대 차트 (배정액 대비 집행 실적 병행 표출) */}
-            <div style={{ height: "200px", width: "100%", marginBottom: "1.5rem" }}>
+            <div style={{ height: "260px", width: "100%", marginBottom: "1.5rem" }}>
               <ResponsiveContainer>
                 <BarChart data={chartData}>
-                  <XAxis dataKey="name" stroke="var(--text-secondary-dark)" height={55} interval={0} tick={<CustomizedAxisTick />} />
+                  <XAxis dataKey="name" stroke="var(--text-secondary-dark)" height={80} interval={0} tick={<CustomizedAxisTick />} />
                   <YAxis stroke="var(--text-secondary-dark)" fontSize={9} />
                   <Tooltip
                     formatter={value => `${value.toLocaleString()} 백만원`}
@@ -367,22 +348,15 @@ export default function BudgetItemsManager({ projects, currentRole, onUpdateBudg
                     }}
                   />
                   <Legend verticalAlign="top" height={28} fontSize={10} />
-                  {subTab === "main" && (
+                  {subTab === "main" ? (
                     <>
                       <Bar dataKey="본예산" fill="#1e3a8a" />
                       <Bar dataKey="본집행" fill="#3b82f6" />
                     </>
-                  )}
-                  {subTab === "carry" && (
+                  ) : (
                     <>
                       <Bar dataKey="이월예산" fill="#064e3b" />
                       <Bar dataKey="이월집행" fill="#10b981" />
-                    </>
-                  )}
-                  {subTab === "total" && (
-                    <>
-                      <Bar dataKey="전체예산" fill="#4f46e5" />
-                      <Bar dataKey="전체집행" fill="#818cf8" />
                     </>
                   )}
                 </BarChart>
@@ -401,19 +375,12 @@ export default function BudgetItemsManager({ projects, currentRole, onUpdateBudg
                         <th>본사업비 집행 (백만원)</th>
                         <th>본사업비 잔액 (백만원)</th>
                       </tr>
-                    ) : subTab === "carry" ? (
+                    ) : (
                       <tr>
                         <th>비목명</th>
                         <th style={{ width: "180px" }}>이월예산 배정 (백만원)</th>
                         <th>이월비 집행 (백만원)</th>
                         <th>이월비 잔액 (백만원)</th>
-                      </tr>
-                    ) : (
-                      <tr>
-                        <th>비목명</th>
-                        <th>전체예산 배정 (백만원)</th>
-                        <th>전체 집행실적 (백만원)</th>
-                        <th>전체 잔액 (백만원)</th>
                       </tr>
                     )}
                   </thead>
@@ -425,10 +392,6 @@ export default function BudgetItemsManager({ projects, currentRole, onUpdateBudg
                       // 본사업비 및 이월비 각각의 잔액 계산 (배정액 - 집행액)
                       const balanceMain = (yearDet.budget_main || 0) - (yearDet.spent_main || 0);
                       const balanceCarry = (yearDet.budget_carry || 0) - (yearDet.spent_carry || 0);
-
-                      const totalBudget = (yearDet.budget_main || 0) + (yearDet.budget_carry || 0);
-                      const totalSpent = (yearDet.spent_main || 0) + (yearDet.spent_carry || 0);
-                      const balanceTotal = totalBudget - totalSpent;
 
                       return (
                         <tr key={bName}>
@@ -453,7 +416,7 @@ export default function BudgetItemsManager({ projects, currentRole, onUpdateBudg
                                 {formatToMillionWon(balanceMain)} 백만원
                               </td>
                             </>
-                          ) : subTab === "carry" ? (
+                          ) : (
                             <>
                               <td>
                                 {isEditable ? (
@@ -473,14 +436,6 @@ export default function BudgetItemsManager({ projects, currentRole, onUpdateBudg
                                 {formatToMillionWon(balanceCarry)} 백만원
                               </td>
                             </>
-                          ) : (
-                            <>
-                              <td style={{ fontFamily: "var(--font-data)" }}>{formatToMillionWon(totalBudget)} 백만원</td>
-                              <td style={{ fontFamily: "var(--font-data)" }}>{formatToMillionWon(totalSpent)} 백만원</td>
-                              <td style={{ fontFamily: "var(--font-data)", fontWeight: "700", color: balanceTotal >= 0 ? "white" : "var(--danger-color)" }}>
-                                {formatToMillionWon(balanceTotal)} 백만원
-                              </td>
-                            </>
                           )}
                         </tr>
                       );
@@ -495,18 +450,14 @@ export default function BudgetItemsManager({ projects, currentRole, onUpdateBudg
                     <Info size={14} />
                     {subTab === "main" ? (
                       <span>본예산 한도 범위 내에서 각각 조율해야 합니다.</span>
-                    ) : subTab === "carry" ? (
-                      <span>이월비 한도 범위 내에서 각각 조율해야 합니다.</span>
                     ) : (
-                      <span>전체예산은 조회 전용 모드입니다. 본사업비 또는 이월사업비 탭에서 개별 조율해주세요.</span>
+                      <span>이월비 한도 범위 내에서 각각 조율해야 합니다.</span>
                     )}
                   </div>
-                  {subTab !== "total" && (
-                    <button type="submit" className="btn-primary">
-                      <FileEdit size={16} />
-                      <span>재원별 배정액 적용</span>
-                    </button>
-                  )}
+                  <button type="submit" className="btn-primary">
+                    <FileEdit size={16} />
+                    <span>재원별 배정액 적용</span>
+                  </button>
                 </div>
               ) : (
                 <div style={{ display: "flex", alignItems: "center", gap: "0.4rem", fontSize: "0.8rem", color: "var(--text-secondary-dark)", background: "rgba(255,255,255,0.02)", padding: "0.75rem", borderRadius: "0.5rem", border: "1px solid var(--border-color-dark)" }}>
