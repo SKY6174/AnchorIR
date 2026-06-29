@@ -984,11 +984,7 @@ export default function PDCAManager({
                   </form>
                 )}
 
-                {feedbackMsg && (
-                  <div style={{ padding: "0.5rem", background: "rgba(16,185,129,0.1)", border: "1px solid var(--success-color)", borderRadius: "0.5rem", color: "#34d399", fontSize: "0.75rem", textAlign: "center" }}>
-                    {feedbackMsg}
-                  </div>
-                )}
+                
               </div>
             ) : (
               <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: "260px", color: "var(--text-secondary-dark)" }}>
@@ -1112,45 +1108,50 @@ export default function PDCAManager({
           )}
         </div>
       )}
-      {/* 프리미엄 토스트 피드백 알림 (새로고침/저장 피드백) */}
+      {/* 프리미엄 토스트 피드백 알림 (화면 정중앙 오버레이 팝업) */}
       {feedbackMsg && (
         <div style={{
           position: "fixed",
-          top: "1.5rem",
-          right: "1.5rem",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
           zIndex: 99999,
-          background: "rgba(24, 24, 27, 0.95)",
-          border: "1px solid rgba(16, 185, 129, 0.4)",
-          borderRadius: "0.5rem",
-          padding: "0.8rem 1.2rem",
-          boxShadow: "0 10px 30px rgba(0, 0, 0, 0.5), 0 0 15px rgba(16, 185, 129, 0.15)",
+          background: "rgba(18, 18, 23, 0.96)",
+          border: "2px solid rgba(16, 185, 129, 0.8)",
+          borderRadius: "1rem",
+          padding: "1.5rem 3rem",
+          boxShadow: "0 20px 60px rgba(0, 0, 0, 0.95), 0 0 40px rgba(16, 185, 129, 0.25)",
           display: "flex",
           alignItems: "center",
-          gap: "0.6rem",
-          animation: "toastSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
+          flexDirection: "column",
+          gap: "0.8rem",
+          animation: "centerToastPop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)",
           color: "white",
-          fontSize: "0.85rem",
-          fontWeight: "700"
+          minWidth: "360px",
+          textAlign: "center"
         }}>
           <div style={{
-            width: "18px",
-            height: "18px",
+            width: "40px",
+            height: "40px",
             borderRadius: "50%",
             background: "var(--success-color)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            color: "#18181b"
+            color: "#18181b",
+            boxShadow: "0 0 15px rgba(16, 185, 129, 0.4)",
+            marginBottom: "0.2rem"
           }}>
-            <Check size={12} strokeWidth={4} />
+            <Check size={22} strokeWidth={4} />
           </div>
-          <span>{feedbackMsg}</span>
+          <span style={{ fontSize: "1.1rem", fontWeight: "800", color: "#34d399", letterSpacing: "-0.03em" }}>설정 완료</span>
+          <span style={{ fontSize: "0.9rem", color: "var(--text-secondary-dark)", fontWeight: "600", lineHeight: "1.4" }}>{feedbackMsg}</span>
         </div>
       )}
       <style>{`
-        @keyframes toastSlideIn {
-          from { transform: translateX(120%); opacity: 0; }
-          to { transform: translateX(0); opacity: 1; }
+        @keyframes centerToastPop {
+          from { transform: translate(-50%, -40%) scale(0.85); opacity: 0; }
+          to { transform: translate(-50%, -50%) scale(1); opacity: 1; }
         }
       `}</style>
     </div>
