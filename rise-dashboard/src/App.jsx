@@ -627,6 +627,31 @@ export default function App() {
     });
   };
 
+  // 성과지표 목표치/실적치 직접 수정 핸들러
+  const handleUpdateKpiValue = (subItemId, field, value) => {
+    setProjects((prevProjects) => {
+      const updated = JSON.parse(JSON.stringify(prevProjects));
+      updated.forEach((p) => {
+        p.units.forEach((u) => {
+          u.kpis.forEach((k) => {
+            if (k.subItems) {
+              k.subItems.forEach((sub) => {
+                if (sub.id === subItemId) {
+                  if (!sub.years) sub.years = {};
+                  if (!sub.years[selectedYear]) {
+                    sub.years[selectedYear] = { target: 0, current: 0 };
+                  }
+                  sub.years[selectedYear][field] = value;
+                }
+              });
+            }
+          });
+        });
+      });
+      return updated;
+    });
+  };
+
   // 비목 예산 세부 조율 갱신 핸들러 (5개년 연쇄 이월 계산 연계)
   const handleUpdateBudgetDetails = (unitId, updatedBudgetDetails) => {
     setProjects(prevProjects => {
@@ -1438,6 +1463,79 @@ export default function App() {
                           <code style={{ fontSize: "0.75rem", fontFamily: "var(--font-data)", color: "#93c5fd" }}>
                             {selectedKpi.formula}
                           </code>
+                        </div>
+                      </div>
+
+                      {/* 성과지표 목표치 및 실적 직접 수정 (실시간 연동 & 권한 통제) */}
+                      <div style={{ borderTop: "1px solid var(--border-color-dark)", paddingTop: "0.8rem" }}>
+                        <span style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)", display: "block", marginBottom: "0.4rem" }}>
+                          지표 목표치 및 실적 수정 (소수점 입력 가능)
+                        </span>
+                        <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
+                          {selectedKpi.subItems && selectedKpi.subItems.map((sub) => {
+                            const yData = sub.years?.[selectedYear] || { target: 0, current: 0 };
+                            const canEditTarget = currentRole.rank <= 4; // 단장, 본부장, 센터장, 운영팀장 (rank <= 4)
+                            return (
+                              <div key={sub.id} style={{ display: "grid", gridTemplateColumns: "1.4fr 1fr 1fr", gap: "0.4rem", alignItems: "center", background: "rgba(255,255,255,0.01)", padding: "0.25rem 0.4rem", borderRadius: "0.3rem", border: "1px solid rgba(255,255,255,0.02)" }}>
+                                <span style={{ fontSize: "0.7rem", fontWeight: "700", textOverflow: "ellipsis", overflow: "hidden", whiteSpace: "nowrap" }}>
+                                  {sub.name}
+                                </span>
+                                <div>
+                                  <span style={{ fontSize: "0.55rem", color: "var(--text-secondary-dark)", display: "block" }}>목표 ({sub.unit})</span>
+                                  <input
+                                    type="number"
+                                    step="any"
+                                    className="user-selector"
+                                    disabled={!canEditTarget}
+                                    defaultValue={yData.target}
+                                    placeholder={!canEditTarget ? "권한 없음" : "목표치"}
+                                    onBlur={(e) => {
+                                      if (!canEditTarget) return;
+                                      const val = parseFloat(e.target.value);
+                                      if (!isNaN(val)) {
+                                        handleUpdateKpiValue(sub.id, "target", val);
+                                      }
+                                    }}
+                                    style={{
+                                      padding: "0.15rem 0.3rem",
+                                      fontSize: "0.7rem",
+                                      width: "100%",
+                                      background: !canEditTarget ? "rgba(255,255,255,0.02)" : "#18181b",
+                                      color: !canEditTarget ? "rgba(255,255,255,0.25)" : "white",
+                                      border: "1px solid var(--border-color-dark)",
+                                      borderRadius: "0.2rem",
+                                      cursor: !canEditTarget ? "not-allowed" : "text"
+                                    }}
+                                  />
+                                </div>
+                                <div>
+                                  <span style={{ fontSize: "0.55rem", color: "var(--text-secondary-dark)", display: "block" }}>실적 ({sub.unit})</span>
+                                  <input
+                                    type="number"
+                                    step="any"
+                                    className="user-selector"
+                                    defaultValue={yData.current}
+                                    placeholder="실적치"
+                                    onBlur={(e) => {
+                                      const val = parseFloat(e.target.value);
+                                      if (!isNaN(val)) {
+                                        handleUpdateKpiValue(sub.id, "current", val);
+                                      }
+                                    }}
+                                    style={{
+                                      padding: "0.15rem 0.3rem",
+                                      fontSize: "0.7rem",
+                                      width: "100%",
+                                      background: "#18181b",
+                                      color: "white",
+                                      border: "1px solid var(--border-color-dark)",
+                                      borderRadius: "0.2rem"
+                                    }}
+                                  />
+                                </div>
+                              </div>
+                            );
+                          })}
                         </div>
                       </div>
 
