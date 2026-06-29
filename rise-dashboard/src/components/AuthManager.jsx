@@ -1,6 +1,14 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { userRoles } from "../data/mockData";
 import { Lock, User, UserPlus, LogIn, Award } from "lucide-react";
+import { supabase } from "../supabaseClient";
+import CryptoJS from "crypto-js";
+
+// 비밀번호 SHA-256 해시 암호화 헬퍼 함수 (단방향)
+const hashPassword = (password) => {
+  if (!password) return "";
+  return CryptoJS.SHA256(password).toString();
+};
 
 export default function AuthManager({ onLoginSuccess }) {
   const [isSignup, setIsSignup] = useState(false);
@@ -11,45 +19,62 @@ export default function AuthManager({ onLoginSuccess }) {
   const [errorMsg, setErrorMsg] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
 
-  // 실명 조직 거버넌스 기반 기본 계정 자동 등록
-  useEffect(() => {
-    const existingUsers = JSON.parse(localStorage.getItem("rise_users") || "[]");
-    const hasDirector = existingUsers.some((u) => u.id === "director");
-    
-    if (!hasDirector) {
-      const defaultUsers = [
-        { id: "director", pw: "1234", name: "송경영 사업단장", role: userRoles.DIRECTOR },
-        { id: "hq_head", pw: "1234", name: "김현수 총괄본부장", role: userRoles.HQ_HEAD },
-        { id: "ecc_head", pw: "1234", name: "이동은 ECC센터장", role: userRoles.CENTER_ECC },
-        { id: "special_head", pw: "1234", name: "홍진숙 신산업특화센터장", role: userRoles.CENTER_SPECIAL },
-        { id: "manager", pw: "1234", name: "심현미 운영팀장", role: userRoles.TEAM_LEADER },
-        { id: "researcher", pw: "1234", name: "이은주 선임연구원", role: userRoles.RESEARCHER }
-      ];
-      localStorage.setItem("rise_users", JSON.stringify([...existingUsers, ...defaultUsers]));
-    }
-  }, []);
-
-  const handleLogin = (e) => {
+  // 로그인 핸들러 (Supabase 연동 및 승인 상태 체크)
+  const handleLogin = async (e) => {
     e.preventDefault();
     setErrorMsg("");
+    setSuccessMsg("");
 
     if (!userId || !userPw) {
       setErrorMsg("아이디와 비밀번호를 모두 입력해 주세요.");
       return;
     }
 
-    const users = JSON.parse(localStorage.getItem("rise_users") || "[]");
-    const foundUser = users.find((u) => u.id === userId.trim().toLowerCase() && u.pw === userPw);
+    try {
+      const targetId = userId.trim().toLowerCase();
+      const targetHashedPw = hashPassword(userPw);
 
-    if (!foundUser) {
-      setErrorMsg("아이디 또는 비밀번호가 일치하지 않습니다.");
-      return;
+      // Supabase rise_users 테이블에서 계정 조회
+      const { data: foundUser, error } = await supabase
+        .from("rise_users")
+        .select("*")
+        .eq("id", targetId)
+        .single();
+
+      if (error || !foundUser) {
+        setErrorMsg("아이디 또는 비밀번호가 일치하지 않습니다.");
+        return;
+      }
+
+      // 비밀번호 해시값 비교
+      if (foundUser.pw !== targetHashedPw) {
+        setErrorMsg("아이디 또는 비밀번호가 일치하지 않습니다.");
+        return;
+      }
+
+      // 관리자 승인 여부(approved) 체크
+      if (!foundUser.approved) {
+        setErrorMsg("아직 가입 승인을 받지 않은 계정입니다. 사업단 관리자의 승인을 기다려 주세요.");
+        return;
+      }
+
+      // 로그인 성공 처리 (role 매핑 복원)
+      const mappedRole = userRoles[foundUser.role_key] || userRoles.RESEARCHER;
+      const sessionUser = {
+        id: foundUser.id,
+        name: foundUser.name,
+        role: mappedRole
+      };
+
+      onLoginSuccess(sessionUser);
+    } catch (err) {
+      console.error("Login process error:", err);
+      setErrorMsg("로그인 처리 중 서버 통신 에러가 발생했습니다.");
     }
-
-    onLoginSuccess(foundUser);
   };
 
-  const handleSignup = (e) => {
+  // 회원가입 핸들러 (Supabase 연동)
+  const handleSignup = async (e) => {
     e.preventDefault();
     setErrorMsg("");
     setSuccessMsg("");
@@ -59,28 +84,53 @@ export default function AuthManager({ onLoginSuccess }) {
       return;
     }
 
-    const users = JSON.parse(localStorage.getItem("rise_users") || "[]");
-    const isDup = users.some((u) => u.id === userId.trim().toLowerCase());
+    try {
+      const targetId = userId.trim().toLowerCase();
 
-    if (isDup) {
-      setErrorMsg("이미 존재하는 아이디입니다.");
-      return;
+      // 1. 중복 계정 유무 체크
+      const { data: existingUser, error: checkError } = await supabase
+        .from("rise_users")
+        .select("id")
+        .eq("id", targetId)
+        .maybeSingle();
+
+      if (existingUser) {
+        setErrorMsg("이미 존재하는 아이디입니다.");
+        return;
+      }
+
+      // 2. 신규 사용자 등록 (approved = false 상태로 기입)
+      const selectedRole = userRoles[userRoleKey];
+      const displayName = `${userName} ${selectedRole.name.split(" ")[1] || "연구원"}`;
+      const hashedPw = hashPassword(userPw);
+
+      const { error: insertError } = await supabase
+        .from("rise_users")
+        .insert([
+          {
+            id: targetId,
+            pw: hashedPw,
+            name: displayName,
+            role_key: userRoleKey,
+            approved: false // 기본값은 승인 대기
+          }
+        ]);
+
+      if (insertError) {
+        console.error("Signup insert error:", insertError);
+        setErrorMsg("회원가입 처리 중 오류가 발생했습니다.");
+        return;
+      }
+
+      setSuccessMsg("회원가입 신청이 정상 접수되었습니다! 관리자 승인 후 로그인해 주세요.");
+      setIsSignup(false);
+      setUserId("");
+      setUserPw("");
+      setUserName("");
+    } catch (err) {
+      console.error("Signup process error:", err);
+      setErrorMsg("회원가입 통신 중 예기치 못한 에러가 발생했습니다.");
     }
-
-    const selectedRole = userRoles[userRoleKey];
-    const newUser = {
-      id: userId.trim().toLowerCase(),
-      pw: userPw,
-      name: `${userName} ${selectedRole.name.split(" ")[1] || "연구원"}`,
-      role: selectedRole
-    };
-
-    localStorage.setItem("rise_users", JSON.stringify([...users, newUser]));
-    setSuccessMsg("회원가입이 완료되었습니다! 로그인해 주세요.");
-    setIsSignup(false);
-    setUserId("");
-    setUserPw("");
-    setUserName("");
   };
 
   return (
@@ -180,7 +230,7 @@ export default function AuthManager({ onLoginSuccess }) {
               <User size={16} style={{ position: "absolute", left: "1rem", top: "50%", transform: "translateY(-50%)", color: "var(--text-secondary-dark)" }} />
               <input
                 type="text"
-                placeholder="아이디 (테스트: director / hq_head / researcher)"
+                placeholder="아이디 (기본계정: director / hq_head / researcher)"
                 className="user-selector"
                 style={{ paddingLeft: "2.5rem" }}
                 value={userId}
@@ -192,7 +242,7 @@ export default function AuthManager({ onLoginSuccess }) {
               <Lock size={16} style={{ position: "absolute", left: "1rem", top: "50%", transform: "translateY(-50%)", color: "var(--text-secondary-dark)" }} />
               <input
                 type="password"
-                placeholder="비밀번호 (테스트: 1234)"
+                placeholder="비밀번호 (기본: 1234)"
                 className="user-selector"
                 style={{ paddingLeft: "2.5rem" }}
                 value={userPw}
