@@ -19,3 +19,7 @@ INSERT INTO rise_users (id, pw, name, role_key, approved) VALUES
 ('manager', '03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4', '심현미 운영팀장', 'TEAM_LEADER', true),
 ('researcher', '03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4', '이은주 선임연구원', 'RESEARCHER', true)
 ON CONFLICT (id) DO NOTHING;
+
+-- Supabase에서 클라이언트 Anon Key를 통해 가입(INSERT) 및 조회가 가능하도록 Row Level Security(RLS)를 비활성화합니다.
+ALTER TABLE rise_users DISABLE ROW LEVEL SECURITY;
+
