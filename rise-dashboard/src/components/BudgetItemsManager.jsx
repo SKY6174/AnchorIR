@@ -585,32 +585,14 @@ export default function BudgetItemsManager({ projects, currentRole, onUpdateBudg
                       const isEduProg = bName === "교육∙연구 프로그램 개발∙운영비";
 
                       return (
-                        <tr key={bName} style={{ background: isEduProg ? "rgba(59, 130, 246, 0.02)" : "inherit" }}>
-                          <td style={{ fontWeight: "700" }}>
-                            {bName}
-                            {isEduProg && (
-                              <span style={{ fontSize: "0.65rem", color: "var(--accent-color)", display: "block", fontWeight: "normal", marginTop: "0.15rem" }}>
-                                * 세부 프로그램 기획(P)의 배정액 합계로 자동 동기화됩니다.
-                              </span>
-                            )}
-                          </td>
+                        <tr key={bName}>
+                          <td style={{ fontWeight: "700" }}>{bName}</td>
                           {subTab === "main" ? (
                             <>
                               <td>
-                                {isEditable && !isEduProg ? (
-                                  <input
-                                    type="text"
-                                    className="user-selector"
-                                    style={{ padding: "0.2rem 0.4rem", width: "100%" }}
-                                    value={editedBudgets[bName]?.budget_main ?? (yearDet.budget_main || 0).toString()}
-                                    onChange={e => handleBudgetChange(bName, "budget_main", e.target.value)}
-                                    onBlur={e => handleInputBlur(bName, "budget_main", e.target.value)}
-                                  />
-                                ) : (
-                                  <span style={{ color: isEduProg ? "var(--accent-color)" : "inherit", fontWeight: isEduProg ? "800" : "normal" }}>
-                                    {formatToMillionWon(yearDet.budget_main)} 백만원
-                                  </span>
-                                )}
+                                <span style={{ color: "var(--accent-color)", fontWeight: "800" }}>
+                                  {formatToMillionWon(yearDet.budget_main)} 백만원
+                                </span>
                               </td>
                               <td style={{ fontFamily: "var(--font-data)" }}>{formatToMillionWon(yearDet.spent_main)} 백만원</td>
                               <td style={{ fontFamily: "var(--font-data)", fontWeight: "700", color: balanceMain >= 0 ? "white" : "var(--danger-color)" }}>
@@ -620,20 +602,9 @@ export default function BudgetItemsManager({ projects, currentRole, onUpdateBudg
                           ) : (
                             <>
                               <td>
-                                {isEditable && !isEduProg ? (
-                                  <input
-                                    type="text"
-                                    className="user-selector"
-                                    style={{ padding: "0.2rem 0.4rem", width: "100%" }}
-                                    value={editedBudgets[bName]?.budget_carry ?? (yearDet.budget_carry || 0).toString()}
-                                    onChange={e => handleBudgetChange(bName, "budget_carry", e.target.value)}
-                                    onBlur={e => handleInputBlur(bName, "budget_carry", e.target.value)}
-                                  />
-                                ) : (
-                                  <span style={{ color: isEduProg ? "var(--accent-color)" : "inherit", fontWeight: isEduProg ? "800" : "normal" }}>
-                                    {formatToMillionWon(yearDet.budget_carry)} 백만원
-                                  </span>
-                                )}
+                                <span style={{ color: "var(--accent-color)", fontWeight: "800" }}>
+                                  {formatToMillionWon(yearDet.budget_carry)} 백만원
+                                </span>
                               </td>
                               <td style={{ fontFamily: "var(--font-data)" }}>{formatToMillionWon(yearDet.spent_carry)} 백만원</td>
                               <td style={{ fontFamily: "var(--font-data)", fontWeight: "700", color: balanceCarry >= 0 ? "white" : "var(--danger-color)" }}>
@@ -648,30 +619,10 @@ export default function BudgetItemsManager({ projects, currentRole, onUpdateBudg
                 </table>
               </div>
 
-              {isEditable ? (
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: "0.4rem", fontSize: "0.8rem", color: "var(--text-secondary-dark)" }}>
-                    <Info size={14} />
-                    {subTab === "main" ? (
-                      <span>본예산 한도 범위 내에서 조율 시 실시간 자동 저장됩니다.</span>
-                    ) : (
-                      <span>{selectedYear - 1}차년도 이월비 한도 범위 내에서 조율 시 실시간 자동 저장됩니다.</span>
-                    )}
-                  </div>
-                  <div style={{ fontSize: "0.75rem", color: "var(--success-color)", fontWeight: "700" }}>
-                    ✓ 포커스 아웃 시 자동 세이브됨
-                  </div>
-                </div>
-              ) : (
-                <div style={{ display: "flex", alignItems: "center", gap: "0.4rem", fontSize: "0.8rem", color: "var(--text-secondary-dark)", background: "rgba(255,255,255,0.02)", padding: "0.75rem", borderRadius: "0.5rem", border: "1px solid var(--border-color-dark)" }}>
-                  <Info size={14} style={{ color: "var(--warning-color)" }} />
-                  {selectedUnitId === "Total" ? (
-                    <span>전체 사업 예산 현황은 조회 전용 모드입니다. 개별 단위과제 탭에서 예산을 조율해 주세요.</span>
-                  ) : (
-                    <span>예산 배정 조율 권한은 '송경영 사업단장' 및 '김현수 총괄본부장' 계정에만 주어져 있습니다.</span>
-                  )}
-                </div>
-              )}
+              <div style={{ display: "flex", alignItems: "center", gap: "0.4rem", fontSize: "0.8rem", color: "var(--text-secondary-dark)", background: "rgba(255,255,255,0.02)", padding: "0.75rem", borderRadius: "0.5rem", border: "1px solid var(--border-color-dark)" }}>
+                <Info size={14} style={{ color: "var(--accent-color)" }} />
+                <span>모든 비목의 예산 배정액은 세부 프로그램 기획(P) 단계에서 입력하신 금액의 합계로 실시간 자동 동기화됩니다 (임의 수정 불가).</span>
+              </div>
             </form>
 
             {feedback && (
