@@ -324,6 +324,7 @@ export default function App() {
   // 사업단 구성원 관리 및 서브탭 상태
   const [members, setMembers] = useState(INITIAL_MEMBERS);
   const [mgmtSubTab, setMgmtSubTab] = useState("members"); // "members", "programs", "approvals"
+  const [projectsSubTab, setProjectsSubTab] = useState("unit_status"); // "unit_status" (단위과제 집행현황) 또는 "program_mgmt" (프로그램 관리)
   const [isMemberModalOpen, setIsMemberModalOpen] = useState(false);
   const [editingMember, setEditingMember] = useState(null); // 추가/수정용 임시 객체
 
@@ -772,92 +773,135 @@ export default function App() {
 
         {activeTab === "projects" && (
           <div className="glass-card">
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
-              <h2 style={{ fontSize: "1.25rem", fontWeight: "800" }}>단위과제별 집행 및 프로그램 관리</h2>
-            </div>
-            
-            <div className="table-panel" style={{ marginBottom: "2rem" }}>
-              <table className="custom-table" style={{ fontSize: "0.8rem" }}>
-                <thead>
-                  <tr>
-                    <th>과제/부서</th>
-                    <th>담당 센터장/팀장</th>
-                    <th>{selectedYear}차년도 본예산 (백만원)</th>
-                    {selectedYear >= 2 && <th>{selectedYear - 1}차년도 이월예산 (백만원)</th>}
-                    <th>총 배정액 (백만원)</th>
-                    <th>누적 집행실적 (백만원)</th>
-                    <th>집행률</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {projects.flatMap((p) =>
-                    p.units.map((u) => {
-                      const yData = u.years?.[selectedYear] || { budget_main: 0, spent_main: 0, budget_carry: 0, spent_carry: 0 };
-                      const budgetCarryVal = selectedYear === 1 ? 0 : (yData.budget_carry || 0);
-                      const spentCarryVal = selectedYear === 1 ? 0 : (yData.spent_carry || 0);
-                      const totalBudget = (yData.budget_main || 0) + budgetCarryVal;
-                      const totalSpent = (yData.spent_main || 0) + spentCarryVal;
-                      const rate = totalBudget > 0 ? (totalSpent / totalBudget) * 100 : 0;
-                      return (
-                        <tr 
-                          key={u.id}
-                          onClick={() => {
-                            setSelectedUnitId(u.id);
-                            setSelectedProgId(null);
-                          }}
-                          style={{
-                            cursor: "pointer",
-                            background: selectedUnitId === u.id ? "rgba(59, 130, 246, 0.15)" : "transparent",
-                            transition: "background 0.2s"
-                          }}
-                        >
-                          <td style={{ fontWeight: "700" }}>
-                            {u.id === "Common" ? "" : `${u.id} `}{u.title}
-                          </td>
-                          <td>{u.manager}</td>
-                          <td style={{ fontFamily: "var(--font-data)" }}>
-                            {formatToMillionWon(yData.budget_main)}
-                          </td>
-                          {selectedYear >= 2 && (
-                            <td style={{ fontFamily: "var(--font-data)" }}>
-                              {formatToMillionWon(budgetCarryVal)}
-                            </td>
-                          )}
-                          <td style={{ fontFamily: "var(--font-data)", fontWeight: "700" }}>
-                            {formatToMillionWon(totalBudget)}
-                          </td>
-                          <td style={{ fontFamily: "var(--font-data)" }}>
-                            {formatToMillionWon(totalSpent)}
-                          </td>
-                          <td>
-                            <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                              <div style={{ width: "50px", height: "6px", background: "rgba(255,255,255,0.1)", borderRadius: "3px", overflow: "hidden" }}>
-                                <div style={{ width: `${Math.min(rate, 100)}%`, height: "100%", background: u.id === "Common" ? "#ec4899" : "var(--accent-color)" }} />
-                              </div>
-                              <span style={{ fontSize: "0.75rem", fontFamily: "var(--font-data)" }}>{rate.toFixed(1)}%</span>
-                            </div>
-                          </td>
-                        </tr>
-                      );
-                    })
-                  )}
-                </tbody>
-              </table>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.2rem" }}>
+              <h2 style={{ fontSize: "1.25rem", fontWeight: "800" }}>단위과제 관리 (Anchor Unit Projects)</h2>
             </div>
 
-            <div id="pdca-manager-section" style={{ marginTop: "2.5rem" }}>
-              <h3 style={{ fontSize: "1.1rem", fontWeight: "800", marginBottom: "1rem" }}>프로그램 정보 등록 (연구원)</h3>
-              <PDCAManager
-                projects={projects}
-                currentRole={currentRole}
-                onUpdateProgramDetails={handleUpdateProgramDetails}
-                selectedYear={selectedYear}
-                selectedUnitId={selectedUnitId}
-                setSelectedUnitId={setSelectedUnitId}
-                selectedProgId={selectedProgId}
-                setSelectedProgId={setSelectedProgId}
-              />
+            {/* 서브탭 내비게이션 바 */}
+            <div style={{ display: "flex", gap: "0.5rem", borderBottom: "1px solid var(--border-color-dark)", paddingBottom: "0.8rem", marginBottom: "1.2rem" }}>
+              <button
+                type="button"
+                onClick={() => setProjectsSubTab("unit_status")}
+                style={{
+                  border: "none",
+                  background: "transparent",
+                  padding: "0.5rem 1rem",
+                  fontSize: "0.85rem",
+                  fontWeight: "800",
+                  cursor: "pointer",
+                  color: projectsSubTab === "unit_status" ? "var(--accent-color)" : "var(--text-secondary-dark)",
+                  borderBottom: projectsSubTab === "unit_status" ? "2px solid var(--accent-color)" : "none",
+                  transition: "all 0.2s"
+                }}
+              >
+                단위과제 집행현황
+              </button>
+              <button
+                type="button"
+                onClick={() => setProjectsSubTab("program_mgmt")}
+                style={{
+                  border: "none",
+                  background: "transparent",
+                  padding: "0.5rem 1rem",
+                  fontSize: "0.85rem",
+                  fontWeight: "800",
+                  cursor: "pointer",
+                  color: projectsSubTab === "program_mgmt" ? "var(--accent-color)" : "var(--text-secondary-dark)",
+                  borderBottom: projectsSubTab === "program_mgmt" ? "2px solid var(--accent-color)" : "none",
+                  transition: "all 0.2s"
+                }}
+              >
+                프로그램 관리
+              </button>
             </div>
+            
+            {projectsSubTab === "unit_status" && (
+              <div className="table-panel">
+                <table className="custom-table" style={{ fontSize: "0.8rem" }}>
+                  <thead>
+                    <tr>
+                      <th>과제/부서</th>
+                      <th>담당 센터장/팀장</th>
+                      <th>{selectedYear}차년도 본예산 (백만원)</th>
+                      {selectedYear >= 2 && <th>{selectedYear - 1}차년도 이월예산 (백만원)</th>}
+                      <th>총 배정액 (백만원)</th>
+                      <th>누적 집행실적 (백만원)</th>
+                      <th>집행률</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {projects.flatMap((p) =>
+                      p.units.map((u) => {
+                        const yData = u.years?.[selectedYear] || { budget_main: 0, spent_main: 0, budget_carry: 0, spent_carry: 0 };
+                        const budgetCarryVal = selectedYear === 1 ? 0 : (yData.budget_carry || 0);
+                        const spentCarryVal = selectedYear === 1 ? 0 : (yData.spent_carry || 0);
+                        const totalBudget = (yData.budget_main || 0) + budgetCarryVal;
+                        const totalSpent = (yData.spent_main || 0) + spentCarryVal;
+                        const rate = totalBudget > 0 ? (totalSpent / totalBudget) * 100 : 0;
+                        return (
+                          <tr 
+                            key={u.id}
+                            onClick={() => {
+                              setSelectedUnitId(u.id);
+                              setSelectedProgId(null);
+                              setProjectsSubTab("program_mgmt"); // 단위과제 클릭 시 프로그램 관리 탭으로 연계 이동
+                            }}
+                            style={{
+                              cursor: "pointer",
+                              background: selectedUnitId === u.id ? "rgba(59, 130, 246, 0.15)" : "transparent",
+                              transition: "background 0.2s"
+                            }}
+                          >
+                            <td style={{ fontWeight: "700" }}>
+                              {u.id === "Common" ? "" : `${u.id} `}{u.title}
+                            </td>
+                            <td>{u.manager}</td>
+                            <td style={{ fontFamily: "var(--font-data)" }}>
+                              {formatToMillionWon(yData.budget_main)}
+                            </td>
+                            {selectedYear >= 2 && (
+                              <td style={{ fontFamily: "var(--font-data)" }}>
+                                {formatToMillionWon(budgetCarryVal)}
+                              </td>
+                            )}
+                            <td style={{ fontFamily: "var(--font-data)", fontWeight: "700" }}>
+                              {formatToMillionWon(totalBudget)}
+                            </td>
+                            <td style={{ fontFamily: "var(--font-data)" }}>
+                              {formatToMillionWon(totalSpent)}
+                            </td>
+                            <td>
+                              <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                                <div style={{ width: "50px", height: "6px", background: "rgba(255,255,255,0.1)", borderRadius: "3px", overflow: "hidden" }}>
+                                  <div style={{ width: `${Math.min(rate, 100)}%`, height: "100%", background: u.id === "Common" ? "#ec4899" : "var(--accent-color)" }} />
+                                </div>
+                                <span style={{ fontSize: "0.75rem", fontFamily: "var(--font-data)" }}>{rate.toFixed(1)}%</span>
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      })
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            )}
+
+            {projectsSubTab === "program_mgmt" && (
+              <div id="pdca-manager-section">
+                <h3 style={{ fontSize: "1.1rem", fontWeight: "800", marginBottom: "1rem" }}>프로그램 관리</h3>
+                <PDCAManager
+                  projects={projects}
+                  currentRole={currentRole}
+                  onUpdateProgramDetails={handleUpdateProgramDetails}
+                  selectedYear={selectedYear}
+                  selectedUnitId={selectedUnitId}
+                  setSelectedUnitId={setSelectedUnitId}
+                  selectedProgId={selectedProgId}
+                  setSelectedProgId={setSelectedProgId}
+                />
+              </div>
+            )}
           </div>
         )}
 
