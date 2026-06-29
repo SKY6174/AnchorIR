@@ -300,26 +300,74 @@ function formatDataToMultiYear(data) {
         };
       });
 
-      // 3.5. 교육∙연구 프로그램 개발∙운영비 비목에 세부 프로그램(newPrograms) 예산의 5개년 합산을 강제 롤업 연동
-      const progBudgetCategory = "교육∙연구 프로그램 개발∙운영비";
-      if (newBudgetDetails[progBudgetCategory]) {
-        [1, 2, 3, 4, 5].forEach((yr) => {
-          const totalProgBudgetMain = newPrograms.reduce((sum, pr) => sum + (pr.years?.[yr]?.budget_main || 0), 0);
-          const totalProgBudgetCarry = newPrograms.reduce((sum, pr) => sum + (pr.years?.[yr]?.budget_carry || 0), 0);
-          const totalProgSpentMain = newPrograms.reduce((sum, pr) => sum + (pr.years?.[yr]?.spent_main || 0), 0);
-          const totalProgSpentCarry = newPrograms.reduce((sum, pr) => sum + (pr.years?.[yr]?.spent_carry || 0), 0);
+      // 3.5. 세부 프로그램(newPrograms)의 비목별 배정 계획을 단위과제 10대 비목(newBudgetDetails)에 쪼개서 강제 롤업 연동
+      [1, 2, 3, 4, 5].forEach((yr) => {
+        const categorySums = {
+          "인건비": { main: 0, carry: 0 },
+          "장학금": { main: 0, carry: 0 },
+          "교육∙연구 프로그램 개발∙운영비": { main: 0, carry: 0 },
+          "교육∙연구 환경개선비": { main: 0, carry: 0 },
+          "실험∙실습장비 및 기자재 구입∙운영비": { main: 0, carry: 0 },
+          "지역 연계∙협업 지원비": { main: 0, carry: 0 },
+          "기업 지원∙협력 활동비": { main: 0, carry: 0 },
+          "성과 활용∙확산 지원비": { main: 0, carry: 0 },
+          "그 밖의 사업운영경비": { main: 0, carry: 0 },
+          "간접비": { main: 0, carry: 0 }
+        };
 
-          newBudgetDetails[progBudgetCategory].years[yr] = {
-            budget_main: totalProgBudgetMain,
-            budget_carry: totalProgBudgetCarry,
-            spent_main: totalProgSpentMain,
-            spent_carry: totalProgSpentCarry
-          };
+        newPrograms.forEach((prog) => {
+          const py = prog.years?.[yr] || {};
+          const progTotalMain = py.budget_main || 0;
+          const progTotalCarry = py.budget_carry || 0;
+
+          let allocatedMain = 0;
+          let allocatedCarry = 0;
+
+          if (py.budget_categories && Array.isArray(py.budget_categories)) {
+            py.budget_categories.forEach((catItem) => {
+              const catName = catItem.category;
+              if (catName && categorySums[catName] && catName !== "교육∙연구 프로그램 개발∙운영비") {
+                const mainVal = (parseInt(String(catItem.budget || "0").replace(/,/g, ""), 10) || 0) * 1000;
+                const carryVal = (parseInt(String(catItem.budget_carry || "0").replace(/,/g, ""), 10) || 0) * 1000;
+
+                categorySums[catName].main += mainVal;
+                categorySums[catName].carry += carryVal;
+
+                allocatedMain += mainVal;
+                allocatedCarry += carryVal;
+              }
+            });
+          }
+
+          const remainMain = Math.max(0, progTotalMain - allocatedMain);
+          const remainCarry = Math.max(0, progTotalCarry - allocatedCarry);
+
+          categorySums["교육∙연구 프로그램 개발∙운영비"].main += remainMain;
+          categorySums["교육∙연구 프로그램 개발∙운영비"].carry += remainCarry;
         });
 
-        // 롤업된 비목의 이월 잔액 5개년 연쇄 재계산
-        recalculateCarryOver(newBudgetDetails[progBudgetCategory].years);
-      }
+        // 결과 주입
+        Object.keys(categorySums).forEach((catName) => {
+          if (!newBudgetDetails[catName]) {
+            newBudgetDetails[catName] = { years: {} };
+          }
+          if (!newBudgetDetails[catName].years[yr]) {
+            newBudgetDetails[catName].years[yr] = {
+              budget_main: 0, spent_main: 0, budget_carry: 0, spent_carry: 0
+            };
+          }
+          const tgt = newBudgetDetails[catName].years[yr];
+          tgt.budget_main = categorySums[catName].main;
+          tgt.budget_carry = categorySums[catName].carry;
+          tgt.spent_main = Math.min(tgt.spent_main || 0, tgt.budget_main);
+          tgt.spent_carry = Math.min(tgt.spent_carry || 0, tgt.budget_carry);
+        });
+      });
+
+      // 모든 비목의 이월 잔액 5개년 연쇄 재계산
+      Object.keys(newBudgetDetails).forEach((key) => {
+        recalculateCarryOver(newBudgetDetails[key].years);
+      });
 
       // 3.6. 롤업된 데이터를 바탕으로 단위과제 전체 연도별(unitYears) 총예산/총집행액 누적합 재집계
       [1, 2, 3, 4, 5].forEach((yr) => {
@@ -357,22 +405,72 @@ export default function App() {
         // 캐시 데이터가 존재해도 최신 5개년 프로그램 기획 예산을 단위과제 비목 및 통계로 강제 롤업 싱크
         loaded.forEach((p) => {
           p.units.forEach((u) => {
-            const progBudgetCategory = "교육∙연구 프로그램 개발∙운영비";
-            if (u.budgetDetails && u.budgetDetails[progBudgetCategory]) {
+            if (u.budgetDetails) {
               [1, 2, 3, 4, 5].forEach((yr) => {
-                const totalProgBudgetMain = u.programs.reduce((sum, pr) => sum + (pr.years?.[yr]?.budget_main || 0), 0);
-                const totalProgBudgetCarry = u.programs.reduce((sum, pr) => sum + (pr.years?.[yr]?.budget_carry || 0), 0);
-                const totalProgSpentMain = u.programs.reduce((sum, pr) => sum + (pr.years?.[yr]?.spent_main || 0), 0);
-                const totalProgSpentCarry = u.programs.reduce((sum, pr) => sum + (pr.years?.[yr]?.spent_carry || 0), 0);
-
-                u.budgetDetails[progBudgetCategory].years[yr] = {
-                  budget_main: totalProgBudgetMain,
-                  budget_carry: totalProgBudgetCarry,
-                  spent_main: totalProgSpentMain,
-                  spent_carry: totalProgSpentCarry
+                const categorySums = {
+                  "인건비": { main: 0, carry: 0 },
+                  "장학금": { main: 0, carry: 0 },
+                  "교육∙연구 프로그램 개발∙운영비": { main: 0, carry: 0 },
+                  "교육∙연구 환경개선비": { main: 0, carry: 0 },
+                  "실험∙실습장비 및 기자재 구입∙운영비": { main: 0, carry: 0 },
+                  "지역 연계∙협업 지원비": { main: 0, carry: 0 },
+                  "기업 지원∙협력 활동비": { main: 0, carry: 0 },
+                  "성과 활용∙확산 지원비": { main: 0, carry: 0 },
+                  "그 밖의 사업운영경비": { main: 0, carry: 0 },
+                  "간접비": { main: 0, carry: 0 }
                 };
+
+                u.programs.forEach(prog => {
+                  const py = prog.years?.[yr] || {};
+                  const progTotalMain = py.budget_main || 0;
+                  const progTotalCarry = py.budget_carry || 0;
+
+                  let allocatedMain = 0;
+                  let allocatedCarry = 0;
+
+                  if (py.budget_categories && Array.isArray(py.budget_categories)) {
+                    py.budget_categories.forEach(catItem => {
+                      const catName = catItem.category;
+                      if (catName && categorySums[catName] && catName !== "교육∙연구 프로그램 개발∙운영비") {
+                        const mainVal = (parseInt(String(catItem.budget || "0").replace(/,/g, ""), 10) || 0) * 1000;
+                        const carryVal = (parseInt(String(catItem.budget_carry || "0").replace(/,/g, ""), 10) || 0) * 1000;
+
+                        categorySums[catName].main += mainVal;
+                        categorySums[catName].carry += carryVal;
+
+                        allocatedMain += mainVal;
+                        allocatedCarry += carryVal;
+                      }
+                    });
+                  }
+
+                  const remainMain = Math.max(0, progTotalMain - allocatedMain);
+                  const remainCarry = Math.max(0, progTotalCarry - allocatedCarry);
+
+                  categorySums["교육∙연구 프로그램 개발∙운영비"].main += remainMain;
+                  categorySums["교육∙연구 프로그램 개발∙운영비"].carry += remainCarry;
+                });
+
+                Object.keys(categorySums).forEach(catName => {
+                  if (!u.budgetDetails[catName]) {
+                    u.budgetDetails[catName] = { years: {} };
+                  }
+                  if (!u.budgetDetails[catName].years[yr]) {
+                    u.budgetDetails[catName].years[yr] = {
+                      budget_main: 0, spent_main: 0, budget_carry: 0, spent_carry: 0
+                    };
+                  }
+                  const tgt = u.budgetDetails[catName].years[yr];
+                  tgt.budget_main = categorySums[catName].main;
+                  tgt.budget_carry = categorySums[catName].carry;
+                  tgt.spent_main = Math.min(tgt.spent_main || 0, tgt.budget_main);
+                  tgt.spent_carry = Math.min(tgt.spent_carry || 0, tgt.budget_carry);
+                });
               });
-              recalculateCarryOver(u.budgetDetails[progBudgetCategory].years);
+
+              Object.keys(u.budgetDetails).forEach(key => {
+                recalculateCarryOver(u.budgetDetails[key].years);
+              });
             }
 
             // 단위과제 연도별 전체 집행액/예산 재집계 및 이월 계산
@@ -686,21 +784,67 @@ export default function App() {
               }
             });
             
-            // 해당 단위과제의 프로그램 예산 및 집행액 합산을 비목(교육∙연구 프로그램 개발∙운영비)에 동적으로 반영
-            const progBudgetTotalMain = u.programs.reduce((sum, pr) => sum + (pr.years[selectedYear]?.budget_main || 0), 0);
-            const progBudgetTotalCarry = u.programs.reduce((sum, pr) => sum + (pr.years[selectedYear]?.budget_carry || 0), 0);
-            
-            const progSpentTotalMain = u.programs.reduce((sum, pr) => sum + (pr.years[selectedYear]?.spent_main || 0), 0);
-            const progSpentTotalCarry = u.programs.reduce((sum, pr) => sum + (pr.years[selectedYear]?.spent_carry || 0), 0);
-            
-            const targetDetail = u.budgetDetails["교육∙연구 프로그램 개발∙운영비"];
-            if (targetDetail && targetDetail.years[selectedYear]) {
-              targetDetail.years[selectedYear].budget_main = progBudgetTotalMain;
-              targetDetail.years[selectedYear].budget_carry = progBudgetTotalCarry;
-              
-              targetDetail.years[selectedYear].spent_main = Math.min(progSpentTotalMain, targetDetail.years[selectedYear].budget_main || 0);
-              targetDetail.years[selectedYear].spent_carry = Math.min(progSpentTotalCarry, targetDetail.years[selectedYear].budget_carry || 0);
-            }
+            // 해당 단위과제에 소속된 세부 프로그램들의 비목별 배정계획을 10대 표준비목으로 쪼개서 실시간 롤업 동기화
+            const categorySums = {
+              "인건비": { main: 0, carry: 0 },
+              "장학금": { main: 0, carry: 0 },
+              "교육∙연구 프로그램 개발∙운영비": { main: 0, carry: 0 },
+              "교육∙연구 환경개선비": { main: 0, carry: 0 },
+              "실험∙실습장비 및 기자재 구입∙운영비": { main: 0, carry: 0 },
+              "지역 연계∙협업 지원비": { main: 0, carry: 0 },
+              "기업 지원∙협력 활동비": { main: 0, carry: 0 },
+              "성과 활용∙확산 지원비": { main: 0, carry: 0 },
+              "그 밖의 사업운영경비": { main: 0, carry: 0 },
+              "간접비": { main: 0, carry: 0 }
+            };
+
+            u.programs.forEach(prog => {
+              const py = prog.years?.[selectedYear] || {};
+              const progTotalMain = py.budget_main || 0;
+              const progTotalCarry = py.budget_carry || 0;
+
+              let allocatedMain = 0;
+              let allocatedCarry = 0;
+
+              if (py.budget_categories && Array.isArray(py.budget_categories)) {
+                py.budget_categories.forEach(catItem => {
+                  const catName = catItem.category;
+                  if (catName && categorySums[catName] && catName !== "교육∙연구 프로그램 개발∙운영비") {
+                    const mainVal = (parseInt(String(catItem.budget || "0").replace(/,/g, ""), 10) || 0) * 1000;
+                    const carryVal = (parseInt(String(catItem.budget_carry || "0").replace(/,/g, ""), 10) || 0) * 1000;
+
+                    categorySums[catName].main += mainVal;
+                    categorySums[catName].carry += carryVal;
+
+                    allocatedMain += mainVal;
+                    allocatedCarry += carryVal;
+                  }
+                });
+              }
+
+              const remainMain = Math.max(0, progTotalMain - allocatedMain);
+              const remainCarry = Math.max(0, progTotalCarry - allocatedCarry);
+
+              categorySums["교육∙연구 프로그램 개발∙운영비"].main += remainMain;
+              categorySums["교육∙연구 프로그램 개발∙운영비"].carry += remainCarry;
+            });
+
+            // 계산 결과를 u.budgetDetails 의 selectedYear 에 주입
+            Object.keys(categorySums).forEach(catName => {
+              if (!u.budgetDetails[catName]) {
+                u.budgetDetails[catName] = { years: {} };
+              }
+              if (!u.budgetDetails[catName].years[selectedYear]) {
+                u.budgetDetails[catName].years[selectedYear] = {
+                  budget_main: 0, spent_main: 0, budget_carry: 0, spent_carry: 0
+                };
+              }
+              const tgt = u.budgetDetails[catName].years[selectedYear];
+              tgt.budget_main = categorySums[catName].main;
+              tgt.budget_carry = categorySums[catName].carry;
+              tgt.spent_main = Math.min(tgt.spent_main || 0, tgt.budget_main);
+              tgt.spent_carry = Math.min(tgt.spent_carry || 0, tgt.budget_carry);
+            });
             
             // 모든 비목의 이월 잔액 재계산
             Object.keys(u.budgetDetails).forEach(key => {
