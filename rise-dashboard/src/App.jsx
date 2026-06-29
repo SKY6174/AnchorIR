@@ -1450,13 +1450,15 @@ export default function App() {
 
         {activeTab === "dashboard" && (
           <div>
+            {/* 메인 대시보드 탭: 사용자의 요청에 따라 엑셀 업로더 영역을 제거하고 KPI 요약 카드만 노출합니다. */}
             <KPIOverview projects={projects} currentRole={currentRole} selectedYear={selectedYear} />
-            <ExcelUploader onUpdateData={handleUpdateData} projects={projects} selectedYear={selectedYear} />
           </div>
         )}
 
         {activeTab === "projects" && (
-          <div className="glass-card">
+          <>
+            {/* 단위과제 및 프로그램 관리 탭: 전체 카드를 Fragment로 감싼 뒤 하단에 예산 전용 엑셀 업로더를 배치합니다. */}
+            <div className="glass-card">
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.2rem" }}>
               <h2 style={{ fontSize: "1.25rem", fontWeight: "800" }}>단위과제 관리 (Anchor Unit Projects)</h2>
             </div>
@@ -1588,6 +1590,9 @@ export default function App() {
               </div>
             )}
           </div>
+          {/* 단위과제 및 프로그램 전용 예산 엑셀 업로더 (mode="BUDGET") */}
+          <ExcelUploader mode="BUDGET" onUpdateData={handleUpdateData} projects={projects} selectedYear={selectedYear} />
+        </>
         )}
 
         {activeTab === "management" && (
@@ -1915,7 +1920,9 @@ export default function App() {
 
         {/* 탭 개편: 반응형 사이드 2분할 레이아웃 및 목표치/실적 미니 표 */}
         {activeTab === "kpis" && (
-          <div className="kpi-split-layout">
+          <>
+            {/* 성과지표 관리 탭: 전체 영역을 Fragment로 묶어 하단에 성과지표 전용 엑셀 업로더를 배치합니다. */}
+            <div className="kpi-split-layout">
             {/* 좌측 성과지표 리스트 테이블 */}
             <div className="glass-card">
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: "1rem", marginBottom: "1.5rem", borderBottom: "1px solid var(--border-color-dark)", paddingBottom: "1rem" }}>
@@ -2199,6 +2206,9 @@ export default function App() {
               </div>
             </div>
           </div>
+          {/* 성과지표 목표 및 실적 업데이트 전용 엑셀 업로더 (mode="KPI") */}
+          <ExcelUploader mode="KPI" onUpdateData={handleUpdateData} projects={projects} selectedYear={selectedYear} />
+        </>
         )}
 
         {activeTab === "progress" && (
