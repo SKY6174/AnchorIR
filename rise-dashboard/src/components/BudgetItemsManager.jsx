@@ -8,8 +8,24 @@ const formatToMillionWon = (value) => {
   return Math.round(value / 1000000).toLocaleString();
 };
 
-// 긴 비목명을 3줄로 분리하기 위한 헬퍼 함수
-const splitLabel = (val) => {
+// 긴 비목명을 분리하기 위한 헬퍼 함수 (모바일에서는 축약 처리)
+const splitLabel = (val, isMobile) => {
+  if (isMobile) {
+    const mobileMappings = {
+      "교육∙연구 프로그램 개발∙운영비": ["교육프로그램"],
+      "실험∙실습장비 및 기자재 구입∙운영비": ["실험실습장비"],
+      "지역 연계∙협업 지원비": ["지역연계협업"],
+      "기업 지원∙협력 활동비": ["기업지원협력"],
+      "성과 활용∙확산 지원비": ["성과활용확산"],
+      "그 밖의 사업운영경비": ["기타운영경비"],
+      "교육∙연구 환경개선비": ["환경개선비"],
+      "인건비": ["인건비"],
+      "장학금": ["장학금"],
+      "간접비": ["간접비"]
+    };
+    return mobileMappings[val] || [val];
+  }
+
   const mappings = {
     "교육∙연구 프로그램 개발∙운영비": ["교육∙연구", "프로그램 개발", "∙운영비"],
     "실험∙실습장비 및 기자재 구입∙운영비": ["실험∙실습장비", "및 기자재", "구입∙운영비"],
@@ -22,17 +38,17 @@ const splitLabel = (val) => {
   return mappings[val] || [val];
 };
 
-// Recharts x축 긴 라벨용 커스텀 틱 컴포넌트 (최대 3줄 표출 및 간격 조정)
+// Recharts x축 긴 라벨용 커스텀 틱 컴포넌트 (최대 3줄 표출 및 간격 조정, 모바일 축약 대응)
 const CustomizedAxisTick = (props) => {
-  const { x, y, payload } = props;
+  const { x, y, payload, isMobile } = props;
   const val = payload.value;
   if (!val) return null;
 
-  const lines = splitLabel(val);
+  const lines = splitLabel(val, isMobile);
 
   return (
     <g transform={`translate(${x},${y})`}>
-      <text x={0} y={0} dy={22} textAnchor="middle" fill="var(--text-secondary-dark)" style={{ fontSize: "0.62rem", fontWeight: "600", lineHeight: "1.4" }}>
+      <text x={0} y={0} dy={28} textAnchor="middle" fill="var(--text-secondary-dark)" style={{ fontSize: isMobile ? "0.55rem" : "0.62rem", fontWeight: "600", lineHeight: "1.4" }}>
         {lines.map((line, idx) => (
           <tspan key={idx} x={0} dy={idx === 0 ? 0 : 11}>
             {line}
@@ -50,6 +66,17 @@ export default function BudgetItemsManager({ projects, currentRole, onUpdateBudg
   
   // 서브탭 상태 관리: "main" (본사업비) 또는 "carry" (이월사업비)
   const [subTab, setSubTab] = useState("main");
+
+  // 모바일 화면 감지 상태 (가로폭 768px 미만)
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   // 모든 단위과제 수집
   const allUnits = [];
@@ -276,9 +303,9 @@ export default function BudgetItemsManager({ projects, currentRole, onUpdateBudg
   const isEditable = (currentRole.id === "DIRECTOR" || currentRole.id === "HQ_HEAD") && selectedUnitId !== "Total";
 
   return (
-    <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: "1.5rem" }}>
+    <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 2fr", gap: "1.5rem" }}>
       {/* 좌측 단위과제 목록 */}
-      <div className="glass-card" style={{ maxHeight: "680px", overflowY: "auto" }}>
+      <div className="glass-card" style={{ maxHeight: isMobile ? "none" : "680px", overflowY: "auto" }}>
         <h3 style={{ fontSize: "1.1rem", fontWeight: "800", marginBottom: "0.8rem" }}>단위과제 목록</h3>
         
         {/* 전체 예산 현황 요약 카드 추가 (클릭 시 전체사업 통계 조회) */}
@@ -415,10 +442,10 @@ export default function BudgetItemsManager({ projects, currentRole, onUpdateBudg
             </div>
 
             {/* 재원 구분별 막대 차트 (배정액 대비 집행 실적 병행 표출) */}
-            <div style={{ height: "260px", width: "100%", marginBottom: "1.5rem" }}>
+            <div style={{ height: "280px", width: "100%", marginBottom: "1.5rem" }}>
               <ResponsiveContainer>
                 <BarChart data={chartData}>
-                  <XAxis dataKey="name" stroke="var(--text-secondary-dark)" height={80} interval={0} tick={<CustomizedAxisTick />} />
+                  <XAxis dataKey="name" stroke="var(--text-secondary-dark)" height={90} interval={0} tick={<CustomizedAxisTick isMobile={isMobile} />} />
                   <YAxis stroke="var(--text-secondary-dark)" fontSize={9} />
                   <Tooltip
                     formatter={value => `${value.toLocaleString()} 백만원`}
@@ -447,7 +474,7 @@ export default function BudgetItemsManager({ projects, currentRole, onUpdateBudg
 
             {/* 편집 및 조회 테이블 (서브탭별로 다른 열을 노출함) */}
             <form onSubmit={handleSaveBudgetDetails}>
-              <div className="table-panel" style={{ maxHeight: "300px", overflowY: "auto", marginBottom: "1.5rem" }}>
+              <div className="table-panel" style={{ maxHeight: "300px", overflowY: "auto", overflowX: "auto", width: "100%", marginBottom: "1.5rem" }}>
                 <table className="custom-table" style={{ fontSize: "0.75rem" }}>
                   <thead>
                     {subTab === "main" ? (
