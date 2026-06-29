@@ -605,8 +605,8 @@ export default function PDCAManager({
 
                 {/* D 단계: 세부 재원별 집행 등록 */}
                 {(isResearcher || currentRole.rank <= 2) && (
-                  <form onSubmit={handleUpdateBudget} style={{ padding: "0.75rem", background: "rgba(59,130,246,0.03)", border: "1px solid rgba(59,130,246,0.15)", borderRadius: "0.5rem" }}>
-                    <h4 style={{ fontSize: "0.8rem", fontWeight: "800", marginBottom: "0.5rem", color: "var(--accent-color)" }}>D 단계: 세부 재원별 본집행액 및 실적 입력</h4>
+                  <form onSubmit={handleUpdateBudget} style={{ padding: "0.75rem", background: "rgba(16,185,129,0.03)", border: "1px solid rgba(16,185,129,0.15)", borderRadius: "0.5rem" }}>
+                    <h4 style={{ fontSize: "0.8rem", fontWeight: "800", marginBottom: "0.5rem", color: "#10b981" }}>D 단계: 세부 재원별 본집행액 및 실적 입력</h4>
                     <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
                       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: "0.4rem" }}>
                         <div>
@@ -626,15 +626,15 @@ export default function PDCAManager({
                           <input type="text" className="user-selector" value={inputParticipants} onChange={(e) => setInputParticipants(e.target.value)} style={{ padding: "0.2rem 0.4rem", fontSize: "0.75rem" }} />
                         </div>
                       </div>
-                      <button type="submit" className="btn-primary" style={{ marginTop: "0.2rem" }}>D 집행 실적 및 인원 저장</button>
+                      <button type="submit" className="btn-primary" style={{ marginTop: "0.2rem", background: "#10b981", color: "white" }}>D 집행 실적 및 인원 저장</button>
                     </div>
                   </form>
                 )}
 
                 {/* C 단계: 집행액 제외 성과 실적 입력 */}
                 {(isResearcher || currentRole.rank <= 2) && (
-                  <form onSubmit={handleUpdateCDetails} style={{ padding: "0.75rem", background: "rgba(16,185,129,0.03)", border: "1px solid rgba(16,185,129,0.15)", borderRadius: "0.5rem" }}>
-                    <h4 style={{ fontSize: "0.8rem", fontWeight: "800", marginBottom: "0.5rem", color: "var(--success-color)" }}>C 단계: 운영 성과 실적 입력</h4>
+                  <form onSubmit={handleUpdateCDetails} style={{ padding: "0.75rem", background: "rgba(245,158,11,0.03)", border: "1px solid rgba(245,158,11,0.15)", borderRadius: "0.5rem" }}>
+                    <h4 style={{ fontSize: "0.8rem", fontWeight: "800", marginBottom: "0.5rem", color: "#f59e0b" }}>C 단계: 운영 성과 실적 입력</h4>
                     <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
                       <div>
                         <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)" }}>성과사항 (정성/정량적 성과 서술)</span>
@@ -644,15 +644,15 @@ export default function PDCAManager({
                         <span style={{ fontSize: "0.75rem", width: "140px", color: "var(--text-secondary-dark)" }}>만족도 (점 / 100점):</span>
                         <input type="text" className="user-selector" placeholder="예: 95" value={inputSatisfaction} onChange={(e) => setInputSatisfaction(e.target.value)} style={{ flexGrow: 1 }} />
                       </div>
-                      <button type="submit" className="btn-primary" style={{ background: "var(--success-color)" }}>C 성과 적용</button>
+                      <button type="submit" className="btn-primary" style={{ background: "#f59e0b", color: "white" }}>C 성과 적용</button>
                     </div>
                   </form>
                 )}
 
                 {/* A 단계: 환류 2분할 자체평가 */}
                 {(isResearcher || currentRole.rank <= 2) && (
-                  <form onSubmit={handleUpdateA} style={{ padding: "0.75rem", background: "rgba(245,158,11,0.03)", border: "1px solid rgba(245,158,11,0.15)", borderRadius: "0.5rem" }}>
-                    <h4 style={{ fontSize: "0.8rem", fontWeight: "800", marginBottom: "0.5rem", color: "var(--warning-color)" }}>A 단계: 사업 환류 및 자체평가</h4>
+                  <form onSubmit={handleUpdateA} style={{ padding: "0.75rem", background: "rgba(217,70,239,0.03)", border: "1px solid rgba(217,70,239,0.15)", borderRadius: "0.5rem" }}>
+                    <h4 style={{ fontSize: "0.8rem", fontWeight: "800", marginBottom: "0.5rem", color: "#d946ef" }}>A 단계: 사업 환류 및 자체평가</h4>
                     
                     <div style={{ display: "flex", gap: "1rem", marginBottom: "0.5rem" }}>
                       <span style={{ fontSize: "0.75rem", fontWeight: "700" }}>자체평가 구분:</span>
@@ -693,7 +693,7 @@ export default function PDCAManager({
                         </div>
                       </div>
                     )}
-                    <button type="submit" className="btn-primary" style={{ marginTop: "0.5rem", background: "var(--warning-color)" }}>A 환류 방안 저장</button>
+                    <button type="submit" className="btn-primary" style={{ marginTop: "0.5rem", background: "#d946ef", color: "white" }}>A 환류 방안 저장</button>
                   </form>
                 )}
 
