@@ -43,13 +43,17 @@ const parseTimelineDates = (timelineStr) => {
 const MONTHS_LIST = ["26.3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월", "27.1월", "2월"];
 
 const BUDGET_CATEGORIES_OPTIONS = [
-  "선택 안 함",
-  "인건비",
-  "운영비",
-  "여비/수당",
-  "재료비/기자재비",
-  "간접비",
-  "기타"
+  { value: "", label: "선택 안 함" },
+  { value: "인건비", label: "인건비" },
+  { value: "장학금", label: "장학금" },
+  { value: "교육∙연구 프로그램 개발∙운영비", label: "교육∙연구 프로그램비" },
+  { value: "교육∙연구 환경개선비", label: "환경개선비" },
+  { value: "실험∙실습장비 및 기자재 구입∙운영비", label: "실험실습장비비" },
+  { value: "지역 연계∙협업 지원비", label: "지역연계협업비" },
+  { value: "기업 지원∙협력 활동비", label: "기업지원협력비" },
+  { value: "성과 활용∙확산 지원비", label: "성과활용확산비" },
+  { value: "그 밖의 사업운영경비", label: "기타운영경비" },
+  { value: "간접비", label: "간접비" }
 ];
 
 const parseTimelineToMonths = (timelineStr) => {
@@ -775,8 +779,8 @@ export default function PDCAManager({
                                 style={{ fontSize: "0.7rem", padding: "0.2rem", width: "100%" }}
                               >
                                 {BUDGET_CATEGORIES_OPTIONS.map((opt) => (
-                                  <option key={opt} value={opt === "선택 안 함" ? "" : opt}>
-                                    {opt}
+                                  <option key={opt.value} value={opt.value}>
+                                    {opt.label}
                                   </option>
                                 ))}
                               </select>
