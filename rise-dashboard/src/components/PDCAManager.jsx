@@ -336,13 +336,9 @@ export default function PDCAManager({
 
     if (status === "완료") {
       if (stage === "p") {
-        // P 완료 검증: 예산 기재 및 Timeline, 참여대상, 연계부서 기재 필수
+        // P 완료 검증: 예산 기재 필수 (Timeline, 참여대상, 연계부서는 필수 아님)
         if (budgetMain <= 0) {
           alert(`[검증 실패] P(Plan) 단계를 완료하려면 재원 예산(국고/시비/외부)이 0원 초과 배정되어야 합니다. (현재 총 예산: 0원)`);
-          return;
-        }
-        if (!timeline.trim() || !targetAudience.trim() || !coopDept.trim()) {
-          alert(`[검증 실패] P(Plan) 단계를 완료하려면 기획 정보(Timeline, 참여대상, 연계부서)가 모두 기재되어야 합니다.`);
           return;
         }
       } else if (stage === "d") {
@@ -409,11 +405,7 @@ export default function PDCAManager({
       return;
     }
 
-    const hasAnyMonthlyTimeline = inputMonthlyPDCA.some((m) => m !== "");
-    if (!hasAnyMonthlyTimeline || !inputTargetAudience.trim() || !inputCoopDept.trim()) {
-      alert("최소 한 달 이상의 월별 PDCA 일정을 지정하고, 참여대상 및 연계부서 기획 정보를 기입해주세요.");
-      return;
-    }
+    // 추진일정, 참여대상, 연계부서 필수 제약 해제 (선택 입력 사항으로 전향)
 
     // 비목별 예산 데이터 조립 및 복원 (본예산 및 이월예산 구분)
     const categoriesToSave = inputBudgetCategories
