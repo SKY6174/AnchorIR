@@ -139,12 +139,12 @@ export default function PDCAManager({
   const [inputBudgetCarryCity, setInputBudgetCarryCity] = useState("");
   const [inputBudgetCarryExternal, setInputBudgetCarryExternal] = useState("");
 
-  // 이원화 비목별 예산용 상태 (본예산/이월예산 구분, 최대 4칸)
+  // 이원화 비목별 예산용 상태 (본예산/이월예산/집행액 구분, 최대 4칸)
   const [inputBudgetCategories, setInputBudgetCategories] = useState([
-    { category: "", budget: "", budget_carry: "" },
-    { category: "", budget: "", budget_carry: "" },
-    { category: "", budget: "", budget_carry: "" },
-    { category: "", budget: "", budget_carry: "" }
+    { category: "", budget: "", budget_carry: "", spent: "0.0", spent_carry: "0.0" },
+    { category: "", budget: "", budget_carry: "", spent: "0.0", spent_carry: "0.0" },
+    { category: "", budget: "", budget_carry: "", spent: "0.0", spent_carry: "0.0" },
+    { category: "", budget: "", budget_carry: "", spent: "0.0", spent_carry: "0.0" }
   ]);
 
   // 월별 PDCA 일정 관리용 상태 (26.3월 ~ 27.2월, 12칸)
@@ -232,14 +232,16 @@ export default function PDCAManager({
           setInputBudgetCarryExternal(py.budget_carry_external !== undefined ? (py.budget_carry_external / 1000000).toFixed(1) : "0.0");
         }
 
-        // 비목 예산 바인딩 (본예산 + 이월예산, 4칸 구성)
+        // 비목 예산 및 집행 바인딩 (본예산 + 이월예산 + 집행액, 4칸 구성)
         const loadedCategories = (py.budget_categories || []).map((c) => ({
           category: c.category || "",
           budget: c.budget !== undefined ? (c.budget / 1000000).toFixed(1) : "",
-          budget_carry: selectedYear === 1 ? "0.0" : (c.budget_carry !== undefined ? (c.budget_carry / 1000000).toFixed(1) : "")
+          budget_carry: selectedYear === 1 ? "0.0" : (c.budget_carry !== undefined ? (c.budget_carry / 1000000).toFixed(1) : ""),
+          spent: c.spent !== undefined ? (c.spent / 1000000).toFixed(1) : "0.0",
+          spent_carry: selectedYear === 1 ? "0.0" : (c.spent_carry !== undefined ? (c.spent_carry / 1000000).toFixed(1) : "0.0")
         }));
         while (loadedCategories.length < 4) {
-          loadedCategories.push({ category: "", budget: "", budget_carry: "" });
+          loadedCategories.push({ category: "", budget: "", budget_carry: "", spent: "0.0", spent_carry: "0.0" });
         }
         setInputBudgetCategories(loadedCategories);
 
@@ -273,10 +275,10 @@ export default function PDCAManager({
       setInputBudgetCarryCity("");
       setInputBudgetCarryExternal("");
       setInputBudgetCategories([
-        { category: "", budget: "", budget_carry: "" },
-        { category: "", budget: "", budget_carry: "" },
-        { category: "", budget: "", budget_carry: "" },
-        { category: "", budget: "", budget_carry: "" }
+        { category: "", budget: "", budget_carry: "", spent: "0.0", spent_carry: "0.0" },
+        { category: "", budget: "", budget_carry: "", spent: "0.0", spent_carry: "0.0" },
+        { category: "", budget: "", budget_carry: "", spent: "0.0", spent_carry: "0.0" },
+        { category: "", budget: "", budget_carry: "", spent: "0.0", spent_carry: "0.0" }
       ]);
       setInputMonthlyPDCA(Array(12).fill(""));
       setInputSpentNational("");
@@ -407,13 +409,15 @@ export default function PDCAManager({
 
     // 추진일정, 참여대상, 연계부서 필수 제약 해제 (선택 입력 사항으로 전향)
 
-    // 비목별 예산 데이터 조립 및 복원 (본예산 및 이월예산 구분)
+    // 비목별 예산 및 집행 데이터 조립 및 복원 (본예산/이월예산 및 집행액 구분)
     const categoriesToSave = inputBudgetCategories
-      .filter((c) => c.category && c.category !== "선택 안 함")
+      .filter((c) => c.category && c.category !== "")
       .map((c) => ({
         category: c.category,
         budget: Math.round(parseDecimalFromCommas(c.budget) * 1000000),
-        budget_carry: selectedYear === 1 ? 0 : Math.round(parseDecimalFromCommas(c.budget_carry) * 1000000)
+        budget_carry: selectedYear === 1 ? 0 : Math.round(parseDecimalFromCommas(c.budget_carry) * 1000000),
+        spent: Math.round(parseDecimalFromCommas(c.spent || "0.0") * 1000000),
+        spent_carry: selectedYear === 1 ? 0 : Math.round(parseDecimalFromCommas(c.spent_carry || "0.0") * 1000000)
       }));
 
     onUpdateProgramDetails(activeProg.unitId, activeProg.id, {
@@ -467,11 +471,23 @@ export default function PDCAManager({
       return;
     }
 
+    // D단계 비목별 집행액 데이터 취합 (본예산 및 이월예산은 유지)
+    const categoriesToSave = inputBudgetCategories
+      .filter((c) => c.category && c.category !== "")
+      .map((c) => ({
+        category: c.category,
+        budget: Math.round(parseDecimalFromCommas(c.budget || "0.0") * 1000000),
+        budget_carry: selectedYear === 1 ? 0 : Math.round(parseDecimalFromCommas(c.budget_carry || "0.0") * 1000000),
+        spent: Math.round(parseDecimalFromCommas(c.spent || "0.0") * 1000000),
+        spent_carry: selectedYear === 1 ? 0 : Math.round(parseDecimalFromCommas(c.spent_carry || "0.0") * 1000000)
+      }));
+
     onUpdateProgramDetails(activeProg.unitId, activeProg.id, {
       spent_national: sNational,
       spent_city: sCity,
       spent_external: sExternal,
-      participants: parsedParticipants
+      participants: parsedParticipants,
+      budget_categories: categoriesToSave
     });
 
     setFeedbackMsg("D 단계 집행 실적 및 이수인원이 안전하게 저장되었습니다.");
@@ -895,6 +911,73 @@ export default function PDCAManager({
                   <form onSubmit={handleUpdateBudget} style={{ padding: "0.75rem", background: "rgba(16,185,129,0.03)", border: "1px solid rgba(16,185,129,0.15)", borderRadius: "0.5rem" }}>
                     <h4 style={{ fontSize: "0.8rem", fontWeight: "800", marginBottom: "0.5rem", color: "#10b981" }}>D 단계: 세부 재원별 본집행액 및 실적 입력</h4>
                     <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
+                      {/* 비목별 예산 집행액 입력 (P단계와 동일한 형태로 노출) */}
+                      <div style={{ borderBottom: "1px solid var(--border-color-dark)", paddingBottom: "0.5rem", marginBottom: "0.2rem" }}>
+                        <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)", display: "block", marginBottom: "0.25rem" }}>비목별 집행 등록 (백만원 단위)</span>
+                        <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
+                          {inputBudgetCategories
+                            .filter(item => item.category && item.category !== "")
+                            .map((item, idx) => {
+                              const originalIdx = inputBudgetCategories.findIndex(c => c.category === item.category);
+                              return (
+                                <div key={idx} style={{ display: "grid", gridTemplateColumns: "1.2fr 1fr 1fr", gap: "0.2rem", alignItems: "center" }}>
+                                  <div style={{
+                                    fontSize: "0.7rem",
+                                    fontWeight: "700",
+                                    color: "var(--text-primary-dark)",
+                                    background: "rgba(255,255,255,0.02)",
+                                    padding: "0.2rem 0.4rem",
+                                    borderRadius: "0.25rem",
+                                    border: "1px solid var(--border-color-dark)",
+                                    whiteSpace: "nowrap",
+                                    overflow: "hidden",
+                                    textOverflow: "ellipsis"
+                                  }} title={item.category}>
+                                    {item.category}
+                                  </div>
+                                  <input
+                                    type="text"
+                                    className="user-selector"
+                                    placeholder="본집행액"
+                                    value={item.spent || "0.0"}
+                                    onChange={(e) => {
+                                      const newCats = [...inputBudgetCategories];
+                                      newCats[originalIdx].spent = e.target.value.replace(/[^0-9.]/g, "");
+                                      setInputBudgetCategories(newCats);
+                                    }}
+                                    style={{ fontSize: "0.7rem", padding: "0.2rem", width: "100%" }}
+                                  />
+                                  <input
+                                    type="text"
+                                    className="user-selector"
+                                    placeholder="이월집행"
+                                    disabled={selectedYear === 1}
+                                    value={selectedYear === 1 ? "0.0" : (item.spent_carry || "0.0")}
+                                    onChange={(e) => {
+                                      const newCats = [...inputBudgetCategories];
+                                      newCats[originalIdx].spent_carry = e.target.value.replace(/[^0-9.]/g, "");
+                                      setInputBudgetCategories(newCats);
+                                    }}
+                                    style={{
+                                      fontSize: "0.7rem",
+                                      padding: "0.2rem",
+                                      width: "100%",
+                                      background: selectedYear === 1 ? "rgba(255,255,255,0.02)" : "#18181b",
+                                      color: selectedYear === 1 ? "rgba(255,255,255,0.2)" : "white",
+                                      cursor: selectedYear === 1 ? "not-allowed" : "text"
+                                    }}
+                                  />
+                                </div>
+                              );
+                            })}
+                          {inputBudgetCategories.filter(item => item.category && item.category !== "").length === 0 && (
+                            <div style={{ fontSize: "0.7rem", color: "var(--text-secondary-dark)", fontStyle: "italic", padding: "0.2rem" }}>
+                              ※ P단계에서 비목별 예산 배정을 먼저 입력하고 저장해야 집행 등록이 가능합니다.
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
                       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: "0.4rem" }}>
                         <div>
                           <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)" }}>국고 집행 (백만원)</span>
