@@ -237,17 +237,10 @@ export default function PDCAManager({
           return;
         }
       } else if (stage === "a") {
-        // A 완료 검증: 우수/미흡 평가 구분에 따른 2가지 세부 사항 기재 필수
-        if (evalType === "우수") {
-          if (!excellent.trim() || !improvePlan.trim()) {
-            alert(`[검증 실패] A(Act) 우수 프로그램 상태를 완료하려면 '우수한 점'과 '발전방안'을 모두 기입해 주셔야 합니다.`);
-            return;
-          }
-        } else {
-          if (!deficiency.trim() || !actionItem.trim()) {
-            alert(`[검증 실패] A(Act) 미흡 프로그램 상태를 완료하려면 '미비점'과 '개선사항'을 모두 기입해 주셔야 합니다.`);
-            return;
-          }
+        // A 완료 검증: 자체평가 및 환류 방안 중 최소 하나 기재 필수
+        if (!excellent.trim() && !improvePlan.trim() && !deficiency.trim() && !actionItem.trim()) {
+          alert(`[검증 실패] A(Act) 단계를 완료하려면 자체평가 및 환류 방안(우수한 점, 발전방안, 미비점, 개선사항) 중 최소 하나를 입력해 주셔야 합니다.`);
+          return;
         }
       }
     }
@@ -367,16 +360,9 @@ export default function PDCAManager({
     e.preventDefault();
     if (!activeProg) return;
 
-    if (inputEvalType === "우수") {
-      if (!inputExcellent.trim() || !inputImprovePlan.trim()) {
-        alert("우수 프로그램 환류 사항(우수한 점 및 발전방안)을 모두 기재해 주세요.");
-        return;
-      }
-    } else {
-      if (!inputDeficiency.trim() || !inputActionItem.trim()) {
-        alert("미흡 프로그램 환류 사항(미비점 및 개선사항)을 모두 기재해 주세요.");
-        return;
-      }
+    if (!inputExcellent.trim() && !inputImprovePlan.trim() && !inputDeficiency.trim() && !inputActionItem.trim()) {
+      alert("자체평가 및 환류 방안(우수한 점, 발전방안, 미비점, 개선사항) 중 최소 하나 이상을 기입해 주세요.");
+      return;
     }
 
     onUpdateProgramDetails(activeProg.unitId, activeProg.id, {
@@ -591,7 +577,7 @@ export default function PDCAManager({
                 )}
 
                 {/* D 단계: 세부 재원별 집행 등록 */}
-                {(isResearcher || currentRole.rank <= 2) && activeProg.pdca.p === "완료" && (
+                {(isResearcher || currentRole.rank <= 2) && (
                   <form onSubmit={handleUpdateBudget} style={{ padding: "0.75rem", background: "rgba(59,130,246,0.03)", border: "1px solid rgba(59,130,246,0.15)", borderRadius: "0.5rem" }}>
                     <h4 style={{ fontSize: "0.8rem", fontWeight: "800", marginBottom: "0.5rem", color: "var(--accent-color)" }}>D 단계: 세부 재원별 본집행액 입력</h4>
                     <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
@@ -615,7 +601,7 @@ export default function PDCAManager({
                 )}
 
                 {/* C 단계: 집행액 제외 성과 실적 입력 */}
-                {(isResearcher || currentRole.rank <= 2) && activeProg.pdca.d === "완료" && (
+                {(isResearcher || currentRole.rank <= 2) && (
                   <form onSubmit={handleUpdateCDetails} style={{ padding: "0.75rem", background: "rgba(16,185,129,0.03)", border: "1px solid rgba(16,185,129,0.15)", borderRadius: "0.5rem" }}>
                     <h4 style={{ fontSize: "0.8rem", fontWeight: "800", marginBottom: "0.5rem", color: "var(--success-color)" }}>C 단계: 운영 성과 실적 입력</h4>
                     <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
@@ -633,11 +619,12 @@ export default function PDCAManager({
                 )}
 
                 {/* A 단계: 환류 2분할 자체평가 */}
-                {(isResearcher || currentRole.rank <= 2) && activeProg.pdca.c === "완료" && (
+                {(isResearcher || currentRole.rank <= 2) && (
                   <form onSubmit={handleUpdateA} style={{ padding: "0.75rem", background: "rgba(245,158,11,0.03)", border: "1px solid rgba(245,158,11,0.15)", borderRadius: "0.5rem" }}>
                     <h4 style={{ fontSize: "0.8rem", fontWeight: "800", marginBottom: "0.5rem", color: "var(--warning-color)" }}>A 단계: 사업 환류 및 자체평가</h4>
                     
                     <div style={{ display: "flex", gap: "1rem", marginBottom: "0.5rem" }}>
+                      <span style={{ fontSize: "0.75rem", fontWeight: "700" }}>자체평가 구분:</span>
                       <label style={{ fontSize: "0.75rem", cursor: "pointer", display: "flex", alignItems: "center", gap: "0.2rem" }}>
                         <input type="radio" name="evalType" value="우수" checked={inputEvalType === "우수"} onChange={() => setInputEvalType("우수")} />
                         우수 프로그램
@@ -648,8 +635,8 @@ export default function PDCAManager({
                       </label>
                     </div>
 
-                    {inputEvalType === "우수" ? (
-                      <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
+                    <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
+                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem" }}>
                         <div>
                           <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)" }}>우수한 점</span>
                           <textarea className="user-selector" rows={2} value={inputExcellent} onChange={(e) => setInputExcellent(e.target.value)} placeholder="프로그램 운영 중 창출된 우수한 성과 및 성료 요인을 기록하세요." style={{ width: "100%", fontSize: "0.75rem", padding: "0.3rem" }} />
@@ -659,8 +646,7 @@ export default function PDCAManager({
                           <textarea className="user-selector" rows={2} value={inputImprovePlan} onChange={(e) => setInputImprovePlan(e.target.value)} placeholder="우수한 성과를 타 프로그램으로 확산하거나 차년도에 더욱 발전시킬 방안을 기입하세요." style={{ width: "100%", fontSize: "0.75rem", padding: "0.3rem" }} />
                         </div>
                       </div>
-                    ) : (
-                      <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
+                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem" }}>
                         <div>
                           <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)" }}>미비점</span>
                           <textarea className="user-selector" rows={2} value={inputDeficiency} onChange={(e) => setInputDeficiency(e.target.value)} placeholder="운영상의 한계, 예산 집행 차질, 혹은 목표 달성 미달의 주원인을 파악하여 입력하세요." style={{ width: "100%", fontSize: "0.75rem", padding: "0.3rem" }} />
@@ -670,7 +656,7 @@ export default function PDCAManager({
                           <textarea className="user-selector" rows={2} value={inputActionItem} onChange={(e) => setInputActionItem(e.target.value)} placeholder="발견된 미비점을 극복하고 차년도 계획 시 보완 및 구조조정할 대책을 기입하세요." style={{ width: "100%", fontSize: "0.75rem", padding: "0.3rem" }} />
                         </div>
                       </div>
-                    )}
+                    </div>
                     <button type="submit" className="btn-primary" style={{ marginTop: "0.5rem", background: "var(--warning-color)" }}>A 환류 방안 저장</button>
                   </form>
                 )}
