@@ -443,45 +443,120 @@ export default function App() {
                 const cachedProg = unit.programs?.find(cp => cp.id === sourceProg.id);
                 if (cachedProg) {
                   const updatedYears = { ...cachedProg.years };
-                  if (updatedYears[2]) {
-                    updatedYears[2].budget_main = sourceProg.budget_2026 || 0;
-                  }
-                  if (updatedYears[1]) {
-                    updatedYears[1].budget_main = Math.round((sourceProg.budget_2026 || 0) * 0.9);
-                  }
+
+                  // 5개년에 대한 예산 및 집행액 정합성 복원 루프
                   [1, 2, 3, 4, 5].forEach((yr) => {
-                    const y = updatedYears[yr];
-                    if (y && y.budget_categories && Array.isArray(y.budget_categories)) {
-                      y.budget_categories.forEach((cat) => {
-                        const catBudget = parseInt(String(cat.budget || "0").replace(/,/g, ""), 10) || 0;
-                        if (catBudget > 10000000000) { // 100억 원 초과 시 오버플로우로 간주하고 원상 복구
-                          cat.budget = Math.round(catBudget / 1000);
+                    if (updatedYears[yr]) {
+                      const y = updatedYears[yr];
+                      
+                      // 1. 입력한 예산(세부 재원: 국고 + 시비 + 외부)이 있는지 확인
+                      const inputBudgetSum = (y.budget_national || 0) + (y.budget_city || 0) + (y.budget_external || 0);
+                      
+                      if (inputBudgetSum > 0) {
+                        // 사용자가 세부 재원 예산을 하나라도 입력했다면, 그 합산을 본예산(budget_main)으로 동기화 (입력 예산 우선 원칙)
+                        y.budget_main = inputBudgetSum;
+                      } else {
+                        // 입력된 세부 예산이 없는 경우, 기존 sourceProg를 기준으로 본예산 기본값을 계산
+                        let defaultBudgetMain = 0;
+                        if (yr === 2) {
+                          defaultBudgetMain = sourceProg.budget_2026 || 0;
+                        } else if (yr === 1) {
+                          defaultBudgetMain = Math.round((sourceProg.budget_2026 || 0) * 0.9);
+                        } else {
+                          const factor = yr === 3 ? 1.1 : yr === 4 ? 1.2 : 1.3;
+                          defaultBudgetMain = Math.round((sourceProg.budget_2026 || 0) * factor);
                         }
-                        const catCarry = parseInt(String(cat.budget_carry || "0").replace(/,/g, ""), 10) || 0;
-                        if (catCarry > 10000000000) {
-                          cat.budget_carry = Math.round(catCarry / 1000);
+                        
+                        y.budget_main = defaultBudgetMain;
+                        
+                        // 디폴트 분배 규칙: 특정 외부위탁 프로그램은 외부사업비 100%, 그 외 일반 사업은 국고 50% / 시비 50% 분배
+                        const isExternalSub = sourceProg.id.endsWith("-2") || sourceProg.id.includes("위탁") || sourceProg.title.includes("위탁") || sourceProg.title.includes("협력");
+                        if (isExternalSub) {
+                          y.budget_external = defaultBudgetMain;
+                          y.budget_national = 0;
+                          y.budget_city = 0;
+                        } else {
+                          y.budget_national = Math.round(defaultBudgetMain * 0.5);
+                          y.budget_city = defaultBudgetMain - y.budget_national;
+                          y.budget_external = 0;
                         }
-                        const catSpent = parseInt(String(cat.spent || "0").replace(/,/g, ""), 10) || 0;
-                        if (catSpent > 10000000000) {
-                          cat.spent = Math.round(catSpent / 1000);
-                        }
-                        const catSpentCarry = parseInt(String(cat.spent_carry || "0").replace(/,/g, ""), 10) || 0;
-                        if (catSpentCarry > 10000000000) {
-                          cat.spent_carry = Math.round(catSpentCarry / 1000);
-                        }
-                      });
+                      }
+
+                      // 2. 이월예산도 세부 이월예산(국고 + 시비 + 외부)의 합산으로 동기화 (1차년도는 이월이 없으므로 강제 0원)
+                      if (yr === 1) {
+                        y.budget_carry_national = 0;
+                        y.budget_carry_city = 0;
+                        y.budget_carry_external = 0;
+                        y.budget_carry = 0;
+                      } else {
+                        y.budget_carry = (y.budget_carry_national || 0) + (y.budget_carry_city || 0) + (y.budget_carry_external || 0);
+                      }
+
+                      // 3. 본집행액도 세부 집행액(국고 + 시비 + 외부)의 합으로 실시간 동기화
+                      y.spent_main = (y.spent_national || 0) + (y.spent_city || 0) + (y.spent_external || 0);
+
+                      // 4. 이월집행액도 세부 이월집행액(국고 + 시비 + 외부)의 합으로 동기화 (1차년도는 0원)
+                      if (yr === 1) {
+                        y.spent_carry_national = 0;
+                        y.spent_carry_city = 0;
+                        y.spent_carry_external = 0;
+                        y.spent_carry = 0;
+                      } else {
+                        y.spent_carry = (y.spent_carry_national || 0) + (y.spent_carry_city || 0) + (y.spent_carry_external || 0);
+                      }
+
+                      // 5. 비목 카테고리 예산 오버플로우 보정 (기존 복원 로직)
+                      if (y.budget_categories && Array.isArray(y.budget_categories)) {
+                        y.budget_categories.forEach((cat) => {
+                          const catBudget = parseInt(String(cat.budget || "0").replace(/,/g, ""), 10) || 0;
+                          if (catBudget > 10000000000) {
+                            cat.budget = Math.round(catBudget / 1000);
+                          }
+                          const catCarry = parseInt(String(cat.budget_carry || "0").replace(/,/g, ""), 10) || 0;
+                          if (catCarry > 10000000000) {
+                            cat.budget_carry = Math.round(catCarry / 1000);
+                          }
+                          const catSpent = parseInt(String(cat.spent || "0").replace(/,/g, ""), 10) || 0;
+                          if (catSpent > 10000000000) {
+                            cat.spent = Math.round(catSpent / 1000);
+                          }
+                          const catSpentCarry = parseInt(String(cat.spent_carry || "0").replace(/,/g, ""), 10) || 0;
+                          if (catSpentCarry > 10000000000) {
+                            cat.spent_carry = Math.round(catSpentCarry / 1000);
+                          }
+                        });
+                      }
                     }
                   });
 
-                  [3, 4, 5].forEach((yr) => {
-                    if (updatedYears[yr]) {
-                      const factor = yr === 3 ? 1.1 : yr === 4 ? 1.2 : 1.3;
-                      updatedYears[yr].budget_main = Math.round((sourceProg.budget_2026 || 0) * factor);
-                    }
-                  });
+                  // 6. 프로그램 최상위 레거시 예산/집행 필드도 2차년도 기준으로 완벽하게 강제 동기화
+                  const currentYearBudgetMain = updatedYears[2]?.budget_main || 0;
+                  const currentYearBudgetCarry = updatedYears[2]?.budget_carry || 0;
+                  const currentYearSpentMain = updatedYears[2]?.spent_main || 0;
+                  const currentYearSpentCarry = updatedYears[2]?.spent_carry || 0;
+
                   return {
                     ...sourceProg,
                     pdca: cachedProg.pdca || sourceProg.pdca,
+                    timeline: cachedProg.timeline || sourceProg.timeline,
+                    targetAudience: cachedProg.targetAudience || sourceProg.targetAudience,
+                    coopDept: cachedProg.coopDept || sourceProg.coopDept,
+                    participants: cachedProg.participants !== undefined ? cachedProg.participants : sourceProg.participants,
+                    satisfaction: cachedProg.satisfaction !== undefined ? cachedProg.satisfaction : sourceProg.satisfaction,
+                    achievements: cachedProg.achievements || sourceProg.achievements,
+                    evalType: cachedProg.evalType || sourceProg.evalType,
+                    excellent: cachedProg.excellent || sourceProg.excellent,
+                    improvePlan: cachedProg.improvePlan || sourceProg.improvePlan,
+                    deficiency: cachedProg.deficiency || sourceProg.deficiency,
+                    actionItem: cachedProg.actionItem || sourceProg.actionItem,
+                    
+                    // 레거시 필드 롤업
+                    budget_2026: currentYearBudgetMain,
+                    budget_2025_carry: currentYearBudgetCarry,
+                    budget: currentYearBudgetMain + currentYearBudgetCarry,
+                    spent_2026: currentYearSpentMain,
+                    spent_2025_carry: currentYearSpentCarry,
+                    spent: currentYearSpentMain + currentYearSpentCarry,
                     years: updatedYears
                   };
                 }
