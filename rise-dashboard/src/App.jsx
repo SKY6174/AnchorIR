@@ -549,6 +549,7 @@ export default function App() {
                     improvePlan: cachedProg.improvePlan || sourceProg.improvePlan,
                     deficiency: cachedProg.deficiency || sourceProg.deficiency,
                     actionItem: cachedProg.actionItem || sourceProg.actionItem,
+                    assignee: cachedProg.assignee !== undefined ? cachedProg.assignee : sourceProg.assignee,
                     
                     // 레거시 필드 롤업
                     budget_2026: currentYearBudgetMain,
@@ -1955,7 +1956,7 @@ export default function App() {
                                     >
                                       <option value="">미배정</option>
                                       {members
-                                        .filter((m) => m.role === "연구원")
+                                        .filter((m) => m.role === "연구원" && (m.dept === dept || prog.assignee === `${m.name} ${m.grade}`))
                                         .map((m) => {
                                           const valueStr = `${m.name} ${m.grade}`;
                                           const labelStr = `${m.name} ${m.grade} (${m.dept})`;
