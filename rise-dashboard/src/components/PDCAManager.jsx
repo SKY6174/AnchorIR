@@ -99,6 +99,11 @@ const parseTimelineToMonths = (timelineStr) => {
   return defaultValue;
 };
 
+const parseDecimalFromCommas = (val) => {
+  if (!val) return 0;
+  return parseFloat(String(val).replace(/,/g, "")) || 0;
+};
+
 /**
  * PDCAManager Component
  * 프로그램별 PDCA(Plan-Do-Check-Act) 단계 관리, 기획수립(Timeline, 대상, 부서),
@@ -211,27 +216,27 @@ export default function PDCAManager({
         setInputTargetAudience(prog.targetAudience || "");
         setInputCoopDept(prog.coopDept || "");
         
-        // 본예산 로드
-        setInputBudgetNational(py.budget_national !== undefined ? formatNumberWithCommas(Math.round(py.budget_national / 1000)) : "0");
-        setInputBudgetCity(py.budget_city !== undefined ? formatNumberWithCommas(Math.round(py.budget_city / 1000)) : "0");
-        setInputBudgetExternal(py.budget_external !== undefined ? formatNumberWithCommas(Math.round(py.budget_external / 1000)) : "0");
+        // 본예산 로드 (백만원 단위 소수점 첫째자리)
+        setInputBudgetNational(py.budget_national !== undefined ? (py.budget_national / 1000000).toFixed(1) : "0.0");
+        setInputBudgetCity(py.budget_city !== undefined ? (py.budget_city / 1000000).toFixed(1) : "0.0");
+        setInputBudgetExternal(py.budget_external !== undefined ? (py.budget_external / 1000000).toFixed(1) : "0.0");
 
         // 이월예산 로드 (1차년도 제외)
         if (selectedYear === 1) {
-          setInputBudgetCarryNational("0");
-          setInputBudgetCarryCity("0");
-          setInputBudgetCarryExternal("0");
+          setInputBudgetCarryNational("0.0");
+          setInputBudgetCarryCity("0.0");
+          setInputBudgetCarryExternal("0.0");
         } else {
-          setInputBudgetCarryNational(py.budget_carry_national !== undefined ? formatNumberWithCommas(Math.round(py.budget_carry_national / 1000)) : "0");
-          setInputBudgetCarryCity(py.budget_carry_city !== undefined ? formatNumberWithCommas(Math.round(py.budget_carry_city / 1000)) : "0");
-          setInputBudgetCarryExternal(py.budget_carry_external !== undefined ? formatNumberWithCommas(Math.round(py.budget_carry_external / 1000)) : "0");
+          setInputBudgetCarryNational(py.budget_carry_national !== undefined ? (py.budget_carry_national / 1000000).toFixed(1) : "0.0");
+          setInputBudgetCarryCity(py.budget_carry_city !== undefined ? (py.budget_carry_city / 1000000).toFixed(1) : "0.0");
+          setInputBudgetCarryExternal(py.budget_carry_external !== undefined ? (py.budget_carry_external / 1000000).toFixed(1) : "0.0");
         }
 
         // 비목 예산 바인딩 (본예산 + 이월예산, 4칸 구성)
         const loadedCategories = (py.budget_categories || []).map((c) => ({
           category: c.category || "",
-          budget: c.budget !== undefined ? formatNumberWithCommas(Math.round(c.budget / 1000)) : "",
-          budget_carry: selectedYear === 1 ? "0" : (c.budget_carry !== undefined ? formatNumberWithCommas(Math.round(c.budget_carry / 1000)) : "")
+          budget: c.budget !== undefined ? (c.budget / 1000000).toFixed(1) : "",
+          budget_carry: selectedYear === 1 ? "0.0" : (c.budget_carry !== undefined ? (c.budget_carry / 1000000).toFixed(1) : "")
         }));
         while (loadedCategories.length < 4) {
           loadedCategories.push({ category: "", budget: "", budget_carry: "" });
@@ -241,9 +246,9 @@ export default function PDCAManager({
         // 월별 PDCA일정 바인딩
         setInputMonthlyPDCA(parseTimelineToMonths(prog.timeline || ""));
 
-        setInputSpentNational(formatNumberWithCommas(py.spent_national ?? 0));
-        setInputSpentCity(formatNumberWithCommas(py.spent_city ?? 0));
-        setInputSpentExternal(formatNumberWithCommas(py.spent_external ?? 0));
+        setInputSpentNational(py.spent_national !== undefined ? (py.spent_national / 1000000).toFixed(1) : "0.0");
+        setInputSpentCity(py.spent_city !== undefined ? (py.spent_city / 1000000).toFixed(1) : "0.0");
+        setInputSpentExternal(py.spent_external !== undefined ? (py.spent_external / 1000000).toFixed(1) : "0.0");
 
         setInputParticipants(String(prog.participants ?? 0));
         setInputSatisfaction(String(prog.satisfaction ?? 0));
@@ -391,13 +396,13 @@ export default function PDCAManager({
     e.preventDefault();
     if (!activeProg) return;
 
-    const bNational = parseNumberFromCommas(inputBudgetNational) * 1000;
-    const bCity = parseNumberFromCommas(inputBudgetCity) * 1000;
-    const bExternal = parseNumberFromCommas(inputBudgetExternal) * 1000;
+    const bNational = Math.round(parseDecimalFromCommas(inputBudgetNational) * 1000000);
+    const bCity = Math.round(parseDecimalFromCommas(inputBudgetCity) * 1000000);
+    const bExternal = Math.round(parseDecimalFromCommas(inputBudgetExternal) * 1000000);
 
-    const bCarryNational = selectedYear === 1 ? 0 : (parseNumberFromCommas(inputBudgetCarryNational) * 1000);
-    const bCarryCity = selectedYear === 1 ? 0 : (parseNumberFromCommas(inputBudgetCarryCity) * 1000);
-    const bCarryExternal = selectedYear === 1 ? 0 : (parseNumberFromCommas(inputBudgetCarryExternal) * 1000);
+    const bCarryNational = selectedYear === 1 ? 0 : Math.round(parseDecimalFromCommas(inputBudgetCarryNational) * 1000000);
+    const bCarryCity = selectedYear === 1 ? 0 : Math.round(parseDecimalFromCommas(inputBudgetCarryCity) * 1000000);
+    const bCarryExternal = selectedYear === 1 ? 0 : Math.round(parseDecimalFromCommas(inputBudgetCarryExternal) * 1000000);
 
     if (bNational < 0 || bCity < 0 || bExternal < 0 || bCarryNational < 0 || bCarryCity < 0 || bCarryExternal < 0) {
       alert("배정 예산은 0원 이상의 올바른 숫자 형식이어야 합니다.");
@@ -415,8 +420,8 @@ export default function PDCAManager({
       .filter((c) => c.category && c.category !== "선택 안 함")
       .map((c) => ({
         category: c.category,
-        budget: parseNumberFromCommas(c.budget) * 1000,
-        budget_carry: selectedYear === 1 ? 0 : (parseNumberFromCommas(c.budget_carry) * 1000)
+        budget: Math.round(parseDecimalFromCommas(c.budget) * 1000000),
+        budget_carry: selectedYear === 1 ? 0 : Math.round(parseDecimalFromCommas(c.budget_carry) * 1000000)
       }));
 
     onUpdateProgramDetails(activeProg.unitId, activeProg.id, {
@@ -443,9 +448,9 @@ export default function PDCAManager({
     e.preventDefault();
     if (!activeProg) return;
 
-    const sNational = parseNumberFromCommas(inputSpentNational);
-    const sCity = parseNumberFromCommas(inputSpentCity);
-    const sExternal = parseNumberFromCommas(inputSpentExternal);
+    const sNational = Math.round(parseDecimalFromCommas(inputSpentNational) * 1000000);
+    const sCity = Math.round(parseDecimalFromCommas(inputSpentCity) * 1000000);
+    const sExternal = Math.round(parseDecimalFromCommas(inputSpentExternal) * 1000000);
     const parsedParticipants = parseInt(inputParticipants, 10);
 
     const py = activeProg.years?.[selectedYear] || {};
@@ -454,15 +459,15 @@ export default function PDCAManager({
     const limitExternal = py.budget_external || 0;
 
     if (sNational > limitNational) {
-      alert(`[한도 초과] 국고 집행액(${sNational.toLocaleString()}원)은 배정 예산(${limitNational.toLocaleString()}원)을 초과할 수 없습니다.`);
+      alert(`[한도 초과] 국고 집행액(${(sNational / 1000000).toFixed(1)} 백만원)은 배정 예산(${(limitNational / 1000000).toFixed(1)} 백만원)을 초과할 수 없습니다.`);
       return;
     }
     if (sCity > limitCity) {
-      alert(`[한도 초과] 시비 집행액(${sCity.toLocaleString()}원)은 배정 예산(${limitCity.toLocaleString()}원)을 초과할 수 없습니다.`);
+      alert(`[한도 초과] 시비 집행액(${(sCity / 1000000).toFixed(1)} 백만원)은 배정 예산(${(limitCity / 1000000).toFixed(1)} 백만원)을 초과할 수 없습니다.`);
       return;
     }
     if (sExternal > limitExternal) {
-      alert(`[한도 초과] 외부사업비 집행액(${sExternal.toLocaleString()}원)은 배정 예산(${limitExternal.toLocaleString()}원)을 초과할 수 없습니다.`);
+      alert(`[한도 초과] 외부사업비 집행액(${(sExternal / 1000000).toFixed(1)} 백만원)은 배정 예산(${(limitExternal / 1000000).toFixed(1)} 백만원)을 초과할 수 없습니다.`);
       return;
     }
     if (isNaN(parsedParticipants) || parsedParticipants < 0) {
@@ -688,21 +693,21 @@ export default function PDCAManager({
                       
                       {/* 1영역: 재원별 예산 */}
                       <div>
-                        <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)", display: "block", marginBottom: "0.15rem" }}>재원별 예산 배정 (천원 단위)</span>
+                        <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)", display: "block", marginBottom: "0.15rem" }}>재원별 예산 배정 (백만원 단위)</span>
                         <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
                           {/* 본예산 */}
                           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "0.4rem" }}>
                             <div>
                               <span style={{ fontSize: "0.6rem", color: "var(--text-secondary-dark)" }}>국고 본예산</span>
-                              <input type="text" className="user-selector" value={inputBudgetNational} onChange={(e) => setInputBudgetNational(formatNumberWithCommas(e.target.value))} style={{ padding: "0.2rem 0.4rem", fontSize: "0.7rem" }} />
+                              <input type="text" className="user-selector" value={inputBudgetNational} onChange={(e) => setInputBudgetNational(e.target.value.replace(/[^0-9.]/g, ""))} style={{ padding: "0.2rem 0.4rem", fontSize: "0.7rem" }} />
                             </div>
                             <div>
                               <span style={{ fontSize: "0.6rem", color: "var(--text-secondary-dark)" }}>지자체 시비 본예산</span>
-                              <input type="text" className="user-selector" value={inputBudgetCity} onChange={(e) => setInputBudgetCity(formatNumberWithCommas(e.target.value))} style={{ padding: "0.2rem 0.4rem", fontSize: "0.7rem" }} />
+                              <input type="text" className="user-selector" value={inputBudgetCity} onChange={(e) => setInputBudgetCity(e.target.value.replace(/[^0-9.]/g, ""))} style={{ padding: "0.2rem 0.4rem", fontSize: "0.7rem" }} />
                             </div>
                             <div>
                               <span style={{ fontSize: "0.6rem", color: "var(--text-secondary-dark)" }}>외부사업비 본예산</span>
-                              <input type="text" className="user-selector" value={inputBudgetExternal} onChange={(e) => setInputBudgetExternal(formatNumberWithCommas(e.target.value))} style={{ padding: "0.2rem 0.4rem", fontSize: "0.7rem" }} />
+                              <input type="text" className="user-selector" value={inputBudgetExternal} onChange={(e) => setInputBudgetExternal(e.target.value.replace(/[^0-9.]/g, ""))} style={{ padding: "0.2rem 0.4rem", fontSize: "0.7rem" }} />
                             </div>
                           </div>
                           {/* 이월예산 (1차년도 비활성화) */}
@@ -713,8 +718,8 @@ export default function PDCAManager({
                                 type="text"
                                 className="user-selector"
                                 disabled={selectedYear === 1}
-                                value={selectedYear === 1 ? "0" : inputBudgetCarryNational}
-                                onChange={(e) => setInputBudgetCarryNational(formatNumberWithCommas(e.target.value))}
+                                value={selectedYear === 1 ? "0.0" : inputBudgetCarryNational}
+                                onChange={(e) => setInputBudgetCarryNational(e.target.value.replace(/[^0-9.]/g, ""))}
                                 style={{
                                   padding: "0.2rem 0.4rem",
                                   fontSize: "0.7rem",
@@ -730,8 +735,8 @@ export default function PDCAManager({
                                 type="text"
                                 className="user-selector"
                                 disabled={selectedYear === 1}
-                                value={selectedYear === 1 ? "0" : inputBudgetCarryCity}
-                                onChange={(e) => setInputBudgetCarryCity(formatNumberWithCommas(e.target.value))}
+                                value={selectedYear === 1 ? "0.0" : inputBudgetCarryCity}
+                                onChange={(e) => setInputBudgetCarryCity(e.target.value.replace(/[^0-9.]/g, ""))}
                                 style={{
                                   padding: "0.2rem 0.4rem",
                                   fontSize: "0.7rem",
@@ -747,8 +752,8 @@ export default function PDCAManager({
                                 type="text"
                                 className="user-selector"
                                 disabled={selectedYear === 1}
-                                value={selectedYear === 1 ? "0" : inputBudgetCarryExternal}
-                                onChange={(e) => setInputBudgetCarryExternal(formatNumberWithCommas(e.target.value))}
+                                value={selectedYear === 1 ? "0.0" : inputBudgetCarryExternal}
+                                onChange={(e) => setInputBudgetCarryExternal(e.target.value.replace(/[^0-9.]/g, ""))}
                                 style={{
                                   padding: "0.2rem 0.4rem",
                                   fontSize: "0.7rem",
@@ -764,7 +769,7 @@ export default function PDCAManager({
 
                       {/* 2영역: 비목별 예산 */}
                       <div style={{ borderTop: "1px solid var(--border-color-dark)", paddingTop: "0.4rem" }}>
-                        <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)", display: "block", marginBottom: "0.2rem" }}>비목별 예산 배정 (천원 단위, 최대 4개)</span>
+                        <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)", display: "block", marginBottom: "0.2rem" }}>비목별 예산 배정 (백만원 단위, 최대 4개)</span>
                         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.4rem" }}>
                           {inputBudgetCategories.map((item, idx) => (
                             <div key={idx} style={{ display: "grid", gridTemplateColumns: "1.2fr 1fr 1fr", gap: "0.2rem", alignItems: "center" }}>
@@ -791,7 +796,7 @@ export default function PDCAManager({
                                 value={item.budget}
                                 onChange={(e) => {
                                   const newCats = [...inputBudgetCategories];
-                                  newCats[idx].budget = formatNumberWithCommas(e.target.value);
+                                  newCats[idx].budget = e.target.value.replace(/[^0-9.]/g, "");
                                   setInputBudgetCategories(newCats);
                                 }}
                                 style={{ fontSize: "0.7rem", padding: "0.2rem 0.4rem", width: "100%" }}
@@ -801,10 +806,10 @@ export default function PDCAManager({
                                 className="user-selector"
                                 placeholder="이월비"
                                 disabled={selectedYear === 1}
-                                value={selectedYear === 1 ? "0" : item.budget_carry}
+                                value={selectedYear === 1 ? "0.0" : item.budget_carry}
                                 onChange={(e) => {
                                   const newCats = [...inputBudgetCategories];
-                                  newCats[idx].budget_carry = formatNumberWithCommas(e.target.value);
+                                  newCats[idx].budget_carry = e.target.value.replace(/[^0-9.]/g, "");
                                   setInputBudgetCategories(newCats);
                                 }}
                                 style={{
@@ -900,16 +905,16 @@ export default function PDCAManager({
                     <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
                       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: "0.4rem" }}>
                         <div>
-                          <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)" }}>국고 집행 (천원)</span>
-                          <input type="text" className="user-selector" value={inputSpentNational} onChange={(e) => setInputSpentNational(formatNumberWithCommas(e.target.value))} style={{ padding: "0.2rem 0.4rem", fontSize: "0.75rem" }} />
+                          <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)" }}>국고 집행 (백만원)</span>
+                          <input type="text" className="user-selector" value={inputSpentNational} onChange={(e) => setInputSpentNational(e.target.value.replace(/[^0-9.]/g, ""))} style={{ padding: "0.2rem 0.4rem", fontSize: "0.75rem" }} />
                         </div>
                         <div>
-                          <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)" }}>시비 집행 (천원)</span>
-                          <input type="text" className="user-selector" value={inputSpentCity} onChange={(e) => setInputSpentCity(formatNumberWithCommas(e.target.value))} style={{ padding: "0.2rem 0.4rem", fontSize: "0.75rem" }} />
+                          <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)" }}>시비 집행 (백만원)</span>
+                          <input type="text" className="user-selector" value={inputSpentCity} onChange={(e) => setInputSpentCity(e.target.value.replace(/[^0-9.]/g, ""))} style={{ padding: "0.2rem 0.4rem", fontSize: "0.75rem" }} />
                         </div>
                         <div>
-                          <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)" }}>외부 집행 (천원)</span>
-                          <input type="text" className="user-selector" value={inputSpentExternal} onChange={(e) => setInputSpentExternal(formatNumberWithCommas(e.target.value))} style={{ padding: "0.2rem 0.4rem", fontSize: "0.75rem" }} />
+                          <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)" }}>외부 집행 (백만원)</span>
+                          <input type="text" className="user-selector" value={inputSpentExternal} onChange={(e) => setInputSpentExternal(e.target.value.replace(/[^0-9.]/g, ""))} style={{ padding: "0.2rem 0.4rem", fontSize: "0.75rem" }} />
                         </div>
                         <div>
                           <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)" }}>이수인원 (명)</span>
