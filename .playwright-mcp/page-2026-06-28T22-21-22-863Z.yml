@@ -1,0 +1,162 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e201]:
+    - generic [ref=e202]:
+      - complementary [ref=e203]:
+        - generic [ref=e204]:
+          - generic [ref=e205]:
+            - img [ref=e206]
+            - generic [ref=e209]: UC ANCHOR Portal
+          - navigation [ref=e210]:
+            - generic [ref=e211] [cursor=pointer]:
+              - img [ref=e212]
+              - generic [ref=e217]: IR 대시보드
+            - generic [ref=e218] [cursor=pointer]:
+              - img [ref=e219]
+              - generic [ref=e221]: 단위과제 관리
+            - generic [ref=e222] [cursor=pointer]:
+              - img [ref=e223]
+              - generic [ref=e226]: 프로그램 진행
+            - generic [ref=e227] [cursor=pointer]:
+              - img [ref=e228]
+              - generic [ref=e230]: 예산항목 관리
+            - generic [ref=e231] [cursor=pointer]:
+              - img [ref=e232]
+              - generic [ref=e235]: 성과지표 관리
+            - generic [ref=e236] [cursor=pointer]:
+              - img [ref=e237]
+              - generic [ref=e242]: 사업단 관리
+        - generic [ref=e243]:
+          - generic [ref=e244]:
+            - generic [ref=e245]: 현재 로그인 권한
+            - text: 사업단장 (송경영 교수)
+          - paragraph [ref=e246]: 전체 프로젝트 사업비 & KPI 최종 결재 및 연구원 배정 마스터 권한
+      - button "로그아웃" [ref=e248] [cursor=pointer]:
+        - img [ref=e249]
+        - generic [ref=e252]: 로그아웃
+    - main [ref=e253]:
+      - generic [ref=e254]:
+        - generic [ref=e255]:
+          - heading "앵커사업 통합 IR 대시보드" [level=1] [ref=e256]
+          - paragraph [ref=e257]: 울산과학대학교 2차년도 사업 예산 관리 및 성과 실증 시스템
+        - generic [ref=e258]:
+          - button "1차년도" [ref=e259] [cursor=pointer]
+          - button "2차년도(현)" [ref=e260] [cursor=pointer]
+          - button "3차년도" [ref=e261] [cursor=pointer]
+          - button "4차년도" [ref=e262] [cursor=pointer]
+          - button "5차년도" [ref=e263] [cursor=pointer]
+        - generic [ref=e264]:
+          - generic [ref=e265]:
+            - text: 반갑습니다,
+            - strong [ref=e266]: 송경영 사업단장
+            - text: 님
+          - button [ref=e267] [cursor=pointer]:
+            - img [ref=e268]
+      - generic [ref=e274]:
+        - generic [ref=e275]:
+          - generic [ref=e276]:
+            - generic [ref=e277]:
+              - generic [ref=e278]:
+                - generic [ref=e279]: ANCHOR 2차년도 총 예산
+                - img [ref=e280]
+              - generic [ref=e283]: 11,903 백만원
+              - generic [ref=e284]:
+                - generic [ref=e285]:
+                  - generic [ref=e286]: "본사업비: 9,183백만원"
+                  - generic [ref=e287]: "신산업특화: 400백만원"
+                - generic [ref=e288]:
+                  - generic [ref=e289]: "본예산 계: 9,583백만원"
+                  - generic [ref=e290]: "이월비: 2,320백만원"
+            - generic [ref=e291]:
+              - generic [ref=e292]:
+                - generic [ref=e293]: 2차년도 본사업비 집행
+                - img [ref=e294]
+              - generic [ref=e296]: 2,560 백만원
+              - generic [ref=e297]: "집행률: 26.7% (배정: 9,583백만원)"
+            - generic [ref=e298]:
+              - generic [ref=e299]:
+                - generic [ref=e300]: 2차년도 이월사업비 집행
+                - img [ref=e301]
+              - generic [ref=e304]: 888 백만원
+              - generic [ref=e305]: "집행률: 38.3% (배정: 2,320백만원)"
+            - generic [ref=e306]:
+              - generic [ref=e307]:
+                - generic [ref=e308]: 성과지표 달성도 (KPI)
+                - img [ref=e309]
+              - generic [ref=e312]: 79.5%
+              - generic [ref=e313]: 2차년도 성과목표 종합 가속화
+          - generic [ref=e314]:
+            - generic [ref=e315]:
+              - 'heading "프로젝트별 재원 배정 및 누적 집행 현황 (단위: 백만원)" [level=3] [ref=e316]'
+              - generic [ref=e319]:
+                - generic:
+                  - status:
+                    - paragraph: 프로젝트 C
+                    - list:
+                      - listitem: "본예산 : 1,050 백만원"
+                      - listitem: "본집행 : 290 백만원"
+                      - listitem: "이월예산 : 300 백만원"
+                      - listitem: "이월집행 : 130 백만원"
+                - list [ref=e321]:
+                  - listitem [ref=e322]:
+                    - img "본예산 legend icon" [ref=e323]
+                    - text: 본예산
+                  - listitem [ref=e325]:
+                    - img "본집행 legend icon" [ref=e326]
+                    - text: 본집행
+                  - listitem [ref=e328]:
+                    - img "이월예산 legend icon" [ref=e329]
+                    - text: 이월예산
+                  - listitem [ref=e331]:
+                    - img "이월집행 legend icon" [ref=e332]
+                    - text: 이월집행
+                - application [ref=e334]:
+                  - generic [ref=e416]:
+                    - generic [ref=e417]:
+                      - generic [ref=e419]: 프로젝트 A
+                      - generic [ref=e421]: 프로젝트 B
+                      - generic [ref=e423]: 프로젝트 C
+                      - generic [ref=e425]: 프로젝트 D
+                      - generic [ref=e427]: 공통경비
+                    - generic [ref=e428]:
+                      - generic [ref=e430]: "0"
+                      - generic [ref=e432]: "850"
+                      - generic [ref=e434]: "1700"
+                      - generic [ref=e436]: "2550"
+                      - generic [ref=e438]: "3400"
+            - generic [ref=e439]:
+              - heading "재원 배분 구조 (공통경비 포함)" [level=3] [ref=e440]
+              - application [ref=e444]
+              - generic [ref=e463]:
+                - generic [ref=e464]:
+                  - generic [ref=e467]: 프로젝트 A
+                  - generic [ref=e468]: 0.0%
+                - generic [ref=e469]:
+                  - generic [ref=e472]: 프로젝트 B
+                  - generic [ref=e473]: 0.0%
+                - generic [ref=e474]:
+                  - generic [ref=e477]: 프로젝트 C
+                  - generic [ref=e478]: 0.0%
+                - generic [ref=e479]:
+                  - generic [ref=e482]: 프로젝트 D
+                  - generic [ref=e483]: 0.0%
+                - generic [ref=e484]:
+                  - generic [ref=e487]: 공통경비
+                  - generic [ref=e488]: 0.0%
+        - generic [ref=e489]:
+          - generic [ref=e490]:
+            - generic [ref=e491]:
+              - heading "엑셀 기반 실시간 데이터 업데이트" [level=3] [ref=e492]
+              - paragraph [ref=e493]: 2026년 본사업비/2025년 이월비 재원이 구분된 엑셀 시트 또는 성과지표 양식을 연계할 수 있습니다.
+            - generic [ref=e494]:
+              - button "재원별 예산양식 받기" [ref=e495] [cursor=pointer]:
+                - img [ref=e496]
+                - generic [ref=e499]: 재원별 예산양식 받기
+              - button "성과지표 양식 받기" [ref=e500] [cursor=pointer]:
+                - img [ref=e501]
+                - generic [ref=e504]: 성과지표 양식 받기
+          - generic [ref=e507] [cursor=pointer]:
+            - img [ref=e508]
+            - generic [ref=e511]:
+              - text: 파일을 끌어다 놓거나, 클릭하여 찾아보기
+              - paragraph [ref=e512]: "지원 포맷: .xlsx, .xls (앵커사업 재원 구분 및 지표 양식)"
+  - generic [ref=e200]: "0"
