@@ -59,14 +59,32 @@ export default function BudgetItemsManager({ projects, currentRole, onUpdateBudg
     });
   });
 
-  // 선택 연차별 전체 예산 구하기
+  // 10개 표준 비목 목록 정의
+  const BUDGET_ITEM_NAMES = [
+    "인건비",
+    "장학금",
+    "교육∙연구 프로그램 개발∙운영비",
+    "교육∙연구 환경개선비",
+    "실험∙실습장비 및 기자재 구입∙운영비",
+    "지역 연계∙협업 지원비",
+    "기업 지원∙협력 활동비",
+    "성과 활용∙확산 지원비",
+    "그 밖의 사업운영경비",
+    "간접비"
+  ];
+
+  // 선택 연차별 전체 예산 및 누적 집행액 구하기
   let totalMainBudget = 0;
   let totalCarryBudget = 0;
+  let totalMainSpent = 0;
+  let totalCarrySpent = 0;
   projects.forEach((p) => {
     p.units.forEach((u) => {
-      const yr = u.years?.[selectedYear] || { budget_main: 0, budget_carry: 0 };
+      const yr = u.years?.[selectedYear] || { budget_main: 0, budget_carry: 0, spent_main: 0, spent_carry: 0 };
       totalMainBudget += (yr.budget_main || 0);
       totalCarryBudget += (yr.budget_carry || 0);
+      totalMainSpent += (yr.spent_main || 0);
+      totalCarrySpent += (yr.spent_carry || 0);
     });
   });
   const totalCombinedBudget = totalMainBudget + totalCarryBudget;
@@ -82,15 +100,65 @@ export default function BudgetItemsManager({ projects, currentRole, onUpdateBudg
     { name: "RCC센터", ids: ["C-1", "D-1", "D-2", "D-3"] }
   ];
 
-  // 선택된 단위과제 및 프로젝트 제목 찾기 (렌더링 참조 무한 루프 방지)
+  // 선택된 단위과제 및 프로젝트 제목 찾기 또는 전체사업 가상 유닛 빌드
   let activeUnit = null;
   let activeProjectTitle = "";
-  for (const p of projects) {
-    const found = p.units.find(u => u.id === selectedUnitId);
-    if (found) {
-      activeUnit = found;
-      activeProjectTitle = p.title;
-      break;
+  
+  if (selectedUnitId === "Total") {
+    activeProjectTitle = "울산과학대학교 라이즈(앵커) 사업단";
+    
+    // 가상의 budgetDetails 생성하여 모든 단위과제의 비목 데이터를 실시간으로 합산
+    const combinedDetails = {};
+    BUDGET_ITEM_NAMES.forEach(bName => {
+      combinedDetails[bName] = {
+        years: {
+          [selectedYear]: {
+            budget_main: 0,
+            spent_main: 0,
+            budget_carry: 0,
+            spent_carry: 0
+          }
+        }
+      };
+    });
+
+    projects.forEach(p => {
+      p.units.forEach(u => {
+        if (!u.budgetDetails) return;
+        Object.keys(u.budgetDetails).forEach(bName => {
+          const detailYear = u.budgetDetails[bName]?.years?.[selectedYear] || {};
+          if (combinedDetails[bName]) {
+            const tgt = combinedDetails[bName].years[selectedYear];
+            tgt.budget_main += (detailYear.budget_main || 0);
+            tgt.spent_main += (detailYear.spent_main || 0);
+            tgt.budget_carry += (detailYear.budget_carry || 0);
+            tgt.spent_carry += (detailYear.spent_carry || 0);
+          }
+        });
+      });
+    });
+
+    activeUnit = {
+      id: "Total",
+      title: "전체 사업 예산 현황",
+      years: {
+        [selectedYear]: {
+          budget_main: totalMainBudget,
+          spent_main: totalMainSpent,
+          budget_carry: totalCarryBudget,
+          spent_carry: totalCarrySpent
+        }
+      },
+      budgetDetails: combinedDetails
+    };
+  } else {
+    for (const p of projects) {
+      const found = p.units.find(u => u.id === selectedUnitId);
+      if (found) {
+        activeUnit = found;
+        activeProjectTitle = p.title;
+        break;
+      }
     }
   }
 
@@ -205,7 +273,7 @@ export default function BudgetItemsManager({ projects, currentRole, onUpdateBudg
       })
     : [];
 
-  const isEditable = currentRole.id === "DIRECTOR" || currentRole.id === "HQ_HEAD";
+  const isEditable = (currentRole.id === "DIRECTOR" || currentRole.id === "HQ_HEAD") && selectedUnitId !== "Total";
 
   return (
     <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: "1.5rem" }}>
@@ -213,9 +281,23 @@ export default function BudgetItemsManager({ projects, currentRole, onUpdateBudg
       <div className="glass-card" style={{ maxHeight: "680px", overflowY: "auto" }}>
         <h3 style={{ fontSize: "1.1rem", fontWeight: "800", marginBottom: "0.8rem" }}>단위과제 목록</h3>
         
-        {/* 전체 예산 현황 요약 카드 추가 */}
-        <div style={{ padding: "0.8rem", borderRadius: "0.5rem", background: "rgba(59,130,246,0.08)", marginBottom: "1.2rem", border: "1px solid rgba(59,130,246,0.15)" }}>
-          <div style={{ fontSize: "0.7rem", color: "var(--text-secondary-dark)", fontWeight: "700" }}>{selectedYear}차년도 전체 예산 규모</div>
+        {/* 전체 예산 현황 요약 카드 추가 (클릭 시 전체사업 통계 조회) */}
+        <div 
+          onClick={() => {
+            setSelectedUnitId("Total");
+            setFeedback("");
+          }}
+          style={{ 
+            padding: "0.8rem", 
+            borderRadius: "0.5rem", 
+            background: selectedUnitId === "Total" ? "rgba(59,130,246,0.15)" : "rgba(59,130,246,0.08)", 
+            marginBottom: "1.2rem", 
+            border: `1px solid ${selectedUnitId === "Total" ? "var(--accent-color)" : "rgba(59,130,246,0.15)"}`,
+            cursor: "pointer",
+            transition: "all 0.2s ease"
+          }}
+        >
+          <div style={{ fontSize: "0.7rem", color: selectedUnitId === "Total" ? "var(--accent-color)" : "var(--text-secondary-dark)", fontWeight: "700" }}>{selectedYear}차년도 전체 예산 규모</div>
           <div style={{ fontSize: "1.2rem", fontWeight: "900", color: "white", marginTop: "0.2rem" }}>
             {formatToMillionWon(totalCombinedBudget)} <span style={{ fontSize: "0.8rem", fontWeight: "normal" }}>백만원</span>
           </div>
@@ -462,7 +544,11 @@ export default function BudgetItemsManager({ projects, currentRole, onUpdateBudg
               ) : (
                 <div style={{ display: "flex", alignItems: "center", gap: "0.4rem", fontSize: "0.8rem", color: "var(--text-secondary-dark)", background: "rgba(255,255,255,0.02)", padding: "0.75rem", borderRadius: "0.5rem", border: "1px solid var(--border-color-dark)" }}>
                   <Info size={14} style={{ color: "var(--warning-color)" }} />
-                  <span>예산 배정 조율 권한은 '송경영 사업단장' 및 '김현수 총괄본부장' 계정에만 주어져 있습니다.</span>
+                  {selectedUnitId === "Total" ? (
+                    <span>전체 사업 예산 현황은 조회 전용 모드입니다. 개별 단위과제 탭에서 예산을 조율해 주세요.</span>
+                  ) : (
+                    <span>예산 배정 조율 권한은 '송경영 사업단장' 및 '김현수 총괄본부장' 계정에만 주어져 있습니다.</span>
+                  )}
                 </div>
               )}
             </form>
