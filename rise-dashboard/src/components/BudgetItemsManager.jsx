@@ -48,7 +48,7 @@ const CustomizedAxisTick = (props) => {
 
   return (
     <g transform={`translate(${x},${y})`}>
-      <text x={0} y={0} dy={28} textAnchor="middle" fill="var(--text-secondary-dark)" style={{ fontSize: isMobile ? "0.55rem" : "0.62rem", fontWeight: "600", lineHeight: "1.4" }}>
+      <text x={0} y={10} textAnchor="middle" fill="var(--text-secondary-dark)" style={{ fontSize: isMobile ? "0.55rem" : "0.62rem", fontWeight: "600", lineHeight: "1.4" }}>
         {lines.map((line, idx) => (
           <tspan key={idx} x={0} dy={idx === 0 ? 0 : 11}>
             {line}
