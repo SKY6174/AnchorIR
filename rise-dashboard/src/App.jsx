@@ -762,6 +762,25 @@ export default function App() {
     });
   };
 
+  // 사용자 호칭 맵핑 웰컴 메시지 헬퍼 함수
+  const getWelcomeMessage = () => {
+    if (!currentUser) return "";
+    let cleanName = currentUser.name ? currentUser.name.split(" ")[0].split("(")[0].trim() : "";
+    const roleId = currentUser.role?.id || "";
+    let titleSuffix = "님";
+    if (roleId === "DIRECTOR") titleSuffix = " 단장님";
+    else if (roleId === "HQ_HEAD") titleSuffix = " 본부장님";
+    else if (roleId === "CENTER_LEADER") titleSuffix = " 센터장님";
+    else if (roleId === "OP_LEADER") titleSuffix = " 팀장님";
+    else if (roleId === "RESEARCHER") titleSuffix = " 연구원님";
+
+    return (
+      <span>
+        반갑습니다, <strong>{cleanName}{titleSuffix}</strong>
+      </span>
+    );
+  };
+
   if (!currentUser) {
     return <AuthManager onLoginSuccess={handleLoginSuccess} />;
   }
@@ -825,29 +844,8 @@ export default function App() {
 
           <div className="controls-section">
             <span style={{ fontSize: "0.85rem", color: "var(--text-secondary-dark)", marginRight: "1rem" }}>
-              반갑습니다, <strong>{currentUser.name}</strong> 님
+              {getWelcomeMessage()}
             </span>
-            <button
-              onClick={() => {
-                if (window.confirm("기획 및 입력하신 모든 로컬 변경 예산/상태 데이터를 초기 mockData 상태로 복원하시겠습니까?")) {
-                  localStorage.removeItem("rise_projects_data");
-                  window.location.reload();
-                }
-              }}
-              style={{
-                fontSize: "0.7rem",
-                padding: "0.25rem 0.6rem",
-                borderRadius: "0.25rem",
-                background: "rgba(239, 68, 68, 0.15)",
-                color: "#f87171",
-                border: "1px solid rgba(239, 68, 68, 0.3)",
-                marginRight: "0.5rem",
-                cursor: "pointer",
-                fontWeight: "700"
-              }}
-            >
-              데이터 초기화
-            </button>
             <button className="theme-toggle-btn" onClick={() => setDarkMode(!darkMode)}>
               {darkMode ? <Sun size={18} /> : <Moon size={18} />}
             </button>
