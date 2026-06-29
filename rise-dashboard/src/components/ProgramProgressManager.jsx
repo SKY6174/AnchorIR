@@ -23,6 +23,70 @@ const MONTHS_GUIDE = [
   { name: "2월", label: "27.2" }
 ];
 
+// YYYY-MM-DD ~ YYYY-MM-DD 포맷 파서
+const parseTimelineDates = (timelineStr) => {
+  if (!timelineStr || !timelineStr.includes("~")) return { start: "", end: "" };
+  const parts = timelineStr.split("~").map((p) => p.trim());
+  
+  const toYYYYMMDD = (str) => {
+    if (!str) return "";
+    if (/^\d{4}-\d{2}-\d{2}$/.test(str)) return str;
+    const dotted = str.replace(/\./g, "-");
+    if (/^\d{4}-\d{2}-\d{2}$/.test(dotted)) return dotted;
+    if (/^\d{4}-\d{2}$/.test(dotted)) return `${dotted}-01`;
+    return dotted;
+  };
+  
+  return {
+    start: toYYYYMMDD(parts[0]),
+    end: toYYYYMMDD(parts[1] || parts[0])
+  };
+};
+
+// 타임라인을 12개월 (P/D/C/A) 배열로 파싱
+const parseTimelineToMonths = (timelineStr) => {
+  const defaultValue = Array(12).fill("");
+  if (!timelineStr) return defaultValue;
+
+  if (timelineStr.includes(",")) {
+    const parts = timelineStr.split(",");
+    if (parts.length === 12) {
+      return parts.map(p => ["P", "D", "C", "A"].includes(p.trim()) ? p.trim() : "");
+    }
+  }
+
+  const dates = parseTimelineDates(timelineStr);
+  if (dates.start && dates.end) {
+    try {
+      const startMonth = parseInt(dates.start.split("-")[1], 10);
+      const endMonth = parseInt(dates.end.split("-")[1], 10);
+
+      const getMonthIndex = (m) => {
+        if (m >= 3 && m <= 12) return m - 3;
+        if (m === 1 || m === 2) return m + 9;
+        return -1;
+      };
+
+      const startIndex = getMonthIndex(startMonth);
+      const endIndex = getMonthIndex(endMonth);
+
+      if (startIndex !== -1 && endIndex !== -1) {
+        const arr = Array(12).fill("");
+        const start = Math.min(startIndex, endIndex);
+        const end = Math.max(startIndex, endIndex);
+        for (let i = start; i <= end; i++) {
+          arr[i] = "P";
+        }
+        return arr;
+      }
+    } catch (e) {
+      console.error("Parse timeline to months error:", e);
+    }
+  }
+
+  return defaultValue;
+};
+
 // 프로그램 ID 기반 모의 타임라인 범위 산정 헬퍼
 const getProgramTimeline = (progId) => {
   // ID 끝자리 숫자를 추출하여 다채로운 타임라인 할당
@@ -150,33 +214,11 @@ export default function ProgramProgressManager({ projects, selectedYear }) {
                 <tbody>
                   {activeUnit.programs && activeUnit.programs.length > 0 ? (
                     activeUnit.programs.map((prog) => {
-                      const timeline = getProgramTimeline(prog.id);
-                      const bMain = prog.budget_2026 || 0;
-                      const bCarry = prog.budget_2025_carry || 0;
-                      const totalProgBudget = bMain + bCarry;
+                      const py = prog.years?.[selectedYear] || {};
+                      const totalProgBudget = (py.budget_main || 0) + (py.budget_carry || 0);
+                      const totalProgSpent = (py.spent_main || 0) + (py.spent_carry || 0);
 
-                      const sMain = prog.spent_2026 || 0;
-                      const sCarry = prog.spent_2025_carry || 0;
-                      const totalProgSpent = sMain + sCarry;
-
-                      // P-D-C-A 월 계산 및 툴팁 가이드라인 (기획과 실행에 긴 시간 배정)
-                      const totalMonths = timeline.end - timeline.start + 1;
-                      let pLen = Math.max(1, Math.round(totalMonths * 0.35));
-                      let dLen = Math.max(1, Math.round(totalMonths * 0.40));
-                      let cLen = Math.max(1, Math.round(totalMonths * 0.15));
-                      let aLen = totalMonths - pLen - dLen - cLen;
-                      if (aLen < 1) {
-                        if (dLen > 1) { dLen--; aLen = 1; }
-                        else if (pLen > 1) { pLen--; aLen = 1; }
-                        else { aLen = 1; }
-                      }
-
-                      const monthNames = ["3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월", "1월", "2월"];
-                      const pRange = `${monthNames[timeline.start]}~${monthNames[timeline.start + pLen - 1]}`;
-                      const dRange = `${monthNames[timeline.start + pLen]}~${monthNames[timeline.start + pLen + dLen - 1]}`;
-                      const cRange = `${monthNames[timeline.start + pLen + dLen]}~${monthNames[timeline.start + pLen + dLen + cLen - 1]}`;
-                      const aRange = `${monthNames[timeline.start + pLen + dLen + cLen]}~${monthNames[timeline.end]}`;
-                      const hoverTooltip = `전체 일정: ${timeline.label}\n- Plan(P): ${pRange}\n- Do(D): ${dRange}\n- Check(C): ${cRange}\n- Act(A): ${aRange}`;
+                      const monthlyPDCA = parseTimelineToMonths(prog.timeline || "");
 
                       return (
                         <tr key={prog.id} style={{ height: "64px" }}>
@@ -203,43 +245,69 @@ export default function ProgramProgressManager({ projects, selectedYear }) {
                             </div>
                           </td>
                           <td style={{ verticalAlign: "middle", padding: "0.5rem 0.2rem" }}>
-                            <div style={{ position: "relative", width: "100%", height: "24px", background: "rgba(255, 255, 255, 0.02)", borderRadius: "0.3rem" }}>
-                              {/* 12칸 그리드 배경 라인 */}
-                              <div style={{ display: "grid", gridTemplateColumns: "repeat(12, 1fr)", height: "100%", position: "absolute", width: "100%", top: 0, left: 0 }}>
-                                {[...Array(12)].map((_, idx) => (
-                                  <div key={idx} style={{ borderRight: idx === 11 ? "none" : "1px solid rgba(255, 255, 255, 0.03)", height: "100%" }} />
-                                ))}
-                              </div>
+                            <div style={{
+                              display: "grid",
+                              gridTemplateColumns: "repeat(12, 1fr)",
+                              gap: "3px",
+                              background: "rgba(255, 255, 255, 0.02)",
+                              borderRadius: "0.4rem",
+                              padding: "4px",
+                              border: "1px solid rgba(255,255,255,0.04)"
+                            }}>
+                              {monthlyPDCA.map((val, idx) => {
+                                if (!val) {
+                                  return (
+                                    <div key={idx} style={{ height: "20px", borderRadius: "0.2rem", background: "rgba(255, 255, 255, 0.01)", border: "1px dashed rgba(255,255,255,0.03)" }} />
+                                  );
+                                }
 
-                              {/* Gantt Timeline Bar (P-D-C-A 4색 분할) */}
-                              <div
-                                title={hoverTooltip}
-                                style={{
-                                  position: "absolute",
-                                  top: "3px",
-                                  height: "18px",
-                                  left: `${(timeline.start / 12) * 100}%`,
-                                  width: `${(totalMonths / 12) * 100}%`,
-                                  boxShadow: "0 2px 4px rgba(0,0,0,0.25)",
-                                  display: "flex",
-                                  borderRadius: "0.25rem",
-                                  overflow: "hidden",
-                                  transition: "all 0.3s ease"
-                                }}
-                              >
-                                <div style={{ flex: pLen, height: "100%", background: "linear-gradient(135deg, #3b82f6, #1d4ed8)", display: "flex", alignItems: "center", justifyContent: "center", color: "white", fontSize: "0.55rem", fontWeight: "900" }} title={`Plan: ${pRange}`}>
-                                  P
-                                </div>
-                                <div style={{ flex: dLen, height: "100%", background: "linear-gradient(135deg, #10b981, #047857)", display: "flex", alignItems: "center", justifyContent: "center", color: "white", fontSize: "0.55rem", fontWeight: "900" }} title={`Do: ${dRange}`}>
-                                  D
-                                </div>
-                                <div style={{ flex: cLen, height: "100%", background: "linear-gradient(135deg, #f59e0b, #b45309)", display: "flex", alignItems: "center", justifyContent: "center", color: "white", fontSize: "0.55rem", fontWeight: "900" }} title={`Check: ${cRange}`}>
-                                  C
-                                </div>
-                                <div style={{ flex: aLen, height: "100%", background: "linear-gradient(135deg, #d946ef, #a21caf)", display: "flex", alignItems: "center", justifyContent: "center", color: "white", fontSize: "0.55rem", fontWeight: "900" }} title={`Act: ${aRange}`}>
-                                  A
-                                </div>
-                              </div>
+                                const stageKey = val.toLowerCase();
+                                const status = prog.pdca?.[stageKey] || "대기";
+
+                                let color = "transparent";
+                                if (val === "P") color = "linear-gradient(135deg, #3b82f6, #1d4ed8)";
+                                if (val === "D") color = "linear-gradient(135deg, #10b981, #047857)";
+                                if (val === "C") color = "linear-gradient(135deg, #f59e0b, #b45309)";
+                                if (val === "A") color = "linear-gradient(135deg, #d946ef, #a21caf)";
+
+                                let opacity = 0.2; // 대기
+                                let border = "none";
+                                let animation = "none";
+
+                                if (status === "진행") {
+                                  opacity = 0.75;
+                                  border = `1px solid ${val === "P" ? "#93c5fd" : val === "D" ? "#6ee7b7" : val === "C" ? "#fcd34d" : "#f5d0fe"}`;
+                                  animation = "pulse 2s infinite";
+                                } else if (status === "완료") {
+                                  opacity = 1.0;
+                                  border = "none";
+                                }
+
+                                return (
+                                  <div
+                                    key={idx}
+                                    title={`${MONTHS_GUIDE[idx].name}: ${val}단계 (${status})`}
+                                    style={{
+                                      height: "20px",
+                                      background: color,
+                                      opacity: opacity,
+                                      border: border,
+                                      animation: animation,
+                                      borderRadius: "0.2rem",
+                                      display: "flex",
+                                      alignItems: "center",
+                                      justifyContent: "center",
+                                      color: "white",
+                                      fontSize: "0.6rem",
+                                      fontWeight: "900",
+                                      boxShadow: status === "완료" ? "0 1px 3px rgba(0,0,0,0.3)" : "none",
+                                      transition: "all 0.2s"
+                                    }}
+                                  >
+                                    {val}
+                                  </div>
+                                );
+                              })}
                             </div>
                           </td>
                         </tr>
