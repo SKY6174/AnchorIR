@@ -235,15 +235,15 @@ export default function KPIOverview({ projects, currentRole, selectedYear = 2 })
           <h3 style={{ marginBottom: "1.2rem", fontSize: "1.1rem", fontWeight: "800" }}>
             재원 배분 구조 {selectedYear === 1 ? "(공통경비 제외)" : "(공통경비 포함)"}
           </h3>
-          <div style={{ width: "100%", height: "240px", display: "flex", justifyContent: "center", alignItems: "center" }}>
+          <div style={{ width: "100%", height: "300px", display: "flex", justifyContent: "center", alignItems: "center" }}>
             <ResponsiveContainer>
-              <PieChart margin={{ top: 20, right: 35, left: 35, bottom: 20 }}>
+              <PieChart margin={{ top: 24, right: 40, left: 40, bottom: 24 }}>
                 <Pie
                   data={pieData}
                   cx="50%"
                   cy="50%"
-                  innerRadius={55}
-                  outerRadius={75}
+                  innerRadius={65}
+                  outerRadius={88}
                   paddingAngle={4}
                   dataKey="value"
                   label={renderCustomizedLabel}
@@ -265,22 +265,6 @@ export default function KPIOverview({ projects, currentRole, selectedYear = 2 })
                 />
               </PieChart>
             </ResponsiveContainer>
-          </div>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "0.4rem", marginTop: "0.5rem", fontSize: "0.75rem" }}>
-            {pieData.map((item, index) => {
-              const totalBudgetInMillion = totalBudget / 1000000;
-              return (
-                <div key={item.name} style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: "0.3rem" }}>
-                    <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: COLORS[index] }} />
-                    <span style={{ color: "var(--text-secondary-dark)" }}>{item.name}</span>
-                  </div>
-                  <span style={{ fontFamily: "var(--font-data)", fontWeight: "700" }}>
-                    {totalBudgetInMillion > 0 ? ((item.value / totalBudgetInMillion) * 100).toFixed(1) : "0.0"}%
-                  </span>
-                </div>
-              );
-            })}
           </div>
         </div>
       </div>
