@@ -1143,8 +1143,14 @@ export default function App() {
     }
     return formatDataToMultiYear(initialProjectsData);
   });
-  const [activeTab, setActiveTab] = useState("dashboard");
+  const [activeTab, setActiveTab] = useState(() => {
+    return localStorage.getItem("anchor_active_tab") || "dashboard";
+  });
   const [darkMode, setDarkMode] = useState(true);
+
+  useEffect(() => {
+    localStorage.setItem("anchor_active_tab", activeTab);
+  }, [activeTab]);
 
   // 사업단 구성원 관리 및 서브탭 상태
   const [members, setMembers] = useState(() => {
@@ -1357,11 +1363,54 @@ export default function App() {
   }, [activeTab, currentUser]);
 
   // 성과지표 상세 조회용 상태 및 다년도 성과관리 연도 선택 상태
-  const [selectedKpi, setSelectedKpi] = useState(null);
-  const [selectedYear, setSelectedYear] = useState(2);
-  const [kpiSubTab, setKpiSubTab] = useState("자율"); // "자율" ((지자체)자율성과지표) 또는 "중점" ((대학)중점관리지표)
-  const [selectedUnitId, setSelectedUnitId] = useState("A1가");
-  const [selectedProgId, setSelectedProgId] = useState(null);
+  const [selectedKpi, setSelectedKpi] = useState(() => {
+    const saved = localStorage.getItem("anchor_selected_kpi");
+    if (saved) {
+      try { return JSON.parse(saved); } catch (e) { return null; }
+    }
+    return null;
+  });
+  const [selectedYear, setSelectedYear] = useState(() => {
+    const saved = localStorage.getItem("anchor_selected_year");
+    return saved ? parseInt(saved, 10) : 2;
+  });
+  const [kpiSubTab, setKpiSubTab] = useState(() => {
+    return localStorage.getItem("anchor_kpi_sub_tab") || "자율";
+  });
+  const [selectedUnitId, setSelectedUnitId] = useState(() => {
+    return localStorage.getItem("anchor_selected_unit_id") || "A1가";
+  });
+  const [selectedProgId, setSelectedProgId] = useState(() => {
+    return localStorage.getItem("anchor_selected_prog_id") || null;
+  });
+
+  useEffect(() => {
+    if (selectedKpi) {
+      localStorage.setItem("anchor_selected_kpi", JSON.stringify(selectedKpi));
+    } else {
+      localStorage.removeItem("anchor_selected_kpi");
+    }
+  }, [selectedKpi]);
+
+  useEffect(() => {
+    localStorage.setItem("anchor_selected_year", String(selectedYear));
+  }, [selectedYear]);
+
+  useEffect(() => {
+    localStorage.setItem("anchor_kpi_sub_tab", kpiSubTab);
+  }, [kpiSubTab]);
+
+  useEffect(() => {
+    localStorage.setItem("anchor_selected_unit_id", selectedUnitId);
+  }, [selectedUnitId]);
+
+  useEffect(() => {
+    if (selectedProgId) {
+      localStorage.setItem("anchor_selected_prog_id", selectedProgId);
+    } else {
+      localStorage.removeItem("anchor_selected_prog_id");
+    }
+  }, [selectedProgId]);
   const [pdcaViewMode, setPdcaViewMode] = useState("unit");
 
   // 1차년도용 단위과제 필터링 및 이름/ID 변환
