@@ -565,6 +565,7 @@ export default function App() {
                 return sourceProg;
               });
               unit.programs = mergedPrograms;
+              unit.kpis = sourceUnit.kpis || []; // [성과 동기화] mockData.js의 1차년도 등 최신 KPI 실적 데이터를 캐시와 강제 동기화
               
               if (unit.id === "A1나" || unit.id === "A1가") {
                 unit.budget = sourceUnit.budget;
