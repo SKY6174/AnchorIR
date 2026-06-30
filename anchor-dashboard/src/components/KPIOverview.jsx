@@ -167,7 +167,7 @@ export default function KPIOverview({ projects, currentRole, selectedYear = 2 })
             <span>{selectedYear}차년도 본사업비 집행</span>
             <Activity size={16} className="badge-green" />
           </div>
-          <div className="kpi-value" style={{ color: "var(--success-color)", fontSize: "1.45rem" }}>
+          <div className="kpi-value" style={{ color: "#94deb8", fontSize: "1.45rem" }}>
             {formatToMillionWon(totalSpentMain)} 백만원
           </div>
           <div className="kpi-subtext">집행률: {rateMain.toFixed(1)}% (배정: {formatToMillionWon(totalBudgetMain)}백만원)</div>
@@ -179,7 +179,7 @@ export default function KPIOverview({ projects, currentRole, selectedYear = 2 })
               <span>{selectedYear - 1}차년도 이월사업비 집행</span>
               <TrendingUp size={16} className="badge-yellow" />
             </div>
-            <div className="kpi-value" style={{ color: "var(--warning-color)", fontSize: "1.45rem" }}>
+            <div className="kpi-value" style={{ color: "#f6c97f", fontSize: "1.45rem" }}>
               {formatToMillionWon(totalSpentCarry)} 백만원
             </div>
             <div className="kpi-subtext">집행률: {rateCarry.toFixed(1)}% (배정: {formatToMillionWon(totalBudgetCarry)}백만원)</div>
@@ -241,10 +241,10 @@ export default function KPIOverview({ projects, currentRole, selectedYear = 2 })
                   }}
                   formatter={(value) => <span style={{ color: "var(--text-primary-dark)", fontSize: "11px", fontWeight: "600" }}>{value}</span>}
                 />
-                <Bar dataKey="본예산" name="본사업비 예산" fill="#1e3a8a" radius={[3, 3, 0, 0]} />
-                <Bar dataKey="본집행" name="본사업비 집행" fill="#3b82f6" radius={[3, 3, 0, 0]} />
-                {selectedYear >= 2 && <Bar dataKey="이월예산" name="이월사업비 예산" fill="#064e3b" radius={[3, 3, 0, 0]} />}
-                {selectedYear >= 2 && <Bar dataKey="이월집행" name="이월사업비 집행" fill="#10b981" radius={[3, 3, 0, 0]} />}
+                <Bar dataKey="본예산" name="본사업비 예산" fill="#55b685" radius={[3, 3, 0, 0]} />
+                <Bar dataKey="본집행" name="본사업비 집행" fill="#94deb8" radius={[3, 3, 0, 0]} />
+                {selectedYear >= 2 && <Bar dataKey="이월예산" name="이월사업비 예산" fill="#e9a23b" radius={[3, 3, 0, 0]} />}
+                {selectedYear >= 2 && <Bar dataKey="이월집행" name="이월사업비 집행" fill="#f6c97f" radius={[3, 3, 0, 0]} />}
               </BarChart>
             </ResponsiveContainer>
           </div>
