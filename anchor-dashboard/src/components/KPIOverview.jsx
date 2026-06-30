@@ -34,7 +34,7 @@ const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, per
       fill="var(--text-primary-dark)"
       textAnchor={x > cx ? "start" : "end"}
       dominantBaseline="central"
-      fontSize="11px"
+      fontSize="12px"
       fontWeight="700"
     >
       <tspan x={x} dy="-0.5em">{name}</tspan>
@@ -208,20 +208,38 @@ export default function KPIOverview({ projects, currentRole, selectedYear = 2 })
           <div style={{ width: "100%", height: "280px" }}>
             <ResponsiveContainer>
               <BarChart data={chartData}>
-                <XAxis dataKey="name" stroke="var(--text-secondary-dark)" fontSize={10} />
-                <YAxis stroke="var(--text-secondary-dark)" fontSize={10} />
+                <XAxis dataKey="name" stroke="var(--text-secondary-dark)" fontSize={12} />
+                <YAxis stroke="var(--text-secondary-dark)" fontSize={12} />
                 <Tooltip
-                  cursor={{ fill: "rgba(244, 63, 94, 0.04)" }}
+                  cursor={{ fill: "rgba(229, 240, 219, 0.15)" }}
                   formatter={(value) => `${value.toLocaleString()} 백만원`}
                   contentStyle={{
-                    background: "rgba(24, 24, 27, 0.95)",
+                    background: "rgba(224, 235, 246, 0.95)",
                     border: "1px solid var(--border-color-dark)",
                     borderRadius: "0.5rem",
-                    color: "white",
                     fontSize: "11px"
                   }}
+                  labelStyle={{ color: "#111827", fontWeight: "700", marginBottom: "0.2rem" }}
+                  itemStyle={{ color: "#1f2937" }}
                 />
-                <Legend verticalAlign="top" height={36} fontSize={11} />
+                <Legend
+                  verticalAlign="top"
+                  height={44}
+                  iconSize={10}
+                  wrapperStyle={{
+                    background: "rgba(255, 255, 255, 0.03)",
+                    border: "1px solid var(--border-color-dark)",
+                    borderRadius: "0.5rem",
+                    padding: "0.3rem 0.8rem",
+                    display: "inline-flex",
+                    justifyContent: "center",
+                    gap: "1rem",
+                    left: "50%",
+                    transform: "translateX(-50%)",
+                    marginBottom: "0.8rem"
+                  }}
+                  formatter={(value) => <span style={{ color: "var(--text-primary-dark)", fontSize: "11px", fontWeight: "600" }}>{value}</span>}
+                />
                 <Bar dataKey="본예산" fill="#1e3a8a" radius={[3, 3, 0, 0]} />
                 <Bar dataKey="본집행" fill="#3b82f6" radius={[3, 3, 0, 0]} />
                 {selectedYear >= 2 && <Bar dataKey="이월예산" name={`${selectedYear - 1}차년도 이월예산`} fill="#064e3b" radius={[3, 3, 0, 0]} />}
