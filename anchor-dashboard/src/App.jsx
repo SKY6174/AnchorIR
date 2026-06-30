@@ -939,10 +939,11 @@ export default function App() {
     if (cached) {
       try {
         const loaded = JSON.parse(cached);
+        const multiYearInitialData = formatDataToMultiYear(initialProjectsData);
         // [자동 동기화] mockData.js의 initialProjectsData로부터 각 과제의 최신 프로그램 목록을 조회하여 캐시 데이터와 머지합니다.
         loaded.forEach((strategy) => {
           strategy.units.forEach((unit) => {
-            const sourceUnit = initialProjectsData
+            const sourceUnit = multiYearInitialData
               ?.flatMap(s => s.units)
               ?.find(u => u.id === unit.id);
               
@@ -966,28 +967,54 @@ export default function App() {
                       } else {
                         // 입력된 세부 예산이 없는 경우, 기존 sourceProg를 기준으로 본예산 기본값을 계산
                         let defaultBudgetMain = 0;
-                        if (yr === 2) {
-                          defaultBudgetMain = sourceProg.budget_2026 || 0;
-                        } else if (yr === 1) {
-                          defaultBudgetMain = Math.round((sourceProg.budget_2026 || 0) * 0.9);
+                        let defaultNational = 0;
+                        let defaultCity = 0;
+                        let defaultExternal = 0;
+                        
+                        let defaultSpentMain = 0;
+                        let defaultSpentNational = 0;
+                        let defaultSpentCity = 0;
+                        let defaultSpentExternal = 0;
+
+                        if (sourceProg.years && sourceProg.years[yr]) {
+                          const sy = sourceProg.years[yr];
+                          defaultBudgetMain = sy.budget_main || 0;
+                          defaultNational = sy.budget_national || 0;
+                          defaultCity = sy.budget_city || 0;
+                          defaultExternal = sy.budget_external || 0;
+                          
+                          defaultSpentMain = sy.spent_main || 0;
+                          defaultSpentNational = sy.spent_national || 0;
+                          defaultSpentCity = sy.spent_city || 0;
+                          defaultSpentExternal = sy.spent_external || 0;
                         } else {
-                          const factor = yr === 3 ? 1.1 : yr === 4 ? 1.2 : 1.3;
-                          defaultBudgetMain = Math.round((sourceProg.budget_2026 || 0) * factor);
+                          if (yr === 2) {
+                            defaultBudgetMain = sourceProg.budget_2026 || 0;
+                          } else if (yr === 1) {
+                            defaultBudgetMain = Math.round((sourceProg.budget_2026 || 0) * 0.9);
+                          } else {
+                            const factor = yr === 3 ? 1.1 : yr === 4 ? 1.2 : 1.3;
+                            defaultBudgetMain = Math.round((sourceProg.budget_2026 || 0) * factor);
+                          }
+                          
+                          const isExternalSub = sourceProg.id.endsWith("-2") || sourceProg.id.includes("위탁") || sourceProg.title.includes("위탁") || sourceProg.title.includes("협력");
+                          if (isExternalSub) {
+                            defaultExternal = defaultBudgetMain;
+                          } else {
+                            defaultNational = Math.round(defaultBudgetMain * 0.5);
+                            defaultCity = defaultBudgetMain - defaultNational;
+                          }
                         }
                         
                         y.budget_main = defaultBudgetMain;
+                        y.budget_national = defaultNational;
+                        y.budget_city = defaultCity;
+                        y.budget_external = defaultExternal;
                         
-                        // 디폴트 분배 규칙: 특정 외부위탁 프로그램은 외부사업비 100%, 그 외 일반 사업은 국고 50% / 시비 50% 분배
-                        const isExternalSub = sourceProg.id.endsWith("-2") || sourceProg.id.includes("위탁") || sourceProg.title.includes("위탁") || sourceProg.title.includes("협력");
-                        if (isExternalSub) {
-                          y.budget_external = defaultBudgetMain;
-                          y.budget_national = 0;
-                          y.budget_city = 0;
-                        } else {
-                          y.budget_national = Math.round(defaultBudgetMain * 0.5);
-                          y.budget_city = defaultBudgetMain - y.budget_national;
-                          y.budget_external = 0;
-                        }
+                        y.spent_main = defaultSpentMain;
+                        y.spent_national = defaultSpentNational;
+                        y.spent_city = defaultSpentCity;
+                        y.spent_external = defaultSpentExternal;
                       }
 
                       // 2. 이월예산도 세부 이월예산(국고 + 시비 + 외부)의 합산으로 동기화 (1차년도는 이월이 없으므로 강제 0원)
