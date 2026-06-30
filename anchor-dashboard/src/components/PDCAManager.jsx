@@ -176,6 +176,11 @@ export default function PDCAManager({
   const [inputDeficiency, setInputDeficiency] = useState("");
   const [inputActionItem, setInputActionItem] = useState("");
 
+  // P/D 실적 횟수 및 달성률 상태
+  const [inputFrequency, setInputFrequency] = useState("");
+  const [inputActualFrequency, setInputActualFrequency] = useState("");
+  const [inputAchieveRate, setInputAchieveRate] = useState("");
+
   // 모든 프로그램 수집
   const allPrograms = [];
   const allUnits = [];
@@ -270,6 +275,10 @@ export default function PDCAManager({
         setInputImprovePlan(prog.improvePlan || "");
         setInputDeficiency(prog.deficiency || "");
         setInputActionItem(prog.actionItem || "");
+
+        setInputFrequency(prog.frequency !== undefined ? String(prog.frequency) : "");
+        setInputActualFrequency(prog.actualFrequency !== undefined ? String(prog.actualFrequency) : "");
+        setInputAchieveRate(prog.achieveRate !== undefined ? String(prog.achieveRate) : "");
       }
     } else {
       setInputTimeline("");
@@ -300,6 +309,9 @@ export default function PDCAManager({
       setInputImprovePlan("");
       setInputDeficiency("");
       setInputActionItem("");
+      setInputFrequency("");
+      setInputActualFrequency("");
+      setInputAchieveRate("");
     }
   }, [selectedProgId, selectedYear]);
 
@@ -353,13 +365,18 @@ export default function PDCAManager({
           return;
         }
       } else if (stage === "d") {
-        // D 완료 검증: 실제 예산 집행과 최종 이수인원이 기재되었는지만 확인!
+        // D 완료 검증: 실제 예산 집행, 최종 이수인원, 수행 횟수가 기재되었는지 확인!
+        const actualFrequency = activeProg.actualFrequency || 0;
         if (spentMain <= 0) {
           alert(`[검증 실패] D(Do) 단계를 완료하려면 실제 세부 집행 실적이 기재되어야 합니다.`);
           return;
         }
         if (participants <= 0) {
           alert(`[검증 실패] D(Do) 단계를 완료하려면 최종 이수인원(0명 초과)이 기재되어야 합니다.`);
+          return;
+        }
+        if (actualFrequency <= 0) {
+          alert(`[검증 실패] D(Do) 단계를 완료하려면 수행 횟수(0회 초과)가 기재되어야 합니다.`);
           return;
         }
       } else if (stage === "c") {
@@ -433,6 +450,7 @@ export default function PDCAManager({
       timeline: inputMonthlyPDCA.join(","), // 12개월 쉼표 직렬화 저장
       targetAudience: inputTargetAudience,
       coopDept: inputCoopDept,
+      frequency: inputFrequency !== "" ? parseInt(inputFrequency, 10) : 0,
       budget_national: bNational,
       budget_city: bCity,
       budget_external: bExternal,
@@ -496,6 +514,8 @@ export default function PDCAManager({
       spent_city: sCity,
       spent_external: sExternal,
       participants: parsedParticipants,
+      actualFrequency: inputActualFrequency !== "" ? parseInt(inputActualFrequency, 10) : 0,
+      achieveRate: inputAchieveRate !== "" ? parseFloat(inputAchieveRate) : 0,
       budget_categories: categoriesToSave
     });
 
@@ -951,18 +971,26 @@ export default function PDCAManager({
                         </div>
                       </div>
 
-                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.4rem" }}>
+                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "0.4rem" }}>
                         <div>
                           <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)" }}>참여 대상 (Target)</span>
-                          <input type="text" className="user-selector" placeholder="예: 재학생" value={inputTargetAudience} onChange={(e) => setInputTargetAudience(e.target.value)} style={{ padding: "0.25rem 0.4rem", fontSize: "0.75rem" }} />
+                          <input type="text" className="user-selector" placeholder="예: 재학생" value={inputTargetAudience} onChange={(e) => setInputTargetAudience(e.target.value)} style={{ padding: "0.25rem 0.4rem", fontSize: "0.75rem", width: "100%" }} />
                         </div>
                         <div>
                           <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)" }}>연계 부서 (Cooperation Dept)</span>
-                          <input type="text" className="user-selector" placeholder="예: ICC센터" value={inputCoopDept} onChange={(e) => setInputCoopDept(e.target.value)} style={{ padding: "0.25rem 0.4rem", fontSize: "0.75rem" }} />
+                          <input type="text" className="user-selector" placeholder="예: ICC센터" value={inputCoopDept} onChange={(e) => setInputCoopDept(e.target.value)} style={{ padding: "0.25rem 0.4rem", fontSize: "0.75rem", width: "100%" }} />
+                        </div>
+                        <div>
+                          <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)" }}>계획 횟수 (회)</span>
+                          <input type="number" className="user-selector" placeholder="예: 2" value={inputFrequency} onChange={(e) => setInputFrequency(e.target.value)} style={{ padding: "0.25rem 0.4rem", fontSize: "0.75rem", width: "100%" }} />
                         </div>
                       </div>
                       
-                      <button type="submit" className="btn-primary" style={{ marginTop: "0.3rem" }}>P 기획 정보 저장</button>
+                      <div style={{ display: "flex", justifyContent: "center", marginTop: "0.4rem" }}>
+                        <button type="submit" className="btn-primary" style={{ width: "50%", padding: "0.35rem 0.5rem", fontSize: "0.75rem" }}>
+                          P 기획정보 저장
+                        </button>
+                      </div>
                     </div>
                   </form>
                 )}
@@ -1039,25 +1067,41 @@ export default function PDCAManager({
                         </div>
                       </div>
 
-                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: "0.4rem" }}>
+                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "0.4rem" }}>
                         <div>
                           <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)" }}>국고 집행 (백만원)</span>
-                          <input type="text" className="user-selector" value={inputSpentNational} onChange={(e) => setInputSpentNational(e.target.value.replace(/[^0-9.]/g, ""))} style={{ padding: "0.2rem 0.4rem", fontSize: "0.75rem" }} />
+                          <input type="text" className="user-selector" value={inputSpentNational} onChange={(e) => setInputSpentNational(e.target.value.replace(/[^0-9.]/g, ""))} style={{ padding: "0.2rem 0.4rem", fontSize: "0.75rem", width: "100%" }} />
                         </div>
                         <div>
                           <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)" }}>시비 집행 (백만원)</span>
-                          <input type="text" className="user-selector" value={inputSpentCity} onChange={(e) => setInputSpentCity(e.target.value.replace(/[^0-9.]/g, ""))} style={{ padding: "0.2rem 0.4rem", fontSize: "0.75rem" }} />
+                          <input type="text" className="user-selector" value={inputSpentCity} onChange={(e) => setInputSpentCity(e.target.value.replace(/[^0-9.]/g, ""))} style={{ padding: "0.2rem 0.4rem", fontSize: "0.75rem", width: "100%" }} />
                         </div>
                         <div>
                           <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)" }}>외부 집행 (백만원)</span>
-                          <input type="text" className="user-selector" value={inputSpentExternal} onChange={(e) => setInputSpentExternal(e.target.value.replace(/[^0-9.]/g, ""))} style={{ padding: "0.2rem 0.4rem", fontSize: "0.75rem" }} />
+                          <input type="text" className="user-selector" value={inputSpentExternal} onChange={(e) => setInputSpentExternal(e.target.value.replace(/[^0-9.]/g, ""))} style={{ padding: "0.2rem 0.4rem", fontSize: "0.75rem", width: "100%" }} />
+                        </div>
+                      </div>
+
+                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "0.4rem" }}>
+                        <div>
+                          <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)" }}>수행 횟수 (회)</span>
+                          <input type="number" className="user-selector" placeholder="예: 2" value={inputActualFrequency} onChange={(e) => setInputActualFrequency(e.target.value)} style={{ padding: "0.2rem 0.4rem", fontSize: "0.75rem", width: "100%" }} />
                         </div>
                         <div>
                           <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)" }}>이수인원 (명)</span>
-                          <input type="text" className="user-selector" value={inputParticipants} onChange={(e) => setInputParticipants(e.target.value)} style={{ padding: "0.2rem 0.4rem", fontSize: "0.75rem" }} />
+                          <input type="text" className="user-selector" placeholder="예: 10" value={inputParticipants} onChange={(e) => setInputParticipants(e.target.value)} style={{ padding: "0.2rem 0.4rem", fontSize: "0.75rem", width: "100%" }} />
+                        </div>
+                        <div>
+                          <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)" }}>계획대비 달성률 (%)</span>
+                          <input type="text" className="user-selector" placeholder="예: 100" value={inputAchieveRate} onChange={(e) => setInputAchieveRate(e.target.value)} style={{ padding: "0.2rem 0.4rem", fontSize: "0.75rem", width: "100%" }} />
                         </div>
                       </div>
-                      <button type="submit" className="btn-primary" style={{ marginTop: "0.2rem", background: "#10b981", color: "white" }}>D 집행 실적 및 인원 저장</button>
+                      
+                      <div style={{ display: "flex", justifyContent: "center", marginTop: "0.4rem" }}>
+                        <button type="submit" className="btn-primary" style={{ width: "50%", padding: "0.35rem 0.5rem", fontSize: "0.75rem", background: "#10b981", color: "white" }}>
+                          D 수행결과 저장
+                        </button>
+                      </div>
                     </div>
                   </form>
                 )}
@@ -1075,7 +1119,11 @@ export default function PDCAManager({
                         <span style={{ fontSize: "0.75rem", width: "140px", color: "var(--text-secondary-dark)" }}>만족도 (점 / 100점):</span>
                         <input type="text" className="user-selector" placeholder="예: 95" value={inputSatisfaction} onChange={(e) => setInputSatisfaction(e.target.value)} style={{ flexGrow: 1 }} />
                       </div>
-                      <button type="submit" className="btn-primary" style={{ background: "#f59e0b", color: "white" }}>C 성과 적용</button>
+                      <div style={{ display: "flex", justifyContent: "center", marginTop: "0.4rem" }}>
+                        <button type="submit" className="btn-primary" style={{ width: "50%", padding: "0.35rem 0.5rem", fontSize: "0.75rem", background: "#f59e0b", color: "white" }}>
+                          C 성과분석 저장
+                        </button>
+                      </div>
                     </div>
                   </form>
                 )}
@@ -1124,7 +1172,11 @@ export default function PDCAManager({
                         </div>
                       </div>
                     )}
-                    <button type="submit" className="btn-primary" style={{ marginTop: "0.5rem", background: "#d946ef", color: "white" }}>A 환류 방안 저장</button>
+                    <div style={{ display: "flex", justifyContent: "center", marginTop: "0.5rem" }}>
+                      <button type="submit" className="btn-primary" style={{ width: "50%", padding: "0.35rem 0.5rem", fontSize: "0.75rem", background: "#d946ef", color: "white" }}>
+                        A 환류평가 저장
+                      </button>
+                    </div>
                   </form>
                 )}
 
