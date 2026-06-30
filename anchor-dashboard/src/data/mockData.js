@@ -2053,25 +2053,28 @@ export const YEAR_1_PROGRAMS = {
     {
       "id": "A2-S1T1-1",
       "title": "창업 정규 교육과정 개발·운영",
-      "budget": 50000000,
+      "budget": 9600000,
+      "spent": 7900000,
       "assignee": "글로컬창업지원팀",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 50000000, "spent": 50000000 }
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 9600000, "spent": 7900000 }
       ]
     },
     {
       "id": "A2-S1T1-2",
       "title": "창업 비정규 프로그램 개발·운영",
-      "budget": 150000000,
+      "budget": 95900000,
+      "spent": 86500000,
       "assignee": "글로컬창업지원팀",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 150000000, "spent": 150000000 }
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 95900000, "spent": 86500000 }
       ]
     },
     {
       "id": "A2-S1T2-1",
       "title": "창업문화 확산을 위한 규정·제도 개선",
       "budget": 10000000,
+      "spent": 10000000,
       "assignee": "글로컬창업지원팀",
       "budget_categories": [
         { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 10000000, "spent": 10000000 }
@@ -2080,101 +2083,116 @@ export const YEAR_1_PROGRAMS = {
     {
       "id": "A2-S1T2-2",
       "title": "교직원 창업역량 강화",
-      "budget": 40000000,
+      "budget": 9800000,
+      "spent": 9800000,
       "assignee": "글로컬창업지원팀",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 40000000, "spent": 40000000 }
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 9800000, "spent": 9800000 }
       ]
     },
     {
       "id": "A2-S1T2-3",
       "title": "실전 창업 환경 개선 및 하이퍼캠퍼스(창업) 구축",
-      "budget": 150000000,
+      "budget": 389000000,
+      "spent": 378100000,
       "assignee": "시설관리처",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 150000000, "spent": 150000000 }
+        { "category": "교육∙연구 환경개선비", "budget": 79000000, "spent": 68600000 },
+        { "category": "실험∙실습장비 및 기자재 구입∙운영비", "budget": 310000000, "spent": 309500000 }
       ]
     },
     {
       "id": "A2-S2T3-1",
       "title": "재학생·교직원 예비창업자 지원 프로그램 운영",
-      "budget": 50000000,
+      "budget": 20000000,
+      "spent": 18900000,
       "assignee": "글로컬창업지원팀",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 50000000, "spent": 50000000 }
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 20000000, "spent": 18900000 }
       ]
     },
     {
       "id": "A2-S2T3-2",
       "title": "초·중·고 및 지역민 예비창업자 지원 프로그램 운영",
-      "budget": 50000000,
+      "budget": 12700000,
+      "spent": 11900000,
       "assignee": "글로컬창업지원팀",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 50000000, "spent": 50000000 }
+        { "category": "지역 연계∙협업 지원비", "budget": 12700000, "spent": 11900000 }
       ]
     },
     {
       "id": "A2-S2T4-1",
       "title": "초기 창업자 대상 사업화 후속 지원",
-      "budget": 50000000,
+      "budget": 0,
+      "spent": 0,
       "assignee": "글로컬창업지원팀",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 50000000, "spent": 50000000 }
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 0, "spent": 0 }
       ]
     },
     {
       "id": "A2-S2T4-2",
       "title": "아이디어 특허 지원",
-      "budget": 50000000,
+      "budget": 38000000,
+      "spent": 30500000,
       "assignee": "산학협력단",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 50000000, "spent": 50000000 }
+        { "category": "지역 연계∙협업 지원비", "budget": 38000000, "spent": 30500000 }
       ]
     },
     {
       "id": "A2-S3T5-1",
       "title": "초·중·고 창업 교육 통합 지원 프로그램",
-      "budget": 50000000,
+      "budget": 0,
+      "spent": 0,
       "assignee": "글로컬창업지원팀",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 50000000, "spent": 50000000 }
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 0, "spent": 0 }
       ]
     },
     {
       "id": "A2-S3T5-2",
       "title": "타 기관 연계 창업 협력 네트워크 구축 및 공동 교육 프로그램 운영",
       "budget": 150000000,
+      "spent": 150000000,
       "assignee": "글로컬창업지원팀",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 150000000, "spent": 150000000 }
+        { "category": "지역 연계∙협업 지원비", "budget": 150000000, "spent": 150000000 }
       ]
     },
     {
       "id": "A2-S3T6-1",
       "title": "해외 창업 인큐베이터 연계 프로그램 기획",
-      "budget": 50000000,
+      "budget": 20000000,
+      "spent": 100000,
       "assignee": "글로컬창업지원팀",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 50000000, "spent": 50000000 }
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 20000000, "spent": 100000 }
       ]
     },
     {
       "id": "A2-S3T6-2",
       "title": "창업선도모델 공동연구 및 벤치마크",
-      "budget": 50000000,
+      "budget": 25000000,
+      "spent": 15000000,
       "assignee": "글로컬창업지원팀",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 50000000, "spent": 50000000 }
+        { "category": "지역 연계∙협업 지원비", "budget": 25000000, "spent": 15000000 }
       ]
     }
   ,
     {
       "id": "A2-S3T7-1",
       "title": "공통경비",
-      "budget": 10000000,
+      "budget": 140000000,
+      "spent": 114500000,
       "assignee": "글로컬창업지원팀",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 10000000, "spent": 10000000 }
+        { "category": "인건비", "budget": 76000000, "spent": 75200000 },
+        { "category": "간접비", "budget": 27000000, "spent": 27000000 },
+        { "category": "그 밖의 사업운영경비", "budget": 27000000, "spent": 12300000 },
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 10000000, "spent": 0 }
       ]
     }],
   "B1": [
