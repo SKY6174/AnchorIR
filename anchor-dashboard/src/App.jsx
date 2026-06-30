@@ -2063,6 +2063,9 @@ export default function App() {
               id: newId,
               title: title,
               assignee: assignee || "미지정",
+              assignees: {
+                [selectedYear]: assignee || "미지정"
+              },
               budget_2026: bMain,
               budget_2025_carry: bCarry,
               budget: bMain + bCarry,
@@ -2267,6 +2270,11 @@ export default function App() {
           if (u.id === unitId) {
             u.programs.forEach((prog) => {
               if (prog.id === progId) {
+                if (!prog.assignees) {
+                  prog.assignees = {};
+                }
+                prog.assignees[selectedYear] = newAssignee;
+                // 하위 호환성을 위해 현재 선택된 년도의 배정을 단일 assignee 필드에도 업데이트
                 prog.assignee = newAssignee;
               }
             });
@@ -2275,7 +2283,7 @@ export default function App() {
       });
       return updated;
     });
-    alert(`[${progId}] 프로그램의 담당연구원이 "${newAssignee || "미배정"}"(으)로 배정 및 저장되었습니다.`);
+    alert(`[${progId}] 프로그램의 ${selectedYear}차년도 담당연구원이 "${newAssignee || "미배정"}"(으)로 배정 및 저장되었습니다.`);
   };
 
   // 사용자 호칭 맵핑 웰컴 메시지 헬퍼 함수
@@ -2883,12 +2891,35 @@ export default function App() {
                                     <select
                                       className="user-selector"
                                       style={{ width: "200px", padding: "0.2rem 0.4rem", fontSize: "0.75rem" }}
-                                      value={prog.assignee}
+                                      value={prog.assignees?.[selectedYear] !== undefined ? prog.assignees[selectedYear] : (prog.assignee || "")}
                                       onChange={(e) => handleAssignChange(u.id, prog.id, e.target.value)}
                                     >
                                       <option value="">미배정</option>
                                       {members
-                                        .filter((m) => m.role === "연구원" && (m.dept === dept || prog.assignee === `${m.name} ${m.grade}`))
+                                        .filter((m) => {
+                                          if (m.role !== "연구원") return false;
+                                          const currentAssignee = prog.assignees?.[selectedYear] || prog.assignee || "";
+                                          const isCurrent = currentAssignee === `${m.name} ${m.grade}`;
+                                          const isDeptMatch = m.dept === dept;
+                                          if (!isCurrent && !isDeptMatch) return false;
+                                          
+                                          // 연차별 담당자는 당해 연도에 재직하고 있어야 함
+                                          const startYear = 2024 + selectedYear;
+                                          const endYear = 2025 + selectedYear;
+                                          const yearStart = new Date(`${startYear}-03-01T00:00:00`);
+                                          const yearEnd = new Date(`${endYear}-02-28T23:59:59`);
+                                          
+                                          const mStartStr = m.startDate || m.hireDate || "2025-03-01";
+                                          const mStartDate = new Date(mStartStr);
+                                          if (mStartDate > yearEnd) return false;
+                                          
+                                          if (m.endDate) {
+                                            const mEndDate = new Date(m.endDate);
+                                            if (mEndDate < yearStart) return false;
+                                          }
+                                          
+                                          return true;
+                                        })
                                         .map((m) => {
                                           const valueStr = `${m.name} ${m.grade}`;
                                           const labelStr = `${m.name} ${m.grade} (${m.dept})`;
@@ -2900,7 +2931,7 @@ export default function App() {
                                         })}
                                     </select>
                                   ) : (
-                                    <span>{prog.assignee || "미배정"}</span>
+                                    <span>{(prog.assignees?.[selectedYear] !== undefined ? prog.assignees[selectedYear] : prog.assignee) || "미배정"}</span>
                                   )}
                                 </td>
                                 <td style={{ textAlign: "center", color: prog.pdca.p === "완료" ? "var(--success-color)" : "inherit", fontWeight: "700" }}>{prog.pdca.p}</td>

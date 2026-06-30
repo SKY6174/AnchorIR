@@ -216,13 +216,17 @@ export default function PDCAManager({
   const unitFilteredPrograms = allPrograms.filter((p) => {
     const matchesUnit = p.unitId === selectedUnitId;
     if (isResearcher) {
-      return matchesUnit && p.assignee.includes(currentRole.name.split(" ")[0]);
+      const currentAssignee = p.assignees?.[selectedYear] !== undefined ? p.assignees[selectedYear] : (p.assignee || "");
+      return matchesUnit && currentAssignee.includes(currentRole.name.split(" ")[0]);
     }
     return matchesUnit;
   });
 
   const allFilteredPrograms = isResearcher
-    ? allPrograms.filter((p) => p.assignee.includes(currentRole.name.split(" ")[0]))
+    ? allPrograms.filter((p) => {
+        const currentAssignee = p.assignees?.[selectedYear] !== undefined ? p.assignees[selectedYear] : (p.assignee || "");
+        return currentAssignee.includes(currentRole.name.split(" ")[0]);
+      })
     : allPrograms;
 
   const activeProg = allPrograms.find((p) => p.id === selectedProgId);
@@ -709,7 +713,9 @@ export default function PDCAManager({
                   >
                     <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.7rem", color: "var(--text-secondary-dark)", marginBottom: "0.2rem" }}>
                       <span>{prog.id}</span>
-                      <span style={{ color: "var(--accent-color)", fontWeight: "700" }}>{prog.assignee}</span>
+                      <span style={{ color: "var(--accent-color)", fontWeight: "700" }}>
+                        {(prog.assignees?.[selectedYear] !== undefined ? prog.assignees[selectedYear] : prog.assignee) || "미배정"}
+                      </span>
                     </div>
                     <h5 style={{ fontSize: "0.8rem", fontWeight: "700", lineHeight: "1.3" }}>{prog.title}</h5>
                   </div>
@@ -1247,7 +1253,9 @@ export default function PDCAManager({
                       <td style={{ fontFamily: "var(--font-data)", fontWeight: "700" }}>{prog.id}</td>
                       <td style={{ fontWeight: selectedProgId === prog.id ? "700" : "normal" }}>{prog.title}</td>
                       <td>{prog.unitId}</td>
-                      <td style={{ fontWeight: "700", color: "var(--accent-color)" }}>{prog.assignee}</td>
+                      <td style={{ fontWeight: "700", color: "var(--accent-color)" }}>
+                        {(prog.assignees?.[selectedYear] !== undefined ? prog.assignees[selectedYear] : prog.assignee) || "미배정"}
+                      </td>
                       <td style={{ fontFamily: "var(--font-data)" }}>{formatToMillionWon(py.budget_main)}백만원</td>
                       <td style={{ fontFamily: "var(--font-data)" }}>{formatToMillionWon(py.spent_main)}백만원</td>
                       <td style={{ textAlign: "center", color: prog.pdca.p === "완료" ? "var(--success-color)" : "inherit", fontWeight: "700" }}>{prog.pdca.p}</td>
