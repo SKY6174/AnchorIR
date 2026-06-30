@@ -83,7 +83,7 @@
 
 ### 📌 [L-5] 산학기술 이전 및 기술사업화 성과지수 (B1)
 - **종합 성과**: 목푯값 **40.0%** | 실적값 **81.8%** (달성도 **100.0%**)
-- **산출 산식**: $\frac{\text{A 실적}}{\text{A 기준}} \times 25 + \frac{\text{B 실적}}{\text{B 기준}} \times 25 + \frac{\text{C 실적}}{\text{C 기준}} \times 25 + \frac{\text{D 실적}}{\text{D 기준}} \times 25$
+- **산출 산식**: $\frac{\text{A 실적}}{\text{A 기준}} \times 25 + \frac{\text{B 실적}}{\text{B 기준}} \times 25 + \frac{\text{C 실적}}{\text{C 기준}} \times 10 + \frac{\text{D 실적}}{\text{D 기준}} \times 30 + \frac{\text{E 실적}}{\text{E 기준}} \times 10$
 
 | 요소 | 지표 요소명 | 단위 | 기준값 | 목푯값 | 실적값 |
 | :---: | :--- | :---: | :---: | :---: | :---: |
