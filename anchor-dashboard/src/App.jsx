@@ -22,7 +22,7 @@ const INITIAL_MEMBERS = [
   { id: "m-05", name: "김기범", role: "센터장", grade: "정교수", dept: "ICC센터", phoneOffice: "052-230-0222", phoneMobile: "010-2345-6789", email: "kbkim@uc.ac.kr", room: "교수연구실/E2-301", hireDate: "2026-03-01" },
   { id: "m-06", name: "현용환", role: "센터장", grade: "정교수", dept: "RCC센터", phoneOffice: "052-230-0333", phoneMobile: "010-3456-7890", email: "yhhyun@uc.ac.kr", room: "교수연구실/E2-401", hireDate: "2026-03-01" },
   { id: "m-07", name: "홍광표", role: "센터장", grade: "정교수", dept: "울산늘봄누리센터", phoneOffice: "052-230-0444", phoneMobile: "010-4567-8901", email: "gphong@uc.ac.kr", room: "교수연구실/E2-501", hireDate: "2026-03-01" },
-  { id: "m-07b", name: "홍진숙", role: "센터장", grade: "정교수", dept: "신산업특화센터", phoneOffice: "052-230-0700", phoneMobile: "010-7777-8888", email: "special_head@uc.ac.kr", room: "센터실/N-101", hireDate: "2026-06-01" },
+  { id: "m-07b", name: "홍진숙", role: "센터장", grade: "정교수", dept: "신산업특화센터", phoneOffice: "052-279-3134", phoneMobile: "010-9120-8583", email: "cshong@uc.ac.kr", room: "센터실/N-101", hireDate: "2026-06-01" },
   
   // 팀장교수
   { id: "m-08", name: "장광일", role: "팀장교수", grade: "정교수", dept: "ECC센터", phoneOffice: "052-230-0112", phoneMobile: "010-5678-9012", email: "kijang@uc.ac.kr", room: "교수연구실/E2-202", hireDate: "2026-03-01" },
@@ -1166,10 +1166,20 @@ export default function App() {
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        // 로컬스토리지에 홍진숙 교수가 누락되어 있을 경우 강제 복구(홍광표 센터장 다음 칸에 주입)
-        const hasHong = parsed.some(m => m.email && m.email.trim().toLowerCase() === "special_head@uc.ac.kr");
-        if (!hasHong) {
-          const hongObj = initialList.find(m => m.email === "special_head@uc.ac.kr");
+        // 로컬스토리지에 홍진숙 교수(cshong@uc.ac.kr)가 존재할 경우 위치를 홍광표 교수(gphong@uc.ac.kr) 바로 다음으로 재정렬 이동
+        const hongIdx = parsed.findIndex(m => m.email && m.email.trim().toLowerCase() === "cshong@uc.ac.kr");
+        if (hongIdx !== -1) {
+          const hongObj = parsed[hongIdx];
+          parsed.splice(hongIdx, 1);
+          const gphongIdx = parsed.findIndex(m => m.email && m.email.trim().toLowerCase() === "gphong@uc.ac.kr");
+          if (gphongIdx !== -1) {
+            parsed.splice(gphongIdx + 1, 0, hongObj);
+          } else {
+            parsed.push(hongObj);
+          }
+        } else {
+          // 존재하지 않을 경우 새로 initialList에서 주입 복구
+          const hongObj = initialList.find(m => m.email === "cshong@uc.ac.kr");
           if (hongObj) {
             const gphongIdx = parsed.findIndex(m => m.email && m.email.trim().toLowerCase() === "gphong@uc.ac.kr");
             if (gphongIdx !== -1) {
@@ -1313,7 +1323,10 @@ export default function App() {
           }
 
           // DB에 비밀번호를 직접 변경한 이력이 존재하면 해당 가입일/이름 정보를 우선시함
-          const dbUser = dbMap.get(emailId);
+          // cshong@uc.ac.kr 주소록과 DB 상의 special_head 계정 간의 예외 매핑을 함께 지원합니다.
+          const dbUser = dbMap.get(emailId) || 
+                         dbMap.get(emailId.split("@")[0]) || 
+                         (emailId === "cshong@uc.ac.kr" ? dbMap.get("special_head") : null);
           return {
             id: emailId,
             name: dbUser ? dbUser.name : m.name,

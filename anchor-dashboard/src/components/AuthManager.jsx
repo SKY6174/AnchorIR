@@ -81,6 +81,7 @@ export default function AuthManager({ onLoginSuccess, members = [] }) {
       // 3. 주소록(members)에서 해당 이메일 또는 ID 기준 구성원 탐색
       const matchedMember = members.find((m) => {
         const mEmail = (m.email || "").trim().toLowerCase();
+        if (targetId === "special_head" && mEmail === "cshong@uc.ac.kr") return true;
         return mEmail === targetId || mEmail.split("@")[0] === targetId;
       });
 
