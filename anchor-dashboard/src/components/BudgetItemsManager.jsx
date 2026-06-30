@@ -121,16 +121,26 @@ export default function BudgetItemsManager({ projects, currentRole, onUpdateBudg
   });
   const totalCombinedBudget = totalMainBudget + totalCarryBudget;
 
-  // 담당부서 맵핑 정의 (공통경비가 포함된 사업운영팀이 최상단 배치)
-  const DEPARTMENTS = [
-    { name: "사업운영팀", ids: ["Common"] },
-    { name: "ECC센터", ids: ["A1가", "A2", "A3"] },
-    { name: "신산업특화센터", ids: ["A1나"] },
-    { name: "ICC센터", ids: ["B1", "B3", "B4"] },
-    { name: "AID-X지원센터", ids: ["B2"] },
-    { name: "울산늘봄누리센터", ids: ["B2"] },
-    { name: "RCC센터", ids: ["C1", "D1", "D2", "D3"] }
-  ];
+  // 담당부서 맵핑 정의 (연차별 유닛 ID 분기 처리)
+  const DEPARTMENTS = selectedYear === 1
+    ? [
+        { name: "사업운영팀", ids: [] },
+        { name: "ECC센터", ids: ["A1", "A2", "D4"] },
+        { name: "신산업특화센터", ids: [] },
+        { name: "ICC센터", ids: ["B1", "B3", "C1", "C3"] },
+        { name: "AID-X지원센터", ids: ["C2"] },
+        { name: "울산늘봄누리센터", ids: ["D2"] },
+        { name: "RCC센터", ids: ["B2", "D1", "D3"] }
+      ]
+    : [
+        { name: "사업운영팀", ids: ["Common"] },
+        { name: "ECC센터", ids: ["A1가", "A2", "A3"] },
+        { name: "신산업특화센터", ids: ["A1나"] },
+        { name: "ICC센터", ids: ["B1", "B3", "B4"] },
+        { name: "AID-X지원센터", ids: ["B2"] },
+        { name: "울산늘봄누리센터", ids: ["C2"] },
+        { name: "RCC센터", ids: ["C1", "D1", "D2", "D3"] }
+      ];
 
   // 선택된 단위과제 및 프로젝트 제목 찾기 또는 전체사업 가상 유닛 빌드
   let activeUnit = null;
@@ -195,6 +205,20 @@ export default function BudgetItemsManager({ projects, currentRole, onUpdateBudg
   }
 
   // 선택된 단위가 바뀔 때 혹은 연차가 바뀔 때 사용자가 편집하던 값 초기화 (백만원 단위로 환산하여 Input 기본값 제공)
+  // 연차가 변경될 때 활성화 연도에 맞는 유효한 기본 단위과제를 자동 선택
+  useEffect(() => {
+    if (selectedYear === 1) {
+      setSubTab("main");
+      if (selectedUnitId === "A1가" || !["A1", "A2", "D4", "B1", "B3", "C1", "C3", "C2", "D2", "B2", "D1", "D3", "Total"].includes(selectedUnitId)) {
+        setSelectedUnitId("A1");
+      }
+    } else {
+      if (selectedUnitId === "A1" || !["A1가", "A1나", "A2", "A3", "B1", "B3", "B4", "B2", "C2", "C1", "D1", "D2", "D3", "Common", "Total"].includes(selectedUnitId)) {
+        setSelectedUnitId("A1가");
+      }
+    }
+  }, [selectedYear]);
+
   useEffect(() => {
     if (selectedYear === 1) {
       setSubTab("main");
