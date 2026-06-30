@@ -657,6 +657,153 @@ const getNormalizedKpi = (k, selectedYear) => {
     };
   }
 
+  if (k.id === "L-13") {
+    return {
+      ...k,
+      description: "스마트 제조 및 미래 신산업 전환을 대비한 지역 산업 연계 AI·DX 핵심 인재 양성 교육프로그램 성과지수",
+      formula: "((A)실적/(A)기준값)*30 + ((B)실적/(B)기준값)*70",
+      subItems: [
+        { id: "L-13-1", name: "AI·DX 관련 교육프로그램 개발 건수", unit: "건", years: { 1: { target: 5, current: 4 } } },
+        { id: "L-13-2", name: "AI·DX 관련 교육프로그램 이수자 수", unit: "명", years: { 1: { target: 300, current: 360 } } }
+      ]
+    };
+  }
+
+  if (k.id === "L-14") {
+    return {
+      ...k,
+      name: "AI·DX 기술혁신 확산지수",
+      description: "중소·중견 제조기업의 스마트화 지원을 위한 AI·DX 연계 밀착형 기술지도 및 융합컨설팅 지원 확산지수",
+      formula: "((A)실적/(A)기준값)*50 + ((B)실적/(B)기준값)*50",
+      subItems: [
+        { id: "L-14-1", name: "AI·DX 관련 기술지원 건수", unit: "건", years: { 1: { target: 3, current: 3 } } },
+        { id: "L-14-2", name: "AI·DX 관련 자문·컨설팅 건수", unit: "건", years: { 1: { target: 5, current: 17 } } }
+      ]
+    };
+  }
+
+  if (k.id === "L-15") {
+    return {
+      ...k,
+      description: "탄소중립 및 친환경 ESG 핵심 가치 확산을 위한 전공·비전공 학생 대상 ESG 전문 인력 육성 성과지수",
+      formula: "((A)실적/(A)기준값)*70 + ((B)실적/(B)기준값)*30",
+      subItems: [
+        { id: "L-15-1", name: "ESG 전문인력 양성프로그램 이수자 수", unit: "명", years: { 1: { target: 100, current: 146 } } },
+        { id: "L-15-2", name: "ESG 경영개선 지원 건수", unit: "건", years: { 1: { target: 1, current: 1 } } }
+      ]
+    };
+  }
+
+  if (k.id === "L-16") {
+    return {
+      ...k,
+      description: "지역 중소기업의 저탄소 공정 전환 지원 및 친환경 탄소중립 실천 문화 정착 기여 성과지수",
+      formula: "((A)실적/(A)기준값)*70 + ((B)실적/(B)기준값)*30",
+      subItems: [
+        { id: "L-16-1", name: "탄소중립 프로그램 운영 건수", unit: "건", years: { 1: { target: 3, current: 4 } } },
+        { id: "L-16-2", name: "탄소배출 경영개선 지원 건수", unit: "건", years: { 1: { target: 1, current: 1 } } }
+      ]
+    };
+  }
+
+  if (k.id === "L-17") {
+    return {
+      ...k,
+      description: "지역 보건·의료 분야 정주 인력 확보를 위한 전공 학생 대상 전문 취업 역량 및 지역 정착 지원지수",
+      formula: "1차년도 미개설 지표 (0%)",
+      subItems: []
+    };
+  }
+
+  if (k.id === "L-18") {
+    return {
+      ...k,
+      description: "취약계층의 만성질환 예방 및 만성병 환자의 체계적 자가 관리를 돕는 디지털 모니터링 수혜지수",
+      formula: "((A)실적/(A)기준값)*50 + ((B)실적/(B)기준값)*50",
+      subItems: [
+        { id: "L-18-1", name: "사회적약자 의료케어를 위한 전문인력 양성 인원 수", unit: "명", years: { 1: { target: 110, current: 208 } } },
+        { id: "L-18-2", name: "사회적약자 건강모니터링 지원 인원 수", unit: "명", years: { 1: { target: 70, current: 87 } } }
+      ]
+    };
+  }
+
+  if (k.id === "L-19") {
+    return {
+      ...k,
+      name: "늘봄학교 및 온동네 돌봄 교사 양성 프로그램 운영성과 지수",
+      description: "울산형 온동네 초등 돌봄 교사 및 방과후 프로그램 연수를 통한 아동 돌봄 전문 인력 공급 양성 지수",
+      formula: "((A)실적/(A)기준값)*50 + ((B)실적/(B)기준값)*50",
+      subItems: [
+        { id: "L-19-1", name: "늘봄/방과후 교사 양성 프로그램 수", unit: "건", years: { 1: { target: 5, current: 11 } } },
+        { id: "L-19-2", name: "늘봄/방과후 교사 양성 수", unit: "명", years: { 1: { target: 100, current: 134 } } }
+      ]
+    };
+  }
+
+  if (k.id === "L-20") {
+    return {
+      ...k,
+      name: "돌봄 및 체험 프로그램 운영 활성화 지수",
+      description: "지역 영유아 및 초등학생을 위한 창의 융합 체험 프로그램 다각화 및 이용 수혜 실적 지수",
+      formula: "((A)실적/(A)기준값)*50 + ((B)실적/(B)기준값)*50",
+      subItems: [
+        { id: "L-20-1", name: "돌봄 및 체험 프로그램 수", unit: "건", years: { 1: { target: 10, current: 14 } } },
+        { id: "L-20-2", name: "돌봄 및 체험 프로그램 이용자 수", unit: "명", years: { 1: { target: 40, current: 69 } } }
+      ]
+    };
+  }
+
+  if (k.id === "L-21") {
+    return {
+      ...k,
+      description: "도시 쇠퇴지역 공간 혁신 및 청년 창작 생태계 기반 조성을 위한 공간 재생 및 거버넌스 구축 성과지수",
+      formula: "((A)실적/(A)기준값)*50 + ((B)실적/(B)기준값)*50",
+      subItems: [
+        { id: "L-21-1", name: "도시공간 재생프로젝트 운영 건수", unit: "건", years: { 1: { target: 2, current: 2 } } },
+        { id: "L-21-2", name: "도시공간 재생프로젝트 네트워크 건수", unit: "건", years: { 1: { target: 3, current: 3 } } }
+      ]
+    };
+  }
+
+  if (k.id === "L-22") {
+    return {
+      ...k,
+      description: "지역 고유 문화 자원 기반 청년 창작 콘텐츠 신규 개발 및 축제 활성화를 통한 관내 수혜 성과지수",
+      formula: "((A)실적/(A)기준값)*50 + ((B)실적/(B)기준값)*50",
+      subItems: [
+        { id: "L-22-1", name: "문화 콘텐츠 개발 건수", unit: "건", years: { 1: { target: 1, current: 2 } } },
+        { id: "L-22-2", name: "문화 콘텐츠 개발 프로젝트 참여 인원", unit: "명", years: { 1: { target: 40, current: 60 } } }
+      ]
+    };
+  }
+
+  if (k.id === "L-23") {
+    return {
+      ...k,
+      description: "대학의 글로벌 학술 평판 제고 및 국제 공동 연구·교류 활성화를 통한 해외 우수 기관과의 파트너십 성과지수",
+      formula: "((A)실적/(A)기준값)*20 + ((B)실적/(B)기준값)*30 + ((C)실적/(C)기준값)*50",
+      subItems: [
+        { id: "L-23-1", name: "국제공동 연구 건수", unit: "건", years: { 1: { target: 0, current: 0 } } },
+        { id: "L-23-2", name: "국제공동 협력 건수", unit: "건", years: { 1: { target: 3, current: 5 } } },
+        { id: "L-23-3", name: "해외교류 프로그램 참여인원 수", unit: "명", years: { 1: { target: 53, current: 100 } } }
+      ]
+    };
+  }
+
+  if (k.id === "L-24") {
+    return {
+      ...k,
+      name: "글로벌 인재유치 및 정착 지원지수",
+      description: "외국인 유학생 유치 다각화 및 안정적인 주거·학습·취업 전주기 밀착 케어 서비스 활성화 지수",
+      formula: "((A)실적/(A)기준값)*60 + ((B)실적/(B)기준값)*20 + ((C)실적/(C)기준값)*20",
+      subItems: [
+        { id: "L-24-1", name: "국제학생 유치 인원수", unit: "명", years: { 1: { target: 190, current: 295 } } },
+        { id: "L-24-2", name: "국제학생 정착 지원 건수", unit: "건", years: { 1: { target: 1, current: 2 } } },
+        { id: "L-24-3", name: "외국인 근로자 정착 지원 건수", unit: "건", years: { 1: { target: 1, current: 0 } } }
+      ]
+    };
+  }
+
   return k;
 };
 
@@ -2753,81 +2900,118 @@ export default function App() {
                     </tr>
                   </thead>
                   <tbody>
-                    {displayProjects.flatMap((p) =>
-                      p.units.flatMap((u) =>
-                        u.kpis
-                          .filter((k) => k.type === kpiSubTab) // 선택된 서브탭 유형별 필터링
-                          .map((k) => {
-                            const nk = getNormalizedKpi(k, selectedYear);
-                            let rate = 0;
-                            if (selectedYear === 1 && nk.id === "L-1") {
-                              rate = 111.9;
-                            } else if (selectedYear === 1 && nk.id === "L-2") {
-                              rate = 687.8;
-                            } else if (selectedYear === 1 && nk.id === "L-3") {
-                              rate = 138.6;
-                            } else if (selectedYear === 1 && nk.id === "L-4") {
-                              rate = 146.7;
-                            } else if (selectedYear === 1 && nk.id === "L-5") {
-                              rate = 81.8;
-                            } else if (selectedYear === 1 && nk.id === "L-6") {
-                              rate = 103.3;
-                            } else if (selectedYear === 1 && nk.id === "L-7") {
-                              rate = 321.3;
-                            } else if (selectedYear === 1 && nk.id === "L-8") {
-                              rate = 134.0;
-                            } else if (selectedYear === 1 && nk.id === "L-9") {
-                              rate = 106.0;
-                            } else if (selectedYear === 1 && nk.id === "L-10") {
-                              rate = 128.5;
-                            } else if (selectedYear === 1 && nk.id === "L-11") {
-                              rate = 160.0;
-                            } else if (selectedYear === 1 && nk.id === "L-12") {
-                              rate = 114.6;
-                            } else if (nk.subItems && nk.subItems.length > 0) {
-                              let sumRate = 0;
-                              nk.subItems.forEach((sub) => {
-                                const yData = sub.years?.[selectedYear] || { target: 0, current: 0 };
-                                sumRate += yData.target > 0 ? (yData.current / yData.target) * 100 : 0;
-                              });
-                              rate = sumRate / nk.subItems.length;
-                            } else {
-                              rate = nk.target > 0 ? (nk.current / nk.target) * 100 : 0;
+                    {(() => {
+                      const kpiMap = new Map();
+                      displayProjects.forEach((p) => {
+                        p.units.forEach((u) => {
+                          u.kpis.forEach((k) => {
+                            if (k.type === kpiSubTab) {
+                              const nk = getNormalizedKpi(k, selectedYear);
+                              kpiMap.set(nk.id, { k, nk });
                             }
-                            const isSelected = selectedKpi?.id === nk.id;
-                            return (
-                              <tr
-                                key={nk.id}
-                                onClick={() => setSelectedKpi(nk)}
-                                style={{
-                                  cursor: "pointer",
-                                  background: isSelected ? "rgba(59,130,246,0.08)" : "inherit",
-                                  borderLeft: isSelected ? "4px solid var(--accent-color)" : "none",
-                                  transition: "all 0.2s ease"
-                                }}
-                              >
-                                <td style={{ fontFamily: "var(--font-data)", fontWeight: "700" }}>{nk.id}</td>
-                                <td style={{ fontWeight: isSelected ? "700" : "normal" }}>{nk.name}</td>
-                                <td>
-                                  <span className={`badge ${nk.type === "자율" ? "badge-blue" : "badge-yellow"}`}>
-                                    {nk.type}
-                                  </span>
-                                </td>
-                                <td>
-                                  <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                                    <div style={{ width: "50px", height: "6px", background: "rgba(255,255,255,0.1)", borderRadius: "3px", overflow: "hidden" }}>
-                                      <div style={{ width: `${Math.min(rate, 100)}%`, height: "100%", background: rate >= 100 ? "var(--success-color)" : "var(--warning-color)" }} />
-                                    </div>
-                                    <span style={{ fontSize: "0.75rem", fontFamily: "var(--font-data)", color: rate >= 100 ? "var(--success-color)" : "inherit" }}>
-                                      {rate.toFixed(1)}%
-                                    </span>
-                                  </div>
-                                </td>
-                              </tr>
-                            );
-                          })
-                      )
-                    )}
+                          });
+                        });
+                      });
+
+                      const sortedKpis = Array.from(kpiMap.values()).sort((a, b) => {
+                        const numA = parseInt(a.nk.id.replace("L-", ""), 10) || 0;
+                        const numB = parseInt(b.nk.id.replace("L-", ""), 10) || 0;
+                        return numA - numB;
+                      });
+
+                      return sortedKpis.map(({ k, nk }) => {
+                        let rate = 0;
+                        if (selectedYear === 1 && nk.id === "L-1") {
+                          rate = 111.9;
+                        } else if (selectedYear === 1 && nk.id === "L-2") {
+                          rate = 687.8;
+                        } else if (selectedYear === 1 && nk.id === "L-3") {
+                          rate = 138.6;
+                        } else if (selectedYear === 1 && nk.id === "L-4") {
+                          rate = 146.7;
+                        } else if (selectedYear === 1 && nk.id === "L-5") {
+                          rate = 81.8;
+                        } else if (selectedYear === 1 && nk.id === "L-6") {
+                          rate = 103.3;
+                        } else if (selectedYear === 1 && nk.id === "L-7") {
+                          rate = 321.3;
+                        } else if (selectedYear === 1 && nk.id === "L-8") {
+                          rate = 134.0;
+                        } else if (selectedYear === 1 && nk.id === "L-9") {
+                          rate = 106.0;
+                        } else if (selectedYear === 1 && nk.id === "L-10") {
+                          rate = 128.5;
+                        } else if (selectedYear === 1 && nk.id === "L-11") {
+                          rate = 160.0;
+                        } else if (selectedYear === 1 && nk.id === "L-12") {
+                          rate = 114.6;
+                        } else if (selectedYear === 1 && nk.id === "L-13") {
+                          rate = 108.0;
+                        } else if (selectedYear === 1 && nk.id === "L-14") {
+                          rate = 500.0;
+                        } else if (selectedYear === 1 && nk.id === "L-15") {
+                          rate = 132.2;
+                        } else if (selectedYear === 1 && nk.id === "L-16") {
+                          rate = 123.3;
+                        } else if (selectedYear === 1 && nk.id === "L-17") {
+                          rate = 0.0;
+                        } else if (selectedYear === 1 && nk.id === "L-18") {
+                          rate = 176.5;
+                        } else if (selectedYear === 1 && nk.id === "L-19") {
+                          rate = 244.0;
+                        } else if (selectedYear === 1 && nk.id === "L-20") {
+                          rate = 202.5;
+                        } else if (selectedYear === 1 && nk.id === "L-21") {
+                          rate = 100.0;
+                        } else if (selectedYear === 1 && nk.id === "L-22") {
+                          rate = 175.0;
+                        } else if (selectedYear === 1 && nk.id === "L-23") {
+                          rate = 144.3;
+                        } else if (selectedYear === 1 && nk.id === "L-24") {
+                          rate = 138.3;
+                        } else if (nk.subItems && nk.subItems.length > 0) {
+                          let sumRate = 0;
+                          nk.subItems.forEach((sub) => {
+                            const yData = sub.years?.[selectedYear] || { target: 0, current: 0 };
+                            sumRate += yData.target > 0 ? (yData.current / yData.target) * 100 : 0;
+                          });
+                          rate = sumRate / nk.subItems.length;
+                        } else {
+                          rate = nk.target > 0 ? (nk.current / nk.target) * 100 : 0;
+                        }
+                        const isSelected = selectedKpi?.id === nk.id;
+                        return (
+                          <tr
+                            key={nk.id}
+                            onClick={() => setSelectedKpi(nk)}
+                            style={{
+                              cursor: "pointer",
+                              background: isSelected ? "rgba(59,130,246,0.08)" : "inherit",
+                              borderLeft: isSelected ? "4px solid var(--accent-color)" : "none",
+                              transition: "all 0.2s ease"
+                            }}
+                          >
+                            <td style={{ fontFamily: "var(--font-data)", fontWeight: "700" }}>{nk.id}</td>
+                            <td style={{ fontWeight: isSelected ? "700" : "normal" }}>{nk.name}</td>
+                            <td>
+                              <span className={`badge ${nk.type === "자율" ? "badge-blue" : "badge-yellow"}`}>
+                                {nk.type}
+                              </span>
+                            </td>
+                            <td>
+                              <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                                <div style={{ width: "50px", height: "6px", background: "rgba(255,255,255,0.1)", borderRadius: "3px", overflow: "hidden" }}>
+                                  <div style={{ width: `${Math.min(rate, 100)}%`, height: "100%", background: rate >= 100 ? "var(--success-color)" : "var(--warning-color)" }} />
+                                </div>
+                                <span style={{ fontSize: "0.75rem", fontFamily: "var(--font-data)", color: rate >= 100 ? "var(--success-color)" : "inherit" }}>
+                                  {rate.toFixed(1)}%
+                                </span>
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      });
+                    })()}
                   </tbody>
                 </table>
               </div>
@@ -2967,6 +3151,30 @@ export default function App() {
                                   totalKpiRate = 160.0;
                                 } else if (selectedYear === 1 && nk.id === "L-12") {
                                   totalKpiRate = 114.6;
+                                } else if (selectedYear === 1 && nk.id === "L-13") {
+                                  totalKpiRate = 108.0;
+                                } else if (selectedYear === 1 && nk.id === "L-14") {
+                                  totalKpiRate = 500.0;
+                                } else if (selectedYear === 1 && nk.id === "L-15") {
+                                  totalKpiRate = 132.2;
+                                } else if (selectedYear === 1 && nk.id === "L-16") {
+                                  totalKpiRate = 123.3;
+                                } else if (selectedYear === 1 && nk.id === "L-17") {
+                                  totalKpiRate = 0.0;
+                                } else if (selectedYear === 1 && nk.id === "L-18") {
+                                  totalKpiRate = 176.5;
+                                } else if (selectedYear === 1 && nk.id === "L-19") {
+                                  totalKpiRate = 244.0;
+                                } else if (selectedYear === 1 && nk.id === "L-20") {
+                                  totalKpiRate = 202.5;
+                                } else if (selectedYear === 1 && nk.id === "L-21") {
+                                  totalKpiRate = 100.0;
+                                } else if (selectedYear === 1 && nk.id === "L-22") {
+                                  totalKpiRate = 175.0;
+                                } else if (selectedYear === 1 && nk.id === "L-23") {
+                                  totalKpiRate = 144.3;
+                                } else if (selectedYear === 1 && nk.id === "L-24") {
+                                  totalKpiRate = 138.3;
                                 } else if (nk.subItems && nk.subItems.length > 0) {
                                   let sumKpiRate = 0;
                                   nk.subItems.forEach((sub) => {

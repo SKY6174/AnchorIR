@@ -119,6 +119,30 @@ export default function KPIOverview({ projects, currentRole, selectedYear = 2 })
           ach = 160.0;
         } else if (selectedYear === 1 && k.id === "L-12") {
           ach = 114.6;
+        } else if (selectedYear === 1 && k.id === "L-13") {
+          ach = 108.0;
+        } else if (selectedYear === 1 && k.id === "L-14") {
+          ach = 500.0;
+        } else if (selectedYear === 1 && k.id === "L-15") {
+          ach = 132.2;
+        } else if (selectedYear === 1 && k.id === "L-16") {
+          ach = 123.3;
+        } else if (selectedYear === 1 && k.id === "L-17") {
+          ach = 0.0;
+        } else if (selectedYear === 1 && k.id === "L-18") {
+          ach = 176.5;
+        } else if (selectedYear === 1 && k.id === "L-19") {
+          ach = 244.0;
+        } else if (selectedYear === 1 && k.id === "L-20") {
+          ach = 202.5;
+        } else if (selectedYear === 1 && k.id === "L-21") {
+          ach = 100.0;
+        } else if (selectedYear === 1 && k.id === "L-22") {
+          ach = 175.0;
+        } else if (selectedYear === 1 && k.id === "L-23") {
+          ach = 144.3;
+        } else if (selectedYear === 1 && k.id === "L-24") {
+          ach = 138.3;
         } else if (k.subItems && k.subItems.length > 0) {
           let sumSub = 0;
           k.subItems.forEach((sub) => {
