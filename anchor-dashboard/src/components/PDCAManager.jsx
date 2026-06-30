@@ -817,60 +817,56 @@ export default function PDCAManager({
                               <input type="text" className="user-selector" value={inputBudgetExternal} onChange={(e) => setInputBudgetExternal(e.target.value.replace(/[^0-9.]/g, ""))} style={{ padding: "0.2rem 0.4rem", fontSize: "0.7rem" }} />
                             </div>
                           </div>
-                          {/* 이월예산 (1차년도 비활성화) */}
-                          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "0.4rem" }}>
-                            <div>
-                              <span style={{ fontSize: "0.6rem", color: selectedYear === 1 ? "rgba(255,255,255,0.15)" : "var(--text-secondary-dark)" }}>국고 이월예산</span>
-                              <input
-                                type="text"
-                                className="user-selector"
-                                disabled={selectedYear === 1}
-                                value={selectedYear === 1 ? "0.0" : inputBudgetCarryNational}
-                                onChange={(e) => setInputBudgetCarryNational(e.target.value.replace(/[^0-9.]/g, ""))}
-                                style={{
-                                  padding: "0.2rem 0.4rem",
-                                  fontSize: "0.7rem",
-                                  background: selectedYear === 1 ? "rgba(255,255,255,0.02)" : "#18181b",
-                                  color: selectedYear === 1 ? "rgba(255,255,255,0.2)" : "white",
-                                  cursor: selectedYear === 1 ? "not-allowed" : "text"
-                                }}
-                              />
+                          {/* 이월예산 (1차년도 제외) */}
+                          {selectedYear !== 1 && (
+                            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "0.4rem" }}>
+                              <div>
+                                <span style={{ fontSize: "0.6rem", color: "var(--text-secondary-dark)" }}>국고 이월예산</span>
+                                <input
+                                  type="text"
+                                  className="user-selector"
+                                  value={inputBudgetCarryNational}
+                                  onChange={(e) => setInputBudgetCarryNational(e.target.value.replace(/[^0-9.]/g, ""))}
+                                  style={{
+                                    padding: "0.2rem 0.4rem",
+                                    fontSize: "0.7rem",
+                                    background: "#18181b",
+                                    color: "white"
+                                  }}
+                                />
+                              </div>
+                              <div>
+                                <span style={{ fontSize: "0.6rem", color: "var(--text-secondary-dark)" }}>지자체 시비 이월예산</span>
+                                <input
+                                  type="text"
+                                  className="user-selector"
+                                  value={inputBudgetCarryCity}
+                                  onChange={(e) => setInputBudgetCarryCity(e.target.value.replace(/[^0-9.]/g, ""))}
+                                  style={{
+                                    padding: "0.2rem 0.4rem",
+                                    fontSize: "0.7rem",
+                                    background: "#18181b",
+                                    color: "white"
+                                  }}
+                                />
+                              </div>
+                              <div>
+                                <span style={{ fontSize: "0.6rem", color: "var(--text-secondary-dark)" }}>외부사업비 이월예산</span>
+                                <input
+                                  type="text"
+                                  className="user-selector"
+                                  value={inputBudgetCarryExternal}
+                                  onChange={(e) => setInputBudgetCarryExternal(e.target.value.replace(/[^0-9.]/g, ""))}
+                                  style={{
+                                    padding: "0.2rem 0.4rem",
+                                    fontSize: "0.7rem",
+                                    background: "#18181b",
+                                    color: "white"
+                                  }}
+                                />
+                              </div>
                             </div>
-                            <div>
-                              <span style={{ fontSize: "0.6rem", color: selectedYear === 1 ? "rgba(255,255,255,0.15)" : "var(--text-secondary-dark)" }}>지자체 시비 이월예산</span>
-                              <input
-                                type="text"
-                                className="user-selector"
-                                disabled={selectedYear === 1}
-                                value={selectedYear === 1 ? "0.0" : inputBudgetCarryCity}
-                                onChange={(e) => setInputBudgetCarryCity(e.target.value.replace(/[^0-9.]/g, ""))}
-                                style={{
-                                  padding: "0.2rem 0.4rem",
-                                  fontSize: "0.7rem",
-                                  background: selectedYear === 1 ? "rgba(255,255,255,0.02)" : "#18181b",
-                                  color: selectedYear === 1 ? "rgba(255,255,255,0.2)" : "white",
-                                  cursor: selectedYear === 1 ? "not-allowed" : "text"
-                                }}
-                              />
-                            </div>
-                            <div>
-                              <span style={{ fontSize: "0.6rem", color: selectedYear === 1 ? "rgba(255,255,255,0.15)" : "var(--text-secondary-dark)" }}>외부사업비 이월예산</span>
-                              <input
-                                type="text"
-                                className="user-selector"
-                                disabled={selectedYear === 1}
-                                value={selectedYear === 1 ? "0.0" : inputBudgetCarryExternal}
-                                onChange={(e) => setInputBudgetCarryExternal(e.target.value.replace(/[^0-9.]/g, ""))}
-                                style={{
-                                  padding: "0.2rem 0.4rem",
-                                  fontSize: "0.7rem",
-                                  background: selectedYear === 1 ? "rgba(255,255,255,0.02)" : "#18181b",
-                                  color: selectedYear === 1 ? "rgba(255,255,255,0.2)" : "white",
-                                  cursor: selectedYear === 1 ? "not-allowed" : "text"
-                                }}
-                              />
-                            </div>
-                          </div>
+                          )}
                         </div>
                       </div>
 
