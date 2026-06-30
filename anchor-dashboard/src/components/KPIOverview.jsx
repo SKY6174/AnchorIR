@@ -168,20 +168,21 @@ export default function KPIOverview({ projects, currentRole, selectedYear = 2 })
               {formatToMillionWon(totalBudget)} 백만원
             </div>
           </div>
-          <div className="kpi-subtext" style={{ display: "flex", flexDirection: "column", gap: "0.4rem", fontSize: "0.72rem", width: "100%", borderTop: "1px solid rgba(255,255,255,0.1)", paddingTop: "0.5rem", marginTop: "0.4rem" }}>
+          <div className="kpi-subtext" style={{ display: "flex", flexDirection: "column", gap: "0.5rem", width: "100%", borderTop: "1px solid rgba(255,255,255,0.1)", paddingTop: "0.6rem", marginTop: "0.5rem" }}>
             {selectedYear === 1 ? (
               // 1차년도 레이아웃: 신산업/이월사업이 존재하지 않는 전담 본사업 체계
-              <div style={{ display: "flex", justifyContent: "space-between", gap: "0.5rem" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", gap: "0.6rem" }}>
                 <div style={{
                   flex: 1,
                   background: "rgba(59, 130, 246, 0.08)",
                   border: "1px solid rgba(59, 130, 246, 0.2)",
                   borderRadius: "0.375rem",
-                  padding: "0.4rem 0.5rem",
-                  textAlign: "center",
+                  padding: "0.5rem 0.8rem",
                   display: "flex",
-                  flexDirection: "column",
-                  gap: "0.15rem"
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  fontSize: "0.85rem"
                 }}>
                   <span style={{ fontWeight: "700", color: "#60a5fa" }}>앵커(본사업)</span>
                   <span>{formatToMillionWon(anchorBudgetMain)} 백만원</span>
@@ -191,11 +192,12 @@ export default function KPIOverview({ projects, currentRole, selectedYear = 2 })
                   background: "rgba(59, 130, 246, 0.15)",
                   border: "1px solid rgba(59, 130, 246, 0.3)",
                   borderRadius: "0.375rem",
-                  padding: "0.4rem 0.5rem",
-                  textAlign: "center",
+                  padding: "0.5rem 0.8rem",
                   display: "flex",
-                  flexDirection: "column",
-                  gap: "0.15rem"
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  fontSize: "0.85rem"
                 }}>
                   <span style={{ fontWeight: "700", color: "#93c5fd" }}>1차년도(본사업)</span>
                   <span style={{ fontWeight: "700" }}>{formatToMillionWon(totalBudgetMain)} 백만원</span>
@@ -204,17 +206,18 @@ export default function KPIOverview({ projects, currentRole, selectedYear = 2 })
             ) : (
               // 2차년도 이상 레이아웃: 신산업 특화 및 이월사업이 유입된 다중 체계
               <>
-                <div style={{ display: "flex", justifyContent: "space-between", gap: "0.5rem" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", gap: "0.6rem" }}>
                   <div style={{
                     flex: 1,
                     background: "rgba(59, 130, 246, 0.08)",
                     border: "1px solid rgba(59, 130, 246, 0.2)",
                     borderRadius: "0.375rem",
-                    padding: "0.4rem 0.5rem",
-                    textAlign: "center",
+                    padding: "0.5rem 0.8rem",
                     display: "flex",
-                    flexDirection: "column",
-                    gap: "0.15rem"
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    fontSize: "0.85rem"
                   }}>
                     <span style={{ fontWeight: "700", color: "#60a5fa" }}>앵커(본사업)</span>
                     <span>{formatToMillionWon(anchorBudgetMain)} 백만원</span>
@@ -224,27 +227,29 @@ export default function KPIOverview({ projects, currentRole, selectedYear = 2 })
                     background: "rgba(139, 92, 246, 0.08)",
                     border: "1px solid rgba(139, 92, 246, 0.2)",
                     borderRadius: "0.375rem",
-                    padding: "0.4rem 0.5rem",
-                    textAlign: "center",
+                    padding: "0.5rem 0.8rem",
                     display: "flex",
-                    flexDirection: "column",
-                    gap: "0.15rem"
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    fontSize: "0.85rem"
                   }}>
                     <span style={{ fontWeight: "700", color: "#a78bfa" }}>앵커(이월사업)</span>
                     <span>{formatToMillionWon(anchorBudgetCarry)} 백만원</span>
                   </div>
                 </div>
-                <div style={{ display: "flex", justifyContent: "space-between", gap: "0.5rem" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", gap: "0.6rem" }}>
                   <div style={{
                     flex: 1,
                     background: "rgba(85, 182, 133, 0.08)",
                     border: "1px solid rgba(85, 182, 133, 0.2)",
                     borderRadius: "0.375rem",
-                    padding: "0.4rem 0.5rem",
-                    textAlign: "center",
+                    padding: "0.5rem 0.8rem",
                     display: "flex",
-                    flexDirection: "column",
-                    gap: "0.15rem"
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    fontSize: "0.85rem"
                   }}>
                     <span style={{ fontWeight: "700", color: "#55b685" }}>신산업(본사업)</span>
                     <span>{formatToMillionWon(shinSanUpBudgetMain)} 백만원</span>
@@ -254,27 +259,29 @@ export default function KPIOverview({ projects, currentRole, selectedYear = 2 })
                     background: "rgba(233, 162, 59, 0.08)",
                     border: "1px solid rgba(233, 162, 59, 0.2)",
                     borderRadius: "0.375rem",
-                    padding: "0.4rem 0.5rem",
-                    textAlign: "center",
+                    padding: "0.5rem 0.8rem",
                     display: "flex",
-                    flexDirection: "column",
-                    gap: "0.15rem"
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    fontSize: "0.85rem"
                   }}>
                     <span style={{ fontWeight: "700", color: "#e9a23b" }}>신산업(이월사업)</span>
                     <span>{formatToMillionWon(shinSanUpBudgetCarry)} 백만원</span>
                   </div>
                 </div>
-                <div style={{ display: "flex", justifyContent: "space-between", gap: "0.5rem", borderTop: "1px dashed rgba(255,255,255,0.15)", paddingTop: "0.5rem", marginTop: "0.2rem" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", gap: "0.6rem", borderTop: "1px dashed rgba(255,255,255,0.15)", paddingTop: "0.6rem", marginTop: "0.3rem" }}>
                   <div style={{
                     flex: 1,
                     background: "rgba(85, 182, 133, 0.15)",
                     border: "1px solid rgba(85, 182, 133, 0.3)",
                     borderRadius: "0.375rem",
-                    padding: "0.4rem 0.5rem",
-                    textAlign: "center",
+                    padding: "0.5rem 0.8rem",
                     display: "flex",
-                    flexDirection: "column",
-                    gap: "0.15rem"
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    fontSize: "0.85rem"
                   }}>
                     <span style={{ fontWeight: "700", color: "#94deb8" }}>{selectedYear}차년도(본사업)</span>
                     <span style={{ fontWeight: "700" }}>{formatToMillionWon(totalBudgetMain)} 백만원</span>
@@ -284,11 +291,12 @@ export default function KPIOverview({ projects, currentRole, selectedYear = 2 })
                     background: "rgba(233, 162, 59, 0.15)",
                     border: "1px solid rgba(233, 162, 59, 0.3)",
                     borderRadius: "0.375rem",
-                    padding: "0.4rem 0.5rem",
-                    textAlign: "center",
+                    padding: "0.5rem 0.8rem",
                     display: "flex",
-                    flexDirection: "column",
-                    gap: "0.15rem"
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    fontSize: "0.85rem"
                   }}>
                     <span style={{ fontWeight: "700", color: "#f6c97f" }}>{selectedYear - 1}차년도(이월사업)</span>
                     <span style={{ fontWeight: "700" }}>{formatToMillionWon(totalBudgetCarry)} 백만원</span>
