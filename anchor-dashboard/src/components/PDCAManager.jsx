@@ -313,7 +313,7 @@ export default function PDCAManager({
       setInputActualFrequency("");
       setInputAchieveRate("");
     }
-  }, [selectedProgId, selectedYear]);
+  }, [selectedProgId, selectedYear, projects]);
 
   // 추진일정 변경 이벤트 핸들러 (기존 호환 유지)
   const handleTimelineChange = (start, end) => {
