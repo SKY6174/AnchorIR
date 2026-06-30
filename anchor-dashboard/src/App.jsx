@@ -946,7 +946,8 @@ const getNormalizedKpi = (k, selectedYear) => {
 export default function App() {
   const [currentUser, setCurrentUser] = useState(null);
   const [projects, setProjects] = useState(() => {
-    const cached = localStorage.getItem("anchor_projects_data");
+    // 1차년도 프로그램 ID 신규 규칙 적용으로 인한 캐시 오염을 막기 위해 로컬스토리지 키 버전을 v3로 업그레이드합니다.
+    const cached = localStorage.getItem("anchor_projects_data_v3");
     if (cached) {
       try {
         const loaded = JSON.parse(cached);
@@ -1644,7 +1645,8 @@ export default function App() {
 
   // projects 상태 변경 시 localStorage 자동 기입 (새로고침 휘발 방지 우회책)
   useEffect(() => {
-    localStorage.setItem("anchor_projects_data", JSON.stringify(projects));
+    // 1차년도 프로그램 ID 신규 규칙 적용으로 인한 캐시 오염을 막기 위해 로컬스토리지 키 버전을 v3로 업그레이드합니다.
+    localStorage.setItem("anchor_projects_data_v3", JSON.stringify(projects));
   }, [projects]);
 
   /* 
