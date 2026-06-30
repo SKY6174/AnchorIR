@@ -86,7 +86,10 @@ export default function ExcelUploader({
         if (mode === "BUDGET" && viewMode === "unit" && selectedUnitId) {
           // 단위과제별 조회/등록 탭이 선택되어 있다면, 업로드된 엑셀 데이터 중 해당 단위과제에 속한 데이터만 필터링하여 반영
           dataToUpdate = normalizedJson.filter(
-            (row) => row["단위과제ID"] && String(row["단위과제ID"]).trim() === String(selectedUnitId).trim()
+            (row) => {
+              const unitIdInRow = row["단위과제ID"] ? String(row["단위과제ID"]).trim() : "";
+              return unitIdInRow === String(selectedUnitId).trim();
+            }
           );
 
           if (dataToUpdate.length === 0) {
@@ -99,6 +102,16 @@ export default function ExcelUploader({
         // App.jsx의 데이터 갱신 로직으로 파싱된 배열 데이터와 업데이트 타입 전달
         onUpdateData(dataToUpdate, isBudgetUpdate ? "BUDGET" : "KPI");
         setSuccess(true);
+
+        // 성공 안내 피드백 알럿 메시지 출력 (반응형 알림)
+        if (mode === "BUDGET" && viewMode === "unit" && selectedUnitId) {
+          alert(`[업로드 완료] 현재 선택된 단위과제("${selectedUnitId}")의 예산 데이터 ${dataToUpdate.length}건이 성공적으로 업데이트되었습니다.`);
+        } else if (mode === "BUDGET") {
+          alert(`[업로드 완료] 전체 단위과제의 예산 데이터 ${dataToUpdate.length}건이 일괄 업데이트되었습니다.`);
+        } else {
+          alert(`[업로드 완료] 성과지표 데이터 ${dataToUpdate.length}건이 성공적으로 업데이트되었습니다.`);
+        }
+
         setTimeout(() => setSuccess(false), 3000);
       } catch (err) {
         console.error(err);
@@ -295,7 +308,11 @@ export default function ExcelUploader({
           {mode === "BUDGET" ? (
             <button className="btn-primary" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", color: "var(--text-primary-dark)" }} onClick={() => downloadSample("BUDGET")}>
               <Download size={16} />
-              <span>재원별 예산양식 받기</span>
+              <span>
+                {viewMode === "unit" && selectedUnitId 
+                  ? `재원별 예산양식 받기 (${selectedUnitId} 전용)` 
+                  : "재원별 예산양식 받기 (전체 목록)"}
+              </span>
             </button>
           ) : (
             <button className="btn-primary" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", color: "var(--text-primary-dark)" }} onClick={() => downloadSample("KPI")}>
