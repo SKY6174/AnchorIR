@@ -1318,7 +1318,32 @@ export default function App() {
         finalUsersMap.set(idLower, u);
       });
 
-      setRegisteredUsers(Array.from(finalUsersMap.values()));
+      // 직책별 가중치 순서 정의 (0순위 관리자 ~ 5순위 실무 연구원)
+      const roleRanks = {
+        ADMIN: 0,
+        DIRECTOR: 1,
+        HQ_HEAD: 2,
+        CENTER_ECC: 3,
+        CENTER_ICC: 3,
+        CENTER_RCC: 3,
+        CENTER_AID: 3,
+        CENTER_NULBOM: 3,
+        CENTER_SPECIAL: 3,
+        TEAM_LEADER: 4,
+        RESEARCHER: 5
+      };
+
+      const sortedUsers = Array.from(finalUsersMap.values()).sort((a, b) => {
+        const rankA = roleRanks[a.role_key] !== undefined ? roleRanks[a.role_key] : 99;
+        const rankB = roleRanks[b.role_key] !== undefined ? roleRanks[b.role_key] : 99;
+        if (rankA !== rankB) {
+          return rankA - rankB;
+        }
+        // 동일한 직급일 경우 ID 알파벳 순 정렬
+        return a.id.localeCompare(b.id, 'en');
+      });
+
+      setRegisteredUsers(sortedUsers);
     } catch (err) {
       console.error("Fetch registered users error:", err);
       setRegisteredUsers(demoUsers);
