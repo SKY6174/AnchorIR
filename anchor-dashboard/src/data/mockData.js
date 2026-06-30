@@ -78,7 +78,7 @@ export const initialProjectsData = [
                 name: "신규 주문식 교육과정 개발 건수",
                 unit: "건",
                 years: {
-                  1: { target: 0, current: 0 },
+                  1: { target: 3, current: 3 },
                   2: { target: 5.0, current: 4.0 },
                   3: { target: 6.0, current: 0 },
                   4: { target: 7.0, current: 0 },
@@ -90,7 +90,7 @@ export const initialProjectsData = [
                 name: "주문식 교육 교재 개발 성과 건수",
                 unit: "건",
                 years: {
-                  1: { target: 0, current: 0 },
+                  1: { target: 6, current: 6 },
                   2: { target: 10.0, current: 9.0 },
                   3: { target: 12.0, current: 0 },
                   4: { target: 14.0, current: 0 },
@@ -113,7 +113,7 @@ export const initialProjectsData = [
                 name: "핵심 분야 현장실습 참여 이수 인원",
                 unit: "명",
                 years: {
-                  1: { target: 0, current: 0 },
+                  1: { target: 100, current: 95 },
                   2: { target: 200.0, current: 160.0 },
                   3: { target: 220.0, current: 0 },
                   4: { target: 240.0, current: 0 },
@@ -125,7 +125,7 @@ export const initialProjectsData = [
                 name: "참여 학생 현장실습 만족 평점",
                 unit: "점",
                 years: {
-                  1: { target: 0, current: 0 },
+                  1: { target: 90, current: 82 },
                   2: { target: 95.0, current: 85.0 },
                   3: { target: 96.0, current: 0 },
                   4: { target: 97.0, current: 0 },
@@ -314,7 +314,7 @@ export const initialProjectsData = [
                 name: "창업 특화 아카데미 교육 수료 인원",
                 unit: "명",
                 years: {
-                  1: { target: 0, current: 0 },
+                  1: { target: 5, current: 5 },
                   2: { target: 100.0, current: 85.0 },
                   3: { target: 110.0, current: 0 },
                   4: { target: 120.0, current: 0 },
@@ -326,7 +326,7 @@ export const initialProjectsData = [
                 name: "육성 지원하는 학생 창업동아리 수",
                 unit: "개",
                 years: {
-                  1: { target: 0, current: 0 },
+                  1: { target: 120, current: 110 },
                   2: { target: 10.0, current: 8.5 },
                   3: { target: 12.0, current: 0 },
                   4: { target: 14.0, current: 0 },
@@ -349,7 +349,7 @@ export const initialProjectsData = [
                 name: "학생 및 교원 신규 기술창업 기업 수",
                 unit: "개",
                 years: {
-                  1: { target: 0, current: 0 },
+                  1: { target: 8, current: 8 },
                   2: { target: 5.0, current: 4.0 },
                   3: { target: 6.0, current: 0 },
                   4: { target: 7.0, current: 0 },
@@ -361,7 +361,7 @@ export const initialProjectsData = [
                 name: "창업기업 외부 매칭 투자유치 유치액",
                 unit: "만원",
                 years: {
-                  1: { target: 0, current: 0 },
+                  1: { target: 3, current: 3 },
                   2: { target: 20000.0, current: 15000.0 },
                   3: { target: 22000.0, current: 0 },
                   4: { target: 25000.0, current: 0 },
@@ -450,7 +450,7 @@ export const initialProjectsData = [
                 name: "외국인 전임교원 신규 유치 확보율",
                 unit: "%",
                 years: {
-                  1: { target: 0, current: 0 },
+                  1: { target: 2, current: 2 },
                   2: { target: 12.0, current: 9.6 },
                   3: { target: 13.0, current: 0 },
                   4: { target: 14.0, current: 0 },
@@ -462,7 +462,7 @@ export const initialProjectsData = [
                 name: "해외 파견 및 글로벌 학기 참여 재학생 수",
                 unit: "명",
                 years: {
-                  1: { target: 0, current: 0 },
+                  1: { target: 25, current: 24 },
                   2: { target: 40.0, current: 32.0 },
                   3: { target: 45.0, current: 0 },
                   4: { target: 50.0, current: 0 },
@@ -485,7 +485,7 @@ export const initialProjectsData = [
                 name: "정규과정 입학 외국인 유학생 수",
                 unit: "명",
                 years: {
-                  1: { target: 0, current: 0 },
+                  1: { target: 15, current: 15 },
                   2: { target: 150.0, current: 120.0 },
                   3: { target: 160.0, current: 0 },
                   4: { target: 170.0, current: 0 },
@@ -497,7 +497,7 @@ export const initialProjectsData = [
                 name: "졸업 외국인 유학생 울산 정주 취업률",
                 unit: "%",
                 years: {
-                  1: { target: 0, current: 0 },
+                  1: { target: 90, current: 85 },
                   2: { target: 30.0, current: 22.0 },
                   3: { target: 32.0, current: 0 },
                   4: { target: 34.0, current: 0 },
@@ -594,7 +594,7 @@ export const initialProjectsData = [
                 name: "지산학 연계 공동 특허 등록 건수",
                 unit: "건",
                 years: {
-                  1: { target: 0, current: 0 },
+                  1: { target: 10, current: 9 },
                   2: { target: 8.0, current: 6.0 },
                   3: { target: 10.0, current: 0 },
                   4: { target: 11.0, current: 0 },
@@ -606,7 +606,7 @@ export const initialProjectsData = [
                 name: "체결한 특허기술 기술료 징수액",
                 unit: "만원",
                 years: {
-                  1: { target: 0, current: 0 },
+                  1: { target: 50, current: 48 },
                   2: { target: 3000.0, current: 2000.0 },
                   3: { target: 3500.0, current: 0 },
                   4: { target: 4000.0, current: 0 },
@@ -629,7 +629,7 @@ export const initialProjectsData = [
                 name: "중소기업 애로기술 지도 자문 건수",
                 unit: "건",
                 years: {
-                  1: { target: 0, current: 0 },
+                  1: { target: 15, current: 15 },
                   2: { target: 50.0, current: 44.0 },
                   3: { target: 55.0, current: 0 },
                   4: { target: 60.0, current: 0 },
@@ -641,7 +641,7 @@ export const initialProjectsData = [
                 name: "지도 자문 수혜업체 종합 만족도",
                 unit: "점",
                 years: {
-                  1: { target: 0, current: 0 },
+                  1: { target: 20, current: 20 },
                   2: { target: 95.0, current: 83.6 },
                   3: { target: 96.0, current: 0 },
                   4: { target: 97.0, current: 0 },
@@ -866,7 +866,7 @@ export const initialProjectsData = [
                 name: "ESG 탄소중립 수료 아카데미 학생 수",
                 unit: "명",
                 years: {
-                  1: { target: 0, current: 0 },
+                  1: { target: 40, current: 38 },
                   2: { target: 100.0, current: 82.0 },
                   3: { target: 110.0, current: 0 },
                   4: { target: 120.0, current: 0 },
@@ -878,7 +878,7 @@ export const initialProjectsData = [
                 name: "학생 연계 ESG 기업 컨설팅 수행 건수",
                 unit: "건",
                 years: {
-                  1: { target: 0, current: 0 },
+                  1: { target: 2, current: 2 },
                   2: { target: 5.0, current: 4.1 },
                   3: { target: 6.0, current: 0 },
                   4: { target: 7.0, current: 0 },
@@ -901,7 +901,7 @@ export const initialProjectsData = [
                 name: "모니터링 솔루션 적용 지원 기업 수",
                 unit: "개",
                 years: {
-                  1: { target: 0, current: 0 },
+                  1: { target: 3, current: 3 },
                   2: { target: 5.0, current: 4.0 },
                   3: { target: 6.0, current: 0 },
                   4: { target: 7.0, current: 0 },
@@ -913,7 +913,7 @@ export const initialProjectsData = [
                 name: "수혜기업 평균 이산화탄소 절감 비율",
                 unit: "%",
                 years: {
-                  1: { target: 0, current: 0 },
+                  1: { target: 2, current: 2 },
                   2: { target: 12.0, current: 9.0 },
                   3: { target: 13.0, current: 0 },
                   4: { target: 14.0, current: 0 },
@@ -1001,7 +1001,7 @@ export const initialProjectsData = [
                 name: "K-MOOC 안전 보건 신규 강좌 개발",
                 unit: "건",
                 years: {
-                  1: { target: 0, current: 0 },
+                  1: { target: 12, current: 12 },
                   2: { target: 4.0, current: 3.0 },
                   3: { target: 5.0, current: 0 },
                   4: { target: 6.0, current: 0 },
@@ -1013,7 +1013,7 @@ export const initialProjectsData = [
                 name: "개설 강좌 안전 이수 완료 재직자 수",
                 unit: "명",
                 years: {
-                  1: { target: 0, current: 0 },
+                  1: { target: 3, current: 3 },
                   2: { target: 500.0, current: 375.0 },
                   3: { target: 550.0, current: 0 },
                   4: { target: 600.0, current: 0 },
@@ -1036,7 +1036,7 @@ export const initialProjectsData = [
                 name: "안전 VR 시뮬레이터 교육 이수생 수",
                 unit: "명",
                 years: {
-                  1: { target: 0, current: 0 },
+                  1: { target: 80, current: 75 },
                   2: { target: 200.0, current: 150.0 },
                   3: { target: 220.0, current: 0 },
                   4: { target: 240.0, current: 0 },
@@ -1048,7 +1048,7 @@ export const initialProjectsData = [
                 name: "신규 개발 도입한 안전 VR 교육 콘텐츠",
                 unit: "개",
                 years: {
-                  1: { target: 0, current: 0 },
+                  1: { target: 15, current: 15 },
                   2: { target: 5.0, current: 3.5 },
                   3: { target: 6.0, current: 0 },
                   4: { target: 7.0, current: 0 },
@@ -1145,7 +1145,7 @@ export const initialProjectsData = [
                 name: "직무도약 평생아카데미 이수 학습자",
                 unit: "명",
                 years: {
-                  1: { target: 0, current: 0 },
+                  1: { target: 90, current: 85 },
                   2: { target: 150.0, current: 120.0 },
                   3: { target: 160.0, current: 0 },
                   4: { target: 170.0, current: 0 },
@@ -1157,7 +1157,7 @@ export const initialProjectsData = [
                 name: "자격증 취득 지원반 참여 만족도",
                 unit: "점",
                 years: {
-                  1: { target: 0, current: 0 },
+                  1: { target: 90, current: 70 },
                   2: { target: 95.0, current: 65.0 },
                   3: { target: 96.0, current: 0 },
                   4: { target: 97.0, current: 0 },
@@ -1180,7 +1180,7 @@ export const initialProjectsData = [
                 name: "직무 평생교육 전용 교재 신개발 수",
                 unit: "건",
                 years: {
-                  1: { target: 0, current: 0 },
+                  1: { target: 6, current: 5 },
                   2: { target: 10.0, current: 8.0 },
                   3: { target: 12.0, current: 0 },
                   4: { target: 14.0, current: 0 },
@@ -1192,7 +1192,7 @@ export const initialProjectsData = [
                 name: "평생교육 학습 참여자 강의 종합 평점",
                 unit: "점",
                 years: {
-                  1: { target: 0, current: 0 },
+                  1: { target: 90, current: 75 },
                   2: { target: 95.0, current: 70.0 },
                   3: { target: 96.0, current: 0 },
                   4: { target: 97.0, current: 0 },
@@ -1281,7 +1281,7 @@ export const initialProjectsData = [
                 name: "양성 연수 이수 늘봄 전담 교사 수",
                 unit: "명",
                 years: {
-                  1: { target: 0, current: 0 },
+                  1: { target: 2, current: 2 },
                   2: { target: 5.0, current: 3.5 },
                   3: { target: 6.0, current: 0 },
                   4: { target: 7.0, current: 0 },
@@ -1293,7 +1293,7 @@ export const initialProjectsData = [
                 name: "늘봄 연수 전용 실습 교재 개발 수",
                 unit: "건",
                 years: {
-                  1: { target: 0, current: 0 },
+                  1: { target: 1, current: 1 },
                   2: { target: 3.0, current: 2.1 },
                   3: { target: 4.0, current: 0 },
                   4: { target: 5.0, current: 0 },
@@ -1316,7 +1316,7 @@ export const initialProjectsData = [
                 name: "돌봄 패키지 위탁 교육 참여 학생 수",
                 unit: "명",
                 years: {
-                  1: { target: 0, current: 0 },
+                  1: { target: 100, current: 95 },
                   2: { target: 200.0, current: 160.0 },
                   3: { target: 220.0, current: 0 },
                   4: { target: 240.0, current: 0 },
@@ -1328,7 +1328,7 @@ export const initialProjectsData = [
                 name: "참여 학부모 대상 만족도 종합 평정",
                 unit: "점",
                 years: {
-                  1: { target: 0, current: 0 },
+                  1: { target: 90, current: 75 },
                   2: { target: 95.0, current: 72.0 },
                   3: { target: 96.0, current: 0 },
                   4: { target: 97.0, current: 0 },
@@ -1424,7 +1424,7 @@ export const initialProjectsData = [
                 name: "리빙랩 해결 프로젝트 성공 건수",
                 unit: "건",
                 years: {
-                  1: { target: 0, current: 0 },
+                  1: { target: 2, current: 2 },
                   2: { target: 4.0, current: 3.0 },
                   3: { target: 5.0, current: 0 },
                   4: { target: 6.0, current: 0 },
@@ -1436,7 +1436,7 @@ export const initialProjectsData = [
                 name: "프로젝트 참여 수혜 주민 인원",
                 unit: "명",
                 years: {
-                  1: { target: 0, current: 0 },
+                  1: { target: 80, current: 80 },
                   2: { target: 150.0, current: 130.0 },
                   3: { target: 160.0, current: 0 },
                   4: { target: 170.0, current: 0 },
@@ -1459,7 +1459,7 @@ export const initialProjectsData = [
                 name: "봉사활동 연계 프로그램 참여 누적 시간",
                 unit: "시간",
                 years: {
-                  1: { target: 0, current: 0 },
+                  1: { target: 600, current: 580 },
                   2: { target: 1000.0, current: 800.0 },
                   3: { target: 1100.0, current: 0 },
                   4: { target: 1200.0, current: 0 },
@@ -1471,7 +1471,7 @@ export const initialProjectsData = [
                 name: "봉사 지원을 받은 관내 사회복지기관",
                 unit: "개소",
                 years: {
-                  1: { target: 0, current: 0 },
+                  1: { target: 6, current: 6 },
                   2: { target: 10.0, current: 7.8 },
                   3: { target: 12.0, current: 0 },
                   4: { target: 14.0, current: 0 },
@@ -1559,7 +1559,7 @@ export const initialProjectsData = [
                 name: "의료 혜택 서비스 지원 수혜 인원",
                 unit: "명",
                 years: {
-                  1: { target: 0, current: 0 },
+                  1: { target: 180, current: 175 },
                   2: { target: 300.0, current: 250.0 },
                   3: { target: 320.0, current: 0 },
                   4: { target: 340.0, current: 0 },
@@ -1571,7 +1571,7 @@ export const initialProjectsData = [
                 name: "지역 보건 봉사 활동 참여 동아리 수",
                 unit: "개",
                 years: {
-                  1: { target: 0, current: 0 },
+                  1: { target: 3, current: 3 },
                   2: { target: 5.0, current: 4.0 },
                   3: { target: 6.0, current: 0 },
                   4: { target: 7.0, current: 0 },
@@ -1659,7 +1659,7 @@ export const initialProjectsData = [
                 name: "청년 창작공유 신규 리모델링 공간",
                 unit: "개소",
                 years: {
-                  1: { target: 0, current: 0 },
+                  1: { target: 1, current: 1 },
                   2: { target: 3.0, current: 2.0 },
                   3: { target: 4.0, current: 0 },
                   4: { target: 5.0, current: 0 },
@@ -1671,7 +1671,7 @@ export const initialProjectsData = [
                 name: "공간 신규 매칭 창작기업 입주 수",
                 unit: "개",
                 years: {
-                  1: { target: 0, current: 0 },
+                  1: { target: 5, current: 5 },
                   2: { target: 10.0, current: 9.0 },
                   3: { target: 11.0, current: 0 },
                   4: { target: 12.0, current: 0 },
@@ -1694,7 +1694,7 @@ export const initialProjectsData = [
                 name: "에코디자인 굿즈 신규 개발 수",
                 unit: "종",
                 years: {
-                  1: { target: 0, current: 0 },
+                  1: { target: 4, current: 4 },
                   2: { target: 8.0, current: 6.0 },
                   3: { target: 9.0, current: 0 },
                   4: { target: 10.0, current: 0 },
@@ -1706,7 +1706,7 @@ export const initialProjectsData = [
                 name: "체험 축제 참여 관내 수혜 시민 인원",
                 unit: "명",
                 years: {
-                  1: { target: 0, current: 0 },
+                  1: { target: 250, current: 240 },
                   2: { target: 500.0, current: 360.0 },
                   3: { target: 550.0, current: 0 },
                   4: { target: 600.0, current: 0 },
