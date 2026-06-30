@@ -6,7 +6,7 @@ import PDCAManager from "./components/PDCAManager";
 import BudgetItemsManager from "./components/BudgetItemsManager";
 import ProgramProgressManager from "./components/ProgramProgressManager";
 import AuthManager from "./components/AuthManager";
-import { initialProjectsData, userRoles } from "./data/mockData";
+import { initialProjectsData, userRoles, YEAR_1_PROGRAMS, Y1_UNIT_META } from "./data/mockData";
 import { Sun, Moon, LogOut, HelpCircle, ArrowUpRight, Lock as LockIcon } from "lucide-react";
 import { supabase } from "./supabaseClient";
 import CryptoJS from "crypto-js";
@@ -192,9 +192,66 @@ function formatDataToMultiYear(data) {
       recalculateCarryOver(unitYears);
 
       // 2. 세부 프로그램 다년도 맵핑
-      const newPrograms = u.programs.map((prog) => {
+      // 1차년도용 프로그램 목록 생성
+      const y1ProgList = YEAR_1_PROGRAMS[u.id] || [];
+      const y1Progs = y1ProgList.map((item) => {
+        const meta = Y1_UNIT_META[u.id] || { budget: 1, national: 1, city: 0, carry: 0 };
+        const nationalRatio = meta.national / meta.budget;
+        const spentRatio = (meta.budget - meta.carry) / meta.budget;
+        
+        const budgetMain = item.budget;
+        const spentMain = Math.round(item.budget * spentRatio);
+        
+        const budget_national = Math.round(budgetMain * nationalRatio);
+        const budget_city = budgetMain - budget_national;
+        
+        const spent_national = Math.round(spentMain * nationalRatio);
+        const spent_city = spentMain - spent_national;
+        
+        const progYears = {
+          1: {
+            budget_main: budgetMain,
+            spent_main: spentMain,
+            budget_carry: 0,
+            spent_carry: 0,
+            
+            budget_national,
+            spent_national,
+            budget_city,
+            spent_city,
+            budget_external: 0,
+            spent_external: 0,
+            
+            budget_carry_national: 0,
+            spent_carry_national: 0,
+            budget_carry_city: 0,
+            spent_carry_city: 0,
+            budget_carry_external: 0,
+            spent_carry_external: 0
+          }
+        };
+        
+        return {
+          id: item.id,
+          title: item.title,
+          assignee: item.assignee || "미지정",
+          pdca: { p: "대기", d: "대기", c: "대기", a: "대기" },
+          years: progYears,
+          timeline: "",
+          targetAudience: "",
+          coopDept: "",
+          evalType: "우수",
+          excellent: "",
+          improvePlan: "",
+          deficiency: "",
+          actionItem: ""
+        };
+      });
+
+      // 2~5차년도용 프로그램 다년도 매핑 (1차년도는 제외)
+      const y2Progs = u.programs.map((prog) => {
         const progYears = {};
-        [1, 2, 3, 4, 5].forEach((yr) => {
+        [2, 3, 4, 5].forEach((yr) => {
           let budgetMain = 0;
           let spentMain = 0;
           let budgetCarry = 0;
@@ -205,11 +262,6 @@ function formatDataToMultiYear(data) {
             spentMain = prog.spent_2026 || 0;
             budgetCarry = prog.budget_2025_carry || 0;
             spentCarry = prog.spent_2025_carry || 0;
-          } else if (yr === 1) {
-            budgetMain = Math.round((prog.budget_2026 || 0) * 0.9);
-            spentMain = Math.max(0, budgetMain - (prog.budget_2025_carry || 0));
-            budgetCarry = 0;
-            spentCarry = 0;
           } else {
             const factor = yr === 3 ? 1.1 : yr === 4 ? 1.2 : 1.3;
             budgetMain = Math.round((prog.budget_2026 || 0) * factor);
@@ -218,9 +270,6 @@ function formatDataToMultiYear(data) {
             spentCarry = 0;
           }
 
-          // 재원 다변화 디폴트 배정 규칙:
-          // 특정 외부위탁 성격의 프로그램(ID의 끝이 -2이거나, 명칭에 '위탁', '협력', '외부'가 들어가는 경우)은 '외부사업비'로 100% 배정
-          // 그 외 일반 앵커 본사업은 국고 50%, 시비 50% 분할 매칭
           const isExternalSub = prog.id.endsWith("-2") || prog.id.includes("위탁") || prog.title.includes("위탁") || prog.title.includes("협력");
           
           let budget_national = 0;
@@ -234,7 +283,6 @@ function formatDataToMultiYear(data) {
             budget_city = budgetMain - budget_national;
           }
 
-          // 집행액(spent)도 배정 비율에 따라 배분
           let spent_national = 0;
           let spent_city = 0;
           let spent_external = 0;
@@ -247,7 +295,6 @@ function formatDataToMultiYear(data) {
             }
           }
 
-          // 이월예산(carry) 국고/시비/외부 배분
           let carry_national = 0;
           let carry_city = 0;
           let carry_external = 0;
@@ -278,7 +325,6 @@ function formatDataToMultiYear(data) {
             budget_carry: budgetCarry,
             spent_carry: spentCarry,
 
-            // 세부 재원 예산/집행 필드
             budget_national,
             spent_national,
             budget_city,
@@ -297,8 +343,7 @@ function formatDataToMultiYear(data) {
 
         recalculateCarryOver(progYears);
 
-        // recalculateCarryOver 실행 후 갱신된 이월예산(budget_carry)에 맞게 세부 이월액 재조정
-        [1, 2, 3, 4, 5].forEach((yr) => {
+        [2, 3, 4, 5].forEach((yr) => {
           const py = progYears[yr];
           const isExternalSub = prog.id.endsWith("-2") || prog.id.includes("위탁") || prog.title.includes("위탁") || prog.title.includes("협력");
           if (isExternalSub) {
@@ -315,18 +360,18 @@ function formatDataToMultiYear(data) {
         return {
           ...prog,
           years: progYears,
-          // P 단계 기본 기획 필드 추가
           timeline: prog.timeline || "",
           targetAudience: prog.targetAudience || "",
           coopDept: prog.coopDept || "",
-          // A 단계 환류 필드 추가
-          evalType: prog.evalType || "우수", // "우수" | "미흡"
+          evalType: prog.evalType || "우수",
           excellent: prog.excellent || "",
           improvePlan: prog.improvePlan || "",
           deficiency: prog.deficiency || "",
           actionItem: prog.actionItem || ""
         };
       });
+
+      const newPrograms = [...y1Progs, ...y2Progs];
 
       // 3. 비목별 예산 다년도 맵핑
       const newBudgetDetails = {};
@@ -1473,10 +1518,22 @@ export default function App() {
   // 1차년도용 단위과제 필터링 및 이름/ID 변환
   const getNormalizedProjectsForRendering = (rawProjects, yr) => {
     if (!rawProjects) return [];
-    if (yr !== 1) return rawProjects;
-
+    
     const cloned = JSON.parse(JSON.stringify(rawProjects));
     
+    if (yr !== 1) {
+      // 2~5차년도에는 해당 연도의 프로그램만 필터링
+      return cloned.map(p => {
+        const newUnits = p.units.map(u => {
+          return {
+            ...u,
+            programs: u.programs.filter(prog => prog.years && prog.years[yr])
+          };
+        });
+        return { ...p, units: newUnits };
+      });
+    }
+
     // 1차년도에 A1나 및 공통 E는 필터링 제외
     const mapping = {
       "A1가": { id: "A1", title: "지역과 미래를 만드는 UC-HYPER 전문기술인재 양성" },
@@ -1500,14 +1557,19 @@ export default function App() {
         .filter(u => u.id !== "A1나")
         .map(u => {
           const mapInfo = mapping[u.id];
+          const filteredPrograms = u.programs.filter(prog => prog.years && prog.years[1]);
           if (mapInfo) {
             return {
               ...u,
               id: mapInfo.id,
-              title: mapInfo.title
+              title: mapInfo.title,
+              programs: filteredPrograms
             };
           }
-          return u;
+          return {
+            ...u,
+            programs: filteredPrograms
+          };
         });
 
       return {
@@ -2872,13 +2934,21 @@ export default function App() {
                         })
                         .flatMap((u) => {
                           return u.programs.map((prog) => {
-                              let dept = "사업운영팀";
-                            if (["A1가", "A2", "A3"].includes(u.id)) dept = "ECC센터";
-                            else if (u.id === "A1나") dept = "신산업특화센터";
-                            else if (["B1", "B3", "B4"].includes(u.id)) dept = "ICC센터";
-                            else if (u.id === "B2") dept = "AID-X지원센터";
-                            else if (u.id === "C2") dept = "울산늘봄누리센터";
-                            else if (["C1", "D1", "D2", "D3"].includes(u.id)) dept = "RCC센터";
+                            let dept = "사업운영팀";
+                            if (selectedYear === 1) {
+                              if (["A1", "A2", "D4"].includes(u.id)) dept = "ECC센터";
+                              else if (["B1", "B3", "C1", "C3"].includes(u.id)) dept = "ICC센터";
+                              else if (["B2", "D1", "D3"].includes(u.id)) dept = "RCC센터";
+                              else if (u.id === "C2") dept = "AID-X지원센터";
+                              else if (u.id === "D2") dept = "울산늘봄누리센터";
+                            } else {
+                              if (["A1가", "A2", "A3"].includes(u.id)) dept = "ECC센터";
+                              else if (u.id === "A1나") dept = "신산업특화센터";
+                              else if (["B1", "B3", "B4"].includes(u.id)) dept = "ICC센터";
+                              else if (u.id === "B2") dept = "AID-X지원센터";
+                              else if (u.id === "C2") dept = "울산늘봄누리센터";
+                              else if (["C1", "D1", "D2", "D3"].includes(u.id)) dept = "RCC센터";
+                            }
 
                             return (
                               <tr key={prog.id}>
