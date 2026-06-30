@@ -766,55 +766,6 @@ export default function App() {
   const [activeTab, setActiveTab] = useState("dashboard");
   const [darkMode, setDarkMode] = useState(true);
 
-  // 1차년도용 단위과제 필터링 및 이름/ID 변환
-  const getNormalizedProjectsForRendering = (rawProjects, yr) => {
-    if (!rawProjects) return [];
-    if (yr !== 1) return rawProjects;
-
-    const cloned = JSON.parse(JSON.stringify(rawProjects));
-    
-    // 1차년도에 A1나 및 공통 E는 필터링 제외
-    const mapping = {
-      "A1가": { id: "A1", title: "지역과 미래를 만드는 UC-HYPER 전문기술인재 양성" },
-      "A2": { id: "A2", title: "지역 창업 생태계 혁신을 위한 글로컬 창업 문화 조성" },
-      "A3": { id: "D4", title: "지역산업 연계 글로벌 협력 거점 대학 육성" },
-      "B1": { id: "B1", title: "중소·중견기업 맞춤형 기술지원·공동연구 활성화" },
-      "B2": { id: "C2", title: "AID 역량강화 기반 지역산업 전환 지원" },
-      "B3": { id: "C3", title: "교육·산업·복지가 조화로운 지속가능한 탄소중립" },
-      "B4": { id: "C1", title: "복합재난 대응 산업안전·보건 관리시스템 개발" },
-      "C1": { id: "B2", title: "U-LIFE 평생직업교육 플랫폼 구축" },
-      "C2": { id: "B3", title: "지역을 키우는 지역문제 해결 협력 체계 구축" },
-      "D1": { id: "D1", title: "통합형 인재양성 기반 포용적 보건복지서비스 구현" },
-      "D2": { id: "D2", title: "내일을 밝히는 '위드아이' 늘봄 생태계 조성" },
-      "D3": { id: "D3", title: "에코 컬처로 만드는 꿀잼도시 울산" }
-    };
-
-    return cloned.map(p => {
-      if (p.id === "E") return null;
-
-      const newUnits = p.units
-        .filter(u => u.id !== "A1나")
-        .map(u => {
-          const mapInfo = mapping[u.id];
-          if (mapInfo) {
-            return {
-              ...u,
-              id: mapInfo.id,
-              title: mapInfo.title
-            };
-          }
-          return u;
-        });
-
-      return {
-        ...p,
-        units: newUnits
-      };
-    }).filter(Boolean);
-  };
-
-  const displayProjects = getNormalizedProjectsForRendering(projects, selectedYear);
-
   // 사업단 구성원 관리 및 서브탭 상태
   const [members, setMembers] = useState(() => {
     const saved = localStorage.getItem("anchor_members");
@@ -1032,6 +983,55 @@ export default function App() {
   const [selectedUnitId, setSelectedUnitId] = useState("A1가");
   const [selectedProgId, setSelectedProgId] = useState(null);
   const [pdcaViewMode, setPdcaViewMode] = useState("unit");
+
+  // 1차년도용 단위과제 필터링 및 이름/ID 변환
+  const getNormalizedProjectsForRendering = (rawProjects, yr) => {
+    if (!rawProjects) return [];
+    if (yr !== 1) return rawProjects;
+
+    const cloned = JSON.parse(JSON.stringify(rawProjects));
+    
+    // 1차년도에 A1나 및 공통 E는 필터링 제외
+    const mapping = {
+      "A1가": { id: "A1", title: "지역과 미래를 만드는 UC-HYPER 전문기술인재 양성" },
+      "A2": { id: "A2", title: "지역 창업 생태계 혁신을 위한 글로컬 창업 문화 조성" },
+      "A3": { id: "D4", title: "지역산업 연계 글로벌 협력 거점 대학 육성" },
+      "B1": { id: "B1", title: "중소·중견기업 맞춤형 기술지원·공동연구 활성화" },
+      "B2": { id: "C2", title: "AID 역량강화 기반 지역산업 전환 지원" },
+      "B3": { id: "C3", title: "교육·산업·복지가 조화로운 지속가능한 탄소중립" },
+      "B4": { id: "C1", title: "복합재난 대응 산업안전·보건 관리시스템 개발" },
+      "C1": { id: "B2", title: "U-LIFE 평생직업교육 플랫폼 구축" },
+      "C2": { id: "B3", title: "지역을 키우는 지역문제 해결 협력 체계 구축" },
+      "D1": { id: "D1", title: "통합형 인재양성 기반 포용적 보건복지서비스 구현" },
+      "D2": { id: "D2", title: "내일을 밝히는 '위드아이' 늘봄 생태계 조성" },
+      "D3": { id: "D3", title: "에코 컬처로 만드는 꿀잼도시 울산" }
+    };
+
+    return cloned.map(p => {
+      if (p.id === "E") return null;
+
+      const newUnits = p.units
+        .filter(u => u.id !== "A1나")
+        .map(u => {
+          const mapInfo = mapping[u.id];
+          if (mapInfo) {
+            return {
+              ...u,
+              id: mapInfo.id,
+              title: mapInfo.title
+            };
+          }
+          return u;
+        });
+
+      return {
+        ...p,
+        units: newUnits
+      };
+    }).filter(Boolean);
+  };
+
+  const displayProjects = getNormalizedProjectsForRendering(projects, selectedYear);
 
 
   // 로컬스토리지에서 세션 확인 및 테마 설정
