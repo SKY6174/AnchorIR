@@ -553,6 +553,33 @@ const getNormalizedKpi = (k, selectedYear) => {
     };
   }
 
+  if (k.id === "L-5") {
+    return {
+      ...k,
+      description: "산학공동 연구개발 성과의 기업 기술이전 계약 건수 및 로열티(기술료) 창출 실적 평가 지수",
+      formula: "((A)실적/(A)기준)*25 + ((B)실적/(B)기준)*25 + ((C)실적/(C)기준)*10 + ((D)실적/(D)기준)*30 + ((E)실적/(E)기준)*10",
+      subItems: [
+        { id: "L-5-1", name: "산학연계 기술이전 건수", unit: "건", years: { 1: { target: 0, current: 0 } } },
+        { id: "L-5-2", name: "산학연계 기술이전 수익", unit: "원", years: { 1: { target: 0, current: 0 } } },
+        { id: "L-5-3", name: "산학연계 기술사업화 지원 건수", unit: "건", years: { 1: { target: 0, current: 0 } } },
+        { id: "L-5-4", name: "지식재산권 건수", unit: "건", years: { 1: { target: 10, current: 21 } } },
+        { id: "L-5-5", name: "논문 게재 수", unit: "편", years: { 1: { target: 33, current: 62 } } }
+      ]
+    };
+  }
+
+  if (k.id === "L-6") {
+    return {
+      ...k,
+      description: "대학 인프라 및 교수진을 매칭한 중소·중견기업 대상 기업애로 기술 지원 및 비즈니스 컨설팅 지원 지수",
+      formula: "((A)실적/(A)기준)*70 + ((B)실적/(B)기준)*30",
+      subItems: [
+        { id: "L-6-1", name: "기업애로 해결 기술 지원 수", unit: "건", years: { 1: { target: 21, current: 22 } } },
+        { id: "L-6-2", name: "기업애로 해결 컨설팅 지원 건수", unit: "건", years: { 1: { target: 3, current: 3 } } }
+      ]
+    };
+  }
+
   return k;
 };
 
@@ -2664,6 +2691,10 @@ export default function App() {
                               rate = 138.6;
                             } else if (selectedYear === 1 && nk.id === "L-4") {
                               rate = 146.7;
+                            } else if (selectedYear === 1 && nk.id === "L-5") {
+                              rate = 81.8;
+                            } else if (selectedYear === 1 && nk.id === "L-6") {
+                              rate = 103.3;
                             } else if (nk.subItems && nk.subItems.length > 0) {
                               let sumRate = 0;
                               nk.subItems.forEach((sub) => {
@@ -2831,6 +2862,10 @@ export default function App() {
                                   totalKpiRate = 138.6;
                                 } else if (selectedYear === 1 && nk.id === "L-4") {
                                   totalKpiRate = 146.7;
+                                } else if (selectedYear === 1 && nk.id === "L-5") {
+                                  totalKpiRate = 81.8;
+                                } else if (selectedYear === 1 && nk.id === "L-6") {
+                                  totalKpiRate = 103.3;
                                 } else if (nk.subItems && nk.subItems.length > 0) {
                                   let sumKpiRate = 0;
                                   nk.subItems.forEach((sub) => {
