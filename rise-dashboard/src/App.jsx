@@ -784,47 +784,40 @@ export default function App() {
     }
   };
 
-  // Supabase 가입 승인 대기 목록 상태
-  const [pendingUsers, setPendingUsers] = useState([]);
+  // Supabase 회원가입 현황 목록 상태
+  const [registeredUsers, setRegisteredUsers] = useState([]);
 
-  // 가입 승인 대기자 로드 함수
-  const fetchPendingUsers = async () => {
+  // 회원가입 현황 목록 로드 함수
+  const fetchRegisteredUsers = async () => {
+    const demoUsers = [
+      { id: "admin", name: "시스템 관리자", role_key: "ADMIN", created_at: "2026-03-01T00:00:00.000Z" },
+      { id: "director", name: "송경영", role_key: "DIRECTOR", created_at: "2026-03-01T00:00:00.000Z" },
+      { id: "hq_head", name: "김현수", role_key: "HQ_HEAD", created_at: "2026-03-01T00:00:00.000Z" },
+      { id: "center_director", name: "이동은", role_key: "CENTER_ECC", created_at: "2026-03-01T00:00:00.000Z" },
+      { id: "team_leader", name: "심현미", role_key: "TEAM_LEADER", created_at: "2026-03-01T00:00:00.000Z" },
+      { id: "researcher", name: "이은주", role_key: "RESEARCHER", created_at: "2026-03-01T00:00:00.000Z" }
+    ];
+
     try {
       const { data, error } = await supabase
         .from("rise_users")
-        .select("id, name, role_key, created_at")
-        .eq("approved", false);
-      if (!error && data) {
-        setPendingUsers(data);
-      }
-    } catch (err) {
-      console.error("Fetch pending users error:", err);
-    }
-  };
-
-  // 가입 승인 실행 함수
-  const handleApproveUser = async (userId) => {
-    try {
-      const { error } = await supabase
-        .from("rise_users")
-        .update({ approved: true })
-        .eq("id", userId);
+        .select("id, name, role_key, created_at");
       
-      if (error) {
-        alert("승인 처리 중 데이터베이스 에러가 발생했습니다.");
-      } else {
-        alert("성공적으로 가입 승인이 완료되었습니다!");
-        fetchPendingUsers(); // 목록 새로고침
-      }
+      const dbUsers = data || [];
+      const dbIds = new Set(dbUsers.map(u => u.id.trim().toLowerCase()));
+      const filteredDemos = demoUsers.filter(d => !dbIds.has(d.id));
+
+      setRegisteredUsers([...filteredDemos, ...dbUsers]);
     } catch (err) {
-      console.error("Approve user error:", err);
+      console.error("Fetch registered users error:", err);
+      setRegisteredUsers(demoUsers);
     }
   };
 
   // 관리자 탭 활성화 시 또는 주기적으로 대기 목록 로드
   useEffect(() => {
     if (activeTab === "management" && currentUser && currentUser.role?.rank <= 2) {
-      fetchPendingUsers();
+      fetchRegisteredUsers();
     }
   }, [activeTab, currentUser]);
 
@@ -1995,7 +1988,7 @@ export default function App() {
                     transition: "all 0.2s"
                   }}
                 >
-                  가입 승인 대기
+                  회원가입 현황
                 </button>
               )}
             </div>
@@ -2220,46 +2213,66 @@ export default function App() {
 
             {mgmtSubTab === "approvals" && currentRole.rank <= 2 && (
               <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-                <h3 style={{ fontSize: "1rem", fontWeight: "800", color: "var(--accent-color)" }}>가입 승인 대기 목록</h3>
+                <h3 style={{ fontSize: "1rem", fontWeight: "800", color: "var(--accent-color)" }}>회원가입 현황</h3>
                 <p style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)" }}>
-                  포털 대시보드에 신규 가입 신청한 교원 및 실무 연구원의 명단입니다. [승인 완료] 버튼을 누르면 즉시 로그인 권한이 승인됩니다.
+                  현재 ANCHOR 통합 대시보드 시스템에 등록된 계정 및 시연용 테스트 계정의 가입 현황 목록입니다.
                 </p>
                 <div className="table-panel" style={{ maxHeight: "400px", overflowY: "auto" }}>
                   <table className="custom-table" style={{ fontSize: "0.75rem" }}>
                     <thead>
                       <tr>
                         <th>아이디</th>
-                        <th>이름 / 역할</th>
-                        <th>역할 키</th>
-                        <th>신청 일자</th>
-                        <th style={{ width: "100px" }}>가입 승인</th>
+                        <th>이름</th>
+                        <th>역할</th>
+                        <th>역할키</th>
+                        <th>시작일</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {pendingUsers.length === 0 ? (
+                      {registeredUsers.length === 0 ? (
                         <tr>
                           <td colSpan="5" style={{ textAlign: "center", color: "var(--text-secondary-dark)", padding: "2rem" }}>
-                            현재 가입 승인 대기자가 없습니다.
+                            등록된 회원 정보가 없습니다.
                           </td>
                         </tr>
                       ) : (
-                        pendingUsers.map((u) => (
-                          <tr key={u.id}>
-                            <td style={{ fontFamily: "var(--font-data)", fontWeight: "700" }}>{u.id}</td>
-                            <td style={{ fontWeight: "700" }}>{u.name}</td>
-                            <td style={{ fontFamily: "var(--font-data)" }}>{u.role_key}</td>
-                            <td style={{ fontFamily: "var(--font-data)" }}>{new Date(u.created_at).toLocaleDateString()}</td>
-                            <td>
-                              <button
-                                className="btn-primary"
-                                style={{ padding: "0.2rem 0.5rem", fontSize: "0.7rem", borderRadius: "0.3rem", background: "var(--success-color)" }}
-                                onClick={() => handleApproveUser(u.id)}
-                              >
-                                승인 완료
-                              </button>
-                            </td>
-                          </tr>
-                        ))
+                        registeredUsers.map((u) => {
+                          const roleNames = {
+                            ADMIN: "최고 관리자",
+                            DIRECTOR: "사업단장",
+                            HQ_HEAD: "본부장",
+                            CENTER_ECC: "ECC센터장",
+                            CENTER_SPECIAL: "신산업특화센터장",
+                            TEAM_LEADER: "운영팀장",
+                            RESEARCHER: "실무 연구원"
+                          };
+                          // DB에 등록할 때 이름 뒤에 직위가 붙어 있는 경우(예: "이은주 연구원") 이름을 깔끔하게 앞부분만 발췌하거나 그대로 보여줌
+                          const cleanName = (u.name || "").split(" ")[0];
+                          return (
+                            <tr key={u.id}>
+                              <td style={{ fontFamily: "var(--font-data)", fontWeight: "700" }}>{u.id}</td>
+                              <td style={{ fontWeight: "700" }}>{cleanName}</td>
+                              <td>
+                                <span
+                                  className={`badge ${
+                                    u.role_key === "ADMIN" || u.role_key === "DIRECTOR" || u.role_key === "HQ_HEAD"
+                                      ? "badge-red"
+                                      : u.role_key === "CENTER_ECC" || u.role_key === "CENTER_SPECIAL"
+                                      ? "badge-blue"
+                                      : u.role_key === "TEAM_LEADER"
+                                      ? "badge-green"
+                                      : "badge-gray"
+                                  }`}
+                                  style={{ fontSize: "0.65rem" }}
+                                >
+                                  {roleNames[u.role_key] || u.role_key}
+                                </span>
+                              </td>
+                              <td style={{ fontFamily: "var(--font-data)" }}>{u.role_key}</td>
+                              <td style={{ fontFamily: "var(--font-data)" }}>{new Date(u.created_at).toLocaleDateString()}</td>
+                            </tr>
+                          );
+                        })
                       )}
                     </tbody>
                   </table>
