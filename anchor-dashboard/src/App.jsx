@@ -636,9 +636,9 @@ const getNormalizedKpi = (k, selectedYear) => {
       description: "재난 및 산업안전 분야 예방 관련 산학협력 안전기술 지도 및 재난안전 확산 지수",
       formula: "((A)실적/(A)기준값)*40 + ((B)실적/(B)기준값)*30 + ((C)실적/(C)기준값)*30",
       subItems: [
-        { id: "L-11-1", name: "재난 및 산업안전 관련 안전기술 지원 건수", unit: "건", years: { 1: { target: 3, current: 3 } } },
-        { id: "L-11-2", name: "재난 및 산업안전 관련 연구 및 시스템(S/W, 콘텐츠) 개발 활용 건수", unit: "건", years: { 1: { target: 1, current: 1 } } },
-        { id: "L-11-3", name: "재난 및 산업안전 확산 활동 건수", unit: "건", years: { 1: { target: 1, current: 3 } } }
+        { id: "L-11-1", name: "재난 및 산업안전 관련 안전기술 지원 건수 (기준값: 3)", unit: "건", years: { 1: { target: 3, current: 3 } } },
+        { id: "L-11-2", name: "재난 및 산업안전 관련 연구 및 시스템(S/W, 콘텐츠) 개발 활용 건수 (기준값: 1)", unit: "건", years: { 1: { target: 1, current: 1 } } },
+        { id: "L-11-3", name: "재난 및 산업안전 확산 활동 건수 (기준값: 1)", unit: "건", years: { 1: { target: 1, current: 3 } } }
       ]
     };
   }
@@ -646,13 +646,14 @@ const getNormalizedKpi = (k, selectedYear) => {
   if (k.id === "L-12") {
     return {
       ...k,
+      name: "재난 및 산업안전 교육성과 종합지수",
       description: "지역 밀착형 재난안전 교육프로그램 신규 개발 및 전문 교육 이수, 관련 자격 취득 활성화 종합 지수",
-      formula: "교육프로그램 개편 및 이수자수, 자격 취득, 현장적용 기업수 종합 지수 연산",
+      formula: "((A)실적/(A)기준값)*20 + ((B)실적/(B)기준값)*40 + ((C)실적/(C)기준값)*20 + ((D)실적/(D)기준값)*20",
       subItems: [
-        { id: "L-12-1", name: "재난 및 산업안전 관련 교육프로그램 개편건수", unit: "건", years: { 1: { target: 1, current: 1 } } },
-        { id: "L-12-2", name: "재난 및 산업안전 관련 교육프로그램 이수자수", unit: "명", years: { 1: { target: 150, current: 168 } } },
-        { id: "L-12-3", name: "재난 및 산업안전 관련 교육프로그램 이수자 자격증 취득건수", unit: "건", years: { 1: { target: 25, current: 31 } } },
-        { id: "L-12-4", name: "재난 및 산업안전 관련 교육프로그램 산업현장 적용 기업수", unit: "개", years: { 1: { target: 5, current: 5 } } }
+        { id: "L-12-1", name: "재난 및 산업안전 관련 교육프로그램 개편건수 (기준값: 1)", unit: "건", years: { 1: { target: 1, current: 1 } } },
+        { id: "L-12-2", name: "재난 및 산업안전 관련 교육프로그램 이수자수 (기준값: 150)", unit: "명", years: { 1: { target: 150, current: 168 } } },
+        { id: "L-12-3", name: "재난 및 산업안전 관련 교육프로그램 이수자 자격증 취득건수 (기준값: 25)", unit: "건", years: { 1: { target: 25, current: 31 } } },
+        { id: "L-12-4", name: "재난 및 산업안전 관련 교육프로그램 산업현장 적용 기업수 (기준값: 4)", unit: "개", years: { 1: { target: 5, current: 5 } } }
       ]
     };
   }
