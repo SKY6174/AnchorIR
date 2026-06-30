@@ -1,0 +1,850 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e28]:
+    - generic [ref=e29]:
+      - complementary [ref=e30]:
+        - generic [ref=e31]:
+          - generic [ref=e32]:
+            - img [ref=e33]
+            - generic [ref=e36]: UC ANCHOR Portal
+          - navigation [ref=e37]:
+            - generic [ref=e38] [cursor=pointer]:
+              - img [ref=e39]
+              - generic [ref=e44]: IR 대시보드
+            - generic [ref=e45] [cursor=pointer]:
+              - img [ref=e46]
+              - generic [ref=e48]: 단위과제 관리
+            - generic [ref=e49] [cursor=pointer]:
+              - img [ref=e50]
+              - generic [ref=e53]: 프로그램 진행
+            - generic [ref=e54] [cursor=pointer]:
+              - img [ref=e55]
+              - generic [ref=e57]: 예산항목 관리
+            - generic [ref=e58] [cursor=pointer]:
+              - img [ref=e59]
+              - generic [ref=e62]: 성과지표 관리
+            - generic [ref=e63] [cursor=pointer]:
+              - img [ref=e64]
+              - generic [ref=e69]: 사업단 관리
+        - generic [ref=e70]:
+          - generic [ref=e71]:
+            - generic [ref=e72]: 현재 로그인 권한
+            - text: 사업단장 (송경영 교수)
+          - paragraph [ref=e73]: 전체 프로젝트 사업비 & KPI 최종 결재 및 연구원 배정 마스터 권한
+      - button "로그아웃" [ref=e75] [cursor=pointer]:
+        - img [ref=e76]
+        - generic [ref=e79]: 로그아웃
+    - main [ref=e80]:
+      - generic [ref=e81]:
+        - generic [ref=e82]:
+          - heading "앵커사업 통합 IR 대시보드" [level=1] [ref=e83]
+          - paragraph [ref=e84]: 울산과학대학교 앵커사업 2차년도 사업예산 및 성과관리 시스템
+        - generic [ref=e85]:
+          - button "1차년도" [ref=e86] [cursor=pointer]
+          - button "2차년도(현)" [ref=e87] [cursor=pointer]
+          - button "3차년도" [ref=e88] [cursor=pointer]
+          - button "4차년도" [ref=e89] [cursor=pointer]
+          - button "5차년도" [ref=e90] [cursor=pointer]
+        - generic [ref=e91]:
+          - generic [ref=e93]:
+            - text: 반갑습니다,
+            - strong [ref=e94]: 송경영 단장님
+          - button [ref=e95] [cursor=pointer]:
+            - img [ref=e96]
+      - generic [ref=e377]:
+        - generic [ref=e378]:
+          - generic [ref=e379]:
+            - heading "사업단 관리 (ANCHOR Management)" [level=2] [ref=e380]
+            - paragraph [ref=e381]: 울산과학대학교 라이즈(앵커) 사업단 구성원을 관리하고, 각 세부 프로그램의 실무 연구원을 매핑하는 통합 업무 공간입니다.
+          - button "구성원 추가" [ref=e2611] [cursor=pointer]
+        - generic [ref=e383]:
+          - button "구성원 관리" [ref=e384] [cursor=pointer]
+          - button "프로그램 배정" [ref=e385] [cursor=pointer]
+          - button "가입 승인 대기" [ref=e386] [cursor=pointer]
+        - table [ref=e2614]:
+          - rowgroup [ref=e2615]:
+            - row "소속 부서 성명 직책 직급/직위 이메일 교내 전화 휴대전화 시작일 종료일 재직 여부 관리" [ref=e2616]:
+              - columnheader "소속 부서" [ref=e2617]
+              - columnheader "성명" [ref=e2618]
+              - columnheader "직책" [ref=e2619]
+              - columnheader "직급/직위" [ref=e2620]
+              - columnheader "이메일" [ref=e2621]
+              - columnheader "교내 전화" [ref=e2622]
+              - columnheader "휴대전화" [ref=e2623]
+              - columnheader "시작일" [ref=e2624]
+              - columnheader "종료일" [ref=e2625]
+              - columnheader "재직 여부" [ref=e2626]
+              - columnheader "관리" [ref=e2627]
+          - rowgroup [ref=e2628]:
+            - row "미배정 송경영 사업단장 전임 교수 kysong@uc.ac.kr 052-279-3154 010-7627-7123 2026-03-01 - 재직중 수정 삭제" [ref=e2629]:
+              - cell "미배정" [ref=e2630]
+              - cell "송경영" [ref=e2631]
+              - cell "사업단장" [ref=e2632]:
+                - generic [ref=e2633]: 사업단장
+              - cell "전임 교수" [ref=e2634]
+              - cell "kysong@uc.ac.kr" [ref=e2635]
+              - cell "052-279-3154" [ref=e2636]
+              - cell "010-7627-7123" [ref=e2637]
+              - cell "2026-03-01" [ref=e2638]
+              - cell "-" [ref=e2639]
+              - cell "재직중" [ref=e2640]:
+                - generic [ref=e2641]: 재직중
+              - cell "수정 삭제" [ref=e2642]:
+                - generic [ref=e2643]:
+                  - button "수정" [ref=e2644] [cursor=pointer]
+                  - button "삭제" [ref=e2645] [cursor=pointer]
+            - row "운영본부 김현수 본부장 전임 교수 hskim3@uc.ac.kr 052-279-3122 010-4628-7963 2026-03-01 - 재직중 수정 삭제" [ref=e2646]:
+              - cell "운영본부" [ref=e2647]
+              - cell "김현수" [ref=e2648]
+              - cell "본부장" [ref=e2649]:
+                - generic [ref=e2650]: 본부장
+              - cell "전임 교수" [ref=e2651]
+              - cell "hskim3@uc.ac.kr" [ref=e2652]
+              - cell "052-279-3122" [ref=e2653]
+              - cell "010-4628-7963" [ref=e2654]
+              - cell "2026-03-01" [ref=e2655]
+              - cell "-" [ref=e2656]
+              - cell "재직중" [ref=e2657]:
+                - generic [ref=e2658]: 재직중
+              - cell "수정 삭제" [ref=e2659]:
+                - generic [ref=e2660]:
+                  - button "수정" [ref=e2661] [cursor=pointer]
+                  - button "삭제" [ref=e2662] [cursor=pointer]
+            - row "사업운영팀 심현미 운영팀장 행정 부장 hmsim@uc.ac.kr 052-230-0441 010-6554-8359 2026-03-01 - 재직중 수정 삭제" [ref=e2663]:
+              - cell "사업운영팀" [ref=e2664]
+              - cell "심현미" [ref=e2665]
+              - cell "운영팀장" [ref=e2666]:
+                - generic [ref=e2667]: 운영팀장
+              - cell "행정 부장" [ref=e2668]
+              - cell "hmsim@uc.ac.kr" [ref=e2669]
+              - cell "052-230-0441" [ref=e2670]
+              - cell "010-6554-8359" [ref=e2671]
+              - cell "2026-03-01" [ref=e2672]
+              - cell "-" [ref=e2673]
+              - cell "재직중" [ref=e2674]:
+                - generic [ref=e2675]: 재직중
+              - cell "수정 삭제" [ref=e2676]:
+                - generic [ref=e2677]:
+                  - button "수정" [ref=e2678] [cursor=pointer]
+                  - button "삭제" [ref=e2679] [cursor=pointer]
+            - row "ECC센터 이동은 센터장 전임 교수 delee@uc.ac.kr 052-230-0111 010-1234-5678 2026-03-01 - 재직중 수정 삭제" [ref=e2680]:
+              - cell "ECC센터" [ref=e2681]
+              - cell "이동은" [ref=e2682]
+              - cell "센터장" [ref=e2683]:
+                - generic [ref=e2684]: 센터장
+              - cell "전임 교수" [ref=e2685]
+              - cell "delee@uc.ac.kr" [ref=e2686]
+              - cell "052-230-0111" [ref=e2687]
+              - cell "010-1234-5678" [ref=e2688]
+              - cell "2026-03-01" [ref=e2689]
+              - cell "-" [ref=e2690]
+              - cell "재직중" [ref=e2691]:
+                - generic [ref=e2692]: 재직중
+              - cell "수정 삭제" [ref=e2693]:
+                - generic [ref=e2694]:
+                  - button "수정" [ref=e2695] [cursor=pointer]
+                  - button "삭제" [ref=e2696] [cursor=pointer]
+            - row "ICC센터 김기범 센터장 전임 교수 kbkim@uc.ac.kr 052-230-0222 010-2345-6789 2026-03-01 - 재직중 수정 삭제" [ref=e2697]:
+              - cell "ICC센터" [ref=e2698]
+              - cell "김기범" [ref=e2699]
+              - cell "센터장" [ref=e2700]:
+                - generic [ref=e2701]: 센터장
+              - cell "전임 교수" [ref=e2702]
+              - cell "kbkim@uc.ac.kr" [ref=e2703]
+              - cell "052-230-0222" [ref=e2704]
+              - cell "010-2345-6789" [ref=e2705]
+              - cell "2026-03-01" [ref=e2706]
+              - cell "-" [ref=e2707]
+              - cell "재직중" [ref=e2708]:
+                - generic [ref=e2709]: 재직중
+              - cell "수정 삭제" [ref=e2710]:
+                - generic [ref=e2711]:
+                  - button "수정" [ref=e2712] [cursor=pointer]
+                  - button "삭제" [ref=e2713] [cursor=pointer]
+            - row "RCC센터 현용환 센터장 전임 교수 yhhyun@uc.ac.kr 052-230-0333 010-3456-7890 2026-03-01 - 재직중 수정 삭제" [ref=e2714]:
+              - cell "RCC센터" [ref=e2715]
+              - cell "현용환" [ref=e2716]
+              - cell "센터장" [ref=e2717]:
+                - generic [ref=e2718]: 센터장
+              - cell "전임 교수" [ref=e2719]
+              - cell "yhhyun@uc.ac.kr" [ref=e2720]
+              - cell "052-230-0333" [ref=e2721]
+              - cell "010-3456-7890" [ref=e2722]
+              - cell "2026-03-01" [ref=e2723]
+              - cell "-" [ref=e2724]
+              - cell "재직중" [ref=e2725]:
+                - generic [ref=e2726]: 재직중
+              - cell "수정 삭제" [ref=e2727]:
+                - generic [ref=e2728]:
+                  - button "수정" [ref=e2729] [cursor=pointer]
+                  - button "삭제" [ref=e2730] [cursor=pointer]
+            - row "울산늘봄누리센터 홍광표 센터장 전임 교수 gphong@uc.ac.kr 052-230-0444 010-4567-8901 2026-03-01 - 재직중 수정 삭제" [ref=e2731]:
+              - cell "울산늘봄누리센터" [ref=e2732]
+              - cell "홍광표" [ref=e2733]
+              - cell "센터장" [ref=e2734]:
+                - generic [ref=e2735]: 센터장
+              - cell "전임 교수" [ref=e2736]
+              - cell "gphong@uc.ac.kr" [ref=e2737]
+              - cell "052-230-0444" [ref=e2738]
+              - cell "010-4567-8901" [ref=e2739]
+              - cell "2026-03-01" [ref=e2740]
+              - cell "-" [ref=e2741]
+              - cell "재직중" [ref=e2742]:
+                - generic [ref=e2743]: 재직중
+              - cell "수정 삭제" [ref=e2744]:
+                - generic [ref=e2745]:
+                  - button "수정" [ref=e2746] [cursor=pointer]
+                  - button "삭제" [ref=e2747] [cursor=pointer]
+            - row "ECC센터 장광일 팀장교수 전임 교수 kijang@uc.ac.kr 052-230-0112 010-5678-9012 2026-03-01 - 재직중 수정 삭제" [ref=e2748]:
+              - cell "ECC센터" [ref=e2749]
+              - cell "장광일" [ref=e2750]
+              - cell "팀장교수" [ref=e2751]:
+                - generic [ref=e2752]: 팀장교수
+              - cell "전임 교수" [ref=e2753]
+              - cell "kijang@uc.ac.kr" [ref=e2754]
+              - cell "052-230-0112" [ref=e2755]
+              - cell "010-5678-9012" [ref=e2756]
+              - cell "2026-03-01" [ref=e2757]
+              - cell "-" [ref=e2758]
+              - cell "재직중" [ref=e2759]:
+                - generic [ref=e2760]: 재직중
+              - cell "수정 삭제" [ref=e2761]:
+                - generic [ref=e2762]:
+                  - button "수정" [ref=e2763] [cursor=pointer]
+                  - button "삭제" [ref=e2764] [cursor=pointer]
+            - row "ECC센터 고형석 팀장교수 전임 교수 hsko@uc.ac.kr 052-230-0113 010-6789-0123 2026-03-01 - 재직중 수정 삭제" [ref=e2765]:
+              - cell "ECC센터" [ref=e2766]
+              - cell "고형석" [ref=e2767]
+              - cell "팀장교수" [ref=e2768]:
+                - generic [ref=e2769]: 팀장교수
+              - cell "전임 교수" [ref=e2770]
+              - cell "hsko@uc.ac.kr" [ref=e2771]
+              - cell "052-230-0113" [ref=e2772]
+              - cell "010-6789-0123" [ref=e2773]
+              - cell "2026-03-01" [ref=e2774]
+              - cell "-" [ref=e2775]
+              - cell "재직중" [ref=e2776]:
+                - generic [ref=e2777]: 재직중
+              - cell "수정 삭제" [ref=e2778]:
+                - generic [ref=e2779]:
+                  - button "수정" [ref=e2780] [cursor=pointer]
+                  - button "삭제" [ref=e2781] [cursor=pointer]
+            - row "ECC센터 양승호 팀장교수 전임 교수 shyang@uc.ac.kr 052-230-0114 010-7890-1234 2026-03-01 - 재직중 수정 삭제" [ref=e2782]:
+              - cell "ECC센터" [ref=e2783]
+              - cell "양승호" [ref=e2784]
+              - cell "팀장교수" [ref=e2785]:
+                - generic [ref=e2786]: 팀장교수
+              - cell "전임 교수" [ref=e2787]
+              - cell "shyang@uc.ac.kr" [ref=e2788]
+              - cell "052-230-0114" [ref=e2789]
+              - cell "010-7890-1234" [ref=e2790]
+              - cell "2026-03-01" [ref=e2791]
+              - cell "-" [ref=e2792]
+              - cell "재직중" [ref=e2793]:
+                - generic [ref=e2794]: 재직중
+              - cell "수정 삭제" [ref=e2795]:
+                - generic [ref=e2796]:
+                  - button "수정" [ref=e2797] [cursor=pointer]
+                  - button "삭제" [ref=e2798] [cursor=pointer]
+            - row "ICC센터 김산 팀장교수 전임 교수 skim@uc.ac.kr 052-230-0223 010-8901-2345 2026-03-01 - 재직중 수정 삭제" [ref=e2799]:
+              - cell "ICC센터" [ref=e2800]
+              - cell "김산" [ref=e2801]
+              - cell "팀장교수" [ref=e2802]:
+                - generic [ref=e2803]: 팀장교수
+              - cell "전임 교수" [ref=e2804]
+              - cell "skim@uc.ac.kr" [ref=e2805]
+              - cell "052-230-0223" [ref=e2806]
+              - cell "010-8901-2345" [ref=e2807]
+              - cell "2026-03-01" [ref=e2808]
+              - cell "-" [ref=e2809]
+              - cell "재직중" [ref=e2810]:
+                - generic [ref=e2811]: 재직중
+              - cell "수정 삭제" [ref=e2812]:
+                - generic [ref=e2813]:
+                  - button "수정" [ref=e2814] [cursor=pointer]
+                  - button "삭제" [ref=e2815] [cursor=pointer]
+            - row "ICC센터 한미라 팀장교수 전임 교수 mrhan@uc.ac.kr 052-230-0224 010-9012-3456 2026-03-01 - 재직중 수정 삭제" [ref=e2816]:
+              - cell "ICC센터" [ref=e2817]
+              - cell "한미라" [ref=e2818]
+              - cell "팀장교수" [ref=e2819]:
+                - generic [ref=e2820]: 팀장교수
+              - cell "전임 교수" [ref=e2821]
+              - cell "mrhan@uc.ac.kr" [ref=e2822]
+              - cell "052-230-0224" [ref=e2823]
+              - cell "010-9012-3456" [ref=e2824]
+              - cell "2026-03-01" [ref=e2825]
+              - cell "-" [ref=e2826]
+              - cell "재직중" [ref=e2827]:
+                - generic [ref=e2828]: 재직중
+              - cell "수정 삭제" [ref=e2829]:
+                - generic [ref=e2830]:
+                  - button "수정" [ref=e2831] [cursor=pointer]
+                  - button "삭제" [ref=e2832] [cursor=pointer]
+            - row "RCC센터 김민경 팀장교수 전임 교수 mkkim@uc.ac.kr 052-230-0334 010-0123-4567 2026-03-01 - 재직중 수정 삭제" [ref=e2833]:
+              - cell "RCC센터" [ref=e2834]
+              - cell "김민경" [ref=e2835]
+              - cell "팀장교수" [ref=e2836]:
+                - generic [ref=e2837]: 팀장교수
+              - cell "전임 교수" [ref=e2838]
+              - cell "mkkim@uc.ac.kr" [ref=e2839]
+              - cell "052-230-0334" [ref=e2840]
+              - cell "010-0123-4567" [ref=e2841]
+              - cell "2026-03-01" [ref=e2842]
+              - cell "-" [ref=e2843]
+              - cell "재직중" [ref=e2844]:
+                - generic [ref=e2845]: 재직중
+              - cell "수정 삭제" [ref=e2846]:
+                - generic [ref=e2847]:
+                  - button "수정" [ref=e2848] [cursor=pointer]
+                  - button "삭제" [ref=e2849] [cursor=pointer]
+            - row "RCC센터 이한도 팀장교수 전임 교수 hdlee@uc.ac.kr 052-230-0335 010-1234-8765 2026-03-01 - 재직중 수정 삭제" [ref=e2850]:
+              - cell "RCC센터" [ref=e2851]
+              - cell "이한도" [ref=e2852]
+              - cell "팀장교수" [ref=e2853]:
+                - generic [ref=e2854]: 팀장교수
+              - cell "전임 교수" [ref=e2855]
+              - cell "hdlee@uc.ac.kr" [ref=e2856]
+              - cell "052-230-0335" [ref=e2857]
+              - cell "010-1234-8765" [ref=e2858]
+              - cell "2026-03-01" [ref=e2859]
+              - cell "-" [ref=e2860]
+              - cell "재직중" [ref=e2861]:
+                - generic [ref=e2862]: 재직중
+              - cell "수정 삭제" [ref=e2863]:
+                - generic [ref=e2864]:
+                  - button "수정" [ref=e2865] [cursor=pointer]
+                  - button "삭제" [ref=e2866] [cursor=pointer]
+            - row "RCC센터 이상현 팀장교수 전임 교수 shlee@uc.ac.kr 052-230-0336 010-2345-9876 2026-03-01 - 재직중 수정 삭제" [ref=e2867]:
+              - cell "RCC센터" [ref=e2868]
+              - cell "이상현" [ref=e2869]
+              - cell "팀장교수" [ref=e2870]:
+                - generic [ref=e2871]: 팀장교수
+              - cell "전임 교수" [ref=e2872]
+              - cell "shlee@uc.ac.kr" [ref=e2873]
+              - cell "052-230-0336" [ref=e2874]
+              - cell "010-2345-9876" [ref=e2875]
+              - cell "2026-03-01" [ref=e2876]
+              - cell "-" [ref=e2877]
+              - cell "재직중" [ref=e2878]:
+                - generic [ref=e2879]: 재직중
+              - cell "수정 삭제" [ref=e2880]:
+                - generic [ref=e2881]:
+                  - button "수정" [ref=e2882] [cursor=pointer]
+                  - button "삭제" [ref=e2883] [cursor=pointer]
+            - row "AID-X지원센터 이정준 팀장교수 전임 교수 jjlee@uc.ac.kr 052-230-0445 010-3456-0987 2026-03-01 - 재직중 수정 삭제" [ref=e2884]:
+              - cell "AID-X지원센터" [ref=e2885]
+              - cell "이정준" [ref=e2886]
+              - cell "팀장교수" [ref=e2887]:
+                - generic [ref=e2888]: 팀장교수
+              - cell "전임 교수" [ref=e2889]
+              - cell "jjlee@uc.ac.kr" [ref=e2890]
+              - cell "052-230-0445" [ref=e2891]
+              - cell "010-3456-0987" [ref=e2892]
+              - cell "2026-03-01" [ref=e2893]
+              - cell "-" [ref=e2894]
+              - cell "재직중" [ref=e2895]:
+                - generic [ref=e2896]: 재직중
+              - cell "수정 삭제" [ref=e2897]:
+                - generic [ref=e2898]:
+                  - button "수정" [ref=e2899] [cursor=pointer]
+                  - button "삭제" [ref=e2900] [cursor=pointer]
+            - row "RCC센터 이현섭 연구원 책임연구원 mogern1@uc.ac.kr 052-230-0417 010-8252-1151 2026-03-01 - 재직중 수정 삭제" [ref=e2901]:
+              - cell "RCC센터" [ref=e2902]
+              - cell "이현섭" [ref=e2903]
+              - cell "연구원" [ref=e2904]:
+                - generic [ref=e2905]: 연구원
+              - cell "책임연구원" [ref=e2906]
+              - cell "mogern1@uc.ac.kr" [ref=e2907]
+              - cell "052-230-0417" [ref=e2908]
+              - cell "010-8252-1151" [ref=e2909]
+              - cell "2026-03-01" [ref=e2910]
+              - cell "-" [ref=e2911]
+              - cell "재직중" [ref=e2912]:
+                - generic [ref=e2913]: 재직중
+              - cell "수정 삭제" [ref=e2914]:
+                - generic [ref=e2915]:
+                  - button "수정" [ref=e2916] [cursor=pointer]
+                  - button "삭제" [ref=e2917] [cursor=pointer]
+            - row "ECC센터 이은주 연구원 선임연구원 ejlee7@uc.ac.kr 052-230-0414 010-4026-3850 2026-03-01 - 재직중 수정 삭제" [ref=e2918]:
+              - cell "ECC센터" [ref=e2919]
+              - cell "이은주" [ref=e2920]
+              - cell "연구원" [ref=e2921]:
+                - generic [ref=e2922]: 연구원
+              - cell "선임연구원" [ref=e2923]
+              - cell "ejlee7@uc.ac.kr" [ref=e2924]
+              - cell "052-230-0414" [ref=e2925]
+              - cell "010-4026-3850" [ref=e2926]
+              - cell "2026-03-01" [ref=e2927]
+              - cell "-" [ref=e2928]
+              - cell "재직중" [ref=e2929]:
+                - generic [ref=e2930]: 재직중
+              - cell "수정 삭제" [ref=e2931]:
+                - generic [ref=e2932]:
+                  - button "수정" [ref=e2933] [cursor=pointer]
+                  - button "삭제" [ref=e2934] [cursor=pointer]
+            - row "ICC센터 이정은 연구원 선임연구원 lje6878@uc.ac.kr 052-279-3305 010-3435-6878 2026-03-01 - 재직중 수정 삭제" [ref=e2935]:
+              - cell "ICC센터" [ref=e2936]
+              - cell "이정은" [ref=e2937]
+              - cell "연구원" [ref=e2938]:
+                - generic [ref=e2939]: 연구원
+              - cell "선임연구원" [ref=e2940]
+              - cell "lje6878@uc.ac.kr" [ref=e2941]
+              - cell "052-279-3305" [ref=e2942]
+              - cell "010-3435-6878" [ref=e2943]
+              - cell "2026-03-01" [ref=e2944]
+              - cell "-" [ref=e2945]
+              - cell "재직중" [ref=e2946]:
+                - generic [ref=e2947]: 재직중
+              - cell "수정 삭제" [ref=e2948]:
+                - generic [ref=e2949]:
+                  - button "수정" [ref=e2950] [cursor=pointer]
+                  - button "삭제" [ref=e2951] [cursor=pointer]
+            - row "AID-X지원센터 임은애 연구원 선임연구원 jslover85@uc.ac.kr 052-279-3319 010-4595-5406 2026-03-01 - 재직중 수정 삭제" [ref=e2952]:
+              - cell "AID-X지원센터" [ref=e2953]
+              - cell "임은애" [ref=e2954]
+              - cell "연구원" [ref=e2955]:
+                - generic [ref=e2956]: 연구원
+              - cell "선임연구원" [ref=e2957]
+              - cell "jslover85@uc.ac.kr" [ref=e2958]
+              - cell "052-279-3319" [ref=e2959]
+              - cell "010-4595-5406" [ref=e2960]
+              - cell "2026-03-01" [ref=e2961]
+              - cell "-" [ref=e2962]
+              - cell "재직중" [ref=e2963]:
+                - generic [ref=e2964]: 재직중
+              - cell "수정 삭제" [ref=e2965]:
+                - generic [ref=e2966]:
+                  - button "수정" [ref=e2967] [cursor=pointer]
+                  - button "삭제" [ref=e2968] [cursor=pointer]
+            - row "RCC센터 박인숙 연구원 선임연구원 ispark@uc.ac.kr 052-230-0428 010-5703-5706 2026-03-01 - 재직중 수정 삭제" [ref=e2969]:
+              - cell "RCC센터" [ref=e2970]
+              - cell "박인숙" [ref=e2971]
+              - cell "연구원" [ref=e2972]:
+                - generic [ref=e2973]: 연구원
+              - cell "선임연구원" [ref=e2974]
+              - cell "ispark@uc.ac.kr" [ref=e2975]
+              - cell "052-230-0428" [ref=e2976]
+              - cell "010-5703-5706" [ref=e2977]
+              - cell "2026-03-01" [ref=e2978]
+              - cell "-" [ref=e2979]
+              - cell "재직중" [ref=e2980]:
+                - generic [ref=e2981]: 재직중
+              - cell "수정 삭제" [ref=e2982]:
+                - generic [ref=e2983]:
+                  - button "수정" [ref=e2984] [cursor=pointer]
+                  - button "삭제" [ref=e2985] [cursor=pointer]
+            - row "사업운영팀 한유경 연구원 선임연구원 hanyuky@uc.ac.kr 052-230-0452 010-5137-7030 2026-03-01 - 재직중 수정 삭제" [ref=e2986]:
+              - cell "사업운영팀" [ref=e2987]
+              - cell "한유경" [ref=e2988]
+              - cell "연구원" [ref=e2989]:
+                - generic [ref=e2990]: 연구원
+              - cell "선임연구원" [ref=e2991]
+              - cell "hanyuky@uc.ac.kr" [ref=e2992]
+              - cell "052-230-0452" [ref=e2993]
+              - cell "010-5137-7030" [ref=e2994]
+              - cell "2026-03-01" [ref=e2995]
+              - cell "-" [ref=e2996]
+              - cell "재직중" [ref=e2997]:
+                - generic [ref=e2998]: 재직중
+              - cell "수정 삭제" [ref=e2999]:
+                - generic [ref=e3000]:
+                  - button "수정" [ref=e3001] [cursor=pointer]
+                  - button "삭제" [ref=e3002] [cursor=pointer]
+            - row "울산늘봄누리센터 황수진 연구원 선임연구원 sujin5599@uc.ac.kr 052-230-0418 010-2080-2503 2026-03-01 - 재직중 수정 삭제" [ref=e3003]:
+              - cell "울산늘봄누리센터" [ref=e3004]
+              - cell "황수진" [ref=e3005]
+              - cell "연구원" [ref=e3006]:
+                - generic [ref=e3007]: 연구원
+              - cell "선임연구원" [ref=e3008]
+              - cell "sujin5599@uc.ac.kr" [ref=e3009]
+              - cell "052-230-0418" [ref=e3010]
+              - cell "010-2080-2503" [ref=e3011]
+              - cell "2026-03-01" [ref=e3012]
+              - cell "-" [ref=e3013]
+              - cell "재직중" [ref=e3014]:
+                - generic [ref=e3015]: 재직중
+              - cell "수정 삭제" [ref=e3016]:
+                - generic [ref=e3017]:
+                  - button "수정" [ref=e3018] [cursor=pointer]
+                  - button "삭제" [ref=e3019] [cursor=pointer]
+            - row "ECC센터 서란 연구원 연구원 rseo2@uc.ac.kr 052-230-0415 010-8636-1276 2026-03-01 - 재직중 수정 삭제" [ref=e3020]:
+              - cell "ECC센터" [ref=e3021]
+              - cell "서란" [ref=e3022]
+              - cell "연구원" [ref=e3023]:
+                - generic [ref=e3024]: 연구원
+              - cell "연구원" [ref=e3025]
+              - cell "rseo2@uc.ac.kr" [ref=e3026]
+              - cell "052-230-0415" [ref=e3027]
+              - cell "010-8636-1276" [ref=e3028]
+              - cell "2026-03-01" [ref=e3029]
+              - cell "-" [ref=e3030]
+              - cell "재직중" [ref=e3031]:
+                - generic [ref=e3032]: 재직중
+              - cell "수정 삭제" [ref=e3033]:
+                - generic [ref=e3034]:
+                  - button "수정" [ref=e3035] [cursor=pointer]
+                  - button "삭제" [ref=e3036] [cursor=pointer]
+            - row "ECC센터 정자윤 연구원 연구원 jyjung2@uc.ac.kr 052-230-0673 010-3517-9169 2026-03-01 - 재직중 수정 삭제" [ref=e3037]:
+              - cell "ECC센터" [ref=e3038]
+              - cell "정자윤" [ref=e3039]
+              - cell "연구원" [ref=e3040]:
+                - generic [ref=e3041]: 연구원
+              - cell "연구원" [ref=e3042]
+              - cell "jyjung2@uc.ac.kr" [ref=e3043]
+              - cell "052-230-0673" [ref=e3044]
+              - cell "010-3517-9169" [ref=e3045]
+              - cell "2026-03-01" [ref=e3046]
+              - cell "-" [ref=e3047]
+              - cell "재직중" [ref=e3048]:
+                - generic [ref=e3049]: 재직중
+              - cell "수정 삭제" [ref=e3050]:
+                - generic [ref=e3051]:
+                  - button "수정" [ref=e3052] [cursor=pointer]
+                  - button "삭제" [ref=e3053] [cursor=pointer]
+            - row "ECC센터 박기범 연구원 연구원 gbbak@uc.ac.kr 052-230-0445 010-8079-1798 2026-03-01 - 재직중 수정 삭제" [ref=e3054]:
+              - cell "ECC센터" [ref=e3055]
+              - cell "박기범" [ref=e3056]
+              - cell "연구원" [ref=e3057]:
+                - generic [ref=e3058]: 연구원
+              - cell "연구원" [ref=e3059]
+              - cell "gbbak@uc.ac.kr" [ref=e3060]
+              - cell "052-230-0445" [ref=e3061]
+              - cell "010-8079-1798" [ref=e3062]
+              - cell "2026-03-01" [ref=e3063]
+              - cell "-" [ref=e3064]
+              - cell "재직중" [ref=e3065]:
+                - generic [ref=e3066]: 재직중
+              - cell "수정 삭제" [ref=e3067]:
+                - generic [ref=e3068]:
+                  - button "수정" [ref=e3069] [cursor=pointer]
+                  - button "삭제" [ref=e3070] [cursor=pointer]
+            - row "ECC센터 김소연 연구원 연구원 sysy400@uc.ac.kr 052-230-0667 010-2482-9506 2026-03-01 - 재직중 수정 삭제" [ref=e3071]:
+              - cell "ECC센터" [ref=e3072]
+              - cell "김소연" [ref=e3073]
+              - cell "연구원" [ref=e3074]:
+                - generic [ref=e3075]: 연구원
+              - cell "연구원" [ref=e3076]
+              - cell "sysy400@uc.ac.kr" [ref=e3077]
+              - cell "052-230-0667" [ref=e3078]
+              - cell "010-2482-9506" [ref=e3079]
+              - cell "2026-03-01" [ref=e3080]
+              - cell "-" [ref=e3081]
+              - cell "재직중" [ref=e3082]:
+                - generic [ref=e3083]: 재직중
+              - cell "수정 삭제" [ref=e3084]:
+                - generic [ref=e3085]:
+                  - button "수정" [ref=e3086] [cursor=pointer]
+                  - button "삭제" [ref=e3087] [cursor=pointer]
+            - row "ICC센터 이혜성 연구원 연구원 hslee4@uc.ac.kr 052-279-3307 010-3459-0429 2026-03-01 - 재직중 수정 삭제" [ref=e3088]:
+              - cell "ICC센터" [ref=e3089]
+              - cell "이혜성" [ref=e3090]
+              - cell "연구원" [ref=e3091]:
+                - generic [ref=e3092]: 연구원
+              - cell "연구원" [ref=e3093]
+              - cell "hslee4@uc.ac.kr" [ref=e3094]
+              - cell "052-279-3307" [ref=e3095]
+              - cell "010-3459-0429" [ref=e3096]
+              - cell "2026-03-01" [ref=e3097]
+              - cell "-" [ref=e3098]
+              - cell "재직중" [ref=e3099]:
+                - generic [ref=e3100]: 재직중
+              - cell "수정 삭제" [ref=e3101]:
+                - generic [ref=e3102]:
+                  - button "수정" [ref=e3103] [cursor=pointer]
+                  - button "삭제" [ref=e3104] [cursor=pointer]
+            - row "ICC센터 도지은 연구원 연구원 jido@uc.ac.kr 052-279-3313 010-4262-0370 2026-03-01 - 재직중 수정 삭제" [ref=e3105]:
+              - cell "ICC센터" [ref=e3106]
+              - cell "도지은" [ref=e3107]
+              - cell "연구원" [ref=e3108]:
+                - generic [ref=e3109]: 연구원
+              - cell "연구원" [ref=e3110]
+              - cell "jido@uc.ac.kr" [ref=e3111]
+              - cell "052-279-3313" [ref=e3112]
+              - cell "010-4262-0370" [ref=e3113]
+              - cell "2026-03-01" [ref=e3114]
+              - cell "-" [ref=e3115]
+              - cell "재직중" [ref=e3116]:
+                - generic [ref=e3117]: 재직중
+              - cell "수정 삭제" [ref=e3118]:
+                - generic [ref=e3119]:
+                  - button "수정" [ref=e3120] [cursor=pointer]
+                  - button "삭제" [ref=e3121] [cursor=pointer]
+            - row "RCC센터 이연향 연구원 연구원 yhlee4@uc.ac.kr 052-230-0427 010-7165-7038 2026-03-01 - 재직중 수정 삭제" [ref=e3122]:
+              - cell "RCC센터" [ref=e3123]
+              - cell "이연향" [ref=e3124]
+              - cell "연구원" [ref=e3125]:
+                - generic [ref=e3126]: 연구원
+              - cell "연구원" [ref=e3127]
+              - cell "yhlee4@uc.ac.kr" [ref=e3128]
+              - cell "052-230-0427" [ref=e3129]
+              - cell "010-7165-7038" [ref=e3130]
+              - cell "2026-03-01" [ref=e3131]
+              - cell "-" [ref=e3132]
+              - cell "재직중" [ref=e3133]:
+                - generic [ref=e3134]: 재직중
+              - cell "수정 삭제" [ref=e3135]:
+                - generic [ref=e3136]:
+                  - button "수정" [ref=e3137] [cursor=pointer]
+                  - button "삭제" [ref=e3138] [cursor=pointer]
+            - row "RCC센터 김소정 연구원 연구원 sjkim9@uc.ac.kr 052-230-0450 010-3162-1678 2026-03-01 - 재직중 수정 삭제" [ref=e3139]:
+              - cell "RCC센터" [ref=e3140]
+              - cell "김소정" [ref=e3141]
+              - cell "연구원" [ref=e3142]:
+                - generic [ref=e3143]: 연구원
+              - cell "연구원" [ref=e3144]
+              - cell "sjkim9@uc.ac.kr" [ref=e3145]
+              - cell "052-230-0450" [ref=e3146]
+              - cell "010-3162-1678" [ref=e3147]
+              - cell "2026-03-01" [ref=e3148]
+              - cell "-" [ref=e3149]
+              - cell "재직중" [ref=e3150]:
+                - generic [ref=e3151]: 재직중
+              - cell "수정 삭제" [ref=e3152]:
+                - generic [ref=e3153]:
+                  - button "수정" [ref=e3154] [cursor=pointer]
+                  - button "삭제" [ref=e3155] [cursor=pointer]
+            - row "RCC센터 오영경 연구원 연구원 ohyk@uc.ac.kr 052-230-0449 010-2636-3832 2026-03-01 - 재직중 수정 삭제" [ref=e3156]:
+              - cell "RCC센터" [ref=e3157]
+              - cell "오영경" [ref=e3158]
+              - cell "연구원" [ref=e3159]:
+                - generic [ref=e3160]: 연구원
+              - cell "연구원" [ref=e3161]
+              - cell "ohyk@uc.ac.kr" [ref=e3162]
+              - cell "052-230-0449" [ref=e3163]
+              - cell "010-2636-3832" [ref=e3164]
+              - cell "2026-03-01" [ref=e3165]
+              - cell "-" [ref=e3166]
+              - cell "재직중" [ref=e3167]:
+                - generic [ref=e3168]: 재직중
+              - cell "수정 삭제" [ref=e3169]:
+                - generic [ref=e3170]:
+                  - button "수정" [ref=e3171] [cursor=pointer]
+                  - button "삭제" [ref=e3172] [cursor=pointer]
+            - row "RCC센터 최승혜 연구원 연구원 shchoi2@uc.ac.kr 052-230-0448 010-8545-9087 2026-03-01 - 재직중 수정 삭제" [ref=e3173]:
+              - cell "RCC센터" [ref=e3174]
+              - cell "최승혜" [ref=e3175]
+              - cell "연구원" [ref=e3176]:
+                - generic [ref=e3177]: 연구원
+              - cell "연구원" [ref=e3178]
+              - cell "shchoi2@uc.ac.kr" [ref=e3179]
+              - cell "052-230-0448" [ref=e3180]
+              - cell "010-8545-9087" [ref=e3181]
+              - cell "2026-03-01" [ref=e3182]
+              - cell "-" [ref=e3183]
+              - cell "재직중" [ref=e3184]:
+                - generic [ref=e3185]: 재직중
+              - cell "수정 삭제" [ref=e3186]:
+                - generic [ref=e3187]:
+                  - button "수정" [ref=e3188] [cursor=pointer]
+                  - button "삭제" [ref=e3189] [cursor=pointer]
+            - row "AID-X지원센터 서은지 연구원 연구원 ajaeunji@uc.ac.kr 052-279-3220 010-3294-8295 2026-03-01 - 재직중 수정 삭제" [ref=e3190]:
+              - cell "AID-X지원센터" [ref=e3191]
+              - cell "서은지" [ref=e3192]
+              - cell "연구원" [ref=e3193]:
+                - generic [ref=e3194]: 연구원
+              - cell "연구원" [ref=e3195]
+              - cell "ajaeunji@uc.ac.kr" [ref=e3196]
+              - cell "052-279-3220" [ref=e3197]
+              - cell "010-3294-8295" [ref=e3198]
+              - cell "2026-03-01" [ref=e3199]
+              - cell "-" [ref=e3200]
+              - cell "재직중" [ref=e3201]:
+                - generic [ref=e3202]: 재직중
+              - cell "수정 삭제" [ref=e3203]:
+                - generic [ref=e3204]:
+                  - button "수정" [ref=e3205] [cursor=pointer]
+                  - button "삭제" [ref=e3206] [cursor=pointer]
+            - row "AID-X지원센터 채민지 연구원 연구원 minji6843@uc.ac.kr 052-279-3185 010-7682-6864 2026-03-01 - 재직중 수정 삭제" [ref=e3207]:
+              - cell "AID-X지원센터" [ref=e3208]
+              - cell "채민지" [ref=e3209]
+              - cell "연구원" [ref=e3210]:
+                - generic [ref=e3211]: 연구원
+              - cell "연구원" [ref=e3212]
+              - cell "minji6843@uc.ac.kr" [ref=e3213]
+              - cell "052-279-3185" [ref=e3214]
+              - cell "010-7682-6864" [ref=e3215]
+              - cell "2026-03-01" [ref=e3216]
+              - cell "-" [ref=e3217]
+              - cell "재직중" [ref=e3218]:
+                - generic [ref=e3219]: 재직중
+              - cell "수정 삭제" [ref=e3220]:
+                - generic [ref=e3221]:
+                  - button "수정" [ref=e3222] [cursor=pointer]
+                  - button "삭제" [ref=e3223] [cursor=pointer]
+            - row "신산업특화센터 김나희 연구원 연구원 nhkim2@uc.ac.kr 052-230-0709 010-4363-7319 2026-03-01 - 재직중 수정 삭제" [ref=e3224]:
+              - cell "신산업특화센터" [ref=e3225]
+              - cell "김나희" [ref=e3226]
+              - cell "연구원" [ref=e3227]:
+                - generic [ref=e3228]: 연구원
+              - cell "연구원" [ref=e3229]
+              - cell "nhkim2@uc.ac.kr" [ref=e3230]
+              - cell "052-230-0709" [ref=e3231]
+              - cell "010-4363-7319" [ref=e3232]
+              - cell "2026-03-01" [ref=e3233]
+              - cell "-" [ref=e3234]
+              - cell "재직중" [ref=e3235]:
+                - generic [ref=e3236]: 재직중
+              - cell "수정 삭제" [ref=e3237]:
+                - generic [ref=e3238]:
+                  - button "수정" [ref=e3239] [cursor=pointer]
+                  - button "삭제" [ref=e3240] [cursor=pointer]
+            - row "신산업특화센터 정호성 연구원 연구원 jhsung@uc.ac.kr 052-230-0708 010-9208-7849 2026-03-01 - 재직중 수정 삭제" [ref=e3241]:
+              - cell "신산업특화센터" [ref=e3242]
+              - cell "정호성" [ref=e3243]
+              - cell "연구원" [ref=e3244]:
+                - generic [ref=e3245]: 연구원
+              - cell "연구원" [ref=e3246]
+              - cell "jhsung@uc.ac.kr" [ref=e3247]
+              - cell "052-230-0708" [ref=e3248]
+              - cell "010-9208-7849" [ref=e3249]
+              - cell "2026-03-01" [ref=e3250]
+              - cell "-" [ref=e3251]
+              - cell "재직중" [ref=e3252]:
+                - generic [ref=e3253]: 재직중
+              - cell "수정 삭제" [ref=e3254]:
+                - generic [ref=e3255]:
+                  - button "수정" [ref=e3256] [cursor=pointer]
+                  - button "삭제" [ref=e3257] [cursor=pointer]
+            - row "사업운영팀 김래림 연구원 연구원 rrkim@uc.ac.kr 052-230-0529 010-5246-9520 2026-03-01 - 재직중 수정 삭제" [ref=e3258]:
+              - cell "사업운영팀" [ref=e3259]
+              - cell "김래림" [ref=e3260]
+              - cell "연구원" [ref=e3261]:
+                - generic [ref=e3262]: 연구원
+              - cell "연구원" [ref=e3263]
+              - cell "rrkim@uc.ac.kr" [ref=e3264]
+              - cell "052-230-0529" [ref=e3265]
+              - cell "010-5246-9520" [ref=e3266]
+              - cell "2026-03-01" [ref=e3267]
+              - cell "-" [ref=e3268]
+              - cell "재직중" [ref=e3269]:
+                - generic [ref=e3270]: 재직중
+              - cell "수정 삭제" [ref=e3271]:
+                - generic [ref=e3272]:
+                  - button "수정" [ref=e3273] [cursor=pointer]
+                  - button "삭제" [ref=e3274] [cursor=pointer]
+            - row "사업운영팀 박언주 연구원 연구원 ejpark@uc.ac.kr 052-230-0443 010-2541-5992 2026-03-01 - 재직중 수정 삭제" [ref=e3275]:
+              - cell "사업운영팀" [ref=e3276]
+              - cell "박언주" [ref=e3277]
+              - cell "연구원" [ref=e3278]:
+                - generic [ref=e3279]: 연구원
+              - cell "연구원" [ref=e3280]
+              - cell "ejpark@uc.ac.kr" [ref=e3281]
+              - cell "052-230-0443" [ref=e3282]
+              - cell "010-2541-5992" [ref=e3283]
+              - cell "2026-03-01" [ref=e3284]
+              - cell "-" [ref=e3285]
+              - cell "재직중" [ref=e3286]:
+                - generic [ref=e3287]: 재직중
+              - cell "수정 삭제" [ref=e3288]:
+                - generic [ref=e3289]:
+                  - button "수정" [ref=e3290] [cursor=pointer]
+                  - button "삭제" [ref=e3291] [cursor=pointer]
+            - row "사업운영팀 이규상 연구원 연구원 leegyu@uc.ac.kr 052-230-0442 010-2402-1649 2026-03-01 - 재직중 수정 삭제" [ref=e3292]:
+              - cell "사업운영팀" [ref=e3293]
+              - cell "이규상" [ref=e3294]
+              - cell "연구원" [ref=e3295]:
+                - generic [ref=e3296]: 연구원
+              - cell "연구원" [ref=e3297]
+              - cell "leegyu@uc.ac.kr" [ref=e3298]
+              - cell "052-230-0442" [ref=e3299]
+              - cell "010-2402-1649" [ref=e3300]
+              - cell "2026-03-01" [ref=e3301]
+              - cell "-" [ref=e3302]
+              - cell "재직중" [ref=e3303]:
+                - generic [ref=e3304]: 재직중
+              - cell "수정 삭제" [ref=e3305]:
+                - generic [ref=e3306]:
+                  - button "수정" [ref=e3307] [cursor=pointer]
+                  - button "삭제" [ref=e3308] [cursor=pointer]
+            - row "울산늘봄누리센터 김예지 연구원 연구원 limited0517@uc.ac.kr 052-230-0454 010-9778-1705 2026-03-01 - 재직중 수정 삭제" [ref=e3309]:
+              - cell "울산늘봄누리센터" [ref=e3310]
+              - cell "김예지" [ref=e3311]
+              - cell "연구원" [ref=e3312]:
+                - generic [ref=e3313]: 연구원
+              - cell "연구원" [ref=e3314]
+              - cell "limited0517@uc.ac.kr" [ref=e3315]
+              - cell "052-230-0454" [ref=e3316]
+              - cell "010-9778-1705" [ref=e3317]
+              - cell "2026-03-01" [ref=e3318]
+              - cell "-" [ref=e3319]
+              - cell "재직중" [ref=e3320]:
+                - generic [ref=e3321]: 재직중
+              - cell "수정 삭제" [ref=e3322]:
+                - generic [ref=e3323]:
+                  - button "수정" [ref=e3324] [cursor=pointer]
+                  - button "삭제" [ref=e3325] [cursor=pointer]
+            - row "울산늘봄누리센터 최주명 연구원 연구원 jmchoi@uc.ac.kr 052-230-0419 010-9385-5959 2026-03-01 - 재직중 수정 삭제" [ref=e3326]:
+              - cell "울산늘봄누리센터" [ref=e3327]
+              - cell "최주명" [ref=e3328]
+              - cell "연구원" [ref=e3329]:
+                - generic [ref=e3330]: 연구원
+              - cell "연구원" [ref=e3331]
+              - cell "jmchoi@uc.ac.kr" [ref=e3332]
+              - cell "052-230-0419" [ref=e3333]
+              - cell "010-9385-5959" [ref=e3334]
+              - cell "2026-03-01" [ref=e3335]
+              - cell "-" [ref=e3336]
+              - cell "재직중" [ref=e3337]:
+                - generic [ref=e3338]: 재직중
+              - cell "수정 삭제" [ref=e3339]:
+                - generic [ref=e3340]:
+                  - button "수정" [ref=e3341] [cursor=pointer]
+                  - button "삭제" [ref=e3342] [cursor=pointer]
+    - generic [ref=e3344]:
+      - heading "신규 구성원 등록" [level=3] [ref=e3345]
+      - generic [ref=e3346]:
+        - generic [ref=e3347]:
+          - generic [ref=e3348]:
+            - generic [ref=e3349]: 성명 *
+            - textbox [ref=e3350] [cursor=pointer]
+          - generic [ref=e3351]:
+            - generic [ref=e3352]: 소속 부서
+            - combobox [ref=e3353] [cursor=pointer]:
+              - option "미배정"
+              - option "운영본부"
+              - option "사업운영팀"
+              - option "ECC센터" [selected]
+              - option "신산업특화센터"
+              - option "ICC센터"
+              - option "AID-X지원센터"
+              - option "울산늘봄누리센터"
+              - option "RCC센터"
+        - generic [ref=e3354]:
+          - generic [ref=e3355]:
+            - generic [ref=e3356]: 직책(역할)
+            - combobox [ref=e3357] [cursor=pointer]:
+              - option "사업단장"
+              - option "본부장" [selected]
+              - option "센터장"
+              - option "운영팀장"
+              - option "팀장교수"
+              - option "연구원"
+          - generic [ref=e3358]:
+            - generic [ref=e3359]: 직급/직위
+            - combobox [ref=e3360] [cursor=pointer]:
+              - option "정교수" [selected]
+              - option "부교수"
+              - option "조교수"
+        - generic [ref=e3361]:
+          - generic [ref=e3362]: 이메일 *
+          - textbox [ref=e3363] [cursor=pointer]
+        - generic [ref=e3364]:
+          - generic [ref=e3365]:
+            - generic [ref=e3366]: 교내 전화번호
+            - textbox "052-230-XXXX" [ref=e3367] [cursor=pointer]
+          - generic [ref=e3368]:
+            - generic [ref=e3369]: 휴대전화번호
+            - textbox "010-XXXX-XXXX" [ref=e3370] [cursor=pointer]
+        - generic [ref=e3371]:
+          - checkbox "현재 재직중" [ref=e3372]
+          - generic [ref=e3373] [cursor=pointer]: 현재 재직중
+        - generic [ref=e3374]:
+          - generic [ref=e3375]:
+            - generic [ref=e3376]: 시작일
+            - textbox [ref=e3377] [cursor=pointer]: 2026-03-01
+          - generic [ref=e3378]:
+            - generic [ref=e3379]: 종료일
+            - textbox [ref=e3380] [cursor=pointer]
+      - generic [ref=e3381]:
+        - button "취소" [ref=e3382] [cursor=pointer]
+        - button "저장" [ref=e3383] [cursor=pointer]
+  - generic [ref=e298]: "0"

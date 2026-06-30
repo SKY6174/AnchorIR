@@ -1,0 +1,135 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e28]:
+    - generic [ref=e29]:
+      - complementary [ref=e30]:
+        - generic [ref=e31]:
+          - generic [ref=e32]:
+            - img [ref=e33]
+            - generic [ref=e36]: UC ANCHOR Portal
+          - navigation [ref=e37]:
+            - generic [ref=e38] [cursor=pointer]:
+              - img [ref=e39]
+              - generic [ref=e44]: IR 대시보드
+            - generic [ref=e45] [cursor=pointer]:
+              - img [ref=e46]
+              - generic [ref=e48]: 단위과제 관리
+            - generic [ref=e49] [cursor=pointer]:
+              - img [ref=e50]
+              - generic [ref=e53]: 프로그램 진행
+            - generic [ref=e54] [cursor=pointer]:
+              - img [ref=e55]
+              - generic [ref=e57]: 예산항목 관리
+            - generic [ref=e58] [cursor=pointer]:
+              - img [ref=e59]
+              - generic [ref=e62]: 성과지표 관리
+            - generic [ref=e63] [cursor=pointer]:
+              - img [ref=e64]
+              - generic [ref=e69]: 사업단 관리
+        - generic [ref=e70]:
+          - generic [ref=e71]:
+            - generic [ref=e72]: 현재 로그인 권한
+            - text: 사업단장 (송경영 교수)
+          - paragraph [ref=e73]: 전체 프로젝트 사업비 & KPI 최종 결재 및 연구원 배정 마스터 권한
+      - button "로그아웃" [ref=e75] [cursor=pointer]:
+        - img [ref=e76]
+        - generic [ref=e79]: 로그아웃
+    - main [ref=e80]:
+      - generic [ref=e81]:
+        - generic [ref=e82]:
+          - heading "앵커사업 통합 IR 대시보드" [level=1] [ref=e83]
+          - paragraph [ref=e84]: 울산과학대학교 앵커사업 2차년도 사업예산 및 성과관리 시스템
+        - generic [ref=e85]:
+          - button "1차년도" [ref=e86] [cursor=pointer]
+          - button "2차년도(현)" [ref=e87] [cursor=pointer]
+          - button "3차년도" [ref=e88] [cursor=pointer]
+          - button "4차년도" [ref=e89] [cursor=pointer]
+          - button "5차년도" [ref=e90] [cursor=pointer]
+        - generic [ref=e91]:
+          - generic [ref=e93]:
+            - text: 반갑습니다,
+            - strong [ref=e94]: 송경영 단장님
+          - button [ref=e95] [cursor=pointer]:
+            - img [ref=e96]
+      - generic [ref=e103]:
+        - generic [ref=e104]:
+          - generic [ref=e105]:
+            - generic [ref=e106]:
+              - generic [ref=e107]: ANCHOR 2차년도 총 예산
+              - img [ref=e108]
+            - generic [ref=e111]: 10,593.2 백만원
+            - generic [ref=e112]:
+              - generic [ref=e113]:
+                - generic [ref=e114]: "본사업비: 8,947.0백만원"
+                - generic [ref=e115]: "신산업특화: 287.0백만원"
+              - generic [ref=e116]:
+                - generic [ref=e117]: "본예산 계: 9,234.0백만원"
+                - generic [ref=e118]: "1차년도 이월비: 1,359.2백만원"
+          - generic [ref=e119]:
+            - generic [ref=e120]:
+              - generic [ref=e121]: 2차년도 본사업비 집행
+              - img [ref=e122]
+            - generic [ref=e124]: 1,483.8 백만원
+            - generic [ref=e125]: "집행률: 16.1% (배정: 9,234.0백만원)"
+          - generic [ref=e126]:
+            - generic [ref=e127]:
+              - generic [ref=e128]: 1차년도 이월사업비 집행
+              - img [ref=e129]
+            - generic [ref=e132]: 663.2 백만원
+            - generic [ref=e133]: "집행률: 48.8% (배정: 1,359.2백만원)"
+          - generic [ref=e134]:
+            - generic [ref=e135]:
+              - generic [ref=e136]: 성과지표 달성도 (KPI)
+              - img [ref=e137]
+            - generic [ref=e140]: 79.5%
+            - generic [ref=e141]: 2차년도 성과목표 종합 가속화
+        - generic [ref=e142]:
+          - generic [ref=e143]:
+            - 'heading "프로젝트별 재원 배정 및 누적 집행 현황 (단위: 백만원)" [level=3] [ref=e144]'
+            - generic [ref=e147]:
+              - list [ref=e149]:
+                - listitem [ref=e150]:
+                  - img "1차년도 이월예산 legend icon" [ref=e151]
+                  - text: 1차년도 이월예산
+                - listitem [ref=e153]:
+                  - img "1차년도 이월집행 legend icon" [ref=e154]
+                  - text: 1차년도 이월집행
+                - listitem [ref=e156]:
+                  - img "본예산 legend icon" [ref=e157]
+                  - text: 본예산
+                - listitem [ref=e159]:
+                  - img "본집행 legend icon" [ref=e160]
+                  - text: 본집행
+              - application [ref=e162]:
+                - generic [ref=e243]:
+                  - generic [ref=e244]:
+                    - generic [ref=e246]: 프로젝트 A
+                    - generic [ref=e248]: 프로젝트 B
+                    - generic [ref=e250]: 프로젝트 C
+                    - generic [ref=e252]: 프로젝트 D
+                    - generic [ref=e254]: 공통경비
+                  - generic [ref=e255]:
+                    - generic [ref=e257]: "0"
+                    - generic [ref=e259]: "750"
+                    - generic [ref=e261]: "1500"
+                    - generic [ref=e263]: "2250"
+                    - generic [ref=e265]: "3000"
+          - generic [ref=e266]:
+            - heading "재원 배분 구조 (공통경비 포함)" [level=3] [ref=e267]
+            - application [ref=e271]
+            - generic [ref=e272]:
+              - generic [ref=e273]:
+                - generic [ref=e276]: 프로젝트 A
+                - generic [ref=e277]: 28.6%
+              - generic [ref=e278]:
+                - generic [ref=e281]: 프로젝트 B
+                - generic [ref=e282]: 24.0%
+              - generic [ref=e283]:
+                - generic [ref=e286]: 프로젝트 C
+                - generic [ref=e287]: 12.7%
+              - generic [ref=e288]:
+                - generic [ref=e291]: 프로젝트 D
+                - generic [ref=e292]: 11.9%
+              - generic [ref=e293]:
+                - generic [ref=e296]: 공통경비
+                - generic [ref=e297]: 22.8%
+  - generic [ref=e298]: "0"

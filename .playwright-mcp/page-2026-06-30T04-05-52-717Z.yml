@@ -1,0 +1,106 @@
+- generic [ref=e3]:
+  - generic [ref=e4]:
+    - complementary [ref=e5]:
+      - generic [ref=e6]:
+        - generic [ref=e7]:
+          - img [ref=e8]
+          - generic [ref=e11]: UC ANCHOR Portal
+        - navigation [ref=e12]:
+          - generic [ref=e13] [cursor=pointer]:
+            - img [ref=e14]
+            - generic [ref=e19]: IR 대시보드
+          - generic [ref=e20] [cursor=pointer]:
+            - img [ref=e21]
+            - generic [ref=e23]: 단위과제 관리
+          - generic [ref=e24] [cursor=pointer]:
+            - img [ref=e25]
+            - generic [ref=e28]: 프로그램 진행
+          - generic [ref=e29] [cursor=pointer]:
+            - img [ref=e30]
+            - generic [ref=e32]: 예산항목 관리
+          - generic [ref=e33] [cursor=pointer]:
+            - img [ref=e34]
+            - generic [ref=e37]: 성과지표 관리
+          - generic [ref=e38] [cursor=pointer]:
+            - img [ref=e39]
+            - generic [ref=e44]: 사업단 관리
+      - generic [ref=e45]:
+        - generic [ref=e46]:
+          - generic [ref=e47]: 현재 로그인 권한
+          - text: 사업단장 (송경영 교수)
+        - paragraph [ref=e48]: 전체 프로젝트 사업비 & KPI 최종 결재 및 연구원 배정 마스터 권한
+    - button "개인정보 관리" [ref=e50] [cursor=pointer]:
+      - img [ref=e51]
+      - generic [ref=e54]: 개인정보 관리
+    - button "로그아웃" [ref=e56] [cursor=pointer]:
+      - img [ref=e57]
+      - generic [ref=e60]: 로그아웃
+  - main [ref=e61]:
+    - generic [ref=e62]:
+      - generic [ref=e63]:
+        - heading "앵커사업 통합 IR 대시보드" [level=1] [ref=e64]
+        - paragraph [ref=e65]: 울산과학대학교 앵커사업 2차년도 사업예산 및 성과관리 시스템
+      - generic [ref=e66]:
+        - button "1차년도" [ref=e67] [cursor=pointer]
+        - button "2차년도(현)" [ref=e68] [cursor=pointer]
+        - button "3차년도" [ref=e69] [cursor=pointer]
+        - button "4차년도" [ref=e70] [cursor=pointer]
+        - button "5차년도" [ref=e71] [cursor=pointer]
+      - generic [ref=e72]:
+        - generic [ref=e74]:
+          - text: 반갑습니다,
+          - strong [ref=e75]: 시스템 단장님
+        - button [ref=e76] [cursor=pointer]:
+          - img [ref=e77]
+    - generic [ref=e84]:
+      - generic [ref=e85]:
+        - generic [ref=e86]:
+          - generic [ref=e87]:
+            - generic [ref=e88]: ANCHOR 2차년도 총 예산
+            - img [ref=e89]
+          - generic [ref=e92]: 10,593.2 백만원
+          - generic [ref=e93]:
+            - generic [ref=e94]:
+              - generic [ref=e95]: "본사업비: 8,947.0백만원"
+              - generic [ref=e96]: "신산업특화: 287.0백만원"
+            - generic [ref=e97]:
+              - generic [ref=e98]: "본예산 계: 9,234.0백만원"
+              - generic [ref=e99]: "1차년도 이월비: 1,359.2백만원"
+        - generic [ref=e100]:
+          - generic [ref=e101]:
+            - generic [ref=e102]: 2차년도 본사업비 집행
+            - img [ref=e103]
+          - generic [ref=e105]: 1,483.8 백만원
+          - generic [ref=e106]: "집행률: 16.1% (배정: 9,234.0백만원)"
+        - generic [ref=e107]:
+          - generic [ref=e108]:
+            - generic [ref=e109]: 1차년도 이월사업비 집행
+            - img [ref=e110]
+          - generic [ref=e113]: 663.2 백만원
+          - generic [ref=e114]: "집행률: 48.8% (배정: 1,359.2백만원)"
+        - generic [ref=e115]:
+          - generic [ref=e116]:
+            - generic [ref=e117]: 성과지표 달성도 (KPI)
+            - img [ref=e118]
+          - generic [ref=e121]: 79.5%
+          - generic [ref=e122]: 2차년도 성과목표 종합 가속화
+      - generic [ref=e123]:
+        - 'heading "프로젝트별 재원 배정 및 누적 집행 현황 (단위: 백만원)" [level=3] [ref=e125]'
+        - generic [ref=e128]:
+          - heading "재원 배분 구조 (공통경비 포함)" [level=3] [ref=e129]
+          - generic [ref=e132]:
+            - generic [ref=e133]:
+              - generic [ref=e136]: 프로젝트 A
+              - generic [ref=e137]: 28.6%
+            - generic [ref=e138]:
+              - generic [ref=e141]: 프로젝트 B
+              - generic [ref=e142]: 24.0%
+            - generic [ref=e143]:
+              - generic [ref=e146]: 프로젝트 C
+              - generic [ref=e147]: 12.7%
+            - generic [ref=e148]:
+              - generic [ref=e151]: 프로젝트 D
+              - generic [ref=e152]: 11.9%
+            - generic [ref=e153]:
+              - generic [ref=e156]: 공통경비
+              - generic [ref=e157]: 22.8%

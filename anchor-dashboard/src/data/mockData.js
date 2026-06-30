@@ -1918,7 +1918,13 @@ export const YEAR_1_PROGRAMS = {
       "budget": 10000000,
       "assignee": "국제교류원"
     }
-  ],
+  ,
+    {
+      "id": "A1-5-3",
+      "title": "공통경비",
+      "budget": 10000000,
+      "assignee": "지산학교육센터(ECC)"
+    }],
   "A2": [
     {
       "id": "A2-1-1",
@@ -1998,7 +2004,13 @@ export const YEAR_1_PROGRAMS = {
       "budget": 50000000,
       "assignee": "글로컬창업지원팀"
     }
-  ],
+  ,
+    {
+      "id": "A2-3-5",
+      "title": "공통경비",
+      "budget": 10000000,
+      "assignee": "글로컬창업지원팀"
+    }],
   "B1": [
     {
       "id": "B1-1-1",
@@ -2072,7 +2084,13 @@ export const YEAR_1_PROGRAMS = {
       "budget": 35000000,
       "assignee": "R&BD지원팀"
     }
-  ],
+  ,
+    {
+      "id": "B1-3-5",
+      "title": "공통경비",
+      "budget": 10000000,
+      "assignee": "R&BD지원팀"
+    }],
   "C1": [
     {
       "id": "B2-1-1",
@@ -2164,7 +2182,13 @@ export const YEAR_1_PROGRAMS = {
       "budget": 85000000,
       "assignee": "평생교육원"
     }
-  ],
+  ,
+    {
+      "id": "B2-4-4",
+      "title": "공통경비",
+      "budget": 10000000,
+      "assignee": "평생교육원"
+    }],
   "C2": [
     {
       "id": "B3-1-1",
@@ -2214,7 +2238,13 @@ export const YEAR_1_PROGRAMS = {
       "budget": 15000000,
       "assignee": "로컬브릿지팀"
     }
-  ],
+  ,
+    {
+      "id": "B3-2-5",
+      "title": "공통경비",
+      "budget": 10000000,
+      "assignee": "로컬브릿지팀"
+    }],
   "B4": [
     {
       "id": "C1-1-1",
@@ -2288,7 +2318,13 @@ export const YEAR_1_PROGRAMS = {
       "budget": 20000000,
       "assignee": "산학협력단"
     }
-  ],
+  ,
+    {
+      "id": "C1-3-5",
+      "title": "공통경비",
+      "budget": 10000000,
+      "assignee": "산학협력단"
+    }],
   "B2": [
     {
       "id": "C2-1-1",
@@ -2350,7 +2386,13 @@ export const YEAR_1_PROGRAMS = {
       "budget": 80000000,
       "assignee": "산학협력단"
     }
-  ],
+  ,
+    {
+      "id": "C2-3-3",
+      "title": "공통경비",
+      "budget": 10000000,
+      "assignee": "산학협력단"
+    }],
   "B3": [
     {
       "id": "C3-1-1",
@@ -2424,7 +2466,13 @@ export const YEAR_1_PROGRAMS = {
       "budget": 30000000,
       "assignee": "산학협력단"
     }
-  ],
+  ,
+    {
+      "id": "C3-3-5",
+      "title": "공통경비",
+      "budget": 10000000,
+      "assignee": "산학협력단"
+    }],
   "D1": [
     {
       "id": "D1-1-1",
@@ -2486,7 +2534,13 @@ export const YEAR_1_PROGRAMS = {
       "budget": 50000000,
       "assignee": "산학협력단"
     }
-  ],
+  ,
+    {
+      "id": "D1-2-6",
+      "title": "공통경비",
+      "budget": 10000000,
+      "assignee": "산학협력단"
+    }],
   "D2": [
     {
       "id": "D2-1-1",
@@ -2566,7 +2620,13 @@ export const YEAR_1_PROGRAMS = {
       "budget": 140000000,
       "assignee": "늘봄학교지원센터"
     }
-  ],
+  ,
+    {
+      "id": "D2-4-5",
+      "title": "공통경비",
+      "budget": 10000000,
+      "assignee": "늘봄학교지원센터"
+    }],
   "D3": [
     {
       "id": "D3-1-1",
@@ -2610,7 +2670,13 @@ export const YEAR_1_PROGRAMS = {
       "budget": 150000000,
       "assignee": "R&BD지원센터"
     }
-  ],
+  ,
+    {
+      "id": "D3-2-5",
+      "title": "공통경비",
+      "budget": 10000000,
+      "assignee": "R&BD지원센터"
+    }],
   "A3": [
     {
       "id": "D4-1-1",
@@ -2660,7 +2726,13 @@ export const YEAR_1_PROGRAMS = {
       "budget": 60000000,
       "assignee": "R&BD지원센터"
     }
-  ]
+  ,
+    {
+      "id": "A3-2-3",
+      "title": "공통경비",
+      "budget": 10000000,
+      "assignee": "국제교류원"
+    }]
 };
 
 // 1차년도 단위과제 예산 메타데이터

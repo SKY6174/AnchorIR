@@ -1,0 +1,143 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e502]:
+    - generic [ref=e503]:
+      - complementary [ref=e504]:
+        - generic [ref=e505]:
+          - generic [ref=e506]:
+            - img [ref=e507]
+            - generic [ref=e510]: UC ANCHOR Portal
+          - navigation [ref=e511]:
+            - generic [ref=e512] [cursor=pointer]:
+              - img [ref=e513]
+              - generic [ref=e518]: IR 대시보드
+            - generic [ref=e519] [cursor=pointer]:
+              - img [ref=e520]
+              - generic [ref=e522]: 단위과제 관리
+            - generic [ref=e523] [cursor=pointer]:
+              - img [ref=e524]
+              - generic [ref=e527]: 프로그램 진행
+            - generic [ref=e528] [cursor=pointer]:
+              - img [ref=e529]
+              - generic [ref=e531]: 예산항목 관리
+            - generic [ref=e532] [cursor=pointer]:
+              - img [ref=e533]
+              - generic [ref=e536]: 성과지표 관리
+        - generic [ref=e537]:
+          - generic [ref=e538]:
+            - generic [ref=e539]: 현재 로그인 권한
+            - text: 실무 연구원
+          - paragraph [ref=e540]: 담당 프로그램 세부 예산 실시간 집행 등록 및 PDCA 업데이트 권한
+      - button "개인정보 관리" [ref=e542] [cursor=pointer]:
+        - img [ref=e543]
+        - generic [ref=e546]: 개인정보 관리
+      - button "로그아웃" [ref=e548] [cursor=pointer]:
+        - img [ref=e549]
+        - generic [ref=e552]: 로그아웃
+    - main [ref=e553]:
+      - generic [ref=e554]:
+        - generic [ref=e555]:
+          - heading "앵커사업 통합 IR 대시보드" [level=1] [ref=e556]
+          - paragraph [ref=e557]: 울산과학대학교 앵커사업 2차년도 사업예산 및 성과관리 시스템
+        - generic [ref=e558]:
+          - button "1차년도" [ref=e559] [cursor=pointer]
+          - button "2차년도(현)" [ref=e560] [cursor=pointer]
+          - button "3차년도" [ref=e561] [cursor=pointer]
+          - button "4차년도" [ref=e562] [cursor=pointer]
+          - button "5차년도" [ref=e563] [cursor=pointer]
+        - generic [ref=e564]:
+          - generic [ref=e566]:
+            - text: 반갑습니다,
+            - strong [ref=e567]: 이은주 연구원님
+          - button [ref=e568] [cursor=pointer]:
+            - img [ref=e569]
+      - generic [ref=e576]:
+        - generic [ref=e577]:
+          - generic [ref=e578]:
+            - generic [ref=e579]:
+              - generic [ref=e580]: ANCHOR 2차년도 총 예산
+              - img [ref=e581]
+            - generic [ref=e584]: 10,593.2 백만원
+            - generic [ref=e585]:
+              - generic [ref=e586]:
+                - generic [ref=e587]: "본사업비: 8,947.0백만원"
+                - generic [ref=e588]: "신산업특화: 287.0백만원"
+              - generic [ref=e589]:
+                - generic [ref=e590]: "본예산 계: 9,234.0백만원"
+                - generic [ref=e591]: "1차년도 이월비: 1,359.2백만원"
+          - generic [ref=e592]:
+            - generic [ref=e593]:
+              - generic [ref=e594]: 2차년도 본사업비 집행
+              - img [ref=e595]
+            - generic [ref=e597]: 1,483.8 백만원
+            - generic [ref=e598]: "집행률: 16.1% (배정: 9,234.0백만원)"
+          - generic [ref=e599]:
+            - generic [ref=e600]:
+              - generic [ref=e601]: 1차년도 이월사업비 집행
+              - img [ref=e602]
+            - generic [ref=e605]: 663.2 백만원
+            - generic [ref=e606]: "집행률: 48.8% (배정: 1,359.2백만원)"
+          - generic [ref=e607]:
+            - generic [ref=e608]:
+              - generic [ref=e609]: 성과지표 달성도 (KPI)
+              - img [ref=e610]
+            - generic [ref=e613]: 79.5%
+            - generic [ref=e614]: 2차년도 성과목표 종합 가속화
+        - generic [ref=e615]:
+          - generic [ref=e616]:
+            - 'heading "프로젝트별 재원 배정 및 누적 집행 현황 (단위: 백만원)" [level=3] [ref=e617]'
+            - generic [ref=e620]:
+              - generic:
+                - status:
+                  - paragraph: 프로젝트 C
+                  - list:
+                    - listitem: "1차년도 이월예산 : 300 백만원"
+                    - listitem: "1차년도 이월집행 : 130 백만원"
+                    - listitem: "본예산 : 1,050 백만원"
+                    - listitem: "본집행 : 290 백만원"
+              - list [ref=e622]:
+                - listitem [ref=e623]:
+                  - img "1차년도 이월예산 legend icon" [ref=e624]
+                  - text: 1차년도 이월예산
+                - listitem [ref=e626]:
+                  - img "1차년도 이월집행 legend icon" [ref=e627]
+                  - text: 1차년도 이월집행
+                - listitem [ref=e629]:
+                  - img "본예산 legend icon" [ref=e630]
+                  - text: 본예산
+                - listitem [ref=e632]:
+                  - img "본집행 legend icon" [ref=e633]
+                  - text: 본집행
+              - application [ref=e635]:
+                - generic [ref=e717]:
+                  - generic [ref=e718]:
+                    - generic [ref=e720]: 프로젝트 A
+                    - generic [ref=e722]: 프로젝트 B
+                    - generic [ref=e724]: 프로젝트 C
+                    - generic [ref=e726]: 프로젝트 D
+                    - generic [ref=e728]: 공통경비
+                  - generic [ref=e729]:
+                    - generic [ref=e731]: "0"
+                    - generic [ref=e733]: "750"
+                    - generic [ref=e735]: "1500"
+                    - generic [ref=e737]: "2250"
+                    - generic [ref=e739]: "3000"
+          - generic [ref=e740]:
+            - heading "재원 배분 구조 (공통경비 포함)" [level=3] [ref=e741]
+            - application [ref=e745]
+            - generic [ref=e764]:
+              - generic [ref=e765]:
+                - generic [ref=e768]: 프로젝트 A
+                - generic [ref=e769]: 28.6%
+              - generic [ref=e770]:
+                - generic [ref=e773]: 프로젝트 B
+                - generic [ref=e774]: 24.0%
+              - generic [ref=e775]:
+                - generic [ref=e778]: 프로젝트 C
+                - generic [ref=e779]: 12.7%
+              - generic [ref=e780]:
+                - generic [ref=e783]: 프로젝트 D
+                - generic [ref=e784]: 11.9%
+              - generic [ref=e785]:
+                - generic [ref=e788]: 공통경비
+                - generic [ref=e789]: 22.8%
+  - generic [ref=e290]: "0"

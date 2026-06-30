@@ -1,0 +1,30 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e806]:
+    - generic [ref=e807]:
+      - img [ref=e808]
+      - heading "UC ANCHOR Portal" [level=2] [ref=e811]
+      - paragraph [ref=e812]: 앵커사업 통합 대시보드 회원가입
+    - generic [ref=e813]:
+      - generic [ref=e814]:
+        - img [ref=e815]
+        - textbox "이메일 (아이디)" [ref=e830] [cursor=pointer]
+      - generic [ref=e819]:
+        - img [ref=e831]
+        - textbox "성명" [ref=e834] [cursor=pointer]
+      - generic [ref=e835]:
+        - paragraph [ref=e836]: ※ 구성원 주소록에 등록된 이메일을 아이디로 입력해 주세요.
+        - paragraph [ref=e837]: ※ 초기 비밀번호는 등록된 휴대전화 번호 뒷자리 4자리로 자동 지정됩니다.
+      - generic [ref=e838]:
+        - generic [ref=e839]: 역할(권한) 선택
+        - combobox [ref=e840] [cursor=pointer]:
+          - option "단장 (송경영 교수 권한)"
+          - option "총괄본부장 (김현수 교수 권한)"
+          - option "ECC센터장 (이동은 교수 권한)"
+          - option "신산업특화센터장 (홍진숙 교수 권한)"
+          - option "운영팀장 (심현미 부장 권한)"
+          - option "실무 연구원 권한" [selected]
+      - button "회원가입" [ref=e841] [cursor=pointer]:
+        - img [ref=e842]
+        - generic [ref=e845]: 회원가입
+      - generic [ref=e846] [cursor=pointer]: 이미 계정이 있으신가요? 로그인하기
+  - generic [ref=e290]: "0"

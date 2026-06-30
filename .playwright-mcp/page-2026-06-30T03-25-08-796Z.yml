@@ -1,0 +1,16 @@
+- generic [ref=e4]:
+  - generic [ref=e5]:
+    - img [ref=e6]
+    - heading "UC ANCHOR Portal" [level=2] [ref=e9]
+    - paragraph [ref=e10]: 앵커사업 통합 대시보드 로그인
+  - generic [ref=e11]:
+    - generic [ref=e12]:
+      - img [ref=e13]
+      - textbox "아이디" [ref=e16] [cursor=pointer]
+    - generic [ref=e17]:
+      - img [ref=e18]
+      - textbox "비밀번호" [ref=e21] [cursor=pointer]
+    - button "로그인" [ref=e22] [cursor=pointer]:
+      - img [ref=e23]
+      - generic [ref=e26]: 로그인
+    - generic [ref=e27] [cursor=pointer]: 새로운 계정이 필요하신가요? 회원가입하기

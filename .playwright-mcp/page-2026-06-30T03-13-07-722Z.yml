@@ -1,0 +1,103 @@
+- generic [ref=e3]:
+  - generic [ref=e4]:
+    - complementary [ref=e5]:
+      - generic [ref=e6]:
+        - generic [ref=e7]:
+          - img [ref=e8]
+          - generic [ref=e11]: UC ANCHOR Portal
+        - navigation [ref=e12]:
+          - generic [ref=e13] [cursor=pointer]:
+            - img [ref=e14]
+            - generic [ref=e19]: IR 대시보드
+          - generic [ref=e20] [cursor=pointer]:
+            - img [ref=e21]
+            - generic [ref=e23]: 단위과제 관리
+          - generic [ref=e24] [cursor=pointer]:
+            - img [ref=e25]
+            - generic [ref=e28]: 프로그램 진행
+          - generic [ref=e29] [cursor=pointer]:
+            - img [ref=e30]
+            - generic [ref=e32]: 예산항목 관리
+          - generic [ref=e33] [cursor=pointer]:
+            - img [ref=e34]
+            - generic [ref=e37]: 성과지표 관리
+      - generic [ref=e38]:
+        - generic [ref=e39]:
+          - generic [ref=e40]: 현재 로그인 권한
+          - text: 실무 연구원
+        - paragraph [ref=e41]: 담당 프로그램 세부 예산 실시간 집행 등록 및 PDCA 업데이트 권한
+    - button "개인정보 관리" [ref=e43] [cursor=pointer]:
+      - img [ref=e44]
+      - generic [ref=e47]: 개인정보 관리
+    - button "로그아웃" [ref=e49] [cursor=pointer]:
+      - img [ref=e50]
+      - generic [ref=e53]: 로그아웃
+  - main [ref=e54]:
+    - generic [ref=e55]:
+      - generic [ref=e56]:
+        - heading "앵커사업 통합 IR 대시보드" [level=1] [ref=e57]
+        - paragraph [ref=e58]: 울산과학대학교 앵커사업 2차년도 사업예산 및 성과관리 시스템
+      - generic [ref=e59]:
+        - button "1차년도" [ref=e60] [cursor=pointer]
+        - button "2차년도(현)" [ref=e61] [cursor=pointer]
+        - button "3차년도" [ref=e62] [cursor=pointer]
+        - button "4차년도" [ref=e63] [cursor=pointer]
+        - button "5차년도" [ref=e64] [cursor=pointer]
+      - generic [ref=e65]:
+        - generic [ref=e67]:
+          - text: 반갑습니다,
+          - strong [ref=e68]: 이은주 연구원님
+        - button [ref=e69] [cursor=pointer]:
+          - img [ref=e70]
+    - generic [ref=e77]:
+      - generic [ref=e78]:
+        - generic [ref=e79]:
+          - generic [ref=e80]:
+            - generic [ref=e81]: ANCHOR 2차년도 총 예산
+            - img [ref=e82]
+          - generic [ref=e85]: 10,593.2 백만원
+          - generic [ref=e86]:
+            - generic [ref=e87]:
+              - generic [ref=e88]: "본사업비: 8,947.0백만원"
+              - generic [ref=e89]: "신산업특화: 287.0백만원"
+            - generic [ref=e90]:
+              - generic [ref=e91]: "본예산 계: 9,234.0백만원"
+              - generic [ref=e92]: "1차년도 이월비: 1,359.2백만원"
+        - generic [ref=e93]:
+          - generic [ref=e94]:
+            - generic [ref=e95]: 2차년도 본사업비 집행
+            - img [ref=e96]
+          - generic [ref=e98]: 1,483.8 백만원
+          - generic [ref=e99]: "집행률: 16.1% (배정: 9,234.0백만원)"
+        - generic [ref=e100]:
+          - generic [ref=e101]:
+            - generic [ref=e102]: 1차년도 이월사업비 집행
+            - img [ref=e103]
+          - generic [ref=e106]: 663.2 백만원
+          - generic [ref=e107]: "집행률: 48.8% (배정: 1,359.2백만원)"
+        - generic [ref=e108]:
+          - generic [ref=e109]:
+            - generic [ref=e110]: 성과지표 달성도 (KPI)
+            - img [ref=e111]
+          - generic [ref=e114]: 79.5%
+          - generic [ref=e115]: 2차년도 성과목표 종합 가속화
+      - generic [ref=e116]:
+        - 'heading "프로젝트별 재원 배정 및 누적 집행 현황 (단위: 백만원)" [level=3] [ref=e118]'
+        - generic [ref=e121]:
+          - heading "재원 배분 구조 (공통경비 포함)" [level=3] [ref=e122]
+          - generic [ref=e125]:
+            - generic [ref=e126]:
+              - generic [ref=e129]: 프로젝트 A
+              - generic [ref=e130]: 28.6%
+            - generic [ref=e131]:
+              - generic [ref=e134]: 프로젝트 B
+              - generic [ref=e135]: 24.0%
+            - generic [ref=e136]:
+              - generic [ref=e139]: 프로젝트 C
+              - generic [ref=e140]: 12.7%
+            - generic [ref=e141]:
+              - generic [ref=e144]: 프로젝트 D
+              - generic [ref=e145]: 11.9%
+            - generic [ref=e146]:
+              - generic [ref=e149]: 공통경비
+              - generic [ref=e150]: 22.8%
