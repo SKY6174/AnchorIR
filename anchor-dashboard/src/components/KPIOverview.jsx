@@ -45,16 +45,19 @@ export default function KPIOverview({ projects, currentRole, selectedYear = 2 })
   const totalBudget = totalBudgetMain + totalBudgetCarry;
   const totalSpent = totalSpentMain + totalSpentCarry;
 
-  // A-1-나 신산업특화 예산 동적 추출 및 본사업비(A-1-나 제외) 계산
-  let shinSanUpBudget = 0;
+  // A1나 신산업특화 예산 동적 추출 및 앵커 예산 계산
+  let shinSanUpBudgetMain = 0; // 신산업(본사업)
+  let shinSanUpBudgetCarry = 0; // 신산업(이월사업)
   activeProjects.forEach((p) => {
     p.units.forEach((u) => {
-      if (u.id === "A-1-나") {
-        shinSanUpBudget = u.years?.[selectedYear]?.budget_main || 0;
+      if (u.id === "A1나") {
+        shinSanUpBudgetMain = u.years?.[selectedYear]?.budget_main || 0;
+        shinSanUpBudgetCarry = u.years?.[selectedYear]?.budget_carry || 0;
       }
     });
   });
-  const bonBudgetMain = Math.max(0, totalBudgetMain - shinSanUpBudget);
+  const anchorBudgetMain = Math.max(0, totalBudgetMain - shinSanUpBudgetMain);
+  const anchorBudgetCarry = Math.max(0, totalBudgetCarry - shinSanUpBudgetCarry);
 
   // 전체 KPI 달성률 계산
   let kpiCount = 0;
@@ -119,14 +122,18 @@ export default function KPIOverview({ projects, currentRole, selectedYear = 2 })
           <div className="kpi-value" style={{ color: "var(--accent-color)", fontSize: "1.45rem" }}>
             {formatToMillionWon(totalBudget)} 백만원
           </div>
-          <div className="kpi-subtext" style={{ display: "flex", flexDirection: "column", gap: "0.2rem", fontSize: "0.75rem", width: "100%" }}>
+          <div className="kpi-subtext" style={{ display: "flex", flexDirection: "column", gap: "0.3rem", fontSize: "0.72rem", width: "100%", borderTop: "1px solid rgba(255,255,255,0.1)", paddingTop: "0.4rem", marginTop: "0.3rem" }}>
             <div style={{ display: "flex", justifyContent: "space-between" }}>
-              <span>본사업비: {formatToMillionWon(bonBudgetMain)}백만원</span>
-              <span>신산업특화: {formatToMillionWon(shinSanUpBudget)}백만원</span>
+              <span>앵커(본사업): {formatToMillionWon(anchorBudgetMain)}백만원</span>
+              <span>앵커(이월사업): {formatToMillionWon(anchorBudgetCarry)}백만원</span>
             </div>
-            <div style={{ display: "flex", justifyContent: "space-between", borderTop: "1px solid rgba(255,255,255,0.1)", paddingTop: "0.2rem", marginTop: "0.1rem" }}>
-              <span>본예산 계: {formatToMillionWon(totalBudgetMain)}백만원</span>
-              {selectedYear >= 2 && <span>{selectedYear - 1}차년도 이월비: {formatToMillionWon(totalBudgetCarry)}백만원</span>}
+            <div style={{ display: "flex", justifyContent: "space-between" }}>
+              <span>신산업(본사업): {formatToMillionWon(shinSanUpBudgetMain)}백만원</span>
+              <span>신산업(이월사업): {formatToMillionWon(shinSanUpBudgetCarry)}백만원</span>
+            </div>
+            <div style={{ display: "flex", justifyContent: "space-between", fontWeight: "700", borderTop: "1px dashed rgba(255,255,255,0.15)", paddingTop: "0.3rem", marginTop: "0.1rem" }}>
+              <span>2차년도(본사업): {formatToMillionWon(totalBudgetMain)}백만원</span>
+              <span>1차년도(이월사업): {formatToMillionWon(totalBudgetCarry)}백만원</span>
             </div>
           </div>
         </div>
