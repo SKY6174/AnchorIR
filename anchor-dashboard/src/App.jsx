@@ -136,21 +136,31 @@ const formatToMillionWon = (value) => {
 
 // 5개년 연쇄 잔액 이월(Carry Over) 계산 함수
 function recalculateCarryOver(years) {
+  if (!years) return;
+
   // 1차년도 잔액 -> 2차년도 이월
-  const balanceY1 = Math.max(0, ((years[1].budget_main || 0) + (years[1].budget_carry || 0)) - ((years[1].spent_main || 0) + (years[1].spent_carry || 0)));
-  years[2].budget_carry = balanceY1;
+  if (years[1] && years[2]) {
+    const balanceY1 = Math.max(0, ((years[1].budget_main || 0) + (years[1].budget_carry || 0)) - ((years[1].spent_main || 0) + (years[1].spent_carry || 0)));
+    years[2].budget_carry = balanceY1;
+  }
 
   // 2차년도 잔액 -> 3차년도 이월
-  const balanceY2 = Math.max(0, ((years[2].budget_main || 0) + (years[2].budget_carry || 0)) - ((years[2].spent_main || 0) + (years[2].spent_carry || 0)));
-  years[3].budget_carry = balanceY2;
+  if (years[2] && years[3]) {
+    const balanceY2 = Math.max(0, ((years[2].budget_main || 0) + (years[2].budget_carry || 0)) - ((years[2].spent_main || 0) + (years[2].spent_carry || 0)));
+    years[3].budget_carry = balanceY2;
+  }
 
   // 3차년도 잔액 -> 4차년도 이월
-  const balanceY3 = Math.max(0, ((years[3].budget_main || 0) + (years[3].budget_carry || 0)) - ((years[3].spent_main || 0) + (years[3].spent_carry || 0)));
-  years[4].budget_carry = balanceY3;
+  if (years[3] && years[4]) {
+    const balanceY3 = Math.max(0, ((years[3].budget_main || 0) + (years[3].budget_carry || 0)) - ((years[3].spent_main || 0) + (years[3].spent_carry || 0)));
+    years[4].budget_carry = balanceY3;
+  }
 
   // 4차년도 잔액 -> 5차년도 이월
-  const balanceY4 = Math.max(0, ((years[4].budget_main || 0) + (years[4].budget_carry || 0)) - ((years[4].spent_main || 0) + (years[4].spent_carry || 0)));
-  years[5].budget_carry = balanceY4;
+  if (years[4] && years[5]) {
+    const balanceY4 = Math.max(0, ((years[4].budget_main || 0) + (years[4].budget_carry || 0)) - ((years[4].spent_main || 0) + (years[4].spent_carry || 0)));
+    years[5].budget_carry = balanceY4;
+  }
 }
 
 // 다년도 예산/집행 구조 동적 변환기 (1~5차년도)
