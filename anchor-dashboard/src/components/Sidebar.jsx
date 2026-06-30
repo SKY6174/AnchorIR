@@ -18,8 +18,8 @@ export default function Sidebar({
     <aside className="sidebar">
       <div>
         <div className="logo-section">
-          <Award className="logo-icon" size={28} />
-          <span className="logo-text">UC ANCHOR Portal</span>
+          <img src="/logo.png" alt="울산과학대학교 로고" className="logo-img" />
+          <span className="logo-text">ANCHOR Portal</span>
         </div>
 
         <nav className="nav-menu">
