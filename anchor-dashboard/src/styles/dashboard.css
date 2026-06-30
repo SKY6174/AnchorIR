@@ -569,3 +569,58 @@ body.light-mode {
 .light-mode .mini-table td {
   border-bottom: 1px solid rgba(0, 0, 0, 0.02);
 }
+
+/* Sidebar Submenu */
+.projects-nav-wrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.nav-sub-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding-left: 2.25rem;
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s ease, margin-top 0.3s ease;
+}
+
+/* Hover & Active expanded state */
+.projects-nav-wrapper:hover .nav-sub-menu,
+.projects-nav-wrapper.active .nav-sub-menu {
+  max-height: 80px;
+  opacity: 1;
+  margin-top: 0.25rem;
+  margin-bottom: 0.25rem;
+}
+
+.nav-sub-item {
+  font-size: 0.72rem;
+  color: var(--text-secondary-dark);
+  padding: 0.35rem 0.5rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  font-weight: 500;
+}
+
+.light-mode .nav-sub-item {
+  color: var(--text-secondary-light);
+}
+
+.nav-sub-item:hover,
+.nav-sub-item.active {
+  background: rgba(59, 130, 246, 0.12);
+  color: var(--accent-color);
+  font-weight: 700;
+}
+
+.light-mode .nav-sub-item:hover,
+.light-mode .nav-sub-item.active {
+  background: rgba(59, 130, 246, 0.08);
+  color: var(--accent-color);
+}

@@ -2,7 +2,7 @@ import React from "react";
 import { userRoles } from "../data/mockData";
 import { LayoutDashboard, Users, FileBarChart2, FolderKanban, Award, Landmark, ClipboardList } from "lucide-react";
 
-export default function Sidebar({ currentRole, onChangeRole, activeTab, onChangeTab }) {
+export default function Sidebar({ currentRole, onChangeRole, activeTab, onChangeTab, projectsSubTab, onChangeProjectsSubTab }) {
   return (
     <aside className="sidebar">
       <div>
@@ -20,12 +20,45 @@ export default function Sidebar({ currentRole, onChangeRole, activeTab, onChange
             <span>IR 대시보드</span>
           </div>
 
-          <div
-            className={`nav-item ${activeTab === "projects" ? "active" : ""}`}
-            onClick={() => onChangeTab("projects")}
-          >
-            <FolderKanban size={18} />
-            <span>단위과제 관리</span>
+          <div className={`projects-nav-wrapper ${activeTab === "projects" ? "active" : ""}`}>
+            <div
+              className={`nav-item ${activeTab === "projects" ? "active" : ""}`}
+              onClick={() => {
+                onChangeTab("projects");
+                if (onChangeProjectsSubTab) {
+                  onChangeProjectsSubTab("unit_status");
+                }
+              }}
+            >
+              <FolderKanban size={18} />
+              <span>단위과제 관리</span>
+            </div>
+            <div className="nav-sub-menu">
+              <div
+                className={`nav-sub-item ${activeTab === "projects" && projectsSubTab === "unit_status" ? "active" : ""}`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onChangeTab("projects");
+                  if (onChangeProjectsSubTab) {
+                    onChangeProjectsSubTab("unit_status");
+                  }
+                }}
+              >
+                - 단위과제 집행현황
+              </div>
+              <div
+                className={`nav-sub-item ${activeTab === "projects" && projectsSubTab === "program_mgmt" ? "active" : ""}`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onChangeTab("projects");
+                  if (onChangeProjectsSubTab) {
+                    onChangeProjectsSubTab("program_mgmt");
+                  }
+                }}
+              >
+                - 프로그램 관리
+              </div>
+            </div>
           </div>
 
           <div

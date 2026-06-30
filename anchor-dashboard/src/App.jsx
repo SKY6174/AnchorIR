@@ -1698,6 +1698,8 @@ export default function App() {
             setActiveTab(tab);
             setSelectedKpi(null);
           }}
+          projectsSubTab={projectsSubTab}
+          onChangeProjectsSubTab={setProjectsSubTab}
         />
         <div style={{ padding: "0.5rem 1.5rem 0.25rem 1.5rem", background: "var(--panel-bg-dark)", borderRight: "1px solid var(--border-color-dark)" }}>
           <button
