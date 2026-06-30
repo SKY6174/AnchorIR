@@ -900,6 +900,8 @@ export default function App() {
   const [kpiSubTab, setKpiSubTab] = useState("자율"); // "자율" ((지자체)자율성과지표) 또는 "중점" ((대학)중점관리지표)
   const [selectedUnitId, setSelectedUnitId] = useState("A1가");
   const [selectedProgId, setSelectedProgId] = useState(null);
+  const [pdcaViewMode, setPdcaViewMode] = useState("unit");
+
 
   // 로컬스토리지에서 세션 확인 및 테마 설정
   useEffect(() => {
@@ -1963,12 +1965,21 @@ export default function App() {
                   setSelectedUnitId={setSelectedUnitId}
                   selectedProgId={selectedProgId}
                   setSelectedProgId={setSelectedProgId}
+                  viewMode={pdcaViewMode}
+                  setViewMode={setPdcaViewMode}
+                />
+                {/* 단위과제 및 프로그램 전용 예산 엑셀 업로더 (mode="BUDGET") */}
+                <ExcelUploader
+                  mode="BUDGET"
+                  onUpdateData={handleUpdateData}
+                  projects={projects}
+                  selectedYear={selectedYear}
+                  viewMode={pdcaViewMode}
+                  selectedUnitId={selectedUnitId}
                 />
               </div>
             )}
           </div>
-          {/* 단위과제 및 프로그램 전용 예산 엑셀 업로더 (mode="BUDGET") */}
-          <ExcelUploader mode="BUDGET" onUpdateData={handleUpdateData} projects={projects} selectedYear={selectedYear} />
         </>
         )}
 

@@ -8,7 +8,14 @@ import { Download, FileSpreadsheet, Check } from "lucide-react";
  * - mode === "BUDGET": 예산 및 프로그램 전용 엑셀 업로더
  * - mode === "KPI": 성과지표(목표/실적) 전용 엑셀 업로더
  */
-export default function ExcelUploader({ onUpdateData, projects, selectedYear = 2, mode = "BUDGET" }) {
+export default function ExcelUploader({ 
+  onUpdateData, 
+  projects, 
+  selectedYear = 2, 
+  mode = "BUDGET",
+  viewMode = "all",
+  selectedUnitId
+}) {
   const [dragActive, setDragActive] = useState(false);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -75,8 +82,22 @@ export default function ExcelUploader({ onUpdateData, projects, selectedYear = 2
           return newRow;
         });
 
+        let dataToUpdate = normalizedJson;
+        if (mode === "BUDGET" && viewMode === "unit" && selectedUnitId) {
+          // 단위과제별 조회/등록 탭이 선택되어 있다면, 업로드된 엑셀 데이터 중 해당 단위과제에 속한 데이터만 필터링하여 반영
+          dataToUpdate = normalizedJson.filter(
+            (row) => row["단위과제ID"] && String(row["단위과제ID"]).trim() === String(selectedUnitId).trim()
+          );
+
+          if (dataToUpdate.length === 0) {
+            alert(`[업로드 실패] 업로드된 파일에 현재 선택된 단위과제("${selectedUnitId}")의 예산 데이터가 존재하지 않습니다.`);
+            setLoading(false);
+            return;
+          }
+        }
+
         // App.jsx의 데이터 갱신 로직으로 파싱된 배열 데이터와 업데이트 타입 전달
-        onUpdateData(normalizedJson, isBudgetUpdate ? "BUDGET" : "KPI");
+        onUpdateData(dataToUpdate, isBudgetUpdate ? "BUDGET" : "KPI");
         setSuccess(true);
         setTimeout(() => setSuccess(false), 3000);
       } catch (err) {
@@ -123,8 +144,15 @@ export default function ExcelUploader({ onUpdateData, projects, selectedYear = 2
 
     if (type === "BUDGET") {
       filename = "ANCHOR_재원구분_예산양식_2026.xlsx";
+      if (viewMode === "unit" && selectedUnitId) {
+        filename = `ANCHOR_재원구분_예산양식_2026_${selectedUnitId}.xlsx`;
+      }
       projects.forEach((p) => {
         p.units.forEach((u) => {
+          // 단위과제별 보기 모드일 때는 선택된 단위과제 자료만 포함
+          if (viewMode === "unit" && selectedUnitId && u.id !== selectedUnitId) {
+            return;
+          }
           u.programs.forEach((prog) => {
             const py = prog.years?.[selectedYear] || {};
             

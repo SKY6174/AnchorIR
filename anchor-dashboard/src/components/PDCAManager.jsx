@@ -118,9 +118,10 @@ export default function PDCAManager({
   selectedUnitId,
   setSelectedUnitId,
   selectedProgId,
-  setSelectedProgId
+  setSelectedProgId,
+  viewMode = "unit",
+  setViewMode
 }) {
-  const [viewMode, setViewMode] = useState("unit"); // "unit" (단위과제별) 또는 "all" (전체)
   const [feedbackMsg, setFeedbackMsg] = useState("");
 
   // 프로그램 신규 추가용 모달 상태
@@ -1151,14 +1152,20 @@ export default function PDCAManager({
             <table className="custom-table" style={{ fontSize: "0.75rem" }}>
               <thead>
                 <tr>
-                  <th>ID</th>
-                  <th>프로그램명</th>
-                  <th>소속 과제</th>
-                  <th>담당자</th>
-                  <th>{selectedYear}차년도 본예산 (백만원)</th>
-                  <th>{selectedYear}차년도 본집행 (백만원)</th>
-                  <th>PDCA 현황</th>
-                  <th style={{ width: "90px" }}>실적 등록</th>
+                  <th rowSpan={2}>ID</th>
+                  <th rowSpan={2}>프로그램명</th>
+                  <th rowSpan={2}>소속 과제</th>
+                  <th rowSpan={2}>담당자</th>
+                  <th rowSpan={2}>{selectedYear}차년도 본예산 (백만원)</th>
+                  <th rowSpan={2}>{selectedYear}차년도 본집행 (백만원)</th>
+                  <th colSpan={4} style={{ textAlign: "center" }}>진행 단계(PDCA)</th>
+                  <th rowSpan={2} style={{ width: "90px" }}>실적 등록</th>
+                </tr>
+                <tr>
+                  <th style={{ textAlign: "center", width: "50px" }}>P</th>
+                  <th style={{ textAlign: "center", width: "50px" }}>D</th>
+                  <th style={{ textAlign: "center", width: "50px" }}>C</th>
+                  <th style={{ textAlign: "center", width: "50px" }}>A</th>
                 </tr>
               </thead>
               <tbody>
@@ -1179,14 +1186,10 @@ export default function PDCAManager({
                       <td style={{ fontWeight: "700", color: "var(--accent-color)" }}>{prog.assignee}</td>
                       <td style={{ fontFamily: "var(--font-data)" }}>{formatToMillionWon(py.budget_main)}백만원</td>
                       <td style={{ fontFamily: "var(--font-data)" }}>{formatToMillionWon(py.spent_main)}백만원</td>
-                      <td>
-                        <span style={{ display: "flex", gap: "0.2rem", fontSize: "0.65rem", fontFamily: "var(--font-data)" }}>
-                          <span style={{ color: prog.pdca.p === "완료" ? "var(--success-color)" : "inherit" }}>P:{prog.pdca.p}</span>
-                          <span style={{ color: prog.pdca.d === "완료" ? "var(--success-color)" : "inherit" }}>D:{prog.pdca.d}</span>
-                          <span style={{ color: prog.pdca.c === "완료" ? "var(--success-color)" : "inherit" }}>C:{prog.pdca.c}</span>
-                          <span style={{ color: prog.pdca.a === "완료" ? "var(--success-color)" : "inherit" }}>A:{prog.pdca.a}</span>
-                        </span>
-                      </td>
+                      <td style={{ textAlign: "center", color: prog.pdca.p === "완료" ? "var(--success-color)" : "inherit", fontWeight: "700" }}>{prog.pdca.p}</td>
+                      <td style={{ textAlign: "center", color: prog.pdca.d === "완료" ? "var(--success-color)" : "inherit", fontWeight: "700" }}>{prog.pdca.d}</td>
+                      <td style={{ textAlign: "center", color: prog.pdca.c === "완료" ? "var(--success-color)" : "inherit", fontWeight: "700" }}>{prog.pdca.c}</td>
+                      <td style={{ textAlign: "center", color: prog.pdca.a === "완료" ? "var(--success-color)" : "inherit", fontWeight: "700" }}>{prog.pdca.a}</td>
                       <td>
                         <button
                           className="btn-primary"

@@ -22,7 +22,7 @@ export const initialProjectsData = [
           { id: "A1가-02", title: "주문식 교육과정 운영", budget_2026: 202000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "정자윤 연구원", pdca: { p: "대기", d: "대기", c: "대기", a: "대기" } },
           { id: "A1가-03", title: "주문식(지역맞춤형) 교육과정 개발 및 개편 보고서", budget_2026: 20000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "정자윤 연구원", pdca: { p: "대기", d: "대기", c: "대기", a: "대기" } },
           { id: "A1가-04", title: "주문식 교육과정 자체평가 보고서", budget_2026: 20000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "정자윤 연구원", pdca: { p: "대기", d: "대기", c: "대기", a: "대기" } },
-          { id: "A1가-05", title: "과정평가형 교육과정개발(3개 학과)", budget_2026: 12000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "미지정", pdca: { p: "대기", d: "대기", c: "대기", a: "대기" } },
+          { id: "A1가-05", title: "과정평가형 교육과정개발(3개 학과)", budget_2026: 12000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "정자윤 연구원", pdca: { p: "대기", d: "대기", c: "대기", a: "대기" } },
           { id: "A1가-06", title: "학점교류 교과목 운영", budget_2026: 20000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "서란 연구원, 이은주 선임연구원", pdca: { p: "대기", d: "대기", c: "대기", a: "대기" } },
           { id: "A1가-07", title: "학과별 실험실습재료비 지원", budget_2026: 100000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "정자윤 연구원", pdca: { p: "대기", d: "대기", c: "대기", a: "대기" } },
           { id: "A1가-08", title: "특화분야 자격증/전문가 과정 운영", budget_2026: 45000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "정자윤 연구원", pdca: { p: "대기", d: "대기", c: "대기", a: "대기" } },
