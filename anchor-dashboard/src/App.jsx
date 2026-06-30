@@ -1700,6 +1700,10 @@ export default function App() {
           }}
           projectsSubTab={projectsSubTab}
           onChangeProjectsSubTab={setProjectsSubTab}
+          kpiSubTab={kpiSubTab}
+          onChangeKpiSubTab={setKpiSubTab}
+          mgmtSubTab={mgmtSubTab}
+          onChangeMgmtSubTab={setMgmtSubTab}
         />
         <div style={{ padding: "0.5rem 1.5rem 0.25rem 1.5rem", background: "var(--panel-bg-dark)", borderRight: "1px solid var(--border-color-dark)" }}>
           <button

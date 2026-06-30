@@ -624,3 +624,26 @@ body.light-mode {
   background: rgba(59, 130, 246, 0.08);
   color: var(--accent-color);
 }
+
+.kpis-nav-wrapper,
+.mgmt-nav-wrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.kpis-nav-wrapper:hover .nav-sub-menu,
+.kpis-nav-wrapper.active .nav-sub-menu {
+  max-height: 80px;
+  opacity: 1;
+  margin-top: 0.25rem;
+  margin-bottom: 0.25rem;
+}
+
+.mgmt-nav-wrapper:hover .nav-sub-menu,
+.mgmt-nav-wrapper.active .nav-sub-menu {
+  max-height: 110px;
+  opacity: 1;
+  margin-top: 0.25rem;
+  margin-bottom: 0.25rem;
+}
