@@ -69,17 +69,19 @@ export default function KPIOverview({ projects, currentRole, selectedYear = 2 })
   const totalBudget = totalBudgetMain + totalBudgetCarry;
   const totalSpent = totalSpentMain + totalSpentCarry;
 
-  // A1나 신산업특화 예산 동적 추출 및 앵커 예산 계산
+  // A1나 신산업특화 예산 동적 추출 및 앵커 예산 계산 (1차년도에는 신산업이 존재하지 않음)
   let shinSanUpBudgetMain = 0; // 신산업(본사업)
   let shinSanUpBudgetCarry = 0; // 신산업(이월사업)
-  activeProjects.forEach((p) => {
-    p.units.forEach((u) => {
-      if (u.id === "A1나") {
-        shinSanUpBudgetMain = u.years?.[selectedYear]?.budget_main || 0;
-        shinSanUpBudgetCarry = u.years?.[selectedYear]?.budget_carry || 0;
-      }
+  if (selectedYear >= 2) {
+    activeProjects.forEach((p) => {
+      p.units.forEach((u) => {
+        if (u.id === "A1나") {
+          shinSanUpBudgetMain = u.years?.[selectedYear]?.budget_main || 0;
+          shinSanUpBudgetCarry = u.years?.[selectedYear]?.budget_carry || 0;
+        }
+      });
     });
-  });
+  }
   const anchorBudgetMain = Math.max(0, totalBudgetMain - shinSanUpBudgetMain);
   const anchorBudgetCarry = Math.max(0, totalBudgetCarry - shinSanUpBudgetCarry);
 
@@ -147,18 +149,29 @@ export default function KPIOverview({ projects, currentRole, selectedYear = 2 })
             {formatToMillionWon(totalBudget)} 백만원
           </div>
           <div className="kpi-subtext" style={{ display: "flex", flexDirection: "column", gap: "0.3rem", fontSize: "0.72rem", width: "100%", borderTop: "1px solid rgba(255,255,255,0.1)", paddingTop: "0.4rem", marginTop: "0.3rem" }}>
-            <div style={{ display: "flex", justifyContent: "space-between" }}>
-              <span>앵커(본사업):<br />{formatToMillionWon(anchorBudgetMain)} 백만원</span>
-              <span>앵커(이월사업):<br />{formatToMillionWon(anchorBudgetCarry)} 백만원</span>
-            </div>
-            <div style={{ display: "flex", justifyContent: "space-between" }}>
-              <span>신산업(본사업):<br />{formatToMillionWon(shinSanUpBudgetMain)} 백만원</span>
-              <span>신산업(이월사업):<br />{formatToMillionWon(shinSanUpBudgetCarry)} 백만원</span>
-            </div>
-            <div style={{ display: "flex", justifyContent: "space-between", fontWeight: "700", borderTop: "1px dashed rgba(255,255,255,0.15)", paddingTop: "0.3rem", marginTop: "0.1rem" }}>
-              <span>2차년도(본사업):<br />{formatToMillionWon(totalBudgetMain)} 백만원</span>
-              <span>1차년도(이월사업):<br />{formatToMillionWon(totalBudgetCarry)} 백만원</span>
-            </div>
+            {selectedYear === 1 ? (
+              // 1차년도 레이아웃: 신산업/이월사업이 존재하지 않는 전담 본사업 체계
+              <div style={{ display: "flex", justifyContent: "space-between" }}>
+                <span>앵커(본사업):<br />{formatToMillionWon(anchorBudgetMain)} 백만원</span>
+                <span>1차년도(본사업):<br />{formatToMillionWon(totalBudgetMain)} 백만원</span>
+              </div>
+            ) : (
+              // 2차년도 이상 레이아웃: 신산업 특화 및 이월사업이 유입된 다중 체계
+              <>
+                <div style={{ display: "flex", justifyContent: "space-between" }}>
+                  <span>앵커(본사업):<br />{formatToMillionWon(anchorBudgetMain)} 백만원</span>
+                  <span>앵커(이월사업):<br />{formatToMillionWon(anchorBudgetCarry)} 백만원</span>
+                </div>
+                <div style={{ display: "flex", justifyContent: "space-between" }}>
+                  <span>신산업(본사업):<br />{formatToMillionWon(shinSanUpBudgetMain)} 백만원</span>
+                  <span>신산업(이월사업):<br />{formatToMillionWon(shinSanUpBudgetCarry)} 백만원</span>
+                </div>
+                <div style={{ display: "flex", justifyContent: "space-between", fontWeight: "700", borderTop: "1px dashed rgba(255,255,255,0.15)", paddingTop: "0.3rem", marginTop: "0.1rem" }}>
+                  <span>{selectedYear}차년도(본사업):<br />{formatToMillionWon(totalBudgetMain)} 백만원</span>
+                  <span>{selectedYear - 1}차년도(이월사업):<br />{formatToMillionWon(totalBudgetCarry)} 백만원</span>
+                </div>
+              </>
+            )}
           </div>
         </div>
 
