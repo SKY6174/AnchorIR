@@ -31,7 +31,7 @@ const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, per
     <text
       x={x}
       y={y}
-      fill="var(--text-primary-dark)"
+      fill="var(--text-primary)"
       textAnchor={x > cx ? "start" : "end"}
       dominantBaseline="central"
       fontSize="12px"
@@ -208,14 +208,14 @@ export default function KPIOverview({ projects, currentRole, selectedYear = 2 })
           <div style={{ width: "100%", height: "280px" }}>
             <ResponsiveContainer>
               <BarChart data={chartData} margin={{ top: 52, right: 10, left: 10, bottom: 5 }}>
-                <XAxis dataKey="name" stroke="var(--text-secondary-dark)" fontSize={12} />
-                <YAxis stroke="var(--text-secondary-dark)" fontSize={12} />
+                <XAxis dataKey="name" stroke="var(--text-secondary)" fontSize={12} />
+                <YAxis stroke="var(--text-secondary)" fontSize={12} />
                 <Tooltip
                   cursor={{ fill: "rgba(229, 240, 219, 0.15)" }}
                   formatter={(value) => `${value.toLocaleString()} 백만원`}
                   contentStyle={{
                     background: "rgba(224, 235, 246, 0.95)",
-                    border: "1px solid var(--border-color-dark)",
+                    border: "1px solid var(--border-color)",
                     borderRadius: "0.5rem",
                     fontSize: "11px"
                   }}
@@ -228,7 +228,7 @@ export default function KPIOverview({ projects, currentRole, selectedYear = 2 })
                   iconSize={10}
                   wrapperStyle={{
                     background: "rgba(255, 255, 255, 0.03)",
-                    border: "1px solid var(--border-color-dark)",
+                    border: "1px solid var(--border-color)",
                     borderRadius: "0.5rem",
                     padding: "0.3rem 0.8rem",
                     display: "inline-flex",
@@ -239,7 +239,7 @@ export default function KPIOverview({ projects, currentRole, selectedYear = 2 })
                     top: 0,
                     width: "80%"
                   }}
-                  formatter={(value) => <span style={{ color: "var(--text-primary-dark)", fontSize: "11px", fontWeight: "600" }}>{value}</span>}
+                  formatter={(value) => <span style={{ color: "var(--text-primary)", fontSize: "11px", fontWeight: "600" }}>{value}</span>}
                 />
                 <Bar dataKey="본예산" name="본사업비 예산" fill="#55b685" radius={[3, 3, 0, 0]} />
                 <Bar dataKey="본집행" name="본사업비 집행" fill="#94deb8" radius={[3, 3, 0, 0]} />
@@ -267,7 +267,7 @@ export default function KPIOverview({ projects, currentRole, selectedYear = 2 })
                   paddingAngle={4}
                   dataKey="value"
                   label={renderCustomizedLabel}
-                  labelLine={{ stroke: "rgba(255, 255, 255, 0.25)", strokeWidth: 1 }}
+                  labelLine={{ stroke: "var(--text-secondary)", strokeWidth: 1, opacity: 0.45 }}
                 >
                   {pieData.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
@@ -276,12 +276,13 @@ export default function KPIOverview({ projects, currentRole, selectedYear = 2 })
                 <Tooltip
                   formatter={(value) => `${value.toLocaleString()} 백만원`}
                   contentStyle={{
-                    background: "rgba(24, 24, 27, 0.95)",
-                    border: "1px solid var(--border-color-dark)",
+                    background: "var(--tooltip-bg)",
+                    border: "1px solid var(--border-color)",
                     borderRadius: "0.5rem",
-                    color: "white",
                     fontSize: "11px"
                   }}
+                  labelStyle={{ color: "var(--text-primary)", fontWeight: "700" }}
+                  itemStyle={{ color: "var(--text-primary)" }}
                 />
               </PieChart>
             </ResponsiveContainer>

@@ -25,6 +25,12 @@
   --warning-color: #e9a23b;
   --danger-color: #ef4444;
   
+  --text-primary: var(--text-primary-dark);
+  --text-secondary: var(--text-secondary-dark);
+  --border-color: var(--border-color-dark);
+  --panel-bg: var(--panel-bg-dark);
+  --tooltip-bg: rgba(24, 24, 27, 0.95);
+  
   /* Font Families */
   --font-content: 'DM Sans', sans-serif;
   --font-data: 'JetBrains Mono', monospace;
@@ -48,6 +54,11 @@ body {
 body.light-mode {
   background: var(--bg-gradient-light);
   color: var(--text-primary-light);
+  --text-primary: var(--text-primary-light);
+  --text-secondary: var(--text-secondary-light);
+  --border-color: var(--border-color-light);
+  --panel-bg: var(--panel-bg-light);
+  --tooltip-bg: rgba(255, 255, 255, 0.95);
 }
 
 /* Dashboard Container */
