@@ -966,6 +966,11 @@ export default function App() {
                   // 5개년에 대한 예산 및 집행액 정합성 복원 루프
                   [1, 2, 3, 4, 5].forEach((yr) => {
                     if (updatedYears[yr]) {
+                      // 소스에 해당 연도가 아예 기획되지 않은 프로그램이라면 캐시 오염을 막기 위해 제거
+                      if (!sourceProg.years || !sourceProg.years[yr]) {
+                        delete updatedYears[yr];
+                        return;
+                      }
                       const y = updatedYears[yr];
                       
                       // 1. 입력한 예산(세부 재원: 국고 + 시비 + 외부)이 있는지 확인
