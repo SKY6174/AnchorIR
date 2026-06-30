@@ -139,14 +139,22 @@ export default function KPIOverview({ projects, currentRole, selectedYear = 2 })
   return (
     <div>
       {/* 4대 핵심 요약 카드 (재원별 분리 반영) */}
-      <div className="kpi-grid">
-        <div className="glass-card">
-          <div className="kpi-header">
-            <span>ANCHOR {selectedYear}차년도 총 예산</span>
-            <TrendingUp size={16} className="badge-blue" />
-          </div>
-          <div className="kpi-value" style={{ color: "var(--accent-color)", fontSize: "1.45rem" }}>
-            {formatToMillionWon(totalBudget)} 백만원
+      <div style={{
+        display: "grid",
+        gridTemplateColumns: selectedYear === 1 ? "2fr 1fr" : "2fr 1fr 1fr",
+        gap: "1.5rem",
+        marginBottom: "2rem"
+      }}>
+        {/* 1. ANCHOR 총 예산 카드 (2열 너비 영역을 차지하여 미니 배치 배제 방지) */}
+        <div className="glass-card" style={{ display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+          <div>
+            <div className="kpi-header">
+              <span>ANCHOR {selectedYear}차년도 총 예산</span>
+              <TrendingUp size={16} className="badge-blue" />
+            </div>
+            <div className="kpi-value" style={{ color: "var(--accent-color)", fontSize: "1.45rem" }}>
+              {formatToMillionWon(totalBudget)} 백만원
+            </div>
           </div>
           <div className="kpi-subtext" style={{ display: "flex", flexDirection: "column", gap: "0.4rem", fontSize: "0.72rem", width: "100%", borderTop: "1px solid rgba(255,255,255,0.1)", paddingTop: "0.5rem", marginTop: "0.4rem" }}>
             {selectedYear === 1 ? (
@@ -279,40 +287,78 @@ export default function KPIOverview({ projects, currentRole, selectedYear = 2 })
           </div>
         </div>
 
-        <div className="glass-card">
-          <div className="kpi-header">
-            <span>{selectedYear}차년도 본사업비 집행</span>
-            <Activity size={16} className="badge-green" />
+        {selectedYear === 1 ? (
+          // 1차년도 우측 서브 정렬: 집행카드(위)와 KPI 달성도(아래)를 세로로 수직 나열
+          <div style={{ display: "flex", flexDirection: "column", gap: "1rem", height: "100%" }}>
+            <div className="glass-card" style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "space-between", padding: "1.2rem 1.5rem" }}>
+              <div className="kpi-header">
+                <span>{selectedYear}차년도 본사업비 집행</span>
+                <Activity size={16} className="badge-green" />
+              </div>
+              <div>
+                <div className="kpi-value" style={{ color: "#94deb8", fontSize: "1.45rem", margin: "0.2rem 0" }}>
+                  {formatToMillionWon(totalSpentMain)} 백만원
+                </div>
+                <div className="kpi-subtext" style={{ fontSize: "0.72rem" }}>집행률: {rateMain.toFixed(1)}% (배정: {formatToMillionWon(totalBudgetMain)}백만원)</div>
+              </div>
+            </div>
+            <div className="glass-card" style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "space-between", padding: "1.2rem 1.5rem" }}>
+              <div className="kpi-header">
+                <span>성과지표 달성도 (KPI)</span>
+                <Award size={16} style={{ color: "#ec4899" }} />
+              </div>
+              <div>
+                <div className="kpi-value" style={{ color: "#ec4899", fontSize: "1.45rem", margin: "0.2rem 0" }}>
+                  {avgKpiAchievement.toFixed(1)}%
+                </div>
+                <div className="kpi-subtext" style={{ fontSize: "0.72rem" }}>{selectedYear}차년도 성과목표 종합 가속화</div>
+              </div>
+            </div>
           </div>
-          <div className="kpi-value" style={{ color: "#94deb8", fontSize: "1.45rem" }}>
-            {formatToMillionWon(totalSpentMain)} 백만원
-          </div>
-          <div className="kpi-subtext">집행률: {rateMain.toFixed(1)}% (배정: {formatToMillionWon(totalBudgetMain)}백만원)</div>
-        </div>
+        ) : (
+          // 2차년도 이상 배치: 본사업/이월사업 집행 세로 묶음(가운데) + 성과달성도(우측 단독)
+          <>
+            <div style={{ display: "flex", flexDirection: "column", gap: "1rem", height: "100%" }}>
+              <div className="glass-card" style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "space-between", padding: "1rem 1.2rem" }}>
+                <div className="kpi-header">
+                  <span>{selectedYear}차년도 본사업비 집행</span>
+                  <Activity size={16} className="badge-green" />
+                </div>
+                <div>
+                  <div className="kpi-value" style={{ color: "#94deb8", fontSize: "1.35rem", margin: "0.15rem 0" }}>
+                    {formatToMillionWon(totalSpentMain)} 백만원
+                  </div>
+                  <div className="kpi-subtext" style={{ fontSize: "0.7rem" }}>집행률: {rateMain.toFixed(1)}% (배정: {formatToMillionWon(totalBudgetMain)}백)</div>
+                </div>
+              </div>
+              <div className="glass-card" style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "space-between", padding: "1rem 1.2rem" }}>
+                <div className="kpi-header">
+                  <span>{selectedYear - 1}차년도 이월사업비 집행</span>
+                  <TrendingUp size={16} className="badge-yellow" />
+                </div>
+                <div>
+                  <div className="kpi-value" style={{ color: "#f6c97f", fontSize: "1.35rem", margin: "0.15rem 0" }}>
+                    {formatToMillionWon(totalSpentCarry)} 백만원
+                  </div>
+                  <div className="kpi-subtext" style={{ fontSize: "0.7rem" }}>집행률: {rateCarry.toFixed(1)}% (배정: {formatToMillionWon(totalBudgetCarry)}백)</div>
+                </div>
+              </div>
+            </div>
 
-        {selectedYear >= 2 && (
-          <div className="glass-card">
-            <div className="kpi-header">
-              <span>{selectedYear - 1}차년도 이월사업비 집행</span>
-              <TrendingUp size={16} className="badge-yellow" />
+            <div className="glass-card" style={{ display: "flex", flexDirection: "column", justifyContent: "space-between", height: "100%" }}>
+              <div className="kpi-header">
+                <span>성과지표 달성도 (KPI)</span>
+                <Award size={16} style={{ color: "#ec4899" }} />
+              </div>
+              <div style={{ marginTop: "1rem" }}>
+                <div className="kpi-value" style={{ color: "#ec4899", fontSize: "1.45rem", marginBottom: "0.3rem" }}>
+                  {avgKpiAchievement.toFixed(1)}%
+                </div>
+                <div className="kpi-subtext">{selectedYear}차년도 성과목표 종합 가속화</div>
+              </div>
             </div>
-            <div className="kpi-value" style={{ color: "#f6c97f", fontSize: "1.45rem" }}>
-              {formatToMillionWon(totalSpentCarry)} 백만원
-            </div>
-            <div className="kpi-subtext">집행률: {rateCarry.toFixed(1)}% (배정: {formatToMillionWon(totalBudgetCarry)}백만원)</div>
-          </div>
+          </>
         )}
-
-        <div className="glass-card">
-          <div className="kpi-header">
-            <span>성과지표 달성도 (KPI)</span>
-            <Award size={16} style={{ color: "#ec4899" }} />
-          </div>
-          <div className="kpi-value" style={{ color: "#ec4899" }}>
-            {avgKpiAchievement.toFixed(1)}%
-          </div>
-          <div className="kpi-subtext">{selectedYear}차년도 성과목표 종합 가속화</div>
-        </div>
       </div>
 
       {/* 차트 시각화 섹션 */}
