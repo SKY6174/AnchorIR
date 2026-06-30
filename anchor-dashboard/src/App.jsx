@@ -609,7 +609,7 @@ const getNormalizedKpi = (k, selectedYear) => {
     return {
       ...k,
       description: "지역 밀착형 문제 해결을 위한 리빙랩 및 지자체-대학-산업계 지역 현안 공동 대응 성과지수",
-      formula: "((A)실적/(A)목표값)*50 + ((B)실적/(B)목표값)*30 + ((C)실적/(C)목표값)*20",
+      formula: "((A)실적/(A)기준값)*50 + ((B)실적/(B)기준값)*30 + ((C)실적/(C)기준값)*20",
       subItems: [
         { id: "L-9-1", name: "지역사회 문제를 해결한 프로젝트 건수", unit: "건", years: { 1: { target: 7, current: 7 } } },
         { id: "L-9-2", name: "지역사회 문제해결 협의체 운영 건수", unit: "명", years: { 1: { target: 5, current: 6 } } },
@@ -622,7 +622,7 @@ const getNormalizedKpi = (k, selectedYear) => {
     return {
       ...k,
       description: "대학 보건·안전·문화 인프라를 활용한 취약계층 돌봄 및 사회공헌 프로그램 활성화 지수",
-      formula: "((A)실적/(A)목표값)*70 + ((B)실적/(B)목표값)*30",
+      formula: "((A)실적/(A)기준값)*70 + ((B)실적/(B)기준값)*30",
       subItems: [
         { id: "L-10-1", name: "대학 특화분야 연계 사회공헌활동 참여 인원", unit: "명", years: { 1: { target: 30, current: 34 } } },
         { id: "L-10-2", name: "지역사회 내 행사 봉사활동 참여 인원", unit: "명", years: { 1: { target: 100, current: 164 } } }
