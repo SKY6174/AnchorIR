@@ -2829,7 +2829,7 @@ export default function App() {
                     }}
                   >
                     <option value="all">전체 단위과제</option>
-                    {projects.flatMap((p) => p.units)
+                    {displayProjects.flatMap((p) => p.units)
                       .sort((a, b) => {
                         if (a.id === "Common") return 1;
                         if (b.id === "Common") return -1;
@@ -2863,7 +2863,7 @@ export default function App() {
                       </tr>
                     </thead>
                     <tbody>
-                      {projects.flatMap((p) => p.units)
+                      {displayProjects.flatMap((p) => p.units)
                         .filter((u) => assignFilterUnitId === "all" || u.id === assignFilterUnitId)
                         .sort((a, b) => {
                           if (a.id === "Common") return 1;
@@ -3076,7 +3076,7 @@ export default function App() {
                       onClick={() => {
                         setKpiSubTab("자율");
                         // 자율 탭에 해당하는 첫 번째 지표 자동 선택
-                        const first = projects.flatMap(p => p.units.flatMap(u => u.kpis)).find(k => k.type === "자율");
+                        const first = displayProjects.flatMap(p => p.units.flatMap(u => u.kpis)).find(k => k.type === "자율");
                         setSelectedKpi(first || null);
                       }}
                       style={{
@@ -3097,7 +3097,7 @@ export default function App() {
                       onClick={() => {
                         setKpiSubTab("중점");
                         // 중점 탭에 해당하는 첫 번째 지표 자동 선택
-                        const first = projects.flatMap(p => p.units.flatMap(u => u.kpis)).find(k => k.type === "중점");
+                        const first = displayProjects.flatMap(p => p.units.flatMap(u => u.kpis)).find(k => k.type === "중점");
                         setSelectedKpi(first || null);
                       }}
                       style={{
