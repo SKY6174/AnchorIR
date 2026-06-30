@@ -63,6 +63,69 @@ const INITIAL_MEMBERS = [
   { id: "m-42", name: "최주명", role: "연구원", grade: "연구원", dept: "울산늘봄누리센터", phoneOffice: "052-230-0419", phoneMobile: "010-9385-5959", email: "jmchoi@uc.ac.kr", room: "연구원실/N-105", hireDate: "2026-03-01" }
 ];
 
+// LaTeX 수식 파서 및 HTML 렌더러 컴포넌트
+const RenderLatexFormula = ({ formula }) => {
+  if (!formula) return null;
+  if (!formula.includes("\\frac")) {
+    return <span style={{ fontSize: "0.85rem", color: "var(--text-secondary-dark)" }}>{formula}</span>;
+  }
+
+  const terms = formula.split("+");
+
+  return (
+    <div style={{
+      display: "inline-flex",
+      flexWrap: "wrap",
+      alignItems: "center",
+      gap: "0.5rem",
+      color: "var(--text-primary)",
+      fontSize: "0.85rem",
+      background: "rgba(255,255,255,0.01)",
+      padding: "0.6rem 0.8rem",
+      borderRadius: "0.4rem",
+      border: "1px solid var(--border-color-dark)",
+      width: "100%",
+      boxSizing: "border-box"
+    }}>
+      {terms.map((termStr, index) => {
+        const trimmed = termStr.trim();
+        const fracRegex = /\\frac\{\\text\{([^}]+)\}\}\{\\text\{([^}]+)\}\}(?:\s*\\times\s*([\d.]+))?/;
+        const match = trimmed.match(fracRegex);
+
+        if (match) {
+          const num = match[1];
+          const den = match[2];
+          const weight = match[3];
+
+          return (
+            <React.Fragment key={index}>
+              {index > 0 && <span style={{ margin: "0 0.1rem", fontWeight: "700", color: "var(--text-secondary-dark)" }}>+</span>}
+              <div style={{ display: "inline-flex", alignItems: "center", gap: "0.4rem" }}>
+                <div style={{ display: "inline-flex", flexDirection: "column", alignItems: "center", minWidth: "65px" }}>
+                  <span style={{ borderBottom: "1px solid var(--text-secondary)", paddingBottom: "2px", width: "100%", textAlign: "center", fontSize: "0.75rem", fontWeight: "600" }}>{num}</span>
+                  <span style={{ paddingTop: "2px", width: "100%", textAlign: "center", fontSize: "0.75rem", color: "var(--text-secondary-dark)" }}>{den}</span>
+                </div>
+                {weight && (
+                  <span style={{ fontSize: "0.8rem", fontWeight: "700", color: "var(--accent-color)" }}>
+                    × {weight}
+                  </span>
+                )}
+              </div>
+            </React.Fragment>
+          );
+        }
+
+        return (
+          <React.Fragment key={index}>
+            {index > 0 && <span style={{ margin: "0 0.1rem", fontWeight: "700", color: "var(--text-secondary-dark)" }}>+</span>}
+            <span style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)" }}>{trimmed}</span>
+          </React.Fragment>
+        );
+      })}
+    </div>
+  );
+};
+
 // 백만원 단위 포맷팅 헬퍼 함수 (소수점 첫째자리까지 표현)
 const formatToMillionWon = (value) => {
   if (value === undefined || value === null || isNaN(value)) return "0.0";
@@ -433,7 +496,7 @@ const getNormalizedKpi = (k, selectedYear) => {
     return {
       ...k,
       description: "주류 및 신산업 연계 주문식 교육과정 개발 건수 및 강의 만족도 조사 지표",
-      formula: "((A)실적/(A)기준)*40 + ((B)실적/(B)기준)*30 + ((C)실적/(C)기준)*20 + ((D)실적/(D)기준)*10",
+      formula: "\\frac{\\text{A 실적}}{\\text{A 기준}} \\times 40 + \\frac{\\text{B 실적}}{\\text{B 기준}} \\times 30 + \\frac{\\text{C 실적}}{\\text{C 기준}} \\times 20 + \\frac{\\text{D 실적}}{\\text{D 기준}} \\times 10",
       subItems: [
         {
           id: "L-1-1",
@@ -467,7 +530,7 @@ const getNormalizedKpi = (k, selectedYear) => {
     return {
       ...k,
       description: "이차전지/조선 등 울산 핵심 분야 산업체 현장실습 이수 학생 수 및 만족도",
-      formula: "((A)실적/(A)기준)*30 + ((B)실적/(B)기준)*20 + ((C)실적/(C)기준)*10 + ((D)실적/(D)기준)*10 + ((E)실적/(E)기준)*30",
+      formula: "\\frac{\\text{A 실적}}{\\text{A 기준}} \\times 30 + \\frac{\\text{B 실적}}{\\text{B 기준}} \\times 20 + \\frac{\\text{C 실적}}{\\text{C 기준}} \\times 10 + \\frac{\\text{D 실적}}{\\text{D 기준}} \\times 10 + \\frac{\\text{E 실적}}{\\text{E 기준}} \\times 30",
       subItems: [
         {
           id: "L-2-1",
@@ -507,7 +570,7 @@ const getNormalizedKpi = (k, selectedYear) => {
     return {
       ...k,
       description: "창업 강좌 개설 건수 및 창업 강좌 이수 학생 수 지수",
-      formula: "((A)실적값/(A)기준값) * 50 + ((B)실적값/(B)기준값) * 50",
+      formula: "\\frac{\\text{A 실적}}{\\text{A 기준}} \\times 50 + \\frac{\\text{B 실적}}{\\text{B 기준}} \\times 50",
       subItems: [
         {
           id: "L-3-1",
@@ -529,7 +592,7 @@ const getNormalizedKpi = (k, selectedYear) => {
     return {
       ...k,
       description: "학생 및 교원의 창업 프로그램 참가 지원 및 실질 창업 활성화 수준 평가 지수",
-      formula: "((A)실적값/(A)기준값) * 50 + ((B)실적값/(B)기준값) * 40 + ((C)실적값/(C)기준값) * 10",
+      formula: "\\frac{\\text{A 실적}}{\\text{A 기준}} \\times 50 + \\frac{\\text{B 실적}}{\\text{B 기준}} \\times 40 + \\frac{\\text{C 실적}}{\\text{C 기준}} \\times 10",
       subItems: [
         {
           id: "L-4-1",
@@ -557,7 +620,7 @@ const getNormalizedKpi = (k, selectedYear) => {
     return {
       ...k,
       description: "산학공동 연구개발 성과의 기업 기술이전 계약 건수 및 로열티(기술료) 창출 실적 평가 지수",
-      formula: "((A)실적/(A)기준)*25 + ((B)실적/(B)기준)*25 + ((C)실적/(C)기준)*10 + ((D)실적/(D)기준)*30 + ((E)실적/(E)기준)*10",
+      formula: "\\frac{\\text{A 실적}}{\\text{A 기준}} \\times 25 + \\frac{\\text{B 실적}}{\\text{B 기준}} \\times 25 + \\frac{\\text{C 실적}}{\\text{C 기준}} \\times 25 + \\frac{\\text{D 실적}}{\\text{D 기준}} \\times 25",
       subItems: [
         { id: "L-5-1", name: "산학연계 기술이전 건수", unit: "건", years: { 1: { target: 0, current: 0 } } },
         { id: "L-5-2", name: "산학연계 기술이전 수익", unit: "원", years: { 1: { target: 0, current: 0 } } },
@@ -572,7 +635,7 @@ const getNormalizedKpi = (k, selectedYear) => {
     return {
       ...k,
       description: "대학 인프라 및 교수진을 매칭한 중소·중견기업 대상 기업애로 기술 지원 및 비즈니스 컨설팅 지원 지수",
-      formula: "((A)실적/(A)기준)*70 + ((B)실적/(B)기준)*30",
+      formula: "\\frac{\\text{A 실적}}{\\text{A 기준}} \\times 70 + \\frac{\\text{B 실적}}{\\text{B 기준}} \\times 30",
       subItems: [
         { id: "L-6-1", name: "기업애로 해결 기술 지원 수", unit: "건", years: { 1: { target: 21, current: 22 } } },
         { id: "L-6-2", name: "기업애로 해결 컨설팅 지원 건수", unit: "건", years: { 1: { target: 3, current: 3 } } }
@@ -584,7 +647,7 @@ const getNormalizedKpi = (k, selectedYear) => {
     return {
       ...k,
       description: "성인학습자 친화형 교육환경 구축 및 평생·직업교육 과정 활성화를 통한 평생학습 기회 보장 지수",
-      formula: "((A)실적/(A)기준)*70 + ((B)실적/(B)기준)*30",
+      formula: "\\frac{\\text{A 실적}}{\\text{A 기준}} \\times 70 + \\frac{\\text{B 실적}}{\\text{B 기준}} \\times 30",
       subItems: [
         { id: "L-7-1", name: "평생·직업교육 프로그램 이수자 수", unit: "명", years: { 1: { target: 110, current: 375 } } },
         { id: "L-7-2", name: "재학생 중 성인 학습자 수", unit: "명", years: { 1: { target: 50, current: 98 } } }
@@ -596,7 +659,7 @@ const getNormalizedKpi = (k, selectedYear) => {
     return {
       ...k,
       description: "평생·직업교육 품질 신뢰도 향상을 위한 교육과정 신개발 및 참여자의 취·창업 지원 성과지수",
-      formula: "((A)실적/(A)기준)*30 + ((B)실적/(B)기준)*40 + ((C)실적/(C)기준)*40",
+      formula: "\\frac{\\text{A 실적}}{\\text{A 기준}} \\times 30 + \\frac{\\text{B 실적}}{\\text{B 기준}} \\times 40 + \\frac{\\text{C 실적}}{\\text{C 기준}} \\times 40",
       subItems: [
         { id: "L-8-1", name: "평생·직업교육 프로그램 개발 및 개편 건수", unit: "건", years: { 1: { target: 5, current: 10 } } },
         { id: "L-8-2", name: "대학 성인학습자 고등교육 참여자의 유지취업률", unit: "%", years: { 1: { target: 10, current: 0 } } },
@@ -609,7 +672,7 @@ const getNormalizedKpi = (k, selectedYear) => {
     return {
       ...k,
       description: "지역 밀착형 문제 해결을 위한 리빙랩 및 지자체-대학-산업계 지역 현안 공동 대응 성과지수",
-      formula: "((A)실적/(A)기준값)*50 + ((B)실적/(B)기준값)*30 + ((C)실적/(C)기준값)*20",
+      formula: "\\frac{\\text{A 실적}}{\\text{A 기준}} \\times 50 + \\frac{\\text{B 실적}}{\\text{B 기준}} \\times 30 + \\frac{\\text{C 실적}}{\\text{C 기준}} \\times 20",
       subItems: [
         { id: "L-9-1", name: "지역사회 문제를 해결한 프로젝트 건수", unit: "건", years: { 1: { target: 7, current: 7 } } },
         { id: "L-9-2", name: "지역사회 문제해결 협의체 운영 건수", unit: "명", years: { 1: { target: 5, current: 6 } } },
@@ -622,7 +685,7 @@ const getNormalizedKpi = (k, selectedYear) => {
     return {
       ...k,
       description: "대학 보건·안전·문화 인프라를 활용한 취약계층 돌봄 및 사회공헌 프로그램 활성화 지수",
-      formula: "((A)실적/(A)기준값)*70 + ((B)실적/(B)기준값)*30",
+      formula: "\\frac{\\text{A 실적}}{\\text{A 기준}} \\times 70 + \\frac{\\text{B 실적}}{\\text{B 기준}} \\times 30",
       subItems: [
         { id: "L-10-1", name: "대학 특화분야 연계 사회공헌활동 참여 인원", unit: "명", years: { 1: { target: 30, current: 34 } } },
         { id: "L-10-2", name: "지역사회 내 행사 봉사활동 참여 인원", unit: "명", years: { 1: { target: 100, current: 164 } } }
@@ -634,7 +697,7 @@ const getNormalizedKpi = (k, selectedYear) => {
     return {
       ...k,
       description: "재난 및 산업안전 분야 예방 관련 산학협력 안전기술 지도 및 재난안전 확산 지수",
-      formula: "((A)실적/(A)기준값)*40 + ((B)실적/(B)기준값)*30 + ((C)실적/(C)기준값)*30",
+      formula: "\\frac{\\text{A 실적}}{\\text{A 기준}} \\times 40 + \\frac{\\text{B 실적}}{\\text{B 기준}} \\times 30 + \\frac{\\text{C 실적}}{\\text{C 기준}} \\times 30",
       subItems: [
         { id: "L-11-1", name: "재난 및 산업안전 관련 안전기술 지원 건수 (기준값: 3)", unit: "건", years: { 1: { target: 3, current: 3 } } },
         { id: "L-11-2", name: "재난 및 산업안전 관련 연구 및 시스템(S/W, 콘텐츠) 개발 활용 건수 (기준값: 1)", unit: "건", years: { 1: { target: 1, current: 1 } } },
@@ -648,7 +711,7 @@ const getNormalizedKpi = (k, selectedYear) => {
       ...k,
       name: "재난 및 산업안전 교육성과 종합지수",
       description: "지역 밀착형 재난안전 교육프로그램 신규 개발 및 전문 교육 이수, 관련 자격 취득 활성화 종합 지수",
-      formula: "((A)실적/(A)기준값)*20 + ((B)실적/(B)기준값)*40 + ((C)실적/(C)기준값)*20 + ((D)실적/(D)기준값)*20",
+      formula: "\\frac{\\text{A 실적}}{\\text{A 기준}} \\times 20 + \\frac{\\text{B 실적}}{\\text{B 기준}} \\times 40 + \\frac{\\text{C 실적}}{\\text{C 기준}} \\times 20 + \\frac{\\text{D 실적}}{\\text{D 기준}} \\times 20",
       subItems: [
         { id: "L-12-1", name: "재난 및 산업안전 관련 교육프로그램 개편건수 (기준값: 1)", unit: "건", years: { 1: { target: 1, current: 1 } } },
         { id: "L-12-2", name: "재난 및 산업안전 관련 교육프로그램 이수자수 (기준값: 150)", unit: "명", years: { 1: { target: 150, current: 168 } } },
@@ -662,7 +725,7 @@ const getNormalizedKpi = (k, selectedYear) => {
     return {
       ...k,
       description: "스마트 제조 및 미래 신산업 전환을 대비한 지역 산업 연계 AI·DX 핵심 인재 양성 교육프로그램 성과지수",
-      formula: "((A)실적/(A)기준값)*30 + ((B)실적/(B)기준값)*70",
+      formula: "\\frac{\\text{A 실적}}{\\text{A 기준}} \\times 30 + \\frac{\\text{B 실적}}{\\text{B 기준}} \\times 70",
       subItems: [
         { id: "L-13-1", name: "AI·DX 관련 교육프로그램 개발 건수", unit: "건", years: { 1: { target: 5, current: 4 } } },
         { id: "L-13-2", name: "AI·DX 관련 교육프로그램 이수자 수", unit: "명", years: { 1: { target: 300, current: 360 } } }
@@ -675,7 +738,7 @@ const getNormalizedKpi = (k, selectedYear) => {
       ...k,
       name: "AI·DX 기술혁신 확산지수",
       description: "중소·중견 제조기업의 스마트화 지원을 위한 AI·DX 연계 밀착형 기술지도 및 융합컨설팅 지원 확산지수",
-      formula: "((A)실적/(A)기준값)*50 + ((B)실적/(B)기준값)*50",
+      formula: "\\frac{\\text{A 실적}}{\\text{A 기준}} \\times 50 + \\frac{\\text{B 실적}}{\\text{B 기준}} \\times 50",
       subItems: [
         { id: "L-14-1", name: "AI·DX 관련 기술지원 건수", unit: "건", years: { 1: { target: 3, current: 3 } } },
         { id: "L-14-2", name: "AI·DX 관련 자문·컨설팅 건수", unit: "건", years: { 1: { target: 5, current: 17 } } }
@@ -687,7 +750,7 @@ const getNormalizedKpi = (k, selectedYear) => {
     return {
       ...k,
       description: "탄소중립 및 친환경 ESG 핵심 가치 확산을 위한 전공·비전공 학생 대상 ESG 전문 인력 육성 성과지수",
-      formula: "((A)실적/(A)기준값)*70 + ((B)실적/(B)기준값)*30",
+      formula: "\\frac{\\text{A 실적}}{\\text{A 기준}} \\times 70 + \\frac{\\text{B 실적}}{\\text{B 기준}} \\times 30",
       subItems: [
         { id: "L-15-1", name: "ESG 전문인력 양성프로그램 이수자 수", unit: "명", years: { 1: { target: 100, current: 146 } } },
         { id: "L-15-2", name: "ESG 경영개선 지원 건수", unit: "건", years: { 1: { target: 1, current: 1 } } }
@@ -699,7 +762,7 @@ const getNormalizedKpi = (k, selectedYear) => {
     return {
       ...k,
       description: "지역 중소기업의 저탄소 공정 전환 지원 및 친환경 탄소중립 실천 문화 정착 기여 성과지수",
-      formula: "((A)실적/(A)기준값)*70 + ((B)실적/(B)기준값)*30",
+      formula: "\\frac{\\text{A 실적}}{\\text{A 기준}} \\times 70 + \\frac{\\text{B 실적}}{\\text{B 기준}} \\times 30",
       subItems: [
         { id: "L-16-1", name: "탄소중립 프로그램 운영 건수", unit: "건", years: { 1: { target: 3, current: 4 } } },
         { id: "L-16-2", name: "탄소배출 경영개선 지원 건수", unit: "건", years: { 1: { target: 1, current: 1 } } }
@@ -720,7 +783,7 @@ const getNormalizedKpi = (k, selectedYear) => {
     return {
       ...k,
       description: "취약계층의 만성질환 예방 및 만성병 환자의 체계적 자가 관리를 돕는 디지털 모니터링 수혜지수",
-      formula: "((A)실적/(A)기준값)*50 + ((B)실적/(B)기준값)*50",
+      formula: "\\frac{\\text{A 실적}}{\\text{A 기준}} \\times 50 + \\frac{\\text{B 실적}}{\\text{B 기준}} \\times 50",
       subItems: [
         { id: "L-18-1", name: "사회적약자 의료케어를 위한 전문인력 양성 인원 수", unit: "명", years: { 1: { target: 110, current: 208 } } },
         { id: "L-18-2", name: "사회적약자 건강모니터링 지원 인원 수", unit: "명", years: { 1: { target: 70, current: 87 } } }
@@ -733,7 +796,7 @@ const getNormalizedKpi = (k, selectedYear) => {
       ...k,
       name: "늘봄학교 및 온동네 돌봄 교사 양성 프로그램 운영성과 지수",
       description: "울산형 온동네 초등 돌봄 교사 및 방과후 프로그램 연수를 통한 아동 돌봄 전문 인력 공급 양성 지수",
-      formula: "((A)실적/(A)기준값)*50 + ((B)실적/(B)기준값)*50",
+      formula: "\\frac{\\text{A 실적}}{\\text{A 기준}} \\times 50 + \\frac{\\text{B 실적}}{\\text{B 기준}} \\times 50",
       subItems: [
         { id: "L-19-1", name: "늘봄/방과후 교사 양성 프로그램 수", unit: "건", years: { 1: { target: 5, current: 11 } } },
         { id: "L-19-2", name: "늘봄/방과후 교사 양성 수", unit: "명", years: { 1: { target: 100, current: 134 } } }
@@ -746,7 +809,7 @@ const getNormalizedKpi = (k, selectedYear) => {
       ...k,
       name: "돌봄 및 체험 프로그램 운영 활성화 지수",
       description: "지역 영유아 및 초등학생을 위한 창의 융합 체험 프로그램 다각화 및 이용 수혜 실적 지수",
-      formula: "((A)실적/(A)기준값)*50 + ((B)실적/(B)기준값)*50",
+      formula: "\\frac{\\text{A 실적}}{\\text{A 기준}} \\times 50 + \\frac{\\text{B 실적}}{\\text{B 기준}} \\times 50",
       subItems: [
         { id: "L-20-1", name: "돌봄 및 체험 프로그램 수", unit: "건", years: { 1: { target: 10, current: 14 } } },
         { id: "L-20-2", name: "돌봄 및 체험 프로그램 이용자 수", unit: "명", years: { 1: { target: 40, current: 69 } } }
@@ -758,7 +821,7 @@ const getNormalizedKpi = (k, selectedYear) => {
     return {
       ...k,
       description: "도시 쇠퇴지역 공간 혁신 및 청년 창작 생태계 기반 조성을 위한 공간 재생 및 거버넌스 구축 성과지수",
-      formula: "((A)실적/(A)기준값)*50 + ((B)실적/(B)기준값)*50",
+      formula: "\\frac{\\text{A 실적}}{\\text{A 기준}} \\times 50 + \\frac{\\text{B 실적}}{\\text{B 기준}} \\times 50",
       subItems: [
         { id: "L-21-1", name: "도시공간 재생프로젝트 운영 건수", unit: "건", years: { 1: { target: 2, current: 2 } } },
         { id: "L-21-2", name: "도시공간 재생프로젝트 네트워크 건수", unit: "건", years: { 1: { target: 3, current: 3 } } }
@@ -770,7 +833,7 @@ const getNormalizedKpi = (k, selectedYear) => {
     return {
       ...k,
       description: "지역 고유 문화 자원 기반 청년 창작 콘텐츠 신규 개발 및 축제 활성화를 통한 관내 수혜 성과지수",
-      formula: "((A)실적/(A)기준값)*50 + ((B)실적/(B)기준값)*50",
+      formula: "\\frac{\\text{A 실적}}{\\text{A 기준}} \\times 50 + \\frac{\\text{B 실적}}{\\text{B 기준}} \\times 50",
       subItems: [
         { id: "L-22-1", name: "문화 콘텐츠 개발 건수", unit: "건", years: { 1: { target: 1, current: 2 } } },
         { id: "L-22-2", name: "문화 콘텐츠 개발 프로젝트 참여 인원", unit: "명", years: { 1: { target: 40, current: 60 } } }
@@ -782,7 +845,7 @@ const getNormalizedKpi = (k, selectedYear) => {
     return {
       ...k,
       description: "대학의 글로벌 학술 평판 제고 및 국제 공동 연구·교류 활성화를 통한 해외 우수 기관과의 파트너십 성과지수",
-      formula: "((A)실적/(A)기준값)*20 + ((B)실적/(B)기준값)*30 + ((C)실적/(C)기준값)*50",
+      formula: "\\frac{\\text{A 실적}}{\\text{A 기준}} \\times 20 + \\frac{\\text{B 실적}}{\\text{B 기준}} \\times 30 + \\frac{\\text{C 실적}}{\\text{C 기준}} \\times 50",
       subItems: [
         { id: "L-23-1", name: "국제공동 연구 건수", unit: "건", years: { 1: { target: 0, current: 0 } } },
         { id: "L-23-2", name: "국제공동 협력 건수", unit: "건", years: { 1: { target: 3, current: 5 } } },
@@ -796,7 +859,7 @@ const getNormalizedKpi = (k, selectedYear) => {
       ...k,
       name: "글로벌 인재유치 및 정착 지원지수",
       description: "외국인 유학생 유치 다각화 및 안정적인 주거·학습·취업 전주기 밀착 케어 서비스 활성화 지수",
-      formula: "((A)실적/(A)기준값)*60 + ((B)실적/(B)기준값)*20 + ((C)실적/(C)기준값)*20",
+      formula: "\\frac{\\text{A 실적}}{\\text{A 기준}} \\times 60 + \\frac{\\text{B 실적}}{\\text{B 기준}} \\times 20 + \\frac{\\text{C 실적}}{\\text{C 기준}} \\times 20",
       subItems: [
         { id: "L-24-1", name: "국제학생 유치 인원수", unit: "명", years: { 1: { target: 190, current: 295 } } },
         { id: "L-24-2", name: "국제학생 정착 지원 건수", unit: "건", years: { 1: { target: 1, current: 2 } } },
@@ -3201,12 +3264,8 @@ export default function App() {
                         </div>
 
                         <div>
-                          <span style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)", display: "block" }}>성과지표 산출공식</span>
-                          <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid var(--border-color-dark)", borderRadius: "0.5rem", padding: "0.6rem", marginTop: "0.2rem" }}>
-                            <code style={{ fontSize: "0.75rem", fontFamily: "var(--font-data)", color: "#93c5fd" }}>
-                              {nk.formula}
-                            </code>
-                          </div>
+                          <span style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)", display: "block", marginBottom: "0.4rem" }}>성과지표 산출공식</span>
+                          <RenderLatexFormula formula={nk.formula} />
                         </div>
 
                         <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.8rem", borderTop: "1px solid var(--border-color-dark)", paddingTop: "0.8rem" }}>
