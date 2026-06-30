@@ -78,7 +78,7 @@ export const initialProjectsData = [
                 name: "신규 주문식 교육과정 개발 건수",
                 unit: "건",
                 years: {
-                  1: { target: 3, current: 3 },
+                  1: { target: 28, current: 35 },
                   2: { target: 5.0, current: 4.0 },
                   3: { target: 6.0, current: 0 },
                   4: { target: 7.0, current: 0 },
@@ -90,7 +90,7 @@ export const initialProjectsData = [
                 name: "주문식 교육 교재 개발 성과 건수",
                 unit: "건",
                 years: {
-                  1: { target: 6, current: 6 },
+                  1: { target: 100, current: 98.8 },
                   2: { target: 10.0, current: 9.0 },
                   3: { target: 12.0, current: 0 },
                   4: { target: 14.0, current: 0 },
@@ -113,7 +113,7 @@ export const initialProjectsData = [
                 name: "핵심 분야 현장실습 참여 이수 인원",
                 unit: "명",
                 years: {
-                  1: { target: 100, current: 95 },
+                  1: { target: 100, current: 1266 },
                   2: { target: 200.0, current: 160.0 },
                   3: { target: 220.0, current: 0 },
                   4: { target: 240.0, current: 0 },
@@ -125,7 +125,7 @@ export const initialProjectsData = [
                 name: "참여 학생 현장실습 만족 평점",
                 unit: "점",
                 years: {
-                  1: { target: 90, current: 82 },
+                  1: { target: 90, current: 98.64 },
                   2: { target: 95.0, current: 85.0 },
                   3: { target: 96.0, current: 0 },
                   4: { target: 97.0, current: 0 },
