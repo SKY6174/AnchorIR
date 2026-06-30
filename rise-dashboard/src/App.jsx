@@ -7,8 +7,9 @@ import BudgetItemsManager from "./components/BudgetItemsManager";
 import ProgramProgressManager from "./components/ProgramProgressManager";
 import AuthManager from "./components/AuthManager";
 import { initialProjectsData, userRoles } from "./data/mockData";
-import { Sun, Moon, LogOut, HelpCircle, ArrowUpRight } from "lucide-react";
+import { Sun, Moon, LogOut, HelpCircle, ArrowUpRight, Lock } from "lucide-react";
 import { supabase } from "./supabaseClient";
+import CryptoJS from "crypto-js";
 import "./styles/dashboard.css";
 
 // RISE 사업단 초기 구성원 주소록 명단 데이터셋
@@ -685,6 +686,14 @@ export default function App() {
 
   // 사업단 구성원 관리 및 서브탭 상태
   const [members, setMembers] = useState(() => {
+    const saved = localStorage.getItem("anchor_members");
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        console.error("Failed to parse saved members:", e);
+      }
+    }
     return INITIAL_MEMBERS.map((m) => ({
       ...m,
       startDate: m.startDate || m.hireDate || "2026-03-01",
@@ -692,11 +701,75 @@ export default function App() {
       status: m.status || "재직중"
     }));
   });
+
+  useEffect(() => {
+    localStorage.setItem("anchor_members", JSON.stringify(members));
+  }, [members]);
   const [assignFilterUnitId, setAssignFilterUnitId] = useState("all");
   const [mgmtSubTab, setMgmtSubTab] = useState("members"); // "members", "programs", "approvals"
   const [projectsSubTab, setProjectsSubTab] = useState("unit_status"); // "unit_status" (단위과제 집행현황) 또는 "program_mgmt" (프로그램 관리)
   const [isMemberModalOpen, setIsMemberModalOpen] = useState(false);
   const [editingMember, setEditingMember] = useState(null); // 추가/수정용 임시 객체
+
+  // 개인정보 관리 (비밀번호 변경) 상태 및 핸들러
+  const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
+  const [currentPw, setCurrentPw] = useState("");
+  const [newPw, setNewPw] = useState("");
+  const [confirmNewPw, setConfirmNewPw] = useState("");
+
+  const handlePasswordChange = async (e) => {
+    e.preventDefault();
+    if (!currentPw || !newPw || !confirmNewPw) {
+      alert("모든 필드를 입력해 주세요.");
+      return;
+    }
+    if (newPw !== confirmNewPw) {
+      alert("새 비밀번호와 비밀번호 확인이 일치하지 않습니다.");
+      return;
+    }
+
+    try {
+      const hashedCurrent = CryptoJS.SHA256(currentPw).toString();
+
+      // 1. Supabase에서 현재 사용자의 비밀번호 조회
+      const { data: user, error: fetchError } = await supabase
+        .from("rise_users")
+        .select("pw")
+        .eq("id", currentUser.id)
+        .single();
+
+      if (fetchError || !user) {
+        alert("사용자 정보를 조회할 수 없습니다.");
+        return;
+      }
+
+      if (user.pw !== hashedCurrent) {
+        alert("현재 비밀번호가 일치하지 않습니다.");
+        return;
+      }
+
+      // 2. 비밀번호 업데이트
+      const hashedNew = CryptoJS.SHA256(newPw).toString();
+      const { error: updateError } = await supabase
+        .from("rise_users")
+        .update({ pw: hashedNew })
+        .eq("id", currentUser.id);
+
+      if (updateError) {
+        alert("비밀번호 변경 처리 중 오류가 발생했습니다.");
+        return;
+      }
+
+      alert("비밀번호가 성공적으로 변경되었습니다.");
+      setIsPasswordModalOpen(false);
+      setCurrentPw("");
+      setNewPw("");
+      setConfirmNewPw("");
+    } catch (err) {
+      console.error("Password change error:", err);
+      alert("비밀번호 변경 중 통신 오류가 발생했습니다.");
+    }
+  };
 
   // Supabase 가입 승인 대기 목록 상태
   const [pendingUsers, setPendingUsers] = useState([]);
@@ -1527,7 +1600,7 @@ export default function App() {
   };
 
   if (!currentUser) {
-    return <AuthManager onLoginSuccess={handleLoginSuccess} />;
+    return <AuthManager onLoginSuccess={handleLoginSuccess} members={members} />;
   }
 
   const currentRole = currentUser.role;
@@ -1545,7 +1618,17 @@ export default function App() {
             setSelectedKpi(null);
           }}
         />
-        <div style={{ padding: "0 1.5rem 1.5rem 1.5rem", background: "var(--panel-bg-dark)", borderRight: "1px solid var(--border-color-dark)" }} className="light-mode-logout-bg">
+        <div style={{ padding: "0.5rem 1.5rem 0.25rem 1.5rem", background: "var(--panel-bg-dark)", borderRight: "1px solid var(--border-color-dark)" }}>
+          <button
+            className="btn-primary"
+            style={{ width: "100%", justifyContent: "center", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", color: "white" }}
+            onClick={() => setIsPasswordModalOpen(true)}
+          >
+            <Lock size={16} />
+            <span>개인정보 관리</span>
+          </button>
+        </div>
+        <div style={{ padding: "0.25rem 1.5rem 1.5rem 1.5rem", background: "var(--panel-bg-dark)", borderRight: "1px solid var(--border-color-dark)" }} className="light-mode-logout-bg">
           <button className="btn-primary" style={{ width: "100%", justifyContent: "center", background: "rgba(239,68,68,0.15)", border: "1px solid var(--danger-color)", color: "#f87171" }} onClick={handleLogout}>
             <LogOut size={16} />
             <span>로그아웃</span>
@@ -2695,6 +2778,107 @@ export default function App() {
                 style={{ padding: "0.4rem 1rem", borderRadius: "0.35rem", fontSize: "0.75rem" }}
               >
                 저장
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+
+      {isPasswordModalOpen && (
+        <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(0,0,0,0.7)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000 }}>
+          <form
+            onSubmit={handlePasswordChange}
+            className="glass-card"
+            style={{ width: "400px", padding: "2rem", border: "1px solid var(--border-color-dark)", background: "var(--bg-dark)", boxShadow: "0 10px 25px rgba(0,0,0,0.5)" }}
+          >
+            <h3 style={{ fontSize: "1.1rem", fontWeight: "800", marginBottom: "1.5rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
+              <Lock size={20} style={{ color: "var(--accent-color)" }} />
+              <span>개인정보 관리 (비밀번호 변경)</span>
+            </h3>
+
+            <div style={{ display: "flex", flexDirection: "column", gap: "1rem", fontSize: "0.8rem" }}>
+              <div>
+                <label style={{ display: "block", marginBottom: "0.3rem", fontWeight: "700", color: "var(--text-secondary-dark)" }}>아이디 (이메일)</label>
+                <input
+                  type="text"
+                  disabled
+                  className="user-selector"
+                  style={{ width: "100%", padding: "0.4rem", color: "rgba(255,255,255,0.4)", background: "rgba(255,255,255,0.02)" }}
+                  value={currentUser.id}
+                />
+              </div>
+
+              <div>
+                <label style={{ display: "block", marginBottom: "0.3rem", fontWeight: "700", color: "var(--text-secondary-dark)" }}>성명</label>
+                <input
+                  type="text"
+                  disabled
+                  className="user-selector"
+                  style={{ width: "100%", padding: "0.4rem", color: "rgba(255,255,255,0.4)", background: "rgba(255,255,255,0.02)" }}
+                  value={currentUser.name}
+                />
+              </div>
+
+              <div>
+                <label style={{ display: "block", marginBottom: "0.3rem", fontWeight: "700" }}>현재 비밀번호 *</label>
+                <input
+                  type="password"
+                  required
+                  className="user-selector"
+                  style={{ width: "100%", padding: "0.4rem", color: "white" }}
+                  placeholder="현재 비밀번호를 입력해 주세요"
+                  value={currentPw}
+                  onChange={(e) => setCurrentPw(e.target.value)}
+                />
+              </div>
+
+              <div>
+                <label style={{ display: "block", marginBottom: "0.3rem", fontWeight: "700" }}>새 비밀번호 *</label>
+                <input
+                  type="password"
+                  required
+                  className="user-selector"
+                  style={{ width: "100%", padding: "0.4rem", color: "white" }}
+                  placeholder="새 비밀번호를 입력해 주세요"
+                  value={newPw}
+                  onChange={(e) => setNewPw(e.target.value)}
+                />
+              </div>
+
+              <div>
+                <label style={{ display: "block", marginBottom: "0.3rem", fontWeight: "700" }}>새 비밀번호 확인 *</label>
+                <input
+                  type="password"
+                  required
+                  className="user-selector"
+                  style={{ width: "100%", padding: "0.4rem", color: "white" }}
+                  placeholder="새 비밀번호를 한 번 더 입력해 주세요"
+                  value={confirmNewPw}
+                  onChange={(e) => setConfirmNewPw(e.target.value)}
+                />
+              </div>
+            </div>
+
+            <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.5rem", marginTop: "1.5rem" }}>
+              <button
+                type="button"
+                className="btn-primary"
+                style={{ background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", padding: "0.4rem 1rem", borderRadius: "0.35rem", fontSize: "0.75rem" }}
+                onClick={() => {
+                  setIsPasswordModalOpen(false);
+                  setCurrentPw("");
+                  setNewPw("");
+                  setConfirmNewPw("");
+                }}
+              >
+                취소
+              </button>
+              <button
+                type="submit"
+                className="btn-primary"
+                style={{ padding: "0.4rem 1rem", borderRadius: "0.35rem", fontSize: "0.75rem" }}
+              >
+                변경하기
               </button>
             </div>
           </form>

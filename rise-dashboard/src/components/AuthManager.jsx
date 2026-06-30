@@ -10,7 +10,7 @@ const hashPassword = (password) => {
   return CryptoJS.SHA256(password).toString();
 };
 
-export default function AuthManager({ onLoginSuccess }) {
+export default function AuthManager({ onLoginSuccess, members = [] }) {
   const [isSignup, setIsSignup] = useState(false);
   const [userId, setUserId] = useState("");
   const [userPw, setUserPw] = useState("");
@@ -52,6 +52,18 @@ export default function AuthManager({ onLoginSuccess }) {
         return;
       }
 
+      // 주소록(members)에서 해당 이메일을 가진 구성원의 퇴직 상태 체크
+      const matchedMember = members.find((m) => {
+        const mEmail = (m.email || "").trim().toLowerCase();
+        if (targetId === "researcher" && m.name === "이은주") return true;
+        if (targetId === "director" && m.name === "송경영") return true;
+        return mEmail === targetId || mEmail.split("@")[0] === targetId;
+      });
+      if (matchedMember && matchedMember.status === "퇴직") {
+        setErrorMsg("퇴직 처리된 구성원은 로그인이 불가능합니다.");
+        return;
+      }
+
       // 관리자 승인 여부(approved) 체크
       if (!foundUser.approved) {
         setErrorMsg("아직 가입 승인을 받지 않은 계정입니다. 사업단 관리자의 승인을 기다려 주세요.");
@@ -73,42 +85,73 @@ export default function AuthManager({ onLoginSuccess }) {
     }
   };
 
-  // 회원가입 핸들러 (Supabase 연동)
+  // 회원가입 핸들러 (Supabase 연동 및 주소록 매핑 검증)
   const handleSignup = async (e) => {
     e.preventDefault();
     setErrorMsg("");
     setSuccessMsg("");
 
-    if (!userId || !userPw || !userName) {
-      setErrorMsg("모든 필드를 입력해 주세요.");
+    if (!userId || !userName) {
+      setErrorMsg("이메일(아이디)과 성명을 모두 입력해 주세요.");
       return;
     }
 
     try {
-      const targetId = userId.trim().toLowerCase();
+      const emailInput = userId.trim().toLowerCase();
+      const nameInput = userName.trim();
 
-      // 1. 중복 계정 유무 체크
-      const { data: existingUser, error: checkError } = await supabase
-        .from("rise_users")
-        .select("id")
-        .eq("id", targetId)
-        .maybeSingle();
+      // 1. 주소록에 매칭되는 이메일이 있는지 확인
+      const matchedMember = members.find(
+        (m) => (m.email || "").trim().toLowerCase() === emailInput
+      );
 
-      if (existingUser) {
-        setErrorMsg("이미 존재하는 아이디입니다.");
+      if (!matchedMember) {
+        setErrorMsg("주소록에 등록되지 않은 이메일입니다. 관리자에게 구성원 등록을 먼저 요청해 주세요.");
         return;
       }
 
-      // 2. 신규 사용자 등록 (approved = false 상태로 기입)
+      // 2. 이름 일치 여부 체크
+      if (matchedMember.name !== nameInput) {
+        setErrorMsg("등록된 구성원 정보의 성명과 일치하지 않습니다.");
+        return;
+      }
+
+      // 3. 재직중 여부 체크
+      if (matchedMember.status === "퇴직") {
+        setErrorMsg("퇴직 처리된 구성원은 회원가입을 신청할 수 없습니다.");
+        return;
+      }
+
+      // 4. 중복 가입 체크
+      const { data: existingUser, error: checkError } = await supabase
+        .from("rise_users")
+        .select("id")
+        .eq("id", emailInput)
+        .maybeSingle();
+
+      if (existingUser) {
+        setErrorMsg("이미 가입 신청 또는 가입이 완료된 이메일 계정입니다.");
+        return;
+      }
+
+      // 5. 휴대전화번호 뒷자리 4자리 파싱
+      const cleanPhone = (matchedMember.phoneMobile || "").replace(/[^0-9]/g, "");
+      if (cleanPhone.length < 4) {
+        setErrorMsg("등록된 휴대전화 번호 정보가 없거나 올바르지 않습니다. 관리자에게 주소록 번호 수정을 요청하세요.");
+        return;
+      }
+      const rawPw = cleanPhone.slice(-4);
+      const hashedPw = hashPassword(rawPw);
+
+      // 6. 신규 사용자 등록 (approved = false 상태로 기입)
       const selectedRole = userRoles[userRoleKey];
-      const displayName = `${userName} ${selectedRole.name.split(" ")[1] || "연구원"}`;
-      const hashedPw = hashPassword(userPw);
+      const displayName = `${matchedMember.name} ${selectedRole.name.split(" ")[1] || "연구원"}`;
 
       const { error: insertError } = await supabase
         .from("rise_users")
         .insert([
           {
-            id: targetId,
+            id: emailInput,
             pw: hashedPw,
             name: displayName,
             role_key: userRoleKey,
@@ -122,10 +165,9 @@ export default function AuthManager({ onLoginSuccess }) {
         return;
       }
 
-      setSuccessMsg("회원가입 신청이 정상 접수되었습니다! 관리자 승인 후 로그인해 주세요.");
+      setSuccessMsg(`회원가입 신청이 성공적으로 접수되었습니다! 초기 비밀번호는 등록된 휴대전화 뒷번호 4자리(${rawPw})입니다. 관리자 승인 완료 후 로그인해 주세요.`);
       setIsSignup(false);
       setUserId("");
-      setUserPw("");
       setUserName("");
     } catch (err) {
       console.error("Signup process error:", err);
@@ -162,7 +204,7 @@ export default function AuthManager({ onLoginSuccess }) {
               <User size={16} style={{ position: "absolute", left: "1rem", top: "50%", transform: "translateY(-50%)", color: "var(--text-secondary-dark)" }} />
               <input
                 type="text"
-                placeholder="아이디"
+                placeholder="이메일 (아이디)"
                 className="user-selector"
                 style={{ paddingLeft: "2.5rem" }}
                 value={userId}
@@ -171,27 +213,20 @@ export default function AuthManager({ onLoginSuccess }) {
             </div>
 
             <div style={{ position: "relative" }}>
-              <Lock size={16} style={{ position: "absolute", left: "1rem", top: "50%", transform: "translateY(-50%)", color: "var(--text-secondary-dark)" }} />
-              <input
-                type="password"
-                placeholder="비밀번호"
-                className="user-selector"
-                style={{ paddingLeft: "2.5rem" }}
-                value={userPw}
-                onChange={(e) => setUserPw(e.target.value)}
-              />
-            </div>
-
-            <div style={{ position: "relative" }}>
               <User size={16} style={{ position: "absolute", left: "1rem", top: "50%", transform: "translateY(-50%)", color: "var(--text-secondary-dark)" }} />
               <input
                 type="text"
-                placeholder="이름 (예: 홍길동)"
+                placeholder="성명"
                 className="user-selector"
                 style={{ paddingLeft: "2.5rem" }}
                 value={userName}
                 onChange={(e) => setUserName(e.target.value)}
               />
+            </div>
+
+            <div style={{ fontSize: "0.72rem", color: "var(--text-secondary-dark)", lineHeight: "1.4", padding: "0.5rem", background: "rgba(255,255,255,0.02)", border: "1px dashed var(--border-color-dark)", borderRadius: "0.25rem" }}>
+              <p>※ 구성원 주소록에 등록된 이메일을 아이디로 입력해 주세요.</p>
+              <p>※ 초기 비밀번호는 등록된 휴대전화 번호 뒷자리 4자리로 자동 지정됩니다.</p>
             </div>
 
             <div>
