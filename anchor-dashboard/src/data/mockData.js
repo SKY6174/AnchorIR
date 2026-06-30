@@ -1933,11 +1933,11 @@ export const YEAR_1_PROGRAMS = {
     {
       "id": "A1-S4T7-1",
       "title": "UC-HYPER 교육환경 구축",
-      "budget": 1319900000,
+      "budget": 1228900000,
       "spent": 1120900000,
       "assignee": "시설관리처",
       "budget_categories": [
-        { "category": "교육∙연구 환경개선비", "budget": 1319900000, "spent": 1120900000 }
+        { "category": "교육∙연구 환경개선비", "budget": 1228900000, "spent": 1120900000 }
       ]
     },
     {
@@ -1993,13 +1993,13 @@ export const YEAR_1_PROGRAMS = {
     {
       "id": "A1-S5T11-1",
       "title": "공통경비",
-      "budget": 739100000,
-      "spent": 557300000,
+      "budget": 379600000,
+      "spent": 405800000,
       "assignee": "지산학교육센터(ECC)",
       "budget_categories": [
         { "category": "인건비", "budget": 156000000, "spent": 155200000 },
         { "category": "장학금", "budget": 88000000, "spent": 72100000 },
-        { "category": "실험∙실습장비 및 기자재 구입∙운영비", "budget": 547300000, "spent": 257400000 },
+        { "category": "실험∙실습장비 및 기자재 구입∙운영비", "budget": 187800000, "spent": 105900000 },
         { "category": "기업 지원∙협력 활동비", "budget": 208300000, "spent": 76700000 },
         { "category": "성과 활용∙확산 지원비", "budget": 48700000, "spent": 22800000 },
         { "category": "그 밖의 사업운영경비", "budget": 72300000, "spent": 55700000 },
