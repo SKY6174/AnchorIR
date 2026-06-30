@@ -122,6 +122,13 @@ export default function PDCAManager({
   viewMode = "unit",
   setViewMode
 }) {
+  const startYrShort = String(2024 + selectedYear).slice(-2);
+  const endYrShort = String(2025 + selectedYear).slice(-2);
+  const monthsList = [
+    `${startYrShort}.3월`, "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월",
+    `${endYrShort}.1월`, "2월"
+  ];
+
   const [feedbackMsg, setFeedbackMsg] = useState("");
 
   // 프로그램 신규 추가용 모달 상태
@@ -196,6 +203,11 @@ export default function PDCAManager({
         });
       });
     });
+  });
+  allUnits.sort((a, b) => {
+    if (a.id === "Common") return 1;
+    if (b.id === "Common") return -1;
+    return a.id.localeCompare(b.id, undefined, { numeric: true, sensitivity: 'base' });
   });
 
   // 연구원 권한 필터링 (본인 담당 세부과제만 노출)
@@ -921,7 +933,7 @@ export default function PDCAManager({
                           월별 추진 일정 (PDCA)
                         </span>
                         <div style={{ display: "grid", gridTemplateColumns: "repeat(12, 1fr)", gap: "0.2rem", overflowX: "auto", paddingBottom: "0.3rem" }}>
-                          {MONTHS_LIST.map((month, idx) => {
+                          {monthsList.map((month, idx) => {
                             const val = inputMonthlyPDCA[idx] || "";
                             // 인라인 색상 매칭 헬퍼
                             const getPDCAColor = (v) => {

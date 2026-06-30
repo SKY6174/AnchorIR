@@ -109,7 +109,31 @@ const getProgramTimeline = (progId) => {
 };
 
 export default function ProgramProgressManager({ projects, selectedYear }) {
-  const allUnits = projects.flatMap(p => p.units);
+  const startYr = 2024 + selectedYear;
+  const endYr = 2025 + selectedYear;
+  const startYrShort = String(startYr).slice(-2);
+  const endYrShort = String(endYr).slice(-2);
+
+  const monthsGuide = [
+    { name: "3월", label: `${startYrShort}.3` },
+    { name: "4월", label: `${startYrShort}.4` },
+    { name: "5월", label: `${startYrShort}.5` },
+    { name: "6월", label: `${startYrShort}.6` },
+    { name: "7월", label: `${startYrShort}.7` },
+    { name: "8월", label: `${startYrShort}.8` },
+    { name: "9월", label: `${startYrShort}.9` },
+    { name: "10월", label: `${startYrShort}.10` },
+    { name: "11월", label: `${startYrShort}.11` },
+    { name: "12월", label: `${startYrShort}.12` },
+    { name: "1월", label: `${endYrShort}.1` },
+    { name: "2월", label: `${endYrShort}.2` }
+  ];
+
+  const allUnits = projects.flatMap(p => p.units).sort((a, b) => {
+    if (a.id === "Common") return 1;
+    if (b.id === "Common") return -1;
+    return a.id.localeCompare(b.id, undefined, { numeric: true, sensitivity: 'base' });
+  });
   const [selectedUnitId, setSelectedUnitId] = useState(allUnits[0]?.id || "A1가");
 
   const activeUnit = allUnits.find(u => u.id === selectedUnitId);
@@ -196,15 +220,15 @@ export default function ProgramProgressManager({ projects, selectedYear }) {
                     <th style={{ width: "140px" }}>담당연구원</th>
                     <th style={{ width: "130px" }}>운영 예산 (배정/집행)</th>
                     <th style={{ width: "340px", textAlign: "center" }}>
-                      2차년도 Timeline
-                      {/* 연도 구분 줄 (상위 2분할: 2026년 10개월 / 2027년 2개월) */}
+                      {selectedYear}차년도 Timeline
+                      {/* 연도 구분 줄 (상위 2분할: 시작년도 10개월 / 끝년도 2개월) */}
                       <div style={{ display: "grid", gridTemplateColumns: "repeat(12, 1fr)", gap: "1px", marginTop: "0.4rem", fontSize: "0.6rem", borderBottom: "1px solid rgba(255,255,255,0.08)", paddingBottom: "0.2rem", color: "var(--accent-color)" }}>
-                        <div style={{ gridColumn: "span 10", textAlign: "center", borderRight: "1px solid rgba(255,255,255,0.05)", fontWeight: "800" }}>2026년</div>
-                        <div style={{ gridColumn: "span 2", textAlign: "center", fontWeight: "800" }}>2027년</div>
+                        <div style={{ gridColumn: "span 10", textAlign: "center", borderRight: "1px solid rgba(255,255,255,0.05)", fontWeight: "800" }}>{startYr}년</div>
+                        <div style={{ gridColumn: "span 2", textAlign: "center", fontWeight: "800" }}>{endYr}년</div>
                       </div>
                       {/* 월 구분 줄 */}
                       <div style={{ display: "grid", gridTemplateColumns: "repeat(12, 1fr)", gap: "1px", marginTop: "0.25rem", fontSize: "0.65rem", fontWeight: "normal" }}>
-                        {MONTHS_GUIDE.map((m) => (
+                        {monthsGuide.map((m) => (
                           <div key={m.name} title={`${m.label}월`}>{m.name}</div>
                         ))}
                       </div>
@@ -286,7 +310,7 @@ export default function ProgramProgressManager({ projects, selectedYear }) {
                                 return (
                                   <div
                                     key={idx}
-                                    title={`${MONTHS_GUIDE[idx].name}: ${val}단계 (${status})`}
+                                    title={`${monthsGuide[idx].name}: ${val}단계 (${status})`}
                                     style={{
                                       height: "20px",
                                       background: color,

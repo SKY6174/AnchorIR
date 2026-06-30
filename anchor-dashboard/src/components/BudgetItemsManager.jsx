@@ -85,6 +85,11 @@ export default function BudgetItemsManager({ projects, currentRole, onUpdateBudg
       allUnits.push({ ...u, projectTitle: p.title });
     });
   });
+  allUnits.sort((a, b) => {
+    if (a.id === "Common") return 1;
+    if (b.id === "Common") return -1;
+    return a.id.localeCompare(b.id, undefined, { numeric: true, sensitivity: 'base' });
+  });
 
   // 10개 표준 비목 목록 정의
   const BUDGET_ITEM_NAMES = [

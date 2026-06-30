@@ -2413,8 +2413,13 @@ export default function App() {
                     </tr>
                   </thead>
                   <tbody>
-                    {displayProjects.flatMap((p) =>
-                      p.units.map((u) => {
+                    {displayProjects.flatMap((p) => p.units)
+                      .sort((a, b) => {
+                        if (a.id === "Common") return 1;
+                        if (b.id === "Common") return -1;
+                        return a.id.localeCompare(b.id, undefined, { numeric: true, sensitivity: 'base' });
+                      })
+                      .map((u) => {
                         const yData = u.years?.[selectedYear] || { budget_main: 0, spent_main: 0, budget_carry: 0, spent_carry: 0 };
                         const budgetCarryVal = selectedYear === 1 ? 0 : (yData.budget_carry || 0);
                         const spentCarryVal = selectedYear === 1 ? 0 : (yData.spent_carry || 0);
@@ -2518,7 +2523,7 @@ export default function App() {
                           </tr>
                         );
                       })
-                    )}
+                    }
                   </tbody>
                 </table>
               </div>
@@ -2759,9 +2764,15 @@ export default function App() {
                     }}
                   >
                     <option value="all">전체 단위과제</option>
-                    {projects.flatMap((p) => p.units).map((u) => (
-                      <option key={u.id} value={u.id}>{u.id === "Common" ? "" : `${u.id}. `}{u.title}</option>
-                    ))}
+                    {projects.flatMap((p) => p.units)
+                      .sort((a, b) => {
+                        if (a.id === "Common") return 1;
+                        if (b.id === "Common") return -1;
+                        return a.id.localeCompare(b.id, undefined, { numeric: true, sensitivity: 'base' });
+                      })
+                      .map((u) => (
+                        <option key={u.id} value={u.id}>{u.id === "Common" ? "" : `${u.id}. `}{u.title}</option>
+                      ))}
                   </select>
                 </div>
                 <p style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)", marginBottom: "1rem" }}>
@@ -2787,11 +2798,15 @@ export default function App() {
                       </tr>
                     </thead>
                     <tbody>
-                      {projects.flatMap((p) => {
-                        return p.units
-                          .filter((u) => assignFilterUnitId === "all" || u.id === assignFilterUnitId)
-                          .flatMap((u) => {
-                            return u.programs.map((prog) => {
+                      {projects.flatMap((p) => p.units)
+                        .filter((u) => assignFilterUnitId === "all" || u.id === assignFilterUnitId)
+                        .sort((a, b) => {
+                          if (a.id === "Common") return 1;
+                          if (b.id === "Common") return -1;
+                          return a.id.localeCompare(b.id, undefined, { numeric: true, sensitivity: 'base' });
+                        })
+                        .flatMap((u) => {
+                          return u.programs.map((prog) => {
                               let dept = "사업운영팀";
                             if (["A1가", "A2", "A3"].includes(u.id)) dept = "ECC센터";
                             else if (u.id === "A1나") dept = "신산업특화센터";
@@ -2859,8 +2874,8 @@ export default function App() {
                               </tr>
                             );
                           });
-                        });
-                      })}
+                        })
+                      }
                     </tbody>
                   </table>
                 </div>
