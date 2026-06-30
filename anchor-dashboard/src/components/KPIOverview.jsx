@@ -209,7 +209,7 @@ export default function KPIOverview({ projects, currentRole, selectedYear = 2 })
             <ResponsiveContainer>
               <BarChart data={chartData} margin={{ top: 52, right: 10, left: 10, bottom: 5 }}>
                 <XAxis dataKey="name" stroke="var(--text-secondary)" fontSize={12} />
-                <YAxis stroke="var(--text-secondary)" fontSize={12} />
+                <YAxis stroke="var(--text-secondary)" fontSize={12} tickFormatter={(value) => value.toLocaleString()} />
                 <Tooltip
                   cursor={{ fill: "rgba(229, 240, 219, 0.15)" }}
                   formatter={(value) => `${value.toLocaleString()} 백만원`}
