@@ -22,6 +22,7 @@ const INITIAL_MEMBERS = [
   { id: "m-05", name: "김기범", role: "센터장", grade: "정교수", dept: "ICC센터", phoneOffice: "052-230-0222", phoneMobile: "010-2345-6789", email: "kbkim@uc.ac.kr", room: "교수연구실/E2-301", hireDate: "2026-03-01" },
   { id: "m-06", name: "현용환", role: "센터장", grade: "정교수", dept: "RCC센터", phoneOffice: "052-230-0333", phoneMobile: "010-3456-7890", email: "yhhyun@uc.ac.kr", room: "교수연구실/E2-401", hireDate: "2026-03-01" },
   { id: "m-07", name: "홍광표", role: "센터장", grade: "정교수", dept: "울산늘봄누리센터", phoneOffice: "052-230-0444", phoneMobile: "010-4567-8901", email: "gphong@uc.ac.kr", room: "교수연구실/E2-501", hireDate: "2026-03-01" },
+  { id: "m-07b", name: "홍진숙", role: "센터장", grade: "정교수", dept: "신산업특화센터", phoneOffice: "052-230-0700", phoneMobile: "010-7777-8888", email: "special_head@uc.ac.kr", room: "센터실/N-101", hireDate: "2026-06-01" },
   
   // 팀장교수
   { id: "m-08", name: "장광일", role: "팀장교수", grade: "정교수", dept: "ECC센터", phoneOffice: "052-230-0112", phoneMobile: "010-5678-9012", email: "kijang@uc.ac.kr", room: "교수연구실/E2-202", hireDate: "2026-03-01" },
@@ -1155,9 +1156,30 @@ export default function App() {
   // 사업단 구성원 관리 및 서브탭 상태
   const [members, setMembers] = useState(() => {
     const saved = localStorage.getItem("anchor_members");
+    const initialList = INITIAL_MEMBERS.map((m) => ({
+      ...m,
+      startDate: m.startDate || m.hireDate || "2026-03-01",
+      endDate: m.endDate || "",
+      status: m.status || "재직중"
+    }));
+
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
+        // 로컬스토리지에 홍진숙 교수가 누락되어 있을 경우 강제 복구(홍광표 센터장 다음 칸에 주입)
+        const hasHong = parsed.some(m => m.email && m.email.trim().toLowerCase() === "special_head@uc.ac.kr");
+        if (!hasHong) {
+          const hongObj = initialList.find(m => m.email === "special_head@uc.ac.kr");
+          if (hongObj) {
+            const gphongIdx = parsed.findIndex(m => m.email && m.email.trim().toLowerCase() === "gphong@uc.ac.kr");
+            if (gphongIdx !== -1) {
+              parsed.splice(gphongIdx + 1, 0, hongObj);
+            } else {
+              parsed.push(hongObj);
+            }
+          }
+        }
+
         // 하위 드롭다운 싱크 불일치 마이그레이션 보장
         return parsed.map((m) => {
           let currentGrade = m.grade || "연구원";
@@ -1175,12 +1197,7 @@ export default function App() {
         console.error("Failed to parse saved members:", e);
       }
     }
-    return INITIAL_MEMBERS.map((m) => ({
-      ...m,
-      startDate: m.startDate || m.hireDate || "2026-03-01",
-      endDate: m.endDate || "",
-      status: m.status || "재직중"
-    }));
+    return initialList;
   });
 
   useEffect(() => {
