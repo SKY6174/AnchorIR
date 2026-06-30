@@ -1301,7 +1301,8 @@ export default function App() {
             id: emailId,
             name: dbUser ? dbUser.name : m.name,
             role_key: dbUser ? dbUser.role_key : autoRoleKey,
-            created_at: dbUser ? dbUser.created_at : (m.startDate || m.hireDate || "2026-03-01T00:00:00.000Z")
+            // 주소록(members)에 시작일이 수정 기입되어 있다면 그것을 우선 표출하고, 없으면 DB 생성일 또는 디폴트값을 사용합니다.
+            created_at: m.startDate || m.hireDate || (dbUser ? dbUser.created_at : "2026-03-01T00:00:00.000Z")
           };
         });
 
@@ -1380,12 +1381,12 @@ export default function App() {
     }
   };
 
-  // 관리자 탭 활성화 시 또는 주기적으로 대기 목록 로드
+  // 관리자 탭 활성화 시 또는 주소록(members)이 변경되었을 때 대기 목록 로드 및 갱신
   useEffect(() => {
     if (activeTab === "management" && currentUser && currentUser.role?.rank <= 2) {
       fetchRegisteredUsers();
     }
-  }, [activeTab, currentUser]);
+  }, [activeTab, currentUser, members]);
 
   // 성과지표 상세 조회용 상태 및 다년도 성과관리 연도 선택 상태
   const [selectedKpi, setSelectedKpi] = useState(() => {
