@@ -148,16 +148,16 @@ export default function KPIOverview({ projects, currentRole, selectedYear = 2 })
           </div>
           <div className="kpi-subtext" style={{ display: "flex", flexDirection: "column", gap: "0.3rem", fontSize: "0.72rem", width: "100%", borderTop: "1px solid rgba(255,255,255,0.1)", paddingTop: "0.4rem", marginTop: "0.3rem" }}>
             <div style={{ display: "flex", justifyContent: "space-between" }}>
-              <span>앵커(본사업): {formatToMillionWon(anchorBudgetMain)}백만원</span>
-              <span>앵커(이월사업): {formatToMillionWon(anchorBudgetCarry)}백만원</span>
+              <span>앵커(본사업):<br />{formatToMillionWon(anchorBudgetMain)} 백만원</span>
+              <span>앵커(이월사업):<br />{formatToMillionWon(anchorBudgetCarry)} 백만원</span>
             </div>
             <div style={{ display: "flex", justifyContent: "space-between" }}>
-              <span>신산업(본사업): {formatToMillionWon(shinSanUpBudgetMain)}백만원</span>
-              <span>신산업(이월사업): {formatToMillionWon(shinSanUpBudgetCarry)}백만원</span>
+              <span>신산업(본사업):<br />{formatToMillionWon(shinSanUpBudgetMain)} 백만원</span>
+              <span>신산업(이월사업):<br />{formatToMillionWon(shinSanUpBudgetCarry)} 백만원</span>
             </div>
             <div style={{ display: "flex", justifyContent: "space-between", fontWeight: "700", borderTop: "1px dashed rgba(255,255,255,0.15)", paddingTop: "0.3rem", marginTop: "0.1rem" }}>
-              <span>2차년도(본사업): {formatToMillionWon(totalBudgetMain)}백만원</span>
-              <span>1차년도(이월사업): {formatToMillionWon(totalBudgetCarry)}백만원</span>
+              <span>2차년도(본사업):<br />{formatToMillionWon(totalBudgetMain)} 백만원</span>
+              <span>1차년도(이월사업):<br />{formatToMillionWon(totalBudgetCarry)} 백만원</span>
             </div>
           </div>
         </div>
