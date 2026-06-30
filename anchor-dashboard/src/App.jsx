@@ -580,6 +580,31 @@ const getNormalizedKpi = (k, selectedYear) => {
     };
   }
 
+  if (k.id === "L-7") {
+    return {
+      ...k,
+      description: "성인학습자 친화형 교육환경 구축 및 평생·직업교육 과정 활성화를 통한 평생학습 기회 보장 지수",
+      formula: "((A)실적/(A)기준)*70 + ((B)실적/(B)기준)*30",
+      subItems: [
+        { id: "L-7-1", name: "평생·직업교육 프로그램 이수자 수", unit: "명", years: { 1: { target: 110, current: 375 } } },
+        { id: "L-7-2", name: "재학생 중 성인 학습자 수", unit: "명", years: { 1: { target: 50, current: 98 } } }
+      ]
+    };
+  }
+
+  if (k.id === "L-8") {
+    return {
+      ...k,
+      description: "평생·직업교육 품질 신뢰도 향상을 위한 교육과정 신개발 및 참여자의 취·창업 지원 성과지수",
+      formula: "((A)실적/(A)기준)*30 + ((B)실적/(B)기준)*40 + ((C)실적/(C)기준)*40",
+      subItems: [
+        { id: "L-8-1", name: "평생·직업교육 프로그램 개발 및 개편 건수", unit: "건", years: { 1: { target: 5, current: 10 } } },
+        { id: "L-8-2", name: "대학 성인학습자 고등교육 참여자의 유지취업률", unit: "%", years: { 1: { target: 10, current: 0 } } },
+        { id: "L-8-3", name: "대학 성인학습자 고등교육 참여자의 취·창업률", unit: "%", years: { 1: { target: 14, current: 25.9 } } }
+      ]
+    };
+  }
+
   return k;
 };
 
@@ -2695,6 +2720,10 @@ export default function App() {
                               rate = 81.8;
                             } else if (selectedYear === 1 && nk.id === "L-6") {
                               rate = 103.3;
+                            } else if (selectedYear === 1 && nk.id === "L-7") {
+                              rate = 321.3;
+                            } else if (selectedYear === 1 && nk.id === "L-8") {
+                              rate = 134.0;
                             } else if (nk.subItems && nk.subItems.length > 0) {
                               let sumRate = 0;
                               nk.subItems.forEach((sub) => {
@@ -2866,6 +2895,10 @@ export default function App() {
                                   totalKpiRate = 81.8;
                                 } else if (selectedYear === 1 && nk.id === "L-6") {
                                   totalKpiRate = 103.3;
+                                } else if (selectedYear === 1 && nk.id === "L-7") {
+                                  totalKpiRate = 321.3;
+                                } else if (selectedYear === 1 && nk.id === "L-8") {
+                                  totalKpiRate = 134.0;
                                 } else if (nk.subItems && nk.subItems.length > 0) {
                                   let sumKpiRate = 0;
                                   nk.subItems.forEach((sub) => {
