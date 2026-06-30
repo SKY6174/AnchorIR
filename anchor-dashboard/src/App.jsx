@@ -630,6 +630,33 @@ const getNormalizedKpi = (k, selectedYear) => {
     };
   }
 
+  if (k.id === "L-11") {
+    return {
+      ...k,
+      description: "재난 및 산업안전 분야 예방 관련 산학협력 안전기술 지도 및 재난안전 확산 지수",
+      formula: "((A)실적/(A)기준값)*40 + ((B)실적/(B)기준값)*30 + ((C)실적/(C)기준값)*30",
+      subItems: [
+        { id: "L-11-1", name: "재난 및 산업안전 관련 안전기술 지원 건수", unit: "건", years: { 1: { target: 3, current: 3 } } },
+        { id: "L-11-2", name: "재난 및 산업안전 관련 연구 및 시스템(S/W, 콘텐츠) 개발 활용 건수", unit: "건", years: { 1: { target: 1, current: 1 } } },
+        { id: "L-11-3", name: "재난 및 산업안전 확산 활동 건수", unit: "건", years: { 1: { target: 1, current: 3 } } }
+      ]
+    };
+  }
+
+  if (k.id === "L-12") {
+    return {
+      ...k,
+      description: "지역 밀착형 재난안전 교육프로그램 신규 개발 및 전문 교육 이수, 관련 자격 취득 활성화 종합 지수",
+      formula: "교육프로그램 개편 및 이수자수, 자격 취득, 현장적용 기업수 종합 지수 연산",
+      subItems: [
+        { id: "L-12-1", name: "재난 및 산업안전 관련 교육프로그램 개편건수", unit: "건", years: { 1: { target: 1, current: 1 } } },
+        { id: "L-12-2", name: "재난 및 산업안전 관련 교육프로그램 이수자수", unit: "명", years: { 1: { target: 150, current: 168 } } },
+        { id: "L-12-3", name: "재난 및 산업안전 관련 교육프로그램 이수자 자격증 취득건수", unit: "건", years: { 1: { target: 25, current: 31 } } },
+        { id: "L-12-4", name: "재난 및 산업안전 관련 교육프로그램 산업현장 적용 기업수", unit: "개", years: { 1: { target: 5, current: 5 } } }
+      ]
+    };
+  }
+
   return k;
 };
 
@@ -2753,6 +2780,10 @@ export default function App() {
                               rate = 106.0;
                             } else if (selectedYear === 1 && nk.id === "L-10") {
                               rate = 128.5;
+                            } else if (selectedYear === 1 && nk.id === "L-11") {
+                              rate = 160.0;
+                            } else if (selectedYear === 1 && nk.id === "L-12") {
+                              rate = 114.6;
                             } else if (nk.subItems && nk.subItems.length > 0) {
                               let sumRate = 0;
                               nk.subItems.forEach((sub) => {
@@ -2932,6 +2963,10 @@ export default function App() {
                                   totalKpiRate = 106.0;
                                 } else if (selectedYear === 1 && nk.id === "L-10") {
                                   totalKpiRate = 128.5;
+                                } else if (selectedYear === 1 && nk.id === "L-11") {
+                                  totalKpiRate = 160.0;
+                                } else if (selectedYear === 1 && nk.id === "L-12") {
+                                  totalKpiRate = 114.6;
                                 } else if (nk.subItems && nk.subItems.length > 0) {
                                   let sumKpiRate = 0;
                                   nk.subItems.forEach((sub) => {

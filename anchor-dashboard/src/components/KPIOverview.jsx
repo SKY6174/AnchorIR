@@ -115,6 +115,10 @@ export default function KPIOverview({ projects, currentRole, selectedYear = 2 })
           ach = 106.0;
         } else if (selectedYear === 1 && k.id === "L-10") {
           ach = 128.5;
+        } else if (selectedYear === 1 && k.id === "L-11") {
+          ach = 160.0;
+        } else if (selectedYear === 1 && k.id === "L-12") {
+          ach = 114.6;
         } else if (k.subItems && k.subItems.length > 0) {
           let sumSub = 0;
           k.subItems.forEach((sub) => {
