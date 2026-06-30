@@ -1787,43 +1787,7 @@ export const initialProjectsData = [
           "그 밖의 사업운영경비": { budget_2026: 200000000, spent_2026: 10000000, budget_2025_carry: 50000000, spent_2025_carry: 3000000 },
           "간접비": { budget_2026: 100000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0 }
         },
-        kpis: [
-          {
-            id: "Common-K-1",
-            name: "사업단 행정 및 재정 집행 효율성 평가지수",
-            type: "자율",
-            description: "공통 사업비 재원 관리 모니터링 감사 통과 및 집행 효율성 종합 점수",
-            formula: "(행정집행 달성률 * 0.8) + (감사지수 달성률 * 0.2)",
-            cycle: "연 1회",
-            owner: "운영팀",
-            subItems: [
-              {
-                id: "Common-K-1-1",
-                name: "공통 경상운영비 예산 집행률",
-                unit: "%",
-                years: {
-                  1: { target: 0, current: 0 },
-                  2: { target: 95.0, current: 88.0 },
-                  3: { target: 96.0, current: 0 },
-                  4: { target: 97.0, current: 0 },
-                  5: { target: 98.0, current: 0 }
-                }
-              },
-              {
-                id: "Common-K-1-2",
-                name: "정기 재정운영 감사 지적 건수 (감점형)",
-                unit: "점",
-                years: {
-                  1: { target: 0, current: 0 },
-                  2: { target: 100.0, current: 95.0 },
-                  3: { target: 100.0, current: 0 },
-                  4: { target: 100.0, current: 0 },
-                  5: { target: 100.0, current: 0 }
-                }
-              }
-            ]
-          }
-        ]
+        kpis: []
       }
     ]
   }
