@@ -685,7 +685,7 @@ export default function PDCAManager({
             </div>
             
             {/* 프로그램 신규 생성 추가 버튼 */}
-            {currentRole.rank <= 2 && (
+            {currentRole.rank <= 1 && (
               <button
                 type="button"
                 className="btn-primary"

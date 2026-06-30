@@ -14,8 +14,8 @@ import "./styles/dashboard.css";
 // RISE 사업단 초기 구성원 주소록 명단 데이터셋
 const INITIAL_MEMBERS = [
   // 교수 및 리더진
-  { id: "m-01", name: "송경영", role: "사업단장", grade: "전임 교수", dept: "사업운영팀", phoneOffice: "052-279-3154", phoneMobile: "010-7627-7123", email: "kysong@uc.ac.kr", room: "교수연구실/E1-307", hireDate: "2026-03-01" },
-  { id: "m-02", name: "김현수", role: "본부장", grade: "전임 교수", dept: "AID-X지원센터", phoneOffice: "052-279-3122", phoneMobile: "010-4628-7963", email: "hskim3@uc.ac.kr", room: "교수연구실/E2-414", hireDate: "2026-03-01" },
+  { id: "m-01", name: "송경영", role: "사업단장", grade: "전임 교수", dept: "미배정", phoneOffice: "052-279-3154", phoneMobile: "010-7627-7123", email: "kysong@uc.ac.kr", room: "교수연구실/E1-307", hireDate: "2026-03-01" },
+  { id: "m-02", name: "김현수", role: "본부장", grade: "전임 교수", dept: "운영본부", phoneOffice: "052-279-3122", phoneMobile: "010-4628-7963", email: "hskim3@uc.ac.kr", room: "교수연구실/E2-414", hireDate: "2026-03-01" },
   { id: "m-03", name: "심현미", role: "운영팀장", grade: "행정 부장", dept: "사업운영팀", phoneOffice: "052-230-0441", phoneMobile: "010-6554-8359", email: "hmsim@uc.ac.kr", room: "산학협력단/S-203", hireDate: "2026-03-01" },
   { id: "m-04", name: "이동은", role: "센터장", grade: "전임 교수", dept: "ECC센터", phoneOffice: "052-230-0111", phoneMobile: "010-1234-5678", email: "delee@uc.ac.kr", room: "교수연구실/E2-201", hireDate: "2026-03-01" },
   { id: "m-05", name: "김기범", role: "센터장", grade: "전임 교수", dept: "ICC센터", phoneOffice: "052-230-0222", phoneMobile: "010-2345-6789", email: "kbkim@uc.ac.kr", room: "교수연구실/E2-301", hireDate: "2026-03-01" },
@@ -684,7 +684,15 @@ export default function App() {
   const [darkMode, setDarkMode] = useState(true);
 
   // 사업단 구성원 관리 및 서브탭 상태
-  const [members, setMembers] = useState(INITIAL_MEMBERS);
+  const [members, setMembers] = useState(() => {
+    return INITIAL_MEMBERS.map((m) => ({
+      ...m,
+      startDate: m.startDate || m.hireDate || "2026-03-01",
+      endDate: m.endDate || "",
+      status: m.status || "재직중"
+    }));
+  });
+  const [assignFilterUnitId, setAssignFilterUnitId] = useState("all");
   const [mgmtSubTab, setMgmtSubTab] = useState("members"); // "members", "programs", "approvals"
   const [projectsSubTab, setProjectsSubTab] = useState("unit_status"); // "unit_status" (단위과제 집행현황) 또는 "program_mgmt" (프로그램 관리)
   const [isMemberModalOpen, setIsMemberModalOpen] = useState(false);
@@ -1496,6 +1504,7 @@ export default function App() {
       });
       return updated;
     });
+    alert(`[${progId}] 프로그램의 담당연구원이 "${newAssignee || "미배정"}"(으)로 배정 및 저장되었습니다.`);
   };
 
   // 사용자 호칭 맵핑 웰컴 메시지 헬퍼 함수
@@ -1549,7 +1558,7 @@ export default function App() {
         <header className="top-nav" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "1rem" }}>
           <div className="page-title">
             <h1>앵커사업 통합 IR 대시보드</h1>
-            <p>울산과학대학교 {selectedYear}차년도 사업 예산 관리 및 성과 실증 시스템</p>
+            <p>울산과학대학교 앵커사업 {selectedYear}차년도 사업예산 및 성과관리 시스템</p>
           </div>
 
           {/* 전역 연도 선택 컨트롤러 */}
@@ -1600,7 +1609,7 @@ export default function App() {
             {/* 단위과제 및 프로그램 관리 탭: 전체 카드를 Fragment로 감싼 뒤 하단에 예산 전용 엑셀 업로더를 배치합니다. */}
             <div className="glass-card">
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.2rem" }}>
-              <h2 style={{ fontSize: "1.25rem", fontWeight: "800" }}>단위과제 관리 (Anchor Unit Projects)</h2>
+              <h2 style={{ fontSize: "1.25rem", fontWeight: "800" }}>단위과제 관리 (ANCHOR Unit Projects)</h2>
             </div>
 
             {/* 서브탭 내비게이션 바 */}
@@ -1805,7 +1814,7 @@ export default function App() {
           <div className="glass-card" style={{ position: "relative" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.2rem", flexWrap: "wrap", gap: "0.8rem" }}>
               <div>
-                <h2 style={{ fontSize: "1.25rem", fontWeight: "800" }}>사업단 관리 (Anchor Management)</h2>
+                <h2 style={{ fontSize: "1.25rem", fontWeight: "800" }}>사업단 관리 (ANCHOR Management)</h2>
                 <p style={{ fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginTop: "0.2rem" }}>
                   울산과학대학교 라이즈(앵커) 사업단 구성원을 관리하고, 각 세부 프로그램의 실무 연구원을 매핑하는 통합 업무 공간입니다.
                 </p>
@@ -1826,7 +1835,10 @@ export default function App() {
                       phoneMobile: "",
                       email: "",
                       room: "",
-                      hireDate: "2026-03-01"
+                      hireDate: "2026-03-01",
+                      startDate: "2026-03-01",
+                      endDate: "",
+                      status: "재직중"
                     });
                     setIsMemberModalOpen(true);
                   }}
@@ -1905,7 +1917,9 @@ export default function App() {
                         <th>이메일</th>
                         <th>교내 전화</th>
                         <th>휴대전화</th>
-                        <th>입사일</th>
+                        <th>시작일</th>
+                        <th>종료일</th>
+                        <th>재직 여부</th>
                         {currentRole.rank <= 2 && <th>관리</th>}
                       </tr>
                     </thead>
@@ -1934,7 +1948,18 @@ export default function App() {
                           <td style={{ fontFamily: "var(--font-data)" }}>{m.email}</td>
                           <td style={{ fontFamily: "var(--font-data)" }}>{m.phoneOffice || "-"}</td>
                           <td style={{ fontFamily: "var(--font-data)" }}>{m.phoneMobile || "-"}</td>
-                          <td style={{ fontFamily: "var(--font-data)" }}>{m.hireDate}</td>
+                          <td style={{ fontFamily: "var(--font-data)" }}>{m.startDate || m.hireDate || "-"}</td>
+                          <td style={{ fontFamily: "var(--font-data)" }}>{m.endDate || "-"}</td>
+                          <td>
+                            <span
+                              className={`badge ${
+                                m.status === "퇴직" ? "badge-red" : "badge-green"
+                              }`}
+                              style={{ fontSize: "0.65rem" }}
+                            >
+                              {m.status || "재직중"}
+                            </span>
+                          </td>
                           {currentRole.rank <= 2 && (
                             <td>
                               <div style={{ display: "flex", gap: "0.3rem" }}>
@@ -1972,6 +1997,28 @@ export default function App() {
 
             {mgmtSubTab === "programs" && (
               <div>
+                <div style={{ marginBottom: "1.2rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                  <span style={{ fontSize: "0.8rem", fontWeight: "700", color: "var(--text-secondary-dark)" }}>단위과제 필터:</span>
+                  <select
+                    className="user-selector"
+                    value={assignFilterUnitId}
+                    onChange={(e) => setAssignFilterUnitId(e.target.value)}
+                    style={{
+                      padding: "0.3rem 0.6rem",
+                      fontSize: "0.78rem",
+                      borderRadius: "0.25rem",
+                      background: "rgba(255,255,255,0.05)",
+                      border: "1px solid var(--border-color-dark)",
+                      color: "white",
+                      outline: "none"
+                    }}
+                  >
+                    <option value="all">전체 단위과제</option>
+                    {projects.flatMap((p) => p.units).map((u) => (
+                      <option key={u.id} value={u.id}>{u.id} {u.title}</option>
+                    ))}
+                  </select>
+                </div>
                 <p style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)", marginBottom: "1rem" }}>
                   * 실무 연구원으로 등록된 구성원(직책: 연구원)만 프로그램 담당연구원 목록으로 매핑됩니다.
                 </p>
@@ -1996,9 +2043,11 @@ export default function App() {
                     </thead>
                     <tbody>
                       {projects.flatMap((p) => {
-                        return p.units.flatMap((u) => {
-                          return u.programs.map((prog) => {
-                            let dept = "사업운영팀";
+                        return p.units
+                          .filter((u) => assignFilterUnitId === "all" || u.id === assignFilterUnitId)
+                          .flatMap((u) => {
+                            return u.programs.map((prog) => {
+                              let dept = "사업운영팀";
                             if (["A-1-가", "A-2", "A-3"].includes(u.id)) dept = "ECC센터";
                             else if (u.id === "A-1-나") dept = "신산업특화센터";
                             else if (["B-1", "B-3", "B-4"].includes(u.id)) dept = "ICC센터";
@@ -2480,6 +2529,8 @@ export default function App() {
                     value={editingMember.dept}
                     onChange={(e) => setEditingMember({ ...editingMember, dept: e.target.value })}
                   >
+                    <option value="미배정">미배정</option>
+                    <option value="운영본부">운영본부</option>
                     <option value="사업운영팀">사업운영팀</option>
                     <option value="ECC센터">ECC센터</option>
                     <option value="신산업특화센터">신산업특화센터</option>
@@ -2498,7 +2549,16 @@ export default function App() {
                     className="user-selector"
                     style={{ width: "100%", padding: "0.4rem" }}
                     value={editingMember.role}
-                    onChange={(e) => setEditingMember({ ...editingMember, role: e.target.value })}
+                    onChange={(e) => {
+                      const nextRole = e.target.value;
+                      let nextGrade = "연구원";
+                      if (["사업단장", "본부장", "센터장", "팀장교수"].includes(nextRole)) {
+                        nextGrade = "정교수";
+                      } else if (nextRole === "운영팀장") {
+                        nextGrade = "부장";
+                      }
+                      setEditingMember({ ...editingMember, role: nextRole, grade: nextGrade });
+                    }}
                   >
                     <option value="사업단장">사업단장</option>
                     <option value="본부장">본부장</option>
@@ -2516,16 +2576,22 @@ export default function App() {
                     value={editingMember.grade}
                     onChange={(e) => setEditingMember({ ...editingMember, grade: e.target.value })}
                   >
-                    {editingMember.role === "연구원" ? (
+                    {["사업단장", "본부장", "센터장", "팀장교수"].includes(editingMember.role) ? (
                       <>
-                        <option value="책임연구원">책임연구원</option>
-                        <option value="선임연구원">선임연구원</option>
-                        <option value="연구원">연구원</option>
+                        <option value="정교수">정교수</option>
+                        <option value="부교수">부교수</option>
+                        <option value="조교수">조교수</option>
                       </>
                     ) : (
                       <>
-                        <option value="전임 교수">전임 교수</option>
-                        <option value="행정 부장">행정 부장</option>
+                        <option value="부장">부장</option>
+                        <option value="차장">차장</option>
+                        <option value="과장">과장</option>
+                        <option value="대리">대리</option>
+                        <option value="사원">사원</option>
+                        <option value="책임연구원">책임연구원</option>
+                        <option value="선임연구원">선임연구원</option>
+                        <option value="연구원">연구원</option>
                       </>
                     )}
                   </select>
@@ -2569,15 +2635,45 @@ export default function App() {
                 </div>
               </div>
 
-              <div>
-                <label style={{ display: "block", marginBottom: "0.3rem", fontWeight: "700" }}>입사일</label>
+              <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginTop: "0.2rem" }}>
                 <input
-                  type="date"
-                  className="user-selector"
-                  style={{ width: "100%", padding: "0.4rem", color: "white" }}
-                  value={editingMember.hireDate}
-                  onChange={(e) => setEditingMember({ ...editingMember, hireDate: e.target.value })}
+                  type="checkbox"
+                  id="is_active"
+                  checked={editingMember.status !== "퇴직"}
+                  onChange={(e) => {
+                    const isActive = e.target.checked;
+                    setEditingMember({
+                      ...editingMember,
+                      status: isActive ? "재직중" : "퇴직",
+                      endDate: isActive ? "" : (editingMember.endDate || "")
+                    });
+                  }}
                 />
+                <label htmlFor="is_active" style={{ fontWeight: "700", cursor: "pointer" }}>현재 재직중</label>
+              </div>
+
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+                <div>
+                  <label style={{ display: "block", marginBottom: "0.3rem", fontWeight: "700" }}>시작일</label>
+                  <input
+                    type="date"
+                    className="user-selector"
+                    style={{ width: "100%", padding: "0.4rem", color: "white" }}
+                    value={editingMember.startDate || editingMember.hireDate || ""}
+                    onChange={(e) => setEditingMember({ ...editingMember, startDate: e.target.value, hireDate: e.target.value })}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: "block", marginBottom: "0.3rem", fontWeight: "700" }}>종료일</label>
+                  <input
+                    type="date"
+                    className="user-selector"
+                    style={{ width: "100%", padding: "0.4rem", color: "white" }}
+                    disabled={editingMember.status !== "퇴직"}
+                    value={editingMember.endDate || ""}
+                    onChange={(e) => setEditingMember({ ...editingMember, endDate: e.target.value })}
+                  />
+                </div>
               </div>
             </div>
 
