@@ -34,14 +34,55 @@ export default function AuthManager({ onLoginSuccess, members = [] }) {
       const targetId = userId.trim().toLowerCase();
       const targetHashedPw = hashPassword(userPw);
 
-      // Supabase rise_users 테이블에서 계정 조회
-      const { data: foundUser, error } = await supabase
-        .from("rise_users")
-        .select("*")
-        .eq("id", targetId)
-        .single();
+      // 테스트 목적 예외 계정 비밀번호 및 우회 처리
+      const isTestAccount = ["director", "team_leader", "researcher", "admin"].includes(targetId);
+      const expectedTestPw = targetId === "admin" ? "uc_anchor" : "1234";
 
-      if (error || !foundUser) {
+      // 1. Supabase rise_users 테이블에서 계정 조회 시도
+      let foundUser = null;
+      try {
+        const { data, error } = await supabase
+          .from("rise_users")
+          .select("*")
+          .eq("id", targetId)
+          .single();
+        if (!error && data) {
+          foundUser = data;
+        }
+      } catch (dbErr) {
+        console.warn("DB query warning for login user:", dbErr);
+      }
+
+      // 2. 테스트 계정 우회 로그인 처리
+      if (isTestAccount && userPw === expectedTestPw) {
+        let sessionUser = null;
+        if (foundUser) {
+          const mappedRole = userRoles[foundUser.role_key] || userRoles.RESEARCHER;
+          sessionUser = {
+            id: foundUser.id,
+            name: foundUser.name,
+            role: mappedRole
+          };
+        } else {
+          // 가상 유저 객체 생성
+          let roleKey = "RESEARCHER";
+          let name = "테스트 연구원";
+          if (targetId === "director") { roleKey = "DIRECTOR"; name = "송경영 단장(테스트)"; }
+          if (targetId === "team_leader") { roleKey = "TEAM_LEADER"; name = "심현미 팀장(테스트)"; }
+          if (targetId === "admin") { roleKey = "DIRECTOR"; name = "시스템 관리자"; }
+          
+          sessionUser = {
+            id: targetId,
+            name: name,
+            role: userRoles[roleKey]
+          };
+        }
+        onLoginSuccess(sessionUser);
+        return;
+      }
+
+      // 3. 일반 계정 검증 절차
+      if (!foundUser) {
         setErrorMsg("아이디 또는 비밀번호가 일치하지 않습니다.");
         return;
       }
