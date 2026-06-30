@@ -207,7 +207,7 @@ export default function KPIOverview({ projects, currentRole, selectedYear = 2 })
           </h3>
           <div style={{ width: "100%", height: "280px" }}>
             <ResponsiveContainer>
-              <BarChart data={chartData}>
+              <BarChart data={chartData} margin={{ top: 52, right: 10, left: 10, bottom: 5 }}>
                 <XAxis dataKey="name" stroke="var(--text-secondary-dark)" fontSize={12} />
                 <YAxis stroke="var(--text-secondary-dark)" fontSize={12} />
                 <Tooltip
@@ -236,14 +236,15 @@ export default function KPIOverview({ projects, currentRole, selectedYear = 2 })
                     gap: "1rem",
                     left: "50%",
                     transform: "translateX(-50%)",
-                    marginBottom: "0.8rem"
+                    top: 0,
+                    width: "80%"
                   }}
                   formatter={(value) => <span style={{ color: "var(--text-primary-dark)", fontSize: "11px", fontWeight: "600" }}>{value}</span>}
                 />
-                <Bar dataKey="본예산" fill="#1e3a8a" radius={[3, 3, 0, 0]} />
-                <Bar dataKey="본집행" fill="#3b82f6" radius={[3, 3, 0, 0]} />
-                {selectedYear >= 2 && <Bar dataKey="이월예산" name={`${selectedYear - 1}차년도 이월예산`} fill="#064e3b" radius={[3, 3, 0, 0]} />}
-                {selectedYear >= 2 && <Bar dataKey="이월집행" name={`${selectedYear - 1}차년도 이월집행`} fill="#10b981" radius={[3, 3, 0, 0]} />}
+                <Bar dataKey="본예산" name="본사업비 예산" fill="#1e3a8a" radius={[3, 3, 0, 0]} />
+                <Bar dataKey="본집행" name="본사업비 집행" fill="#3b82f6" radius={[3, 3, 0, 0]} />
+                {selectedYear >= 2 && <Bar dataKey="이월예산" name="이월사업비 예산" fill="#064e3b" radius={[3, 3, 0, 0]} />}
+                {selectedYear >= 2 && <Bar dataKey="이월집행" name="이월사업비 집행" fill="#10b981" radius={[3, 3, 0, 0]} />}
               </BarChart>
             </ResponsiveContainer>
           </div>
