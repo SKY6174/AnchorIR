@@ -648,7 +648,7 @@ export default function PDCAManager({
               >
                 {allUnits.map((u) => (
                   <option key={u.id} value={u.id}>
-                    {u.id === "Common" ? "" : `${u.id} `}{u.title}
+                    {u.id === "Common" ? "" : `${u.id}. `}{u.title}
                   </option>
                 ))}
               </select>

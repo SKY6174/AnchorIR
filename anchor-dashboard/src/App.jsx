@@ -1888,7 +1888,7 @@ export default function App() {
                             }}
                           >
                             <td style={{ fontWeight: "700", borderRight: "1px solid rgba(255,255,255,0.05)" }}>
-                              {u.id === "Common" ? "" : `${u.id} `}{u.title}
+                              {u.id === "Common" ? "" : `${u.id}. `}{u.title}
                             </td>
                             <td style={{ fontFamily: "var(--font-data)" }}>
                               {formatToMillionWon(yData.budget_main)}
@@ -2177,7 +2177,7 @@ export default function App() {
                   >
                     <option value="all">전체 단위과제</option>
                     {projects.flatMap((p) => p.units).map((u) => (
-                      <option key={u.id} value={u.id}>{u.id} {u.title}</option>
+                      <option key={u.id} value={u.id}>{u.id === "Common" ? "" : `${u.id}. `}{u.title}</option>
                     ))}
                   </select>
                 </div>
@@ -2219,7 +2219,7 @@ export default function App() {
 
                             return (
                               <tr key={prog.id}>
-                                <td style={{ fontWeight: "700" }}>{u.id === "Common" ? "공통경비" : `${u.id} ${u.title}`}</td>
+                                <td style={{ fontWeight: "700" }}>{u.id === "Common" ? "공통경비" : `${u.id}. ${u.title}`}</td>
                                 <td style={{ fontFamily: "var(--font-data)", fontWeight: "700" }}>{prog.id}</td>
                                 <td>{prog.title}</td>
                                 <td style={{ color: "var(--accent-color)", fontWeight: "700" }}>{dept}</td>
