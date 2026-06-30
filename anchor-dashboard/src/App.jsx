@@ -246,7 +246,7 @@ function formatDataToMultiYear(data) {
           id: item.id,
           title: item.title,
           assignee: item.assignee || "미지정",
-          pdca: { p: "대기", d: "대기", c: "대기", a: "대기" },
+          pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
           years: progYears,
           timeline: "",
           targetAudience: "",
