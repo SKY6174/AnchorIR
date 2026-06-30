@@ -784,11 +784,12 @@ export default function App() {
     }
   };
 
-  // Supabase 회원가입 현황 목록 상태
+  // Supabase 회원현황 목록 상태
   const [registeredUsers, setRegisteredUsers] = useState([]);
 
-  // 회원가입 현황 목록 로드 함수
+  // 회원현황 목록 로드 함수
   const fetchRegisteredUsers = async () => {
+    // 1. 기본 데모 계정들 정의
     const demoUsers = [
       { id: "admin", name: "시스템 관리자", role_key: "ADMIN", created_at: "2026-03-01T00:00:00.000Z" },
       { id: "director", name: "송경영", role_key: "DIRECTOR", created_at: "2026-03-01T00:00:00.000Z" },
@@ -799,22 +800,64 @@ export default function App() {
     ];
 
     try {
+      // 2. Supabase DB에서 가입된 회원 로드
       const { data, error } = await supabase
         .from("rise_users")
         .select("id, name, role_key, created_at");
-      
       const dbUsers = data || [];
-      const dbIds = new Set(dbUsers.map(u => u.id.trim().toLowerCase()));
-      const filteredDemos = demoUsers.filter(d => !dbIds.has(d.id));
+      const dbMap = new Map(dbUsers.map(u => [u.id.trim().toLowerCase(), u]));
 
-      setRegisteredUsers([...filteredDemos, ...dbUsers]);
+      // 3. 주소록(members)에서 재직중인 멤버들 로드 및 매핑 (이메일 및 임시 비밀번호 매핑 가이드라인 연동)
+      const activeMembers = (members || [])
+        .filter(m => m.status !== "퇴직" && m.email)
+        .map(m => {
+          const emailId = m.email.trim().toLowerCase();
+          
+          // 역할 맵핑 규칙
+          let autoRoleKey = "RESEARCHER";
+          const mRole = m.role || "";
+          const mDept = m.dept || "";
+          if (mRole === "사업단장") {
+            autoRoleKey = "DIRECTOR";
+          } else if (mRole === "본부장") {
+            autoRoleKey = "HQ_HEAD";
+          } else if (mRole === "운영팀장") {
+            autoRoleKey = "TEAM_LEADER";
+          } else if (mRole === "센터장") {
+            autoRoleKey = mDept === "ECC센터" ? "CENTER_ECC" : "CENTER_SPECIAL";
+          }
+
+          // DB에 비밀번호를 직접 변경한 이력이 존재하면 해당 가입일/이름 정보를 우선시함
+          const dbUser = dbMap.get(emailId);
+          return {
+            id: emailId,
+            name: dbUser ? dbUser.name : m.name,
+            role_key: dbUser ? dbUser.role_key : autoRoleKey,
+            created_at: dbUser ? dbUser.created_at : (m.startDate || m.hireDate || "2026-03-01T00:00:00.000Z")
+          };
+        });
+
+      // 4. 데모 계정 + 주소록 액티브 계정 + DB 계정 우선순위 병합
+      const finalUsersMap = new Map();
+      
+      // 데모 계정 주입
+      demoUsers.forEach(u => finalUsersMap.set(u.id.toLowerCase(), u));
+      // 주소록 재직중인 계정 주입
+      activeMembers.forEach(u => finalUsersMap.set(u.id.toLowerCase(), u));
+      // DB 실제 회원 계정 주입 (최종 우선순위 보장)
+      dbUsers.forEach(u => {
+        const idLower = u.id.trim().toLowerCase();
+        finalUsersMap.set(idLower, u);
+      });
+
+      setRegisteredUsers(Array.from(finalUsersMap.values()));
     } catch (err) {
       console.error("Fetch registered users error:", err);
       setRegisteredUsers(demoUsers);
     }
   };
 
-  // 회원가입 현황에서 사용자 계정 삭제 실행 함수
+  // 회원현황에서 사용자 계정 삭제 실행 함수
   const handleDeleteUser = async (userId) => {
     const demoIds = ["admin", "director", "hq_head", "center_director", "team_leader", "researcher"];
     if (demoIds.includes(userId.toLowerCase())) {
@@ -2018,7 +2061,7 @@ export default function App() {
                     transition: "all 0.2s"
                   }}
                 >
-                  회원가입 현황
+                  회원현황
                 </button>
               )}
             </div>
@@ -2243,9 +2286,9 @@ export default function App() {
 
             {mgmtSubTab === "approvals" && currentRole.rank <= 2 && (
               <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-                <h3 style={{ fontSize: "1rem", fontWeight: "800", color: "var(--accent-color)" }}>회원가입 현황</h3>
+                <h3 style={{ fontSize: "1rem", fontWeight: "800", color: "var(--accent-color)" }}>회원현황</h3>
                 <p style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)" }}>
-                  현재 ANCHOR 통합 대시보드 시스템에 등록된 계정 및 시연용 테스트 계정의 가입 현황 목록입니다.
+                  현재 ANCHOR 통합 대시보드 시스템에 가입되었거나 주소록에서 자동으로 연동된 재직 구성원 계정 현황 목록입니다.
                 </p>
                 <div className="table-panel" style={{ maxHeight: "400px", overflowY: "auto" }}>
                   <table className="custom-table" style={{ fontSize: "0.75rem" }}>
@@ -2277,9 +2320,11 @@ export default function App() {
                             TEAM_LEADER: "운영팀장",
                             RESEARCHER: "실무 연구원"
                           };
-                          // DB에 등록할 때 이름 뒤에 직위가 붙어 있는 경우(예: "이은주 연구원") 이름을 깔끔하게 앞부분만 발췌하거나 그대로 보여줌
                           const cleanName = (u.name || "").split(" ")[0];
                           const isDemoId = ["admin", "director", "hq_head", "center_director", "team_leader", "researcher"].includes(u.id.toLowerCase());
+                          const isDirectoryUser = (members || []).some(m => m.email && m.email.trim().toLowerCase() === u.id.trim().toLowerCase() && m.status !== "퇴직");
+                          const isProtected = isDemoId || isDirectoryUser;
+
                           return (
                             <tr key={u.id}>
                               <td style={{ fontFamily: "var(--font-data)", fontWeight: "700" }}>{u.id}</td>
@@ -2303,7 +2348,7 @@ export default function App() {
                               <td style={{ fontFamily: "var(--font-data)" }}>{u.role_key}</td>
                               <td style={{ fontFamily: "var(--font-data)" }}>{new Date(u.created_at).toLocaleDateString()}</td>
                               <td style={{ textAlign: "center" }}>
-                                {!isDemoId ? (
+                                {!isProtected ? (
                                   <button
                                     className="btn-primary"
                                     style={{ padding: "0.2rem 0.5rem", fontSize: "0.7rem", borderRadius: "0.3rem", background: "var(--danger-color)", cursor: "pointer", border: "none" }}
@@ -2312,7 +2357,9 @@ export default function App() {
                                     삭제
                                   </button>
                                 ) : (
-                                  <span style={{ fontSize: "0.7rem", color: "var(--text-secondary-dark)" }}>고정 계정</span>
+                                  <span style={{ fontSize: "0.7rem", color: "var(--text-secondary-dark)" }}>
+                                    {isDemoId ? "고정 계정" : "주소록 회원"}
+                                  </span>
                                 )}
                               </td>
                             </tr>
