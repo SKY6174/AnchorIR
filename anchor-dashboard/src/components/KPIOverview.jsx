@@ -19,6 +19,29 @@ const formatToMillionWon = (value) => {
   return (value / 1000000).toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
 };
 
+// 도넛 차트 조각 옆에 지시선과 함께 이름(비율%) 라벨을 그리기 위한 커스텀 SVG 렌더러
+const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, name }) => {
+  const RADIAN = Math.PI / 180;
+  const radius = outerRadius * 1.15;
+  const x = cx + radius * Math.cos(-midAngle * RADIAN);
+  const y = cy + radius * Math.sin(-midAngle * RADIAN);
+  const pctString = (percent * 100).toFixed(1);
+
+  return (
+    <text
+      x={x}
+      y={y}
+      fill="var(--text-primary-dark)"
+      textAnchor={x > cx ? "start" : "end"}
+      dominantBaseline="central"
+      fontSize="10px"
+      fontWeight="700"
+    >
+      {`${name} (${pctString}%)`}
+    </text>
+  );
+};
+
 export default function KPIOverview({ projects, currentRole, selectedYear = 2 }) {
   // 1차년도에는 공통경비(프로젝트 ID: E)가 존재하지 않으므로 필터링 처리
   const activeProjects = selectedYear === 1 
@@ -187,12 +210,14 @@ export default function KPIOverview({ projects, currentRole, selectedYear = 2 })
                 <XAxis dataKey="name" stroke="var(--text-secondary-dark)" fontSize={10} />
                 <YAxis stroke="var(--text-secondary-dark)" fontSize={10} />
                 <Tooltip
+                  cursor={{ fill: "rgba(255, 255, 255, 0.03)" }}
                   formatter={(value) => `${value.toLocaleString()} 백만원`}
                   contentStyle={{
-                    background: "rgba(24, 24, 27, 0.9)",
+                    background: "rgba(24, 24, 27, 0.95)",
                     border: "1px solid var(--border-color-dark)",
                     borderRadius: "0.5rem",
-                    color: "white"
+                    color: "white",
+                    fontSize: "11px"
                   }}
                 />
                 <Legend verticalAlign="top" height={36} fontSize={11} />
@@ -212,15 +237,17 @@ export default function KPIOverview({ projects, currentRole, selectedYear = 2 })
           </h3>
           <div style={{ width: "100%", height: "240px", display: "flex", justifyContent: "center", alignItems: "center" }}>
             <ResponsiveContainer>
-              <PieChart>
+              <PieChart margin={{ top: 20, right: 35, left: 35, bottom: 20 }}>
                 <Pie
                   data={pieData}
                   cx="50%"
                   cy="50%"
-                  innerRadius={65}
-                  outerRadius={85}
+                  innerRadius={55}
+                  outerRadius={75}
                   paddingAngle={4}
                   dataKey="value"
+                  label={renderCustomizedLabel}
+                  labelLine={{ stroke: "rgba(255, 255, 255, 0.25)", strokeWidth: 1 }}
                 >
                   {pieData.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
@@ -229,10 +256,11 @@ export default function KPIOverview({ projects, currentRole, selectedYear = 2 })
                 <Tooltip
                   formatter={(value) => `${value.toLocaleString()} 백만원`}
                   contentStyle={{
-                    background: "rgba(24, 24, 27, 0.9)",
+                    background: "rgba(24, 24, 27, 0.95)",
                     border: "1px solid var(--border-color-dark)",
                     borderRadius: "0.5rem",
-                    color: "white"
+                    color: "white",
+                    fontSize: "11px"
                   }}
                 />
               </PieChart>
