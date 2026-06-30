@@ -2073,11 +2073,11 @@ export const YEAR_1_PROGRAMS = {
     {
       "id": "A2-S1T2-1",
       "title": "창업문화 확산을 위한 규정·제도 개선",
-      "budget": 10000000,
-      "spent": 10000000,
+      "budget": 0,
+      "spent": 0,
       "assignee": "글로컬창업지원팀",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 10000000, "spent": 10000000 }
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 0, "spent": 0 }
       ]
     },
     {
@@ -2191,8 +2191,7 @@ export const YEAR_1_PROGRAMS = {
       "budget_categories": [
         { "category": "인건비", "budget": 76000000, "spent": 75200000 },
         { "category": "간접비", "budget": 27000000, "spent": 27000000 },
-        { "category": "그 밖의 사업운영경비", "budget": 27000000, "spent": 12300000 },
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 10000000, "spent": 0 }
+        { "category": "그 밖의 사업운영경비", "budget": 37000000, "spent": 12300000 }
       ]
     }],
   "B1": [
