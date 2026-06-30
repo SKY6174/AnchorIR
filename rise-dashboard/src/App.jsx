@@ -1645,14 +1645,26 @@ export default function App() {
               <div className="table-panel">
                 <table className="custom-table" style={{ fontSize: "0.8rem" }}>
                   <thead>
+                    <tr style={{ background: "rgba(255,255,255,0.02)" }}>
+                      <th rowSpan={2} style={{ verticalAlign: "middle", borderBottom: "1px solid rgba(255,255,255,0.1)", borderRight: "1px solid rgba(255,255,255,0.05)" }}>과제/부서</th>
+                      <th colSpan={selectedYear >= 2 ? 5 : 4} style={{ textAlign: "center", borderBottom: "1px solid rgba(255,255,255,0.1)", borderRight: "1px solid rgba(255,255,255,0.05)", fontWeight: "800", color: "var(--accent-color)" }}>
+                        예산 배정 및 집행
+                      </th>
+                      <th colSpan={5} style={{ textAlign: "center", borderBottom: "1px solid rgba(255,255,255,0.1)", fontWeight: "800", color: "#10b981" }}>
+                        프로그램 현황 및 진행
+                      </th>
+                    </tr>
                     <tr>
-                      <th>과제/부서</th>
-                      <th>담당 센터장/팀장</th>
-                      <th>{selectedYear}차년도 본예산 (백만원)</th>
-                      {selectedYear >= 2 && <th>{selectedYear - 1}차년도 이월예산 (백만원)</th>}
-                      <th>총 배정액 (백만원)</th>
-                      <th>누적 집행실적 (백만원)</th>
-                      <th>집행률</th>
+                      <th style={{ fontSize: "0.75rem" }}>본예산</th>
+                      {selectedYear >= 2 && <th style={{ fontSize: "0.75rem" }}>이월예산</th>}
+                      <th style={{ fontSize: "0.75rem" }}>총 배정액</th>
+                      <th style={{ fontSize: "0.75rem" }}>누적 집행</th>
+                      <th style={{ fontSize: "0.75rem", borderRight: "1px solid rgba(255,255,255,0.05)" }}>집행률</th>
+                      <th style={{ fontSize: "0.75rem", textAlign: "center" }}>총 개수</th>
+                      <th style={{ fontSize: "0.75rem", textAlign: "center" }}>준비</th>
+                      <th style={{ fontSize: "0.75rem", textAlign: "center" }}>진행</th>
+                      <th style={{ fontSize: "0.75rem", textAlign: "center" }}>완료</th>
+                      <th style={{ fontSize: "0.75rem" }}>진행률</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -1664,6 +1676,32 @@ export default function App() {
                         const totalBudget = (yData.budget_main || 0) + budgetCarryVal;
                         const totalSpent = (yData.spent_main || 0) + spentCarryVal;
                         const rate = totalBudget > 0 ? (totalSpent / totalBudget) * 100 : 0;
+
+                        // 프로그램 현황 집계 변수들
+                        const totalPrograms = u.programs?.length || 0;
+                        let readyCount = 0;
+                        let inProgressCount = 0;
+                        let completedCount = 0;
+                        let totalProgressSum = 0;
+
+                        if (totalPrograms > 0) {
+                          u.programs.forEach((prog) => {
+                            const pdca = prog.pdca || { p: "대기", d: "대기", c: "대기", a: "대기" };
+                            const completedSteps = [pdca.p, pdca.d, pdca.c, pdca.a].filter(step => step === "완료").length;
+                            const progProgress = (completedSteps / 4) * 100;
+                            totalProgressSum += progProgress;
+
+                            if (completedSteps === 0) {
+                              readyCount++;
+                            } else if (completedSteps === 4) {
+                              completedCount++;
+                            } else {
+                              inProgressCount++;
+                            }
+                          });
+                        }
+                        const progressRate = totalPrograms > 0 ? (totalProgressSum / totalPrograms) : 0;
+
                         return (
                           <tr 
                             key={u.id}
@@ -1678,10 +1716,9 @@ export default function App() {
                               transition: "background 0.2s"
                             }}
                           >
-                            <td style={{ fontWeight: "700" }}>
+                            <td style={{ fontWeight: "700", borderRight: "1px solid rgba(255,255,255,0.05)" }}>
                               {u.id === "Common" ? "" : `${u.id} `}{u.title}
                             </td>
-                            <td>{u.manager}</td>
                             <td style={{ fontFamily: "var(--font-data)" }}>
                               {formatToMillionWon(yData.budget_main)}
                             </td>
@@ -1696,14 +1733,43 @@ export default function App() {
                             <td style={{ fontFamily: "var(--font-data)" }}>
                               {formatToMillionWon(totalSpent)}
                             </td>
-                            <td>
-                              <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                                <div style={{ width: "50px", height: "6px", background: "rgba(255,255,255,0.1)", borderRadius: "3px", overflow: "hidden" }}>
-                                  <div style={{ width: `${Math.min(rate, 100)}%`, height: "100%", background: u.id === "Common" ? "#ec4899" : "var(--accent-color)" }} />
-                                </div>
+                            <td style={{ borderRight: "1px solid rgba(255,255,255,0.05)" }}>
+                              <div style={{ display: "flex", alignItems: "center", gap: "0.25rem" }}>
                                 <span style={{ fontSize: "0.75rem", fontFamily: "var(--font-data)" }}>{rate.toFixed(1)}%</span>
                               </div>
                             </td>
+                            {u.id === "Common" ? (
+                              <>
+                                <td style={{ textAlign: "center" }}>-</td>
+                                <td style={{ textAlign: "center" }}>-</td>
+                                <td style={{ textAlign: "center" }}>-</td>
+                                <td style={{ textAlign: "center" }}>-</td>
+                                <td>-</td>
+                              </>
+                            ) : (
+                              <>
+                                <td style={{ fontFamily: "var(--font-data)", textAlign: "center" }}>
+                                  {totalPrograms}개
+                                </td>
+                                <td style={{ fontFamily: "var(--font-data)", textAlign: "center", color: "var(--text-secondary-dark)" }}>
+                                  {readyCount}
+                                </td>
+                                <td style={{ fontFamily: "var(--font-data)", textAlign: "center", color: "#f59e0b" }}>
+                                  {inProgressCount}
+                                </td>
+                                <td style={{ fontFamily: "var(--font-data)", textAlign: "center", color: "var(--success-color)", fontWeight: "700" }}>
+                                  {completedCount}
+                                </td>
+                                <td>
+                                  <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
+                                    <div style={{ width: "40px", height: "6px", background: "rgba(255,255,255,0.1)", borderRadius: "3px", overflow: "hidden" }}>
+                                      <div style={{ width: `${Math.min(progressRate, 100)}%`, height: "100%", background: "#10b981" }} />
+                                    </div>
+                                    <span style={{ fontSize: "0.75rem", fontFamily: "var(--font-data)", fontWeight: "700", color: "#10b981" }}>{progressRate.toFixed(1)}%</span>
+                                  </div>
+                                </td>
+                              </>
+                            )}
                           </tr>
                         );
                       })
