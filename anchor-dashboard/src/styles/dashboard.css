@@ -350,6 +350,7 @@ body.light-mode {
   transition: background 0.2s ease;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 0.5rem;
 }
 
