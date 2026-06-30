@@ -15,7 +15,7 @@ import "./styles/dashboard.css";
 // RISE 사업단 초기 구성원 주소록 명단 데이터셋
 const INITIAL_MEMBERS = [
   // 교수 및 리더진
-  { id: "m-01", name: "송경영", role: "사업단장", grade: "정교수", dept: "미배정", phoneOffice: "052-279-3154", phoneMobile: "010-7627-7123", email: "kysong@uc.ac.kr", room: "교수연구실/E1-307", hireDate: "2026-03-01" },
+  { id: "m-01", name: "송경영", role: "사업단장", grade: "정교수", dept: "-", phoneOffice: "052-279-3154", phoneMobile: "010-7627-7123", email: "kysong@uc.ac.kr", room: "교수연구실/E1-307", hireDate: "2026-03-01" },
   { id: "m-02", name: "김현수", role: "본부장", grade: "정교수", dept: "운영본부", phoneOffice: "052-279-3122", phoneMobile: "010-4628-7963", email: "hskim3@uc.ac.kr", room: "교수연구실/E2-414", hireDate: "2026-03-01" },
   { id: "m-03", name: "심현미", role: "운영팀장", grade: "부장", dept: "사업운영팀", phoneOffice: "052-230-0441", phoneMobile: "010-6554-8359", email: "hmsim@uc.ac.kr", room: "산학협력단/S-203", hireDate: "2026-03-01" },
   { id: "m-04", name: "이동은", role: "센터장", grade: "정교수", dept: "ECC센터", phoneOffice: "052-230-0111", phoneMobile: "010-1234-5678", email: "delee@uc.ac.kr", room: "교수연구실/E2-201", hireDate: "2026-03-01" },
@@ -1197,6 +1197,7 @@ export default function App() {
           if (currentGrade === "행정 부장") currentGrade = "부장";
           return {
             ...m,
+            dept: m.dept === "미배정" ? "-" : m.dept,
             grade: currentGrade,
             startDate: m.startDate || m.hireDate || "2026-03-01",
             endDate: m.endDate || "",
@@ -3498,7 +3499,7 @@ export default function App() {
                     value={editingMember.dept}
                     onChange={(e) => setEditingMember({ ...editingMember, dept: e.target.value })}
                   >
-                    <option value="미배정">미배정</option>
+                    <option value="-">-</option>
                     <option value="운영본부">운영본부</option>
                     <option value="사업운영팀">사업운영팀</option>
                     <option value="ECC센터">ECC센터</option>
