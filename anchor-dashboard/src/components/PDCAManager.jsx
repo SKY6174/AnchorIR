@@ -654,7 +654,7 @@ export default function PDCAManager({
               </select>
             </div>
 
-            <h4 style={{ fontSize: "0.9rem", fontWeight: "800", borderTop: "1px solid var(--border-color-dark)", paddingTop: "1rem" }}>소속 프로그램 목록</h4>
+            <h4 style={{ fontSize: "0.9rem", fontWeight: "800", borderTop: "1px solid var(--border-color-dark)", paddingTop: "1rem" }}>프로그램 리스트</h4>
             <div style={{ maxHeight: "320px", overflowY: "auto", display: "flex", flexDirection: "column", gap: "0.5rem" }}>
               {unitFilteredPrograms.length === 0 ? (
                 <p style={{ color: "var(--text-secondary-dark)", fontSize: "0.75rem", textAlign: "center", padding: "2rem" }}>

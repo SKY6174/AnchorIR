@@ -110,7 +110,7 @@ const getProgramTimeline = (progId) => {
 
 export default function ProgramProgressManager({ projects, selectedYear }) {
   const allUnits = projects.flatMap(p => p.units);
-  const [selectedUnitId, setSelectedUnitId] = useState(allUnits[0]?.id || "A-1-가");
+  const [selectedUnitId, setSelectedUnitId] = useState(allUnits[0]?.id || "A1가");
 
   const activeUnit = allUnits.find(u => u.id === selectedUnitId);
 

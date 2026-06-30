@@ -7,7 +7,7 @@ import BudgetItemsManager from "./components/BudgetItemsManager";
 import ProgramProgressManager from "./components/ProgramProgressManager";
 import AuthManager from "./components/AuthManager";
 import { initialProjectsData, userRoles } from "./data/mockData";
-import { Sun, Moon, LogOut, HelpCircle, ArrowUpRight, Lock } from "lucide-react";
+import { Sun, Moon, LogOut, HelpCircle, ArrowUpRight, Lock as LockIcon } from "lucide-react";
 import { supabase } from "./supabaseClient";
 import CryptoJS from "crypto-js";
 import "./styles/dashboard.css";
@@ -38,7 +38,7 @@ const INITIAL_MEMBERS = [
   { id: "m-17", name: "이현섭", role: "연구원", grade: "책임연구원", dept: "RCC센터", phoneOffice: "052-230-0417", phoneMobile: "010-8252-1151", email: "mogern1@uc.ac.kr", room: "연구원실/R-101", hireDate: "2026-03-01" },
   { id: "m-18", name: "이은주", role: "연구원", grade: "선임연구원", dept: "ECC센터", phoneOffice: "052-230-0414", phoneMobile: "010-4026-3850", email: "ejlee7@uc.ac.kr", room: "연구원실/E-101", hireDate: "2026-03-01" },
   { id: "m-19", name: "이정은", role: "연구원", grade: "선임연구원", dept: "ICC센터", phoneOffice: "052-279-3305", phoneMobile: "010-3435-6878", email: "lje6878@uc.ac.kr", room: "연구원실/I-101", hireDate: "2026-03-01" },
-  { id: "m-20", name: "임은애", role: "연구원", grade: "선임연구원", dept: "AID-X지원센터", phoneOffice: "052-279-3319", phoneMobile: "010-4595-5406", email: "jslover85@uc.ac.kr", room: "연구원실/A-101", hireDate: "2026-03-01" },
+  { id: "m-20", name: "임은애", role: "연구원", grade: "선임연구원", dept: "AID-X지원센터", phoneOffice: "052-279-3319", phoneMobile: "010-4595-5406", email: "jslover85@uc.ac.kr", room: "연구원실/A101", hireDate: "2026-03-01" },
   { id: "m-21", name: "박인숙", role: "연구원", grade: "선임연구원", dept: "RCC센터", phoneOffice: "052-230-0428", phoneMobile: "010-5703-5706", email: "ispark@uc.ac.kr", room: "연구원실/R-102", hireDate: "2026-03-01" },
   { id: "m-22", name: "한유경", role: "연구원", grade: "선임연구원", dept: "사업운영팀", phoneOffice: "052-230-0452", phoneMobile: "010-5137-7030", email: "hanyuky@uc.ac.kr", room: "운영팀실/S-204", hireDate: "2026-03-01" },
   { id: "m-23", name: "황수진", role: "연구원", grade: "선임연구원", dept: "울산늘봄누리센터", phoneOffice: "052-230-0418", phoneMobile: "010-2080-2503", email: "sujin5599@uc.ac.kr", room: "연구원실/N-103", hireDate: "2026-03-01" },
@@ -52,8 +52,8 @@ const INITIAL_MEMBERS = [
   { id: "m-31", name: "김소정", role: "연구원", grade: "연구원", dept: "RCC센터", phoneOffice: "052-230-0450", phoneMobile: "010-3162-1678", email: "sjkim9@uc.ac.kr", room: "연구원실/R-104", hireDate: "2026-03-01" },
   { id: "m-32", name: "오영경", role: "연구원", grade: "연구원", dept: "RCC센터", phoneOffice: "052-230-0449", phoneMobile: "010-2636-3832", email: "ohyk@uc.ac.kr", room: "연구원실/R-105", hireDate: "2026-03-01" },
   { id: "m-33", name: "최승혜", role: "연구원", grade: "연구원", dept: "RCC센터", phoneOffice: "052-230-0448", phoneMobile: "010-8545-9087", email: "shchoi2@uc.ac.kr", room: "연구원실/R-106", hireDate: "2026-03-01" },
-  { id: "m-34", name: "서은지", role: "연구원", grade: "연구원", dept: "AID-X지원센터", phoneOffice: "052-279-3220", phoneMobile: "010-3294-8295", email: "ajaeunji@uc.ac.kr", room: "연구원실/A-102", hireDate: "2026-03-01" },
-  { id: "m-35", name: "채민지", role: "연구원", grade: "연구원", dept: "AID-X지원센터", phoneOffice: "052-279-3185", phoneMobile: "010-7682-6864", email: "minji6843@uc.ac.kr", room: "연구원실/A-103", hireDate: "2026-03-01" },
+  { id: "m-34", name: "서은지", role: "연구원", grade: "연구원", dept: "AID-X지원센터", phoneOffice: "052-279-3220", phoneMobile: "010-3294-8295", email: "ajaeunji@uc.ac.kr", room: "연구원실/A102", hireDate: "2026-03-01" },
+  { id: "m-35", name: "채민지", role: "연구원", grade: "연구원", dept: "AID-X지원센터", phoneOffice: "052-279-3185", phoneMobile: "010-7682-6864", email: "minji6843@uc.ac.kr", room: "연구원실/A103", hireDate: "2026-03-01" },
   { id: "m-36", name: "김나희", role: "연구원", grade: "연구원", dept: "신산업특화센터", phoneOffice: "052-230-0709", phoneMobile: "010-4363-7319", email: "nhkim2@uc.ac.kr", room: "센터실/N-101", hireDate: "2026-03-01" },
   { id: "m-37", name: "정호성", role: "연구원", grade: "연구원", dept: "신산업특화센터", phoneOffice: "052-230-0708", phoneMobile: "010-9208-7849", email: "jhsung@uc.ac.kr", room: "센터실/N-102", hireDate: "2026-03-01" },
   { id: "m-38", name: "김래림", role: "연구원", grade: "연구원", dept: "사업운영팀", phoneOffice: "052-230-0529", phoneMobile: "010-5246-9520", email: "rrkim@uc.ac.kr", room: "운영팀실/S-206", hireDate: "2026-03-01" },
@@ -428,7 +428,7 @@ function formatDataToMultiYear(data) {
 export default function App() {
   const [currentUser, setCurrentUser] = useState(null);
   const [projects, setProjects] = useState(() => {
-    const cached = localStorage.getItem("rise_projects_data");
+    const cached = localStorage.getItem("anchor_projects_data");
     if (cached) {
       try {
         const loaded = JSON.parse(cached);
@@ -566,7 +566,7 @@ export default function App() {
               });
               unit.programs = mergedPrograms;
               
-              if (unit.id === "A-1-나" || unit.id === "A-1-가") {
+              if (unit.id === "A1나" || unit.id === "A1가") {
                 unit.budget = sourceUnit.budget;
                 unit.spent = sourceUnit.spent;
                 unit.budget_2026 = sourceUnit.budget_2026;
@@ -898,12 +898,12 @@ export default function App() {
   const [selectedKpi, setSelectedKpi] = useState(null);
   const [selectedYear, setSelectedYear] = useState(2);
   const [kpiSubTab, setKpiSubTab] = useState("자율"); // "자율" ((지자체)자율성과지표) 또는 "중점" ((대학)중점관리지표)
-  const [selectedUnitId, setSelectedUnitId] = useState("A-1-가");
+  const [selectedUnitId, setSelectedUnitId] = useState("A1가");
   const [selectedProgId, setSelectedProgId] = useState(null);
 
   // 로컬스토리지에서 세션 확인 및 테마 설정
   useEffect(() => {
-    const sessionUser = localStorage.getItem("rise_logged_in_user");
+    const sessionUser = localStorage.getItem("anchor_logged_in_user");
     if (sessionUser) {
       setCurrentUser(JSON.parse(sessionUser));
     }
@@ -920,7 +920,7 @@ export default function App() {
 
   // projects 상태 변경 시 localStorage 자동 기입 (새로고침 휘발 방지 우회책)
   useEffect(() => {
-    localStorage.setItem("rise_projects_data", JSON.stringify(projects));
+    localStorage.setItem("anchor_projects_data", JSON.stringify(projects));
   }, [projects]);
 
   /* 
@@ -943,12 +943,12 @@ export default function App() {
 
   const handleLoginSuccess = (user) => {
     setCurrentUser(user);
-    localStorage.setItem("rise_logged_in_user", JSON.stringify(user));
+    localStorage.setItem("anchor_logged_in_user", JSON.stringify(user));
   };
 
   const handleLogout = () => {
     setCurrentUser(null);
-    localStorage.removeItem("rise_logged_in_user");
+    localStorage.removeItem("anchor_logged_in_user");
   };
 
   // 엑셀 업로드로 데이터 실시간 갱신 (본사업비/이월비 구분 갱신 및 다년도 연쇄 이월 반영)
@@ -1416,7 +1416,7 @@ export default function App() {
               const lastNum = parseInt(parts[parts.length - 1], 10);
               if (!isNaN(lastNum)) nextNum = lastNum + 1;
             }
-            const newId = `${unitId}-${nextNum}`;
+            const newId = `${unitId}-${String(nextNum).padStart(2, '0')}`;
 
             const bMain = Math.round((parseFloat(budget2026) || 0) * 1000000);
             const bCarry = Math.round((parseFloat(carryBudget) || 0) * 1000000);
@@ -1703,7 +1703,7 @@ export default function App() {
             style={{ width: "100%", justifyContent: "center", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", color: "white" }}
             onClick={() => setIsPasswordModalOpen(true)}
           >
-            <Lock size={16} />
+            <LockIcon size={16} />
             <span>개인정보 관리</span>
           </button>
         </div>
@@ -2210,12 +2210,12 @@ export default function App() {
                           .flatMap((u) => {
                             return u.programs.map((prog) => {
                               let dept = "사업운영팀";
-                            if (["A-1-가", "A-2", "A-3"].includes(u.id)) dept = "ECC센터";
-                            else if (u.id === "A-1-나") dept = "신산업특화센터";
-                            else if (["B-1", "B-3", "B-4"].includes(u.id)) dept = "ICC센터";
-                            else if (u.id === "B-2") dept = "AID-X지원센터";
-                            else if (u.id === "C-2") dept = "울산늘봄누리센터";
-                            else if (["C-1", "D-1", "D-2", "D-3"].includes(u.id)) dept = "RCC센터";
+                            if (["A1가", "A2", "A3"].includes(u.id)) dept = "ECC센터";
+                            else if (u.id === "A1나") dept = "신산업특화센터";
+                            else if (["B1", "B3", "B4"].includes(u.id)) dept = "ICC센터";
+                            else if (u.id === "B2") dept = "AID-X지원센터";
+                            else if (u.id === "C2") dept = "울산늘봄누리센터";
+                            else if (["C1", "D1", "D2", "D3"].includes(u.id)) dept = "RCC센터";
 
                             return (
                               <tr key={prog.id}>
@@ -2910,7 +2910,7 @@ export default function App() {
             style={{ width: "400px", padding: "2rem", border: "1px solid var(--border-color-dark)", background: "var(--bg-dark)", boxShadow: "0 10px 25px rgba(0,0,0,0.5)" }}
           >
             <h3 style={{ fontSize: "1.1rem", fontWeight: "800", marginBottom: "1.5rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
-              <Lock size={20} style={{ color: "var(--accent-color)" }} />
+              <LockIcon size={20} style={{ color: "var(--accent-color)" }} />
               <span>개인정보 관리 (비밀번호 변경)</span>
             </h3>
 

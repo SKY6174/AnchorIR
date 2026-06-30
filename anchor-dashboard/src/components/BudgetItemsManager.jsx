@@ -60,7 +60,7 @@ const CustomizedAxisTick = (props) => {
 };
 
 export default function BudgetItemsManager({ projects, currentRole, onUpdateBudgetDetails, selectedYear }) {
-  const [selectedUnitId, setSelectedUnitId] = useState("A-1-가");
+  const [selectedUnitId, setSelectedUnitId] = useState("A1가");
   const [editedBudgets, setEditedBudgets] = useState({}); // {budgetName: {budget_main: '', budget_carry: ''}}
   const [feedback, setFeedback] = useState("");
   
@@ -119,12 +119,12 @@ export default function BudgetItemsManager({ projects, currentRole, onUpdateBudg
   // 담당부서 맵핑 정의 (공통경비가 포함된 사업운영팀이 최상단 배치)
   const DEPARTMENTS = [
     { name: "사업운영팀", ids: ["Common"] },
-    { name: "ECC센터", ids: ["A-1-가", "A-2", "A-3"] },
-    { name: "신산업특화센터", ids: ["A-1-나"] },
-    { name: "ICC센터", ids: ["B-1", "B-3", "B-4"] },
-    { name: "AID-X지원센터", ids: ["B-2"] },
-    { name: "울산늘봄누리센터", ids: ["B-2"] },
-    { name: "RCC센터", ids: ["C-1", "D-1", "D-2", "D-3"] }
+    { name: "ECC센터", ids: ["A1가", "A2", "A3"] },
+    { name: "신산업특화센터", ids: ["A1나"] },
+    { name: "ICC센터", ids: ["B1", "B3", "B4"] },
+    { name: "AID-X지원센터", ids: ["B2"] },
+    { name: "울산늘봄누리센터", ids: ["B2"] },
+    { name: "RCC센터", ids: ["C1", "D1", "D2", "D3"] }
   ];
 
   // 선택된 단위과제 및 프로젝트 제목 찾기 또는 전체사업 가상 유닛 빌드
@@ -427,7 +427,19 @@ export default function BudgetItemsManager({ projects, currentRole, onUpdateBudg
                 {/* 부서 소속 과제 카드 리스트 */}
                 <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
                   {deptUnits.map((u) => {
-                    const spentRate = u.budget > 0 ? (u.spent / u.budget) * 100 : 0;
+                    // 선택 연도(selectedYear) 및 서브탭(subTab) 기준 예산 및 집행액 동적 산출
+                    const yr = u.years?.[selectedYear] || { budget_main: 0, budget_carry: 0, spent_main: 0, spent_carry: 0 };
+                    let displayBudget = 0;
+                    let displaySpent = 0;
+                    if (subTab === "main") {
+                      displayBudget = yr.budget_main || 0;
+                      displaySpent = yr.spent_main || 0;
+                    } else {
+                      // carry (이월사업비)
+                      displayBudget = yr.budget_carry || 0;
+                      displaySpent = yr.spent_carry || 0;
+                    }
+                    const spentRate = displayBudget > 0 ? (displaySpent / displayBudget) * 100 : 0;
                     const isCommon = u.id === "Common";
                     // 동일한 u.id가 두 개 부서(AID-X, 늘봄누리)에 복제될 수 있으므로 key는 부서명과 id의 조합으로 유니크하게 보장한다.
                     const keyStr = `${dept.name}-${u.id}`;
@@ -449,6 +461,20 @@ export default function BudgetItemsManager({ projects, currentRole, onUpdateBudg
                           <span>{spentRate.toFixed(1)}% 집행</span>
                         </div>
                         <h4 style={{ fontSize: "0.8rem", fontWeight: "700", marginTop: "0.25rem", lineHeight: "1.3", color: "white" }}>{u.title}</h4>
+                        {/* 본사업비/이월사업비 상태에 따른 상세 수치 동적 반영 */}
+                        <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.65rem", color: "var(--text-secondary-dark)", marginTop: "0.4rem" }}>
+                          {subTab === "main" ? (
+                            <>
+                              <span>본예산: {formatToMillionWon(displayBudget)}백만원</span>
+                              <span>집행: {formatToMillionWon(displaySpent)}백만원</span>
+                            </>
+                          ) : (
+                            <>
+                              <span>이월예산: {formatToMillionWon(displayBudget)}백만원</span>
+                              <span>집행: {formatToMillionWon(displaySpent)}백만원</span>
+                            </>
+                          )}
+                        </div>
                       </div>
                     );
                   })}
