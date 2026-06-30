@@ -3040,7 +3040,7 @@ export default function App() {
                           </p>
                         </div>
 
-                        {/* 세부지표 목표값 및 실적값을 보여주는 미니 표 추가 */}
+                        {/* 세부지표 목푯값 및 실적값을 보여주는 미니 표 추가 */}
                         <div>
                           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.4rem" }}>
                             <span style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)" }}>지표 구성 세부항목 목표 대비 실적 표</span>
