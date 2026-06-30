@@ -814,6 +814,36 @@ export default function App() {
     }
   };
 
+  // 회원가입 현황에서 사용자 계정 삭제 실행 함수
+  const handleDeleteUser = async (userId) => {
+    const demoIds = ["admin", "director", "hq_head", "center_director", "team_leader", "researcher"];
+    if (demoIds.includes(userId.toLowerCase())) {
+      alert("시스템 기본 데모 계정은 삭제할 수 없습니다.");
+      return;
+    }
+
+    if (!window.confirm(`정말로 '${userId}' 계정을 삭제하시겠습니까?`)) {
+      return;
+    }
+
+    try {
+      const { error } = await supabase
+        .from("rise_users")
+        .delete()
+        .eq("id", userId);
+      
+      if (error) {
+        alert("계정 삭제 중 오류가 발생했습니다.");
+      } else {
+        alert("성공적으로 계정이 삭제되었습니다.");
+        fetchRegisteredUsers(); // 목록 새로고침
+      }
+    } catch (err) {
+      console.error("Delete user error:", err);
+      alert("삭제 처리 중 예기치 못한 에러가 발생했습니다.");
+    }
+  };
+
   // 관리자 탭 활성화 시 또는 주기적으로 대기 목록 로드
   useEffect(() => {
     if (activeTab === "management" && currentUser && currentUser.role?.rank <= 2) {
@@ -2226,12 +2256,13 @@ export default function App() {
                         <th>역할</th>
                         <th>역할키</th>
                         <th>시작일</th>
+                        <th style={{ width: "80px", textAlign: "center" }}>관리</th>
                       </tr>
                     </thead>
                     <tbody>
                       {registeredUsers.length === 0 ? (
                         <tr>
-                          <td colSpan="5" style={{ textAlign: "center", color: "var(--text-secondary-dark)", padding: "2rem" }}>
+                          <td colSpan="6" style={{ textAlign: "center", color: "var(--text-secondary-dark)", padding: "2rem" }}>
                             등록된 회원 정보가 없습니다.
                           </td>
                         </tr>
@@ -2248,6 +2279,7 @@ export default function App() {
                           };
                           // DB에 등록할 때 이름 뒤에 직위가 붙어 있는 경우(예: "이은주 연구원") 이름을 깔끔하게 앞부분만 발췌하거나 그대로 보여줌
                           const cleanName = (u.name || "").split(" ")[0];
+                          const isDemoId = ["admin", "director", "hq_head", "center_director", "team_leader", "researcher"].includes(u.id.toLowerCase());
                           return (
                             <tr key={u.id}>
                               <td style={{ fontFamily: "var(--font-data)", fontWeight: "700" }}>{u.id}</td>
@@ -2270,6 +2302,19 @@ export default function App() {
                               </td>
                               <td style={{ fontFamily: "var(--font-data)" }}>{u.role_key}</td>
                               <td style={{ fontFamily: "var(--font-data)" }}>{new Date(u.created_at).toLocaleDateString()}</td>
+                              <td style={{ textAlign: "center" }}>
+                                {!isDemoId ? (
+                                  <button
+                                    className="btn-primary"
+                                    style={{ padding: "0.2rem 0.5rem", fontSize: "0.7rem", borderRadius: "0.3rem", background: "var(--danger-color)", cursor: "pointer", border: "none" }}
+                                    onClick={() => handleDeleteUser(u.id)}
+                                  >
+                                    삭제
+                                  </button>
+                                ) : (
+                                  <span style={{ fontSize: "0.7rem", color: "var(--text-secondary-dark)" }}>고정 계정</span>
+                                )}
+                              </td>
                             </tr>
                           );
                         })
