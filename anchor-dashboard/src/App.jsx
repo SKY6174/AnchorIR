@@ -503,6 +503,56 @@ const getNormalizedKpi = (k, selectedYear) => {
     };
   }
 
+  if (k.id === "L-3") {
+    return {
+      ...k,
+      description: "창업 강좌 개설 건수 및 창업 강좌 이수 학생 수 지수",
+      formula: "((A)실적값/(A)기준값) * 50 + ((B)실적값/(B)기준값) * 50",
+      subItems: [
+        {
+          id: "L-3-1",
+          name: "창업교육 운영성과지수",
+          unit: "건",
+          years: { 1: { target: 132, current: 143 } }
+        },
+        {
+          id: "L-3-2",
+          name: "창업교육과정 이수학생 수",
+          unit: "명",
+          years: { 1: { target: 2300, current: 3580 } }
+        }
+      ]
+    };
+  }
+
+  if (k.id === "L-4") {
+    return {
+      ...k,
+      description: "학생 및 교원의 창업 프로그램 참가 지원 및 실질 창업 활성화 수준 평가 지수",
+      formula: "((A)실적값/(A)기준값) * 50 + ((B)실적값/(B)기준값) * 40 + ((C)실적값/(C)기준값) * 10",
+      subItems: [
+        {
+          id: "L-4-1",
+          name: "창업지원 프로그램 지원(운영)건수",
+          unit: "건",
+          years: { 1: { target: 22, current: 32 } }
+        },
+        {
+          id: "L-4-2",
+          name: "학생·교원 창업기업 수",
+          unit: "개사",
+          years: { 1: { target: 1, current: 1 } }
+        },
+        {
+          id: "L-4-3",
+          name: "학생·교원 창업 매출액",
+          unit: "백만원",
+          years: { 1: { target: 0, current: 0 } }
+        }
+      ]
+    };
+  }
+
   return k;
 };
 
@@ -2610,6 +2660,10 @@ export default function App() {
                               rate = 111.9;
                             } else if (selectedYear === 1 && nk.id === "L-2") {
                               rate = 687.8;
+                            } else if (selectedYear === 1 && nk.id === "L-3") {
+                              rate = 138.6;
+                            } else if (selectedYear === 1 && nk.id === "L-4") {
+                              rate = 146.7;
                             } else if (nk.subItems && nk.subItems.length > 0) {
                               let sumRate = 0;
                               nk.subItems.forEach((sub) => {
@@ -2773,6 +2827,10 @@ export default function App() {
                                   totalKpiRate = 111.9;
                                 } else if (selectedYear === 1 && nk.id === "L-2") {
                                   totalKpiRate = 687.8;
+                                } else if (selectedYear === 1 && nk.id === "L-3") {
+                                  totalKpiRate = 138.6;
+                                } else if (selectedYear === 1 && nk.id === "L-4") {
+                                  totalKpiRate = 146.7;
                                 } else if (nk.subItems && nk.subItems.length > 0) {
                                   let sumKpiRate = 0;
                                   nk.subItems.forEach((sub) => {
@@ -2781,13 +2839,14 @@ export default function App() {
                                   });
                                   totalKpiRate = sumKpiRate / nk.subItems.length;
                                 }
+                                const finalCapRate = Math.min(totalKpiRate, 100.0);
                                 return (
                                   <tr style={{ background: "rgba(59,130,246,0.06)", borderTop: "1px solid var(--border-color-dark)" }}>
                                     <td style={{ fontWeight: "800" }}>종합 지표 달성도 (Total)</td>
                                     <td style={{ textAlign: "right", fontFamily: "var(--font-data)" }}>100.0%</td>
                                     <td style={{ textAlign: "right", fontFamily: "var(--font-data)", color: "var(--accent-color)", fontWeight: "700" }}>{totalKpiRate.toFixed(1)}%</td>
-                                    <td style={{ textAlign: "right", fontFamily: "var(--font-data)", fontWeight: "900", color: totalKpiRate >= 100 ? "var(--success-color)" : "var(--warning-color)" }}>
-                                      {totalKpiRate.toFixed(1)}%
+                                    <td style={{ textAlign: "right", fontFamily: "var(--font-data)", fontWeight: "900", color: finalCapRate >= 100 ? "var(--success-color)" : "var(--warning-color)" }}>
+                                      {finalCapRate.toFixed(1)}%
                                     </td>
                                   </tr>
                                 );
