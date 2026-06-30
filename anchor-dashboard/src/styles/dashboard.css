@@ -522,7 +522,7 @@ body.light-mode {
 /* KPI 성과지표 가로 2분할 뷰포트 레이아웃 */
 .kpi-split-layout {
   display: grid;
-  grid-template-columns: 1.65fr 1fr;
+  grid-template-columns: 1.2fr 1fr;
   gap: 1.5rem;
   align-items: start;
 }
