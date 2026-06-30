@@ -27,11 +27,11 @@
 
 ### 📌 프로젝트 A: 정주형 실전인재 양성
 *   **단위과제 A-1 (UC-HYPER 실무인재)**
-    *   *중점지표 1 (지역 정주 교육)*: [프로그램 3-1-1 개방형 설계센터(UDx-Lab)](file:///Users/thomas/Documents/AnchorIR/unit_a1_proposal.md#3-1-1)를 통한 전문가 재직자 특강 1건 및 [프로그램 3-1-2 전문기술석사 R&BD](file:///Users/thomas/Documents/AnchorIR/unit_a1_proposal.md#3-1-2) 공동 연구 6건이 정주 프로그램 실적에 매칭됩니다.
+    *   *중점지표 1 (지역 정주 교육)*: [프로그램 3-1-1 개방형 설계센터(UDx-Lab)](file:///Users/thomas/Documents/AnchorIR/rise_2nd_year_unit_a1_proposal.md#3-1-1)를 통한 전문가 재직자 특강 1건 및 [프로그램 3-1-2 전문기술석사 R&BD](file:///Users/thomas/Documents/AnchorIR/rise_2nd_year_unit_a1_proposal.md#3-1-2) 공동 연구 6건이 정주 프로그램 실적에 매칭됩니다.
 *   **단위과제 A-2 (글로컬 창업 문화)**
     *   *중점지표 2 (창업 문화 확산)*: F.A.B. Lab 메이커스페이스 활성화를 통해 정규 14개 창업동아리를 발굴하여 밀착 육성하고 동아리 멘토링 만족도 조사 평균 87점을 달성합니다.
 *   **단위과제 A-3 (글로벌 협력 거점)**
-    *   *중점지표 12 (글로벌 인재 교육)*: [프로그램 2-1-1 외국인 특화 정규과정](file:///Users/thomas/Documents/AnchorIR/unit_a3_proposal.md#2-1-1)의 실습비 매칭을 통해 요양보호사 유학생 현장실습 파견(목표: 5명)을 촉진하며, 한국어 교육 및 다문화 다가정 융합 정주 지원을 수행합니다.
+    *   *중점지표 12 (글로벌 인재 교육)*: [프로그램 2-1-1 외국인 특화 정규과정](file:///Users/thomas/Documents/AnchorIR/rise_2nd_year_unit_a3_proposal.md#2-1-1)의 실습비 매칭을 통해 요양보호사 유학생 현장실습 파견(목표: 5명)을 촉진하며, 한국어 교육 및 다문화 다가정 융합 정주 지원을 수행합니다.
 
 ---
 
@@ -61,4 +61,4 @@
 *   **단위과제 D-2 (지속가능 보건복지)**
     *   *중점지표 9 (보건복지 프로그램)*: 간호학부 및 사회복지학과 주도로 고령층 구강/물리치료 홈케어 서비스 과정 등 12건의 프로그램을 개설하고 보건계열 학부생 38명 이상이 참여하는 성과를 냅니다.
 *   **단위과제 D-3 (에코컬처 도시재생)**
-    *   *중점지표 11 (꿀잼도시 만족)*: [프로그램 2-1-1 시민체험 꿀잼 축제 기획](file:///Users/thomas/Documents/AnchorIR/unit_d3_proposal.md#2-1-1)을 통해 청년기획단 중심의 환경·문화 축제 부스를 설치하고 만족도 설문 평균 88점 이상을 확보합니다.
+    *   *중점지표 11 (꿀잼도시 만족)*: [프로그램 2-1-1 시민체험 꿀잼 축제 기획](file:///Users/thomas/Documents/AnchorIR/rise_2nd_year_unit_d3_proposal.md#2-1-1)을 통해 청년기획단 중심의 환경·문화 축제 부스를 설치하고 만족도 설문 평균 88점 이상을 확보합니다.

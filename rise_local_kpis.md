@@ -39,49 +39,49 @@
 
 ### 📌 프로젝트 A: 정주형 실전인재 양성
 *   **단위과제 A1 (UC-HYPER 실무인재)**
-    *   *자율지표 1 (교과과정 혁신)*: [프로그램 1-1-2 미래차/디지털 정규과정 개편](file:///Users/thomas/Documents/AnchorIR/unit_a1_proposal.md#1-1-2) 활동이 교과 개편 실적(A요소)에 직접 기여하며, [프로그램 1-1-3 비교과 자격증 과정](file:///Users/thomas/Documents/AnchorIR/unit_a1_proposal.md#1-1-3)이 학생 이수자 실적(B요소)에 대응합니다.
+    *   *자율지표 1 (교과과정 혁신)*: [프로그램 1-1-2 미래차/디지털 정규과정 개편](file:///Users/thomas/Documents/AnchorIR/rise_2nd_year_unit_a1_proposal.md#1-1-2) 활동이 교과 개편 실적(A요소)에 직접 기여하며, [프로그램 1-1-3 비교과 자격증 과정](file:///Users/thomas/Documents/AnchorIR/rise_2nd_year_unit_a1_proposal.md#1-1-3)이 학생 이수자 실적(B요소)에 대응합니다.
     *   *자율지표 2 (현장실습 참여)*: 7대 신산업 맞춤형 기업 매칭 12주 학기제 및 4주 방학 인턴십 실습비 매칭을 통해 실습 이수 실적에 정합 연계됩니다.
 *   **단위과제 A2 (글로컬 창업 문화)**
-    *   *자율지표 3 (창업교육 운영)*: [프로그램 1-1-1 창업 정규/비정규 교육](file:///Users/thomas/Documents/AnchorIR/unit_a2_proposal.md#1-1-1)을 통해 창업 이수 학생 수 2,400명 목표를 실현합니다.
-    *   *자율지표 4 (창업 활성화)*: [프로그램 2-2-1 창업 성공 도약 패키지](file:///Users/thomas/Documents/AnchorIR/unit_a2_proposal.md#2-2-1)의 마케팅/사업화 지원금 집행이 학생/교원 신규 창업 기업 설립(B요소)에 기여합니다.
+    *   *자율지표 3 (창업교육 운영)*: [프로그램 1-1-1 창업 정규/비정규 교육](file:///Users/thomas/Documents/AnchorIR/rise_2nd_year_unit_a2_proposal.md#1-1-1)을 통해 창업 이수 학생 수 2,400명 목표를 실현합니다.
+    *   *자율지표 4 (창업 활성화)*: [프로그램 2-2-1 창업 성공 도약 패키지](file:///Users/thomas/Documents/AnchorIR/rise_2nd_year_unit_a2_proposal.md#2-2-1)의 마케팅/사업화 지원금 집행이 학생/교원 신규 창업 기업 설립(B요소)에 기여합니다.
 *   **단위과제 A3 (글로벌 협력 거점)**
-    *   *자율지표 23 (글로벌 역량)*: [프로그램 1-1-1 글로벌 대학 협약](file:///Users/thomas/Documents/AnchorIR/unit_a3_proposal.md#1-1-1)을 통해 해외 거점 공동 연구 및 학생 교류(목표 55명)를 활성화합니다.
-    *   *자율지표 24 (외국인 유치/정착)*: [프로그램 2-1-1 외국인 특화 전공 개설](file:///Users/thomas/Documents/AnchorIR/unit_a3_proposal.md#2-1-1)과 [프로그램 2-2-1 TOPIK 한국어 교육 및 다문화 지원](file:///Users/thomas/Documents/AnchorIR/unit_a3_proposal.md#2-2-1)이 외국인 유학생 유치 및 생활 행정 밀착 정주 케어에 매핑됩니다.
+    *   *자율지표 23 (글로벌 역량)*: [프로그램 1-1-1 글로벌 대학 협약](file:///Users/thomas/Documents/AnchorIR/rise_2nd_year_unit_a3_proposal.md#1-1-1)을 통해 해외 거점 공동 연구 및 학생 교류(목표 55명)를 활성화합니다.
+    *   *자율지표 24 (외국인 유치/정착)*: [프로그램 2-1-1 외국인 특화 전공 개설](file:///Users/thomas/Documents/AnchorIR/rise_2nd_year_unit_a3_proposal.md#2-1-1)과 [프로그램 2-2-1 TOPIK 한국어 교육 및 다문화 지원](file:///Users/thomas/Documents/AnchorIR/rise_2nd_year_unit_a3_proposal.md#2-2-1)이 외국인 유학생 유치 및 생활 행정 밀착 정주 케어에 매핑됩니다.
 
 ---
 
 ### 📌 프로젝트 B: 지산학연 초연결 생태계
 *   **단위과제 B1 (주력·신산업 산학협력)**
-    *   *자율지표 5 (기술이전 및 사업화)*: [프로그램 2-1-1 산학공동기술개발과제](file:///Users/thomas/Documents/AnchorIR/unit_b1_proposal.md#2-1-1) 결과물의 특허 출원 10건(D요소) 및 가족회사 연계 기술이전료 매칭이 핵심입니다.
-    *   *자율지표 6 (기업애로 해결)*: [프로그램 3-1-1 중소기업 기술 애로 해결 자문](file:///Users/thomas/Documents/AnchorIR/unit_b1_proposal.md#3-1-1)을 통해 관내 중소기업 22개사에 대한 설계/해석 도면 지도를 완수합니다.
+    *   *자율지표 5 (기술이전 및 사업화)*: [프로그램 2-1-1 산학공동기술개발과제](file:///Users/thomas/Documents/AnchorIR/rise_2nd_year_unit_b1_proposal.md#2-1-1) 결과물의 특허 출원 10건(D요소) 및 가족회사 연계 기술이전료 매칭이 핵심입니다.
+    *   *자율지표 6 (기업애로 해결)*: [프로그램 3-1-1 중소기업 기술 애로 해결 자문](file:///Users/thomas/Documents/AnchorIR/rise_2nd_year_unit_b1_proposal.md#3-1-1)을 통해 관내 중소기업 22개사에 대한 설계/해석 도면 지도를 완수합니다.
 *   **단위과제 B2 (AID 지역산업 전환)**
-    *   *자율지표 13 (AI·DX 교육)*: [프로그램 2-2-1 전학부 AI 리터러시 융합 교육](file:///Users/thomas/Documents/AnchorIR/unit_b2_proposal.md#2-2-1)이 AICE 자격 취득 및 AI·DX 교육 이수생 실적에 100% 매핑됩니다.
+    *   *자율지표 13 (AI·DX 교육)*: [프로그램 2-2-1 전학부 AI 리터러시 융합 교육](file:///Users/thomas/Documents/AnchorIR/rise_2nd_year_unit_b2_proposal.md#2-2-1)이 AICE 자격 취득 및 AI·DX 교육 이수생 실적에 100% 매핑됩니다.
     *   *자율지표 14 (AI·DX 역량강화)*: AWS C3 인증 교육센터 리모델링 및 클라우드 실습 환경 인프라를 활용하여 재직자 공동교육을 지원합니다.
 *   **단위과제 B3 (탄소중립 플랫폼)**
-    *   *자율지표 15 (ESG 전문인력)*: [프로그램 1-1-1 ESG 캠퍼스 아카데미](file:///Users/thomas/Documents/AnchorIR/unit_b3_proposal.md#1-1-1)를 통해 ESG 및 온실가스 관리 전문가 수료생 105명을 양성합니다.
-    *   *자율지표 16 (탄소중립 실천)*: [프로그램 3-1-1 배터리 스왑(BSS) 실증](file:///Users/thomas/Documents/AnchorIR/unit_b3_proposal.md#3-1-1)을 통해 캠퍼스 리빙랩 전동 BSS 장비를 조달하고 4건의 실증 프로그램을 시범 가동합니다.
+    *   *자율지표 15 (ESG 전문인력)*: [프로그램 1-1-1 ESG 캠퍼스 아카데미](file:///Users/thomas/Documents/AnchorIR/rise_2nd_year_unit_b3_proposal.md#1-1-1)를 통해 ESG 및 온실가스 관리 전문가 수료생 105명을 양성합니다.
+    *   *자율지표 16 (탄소중립 실천)*: [프로그램 3-1-1 배터리 스왑(BSS) 실증](file:///Users/thomas/Documents/AnchorIR/rise_2nd_year_unit_b3_proposal.md#3-1-1)을 통해 캠퍼스 리빙랩 전동 BSS 장비를 조달하고 4건의 실증 프로그램을 시범 가동합니다.
 *   **단위과제 B4 (복합재난 대응)**
-    *   *자율지표 11 (산업안전 확산)*: [프로그램 2-1-1 기업 안전 진단](file:///Users/thomas/Documents/AnchorIR/unit_b4_proposal.md#2-1-1) 활동이 현장 위해 요소 안전기술 지도(A요소) 및 응급 대응 매뉴얼 개발(B요소)에 직결됩니다.
-    *   *자율지표 12 (산업안전 교육성과)*: [프로그램 1-1-1 정규 산업안전 교과 신설](file:///Users/thomas/Documents/AnchorIR/unit_b4_proposal.md#1-1-1) 및 심폐소생술/ISO 내부심사원 취득반 운영이 이수자 수와 자격증 확보에 매핑됩니다.
+    *   *자율지표 11 (산업안전 확산)*: [프로그램 2-1-1 기업 안전 진단](file:///Users/thomas/Documents/AnchorIR/rise_2nd_year_unit_b4_proposal.md#2-1-1) 활동이 현장 위해 요소 안전기술 지도(A요소) 및 응급 대응 매뉴얼 개발(B요소)에 직결됩니다.
+    *   *자율지표 12 (산업안전 교육성과)*: [프로그램 1-1-1 정규 산업안전 교과 신설](file:///Users/thomas/Documents/AnchorIR/rise_2nd_year_unit_b4_proposal.md#1-1-1) 및 심폐소생술/ISO 내부심사원 취득반 운영이 이수자 수와 자격증 확보에 매핑됩니다.
 
 ---
 
 ### 📌 프로젝트 C: 생애 직무 도약 체계
 *   **단위과제 C1 (U-LIFE 평생직업교육)**
-    *   *자율지표 7 (평생교육 활성화)*: [프로그램 3-1-1 4대 아카데미 교육 과정](file:///Users/thomas/Documents/AnchorIR/unit_c1_proposal.md#3-1-1) 운영이 성인학습자 및 재직자 이수자 수 110명 달성에 직접 기여합니다.
-    *   *자율지표 8 (평생교육 품질향상)*: [프로그램 1-1-1 거점센터 기능 내실화 및 교육과정 개발](file:///Users/thomas/Documents/AnchorIR/unit_c1_proposal.md#1-1-1)을 통해 6건의 신규 맞춤형 평생 직업 교육과정을 개편 적용합니다.
+    *   *자율지표 7 (평생교육 활성화)*: [프로그램 3-1-1 4대 아카데미 교육 과정](file:///Users/thomas/Documents/AnchorIR/rise_2nd_year_unit_c1_proposal.md#3-1-1) 운영이 성인학습자 및 재직자 이수자 수 110명 달성에 직접 기여합니다.
+    *   *자율지표 8 (평생교육 품질향상)*: [프로그램 1-1-1 거점센터 기능 내실화 및 교육과정 개발](file:///Users/thomas/Documents/AnchorIR/rise_2nd_year_unit_c1_proposal.md#1-1-1)을 통해 6건의 신규 맞춤형 평생 직업 교육과정을 개편 적용합니다.
 *   **단위과제 C2 (동남권 돌봄생태계)**
-    *   *자율지표 19 (돌봄교사 양성)*: [프로그램 4-1-1 K-pop/브리지게임 돌봄 교사 아카데미](file:///Users/thomas/Documents/AnchorIR/unit_c2_proposal.md#4-1-1)가 이수 교사 양성 성과(이수자 50명 목표)에 직결됩니다.
-    *   *자율지표 20 (돌봄/체험 활성화)*: [프로그램 1-1-1 방과후/방학 늘봄 표준 개발](file:///Users/thomas/Documents/AnchorIR/unit_c2_proposal.md#1-1-1) 파견 운영이 초등학생 수혜자 수 확보에 매치됩니다.
+    *   *자율지표 19 (돌봄교사 양성)*: [프로그램 4-1-1 K-pop/브리지게임 돌봄 교사 아카데미](file:///Users/thomas/Documents/AnchorIR/rise_2nd_year_unit_c2_proposal.md#4-1-1)가 이수 교사 양성 성과(이수자 50명 목표)에 직결됩니다.
+    *   *자율지표 20 (돌봄/체험 활성화)*: [프로그램 1-1-1 방과후/방학 늘봄 표준 개발](file:///Users/thomas/Documents/AnchorIR/rise_2nd_year_unit_c2_proposal.md#1-1-1) 파견 운영이 초등학생 수혜자 수 확보에 매치됩니다.
 
 ---
 
 ### 📌 프로젝트 D: 지역생활안전·의료·정주
 *   **단위과제 D1 (지역문제해결 솔루션)**
-    *   *자율지표 9 (지역 현안 해결)*: [프로그램 1-1-1 리씽크 울산(Re:Think) 프로젝트](file:///Users/thomas/Documents/AnchorIR/unit_d1_proposal.md#1-1-1)의 대학생 멘토링 캡스톤 8건이 현안 해결 실적(A요소)에 기여합니다.
+    *   *자율지표 9 (지역 현안 해결)*: [프로그램 1-1-1 리씽크 울산(Re:Think) 프로젝트](file:///Users/thomas/Documents/AnchorIR/rise_2nd_year_unit_d1_proposal.md#1-1-1)의 대학생 멘토링 캡스톤 8건이 현안 해결 실적(A요소)에 기여합니다.
     *   *자율지표 10 (사회공헌 활성화)*: 디자인 씽킹 융합 봉사 및 관내 공공 환경 개선 활동이 사회공헌 이수 학생(목표 35명) 및 행사 봉사 참여자(목표 110명)에 연계됩니다.
 *   **단위과제 D2 (지속가능 보건복지)**
-    *   *자율지표 18 (의료케어 종합 달성)*: [프로그램 1-2-1 취약계층 복지케어 모니터링](file:///Users/thomas/Documents/AnchorIR/unit_d2_proposal.md#1-2-1)의 고령층 구강/물리치료 홈케어가 수혜 주민 수 160명 달성에 직결됩니다.
+    *   *자율지표 18 (의료케어 종합 달성)*: [프로그램 1-2-1 취약계층 복지케어 모니터링](file:///Users/thomas/Documents/AnchorIR/rise_2nd_year_unit_d2_proposal.md#1-2-1)의 고령층 구강/물리치료 홈케어가 수혜 주민 수 160명 달성에 직결됩니다.
 *   **단위과제 D3 (에코컬처 도시재생)**
-    *   *자율지표 21 (도시공간 재생)*: [프로그램 1-2-1 청년 주도형 유휴공간 활성화](file:///Users/thomas/Documents/AnchorIR/unit_d3_proposal.md#1-2-1)를 통해 구도심 공실 상가 2개소를 청년 창작 공유 공간으로 리모델링 개편합니다.
-    *   *자율지표 22 (문화 콘텐츠 개발)*: [프로그램 1-1-1 시민 참여형 에코컬처 프로젝트](file:///Users/thomas/Documents/AnchorIR/unit_d3_proposal.md#1-1-1)를 통해 호계역 등 역사 테마 디자인 굿즈 5종을 개발 및 전시합니다.
+    *   *자율지표 21 (도시공간 재생)*: [프로그램 1-2-1 청년 주도형 유휴공간 활성화](file:///Users/thomas/Documents/AnchorIR/rise_2nd_year_unit_d3_proposal.md#1-2-1)를 통해 구도심 공실 상가 2개소를 청년 창작 공유 공간으로 리모델링 개편합니다.
+    *   *자율지표 22 (문화 콘텐츠 개발)*: [프로그램 1-1-1 시민 참여형 에코컬처 프로젝트](file:///Users/thomas/Documents/AnchorIR/rise_2nd_year_unit_d3_proposal.md#1-1-1)를 통해 호계역 등 역사 테마 디자인 굿즈 5종을 개발 및 전시합니다.
