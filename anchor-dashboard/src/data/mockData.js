@@ -1814,116 +1814,177 @@ export const YEAR_1_PROGRAMS = {
       "id": "A1-1-1",
       "title": "UC-HYPER 교수학습모델 개발/운영/성과확산",
       "budget": 62000000,
+      "spent": 62000000,
       "assignee": "지산학교육센터(ECC)"
     },
     {
       "id": "A1-1-2",
       "title": "채용연계(우대) 맞춤형 주문식 교육과정 개발/운영",
       "budget": 764000000,
+      "spent": 764000000,
       "assignee": "기획처 & 참여학과 교수진"
     },
     {
       "id": "A1-1-3",
       "title": "캡스톤 디자인 운영",
       "budget": 130000000,
+      "spent": 130000000,
       "assignee": "지산학교육센터(ECC)"
     },
     {
       "id": "A1-1-4",
       "title": "현장기반 학습공간 연계 정규교과목 운영",
       "budget": 50000000,
+      "spent": 50000000,
       "assignee": "참여학과"
     },
     {
       "id": "A1-1-5",
       "title": "UC-HYPER 융복합 트랙 교육과정 개발/운영",
       "budget": 50000000,
+      "spent": 50000000,
       "assignee": "기획처"
     },
     {
       "id": "A1-2-1",
       "title": "진로개발 통합지원 시스템 개발/운영",
       "budget": 20000000,
+      "spent": 20000000,
       "assignee": "학생취업처"
     },
     {
       "id": "A1-2-2",
       "title": "ECC 성과확산 프로그램 운영",
       "budget": 26000000,
+      "spent": 26000000,
       "assignee": "지산학교육센터(ECC)"
     },
     {
       "id": "A1-3-1",
       "title": "UC-HYPER 교직원 역량 강화 프로그램 운영",
       "budget": 40000000,
+      "spent": 40000000,
       "assignee": "교무처"
     },
     {
       "id": "A1-3-2",
       "title": "UC-HYPER 운영 규정 제·개정",
       "budget": 10000000,
+      "spent": 10000000,
       "assignee": "지산학교육센터(ECC)"
     },
     {
       "id": "A1-3-3",
       "title": "표준형 현장실습 운영",
       "budget": 50000000,
+      "spent": 50000000,
       "assignee": "산학협력단"
     },
     {
       "id": "A1-3-4",
       "title": "전문기술석사 교육과정 운영",
       "budget": 14000000,
+      "spent": 14000000,
       "assignee": "대학원"
     },
     {
       "id": "A1-3-5",
       "title": "글로벌 교육 프로그램 개발/운영",
       "budget": 60000000,
+      "spent": 60000000,
       "assignee": "국제교류원"
     },
     {
       "id": "A1-4-1",
       "title": "UC-HYPER 교육환경 구축",
       "budget": 896000000,
+      "spent": 896000000,
       "assignee": "시설관리처"
     },
     {
       "id": "A1-4-2",
       "title": "ECC 공유·협업 체계를 위한 인프라 구축",
       "budget": 15000000,
+      "spent": 15000000,
       "assignee": "지산학교육센터(ECC)"
     },
     {
       "id": "A1-4-3",
       "title": "AI 리터러시 정규/비정규 교육과정 개발/운영",
       "budget": 50000000,
+      "spent": 50000000,
       "assignee": "교무처"
     },
     {
       "id": "A1-4-4",
       "title": "UC-HYPER 핵심분야 요소기술 정규/비정규 교육과정 개발/운영",
       "budget": 60000000,
+      "spent": 60000000,
       "assignee": "기획처"
     },
     {
       "id": "A1-5-1",
       "title": "울산 맞춤형 인재양성 거버넌스 구축",
       "budget": 6000000,
+      "spent": 6000000,
       "assignee": "지산학교육센터(ECC)"
     },
     {
       "id": "A1-5-2",
       "title": "글로벌 지산학 혁신 거버넌스 구축",
       "budget": 10000000,
+      "spent": 10000000,
       "assignee": "국제교류원"
-    }
-  ,
+    },
     {
       "id": "A1-5-3",
       "title": "공통경비",
       "budget": 10000000,
+      "spent": 10000000,
       "assignee": "지산학교육센터(ECC)"
+    },
+    {
+      "id": "A1-4-5",
+      "title": "UDx 미래인재양성 교육과정 개발 및 Lab 구축 [인센티브]",
+      "budget": 161000000,
+      "spent": 0,
+      "assignee": "지산학교육센터(ECC)",
+      "budget_categories": [
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 70000000, "spent": 0 },
+        { "category": "교육∙연구 환경개선비", "budget": 91000000, "spent": 0 }
+      ]
+    },
+    {
+      "id": "A1-4-6",
+      "title": "AI·디지털트윈 첨단 실습 및 실증 장비 인프라 구축 [인센티브]",
+      "budget": 359500000,
+      "spent": 151500000,
+      "assignee": "지산학교육센터(ECC)",
+      "budget_categories": [
+        { "category": "실험∙실습장비 및 기자재 구입∙운영비", "budget": 359500000, "spent": 151500000 }
+      ]
+    },
+    {
+      "id": "A1-5-4",
+      "title": "UDx 지산학 협력 거버넌스 및 첫걸음 R&D 예비과제 운영 [인센티브]",
+      "budget": 62000000,
+      "spent": 0,
+      "assignee": "지산학교육센터(ECC)",
+      "budget_categories": [
+        { "category": "기업 지원∙협력 활동비", "budget": 62000000, "spent": 0 }
+      ]
+    },
+    {
+      "id": "A1-5-5",
+      "title": "인센티브 공통 운영 경비 및 간접비",
+      "budget": 41500000,
+      "spent": 29900000,
+      "assignee": "지산학교육센터(ECC)",
+      "budget_categories": [
+        { "category": "인건비", "budget": 7500000, "spent": 7000000 },
+        { "category": "그 밖의 사업운영경비", "budget": 17000000, "spent": 5900000 },
+        { "category": "간접비", "budget": 17000000, "spent": 17000000 }
+      ]
     }],
   "A2": [
     {
@@ -2738,10 +2799,10 @@ export const YEAR_1_PROGRAMS = {
 // 1차년도 단위과제 예산 메타데이터
 export const Y1_UNIT_META = {
   "A1가": {
-    "budget": 2000000000,
-    "national": 1705000000,
+    "budget": 2947000000,
+    "national": 2652000000,
     "city": 295000000,
-    "carry": 0
+    "carry": 442600000
   },
   "A2": {
     "budget": 900000000,

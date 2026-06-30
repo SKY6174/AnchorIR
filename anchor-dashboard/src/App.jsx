@@ -210,7 +210,7 @@ function formatDataToMultiYear(data) {
         const spentRatio = (meta.budget - meta.carry) / meta.budget;
         
         const budgetMain = item.budget;
-        const spentMain = Math.round(item.budget * spentRatio);
+        const spentMain = item.spent !== undefined ? item.spent : Math.round(item.budget * spentRatio);
         
         const budget_national = Math.round(budgetMain * nationalRatio);
         const budget_city = budgetMain - budget_national;
@@ -237,7 +237,8 @@ function formatDataToMultiYear(data) {
             budget_carry_city: 0,
             spent_carry_city: 0,
             budget_carry_external: 0,
-            spent_carry_external: 0
+            spent_carry_external: 0,
+            budget_categories: item.budget_categories || []
           }
         };
         
