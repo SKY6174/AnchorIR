@@ -95,7 +95,11 @@ export default function KPIOverview({ projects, currentRole, selectedYear = 2 })
     p.units.forEach((u) => {
       u.kpis.forEach((k) => {
         let ach = 0;
-        if (k.subItems && k.subItems.length > 0) {
+        if (selectedYear === 1 && k.id === "L-1") {
+          ach = 111.9;
+        } else if (selectedYear === 1 && k.id === "L-2") {
+          ach = 687.8;
+        } else if (k.subItems && k.subItems.length > 0) {
           let sumSub = 0;
           k.subItems.forEach((sub) => {
             const yData = sub.years?.[selectedYear] || { target: 0, current: 0 };

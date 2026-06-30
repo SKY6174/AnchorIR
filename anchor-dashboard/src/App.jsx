@@ -425,6 +425,87 @@ function formatDataToMultiYear(data) {
   });
 }
 
+const getNormalizedKpi = (k, selectedYear) => {
+  if (!k) return null;
+  if (selectedYear !== 1) return k;
+
+  if (k.id === "L-1") {
+    return {
+      ...k,
+      description: "주류 및 신산업 연계 주문식 교육과정 개발 건수 및 강의 만족도 조사 지표",
+      formula: "((A)실적/(A)기준)*40 + ((B)실적/(B)기준)*30 + ((C)실적/(C)기준)*20 + ((D)실적/(D)기준)*10",
+      subItems: [
+        {
+          id: "L-1-1",
+          name: "지역 맞춤형 교과·비교과 프로그램 개편 건수",
+          unit: "건",
+          years: { 1: { target: 28, current: 35 } }
+        },
+        {
+          id: "L-1-2",
+          name: "지역 맞춤형 교과·비교과 프로그램 이수 학생 수",
+          unit: "명",
+          years: { 1: { target: 4000, current: 3726 } }
+        },
+        {
+          id: "L-1-3",
+          name: "졸업자의 지역 내 취업자 수",
+          unit: "명",
+          years: { 1: { target: 624, current: 624 } }
+        },
+        {
+          id: "L-1-4",
+          name: "졸업자의 지역 외 취업자 수",
+          unit: "명",
+          years: { 1: { target: 527, current: 527 } }
+        }
+      ]
+    };
+  }
+
+  if (k.id === "L-2") {
+    return {
+      ...k,
+      description: "이차전지/조선 등 울산 핵심 분야 산업체 현장실습 이수 학생 수 및 만족도",
+      formula: "((A)실적/(A)기준)*30 + ((B)실적/(B)기준)*20 + ((C)실적/(C)기준)*10 + ((D)실적/(D)기준)*10 + ((E)실적/(E)기준)*30",
+      subItems: [
+        {
+          id: "L-2-1",
+          name: "12주 이상으로 운영된 표준 현장실습 학기제 이수학생 수",
+          unit: "명",
+          years: { 1: { target: 74, current: 66 } }
+        },
+        {
+          id: "L-2-2",
+          name: "8주이상 12주미만으로 운영된 표준 현장실습 학기제 이수학생 수",
+          unit: "명",
+          years: { 1: { target: 27, current: 26 } }
+        },
+        {
+          id: "L-2-3",
+          name: "4주 이상 8주 미만으로 운영된 표준 현장실습 학기제 이수학생 수",
+          unit: "명",
+          years: { 1: { target: 103, current: 63 } }
+        },
+        {
+          id: "L-2-4",
+          name: "4주 이상으로 운영된 일반 현장실습 이수학생 수",
+          unit: "명",
+          years: { 1: { target: 20, current: 1005 } }
+        },
+        {
+          id: "L-2-5",
+          name: "4주 이상 글로벌 표준 현장실습 학기제 이수학생 수",
+          unit: "명",
+          years: { 1: { target: 4, current: 1 } }
+        }
+      ]
+    };
+  }
+
+  return k;
+};
+
 export default function App() {
   const [currentUser, setCurrentUser] = useState(null);
   const [projects, setProjects] = useState(() => {
@@ -2468,22 +2549,27 @@ export default function App() {
                         u.kpis
                           .filter((k) => k.type === kpiSubTab) // 선택된 서브탭 유형별 필터링
                           .map((k) => {
+                            const nk = getNormalizedKpi(k, selectedYear);
                             let rate = 0;
-                            if (k.subItems && k.subItems.length > 0) {
+                            if (selectedYear === 1 && nk.id === "L-1") {
+                              rate = 111.9;
+                            } else if (selectedYear === 1 && nk.id === "L-2") {
+                              rate = 687.8;
+                            } else if (nk.subItems && nk.subItems.length > 0) {
                               let sumRate = 0;
-                              k.subItems.forEach((sub) => {
+                              nk.subItems.forEach((sub) => {
                                 const yData = sub.years?.[selectedYear] || { target: 0, current: 0 };
                                 sumRate += yData.target > 0 ? (yData.current / yData.target) * 100 : 0;
                               });
-                              rate = sumRate / k.subItems.length;
+                              rate = sumRate / nk.subItems.length;
                             } else {
-                              rate = k.target > 0 ? (k.current / k.target) * 100 : 0;
+                              rate = nk.target > 0 ? (nk.current / nk.target) * 100 : 0;
                             }
-                            const isSelected = selectedKpi?.id === k.id;
+                            const isSelected = selectedKpi?.id === nk.id;
                             return (
                               <tr
-                                key={k.id}
-                                onClick={() => setSelectedKpi(k)}
+                                key={nk.id}
+                                onClick={() => setSelectedKpi(nk)}
                                 style={{
                                   cursor: "pointer",
                                   background: isSelected ? "rgba(59,130,246,0.08)" : "inherit",
@@ -2491,11 +2577,11 @@ export default function App() {
                                   transition: "all 0.2s ease"
                                 }}
                               >
-                                <td style={{ fontFamily: "var(--font-data)", fontWeight: "700" }}>{k.id}</td>
-                                <td style={{ fontWeight: isSelected ? "700" : "normal" }}>{k.name}</td>
+                                <td style={{ fontFamily: "var(--font-data)", fontWeight: "700" }}>{nk.id}</td>
+                                <td style={{ fontWeight: isSelected ? "700" : "normal" }}>{nk.name}</td>
                                 <td>
-                                  <span className={`badge ${k.type === "자율" ? "badge-blue" : "badge-yellow"}`}>
-                                    {k.type}
+                                  <span className={`badge ${nk.type === "자율" ? "badge-blue" : "badge-yellow"}`}>
+                                    {nk.type}
                                   </span>
                                 </td>
                                 <td>
@@ -2521,157 +2607,163 @@ export default function App() {
             {/* 우측 성과지표 세부내용 상세 블록 (Sticky 고정 스크롤 효과) */}
             <div className="sticky-panel">
               <div className="glass-card" style={{ border: selectedKpi ? "1px solid var(--accent-color)" : "1px solid var(--border-color-dark)", minHeight: "360px" }}>
-                {selectedKpi ? (
-                  <div>
-                    <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "1rem", borderBottom: "1px solid var(--border-color-dark)", paddingBottom: "0.75rem" }}>
-                      <span className="badge badge-blue" style={{ fontSize: "0.75rem", padding: "0.25rem 0.6rem" }}>
-                        {selectedKpi.id}
-                      </span>
-                      <h3 style={{ fontSize: "1.1rem", fontWeight: "800" }}>{selectedKpi.name} 상세 명세</h3>
-                    </div>
-                    
-                    <div style={{ display: "flex", flexDirection: "column", gap: "1.2rem" }}>
-                      <div>
-                        <span style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)", display: "block" }}>지표 정의</span>
-                        <p style={{ fontSize: "0.85rem", fontWeight: "700", marginTop: "0.2rem", lineHeight: "1.4" }}>
-                          {selectedKpi.description}
-                        </p>
+                {selectedKpi ? (() => {
+                  const nk = getNormalizedKpi(selectedKpi, selectedYear);
+                  return (
+                    <div>
+                      <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "1rem", borderBottom: "1px solid var(--border-color-dark)", paddingBottom: "0.75rem" }}>
+                        <span className="badge badge-blue" style={{ fontSize: "0.75rem", padding: "0.25rem 0.6rem" }}>
+                          {nk.id}
+                        </span>
+                        <h3 style={{ fontSize: "1.1rem", fontWeight: "800" }}>{nk.name} 상세 명세</h3>
                       </div>
-
-                      {/* 세부지표 목표값 및 실적값을 보여주는 미니 표 추가 */}
-                      <div>
-                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.4rem" }}>
-                          <span style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)" }}>지표 구성 세부항목 목표 대비 실적 표</span>
-                          <span className="badge badge-yellow" style={{ fontSize: "0.75rem", padding: "0.15rem 0.4rem" }}>{selectedYear}차년도 세부지표</span>
-                        </div>
-                        <table className="mini-table" style={{ fontSize: "0.75rem" }}>
-                          <thead>
-                            <tr>
-                              <th>세부 항목명</th>
-                              <th style={{ textAlign: "right" }}>목표치</th>
-                              <th style={{ textAlign: "right" }}>현재실적</th>
-                              <th style={{ textAlign: "right" }}>달성도</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {selectedKpi.subItems && selectedKpi.subItems.map((sub) => {
-                              const yData = sub.years?.[selectedYear] || { target: 0, current: 0 };
-                              const subRate = yData.target > 0 ? (yData.current / yData.target) * 100 : 0;
-                              const canEditTarget = currentRole.rank <= 4;
-                              return (
-                                <tr key={sub.id}>
-                                  <td style={{ fontWeight: "700" }}>{sub.name}</td>
-                                  <td style={{ textAlign: "right" }}>
-                                    <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: "0.2rem" }}>
-                                      <input
-                                        type="number"
-                                        step="any"
-                                        className="user-selector"
-                                        disabled={!canEditTarget}
-                                        defaultValue={yData.target}
-                                        onBlur={(e) => {
-                                          if (!canEditTarget) return;
-                                          const val = parseFloat(e.target.value);
-                                          if (!isNaN(val)) {
-                                            handleUpdateKpiValue(sub.id, "target", val);
-                                          }
-                                        }}
-                                        style={{
-                                          width: "55px",
-                                          textAlign: "right",
-                                          fontSize: "0.75rem",
-                                          padding: "0.1rem 0.2rem",
-                                          background: !canEditTarget ? "rgba(255,255,255,0.02)" : "#18181b",
-                                          color: !canEditTarget ? "rgba(255,255,255,0.3)" : "white",
-                                          border: "1px solid var(--border-color-dark)",
-                                          borderRadius: "0.25rem",
-                                          cursor: !canEditTarget ? "not-allowed" : "text"
-                                        }}
-                                      />
-                                      <span style={{ fontSize: "0.7rem", color: "var(--text-secondary-dark)" }}>{sub.unit}</span>
-                                    </div>
-                                  </td>
-                                  <td style={{ textAlign: "right" }}>
-                                    <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: "0.2rem" }}>
-                                      <input
-                                        type="number"
-                                        step="any"
-                                        className="user-selector"
-                                        defaultValue={yData.current}
-                                        onBlur={(e) => {
-                                          const val = parseFloat(e.target.value);
-                                          if (!isNaN(val)) {
-                                            handleUpdateKpiValue(sub.id, "current", val);
-                                          }
-                                        }}
-                                        style={{
-                                          width: "55px",
-                                          textAlign: "right",
-                                          fontSize: "0.75rem",
-                                          padding: "0.1rem 0.2rem",
-                                          background: "#18181b",
-                                          color: "var(--accent-color)",
-                                          border: "1px solid var(--border-color-dark)",
-                                          borderRadius: "0.25rem"
-                                        }}
-                                      />
-                                      <span style={{ fontSize: "0.7rem", color: "var(--text-secondary-dark)" }}>{sub.unit}</span>
-                                    </div>
-                                  </td>
-                                  <td style={{ textAlign: "right", fontFamily: "var(--font-data)", fontWeight: "800", color: subRate >= 100 ? "var(--success-color)" : "var(--warning-color)" }}>
-                                    {subRate.toFixed(1)}%
-                                  </td>
-                                </tr>
-                              );
-                            })}
-                            {(() => {
-                              let totalKpiRate = 0;
-                              if (selectedKpi.subItems && selectedKpi.subItems.length > 0) {
-                                let sumKpiRate = 0;
-                                selectedKpi.subItems.forEach((sub) => {
-                                  const yData = sub.years?.[selectedYear] || { target: 0, current: 0 };
-                                  sumKpiRate += yData.target > 0 ? (yData.current / yData.target) * 100 : 0;
-                                });
-                                totalKpiRate = sumKpiRate / selectedKpi.subItems.length;
-                              }
-                              return (
-                                <tr style={{ background: "rgba(59,130,246,0.06)", borderTop: "1px solid var(--border-color-dark)" }}>
-                                  <td style={{ fontWeight: "800" }}>종합 지표 달성도 (Total)</td>
-                                  <td style={{ textAlign: "right", fontFamily: "var(--font-data)" }}>100.0%</td>
-                                  <td style={{ textAlign: "right", fontFamily: "var(--font-data)", color: "var(--accent-color)", fontWeight: "700" }}>{totalKpiRate.toFixed(1)}%</td>
-                                  <td style={{ textAlign: "right", fontFamily: "var(--font-data)", fontWeight: "900", color: totalKpiRate >= 100 ? "var(--success-color)" : "var(--warning-color)" }}>
-                                    {totalKpiRate.toFixed(1)}%
-                                  </td>
-                                </tr>
-                              );
-                            })()}
-                          </tbody>
-                        </table>
-                      </div>
-
-                      <div>
-                        <span style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)", display: "block" }}>성과지표 산출공식</span>
-                        <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid var(--border-color-dark)", borderRadius: "0.5rem", padding: "0.6rem", marginTop: "0.2rem" }}>
-                          <code style={{ fontSize: "0.75rem", fontFamily: "var(--font-data)", color: "#93c5fd" }}>
-                            {selectedKpi.formula}
-                          </code>
-                        </div>
-                      </div>
-
-
-                      <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.8rem", borderTop: "1px solid var(--border-color-dark)", paddingTop: "0.8rem" }}>
+                      
+                      <div style={{ display: "flex", flexDirection: "column", gap: "1.2rem" }}>
                         <div>
-                          <span style={{ fontSize: "0.7rem", color: "var(--text-secondary-dark)" }}>주관 부서</span>
-                          <p style={{ fontWeight: "700" }}>{selectedKpi.owner}</p>
+                          <span style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)", display: "block" }}>지표 정의</span>
+                          <p style={{ fontSize: "0.85rem", fontWeight: "700", marginTop: "0.2rem", lineHeight: "1.4" }}>
+                            {nk.description}
+                          </p>
                         </div>
-                        <div style={{ textAlign: "right" }}>
-                          <span style={{ fontSize: "0.7rem", color: "var(--text-secondary-dark)" }}>측정 주기</span>
-                          <p style={{ fontWeight: "700" }}>{selectedKpi.cycle}</p>
+
+                        {/* 세부지표 목표값 및 실적값을 보여주는 미니 표 추가 */}
+                        <div>
+                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.4rem" }}>
+                            <span style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)" }}>지표 구성 세부항목 목표 대비 실적 표</span>
+                            <span className="badge badge-yellow" style={{ fontSize: "0.75rem", padding: "0.15rem 0.4rem" }}>{selectedYear}차년도 세부지표</span>
+                          </div>
+                          <table className="mini-table" style={{ fontSize: "0.75rem" }}>
+                            <thead>
+                              <tr>
+                                <th>세부 항목명</th>
+                                <th style={{ textAlign: "right" }}>목표치</th>
+                                <th style={{ textAlign: "right" }}>현재실적</th>
+                                <th style={{ textAlign: "right" }}>달성도</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {nk.subItems && nk.subItems.map((sub) => {
+                                const yData = sub.years?.[selectedYear] || { target: 0, current: 0 };
+                                const subRate = yData.target > 0 ? (yData.current / yData.target) * 100 : 0;
+                                const canEditTarget = currentRole.rank <= 4;
+                                return (
+                                  <tr key={sub.id}>
+                                    <td style={{ fontWeight: "700" }}>{sub.name}</td>
+                                    <td style={{ textAlign: "right" }}>
+                                      <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: "0.2rem" }}>
+                                        <input
+                                          type="number"
+                                          step="any"
+                                          className="user-selector"
+                                          disabled={!canEditTarget}
+                                          defaultValue={yData.target}
+                                          onBlur={(e) => {
+                                            if (!canEditTarget) return;
+                                            const val = parseFloat(e.target.value);
+                                            if (!isNaN(val)) {
+                                              handleUpdateKpiValue(sub.id, "target", val);
+                                            }
+                                          }}
+                                          style={{
+                                            width: "55px",
+                                            textAlign: "right",
+                                            fontSize: "0.75rem",
+                                            padding: "0.1rem 0.2rem",
+                                            background: !canEditTarget ? "rgba(255,255,255,0.02)" : "#18181b",
+                                            color: !canEditTarget ? "rgba(255,255,255,0.3)" : "white",
+                                            border: "1px solid var(--border-color-dark)",
+                                            borderRadius: "0.25rem",
+                                            cursor: !canEditTarget ? "not-allowed" : "text"
+                                          }}
+                                        />
+                                        <span style={{ fontSize: "0.7rem", color: "var(--text-secondary-dark)" }}>{sub.unit}</span>
+                                      </div>
+                                    </td>
+                                    <td style={{ textAlign: "right" }}>
+                                      <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: "0.2rem" }}>
+                                        <input
+                                          type="number"
+                                          step="any"
+                                          className="user-selector"
+                                          defaultValue={yData.current}
+                                          onBlur={(e) => {
+                                            const val = parseFloat(e.target.value);
+                                            if (!isNaN(val)) {
+                                              handleUpdateKpiValue(sub.id, "current", val);
+                                            }
+                                          }}
+                                          style={{
+                                            width: "55px",
+                                            textAlign: "right",
+                                            fontSize: "0.75rem",
+                                            padding: "0.1rem 0.2rem",
+                                            background: "#18181b",
+                                            color: "var(--accent-color)",
+                                            border: "1px solid var(--border-color-dark)",
+                                            borderRadius: "0.25rem"
+                                          }}
+                                        />
+                                        <span style={{ fontSize: "0.7rem", color: "var(--text-secondary-dark)" }}>{sub.unit}</span>
+                                      </div>
+                                    </td>
+                                    <td style={{ textAlign: "right", fontFamily: "var(--font-data)", fontWeight: "800", color: subRate >= 100 ? "var(--success-color)" : "var(--warning-color)" }}>
+                                      {subRate.toFixed(1)}%
+                                    </td>
+                                  </tr>
+                                );
+                              })}
+                              {(() => {
+                                let totalKpiRate = 0;
+                                if (selectedYear === 1 && nk.id === "L-1") {
+                                  totalKpiRate = 111.9;
+                                } else if (selectedYear === 1 && nk.id === "L-2") {
+                                  totalKpiRate = 687.8;
+                                } else if (nk.subItems && nk.subItems.length > 0) {
+                                  let sumKpiRate = 0;
+                                  nk.subItems.forEach((sub) => {
+                                    const yData = sub.years?.[selectedYear] || { target: 0, current: 0 };
+                                    sumKpiRate += yData.target > 0 ? (yData.current / yData.target) * 100 : 0;
+                                  });
+                                  totalKpiRate = sumKpiRate / nk.subItems.length;
+                                }
+                                return (
+                                  <tr style={{ background: "rgba(59,130,246,0.06)", borderTop: "1px solid var(--border-color-dark)" }}>
+                                    <td style={{ fontWeight: "800" }}>종합 지표 달성도 (Total)</td>
+                                    <td style={{ textAlign: "right", fontFamily: "var(--font-data)" }}>100.0%</td>
+                                    <td style={{ textAlign: "right", fontFamily: "var(--font-data)", color: "var(--accent-color)", fontWeight: "700" }}>{totalKpiRate.toFixed(1)}%</td>
+                                    <td style={{ textAlign: "right", fontFamily: "var(--font-data)", fontWeight: "900", color: totalKpiRate >= 100 ? "var(--success-color)" : "var(--warning-color)" }}>
+                                      {totalKpiRate.toFixed(1)}%
+                                    </td>
+                                  </tr>
+                                );
+                              })()}
+                            </tbody>
+                          </table>
+                        </div>
+
+                        <div>
+                          <span style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)", display: "block" }}>성과지표 산출공식</span>
+                          <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid var(--border-color-dark)", borderRadius: "0.5rem", padding: "0.6rem", marginTop: "0.2rem" }}>
+                            <code style={{ fontSize: "0.75rem", fontFamily: "var(--font-data)", color: "#93c5fd" }}>
+                              {nk.formula}
+                            </code>
+                          </div>
+                        </div>
+
+                        <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.8rem", borderTop: "1px solid var(--border-color-dark)", paddingTop: "0.8rem" }}>
+                          <div>
+                            <span style={{ fontSize: "0.7rem", color: "var(--text-secondary-dark)" }}>주관 부서</span>
+                            <p style={{ fontWeight: "700" }}>{nk.owner}</p>
+                          </div>
+                          <div style={{ textAlign: "right" }}>
+                            <span style={{ fontSize: "0.7rem", color: "var(--text-secondary-dark)" }}>측정 주기</span>
+                            <p style={{ fontWeight: "700" }}>{nk.cycle}</p>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                ) : (
+                  );
+                })() : (
                   <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: "320px", color: "var(--text-secondary-dark)", gap: "0.5rem" }}>
                     <HelpCircle size={32} style={{ color: "var(--accent-color)" }} />
                     <span style={{ fontSize: "0.8rem" }}>좌측 목록의 성과지표 행을 클릭하시면 상세 비교 정보가 나타납니다.</span>
