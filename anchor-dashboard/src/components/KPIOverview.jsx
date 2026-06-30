@@ -20,19 +20,24 @@ const formatToMillionWon = (value) => {
 };
 
 export default function KPIOverview({ projects, currentRole, selectedYear = 2 }) {
+  // 1차년도에는 공통경비(프로젝트 ID: E)가 존재하지 않으므로 필터링 처리
+  const activeProjects = selectedYear === 1 
+    ? projects.filter((p) => p.id !== "E") 
+    : projects;
+
   // 예산 합계 및 재원 구분 계산
-  const totalBudgetMain = projects.reduce((sum, p) => {
+  const totalBudgetMain = activeProjects.reduce((sum, p) => {
     return sum + p.units.reduce((s, u) => s + (u.years?.[selectedYear]?.budget_main || 0), 0);
   }, 0);
-  const totalSpentMain = projects.reduce((sum, p) => {
+  const totalSpentMain = activeProjects.reduce((sum, p) => {
     return sum + p.units.reduce((s, u) => s + (u.years?.[selectedYear]?.spent_main || 0), 0);
   }, 0);
   const rateMain = totalBudgetMain > 0 ? (totalSpentMain / totalBudgetMain) * 100 : 0;
 
-  const totalBudgetCarry = selectedYear === 1 ? 0 : projects.reduce((sum, p) => {
+  const totalBudgetCarry = selectedYear === 1 ? 0 : activeProjects.reduce((sum, p) => {
     return sum + p.units.reduce((s, u) => s + (u.years?.[selectedYear]?.budget_carry || 0), 0);
   }, 0);
-  const totalSpentCarry = selectedYear === 1 ? 0 : projects.reduce((sum, p) => {
+  const totalSpentCarry = selectedYear === 1 ? 0 : activeProjects.reduce((sum, p) => {
     return sum + p.units.reduce((s, u) => s + (u.years?.[selectedYear]?.spent_carry || 0), 0);
   }, 0);
   const rateCarry = totalBudgetCarry > 0 ? (totalSpentCarry / totalBudgetCarry) * 100 : 0;
@@ -42,7 +47,7 @@ export default function KPIOverview({ projects, currentRole, selectedYear = 2 })
 
   // A-1-나 신산업특화 예산 동적 추출 및 본사업비(A-1-나 제외) 계산
   let shinSanUpBudget = 0;
-  projects.forEach((p) => {
+  activeProjects.forEach((p) => {
     p.units.forEach((u) => {
       if (u.id === "A-1-나") {
         shinSanUpBudget = u.years?.[selectedYear]?.budget_main || 0;
@@ -54,7 +59,7 @@ export default function KPIOverview({ projects, currentRole, selectedYear = 2 })
   // 전체 KPI 달성률 계산
   let kpiCount = 0;
   let totalKpiAchievement = 0;
-  projects.forEach((p) => {
+  activeProjects.forEach((p) => {
     p.units.forEach((u) => {
       u.kpis.forEach((k) => {
         kpiCount++;
@@ -76,7 +81,7 @@ export default function KPIOverview({ projects, currentRole, selectedYear = 2 })
   const avgKpiAchievement = kpiCount > 0 ? totalKpiAchievement / kpiCount : 0;
 
   // 차트 데이터 (프로젝트 및 공통영역 분할)
-  const chartData = projects.map((p) => {
+  const chartData = activeProjects.map((p) => {
     const pBudgetMain = p.units.reduce((s, u) => s + (u.years?.[selectedYear]?.budget_main || 0), 0);
     const pSpentMain = p.units.reduce((s, u) => s + (u.years?.[selectedYear]?.spent_main || 0), 0);
     const pBudgetCarry = p.units.reduce((s, u) => s + (u.years?.[selectedYear]?.budget_carry || 0), 0);
@@ -91,7 +96,7 @@ export default function KPIOverview({ projects, currentRole, selectedYear = 2 })
     };
   });
 
-  const pieData = projects.map((p) => {
+  const pieData = activeProjects.map((p) => {
     const pBudgetMain = p.units.reduce((s, u) => s + (u.years?.[selectedYear]?.budget_main || 0), 0);
     const pBudgetCarry = p.units.reduce((s, u) => s + (u.years?.[selectedYear]?.budget_carry || 0), 0);
     return {
@@ -196,7 +201,7 @@ export default function KPIOverview({ projects, currentRole, selectedYear = 2 })
         {/* 예산 분배 비율 */}
         <div className="glass-card" style={{ minHeight: "380px" }}>
           <h3 style={{ marginBottom: "1.2rem", fontSize: "1.1rem", fontWeight: "800" }}>
-            재원 배분 구조 (공통경비 포함)
+            재원 배분 구조 {selectedYear === 1 ? "(공통경비 제외)" : "(공통경비 포함)"}
           </h3>
           <div style={{ width: "100%", height: "240px", display: "flex", justifyContent: "center", alignItems: "center" }}>
             <ResponsiveContainer>
