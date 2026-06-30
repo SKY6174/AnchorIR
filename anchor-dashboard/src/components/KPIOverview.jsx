@@ -25,7 +25,7 @@ const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, per
   const radius = outerRadius * 1.15;
   const x = cx + radius * Math.cos(-midAngle * RADIAN);
   const y = cy + radius * Math.sin(-midAngle * RADIAN);
-  const pctString = (percent * 100).toFixed(1);
+  const pctString = `(${(percent * 100).toFixed(1)}%)`;
 
   return (
     <text
@@ -34,10 +34,11 @@ const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, per
       fill="var(--text-primary-dark)"
       textAnchor={x > cx ? "start" : "end"}
       dominantBaseline="central"
-      fontSize="10px"
+      fontSize="11px"
       fontWeight="700"
     >
-      {`${name} (${pctString}%)`}
+      <tspan x={x} dy="-0.5em">{name}</tspan>
+      <tspan x={x} dy="1.2em">{pctString}</tspan>
     </text>
   );
 };
@@ -210,7 +211,7 @@ export default function KPIOverview({ projects, currentRole, selectedYear = 2 })
                 <XAxis dataKey="name" stroke="var(--text-secondary-dark)" fontSize={10} />
                 <YAxis stroke="var(--text-secondary-dark)" fontSize={10} />
                 <Tooltip
-                  cursor={{ fill: "rgba(255, 255, 255, 0.03)" }}
+                  cursor={{ fill: "rgba(244, 63, 94, 0.04)" }}
                   formatter={(value) => `${value.toLocaleString()} 백만원`}
                   contentStyle={{
                     background: "rgba(24, 24, 27, 0.95)",
