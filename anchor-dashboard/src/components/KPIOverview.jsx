@@ -93,7 +93,7 @@ export default function KPIOverview({ projects, currentRole, selectedYear = 2 })
 
   activeProjects.forEach((p) => {
     p.units.forEach((u) => {
-      u.kpis.forEach((k) => {
+      (u.kpis || []).forEach((k) => {
         let ach = 0;
         if (selectedYear === 1 && k.id === "L-1") {
           ach = 111.9;

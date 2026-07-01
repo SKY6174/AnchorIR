@@ -1630,7 +1630,20 @@ export default function App() {
   useEffect(() => {
     const sessionUser = localStorage.getItem("anchor_logged_in_user");
     if (sessionUser) {
-      setCurrentUser(JSON.parse(sessionUser));
+      try {
+        const parsed = JSON.parse(sessionUser);
+        if (parsed && parsed.role && typeof parsed.role === "object" && parsed.role.id) {
+          setCurrentUser(parsed);
+        } else {
+          console.warn("Invalid session role structure detected. Clearing session to prevent crash.");
+          localStorage.removeItem("anchor_logged_in_user");
+          setCurrentUser(null);
+        }
+      } catch (e) {
+        console.error("Failed to parse logged in user session:", e);
+        localStorage.removeItem("anchor_logged_in_user");
+        setCurrentUser(null);
+      }
     }
   }, []);
 
@@ -1659,8 +1672,8 @@ export default function App() {
     if (activeTab === "kpis") {
       // 모든 단위과제(units)의 성과지표(kpis) 중에서 현재 선택된 서브탭 유형('자율'/'중점')과 일치하는 첫 번째 지표를 검색합니다.
       const firstKpi = projects
-        .flatMap((p) => p.units.flatMap((u) => u.kpis))
-        .find((k) => k.type === kpiSubTab);
+        .flatMap((p) => p.units.flatMap((u) => u.kpis || []))
+        .find((k) => k ? k.type === kpiSubTab : false);
       
       // 검색된 첫 번째 지표가 있으면 자동으로 조회 대상으로 설정하고, 없으면 null로 초기화합니다.
       setSelectedKpi(firstKpi || null);

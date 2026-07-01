@@ -1,0 +1,107 @@
+- generic [ref=f1e3]:
+  - generic [ref=f1e4]:
+    - complementary [ref=f1e5]:
+      - generic [ref=f1e6]:
+        - generic [ref=f1e7]:
+          - img "울산과학대학교 로고" [ref=f1e8]
+          - generic [ref=f1e9]: ANCHOR Portal
+        - navigation [ref=f1e10]:
+          - generic [ref=f1e11] [cursor=pointer]:
+            - img [ref=f1e12]
+            - generic [ref=f1e17]: IR 대시보드
+          - generic [ref=f1e18]:
+            - generic [ref=f1e19] [cursor=pointer]:
+              - img [ref=f1e20]
+              - generic [ref=f1e22]: 단위과제 관리
+            - generic:
+              - generic [ref=f1e23] [cursor=pointer]: "- 단위과제 집행현황"
+              - generic [ref=f1e24] [cursor=pointer]: "- 프로그램 관리"
+          - generic [ref=f1e25] [cursor=pointer]:
+            - img [ref=f1e26]
+            - generic [ref=f1e29]: 프로그램 진행
+          - generic [ref=f1e30] [cursor=pointer]:
+            - img [ref=f1e31]
+            - generic [ref=f1e33]: 예산항목 관리
+          - generic [ref=f1e34]:
+            - generic [ref=f1e35] [cursor=pointer]:
+              - img [ref=f1e36]
+              - generic [ref=f1e39]: 성과지표 관리
+            - generic:
+              - generic [ref=f1e40] [cursor=pointer]: "- (지자체)자율성과지표"
+              - generic [ref=f1e41] [cursor=pointer]: "- (대학)중점관리지표"
+          - generic [ref=f1e42]:
+            - generic [ref=f1e43] [cursor=pointer]:
+              - img [ref=f1e44]
+              - generic [ref=f1e49]: 사업단 관리
+            - generic:
+              - generic [ref=f1e50] [cursor=pointer]: "- 구성원 관리"
+              - generic [ref=f1e51] [cursor=pointer]: "- 프로그램 배정"
+              - generic [ref=f1e52] [cursor=pointer]: "- 회원현황"
+      - generic [ref=f1e53]:
+        - generic [ref=f1e54]:
+          - generic [ref=f1e55]: 현재 로그인 권한
+          - text: 사업단장 (송경영 교수)
+        - paragraph [ref=f1e56]: 전체 프로젝트 사업비 & KPI 최종 결재 및 연구원 배정 마스터 권한
+    - button "개인정보 관리" [ref=f1e58] [cursor=pointer]:
+      - img [ref=f1e59]
+      - generic [ref=f1e62]: 개인정보 관리
+    - button "로그아웃" [ref=f1e64] [cursor=pointer]:
+      - img [ref=f1e65]
+      - generic [ref=f1e68]: 로그아웃
+  - main [ref=f1e69]:
+    - generic [ref=f1e70]:
+      - generic [ref=f1e71]:
+        - heading "앵커사업 통합 IR 대시보드" [level=1] [ref=f1e72]
+        - paragraph [ref=f1e73]: 울산과학대학교 앵커사업 1차년도 사업예산 및 성과관리 시스템
+      - generic [ref=f1e74]:
+        - button "1차년도" [ref=f1e75] [cursor=pointer]
+        - button "2차년도(현)" [ref=f1e76] [cursor=pointer]
+        - button "3차년도" [ref=f1e77] [cursor=pointer]
+        - button "4차년도" [ref=f1e78] [cursor=pointer]
+        - button "5차년도" [ref=f1e79] [cursor=pointer]
+      - generic [ref=f1e80]:
+        - generic [ref=f1e82]:
+          - text: 반갑습니다,
+          - strong [ref=f1e83]: 송경영 단장님
+        - button [ref=f1e84] [cursor=pointer]:
+          - img [ref=f1e85]
+    - generic [ref=f1e92]:
+      - generic [ref=f1e93]:
+        - generic [ref=f1e94]:
+          - generic [ref=f1e95]:
+            - generic [ref=f1e96]:
+              - generic [ref=f1e97]: ANCHOR 1차년도 총 예산
+              - img [ref=f1e98]
+            - generic [ref=f1e101]: 9,715.0 백만원
+          - generic [ref=f1e103]:
+            - generic [ref=f1e104]:
+              - generic [ref=f1e105]: 앵커(본사업)
+              - generic [ref=f1e106]: 9,715.0 백만원
+            - generic [ref=f1e107]:
+              - generic [ref=f1e108]: 1차년도(본사업)
+              - generic [ref=f1e109]: 9,715.0 백만원
+        - generic [ref=f1e110]:
+          - generic [ref=f1e111]:
+            - generic [ref=f1e112]: 1차년도 본사업비 집행
+            - img [ref=f1e113]
+          - generic [ref=f1e115]:
+            - generic [ref=f1e116]: 7,043.8 백만원
+            - generic [ref=f1e117]: "집행률: 72.5% (배정: 9,715.0백만원)"
+        - generic [ref=f1e118]:
+          - generic [ref=f1e119]:
+            - generic [ref=f1e120]:
+              - generic [ref=f1e121]: (지자체)자율성과지표
+              - img [ref=f1e122]
+            - generic [ref=f1e125]:
+              - generic [ref=f1e126]: 115.0%
+              - generic [ref=f1e127]: 1차년도 지자체 요구 자율 혁신목표
+          - generic [ref=f1e128]:
+            - generic [ref=f1e129]:
+              - generic [ref=f1e130]: (대학)중점관리지표
+              - img [ref=f1e131]
+            - generic [ref=f1e134]:
+              - generic [ref=f1e135]: 0.0%
+              - generic [ref=f1e136]: 1차년도 대학 특성 핵심관리지표
+      - generic [ref=f1e137]:
+        - 'heading "프로젝트별 재원 배정 및 누적 집행 현황 (단위: 백만원)" [level=3] [ref=f1e139]'
+        - heading "재원 배분 구조 (공통경비 제외)" [level=3] [ref=f1e143]
