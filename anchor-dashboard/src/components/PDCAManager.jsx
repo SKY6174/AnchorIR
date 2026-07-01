@@ -806,15 +806,15 @@ export default function PDCAManager({
                           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "0.4rem" }}>
                             <div>
                               <span style={{ fontSize: "0.6rem", color: "var(--text-secondary-dark)" }}>국고 본예산</span>
-                              <input type="text" className="user-selector" value={inputBudgetNational} onChange={(e) => setInputBudgetNational(e.target.value.replace(/[^0-9.]/g, ""))} style={{ padding: "0.2rem 0.4rem", fontSize: "0.7rem" }} />
+                              <input type="text" className="user-selector budget-main-input" value={inputBudgetNational} onChange={(e) => setInputBudgetNational(e.target.value.replace(/[^0-9.]/g, ""))} style={{ padding: "0.2rem 0.4rem", fontSize: "0.7rem" }} />
                             </div>
                             <div>
                               <span style={{ fontSize: "0.6rem", color: "var(--text-secondary-dark)" }}>지자체 시비 본예산</span>
-                              <input type="text" className="user-selector" value={inputBudgetCity} onChange={(e) => setInputBudgetCity(e.target.value.replace(/[^0-9.]/g, ""))} style={{ padding: "0.2rem 0.4rem", fontSize: "0.7rem" }} />
+                              <input type="text" className="user-selector budget-main-input" value={inputBudgetCity} onChange={(e) => setInputBudgetCity(e.target.value.replace(/[^0-9.]/g, ""))} style={{ padding: "0.2rem 0.4rem", fontSize: "0.7rem" }} />
                             </div>
                             <div>
                               <span style={{ fontSize: "0.6rem", color: "var(--text-secondary-dark)" }}>외부사업비 본예산</span>
-                              <input type="text" className="user-selector" value={inputBudgetExternal} onChange={(e) => setInputBudgetExternal(e.target.value.replace(/[^0-9.]/g, ""))} style={{ padding: "0.2rem 0.4rem", fontSize: "0.7rem" }} />
+                              <input type="text" className="user-selector budget-main-input" value={inputBudgetExternal} onChange={(e) => setInputBudgetExternal(e.target.value.replace(/[^0-9.]/g, ""))} style={{ padding: "0.2rem 0.4rem", fontSize: "0.7rem" }} />
                             </div>
                           </div>
                           {/* 이월예산 (1차년도 제외) */}
@@ -824,14 +824,12 @@ export default function PDCAManager({
                                 <span style={{ fontSize: "0.6rem", color: "var(--text-secondary-dark)" }}>국고 이월예산</span>
                                 <input
                                   type="text"
-                                  className="user-selector"
+                                  className="user-selector budget-carry-input"
                                   value={inputBudgetCarryNational}
                                   onChange={(e) => setInputBudgetCarryNational(e.target.value.replace(/[^0-9.]/g, ""))}
                                   style={{
                                     padding: "0.2rem 0.4rem",
-                                    fontSize: "0.7rem",
-                                    background: "#18181b",
-                                    color: "white"
+                                    fontSize: "0.7rem"
                                   }}
                                 />
                               </div>
@@ -839,14 +837,12 @@ export default function PDCAManager({
                                 <span style={{ fontSize: "0.6rem", color: "var(--text-secondary-dark)" }}>지자체 시비 이월예산</span>
                                 <input
                                   type="text"
-                                  className="user-selector"
+                                  className="user-selector budget-carry-input"
                                   value={inputBudgetCarryCity}
                                   onChange={(e) => setInputBudgetCarryCity(e.target.value.replace(/[^0-9.]/g, ""))}
                                   style={{
                                     padding: "0.2rem 0.4rem",
-                                    fontSize: "0.7rem",
-                                    background: "#18181b",
-                                    color: "white"
+                                    fontSize: "0.7rem"
                                   }}
                                 />
                               </div>
@@ -854,14 +850,12 @@ export default function PDCAManager({
                                 <span style={{ fontSize: "0.6rem", color: "var(--text-secondary-dark)" }}>외부사업비 이월예산</span>
                                 <input
                                   type="text"
-                                  className="user-selector"
+                                  className="user-selector budget-carry-input"
                                   value={inputBudgetCarryExternal}
                                   onChange={(e) => setInputBudgetCarryExternal(e.target.value.replace(/[^0-9.]/g, ""))}
                                   style={{
                                     padding: "0.2rem 0.4rem",
-                                    fontSize: "0.7rem",
-                                    background: "#18181b",
-                                    color: "white"
+                                    fontSize: "0.7rem"
                                   }}
                                 />
                               </div>
@@ -894,7 +888,7 @@ export default function PDCAManager({
                               </select>
                               <input
                                 type="text"
-                                className="user-selector"
+                                className="user-selector budget-main-input"
                                 placeholder="본예산"
                                 value={item.budget}
                                 onChange={(e) => {
@@ -906,7 +900,7 @@ export default function PDCAManager({
                               />
                               <input
                                 type="text"
-                                className="user-selector"
+                                className="user-selector budget-carry-input"
                                 placeholder="이월비"
                                 disabled={selectedYear === 1}
                                 value={selectedYear === 1 ? "0.0" : item.budget_carry}
@@ -918,10 +912,7 @@ export default function PDCAManager({
                                 style={{
                                   fontSize: "0.7rem",
                                   padding: "0.2rem 0.4rem",
-                                  width: "100%",
-                                  background: selectedYear === 1 ? "rgba(255,255,255,0.02)" : "#18181b",
-                                  color: selectedYear === 1 ? "rgba(255,255,255,0.2)" : "white",
-                                  cursor: selectedYear === 1 ? "not-allowed" : "text"
+                                  width: "100%"
                                 }}
                               />
                             </div>

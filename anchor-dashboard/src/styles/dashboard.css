@@ -179,6 +179,45 @@ body.light-mode {
   border: 1px solid var(--border-color-light);
 }
 
+/* 플레이스홀더 다크/라이트 모드 가독성 패치 */
+.user-selector::placeholder {
+  color: #71717a !important; /* 다크모드 기본 플레이스홀더 색상 (가독성 보장) */
+  opacity: 1 !important;
+}
+
+.light-mode .user-selector::placeholder {
+  color: #a1a1aa !important; /* 라이트모드 기본 플레이스홀더 색상 */
+  opacity: 1 !important;
+}
+
+/* 본예산 / 이월예산 인풋 상자 시각적 구분자 강화 */
+.budget-main-input {
+  border-left: 3px solid #3b82f6 !important; /* 본예산: 신뢰의 블루 보더 */
+}
+
+.budget-carry-input {
+  border-left: 3px solid #e9a23b !important; /* 이월예산: 주의/지속의 골드 보더 */
+  background: rgba(233, 162, 59, 0.04) !important; /* 은은한 골드빛 틴트 배경 */
+}
+
+.light-mode .budget-carry-input {
+  background: rgba(233, 162, 59, 0.02) !important;
+}
+
+/* 이월예산 비활성화 상태 다크/라이트 하이브리드 보정 */
+.user-selector:disabled {
+  background: rgba(255, 255, 255, 0.02) !important;
+  color: rgba(255, 255, 255, 0.2) !important;
+  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+  cursor: not-allowed !important;
+}
+
+.light-mode .user-selector:disabled {
+  background: rgba(0, 0, 0, 0.03) !important;
+  color: rgba(0, 0, 0, 0.25) !important;
+  border: 1px solid rgba(0, 0, 0, 0.05) !important;
+}
+
 /* Main Content Area */
 .main-content {
   flex-grow: 1;
