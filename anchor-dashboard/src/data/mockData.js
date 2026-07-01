@@ -1818,6 +1818,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 17300000,
       "spent": 17300000,
       "assignee": "지산학교육센터(ECC)",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 17300000, "spent": 17300000 }
       ]
@@ -1828,6 +1829,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 74000000,
       "spent": 68000000,
       "assignee": "기획처 & 참여학과 교수진",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 74000000, "spent": 68000000 }
       ]
@@ -1838,6 +1840,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 6500000,
       "spent": 6100000,
       "assignee": "지산학교육센터(ECC)",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 6500000, "spent": 6100000 }
       ]
@@ -1848,6 +1851,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 50000000,
       "spent": 49400000,
       "assignee": "참여학과",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 50000000, "spent": 49400000 }
       ]
@@ -1858,6 +1862,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 11200000,
       "spent": 9800000,
       "assignee": "기획처",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 11200000, "spent": 9800000 }
       ]
@@ -1868,6 +1873,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 0,
       "spent": 0,
       "assignee": "학생취업처",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 0, "spent": 0 }
       ]
@@ -1878,6 +1884,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 18000000,
       "spent": 15500000,
       "assignee": "지산학교육센터(ECC)",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 18000000, "spent": 15500000 }
       ]
@@ -1888,6 +1895,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 500000,
       "spent": 500000,
       "assignee": "교무처",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 500000, "spent": 500000 }
       ]
@@ -1898,6 +1906,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 0,
       "spent": 0,
       "assignee": "지산학교육센터(ECC)",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 0, "spent": 0 }
       ]
@@ -1908,6 +1917,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 40000000,
       "spent": 32600000,
       "assignee": "산학협력단",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 40000000, "spent": 32600000 }
       ]
@@ -1918,6 +1928,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 5500000,
       "spent": 5500000,
       "assignee": "대학원",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 5500000, "spent": 5500000 }
       ]
@@ -1928,6 +1939,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 0,
       "spent": 0,
       "assignee": "국제교류원",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 0, "spent": 0 }
       ]
@@ -1938,6 +1950,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 1228900000,
       "spent": 1120900000,
       "assignee": "시설관리처",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "교육∙연구 환경개선비", "budget": 1228900000, "spent": 1120900000 }
       ]
@@ -1948,6 +1961,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 29300000,
       "spent": 26000000,
       "assignee": "지산학교육센터(ECC)",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 29300000, "spent": 26000000 }
       ]
@@ -1958,6 +1972,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 7700000,
       "spent": 7700000,
       "assignee": "교무처",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 7700000, "spent": 7700000 }
       ]
@@ -1968,6 +1983,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 35000000,
       "spent": 34800000,
       "assignee": "기획처",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 35000000, "spent": 34800000 }
       ]
@@ -1978,6 +1994,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 0,
       "spent": 0,
       "assignee": "지산학교육센터(ECC)",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 0, "spent": 0 }
       ]
@@ -1988,6 +2005,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 0,
       "spent": 0,
       "assignee": "국제교류원",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 0, "spent": 0 }
       ]
@@ -1998,6 +2016,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 829800000,
       "spent": 557400000,
       "assignee": "지산학교육센터(ECC)",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "인건비", "budget": 156000000, "spent": 155200000 },
         { "category": "장학금", "budget": 88000000, "spent": 72100000 },
@@ -2014,6 +2033,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 161000000,
       "spent": 0,
       "assignee": "지산학교육센터(ECC)",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 70000000, "spent": 0 },
         { "category": "교육∙연구 환경개선비", "budget": 91000000, "spent": 0 }
@@ -2025,6 +2045,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 359500000,
       "spent": 151500000,
       "assignee": "지산학교육센터(ECC)",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "실험∙실습장비 및 기자재 구입∙운영비", "budget": 359500000, "spent": 151500000 }
       ]
@@ -2035,6 +2056,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 62000000,
       "spent": 0,
       "assignee": "지산학교육센터(ECC)",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "기업 지원∙협력 활동비", "budget": 62000000, "spent": 0 }
       ]
@@ -2045,6 +2067,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 41500000,
       "spent": 29900000,
       "assignee": "지산학교육센터(ECC)",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "인건비", "budget": 7500000, "spent": 7000000 },
         { "category": "그 밖의 사업운영경비", "budget": 17000000, "spent": 5900000 },
@@ -2058,6 +2081,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 9600000,
       "spent": 7900000,
       "assignee": "글로컬창업지원팀",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 9600000, "spent": 7900000 }
       ]
@@ -2068,6 +2092,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 95900000,
       "spent": 86500000,
       "assignee": "글로컬창업지원팀",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 95900000, "spent": 86500000 }
       ]
@@ -2078,6 +2103,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 0,
       "spent": 0,
       "assignee": "글로컬창업지원팀",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 0, "spent": 0 }
       ]
@@ -2088,6 +2114,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 9800000,
       "spent": 9800000,
       "assignee": "글로컬창업지원팀",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 9800000, "spent": 9800000 }
       ]
@@ -2098,6 +2125,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 389000000,
       "spent": 378100000,
       "assignee": "시설관리처",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "교육∙연구 환경개선비", "budget": 79000000, "spent": 68600000 },
         { "category": "실험∙실습장비 및 기자재 구입∙운영비", "budget": 310000000, "spent": 309500000 }
@@ -2109,6 +2137,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 20000000,
       "spent": 18900000,
       "assignee": "글로컬창업지원팀",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 20000000, "spent": 18900000 }
       ]
@@ -2119,6 +2148,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 12700000,
       "spent": 11900000,
       "assignee": "글로컬창업지원팀",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "지역 연계∙협업 지원비", "budget": 12700000, "spent": 11900000 }
       ]
@@ -2129,6 +2159,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 0,
       "spent": 0,
       "assignee": "글로컬창업지원팀",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 0, "spent": 0 }
       ]
@@ -2139,6 +2170,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 38000000,
       "spent": 30500000,
       "assignee": "산학협력단",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "지역 연계∙협업 지원비", "budget": 38000000, "spent": 30500000 }
       ]
@@ -2149,6 +2181,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 0,
       "spent": 0,
       "assignee": "글로컬창업지원팀",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 0, "spent": 0 }
       ]
@@ -2159,6 +2192,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 150000000,
       "spent": 150000000,
       "assignee": "글로컬창업지원팀",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "지역 연계∙협업 지원비", "budget": 150000000, "spent": 150000000 }
       ]
@@ -2169,6 +2203,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 20000000,
       "spent": 100000,
       "assignee": "글로컬창업지원팀",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 20000000, "spent": 100000 }
       ]
@@ -2179,6 +2214,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 25000000,
       "spent": 15000000,
       "assignee": "글로컬창업지원팀",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "지역 연계∙협업 지원비", "budget": 25000000, "spent": 15000000 }
       ]
@@ -2190,6 +2226,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 130000000,
       "spent": 114500000,
       "assignee": "글로컬창업지원팀",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "인건비", "budget": 76000000, "spent": 75200000 },
         { "category": "간접비", "budget": 27000000, "spent": 27000000 },
@@ -2203,6 +2240,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 0,
       "spent": 0,
       "assignee": "R&BD지원팀",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 0, "spent": 0 }
       ]
@@ -2213,6 +2251,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 0,
       "spent": 0,
       "assignee": "R&BD지원팀",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 0, "spent": 0 }
       ]
@@ -2223,6 +2262,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 0,
       "spent": 0,
       "assignee": "R&BD지원팀",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 0, "spent": 0 }
       ]
@@ -2233,6 +2273,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 0,
       "spent": 0,
       "assignee": "R&BD지원팀",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 0, "spent": 0 }
       ]
@@ -2243,6 +2284,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 70000000,
       "spent": 0,
       "assignee": "R&BD지원팀",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "교육∙연구 환경개선비", "budget": 70000000, "spent": 0 }
       ]
@@ -2253,6 +2295,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 60000000,
       "spent": 58100000,
       "assignee": "R&BD지원팀",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "기업 지원∙협력 활동비", "budget": 60000000, "spent": 58100000 }
       ]
@@ -2263,6 +2306,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 0,
       "spent": 0,
       "assignee": "R&BD지원팀",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 0, "spent": 0 }
       ]
@@ -2273,6 +2317,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 35000000,
       "spent": 34900000,
       "assignee": "대학원",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "기업 지원∙협력 활동비", "budget": 35000000, "spent": 34900000 }
       ]
@@ -2283,6 +2328,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 0,
       "spent": 0,
       "assignee": "R&BD지원팀",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 0, "spent": 0 }
       ]
@@ -2293,6 +2339,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 29900000,
       "spent": 25300000,
       "assignee": "R&BD지원팀",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "기업 지원∙협력 활동비", "budget": 23100000, "spent": 20600000 },
         { "category": "성과 활용∙확산 지원비", "budget": 6800000, "spent": 4700000 }
@@ -2304,6 +2351,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 15000000,
       "spent": 13770000,
       "assignee": "정보통신처",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "기업 지원∙협력 활동비", "budget": 15000000, "spent": 13770000 }
       ]
@@ -2314,6 +2362,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 35000000,
       "spent": 32130000,
       "assignee": "R&BD지원팀",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "기업 지원∙협력 활동비", "budget": 35000000, "spent": 32130000 }
       ]
@@ -2325,6 +2374,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 55100000,
       "spent": 50700000,
       "assignee": "R&BD지원팀",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "인건비", "budget": 35500000, "spent": 34200000 },
         { "category": "간접비", "budget": 9000000, "spent": 9000000 },
@@ -2339,6 +2389,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 25500000,
       "spent": 25500000,
       "assignee": "평생교육원",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 25500000, "spent": 25500000 }
       ]
@@ -2349,6 +2400,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 22300000,
       "spent": 22300000,
       "assignee": "평생교육원",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 22300000, "spent": 22300000 }
       ]
@@ -2359,6 +2411,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 2800000,
       "spent": 2800000,
       "assignee": "정보통신처",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "지역 연계∙협업 지원비", "budget": 2800000, "spent": 2800000 }
       ]
@@ -2369,6 +2422,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 119900000,
       "spent": 59300000,
       "assignee": "정보통신처",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "교육∙연구 환경개선비", "budget": 119900000, "spent": 59300000 }
       ]
@@ -2379,6 +2433,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 62200000,
       "spent": 100000,
       "assignee": "평생교육원",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "지역 연계∙협업 지원비", "budget": 62200000, "spent": 100000 }
       ]
@@ -2389,6 +2444,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 15600000,
       "spent": 15600000,
       "assignee": "평생교육원",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 15600000, "spent": 15600000 }
       ]
@@ -2399,6 +2455,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 42700000,
       "spent": 42700000,
       "assignee": "기획처",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 42700000, "spent": 42700000 }
       ]
@@ -2409,6 +2466,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 9000000,
       "spent": 3000000,
       "assignee": "학생취업처",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 9000000, "spent": 3000000 }
       ]
@@ -2419,6 +2477,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 91800000,
       "spent": 52000000,
       "assignee": "평생교육원",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 91800000, "spent": 52000000 }
       ]
@@ -2429,6 +2488,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 0,
       "spent": 0,
       "assignee": "평생교육원",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 0, "spent": 0 }
       ]
@@ -2439,6 +2499,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 85100000,
       "spent": 85100000,
       "assignee": "평생교육원",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "실험∙실습장비 및 기자재 구입∙운영비", "budget": 85100000, "spent": 85100000 }
       ]
@@ -2449,6 +2510,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 0,
       "spent": 0,
       "assignee": "기획처",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 0, "spent": 0 }
       ]
@@ -2459,6 +2521,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 0,
       "spent": 0,
       "assignee": "평생교육원",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 0, "spent": 0 }
       ]
@@ -2469,6 +2532,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 0,
       "spent": 0,
       "assignee": "평생교육원",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 0, "spent": 0 }
       ]
@@ -2479,6 +2543,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 0,
       "spent": 0,
       "assignee": "평생교육원",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 0, "spent": 0 }
       ]
@@ -2490,6 +2555,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 173100000,
       "spent": 166900000,
       "assignee": "평생교육원",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "인건비", "budget": 114000000, "spent": 113100000 },
         { "category": "간접비", "budget": 20000000, "spent": 20000000 },
@@ -2504,6 +2570,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 22000000,
       "spent": 22000000,
       "assignee": "로컬브릿지팀",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 22000000, "spent": 22000000 }
       ]
@@ -2514,6 +2581,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 15000000,
       "spent": 7800000,
       "assignee": "로컬브릿지팀",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 15000000, "spent": 7800000 }
       ]
@@ -2524,6 +2592,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 38000000,
       "spent": 23500000,
       "assignee": "로컬브릿지팀",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "지역 연계∙협업 지원비", "budget": 38000000, "spent": 23500000 }
       ]
@@ -2534,6 +2603,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 65400000,
       "spent": 11100000,
       "assignee": "로컬브릿지팀",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "지역 연계∙협업 지원비", "budget": 40000000, "spent": 0 },
         { "category": "성과 활용∙확산 지원비", "budget": 25400000, "spent": 11100000 }
@@ -2545,6 +2615,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 11500000,
       "spent": 11500000,
       "assignee": "로컬브릿지팀",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 11500000, "spent": 11500000 }
       ]
@@ -2555,6 +2626,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 23900000,
       "spent": 0,
       "assignee": "로컬브릿지팀",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 23900000, "spent": 0 }
       ]
@@ -2565,6 +2637,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 33400000,
       "spent": 19600000,
       "assignee": "로컬브릿지팀",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 33400000, "spent": 19600000 }
       ]
@@ -2575,6 +2648,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 19000000,
       "spent": 18700000,
       "assignee": "로컬브릿지팀",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 19000000, "spent": 18700000 }
       ]
@@ -2586,6 +2660,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 71800000,
       "spent": 65000000,
       "assignee": "로컬브릿지팀",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "인건비", "budget": 24000000, "spent": 23200000 },
         { "category": "장학금", "budget": 30000000, "spent": 29200000 },
@@ -2600,6 +2675,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 6000000,
       "spent": 4800000,
       "assignee": "산학협력단",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 6000000, "spent": 4800000 }
       ]
@@ -2610,6 +2686,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 15000000,
       "spent": 13500000,
       "assignee": "산학협력단",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 15000000, "spent": 13500000 }
       ]
@@ -2620,6 +2697,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 3000000,
       "spent": 2100000,
       "assignee": "산학협력단",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 3000000, "spent": 2100000 }
       ]
@@ -2630,6 +2708,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 6000000,
       "spent": 6000000,
       "assignee": "산학협력단",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 6000000, "spent": 6000000 }
       ]
@@ -2640,6 +2719,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 0,
       "spent": 0,
       "assignee": "산학협력단",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 0, "spent": 0 }
       ]
@@ -2650,6 +2730,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 50000000,
       "spent": 46400000,
       "assignee": "산학협력단",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "교육∙연구 환경개선비", "budget": 50000000, "spent": 46400000 }
       ]
@@ -2660,6 +2741,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 30400000,
       "spent": 30410000,
       "assignee": "산학협력단",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "기업 지원∙협력 활동비", "budget": 30400000, "spent": 30410000 }
       ]
@@ -2670,6 +2752,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 54000000,
       "spent": 53900000,
       "assignee": "산학협력단",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "실험∙실습장비 및 기자재 구입∙운영비", "budget": 54000000, "spent": 53900000 }
       ]
@@ -2680,6 +2763,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 4000000,
       "spent": 3700000,
       "assignee": "산학협력단",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "지역 연계∙협업 지원비", "budget": 4000000, "spent": 3700000 }
       ]
@@ -2690,6 +2774,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 38400000,
       "spent": 31800000,
       "assignee": "산학협력단",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "성과 활용∙확산 지원비", "budget": 38400000, "spent": 31800000 }
       ]
@@ -2700,6 +2785,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 100000000,
       "spent": 49000000,
       "assignee": "산학협력단",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "지역 연계∙협업 지원비", "budget": 100000000, "spent": 49000000 }
       ]
@@ -2710,6 +2796,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 18200000,
       "spent": 17990000,
       "assignee": "산학협력단",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "기업 지원∙협력 활동비", "budget": 18200000, "spent": 17990000 }
       ]
@@ -2721,6 +2808,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 75000000,
       "spent": 65500000,
       "assignee": "산학협력단",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "인건비", "budget": 54000000, "spent": 51400000 },
         { "category": "간접비", "budget": 9000000, "spent": 9000000 },
@@ -2734,6 +2822,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 327300000,
       "spent": 160400000,
       "assignee": "시설관리처",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "교육∙연구 환경개선비", "budget": 327300000, "spent": 160400000 }
       ]
@@ -2744,6 +2833,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 73900000,
       "spent": 0,
       "assignee": "산학협력단",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "교육∙연구 환경개선비", "budget": 73900000, "spent": 0 }
       ]
@@ -2754,6 +2844,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 43600000,
       "spent": 35100000,
       "assignee": "교무처",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 43600000, "spent": 35100000 }
       ]
@@ -2764,6 +2855,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 47300000,
       "spent": 47300000,
       "assignee": "학생취업처",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 47300000, "spent": 47300000 }
       ]
@@ -2774,6 +2866,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 41800000,
       "spent": 41700000,
       "assignee": "기획처",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 41800000, "spent": 41700000 }
       ]
@@ -2784,6 +2877,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 38500000,
       "spent": 38500000,
       "assignee": "교무처",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 38500000, "spent": 38500000 }
       ]
@@ -2794,6 +2888,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 100000000,
       "spent": 0,
       "assignee": "산학협력단",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 100000000, "spent": 0 }
       ]
@@ -2804,6 +2899,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 48000000,
       "spent": 0,
       "assignee": "학생취업처",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 48000000, "spent": 0 }
       ]
@@ -2814,6 +2910,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 169300000,
       "spent": 151900000,
       "assignee": "산학협력단",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "기업 지원∙협력 활동비", "budget": 79100000, "spent": 23000000 },
         { "category": "지역 연계∙협업 지원비", "budget": 35000000, "spent": 79100000 },
@@ -2826,6 +2923,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 557700000,
       "spent": 285700000,
       "assignee": "산학협력단",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "실험∙실습장비 및 기자재 구입∙운영비", "budget": 557700000, "spent": 285700000 }
       ]
@@ -2837,6 +2935,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 189600000,
       "spent": 175100000,
       "assignee": "산학협력단",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "인건비", "budget": 99500000, "spent": 97700000 },
         { "category": "간접비", "budget": 46000000, "spent": 46000000 },
@@ -2850,6 +2949,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 38000000,
       "spent": 35400000,
       "assignee": "산학협력단",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 38000000, "spent": 35400000 }
       ]
@@ -2860,6 +2960,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 50000000,
       "spent": 50000000,
       "assignee": "산학협력단",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 50000000, "spent": 50000000 }
       ]
@@ -2870,6 +2971,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 0,
       "spent": 0,
       "assignee": "산학협력단",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 0, "spent": 0 }
       ]
@@ -2880,6 +2982,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 0,
       "spent": 0,
       "assignee": "산학협력단",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 0, "spent": 0 }
       ]
@@ -2890,6 +2993,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 15800000,
       "spent": 15400000,
       "assignee": "산학협력단",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "기업 지원∙협력 활동비", "budget": 15800000, "spent": 15400000 }
       ]
@@ -2900,6 +3004,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 20000000,
       "spent": 20000000,
       "assignee": "산학협력단",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "기업 지원∙협력 활동비", "budget": 20000000, "spent": 20000000 }
       ]
@@ -2910,6 +3015,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 0,
       "spent": 0,
       "assignee": "산학협력단",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "기업 지원∙협력 활동비", "budget": 0, "spent": 0 }
       ]
@@ -2920,6 +3026,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 0,
       "spent": 0,
       "assignee": "산학협력단",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "기업 지원∙협력 활동비", "budget": 0, "spent": 0 }
       ]
@@ -2930,6 +3037,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 150000000,
       "spent": 0,
       "assignee": "산학협력단",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "교육∙연구 환경개선비", "budget": 150000000, "spent": 0 }
       ]
@@ -2940,6 +3048,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 25500000,
       "spent": 25500000,
       "assignee": "산학협력단",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "실험∙실습장비 및 기자재 구입∙운영비", "budget": 25500000, "spent": 25500000 }
       ]
@@ -2950,6 +3059,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 14700000,
       "spent": 6200000,
       "assignee": "산학협력단",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "성과 활용∙확산 지원비", "budget": 14700000, "spent": 6200000 }
       ]
@@ -2960,6 +3070,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 20000000,
       "spent": 0,
       "assignee": "산학협력단",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "성과 활용∙확산 지원비", "budget": 20000000, "spent": 0 }
       ]
@@ -2971,6 +3082,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 66000000,
       "spent": 59300000,
       "assignee": "산학협력단",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "인건비", "budget": 42000000, "spent": 40800000 },
         { "category": "간접비", "budget": 12000000, "spent": 12000000 },
@@ -2984,6 +3096,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 3200000,
       "spent": 470000,
       "assignee": "산학협력단",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "지역 연계∙협업 지원비", "budget": 3200000, "spent": 470000 }
       ]
@@ -2994,6 +3107,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 0,
       "spent": 0,
       "assignee": "산학협력단",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": []
     },
     {
@@ -3002,6 +3116,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 20000000,
       "spent": 12600000,
       "assignee": "산학협력단",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 20000000, "spent": 12600000 }
       ]
@@ -3012,6 +3127,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 33500000,
       "spent": 29000000,
       "assignee": "산학협력단",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 33500000, "spent": 29000000 }
       ]
@@ -3022,6 +3138,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 26500000,
       "spent": 24200000,
       "assignee": "산학협력단",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 26500000, "spent": 24200000 }
       ]
@@ -3032,6 +3149,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 0,
       "spent": 0,
       "assignee": "산학협력단",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": []
     },
     {
@@ -3040,6 +3158,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 0,
       "spent": 0,
       "assignee": "서포터즈 단원",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": []
     },
     {
@@ -3048,6 +3167,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 0,
       "spent": 0,
       "assignee": "정보통신처",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": []
     },
     {
@@ -3056,6 +3176,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 341400000,
       "spent": 333600000,
       "assignee": "기획처, 시설관리처",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "교육∙연구 환경개선비", "budget": 341400000, "spent": 333600000 }
       ]
@@ -3066,6 +3187,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 58900000,
       "spent": 52600000,
       "assignee": "외부 강사, 산학협력단",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "실험∙실습장비 및 기자재 구입∙운영비", "budget": 58900000, "spent": 52600000 }
       ]
@@ -3076,6 +3198,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 66500000,
       "spent": 60000000,
       "assignee": "산학협력단",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "인건비", "budget": 35000000, "spent": 33500000 },
         { "category": "간접비", "budget": 15000000, "spent": 15000000 },
@@ -3089,6 +3212,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 55400000,
       "spent": 49100000,
       "assignee": "늘봄학교지원센터",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 55400000, "spent": 49100000 }
       ]
@@ -3099,6 +3223,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 113200000,
       "spent": 111800000,
       "assignee": "늘봄학교지원센터",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 113200000, "spent": 111800000 }
       ]
@@ -3109,6 +3234,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 21000000,
       "spent": 21000000,
       "assignee": "늘봄학교지원센터",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 21000000, "spent": 21000000 }
       ]
@@ -3119,6 +3245,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 34000000,
       "spent": 19600000,
       "assignee": "늘봄학교지원센터",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "지역 연계∙협업 지원비", "budget": 34000000, "spent": 19600000 }
       ]
@@ -3129,6 +3256,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 0,
       "spent": 0,
       "assignee": "늘봄학교지원센터",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": []
     },
     {
@@ -3137,6 +3265,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 20000000,
       "spent": 19900000,
       "assignee": "늘봄학교지원센터",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "기업 지원∙협력 활동비", "budget": 20000000, "spent": 19900000 }
       ]
@@ -3147,6 +3276,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 13800000,
       "spent": 13000000,
       "assignee": "늘봄학교지원센터",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 13800000, "spent": 13000000 }
       ]
@@ -3157,6 +3287,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 30000000,
       "spent": 30000000,
       "assignee": "늘봄학교지원센터",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 30000000, "spent": 30000000 }
       ]
@@ -3167,6 +3298,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 33500000,
       "spent": 23200000,
       "assignee": "늘봄학교지원센터",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "성과 활용∙확산 지원비", "budget": 33500000, "spent": 23200000 }
       ]
@@ -3177,6 +3309,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 22500000,
       "spent": 22100000,
       "assignee": "늘봄학교지원센터",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 22500000, "spent": 22100000 }
       ]
@@ -3187,6 +3320,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 25700000,
       "spent": 25000000,
       "assignee": "늘봄학교지원센터",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 25700000, "spent": 25000000 }
       ]
@@ -3197,6 +3331,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 415900000,
       "spent": 358100000,
       "assignee": "늘봄학교지원센터",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "교육∙연구 환경개선비", "budget": 415900000, "spent": 358100000 }
       ]
@@ -3207,6 +3342,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 244000000,
       "spent": 57300000,
       "assignee": "늘봄학교지원센터",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "실험∙실습장비 및 기자재 구입∙운영비", "budget": 244000000, "spent": 57300000 }
       ]
@@ -3217,6 +3353,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 171000000,
       "spent": 147700000,
       "assignee": "늘봄학교지원센터",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "인건비", "budget": 99000000, "spent": 83800000 },
         { "category": "간접비", "budget": 36000000, "spent": 36000000 },
@@ -3230,6 +3367,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 27900000,
       "spent": 17800000,
       "assignee": "R&BD지원센터",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 27900000, "spent": 17800000 }
       ]
@@ -3240,6 +3378,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 12000000,
       "spent": 0,
       "assignee": "R&BD지원센터",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 12000000, "spent": 0 }
       ]
@@ -3250,6 +3389,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 9200000,
       "spent": 0,
       "assignee": "R&BD지원센터",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 9200000, "spent": 0 }
       ]
@@ -3260,6 +3400,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 124400000,
       "spent": 118400000,
       "assignee": "R&BD지원센터",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 6000000, "spent": 0 },
         { "category": "교육∙연구 환경개선비", "budget": 118400000, "spent": 118400000 }
@@ -3271,6 +3412,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 136100000,
       "spent": 132300000,
       "assignee": "R&BD지원센터",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "실험∙실습장비 및 기자재 구입∙운영비", "budget": 136100000, "spent": 132300000 }
       ]
@@ -3281,6 +3423,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 185300000,
       "spent": 169600000,
       "assignee": "R&BD지원센터",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "지역 연계∙협업 지원비", "budget": 185300000, "spent": 169600000 }
       ]
@@ -3291,6 +3434,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 57200000,
       "spent": 34300000,
       "assignee": "R&BD지원센터",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 23000000, "spent": 13200000 },
         { "category": "성과 활용∙확산 지원비", "budget": 34200000, "spent": 21100000 }
@@ -3302,6 +3446,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 73050000,
       "spent": 58950000,
       "assignee": "R&BD지원센터",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "인건비", "budget": 35500000, "spent": 27600000 },
         { "category": "간접비", "budget": 18750000, "spent": 18750000 },
@@ -3315,6 +3460,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 66000000,
       "spent": 62000000,
       "assignee": "시설관리처",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "교육∙연구 환경개선비", "budget": 66000000, "spent": 62000000 }
       ]
@@ -3325,6 +3471,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 157000000,
       "spent": 57000000,
       "assignee": "R&BD지원센터",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "실험∙실습장비 및 기자재 구입∙운영비", "budget": 157000000, "spent": 57000000 }
       ]
@@ -3335,6 +3482,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 21000000,
       "spent": 18000000,
       "assignee": "R&BD지원센터",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 21000000, "spent": 18000000 }
       ]
@@ -3345,6 +3493,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 30000000,
       "spent": 30000000,
       "assignee": "R&BD지원센터",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 30000000, "spent": 30000000 }
       ]
@@ -3355,6 +3504,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 25000000,
       "spent": 2000000,
       "assignee": "R&BD지원센터",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "지역 연계∙협업 지원비", "budget": 25000000, "spent": 2000000 }
       ]
@@ -3365,6 +3515,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 8000000,
       "spent": 0,
       "assignee": "R&BD지원센터",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "성과 활용∙확산 지원비", "budget": 8000000, "spent": 0 }
       ]
@@ -3375,6 +3526,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 62000000,
       "spent": 55000000,
       "assignee": "R&BD지원센터",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 62000000, "spent": 55000000 }
       ]
@@ -3385,6 +3537,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 8000000,
       "spent": 8000000,
       "assignee": "R&BD지원센터",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 8000000, "spent": 8000000 }
       ]
@@ -3395,6 +3548,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 106000000,
       "spent": 68000000,
       "assignee": "국제교류원",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "budget_categories": [
         { "category": "인건비", "budget": 38000000, "spent": 30000000 },
         { "category": "장학금", "budget": 40000000, "spent": 15000000 },
