@@ -1385,11 +1385,11 @@ export const initialProjectsData = [
       {
         id: "D1",
         title: "지역문제 해결을 위한 울산형 혁신 솔루션 구축",
-        budget: 250000000,
+        budget: 237500000,
         spent: 80000000,
         budget_2026: 200000000,
         spent_2026: 50000000,
-        budget_2025_carry: 50000000,
+        budget_2025_carry: 37500000,
         spent_2025_carry: 30000000,
         manager: "현용환 RCC센터장",
         programs: [
@@ -2497,98 +2497,107 @@ export const YEAR_1_PROGRAMS = {
     }],
   "D1": [
     {
-      "id": "B3-S1T1-1",
-      "title": "지역문제해결 공용플랫폼의 협력 체계 구축",
-      "budget": 22000000,
-      "spent": 22000000,
-      "assignee": "로컬브릿지팀",
+      "id": "D1-S1T1-1",
+      "title": "지역사회 기반 보건복지 협의체 구축 및 운영",
+      "budget": 3200000,
+      "spent": 470000,
+      "assignee": "산학협력단",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 22000000, "spent": 22000000 }
+        { "category": "지역 연계∙협업 지원비", "budget": 3200000, "spent": 470000 }
       ]
     },
     {
-      "id": "B3-S1T1-2",
-      "title": "공용 플랫폼의 협력 체계 마련",
-      "budget": 15000000,
-      "spent": 7800000,
-      "assignee": "로컬브릿지팀",
-      "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 15000000, "spent": 7800000 }
-      ]
-    },
-    {
-      "id": "B3-S1T2-1",
-      "title": "지역문제해결 캡스톤 디자인 운영",
-      "budget": 38000000,
-      "spent": 23500000,
-      "assignee": "로컬브릿지팀",
-      "budget_categories": [
-        { "category": "지역 연계∙협업 지원비", "budget": 38000000, "spent": 23500000 }
-      ]
-    },
-    {
-      "id": "B3-S1T2-2",
-      "title": "자매도시 또는 글로벌 지역문제해결 캡스톤 디자인 모델 개발",
-      "budget": 65400000,
-      "spent": 11100000,
-      "assignee": "로컬브릿지팀",
-      "budget_categories": [
-        { "category": "지역 연계∙협업 지원비", "budget": 40000000, "spent": 0 },
-        { "category": "성과 활용∙확산 지원비", "budget": 25400000, "spent": 11100000 }
-      ]
-    },
-    {
-      "id": "B3-S2T3-1",
-      "title": "지역협력 마일리지 제도 협력 체계 구축",
-      "budget": 11500000,
-      "spent": 11500000,
-      "assignee": "로컬브릿지팀",
-      "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 11500000, "spent": 11500000 }
-      ]
-    },
-    {
-      "id": "B3-S2T3-2",
-      "title": "지역협력 마일리지 형태의 지속 가능한 주민참여 운영 모델 및 제도 개발",
-      "budget": 23900000,
+      "id": "D1-S1T1-2",
+      "title": "보건의료 전문기관 연계 협력체계 마련",
+      "budget": 0,
       "spent": 0,
-      "assignee": "로컬브릿지팀",
+      "assignee": "산학협력단",
+      "budget_categories": []
+    },
+    {
+      "id": "D1-S1T2-1",
+      "title": "보건분야 전문기술인력 연수 프로그램 기획 및 운영",
+      "budget": 20000000,
+      "spent": 12600000,
+      "assignee": "산학협력단",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 23900000, "spent": 0 }
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 20000000, "spent": 12600000 }
       ]
     },
     {
-      "id": "B3-S2T4-1",
-      "title": "학과기반의 지역사회공헌활동 프로그램 운영",
-      "budget": 33400000,
-      "spent": 19600000,
-      "assignee": "로컬브릿지팀",
+      "id": "D1-S1T2-2",
+      "title": "요양보호사 등 재직자 대상 직무 역량 강화 교육과정 개발 및 운영",
+      "budget": 33500000,
+      "spent": 29000000,
+      "assignee": "산학협력단",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 33400000, "spent": 19600000 }
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 33500000, "spent": 29000000 }
       ]
     },
     {
-      "id": "B3-S2T4-2",
-      "title": "대학의 역량을 활용한 지역사회협력 연계",
-      "budget": 19000000,
-      "spent": 18700000,
-      "assignee": "로컬브릿지팀",
+      "id": "D1-S1T2-3",
+      "title": "대학생-재직자 매칭 보건복지 연수 과정 운영",
+      "budget": 26500000,
+      "spent": 24200000,
+      "assignee": "산학협력단",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 19000000, "spent": 18700000 }
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 26500000, "spent": 24200000 }
       ]
-    }
-  ,
+    },
     {
-      "id": "B3-S2T5-1",
+      "id": "D1-S2T3-1",
+      "title": "취약계층 건강모니터링 프로그램 운영",
+      "budget": 0,
+      "spent": 0,
+      "assignee": "산학협력단",
+      "budget_categories": []
+    },
+    {
+      "id": "D1-S2T3-2",
+      "title": "사회적 약자 의료케어 서포터즈 조직 및 운영",
+      "budget": 0,
+      "spent": 0,
+      "assignee": "서포터즈 단원",
+      "budget_categories": []
+    },
+    {
+      "id": "D1-S2T3-3",
+      "title": "디지털헬스케어 기반 시범사업 적용 및 평가",
+      "budget": 0,
+      "spent": 0,
+      "assignee": "정보통신처",
+      "budget_categories": []
+    },
+    {
+      "id": "D1-S2T4-1",
+      "title": "반려동물보건과 신설을 위한 학과 기반 구축",
+      "budget": 341400000,
+      "spent": 333600000,
+      "assignee": "기획처, 시설관리처",
+      "budget_categories": [
+        { "category": "교육∙연구 환경개선비", "budget": 341400000, "spent": 333600000 }
+      ]
+    },
+    {
+      "id": "D1-S2T4-2",
+      "title": "반려동물 매개치료 교육 프로그램 개발 및 적용",
+      "budget": 58900000,
+      "spent": 52600000,
+      "assignee": "외부 강사, 산학협력단",
+      "budget_categories": [
+        { "category": "실험∙실습장비 및 기자재 구입∙운영비", "budget": 58900000, "spent": 52600000 }
+      ]
+    },
+    {
+      "id": "D1-S2T5-1",
       "title": "공통경비",
-      "budget": 71800000,
-      "spent": 65000000,
-      "assignee": "로컬브릿지팀",
+      "budget": 66500000,
+      "spent": 60000000,
+      "assignee": "산학협력단",
       "budget_categories": [
-        { "category": "인건비", "budget": 24000000, "spent": 23200000 },
-        { "category": "장학금", "budget": 30000000, "spent": 29200000 },
-        { "category": "간접비", "budget": 9000000, "spent": 9000000 },
-        { "category": "그 밖의 사업운영경비", "budget": 8800000, "spent": 3600000 }
+        { "category": "인건비", "budget": 35000000, "spent": 33500000 },
+        { "category": "간접비", "budget": 15000000, "spent": 15000000 },
+        { "category": "그 밖의 사업운영경비", "budget": 16500000, "spent": 11500000 }
       ]
     }],
   "B4": [
@@ -3473,7 +3482,7 @@ export const Y1_UNIT_META = {
     "budget": 550000000,
     "national": 490000000,
     "city": 60000000,
-    "carry": 100000000
+    "carry": 37500000
   },
   "D2": {
     "budget": 1200000000,
