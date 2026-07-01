@@ -27,7 +27,7 @@ export default function Sidebar({
             className={`nav-item ${activeTab === "dashboard" ? "active" : ""}`}
             onClick={() => onChangeTab("dashboard")}
           >
-            <LayoutDashboard size={18} />
+            <LayoutDashboard size={24} />
             <span>IR 대시보드</span>
           </div>
 
@@ -41,7 +41,7 @@ export default function Sidebar({
                 }
               }}
             >
-              <FolderKanban size={18} />
+              <FolderKanban size={24} />
               <span>단위과제 관리</span>
             </div>
             <div className="nav-sub-menu">
@@ -76,7 +76,7 @@ export default function Sidebar({
             className={`nav-item ${activeTab === "progress" ? "active" : ""}`}
             onClick={() => onChangeTab("progress")}
           >
-            <ClipboardList size={18} />
+            <ClipboardList size={24} />
             <span>프로그램 진행</span>
           </div>
 
@@ -84,7 +84,7 @@ export default function Sidebar({
             className={`nav-item ${activeTab === "budget-items" ? "active" : ""}`}
             onClick={() => onChangeTab("budget-items")}
           >
-            <Landmark size={18} />
+            <Landmark size={24} />
             <span>예산항목 관리</span>
           </div>
 
@@ -98,7 +98,7 @@ export default function Sidebar({
                 }
               }}
             >
-              <FileBarChart2 size={18} />
+              <FileBarChart2 size={24} />
               <span>성과지표 관리</span>
             </div>
             <div className="nav-sub-menu">
@@ -134,7 +134,7 @@ export default function Sidebar({
             onClick={() => onChangeTab("llm_wiki")}
             style={{ marginTop: "0.2rem" }}
           >
-            <BookOpen size={18} />
+            <BookOpen size={24} />
             <span>앵커Wiki</span>
           </div>
 
@@ -149,7 +149,7 @@ export default function Sidebar({
                   }
                 }}
               >
-                <Users size={18} />
+                <Users size={24} />
                 <span>사업단 관리</span>
               </div>
               <div className="nav-sub-menu">
@@ -195,14 +195,14 @@ export default function Sidebar({
         </nav>
       </div>
 
-      <div className="user-profile-card">
-        <div style={{ marginBottom: "0.5rem" }}>
-          <span style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)", display: "block" }}>
+      <div className="user-profile-card" style={{ padding: "0.5rem" }}>
+        <div style={{ marginBottom: "0.3rem" }}>
+          <span style={{ fontSize: "0.6rem", color: "var(--text-secondary-dark)", display: "block" }}>
             현재 로그인 권한
           </span>
-          <span style={{ fontSize: "0.9rem", fontWeight: "700" }}>{currentRole.name}</span>
+          <span style={{ fontSize: "0.75rem", fontWeight: "700" }}>{currentRole.name}</span>
         </div>
-        <p style={{ fontSize: "0.7rem", color: "var(--text-secondary-dark)", lineHeight: "1.2" }}>
+        <p style={{ fontSize: "0.6rem", color: "var(--text-secondary-dark)", lineHeight: "1.2" }}>
           {currentRole.desc}
         </p>
       </div>
