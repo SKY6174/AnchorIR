@@ -753,3 +753,12 @@ graph TD
 - **카드/패널 배경**: `var(--panel-bg)` 와 `var(--border-color)` 변수를 활용하여 라이트 모드용 패널 배경과 테두리가 시스템 모드에 조화롭게 스위칭되도록 구성합니다.
 - **강조 색상**: 핵심 정보나 아이디, 활성 텍스트에는 `var(--accent-color)` (Ulsan Blue)를 적용해 가독성을 제공합니다.
 - **설정 영속화 (Theme Persistence)**: 사용자가 선호하는 화면 모드(라이트/다크)가 새로고침 시 유실되지 않도록 `localStorage` 에 `anchor_dark_mode` 키로 저장하고, 컴포넌트 초기화 시(`useState` 지연 평가 초기화 패턴) 이를 우선 로드하여 영속적으로 테마가 유지되도록 설계해야 합니다.
+
+---
+
+## 8. RAG AI 위키 폴더 설계 및 구축 가이드
+지능형 앵커 RAG 위키 시스템을 로컬/클라우드에 온전히 직접 배포하고 관리하기 위한 표준 폴더 레이아웃 규칙입니다.
+- **`backend/` (FastAPI 서버)**: `app/main.py`를 진입점으로 하며, 프론트엔드 리액트와 통신하는 API 라우터(`routes.py`), RAG 알고리즘(`services/rag.py`)을 포함합니다. 파이썬 의존성 패키지는 `requirements.txt`에 기록합니다.
+- **`scripts/` (데이터 ETL)**: `ingest.py` 스크립트를 통해 PDF 성과보고서를 읽고, `RecursiveCharacterTextSplitter`를 활용해 1,000자(겹침 200자) 단위로 청킹한 뒤, 임베딩을 거쳐 벡터 데이터베이스에 저장하는 파이프라인 역할을 수행합니다.
+- **`data/` (문서 및 DB)**: `documents/`에 원본 성과보고서 PDF를 임시 적재하며, `vector_store/` 폴더 내부에 임베딩된 ChromaDB 바이너리 파일들을 영속적으로 보관 및 보존합니다.
+- **`frontend/` (React 대시보드)**: `anchor-dashboard` 리액트 프로젝트로 작동하며 `LLMWiki.jsx`가 챗봇 UI를 렌더링하고 백엔드 API와 통신을 담당합니다.
