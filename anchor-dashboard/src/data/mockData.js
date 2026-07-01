@@ -2729,101 +2729,116 @@ export const YEAR_1_PROGRAMS = {
     {
       "id": "C2-S1T1-1",
       "title": "AID-X지원센터 공간 설계 및 구축",
-      "budget": 400000000,
+      "budget": 327300000,
+      "spent": 160400000,
       "assignee": "시설관리처",
       "budget_categories": [
-        { "category": "교육∙연구 환경개선비", "budget": 400000000, "spent": 400000000 }
+        { "category": "교육∙연구 환경개선비", "budget": 327300000, "spent": 160400000 }
       ]
     },
     {
       "id": "C2-S1T1-2",
       "title": "센터 운영 규정 및 마스터플랜 수립",
-      "budget": 10000000,
+      "budget": 73900000,
+      "spent": 0,
       "assignee": "산학협력단",
       "budget_categories": [
-        { "category": "교육∙연구 환경개선비", "budget": 10000000, "spent": 10000000 }
+        { "category": "교육∙연구 환경개선비", "budget": 73900000, "spent": 0 }
       ]
     },
     {
       "id": "C2-S1T2-1",
       "title": "교원 AI·DX 활용 교수역량 강화 연수",
-      "budget": 40000000,
+      "budget": 43600000,
+      "spent": 35100000,
       "assignee": "교무처",
       "budget_categories": [
-        { "category": "교육∙연구 환경개선비", "budget": 40000000, "spent": 40000000 }
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 43600000, "spent": 35100000 }
       ]
     },
     {
       "id": "C2-S1T2-2",
       "title": "AI 리터러시 튜터 교원 선발 및 아카데미 운영",
-      "budget": 20000000,
+      "budget": 47300000,
+      "spent": 47300000,
       "assignee": "학생취업처",
       "budget_categories": [
-        { "category": "교육∙연구 환경개선비", "budget": 20000000, "spent": 20000000 }
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 47300000, "spent": 47300000 }
       ]
     },
     {
       "id": "C2-S2T3-1",
       "title": "AI·DX 융합 마이크로디그리 교과 개발",
-      "budget": 50000000,
+      "budget": 41800000,
+      "spent": 41700000,
       "assignee": "기획처",
       "budget_categories": [
-        { "category": "교육∙연구 환경개선비", "budget": 50000000, "spent": 50000000 }
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 41800000, "spent": 41700000 }
       ]
     },
     {
       "id": "C2-S2T3-2",
       "title": "학과별 AI 융합 요소기술 교재 집필",
-      "budget": 30000000,
+      "budget": 38500000,
+      "spent": 38500000,
       "assignee": "교무처",
       "budget_categories": [
-        { "category": "교육∙연구 환경개선비", "budget": 30000000, "spent": 30000000 }
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 38500000, "spent": 38500000 }
       ]
     },
     {
       "id": "C2-S2T4-1",
       "title": "산업체 재직자 맞춤형 AI·DX 직무 비교과 개설",
-      "budget": 60000000,
+      "budget": 100000000,
+      "spent": 0,
       "assignee": "산학협력단",
       "budget_categories": [
-        { "category": "교육∙연구 환경개선비", "budget": 60000000, "spent": 60000000 }
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 100000000, "spent": 0 }
       ]
     },
     {
       "id": "C2-S2T4-2",
       "title": "채용 우대형 AI 코딩 단기 실무반 운영",
-      "budget": 40000000,
+      "budget": 48000000,
+      "spent": 0,
       "assignee": "학생취업처",
       "budget_categories": [
-        { "category": "교육∙연구 환경개선비", "budget": 40000000, "spent": 40000000 }
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 48000000, "spent": 0 }
       ]
     },
     {
       "id": "C2-S3T5-1",
       "title": "기업 애로 AI 기술 연계 산학 공동 R&D 수행",
-      "budget": 120000000,
+      "budget": 169300000,
+      "spent": 151900000,
       "assignee": "산학협력단",
       "budget_categories": [
-        { "category": "교육∙연구 환경개선비", "budget": 120000000, "spent": 120000000 }
+        { "category": "기업 지원∙협력 활동비", "budget": 79100000, "spent": 23000000 },
+        { "category": "지역 연계∙협업 지원비", "budget": 35000000, "spent": 79100000 },
+        { "category": "성과 활용∙확산 지원비", "budget": 55200000, "spent": 49800000 }
       ]
     },
     {
       "id": "C2-S3T6-1",
       "title": "중소기업 맞춤형 디지털 트윈 실증 기술지도",
-      "budget": 80000000,
+      "budget": 557700000,
+      "spent": 285700000,
       "assignee": "산학협력단",
       "budget_categories": [
-        { "category": "교육∙연구 환경개선비", "budget": 80000000, "spent": 80000000 }
+        { "category": "실험∙실습장비 및 기자재 구입∙운영비", "budget": 557700000, "spent": 285700000 }
       ]
     }
   ,
     {
-      "id": "C1-S3T7-1",
+      "id": "C2-S3T7-1",
       "title": "공통경비",
-      "budget": 10000000,
+      "budget": 189600000,
+      "spent": 175100000,
       "assignee": "산학협력단",
       "budget_categories": [
-        { "category": "교육∙연구 환경개선비", "budget": 10000000, "spent": 10000000 }
+        { "category": "인건비", "budget": 99500000, "spent": 97700000 },
+        { "category": "간접비", "budget": 46000000, "spent": 46000000 },
+        { "category": "그 밖의 사업운영경비", "budget": 44100000, "spent": 31400000 }
       ]
     }],
   "B3": [
@@ -3381,9 +3396,9 @@ export const Y1_UNIT_META = {
     "carry": 150000000
   },
   "C2": {
-    "budget": 300000000,
-    "national": 275000000,
-    "city": 25000000,
+    "budget": 1637000000,
+    "national": 1497000000,
+    "city": 140000000,
     "carry": 80000000
   },
   "D1": {
