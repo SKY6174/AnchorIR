@@ -13,6 +13,7 @@ export default function LLMWiki() {
   ]);
   const [loading, setLoading] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("all");
+  const [isFocused, setIsFocused] = useState(false);
   const chatEndRef = useRef(null);
 
   // 메시지 전송 시 대화창 하단 자동 스크롤
@@ -251,12 +252,26 @@ export default function LLMWiki() {
         </div>
 
         {/* 채팅 입력 폼 */}
-        <form onSubmit={handleSend} style={{ display: "flex", gap: "0.5rem", background: "var(--panel-bg)", border: "1px solid var(--border-color)", padding: "0.4rem 0.6rem", borderRadius: "0.75rem" }}>
+        <form 
+          onSubmit={handleSend} 
+          style={{ 
+            display: "flex", 
+            gap: "0.5rem", 
+            background: "var(--panel-bg)", 
+            border: isFocused ? "1.5px solid var(--accent-color)" : "1.5px solid rgba(255, 255, 255, 0.12)", 
+            padding: "0.4rem 0.6rem", 
+            borderRadius: "0.75rem",
+            boxShadow: isFocused ? "0 0 10px rgba(59, 130, 246, 0.25)" : "none",
+            transition: "all 0.2s ease"
+          }}
+        >
           <input
             type="text"
             placeholder="사업 관련 질문을 입력하세요 (예: D3 지연 사유가 뭐야?)..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
+            onFocus={() => setIsFocused(true)}
+            onBlur={() => setIsFocused(false)}
             disabled={loading}
             style={{
               flexGrow: 1,
