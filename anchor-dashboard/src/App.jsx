@@ -2660,7 +2660,7 @@ export default function App() {
                     <tr style={{ background: "rgba(255,255,255,0.02)" }}>
                       <th rowSpan={2} style={{ verticalAlign: "middle", borderBottom: "1px solid rgba(255,255,255,0.1)", borderRight: "1px solid rgba(255,255,255,0.05)" }}>과제/부서</th>
                       <th colSpan={selectedYear >= 2 ? 5 : 4} style={{ textAlign: "center", borderBottom: "1px solid rgba(255,255,255,0.1)", borderRight: "1px solid rgba(255,255,255,0.05)", fontWeight: "800", color: "var(--accent-color)" }}>
-                        예산 배정 및 집행
+                        예산 배정 및 집행 (단위: 백만원)
                       </th>
                       <th colSpan={5} style={{ textAlign: "center", borderBottom: "1px solid rgba(255,255,255,0.1)", fontWeight: "800", color: "#10b981" }}>
                         프로그램 현황 및 진행
