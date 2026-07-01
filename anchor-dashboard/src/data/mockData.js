@@ -410,11 +410,11 @@ export const initialProjectsData = [
       {
         id: "A3",
         title: "글로벌 협력 거점 대학 육성",
-        budget: 300000000,
+        budget: 424000000,
         spent: 85000000,
         budget_2026: 240000000,
         spent_2026: 60000000,
-        budget_2025_carry: 60000000,
+        budget_2025_carry: 184000000,
         spent_2025_carry: 25000000,
         manager: "이동은 ECC센터장",
         programs: [
@@ -424,15 +424,15 @@ export const initialProjectsData = [
           { id: "A3-04", title: "TOPIK 한국어 교육 및 다문화 지원", budget_2026: 41000000, spent_2026: 10000000, budget_2025_carry: 8000000, spent_2025_carry: 5000000, assignee: "박기범 연구원", pdca: { p: "완료", d: "진행", c: "대기", a: "대기" } }
         ],
         budgetDetails: {
-          "인건비": { budget_2026: 20000000, spent_2026: 8000000, budget_2025_carry: 5000000, spent_2025_carry: 2000000 },
-          "장학금": { budget_2026: 40000000, spent_2026: 10000000, budget_2025_carry: 10000000, spent_2025_carry: 5000000 },
-          "교육∙연구 프로그램 개발∙운영비": { budget_2026: 120000000, spent_2026: 35000000, budget_2025_carry: 30000000, spent_2025_carry: 15000000 },
-          "교육∙연구 환경개선비": { budget_2026: 20000000, spent_2026: 3000000, budget_2025_carry: 5000000, spent_2025_carry: 1000000 },
-          "실험∙실습장비 및 기자재 구입∙운영비": { budget_2026: 10000000, spent_2026: 1000000, budget_2025_carry: 2000000, spent_2025_carry: 1000000 },
-          "지역 연계∙협업 지원비": { budget_2026: 10000000, spent_2026: 1000000, budget_2025_carry: 5000000, spent_2025_carry: 1000000 },
-          "기업 지원∙협력 활동비": { budget_2026: 10000000, spent_2026: 1000000, budget_2025_carry: 2000000, spent_2025_carry: 0 },
-          "성과 활용∙확산 지원비": { budget_2026: 10000000, spent_2026: 1000000, budget_2025_carry: 1000000, spent_2025_carry: 0 },
-          "그 밖의 사업운영경비": { budget_2026: 0, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0 },
+          "인건비": { budget_2026: 20000000, spent_2026: 8000000, budget_2025_carry: 8000000, spent_2025_carry: 2000000 },
+          "장학금": { budget_2026: 40000000, spent_2026: 10000000, budget_2025_carry: 25000000, spent_2025_carry: 5000000 },
+          "교육∙연구 프로그램 개발∙운영비": { budget_2026: 120000000, spent_2026: 35000000, budget_2025_carry: 10000000, spent_2025_carry: 15000000 },
+          "교육∙연구 환경개선비": { budget_2026: 20000000, spent_2026: 3000000, budget_2025_carry: 4000000, spent_2025_carry: 1000000 },
+          "실험∙실습장비 및 기자재 구입∙운영비": { budget_2026: 10000000, spent_2026: 1000000, budget_2025_carry: 100000000, spent_2025_carry: 1000000 },
+          "지역 연계∙협업 지원비": { budget_2026: 10000000, spent_2026: 1000000, budget_2025_carry: 23000000, spent_2025_carry: 1000000 },
+          "기업 지원∙협력 활동비": { budget_2026: 10000000, spent_2026: 1000000, budget_2025_carry: 0, spent_2025_carry: 0 },
+          "성과 활용∙확산 지원비": { budget_2026: 10000000, spent_2026: 1000000, budget_2025_carry: 8000000, spent_2025_carry: 0 },
+          "그 밖의 사업운영경비": { budget_2026: 0, spent_2026: 0, budget_2025_carry: 6000000, spent_2025_carry: 0 },
           "간접비": { budget_2026: 0, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0 }
         },
         kpis: [
@@ -3312,94 +3312,94 @@ export const YEAR_1_PROGRAMS = {
     {
       "id": "D4-S1T1-1",
       "title": "글로벌 거점 센터 물리적/제도적 공간 구축",
-      "budget": 71300000,
-      "spent": 67000000,
+      "budget": 66000000,
+      "spent": 62000000,
       "assignee": "시설관리처",
       "budget_categories": [
-        { "category": "교육∙연구 환경개선비", "budget": 71300000, "spent": 67000000 }
+        { "category": "교육∙연구 환경개선비", "budget": 66000000, "spent": 62000000 }
       ]
     },
     {
       "id": "D4-S1T1-2",
       "title": "센터 운영 규칙 및 마스터플랜 수립",
-      "budget": 11400000,
-      "spent": 11400000,
+      "budget": 157000000,
+      "spent": 57000000,
       "assignee": "R&BD지원센터",
       "budget_categories": [
-        { "category": "실험∙실습장비 및 기자재 구입∙운영비", "budget": 11400000, "spent": 11400000 }
+        { "category": "실험∙실습장비 및 기자재 구입∙운영비", "budget": 157000000, "spent": 57000000 }
       ]
     },
     {
       "id": "D4-S1T2-1",
       "title": "무역/글로벌 비즈니스 비교과 트랙 운영",
-      "budget": 20000000,
-      "spent": 15000000,
+      "budget": 21000000,
+      "spent": 18000000,
       "assignee": "R&BD지원센터",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 20000000, "spent": 15000000 }
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 21000000, "spent": 18000000 }
       ]
     },
     {
       "id": "D4-S1T2-2",
       "title": "해외 인턴십 파견 전 직무 훈련 코스 개설",
-      "budget": 12800000,
-      "spent": 10800000,
+      "budget": 30000000,
+      "spent": 30000000,
       "assignee": "R&BD지원센터",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 12800000, "spent": 10800000 }
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 30000000, "spent": 30000000 }
       ]
     },
     {
       "id": "D4-S2T3-1",
       "title": "자매대학 교환교류 및 공동 연구 세션 설계",
-      "budget": 0,
-      "spent": 0,
+      "budget": 25000000,
+      "spent": 2000000,
       "assignee": "R&BD지원센터",
       "budget_categories": [
-        { "category": "지역 연계∙협업 지원비", "budget": 0, "spent": 0 }
+        { "category": "지역 연계∙협업 지원비", "budget": 25000000, "spent": 2000000 }
       ]
     },
     {
       "id": "D4-S2T4-1",
       "title": "글로벌 지산학 거버넌스 위원회 회의 개최",
-      "budget": 1000000,
-      "spent": 700000,
+      "budget": 8000000,
+      "spent": 0,
       "assignee": "R&BD지원센터",
       "budget_categories": [
-        { "category": "지역 연계∙협업 지원비", "budget": 1000000, "spent": 700000 }
+        { "category": "성과 활용∙확산 지원비", "budget": 8000000, "spent": 0 }
       ]
     },
     {
       "id": "D4-S2T4-2",
       "title": "해외 우수 바이어 초청 수출상담회 연계",
-      "budget": 0,
-      "spent": 0,
+      "budget": 62000000,
+      "spent": 55000000,
       "assignee": "R&BD지원센터",
       "budget_categories": [
-        { "category": "지역 연계∙협업 지원비", "budget": 0, "spent": 0 }
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 62000000, "spent": 55000000 }
       ]
     },
     {
       "id": "D4-S2T4-3",
       "title": "글로벌 공동 연구 성과공유 세미나 개최",
-      "budget": 0,
-      "spent": 0,
+      "budget": 8000000,
+      "spent": 8000000,
       "assignee": "R&BD지원센터",
       "budget_categories": [
-        { "category": "지역 연계∙협업 지원비", "budget": 0, "spent": 0 }
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 8000000, "spent": 8000000 }
       ]
-    }
-  ,
+    },
     {
       "id": "D4-S3T7-1",
       "title": "공통경비",
-      "budget": 33500000,
-      "spent": 33000000,
+      "budget": 106000000,
+      "spent": 68000000,
       "assignee": "국제교류원",
       "budget_categories": [
-        { "category": "인건비", "budget": 20000000, "spent": 20000000 },
-        { "category": "간접비", "budget": 4000000, "spent": 4000000 },
-        { "category": "그 밖의 사업운영경비", "budget": 9500000, "spent": 9000000 }
+        { "category": "인건비", "budget": 38000000, "spent": 30000000 },
+        { "category": "장학금", "budget": 40000000, "spent": 15000000 },
+        { "category": "간접비", "budget": 13000000, "spent": 13000000 },
+        { "category": "그 밖의 사업운영경비", "budget": 15000000, "spent": 10000000 }
       ]
     }]
 };
@@ -3422,7 +3422,7 @@ export const Y1_UNIT_META = {
     "budget": 483000000,
     "national": 362000000,
     "city": 121000000,
-    "carry": 60000000
+    "carry": 184000000
   },
   "B1": {
     "budget": 300000000,
