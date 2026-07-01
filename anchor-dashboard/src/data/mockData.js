@@ -1241,11 +1241,11 @@ export const initialProjectsData = [
       {
         id: "C2",
         title: "동남권과 함께 성장하는 돌봄생태계, 울산애(愛) 구현",
-        budget: 900000000,
+        budget: 1002300000,
         spent: 280000000,
         budget_2026: 700000000,
         spent_2026: 200000000,
-        budget_2025_carry: 200000000,
+        budget_2025_carry: 302300000,
         spent_2025_carry: 80000000,
         manager: "홍광표 울산늘봄누리센터장",
         programs: [
@@ -3084,31 +3084,31 @@ export const YEAR_1_PROGRAMS = {
     {
       "id": "D2-S1T1-1",
       "title": "방과후 늘봄 프로그램 시범 적용",
-      "budget": 100000000,
-      "spent": 95000000,
+      "budget": 55400000,
+      "spent": 49100000,
       "assignee": "늘봄학교지원센터",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 100000000, "spent": 95000000 }
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 55400000, "spent": 49100000 }
       ]
     },
     {
       "id": "D2-S1T1-2",
       "title": "전문 강사 양성 과정 설계",
-      "budget": 81500000,
-      "spent": 77000000,
+      "budget": 113200000,
+      "spent": 111800000,
       "assignee": "늘봄학교지원센터",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 81500000, "spent": 77000000 }
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 113200000, "spent": 111800000 }
       ]
     },
     {
       "id": "D2-S1T2-1",
       "title": "방학 중 특별 돌봄 캠프 운영",
-      "budget": 100000000,
-      "spent": 100000000,
+      "budget": 21000000,
+      "spent": 21000000,
       "assignee": "늘봄학교지원센터",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 100000000, "spent": 100000000 }
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 21000000, "spent": 21000000 }
       ]
     },
     {
@@ -3127,9 +3127,7 @@ export const YEAR_1_PROGRAMS = {
       "budget": 0,
       "spent": 0,
       "assignee": "늘봄학교지원센터",
-      "budget_categories": [
-        { "category": "지역 연계∙협업 지원비", "budget": 0, "spent": 0 }
-      ]
+      "budget_categories": []
     },
     {
       "id": "D2-S2T4-1",
@@ -3144,51 +3142,51 @@ export const YEAR_1_PROGRAMS = {
     {
       "id": "D2-S3T5-1",
       "title": "늘봄 프로그램 효과 분석 및 고도화 연구",
-      "budget": 0,
-      "spent": 0,
+      "budget": 13800000,
+      "spent": 13000000,
       "assignee": "늘봄학교지원센터",
       "budget_categories": [
-        { "category": "지역 연계∙협업 지원비", "budget": 0, "spent": 0 }
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 13800000, "spent": 13000000 }
       ]
     },
     {
       "id": "D2-S3T6-1",
       "title": "늘봄 온라인 플랫폼 내 모니터링 모듈 구축",
-      "budget": 0,
-      "spent": 0,
-      "assignee": "정보통신처",
+      "budget": 30000000,
+      "spent": 30000000,
+      "assignee": "늘봄학교지원센터",
       "budget_categories": [
-        { "category": "지역 연계∙협업 지원비", "budget": 0, "spent": 0 }
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 30000000, "spent": 30000000 }
       ]
     },
     {
       "id": "D2-S3T7-1",
       "title": "울산 늘봄누리 브랜드 BI 개발 및 홍보",
-      "budget": 33600000,
-      "spent": 23100000,
+      "budget": 33500000,
+      "spent": 23200000,
       "assignee": "늘봄학교지원센터",
       "budget_categories": [
-        { "category": "성과 활용∙확산 지원비", "budget": 33600000, "spent": 23100000 }
+        { "category": "성과 활용∙확산 지원비", "budget": 33500000, "spent": 23200000 }
       ]
     },
     {
       "id": "D2-S4T8-1",
       "title": "동구, 중구, 북구 특화 늘봄 프로그램 개발",
-      "budget": 0,
-      "spent": 0,
+      "budget": 22500000,
+      "spent": 22100000,
       "assignee": "늘봄학교지원센터",
       "budget_categories": [
-        { "category": "지역 연계∙협업 지원비", "budget": 0, "spent": 0 }
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 22500000, "spent": 22100000 }
       ]
     },
     {
       "id": "D2-S4T9-1",
       "title": "울산 정주형 예비교사 멘토단 선발 및 파견",
-      "budget": 0,
-      "spent": 0,
+      "budget": 25700000,
+      "spent": 25000000,
       "assignee": "늘봄학교지원센터",
       "budget_categories": [
-        { "category": "지역 연계∙협업 지원비", "budget": 0, "spent": 0 }
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 25700000, "spent": 25000000 }
       ]
     },
     {
@@ -3210,8 +3208,7 @@ export const YEAR_1_PROGRAMS = {
       "budget_categories": [
         { "category": "실험∙실습장비 및 기자재 구입∙운영비", "budget": 244000000, "spent": 57300000 }
       ]
-    }
-  ,
+    },
     {
       "id": "D2-S4T11-1",
       "title": "공통경비",
@@ -3455,10 +3452,10 @@ export const Y1_UNIT_META = {
     "carry": 150000000
   },
   "C2": {
-    "budget": 1637000000,
-    "national": 1497000000,
-    "city": 140000000,
-    "carry": 80000000
+    "budget": 1200000000,
+    "national": 1200000000,
+    "city": 0,
+    "carry": 302300000
   },
   "D1": {
     "budget": 400000000,
