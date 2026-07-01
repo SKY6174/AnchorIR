@@ -2198,119 +2198,136 @@ export const YEAR_1_PROGRAMS = {
     {
       "id": "B1-S1T1-1",
       "title": "ICC 기반 미래가치창출 지원 체계 구축",
-      "budget": 15000000,
+      "budget": 0,
+      "spent": 0,
       "assignee": "R&BD지원팀",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 15000000, "spent": 15000000 }
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 0, "spent": 0 }
       ]
     },
     {
       "id": "B1-S1T1-2",
       "title": "ICC 구축을 위한 행·제도적 기반 마련",
-      "budget": 15000000,
+      "budget": 0,
+      "spent": 0,
       "assignee": "R&BD지원팀",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 15000000, "spent": 15000000 }
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 0, "spent": 0 }
       ]
     },
     {
       "id": "B1-S1T2-1",
       "title": "지역별 산학연 협의체 구성 및 운영 계획 수립",
-      "budget": 10000000,
+      "budget": 0,
+      "spent": 0,
       "assignee": "R&BD지원팀",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 10000000, "spent": 10000000 }
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 0, "spent": 0 }
       ]
     },
     {
       "id": "B1-S1T2-2",
       "title": "분야별 협력기관 발굴 및 협약체결",
-      "budget": 10000000,
+      "budget": 0,
+      "spent": 0,
       "assignee": "R&BD지원팀",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 10000000, "spent": 10000000 }
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 0, "spent": 0 }
       ]
     },
     {
       "id": "B1-S2T3-1",
       "title": "기업 맞춤형 과제 공모 및 지원 체계 구축",
       "budget": 70000000,
+      "spent": 0,
       "assignee": "R&BD지원팀",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 70000000, "spent": 70000000 }
+        { "category": "교육∙연구 환경개선비", "budget": 70000000, "spent": 0 }
       ]
     },
     {
       "id": "B1-S2T3-2",
       "title": "컨소시엄 형태의 다기관 협력형 연구개발 과제 운영",
       "budget": 60000000,
+      "spent": 58100000,
       "assignee": "R&BD지원팀",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 60000000, "spent": 60000000 }
+        { "category": "기업 지원∙협력 활동비", "budget": 60000000, "spent": 58100000 }
       ]
     },
     {
       "id": "B1-S2T4-1",
       "title": "지역 산업체 및 혁신기관 협력을 통한 수요 발굴",
-      "budget": 15000000,
+      "budget": 0,
+      "spent": 0,
       "assignee": "R&BD지원팀",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 15000000, "spent": 15000000 }
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 0, "spent": 0 }
       ]
     },
     {
       "id": "B1-S2T4-2",
       "title": "전문기술석사 학생의 현장문제 발굴 및 과제 수행",
       "budget": 35000000,
+      "spent": 34900000,
       "assignee": "대학원",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 35000000, "spent": 35000000 }
+        { "category": "기업 지원∙협력 활동비", "budget": 35000000, "spent": 34900000 }
       ]
     },
     {
       "id": "B1-S3T5-1",
       "title": "높은 접근성의 산업체를 위한 공용 플랫폼 구축",
-      "budget": 10000000,
+      "budget": 0,
+      "spent": 0,
       "assignee": "R&BD지원팀",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 10000000, "spent": 10000000 }
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 0, "spent": 0 }
       ]
     },
     {
       "id": "B1-S3T5-2",
       "title": "전문가 풀을 활용한 중소기업 기술 지원 체계 운영",
-      "budget": 20000000,
+      "budget": 29900000,
+      "spent": 25300000,
       "assignee": "R&BD지원팀",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 20000000, "spent": 20000000 }
+        { "category": "기업 지원∙협력 활동비", "budget": 23100000, "spent": 20600000 },
+        { "category": "성과 활용∙확산 지원비", "budget": 6800000, "spent": 4700000 }
       ]
     },
     {
       "id": "B1-S3T6-1",
       "title": "공용장비 지원 플랫폼 구축 (U-NEXUS 연계)",
       "budget": 15000000,
+      "spent": 13770000,
       "assignee": "정보통신처",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 15000000, "spent": 15000000 }
+        { "category": "기업 지원∙협력 활동비", "budget": 15000000, "spent": 13770000 }
       ]
     },
     {
       "id": "B1-S3T6-2",
       "title": "공용장비 활용 프로그램 개발 및 운영 체계 마련",
       "budget": 35000000,
+      "spent": 32130000,
       "assignee": "R&BD지원팀",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 35000000, "spent": 35000000 }
+        { "category": "기업 지원∙협력 활동비", "budget": 35000000, "spent": 32130000 }
       ]
     }
   ,
     {
       "id": "B1-S3T7-1",
       "title": "공통경비",
-      "budget": 10000000,
+      "budget": 55100000,
+      "spent": 50700000,
       "assignee": "R&BD지원팀",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 10000000, "spent": 10000000 }
+        { "category": "인건비", "budget": 35500000, "spent": 34200000 },
+        { "category": "간접비", "budget": 9000000, "spent": 9000000 },
+        { "category": "그 밖의 사업운영경비", "budget": 8900000, "spent": 5800000 },
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 1700000, "spent": 1700000 }
       ]
     }],
   "C1": [
