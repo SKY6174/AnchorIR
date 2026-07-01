@@ -2617,7 +2617,7 @@ export default function App() {
             {/* 단위과제 및 프로그램 관리 탭: 전체 카드를 Fragment로 감싼 뒤 하단에 예산 전용 엑셀 업로더를 배치합니다. */}
             <div className="glass-card">
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.2rem" }}>
-              <h2 style={{ fontSize: "1.25rem", fontWeight: "800" }}>{selectedYear}차년도 단위과제 관리</h2>
+              <h2 style={{ fontSize: "1.25rem", fontWeight: "800" }}>{selectedYear}차년도 단위과제 관리 및 프로그램 관리</h2>
             </div>
 
             {/* 서브탭 내비게이션 바 */}
