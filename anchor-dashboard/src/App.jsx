@@ -2579,12 +2579,12 @@ export default function App() {
                   setSelectedProgId(null);
                 }}
                 style={{
-                  padding: "0.4rem 0.9rem",
-                  fontSize: "0.75rem",
+                  padding: "0.45rem 1rem",
+                  fontSize: "0.85rem",
                   borderRadius: "2rem",
                   border: "none",
                   background: selectedYear === yr ? "var(--accent-color)" : "transparent",
-                  color: selectedYear === yr ? "#fff" : "var(--text-secondary-dark)",
+                  color: selectedYear === yr ? "#fff" : "var(--text-secondary)",
                   cursor: "pointer",
                   fontWeight: "700",
                   transition: "all 0.2s"
