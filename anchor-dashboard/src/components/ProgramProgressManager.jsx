@@ -304,6 +304,7 @@ export default function ProgramProgressManager({ projects, selectedYear }) {
                                 const steps = val ? val.split(/[\/+&,]/).map(s => s.trim().toUpperCase()).filter(s => ["P", "D", "C", "A"].includes(s)) : [];
                                 
                                 const getSingleColor = (char, isActual = false, progData = null) => {
+                                  if (!char || typeof char !== "string") return "transparent";
                                   if (isActual && progData) {
                                     const stageKey = char.toLowerCase();
                                     const status = progData.pdca?.[stageKey] || "대기";
@@ -378,20 +379,22 @@ export default function ProgramProgressManager({ projects, selectedYear }) {
                                 const isActualActive = (i) => {
                                   // 수동 기입된 실제 타임라인이 존재하면 그것을 판정 기준으로 삼습니다.
                                   if (prog.actual_timeline) {
-                                    const actualMonths = parseTimelineToMonths(prog.actual_timeline);
+                                    const actualMonths = parseTimelineToMonths(prog.actual_timeline) || [];
                                     const actVal = actualMonths[i];
-                                    if (!actVal) return false;
+                                    if (!actVal || typeof actVal !== "string") return false;
                                     const sList = actVal.split(/[\/+&,]/).map(s => s.trim().toUpperCase()).filter(s => ["P", "D", "C", "A"].includes(s));
                                     return sList.some(char => {
+                                      if (!char || typeof char !== "string") return false;
                                       const status = prog.pdca?.[char.toLowerCase()] || "대기";
                                       return status === "완료" || status === "진행";
                                     });
                                   }
 
                                   const v = monthlyPDCA[i];
-                                  if (!v) return false;
+                                  if (!v || typeof v !== "string") return false;
                                   const sList = v.split(/[\/+&,]/).map(s => s.trim().toUpperCase()).filter(s => ["P", "D", "C", "A"].includes(s));
                                   return sList.some(char => {
+                                    if (!char || typeof char !== "string") return false;
                                     const status = prog.pdca?.[char.toLowerCase()] || "대기";
                                     return status === "완료" || status === "진행";
                                   });

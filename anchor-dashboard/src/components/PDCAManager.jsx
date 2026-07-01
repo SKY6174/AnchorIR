@@ -945,11 +945,12 @@ export default function PDCAManager({
                               {monthsList.map((month, idx) => {
                                 const val = inputMonthlyPDCA[idx] || "";
                                 const getPDCAColor = (v) => {
+                                  if (!v || typeof v !== "string") return "transparent";
                                   if (v === "P") return "#2563eb";
                                   if (v === "D") return "#10b981";
                                   if (v === "C") return "#f59e0b";
                                   if (v === "A") return "#d946ef";
-                                  if (v && v.includes("/")) {
+                                  if (v.includes("/")) {
                                     const steps = v.split("/").map(s => s.trim().toUpperCase());
                                     const getCol = (char) => {
                                       if (char === "P") return "#2563eb";
@@ -958,7 +959,7 @@ export default function PDCAManager({
                                       if (char === "A") return "#d946ef";
                                       return "#18181b";
                                     };
-                                    return `linear-gradient(135deg, ${getCol(steps[0])} 50%, ${getCol(steps[1])} 50%)`;
+                                    return `linear-gradient(135deg, ${getCol(steps[0] || "")} 50%, ${getCol(steps[1] || "")} 50%)`;
                                   }
                                   return "transparent";
                                 };
@@ -1047,12 +1048,13 @@ export default function PDCAManager({
                             const actVal = inputMonthlyPDCAActual[idx] || "";
                             
                             const getActualStatusColor = (v) => {
-                              if (!v) return "transparent";
+                              if (!v || typeof v !== "string") return "transparent";
                               const steps = v.split(/[\/+&,]/).map(s => s.trim().toUpperCase()).filter(s => ["P", "D", "C", "A"].includes(s));
                               
                               const getCharActualColor = (char) => {
+                                if (!char || typeof char !== "string") return "transparent";
                                 const stageKey = char.toLowerCase();
-                                const status = activeProg.pdca?.[stageKey] || "대기";
+                                const status = activeProg?.pdca?.[stageKey] || "대기";
                                 if (status === "완료") {
                                   if (char === "P") return "#2563eb";
                                   if (char === "D") return "#10b981";
@@ -1071,7 +1073,7 @@ export default function PDCAManager({
                                 return getCharActualColor(steps[0]);
                               } else if (steps.length >= 2) {
                                 const col1 = getCharActualColor(steps[0]);
-                                const col2 = getCharActualColor(steps[1]);
+                                const col2 = getCharActualColor(steps[1] || "");
                                 if (col1 !== "transparent" || col2 !== "transparent") {
                                   const fallbackCol1 = col1 !== "transparent" ? col1 : "#18181b";
                                   const fallbackCol2 = col2 !== "transparent" ? col2 : "#18181b";
