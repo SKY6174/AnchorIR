@@ -2889,23 +2889,6 @@ export default function App() {
               >
                 구성원 관리
               </button>
-              <button
-                type="button"
-                onClick={() => setMgmtSubTab("programs")}
-                style={{
-                  border: "none",
-                  background: "transparent",
-                  padding: "0.5rem 1rem",
-                  fontSize: "0.85rem",
-                  fontWeight: "800",
-                  cursor: "pointer",
-                  color: mgmtSubTab === "programs" ? "var(--accent-color)" : "var(--text-secondary-dark)",
-                  borderBottom: mgmtSubTab === "programs" ? "2px solid var(--accent-color)" : "none",
-                  transition: "all 0.2s"
-                }}
-              >
-                프로그램 배정
-              </button>
               {currentRole.rank <= 2 && (
                 <button
                   type="button"
@@ -2925,6 +2908,23 @@ export default function App() {
                   회원현황
                 </button>
               )}
+              <button
+                type="button"
+                onClick={() => setMgmtSubTab("programs")}
+                style={{
+                  border: "none",
+                  background: "transparent",
+                  padding: "0.5rem 1rem",
+                  fontSize: "0.85rem",
+                  fontWeight: "800",
+                  cursor: "pointer",
+                  color: mgmtSubTab === "programs" ? "var(--accent-color)" : "var(--text-secondary-dark)",
+                  borderBottom: mgmtSubTab === "programs" ? "2px solid var(--accent-color)" : "none",
+                  transition: "all 0.2s"
+                }}
+              >
+                프로그램 배정
+              </button>
             </div>
 
             {mgmtSubTab === "members" && (
