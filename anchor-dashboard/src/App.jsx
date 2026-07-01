@@ -4044,6 +4044,12 @@ export default function App() {
           <ProgramProgressManager
             projects={displayProjects}
             selectedYear={selectedYear}
+            onSelectProgram={(unitId, progId) => {
+              setActiveTab("projects");
+              setProjectsSubTab("program_mgmt");
+              setSelectedUnitId(unitId);
+              setSelectedProgId(progId);
+            }}
           />
         )}
 

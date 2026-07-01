@@ -114,7 +114,7 @@ const getProgramTimeline = (progId) => {
   }
 };
 
-export default function ProgramProgressManager({ projects, selectedYear }) {
+export default function ProgramProgressManager({ projects, selectedYear, onSelectProgram }) {
   const startYr = 2024 + selectedYear;
   const endYr = 2025 + selectedYear;
   const startYrShort = String(startYr).slice(-2);
@@ -238,7 +238,7 @@ export default function ProgramProgressManager({ projects, selectedYear }) {
                 <thead>
                   <tr>
                     <th style={{ width: "80px" }}>ID</th>
-                    <th style={{ width: "230px" }}>세부 프로그램명</th>
+                    <th style={{ width: "230px" }}>프로그램명</th>
                     <th style={{ width: "140px" }}>담당연구원</th>
                     <th style={{ width: "130px" }}>운영 예산 (배정/집행)</th>
                     <th style={{ width: "340px", textAlign: "center" }}>
@@ -268,8 +268,31 @@ export default function ProgramProgressManager({ projects, selectedYear }) {
 
                       return (
                         <tr key={prog.id} style={{ height: "80px" }}>
-                          <td style={{ fontFamily: "var(--font-data)", fontWeight: "700" }}>{prog.id}</td>
-                          <td style={{ fontWeight: "700", whiteSpace: "normal", wordBreak: "keep-all" }}>
+                          <td 
+                            onClick={() => onSelectProgram && onSelectProgram(activeUnit.id, prog.id)}
+                            style={{ 
+                              fontFamily: "var(--font-data)", 
+                              fontWeight: "700", 
+                              cursor: "pointer", 
+                              transition: "color 0.2s" 
+                            }}
+                            onMouseEnter={(e) => { e.currentTarget.style.color = "var(--accent-color)"; e.currentTarget.style.textDecoration = "underline"; }}
+                            onMouseLeave={(e) => { e.currentTarget.style.color = ""; e.currentTarget.style.textDecoration = "none"; }}
+                          >
+                            {prog.id}
+                          </td>
+                          <td 
+                            onClick={() => onSelectProgram && onSelectProgram(activeUnit.id, prog.id)}
+                            style={{ 
+                              fontWeight: "700", 
+                              whiteSpace: "normal", 
+                              wordBreak: "keep-all", 
+                              cursor: "pointer", 
+                              transition: "color 0.2s" 
+                            }}
+                            onMouseEnter={(e) => { e.currentTarget.style.color = "var(--accent-color)"; e.currentTarget.style.textDecoration = "underline"; }}
+                            onMouseLeave={(e) => { e.currentTarget.style.color = ""; e.currentTarget.style.textDecoration = "none"; }}
+                          >
                             {prog.title}
                           </td>
                           <td style={{ fontWeight: "700", color: "var(--accent-color)", whiteSpace: "nowrap" }}>
