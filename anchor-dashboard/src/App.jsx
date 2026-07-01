@@ -178,10 +178,16 @@ function formatDataToMultiYear(data) {
             spent_carry: u.spent_2025_carry || 0
           };
         } else if (yr === 1) {
-          // 1차년도 본예산은 2차년도 본예산의 0.9배
-          const budgetMain = Math.round((u.budget_2026 || 0) * 0.9);
-          // 1차년도 잔액이 2차년도 이월예산(budget_2025_carry)과 일치하도록 집행액 역산
-          const spentMain = Math.max(0, budgetMain - (u.budget_2025_carry || 0));
+          // 1차년도 실제 예산 데이터가 Y1_UNIT_META에 정의되어 있다면 이를 우선 사용하고, 없다면 0.9배 및 역산 공식 적용
+          const meta = Y1_UNIT_META[u.id];
+          let budgetMain, spentMain;
+          if (meta) {
+            budgetMain = meta.budget;
+            spentMain = meta.budget - meta.carry; // 예산에서 이월 잔액(carry)을 차감하여 집행액 역산
+          } else {
+            budgetMain = Math.round((u.budget_2026 || 0) * 0.9);
+            spentMain = Math.max(0, budgetMain - (u.budget_2025_carry || 0));
+          }
           unitYears[yr] = {
             budget_main: budgetMain,
             spent_main: spentMain,
