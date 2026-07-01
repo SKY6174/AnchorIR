@@ -603,7 +603,7 @@ export default function BudgetItemsManager({ projects, currentRole, onUpdateBudg
             {/* 재원 구분별 막대 차트 (배정액 대비 집행 실적 병행 표출) */}
             <div style={{ height: "280px", width: "100%", marginBottom: "1.5rem" }}>
               <ResponsiveContainer>
-                <BarChart data={chartData}>
+                <BarChart data={chartData} margin={{ top: 20 }}>
                   <XAxis dataKey="name" stroke="var(--text-secondary-dark)" height={90} interval={0} tick={<CustomizedAxisTick isMobile={isMobile} />} />
                   <YAxis stroke="var(--text-secondary-dark)" fontSize={9} />
                   <Tooltip
@@ -615,7 +615,30 @@ export default function BudgetItemsManager({ projects, currentRole, onUpdateBudg
                       color: "white"
                     }}
                   />
-                  <Legend verticalAlign="top" height={28} fontSize={10} />
+                  <Legend
+                    verticalAlign="top"
+                    height={36}
+                    iconSize={10}
+                    wrapperStyle={{
+                      background: "rgba(255, 255, 255, 0.03)",
+                      border: "1px solid var(--border-color)",
+                      borderRadius: "0.375rem",
+                      padding: "0.2rem 0.6rem",
+                      display: "inline-flex",
+                      justifyContent: "center",
+                      gap: "0.8rem",
+                      left: "50%",
+                      transform: "translateX(-50%)",
+                      top: -10,
+                      width: "60%",
+                      boxShadow: "0 2px 8px rgba(0,0,0,0.15)"
+                    }}
+                    formatter={(value) => (
+                      <span style={{ color: "var(--text-primary)", fontSize: "11px", fontWeight: "700" }}>
+                        {value}
+                      </span>
+                    )}
+                  />
                   {subTab === "main" ? (
                     <>
                       <Bar dataKey="본예산" fill="#1e3a8a" />
