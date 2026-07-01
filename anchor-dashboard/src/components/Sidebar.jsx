@@ -129,6 +129,15 @@ export default function Sidebar({
             </div>
           </div>
 
+          <div
+            className={`nav-item ${activeTab === "llm_wiki" ? "active" : ""}`}
+            onClick={() => onChangeTab("llm_wiki")}
+            style={{ marginTop: "0.2rem" }}
+          >
+            <BookOpen size={18} />
+            <span>앵커Wiki</span>
+          </div>
+
           {(currentRole.id === "DIRECTOR" || currentRole.id === "HQ_HEAD") && (
             <div className={`mgmt-nav-wrapper ${activeTab === "management" ? "active" : ""}`}>
               <div
@@ -183,15 +192,6 @@ export default function Sidebar({
               </div>
             </div>
           )}
-
-          <div
-            className={`nav-item ${activeTab === "llm_wiki" ? "active" : ""}`}
-            onClick={() => onChangeTab("llm_wiki")}
-            style={{ marginTop: "0.2rem" }}
-          >
-            <BookOpen size={18} />
-            <span>LLM Wiki (RAG)</span>
-          </div>
         </nav>
       </div>
 
