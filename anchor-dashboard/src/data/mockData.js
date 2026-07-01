@@ -1993,8 +1993,8 @@ export const YEAR_1_PROGRAMS = {
     {
       "id": "A1-S5T11-1",
       "title": "공통경비",
-      "budget": 379600000,
-      "spent": 405800000,
+      "budget": 829800000,
+      "spent": 557400000,
       "assignee": "지산학교육센터(ECC)",
       "budget_categories": [
         { "category": "인건비", "budget": 156000000, "spent": 155200000 },
@@ -2495,7 +2495,7 @@ export const YEAR_1_PROGRAMS = {
         { "category": "성과 활용∙확산 지원비", "budget": 20000000, "spent": 20000000 }
       ]
     }],
-  "C2": [
+  "D1": [
     {
       "id": "B3-S1T1-1",
       "title": "지역문제해결 공용플랫폼의 협력 체계 구축",
@@ -2975,7 +2975,7 @@ export const YEAR_1_PROGRAMS = {
         { "category": "그 밖의 사업운영경비", "budget": 12000000, "spent": 6500000 }
       ]
     }],
-  "D1": [
+  "D2": [
     {
       "id": "D1-S1T1-1",
       "title": "지역사회 기반 보건복지 협의체 구축 및 운영",
@@ -3089,7 +3089,7 @@ export const YEAR_1_PROGRAMS = {
         { "category": "그 밖의 사업운영경비", "budget": 16500000, "spent": 11500000 }
       ]
     }],
-  "D2": [
+  "C2": [
     {
       "id": "D2-S1T1-1",
       "title": "방과후 늘봄 프로그램 시범 적용",
