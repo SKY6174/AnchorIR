@@ -126,8 +126,8 @@ export default function BudgetItemsManager({ projects, currentRole, onUpdateBudg
   const DEPARTMENTS = selectedYear === 1
     ? [
         { name: "ECC센터", ids: ["A1", "A2", "D4"] },
-        { name: "ICC센터", ids: ["B1", "B3", "C1", "C3"] },
-        { name: "RCC센터", ids: ["B2", "D1", "D3"] },
+        { name: "ICC센터", ids: ["B1", "C1", "C3"] },
+        { name: "RCC센터", ids: ["B2", "B3", "D1", "D3"] },
         { name: "AID-X지원센터", ids: ["C2"] },
         { name: "울산늘봄누리센터", ids: ["D2"] },
         { name: "사업운영팀", ids: [] }

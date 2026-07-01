@@ -3210,8 +3210,8 @@ export default function App() {
                             let dept = "사업운영팀";
                             if (selectedYear === 1) {
                               if (["A1", "A2", "D4"].includes(u.id)) dept = "ECC센터";
-                              else if (["B1", "B3", "C1", "C3"].includes(u.id)) dept = "ICC센터";
-                              else if (["B2", "D1", "D3"].includes(u.id)) dept = "RCC센터";
+                              else if (["B1", "C1", "C3"].includes(u.id)) dept = "ICC센터";
+                              else if (["B2", "B3", "D1", "D3"].includes(u.id)) dept = "RCC센터";
                               else if (u.id === "C2") dept = "AID-X지원센터";
                               else if (u.id === "D2") dept = "울산늘봄누리센터";
                             } else {
