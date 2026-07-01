@@ -61,6 +61,7 @@ const CustomizedAxisTick = (props) => {
 
 export default function BudgetItemsManager({ projects, currentRole, onUpdateBudgetDetails, selectedYear }) {
   const [selectedUnitId, setSelectedUnitId] = useState("A1가");
+  const [selectedDeptName, setSelectedDeptName] = useState("all");
   const [editedBudgets, setEditedBudgets] = useState({}); // {budgetName: {budget_main: '', budget_carry: ''}}
   const [feedback, setFeedback] = useState("");
   
@@ -441,10 +442,31 @@ export default function BudgetItemsManager({ projects, currentRole, onUpdateBudg
             <span>이월: {formatToMillionWon(totalCarryBudget)}백만원</span>
           </div>
         </div>
+        
+        {/* 센터 선택 드롭박스 필터 */}
+        <div style={{ marginBottom: "1.2rem", padding: "0.8rem", borderRadius: "0.5rem", background: "var(--panel-bg)", border: "1px solid var(--border-color)" }}>
+          <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)", display: "block", marginBottom: "0.4rem", fontWeight: "700" }}>담당 센터 선택</span>
+          <select
+            className="user-selector"
+            style={{ width: "100%", padding: "0.4rem", fontSize: "0.75rem", borderRadius: "0.375rem" }}
+            value={selectedDeptName}
+            onChange={(e) => setSelectedDeptName(e.target.value)}
+          >
+            <option value="all">전체 센터</option>
+            {DEPARTMENTS.map((dept) => (
+              <option key={dept.name} value={dept.name}>
+                {dept.name}
+              </option>
+            ))}
+          </select>
+        </div>
+
         <div style={{ display: "flex", flexDirection: "column", gap: "1.2rem" }}>
-          {DEPARTMENTS.map((dept) => {
-            // 해당 부서에 속한 단위과제 필터링
-            const deptUnits = allUnits.filter((u) => dept.ids.includes(u.id));
+          {DEPARTMENTS
+            .filter((dept) => selectedDeptName === "all" || dept.name === selectedDeptName)
+            .map((dept) => {
+              // 해당 부서에 속한 단위과제 필터링
+              const deptUnits = allUnits.filter((u) => dept.ids.includes(u.id));
             if (deptUnits.length === 0) return null;
 
             return (
