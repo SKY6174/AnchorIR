@@ -643,7 +643,7 @@ export default function BudgetItemsManager({ projects, currentRole, onUpdateBudg
                       const isEduProg = bName === "교육∙연구 프로그램 개발∙운영비";
 
                       return (
-                        <tr key={bName}>
+                        <tr key={bName} style={{ color: "var(--text-primary)" }}>
                           <td style={{ fontWeight: "700" }}>{bName}</td>
                           {subTab === "main" ? (
                             <>
@@ -652,8 +652,8 @@ export default function BudgetItemsManager({ projects, currentRole, onUpdateBudg
                                   {formatToMillionWon(yearDet.budget_main)} 백만원
                                 </span>
                               </td>
-                              <td style={{ fontFamily: "var(--font-data)", textAlign: "right", paddingRight: "1rem" }}>{formatToMillionWon(yearDet.spent_main)} 백만원</td>
-                              <td style={{ fontFamily: "var(--font-data)", fontWeight: "700", color: balanceMain >= 0 ? "white" : "var(--danger-color)", textAlign: "right", paddingRight: "1rem" }}>
+                              <td style={{ fontFamily: "var(--font-data)", color: "var(--text-primary)", textAlign: "right", paddingRight: "1rem" }}>{formatToMillionWon(yearDet.spent_main)} 백만원</td>
+                              <td style={{ fontFamily: "var(--font-data)", fontWeight: "700", color: balanceMain >= 0 ? "var(--text-primary)" : "var(--danger-color)", textAlign: "right", paddingRight: "1rem" }}>
                                 {formatToMillionWon(balanceMain)} 백만원
                               </td>
                             </>
@@ -664,8 +664,8 @@ export default function BudgetItemsManager({ projects, currentRole, onUpdateBudg
                                   {formatToMillionWon(yearDet.budget_carry)} 백만원
                                 </span>
                               </td>
-                              <td style={{ fontFamily: "var(--font-data)", textAlign: "right", paddingRight: "1rem" }}>{formatToMillionWon(yearDet.spent_carry)} 백만원</td>
-                              <td style={{ fontFamily: "var(--font-data)", fontWeight: "700", color: balanceCarry >= 0 ? "white" : "var(--danger-color)", textAlign: "right", paddingRight: "1rem" }}>
+                              <td style={{ fontFamily: "var(--font-data)", color: "var(--text-primary)", textAlign: "right", paddingRight: "1rem" }}>{formatToMillionWon(yearDet.spent_carry)} 백만원</td>
+                              <td style={{ fontFamily: "var(--font-data)", fontWeight: "700", color: balanceCarry >= 0 ? "var(--text-primary)" : "var(--danger-color)", textAlign: "right", paddingRight: "1rem" }}>
                                 {formatToMillionWon(balanceCarry)} 백만원
                               </td>
                             </>
