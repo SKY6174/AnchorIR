@@ -2414,11 +2414,11 @@ export const YEAR_1_PROGRAMS = {
     {
       "id": "B2-S3T5-1",
       "title": "생애주기별 평생학습 지원 체계 구축",
-      "budget": 91400000,
+      "budget": 91800000,
       "spent": 52000000,
       "assignee": "평생교육원",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 91400000, "spent": 52000000 }
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 91800000, "spent": 52000000 }
       ]
     },
     {
@@ -2485,13 +2485,13 @@ export const YEAR_1_PROGRAMS = {
     {
       "id": "B2-S4T9-1",
       "title": "공통경비",
-      "budget": 173500000,
+      "budget": 173100000,
       "spent": 166900000,
       "assignee": "평생교육원",
       "budget_categories": [
         { "category": "인건비", "budget": 114000000, "spent": 113100000 },
         { "category": "간접비", "budget": 20000000, "spent": 20000000 },
-        { "category": "그 밖의 사업운영경비", "budget": 19500000, "spent": 13800000 },
+        { "category": "그 밖의 사업운영경비", "budget": 19100000, "spent": 13800000 },
         { "category": "성과 활용∙확산 지원비", "budget": 20000000, "spent": 20000000 }
       ]
     }],
