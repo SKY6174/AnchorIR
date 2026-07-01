@@ -3017,7 +3017,7 @@ export default function App() {
                               }}
                             >
                               <td style={{ fontWeight: "700" }}>{m.dept}</td>
-                              <td style={{ fontWeight: "800", color: isRetired ? "var(--text-secondary)" : "white" }}>{m.name}</td>
+                              <td style={{ fontWeight: "800", color: isRetired ? "var(--text-secondary)" : "var(--text-primary)" }}>{m.name}</td>
                               <td>
                                 <span
                                   className={`badge ${
