@@ -1537,6 +1537,24 @@ export default function App() {
           return rankA - rankB;
         }
         
+        // 동일한 센터장 직급 내에서의 정렬 순서 적용 (이동은 -> 김기범 -> 현용환 -> 홍광표 -> 홍진숙)
+        const isCenterA = a.role_key.startsWith("CENTER_");
+        const isCenterB = b.role_key.startsWith("CENTER_");
+        if (isCenterA && isCenterB) {
+          const centerOrder = {
+            CENTER_ECC: 1,
+            CENTER_ICC: 2,
+            CENTER_RCC: 3,
+            CENTER_NURI: 4,
+            CENTER_SPECIAL: 5
+          };
+          const orderA = centerOrder[a.role_key] || 99;
+          const orderB = centerOrder[b.role_key] || 99;
+          if (orderA !== orderB) {
+            return orderA - orderB;
+          }
+        }
+
         // 동일한 TEAM_LEADER 직급 내에서 운영팀장(심현미 부장)을 팀장교수진보다 우선 배치
         if (a.role_key === "TEAM_LEADER" && b.role_key === "TEAM_LEADER") {
           const isOpLeaderA = a.id.toLowerCase() === "hmsim@uc.ac.kr" || a.id.toLowerCase() === "team_leader";
