@@ -999,76 +999,7 @@ export default function PDCAManager({
                             </div>
                           </div>
 
-                          {/* 2행: 실제 진행 일정 (Actual) */}
-                          <div style={{ borderTop: "1px dashed rgba(255,255,255,0.06)", paddingTop: "0.4rem" }}>
-                            <span style={{ fontSize: "0.58rem", color: "#10b981", fontWeight: "800", display: "inline-block", marginBottom: "0.25rem" }}>● 실제 실적 (Actual Progress)</span>
-                            <div style={{ display: "grid", gridTemplateColumns: "repeat(12, 1fr)", gap: "0.2rem", overflowX: "auto" }}>
-                              {monthsList.map((month, idx) => {
-                                const planVal = inputMonthlyPDCA[idx] || "";
-                                
-                                const getActualStatusColor = (v) => {
-                                  if (!v) return "transparent";
-                                  const steps = v.split(/[\/+&,]/).map(s => s.trim().toUpperCase());
-                                  
-                                  const getCharActualColor = (char) => {
-                                    const stageKey = char.toLowerCase();
-                                    const status = activeProg.pdca?.[stageKey] || "대기";
-                                    if (status === "완료") {
-                                      if (char === "P") return "#2563eb";
-                                      if (char === "D") return "#10b981";
-                                      if (char === "C") return "#f59e0b";
-                                      if (char === "A") return "#d946ef";
-                                    } else if (status === "진행") {
-                                      if (char === "P") return "rgba(37,99,235,0.45)";
-                                      if (char === "D") return "rgba(16,185,129,0.45)";
-                                      if (char === "C") return "rgba(245,158,11,0.45)";
-                                      if (char === "A") return "rgba(217,70,239,0.45)";
-                                    }
-                                    return "transparent";
-                                  };
 
-                                  if (steps.length === 1) {
-                                    return getCharActualColor(steps[0]);
-                                  } else if (steps.length >= 2) {
-                                    const col1 = getCharActualColor(steps[0]);
-                                    const col2 = getCharActualColor(steps[1]);
-                                    if (col1 !== "transparent" || col2 !== "transparent") {
-                                      const fallbackCol1 = col1 !== "transparent" ? col1 : "#18181b";
-                                      const fallbackCol2 = col2 !== "transparent" ? col2 : "#18181b";
-                                      return `linear-gradient(135deg, ${fallbackCol1} 50%, ${fallbackCol2} 50%)`;
-                                    }
-                                    return "transparent";
-                                  }
-                                  return "transparent";
-                                };
-
-                                const actBg = getActualStatusColor(planVal);
-                                
-                                return (
-                                  <div key={`act-${month}`} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.15rem", minWidth: "36px" }}>
-                                    <div
-                                      style={{
-                                        width: "100%",
-                                        height: "22px",
-                                        fontSize: "0.62rem",
-                                        display: "flex",
-                                        alignItems: "center",
-                                        justifyContent: "center",
-                                        background: actBg !== "transparent" ? actBg : "#18181b",
-                                        color: actBg !== "transparent" ? "white" : "rgba(255,255,255,0.15)",
-                                        border: "1px solid rgba(255,255,255,0.04)",
-                                        borderRadius: "0.2rem",
-                                        fontWeight: "800",
-                                        transition: "all 0.2s"
-                                      }}
-                                    >
-                                      {planVal || "-"}
-                                    </div>
-                                  </div>
-                                );
-                              })}
-                            </div>
-                          </div>
                         </div>
                       </div>
 
@@ -1101,6 +1032,81 @@ export default function PDCAManager({
                   <form onSubmit={handleUpdateBudget} style={{ padding: "0.75rem", background: "rgba(16,185,129,0.03)", border: "1px solid rgba(16,185,129,0.15)", borderRadius: "0.5rem" }}>
                     <h4 style={{ fontSize: "0.8rem", fontWeight: "800", marginBottom: "0.5rem", color: "#10b981" }}>D 단계: 세부 재원별 본집행액 및 실적 입력</h4>
                     <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
+                      
+                      {/* 실제 실적 일정 (D단계 내부 노출) */}
+                      <div style={{ background: "rgba(255,255,255,0.01)", padding: "0.5rem", borderRadius: "0.4rem", border: "1px solid rgba(255,255,255,0.03)", marginBottom: "0.3rem" }}>
+                        <span style={{ fontSize: "0.58rem", color: "#10b981", fontWeight: "800", display: "inline-block", marginBottom: "0.25rem" }}>● 실제 실적 (Actual Progress - PDCA 실시간 연동)</span>
+                        <div style={{ display: "grid", gridTemplateColumns: "repeat(12, 1fr)", gap: "0.2rem", overflowX: "auto" }}>
+                          {monthsList.map((month, idx) => {
+                            const planVal = inputMonthlyPDCA[idx] || "";
+                            
+                            // 계획된 단계에 따라 실제 완료/진행 여부를 실시간 연동하여 매핑합니다.
+                            const getActualStatusColor = (v) => {
+                              if (!v) return "transparent";
+                              const steps = v.split(/[\/+&,]/).map(s => s.trim().toUpperCase()).filter(s => ["P", "D", "C", "A"].includes(s));
+                              
+                              const getCharActualColor = (char) => {
+                                const stageKey = char.toLowerCase();
+                                const status = activeProg.pdca?.[stageKey] || "대기";
+                                if (status === "완료") {
+                                  if (char === "P") return "#2563eb";
+                                  if (char === "D") return "#10b981";
+                                  if (char === "C") return "#f59e0b";
+                                  if (char === "A") return "#d946ef";
+                                } else if (status === "진행") {
+                                  if (char === "P") return "rgba(37,99,235,0.45)";
+                                  if (char === "D") return "rgba(16,185,129,0.45)";
+                                  if (char === "C") return "rgba(245,158,11,0.45)";
+                                  if (char === "A") return "rgba(217,70,239,0.45)";
+                                }
+                                return "transparent";
+                              };
+
+                              if (steps.length === 1) {
+                                return getCharActualColor(steps[0]);
+                              } else if (steps.length >= 2) {
+                                const col1 = getCharActualColor(steps[0]);
+                                const col2 = getCharActualColor(steps[1]);
+                                if (col1 !== "transparent" || col2 !== "transparent") {
+                                  const fallbackCol1 = col1 !== "transparent" ? col1 : "#18181b";
+                                  const fallbackCol2 = col2 !== "transparent" ? col2 : "#18181b";
+                                  return `linear-gradient(135deg, ${fallbackCol1} 50%, ${fallbackCol2} 50%)`;
+                                }
+                                return "transparent";
+                              }
+                              return "transparent";
+                            };
+
+                            const actBg = getActualStatusColor(planVal);
+                            
+                            return (
+                              <div key={`act-d-${month}`} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.15rem", minWidth: "36px" }}>
+                                <span style={{ fontSize: "0.55rem", color: "var(--text-secondary-dark)", whiteSpace: "nowrap", marginBottom: "0.1rem" }}>
+                                  {month}
+                                </span>
+                                <div
+                                  style={{
+                                    width: "100%",
+                                    height: "22px",
+                                    fontSize: "0.62rem",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    background: actBg !== "transparent" ? actBg : "#18181b",
+                                    color: actBg !== "transparent" ? "white" : "rgba(255,255,255,0.15)",
+                                    border: "1px solid rgba(255,255,255,0.04)",
+                                    borderRadius: "0.2rem",
+                                    fontWeight: "800",
+                                    transition: "all 0.2s"
+                                  }}
+                                >
+                                  {planVal || "-"}
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
                       {/* 비목별 예산 집행액 입력 (P단계와 동일한 형태로 노출) */}
                       <div style={{ borderBottom: "1px solid var(--border-color-dark)", paddingBottom: "0.5rem", marginBottom: "0.2rem" }}>
                         <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)", display: "block", marginBottom: "0.25rem" }}>비목별 집행 등록 (백만원 단위)</span>
