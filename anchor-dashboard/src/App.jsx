@@ -3815,7 +3815,7 @@ export default function App() {
                     type="text"
                     required
                     className="user-selector"
-                    style={{ width: "100%", padding: "0.4rem", color: "white" }}
+                    style={{ width: "100%", padding: "0.4rem", color: "var(--text-primary)" }}
                     value={editingMember.name}
                     onChange={(e) => setEditingMember({ ...editingMember, name: e.target.value })}
                   />
@@ -3903,7 +3903,7 @@ export default function App() {
                   type="email"
                   required
                   className="user-selector"
-                  style={{ width: "100%", padding: "0.4rem", color: "white" }}
+                  style={{ width: "100%", padding: "0.4rem", color: "var(--text-primary)" }}
                   value={editingMember.email}
                   onChange={(e) => setEditingMember({ ...editingMember, email: e.target.value })}
                 />
@@ -3915,7 +3915,7 @@ export default function App() {
                   <input
                     type="text"
                     className="user-selector"
-                    style={{ width: "100%", padding: "0.4rem", color: "white" }}
+                    style={{ width: "100%", padding: "0.4rem", color: "var(--text-primary)" }}
                     placeholder="052-230-XXXX"
                     value={editingMember.phoneOffice}
                     onChange={(e) => setEditingMember({ ...editingMember, phoneOffice: e.target.value })}
@@ -3926,7 +3926,7 @@ export default function App() {
                   <input
                     type="text"
                     className="user-selector"
-                    style={{ width: "100%", padding: "0.4rem", color: "white" }}
+                    style={{ width: "100%", padding: "0.4rem", color: "var(--text-primary)" }}
                     placeholder="010-XXXX-XXXX"
                     value={editingMember.phoneMobile}
                     onChange={(e) => setEditingMember({ ...editingMember, phoneMobile: e.target.value })}
@@ -3957,7 +3957,7 @@ export default function App() {
                   <input
                     type="date"
                     className="user-selector"
-                    style={{ width: "100%", padding: "0.4rem", color: "white" }}
+                    style={{ width: "100%", padding: "0.4rem", color: "var(--text-primary)" }}
                     value={editingMember.startDate || editingMember.hireDate || ""}
                     onChange={(e) => setEditingMember({ ...editingMember, startDate: e.target.value, hireDate: e.target.value })}
                   />
@@ -3967,7 +3967,7 @@ export default function App() {
                   <input
                     type="date"
                     className="user-selector"
-                    style={{ width: "100%", padding: "0.4rem", color: "white" }}
+                    style={{ width: "100%", padding: "0.4rem", color: "var(--text-primary)" }}
                     disabled={editingMember.status !== "퇴직"}
                     value={editingMember.endDate || ""}
                     onChange={(e) => setEditingMember({ ...editingMember, endDate: e.target.value })}
