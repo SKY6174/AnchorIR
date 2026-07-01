@@ -63,7 +63,13 @@ const parseTimelineToMonths = (timelineStr) => {
   if (timelineStr.includes(",")) {
     const parts = timelineStr.split(",");
     if (parts.length === 12) {
-      return parts.map(p => ["P", "D", "C", "A"].includes(p.trim()) ? p.trim() : "");
+      return parts.map(p => {
+        const trimmed = p.trim().toUpperCase();
+        if (trimmed.split("").some(char => ["P", "D", "C", "A"].includes(char))) {
+          return trimmed;
+        }
+        return "";
+      });
     }
   }
 
@@ -925,20 +931,31 @@ export default function PDCAManager({
                         <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)", display: "block", marginBottom: "0.25rem" }}>
                           월별 추진 일정 (PDCA)
                         </span>
-                        <div style={{ display: "grid", gridTemplateColumns: "repeat(12, 1fr)", gap: "0.2rem", overflowX: "auto", paddingBottom: "0.3rem" }}>
+                        <div style={{ display: "grid", gridTemplateColumns: "repeat(6, 1fr)", gap: "0.5rem 0.25rem", paddingBottom: "0.3rem" }}>
                           {monthsList.map((month, idx) => {
                             const val = inputMonthlyPDCA[idx] || "";
-                            // 인라인 색상 매칭 헬퍼
+                            // 인라인 색상 매칭 헬퍼 (대각선 그라데이션 하이브리드 지원)
                             const getPDCAColor = (v) => {
                               if (v === "P") return "#2563eb";
                               if (v === "D") return "#10b981";
                               if (v === "C") return "#f59e0b";
                               if (v === "A") return "#d946ef";
+                              if (v && v.includes("/")) {
+                                const steps = v.split("/").map(s => s.trim().toUpperCase());
+                                const getCol = (char) => {
+                                  if (char === "P") return "#2563eb";
+                                  if (char === "D") return "#10b981";
+                                  if (char === "C") return "#f59e0b";
+                                  if (char === "A") return "#d946ef";
+                                  return "#18181b";
+                                };
+                                return `linear-gradient(135deg, ${getCol(steps[0])} 50%, ${getCol(steps[1])} 50%)`;
+                              }
                               return "transparent";
                             };
                             const bg = getPDCAColor(val);
                             return (
-                              <div key={month} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.15rem", minWidth: "32px" }}>
+                              <div key={month} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.15rem" }}>
                                 <span style={{ fontSize: "0.6rem", color: "var(--text-secondary-dark)", whiteSpace: "nowrap" }}>
                                   {month}
                                 </span>
@@ -969,6 +986,9 @@ export default function PDCAManager({
                                   <option value="D" style={{ background: "#10b981", color: "white" }}>D</option>
                                   <option value="C" style={{ background: "#f59e0b", color: "white" }}>C</option>
                                   <option value="A" style={{ background: "#d946ef", color: "white" }}>A</option>
+                                  <option value="P/D" style={{ background: "linear-gradient(135deg, #2563eb 50%, #10b981 50%)", color: "white" }}>P/D</option>
+                                  <option value="D/C" style={{ background: "linear-gradient(135deg, #10b981 50%, #f59e0b 50%)", color: "white" }}>D/C</option>
+                                  <option value="C/A" style={{ background: "linear-gradient(135deg, #f59e0b 50%, #d946ef 50%)", color: "white" }}>C/A</option>
                                 </select>
                               </div>
                             );

@@ -51,7 +51,13 @@ const parseTimelineToMonths = (timelineStr) => {
   if (timelineStr.includes(",")) {
     const parts = timelineStr.split(",");
     if (parts.length === 12) {
-      return parts.map(p => ["P", "D", "C", "A"].includes(p.trim()) ? p.trim() : "");
+      return parts.map(p => {
+        const trimmed = p.trim().toUpperCase();
+        if (trimmed.split("").some(char => ["P", "D", "C", "A"].includes(char))) {
+          return trimmed;
+        }
+        return "";
+      });
     }
   }
 
@@ -301,24 +307,51 @@ export default function ProgramProgressManager({ projects, selectedYear }) {
                                   );
                                 }
 
-                                const stageKey = val.toLowerCase();
-                                const status = prog.pdca?.[stageKey] || "대기";
+                                // 콤마, 슬래시, 또는 공백 등을 기준으로 개별 단계를 추출 (예: "P/D" -> ["P", "D"])
+                                const steps = val.split(/[\/+&,]/).map(s => s.trim().toUpperCase()).filter(s => ["P", "D", "C", "A"].includes(s));
+                                
+                                const getSingleColor = (char) => {
+                                  if (char === "P") return "#3b82f6";
+                                  if (char === "D") return "#10b981";
+                                  if (char === "C") return "#f59e0b";
+                                  if (char === "A") return "#d946ef";
+                                  return "transparent";
+                                };
 
-                                let color = "transparent";
-                                if (val === "P") color = "linear-gradient(135deg, #3b82f6, #1d4ed8)";
-                                if (val === "D") color = "linear-gradient(135deg, #10b981, #047857)";
-                                if (val === "C") color = "linear-gradient(135deg, #f59e0b, #b45309)";
-                                if (val === "A") color = "linear-gradient(135deg, #d946ef, #a21caf)";
+                                let bgStyle = "transparent";
+                                if (steps.length === 1) {
+                                  const char = steps[0];
+                                  if (char === "P") bgStyle = "linear-gradient(135deg, #3b82f6, #1d4ed8)";
+                                  else if (char === "D") bgStyle = "linear-gradient(135deg, #10b981, #047857)";
+                                  else if (char === "C") bgStyle = "linear-gradient(135deg, #f59e0b, #b45309)";
+                                  else if (char === "A") bgStyle = "linear-gradient(135deg, #d946ef, #a21caf)";
+                                } else if (steps.length >= 2) {
+                                  // 두 가지 단계가 동일 month에 계획된 경우: 대각선 linear-gradient 구현
+                                  const color1 = getSingleColor(steps[0]);
+                                  const color2 = getSingleColor(steps[1]);
+                                  bgStyle = `linear-gradient(135deg, ${color1} 50%, ${color2} 50%)`;
+                                }
 
-                                let opacity = 0.2; // 대기
+                                // 복합 단계 상태 연산: 진행이 하나라도 있다면 진행 연출, 완료가 하나라도 있다면 완료, 대기
+                                let isProgress = false;
+                                let isDone = false;
+                                steps.forEach(step => {
+                                  const stepKey = step.toLowerCase();
+                                  const s = prog.pdca?.[stepKey] || "대기";
+                                  if (s === "진행") isProgress = true;
+                                  if (s === "완료") isDone = true;
+                                });
+
+                                let opacity = 0.2;
                                 let border = "none";
                                 let animation = "none";
 
-                                if (status === "진행") {
+                                if (isProgress) {
                                   opacity = 0.75;
-                                  border = `1px solid ${val === "P" ? "#93c5fd" : val === "D" ? "#6ee7b7" : val === "C" ? "#fcd34d" : "#f5d0fe"}`;
+                                  const primaryStep = steps[0];
+                                  border = `1px solid ${primaryStep === "P" ? "#93c5fd" : primaryStep === "D" ? "#6ee7b7" : primaryStep === "C" ? "#fcd34d" : "#f5d0fe"}`;
                                   animation = "pulse 2s infinite";
-                                } else if (status === "완료") {
+                                } else if (isDone) {
                                   opacity = 1.0;
                                   border = "none";
                                 }
@@ -326,10 +359,10 @@ export default function ProgramProgressManager({ projects, selectedYear }) {
                                 return (
                                   <div
                                     key={idx}
-                                    title={`${monthsGuide[idx].name}: ${val}단계 (${status})`}
+                                    title={`${monthsGuide[idx].name}: ${val}단계 (${isProgress ? "진행" : isDone ? "완료" : "대기"})`}
                                     style={{
                                       height: "20px",
-                                      background: color,
+                                      background: bgStyle,
                                       opacity: opacity,
                                       border: border,
                                       animation: animation,
@@ -338,9 +371,9 @@ export default function ProgramProgressManager({ projects, selectedYear }) {
                                       alignItems: "center",
                                       justifyContent: "center",
                                       color: "white",
-                                      fontSize: "0.6rem",
+                                      fontSize: steps.length > 1 ? "0.45rem" : "0.6rem",
                                       fontWeight: "900",
-                                      boxShadow: status === "완료" ? "0 1px 3px rgba(0,0,0,0.3)" : "none",
+                                      boxShadow: isDone ? "0 1px 3px rgba(0,0,0,0.3)" : "none",
                                       transition: "all 0.2s"
                                     }}
                                   >
