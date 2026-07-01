@@ -1882,7 +1882,7 @@ export default function App() {
             p.units.forEach((u) => {
               u.programs.forEach((prog) => {
                 if (prog.id === progId) {
-                  const py = prog.years[selectedYear];
+                  const py = prog.years?.[selectedYear];
                   if (py) {
                     // 1. 재원별 본예산 및 이월예산 원화 단위(* 1,000,000)로 파싱하여 대입
                     const bNational = Math.round((parseFloat(mainRow["국고"]) || 0) * 1000000);
@@ -2118,7 +2118,7 @@ export default function App() {
                 if (updatedFields.actionItem !== undefined) prog.actionItem = updatedFields.actionItem;
                 if (updatedFields.achievements !== undefined) prog.achievements = updatedFields.achievements;
 
-                const py = prog.years[selectedYear];
+                const py = prog.years?.[selectedYear];
                 if (py) {
                   // P단계 예산 배정액 세부 재원 갱신 (본예산 및 이월예산 구분)
                   if (updatedFields.budget_national !== undefined) py.budget_national = updatedFields.budget_national;
@@ -2187,16 +2187,18 @@ export default function App() {
                 if (updatedFields.budget_carry_national === undefined) {
                   [1, 2, 3, 4, 5].forEach((yr) => {
                     if (yr !== selectedYear) {
-                      const y = prog.years[yr];
-                      const isExternalSub = prog.id.endsWith("-2") || prog.id.includes("위탁") || prog.title.includes("위탁") || prog.title.includes("협력");
-                      if (isExternalSub) {
-                        y.budget_carry_external = y.budget_carry || 0;
-                        y.budget_carry_national = 0;
-                        y.budget_carry_city = 0;
-                      } else {
-                        y.budget_carry_national = Math.round((y.budget_carry || 0) * 0.5);
-                        y.budget_carry_city = (y.budget_carry || 0) - y.budget_carry_national;
-                        y.budget_carry_external = 0;
+                      const y = prog.years?.[yr];
+                      if (y) {
+                        const isExternalSub = prog.id.endsWith("-2") || prog.id.includes("위탁") || prog.title.includes("위탁") || prog.title.includes("협력");
+                        if (isExternalSub) {
+                          y.budget_carry_external = y.budget_carry || 0;
+                          y.budget_carry_national = 0;
+                          y.budget_carry_city = 0;
+                        } else {
+                          y.budget_carry_national = Math.round((y.budget_carry || 0) * 0.5);
+                          y.budget_carry_city = (y.budget_carry || 0) - y.budget_carry_national;
+                          y.budget_carry_external = 0;
+                        }
                       }
                     }
                   });
