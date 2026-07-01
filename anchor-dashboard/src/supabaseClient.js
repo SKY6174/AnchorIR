@@ -13,6 +13,46 @@ if (!supabaseUrl || !supabaseAnonKey) {
   );
 }
 
-// 3. Supabase 클라이언트 인스턴스를 생성하여 내보냅니다(export).
-// 이 클라이언트 객체를 통해 DB 조회, 입력, 수정, 삭제(CRUD) 및 실시간 데이터 구독 등을 수행할 수 있습니다.
-export const supabase = createClient(supabaseUrl || '', supabaseAnonKey || '');
+// 3. 크래시 방지용 더미(Mock) 폴백 객체 정의
+// 환경 변수가 없거나 초기화에 실패할 경우, 메서드 체이닝 시 에러가 터져 화면이 화이트 스크린이 되는 것을 방지합니다.
+const createDummyClient = (initError) => {
+  const dummyQueryBuilder = {
+    select: function() { return this; },
+    insert: function() { return this; },
+    update: function() { return this; },
+    delete: function() { return this; },
+    eq: function() { return this; },
+    single: function() { return this; },
+    then: function(resolve) {
+      // Promise처럼 작동하여 await 호출 시 에러 정보와 빈 결과를 리턴합니다.
+      resolve({ data: null, error: initError });
+    }
+  };
+
+  return {
+    from: () => dummyQueryBuilder,
+    auth: {
+      getSession: () => Promise.resolve({ data: { session: null }, error: null }),
+      onAuthStateChange: () => ({ data: { subscription: { unsubscribe: () => {} } } }),
+      signInWithPassword: () => Promise.resolve({ data: { user: null, session: null }, error: initError }),
+      signOut: () => Promise.resolve({ error: null })
+    }
+  };
+};
+
+// 4. Supabase 클라이언트 생성 시도
+let supabaseInstance;
+try {
+  if (supabaseUrl && supabaseAnonKey) {
+    supabaseInstance = createClient(supabaseUrl, supabaseAnonKey);
+  } else {
+    const errorMsg = new Error('Supabase 환경 변수가 누락되었습니다.');
+    supabaseInstance = createDummyClient(errorMsg);
+  }
+} catch (e) {
+  console.error('Supabase 클라이언트 생성 실패:', e);
+  supabaseInstance = createDummyClient(e);
+}
+
+export const supabase = supabaseInstance;
+
