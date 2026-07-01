@@ -2667,11 +2667,11 @@ export default function App() {
                       </th>
                     </tr>
                     <tr>
-                      <th style={{ fontSize: "0.75rem" }}>본예산</th>
-                      {selectedYear >= 2 && <th style={{ fontSize: "0.75rem" }}>이월예산</th>}
-                      <th style={{ fontSize: "0.75rem" }}>총 배정액</th>
-                      <th style={{ fontSize: "0.75rem" }}>누적 집행</th>
-                      <th style={{ fontSize: "0.75rem", borderRight: "1px solid rgba(255,255,255,0.05)" }}>집행률</th>
+                      <th style={{ fontSize: "0.75rem", textAlign: "right", paddingRight: "1rem" }}>본예산</th>
+                      {selectedYear >= 2 && <th style={{ fontSize: "0.75rem", textAlign: "right", paddingRight: "1rem" }}>이월예산</th>}
+                      <th style={{ fontSize: "0.75rem", textAlign: "right", paddingRight: "1rem" }}>총 배정액</th>
+                      <th style={{ fontSize: "0.75rem", textAlign: "right", paddingRight: "1rem" }}>누적 집행</th>
+                      <th style={{ fontSize: "0.75rem", borderRight: "1px solid rgba(255,255,255,0.05)", textAlign: "right", paddingRight: "1rem" }}>집행률</th>
                       <th style={{ fontSize: "0.75rem", textAlign: "center" }}>총 개수</th>
                       <th style={{ fontSize: "0.75rem", textAlign: "center" }}>준비</th>
                       <th style={{ fontSize: "0.75rem", textAlign: "center" }}>진행</th>
@@ -2736,18 +2736,18 @@ export default function App() {
                             <td style={{ fontWeight: "700", borderRight: "1px solid rgba(255,255,255,0.05)" }}>
                               {u.id === "Common" ? "" : `${u.id}. `}{u.title}
                             </td>
-                            <td style={{ fontFamily: "var(--font-data)" }}>
+                            <td style={{ fontFamily: "var(--font-data)", textAlign: "right", paddingRight: "1rem" }}>
                               {formatToMillionWon(yData.budget_main)}
                             </td>
                             {selectedYear >= 2 && (
-                              <td style={{ fontFamily: "var(--font-data)" }}>
+                              <td style={{ fontFamily: "var(--font-data)", textAlign: "right", paddingRight: "1rem" }}>
                                 {formatToMillionWon(budgetCarryVal)}
                               </td>
                             )}
-                            <td style={{ fontFamily: "var(--font-data)", fontWeight: "700" }}>
+                            <td style={{ fontFamily: "var(--font-data)", fontWeight: "700", textAlign: "right", paddingRight: "1rem" }}>
                               {formatToMillionWon(totalBudget)}
                             </td>
-                            <td style={{ fontFamily: "var(--font-data)" }}>
+                            <td style={{ fontFamily: "var(--font-data)", textAlign: "right", paddingRight: "1rem" }}>
                               {formatToMillionWon(totalSpent)}
                             </td>
                             <td style={{ borderRight: "1px solid rgba(255,255,255,0.05)" }}>
