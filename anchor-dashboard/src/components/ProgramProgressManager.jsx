@@ -267,7 +267,7 @@ export default function ProgramProgressManager({ projects, selectedYear }) {
                       const monthlyPDCA = parseTimelineToMonths(prog.timeline || "");
 
                       return (
-                        <tr key={prog.id} style={{ height: "64px" }}>
+                        <tr key={prog.id} style={{ height: "80px" }}>
                           <td style={{ fontFamily: "var(--font-data)", fontWeight: "700" }}>{prog.id}</td>
                           <td style={{ fontWeight: "700", whiteSpace: "normal", wordBreak: "keep-all" }}>
                             {prog.title}
@@ -290,27 +290,32 @@ export default function ProgramProgressManager({ projects, selectedYear }) {
                               </div>
                             </div>
                           </td>
-                          <td style={{ verticalAlign: "middle", padding: "0.5rem 0.2rem" }}>
+                          <td style={{ verticalAlign: "middle", padding: "0.3rem 0.2rem" }}>
                             <div style={{
                               display: "grid",
                               gridTemplateColumns: "repeat(12, 1fr)",
-                              gap: "3px",
-                              background: "rgba(255, 255, 255, 0.02)",
+                              gap: "2px",
+                              background: "rgba(255, 255, 255, 0.015)",
                               borderRadius: "0.4rem",
-                              padding: "4px",
-                              border: "1px solid rgba(255,255,255,0.04)"
+                              padding: "2px",
+                              border: "1px solid rgba(255,255,255,0.03)"
                             }}>
                               {monthlyPDCA.map((val, idx) => {
-                                if (!val) {
-                                  return (
-                                    <div key={idx} style={{ height: "20px", borderRadius: "0.2rem", background: "rgba(255, 255, 255, 0.01)", border: "1px dashed rgba(255,255,255,0.03)" }} />
-                                  );
-                                }
-
-                                // 콤마, 슬래시, 또는 공백 등을 기준으로 개별 단계를 추출 (예: "P/D" -> ["P", "D"])
-                                const steps = val.split(/[\/+&,]/).map(s => s.trim().toUpperCase()).filter(s => ["P", "D", "C", "A"].includes(s));
+                                const steps = val ? val.split(/[\/+&,]/).map(s => s.trim().toUpperCase()).filter(s => ["P", "D", "C", "A"].includes(s)) : [];
                                 
-                                const getSingleColor = (char) => {
+                                const getSingleColor = (char, isActual = false, progData = null) => {
+                                  if (isActual && progData) {
+                                    const stageKey = char.toLowerCase();
+                                    const status = progData.pdca?.[stageKey] || "대기";
+                                    if (status === "대기") return "transparent";
+                                    if (status === "진행") {
+                                      if (char === "P") return "rgba(59, 130, 246, 0.45)";
+                                      if (char === "D") return "rgba(16, 185, 129, 0.45)";
+                                      if (char === "C") return "rgba(245, 158, 11, 0.45)";
+                                      if (char === "A") return "rgba(217, 70, 239, 0.45)";
+                                    }
+                                    // 완료인 경우 선명한 색상
+                                  }
                                   if (char === "P") return "#3b82f6";
                                   if (char === "D") return "#10b981";
                                   if (char === "C") return "#f59e0b";
@@ -318,66 +323,135 @@ export default function ProgramProgressManager({ projects, selectedYear }) {
                                   return "transparent";
                                 };
 
-                                let bgStyle = "transparent";
+                                // 1. 상단 Plan 바 배경 및 연속 둥글기 계산 (Gantt 연결 바 연출)
+                                let planBg = "transparent";
                                 if (steps.length === 1) {
-                                  const char = steps[0];
-                                  if (char === "P") bgStyle = "linear-gradient(135deg, #3b82f6, #1d4ed8)";
-                                  else if (char === "D") bgStyle = "linear-gradient(135deg, #10b981, #047857)";
-                                  else if (char === "C") bgStyle = "linear-gradient(135deg, #f59e0b, #b45309)";
-                                  else if (char === "A") bgStyle = "linear-gradient(135deg, #d946ef, #a21caf)";
+                                  planBg = getSingleColor(steps[0]);
                                 } else if (steps.length >= 2) {
-                                  // 두 가지 단계가 동일 month에 계획된 경우: 대각선 linear-gradient 구현
-                                  const color1 = getSingleColor(steps[0]);
-                                  const color2 = getSingleColor(steps[1]);
-                                  bgStyle = `linear-gradient(135deg, ${color1} 50%, ${color2} 50%)`;
+                                  planBg = `linear-gradient(135deg, ${getSingleColor(steps[0])} 50%, ${getSingleColor(steps[1])} 50%)`;
                                 }
 
-                                // 복합 단계 상태 연산: 진행이 하나라도 있다면 진행 연출, 완료가 하나라도 있다면 완료, 대기
-                                let isProgress = false;
-                                let isDone = false;
-                                steps.forEach(step => {
-                                  const stepKey = step.toLowerCase();
-                                  const s = prog.pdca?.[stepKey] || "대기";
-                                  if (s === "진행") isProgress = true;
-                                  if (s === "완료") isDone = true;
-                                });
+                                const hasLeftPlan = idx > 0 && monthlyPDCA[idx - 1] !== "";
+                                const hasRightPlan = idx < 11 && monthlyPDCA[idx + 1] !== "";
+                                const planRadius = `${!hasLeftPlan ? "4px" : "0"} ${!hasRightPlan ? "4px" : "0"} ${!hasRightPlan ? "4px" : "0"} ${!hasLeftPlan ? "4px" : "0"}`;
 
-                                let opacity = 0.2;
-                                let border = "none";
-                                let animation = "none";
+                                // 2. 하단 Actual 바 배경 및 연속 둥글기 계산 (Gantt 연결 바 연출)
+                                const getActualBg = () => {
+                                  if (steps.length === 0) return "transparent";
+                                  if (steps.length === 1) {
+                                    return getSingleColor(steps[0], true, prog);
+                                  } else {
+                                    const col1 = getSingleColor(steps[0], true, prog);
+                                    const col2 = getSingleColor(steps[1], true, prog);
+                                    if (col1 !== "transparent" || col2 !== "transparent") {
+                                      const fb1 = col1 !== "transparent" ? col1 : "rgba(255,255,255,0.02)";
+                                      const fb2 = col2 !== "transparent" ? col2 : "rgba(255,255,255,0.02)";
+                                      return `linear-gradient(135deg, ${fb1} 50%, ${fb2} 50%)`;
+                                    }
+                                    return "transparent";
+                                  }
+                                };
+                                const actualBg = getActualBg();
 
-                                if (isProgress) {
-                                  opacity = 0.75;
-                                  const primaryStep = steps[0];
-                                  border = `1px solid ${primaryStep === "P" ? "#93c5fd" : primaryStep === "D" ? "#6ee7b7" : primaryStep === "C" ? "#fcd34d" : "#f5d0fe"}`;
-                                  animation = "pulse 2s infinite";
-                                } else if (isDone) {
-                                  opacity = 1.0;
-                                  border = "none";
-                                }
+                                const isActualActive = (i) => {
+                                  const v = monthlyPDCA[i];
+                                  if (!v) return false;
+                                  const sList = v.split(/[\/+&,]/).map(s => s.trim().toUpperCase()).filter(s => ["P", "D", "C", "A"].includes(s));
+                                  return sList.some(char => {
+                                    const status = prog.pdca?.[char.toLowerCase()] || "대기";
+                                    return status === "완료" || status === "진행";
+                                  });
+                                };
+
+                                const hasLeftActual = idx > 0 && isActualActive(idx - 1) && isActualActive(idx);
+                                const hasRightActual = idx < 11 && isActualActive(idx + 1) && isActualActive(idx);
+                                const actualRadius = `${!hasLeftActual ? "4px" : "0"} ${!hasRightActual ? "4px" : "0"} ${!hasRightActual ? "4px" : "0"} ${!hasLeftActual ? "4px" : "0"}`;
 
                                 return (
                                   <div
                                     key={idx}
-                                    title={`${monthsGuide[idx].name}: ${val}단계 (${isProgress ? "진행" : isDone ? "완료" : "대기"})`}
                                     style={{
-                                      height: "20px",
-                                      background: bgStyle,
-                                      opacity: opacity,
-                                      border: border,
-                                      animation: animation,
-                                      borderRadius: "0.2rem",
+                                      height: "36px",
                                       display: "flex",
-                                      alignItems: "center",
-                                      justifyContent: "center",
-                                      color: "white",
-                                      fontSize: steps.length > 1 ? "0.45rem" : "0.6rem",
-                                      fontWeight: "900",
-                                      boxShadow: isDone ? "0 1px 3px rgba(0,0,0,0.3)" : "none",
-                                      transition: "all 0.2s"
+                                      flexDirection: "column",
+                                      justifyContent: "space-between",
+                                      position: "relative",
+                                      padding: "2px 0",
+                                      background: "rgba(255, 255, 255, 0.01)",
+                                      borderRight: "1px dashed rgba(255,255,255,0.03)"
                                     }}
                                   >
-                                    {val}
+                                    {/* 상단: 계획(Plan) Gantt Bar */}
+                                    {val ? (
+                                      <div
+                                        title={`계획: ${val}단계`}
+                                        style={{
+                                          height: "10px",
+                                          background: planBg,
+                                          borderRadius: planRadius,
+                                          fontSize: "0.52rem",
+                                          fontWeight: "900",
+                                          color: "white",
+                                          display: "flex",
+                                          alignItems: "center",
+                                          justifyContent: "center",
+                                          lineHeight: 1,
+                                          position: "relative"
+                                        }}
+                                      >
+                                        <span style={{ transform: "scale(0.85)" }}>{val}</span>
+                                        {hasRightPlan && (
+                                          <span style={{ position: "absolute", right: "-3px", fontSize: "0.45rem", opacity: 0.6, zIndex: 2 }}>➔</span>
+                                        )}
+                                      </div>
+                                    ) : (
+                                      <div style={{ height: "10px" }} />
+                                    )}
+
+                                    {/* 중앙: 상/하 연결 화살표 데코레이션 */}
+                                    {val && (
+                                      <div
+                                        style={{
+                                          position: "absolute",
+                                          left: "50%",
+                                          top: "50%",
+                                          transform: "translate(-50%, -50%)",
+                                          fontSize: "0.55rem",
+                                          color: "rgba(255, 255, 255, 0.35)",
+                                          fontWeight: "bold",
+                                          zIndex: 10,
+                                          pointerEvents: "none"
+                                        }}
+                                      >
+                                        ↓
+                                      </div>
+                                    )}
+
+                                    {/* 하단: 실제(Actual) Gantt Bar */}
+                                    {val ? (
+                                      <div
+                                        title={`실제 진행`}
+                                        style={{
+                                          height: "10px",
+                                          background: actualBg !== "transparent" ? actualBg : "rgba(255,255,255,0.02)",
+                                          borderRadius: actualRadius,
+                                          border: actualBg === "transparent" ? "1px dashed rgba(255,255,255,0.02)" : "none",
+                                          fontSize: "0.5rem",
+                                          fontWeight: "900",
+                                          color: "white",
+                                          display: "flex",
+                                          alignItems: "center",
+                                          justifyContent: "center",
+                                          lineHeight: 1
+                                        }}
+                                      >
+                                        {actualBg !== "transparent" && (
+                                          <span style={{ transform: "scale(0.8)" }}>{val}</span>
+                                        )}
+                                      </div>
+                                    ) : (
+                                      <div style={{ height: "10px" }} />
+                                    )}
                                   </div>
                                 );
                               })}

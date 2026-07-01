@@ -931,68 +931,144 @@ export default function PDCAManager({
                         <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)", display: "block", marginBottom: "0.25rem" }}>
                           월별 추진 일정 (PDCA)
                         </span>
-                        <div style={{ display: "grid", gridTemplateColumns: "repeat(6, 1fr)", gap: "0.5rem 0.25rem", paddingBottom: "0.3rem" }}>
-                          {monthsList.map((month, idx) => {
-                            const val = inputMonthlyPDCA[idx] || "";
-                            // 인라인 색상 매칭 헬퍼 (대각선 그라데이션 하이브리드 지원)
-                            const getPDCAColor = (v) => {
-                              if (v === "P") return "#2563eb";
-                              if (v === "D") return "#10b981";
-                              if (v === "C") return "#f59e0b";
-                              if (v === "A") return "#d946ef";
-                              if (v && v.includes("/")) {
-                                const steps = v.split("/").map(s => s.trim().toUpperCase());
-                                const getCol = (char) => {
-                                  if (char === "P") return "#2563eb";
-                                  if (char === "D") return "#10b981";
-                                  if (char === "C") return "#f59e0b";
-                                  if (char === "A") return "#d946ef";
-                                  return "#18181b";
+                        <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", background: "rgba(255,255,255,0.01)", padding: "0.5rem", borderRadius: "0.4rem", border: "1px solid rgba(255,255,255,0.03)" }}>
+                          {/* 1행: 계획 추진 일정 (Plan) */}
+                          <div>
+                            <span style={{ fontSize: "0.58rem", color: "#3b82f6", fontWeight: "800", display: "inline-block", marginBottom: "0.25rem" }}>● 계획 일정 (Plan Schedule)</span>
+                            <div style={{ display: "grid", gridTemplateColumns: "repeat(12, 1fr)", gap: "0.2rem", overflowX: "auto", paddingBottom: "0.15rem" }}>
+                              {monthsList.map((month, idx) => {
+                                const val = inputMonthlyPDCA[idx] || "";
+                                const getPDCAColor = (v) => {
+                                  if (v === "P") return "#2563eb";
+                                  if (v === "D") return "#10b981";
+                                  if (v === "C") return "#f59e0b";
+                                  if (v === "A") return "#d946ef";
+                                  if (v && v.includes("/")) {
+                                    const steps = v.split("/").map(s => s.trim().toUpperCase());
+                                    const getCol = (char) => {
+                                      if (char === "P") return "#2563eb";
+                                      if (char === "D") return "#10b981";
+                                      if (char === "C") return "#f59e0b";
+                                      if (char === "A") return "#d946ef";
+                                      return "#18181b";
+                                    };
+                                    return `linear-gradient(135deg, ${getCol(steps[0])} 50%, ${getCol(steps[1])} 50%)`;
+                                  }
+                                  return "transparent";
                                 };
-                                return `linear-gradient(135deg, ${getCol(steps[0])} 50%, ${getCol(steps[1])} 50%)`;
-                              }
-                              return "transparent";
-                            };
-                            const bg = getPDCAColor(val);
-                            return (
-                              <div key={month} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.15rem" }}>
-                                <span style={{ fontSize: "0.6rem", color: "var(--text-secondary-dark)", whiteSpace: "nowrap" }}>
-                                  {month}
-                                </span>
-                                <select
-                                  className="user-selector"
-                                  value={val}
-                                  onChange={(e) => {
-                                    const newPDCA = [...inputMonthlyPDCA];
-                                    newPDCA[idx] = e.target.value;
-                                    setInputMonthlyPDCA(newPDCA);
-                                  }}
-                                  style={{
-                                    width: "100%",
-                                    fontSize: "0.65rem",
-                                    padding: "0.15rem 0.05rem",
-                                    textAlign: "center",
-                                    background: bg !== "transparent" ? bg : "#18181b",
-                                    color: bg !== "transparent" ? "white" : "var(--text-secondary-dark)",
-                                    border: "1px solid var(--border-color-dark)",
-                                    borderRadius: "0.2rem",
-                                    cursor: "pointer",
-                                    fontWeight: bg !== "transparent" ? "800" : "normal",
-                                    outline: "none"
-                                  }}
-                                >
-                                  <option value="" style={{ background: "#18181b", color: "white" }}>-</option>
-                                  <option value="P" style={{ background: "#2563eb", color: "white" }}>P</option>
-                                  <option value="D" style={{ background: "#10b981", color: "white" }}>D</option>
-                                  <option value="C" style={{ background: "#f59e0b", color: "white" }}>C</option>
-                                  <option value="A" style={{ background: "#d946ef", color: "white" }}>A</option>
-                                  <option value="P/D" style={{ background: "linear-gradient(135deg, #2563eb 50%, #10b981 50%)", color: "white" }}>P/D</option>
-                                  <option value="D/C" style={{ background: "linear-gradient(135deg, #10b981 50%, #f59e0b 50%)", color: "white" }}>D/C</option>
-                                  <option value="C/A" style={{ background: "linear-gradient(135deg, #f59e0b 50%, #d946ef 50%)", color: "white" }}>C/A</option>
-                                </select>
-                              </div>
-                            );
-                          })}
+                                const bg = getPDCAColor(val);
+                                return (
+                                  <div key={month} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.15rem", minWidth: "36px" }}>
+                                    <span style={{ fontSize: "0.55rem", color: "var(--text-secondary-dark)", whiteSpace: "nowrap" }}>
+                                      {month}
+                                    </span>
+                                    <select
+                                      className="user-selector"
+                                      value={val}
+                                      onChange={(e) => {
+                                        const newPDCA = [...inputMonthlyPDCA];
+                                        newPDCA[idx] = e.target.value;
+                                        setInputMonthlyPDCA(newPDCA);
+                                      }}
+                                      style={{
+                                        width: "100%",
+                                        fontSize: "0.62rem",
+                                        padding: "0.15rem 0.05rem",
+                                        textAlign: "center",
+                                        background: bg !== "transparent" ? bg : "#18181b",
+                                        color: bg !== "transparent" ? "white" : "var(--text-secondary-dark)",
+                                        border: "1px solid var(--border-color-dark)",
+                                        borderRadius: "0.2rem",
+                                        cursor: "pointer",
+                                        fontWeight: bg !== "transparent" ? "800" : "normal",
+                                        outline: "none"
+                                      }}
+                                    >
+                                      <option value="" style={{ background: "#18181b", color: "white" }}>-</option>
+                                      <option value="P" style={{ background: "#2563eb", color: "white" }}>P</option>
+                                      <option value="D" style={{ background: "#10b981", color: "white" }}>D</option>
+                                      <option value="C" style={{ background: "#f59e0b", color: "white" }}>C</option>
+                                      <option value="A" style={{ background: "#d946ef", color: "white" }}>A</option>
+                                      <option value="P/D" style={{ background: "linear-gradient(135deg, #2563eb 50%, #10b981 50%)", color: "white" }}>P/D</option>
+                                      <option value="D/C" style={{ background: "linear-gradient(135deg, #10b981 50%, #f59e0b 50%)", color: "white" }}>D/C</option>
+                                      <option value="C/A" style={{ background: "linear-gradient(135deg, #f59e0b 50%, #d946ef 50%)", color: "white" }}>C/A</option>
+                                    </select>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          </div>
+
+                          {/* 2행: 실제 진행 일정 (Actual) */}
+                          <div style={{ borderTop: "1px dashed rgba(255,255,255,0.06)", paddingTop: "0.4rem" }}>
+                            <span style={{ fontSize: "0.58rem", color: "#10b981", fontWeight: "800", display: "inline-block", marginBottom: "0.25rem" }}>● 실제 실적 (Actual Progress)</span>
+                            <div style={{ display: "grid", gridTemplateColumns: "repeat(12, 1fr)", gap: "0.2rem", overflowX: "auto" }}>
+                              {monthsList.map((month, idx) => {
+                                const planVal = inputMonthlyPDCA[idx] || "";
+                                
+                                const getActualStatusColor = (v) => {
+                                  if (!v) return "transparent";
+                                  const steps = v.split(/[\/+&,]/).map(s => s.trim().toUpperCase());
+                                  
+                                  const getCharActualColor = (char) => {
+                                    const stageKey = char.toLowerCase();
+                                    const status = activeProg.pdca?.[stageKey] || "대기";
+                                    if (status === "완료") {
+                                      if (char === "P") return "#2563eb";
+                                      if (char === "D") return "#10b981";
+                                      if (char === "C") return "#f59e0b";
+                                      if (char === "A") return "#d946ef";
+                                    } else if (status === "진행") {
+                                      if (char === "P") return "rgba(37,99,235,0.45)";
+                                      if (char === "D") return "rgba(16,185,129,0.45)";
+                                      if (char === "C") return "rgba(245,158,11,0.45)";
+                                      if (char === "A") return "rgba(217,70,239,0.45)";
+                                    }
+                                    return "transparent";
+                                  };
+
+                                  if (steps.length === 1) {
+                                    return getCharActualColor(steps[0]);
+                                  } else if (steps.length >= 2) {
+                                    const col1 = getCharActualColor(steps[0]);
+                                    const col2 = getCharActualColor(steps[1]);
+                                    if (col1 !== "transparent" || col2 !== "transparent") {
+                                      const fallbackCol1 = col1 !== "transparent" ? col1 : "#18181b";
+                                      const fallbackCol2 = col2 !== "transparent" ? col2 : "#18181b";
+                                      return `linear-gradient(135deg, ${fallbackCol1} 50%, ${fallbackCol2} 50%)`;
+                                    }
+                                    return "transparent";
+                                  }
+                                  return "transparent";
+                                };
+
+                                const actBg = getActualStatusColor(planVal);
+                                
+                                return (
+                                  <div key={`act-${month}`} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.15rem", minWidth: "36px" }}>
+                                    <div
+                                      style={{
+                                        width: "100%",
+                                        height: "22px",
+                                        fontSize: "0.62rem",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        background: actBg !== "transparent" ? actBg : "#18181b",
+                                        color: actBg !== "transparent" ? "white" : "rgba(255,255,255,0.15)",
+                                        border: "1px solid rgba(255,255,255,0.04)",
+                                        borderRadius: "0.2rem",
+                                        fontWeight: "800",
+                                        transition: "all 0.2s"
+                                      }}
+                                    >
+                                      {planVal || "-"}
+                                    </div>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          </div>
                         </div>
                       </div>
 
