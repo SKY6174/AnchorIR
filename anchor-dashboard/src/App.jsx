@@ -944,6 +944,20 @@ const getNormalizedKpi = (k, selectedYear) => {
 };
 
 export default function App() {
+  // [이전 캐시 자동 청소 로직]
+  // 구버전 캐시(v1~v19 등)가 쌓여 QuotaExceededError(용량 초과)를 내는 현상을 원천 방지하기 위해 v20 이외의 옛날 데이터를 즉시 제거합니다.
+  useEffect(() => {
+    try {
+      Object.keys(localStorage).forEach((key) => {
+        if (key.startsWith("anchor_projects_data_") && key !== "anchor_projects_data_v20") {
+          localStorage.removeItem(key);
+        }
+      });
+    } catch (e) {
+      console.warn("구버전 캐시 청소 실패:", e);
+    }
+  }, []);
+
   // [전역 자가 치유 에러 핸들러]
   // 캐시 오염 등으로 렌더링 에러가 날 경우, 화이트스크린 방지를 위해 로컬 세션을 비우고 클린 샌드박스로 자동 복원합니다.
   useEffect(() => {
@@ -1701,8 +1715,27 @@ export default function App() {
 
   // projects 상태 변경 시 localStorage 자동 기입 (새로고침 휘발 방지 우회책)
   useEffect(() => {
-    // 1차년도 프로그램 ID 신규 규칙 적용 및 예산 정합성 보정을 위해 로컬스토리지 키 버전을 v20로 업그레이드합니다.
-    localStorage.setItem("anchor_projects_data_v20", JSON.stringify(projects));
+    try {
+      localStorage.setItem("anchor_projects_data_v20", JSON.stringify(projects));
+    } catch (e) {
+      const isQuotaError = e.name === "QuotaExceededError" || e.code === 22 || e.number === -2147024882;
+      if (isQuotaError) {
+        console.warn("로컬 스토리지 공간이 부족합니다. 이전 구버전 캐시를 청소하고 재시도합니다...");
+        try {
+          Object.keys(localStorage).forEach((key) => {
+            if (key.startsWith("anchor_projects_data_") && key !== "anchor_projects_data_v20") {
+              localStorage.removeItem(key);
+            }
+          });
+          localStorage.setItem("anchor_projects_data_v20", JSON.stringify(projects));
+          console.log("이전 캐시 청소 및 데이터 재저장 성공");
+        } catch (retryError) {
+          console.error("이전 캐시 청소 후에도 로컬 스토리지 기입 실패:", retryError);
+        }
+      } else {
+        console.error("로컬 스토리지 기입 중 알 수 없는 예외 발생:", e);
+      }
+    }
   }, [projects]);
 
   /* 
