@@ -1514,6 +1514,14 @@ export default function App() {
         finalUsersMap.set(idLower, u);
       });
 
+      // 주소록에 변경된 시작일이 있다면, DB 계정 정보가 덮어썼더라도 주소록에 명시된 시작일이 화면상 가입일/시작일로 우선 표출되게 최종 갱신 보장
+      finalUsersMap.forEach((user, key) => {
+        const matchedActive = activeMembers.find(am => am.id.trim().toLowerCase() === key);
+        if (matchedActive) {
+          user.created_at = matchedActive.created_at;
+        }
+      });
+
       // 직책별 가중치 순서 정의 (0순위 관리자 ~ 5순위 실무 연구원)
       const roleRanks = {
         ADMIN: 0,
@@ -1561,6 +1569,41 @@ export default function App() {
           const isOpLeaderB = b.id.toLowerCase() === "hmsim@uc.ac.kr" || b.id.toLowerCase() === "team_leader";
           if (isOpLeaderA && !isOpLeaderB) return -1;
           if (!isOpLeaderA && isOpLeaderB) return 1;
+        }
+
+        // 동일한 RESEARCHER 직급 내에서의 정렬 순서 적용 (소속 부서 순서 -> 직급/직위 순서)
+        if (a.role_key === "RESEARCHER" && b.role_key === "RESEARCHER") {
+          const memberA = (members || []).find(m => m.email && m.email.trim().toLowerCase() === a.id.trim().toLowerCase());
+          const memberB = (members || []).find(m => m.email && m.email.trim().toLowerCase() === b.id.trim().toLowerCase());
+          
+          if (memberA && memberB) {
+            // 1. 소속부서 정렬 순서 (ECC, ICC, RCC, AID-X, 늘봄누리, 신산업)
+            const deptOrder = {
+              "ECC센터": 1,
+              "ICC센터": 2,
+              "RCC센터": 3,
+              "AID-X지원센터": 4,
+              "울산늘봄누리센터": 5,
+              "신산업특화센터": 6
+            };
+            const deptValA = deptOrder[memberA.dept] || 99;
+            const deptValB = deptOrder[memberB.dept] || 99;
+            if (deptValA !== deptValB) {
+              return deptValA - deptValB;
+            }
+
+            // 2. 직급/직위 정렬 순서 (책임연구원, 선임연구원, 연구원)
+            const gradeOrder = {
+              "책임연구원": 1,
+              "선임연구원": 2,
+              "연구원": 3
+            };
+            const gradeValA = gradeOrder[memberA.grade] || 99;
+            const gradeValB = gradeOrder[memberB.grade] || 99;
+            if (gradeValA !== gradeValB) {
+              return gradeValA - gradeValB;
+            }
+          }
         }
 
         // 동일한 직급일 경우 ID 알파벳 순 정렬
@@ -3088,6 +3131,71 @@ export default function App() {
                           if (memberFilter === "active") return m.status !== "퇴직";
                           if (memberFilter === "retired") return m.status === "퇴직";
                           return true;
+                        })
+                        .sort((a, b) => {
+                          const roleRanks = {
+                            "사업단장": 1,
+                            "본부장": 2,
+                            "센터장": 3,
+                            "운영팀장": 4,
+                            "팀장교수": 4,
+                            "연구원": 5
+                          };
+                          const rankA = roleRanks[a.role] || 99;
+                          const rankB = roleRanks[b.role] || 99;
+                          if (rankA !== rankB) {
+                            return rankA - rankB;
+                          }
+
+                          // 1. 센터장 정렬 (이동은 -> 김기범 -> 현용환 -> 홍광표 -> 홍진숙)
+                          if (a.role === "센터장" && b.role === "센터장") {
+                            const centerOrder = {
+                              "ECC센터": 1,
+                              "ICC센터": 2,
+                              "RCC센터": 3,
+                              "울산늘봄누리센터": 4,
+                              "신산업특화센터": 5
+                            };
+                            const oA = centerOrder[a.dept] || 99;
+                            const oB = centerOrder[b.dept] || 99;
+                            if (oA !== oB) return oA - oB;
+                          }
+
+                          // 2. 운영팀장(심현미 부장)을 팀장교수진보다 우선 정렬
+                          if (a.role === "운영팀장" && b.role !== "운영팀장") return -1;
+                          if (a.role !== "운영팀장" && b.role === "운영팀장") return 1;
+
+                          // 3. 연구원인 경우: 소속부서 순서(ECC -> ICC -> RCC -> AID-X -> 늘봄누리 -> 신산업)
+                          // 그 후 직급/직위 순서(책임연구원 -> 선임연구원 -> 연구원)
+                          if (a.role === "연구원" && b.role === "연구원") {
+                            const deptOrder = {
+                              "ECC센터": 1,
+                              "ICC센터": 2,
+                              "RCC센터": 3,
+                              "AID-X지원센터": 4,
+                              "울산늘봄누리센터": 5,
+                              "신산업특화센터": 6
+                            };
+                            const deptValA = deptOrder[a.dept] || 99;
+                            const deptValB = deptOrder[b.dept] || 99;
+                            if (deptValA !== deptValB) {
+                              return deptValA - deptValB;
+                            }
+
+                            const gradeOrder = {
+                              "책임연구원": 1,
+                              "선임연구원": 2,
+                              "연구원": 3
+                            };
+                            const gradeValA = gradeOrder[a.grade] || 99;
+                            const gradeValB = gradeOrder[b.grade] || 99;
+                            if (gradeValA !== gradeValB) {
+                              return gradeValA - gradeValB;
+                            }
+                          }
+
+                          // 4. 동일 직급 내 기본 정렬 (ID 순)
+                          return a.id.localeCompare(b.id, 'en');
                         })
                         .map((m) => {
                           const isRetired = m.status === "퇴직";
