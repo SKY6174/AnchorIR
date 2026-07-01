@@ -2185,13 +2185,13 @@ export const YEAR_1_PROGRAMS = {
     {
       "id": "A2-S3T7-1",
       "title": "공통경비",
-      "budget": 140000000,
+      "budget": 130000000,
       "spent": 114500000,
       "assignee": "글로컬창업지원팀",
       "budget_categories": [
         { "category": "인건비", "budget": 76000000, "spent": 75200000 },
         { "category": "간접비", "budget": 27000000, "spent": 27000000 },
-        { "category": "그 밖의 사업운영경비", "budget": 37000000, "spent": 12300000 }
+        { "category": "그 밖의 사업운영경비", "budget": 27000000, "spent": 12300000 }
       ]
     }],
   "B1": [
