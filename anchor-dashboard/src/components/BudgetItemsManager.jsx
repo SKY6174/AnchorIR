@@ -413,7 +413,7 @@ export default function BudgetItemsManager({ projects, currentRole, onUpdateBudg
     <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 2fr", gap: "1.5rem" }}>
       {/* 좌측 단위과제 목록 */}
       <div className="glass-card" style={{ maxHeight: isMobile ? "none" : "680px", overflowY: "auto" }}>
-        <h3 style={{ fontSize: "1.1rem", fontWeight: "800", marginBottom: "0.8rem" }}>단위과제 목록</h3>
+        <h3 style={{ fontSize: "1.1rem", fontWeight: "800", marginBottom: "0.8rem", color: "var(--text-primary)" }}>단위과제 목록</h3>
         
         {/* 전체 예산 현황 요약 카드 추가 (클릭 시 전체사업 통계 조회) */}
         <div 
@@ -424,18 +424,19 @@ export default function BudgetItemsManager({ projects, currentRole, onUpdateBudg
           style={{ 
             padding: "0.8rem", 
             borderRadius: "0.5rem", 
-            background: selectedUnitId === "Total" ? "rgba(59,130,246,0.15)" : "rgba(59,130,246,0.08)", 
+            background: selectedUnitId === "Total" ? "rgba(59,130,246,0.15)" : "var(--panel-bg)", 
             marginBottom: "1.2rem", 
-            border: `1px solid ${selectedUnitId === "Total" ? "var(--accent-color)" : "rgba(59,130,246,0.15)"}`,
+            border: `1px solid ${selectedUnitId === "Total" ? "var(--accent-color)" : "var(--border-color)"}`,
             cursor: "pointer",
-            transition: "all 0.2s ease"
+            transition: "all 0.2s ease",
+            boxShadow: selectedUnitId === "Total" ? "0 4px 12px rgba(59, 130, 246, 0.15)" : "none"
           }}
         >
-          <div style={{ fontSize: "0.7rem", color: selectedUnitId === "Total" ? "var(--accent-color)" : "var(--text-secondary-dark)", fontWeight: "700" }}>{selectedYear}차년도 전체 예산 규모</div>
-          <div style={{ fontSize: "1.2rem", fontWeight: "900", color: "white", marginTop: "0.2rem" }}>
+          <div style={{ fontSize: "0.7rem", color: selectedUnitId === "Total" ? "var(--accent-color)" : "var(--text-secondary)", fontWeight: "700" }}>{selectedYear}차년도 전체 예산 규모</div>
+          <div style={{ fontSize: "1.2rem", fontWeight: "900", color: "var(--text-primary)", marginTop: "0.2rem" }}>
             {formatToMillionWon(totalCombinedBudget)} <span style={{ fontSize: "0.8rem", fontWeight: "normal" }}>백만원</span>
           </div>
-          <div style={{ display: "flex", gap: "0.6rem", fontSize: "0.65rem", color: "var(--text-secondary-dark)", marginTop: "0.4rem" }}>
+          <div style={{ display: "flex", gap: "0.6rem", fontSize: "0.65rem", color: "var(--text-secondary)", marginTop: "0.4rem" }}>
             <span>본사업비: {formatToMillionWon(totalMainBudget)}백만원</span>
             <span>이월: {formatToMillionWon(totalCarryBudget)}백만원</span>
           </div>
@@ -451,7 +452,7 @@ export default function BudgetItemsManager({ projects, currentRole, onUpdateBudg
                 {/* 부서 헤더 소제목 */}
                 <div style={{ fontSize: "0.75rem", fontWeight: "800", color: "var(--accent-color)", borderLeft: "3px solid var(--accent-color)", paddingLeft: "0.4rem", marginBottom: "0.2rem", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                   <span>{dept.name}</span>
-                  <span style={{ fontSize: "0.65rem", fontWeight: "normal", color: "var(--text-secondary-dark)" }}>{deptUnits.length}개 과제</span>
+                  <span style={{ fontSize: "0.65rem", fontWeight: "normal", color: "var(--text-secondary)" }}>{deptUnits.length}개 과제</span>
                 </div>
                 {/* 부서 소속 과제 카드 리스트 */}
                 <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
@@ -470,6 +471,7 @@ export default function BudgetItemsManager({ projects, currentRole, onUpdateBudg
                     }
                     const spentRate = displayBudget > 0 ? (displaySpent / displayBudget) * 100 : 0;
                     const isCommon = u.id === "Common";
+                    const isSelected = selectedUnitId === u.id;
                     // 동일한 u.id가 두 개 부서(AID-X, 늘봄누리)에 복제될 수 있으므로 key는 부서명과 id의 조합으로 유니크하게 보장한다.
                     const keyStr = `${dept.name}-${u.id}`;
                     return (
@@ -479,19 +481,20 @@ export default function BudgetItemsManager({ projects, currentRole, onUpdateBudg
                         style={{
                           padding: "0.75rem 0.9rem",
                           borderRadius: "0.5rem",
-                          border: `1px solid ${selectedUnitId === u.id ? "var(--accent-color)" : "var(--border-color-dark)"}`,
-                          background: selectedUnitId === u.id ? "rgba(59,130,246,0.08)" : "rgba(255,255,255,0.02)",
+                          border: `1px solid ${isSelected ? "var(--accent-color)" : "var(--border-color)"}`,
+                          background: isSelected ? "rgba(59,130,246,0.08)" : "var(--panel-bg)",
                           cursor: "pointer",
-                          transition: "all 0.2s ease"
+                          transition: "all 0.2s ease",
+                          boxShadow: isSelected ? "0 4px 12px rgba(59, 130, 246, 0.12)" : "none"
                         }}
                       >
-                        <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.7rem", color: isCommon ? "#ec4899" : "var(--accent-color)", fontWeight: "700" }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.7rem", color: isCommon ? "#ec4899" : (isSelected ? "var(--accent-color)" : "var(--text-secondary)"), fontWeight: "700" }}>
                           <span>{u.id}</span>
-                          <span>{spentRate.toFixed(1)}% 집행</span>
+                          <span style={{ color: "var(--accent-color)" }}>{spentRate.toFixed(1)}% 집행</span>
                         </div>
-                        <h4 style={{ fontSize: "0.8rem", fontWeight: "700", marginTop: "0.25rem", lineHeight: "1.3", color: "white" }}>{u.title}</h4>
+                        <h4 style={{ fontSize: "0.8rem", fontWeight: "700", marginTop: "0.25rem", lineHeight: "1.3", color: isSelected ? "var(--accent-color)" : "var(--text-primary)" }}>{u.title}</h4>
                         {/* 본사업비/이월사업비 상태에 따른 상세 수치 동적 반영 */}
-                        <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.65rem", color: "var(--text-secondary-dark)", marginTop: "0.4rem" }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.65rem", color: "var(--text-secondary)", marginTop: "0.4rem" }}>
                           {subTab === "main" ? (
                             <>
                               <span>본예산: {formatToMillionWon(displayBudget)}백만원</span>
