@@ -1536,6 +1536,15 @@ export default function App() {
         if (rankA !== rankB) {
           return rankA - rankB;
         }
+        
+        // 동일한 TEAM_LEADER 직급 내에서 운영팀장(심현미 부장)을 팀장교수진보다 우선 배치
+        if (a.role_key === "TEAM_LEADER" && b.role_key === "TEAM_LEADER") {
+          const isOpLeaderA = a.id.toLowerCase() === "hmsim@uc.ac.kr" || a.id.toLowerCase() === "team_leader";
+          const isOpLeaderB = b.id.toLowerCase() === "hmsim@uc.ac.kr" || b.id.toLowerCase() === "team_leader";
+          if (isOpLeaderA && !isOpLeaderB) return -1;
+          if (!isOpLeaderA && isOpLeaderB) return 1;
+        }
+
         // 동일한 직급일 경우 ID 알파벳 순 정렬
         return a.id.localeCompare(b.id, 'en');
       });
