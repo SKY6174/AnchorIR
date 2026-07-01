@@ -337,6 +337,28 @@ export default function ProgramProgressManager({ projects, selectedYear }) {
 
                                 // 2. 하단 Actual 바 배경 및 연속 둥글기 계산 (Gantt 연결 바 연출)
                                 const getActualBg = () => {
+                                  // 수동 기입된 실제 타임라인이 존재하면 그것을 최우선으로 사용하여 그립니다.
+                                  if (prog.actual_timeline) {
+                                    const actualMonths = parseTimelineToMonths(prog.actual_timeline);
+                                    const targetActualVal = actualMonths[idx] || "";
+                                    const actualSteps = targetActualVal ? targetActualVal.split(/[\/+&,]/).map(s => s.trim().toUpperCase()).filter(s => ["P", "D", "C", "A"].includes(s)) : [];
+                                    
+                                    if (actualSteps.length === 0) return "transparent";
+                                    if (actualSteps.length === 1) {
+                                      return getSingleColor(actualSteps[0], true, prog);
+                                    } else {
+                                      const col1 = getSingleColor(actualSteps[0], true, prog);
+                                      const col2 = getSingleColor(actualSteps[1], true, prog);
+                                      if (col1 !== "transparent" || col2 !== "transparent") {
+                                        const fb1 = col1 !== "transparent" ? col1 : "rgba(255,255,255,0.02)";
+                                        const fb2 = col2 !== "transparent" ? col2 : "rgba(255,255,255,0.02)";
+                                        return `linear-gradient(135deg, ${fb1} 50%, ${fb2} 50%)`;
+                                      }
+                                      return "transparent";
+                                    }
+                                  }
+
+                                  // actual_timeline이 비어있으면 기존의 계획 기반 매핑 자동 폴백
                                   if (steps.length === 0) return "transparent";
                                   if (steps.length === 1) {
                                     return getSingleColor(steps[0], true, prog);
@@ -354,6 +376,18 @@ export default function ProgramProgressManager({ projects, selectedYear }) {
                                 const actualBg = getActualBg();
 
                                 const isActualActive = (i) => {
+                                  // 수동 기입된 실제 타임라인이 존재하면 그것을 판정 기준으로 삼습니다.
+                                  if (prog.actual_timeline) {
+                                    const actualMonths = parseTimelineToMonths(prog.actual_timeline);
+                                    const actVal = actualMonths[i];
+                                    if (!actVal) return false;
+                                    const sList = actVal.split(/[\/+&,]/).map(s => s.trim().toUpperCase()).filter(s => ["P", "D", "C", "A"].includes(s));
+                                    return sList.some(char => {
+                                      const status = prog.pdca?.[char.toLowerCase()] || "대기";
+                                      return status === "완료" || status === "진행";
+                                    });
+                                  }
+
                                   const v = monthlyPDCA[i];
                                   if (!v) return false;
                                   const sList = v.split(/[\/+&,]/).map(s => s.trim().toUpperCase()).filter(s => ["P", "D", "C", "A"].includes(s));

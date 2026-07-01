@@ -2102,6 +2102,9 @@ export default function App() {
                 if (updatedFields.satisfaction !== undefined) prog.satisfaction = updatedFields.satisfaction;
                 if (updatedFields.selfEval !== undefined) prog.selfEval = updatedFields.selfEval;
                 
+                // 실제 실적 타임라인 갱신 (수동 입력 지원)
+                if (updatedFields.actual_timeline !== undefined) prog.actual_timeline = updatedFields.actual_timeline;
+                
                 // 신규 P단계 기획 필드 갱신
                 if (updatedFields.timeline !== undefined) prog.timeline = updatedFields.timeline;
                 if (updatedFields.targetAudience !== undefined) prog.targetAudience = updatedFields.targetAudience;

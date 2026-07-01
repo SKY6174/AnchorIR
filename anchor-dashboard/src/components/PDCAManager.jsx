@@ -172,6 +172,9 @@ export default function PDCAManager({
   // 월별 PDCA 일정 관리용 상태 (26.3월 ~ 27.2월, 12칸)
   const [inputMonthlyPDCA, setInputMonthlyPDCA] = useState(Array(12).fill(""));
 
+  // 월별 실제 추진 실적 일정 관리용 상태 (26.3월 ~ 27.2월, 12칸, 드롭박스 입력 방식)
+  const [inputMonthlyPDCAActual, setInputMonthlyPDCAActual] = useState(Array(12).fill(""));
+
   // D 단계 집행 실적용 상태 (재원별 분리)
   const [inputSpentNational, setInputSpentNational] = useState("");
   const [inputSpentCity, setInputSpentCity] = useState("");
@@ -283,6 +286,7 @@ export default function PDCAManager({
 
         // 월별 PDCA일정 바인딩
         setInputMonthlyPDCA(parseTimelineToMonths(prog.timeline || ""));
+        setInputMonthlyPDCAActual(parseTimelineToMonths(prog.actual_timeline || ""));
 
         setInputSpentNational(py.spent_national !== undefined ? (py.spent_national / 1000000).toFixed(1) : "0.0");
         setInputSpentCity(py.spent_city !== undefined ? (py.spent_city / 1000000).toFixed(1) : "0.0");
@@ -321,6 +325,7 @@ export default function PDCAManager({
         { category: "", budget: "", budget_carry: "", spent: "0.0", spent_carry: "0.0" }
       ]);
       setInputMonthlyPDCA(Array(12).fill(""));
+      setInputMonthlyPDCAActual(Array(12).fill(""));
       setInputSpentNational("");
       setInputSpentCity("");
       setInputSpentExternal("");
@@ -538,7 +543,8 @@ export default function PDCAManager({
       participants: parsedParticipants,
       actualFrequency: inputActualFrequency !== "" ? parseInt(inputActualFrequency, 10) : 0,
       achieveRate: inputAchieveRate !== "" ? parseFloat(inputAchieveRate) : 0,
-      budget_categories: categoriesToSave
+      budget_categories: categoriesToSave,
+      actual_timeline: inputMonthlyPDCAActual.join(",") // 실제 일정을 쉼표로 연결해서 전송
     });
 
     setFeedbackMsg("D 단계 집행 실적 및 이수인원이 안전하게 저장되었습니다.");
@@ -1033,14 +1039,13 @@ export default function PDCAManager({
                     <h4 style={{ fontSize: "0.8rem", fontWeight: "800", marginBottom: "0.5rem", color: "#10b981" }}>D 단계: 세부 재원별 본집행액 및 실적 입력</h4>
                     <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
                       
-                      {/* 실제 실적 일정 (D단계 내부 노출) */}
+                      {/* 실제 실적 일정 (D단계 내부 노출 및 수동 입력 기능) */}
                       <div style={{ background: "rgba(255,255,255,0.01)", padding: "0.5rem", borderRadius: "0.4rem", border: "1px solid rgba(255,255,255,0.03)", marginBottom: "0.3rem" }}>
-                        <span style={{ fontSize: "0.58rem", color: "#10b981", fontWeight: "800", display: "inline-block", marginBottom: "0.25rem" }}>● 실제 실적 (Actual Progress - PDCA 실시간 연동)</span>
+                        <span style={{ fontSize: "0.58rem", color: "#10b981", fontWeight: "800", display: "inline-block", marginBottom: "0.25rem" }}>● 실제 실적 (Actual Progress - 추진 월 수동 선택)</span>
                         <div style={{ display: "grid", gridTemplateColumns: "repeat(12, 1fr)", gap: "0.2rem", overflowX: "auto" }}>
                           {monthsList.map((month, idx) => {
-                            const planVal = inputMonthlyPDCA[idx] || "";
+                            const actVal = inputMonthlyPDCAActual[idx] || "";
                             
-                            // 계획된 단계에 따라 실제 완료/진행 여부를 실시간 연동하여 매핑합니다.
                             const getActualStatusColor = (v) => {
                               if (!v) return "transparent";
                               const steps = v.split(/[\/+&,]/).map(s => s.trim().toUpperCase()).filter(s => ["P", "D", "C", "A"].includes(s));
@@ -1077,31 +1082,45 @@ export default function PDCAManager({
                               return "transparent";
                             };
 
-                            const actBg = getActualStatusColor(planVal);
+                            const actBg = getActualStatusColor(actVal);
                             
                             return (
                               <div key={`act-d-${month}`} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.15rem", minWidth: "36px" }}>
                                 <span style={{ fontSize: "0.55rem", color: "var(--text-secondary-dark)", whiteSpace: "nowrap", marginBottom: "0.1rem" }}>
                                   {month}
                                 </span>
-                                <div
+                                <select
+                                  className="user-selector"
+                                  value={actVal}
+                                  onChange={(e) => {
+                                    const newPDCAActual = [...inputMonthlyPDCAActual];
+                                    newPDCAActual[idx] = e.target.value;
+                                    setInputMonthlyPDCAActual(newPDCAActual);
+                                  }}
                                   style={{
                                     width: "100%",
-                                    height: "22px",
                                     fontSize: "0.62rem",
-                                    display: "flex",
-                                    alignItems: "center",
-                                    justifyContent: "center",
+                                    padding: "0.15rem 0.05rem",
+                                    textAlign: "center",
                                     background: actBg !== "transparent" ? actBg : "#18181b",
-                                    color: actBg !== "transparent" ? "white" : "rgba(255,255,255,0.15)",
-                                    border: "1px solid rgba(255,255,255,0.04)",
+                                    color: actBg !== "transparent" ? "white" : "var(--text-secondary-dark)",
+                                    border: "1px solid var(--border-color-dark)",
                                     borderRadius: "0.2rem",
-                                    fontWeight: "800",
+                                    cursor: "pointer",
+                                    fontWeight: actBg !== "transparent" ? "800" : "normal",
+                                    outline: "none",
                                     transition: "all 0.2s"
                                   }}
                                 >
-                                  {planVal || "-"}
-                                </div>
+                                  <option value="" style={{ background: "#18181b", color: "white" }}>-</option>
+                                  <option value="P" style={{ background: "#2563eb", color: "white" }}>P</option>
+                                  <option value="D" style={{ background: "#10b981", color: "white" }}>D</option>
+                                  <option value="C" style={{ background: "#f59e0b", color: "white" }}>C</option>
+                                  <option value="A" style={{ background: "#d946ef", color: "white" }}>A</option>
+                                  <option value="P/D" style={{ background: "linear-gradient(135deg, #2563eb 50%, #10b981 50%)", color: "white" }}>P/D</option>
+                                  <option value="D/C" style={{ background: "linear-gradient(135deg, #10b981 50%, #f59e0b 50%)", color: "white" }}>D/C</option>
+                                  <option value="C/A" style={{ background: "linear-gradient(135deg, #f59e0b 50%, #d946ef 50%)", color: "white" }}>C/A</option>
+                                </select>
                               </div>
                             );
                           })}
