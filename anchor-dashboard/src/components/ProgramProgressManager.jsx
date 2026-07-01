@@ -114,7 +114,7 @@ const getProgramTimeline = (progId) => {
   }
 };
 
-export default function ProgramProgressManager({ projects, selectedYear, onSelectProgram }) {
+export default function ProgramProgressManager({ projects, selectedYear, onSelectProgram, onUpdateProgramDetails }) {
   const startYr = 2024 + selectedYear;
   const endYr = 2025 + selectedYear;
   const startYrShort = String(startYr).slice(-2);
@@ -142,11 +142,130 @@ export default function ProgramProgressManager({ projects, selectedYear, onSelec
   });
   const [selectedUnitId, setSelectedUnitId] = useState(allUnits[0]?.id || "A1가");
 
+  // 마우스 간트 드래그 편집 상태 관리
+  const [dragState, setDragState] = useState({
+    isDragging: false,
+    progId: null,
+    unitId: null,
+    type: null, // 'plan' | 'actual'
+    startSlot: null,
+    currentSlot: null
+  });
+
+  // 슬롯 인덱스(0~23)를 YYYY.MM.DD ~ YYYY.MM.DD 날짜 범위로 파싱해 주는 유틸
+  const getSlotDateRange = (startSlot, endSlot, yr) => {
+    const startYr = 2024 + yr;
+    const getSlotDetails = (slot) => {
+      const monthOffset = Math.floor(slot / 2); // 0 ~ 11
+      const isSecondHalf = slot % 2 === 1;
+      let month = 3 + monthOffset;
+      let year = startYr;
+      if (month > 12) {
+        month -= 12;
+        year += 1;
+      }
+      const pad = (num) => String(num).padStart(2, "0");
+      let startDay = isSecondHalf ? "16" : "01";
+      let endDay = "";
+      if (isSecondHalf) {
+        if ([1, 3, 5, 7, 8, 10, 12].includes(month)) endDay = "31";
+        else if ([4, 6, 9, 11].includes(month)) endDay = "30";
+        else {
+          const isLeap = (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0);
+          endDay = isLeap ? "29" : "28";
+        }
+      } else {
+        endDay = "15";
+      }
+      return {
+        startStr: `${year}.${pad(month)}.${startDay}`,
+        endStr: `${year}.${pad(month)}.${endDay}`
+      };
+    };
+    const minSlot = Math.min(startSlot, endSlot);
+    const maxSlot = Math.max(startSlot, endSlot);
+    const startInfo = getSlotDetails(minSlot);
+    const endInfo = getSlotDetails(maxSlot);
+    return `${startInfo.startStr} ~ ${endInfo.endStr}`;
+  };
+
+  // 24개 반달 슬롯 문자열을 12개월 쉼표 구조(P,D,C,A)로 변환해 주는 헬퍼 함수
+  const convertSlotsToTimelineActual = (startSlot, endSlot, currentTimeline) => {
+    const minSlot = Math.min(startSlot, endSlot);
+    const maxSlot = Math.max(startSlot, endSlot);
+    const months = currentTimeline && currentTimeline.split(",").length === 12 
+      ? currentTimeline.split(",").map(m => m.trim())
+      : Array(12).fill("");
+      
+    for (let slot = 0; slot < 24; slot++) {
+      if (slot >= minSlot && slot <= maxSlot) {
+        const mIdx = Math.floor(slot / 2);
+        months[mIdx] = "P";
+      }
+    }
+    return months.join(",");
+  };
+
   const activeUnit = allUnits.find(u => u.id === selectedUnitId);
 
   // 단위과제 클릭 핸들러
   const handleSelectUnit = (unitId) => {
     setSelectedUnitId(unitId);
+  };
+
+  // 마우스 간트 드래그 핸들러
+  const handleGanttMouseDown = (progId, unitId, type, slotIdx) => {
+    setDragState({
+      isDragging: true,
+      progId,
+      unitId,
+      type,
+      startSlot: slotIdx,
+      currentSlot: slotIdx
+    });
+  };
+
+  const handleGanttMouseEnter = (progId, slotIdx) => {
+    if (dragState.isDragging && dragState.progId === progId) {
+      setDragState(prev => ({
+        ...prev,
+        currentSlot: slotIdx
+      }));
+    }
+  };
+
+  const handleGanttMouseUp = (prog) => {
+    if (!dragState.isDragging || !onUpdateProgramDetails) {
+      setDragState({ isDragging: false, progId: null, unitId: null, type: null, startSlot: null, currentSlot: null });
+      return;
+    }
+
+    const { startSlot, currentSlot, type } = dragState;
+    if (startSlot === null || currentSlot === null) {
+      setDragState({ isDragging: false, progId: null, unitId: null, type: null, startSlot: null, currentSlot: null });
+      return;
+    }
+
+    if (type === 'plan') {
+      const newTimeline = getSlotDateRange(startSlot, currentSlot, selectedYear);
+      onUpdateProgramDetails(dragState.unitId, dragState.progId, {
+        timeline: newTimeline
+      });
+    } else if (type === 'actual') {
+      const newActualTimeline = convertSlotsToTimelineActual(startSlot, currentSlot, prog.actual_timeline);
+      onUpdateProgramDetails(dragState.unitId, dragState.progId, {
+        actual_timeline: newActualTimeline
+      });
+    }
+
+    setDragState({
+      isDragging: false,
+      progId: null,
+      unitId: null,
+      type: null,
+      startSlot: null,
+      currentSlot: null
+    });
   };
 
   return (
@@ -265,6 +384,14 @@ export default function ProgramProgressManager({ projects, selectedYear, onSelec
                       const totalProgSpent = (py.spent_main || 0) + (py.spent_carry || 0);
 
                       const monthlyPDCA = parseTimelineToMonths(prog.timeline || "");
+
+                      // 드래그 영역 판정용 함수
+                      const isSlotInDrag = (type, slotIdx) => {
+                        if (!dragState.isDragging || dragState.progId !== prog.id || dragState.type !== type) return false;
+                        const minS = Math.min(dragState.startSlot, dragState.currentSlot);
+                        const maxS = Math.max(dragState.startSlot, dragState.currentSlot);
+                        return slotIdx >= minS && slotIdx <= maxS;
+                      };
 
                       return (
                         <tr key={prog.id} style={{ height: "80px" }}>
@@ -431,42 +558,73 @@ export default function ProgramProgressManager({ projects, selectedYear, onSelec
                                   <div
                                     key={idx}
                                     style={{
-                                      height: "36px",
+                                      height: "38px",
                                       display: "flex",
                                       flexDirection: "column",
                                       justifyContent: "space-between",
                                       position: "relative",
-                                      padding: "2px 0",
+                                      padding: "1px 0",
                                       background: "rgba(255, 255, 255, 0.01)",
                                       borderRight: "1px dashed rgba(255,255,255,0.03)"
                                     }}
+                                    onMouseUp={() => handleGanttMouseUp(prog)}
                                   >
-                                    {/* 상단: 계획(Plan) Gantt Bar */}
-                                    {val ? (
+                                    {/* 1. 계획(Plan) 영역 및 드래그 2분할 */}
+                                    <div style={{ height: "12px", display: "flex", position: "relative" }}>
                                       <div
-                                        title={`계획: ${val}단계`}
+                                        onMouseDown={() => handleGanttMouseDown(prog.id, activeUnit.id, 'plan', idx * 2)}
+                                        onMouseEnter={() => handleGanttMouseEnter(prog.id, idx * 2)}
                                         style={{
-                                          height: "10px",
-                                          background: planBg,
-                                          borderRadius: planRadius,
-                                          fontSize: "0.52rem",
-                                          fontWeight: "900",
-                                          color: "white",
-                                          display: "flex",
-                                          alignItems: "center",
-                                          justifyContent: "center",
-                                          lineHeight: 1,
-                                          position: "relative"
+                                          flex: 1,
+                                          height: "100%",
+                                          cursor: "ew-resize",
+                                          background: isSlotInDrag('plan', idx * 2) ? "rgba(59, 130, 246, 0.45)" : "transparent",
+                                          border: isSlotInDrag('plan', idx * 2) ? "1px solid #3b82f6" : "none",
+                                          zIndex: 5
                                         }}
-                                      >
-                                        <span style={{ transform: "scale(0.85)" }}>{val}</span>
-                                        {hasRightPlan && (
-                                          <span style={{ position: "absolute", right: "-3px", fontSize: "0.45rem", opacity: 0.6, zIndex: 2 }}>➔</span>
-                                        )}
-                                      </div>
-                                    ) : (
-                                      <div style={{ height: "10px" }} />
-                                    )}
+                                      />
+                                      <div
+                                        onMouseDown={() => handleGanttMouseDown(prog.id, activeUnit.id, 'plan', idx * 2 + 1)}
+                                        onMouseEnter={() => handleGanttMouseEnter(prog.id, idx * 2 + 1)}
+                                        style={{
+                                          flex: 1,
+                                          height: "100%",
+                                          cursor: "ew-resize",
+                                          background: isSlotInDrag('plan', idx * 2 + 1) ? "rgba(59, 130, 246, 0.45)" : "transparent",
+                                          border: isSlotInDrag('plan', idx * 2 + 1) ? "1px solid #3b82f6" : "none",
+                                          zIndex: 5
+                                        }}
+                                      />
+                                      
+                                      {val && (
+                                        <div
+                                          title={`계획: ${val}단계`}
+                                          style={{
+                                            position: "absolute",
+                                            left: 0,
+                                            right: 0,
+                                            top: 0,
+                                            height: "10px",
+                                            background: planBg,
+                                            borderRadius: planRadius,
+                                            fontSize: "0.52rem",
+                                            fontWeight: "900",
+                                            color: "white",
+                                            display: "flex",
+                                            alignItems: "center",
+                                            justifyContent: "center",
+                                            lineHeight: 1,
+                                            pointerEvents: "none",
+                                            zIndex: 2
+                                          }}
+                                        >
+                                          <span style={{ transform: "scale(0.85)" }}>{val}</span>
+                                          {hasRightPlan && (
+                                            <span style={{ position: "absolute", right: "-3px", fontSize: "0.45rem", opacity: 0.6, zIndex: 2 }}>➔</span>
+                                          )}
+                                        </div>
+                                      )}
+                                    </div>
 
                                     {/* 중앙: 상/하 연결 화살표 데코레이션 */}
                                     {val && (
@@ -479,7 +637,7 @@ export default function ProgramProgressManager({ projects, selectedYear, onSelec
                                           fontSize: "0.55rem",
                                           color: "rgba(255, 255, 255, 0.35)",
                                           fontWeight: "bold",
-                                          zIndex: 10,
+                                          zIndex: 1,
                                           pointerEvents: "none"
                                         }}
                                       >
@@ -487,11 +645,40 @@ export default function ProgramProgressManager({ projects, selectedYear, onSelec
                                       </div>
                                     )}
 
-                                    {/* 하단: 실제(Actual) Gantt Bar */}
-                                    {val ? (
+                                    {/* 2. 실제(Actual) 영역 및 드래그 2분할 */}
+                                    <div style={{ height: "12px", display: "flex", position: "relative" }}>
+                                      <div
+                                        onMouseDown={() => handleGanttMouseDown(prog.id, activeUnit.id, 'actual', idx * 2)}
+                                        onMouseEnter={() => handleGanttMouseEnter(prog.id, idx * 2)}
+                                        style={{
+                                          flex: 1,
+                                          height: "100%",
+                                          cursor: "ew-resize",
+                                          background: isSlotInDrag('actual', idx * 2) ? "rgba(16, 185, 129, 0.45)" : "transparent",
+                                          border: isSlotInDrag('actual', idx * 2) ? "1px solid #10b981" : "none",
+                                          zIndex: 5
+                                        }}
+                                      />
+                                      <div
+                                        onMouseDown={() => handleGanttMouseDown(prog.id, activeUnit.id, 'actual', idx * 2 + 1)}
+                                        onMouseEnter={() => handleGanttMouseEnter(prog.id, idx * 2 + 1)}
+                                        style={{
+                                          flex: 1,
+                                          height: "100%",
+                                          cursor: "ew-resize",
+                                          background: isSlotInDrag('actual', idx * 2 + 1) ? "rgba(16, 185, 129, 0.45)" : "transparent",
+                                          border: isSlotInDrag('actual', idx * 2 + 1) ? "1px solid #10b981" : "none",
+                                          zIndex: 5
+                                        }}
+                                      />
+
                                       <div
                                         title={`실제 진행`}
                                         style={{
+                                          position: "absolute",
+                                          left: 0,
+                                          right: 0,
+                                          top: 0,
                                           height: "10px",
                                           background: actualBg !== "transparent" ? actualBg : "rgba(255,255,255,0.02)",
                                           borderRadius: actualRadius,
@@ -502,16 +689,16 @@ export default function ProgramProgressManager({ projects, selectedYear, onSelec
                                           display: "flex",
                                           alignItems: "center",
                                           justifyContent: "center",
-                                          lineHeight: 1
+                                          lineHeight: 1,
+                                          pointerEvents: "none",
+                                          zIndex: 2
                                         }}
                                       >
-                                        {actualBg !== "transparent" && (
+                                        {actualBg !== "transparent" && val && (
                                           <span style={{ transform: "scale(0.8)" }}>{val}</span>
                                         )}
                                       </div>
-                                    ) : (
-                                      <div style={{ height: "10px" }} />
-                                    )}
+                                    </div>
                                   </div>
                                 );
                               })}

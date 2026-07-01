@@ -4044,6 +4044,7 @@ export default function App() {
           <ProgramProgressManager
             projects={displayProjects}
             selectedYear={selectedYear}
+            onUpdateProgramDetails={handleUpdateProgramDetails}
             onSelectProgram={(unitId, progId) => {
               setActiveTab("projects");
               setProjectsSubTab("program_mgmt");
