@@ -182,7 +182,7 @@ body.light-mode {
 /* Main Content Area */
 .main-content {
   flex-grow: 1;
-  padding: 2.5rem;
+  padding: 1.0rem 1.25rem;
   overflow-y: auto;
   max-height: 100vh;
 }

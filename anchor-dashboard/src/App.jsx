@@ -2522,39 +2522,21 @@ export default function App() {
   return (
     <div className="dashboard-container">
       {/* 사이드바 */}
-      <div style={{ display: "flex", flexDirection: "column", height: "100vh" }}>
-        <Sidebar
-          currentRole={currentRole}
-          onChangeRole={() => {}}
-          activeTab={activeTab}
-          onChangeTab={(tab) => {
-            setActiveTab(tab);
-            setSelectedKpi(null);
-          }}
-          projectsSubTab={projectsSubTab}
-          onChangeProjectsSubTab={setProjectsSubTab}
-          kpiSubTab={kpiSubTab}
-          onChangeKpiSubTab={setKpiSubTab}
-          mgmtSubTab={mgmtSubTab}
-          onChangeMgmtSubTab={setMgmtSubTab}
-        />
-        <div style={{ padding: "0.5rem 0.4rem 0.25rem 0.4rem", background: "var(--panel-bg-dark)", borderRight: "1px solid var(--border-color-dark)" }}>
-          <button
-            className="btn-primary"
-            style={{ width: "100%", justifyContent: "center", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", color: "white", padding: "0.5rem 0.3rem", fontSize: "0.75rem", gap: "0.3rem" }}
-            onClick={() => setIsPasswordModalOpen(true)}
-          >
-            <LockIcon size={14} />
-            <span style={{ textAlign: "center", lineHeight: "1.2" }}>개인정보<br />관리</span>
-          </button>
-        </div>
-        <div style={{ padding: "0.25rem 0.4rem 1.0rem 0.4rem", background: "var(--panel-bg-dark)", borderRight: "1px solid var(--border-color-dark)" }} className="light-mode-logout-bg">
-          <button className="btn-primary" style={{ width: "100%", justifyContent: "center", background: "rgba(239,68,68,0.15)", border: "1px solid var(--danger-color)", color: "#f87171", padding: "0.5rem 0.3rem", fontSize: "0.75rem", gap: "0.3rem" }} onClick={handleLogout}>
-            <LogOut size={14} />
-            <span>로그아웃</span>
-          </button>
-        </div>
-      </div>
+      <Sidebar
+        currentRole={currentRole}
+        onChangeRole={() => {}}
+        activeTab={activeTab}
+        onChangeTab={(tab) => {
+          setActiveTab(tab);
+          setSelectedKpi(null);
+        }}
+        projectsSubTab={projectsSubTab}
+        onChangeProjectsSubTab={setProjectsSubTab}
+        kpiSubTab={kpiSubTab}
+        onChangeKpiSubTab={setKpiSubTab}
+        mgmtSubTab={mgmtSubTab}
+        onChangeMgmtSubTab={setMgmtSubTab}
+      />
 
       {/* 메인 뷰 */}
       <main className="main-content">
@@ -2596,11 +2578,51 @@ export default function App() {
             ))}
           </div>
 
-          <div className="controls-section">
-            <span style={{ fontSize: "0.85rem", color: "var(--text-secondary-dark)", marginRight: "1rem" }}>
+          <div className="controls-section" style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
+            <span style={{ fontSize: "0.85rem", color: "var(--text-secondary)", marginRight: "0.4rem" }}>
               {getWelcomeMessage()}
             </span>
-            <button className="theme-toggle-btn" onClick={() => setDarkMode(!darkMode)}>
+            <button
+              className="btn-primary"
+              style={{
+                padding: "0.4rem 0.8rem",
+                fontSize: "0.75rem",
+                background: "rgba(255,255,255,0.05)",
+                border: "1px solid var(--border-color)",
+                borderRadius: "0.375rem",
+                color: "var(--text-primary)",
+                display: "flex",
+                alignItems: "center",
+                gap: "0.3rem",
+                cursor: "pointer",
+                height: "34px"
+              }}
+              onClick={() => setIsPasswordModalOpen(true)}
+            >
+              <LockIcon size={14} />
+              <span>개인정보 관리</span>
+            </button>
+            <button
+              className="btn-primary"
+              style={{
+                padding: "0.4rem 0.8rem",
+                fontSize: "0.75rem",
+                background: "rgba(239,68,68,0.15)",
+                border: "1px solid var(--danger-color)",
+                borderRadius: "0.375rem",
+                color: "#f87171",
+                display: "flex",
+                alignItems: "center",
+                gap: "0.3rem",
+                cursor: "pointer",
+                height: "34px"
+              }}
+              onClick={handleLogout}
+            >
+              <LogOut size={14} />
+              <span>로그아웃</span>
+            </button>
+            <button className="theme-toggle-btn" style={{ padding: "0.4rem", borderRadius: "0.375rem", height: "34px", width: "34px", display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => setDarkMode(!darkMode)}>
               {darkMode ? <Sun size={18} /> : <Moon size={18} />}
             </button>
           </div>
