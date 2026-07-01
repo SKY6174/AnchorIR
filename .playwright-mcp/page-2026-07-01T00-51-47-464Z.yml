@@ -1,0 +1,18 @@
+- generic [ref=e4]:
+  - generic [ref=e5]:
+    - img [ref=e6]
+    - heading "UC ANCHOR Portal" [level=2] [ref=e9]
+    - paragraph [ref=e10]: 앵커사업 통합 대시보드 로그인
+  - generic [ref=e11]:
+    - generic [ref=e12]:
+      - img [ref=e13]
+      - textbox "이메일 (또는 아이디)" [ref=e16] [cursor=pointer]
+    - generic [ref=e17]:
+      - img [ref=e18]
+      - textbox "비밀번호" [ref=e21] [cursor=pointer]
+    - generic [ref=e22]:
+      - paragraph [ref=e23]: ※ 별도의 회원가입 없이 주소록에 등록된 이메일로 로그인하세요.
+      - paragraph [ref=e24]: ※ 초기 비밀번호는 본인의 휴대전화 뒷번호 4자리입니다.
+    - button "로그인" [ref=e25] [cursor=pointer]:
+      - img [ref=e26]
+      - generic [ref=e29]: 로그인

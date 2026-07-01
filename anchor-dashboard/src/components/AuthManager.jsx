@@ -205,6 +205,26 @@ export default function AuthManager({ onLoginSuccess, members = [] }) {
             <LogIn size={18} />
             <span>로그인</span>
           </button>
+
+          <div style={{ textAlign: "center", marginTop: "1rem" }}>
+            <button
+              type="button"
+              onClick={() => {
+                localStorage.clear();
+                window.location.reload();
+              }}
+              style={{
+                background: "none",
+                border: "none",
+                color: "#94a3b8",
+                fontSize: "0.7rem",
+                textDecoration: "underline",
+                cursor: "pointer"
+              }}
+            >
+              화면이 정상적으로 표시되지 않나요? (시스템 캐시 초기화 및 화면 복구)
+            </button>
+          </div>
         </form>
       </div>
     </div>
