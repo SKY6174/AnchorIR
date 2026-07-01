@@ -973,9 +973,18 @@ export default function PDCAManager({
                                       className="user-selector"
                                       value={val}
                                       onChange={(e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
                                         const newPDCA = [...inputMonthlyPDCA];
                                         newPDCA[idx] = e.target.value;
                                         setInputMonthlyPDCA(newPDCA);
+                                      }}
+                                      onClick={(e) => e.stopPropagation()}
+                                      onKeyDown={(e) => {
+                                        if (e.key === "Enter") {
+                                          e.preventDefault();
+                                          e.stopPropagation();
+                                        }
                                       }}
                                       style={{
                                         width: "100%",
@@ -996,9 +1005,9 @@ export default function PDCAManager({
                                       <option value="D" style={{ background: "#10b981", color: "white" }}>D</option>
                                       <option value="C" style={{ background: "#f59e0b", color: "white" }}>C</option>
                                       <option value="A" style={{ background: "#d946ef", color: "white" }}>A</option>
-                                      <option value="P/D" style={{ background: "linear-gradient(135deg, #2563eb 50%, #10b981 50%)", color: "white" }}>P/D</option>
-                                      <option value="D/C" style={{ background: "linear-gradient(135deg, #10b981 50%, #f59e0b 50%)", color: "white" }}>D/C</option>
-                                      <option value="C/A" style={{ background: "linear-gradient(135deg, #f59e0b 50%, #d946ef 50%)", color: "white" }}>C/A</option>
+                                      <option value="P/D" style={{ background: "#1e3a8a", color: "#60a5fa" }}>P/D</option>
+                                      <option value="D/C" style={{ background: "#064e3b", color: "#34d399" }}>D/C</option>
+                                      <option value="C/A" style={{ background: "#78350f", color: "#fbbf24" }}>C/A</option>
                                     </select>
                                   </div>
                                 );
@@ -1095,9 +1104,18 @@ export default function PDCAManager({
                                   className="user-selector"
                                   value={actVal}
                                   onChange={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
                                     const newPDCAActual = [...inputMonthlyPDCAActual];
                                     newPDCAActual[idx] = e.target.value;
                                     setInputMonthlyPDCAActual(newPDCAActual);
+                                  }}
+                                  onClick={(e) => e.stopPropagation()}
+                                  onKeyDown={(e) => {
+                                    if (e.key === "Enter") {
+                                      e.preventDefault();
+                                      e.stopPropagation();
+                                    }
                                   }}
                                   style={{
                                     width: "100%",
@@ -1119,9 +1137,9 @@ export default function PDCAManager({
                                   <option value="D" style={{ background: "#10b981", color: "white" }}>D</option>
                                   <option value="C" style={{ background: "#f59e0b", color: "white" }}>C</option>
                                   <option value="A" style={{ background: "#d946ef", color: "white" }}>A</option>
-                                  <option value="P/D" style={{ background: "linear-gradient(135deg, #2563eb 50%, #10b981 50%)", color: "white" }}>P/D</option>
-                                  <option value="D/C" style={{ background: "linear-gradient(135deg, #10b981 50%, #f59e0b 50%)", color: "white" }}>D/C</option>
-                                  <option value="C/A" style={{ background: "linear-gradient(135deg, #f59e0b 50%, #d946ef 50%)", color: "white" }}>C/A</option>
+                                  <option value="P/D" style={{ background: "#1e3a8a", color: "#60a5fa" }}>P/D</option>
+                                  <option value="D/C" style={{ background: "#064e3b", color: "#34d399" }}>D/C</option>
+                                  <option value="C/A" style={{ background: "#78350f", color: "#fbbf24" }}>C/A</option>
                                 </select>
                               </div>
                             );
