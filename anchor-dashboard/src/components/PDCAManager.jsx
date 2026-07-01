@@ -1051,7 +1051,7 @@ export default function PDCAManager({
                       
                       {/* 실제 실적 일정 (D단계 내부 노출 및 수동 입력 기능) */}
                       <div style={{ background: "rgba(255,255,255,0.01)", padding: "0.5rem", borderRadius: "0.4rem", border: "1px solid rgba(255,255,255,0.03)", marginBottom: "0.3rem" }}>
-                        <span style={{ fontSize: "0.58rem", color: "#10b981", fontWeight: "800", display: "inline-block", marginBottom: "0.25rem" }}>● 실제 실적 (Actual Progress - 추진 월 수동 선택)</span>
+                        <span style={{ fontSize: "0.58rem", color: "#10b981", fontWeight: "800", display: "inline-block", marginBottom: "0.25rem" }}>● 실제 추진일정</span>
                         <div style={{ display: "grid", gridTemplateColumns: "repeat(12, 1fr)", gap: "0.2rem", overflowX: "auto" }}>
                           {monthsList.map((month, idx) => {
                             const actVal = inputMonthlyPDCAActual[idx] || "";
