@@ -1299,7 +1299,10 @@ export default function App() {
   const [activeTab, setActiveTab] = useState(() => {
     return localStorage.getItem("anchor_active_tab") || "dashboard";
   });
-  const [darkMode, setDarkMode] = useState(true);
+  const [darkMode, setDarkMode] = useState(() => {
+    const saved = localStorage.getItem("anchor_dark_mode");
+    return saved !== null ? JSON.parse(saved) : true;
+  });
 
   useEffect(() => {
     localStorage.setItem("anchor_active_tab", activeTab);
@@ -1717,6 +1720,7 @@ export default function App() {
     } else {
       document.body.classList.add("light-mode");
     }
+    localStorage.setItem("anchor_dark_mode", JSON.stringify(darkMode));
   }, [darkMode]);
 
   // projects 상태 변경 시 localStorage 자동 기입 (새로고침 휘발 방지 우회책)
