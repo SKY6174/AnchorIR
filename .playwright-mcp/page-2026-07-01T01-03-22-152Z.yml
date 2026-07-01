@@ -1,0 +1,19 @@
+- generic [ref=f10e4]:
+  - generic [ref=f10e5]:
+    - img [ref=f10e6]
+    - heading "UC ANCHOR Portal" [level=2] [ref=f10e9]
+    - paragraph [ref=f10e10]: 앵커사업 통합 대시보드 로그인
+  - generic [ref=f10e11]:
+    - generic [ref=f10e12]:
+      - img [ref=f10e13]
+      - textbox "이메일 (또는 아이디)" [active] [ref=f10e16] [cursor=pointer]: kysong@uc.ac.kr
+    - generic [ref=f10e17]:
+      - img [ref=f10e18]
+      - textbox "비밀번호" [ref=f10e21] [cursor=pointer]
+    - generic [ref=f10e22]:
+      - paragraph [ref=f10e23]: ※ 별도의 회원가입 없이 주소록에 등록된 이메일로 로그인하세요.
+      - paragraph [ref=f10e24]: ※ 초기 비밀번호는 본인의 휴대전화 뒷번호 4자리입니다.
+    - button "로그인" [ref=f10e25] [cursor=pointer]:
+      - img [ref=f10e26]
+      - generic [ref=f10e29]: 로그인
+    - button "화면이 정상적으로 표시되지 않나요? (시스템 캐시 초기화 및 화면 복구)" [ref=f10e31] [cursor=pointer]

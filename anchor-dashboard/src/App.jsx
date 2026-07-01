@@ -948,7 +948,24 @@ export default function App() {
   // 캐시 오염 등으로 렌더링 에러가 날 경우, 화이트스크린 방지를 위해 로컬 세션을 비우고 클린 샌드박스로 자동 복원합니다.
   useEffect(() => {
     const handleGlobalError = (event) => {
-      console.error("Global error caught by Self-Healing:", event.error);
+      const err = event.error || event.reason;
+      if (!err) return;
+      
+      const errMsg = String(err.message || err);
+      
+      // 렌더링을 완전히 멈추게 만드는 치명적인 자바스크립트 오류(TypeError, undefined/null 속성 에러 등)만 선별합니다.
+      const isCriticalRenderError = 
+        errMsg.includes("TypeError") || 
+        errMsg.includes("Cannot read properties") || 
+        errMsg.includes("undefined") || 
+        errMsg.includes("null") ||
+        errMsg.includes("is not a function");
+        
+      if (!isCriticalRenderError) {
+        return; // API 요청 실패, CORS, 406 에러 등의 네트워크 지연/차단 오류는 자가치유 리로드를 타지 않고 넘어갑니다.
+      }
+
+      console.error("Critical rendering error caught by Self-Healing. Resetting cache:", errMsg);
       const lastReset = localStorage.getItem("anchor_last_self_healing_reset");
       const now = Date.now();
       if (lastReset && now - parseInt(lastReset, 10) < 3000) {
