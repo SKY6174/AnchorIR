@@ -2845,119 +2845,134 @@ export const YEAR_1_PROGRAMS = {
     {
       "id": "C3-S1T1-1",
       "title": "탄소중립 교육 기본과정 개발",
-      "budget": 15000000,
+      "budget": 38000000,
+      "spent": 35400000,
       "assignee": "산학협력단",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 15000000, "spent": 15000000 }
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 38000000, "spent": 35400000 }
       ]
     },
     {
       "id": "C3-S1T1-2",
       "title": "탄소중립 시범 교육 운영",
-      "budget": 35000000,
-      "assignee": "산학협력단",
-      "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 35000000, "spent": 35000000 }
-      ]
-    },
-    {
-      "id": "C3-S1T2-1",
-      "title": "시험 평가 기준 연구 및 시험 설계",
-      "budget": 20000000,
-      "assignee": "산학협력단",
-      "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 20000000, "spent": 20000000 }
-      ]
-    },
-    {
-      "id": "C3-S1T2-2",
-      "title": "인증체계 구축 및 시험 운영 시범사업",
-      "budget": 30000000,
-      "assignee": "산학협력단",
-      "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 30000000, "spent": 30000000 }
-      ]
-    },
-    {
-      "id": "C3-S2T3-1",
-      "title": "ESG 경영진단 시스템 개발",
-      "budget": 30000000,
-      "assignee": "산학협력단",
-      "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 30000000, "spent": 30000000 }
-      ]
-    },
-    {
-      "id": "C3-S2T3-2",
-      "title": "ESG 경영 컨설팅 시범 운영",
       "budget": 50000000,
+      "spent": 50000000,
       "assignee": "산학협력단",
       "budget_categories": [
         { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 50000000, "spent": 50000000 }
       ]
     },
     {
-      "id": "C3-S2T4-1",
-      "title": "친환경 기술 개발 지원 체계 구축",
-      "budget": 40000000,
+      "id": "C3-S1T2-1",
+      "title": "시험 평가 기준 연구 및 시험 설계",
+      "budget": 0,
+      "spent": 0,
       "assignee": "산학협력단",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 40000000, "spent": 40000000 }
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 0, "spent": 0 }
+      ]
+    },
+    {
+      "id": "C3-S1T2-2",
+      "title": "인증체계 구축 및 시험 운영 시범사업",
+      "budget": 0,
+      "spent": 0,
+      "assignee": "산학협력단",
+      "budget_categories": [
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 0, "spent": 0 }
+      ]
+    },
+    {
+      "id": "C3-S2T3-1",
+      "title": "ESG 경영진단 시스템 개발",
+      "budget": 15800000,
+      "spent": 15400000,
+      "assignee": "산학협력단",
+      "budget_categories": [
+        { "category": "기업 지원∙협력 활동비", "budget": 15800000, "spent": 15400000 }
+      ]
+    },
+    {
+      "id": "C3-S2T3-2",
+      "title": "ESG 경영 컨설팅 시범 운영",
+      "budget": 20000000,
+      "spent": 20000000,
+      "assignee": "산학협력단",
+      "budget_categories": [
+        { "category": "기업 지원∙협력 활동비", "budget": 20000000, "spent": 20000000 }
+      ]
+    },
+    {
+      "id": "C3-S2T4-1",
+      "title": "친환경 기술 개발 지원 체계 구축",
+      "budget": 0,
+      "spent": 0,
+      "assignee": "산학협력단",
+      "budget_categories": [
+        { "category": "기업 지원∙협력 활동비", "budget": 0, "spent": 0 }
       ]
     },
     {
       "id": "C3-S2T4-2",
       "title": "녹색산업 육성 및 실증 사업 지원",
-      "budget": 40000000,
+      "budget": 0,
+      "spent": 0,
       "assignee": "산학협력단",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 40000000, "spent": 40000000 }
+        { "category": "기업 지원∙협력 활동비", "budget": 0, "spent": 0 }
       ]
     },
     {
       "id": "C3-S3T5-1",
       "title": "탄소중립지원센터 연계 교육 인프라 구축 설계",
-      "budget": 20000000,
+      "budget": 150000000,
+      "spent": 0,
       "assignee": "산학협력단",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 20000000, "spent": 20000000 }
+        { "category": "교육∙연구 환경개선비", "budget": 150000000, "spent": 0 }
       ]
     },
     {
       "id": "C3-S3T5-2",
       "title": "탄소중립 실습 및 체험 공간 조성 설계",
-      "budget": 20000000,
+      "budget": 25500000,
+      "spent": 25500000,
       "assignee": "산학협력단",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 20000000, "spent": 20000000 }
+        { "category": "실험∙실습장비 및 기자재 구입∙운영비", "budget": 25500000, "spent": 25500000 }
       ]
     },
     {
       "id": "C3-S3T6-1",
       "title": "탄소중립지원센터 연계 정책과제 연구 및 벤치마킹",
-      "budget": 20000000,
+      "budget": 14700000,
+      "spent": 6200000,
       "assignee": "산학협력단",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 20000000, "spent": 20000000 }
+        { "category": "성과 활용∙확산 지원비", "budget": 14700000, "spent": 6200000 }
       ]
     },
     {
       "id": "C3-S3T6-2",
       "title": "시민 참여형 탄소중립 실천 프로그램 기획 및 시범 운영",
-      "budget": 30000000,
+      "budget": 20000000,
+      "spent": 0,
       "assignee": "산학협력단",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 30000000, "spent": 30000000 }
+        { "category": "성과 활용∙확산 지원비", "budget": 20000000, "spent": 0 }
       ]
     }
   ,
     {
       "id": "C3-S3T7-1",
       "title": "공통경비",
-      "budget": 10000000,
+      "budget": 66000000,
+      "spent": 59300000,
       "assignee": "산학협력단",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 10000000, "spent": 10000000 }
+        { "category": "인건비", "budget": 42000000, "spent": 40800000 },
+        { "category": "간접비", "budget": 12000000, "spent": 12000000 },
+        { "category": "그 밖의 사업운영경비", "budget": 12000000, "spent": 6500000 }
       ]
     }],
   "D1": [
