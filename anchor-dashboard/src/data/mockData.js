@@ -1627,10 +1627,11 @@ export const initialProjectsData = [
         budget_2025_carry: 93800000,
         spent_2025_carry: 30000000,
         manager: "현용환 RCC센터장",
+        // 2차년도 사업계획서에 맞춘 D3 세부 프로그램 명칭 반영 (기존 가칭에서 정식 명칭으로 변경)
         programs: [
-          { id: "D3-01", title: "호계역 에코컬처 공공디자인 및 굿즈 브랜드 개발", budget_2026: 115000000, spent_2026: 30000000, budget_2025_carry: 30000000, spent_2025_carry: 10000000, assignee: "김소정 연구원", pdca: { p: "완료", d: "완료", c: "진행", a: "대기" } },
-          { id: "D3-02", title: "구도심 공실 상가 청년 창작 공유 공간 리모델링 시공", budget_2026: 251000000, spent_2026: 50000000, budget_2025_carry: 70000000, spent_2025_carry: 20000000, assignee: "오영경 연구원", pdca: { p: "완료", d: "진행", c: "대기", a: "대기" } },
-          { id: "D3-03", title: "시민 참여형 업사이클링 축제 기획 운영", budget_2026: 24000000, spent_2026: 10000000, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "최승혜 연구원", pdca: { p: "완료", d: "진행", c: "대기", a: "대기" } }
+          { id: "D3-01", title: "시민 참여형 에코컬처 체험 프로그램 및 브랜드 디자인 운영", budget_2026: 115000000, spent_2026: 30000000, budget_2025_carry: 30000000, spent_2025_carry: 10000000, assignee: "김소정 연구원", pdca: { p: "완료", d: "완료", c: "진행", a: "대기" } },
+          { id: "D3-02", title: "청년 주도형 유휴공간 활성화 및 도시재생 융합 프로젝트", budget_2026: 251000000, spent_2026: 50000000, budget_2025_carry: 70000000, spent_2025_carry: 20000000, assignee: "오영경 연구원", pdca: { p: "완료", d: "진행", c: "대기", a: "대기" } },
+          { id: "D3-03", title: "지역 밀착형 문화예술 체험 및 울산 꿀잼 축제 기획 운영", budget_2026: 24000000, spent_2026: 10000000, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "최승혜 연구원", pdca: { p: "완료", d: "진행", c: "대기", a: "대기" } }
         ],
         budgetDetails: {
           "인건비": { budget_2026: 25000000, spent_2026: 8000000, budget_2025_carry: 5000000, spent_2025_carry: 2000000 },
@@ -1644,23 +1645,24 @@ export const initialProjectsData = [
           "그 밖의 사업운영경비": { budget_2026: 0, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0 },
           "간접비": { budget_2026: 0, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0 }
         },
+        // D3 단위과제 성과지표(자율 성과지표 L-21, L-22 및 대학 중점관리지표 U-11) 최신 공식 규격으로 업데이트
         kpis: [
           {
             id: "L-21",
             name: "도시공간 재생프로젝트 운영성과지수",
             type: "자율",
-            description: "구도심 리모델링 청년 창작공유공간 구축 면적 및 청년 기업 매칭 수",
-            formula: "(구축공간 달성률 * 0.6) + (입주매칭 달성률 * 0.4)",
+            description: "구도심 유휴공간 활성화 리모델링 및 청년 창작 거점 공간 시공 및 참여 실증",
+            formula: "(도시 재생프로젝트 운영 건수 / 기준값) x 50% + (프로젝트 참여자 수 / 기준값) x 50%",
             cycle: "연 1회",
             owner: "RCC센터",
             subItems: [
               {
                 id: "L-21-1",
-                name: "청년 창작공유 신규 리모델링 공간",
-                unit: "개소",
+                name: "도시 재생프로젝트 운영 건수",
+                unit: "건",
                 years: {
                   1: { target: 1, current: 1 },
-                  2: { target: 3.0, current: 2.0 },
+                  2: { target: 2.0, current: 2.0 }, // 2차년도 목표 2건, 실적 2건으로 100% 달성 반영
                   3: { target: 4.0, current: 0 },
                   4: { target: 5.0, current: 0 },
                   5: { target: 6.0, current: 0 }
@@ -1668,11 +1670,11 @@ export const initialProjectsData = [
               },
               {
                 id: "L-21-2",
-                name: "공간 신규 매칭 창작기업 입주 수",
-                unit: "개",
+                name: "프로젝트 참여자 수",
+                unit: "명",
                 years: {
                   1: { target: 5, current: 5 },
-                  2: { target: 10.0, current: 9.0 },
+                  2: { target: 30.0, current: 30.0 }, // 2차년도 목표 30명, 실적 30명 반영
                   3: { target: 11.0, current: 0 },
                   4: { target: 12.0, current: 0 },
                   5: { target: 13.0, current: 0 }
@@ -1684,18 +1686,18 @@ export const initialProjectsData = [
             id: "L-22",
             name: "문화 콘텐츠 개발프로젝트 운영성과지수",
             type: "자율",
-            description: "에코디자인 굿즈 개발 개수 및 축제 참여 울산시민 관람객 수",
-            formula: "(굿즈개발 달성률 * 0.5) + (시민관람 달성률 * 0.5)",
+            description: "지역 호계역 중심 에코컬처 굿즈 및 공공디자인 콘텐츠 개발 및 품평 참여",
+            formula: "(콘텐츠 개발프로젝트 운영 건수 / 기준값) x 50% + (프로젝트 참여자 수 / 기준값) x 50%",
             cycle: "반기별 1회",
             owner: "RCC센터",
             subItems: [
               {
                 id: "L-22-1",
-                name: "에코디자인 굿즈 신규 개발 수",
-                unit: "종",
+                name: "콘텐츠 개발프로젝트 운영 건수",
+                unit: "건",
                 years: {
                   1: { target: 4, current: 4 },
-                  2: { target: 8.0, current: 6.0 },
+                  2: { target: 2.0, current: 2.0 }, // 2차년도 목표 2건, 실적 2건 반영
                   3: { target: 9.0, current: 0 },
                   4: { target: 10.0, current: 0 },
                   5: { target: 11.0, current: 0 }
@@ -1703,11 +1705,11 @@ export const initialProjectsData = [
               },
               {
                 id: "L-22-2",
-                name: "체험 축제 참여 관내 수혜 시민 인원",
+                name: "프로젝트 참여자 수",
                 unit: "명",
                 years: {
                   1: { target: 250, current: 240 },
-                  2: { target: 500.0, current: 360.0 },
+                  2: { target: 12.0, current: 12.0 }, // 2차년도 목표 12명, 실적 12명 반영
                   3: { target: 550.0, current: 0 },
                   4: { target: 600.0, current: 0 },
                   5: { target: 650.0, current: 0 }
@@ -1719,18 +1721,18 @@ export const initialProjectsData = [
             id: "U-11",
             name: "꿀잼도시 프로젝트 만족 지수",
             type: "중점",
-            description: "울산 에코컬처 공공디자인 관련 프로젝트 완료 후 시민 만족도 종합 설문",
-            formula: "(종합만족도 달성률 * 0.8) + (브랜드참여 달성률 * 0.2)",
+            description: "울산 청년 축제 연계 업사이클링 환경 체험 부스 운영 및 만족도 설문 조사",
+            formula: "(체험 프로그램 수 / 기준값 x 50) + (체험자 만족도 설문 평균 / 기준값 x 50)",
             cycle: "연 1회",
             owner: "RCC센터",
             subItems: [
               {
                 id: "U-11-1",
-                name: "공공디자인 적용 환경 만족도 점수",
-                unit: "점",
+                name: "체험 프로그램 수",
+                unit: "회",
                 years: {
                   1: { target: 0, current: 0 },
-                  2: { target: 90.0, current: 80.0 },
+                  2: { target: 2.0, current: 2.0 }, // 2차년도 목표 2회, 실적 2회 반영
                   3: { target: 91.0, current: 0 },
                   4: { target: 92.0, current: 0 },
                   5: { target: 93.0, current: 0 }
@@ -1738,11 +1740,11 @@ export const initialProjectsData = [
               },
               {
                 id: "U-11-2",
-                name: "굿즈 브랜드 마일스톤 참여자 수",
-                unit: "명",
+                name: "체험자 만족도 설문 평균",
+                unit: "점",
                 years: {
                   1: { target: 0, current: 0 },
-                  2: { target: 300.0, current: 220.0 },
+                  2: { target: 88.0, current: 88.0 }, // 2차년도 목표 만족도 88점, 실적 88점 반영
                   3: { target: 320.0, current: 0 },
                   4: { target: 340.0, current: 0 },
                   5: { target: 350.0, current: 0 }
