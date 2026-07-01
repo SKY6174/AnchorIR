@@ -3015,7 +3015,7 @@ export default function App() {
             {mgmtSubTab === "programs" && (
               <div>
                 <div style={{ marginBottom: "1.2rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                  <span style={{ fontSize: "0.8rem", fontWeight: "700", color: "var(--text-secondary-dark)" }}>단위과제 필터:</span>
+                  <span style={{ fontSize: "0.8rem", fontWeight: "700", color: "var(--text-secondary)" }}>단위과제 필터:</span>
                   <select
                     className="user-selector"
                     value={assignFilterUnitId}
@@ -3024,13 +3024,13 @@ export default function App() {
                       padding: "0.3rem 0.6rem",
                       fontSize: "0.78rem",
                       borderRadius: "0.25rem",
-                      background: "rgba(255,255,255,0.05)",
-                      border: "1px solid var(--border-color-dark)",
-                      color: "white",
+                      background: "var(--panel-bg)",
+                      border: "1px solid var(--border-color)",
+                      color: "var(--text-primary)",
                       outline: "none"
                     }}
                   >
-                    <option value="all">전체 단위과제</option>
+                    <option value="all" style={{ background: "var(--panel-bg)", color: "var(--text-primary)" }}>전체 단위과제</option>
                     {displayProjects.flatMap((p) => p.units)
                       .sort((a, b) => {
                         if (a.id === "Common") return 1;
@@ -3038,11 +3038,11 @@ export default function App() {
                         return a.id.localeCompare(b.id, undefined, { numeric: true, sensitivity: 'base' });
                       })
                       .map((u) => (
-                        <option key={u.id} value={u.id}>{u.id === "Common" ? "" : `${u.id}. `}{u.title}</option>
+                        <option key={u.id} value={u.id} style={{ background: "var(--panel-bg)", color: "var(--text-primary)" }}>{u.id === "Common" ? "" : `${u.id}. `}{u.title}</option>
                       ))}
                   </select>
                 </div>
-                <p style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)", marginBottom: "1rem" }}>
+                <p style={{ fontSize: "0.75rem", color: "var(--text-secondary)", marginBottom: "1rem" }}>
                   * 실무 연구원으로 등록된 구성원(직책: 연구원)만 프로그램 담당연구원 목록으로 매핑됩니다.
                 </p>
                 <div className="table-panel">
