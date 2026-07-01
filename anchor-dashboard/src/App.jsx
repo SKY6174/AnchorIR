@@ -944,6 +944,32 @@ const getNormalizedKpi = (k, selectedYear) => {
 };
 
 export default function App() {
+  // [전역 자가 치유 에러 핸들러]
+  // 캐시 오염 등으로 렌더링 에러가 날 경우, 화이트스크린 방지를 위해 로컬 세션을 비우고 클린 샌드박스로 자동 복원합니다.
+  useEffect(() => {
+    const handleGlobalError = (event) => {
+      console.error("Global error caught by Self-Healing:", event.error);
+      const lastReset = localStorage.getItem("anchor_last_self_healing_reset");
+      const now = Date.now();
+      if (lastReset && now - parseInt(lastReset, 10) < 3000) {
+        return;
+      }
+      localStorage.setItem("anchor_last_self_healing_reset", String(now));
+      localStorage.removeItem("anchor_logged_in_user");
+      localStorage.removeItem("anchor_projects_data_v20");
+      localStorage.removeItem("anchor_selected_kpi");
+      window.location.reload();
+    };
+
+    window.addEventListener("error", handleGlobalError);
+    window.addEventListener("unhandledrejection", handleGlobalError);
+
+    return () => {
+      window.removeEventListener("error", handleGlobalError);
+      window.removeEventListener("unhandledrejection", handleGlobalError);
+    };
+  }, []);
+
   const [currentUser, setCurrentUser] = useState(null);
   const [projects, setProjects] = useState(() => {
     // 1차년도 프로그램 ID 신규 규칙 적용 및 예산 정합성 보정을 위해 로컬스토리지 키 버전을 v20로 업그레이드합니다.

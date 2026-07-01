@@ -1,0 +1,138 @@
+- generic [active] [ref=f7e1]:
+  - generic [ref=f7e3]:
+    - generic [ref=f7e4]:
+      - complementary [ref=f7e5]:
+        - generic [ref=f7e6]:
+          - generic [ref=f7e7]:
+            - img "울산과학대학교 로고" [ref=f7e8]
+            - generic [ref=f7e9]: ANCHOR Portal
+          - navigation [ref=f7e10]:
+            - generic [ref=f7e11] [cursor=pointer]:
+              - img [ref=f7e12]
+              - generic [ref=f7e17]: IR 대시보드
+            - generic [ref=f7e18]:
+              - generic [ref=f7e19] [cursor=pointer]:
+                - img [ref=f7e20]
+                - generic [ref=f7e22]: 단위과제 관리
+              - generic:
+                - generic [ref=f7e23] [cursor=pointer]: "- 단위과제 집행현황"
+                - generic [ref=f7e24] [cursor=pointer]: "- 프로그램 관리"
+            - generic [ref=f7e25] [cursor=pointer]:
+              - img [ref=f7e26]
+              - generic [ref=f7e29]: 프로그램 진행
+            - generic [ref=f7e30] [cursor=pointer]:
+              - img [ref=f7e31]
+              - generic [ref=f7e33]: 예산항목 관리
+            - generic [ref=f7e34]:
+              - generic [ref=f7e35] [cursor=pointer]:
+                - img [ref=f7e36]
+                - generic [ref=f7e39]: 성과지표 관리
+              - generic:
+                - generic [ref=f7e40] [cursor=pointer]: "- (지자체)자율성과지표"
+                - generic [ref=f7e41] [cursor=pointer]: "- (대학)중점관리지표"
+            - generic [ref=f7e42]:
+              - generic [ref=f7e43] [cursor=pointer]:
+                - img [ref=f7e44]
+                - generic [ref=f7e49]: 사업단 관리
+              - generic:
+                - generic [ref=f7e50] [cursor=pointer]: "- 구성원 관리"
+                - generic [ref=f7e51] [cursor=pointer]: "- 프로그램 배정"
+                - generic [ref=f7e52] [cursor=pointer]: "- 회원현황"
+        - generic [ref=f7e53]:
+          - generic [ref=f7e54]:
+            - generic [ref=f7e55]: 현재 로그인 권한
+            - text: 사업단장
+          - paragraph
+      - button "개인정보 관리" [ref=f7e57] [cursor=pointer]:
+        - img [ref=f7e58]
+        - generic [ref=f7e61]: 개인정보 관리
+      - button "로그아웃" [ref=f7e63] [cursor=pointer]:
+        - img [ref=f7e64]
+        - generic [ref=f7e67]: 로그아웃
+    - main [ref=f7e68]:
+      - generic [ref=f7e69]:
+        - generic [ref=f7e70]:
+          - heading "앵커사업 통합 IR 대시보드" [level=1] [ref=f7e71]
+          - paragraph [ref=f7e72]: 울산과학대학교 앵커사업 1차년도 사업예산 및 성과관리 시스템
+        - generic [ref=f7e73]:
+          - button "1차년도" [ref=f7e74] [cursor=pointer]
+          - button "2차년도(현)" [ref=f7e75] [cursor=pointer]
+          - button "3차년도" [ref=f7e76] [cursor=pointer]
+          - button "4차년도" [ref=f7e77] [cursor=pointer]
+          - button "5차년도" [ref=f7e78] [cursor=pointer]
+        - generic [ref=f7e79]:
+          - generic [ref=f7e81]:
+            - text: 반갑습니다,
+            - strong [ref=f7e82]: 송경영 단장님
+          - button [ref=f7e83] [cursor=pointer]:
+            - img [ref=f7e84]
+      - generic [ref=f7e91]:
+        - generic [ref=f7e92]:
+          - generic [ref=f7e93]:
+            - generic [ref=f7e94]:
+              - generic [ref=f7e95]:
+                - generic [ref=f7e96]: ANCHOR 1차년도 총 예산
+                - img [ref=f7e97]
+              - generic [ref=f7e100]: 9,715.0 백만원
+            - generic [ref=f7e102]:
+              - generic [ref=f7e103]:
+                - generic [ref=f7e104]: 앵커(본사업)
+                - generic [ref=f7e105]: 9,715.0 백만원
+              - generic [ref=f7e106]:
+                - generic [ref=f7e107]: 1차년도(본사업)
+                - generic [ref=f7e108]: 9,715.0 백만원
+          - generic [ref=f7e109]:
+            - generic [ref=f7e110]:
+              - generic [ref=f7e111]: 1차년도 본사업비 집행
+              - img [ref=f7e112]
+            - generic [ref=f7e114]:
+              - generic [ref=f7e115]: 7,043.8 백만원
+              - generic [ref=f7e116]: "집행률: 72.5% (배정: 9,715.0백만원)"
+          - generic [ref=f7e117]:
+            - generic [ref=f7e118]:
+              - generic [ref=f7e119]:
+                - generic [ref=f7e120]: (지자체)자율성과지표
+                - img [ref=f7e121]
+              - generic [ref=f7e124]:
+                - generic [ref=f7e125]: 115.0%
+                - generic [ref=f7e126]: 1차년도 지자체 요구 자율 혁신목표
+            - generic [ref=f7e127]:
+              - generic [ref=f7e128]:
+                - generic [ref=f7e129]: (대학)중점관리지표
+                - img [ref=f7e130]
+              - generic [ref=f7e133]:
+                - generic [ref=f7e134]: 0.0%
+                - generic [ref=f7e135]: 1차년도 대학 특성 핵심관리지표
+        - generic [ref=f7e136]:
+          - generic [ref=f7e137]:
+            - 'heading "프로젝트별 재원 배정 및 누적 집행 현황 (단위: 백만원)" [level=3] [ref=f7e138]'
+            - generic [ref=f7e141]:
+              - list [ref=f7e143]:
+                - listitem [ref=f7e144]:
+                  - img "본사업비 예산 legend icon" [ref=f7e145]
+                  - generic [ref=f7e147]: 본사업비 예산
+                - listitem [ref=f7e148]:
+                  - img "본사업비 집행 legend icon" [ref=f7e149]
+                  - generic [ref=f7e151]: 본사업비 집행
+              - application [ref=f7e152]:
+                - generic [ref=f7e191]:
+                  - generic [ref=f7e192]:
+                    - generic [ref=f7e194]: 프로젝트 A
+                    - generic [ref=f7e196]: 프로젝트 B
+                    - generic [ref=f7e198]: 프로젝트 C
+                    - generic [ref=f7e200]: 프로젝트 D
+                  - generic [ref=f7e201]:
+                    - generic [ref=f7e203]: "0"
+                    - generic [ref=f7e205]: 1,500
+                    - generic [ref=f7e207]: 3,000
+                    - generic [ref=f7e209]: 4,500
+                    - generic [ref=f7e211]: 6,000
+          - generic [ref=f7e212]:
+            - heading "재원 배분 구조 (공통경비 제외)" [level=3] [ref=f7e213]
+            - application [ref=f7e217]:
+              - generic [ref=f7e233]:
+                - generic [ref=f7e236]: 프로젝트 A(41.5%)
+                - generic [ref=f7e239]: 프로젝트 B(28.2%)
+                - generic [ref=f7e242]: 프로젝트 C(19.0%)
+                - generic [ref=f7e245]: 프로젝트 D(11.3%)
+  - generic [ref=f7e246]: "0"

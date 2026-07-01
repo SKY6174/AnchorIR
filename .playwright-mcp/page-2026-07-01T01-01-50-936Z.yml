@@ -1,0 +1,19 @@
+- generic [ref=f6e4]:
+  - generic [ref=f6e5]:
+    - img [ref=f6e6]
+    - heading "UC ANCHOR Portal" [level=2] [ref=f6e9]
+    - paragraph [ref=f6e10]: 앵커사업 통합 대시보드 로그인
+  - generic [ref=f6e11]:
+    - generic [ref=f6e12]:
+      - img [ref=f6e13]
+      - textbox "이메일 (또는 아이디)" [ref=f6e16] [cursor=pointer]
+    - generic [ref=f6e17]:
+      - img [ref=f6e18]
+      - textbox "비밀번호" [ref=f6e21] [cursor=pointer]
+    - generic [ref=f6e22]:
+      - paragraph [ref=f6e23]: ※ 별도의 회원가입 없이 주소록에 등록된 이메일로 로그인하세요.
+      - paragraph [ref=f6e24]: ※ 초기 비밀번호는 본인의 휴대전화 뒷번호 4자리입니다.
+    - button "로그인" [ref=f6e25] [cursor=pointer]:
+      - img [ref=f6e26]
+      - generic [ref=f6e29]: 로그인
+    - button "화면이 정상적으로 표시되지 않나요? (시스템 캐시 초기화 및 화면 복구)" [ref=f6e31] [cursor=pointer]
