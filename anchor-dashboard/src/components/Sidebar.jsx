@@ -1,6 +1,6 @@
 import React from "react";
 import { userRoles } from "../data/mockData";
-import { LayoutDashboard, Users, FileBarChart2, FolderKanban, Award, Landmark, ClipboardList } from "lucide-react";
+import { LayoutDashboard, Users, FileBarChart2, FolderKanban, Award, Landmark, ClipboardList, BookOpen } from "lucide-react";
 
 export default function Sidebar({
   currentRole,
@@ -183,6 +183,15 @@ export default function Sidebar({
               </div>
             </div>
           )}
+
+          <div
+            className={`nav-item ${activeTab === "llm_wiki" ? "active" : ""}`}
+            onClick={() => onChangeTab("llm_wiki")}
+            style={{ marginTop: "0.2rem" }}
+          >
+            <BookOpen size={18} />
+            <span>LLM Wiki (RAG)</span>
+          </div>
         </nav>
       </div>
 

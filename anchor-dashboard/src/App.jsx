@@ -5,6 +5,7 @@ import ExcelUploader from "./components/ExcelUploader";
 import PDCAManager from "./components/PDCAManager";
 import BudgetItemsManager from "./components/BudgetItemsManager";
 import ProgramProgressManager from "./components/ProgramProgressManager";
+import LLMWiki from "./components/LLMWiki";
 import AuthManager from "./components/AuthManager";
 import { initialProjectsData, userRoles, YEAR_1_PROGRAMS, Y1_UNIT_META } from "./data/mockData";
 import { Sun, Moon, LogOut, HelpCircle, ArrowUpRight, Lock as LockIcon } from "lucide-react";
@@ -3695,6 +3696,10 @@ export default function App() {
             onUpdateBudgetDetails={handleUpdateBudgetDetails}
             selectedYear={selectedYear}
           />
+        )}
+
+        {activeTab === "llm_wiki" && (
+          <LLMWiki />
         )}
       </main>
 
