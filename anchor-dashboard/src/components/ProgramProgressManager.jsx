@@ -165,26 +165,42 @@ export default function ProgramProgressManager({ projects, selectedYear }) {
                 style={{
                   padding: "0.8rem 1rem",
                   borderRadius: "0.5rem",
-                  background: isActive ? "rgba(59, 130, 246, 0.12)" : "rgba(255, 255, 255, 0.02)",
-                  border: isActive ? "1px solid var(--accent-color)" : "1px solid var(--border-color-dark)",
+                  background: isActive ? "rgba(59, 130, 246, 0.08)" : "var(--panel-bg)",
+                  border: isActive ? "1.5px solid var(--accent-color)" : "1px solid var(--border-color)",
                   cursor: "pointer",
-                  transition: "all 0.2s"
+                  transition: "all 0.2s",
+                  boxShadow: isActive ? "0 4px 12px rgba(59, 130, 246, 0.15)" : "none"
                 }}
               >
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.2rem" }}>
-                  <span style={{ fontSize: "0.75rem", fontWeight: "700", color: isActive ? "white" : "var(--text-secondary-dark)" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.3rem" }}>
+                  <span style={{ fontSize: "0.75rem", fontWeight: "800", color: isActive ? "var(--accent-color)" : "var(--text-secondary)" }}>
                     {u.id}
                   </span>
-                  <span style={{ fontSize: "0.65rem", padding: "0.1rem 0.35rem", borderRadius: "0.25rem", background: "rgba(255, 255, 255, 0.05)" }}>
+                  <span style={{ 
+                    fontSize: "0.65rem", 
+                    padding: "0.15rem 0.45rem", 
+                    borderRadius: "0.25rem", 
+                    background: isActive ? "rgba(59, 130, 246, 0.15)" : "rgba(0, 0, 0, 0.04)",
+                    color: "var(--text-secondary)",
+                    fontWeight: "600"
+                  }}>
                     {u.programs?.length || 0}개 프로그램
                   </span>
                 </div>
-                <div style={{ fontSize: "0.85rem", fontWeight: "800", color: isActive ? "var(--accent-color)" : "white", textOverflow: "ellipsis", overflow: "hidden", whiteSpace: "nowrap", marginBottom: "0.4rem" }}>
+                <div style={{ 
+                  fontSize: "0.85rem", 
+                  fontWeight: "800", 
+                  color: isActive ? "var(--accent-color)" : "var(--text-primary)", 
+                  textOverflow: "ellipsis", 
+                  overflow: "hidden", 
+                  whiteSpace: "nowrap", 
+                  marginBottom: "0.4rem" 
+                }}>
                   {u.title}
                 </div>
-                <div style={{ fontSize: "0.72rem", color: "var(--text-secondary-dark)", display: "flex", justifyContent: "space-between" }}>
+                <div style={{ fontSize: "0.72rem", color: "var(--text-secondary)", display: "flex", justifyContent: "space-between" }}>
                   <span>총 예산:</span>
-                  <span style={{ fontWeight: "700", color: "white" }}>{formatToMillionWon(totalBudget)} 백만원</span>
+                  <span style={{ fontWeight: "700", color: "var(--text-primary)" }}>{formatToMillionWon(totalBudget)} 백만원</span>
                 </div>
               </div>
             );
