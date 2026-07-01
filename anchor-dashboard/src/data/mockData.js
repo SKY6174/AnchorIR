@@ -3093,128 +3093,144 @@ export const YEAR_1_PROGRAMS = {
     {
       "id": "D2-S1T1-1",
       "title": "방과후 늘봄 프로그램 시범 적용",
-      "budget": 50000000,
+      "budget": 100000000,
+      "spent": 95000000,
       "assignee": "늘봄학교지원센터",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 50000000, "spent": 50000000 }
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 100000000, "spent": 95000000 }
       ]
     },
     {
       "id": "D2-S1T1-2",
       "title": "전문 강사 양성 과정 설계",
-      "budget": 20000000,
+      "budget": 81500000,
+      "spent": 77000000,
       "assignee": "늘봄학교지원센터",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 20000000, "spent": 20000000 }
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 81500000, "spent": 77000000 }
       ]
     },
     {
       "id": "D2-S1T2-1",
       "title": "방학 중 특별 돌봄 캠프 운영",
-      "budget": 40000000,
+      "budget": 100000000,
+      "spent": 100000000,
       "assignee": "늘봄학교지원센터",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 40000000, "spent": 40000000 }
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 100000000, "spent": 100000000 }
       ]
     },
     {
       "id": "D2-S2T3-1",
       "title": "대학 컨소시엄 구축 및 MOU 체결",
-      "budget": 15000000,
+      "budget": 34000000,
+      "spent": 19600000,
       "assignee": "늘봄학교지원센터",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 15000000, "spent": 15000000 }
+        { "category": "지역 연계∙협업 지원비", "budget": 34000000, "spent": 19600000 }
       ]
     },
     {
       "id": "D2-S2T3-2",
       "title": "공동 성과 공유회 개최",
-      "budget": 15000000,
+      "budget": 0,
+      "spent": 0,
       "assignee": "늘봄학교지원센터",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 15000000, "spent": 15000000 }
+        { "category": "지역 연계∙협업 지원비", "budget": 0, "spent": 0 }
       ]
     },
     {
       "id": "D2-S2T4-1",
       "title": "교육청-지자체 연합 늘봄 거버넌스 회의 개최",
-      "budget": 10000000,
+      "budget": 20000000,
+      "spent": 19900000,
       "assignee": "늘봄학교지원센터",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 10000000, "spent": 10000000 }
+        { "category": "기업 지원∙협력 활동비", "budget": 20000000, "spent": 19900000 }
       ]
     },
     {
       "id": "D2-S3T5-1",
       "title": "늘봄 프로그램 효과 분석 및 고도화 연구",
-      "budget": 20000000,
+      "budget": 0,
+      "spent": 0,
       "assignee": "늘봄학교지원센터",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 20000000, "spent": 20000000 }
+        { "category": "지역 연계∙협업 지원비", "budget": 0, "spent": 0 }
       ]
     },
     {
       "id": "D2-S3T6-1",
       "title": "늘봄 온라인 플랫폼 내 모니터링 모듈 구축",
-      "budget": 30000000,
+      "budget": 0,
+      "spent": 0,
       "assignee": "정보통신처",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 30000000, "spent": 30000000 }
+        { "category": "지역 연계∙협업 지원비", "budget": 0, "spent": 0 }
       ]
     },
     {
       "id": "D2-S3T7-1",
       "title": "울산 늘봄누리 브랜드 BI 개발 및 홍보",
-      "budget": 30000000,
+      "budget": 33600000,
+      "spent": 23100000,
       "assignee": "늘봄학교지원센터",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 30000000, "spent": 30000000 }
+        { "category": "성과 활용∙확산 지원비", "budget": 33600000, "spent": 23100000 }
       ]
     },
     {
       "id": "D2-S4T8-1",
       "title": "동구, 중구, 북구 특화 늘봄 프로그램 개발",
-      "budget": 280000000,
+      "budget": 0,
+      "spent": 0,
       "assignee": "늘봄학교지원센터",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 280000000, "spent": 280000000 }
+        { "category": "지역 연계∙협업 지원비", "budget": 0, "spent": 0 }
       ]
     },
     {
       "id": "D2-S4T9-1",
       "title": "울산 정주형 예비교사 멘토단 선발 및 파견",
-      "budget": 250000000,
+      "budget": 0,
+      "spent": 0,
       "assignee": "늘봄학교지원센터",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 250000000, "spent": 250000000 }
+        { "category": "지역 연계∙협업 지원비", "budget": 0, "spent": 0 }
       ]
     },
     {
       "id": "D2-S4T10-1",
       "title": "IT·보건 강점을 살린 특화 교육 개설",
-      "budget": 200000000,
+      "budget": 415900000,
+      "spent": 358100000,
       "assignee": "늘봄학교지원센터",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 200000000, "spent": 200000000 }
+        { "category": "교육∙연구 환경개선비", "budget": 415900000, "spent": 358100000 }
       ]
     },
     {
       "id": "D2-S4T10-2",
       "title": "대학 기자재 활용형 늘봄 교육 운영",
-      "budget": 140000000,
+      "budget": 244000000,
+      "spent": 57300000,
       "assignee": "늘봄학교지원센터",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 140000000, "spent": 140000000 }
+        { "category": "실험∙실습장비 및 기자재 구입∙운영비", "budget": 244000000, "spent": 57300000 }
       ]
     }
   ,
     {
       "id": "D2-S4T11-1",
       "title": "공통경비",
-      "budget": 10000000,
+      "budget": 171000000,
+      "spent": 147700000,
       "assignee": "늘봄학교지원센터",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 10000000, "spent": 10000000 }
+        { "category": "인건비", "budget": 99000000, "spent": 83800000 },
+        { "category": "간접비", "budget": 36000000, "spent": 36000000 },
+        { "category": "그 밖의 사업운영경비", "budget": 36000000, "spent": 27900000 }
       ]
     }],
   "D3": [
