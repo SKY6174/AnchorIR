@@ -66,7 +66,7 @@ export default function LLMWiki() {
 
         {/* 카테고리 탭 스위처 */}
         <div style={{ display: "flex", gap: "0.3rem", marginBottom: "1rem", flexWrap: "wrap" }}>
-          {["all", "개요", "지연 사유", "성과지표"].map(cat => (
+          {["all", "개요", "사업비 현황", "사업비지침", "성과지표", "5극3특"].map(cat => (
             <button
               key={cat}
               onClick={() => setSelectedCategory(cat)}
@@ -92,7 +92,7 @@ export default function LLMWiki() {
           {filteredChunks.map(chunk => (
             <div
               key={chunk.id}
-              onClick={() => handleQuickQuestion(`${chunk.unit} ${chunk.category === "지연 사유" ? "지연 사유" : chunk.title}`)}
+              onClick={() => handleQuickQuestion(`${chunk.unit} ${chunk.title}`)}
               style={{
                 padding: "0.7rem 0.8rem",
                 borderRadius: "0.5rem",
