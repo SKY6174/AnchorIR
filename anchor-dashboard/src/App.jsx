@@ -3314,89 +3314,161 @@ export default function App() {
             )}
 
             {mgmtSubTab === "approvals" && currentRole.rank <= 2 && (
-              <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-                <h3 style={{ fontSize: "1rem", fontWeight: "800", color: "var(--accent-color)" }}>회원현황</h3>
-                <p style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)" }}>
-                  현재 ANCHOR 통합 대시보드 시스템에 가입되었거나 주소록에서 자동으로 연동된 재직 구성원 계정 현황 목록입니다.
-                </p>
-                <div className="table-panel" style={{ maxHeight: "400px", overflowY: "auto" }}>
-                  <table className="custom-table" style={{ fontSize: "0.75rem" }}>
-                    <thead>
-                      <tr>
-                        <th>아이디</th>
-                        <th>이름</th>
-                        <th>역할</th>
-                        <th>역할키</th>
-                        <th>시작일</th>
-                        <th style={{ width: "80px", textAlign: "center" }}>관리</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {registeredUsers.length === 0 ? (
+              <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+                {/* 1. 시스템 고정 계정 목록 테이블 */}
+                <div>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.5rem" }}>
+                    <h3 style={{ fontSize: "0.9rem", fontWeight: "800", color: "var(--accent-color)", borderLeft: "3px solid var(--accent-color)", paddingLeft: "0.4rem" }}>시스템 고정 계정 현황</h3>
+                    <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)" }}>관리자용 데모 및 시스템 고유 계정</span>
+                  </div>
+                  <div className="table-panel" style={{ maxHeight: "250px", overflowY: "auto" }}>
+                    <table className="custom-table" style={{ fontSize: "0.75rem" }}>
+                      <thead>
                         <tr>
-                          <td colSpan="6" style={{ textAlign: "center", color: "var(--text-secondary-dark)", padding: "2rem" }}>
-                            등록된 회원 정보가 없습니다.
-                          </td>
+                          <th>아이디</th>
+                          <th>이름</th>
+                          <th>역할</th>
+                          <th>역할키</th>
+                          <th>시작일</th>
+                          <th style={{ width: "100px", textAlign: "center" }}>속성</th>
                         </tr>
-                      ) : (
-                        registeredUsers.map((u) => {
-                          const roleNames = {
-                            ADMIN: "최고 관리자",
-                            DIRECTOR: "사업단장",
-                            HQ_HEAD: "본부장",
-                            CENTER_ECC: "ECC센터장",
-                            CENTER_SPECIAL: "신산업특화센터장",
-                            TEAM_LEADER: "운영팀장",
-                            RESEARCHER: "실무 연구원"
-                          };
-                          const cleanName = (u.name || "").split(" ")[0];
-                          const isDemoId = ["admin", "director", "hq_head", "center_director", "team_leader", "researcher"].includes(u.id.toLowerCase());
-                          const isDirectoryUser = (members || []).some(m => m.email && m.email.trim().toLowerCase() === u.id.trim().toLowerCase() && m.status !== "퇴직");
-                          const isProtected = isDemoId || isDirectoryUser;
+                      </thead>
+                      <tbody>
+                        {registeredUsers.filter(u => ["admin", "director", "hq_head", "center_director", "team_leader", "researcher"].includes(u.id.toLowerCase())).length === 0 ? (
+                          <tr>
+                            <td colSpan="6" style={{ textAlign: "center", color: "var(--text-secondary-dark)", padding: "1.5rem" }}>
+                              등록된 고정 계정이 없습니다.
+                            </td>
+                          </tr>
+                        ) : (
+                          registeredUsers
+                            .filter(u => ["admin", "director", "hq_head", "center_director", "team_leader", "researcher"].includes(u.id.toLowerCase()))
+                            .map((u) => {
+                              const roleNames = {
+                                ADMIN: "최고 관리자",
+                                DIRECTOR: "사업단장",
+                                HQ_HEAD: "본부장",
+                                CENTER_ECC: "ECC센터장",
+                                CENTER_SPECIAL: "신산업특화센터장",
+                                TEAM_LEADER: "운영팀장",
+                                RESEARCHER: "실무 연구원"
+                              };
+                              const cleanName = (u.name || "").split(" ")[0];
+                              return (
+                                <tr key={u.id}>
+                                  <td style={{ fontFamily: "var(--font-data)", fontWeight: "700" }}>{u.id}</td>
+                                  <td style={{ fontWeight: "700" }}>{cleanName}</td>
+                                  <td>
+                                    <span
+                                      className={`badge ${
+                                        u.role_key === "ADMIN" || u.role_key === "DIRECTOR" || u.role_key === "HQ_HEAD"
+                                          ? "badge-red"
+                                          : u.role_key === "CENTER_ECC" || u.role_key === "CENTER_SPECIAL"
+                                          ? "badge-blue"
+                                          : u.role_key === "TEAM_LEADER"
+                                          ? "badge-green"
+                                          : "badge-gray"
+                                      }`}
+                                      style={{ fontSize: "0.65rem" }}
+                                    >
+                                      {roleNames[u.role_key] || u.role_key}
+                                    </span>
+                                  </td>
+                                  <td style={{ fontFamily: "var(--font-data)" }}>{u.role_key}</td>
+                                  <td style={{ fontFamily: "var(--font-data)" }}>{new Date(u.created_at).toLocaleDateString()}</td>
+                                  <td style={{ textAlign: "center", color: "var(--text-secondary-dark)", fontWeight: "700" }}>고정 계정</td>
+                                </tr>
+                              );
+                            })
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
 
-                          return (
-                            <tr key={u.id}>
-                              <td style={{ fontFamily: "var(--font-data)", fontWeight: "700" }}>{u.id}</td>
-                              <td style={{ fontWeight: "700" }}>{cleanName}</td>
-                              <td>
-                                <span
-                                  className={`badge ${
-                                    u.role_key === "ADMIN" || u.role_key === "DIRECTOR" || u.role_key === "HQ_HEAD"
-                                      ? "badge-red"
-                                      : u.role_key === "CENTER_ECC" || u.role_key === "CENTER_SPECIAL"
-                                      ? "badge-blue"
-                                      : u.role_key === "TEAM_LEADER"
-                                      ? "badge-green"
-                                      : "badge-gray"
-                                  }`}
-                                  style={{ fontSize: "0.65rem" }}
-                                >
-                                  {roleNames[u.role_key] || u.role_key}
-                                </span>
-                              </td>
-                              <td style={{ fontFamily: "var(--font-data)" }}>{u.role_key}</td>
-                              <td style={{ fontFamily: "var(--font-data)" }}>{new Date(u.created_at).toLocaleDateString()}</td>
-                              <td style={{ textAlign: "center" }}>
-                                {!isProtected ? (
-                                  <button
-                                    className="btn-primary"
-                                    style={{ padding: "0.2rem 0.5rem", fontSize: "0.7rem", borderRadius: "0.3rem", background: "var(--danger-color)", cursor: "pointer", border: "none" }}
-                                    onClick={() => handleDeleteUser(u.id)}
-                                  >
-                                    삭제
-                                  </button>
-                                ) : (
-                                  <span style={{ fontSize: "0.7rem", color: "var(--text-secondary-dark)" }}>
-                                    {isDemoId ? "고정 계정" : "주소록 회원"}
-                                  </span>
-                                )}
-                              </td>
-                            </tr>
-                          );
-                        })
-                      )}
-                    </tbody>
-                  </table>
+                {/* 2. 주소록 연동 회원 목록 테이블 */}
+                <div>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.5rem" }}>
+                    <h3 style={{ fontSize: "0.9rem", fontWeight: "800", color: "var(--accent-color)", borderLeft: "3px solid var(--accent-color)", paddingLeft: "0.4rem" }}>주소록 연동 회원 현황</h3>
+                    <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)" }}>인사 주소록 기반 가입 계정</span>
+                  </div>
+                  <div className="table-panel" style={{ maxHeight: "300px", overflowY: "auto" }}>
+                    <table className="custom-table" style={{ fontSize: "0.75rem" }}>
+                      <thead>
+                        <tr>
+                          <th>아이디</th>
+                          <th>이름</th>
+                          <th>역할</th>
+                          <th>역할키</th>
+                          <th>시작일</th>
+                          <th style={{ width: "100px", textAlign: "center" }}>관리</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {registeredUsers.filter(u => !["admin", "director", "hq_head", "center_director", "team_leader", "researcher"].includes(u.id.toLowerCase())).length === 0 ? (
+                          <tr>
+                            <td colSpan="6" style={{ textAlign: "center", color: "var(--text-secondary-dark)", padding: "2rem" }}>
+                              연동된 주소록 회원이 없습니다.
+                            </td>
+                          </tr>
+                        ) : (
+                          registeredUsers
+                            .filter(u => !["admin", "director", "hq_head", "center_director", "team_leader", "researcher"].includes(u.id.toLowerCase()))
+                            .map((u) => {
+                              const roleNames = {
+                                ADMIN: "최고 관리자",
+                                DIRECTOR: "사업단장",
+                                HQ_HEAD: "본부장",
+                                CENTER_ECC: "ECC센터장",
+                                CENTER_SPECIAL: "신산업특화센터장",
+                                TEAM_LEADER: "운영팀장",
+                                RESEARCHER: "실무 연구원"
+                              };
+                              const cleanName = (u.name || "").split(" ")[0];
+                              const isDirectoryUser = (members || []).some(m => m.email && m.email.trim().toLowerCase() === u.id.trim().toLowerCase() && m.status !== "퇴직");
+
+                              return (
+                                <tr key={u.id}>
+                                  <td style={{ fontFamily: "var(--font-data)", fontWeight: "700" }}>{u.id}</td>
+                                  <td style={{ fontWeight: "700" }}>{cleanName}</td>
+                                  <td>
+                                    <span
+                                      className={`badge ${
+                                        u.role_key === "ADMIN" || u.role_key === "DIRECTOR" || u.role_key === "HQ_HEAD"
+                                          ? "badge-red"
+                                          : u.role_key === "CENTER_ECC" || u.role_key === "CENTER_SPECIAL"
+                                          ? "badge-blue"
+                                          : u.role_key === "TEAM_LEADER"
+                                          ? "badge-green"
+                                          : "badge-gray"
+                                      }`}
+                                      style={{ fontSize: "0.65rem" }}
+                                    >
+                                      {roleNames[u.role_key] || u.role_key}
+                                    </span>
+                                  </td>
+                                  <td style={{ fontFamily: "var(--font-data)" }}>{u.role_key}</td>
+                                  <td style={{ fontFamily: "var(--font-data)" }}>{new Date(u.created_at).toLocaleDateString()}</td>
+                                  <td style={{ textAlign: "center" }}>
+                                    {!isDirectoryUser ? (
+                                      <button
+                                        onClick={() => handleDeleteUser(u.id)}
+                                        className="btn-primary"
+                                        style={{ padding: "0.2rem 0.5rem", fontSize: "0.7rem", borderRadius: "0.3rem", background: "var(--danger-color)", cursor: "pointer", border: "none" }}
+                                      >
+                                        삭제
+                                      </button>
+                                    ) : (
+                                      <span style={{ fontSize: "0.7rem", color: "var(--text-secondary-dark)", fontWeight: "700" }}>주소록 회원</span>
+                                    )}
+                                  </td>
+                                </tr>
+                              );
+                            })
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               </div>
             )}
