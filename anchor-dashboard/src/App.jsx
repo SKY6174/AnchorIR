@@ -3361,7 +3361,9 @@ export default function App() {
                                 CENTER_NURI: "늘봄누리센터장",
                                 CENTER_ICC: "ICC센터장",
                                 CENTER_RCC: "RCC센터장",
-                                TEAM_LEADER: "팀장교수",
+                                TEAM_LEADER: u.id.toLowerCase() === "team_leader" || u.id.toLowerCase() === "hmsim@uc.ac.kr"
+                                  ? "운영팀장"
+                                  : (members || []).find(m => m.email && m.email.trim().toLowerCase() === u.id.trim().toLowerCase())?.role || "팀장교수",
                                 RESEARCHER: "실무 연구원"
                               };
                               const cleanName = (u.name || "").split(" ")[0];
@@ -3435,7 +3437,9 @@ export default function App() {
                                 CENTER_NURI: "늘봄누리센터장",
                                 CENTER_ICC: "ICC센터장",
                                 CENTER_RCC: "RCC센터장",
-                                TEAM_LEADER: "팀장교수",
+                                TEAM_LEADER: u.id.toLowerCase() === "team_leader" || u.id.toLowerCase() === "hmsim@uc.ac.kr"
+                                  ? "운영팀장"
+                                  : (members || []).find(m => m.email && m.email.trim().toLowerCase() === u.id.trim().toLowerCase())?.role || "팀장교수",
                                 RESEARCHER: "실무 연구원"
                               };
                               const cleanName = (u.name || "").split(" ")[0];
