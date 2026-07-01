@@ -106,8 +106,14 @@ export default function AuthManager({ onLoginSuccess, members = [] }) {
         autoRoleKey = "HQ_HEAD";
       } else if (mRole === "운영팀장") {
         autoRoleKey = "TEAM_LEADER";
+      } else if (mRole === "팀장교수" || mRole === "팀장") {
+        autoRoleKey = "TEAM_LEADER";
       } else if (mRole === "센터장") {
-        autoRoleKey = mDept === "ECC센터" ? "CENTER_ECC" : "CENTER_SPECIAL";
+        if (mDept === "ECC센터") autoRoleKey = "CENTER_ECC";
+        else if (mDept === "ICC센터") autoRoleKey = "CENTER_ICC";
+        else if (mDept === "RCC센터") autoRoleKey = "CENTER_RCC";
+        else if (mDept === "울산늘봄누리센터") autoRoleKey = "CENTER_NURI";
+        else autoRoleKey = "CENTER_SPECIAL";
       }
 
       const mappedRole = userRoles[autoRoleKey] || userRoles.RESEARCHER;

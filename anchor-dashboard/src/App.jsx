@@ -34,6 +34,7 @@ const INITIAL_MEMBERS = [
   { id: "m-13", name: "김민경", role: "팀장교수", grade: "정교수", dept: "RCC센터", phoneOffice: "052-230-0334", phoneMobile: "010-0123-4567", email: "mkkim@uc.ac.kr", room: "교수연구실/E2-402", hireDate: "2026-03-01" },
   { id: "m-14", name: "이한도", role: "팀장교수", grade: "정교수", dept: "RCC센터", phoneOffice: "052-230-0335", phoneMobile: "010-1234-8765", email: "hdlee@uc.ac.kr", room: "교수연구실/E2-403", hireDate: "2026-03-01" },
   { id: "m-15", name: "이상현", role: "팀장교수", grade: "정교수", dept: "RCC센터", phoneOffice: "052-230-0336", phoneMobile: "010-2345-9876", email: "shlee@uc.ac.kr", room: "교수연구실/E2-404", hireDate: "2026-03-01" },
+  { id: "m-15b", name: "박성혁", role: "팀장교수", grade: "정교수", dept: "RCC센터", phoneOffice: "052-230-0337", phoneMobile: "010-8765-4321", email: "shpark@uc.ac.kr", room: "교수연구실/E2-405", hireDate: "2026-03-01" },
   { id: "m-16", name: "이정준", role: "팀장교수", grade: "정교수", dept: "AID-X지원센터", phoneOffice: "052-230-0445", phoneMobile: "010-3456-0987", email: "jjlee@uc.ac.kr", room: "교수연구실/E2-502", hireDate: "2026-03-01" },
 
   // 실무 연구원 (등급/직위 3구분 적용)
@@ -1476,8 +1477,14 @@ export default function App() {
             autoRoleKey = "HQ_HEAD";
           } else if (mRole === "운영팀장") {
             autoRoleKey = "TEAM_LEADER";
+          } else if (mRole === "팀장교수" || mRole === "팀장") {
+            autoRoleKey = "TEAM_LEADER";
           } else if (mRole === "센터장") {
-            autoRoleKey = mDept === "ECC센터" ? "CENTER_ECC" : "CENTER_SPECIAL";
+            if (mDept === "ECC센터") autoRoleKey = "CENTER_ECC";
+            else if (mDept === "ICC센터") autoRoleKey = "CENTER_ICC";
+            else if (mDept === "RCC센터") autoRoleKey = "CENTER_RCC";
+            else if (mDept === "울산늘봄누리센터") autoRoleKey = "CENTER_NURI";
+            else autoRoleKey = "CENTER_SPECIAL";
           }
 
           // DB에 비밀번호를 직접 변경한 이력이 존재하면 해당 가입일/이름 정보를 우선시함
@@ -1488,7 +1495,7 @@ export default function App() {
           return {
             id: emailId,
             name: dbUser ? dbUser.name : m.name,
-            role_key: dbUser ? dbUser.role_key : autoRoleKey,
+            role_key: autoRoleKey,
             // 주소록(members)에 시작일이 수정 기입되어 있다면 그것을 우선 표출하고, 없으면 DB 생성일 또는 디폴트값을 사용합니다.
             created_at: m.startDate || m.hireDate || (dbUser ? dbUser.created_at : "2026-03-01T00:00:00.000Z")
           };
@@ -1516,6 +1523,7 @@ export default function App() {
         CENTER_ICC: 3,
         CENTER_RCC: 3,
         CENTER_AID: 3,
+        CENTER_NURI: 3,
         CENTER_NULBOM: 3,
         CENTER_SPECIAL: 3,
         TEAM_LEADER: 4,
@@ -3350,7 +3358,10 @@ export default function App() {
                                 HQ_HEAD: "본부장",
                                 CENTER_ECC: "ECC센터장",
                                 CENTER_SPECIAL: "신산업특화센터장",
-                                TEAM_LEADER: "운영팀장",
+                                CENTER_NURI: "늘봄누리센터장",
+                                CENTER_ICC: "ICC센터장",
+                                CENTER_RCC: "RCC센터장",
+                                TEAM_LEADER: "팀장교수",
                                 RESEARCHER: "실무 연구원"
                               };
                               const cleanName = (u.name || "").split(" ")[0];
@@ -3363,7 +3374,7 @@ export default function App() {
                                       className={`badge ${
                                         u.role_key === "ADMIN" || u.role_key === "DIRECTOR" || u.role_key === "HQ_HEAD"
                                           ? "badge-red"
-                                          : u.role_key === "CENTER_ECC" || u.role_key === "CENTER_SPECIAL"
+                                          : u.role_key.startsWith("CENTER_")
                                           ? "badge-blue"
                                           : u.role_key === "TEAM_LEADER"
                                           ? "badge-green"
@@ -3421,7 +3432,10 @@ export default function App() {
                                 HQ_HEAD: "본부장",
                                 CENTER_ECC: "ECC센터장",
                                 CENTER_SPECIAL: "신산업특화센터장",
-                                TEAM_LEADER: "운영팀장",
+                                CENTER_NURI: "늘봄누리센터장",
+                                CENTER_ICC: "ICC센터장",
+                                CENTER_RCC: "RCC센터장",
+                                TEAM_LEADER: "팀장교수",
                                 RESEARCHER: "실무 연구원"
                               };
                               const cleanName = (u.name || "").split(" ")[0];
@@ -3436,7 +3450,7 @@ export default function App() {
                                       className={`badge ${
                                         u.role_key === "ADMIN" || u.role_key === "DIRECTOR" || u.role_key === "HQ_HEAD"
                                           ? "badge-red"
-                                          : u.role_key === "CENTER_ECC" || u.role_key === "CENTER_SPECIAL"
+                                          : u.role_key.startsWith("CENTER_")
                                           ? "badge-blue"
                                           : u.role_key === "TEAM_LEADER"
                                           ? "badge-green"

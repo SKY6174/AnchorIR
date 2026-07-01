@@ -1802,6 +1802,7 @@ export const userRoles = {
   CENTER_ICC: { id: "CENTER_ICC", name: "CENTER_ICC", rank: 3, desc: "소속 단위과제(B1, B3, B4) 세부 예산 및 산학협력 체계 관리" },
   CENTER_RCC: { id: "CENTER_RCC", name: "CENTER_RCC", rank: 3, desc: "소속 단위과제(C1, D1, D2, D3) 세부 예산 및 평생학습 관리" },
   CENTER_AID: { id: "CENTER_AID", name: "CENTER_AID", rank: 3, desc: "소속 단위과제(B2) 세부 예산 및 AID 역량강화 관리" },
+  CENTER_NURI: { id: "CENTER_NURI", name: "CENTER_NURI", rank: 3, desc: "소속 단위과제(C2) 늘봄누리 생태계 및 특화 교육 총괄 관리" },
   CENTER_NULBOM: { id: "CENTER_NULBOM", name: "CENTER_NULBOM", rank: 3, desc: "소속 단위과제(C2) 늘봄 표준 교안 및 특화 교육 관리" },
   CENTER_SPECIAL: { id: "CENTER_SPECIAL", name: "CENTER_SPECIAL", rank: 3, desc: "소속 단위과제(A1나 신산업 이관 분 4억 원 총괄)" },
   TEAM_LEADER: { id: "TEAM_LEADER", name: "TEAM_LEADER", rank: 4, desc: "공통 영역 및 운영 행정비 집행 관리 총괄" },
