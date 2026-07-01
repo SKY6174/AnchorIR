@@ -2497,18 +2497,45 @@ export default function App() {
   // 사용자 호칭 맵핑 웰컴 메시지 헬퍼 함수
   const getWelcomeMessage = () => {
     if (!currentUser) return "";
+    
+    // currentUser.id 또는 name 기준으로 members 데이터에서 정보 탐색
+    const currentMember = members.find((m) => {
+      if (!m.email) return false;
+      const mId = m.email.trim().toLowerCase().split("@")[0];
+      return mId === currentUser.id;
+    }) || members.find((m) => {
+      const cleanMName = m.name ? m.name.split(" ")[0].split("(")[0].trim() : "";
+      const cleanCurrName = currentUser.name ? currentUser.name.split(" ")[0].split("(")[0].trim() : "";
+      return cleanMName === cleanCurrName;
+    });
+
     let cleanName = currentUser.name ? currentUser.name.split(" ")[0].split("(")[0].trim() : "";
-    const roleId = currentUser.role?.id || "";
-    let titleSuffix = "님";
-    if (roleId === "DIRECTOR") titleSuffix = " 단장님";
-    else if (roleId === "HQ_HEAD") titleSuffix = " 본부장님";
-    else if (roleId === "CENTER_LEADER") titleSuffix = " 센터장님";
-    else if (roleId === "OP_LEADER") titleSuffix = " 팀장님";
-    else if (roleId === "RESEARCHER") titleSuffix = " 연구원님";
+    let roleOrPosition = "";
+
+    if (currentMember) {
+      const mRole = currentMember.role || "";
+      const mPosition = currentMember.position || "";
+
+      if (mRole === "연구원") {
+        // 연구원의 경우에는 직급/직위(position)를 표시
+        roleOrPosition = mPosition || "연구원";
+      } else {
+        // 그 외의 경우(사업단장, 본부장, 센터장, 운영팀장 등)는 직책(role)을 표시
+        roleOrPosition = mRole;
+      }
+    } else {
+      // 주소록에 매칭되지 않는 예외 및 테스트 계정 처리
+      const roleId = currentUser.role?.id || "";
+      if (roleId === "DIRECTOR") roleOrPosition = "단장";
+      else if (roleId === "HQ_HEAD") roleOrPosition = "본부장";
+      else if (roleId === "CENTER_LEADER") roleOrPosition = "센터장";
+      else if (roleId === "OP_LEADER") roleOrPosition = "팀장";
+      else roleOrPosition = "연구원";
+    }
 
     return (
       <span>
-        반갑습니다, <strong>{cleanName}{titleSuffix}</strong>
+        반갑습니다, <strong>{cleanName} {roleOrPosition}님</strong>
       </span>
     );
   };
