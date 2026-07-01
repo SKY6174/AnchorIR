@@ -2979,101 +2979,114 @@ export const YEAR_1_PROGRAMS = {
     {
       "id": "D1-S1T1-1",
       "title": "지역사회 기반 보건복지 협의체 구축 및 운영",
-      "budget": 15000000,
+      "budget": 0,
+      "spent": 0,
       "assignee": "산학협력단",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 15000000, "spent": 15000000 }
+        { "category": "지역 연계∙협업 지원비", "budget": 0, "spent": 0 }
       ]
     },
     {
       "id": "D1-S1T1-2",
       "title": "보건의료 전문기관 연계 협력체계 마련",
-      "budget": 10000000,
+      "budget": 0,
+      "spent": 0,
       "assignee": "산학협력단",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 10000000, "spent": 10000000 }
+        { "category": "지역 연계∙협업 지원비", "budget": 0, "spent": 0 }
       ]
     },
     {
       "id": "D1-S1T2-1",
       "title": "보건분야 전문기술인력 연수 프로그램 기획 및 운영",
-      "budget": 35000000,
+      "budget": 20000000,
+      "spent": 12600000,
       "assignee": "산학협력단",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 35000000, "spent": 35000000 }
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 20000000, "spent": 12600000 }
       ]
     },
     {
       "id": "D1-S1T2-2",
       "title": "요양보호사 등 재직자 대상 직무 역량 강화 교육과정 개발 및 운영",
-      "budget": 40000000,
+      "budget": 30000000,
+      "spent": 23200000,
       "assignee": "산학협력단",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 40000000, "spent": 40000000 }
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 30000000, "spent": 23200000 }
       ]
     },
     {
       "id": "D1-S1T2-3",
       "title": "대학생-재직자 매칭 보건복지 연수 과정 운영",
-      "budget": 20000000,
+      "budget": 30000000,
+      "spent": 30000000,
       "assignee": "산학협력단",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 20000000, "spent": 20000000 }
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 30000000, "spent": 30000000 }
       ]
     },
     {
       "id": "D1-S2T3-1",
       "title": "취약계층 건강모니터링 프로그램 운영",
-      "budget": 60000000,
+      "budget": 3200000,
+      "spent": 500000,
       "assignee": "산학협력단",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 60000000, "spent": 60000000 }
+        { "category": "지역 연계∙협업 지원비", "budget": 3200000, "spent": 500000 }
       ]
     },
     {
       "id": "D1-S2T3-2",
       "title": "사회적 약자 의료케어 서포터즈 조직 및 운영",
-      "budget": 40000000,
+      "budget": 0,
+      "spent": 0,
       "assignee": "산학협력단",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 40000000, "spent": 40000000 }
+        { "category": "지역 연계∙협업 지원비", "budget": 0, "spent": 0 }
       ]
     },
     {
       "id": "D1-S2T3-3",
       "title": "디지털헬스케어 기반 시범사업 적용 및 평가",
-      "budget": 70000000,
+      "budget": 0,
+      "spent": 0,
       "assignee": "정보통신처",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 70000000, "spent": 70000000 }
+        { "category": "지역 연계∙협업 지원비", "budget": 0, "spent": 0 }
       ]
     },
     {
       "id": "D1-S2T4-1",
       "title": "반려동물보건과 신설을 위한 학과 기반 구축",
-      "budget": 130000000,
+      "budget": 341400000,
+      "spent": 333600000,
       "assignee": "기획처",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 130000000, "spent": 130000000 }
+        { "category": "교육∙연구 환경개선비", "budget": 341400000, "spent": 333600000 }
       ]
     },
     {
       "id": "D1-S2T4-2",
       "title": "반려동물 매개치료 교육 프로그램 개발 및 적용",
-      "budget": 50000000,
+      "budget": 58900000,
+      "spent": 52600000,
       "assignee": "산학협력단",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 50000000, "spent": 50000000 }
+        { "category": "실험∙실습장비 및 기자재 구입∙운영비", "budget": 58900000, "spent": 52600000 }
       ]
     }
   ,
     {
       "id": "D1-S2T5-1",
       "title": "공통경비",
-      "budget": 10000000,
+      "budget": 66500000,
+      "spent": 60000000,
       "assignee": "산학협력단",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 10000000, "spent": 10000000 }
+        { "category": "인건비", "budget": 35000000, "spent": 33500000 },
+        { "category": "간접비", "budget": 15000000, "spent": 15000000 },
+        { "category": "그 밖의 사업운영경비", "budget": 16500000, "spent": 11500000 }
       ]
     }],
   "D2": [
@@ -3417,8 +3430,8 @@ export const Y1_UNIT_META = {
     "carry": 80000000
   },
   "D1": {
-    "budget": 500000000,
-    "national": 440000000,
+    "budget": 550000000,
+    "national": 490000000,
     "city": 60000000,
     "carry": 100000000
   },
