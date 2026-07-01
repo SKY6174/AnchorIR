@@ -1372,6 +1372,7 @@ export default function App() {
   }, [members]);
   const [assignFilterUnitId, setAssignFilterUnitId] = useState("all");
   const [mgmtSubTab, setMgmtSubTab] = useState("members"); // "members", "programs", "approvals"
+  const [memberFilter, setMemberFilter] = useState("all"); // "all", "active", "retired"
   const [projectsSubTab, setProjectsSubTab] = useState("unit_status"); // "unit_status" (단위과제 집행현황) 또는 "program_mgmt" (프로그램 관리)
   const [isMemberModalOpen, setIsMemberModalOpen] = useState(false);
   const [editingMember, setEditingMember] = useState(null); // 추가/수정용 임시 객체
@@ -2928,6 +2929,58 @@ export default function App() {
 
             {mgmtSubTab === "members" && (
               <div>
+                {/* 재직자 / 퇴직자 구분을 위한 삼분할 필터 바 */}
+                <div style={{ display: "flex", gap: "0.5rem", marginBottom: "1rem" }}>
+                  <button
+                    onClick={() => setMemberFilter("all")}
+                    style={{
+                      padding: "0.35rem 0.75rem",
+                      fontSize: "0.75rem",
+                      borderRadius: "0.25rem",
+                      border: memberFilter === "all" ? "1px solid var(--accent-color)" : "1px solid var(--border-color)",
+                      background: memberFilter === "all" ? "rgba(59,130,246,0.15)" : "transparent",
+                      color: memberFilter === "all" ? "var(--accent-color)" : "var(--text-secondary)",
+                      cursor: "pointer",
+                      fontWeight: "700",
+                      transition: "all 0.2s"
+                    }}
+                  >
+                    전체 ({members.length}명)
+                  </button>
+                  <button
+                    onClick={() => setMemberFilter("active")}
+                    style={{
+                      padding: "0.35rem 0.75rem",
+                      fontSize: "0.75rem",
+                      borderRadius: "0.25rem",
+                      border: memberFilter === "active" ? "1px solid var(--success-color)" : "1px solid var(--border-color)",
+                      background: memberFilter === "active" ? "rgba(16,185,129,0.15)" : "transparent",
+                      color: memberFilter === "active" ? "var(--success-color)" : "var(--text-secondary)",
+                      cursor: "pointer",
+                      fontWeight: "700",
+                      transition: "all 0.2s"
+                    }}
+                  >
+                    재직자 ({members.filter(m => m.status !== "퇴직").length}명)
+                  </button>
+                  <button
+                    onClick={() => setMemberFilter("retired")}
+                    style={{
+                      padding: "0.35rem 0.75rem",
+                      fontSize: "0.75rem",
+                      borderRadius: "0.25rem",
+                      border: memberFilter === "retired" ? "1px solid #ef4444" : "1px solid var(--border-color)",
+                      background: memberFilter === "retired" ? "rgba(239,68,68,0.15)" : "transparent",
+                      color: memberFilter === "retired" ? "#ef4444" : "var(--text-secondary)",
+                      cursor: "pointer",
+                      fontWeight: "700",
+                      transition: "all 0.2s"
+                    }}
+                  >
+                    퇴직자 ({members.filter(m => m.status === "퇴직").length}명)
+                  </button>
+                </div>
+
                 <div className="table-panel">
                   <table className="custom-table" style={{ fontSize: "0.8rem" }}>
                     <thead>
@@ -2946,42 +2999,67 @@ export default function App() {
                       </tr>
                     </thead>
                     <tbody>
-                      {members.map((m) => (
-                        <tr key={m.id}>
-                          <td style={{ fontWeight: "700" }}>{m.dept}</td>
-                          <td style={{ fontWeight: "800", color: "white" }}>{m.name}</td>
-                          <td>
-                            <span
-                              className={`badge ${
-                                m.role === "사업단장" || m.role === "본부장"
-                                  ? "badge-red"
-                                  : m.role === "센터장"
-                                  ? "badge-blue"
-                                  : m.role === "팀장교수"
-                                  ? "badge-green"
-                                  : "badge-gray"
-                              }`}
-                              style={{ fontSize: "0.65rem" }}
+                      {members
+                        .filter((m) => {
+                          if (memberFilter === "active") return m.status !== "퇴직";
+                          if (memberFilter === "retired") return m.status === "퇴직";
+                          return true;
+                        })
+                        .map((m) => {
+                          const isRetired = m.status === "퇴직";
+                          return (
+                            <tr 
+                              key={m.id}
+                              style={{
+                                opacity: isRetired ? 0.45 : 1,
+                                background: isRetired ? "rgba(255, 255, 255, 0.01)" : "transparent",
+                                transition: "all 0.2s"
+                              }}
                             >
-                              {m.role}
-                            </span>
-                          </td>
-                          <td>{m.grade}</td>
-                          <td style={{ fontFamily: "var(--font-data)" }}>{m.email}</td>
-                          <td style={{ fontFamily: "var(--font-data)" }}>{m.phoneOffice || "-"}</td>
-                          <td style={{ fontFamily: "var(--font-data)" }}>{m.phoneMobile || "-"}</td>
-                          <td style={{ fontFamily: "var(--font-data)" }}>{m.startDate || m.hireDate || "-"}</td>
-                          <td style={{ fontFamily: "var(--font-data)" }}>{m.endDate || "-"}</td>
-                          <td>
-                            <span
-                              className={`badge ${
-                                m.status === "퇴직" ? "badge-red" : "badge-green"
-                              }`}
-                              style={{ fontSize: "0.65rem" }}
-                            >
-                              {m.status || "재직중"}
-                            </span>
-                          </td>
+                              <td style={{ fontWeight: "700" }}>{m.dept}</td>
+                              <td style={{ fontWeight: "800", color: isRetired ? "var(--text-secondary)" : "white" }}>{m.name}</td>
+                              <td>
+                                <span
+                                  className={`badge ${
+                                    isRetired
+                                      ? "badge-gray"
+                                      : m.role === "사업단장" || m.role === "본부장"
+                                      ? "badge-red"
+                                      : m.role === "센터장"
+                                      ? "badge-blue"
+                                      : m.role === "팀장교수"
+                                      ? "badge-green"
+                                      : "badge-gray"
+                                  }`}
+                                  style={{ 
+                                    fontSize: "0.65rem",
+                                    background: isRetired ? "rgba(255, 255, 255, 0.08)" : undefined,
+                                    color: isRetired ? "var(--text-secondary)" : undefined
+                                  }}
+                                >
+                                  {m.role}
+                                </span>
+                              </td>
+                              <td>{m.grade}</td>
+                              <td style={{ fontFamily: "var(--font-data)" }}>{m.email}</td>
+                              <td style={{ fontFamily: "var(--font-data)" }}>{m.phoneOffice || "-"}</td>
+                              <td style={{ fontFamily: "var(--font-data)" }}>{m.phoneMobile || "-"}</td>
+                              <td style={{ fontFamily: "var(--font-data)" }}>{m.startDate || m.hireDate || "-"}</td>
+                              <td style={{ fontFamily: "var(--font-data)" }}>{m.endDate || "-"}</td>
+                              <td>
+                                <span
+                                  className={`badge ${
+                                    isRetired ? "badge-red" : "badge-green"
+                                  }`}
+                                  style={{ 
+                                    fontSize: "0.65rem",
+                                    background: isRetired ? "rgba(239, 68, 68, 0.15)" : undefined,
+                                    color: isRetired ? "#f87171" : undefined
+                                  }}
+                                >
+                                  {m.status || "재직중"}
+                                </span>
+                              </td>
                           {currentRole.rank <= 2 && (
                             <td>
                               <div style={{ display: "flex", gap: "0.3rem" }}>
@@ -3010,7 +3088,8 @@ export default function App() {
                             </td>
                           )}
                         </tr>
-                      ))}
+                      );
+                    })}
                     </tbody>
                   </table>
                 </div>
