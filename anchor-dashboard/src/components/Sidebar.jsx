@@ -195,17 +195,7 @@ export default function Sidebar({
         </nav>
       </div>
 
-      <div className="user-profile-card" style={{ padding: "0.5rem" }}>
-        <div style={{ marginBottom: "0.3rem" }}>
-          <span style={{ fontSize: "0.6rem", color: "var(--text-secondary-dark)", display: "block" }}>
-            현재 로그인 권한
-          </span>
-          <span style={{ fontSize: "0.75rem", fontWeight: "700" }}>{currentRole.name}</span>
-        </div>
-        <p style={{ fontSize: "0.6rem", color: "var(--text-secondary-dark)", lineHeight: "1.2" }}>
-          {currentRole.desc}
-        </p>
-      </div>
+
     </aside>
   );
 }
