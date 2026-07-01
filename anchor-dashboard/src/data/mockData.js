@@ -2499,83 +2499,96 @@ export const YEAR_1_PROGRAMS = {
     {
       "id": "B3-S1T1-1",
       "title": "지역문제해결 공용플랫폼의 협력 체계 구축",
-      "budget": 20000000,
+      "budget": 22000000,
+      "spent": 22000000,
       "assignee": "로컬브릿지팀",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 20000000, "spent": 20000000 }
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 22000000, "spent": 22000000 }
       ]
     },
     {
       "id": "B3-S1T1-2",
       "title": "공용 플랫폼의 협력 체계 마련",
       "budget": 15000000,
+      "spent": 7800000,
       "assignee": "로컬브릿지팀",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 15000000, "spent": 15000000 }
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 15000000, "spent": 7800000 }
       ]
     },
     {
       "id": "B3-S1T2-1",
       "title": "지역문제해결 캡스톤 디자인 운영",
-      "budget": 114999999,
+      "budget": 38000000,
+      "spent": 23500000,
       "assignee": "로컬브릿지팀",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 115000000, "spent": 115000000 }
+        { "category": "지역 연계∙협업 지원비", "budget": 38000000, "spent": 23500000 }
       ]
     },
     {
       "id": "B3-S1T2-2",
       "title": "자매도시 또는 글로벌 지역문제해결 캡스톤 디자인 모델 개발",
-      "budget": 50000000,
+      "budget": 65400000,
+      "spent": 11100000,
       "assignee": "로컬브릿지팀",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 50000000, "spent": 50000000 }
+        { "category": "지역 연계∙협업 지원비", "budget": 40000000, "spent": 0 },
+        { "category": "성과 활용∙확산 지원비", "budget": 25400000, "spent": 11100000 }
       ]
     },
     {
       "id": "B3-S2T3-1",
       "title": "지역협력 마일리지 제도 협력 체계 구축",
-      "budget": 15000000,
+      "budget": 11500000,
+      "spent": 11500000,
       "assignee": "로컬브릿지팀",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 15000000, "spent": 15000000 }
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 11500000, "spent": 11500000 }
       ]
     },
     {
       "id": "B3-S2T3-2",
       "title": "지역협력 마일리지 형태의 지속 가능한 주민참여 운영 모델 및 제도 개발",
-      "budget": 25000000,
+      "budget": 23900000,
+      "spent": 0,
       "assignee": "로컬브릿지팀",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 25000000, "spent": 25000000 }
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 23900000, "spent": 0 }
       ]
     },
     {
       "id": "B3-S2T4-1",
       "title": "학과기반의 지역사회공헌활동 프로그램 운영",
-      "budget": 35000000,
+      "budget": 33400000,
+      "spent": 19600000,
       "assignee": "로컬브릿지팀",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 35000000, "spent": 35000000 }
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 33400000, "spent": 19600000 }
       ]
     },
     {
       "id": "B3-S2T4-2",
       "title": "대학의 역량을 활용한 지역사회협력 연계",
-      "budget": 15000000,
+      "budget": 19000000,
+      "spent": 18700000,
       "assignee": "로컬브릿지팀",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 15000000, "spent": 15000000 }
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 19000000, "spent": 18700000 }
       ]
     }
   ,
     {
       "id": "B3-S2T5-1",
       "title": "공통경비",
-      "budget": 10000000,
+      "budget": 71800000,
+      "spent": 65000000,
       "assignee": "로컬브릿지팀",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 10000000, "spent": 10000000 }
+        { "category": "인건비", "budget": 24000000, "spent": 23200000 },
+        { "category": "장학금", "budget": 30000000, "spent": 29200000 },
+        { "category": "간접비", "budget": 9000000, "spent": 9000000 },
+        { "category": "그 밖의 사업운영경비", "budget": 8800000, "spent": 3600000 }
       ]
     }],
   "B4": [
