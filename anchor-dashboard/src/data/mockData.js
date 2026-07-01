@@ -2595,119 +2595,134 @@ export const YEAR_1_PROGRAMS = {
     {
       "id": "C1-S1T1-1",
       "title": "산업별 재난 유형 및 사례 분석 기반 교육 콘텐츠 개발",
-      "budget": 30000000,
+      "budget": 6000000,
+      "spent": 4800000,
       "assignee": "산학협력단",
       "budget_categories": [
-        { "category": "교육∙연구 환경개선비", "budget": 30000000, "spent": 30000000 }
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 6000000, "spent": 4800000 }
       ]
     },
     {
       "id": "C1-S1T1-2",
       "title": "산업 맞춤형 재난 대응 표준프로세스 개발 및 적용",
-      "budget": 30000000,
+      "budget": 15000000,
+      "spent": 13500000,
       "assignee": "산학협력단",
       "budget_categories": [
-        { "category": "교육∙연구 환경개선비", "budget": 30000000, "spent": 30000000 }
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 15000000, "spent": 13500000 }
       ]
     },
     {
       "id": "C1-S1T2-1",
       "title": "산업 현장 중심 응급 대응 매뉴얼 개발 및 운영",
-      "budget": 20000000,
+      "budget": 3000000,
+      "spent": 2100000,
       "assignee": "산학협력단",
       "budget_categories": [
-        { "category": "교육∙연구 환경개선비", "budget": 20000000, "spent": 20000000 }
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 3000000, "spent": 2100000 }
       ]
     },
     {
       "id": "C1-S1T2-2",
       "title": "응급처치 교육 모듈 개발 및 시범 운영",
-      "budget": 30000000,
+      "budget": 6000000,
+      "spent": 6000000,
       "assignee": "산학협력단",
       "budget_categories": [
-        { "category": "교육∙연구 환경개선비", "budget": 30000000, "spent": 30000000 }
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 6000000, "spent": 6000000 }
       ]
     },
     {
       "id": "C1-S1T2-3",
       "title": "기업·지자체 협력 기반 재난 대응 전문 교육 프로그램 개발",
-      "budget": 20000000,
+      "budget": 0,
+      "spent": 0,
       "assignee": "산학협력단",
       "budget_categories": [
-        { "category": "교육∙연구 환경개선비", "budget": 20000000, "spent": 20000000 }
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 0, "spent": 0 }
       ]
     },
     {
       "id": "C1-S2T3-1",
       "title": "산업안전·보건 교육 교재 및 온라인 학습 콘텐츠 개발",
       "budget": 50000000,
+      "spent": 46400000,
       "assignee": "산학협력단",
       "budget_categories": [
-        { "category": "교육∙연구 환경개선비", "budget": 50000000, "spent": 50000000 }
+        { "category": "교육∙연구 환경개선비", "budget": 50000000, "spent": 46400000 }
       ]
     },
     {
       "id": "C1-S2T3-2",
       "title": "산업 맞춤형 안전·보건 자격 인증 과정 개설 및 운영",
-      "budget": 50000000,
+      "budget": 30400000,
+      "spent": 30410000,
       "assignee": "산학협력단",
       "budget_categories": [
-        { "category": "교육∙연구 환경개선비", "budget": 50000000, "spent": 50000000 }
+        { "category": "기업 지원∙협력 활동비", "budget": 30400000, "spent": 30410000 }
       ]
     },
     {
       "id": "C1-S2T4-1",
       "title": "실습 중심의 VR·AR 기반 재난 대응 교육 콘텐츠 개발",
-      "budget": 80000000,
+      "budget": 54000000,
+      "spent": 53900000,
       "assignee": "산학협력단",
       "budget_categories": [
-        { "category": "교육∙연구 환경개선비", "budget": 80000000, "spent": 80000000 }
+        { "category": "실험∙실습장비 및 기자재 구입∙운영비", "budget": 54000000, "spent": 53900000 }
       ]
     },
     {
       "id": "C1-S3T5-1",
       "title": "기업 및 연구기관 협력을 통한 산업안전 컨설팅 모델 기획",
-      "budget": 20000000,
+      "budget": 4000000,
+      "spent": 3700000,
       "assignee": "산학협력단",
       "budget_categories": [
-        { "category": "교육∙연구 환경개선비", "budget": 20000000, "spent": 20000000 }
+        { "category": "지역 연계∙협업 지원비", "budget": 4000000, "spent": 3700000 }
       ]
     },
     {
       "id": "C1-S3T5-2",
       "title": "센터 운영을 위한 전문 인력 양성 및 교육 과정 개설",
-      "budget": 20000000,
+      "budget": 38400000,
+      "spent": 31800000,
       "assignee": "산학협력단",
       "budget_categories": [
-        { "category": "교육∙연구 환경개선비", "budget": 20000000, "spent": 20000000 }
+        { "category": "성과 활용∙확산 지원비", "budget": 38400000, "spent": 31800000 }
       ]
     },
     {
       "id": "C1-S3T6-1",
       "title": "재난 대응 협력 네트워크 구축을 위한 MOU 체결",
-      "budget": 10000000,
+      "budget": 100000000,
+      "spent": 49000000,
       "assignee": "산학협력단",
       "budget_categories": [
-        { "category": "교육∙연구 환경개선비", "budget": 10000000, "spent": 10000000 }
+        { "category": "지역 연계∙협업 지원비", "budget": 100000000, "spent": 49000000 }
       ]
     },
     {
       "id": "C1-S3T6-2",
       "title": "정기 협의체 운영 및 기업 맞춤형 재난 대응 전략 논의",
-      "budget": 20000000,
+      "budget": 18200000,
+      "spent": 17990000,
       "assignee": "산학협력단",
       "budget_categories": [
-        { "category": "교육∙연구 환경개선비", "budget": 20000000, "spent": 20000000 }
+        { "category": "기업 지원∙협력 활동비", "budget": 18200000, "spent": 17990000 }
       ]
     }
   ,
     {
       "id": "C1-S3T7-1",
       "title": "공통경비",
-      "budget": 10000000,
+      "budget": 75000000,
+      "spent": 65500000,
       "assignee": "산학협력단",
       "budget_categories": [
-        { "category": "교육∙연구 환경개선비", "budget": 10000000, "spent": 10000000 }
+        { "category": "인건비", "budget": 54000000, "spent": 51400000 },
+        { "category": "간접비", "budget": 9000000, "spent": 9000000 },
+        { "category": "그 밖의 사업운영경비", "budget": 12000000, "spent": 5100000 }
       ]
     }],
   "B2": [
@@ -3360,9 +3375,9 @@ export const Y1_UNIT_META = {
     "carry": 50000000
   },
   "C1": {
-    "budget": 700000000,
-    "national": 515000000,
-    "city": 185000000,
+    "budget": 400000000,
+    "national": 400000000,
+    "city": 0,
     "carry": 150000000
   },
   "C2": {
