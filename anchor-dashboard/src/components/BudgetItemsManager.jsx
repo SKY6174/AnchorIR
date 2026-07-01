@@ -122,25 +122,24 @@ export default function BudgetItemsManager({ projects, currentRole, onUpdateBudg
   });
   const totalCombinedBudget = totalMainBudget + totalCarryBudget;
 
-  // 담당부서 맵핑 정의 (연차별 유닛 ID 분기 처리)
+  // 담당부서 맵핑 정의 (연차별 유닛 ID 분기 처리 및 사용자 지정 순서)
   const DEPARTMENTS = selectedYear === 1
     ? [
-        { name: "사업운영팀", ids: [] },
         { name: "ECC센터", ids: ["A1", "A2", "D4"] },
-        { name: "신산업특화센터", ids: [] },
         { name: "ICC센터", ids: ["B1", "B3", "C1", "C3"] },
+        { name: "RCC센터", ids: ["B2", "D1", "D3"] },
         { name: "AID-X지원센터", ids: ["C2"] },
         { name: "울산늘봄누리센터", ids: ["D2"] },
-        { name: "RCC센터", ids: ["B2", "D1", "D3"] }
+        { name: "사업운영팀", ids: [] }
       ]
     : [
-        { name: "사업운영팀", ids: ["Common"] },
         { name: "ECC센터", ids: ["A1가", "A2", "A3"] },
-        { name: "신산업특화센터", ids: ["A1나"] },
         { name: "ICC센터", ids: ["B1", "B3", "B4"] },
+        { name: "RCC센터", ids: ["C1", "D1", "D2", "D3"] },
         { name: "AID-X지원센터", ids: ["B2"] },
         { name: "울산늘봄누리센터", ids: ["C2"] },
-        { name: "RCC센터", ids: ["C1", "D1", "D2", "D3"] }
+        { name: "신산업특화센터", ids: ["A1나"] },
+        { name: "사업운영팀", ids: ["Common"] }
       ];
 
   // 선택된 단위과제 및 프로젝트 제목 찾기 또는 전체사업 가상 유닛 빌드
