@@ -2334,146 +2334,165 @@ export const YEAR_1_PROGRAMS = {
     {
       "id": "B2-S1T1-1",
       "title": "지역 내 평생직업교육 거점센터 운영",
-      "budget": 55000000,
+      "budget": 25500000,
+      "spent": 25500000,
       "assignee": "평생교육원",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 55000000, "spent": 55000000 }
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 25500000, "spent": 25500000 }
       ]
     },
     {
       "id": "B2-S1T1-2",
       "title": "지역 기관과의 평생직업교육 연계 방안 마련",
-      "budget": 15000000,
+      "budget": 22300000,
+      "spent": 22300000,
       "assignee": "평생교육원",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 15000000, "spent": 15000000 }
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 22300000, "spent": 22300000 }
       ]
     },
     {
       "id": "B2-S1T2-1",
       "title": "UC-HYPER 내 평생직업교육관련 데이터 구축",
-      "budget": 20000000,
+      "budget": 2800000,
+      "spent": 2800000,
       "assignee": "정보통신처",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 20000000, "spent": 20000000 }
+        { "category": "지역 연계∙협업 지원비", "budget": 2800000, "spent": 2800000 }
       ]
     },
     {
       "id": "B2-S1T2-2",
       "title": "교육통합 플랫폼의 대학내 기반 구축",
-      "budget": 30000000,
+      "budget": 119900000,
+      "spent": 59300000,
       "assignee": "정보통신처",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 30000000, "spent": 30000000 }
+        { "category": "교육∙연구 환경개선비", "budget": 119900000, "spent": 59300000 }
       ]
     },
     {
       "id": "B2-S1T2-3",
       "title": "울산의 교육통합 플랫폼을 위한 참여",
-      "budget": 20000000,
+      "budget": 62200000,
+      "spent": 100000,
       "assignee": "평생교육원",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 20000000, "spent": 20000000 }
+        { "category": "지역 연계∙협업 지원비", "budget": 62200000, "spent": 100000 }
       ]
     },
     {
       "id": "B2-S2T3-1",
       "title": "교육접근성 확대를 위한 다양한 학습 프로그램 개발",
-      "budget": 20000000,
+      "budget": 15600000,
+      "spent": 15600000,
       "assignee": "평생교육원",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 20000000, "spent": 20000000 }
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 15600000, "spent": 15600000 }
       ]
     },
     {
       "id": "B2-S2T4-1",
       "title": "성인학습자를 위한 맞춤형 학과 개설 지원",
-      "budget": 30000000,
+      "budget": 42700000,
+      "spent": 42700000,
       "assignee": "기획처",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 30000000, "spent": 30000000 }
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 42700000, "spent": 42700000 }
       ]
     },
     {
       "id": "B2-S2T4-2",
       "title": "성인학습자 학과 입학을 위한 맞춤형 지원 확대",
-      "budget": 15000000,
+      "budget": 9000000,
+      "spent": 3000000,
       "assignee": "학생취업처",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 15000000, "spent": 15000000 }
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 9000000, "spent": 3000000 }
       ]
     },
     {
       "id": "B2-S3T5-1",
       "title": "생애주기별 평생학습 지원 체계 구축",
-      "budget": 20000000,
+      "budget": 91400000,
+      "spent": 52000000,
       "assignee": "평생교육원",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 20000000, "spent": 20000000 }
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 91400000, "spent": 52000000 }
       ]
     },
     {
       "id": "B2-S3T5-2",
       "title": "생애주기별 교육 지원 시스템 구축",
-      "budget": 15000000,
+      "budget": 0,
+      "spent": 0,
       "assignee": "평생교육원",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 15000000, "spent": 15000000 }
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 0, "spent": 0 }
       ]
     },
     {
       "id": "B2-S3T6-1",
       "title": "산업체와의 실무중심의 교육 프로그램 개발",
-      "budget": 40000000,
+      "budget": 85100000,
+      "spent": 85100000,
       "assignee": "평생교육원",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 40000000, "spent": 40000000 }
+        { "category": "실험∙실습장비 및 기자재 구입∙운영비", "budget": 85100000, "spent": 85100000 }
       ]
     },
     {
       "id": "B2-S3T6-2",
       "title": "성인학습자 대상 학점 인정 프로그램 운영",
-      "budget": 20000000,
+      "budget": 0,
+      "spent": 0,
       "assignee": "기획처",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 20000000, "spent": 20000000 }
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 0, "spent": 0 }
       ]
     },
     {
       "id": "B2-S4T7-1",
       "title": "지역산업 연계 맞춤형 직업교육 과정 운영",
-      "budget": 80000000,
+      "budget": 0,
+      "spent": 0,
       "assignee": "평생교육원",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 80000000, "spent": 80000000 }
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 0, "spent": 0 }
       ]
     },
     {
       "id": "B2-S4T7-2",
       "title": "지역 산업 맞춤형 교육 콘텐츠 개발",
-      "budget": 60000000,
+      "budget": 0,
+      "spent": 0,
       "assignee": "평생교육원",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 60000000, "spent": 60000000 }
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 0, "spent": 0 }
       ]
     },
     {
       "id": "B2-S4T8-1",
       "title": "기업과 협력한 교육 콘텐츠 개발",
-      "budget": 85000000,
+      "budget": 0,
+      "spent": 0,
       "assignee": "평생교육원",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 85000000, "spent": 85000000 }
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 0, "spent": 0 }
       ]
     }
   ,
     {
       "id": "B2-S4T9-1",
       "title": "공통경비",
-      "budget": 10000000,
+      "budget": 173500000,
+      "spent": 166900000,
       "assignee": "평생교육원",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 10000000, "spent": 10000000 }
+        { "category": "인건비", "budget": 114000000, "spent": 113100000 },
+        { "category": "간접비", "budget": 20000000, "spent": 20000000 },
+        { "category": "그 밖의 사업운영경비", "budget": 19500000, "spent": 13800000 },
+        { "category": "성과 활용∙확산 지원비", "budget": 20000000, "spent": 20000000 }
       ]
     }],
   "C2": [
@@ -3310,8 +3329,8 @@ export const Y1_UNIT_META = {
     "carry": 100000000
   },
   "B2": {
-    "budget": 900000000,
-    "national": 900000000,
+    "budget": 650000000,
+    "national": 650000000,
     "city": 0,
     "carry": 300000000
   },
