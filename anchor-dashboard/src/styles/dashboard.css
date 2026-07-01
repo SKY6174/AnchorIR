@@ -69,11 +69,11 @@ body.light-mode {
 
 /* Sidebar Styling */
 .sidebar {
-  width: 280px;
+  width: 224px;
   background: var(--panel-bg-dark);
   border-right: 1px solid var(--border-color-dark);
   backdrop-filter: blur(16px);
-  padding: 2rem 1.5rem;
+  padding: 2rem 1rem;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
