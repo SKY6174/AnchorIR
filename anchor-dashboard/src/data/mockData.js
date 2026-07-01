@@ -3321,81 +3321,95 @@ export const YEAR_1_PROGRAMS = {
     {
       "id": "D4-S1T1-1",
       "title": "글로벌 거점 센터 물리적/제도적 공간 구축",
-      "budget": 120000000,
+      "budget": 71300000,
+      "spent": 67000000,
       "assignee": "시설관리처",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 120000000, "spent": 120000000 }
+        { "category": "교육∙연구 환경개선비", "budget": 71300000, "spent": 67000000 }
       ]
     },
     {
       "id": "D4-S1T1-2",
       "title": "센터 운영 규칙 및 마스터플랜 수립",
-      "budget": 13000000,
+      "budget": 11400000,
+      "spent": 11400000,
       "assignee": "R&BD지원센터",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 13000000, "spent": 13000000 }
+        { "category": "실험∙실습장비 및 기자재 구입∙운영비", "budget": 11400000, "spent": 11400000 }
       ]
     },
     {
       "id": "D4-S1T2-1",
       "title": "무역/글로벌 비즈니스 비교과 트랙 운영",
-      "budget": 50000000,
+      "budget": 20000000,
+      "spent": 15000000,
       "assignee": "R&BD지원센터",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 50000000, "spent": 50000000 }
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 20000000, "spent": 15000000 }
       ]
     },
     {
       "id": "D4-S1T2-2",
       "title": "해외 인턴십 파견 전 직무 훈련 코스 개설",
-      "budget": 50000000,
+      "budget": 12800000,
+      "spent": 10800000,
       "assignee": "R&BD지원센터",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 50000000, "spent": 50000000 }
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 12800000, "spent": 10800000 }
       ]
     },
     {
       "id": "D4-S2T3-1",
       "title": "자매대학 교환교류 및 공동 연구 세션 설계",
-      "budget": 50000000,
+      "budget": 0,
+      "spent": 0,
       "assignee": "R&BD지원센터",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 50000000, "spent": 50000000 }
+        { "category": "지역 연계∙협업 지원비", "budget": 0, "spent": 0 }
       ]
     },
     {
       "id": "D4-S2T4-1",
       "title": "글로벌 지산학 거버넌스 위원회 회의 개최",
-      "budget": 10000000,
+      "budget": 1000000,
+      "spent": 700000,
       "assignee": "R&BD지원센터",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 10000000, "spent": 10000000 }
+        { "category": "지역 연계∙협업 지원비", "budget": 1000000, "spent": 700000 }
       ]
     },
     {
       "id": "D4-S2T4-2",
       "title": "해외 우수 바이어 초청 수출상담회 연계",
-      "budget": 110000000,
+      "budget": 0,
+      "spent": 0,
       "assignee": "R&BD지원센터",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 110000000, "spent": 110000000 }
+        { "category": "지역 연계∙협업 지원비", "budget": 0, "spent": 0 }
       ]
     },
     {
       "id": "D4-S2T4-3",
       "title": "글로벌 공동 연구 성과공유 세미나 개최",
-      "budget": 60000000,
+      "budget": 0,
+      "spent": 0,
       "assignee": "R&BD지원센터",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 60000000, "spent": 60000000 }
+        { "category": "지역 연계∙협업 지원비", "budget": 0, "spent": 0 }
       ]
     }
   ,
     {
       "id": "D4-S3T7-1",
       "title": "공통경비",
-      "budget": 10000000,
-      "assignee": "국제교류원"
+      "budget": 33500000,
+      "spent": 33000000,
+      "assignee": "국제교류원",
+      "budget_categories": [
+        { "category": "인건비", "budget": 20000000, "spent": 20000000 },
+        { "category": "간접비", "budget": 4000000, "spent": 4000000 },
+        { "category": "그 밖의 사업운영경비", "budget": 9500000, "spent": 9000000 }
+      ]
     }]
 };
 
