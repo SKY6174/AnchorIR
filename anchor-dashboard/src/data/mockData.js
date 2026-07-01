@@ -3237,74 +3237,84 @@ export const YEAR_1_PROGRAMS = {
     {
       "id": "D3-S1T1-1",
       "title": "울산 에코 컬처 관광·문화 콘텐츠 개발",
-      "budget": 35000000,
+      "budget": 42200000,
+      "spent": 22700000,
       "assignee": "R&BD지원센터",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 35000000, "spent": 35000000 }
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 42200000, "spent": 22700000 }
       ]
     },
     {
       "id": "D3-S1T1-2",
       "title": "기후·문화 융합 시범 강좌 개설",
-      "budget": 65000000,
+      "budget": 20000000,
+      "spent": 20000000,
       "assignee": "R&BD지원센터",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 65000000, "spent": 65000000 }
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 20000000, "spent": 20000000 }
       ]
     },
     {
       "id": "D3-S1T2-1",
       "title": "지역 문화 기획자 및 에코 도슨트 양성 과정",
-      "budget": 70000000,
+      "budget": 30000000,
+      "spent": 20000000,
       "assignee": "R&BD지원센터",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 70000000, "spent": 70000000 }
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 30000000, "spent": 20000000 }
       ]
     },
     {
       "id": "D3-S1T2-2",
       "title": "대학생 문화 서포터즈 발굴 및 육성",
-      "budget": 50000000,
+      "budget": 2500000,
+      "spent": 2400000,
       "assignee": "R&BD지원센터",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 50000000, "spent": 50000000 }
+        { "category": "교육∙연구 환경개선비", "budget": 2500000, "spent": 2400000 }
       ]
     },
     {
       "id": "D3-S2T3-1",
       "title": "에코 컬처 축제 기획 및 시민 체험 행사 운영",
-      "budget": 250000000,
+      "budget": 80000000,
+      "spent": 68200000,
       "assignee": "R&BD지원센터",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 250000000, "spent": 250000000 }
+        { "category": "실험∙실습장비 및 기자재 구입∙운영비", "budget": 80000000, "spent": 68200000 }
       ]
     },
     {
       "id": "D3-S2T4-1",
       "title": "에코 컬처 네트워크 구축을 위한 다자간 MOU 체결",
-      "budget": 80000000,
+      "budget": 26300000,
+      "spent": 15400000,
       "assignee": "R&BD지원센터",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 80000000, "spent": 80000000 }
+        { "category": "지역 연계∙협업 지원비", "budget": 26300000, "spent": 15400000 }
       ]
     },
     {
       "id": "D3-S2T5-1",
       "title": "'꿀잼도시 울산' 콘텐츠 브랜딩 BI 개발 및 대외 홍보",
-      "budget": 150000000,
+      "budget": 0,
+      "spent": 0,
       "assignee": "R&BD지원센터",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 150000000, "spent": 150000000 }
+        { "category": "지역 연계∙협업 지원비", "budget": 0, "spent": 0 }
       ]
     }
   ,
     {
       "id": "D3-S2T6-1",
       "title": "공통경비",
-      "budget": 10000000,
+      "budget": 49000000,
+      "spent": 48900000,
       "assignee": "R&BD지원센터",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 10000000, "spent": 10000000 }
+        { "category": "인건비", "budget": 20000000, "spent": 20000000 },
+        { "category": "간접비", "budget": 6000000, "spent": 6000000 },
+        { "category": "그 밖의 사업운영경비", "budget": 23000000, "spent": 22900000 }
       ]
     }],
   "A3": [
