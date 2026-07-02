@@ -1834,11 +1834,14 @@ export default function App() {
   const displayProjects = getNormalizedProjectsForRendering(projects, selectedYear);
 
 
-  // 새로고침 시 스크롤 위치 영속성 복원 훅
+  // 새로고침 시 스크롤 위치 영속성 복원 훅 (.main-content 컨테이너 대상)
   useEffect(() => {
-    // 1. 페이지를 벗어나거나 새로고침할 때 현재 스크롤 위치 저장
+    const mainEl = document.querySelector(".main-content");
+    if (!mainEl) return;
+
+    // 1. 페이지를 벗어나거나 새로고침할 때 현재 메인 영역 스크롤 위치 저장
     const handleSaveScroll = () => {
-      localStorage.setItem("anchor_scroll_y", String(window.scrollY));
+      localStorage.setItem("anchor_scroll_y", String(mainEl.scrollTop));
     };
 
     // 2. 실시간 스크롤 움직임 추적 (디바운스 적용)
@@ -1846,37 +1849,40 @@ export default function App() {
     const handleScroll = () => {
       if (scrollTimeout) clearTimeout(scrollTimeout);
       scrollTimeout = setTimeout(() => {
-        // 스크롤이 0이 아닐 때만 유효하게 캐싱
-        if (window.scrollY > 0) {
-          localStorage.setItem("anchor_scroll_y", String(window.scrollY));
+        if (mainEl.scrollTop > 0) {
+          localStorage.setItem("anchor_scroll_y", String(mainEl.scrollTop));
         }
       }, 150);
     };
 
     window.addEventListener("beforeunload", handleSaveScroll);
-    window.addEventListener("scroll", handleScroll);
+    mainEl.addEventListener("scroll", handleScroll);
 
-    // 3. 마운트 완료 후 이전 스크롤 위치 복원 (렌더링 안정성을 위해 약간의 지연 처리)
+    // 3. 마운트 완료 후 이전 스크롤 위치 복원 (지연 복원 보장)
     const savedScrollY = localStorage.getItem("anchor_scroll_y");
     if (savedScrollY) {
       const scrollY = parseInt(savedScrollY, 10);
       if (scrollY > 0) {
-        // DOM이 완전히 그려질 시간을 준 후 2회에 걸쳐 복구 시도 (확실한 복구 보장)
         setTimeout(() => {
-          window.scrollTo(0, scrollY);
+          if (mainEl) mainEl.scrollTop = scrollY;
         }, 100);
         setTimeout(() => {
-          window.scrollTo(0, scrollY);
+          if (mainEl) mainEl.scrollTop = scrollY;
         }, 350);
+        setTimeout(() => {
+          if (mainEl) mainEl.scrollTop = scrollY;
+        }, 600);
       }
     }
 
     return () => {
       window.removeEventListener("beforeunload", handleSaveScroll);
-      window.removeEventListener("scroll", handleScroll);
+      if (mainEl) {
+        mainEl.removeEventListener("scroll", handleScroll);
+      }
       if (scrollTimeout) clearTimeout(scrollTimeout);
     };
-  }, []);
+  }, [currentUser, activeTab, projectsSubTab, selectedProgId]);
 
   // 로컬스토리지에서 세션 확인 및 테마 설정
   useEffect(() => {
