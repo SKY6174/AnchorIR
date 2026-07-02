@@ -1741,7 +1741,14 @@ export default function App() {
       localStorage.removeItem("anchor_selected_prog_id");
     }
   }, [selectedProgId]);
-  const [pdcaViewMode, setPdcaViewMode] = useState("unit");
+
+  const [pdcaViewMode, setPdcaViewMode] = useState(() => {
+    return localStorage.getItem("anchor_pdca_view_mode") || "unit";
+  });
+
+  useEffect(() => {
+    localStorage.setItem("anchor_pdca_view_mode", pdcaViewMode);
+  }, [pdcaViewMode]);
 
   // 1차년도용 단위과제 필터링 및 이름/ID 변환
   const getNormalizedProjectsForRendering = (rawProjects, yr) => {
