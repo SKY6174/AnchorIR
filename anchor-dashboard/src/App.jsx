@@ -1462,9 +1462,15 @@ export default function App() {
 
   useEffect(() => {
     try {
-      localStorage.setItem("anchor_agreements_data_v1", JSON.stringify(agreements));
+      // 용량이 큰 fileData(Base64 파일 데이터)는 로컬스토리지 5MB Quota 초과 방지를 위해 캐싱 항목에서 배제합니다.
+      // 인메모리 상에서는 새로고침 전까지 fileData가 온전히 유지됩니다.
+      const agreementsForStorage = agreements.map((item) => {
+        const { fileData, ...rest } = item;
+        return rest;
+      });
+      localStorage.setItem("anchor_agreements_data_v1", JSON.stringify(agreementsForStorage));
     } catch (e) {
-      console.error("Failed to save agreements:", e);
+      console.error("Failed to save agreements to localStorage:", e);
     }
   }, [agreements]);
 
