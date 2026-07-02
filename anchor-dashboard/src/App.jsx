@@ -1029,6 +1029,8 @@ export default function App() {
     };
   }, []);
 
+  const [isScrollRestored, setIsScrollRestored] = useState(false);
+
   const [currentUser, setCurrentUser] = useState(() => {
     const sessionUser = localStorage.getItem("anchor_logged_in_user");
     if (sessionUser) {
@@ -1837,7 +1839,13 @@ export default function App() {
   // 새로고침 시 스크롤 위치 영속성 복원 훅 (.main-content 컨테이너 대상)
   useEffect(() => {
     const mainEl = document.querySelector(".main-content");
-    if (!mainEl) return;
+    if (!mainEl) {
+      setIsScrollRestored(true);
+      return;
+    }
+
+    // 의존성 변경에 따라 렌더링이 튈 때 임시로 투명도를 낮추어 스크롤 튐을 감춤
+    setIsScrollRestored(false);
 
     // 1. 페이지를 벗어나거나 새로고침할 때 현재 메인 영역 스크롤 위치 저장
     const handleSaveScroll = () => {
@@ -1860,12 +1868,17 @@ export default function App() {
 
     // 3. 마운트 완료 후 이전 스크롤 위치 복원 (지연 복원 보장)
     const savedScrollY = localStorage.getItem("anchor_scroll_y");
+    let hasSavedScroll = false;
+    
     if (savedScrollY) {
       const scrollY = parseInt(savedScrollY, 10);
       if (scrollY > 0) {
+        hasSavedScroll = true;
+        // 복원 및 페이드인 타이밍 정합성 통제
         setTimeout(() => {
           if (mainEl) mainEl.scrollTop = scrollY;
-        }, 100);
+          setIsScrollRestored(true); // 첫 스크롤 복원 직후 투명도를 켜서 페이드인
+        }, 120);
         setTimeout(() => {
           if (mainEl) mainEl.scrollTop = scrollY;
         }, 350);
@@ -1873,6 +1886,13 @@ export default function App() {
           if (mainEl) mainEl.scrollTop = scrollY;
         }, 600);
       }
+    }
+
+    // 복원할 스크롤 정보가 없으면 즉시 투명도 복원
+    if (!hasSavedScroll) {
+      setTimeout(() => {
+        setIsScrollRestored(true);
+      }, 50);
     }
 
     return () => {
@@ -2775,7 +2795,7 @@ export default function App() {
       />
 
       {/* 메인 뷰 */}
-      <main className="main-content">
+      <main className="main-content" style={{ opacity: isScrollRestored ? 1 : 0, transition: "opacity 0.22s ease-in-out" }}>
         <header className="top-nav" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "1rem" }}>
           <div className="page-title">
             <h1>앵커사업 통합 IR 대시보드</h1>
