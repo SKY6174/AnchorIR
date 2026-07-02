@@ -197,6 +197,9 @@ export default function PDCAManager({
   const [inputTargetParticipants, setInputTargetParticipants] = useState("");
   const [inputTargetDevelopments, setInputTargetDevelopments] = useState("");
   const [inputTargetEtc, setInputTargetEtc] = useState("");
+  const [inputTargetParticipantsUnit, setInputTargetParticipantsUnit] = useState("명");
+  const [inputTargetDevelopmentsUnit, setInputTargetDevelopmentsUnit] = useState("건");
+  const [inputTargetEtcUnit, setInputTargetEtcUnit] = useState("개");
   const [inputKpiType, setInputKpiType] = useState("자율");
   const [inputKpiLink, setInputKpiLink] = useState("");
   const [inputActualFrequency, setInputActualFrequency] = useState("");
@@ -311,6 +314,9 @@ export default function PDCAManager({
         setInputTargetParticipants(prog.target_participants !== undefined ? String(prog.target_participants) : "");
         setInputTargetDevelopments(prog.target_developments !== undefined ? String(prog.target_developments) : "");
         setInputTargetEtc(prog.target_etc !== undefined ? String(prog.target_etc) : "");
+        setInputTargetParticipantsUnit(prog.target_participants_unit || "명");
+        setInputTargetDevelopmentsUnit(prog.target_developments_unit || "건");
+        setInputTargetEtcUnit(prog.target_etc_unit || "개");
         setInputKpiType(prog.kpi_type || "자율");
         setInputKpiLink(prog.kpi_link || "");
         setInputActualFrequency(prog.actualFrequency !== undefined ? String(prog.actualFrequency) : "");
@@ -319,6 +325,9 @@ export default function PDCAManager({
     } else {
       setInputKpiType("자율");
       setInputKpiLink("");
+      setInputTargetParticipantsUnit("명");
+      setInputTargetDevelopmentsUnit("건");
+      setInputTargetEtcUnit("개");
       setInputTimeline("");
       setInputStartDate("");
       setInputEndDate("");
@@ -493,6 +502,9 @@ export default function PDCAManager({
       target_participants: inputTargetParticipants !== "" ? parseInt(inputTargetParticipants, 10) : 0,
       target_developments: inputTargetDevelopments !== "" ? parseInt(inputTargetDevelopments, 10) : 0,
       target_etc: inputTargetEtc !== "" ? parseInt(inputTargetEtc, 10) : 0,
+      target_participants_unit: inputTargetParticipantsUnit,
+      target_developments_unit: inputTargetDevelopmentsUnit,
+      target_etc_unit: inputTargetEtcUnit,
       kpi_type: inputKpiType,
       kpi_link: inputKpiLink,
       budget_national: bNational,
@@ -1152,8 +1164,75 @@ export default function PDCAManager({
                         })()}
                       </div>
 
-                      {/* 참여대상 & 연계부서 (한 줄로 배치) */}
-                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.4rem" }}>
+                      {/* 실적목표 3종 구분 입력 (참여대상/연계부서 위쪽으로 배치) */}
+                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "0.4rem" }}>
+                        <div>
+                          <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)" }}>실적목표: 참여인원</span>
+                          <div style={{ display: "flex", gap: "0.2rem" }}>
+                            <input 
+                              type="number" 
+                              className="user-selector" 
+                              placeholder="수치" 
+                              value={inputTargetParticipants} 
+                              onChange={(e) => setInputTargetParticipants(e.target.value)} 
+                              style={{ padding: "0.25rem 0.4rem", fontSize: "0.75rem", flex: 2, minWidth: 0 }} 
+                            />
+                            <input 
+                              type="text" 
+                              className="user-selector" 
+                              placeholder="단위" 
+                              value={inputTargetParticipantsUnit} 
+                              onChange={(e) => setInputTargetParticipantsUnit(e.target.value)} 
+                              style={{ padding: "0.25rem 0.4rem", fontSize: "0.75rem", flex: 1, minWidth: 0, textAlign: "center" }} 
+                            />
+                          </div>
+                        </div>
+                        <div>
+                          <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)" }}>실적목표: 개발수</span>
+                          <div style={{ display: "flex", gap: "0.2rem" }}>
+                            <input 
+                              type="number" 
+                              className="user-selector" 
+                              placeholder="수치" 
+                              value={inputTargetDevelopments} 
+                              onChange={(e) => setInputTargetDevelopments(e.target.value)} 
+                              style={{ padding: "0.25rem 0.4rem", fontSize: "0.75rem", flex: 2, minWidth: 0 }} 
+                            />
+                            <input 
+                              type="text" 
+                              className="user-selector" 
+                              placeholder="단위" 
+                              value={inputTargetDevelopmentsUnit} 
+                              onChange={(e) => setInputTargetDevelopmentsUnit(e.target.value)} 
+                              style={{ padding: "0.25rem 0.4rem", fontSize: "0.75rem", flex: 1, minWidth: 0, textAlign: "center" }} 
+                            />
+                          </div>
+                        </div>
+                        <div>
+                          <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)" }}>실적목표: 기타</span>
+                          <div style={{ display: "flex", gap: "0.2rem" }}>
+                            <input 
+                              type="number" 
+                              className="user-selector" 
+                              placeholder="수치" 
+                              value={inputTargetEtc} 
+                              onChange={(e) => setInputTargetEtc(e.target.value)} 
+                              style={{ padding: "0.25rem 0.4rem", fontSize: "0.75rem", flex: 2, minWidth: 0 }} 
+                            />
+                            <input 
+                              type="text" 
+                              className="user-selector" 
+                              placeholder="단위" 
+                              value={inputTargetEtcUnit} 
+                              onChange={(e) => setInputTargetEtcUnit(e.target.value)} 
+                              style={{ padding: "0.25rem 0.4rem", fontSize: "0.75rem", flex: 1, minWidth: 0, textAlign: "center" }} 
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* 참여대상 & 연계부서 (실적목표 아래로 한 줄 배치) */}
+                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.4rem", borderTop: "1px solid var(--border-color-dark)", paddingTop: "0.4rem" }}>
                         <div>
                           <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)" }}>참여 대상 (Target)</span>
                           <input type="text" className="user-selector" placeholder="예: 재학생" value={inputTargetAudience} onChange={(e) => setInputTargetAudience(e.target.value)} style={{ padding: "0.25rem 0.4rem", fontSize: "0.75rem", width: "100%" }} />
@@ -1161,22 +1240,6 @@ export default function PDCAManager({
                         <div>
                           <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)" }}>연계 부서 (Cooperation Dept)</span>
                           <input type="text" className="user-selector" placeholder="예: ICC센터" value={inputCoopDept} onChange={(e) => setInputCoopDept(e.target.value)} style={{ padding: "0.25rem 0.4rem", fontSize: "0.75rem", width: "100%" }} />
-                        </div>
-                      </div>
-                      
-                      {/* 정량목표 3종 구분 입력 (다음 줄에 배치) */}
-                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "0.4rem", borderTop: "1px solid var(--border-color-dark)", paddingTop: "0.4rem" }}>
-                        <div>
-                          <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)" }}>정량목표: 참여인원 (명)</span>
-                          <input type="number" className="user-selector" placeholder="예: 50" value={inputTargetParticipants} onChange={(e) => setInputTargetParticipants(e.target.value)} style={{ padding: "0.25rem 0.4rem", fontSize: "0.75rem", width: "100%" }} />
-                        </div>
-                        <div>
-                          <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)" }}>정량목표: 개발수 (건)</span>
-                          <input type="number" className="user-selector" placeholder="예: 2" value={inputTargetDevelopments} onChange={(e) => setInputTargetDevelopments(e.target.value)} style={{ padding: "0.25rem 0.4rem", fontSize: "0.75rem", width: "100%" }} />
-                        </div>
-                        <div>
-                          <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)" }}>정량목표: 기타</span>
-                          <input type="number" className="user-selector" placeholder="예: 1" value={inputTargetEtc} onChange={(e) => setInputTargetEtc(e.target.value)} style={{ padding: "0.25rem 0.4rem", fontSize: "0.75rem", width: "100%" }} />
                         </div>
                       </div>
                       
