@@ -1161,6 +1161,9 @@ export default function App() {
                     achieveRate: cachedProg.achieveRate !== undefined ? cachedProg.achieveRate : sourceProg.achieveRate,
                     targetAudience: cachedProg.targetAudience || sourceProg.targetAudience,
                     coopDept: cachedProg.coopDept || sourceProg.coopDept,
+                    target_participants: cachedProg.target_participants !== undefined ? cachedProg.target_participants : sourceProg.target_participants,
+                    target_developments: cachedProg.target_developments !== undefined ? cachedProg.target_developments : sourceProg.target_developments,
+                    target_etc: cachedProg.target_etc !== undefined ? cachedProg.target_etc : sourceProg.target_etc,
                     participants: cachedProg.participants !== undefined ? cachedProg.participants : sourceProg.participants,
                     satisfaction: cachedProg.satisfaction !== undefined ? cachedProg.satisfaction : sourceProg.satisfaction,
                     achievements: cachedProg.achievements || sourceProg.achievements,
@@ -2117,6 +2120,9 @@ export default function App() {
                 if (updatedFields.timeline !== undefined) prog.timeline = updatedFields.timeline;
                 if (updatedFields.targetAudience !== undefined) prog.targetAudience = updatedFields.targetAudience;
                 if (updatedFields.coopDept !== undefined) prog.coopDept = updatedFields.coopDept;
+                if (updatedFields.target_participants !== undefined) prog.target_participants = updatedFields.target_participants;
+                if (updatedFields.target_developments !== undefined) prog.target_developments = updatedFields.target_developments;
+                if (updatedFields.target_etc !== undefined) prog.target_etc = updatedFields.target_etc;
                 
                 // 신규 A단계 2분할 환류 필드 갱신
                 if (updatedFields.evalType !== undefined) prog.evalType = updatedFields.evalType;
