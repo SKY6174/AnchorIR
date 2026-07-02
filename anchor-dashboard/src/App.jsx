@@ -1392,7 +1392,7 @@ export default function App() {
       ...m,
       startDate: m.startDate || m.hireDate || "2026-03-01",
       endDate: m.endDate || "",
-      status: m.status || "재직중"
+      status: m.status || "참여중"
     }));
 
     if (saved) {
@@ -1431,7 +1431,7 @@ export default function App() {
             grade: currentGrade,
             startDate: m.startDate || m.hireDate || "2026-03-01",
             endDate: m.endDate || "",
-            status: m.status || "재직중"
+            status: m.status === "재직중" ? "참여중" : (m.status === "퇴직" ? "미참여" : (m.status || "참여중"))
           };
         });
       } catch (e) {
@@ -1457,7 +1457,7 @@ export default function App() {
       room: m.room || null,
       startDate: m.startDate || m.hireDate || "2026-03-01",
       endDate: m.endDate || null,
-      status: m.status || "재직중"
+      status: m.status === "재직중" ? "참여중" : (m.status === "퇴직" ? "미참여" : (m.status || "참여중"))
     };
   };
 
@@ -1482,7 +1482,7 @@ export default function App() {
             ...m,
             startDate: m.startDate || m.hireDate || "2026-03-01",
             endDate: m.endDate || "",
-            status: m.status || "재직중"
+            status: m.status || "참여중"
           }));
 
           const { error: seedError } = await supabase
@@ -1558,8 +1558,8 @@ export default function App() {
 
   const getSortedMembers = () => {
     const filtered = (members || []).filter((m) => {
-      if (memberFilter === "active") return m.status !== "퇴직";
-      if (memberFilter === "retired") return m.status === "퇴직";
+      if (memberFilter === "active") return m.status !== "미참여";
+      if (memberFilter === "retired") return m.status === "미참여";
       return true;
     });
 
@@ -1738,9 +1738,9 @@ export default function App() {
       const dbUsers = data || [];
       const dbMap = new Map(dbUsers.map(u => [u.id.trim().toLowerCase(), u]));
 
-      // 3. 주소록(members)에서 재직중인 멤버들 로드 및 매핑 (이메일 및 임시 비밀번호 매핑 가이드라인 연동)
+      // 3. 주소록(members)에서 참여중인 멤버들 로드 및 매핑 (이메일 및 임시 비밀번호 매핑 가이드라인 연동)
       const activeMembers = (members || [])
-        .filter(m => m.status !== "퇴직" && m.email)
+        .filter(m => m.status !== "미참여" && m.email)
         .map(m => {
           const emailId = m.email.trim().toLowerCase();
           
@@ -3391,7 +3391,7 @@ export default function App() {
                       hireDate: "2026-03-01",
                       startDate: "2026-03-01",
                       endDate: "",
-                      status: "재직중"
+                      status: "참여중"
                     });
                     setIsMemberModalOpen(true);
                   }}
@@ -3459,7 +3459,7 @@ export default function App() {
 
             {mgmtSubTab === "members" && (
               <div>
-                {/* 재직자 / 퇴직자 구분을 위한 삼분할 필터 바 */}
+                {/* 참여중 / 미참여 구분을 위한 삼분할 필터 바 */}
                 <div style={{ display: "flex", gap: "0.5rem", marginBottom: "1rem" }}>
                   <button
                     onClick={() => setMemberFilter("all")}
@@ -3491,7 +3491,7 @@ export default function App() {
                       transition: "all 0.2s"
                     }}
                   >
-                    재직자 ({members.filter(m => m.status !== "퇴직").length}명)
+                    참여중 ({members.filter(m => m.status !== "미참여").length}명)
                   </button>
                   <button
                     onClick={() => setMemberFilter("retired")}
@@ -3507,7 +3507,7 @@ export default function App() {
                       transition: "all 0.2s"
                     }}
                   >
-                    퇴직자 ({members.filter(m => m.status === "퇴직").length}명)
+                    미참여 ({members.filter(m => m.status === "미참여").length}명)
                   </button>
                 </div>
 
@@ -3551,14 +3551,14 @@ export default function App() {
                           onMouseEnter={(e) => e.target.style.color = "var(--accent-color)"}
                           onMouseLeave={(e) => e.target.style.color = ""}
                         >
-                          재직 여부 {memberSortConfig.key === "status" ? (memberSortConfig.direction === "asc" ? " ▲" : " ▼") : " ⇅"}
+                          참여 여부 {memberSortConfig.key === "status" ? (memberSortConfig.direction === "asc" ? " ▲" : " ▼") : " ⇅"}
                         </th>
                         {currentRole.rank <= 2 && <th>관리</th>}
                       </tr>
                     </thead>
                     <tbody>
                       {getSortedMembers().map((m) => {
-                          const isRetired = m.status === "퇴직";
+                          const isRetired = m.status === "미참여";
                           return (
                             <tr 
                               key={m.id}
@@ -3609,7 +3609,7 @@ export default function App() {
                                     color: isRetired ? "#f87171" : undefined
                                   }}
                                 >
-                                  {m.status || "재직중"}
+                                  {m.status || "참여중"}
                                 </span>
                               </td>
                           {currentRole.rank <= 2 && (
@@ -3947,7 +3947,7 @@ export default function App() {
                                 RESEARCHER: "실무 연구원"
                               };
                               const cleanName = (u.name || "").split(" ")[0];
-                              const isDirectoryUser = (members || []).some(m => m.email && m.email.trim().toLowerCase() === u.id.trim().toLowerCase() && m.status !== "퇴직");
+                              const isDirectoryUser = (members || []).some(m => m.email && m.email.trim().toLowerCase() === u.id.trim().toLowerCase() && m.status !== "미참여");
 
                               return (
                                 <tr key={u.id}>
@@ -4477,7 +4477,7 @@ export default function App() {
                   ...editingMember, 
                   id: `m-${Date.now()}`,
                   startDate: editingMember.startDate || "2026-03-01",
-                  status: editingMember.status || "재직중"
+                  status: editingMember.status || "참여중"
                 };
                 setMembers([...members, newMember]);
                 try {
@@ -4633,17 +4633,17 @@ export default function App() {
                 <input
                   type="checkbox"
                   id="is_active"
-                  checked={editingMember.status !== "퇴직"}
+                  checked={editingMember.status !== "미참여"}
                   onChange={(e) => {
                     const isActive = e.target.checked;
                     setEditingMember({
                       ...editingMember,
-                      status: isActive ? "재직중" : "퇴직",
+                      status: isActive ? "참여중" : "미참여",
                       endDate: isActive ? "" : (editingMember.endDate || "")
                     });
                   }}
                 />
-                <label htmlFor="is_active" style={{ fontWeight: "700", cursor: "pointer" }}>현재 재직중</label>
+                <label htmlFor="is_active" style={{ fontWeight: "700", cursor: "pointer" }}>현재 사업단 참여중</label>
               </div>
 
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
@@ -4663,7 +4663,7 @@ export default function App() {
                     type="date"
                     className="user-selector"
                     style={{ width: "100%", padding: "0.4rem", color: "var(--text-primary)" }}
-                    disabled={editingMember.status !== "퇴직"}
+                    disabled={editingMember.status !== "미참여"}
                     value={editingMember.endDate || ""}
                     onChange={(e) => setEditingMember({ ...editingMember, endDate: e.target.value })}
                   />
