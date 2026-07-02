@@ -1081,24 +1081,26 @@ export default function PDCAManager({
                               onChange={(e) => setInputKpiLink(e.target.value)}
                               style={{ width: "100%", padding: "0.25rem 0.4rem", fontSize: "0.7rem", background: "#18181b", color: "white", border: "1px solid var(--border-color-dark)" }}
                             >
-                              <option value="">-- 성과지표를 선택해 주세요 --</option>
+                              <option value="" style={{ background: "#18181b", color: "white" }}>-- 성과지표를 선택해 주세요 --</option>
                               {(() => {
                                 // 소속 단위과제 KPI를 우선으로 하고 없으면 전체 폴백
-                                const activeUnit = allUnits.find(u => u.programs.some(p => p.id === activeProg?.id));
+                                const activeUnit = allUnits.find(u => u.programs?.some(p => p.id === activeProg?.id));
                                 let filteredKpis = activeUnit?.kpis || [];
-                                if (filteredKpis.length === 0) {
+                                if (!Array.isArray(filteredKpis) || filteredKpis.length === 0) {
                                   const kpiMap = new Map();
                                   allUnits.forEach(u => {
-                                    if (u.kpis) {
-                                      u.kpis.forEach(k => kpiMap.set(k.id, k));
+                                    if (Array.isArray(u.kpis)) {
+                                      u.kpis.forEach(k => {
+                                        if (k && k.id) kpiMap.set(k.id, k);
+                                      });
                                     }
                                   });
                                   filteredKpis = Array.from(kpiMap.values());
                                 }
                                 return filteredKpis
-                                  .filter(k => k.type === inputKpiType)
+                                  .filter(k => k && k.type === inputKpiType)
                                   .map(k => (
-                                    <option key={k.id} value={k.id}>
+                                    <option key={k.id} value={k.id} style={{ background: "#18181b", color: "white" }}>
                                       [{k.id}] {k.name}
                                     </option>
                                   ));
@@ -1109,18 +1111,20 @@ export default function PDCAManager({
 
                         {/* 성과지표 선택 시 세부지표 목록을 바로 아래 줄에 디스플레이 */}
                         {inputKpiLink && (() => {
-                          const activeUnit = allUnits.find(u => u.programs.some(p => p.id === activeProg?.id));
+                          const activeUnit = allUnits.find(u => u.programs?.some(p => p.id === activeProg?.id));
                           let filteredKpis = activeUnit?.kpis || [];
-                          if (filteredKpis.length === 0) {
+                          if (!Array.isArray(filteredKpis) || filteredKpis.length === 0) {
                             const kpiMap = new Map();
                             allUnits.forEach(u => {
-                              if (u.kpis) {
-                                u.kpis.forEach(k => kpiMap.set(k.id, k));
+                              if (Array.isArray(u.kpis)) {
+                                u.kpis.forEach(k => {
+                                  if (k && k.id) kpiMap.set(k.id, k);
+                                });
                               }
                             });
                             filteredKpis = Array.from(kpiMap.values());
                           }
-                          const selectedKpi = filteredKpis.find(k => k.id === inputKpiLink);
+                          const selectedKpi = filteredKpis.find(k => k && k.id === inputKpiLink);
                           if (!selectedKpi) return null;
                           return (
                             <div style={{ marginTop: "0.4rem", background: "rgba(59, 130, 246, 0.04)", border: "1px solid rgba(59, 130, 246, 0.15)", borderRadius: "0.3rem", padding: "0.4rem 0.6rem" }}>
