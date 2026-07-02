@@ -512,7 +512,34 @@ export default function PDCAManager({
         spent_carry: selectedYear === 1 ? 0 : Math.round(parseDecimalFromCommas(c.spent_carry || "0.0") * 1000000)
       }));
 
+    // P단계 입력 항목의 완성도에 따라 PDCA 상태 자동 판별
+    const hasBudget = (bNational > 0 || bCarryNational > 0 || bCity > 0 || bCarryCity > 0 || bExternal > 0);
+    const hasCategories = categoriesToSave.length > 0 && categoriesToSave.some(c => c.category && c.category !== "" && c.category !== "선택 안 함" && (c.budget > 0 || c.budget_carry > 0));
+    const hasSchedules = inputMonthlyPDCA.some(val => val && val !== "" && val !== "-");
+    const hasKpis = (inputKpiLink && inputKpiLink !== "" && inputKpiLink !== "선택 안 함");
+    const hasTargetGoals = (inputTargetParticipants !== "" || inputTargetDevelopments !== "" || inputTargetEtc !== "");
+    const hasTargetAudience = (inputTargetAudience && inputTargetAudience.trim() !== "");
+    const hasCoopDept = (inputCoopDept && inputCoopDept.trim() !== "");
+
+    const checkList = [
+      hasBudget,
+      hasCategories,
+      hasSchedules,
+      hasKpis,
+      hasTargetGoals,
+      hasTargetAudience,
+      hasCoopDept
+    ];
+    const filledCount = checkList.filter(Boolean).length;
+    let autoPState = "대기";
+    if (filledCount === checkList.length) {
+      autoPState = "완료";
+    } else if (filledCount > 0) {
+      autoPState = "진행";
+    }
+
     onUpdateProgramDetails(activeProg.unitId, activeProg.id, {
+      pdca: { ...activeProg.pdca, p: autoPState },
       timeline: inputMonthlyPDCA.join(","), // 12개월 쉼표 직렬화 저장
       targetAudience: inputTargetAudience,
       coopDept: inputCoopDept,
@@ -825,7 +852,7 @@ export default function PDCAManager({
 
                 {/* PDCA 현황 제어기 */}
                 <div>
-                  <h4 style={{ fontSize: "0.85rem", fontWeight: "700", marginBottom: "0.75rem" }}>PDCA 단계 상태 설정</h4>
+                  <h4 style={{ fontSize: "0.85rem", fontWeight: "700", marginBottom: "0.75rem" }}>PDCA 상태 설정</h4>
                   <div className="pdca-stepper">
                     {["p", "d", "c", "a"].map((stage) => {
                       const status = activeProg.pdca[stage];
@@ -1282,11 +1309,11 @@ export default function PDCAManager({
                         {/* 참여대상 & 연계부서 (실적목표 아래로 한 줄 배치) */}
                         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.4rem", borderTop: "1px solid var(--border-color-dark)", paddingTop: "0.4rem" }}>
                           <div>
-                            <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)" }}>참여 대상 (Target)</span>
+                            <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)" }}>참여 대상</span>
                             <input type="text" className="user-selector" placeholder="예: 재학생" value={inputTargetAudience} onChange={(e) => setInputTargetAudience(e.target.value)} style={{ padding: "0.25rem 0.4rem", fontSize: "0.75rem", width: "100%" }} />
                           </div>
                           <div>
-                            <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)" }}>연계 부서 (Cooperation Dept)</span>
+                            <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)" }}>연계부서</span>
                             <input type="text" className="user-selector" placeholder="예: ICC센터" value={inputCoopDept} onChange={(e) => setInputCoopDept(e.target.value)} style={{ padding: "0.25rem 0.4rem", fontSize: "0.75rem", width: "100%" }} />
                           </div>
                         </div>
