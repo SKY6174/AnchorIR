@@ -138,7 +138,7 @@ export default function Sidebar({
             <span>앵커Wiki</span>
           </div>
 
-          {(currentRole.id === "DIRECTOR" || currentRole.id === "HQ_HEAD") && (
+          {(currentRole.id === "ADMIN" || currentRole.id === "DIRECTOR" || currentRole.id === "HQ_HEAD") && (
             <div className={`mgmt-nav-wrapper ${activeTab === "management" ? "active" : ""}`}>
               <div
                 className={`nav-item ${activeTab === "management" ? "active" : ""}`}
