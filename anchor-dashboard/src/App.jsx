@@ -1164,6 +1164,8 @@ export default function App() {
                     target_participants: cachedProg.target_participants !== undefined ? cachedProg.target_participants : sourceProg.target_participants,
                     target_developments: cachedProg.target_developments !== undefined ? cachedProg.target_developments : sourceProg.target_developments,
                     target_etc: cachedProg.target_etc !== undefined ? cachedProg.target_etc : sourceProg.target_etc,
+                    kpi_type: cachedProg.kpi_type || sourceProg.kpi_type,
+                    kpi_link: cachedProg.kpi_link || sourceProg.kpi_link,
                     participants: cachedProg.participants !== undefined ? cachedProg.participants : sourceProg.participants,
                     satisfaction: cachedProg.satisfaction !== undefined ? cachedProg.satisfaction : sourceProg.satisfaction,
                     achievements: cachedProg.achievements || sourceProg.achievements,
@@ -2123,6 +2125,8 @@ export default function App() {
                 if (updatedFields.target_participants !== undefined) prog.target_participants = updatedFields.target_participants;
                 if (updatedFields.target_developments !== undefined) prog.target_developments = updatedFields.target_developments;
                 if (updatedFields.target_etc !== undefined) prog.target_etc = updatedFields.target_etc;
+                if (updatedFields.kpi_type !== undefined) prog.kpi_type = updatedFields.kpi_type;
+                if (updatedFields.kpi_link !== undefined) prog.kpi_link = updatedFields.kpi_link;
                 
                 // 신규 A단계 2분할 환류 필드 갱신
                 if (updatedFields.evalType !== undefined) prog.evalType = updatedFields.evalType;

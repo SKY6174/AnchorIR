@@ -197,6 +197,8 @@ export default function PDCAManager({
   const [inputTargetParticipants, setInputTargetParticipants] = useState("");
   const [inputTargetDevelopments, setInputTargetDevelopments] = useState("");
   const [inputTargetEtc, setInputTargetEtc] = useState("");
+  const [inputKpiType, setInputKpiType] = useState("자율");
+  const [inputKpiLink, setInputKpiLink] = useState("");
   const [inputActualFrequency, setInputActualFrequency] = useState("");
   const [inputAchieveRate, setInputAchieveRate] = useState("");
 
@@ -309,10 +311,14 @@ export default function PDCAManager({
         setInputTargetParticipants(prog.target_participants !== undefined ? String(prog.target_participants) : "");
         setInputTargetDevelopments(prog.target_developments !== undefined ? String(prog.target_developments) : "");
         setInputTargetEtc(prog.target_etc !== undefined ? String(prog.target_etc) : "");
+        setInputKpiType(prog.kpi_type || "자율");
+        setInputKpiLink(prog.kpi_link || "");
         setInputActualFrequency(prog.actualFrequency !== undefined ? String(prog.actualFrequency) : "");
         setInputAchieveRate(prog.achieveRate !== undefined ? String(prog.achieveRate) : "");
       }
     } else {
+      setInputKpiType("자율");
+      setInputKpiLink("");
       setInputTimeline("");
       setInputStartDate("");
       setInputEndDate("");
@@ -487,6 +493,8 @@ export default function PDCAManager({
       target_participants: inputTargetParticipants !== "" ? parseInt(inputTargetParticipants, 10) : 0,
       target_developments: inputTargetDevelopments !== "" ? parseInt(inputTargetDevelopments, 10) : 0,
       target_etc: inputTargetEtc !== "" ? parseInt(inputTargetEtc, 10) : 0,
+      kpi_type: inputKpiType,
+      kpi_link: inputKpiLink,
       budget_national: bNational,
       budget_city: bCity,
       budget_external: bExternal,
@@ -949,7 +957,7 @@ export default function PDCAManager({
                         <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", background: "rgba(255,255,255,0.01)", padding: "0.5rem", borderRadius: "0.4rem", border: "1px solid rgba(255,255,255,0.03)" }}>
                           {/* 1행: 계획 추진 일정 (Plan) */}
                           <div>
-                            <span style={{ fontSize: "0.58rem", color: "#3b82f6", fontWeight: "800", display: "inline-block", marginBottom: "0.25rem" }}>● 계획 일정 (Plan Schedule)</span>
+                            <span style={{ fontSize: "0.58rem", color: "#3b82f6", fontWeight: "800", display: "inline-block", marginBottom: "0.25rem" }}>● 계획 일정</span>
                             <div style={{ display: "grid", gridTemplateColumns: "repeat(12, 1fr)", gap: "0.2rem", overflowX: "auto", paddingBottom: "0.15rem" }}>
                               {monthsList.map((month, idx) => {
                                 const val = inputMonthlyPDCA[idx] || "";
@@ -1026,6 +1034,118 @@ export default function PDCAManager({
 
 
                         </div>
+                      </div>
+
+                      {/* 성과지표 연계 설정 영역 */}
+                      <div style={{ borderTop: "1px solid var(--border-color-dark)", paddingTop: "0.45rem", marginTop: "0.2rem", marginBottom: "0.4rem" }}>
+                        <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)", display: "block", marginBottom: "0.3rem" }}>
+                          성과지표 연계
+                        </span>
+                        <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: "0.5rem" }}>
+                          {/* 지표 유형 선택 라디오 그룹 */}
+                          <div style={{ display: "flex", gap: "0.6rem", alignItems: "center", background: "#18181b", padding: "0.2rem 0.5rem", borderRadius: "0.25rem", border: "1px solid var(--border-color-dark)" }}>
+                            <span style={{ fontSize: "0.62rem", color: "var(--text-secondary-dark)", marginRight: "0.2rem" }}>유형:</span>
+                            <label style={{ fontSize: "0.65rem", color: "white", cursor: "pointer", display: "flex", alignItems: "center", gap: "0.15rem" }}>
+                              <input 
+                                type="radio" 
+                                name="kpiTypeSelect" 
+                                value="자율" 
+                                checked={inputKpiType === "자율"} 
+                                onChange={() => {
+                                  setInputKpiType("자율");
+                                  setInputKpiLink(""); // 유형 변경 시 초기화
+                                }} 
+                              />
+                              지자체 자율
+                            </label>
+                            <label style={{ fontSize: "0.65rem", color: "white", cursor: "pointer", display: "flex", alignItems: "center", gap: "0.15rem" }}>
+                              <input 
+                                type="radio" 
+                                name="kpiTypeSelect" 
+                                value="중점" 
+                                checked={inputKpiType === "중점"} 
+                                onChange={() => {
+                                  setInputKpiType("중점");
+                                  setInputKpiLink(""); // 유형 변경 시 초기화
+                                }} 
+                              />
+                              대학 중점
+                            </label>
+                          </div>
+                          
+                          {/* 지표 목록 드롭다운 */}
+                          <div>
+                            <select
+                              className="user-selector"
+                              value={inputKpiLink}
+                              onChange={(e) => setInputKpiLink(e.target.value)}
+                              style={{ width: "100%", padding: "0.25rem 0.4rem", fontSize: "0.7rem", background: "#18181b", color: "white", border: "1px solid var(--border-color-dark)" }}
+                            >
+                              <option value="">-- 성과지표를 선택해 주세요 --</option>
+                              {(() => {
+                                // 소속 단위과제 KPI를 우선으로 하고 없으면 전체 폴백
+                                const activeUnit = allUnits.find(u => u.programs.some(p => p.id === activeProg?.id));
+                                let filteredKpis = activeUnit?.kpis || [];
+                                if (filteredKpis.length === 0) {
+                                  const kpiMap = new Map();
+                                  allUnits.forEach(u => {
+                                    if (u.kpis) {
+                                      u.kpis.forEach(k => kpiMap.set(k.id, k));
+                                    }
+                                  });
+                                  filteredKpis = Array.from(kpiMap.values());
+                                }
+                                return filteredKpis
+                                  .filter(k => k.type === inputKpiType)
+                                  .map(k => (
+                                    <option key={k.id} value={k.id}>
+                                      [{k.id}] {k.name}
+                                    </option>
+                                  ));
+                              })()}
+                            </select>
+                          </div>
+                        </div>
+
+                        {/* 성과지표 선택 시 세부지표 목록을 바로 아래 줄에 디스플레이 */}
+                        {inputKpiLink && (() => {
+                          const activeUnit = allUnits.find(u => u.programs.some(p => p.id === activeProg?.id));
+                          let filteredKpis = activeUnit?.kpis || [];
+                          if (filteredKpis.length === 0) {
+                            const kpiMap = new Map();
+                            allUnits.forEach(u => {
+                              if (u.kpis) {
+                                u.kpis.forEach(k => kpiMap.set(k.id, k));
+                              }
+                            });
+                            filteredKpis = Array.from(kpiMap.values());
+                          }
+                          const selectedKpi = filteredKpis.find(k => k.id === inputKpiLink);
+                          if (!selectedKpi) return null;
+                          return (
+                            <div style={{ marginTop: "0.4rem", background: "rgba(59, 130, 246, 0.04)", border: "1px solid rgba(59, 130, 246, 0.15)", borderRadius: "0.3rem", padding: "0.4rem 0.6rem" }}>
+                              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.25rem", borderBottom: "1px solid rgba(255,255,255,0.05)", paddingBottom: "0.15rem" }}>
+                                <span style={{ fontSize: "0.62rem", color: "#60a5fa", fontWeight: "700" }}>📌 연계 성과지표 상세: {selectedKpi.name}</span>
+                                <span style={{ fontSize: "0.55rem", color: "var(--text-secondary-dark)" }}>공식: {selectedKpi.formula || "N/A"}</span>
+                              </div>
+                              <div style={{ display: "flex", flexDirection: "column", gap: "0.2rem" }}>
+                                <span style={{ fontSize: "0.58rem", color: "var(--text-secondary-dark)", display: "block" }}>세부지표 목록:</span>
+                                {selectedKpi.subItems && selectedKpi.subItems.length > 0 ? (
+                                  <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "0.3rem" }}>
+                                    {selectedKpi.subItems.map(sub => (
+                                      <div key={sub.id} style={{ display: "flex", justifyContent: "space-between", background: "rgba(255,255,255,0.02)", padding: "0.15rem 0.35rem", borderRadius: "0.2rem", border: "1px solid rgba(255,255,255,0.03)" }}>
+                                        <span style={{ fontSize: "0.6rem", color: "white" }}>• {sub.name}</span>
+                                        <span style={{ fontSize: "0.6rem", color: "#34d399", fontWeight: "700" }}>({sub.unit})</span>
+                                      </div>
+                                    ))}
+                                  </div>
+                                ) : (
+                                  <span style={{ fontSize: "0.6rem", color: "var(--text-secondary-dark)" }}>등록된 세부지표가 없습니다.</span>
+                                )}
+                              </div>
+                            </div>
+                          );
+                        })()}
                       </div>
 
                       {/* 참여대상 & 연계부서 (한 줄로 배치) */}
