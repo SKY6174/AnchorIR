@@ -4527,11 +4527,11 @@ export default function App() {
                     <option value="운영본부">운영본부</option>
                     <option value="사업운영팀">사업운영팀</option>
                     <option value="ECC센터">ECC센터</option>
-                    <option value="신산업특화센터">신산업특화센터</option>
                     <option value="ICC센터">ICC센터</option>
+                    <option value="RCC센터">RCC센터</option>
                     <option value="AID-X지원센터">AID-X지원센터</option>
                     <option value="울산늘봄누리센터">울산늘봄누리센터</option>
-                    <option value="RCC센터">RCC센터</option>
+                    <option value="신산업특화센터">신산업특화센터</option>
                   </select>
                 </div>
               </div>
