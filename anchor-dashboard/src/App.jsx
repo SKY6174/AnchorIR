@@ -1474,7 +1474,12 @@ export default function App() {
 
         if (data && data.length > 0) {
           // DB 테이블에 데이터가 정상 적재되어 있는 경우 최우선 동기화 적용
-          setMembers(data);
+          // 기존 구버전 상태값("재직중", "퇴직")을 "참여중", "미참여"로 자가 보정 매핑 로드
+          const formatted = data.map((m) => ({
+            ...m,
+            status: m.status === "재직중" ? "참여중" : (m.status === "퇴직" ? "미참여" : (m.status || "참여중"))
+          }));
+          setMembers(formatted);
         } else {
           // DB 테이블은 존재하나 데이터가 비어있을 시 최초 시드 업서트 기동
           console.log("Supabase members empty. Seeding initial data...");
