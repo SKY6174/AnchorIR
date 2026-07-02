@@ -391,27 +391,23 @@ export default function AgreementManager({
       const workbook = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(workbook, worksheet, `${selectedYear}차년도 협약서 목록`);
       
-      // 네이티브 Blob 및 download 속성 링크 제어를 통해 브라우저별 파일명 유실 및 UUID 다운로드 현상을 완벽하게 방지
-      const wbout = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
-      
-      // 다운로드 시 브라우저가 임시 파일로 착각하지 않도록 application/octet-stream 타입으로 더 안전하게 처리
-      const blob = new Blob([wbout], { type: "application/octet-stream" });
-      const blobUrl = URL.createObjectURL(blob);
+      // 크롬 브라우저의 Blob URL 보안 정책 및 다운로드 레이스 컨디션 버그를 완벽하게 회피하기 위해 Base64 Data URL 방식 채택
+      const b64out = XLSX.write(workbook, { bookType: "xlsx", type: "base64" });
+      const dataUrl = `data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,${b64out}`;
       
       const link = document.createElement("a");
-      link.href = blobUrl;
+      link.href = dataUrl;
       link.download = `Anchor_라이즈_협약서_목록_${selectedYear}차년도.xlsx`;
       link.style.display = "none";
       
       document.body.appendChild(link);
       link.click();
       
-      // 지연시간을 5초로 넉넉하게 늘려 브라우저가 안전하게 파일명 정보를 수립하고 다운로드를 완수하도록 레이스 컨디션 방지
+      // Data URL 방식은 revokeObjectURL 처리가 불필요하여 즉시 자원 해제가 가능하며 안전함
       setTimeout(() => {
         if (document.body.contains(link)) {
           document.body.removeChild(link);
         }
-        URL.revokeObjectURL(blobUrl);
       }, 5000);
       
     } catch (err) {
