@@ -32,6 +32,9 @@ export default function AgreementManager({
   const [inputContents, setInputContents] = useState([]);
   const [inputFileName, setInputFileName] = useState("");
   const [inputFileData, setInputFileData] = useState(""); // Base64 파일 원본 데이터 영속 캐시
+  
+  // 정렬 상태 관리
+  const [sortConfig, setSortConfig] = useState({ key: "date", direction: "asc" }); // 기본값: 날짜 오름차순
 
   // 현재 연차에 등록된 단위과제 추출 로직 (드롭다운 연동용)
   const getAvailableUnits = () => {
@@ -91,6 +94,40 @@ export default function AgreementManager({
 
   // 협약서 필터링 (현재 선택된 사업연도 기준)
   const filteredAgreements = agreements.filter(a => a.year === selectedYear);
+
+  // 정렬 요청 핸들러
+  const requestSort = (key) => {
+    let direction = "asc";
+    if (sortConfig.key === key && sortConfig.direction === "asc") {
+      direction = "desc";
+    }
+    setSortConfig({ key, direction });
+  };
+
+  // 정렬된 협약서 목록 도출
+  const getSortedAgreements = () => {
+    const sorted = [...filteredAgreements];
+    if (sortConfig.key) {
+      sorted.sort((a, b) => {
+        let valA = a[sortConfig.key] || "";
+        let valB = b[sortConfig.key] || "";
+
+        // 한글/영문/숫자 혼합 정렬을 위해 localeCompare 적용
+        if (typeof valA === "string" && typeof valB === "string") {
+          return sortConfig.direction === "asc"
+            ? valA.localeCompare(valB, undefined, { numeric: true, sensitivity: 'base' })
+            : valB.localeCompare(valA, undefined, { numeric: true, sensitivity: 'base' });
+        }
+
+        if (valA < valB) return sortConfig.direction === "asc" ? -1 : 1;
+        if (valA > valB) return sortConfig.direction === "asc" ? 1 : -1;
+        return 0;
+      });
+    }
+    return sorted;
+  };
+
+  const sortedAgreements = getSortedAgreements();
 
   // 협약기관 및 해당 협약주체 추가/제거 핸들러
   const handleAddOrgField = () => {
@@ -339,25 +376,46 @@ export default function AgreementManager({
         <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.75rem", color: "white" }}>
           <thead>
             <tr style={{ background: "rgba(255,255,255,0.03)", borderBottom: "1px solid var(--border-color-dark)" }}>
-              <th style={{ padding: "0.6rem 0.8rem", textAlign: "left", width: "12%" }}>날짜</th>
-              <th style={{ padding: "0.6rem 0.8rem", textAlign: "left", width: "12%" }}>관련 센터</th>
+              <th 
+                onClick={() => requestSort("date")} 
+                style={{ padding: "0.6rem 0.8rem", textAlign: "left", width: "12%", cursor: "pointer", userSelect: "none", transition: "color 0.2s" }}
+                onMouseEnter={(e) => e.target.style.color = "#60a5fa"}
+                onMouseLeave={(e) => e.target.style.color = "white"}
+              >
+                날짜 {sortConfig.key === "date" ? (sortConfig.direction === "asc" ? "▲" : "▼") : "⇅"}
+              </th>
+              <th 
+                onClick={() => requestSort("center")} 
+                style={{ padding: "0.6rem 0.8rem", textAlign: "left", width: "12%", cursor: "pointer", userSelect: "none", transition: "color 0.2s" }}
+                onMouseEnter={(e) => e.target.style.color = "#60a5fa"}
+                onMouseLeave={(e) => e.target.style.color = "white"}
+              >
+                관련 센터 {sortConfig.key === "center" ? (sortConfig.direction === "asc" ? "▲" : "▼") : "⇅"}
+              </th>
               <th style={{ padding: "0.6rem 0.8rem", textAlign: "left", width: "18%" }}>협약기관</th>
               <th style={{ padding: "0.6rem 0.8rem", textAlign: "left", width: "24%" }}>협약주체 (UC & 타기관)</th>
-              <th style={{ padding: "0.6rem 0.8rem", textAlign: "left", width: "10%" }}>단위과제</th>
+              <th 
+                onClick={() => requestSort("unitId")} 
+                style={{ padding: "0.6rem 0.8rem", textAlign: "left", width: "10%", cursor: "pointer", userSelect: "none", transition: "color 0.2s" }}
+                onMouseEnter={(e) => e.target.style.color = "#60a5fa"}
+                onMouseLeave={(e) => e.target.style.color = "white"}
+              >
+                단위과제 {sortConfig.key === "unitId" ? (sortConfig.direction === "asc" ? "▲" : "▼") : "⇅"}
+              </th>
               <th style={{ padding: "0.6rem 0.8rem", textAlign: "left", width: "14%" }}>협약내용 범주</th>
               <th style={{ padding: "0.6rem 0.8rem", textAlign: "center", width: "5%" }}>사본</th>
               {(currentRole.rank <= 2) && <th style={{ padding: "0.6rem 0.8rem", textAlign: "center", width: "5%" }}>제어</th>}
             </tr>
           </thead>
           <tbody>
-            {filteredAgreements.length === 0 ? (
+            {sortedAgreements.length === 0 ? (
               <tr>
                 <td colSpan={currentRole.rank <= 2 ? 8 : 7} style={{ padding: "2rem", textAlign: "center", color: "var(--text-secondary-dark)" }}>
                   등록된 협약서 내역이 없습니다. 새로운 협약서를 등록해 보세요!
                 </td>
               </tr>
             ) : (
-              filteredAgreements.map((agr) => {
+              sortedAgreements.map((agr) => {
                 const hasInvalidDate = !isDateValidForYear(agr.date, selectedYear);
                 return (
                   <tr key={agr.id} style={{ borderBottom: "1px solid var(--border-color-dark)", background: hasInvalidDate ? "rgba(239, 68, 68, 0.05)" : "rgba(255,255,255,0.01)" }}>
