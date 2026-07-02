@@ -406,11 +406,13 @@ export default function AgreementManager({
       document.body.appendChild(link);
       link.click();
       
-      // 지연시간을 살짝 두어 브라우저가 안전하게 파일 다운로드 프로세스를 인지할 수 있도록 유도
+      // 지연시간을 5초로 넉넉하게 늘려 브라우저가 안전하게 파일명 정보를 수립하고 다운로드를 완수하도록 레이스 컨디션 방지
       setTimeout(() => {
-        document.body.removeChild(link);
+        if (document.body.contains(link)) {
+          document.body.removeChild(link);
+        }
         URL.revokeObjectURL(blobUrl);
-      }, 100);
+      }, 5000);
       
     } catch (err) {
       console.error("Excel download runtime error:", err);
