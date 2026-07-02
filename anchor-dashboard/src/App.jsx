@@ -1009,7 +1009,20 @@ export default function App() {
     };
   }, []);
 
-  const [currentUser, setCurrentUser] = useState(null);
+  const [currentUser, setCurrentUser] = useState(() => {
+    const sessionUser = localStorage.getItem("anchor_logged_in_user");
+    if (sessionUser) {
+      try {
+        const parsed = JSON.parse(sessionUser);
+        if (parsed && parsed.role && typeof parsed.role === "object" && parsed.role.id) {
+          return parsed;
+        }
+      } catch (e) {
+        return null;
+      }
+    }
+    return null;
+  });
   const [projects, setProjects] = useState(() => {
     // D4 1차년도 실제 예산 및 집행 데이터 롤업 정합성 연동을 위해 로컬스토리지 키 버전을 v22로 업그레이드합니다.
     const cached = localStorage.getItem("anchor_projects_data_v22");
