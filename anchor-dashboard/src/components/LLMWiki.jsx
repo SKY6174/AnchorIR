@@ -257,12 +257,14 @@ export default function LLMWiki() {
           style={{ 
             display: "flex", 
             gap: "0.5rem", 
-            background: "var(--panel-bg)", 
-            border: isFocused ? "1.5px solid var(--accent-color)" : "1.5px solid rgba(255, 255, 255, 0.12)", 
-            padding: "0.4rem 0.6rem", 
+            background: isFocused ? "rgba(30, 41, 59, 0.6)" : "rgba(24, 24, 27, 0.85)", 
+            border: isFocused ? "1.8px solid var(--accent-color)" : "1.8px solid rgba(255, 255, 255, 0.22)", 
+            padding: "0.5rem 0.8rem", 
             borderRadius: "0.75rem",
-            boxShadow: isFocused ? "0 0 10px rgba(59, 130, 246, 0.25)" : "none",
-            transition: "all 0.2s ease"
+            boxShadow: isFocused 
+              ? "0 0 16px rgba(59, 130, 246, 0.45), inset 0 0 8px rgba(59, 130, 246, 0.15)" 
+              : "0 4px 15px rgba(0, 0, 0, 0.35)",
+            transition: "all 0.25s cubic-bezier(0.4, 0, 0.2, 1)"
           }}
         >
           <input
