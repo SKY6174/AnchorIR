@@ -98,22 +98,28 @@ export default function AuthManager({ onLoginSuccess, members = [] }) {
 
       // 5. 역할 권한 자동 판별 매핑 규칙
       let autoRoleKey = "RESEARCHER";
-      const mRole = matchedMember.role || "";
-      const mDept = matchedMember.dept || "";
-      if (mRole === "사업단장") {
-        autoRoleKey = "DIRECTOR";
-      } else if (mRole === "본부장") {
-        autoRoleKey = "HQ_HEAD";
-      } else if (mRole === "운영팀장") {
-        autoRoleKey = "TEAM_LEADER";
-      } else if (mRole === "팀장교수" || mRole === "팀장") {
-        autoRoleKey = "TEAM_LEADER";
-      } else if (mRole === "센터장") {
-        if (mDept === "ECC센터") autoRoleKey = "CENTER_ECC";
-        else if (mDept === "ICC센터") autoRoleKey = "CENTER_ICC";
-        else if (mDept === "RCC센터") autoRoleKey = "CENTER_RCC";
-        else if (mDept === "울산늘봄누리센터") autoRoleKey = "CENTER_NURI";
-        else autoRoleKey = "CENTER_SPECIAL";
+      if (foundUser && foundUser.role_key) {
+        autoRoleKey = foundUser.role_key;
+      } else {
+        const mRole = matchedMember.role || "";
+        const mDept = matchedMember.dept || "";
+        if (targetId === "hmsim@uc.ac.kr" || targetId === "leegyu@uc.ac.kr") {
+          autoRoleKey = "ADMIN";
+        } else if (mRole === "사업단장") {
+          autoRoleKey = "DIRECTOR";
+        } else if (mRole === "본부장") {
+          autoRoleKey = "HQ_HEAD";
+        } else if (mRole === "운영팀장") {
+          autoRoleKey = "TEAM_LEADER";
+        } else if (mRole === "팀장교수" || mRole === "팀장") {
+          autoRoleKey = "TEAM_LEADER";
+        } else if (mRole === "센터장") {
+          if (mDept === "ECC센터") autoRoleKey = "CENTER_ECC";
+          else if (mDept === "ICC센터") autoRoleKey = "CENTER_ICC";
+          else if (mDept === "RCC센터") autoRoleKey = "CENTER_RCC";
+          else if (mDept === "울산늘봄누리센터") autoRoleKey = "CENTER_NURI";
+          else autoRoleKey = "CENTER_SPECIAL";
+        }
       }
 
       const mappedRole = userRoles[autoRoleKey] || userRoles.RESEARCHER;
