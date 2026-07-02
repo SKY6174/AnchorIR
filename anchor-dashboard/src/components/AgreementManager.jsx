@@ -76,10 +76,10 @@ export default function AgreementManager({
 
   const availableUnits = getAvailableUnits();
 
-  // 날짜가 해당 연차의 사업기간 범위 내에 있는지 판별하는 헬퍼 함수 (Y차년도: (2025 + Y)년 3월 1일 ~ (2025 + Y + 1)년 2월 말일)
+  // 날짜가 해당 연차의 사업기간 범위 내에 있는지 판별하는 헬퍼 함수 (Y차년도: (2024 + Y)년 3월 1일 ~ (2024 + Y + 1)년 2월 말일)
   const isDateValidForYear = (dateStr, year) => {
     if (!dateStr) return false;
-    const startYear = 2025 + year;
+    const startYear = 2024 + year;
     const endYear = startYear + 1;
     const minDate = new Date(`${startYear}-03-01T00:00:00`);
     const maxDate = new Date(`${endYear}-03-01T00:00:00`);
@@ -194,8 +194,8 @@ export default function AgreementManager({
       return;
     }
 
-    // 연차별 사업기간 유효성 체크 (Y차년도: (2025 + Y)년 3월 1일 ~ (2025 + Y + 1)년 2월 말일)
-    const startYear = 2025 + selectedYear;
+    // 연차별 사업기간 유효성 체크 (Y차년도: (2024 + Y)년 3월 1일 ~ (2024 + Y + 1)년 2월 말일)
+    const startYear = 2024 + selectedYear;
     const endYear = startYear + 1;
     const minDate = new Date(`${startYear}-03-01T00:00:00`);
     const maxDate = new Date(`${endYear}-03-01T00:00:00`);
@@ -320,7 +320,7 @@ export default function AgreementManager({
       {(() => {
         const invalidCount = filteredAgreements.filter(a => !isDateValidForYear(a.date, selectedYear)).length;
         if (invalidCount > 0) {
-          const startYear = 2025 + selectedYear;
+          const startYear = 2024 + selectedYear;
           const endYear = startYear + 1;
           return (
             <div style={{ background: "rgba(239, 68, 68, 0.1)", border: "1px solid rgba(239, 68, 68, 0.3)", borderRadius: "0.375rem", padding: "0.75rem 1rem", display: "flex", alignItems: "center", gap: "0.6rem" }}>
