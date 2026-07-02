@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { Plus, Trash2, Edit, Trash, FileText, Upload, X, AlertTriangle } from "lucide-react";
+import { Plus, Trash2, Edit, Trash, FileText, Upload, X, AlertTriangle, Download } from "lucide-react";
+import * as XLSX from "xlsx";
 
 const AGREEMENT_CONTENTS_OPTIONS = [
   "주문식교육", "창업", "글로벌", "R&BD", "AIDX", "탄소중립",
@@ -338,6 +339,60 @@ export default function AgreementManager({
     }
   };
 
+  // 엑셀 다운로드 핸들러
+  const handleDownloadExcel = () => {
+    if (sortedAgreements.length === 0) {
+      alert("다운로드할 협약서 데이터가 없습니다.");
+      return;
+    }
+
+    // 엑셀 변환용 데이터 매핑
+    const excelData = sortedAgreements.map((agr) => {
+      let orgsStr = "";
+      let orgSubjectsStr = "";
+      if (Array.isArray(agr.organizations)) {
+        if (typeof agr.organizations[0] === "object" && agr.organizations[0] !== null) {
+          orgsStr = agr.organizations.map(o => o.name).join(", ");
+          orgSubjectsStr = agr.organizations.map(o => `${o.name}(${o.subject || "주체없음"})`).join(", ");
+        } else {
+          orgsStr = agr.organizations.join(", ");
+          orgSubjectsStr = agr.subjectOrganization || "";
+        }
+      }
+
+      return {
+        "체결일자": agr.date || "",
+        "관련 센터": agr.center || "",
+        "협약 대상기관": orgsStr,
+        "대학 측 협약주체(UC)": agr.subjectUniversity || "",
+        "기관 측 협약주체": orgSubjectsStr,
+        "관련 단위과제": agr.unitId || "",
+        "협약내용 범주": Array.isArray(agr.contents) ? agr.contents.join(", ") : "",
+        "사본 파일명": agr.fileName || "미첨부"
+      };
+    });
+
+    const worksheet = XLSX.utils.json_to_sheet(excelData);
+    
+    // 열 너비 자동 보완
+    const colWidths = [
+      { wch: 15 }, // 체결일자
+      { wch: 15 }, // 관련 센터
+      { wch: 30 }, // 협약 대상기관
+      { wch: 20 }, // 대학 측 협약주체
+      { wch: 35 }, // 기관 측 협약주체
+      { wch: 15 }, // 관련 단위과제
+      { wch: 30 }, // 협약내용 범주
+      { wch: 35 }  // 사본 파일명
+    ];
+    worksheet["!cols"] = colWidths;
+
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, `${selectedYear}차년도 협약서 목록`);
+    
+    XLSX.writeFile(workbook, `Anchor_라이즈_협약서_목록_${selectedYear}차년도.xlsx`);
+  };
+
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
       {/* 타이틀 및 등록 버튼 */}
@@ -347,9 +402,32 @@ export default function AgreementManager({
           <p style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)" }}>단위과제별 가족회사 및 기관과의 대외 협약 체결 내용을 연차별로 영속 보존합니다.</p>
         </div>
         {(currentRole.rank <= 2) && (
-          <button className="btn-primary" onClick={handleOpenAddModal} style={{ display: "flex", alignItems: "center", gap: "0.25rem", padding: "0.4rem 0.75rem", fontSize: "0.75rem" }}>
-            <Plus size={16} /> 신규 협약서 등록
-          </button>
+          <div style={{ display: "flex", gap: "0.4rem", alignItems: "center" }}>
+            <button 
+              onClick={handleDownloadExcel} 
+              style={{ 
+                display: "flex", 
+                alignItems: "center", 
+                gap: "0.25rem", 
+                padding: "0.4rem 0.75rem", 
+                fontSize: "0.75rem", 
+                background: "#16a34a", 
+                border: "none", 
+                color: "white", 
+                borderRadius: "0.25rem", 
+                cursor: "pointer", 
+                fontWeight: "700",
+                transition: "background 0.2s"
+              }}
+              onMouseEnter={(e) => e.target.style.background = "#15803d"}
+              onMouseLeave={(e) => e.target.style.background = "#16a34a"}
+            >
+              <Download size={14} /> 엑셀 다운로드
+            </button>
+            <button className="btn-primary" onClick={handleOpenAddModal} style={{ display: "flex", alignItems: "center", gap: "0.25rem", padding: "0.4rem 0.75rem", fontSize: "0.75rem" }}>
+              <Plus size={16} /> 신규 협약서 등록
+            </button>
+          </div>
         )}
       </div>
 
