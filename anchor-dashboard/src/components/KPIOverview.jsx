@@ -69,6 +69,16 @@ export default function KPIOverview({ projects, currentRole, selectedYear = 2 })
   const totalBudget = totalBudgetMain + totalBudgetCarry;
   const totalSpent = totalSpentMain + totalSpentCarry;
 
+  // 외부사업비 합산 추출 (P단계 기획 폼에서 입력된 budget_external 합산)
+  const totalExternalBudget = activeProjects.reduce((sum, p) => {
+    return sum + p.units.reduce((s, u) => {
+      const progExternalSum = u.programs?.reduce((progSum, prog) => {
+        return progSum + (prog.years?.[selectedYear]?.budget_external || 0);
+      }, 0) || 0;
+      return s + progExternalSum;
+    }, 0);
+  }, 0);
+
   // A1나 신산업특화 예산 동적 추출 및 앵커 예산 계산 (1차년도에는 신산업이 존재하지 않음)
   let shinSanUpBudgetMain = 0; // 신산업(본사업)
   let shinSanUpBudgetCarry = 0; // 신산업(이월사업)
@@ -212,8 +222,11 @@ export default function KPIOverview({ projects, currentRole, selectedYear = 2 })
               <span>ANCHOR {selectedYear}차년도 총 예산</span>
               <TrendingUp size={16} className="badge-blue" />
             </div>
-            <div className="kpi-value" style={{ color: "var(--accent-color)", fontSize: "1.45rem" }}>
-              {formatToMillionWon(totalBudget)} 백만원
+            <div className="kpi-value" style={{ color: "var(--accent-color)", fontSize: "1.45rem", display: "flex", alignItems: "baseline", gap: "0.4rem", flexWrap: "wrap" }}>
+              <span>{formatToMillionWon(totalBudget)} 백만원</span>
+              <span style={{ fontSize: "0.85rem", color: "var(--text-secondary-dark)", fontWeight: "normal" }}>
+                (외부사업비: {formatToMillionWon(totalExternalBudget)} 백만원)
+              </span>
             </div>
           </div>
           <div className="kpi-subtext" style={{ display: "flex", flexDirection: "column", gap: "0.5rem", width: "100%", borderTop: "1px solid rgba(255,255,255,0.1)", paddingTop: "0.6rem", marginTop: "0.5rem" }}>

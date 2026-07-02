@@ -1053,11 +1053,11 @@ export default function App() {
                       }
                       const y = updatedYears[yr];
                       
-                      // 1. 입력한 예산(세부 재원: 국고 + 시비 + 외부)이 있는지 확인
-                      const inputBudgetSum = (y.budget_national || 0) + (y.budget_city || 0) + (y.budget_external || 0);
+                      // 1. 입력한 예산(세부 재원: 국고 + 시비)이 있는지 확인
+                      const inputBudgetSum = (y.budget_national || 0) + (y.budget_city || 0);
                       
                       if (inputBudgetSum > 0) {
-                        // 사용자가 세부 재원 예산을 하나라도 입력했다면, 그 합산을 본예산(budget_main)으로 동기화 (입력 예산 우선 원칙)
+                        // 사용자가 세부 재원 예산을 하나라도 입력했다면, 그 합산을 본예산(budget_main)으로 동기화 (입력 예산 우선 원칙, 외부사업비 제외)
                         y.budget_main = inputBudgetSum;
                       } else {
                         // 입력된 세부 예산이 없는 경우, 기존 sourceProg를 기준으로 본예산 기본값을 계산
@@ -1073,32 +1073,29 @@ export default function App() {
 
                         if (sourceProg.years && sourceProg.years[yr]) {
                           const sy = sourceProg.years[yr];
-                          defaultBudgetMain = sy.budget_main || 0;
+                          defaultBudgetMain = (sy.budget_national || 0) + (sy.budget_city || 0);
                           defaultNational = sy.budget_national || 0;
                           defaultCity = sy.budget_city || 0;
                           defaultExternal = sy.budget_external || 0;
                           
-                          defaultSpentMain = sy.spent_main || 0;
+                          defaultSpentMain = (sy.spent_national || 0) + (sy.spent_city || 0);
                           defaultSpentNational = sy.spent_national || 0;
                           defaultSpentCity = sy.spent_city || 0;
                           defaultSpentExternal = sy.spent_external || 0;
                         } else {
-                          if (yr === 2) {
-                            defaultBudgetMain = sourceProg.budget_2026 || 0;
-                          } else if (yr === 1) {
-                            defaultBudgetMain = Math.round((sourceProg.budget_2026 || 0) * 0.9);
-                          } else {
-                            const factor = yr === 3 ? 1.1 : yr === 4 ? 1.2 : 1.3;
-                            defaultBudgetMain = Math.round((sourceProg.budget_2026 || 0) * factor);
-                          }
-                          
+                          // 기존 fallback
+                          const rawBudgetMain = yr === 2 ? (sourceProg.budget_2026 || 0) : yr === 1 ? Math.round((sourceProg.budget_2026 || 0) * 0.9) : Math.round((sourceProg.budget_2026 || 0) * (yr === 3 ? 1.1 : yr === 4 ? 1.2 : 1.3));
                           const isExternalSub = sourceProg.id.endsWith("-2") || sourceProg.id.includes("위탁") || sourceProg.title.includes("위탁") || sourceProg.title.includes("협력");
                           if (isExternalSub) {
-                            defaultExternal = defaultBudgetMain;
+                            defaultExternal = rawBudgetMain;
+                            defaultNational = 0;
+                            defaultCity = 0;
                           } else {
-                            defaultNational = Math.round(defaultBudgetMain * 0.5);
-                            defaultCity = defaultBudgetMain - defaultNational;
+                            defaultNational = Math.round(rawBudgetMain * 0.5);
+                            defaultCity = rawBudgetMain - defaultNational;
+                            defaultExternal = 0;
                           }
+                          defaultBudgetMain = defaultNational + defaultCity;
                         }
                         
                         y.budget_main = defaultBudgetMain;
@@ -1112,27 +1109,27 @@ export default function App() {
                         y.spent_external = defaultSpentExternal;
                       }
 
-                      // 2. 이월예산도 세부 이월예산(국고 + 시비 + 외부)의 합산으로 동기화 (1차년도는 이월이 없으므로 강제 0원)
+                      // 2. 이월예산도 세부 이월예산(국고 + 시비)의 합산으로 동기화 (1차년도는 이월이 없으므로 강제 0원, 외부사업비 제외)
                       if (yr === 1) {
                         y.budget_carry_national = 0;
                         y.budget_carry_city = 0;
                         y.budget_carry_external = 0;
                         y.budget_carry = 0;
                       } else {
-                        y.budget_carry = (y.budget_carry_national || 0) + (y.budget_carry_city || 0) + (y.budget_carry_external || 0);
+                        y.budget_carry = (y.budget_carry_national || 0) + (y.budget_carry_city || 0);
                       }
 
-                      // 3. 본집행액도 세부 집행액(국고 + 시비 + 외부)의 합으로 실시간 동기화
-                      y.spent_main = (y.spent_national || 0) + (y.spent_city || 0) + (y.spent_external || 0);
+                      // 3. 본집행액도 세부 집행액(국고 + 시비)의 합으로 실시간 동기화 (외부사업비 제외)
+                      y.spent_main = (y.spent_national || 0) + (y.spent_city || 0);
 
-                      // 4. 이월집행액도 세부 이월집행액(국고 + 시비 + 외부)의 합으로 동기화 (1차년도는 0원)
+                      // 4. 이월집행액도 세부 이월집행액(국고 + 시비)의 합으로 동기화 (1차년도는 0원, 외부사업비 제외)
                       if (yr === 1) {
                         y.spent_carry_national = 0;
                         y.spent_carry_city = 0;
                         y.spent_carry_external = 0;
                         y.spent_carry = 0;
                       } else {
-                        y.spent_carry = (y.spent_carry_national || 0) + (y.spent_carry_city || 0) + (y.spent_carry_external || 0);
+                        y.spent_carry = (y.spent_carry_national || 0) + (y.spent_carry_city || 0);
                       }
 
                       // 5. 비목 카테고리 예산 오버플로우 보정 (기존 복원 로직)
@@ -1941,12 +1938,12 @@ export default function App() {
                     py.budget_national = bNational;
                     py.budget_city = bCity;
                     py.budget_external = bExternal;
-                    py.budget_main = bNational + bCity + bExternal; // 본예산 입력 우선 합산
+                    py.budget_main = bNational + bCity; // 본예산 입력 우선 합산 (외부사업비 제외)
 
                     py.budget_carry_national = bCarryNational;
                     py.budget_carry_city = bCarryCity;
                     py.budget_carry_external = bCarryExternal;
-                    py.budget_carry = bCarryNational + bCarryCity + bCarryExternal; // 이월예산 입력 우선 합산
+                    py.budget_carry = bCarryNational + bCarryCity; // 이월예산 입력 우선 합산 (외부사업비 제외)
 
                     // 2. 10대 비목별 요소 파싱 및 0원 초과 비목 필터링 롤업 (최대 4개 제한)
                     const standardCategories = [
@@ -2185,17 +2182,17 @@ export default function App() {
                   if (updatedFields.budget_carry_city !== undefined) py.budget_carry_city = updatedFields.budget_carry_city;
                   if (updatedFields.budget_carry_external !== undefined) py.budget_carry_external = updatedFields.budget_carry_external;
 
-                  // 세부 재원 예산의 합으로 총 본예산(budget_main) 동기화
-                  py.budget_main = (py.budget_national || 0) + (py.budget_city || 0) + (py.budget_external || 0);
+                  // 세부 재원 예산의 합으로 총 본예산(budget_main) 동기화 (외부사업비 제외)
+                  py.budget_main = (py.budget_national || 0) + (py.budget_city || 0);
 
-                  // 세부 재원 이월예산의 합으로 총 이월예산(budget_carry) 동기화 (1차년도 제외)
+                  // 세부 재원 이월예산의 합으로 총 이월예산(budget_carry) 동기화 (1차년도 제외, 외부사업비 제외)
                   if (selectedYear === 1) {
                     py.budget_carry_national = 0;
                     py.budget_carry_city = 0;
                     py.budget_carry_external = 0;
                     py.budget_carry = 0;
                   } else {
-                    py.budget_carry = (py.budget_carry_national || 0) + (py.budget_carry_city || 0) + (py.budget_carry_external || 0);
+                    py.budget_carry = (py.budget_carry_national || 0) + (py.budget_carry_city || 0);
                   }
 
                   // 프로그램 최상위 레거시 필드도 현재 5개년 연도 정보 기준으로 일치화 (P 단계 입력이 진짜)
@@ -2215,8 +2212,8 @@ export default function App() {
                   if (updatedFields.spent_city !== undefined) py.spent_city = Math.min(updatedFields.spent_city, py.budget_city || 0);
                   if (updatedFields.spent_external !== undefined) py.spent_external = Math.min(updatedFields.spent_external, py.budget_external || 0);
                   
-                  // 세부 재원 집행액의 합으로 총 본집행액(spent_main) 동기화
-                  py.spent_main = (py.spent_national || 0) + (py.spent_city || 0) + (py.spent_external || 0);
+                  // 세부 재원 집행액의 합으로 총 본집행액(spent_main) 동기화 (외부사업비 제외)
+                  py.spent_main = (py.spent_national || 0) + (py.spent_city || 0);
 
                   // 프로그램 최상위 집행액 레거시 필드 동기화 (D 단계 입력이 진짜)
                   if (selectedYear === 2) {

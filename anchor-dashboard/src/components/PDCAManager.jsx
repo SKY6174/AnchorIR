@@ -492,9 +492,9 @@ export default function PDCAManager({
 
     const bCarryNational = selectedYear === 1 ? 0 : Math.round(parseDecimalFromCommas(inputBudgetCarryNational) * 1000000);
     const bCarryCity = selectedYear === 1 ? 0 : Math.round(parseDecimalFromCommas(inputBudgetCarryCity) * 1000000);
-    const bCarryExternal = selectedYear === 1 ? 0 : Math.round(parseDecimalFromCommas(inputBudgetCarryExternal) * 1000000);
+    const bCarryExternal = 0; // 외부사업비는 본/이월 구분이 없어 0원으로 고정
 
-    if (bNational < 0 || bCity < 0 || bExternal < 0 || bCarryNational < 0 || bCarryCity < 0 || bCarryExternal < 0) {
+    if (bNational < 0 || bCity < 0 || bExternal < 0 || bCarryNational < 0 || bCarryCity < 0) {
       alert("배정 예산은 0원 이상의 올바른 숫자 형식이어야 합니다.");
       return;
     }
@@ -907,65 +907,47 @@ export default function PDCAManager({
                       <div>
                         <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)", display: "block", marginBottom: "0.15rem" }}>재원별 예산 배정 (백만원 단위)</span>
                         <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
-                          {/* 본예산 */}
-                          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "0.4rem" }}>
-                            <div>
-                              <span style={{ fontSize: "0.6rem", color: "var(--text-secondary-dark)" }}>국고 본예산</span>
-                              <input type="text" className="user-selector budget-main-input" value={inputBudgetNational} onChange={(e) => setInputBudgetNational(e.target.value.replace(/[^0-9.]/g, ""))} style={{ padding: "0.2rem 0.4rem", fontSize: "0.7rem" }} />
+                          {/* 재원별 3개 분할 영역 (국고, 지자체시비, 외부사업비) */}
+                          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "0.5rem" }}>
+                            {/* 국고 카드 */}
+                            <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem", background: "rgba(255,255,255,0.01)", padding: "0.4rem", borderRadius: "0.35rem", border: "1px solid var(--border-color-dark)" }}>
+                              <span style={{ fontSize: "0.62rem", color: "#60a5fa", fontWeight: "800", borderBottom: "1px solid rgba(255,255,255,0.03)", paddingBottom: "0.15rem", marginBottom: "0.15rem" }}>국고</span>
+                              <div>
+                                <span style={{ fontSize: "0.55rem", color: "var(--text-secondary-dark)" }}>본예산</span>
+                                <input type="text" className="user-selector budget-main-input" value={inputBudgetNational} onChange={(e) => setInputBudgetNational(e.target.value.replace(/[^0-9.]/g, ""))} style={{ padding: "0.2rem 0.4rem", fontSize: "0.7rem", width: "100%" }} />
+                              </div>
+                              {selectedYear !== 1 && (
+                                <div>
+                                  <span style={{ fontSize: "0.55rem", color: "var(--text-secondary-dark)" }}>이월예산</span>
+                                  <input type="text" className="user-selector budget-carry-input" value={inputBudgetCarryNational} onChange={(e) => setInputBudgetCarryNational(e.target.value.replace(/[^0-9.]/g, ""))} style={{ padding: "0.2rem 0.4rem", fontSize: "0.7rem", width: "100%" }} />
+                                </div>
+                              )}
                             </div>
-                            <div>
-                              <span style={{ fontSize: "0.6rem", color: "var(--text-secondary-dark)" }}>지자체 시비 본예산</span>
-                              <input type="text" className="user-selector budget-main-input" value={inputBudgetCity} onChange={(e) => setInputBudgetCity(e.target.value.replace(/[^0-9.]/g, ""))} style={{ padding: "0.2rem 0.4rem", fontSize: "0.7rem" }} />
+
+                            {/* 지자체 시비 카드 */}
+                            <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem", background: "rgba(255,255,255,0.01)", padding: "0.4rem", borderRadius: "0.35rem", border: "1px solid var(--border-color-dark)" }}>
+                              <span style={{ fontSize: "0.62rem", color: "#34d399", fontWeight: "800", borderBottom: "1px solid rgba(255,255,255,0.03)", paddingBottom: "0.15rem", marginBottom: "0.15rem" }}>지자체 시비</span>
+                              <div>
+                                <span style={{ fontSize: "0.55rem", color: "var(--text-secondary-dark)" }}>본예산</span>
+                                <input type="text" className="user-selector budget-main-input" value={inputBudgetCity} onChange={(e) => setInputBudgetCity(e.target.value.replace(/[^0-9.]/g, ""))} style={{ padding: "0.2rem 0.4rem", fontSize: "0.7rem", width: "100%" }} />
+                              </div>
+                              {selectedYear !== 1 && (
+                                <div>
+                                  <span style={{ fontSize: "0.55rem", color: "var(--text-secondary-dark)" }}>이월예산</span>
+                                  <input type="text" className="user-selector budget-carry-input" value={inputBudgetCarryCity} onChange={(e) => setInputBudgetCarryCity(e.target.value.replace(/[^0-9.]/g, ""))} style={{ padding: "0.2rem 0.4rem", fontSize: "0.7rem", width: "100%" }} />
+                                </div>
+                              )}
                             </div>
-                            <div>
-                              <span style={{ fontSize: "0.6rem", color: "var(--text-secondary-dark)" }}>외부사업비 본예산</span>
-                              <input type="text" className="user-selector budget-main-input" value={inputBudgetExternal} onChange={(e) => setInputBudgetExternal(e.target.value.replace(/[^0-9.]/g, ""))} style={{ padding: "0.2rem 0.4rem", fontSize: "0.7rem" }} />
+
+                            {/* 외부사업비 카드 (본예산/이월예산 구분 없이 '외부사업비' 단일 입력) */}
+                            <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem", background: "rgba(255,255,255,0.01)", padding: "0.4rem", borderRadius: "0.35rem", border: "1px solid var(--border-color-dark)" }}>
+                              <span style={{ fontSize: "0.62rem", color: "#fbbf24", fontWeight: "800", borderBottom: "1px solid rgba(255,255,255,0.03)", paddingBottom: "0.15rem", marginBottom: "0.15rem" }}>외부사업비</span>
+                              <div style={{ marginTop: selectedYear === 1 ? "0rem" : "0.85rem" }}>
+                                <span style={{ fontSize: "0.55rem", color: "var(--text-secondary-dark)", display: "block", marginBottom: "0.15rem" }}>외부사업비</span>
+                                <input type="text" className="user-selector budget-main-input" value={inputBudgetExternal} onChange={(e) => setInputBudgetExternal(e.target.value.replace(/[^0-9.]/g, ""))} style={{ padding: "0.2rem 0.4rem", fontSize: "0.7rem", width: "100%" }} />
+                              </div>
                             </div>
                           </div>
-                          {/* 이월예산 (1차년도 제외) */}
-                          {selectedYear !== 1 && (
-                            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "0.4rem" }}>
-                              <div>
-                                <span style={{ fontSize: "0.6rem", color: "var(--text-secondary-dark)" }}>국고 이월예산</span>
-                                <input
-                                  type="text"
-                                  className="user-selector budget-carry-input"
-                                  value={inputBudgetCarryNational}
-                                  onChange={(e) => setInputBudgetCarryNational(e.target.value.replace(/[^0-9.]/g, ""))}
-                                  style={{
-                                    padding: "0.2rem 0.4rem",
-                                    fontSize: "0.7rem"
-                                  }}
-                                />
-                              </div>
-                              <div>
-                                <span style={{ fontSize: "0.6rem", color: "var(--text-secondary-dark)" }}>지자체 시비 이월예산</span>
-                                <input
-                                  type="text"
-                                  className="user-selector budget-carry-input"
-                                  value={inputBudgetCarryCity}
-                                  onChange={(e) => setInputBudgetCarryCity(e.target.value.replace(/[^0-9.]/g, ""))}
-                                  style={{
-                                    padding: "0.2rem 0.4rem",
-                                    fontSize: "0.7rem"
-                                  }}
-                                />
-                              </div>
-                              <div>
-                                <span style={{ fontSize: "0.6rem", color: "var(--text-secondary-dark)" }}>외부사업비 이월예산</span>
-                                <input
-                                  type="text"
-                                  className="user-selector budget-carry-input"
-                                  value={inputBudgetCarryExternal}
-                                  onChange={(e) => setInputBudgetCarryExternal(e.target.value.replace(/[^0-9.]/g, ""))}
-                                  style={{
-                                    padding: "0.2rem 0.4rem",
-                                    fontSize: "0.7rem"
-                                  }}
-                                />
-                              </div>
-                            </div>
-                          )}
                         </div>
                       </div>
 
