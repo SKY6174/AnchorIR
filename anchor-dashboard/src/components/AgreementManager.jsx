@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Plus, Trash2, Edit, Trash, FileText, Upload, X } from "lucide-react";
+import { Plus, Trash2, Edit, Trash, FileText, Upload, X, AlertTriangle } from "lucide-react";
 
 const AGREEMENT_CONTENTS_OPTIONS = [
   "주문식교육", "창업", "글로벌", "R&BD", "AIDX", "탄소중립",
@@ -75,6 +75,19 @@ export default function AgreementManager({
   };
 
   const availableUnits = getAvailableUnits();
+
+  // 날짜가 해당 연차의 사업기간 범위 내에 있는지 판별하는 헬퍼 함수 (Y차년도: (2025 + Y)년 3월 1일 ~ (2025 + Y + 1)년 2월 말일)
+  const isDateValidForYear = (dateStr, year) => {
+    if (!dateStr) return false;
+    const startYear = 2025 + year;
+    const endYear = startYear + 1;
+    const minDate = new Date(`${startYear}-03-01T00:00:00`);
+    const maxDate = new Date(`${endYear}-03-01T00:00:00`);
+    maxDate.setMilliseconds(-1); // 2월 말일
+    
+    const selectedDate = new Date(`${dateStr}T00:00:00`);
+    return selectedDate >= minDate && selectedDate <= maxDate;
+  };
 
   // 협약서 필터링 (현재 선택된 사업연도 기준)
   const filteredAgreements = agreements.filter(a => a.year === selectedYear);
@@ -303,17 +316,35 @@ export default function AgreementManager({
         )}
       </div>
 
+      {/* 실시간 등록 데이터 일자 유효성 검증 경고 배너 */}
+      {(() => {
+        const invalidCount = filteredAgreements.filter(a => !isDateValidForYear(a.date, selectedYear)).length;
+        if (invalidCount > 0) {
+          const startYear = 2025 + selectedYear;
+          const endYear = startYear + 1;
+          return (
+            <div style={{ background: "rgba(239, 68, 68, 0.1)", border: "1px solid rgba(239, 68, 68, 0.3)", borderRadius: "0.375rem", padding: "0.75rem 1rem", display: "flex", alignItems: "center", gap: "0.6rem" }}>
+              <AlertTriangle color="#ef4444" size={16} style={{ flexShrink: 0 }} />
+              <span style={{ fontSize: "0.75rem", color: "#fca5a5", lineHeight: "1.4" }}>
+                <strong>⚠️ {selectedYear}차년도 사업기간 불일치 협약서 {invalidCount}건 감지:</strong> {startYear}년 3월 1일 ~ {endYear}년 2월 말일 범위를 벗어난 내역이 있습니다. 해당 항목의 수정(수정 아이콘) 버튼을 클릭하여 올바른 일자로 보정해 주세요.
+              </span>
+            </div>
+          );
+        }
+        return null;
+      })()}
+
       {/* 협약서 목록 테이블 */}
       <div className="table-container" style={{ background: "var(--card-bg-dark)", border: "1px solid var(--border-color-dark)", borderRadius: "0.5rem", overflow: "hidden" }}>
         <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.75rem", color: "white" }}>
           <thead>
             <tr style={{ background: "rgba(255,255,255,0.03)", borderBottom: "1px solid var(--border-color-dark)" }}>
-              <th style={{ padding: "0.6rem 0.8rem", textAlign: "left", width: "10%" }}>날짜</th>
+              <th style={{ padding: "0.6rem 0.8rem", textAlign: "left", width: "12%" }}>날짜</th>
               <th style={{ padding: "0.6rem 0.8rem", textAlign: "left", width: "12%" }}>관련 센터</th>
               <th style={{ padding: "0.6rem 0.8rem", textAlign: "left", width: "18%" }}>협약기관</th>
               <th style={{ padding: "0.6rem 0.8rem", textAlign: "left", width: "24%" }}>협약주체 (UC & 타기관)</th>
               <th style={{ padding: "0.6rem 0.8rem", textAlign: "left", width: "10%" }}>단위과제</th>
-              <th style={{ padding: "0.6rem 0.8rem", textAlign: "left", width: "16%" }}>협약내용 범주</th>
+              <th style={{ padding: "0.6rem 0.8rem", textAlign: "left", width: "14%" }}>협약내용 범주</th>
               <th style={{ padding: "0.6rem 0.8rem", textAlign: "center", width: "5%" }}>사본</th>
               {(currentRole.rank <= 2) && <th style={{ padding: "0.6rem 0.8rem", textAlign: "center", width: "5%" }}>제어</th>}
             </tr>
@@ -326,9 +357,22 @@ export default function AgreementManager({
                 </td>
               </tr>
             ) : (
-              filteredAgreements.map((agr) => (
-                <tr key={agr.id} style={{ borderBottom: "1px solid var(--border-color-dark)", background: "rgba(255,255,255,0.01)" }}>
-                  <td style={{ padding: "0.6rem 0.8rem" }}>{agr.date}</td>
+              filteredAgreements.map((agr) => {
+                const hasInvalidDate = !isDateValidForYear(agr.date, selectedYear);
+                return (
+                  <tr key={agr.id} style={{ borderBottom: "1px solid var(--border-color-dark)", background: hasInvalidDate ? "rgba(239, 68, 68, 0.05)" : "rgba(255,255,255,0.01)" }}>
+                    <td style={{ padding: "0.6rem 0.8rem" }}>
+                      <div style={{ display: "flex", flexDirection: "column", gap: "0.15rem" }}>
+                        <span style={{ color: hasInvalidDate ? "#ef4444" : "inherit", fontWeight: hasInvalidDate ? "700" : "normal" }}>
+                          {agr.date}
+                        </span>
+                        {hasInvalidDate && (
+                          <span style={{ color: "#ef4444", fontSize: "0.6rem", fontWeight: "800", display: "inline-flex", alignItems: "center", gap: "0.1rem" }}>
+                            ⚠️ 기간초과 (수정필요)
+                          </span>
+                        )}
+                      </div>
+                    </td>
                   <td style={{ padding: "0.6rem 0.8rem" }}>
                     <span style={{ background: "rgba(96,165,250,0.1)", color: "#60a5fa", padding: "0.15rem 0.35rem", borderRadius: "0.25rem", fontSize: "0.65rem", fontWeight: "700" }}>{agr.center}</span>
                   </td>
@@ -401,7 +445,7 @@ export default function AgreementManager({
                     </td>
                   )}
                 </tr>
-              ))
+              );})
             )}
           </tbody>
         </table>
