@@ -13,6 +13,26 @@ import { supabase } from "./supabaseClient";
 import CryptoJS from "crypto-js";
 import "./styles/dashboard.css";
 
+// 1차년도 화면 노출 ID에서 원본 내부 ID로 역매핑을 위한 전역 맵
+const REVERSE_UNIT_MAPPING_Y1 = {
+  "A1": "A1가",
+  "A2": "A2",
+  "D4": "A3",
+  "B1": "B1",
+  "C2": "B2",
+  "C3": "B3",
+  "C1": "B4",
+  "B2": "C1",
+  "D2": "C2",
+  "B3": "D1",
+  "D1": "D2",
+  "D3": "D3"
+};
+
+const getRealUnitId = (unitId, yr) => {
+  return yr === 1 ? (REVERSE_UNIT_MAPPING_Y1[unitId] || unitId) : unitId;
+};
+
 // RISE 사업단 초기 구성원 주소록 명단 데이터셋
 const INITIAL_MEMBERS = [
   // 교수 및 리더진
@@ -2131,11 +2151,12 @@ export default function App() {
 
   // 실무진 수동 갱신 (프로그램 PDCA 및 실적 등록)
   const handleUpdateProgramDetails = (unitId, progId, updatedFields) => {
+    const realUnitId = getRealUnitId(unitId, selectedYear);
     setProjects((prevProjects) => {
       const updated = JSON.parse(JSON.stringify(prevProjects));
       updated.forEach((p) => {
         p.units.forEach((u) => {
-          if (u.id === unitId) {
+          if (u.id === realUnitId) {
             u.programs.forEach((prog) => {
               if (prog.id === progId) {
                 // PDCA 상태 갱신
@@ -2555,11 +2576,12 @@ export default function App() {
 
   // 비목 예산 세부 조율 갱신 핸들러 (5개년 연쇄 이월 계산 연계)
   const handleUpdateBudgetDetails = (unitId, updatedBudgetDetails) => {
+    const realUnitId = getRealUnitId(unitId, selectedYear);
     setProjects(prevProjects => {
       const updated = JSON.parse(JSON.stringify(prevProjects));
       updated.forEach(p => {
         p.units.forEach(u => {
-          if (u.id === unitId) {
+          if (u.id === realUnitId) {
             // 비목 예산 배정 수정분 반영
             Object.keys(updatedBudgetDetails).forEach(key => {
               if (!u.budgetDetails[key]) {
@@ -2607,11 +2629,12 @@ export default function App() {
 
   // 연구원 배정 핸들러
   const handleAssignChange = (unitId, progId, newAssignee) => {
+    const realUnitId = getRealUnitId(unitId, selectedYear);
     setProjects((prevProjects) => {
       const updated = JSON.parse(JSON.stringify(prevProjects));
       updated.forEach((p) => {
         p.units.forEach((u) => {
-          if (u.id === unitId) {
+          if (u.id === realUnitId) {
             u.programs.forEach((prog) => {
               if (prog.id === progId) {
                 if (!prog.assignees) {
