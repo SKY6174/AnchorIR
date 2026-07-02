@@ -1796,6 +1796,7 @@ export const initialProjectsData = [
 ];
 
 export const userRoles = {
+  ADMIN: { id: "ADMIN", name: "최고 관리자", rank: 0, desc: "시스템 모든 메뉴 및 권한 마스터 제어 권한" },
   DIRECTOR: { id: "DIRECTOR", name: "사업단장 (송경영 교수)", rank: 1, desc: "전체 프로젝트 사업비 & KPI 최종 결재 및 연구원 배정 마스터 권한" },
   HQ_HEAD: { id: "HQ_HEAD", name: "총괄본부장 (김현수 교수)", rank: 2, desc: "사업단 전체 실적 모니터링 및 AID-X지원센터 실무 총괄" },
   CENTER_ECC: { id: "CENTER_ECC", name: "CENTER_ECC", rank: 3, desc: "소속 단위과제(A1가, A2, A3) 세부 예산 및 프로그램 상태 관리" },
