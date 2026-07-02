@@ -504,9 +504,9 @@ export default function PDCAManager({
     const parsedParticipants = parseInt(inputParticipants, 10);
 
     const py = activeProg.years?.[selectedYear] || {};
-    const limitNational = py.budget_national || 0;
-    const limitCity = py.budget_city || 0;
-    const limitExternal = py.budget_external || 0;
+    const limitNational = Math.round((py.budget_national || 0) + (py.budget_carry_national || 0));
+    const limitCity = Math.round((py.budget_city || 0) + (py.budget_carry_city || 0));
+    const limitExternal = Math.round((py.budget_external || 0) + (py.budget_carry_external || 0));
 
     if (sNational > limitNational) {
       alert(`[한도 초과] 국고 집행액(${(sNational / 1000000).toFixed(1)} 백만원)은 배정 예산(${(limitNational / 1000000).toFixed(1)} 백만원)을 초과할 수 없습니다.`);
