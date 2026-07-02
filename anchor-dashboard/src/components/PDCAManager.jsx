@@ -516,7 +516,7 @@ export default function PDCAManager({
     const hasBudget = (bNational > 0 || bCarryNational > 0 || bCity > 0 || bCarryCity > 0 || bExternal > 0);
     const hasCategories = categoriesToSave.length > 0 && categoriesToSave.some(c => c.category && c.category !== "" && c.category !== "선택 안 함" && (c.budget > 0 || c.budget_carry > 0));
     const hasSchedules = inputMonthlyPDCA.some(val => val && val !== "" && val !== "-");
-    const hasKpis = (inputKpiLink && inputKpiLink !== "" && inputKpiLink !== "선택 안 함");
+    const hasKpis = (inputKpiType === "없음") || (inputKpiLink && inputKpiLink !== "" && inputKpiLink !== "선택 안 함");
     const hasTargetGoals = (inputTargetParticipants !== "" || inputTargetDevelopments !== "" || inputTargetEtc !== "");
     const hasTargetAudience = (inputTargetAudience && inputTargetAudience.trim() !== "");
     const hasCoopDept = (inputCoopDept && inputCoopDept.trim() !== "");
@@ -1109,10 +1109,10 @@ export default function PDCAManager({
                           <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)", display: "block", marginBottom: "0.3rem" }}>
                             성과지표 연계
                           </span>
-                          <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: "0.5rem" }}>
+                          <div style={{ display: "grid", gridTemplateColumns: "1.2fr 1.8fr", gap: "0.5rem" }}>
                             {/* 지표 유형 선택 라디오 그룹 */}
-                            <div style={{ display: "flex", gap: "0.6rem", alignItems: "center", background: "#18181b", padding: "0.2rem 0.5rem", borderRadius: "0.25rem", border: "1px solid var(--border-color-dark)" }}>
-                              <span style={{ fontSize: "0.62rem", color: "var(--text-secondary-dark)", marginRight: "0.2rem" }}>유형:</span>
+                            <div style={{ display: "flex", gap: "0.5rem", alignItems: "center", background: "#18181b", padding: "0.2rem 0.4rem", borderRadius: "0.25rem", border: "1px solid var(--border-color-dark)" }}>
+                              <span style={{ fontSize: "0.62rem", color: "var(--text-secondary-dark)", marginRight: "0.1rem" }}>유형:</span>
                               <label style={{ fontSize: "0.65rem", color: "white", cursor: "pointer", display: "flex", alignItems: "center", gap: "0.15rem" }}>
                                 <input 
                                   type="radio" 
@@ -1124,7 +1124,7 @@ export default function PDCAManager({
                                     setInputKpiLink(""); // 유형 변경 시 초기화
                                   }} 
                                 />
-                                지자체 자율
+                                자율
                               </label>
                               <label style={{ fontSize: "0.65rem", color: "white", cursor: "pointer", display: "flex", alignItems: "center", gap: "0.15rem" }}>
                                 <input 
@@ -1137,7 +1137,20 @@ export default function PDCAManager({
                                     setInputKpiLink(""); // 유형 변경 시 초기화
                                   }} 
                                 />
-                                대학 중점
+                                중점
+                              </label>
+                              <label style={{ fontSize: "0.65rem", color: "white", cursor: "pointer", display: "flex", alignItems: "center", gap: "0.15rem" }}>
+                                <input 
+                                  type="radio" 
+                                  name="kpiTypeSelect" 
+                                  value="없음" 
+                                  checked={inputKpiType === "없음" || !inputKpiType} 
+                                  onChange={() => {
+                                    setInputKpiType("없음");
+                                    setInputKpiLink(""); // 없음 선택 시 링크 초기화
+                                  }} 
+                                />
+                                없음
                               </label>
                             </div>
                             
@@ -1146,10 +1159,23 @@ export default function PDCAManager({
                               <select
                                 className="user-selector"
                                 value={inputKpiLink}
+                                disabled={inputKpiType === "없음"}
                                 onChange={(e) => setInputKpiLink(e.target.value)}
-                                style={{ width: "100%", padding: "0.25rem 0.4rem", fontSize: "0.7rem", background: "#18181b", color: "white", border: "1px solid var(--border-color-dark)" }}
+                                style={{ 
+                                  width: "100%", 
+                                  padding: "0.25rem 0.4rem", 
+                                  fontSize: "0.7rem", 
+                                  background: inputKpiType === "없음" ? "#27272a" : "#18181b", 
+                                  color: inputKpiType === "없음" ? "#a1a1aa" : "white", 
+                                  border: "1px solid var(--border-color-dark)",
+                                  cursor: inputKpiType === "없음" ? "not-allowed" : "pointer"
+                                }}
                               >
-                                <option value="" style={{ background: "#18181b", color: "white" }}>-- 성과지표를 선택해 주세요 --</option>
+                                {inputKpiType === "없음" ? (
+                                  <option value="" style={{ background: "#18181b", color: "#a1a1aa" }}>-- 성과지표 연계 없음 --</option>
+                                ) : (
+                                  <option value="" style={{ background: "#18181b", color: "white" }}>-- 성과지표를 선택해 주세요 --</option>
+                                )}
                                 {(() => {
                                   // 소속 단위과제 KPI를 우선으로 하고 없으면 전체 폴백
                                   const activeUnit = allUnits.find(u => u.programs?.some(p => p.id === activeProg?.id));
@@ -1319,7 +1345,7 @@ export default function PDCAManager({
                         {/* 참여대상 & 연계부서 (실적목표 아래로 한 줄 배치) */}
                         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.4rem", borderTop: "1px solid var(--border-color-dark)", paddingTop: "0.4rem" }}>
                           <div>
-                            <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)" }}>참여 대상</span>
+                            <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)" }}>참여대상</span>
                             <input type="text" className="user-selector" placeholder="예: 재학생" value={inputTargetAudience} onChange={(e) => setInputTargetAudience(e.target.value)} style={{ padding: "0.25rem 0.4rem", fontSize: "0.75rem", width: "100%" }} />
                           </div>
                           <div>
