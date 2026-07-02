@@ -32,6 +32,7 @@ export default function AgreementManager({
   const [inputUnitId, setInputUnitId] = useState("");
   const [inputContents, setInputContents] = useState([]);
   const [inputFileName, setInputFileName] = useState("");
+  const [inputFileData, setInputFileData] = useState(""); // Base64 파일 원본 데이터 영속 캐시
 
   // 현재 연차에 등록된 단위과제 추출 로직 (드롭다운 연동용)
   const getAvailableUnits = () => {
@@ -105,11 +106,16 @@ export default function AgreementManager({
     }
   };
 
-  // 모의 파일 업로드
+  // 모의 파일 업로드 (Base64 파일 리더 포함)
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
       setInputFileName(file.name);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setInputFileData(reader.result);
+      };
+      reader.readAsDataURL(file);
     }
   };
 
@@ -124,6 +130,7 @@ export default function AgreementManager({
     setInputUnitId(availableUnits[0]?.id || "");
     setInputContents([]);
     setInputFileName("");
+    setInputFileData("");
   };
 
   // 모달 열기 (등록 모드)
@@ -143,6 +150,7 @@ export default function AgreementManager({
     setInputUnitId(agr.unitId || "");
     setInputContents(Array.isArray(agr.contents) ? [...agr.contents] : []);
     setInputFileName(agr.fileName || "");
+    setInputFileData(agr.fileData || "");
     setIsModalOpen(true);
   };
 
@@ -182,7 +190,8 @@ export default function AgreementManager({
       subjectOrganization: inputSubjectOrg.trim(),
       unitId: inputUnitId,
       contents: inputContents,
-      fileName: inputFileName
+      fileName: inputFileName,
+      fileData: inputFileData
     };
 
     if (editingId) {
@@ -193,6 +202,46 @@ export default function AgreementManager({
 
     setIsModalOpen(false);
     resetForm();
+  };
+
+  // 사본 보기 핸들러 (Base64 데이터를 브라우저 임시 Blob 객체로 변환해 새 창에서 시각화)
+  const handleViewFile = (agr) => {
+    try {
+      let base64Data = agr.fileData;
+      let mimeType = "application/pdf";
+
+      if (!base64Data) {
+        // 내장 모의 PDF 1페이지 Base64 데이터셋 (ANCHOR PORTAL 예시 PDF)
+        base64Data = "data:application/pdf;base64,JVBERi0xLjQKJdPr6goxIDAgb2JqCjw8L1R5cGUvQ2F0YWxvZy9QYWdlcyAyIDAgUj4+CmVuZG9iagoyIDAgb2JqCjw8L1R5cGUvUGFnZXMvQ291bnQgMS9LaWRzWzMgMCBSXT4+CmVuZG9iagozIDAgb2JqCjw8L1R5cGUvUGFnZS9QYXJlbnQgMiAwIFIvTWVkaWFCb3hbMCAwIDU5NSA4NDJdL1Jlc291cmNlczw8L0ZvbnQ8PC9GMSA0IDAgUj4+Pj4vQ29udGVudHMgNSAwIFI+PgplbmRvYmoKNCAwIG9iago8PC9UeXBlL0ZvbnQvU3VidHlwZS9UeXBlMS9CYXNlRm9udC9IZWx2ZXRpY2EvRW5jb2RpbmcvV2luQW5zaUVuY29kaW5nPj4KZW5kb2JqCjUgMCBvYmoKPDwvTGVuZ3RoIDczPj5zdHJlYW0KQlQKL0YxIDI0IFRmCjUwIDc1MCBUZAooQU5DSE9SIFBPUlRBTCAtIEFncmVlbWVudCBEb2N1bWVudCBTYW1wbGUpIFNqCkVORAplbmRzdHJlYW0KZW5kb2JqCnhyZWYKMCA2CjAwMDAwMDAwMDAgNjU1MzUgZiAKMDAwMDAwMDAxNiAwMDAwMCBuIAowMDAwMDAwMDcyIDAwMDAwIG4gCDAwMDAwMDAxMzMgMDAwMDAgbiAKMDAwMDAwMDI0NiAwMDAwMCBuIAowMDAwMDAzNDEgMDAwMDAgbiAKdHJhaWxlcgo8PC9TaXplIDYvUm9vdCAxIDA+PgpzdGFydHhyZWYKNDY1CiUlRU9GCg==";
+      }
+
+      // Base64 Mime-Type 파싱
+      const parts = base64Data.split(",");
+      if (parts.length > 1) {
+        const mimeMatch = parts[0].match(/:(.*?);/);
+        if (mimeMatch) {
+          mimeType = mimeMatch[1];
+        }
+        base64Data = parts[1];
+      } else {
+        base64Data = parts[0];
+      }
+
+      const byteCharacters = window.atob(base64Data);
+      const byteNumbers = new Array(byteCharacters.length);
+      for (let i = 0; i < byteCharacters.length; i++) {
+        byteNumbers[i] = byteCharacters.charCodeAt(i);
+      }
+      const byteArray = new Uint8Array(byteNumbers);
+      const blob = new Blob([byteArray], { type: mimeType });
+      const blobUrl = URL.createObjectURL(blob);
+      
+      // 새 창에서 파일 띄우기
+      window.open(blobUrl, "_blank");
+    } catch (error) {
+      console.error("Failed to render PDF file:", error);
+      alert("파일 로드 중 오류가 발생했습니다.");
+    }
   };
 
   return (
@@ -262,7 +311,11 @@ export default function AgreementManager({
                   </td>
                   <td style={{ padding: "0.6rem 0.8rem", textAlign: "center" }}>
                     {agr.fileName ? (
-                      <span title={agr.fileName} style={{ color: "#a1a1aa", cursor: "pointer", display: "inline-flex", alignItems: "center" }}>
+                      <span 
+                        title={agr.fileName} 
+                        onClick={() => handleViewFile(agr)}
+                        style={{ color: "#60a5fa", cursor: "pointer", display: "inline-flex", alignItems: "center" }}
+                      >
                         <FileText size={16} />
                       </span>
                     ) : (
