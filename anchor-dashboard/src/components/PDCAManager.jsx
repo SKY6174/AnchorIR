@@ -866,8 +866,18 @@ export default function PDCAManager({
                           </span>
                           {(isResearcher || currentRole.rank <= 2) && (
                             <select
-                              style={{ fontSize: "0.65rem", background: "#18181b", color: "white", border: "1px solid var(--border-color-dark)", borderRadius: "0.25rem", marginTop: "0.2rem" }}
+                              style={{ 
+                                fontSize: "0.65rem", 
+                                background: stage === "p" ? "#27272a" : "#18181b", 
+                                color: stage === "p" ? "#a1a1aa" : "white", 
+                                border: "1px solid var(--border-color-dark)", 
+                                borderRadius: "0.25rem", 
+                                marginTop: "0.2rem",
+                                cursor: stage === "p" ? "not-allowed" : "pointer"
+                              }}
                               value={status}
+                              disabled={stage === "p"}
+                              title={stage === "p" ? "Plan 단계 상태는 기획 정보 입력량에 따라 자동으로 설정됩니다." : ""}
                               onChange={(e) => handleUpdatePDCA(stage, e.target.value)}
                             >
                               <option value="대기">대기</option>
