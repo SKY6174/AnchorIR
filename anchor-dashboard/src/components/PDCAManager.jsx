@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Check, ClipboardList, PenTool, Layers, LayoutList, Info, HelpCircle } from "lucide-react";
 
 // 백만원 단위 포맷팅 헬퍼 함수 (소수점 첫째자리까지 표현)
@@ -207,6 +207,15 @@ export default function PDCAManager({
   const [inputKpiLink, setInputKpiLink] = useState("");
   const [inputActualFrequency, setInputActualFrequency] = useState("");
   const [inputAchieveRate, setInputAchieveRate] = useState("");
+
+  // 현재 뷰포트에서 보여줄 PDCA 단계 선택 (localStorage 세션 연동)
+  const [activePdcaStage, setActivePdcaStage] = useState(() => {
+    return localStorage.getItem("anchor_active_pdca_stage") || "P";
+  });
+
+  useEffect(() => {
+    localStorage.setItem("anchor_active_pdca_stage", activePdcaStage);
+  }, [activePdcaStage]);
 
   // 모든 프로그램 수집
   const allPrograms = [];
@@ -845,8 +854,51 @@ export default function PDCAManager({
                   </div>
                 </div>
 
+                {/* 기획/실적 단계 선택 드롭다운 */}
+                <div style={{
+                  marginBottom: "1rem",
+                  padding: "0.6rem 0.8rem",
+                  background: "rgba(255, 255, 255, 0.02)",
+                  border: "1px solid var(--border-color-dark)",
+                  borderRadius: "0.5rem",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  gap: "0.8rem",
+                  boxShadow: "inset 0 1px 1px rgba(255, 255, 255, 0.05)"
+                }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
+                    <ClipboardList size={16} style={{ color: "var(--accent-color)" }} />
+                    <span style={{ fontSize: "0.75rem", fontWeight: "800", color: "var(--text-secondary-dark)" }}>기획/실적 등록 단계 선택:</span>
+                  </div>
+                  <select
+                    className="user-selector"
+                    value={activePdcaStage}
+                    onChange={(e) => setActivePdcaStage(e.target.value)}
+                    style={{
+                      flex: 1,
+                      maxWidth: "340px",
+                      padding: "0.35rem 0.6rem",
+                      fontSize: "0.75rem",
+                      fontWeight: "700",
+                      background: "#18181b",
+                      color: "white",
+                      border: "1px solid var(--border-color-dark)",
+                      borderRadius: "0.3rem",
+                      outline: "none",
+                      cursor: "pointer",
+                      boxShadow: "0 2px 4px rgba(0, 0, 0, 0.2)"
+                    }}
+                  >
+                    <option value="P" style={{ background: "#18181b", color: "white" }}>Plan (P 단계: 예산 기획 및 세부 추진계획)</option>
+                    <option value="D" style={{ background: "#18181b", color: "white" }}>Do (D 단계: 세부 재원별 본집행액 및 실적 입력)</option>
+                    <option value="C" style={{ background: "#18181b", color: "white" }}>Check (C 단계: 운영 성과 실적 입력)</option>
+                    <option value="A" style={{ background: "#18181b", color: "white" }}>Act (A 단계: 사업 환류 및 자체평가)</option>
+                  </select>
+                </div>
+
                 {/* P 단계: 기획 정보 수립 & 예산 세부 배정 */}
-                {(isResearcher || currentRole.rank <= 2) && (
+                {activePdcaStage === "P" && (isResearcher || currentRole.rank <= 2) && (
                   <form onSubmit={handleUpdatePDetails} style={{ padding: "0.75rem", background: "rgba(59,130,246,0.02)", border: "1px solid var(--border-color-dark)", borderRadius: "0.5rem" }}>
                     <h4 style={{ fontSize: "0.8rem", fontWeight: "800", marginBottom: "0.6rem", color: "var(--accent-color)" }}>P 단계: 예산 기획 및 세부 추진계획</h4>
                     <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
@@ -949,338 +1001,312 @@ export default function PDCAManager({
                                   newCats[idx].budget = e.target.value.replace(/[^0-9.]/g, "");
                                   setInputBudgetCategories(newCats);
                                 }}
-                                style={{ fontSize: "0.7rem", padding: "0.2rem 0.4rem", width: "100%" }}
+                                style={{ padding: "0.2rem 0.4rem", fontSize: "0.7rem" }}
                               />
                               <input
                                 type="text"
                                 className="user-selector budget-carry-input"
                                 placeholder="이월비"
+                                value={selectedYear === 1 ? 0 : item.budget_carry}
                                 disabled={selectedYear === 1}
-                                value={selectedYear === 1 ? "0.0" : item.budget_carry}
                                 onChange={(e) => {
+                                  if (selectedYear === 1) return;
                                   const newCats = [...inputBudgetCategories];
                                   newCats[idx].budget_carry = e.target.value.replace(/[^0-9.]/g, "");
                                   setInputBudgetCategories(newCats);
                                 }}
-                                style={{
-                                  fontSize: "0.7rem",
-                                  padding: "0.2rem 0.4rem",
-                                  width: "100%"
-                                }}
+                                style={{ padding: "0.2rem 0.4rem", fontSize: "0.7rem" }}
                               />
                             </div>
                           ))}
                         </div>
                       </div>
 
-                      {/* 월별 추진 일정 (PDCA) */}
+                      {/* 3영역: 추진일정 */}
                       <div style={{ borderTop: "1px solid var(--border-color-dark)", paddingTop: "0.4rem" }}>
-                        <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)", display: "block", marginBottom: "0.25rem" }}>
-                          월별 추진 일정 (PDCA)
-                        </span>
-                        <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", background: "rgba(255,255,255,0.01)", padding: "0.5rem", borderRadius: "0.4rem", border: "1px solid rgba(255,255,255,0.03)" }}>
-                          {/* 1행: 계획 추진 일정 (Plan) */}
-                          <div>
-                            <span style={{ fontSize: "0.58rem", color: "#3b82f6", fontWeight: "800", display: "inline-block", marginBottom: "0.25rem" }}>● 계획 일정</span>
-                            <div style={{ display: "grid", gridTemplateColumns: "repeat(12, 1fr)", gap: "0.2rem", overflowX: "auto", paddingBottom: "0.15rem" }}>
-                              {monthsList.map((month, idx) => {
-                                const val = inputMonthlyPDCA[idx] || "";
-                                const getPDCAColor = (v) => {
-                                  if (!v || typeof v !== "string") return "transparent";
-                                  if (v === "P") return "#2563eb";
-                                  if (v === "D") return "#10b981";
-                                  if (v === "C") return "#f59e0b";
-                                  if (v === "A") return "#d946ef";
-                                  if (v.includes("/")) {
-                                    const steps = v.split("/").map(s => s.trim().toUpperCase());
-                                    const getCol = (char) => {
-                                      if (char === "P") return "#2563eb";
-                                      if (char === "D") return "#10b981";
-                                      if (char === "C") return "#f59e0b";
-                                      if (char === "A") return "#d946ef";
-                                      return "#18181b";
-                                    };
-                                    return `linear-gradient(135deg, ${getCol(steps[0] || "")} 50%, ${getCol(steps[1] || "")} 50%)`;
+                        <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)", display: "block", marginBottom: "0.25rem" }}>월별 추진 일정 (PDCA)</span>
+                        
+                        <div style={{ background: "rgba(255,255,255,0.01)", padding: "0.5rem", borderRadius: "0.4rem", border: "1px solid rgba(255,255,255,0.03)", marginBottom: "0.3rem" }}>
+                          <span style={{ fontSize: "0.58rem", color: "var(--accent-color)", fontWeight: "800", display: "inline-block", marginBottom: "0.25rem" }}>● 계획 일정</span>
+                          <div style={{ display: "grid", gridTemplateColumns: "repeat(12, 1fr)", gap: "0.2rem", overflowX: "auto" }}>
+                            {monthsList.map((month, idx) => {
+                              const val = inputMonthlyPDCA[idx] || "";
+                              
+                              const getStatusColor = (v) => {
+                                if (!v || typeof v !== "string") return "transparent";
+                                if (v.startsWith("P/D")) return "#1e3a8a";
+                                if (v.startsWith("D/C")) return "#064e3b";
+                                if (v.startsWith("C/A")) return "#78350f";
+                                if (v.startsWith("P")) return "#2563eb";
+                                if (v.startsWith("D")) return "#10b981";
+                                if (v.startsWith("C")) return "#f59e0b";
+                                if (v.startsWith("A")) return "#d946ef";
+                                return "transparent";
+                              };
+                              
+                              const bg = getStatusColor(val);
+                              
+                              return (
+                                <div key={idx} style={{ textAlign: "center", minWidth: "42px" }}>
+                                  <div style={{ fontSize: "0.6rem", color: "var(--text-secondary-dark)", marginBottom: "0.15rem" }}>{month}</div>
+                                  <select
+                                    className="user-selector"
+                                    value={val}
+                                    onChange={(e) => {
+                                      const newPDCA = [...inputMonthlyPDCA];
+                                      newPDCA[idx] = e.target.value;
+                                      setInputMonthlyPDCA(newPDCA);
+                                    }}
+                                    style={{
+                                      width: "100%",
+                                      padding: "0.15rem 0.2rem",
+                                      fontSize: "0.65rem",
+                                      background: bg !== "transparent" ? bg : "#18181b",
+                                      color: bg !== "transparent" ? "white" : "var(--text-secondary-dark)",
+                                      border: "1px solid var(--border-color-dark)",
+                                      borderRadius: "0.2rem",
+                                      fontWeight: bg !== "transparent" ? "800" : "normal",
+                                      outline: "none",
+                                      transition: "all 0.2s"
+                                    }}
+                                  >
+                                    <option value="" style={{ background: "#18181b", color: "white" }}>-</option>
+                                    <option value="P" style={{ background: "#2563eb", color: "white" }}>P</option>
+                                    <option value="D" style={{ background: "#10b981", color: "white" }}>D</option>
+                                    <option value="C" style={{ background: "#f59e0b", color: "white" }}>C</option>
+                                    <option value="A" style={{ background: "#d946ef", color: "white" }}>A</option>
+                                    <option value="P/D" style={{ background: "#1e3a8a", color: "#60a5fa" }}>P/D</option>
+                                    <option value="D/C" style={{ background: "#064e3b", color: "#34d399" }}>D/C</option>
+                                    <option value="C/A" style={{ background: "#78350f", color: "#fbbf24" }}>C/A</option>
+                                  </select>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+
+                        {/* 성과지표 연계 설정 영역 */}
+                        <div style={{ borderTop: "1px solid var(--border-color-dark)", paddingTop: "0.45rem", marginTop: "0.2rem", marginBottom: "0.4rem" }}>
+                          <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)", display: "block", marginBottom: "0.3rem" }}>
+                            성과지표 연계
+                          </span>
+                          <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: "0.5rem" }}>
+                            {/* 지표 유형 선택 라디오 그룹 */}
+                            <div style={{ display: "flex", gap: "0.6rem", alignItems: "center", background: "#18181b", padding: "0.2rem 0.5rem", borderRadius: "0.25rem", border: "1px solid var(--border-color-dark)" }}>
+                              <span style={{ fontSize: "0.62rem", color: "var(--text-secondary-dark)", marginRight: "0.2rem" }}>유형:</span>
+                              <label style={{ fontSize: "0.65rem", color: "white", cursor: "pointer", display: "flex", alignItems: "center", gap: "0.15rem" }}>
+                                <input 
+                                  type="radio" 
+                                  name="kpiTypeSelect" 
+                                  value="자율" 
+                                  checked={inputKpiType === "자율"} 
+                                  onChange={() => {
+                                    setInputKpiType("자율");
+                                    setInputKpiLink(""); // 유형 변경 시 초기화
+                                  }} 
+                                />
+                                지자체 자율
+                              </label>
+                              <label style={{ fontSize: "0.65rem", color: "white", cursor: "pointer", display: "flex", alignItems: "center", gap: "0.15rem" }}>
+                                <input 
+                                  type="radio" 
+                                  name="kpiTypeSelect" 
+                                  value="중점" 
+                                  checked={inputKpiType === "중점"} 
+                                  onChange={() => {
+                                    setInputKpiType("중점");
+                                    setInputKpiLink(""); // 유형 변경 시 초기화
+                                  }} 
+                                />
+                                대학 중점
+                              </label>
+                            </div>
+                            
+                            {/* 지표 목록 드롭다운 */}
+                            <div>
+                              <select
+                                className="user-selector"
+                                value={inputKpiLink}
+                                onChange={(e) => setInputKpiLink(e.target.value)}
+                                style={{ width: "100%", padding: "0.25rem 0.4rem", fontSize: "0.7rem", background: "#18181b", color: "white", border: "1px solid var(--border-color-dark)" }}
+                              >
+                                <option value="" style={{ background: "#18181b", color: "white" }}>-- 성과지표를 선택해 주세요 --</option>
+                                {(() => {
+                                  // 소속 단위과제 KPI를 우선으로 하고 없으면 전체 폴백
+                                  const activeUnit = allUnits.find(u => u.programs?.some(p => p.id === activeProg?.id));
+                                  let filteredKpis = activeUnit?.kpis || [];
+                                  if (!Array.isArray(filteredKpis) || filteredKpis.length === 0) {
+                                    const kpiMap = new Map();
+                                    allUnits.forEach(u => {
+                                      if (Array.isArray(u.kpis)) {
+                                        u.kpis.forEach(k => {
+                                          if (k && k.id) kpiMap.set(k.id, k);
+                                        });
+                                      }
+                                    });
+                                    filteredKpis = Array.from(kpiMap.values());
                                   }
-                                  return "transparent";
-                                };
-                                const bg = getPDCAColor(val);
-                                return (
-                                  <div key={month} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.15rem", minWidth: "36px" }}>
-                                    <span style={{ fontSize: "0.55rem", color: "var(--text-secondary-dark)", whiteSpace: "nowrap" }}>
-                                      {month}
-                                    </span>
-                                    <select
-                                      className="user-selector"
-                                      value={val}
-                                      onChange={(e) => {
-                                        e.preventDefault();
-                                        e.stopPropagation();
-                                        const newPDCA = [...inputMonthlyPDCA];
-                                        newPDCA[idx] = e.target.value;
-                                        setInputMonthlyPDCA(newPDCA);
-                                      }}
-                                      onClick={(e) => e.stopPropagation()}
-                                      onKeyDown={(e) => {
-                                        if (e.key === "Enter") {
-                                          e.preventDefault();
-                                          e.stopPropagation();
-                                        }
-                                      }}
-                                      style={{
-                                        width: "100%",
-                                        fontSize: "0.62rem",
-                                        padding: "0.15rem 0.05rem",
-                                        textAlign: "center",
-                                        background: bg !== "transparent" ? bg : "#18181b",
-                                        color: bg !== "transparent" ? "white" : "var(--text-secondary-dark)",
-                                        border: "1px solid var(--border-color-dark)",
-                                        borderRadius: "0.2rem",
-                                        cursor: "pointer",
-                                        fontWeight: bg !== "transparent" ? "800" : "normal",
-                                        outline: "none"
-                                      }}
-                                    >
-                                      <option value="" style={{ background: "#18181b", color: "white" }}>-</option>
-                                      <option value="P" style={{ background: "#2563eb", color: "white" }}>P</option>
-                                      <option value="D" style={{ background: "#10b981", color: "white" }}>D</option>
-                                      <option value="C" style={{ background: "#f59e0b", color: "white" }}>C</option>
-                                      <option value="A" style={{ background: "#d946ef", color: "white" }}>A</option>
-                                      <option value="P/D" style={{ background: "#1e3a8a", color: "#60a5fa" }}>P/D</option>
-                                      <option value="D/C" style={{ background: "#064e3b", color: "#34d399" }}>D/C</option>
-                                      <option value="C/A" style={{ background: "#78350f", color: "#fbbf24" }}>C/A</option>
-                                    </select>
-                                  </div>
-                                );
-                              })}
+                                  return filteredKpis
+                                    .filter(k => k && k.type === inputKpiType)
+                                    .map(k => (
+                                      <option key={k.id} value={k.id} style={{ background: "#18181b", color: "white" }}>
+                                        [{k.id}] {k.name}
+                                      </option>
+                                    ));
+                                })()}
+                              </select>
                             </div>
                           </div>
 
-
-                        </div>
-                      </div>
-
-                      {/* 성과지표 연계 설정 영역 */}
-                      <div style={{ borderTop: "1px solid var(--border-color-dark)", paddingTop: "0.45rem", marginTop: "0.2rem", marginBottom: "0.4rem" }}>
-                        <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)", display: "block", marginBottom: "0.3rem" }}>
-                          성과지표 연계
-                        </span>
-                        <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: "0.5rem" }}>
-                          {/* 지표 유형 선택 라디오 그룹 */}
-                          <div style={{ display: "flex", gap: "0.6rem", alignItems: "center", background: "#18181b", padding: "0.2rem 0.5rem", borderRadius: "0.25rem", border: "1px solid var(--border-color-dark)" }}>
-                            <span style={{ fontSize: "0.62rem", color: "var(--text-secondary-dark)", marginRight: "0.2rem" }}>유형:</span>
-                            <label style={{ fontSize: "0.65rem", color: "white", cursor: "pointer", display: "flex", alignItems: "center", gap: "0.15rem" }}>
-                              <input 
-                                type="radio" 
-                                name="kpiTypeSelect" 
-                                value="자율" 
-                                checked={inputKpiType === "자율"} 
-                                onChange={() => {
-                                  setInputKpiType("자율");
-                                  setInputKpiLink(""); // 유형 변경 시 초기화
-                                }} 
-                              />
-                              지자체 자율
-                            </label>
-                            <label style={{ fontSize: "0.65rem", color: "white", cursor: "pointer", display: "flex", alignItems: "center", gap: "0.15rem" }}>
-                              <input 
-                                type="radio" 
-                                name="kpiTypeSelect" 
-                                value="중점" 
-                                checked={inputKpiType === "중점"} 
-                                onChange={() => {
-                                  setInputKpiType("중점");
-                                  setInputKpiLink(""); // 유형 변경 시 초기화
-                                }} 
-                              />
-                              대학 중점
-                            </label>
-                          </div>
-                          
-                          {/* 지표 목록 드롭다운 */}
-                          <div>
-                            <select
-                              className="user-selector"
-                              value={inputKpiLink}
-                              onChange={(e) => setInputKpiLink(e.target.value)}
-                              style={{ width: "100%", padding: "0.25rem 0.4rem", fontSize: "0.7rem", background: "#18181b", color: "white", border: "1px solid var(--border-color-dark)" }}
-                            >
-                              <option value="" style={{ background: "#18181b", color: "white" }}>-- 성과지표를 선택해 주세요 --</option>
-                              {(() => {
-                                // 소속 단위과제 KPI를 우선으로 하고 없으면 전체 폴백
-                                const activeUnit = allUnits.find(u => u.programs?.some(p => p.id === activeProg?.id));
-                                let filteredKpis = activeUnit?.kpis || [];
-                                if (!Array.isArray(filteredKpis) || filteredKpis.length === 0) {
-                                  const kpiMap = new Map();
-                                  allUnits.forEach(u => {
-                                    if (Array.isArray(u.kpis)) {
-                                      u.kpis.forEach(k => {
-                                        if (k && k.id) kpiMap.set(k.id, k);
-                                      });
-                                    }
+                          {/* 성과지표 선택 시 세부지표 목록을 바로 아래 줄에 디스플레이 */}
+                          {inputKpiLink && (() => {
+                            const activeUnit = allUnits.find(u => u.programs?.some(p => p.id === activeProg?.id));
+                            let filteredKpis = activeUnit?.kpis || [];
+                            if (!Array.isArray(filteredKpis) || filteredKpis.length === 0) {
+                              const kpiMap = new Map();
+                              allUnits.forEach(u => {
+                                if (Array.isArray(u.kpis)) {
+                                  u.kpis.forEach(k => {
+                                    if (k && k.id) kpiMap.set(k.id, k);
                                   });
-                                  filteredKpis = Array.from(kpiMap.values());
                                 }
-                                return filteredKpis
-                                  .filter(k => k && k.type === inputKpiType)
-                                  .map(k => (
-                                    <option key={k.id} value={k.id} style={{ background: "#18181b", color: "white" }}>
-                                      [{k.id}] {k.name}
-                                    </option>
-                                  ));
-                              })()}
-                            </select>
-                          </div>
+                              });
+                              filteredKpis = Array.from(kpiMap.values());
+                            }
+                            const selectedKpi = filteredKpis.find(k => k && k.id === inputKpiLink);
+                            if (!selectedKpi) return null;
+                            return (
+                              <div style={{ marginTop: "0.4rem", background: "rgba(59, 130, 246, 0.04)", border: "1px solid rgba(59, 130, 246, 0.15)", borderRadius: "0.3rem", padding: "0.4rem 0.6rem" }}>
+                                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.25rem", borderBottom: "1px solid rgba(255,255,255,0.05)", paddingBottom: "0.15rem" }}>
+                                  <span style={{ fontSize: "0.62rem", color: "#60a5fa", fontWeight: "700" }}>📌 연계 성과지표 상세: {selectedKpi.name}</span>
+                                  <span style={{ fontSize: "0.55rem", color: "var(--text-secondary-dark)" }}>공식: {selectedKpi.formula || "N/A"}</span>
+                                </div>
+                                <div style={{ display: "flex", flexDirection: "column", gap: "0.2rem" }}>
+                                  <span style={{ fontSize: "0.58rem", color: "var(--text-secondary-dark)", display: "block" }}>세부지표 목록:</span>
+                                  {selectedKpi.subItems && selectedKpi.subItems.length > 0 ? (
+                                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "0.3rem" }}>
+                                      {selectedKpi.subItems.map(sub => (
+                                        <div key={sub.id} style={{ display: "flex", justifyContent: "space-between", background: "rgba(255,255,255,0.02)", padding: "0.15rem 0.35rem", borderRadius: "0.2rem", border: "1px solid rgba(255,255,255,0.03)" }}>
+                                          <span style={{ fontSize: "0.6rem", color: "white" }}>• {sub.name}</span>
+                                          <span style={{ fontSize: "0.6rem", color: "#34d399", fontWeight: "700" }}>({sub.unit})</span>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  ) : (
+                                    <span style={{ fontSize: "0.6rem", color: "var(--text-secondary-dark)" }}>등록된 세부지표가 없습니다.</span>
+                                  )}
+                                </div>
+                              </div>
+                            );
+                          })()}
                         </div>
 
-                        {/* 성과지표 선택 시 세부지표 목록을 바로 아래 줄에 디스플레이 */}
-                        {inputKpiLink && (() => {
-                          const activeUnit = allUnits.find(u => u.programs?.some(p => p.id === activeProg?.id));
-                          let filteredKpis = activeUnit?.kpis || [];
-                          if (!Array.isArray(filteredKpis) || filteredKpis.length === 0) {
-                            const kpiMap = new Map();
-                            allUnits.forEach(u => {
-                              if (Array.isArray(u.kpis)) {
-                                u.kpis.forEach(k => {
-                                  if (k && k.id) kpiMap.set(k.id, k);
-                                });
-                              }
-                            });
-                            filteredKpis = Array.from(kpiMap.values());
-                          }
-                          const selectedKpi = filteredKpis.find(k => k && k.id === inputKpiLink);
-                          if (!selectedKpi) return null;
-                          return (
-                            <div style={{ marginTop: "0.4rem", background: "rgba(59, 130, 246, 0.04)", border: "1px solid rgba(59, 130, 246, 0.15)", borderRadius: "0.3rem", padding: "0.4rem 0.6rem" }}>
-                              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.25rem", borderBottom: "1px solid rgba(255,255,255,0.05)", paddingBottom: "0.15rem" }}>
-                                <span style={{ fontSize: "0.62rem", color: "#60a5fa", fontWeight: "700" }}>📌 연계 성과지표 상세: {selectedKpi.name}</span>
-                                <span style={{ fontSize: "0.55rem", color: "var(--text-secondary-dark)" }}>공식: {selectedKpi.formula || "N/A"}</span>
-                              </div>
-                              <div style={{ display: "flex", flexDirection: "column", gap: "0.2rem" }}>
-                                <span style={{ fontSize: "0.58rem", color: "var(--text-secondary-dark)", display: "block" }}>세부지표 목록:</span>
-                                {selectedKpi.subItems && selectedKpi.subItems.length > 0 ? (
-                                  <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "0.3rem" }}>
-                                    {selectedKpi.subItems.map(sub => (
-                                      <div key={sub.id} style={{ display: "flex", justifyContent: "space-between", background: "rgba(255,255,255,0.02)", padding: "0.15rem 0.35rem", borderRadius: "0.2rem", border: "1px solid rgba(255,255,255,0.03)" }}>
-                                        <span style={{ fontSize: "0.6rem", color: "white" }}>• {sub.name}</span>
-                                        <span style={{ fontSize: "0.6rem", color: "#34d399", fontWeight: "700" }}>({sub.unit})</span>
-                                      </div>
-                                    ))}
-                                  </div>
-                                ) : (
-                                  <span style={{ fontSize: "0.6rem", color: "var(--text-secondary-dark)" }}>등록된 세부지표가 없습니다.</span>
-                                )}
-                              </div>
+                        {/* 실적목표 3종 구분 입력 (제목 입력창 신설 및 수치/단위 분리) */}
+                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "0.4rem" }}>
+                          {/* 실적목표 1 */}
+                          <div style={{ display: "flex", flexDirection: "column", gap: "0.2rem" }}>
+                            <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)" }}>실적목표 1 제목</span>
+                            <input 
+                              type="text" 
+                              className="user-selector" 
+                              placeholder="실적목표명 (예: 참여인원)" 
+                              value={inputTargetParticipantsName} 
+                              onChange={(e) => setInputTargetParticipantsName(e.target.value)} 
+                              style={{ padding: "0.25rem 0.4rem", fontSize: "0.75rem", width: "100%", background: "#18181b", color: "white", border: "1px solid var(--border-color-dark)" }} 
+                            />
+                            <div style={{ display: "flex", gap: "0.2rem" }}>
+                              <input 
+                                type="number" 
+                                className="user-selector" 
+                                placeholder="수치" 
+                                value={inputTargetParticipants} 
+                                onChange={(e) => setInputTargetParticipants(e.target.value)} 
+                                style={{ padding: "0.25rem 0.4rem", fontSize: "0.75rem", flex: 2, minWidth: 0 }} 
+                              />
+                              <input 
+                                type="text" 
+                                className="user-selector" 
+                                placeholder="단위" 
+                                value={inputTargetParticipantsUnit} 
+                                onChange={(e) => setInputTargetParticipantsUnit(e.target.value)} 
+                                style={{ padding: "0.25rem 0.4rem", fontSize: "0.75rem", flex: 1, minWidth: 0, textAlign: "center" }} 
+                              />
                             </div>
-                          );
-                        })()}
-                      </div>
+                          </div>
 
-                      {/* 실적목표 3종 구분 입력 (제목 입력창 신설 및 수치/단위 분리) */}
-                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "0.4rem" }}>
-                        {/* 실적목표 1 */}
-                        <div style={{ display: "flex", flexDirection: "column", gap: "0.2rem" }}>
-                          <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)" }}>실적목표 1 제목</span>
-                          <input 
-                            type="text" 
-                            className="user-selector" 
-                            placeholder="실적목표명 (예: 참여인원)" 
-                            value={inputTargetParticipantsName} 
-                            onChange={(e) => setInputTargetParticipantsName(e.target.value)} 
-                            style={{ padding: "0.25rem 0.4rem", fontSize: "0.75rem", width: "100%", background: "#18181b", color: "white", border: "1px solid var(--border-color-dark)" }} 
-                          />
-                          <div style={{ display: "flex", gap: "0.2rem" }}>
-                            <input 
-                              type="number" 
-                              className="user-selector" 
-                              placeholder="수치" 
-                              value={inputTargetParticipants} 
-                              onChange={(e) => setInputTargetParticipants(e.target.value)} 
-                              style={{ padding: "0.25rem 0.4rem", fontSize: "0.75rem", flex: 2, minWidth: 0 }} 
-                            />
+                          {/* 실적목표 2 */}
+                          <div style={{ display: "flex", flexDirection: "column", gap: "0.2rem" }}>
+                            <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)" }}>실적목표 2 제목</span>
                             <input 
                               type="text" 
                               className="user-selector" 
-                              placeholder="단위" 
-                              value={inputTargetParticipantsUnit} 
-                              onChange={(e) => setInputTargetParticipantsUnit(e.target.value)} 
-                              style={{ padding: "0.25rem 0.4rem", fontSize: "0.75rem", flex: 1, minWidth: 0, textAlign: "center" }} 
+                              placeholder="실적목표명 (예: 개발수)" 
+                              value={inputTargetDevelopmentsName} 
+                              onChange={(e) => setInputTargetDevelopmentsName(e.target.value)} 
+                              style={{ padding: "0.25rem 0.4rem", fontSize: "0.75rem", width: "100%", background: "#18181b", color: "white", border: "1px solid var(--border-color-dark)" }} 
                             />
+                            <div style={{ display: "flex", gap: "0.2rem" }}>
+                              <input 
+                                type="number" 
+                                className="user-selector" 
+                                placeholder="수치" 
+                                value={inputTargetDevelopments} 
+                                onChange={(e) => setInputTargetDevelopments(e.target.value)} 
+                                style={{ padding: "0.25rem 0.4rem", fontSize: "0.75rem", flex: 2, minWidth: 0 }} 
+                              />
+                              <input 
+                                type="text" 
+                                className="user-selector" 
+                                placeholder="단위" 
+                                value={inputTargetDevelopmentsUnit} 
+                                onChange={(e) => setInputTargetDevelopmentsUnit(e.target.value)} 
+                                style={{ padding: "0.25rem 0.4rem", fontSize: "0.75rem", flex: 1, minWidth: 0, textAlign: "center" }} 
+                              />
+                            </div>
                           </div>
-                        </div>
 
-                        {/* 실적목표 2 */}
-                        <div style={{ display: "flex", flexDirection: "column", gap: "0.2rem" }}>
-                          <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)" }}>실적목표 2 제목</span>
-                          <input 
-                            type="text" 
-                            className="user-selector" 
-                            placeholder="실적목표명 (예: 개발수)" 
-                            value={inputTargetDevelopmentsName} 
-                            onChange={(e) => setInputTargetDevelopmentsName(e.target.value)} 
-                            style={{ padding: "0.25rem 0.4rem", fontSize: "0.75rem", width: "100%", background: "#18181b", color: "white", border: "1px solid var(--border-color-dark)" }} 
-                          />
-                          <div style={{ display: "flex", gap: "0.2rem" }}>
-                            <input 
-                              type="number" 
-                              className="user-selector" 
-                              placeholder="수치" 
-                              value={inputTargetDevelopments} 
-                              onChange={(e) => setInputTargetDevelopments(e.target.value)} 
-                              style={{ padding: "0.25rem 0.4rem", fontSize: "0.75rem", flex: 2, minWidth: 0 }} 
-                            />
+                          {/* 실적목표 3 */}
+                          <div style={{ display: "flex", flexDirection: "column", gap: "0.2rem" }}>
+                            <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)" }}>실적목표 3 제목</span>
                             <input 
                               type="text" 
                               className="user-selector" 
-                              placeholder="단위" 
-                              value={inputTargetDevelopmentsUnit} 
-                              onChange={(e) => setInputTargetDevelopmentsUnit(e.target.value)} 
-                              style={{ padding: "0.25rem 0.4rem", fontSize: "0.75rem", flex: 1, minWidth: 0, textAlign: "center" }} 
+                              placeholder="실적목표명 (예: 기타)" 
+                              value={inputTargetEtcName} 
+                              onChange={(e) => setInputTargetEtcName(e.target.value)} 
+                              style={{ padding: "0.25rem 0.4rem", fontSize: "0.75rem", width: "100%", background: "#18181b", color: "white", border: "1px solid var(--border-color-dark)" }} 
                             />
+                            <div style={{ display: "flex", gap: "0.2rem" }}>
+                              <input 
+                                type="number" 
+                                className="user-selector" 
+                                placeholder="수치" 
+                                value={inputTargetEtc} 
+                                onChange={(e) => setInputTargetEtc(e.target.value)} 
+                                style={{ padding: "0.25rem 0.4rem", fontSize: "0.75rem", flex: 2, minWidth: 0 }} 
+                              />
+                              <input 
+                                type="text" 
+                                className="user-selector" 
+                                placeholder="단위" 
+                                value={inputTargetEtcUnit} 
+                                onChange={(e) => setInputTargetEtcUnit(e.target.value)} 
+                                style={{ padding: "0.25rem 0.4rem", fontSize: "0.75rem", flex: 1, minWidth: 0, textAlign: "center" }} 
+                              />
+                            </div>
                           </div>
                         </div>
 
-                        {/* 실적목표 3 */}
-                        <div style={{ display: "flex", flexDirection: "column", gap: "0.2rem" }}>
-                          <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)" }}>실적목표 3 제목</span>
-                          <input 
-                            type="text" 
-                            className="user-selector" 
-                            placeholder="실적목표명 (예: 기타)" 
-                            value={inputTargetEtcName} 
-                            onChange={(e) => setInputTargetEtcName(e.target.value)} 
-                            style={{ padding: "0.25rem 0.4rem", fontSize: "0.75rem", width: "100%", background: "#18181b", color: "white", border: "1px solid var(--border-color-dark)" }} 
-                          />
-                          <div style={{ display: "flex", gap: "0.2rem" }}>
-                            <input 
-                              type="number" 
-                              className="user-selector" 
-                              placeholder="수치" 
-                              value={inputTargetEtc} 
-                              onChange={(e) => setInputTargetEtc(e.target.value)} 
-                              style={{ padding: "0.25rem 0.4rem", fontSize: "0.75rem", flex: 2, minWidth: 0 }} 
-                            />
-                            <input 
-                              type="text" 
-                              className="user-selector" 
-                              placeholder="단위" 
-                              value={inputTargetEtcUnit} 
-                              onChange={(e) => setInputTargetEtcUnit(e.target.value)} 
-                              style={{ padding: "0.25rem 0.4rem", fontSize: "0.75rem", flex: 1, minWidth: 0, textAlign: "center" }} 
-                            />
+                        {/* 참여대상 & 연계부서 (실적목표 아래로 한 줄 배치) */}
+                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.4rem", borderTop: "1px solid var(--border-color-dark)", paddingTop: "0.4rem" }}>
+                          <div>
+                            <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)" }}>참여 대상 (Target)</span>
+                            <input type="text" className="user-selector" placeholder="예: 재학생" value={inputTargetAudience} onChange={(e) => setInputTargetAudience(e.target.value)} style={{ padding: "0.25rem 0.4rem", fontSize: "0.75rem", width: "100%" }} />
                           </div>
-                        </div>
-                      </div>
-
-                      {/* 참여대상 & 연계부서 (실적목표 아래로 한 줄 배치) */}
-                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.4rem", borderTop: "1px solid var(--border-color-dark)", paddingTop: "0.4rem" }}>
-                        <div>
-                          <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)" }}>참여 대상 (Target)</span>
-                          <input type="text" className="user-selector" placeholder="예: 재학생" value={inputTargetAudience} onChange={(e) => setInputTargetAudience(e.target.value)} style={{ padding: "0.25rem 0.4rem", fontSize: "0.75rem", width: "100%" }} />
-                        </div>
-                        <div>
-                          <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)" }}>연계 부서 (Cooperation Dept)</span>
-                          <input type="text" className="user-selector" placeholder="예: ICC센터" value={inputCoopDept} onChange={(e) => setInputCoopDept(e.target.value)} style={{ padding: "0.25rem 0.4rem", fontSize: "0.75rem", width: "100%" }} />
+                          <div>
+                            <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)" }}>연계 부서 (Cooperation Dept)</span>
+                            <input type="text" className="user-selector" placeholder="예: ICC센터" value={inputCoopDept} onChange={(e) => setInputCoopDept(e.target.value)} style={{ padding: "0.25rem 0.4rem", fontSize: "0.75rem", width: "100%" }} />
+                          </div>
                         </div>
                       </div>
                       
@@ -1294,12 +1320,12 @@ export default function PDCAManager({
                 )}
 
                 {/* D 단계: 세부 재원별 집행 등록 */}
-                {(isResearcher || currentRole.rank <= 2) && (
+                {activePdcaStage === "D" && (isResearcher || currentRole.rank <= 2) && (
                   <form onSubmit={handleUpdateBudget} style={{ padding: "0.75rem", background: "rgba(16,185,129,0.03)", border: "1px solid rgba(16,185,129,0.15)", borderRadius: "0.5rem" }}>
                     <h4 style={{ fontSize: "0.8rem", fontWeight: "800", marginBottom: "0.5rem", color: "#10b981" }}>D 단계: 세부 재원별 본집행액 및 실적 입력</h4>
                     <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
                       
-                      {/* 실제 실적 일정 (D단계 내부 노출 및 수동 입력 기능) */}
+                      {/* 실제 추진일정 */}
                       <div style={{ background: "rgba(255,255,255,0.01)", padding: "0.5rem", borderRadius: "0.4rem", border: "1px solid rgba(255,255,255,0.03)", marginBottom: "0.3rem" }}>
                         <span style={{ fontSize: "0.58rem", color: "#10b981", fontWeight: "800", display: "inline-block", marginBottom: "0.25rem" }}>● 실제 추진일정</span>
                         <div style={{ display: "grid", gridTemplateColumns: "repeat(12, 1fr)", gap: "0.2rem", overflowX: "auto" }}>
@@ -1308,75 +1334,37 @@ export default function PDCAManager({
                             
                             const getActualStatusColor = (v) => {
                               if (!v || typeof v !== "string") return "transparent";
-                              const steps = v.split(/[\/+&,]/).map(s => s.trim().toUpperCase()).filter(s => ["P", "D", "C", "A"].includes(s));
-                              
-                              const getCharActualColor = (char) => {
-                                if (!char || typeof char !== "string") return "transparent";
-                                const stageKey = char.toLowerCase();
-                                const status = activeProg?.pdca?.[stageKey] || "대기";
-                                if (status === "완료") {
-                                  if (char === "P") return "#2563eb";
-                                  if (char === "D") return "#10b981";
-                                  if (char === "C") return "#f59e0b";
-                                  if (char === "A") return "#d946ef";
-                                } else if (status === "진행") {
-                                  if (char === "P") return "rgba(37,99,235,0.45)";
-                                  if (char === "D") return "rgba(16,185,129,0.45)";
-                                  if (char === "C") return "rgba(245,158,11,0.45)";
-                                  if (char === "A") return "rgba(217,70,239,0.45)";
-                                }
-                                return "transparent";
-                              };
-
-                              if (steps.length === 1) {
-                                return getCharActualColor(steps[0]);
-                              } else if (steps.length >= 2) {
-                                const col1 = getCharActualColor(steps[0]);
-                                const col2 = getCharActualColor(steps[1] || "");
-                                if (col1 !== "transparent" || col2 !== "transparent") {
-                                  const fallbackCol1 = col1 !== "transparent" ? col1 : "#18181b";
-                                  const fallbackCol2 = col2 !== "transparent" ? col2 : "#18181b";
-                                  return `linear-gradient(135deg, ${fallbackCol1} 50%, ${fallbackCol2} 50%)`;
-                                }
-                                return "transparent";
-                              }
+                              if (v.startsWith("P/D")) return "#1e3a8a";
+                              if (v.startsWith("D/C")) return "#064e3b";
+                              if (v.startsWith("C/A")) return "#78350f";
+                              if (v.startsWith("P")) return "#2563eb";
+                              if (v.startsWith("D")) return "#10b981";
+                              if (v.startsWith("C")) return "#f59e0b";
+                              if (v.startsWith("A")) return "#d946ef";
                               return "transparent";
                             };
-
+                            
                             const actBg = getActualStatusColor(actVal);
                             
                             return (
-                              <div key={`act-d-${month}`} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.15rem", minWidth: "36px" }}>
-                                <span style={{ fontSize: "0.55rem", color: "var(--text-secondary-dark)", whiteSpace: "nowrap", marginBottom: "0.1rem" }}>
-                                  {month}
-                                </span>
+                              <div key={idx} style={{ textAlign: "center", minWidth: "42px" }}>
+                                <div style={{ fontSize: "0.6rem", color: "var(--text-secondary-dark)", marginBottom: "0.15rem" }}>{month}</div>
                                 <select
                                   className="user-selector"
                                   value={actVal}
                                   onChange={(e) => {
-                                    e.preventDefault();
-                                    e.stopPropagation();
                                     const newPDCAActual = [...inputMonthlyPDCAActual];
                                     newPDCAActual[idx] = e.target.value;
                                     setInputMonthlyPDCAActual(newPDCAActual);
                                   }}
-                                  onClick={(e) => e.stopPropagation()}
-                                  onKeyDown={(e) => {
-                                    if (e.key === "Enter") {
-                                      e.preventDefault();
-                                      e.stopPropagation();
-                                    }
-                                  }}
                                   style={{
                                     width: "100%",
-                                    fontSize: "0.62rem",
-                                    padding: "0.15rem 0.05rem",
-                                    textAlign: "center",
+                                    padding: "0.15rem 0.2rem",
+                                    fontSize: "0.65rem",
                                     background: actBg !== "transparent" ? actBg : "#18181b",
                                     color: actBg !== "transparent" ? "white" : "var(--text-secondary-dark)",
                                     border: "1px solid var(--border-color-dark)",
                                     borderRadius: "0.2rem",
-                                    cursor: "pointer",
                                     fontWeight: actBg !== "transparent" ? "800" : "normal",
                                     outline: "none",
                                     transition: "all 0.2s"
@@ -1396,7 +1384,8 @@ export default function PDCAManager({
                           })}
                         </div>
                       </div>
-                      {/* 비목별 예산 집행액 입력 (P단계와 동일한 형태로 노출) */}
+                      
+                      {/* 비목별 예산 집행액 입력 */}
                       <div style={{ borderBottom: "1px solid var(--border-color-dark)", paddingBottom: "0.5rem", marginBottom: "0.2rem" }}>
                         <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)", display: "block", marginBottom: "0.25rem" }}>비목별 집행 등록 (백만원 단위)</span>
                         <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
@@ -1430,62 +1419,33 @@ export default function PDCAManager({
                                       newCats[originalIdx].spent = e.target.value.replace(/[^0-9.]/g, "");
                                       setInputBudgetCategories(newCats);
                                     }}
-                                    style={{ fontSize: "0.7rem", padding: "0.2rem", width: "100%" }}
+                                    style={{ padding: "0.2rem 0.4rem", fontSize: "0.7rem" }}
                                   />
                                   <input
                                     type="text"
                                     className="user-selector"
                                     placeholder="이월집행"
+                                    value={selectedYear === 1 ? 0 : item.spent_carry || "0.0"}
                                     disabled={selectedYear === 1}
-                                    value={selectedYear === 1 ? "0.0" : (item.spent_carry || "0.0")}
                                     onChange={(e) => {
+                                      if (selectedYear === 1) return;
                                       const newCats = [...inputBudgetCategories];
                                       newCats[originalIdx].spent_carry = e.target.value.replace(/[^0-9.]/g, "");
                                       setInputBudgetCategories(newCats);
                                     }}
-                                    style={{
-                                      fontSize: "0.7rem",
-                                      padding: "0.2rem",
-                                      width: "100%",
-                                      background: selectedYear === 1 ? "rgba(255,255,255,0.02)" : "#18181b",
-                                      color: selectedYear === 1 ? "rgba(255,255,255,0.2)" : "white",
-                                      cursor: selectedYear === 1 ? "not-allowed" : "text"
-                                    }}
+                                    style={{ padding: "0.2rem 0.4rem", fontSize: "0.7rem" }}
                                   />
                                 </div>
                               );
                             })}
-                          {inputBudgetCategories.filter(item => item.category && item.category !== "").length === 0 && (
-                            <div style={{ fontSize: "0.7rem", color: "var(--text-secondary-dark)", fontStyle: "italic", padding: "0.2rem" }}>
-                              ※ P단계에서 비목별 예산 배정을 먼저 입력하고 저장해야 집행 등록이 가능합니다.
-                            </div>
-                          )}
                         </div>
                       </div>
 
-                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "0.4rem" }}>
+                      {/* 실적수 입력 */}
+                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.4rem" }}>
                         <div>
-                          <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)" }}>국고 집행 (백만원)</span>
-                          <input type="text" className="user-selector" value={inputSpentNational} onChange={(e) => setInputSpentNational(e.target.value.replace(/[^0-9.]/g, ""))} style={{ padding: "0.2rem 0.4rem", fontSize: "0.75rem", width: "100%" }} />
-                        </div>
-                        <div>
-                          <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)" }}>시비 집행 (백만원)</span>
-                          <input type="text" className="user-selector" value={inputSpentCity} onChange={(e) => setInputSpentCity(e.target.value.replace(/[^0-9.]/g, ""))} style={{ padding: "0.2rem 0.4rem", fontSize: "0.75rem", width: "100%" }} />
-                        </div>
-                        <div>
-                          <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)" }}>외부 집행 (백만원)</span>
-                          <input type="text" className="user-selector" value={inputSpentExternal} onChange={(e) => setInputSpentExternal(e.target.value.replace(/[^0-9.]/g, ""))} style={{ padding: "0.2rem 0.4rem", fontSize: "0.75rem", width: "100%" }} />
-                        </div>
-                      </div>
-
-                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "0.4rem" }}>
-                        <div>
-                          <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)" }}>수행 횟수 (회)</span>
-                          <input type="number" className="user-selector" placeholder="예: 2" value={inputActualFrequency} onChange={(e) => setInputActualFrequency(e.target.value)} style={{ padding: "0.2rem 0.4rem", fontSize: "0.75rem", width: "100%" }} />
-                        </div>
-                        <div>
-                          <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)" }}>이수인원 (명)</span>
-                          <input type="text" className="user-selector" placeholder="예: 10" value={inputParticipants} onChange={(e) => setInputParticipants(e.target.value)} style={{ padding: "0.2rem 0.4rem", fontSize: "0.75rem", width: "100%" }} />
+                          <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)" }}>실제 실적 횟수 (실적 빈도)</span>
+                          <input type="text" className="user-selector" placeholder="예: 2" value={inputActualFrequency} onChange={(e) => setInputActualFrequency(e.target.value)} style={{ padding: "0.2rem 0.4rem", fontSize: "0.75rem", width: "100%" }} />
                         </div>
                         <div>
                           <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)" }}>계획대비 달성률 (%)</span>
@@ -1503,7 +1463,7 @@ export default function PDCAManager({
                 )}
 
                 {/* C 단계: 집행액 제외 성과 실적 입력 */}
-                {(isResearcher || currentRole.rank <= 2) && (
+                {activePdcaStage === "C" && (isResearcher || currentRole.rank <= 2) && (
                   <form onSubmit={handleUpdateCDetails} style={{ padding: "0.75rem", background: "rgba(245,158,11,0.03)", border: "1px solid rgba(245,158,11,0.15)", borderRadius: "0.5rem" }}>
                     <h4 style={{ fontSize: "0.8rem", fontWeight: "800", marginBottom: "0.5rem", color: "#f59e0b" }}>C 단계: 운영 성과 실적 입력</h4>
                     <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
@@ -1525,7 +1485,7 @@ export default function PDCAManager({
                 )}
 
                 {/* A 단계: 환류 2분할 자체평가 */}
-                {(isResearcher || currentRole.rank <= 2) && (
+                {activePdcaStage === "A" && (isResearcher || currentRole.rank <= 2) && (
                   <form onSubmit={handleUpdateA} style={{ padding: "0.75rem", background: "rgba(217,70,239,0.03)", border: "1px solid rgba(217,70,239,0.15)", borderRadius: "0.5rem" }}>
                     <h4 style={{ fontSize: "0.8rem", fontWeight: "800", marginBottom: "0.5rem", color: "#d946ef" }}>A 단계: 사업 환류 및 자체평가</h4>
                     
