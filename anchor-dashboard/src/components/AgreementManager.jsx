@@ -390,7 +390,19 @@ export default function AgreementManager({
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, `${selectedYear}차년도 협약서 목록`);
     
-    XLSX.writeFile(workbook, `Anchor_라이즈_협약서_목록_${selectedYear}차년도.xlsx`);
+    // 네이티브 Blob 및 download 속성 링크 제어를 통해 브라우저별 파일명 유실 및 UUID 다운로드 현상을 완벽하게 방지
+    const wbout = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
+    const blob = new Blob([wbout], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+    const blobUrl = URL.createObjectURL(blob);
+    
+    const link = document.createElement("a");
+    link.href = blobUrl;
+    link.download = `Anchor_라이즈_협약서_목록_${selectedYear}차년도.xlsx`;
+    document.body.appendChild(link);
+    link.click();
+    
+    document.body.removeChild(link);
+    URL.revokeObjectURL(blobUrl);
   };
 
   return (
