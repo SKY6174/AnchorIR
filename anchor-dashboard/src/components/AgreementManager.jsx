@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Plus, Trash2, Edit, Trash, FileText, Upload, X, AlertTriangle, Download } from "lucide-react";
 import * as XLSX from "xlsx";
 
@@ -36,6 +36,9 @@ export default function AgreementManager({
   
   // 정렬 상태 관리
   const [sortConfig, setSortConfig] = useState({ key: "date", direction: "asc" }); // 기본값: 날짜 오름차순
+
+  // 네이티브 마우스 다운로드 바인딩을 위한 실시간 엑셀 데이터 URL 상태
+  const [excelDownloadUrl, setExcelDownloadUrl] = useState("");
 
   // 현재 연차에 등록된 단위과제 추출 로직 (드롭다운 연동용)
   const getAvailableUnits = () => {
@@ -129,6 +132,66 @@ export default function AgreementManager({
   };
 
   const sortedAgreements = getSortedAgreements();
+
+  // 엑셀 다운로드용 Base64 Data URL 실시간 사전 생성
+  // (sortedAgreements, selectedYear 상태가 바뀔 때마다 실시간으로 갱신하여 앵커 href에 바인딩)
+  useEffect(() => {
+    if (sortedAgreements.length === 0) {
+      setExcelDownloadUrl("");
+      return;
+    }
+
+    try {
+      const excelData = sortedAgreements.map((agr) => {
+        let orgsStr = "";
+        let orgSubjectsStr = "";
+        if (Array.isArray(agr.organizations)) {
+          if (typeof agr.organizations[0] === "object" && agr.organizations[0] !== null) {
+            orgsStr = agr.organizations.map(o => o.name).join(", ");
+            orgSubjectsStr = agr.organizations.map(o => `${o.name}(${o.subject || "주체없음"})`).join(", ");
+          } else {
+            orgsStr = agr.organizations.join(", ");
+            orgSubjectsStr = agr.subjectOrganization || "";
+          }
+        }
+
+        return {
+          "체결일자": agr.date || "",
+          "관련 센터": agr.center || "",
+          "협약 대상기관": orgsStr,
+          "대학 측 협약주체(UC)": agr.subjectUniversity || "",
+          "기관 측 협약주체": orgSubjectsStr,
+          "관련 단위과제": agr.unitId || "",
+          "협약내용 범주": Array.isArray(agr.contents) ? agr.contents.join(", ") : "",
+          "사본 파일명": agr.fileName || "미첨부"
+        };
+      });
+
+      const worksheet = XLSX.utils.json_to_sheet(excelData);
+      
+      // 열 너비 자동 보완
+      const colWidths = [
+        { wch: 15 }, // 체결일자
+        { wch: 15 }, // 관련 센터
+        { wch: 30 }, // 협약 대상기관
+        { wch: 20 }, // 대학 측 협약주체
+        { wch: 35 }, // 기관 측 협약주체
+        { wch: 15 }, // 관련 단위과제
+        { wch: 30 }, // 협약내용 범주
+        { wch: 35 }  // 사본 파일명
+      ];
+      worksheet["!cols"] = colWidths;
+
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, `${selectedYear}차년도 협약서 목록`);
+      
+      const b64out = XLSX.write(workbook, { bookType: "xlsx", type: "base64" });
+      setExcelDownloadUrl(`data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,${b64out}`);
+    } catch (err) {
+      console.error("Excel pre-generation error:", err);
+      setExcelDownloadUrl("");
+    }
+  }, [sortedAgreements, selectedYear]);
 
   // 협약기관 및 해당 협약주체 추가/제거 핸들러
   const handleAddOrgField = () => {
@@ -339,85 +402,6 @@ export default function AgreementManager({
     }
   };
 
-  // 엑셀 다운로드 핸들러
-  const handleDownloadExcel = () => {
-    try {
-      if (sortedAgreements.length === 0) {
-        alert("다운로드할 협약서 데이터가 없습니다.");
-        return;
-      }
-
-      // 엑셀 변환용 데이터 매핑
-      const excelData = sortedAgreements.map((agr) => {
-        let orgsStr = "";
-        let orgSubjectsStr = "";
-        if (Array.isArray(agr.organizations)) {
-          if (typeof agr.organizations[0] === "object" && agr.organizations[0] !== null) {
-            orgsStr = agr.organizations.map(o => o.name).join(", ");
-            orgSubjectsStr = agr.organizations.map(o => `${o.name}(${o.subject || "주체없음"})`).join(", ");
-          } else {
-            orgsStr = agr.organizations.join(", ");
-            orgSubjectsStr = agr.subjectOrganization || "";
-          }
-        }
-
-        return {
-          "체결일자": agr.date || "",
-          "관련 센터": agr.center || "",
-          "협약 대상기관": orgsStr,
-          "대학 측 협약주체(UC)": agr.subjectUniversity || "",
-          "기관 측 협약주체": orgSubjectsStr,
-          "관련 단위과제": agr.unitId || "",
-          "협약내용 범주": Array.isArray(agr.contents) ? agr.contents.join(", ") : "",
-          "사본 파일명": agr.fileName || "미첨부"
-        };
-      });
-
-      const worksheet = XLSX.utils.json_to_sheet(excelData);
-      
-      // 열 너비 자동 보완
-      const colWidths = [
-        { wch: 15 }, // 체결일자
-        { wch: 15 }, // 관련 센터
-        { wch: 30 }, // 협약 대상기관
-        { wch: 20 }, // 대학 측 협약주체
-        { wch: 35 }, // 기관 측 협약주체
-        { wch: 15 }, // 관련 단위과제
-        { wch: 30 }, // 협약내용 범주
-        { wch: 35 }  // 사본 파일명
-      ];
-      worksheet["!cols"] = colWidths;
-
-      const workbook = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(workbook, worksheet, `${selectedYear}차년도 협약서 목록`);
-      
-      // 크롬 브라우저의 Blob URL 보안 정책 및 다운로드 레이스 컨디션 버그를 완벽하게 회피하기 위해 Base64 Data URL 방식 채택
-      const b64out = XLSX.write(workbook, { bookType: "xlsx", type: "base64" });
-      const dataUrl = `data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,${b64out}`;
-      
-      const link = document.createElement("a");
-      link.href = dataUrl;
-      
-      // 크롬 브라우저 특정 버전에서 한글(Non-ASCII) 파일명 파싱 실패 시 download 속성을 통째로 무시하고 UUID로 다운로드하는 버그를 방어하기 위해 순수 영문명 지정
-      link.download = `Anchor_Agreement_List_Year_${selectedYear}.xlsx`;
-      link.style.display = "none";
-      
-      document.body.appendChild(link);
-      link.click();
-      
-      // Data URL 방식은 revokeObjectURL 처리가 불필요하여 즉시 자원 해제가 가능하며 안전함
-      setTimeout(() => {
-        if (document.body.contains(link)) {
-          document.body.removeChild(link);
-        }
-      }, 5000);
-      
-    } catch (err) {
-      console.error("Excel download runtime error:", err);
-      alert(`엑셀 파일 생성 중 오류가 발생했습니다: ${err.message}`);
-    }
-  };
-
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
       {/* 타이틀 및 등록 버튼 */}
@@ -428,8 +412,15 @@ export default function AgreementManager({
         </div>
         {(currentRole.rank <= 2) && (
           <div style={{ display: "flex", gap: "0.4rem", alignItems: "center" }}>
-            <button 
-              onClick={handleDownloadExcel} 
+            <a 
+              href={excelDownloadUrl || "#"}
+              download={excelDownloadUrl ? `Anchor_Agreement_List_Year_${selectedYear}.xlsx` : undefined}
+              onClick={(e) => {
+                if (!excelDownloadUrl) {
+                  e.preventDefault();
+                  alert("다운로드할 협약서 데이터가 없습니다.");
+                }
+              }}
               style={{ 
                 display: "flex", 
                 alignItems: "center", 
@@ -440,15 +431,20 @@ export default function AgreementManager({
                 border: "none", 
                 color: "white", 
                 borderRadius: "0.25rem", 
-                cursor: "pointer", 
+                cursor: excelDownloadUrl ? "pointer" : "not-allowed", 
                 fontWeight: "700",
+                textDecoration: "none",
                 transition: "background 0.2s"
               }}
-              onMouseEnter={(e) => e.target.style.background = "#15803d"}
-              onMouseLeave={(e) => e.target.style.background = "#16a34a"}
+              onMouseEnter={(e) => {
+                if (excelDownloadUrl) e.target.style.background = "#15803d";
+              }}
+              onMouseLeave={(e) => {
+                if (excelDownloadUrl) e.target.style.background = "#16a34a";
+              }}
             >
               <Download size={14} /> 엑셀 다운로드
-            </button>
+            </a>
             <button className="btn-primary" onClick={handleOpenAddModal} style={{ display: "flex", alignItems: "center", gap: "0.25rem", padding: "0.4rem 0.75rem", fontSize: "0.75rem" }}>
               <Plus size={16} /> 신규 협약서 등록
             </button>
