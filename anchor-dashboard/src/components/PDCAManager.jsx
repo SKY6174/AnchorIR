@@ -867,9 +867,9 @@ export default function PDCAManager({
                   gap: "0.8rem",
                   boxShadow: "inset 0 1px 1px rgba(255, 255, 255, 0.05)"
                 }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
-                    <ClipboardList size={16} style={{ color: "var(--accent-color)" }} />
-                    <span style={{ fontSize: "0.75rem", fontWeight: "800", color: "var(--text-secondary-dark)" }}>기획/실적 등록 단계 선택:</span>
+                  <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                    <ClipboardList size={20} style={{ color: "var(--accent-color)" }} />
+                    <span style={{ fontSize: "0.95rem", fontWeight: "800", color: "var(--text-secondary-dark)" }}>P-D-C-A 단계 선택</span>
                   </div>
                   <select
                     className="user-selector"
@@ -877,9 +877,9 @@ export default function PDCAManager({
                     onChange={(e) => setActivePdcaStage(e.target.value)}
                     style={{
                       flex: 1,
-                      maxWidth: "340px",
+                      maxWidth: "380px",
                       padding: "0.35rem 0.6rem",
-                      fontSize: "0.75rem",
+                      fontSize: "0.95rem",
                       fontWeight: "700",
                       background: "#18181b",
                       color: "white",
