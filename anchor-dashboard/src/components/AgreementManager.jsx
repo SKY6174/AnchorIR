@@ -26,9 +26,8 @@ export default function AgreementManager({
   // 입력 폼 상태
   const [inputDate, setInputDate] = useState("");
   const [inputCenter, setInputCenter] = useState("ECC센터");
-  const [inputOrganizations, setInputOrganizations] = useState([""]);
+  const [inputOrganizations, setInputOrganizations] = useState([{ name: "", subject: "" }]); // [{ name: "기관명", subject: "주체(직위/성명)" }] 구조로 관리
   const [inputSubjectUniv, setInputSubjectUniv] = useState("단장");
-  const [inputSubjectOrg, setInputSubjectOrg] = useState("");
   const [inputUnitId, setInputUnitId] = useState("");
   const [inputContents, setInputContents] = useState([]);
   const [inputFileName, setInputFileName] = useState("");
@@ -80,9 +79,9 @@ export default function AgreementManager({
   // 협약서 필터링 (현재 선택된 사업연도 기준)
   const filteredAgreements = agreements.filter(a => a.year === selectedYear);
 
-  // 협약기관 추가/제거 핸들러
+  // 협약기관 및 해당 협약주체 추가/제거 핸들러
   const handleAddOrgField = () => {
-    setInputOrganizations([...inputOrganizations, ""]);
+    setInputOrganizations([...inputOrganizations, { name: "", subject: "" }]);
   };
 
   const handleRemoveOrgField = (index) => {
@@ -91,9 +90,12 @@ export default function AgreementManager({
     setInputOrganizations(updated);
   };
 
-  const handleOrgChange = (index, value) => {
+  const handleOrgChange = (index, field, value) => {
     const updated = [...inputOrganizations];
-    updated[index] = value;
+    updated[index] = {
+      ...updated[index],
+      [field]: value
+    };
     setInputOrganizations(updated);
   };
 
@@ -124,9 +126,8 @@ export default function AgreementManager({
     setEditingId(null);
     setInputDate("");
     setInputCenter("ECC센터");
-    setInputOrganizations([""]);
+    setInputOrganizations([{ name: "", subject: "" }]);
     setInputSubjectUniv("단장");
-    setInputSubjectOrg("");
     setInputUnitId(availableUnits[0]?.id || "");
     setInputContents([]);
     setInputFileName("");
@@ -144,9 +145,25 @@ export default function AgreementManager({
     setEditingId(agr.id);
     setInputDate(agr.date || "");
     setInputCenter(agr.center || "ECC센터");
-    setInputOrganizations(Array.isArray(agr.organizations) ? [...agr.organizations] : [""]);
+    
+    // 복원 시 객체 배열과 구규격 단순 문자열 배열 호환 처리
+    let restoredOrgs = [];
+    if (Array.isArray(agr.organizations)) {
+      if (typeof agr.organizations[0] === "object" && agr.organizations[0] !== null) {
+        restoredOrgs = agr.organizations.map(o => ({ name: o.name || "", subject: o.subject || "" }));
+      } else {
+        const oldSubjects = (agr.subjectOrganization || "").split(",").map(s => s.trim());
+        restoredOrgs = agr.organizations.map((orgStr, idx) => ({
+          name: orgStr,
+          subject: oldSubjects[idx] || oldSubjects[0] || ""
+        }));
+      }
+    } else {
+      restoredOrgs = [{ name: "", subject: "" }];
+    }
+
+    setInputOrganizations(restoredOrgs);
     setInputSubjectUniv(agr.subjectUniversity || "단장");
-    setInputSubjectOrg(agr.subjectOrganization || "");
     setInputUnitId(agr.unitId || "");
     setInputContents(Array.isArray(agr.contents) ? [...agr.contents] : []);
     setInputFileName(agr.fileName || "");
@@ -163,15 +180,22 @@ export default function AgreementManager({
       alert("협약 체결일자를 선택해 주세요.");
       return;
     }
-    const cleanOrgs = inputOrganizations.map(o => o.trim()).filter(Boolean);
+    
+    const cleanOrgs = inputOrganizations
+      .map(o => ({ name: o.name.trim(), subject: o.subject.trim() }))
+      .filter(o => o.name);
+
     if (cleanOrgs.length === 0) {
-      alert("협약기관을 최소 1개 이상 입력해 주세요.");
+      alert("협약 대상기관을 최소 1개 이상 입력해 주세요.");
       return;
     }
-    if (!inputSubjectOrg.trim()) {
-      alert("기관 측 협약 주체를 입력해 주세요.");
+
+    const missingSubject = cleanOrgs.some(o => !o.subject);
+    if (missingSubject) {
+      alert("각 협약 대상기관에 대응하는 협약주체(직위/성명)를 입력해 주세요.");
       return;
     }
+
     if (!inputUnitId) {
       alert("관련 단위과제를 선택해 주세요.");
       return;
@@ -181,13 +205,16 @@ export default function AgreementManager({
       return;
     }
 
+    // 구버전 및 테이블 간이 출력을 위한 결합 문자열 생성
+    const combinedSubjectOrg = cleanOrgs.map(o => `${o.name} (${o.subject})`).join(", ");
+
     const payload = {
       year: selectedYear,
       date: inputDate,
       center: inputCenter,
       organizations: cleanOrgs,
       subjectUniversity: inputSubjectUniv,
-      subjectOrganization: inputSubjectOrg.trim(),
+      subjectOrganization: combinedSubjectOrg,
       unitId: inputUnitId,
       contents: inputContents,
       fileName: inputFileName,
@@ -269,11 +296,11 @@ export default function AgreementManager({
             <tr style={{ background: "rgba(255,255,255,0.03)", borderBottom: "1px solid var(--border-color-dark)" }}>
               <th style={{ padding: "0.6rem 0.8rem", textAlign: "left", width: "10%" }}>날짜</th>
               <th style={{ padding: "0.6rem 0.8rem", textAlign: "left", width: "12%" }}>관련 센터</th>
-              <th style={{ padding: "0.6rem 0.8rem", textAlign: "left", width: "22%" }}>협약기관</th>
-              <th style={{ padding: "0.6rem 0.8rem", textAlign: "left", width: "15%" }}>협약주체 (대학 vs 기관)</th>
+              <th style={{ padding: "0.6rem 0.8rem", textAlign: "left", width: "18%" }}>협약기관</th>
+              <th style={{ padding: "0.6rem 0.8rem", textAlign: "left", width: "24%" }}>협약주체 (UC & 타기관)</th>
               <th style={{ padding: "0.6rem 0.8rem", textAlign: "left", width: "10%" }}>단위과제</th>
-              <th style={{ padding: "0.6rem 0.8rem", textAlign: "left", width: "20%" }}>협약내용 범주</th>
-              <th style={{ padding: "0.6rem 0.8rem", textAlign: "center", width: "6%" }}>사본</th>
+              <th style={{ padding: "0.6rem 0.8rem", textAlign: "left", width: "16%" }}>협약내용 범주</th>
+              <th style={{ padding: "0.6rem 0.8rem", textAlign: "center", width: "5%" }}>사본</th>
               {(currentRole.rank <= 2) && <th style={{ padding: "0.6rem 0.8rem", textAlign: "center", width: "5%" }}>제어</th>}
             </tr>
           </thead>
@@ -293,15 +320,37 @@ export default function AgreementManager({
                   </td>
                   <td style={{ padding: "0.6rem 0.8rem" }}>
                     <div style={{ display: "flex", flexWrap: "wrap", gap: "0.25rem" }}>
-                      {agr.organizations.map((org, idx) => (
-                        <span key={idx} style={{ background: "#27272a", padding: "0.15rem 0.35rem", borderRadius: "0.25rem", color: "#e4e4e7" }}>{org}</span>
-                      ))}
+                      {Array.isArray(agr.organizations) && (
+                        typeof agr.organizations[0] === "object" ? (
+                          agr.organizations.map((org, idx) => (
+                            <span key={idx} style={{ background: "#27272a", padding: "0.15rem 0.35rem", borderRadius: "0.25rem", color: "#e4e4e7" }}>
+                              {org.name}
+                            </span>
+                          ))
+                        ) : (
+                          agr.organizations.map((orgStr, idx) => (
+                            <span key={idx} style={{ background: "#27272a", padding: "0.15rem 0.35rem", borderRadius: "0.25rem", color: "#e4e4e7" }}>
+                              {orgStr}
+                            </span>
+                          ))
+                        )
+                      )}
                     </div>
                   </td>
                   <td style={{ padding: "0.6rem 0.8rem" }}>
-                    <div style={{ display: "flex", flexDirection: "column", gap: "0.1rem" }}>
-                      <span style={{ color: "#a1a1aa" }}>🏫 {agr.subjectUniversity}</span>
-                      <span style={{ color: "#38bdf8" }}>🤝 {agr.subjectOrganization}</span>
+                    <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
+                      <span style={{ color: "#a1a1aa" }}>🏫 UC: {agr.subjectUniversity}</span>
+                      <div style={{ display: "flex", flexDirection: "column", gap: "0.1rem" }}>
+                        {Array.isArray(agr.organizations) && typeof agr.organizations[0] === "object" ? (
+                          agr.organizations.map((org, idx) => (
+                            <span key={idx} style={{ color: "#38bdf8", display: "block" }}>
+                              🤝 {org.name}: {org.subject || "주체 없음"}
+                            </span>
+                          ))
+                        ) : (
+                          <span style={{ color: "#38bdf8" }}>🤝 {agr.subjectOrganization}</span>
+                        )}
+                      </div>
                     </div>
                   </td>
                   <td style={{ padding: "0.6rem 0.8rem", fontWeight: "700" }}>{agr.unitId}</td>
@@ -385,22 +434,29 @@ export default function AgreementManager({
                 </div>
               </div>
 
-              {/* 동적 협약기관 리스트 */}
+              {/* 동적 협약기관 및 주체 목록 */}
               <div>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.25rem" }}>
-                  <label style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)" }}>협약기관 목록</label>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.4rem" }}>
+                  <label style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)" }}>협약 대상기관 및 기관 측 협약주체 목록</label>
                   <button type="button" onClick={handleAddOrgField} style={{ background: "none", border: "none", color: "#60a5fa", cursor: "pointer", fontSize: "0.65rem", display: "flex", alignItems: "center", gap: "0.1rem" }}>
                     <Plus size={12} /> 기관 추가
                   </button>
                 </div>
-                <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
+                <div style={{ display: "flex", flexDirection: "column", gap: "0.40rem" }}>
                   {inputOrganizations.map((org, index) => (
-                    <div key={index} style={{ display: "flex", gap: "0.25rem" }}>
+                    <div key={index} style={{ display: "flex", gap: "0.35rem", alignItems: "center" }}>
                       <input 
                         type="text" 
-                        placeholder={`협약기관 ${index + 1} (예: 울산대학교)`} 
-                        value={org} 
-                        onChange={(e) => handleOrgChange(index, e.target.value)} 
+                        placeholder={`협약 대상기관 ${index + 1} (예: 울산대학교)`} 
+                        value={org.name || ""} 
+                        onChange={(e) => handleOrgChange(index, "name", e.target.value)} 
+                        style={{ flex: 1.3, padding: "0.35rem 0.5rem", fontSize: "0.75rem", background: "#27272a", color: "white", border: "1px solid var(--border-color-dark)", borderRadius: "0.25rem" }} 
+                      />
+                      <input 
+                        type="text" 
+                        placeholder="직위/성명 (예: 총장 오연천)" 
+                        value={org.subject || ""} 
+                        onChange={(e) => handleOrgChange(index, "subject", e.target.value)} 
                         style={{ flex: 1, padding: "0.35rem 0.5rem", fontSize: "0.75rem", background: "#27272a", color: "white", border: "1px solid var(--border-color-dark)", borderRadius: "0.25rem" }} 
                       />
                       {inputOrganizations.length > 1 && (
@@ -413,30 +469,18 @@ export default function AgreementManager({
                 </div>
               </div>
 
-              {/* 협약 주체 */}
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem" }}>
-                <div>
-                  <label style={{ display: "block", fontSize: "0.65rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>대학 측 협약주체</label>
-                  <select 
-                    value={inputSubjectUniv} 
-                    onChange={(e) => setInputSubjectUniv(e.target.value)} 
-                    style={{ width: "100%", padding: "0.35rem 0.5rem", fontSize: "0.75rem", background: "#27272a", color: "white", border: "1px solid var(--border-color-dark)", borderRadius: "0.25rem" }}
-                  >
-                    <option value="총장">총장</option>
-                    <option value="단장">단장</option>
-                    <option value="센터장">센터장</option>
-                  </select>
-                </div>
-                <div>
-                  <label style={{ display: "block", fontSize: "0.65rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>기관 측 협약주체</label>
-                  <input 
-                    type="text" 
-                    placeholder="예: 울산테크노파크 원장" 
-                    value={inputSubjectOrg} 
-                    onChange={(e) => setInputSubjectOrg(e.target.value)} 
-                    style={{ width: "100%", padding: "0.35rem 0.5rem", fontSize: "0.75rem", background: "#27272a", color: "white", border: "1px solid var(--border-color-dark)", borderRadius: "0.25rem" }} 
-                  />
-                </div>
+              {/* 대학 측 협약주체 */}
+              <div>
+                <label style={{ display: "block", fontSize: "0.65rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>대학 측 협약주체 (UC)</label>
+                <select 
+                  value={inputSubjectUniv} 
+                  onChange={(e) => setInputSubjectUniv(e.target.value)} 
+                  style={{ width: "100%", padding: "0.35rem 0.5rem", fontSize: "0.75rem", background: "#27272a", color: "white", border: "1px solid var(--border-color-dark)", borderRadius: "0.25rem" }}
+                >
+                  <option value="총장">총장</option>
+                  <option value="단장">단장</option>
+                  <option value="센터장">센터장</option>
+                </select>
               </div>
 
               {/* 관련 단위과제 */}
