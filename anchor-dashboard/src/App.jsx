@@ -1167,6 +1167,9 @@ export default function App() {
                     target_participants_unit: cachedProg.target_participants_unit || sourceProg.target_participants_unit || "명",
                     target_developments_unit: cachedProg.target_developments_unit || sourceProg.target_developments_unit || "건",
                     target_etc_unit: cachedProg.target_etc_unit || sourceProg.target_etc_unit || "개",
+                    target_participants_name: cachedProg.target_participants_name || sourceProg.target_participants_name || "참여인원",
+                    target_developments_name: cachedProg.target_developments_name || sourceProg.target_developments_name || "개발수",
+                    target_etc_name: cachedProg.target_etc_name || sourceProg.target_etc_name || "기타",
                     kpi_type: cachedProg.kpi_type || sourceProg.kpi_type,
                     kpi_link: cachedProg.kpi_link || sourceProg.kpi_link,
                     participants: cachedProg.participants !== undefined ? cachedProg.participants : sourceProg.participants,
@@ -2131,6 +2134,9 @@ export default function App() {
                 if (updatedFields.target_participants_unit !== undefined) prog.target_participants_unit = updatedFields.target_participants_unit;
                 if (updatedFields.target_developments_unit !== undefined) prog.target_developments_unit = updatedFields.target_developments_unit;
                 if (updatedFields.target_etc_unit !== undefined) prog.target_etc_unit = updatedFields.target_etc_unit;
+                if (updatedFields.target_participants_name !== undefined) prog.target_participants_name = updatedFields.target_participants_name;
+                if (updatedFields.target_developments_name !== undefined) prog.target_developments_name = updatedFields.target_developments_name;
+                if (updatedFields.target_etc_name !== undefined) prog.target_etc_name = updatedFields.target_etc_name;
                 if (updatedFields.kpi_type !== undefined) prog.kpi_type = updatedFields.kpi_type;
                 if (updatedFields.kpi_link !== undefined) prog.kpi_link = updatedFields.kpi_link;
                 
