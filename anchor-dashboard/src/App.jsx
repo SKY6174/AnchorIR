@@ -1518,6 +1518,109 @@ export default function App() {
   const [assignFilterUnitId, setAssignFilterUnitId] = useState("all");
   const [mgmtSubTab, setMgmtSubTab] = useState("members"); // "members", "programs", "approvals"
   const [memberFilter, setMemberFilter] = useState("all"); // "all", "active", "retired"
+  const [memberSortConfig, setMemberSortConfig] = useState({ key: null, direction: "asc" });
+
+  const requestMemberSort = (key) => {
+    let direction = "asc";
+    if (memberSortConfig.key === key && memberSortConfig.direction === "asc") {
+      direction = "desc";
+    }
+    setMemberSortConfig({ key, direction });
+  };
+
+  const getSortedMembers = () => {
+    const filtered = (members || []).filter((m) => {
+      if (memberFilter === "active") return m.status !== "퇴직";
+      if (memberFilter === "retired") return m.status === "퇴직";
+      return true;
+    });
+
+    const sorted = [...filtered];
+
+    if (!memberSortConfig.key) {
+      // 기본 정렬: 리더십 순서 -> 센터 부서 가중치 -> 연구원 가중치 -> ID 오름차순
+      return sorted.sort((a, b) => {
+        const roleRanks = {
+          "사업단장": 1,
+          "본부장": 2,
+          "센터장": 3,
+          "운영팀장": 4,
+          "팀장교수": 4,
+          "연구원": 5
+        };
+        const rankA = roleRanks[a.role] || 99;
+        const rankB = roleRanks[b.role] || 99;
+        if (rankA !== rankB) {
+          return rankA - rankB;
+        }
+
+        if (a.role === "센터장" && b.role === "센터장") {
+          const centerOrder = {
+            "ECC센터": 1,
+            "ICC센터": 2,
+            "RCC센터": 3,
+            "울산늘봄누리센터": 4,
+            "신산업특화센터": 5
+          };
+          const oA = centerOrder[a.dept] || 99;
+          const oB = centerOrder[b.dept] || 99;
+          if (oA !== oB) return oA - oB;
+        }
+
+        if (a.role === "운영팀장" && b.role !== "운영팀장") return -1;
+        if (a.role !== "운영팀장" && b.role === "운영팀장") return 1;
+
+        if (a.role === "연구원" && b.role === "연구원") {
+          const deptOrder = {
+            "ECC센터": 1,
+            "ICC센터": 2,
+            "RCC센터": 3,
+            "AID-X지원센터": 4,
+            "울산늘봄누리센터": 5,
+            "신산업특화센터": 6
+          };
+          const deptValA = deptOrder[a.dept] || 99;
+          const deptValB = deptOrder[b.dept] || 99;
+          if (deptValA !== deptValB) {
+            return deptValA - deptValB;
+          }
+
+          const gradeOrder = {
+            "책임연구원": 1,
+            "선임연구원": 2,
+            "연구원": 3
+          };
+          const gradeValA = gradeOrder[a.grade] || 99;
+          const gradeValB = gradeOrder[b.grade] || 99;
+          if (gradeValA !== gradeValB) {
+            return gradeValA - gradeValB;
+          }
+        }
+
+        return a.id.localeCompare(b.id, 'en');
+      });
+    }
+
+    return sorted.sort((a, b) => {
+      let valA = a[memberSortConfig.key] || "";
+      let valB = b[memberSortConfig.key] || "";
+
+      if (memberSortConfig.key === "startDate") {
+        valA = a.startDate || a.hireDate || "";
+        valB = b.startDate || b.hireDate || "";
+      }
+
+      if (typeof valA === "string" && typeof valB === "string") {
+        return memberSortConfig.direction === "asc"
+          ? valA.localeCompare(valB, undefined, { numeric: true, sensitivity: "base" })
+          : valB.localeCompare(valA, undefined, { numeric: true, sensitivity: "base" });
+      }
+
+      if (valA < valB) return memberSortConfig.direction === "asc" ? -1 : 1;
+      if (valA > valB) return memberSortConfig.direction === "asc" ? 1 : -1;
+      return 0;
+    });
+  };
   const [projectsSubTab, setProjectsSubTab] = useState(() => {
     return localStorage.getItem("anchor_projects_sub_tab") || "unit_status";
   }); // "unit_status" (단위과제 집행현황) 또는 "program_mgmt" (프로그램 관리)
@@ -3384,92 +3487,49 @@ export default function App() {
                   <table className="custom-table" style={{ fontSize: "0.8rem" }}>
                     <thead>
                       <tr>
-                        <th>소속 부서</th>
+                        <th 
+                          onClick={() => requestMemberSort("dept")}
+                          style={{ cursor: "pointer", userSelect: "none" }}
+                          onMouseEnter={(e) => e.target.style.color = "var(--accent-color)"}
+                          onMouseLeave={(e) => e.target.style.color = ""}
+                        >
+                          소속 부서 {memberSortConfig.key === "dept" ? (memberSortConfig.direction === "asc" ? " ▲" : " ▼") : " ⇅"}
+                        </th>
                         <th>성명</th>
-                        <th>직책</th>
+                        <th 
+                          onClick={() => requestMemberSort("role")}
+                          style={{ cursor: "pointer", userSelect: "none" }}
+                          onMouseEnter={(e) => e.target.style.color = "var(--accent-color)"}
+                          onMouseLeave={(e) => e.target.style.color = ""}
+                        >
+                          직책 {memberSortConfig.key === "role" ? (memberSortConfig.direction === "asc" ? " ▲" : " ▼") : " ⇅"}
+                        </th>
                         <th>직급/직위</th>
                         <th>이메일</th>
                         <th>교내 전화</th>
                         <th>휴대전화</th>
-                        <th>시작일</th>
+                        <th 
+                          onClick={() => requestMemberSort("startDate")}
+                          style={{ cursor: "pointer", userSelect: "none" }}
+                          onMouseEnter={(e) => e.target.style.color = "var(--accent-color)"}
+                          onMouseLeave={(e) => e.target.style.color = ""}
+                        >
+                          시작일 {memberSortConfig.key === "startDate" ? (memberSortConfig.direction === "asc" ? " ▲" : " ▼") : " ⇅"}
+                        </th>
                         <th>종료일</th>
-                        <th>재직 여부</th>
+                        <th 
+                          onClick={() => requestMemberSort("status")}
+                          style={{ cursor: "pointer", userSelect: "none" }}
+                          onMouseEnter={(e) => e.target.style.color = "var(--accent-color)"}
+                          onMouseLeave={(e) => e.target.style.color = ""}
+                        >
+                          재직 여부 {memberSortConfig.key === "status" ? (memberSortConfig.direction === "asc" ? " ▲" : " ▼") : " ⇅"}
+                        </th>
                         {currentRole.rank <= 2 && <th>관리</th>}
                       </tr>
                     </thead>
                     <tbody>
-                      {members
-                        .filter((m) => {
-                          if (memberFilter === "active") return m.status !== "퇴직";
-                          if (memberFilter === "retired") return m.status === "퇴직";
-                          return true;
-                        })
-                        .sort((a, b) => {
-                          const roleRanks = {
-                            "사업단장": 1,
-                            "본부장": 2,
-                            "센터장": 3,
-                            "운영팀장": 4,
-                            "팀장교수": 4,
-                            "연구원": 5
-                          };
-                          const rankA = roleRanks[a.role] || 99;
-                          const rankB = roleRanks[b.role] || 99;
-                          if (rankA !== rankB) {
-                            return rankA - rankB;
-                          }
-
-                          // 1. 센터장 정렬 (이동은 -> 김기범 -> 현용환 -> 홍광표 -> 홍진숙)
-                          if (a.role === "센터장" && b.role === "센터장") {
-                            const centerOrder = {
-                              "ECC센터": 1,
-                              "ICC센터": 2,
-                              "RCC센터": 3,
-                              "울산늘봄누리센터": 4,
-                              "신산업특화센터": 5
-                            };
-                            const oA = centerOrder[a.dept] || 99;
-                            const oB = centerOrder[b.dept] || 99;
-                            if (oA !== oB) return oA - oB;
-                          }
-
-                          // 2. 운영팀장(심현미 부장)을 팀장교수진보다 우선 정렬
-                          if (a.role === "운영팀장" && b.role !== "운영팀장") return -1;
-                          if (a.role !== "운영팀장" && b.role === "운영팀장") return 1;
-
-                          // 3. 연구원인 경우: 소속부서 순서(ECC -> ICC -> RCC -> AID-X -> 늘봄누리 -> 신산업)
-                          // 그 후 직급/직위 순서(책임연구원 -> 선임연구원 -> 연구원)
-                          if (a.role === "연구원" && b.role === "연구원") {
-                            const deptOrder = {
-                              "ECC센터": 1,
-                              "ICC센터": 2,
-                              "RCC센터": 3,
-                              "AID-X지원센터": 4,
-                              "울산늘봄누리센터": 5,
-                              "신산업특화센터": 6
-                            };
-                            const deptValA = deptOrder[a.dept] || 99;
-                            const deptValB = deptOrder[b.dept] || 99;
-                            if (deptValA !== deptValB) {
-                              return deptValA - deptValB;
-                            }
-
-                            const gradeOrder = {
-                              "책임연구원": 1,
-                              "선임연구원": 2,
-                              "연구원": 3
-                            };
-                            const gradeValA = gradeOrder[a.grade] || 99;
-                            const gradeValB = gradeOrder[b.grade] || 99;
-                            if (gradeValA !== gradeValB) {
-                              return gradeValA - gradeValB;
-                            }
-                          }
-
-                          // 4. 동일 직급 내 기본 정렬 (ID 순)
-                          return a.id.localeCompare(b.id, 'en');
-                        })
-                        .map((m) => {
+                      {getSortedMembers().map((m) => {
                           const isRetired = m.status === "퇴직";
                           return (
                             <tr 
