@@ -149,7 +149,8 @@ export default function PDCAManager({
   const [inputStartDate, setInputStartDate] = useState("");
   const [inputEndDate, setInputEndDate] = useState("");
   const [inputTargetAudience, setInputTargetAudience] = useState("");
-  const [inputCoopDept, setInputCoopDept] = useState("");
+  const [inputCoopDept1, setInputCoopDept1] = useState("");
+  const [inputCoopDept2, setInputCoopDept2] = useState("");
   
   // 본예산 재원 상태
   const [inputBudgetNational, setInputBudgetNational] = useState("");
@@ -273,7 +274,9 @@ export default function PDCAManager({
         setInputEndDate(end);
 
         setInputTargetAudience(prog.targetAudience || "");
-        setInputCoopDept(prog.coopDept || "");
+        const coopParts = (prog.coopDept || "").split(",").map(s => s.trim());
+        setInputCoopDept1(coopParts[0] || "");
+        setInputCoopDept2(coopParts[1] || "");
         
         // 본예산 로드 (백만원 단위 소수점 첫째자리)
         setInputBudgetNational(py.budget_national !== undefined ? (py.budget_national / 1000000).toFixed(1) : "0.0");
@@ -350,7 +353,8 @@ export default function PDCAManager({
       setInputStartDate("");
       setInputEndDate("");
       setInputTargetAudience("");
-      setInputCoopDept("");
+      setInputCoopDept1("");
+      setInputCoopDept2("");
       setInputBudgetNational("");
       setInputBudgetCity("");
       setInputBudgetExternal("");
@@ -519,7 +523,7 @@ export default function PDCAManager({
     const hasKpis = (inputKpiType === "없음") || (inputKpiLink && inputKpiLink !== "" && inputKpiLink !== "선택 안 함");
     const hasTargetGoals = (inputTargetParticipants !== "" || inputTargetDevelopments !== "" || inputTargetEtc !== "");
     const hasTargetAudience = (inputTargetAudience && inputTargetAudience.trim() !== "");
-    const hasCoopDept = (inputCoopDept && inputCoopDept.trim() !== "");
+    const hasCoopDept = (inputCoopDept1 !== "" || inputCoopDept2 !== "");
 
     const checkList = [
       hasBudget,
@@ -538,11 +542,13 @@ export default function PDCAManager({
       autoPState = "진행";
     }
 
+    const combinedCoopDept = [inputCoopDept1, inputCoopDept2].filter(Boolean).join(", ");
+
     onUpdateProgramDetails(activeProg.unitId, activeProg.id, {
       pdca: { ...activeProg.pdca, p: autoPState },
       timeline: inputMonthlyPDCA.join(","), // 12개월 쉼표 직렬화 저장
       targetAudience: inputTargetAudience,
-      coopDept: inputCoopDept,
+      coopDept: combinedCoopDept,
       frequency: inputTargetParticipants !== "" ? parseInt(inputTargetParticipants, 10) : 0,
       target_participants: inputTargetParticipants !== "" ? parseInt(inputTargetParticipants, 10) : 0,
       target_developments: inputTargetDevelopments !== "" ? parseInt(inputTargetDevelopments, 10) : 0,
@@ -1343,31 +1349,10 @@ export default function PDCAManager({
                         </div>
 
                         {/* 참여대상 & 연계부서 (실적목표 아래로 한 줄 배치) */}
-                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.4rem", borderTop: "1px solid var(--border-color-dark)", paddingTop: "0.4rem" }}>
-                          <div>
-                            <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)" }}>참여대상</span>
-                            <select
-                              className="user-selector"
-                              value={inputTargetAudience}
-                              onChange={(e) => setInputTargetAudience(e.target.value)}
-                              style={{ width: "100%", padding: "0.25rem 0.4rem", fontSize: "0.75rem", background: "#18181b", color: "white", border: "1px solid var(--border-color-dark)", borderRadius: "0.25rem" }}
-                            >
-                              <option value="" style={{ background: "#18181b", color: "white" }}>-- 참여대상 선택 --</option>
-                              <option value="재학생" style={{ background: "#18181b", color: "white" }}>재학생</option>
-                              <option value="성인학습자" style={{ background: "#18181b", color: "white" }}>성인학습자</option>
-                              <option value="재직자" style={{ background: "#18181b", color: "white" }}>재직자</option>
-                              <option value="기타" style={{ background: "#18181b", color: "white" }}>기타</option>
-                            </select>
-                          </div>
-                          <div>
-                            <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)" }}>연계부서</span>
-                            <select
-                              className="user-selector"
-                              value={inputCoopDept}
-                              onChange={(e) => setInputCoopDept(e.target.value)}
-                              style={{ width: "100%", padding: "0.25rem 0.4rem", fontSize: "0.75rem", background: "#18181b", color: "white", border: "1px solid var(--border-color-dark)", borderRadius: "0.25rem" }}
-                            >
-                              <option value="" style={{ background: "#18181b", color: "white" }}>-- 연계부서 선택 --</option>
+                        {(() => {
+                          const coopDeptOptions = (
+                            <>
+                              <option value="" style={{ background: "#18181b", color: "#a1a1aa" }}>-- 선택 안 함 --</option>
                               <optgroup label="RISE(앵커)사업단 센터" style={{ background: "#18181b", color: "#60a5fa" }}>
                                 <option value="ECC센터" style={{ background: "#18181b", color: "white" }}>ECC센터</option>
                                 <option value="ICC센터" style={{ background: "#18181b", color: "white" }}>ICC센터</option>
@@ -1377,23 +1362,69 @@ export default function PDCAManager({
                                 <option value="신산업특화센터" style={{ background: "#18181b", color: "white" }}>신산업특화센터</option>
                                 <option value="사업운영팀" style={{ background: "#18181b", color: "white" }}>사업운영팀</option>
                               </optgroup>
-                              <optgroup label="대학본부 부서" style={{ background: "#18181b", color: "#34d399" }}>
-                                <option value="기획처" style={{ background: "#18181b", color: "white" }}>기획처</option>
-                                <option value="교무처" style={{ background: "#18181b", color: "white" }}>교무처</option>
-                                <option value="학생취업처" style={{ background: "#18181b", color: "white" }}>학생취업처</option>
-                                <option value="입학처" style={{ background: "#18181b", color: "white" }}>입학처</option>
-                                <option value="총무처" style={{ background: "#18181b", color: "white" }}>총무처</option>
-                                <option value="정보통신원" style={{ background: "#18181b", color: "white" }}>정보통신원</option>
+                              <optgroup label="대학본부 및 부속기관" style={{ background: "#18181b", color: "#34d399" }}>
+                                <option value="기획팀" style={{ background: "#18181b", color: "white" }}>기획팀</option>
+                                <option value="교무팀" style={{ background: "#18181b", color: "white" }}>교무팀</option>
+                                <option value="교수학습지원센터" style={{ background: "#18181b", color: "white" }}>교수학습지원센터</option>
+                                <option value="직업교육혁신센터" style={{ background: "#18181b", color: "white" }}>직업교육혁신센터</option>
+                                <option value="취업지원팀" style={{ background: "#18181b", color: "white" }}>취업지원팀</option>
+                                <option value="학생복지팀" style={{ background: "#18181b", color: "white" }}>학생복지팀</option>
+                                <option value="입학팀" style={{ background: "#18181b", color: "white" }}>입학팀</option>
+                                <option value="평생교육원" style={{ background: "#18181b", color: "white" }}>평생교육원</option>
+                                <option value="국제교류원" style={{ background: "#18181b", color: "white" }}>국제교류원</option>
                               </optgroup>
-                              <optgroup label="산학협력단 부서" style={{ background: "#18181b", color: "#fbbf24" }}>
+                              <optgroup label="산학협력단 및 연구소/기타 센터" style={{ background: "#18181b", color: "#fbbf24" }}>
                                 <option value="산학기획팀" style={{ background: "#18181b", color: "white" }}>산학기획팀</option>
                                 <option value="산학지원팀" style={{ background: "#18181b", color: "white" }}>산학지원팀</option>
-                                <option value="창업보육센터" style={{ background: "#18181b", color: "white" }}>창업보육센터</option>
-                                <option value="기술이전센터" style={{ background: "#18181b", color: "white" }}>기술이전센터</option>
+                                <option value="이차전지연구소" style={{ background: "#18181b", color: "white" }}>이차전지연구소</option>
+                                <option value="탄소중립지원센터" style={{ background: "#18181b", color: "white" }}>탄소중립지원센터</option>
+                                <option value="현장실습지원센터" style={{ background: "#18181b", color: "white" }}>현장실습지원센터</option>
+                                <option value="창업창직교육센터" style={{ background: "#18181b", color: "white" }}>창업창직교육센터</option>
                               </optgroup>
-                            </select>
-                          </div>
-                        </div>
+                            </>
+                          );
+
+                          return (
+                            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.4rem", borderTop: "1px solid var(--border-color-dark)", paddingTop: "0.4rem" }}>
+                              <div>
+                                <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)" }}>참여대상</span>
+                                <select
+                                  className="user-selector"
+                                  value={inputTargetAudience}
+                                  onChange={(e) => setInputTargetAudience(e.target.value)}
+                                  style={{ width: "100%", padding: "0.25rem 0.4rem", fontSize: "0.75rem", background: "#18181b", color: "white", border: "1px solid var(--border-color-dark)", borderRadius: "0.25rem" }}
+                                >
+                                  <option value="" style={{ background: "#18181b", color: "white" }}>-- 참여대상 선택 --</option>
+                                  <option value="재학생" style={{ background: "#18181b", color: "white" }}>재학생</option>
+                                  <option value="성인학습자" style={{ background: "#18181b", color: "white" }}>성인학습자</option>
+                                  <option value="재직자" style={{ background: "#18181b", color: "white" }}>재직자</option>
+                                  <option value="기타" style={{ background: "#18181b", color: "white" }}>기타</option>
+                                </select>
+                              </div>
+                              <div>
+                                <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)" }}>연계부서 (최대 2개 선택)</span>
+                                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.2rem" }}>
+                                  <select
+                                    className="user-selector"
+                                    value={inputCoopDept1}
+                                    onChange={(e) => setInputCoopDept1(e.target.value)}
+                                    style={{ width: "100%", padding: "0.25rem 0.4rem", fontSize: "0.75rem", background: "#18181b", color: "white", border: "1px solid var(--border-color-dark)", borderRadius: "0.25rem" }}
+                                  >
+                                    {coopDeptOptions}
+                                  </select>
+                                  <select
+                                    className="user-selector"
+                                    value={inputCoopDept2}
+                                    onChange={(e) => setInputCoopDept2(e.target.value)}
+                                    style={{ width: "100%", padding: "0.25rem 0.4rem", fontSize: "0.75rem", background: "#18181b", color: "white", border: "1px solid var(--border-color-dark)", borderRadius: "0.25rem" }}
+                                  >
+                                    {coopDeptOptions}
+                                  </select>
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })()}
                       </div>
                       
                       <div style={{ display: "flex", justifyContent: "center", marginTop: "0.4rem" }}>
