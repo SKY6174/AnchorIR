@@ -1346,11 +1346,52 @@ export default function PDCAManager({
                         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.4rem", borderTop: "1px solid var(--border-color-dark)", paddingTop: "0.4rem" }}>
                           <div>
                             <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)" }}>참여대상</span>
-                            <input type="text" className="user-selector" placeholder="예: 재학생" value={inputTargetAudience} onChange={(e) => setInputTargetAudience(e.target.value)} style={{ padding: "0.25rem 0.4rem", fontSize: "0.75rem", width: "100%" }} />
+                            <select
+                              className="user-selector"
+                              value={inputTargetAudience}
+                              onChange={(e) => setInputTargetAudience(e.target.value)}
+                              style={{ width: "100%", padding: "0.25rem 0.4rem", fontSize: "0.75rem", background: "#18181b", color: "white", border: "1px solid var(--border-color-dark)", borderRadius: "0.25rem" }}
+                            >
+                              <option value="" style={{ background: "#18181b", color: "white" }}>-- 참여대상 선택 --</option>
+                              <option value="재학생" style={{ background: "#18181b", color: "white" }}>재학생</option>
+                              <option value="성인학습자" style={{ background: "#18181b", color: "white" }}>성인학습자</option>
+                              <option value="재직자" style={{ background: "#18181b", color: "white" }}>재직자</option>
+                              <option value="기타" style={{ background: "#18181b", color: "white" }}>기타</option>
+                            </select>
                           </div>
                           <div>
                             <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)" }}>연계부서</span>
-                            <input type="text" className="user-selector" placeholder="예: ICC센터" value={inputCoopDept} onChange={(e) => setInputCoopDept(e.target.value)} style={{ padding: "0.25rem 0.4rem", fontSize: "0.75rem", width: "100%" }} />
+                            <select
+                              className="user-selector"
+                              value={inputCoopDept}
+                              onChange={(e) => setInputCoopDept(e.target.value)}
+                              style={{ width: "100%", padding: "0.25rem 0.4rem", fontSize: "0.75rem", background: "#18181b", color: "white", border: "1px solid var(--border-color-dark)", borderRadius: "0.25rem" }}
+                            >
+                              <option value="" style={{ background: "#18181b", color: "white" }}>-- 연계부서 선택 --</option>
+                              <optgroup label="RISE(앵커)사업단 센터" style={{ background: "#18181b", color: "#60a5fa" }}>
+                                <option value="ECC센터" style={{ background: "#18181b", color: "white" }}>ECC센터</option>
+                                <option value="ICC센터" style={{ background: "#18181b", color: "white" }}>ICC센터</option>
+                                <option value="RCC센터" style={{ background: "#18181b", color: "white" }}>RCC센터</option>
+                                <option value="AID-X지원센터" style={{ background: "#18181b", color: "white" }}>AID-X지원센터</option>
+                                <option value="울산늘봄누리센터" style={{ background: "#18181b", color: "white" }}>울산늘봄누리센터</option>
+                                <option value="신산업특화센터" style={{ background: "#18181b", color: "white" }}>신산업특화센터</option>
+                                <option value="사업운영팀" style={{ background: "#18181b", color: "white" }}>사업운영팀</option>
+                              </optgroup>
+                              <optgroup label="대학본부 부서" style={{ background: "#18181b", color: "#34d399" }}>
+                                <option value="기획처" style={{ background: "#18181b", color: "white" }}>기획처</option>
+                                <option value="교무처" style={{ background: "#18181b", color: "white" }}>교무처</option>
+                                <option value="학생취업처" style={{ background: "#18181b", color: "white" }}>학생취업처</option>
+                                <option value="입학처" style={{ background: "#18181b", color: "white" }}>입학처</option>
+                                <option value="총무처" style={{ background: "#18181b", color: "white" }}>총무처</option>
+                                <option value="정보통신원" style={{ background: "#18181b", color: "white" }}>정보통신원</option>
+                              </optgroup>
+                              <optgroup label="산학협력단 부서" style={{ background: "#18181b", color: "#fbbf24" }}>
+                                <option value="산학기획팀" style={{ background: "#18181b", color: "white" }}>산학기획팀</option>
+                                <option value="산학지원팀" style={{ background: "#18181b", color: "white" }}>산학지원팀</option>
+                                <option value="창업보육센터" style={{ background: "#18181b", color: "white" }}>창업보육센터</option>
+                                <option value="기술이전센터" style={{ background: "#18181b", color: "white" }}>기술이전센터</option>
+                              </optgroup>
+                            </select>
                           </div>
                         </div>
                       </div>
