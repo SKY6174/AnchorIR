@@ -130,6 +130,14 @@ export default function Sidebar({
           </div>
 
           <div
+            className={`nav-item ${activeTab === "agreements" ? "active" : ""}`}
+            onClick={() => onChangeTab("agreements")}
+          >
+            <Award size={24} />
+            <span>협약서 관리</span>
+          </div>
+
+          <div
             className={`nav-item ${activeTab === "llm_wiki" ? "active" : ""}`}
             onClick={() => onChangeTab("llm_wiki")}
             style={{ marginTop: "0.2rem" }}

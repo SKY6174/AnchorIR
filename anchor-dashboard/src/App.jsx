@@ -3,6 +3,7 @@ import Sidebar from "./components/Sidebar";
 import KPIOverview from "./components/KPIOverview";
 import ExcelUploader from "./components/ExcelUploader";
 import PDCAManager from "./components/PDCAManager";
+import AgreementManager from "./components/AgreementManager";
 import BudgetItemsManager from "./components/BudgetItemsManager";
 import ProgramProgressManager from "./components/ProgramProgressManager";
 import LLMWiki from "./components/LLMWiki";
@@ -12,6 +13,34 @@ import { Sun, Moon, LogOut, HelpCircle, ArrowUpRight, Lock as LockIcon } from "l
 import { supabase } from "./supabaseClient";
 import CryptoJS from "crypto-js";
 import "./styles/dashboard.css";
+
+// 초기에 적재해 둘 협약서 목록 모의 데이터셋 (1차년도 샘플 2개 제공)
+const INITIAL_AGREEMENTS = [
+  {
+    id: "agr-01",
+    year: 1,
+    date: "2026-05-12",
+    center: "ECC센터",
+    organizations: ["울산대학교", "울산테크노파크"],
+    subjectUniversity: "단장",
+    subjectOrganization: "울산대학교 교무처장, 울산TP 원장",
+    unitId: "A1",
+    contents: ["주문식교육", "R&BD"],
+    fileName: "2026_지역혁신인재양성_공동협약서.pdf"
+  },
+  {
+    id: "agr-02",
+    year: 1,
+    date: "2026-06-20",
+    center: "ICC센터",
+    organizations: ["HD현대중공업"],
+    subjectUniversity: "총장",
+    subjectOrganization: "HD현대중공업 인재개발원장",
+    unitId: "B1",
+    contents: ["주문식교육", "AIDX"],
+    fileName: "HD현대중공업_산학협력_협약서_최종.docx"
+  }
+];
 
 // 1차년도 화면 노출 ID에서 원본 내부 ID로 역매핑을 위한 전역 맵
 const REVERSE_UNIT_MAPPING_Y1 = {
@@ -1417,6 +1446,28 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem("anchor_members", JSON.stringify(members));
   }, [members]);
+
+  // 협약서 관리 상태 선언 및 로컬스토리지 영속 저장 연동
+  const [agreements, setAgreements] = useState(() => {
+    const cached = localStorage.getItem("anchor_agreements_data_v1");
+    if (cached) {
+      try {
+        return JSON.parse(cached);
+      } catch (e) {
+        return INITIAL_AGREEMENTS;
+      }
+    }
+    return INITIAL_AGREEMENTS;
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem("anchor_agreements_data_v1", JSON.stringify(agreements));
+    } catch (e) {
+      console.error("Failed to save agreements:", e);
+    }
+  }, [agreements]);
+
   const [assignFilterUnitId, setAssignFilterUnitId] = useState("all");
   const [mgmtSubTab, setMgmtSubTab] = useState("members"); // "members", "programs", "approvals"
   const [memberFilter, setMemberFilter] = useState("all"); // "all", "active", "retired"
@@ -2617,6 +2668,29 @@ export default function App() {
       });
       return updated;
     });
+  };
+
+  // 협약서 신규 등록 핸들러
+  const handleAddAgreement = (newAgr) => {
+    setAgreements((prev) => [
+      ...prev,
+      {
+        ...newAgr,
+        id: `agr-${Date.now()}` // 유니크 모의 ID 생성
+      }
+    ]);
+  };
+
+  // 협약서 수정 핸들러
+  const handleUpdateAgreement = (id, updatedFields) => {
+    setAgreements((prev) =>
+      prev.map((a) => (a.id === id ? { ...a, ...updatedFields } : a))
+    );
+  };
+
+  // 협약서 삭제 핸들러
+  const handleDeleteAgreement = (id) => {
+    setAgreements((prev) => prev.filter((a) => a.id !== id));
   };
 
   // 성과지표 목표치/실적치 직접 수정 핸들러
@@ -4184,6 +4258,20 @@ export default function App() {
           {/* 성과지표 목표 및 실적 업데이트 전용 엑셀 업로더 (mode="KPI") */}
           <ExcelUploader mode="KPI" onUpdateData={handleUpdateData} projects={displayProjects} selectedYear={selectedYear} />
         </>
+        )}
+
+        {activeTab === "agreements" && (
+          <div className="glass-card" style={{ padding: "1.25rem" }}>
+            <AgreementManager
+              projects={displayProjects}
+              agreements={agreements}
+              selectedYear={selectedYear}
+              onAddAgreement={handleAddAgreement}
+              onUpdateAgreement={handleUpdateAgreement}
+              onDeleteAgreement={handleDeleteAgreement}
+              currentRole={currentRole}
+            />
+          </div>
         )}
 
         {activeTab === "progress" && (
