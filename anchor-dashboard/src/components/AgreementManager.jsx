@@ -397,7 +397,9 @@ export default function AgreementManager({
       
       const link = document.createElement("a");
       link.href = dataUrl;
-      link.download = `Anchor_라이즈_협약서_목록_${selectedYear}차년도.xlsx`;
+      
+      // 크롬 브라우저 특정 버전에서 한글(Non-ASCII) 파일명 파싱 실패 시 download 속성을 통째로 무시하고 UUID로 다운로드하는 버그를 방어하기 위해 순수 영문명 지정
+      link.download = `Anchor_Agreement_List_Year_${selectedYear}.xlsx`;
       link.style.display = "none";
       
       document.body.appendChild(link);
