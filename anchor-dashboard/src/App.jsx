@@ -1385,7 +1385,7 @@ export default function App() {
     localStorage.setItem("anchor_active_tab", activeTab);
   }, [activeTab]);
 
-  // 사업단 구성원 관리 및 서브탭 상태
+  // 사업단 구성원 관리 및 서브탭 상태 (첫 기동 시 즉각 화면 출력을 보장하기 위해 로컬 캐시를 초기값으로 지탱)
   const [members, setMembers] = useState(() => {
     const saved = localStorage.getItem("anchor_members");
     const initialList = INITIAL_MEMBERS.map((m) => ({
@@ -1410,7 +1410,6 @@ export default function App() {
             parsed.push(hongObj);
           }
         } else {
-          // 존재하지 않을 경우 새로 initialList에서 주입 복구
           const hongObj = initialList.find(m => m.email === "cshong@uc.ac.kr");
           if (hongObj) {
             const gphongIdx = parsed.findIndex(m => m.email && m.email.trim().toLowerCase() === "gphong@uc.ac.kr");
@@ -1422,7 +1421,6 @@ export default function App() {
           }
         }
 
-        // 하위 드롭다운 싱크 불일치 마이그레이션 보장
         return parsed.map((m) => {
           let currentGrade = m.grade || "연구원";
           if (currentGrade === "전임 교수") currentGrade = "정교수";
@@ -1443,6 +1441,49 @@ export default function App() {
     return initialList;
   });
 
+  // Supabase 원격 rise_members 테이블에서 구성원 주소록 실시간 동기화 및 자가 치유 시딩 로드
+  useEffect(() => {
+    const fetchDbMembers = async () => {
+      try {
+        const { data, error } = await supabase
+          .from("rise_members")
+          .select("*")
+          .order("id", { ascending: true });
+
+        if (error) throw error;
+
+        if (data && data.length > 0) {
+          // DB 테이블에 데이터가 정상 적재되어 있는 경우 최우선 동기화 적용
+          setMembers(data);
+        } else {
+          // DB 테이블은 존재하나 데이터가 비어있을 시 최초 시드 업서트 기동
+          console.log("Supabase members empty. Seeding initial data...");
+          const initialList = INITIAL_MEMBERS.map((m) => ({
+            ...m,
+            startDate: m.startDate || m.hireDate || "2026-03-01",
+            endDate: m.endDate || "",
+            status: m.status || "재직중"
+          }));
+
+          const { error: seedError } = await supabase
+            .from("rise_members")
+            .upsert(initialList);
+
+          if (!seedError) {
+            setMembers(initialList);
+          } else {
+            console.error("Seeding initial members failed:", seedError);
+          }
+        }
+      } catch (err) {
+        console.error("Supabase rise_members table sync failed, fallback to localStorage cache:", err);
+      }
+    };
+
+    fetchDbMembers();
+  }, []);
+
+  // members 로컬 상태 갱신 시 로컬스토리지 보조 백업 (네트워크 지연 시 즉시 피드백 및 영속성 보장)
   useEffect(() => {
     localStorage.setItem("anchor_members", JSON.stringify(members));
   }, [members]);
@@ -3499,9 +3540,18 @@ export default function App() {
                                 <button
                                   className="btn-primary"
                                   style={{ padding: "0.2rem 0.4rem", fontSize: "0.65rem", borderRadius: "0.25rem", background: "rgba(239,68,68,0.15)", border: "1px solid #ef4444", color: "#f87171" }}
-                                  onClick={() => {
+                                  onClick={async () => {
                                     if (window.confirm(`정말 ${m.name} 구성원을 삭제하시겠습니까?`)) {
                                       setMembers(members.filter((item) => item.id !== m.id));
+                                      try {
+                                        const { error } = await supabase
+                                          .from("rise_members")
+                                          .delete()
+                                          .eq("id", m.id);
+                                        if (error) throw error;
+                                      } catch (err) {
+                                        console.error("Failed to delete member from DB:", err);
+                                      }
                                     }
                                   }}
                                 >
@@ -4311,17 +4361,40 @@ export default function App() {
       {isMemberModalOpen && editingMember && (
         <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(0,0,0,0.7)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000 }}>
           <form
-            onSubmit={(e) => {
+            onSubmit={async (e) => {
               e.preventDefault();
               if (!editingMember.name || !editingMember.email) {
                 alert("성명과 이메일은 필수 입력 사항입니다.");
                 return;
               }
               if (editingMember.id) {
+                // 수정 처리
                 setMembers(members.map((m) => (m.id === editingMember.id ? editingMember : m)));
+                try {
+                  const { error } = await supabase
+                    .from("rise_members")
+                    .upsert(editingMember);
+                  if (error) throw error;
+                } catch (err) {
+                  console.error("Failed to update member in DB:", err);
+                }
               } else {
-                const newMember = { ...editingMember, id: `m-${Date.now()}` };
+                // 추가 처리
+                const newMember = { 
+                  ...editingMember, 
+                  id: `m-${Date.now()}`,
+                  startDate: editingMember.startDate || "2026-03-01",
+                  status: editingMember.status || "재직중"
+                };
                 setMembers([...members, newMember]);
+                try {
+                  const { error } = await supabase
+                    .from("rise_members")
+                    .insert(newMember);
+                  if (error) throw error;
+                } catch (err) {
+                  console.error("Failed to insert member into DB:", err);
+                }
               }
               setIsMemberModalOpen(false);
               setEditingMember(null);
