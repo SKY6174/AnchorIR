@@ -1388,7 +1388,9 @@ export default function App() {
   const [assignFilterUnitId, setAssignFilterUnitId] = useState("all");
   const [mgmtSubTab, setMgmtSubTab] = useState("members"); // "members", "programs", "approvals"
   const [memberFilter, setMemberFilter] = useState("all"); // "all", "active", "retired"
-  const [projectsSubTab, setProjectsSubTab] = useState("unit_status"); // "unit_status" (단위과제 집행현황) 또는 "program_mgmt" (프로그램 관리)
+  const [projectsSubTab, setProjectsSubTab] = useState(() => {
+    return localStorage.getItem("anchor_projects_sub_tab") || "unit_status";
+  }); // "unit_status" (단위과제 집행현황) 또는 "program_mgmt" (프로그램 관리)
   const [isMemberModalOpen, setIsMemberModalOpen] = useState(false);
   const [editingMember, setEditingMember] = useState(null); // 추가/수정용 임시 객체
 
@@ -1710,6 +1712,10 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem("anchor_kpi_sub_tab", kpiSubTab);
   }, [kpiSubTab]);
+
+  useEffect(() => {
+    localStorage.setItem("anchor_projects_sub_tab", projectsSubTab);
+  }, [projectsSubTab]);
 
   useEffect(() => {
     localStorage.setItem("anchor_selected_unit_id", selectedUnitId);
