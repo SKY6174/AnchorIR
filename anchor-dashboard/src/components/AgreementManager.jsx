@@ -341,68 +341,81 @@ export default function AgreementManager({
 
   // 엑셀 다운로드 핸들러
   const handleDownloadExcel = () => {
-    if (sortedAgreements.length === 0) {
-      alert("다운로드할 협약서 데이터가 없습니다.");
-      return;
-    }
-
-    // 엑셀 변환용 데이터 매핑
-    const excelData = sortedAgreements.map((agr) => {
-      let orgsStr = "";
-      let orgSubjectsStr = "";
-      if (Array.isArray(agr.organizations)) {
-        if (typeof agr.organizations[0] === "object" && agr.organizations[0] !== null) {
-          orgsStr = agr.organizations.map(o => o.name).join(", ");
-          orgSubjectsStr = agr.organizations.map(o => `${o.name}(${o.subject || "주체없음"})`).join(", ");
-        } else {
-          orgsStr = agr.organizations.join(", ");
-          orgSubjectsStr = agr.subjectOrganization || "";
-        }
+    try {
+      if (sortedAgreements.length === 0) {
+        alert("다운로드할 협약서 데이터가 없습니다.");
+        return;
       }
 
-      return {
-        "체결일자": agr.date || "",
-        "관련 센터": agr.center || "",
-        "협약 대상기관": orgsStr,
-        "대학 측 협약주체(UC)": agr.subjectUniversity || "",
-        "기관 측 협약주체": orgSubjectsStr,
-        "관련 단위과제": agr.unitId || "",
-        "협약내용 범주": Array.isArray(agr.contents) ? agr.contents.join(", ") : "",
-        "사본 파일명": agr.fileName || "미첨부"
-      };
-    });
+      // 엑셀 변환용 데이터 매핑
+      const excelData = sortedAgreements.map((agr) => {
+        let orgsStr = "";
+        let orgSubjectsStr = "";
+        if (Array.isArray(agr.organizations)) {
+          if (typeof agr.organizations[0] === "object" && agr.organizations[0] !== null) {
+            orgsStr = agr.organizations.map(o => o.name).join(", ");
+            orgSubjectsStr = agr.organizations.map(o => `${o.name}(${o.subject || "주체없음"})`).join(", ");
+          } else {
+            orgsStr = agr.organizations.join(", ");
+            orgSubjectsStr = agr.subjectOrganization || "";
+          }
+        }
 
-    const worksheet = XLSX.utils.json_to_sheet(excelData);
-    
-    // 열 너비 자동 보완
-    const colWidths = [
-      { wch: 15 }, // 체결일자
-      { wch: 15 }, // 관련 센터
-      { wch: 30 }, // 협약 대상기관
-      { wch: 20 }, // 대학 측 협약주체
-      { wch: 35 }, // 기관 측 협약주체
-      { wch: 15 }, // 관련 단위과제
-      { wch: 30 }, // 협약내용 범주
-      { wch: 35 }  // 사본 파일명
-    ];
-    worksheet["!cols"] = colWidths;
+        return {
+          "체결일자": agr.date || "",
+          "관련 센터": agr.center || "",
+          "협약 대상기관": orgsStr,
+          "대학 측 협약주체(UC)": agr.subjectUniversity || "",
+          "기관 측 협약주체": orgSubjectsStr,
+          "관련 단위과제": agr.unitId || "",
+          "협약내용 범주": Array.isArray(agr.contents) ? agr.contents.join(", ") : "",
+          "사본 파일명": agr.fileName || "미첨부"
+        };
+      });
 
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, `${selectedYear}차년도 협약서 목록`);
-    
-    // 네이티브 Blob 및 download 속성 링크 제어를 통해 브라우저별 파일명 유실 및 UUID 다운로드 현상을 완벽하게 방지
-    const wbout = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
-    const blob = new Blob([wbout], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
-    const blobUrl = URL.createObjectURL(blob);
-    
-    const link = document.createElement("a");
-    link.href = blobUrl;
-    link.download = `Anchor_라이즈_협약서_목록_${selectedYear}차년도.xlsx`;
-    document.body.appendChild(link);
-    link.click();
-    
-    document.body.removeChild(link);
-    URL.revokeObjectURL(blobUrl);
+      const worksheet = XLSX.utils.json_to_sheet(excelData);
+      
+      // 열 너비 자동 보완
+      const colWidths = [
+        { wch: 15 }, // 체결일자
+        { wch: 15 }, // 관련 센터
+        { wch: 30 }, // 협약 대상기관
+        { wch: 20 }, // 대학 측 협약주체
+        { wch: 35 }, // 기관 측 협약주체
+        { wch: 15 }, // 관련 단위과제
+        { wch: 30 }, // 협약내용 범주
+        { wch: 35 }  // 사본 파일명
+      ];
+      worksheet["!cols"] = colWidths;
+
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, `${selectedYear}차년도 협약서 목록`);
+      
+      // 네이티브 Blob 및 download 속성 링크 제어를 통해 브라우저별 파일명 유실 및 UUID 다운로드 현상을 완벽하게 방지
+      const wbout = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
+      
+      // 다운로드 시 브라우저가 임시 파일로 착각하지 않도록 application/octet-stream 타입으로 더 안전하게 처리
+      const blob = new Blob([wbout], { type: "application/octet-stream" });
+      const blobUrl = URL.createObjectURL(blob);
+      
+      const link = document.createElement("a");
+      link.href = blobUrl;
+      link.download = `Anchor_라이즈_협약서_목록_${selectedYear}차년도.xlsx`;
+      link.style.display = "none";
+      
+      document.body.appendChild(link);
+      link.click();
+      
+      // 지연시간을 살짝 두어 브라우저가 안전하게 파일 다운로드 프로세스를 인지할 수 있도록 유도
+      setTimeout(() => {
+        document.body.removeChild(link);
+        URL.revokeObjectURL(blobUrl);
+      }, 100);
+      
+    } catch (err) {
+      console.error("Excel download runtime error:", err);
+      alert(`엑셀 파일 생성 중 오류가 발생했습니다: ${err.message}`);
+    }
   };
 
   return (
