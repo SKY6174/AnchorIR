@@ -180,6 +180,20 @@ export default function AgreementManager({
       alert("협약 체결일자를 선택해 주세요.");
       return;
     }
+
+    // 연차별 사업기간 유효성 체크 (Y차년도: (2025 + Y)년 3월 1일 ~ (2025 + Y + 1)년 2월 말일)
+    const startYear = 2025 + selectedYear;
+    const endYear = startYear + 1;
+    const minDate = new Date(`${startYear}-03-01T00:00:00`);
+    const maxDate = new Date(`${endYear}-03-01T00:00:00`);
+    maxDate.setMilliseconds(-1); // 2월 말일 23:59:59.999
+
+    const selectedDate = new Date(`${inputDate}T00:00:00`);
+
+    if (selectedDate < minDate || selectedDate > maxDate) {
+      alert(`${selectedYear}차년도 사업기간은 ${startYear}년 03월 01일부터 ${endYear}년 02월 말일까지입니다.\n선택하신 날짜(${inputDate})는 사업기간 범위에 해당되지 않습니다.`);
+      return;
+    }
     
     const cleanOrgs = inputOrganizations
       .map(o => ({ name: o.name.trim(), subject: o.subject.trim() }))
