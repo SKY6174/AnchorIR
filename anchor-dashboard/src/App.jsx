@@ -1469,8 +1469,8 @@ export default function App() {
     // 종료일 조건: 종료일(endDate) 정보가 없거나, 혹은 해당 연차의 시작일(termStart)보다 크거나 같아야 함
     const isNotEnded = !eDate || eDate >= termStart;
 
-    // 만약 데이터 상의 원본 상태가 "미참여"로 강제 세팅된 상태이거나 날짜 범위를 벗어난 경우 미참여 처리
-    if (isStarted && isNotEnded && m.status !== "미참여") {
+    // 오로지 날짜 범위 조건(계약 기간)만을 기준으로 동적으로 판별함
+    if (isStarted && isNotEnded) {
       return "참여중";
     }
     return "미참여";
