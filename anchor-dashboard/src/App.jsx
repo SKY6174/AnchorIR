@@ -2194,7 +2194,9 @@ export default function App() {
             dept: x.dept,
             startAt: x.start_at,
             endAt: x.end_at,
-            location: x.location
+            location: x.location,
+            isTask: x.is_task || false,
+            completed: x.completed || false
           }));
           setMonthlySchedules(formatted);
           localStorage.setItem(`anchor_cache_month_y${selectedYear}`, JSON.stringify(formatted));
@@ -2391,7 +2393,9 @@ export default function App() {
               dept: s.dept || "사업운영팀",
               start_at: s.startAt,
               end_at: s.endAt,
-              location: s.location || ""
+              location: s.location || "",
+              is_task: s.isTask || false,
+              completed: s.completed || false
             }))
           );
           if (error) throw error;
