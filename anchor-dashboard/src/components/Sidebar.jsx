@@ -448,6 +448,30 @@ export default function Sidebar({
                 >
                   - 프로그램 배정
                 </div>
+                <div
+                  className={`nav-sub-item ${activeTab === "management" && mgmtSubTab === "org_chart" ? "active" : ""}`}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onChangeTab("management");
+                    if (onChangeMgmtSubTab) {
+                      onChangeMgmtSubTab("org_chart");
+                    }
+                  }}
+                >
+                  - 대학조직도
+                </div>
+                <div
+                  className={`nav-sub-item ${activeTab === "management" && mgmtSubTab === "partners" ? "active" : ""}`}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onChangeTab("management");
+                    if (onChangeMgmtSubTab) {
+                      onChangeMgmtSubTab("partners");
+                    }
+                  }}
+                >
+                  - 파트너기관
+                </div>
               </div>
             </div>
           )}

@@ -1,0 +1,791 @@
+import React, { useState, useEffect } from "react";
+import { Plus, Trash2, Edit, FileText, Search, Download, Upload, X, Shield, Globe, Award, Database, Filter } from "lucide-react";
+import * as XLSX from "xlsx";
+import { supabase } from "../supabaseClient";
+
+// 협력 내용 범주 목록 (협약 관리와 통일)
+const SECTOR_OPTIONS = [
+  "주문식교육", "창업", "글로벌", "R&BD", "AIDX", "탄소중립",
+  "복합재난", "평생교육", "늘봄", "지역현안해결", "보건복지서비스", "에코컬처", "도시재생"
+];
+
+// 대분류 옵션
+const CATEGORY_OPTIONS = [
+  "공공기관", "유관기관", "산업체", "대학", "지역사회"
+];
+
+// 세부분류 매핑
+const SUB_CATEGORY_OPTIONS = {
+  "공공기관": ["시청", "구청", "군청", "교육청", "기타"],
+  "유관기관": ["진흥원", "테크노파크", "센터", "협회", "기타"],
+  "산업체": ["대기업", "중견기업", "중소기업", "스타트업", "외투기업"],
+  "대학": ["일반대학", "전문대학", "석사과정", "협의체", "해외대학"],
+  "지역사회": ["주민자치회", "사회공헌단체", "복지관", "기타"]
+};
+
+// 2차년도 기본 모의 데이터셋 (데이터가 비어있을 시 자동 폴백 적재용)
+const MOCK_PARTNERS = [
+  { name: "울산광역시청", category: "공공기관", sub_category: "시청", location: "울산", sectors: ["지역현안해결", "도시재생", "AIDX"], contact_person: "정민우 서기관", contact_phone: "052-229-2000", remarks: "울산 라이즈(RISE) 기획 기본 수립 및 예산 배분 총괄" },
+  { name: "울산 동구청", category: "공공기관", sub_category: "구청", location: "울산", sectors: ["지역현안해결", "창업", "평생교육"], contact_person: "한서진 팀장", contact_phone: "052-209-3000", remarks: "동구 청년친화도시 조성 및 T:IM 1219 청소년 벽화 공동 추진" },
+  { name: "울산정보산업진흥원", category: "유관기관", sub_category: "진흥원", location: "울산", sectors: ["AIDX", "R&BD"], contact_person: "이승호 연구원", contact_phone: "052-210-0200", remarks: "AIDX 재학생/재직자 40시간 현장 융합 교육 장비 공동 운영" },
+  { name: "HD현대중공업", category: "산업체", sub_category: "대기업", location: "울산", sectors: ["주문식교육", "글로벌"], contact_person: "김두환 실장", contact_phone: "052-202-2114", remarks: "조선해양 미래 전문기술인재 채용연계 맞춤형 주문식 트랙 가동" },
+  { name: "제주한라대학교", category: "대학", sub_category: "전문대학", location: "제주", sectors: ["글로벌", "AIDX"], contact_person: "고지혁 처장", contact_phone: "064-741-7500", remarks: "AI 인재양성 및 초광역 라이즈 협력 추진 협약 체결 대학" },
+  { name: "HHS", category: "산업체", sub_category: "스타트업", location: "울산", sectors: ["창업", "R&BD"], contact_person: "한형섭 대표", contact_phone: "052-911-3000", remarks: "안전 헬멧 스마트 바이오 센서 기술이전 및 산학공동 R&D 과제 협력" }
+];
+
+export default function PartnerManager({ selectedYear }) {
+  const [partners, setPartners] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filterCategory, setFilterCategory] = useState("all");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingPartner, setEditingPartner] = useState(null);
+
+  // 폼 입력 상태
+  const [formName, setFormName] = useState("");
+  const [formCategory, setFormCategory] = useState("공공기관");
+  const [formSubCategory, setFormSubCategory] = useState("");
+  const [formLocation, setFormLocation] = useState("울산");
+  const [formSectors, setFormSectors] = useState([]);
+  const [formContactPerson, setFormContactPerson] = useState("");
+  const [formContactPhone, setFormContactPhone] = useState("");
+  const [formRemarks, setFormRemarks] = useState("");
+
+  // Supabase 또는 로컬 스토리지로부터 파트너 목록 불러오기
+  const loadPartners = async () => {
+    setLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from("partner_institutions")
+        .select("*")
+        .order("id", { ascending: false });
+
+      if (error) throw error;
+
+      if (data && data.length > 0) {
+        setPartners(data);
+      } else {
+        // 데이터가 아예 없는 초기 시점에는 샘플 데이터 적재
+        setPartners(MOCK_PARTNERS);
+        // Supabase에 대용량 인서트 시도
+        await supabase.from("partner_institutions").insert(MOCK_PARTNERS);
+      }
+    } catch (e) {
+      console.warn("Failed to load partners from Supabase, loading fallback mock:", e);
+      // 로컬 스토리지 캐시 백업
+      const cached = localStorage.getItem("anchor_partner_institutions");
+      if (cached) {
+        try { setPartners(JSON.parse(cached)); } catch (err) { setPartners(MOCK_PARTNERS); }
+      } else {
+        setPartners(MOCK_PARTNERS);
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadPartners();
+  }, []);
+
+  // 로컬 변경 사항 있을 때 로컬 스토리지 백업
+  useEffect(() => {
+    if (partners.length > 0) {
+      localStorage.setItem("anchor_partner_institutions", JSON.stringify(partners));
+    }
+  }, [partners]);
+
+  // 카테고리 대분류 변경 시 세부분류 초기값 설정
+  useEffect(() => {
+    const subOptions = SUB_CATEGORY_OPTIONS[formCategory] || [];
+    if (subOptions.length > 0 && !subOptions.includes(formSubCategory)) {
+      setFormSubCategory(subOptions[0]);
+    }
+  }, [formCategory]);
+
+  // 모달 열기/닫기 제어
+  const openAddModal = () => {
+    setEditingPartner(null);
+    setFormName("");
+    setFormCategory("공공기관");
+    setFormSubCategory("시청");
+    setFormLocation("울산");
+    setFormSectors([]);
+    setFormContactPerson("");
+    setFormContactPhone("");
+    setFormRemarks("");
+    setIsModalOpen(true);
+  };
+
+  const openEditModal = (partner) => {
+    setEditingPartner(partner);
+    setFormName(partner.name);
+    setFormCategory(partner.category);
+    setFormSubCategory(partner.sub_category || "");
+    setFormLocation(partner.location);
+    setFormSectors(partner.sectors || []);
+    setFormContactPerson(partner.contact_person || "");
+    setFormContactPhone(partner.contact_phone || "");
+    setFormRemarks(partner.remarks || "");
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setEditingPartner(null);
+  };
+
+  // 다중선택 분야 토글
+  const toggleSector = (sector) => {
+    if (formSectors.includes(sector)) {
+      setFormSectors(formSectors.filter(s => s !== sector));
+    } else {
+      setFormSectors([...formSectors, sector]);
+    }
+  };
+
+  // C.R.U.D 처리 핸들러
+  const handleSave = async (e) => {
+    e.preventDefault();
+    if (!formName || !formLocation) {
+      alert("기관명과 지역은 필수 입력값입니다.");
+      return;
+    }
+
+    const payload = {
+      name: formName,
+      category: formCategory,
+      sub_category: formSubCategory,
+      location: formLocation,
+      sectors: formSectors,
+      contact_person: formContactPerson,
+      contact_phone: formContactPhone,
+      remarks: formRemarks
+    };
+
+    try {
+      if (editingPartner) {
+        // UPDATE
+        if (editingPartner.id) {
+          const { error } = await supabase
+            .from("partner_institutions")
+            .update(payload)
+            .eq("id", editingPartner.id);
+          if (error) throw error;
+        }
+        // 로컬 상태 수정
+        setPartners(partners.map(p => p.id === editingPartner.id ? { ...p, ...payload } : p));
+      } else {
+        // CREATE
+        const { data, error } = await supabase
+          .from("partner_institutions")
+          .insert([payload])
+          .select();
+        if (error) throw error;
+        // 로컬 상태 추가
+        const newRecord = data && data[0] ? data[0] : { ...payload, id: Date.now() };
+        setPartners([newRecord, ...partners]);
+      }
+      closeModal();
+    } catch (err) {
+      console.error("Error saving partner:", err);
+      alert("DB 저장 도중 오류가 발생했습니다. 로컬 임시본에 반영합니다.");
+      // 오프라인/로컬 폴백 처리
+      if (editingPartner) {
+        setPartners(partners.map(p => p.name === editingPartner.name ? { ...p, ...payload } : p));
+      } else {
+        setPartners([{ ...payload, id: Date.now() }, ...partners]);
+      }
+      closeModal();
+    }
+  };
+
+  const handleDelete = async (partner) => {
+    if (!confirm(`정말로 '${partner.name}' 파트너기관을 목록에서 삭제하시겠습니까?`)) return;
+
+    try {
+      if (partner.id) {
+        const { error } = await supabase
+          .from("partner_institutions")
+          .delete()
+          .eq("id", partner.id);
+        if (error) throw error;
+      }
+      setPartners(partners.filter(p => p.id !== partner.id && p.name !== partner.name));
+    } catch (err) {
+      console.error("Error deleting partner:", err);
+      alert("DB 삭제에 실패했습니다. 로컬 목록에서 우선 차단합니다.");
+      setPartners(partners.filter(p => p.id !== partner.id && p.name !== partner.name));
+    }
+  };
+
+  // 엑셀 다운로드 (XLSX)
+  const handleExcelExport = () => {
+    const dataToExport = filteredPartners.map((p, idx) => ({
+      번호: idx + 1,
+      기관명: p.name,
+      대분류: p.category,
+      세부분류: p.sub_category || "-",
+      지역: p.location,
+      협력분야: (p.sectors || []).join(", "),
+      담당자: p.contact_person || "-",
+      연락처: p.contact_phone || "-",
+      주요메모: p.remarks || "-"
+    }));
+
+    const ws = XLSX.utils.json_to_sheet(dataToExport);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "파트너기관_대장");
+    XLSX.writeFile(wb, `UC_ANCHOR_파트너기관_대장_${selectedYear}차년도.xlsx`);
+  };
+
+  // 엑셀 업로드 (가져오기)
+  const handleExcelImport = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = async (evt) => {
+      try {
+        const data = evt.target.result;
+        const workbook = XLSX.read(data, { type: "binary" });
+        const sheetName = workbook.SheetNames[0];
+        const ws = workbook.Sheets[sheetName];
+        const excelRows = XLSX.utils.sheet_to_json(ws);
+
+        // 로우 가공 및 검증
+        const importedPartners = excelRows.map((row) => {
+          const sectorsStr = row["협력분야"] || row["분야"] || "";
+          const sectorsArr = sectorsStr ? sectorsStr.split(",").map(s => s.trim()) : [];
+          return {
+            name: row["기관명"] || row["파트너명"] || "무명기관",
+            category: row["대분류"] || row["분류"] || "산업체",
+            sub_category: row["세부분류"] || row["세부"] || "중소기업",
+            location: row["지역"] || "울산",
+            sectors: sectorsArr.filter(s => SECTOR_OPTIONS.includes(s)),
+            contact_person: row["담당자"] || "",
+            contact_phone: row["연락처"] || "",
+            remarks: row["주요메모"] || row["메모"] || ""
+          };
+        });
+
+        if (importedPartners.length > 0) {
+          // Supabase 일괄 삽입 시도
+          const { data: insData, error } = await supabase
+            .from("partner_institutions")
+            .insert(importedPartners)
+            .select();
+          
+          if (error) throw error;
+          
+          setPartners([...(insData || importedPartners), ...partners]);
+          alert(`엑셀 파일로부터 ${importedPartners.length}개의 파트너기관 정보를 성공적으로 업로드하여 적재했습니다!`);
+        }
+      } catch (err) {
+        console.error("Excel Import Error:", err);
+        alert("엑셀 구조 분석 중 에러가 발생했거나 필수 컬럼('기관명', '대분류', '지역')이 누락되었습니다.");
+      }
+    };
+    reader.readAsBinaryString(file);
+  };
+
+  // 필터링 및 검색 로직
+  const filteredPartners = partners.filter((p) => {
+    const matchesSearch = p.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                          (p.contact_person || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          (p.location || "").toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory = filterCategory === "all" || p.category === filterCategory;
+    return matchesSearch && matchesCategory;
+  });
+
+  // 통계 계산
+  const categoryStats = CATEGORY_OPTIONS.reduce((acc, curr) => {
+    acc[curr] = partners.filter(p => p.category === curr).length;
+    return acc;
+  }, {});
+
+  return (
+    <div className="partner-manager-container" style={{ display: "flex", flexDirection: "column", gap: "1.5rem", width: "100%" }}>
+      {/* 1. 상단 안내 */}
+      <div className="glass-card" style={{ padding: "1.5rem", display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+        <h2 style={{ fontSize: "1.25rem", fontWeight: "800", color: "var(--accent-color)", display: "flex", alignItems: "center", gap: "0.5rem" }}>
+          <Globe size={22} />
+          파트너기관 정보 관리 (지·산·학 파트너십 CRM)
+        </h2>
+        <p style={{ fontSize: "0.9rem", color: "var(--text-secondary-dark)", lineHeight: "1.5" }}>
+          울산과학대학교 라이즈(RISE)사업 및 앵커 사업의 핵심 동반자인 지자체, 공공기관, 유관 협회, 주요 산업체 및 교류 대학들의 파트너십 정보를 집중 보존하고 관리합니다.
+          협약 관리 대장과도 유기적으로 연동하여 분야별 협력 역량을 통합 조회합니다.
+        </p>
+      </div>
+
+      {/* 2. 분류별 파트너 수 요약 배지 */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: "1rem" }}>
+        {CATEGORY_OPTIONS.map((cat) => (
+          <div
+            key={cat}
+            onClick={() => setFilterCategory(filterCategory === cat ? "all" : cat)}
+            className="glass-card clickable"
+            style={{
+              padding: "1rem",
+              textAlign: "center",
+              cursor: "pointer",
+              transition: "all 0.2s ease",
+              background: filterCategory === cat ? "rgba(59, 130, 246, 0.12)" : "rgba(255, 255, 255, 0.02)",
+              border: filterCategory === cat ? "1px solid var(--accent-color)" : "1px solid rgba(255, 255, 255, 0.05)"
+            }}
+          >
+            <span style={{ fontSize: "0.8rem", color: "var(--text-secondary-dark)", fontWeight: "700" }}>{cat}</span>
+            <div style={{ fontSize: "1.5rem", fontWeight: "900", marginTop: "0.25rem", color: filterCategory === cat ? "var(--accent-color)" : "white" }}>
+              {categoryStats[cat] || 0} <span style={{ fontSize: "0.85rem", fontWeight: "700" }}>개소</span>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* 3. 테이블 컨트롤바 (검색, 등록, 엑셀 다운/업) */}
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "1rem", flexWrap: "wrap" }}>
+        <div style={{ display: "flex", gap: "0.6rem", alignItems: "center" }}>
+          <div style={{ position: "relative" }}>
+            <Search size={16} style={{ position: "absolute", left: "10px", top: "50%", transform: "translateY(-50%)", color: "var(--text-secondary-dark)" }} />
+            <input
+              type="text"
+              placeholder="기관명, 지역, 담당자 검색..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              style={{
+                padding: "0.5rem 1rem 0.5rem 2rem",
+                borderRadius: "6px",
+                border: "1px solid rgba(255, 255, 255, 0.1)",
+                background: "rgba(0, 0, 0, 0.2)",
+                color: "white",
+                fontSize: "0.85rem",
+                width: "240px"
+              }}
+            />
+          </div>
+
+          {filterCategory !== "all" && (
+            <button
+              onClick={() => setFilterCategory("all")}
+              style={{
+                padding: "0.5rem 0.75rem",
+                borderRadius: "6px",
+                border: "none",
+                background: "rgba(255, 255, 255, 0.05)",
+                color: "white",
+                fontSize: "0.8rem",
+                cursor: "pointer"
+              }}
+            >
+              필터 해제
+            </button>
+          )}
+        </div>
+
+        <div style={{ display: "flex", gap: "0.6rem", alignItems: "center" }}>
+          {/* 엑셀 파일 가져오기 (Upload) */}
+          <label
+            className="btn-secondary"
+            style={{
+              padding: "0.5rem 0.8rem",
+              fontSize: "0.8rem",
+              borderRadius: "6px",
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              gap: "0.4rem",
+              background: "rgba(255, 255, 255, 0.05)",
+              border: "1px solid rgba(255,255,255,0.08)"
+            }}
+          >
+            <Upload size={14} />
+            엑셀 업로드
+            <input
+              type="file"
+              accept=".xlsx, .xls"
+              onChange={handleExcelImport}
+              style={{ display: "none" }}
+            />
+          </label>
+
+          {/* 엑셀 다운로드 (Export) */}
+          <button
+            onClick={handleExcelExport}
+            className="btn-secondary"
+            style={{
+              padding: "0.5rem 0.8rem",
+              fontSize: "0.8rem",
+              borderRadius: "6px",
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              gap: "0.4rem",
+              background: "rgba(16, 185, 129, 0.1)",
+              border: "1px solid rgba(16, 185, 129, 0.2)",
+              color: "#10B981"
+            }}
+          >
+            <Download size={14} />
+            엑셀 다운로드
+          </button>
+
+          {/* 신규 등록 */}
+          <button
+            onClick={openAddModal}
+            className="btn-primary"
+            style={{
+              padding: "0.5rem 1rem",
+              fontSize: "0.8rem",
+              borderRadius: "6px",
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              gap: "0.4rem"
+            }}
+          >
+            <Plus size={14} />
+            신규 파트너 등록
+          </button>
+        </div>
+      </div>
+
+      {/* 4. 파트너 대장 테이블 */}
+      <div className="glass-card" style={{ padding: "0.5rem", overflowX: "auto" }}>
+        <table className="mini-table" style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.85rem", textAlign: "left" }}>
+          <thead>
+            <tr style={{ borderBottom: "1px solid rgba(255, 255, 255, 0.08)", color: "var(--text-secondary-dark)" }}>
+              <th style={{ padding: "0.75rem 1rem" }}>기관명</th>
+              <th style={{ padding: "0.75rem 1rem" }}>분류</th>
+              <th style={{ padding: "0.75rem 1rem" }}>세부분류</th>
+              <th style={{ padding: "0.75rem 1rem" }}>지역</th>
+              <th style={{ padding: "0.75rem 1rem" }}>협력 분야</th>
+              <th style={{ padding: "0.75rem 1rem" }}>담당자 (연락처)</th>
+              <th style={{ padding: "0.75rem 1rem" }}>주요 성과 / 메모</th>
+              <th style={{ padding: "0.75rem 1rem", textAlign: "center" }}>제어</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredPartners.length > 0 ? (
+              filteredPartners.map((p) => (
+                <tr
+                  key={p.id || p.name}
+                  style={{
+                    borderBottom: "1px solid rgba(255, 255, 255, 0.04)",
+                    transition: "all 0.15s ease",
+                    cursor: "pointer"
+                  }}
+                  className="hover-row"
+                >
+                  <td style={{ padding: "0.85rem 1rem", fontWeight: "800" }}>{p.name}</td>
+                  <td style={{ padding: "0.85rem 1rem" }}>
+                    <span style={{
+                      padding: "0.2rem 0.5rem",
+                      borderRadius: "4px",
+                      background: "rgba(59, 130, 246, 0.08)",
+                      color: "var(--accent-color)",
+                      fontWeight: "700",
+                      fontSize: "0.75rem"
+                    }}>
+                      {p.category}
+                    </span>
+                  </td>
+                  <td style={{ padding: "0.85rem 1rem", color: "var(--text-secondary-dark)" }}>
+                    {p.sub_category || "-"}
+                  </td>
+                  <td style={{ padding: "0.85rem 1rem" }}>{p.location}</td>
+                  <td style={{ padding: "0.85rem 1rem" }}>
+                    <div style={{ display: "flex", gap: "0.3rem", flexWrap: "wrap", maxWidth: "240px" }}>
+                      {(p.sectors || []).map((sec) => (
+                        <span
+                          key={sec}
+                          style={{
+                            fontSize: "0.7rem",
+                            background: "rgba(255, 255, 255, 0.04)",
+                            color: "var(--text-secondary-dark)",
+                            border: "1px solid rgba(255, 255, 255, 0.08)",
+                            padding: "0.1rem 0.35rem",
+                            borderRadius: "4px"
+                          }}
+                        >
+                          {sec}
+                        </span>
+                      ))}
+                      {(p.sectors || []).length === 0 && <span style={{ color: "var(--text-secondary-dark)" }}>-</span>}
+                    </div>
+                  </td>
+                  <td style={{ padding: "0.85rem 1rem" }}>
+                    {p.contact_person ? (
+                      <div>
+                        <span style={{ fontWeight: "700" }}>{p.contact_person}</span>
+                        {p.contact_phone && (
+                          <span style={{ display: "block", fontSize: "0.75rem", color: "var(--text-secondary-dark)" }}>
+                            {p.contact_phone}
+                          </span>
+                        )}
+                      </div>
+                    ) : (
+                      "-"
+                    )}
+                  </td>
+                  <td style={{ padding: "0.85rem 1rem", maxWidth: "250px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", color: "var(--text-secondary-dark)" }} title={p.remarks}>
+                    {p.remarks || "-"}
+                  </td>
+                  <td style={{ padding: "0.85rem 1rem", textAlign: "center" }}>
+                    <div style={{ display: "flex", gap: "0.5rem", justifyContent: "center" }}>
+                      <button
+                        onClick={(e) => { e.stopPropagation(); openEditModal(p); }}
+                        style={{ border: "none", background: "transparent", cursor: "pointer", color: "var(--text-secondary-dark)" }}
+                        title="수정"
+                      >
+                        <Edit size={16} />
+                      </button>
+                      <button
+                        onClick={(e) => { e.stopPropagation(); handleDelete(p); }}
+                        style={{ border: "none", background: "transparent", cursor: "pointer", color: "#EF4444" }}
+                        title="삭제"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan={8} style={{ padding: "3rem", textAlign: "center", color: "var(--text-secondary-dark)" }}>
+                  검색 조건에 부합하는 파트너기관 정보가 존재하지 않습니다.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+
+      {/* 5. 신규 등록 / 수정 팝업 모달 */}
+      {isModalOpen && (
+        <div style={{
+          position: "fixed",
+          left: 0,
+          top: 0,
+          right: 0,
+          bottom: 0,
+          background: "rgba(0, 0, 0, 0.7)",
+          backdropFilter: "blur(4px)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          zIndex: 9999
+        }}>
+          <div className="glass-card" style={{ width: "600px", padding: "2rem", display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <h3 style={{ fontSize: "1.25rem", fontWeight: "800", color: "var(--accent-color)" }}>
+                {editingPartner ? "🛠️ 파트너기관 정보 수정" : "➕ 신규 파트너기관 등록"}
+              </h3>
+              <button onClick={closeModal} style={{ border: "none", background: "transparent", cursor: "pointer", color: "white" }}>
+                <X size={20} />
+              </button>
+            </div>
+
+            <form onSubmit={handleSave} style={{ display: "flex", flexDirection: "column", gap: "1.2rem" }}>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+                {/* 기관명 */}
+                <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
+                  <label style={{ fontSize: "0.8rem", color: "var(--text-secondary-dark)" }}>기관명 *</label>
+                  <input
+                    type="text"
+                    required
+                    value={formName}
+                    onChange={(e) => setFormName(e.target.value)}
+                    style={{
+                      padding: "0.5rem",
+                      borderRadius: "4px",
+                      border: "1px solid rgba(255,255,255,0.1)",
+                      background: "rgba(0,0,0,0.3)",
+                      color: "white"
+                    }}
+                  />
+                </div>
+
+                {/* 지역 */}
+                <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
+                  <label style={{ fontSize: "0.8rem", color: "var(--text-secondary-dark)" }}>지역/도시 *</label>
+                  <input
+                    type="text"
+                    required
+                    value={formLocation}
+                    onChange={(e) => setFormLocation(e.target.value)}
+                    style={{
+                      padding: "0.5rem",
+                      borderRadius: "4px",
+                      border: "1px solid rgba(255,255,255,0.1)",
+                      background: "rgba(0,0,0,0.3)",
+                      color: "white"
+                    }}
+                  />
+                </div>
+              </div>
+
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+                {/* 대분류 */}
+                <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
+                  <label style={{ fontSize: "0.8rem", color: "var(--text-secondary-dark)" }}>기관 대분류</label>
+                  <select
+                    value={formCategory}
+                    onChange={(e) => setFormCategory(e.target.value)}
+                    style={{
+                      padding: "0.5rem",
+                      borderRadius: "4px",
+                      border: "1px solid rgba(255,255,255,0.1)",
+                      background: "rgba(0,0,0,0.3)",
+                      color: "white"
+                    }}
+                  >
+                    {CATEGORY_OPTIONS.map(opt => (
+                      <option key={opt} value={opt} style={{ background: "#222" }}>{opt}</option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* 세부분류 */}
+                <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
+                  <label style={{ fontSize: "0.8rem", color: "var(--text-secondary-dark)" }}>세부 분류</label>
+                  <select
+                    value={formSubCategory}
+                    onChange={(e) => setFormSubCategory(e.target.value)}
+                    style={{
+                      padding: "0.5rem",
+                      borderRadius: "4px",
+                      border: "1px solid rgba(255,255,255,0.1)",
+                      background: "rgba(0,0,0,0.3)",
+                      color: "white"
+                    }}
+                  >
+                    {(SUB_CATEGORY_OPTIONS[formCategory] || []).map(opt => (
+                      <option key={opt} value={opt} style={{ background: "#222" }}>{opt}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+                {/* 담당자 */}
+                <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
+                  <label style={{ fontSize: "0.8rem", color: "var(--text-secondary-dark)" }}>담당자 성명</label>
+                  <input
+                    type="text"
+                    value={formContactPerson}
+                    onChange={(e) => setFormContactPerson(e.target.value)}
+                    style={{
+                      padding: "0.5rem",
+                      borderRadius: "4px",
+                      border: "1px solid rgba(255,255,255,0.1)",
+                      background: "rgba(0,0,0,0.3)",
+                      color: "white"
+                    }}
+                  />
+                </div>
+
+                {/* 연락처 */}
+                <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
+                  <label style={{ fontSize: "0.8rem", color: "var(--text-secondary-dark)" }}>연락처 (전화번호)</label>
+                  <input
+                    type="text"
+                    value={formContactPhone}
+                    onChange={(e) => setFormContactPhone(e.target.value)}
+                    placeholder="052-000-0000"
+                    style={{
+                      padding: "0.5rem",
+                      borderRadius: "4px",
+                      border: "1px solid rgba(255,255,255,0.1)",
+                      background: "rgba(0,0,0,0.3)",
+                      color: "white"
+                    }}
+                  />
+                </div>
+              </div>
+
+              {/* 협력 분야 다중 선택 */}
+              <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
+                <label style={{ fontSize: "0.8rem", color: "var(--text-secondary-dark)" }}>협력분야 (다중선택)</label>
+                <div style={{ display: "flex", gap: "0.4rem", flexWrap: "wrap", maxHeight: "120px", overflowY: "auto", padding: "0.5rem", background: "rgba(0,0,0,0.2)", borderRadius: "6px" }}>
+                  {SECTOR_OPTIONS.map((sec) => {
+                    const isSelected = formSectors.includes(sec);
+                    return (
+                      <button
+                        type="button"
+                        key={sec}
+                        onClick={() => toggleSector(sec)}
+                        style={{
+                          padding: "0.3rem 0.6rem",
+                          borderRadius: "20px",
+                          border: "none",
+                          fontSize: "0.75rem",
+                          fontWeight: "700",
+                          cursor: "pointer",
+                          transition: "all 0.15s ease",
+                          background: isSelected ? "rgba(59, 130, 246, 0.2)" : "rgba(255, 255, 255, 0.03)",
+                          color: isSelected ? "var(--accent-color)" : "var(--text-secondary-dark)",
+                          border: isSelected ? "1px solid var(--accent-color)" : "1px solid rgba(255, 255, 255, 0.08)"
+                        }}
+                      >
+                        {sec}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* 메모 */}
+              <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
+                <label style={{ fontSize: "0.8rem", color: "var(--text-secondary-dark)" }}>주요 협력 메모 / 추진 실적</label>
+                <textarea
+                  value={formRemarks}
+                  onChange={(e) => setFormRemarks(e.target.value)}
+                  rows={3}
+                  style={{
+                    padding: "0.5rem",
+                    borderRadius: "4px",
+                    border: "1px solid rgba(255,255,255,0.1)",
+                    background: "rgba(0,0,0,0.3)",
+                    color: "white",
+                    resize: "none"
+                  }}
+                />
+              </div>
+
+              <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.8rem", marginTop: "0.5rem" }}>
+                <button
+                  type="button"
+                  onClick={closeModal}
+                  style={{
+                    padding: "0.5rem 1.25rem",
+                    borderRadius: "6px",
+                    border: "none",
+                    background: "rgba(255,255,255,0.1)",
+                    color: "white",
+                    cursor: "pointer"
+                  }}
+                >
+                  취소
+                </button>
+                <button
+                  type="submit"
+                  className="btn-primary"
+                  style={{
+                    padding: "0.5rem 1.5rem",
+                    borderRadius: "6px",
+                    border: "none",
+                    cursor: "pointer",
+                    fontWeight: "800"
+                  }}
+                >
+                  저장하기
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}

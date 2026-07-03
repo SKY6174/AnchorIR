@@ -730,10 +730,10 @@ body.light-mode {
 
 .mgmt-nav-wrapper:hover .nav-sub-menu,
 .mgmt-nav-wrapper.active .nav-sub-menu {
-  max-height: 110px;
-  opacity: 1;
-  margin-top: 0.25rem;
-  margin-bottom: 0.25rem;
+  max-height: 210px !important;
+  opacity: 1 !important;
+  margin-top: 0.25rem !important;
+  margin-bottom: 0.25rem !important;
 }
 
 /* 날짜/시간 입력창 내장 달력 및 피커 아이콘 시인성 고대비 설정 */

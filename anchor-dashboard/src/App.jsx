@@ -9,6 +9,8 @@ import BudgetExecutionManager from "./components/BudgetExecutionManager";
 import ProgramProgressManager from "./components/ProgramProgressManager";
 import MajorProgramsManager from "./components/MajorProgramsManager";
 import LLMWiki from "./components/LLMWiki";
+import OrgChartManager from "./components/OrgChartManager";
+import PartnerManager from "./components/PartnerManager";
 import AuthManager from "./components/AuthManager";
 import ProcurementManager from "./components/ProcurementManager";
 import ScheduleManager from "./components/ScheduleManager";
@@ -4684,6 +4686,40 @@ export default function App() {
               >
                 프로그램 배정
               </button>
+              <button
+                type="button"
+                onClick={() => setMgmtSubTab("org_chart")}
+                style={{
+                  border: "none",
+                  background: "transparent",
+                  padding: "0.5rem 1rem",
+                  fontSize: "0.85rem",
+                  fontWeight: "800",
+                  cursor: "pointer",
+                  color: mgmtSubTab === "org_chart" ? "var(--accent-color)" : "var(--text-secondary-dark)",
+                  borderBottom: mgmtSubTab === "org_chart" ? "2px solid var(--accent-color)" : "none",
+                  transition: "all 0.2s"
+                }}
+              >
+                대학조직도
+              </button>
+              <button
+                type="button"
+                onClick={() => setMgmtSubTab("partners")}
+                style={{
+                  border: "none",
+                  background: "transparent",
+                  padding: "0.5rem 1rem",
+                  fontSize: "0.85rem",
+                  fontWeight: "800",
+                  cursor: "pointer",
+                  color: mgmtSubTab === "partners" ? "var(--accent-color)" : "var(--text-secondary-dark)",
+                  borderBottom: mgmtSubTab === "partners" ? "2px solid var(--accent-color)" : "none",
+                  transition: "all 0.2s"
+                }}
+              >
+                파트너기관
+              </button>
             </div>
 
             {mgmtSubTab === "members" && (
@@ -5372,6 +5408,14 @@ export default function App() {
                   );
                 })()}
               </div>
+            )}
+
+            {mgmtSubTab === "org_chart" && (
+              <OrgChartManager />
+            )}
+
+            {mgmtSubTab === "partners" && (
+              <PartnerManager selectedYear={selectedYear} />
             )}
           </div>
         )}
