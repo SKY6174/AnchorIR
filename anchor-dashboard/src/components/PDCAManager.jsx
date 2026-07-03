@@ -767,14 +767,33 @@ export default function PDCAManager({
 
     // 비목별 예산 및 집행 데이터 조립 및 복원 (본예산/이월예산 및 집행액 구분)
     const categoriesToSave = inputBudgetCategories
-      .filter((c) => c.category && c.category !== "")
+      .filter((c) => c.category && c.category !== "" && c.category !== "선택 안 함")
       .map((c) => ({
         category: c.category,
-        budget: Math.round(parseDecimalFromCommas(c.budget) * 1000000),
-        budget_carry: selectedYear === 1 ? 0 : Math.round(parseDecimalFromCommas(c.budget_carry) * 1000000),
+        budget: Math.round(parseDecimalFromCommas(c.budget || "0") * 1000000),
+        budget_carry: selectedYear === 1 ? 0 : Math.round(parseDecimalFromCommas(c.budget_carry || "0") * 1000000),
         spent: Math.round(parseDecimalFromCommas(c.spent || "0.0") * 1000000),
         spent_carry: selectedYear === 1 ? 0 : Math.round(parseDecimalFromCommas(c.spent_carry || "0.0") * 1000000)
       }));
+
+    // 재원별 총합 vs 비목별 총합 정합성 검증
+    const totalResourceBudget = bNational + bCity + bExternal;
+    const totalCategoryBudget = categoriesToSave.reduce((sum, c) => sum + (c.budget || 0), 0);
+
+    if (totalResourceBudget !== totalCategoryBudget) {
+      alert(`[예산 불일치]\n\n재원별 본예산 총합(${(totalResourceBudget / 1000000).toFixed(2)} 백만원)과\n비목별 본예산 총합(${(totalCategoryBudget / 1000000).toFixed(2)} 백만원)이 일치하지 않습니다.\n\n수치를 다시 확인하여 균등하게 배정해 주세요.`);
+      return;
+    }
+
+    if (selectedYear !== 1) {
+      const totalResourceBudgetCarry = bCarryNational + bCarryCity + bCarryExternal;
+      const totalCategoryBudgetCarry = categoriesToSave.reduce((sum, c) => sum + (c.budget_carry || 0), 0);
+
+      if (totalResourceBudgetCarry !== totalCategoryBudgetCarry) {
+        alert(`[예산 불일치]\n\n재원별 이월예산 총합(${(totalResourceBudgetCarry / 1000000).toFixed(2)} 백만원)과\n비목별 이월예산 총합(${(totalCategoryBudgetCarry / 1000000).toFixed(2)} 백만원)이 일치하지 않습니다.\n\n이월예산 수치를 다시 확인해 주세요.`);
+        return;
+      }
+    }
 
     const draftData = {
       budget_national: bNational,
