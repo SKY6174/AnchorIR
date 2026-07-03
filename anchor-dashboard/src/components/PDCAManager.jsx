@@ -1378,33 +1378,68 @@ export default function PDCAManager({
                       <h4 style={{ fontSize: "0.8rem", fontWeight: "800", color: "var(--accent-color)", margin: 0 }}>P 단계: 예산 기획 및 세부 추진계획</h4>
                       
                       {/* 버전 선택 드롭다운 */}
-                      <div style={{ display: "flex", alignItems: "center", gap: "0.3rem" }}>
-                        <span style={{ fontSize: "0.62rem", color: "var(--text-secondary-dark)" }}>📄 변경 차수 확인:</span>
-                        <select
-                          value={selectedVersionId}
-                          onChange={(e) => setSelectedVersionId(e.target.value)}
-                          style={{
-                            padding: "0.25rem 0.4rem",
-                            fontSize: "0.68rem",
-                            background: "var(--panel-bg)",
-                            border: "1px solid var(--border-color)",
-                            borderRadius: "4px",
-                            color: "var(--text-primary)",
-                            outline: "none",
-                            cursor: "pointer"
-                          }}
-                        >
-                          <option value="current">현재 실시간 데이터 (수정 가능)</option>
-                          {programVersions.map(v => (
-                            <option key={v.id} value={v.id}>
-                              {v.version_name} ({v.status})
-                            </option>
-                          ))}
-                        </select>
-                      </div>
+                      {(() => {
+                        const latestApproved = (programVersions || []).find(v => v.status === "승인완료");
+                        const currentVersionName = latestApproved ? latestApproved.version_name : "최초계획";
+                        return (
+                          <div style={{ display: "flex", alignItems: "center", gap: "0.3rem" }}>
+                            <span style={{ fontSize: "0.62rem", color: "var(--text-secondary-dark)" }}>📄 현재 버전:</span>
+                            <select
+                              value={selectedVersionId}
+                              onChange={(e) => setSelectedVersionId(e.target.value)}
+                              style={{
+                                padding: "0.25rem 0.4rem",
+                                fontSize: "0.68rem",
+                                background: "var(--panel-bg)",
+                                border: "1px solid var(--border-color)",
+                                borderRadius: "4px",
+                                color: "var(--text-primary)",
+                                outline: "none",
+                                cursor: "pointer"
+                              }}
+                            >
+                              <option value="current">실시간 현재 버전 [{currentVersionName}] (수정 가능)</option>
+                              {programVersions.map(v => (
+                                <option key={v.id} value={v.id}>
+                                  {v.version_name} ({v.status})
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+                        );
+                      })()}
                     </div>
                     
                     <fieldset disabled={selectedVersionId !== "current"} style={{ border: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                      
+                      {/* 💡 프로그램 기획 및 예산 변경 방법 안내 카드 */}
+                      <div className="glass-card" style={{
+                        padding: "0.6rem 0.8rem",
+                        background: "rgba(59, 130, 246, 0.04)",
+                        border: "1px solid rgba(59, 130, 246, 0.15)",
+                        borderRadius: "6px",
+                        fontSize: "0.72rem",
+                        color: "var(--text-secondary)",
+                        lineHeight: "1.4",
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: "0.25rem",
+                        boxShadow: "inset 0 1px 2px rgba(59, 130, 246, 0.02)"
+                      }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: "0.3rem", fontWeight: "800", color: "#60a5fa" }}>
+                          💡 프로그램 기획 및 예산 변경 방법 안내
+                        </div>
+                        <p style={{ margin: 0 }}>
+                          아래의 <strong>재원별 예산 배정, 비목별 예산 배정, 월별 일정, 실적 목표치, 연계 대상</strong>을 알맞게 수정한 뒤 하단의 <strong>[저장 및 결재 요청]</strong> 버튼을 누르시면 승인 대기 상태로 등록됩니다.
+                        </p>
+                        <p style={{ margin: 0, color: "var(--text-secondary-dark)" }}>
+                          - 운영팀장, 본부장, 단장 결재 승인이 완료되면 최종 반영되며 새로운 변경 차수 버전이 영구 기록됩니다.
+                        </p>
+                        <p style={{ margin: 0, color: "#93c5fd", fontWeight: "700" }}>
+                          * 단, 송경영 단장님이 직접 수정하는 경우는 결재 대기 절차 없이 즉시 최종 반영됩니다.
+                        </p>
+                      </div>
+
                       <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
                       
                       {/* 1영역: 재원별 예산 */}

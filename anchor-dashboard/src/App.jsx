@@ -3128,6 +3128,89 @@ export default function App() {
     }
   };
 
+  const handleDeleteRequest = async (req) => {
+    // 1) 권한 검사: 송경영에게만 허용
+    if (!currentUser || currentUser.name !== "송경영") {
+      alert("⚠️ 결재 내역 삭제 권한은 송경영 단장에게만 있습니다.");
+      return;
+    }
+
+    if (!window.confirm("정말 이 결재 내역을 삭제하시겠습니까?\n(승인 완료된 이력의 경우, 적용 이전 계획 상태로 프로그램 데이터가 강제 롤백됩니다.)")) {
+      return;
+    }
+
+    try {
+      // 2) DB에서 해당 결재 내역 삭제
+      const { error: deleteErr } = await supabase
+        .from("program_version_requests")
+        .delete()
+        .eq("id", req.id);
+      
+      if (deleteErr) throw deleteErr;
+
+      // 3) 승인 완료된 이력인 경우 롤백(이전 계획 복원) 처리
+      if (req.status === "승인완료") {
+        const beforeFields = req.changes.before; // 이전 계획 데이터
+        const targetUnitId = getRealUnitId(req.unit_id, selectedYear);
+
+        setProjects((prevProjects) => {
+          const updated = JSON.parse(JSON.stringify(prevProjects));
+          let dataUpdated = false;
+
+          updated.forEach((p) => {
+            const pYearVal = p.year === 2024 + selectedYear || p.year === selectedYear;
+            if (pYearVal) {
+              p.units.forEach((u) => {
+                if (u.id === targetUnitId) {
+                  u.programs.forEach((prog) => {
+                    if (String(prog.id) === String(req.program_id)) {
+                      // 이전 계획 스냅샷(beforeFields)의 정보를 전체 병합
+                      Object.keys(beforeFields).forEach((key) => {
+                        if (key === "years" && beforeFields.years) {
+                          if (!prog.years) prog.years = {};
+                          if (beforeFields.years[selectedYear]) {
+                            prog.years[selectedYear] = {
+                              ...prog.years[selectedYear],
+                              ...beforeFields.years[selectedYear]
+                            };
+                          }
+                        } else if (key === "pdca" && beforeFields.pdca) {
+                          prog.pdca = { ...prog.pdca, ...beforeFields.pdca };
+                        } else {
+                          prog[key] = beforeFields[key];
+                        }
+                      });
+                      dataUpdated = true;
+                    }
+                  });
+                }
+              });
+
+              // Supabase 반영
+              if (dataUpdated) {
+                supabase.from("projects_data")
+                  .update({ data: p.data || p }) // p 통째로 갱신하여 JSON 트리 동기화
+                  .eq("year", 2024 + selectedYear)
+                  .then(({ error }) => {
+                    if (error) console.error("Failed to sync project data after rollback deletion:", error);
+                  });
+              }
+            }
+          });
+
+          return updated;
+        });
+      }
+
+      alert("🗑️ 결재 내역이 성공적으로 삭제되었으며, 승인완료 건의 경우 이전 기획 상태로 안전하게 복원되었습니다.");
+      setSelectedRequest(null);
+      fetchVersionRequests();
+    } catch (e) {
+      console.error("Delete request error:", e);
+      alert("결재 내역 삭제 도중 데이터베이스 오류가 발생했습니다.");
+    }
+  };
+
   // 실무진 수동 갱신 (프로그램 PDCA 및 실적 등록)
   const handleUpdateProgramDetails = (unitId, progId, updatedFields) => {
     const realUnitId = getRealUnitId(unitId, selectedYear);
@@ -4820,6 +4903,15 @@ export default function App() {
                                             반려
                                           </button>
                                         </>
+                                      )}
+                                      {currentUser && currentUser.name === "송경영" && (
+                                        <button
+                                          onClick={() => handleDeleteRequest(req)}
+                                          className="btn-primary"
+                                          style={{ padding: "0.2rem 0.5rem", fontSize: "0.7rem", borderRadius: "0.3rem", background: "#EF4444", cursor: "pointer", border: "none", color: "white" }}
+                                        >
+                                          삭제
+                                        </button>
                                       )}
                                     </div>
                                   </td>
