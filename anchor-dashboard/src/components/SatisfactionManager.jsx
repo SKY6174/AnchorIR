@@ -706,6 +706,29 @@ ${commentList || "(없음)"}
     XLSX.writeFile(wb, `satisfaction_survey_${survey.id}.xlsx`);
   };
 
+  // Google Sheets 웹 문서 자동 복사 및 다이렉트 브릿지 이동
+  const handleOpenGoogleSheetsDirect = (survey) => {
+    if (!survey.responses || survey.responses.length === 0) {
+      alert("연동할 실제 응답 데이터가 없습니다.");
+      return;
+    }
+
+    // 1. 스프레드시트용 TSV(Tab-separated) 데이터 구축
+    let tsvContent = "No\t제출자명\t제출 일시\t문항 1\t문항 2\t문항 3\t문항 4\t문항 5\t기타 건의사항 및 피드백\n";
+    survey.responses.forEach((res, idx) => {
+      tsvContent += `${idx + 1}\t${res.responder}\t${res.date}\t${res.scores[0]}점\t${res.scores[1]}점\t${res.scores[2]}점\t${res.scores[3]}점\t${res.scores[4]}점\t${res.comment || ""}\n`;
+    });
+
+    // 2. 클립보드 복사 후 신규 구글 시트 기동
+    navigator.clipboard.writeText(tsvContent).then(() => {
+      alert("✨ 만족도 조사의 실제 데이터가 스프레드시트 클립보드에 자동 복사되었습니다!\n\n구글 스프레드시트 새 문서가 기동되면 첫 번째 셀(A1)을 선택하시고 붙여넣기(Ctrl+V 또는 Cmd+V) 해주세요. 데이터가 마법처럼 연동 주입됩니다!");
+      window.open("https://docs.google.com/spreadsheets/create", "_blank");
+    }).catch(err => {
+      console.error("Failed to copy survey TSV data:", err);
+      window.open("https://docs.google.com/spreadsheets/create", "_blank");
+    });
+  };
+
   const selectedSurvey = surveys.find(s => s.id === selectedSurveyId);
   const selectedYearFull = 2024 + selectedYear;
 
@@ -1625,17 +1648,25 @@ ${commentList || "(없음)"}
             <div style={{
               background: "#2b2b2b",
               borderBottom: "1px solid #3d3d3d",
-              padding: "0.4rem 1.5rem",
+              padding: "0.45rem 1.5rem",
               display: "flex",
               gap: "1.2rem",
               fontSize: "0.75rem",
-              color: "rgba(255,255,255,0.85)"
+              color: "rgba(255,255,255,0.85)",
+              alignItems: "center"
             }}>
-              <span style={{ cursor: "pointer", color: "var(--accent-color)", fontWeight: "700" }} onClick={() => handleExportToExcel(selectedSurvey)}>📥 Excel 내보내기 (다운로드)</span>
+              <span 
+                style={{ cursor: "pointer", color: "#0f9d58", fontWeight: "900", display: "inline-flex", alignItems: "center", gap: "0.3rem" }} 
+                onClick={() => handleOpenGoogleSheetsDirect(selectedSurvey)}
+              >
+                田 Google Sheets 웹으로 바로가기 (실제 데이터 자동 복사)
+              </span>
               <span style={{ color: "#555" }}>|</span>
-              <span>보기전용 (공유 중)</span>
+              <span style={{ cursor: "pointer", color: "var(--accent-color)", fontWeight: "700" }} onClick={() => handleExportToExcel(selectedSurvey)}>📥 Excel 파일 다운로드</span>
               <span style={{ color: "#555" }}>|</span>
-              <span style={{ color: "#10b981", fontWeight: "700" }}>● DB 실시간 동기화 활성화됨</span>
+              <span>편집 연동형</span>
+              <span style={{ color: "#555" }}>|</span>
+              <span style={{ color: "#10b981", fontWeight: "700" }}>● DB 실시간 동기화 완료</span>
             </div>
 
             {/* 스프레드시트 그리드 바디 */}
