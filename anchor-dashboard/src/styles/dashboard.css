@@ -668,9 +668,7 @@ body.light-mode {
 .procurement-nav-wrapper:hover .nav-sub-menu,
 .procurement-nav-wrapper.active .nav-sub-menu,
 .schedule-nav-wrapper:hover .nav-sub-menu,
-.schedule-nav-wrapper.active .nav-sub-menu,
-.agreements-nav-wrapper:hover .nav-sub-menu,
-.agreements-nav-wrapper.active .nav-sub-menu {
+.schedule-nav-wrapper.active .nav-sub-menu {
   max-height: 120px;
   opacity: 1;
   margin-top: 0.25rem;
@@ -707,13 +705,27 @@ body.light-mode {
 
 
 .kpis-nav-wrapper:hover .nav-sub-menu,
-.kpis-nav-wrapper.active .nav-sub-menu,
+.kpis-nav-wrapper.active .nav-sub-menu {
+  max-height: 80px !important;
+  opacity: 1 !important;
+  margin-top: 0.25rem !important;
+  margin-bottom: 0.25rem !important;
+}
+
 .progress-nav-wrapper:hover .nav-sub-menu,
 .progress-nav-wrapper.active .nav-sub-menu {
-  max-height: 80px;
-  opacity: 1;
-  margin-top: 0.25rem;
-  margin-bottom: 0.25rem;
+  max-height: 80px !important;
+  opacity: 1 !important;
+  margin-top: 0.25rem !important;
+  margin-bottom: 0.25rem !important;
+}
+
+.agreements-nav-wrapper:hover .nav-sub-menu,
+.agreements-nav-wrapper.active .nav-sub-menu {
+  max-height: 120px !important;
+  opacity: 1 !important;
+  margin-top: 0.25rem !important;
+  margin-bottom: 0.25rem !important;
 }
 
 .mgmt-nav-wrapper:hover .nav-sub-menu,
