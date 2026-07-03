@@ -159,12 +159,17 @@ const majorProgramsData = {
 export default function MajorProgramsManager({ selectedYear }) {
   // 현재 연도에 해당하는 단위과제 목록 추출
   const yearData = majorProgramsData[selectedYear] || {};
-  const unitKeys = Object.keys(yearData);Offset: 0
+  const unitKeys = Object.keys(yearData);
 
   // 현재 선택된 단위과제 상태 (첫 번째 항목을 디폴트로 설정)
   const [selectedUnit, setSelectedUnit] = useState("");
   // 현재 선택된 프로그램 상태
   const [selectedProg, setSelectedProg] = useState(null);
+
+  // 휠 스크롤 회전 제어를 위한 틱 제어 상태 및 Ref
+  const containerRef = React.useRef(null);
+  const [lastWheelTime, setLastWheelTime] = useState(0);
+  const activeIndex = unitKeys.indexOf(selectedUnit);
 
   // 연도가 변경되면 단위과제 선택 초기화
   useEffect(() => {
@@ -178,6 +183,38 @@ export default function MajorProgramsManager({ selectedYear }) {
       setSelectedProg(null);
     }
   }, [selectedYear]);
+
+  // 마우스 휠 스크롤과 단위과제 선택 회전 동기화
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const handleWheel = (e) => {
+      // 대시보드 전체 페이지 스크롤과 충돌 방지
+      e.preventDefault();
+      
+      const now = Date.now();
+      if (now - lastWheelTime < 160) return; // 스로틀링 데드타임 적용
+
+      if (e.deltaY > 0) {
+        // 아래로 스크롤: 다음 단위과제로 순환
+        const nextIndex = (activeIndex + 1) % unitKeys.length;
+        handleUnitChange(unitKeys[nextIndex]);
+        setLastWheelTime(now);
+      } else if (e.deltaY < 0) {
+        // 위로 스크롤: 이전 단위과제로 순환
+        const prevIndex = (activeIndex - 1 + unitKeys.length) % unitKeys.length;
+        handleUnitChange(unitKeys[prevIndex]);
+        setLastWheelTime(now);
+      }
+    };
+
+    // passive: false를 명시하여 e.preventDefault()가 브라우저 단에서 즉시 적용되도록 설정
+    container.addEventListener("wheel", handleWheel, { passive: false });
+    return () => {
+      container.removeEventListener("wheel", handleWheel);
+    };
+  }, [activeIndex, unitKeys, lastWheelTime]);
 
   // 단위과제를 변경했을 때 프로그램 선택
   const handleUnitChange = (unit) => {
@@ -199,52 +236,136 @@ export default function MajorProgramsManager({ selectedYear }) {
         </h2>
         <p style={{ fontSize: "0.9rem", color: "var(--text-secondary-dark)", lineHeight: "1.5" }}>
           울산과학대학교 앵커사업단에서 추진하는 핵심 과제별 주요 프로그램을 조회하고 관리할 수 있습니다. 
-          좌측 원형 버튼에서 <strong>단위과제</strong>를 선택한 뒤, 하단의 <strong>주요 프로그램</strong>을 골라 상세 현황을 확인하세요.
+          좌측 3D 롤링 다이얼에서 마우스 휠 스크롤 또는 클릭으로 <strong>단위과제</strong>를 선택하여 현황을 확인하세요.
         </p>
       </div>
 
       {/* 2. 메인 워크스페이스 레이아웃 (좌측 단위과제 원형 리스트 / 우측 프로그램 정보) */}
       <div style={{ display: "grid", gridTemplateColumns: "100px 1fr", gap: "2rem" }}>
         
-        {/* 좌측 단위과제 원형 버튼 세트 */}
-        <div style={{ display: "flex", flexDirection: "column", gap: "1rem", alignItems: "center", borderRight: "1px solid rgba(255,255,255,0.08)", paddingRight: "1.5rem" }}>
-          <span style={{ fontSize: "0.8rem", fontWeight: "800", color: "var(--text-secondary-dark)", textTransform: "uppercase", letterSpacing: "1px", marginBottom: "0.5rem" }}>
+        {/* 좌측 단위과제 원형 버튼 세트 - 3D 회전 실린더 휠 다이얼 */}
+        <div 
+          ref={containerRef}
+          style={{ 
+            display: "flex", 
+            flexDirection: "column", 
+            alignItems: "center", 
+            borderRight: "1px solid rgba(255,255,255,0.08)", 
+            paddingRight: "1.5rem",
+            height: "400px", // 휠 회전 컨테이너의 최적 세로 높이
+            overflow: "hidden",
+            position: "relative",
+            perspective: "800px",
+            userSelect: "none"
+          }}
+        >
+          <span style={{ 
+            fontSize: "0.75rem", 
+            fontWeight: "800", 
+            color: "var(--text-secondary-dark)", 
+            textTransform: "uppercase", 
+            letterSpacing: "1px", 
+            marginBottom: "1rem",
+            zIndex: 10,
+            background: "#090d16", // 배경 불투명 처리하여 고정
+            padding: "0.2rem 0.5rem",
+            borderRadius: "0.25rem",
+            position: "absolute",
+            top: "0"
+          }}>
             과제 선택
           </span>
-          {unitKeys.length > 0 ? (
-            unitKeys.map((unit) => (
-              <button
-                key={unit}
-                onClick={() => handleUnitChange(unit)}
-                className={`unit-circle-btn ${selectedUnit === unit ? "active" : ""}`}
-                style={{
-                  width: "56px",
-                  height: "56px",
-                  borderRadius: "50%",
-                  border: "none",
-                  fontSize: "1.1rem",
-                  fontWeight: "900",
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
-                  background: selectedUnit === unit 
-                    ? "linear-gradient(135deg, var(--accent-color), #3b82f6)" 
-                    : "rgba(255, 255, 255, 0.05)",
-                  color: selectedUnit === unit ? "#white" : "var(--text-secondary-dark)",
-                  boxShadow: selectedUnit === unit 
-                    ? "0 4px 15px rgba(59, 130, 246, 0.4)" 
-                    : "none",
-                  border: selectedUnit === unit ? "2px solid rgba(255,255,255,0.2)" : "1px solid rgba(255,255,255,0.1)"
-                }}
-              >
-                {unit}
-              </button>
-            ))
-          ) : (
-            <div style={{ fontSize: "0.85rem", color: "var(--text-secondary-dark)", textAlign: "center" }}>과제 없음</div>
-          )}
+
+          {/* 상하단 입체 휠 페이드 마스킹 오버레이 */}
+          <div style={{
+            position: "absolute",
+            top: 25,
+            left: 0,
+            right: 0,
+            height: "55px",
+            background: "linear-gradient(to bottom, #090d16 15%, transparent 100%)",
+            pointerEvents: "none",
+            zIndex: 5
+          }} />
+          <div style={{
+            position: "absolute",
+            bottom: 0,
+            left: 0,
+            right: 0,
+            height: "55px",
+            background: "linear-gradient(to top, #090d16 15%, transparent 100%)",
+            pointerEvents: "none",
+            zIndex: 5
+          }} />
+
+          {/* 3D 실린더 트랙 */}
+          <div 
+            style={{ 
+              display: "flex", 
+              flexDirection: "column", 
+              gap: "12px", 
+              alignItems: "center",
+              transformStyle: "preserve-3d",
+              transition: "transform 0.45s cubic-bezier(0.25, 1, 0.5, 1)",
+              // 활성화 버튼을 정확히 수직 중앙으로 정렬하는 트랜슬레이션 수식 적용
+              // 높이 400px 중앙은 Y=200px. 버튼지름 56px, gap 12px -> 1개 높이 68px.
+              // 오프셋 기점: 200 - 28 = 172px.
+              transform: `translateY(${172 - activeIndex * 68}px)`,
+              width: "100%",
+              height: "100%",
+              paddingTop: "24px"
+            }}
+          >
+            {unitKeys.length > 0 ? (
+              unitKeys.map((unit, index) => {
+                const diff = index - activeIndex;
+                // 중앙 활성화 항목 기준으로 상하 입체 궤도 곡률 적용
+                const rotateX = diff * 22; 
+                const translateZ = Math.abs(diff) * -12; 
+                const translateY = diff * -2; 
+                const scale = Math.max(0.68, 1 - Math.abs(diff) * 0.08); 
+                const opacity = Math.max(0.22, 1 - Math.abs(diff) * 0.26); 
+
+                return (
+                  <button
+                    key={unit}
+                    onClick={() => handleUnitChange(unit)}
+                    className={`unit-circle-btn ${selectedUnit === unit ? "active" : ""}`}
+                    style={{
+                      width: "56px",
+                      height: "56px",
+                      borderRadius: "50%",
+                      fontSize: "1.1rem",
+                      fontWeight: "900",
+                      cursor: "pointer",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      transition: "transform 0.45s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.45s, background 0.3s, border-color 0.3s",
+                      
+                      // 3D Cylinder transform 공식 적용!
+                      transform: `rotateX(${rotateX}deg) translateZ(${translateZ}px) translateY(${translateY}px) scale(${scale})`,
+                      opacity: opacity,
+
+                      background: selectedUnit === unit 
+                        ? "linear-gradient(135deg, var(--accent-color), #3b82f6)" 
+                        : "rgba(255, 255, 255, 0.04)",
+                      color: selectedUnit === unit ? "#fff" : "var(--text-secondary-dark)",
+                      boxShadow: selectedUnit === unit 
+                        ? "0 4px 15px rgba(59, 130, 246, 0.35)" 
+                        : "none",
+                      border: selectedUnit === unit ? "2px solid rgba(255,255,255,0.25)" : "1px solid rgba(255,255,255,0.06)",
+                      backfaceVisibility: "hidden"
+                    }}
+                  >
+                    {unit}
+                  </button>
+                );
+              })
+            ) : (
+              <div style={{ fontSize: "0.85rem", color: "var(--text-secondary-dark)", textAlign: "center" }}>과제 없음</div>
+            )}
+          </div>
         </div>
 
         {/* 우측 프로그램 선택 및 개별 화면 */}
