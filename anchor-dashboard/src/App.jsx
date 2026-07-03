@@ -130,6 +130,63 @@ const INITIAL_MEMBERS = [
 // LaTeX 수식 파서 및 HTML 렌더러 컴포넌트
 const RenderLatexFormula = ({ formula }) => {
   if (!formula) return null;
+
+  // 전체 컨테이너 스타일
+  const containerStyle = {
+    display: "inline-flex",
+    flexWrap: "wrap",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: "0.5rem",
+    color: "var(--text-primary)",
+    fontSize: "0.85rem",
+    background: "rgba(255,255,255,0.01)",
+    padding: "0.6rem 0.8rem",
+    borderRadius: "0.4rem",
+    border: "1px solid var(--border-color-dark)",
+    width: "100%",
+    boxSizing: "border-box"
+  };
+
+  // 1. 만약 수식에 "="이 있다면 (예: C-2 ~ C-6 공식 등)
+  if (formula.includes("=")) {
+    const parts = formula.split("=");
+    let label = parts[0].replace(/\\text\{([^}]+)\}/g, "$1").replace(/\\%/g, "%").replace(/\\/g, "").trim();
+    const rightSide = parts[1].trim();
+
+    // 우항에서 \frac{분자}{분모} 추출
+    const fracMatch = rightSide.match(/\\frac\{([\s\S]+?)\}\{([\s\S]+?)\}/);
+    if (fracMatch) {
+      let num = fracMatch[1].replace(/\\text\{([^}]+)\}/g, "$1").replace(/\\%/g, "%").replace(/\\/g, "").trim();
+      let den = fracMatch[2].replace(/\\text\{([^}]+)\}/g, "$1").replace(/\\%/g, "%").replace(/\\/g, "").trim();
+      
+      const timesMatch = rightSide.match(/\\times\s*([\d.]+)/);
+      const weight = timesMatch ? timesMatch[1] : null;
+
+      return (
+        <div style={containerStyle}>
+          {label && (
+            <span style={{ fontWeight: "800", color: "var(--accent-color)", marginRight: "0.4rem" }}>
+              {label} =
+            </span>
+          )}
+          <div style={{ display: "inline-flex", alignItems: "center", gap: "0.4rem" }}>
+            <div style={{ display: "inline-flex", flexDirection: "column", alignItems: "center", minWidth: "80px" }}>
+              <span style={{ borderBottom: "1px solid var(--text-secondary)", paddingBottom: "2px", width: "100%", textAlign: "center", fontSize: "0.75rem", fontWeight: "600" }}>{num}</span>
+              <span style={{ paddingTop: "2px", width: "100%", textAlign: "center", fontSize: "0.75rem", color: "var(--text-secondary-dark)" }}>{den}</span>
+            </div>
+            {weight && (
+              <span style={{ fontSize: "0.8rem", fontWeight: "700", color: "var(--accent-color)" }}>
+                × {weight}
+              </span>
+            )}
+          </div>
+        </div>
+      );
+    }
+  }
+
+  // 2. 만약 일반 다항식 분수라면 (L-1 ~ L-24 공식 등)
   if (!formula.includes("\\frac")) {
     return <span style={{ fontSize: "0.85rem", color: "var(--text-secondary-dark)" }}>{formula}</span>;
   }
@@ -137,21 +194,7 @@ const RenderLatexFormula = ({ formula }) => {
   const terms = formula.split("+");
 
   return (
-    <div style={{
-      display: "inline-flex",
-      flexWrap: "wrap",
-      alignItems: "center",
-      justifyContent: "center",
-      gap: "0.5rem",
-      color: "var(--text-primary)",
-      fontSize: "0.85rem",
-      background: "rgba(255,255,255,0.01)",
-      padding: "0.6rem 0.8rem",
-      borderRadius: "0.4rem",
-      border: "1px solid var(--border-color-dark)",
-      width: "100%",
-      boxSizing: "border-box"
-    }}>
+    <div style={containerStyle}>
       {terms.map((termStr, index) => {
         const trimmed = termStr.trim();
         const fracRegex = /\\frac\{\\text\{([^}]+)\}\}\{\\text\{([^}]+)\}\}(?:\s*\\times\s*([\d.]+))?/;
