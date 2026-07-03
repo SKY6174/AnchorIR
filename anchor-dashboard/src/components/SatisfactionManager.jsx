@@ -75,7 +75,8 @@ export default function SatisfactionManager({ selectedYear }) {
   const [newTitle, setNewTitle] = useState("");
   const [newPurpose, setNewPurpose] = useState("");
   const [newTarget, setNewTarget] = useState("");
-  const [newDepts, setNewDepts] = useState(["ECC"]); // 다중 선택 체크박스 대응
+  const [newDept, setNewDept] = useState("ECC");
+  const [filterDept, setFilterDept] = useState("ALL"); // 부서별 필터링 상태 추가
   const [newStartDate, setNewStartDate] = useState("2026-03-01");
   const [newEndDate, setNewEndDate] = useState("2026-03-15");
   const [newQuestions, setNewQuestions] = useState([
@@ -277,12 +278,8 @@ export default function SatisfactionManager({ selectedYear }) {
       alert("조사제목과 조사목적은 필수 항목입니다.");
       return;
     }
-    if (newDepts.length === 0) {
-      alert("최소 1개 이상의 담당 부서를 선택해야 합니다.");
-      return;
-    }
 
-    const generatedId = getNextSurveyId(newDepts);
+    const generatedId = getNextSurveyId(newDept);
     const newSurvey = {
       id: generatedId,
       title: newTitle.trim(),
@@ -290,9 +287,9 @@ export default function SatisfactionManager({ selectedYear }) {
       startDate: newStartDate,
       endDate: newEndDate,
       target: newTarget.trim() || "프로그램 대상 전체",
-      department: newDepts.join(", "),
+      department: newDept,
       status: "작성",
-      googleSheetUrl: `https://docs.google.com/spreadsheets/d/1x${newDepts[0]}_${generatedId.replace(/-/g, "_")}/edit`,
+      googleSheetUrl: `https://docs.google.com/spreadsheets/d/1x${newDept}_${generatedId.replace(/-/g, "_")}/edit`,
       questions: newQuestions.filter(q => q.trim() !== ""),
       responses: []
     };
@@ -319,7 +316,7 @@ export default function SatisfactionManager({ selectedYear }) {
       setNewTitle("");
       setNewPurpose("");
       setNewTarget("");
-      setNewDepts(["ECC"]);
+      setNewDept("ECC");
       setActiveSurveyTab("list");
       alert("만족도 조사 기획서가 DB와 연동되어 안전하게 생성되었습니다!");
     } catch (err) {
@@ -778,167 +775,195 @@ ${commentList || "(없음)"}
 
       {/* 탭 분기 렌더링 */}
       {activeSurveyTab === "list" && (
-        <div style={{ display: "flex", flexDirection: "column", gap: "2rem" }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+          
+          {/* 만족도조사 목록 하부 부서 선택 필터 셀렉터 */}
+          {surveys.length > 0 && (
+            <div className="glass-card" style={{ padding: "0.8rem 1.5rem", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <span style={{ fontSize: "0.82rem", color: "var(--text-secondary)", fontWeight: "800" }}>
+                조회할 부서 선택
+              </span>
+              <select
+                value={filterDept}
+                onChange={(e) => setFilterDept(e.target.value)}
+                className="user-selector"
+                style={{ width: "260px", fontSize: "0.78rem", padding: "0.45rem 0.75rem", border: "1px solid var(--border-color-dark)", borderRadius: "0.3rem" }}
+              >
+                <option value="ALL">전체 부서 (ECC / ICC / RCC / AIDX / NURI / SEVeN)</option>
+                <option value="ECC">지산학교육센터 (ECC)</option>
+                <option value="ICC">기업협업센터 (ICC)</option>
+                <option value="RCC">지역협업센터 (RCC)</option>
+                <option value="AIDX">AID-X지원센터 (AIDX)</option>
+                <option value="NURI">울산늘봄누리센터 (NURI)</option>
+                <option value="SEVeN">신산업특화센터 (SEVeN)</option>
+              </select>
+            </div>
+          )}
+
           {surveys.length === 0 ? (
             <div className="glass-card" style={{ padding: "4rem", textAlign: "center", color: "var(--text-secondary-dark)" }}>
               등록된 만족도 조사지가 없습니다. 우측 상단의 '신규 만족도조사지 제작' 버튼을 클릭해 새 설문을 생성해 보세요!
             </div>
           ) : (
-            DEPARTMENTS_GROUP.map((group) => {
-              const deptSurveys = getSurveysByDept(group.key);
-              return (
-                <div key={group.key} style={{ display: "flex", flexDirection: "column", gap: "0.8rem" }}>
-                  {/* 부서별 섹션 헤더 */}
-                  <div style={{ 
-                    display: "flex", 
-                    alignItems: "center", 
-                    gap: "0.5rem", 
-                    borderBottom: "2px solid rgba(255,255,255,0.06)", 
-                    paddingBottom: "0.5rem",
-                    marginTop: "0.5rem"
-                  }}>
-                    <span style={{ 
-                      width: "8px", 
-                      height: "15px", 
-                      background: "var(--accent-color)", 
-                      borderRadius: "2px" 
-                    }} />
-                    <h3 style={{ fontSize: "0.95rem", fontWeight: "900", color: "white" }}>
-                      {group.name}
-                      <span style={{ 
-                        fontSize: "0.78rem", 
-                        color: "var(--text-secondary-dark)", 
-                        marginLeft: "0.6rem",
-                        fontWeight: "600"
+            <div style={{ display: "flex", flexDirection: "column", gap: "2rem" }}>
+              {DEPARTMENTS_GROUP
+                .filter(group => filterDept === "ALL" || group.key === filterDept)
+                .map((group) => {
+                  const deptSurveys = getSurveysByDept(group.key);
+                  return (
+                    <div key={group.key} style={{ display: "flex", flexDirection: "column", gap: "0.8rem" }}>
+                      {/* 부서별 섹션 헤더 */}
+                      <div style={{ 
+                        display: "flex", 
+                        alignItems: "center", 
+                        gap: "0.5rem", 
+                        borderBottom: "2px solid rgba(255,255,255,0.06)", 
+                        paddingBottom: "0.5rem",
+                        marginTop: "0.5rem"
                       }}>
-                        (총 {deptSurveys.length}건)
-                      </span>
-                    </h3>
-                  </div>
+                        <span style={{ 
+                          width: "8px", 
+                          height: "15px", 
+                          background: "var(--accent-color)", 
+                          borderRadius: "2px" 
+                        }} />
+                        <h3 style={{ fontSize: "0.95rem", fontWeight: "900", color: "white" }}>
+                          {group.name}
+                          <span style={{ 
+                            fontSize: "0.78rem", 
+                            color: "var(--text-secondary-dark)", 
+                            marginLeft: "0.6rem",
+                            fontWeight: "600"
+                          }}>
+                            (총 {deptSurveys.length}건)
+                          </span>
+                        </h3>
+                      </div>
 
-                  {/* 해당 부서 카드 리스트 */}
-                  {deptSurveys.length === 0 ? (
-                    <div style={{ 
-                      padding: "1.5rem", 
-                      textAlign: "center", 
-                      color: "var(--text-secondary-dark)", 
-                      border: "1px dashed rgba(255,255,255,0.06)", 
-                      borderRadius: "0.5rem",
-                      fontSize: "0.78rem"
-                    }}>
-                      이 부서에서 개설하거나 수집한 만족도 조사 이력이 존재하지 않습니다.
-                    </div>
-                  ) : (
-                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(380px, 1fr))", gap: "1rem" }}>
-                      {deptSurveys.map((survey) => {
-                        const convertedAvg = getLikertConvertedScore(survey.responses, survey.questions.length);
-                        return (
-                          <div 
-                            key={survey.id} 
-                            className="glass-card" 
-                            style={{ 
-                              padding: "1.5rem", 
-                              display: "flex", 
-                              flexDirection: "column", 
-                              justifyContent: "space-between",
-                              border: selectedSurveyId === survey.id ? "1px solid var(--accent-color)" : "1px solid var(--border-color-dark)",
-                              background: selectedSurveyId === survey.id ? "rgba(59, 130, 246, 0.03)" : "rgba(255, 255, 255, 0.01)"
-                            }}
-                          >
-                            <div>
-                              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.75rem" }}>
-                                <span style={{ fontSize: "0.72rem", color: "var(--accent-color)", fontWeight: "900", letterSpacing: "0.5px" }}>
-                                  ID: {survey.id}
-                                </span>
-                                <div style={{ display: "flex", gap: "0.3rem" }}>
-                                  <span style={{
-                                    padding: "0.2rem 0.5rem",
-                                    borderRadius: "0.25rem",
-                                    fontSize: "0.65rem",
-                                    fontWeight: "800",
-                                    background: "rgba(255,255,255,0.05)",
-                                    color: "var(--text-secondary)"
-                                  }}>
-                                    {survey.department}
-                                  </span>
-                                  <span style={{
-                                    padding: "0.2rem 0.5rem",
-                                    borderRadius: "0.25rem",
-                                    fontSize: "0.65rem",
-                                    fontWeight: "800",
-                                    background: survey.status === "완료" ? "rgba(16, 185, 129, 0.1)" : survey.status === "배포중" ? "rgba(59, 130, 246, 0.1)" : "rgba(245, 158, 11, 0.1)",
-                                    color: survey.status === "완료" ? "#10b981" : survey.status === "배포중" ? "#3b82f6" : "#f59e0b"
-                                  }}>
-                                    {survey.status}
-                                  </span>
+                      {/* 해당 부서 카드 리스트 */}
+                      {deptSurveys.length === 0 ? (
+                        <div style={{ 
+                          padding: "1.5rem", 
+                          textAlign: "center", 
+                          color: "var(--text-secondary-dark)", 
+                          border: "1px dashed rgba(255,255,255,0.06)", 
+                          borderRadius: "0.5rem",
+                          fontSize: "0.78rem"
+                        }}>
+                          이 부서에서 개설하거나 수집한 만족도 조사 이력이 존재하지 않습니다.
+                        </div>
+                      ) : (
+                        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(380px, 1fr))", gap: "1rem" }}>
+                          {deptSurveys.map((survey) => {
+                            const convertedAvg = getLikertConvertedScore(survey.responses, survey.questions.length);
+                            return (
+                              <div 
+                                key={survey.id} 
+                                className="glass-card" 
+                                style={{ 
+                                  padding: "1.5rem", 
+                                  display: "flex", 
+                                  flexDirection: "column", 
+                                  justifyContent: "space-between",
+                                  border: selectedSurveyId === survey.id ? "1px solid var(--accent-color)" : "1px solid var(--border-color-dark)",
+                                  background: selectedSurveyId === survey.id ? "rgba(59, 130, 246, 0.03)" : "rgba(255, 255, 255, 0.01)"
+                                }}
+                              >
+                                <div>
+                                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.75rem" }}>
+                                    <span style={{ fontSize: "0.72rem", color: "var(--accent-color)", fontWeight: "900", letterSpacing: "0.5px" }}>
+                                      ID: {survey.id}
+                                    </span>
+                                    <div style={{ display: "flex", gap: "0.3rem" }}>
+                                      <span style={{
+                                        padding: "0.2rem 0.5rem",
+                                        borderRadius: "0.25rem",
+                                        fontSize: "0.65rem",
+                                        fontWeight: "800",
+                                        background: "rgba(255,255,255,0.05)",
+                                        color: "var(--text-secondary)"
+                                      }}>
+                                        {survey.department}
+                                      </span>
+                                      <span style={{
+                                        padding: "0.2rem 0.5rem",
+                                        borderRadius: "0.25rem",
+                                        fontSize: "0.65rem",
+                                        fontWeight: "800",
+                                        background: survey.status === "완료" ? "rgba(16, 185, 129, 0.1)" : survey.status === "배포중" ? "rgba(59, 130, 246, 0.1)" : "rgba(245, 158, 11, 0.1)",
+                                        color: survey.status === "완료" ? "#10b981" : survey.status === "배포중" ? "#3b82f6" : "#f59e0b"
+                                      }}>
+                                        {survey.status}
+                                      </span>
+                                    </div>
+                                  </div>
+                                  
+                                  <h4 style={{ fontSize: "0.95rem", fontWeight: "800", marginBottom: "0.5rem", color: "white", lineHeight: "1.3" }}>
+                                    {survey.title}
+                                  </h4>
+                                  <p style={{ fontSize: "0.78rem", color: "var(--text-secondary-dark)", marginBottom: "1rem", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden", lineHeight: "1.4" }}>
+                                    {survey.purpose}
+                                  </p>
+
+                                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem", fontSize: "0.75rem", background: "rgba(255,255,255,0.01)", padding: "0.5rem", borderRadius: "0.25rem", marginBottom: "1rem" }}>
+                                    <div>일정: <span style={{ color: "var(--text-secondary)" }}>{survey.startDate} ~ {survey.endDate}</span></div>
+                                    <div>대상: <span style={{ color: "var(--text-secondary)" }}>{survey.target}</span></div>
+                                    <div>질문수: <span style={{ color: "var(--text-secondary)", fontWeight: "700" }}>{survey.questions.length}문항</span></div>
+                                    <div>수집응답: <span style={{ color: "var(--text-secondary)", fontWeight: "700" }}>{survey.responses.length}건</span></div>
+                                  </div>
+                                </div>
+
+                                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderTop: "1px solid var(--border-color-dark)", paddingTop: "0.8rem", marginTop: "0.5rem" }}>
+                                  <div style={{ display: "flex", flexDirection: "column" }}>
+                                    <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)" }}>100점 환산 평균</span>
+                                    <strong style={{ fontSize: "1.1rem", color: "var(--accent-color)" }}>
+                                      {survey.responses.length > 0 ? `${convertedAvg}점` : "자료 없음"}
+                                    </strong>
+                                  </div>
+
+                                  <div style={{ display: "flex", gap: "0.4rem" }}>
+                                    <button
+                                      onClick={() => { setSelectedSurveyId(survey.id); setActiveSurveyTab("detail"); }}
+                                      className="btn-secondary"
+                                      style={{
+                                        padding: "0.4rem 0.8rem",
+                                        fontSize: "0.75rem",
+                                        borderRadius: "0.3rem",
+                                        border: "1px solid var(--border-color-dark)",
+                                        background: "rgba(255,255,255,0.02)",
+                                        color: "white",
+                                        cursor: "pointer",
+                                        fontWeight: "700"
+                                      }}
+                                    >
+                                      상세보기 / 관리
+                                    </button>
+                                    <button
+                                      onClick={() => handleDeleteSurvey(survey.id)}
+                                      style={{
+                                        padding: "0.4rem",
+                                        fontSize: "0.75rem",
+                                        borderRadius: "0.3rem",
+                                        border: "none",
+                                        background: "rgba(239, 68, 68, 0.1)",
+                                        color: "#ef4444",
+                                        cursor: "pointer"
+                                      }}
+                                      title="삭제"
+                                    >
+                                      <Trash2 size={14} />
+                                    </button>
+                                  </div>
                                 </div>
                               </div>
-                              
-                              <h4 style={{ fontSize: "0.95rem", fontWeight: "800", marginBottom: "0.5rem", color: "white", lineHeight: "1.3" }}>
-                                {survey.title}
-                              </h4>
-                              <p style={{ fontSize: "0.78rem", color: "var(--text-secondary-dark)", marginBottom: "1rem", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden", lineHeight: "1.4" }}>
-                                {survey.purpose}
-                              </p>
-
-                              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem", fontSize: "0.75rem", background: "rgba(255,255,255,0.01)", padding: "0.5rem", borderRadius: "0.25rem", marginBottom: "1rem" }}>
-                                <div>일정: <span style={{ color: "var(--text-secondary)" }}>{survey.startDate} ~ {survey.endDate}</span></div>
-                                <div>대상: <span style={{ color: "var(--text-secondary)" }}>{survey.target}</span></div>
-                                <div>질문수: <span style={{ color: "var(--text-secondary)", fontWeight: "700" }}>{survey.questions.length}문항</span></div>
-                                <div>수집응답: <span style={{ color: "var(--text-secondary)", fontWeight: "700" }}>{survey.responses.length}건</span></div>
-                              </div>
-                            </div>
-
-                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderTop: "1px solid var(--border-color-dark)", paddingTop: "0.8rem", marginTop: "0.5rem" }}>
-                              <div style={{ display: "flex", flexDirection: "column" }}>
-                                <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)" }}>100점 환산 평균</span>
-                                <strong style={{ fontSize: "1.1rem", color: "var(--accent-color)" }}>
-                                  {survey.responses.length > 0 ? `${convertedAvg}점` : "자료 없음"}
-                                </strong>
-                              </div>
-
-                              <div style={{ display: "flex", gap: "0.4rem" }}>
-                                <button
-                                  onClick={() => { setSelectedSurveyId(survey.id); setActiveSurveyTab("detail"); }}
-                                  className="btn-secondary"
-                                  style={{
-                                    padding: "0.4rem 0.8rem",
-                                    fontSize: "0.75rem",
-                                    borderRadius: "0.3rem",
-                                    border: "1px solid var(--border-color-dark)",
-                                    background: "rgba(255,255,255,0.02)",
-                                    color: "white",
-                                    cursor: "pointer",
-                                    fontWeight: "700"
-                                  }}
-                                >
-                                  상세보기 / 관리
-                                </button>
-                                <button
-                                  onClick={() => handleDeleteSurvey(survey.id)}
-                                  style={{
-                                    padding: "0.4rem",
-                                    fontSize: "0.75rem",
-                                    borderRadius: "0.3rem",
-                                    border: "none",
-                                    background: "rgba(239, 68, 68, 0.1)",
-                                    color: "#ef4444",
-                                    cursor: "pointer"
-                                  }}
-                                  title="삭제"
-                                >
-                                  <Trash2 size={14} />
-                                </button>
-                              </div>
-                            </div>
-                          </div>
-                        );
-                      })}
+                            );
+                          })}
+                        </div>
+                      )}
                     </div>
-                  )}
-                </div>
-              );
-            })
+                  );
+                })}
+            </div>
           )}
         </div>
       )}
@@ -949,88 +974,32 @@ ${commentList || "(없음)"}
             새로운 만족도 조사지 제작 폼
           </h3>
 
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.5rem" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
             <div>
-              <label style={{ fontSize: "0.78rem", color: "var(--text-secondary)", display: "block", marginBottom: "0.5rem" }}>
-                담당 부서 선택 (다중 선택 가능)
-              </label>
-              <div style={{ 
-                display: "grid", 
-                gridTemplateColumns: "repeat(2, 1fr)", 
-                gap: "0.6rem", 
-                background: "rgba(255,255,255,0.01)", 
-                padding: "0.8rem 1rem", 
-                borderRadius: "0.375rem", 
-                border: "1px solid var(--border-color-dark)",
-                minHeight: "115px"
-              }}>
-                {[
-                  { key: "ECC", label: "ECC (지산학교육센터)" },
-                  { key: "ICC", label: "ICC (기업협업센터)" },
-                  { key: "RCC", label: "RCC (지역협업센터)" },
-                  { key: "AIDX", label: "AIDX (AID-X지원센터)" },
-                  { key: "NURI", label: "NURI (울산늘봄누리센터)" },
-                  { key: "SEVeN", label: "SEVeN (신산업특화센터)" }
-                ].map((deptObj) => {
-                  const isChecked = newDepts.includes(deptObj.key);
-                  return (
-                    <label 
-                      key={deptObj.key} 
-                      style={{ 
-                        display: "flex", 
-                        alignItems: "center", 
-                        gap: "0.5rem", 
-                        fontSize: "0.76rem", 
-                        color: isChecked ? "white" : "var(--text-secondary)",
-                        cursor: "pointer",
-                        fontWeight: isChecked ? "800" : "500",
-                        transition: "all 0.15s"
-                      }}
-                    >
-                      <input
-                        type="checkbox"
-                        checked={isChecked}
-                        onChange={(e) => {
-                          if (e.target.checked) {
-                            setNewDepts([...newDepts, deptObj.key]);
-                          } else {
-                            if (newDepts.length > 1) {
-                              setNewDepts(newDepts.filter(d => d !== deptObj.key));
-                            } else {
-                              alert("최소 1개 이상의 담당 부서를 선택하셔야 합니다.");
-                            }
-                          }
-                        }}
-                        style={{ accentColor: "var(--accent-color)" }}
-                      />
-                      {deptObj.label}
-                    </label>
-                  );
-                })}
-              </div>
+              <label style={{ fontSize: "0.78rem", color: "var(--text-secondary)", display: "block", marginBottom: "0.4rem" }}>수행 부서 선택</label>
+              <select
+                value={newDept}
+                onChange={(e) => setNewDept(e.target.value)}
+                className="user-selector"
+                style={{ width: "100%" }}
+              >
+                <option value="ECC">ECC (지산학교육센터)</option>
+                <option value="ICC">ICC (기업협업센터)</option>
+                <option value="RCC">RCC (지역협업센터)</option>
+                <option value="AIDX">AIDX (AID-X지원센터)</option>
+                <option value="NURI">NURI (울산늘봄누리센터)</option>
+                <option value="SEVeN">SEVeN (신산업특화센터)</option>
+              </select>
             </div>
-            <div style={{ display: "flex", flexDirection: "column", justifyContent: "flex-end" }}>
-              <label style={{ fontSize: "0.78rem", color: "var(--text-secondary)", display: "block", marginBottom: "0.5rem" }}>
-                추천 자동발급 ID (선택한 첫 번째 부서 기준)
-              </label>
+            <div>
+              <label style={{ fontSize: "0.78rem", color: "var(--text-secondary)", display: "block", marginBottom: "0.4rem" }}>추천 자동발급 ID</label>
               <input
                 type="text"
-                value={getNextSurveyId(newDepts)}
+                value={getNextSurveyId(newDept)}
                 disabled
                 className="user-selector"
-                style={{ 
-                  width: "100%", 
-                  background: "rgba(255,255,255,0.03)", 
-                  color: "var(--text-secondary-dark)",
-                  padding: "0.6rem 0.8rem",
-                  fontSize: "0.85rem",
-                  border: "1px solid var(--border-color-dark)",
-                  borderRadius: "0.375rem"
-                }}
+                style={{ width: "100%", background: "rgba(255,255,255,0.03)", color: "var(--text-secondary-dark)" }}
               />
-              <span style={{ fontSize: "0.68rem", color: "var(--text-secondary-dark)", marginTop: "0.4rem" }}>
-                * 다중 부서 공동 설문일 경우 첫 번째 체크된 부서명이 접두사 ID로 활용됩니다.
-              </span>
             </div>
           </div>
 
