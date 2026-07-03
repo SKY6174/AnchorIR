@@ -53,21 +53,21 @@ const STRATEGY_TASK_MAPPING = {
       { id: "S5", title: "지역혁신 선도 인재양성 거버넌스 체계 구축 및 확산" }
     ],
     tasks: [
-      { strat: "S1", id: "1-1", title: "UC-HYPER 기반 주문식 교육과정 및 혁신 교수법 개발" },
-      { strat: "S2", id: "2-1", title: "교육과정 성과 모니터링 및 대외 성과공유 확산" },
-      { strat: "S3", id: "3-1", title: "지산학 연계 고숙련 기술 인재 육성 및 현장 실무 지원" },
-      { strat: "S4", id: "4-1", title: "하이퍼 캠퍼스 교육환경 및 데이터 활용 인프라 구축" },
-      { strat: "S5", id: "5-1", title: "울산형 및 글로벌 지산학 거버넌스 협력 체계 구축" }
+      { strat: "S1", id: "1", title: "UC-HYPER 기반 주문식 교육과정 및 혁신 교수법 개발" },
+      { strat: "S2", id: "2", title: "교육과정 성과 모니터링 및 대외 성과공유 확산" },
+      { strat: "S3", id: "3", title: "지산학 연계 고숙련 기술 인재 육성 및 현장 실무 지원" },
+      { strat: "S4", id: "4", title: "하이퍼 캠퍼스 교육환경 및 데이터 활용 인프라 구축" },
+      { strat: "S5", id: "5", title: "울산형 및 글로벌 지산학 거버넌스 협력 체계 구축" }
     ],
     programs: [
       { strat: "S1", id: "A1가-S1T1-1", title: "UC-HYPER 교수학습 모델 및 혁신 교수법 개발 운영" },
       { strat: "S1", id: "A1가-S1T1-2", title: "미래 핵심 산업 맞춤형 정규 주문식 교과정 개편 및 운영" },
       { strat: "S1", id: "A1가-S1T1-3", title: "특화 분야 비교과 자격증 과정 및 학점교류 운영" },
-      { strat: "S2", id: "A1가-S2T1-1", title: "전주기 이력 추적형 진로개발 시스템 운영" },
-      { strat: "S2", id: "A1가-S2T1-2", title: "산학 성과 공유를 위한 경진대회 및 대외 워크숍 개최" },
-      { strat: "S3", id: "A1가-S3T1-1", title: "지역 산업체 연계 고숙련 기술 교육 및 인턴십" },
-      { strat: "S4", id: "A1가-S4T1-1", title: "하이퍼 캠퍼스 온라인 실습 시스템 구축" },
-      { strat: "S5", id: "A1가-S5T1-1", title: "울산 앵커 사업단 거버넌스 활성화 성과 세미나" }
+      { strat: "S2", id: "A1가-S2T2-1", title: "전주기 이력 추적형 진로개발 시스템 운영" },
+      { strat: "S2", id: "A1가-S2T2-2", title: "산학 성과 공유를 위한 경진대회 및 대외 워크숍 개최" },
+      { strat: "S3", id: "A1가-S3T3-1", title: "지역 산업체 연계 고숙련 기술 교육 및 인턴십" },
+      { strat: "S4", id: "A1가-S4T4-1", title: "하이퍼 캠퍼스 온라인 실습 시스템 구축" },
+      { strat: "S5", id: "A1가-S5T5-1", title: "울산 앵커 사업단 거버넌스 활성화 성과 세미나" }
     ]
   },
   "A1나": {
@@ -79,16 +79,16 @@ const STRATEGY_TASK_MAPPING = {
       { id: "S5", title: "지역혁신 선도 인재양성 거버넌스 체계 구축 및 확산" }
     ],
     tasks: [
-      { strat: "S1", id: "1-1", title: "신산업 특화 스마트·친환경선박 직업교육체계 고도화" },
-      { strat: "S2", id: "2-1", title: "신산업 이관 과제 모니터링 및 교육 품질 관리" },
-      { strat: "S3", id: "3-1", title: "글로벌 친환경선박 신기술 정주 인력 교육" },
-      { strat: "S4", id: "4-1", title: "미래 친환경선박 가상 교육 기자재 인프라 확충" },
-      { strat: "S5", id: "5-1", title: "스마트·친환경선박 산학관 거버넌스 네트워크 강화" }
+      { strat: "S1", id: "1", title: "신산업 특화 스마트·친환경선박 직업교육체계 고도화" },
+      { strat: "S2", id: "2", title: "신산업 이관 과제 모니터링 및 교육 품질 관리" },
+      { strat: "S3", id: "3", title: "글로벌 친환경선박 신기술 정주 인력 교육" },
+      { strat: "S4", id: "4", title: "미래 친환경선박 가상 교육 기자재 인프라 확충" },
+      { strat: "S5", id: "5", title: "스마트·친환경선박 산학관 거버넌스 네트워크 강화" }
     ],
     programs: [
       { strat: "S1", id: "A1나-S1T1-1", title: "친환경선박 직업교육 글로벌 표준 표준 교과 개편" },
-      { strat: "S2", id: "A1나-S2T1-1", title: "신산업 이관 전담 실무 교육장비 가동" },
-      { strat: "S3", id: "A1나-S3T1-1", title: "선도 조선소 연계 맞춤형 글로벌 인턴십 프로그램" }
+      { strat: "S2", id: "A1나-S2T2-1", title: "신산업 이관 전담 실무 교육장비 가동" },
+      { strat: "S3", id: "A1나-S3T3-1", title: "선도 조선소 연계 맞춤형 글로벌 인턴십 프로그램" }
     ]
   },
   "A2": {
@@ -98,20 +98,20 @@ const STRATEGY_TASK_MAPPING = {
       { id: "S3", title: "지역 연계창업 네트워크 활성화 및 글로컬 창업 생태계 확장" }
     ],
     tasks: [
-      { strat: "S1", id: "1-1", title: "대학 구성원 창업 마인드 확산 및 교육 (P1-AP1-AP2 통합)" },
-      { strat: "S1", id: "1-2", title: "창업 지원 제도 개선 및 F.A.B. Lab. 인프라 구축 (P2-AP3-AP4 통합)" },
-      { strat: "S2", id: "2-1", title: "예비창업자 모집·선발 및 투자 연계 지원 (P3-AP5-AP6 통합)" },
-      { strat: "S2", id: "2-2", title: "창업 기업 사업화 후속 지원 및 마케팅 연계 (P4-AP7-AP8 통합)" },
-      { strat: "S3", id: "3-1", title: "초중고/지역민 창업 교육 생태계 구축 (P5-AP9-AP10 통합)" },
-      { strat: "S3", id: "3-2", title: "글로벌/초광역 창업 네트워크 구축 및 경진대회 참가 (P6-AP11-AP12 통합)" }
+      { strat: "S1", id: "1", title: "대학 구성원 창업 마인드 확산 및 교육" },
+      { strat: "S1", id: "2", title: "창업 지원 제도 개선 및 F.A.B. Lab. 인프라 구축" },
+      { strat: "S2", id: "3", title: "예비창업자 모집·선발 및 투자 연계 지원" },
+      { strat: "S2", id: "4", title: "창업 기업 사업화 후속 지원 및 마케팅 연계" },
+      { strat: "S3", id: "5", title: "초중고/지역민 창업 교육 생태계 구축" },
+      { strat: "S3", id: "6", title: "글로벌/초광역 창업 네트워크 구축 및 경진대회 참가" }
     ],
     programs: [
       { strat: "S1", id: "A2-S1T1-1", title: "대학 구성원 창업 마인드 확산 세미나" },
-      { strat: "S1", id: "A2-S1T2-2", title: "창업 지원 제도 개선 및 FAB Lab 구축" },
-      { strat: "S2", id: "A2-S2T1-1", title: "예비창업자 엑셀러레이팅 패키지 지원" },
-      { strat: "S2", id: "A2-S2T2-2", title: "창업 기업 홍보·마케팅 및 해외 바이어 매칭" },
-      { strat: "S3", id: "A2-S3T1-1", title: "초중고 리더십 창업 캠프 개설" },
-      { strat: "S3", id: "A2-S3T2-2", title: "글로벌 창업 네트워크 데이 워크숍 참관" }
+      { strat: "S1", id: "A2-S1T2-1", title: "창업 지원 제도 개선 및 FAB Lab 구축" },
+      { strat: "S2", id: "A2-S2T3-1", title: "예비창업자 엑셀러레이팅 패키지 지원" },
+      { strat: "S2", id: "A2-S2T4-1", title: "창업 기업 홍보·마케팅 및 해외 바이어 매칭" },
+      { strat: "S3", id: "A2-S3T5-1", title: "초중고 리더십 창업 캠프 개설" },
+      { strat: "S3", id: "A2-S3T6-1", title: "글로벌 창업 네트워크 데이 워크숍 참관" }
     ]
   },
   "A3": {
@@ -120,16 +120,16 @@ const STRATEGY_TASK_MAPPING = {
       { id: "S2", title: "지역 산업 연계 실무교육 및 취업·정주 연계 강화" }
     ],
     tasks: [
-      { strat: "S1", id: "1-1", title: "해외 대학 및 글로벌 산업체 협력 네트워크 강화 (P1-AP1-AP2 통합)" },
-      { strat: "S1", id: "1-2", title: "유학생 통합관리 플랫폼 구축 및 상담 지원 (P2-AP3 통합)" },
-      { strat: "S2", id: "2-1", title: "글로벌 실무 교육과정 및 현장실습 운영 (P3-AP4-AP5 통합)" },
-      { strat: "S2", id: "2-2", title: "외국인 유학생 및 근로자 정착 지원 프로그램 운영 (P4-AP6-AP7 통합)" }
+      { strat: "S1", id: "1", title: "해외 대학 및 글로벌 산업체 협력 네트워크 강화" },
+      { strat: "S1", id: "2", title: "유학생 통합관리 플랫폼 구축 및 상담 지원" },
+      { strat: "S2", id: "3", title: "글로벌 실무 교육과정 및 현장실습 운영" },
+      { strat: "S2", id: "4", title: "외국인 유학생 및 근로자 정착 지원 프로그램 운영" }
     ],
     programs: [
       { strat: "S1", id: "A3-S1T1-1", title: "글로벌 산업체 협력 거버넌스 및 네트워킹 구축" },
-      { strat: "S1", id: "A3-S1T2-2", title: "다국어 스마트 유학생 케어 앱 론칭 및 상담소 운영" },
-      { strat: "S2", id: "A3-S2T1-1", title: "외국인 전용 특화 직무 단기 아카데미 개편" },
-      { strat: "S2", id: "A3-S2T2-2", title: "유학생 정주 촉진을 위한 법률 및 취업 설명회" }
+      { strat: "S1", id: "A3-S1T2-1", title: "다국어 스마트 유학생 케어 앱 론칭 및 상담소 운영" },
+      { strat: "S2", id: "A3-S2T3-1", title: "외국인 전용 특화 직무 단기 아카데미 개편" },
+      { strat: "S2", id: "A3-S2T4-1", title: "유학생 정주 촉진을 위한 법률 및 취업 설명회" }
     ]
   },
   "B1": {
@@ -139,16 +139,16 @@ const STRATEGY_TASK_MAPPING = {
       { id: "S3", title: "중소·중견기업 기술 혁신 및 사업 경쟁력 강화 지원" }
     ],
     tasks: [
-      { strat: "S1", id: "1-1", title: "산학협력 연계 기업협업센터(ICC) 고도화 및 교원 역량 강화 (P1-AP1-AP2 통합)" },
-      { strat: "S1", id: "1-2", title: "주력/신산업 분야 산학협력 거버넌스 및 기술교류 활성화 (P2-AP3-AP4 통합)" },
-      { strat: "S2", id: "2-1", title: "ICC 연계 초광역 공동연구 및 전문기술석사 프로젝트 활성화 (P3-P4-AP5-AP6-AP7-AP8 통합)" },
-      { strat: "S3", id: "3-1", title: "중소·중견기업 애로기술 지도 및 공용장비 활용 활성화 (P5-P6-AP9-AP10-AP11-AP12 통합)" }
+      { strat: "S1", id: "1", title: "산학협력 연계 기업협업센터(ICC) 고도화 및 교원 역량 강화" },
+      { strat: "S1", id: "2", title: "주력/신산업 분야 산학협력 거버넌스 및 기술교류 활성화" },
+      { strat: "S2", id: "3", title: "ICC 연계 초광역 공동연구 및 전문기술석사 프로젝트 활성화" },
+      { strat: "S3", id: "4", title: "중소·중견기업 애로기술 지도 및 공용장비 활용 활성화" }
     ],
     programs: [
       { strat: "S1", id: "B1-S1T1-1", title: "기업협업센터(ICC) 실무 간담회 및 성과 분석" },
-      { strat: "S1", id: "B1-S1T2-2", title: "주력 신산업 분야 지산학 융합 컨퍼런스 세미나" },
-      { strat: "S2", id: "B1-S2T1-1", title: "전문기술석사 연계 연구실(Lab) 활성화 지원" },
-      { strat: "S3", id: "B1-S3T1-1", title: "공용 고가 정밀 분석 장비 실무 교육 및 지원" }
+      { strat: "S1", id: "B1-S1T2-1", title: "주력 신산업 분야 지산학 융합 컨퍼런스 세미나" },
+      { strat: "S2", id: "B1-S2T3-1", title: "전문기술석사 연계 연구실(Lab) 활성화 지원" },
+      { strat: "S3", id: "B1-S3T4-1", title: "공용 고가 정밀 분석 장비 실무 교육 및 지원" }
     ]
   },
   "B2": {
@@ -159,18 +159,18 @@ const STRATEGY_TASK_MAPPING = {
       { id: "S4", title: "MANI 초광역 협력 기반 인재양성 및 확산체계 구축" }
     ],
     tasks: [
-      { strat: "S1", id: "1-1", title: "AID-X지원센터 운영 고도화 및 AWS C3 인증센터 구축 (P1-AP1-AP2 통합)" },
-      { strat: "S2", id: "2-1", title: "AI·DX 분야 교원 역량 강화 프로그램 운영 (P2-AP3-AP4 통합)" },
-      { strat: "S2", id: "2-2", title: "전 학부(과) 참여형 AI·DX 교육과정 개편 및 운영 (P3-P4-AP5-AP6-AP7-AP8 통합)" },
-      { strat: "S3", id: "3-1", title: "AI·DX 분야 산학공동기술개발 및 현장 실증 지원 (P5-P6-AP9-AP10-AP11-AP12 통합)" },
-      { strat: "S4", id: "4-1", title: "MANI 초광역 협력체계 확립 및 AI·DX 성과 확산 (P7-P8-P9-AP13~AP19 통합)" }
+      { strat: "S1", id: "1", title: "AID-X지원센터 운영 고도화 및 AWS C3 인증센터 구축" },
+      { strat: "S2", id: "2", title: "AI·DX 분야 교원 역량 강화 프로그램 운영" },
+      { strat: "S2", id: "3", title: "전 학부(과) 참여형 AI·DX 교육과정 개편 및 운영" },
+      { strat: "S3", id: "4", title: "AI·DX 분야 산학공동기술개발 및 현장 실증 지원" },
+      { strat: "S4", id: "5", title: "MANI 초광역 협력체계 확립 및 AI·DX 성과 확산" }
     ],
     programs: [
       { strat: "S1", id: "B2-S1T1-1", title: "AID-X 지원실 구축 및 정밀 서버 장비 도입" },
-      { strat: "S2", id: "B2-S2T1-2", title: "교원 대상 파이썬/딥러닝 역량강화 연수 코스" },
-      { strat: "S2", id: "B2-S2T2-3", title: "AI 기본 리터러시 융합 연계 전공 마이크로디그리" },
-      { strat: "S3", id: "B2-S3T1-4", title: "중소기업 현장 실증형 AI 알고리즘 적용 프로젝트" },
-      { strat: "S4", id: "B2-S4T1-5", title: "초광역 MANI 워크숍 공동 개최 및 연구성과 배포" }
+      { strat: "S2", id: "B2-S2T2-1", title: "교원 대상 파이썬/딥러닝 역량강화 연수 코스" },
+      { strat: "S2", id: "B2-S2T3-1", title: "AI 기본 리터러시 융합 연계 전공 마이크로디그리" },
+      { strat: "S3", id: "B2-S3T4-1", title: "중소기업 현장 실증형 AI 알고리즘 적용 프로젝트" },
+      { strat: "S4", id: "B2-S4T5-1", title: "초광역 MANI 워크숍 공동 개최 및 연구성과 배포" }
     ]
   },
   "B3": {
@@ -180,14 +180,14 @@ const STRATEGY_TASK_MAPPING = {
       { id: "S3", title: "지역 사회 상생 및 탄소중립 실천문화 확산" }
     ],
     tasks: [
-      { strat: "S1", id: "1-1", title: "AI 기반 탄소중립 및 ESG 교육과정 개발 운영 (P1-P2-AP1~AP4 통합)" },
-      { strat: "S2", id: "2-1", title: "중소기업 탄소배출 진단 및 저탄소 플랫폼 지원 (P3-P4-AP5~AP8 통합)" },
-      { strat: "S3", id: "3-1", title: "캠퍼스 에코-리빙랩 탄소감축 실증 및 업사이클링 강화 (P5-P6-AP9~AP12 통합)" }
+      { strat: "S1", id: "1", title: "AI 기반 탄소중립 및 ESG 교육과정 개발 운영" },
+      { strat: "S2", id: "2", title: "중소기업 탄소배출 진단 및 저탄소 플랫폼 지원" },
+      { strat: "S3", id: "3", title: "캠퍼스 에코-리빙랩 탄소감축 실증 및 업사이클링 강화" }
     ],
     programs: [
       { strat: "S1", id: "B3-S1T1-1", title: "ESG 등급 분석 전문가 연계 대학 특강 개설" },
-      { strat: "S2", id: "B3-S2T1-2", title: "중소 제조 사업장 온실가스 배출 정밀 실태 진단" },
-      { strat: "S3", id: "B3-S3T1-3", title: "에코 캠퍼스 리빙랩 프로젝트 및 친환경 일회용품 저감" }
+      { strat: "S2", id: "B3-S2T2-1", title: "중소 제조 사업장 온실가스 배출 정밀 실태 진단" },
+      { strat: "S3", id: "B3-S3T3-1", title: "에코 캠퍼스 리빙랩 프로젝트 및 친환경 일회용품 저감" }
     ]
   },
   "B4": {
@@ -197,14 +197,14 @@ const STRATEGY_TASK_MAPPING = {
       { id: "S3", title: "지·산·학·연 복합재난 협력 네트워크 구축 및 운영" }
     ],
     tasks: [
-      { strat: "S1", id: "1-1", title: "재난 대응 안전보건 인재 양성 및 AI 다국어 콘텐츠 실증 (P1-P2-AP1~AP4 통합)" },
-      { strat: "S2", id: "2-1", title: "산업군별 맞춤형 재난 기술지원 및 매뉴얼 안전 진단 (P3-P4-AP5~AP8 통합)" },
-      { strat: "S3", id: "3-1", title: "간호시뮬레이션 연계 재난 교육장 운영 및 거버넌스 활성화 (P5-P6-AP9~AP12 통합)" }
+      { strat: "S1", id: "1", title: "재난 대응 안전보건 인재 양성 및 AI 다국어 콘텐츠 실증" },
+      { strat: "S2", id: "2", title: "산업군별 맞춤형 재난 기술지원 및 매뉴얼 안전 진단" },
+      { strat: "S3", id: "3", title: "간호시뮬레이션 연계 재난 교육장 운영 및 거버넌스 활성화" }
     ],
     programs: [
       { strat: "S1", id: "B4-S1T1-1", title: "VR 활용 복합 가상 대피/화재 재난 안전훈련 체험" },
-      { strat: "S2", id: "B4-S2T1-2", title: "화학 공장 폭발 위험요소 진단 가이드북 배포" },
-      { strat: "S3", id: "B4-S3T1-3", title: "재난 긴급 의료 구호 지산학 세미나 개최" }
+      { strat: "S2", id: "B4-S2T2-1", title: "화학 공장 폭발 위험요소 진단 가이드북 배포" },
+      { strat: "S3", id: "B4-S3T3-1", title: "재난 긴급 의료 구호 지산학 세미나 개최" }
     ]
   },
   "C1": {
@@ -215,16 +215,16 @@ const STRATEGY_TASK_MAPPING = {
       { id: "S4", title: "지역산업의 인력수요 대응형 평생직업교육 운영 및 협력체계 확장" }
     ],
     tasks: [
-      { strat: "S1", id: "1-1", title: "울산 평생직업교육 거점센터 운영 및 통합 플랫폼 고도화 (P1-P2-AP1-AP2 통합)" },
-      { strat: "S2", id: "2-1", title: "생애주기 맞춤형 학습트랙 개설 및 성인학습자 학과 운영 (P3-P4-AP3-AP4 통합)" },
-      { strat: "S3", id: "3-1", title: "취약계층 취·창업 연계 직무교육 및 평생학습 교육과정 확대 (P5-P6-AP9~AP12 통합)" },
-      { strat: "S4", id: "4-1", title: "평생직업교육 거버넌스 및 협력형 맞춤 평생직업교육 확대 (P7-P8-AP13~AP16 통합)" }
+      { strat: "S1", id: "1", title: "울산 평생직업교육 거점센터 운영 및 통합 플랫폼 고도화" },
+      { strat: "S2", id: "2", title: "생애주기 맞춤형 학습트랙 개설 및 성인학습자 학과 운영" },
+      { strat: "S3", id: "3", title: "취약계층 취·창업 연계 직무교육 및 평생학습 교육과정 확대" },
+      { strat: "S4", id: "4", title: "평생직업교육 거버넌스 및 협력형 맞춤 평생직업교육 확대" }
     ],
     programs: [
       { strat: "S1", id: "C1-S1T1-1", title: "평생직업 교육 정보 포털 시스템 유지보수 고도화" },
-      { strat: "S2", id: "C1-S2T1-2", title: "성인학습자 친화형 유연 학사 제도 설계 연구" },
-      { strat: "S3", id: "C1-S3T1-3", title: "소외 계층 취업 연계 제과제빵 및 용접 등 단기 자격" },
-      { strat: "S4", id: "C1-S4T1-4", title: "지역사회 취약계층 재취업 평생교육 추진단 출범" }
+      { strat: "S2", id: "C1-S2T2-1", title: "성인학습자 친화형 유연 학사 제도 설계 연구" },
+      { strat: "S3", id: "C1-S3T3-1", title: "소외 계층 취업 연계 제과제빵 및 용접 등 단기 자격" },
+      { strat: "S4", id: "C1-S4T4-1", title: "지역사회 취약계층 재취업 평생교육 추진단 출범" }
     ]
   },
   "C2": {
@@ -235,16 +235,16 @@ const STRATEGY_TASK_MAPPING = {
       { id: "S4", title: "동남권 지역자원·대학역량 결합 특화 패키지 확산" }
     ],
     tasks: [
-      { strat: "S1", id: "1-1", title: "방과후/방학 늘봄 프로그램 표준모델 개발 및 시범운영 (P1-P2-AP1~AP4 통합)" },
-      { strat: "S2", id: "2-1", title: "동남권 유관기관 돌봄 거버넌스 및 파트너십 구축 (P3-P4-AP5~AP8 통합)" },
-      { strat: "S3", id: "3-1", title: "늘봄학교 모니터링 품질관리 체계 및 브랜딩 홍보 구축 (P5-P6-AP9~AP12 통합)" },
-      { strat: "S4", id: "4-1", title: "K-pop/브리지게임 등 특화 패키지 확산 및 돌봄교사 양성 (P7-P8-AP13~AP16 통합)" }
+      { strat: "S1", id: "1", title: "방과후/방학 늘봄 프로그램 표준모델 개발 및 시범운영" },
+      { strat: "S2", id: "2", title: "동남권 유관기관 돌봄 거버넌스 및 파트너십 구축" },
+      { strat: "S3", id: "3", title: "늘봄학교 모니터링 품질관리 체계 및 브랜딩 홍보 구축" },
+      { strat: "S4", id: "4", title: "K-pop/브리지게임 등 특화 패키지 확산 및 돌봄교사 양성" }
     ],
     programs: [
       { strat: "S1", id: "C2-S1T1-1", title: "초등학생 맞춤형 방학 체험 프로그램 개발" },
-      { strat: "S2", id: "C2-S2T1-2", title: "동남권 아동 복지 보육 연대 파트너십 회의" },
-      { strat: "S3", id: "C2-S3T1-3", title: "늘봄 교강사 품질 모니터링 결과 보고서" },
-      { strat: "S4", id: "C2-S4T1-4", title: "돌봄 자격 연수 교재 제작 및 아동 교육과정 론칭" }
+      { strat: "S2", id: "C2-S2T2-1", title: "동남권 아동 복지 보육 연대 파트너십 회의" },
+      { strat: "S3", id: "C2-S3T3-1", title: "늘봄 교강사 품질 모니터링 결과 보고서" },
+      { strat: "S4", id: "C2-S4T4-1", title: "돌봄 자격 연수 교재 제작 및 아동 교육과정 론칭" }
     ]
   },
   "D1": {
@@ -253,14 +253,14 @@ const STRATEGY_TASK_MAPPING = {
       { id: "S2", title: "울산형 2주기 RISE 모델 설계 및 지역연계 실행체계 구축" }
     ],
     tasks: [
-      { strat: "S1", id: "1-1", title: "지역전문가 연계 공동 설계 및 대학 연계 문제해결 프로젝트 (P1-AP1-AP2 통합)" },
-      { strat: "S2", id: "2-1", title: "주민 참여형 생활밀착 에코-리빙랩 운영 및 현장 코디네이터 (P2-AP3-AP4 통합)" },
-      { strat: "S2", id: "2-2", title: "울산형 2주기 RISE 모델 연구 및 지역연계 정책 연구 (P3-P4-AP5~AP8 통합)" }
+      { strat: "S1", id: "1", title: "지역전문가 연계 공동 설계 및 대학 연계 문제해결 프로젝트" },
+      { strat: "S2", id: "2", title: "주민 참여형 생활밀착 에코-리빙랩 운영 및 현장 코디네이터" },
+      { strat: "S2", id: "3", title: "울산형 2주기 RISE 모델 연구 및 지역연계 정책 연구" }
     ],
     programs: [
       { strat: "S1", id: "D1-S1T1-1", title: "대학 교수 및 연구원 참여 리빙랩 과제 3개년 설계" },
-      { strat: "S2", id: "D1-S2T1-2", title: "주민 참여형 에코 리빙랩 활성화 캠프" },
-      { strat: "S2", id: "D1-S2T2-3", title: "2차년도 지자체 요구 RISE 정책 연구 포럼 개최" }
+      { strat: "S2", id: "D1-S2T2-1", title: "주민 참여형 에코 리빙랩 활성화 캠프" },
+      { strat: "S2", id: "D1-S2T3-1", title: "2차년도 지자체 요구 RISE 정책 연구 포럼 개최" }
     ]
   },
   "D2": {
@@ -269,14 +269,14 @@ const STRATEGY_TASK_MAPPING = {
       { id: "S2", title: "지역 인재 순환과 성과관리를 통한 지속 가능 운영 확립" }
     ],
     tasks: [
-      { strat: "S1", id: "1-1", title: "지역사회 기반 보건복지 거버넌스 구축 및 융합 모델 고도화 (P1-AP1-AP2 통합)" },
-      { strat: "S1", id: "1-2", title: "맞춤형 보건복지 인재 양성 및 복지케어 모니터링 체계 구축 (P2-P3-AP3~AP6 통합)" },
-      { strat: "S2", id: "2-1", title: "지역 맞춤형 보건의료 정주인력 양성 및 실버산업 인력 지원 (P4-P5-AP7~AP10 통합)" }
+      { strat: "S1", id: "1", title: "지역사회 기반 보건복지 거버넌스 구축 및 융합 모델 고도화" },
+      { strat: "S1", id: "2", title: "맞춤형 보건복지 인재 양성 및 복지케어 모니터링 체계 구축" },
+      { strat: "S2", id: "3", title: "지역 맞춤형 보건의료 정주인력 양성 및 실버산업 인력 지원" }
     ],
     programs: [
       { strat: "S1", id: "D2-S1T1-1", title: "울산 의료/간호 지산학 상생 교류 포럼" },
-      { strat: "S1", id: "D2-S1T2-2", title: "지역사회 독거노인 맞춤 케어 실무 학생 인력 파견" },
-      { strat: "S2", id: "D2-S2T1-3", title: "실버산업 맞춤형 요양 보호 기술 교육 강좌" }
+      { strat: "S1", id: "D2-S1T2-1", title: "지역사회 독거노인 맞춤 케어 실무 학생 인력 파견" },
+      { strat: "S2", id: "D2-S2T3-1", title: "실버산업 맞춤형 요양 보호 기술 교육 강좌" }
     ]
   },
   "D3": {
@@ -285,14 +285,14 @@ const STRATEGY_TASK_MAPPING = {
       { id: "S2", title: "지역사회 환경·문화 꿀잼 역량 강화" }
     ],
     tasks: [
-      { strat: "S1", id: "1-1", title: "캠퍼스-로컬 연계 에코컬처 프로젝트 및 브랜드 디자인 (P1-AP1-AP2 통합)" },
-      { strat: "S1", id: "1-2", title: "청년 중심 상업공간 재활성화 및 도시재생 프로젝트 (P2-P3-AP3~AP6 통합)" },
-      { strat: "S2", id: "2-1", title: "시민체험형 문화예술 프로그램 및 축제 연계 운영 (P4-P5-AP7~AP10 통합)" }
+      { strat: "S1", id: "1", title: "캠퍼스-로컬 연계 에코컬처 프로젝트 및 브랜드 디자인" },
+      { strat: "S1", id: "2", title: "청년 중심 상업공간 재활성화 및 도시재생 프로젝트" },
+      { strat: "S2", id: "3", title: "시민체험형 문화예술 프로그램 및 축제 연계 운영" }
     ],
     programs: [
       { strat: "S1", id: "D3-S1T1-1", title: "대학생 참여형 공공 디자인 개선 과제" },
-      { strat: "S1", id: "D3-S1T2-2", title: "청년 유입 촉진을 위한 대학가 꿀잼 문화축제 설계" },
-      { strat: "S2", id: "D3-S2T1-3", title: "지역민과 함께하는 주말 꿀잼 에코 버스킹 기획" }
+      { strat: "S1", id: "D3-S1T2-1", title: "청년 유입 촉진을 위한 대학가 꿀잼 문화축제 설계" },
+      { strat: "S2", id: "D3-S2T3-1", title: "지역민과 함께하는 주말 꿀잼 에코 버스킹 기획" }
     ]
   }
 };
