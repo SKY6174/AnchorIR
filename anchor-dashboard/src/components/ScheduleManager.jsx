@@ -36,6 +36,7 @@ export default function ScheduleManager({
 
   // 언론보도 세부 구분 필터 상태 ("all", "방송", "신문", "기타")
   const [selectedPressType, setSelectedPressType] = useState("all");
+  const [activePressId, setActivePressId] = useState(null);
 
   // 회의 대분류 상태 ("operating": 사업단 운영회의, "center": 센터별 회의, "committee": 각종 위원회 회의)
   const [activeMeetingCat, setActiveMeetingCat] = useState("operating");
@@ -126,6 +127,18 @@ export default function ScheduleManager({
       alert("엑셀(CSV) 다운로드 중 오류가 발생했습니다.");
     }
   };
+
+  // 언론보도 데이터가 로드되거나 필터가 바뀔 때 기본적으로 첫 번째 항목을 활성화
+  useEffect(() => {
+    const filtered = pressReleases.filter(p => selectedPressType === "all" || p.type === selectedPressType);
+    if (filtered.length > 0) {
+      if (!activePressId || !filtered.some(p => p.id === activePressId)) {
+        setActivePressId(filtered[0].id);
+      }
+    } else {
+      setActivePressId(null);
+    }
+  }, [pressReleases, selectedPressType, activePressId]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -505,7 +518,10 @@ export default function ScheduleManager({
   // 언론보도 삭제 핸들러
   const handleDeletePress = (id) => {
     if (window.confirm("선택한 언론보도 내역을 삭제하시겠습니까?")) {
-      setPressReleases(pressReleases.filter(p => p.id !== id));
+      setPressReleases(prev => prev.filter(p => p.id !== id));
+      if (id === activePressId) {
+        setActivePressId(null);
+      }
     }
   };
 
@@ -1380,80 +1396,145 @@ export default function ScheduleManager({
             </div>
           </div>
 
-          {/* 리스트 그리드 */}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.5rem" }}>
-            {pressReleases.filter(p => selectedPressType === "all" || p.type === selectedPressType).length > 0 ? (
-              pressReleases
-                .filter(p => selectedPressType === "all" || p.type === selectedPressType)
-                .map((press) => {
-                  const embedUrl = getYoutubeEmbedUrl(press.contentUrl);
-                  
+          {/* 리스트 & 상세 내용 (Master-Detail) 레이아웃 */}
+          <div style={{ display: "grid", gridTemplateColumns: "380px 1fr", gap: "1.5rem", alignItems: "start" }}>
+            
+            {/* 좌측: 리스트 영역 */}
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem", maxHeight: "70vh", overflowY: "auto", paddingRight: "0.5rem" }}>
+              {pressReleases.filter(p => selectedPressType === "all" || p.type === selectedPressType).length > 0 ? (
+                pressReleases
+                  .filter(p => selectedPressType === "all" || p.type === selectedPressType)
+                  .map((press) => {
+                    const isActive = activePressId === press.id;
+                    return (
+                      <div 
+                        key={press.id}
+                        onClick={() => setActivePressId(press.id)}
+                        className="glass-card"
+                        style={{
+                          padding: "1.0rem",
+                          borderRadius: "8px",
+                          display: "flex",
+                          flexDirection: "column",
+                          gap: "0.5rem",
+                          background: isActive ? "rgba(59, 130, 246, 0.08)" : "rgba(255,255,255,0.02)",
+                          border: isActive ? "1px solid var(--accent-color)" : "1px solid var(--border-color)",
+                          boxShadow: isActive ? "0 0 10px rgba(59, 130, 246, 0.2)" : "none",
+                          cursor: "pointer",
+                          transition: "all 0.2s"
+                        }}
+                      >
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                          <div style={{ display: "flex", gap: "0.4rem" }}>
+                            <span style={{ fontSize: "0.65rem", padding: "0.15rem 0.4rem", borderRadius: "4px", background: press.type === "방송" ? "rgba(239, 68, 68, 0.15)" : press.type === "신문" ? "rgba(59, 130, 246, 0.15)" : "rgba(139, 92, 246, 0.15)", color: press.type === "방송" ? "#EF4444" : press.type === "신문" ? "#60A5FA" : "#A78BFA", fontWeight: "800" }}>
+                              {press.type}
+                            </span>
+                            <span style={{ fontSize: "0.65rem", padding: "0.15rem 0.4rem", borderRadius: "4px", background: "rgba(255,255,255,0.05)", color: "var(--text-secondary)", fontWeight: "700" }}>
+                              {press.media}
+                            </span>
+                          </div>
+                          
+                          {/* 제어 버튼 */}
+                          <div style={{ display: "flex", gap: "0.3rem" }} onClick={(e) => e.stopPropagation()}>
+                            <button 
+                              type="button"
+                              onClick={() => handleEditPress(press)}
+                              title="수정"
+                              style={{ background: "transparent", border: "none", color: "var(--text-secondary)", cursor: "pointer", padding: "0.2rem" }}
+                              onMouseOver={(e) => e.currentTarget.style.color = "var(--accent-color)"}
+                              onMouseOut={(e) => e.currentTarget.style.color = "var(--text-secondary)"}
+                            >
+                              <Edit size={13} />
+                            </button>
+                            <button 
+                              type="button"
+                              onClick={() => handleDeletePress(press.id)}
+                              title="삭제"
+                              style={{ background: "transparent", border: "none", color: "var(--text-secondary)", cursor: "pointer", padding: "0.2rem" }}
+                              onMouseOver={(e) => e.currentTarget.style.color = "#EF4444"}
+                              onMouseOut={(e) => e.currentTarget.style.color = "var(--text-secondary)"}
+                            >
+                              <Trash2 size={13} />
+                            </button>
+                          </div>
+                        </div>
+                        
+                        <h4 style={{ margin: 0, fontSize: "0.85rem", fontWeight: "800", color: isActive ? "white" : "var(--text-primary)", lineHeight: "1.4", overflow: "hidden", textOverflow: "ellipsis", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>
+                          {press.title}
+                        </h4>
+                        
+                        <div style={{ fontSize: "0.7rem", color: "var(--text-secondary)", display: "flex", alignItems: "center", gap: "0.2rem" }}>
+                          <Clock size={11} />
+                          <span>{press.broadcastDate ? press.broadcastDate.replace("T", " ").substring(0, 16) : "-"}</span>
+                        </div>
+                      </div>
+                    );
+                  })
+              ) : (
+                <div className="card" style={{ padding: "3rem 1rem", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", background: "var(--panel-bg)", border: "1px solid var(--border-color)", color: "var(--text-secondary)", textAlign: "center", width: "100%" }}>
+                  <Award size={32} style={{ marginBottom: "0.5rem", opacity: 0.4 }} />
+                  <span style={{ fontSize: "0.8rem" }}>등록된 언론보도 내역이 없습니다.</span>
+                </div>
+              )}
+            </div>
+
+            {/* 우측: 상세 표시 영역 */}
+            <div style={{ minHeight: "500px" }}>
+              {(() => {
+                const activePress = pressReleases.find(p => p.id === activePressId);
+                if (!activePress) {
                   return (
-                    <div 
-                      key={press.id}
-                      className="glass-card"
-                      style={{
-                        padding: "1.25rem",
-                        borderRadius: "10px",
-                        display: "flex",
-                        flexDirection: "column",
-                        gap: "0.8rem",
-                        background: "rgba(255,255,255,0.02)",
-                        border: "1px solid var(--border-color)",
-                        boxShadow: "0 4px 15px rgba(0,0,0,0.15)"
-                      }}
-                    >
-                      {/* 카드 헤더 */}
-                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                        <div style={{ display: "flex", gap: "0.4rem" }}>
-                          <span style={{ fontSize: "0.7rem", padding: "0.2rem 0.5rem", borderRadius: "4px", background: press.type === "방송" ? "rgba(239, 68, 68, 0.15)" : press.type === "신문" ? "rgba(59, 130, 246, 0.15)" : "rgba(139, 92, 246, 0.15)", color: press.type === "방송" ? "#EF4444" : press.type === "신문" ? "#60A5FA" : "#A78BFA", fontWeight: "800" }}>
-                            {press.type}
-                          </span>
-                          <span style={{ fontSize: "0.7rem", padding: "0.2rem 0.5rem", borderRadius: "4px", background: "rgba(255,255,255,0.05)", color: "var(--text-secondary)", fontWeight: "700" }}>
-                            {press.media}
-                          </span>
-                        </div>
-
-                        {/* 제어 버튼 */}
-                        <div style={{ display: "flex", gap: "0.3rem" }}>
-                          <button 
-                            type="button"
-                            onClick={() => handleEditPress(press)}
-                            title="수정"
-                            style={{ background: "transparent", border: "none", color: "var(--text-secondary)", cursor: "pointer", padding: "0.2rem" }}
-                            onMouseOver={(e) => e.currentTarget.style.color = "var(--accent-color)"}
-                            onMouseOut={(e) => e.currentTarget.style.color = "var(--text-secondary)"}
-                          >
-                            <Edit size={14} />
-                          </button>
-                          <button 
-                            type="button"
-                            onClick={() => handleDeletePress(press.id)}
-                            title="삭제"
-                            style={{ background: "transparent", border: "none", color: "var(--text-secondary)", cursor: "pointer", padding: "0.2rem" }}
-                            onMouseOver={(e) => e.currentTarget.style.color = "#EF4444"}
-                            onMouseOut={(e) => e.currentTarget.style.color = "var(--text-secondary)"}
-                          >
-                            <Trash2 size={14} />
-                          </button>
-                        </div>
+                    <div className="card" style={{ height: "100%", minHeight: "450px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", background: "var(--panel-bg)", border: "1px solid var(--border-color)", color: "var(--text-secondary)", textAlign: "center", padding: "2rem" }}>
+                      <Award size={48} style={{ marginBottom: "1rem", opacity: 0.3 }} />
+                      <h4 style={{ margin: 0, color: "var(--text-primary)", fontWeight: "700" }}>언론보도 상세 정보</h4>
+                      <p style={{ margin: "0.5rem 0 0 0", fontSize: "0.85rem" }}>왼쪽 목록에서 보고 싶은 보도 내역을 선택해 주세요.</p>
+                    </div>
+                  );
+                }
+                
+                const embedUrl = getYoutubeEmbedUrl(activePress.contentUrl);
+                
+                return (
+                  <div 
+                    className="card"
+                    style={{
+                      padding: "1.75rem",
+                      borderRadius: "10px",
+                      background: "var(--panel-bg)",
+                      border: "1px solid var(--border-color)",
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "1.2rem",
+                      boxShadow: "0 10px 30px rgba(0,0,0,0.2)"
+                    }}
+                  >
+                    {/* 상단 메타 정보 */}
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid rgba(255,255,255,0.06)", paddingBottom: "1.0rem" }}>
+                      <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+                        <span style={{ fontSize: "0.75rem", padding: "0.25rem 0.60rem", borderRadius: "4px", background: activePress.type === "방송" ? "rgba(239, 68, 68, 0.2)" : activePress.type === "신문" ? "rgba(59, 130, 246, 0.2)" : "rgba(139, 92, 246, 0.2)", color: activePress.type === "방송" ? "#EF4444" : activePress.type === "신문" ? "#60A5FA" : "#A78BFA", fontWeight: "800" }}>
+                          {activePress.type}
+                        </span>
+                        <span style={{ fontSize: "0.75rem", padding: "0.25rem 0.60rem", borderRadius: "4px", background: "rgba(255,255,255,0.06)", color: "var(--text-primary)", fontWeight: "700" }}>
+                          {activePress.media}
+                        </span>
                       </div>
-
-                      {/* 보도 제목 */}
-                      <h4 style={{ margin: 0, fontSize: "1rem", fontWeight: "800", color: "var(--text-primary)", lineHeight: "1.4" }}>
-                        {press.title}
-                      </h4>
-
-                      {/* 보도 일시 */}
-                      <div style={{ fontSize: "0.75rem", color: "var(--text-secondary)", display: "flex", alignItems: "center", gap: "0.25rem" }}>
-                        <Clock size={12} />
-                        <span>보도일시: {press.broadcastDate ? press.broadcastDate.replace("T", " ").substring(0, 16) : "-"}</span>
+                      
+                      <div style={{ fontSize: "0.8rem", color: "var(--text-secondary)", display: "flex", alignItems: "center", gap: "0.3rem" }}>
+                        <Clock size={14} />
+                        <span>보도일시: {activePress.broadcastDate ? activePress.broadcastDate.replace("T", " ").substring(0, 16) : "-"}</span>
                       </div>
+                    </div>
 
-                      {/* 미디어 뷰어 / 프리뷰 카드 */}
-                      <div style={{ marginTop: "0.25rem", borderTop: "1px solid rgba(255,255,255,0.05)", paddingTop: "0.75rem" }}>
-                        {embedUrl ? (
-                          <div style={{ position: "relative", width: "100%", paddingBottom: "56.25%", height: 0, overflow: "hidden", borderRadius: "8px", border: "1px solid rgba(255,255,255,0.05)" }}>
+                    {/* 보도 제목 */}
+                    <h3 style={{ margin: 0, fontSize: "1.25rem", fontWeight: "800", color: "var(--text-primary)", lineHeight: "1.4" }}>
+                      {activePress.title}
+                    </h3>
+
+                    {/* 상세 본문 및 미디어 뷰어 */}
+                    <div style={{ marginTop: "0.5rem" }}>
+                      {embedUrl ? (
+                        <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+                          <div style={{ position: "relative", width: "100%", paddingBottom: "56.25%", height: 0, overflow: "hidden", borderRadius: "8px", border: "1px solid rgba(255,255,255,0.08)" }}>
                             <iframe 
                               src={`${embedUrl}?feature=oembed&enablejsapi=1`}
                               title="Youtube video player"
@@ -1464,41 +1545,68 @@ export default function ScheduleManager({
                               style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%" }}
                             />
                           </div>
-                        ) : (
-                          <div style={{ background: "rgba(255,255,255,0.01)", padding: "0.75rem", borderRadius: "8px", border: "1px solid rgba(255,255,255,0.05)", display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                              <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)", fontWeight: "600" }}>📰 기사 내용 바로가기</span>
-                              <Award size={14} style={{ color: "var(--accent-color)" }} />
+                          
+                          {/* 하단 기사 본문 URL 정보 */}
+                          <div style={{ background: "rgba(255,255,255,0.01)", padding: "0.85rem", borderRadius: "6px", border: "1px solid rgba(255,255,255,0.04)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                            <div style={{ display: "flex", flexDirection: "column", gap: "0.15rem", width: "70%" }}>
+                              <span style={{ fontSize: "0.7rem", color: "var(--text-secondary)", fontWeight: "600" }}>유튜브 영상 주소</span>
+                              <span style={{ fontSize: "0.7rem", color: "#60A5FA", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                                {activePress.contentUrl}
+                              </span>
                             </div>
-                            <span style={{ fontSize: "0.7rem", color: "#60A5FA", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                              {press.contentUrl || "(등록된 링크 주소가 없습니다)"}
-                            </span>
-                            {press.contentUrl && (
-                              <a 
-                                href={press.contentUrl} 
-                                target="_blank" 
-                                rel="noopener noreferrer"
-                                style={{
-                                  display: "inline-flex", alignItems: "center", justifyContent: "center", gap: "0.25rem",
-                                  padding: "0.4rem", borderRadius: "6px", background: "rgba(59, 130, 246, 0.12)",
-                                  border: "1px solid rgba(59, 130, 246, 0.25)", color: "#93C5FD", fontSize: "0.75rem", fontWeight: "700", textDecoration: "none"
-                                }}
-                              >
-                                🔗 새 창에서 보도 기사 읽기
-                              </a>
-                            )}
+                            <a 
+                              href={activePress.contentUrl} 
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                              style={{
+                                display: "inline-flex", alignItems: "center", justifyContent: "center", gap: "0.25rem",
+                                padding: "0.45rem 0.8rem", borderRadius: "6px", background: "rgba(59, 130, 246, 0.12)",
+                                border: "1px solid rgba(59, 130, 246, 0.25)", color: "#93C5FD", fontSize: "0.75rem", fontWeight: "700", textDecoration: "none", transition: "all 0.2s"
+                              }}
+                            >
+                              📺 유튜브에서 보기
+                            </a>
                           </div>
-                        )}
-                      </div>
+                        </div>
+                      ) : (
+                        <div style={{ background: "rgba(255,255,255,0.01)", padding: "1.5rem", borderRadius: "8px", border: "1px solid rgba(255,255,255,0.06)", display: "flex", flexDirection: "column", gap: "1rem" }}>
+                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                            <span style={{ fontSize: "0.85rem", color: "var(--text-secondary)", fontWeight: "600" }}>📰 기사 내용 바로가기</span>
+                            <Award size={18} style={{ color: "var(--accent-color)" }} />
+                          </div>
+                          
+                          <p style={{ margin: 0, fontSize: "0.8rem", color: "var(--text-secondary)", lineHeight: "1.5" }}>
+                            본 보도자료는 신문 및 지면 기사 형태로 배포되었습니다. 아래 기사 링크를 클릭하시면 본문 기사 원본 페이지로 바로 이동합니다.
+                          </p>
+
+                          <div style={{ background: "rgba(0,0,0,0.2)", padding: "0.75rem", borderRadius: "6px", border: "1px solid rgba(255,255,255,0.04)" }}>
+                            <span style={{ fontSize: "0.75rem", color: "#60A5FA", wordBreak: "break-all" }}>
+                              {activePress.contentUrl || "(등록된 링크 주소가 없습니다)"}
+                            </span>
+                          </div>
+                          
+                          {activePress.contentUrl && (
+                            <a 
+                              href={activePress.contentUrl} 
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                              style={{
+                                display: "inline-flex", alignItems: "center", justifyContent: "center", gap: "0.25rem",
+                                padding: "0.6rem", borderRadius: "6px", background: "rgba(59, 130, 246, 0.15)",
+                                border: "1px solid rgba(59, 130, 246, 0.3)", color: "#93C5FD", fontSize: "0.8rem", fontWeight: "700", textDecoration: "none", textAlign: "center", transition: "all 0.2s"
+                              }}
+                            >
+                              🔗 새 창에서 보도 기사 읽기
+                            </a>
+                          )}
+                        </div>
+                      )}
                     </div>
-                  );
-                })
-            ) : (
-              <div className="card" style={{ gridColumn: "span 2", padding: "4rem", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", background: "var(--panel-bg)", border: "1px solid var(--border-color)", color: "var(--text-secondary)", textAlign: "center" }}>
-                <Award size={40} style={{ marginBottom: "0.75rem", opacity: 0.4 }} />
-                <span>등록된 언론보도 내역이 없습니다.<br />[신규 언론보도 등록] 버튼을 눌러 첫 홍보 성과를 기록해 보세요.</span>
-              </div>
-            )}
+                  </div>
+                );
+              })()}
+            </div>
+
           </div>
         </div>
       )}
