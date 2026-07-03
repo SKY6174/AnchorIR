@@ -9,6 +9,7 @@ import BudgetExecutionManager from "./components/BudgetExecutionManager";
 import ProgramProgressManager from "./components/ProgramProgressManager";
 import LLMWiki from "./components/LLMWiki";
 import AuthManager from "./components/AuthManager";
+import ProcurementManager from "./components/ProcurementManager";
 import { initialProjectsData, userRoles, YEAR_1_PROGRAMS, Y1_UNIT_META } from "./data/mockData";
 import { Sun, Moon, LogOut, HelpCircle, ArrowUpRight, Lock as LockIcon } from "lucide-react";
 import { supabase } from "./supabaseClient";
@@ -1998,6 +1999,9 @@ export default function App() {
   const [budgetSubTab, setBudgetSubTab] = useState(() => {
     return localStorage.getItem("anchor_budget_sub_tab") || "budget_categories";
   });
+  const [procurementSubTab, setProcurementSubTab] = useState(() => {
+    return localStorage.getItem("anchor_procurement_sub_tab") || "env_improvement";
+  });
   const [selectedUnitId, setSelectedUnitId] = useState(() => {
     return localStorage.getItem("anchor_selected_unit_id") || "A1가";
   });
@@ -2028,6 +2032,10 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem("anchor_budget_sub_tab", budgetSubTab);
   }, [budgetSubTab]);
+
+  useEffect(() => {
+    localStorage.setItem("anchor_procurement_sub_tab", procurementSubTab);
+  }, [procurementSubTab]);
 
   useEffect(() => {
     localStorage.setItem("anchor_selected_unit_id", selectedUnitId);
@@ -3097,6 +3105,8 @@ export default function App() {
         onChangeMgmtSubTab={setMgmtSubTab}
         budgetSubTab={budgetSubTab}
         onChangeBudgetSubTab={setBudgetSubTab}
+        procurementSubTab={procurementSubTab}
+        onChangeProcurementSubTab={setProcurementSubTab}
       />
 
       {/* 메인 뷰 */}
@@ -4538,6 +4548,70 @@ export default function App() {
                 selectedYear={selectedYear}
               />
             )}
+          </div>
+        )}
+
+        {activeTab === "procurement" && (
+          <div className="procurement-management-wrapper" style={{ display: "flex", flexDirection: "column", gap: "1rem", width: "100%" }}>
+            {/* 구매용역 관리 본문 가로 탭바 헤더 */}
+            <div style={{ display: "flex", gap: "1.5rem", borderBottom: "1px solid rgba(255,255,255,0.1)", paddingBottom: "0.2rem", marginBottom: "0.5rem" }}>
+              <button
+                onClick={() => setProcurementSubTab("env_improvement")}
+                style={{
+                  background: "transparent",
+                  border: "none",
+                  fontSize: "1rem",
+                  fontWeight: "800",
+                  cursor: "pointer",
+                  padding: "0.5rem 1rem",
+                  color: procurementSubTab === "env_improvement" ? "var(--accent-color)" : "var(--text-secondary-dark)",
+                  borderBottom: procurementSubTab === "env_improvement" ? "2px solid var(--accent-color)" : "none",
+                  transition: "all 0.2s ease"
+                }}
+              >
+                환경개선
+              </button>
+              <button
+                onClick={() => setProcurementSubTab("equipment_purchase")}
+                style={{
+                  background: "transparent",
+                  border: "none",
+                  fontSize: "1rem",
+                  fontWeight: "800",
+                  cursor: "pointer",
+                  padding: "0.5rem 1rem",
+                  color: procurementSubTab === "equipment_purchase" ? "var(--accent-color)" : "var(--text-secondary-dark)",
+                  borderBottom: procurementSubTab === "equipment_purchase" ? "2px solid var(--accent-color)" : "none",
+                  transition: "all 0.2s ease"
+                }}
+              >
+                기자재 구입∙운영
+              </button>
+              <button
+                onClick={() => setProcurementSubTab("major_services")}
+                style={{
+                  background: "transparent",
+                  border: "none",
+                  fontSize: "1rem",
+                  fontWeight: "800",
+                  cursor: "pointer",
+                  padding: "0.5rem 1rem",
+                  color: procurementSubTab === "major_services" ? "var(--accent-color)" : "var(--text-secondary-dark)",
+                  borderBottom: procurementSubTab === "major_services" ? "2px solid var(--accent-color)" : "none",
+                  transition: "all 0.2s ease"
+                }}
+              >
+                주요 용역
+              </button>
+            </div>
+
+            {/* 본문 콘텐츠 */}
+            <ProcurementManager
+              currentRole={currentRole}
+              selectedYear={selectedYear}
+              subTab={procurementSubTab}
+              onChangeSubTab={setProcurementSubTab}
+            />
           </div>
         )}
 

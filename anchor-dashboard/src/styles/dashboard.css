@@ -646,8 +646,10 @@ body.light-mode {
 .projects-nav-wrapper:hover .nav-sub-menu,
 .projects-nav-wrapper.active .nav-sub-menu,
 .budget-nav-wrapper:hover .nav-sub-menu,
-.budget-nav-wrapper.active .nav-sub-menu {
-  max-height: 80px;
+.budget-nav-wrapper.active .nav-sub-menu,
+.procurement-nav-wrapper:hover .nav-sub-menu,
+.procurement-nav-wrapper.active .nav-sub-menu {
+  max-height: 120px;
   opacity: 1;
   margin-top: 0.25rem;
   margin-bottom: 0.25rem;

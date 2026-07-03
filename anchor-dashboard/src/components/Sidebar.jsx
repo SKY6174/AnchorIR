@@ -1,6 +1,6 @@
 import React from "react";
 import { userRoles } from "../data/mockData";
-import { LayoutDashboard, Users, FileBarChart2, FolderKanban, Award, Landmark, ClipboardList, BookOpen } from "lucide-react";
+import { LayoutDashboard, Users, FileBarChart2, FolderKanban, Award, Landmark, ClipboardList, BookOpen, Briefcase } from "lucide-react";
 
 export default function Sidebar({
   currentRole,
@@ -14,7 +14,9 @@ export default function Sidebar({
   mgmtSubTab,
   onChangeMgmtSubTab,
   budgetSubTab,
-  onChangeBudgetSubTab
+  onChangeBudgetSubTab,
+  procurementSubTab,
+  onChangeProcurementSubTab
 }) {
   return (
     <aside className="sidebar">
@@ -170,6 +172,59 @@ export default function Sidebar({
           >
             <Award size={24} />
             <span>협약서 관리</span>
+          </div>
+
+          <div className={`procurement-nav-wrapper ${activeTab === "procurement" ? "active" : ""}`}>
+            <div
+              className={`nav-item ${activeTab === "procurement" ? "active" : ""}`}
+              onClick={() => {
+                onChangeTab("procurement");
+                if (onChangeProcurementSubTab) {
+                  onChangeProcurementSubTab("env_improvement");
+                }
+              }}
+            >
+              <Briefcase size={24} />
+              <span>구매용역 관리</span>
+            </div>
+            <div className="nav-sub-menu">
+              <div
+                className={`nav-sub-item ${activeTab === "procurement" && procurementSubTab === "env_improvement" ? "active" : ""}`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onChangeTab("procurement");
+                  if (onChangeProcurementSubTab) {
+                    onChangeProcurementSubTab("env_improvement");
+                  }
+                }}
+              >
+                - 환경개선
+              </div>
+              <div
+                className={`nav-sub-item ${activeTab === "procurement" && procurementSubTab === "equipment_purchase" ? "active" : ""}`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onChangeTab("procurement");
+                  if (onChangeProcurementSubTab) {
+                    onChangeProcurementSubTab("equipment_purchase");
+                  }
+                }}
+              >
+                - 기자재 구입∙운영
+              </div>
+              <div
+                className={`nav-sub-item ${activeTab === "procurement" && procurementSubTab === "major_services" ? "active" : ""}`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onChangeTab("procurement");
+                  if (onChangeProcurementSubTab) {
+                    onChangeProcurementSubTab("major_services");
+                  }
+                }}
+              >
+                - 주요 용역
+              </div>
+            </div>
           </div>
 
           <div
