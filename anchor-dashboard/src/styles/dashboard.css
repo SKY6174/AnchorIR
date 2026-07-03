@@ -644,7 +644,9 @@ body.light-mode {
 
 /* Hover & Active expanded state */
 .projects-nav-wrapper:hover .nav-sub-menu,
-.projects-nav-wrapper.active .nav-sub-menu {
+.projects-nav-wrapper.active .nav-sub-menu,
+.budget-nav-wrapper:hover .nav-sub-menu,
+.budget-nav-wrapper.active .nav-sub-menu {
   max-height: 80px;
   opacity: 1;
   margin-top: 0.25rem;
@@ -680,7 +682,8 @@ body.light-mode {
 }
 
 .kpis-nav-wrapper,
-.mgmt-nav-wrapper {
+.mgmt-nav-wrapper,
+.budget-nav-wrapper {
   position: relative;
   display: flex;
   flex-direction: column;
