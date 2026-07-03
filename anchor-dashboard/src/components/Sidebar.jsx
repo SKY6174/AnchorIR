@@ -31,6 +31,14 @@ export default function Sidebar({
             <span>IR 대시보드</span>
           </div>
 
+          <div
+            className={`nav-item ${activeTab === "progress" ? "active" : ""}`}
+            onClick={() => onChangeTab("progress")}
+          >
+            <ClipboardList size={24} />
+            <span>프로그램 진행</span>
+          </div>
+
           <div className={`projects-nav-wrapper ${activeTab === "projects" ? "active" : ""}`}>
             <div
               className={`nav-item ${activeTab === "projects" ? "active" : ""}`}
@@ -70,14 +78,6 @@ export default function Sidebar({
                 - 프로그램 관리
               </div>
             </div>
-          </div>
-
-          <div
-            className={`nav-item ${activeTab === "progress" ? "active" : ""}`}
-            onClick={() => onChangeTab("progress")}
-          >
-            <ClipboardList size={24} />
-            <span>프로그램 진행</span>
           </div>
 
           <div
