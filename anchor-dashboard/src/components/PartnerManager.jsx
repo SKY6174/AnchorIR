@@ -659,16 +659,26 @@ export default function PartnerManager({ selectedYear }) {
           position: "fixed",
           left: 0,
           top: 0,
-          right: 0,
-          bottom: 0,
-          background: "rgba(0, 0, 0, 0.7)",
-          backdropFilter: "blur(4px)",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
+          width: "100vw",
+          height: "100vh",
+          background: "rgba(0, 0, 0, 0.75)",
+          backdropFilter: "blur(5px)",
           zIndex: 9999
         }}>
-          <div className="glass-card" style={{ width: "600px", padding: "2rem", display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+          <div className="glass-card" style={{ 
+            width: "600px", 
+            padding: "2.2rem 2rem", 
+            display: "flex", 
+            flexDirection: "column", 
+            gap: "1.5rem",
+            position: "fixed",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            maxHeight: "88vh",
+            overflowY: "auto",
+            boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.7)"
+          }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <h3 style={{ fontSize: "1.25rem", fontWeight: "800", color: "var(--accent-color)" }}>
                 {editingPartner ? "🛠️ 파트너기관 정보 수정" : "➕ 신규 파트너기관 등록"}
