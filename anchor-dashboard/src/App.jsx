@@ -5118,7 +5118,7 @@ export default function App() {
                   transition: "all 0.2s ease"
                 }}
               >
-                행사 일정
+                행사 내용
               </button>
               <button
                 onClick={() => setScheduleSubTab("meetings")}

@@ -109,20 +109,46 @@ export default function ScheduleManager({
         setMonthlySchedules([newItem, ...monthlySchedules]);
       }
     } else if (modalType === "event") {
-      const newItem = {
-        id: Date.now(),
-        month: Number(formData.month) || 7,
-        title: formData.title || "새 행사 일정",
-        department: formData.department || "-",
-        datetime: formData.datetime || "-",
-        location: formData.location || "-",
-        attendeesInternal: formData.attendeesInternal || "-",
-        attendeesExternal: formData.attendeesExternal || "-",
-        program: formData.program || "-",
-        purpose: formData.purpose || "-",
-        result: formData.result || "-"
-      };
-      setEventSchedules([newItem, ...eventSchedules]);
+      // 3) 일자가 입력되면 자동으로 해당월 추출 (예: 2026-07-25 -> 7)
+      const extractedMonth = formData.eventDate ? parseInt(formData.eventDate.split("-")[1], 10) : 7;
+      
+      // 4) 일자(캘린더 입력 YYYY-MM-DD), 시간(시작, 종료 개별 입력) 조합
+      const combinedDatetime = `${formData.eventDate} ${formData.eventStartTime} ~ ${formData.eventEndTime}`;
+
+      if (isEditMode) {
+        setEventSchedules(eventSchedules.map(e => 
+          e.id === editingItemId 
+            ? {
+                ...e,
+                month: extractedMonth,
+                title: formData.title || "새 행사",
+                department: formData.department || "-",
+                datetime: combinedDatetime,
+                location: formData.location || "-",
+                attendeesInternal: formData.attendeesInternal || "-",
+                attendeesExternal: formData.attendeesExternal || "-",
+                program: formData.program || "-",
+                purpose: formData.purpose || "-",
+                result: formData.result || "-"
+              }
+            : e
+        ));
+      } else {
+        const newItem = {
+          id: Date.now(),
+          month: extractedMonth,
+          title: formData.title || "새 행사 일정",
+          department: formData.department || "-",
+          datetime: combinedDatetime,
+          location: formData.location || "-",
+          attendeesInternal: formData.attendeesInternal || "-",
+          attendeesExternal: formData.attendeesExternal || "-",
+          program: formData.program || "-",
+          purpose: formData.purpose || "-",
+          result: formData.result || "-"
+        };
+        setEventSchedules([newItem, ...eventSchedules]);
+      }
     } else if (modalType === "meeting") {
       const newItem = {
         id: Date.now(),
@@ -213,8 +239,95 @@ export default function ScheduleManager({
     ));
   };
 
+  // 행사 및 결과 기획 삭제 핸들러
+  const handleDeleteEvent = (id) => {
+    if (window.confirm("선택한 행사 기획 및 결과 내역을 삭제하시겠습니까?")) {
+      setEventSchedules(eventSchedules.filter(e => e.id !== id));
+    }
+  };
+
+  // 행사 및 결과 기획 수정 모달 트리거
+  const handleEditEvent = (event) => {
+    setIsEditMode(true);
+    setEditingItemId(event.id);
+    setModalType("event");
+
+    // datetime 파싱 ("2026-07-25 13:00 ~ 15:00" 형식)
+    const dt = event.datetime || "";
+    const parts = dt.split(" ");
+    let eventDate = parts[0] || "2026-07-15";
+    let eventStartTime = "10:00";
+    let eventEndTime = "11:00";
+
+    if (parts.length >= 4) {
+      eventStartTime = parts[1] || "10:00";
+      eventEndTime = parts[3] || "11:00";
+    } else if (parts.length >= 2) {
+      const timeParts = parts[1].split("~");
+      eventStartTime = timeParts[0] || "10:00";
+      eventEndTime = timeParts[1] || "11:00";
+    }
+
+    setFormData({
+      title: event.title,
+      type: "행사",
+      dept: "사업운영팀",
+      startDate: "2026-07-15",
+      startTime: "10:00",
+      endDate: "2026-07-15",
+      endTime: "11:00",
+      location: event.location || "",
+      noTime: false,
+      month: event.month || 7,
+      department: event.department || "",
+      datetime: event.datetime || "",
+      eventDate: eventDate,
+      eventStartTime: eventStartTime,
+      eventEndTime: eventEndTime,
+      attendeesInternal: event.attendeesInternal || "",
+      attendeesExternal: event.attendeesExternal || "",
+      program: event.program || "",
+      purpose: event.purpose || "",
+      result: event.result || "",
+      category: "operating",
+      agenda: ""
+    });
+    setIsAddModalOpen(true);
+  };
+
   const openAddModal = (type) => {
     setModalType(type);
+    setIsEditMode(false);
+    setEditingItemId(null);
+
+    // 현재 선택된 행사 월에 맞춰 기본 날짜 세팅
+    const formattedMonth = selectedEventMonth < 10 ? `0${selectedEventMonth}` : selectedEventMonth;
+    const defaultEventDate = `2026-${formattedMonth}-15`;
+
+    setFormData({
+      title: "",
+      type: "행사",
+      dept: "사업운영팀",
+      startDate: "2026-07-15",
+      startTime: "10:00",
+      endDate: "2026-07-15",
+      endTime: "11:00",
+      location: "",
+      noTime: false,
+      month: selectedEventMonth,
+      department: "",
+      datetime: "",
+      eventDate: defaultEventDate,
+      eventStartTime: "10:00",
+      eventEndTime: "11:00",
+      attendeesInternal: "",
+      attendeesExternal: "",
+      program: "",
+      purpose: "",
+      result: "",
+      category: "operating",
+      agenda: ""
+    });
     setIsAddModalOpen(true);
   };
 
@@ -575,16 +688,16 @@ export default function ScheduleManager({
               onClick={() => openAddModal("event")}
               style={{
                 display: "flex", alignItems: "center", gap: "0.25rem", padding: "0.4rem 1rem", borderRadius: "6px",
-                background: "var(--accent-color)", border: "none", color: "var(--text-primary)", fontWeight: "600", fontSize: "0.85rem", cursor: "pointer"
+                background: "var(--accent-color)", border: "none", color: "white", fontWeight: "600", fontSize: "0.85rem", cursor: "pointer"
               }}
             >
               <Plus size={16} />
-              행사 일정 등록
+              행사 기획 및 결과 등록
             </button>
           </div>
 
           {/* 💡 월별 가로 탭바 헤더 */}
-          <div style={{ display: "flex", gap: "0.5rem", background: "rgba(255,255,255,0.02)", padding: "0.4rem", borderRadius: "8px", border: "1px solid rgba(255,255,255,0.05)" }}>
+          <div style={{ display: "flex", gap: "0.5rem", background: "rgba(255,255,255,0.02)", padding: "0.4rem", borderRadius: "8px", border: "1px solid var(--border-color)" }}>
             {[3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 1, 2].map((m) => (
               <button
                 key={m}
@@ -614,10 +727,30 @@ export default function ScheduleManager({
                     <span style={{ fontSize: "0.75rem", padding: "0.2rem 0.5rem", borderRadius: "4px", background: "rgba(59, 130, 246, 0.2)", color: "#60A5FA", fontWeight: "700" }}>
                       소속부서: {event.department}
                     </span>
-                    <span style={{ fontSize: "0.8rem", color: "var(--text-secondary)", display: "flex", alignItems: "center", gap: "0.25rem" }}>
-                      <Clock size={14} />
-                      {event.datetime}
-                    </span>
+                    <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                      <span style={{ fontSize: "0.8rem", color: "var(--text-secondary)", display: "flex", alignItems: "center", gap: "0.25rem", marginRight: "0.5rem" }}>
+                        <Clock size={14} />
+                        {event.datetime}
+                      </span>
+                      <button 
+                        onClick={() => handleEditEvent(event)}
+                        title="수정"
+                        style={{ background: "transparent", border: "none", color: "var(--text-secondary)", cursor: "pointer", padding: "0.2rem", transition: "color 0.15s" }}
+                        onMouseOver={(e) => e.currentTarget.style.color = "var(--accent-color)"}
+                        onMouseOut={(e) => e.currentTarget.style.color = "var(--text-secondary)"}
+                      >
+                        <Edit size={14} />
+                      </button>
+                      <button 
+                        onClick={() => handleDeleteEvent(event.id)}
+                        title="삭제"
+                        style={{ background: "transparent", border: "none", color: "var(--text-secondary)", cursor: "pointer", padding: "0.2rem", transition: "color 0.15s" }}
+                        onMouseOver={(e) => e.currentTarget.style.color = "#EF4444"}
+                        onMouseOut={(e) => e.currentTarget.style.color = "var(--text-secondary)"}
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
                   </div>
 
                   <h4 style={{ margin: 0, fontSize: "1.1rem", fontWeight: "800", color: "var(--text-primary)" }}>
@@ -826,11 +959,11 @@ export default function ScheduleManager({
         <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(0,0,0,0.8)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1100 }}>
           <div className="card" style={{ width: "600px", maxHeight: "85vh", overflowY: "auto", padding: "1.5rem", borderRadius: "12px", background: "var(--panel-bg)", border: "1px solid var(--border-color)" }}>
             
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid rgba(255,255,255,0.05)", paddingBottom: "0.75rem", marginBottom: "1rem" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid var(--border-color)", paddingBottom: "0.75rem", marginBottom: "1rem" }}>
               <h3 style={{ margin: 0, fontSize: "1.1rem", fontWeight: "800", color: "var(--text-primary)" }}>
                 {isEditMode 
-                  ? (modalType === "deadline" ? "✏️ 마감일 수정" : modalType === "task" ? "✏️ 할일 수정" : "✏️ 일반 일정 수정") 
-                  : (modalType === "monthly" ? "➕ 새 일반 일정 등록" : modalType === "task" ? "➕ 새 할일 등록" : modalType === "deadline" ? "🚨 새 마감일 등록" : modalType === "event" ? "➕ 새 행사 일정 기획 등록" : "➕ 새 회의 일정 회의록 등록")}
+                  ? (modalType === "deadline" ? "✏️ 마감일 수정" : modalType === "task" ? "✏️ 할일 수정" : modalType === "event" ? "✏️ 행사 기획 및 결과 수정" : "✏️ 일반 일정 수정") 
+                  : (modalType === "monthly" ? "➕ 새 일반 일정 등록" : modalType === "task" ? "➕ 새 할일 등록" : modalType === "deadline" ? "🚨 새 마감일 등록" : modalType === "event" ? "➕ 새 행사 기획 및 결과 등록" : "➕ 새 회의 일정 회의록 등록")}
               </h3>
               <button 
                 onClick={() => {
@@ -981,26 +1114,28 @@ export default function ScheduleManager({
                   </div>
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
                     <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>구분 월</label>
-                      <select name="month" value={formData.month} onChange={handleInputChange} style={{ width: "100%", padding: "0.5rem", background: "var(--panel-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }}>
-                        {[3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 1, 2].map(m => (
-                          <option key={m} value={m}>{m}월</option>
-                        ))}
-                      </select>
-                    </div>
-                    <div>
                       <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>담당 부서(센터)</label>
                       <input type="text" name="department" value={formData.department} onChange={handleInputChange} placeholder="예: ECC센터 / G-VET팀" style={{ width: "100%", padding: "0.5rem", background: "rgba(128,128,128,0.1)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} />
-                    </div>
-                  </div>
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
-                    <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>일시 (상세)</label>
-                      <input type="text" name="datetime" value={formData.datetime} onChange={handleInputChange} placeholder="예: 2026.07.25 13:00~" style={{ width: "100%", padding: "0.5rem", background: "rgba(128,128,128,0.1)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} />
                     </div>
                     <div>
                       <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>장소</label>
                       <input type="text" name="location" value={formData.location} onChange={handleInputChange} placeholder="예: 체육관 특설 돔" style={{ width: "100%", padding: "0.5rem", background: "rgba(128,128,128,0.1)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} />
+                    </div>
+                  </div>
+                  
+                  {/* 일자 및 시작/종료시간 개별 입력 */}
+                  <div style={{ display: "grid", gridTemplateColumns: "1.2fr 0.9fr 0.9fr", gap: "1rem" }}>
+                    <div>
+                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>행사 일자</label>
+                      <input type="date" name="eventDate" value={formData.eventDate} onChange={handleInputChange} required style={{ width: "100%", padding: "0.5rem", background: "rgba(128,128,128,0.1)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", colorScheme: "dark" }} />
+                    </div>
+                    <div>
+                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>시작 시간</label>
+                      <input type="time" name="eventStartTime" value={formData.eventStartTime} onChange={handleInputChange} required style={{ width: "100%", padding: "0.5rem", background: "rgba(128,128,128,0.1)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", colorScheme: "dark" }} />
+                    </div>
+                    <div>
+                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>종료 시간</label>
+                      <input type="time" name="eventEndTime" value={formData.eventEndTime} onChange={handleInputChange} required style={{ width: "100%", padding: "0.5rem", background: "rgba(128,128,128,0.1)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", colorScheme: "dark" }} />
                     </div>
                   </div>
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
