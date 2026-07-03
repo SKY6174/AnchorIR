@@ -718,16 +718,16 @@ input[type="time"] {
 input[type="date"]::-webkit-calendar-picker-indicator,
 input[type="time"]::-webkit-calendar-picker-indicator {
   cursor: pointer;
-  background-color: rgba(255, 255, 255, 0.95) !important; /* 흰색 버튼형 배경을 적용하여 아이콘 형상을 또렷하게 노출 */
+  background-color: #ffffff !important; /* 밝은 흰색 버튼식 영역 형성 */
   padding: 0.15rem;
   border-radius: 4px;
-  opacity: 0.9 !important;
+  opacity: 0.95 !important;
   transition: all 0.15s ease;
-  filter: none !important; /* 이중 반전 간섭 효과 소거 */
+  filter: invert(0.8) brightness(0.1) !important; /* 흰색 아이콘 실루엣을 짙은 검은색으로 강력 반전시켜 고대비 실현 */
 }
 
 input[type="date"]::-webkit-calendar-picker-indicator:hover,
 input[type="time"]::-webkit-calendar-picker-indicator:hover {
-  background-color: #ffffff !important;
+  background-color: #f4f4f5 !important; /* 호버 시 약간 어두운 밝은 회색 */
   opacity: 1 !important;
 }
