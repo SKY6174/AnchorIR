@@ -4021,9 +4021,9 @@ export default function App() {
     }
 
     return (
-      <span>
-        반갑습니다, <strong>{cleanName} {roleOrPosition}님</strong>
-      </span>
+      <strong style={{ fontWeight: "800", color: "var(--text-primary-dark)" }}>
+        [{cleanName} {roleOrPosition}]
+      </strong>
     );
   };
 
