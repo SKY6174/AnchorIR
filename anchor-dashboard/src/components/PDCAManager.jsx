@@ -1532,8 +1532,13 @@ export default function PDCAManager({
                                 className="user-selector"
                                 value={item.category}
                                 onChange={(e) => {
+                                  const val = e.target.value;
                                   const newCats = [...inputBudgetCategories];
-                                  newCats[idx].category = e.target.value;
+                                  newCats[idx].category = val;
+                                  if (!val || val === "선택 안 함") {
+                                    newCats[idx].budget = "";
+                                    newCats[idx].budget_carry = "";
+                                  }
                                   setInputBudgetCategories(newCats);
                                 }}
                                 style={{ fontSize: "0.7rem", padding: "0.2rem", width: "100%" }}
@@ -1549,6 +1554,7 @@ export default function PDCAManager({
                                 className="user-selector budget-main-input"
                                 placeholder="본예산"
                                 value={item.budget}
+                                disabled={!item.category || item.category === "선택 안 함"}
                                 onChange={(e) => {
                                   const newCats = [...inputBudgetCategories];
                                   newCats[idx].budget = e.target.value.replace(/[^0-9.]/g, "");
@@ -1561,7 +1567,7 @@ export default function PDCAManager({
                                 className="user-selector budget-carry-input"
                                 placeholder="이월비"
                                 value={selectedYear === 1 ? 0 : item.budget_carry}
-                                disabled={selectedYear === 1}
+                                disabled={selectedYear === 1 || !item.category || item.category === "선택 안 함"}
                                 onChange={(e) => {
                                   if (selectedYear === 1) return;
                                   const newCats = [...inputBudgetCategories];
