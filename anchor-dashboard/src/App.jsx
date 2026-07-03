@@ -1029,22 +1029,22 @@ const renderTimelineDiff = (timelineStr) => {
   };
 
   return (
-    <div style={{ display: "grid", gridTemplateColumns: "repeat(12, 1fr)", gap: "0.2rem", marginTop: "0.4rem", width: "80%" }}>
+    <div style={{ display: "grid", gridTemplateColumns: "repeat(12, 1fr)", gap: "0.15rem", marginTop: "0.4rem", width: "100%", maxWidth: "360px" }}>
       {months.map((m, idx) => {
         const val = parts[idx] || "";
         const bg = getStatusColor(val);
         const hasValue = val && val !== "-";
         
         return (
-          <div key={idx} style={{ textAlign: "center", minWidth: "40px" }}>
+          <div key={idx} style={{ textAlign: "center", minWidth: "25px" }}>
             {/* 윗줄: 월 표시 */}
-            <div style={{ fontSize: "0.6rem", color: "var(--text-secondary-dark)", marginBottom: "0.15rem" }}>
+            <div style={{ fontSize: "0.55rem", color: "var(--text-secondary-dark)", marginBottom: "0.12rem", whiteSpace: "nowrap" }}>
               {m}
             </div>
             {/* 아랫줄: P, D, C, A 일정 표기 */}
             <div 
               style={{
-                padding: "0.08rem 0.15rem",
+                padding: "0.08rem 0",
                 fontSize: "0.58rem",
                 background: bg !== "transparent" ? bg : "rgba(255,255,255,0.02)",
                 color: bg !== "transparent" ? "white" : "var(--text-secondary-dark)",
