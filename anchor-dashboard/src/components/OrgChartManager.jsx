@@ -146,6 +146,24 @@ const universityOrgData = {
         ]
       }
     ]
+  },
+  anchor: {
+    title: "앵커사업단",
+    desc: "울산과학대학교 라이즈(RISE)사업 및 앵커 실무를 직접 관장하는 사업 부서",
+    departments: [
+      {
+        name: "앵커사업단 센터",
+        subTeams: [
+          { name: "사업운영팀", tel: "052-230-0500", loc: "산학협력관 4층", task: "RISE 사업 예산 총괄, 회계 처리, 정산 및 사업비 모니터링 관리" },
+          { name: "ECC센터", tel: "052-230-0501", loc: "산학협력관 4층", task: "교육혁신(Education Innovation) 부문 총괄 및 주문식 교육과정 가동", rise: "A1 (주문식 교육과정 매핑)" },
+          { name: "ICC센터", tel: "052-230-0502", loc: "산학협력관 4층", task: "기업협업(Industry Cooperation) 부문 총괄 및 지산학 공동 연구 개발 기술 지원", rise: "A2 (글로컬 창업인재 연계)" },
+          { name: "RCC센터", tel: "052-230-0503", loc: "산학협력관 4층", task: "지역협업(Region Cooperation) 부문 총괄 및 지역현안해결, 도시재생/에코컬처 연계", rise: "B1/B2/D3 (도시재생/에코컬처/늘봄 연계)" },
+          { name: "AID-X지원센터", tel: "052-230-0504", loc: "산학협력관 4.5층", task: "AID-X 디지털 전환 특화 직업교육과정 개발 및 AI 융합 교육 모델 실증", rise: "A1 (AIDX 교육 매핑)" },
+          { name: "울산늘봄누리센터", tel: "052-230-0505", loc: "보건관 1층", task: "울산 지역 늘봄 교육 프로그램 개발, 연계 및 강사 풀(Pool) 매칭 관리", rise: "B2 (늘봄 누리 플랫폼 연계)" },
+          { name: "신산업특화센터", tel: "052-230-0506", loc: "공학관 B동 2층", task: "2차전지, 미래 모빌리티 등 지역 신산업 분야 재직자 훈련 과정 개설 운영", rise: "A1 (신산업 트랙 매핑)" }
+        ]
+      }
+    ]
   }
 };
 
@@ -192,27 +210,32 @@ export default function OrgChartManager() {
         <div className="glass-card" style={{ padding: "1rem", display: "flex", flexDirection: "column", gap: "1rem" }}>
           <span style={{ fontSize: "0.8rem", fontWeight: "800", color: "var(--text-secondary-dark)", letterSpacing: "1px" }}>대분류 선택</span>
           <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
-            {Object.keys(universityOrgData).map((key) => (
-              <button
-                key={key}
-                onClick={() => handleCategoryChange(key)}
-                style={{
-                  padding: "0.75rem 1rem",
-                  borderRadius: "8px",
-                  border: "none",
-                  textAlign: "left",
-                  fontSize: "0.9rem",
-                  fontWeight: "800",
-                  cursor: "pointer",
-                  transition: "all 0.2s ease",
-                  background: selectedKey === key ? "rgba(59, 130, 246, 0.15)" : "transparent",
-                  color: selectedKey === key ? "var(--accent-color)" : "var(--text-secondary-dark)",
-                  borderLeft: selectedKey === key ? "4px solid var(--accent-color)" : "4px solid transparent"
-                }}
-              >
-                {universityOrgData[key].title}
-              </button>
-            ))}
+            {Object.keys(universityOrgData).map((key) => {
+              const isAnchor = key === "anchor";
+              return (
+                <React.Fragment key={key}>
+                  {isAnchor && <div style={{ height: "1px", background: "rgba(255,255,255,0.06)", margin: "0.5rem 0" }} />} {/* 한 칸의 공백 구분선 */}
+                  <button
+                    onClick={() => handleCategoryChange(key)}
+                    style={{
+                      padding: "0.75rem 1rem",
+                      borderRadius: "8px",
+                      border: "none",
+                      textAlign: "left",
+                      fontSize: "0.9rem",
+                      fontWeight: "800",
+                      cursor: "pointer",
+                      transition: "all 0.2s ease",
+                      background: selectedKey === key ? "rgba(59, 130, 246, 0.15)" : "transparent",
+                      color: selectedKey === key ? "var(--accent-color)" : "var(--text-secondary-dark)",
+                      borderLeft: selectedKey === key ? "4px solid var(--accent-color)" : "4px solid transparent"
+                    }}
+                  >
+                    {universityOrgData[key].title}
+                  </button>
+                </React.Fragment>
+              );
+            })}
           </div>
         </div>
 
