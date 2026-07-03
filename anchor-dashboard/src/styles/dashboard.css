@@ -714,7 +714,7 @@ body.light-mode {
 
 .progress-nav-wrapper:hover .nav-sub-menu,
 .progress-nav-wrapper.active .nav-sub-menu {
-  max-height: 80px !important;
+  max-height: 120px !important; /* 3개 메뉴 항목 렌더링에 적합하도록 높이 확장 */
   opacity: 1 !important;
   margin-top: 0.25rem !important;
   margin-bottom: 0.25rem !important;
