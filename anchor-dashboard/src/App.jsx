@@ -2088,6 +2088,14 @@ export default function App() {
   // ==========================================
   // Supabase DB 실시간 패칭 및 자동 동기화 훅
   // ==========================================
+
+  // Supabase 원격 서버 데이터 fetch 완료 여부를 체크하는 이중 안전 잠금장치 State
+  const [isFetchCompleted, setIsFetchCompleted] = useState(false);
+
+  // selectedYear가 변경될 때 fetch 완료 플래그를 false로 초기화
+  useEffect(() => {
+    setIsFetchCompleted(false);
+  }, [selectedYear]);
   
   // 1) 최초 마운트 및 연차 변경 시 DB 데이터 Fetch 연동
   useEffect(() => {
@@ -2214,9 +2222,11 @@ export default function App() {
         }
 
         setIsDbLoaded(true);
+        setIsFetchCompleted(true);
       } catch (e) {
         console.error("Error loading dashboard data from Supabase:", e);
         setIsDbLoaded(true);
+        setIsFetchCompleted(true);
       }
     };
 
@@ -2225,7 +2235,7 @@ export default function App() {
 
   // 2) Projects 자동 저장 디바운스 훅
   useEffect(() => {
-    if (!isDbLoaded) return;
+    if (!isDbLoaded || !isFetchCompleted) return;
     localStorage.setItem(`anchor_cache_proj_y${selectedYear}`, JSON.stringify(projects));
     setSyncStatus("syncing");
     const timer = setTimeout(async () => {
@@ -2240,11 +2250,11 @@ export default function App() {
       }
     }, 1500);
     return () => clearTimeout(timer);
-  }, [projects, selectedYear, isDbLoaded]);
+  }, [projects, selectedYear, isDbLoaded, isFetchCompleted]);
 
   // 3) Agreements 자동 저장 디바운스 훅
   useEffect(() => {
-    if (!isDbLoaded) return;
+    if (!isDbLoaded || !isFetchCompleted) return;
     localStorage.setItem(`anchor_cache_agr_y${selectedYear}`, JSON.stringify(agreements));
     setSyncStatus("syncing");
     const timer = setTimeout(async () => {
@@ -2275,11 +2285,11 @@ export default function App() {
       }
     }, 1500);
     return () => clearTimeout(timer);
-  }, [agreements, selectedYear, isDbLoaded]);
+  }, [agreements, selectedYear, isDbLoaded, isFetchCompleted]);
 
   // 4) Procurement Env 자동 저장 디바운스 훅
   useEffect(() => {
-    if (!isDbLoaded) return;
+    if (!isDbLoaded || !isFetchCompleted) return;
     localStorage.setItem(`anchor_cache_env_y${selectedYear}`, JSON.stringify(envData));
     setSyncStatus("syncing");
     const timer = setTimeout(async () => {
@@ -2311,11 +2321,11 @@ export default function App() {
       }
     }, 1500);
     return () => clearTimeout(timer);
-  }, [envData, selectedYear, isDbLoaded]);
+  }, [envData, selectedYear, isDbLoaded, isFetchCompleted]);
 
   // 5) Procurement Equipment 자동 저장 디바운스 훅
   useEffect(() => {
-    if (!isDbLoaded) return;
+    if (!isDbLoaded || !isFetchCompleted) return;
     localStorage.setItem(`anchor_cache_equip_y${selectedYear}`, JSON.stringify(equipData));
     setSyncStatus("syncing");
     const timer = setTimeout(async () => {
@@ -2344,11 +2354,11 @@ export default function App() {
       }
     }, 1500);
     return () => clearTimeout(timer);
-  }, [equipData, selectedYear, isDbLoaded]);
+  }, [equipData, selectedYear, isDbLoaded, isFetchCompleted]);
 
   // 6) Procurement Services 자동 저장 디바운스 훅
   useEffect(() => {
-    if (!isDbLoaded) return;
+    if (!isDbLoaded || !isFetchCompleted) return;
     localStorage.setItem(`anchor_cache_serv_y${selectedYear}`, JSON.stringify(serviceData));
     setSyncStatus("syncing");
     const timer = setTimeout(async () => {
@@ -2375,11 +2385,11 @@ export default function App() {
       }
     }, 1500);
     return () => clearTimeout(timer);
-  }, [serviceData, selectedYear, isDbLoaded]);
+  }, [serviceData, selectedYear, isDbLoaded, isFetchCompleted]);
 
   // 7) Schedule Monthly 자동 저장 디바운스 훅
   useEffect(() => {
-    if (!isDbLoaded) return;
+    if (!isDbLoaded || !isFetchCompleted) return;
     localStorage.setItem(`anchor_cache_month_y${selectedYear}`, JSON.stringify(monthlySchedules));
     setSyncStatus("syncing");
     const timer = setTimeout(async () => {
@@ -2409,11 +2419,11 @@ export default function App() {
       }
     }, 1500);
     return () => clearTimeout(timer);
-  }, [monthlySchedules, selectedYear, isDbLoaded]);
+  }, [monthlySchedules, selectedYear, isDbLoaded, isFetchCompleted]);
 
   // 8) Schedule Events 자동 저장 디바운스 훅
   useEffect(() => {
-    if (!isDbLoaded) return;
+    if (!isDbLoaded || !isFetchCompleted) return;
     localStorage.setItem(`anchor_cache_event_y${selectedYear}`, JSON.stringify(eventSchedules));
     setSyncStatus("syncing");
     const timer = setTimeout(async () => {
@@ -2426,13 +2436,13 @@ export default function App() {
               month: s.month,
               title: s.title,
               department: s.department,
-              datetime: s.datetime,
               location: s.location,
               attendees_internal: s.attendeesInternal,
               attendees_external: s.attendeesExternal,
               program: s.program,
               purpose: s.purpose,
-              result: s.result
+              result: s.result,
+              datetime: s.datetime
             }))
           );
           if (error) throw error;
@@ -2443,11 +2453,11 @@ export default function App() {
       }
     }, 1500);
     return () => clearTimeout(timer);
-  }, [eventSchedules, selectedYear, isDbLoaded]);
+  }, [eventSchedules, selectedYear, isDbLoaded, isFetchCompleted]);
 
   // 9) Schedule Meetings 자동 저장 디바운스 훅
   useEffect(() => {
-    if (!isDbLoaded) return;
+    if (!isDbLoaded || !isFetchCompleted) return;
     localStorage.setItem(`anchor_cache_meet_y${selectedYear}`, JSON.stringify(meetingSchedules));
     setSyncStatus("syncing");
     const timer = setTimeout(async () => {
@@ -2460,12 +2470,12 @@ export default function App() {
               month: s.month,
               category: s.category,
               title: s.title,
-              datetime: s.datetime,
               location: s.location,
               attendees_internal: s.attendeesInternal,
               attendees_external: s.attendeesExternal,
               agenda: s.agenda,
-              result: s.result
+              result: s.result,
+              datetime: s.datetime
             }))
           );
           if (error) throw error;
@@ -2476,7 +2486,7 @@ export default function App() {
       }
     }, 1500);
     return () => clearTimeout(timer);
-  }, [meetingSchedules, selectedYear, isDbLoaded]);
+  }, [meetingSchedules, selectedYear, isDbLoaded, isFetchCompleted]);
 
   // 1차년도용 단위과제 필터링 및 이름/ID 변환
   const getNormalizedProjectsForRendering = (rawProjects, yr) => {
