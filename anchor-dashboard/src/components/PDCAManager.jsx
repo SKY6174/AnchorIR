@@ -208,6 +208,10 @@ export default function PDCAManager({
   const [inputKpiLink, setInputKpiLink] = useState("");
   const [inputActualFrequency, setInputActualFrequency] = useState("");
   const [inputAchieveRate, setInputAchieveRate] = useState("");
+  
+  // D단계 세부 실제 실적 수치 상태
+  const [inputActualDevelopments, setInputActualDevelopments] = useState("");
+  const [inputActualEtc, setInputActualEtc] = useState("");
 
   // 현재 뷰포트에서 보여줄 PDCA 단계 선택 (localStorage 세션 연동)
   const [activePdcaStage, setActivePdcaStage] = useState(() => {
@@ -217,6 +221,38 @@ export default function PDCAManager({
   useEffect(() => {
     localStorage.setItem("anchor_active_pdca_stage", activePdcaStage);
   }, [activePdcaStage]);
+
+  // D단계 실적 입력값 변경 시 계획대비 달성률 자동계산
+  useEffect(() => {
+    if (!activeProg) return;
+    
+    const goal1 = parseFloat(activeProg.target_participants) || 0;
+    const goal2 = parseFloat(activeProg.target_developments) || 0;
+    const goal3 = parseFloat(activeProg.target_etc) || 0;
+    
+    const act1 = parseFloat(inputParticipants) || 0;
+    const act2 = parseFloat(inputActualDevelopments) || 0;
+    const act3 = parseFloat(inputActualEtc) || 0;
+    
+    let totalRate = 0;
+    let count = 0;
+    
+    if (goal1 > 0) {
+      totalRate += (act1 / goal1) * 100;
+      count++;
+    }
+    if (goal2 > 0) {
+      totalRate += (act2 / goal2) * 100;
+      count++;
+    }
+    if (goal3 > 0) {
+      totalRate += (act3 / goal3) * 100;
+      count++;
+    }
+    
+    const rate = count > 0 ? Math.round(totalRate / count) : 0;
+    setInputAchieveRate(String(rate));
+  }, [inputParticipants, inputActualDevelopments, inputActualEtc, activeProg]);
 
   // 모든 프로그램 수집
   const allPrograms = [];
@@ -316,6 +352,8 @@ export default function PDCAManager({
         setInputSpentExternal(py.spent_external !== undefined ? (py.spent_external / 1000000).toFixed(1) : "0.0");
 
         setInputParticipants(String(prog.participants ?? 0));
+        setInputActualDevelopments(prog.actual_developments !== undefined ? String(prog.actual_developments) : "");
+        setInputActualEtc(prog.actual_etc !== undefined ? String(prog.actual_etc) : "");
         setInputSatisfaction(String(prog.satisfaction ?? 0));
         setInputAchievements(prog.achievements || "");
 
@@ -373,6 +411,8 @@ export default function PDCAManager({
       setInputSpentCity("");
       setInputSpentExternal("");
       setInputParticipants("");
+      setInputActualDevelopments("");
+      setInputActualEtc("");
       setInputSatisfaction("");
       setInputAchievements("");
       setInputExcellent("");
@@ -465,6 +505,38 @@ export default function PDCAManager({
     return { ok: true };
   };
 
+  // D단계 완료 조건 판정 공통 함수
+  const checkDStageCompletion = (prog, py, draftData = {}) => {
+    // 1. 실제 추진일정 검증: P, D, C, A 모든 단계가 최소 한 개 이상 반영되어야 OK
+    const actualTimelineStr = draftData.actual_timeline !== undefined ? draftData.actual_timeline : (prog.actual_timeline || "");
+    const actualTimelineList = actualTimelineStr.split(",").map(t => t.trim().toUpperCase());
+    const hasActP = actualTimelineList.some(t => t.includes("P"));
+    const hasActD = actualTimelineList.some(t => t.includes("D"));
+    const hasActC = actualTimelineList.some(t => t.includes("C"));
+    const hasActA = actualTimelineList.some(t => t.includes("A"));
+    if (!hasActP || !hasActD || !hasActC || !hasActA) {
+      return { ok: false, reason: "실제 추진일정에 P, D, C, A가 각각 최소 1회 이상 모두 반영되어야 합니다." };
+    }
+
+    // 2. 비목별 집행 내역 검증: 1개 이상 입력 (spent 또는 spent_carry > 0)
+    const categories = draftData.budget_categories !== undefined ? draftData.budget_categories : (py.budget_categories || []);
+    const hasValidSpentCategory = categories.some(c => c.category && c.category !== "" && c.category !== "선택 안 함" && ((parseFloat(c.spent) || 0) > 0 || (parseFloat(c.spent_carry) || 0) > 0));
+    if (!hasValidSpentCategory) {
+      return { ok: false, reason: "비목별 집행 내역이 최소 하나 이상 등록되고 집행액이 0원 초과여야 합니다." };
+    }
+
+    // 3. 실제 실적 검증: 실제 실적이 1개 이상 입력되어야 OK (participants, actual_developments, actual_etc 중 하나라도 > 0)
+    const actParticipants = draftData.participants !== undefined ? draftData.participants : (prog.participants || 0);
+    const actDevelopments = draftData.actual_developments !== undefined ? draftData.actual_developments : (prog.actual_developments || 0);
+    const actEtc = draftData.actual_etc !== undefined ? draftData.actual_etc : (prog.actual_etc || 0);
+    const hasActualPerformance = actParticipants > 0 || actDevelopments > 0 || actEtc > 0;
+    if (!hasActualPerformance) {
+      return { ok: false, reason: "실제 실적(참여인원, 개발수, 기타 실적 등)이 최소 1개 이상 입력되어야 합니다." };
+    }
+
+    return { ok: true };
+  };
+
   // PDCA 단계 완료 조건 검증 및 강제 롤백 방어
   const handleUpdatePDCA = (stage, status) => {
     if (!activeProg) return;
@@ -514,17 +586,9 @@ export default function PDCAManager({
           return;
         }
       } else if (stage === "d") {
-        const actualFrequency = activeProg.actualFrequency || 0;
-        if (spentMain <= 0) {
-          alert(`[검증 실패] D(Do) 단계를 완료하려면 실제 세부 집행 실적이 기재되어야 합니다.`);
-          return;
-        }
-        if (participants <= 0) {
-          alert(`[검증 실패] D(Do) 단계를 완료하려면 최종 이수인원(0명 초과)이 기재되어야 합니다.`);
-          return;
-        }
-        if (actualFrequency <= 0) {
-          alert(`[검증 실패] D(Do) 단계를 완료하려면 수행 횟수(0회 초과)가 기재되어야 합니다.`);
+        const compD = checkDStageCompletion(activeProg, py);
+        if (!compD.ok) {
+          alert(`[검증 실패] D(Do) 단계를 완료할 수 없습니다.\n- 원인: ${compD.reason}`);
           return;
         }
       } else if (stage === "c") {
@@ -674,7 +738,9 @@ export default function PDCAManager({
     const sNational = Math.round(parseDecimalFromCommas(inputSpentNational) * 1000000);
     const sCity = Math.round(parseDecimalFromCommas(inputSpentCity) * 1000000);
     const sExternal = Math.round(parseDecimalFromCommas(inputSpentExternal) * 1000000);
-    const parsedParticipants = parseInt(inputParticipants, 10);
+    const parsedParticipants = parseInt(inputParticipants, 10) || 0;
+    const parsedActualDevelopments = parseInt(inputActualDevelopments, 10) || 0;
+    const parsedActualEtc = parseInt(inputActualEtc, 10) || 0;
 
     const py = activeProg.years?.[selectedYear] || {};
     const limitNational = Math.round((py.budget_national || 0) + (py.budget_carry_national || 0));
@@ -693,10 +759,6 @@ export default function PDCAManager({
       alert(`[한도 초과] 외부사업비 집행액(${(sExternal / 1000000).toFixed(1)} 백만원)은 배정 예산(${(limitExternal / 1000000).toFixed(1)} 백만원)을 초과할 수 없습니다.`);
       return;
     }
-    if (isNaN(parsedParticipants) || parsedParticipants < 0) {
-      alert("올바른 형식의 최종 이수인원(명)을 입력해 주세요.");
-      return;
-    }
 
     // D단계 비목별 집행액 데이터 취합 (본예산 및 이월예산은 유지)
     const categoriesToSave = inputBudgetCategories
@@ -709,18 +771,31 @@ export default function PDCAManager({
         spent_carry: selectedYear === 1 ? 0 : Math.round(parseDecimalFromCommas(c.spent_carry || "0.0") * 1000000)
       }));
 
+    // D단계 자동 완료/진행 판정
+    const compD = checkDStageCompletion(activeProg, py, {
+      actual_timeline: inputMonthlyPDCAActual.join(","),
+      budget_categories: categoriesToSave,
+      participants: parsedParticipants,
+      actual_developments: parsedActualDevelopments,
+      actual_etc: parsedActualEtc
+    });
+    const autoDState = compD.ok ? "완료" : "진행";
+
     onUpdateProgramDetails(activeProg.unitId, activeProg.id, {
       spent_national: sNational,
       spent_city: sCity,
       spent_external: sExternal,
       participants: parsedParticipants,
-      actualFrequency: inputActualFrequency !== "" ? parseInt(inputActualFrequency, 10) : 0,
+      actual_developments: parsedActualDevelopments,
+      actual_etc: parsedActualEtc,
+      actualFrequency: parsedParticipants, // 실제 참여인원과 동기화
       achieveRate: inputAchieveRate !== "" ? parseFloat(inputAchieveRate) : 0,
       budget_categories: categoriesToSave,
-      actual_timeline: inputMonthlyPDCAActual.join(",") // 실제 일정을 쉼표로 연결해서 전송
+      actual_timeline: inputMonthlyPDCAActual.join(","), // 실제 일정을 쉼표로 연결해서 전송
+      pdca: { ...activeProg.pdca, d: autoDState }
     });
 
-    setFeedbackMsg("D 단계 집행 실적 및 이수인원이 안전하게 저장되었습니다.");
+    setFeedbackMsg("D 단계 집행 실적 및 세부 실적치들이 안전하게 저장되었습니다.");
     setTimeout(() => setFeedbackMsg(""), 3000);
   };
 
@@ -1649,14 +1724,74 @@ export default function PDCAManager({
                       </div>
 
                       {/* 실적수 입력 */}
-                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.4rem" }}>
+                      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(120px, 1fr))", gap: "0.4rem", marginTop: "0.3rem", borderTop: "1px solid rgba(255,255,255,0.05)", paddingTop: "0.5rem" }}>
+                        {activeProg && (parseFloat(activeProg.target_participants) || 0) > 0 && (
+                          <div>
+                            <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)", display: "block", marginBottom: "0.2rem" }}>
+                              {activeProg.target_participants_name || "참여인원"} 실적 ({activeProg.target_participants_unit || "명"})
+                            </span>
+                            <input
+                              type="number"
+                              className="user-selector"
+                              placeholder="실적 수치"
+                              value={inputParticipants}
+                              onChange={(e) => setInputParticipants(e.target.value)}
+                              style={{ padding: "0.2rem 0.4rem", fontSize: "0.75rem", width: "100%" }}
+                            />
+                          </div>
+                        )}
+                        {activeProg && (parseFloat(activeProg.target_developments) || 0) > 0 && (
+                          <div>
+                            <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)", display: "block", marginBottom: "0.2rem" }}>
+                              {activeProg.target_developments_name || "개발수"} 실적 ({activeProg.target_developments_unit || "건"})
+                            </span>
+                            <input
+                              type="number"
+                              className="user-selector"
+                              placeholder="실적 수치"
+                              value={inputActualDevelopments}
+                              onChange={(e) => setInputActualDevelopments(e.target.value)}
+                              style={{ padding: "0.2rem 0.4rem", fontSize: "0.75rem", width: "100%" }}
+                            />
+                          </div>
+                        )}
+                        {activeProg && (parseFloat(activeProg.target_etc) || 0) > 0 && (
+                          <div>
+                            <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)", display: "block", marginBottom: "0.2rem" }}>
+                              {activeProg.target_etc_name || "기타"} 실적 ({activeProg.target_etc_unit || "개"})
+                            </span>
+                            <input
+                              type="number"
+                              className="user-selector"
+                              placeholder="실적 수치"
+                              value={inputActualEtc}
+                              onChange={(e) => setInputActualEtc(e.target.value)}
+                              style={{ padding: "0.2rem 0.4rem", fontSize: "0.75rem", width: "100%" }}
+                            />
+                          </div>
+                        )}
                         <div>
-                          <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)" }}>실제 실적 횟수 (실적 빈도)</span>
-                          <input type="text" className="user-selector" placeholder="예: 2" value={inputActualFrequency} onChange={(e) => setInputActualFrequency(e.target.value)} style={{ padding: "0.2rem 0.4rem", fontSize: "0.75rem", width: "100%" }} />
-                        </div>
-                        <div>
-                          <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)" }}>계획대비 달성률 (%)</span>
-                          <input type="text" className="user-selector" placeholder="예: 100" value={inputAchieveRate} onChange={(e) => setInputAchieveRate(e.target.value)} style={{ padding: "0.2rem 0.4rem", fontSize: "0.75rem", width: "100%" }} />
+                          <span style={{ fontSize: "0.65rem", color: "#60a5fa", display: "block", marginBottom: "0.2rem", fontWeight: "700" }}>
+                            계획대비 달성률 (%) (자동계산)
+                          </span>
+                          <input
+                            type="text"
+                            className="user-selector"
+                            placeholder="자동계산"
+                            value={inputAchieveRate}
+                            readOnly={true}
+                            style={{
+                              padding: "0.2rem 0.4rem",
+                              fontSize: "0.75rem",
+                              width: "100%",
+                              background: "rgba(255,255,255,0.02)",
+                              border: "1px solid rgba(96, 165, 250, 0.3)",
+                              color: "#60a5fa",
+                              fontWeight: "700",
+                              textAlign: "center",
+                              cursor: "not-allowed"
+                            }}
+                          />
                         </div>
                       </div>
                       
