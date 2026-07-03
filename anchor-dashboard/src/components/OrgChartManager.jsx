@@ -222,13 +222,24 @@ const universityOrgData = {
           { name: "컴퓨터공학과", tel: "052-230-1140", loc: "창의관 3층", task: "소프트웨어 코딩, 웹/앱 개발 및 AI 플랫폼 교육" },
           { name: "게임영상학과", tel: "052-230-1150", loc: "창의관 4층", task: "실시간 게임 그래픽, 3D 애니메이션 및 엔진 코딩" },
           { name: "실내건축디자인과", tel: "052-230-1160", loc: "조형관 2층", task: "실내 인테리어 공간 디자인 및 3D CAD/BIM 실무" },
-          { name: "기계공학부", tel: "052-230-1110", loc: "공학관 B동", task: "선박/자동차 제조 설계 및 에너지 기계설비 시스템 훈련", rise: "A1 (HD현대이앤티 공동 교육 연계)" },
           { name: "조선해양시스템공학과", tel: "052-230-1112", loc: "공학관 B동 2층", task: "조선해양 설계 엔지니어링 및 선박 건조 의장 실무", rise: "A1 (현대중공업 채용연계 트랙)" },
-          { name: "전기전자공학부", tel: "052-230-1100", loc: "공학관 A동", task: "친환경 신재생에너지 및 스마트 전자 융합 전공 교육" },
-          { name: "반도체공학과", tel: "052-230-1105", loc: "공학관 A동 2층", task: "반도체 클린룸 실습, 전단 및 패키징 공정 장비 운용 훈련", rise: "A1 (신산업 트랙 연계)" },
           { name: "화학공학과", tel: "052-230-1120", loc: "공학관 C동", task: "정밀 석유화학 및 바이오 화공 신기술 배양" },
           { name: "융합안전공학과", tel: "052-230-1130", loc: "공학관 A동", task: "산업 현장 유해 위험 진단 및 예방 안전 교육" },
           { name: "인테리어시공학과", tel: "052-230-1170", loc: "조형관 1층", task: "친환경 내장재 시공, 목공 실습 및 견적 실무" }
+        ]
+      },
+      {
+        name: "기계공학부",
+        subTeams: [
+          { name: "기계시스템전공", tel: "052-230-1110", loc: "공학관 B동 1층", task: "선박/자동차 제조 및 정밀 기계 부품 설계 실무", rise: "A1 (HD현대이앤티 공동 교육 연계)" },
+          { name: "기계설비전공", tel: "052-230-1111", loc: "공학관 B동 2층", task: "플랜트 및 빌딩 에너지 기계설비 운용 및 자동제어 실습", rise: "A1 (에너지 기계설비 트랙 연계)" }
+        ]
+      },
+      {
+        name: "전기전자공학부",
+        subTeams: [
+          { name: "전기전공", tel: "052-230-1100", loc: "공학관 A동 1층", task: "전력 수배전 설비, 스마트 그리드 및 산업용 모터 제어 실무" },
+          { name: "스마트전자전공", tel: "052-230-1101", loc: "공학관 A동 2층", task: "반도체 임베디드 제어, IoT 및 펌웨어 설계 융합 교육" }
         ]
       },
       {
@@ -445,7 +456,7 @@ export default function OrgChartManager() {
                           borderRadius: "4px",
                           fontWeight: "800"
                         }}>
-                          앵커연계
+                          {selectedKey === "academic" ? "주문식교육과정" : "앵커연계"}
                         </span>
                       )}
                     </div>
@@ -509,7 +520,7 @@ export default function OrgChartManager() {
                                 borderRadius: "4px",
                                 fontWeight: "800"
                               }}>
-                                앵커연계
+                                {selectedKey === "academic" ? "주문식교육과정" : "앵커연계"}
                               </span>
                             )}
                           </div>
@@ -572,7 +583,7 @@ export default function OrgChartManager() {
                   }}>
                     <span style={{ fontSize: "0.75rem", color: "#10B981", fontWeight: "800", display: "flex", alignItems: "center", gap: "0.25rem" }}>
                       <Award size={14} />
-                      앵커연계 주요 협업 과제
+                      {selectedKey === "academic" ? "주문식교육과정 주요 협업 과제" : "앵커연계 주요 협업 과제"}
                     </span>
                     <span style={{ fontSize: "0.8rem", fontWeight: "800" }}>{selectedTeam.rise}</span>
                   </div>
@@ -583,7 +594,7 @@ export default function OrgChartManager() {
             <div className="glass-card" style={{ padding: "2.5rem", textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: "300px", gap: "0.75rem" }}>
               <BookOpen size={36} style={{ color: "var(--text-secondary-dark)" }} />
               <p style={{ fontSize: "0.85rem", color: "var(--text-secondary-dark)" }}>
-                조직도에서 특정 학과/팀을 선택하시면 전화번호, 위치, 담당업무 및 앵커연계 상세 정보를 이곳에서 조회하실 수 있습니다.
+                조직도에서 특정 학과/팀을 선택하시면 전화번호, 위치, 담당업무 및 {selectedKey === "academic" ? "주문식교육과정" : "앵커연계"} 상세 정보를 이곳에서 조회하실 수 있습니다.
               </p>
             </div>
           )}
