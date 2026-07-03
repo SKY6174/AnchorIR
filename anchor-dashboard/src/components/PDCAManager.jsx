@@ -759,9 +759,9 @@ export default function PDCAManager({
       return;
     }
 
-    // 3) 연계대상 필수 검사
+    // 3) 참여대상 필수 검사
     if (!inputTargetAudience || inputTargetAudience.trim() === "" || inputTargetAudience.trim() === "미입력") {
-      alert("연계 대상은 필수 입력 사항입니다.");
+      alert("참여대상은 필수 입력 사항입니다.");
       return;
     }
 

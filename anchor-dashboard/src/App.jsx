@@ -5088,8 +5088,8 @@ export default function App() {
                         )}
 
                         <div>
-                          <span style={{ color: "var(--text-secondary-dark)", display: "block", fontSize: "0.75rem" }}>👥 연계 대상 및 부서</span>
-                          <span style={{ fontSize: "0.7rem", color: "var(--text-primary)" }}>대상: {selectedRequest.changes.before.targetAudience || "미입력"} | 부서: {selectedRequest.changes.before.coopDept || "미입력"}</span>
+                          <span style={{ color: "var(--text-secondary-dark)", display: "block", fontSize: "0.75rem" }}>👥 참여대상 및 부서</span>
+                          <span style={{ fontSize: "0.7rem", color: "var(--text-primary)" }}>참여대상: {selectedRequest.changes.before.targetAudience || "미입력"} | 부서: {selectedRequest.changes.before.coopDept || "미입력"}</span>
                         </div>
                       </div>
                     </div>
@@ -5141,8 +5141,8 @@ export default function App() {
                         )}
 
                         <div>
-                          <span style={{ color: "var(--text-secondary-dark)", display: "block", fontSize: "0.75rem" }}>👥 연계 대상 및 부서</span>
-                          <span style={{ fontSize: "0.7rem", color: "var(--text-primary)" }}>대상: {selectedRequest.changes.after.targetAudience || "미입력"} | 부서: {selectedRequest.changes.after.coopDept || "미입력"}</span>
+                          <span style={{ color: "var(--text-secondary-dark)", display: "block", fontSize: "0.75rem" }}>👥 참여대상 및 부서</span>
+                          <span style={{ fontSize: "0.7rem", color: "var(--text-primary)" }}>참여대상: {selectedRequest.changes.after.targetAudience || "미입력"} | 부서: {selectedRequest.changes.after.coopDept || "미입력"}</span>
                         </div>
                       </div>
                     </div>
