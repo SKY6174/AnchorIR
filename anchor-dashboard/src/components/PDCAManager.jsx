@@ -406,6 +406,65 @@ export default function PDCAManager({
     setFeedbackMsg("");
   };
 
+  // P단계 완료 조건 판정 공통 함수
+  const checkPStageCompletion = (prog, py, draftData = {}) => {
+    const sNational = draftData.budget_national !== undefined ? draftData.budget_national : (py.budget_national || 0);
+    const sCity = draftData.budget_city !== undefined ? draftData.budget_city : (py.budget_city || 0);
+    const sExternal = draftData.budget_external !== undefined ? draftData.budget_external : (py.budget_external || 0);
+    const sCarryNational = draftData.budget_carry_national !== undefined ? draftData.budget_carry_national : (py.budget_carry_national || 0);
+    const sCarryCity = draftData.budget_carry_city !== undefined ? draftData.budget_carry_city : (py.budget_carry_city || 0);
+    const sCarryExternal = draftData.budget_carry_external !== undefined ? draftData.budget_carry_external : (py.budget_carry_external || 0);
+
+    // 1. 재원별 예산 배정: 본예산, 이월예산, 외부사업비 중 하나라도 입력되면 OK (0원 초과)
+    const budgetTotal = sNational + sCity + sExternal + sCarryNational + sCarryCity + sCarryExternal;
+    if (budgetTotal <= 0) return { ok: false, reason: "본예산, 이월예산, 외부사업비 중 하나라도 배정액이 0원 초과여야 합니다." };
+
+    // 2. 비목별 예산 배정: 하나라도 입력되면 OK (0원 초과)
+    const categories = draftData.budget_categories !== undefined ? draftData.budget_categories : (py.budget_categories || []);
+    const hasValidCategory = categories.some(c => c.category && c.category !== "" && c.category !== "선택 안 함" && ((parseFloat(c.budget) || 0) > 0 || (parseFloat(c.budget_carry) || 0) > 0));
+    if (!hasValidCategory) return { ok: false, reason: "비목별 예산 배정이 최소 하나 이상 등록되고 배정 금액이 0원 초과여야 합니다." };
+
+    // 3. 월별 추진일정: P, D, C, A가 모두 반영되어야 OK
+    const timelineStr = draftData.timeline !== undefined ? draftData.timeline : (prog.timeline || "");
+    const timelineList = timelineStr.split(",").map(t => t.trim().toUpperCase());
+    const hasP = timelineList.some(t => t.includes("P"));
+    const hasD = timelineList.some(t => t.includes("D"));
+    const hasC = timelineList.some(t => t.includes("C"));
+    const hasA = timelineList.some(t => t.includes("A"));
+    if (!hasP || !hasD || !hasC || !hasA) {
+      return { ok: false, reason: "월별 추진일정에 P(기획), D(수행), C(성과), A(환류)가 각각 최소 1회 이상 모두 반영되어야 합니다." };
+    }
+
+    // 4. 성과지표 연계: '없음'을 선택하면 오른쪽에 성과지표 선택하지 않아도 됨, '자율'이나 '중점'이 선택되면 성과지표를 선택하고 세부 항목까지 입력해야 OK
+    const kpiType = draftData.kpi_type !== undefined ? draftData.kpi_type : (prog.kpi_type || "자율");
+    const kpiLink = draftData.kpi_link !== undefined ? draftData.kpi_link : (prog.kpi_link || "");
+    if (kpiType === "자율" || kpiType === "중점") {
+      if (!kpiLink || kpiLink === "" || kpiLink === "선택 안 함") {
+        return { ok: false, reason: `성과지표 연계 구분이 '${kpiType}'인 경우 연계할 성과지표를 선택해야 합니다.` };
+      }
+      
+      // 실적목표: 1개만 입력되더라도 OK
+      const freq = draftData.frequency !== undefined ? draftData.frequency : (prog.frequency || 0);
+      const tPart = draftData.target_participants !== undefined ? draftData.target_participants : (prog.target_participants || 0);
+      const tDev = draftData.target_developments !== undefined ? draftData.target_developments : (prog.target_developments || 0);
+      const tEtc = draftData.target_etc !== undefined ? draftData.target_etc : (prog.target_etc || 0);
+      const hasTarget = freq > 0 || tPart > 0 || tDev > 0 || tEtc > 0;
+      if (!hasTarget) {
+        return { ok: false, reason: "성과지표의 세부 목표치(실적 목표)가 최소 1개 이상 입력되어야 합니다." };
+      }
+    }
+
+    // 5. 참여대상: 입력 필요
+    const targetAudience = draftData.targetAudience !== undefined ? draftData.targetAudience : (prog.targetAudience || "");
+    if (!targetAudience.trim()) {
+      return { ok: false, reason: "참여대상 기획 항목을 반드시 입력해야 합니다." };
+    }
+
+    // 연계부서: 입력이 없어도 OK (검증 제외)
+
+    return { ok: true };
+  };
+
   // PDCA 단계 완료 조건 검증 및 강제 롤백 방어
   const handleUpdatePDCA = (stage, status) => {
     if (!activeProg) return;
@@ -427,15 +486,34 @@ export default function PDCAManager({
     const deficiency = activeProg.deficiency || "";
     const actionItem = activeProg.actionItem || "";
 
+    const currentP = activeProg.pdca?.p || "대기";
+    const currentD = activeProg.pdca?.d || "대기";
+    const currentC = activeProg.pdca?.c || "대기";
+    const currentA = activeProg.pdca?.a || "대기";
+
     if (status === "완료") {
+      // 1. 단계별 의존성 체크
+      if (stage === "d" && currentP !== "완료") {
+        alert("[단계 의존성 오류] P(Plan) 단계가 완료되어야만 D(Do) 단계를 완료 처리할 수 있습니다.");
+        return;
+      }
+      if (stage === "c" && currentD !== "완료") {
+        alert("[단계 의존성 오류] D(Do) 단계가 완료되어야만 C(Check) 단계를 완료 처리할 수 있습니다.");
+        return;
+      }
+      if (stage === "a" && currentC !== "완료") {
+        alert("[단계 의존성 오류] C(Check) 단계가 완료되어야만 A(Act) 단계를 완료 처리할 수 있습니다.");
+        return;
+      }
+
+      // 2. 개별 단계 완료 세부 조건 체크
       if (stage === "p") {
-        // P 완료 검증: 예산 기재 필수 (Timeline, 참여대상, 연계부서는 필수 아님)
-        if (budgetMain <= 0) {
-          alert(`[검증 실패] P(Plan) 단계를 완료하려면 재원 예산(국고/시비/외부)이 0원 초과 배정되어야 합니다. (현재 총 예산: 0원)`);
+        const comp = checkPStageCompletion(activeProg, py);
+        if (!comp.ok) {
+          alert(`[검증 실패] P(Plan) 단계를 완료할 수 없습니다.\n- 원인: ${comp.reason}`);
           return;
         }
       } else if (stage === "d") {
-        // D 완료 검증: 실제 예산 집행, 최종 이수인원, 수행 횟수가 기재되었는지 확인!
         const actualFrequency = activeProg.actualFrequency || 0;
         if (spentMain <= 0) {
           alert(`[검증 실패] D(Do) 단계를 완료하려면 실제 세부 집행 실적이 기재되어야 합니다.`);
@@ -450,7 +528,6 @@ export default function PDCAManager({
           return;
         }
       } else if (stage === "c") {
-        // C 완료 검증: 성과사항 서술이 비어있지 않고, 만족도가 0점 초과여야 함
         const achievements = activeProg.achievements || "";
         if (!achievements.trim()) {
           alert(`[검증 실패] C(Check) 단계를 완료하려면 성과사항이 기입되어야 합니다.`);
@@ -461,7 +538,6 @@ export default function PDCAManager({
           return;
         }
       } else if (stage === "a") {
-        // A 완료 검증: 우수/미흡 평가 구분에 따른 2가지 세부 사항 기재 필수
         if (evalType === "우수") {
           if (!excellent.trim() || !improvePlan.trim()) {
             alert(`[검증 실패] A(Act) 우수 프로그램 상태를 완료하려면 '우수한 점'과 '발전방안'을 모두 기입해 주셔야 합니다.`);
@@ -476,7 +552,22 @@ export default function PDCAManager({
       }
     }
 
+    // 의존성 롤백 제어: 특정 단계를 완료에서 해제하는 경우, 하위 단계들도 연쇄 롤백시킴
     const newPdca = { ...activeProg.pdca, [stage]: status };
+    
+    if (status !== "완료") {
+      if (stage === "p") {
+        newPdca.d = "진행";
+        newPdca.c = "진행";
+        newPdca.a = "진행";
+      } else if (stage === "d") {
+        newPdca.c = "진행";
+        newPdca.a = "진행";
+      } else if (stage === "c") {
+        newPdca.a = "진행";
+      }
+    }
+
     onUpdateProgramDetails(activeProg.unitId, activeProg.id, {
       pdca: newPdca
     });
@@ -503,8 +594,6 @@ export default function PDCAManager({
       return;
     }
 
-    // 추진일정, 참여대상, 연계부서 필수 제약 해제 (선택 입력 사항으로 전향)
-
     // 비목별 예산 및 집행 데이터 조립 및 복원 (본예산/이월예산 및 집행액 구분)
     const categoriesToSave = inputBudgetCategories
       .filter((c) => c.category && c.category !== "")
@@ -516,31 +605,32 @@ export default function PDCAManager({
         spent_carry: selectedYear === 1 ? 0 : Math.round(parseDecimalFromCommas(c.spent_carry || "0.0") * 1000000)
       }));
 
-    // P단계 입력 항목의 완성도에 따라 PDCA 상태 자동 판별
-    const hasBudget = (bNational > 0 || bCarryNational > 0 || bCity > 0 || bCarryCity > 0 || bExternal > 0);
-    const hasCategories = categoriesToSave.length > 0 && categoriesToSave.some(c => c.category && c.category !== "" && c.category !== "선택 안 함" && (c.budget > 0 || c.budget_carry > 0));
-    const hasSchedules = inputMonthlyPDCA.some(val => val && val !== "" && val !== "-");
-    const hasKpis = (inputKpiType === "없음") || (inputKpiLink && inputKpiLink !== "" && inputKpiLink !== "선택 안 함");
-    const hasTargetGoals = (inputTargetParticipants !== "" || inputTargetDevelopments !== "" || inputTargetEtc !== "");
-    const hasTargetAudience = (inputTargetAudience && inputTargetAudience.trim() !== "");
-    const hasCoopDept = (inputCoopDept1 !== "" || inputCoopDept2 !== "");
+    // 최신 임시 데이터들을 취합하여 P단계의 자동 완료/진행 판정
+    const freqVal = inputTargetParticipants !== "" ? parseInt(inputTargetParticipants, 10) : 0;
+    const tPartVal = inputTargetParticipants !== "" ? parseInt(inputTargetParticipants, 10) : 0;
+    const tDevVal = inputTargetDevelopments !== "" ? parseInt(inputTargetDevelopments, 10) : 0;
+    const tEtcVal = inputTargetEtc !== "" ? parseInt(inputTargetEtc, 10) : 0;
 
-    const checkList = [
-      hasBudget,
-      hasCategories,
-      hasSchedules,
-      hasKpis,
-      hasTargetGoals,
-      hasTargetAudience,
-      hasCoopDept
-    ];
-    const filledCount = checkList.filter(Boolean).length;
-    let autoPState = "대기";
-    if (filledCount === checkList.length) {
-      autoPState = "완료";
-    } else if (filledCount > 0) {
-      autoPState = "진행";
-    }
+    const draftData = {
+      budget_national: bNational,
+      budget_city: bCity,
+      budget_external: bExternal,
+      budget_carry_national: bCarryNational,
+      budget_carry_city: bCarryCity,
+      budget_carry_external: bCarryExternal,
+      budget_categories: categoriesToSave,
+      timeline: inputMonthlyPDCA.join(","),
+      kpi_type: inputKpiType,
+      kpi_link: inputKpiLink,
+      frequency: freqVal,
+      target_participants: tPartVal,
+      target_developments: tDevVal,
+      target_etc: tEtcVal,
+      targetAudience: inputTargetAudience
+    };
+
+    const comp = checkPStageCompletion(activeProg, activeProg.years?.[selectedYear] || {}, draftData);
+    const autoPState = comp.ok ? "완료" : "진행";
 
     const combinedCoopDept = [inputCoopDept1, inputCoopDept2].filter(Boolean).join(", ");
 
