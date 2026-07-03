@@ -409,6 +409,51 @@ export default function OrgChartManager() {
               // 일반 처/처/원인 경우 아코디언 트리 형태 유지
               listDepts.map((dept, deptIdx) => {
                 const isExpanded = expandedDept === deptIdx;
+                const hasSingleIdenticalSubteam = dept.subTeams.length === 1 && dept.subTeams[0].name === dept.name;
+
+                if (hasSingleIdenticalSubteam) {
+                  // 산학기획팀, 산학지원팀처럼 2차 세부 뎁스가 무의미한 경우, 아코디언 헤더를 생략하고 바로 클릭 가능한 버튼으로 단일 노출!
+                  const team = dept.subTeams[0];
+                  const isSelected = selectedTeam?.name === team.name;
+                  return (
+                    <div
+                      key={dept.name}
+                      onClick={() => {
+                        setSelectedTeam(team);
+                        setExpandedDept(null); // 다른 아코디언 상태는 닫음
+                      }}
+                      style={{
+                        padding: "1rem 1.25rem",
+                        borderRadius: "10px",
+                        cursor: "pointer",
+                        fontSize: "0.95rem",
+                        fontWeight: "800",
+                        transition: "all 0.2s ease",
+                        background: isSelected ? "rgba(59, 130, 246, 0.12)" : "rgba(255, 255, 255, 0.01)",
+                        color: isSelected ? "var(--accent-color)" : "var(--text-primary-dark)",
+                        border: isSelected ? "1px solid rgba(59, 130, 246, 0.3)" : "1px solid rgba(255, 255, 255, 0.05)",
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center"
+                      }}
+                    >
+                      <span>{dept.name}</span>
+                      {team.rise && (
+                        <span style={{
+                          fontSize: "0.75rem",
+                          background: "rgba(16, 185, 129, 0.1)",
+                          color: "#10B981",
+                          padding: "0.15rem 0.4rem",
+                          borderRadius: "4px",
+                          fontWeight: "800"
+                        }}>
+                          RISE 연계
+                        </span>
+                      )}
+                    </div>
+                  );
+                }
+
                 return (
                   <div
                     key={dept.name}
