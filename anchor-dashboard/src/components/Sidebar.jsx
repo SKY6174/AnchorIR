@@ -125,6 +125,18 @@ export default function Sidebar({
                 - 단위과제 집행현황
               </div>
               <div
+                className={`nav-sub-item ${activeTab === "projects" && projectsSubTab === "unit_system" ? "active" : ""}`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onChangeTab("projects");
+                  if (onChangeProjectsSubTab) {
+                    onChangeProjectsSubTab("unit_system");
+                  }
+                }}
+              >
+                - 단위과제 체계
+              </div>
+              <div
                 className={`nav-sub-item ${activeTab === "projects" && projectsSubTab === "program_mgmt" ? "active" : ""}`}
                 onClick={(e) => {
                   e.stopPropagation();

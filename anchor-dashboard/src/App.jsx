@@ -16,6 +16,7 @@ import PartnerManager from "./components/PartnerManager";
 import AuthManager from "./components/AuthManager";
 import ProcurementManager from "./components/ProcurementManager";
 import ScheduleManager from "./components/ScheduleManager";
+import UnitSystemView from "./components/UnitSystemView";
 import { initialProjectsData, userRoles, YEAR_1_PROGRAMS, Y1_UNIT_META } from "./data/mockData";
 import { Sun, Moon, LogOut, HelpCircle, ArrowUpRight, Lock as LockIcon, Info } from "lucide-react";
 import { supabase } from "./supabaseClient";
@@ -4564,6 +4565,23 @@ export default function App() {
               </button>
               <button
                 type="button"
+                onClick={() => setProjectsSubTab("unit_system")}
+                style={{
+                  border: "none",
+                  background: "transparent",
+                  padding: "0.5rem 1rem",
+                  fontSize: "0.85rem",
+                  fontWeight: "800",
+                  cursor: "pointer",
+                  color: projectsSubTab === "unit_system" ? "var(--accent-color)" : "var(--text-secondary-dark)",
+                  borderBottom: projectsSubTab === "unit_system" ? "2px solid var(--accent-color)" : "none",
+                  transition: "all 0.2s"
+                }}
+              >
+                단위과제 체계
+              </button>
+              <button
+                type="button"
                 onClick={() => setProjectsSubTab("program_mgmt")}
                 style={{
                   border: "none",
@@ -4722,6 +4740,10 @@ export default function App() {
                   </tbody>
                 </table>
               </div>
+            )}
+
+            {projectsSubTab === "unit_system" && (
+              <UnitSystemView />
             )}
 
             {projectsSubTab === "program_mgmt" && (
