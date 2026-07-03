@@ -10,6 +10,7 @@ import ProgramProgressManager from "./components/ProgramProgressManager";
 import LLMWiki from "./components/LLMWiki";
 import AuthManager from "./components/AuthManager";
 import ProcurementManager from "./components/ProcurementManager";
+import ScheduleManager from "./components/ScheduleManager";
 import { initialProjectsData, userRoles, YEAR_1_PROGRAMS, Y1_UNIT_META } from "./data/mockData";
 import { Sun, Moon, LogOut, HelpCircle, ArrowUpRight, Lock as LockIcon } from "lucide-react";
 import { supabase } from "./supabaseClient";
@@ -2002,6 +2003,9 @@ export default function App() {
   const [procurementSubTab, setProcurementSubTab] = useState(() => {
     return localStorage.getItem("anchor_procurement_sub_tab") || "env_improvement";
   });
+  const [scheduleSubTab, setScheduleSubTab] = useState(() => {
+    return localStorage.getItem("anchor_schedule_sub_tab") || "monthly";
+  });
   const [selectedUnitId, setSelectedUnitId] = useState(() => {
     return localStorage.getItem("anchor_selected_unit_id") || "A1가";
   });
@@ -2036,6 +2040,10 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem("anchor_procurement_sub_tab", procurementSubTab);
   }, [procurementSubTab]);
+
+  useEffect(() => {
+    localStorage.setItem("anchor_schedule_sub_tab", scheduleSubTab);
+  }, [scheduleSubTab]);
 
   useEffect(() => {
     localStorage.setItem("anchor_selected_unit_id", selectedUnitId);
@@ -3107,6 +3115,8 @@ export default function App() {
         onChangeBudgetSubTab={setBudgetSubTab}
         procurementSubTab={procurementSubTab}
         onChangeProcurementSubTab={setProcurementSubTab}
+        scheduleSubTab={scheduleSubTab}
+        onChangeScheduleSubTab={setScheduleSubTab}
       />
 
       {/* 메인 뷰 */}
@@ -4611,6 +4621,70 @@ export default function App() {
               selectedYear={selectedYear}
               subTab={procurementSubTab}
               onChangeSubTab={setProcurementSubTab}
+            />
+          </div>
+        )}
+
+        {activeTab === "schedule" && (
+          <div className="schedule-management-wrapper" style={{ display: "flex", flexDirection: "column", gap: "1rem", width: "100%" }}>
+            {/* 일정 관리 본문 가로 탭바 헤더 */}
+            <div style={{ display: "flex", gap: "1.5rem", borderBottom: "1px solid rgba(255,255,255,0.1)", paddingBottom: "0.2rem", marginBottom: "0.5rem" }}>
+              <button
+                onClick={() => setScheduleSubTab("monthly")}
+                style={{
+                  background: "transparent",
+                  border: "none",
+                  fontSize: "1rem",
+                  fontWeight: "800",
+                  cursor: "pointer",
+                  padding: "0.5rem 1rem",
+                  color: scheduleSubTab === "monthly" ? "var(--accent-color)" : "var(--text-secondary-dark)",
+                  borderBottom: scheduleSubTab === "monthly" ? "2px solid var(--accent-color)" : "none",
+                  transition: "all 0.2s ease"
+                }}
+              >
+                월간 일정
+              </button>
+              <button
+                onClick={() => setScheduleSubTab("events")}
+                style={{
+                  background: "transparent",
+                  border: "none",
+                  fontSize: "1rem",
+                  fontWeight: "800",
+                  cursor: "pointer",
+                  padding: "0.5rem 1rem",
+                  color: scheduleSubTab === "events" ? "var(--accent-color)" : "var(--text-secondary-dark)",
+                  borderBottom: scheduleSubTab === "events" ? "2px solid var(--accent-color)" : "none",
+                  transition: "all 0.2s ease"
+                }}
+              >
+                행사 일정
+              </button>
+              <button
+                onClick={() => setScheduleSubTab("meetings")}
+                style={{
+                  background: "transparent",
+                  border: "none",
+                  fontSize: "1rem",
+                  fontWeight: "800",
+                  cursor: "pointer",
+                  padding: "0.5rem 1rem",
+                  color: scheduleSubTab === "meetings" ? "var(--accent-color)" : "var(--text-secondary-dark)",
+                  borderBottom: scheduleSubTab === "meetings" ? "2px solid var(--accent-color)" : "none",
+                  transition: "all 0.2s ease"
+                }}
+              >
+                회의 일정
+              </button>
+            </div>
+
+            {/* 본문 콘텐츠 */}
+            <ScheduleManager
+              currentRole={currentRole}
+              selectedYear={selectedYear}
+              subTab={scheduleSubTab}
+              onChangeSubTab={setScheduleSubTab}
             />
           </div>
         )}

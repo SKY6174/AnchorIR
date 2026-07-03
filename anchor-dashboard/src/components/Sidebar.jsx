@@ -1,6 +1,6 @@
 import React from "react";
 import { userRoles } from "../data/mockData";
-import { LayoutDashboard, Users, FileBarChart2, FolderKanban, Award, Landmark, ClipboardList, BookOpen, Briefcase } from "lucide-react";
+import { LayoutDashboard, Users, FileBarChart2, FolderKanban, Award, Landmark, ClipboardList, BookOpen, Briefcase, Calendar } from "lucide-react";
 
 export default function Sidebar({
   currentRole,
@@ -16,7 +16,9 @@ export default function Sidebar({
   budgetSubTab,
   onChangeBudgetSubTab,
   procurementSubTab,
-  onChangeProcurementSubTab
+  onChangeProcurementSubTab,
+  scheduleSubTab,
+  onChangeScheduleSubTab
 }) {
   return (
     <aside className="sidebar">
@@ -223,6 +225,59 @@ export default function Sidebar({
                 }}
               >
                 - 주요 용역
+              </div>
+            </div>
+          </div>
+
+          <div className={`schedule-nav-wrapper ${activeTab === "schedule" ? "active" : ""}`}>
+            <div
+              className={`nav-item ${activeTab === "schedule" ? "active" : ""}`}
+              onClick={() => {
+                onChangeTab("schedule");
+                if (onChangeScheduleSubTab) {
+                  onChangeScheduleSubTab("monthly");
+                }
+              }}
+            >
+              <Calendar size={24} />
+              <span>일정 관리</span>
+            </div>
+            <div className="nav-sub-menu">
+              <div
+                className={`nav-sub-item ${activeTab === "schedule" && scheduleSubTab === "monthly" ? "active" : ""}`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onChangeTab("schedule");
+                  if (onChangeScheduleSubTab) {
+                    onChangeScheduleSubTab("monthly");
+                  }
+                }}
+              >
+                - 월간 일정
+              </div>
+              <div
+                className={`nav-sub-item ${activeTab === "schedule" && scheduleSubTab === "events" ? "active" : ""}`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onChangeTab("schedule");
+                  if (onChangeScheduleSubTab) {
+                    onChangeScheduleSubTab("events");
+                  }
+                }}
+              >
+                - 행사 일정
+              </div>
+              <div
+                className={`nav-sub-item ${activeTab === "schedule" && scheduleSubTab === "meetings" ? "active" : ""}`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onChangeTab("schedule");
+                  if (onChangeScheduleSubTab) {
+                    onChangeScheduleSubTab("meetings");
+                  }
+                }}
+              >
+                - 회의 일정
               </div>
             </div>
           </div>
