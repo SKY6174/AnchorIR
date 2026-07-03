@@ -1433,7 +1433,7 @@ export default function PDCAManager({
                                 cursor: "pointer"
                               }}
                             >
-                              <option value="current">실시간 현재 버전 [{currentVersionName}] (수정 가능)</option>
+                              <option value="current">{currentVersionName}</option>
                               {programVersions.map(v => (
                                 <option key={v.id} value={v.id}>
                                   {v.version_name === "최초계획" ? "최초" : v.version_name} ({v.status})
