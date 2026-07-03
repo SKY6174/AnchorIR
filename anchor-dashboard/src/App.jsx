@@ -4392,7 +4392,7 @@ export default function App() {
           </div>
 
           {/* 전역 연도 선택 컨트롤러 */}
-          <div style={{ display: "flex", gap: "0.25rem", background: "rgba(255, 255, 255, 0.03)", padding: "0.25rem", borderRadius: "2rem", border: "1px solid var(--border-color-dark)" }}>
+          <div style={{ display: "flex", gap: "0.2rem", background: "rgba(255, 255, 255, 0.03)", padding: "0.2rem", borderRadius: "2rem", border: "1px solid var(--border-color-dark)" }}>
             {[1, 2, 3, 4, 5].map((yr) => (
               <button
                 key={yr}
@@ -4407,8 +4407,8 @@ export default function App() {
                   setSelectedProgId(null);
                 }}
                 style={{
-                  padding: "0.45rem 1rem",
-                  fontSize: "0.85rem",
+                  padding: "0.4rem 0.8rem",
+                  fontSize: "0.78rem",
                   borderRadius: "2rem",
                   border: "none",
                   background: selectedYear === yr ? "var(--accent-color)" : "transparent",
