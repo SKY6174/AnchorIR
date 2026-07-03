@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Upload, AlertTriangle, CheckCircle2, TrendingUp, DollarSign, Calendar, FileText } from "lucide-react";
+import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ReferenceLine } from "recharts";
 
 export default function BudgetExecutionManager({ projects, currentRole, selectedYear }) {
   const [dragActive, setDragActive] = useState(false);
@@ -172,39 +173,60 @@ export default function BudgetExecutionManager({ projects, currentRole, selected
             <TrendingUp size={18} style={{ color: "var(--accent-color)" }} />
           </div>
           
-          <div style={{ overflowX: "auto" }}>
-            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.8rem", textAlign: "center" }}>
-              <thead>
-                <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.1)", color: "var(--text-secondary-dark)" }}>
-                  <th style={{ padding: "0.5rem" }}>구분 월</th>
-                  <th style={{ padding: "0.5rem" }}>본예산 누적률</th>
-                  <th style={{ padding: "0.5rem" }}>이월예산 누적률</th>
-                  <th style={{ padding: "0.5rem" }}>비고</th>
-                </tr>
-              </thead>
-              <tbody>
-                {monthlyData.map((row, idx) => (
-                  <tr 
-                    key={idx} 
-                    style={{ 
-                      borderBottom: "1px solid rgba(255,255,255,0.05)",
-                      backgroundColor: row.isLimitMonth ? "rgba(239, 68, 68, 0.05)" : "transparent"
-                    }}
-                  >
-                    <td style={{ padding: "0.5rem", fontWeight: row.isLimitMonth ? "bold" : "normal" }}>{row.month}</td>
-                    <td style={{ padding: "0.5rem", color: "#60A5FA" }}>{row.mainBudget}%</td>
-                    <td style={{ padding: "0.5rem", color: row.carryoverBudget >= 90 ? "#F87171" : "#FCA5A5" }}>
-                      {row.carryoverBudget}%
-                    </td>
-                    <td style={{ padding: "0.5rem", fontSize: "0.75rem" }}>
-                      {row.isLimitMonth && <span style={{ color: "#EF4444", fontWeight: "bold" }}>마감선 (8/31)</span>}
-                      {row.carryoverReturned && <span style={{ color: "var(--text-secondary-dark)" }}>잔액 반납 확정</span>}
-                      {!row.isLimitMonth && !row.carryoverReturned && <span style={{ color: "var(--text-secondary-dark)" }}>-</span>}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div style={{ width: "100%", height: 320, padding: "0.5rem 0" }}>
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart
+                data={monthlyData}
+                margin={{ top: 20, right: 30, left: -10, bottom: 0 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
+                <XAxis 
+                  dataKey="month" 
+                  stroke="var(--text-secondary-dark)" 
+                  tick={{ fontSize: 11, fill: "var(--text-secondary-dark)" }}
+                />
+                <YAxis 
+                  stroke="var(--text-secondary-dark)" 
+                  tick={{ fontSize: 11, fill: "var(--text-secondary-dark)" }}
+                  domain={[0, 100]}
+                  unit="%"
+                />
+                <Tooltip 
+                  contentStyle={{ 
+                    backgroundColor: "var(--bg-card-dark)", 
+                    borderColor: "var(--border-color-dark)", 
+                    color: "white",
+                    borderRadius: "6px",
+                    fontSize: "0.8rem"
+                  }} 
+                />
+                <Legend 
+                  wrapperStyle={{ fontSize: 11, paddingTop: 10 }}
+                />
+                <ReferenceLine 
+                  x="8월" 
+                  stroke="#EF4444" 
+                  strokeDasharray="4 4" 
+                  label={{ value: "이월마감 (8/31)", fill: "#F87171", position: "insideTopLeft", fontSize: 11, fontWeight: "bold" }}
+                />
+                <Line 
+                  name="본예산 누적률" 
+                  type="monotone" 
+                  dataKey="mainBudget" 
+                  stroke="#3B82F6" 
+                  strokeWidth={3}
+                  activeDot={{ r: 6 }} 
+                />
+                <Line 
+                  name="이월예산 누적률" 
+                  type="monotone" 
+                  dataKey="carryoverBudget" 
+                  stroke="#EF4444" 
+                  strokeWidth={3}
+                  activeDot={{ r: 6 }} 
+                />
+              </LineChart>
+            </ResponsiveContainer>
           </div>
         </div>
 
