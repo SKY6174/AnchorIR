@@ -8,6 +8,7 @@ import {
   FileSpreadsheet, QrCode, ClipboardCheck, Plus, Trash2, CheckCircle2, 
   Send, BarChart3, HelpCircle, Calendar, Users, Briefcase, FileText, Check, Download, RefreshCw
 } from "lucide-react";
+import { supabase } from "../supabaseClient"; // Supabase 클라이언트 의존성 주입
 
 // 초기 기본 만족도 조사 데이터 셋 (로컬 스토리지에 유지 가능하도록 구성)
 const defaultSurveys = [
@@ -63,11 +64,8 @@ const defaultSurveys = [
 ];
 
 export default function SatisfactionManager({ selectedYear }) {
-  // 로컬 스토리지 또는 초기값 기반으로 전체 조사 목록 바인딩
-  const [surveys, setSurveys] = useState(() => {
-    const cached = localStorage.getItem("anchor_satisfaction_surveys");
-    return cached ? JSON.parse(cached) : defaultSurveys;
-  });
+  const [surveys, setSurveys] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   const [activeSurveyTab, setActiveSurveyTab] = useState("list"); // "list" | "create" | "detail"
   const [selectedSurveyId, setSelectedSurveyId] = useState(null);
@@ -96,10 +94,133 @@ export default function SatisfactionManager({ selectedYear }) {
   const [copiedId, setCopiedId] = useState(null);
   const [syncingId, setSyncingId] = useState(null);
 
-  // 로컬 스토리지 동기화
+  // 1. DB로부터 조사 목록 및 수집 응답 데이터 통합 조회
+  const fetchSurveysFromDb = async () => {
+    setIsLoading(true);
+    try {
+      // surveys 테이블 조회
+      const { data: dbSurveys, error: surveyError } = await supabase
+        .from("satisfaction_surveys")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+      if (surveyError) throw surveyError;
+
+      // responses 목록 조회
+      const { data: dbResponses, error: responseError } = await supabase
+        .from("satisfaction_responses")
+        .select("*");
+
+      if (responseError) throw responseError;
+
+      let formatted = dbSurveys.map(s => {
+        const matchingResponses = dbResponses
+          .filter(r => r.survey_id === s.id)
+          .map(r => ({
+            id: r.id,
+            responder: r.responder_info || "익명 응답자",
+            scores: [r.score_q1, r.score_q2, r.score_q3, r.score_q4, r.score_q5].filter(v => v !== null),
+            comment: r.comments,
+            date: r.created_at ? r.created_at.split("T")[0] : new Date().toISOString().split("T")[0]
+          }));
+
+        return {
+          id: s.id,
+          title: s.title,
+          purpose: s.purpose,
+          startDate: s.start_date,
+          endDate: s.end_date,
+          target: s.target,
+          department: s.department,
+          status: s.status,
+          googleSheetUrl: s.google_sheet_url,
+          questions: [
+            "제공된 교육 프로그램의 전문성 및 실무 연계성에 만족하십니까?",
+            "프로그램 진행자의 전문성과 원활한 일정 소통 방식에 만족하십니까?",
+            "프로그램 수행 시설 및 인프라의 쾌적함과 장비 구성에 만족하십니까?",
+            "전반적으로 본 프로그램에 참여한 효과성에 만족하십니까?",
+            "향후 추진되는 연계 프로그램에 재참여할 의향이 있으십니까?"
+          ], // 기본 5문항 고정 매칭
+          responses: matchingResponses
+        };
+      });
+
+      // 만약 DB가 비어 있다면 (최초 기동 시), 시드 데이터를 삽입
+      if (formatted.length === 0) {
+        console.log("Supabase satisfaction tables empty. Seeding default surveys...");
+        for (const defaultSurvey of defaultSurveys) {
+          // survey insert
+          await supabase.from("satisfaction_surveys").insert({
+            id: defaultSurvey.id,
+            title: defaultSurvey.title,
+            purpose: defaultSurvey.purpose,
+            start_date: defaultSurvey.startDate,
+            end_date: defaultSurvey.endDate,
+            target: defaultSurvey.target,
+            department: defaultSurvey.department,
+            status: defaultSurvey.status,
+            google_sheet_url: defaultSurvey.googleSheetUrl
+          });
+
+          // responses insert
+          const resInserts = defaultSurvey.responses.map(res => ({
+            survey_id: defaultSurvey.id,
+            responder_info: res.responder,
+            score_q1: res.scores[0],
+            score_q2: res.scores[1],
+            score_q3: res.scores[2],
+            score_q4: res.scores[3],
+            score_q5: res.scores[4],
+            comments: res.comment,
+            created_at: new Date(res.date).toISOString()
+          }));
+          await supabase.from("satisfaction_responses").insert(resInserts);
+        }
+        // 시드 삽입 후 다시 조회
+        const { data: reSurveys } = await supabase.from("satisfaction_surveys").select("*").order("created_at", { ascending: false });
+        const { data: reResponses } = await supabase.from("satisfaction_responses").select("*");
+        
+        formatted = (reSurveys || []).map(s => {
+          const matching = (reResponses || [])
+            .filter(r => r.survey_id === s.id)
+            .map(r => ({
+              id: r.id,
+              responder: r.responder_info || "익명 응답자",
+              scores: [r.score_q1, r.score_q2, r.score_q3, r.score_q4, r.score_q5].filter(v => v !== null),
+              comment: r.comments,
+              date: r.created_at ? r.created_at.split("T")[0] : new Date().toISOString().split("T")[0]
+            }));
+          return {
+            id: s.id,
+            title: s.title,
+            purpose: s.purpose,
+            startDate: s.start_date,
+            endDate: s.end_date,
+            target: s.target,
+            department: s.department,
+            status: s.status,
+            googleSheetUrl: s.google_sheet_url,
+            questions: defaultSurveys[0].questions,
+            responses: matching
+          };
+        });
+      }
+
+      setSurveys(formatted);
+      localStorage.setItem("anchor_satisfaction_surveys", JSON.stringify(formatted));
+    } catch (err) {
+      console.error("Supabase satisfaction fetch failed, fallback to local storage:", err);
+      const cached = localStorage.getItem("anchor_satisfaction_surveys");
+      if (cached) setSurveys(JSON.parse(cached));
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // 연차 변경 또는 로드 시 호출
   useEffect(() => {
-    localStorage.setItem("anchor_satisfaction_surveys", JSON.stringify(surveys));
-  }, [surveys]);
+    fetchSurveysFromDb();
+  }, [selectedYear]);
 
   // 부서별 새 조사 ID 자동 추천 생성기
   const getNextSurveyId = (dept) => {
@@ -118,7 +239,7 @@ export default function SatisfactionManager({ selectedYear }) {
     return `${currentYear}-${dept}-${maxNum + 1}`;
   };
 
-  const handleCreateSurvey = (e) => {
+  const handleCreateSurvey = async (e) => {
     e.preventDefault();
     if (!newTitle.trim() || !newPurpose.trim()) {
       alert("조사제목과 조사목적은 필수 항목입니다.");
@@ -140,13 +261,35 @@ export default function SatisfactionManager({ selectedYear }) {
       responses: []
     };
 
-    setSurveys([newSurvey, ...surveys]);
-    // 폼 초기화
-    setNewTitle("");
-    setNewPurpose("");
-    setNewTarget("");
-    setNewDept("ECC");
-    setActiveSurveyTab("list");
+    try {
+      const { error } = await supabase
+        .from("satisfaction_surveys")
+        .insert({
+          id: generatedId,
+          title: newSurvey.title,
+          purpose: newSurvey.purpose,
+          start_date: newSurvey.startDate,
+          end_date: newSurvey.endDate,
+          target: newSurvey.target,
+          department: newSurvey.department,
+          status: newSurvey.status,
+          google_sheet_url: newSurvey.googleSheetUrl
+        });
+
+      if (error) throw error;
+
+      setSurveys([newSurvey, ...surveys]);
+      // 폼 초기화
+      setNewTitle("");
+      setNewPurpose("");
+      setNewTarget("");
+      setNewDept("ECC");
+      setActiveSurveyTab("list");
+      alert("만족도 조사 기획서가 DB와 연동되어 안전하게 생성되었습니다!");
+    } catch (err) {
+      console.error("Failed to insert survey in Supabase:", err);
+      alert(`DB 저장 중 에러가 발생했습니다: ${err.message}`);
+    }
   };
 
   // 문항 추가 헬퍼
@@ -175,25 +318,33 @@ export default function SatisfactionManager({ selectedYear }) {
   };
 
   // 구글 시트 연동 동기화 시뮬레이션
-  const handleSyncToGoogleSheets = (id) => {
+  const handleSyncToGoogleSheets = async (id) => {
     setSyncingId(id);
-    setTimeout(() => {
+    const sheetUrl = `https://docs.google.com/spreadsheets/d/1xSynced_${id.replace(/-/g, "_")}/edit`;
+    
+    try {
+      const { error } = await supabase
+        .from("satisfaction_surveys")
+        .update({ google_sheet_url: sheetUrl })
+        .eq("id", id);
+
+      if (error) throw error;
+
       setSurveys(prev => prev.map(s => {
         if (s.id === id) {
-          return {
-            ...s,
-            googleSheetUrl: s.googleSheetUrl || `https://docs.google.com/spreadsheets/d/1xSynced_${id.replace(/-/g, "_")}/edit`
-          };
+          return { ...s, googleSheetUrl: sheetUrl };
         }
         return s;
       }));
-      setSyncingId(null);
       alert("데이터가 연동 구글 스프레드시트에 성공적으로 동기화되었습니다!");
-    }, 1500);
+    } catch (err) {
+      console.error("Failed to sync sheets url:", err);
+    } finally {
+      setSyncingId(null);
+    }
   };
 
   // 100점 만점 환산용 통계 가중평균치 계산 (5점 리커트 척도 반영)
-  // 매우만족: 100, 만족: 80, 보통: 60, 미흡: 40, 매우미흡: 20
   const getLikertConvertedScore = (responses, questionsCount) => {
     if (!responses || responses.length === 0 || questionsCount === 0) return 0;
     
@@ -230,7 +381,7 @@ export default function SatisfactionManager({ selectedYear }) {
   };
 
   // 10명 모의 응답 일괄 대량 생성기 (테스트 데이터 생성)
-  const handleGenerateSimulatedData = (id) => {
+  const handleGenerateSimulatedData = async (id) => {
     const targetSurvey = surveys.find(s => s.id === id);
     if (!targetSurvey) return;
 
@@ -249,10 +400,8 @@ export default function SatisfactionManager({ selectedYear }) {
     ];
 
     const newSimulatedResponses = Array.from({ length: 10 }).map((_, idx) => {
-      // 3~5 사이의 정밀 난수 생성
       const scores = targetSurvey.questions.map(() => Math.floor(Math.random() * 3) + 3);
       return {
-        id: targetSurvey.responses.length + idx + 1,
         responder: names[Math.floor(Math.random() * names.length)] + `_${targetSurvey.responses.length + idx + 1}`,
         scores: scores,
         comment: Math.random() > 0.3 ? comments[Math.floor(Math.random() * comments.length)] : "",
@@ -260,66 +409,119 @@ export default function SatisfactionManager({ selectedYear }) {
       };
     });
 
-    setSurveys(prev => prev.map(s => {
-      if (s.id === id) {
-        const updatedResponses = [...s.responses, ...newSimulatedResponses];
-        return {
-          ...s,
-          responses: updatedResponses,
-          status: "배포중"
-        };
-      }
-      return s;
-    }));
+    try {
+      const dbInserts = newSimulatedResponses.map(res => ({
+        survey_id: id,
+        responder_info: res.responder,
+        score_q1: res.scores[0],
+        score_q2: res.scores[1],
+        score_q3: res.scores[2],
+        score_q4: res.scores[3],
+        score_q5: res.scores[4],
+        comments: res.comment,
+        created_at: new Date(res.date).toISOString()
+      }));
+
+      const { error: resError } = await supabase.from("satisfaction_responses").insert(dbInserts);
+      if (resError) throw resError;
+
+      // 설문지 상태를 '배포중'으로 업데이트
+      const { error: sError } = await supabase.from("satisfaction_surveys").update({ status: "배포중" }).eq("id", id);
+      if (sError) throw sError;
+
+      // 로컬 화면 갱신을 위해 DB 다시 패치
+      await fetchSurveysFromDb();
+      alert("모의 응답 10건이 생성되어 Supabase DB에 실시간 저장되었습니다!");
+    } catch (err) {
+      console.error("Failed to generate simulated responses in DB:", err);
+      alert("모의 데이터 DB 입력 실패: " + err.message);
+    }
   };
 
   // 개별 모의 응답 직접 수집 등록
-  const handleAddSingleResponse = (id) => {
+  const handleAddSingleResponse = async (id) => {
     const targetSurvey = surveys.find(s => s.id === id);
     if (!targetSurvey) return;
 
     const newRes = {
-      id: targetSurvey.responses.length + 1,
       responder: simulatedResponder.trim() || "익명 응답자",
       scores: [...simulatedScores],
       comment: simulatedComment.trim(),
       date: new Date().toISOString().split("T")[0]
     };
 
-    setSurveys(prev => prev.map(s => {
-      if (s.id === id) {
-        return {
-          ...s,
-          responses: [...s.responses, newRes],
-          status: "배포중"
-        };
-      }
-      return s;
-    }));
+    try {
+      const { error: resError } = await supabase.from("satisfaction_responses").insert({
+        survey_id: id,
+        responder_info: newRes.responder,
+        score_q1: newRes.scores[0],
+        score_q2: newRes.scores[1],
+        score_q3: newRes.scores[2],
+        score_q4: newRes.scores[3],
+        score_q5: newRes.scores[4],
+        comments: newRes.comment
+      });
 
-    setSimulatedComment("");
-    setSimulatedResponder("일반 참가자");
-    alert("새 응답이 DB에 성공적으로 등록되었습니다!");
+      if (resError) throw resError;
+
+      const { error: sError } = await supabase.from("satisfaction_surveys").update({ status: "배포중" }).eq("id", id);
+      if (sError) throw sError;
+
+      setSimulatedComment("");
+      setSimulatedResponder("일반 참가자");
+      await fetchSurveysFromDb();
+      alert("새 응답이 Supabase DB에 성공적으로 등록 저장되었습니다!");
+    } catch (err) {
+      console.error("Failed to insert single response:", err);
+      alert("응답 DB 저장 실패: " + err.message);
+    }
   };
 
   // 설문조사 완료(마감) 처리
-  const handleCompleteSurveyStatus = (id) => {
+  const handleCompleteSurveyStatus = async (id) => {
     if (!confirm("해당 만족도 조사를 마감하시겠습니까? 마감 시 상태가 '완료'로 잠기게 됩니다.")) return;
-    setSurveys(prev => prev.map(s => {
-      if (s.id === id) {
-        return { ...s, status: "완료" };
-      }
-      return s;
-    }));
+    
+    try {
+      const { error } = await supabase
+        .from("satisfaction_surveys")
+        .update({ status: "완료" })
+        .eq("id", id);
+
+      if (error) throw error;
+
+      setSurveys(prev => prev.map(s => {
+        if (s.id === id) {
+          return { ...s, status: "완료" };
+        }
+        return s;
+      }));
+      alert("조사가 마감(완료) 처리되었습니다.");
+    } catch (err) {
+      console.error("Failed to complete survey status:", err);
+    }
   };
 
   // 조사지 삭제
-  const handleDeleteSurvey = (id) => {
+  const handleDeleteSurvey = async (id) => {
     if (!confirm("해당 만족도 조사와 수집된 모든 응답이 영구 삭제됩니다. 진행하시겠습니까?")) return;
-    setSurveys(prev => prev.filter(s => s.id !== id));
-    if (selectedSurveyId === id) {
-      setSelectedSurveyId(null);
-      setActiveSurveyTab("list");
+    
+    try {
+      const { error } = await supabase
+        .from("satisfaction_surveys")
+        .delete()
+        .eq("id", id);
+
+      if (error) throw error;
+
+      setSurveys(prev => prev.filter(s => s.id !== id));
+      if (selectedSurveyId === id) {
+        setSelectedSurveyId(null);
+        setActiveSurveyTab("list");
+      }
+      alert("해당 조사가 DB에서 깨끗이 삭제되었습니다.");
+    } catch (err) {
+      console.error("Failed to delete survey:", err);
+      alert("삭제 실패: " + err.message);
     }
   };
 
