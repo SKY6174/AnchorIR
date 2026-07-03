@@ -922,13 +922,15 @@ export default function PDCAManager({
 
         const { data: requestList } = await supabase
           .from("program_version_requests")
-          .select("id, version_name")
+          .select("id, version_name, status")
           .eq("program_id", activeProg.id)
           .eq("year", selectedYear);
         
-        // "송경영 단장 직접 수정" 처럼 차수 번호가 없는 경우는 제외하고 연구원 변경요청 수만 필터링 카운트
-        const filteredCount = requestList ? requestList.filter(r => (r.version_name || "").includes("차 수정")).length : 0;
-        const versionName = `${filteredCount + 1}차 수정`;
+        // 오직 '승인완료'된 변경이력 중 '차 수정'이 명기된 건만 카운트해서 버전을 누적
+        const approvedCount = requestList 
+          ? requestList.filter(r => r.status === "승인완료" && (r.version_name || "").includes("차 수정")).length 
+          : 0;
+        const versionName = `${approvedCount + 1}차 수정`;
 
         const beforeData = {
           pdca: activeProg.pdca || { p: "대기", d: "대기", c: "대기", a: "대기" },
@@ -1398,10 +1400,20 @@ export default function PDCAManager({
                       
                       {/* 버전 선택 드롭다운 */}
                       {(() => {
-                        const latestApproved = (programVersions || []).find(v => v.status === "승인완료");
+                        const approvedList = (programVersions || []).filter(v => v.status === "승인완료");
+                        const latestApproved = approvedList.length > 0 ? approvedList[approvedList.length - 1] : null;
                         let currentVersionName = "최초";
                         if (latestApproved) {
-                          currentVersionName = latestApproved.version_name === "최초계획" ? "최초" : latestApproved.version_name;
+                          if (latestApproved.version_name === "최초계획") {
+                            currentVersionName = "최초";
+                          } else if (latestApproved.version_name === "송경영 단장 직접 수정") {
+                            const prevApprovedRevisions = approvedList.filter(v => v.version_name !== "송경영 단장 직접 수정");
+                            currentVersionName = prevApprovedRevisions.length > 0 
+                              ? prevApprovedRevisions[prevApprovedRevisions.length - 1].version_name 
+                              : "최초";
+                          } else {
+                            currentVersionName = latestApproved.version_name;
+                          }
                         }
                         return (
                           <div style={{ display: "flex", alignItems: "center", gap: "0.3rem" }}>
