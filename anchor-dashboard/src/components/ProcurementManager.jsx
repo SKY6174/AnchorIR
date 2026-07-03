@@ -336,20 +336,16 @@ export default function ProcurementManager({
                 <select
                   value={selectedEquipUnit}
                   onChange={(e) => setSelectedEquipUnit(e.target.value)}
+                  className="user-selector"
                   style={{
-                    background: "rgba(255, 255, 255, 0.05)",
-                    color: "var(--text-primary-dark)",
-                    border: "1px solid var(--border-color-dark)",
-                    borderRadius: "6px",
                     padding: "0.4rem 0.75rem",
                     fontSize: "0.85rem",
                     fontWeight: "600",
-                    cursor: "pointer",
-                    outline: "none"
+                    width: "auto"
                   }}
                 >
                   {["A1", "A2", "B1", "B2", "B3", "B4", "C1", "C2", "D1", "D2", "D3", "D4"].map(u => (
-                    <option key={u} value={u} style={{ background: "var(--bg-card-dark)" }}>{u} 과제</option>
+                    <option key={u} value={u}>{u} 과제</option>
                   ))}
                 </select>
               </div>
@@ -635,10 +631,10 @@ export default function ProcurementManager({
                     name="unit" 
                     value={formData.unit} 
                     onChange={handleInputChange}
-                    style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }}
+                    className="user-selector"
                   >
                     {["A1", "A2", "B1", "B2", "B3", "B4", "C1", "C2", "D1", "D2", "D3", "D4"].map(u => (
-                      <option key={u} value={u} style={{ background: "var(--bg-card-dark)" }}>{u} 과제</option>
+                      <option key={u} value={u}>{u} 과제</option>
                     ))}
                   </select>
                 </div>

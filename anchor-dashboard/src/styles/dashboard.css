@@ -179,6 +179,17 @@ body.light-mode {
   border: 1px solid var(--border-color-light);
 }
 
+/* 윈도우 크롬/엣지 등에서 select option 배경색이 흰색으로 풀려 글씨가 안 보이는 현상 패치 */
+.user-selector option {
+  background-color: #18181b !important;
+  color: #fafafa !important;
+}
+
+.light-mode .user-selector option {
+  background-color: #ffffff !important;
+  color: #18181b !important;
+}
+
 /* 플레이스홀더 다크/라이트 모드 가독성 패치 */
 .user-selector::placeholder {
   color: #71717a !important; /* 다크모드 기본 플레이스홀더 색상 (가독성 보장) */
