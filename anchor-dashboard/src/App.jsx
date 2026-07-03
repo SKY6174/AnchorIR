@@ -5,6 +5,7 @@ import ExcelUploader from "./components/ExcelUploader";
 import PDCAManager from "./components/PDCAManager";
 import AgreementManager from "./components/AgreementManager";
 import BudgetItemsManager from "./components/BudgetItemsManager";
+import BudgetExecutionManager from "./components/BudgetExecutionManager";
 import ProgramProgressManager from "./components/ProgramProgressManager";
 import LLMWiki from "./components/LLMWiki";
 import AuthManager from "./components/AuthManager";
@@ -1994,6 +1995,9 @@ export default function App() {
   const [kpiSubTab, setKpiSubTab] = useState(() => {
     return localStorage.getItem("anchor_kpi_sub_tab") || "자율";
   });
+  const [budgetSubTab, setBudgetSubTab] = useState(() => {
+    return localStorage.getItem("anchor_budget_sub_tab") || "budget_categories";
+  });
   const [selectedUnitId, setSelectedUnitId] = useState(() => {
     return localStorage.getItem("anchor_selected_unit_id") || "A1가";
   });
@@ -2020,6 +2024,10 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem("anchor_projects_sub_tab", projectsSubTab);
   }, [projectsSubTab]);
+
+  useEffect(() => {
+    localStorage.setItem("anchor_budget_sub_tab", budgetSubTab);
+  }, [budgetSubTab]);
 
   useEffect(() => {
     localStorage.setItem("anchor_selected_unit_id", selectedUnitId);
@@ -3087,6 +3095,8 @@ export default function App() {
         onChangeKpiSubTab={setKpiSubTab}
         mgmtSubTab={mgmtSubTab}
         onChangeMgmtSubTab={setMgmtSubTab}
+        budgetSubTab={budgetSubTab}
+        onChangeBudgetSubTab={setBudgetSubTab}
       />
 
       {/* 메인 뷰 */}
@@ -4475,11 +4485,19 @@ export default function App() {
           />
         )}
 
-        {activeTab === "budget-items" && (
+        {activeTab === "budget" && budgetSubTab === "budget_categories" && (
           <BudgetItemsManager
             projects={displayProjects}
             currentRole={currentRole}
             onUpdateBudgetDetails={handleUpdateBudgetDetails}
+            selectedYear={selectedYear}
+          />
+        )}
+
+        {activeTab === "budget" && budgetSubTab === "execution_rate" && (
+          <BudgetExecutionManager
+            projects={displayProjects}
+            currentRole={currentRole}
             selectedYear={selectedYear}
           />
         )}

@@ -12,7 +12,9 @@ export default function Sidebar({
   kpiSubTab,
   onChangeKpiSubTab,
   mgmtSubTab,
-  onChangeMgmtSubTab
+  onChangeMgmtSubTab,
+  budgetSubTab,
+  onChangeBudgetSubTab
 }) {
   return (
     <aside className="sidebar">
@@ -80,12 +82,45 @@ export default function Sidebar({
             </div>
           </div>
 
-          <div
-            className={`nav-item ${activeTab === "budget-items" ? "active" : ""}`}
-            onClick={() => onChangeTab("budget-items")}
-          >
-            <Landmark size={24} />
-            <span>예산항목 관리</span>
+          <div className={`budget-nav-wrapper ${activeTab === "budget" ? "active" : ""}`}>
+            <div
+              className={`nav-item ${activeTab === "budget" ? "active" : ""}`}
+              onClick={() => {
+                onChangeTab("budget");
+                if (onChangeBudgetSubTab) {
+                  onChangeBudgetSubTab("budget_categories");
+                }
+              }}
+            >
+              <Landmark size={24} />
+              <span>예산 관리</span>
+            </div>
+            <div className="nav-sub-menu">
+              <div
+                className={`nav-sub-item ${activeTab === "budget" && budgetSubTab === "budget_categories" ? "active" : ""}`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onChangeTab("budget");
+                  if (onChangeBudgetSubTab) {
+                    onChangeBudgetSubTab("budget_categories");
+                  }
+                }}
+              >
+                - 비목별 관리
+              </div>
+              <div
+                className={`nav-sub-item ${activeTab === "budget" && budgetSubTab === "execution_rate" ? "active" : ""}`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onChangeTab("budget");
+                  if (onChangeBudgetSubTab) {
+                    onChangeBudgetSubTab("execution_rate");
+                  }
+                }}
+              >
+                - 집행률 관리
+              </div>
+            </div>
           </div>
 
           <div className={`kpis-nav-wrapper ${activeTab === "kpis" ? "active" : ""}`}>
