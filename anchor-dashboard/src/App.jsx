@@ -20,23 +20,29 @@ import "./styles/dashboard.css";
 // 초기에 적재해 둘 협약서 목록 모의 데이터셋 (1차년도 샘플 2개 제공)
 const INITIAL_AGREEMENTS = [
   {
-    id: "agr-01",
+    id: 1,
     year: 1,
     date: "2026-05-12",
     center: "ECC센터",
-    organizations: ["울산대학교", "울산테크노파크"],
+    organizations: [
+      { name: "울산대학교", subject: "울산대학교 교무처장" },
+      { name: "울산테크노파크", subject: "울산TP 원장" }
+    ],
     subjectUniversity: "단장",
     subjectOrganization: "울산대학교 교무처장, 울산TP 원장",
     unitId: "A1",
     contents: ["주문식교육", "R&BD"],
-    fileName: "2026_지역혁신인재양성_공동협약서.pdf"
+    fileName: "2026_지역혁신인재양성_공동협약서.pdf",
+    fileData: null
   },
   {
-    id: "agr-02",
+    id: 2,
     year: 1,
     date: "2026-06-20",
     center: "ICC센터",
-    organizations: ["HD현대중공업"],
+    organizations: [
+      { name: "HD현대중공업", subject: "HD현대중공업 인재개발원장" }
+    ],
     subjectUniversity: "총장",
     subjectOrganization: "HD현대중공업 인재개발원장",
     unitId: "B1",
@@ -2119,11 +2125,12 @@ export default function App() {
             date: a.date,
             center: a.center,
             organizations: a.organizations,
-            subject_univ: a.subject_univ,
-            unit_id: a.unit_id,
+            subjectUniversity: a.subject_univ,
+            subjectOrganization: a.subject_org || "",
+            unitId: a.unit_id,
             contents: a.contents,
-            file_name: a.file_name,
-            file_data: a.file_data
+            fileName: a.file_name,
+            fileData: a.file_data
           })));
         }
 
@@ -2188,17 +2195,19 @@ export default function App() {
               date: a.date,
               center: a.center,
               organizations: a.organizations,
-              subject_univ: a.subject_univ,
-              unit_id: a.unit_id,
-              contents: a.contents,
-              file_name: a.file_name,
-              file_data: a.file_data
+              subject_univ: a.subjectUniversity || "",
+              subject_org: a.subjectOrganization || "",
+              unit_id: a.unitId || "",
+              contents: a.contents || [],
+              file_name: a.fileName || null,
+              file_data: a.fileData || null
             }))
           );
           if (error) throw error;
         }
         setSyncStatus("synced");
       } catch (e) {
+        console.error("Failed to sync agreements to Supabase:", e);
         setSyncStatus("error");
       }
     }, 1500);
