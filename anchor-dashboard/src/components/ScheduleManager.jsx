@@ -150,19 +150,50 @@ export default function ScheduleManager({
         setEventSchedules([newItem, ...eventSchedules]);
       }
     } else if (modalType === "meeting") {
-      const newItem = {
-        id: Date.now(),
-        month: Number(formData.month) || 7,
-        category: formData.category,
-        title: formData.title || "새 회의 일정",
-        datetime: formData.datetime || "-",
-        location: formData.location || "-",
-        attendeesInternal: formData.attendeesInternal || "-",
-        attendeesExternal: formData.attendeesExternal || "-",
-        agenda: formData.agenda || "-",
-        result: formData.result || "-"
-      };
-      setMeetingSchedules([newItem, ...meetingSchedules]);
+      // 입력된 회의 일자에서 자동으로 월 추출
+      const extractedMonth = formData.meetingDate ? parseInt(formData.meetingDate.split("-")[1], 10) : 7;
+      
+      // 일자(YYYY-MM-DD)와 시작/종료 시간을 결합하여 datetime 문자열 조합
+      const combinedDatetime = `${formData.meetingDate} ${formData.meetingStartTime} ~ ${formData.meetingEndTime}`;
+
+      // 작성자 및 부서 정보를 attendeesExternal에 조합하여 저장 (하위호환성 유지)
+      const combinedAttendeesExternal = `작성자: ${formData.writer || "작성자 미정"} | 부서: ${formData.dept || "부서 미정"}`;
+
+      // 의제 목록을 줄바꿈으로 묶어서 저장
+      const combinedAgenda = (formData.agendaList || []).filter(Boolean).join("\n");
+
+      if (isEditMode) {
+        setMeetingSchedules(meetingSchedules.map(m => 
+          m.id === editingItemId
+            ? {
+                ...m,
+                month: extractedMonth,
+                category: formData.category,
+                title: formData.title || "새 회의록",
+                datetime: combinedDatetime,
+                location: formData.location || "-",
+                attendeesInternal: formData.attendees || "-",
+                attendeesExternal: combinedAttendeesExternal,
+                agenda: combinedAgenda || "-",
+                result: formData.result || "-"
+              }
+            : m
+        ));
+      } else {
+        const newItem = {
+          id: Date.now(),
+          month: extractedMonth,
+          category: formData.category,
+          title: formData.title || "새 회의록",
+          datetime: combinedDatetime,
+          location: formData.location || "-",
+          attendeesInternal: formData.attendees || "-",
+          attendeesExternal: combinedAttendeesExternal,
+          agenda: combinedAgenda || "-",
+          result: formData.result || "-"
+        };
+        setMeetingSchedules([newItem, ...meetingSchedules]);
+      }
     }
 
     setIsAddModalOpen(false);
@@ -295,6 +326,74 @@ export default function ScheduleManager({
     setIsAddModalOpen(true);
   };
 
+  // 회의록 삭제 핸들러
+  const handleDeleteMeeting = (id) => {
+    if (window.confirm("선택한 회의록을 삭제하시겠습니까?")) {
+      setMeetingSchedules(meetingSchedules.filter(m => m.id !== id));
+    }
+  };
+
+  // 회의록 수정 모달 트리거
+  const handleEditMeeting = (meeting) => {
+    setIsEditMode(true);
+    setEditingItemId(meeting.id);
+    setModalType("meeting");
+
+    // datetime 파싱 ("2026-07-25 13:00 ~ 15:00" 형식)
+    const dt = meeting.datetime || "";
+    const parts = dt.split(" ");
+    let meetingDate = parts[0] || "2026-07-15";
+    let meetingStartTime = "10:00";
+    let meetingEndTime = "11:00";
+
+    if (parts.length >= 4) {
+      meetingStartTime = parts[1] || "10:00";
+      meetingEndTime = parts[3] || "11:00";
+    } else if (parts.length >= 2) {
+      const timeParts = parts[1].split("~");
+      meetingStartTime = timeParts[0] || "10:00";
+      meetingEndTime = timeParts[1] || "11:00";
+    }
+
+    // 작성자 및 부서 파싱
+    const ext = meeting.attendeesExternal || "";
+    let writer = "박지현 팀장";
+    let dept = "사업운영팀";
+    if (ext.includes("작성자:") && ext.includes("부서:")) {
+      const p = ext.split("|");
+      writer = p[0] ? p[0].replace("작성자:", "").trim() : "박지현 팀장";
+      dept = p[1] ? p[1].replace("부서:", "").trim() : "사업운영팀";
+    }
+
+    // 의제 목록 파싱 (줄바꿈 구분)
+    const agendaStr = meeting.agenda || "";
+    const agendaList = agendaStr ? agendaStr.split("\n") : [""];
+
+    setFormData({
+      title: meeting.title,
+      type: "회의",
+      dept: dept,
+      startDate: "2026-07-15",
+      startTime: "10:00",
+      endDate: "2026-07-15",
+      endTime: "11:00",
+      location: meeting.location || "",
+      noTime: false,
+      month: meeting.month || 7,
+      department: dept,
+      datetime: meeting.datetime || "",
+      meetingDate: meetingDate,
+      meetingStartTime: meetingStartTime,
+      meetingEndTime: meetingEndTime,
+      writer: writer,
+      attendees: meeting.attendeesInternal || "",
+      agendaList: agendaList,
+      category: meeting.category || "operating",
+      result: meeting.result || ""
+    });
+    setIsAddModalOpen(true);
+  };
+
   const openAddModal = (type) => {
     setModalType(type);
     setIsEditMode(false);
@@ -326,7 +425,14 @@ export default function ScheduleManager({
       purpose: "",
       result: "",
       category: "operating",
-      agenda: ""
+      agenda: "",
+      // 회의록용 추가
+      meetingDate: defaultEventDate,
+      meetingStartTime: "10:00",
+      meetingEndTime: "11:00",
+      writer: "박지현 팀장",
+      attendees: "",
+      agendaList: [""]
     });
     setIsAddModalOpen(true);
   };
@@ -829,11 +935,11 @@ export default function ScheduleManager({
               onClick={() => openAddModal("meeting")}
               style={{
                 display: "flex", alignItems: "center", gap: "0.25rem", padding: "0.4rem 1rem", borderRadius: "6px",
-                background: "var(--accent-color)", border: "none", color: "var(--text-primary)", fontWeight: "600", fontSize: "0.85rem", cursor: "pointer"
+                background: "var(--accent-color)", border: "none", color: "white", fontWeight: "600", fontSize: "0.85rem", cursor: "pointer"
               }}
             >
               <Plus size={16} />
-              회의 일정 등록
+              회의록 등록
             </button>
           </div>
 
@@ -898,49 +1004,127 @@ export default function ScheduleManager({
                   className="card"
                   style={{ padding: "1.5rem", borderRadius: "10px", background: "var(--panel-bg)", border: "1px solid var(--border-color)", display: "flex", flexDirection: "column", gap: "1rem" }}
                 >
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                    <span style={{ fontSize: "0.75rem", padding: "0.2rem 0.5rem", borderRadius: "4px", background: "rgba(59, 130, 246, 0.2)", color: "#60A5FA", fontWeight: "700" }}>
-                      📍 회의 장소: {meeting.location}
-                    </span>
-                    <span style={{ fontSize: "0.8rem", color: "var(--text-secondary)", display: "flex", alignItems: "center", gap: "0.25rem" }}>
-                      <Clock size={14} />
-                      {meeting.datetime}
-                    </span>
-                  </div>
+                  {/* 작성자, 관련부서 정보 동적 파싱 로직 */}
+                  {(() => {
+                    const ext = meeting.attendeesExternal || "";
+                    let writer = "작성자 미정";
+                    let dept = "사업운영팀";
+                    let isCustomFormatted = false;
 
-                  <h4 style={{ margin: 0, fontSize: "1.05rem", fontWeight: "800", color: "var(--text-primary)" }}>
-                    {meeting.title}
-                  </h4>
+                    if (ext.includes("작성자:") && ext.includes("부서:")) {
+                      isCustomFormatted = true;
+                      const parts = ext.split("|");
+                      writer = parts[0] ? parts[0].replace("작성자:", "").trim() : "작성자 미정";
+                      dept = parts[1] ? parts[1].replace("부서:", "").trim() : "사업운영팀";
+                    }
 
-                  <div style={{ display: "grid", gridTemplateColumns: "1.2fr 0.8fr", gap: "1.5rem", borderTop: "1px solid var(--border-color)", paddingTop: "0.75rem", fontSize: "0.8rem", color: "var(--text-primary)" }}>
-                    
-                    <div style={{ display: "flex", flexDirection: "column", gap: "0.6rem" }}>
-                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem" }}>
-                        <div>
-                          <span style={{ color: "var(--text-secondary)", display: "block" }}>👥 참석자 (내부)</span>
-                          <span>{meeting.attendeesInternal}</span>
+                    return (
+                      <>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                          <div style={{ display: "flex", gap: "0.4rem", flexWrap: "wrap" }}>
+                            <span style={{ fontSize: "0.75rem", padding: "0.2rem 0.5rem", borderRadius: "4px", background: "rgba(59, 130, 246, 0.15)", color: "#60A5FA", fontWeight: "700" }}>
+                              소속부서: {isCustomFormatted ? dept : "사업운영팀"}
+                            </span>
+                            <span style={{ fontSize: "0.75rem", padding: "0.2rem 0.5rem", borderRadius: "4px", background: "rgba(16, 185, 129, 0.15)", color: "#34D399", fontWeight: "700" }}>
+                              작성자: {isCustomFormatted ? writer : "박지현 팀장"}
+                            </span>
+                          </div>
+                          
+                          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                            <span style={{ fontSize: "0.8rem", color: "var(--text-secondary)", display: "flex", alignItems: "center", gap: "0.25rem", marginRight: "0.5rem" }}>
+                              <Clock size={14} />
+                              {meeting.datetime}
+                            </span>
+                            <button 
+                              onClick={() => handleEditMeeting(meeting)}
+                              title="수정"
+                              style={{ background: "transparent", border: "none", color: "var(--text-secondary)", cursor: "pointer", padding: "0.2rem", transition: "color 0.15s" }}
+                              onMouseOver={(e) => e.currentTarget.style.color = "var(--accent-color)"}
+                              onMouseOut={(e) => e.currentTarget.style.color = "var(--text-secondary)"}
+                            >
+                              <Edit size={14} />
+                            </button>
+                            <button 
+                              onClick={() => handleDeleteMeeting(meeting.id)}
+                              title="삭제"
+                              style={{ background: "transparent", border: "none", color: "var(--text-secondary)", cursor: "pointer", padding: "0.2rem", transition: "color 0.15s" }}
+                              onMouseOver={(e) => e.currentTarget.style.color = "#EF4444"}
+                              onMouseOut={(e) => e.currentTarget.style.color = "var(--text-secondary)"}
+                            >
+                              <Trash2 size={14} />
+                            </button>
+                          </div>
                         </div>
-                        <div>
-                          <span style={{ color: "var(--text-secondary)", display: "block" }}>👥 참석자 (외부)</span>
-                          <span>{meeting.attendeesExternal}</span>
+
+                        <h4 style={{ margin: 0, fontSize: "1.05rem", fontWeight: "800", color: "var(--text-primary)" }}>
+                          {meeting.title}
+                        </h4>
+
+                        <div style={{ display: "grid", gridTemplateColumns: "1.2fr 0.8fr", gap: "1.5rem", borderTop: "1px solid var(--border-color)", paddingTop: "0.75rem", fontSize: "0.8rem", color: "var(--text-primary)" }}>
+                          
+                          <div style={{ display: "flex", flexDirection: "column", gap: "0.6rem" }}>
+                            
+                            {isCustomFormatted ? (
+                              <div>
+                                <span style={{ color: "var(--text-secondary)", display: "block", marginBottom: "0.15rem" }}>👥 참석자</span>
+                                <strong>{meeting.attendeesInternal}</strong>
+                              </div>
+                            ) : (
+                              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem" }}>
+                                <div>
+                                  <span style={{ color: "var(--text-secondary)", display: "block" }}>👥 참석자 (내부)</span>
+                                  <span>{meeting.attendeesInternal}</span>
+                                </div>
+                                <div>
+                                  <span style={{ color: "var(--text-secondary)", display: "block" }}>👥 참석자 (외부)</span>
+                                  <span>{meeting.attendeesExternal}</span>
+                                </div>
+                              </div>
+                            )}
+
+                            <div>
+                              <span style={{ color: "var(--text-secondary)", display: "block", marginBottom: "0.25rem" }}>📝 회의 의제 (주요 안건)</span>
+                              <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem", margin: "0.1rem 0 0 0" }}>
+                                {meeting.agenda && meeting.agenda.split("\n").filter(Boolean).map((agendaItem, idx) => (
+                                  <span key={idx} style={{ display: "block", lineHeight: "1.3" }}>
+                                    • {agendaItem}
+                                  </span>
+                                ))}
+                              </div>
+                            </div>
+                            
+                            <div>
+                              <span style={{ color: "var(--text-secondary)", display: "block" }}>📍 회의 장소</span>
+                              <strong>{meeting.location}</strong>
+                            </div>
+                          </div>
+
+                          <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                            <div style={{ background: "rgba(59, 130, 246, 0.05)", padding: "0.75rem", borderRadius: "8px", border: "1px solid rgba(59, 130, 246, 0.1)", display: "flex", flexDirection: "column", gap: "0.25rem", flex: 1 }}>
+                              <span style={{ color: "#60A5FA", fontWeight: "700", fontSize: "0.75rem", display: "flex", alignItems: "center", gap: "0.25rem" }}>
+                                <CheckCircle size={14} />
+                                회의 결정 결과
+                              </span>
+                              <p style={{ margin: 0, fontSize: "0.75rem", lineHeight: "1.4", whiteSpace: "pre-wrap" }}>{meeting.result}</p>
+                            </div>
+                            
+                            <button
+                              type="button"
+                              onClick={() => alert("🎙️ PLAUD 음성 녹음 및 AI 회의록 자동 요약 기능 연동 데모\n\n향후 PLAUD 디바이스 및 API와 실시간 동기화하여, 회의 음성 녹음본이 업로드되면 AI가 발화자별 텍스트 변환(STT) 및 핵심 결정을 자동으로 요약하여 이 회의록에 자동으로 채워주는 스마트 기능이 활성화될 예정입니다.")}
+                              style={{
+                                display: "flex", alignItems: "center", justifyContent: "center", gap: "0.25rem",
+                                padding: "0.35rem", borderRadius: "6px", background: "rgba(139, 92, 246, 0.15)",
+                                border: "1px solid rgba(139, 92, 246, 0.3)", color: "#C084FC", fontSize: "0.7rem", fontWeight: "700", cursor: "pointer"
+                              }}
+                            >
+                              🎙️ PLAUD 녹음 자동 연동 (베타 예정)
+                            </button>
+                          </div>
+
                         </div>
-                      </div>
-
-                      <div>
-                        <span style={{ color: "var(--text-secondary)", display: "block" }}>📝 회의 의제 (주요 안건)</span>
-                        <p style={{ margin: "0.1rem 0 0 0", lineHeight: "1.3" }}>{meeting.agenda}</p>
-                      </div>
-                    </div>
-
-                    <div style={{ background: "rgba(59, 130, 246, 0.05)", padding: "0.75rem", borderRadius: "8px", border: "1px solid rgba(59, 130, 246, 0.1)", display: "flex", flexDirection: "column", gap: "0.25rem" }}>
-                      <span style={{ color: "#60A5FA", fontWeight: "700", fontSize: "0.75rem", display: "flex", alignItems: "center", gap: "0.25rem" }}>
-                        <CheckCircle size={14} />
-                        회의 결정 결과
-                      </span>
-                      <p style={{ margin: 0, fontSize: "0.75rem", lineHeight: "1.4" }}>{meeting.result}</p>
-                    </div>
-
-                  </div>
+                      </>
+                    );
+                  })()}
                 </div>
               ))
             ) : (
@@ -962,8 +1146,8 @@ export default function ScheduleManager({
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid var(--border-color)", paddingBottom: "0.75rem", marginBottom: "1rem" }}>
               <h3 style={{ margin: 0, fontSize: "1.1rem", fontWeight: "800", color: "var(--text-primary)" }}>
                 {isEditMode 
-                  ? (modalType === "deadline" ? "✏️ 마감일 수정" : modalType === "task" ? "✏️ 할일 수정" : modalType === "event" ? "✏️ 행사 기획 및 결과 수정" : "✏️ 일반 일정 수정") 
-                  : (modalType === "monthly" ? "➕ 새 일반 일정 등록" : modalType === "task" ? "➕ 새 할일 등록" : modalType === "deadline" ? "🚨 새 마감일 등록" : modalType === "event" ? "➕ 새 행사 기획 및 결과 등록" : "➕ 새 회의 일정 회의록 등록")}
+                  ? (modalType === "deadline" ? "✏️ 마감일 수정" : modalType === "task" ? "✏️ 할일 수정" : modalType === "event" ? "✏️ 행사 기획 및 결과 수정" : modalType === "meeting" ? "✏️ 회의록 수정" : "✏️ 일반 일정 수정") 
+                  : (modalType === "monthly" ? "➕ 새 일반 일정 등록" : modalType === "task" ? "➕ 새 할일 등록" : modalType === "deadline" ? "🚨 새 마감일 등록" : modalType === "event" ? "➕ 새 행사 기획 및 결과 등록" : modalType === "meeting" ? "➕ 새 회의록 등록" : "➕ 새 회의 일정 회의록 등록")}
               </h3>
               <button 
                 onClick={() => {
@@ -1174,7 +1358,7 @@ export default function ScheduleManager({
                     <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>회의 명칭</label>
                     <input type="text" name="title" value={formData.title} onChange={handleInputChange} required placeholder="예: 제2차 ICC 센터 공동 운영 회의" style={{ width: "100%", padding: "0.5rem", background: "rgba(128,128,128,0.1)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} />
                   </div>
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+                  <div style={{ display: "grid", gridTemplateColumns: "1.2fr 0.8fr", gap: "1rem" }}>
                     <div>
                       <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>회의 대분류</label>
                       <select name="category" value={formData.category} onChange={handleInputChange} style={{ width: "100%", padding: "0.5rem", background: "var(--panel-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }}>
@@ -1184,37 +1368,92 @@ export default function ScheduleManager({
                       </select>
                     </div>
                     <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>구분 월</label>
-                      <select name="month" value={formData.month} onChange={handleInputChange} style={{ width: "100%", padding: "0.5rem", background: "var(--panel-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }}>
-                        {[3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 1, 2].map(m => (
-                          <option key={m} value={m}>{m}월</option>
+                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>장소</label>
+                      <input type="text" name="location" value={formData.location} onChange={handleInputChange} required placeholder="예: ICC 센터장실" style={{ width: "100%", padding: "0.5rem", background: "rgba(128,128,128,0.1)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} />
+                    </div>
+                  </div>
+
+                  {/* 회의 일시 개별 입력 필드 */}
+                  <div style={{ display: "grid", gridTemplateColumns: "1.2fr 0.9fr 0.9fr", gap: "1rem" }}>
+                    <div>
+                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>회의 일자</label>
+                      <input type="date" name="meetingDate" value={formData.meetingDate} onChange={handleInputChange} required style={{ width: "100%", padding: "0.5rem", background: "rgba(128,128,128,0.1)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", colorScheme: "dark" }} />
+                    </div>
+                    <div>
+                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>시작 시간</label>
+                      <input type="time" name="meetingStartTime" value={formData.meetingStartTime} onChange={handleInputChange} required style={{ width: "100%", padding: "0.5rem", background: "rgba(128,128,128,0.1)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", colorScheme: "dark" }} />
+                    </div>
+                    <div>
+                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>종료 시간</label>
+                      <input type="time" name="meetingEndTime" value={formData.meetingEndTime} onChange={handleInputChange} required style={{ width: "100%", padding: "0.5rem", background: "rgba(128,128,128,0.1)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", colorScheme: "dark" }} />
+                    </div>
+                  </div>
+
+                  {/* 관련 부서 및 작성자 드롭다운 배치 */}
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+                    <div>
+                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>관련 부서</label>
+                      <select name="dept" value={formData.dept} onChange={handleInputChange} style={{ width: "100%", padding: "0.5rem", background: "var(--panel-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }}>
+                        {["ECC센터", "ICC센터", "RCC센터", "AID-X지원센터", "울산늘봄누리센터", "신산업특화센터", "사업운영팀"].map(d => (
+                          <option key={d} value={d}>{d}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>작성자</label>
+                      <select name="writer" value={formData.writer} onChange={handleInputChange} style={{ width: "100%", padding: "0.5rem", background: "var(--panel-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }}>
+                        {["박지현 팀장", "김민수 단장", "이진우 PD", "최성훈 PD", "한아름 PD"].map(w => (
+                          <option key={w} value={w}>{w}</option>
                         ))}
                       </select>
                     </div>
                   </div>
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
-                    <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>일시 (상세)</label>
-                      <input type="text" name="datetime" value={formData.datetime} onChange={handleInputChange} placeholder="예: 2026.07.19 14:00" style={{ width: "100%", padding: "0.5rem", background: "rgba(128,128,128,0.1)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} />
-                    </div>
-                    <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>장소</label>
-                      <input type="text" name="location" value={formData.location} onChange={handleInputChange} placeholder="예: ICC 센터장실" style={{ width: "100%", padding: "0.5rem", background: "rgba(128,128,128,0.1)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} />
-                    </div>
-                  </div>
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
-                    <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>참석자 (내부 구분)</label>
-                      <input type="text" name="attendeesInternal" value={formData.attendeesInternal} onChange={handleInputChange} placeholder="예: 전담 교수 3명" style={{ width: "100%", padding: "0.5rem", background: "rgba(128,128,128,0.1)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} />
-                    </div>
-                    <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>참석자 (외부 구분)</label>
-                      <input type="text" name="attendeesExternal" value={formData.attendeesExternal} onChange={handleInputChange} placeholder="예: 자문위원 2명" style={{ width: "100%", padding: "0.5rem", background: "rgba(128,128,128,0.1)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} />
-                    </div>
-                  </div>
+
+                  {/* 참석자 직접 입력 */}
                   <div>
-                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>회의 의제 (안건)</label>
-                    <textarea name="agenda" value={formData.agenda} onChange={handleInputChange} placeholder="회의에서 중점적으로 다룬 의제 기술" style={{ width: "100%", height: "60px", padding: "0.5rem", background: "rgba(128,128,128,0.1)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", resize: "none" }} />
+                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>참석자 (직접 입력)</label>
+                    <input type="text" name="attendees" value={formData.attendees} onChange={handleInputChange} placeholder="예: 박지현 팀장, 이진우 PD, 김현주 실무 위원 (총 3명)" style={{ width: "100%", padding: "0.5rem", background: "rgba(128,128,128,0.1)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} />
+                  </div>
+
+                  {/* 주요의제 동적 리스트 추가/삭제 폼 */}
+                  <div>
+                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>주요 의제 (한 줄에 하나의 의제)</label>
+                    <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
+                      {formData.agendaList && formData.agendaList.map((agenda, index) => (
+                        <div key={index} style={{ display: "flex", gap: "0.5rem" }}>
+                          <input 
+                            type="text" 
+                            value={agenda} 
+                            onChange={(e) => {
+                              const newList = [...formData.agendaList];
+                              newList[index] = e.target.value;
+                              setFormData({ ...formData, agendaList: newList });
+                            }}
+                            placeholder={`의제 ${index + 1} (예: 2차년도 사업계획서 검토)`}
+                            style={{ flex: 1, padding: "0.5rem", background: "rgba(128,128,128,0.1)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }}
+                          />
+                          {formData.agendaList.length > 1 && (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const newList = formData.agendaList.filter((_, idx) => idx !== index);
+                                setFormData({ ...formData, agendaList: newList });
+                              }}
+                              style={{ padding: "0.5rem 0.75rem", background: "rgba(239,68,68,0.15)", border: "1px solid rgba(239,68,68,0.3)", borderRadius: "6px", color: "#F87171", cursor: "pointer", fontWeight: "700" }}
+                            >
+                              ✕
+                            </button>
+                          )}
+                        </div>
+                      ))}
+                      <button
+                        type="button"
+                        onClick={() => setFormData({ ...formData, agendaList: [...formData.agendaList, ""] })}
+                        style={{ marginTop: "0.25rem", padding: "0.35rem 0.8rem", background: "rgba(59,130,246,0.15)", border: "1px solid rgba(59,130,246,0.3)", borderRadius: "6px", color: "#60A5FA", cursor: "pointer", fontSize: "0.75rem", display: "inline-flex", alignSelf: "flex-start", fontWeight: "700" }}
+                      >
+                        + 의제 추가
+                      </button>
+                    </div>
                   </div>
                   <div>
                     <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>회의 결과</label>
