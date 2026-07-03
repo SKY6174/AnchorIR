@@ -410,7 +410,7 @@ export default function UnitSystemView() {
       </div>
 
       {/* 🛠️ 하단 블록: 3단 드롭다운 연동 레이아웃 */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: "1.5rem", minHeight: "450px" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "4fr 6fr", gap: "1.5rem", minHeight: "450px" }}>
         
         {/* 좌측: PJ -> WS -> S 3단 드롭다운 선택 패널 */}
         <div className="glass-card" style={{ padding: "1.5rem", display: "flex", flexDirection: "column", gap: "1.2rem" }}>
@@ -498,22 +498,6 @@ export default function UnitSystemView() {
                 </option>
               ))}
             </select>
-          </div>
-
-          {/* 현재 선택 디버깅 한 줄 정보 */}
-          <div style={{
-            fontSize: "0.72rem",
-            color: "var(--text-secondary-dark)",
-            padding: "0.8rem",
-            background: "rgba(255,255,255,0.01)",
-            border: "1px dashed rgba(255,255,255,0.06)",
-            borderRadius: "0.4rem",
-            display: "flex",
-            flexDirection: "column",
-            gap: "0.3rem"
-          }}>
-            <div><strong>과제 WS</strong>: {selectedUnitId}</div>
-            <div><strong>전략 S</strong>: {selectedStratId}</div>
           </div>
         </div>
 
@@ -616,7 +600,7 @@ export default function UnitSystemView() {
               소속 프로그램 내역 (Programs)
             </span>
             
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: "0.6rem" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "0.6rem" }}>
               {filteredPrograms.length === 0 ? (
                 <div style={{ gridColumn: "1/-1", fontSize: "0.78rem", color: "var(--text-secondary-dark)", textAlign: "center", padding: "2rem" }}>
                   본 전략에 매핑되어 작동 중인 실무 프로그램이 아직 존재하지 않습니다.
@@ -644,7 +628,10 @@ export default function UnitSystemView() {
                       padding: "0.15rem 0.4rem",
                       borderRadius: "0.25rem",
                       fontFamily: "monospace",
-                      fontSize: "0.68rem"
+                      fontSize: "0.68rem",
+                      whiteSpace: "nowrap",
+                      flexShrink: 0,
+                      marginLeft: "1rem"
                     }}>
                       {prog.id}
                     </code>
