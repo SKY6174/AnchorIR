@@ -239,9 +239,9 @@ export default function ScheduleManager({
     const startDay = getStartDayOfWeek(currentMonth);
     const cells = [];
 
-    // 빈 셀 채우기 (라이트/다크모드 유동적 border 적용)
+    // 빈 셀 채우기 (라이트/다크모드 유동적 border 적용 및 최소 높이 확보)
     for (let i = 0; i < startDay; i++) {
-      cells.push(<div key={`empty-${i}`} style={{ height: "70px", borderBottom: "1px solid var(--border-color)", borderRight: "1px solid var(--border-color)" }}></div>);
+      cells.push(<div key={`empty-${i}`} style={{ minHeight: "85px", height: "auto", borderBottom: "1px solid var(--border-color)", borderRight: "1px solid var(--border-color)" }}></div>);
     }
 
     // 날짜 채우기
@@ -255,20 +255,23 @@ export default function ScheduleManager({
           key={`day-${day}`}
           onClick={() => setSelectedDay(day)}
           style={{
-            height: "70px",
-            padding: "0.25rem",
+            minHeight: "85px",
+            height: "auto",
+            padding: "0.25rem 0.25rem 0.4rem 0.25rem",
             borderBottom: "1px solid var(--border-color)",
             borderRight: "1px solid var(--border-color)",
             background: isSelected ? "rgba(59, 130, 246, 0.15)" : "transparent",
             cursor: "pointer",
             position: "relative",
-            transition: "all 0.15s ease"
+            transition: "all 0.15s ease",
+            display: "flex",
+            flexDirection: "column"
           }}
         >
           <span style={{ fontSize: "0.75rem", fontWeight: "700", color: isSelected ? "var(--accent-color)" : "var(--text-primary)" }}>
             {day}
           </span>
-          <div style={{ display: "flex", flexDirection: "column", gap: "0.15rem", marginTop: "0.25rem", maxHeight: "40px", overflow: "hidden" }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: "0.15rem", marginTop: "0.25rem", maxHeight: "115px", overflowY: "auto", flex: 1, scrollbarWidth: "none" }}>
             {daySchedules.map(sched => {
               const isTask = sched.isTask || false;
               const isDeadline = sched.isDeadline || false;

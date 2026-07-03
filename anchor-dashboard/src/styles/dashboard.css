@@ -729,3 +729,8 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover,
 input[type="time"]::-webkit-calendar-picker-indicator:hover {
   opacity: 1 !important; /* 마우스 호버 시 완전히 밝은 백색으로 노출 */
 }
+
+/* 캘린더 날짜 셀 내의 불필요한 스크롤바 레이아웃 숨김 처리 */
+.schedule-manager-container div::-webkit-scrollbar {
+  display: none !important;
+}
