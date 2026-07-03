@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Info, Award, Layout, GitFork, ArrowRight, List } from "lucide-react";
+import STRATEGY_TASK_MAPPING_Y1 from "../data/extracted_1st_year.json";
 
 // 1. 프로젝트 및 단위과제 매핑 정보 정의 (2차년도 기준)
 const PROJECTS_DATA = [
@@ -38,6 +39,47 @@ const PROJECTS_DATA = [
       { id: "D1", title: "지역문제해결을 위한 울산형 혁신 솔루션 구축" },
       { id: "D2", title: "지속가능한 보건복지 특성화 및 인재양성 체계 구축" },
       { id: "D3", title: "에코 컬처로 만드는 꿀잼도시 울산" }
+    ]
+  }
+];
+
+// 1차년도 프로젝트 및 단위과제 매핑 정보 정의
+const PROJECTS_DATA_Y1 = [
+  {
+    id: "A",
+    title: "프로젝트 A : 울산에 뿌리내리는 정주형 실전 인재 양성(Dynamic TALENT)",
+    units: [
+      { id: "A1", title: "지역과 미래를 만드는 UC-HYPER 전문기술인재 양성" },
+      { id: "A2", title: "지역 창업 생태계 혁신을 위한 글로컬 창업 문화 조성" }
+    ]
+  },
+  {
+    id: "B",
+    title: "프로젝트 B : 기업과 하나되는 지⋅산⋅학⋅연 초연결 생태계 조성(Dynamic BRIDGE)",
+    units: [
+      { id: "B1", title: "중소·중견기업 맞춤형 기술지원·공동연구 활성화" },
+      { id: "B2", title: "AID 역량강화 기반 지역산업 전환 지원" },
+      { id: "B3", title: "중소·중견기업과의 지산학 공동연구 협력 체계 구축" },
+      { id: "B4", title: "지자체 연계형 지역문제 해결 및 종합 기업 지원 체계" }
+    ]
+  },
+  {
+    id: "C",
+    title: "프로젝트 C : 다시 뛰게 만드는 생애 ‘직무 도약’ 체계 구축(Dynamic JUMP)",
+    units: [
+      { id: "C1", title: "복합재난 대응 산업안전·보건 관리시스템 개발" },
+      { id: "C2", title: "내일을 밝히는 위드아이 늘봄 생태계 조성" },
+      { id: "C3", title: "U-LIFE 평생직업교육 기반 취∙창업 연계모델 구축" }
+    ]
+  },
+  {
+    id: "D",
+    title: "프로젝트 D : 지역생활 안전⋅의료⋅정주 협력체계 구축(Dynamic CARE)",
+    units: [
+      { id: "D1", title: "통합형 인재양성 기반 포용적 보건복지서비스 구현" },
+      { id: "D2", title: "교육·산업·복지가 조화로운 지속가능한 탄소중립" },
+      { id: "D3", title: "에코 컬처로 만드는 꿀잼도시 울산" },
+      { id: "D4", title: "지역산업 연계 글로벌 협력 거점 대학 육성" }
     ]
   }
 ];
@@ -308,16 +350,19 @@ const STRATEGY_TASK_MAPPING = {
   }
 };
 
-export default function UnitSystemView() {
+export default function UnitSystemView({ selectedYear = 2 }) {
   const [selectedProjectId, setSelectedProjectId] = useState("A");
   
+  const currentProjectsData = selectedYear === 1 ? PROJECTS_DATA_Y1 : PROJECTS_DATA;
+  const currentStrategyMapping = selectedYear === 1 ? STRATEGY_TASK_MAPPING_Y1 : STRATEGY_TASK_MAPPING;
+
   // 선택한 프로젝트 소속 단위과제들 중 첫 번째 과제를 기본값으로 설정
-  const currentProject = PROJECTS_DATA.find(p => p.id === selectedProjectId);
+  const currentProject = currentProjectsData.find(p => p.id === selectedProjectId);
   const defaultUnitId = currentProject && currentProject.units.length > 0 ? currentProject.units[0].id : "";
   const [selectedUnitId, setSelectedUnitId] = useState(defaultUnitId);
 
   // 선택한 단위과제 소속 전략 정보 로드
-  const selectedUnitData = STRATEGY_TASK_MAPPING[selectedUnitId] || {
+  const selectedUnitData = currentStrategyMapping[selectedUnitId] || {
     strategies: [],
     tasks: [],
     programs: []
@@ -327,6 +372,19 @@ export default function UnitSystemView() {
   const defaultStratId = selectedUnitData.strategies.length > 0 ? selectedUnitData.strategies[0].id : "";
   const [selectedStratId, setSelectedStratId] = useState(defaultStratId);
 
+  // 연도(selectedYear)나 프로젝트가 변경될 때 현재 유닛 목록의 유효성 검사 및 리셋 처리
+  useEffect(() => {
+    const currentProj = currentProjectsData.find(p => p.id === selectedProjectId);
+    if (currentProj && currentProj.units.length > 0) {
+      const exists = currentProj.units.some(u => u.id === selectedUnitId);
+      if (!exists) {
+        setSelectedUnitId(currentProj.units[0].id);
+      }
+    } else {
+      setSelectedUnitId("");
+    }
+  }, [selectedYear, selectedProjectId, currentProjectsData]);
+
   // 단위과제 변경 시 추진전략 드롭다운도 첫 번째로 자동 연동
   useEffect(() => {
     if (selectedUnitData.strategies.length > 0) {
@@ -334,16 +392,16 @@ export default function UnitSystemView() {
     } else {
       setSelectedStratId("");
     }
-  }, [selectedUnitId]);
+  }, [selectedUnitId, selectedUnitData]);
 
   // 프로젝트 변경 시 단위과제 및 추진전략 자동 갱신
   const handleProjectChange = (projId) => {
     setSelectedProjectId(projId);
-    const targetProj = PROJECTS_DATA.find(p => p.id === projId);
+    const targetProj = currentProjectsData.find(p => p.id === projId);
     if (targetProj && targetProj.units.length > 0) {
       const nextUnitId = targetProj.units[0].id;
       setSelectedUnitId(nextUnitId);
-      const nextUnitData = STRATEGY_TASK_MAPPING[nextUnitId];
+      const nextUnitData = currentStrategyMapping[nextUnitId];
       if (nextUnitData && nextUnitData.strategies.length > 0) {
         setSelectedStratId(nextUnitData.strategies[0].id);
       } else {
@@ -412,7 +470,7 @@ export default function UnitSystemView() {
               단위과제번호-(추진전략번호+추진과제번호)-프로그램번호
             </code>
             <span style={{ margin: "0 0.5rem", color: "#444" }}>|</span>
-            예시: <strong style={{ color: "white" }}>A1가-S1T1-1</strong> ➔ 단위과제 <strong style={{ color: "#10b981" }}>A1가</strong>, 추진전략 <strong style={{ color: "#ec4899" }}>S1</strong>, 추진과제 <strong style={{ color: "#f59e0b" }}>T1</strong>에 매핑된 <strong style={{ color: "#8b5cf6" }}>1번 프로그램</strong>을 의미함.
+            예시: <strong style={{ color: "white" }}>{selectedYear === 1 ? "A1-S1T1-1" : "A1가-S1T1-1"}</strong> ➔ 단위과제 <strong style={{ color: "#10b981" }}>{selectedYear === 1 ? "A1" : "A1가"}</strong>, 추진전략 <strong style={{ color: "#ec4899" }}>S1</strong>, 추진과제 <strong style={{ color: "#f59e0b" }}>T1</strong>에 매핑된 <strong style={{ color: "#8b5cf6" }}>1번 프로그램</strong>을 의미함.
           </p>
           <p style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)", marginTop: "0.4rem", fontStyle: "italic" }}>
             * 액션플랜(Action Plan; AP): 각 프로그램 수행을 위해 예산(본사업비/이월비), 담당자, 추진 단계, 마일스톤 기한 등을 상세히 테이블로 명시한 최하위 실천 명세입니다.
@@ -449,7 +507,7 @@ export default function UnitSystemView() {
                 borderRadius: "0.4rem"
               }}
             >
-              {PROJECTS_DATA.map(p => (
+              {currentProjectsData.map(p => (
                 <option key={p.id} value={p.id} style={{ background: "#1e1e1e", color: "white" }}>
                   {p.id === "A" ? "A. 울산에 뿌리내리는 정주형 실전 인재 양성(Dynamic TALENT)" :
                    p.id === "B" ? "B. 기업과 하나되는 지⋅산⋅학⋅연 초연결 생태계 조성(Dynamic BRIDGE)" :
@@ -479,7 +537,7 @@ export default function UnitSystemView() {
                 borderRadius: "0.4rem"
               }}
             >
-              {PROJECTS_DATA.find(p => p.id === selectedProjectId)?.units.map(u => (
+              {currentProjectsData.find(p => p.id === selectedProjectId)?.units.map(u => (
                 <option key={u.id} value={u.id} style={{ background: "#1e1e1e", color: "white" }}>
                   {u.id} : {u.title}
                 </option>

@@ -4743,7 +4743,7 @@ export default function App() {
             )}
 
             {projectsSubTab === "unit_system" && (
-              <UnitSystemView />
+              <UnitSystemView selectedYear={selectedYear} />
             )}
 
             {projectsSubTab === "program_mgmt" && (
