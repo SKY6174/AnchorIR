@@ -2471,12 +2471,12 @@ export default function App() {
           });
           setProjects(dbProjData);
           localStorage.setItem(`anchor_cache_proj_y${selectedYear}`, JSON.stringify(dbProjData));
-          await supabase.from("projects_data").upsert({ year: selectedYear, data: dbProjData });
+          await supabase.from("projects_data").upsert({ year: selectedYear, data: dbProjData }, { onConflict: "year" });
         } else {
           const multiYearInitialData = formatDataToMultiYear(initialProjectsData);
           setProjects(multiYearInitialData);
           localStorage.setItem(`anchor_cache_proj_y${selectedYear}`, JSON.stringify(multiYearInitialData));
-          await supabase.from("projects_data").upsert({ year: selectedYear, data: multiYearInitialData });
+          await supabase.from("projects_data").upsert({ year: selectedYear, data: multiYearInitialData }, { onConflict: "year" });
         }
 
         // 2. Agreements 복구
