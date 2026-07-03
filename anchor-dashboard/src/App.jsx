@@ -73,6 +73,74 @@ const REVERSE_UNIT_MAPPING_Y1 = {
   "D3": "D3"
 };
 
+const PROGRAM_ID_MIGRATION_MAP = {
+  "A1가": {
+    "A1가-01": "A1가-S1T1-1", "A1가-02": "A1가-S1T1-2", "A1가-03": "A1가-S1T1-3", "A1가-04": "A1가-S1T1-4", "A1가-05": "A1가-S1T1-5",
+    "A1가-06": "A1가-S1T1-6", "A1가-07": "A1가-S1T1-7", "A1가-08": "A1가-S1T1-8", "A1가-09": "A1가-S1T1-9", "A1가-10": "A1가-S1T1-10",
+    "A1가-11": "A1가-S3T3-1",
+    "A1가-12": "A1가-S1T1-11", "A1가-13": "A1가-S1T1-12",
+    "A1가-14": "A1가-S3T3-2", "A1가-15": "A1가-S3T3-3", "A1가-16": "A1가-S3T3-4", "A1가-17": "A1가-S3T3-5",
+    "A1가-18": "A1가-S4T4-1", "A1가-19": "A1가-S4T4-2", "A1가-20": "A1가-S4T4-3", "A1가-21": "A1가-S4T4-4", "A1가-22": "A1가-S4T4-5", "A1가-23": "A1가-S4T4-6", "A1가-24": "A1가-S4T4-7",
+    "A1가-25": "A1가-S3T3-6",
+    "A1가-26": "A1가-S5T5-1", "A1가-27": "A1가-S5T5-2", "A1가-28": "A1가-S5T5-3", "A1가-29": "A1가-S5T5-4", "A1가-30": "A1가-S5T5-5", "A1가-31": "A1가-S5T5-6", "A1가-32": "A1가-S5T5-7"
+  },
+  "A1나": {
+    "A1나-01": "A1나-S1T1-1", "A1나-02": "A1나-S2T2-1", "A1나-03": "A1나-S3T3-1"
+  },
+  "A2": {
+    "A2-01": "A2-S1T1-1", "A2-02": "A2-S1T2-1", "A2-03": "A2-S2T3-1", "A2-04": "A2-S2T4-1", "A2-05": "A2-S3T5-1", "A2-06": "A2-S3T6-1", "A2-07": "A2-S3T7-1"
+  },
+  "A3": {
+    "A3-01": "A3-S1T1-1", "A3-02": "A3-S1T2-1", "A3-03": "A3-S2T3-1", "A3-04": "A3-S2T4-1", "A3-05": "A3-S2T4-2", "A3-06": "A3-S2T4-3"
+  },
+  "B1": {
+    "B1-01": "B1-S1T1-1", "B1-02": "B1-S1T2-1", "B1-03": "B1-S2T3-1", "B1-04": "B1-S3T4-1", "B1-05": "B1-S3T4-2", "B1-06": "B1-S3T4-3"
+  },
+  "B2": {
+    "B2-01": "B2-S1T1-1", "B2-02": "B2-S2T2-1", "B2-03": "B2-S2T3-1", "B2-04": "B2-S3T4-1", "B2-05": "B2-S4T5-1", "B2-06": "B2-S4T5-2", "B2-07": "B2-S4T5-3"
+  },
+  "B3": {
+    "B3-01": "B3-S1T1-1", "B3-02": "B3-S2T2-1", "B3-03": "B3-S3T3-1", "B3-04": "B3-S3T3-2", "B3-05": "B3-S3T3-3"
+  },
+  "B4": {
+    "B4-01": "B4-S1T1-1", "B4-02": "B4-S2T2-1", "B4-03": "B4-S3T3-1", "B4-04": "B4-S3T3-2", "B4-05": "B4-S3T3-3"
+  },
+  "C1": {
+    "C1-01": "C1-S1T1-1", "C1-02": "C1-S2T2-1", "C1-03": "C1-S3T3-1", "C1-04": "C1-S4T4-1", "C1-05": "C1-S4T4-2"
+  },
+  "C2": {
+    "C2-01": "C2-S1T1-1", "C2-02": "C2-S2T2-1", "C2-03": "C2-S3T3-1", "C2-04": "C2-S4T4-1", "C2-05": "C2-S4T4-2"
+  },
+  "D1": {
+    "D1-01": "D1-S1T1-1", "D1-02": "D1-S2T2-1", "D1-03": "D1-S2T3-1", "D1-04": "D1-S2T3-2", "D1-05": "D1-S2T3-3"
+  },
+  "D2": {
+    "D2-01": "D2-S1T1-1", "D2-02": "D2-S1T2-1", "D2-03": "D2-S2T3-1", "D2-04": "D2-S2T3-2", "D2-05": "D2-S2T3-3"
+  },
+  "D3": {
+    "D3-01": "D3-S1T1-1", "D3-02": "D3-S1T2-1", "D3-03": "D3-S2T3-1", "D3-04": "D3-S2T3-2", "D3-05": "D3-S2T3-3"
+  }
+};
+
+const migrateProgramIds = (data) => {
+  if (!data || !Array.isArray(data)) return data;
+  data.forEach((strategy) => {
+    if (strategy.units && Array.isArray(strategy.units)) {
+      strategy.units.forEach((unit) => {
+        if (unit.programs && Array.isArray(unit.programs)) {
+          unit.programs.forEach((prog) => {
+            const unitRules = PROGRAM_ID_MIGRATION_MAP[unit.id];
+            if (unitRules && unitRules[prog.id]) {
+              prog.id = unitRules[prog.id];
+            }
+          });
+        }
+      });
+    }
+  });
+  return data;
+};
+
 const getRealUnitId = (unitId, yr) => {
   return yr === 1 ? (REVERSE_UNIT_MAPPING_Y1[unitId] || unitId) : unitId;
 };
@@ -1334,8 +1402,8 @@ export default function App() {
     const cached = localStorage.getItem("anchor_projects_data_v23");
     if (cached) {
       try {
-        const loaded = JSON.parse(cached);
-        const multiYearInitialData = formatDataToMultiYear(initialProjectsData);
+        const loaded = migrateProgramIds(JSON.parse(cached));
+        const multiYearInitialData = migrateProgramIds(formatDataToMultiYear(initialProjectsData));
         // [자동 동기화] mockData.js의 initialProjectsData로부터 각 과제의 최신 프로그램 목록을 조회하여 캐시 데이터와 머지합니다.
         loaded.forEach((strategy) => {
           strategy.units.forEach((unit) => {
@@ -2438,7 +2506,7 @@ export default function App() {
         const cachedMeet = localStorage.getItem(`anchor_cache_meet_y${selectedYear}`);
         const cachedPress = localStorage.getItem(`anchor_cache_press_y${selectedYear}`);
 
-        if (cachedProj) setProjects(JSON.parse(cachedProj));
+        if (cachedProj) setProjects(migrateProgramIds(JSON.parse(cachedProj)));
         if (cachedAgr) setAgreements(JSON.parse(cachedAgr));
         if (cachedEnv) setEnvData(JSON.parse(cachedEnv));
         if (cachedEquip) setEquipData(JSON.parse(cachedEquip));
@@ -2463,8 +2531,9 @@ export default function App() {
         
         if (projData && projData.data) {
           // [성과 동기화] 원격 DB 데이터 로드 시점에도 mockData.js의 최신 KPI 구조(C-1~C-6 등)가 강제 유지되도록 동기화합니다.
-          const dbProjData = projData.data;
-          const multiYearInitialData = formatDataToMultiYear(initialProjectsData);
+          // [ID 마이그레이션] DB에서 읽어온 데이터 내의 프로그램 ID들을 5단계 위계 규정에 맞게 마이그레이션 적용합니다.
+          const dbProjData = migrateProgramIds(projData.data);
+          const multiYearInitialData = migrateProgramIds(formatDataToMultiYear(initialProjectsData));
           dbProjData.forEach((strategy) => {
             strategy.units.forEach((unit) => {
               const sourceUnit = multiYearInitialData
@@ -2479,7 +2548,7 @@ export default function App() {
           localStorage.setItem(`anchor_cache_proj_y${selectedYear}`, JSON.stringify(dbProjData));
           await supabase.from("projects_data").upsert({ year: selectedYear, data: dbProjData }, { onConflict: "year" });
         } else {
-          const multiYearInitialData = formatDataToMultiYear(initialProjectsData);
+          const multiYearInitialData = migrateProgramIds(formatDataToMultiYear(initialProjectsData));
           setProjects(multiYearInitialData);
           localStorage.setItem(`anchor_cache_proj_y${selectedYear}`, JSON.stringify(multiYearInitialData));
           await supabase.from("projects_data").upsert({ year: selectedYear, data: multiYearInitialData }, { onConflict: "year" });
