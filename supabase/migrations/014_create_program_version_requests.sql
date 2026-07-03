@@ -3,7 +3,7 @@ CREATE TABLE IF NOT EXISTS program_version_requests (
     id BIGSERIAL PRIMARY KEY,
     year INTEGER NOT NULL,
     unit_id TEXT NOT NULL,
-    program_id INTEGER NOT NULL,
+    program_id TEXT NOT NULL,
     program_title TEXT NOT NULL,
     version_name TEXT NOT NULL,
     changes JSONB NOT NULL, -- {"before": {...}, "after": {...}} 구조로 기획 정보 통째 저장

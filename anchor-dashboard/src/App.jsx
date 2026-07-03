@@ -2996,7 +2996,7 @@ export default function App() {
             p.units.forEach((u) => {
               if (u.id === targetUnitId) {
                 u.programs.forEach((prog) => {
-                  if (prog.id === req.program_id) {
+                  if (String(prog.id) === String(req.program_id)) {
                     // 예산, 기획, 추진실적, 환류방안, KPI 등 changes.after의 정보를 전체 병합
                     Object.keys(afterFields).forEach((key) => {
                       if (key === "years" && afterFields.years) {
