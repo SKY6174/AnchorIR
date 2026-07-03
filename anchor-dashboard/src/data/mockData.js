@@ -65,6 +65,156 @@ export const initialProjectsData = [
         },
         kpis: [
           {
+            id: "C-1",
+            name: "지역별 대표 과제 성과목표 달성률",
+            type: "공통",
+            description: "지자체 대표 프로젝트 및 단위과제들의 종합 연도별 목표치 달성률",
+            formula: "(당해연도 대표과제 달성실적 / 목표실적) * 100",
+            cycle: "연 1회",
+            owner: "사업운영팀",
+            subItems: [
+              {
+                id: "C-1-1",
+                name: "대표과제 목표 달성 개수",
+                unit: "건",
+                years: {
+                  1: { target: 5, current: 5 },
+                  2: { target: 6, current: 5 },
+                  3: { target: 7, current: 0 },
+                  4: { target: 8, current: 0 },
+                  5: { target: 9, current: 0 }
+                }
+              }
+            ]
+          },
+          {
+            id: "C-2",
+            name: "지산학연 협업 실적 증가율",
+            type: "공통",
+            description: "대학, 산업체, 연구소, 지자체 간의 협약 건수 및 공동 R&BD 유입 실적 증가 비율",
+            formula: "(당해연도 지산학연 협업 실적 / 2024년 기준연도 실적) * 100",
+            cycle: "연 1회",
+            owner: "ICC센터",
+            subItems: [
+              {
+                id: "C-2-1",
+                name: "지산학연 협력협약 체결 건수",
+                unit: "건",
+                years: {
+                  1: { target: 45, current: 52 },
+                  2: { target: 50, current: 48 },
+                  3: { target: 55, current: 0 },
+                  4: { target: 60, current: 0 },
+                  5: { target: 65, current: 0 }
+                }
+              },
+              {
+                id: "C-2-2",
+                name: "공동 R&BD 및 기술이전 체결액",
+                unit: "백만원",
+                years: {
+                  1: { target: 800, current: 950 },
+                  2: { target: 1000, current: 920 },
+                  3: { target: 1200, current: 0 },
+                  4: { target: 1400, current: 0 },
+                  5: { target: 1600, current: 0 }
+                }
+              }
+            ]
+          },
+          {
+            id: "C-3",
+            name: "성인학습자 고등교육 실적 증가율",
+            type: "공통",
+            description: "성인학습자의 직업 능력 제고를 위한 비학위 및 평생직업교육과정 참여생 증가 추이",
+            formula: "(당해연도 성인학습자 등록생 수 / 2024년 기준연도 실적) * 100",
+            cycle: "연 1회",
+            owner: "RCC센터",
+            subItems: [
+              {
+                id: "C-3-1",
+                name: "평생직업교육 비학위과정 이수 인원",
+                unit: "명",
+                years: {
+                  1: { target: 1500, current: 1680 },
+                  2: { target: 1800, current: 1750 },
+                  3: { target: 2000, current: 0 },
+                  4: { target: 2200, current: 0 },
+                  5: { target: 2400, current: 0 }
+                }
+              }
+            ]
+          },
+          {
+            id: "C-4",
+            name: "지역정주 취업 증가율",
+            type: "공통",
+            description: "졸업생 중 울산광역시 및 인접 동일생활권 내 기업체에 취업하여 정주한 졸업생 증가율",
+            formula: "(당해연도 지역정주 취업 졸업생 수 / 2024년 기준연도 실적) * 100",
+            cycle: "연 1회",
+            owner: "ECC센터",
+            subItems: [
+              {
+                id: "C-4-1",
+                name: "관내 기업체 취업 졸업생 수",
+                unit: "명",
+                years: {
+                  1: { target: 650, current: 698 },
+                  2: { target: 700, current: 685 },
+                  3: { target: 750, current: 0 },
+                  4: { target: 800, current: 0 },
+                  5: { target: 850, current: 0 }
+                }
+              }
+            ]
+          },
+          {
+            id: "C-5",
+            name: "지역혁신체제 만족도 증가율",
+            type: "공통",
+            description: "RISE 사업 및 지산학 협력 거버넌스 전반에 대한 시도 내 만족도 조사 향상율",
+            formula: "(당해연도 종합 만족도 점수 / 2024년 기준연도 점수) * 100",
+            cycle: "연 1회",
+            owner: "사업운영팀",
+            subItems: [
+              {
+                id: "C-5-1",
+                name: "종합 지산학연 연계 체제 만족도 지수",
+                unit: "점",
+                years: {
+                  1: { target: 80, current: 82 },
+                  2: { target: 85, current: 83 },
+                  3: { target: 88, current: 0 },
+                  4: { target: 90, current: 0 },
+                  5: { target: 92, current: 0 }
+                }
+              }
+            ]
+          },
+          {
+            id: "C-6",
+            name: "대학의 지역경제 영향력 증가율 (IMPACT)",
+            type: "공통",
+            description: "대학의 생산 유발 및 고용 창출 등 지역 경제 활성화에 기여한 영향력 성장도",
+            formula: "(당해연도 지역경제 파급효과 유발액 / 2024년 기준연도 실적) * 100",
+            cycle: "연 1회",
+            owner: "사업운영팀",
+            subItems: [
+              {
+                id: "C-6-1",
+                name: "생산 및 고용 유발 파급효과 추정액",
+                unit: "억원",
+                years: {
+                  1: { target: 1200, current: 1280 },
+                  2: { target: 1350, current: 1310 },
+                  3: { target: 1500, current: 0 },
+                  4: { target: 1650, current: 0 },
+                  5: { target: 1800, current: 0 }
+                }
+              }
+            ]
+          },
+          {
             id: "L-1",
             name: "지역 맞춤형 교과과정 혁신지수",
             type: "자율",

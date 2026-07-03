@@ -95,7 +95,9 @@ export default function KPIOverview({ projects, currentRole, selectedYear = 2 })
   const anchorBudgetMain = Math.max(0, totalBudgetMain - shinSanUpBudgetMain);
   const anchorBudgetCarry = Math.max(0, totalBudgetCarry - shinSanUpBudgetCarry);
 
-  // KPI 달성률 유형별 계산 (지자체 자율성과지표 / 대학 중점관리지표)
+  // KPI 달성률 유형별 계산 (교육부 공통성과지표 / 지자체 자율성과지표 / 대학 중점관리지표)
+  let commonKpiCount = 0;
+  let commonKpiTotal = 0;
   let selfKpiCount = 0;
   let selfKpiTotal = 0;
   let focusKpiCount = 0;
@@ -153,6 +155,18 @@ export default function KPIOverview({ projects, currentRole, selectedYear = 2 })
           ach = 144.3;
         } else if (selectedYear === 1 && k.id === "L-24") {
           ach = 138.3;
+        } else if (selectedYear === 1 && k.id === "C-1") {
+          ach = 100.0;
+        } else if (selectedYear === 1 && k.id === "C-2") {
+          ach = 115.5;
+        } else if (selectedYear === 1 && k.id === "C-3") {
+          ach = 112.0;
+        } else if (selectedYear === 1 && k.id === "C-4") {
+          ach = 107.4;
+        } else if (selectedYear === 1 && k.id === "C-5") {
+          ach = 102.5;
+        } else if (selectedYear === 1 && k.id === "C-6") {
+          ach = 106.7;
         } else if (k.subItems && k.subItems.length > 0) {
           let sumSub = 0;
           k.subItems.forEach((sub) => {
@@ -165,7 +179,10 @@ export default function KPIOverview({ projects, currentRole, selectedYear = 2 })
         }
         const finalAch = Math.min(ach, 120); // 최대 120% 제한
         
-        if (k.type === "자율") {
+        if (k.type === "공통") {
+          commonKpiCount++;
+          commonKpiTotal += finalAch;
+        } else if (k.type === "자율") {
           selfKpiCount++;
           selfKpiTotal += finalAch;
         } else if (k.type === "중점") {
@@ -176,6 +193,7 @@ export default function KPIOverview({ projects, currentRole, selectedYear = 2 })
     });
   });
 
+  const avgCommonKpi = commonKpiCount > 0 ? commonKpiTotal / commonKpiCount : 0;
   const avgSelfKpi = selfKpiCount > 0 ? selfKpiTotal / selfKpiCount : 0;
   const avgFocusKpi = focusKpiCount > 0 ? focusKpiTotal / focusKpiCount : 0;
 
@@ -369,7 +387,7 @@ export default function KPIOverview({ projects, currentRole, selectedYear = 2 })
         </div>
 
         {selectedYear === 1 ? (
-          // 1차년도 배치: 본사업비 집행 단독(가운데) + 성과달성도 자율/중점 세로 묶음(우측)
+          // 1차년도 배치: 본사업비 집행 단독(가운데) + 성과달성도 공통/자율/중점 세로 묶음(우측)
           <>
             <div className="glass-card" style={{ display: "flex", flexDirection: "column", justifyContent: "space-between", height: "100%", padding: "1.2rem 1.5rem" }}>
               <div className="kpi-header">
@@ -384,86 +402,110 @@ export default function KPIOverview({ projects, currentRole, selectedYear = 2 })
               </div>
             </div>
 
-            <div style={{ display: "flex", flexDirection: "column", gap: "1rem", height: "100%" }}>
-              <div className="glass-card" style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "space-between", padding: "1rem 1.2rem" }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.6rem", height: "100%" }}>
+              <div className="glass-card" style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "space-between", padding: "0.8rem 1.1rem" }}>
+                <div className="kpi-header">
+                  <span>(교육부)공통성과지표</span>
+                  <Award size={16} style={{ color: "#3b82f6" }} />
+                </div>
+                <div>
+                  <div className="kpi-value" style={{ color: "#3b82f6", fontSize: "1.3rem", margin: "0.15rem 0" }}>
+                    {avgCommonKpi.toFixed(1)}%
+                  </div>
+                  <div className="kpi-subtext" style={{ fontSize: "0.65rem" }}>{selectedYear}차년도 교육부 필수 공통성과지표</div>
+                </div>
+              </div>
+              <div className="glass-card" style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "space-between", padding: "0.8rem 1.1rem" }}>
                 <div className="kpi-header">
                   <span>(지자체)자율성과지표</span>
                   <Award size={16} style={{ color: "#ec4899" }} />
                 </div>
                 <div>
-                  <div className="kpi-value" style={{ color: "#ec4899", fontSize: "1.35rem", margin: "0.15rem 0" }}>
+                  <div className="kpi-value" style={{ color: "#ec4899", fontSize: "1.3rem", margin: "0.15rem 0" }}>
                     {avgSelfKpi.toFixed(1)}%
                   </div>
-                  <div className="kpi-subtext" style={{ fontSize: "0.7rem" }}>{selectedYear}차년도 지자체 요구 자율 혁신목표</div>
+                  <div className="kpi-subtext" style={{ fontSize: "0.65rem" }}>{selectedYear}차년도 지자체 요구 자율 혁신목표</div>
                 </div>
               </div>
-              <div className="glass-card" style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "space-between", padding: "1rem 1.2rem" }}>
+              <div className="glass-card" style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "space-between", padding: "0.8rem 1.1rem" }}>
                 <div className="kpi-header">
                   <span>(대학)중점관리지표</span>
                   <Award size={16} style={{ color: "#f472b6" }} />
                 </div>
                 <div>
-                  <div className="kpi-value" style={{ color: "#f472b6", fontSize: "1.35rem", margin: "0.15rem 0" }}>
+                  <div className="kpi-value" style={{ color: "#f472b6", fontSize: "1.3rem", margin: "0.15rem 0" }}>
                     {avgFocusKpi.toFixed(1)}%
                   </div>
-                  <div className="kpi-subtext" style={{ fontSize: "0.7rem" }}>{selectedYear}차년도 대학 특성 핵심관리지표</div>
+                  <div className="kpi-subtext" style={{ fontSize: "0.65rem" }}>{selectedYear}차년도 대학 특성 핵심관리지표</div>
                 </div>
               </div>
             </div>
           </>
         ) : (
-          // 2차년도 이상 배치: 본사업/이월사업 집행 세로 묶음(가운데) + 성과달성도 자율/중점 세로 묶음(우측)
+          // 2차년도 이상 배치: 본사업/이월사업 집행 세로 묶음(가운데) + 성과달성도 공통/자율/중점 세로 묶음(우측)
           <>
-            <div style={{ display: "flex", flexDirection: "column", gap: "1rem", height: "100%" }}>
-              <div className="glass-card" style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "space-between", padding: "1rem 1.2rem" }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.6rem", height: "100%" }}>
+              <div className="glass-card" style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "space-between", padding: "0.8rem 1.1rem" }}>
                 <div className="kpi-header">
                   <span>{selectedYear}차년도 본사업비 집행</span>
                   <Activity size={16} className="badge-green" />
                 </div>
                 <div>
-                  <div className="kpi-value" style={{ color: "#94deb8", fontSize: "1.35rem", margin: "0.15rem 0" }}>
+                  <div className="kpi-value" style={{ color: "#94deb8", fontSize: "1.3rem", margin: "0.15rem 0" }}>
                     {formatToMillionWon(totalSpentMain)} 백만원
                   </div>
-                  <div className="kpi-subtext" style={{ fontSize: "0.7rem" }}>집행률: {rateMain.toFixed(1)}% (배정: {formatToMillionWon(totalBudgetMain)}백)</div>
+                  <div className="kpi-subtext" style={{ fontSize: "0.65rem" }}>집행률: {rateMain.toFixed(1)}% (배정: {formatToMillionWon(totalBudgetMain)}백)</div>
                 </div>
               </div>
-              <div className="glass-card" style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "space-between", padding: "1rem 1.2rem" }}>
+              <div className="glass-card" style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "space-between", padding: "0.8rem 1.1rem" }}>
                 <div className="kpi-header">
                   <span>{selectedYear - 1}차년도 이월사업비 집행</span>
                   <TrendingUp size={16} className="badge-yellow" />
                 </div>
                 <div>
-                  <div className="kpi-value" style={{ color: "#f6c97f", fontSize: "1.35rem", margin: "0.15rem 0" }}>
+                  <div className="kpi-value" style={{ color: "#f6c97f", fontSize: "1.3rem", margin: "0.15rem 0" }}>
                     {formatToMillionWon(totalSpentCarry)} 백만원
                   </div>
-                  <div className="kpi-subtext" style={{ fontSize: "0.7rem" }}>집행률: {rateCarry.toFixed(1)}% (배정: {formatToMillionWon(totalBudgetCarry)}백)</div>
+                  <div className="kpi-subtext" style={{ fontSize: "0.65rem" }}>집행률: {rateCarry.toFixed(1)}% (배정: {formatToMillionWon(totalBudgetCarry)}백)</div>
                 </div>
               </div>
             </div>
 
-            <div style={{ display: "flex", flexDirection: "column", gap: "1rem", height: "100%" }}>
-              <div className="glass-card" style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "space-between", padding: "1rem 1.2rem" }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.6rem", height: "100%" }}>
+              <div className="glass-card" style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "space-between", padding: "0.8rem 1.1rem" }}>
+                <div className="kpi-header">
+                  <span>(교육부)공통성과지표</span>
+                  <Award size={16} style={{ color: "#3b82f6" }} />
+                </div>
+                <div>
+                  <div className="kpi-value" style={{ color: "#3b82f6", fontSize: "1.3rem", margin: "0.15rem 0" }}>
+                    {avgCommonKpi.toFixed(1)}%
+                  </div>
+                  <div className="kpi-subtext" style={{ fontSize: "0.65rem" }}>{selectedYear}차년도 교육부 필수 공통성과지표</div>
+                </div>
+              </div>
+              <div className="glass-card" style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "space-between", padding: "0.8rem 1.1rem" }}>
                 <div className="kpi-header">
                   <span>(지자체)자율성과지표</span>
                   <Award size={16} style={{ color: "#ec4899" }} />
                 </div>
                 <div>
-                  <div className="kpi-value" style={{ color: "#ec4899", fontSize: "1.35rem", margin: "0.15rem 0" }}>
+                  <div className="kpi-value" style={{ color: "#ec4899", fontSize: "1.3rem", margin: "0.15rem 0" }}>
                     {avgSelfKpi.toFixed(1)}%
                   </div>
-                  <div className="kpi-subtext" style={{ fontSize: "0.7rem" }}>{selectedYear}차년도 지자체 요구 자율 혁신목표</div>
+                  <div className="kpi-subtext" style={{ fontSize: "0.65rem" }}>{selectedYear}차년도 지자체 요구 자율 혁신목표</div>
                 </div>
               </div>
-              <div className="glass-card" style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "space-between", padding: "1rem 1.2rem" }}>
+              <div className="glass-card" style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "space-between", padding: "0.8rem 1.1rem" }}>
                 <div className="kpi-header">
                   <span>(대학)중점관리지표</span>
                   <Award size={16} style={{ color: "#f472b6" }} />
                 </div>
                 <div>
-                  <div className="kpi-value" style={{ color: "#f472b6", fontSize: "1.35rem", margin: "0.15rem 0" }}>
+                  <div className="kpi-value" style={{ color: "#f472b6", fontSize: "1.3rem", margin: "0.15rem 0" }}>
                     {avgFocusKpi.toFixed(1)}%
                   </div>
-                  <div className="kpi-subtext" style={{ fontSize: "0.7rem" }}>{selectedYear}차년도 대학 특성 핵심관리지표</div>
+                  <div className="kpi-subtext" style={{ fontSize: "0.65rem" }}>{selectedYear}차년도 대학 특성 핵심관리지표</div>
                 </div>
               </div>
             </div>

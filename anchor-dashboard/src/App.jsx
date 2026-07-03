@@ -2172,7 +2172,7 @@ export default function App() {
     return saved ? parseInt(saved, 10) : 2;
   });
   const [kpiSubTab, setKpiSubTab] = useState(() => {
-    return localStorage.getItem("anchor_kpi_sub_tab") || "자율";
+    return localStorage.getItem("anchor_kpi_sub_tab") || "공통";
   });
   const [budgetSubTab, setBudgetSubTab] = useState(() => {
     return localStorage.getItem("anchor_budget_sub_tab") || "budget_categories";
@@ -5640,6 +5640,27 @@ export default function App() {
                   <h2 style={{ fontSize: "1.25rem", fontWeight: "800" }}>성과지표(KPI) 통합 목록</h2>
                   {/* 자율 / 중점 성과지표 서브탭 제어기 */}
                   <div style={{ display: "flex", gap: "0.3rem", background: "rgba(255,255,255,0.02)", border: "1px solid var(--border-color-dark)", padding: "0.25rem", borderRadius: "0.5rem", marginTop: "0.5rem", width: "fit-content" }}>
+                    <button
+                      onClick={() => {
+                        setKpiSubTab("공통");
+                        // 공통 탭에 해당하는 첫 번째 지표 자동 선택
+                        const first = displayProjects.flatMap(p => p.units.flatMap(u => u.kpis)).find(k => k.type === "공통");
+                        setSelectedKpi(first || null);
+                      }}
+                      style={{
+                        border: "none",
+                        padding: "0.3rem 0.8rem",
+                        borderRadius: "0.35rem",
+                        fontSize: "0.7rem",
+                        fontWeight: "700",
+                        cursor: "pointer",
+                        background: kpiSubTab === "공통" ? "var(--accent-color)" : "transparent",
+                        color: kpiSubTab === "공통" ? "white" : "var(--text-secondary-dark)",
+                        transition: "all 0.2s"
+                      }}
+                    >
+                      (교육부)공통성과지표
+                    </button>
                     <button
                       onClick={() => {
                         setKpiSubTab("자율");

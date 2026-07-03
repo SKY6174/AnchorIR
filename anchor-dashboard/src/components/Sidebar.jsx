@@ -170,7 +170,7 @@ export default function Sidebar({
               onClick={() => {
                 onChangeTab("kpis");
                 if (onChangeKpiSubTab) {
-                  onChangeKpiSubTab("자율");
+                  onChangeKpiSubTab("공통");
                 }
               }}
             >
@@ -178,6 +178,18 @@ export default function Sidebar({
               <span>성과지표 관리</span>
             </div>
             <div className="nav-sub-menu">
+              <div
+                className={`nav-sub-item ${activeTab === "kpis" && kpiSubTab === "공통" ? "active" : ""}`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onChangeTab("kpis");
+                  if (onChangeKpiSubTab) {
+                    onChangeKpiSubTab("공통");
+                  }
+                }}
+              >
+                - (교육부)공통성과지표
+              </div>
               <div
                 className={`nav-sub-item ${activeTab === "kpis" && kpiSubTab === "자율" ? "active" : ""}`}
                 onClick={(e) => {
