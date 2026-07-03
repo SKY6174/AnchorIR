@@ -274,8 +274,51 @@ export default function MajorProgramsManager({ selectedYear }) {
       </div>
 
       {/* 2. 메인 워크스페이스 레이아웃 (좌측 단위과제 원형 리스트 / 우측 프로그램 정보) */}
-      <div style={{ display: "grid", gridTemplateColumns: "100px 1fr", gap: "2rem" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "100px 1fr", gap: "2rem", position: "relative" }}>
         
+        {/* 키보드 및 휠 조작 안내 말풍선 툴팁 */}
+        <div style={{
+          position: "absolute",
+          top: "60px",
+          left: "90px",
+          width: "210px",
+          background: "rgba(15, 23, 42, 0.95)",
+          backdropFilter: "blur(8px)",
+          border: "1px solid rgba(59, 130, 246, 0.3)",
+          padding: "0.5rem 0.75rem",
+          borderRadius: "0.5rem",
+          fontSize: "0.72rem",
+          color: "var(--text-primary)",
+          boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 0 15px rgba(59, 130, 246, 0.15)",
+          zIndex: 100,
+          pointerEvents: "none",
+          opacity: isHovered ? 1 : 0,
+          transform: `translateX(${isHovered ? 8 : -10}px)`,
+          transition: "opacity 0.25s ease, transform 0.25s ease",
+          display: "flex",
+          flexDirection: "column",
+          gap: "0.2rem",
+          lineHeight: "1.35"
+        }}>
+          {/* 말풍선 꼬리 */}
+          <div style={{
+            position: "absolute",
+            left: "-6px",
+            top: "18px",
+            width: "0",
+            height: "0",
+            borderTop: "6px solid transparent",
+            borderBottom: "6px solid transparent",
+            borderRight: "6px solid rgba(15, 23, 42, 0.95)"
+          }} />
+          <div style={{ display: "flex", alignItems: "center", gap: "0.25rem", fontWeight: "800", color: "var(--accent-color)" }}>
+            <span>💡 조작 가이드</span>
+          </div>
+          <div style={{ color: "var(--text-secondary)" }}>
+            마우스를 이 영역에 올려놓고 <strong>휠 스크롤</strong> 또는 키보드 <strong>↑/↓ 방향키</strong>로 회전할 수 있습니다!
+          </div>
+        </div>
+
         {/* 좌측 단위과제 원형 버튼 세트 - 3D 회전 실린더 휠 다이얼 */}
         <div 
           ref={containerRef}
