@@ -30,7 +30,21 @@ const MOCK_PARTNERS = [
   { name: "울산정보산업진흥원", category: "유관기관", sub_category: "진흥원", location: "울산", sectors: ["AIDX", "R&BD"], contact_person: "이승호 연구원", contact_phone: "052-210-0200", remarks: "AIDX 재학생/재직자 40시간 현장 융합 교육 장비 공동 운영" },
   { name: "HD현대중공업", category: "산업체", sub_category: "대기업", location: "울산", sectors: ["주문식교육", "글로벌"], contact_person: "김두환 실장", contact_phone: "052-202-2114", remarks: "조선해양 미래 전문기술인재 채용연계 맞춤형 주문식 트랙 가동" },
   { name: "제주한라대학교", category: "대학", sub_category: "전문대학", location: "제주", sectors: ["글로벌", "AIDX"], contact_person: "고지혁 처장", contact_phone: "064-741-7500", remarks: "AI 인재양성 및 초광역 앵커 협력 추진 협약 체결 대학" },
-  { name: "HHS", category: "산업체", sub_category: "스타트업", location: "울산", sectors: ["창업", "R&BD"], contact_person: "한형섭 대표", contact_phone: "052-911-3000", remarks: "안전 헬멧 스마트 바이오 센서 기술이전 및 산학공동 R&D 과제 협력" }
+  { name: "HHS", category: "산업체", sub_category: "스타트업", location: "울산", sectors: ["창업", "R&BD"], contact_person: "한형섭 대표", contact_phone: "052-911-3000", remarks: "안전 헬멧 스마트 바이오 센서 기술이전 및 산학공동 R&D 과제 협력" },
+  { name: "울산대학교", category: "대학", sub_category: "일반대학", location: "울산", sectors: ["R&BD", "지역현안해결"], contact_person: "정지원 팀장", contact_phone: "052-259-2000", remarks: "지산학 공유대학 U-Spoke 얼라이언스 주관대학 공동 연구 개발 협력" },
+  { name: "국립부경대학교", category: "대학", sub_category: "일반대학", location: "부산", sectors: ["글로벌", "R&BD"], contact_person: "최재혁 교수", contact_phone: "051-629-5114", remarks: "동남권 초광역 지산학 제조 혁신 공동 포럼 및 해양 바이오 공동 연구" },
+  { name: "춘해보건대학교", category: "대학", sub_category: "전문대학", location: "울산", sectors: ["보건복지서비스", "늘봄"], contact_person: "이지안 센터장", contact_phone: "052-270-0100", remarks: "지역사회 통합 돌봄 및 초등 늘봄 융합 보건케어 인력풀 매칭 공동 협력" },
+  { name: "연암공과대학교", category: "대학", sub_category: "전문대학", location: "경남", sectors: ["주문식교육", "AIDX"], contact_person: "박민수 실장", contact_phone: "055-751-3000", remarks: "스마트 팩토리 및 모빌리티 연계 공동 주문식 트랙 벤치마킹 파트너십" },
+  { name: "마산대학교", category: "대학", sub_category: "전문대학", location: "경남", sectors: ["주문식교육", "보건복지서비스"], contact_person: "강은주 처장", contact_phone: "055-230-1100", remarks: "보건의료 시뮬레이션 공동 인프라 활용 및 현장 임상 실습 교류" },
+  { name: "동의과학대학교", category: "대학", sub_category: "전문대학", location: "부산", sectors: ["주문식교육", "AIDX"], contact_person: "김영호 팀장", contact_phone: "051-860-3114", remarks: "동남권 지산학 융합 기술 사관생도 양성 협력 대학" },
+  { name: "경남정보대학교", category: "대학", sub_category: "전문대학", location: "부산", sectors: ["창업", "주문식교육"], contact_person: "서동현 실장", contact_phone: "051-320-1200", remarks: "경남·울산권 창업교육혁신선도대학(SCOUT) 협의체 공동 스타트업 인재 육성" },
+  { name: "연성대학교", category: "대학", sub_category: "전문대학", location: "경기", sectors: ["주문식교육", "AIDX"], contact_person: "오세현 교수", contact_phone: "031-441-1100", remarks: "수도권 지산학 우수 교육과정 모델 교류 및 디지털 융합 실증 협력" },
+  { name: "인하공업전문대학", category: "대학", sub_category: "전문대학", location: "인천", sectors: ["주문식교육", "글로벌"], contact_person: "조윤오 실장", contact_phone: "032-870-2114", remarks: "조선·항공 정밀 제조 전문 기술 교육과정 표준화 벤치마킹 네트워크" },
+  { name: "영진전문대학교", category: "대학", sub_category: "전문대학", location: "대구", sectors: ["주문식교육", "창업"], contact_person: "윤현우 처장", contact_phone: "053-940-5114", remarks: "국내 최고 수준 주문식 교육 트랙 모델 수립 및 공유 얼라이언스 파트너" },
+  { name: "조선이공대학교", category: "대학", sub_category: "전문대학", location: "광주", sectors: ["주문식교육", "R&BD"], contact_person: "송태일 팀장", contact_phone: "062-230-8114", remarks: "광주-울산 스마트 모빌리티 및 기계 정밀 가공 분야 정보 네트워크 교류" },
+  { name: "대림대학교", category: "대학", sub_category: "전문대학", location: "경기", sectors: ["주문식교육", "AIDX"], contact_person: "황인성 센터장", contact_phone: "031-467-4700", remarks: "수도권 전문기술석사 마이크로디그리 운영 모델 공유 및 AI 트랙 실증" },
+  { name: "디지텍고등직업교육협의회", category: "대학", sub_category: "협의체", location: "서울", sectors: ["주문식교육", "AIDX"], contact_person: "이영수 사무국장", contact_phone: "02-500-1000", remarks: "전국 전문대학 디지털 전환 및 직업교육 공동 가치 창출 거버넌스 협의체" },
+  { name: "WCC협의체", category: "대학", sub_category: "협의체", location: "전국", sectors: ["글로벌", "창업"], contact_person: "김태영 회장", contact_phone: "02-600-2000", remarks: "세계 수준의 전문대학(World Class College) 글로벌 역량 고도화 네트워크 얼라이언스" }
 ];
 
 export default function PartnerManager({ selectedYear }) {
