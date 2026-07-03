@@ -1441,6 +1441,41 @@ export default function App() {
     return initialList;
   });
 
+  // 선택된 연차(selectedYear) 및 계약 기간(startDate/endDate)을 고려한 실시간 참여 상태 계산 함수
+  const getMemberStatusForYear = (m, year) => {
+    if (!m) return "미참여";
+    const sDate = m.startDate || m.hireDate || "2026-03-01";
+    const eDate = m.endDate || "";
+
+    let termStart = "2025-01-01";
+    let termEnd = "2026-02-28";
+
+    if (year === 2) {
+      termStart = "2026-03-01";
+      termEnd = "2027-02-28";
+    } else if (year === 3) {
+      termStart = "2027-03-01";
+      termEnd = "2028-02-29";
+    } else if (year === 4) {
+      termStart = "2028-03-01";
+      termEnd = "2029-02-28";
+    } else if (year === 5) {
+      termStart = "2029-03-01";
+      termEnd = "2030-02-28";
+    }
+
+    // 시작일 조건: 해당 연차의 종료일(termEnd) 이전에 시작했어야 함
+    const isStarted = sDate <= termEnd;
+    // 종료일 조건: 종료일(endDate) 정보가 없거나, 혹은 해당 연차의 시작일(termStart)보다 크거나 같아야 함
+    const isNotEnded = !eDate || eDate >= termStart;
+
+    // 만약 데이터 상의 원본 상태가 "미참여"로 강제 세팅된 상태이거나 날짜 범위를 벗어난 경우 미참여 처리
+    if (isStarted && isNotEnded && m.status !== "미참여") {
+      return "참여중";
+    }
+    return "미참여";
+  };
+
   // Supabase DB 저장 스키마 필드 전용 객체 정제(Sanitize) 함수
   // (PostgreSQL 테이블에 부재하는 'hireDate' 등의 컬럼이 전송되면 구문 오류가 나는 현상을 원천 방지)
   const sanitizeMemberForDb = (m) => {
@@ -1563,8 +1598,9 @@ export default function App() {
 
   const getSortedMembers = () => {
     const filtered = (members || []).filter((m) => {
-      if (memberFilter === "active") return m.status !== "미참여";
-      if (memberFilter === "retired") return m.status === "미참여";
+      const computedStatus = getMemberStatusForYear(m, selectedYear);
+      if (memberFilter === "active") return computedStatus !== "미참여";
+      if (memberFilter === "retired") return computedStatus === "미참여";
       return true;
     });
 
@@ -3496,7 +3532,7 @@ export default function App() {
                       transition: "all 0.2s"
                     }}
                   >
-                    참여중 ({members.filter(m => m.status !== "미참여").length}명)
+                    참여중 ({members.filter(m => getMemberStatusForYear(m, selectedYear) !== "미참여").length}명)
                   </button>
                   <button
                     onClick={() => setMemberFilter("retired")}
@@ -3512,7 +3548,7 @@ export default function App() {
                       transition: "all 0.2s"
                     }}
                   >
-                    미참여 ({members.filter(m => m.status === "미참여").length}명)
+                    미참여 ({members.filter(m => getMemberStatusForYear(m, selectedYear) === "미참여").length}명)
                   </button>
                 </div>
 
@@ -3563,7 +3599,7 @@ export default function App() {
                     </thead>
                     <tbody>
                       {getSortedMembers().map((m) => {
-                          const isRetired = m.status === "미참여";
+                          const isRetired = getMemberStatusForYear(m, selectedYear) === "미참여";
                           return (
                             <tr 
                               key={m.id}
@@ -3614,7 +3650,7 @@ export default function App() {
                                     color: isRetired ? "#f87171" : undefined
                                   }}
                                 >
-                                  {m.status || "참여중"}
+                                  {getMemberStatusForYear(m, selectedYear)}
                                 </span>
                               </td>
                           {currentRole.rank <= 2 && (
