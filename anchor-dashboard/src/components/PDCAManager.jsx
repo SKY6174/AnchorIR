@@ -222,38 +222,6 @@ export default function PDCAManager({
     localStorage.setItem("anchor_active_pdca_stage", activePdcaStage);
   }, [activePdcaStage]);
 
-  // D단계 실적 입력값 변경 시 계획대비 달성률 자동계산
-  useEffect(() => {
-    if (!activeProg) return;
-    
-    const goal1 = parseFloat(activeProg.target_participants) || 0;
-    const goal2 = parseFloat(activeProg.target_developments) || 0;
-    const goal3 = parseFloat(activeProg.target_etc) || 0;
-    
-    const act1 = parseFloat(inputParticipants) || 0;
-    const act2 = parseFloat(inputActualDevelopments) || 0;
-    const act3 = parseFloat(inputActualEtc) || 0;
-    
-    let totalRate = 0;
-    let count = 0;
-    
-    if (goal1 > 0) {
-      totalRate += (act1 / goal1) * 100;
-      count++;
-    }
-    if (goal2 > 0) {
-      totalRate += (act2 / goal2) * 100;
-      count++;
-    }
-    if (goal3 > 0) {
-      totalRate += (act3 / goal3) * 100;
-      count++;
-    }
-    
-    const rate = count > 0 ? Math.round(totalRate / count) : 0;
-    setInputAchieveRate(String(rate));
-  }, [inputParticipants, inputActualDevelopments, inputActualEtc, activeProg]);
-
   // 모든 프로그램 수집
   const allPrograms = [];
   const allUnits = [];
@@ -296,6 +264,38 @@ export default function PDCAManager({
     : allPrograms;
 
   const activeProg = allPrograms.find((p) => p.id === selectedProgId);
+
+  // D단계 실적 입력값 변경 시 계획대비 달성률 자동계산
+  React.useEffect(() => {
+    if (!activeProg) return;
+    
+    const goal1 = parseFloat(activeProg.target_participants) || 0;
+    const goal2 = parseFloat(activeProg.target_developments) || 0;
+    const goal3 = parseFloat(activeProg.target_etc) || 0;
+    
+    const act1 = parseFloat(inputParticipants) || 0;
+    const act2 = parseFloat(inputActualDevelopments) || 0;
+    const act3 = parseFloat(inputActualEtc) || 0;
+    
+    let totalRate = 0;
+    let count = 0;
+    
+    if (goal1 > 0) {
+      totalRate += (act1 / goal1) * 100;
+      count++;
+    }
+    if (goal2 > 0) {
+      totalRate += (act2 / goal2) * 100;
+      count++;
+    }
+    if (goal3 > 0) {
+      totalRate += (act3 / goal3) * 100;
+      count++;
+    }
+    
+    const rate = count > 0 ? Math.round(totalRate / count) : 0;
+    setInputAchieveRate(String(rate));
+  }, [inputParticipants, inputActualDevelopments, inputActualEtc, activeProg]);
 
   // selectedProgId 또는 selectedYear가 바뀔 때 모든 기획/환류/재원 상태 로드
   React.useEffect(() => {
