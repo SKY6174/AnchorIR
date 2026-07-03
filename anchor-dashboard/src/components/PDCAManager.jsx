@@ -736,16 +736,12 @@ export default function PDCAManager({
       return;
     }
 
-    // 1) 월별 추진 일정 유효성 체크 (모든 달이 필수 입력 및 P, D, C, A 1회 이상)
-    const hasEmptyTimeline = inputMonthlyPDCA.some(val => !val || val === "-" || val === "");
-    if (hasEmptyTimeline) {
-      alert("⚠️ 수정 시 월별 추진 일정은 필수 사항입니다. 12개월 전체 일정을 선택해 주세요 (빈 값('-')은 허용되지 않습니다).");
-      return;
-    }
-    const hasP = inputMonthlyPDCA.includes("P");
-    const hasD = inputMonthlyPDCA.includes("D");
-    const hasC = inputMonthlyPDCA.includes("C");
-    const hasA = inputMonthlyPDCA.includes("A");
+    // 1) 월별 추진 일정 유효성 체크 (P, D, C, A 모두 1회 이상 반영 의무, C/A 등 부분 매칭 허용)
+    const timelineCombinedStr = inputMonthlyPDCA.join(",").toUpperCase();
+    const hasP = timelineCombinedStr.includes("P");
+    const hasD = timelineCombinedStr.includes("D");
+    const hasC = timelineCombinedStr.includes("C");
+    const hasA = timelineCombinedStr.includes("A");
     if (!hasP || !hasD || !hasC || !hasA) {
       alert("월별 추진 일정에는 반드시 P(Plan), D(Do), C(Check), A(Action) 단계가 최소 1회 이상 모두 포함되도록 일정을 계획하셔야 합니다.");
       return;
