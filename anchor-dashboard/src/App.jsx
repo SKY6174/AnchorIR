@@ -2329,7 +2329,12 @@ export default function App() {
             fileData: a.file_data
           }));
           setAgreements(formatted);
-          localStorage.setItem(`anchor_cache_agr_y${selectedYear}`, JSON.stringify(formatted));
+          try {
+            const clean = formatted.map(item => ({ ...item, fileData: null }));
+            localStorage.setItem(`anchor_cache_agr_y${selectedYear}`, JSON.stringify(clean));
+          } catch (e) {
+            console.error("Failed to save agreements cache:", e);
+          }
         } else {
           setAgreements([]);
         }
@@ -2352,7 +2357,12 @@ export default function App() {
             fileData: c.file_data
           }));
           setCertificates(formatted);
-          localStorage.setItem(`anchor_cache_cert_y${selectedYear}`, JSON.stringify(formatted));
+          try {
+            const clean = formatted.map(item => ({ ...item, fileData: null }));
+            localStorage.setItem(`anchor_cache_cert_y${selectedYear}`, JSON.stringify(clean));
+          } catch (e) {
+            console.error("Failed to save certificates cache:", e);
+          }
         } else {
           setCertificates([]);
         }
@@ -2375,7 +2385,12 @@ export default function App() {
             fileData: a.file_data
           }));
           setAwards(formatted);
-          localStorage.setItem(`anchor_cache_award_y${selectedYear}`, JSON.stringify(formatted));
+          try {
+            const clean = formatted.map(item => ({ ...item, fileData: null }));
+            localStorage.setItem(`anchor_cache_award_y${selectedYear}`, JSON.stringify(clean));
+          } catch (e) {
+            console.error("Failed to save awards cache:", e);
+          }
         } else {
           setAwards([]);
         }
@@ -2493,7 +2508,12 @@ export default function App() {
   // 3) Agreements 자동 저장 디바운스 훅
   useEffect(() => {
     if (!isDbLoaded || !isFetchCompleted) return;
-    localStorage.setItem(`anchor_cache_agr_y${selectedYear}`, JSON.stringify(agreements));
+    try {
+      const clean = agreements.map(item => ({ ...item, fileData: null }));
+      localStorage.setItem(`anchor_cache_agr_y${selectedYear}`, JSON.stringify(clean));
+    } catch (e) {
+      console.warn("Failed to write agreements cache:", e);
+    }
     setSyncStatus("syncing");
     const timer = setTimeout(async () => {
       try {
@@ -2528,7 +2548,12 @@ export default function App() {
   // 3-2) Certificates 자동 저장 디바운스 훅
   useEffect(() => {
     if (!isDbLoaded || !isFetchCompleted) return;
-    localStorage.setItem(`anchor_cache_cert_y${selectedYear}`, JSON.stringify(certificates));
+    try {
+      const clean = certificates.map(item => ({ ...item, fileData: null }));
+      localStorage.setItem(`anchor_cache_cert_y${selectedYear}`, JSON.stringify(clean));
+    } catch (e) {
+      console.warn("Failed to write certificates cache:", e);
+    }
     setSyncStatus("syncing");
     const timer = setTimeout(async () => {
       try {
@@ -2561,7 +2586,12 @@ export default function App() {
   // 3-3) Awards 자동 저장 디바운스 훅
   useEffect(() => {
     if (!isDbLoaded || !isFetchCompleted) return;
-    localStorage.setItem(`anchor_cache_award_y${selectedYear}`, JSON.stringify(awards));
+    try {
+      const clean = awards.map(item => ({ ...item, fileData: null }));
+      localStorage.setItem(`anchor_cache_award_y${selectedYear}`, JSON.stringify(clean));
+    } catch (e) {
+      console.warn("Failed to write awards cache:", e);
+    }
     setSyncStatus("syncing");
     const timer = setTimeout(async () => {
       try {
