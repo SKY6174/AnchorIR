@@ -1004,7 +1004,16 @@ ${commentList || "(없음)"}
               type="button"
               onClick={() => setActiveSurveyTab("list")}
               className="btn-secondary"
-              style={{ border: "1px solid var(--border-color-dark)", background: "transparent", padding: "0.6rem 1.5rem", borderRadius: "0.4rem", cursor: "pointer", fontWeight: "700" }}
+              style={{ 
+                border: "1px solid rgba(255, 255, 255, 0.18)", 
+                background: "rgba(255, 255, 255, 0.04)", 
+                color: "rgba(255, 255, 255, 0.85)", 
+                padding: "0.6rem 1.5rem", 
+                borderRadius: "0.4rem", 
+                cursor: "pointer", 
+                fontWeight: "700",
+                transition: "all 0.2s"
+              }}
             >
               취소
             </button>
