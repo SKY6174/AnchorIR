@@ -712,18 +712,18 @@ body.light-mode {
 /* 날짜/시간 입력창 내장 달력 및 피커 아이콘 시인성 고대비 설정 */
 input[type="date"],
 input[type="time"] {
-  color-scheme: dark;
+  color-scheme: dark !important;
 }
 
 input[type="date"]::-webkit-calendar-picker-indicator,
 input[type="time"]::-webkit-calendar-picker-indicator {
-  filter: invert(1);
+  filter: invert(1) !important;
   cursor: pointer;
-  opacity: 0.8;
+  opacity: 0.9 !important;
   transition: opacity 0.15s ease;
 }
 
 input[type="date"]::-webkit-calendar-picker-indicator:hover,
 input[type="time"]::-webkit-calendar-picker-indicator:hover {
-  opacity: 1;
+  opacity: 1 !important;
 }
