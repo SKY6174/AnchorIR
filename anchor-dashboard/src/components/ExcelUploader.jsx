@@ -173,7 +173,7 @@ export default function ExcelUploader({
             const standardCategories = [
               "인건비", "장학금", "프로그램개발운영비", "환경개선비", 
               "실험실습장비비", "지역연계협업비", "기업지원협력비", 
-              "성과활용확산비", "기타운영경비", "간접비"
+              "성과활용확산비", "기타사업운영경비", "간접비"
             ];
             
             const getBriefCategoryLabel = (catLabel) => {
@@ -183,7 +183,7 @@ export default function ExcelUploader({
               if (catLabel === "지역 연계∙협업 지원비") return "지역연계협업비";
               if (catLabel === "기업 지원∙협력 활동비") return "기업지원협력비";
               if (catLabel === "성과 활용∙확산 지원비") return "성과활용확산비";
-              if (catLabel === "그 밖의 사업운영경비") return "기타운영경비";
+              if (catLabel === "그 밖의 사업운영경비") return "기타사업운영경비";
               return catLabel;
             };
 

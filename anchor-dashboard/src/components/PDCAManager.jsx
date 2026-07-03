@@ -52,7 +52,7 @@ const BUDGET_CATEGORIES_OPTIONS = [
   { value: "지역 연계∙협업 지원비", label: "지역연계협업비" },
   { value: "기업 지원∙협력 활동비", label: "기업지원협력비" },
   { value: "성과 활용∙확산 지원비", label: "성과활용확산비" },
-  { value: "그 밖의 사업운영경비", label: "기타운영경비" },
+  { value: "그 밖의 사업운영경비", label: "기타사업운영경비" },
   { value: "간접비", label: "간접비" }
 ];
 
