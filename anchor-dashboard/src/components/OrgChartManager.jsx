@@ -222,24 +222,26 @@ const universityOrgData = {
           { name: "컴퓨터공학과", tel: "052-230-1140", loc: "창의관 3층", task: "소프트웨어 코딩, 웹/앱 개발 및 AI 플랫폼 교육" },
           { name: "게임영상학과", tel: "052-230-1150", loc: "창의관 4층", task: "실시간 게임 그래픽, 3D 애니메이션 및 엔진 코딩" },
           { name: "실내건축디자인과", tel: "052-230-1160", loc: "조형관 2층", task: "실내 인테리어 공간 디자인 및 3D CAD/BIM 실무" },
+          {
+            name: "기계공학부",
+            isFaculty: true,
+            majors: [
+              { name: "기계시스템전공", tel: "052-230-1110", loc: "공학관 B동 1층", task: "선박/자동차 제조 및 정밀 기계 부품 설계 실무", rise: "A1 (HD현대이앤티 공동 교육 연계)" },
+              { name: "기계설비전공", tel: "052-230-1111", loc: "공학관 B동 2층", task: "플랜트 및 빌딩 에너지 기계설비 운용 및 자동제어 실습", rise: "A1 (에너지 기계설비 트랙 연계)" }
+            ]
+          },
+          {
+            name: "전기전자공학부",
+            isFaculty: true,
+            majors: [
+              { name: "전기전공", tel: "052-230-1100", loc: "공학관 A동 1층", task: "전력 수배전 설비, 스마트 그리드 및 산업용 모터 제어 실무" },
+              { name: "스마트전자전공", tel: "052-230-1101", loc: "공학관 A동 2층", task: "반도체 임베디드 제어, IoT 및 펌웨어 설계 융합 교육" }
+            ]
+          },
           { name: "조선해양시스템공학과", tel: "052-230-1112", loc: "공학관 B동 2층", task: "조선해양 설계 엔지니어링 및 선박 건조 의장 실무", rise: "A1 (현대중공업 채용연계 트랙)" },
           { name: "화학공학과", tel: "052-230-1120", loc: "공학관 C동", task: "정밀 석유화학 및 바이오 화공 신기술 배양" },
           { name: "융합안전공학과", tel: "052-230-1130", loc: "공학관 A동", task: "산업 현장 유해 위험 진단 및 예방 안전 교육" },
           { name: "인테리어시공학과", tel: "052-230-1170", loc: "조형관 1층", task: "친환경 내장재 시공, 목공 실습 및 견적 실무" }
-        ]
-      },
-      {
-        name: "기계공학부",
-        subTeams: [
-          { name: "기계시스템전공", tel: "052-230-1110", loc: "공학관 B동 1층", task: "선박/자동차 제조 및 정밀 기계 부품 설계 실무", rise: "A1 (HD현대이앤티 공동 교육 연계)" },
-          { name: "기계설비전공", tel: "052-230-1111", loc: "공학관 B동 2층", task: "플랜트 및 빌딩 에너지 기계설비 운용 및 자동제어 실습", rise: "A1 (에너지 기계설비 트랙 연계)" }
-        ]
-      },
-      {
-        name: "전기전자공학부",
-        subTeams: [
-          { name: "전기전공", tel: "052-230-1100", loc: "공학관 A동 1층", task: "전력 수배전 설비, 스마트 그리드 및 산업용 모터 제어 실무" },
-          { name: "스마트전자전공", tel: "052-230-1101", loc: "공학관 A동 2층", task: "반도체 임베디드 제어, IoT 및 펌웨어 설계 융합 교육" }
         ]
       },
       {
@@ -276,24 +278,6 @@ const universityOrgData = {
         ]
       }
     ]
-  },
-  anchor: {
-    title: "앵커사업 부서",
-    desc: "울산과학대학교 라이즈(RISE)사업 및 앵커 실무를 직접 관장하는 사업 부서",
-    departments: [
-      {
-        name: "앵커사업 부서",
-        subTeams: [
-          { name: "사업운영팀", tel: "052-230-0500", loc: "산학협력관 4층", task: "RISE 사업 예산 총괄, 회계 처리, 정산 및 사업비 모니터링 관리", rise: "RISE 예산 총괄 및 모니터링 관리" },
-          { name: "ECC센터", tel: "052-230-0501", loc: "산학협력관 4층", task: "교육혁신(Education Innovation) 부문 총괄 및 주문식 교육과정 가동", rise: "A1 (주문식 교육과정 매핑)" },
-          { name: "ICC센터", tel: "052-230-0502", loc: "산학협력관 4층", task: "기업협업(Industry Cooperation) 부문 총괄 및 지산학 공동 연구 개발 기술 지원", rise: "A2 (글로컬 창업인재 연계)" },
-          { name: "RCC센터", tel: "052-230-0503", loc: "산학협력관 4층", task: "지역협업(Region Cooperation) 부문 총괄 및 지역현안해결, 도시재생/에코컬처 연계", rise: "B1/B2/D3 (도시재생/에코컬처/늘봄 연계)" },
-          { name: "AID-X지원센터", tel: "052-230-0504", loc: "산학협력관 4.5층", task: "AID-X 디지털 전환 특화 직업교육과정 개발 및 AI 융합 교육 모델 실증", rise: "A1 (AIDX 교육 매핑)" },
-          { name: "울산늘봄누리센터", tel: "052-230-0505", loc: "보건관 1층", task: "울산 지역 늘봄 교육 프로그램 개발, 연계 및 강사 풀(Pool) 매칭 관리", rise: "B2 (늘봄 누리 플랫폼 연계)" },
-          { name: "신산업특화센터", tel: "052-230-0506", loc: "공학관 B동 2층", task: "2차전지, 미래 모빌리티 등 지역 신산업 분야 재직자 훈련 과정 개설 운영", rise: "A1 (신산업 트랙 매핑)" }
-        ]
-      }
-    ]
   }
 };
 
@@ -301,6 +285,7 @@ export default function OrgChartManager() {
   const [selectedKey, setSelectedKey] = useState("university");
   const [expandedDept, setExpandedDept] = useState(null);
   const [selectedTeam, setSelectedTeam] = useState(null);
+  const [expandedFaculties, setExpandedFaculties] = useState({});
 
   const currentCategory = universityOrgData[selectedKey];
   const listDepts = currentCategory.departments;
@@ -309,6 +294,7 @@ export default function OrgChartManager() {
     setSelectedKey(key);
     setExpandedDept(null);
     setSelectedTeam(null);
+    setExpandedFaculties({});
   };
 
   const toggleDept = (deptIndex) => {
@@ -317,6 +303,13 @@ export default function OrgChartManager() {
     } else {
       setExpandedDept(deptIndex);
     }
+  };
+
+  const toggleFaculty = (facultyName) => {
+    setExpandedFaculties((prev) => ({
+      ...prev,
+      [facultyName]: !prev[facultyName]
+    }));
   };
 
   return (
@@ -492,39 +485,112 @@ export default function OrgChartManager() {
 
                     {isExpanded && (
                       <div style={{ padding: "0.5rem 1rem 1rem", display: "flex", flexDirection: "column", gap: "0.4rem" }}>
-                        {dept.subTeams.map((team) => (
-                          <div
-                            key={team.name}
-                            onClick={() => setSelectedTeam(team)}
-                            style={{
-                              padding: "0.6rem 0.8rem",
-                              borderRadius: "6px",
-                              cursor: "pointer",
-                              fontSize: "0.85rem",
-                              transition: "all 0.2s ease",
-                              background: selectedTeam?.name === team.name ? "rgba(59, 130, 246, 0.1)" : "rgba(255,255,255,0.02)",
-                              color: selectedTeam?.name === team.name ? "var(--accent-color)" : "var(--text-primary-dark)",
-                              border: selectedTeam?.name === team.name ? "1px solid rgba(59, 130, 246, 0.3)" : "1px solid transparent",
-                              display: "flex",
-                              justifyContent: "space-between",
-                              alignItems: "center"
-                            }}
-                          >
-                            <span style={{ fontWeight: "700" }}>{team.name}</span>
-                            {team.rise && (
-                              <span style={{
-                                fontSize: "0.75rem",
-                                background: "rgba(16, 185, 129, 0.1)",
-                                color: "#10B981",
-                                padding: "0.15rem 0.4rem",
-                                borderRadius: "4px",
-                                fontWeight: "800"
-                              }}>
-                                {selectedKey === "academic" ? "주문식교육과정" : "앵커연계"}
-                              </span>
-                            )}
-                          </div>
-                        ))}
+                        {dept.subTeams.map((team) => {
+                          if (team.isFaculty) {
+                            const isFacultyExpanded = !!expandedFaculties[team.name];
+                            return (
+                              <div
+                                key={team.name}
+                                style={{
+                                  border: "1px solid rgba(255, 255, 255, 0.05)",
+                                  borderRadius: "8px",
+                                  overflow: "hidden",
+                                  background: "rgba(255, 255, 255, 0.01)"
+                                }}
+                              >
+                                <div
+                                  onClick={() => toggleFaculty(team.name)}
+                                  style={{
+                                    padding: "0.6rem 0.8rem",
+                                    display: "flex",
+                                    justifyContent: "space-between",
+                                    alignItems: "center",
+                                    cursor: "pointer",
+                                    fontWeight: "800",
+                                    fontSize: "0.85rem",
+                                    background: isFacultyExpanded ? "rgba(255,255,255,0.02)" : "transparent"
+                                  }}
+                                >
+                                  <span>{team.name}</span>
+                                  {isFacultyExpanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+                                </div>
+
+                                {isFacultyExpanded && (
+                                  <div style={{ padding: "0.4rem 0.6rem 0.6rem", display: "flex", flexDirection: "column", gap: "0.3rem", borderTop: "1px solid rgba(255,255,255,0.04)" }}>
+                                    {team.majors.map((major) => (
+                                      <div
+                                        key={major.name}
+                                        onClick={() => setSelectedTeam(major)}
+                                        style={{
+                                          padding: "0.5rem 0.8rem",
+                                          borderRadius: "6px",
+                                          cursor: "pointer",
+                                          fontSize: "0.8rem",
+                                          transition: "all 0.2s ease",
+                                          background: selectedTeam?.name === major.name ? "rgba(59, 130, 246, 0.1)" : "rgba(255,255,255,0.01)",
+                                          color: selectedTeam?.name === major.name ? "var(--accent-color)" : "var(--text-primary-dark)",
+                                          border: selectedTeam?.name === major.name ? "1px solid rgba(59, 130, 246, 0.25)" : "1px solid transparent",
+                                          display: "flex",
+                                          justifyContent: "space-between",
+                                          alignItems: "center",
+                                          marginLeft: "0.4rem"
+                                        }}
+                                      >
+                                        <span style={{ fontWeight: "700" }}>{major.name}</span>
+                                        {major.rise && (
+                                          <span style={{
+                                            fontSize: "0.75rem",
+                                            background: "rgba(16, 185, 129, 0.1)",
+                                            color: "#10B981",
+                                            padding: "0.15rem 0.4rem",
+                                            borderRadius: "4px",
+                                            fontWeight: "800"
+                                          }}>
+                                            {selectedKey === "academic" ? "주문식교육과정" : "앵커연계"}
+                                          </span>
+                                        )}
+                                      </div>
+                                    ))}
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          }
+
+                          return (
+                            <div
+                              key={team.name}
+                              onClick={() => setSelectedTeam(team)}
+                              style={{
+                                padding: "0.6rem 0.8rem",
+                                borderRadius: "6px",
+                                cursor: "pointer",
+                                fontSize: "0.85rem",
+                                transition: "all 0.2s ease",
+                                background: selectedTeam?.name === team.name ? "rgba(59, 130, 246, 0.1)" : "rgba(255,255,255,0.02)",
+                                color: selectedTeam?.name === team.name ? "var(--accent-color)" : "var(--text-primary-dark)",
+                                border: selectedTeam?.name === team.name ? "1px solid rgba(59, 130, 246, 0.3)" : "1px solid transparent",
+                                display: "flex",
+                                justifyContent: "space-between",
+                                alignItems: "center"
+                              }}
+                            >
+                              <span style={{ fontWeight: "700" }}>{team.name}</span>
+                              {team.rise && (
+                                <span style={{
+                                  fontSize: "0.75rem",
+                                  background: "rgba(16, 185, 129, 0.1)",
+                                  color: "#10B981",
+                                  padding: "0.15rem 0.4rem",
+                                  borderRadius: "4px",
+                                  fontWeight: "800"
+                                }}>
+                                  {selectedKey === "academic" ? "주문식교육과정" : "앵커연계"}
+                                </span>
+                              )}
+                            </div>
+                          );
+                        })}
                       </div>
                     )}
                   </div>
