@@ -1029,8 +1029,15 @@ export default function PDCAManager({
                       const status = activeProg.pdca[stage];
                       const isDone = status === "완료";
                       const isProgress = status === "진행";
+                      const isAutoStage = stage === "p" || stage === "d";
                       return (
-                        <div key={stage} className={`pdca-step-item ${isDone ? "done" : isProgress ? "in-progress" : ""}`}>
+                        <div 
+                          key={stage} 
+                          className={`pdca-step-item ${isDone ? "done" : isProgress ? "in-progress" : ""}`}
+                          style={{ cursor: "pointer", transition: "transform 0.2s" }}
+                          onClick={() => setActivePdcaStage(stage.toUpperCase())}
+                          title={`${stage.toUpperCase()} 단계 실무 폼 열기`}
+                        >
                           <div className="pdca-circle">{stage.toUpperCase()}</div>
                           <span style={{ fontSize: "0.7rem", fontWeight: "700" }}>
                             {stage === "p" ? "Plan" : stage === "d" ? "Do" : stage === "c" ? "Check" : "Act"}
@@ -1039,16 +1046,23 @@ export default function PDCAManager({
                             <select
                               style={{ 
                                 fontSize: "0.65rem", 
-                                background: stage === "p" ? "#27272a" : "#18181b", 
-                                color: stage === "p" ? "#a1a1aa" : "white", 
+                                background: isAutoStage ? "#27272a" : "#18181b", 
+                                color: isAutoStage ? "#a1a1aa" : "white", 
                                 border: "1px solid var(--border-color-dark)", 
                                 borderRadius: "0.25rem", 
                                 marginTop: "0.2rem",
-                                cursor: stage === "p" ? "not-allowed" : "pointer"
+                                cursor: isAutoStage ? "not-allowed" : "pointer"
                               }}
                               value={status}
-                              disabled={stage === "p"}
-                              title={stage === "p" ? "Plan 단계 상태는 기획 정보 입력량에 따라 자동으로 설정됩니다." : ""}
+                              disabled={isAutoStage}
+                              title={
+                                stage === "p" 
+                                  ? "Plan 단계 상태는 기획 정보 입력량에 따라 자동으로 설정됩니다." 
+                                  : stage === "d"
+                                  ? "Do 단계 상태는 집행 및 수행 실적 저장 시 자동으로 설정됩니다."
+                                  : ""
+                              }
+                              onClick={(e) => e.stopPropagation()}
                               onChange={(e) => handleUpdatePDCA(stage, e.target.value)}
                             >
                               <option value="대기">대기</option>
@@ -1997,8 +2011,23 @@ export default function PDCAManager({
                         </span>
                         {(isResearcher || currentRole.rank <= 2) && (
                           <select
-                            style={{ fontSize: "0.6rem", background: "#18181b", color: "white", border: "1px solid var(--border-color-dark)", borderRadius: "0.2px" }}
+                            style={{ 
+                              fontSize: "0.6rem", 
+                              background: (stage === "p" || stage === "d") ? "#27272a" : "#18181b", 
+                              color: (stage === "p" || stage === "d") ? "#a1a1aa" : "white", 
+                              border: "1px solid var(--border-color-dark)", 
+                              borderRadius: "0.2px",
+                              cursor: (stage === "p" || stage === "d") ? "not-allowed" : "pointer"
+                            }}
                             value={status}
+                            disabled={stage === "p" || stage === "d"}
+                            title={
+                              stage === "p" 
+                                ? "Plan 단계 상태는 기획 정보 입력량에 따라 자동으로 설정됩니다." 
+                                : stage === "d"
+                                ? "Do 단계 상태는 집행 및 수행 실적 저장 시 자동으로 설정됩니다."
+                                : ""
+                            }
                             onClick={(e) => e.stopPropagation()}
                             onChange={(e) => handleUpdatePDCA(stage, e.target.value)}
                           >
