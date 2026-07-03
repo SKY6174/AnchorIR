@@ -271,6 +271,31 @@ export default function PartnerManager({ selectedYear }) {
     XLSX.writeFile(wb, `UC_ANCHOR_파트너기관_대장_${selectedYear}차년도.xlsx`);
   };
 
+  // 엑셀 서식 다운로드 (템플릿)
+  const handleDownloadTemplate = () => {
+    const templateData = [
+      {
+        "기관명": "울산대학교 (예시)",
+        "대분류": "대학 (공공기관/유관기관/산업체/대학/지역사회 중 택1)",
+        "세부분류": "일반대학 (전문대학/협의체/대기업/중견기업 등 선택)",
+        "지역": "울산 (예시)",
+        "협력분야": "주문식교육, R&BD (쉼표로 나열)",
+        "담당자": "홍길동 팀장",
+        "연락처": "052-123-4567",
+        "주요메모": "앵커 사업 정밀 가공 공동 훈련 교류"
+      }
+    ];
+
+    const ws = XLSX.utils.json_to_sheet(templateData);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "파트너적재템플릿");
+    
+    // 열 너비 설정
+    ws["!cols"] = Array(8).fill({ wch: 25 });
+    
+    XLSX.writeFile(wb, "UC_ANCHOR_파트너기관_업로드_서식.xlsx");
+  };
+
   // 엑셀 업로드 (가져오기)
   const handleExcelImport = (e) => {
     const file = e.target.files[0];
@@ -455,8 +480,9 @@ export default function PartnerManager({ selectedYear }) {
         </div>
 
         <div style={{ display: "flex", gap: "0.6rem", alignItems: "center" }}>
-          {/* 엑셀 파일 가져오기 (Upload) */}
-          <label
+          {/* 엑셀 서식 다운로드 (Template) */}
+          <button
+            onClick={handleDownloadTemplate}
             className="btn-secondary"
             style={{
               padding: "0.5rem 0.8rem",
@@ -467,7 +493,28 @@ export default function PartnerManager({ selectedYear }) {
               alignItems: "center",
               gap: "0.4rem",
               background: "rgba(255, 255, 255, 0.05)",
-              border: "1px solid rgba(255,255,255,0.08)"
+              border: "1px solid rgba(255, 255, 255, 0.1)",
+              color: "rgba(255, 255, 255, 0.8)"
+            }}
+          >
+            <FileText size={14} />
+            엑셀 서식
+          </button>
+
+          {/* 엑셀 업로드 (Upload) */}
+          <label
+            className="btn-secondary"
+            style={{
+              padding: "0.5rem 0.8rem",
+              fontSize: "0.8rem",
+              borderRadius: "6px",
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              gap: "0.4rem",
+              background: "rgba(99, 102, 241, 0.1)",
+              border: "1px solid rgba(99, 102, 241, 0.2)",
+              color: "#818CF8"
             }}
           >
             <Upload size={14} />
