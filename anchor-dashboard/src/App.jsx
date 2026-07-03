@@ -4912,7 +4912,7 @@ export default function App() {
                                       )}
                                     </div>
                                   </td>
-                                  <td>{req.requested_by}</td>
+                                  <td>{(req.requested_by || "").replace(/\s*\(.*?\)/g, "")}</td>
                                   <td style={{ fontFamily: "var(--font-data)", lineHeight: "1.4" }}>
                                     <div>
                                       <span style={{ color: "var(--text-secondary-dark)", fontSize: "0.65rem" }}>신청: </span>
@@ -5029,7 +5029,7 @@ export default function App() {
                       <span style={{ color: "var(--text-secondary-dark)" }}>결재번호:</span> <strong style={{ color: "var(--text-primary)", fontFamily: "var(--font-data)" }}>{2024 + selectedRequest.year}-{selectedRequest.unit_id}-{displaySeq}</strong>
                     </div>
                     <div>
-                      <span style={{ color: "var(--text-secondary-dark)" }}>신청자:</span> <strong style={{ color: "var(--text-primary)" }}>{selectedRequest.requested_by}</strong>
+                      <span style={{ color: "var(--text-secondary-dark)" }}>신청자:</span> <strong style={{ color: "var(--text-primary)" }}>{(selectedRequest.requested_by || "").replace(/\s*\(.*?\)/g, "")}</strong>
                     </div>
                     <div>
                       <span style={{ color: "var(--text-secondary-dark)" }}>신청 일시:</span> <strong style={{ color: "var(--text-primary)" }}>{new Date(selectedRequest.requested_at).toLocaleString("ko-KR")}</strong>
