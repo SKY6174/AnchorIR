@@ -239,9 +239,9 @@ export default function ScheduleManager({
     const startDay = getStartDayOfWeek(currentMonth);
     const cells = [];
 
-    // 빈 셀 채우기
+    // 빈 셀 채우기 (라이트/다크모드 유동적 border 적용)
     for (let i = 0; i < startDay; i++) {
-      cells.push(<div key={`empty-${i}`} style={{ height: "70px", borderBottom: "1px solid rgba(255,255,255,0.05)", borderRight: "1px solid rgba(255,255,255,0.05)" }}></div>);
+      cells.push(<div key={`empty-${i}`} style={{ height: "70px", borderBottom: "1px solid var(--border-color)", borderRight: "1px solid var(--border-color)" }}></div>);
     }
 
     // 날짜 채우기
@@ -257,15 +257,15 @@ export default function ScheduleManager({
           style={{
             height: "70px",
             padding: "0.25rem",
-            borderBottom: "1px solid rgba(255,255,255,0.05)",
-            borderRight: "1px solid rgba(255,255,255,0.05)",
+            borderBottom: "1px solid var(--border-color)",
+            borderRight: "1px solid var(--border-color)",
             background: isSelected ? "rgba(59, 130, 246, 0.15)" : "transparent",
             cursor: "pointer",
             position: "relative",
             transition: "all 0.15s ease"
           }}
         >
-          <span style={{ fontSize: "0.75rem", fontWeight: "700", color: isSelected ? "var(--accent-color)" : "var(--text-primary-dark)" }}>
+          <span style={{ fontSize: "0.75rem", fontWeight: "700", color: isSelected ? "var(--accent-color)" : "var(--text-primary)" }}>
             {day}
           </span>
           <div style={{ display: "flex", flexDirection: "column", gap: "0.15rem", marginTop: "0.25rem", maxHeight: "40px", overflow: "hidden" }}>
@@ -324,12 +324,12 @@ export default function ScheduleManager({
       {subTab === "monthly" && (
         <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
           
-          <div className="card" style={{ padding: "1.25rem", borderRadius: "10px", background: "var(--bg-card-dark)", border: "1px solid var(--border-color-dark)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <div className="card" style={{ padding: "1.25rem", borderRadius: "10px", background: "var(--panel-bg)", border: "1px solid var(--border-color)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <div>
-              <h3 style={{ margin: 0, fontSize: "1.1rem", fontWeight: "800", color: "var(--text-primary-dark)" }}>
+              <h3 style={{ margin: 0, fontSize: "1.1rem", fontWeight: "800", color: "var(--text-primary)" }}>
                 📅 앵커사업단 월간 일정
               </h3>
-              <p style={{ margin: "0.25rem 0 0 0", fontSize: "0.85rem", color: "var(--text-secondary-dark)" }}>
+              <p style={{ margin: "0.25rem 0 0 0", fontSize: "0.85rem", color: "var(--text-secondary)" }}>
                 주요 마감일정, 장비 검수, 보고서 제출 기한 등을 캘린더 형태로 일괄 체크
               </p>
             </div>
@@ -340,7 +340,7 @@ export default function ScheduleManager({
                 onClick={() => openAddModal("monthly")}
                 style={{
                   display: "flex", alignItems: "center", gap: "0.25rem", padding: "0.4rem 1rem", borderRadius: "6px",
-                  background: "var(--accent-color)", border: "none", color: "white", fontWeight: "600", fontSize: "0.85rem", cursor: "pointer"
+                  background: "var(--accent-color)", border: "none", color: "var(--text-primary)", fontWeight: "600", fontSize: "0.85rem", cursor: "pointer"
                 }}
               >
                 <Plus size={16} />
@@ -350,7 +350,7 @@ export default function ScheduleManager({
                 onClick={() => openAddModal("task")}
                 style={{
                   display: "flex", alignItems: "center", gap: "0.25rem", padding: "0.4rem 1rem", borderRadius: "6px",
-                  background: "#8B5CF6", border: "none", color: "white", fontWeight: "600", fontSize: "0.85rem", cursor: "pointer",
+                  background: "#8B5CF6", border: "none", color: "var(--text-primary)", fontWeight: "600", fontSize: "0.85rem", cursor: "pointer",
                   transition: "background 0.15s"
                 }}
                 onMouseOver={(e) => e.currentTarget.style.background = "#7C3AED"}
@@ -363,7 +363,7 @@ export default function ScheduleManager({
                 onClick={() => openAddModal("deadline")}
                 style={{
                   display: "flex", alignItems: "center", gap: "0.25rem", padding: "0.4rem 1rem", borderRadius: "6px",
-                  background: "#EF4444", border: "none", color: "white", fontWeight: "600", fontSize: "0.85rem", cursor: "pointer",
+                  background: "#EF4444", border: "none", color: "var(--text-primary)", fontWeight: "600", fontSize: "0.85rem", cursor: "pointer",
                   transition: "background 0.15s"
                 }}
                 onMouseOver={(e) => e.currentTarget.style.background = "#DC2626"}
@@ -378,23 +378,23 @@ export default function ScheduleManager({
           <div style={{ display: "grid", gridTemplateColumns: "1.3fr 0.7fr", gap: "1.5rem" }}>
             
             {/* 왼쪽: 캘린더 프레임 */}
-            <div className="card" style={{ padding: "1.25rem", borderRadius: "10px", background: "var(--bg-card-dark)", border: "1px solid var(--border-color-dark)" }}>
+            <div className="card" style={{ padding: "1.25rem", borderRadius: "10px", background: "var(--panel-bg)", border: "1px solid var(--border-color)" }}>
               
               {/* 캘린더 월 조작용 헤더 */}
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
-                <span style={{ fontSize: "1rem", fontWeight: "800", color: "white" }}>
+                <span style={{ fontSize: "1rem", fontWeight: "800", color: "var(--text-primary)" }}>
                   2026년 {currentMonth}월
                 </span>
                 <div style={{ display: "flex", gap: "0.25rem" }}>
                   <button 
                     onClick={() => setCurrentMonth(currentMonth === 7 ? 8 : 7)}
-                    style={{ background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "4px", color: "white", padding: "0.25rem", cursor: "pointer" }}
+                    style={{ background: "rgba(128,128,128,0.1)", border: "1px solid var(--border-color)", borderRadius: "4px", color: "var(--text-primary)", padding: "0.25rem", cursor: "pointer" }}
                   >
                     <ChevronLeft size={16} />
                   </button>
                   <button 
                     onClick={() => setCurrentMonth(currentMonth === 7 ? 8 : 7)}
-                    style={{ background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "4px", color: "white", padding: "0.25rem", cursor: "pointer" }}
+                    style={{ background: "rgba(128,128,128,0.1)", border: "1px solid var(--border-color)", borderRadius: "4px", color: "var(--text-primary)", padding: "0.25rem", cursor: "pointer" }}
                   >
                     <ChevronRight size={16} />
                   </button>
@@ -402,7 +402,7 @@ export default function ScheduleManager({
               </div>
 
               {/* 요일 행 */}
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", textAlign: "center", fontSize: "0.75rem", fontWeight: "700", color: "var(--text-secondary-dark)", borderBottom: "1px solid rgba(255,255,255,0.1)", paddingBottom: "0.5rem" }}>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", textAlign: "center", fontSize: "0.75rem", fontWeight: "700", color: "var(--text-secondary)", borderBottom: "1px solid var(--border-color)", paddingBottom: "0.5rem" }}>
                 <div style={{ color: "#EF4444" }}>일</div>
                 <div>월</div>
                 <div>화</div>
@@ -413,15 +413,15 @@ export default function ScheduleManager({
               </div>
 
               {/* 날짜 그리드 */}
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", borderLeft: "1px solid rgba(255,255,255,0.05)", borderTop: "1px solid rgba(255,255,255,0.05)", marginTop: "0.25rem" }}>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", borderLeft: "1px solid var(--border-color)", borderTop: "1px solid var(--border-color)", marginTop: "0.25rem" }}>
                 {renderCalendar()}
               </div>
 
             </div>
 
             {/* 오른쪽: 선택 일자 상세일정 */}
-            <div className="card" style={{ padding: "1.25rem", borderRadius: "10px", background: "var(--bg-card-dark)", border: "1px solid var(--border-color-dark)", display: "flex", flexDirection: "column", gap: "1rem" }}>
-              <h4 style={{ margin: 0, fontSize: "0.95rem", fontWeight: "700", color: "var(--text-primary-dark)", borderBottom: "1px solid rgba(255,255,255,0.05)", paddingBottom: "0.5rem" }}>
+            <div className="card" style={{ padding: "1.25rem", borderRadius: "10px", background: "var(--panel-bg)", border: "1px solid var(--border-color)", display: "flex", flexDirection: "column", gap: "1rem" }}>
+              <h4 style={{ margin: 0, fontSize: "0.95rem", fontWeight: "700", color: "var(--text-primary)", borderBottom: "1px solid rgba(255,255,255,0.05)", paddingBottom: "0.5rem" }}>
                 🗓️ {currentMonth}월 {selectedDay}일 상세 일정
               </h4>
 
@@ -465,7 +465,7 @@ export default function ScheduleManager({
                             )}
                             <strong style={{ 
                               fontSize: "0.9rem", 
-                              color: "white", 
+                              color: "var(--text-primary)", 
                               display: "block", 
                               marginBottom: "0.25rem",
                               textDecoration: isCompleted ? "line-through" : "none"
@@ -477,18 +477,18 @@ export default function ScheduleManager({
                             <button 
                               onClick={() => handleEditSchedule(sched)}
                               title="수정"
-                              style={{ background: "transparent", border: "none", color: "rgba(255,255,255,0.4)", cursor: "pointer", padding: "0.2rem", transition: "color 0.15s" }}
+                              style={{ background: "transparent", border: "none", color: "var(--text-secondary)", cursor: "pointer", padding: "0.2rem", transition: "color 0.15s" }}
                               onMouseOver={(e) => e.currentTarget.style.color = "var(--accent-color)"}
-                              onMouseOut={(e) => e.currentTarget.style.color = "rgba(255,255,255,0.4)"}
+                              onMouseOut={(e) => e.currentTarget.style.color = "var(--text-secondary)"}
                             >
                               <Edit size={14} />
                             </button>
                             <button 
                               onClick={() => handleDeleteSchedule(sched.id)}
                               title="삭제"
-                              style={{ background: "transparent", border: "none", color: "rgba(255,255,255,0.4)", cursor: "pointer", padding: "0.2rem", transition: "color 0.15s" }}
+                              style={{ background: "transparent", border: "none", color: "var(--text-secondary)", cursor: "pointer", padding: "0.2rem", transition: "color 0.15s" }}
                               onMouseOver={(e) => e.currentTarget.style.color = "#EF4444"}
-                              onMouseOut={(e) => e.currentTarget.style.color = "rgba(255,255,255,0.4)"}
+                              onMouseOut={(e) => e.currentTarget.style.color = "var(--text-secondary)"}
                             >
                               <Trash2 size={14} />
                             </button>
@@ -497,17 +497,17 @@ export default function ScheduleManager({
                         <div style={{ display: "flex", gap: "0.3rem", flexWrap: "wrap", marginBottom: "0.4rem" }}>
                           <span style={{ 
                             fontSize: "0.65rem", padding: "0.1rem 0.4rem", borderRadius: "4px", 
-                            background: isDeadline ? "rgba(239, 68, 68, 0.2)" : (isTask ? "rgba(139, 92, 246, 0.2)" : (sched.type === "행사" ? "rgba(59, 130, 246, 0.2)" : sched.type === "회의" ? "rgba(16, 185, 129, 0.2)" : sched.type === "위원회" ? "rgba(245, 158, 11, 0.2)" : "rgba(255, 255, 255, 0.05)")), 
-                            color: isDeadline ? "#EF4444" : (isTask ? "#A78BFA" : (sched.type === "행사" ? "#60A5FA" : sched.type === "회의" ? "#34D399" : sched.type === "위원회" ? "#FBBF24" : "#FFFFFF")), 
+                            background: isDeadline ? "rgba(239, 68, 68, 0.2)" : (isTask ? "rgba(139, 92, 246, 0.2)" : (sched.type === "행사" ? "rgba(59, 130, 246, 0.2)" : sched.type === "회의" ? "rgba(16, 185, 129, 0.2)" : sched.type === "위원회" ? "rgba(245, 158, 11, 0.2)" : "rgba(128, 128, 128, 0.15)")), 
+                            color: isDeadline ? "#EF4444" : (isTask ? "#A78BFA" : (sched.type === "행사" ? "#60A5FA" : sched.type === "회의" ? "#34D399" : sched.type === "위원회" ? "#FBBF24" : "var(--text-primary)")), 
                             fontWeight: "700" 
                           }}>
                             {isDeadline ? "마감" : (isTask ? "할일" : (sched.type || "기타"))}
                           </span>
-                          <span style={{ fontSize: "0.65rem", padding: "0.1rem 0.4rem", borderRadius: "4px", background: "rgba(255, 255, 255, 0.05)", color: "var(--text-secondary-dark)", fontWeight: "700" }}>
+                          <span style={{ fontSize: "0.65rem", padding: "0.1rem 0.4rem", borderRadius: "4px", background: "rgba(128, 128, 128, 0.1)", color: "var(--text-secondary)", fontWeight: "700" }}>
                             {sched.dept || "사업운영팀"}
                           </span>
                         </div>
-                        <div style={{ display: "flex", flexDirection: "column", gap: "0.2rem", fontSize: "0.75rem", color: "var(--text-secondary-dark)" }}>
+                        <div style={{ display: "flex", flexDirection: "column", gap: "0.2rem", fontSize: "0.75rem", color: "var(--text-secondary)" }}>
                           <span style={{ display: "flex", alignItems: "center", gap: "0.25rem" }}>
                             <Clock size={12} />
                             {(() => {
@@ -535,7 +535,7 @@ export default function ScheduleManager({
                   })}
                 </div>
               ) : (
-                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "200px", color: "var(--text-secondary-dark)", fontSize: "0.8rem", textAlign: "center" }}>
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "200px", color: "var(--text-secondary)", fontSize: "0.8rem", textAlign: "center" }}>
                   <Info size={24} style={{ marginBottom: "0.5rem", opacity: 0.5 }} />
                   <span>선택된 날짜에 등록된 일정이 없습니다.</span>
                 </div>
@@ -552,12 +552,12 @@ export default function ScheduleManager({
         <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
           
           {/* 행사 컨트롤 카드 */}
-          <div className="card" style={{ padding: "1.25rem", borderRadius: "10px", background: "var(--bg-card-dark)", border: "1px solid var(--border-color-dark)", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "1rem" }}>
+          <div className="card" style={{ padding: "1.25rem", borderRadius: "10px", background: "var(--panel-bg)", border: "1px solid var(--border-color)", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "1rem" }}>
             <div>
-              <h3 style={{ margin: 0, fontSize: "1.1rem", fontWeight: "800", color: "var(--text-primary-dark)" }}>
+              <h3 style={{ margin: 0, fontSize: "1.1rem", fontWeight: "800", color: "var(--text-primary)" }}>
                 ✨ 앵커 사업단 주요 행사 관리
               </h3>
-              <p style={{ margin: "0.25rem 0 0 0", fontSize: "0.85rem", color: "var(--text-secondary-dark)" }}>
+              <p style={{ margin: "0.25rem 0 0 0", fontSize: "0.85rem", color: "var(--text-secondary)" }}>
                 월별 가로 탭을 눌러 행사 상세 기획, 참석자, 목적 및 결과 정보 관리
               </p>
             </div>
@@ -567,7 +567,7 @@ export default function ScheduleManager({
               onClick={() => openAddModal("event")}
               style={{
                 display: "flex", alignItems: "center", gap: "0.25rem", padding: "0.4rem 1rem", borderRadius: "6px",
-                background: "var(--accent-color)", border: "none", color: "white", fontWeight: "600", fontSize: "0.85rem", cursor: "pointer"
+                background: "var(--accent-color)", border: "none", color: "var(--text-primary)", fontWeight: "600", fontSize: "0.85rem", cursor: "pointer"
               }}
             >
               <Plus size={16} />
@@ -584,7 +584,7 @@ export default function ScheduleManager({
                 style={{
                   padding: "0.3rem 0.8rem", borderRadius: "4px", border: "none",
                   background: selectedEventMonth === m ? "var(--accent-color)" : "transparent",
-                  color: selectedEventMonth === m ? "white" : "var(--text-secondary-dark)",
+                  color: selectedEventMonth === m ? "white" : "var(--text-secondary)",
                   fontSize: "0.8rem", fontWeight: "700", cursor: "pointer", transition: "all 0.15s ease"
                 }}
               >
@@ -600,48 +600,48 @@ export default function ScheduleManager({
                 <div 
                   key={event.id}
                   className="card"
-                  style={{ padding: "1.5rem", borderRadius: "10px", background: "var(--bg-card-dark)", border: "1px solid var(--border-color-dark)", display: "flex", flexDirection: "column", gap: "1rem" }}
+                  style={{ padding: "1.5rem", borderRadius: "10px", background: "var(--panel-bg)", border: "1px solid var(--border-color)", display: "flex", flexDirection: "column", gap: "1rem" }}
                 >
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                     <span style={{ fontSize: "0.75rem", padding: "0.2rem 0.5rem", borderRadius: "4px", background: "rgba(59, 130, 246, 0.2)", color: "#60A5FA", fontWeight: "700" }}>
                       소속부서: {event.department}
                     </span>
-                    <span style={{ fontSize: "0.8rem", color: "var(--text-secondary-dark)", display: "flex", alignItems: "center", gap: "0.25rem" }}>
+                    <span style={{ fontSize: "0.8rem", color: "var(--text-secondary)", display: "flex", alignItems: "center", gap: "0.25rem" }}>
                       <Clock size={14} />
                       {event.datetime}
                     </span>
                   </div>
 
-                  <h4 style={{ margin: 0, fontSize: "1.1rem", fontWeight: "800", color: "white" }}>
+                  <h4 style={{ margin: 0, fontSize: "1.1rem", fontWeight: "800", color: "var(--text-primary)" }}>
                     {event.title}
                   </h4>
 
-                  <div style={{ display: "grid", gridTemplateColumns: "1.2fr 0.8fr", gap: "1.5rem", borderTop: "1px solid rgba(255,255,255,0.05)", paddingTop: "0.75rem", fontSize: "0.8rem", color: "var(--text-primary-dark)" }}>
+                  <div style={{ display: "grid", gridTemplateColumns: "1.2fr 0.8fr", gap: "1.5rem", borderTop: "1px solid rgba(255,255,255,0.05)", paddingTop: "0.75rem", fontSize: "0.8rem", color: "var(--text-primary)" }}>
                     
                     <div style={{ display: "flex", flexDirection: "column", gap: "0.6rem" }}>
                       <div>
-                        <span style={{ color: "var(--text-secondary-dark)", display: "block" }}>📍 행사 장소</span>
+                        <span style={{ color: "var(--text-secondary)", display: "block" }}>📍 행사 장소</span>
                         <strong>{event.location}</strong>
                       </div>
                       
                       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem" }}>
                         <div>
-                          <span style={{ color: "var(--text-secondary-dark)", display: "block" }}>👥 참석자 (내부)</span>
+                          <span style={{ color: "var(--text-secondary)", display: "block" }}>👥 참석자 (내부)</span>
                           <span>{event.attendeesInternal}</span>
                         </div>
                         <div>
-                          <span style={{ color: "var(--text-secondary-dark)", display: "block" }}>👥 참석자 (외부)</span>
+                          <span style={{ color: "var(--text-secondary)", display: "block" }}>👥 참석자 (외부)</span>
                           <span>{event.attendeesExternal}</span>
                         </div>
                       </div>
 
                       <div>
-                        <span style={{ color: "var(--text-secondary-dark)", display: "block" }}>🔗 연계 프로그램</span>
+                        <span style={{ color: "var(--text-secondary)", display: "block" }}>🔗 연계 프로그램</span>
                         <span>{event.program}</span>
                       </div>
                       
                       <div>
-                        <span style={{ color: "var(--text-secondary-dark)", display: "block" }}>🎯 행사 목적</span>
+                        <span style={{ color: "var(--text-secondary)", display: "block" }}>🎯 행사 목적</span>
                         <p style={{ margin: "0.1rem 0 0 0", lineHeight: "1.3" }}>{event.purpose}</p>
                       </div>
                     </div>
@@ -658,7 +658,7 @@ export default function ScheduleManager({
                 </div>
               ))
             ) : (
-              <div className="card" style={{ padding: "3rem", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", background: "var(--bg-card-dark)", border: "1px solid var(--border-color-dark)", color: "var(--text-secondary-dark)", textAlign: "center" }}>
+              <div className="card" style={{ padding: "3rem", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", background: "var(--panel-bg)", border: "1px solid var(--border-color)", color: "var(--text-secondary)", textAlign: "center" }}>
                 <CalendarIcon size={40} style={{ marginBottom: "0.75rem", opacity: 0.4 }} />
                 <span>{selectedEventMonth}월에 등록된 주요 행사 일정이 없습니다.<br />[행사 일정 등록] 버튼을 눌러 초기 계획을 채워보세요.</span>
               </div>
@@ -673,12 +673,12 @@ export default function ScheduleManager({
         <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
           
           {/* 회의 컨트롤 카드 */}
-          <div className="card" style={{ padding: "1.25rem", borderRadius: "10px", background: "var(--bg-card-dark)", border: "1px solid var(--border-color-dark)", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "1rem" }}>
+          <div className="card" style={{ padding: "1.25rem", borderRadius: "10px", background: "var(--panel-bg)", border: "1px solid var(--border-color)", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "1rem" }}>
             <div>
-              <h3 style={{ margin: 0, fontSize: "1.1rem", fontWeight: "800", color: "var(--text-primary-dark)" }}>
+              <h3 style={{ margin: 0, fontSize: "1.1rem", fontWeight: "800", color: "var(--text-primary)" }}>
                 👥 의사 결정 정기 회의 관리
               </h3>
-              <p style={{ margin: "0.25rem 0 0 0", fontSize: "0.85rem", color: "var(--text-secondary-dark)" }}>
+              <p style={{ margin: "0.25rem 0 0 0", fontSize: "0.85rem", color: "var(--text-secondary)" }}>
                 운영위원회, 센터 실무진 회의, 자문 위원회 일시 및 의제 결과 기록
               </p>
             </div>
@@ -688,7 +688,7 @@ export default function ScheduleManager({
               onClick={() => openAddModal("meeting")}
               style={{
                 display: "flex", alignItems: "center", gap: "0.25rem", padding: "0.4rem 1rem", borderRadius: "6px",
-                background: "var(--accent-color)", border: "none", color: "white", fontWeight: "600", fontSize: "0.85rem", cursor: "pointer"
+                background: "var(--accent-color)", border: "none", color: "var(--text-primary)", fontWeight: "600", fontSize: "0.85rem", cursor: "pointer"
               }}
             >
               <Plus size={16} />
@@ -705,7 +705,7 @@ export default function ScheduleManager({
                 style={{
                   padding: "0.3rem 0.8rem", borderRadius: "4px", border: "none",
                   background: selectedMeetingMonth === m ? "var(--accent-color)" : "transparent",
-                  color: selectedMeetingMonth === m ? "white" : "var(--text-secondary-dark)",
+                  color: selectedMeetingMonth === m ? "white" : "var(--text-secondary)",
                   fontSize: "0.8rem", fontWeight: "700", cursor: "pointer", transition: "all 0.15s ease"
                 }}
               >
@@ -720,7 +720,7 @@ export default function ScheduleManager({
               onClick={() => setActiveMeetingCat("operating")}
               style={{
                 background: "transparent", border: "none", fontSize: "0.875rem", fontWeight: "800", cursor: "pointer", padding: "0.5rem 1rem",
-                color: activeMeetingCat === "operating" ? "var(--accent-color)" : "var(--text-secondary-dark)",
+                color: activeMeetingCat === "operating" ? "var(--accent-color)" : "var(--text-secondary)",
                 borderBottom: activeMeetingCat === "operating" ? "2px solid var(--accent-color)" : "none"
               }}
             >
@@ -730,7 +730,7 @@ export default function ScheduleManager({
               onClick={() => setActiveMeetingCat("center")}
               style={{
                 background: "transparent", border: "none", fontSize: "0.875rem", fontWeight: "800", cursor: "pointer", padding: "0.5rem 1rem",
-                color: activeMeetingCat === "center" ? "var(--accent-color)" : "var(--text-secondary-dark)",
+                color: activeMeetingCat === "center" ? "var(--accent-color)" : "var(--text-secondary)",
                 borderBottom: activeMeetingCat === "center" ? "2px solid var(--accent-color)" : "none"
               }}
             >
@@ -740,7 +740,7 @@ export default function ScheduleManager({
               onClick={() => setActiveMeetingCat("committee")}
               style={{
                 background: "transparent", border: "none", fontSize: "0.875rem", fontWeight: "800", cursor: "pointer", padding: "0.5rem 1rem",
-                color: activeMeetingCat === "committee" ? "var(--accent-color)" : "var(--text-secondary-dark)",
+                color: activeMeetingCat === "committee" ? "var(--accent-color)" : "var(--text-secondary)",
                 borderBottom: activeMeetingCat === "committee" ? "2px solid var(--accent-color)" : "none"
               }}
             >
@@ -755,38 +755,38 @@ export default function ScheduleManager({
                 <div 
                   key={meeting.id}
                   className="card"
-                  style={{ padding: "1.5rem", borderRadius: "10px", background: "var(--bg-card-dark)", border: "1px solid var(--border-color-dark)", display: "flex", flexDirection: "column", gap: "1rem" }}
+                  style={{ padding: "1.5rem", borderRadius: "10px", background: "var(--panel-bg)", border: "1px solid var(--border-color)", display: "flex", flexDirection: "column", gap: "1rem" }}
                 >
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                     <span style={{ fontSize: "0.75rem", padding: "0.2rem 0.5rem", borderRadius: "4px", background: "rgba(59, 130, 246, 0.2)", color: "#60A5FA", fontWeight: "700" }}>
                       📍 회의 장소: {meeting.location}
                     </span>
-                    <span style={{ fontSize: "0.8rem", color: "var(--text-secondary-dark)", display: "flex", alignItems: "center", gap: "0.25rem" }}>
+                    <span style={{ fontSize: "0.8rem", color: "var(--text-secondary)", display: "flex", alignItems: "center", gap: "0.25rem" }}>
                       <Clock size={14} />
                       {meeting.datetime}
                     </span>
                   </div>
 
-                  <h4 style={{ margin: 0, fontSize: "1.05rem", fontWeight: "800", color: "white" }}>
+                  <h4 style={{ margin: 0, fontSize: "1.05rem", fontWeight: "800", color: "var(--text-primary)" }}>
                     {meeting.title}
                   </h4>
 
-                  <div style={{ display: "grid", gridTemplateColumns: "1.2fr 0.8fr", gap: "1.5rem", borderTop: "1px solid rgba(255,255,255,0.05)", paddingTop: "0.75rem", fontSize: "0.8rem", color: "var(--text-primary-dark)" }}>
+                  <div style={{ display: "grid", gridTemplateColumns: "1.2fr 0.8fr", gap: "1.5rem", borderTop: "1px solid var(--border-color)", paddingTop: "0.75rem", fontSize: "0.8rem", color: "var(--text-primary)" }}>
                     
                     <div style={{ display: "flex", flexDirection: "column", gap: "0.6rem" }}>
                       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem" }}>
                         <div>
-                          <span style={{ color: "var(--text-secondary-dark)", display: "block" }}>👥 참석자 (내부)</span>
+                          <span style={{ color: "var(--text-secondary)", display: "block" }}>👥 참석자 (내부)</span>
                           <span>{meeting.attendeesInternal}</span>
                         </div>
                         <div>
-                          <span style={{ color: "var(--text-secondary-dark)", display: "block" }}>👥 참석자 (외부)</span>
+                          <span style={{ color: "var(--text-secondary)", display: "block" }}>👥 참석자 (외부)</span>
                           <span>{meeting.attendeesExternal}</span>
                         </div>
                       </div>
 
                       <div>
-                        <span style={{ color: "var(--text-secondary-dark)", display: "block" }}>📝 회의 의제 (주요 안건)</span>
+                        <span style={{ color: "var(--text-secondary)", display: "block" }}>📝 회의 의제 (주요 안건)</span>
                         <p style={{ margin: "0.1rem 0 0 0", lineHeight: "1.3" }}>{meeting.agenda}</p>
                       </div>
                     </div>
@@ -803,7 +803,7 @@ export default function ScheduleManager({
                 </div>
               ))
             ) : (
-              <div className="card" style={{ padding: "3rem", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", background: "var(--bg-card-dark)", border: "1px solid var(--border-color-dark)", color: "var(--text-secondary-dark)", textAlign: "center" }}>
+              <div className="card" style={{ padding: "3rem", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", background: "var(--panel-bg)", border: "1px solid var(--border-color)", color: "var(--text-secondary)", textAlign: "center" }}>
                 <Users size={40} style={{ marginBottom: "0.75rem", opacity: 0.4 }} />
                 <span>{selectedMeetingMonth}월에 분류된 회의 일정이 없습니다.<br />[회의 일정 등록] 버튼을 눌러 회의록 틀을 보충해 보세요.</span>
               </div>
@@ -816,10 +816,10 @@ export default function ScheduleManager({
       {/* 4. 등록 모달 팝업 */}
       {isAddModalOpen && (
         <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(0,0,0,0.8)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1100 }}>
-          <div className="card" style={{ width: "600px", maxHeight: "85vh", overflowY: "auto", padding: "1.5rem", borderRadius: "12px", background: "var(--bg-card-dark)", border: "1px solid var(--border-color-dark)" }}>
+          <div className="card" style={{ width: "600px", maxHeight: "85vh", overflowY: "auto", padding: "1.5rem", borderRadius: "12px", background: "var(--panel-bg)", border: "1px solid var(--border-color)" }}>
             
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid rgba(255,255,255,0.05)", paddingBottom: "0.75rem", marginBottom: "1rem" }}>
-              <h3 style={{ margin: 0, fontSize: "1.1rem", fontWeight: "800", color: "white" }}>
+              <h3 style={{ margin: 0, fontSize: "1.1rem", fontWeight: "800", color: "var(--text-primary)" }}>
                 {isEditMode 
                   ? (modalType === "deadline" ? "✏️ 마감일 수정" : modalType === "task" ? "✏️ 할일 수정" : "✏️ 일반 일정 수정") 
                   : (modalType === "monthly" ? "➕ 새 일반 일정 등록" : modalType === "task" ? "➕ 새 할일 등록" : modalType === "deadline" ? "🚨 새 마감일 등록" : modalType === "event" ? "➕ 새 행사 일정 기획 등록" : "➕ 새 회의 일정 회의록 등록")}
@@ -830,7 +830,7 @@ export default function ScheduleManager({
                   setIsEditMode(false);
                   setEditingItemId(null);
                 }}
-                style={{ background: "transparent", border: "none", color: "var(--text-secondary-dark)", cursor: "pointer", fontSize: "1.2rem" }}
+                style={{ background: "transparent", border: "none", color: "var(--text-secondary)", cursor: "pointer", fontSize: "1.2rem" }}
               >
                 ✕
               </button>
@@ -842,18 +842,18 @@ export default function ScheduleManager({
               {modalType === "deadline" && (
                 <>
                   <div>
-                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>마감일 내용</label>
-                    <input type="text" name="title" value={formData.title} onChange={handleInputChange} required placeholder="예: 2차년도 RISE 최종 계획서 마감" style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} />
+                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>마감일 내용</label>
+                    <input type="text" name="title" value={formData.title} onChange={handleInputChange} required placeholder="예: 2차년도 RISE 최종 계획서 마감" style={{ width: "100%", padding: "0.5rem", background: "rgba(128,128,128,0.1)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} />
                   </div>
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
                     <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>마감 기한 (일자)</label>
-                      <input type="date" name="startDate" value={formData.startDate} onChange={handleInputChange} style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white", colorScheme: "dark" }} />
+                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>마감 기한 (일자)</label>
+                      <input type="date" name="startDate" value={formData.startDate} onChange={handleInputChange} style={{ width: "100%", padding: "0.5rem", background: "rgba(128,128,128,0.1)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", colorScheme: "dark" }} />
                     </div>
                     <div>
                       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.25rem" }}>
-                        <label style={{ fontSize: "0.8rem", color: "var(--text-secondary-dark)" }}>마감 시간</label>
-                        <label style={{ fontSize: "0.75rem", color: "white", display: "flex", alignItems: "center", gap: "0.25rem", cursor: "pointer" }}>
+                        <label style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>마감 시간</label>
+                        <label style={{ fontSize: "0.75rem", color: "var(--text-primary)", display: "flex", alignItems: "center", gap: "0.25rem", cursor: "pointer" }}>
                           <input type="checkbox" name="noTime" checked={formData.noTime} onChange={handleCheckboxChange} style={{ cursor: "pointer" }} />
                           시간 지정 안 함
                         </label>
@@ -864,7 +864,7 @@ export default function ScheduleManager({
                         value={formData.startTime} 
                         onChange={handleInputChange} 
                         disabled={formData.noTime}
-                        style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: formData.noTime ? "rgba(255,255,255,0.2)" : "white", cursor: formData.noTime ? "not-allowed" : "text", opacity: formData.noTime ? 0.5 : 1, colorScheme: "dark" }} 
+                        style={{ width: "100%", padding: "0.5rem", background: "rgba(128,128,128,0.1)", border: "1px solid var(--border-color)", borderRadius: "6px", color: formData.noTime ? "rgba(255,255,255,0.2)" : "white", cursor: formData.noTime ? "not-allowed" : "text", opacity: formData.noTime ? 0.5 : 1, colorScheme: "dark" }} 
                       />
                     </div>
                   </div>
@@ -875,12 +875,12 @@ export default function ScheduleManager({
               {modalType === "task" && (
                 <>
                   <div>
-                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>할일 내용</label>
-                    <input type="text" name="title" value={formData.title} onChange={handleInputChange} required placeholder="예: 결과 보고서 작성 및 결재 요청" style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} />
+                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>할일 내용</label>
+                    <input type="text" name="title" value={formData.title} onChange={handleInputChange} required placeholder="예: 결과 보고서 작성 및 결재 요청" style={{ width: "100%", padding: "0.5rem", background: "rgba(128,128,128,0.1)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} />
                   </div>
                   <div>
-                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>관련 부서</label>
-                    <select name="dept" value={formData.dept} onChange={handleInputChange} style={{ width: "100%", padding: "0.5rem", background: "var(--bg-card-dark)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }}>
+                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>관련 부서</label>
+                    <select name="dept" value={formData.dept} onChange={handleInputChange} style={{ width: "100%", padding: "0.5rem", background: "var(--panel-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }}>
                       {["사업운영팀", "ECC센터", "ICC센터", "RCC센터", "AID-X지원센터", "울산늘봄누리센터", "신산업특화센터"].map(d => (
                         <option key={d} value={d}>{d}</option>
                       ))}
@@ -888,13 +888,13 @@ export default function ScheduleManager({
                   </div>
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
                     <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>할일 일자</label>
-                      <input type="date" name="startDate" value={formData.startDate} onChange={handleInputChange} style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white", colorScheme: "dark" }} />
+                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>할일 일자</label>
+                      <input type="date" name="startDate" value={formData.startDate} onChange={handleInputChange} style={{ width: "100%", padding: "0.5rem", background: "rgba(128,128,128,0.1)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", colorScheme: "dark" }} />
                     </div>
                     <div>
                       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.25rem" }}>
-                        <label style={{ fontSize: "0.8rem", color: "var(--text-secondary-dark)" }}>할일 시간</label>
-                        <label style={{ fontSize: "0.75rem", color: "white", display: "flex", alignItems: "center", gap: "0.25rem", cursor: "pointer" }}>
+                        <label style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>할일 시간</label>
+                        <label style={{ fontSize: "0.75rem", color: "var(--text-primary)", display: "flex", alignItems: "center", gap: "0.25rem", cursor: "pointer" }}>
                           <input type="checkbox" name="noTime" checked={formData.noTime} onChange={handleCheckboxChange} style={{ cursor: "pointer" }} />
                           시간 지정 안 함
                         </label>
@@ -905,7 +905,7 @@ export default function ScheduleManager({
                         value={formData.startTime} 
                         onChange={handleInputChange} 
                         disabled={formData.noTime}
-                        style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: formData.noTime ? "rgba(255,255,255,0.2)" : "white", cursor: formData.noTime ? "not-allowed" : "text", opacity: formData.noTime ? 0.5 : 1, colorScheme: "dark" }} 
+                        style={{ width: "100%", padding: "0.5rem", background: "rgba(128,128,128,0.1)", border: "1px solid var(--border-color)", borderRadius: "6px", color: formData.noTime ? "rgba(255,255,255,0.2)" : "white", cursor: formData.noTime ? "not-allowed" : "text", opacity: formData.noTime ? 0.5 : 1, colorScheme: "dark" }} 
                       />
                     </div>
                   </div>
@@ -916,21 +916,21 @@ export default function ScheduleManager({
               {modalType === "monthly" && (
                 <>
                   <div>
-                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>일정 명칭</label>
-                    <input type="text" name="title" value={formData.title} onChange={handleInputChange} required placeholder="예: 2차년도 1차 보고서 제출 마감" style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} />
+                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>일정 명칭</label>
+                    <input type="text" name="title" value={formData.title} onChange={handleInputChange} required placeholder="예: 2차년도 1차 보고서 제출 마감" style={{ width: "100%", padding: "0.5rem", background: "rgba(128,128,128,0.1)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} />
                   </div>
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
                     <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>일정 유형</label>
-                      <select name="type" value={formData.type} onChange={handleInputChange} style={{ width: "100%", padding: "0.5rem", background: "var(--bg-card-dark)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }}>
+                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>일정 유형</label>
+                      <select name="type" value={formData.type} onChange={handleInputChange} style={{ width: "100%", padding: "0.5rem", background: "var(--panel-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }}>
                         {["행사", "회의", "위원회", "기타"].map(t => (
                           <option key={t} value={t}>{t}</option>
                         ))}
                       </select>
                     </div>
                     <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>관련 부서</label>
-                      <select name="dept" value={formData.dept} onChange={handleInputChange} style={{ width: "100%", padding: "0.5rem", background: "var(--bg-card-dark)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }}>
+                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>관련 부서</label>
+                      <select name="dept" value={formData.dept} onChange={handleInputChange} style={{ width: "100%", padding: "0.5rem", background: "var(--panel-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }}>
                         {["사업운영팀", "ECC센터", "ICC센터", "RCC센터", "AID-X지원센터", "울산늘봄누리센터", "신산업특화센터"].map(d => (
                           <option key={d} value={d}>{d}</option>
                         ))}
@@ -939,27 +939,27 @@ export default function ScheduleManager({
                   </div>
                   <div style={{ display: "grid", gridTemplateColumns: "1.2fr 0.8fr", gap: "1rem" }}>
                     <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>시작일시 (일자)</label>
-                      <input type="date" name="startDate" value={formData.startDate} onChange={handleInputChange} style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white", colorScheme: "dark" }} />
+                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>시작일시 (일자)</label>
+                      <input type="date" name="startDate" value={formData.startDate} onChange={handleInputChange} style={{ width: "100%", padding: "0.5rem", background: "rgba(128,128,128,0.1)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", colorScheme: "dark" }} />
                     </div>
                     <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>시작 시간</label>
-                      <input type="time" name="startTime" value={formData.startTime} onChange={handleInputChange} style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white", colorScheme: "dark" }} />
+                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>시작 시간</label>
+                      <input type="time" name="startTime" value={formData.startTime} onChange={handleInputChange} style={{ width: "100%", padding: "0.5rem", background: "rgba(128,128,128,0.1)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", colorScheme: "dark" }} />
                     </div>
                   </div>
                   <div style={{ display: "grid", gridTemplateColumns: "1.2fr 0.8fr", gap: "1rem" }}>
                     <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>종료일시 (일자)</label>
-                      <input type="date" name="endDate" value={formData.endDate} onChange={handleInputChange} style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white", colorScheme: "dark" }} />
+                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>종료일시 (일자)</label>
+                      <input type="date" name="endDate" value={formData.endDate} onChange={handleInputChange} style={{ width: "100%", padding: "0.5rem", background: "rgba(128,128,128,0.1)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", colorScheme: "dark" }} />
                     </div>
                     <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>종료 시간</label>
-                      <input type="time" name="endTime" value={formData.endTime} onChange={handleInputChange} style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white", colorScheme: "dark" }} />
+                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>종료 시간</label>
+                      <input type="time" name="endTime" value={formData.endTime} onChange={handleInputChange} style={{ width: "100%", padding: "0.5rem", background: "rgba(128,128,128,0.1)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", colorScheme: "dark" }} />
                     </div>
                   </div>
                   <div>
-                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>장소</label>
-                    <input type="text" name="location" value={formData.location} onChange={handleInputChange} placeholder="예: 대학 본부 대회의실" style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} />
+                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>장소</label>
+                    <input type="text" name="location" value={formData.location} onChange={handleInputChange} placeholder="예: 대학 본부 대회의실" style={{ width: "100%", padding: "0.5rem", background: "rgba(128,128,128,0.1)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} />
                   </div>
                 </>
               )}
@@ -968,54 +968,54 @@ export default function ScheduleManager({
               {modalType === "event" && (
                 <>
                   <div>
-                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>행사 명칭</label>
-                    <input type="text" name="title" value={formData.title} onChange={handleInputChange} required placeholder="예: RISE 지산학 공동 취업 박람회" style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} />
+                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>행사 명칭</label>
+                    <input type="text" name="title" value={formData.title} onChange={handleInputChange} required placeholder="예: RISE 지산학 공동 취업 박람회" style={{ width: "100%", padding: "0.5rem", background: "rgba(128,128,128,0.1)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} />
                   </div>
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
                     <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>구분 월</label>
-                      <select name="month" value={formData.month} onChange={handleInputChange} style={{ width: "100%", padding: "0.5rem", background: "var(--bg-card-dark)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }}>
+                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>구분 월</label>
+                      <select name="month" value={formData.month} onChange={handleInputChange} style={{ width: "100%", padding: "0.5rem", background: "var(--panel-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }}>
                         {[3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 1, 2].map(m => (
                           <option key={m} value={m}>{m}월</option>
                         ))}
                       </select>
                     </div>
                     <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>담당 부서(센터)</label>
-                      <input type="text" name="department" value={formData.department} onChange={handleInputChange} placeholder="예: ECC센터 / G-VET팀" style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} />
+                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>담당 부서(센터)</label>
+                      <input type="text" name="department" value={formData.department} onChange={handleInputChange} placeholder="예: ECC센터 / G-VET팀" style={{ width: "100%", padding: "0.5rem", background: "rgba(128,128,128,0.1)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} />
                     </div>
                   </div>
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
                     <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>일시 (상세)</label>
-                      <input type="text" name="datetime" value={formData.datetime} onChange={handleInputChange} placeholder="예: 2026.07.25 13:00~" style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} />
+                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>일시 (상세)</label>
+                      <input type="text" name="datetime" value={formData.datetime} onChange={handleInputChange} placeholder="예: 2026.07.25 13:00~" style={{ width: "100%", padding: "0.5rem", background: "rgba(128,128,128,0.1)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} />
                     </div>
                     <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>장소</label>
-                      <input type="text" name="location" value={formData.location} onChange={handleInputChange} placeholder="예: 체육관 특설 돔" style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} />
+                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>장소</label>
+                      <input type="text" name="location" value={formData.location} onChange={handleInputChange} placeholder="예: 체육관 특설 돔" style={{ width: "100%", padding: "0.5rem", background: "rgba(128,128,128,0.1)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} />
                     </div>
                   </div>
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
                     <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>참석자 (내부 구분)</label>
-                      <input type="text" name="attendeesInternal" value={formData.attendeesInternal} onChange={handleInputChange} placeholder="예: 내부 교수 및 연구원 15명" style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} />
+                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>참석자 (내부 구분)</label>
+                      <input type="text" name="attendeesInternal" value={formData.attendeesInternal} onChange={handleInputChange} placeholder="예: 내부 교수 및 연구원 15명" style={{ width: "100%", padding: "0.5rem", background: "rgba(128,128,128,0.1)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} />
                     </div>
                     <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>참석자 (외부 구분)</label>
-                      <input type="text" name="attendeesExternal" value={formData.attendeesExternal} onChange={handleInputChange} placeholder="예: 지자체 관계자 5명" style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} />
+                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>참석자 (외부 구분)</label>
+                      <input type="text" name="attendeesExternal" value={formData.attendeesExternal} onChange={handleInputChange} placeholder="예: 지자체 관계자 5명" style={{ width: "100%", padding: "0.5rem", background: "rgba(128,128,128,0.1)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} />
                     </div>
                   </div>
                   <div>
-                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>관련 프로그램</label>
-                    <input type="text" name="program" value={formData.program} onChange={handleInputChange} placeholder="예: 지역 정착 지원 프로그램" style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} />
+                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>관련 프로그램</label>
+                    <input type="text" name="program" value={formData.program} onChange={handleInputChange} placeholder="예: 지역 정착 지원 프로그램" style={{ width: "100%", padding: "0.5rem", background: "rgba(128,128,128,0.1)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} />
                   </div>
                   <div>
-                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>행사 목적</label>
-                    <textarea name="purpose" value={formData.purpose} onChange={handleInputChange} placeholder="행사를 통해 도달하고자 하는 목표 기술" style={{ width: "100%", height: "60px", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white", resize: "none" }} />
+                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>행사 목적</label>
+                    <textarea name="purpose" value={formData.purpose} onChange={handleInputChange} placeholder="행사를 통해 도달하고자 하는 목표 기술" style={{ width: "100%", height: "60px", padding: "0.5rem", background: "rgba(128,128,128,0.1)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", resize: "none" }} />
                   </div>
                   <div>
-                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>행사 결과</label>
-                    <textarea name="result" value={formData.result} onChange={handleInputChange} placeholder="수료 인원, 산출된 최종 성과 및 보도 내역" style={{ width: "100%", height: "60px", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white", resize: "none" }} />
+                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>행사 결과</label>
+                    <textarea name="result" value={formData.result} onChange={handleInputChange} placeholder="수료 인원, 산출된 최종 성과 및 보도 내역" style={{ width: "100%", height: "60px", padding: "0.5rem", background: "rgba(128,128,128,0.1)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", resize: "none" }} />
                   </div>
                 </>
               )}
@@ -1024,21 +1024,21 @@ export default function ScheduleManager({
               {modalType === "meeting" && (
                 <>
                   <div>
-                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>회의 명칭</label>
-                    <input type="text" name="title" value={formData.title} onChange={handleInputChange} required placeholder="예: 제2차 ICC 센터 공동 운영 회의" style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} />
+                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>회의 명칭</label>
+                    <input type="text" name="title" value={formData.title} onChange={handleInputChange} required placeholder="예: 제2차 ICC 센터 공동 운영 회의" style={{ width: "100%", padding: "0.5rem", background: "rgba(128,128,128,0.1)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} />
                   </div>
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
                     <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>회의 대분류</label>
-                      <select name="category" value={formData.category} onChange={handleInputChange} style={{ width: "100%", padding: "0.5rem", background: "var(--bg-card-dark)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }}>
+                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>회의 대분류</label>
+                      <select name="category" value={formData.category} onChange={handleInputChange} style={{ width: "100%", padding: "0.5rem", background: "var(--panel-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }}>
                         <option value="operating">사업단 운영회의</option>
                         <option value="center">센터별 회의</option>
                         <option value="committee">각종 위원회 회의</option>
                       </select>
                     </div>
                     <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>구분 월</label>
-                      <select name="month" value={formData.month} onChange={handleInputChange} style={{ width: "100%", padding: "0.5rem", background: "var(--bg-card-dark)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }}>
+                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>구분 월</label>
+                      <select name="month" value={formData.month} onChange={handleInputChange} style={{ width: "100%", padding: "0.5rem", background: "var(--panel-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }}>
                         {[3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 1, 2].map(m => (
                           <option key={m} value={m}>{m}월</option>
                         ))}
@@ -1047,31 +1047,31 @@ export default function ScheduleManager({
                   </div>
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
                     <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>일시 (상세)</label>
-                      <input type="text" name="datetime" value={formData.datetime} onChange={handleInputChange} placeholder="예: 2026.07.19 14:00" style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} />
+                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>일시 (상세)</label>
+                      <input type="text" name="datetime" value={formData.datetime} onChange={handleInputChange} placeholder="예: 2026.07.19 14:00" style={{ width: "100%", padding: "0.5rem", background: "rgba(128,128,128,0.1)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} />
                     </div>
                     <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>장소</label>
-                      <input type="text" name="location" value={formData.location} onChange={handleInputChange} placeholder="예: ICC 센터장실" style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} />
+                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>장소</label>
+                      <input type="text" name="location" value={formData.location} onChange={handleInputChange} placeholder="예: ICC 센터장실" style={{ width: "100%", padding: "0.5rem", background: "rgba(128,128,128,0.1)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} />
                     </div>
                   </div>
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
                     <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>참석자 (내부 구분)</label>
-                      <input type="text" name="attendeesInternal" value={formData.attendeesInternal} onChange={handleInputChange} placeholder="예: 전담 교수 3명" style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} />
+                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>참석자 (내부 구분)</label>
+                      <input type="text" name="attendeesInternal" value={formData.attendeesInternal} onChange={handleInputChange} placeholder="예: 전담 교수 3명" style={{ width: "100%", padding: "0.5rem", background: "rgba(128,128,128,0.1)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} />
                     </div>
                     <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>참석자 (외부 구분)</label>
-                      <input type="text" name="attendeesExternal" value={formData.attendeesExternal} onChange={handleInputChange} placeholder="예: 자문위원 2명" style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} />
+                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>참석자 (외부 구분)</label>
+                      <input type="text" name="attendeesExternal" value={formData.attendeesExternal} onChange={handleInputChange} placeholder="예: 자문위원 2명" style={{ width: "100%", padding: "0.5rem", background: "rgba(128,128,128,0.1)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} />
                     </div>
                   </div>
                   <div>
-                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>회의 의제 (안건)</label>
-                    <textarea name="agenda" value={formData.agenda} onChange={handleInputChange} placeholder="회의에서 중점적으로 다룬 의제 기술" style={{ width: "100%", height: "60px", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white", resize: "none" }} />
+                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>회의 의제 (안건)</label>
+                    <textarea name="agenda" value={formData.agenda} onChange={handleInputChange} placeholder="회의에서 중점적으로 다룬 의제 기술" style={{ width: "100%", height: "60px", padding: "0.5rem", background: "rgba(128,128,128,0.1)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", resize: "none" }} />
                   </div>
                   <div>
-                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>회의 결과</label>
-                    <textarea name="result" value={formData.result} onChange={handleInputChange} placeholder="결정된 결의 사항 및 향후 조치 내역" style={{ width: "100%", height: "60px", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white", resize: "none" }} />
+                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>회의 결과</label>
+                    <textarea name="result" value={formData.result} onChange={handleInputChange} placeholder="결정된 결의 사항 및 향후 조치 내역" style={{ width: "100%", height: "60px", padding: "0.5rem", background: "rgba(128,128,128,0.1)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", resize: "none" }} />
                   </div>
                 </>
               )}
@@ -1085,13 +1085,13 @@ export default function ScheduleManager({
                     setIsEditMode(false);
                     setEditingItemId(null);
                   }}
-                  style={{ padding: "0.5rem 1rem", borderRadius: "6px", background: "transparent", border: "1px solid var(--border-color-dark)", color: "white", cursor: "pointer" }}
+                  style={{ padding: "0.5rem 1rem", borderRadius: "6px", background: "transparent", border: "1px solid var(--border-color)", color: "var(--text-primary)", cursor: "pointer" }}
                 >
                   취소
                 </button>
                 <button 
                   type="submit" 
-                  style={{ padding: "0.5rem 1.25rem", borderRadius: "6px", background: "var(--accent-color)", border: "none", color: "white", fontWeight: "600", cursor: "pointer" }}
+                  style={{ padding: "0.5rem 1.25rem", borderRadius: "6px", background: "var(--accent-color)", border: "none", color: "var(--text-primary)", fontWeight: "600", cursor: "pointer" }}
                 >
                   {isEditMode ? "수정 완료" : "새 등록 완료"}
                 </button>
