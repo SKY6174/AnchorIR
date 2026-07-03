@@ -40,6 +40,25 @@ const parseTimelineDates = (timelineStr) => {
   };
 };
 
+const getRequesterRoleName = (user) => {
+  if (!user) return "실무자";
+  if (typeof user.role === "string") return user.role;
+  if (user.role && typeof user.role === "object") {
+    return user.role.name || user.role.role || "실무자";
+  }
+  if (user.role_key) {
+    const roleNames = {
+      ADMIN: "최고 관리자",
+      DIRECTOR: "사업단장",
+      HQ_HEAD: "본부장",
+      TEAM_LEADER: "운영팀장",
+      RESEARCHER: "실무 연구원"
+    };
+    return roleNames[user.role_key] || user.role_key;
+  }
+  return "실무자";
+};
+
 const MONTHS_LIST = ["26.3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월", "27.1월", "2월"];
 
 const BUDGET_CATEGORIES_OPTIONS = [
@@ -871,7 +890,7 @@ export default function PDCAManager({
                   after: afterData
                 },
                 status: "승인완료",
-                requested_by: `${currentUser.name} (${typeof currentUser.role === "object" ? currentUser.role.name : (currentUser.role || "사업단장")})`,
+                requested_by: `${currentUser.name} (${getRequesterRoleName(currentUser)})`,
                 approved_by: currentUser.name,
                 approved_at: new Date().toISOString()
               });
@@ -953,7 +972,7 @@ export default function PDCAManager({
               after: afterData
             },
             status: "승인대기",
-            requested_by: currentUser ? `${currentUser.name} (${typeof currentUser.role === "object" ? currentUser.role.name : (currentUser.role || "실무자")})` : "실무 연구원"
+            requested_by: currentUser ? `${currentUser.name} (${getRequesterRoleName(currentUser)})` : "실무 연구원"
           });
 
         if (insertErr) throw insertErr;
@@ -1418,8 +1437,8 @@ export default function PDCAManager({
                       {/* 💡 프로그램 기획 및 예산 변경 방법 안내 카드 */}
                       <div className="glass-card" style={{
                         padding: "0.6rem 0.8rem",
-                        background: "rgba(59, 130, 246, 0.04)",
-                        border: "1px solid rgba(59, 130, 246, 0.15)",
+                        background: "rgba(239, 68, 68, 0.04)",
+                        border: "1px solid rgba(239, 68, 68, 0.15)",
                         borderRadius: "6px",
                         fontSize: "0.72rem",
                         color: "var(--text-secondary)",
@@ -1427,30 +1446,17 @@ export default function PDCAManager({
                         display: "flex",
                         flexDirection: "column",
                         gap: "0.35rem",
-                        boxShadow: "inset 0 1px 2px rgba(59, 130, 246, 0.02)"
+                        boxShadow: "inset 0 1px 2px rgba(239, 68, 68, 0.02)"
                       }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: "0.3rem", fontWeight: "800", color: "#60a5fa" }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: "0.3rem", fontWeight: "800", color: "#f87171" }}>
                           💡 프로그램 기획 및 예산 변경 방법 안내
                         </div>
                         <p style={{ margin: 0 }}>
-                          아래의 <strong>재원별 예산 배정, 비목별 예산 배정, 월별 일정, 실적 목표치, 연계 대상</strong>을 알맞게 수정한 뒤 하단의 <strong>[저장 및 결재 요청]</strong> 버튼을 누르시면 승인 대기 상태로 등록됩니다.
+                          <strong>[변경 원칙]</strong>에 맞춰 <strong>재원별 예산 배정, 비목별 예산 배정, 월별 추진 일정, 실적목표 중 1개 이상</strong>을 수정하고, <strong>참여대상(연계대상)</strong>을 무조건 입력한 뒤 하단의 <strong>[저장 및 결재 요청]</strong> 버튼을 누르시면 승인 대기 상태로 등록됩니다.
                         </p>
                         <p style={{ margin: 0, color: "var(--text-secondary-dark)" }}>
                           - 운영팀장, 본부장, 단장 결재 승인이 완료되면 최종 반영되며 새로운 변경 차수 버전이 영구 기록됩니다.
                         </p>
-                        <div style={{
-                          marginTop: "0.3rem",
-                          padding: "0.4rem 0.6rem",
-                          background: "rgba(239, 68, 68, 0.08)",
-                          border: "1px solid rgba(239, 68, 68, 0.2)",
-                          borderRadius: "4px",
-                          color: "#f87171",
-                          fontWeight: "700",
-                          fontSize: "0.7rem",
-                          lineHeight: "1.35"
-                        }}>
-                          📌 [변경 원칙] 재원별 예산 배정, 비목별 예산 배정, 월별 추진 일정, 실적목표 중 1개 이상, 참여대상(연계대상)은 무조건 입력되어야 합니다.
-                        </div>
                       </div>
 
                       <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
