@@ -1443,8 +1443,8 @@ export default function ScheduleManager({
             </div>
           </div>
 
-          {/* 리스트 & 상세 내용 (Master-Detail) 레이아웃 */}
-          <div style={{ display: "grid", gridTemplateColumns: "380px 1fr", gap: "1.5rem", alignItems: "start" }}>
+          {/* 리스트 & 상세 내용 (Master-Detail) 레이아웃 - 왼쪽 40% : 오른쪽 60% 비율 분할 */}
+          <div style={{ display: "grid", gridTemplateColumns: "4fr 6fr", gap: "1.5rem", alignItems: "start" }}>
             
             {/* 좌측: 리스트 영역 */}
             <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem", maxHeight: "70vh", overflowY: "auto", paddingRight: "0.5rem" }}>
