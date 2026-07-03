@@ -73,13 +73,30 @@ export default function ScheduleManager({
   // 유튜브 임베드용 ID 추출 헬퍼
   const getYoutubeEmbedUrl = (url) => {
     if (!url) return null;
+    const trimmed = url.trim();
     let videoId = "";
-    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-    const match = url.match(regExp);
-    if (match && match[2].length === 11) {
-      videoId = match[2];
+    
+    if (trimmed.includes("v=")) {
+      const parts = trimmed.split("v=");
+      if (parts[1]) {
+        videoId = parts[1].split("&")[0];
+      }
+    } else if (trimmed.includes("youtu.be/")) {
+      const parts = trimmed.split("youtu.be/");
+      if (parts[1]) {
+        videoId = parts[1].split("?")[0].split("&")[0];
+      }
+    } else if (trimmed.includes("embed/")) {
+      const parts = trimmed.split("embed/");
+      if (parts[1]) {
+        videoId = parts[1].split("?")[0];
+      }
     }
-    return videoId ? `https://www.youtube.com/embed/${videoId}` : null;
+    
+    if (videoId && videoId.trim().length === 11) {
+      return `https://www.youtube.com/embed/${videoId.trim()}`;
+    }
+    return null;
   };
 
   // 언론보도 대장 실시간 CSV(엑셀) 다운로드
