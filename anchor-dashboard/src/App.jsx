@@ -4224,32 +4224,47 @@ export default function App() {
 
           <div className="controls-section" style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
             {/* Supabase 실시간 동기화 상태 배지 */}
-            <span style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "0.25rem",
-              fontSize: "0.75rem",
-              padding: "0.25rem 0.6rem",
-              borderRadius: "4px",
-              background: syncStatus === "synced" 
-                ? "rgba(16, 185, 129, 0.1)" 
-                : syncStatus === "syncing" 
-                ? "rgba(245, 158, 11, 0.1)" 
-                : "rgba(239, 68, 68, 0.1)",
-              color: syncStatus === "synced" 
-                ? "#10B981" 
-                : syncStatus === "syncing" 
-                ? "#F59E0B" 
-                : "#EF4444",
-              border: syncStatus === "synced" 
-                ? "1px solid rgba(16, 185, 129, 0.2)" 
-                : syncStatus === "syncing" 
-                ? "1px solid rgba(245, 158, 11, 0.2)" 
-                : "1px solid rgba(239, 68, 68, 0.2)",
-              marginRight: "0.5rem",
-              fontWeight: "700"
-            }}>
-              {syncStatus === "synced" ? "☁️ DB 동기화 완료" : syncStatus === "syncing" ? "🔄 DB 저장 중..." : "⚠️ 동기화 실패"}
+            <span 
+              onClick={() => {
+                if (syncStatus === "error") {
+                  if (confirm("로컬 캐시 데이터 간 충돌이 감지되었습니다. 로컬 캐시를 초기화하고 안전하게 새로고침하시겠습니까? (이수증/상장 등의 임시 캐시가 초기화됩니다)")) {
+                    localStorage.removeItem(`anchor_cache_cert_y${selectedYear}`);
+                    localStorage.removeItem(`anchor_cache_award_y${selectedYear}`);
+                    localStorage.removeItem(`anchor_cache_agr_y${selectedYear}`);
+                    window.location.reload();
+                  }
+                }
+              }}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "0.25rem",
+                fontSize: "0.75rem",
+                padding: "0.25rem 0.6rem",
+                borderRadius: "4px",
+                cursor: syncStatus === "error" ? "pointer" : "default",
+                background: syncStatus === "synced" 
+                  ? "rgba(16, 185, 129, 0.1)" 
+                  : syncStatus === "syncing" 
+                  ? "rgba(245, 158, 11, 0.1)" 
+                  : "rgba(239, 68, 68, 0.1)",
+                color: syncStatus === "synced" 
+                  ? "#10B981" 
+                  : syncStatus === "syncing" 
+                  ? "#F59E0B" 
+                  : "#EF4444",
+                border: syncStatus === "synced" 
+                  ? "1px solid rgba(16, 185, 129, 0.2)" 
+                  : syncStatus === "syncing" 
+                  ? "1px solid rgba(245, 158, 11, 0.2)" 
+                  : "1px solid rgba(239, 68, 68, 0.2)",
+                marginRight: "0.5rem",
+                fontWeight: "700",
+                textDecoration: syncStatus === "error" ? "underline" : "none"
+              }}
+              title={syncStatus === "error" ? "클릭하여 로컬 캐시 초기화" : ""}
+            >
+              {syncStatus === "synced" ? "☁️ DB 동기화 완료" : syncStatus === "syncing" ? "🔄 DB 저장 중..." : "⚠️ 동기화 실패 (클릭 시 복구)"}
             </span>
 
             <span style={{ fontSize: "0.85rem", color: "var(--text-secondary)", marginRight: "0.4rem" }}>
