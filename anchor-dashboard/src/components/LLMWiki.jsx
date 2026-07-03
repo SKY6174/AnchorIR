@@ -54,11 +54,17 @@ export default function LLMWiki({ selectedYear = 2 }) {
     }, 850);
   };
 
-  // 카테고리 필터링된 위키 단락 목록 (연차별 연동)
+  // 카테고리 필터링된 위키 단락 목록 (연차별 연동 및 알파벳/넘버링 기호 오름차순 정렬)
   const filteredChunks = WIKI_CHUNKS.filter(chunk => {
     const matchesCategory = selectedCategory === "all" || chunk.category === selectedCategory;
     const matchesYear = !chunk.year || chunk.year === selectedYear;
     return matchesCategory && matchesYear;
+  }).sort((a, b) => {
+    if (a.category === "개요" && b.category === "개요") {
+      // localeCompare { numeric: true } 옵션을 주어 A1, A2, B1, C1, D1, D4 순으로 넘버링 정렬
+      return a.unit.localeCompare(b.unit, undefined, { numeric: true, sensitivity: "base" });
+    }
+    return 0;
   });
 
   return (
