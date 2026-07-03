@@ -340,7 +340,7 @@ export default function OrgChartManager() {
         </h2>
         <p style={{ fontSize: "0.9rem", color: "var(--text-secondary-dark)", lineHeight: "1.5" }}>
           울산과학대학교의 학부(과), 대학본부, 평생교육원, 산학협력단, 부속기관 등 핵심 행정 및 교육 조직 계통을 한눈에 조회합니다.
-          조직을 선택하면 하위 소속 팀 및 연계된 앵커수행 과제 정보를 조회하실 수 있습니다.
+          조직을 선택하면 하위 소속 팀 및 연계된 앵커수행 또는 앵커연계 과제 정보를 조회하실 수 있습니다.
         </p>
       </div>
 
@@ -396,7 +396,7 @@ export default function OrgChartManager() {
 
           <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
             {selectedKey === "anchor" ? (
-              // 앵커사업단인 경우에는 아코디언 상자를 없애고 바로 센터 리스트 노출
+              // 앵커사업단인 경우에는 아코디언 상자를 없애고 바로 센터 리스트 노출 (앵커수행 배지 유지)
               <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
                 {listDepts[0]?.subTeams.map((team) => (
                   <div
@@ -433,7 +433,7 @@ export default function OrgChartManager() {
                 ))}
               </div>
             ) : (
-              // 일반 처/처/원인 경우 아코디언 트리 형태 유지
+              // 일반 처/처/원인 경우 아코디언 트리 형태 유지 (앵커사업단을 제외하고는 '앵커연계' 배지 적용)
               listDepts.map((dept, deptIdx) => {
                 const isExpanded = expandedDept === deptIdx;
                 const hasSingleIdenticalSubteam = dept.subTeams.length === 1 && dept.subTeams[0].name === dept.name;
@@ -468,13 +468,13 @@ export default function OrgChartManager() {
                       {team.rise && (
                         <span style={{
                           fontSize: "0.75rem",
-                          background: "rgba(16, 185, 129, 0.1)",
-                          color: "#10B981",
+                          background: selectedKey === "academic" ? "rgba(16, 185, 129, 0.1)" : "rgba(59, 130, 246, 0.1)",
+                          color: selectedKey === "academic" ? "#10B981" : "var(--accent-color)",
                           padding: "0.15rem 0.4rem",
                           borderRadius: "4px",
                           fontWeight: "800"
                         }}>
-                          {selectedKey === "academic" ? "주문식교육과정" : "앵커수행"}
+                          {selectedKey === "academic" ? "주문식교육과정" : "앵커연계"}
                         </span>
                       )}
                     </div>
@@ -565,13 +565,13 @@ export default function OrgChartManager() {
                                         {major.rise && (
                                           <span style={{
                                             fontSize: "0.75rem",
-                                            background: "rgba(16, 185, 129, 0.1)",
-                                            color: "#10B981",
+                                            background: selectedKey === "academic" ? "rgba(16, 185, 129, 0.1)" : "rgba(59, 130, 246, 0.1)",
+                                            color: selectedKey === "academic" ? "#10B981" : "var(--accent-color)",
                                             padding: "0.15rem 0.4rem",
                                             borderRadius: "4px",
                                             fontWeight: "800"
                                           }}>
-                                            {selectedKey === "academic" ? "주문식교육과정" : "앵커수행"}
+                                            {selectedKey === "academic" ? "주문식교육과정" : "앵커연계"}
                                           </span>
                                         )}
                                       </div>
@@ -604,13 +604,13 @@ export default function OrgChartManager() {
                               {team.rise && (
                                 <span style={{
                                   fontSize: "0.75rem",
-                                  background: "rgba(16, 185, 129, 0.1)",
-                                  color: "#10B981",
+                                  background: selectedKey === "academic" ? "rgba(16, 185, 129, 0.1)" : "rgba(59, 130, 246, 0.1)",
+                                  color: selectedKey === "academic" ? "#10B981" : "var(--accent-color)",
                                   padding: "0.15rem 0.4rem",
                                   borderRadius: "4px",
                                   fontWeight: "800"
                                 }}>
-                                  {selectedKey === "academic" ? "주문식교육과정" : "앵커수행"}
+                                  {selectedKey === "academic" ? "주문식교육과정" : "앵커연계"}
                                 </span>
                               )}
                             </div>
@@ -666,15 +666,24 @@ export default function OrgChartManager() {
                     marginTop: "0.5rem",
                     padding: "0.75rem",
                     borderRadius: "8px",
-                    background: "rgba(16, 185, 129, 0.06)",
-                    border: "1px solid rgba(16, 185, 129, 0.15)",
+                    background: selectedKey === "academic" ? "rgba(16, 185, 129, 0.06)" : "rgba(59, 130, 246, 0.06)",
+                    border: selectedKey === "academic" ? "1px solid rgba(16, 185, 129, 0.15)" : "1px solid rgba(59, 130, 246, 0.15)",
                     display: "flex",
                     flexDirection: "column",
                     gap: "0.25rem"
                   }}>
-                    <span style={{ fontSize: "0.75rem", color: "#10B981", fontWeight: "800", display: "flex", alignItems: "center", gap: "0.25rem" }}>
+                    <span style={{ 
+                      fontSize: "0.75rem", 
+                      color: selectedKey === "academic" ? "#10B981" : "var(--accent-color)", 
+                      fontWeight: "800", 
+                      display: "flex", 
+                      alignItems: "center", 
+                      gap: "0.25rem" 
+                    }}>
                       <Award size={14} />
-                      {selectedKey === "academic" ? "주문식교육과정 주요 협업 과제" : "앵커수행 주요 협업 과제"}
+                      {selectedKey === "academic" 
+                        ? "주문식교육과정 주요 협업 과제" 
+                        : (selectedKey === "anchor" ? "앵커수행 주요 협업 과제" : "앵커연계 주요 협업 과제")}
                     </span>
                     <span style={{ fontSize: "0.8rem", fontWeight: "800" }}>{selectedTeam.rise}</span>
                   </div>
@@ -685,7 +694,7 @@ export default function OrgChartManager() {
             <div className="glass-card" style={{ padding: "2.5rem", textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: "300px", gap: "0.75rem" }}>
               <BookOpen size={36} style={{ color: "var(--text-secondary-dark)" }} />
               <p style={{ fontSize: "0.85rem", color: "var(--text-secondary-dark)" }}>
-                조직도에서 특정 학과/팀을 선택하시면 전화번호, 위치, 담당업무 및 {selectedKey === "academic" ? "주문식교육과정" : "앵커수행"} 상세 정보를 이곳에서 조회하실 수 있습니다.
+                조직도에서 특정 학과/팀을 선택하시면 전화번호, 위치, 담당업무 및 {selectedKey === "academic" ? "주문식교육과정" : (selectedKey === "anchor" ? "앵커수행" : "앵커연계")} 상세 정보를 이곳에서 조회하실 수 있습니다.
               </p>
             </div>
           )}
