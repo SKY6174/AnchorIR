@@ -735,32 +735,4 @@ input[type="time"]::-webkit-calendar-picker-indicator:hover {
   display: none !important;
 }
 
-/* input[type="date"]를 슬래시 포맷 yyyy/mm/dd로 강제 오버레이 렌더링하는 마법의 CSS */
-.custom-date-picker {
-  position: relative;
-}
 
-/* data-date 속성이 있을 때만 가상 요소를 띄워 브라우저 기본 포맷을 덮어씀 */
-.custom-date-picker[data-date]::before {
-  content: attr(data-date);
-  position: absolute;
-  left: 0.5rem;
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--text-primary);
-  background: transparent;
-  width: calc(100% - 2.5rem);
-  height: 90%;
-  display: flex;
-  align-items: center;
-  pointer-events: none; /* 클릭 이벤트 통과 */
-  font-family: inherit;
-  font-size: inherit;
-  font-weight: inherit;
-}
-
-/* 브라우저 기본의 텍스트가 렌더링되는 영역을 투명하게 숨김 */
-.custom-date-picker::-webkit-datetime-edit {
-  color: transparent !important;
-  opacity: 0 !important;
-}
