@@ -1681,7 +1681,13 @@ export default function App() {
   }, [agreements]);
 
   // 협약∙발급 관리 서브탭 및 추가 데이터군(이수증, 상장) 상태 선언
-  const [agreementsSubTab, setAgreementsSubTab] = useState("agreements");
+  const [agreementsSubTab, setAgreementsSubTab] = useState(() => {
+    return localStorage.getItem("anchor_agreements_sub_tab") || "agreements";
+  });
+
+  useEffect(() => {
+    localStorage.setItem("anchor_agreements_sub_tab", agreementsSubTab);
+  }, [agreementsSubTab]);
 
   const [certificates, setCertificates] = useState(() => {
     const cached = localStorage.getItem("anchor_certificates_data_v1");
