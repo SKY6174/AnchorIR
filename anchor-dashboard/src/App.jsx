@@ -4485,7 +4485,7 @@ export default function App() {
         )}
 
         {activeTab === "llm_wiki" && (
-          <LLMWiki />
+          <LLMWiki selectedYear={selectedYear} />
         )}
       </main>
 

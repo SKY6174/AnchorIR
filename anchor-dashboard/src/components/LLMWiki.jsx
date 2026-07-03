@@ -2,19 +2,24 @@ import React, { useState, useRef, useEffect } from "react";
 import { BookOpen, Send, Sparkles, AlertCircle, Bookmark, RefreshCw, MessageSquare } from "lucide-react";
 import { simulateRAGQuery, WIKI_CHUNKS } from "../data/mockWikiData";
 
-export default function LLMWiki() {
+export default function LLMWiki({ selectedYear = 2 }) {
   const [query, setQuery] = useState("");
-  const [messages, setMessages] = useState([
-    {
-      sender: "ai",
-      text: "안녕하세요! 울산과학대학교 라이즈(앵커) 사업단 AI RAG 위키 포털입니다. 사업 계획서와 1차년도 성과보고서의 축적된 지식을 바탕으로 원하시는 정보를 실시간으로 검색하여 답변해 드립니다. 무엇이든 질문해 보세요!\n\n💡 **추천 질문 목록**:\n- D3 단위과제 집행 지연 사유가 무엇인가요?\n- 자율성과지표 L-1의 산출 공식과 실적을 알려줘\n- 글로벌 협력 거점(D4) 사업의 지연 원인을 알려주세요\n- A1 (UC-HYPER) 사업비 규모와 개요는?",
-      sources: []
-    }
-  ]);
+  const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [isFocused, setIsFocused] = useState(false);
   const chatEndRef = useRef(null);
+
+  // 연차가 변경되면 RAG 챗봇 환영 인사 및 대화 상태 동적 갱신
+  useEffect(() => {
+    setMessages([
+      {
+        sender: "ai",
+        text: `안녕하세요! 울산과학대학교 라이즈(앵커) 사업단 AI RAG 위키 포털입니다. 현재 **${selectedYear}차년도** 지식베이스(기획서 및 성과자료)를 기반으로 검색합니다.\n\n원하시는 정보를 실시간으로 검색하여 답변해 드립니다. 무엇이든 질문해 보세요!\n\n💡 **추천 질문 목록**:\n- ${selectedYear === 1 ? "1차년도" : "2차년도"} A1가 단위과제 개요가 무엇인가요?\n- 회의비 식비 한도 규정이 어떻게 개정되었어?\n- 강사료 지침의 최신 개정본 및 차이점을 알려줘\n- 자율성과지표 L-1의 산출 공식과 실적은?`,
+        sources: []
+      }
+    ]);
+  }, [selectedYear]);
 
   // 메시지 전송 시 대화창 하단 자동 스크롤
   useEffect(() => {
@@ -39,7 +44,7 @@ export default function LLMWiki() {
 
     // AI RAG 시뮬레이션 지연 실행 (마치 서버에서 연산하는 효과)
     setTimeout(() => {
-      const ragResult = simulateRAGQuery(activeText);
+      const ragResult = simulateRAGQuery(activeText, selectedYear);
       setMessages(prev => [...prev, {
         sender: "ai",
         text: ragResult.answer,
@@ -49,10 +54,11 @@ export default function LLMWiki() {
     }, 850);
   };
 
-  // 카테고리 필터링된 위키 단락 목록
+  // 카테고리 필터링된 위키 단락 목록 (연차별 연동)
   const filteredChunks = WIKI_CHUNKS.filter(chunk => {
-    if (selectedCategory === "all") return true;
-    return chunk.category === selectedCategory;
+    const matchesCategory = selectedCategory === "all" || chunk.category === selectedCategory;
+    const matchesYear = !chunk.year || chunk.year === selectedYear;
+    return matchesCategory && matchesYear;
   });
 
   return (
@@ -137,7 +143,7 @@ export default function LLMWiki() {
             <div>
               <h3 style={{ fontSize: "1.1rem", fontWeight: "800", color: "var(--text-primary)" }}>지식 RAG AI 챗봇</h3>
               <div style={{ fontSize: "0.65rem", color: "var(--text-secondary)" }}>
-                학습 문서: 12개 단위과제 계획서, 1차년도 성과보고서 (ChromaDB 모의 색인 연동 중)
+                학습 문서: 12개 단위과제 계획서, 1차년도 성과보고서 (ChromaDB 모의 색인, {selectedYear}차년도 연동 중)
               </div>
             </div>
           </div>
@@ -145,7 +151,7 @@ export default function LLMWiki() {
             onClick={() => setMessages([
               {
                 sender: "ai",
-                text: "대화 기록이 성공적으로 초기화되었습니다. 어떤 내용이 궁금하신가요?",
+                text: `대화 기록이 성공적으로 초기화되었습니다. 현재 **${selectedYear}차년도** 지식베이스를 연동 중입니다. 어떤 내용이 궁금하신가요?`,
                 sources: []
               }
             ])}
