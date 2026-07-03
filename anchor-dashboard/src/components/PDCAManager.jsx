@@ -219,12 +219,12 @@ export default function PDCAManager({
   const [inputTargetParticipants, setInputTargetParticipants] = useState("");
   const [inputTargetDevelopments, setInputTargetDevelopments] = useState("");
   const [inputTargetEtc, setInputTargetEtc] = useState("");
-  const [inputTargetParticipantsUnit, setInputTargetParticipantsUnit] = useState("명");
-  const [inputTargetDevelopmentsUnit, setInputTargetDevelopmentsUnit] = useState("건");
-  const [inputTargetEtcUnit, setInputTargetEtcUnit] = useState("개");
-  const [inputTargetParticipantsName, setInputTargetParticipantsName] = useState("참여인원");
-  const [inputTargetDevelopmentsName, setInputTargetDevelopmentsName] = useState("개발수");
-  const [inputTargetEtcName, setInputTargetEtcName] = useState("기타");
+  const [inputTargetParticipantsUnit, setInputTargetParticipantsUnit] = useState("");
+  const [inputTargetDevelopmentsUnit, setInputTargetDevelopmentsUnit] = useState("");
+  const [inputTargetEtcUnit, setInputTargetEtcUnit] = useState("");
+  const [inputTargetParticipantsName, setInputTargetParticipantsName] = useState("");
+  const [inputTargetDevelopmentsName, setInputTargetDevelopmentsName] = useState("");
+  const [inputTargetEtcName, setInputTargetEtcName] = useState("");
   const [inputKpiType, setInputKpiType] = useState("자율");
   const [inputKpiLink, setInputKpiLink] = useState("");
   const [inputActualFrequency, setInputActualFrequency] = useState("");
@@ -420,16 +420,16 @@ export default function PDCAManager({
         setInputDeficiency(dataSrc.deficiency || "");
         setInputActionItem(dataSrc.actionItem || "");
 
-        setInputFrequency(dataSrc.frequency !== undefined ? String(dataSrc.frequency) : "");
-        setInputTargetParticipants(dataSrc.target_participants !== undefined ? String(dataSrc.target_participants) : "");
-        setInputTargetDevelopments(dataSrc.target_developments !== undefined ? String(dataSrc.target_developments) : "");
-        setInputTargetEtc(dataSrc.target_etc !== undefined ? String(dataSrc.target_etc) : "");
-        setInputTargetParticipantsUnit(dataSrc.target_participants_unit || "명");
-        setInputTargetDevelopmentsUnit(dataSrc.target_developments_unit || "건");
-        setInputTargetEtcUnit(dataSrc.target_etc_unit || "개");
-        setInputTargetParticipantsName(dataSrc.target_participants_name || "참여인원");
-        setInputTargetDevelopmentsName(dataSrc.target_developments_name || "개발수");
-        setInputTargetEtcName(dataSrc.target_etc_name || "기타");
+        setInputFrequency(dataSrc.frequency !== undefined && dataSrc.frequency !== 0 ? String(dataSrc.frequency) : "");
+        setInputTargetParticipants(dataSrc.target_participants !== undefined && dataSrc.target_participants !== 0 ? String(dataSrc.target_participants) : "");
+        setInputTargetDevelopments(dataSrc.target_developments !== undefined && dataSrc.target_developments !== 0 ? String(dataSrc.target_developments) : "");
+        setInputTargetEtc(dataSrc.target_etc !== undefined && dataSrc.target_etc !== 0 ? String(dataSrc.target_etc) : "");
+        setInputTargetParticipantsUnit(dataSrc.target_participants_unit || "");
+        setInputTargetDevelopmentsUnit(dataSrc.target_developments_unit || "");
+        setInputTargetEtcUnit(dataSrc.target_etc_unit || "");
+        setInputTargetParticipantsName(dataSrc.target_participants_name || "");
+        setInputTargetDevelopmentsName(dataSrc.target_developments_name || "");
+        setInputTargetEtcName(dataSrc.target_etc_name || "");
         setInputKpiType(dataSrc.kpi_type || "자율");
         setInputKpiLink(dataSrc.kpi_link || "");
         setInputActualFrequency(dataSrc.actualFrequency !== undefined ? String(dataSrc.actualFrequency) : "");
@@ -438,12 +438,12 @@ export default function PDCAManager({
     } else {
       setInputKpiType("자율");
       setInputKpiLink("");
-      setInputTargetParticipantsUnit("명");
-      setInputTargetDevelopmentsUnit("건");
-      setInputTargetEtcUnit("개");
-      setInputTargetParticipantsName("참여인원");
-      setInputTargetDevelopmentsName("개발수");
-      setInputTargetEtcName("기타");
+      setInputTargetParticipantsUnit("");
+      setInputTargetDevelopmentsUnit("");
+      setInputTargetEtcUnit("");
+      setInputTargetParticipantsName("");
+      setInputTargetDevelopmentsName("");
+      setInputTargetEtcName("");
       setInputTimeline("");
       setInputStartDate("");
       setInputEndDate("");
@@ -736,7 +736,12 @@ export default function PDCAManager({
       return;
     }
 
-    // 1) 월별 추진 일정 유효성 체크 (P, D, C, A 모두 1회 이상 반영 의무)
+    // 1) 월별 추진 일정 유효성 체크 (모든 달이 필수 입력 및 P, D, C, A 1회 이상)
+    const hasEmptyTimeline = inputMonthlyPDCA.some(val => !val || val === "-" || val === "");
+    if (hasEmptyTimeline) {
+      alert("⚠️ 수정 시 월별 추진 일정은 필수 사항입니다. 12개월 전체 일정을 선택해 주세요 (빈 값('-')은 허용되지 않습니다).");
+      return;
+    }
     const hasP = inputMonthlyPDCA.includes("P");
     const hasD = inputMonthlyPDCA.includes("D");
     const hasC = inputMonthlyPDCA.includes("C");
@@ -1787,7 +1792,7 @@ export default function PDCAManager({
                             <input 
                               type="text" 
                               className="user-selector" 
-                              placeholder="실적목표명 (예: 참여인원)" 
+                              placeholder="예시) 참여인원" 
                               value={inputTargetParticipantsName} 
                               onChange={(e) => setInputTargetParticipantsName(e.target.value)} 
                               style={{ padding: "0.25rem 0.4rem", fontSize: "0.75rem", width: "100%", background: "#18181b", color: "white", border: "1px solid var(--border-color-dark)" }} 
@@ -1796,7 +1801,7 @@ export default function PDCAManager({
                               <input 
                                 type="number" 
                                 className="user-selector" 
-                                placeholder="수치" 
+                                placeholder="예시) 0" 
                                 value={inputTargetParticipants} 
                                 onChange={(e) => setInputTargetParticipants(e.target.value)} 
                                 style={{ padding: "0.25rem 0.4rem", fontSize: "0.75rem", flex: 2, minWidth: 0 }} 
@@ -1804,7 +1809,7 @@ export default function PDCAManager({
                               <input 
                                 type="text" 
                                 className="user-selector" 
-                                placeholder="단위" 
+                                placeholder="예시) 명" 
                                 value={inputTargetParticipantsUnit} 
                                 onChange={(e) => setInputTargetParticipantsUnit(e.target.value)} 
                                 style={{ padding: "0.25rem 0.4rem", fontSize: "0.75rem", flex: 1, minWidth: 0, textAlign: "center" }} 
@@ -1818,7 +1823,7 @@ export default function PDCAManager({
                             <input 
                               type="text" 
                               className="user-selector" 
-                              placeholder="실적목표명 (예: 개발수)" 
+                              placeholder="예시) 개발수" 
                               value={inputTargetDevelopmentsName} 
                               onChange={(e) => setInputTargetDevelopmentsName(e.target.value)} 
                               style={{ padding: "0.25rem 0.4rem", fontSize: "0.75rem", width: "100%", background: "#18181b", color: "white", border: "1px solid var(--border-color-dark)" }} 
@@ -1827,7 +1832,7 @@ export default function PDCAManager({
                               <input 
                                 type="number" 
                                 className="user-selector" 
-                                placeholder="수치" 
+                                placeholder="예시) 0" 
                                 value={inputTargetDevelopments} 
                                 onChange={(e) => setInputTargetDevelopments(e.target.value)} 
                                 style={{ padding: "0.25rem 0.4rem", fontSize: "0.75rem", flex: 2, minWidth: 0 }} 
@@ -1835,7 +1840,7 @@ export default function PDCAManager({
                               <input 
                                 type="text" 
                                 className="user-selector" 
-                                placeholder="단위" 
+                                placeholder="예시) 건" 
                                 value={inputTargetDevelopmentsUnit} 
                                 onChange={(e) => setInputTargetDevelopmentsUnit(e.target.value)} 
                                 style={{ padding: "0.25rem 0.4rem", fontSize: "0.75rem", flex: 1, minWidth: 0, textAlign: "center" }} 
@@ -1849,7 +1854,7 @@ export default function PDCAManager({
                             <input 
                               type="text" 
                               className="user-selector" 
-                              placeholder="실적목표명 (예: 기타)" 
+                              placeholder="예시) 기타" 
                               value={inputTargetEtcName} 
                               onChange={(e) => setInputTargetEtcName(e.target.value)} 
                               style={{ padding: "0.25rem 0.4rem", fontSize: "0.75rem", width: "100%", background: "#18181b", color: "white", border: "1px solid var(--border-color-dark)" }} 
@@ -1858,7 +1863,7 @@ export default function PDCAManager({
                               <input 
                                 type="number" 
                                 className="user-selector" 
-                                placeholder="수치" 
+                                placeholder="예시) 0" 
                                 value={inputTargetEtc} 
                                 onChange={(e) => setInputTargetEtc(e.target.value)} 
                                 style={{ padding: "0.25rem 0.4rem", fontSize: "0.75rem", flex: 2, minWidth: 0 }} 
@@ -1866,7 +1871,7 @@ export default function PDCAManager({
                               <input 
                                 type="text" 
                                 className="user-selector" 
-                                placeholder="단위" 
+                                placeholder="예시) 개" 
                                 value={inputTargetEtcUnit} 
                                 onChange={(e) => setInputTargetEtcUnit(e.target.value)} 
                                 style={{ padding: "0.25rem 0.4rem", fontSize: "0.75rem", flex: 1, minWidth: 0, textAlign: "center" }} 
