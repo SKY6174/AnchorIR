@@ -52,7 +52,8 @@ const getRequesterRoleName = (user) => {
       DIRECTOR: "사업단장",
       HQ_HEAD: "본부장",
       TEAM_LEADER: "운영팀장",
-      RESEARCHER: "실무 연구원"
+      RESEARCHER: "실무 연구원",
+      RESEARCH: "연구원"
     };
     return roleNames[user.role_key] || user.role_key;
   }

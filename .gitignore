@@ -42,3 +42,9 @@ lerna-debug.log*
 
 # PDF files (large files excluded from git)
 *.pdf
+
+# Local data & documents (large binary files)
+data/documents/
+
+# Playwright MCP snapshots and logs
+.playwright-mcp/

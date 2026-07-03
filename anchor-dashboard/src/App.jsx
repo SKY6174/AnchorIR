@@ -1862,6 +1862,7 @@ export default function App() {
   const [monthlySchedules, setMonthlySchedules] = useState([]);
   const [eventSchedules, setEventSchedules] = useState([]);
   const [meetingSchedules, setMeetingSchedules] = useState([]);
+  const [pressReleases, setPressReleases] = useState([]);
 
   const [projectsSubTab, setProjectsSubTab] = useState(() => {
     return localStorage.getItem("anchor_projects_sub_tab") || "unit_status";
@@ -1962,8 +1963,10 @@ export default function App() {
           let autoRoleKey = "RESEARCHER";
           const mRole = m.role || "";
           const mDept = m.dept || "";
-          if (emailId === "hmsim@uc.ac.kr" || emailId === "leegyu@uc.ac.kr") {
+          if (emailId === "hmsim@uc.ac.kr") {
             autoRoleKey = "ADMIN";
+          } else if (emailId === "leegyu@uc.ac.kr") {
+            autoRoleKey = "RESEARCH";
           } else if (mRole === "사업단장") {
             autoRoleKey = "DIRECTOR";
           } else if (mRole === "본부장") {
@@ -2004,8 +2007,10 @@ export default function App() {
       // DB 실제 회원 계정 주입 (최종 우선순위 보장)
       dbUsers.forEach(u => {
         const idLower = u.id.trim().toLowerCase();
-        if (idLower === "hmsim@uc.ac.kr" || idLower === "leegyu@uc.ac.kr") {
+        if (idLower === "hmsim@uc.ac.kr") {
           u.role_key = "ADMIN";
+        } else if (idLower === "leegyu@uc.ac.kr") {
+          u.role_key = "RESEARCH";
         }
         finalUsersMap.set(idLower, u);
       });
@@ -2031,7 +2036,8 @@ export default function App() {
         CENTER_NULBOM: 3,
         CENTER_SPECIAL: 3,
         TEAM_LEADER: 4,
-        RESEARCHER: 5
+        RESEARCHER: 5,
+        RESEARCH: 5
       };
 
       const sortedUsers = Array.from(finalUsersMap.values()).sort((a, b) => {
@@ -2258,6 +2264,7 @@ export default function App() {
         const cachedMonth = localStorage.getItem(`anchor_cache_month_y${selectedYear}`);
         const cachedEvent = localStorage.getItem(`anchor_cache_event_y${selectedYear}`);
         const cachedMeet = localStorage.getItem(`anchor_cache_meet_y${selectedYear}`);
+        const cachedPress = localStorage.getItem(`anchor_cache_press_y${selectedYear}`);
 
         if (cachedProj) setProjects(JSON.parse(cachedProj));
         if (cachedAgr) setAgreements(JSON.parse(cachedAgr));
@@ -2267,6 +2274,7 @@ export default function App() {
         if (cachedMonth) setMonthlySchedules(JSON.parse(cachedMonth));
         if (cachedEvent) setEventSchedules(JSON.parse(cachedEvent));
         if (cachedMeet) setMeetingSchedules(JSON.parse(cachedMeet));
+        if (cachedPress) setPressReleases(JSON.parse(cachedPress));
 
         if (cachedProj || cachedMonth) {
           setIsDbLoaded(true);
@@ -2422,6 +2430,24 @@ export default function App() {
           }));
           setMeetingSchedules(formatted);
           localStorage.setItem(`anchor_cache_meet_y${selectedYear}`, JSON.stringify(formatted));
+        }
+
+        // press_releases 복구
+        const { data: sPress } = await supabase.from("press_releases").select("*").eq("year", selectedYear);
+        if (sPress && sPress.length > 0) {
+          const formatted = sPress.map(x => ({
+            id: Number(x.id),
+            year: x.year,
+            type: x.type,
+            media: x.media,
+            title: x.title,
+            broadcastDate: x.broadcast_date,
+            contentUrl: x.content_url
+          }));
+          setPressReleases(formatted);
+          localStorage.setItem(`anchor_cache_press_y${selectedYear}`, JSON.stringify(formatted));
+        } else {
+          setPressReleases([]);
         }
 
         setIsDbLoaded(true);
@@ -2756,6 +2782,36 @@ export default function App() {
     }, 1500);
     return () => clearTimeout(timer);
   }, [meetingSchedules, selectedYear, isDbLoaded, isFetchCompleted]);
+
+  // 10) Press Releases (언론보도) 자동 저장 디바운스 훅
+  useEffect(() => {
+    if (!isDbLoaded || !isFetchCompleted) return;
+    localStorage.setItem(`anchor_cache_press_y${selectedYear}`, JSON.stringify(pressReleases));
+    setSyncStatus("syncing");
+    const timer = setTimeout(async () => {
+      try {
+        await supabase.from("press_releases").delete().eq("year", selectedYear);
+        if (pressReleases.length > 0) {
+          const { error } = await supabase.from("press_releases").insert(
+            pressReleases.map(s => ({
+              year: selectedYear,
+              type: s.type,
+              media: s.media,
+              title: s.title,
+              broadcast_date: s.broadcastDate,
+              content_url: s.contentUrl
+            }))
+          );
+          if (error) throw error;
+        }
+        setSyncStatus("synced");
+      } catch (e) {
+        console.error("Failed to sync press releases:", e);
+        setSyncStatus("error");
+      }
+    }, 1500);
+    return () => clearTimeout(timer);
+  }, [pressReleases, selectedYear, isDbLoaded, isFetchCompleted]);
 
   // 1차년도용 단위과제 필터링 및 이름/ID 변환
   const getNormalizedProjectsForRendering = (rawProjects, yr) => {
@@ -4936,7 +4992,8 @@ export default function App() {
                                 TEAM_LEADER: u.id.toLowerCase() === "team_leader" || u.id.toLowerCase() === "hmsim@uc.ac.kr"
                                   ? "운영팀장"
                                   : (members || []).find(m => m.email && m.email.trim().toLowerCase() === u.id.trim().toLowerCase())?.role || "팀장교수",
-                                RESEARCHER: "실무 연구원"
+                                RESEARCHER: "실무 연구원",
+                                RESEARCH: "연구원"
                               };
                               const cleanName = (u.name || "").split(" ")[0];
                               return (
@@ -5012,7 +5069,8 @@ export default function App() {
                                 TEAM_LEADER: u.id.toLowerCase() === "team_leader" || u.id.toLowerCase() === "hmsim@uc.ac.kr"
                                   ? "운영팀장"
                                   : (members || []).find(m => m.email && m.email.trim().toLowerCase() === u.id.trim().toLowerCase())?.role || "팀장교수",
-                                RESEARCHER: "실무 연구원"
+                                RESEARCHER: "실무 연구원",
+                                RESEARCH: "연구원"
                               };
                               const cleanName = (u.name || "").split(" ")[0];
                               const isDirectoryUser = (members || []).some(m => m.email && m.email.trim().toLowerCase() === u.id.trim().toLowerCase() && m.status !== "미참여");
@@ -6038,6 +6096,22 @@ export default function App() {
               >
                 회의록 등록
               </button>
+              <button
+                onClick={() => setScheduleSubTab("press")}
+                style={{
+                  background: "transparent",
+                  border: "none",
+                  fontSize: "1rem",
+                  fontWeight: "800",
+                  cursor: "pointer",
+                  padding: "0.5rem 1rem",
+                  color: scheduleSubTab === "press" ? "var(--accent-color)" : "var(--text-secondary-dark)",
+                  borderBottom: scheduleSubTab === "press" ? "2px solid var(--accent-color)" : "none",
+                  transition: "all 0.2s ease"
+                }}
+              >
+                언론보도
+              </button>
             </div>
 
             {/* 본문 콘텐츠 */}
@@ -6052,6 +6126,8 @@ export default function App() {
               setEventSchedules={setEventSchedules}
               meetingSchedules={meetingSchedules}
               setMeetingSchedules={setMeetingSchedules}
+              pressReleases={pressReleases}
+              setPressReleases={setPressReleases}
               members={members}
             />
           </div>

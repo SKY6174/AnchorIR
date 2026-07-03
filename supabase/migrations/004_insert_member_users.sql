@@ -44,5 +44,6 @@ INSERT INTO rise_users (id, pw, name, role_key, approved) VALUES
 ('ejpark@uc.ac.kr', 'eaea09d6891e149de8db39d781e8da27d64154c7438d259c45b56dc904fc9f83', '박언주 연구원', 'RESEARCHER', true),
 ('leegyu@uc.ac.kr', '3cc16f8f6eede20fc56248b7da32561c5996a6d44fdabcbe3fd965d016a0d29c', '이규상 연구원', 'RESEARCHER', true),
 ('limited0517@uc.ac.kr', '38bc3d1c4787dd15fb6b16dccd548786cb773da29ffeb075602c76d2ca87f9fd', '김예지 연구원', 'RESEARCHER', true),
-('jmchoi@uc.ac.kr', '8ae6830f615b04192db054fedd2c3dc466988c210ecc4e6332d4d98913f6305a', '최주명 연구원', 'RESEARCHER', true)
+('jmchoi@uc.ac.kr', '8ae6830f615b04192db054fedd2c3dc466988c210ecc4e6332d4d98913f6305a', '최주명 연구원', 'RESEARCHER', true),
+('kimyd98@uc.ac.kr', '03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4', '김예담 연구원', 'RESEARCHER', true)
 ON CONFLICT (id) DO UPDATE SET pw = EXCLUDED.pw, name = EXCLUDED.name, role_key = EXCLUDED.role_key, approved = EXCLUDED.approved;

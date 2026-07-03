@@ -287,7 +287,7 @@ export default function Sidebar({
               }}
             >
               <Calendar size={24} />
-              <span>일정 관리</span>
+              <span>일정∙행사∙회의 관리</span>
             </div>
             <div className="nav-sub-menu">
               <div
@@ -325,6 +325,18 @@ export default function Sidebar({
                 }}
               >
                 - 회의록 등록
+              </div>
+              <div
+                className={`nav-sub-item ${activeTab === "schedule" && scheduleSubTab === "press" ? "active" : ""}`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onChangeTab("schedule");
+                  if (onChangeScheduleSubTab) {
+                    onChangeScheduleSubTab("press");
+                  }
+                }}
+              >
+                - 언론보도
               </div>
             </div>
           </div>
