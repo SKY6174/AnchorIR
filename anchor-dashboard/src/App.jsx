@@ -1680,6 +1680,57 @@ export default function App() {
     }
   }, [agreements]);
 
+  // 협약∙발급 관리 서브탭 및 추가 데이터군(이수증, 상장) 상태 선언
+  const [agreementsSubTab, setAgreementsSubTab] = useState("agreements");
+
+  const [certificates, setCertificates] = useState(() => {
+    const cached = localStorage.getItem("anchor_certificates_data_v1");
+    if (cached) {
+      try {
+        return JSON.parse(cached);
+      } catch (e) {
+        return [];
+      }
+    }
+    return [];
+  });
+
+  useEffect(() => {
+    try {
+      const certsForStorage = certificates.map((item) => {
+        const { fileData, ...rest } = item;
+        return rest;
+      });
+      localStorage.setItem("anchor_certificates_data_v1", JSON.stringify(certsForStorage));
+    } catch (e) {
+      console.error("Failed to save certificates to localStorage:", e);
+    }
+  }, [certificates]);
+
+  const [awards, setAwards] = useState(() => {
+    const cached = localStorage.getItem("anchor_awards_data_v1");
+    if (cached) {
+      try {
+        return JSON.parse(cached);
+      } catch (e) {
+        return [];
+      }
+    }
+    return [];
+  });
+
+  useEffect(() => {
+    try {
+      const awardsForStorage = awards.map((item) => {
+        const { fileData, ...rest } = item;
+        return rest;
+      });
+      localStorage.setItem("anchor_awards_data_v1", JSON.stringify(awardsForStorage));
+    } catch (e) {
+      console.error("Failed to save awards to localStorage:", e);
+    }
+  }, [awards]);
+
   const [assignFilterUnitId, setAssignFilterUnitId] = useState("all");
   const [mgmtSubTab, setMgmtSubTab] = useState(() => {
     return localStorage.getItem("anchor_mgmt_sub_tab") || "members";
@@ -2257,6 +2308,54 @@ export default function App() {
           }));
           setAgreements(formatted);
           localStorage.setItem(`anchor_cache_agr_y${selectedYear}`, JSON.stringify(formatted));
+        } else {
+          setAgreements([]);
+        }
+
+        // 2-2. Certificates 복구
+        const { data: certData } = await supabase
+          .from("certificates")
+          .select("*")
+          .eq("year", selectedYear);
+        if (certData && certData.length > 0) {
+          const formatted = certData.map(c => ({
+            id: Number(c.id),
+            year: c.year,
+            certNo: c.cert_no,
+            recipientDept: c.recipient_dept,
+            recipientName: c.recipient_name,
+            issueDate: c.issue_date,
+            issuer: c.issuer,
+            fileName: c.file_name,
+            fileData: c.file_data
+          }));
+          setCertificates(formatted);
+          localStorage.setItem(`anchor_cache_cert_y${selectedYear}`, JSON.stringify(formatted));
+        } else {
+          setCertificates([]);
+        }
+
+        // 2-3. Awards 복구
+        const { data: awardData } = await supabase
+          .from("awards")
+          .select("*")
+          .eq("year", selectedYear);
+        if (awardData && awardData.length > 0) {
+          const formatted = awardData.map(a => ({
+            id: Number(a.id),
+            year: a.year,
+            awardNo: a.award_no,
+            recipientDept: a.recipient_dept,
+            recipientName: a.recipient_name,
+            issueDate: a.issue_date,
+            issuer: a.issuer,
+            fileName: a.file_name,
+            fileData: a.file_data
+          }));
+          setAwards(formatted);
+          localStorage.setItem(`anchor_cache_award_y${selectedYear}`, JSON.stringify(formatted));
+        } else {
+          setAwards([]);
         }
 
         // 3. Procurement (환경개선, 기자재, 주요용역) 복구
@@ -2384,6 +2483,72 @@ export default function App() {
     }, 1500);
     return () => clearTimeout(timer);
   }, [agreements, selectedYear, isDbLoaded, isFetchCompleted]);
+
+  // 3-2) Certificates 자동 저장 디바운스 훅
+  useEffect(() => {
+    if (!isDbLoaded || !isFetchCompleted) return;
+    localStorage.setItem(`anchor_cache_cert_y${selectedYear}`, JSON.stringify(certificates));
+    setSyncStatus("syncing");
+    const timer = setTimeout(async () => {
+      try {
+        await supabase.from("certificates").delete().eq("year", selectedYear);
+        const filtered = certificates.filter(c => c.year === selectedYear);
+        if (filtered.length > 0) {
+          const { error } = await supabase.from("certificates").insert(
+            filtered.map(c => ({
+              year: c.year,
+              cert_no: c.certNo,
+              recipient_dept: c.recipientDept,
+              recipient_name: c.recipientName,
+              issue_date: c.issueDate,
+              issuer: c.issuer,
+              file_name: c.fileName || null,
+              file_data: c.fileData || null
+            }))
+          );
+          if (error) throw error;
+        }
+        setSyncStatus("synced");
+      } catch (e) {
+        console.error("Failed to sync certificates to Supabase:", e);
+        setSyncStatus("error");
+      }
+    }, 1500);
+    return () => clearTimeout(timer);
+  }, [certificates, selectedYear, isDbLoaded, isFetchCompleted]);
+
+  // 3-3) Awards 자동 저장 디바운스 훅
+  useEffect(() => {
+    if (!isDbLoaded || !isFetchCompleted) return;
+    localStorage.setItem(`anchor_cache_award_y${selectedYear}`, JSON.stringify(awards));
+    setSyncStatus("syncing");
+    const timer = setTimeout(async () => {
+      try {
+        await supabase.from("awards").delete().eq("year", selectedYear);
+        const filtered = awards.filter(a => a.year === selectedYear);
+        if (filtered.length > 0) {
+          const { error } = await supabase.from("awards").insert(
+            filtered.map(a => ({
+              year: a.year,
+              award_no: a.awardNo,
+              recipient_dept: a.recipientDept,
+              recipient_name: a.recipientName,
+              issue_date: a.issueDate,
+              issuer: a.issuer,
+              file_name: a.fileName || null,
+              file_data: a.fileData || null
+            }))
+          );
+          if (error) throw error;
+        }
+        setSyncStatus("synced");
+      } catch (e) {
+        console.error("Failed to sync awards to Supabase:", e);
+        setSyncStatus("error");
+      }
+    }, 1500);
+    return () => clearTimeout(timer);
+  }, [awards, selectedYear, isDbLoaded, isFetchCompleted]);
 
   // 4) Procurement Env 자동 저장 디바운스 훅
   useEffect(() => {
@@ -3666,6 +3831,52 @@ export default function App() {
     setAgreements((prev) => prev.filter((a) => a.id !== id));
   };
 
+  // 이수증 신규 등록 핸들러
+  const handleAddCertificate = (newCert) => {
+    setCertificates((prev) => [
+      ...prev,
+      {
+        ...newCert,
+        id: `cert-${Date.now()}` // 유니크 모의 ID 생성
+      }
+    ]);
+  };
+
+  // 이수증 수정 핸들러
+  const handleUpdateCertificate = (id, updatedFields) => {
+    setCertificates((prev) =>
+      prev.map((c) => (c.id === id ? { ...c, ...updatedFields } : c))
+    );
+  };
+
+  // 이수증 삭제 핸들러
+  const handleDeleteCertificate = (id) => {
+    setCertificates((prev) => prev.filter((c) => c.id !== id));
+  };
+
+  // 상장 신규 등록 핸들러
+  const handleAddAward = (newAward) => {
+    setAwards((prev) => [
+      ...prev,
+      {
+        ...newAward,
+        id: `award-${Date.now()}` // 유니크 모의 ID 생성
+      }
+    ]);
+  };
+
+  // 상장 수정 핸들러
+  const handleUpdateAward = (id, updatedFields) => {
+    setAwards((prev) =>
+      prev.map((a) => (a.id === id ? { ...a, ...updatedFields } : a))
+    );
+  };
+
+  // 상장 삭제 핸들러
+  const handleDeleteAward = (id) => {
+    setAwards((prev) => prev.filter((a) => a.id !== id));
+  };
+
   // 성과지표 목표치/실적치 직접 수정 핸들러
   const handleUpdateKpiValue = (subItemId, field, value) => {
     setProjects((prevProjects) => {
@@ -3845,6 +4056,8 @@ export default function App() {
         onChangeProcurementSubTab={setProcurementSubTab}
         scheduleSubTab={scheduleSubTab}
         onChangeScheduleSubTab={setScheduleSubTab}
+        agreementsSubTab={agreementsSubTab}
+        onChangeAgreementsSubTab={setAgreementsSubTab}
       />
 
       {/* 메인 뷰 */}
@@ -5608,10 +5821,20 @@ export default function App() {
             <AgreementManager
               projects={displayProjects}
               agreements={agreements}
+              certificates={certificates}
+              awards={awards}
               selectedYear={selectedYear}
+              agreementsSubTab={agreementsSubTab}
+              onChangeAgreementsSubTab={setAgreementsSubTab}
               onAddAgreement={handleAddAgreement}
               onUpdateAgreement={handleUpdateAgreement}
               onDeleteAgreement={handleDeleteAgreement}
+              onAddCertificate={handleAddCertificate}
+              onUpdateCertificate={handleUpdateCertificate}
+              onDeleteCertificate={handleDeleteCertificate}
+              onAddAward={handleAddAward}
+              onUpdateAward={handleUpdateAward}
+              onDeleteAward={handleDeleteAward}
               currentRole={currentRole}
             />
           </div>

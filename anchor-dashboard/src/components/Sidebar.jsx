@@ -18,7 +18,9 @@ export default function Sidebar({
   procurementSubTab,
   onChangeProcurementSubTab,
   scheduleSubTab,
-  onChangeScheduleSubTab
+  onChangeScheduleSubTab,
+  agreementsSubTab,
+  onChangeAgreementsSubTab
 }) {
   return (
     <aside className="sidebar">
@@ -168,12 +170,57 @@ export default function Sidebar({
             </div>
           </div>
 
-          <div
-            className={`nav-item ${activeTab === "agreements" ? "active" : ""}`}
-            onClick={() => onChangeTab("agreements")}
-          >
-            <Award size={24} />
-            <span>협약서 관리</span>
+          <div className={`agreements-nav-wrapper ${activeTab === "agreements" ? "active" : ""}`}>
+            <div
+              className={`nav-item ${activeTab === "agreements" ? "active" : ""}`}
+              onClick={() => {
+                onChangeTab("agreements");
+                if (onChangeAgreementsSubTab) {
+                  onChangeAgreementsSubTab("agreements");
+                }
+              }}
+            >
+              <Award size={24} />
+              <span>협약∙발급 관리</span>
+            </div>
+            <div className="nav-sub-menu">
+              <div
+                className={`nav-sub-item ${activeTab === "agreements" && agreementsSubTab === "agreements" ? "active" : ""}`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onChangeTab("agreements");
+                  if (onChangeAgreementsSubTab) {
+                    onChangeAgreementsSubTab("agreements");
+                  }
+                }}
+              >
+                - 협약 관리
+              </div>
+              <div
+                className={`nav-sub-item ${activeTab === "agreements" && agreementsSubTab === "certificates" ? "active" : ""}`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onChangeTab("agreements");
+                  if (onChangeAgreementsSubTab) {
+                    onChangeAgreementsSubTab("certificates");
+                  }
+                }}
+              >
+                - 이수증 관리
+              </div>
+              <div
+                className={`nav-sub-item ${activeTab === "agreements" && agreementsSubTab === "awards" ? "active" : ""}`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onChangeTab("agreements");
+                  if (onChangeAgreementsSubTab) {
+                    onChangeAgreementsSubTab("awards");
+                  }
+                }}
+              >
+                - 상장 관리
+              </div>
+            </div>
           </div>
 
           <div className={`procurement-nav-wrapper ${activeTab === "procurement" ? "active" : ""}`}>
