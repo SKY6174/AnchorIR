@@ -2394,8 +2394,22 @@ export default function App() {
           .single();
         
         if (projData && projData.data) {
-          setProjects(projData.data);
-          localStorage.setItem(`anchor_cache_proj_y${selectedYear}`, JSON.stringify(projData.data));
+          // [성과 동기화] 원격 DB 데이터 로드 시점에도 mockData.js의 최신 KPI 구조(C-1~C-6 등)가 강제 유지되도록 동기화합니다.
+          const dbProjData = projData.data;
+          const multiYearInitialData = formatDataToMultiYear(initialProjectsData);
+          dbProjData.forEach((strategy) => {
+            strategy.units.forEach((unit) => {
+              const sourceUnit = multiYearInitialData
+                ?.flatMap(s => s.units)
+                ?.find(u => u.id === unit.id);
+              if (sourceUnit) {
+                unit.kpis = sourceUnit.kpis || [];
+              }
+            });
+          });
+          setProjects(dbProjData);
+          localStorage.setItem(`anchor_cache_proj_y${selectedYear}`, JSON.stringify(dbProjData));
+          await supabase.from("projects_data").upsert({ year: selectedYear, data: dbProjData });
         } else {
           const multiYearInitialData = formatDataToMultiYear(initialProjectsData);
           setProjects(multiYearInitialData);
