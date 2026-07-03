@@ -437,9 +437,11 @@ export default function UnitSystemView({ selectedYear = 2 }) {
             <div style={{ fontSize: "0.72rem", color: "var(--text-secondary-dark)", marginTop: "0.25rem" }}>울산시가 제시한 4대 핵심 사업 분야</div>
           </div>
           <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid var(--border-color-dark)", padding: "0.8rem 1rem", borderRadius: "0.4rem" }}>
-            <div style={{ fontSize: "0.68rem", color: "#10b981", fontWeight: "900", marginBottom: "0.2rem" }}>2단계: WS</div>
-            <div style={{ fontSize: "0.85rem", fontWeight: "800", color: "white" }}>단위과제 (Workstream)</div>
-            <div style={{ fontSize: "0.72rem", color: "var(--text-secondary-dark)", marginTop: "0.25rem" }}>목표 달성을 위한 12대 단위 사업 (A1~D3)</div>
+            <div style={{ fontSize: "0.68rem", color: "#10b981", fontWeight: "900", marginBottom: "0.2rem" }}>2단계: UP</div>
+            <div style={{ fontSize: "0.85rem", fontWeight: "800", color: "white" }}>단위과제 (Unit Project)</div>
+            <div style={{ fontSize: "0.72rem", color: "var(--text-secondary-dark)", marginTop: "0.25rem" }}>
+              {selectedYear === 1 ? "목표 달성을 위한 12대 단위 사업 (A1~D4)" : "목표 달성을 위한 12대 단위 사업 (A1가~D3)"}
+            </div>
           </div>
           <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid var(--border-color-dark)", padding: "0.8rem 1rem", borderRadius: "0.4rem" }}>
             <div style={{ fontSize: "0.68rem", color: "#ec4899", fontWeight: "900", marginBottom: "0.2rem" }}>3단계: S</div>
@@ -517,7 +519,7 @@ export default function UnitSystemView({ selectedYear = 2 }) {
           {/* 2. 단위과제 드롭다운 */}
           <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
             <label style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)", fontWeight: "700" }}>
-              2단계: 단위과제 선택 (12 WS)
+              2단계: 단위과제 선택 (12 UP)
             </label>
             <select
               value={selectedUnitId}
