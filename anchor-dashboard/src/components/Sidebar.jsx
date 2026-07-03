@@ -79,6 +79,18 @@ export default function Sidebar({
               >
                 - 주요 프로그램
               </div>
+              <div
+                className={`nav-sub-item ${activeTab === "progress" && progressSubTab === "satisfaction_survey" ? "active" : ""}`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onChangeTab("progress");
+                  if (onChangeProgressSubTab) {
+                    onChangeProgressSubTab("satisfaction_survey");
+                  }
+                }}
+              >
+                - 만족도 조사
+              </div>
             </div>
           </div>
 

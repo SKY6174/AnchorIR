@@ -1,0 +1,1031 @@
+import React, { useState, useEffect, useRef } from "react";
+import { QRCodeSVG } from "qrcode.react";
+import * as XLSX from "xlsx";
+import { 
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine 
+} from "recharts";
+import { 
+  FileSpreadsheet, QrCode, ClipboardCheck, Plus, Trash2, CheckCircle2, 
+  Send, BarChart3, HelpCircle, Calendar, Users, Briefcase, FileText, Check, Download, RefreshCw
+} from "lucide-react";
+
+// 초기 기본 만족도 조사 데이터 셋 (로컬 스토리지에 유지 가능하도록 구성)
+const defaultSurveys = [
+  {
+    id: "2025-ECC-1",
+    title: "2025년도 ECC센터 산학협력 가족회사 만족도 조사",
+    purpose: "ECC센터 가족회사 산학협력 프로그램의 실무 활용성과 인프라 지원 만족도를 측정하여 서비스 개선 피드백 획득",
+    startDate: "2025-10-01",
+    endDate: "2025-10-15",
+    target: "ECC센터 가족기업 임직원",
+    department: "ECC",
+    status: "완료",
+    googleSheetUrl: "https://docs.google.com/spreadsheets/d/1xECC_Survey_2025/edit",
+    questions: [
+      "제공된 기술지원 교육과정의 실무 활용성에 만족하십니까?",
+      "산학 공동 연구개발 연구진과의 소통과 지원 태도에 만족하십니까?",
+      "교내 고가 기자재 및 공동장비 실습 인프라의 이용 편의성에 만족하십니까?",
+      "전반적으로 ECC센터 산학협력 패키지 서비스에 만족하십니까?",
+      "향후 타 기업에 본 센터의 산학협력 프로그램을 적극 추천할 의향이 있으십니까?"
+    ],
+    responses: [
+      { id: 1, responder: "익명_1", scores: [5, 4, 5, 5, 5], comment: "공동장비 활용 과정에서 예산 부담이 대폭 해소되었습니다. 내년에도 참여하고 싶습니다.", date: "2025-10-03" },
+      { id: 2, responder: "익명_2", scores: [4, 4, 4, 4, 5], comment: "R&BD 과제 매칭 소통이 원활해서 연구 일정을 잘 준수할 수 있었습니다.", date: "2025-10-05" },
+      { id: 3, responder: "익명_3", scores: [5, 5, 5, 5, 5], comment: "최첨단 융합 실습 장비들이 구비되어 있어 기업 현장 교육용으로 아주 훌륭했습니다.", date: "2025-10-07" },
+      { id: 4, responder: "익명_4", scores: [4, 5, 3, 4, 4], comment: "장비 예약 대기 시간이 조금 긴 편인데 대기 목록 조회 기능이 보강되면 좋겠습니다.", date: "2025-10-08" },
+      { id: 5, responder: "익명_5", scores: [5, 4, 4, 5, 5], comment: "매우 우수한 산학협력 시스템입니다. 기업 실무진 교육에 많은 도움을 받았습니다.", date: "2025-10-12" }
+    ]
+  },
+  {
+    id: "2025-늘봄누리센터-1",
+    title: "2025년도 초등 늘봄교실 참여 학부모 종합 만족도 조사",
+    purpose: "늘봄누리 프로그램 교과과정의 다양성, 안전성 및 방과후 돌봄 교구 인프라에 대한 보호자 환류 조사의견 수렴",
+    startDate: "2025-11-10",
+    endDate: "2025-11-20",
+    target: "늘봄학교 참여 학생 학부모",
+    department: "늘봄누리센터",
+    status: "완료",
+    googleSheetUrl: "https://docs.google.com/spreadsheets/d/2xNeulbom_Survey_2025/edit",
+    questions: [
+      "늘봄교실 프로그램이 자녀의 학습적 성장에 유익하다고 생각하십니까?",
+      "돌봄 전담사 및 보조 교사의 아동 안전 관리와 지도 태도에 만족하십니까?",
+      "제공된 간식의 영양 균형과 위생 관리에 전반적으로 만족하십니까?",
+      "교실 내부 시설 환경 및 교구들의 살균 위생 상태에 만족하십니까?",
+      "자녀를 늘봄교실에 맡기는 전반적인 돌봄 서비스에 만족하십니까?"
+    ],
+    responses: [
+      { id: 1, responder: "익명_A", scores: [5, 5, 4, 4, 5], comment: "다채로운 예체능 특별활동이 추가되어 아이가 지루해하지 않고 너무 좋아합니다.", date: "2025-11-11" },
+      { id: 2, responder: "익명_B", scores: [4, 5, 3, 4, 5], comment: "간식 메뉴가 빵이나 밀가루 중심보다 제철 과일이나 떡 위주로 좀 더 보강되면 좋겠습니다.", date: "2025-11-13" },
+      { id: 3, responder: "익명_C", scores: [5, 4, 5, 5, 5], comment: "맞벌이 가정으로서 안심하고 아이를 늦게까지 맡길 수 있어 삶의 질이 향상되었습니다.", date: "2025-11-14" },
+      { id: 4, responder: "익명_D", scores: [4, 4, 4, 4, 4], comment: "돌봄교실 장난감과 책 위생 소독이 주기적으로 시행되어 안심이 됩니다.", date: "2025-11-16" }
+    ]
+  }
+];
+
+export default function SatisfactionManager({ selectedYear }) {
+  // 로컬 스토리지 또는 초기값 기반으로 전체 조사 목록 바인딩
+  const [surveys, setSurveys] = useState(() => {
+    const cached = localStorage.getItem("anchor_satisfaction_surveys");
+    return cached ? JSON.parse(cached) : defaultSurveys;
+  });
+
+  const [activeSurveyTab, setActiveSurveyTab] = useState("list"); // "list" | "create" | "detail"
+  const [selectedSurveyId, setSelectedSurveyId] = useState(null);
+
+  // 새 설문조사 작성 폼용 상태
+  const [newTitle, setNewTitle] = useState("");
+  const [newPurpose, setNewPurpose] = useState("");
+  const [newTarget, setNewTarget] = useState("");
+  const [newDept, setNewDept] = useState("ECC");
+  const [newStartDate, setNewStartDate] = useState("2026-03-01");
+  const [newEndDate, setNewEndDate] = useState("2026-03-15");
+  const [newQuestions, setNewQuestions] = useState([
+    "제공된 교육 프로그램의 전문성 및 실무 연계성에 만족하십니까?",
+    "프로그램 진행자의 전문성과 원활한 일정 소통 방식에 만족하십니까?",
+    "프로그램 수행 시설 및 인프라의 쾌적함과 장비 구성에 만족하십니까?",
+    "전반적으로 본 프로그램에 참여한 효과성에 만족하십니까?",
+    "향후 추진되는 연계 프로그램에 재참여할 의향이 있으십니까?"
+  ]);
+  const [customQuestionInput, setCustomQuestionInput] = useState("");
+
+  // 모의 응답 추가용 폼 상태
+  const [simulatedResponder, setSimulatedResponder] = useState("일반 참가자");
+  const [simulatedScores, setSimulatedScores] = useState([5, 5, 5, 5, 5]);
+  const [simulatedComment, setSimulatedComment] = useState("");
+
+  const [copiedId, setCopiedId] = useState(null);
+  const [syncingId, setSyncingId] = useState(null);
+
+  // 로컬 스토리지 동기화
+  useEffect(() => {
+    localStorage.setItem("anchor_satisfaction_surveys", JSON.stringify(surveys));
+  }, [surveys]);
+
+  // 부서별 새 조사 ID 자동 추천 생성기
+  const getNextSurveyId = (dept) => {
+    const currentYear = 2024 + selectedYear;
+    const sameDeptSurveys = surveys.filter(s => s.id.startsWith(`${currentYear}-${dept}-`));
+    
+    // 번호 산출 (예: 2026-ECC-1)
+    let maxNum = 0;
+    sameDeptSurveys.forEach(s => {
+      const parts = s.id.split("-");
+      const num = parseInt(parts[parts.length - 1], 10);
+      if (!isNaN(num) && num > maxNum) {
+        maxNum = num;
+      }
+    });
+    return `${currentYear}-${dept}-${maxNum + 1}`;
+  };
+
+  const handleCreateSurvey = (e) => {
+    e.preventDefault();
+    if (!newTitle.trim() || !newPurpose.trim()) {
+      alert("조사제목과 조사목적은 필수 항목입니다.");
+      return;
+    }
+
+    const generatedId = getNextSurveyId(newDept);
+    const newSurvey = {
+      id: generatedId,
+      title: newTitle.trim(),
+      purpose: newPurpose.trim(),
+      startDate: newStartDate,
+      endDate: newEndDate,
+      target: newTarget.trim() || "프로그램 대상 전체",
+      department: newDept,
+      status: "작성",
+      googleSheetUrl: `https://docs.google.com/spreadsheets/d/1x${newDept}_${generatedId.replace(/-/g, "_")}/edit`,
+      questions: newQuestions.filter(q => q.trim() !== ""),
+      responses: []
+    };
+
+    setSurveys([newSurvey, ...surveys]);
+    // 폼 초기화
+    setNewTitle("");
+    setNewPurpose("");
+    setNewTarget("");
+    setNewDept("ECC");
+    setActiveSurveyTab("list");
+  };
+
+  // 문항 추가 헬퍼
+  const handleAddQuestion = () => {
+    if (!customQuestionInput.trim()) return;
+    setNewQuestions([...newQuestions, customQuestionInput.trim()]);
+    setCustomQuestionInput("");
+  };
+
+  // 문항 제거 헬퍼
+  const handleRemoveQuestion = (index) => {
+    if (newQuestions.length <= 1) {
+      alert("최소 1개 이상의 질문이 유지되어야 합니다.");
+      return;
+    }
+    setNewQuestions(newQuestions.filter((_, i) => i !== index));
+  };
+
+  // 단축 주소 복사 액션 시뮬레이션
+  const handleCopyUrl = (id) => {
+    const surveyUrl = `https://anchor.uc.ac.kr/sv/${id}`;
+    navigator.clipboard.writeText(surveyUrl).then(() => {
+      setCopiedId(id);
+      setTimeout(() => setCopiedId(null), 2000);
+    });
+  };
+
+  // 구글 시트 연동 동기화 시뮬레이션
+  const handleSyncToGoogleSheets = (id) => {
+    setSyncingId(id);
+    setTimeout(() => {
+      setSurveys(prev => prev.map(s => {
+        if (s.id === id) {
+          return {
+            ...s,
+            googleSheetUrl: s.googleSheetUrl || `https://docs.google.com/spreadsheets/d/1xSynced_${id.replace(/-/g, "_")}/edit`
+          };
+        }
+        return s;
+      }));
+      setSyncingId(null);
+      alert("데이터가 연동 구글 스프레드시트에 성공적으로 동기화되었습니다!");
+    }, 1500);
+  };
+
+  // 100점 만점 환산용 통계 가중평균치 계산 (5점 리커트 척도 반영)
+  // 매우만족: 100, 만족: 80, 보통: 60, 미흡: 40, 매우미흡: 20
+  const getLikertConvertedScore = (responses, questionsCount) => {
+    if (!responses || responses.length === 0 || questionsCount === 0) return 0;
+    
+    let totalScore = 0;
+    let totalItems = 0;
+    
+    responses.forEach(res => {
+      res.scores.forEach(s => {
+        totalScore += s * 20; // 5점 만점 -> 100점 만점 환산 (1=20, 2=40, 3=60, 4=80, 5=100)
+        totalItems++;
+      });
+    });
+    
+    return parseFloat((totalScore / totalItems).toFixed(1));
+  };
+
+  // 문항별 만족도 점수 계산
+  const getQuestionAverageScores = (survey) => {
+    if (!survey.responses || survey.responses.length === 0) {
+      return survey.questions.map((q, i) => ({ name: `문항 ${i + 1}`, score: 0 }));
+    }
+    
+    return survey.questions.map((q, i) => {
+      let sum = 0;
+      survey.responses.forEach(res => {
+        sum += (res.scores[i] || 0) * 20; // 100점 만점 환산
+      });
+      return {
+        name: `문항 ${i + 1}`,
+        score: parseFloat((sum / survey.responses.length).toFixed(1)),
+        questionText: q
+      };
+    });
+  };
+
+  // 10명 모의 응답 일괄 대량 생성기 (테스트 데이터 생성)
+  const handleGenerateSimulatedData = (id) => {
+    const targetSurvey = surveys.find(s => s.id === id);
+    if (!targetSurvey) return;
+
+    const names = ["홍길동", "김철수", "이영희", "박민수", "최지우", "정대만", "강백호", "채소연", "서태웅", "송태섭"];
+    const comments = [
+      "전반적으로 유익하고 전문성이 돋보이는 교육과정이었습니다.",
+      "교육 인프라가 미흡한 부분이 아쉬우나, 진행 요원들의 태도가 너무 좋았습니다.",
+      "아주 우수한 프로그램입니다. 다음 기수도 무조건 연계해서 진행하겠습니다.",
+      "프로그램 일정이 주말이라 살짝 부담스러웠는데, 진행은 매끄러웠습니다.",
+      "교재와 실습 가이드라인 설명이 상세해서 초보자도 쉽게 따라갔습니다.",
+      "늘 안전 관리에 만전을 기해 주셔서 감사했습니다.",
+      "체계가 잘 잡혀 있고 전담 기관의 책임감이 돋보였습니다.",
+      "구체적인 실태 파악에 도움을 주셔서 고맙습니다.",
+      "비목 대비 효과가 큰 산학 연계 아카데미였습니다.",
+      "프로그램 전반적으로 아주 만족하며 다음에도 추천하고 싶습니다."
+    ];
+
+    const newSimulatedResponses = Array.from({ length: 10 }).map((_, idx) => {
+      // 3~5 사이의 정밀 난수 생성
+      const scores = targetSurvey.questions.map(() => Math.floor(Math.random() * 3) + 3);
+      return {
+        id: targetSurvey.responses.length + idx + 1,
+        responder: names[Math.floor(Math.random() * names.length)] + `_${targetSurvey.responses.length + idx + 1}`,
+        scores: scores,
+        comment: Math.random() > 0.3 ? comments[Math.floor(Math.random() * comments.length)] : "",
+        date: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString().split("T")[0]
+      };
+    });
+
+    setSurveys(prev => prev.map(s => {
+      if (s.id === id) {
+        const updatedResponses = [...s.responses, ...newSimulatedResponses];
+        return {
+          ...s,
+          responses: updatedResponses,
+          status: "배포중"
+        };
+      }
+      return s;
+    }));
+  };
+
+  // 개별 모의 응답 직접 수집 등록
+  const handleAddSingleResponse = (id) => {
+    const targetSurvey = surveys.find(s => s.id === id);
+    if (!targetSurvey) return;
+
+    const newRes = {
+      id: targetSurvey.responses.length + 1,
+      responder: simulatedResponder.trim() || "익명 응답자",
+      scores: [...simulatedScores],
+      comment: simulatedComment.trim(),
+      date: new Date().toISOString().split("T")[0]
+    };
+
+    setSurveys(prev => prev.map(s => {
+      if (s.id === id) {
+        return {
+          ...s,
+          responses: [...s.responses, newRes],
+          status: "배포중"
+        };
+      }
+      return s;
+    }));
+
+    setSimulatedComment("");
+    setSimulatedResponder("일반 참가자");
+    alert("새 응답이 DB에 성공적으로 등록되었습니다!");
+  };
+
+  // 설문조사 완료(마감) 처리
+  const handleCompleteSurveyStatus = (id) => {
+    if (!confirm("해당 만족도 조사를 마감하시겠습니까? 마감 시 상태가 '완료'로 잠기게 됩니다.")) return;
+    setSurveys(prev => prev.map(s => {
+      if (s.id === id) {
+        return { ...s, status: "완료" };
+      }
+      return s;
+    }));
+  };
+
+  // 조사지 삭제
+  const handleDeleteSurvey = (id) => {
+    if (!confirm("해당 만족도 조사와 수집된 모든 응답이 영구 삭제됩니다. 진행하시겠습니까?")) return;
+    setSurveys(prev => prev.filter(s => s.id !== id));
+    if (selectedSurveyId === id) {
+      setSelectedSurveyId(null);
+      setActiveSurveyTab("list");
+    }
+  };
+
+  // 수집 결과 Excel 파일로 내보내기 시뮬레이션 (xlsx 연동 라이브러리)
+  const handleExportToExcel = (survey) => {
+    if (!survey.responses || survey.responses.length === 0) {
+      alert("수집된 응답 데이터가 없어 엑셀 파일 생성이 불가합니다.");
+      return;
+    }
+
+    // 1. 헤더 행 정의
+    const headers = ["응답 ID", "응답자명", "제출 일시"];
+    survey.questions.forEach((q, idx) => {
+      headers.push(`질문 ${idx + 1} 점수 (5점만점)`);
+      headers.push(`질문 ${idx + 1} 만족도 (%)`);
+    });
+    headers.push("기타 건의사항 및 주관식 피드백");
+
+    // 2. 데이터 행 정의
+    const dataRows = survey.responses.map(res => {
+      const row = [res.id, res.responder, res.date];
+      res.scores.forEach(s => {
+        row.push(s);
+        row.push(s * 20); // 100점 환산
+      });
+      row.push(res.comment || "");
+      return row;
+    });
+
+    const worksheetData = [
+      [`만족도조사 보고서 (ID: ${survey.id})`],
+      [`조사제목: ${survey.title}`],
+      [`조사목적: ${survey.purpose}`],
+      [`수행부서: ${survey.department} | 대상: ${survey.target} | 기간: ${survey.startDate} ~ ${survey.endDate}`],
+      [],
+      headers,
+      ...dataRows
+    ];
+
+    // XLSX 생성
+    const wb = XLSX.utils.book_new();
+    const ws = XLSX.utils.aoa_to_sheet(worksheetData);
+    
+    // 스타일을 위한 열 넓이 설정 자동화
+    ws["!cols"] = [{ wch: 15 }, { wch: 15 }, { wch: 15 }, ...survey.questions.map(() => ({ wch: 22 })), { wch: 45 }];
+
+    XLSX.utils.book_append_sheet(wb, ws, "만족도 조사 결과");
+    XLSX.writeFile(wb, `satisfaction_survey_${survey.id}.xlsx`);
+  };
+
+  const selectedSurvey = surveys.find(s => s.id === selectedSurveyId);
+  const selectedYearFull = 2024 + selectedYear;
+
+  // 차트 렌더링에 적합한 데이터 정의
+  const chartData = selectedSurvey ? getQuestionAverageScores(selectedSurvey) : [];
+  const currentLikertAverage = selectedSurvey ? getLikertConvertedScore(selectedSurvey.responses, selectedSurvey.questions.length) : 0;
+
+  return (
+    <div className="satisfaction-manager-container" style={{ display: "flex", flexDirection: "column", gap: "1.5rem", width: "100%" }}>
+      {/* 상단 안내 패널 */}
+      <div className="glass-card" style={{ padding: "1.5rem", display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+        <h2 style={{ fontSize: "1.25rem", fontWeight: "800", color: "var(--accent-color)", display: "flex", alignItems: "center", gap: "0.5rem" }}>
+          <ClipboardCheck size={22} className="animate-spin-slow" />
+          {selectedYearFull}년도 만족도 조사 관리 플랫폼
+        </h2>
+        <p style={{ fontSize: "0.9rem", color: "var(--text-secondary-dark)", lineHeight: "1.5" }}>
+          부서별(ECC, ICC, RCC 등) 만족도 조사를 기획·생성하고, 실시간 QR코드 및 URL 배포, 
+          데이터베이스 저장, 구글 스프레드시트 동기화, 리커트 5점 척도 기반 100점 만점 환산 통계 분석을 전 주기로 관리하는 통합 공간입니다.
+        </p>
+      </div>
+
+      {/* 내부 탭바 */}
+      <div style={{ display: "flex", justifyItems: "center", gap: "0.5rem", borderBottom: "1px solid var(--border-color-dark)", paddingBottom: "0.8rem" }}>
+        <button
+          onClick={() => { setActiveSurveyTab("list"); setSelectedSurveyId(null); }}
+          className={`btn-subtab ${activeSurveyTab === "list" ? "active" : ""}`}
+          style={{
+            border: "none",
+            background: "transparent",
+            padding: "0.5rem 1rem",
+            fontSize: "0.85rem",
+            fontWeight: "800",
+            cursor: "pointer",
+            color: activeSurveyTab === "list" ? "var(--accent-color)" : "var(--text-secondary-dark)",
+            borderBottom: activeSurveyTab === "list" ? "2px solid var(--accent-color)" : "none",
+            transition: "all 0.2s"
+          }}
+        >
+          조사 목록 관리
+        </button>
+        <button
+          onClick={() => setActiveSurveyTab("create")}
+          className={`btn-subtab ${activeSurveyTab === "create" ? "active" : ""}`}
+          style={{
+            border: "none",
+            background: "transparent",
+            padding: "0.5rem 1rem",
+            fontSize: "0.85rem",
+            fontWeight: "800",
+            cursor: "pointer",
+            color: activeSurveyTab === "create" ? "var(--accent-color)" : "var(--text-secondary-dark)",
+            borderBottom: activeSurveyTab === "create" ? "2px solid var(--accent-color)" : "none",
+            transition: "all 0.2s"
+          }}
+        >
+          + 신규 만족도조사지 제작
+        </button>
+      </div>
+
+      {/* 탭 분기 렌더링 */}
+      {activeSurveyTab === "list" && (
+        <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "1.5rem" }}>
+          {surveys.length === 0 ? (
+            <div className="glass-card" style={{ padding: "4rem", textAlign: "center", color: "var(--text-secondary-dark)" }}>
+              등록된 만족도 조사지가 없습니다. 우측 상단의 '신규 만족도조사지 제작' 탭에서 새 설문을 생성해 보세요!
+            </div>
+          ) : (
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(380px, 1fr))", gap: "1rem" }}>
+              {surveys.map((survey) => {
+                const convertedAvg = getLikertConvertedScore(survey.responses, survey.questions.length);
+                return (
+                  <div 
+                    key={survey.id} 
+                    className="glass-card" 
+                    style={{ 
+                      padding: "1.5rem", 
+                      display: "flex", 
+                      flexDirection: "column", 
+                      justifyContent: "space-between",
+                      border: selectedSurveyId === survey.id ? "1px solid var(--accent-color)" : "1px solid var(--border-color-dark)",
+                      background: selectedSurveyId === survey.id ? "rgba(59, 130, 246, 0.03)" : "rgba(255, 255, 255, 0.01)"
+                    }}
+                  >
+                    <div>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.75rem" }}>
+                        <span style={{ fontSize: "0.72rem", color: "var(--accent-color)", fontWeight: "900", letterSpacing: "0.5px" }}>
+                          ID: {survey.id}
+                        </span>
+                        <div style={{ display: "flex", gap: "0.3rem" }}>
+                          <span style={{
+                            padding: "0.2rem 0.5rem",
+                            borderRadius: "0.25rem",
+                            fontSize: "0.65rem",
+                            fontWeight: "800",
+                            background: "rgba(255,255,255,0.05)",
+                            color: "var(--text-secondary)"
+                          }}>
+                            {survey.department}
+                          </span>
+                          <span style={{
+                            padding: "0.2rem 0.5rem",
+                            borderRadius: "0.25rem",
+                            fontSize: "0.65rem",
+                            fontWeight: "800",
+                            background: survey.status === "완료" ? "rgba(16, 185, 129, 0.1)" : survey.status === "배포중" ? "rgba(59, 130, 246, 0.1)" : "rgba(245, 158, 11, 0.1)",
+                            color: survey.status === "완료" ? "#10b981" : survey.status === "배포중" ? "#3b82f6" : "#f59e0b"
+                          }}>
+                            {survey.status}
+                          </span>
+                        </div>
+                      </div>
+                      
+                      <h4 style={{ fontSize: "0.95rem", fontWeight: "800", marginBottom: "0.5rem", color: "white", lineHeight: "1.3" }}>
+                        {survey.title}
+                      </h4>
+                      <p style={{ fontSize: "0.78rem", color: "var(--text-secondary-dark)", marginBottom: "1rem", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden", lineHeight: "1.4" }}>
+                        {survey.purpose}
+                      </p>
+
+                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem", fontSize: "0.75rem", background: "rgba(255,255,255,0.01)", padding: "0.5rem", borderRadius: "0.25rem", marginBottom: "1rem" }}>
+                        <div>일정: <span style={{ color: "var(--text-secondary)" }}>{survey.startDate} ~ {survey.endDate}</span></div>
+                        <div>대상: <span style={{ color: "var(--text-secondary)" }}>{survey.target}</span></div>
+                        <div>질문수: <span style={{ color: "var(--text-secondary)", fontWeight: "700" }}>{survey.questions.length}문항</span></div>
+                        <div>수집응답: <span style={{ color: "var(--text-secondary)", fontWeight: "700" }}>{survey.responses.length}건</span></div>
+                      </div>
+                    </div>
+
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderTop: "1px solid var(--border-color-dark)", paddingTop: "0.8rem", marginTop: "0.5rem" }}>
+                      <div style={{ display: "flex", flexDirection: "column" }}>
+                        <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)" }}>100점 환산 평균</span>
+                        <strong style={{ fontSize: "1.1rem", color: "var(--accent-color)" }}>
+                          {survey.responses.length > 0 ? `${convertedAvg}점` : "자료 없음"}
+                        </strong>
+                      </div>
+
+                      <div style={{ display: "flex", gap: "0.4rem" }}>
+                        <button
+                          onClick={() => { setSelectedSurveyId(survey.id); setActiveSurveyTab("detail"); }}
+                          className="btn-secondary"
+                          style={{
+                            padding: "0.4rem 0.8rem",
+                            fontSize: "0.75rem",
+                            borderRadius: "0.3rem",
+                            border: "1px solid var(--border-color-dark)",
+                            background: "rgba(255,255,255,0.02)",
+                            color: "white",
+                            cursor: "pointer",
+                            fontWeight: "700"
+                          }}
+                        >
+                          상세보기 / 관리
+                        </button>
+                        <button
+                          onClick={() => handleDeleteSurvey(survey.id)}
+                          style={{
+                            padding: "0.4rem",
+                            fontSize: "0.75rem",
+                            borderRadius: "0.3rem",
+                            border: "none",
+                            background: "rgba(239, 68, 68, 0.1)",
+                            color: "#ef4444",
+                            cursor: "pointer"
+                          }}
+                          title="삭제"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      )}
+
+      {activeSurveyTab === "create" && (
+        <form onSubmit={handleCreateSurvey} className="glass-card" style={{ padding: "2rem", display: "flex", flexDirection: "column", gap: "1.2rem" }}>
+          <h3 style={{ fontSize: "1.05rem", fontWeight: "800", color: "white", borderBottom: "1px solid var(--border-color-dark)", paddingBottom: "0.6rem" }}>
+            새로운 만족도 조사지 제작 폼
+          </h3>
+
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+            <div>
+              <label style={{ fontSize: "0.78rem", color: "var(--text-secondary)", display: "block", marginBottom: "0.4rem" }}>수행 부서 선택</label>
+              <select
+                value={newDept}
+                onChange={(e) => setNewDept(e.target.value)}
+                className="user-selector"
+                style={{ width: "100%" }}
+              >
+                <option value="ECC">ECC (산학공동장비지원센터)</option>
+                <option value="ICC">ICC (기업협업센터)</option>
+                <option value="RCC">RCC (지역사회공헌센터)</option>
+                <option value="AID-X">AID-X (인공지능디지털혁신센터)</option>
+                <option value="늘봄누리센터">늘봄누리센터 (돌봄복지센터)</option>
+              </select>
+            </div>
+            <div>
+              <label style={{ fontSize: "0.78rem", color: "var(--text-secondary)", display: "block", marginBottom: "0.4rem" }}>추천 자동발급 ID</label>
+              <input
+                type="text"
+                value={getNextSurveyId(newDept)}
+                disabled
+                className="user-selector"
+                style={{ width: "100%", background: "rgba(255,255,255,0.03)", color: "var(--text-secondary-dark)" }}
+              />
+            </div>
+          </div>
+
+          <div>
+            <label style={{ fontSize: "0.78rem", color: "var(--text-secondary)", display: "block", marginBottom: "0.4rem" }}>조사 제목</label>
+            <input
+              type="text"
+              placeholder="예) 2026년도 AID-X 역량강화 세미나 만족도 조사"
+              value={newTitle}
+              onChange={(e) => setNewTitle(e.target.value)}
+              className="user-selector"
+              style={{ width: "100%" }}
+              required
+            />
+          </div>
+
+          <div>
+            <label style={{ fontSize: "0.78rem", color: "var(--text-secondary)", display: "block", marginBottom: "0.4rem" }}>조사 목적</label>
+            <textarea
+              placeholder="조사의 구체적인 배경 및 환류 계획을 적어주세요."
+              value={newPurpose}
+              onChange={(e) => setNewPurpose(e.target.value)}
+              className="user-selector"
+              style={{ width: "100%", height: "70px", resize: "none" }}
+              required
+            />
+          </div>
+
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+            <div>
+              <label style={{ fontSize: "0.78rem", color: "var(--text-secondary)", display: "block", marginBottom: "0.4rem" }}>조사 일정 (시작 ~ 종료)</label>
+              <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                <input
+                  type="date"
+                  value={newStartDate}
+                  onChange={(e) => setNewStartDate(e.target.value)}
+                  className="user-selector"
+                  style={{ width: "100%" }}
+                />
+                <span>~</span>
+                <input
+                  type="date"
+                  value={newEndDate}
+                  onChange={(e) => setNewEndDate(e.target.value)}
+                  className="user-selector"
+                  style={{ width: "100%" }}
+                />
+              </div>
+            </div>
+            <div>
+              <label style={{ fontSize: "0.78rem", color: "var(--text-secondary)", display: "block", marginBottom: "0.4rem" }}>조사 대상</label>
+              <input
+                type="text"
+                placeholder="예) 인공지능 재직자 교육 참여자 전체"
+                value={newTarget}
+                onChange={(e) => setNewTarget(e.target.value)}
+                className="user-selector"
+                style={{ width: "100%" }}
+              />
+            </div>
+          </div>
+
+          <div>
+            <label style={{ fontSize: "0.78rem", color: "var(--text-secondary)", display: "block", marginBottom: "0.4rem", fontWeight: "700" }}>
+              만족도조사 문항 빌더 (리커트 5점 척도형)
+            </label>
+            
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem", marginBottom: "0.8rem" }}>
+              {newQuestions.map((q, idx) => (
+                <div key={idx} style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+                  <span style={{ fontSize: "0.75rem", color: "var(--accent-color)", fontWeight: "800", minWidth: "45px" }}>문항 {idx + 1}</span>
+                  <input
+                    type="text"
+                    value={q}
+                    onChange={(e) => {
+                      const updated = [...newQuestions];
+                      updated[idx] = e.target.value;
+                      setNewQuestions(updated);
+                    }}
+                    className="user-selector"
+                    style={{ flex: 1, fontSize: "0.78rem" }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveQuestion(idx)}
+                    style={{ background: "rgba(239,68,68,0.1)", color: "#ef4444", border: "none", borderRadius: "0.3rem", padding: "0.4rem", cursor: "pointer" }}
+                  >
+                    <Trash2 size={13} />
+                  </button>
+                </div>
+              ))}
+            </div>
+
+            <div style={{ display: "flex", gap: "0.5rem" }}>
+              <input
+                type="text"
+                placeholder="추가하고 싶은 커스텀 만족도 문항을 적어주세요."
+                value={customQuestionInput}
+                onChange={(e) => setCustomQuestionInput(e.target.value)}
+                className="user-selector"
+                style={{ flex: 1, fontSize: "0.78rem" }}
+                onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); handleAddQuestion(); } }}
+              />
+              <button
+                type="button"
+                onClick={handleAddQuestion}
+                className="btn-secondary"
+                style={{ display: "flex", alignItems: "center", gap: "0.2rem", padding: "0.5rem 1rem", fontSize: "0.78rem", cursor: "pointer", borderRadius: "0.3rem", border: "1px solid var(--border-color-dark)" }}
+              >
+                <Plus size={14} /> 문항 추가
+              </button>
+            </div>
+          </div>
+
+          <div style={{ display: "flex", gap: "0.5rem", justifyContent: "flex-end", marginTop: "1rem" }}>
+            <button
+              type="button"
+              onClick={() => setActiveSurveyTab("list")}
+              className="btn-secondary"
+              style={{ border: "1px solid var(--border-color-dark)", background: "transparent", padding: "0.6rem 1.5rem", borderRadius: "0.4rem", cursor: "pointer", fontWeight: "700" }}
+            >
+              취소
+            </button>
+            <button
+              type="submit"
+              className="btn-primary"
+              style={{ display: "flex", alignItems: "center", gap: "0.3rem", borderRadius: "0.4rem", padding: "0.6rem 1.5rem", fontSize: "0.85rem", fontWeight: "700", cursor: "pointer" }}
+            >
+              <Send size={14} /> 설문지 생성 및 저장
+            </button>
+          </div>
+        </form>
+      )}
+
+      {activeSurveyTab === "detail" && selectedSurvey && (
+        <div style={{ display: "grid", gridTemplateColumns: "1.1fr 1fr", gap: "1.5rem" }}>
+          {/* 좌측: 조사 기본 정보 및 배포용 QR, 모의 응답기 */}
+          <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+            {/* 기본 상세 정보 카드 */}
+            <div className="glass-card" style={{ padding: "1.8rem", display: "flex", flexDirection: "column", gap: "1rem" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid var(--border-color-dark)", paddingBottom: "0.6rem" }}>
+                <div>
+                  <span style={{ fontSize: "0.72rem", color: "var(--accent-color)", fontWeight: "900" }}>ID: {selectedSurvey.id}</span>
+                  <h3 style={{ fontSize: "1.1rem", fontWeight: "800", marginTop: "0.15rem", color: "white" }}>{selectedSurvey.title}</h3>
+                </div>
+                <button
+                  onClick={() => handleCompleteSurveyStatus(selectedSurvey.id)}
+                  disabled={selectedSurvey.status === "완료"}
+                  className="btn-secondary"
+                  style={{
+                    padding: "0.3rem 0.7rem",
+                    fontSize: "0.72rem",
+                    borderRadius: "0.25rem",
+                    background: selectedSurvey.status === "완료" ? "rgba(16, 185, 129, 0.15)" : "rgba(255,255,255,0.05)",
+                    border: "1px solid var(--border-color-dark)",
+                    color: selectedSurvey.status === "완료" ? "#10b981" : "white",
+                    cursor: selectedSurvey.status === "완료" ? "default" : "pointer"
+                  }}
+                >
+                  {selectedSurvey.status === "완료" ? "조사 마감됨" : "조사 마감하기"}
+                </button>
+              </div>
+
+              <div style={{ fontSize: "0.85rem", display: "flex", flexDirection: "column", gap: "0.5rem", color: "var(--text-secondary)" }}>
+                <div><strong>조사 목적:</strong> <span style={{ color: "var(--text-secondary-dark)" }}>{selectedSurvey.purpose}</span></div>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem", background: "rgba(255,255,255,0.01)", padding: "0.6rem", borderRadius: "0.3rem" }}>
+                  <div><strong>수행 부서:</strong> <span style={{ color: "white" }}>{selectedSurvey.department}센터</span></div>
+                  <div><strong>조사 대상:</strong> <span style={{ color: "white" }}>{selectedSurvey.target}</span></div>
+                  <div><strong>조사 일정:</strong> <span style={{ color: "white" }}>{selectedSurvey.startDate} ~ {selectedSurvey.endDate}</span></div>
+                  <div><strong>진행 상태:</strong> <span style={{ color: "var(--accent-color)", fontWeight: "700" }}>{selectedSurvey.status}</span></div>
+                </div>
+              </div>
+            </div>
+
+            {/* 배포용 QR 코드 및 모바일 단축주소 카드 */}
+            <div className="glass-card" style={{ padding: "1.5rem", display: "flex", flexDirection: "column", gap: "1rem" }}>
+              <h4 style={{ fontSize: "0.9rem", fontWeight: "800", color: "white", display: "flex", alignItems: "center", gap: "0.4rem" }}>
+                <QrCode size={18} /> 실시간 배포용 QR코드 & 모바일 링크
+              </h4>
+              
+              <div style={{ display: "grid", gridTemplateColumns: "120px 1fr", gap: "1.5rem", alignItems: "center" }}>
+                <div style={{ background: "white", padding: "0.5rem", borderRadius: "0.5rem", display: "flex", alignItems: "center", justifyContent: "center", width: "120px", height: "120px" }}>
+                  {/* qrcode.react를 이용한 SVG QR코드 실시간 생성 */}
+                  <QRCodeSVG 
+                    value={`https://anchor.uc.ac.kr/sv/${selectedSurvey.id}`} 
+                    size={110}
+                    level="H"
+                    includeMargin={false}
+                  />
+                </div>
+
+                <div style={{ display: "flex", flexDirection: "column", gap: "0.6rem" }}>
+                  <p style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)", lineHeight: "1.4" }}>
+                    모바일 카메라나 현장 안내용 프린트물에 아래 QR코드를 부착하세요. 
+                    스캔 시 해당 조사지로 직통 연결됩니다.
+                  </p>
+                  
+                  <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+                    <input
+                      type="text"
+                      readOnly
+                      value={`https://anchor.uc.ac.kr/sv/${selectedSurvey.id}`}
+                      className="user-selector"
+                      style={{ flex: 1, fontSize: "0.75rem", background: "rgba(255,255,255,0.03)", color: "var(--text-secondary)" }}
+                    />
+                    <button
+                      onClick={() => handleCopyUrl(selectedSurvey.id)}
+                      className="btn-secondary"
+                      style={{ padding: "0.45rem 0.8rem", fontSize: "0.75rem", cursor: "pointer", borderRadius: "0.3rem", border: "1px solid var(--border-color-dark)" }}
+                    >
+                      {copiedId === selectedSurvey.id ? "복사완료!" : "링크복사"}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* 모의 수집 피드백 응답 수동 등록기 */}
+            {selectedSurvey.status !== "완료" && (
+              <div className="glass-card" style={{ padding: "1.5rem", display: "flex", flexDirection: "column", gap: "1rem" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <h4 style={{ fontSize: "0.9rem", fontWeight: "800", color: "white", display: "flex", alignItems: "center", gap: "0.4rem" }}>
+                    <RefreshCw size={16} /> 실시간 응답 수집 시뮬레이터 (DB 저장)
+                  </h4>
+                  <button
+                    type="button"
+                    onClick={() => handleGenerateSimulatedData(selectedSurvey.id)}
+                    className="btn-secondary"
+                    style={{
+                      padding: "0.25rem 0.6rem",
+                      fontSize: "0.7rem",
+                      background: "rgba(59,130,246,0.15)",
+                      border: "1px solid rgba(59,130,246,0.3)",
+                      color: "var(--accent-color)",
+                      borderRadius: "0.25rem",
+                      cursor: "pointer",
+                      fontWeight: "700"
+                    }}
+                  >
+                    ⚡ 대량 모의 데이터 10건 생성
+                  </button>
+                </div>
+
+                <div style={{ display: "flex", flexDirection: "column", gap: "0.8rem", background: "rgba(255,255,255,0.01)", padding: "1rem", borderRadius: "0.4rem", border: "1px solid var(--border-color-dark)" }}>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.8rem" }}>
+                    <div>
+                      <label style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)" }}>응답자 정보</label>
+                      <input
+                        type="text"
+                        value={simulatedResponder}
+                        onChange={(e) => setSimulatedResponder(e.target.value)}
+                        className="user-selector"
+                        style={{ width: "100%", fontSize: "0.75rem", padding: "0.4rem" }}
+                      />
+                    </div>
+                    <div>
+                      <label style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)" }}>개별 문항 점수 부여 (1~5점)</label>
+                      <div style={{ display: "flex", gap: "0.3rem", marginTop: "0.2rem" }}>
+                        {selectedSurvey.questions.map((_, qIdx) => (
+                          <select
+                            key={qIdx}
+                            value={simulatedScores[qIdx] || 5}
+                            onChange={(e) => {
+                              const updated = [...simulatedScores];
+                              updated[qIdx] = parseInt(e.target.value, 10);
+                              setSimulatedScores(updated);
+                            }}
+                            className="user-selector"
+                            style={{ flex: 1, fontSize: "0.75rem", padding: "0.3rem" }}
+                          >
+                            <option value="5">5점</option>
+                            <option value="4">4점</option>
+                            <option value="3">3점</option>
+                            <option value="2">2점</option>
+                            <option value="1">1점</option>
+                          </select>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)" }}>주관식 기타 건의사항</label>
+                    <input
+                      type="text"
+                      placeholder="예) 교재 상태가 아주 훌륭했습니다."
+                      value={simulatedComment}
+                      onChange={(e) => setSimulatedComment(e.target.value)}
+                      className="user-selector"
+                      style={{ width: "100%", fontSize: "0.75rem", padding: "0.4rem" }}
+                    />
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => handleAddSingleResponse(selectedSurvey.id)}
+                    className="btn-primary"
+                    style={{ padding: "0.45rem", fontSize: "0.78rem", fontWeight: "700", width: "100%", justifyContent: "center", borderRadius: "0.3rem", display: "flex", gap: "0.3rem" }}
+                  >
+                    <Check size={14} /> 모의 응답 데이터 DB 입력 전송
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* 우측: 리커트 5점 척도 100점 환산 차트 및 수집 의견 목록 */}
+          <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+            
+            {/* 결과 통계 차트 및 시트 동기화 */}
+            <div className="glass-card" style={{ padding: "1.8rem" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.2rem", flexWrap: "wrap", gap: "0.5rem" }}>
+                <h4 style={{ fontSize: "0.95rem", fontWeight: "800", color: "white", display: "flex", alignItems: "center", gap: "0.4rem" }}>
+                  <BarChart3 size={18} /> 문항별 만족도 점수 (100점 만점)
+                </h4>
+                
+                <div style={{ display: "flex", gap: "0.3rem" }}>
+                  {/* 구글 시트 연동 버튼 */}
+                  <button
+                    onClick={() => handleSyncToGoogleSheets(selectedSurvey.id)}
+                    disabled={syncingId === selectedSurvey.id}
+                    className="btn-secondary"
+                    style={{
+                      padding: "0.35rem 0.6rem",
+                      fontSize: "0.72rem",
+                      borderRadius: "0.3rem",
+                      background: "rgba(16, 185, 129, 0.08)",
+                      border: "1px solid rgba(16, 185, 129, 0.25)",
+                      color: "#10b981",
+                      cursor: "pointer",
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: "0.2rem",
+                      fontWeight: "700"
+                    }}
+                  >
+                    {syncingId === selectedSurvey.id ? "시트 동기화중..." : "구글 시트 연동"}
+                  </button>
+
+                  {/* 엑셀 파일 익스포트 버튼 */}
+                  <button
+                    onClick={() => handleExportToExcel(selectedSurvey)}
+                    className="btn-secondary"
+                    style={{
+                      padding: "0.35rem 0.6rem",
+                      fontSize: "0.72rem",
+                      borderRadius: "0.3rem",
+                      background: "rgba(59, 130, 246, 0.08)",
+                      border: "1px solid rgba(59, 130, 246, 0.25)",
+                      color: "var(--accent-color)",
+                      cursor: "pointer",
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: "0.2rem",
+                      fontWeight: "700"
+                    }}
+                  >
+                    <Download size={12} /> Excel 내보내기
+                  </button>
+                </div>
+              </div>
+
+              {selectedSurvey.responses.length === 0 ? (
+                <div style={{ height: "200px", display: "flex", alignItems: "center", justifyContent: "center", border: "1px dashed var(--border-color-dark)", borderRadius: "0.4rem", color: "var(--text-secondary-dark)", fontSize: "0.8rem" }}>
+                  수집된 만족도 응답이 없어 통계가 산출되지 않았습니다.
+                </div>
+              ) : (
+                <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", background: "rgba(255,255,255,0.01)", padding: "0.6rem 1rem", borderRadius: "0.3rem", border: "1px solid var(--border-color-dark)" }}>
+                    <span style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>수집 응답 건수: <strong style={{ color: "white" }}>{selectedSurvey.responses.length}건</strong></span>
+                    <span style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>종합 환산 점수: <strong style={{ color: "var(--accent-color)" }}>{currentLikertAverage} / 100점</strong></span>
+                  </div>
+
+                  {/* Recharts BarChart */}
+                  <div style={{ width: "100%", height: "220px", fontSize: "0.7rem" }}>
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart data={chartData} margin={{ top: 10, right: 10, left: -25, bottom: 0 }}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
+                        <XAxis dataKey="name" stroke="var(--text-secondary-dark)" />
+                        <YAxis domain={[0, 100]} stroke="var(--text-secondary-dark)" />
+                        <Tooltip 
+                          contentStyle={{ background: "#0f172a", border: "1px solid var(--border-color-dark)", borderRadius: "0.3rem" }}
+                          labelStyle={{ color: "white", fontWeight: "700" }}
+                          itemStyle={{ color: "var(--accent-color)" }}
+                          formatter={(value, name, props) => [`${value}점`, "환산 만족도"]}
+                        />
+                        <ReferenceLine y={80} stroke="rgba(16,185,129,0.5)" strokeDasharray="3 3" label={{ value: "우수선 (80점)", fill: "#10b981", fontSize: 10, position: "top" }} />
+                        <Bar dataKey="score" fill="url(#blueGrad)" radius={[4, 4, 0, 0]} />
+                        <defs>
+                          <linearGradient id="blueGrad" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stopColor="#3b82f6" stopOpacity={0.95}/>
+                            <stop offset="100%" stopColor="#1d4ed8" stopOpacity={0.4}/>
+                          </linearGradient>
+                        </defs>
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+
+                  <div style={{ maxHeight: "120px", overflowY: "auto", fontSize: "0.72rem", border: "1px solid var(--border-color-dark)", borderRadius: "0.3rem", padding: "0.5rem" }}>
+                    <span style={{ fontWeight: "700", color: "var(--accent-color)", display: "block", marginBottom: "0.2rem" }}>[질문 문항 가이드 명세]</span>
+                    {selectedSurvey.questions.map((q, idx) => (
+                      <div key={idx} style={{ padding: "0.15rem 0", borderBottom: "1px solid rgba(255,255,255,0.02)", display: "flex", gap: "0.25rem" }}>
+                        <span style={{ color: "var(--text-secondary-dark)", fontWeight: "700" }}>문항 {idx + 1}:</span>
+                        <span style={{ color: "var(--text-secondary)" }}>{q}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* 수집된 주관식 건의사항 / 의견 피드백 카드 목록 */}
+            <div className="glass-card" style={{ padding: "1.5rem", display: "flex", flexDirection: "column", gap: "0.8rem" }}>
+              <h4 style={{ fontSize: "0.9rem", fontWeight: "800", color: "white", display: "flex", alignItems: "center", gap: "0.4rem" }}>
+                <FileText size={18} /> 주관식 건의사항 및 환류 의견 ({selectedSurvey.responses.filter(r => r.comment).length}건)
+              </h4>
+
+              <div style={{ maxHeight: "250px", overflowY: "auto", display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                {selectedSurvey.responses.filter(r => r.comment).length === 0 ? (
+                  <p style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)", textAlign: "center", padding: "2rem" }}>
+                    제출된 의견 피드백이 없습니다.
+                  </p>
+                ) : (
+                  selectedSurvey.responses.filter(r => r.comment).map((res) => (
+                    <div 
+                      key={res.id} 
+                      style={{ 
+                        padding: "0.6rem 0.8rem", 
+                        borderRadius: "0.4rem", 
+                        background: "rgba(255,255,255,0.01)", 
+                        border: "1px solid var(--border-color-dark)",
+                        fontSize: "0.75rem"
+                      }}
+                    >
+                      <div style={{ display: "flex", justifyContent: "space-between", color: "var(--text-secondary-dark)", fontSize: "0.68rem", marginBottom: "0.25rem" }}>
+                        <span>응답자: <strong style={{ color: "var(--text-secondary)" }}>{res.responder}</strong></span>
+                        <span>{res.date}</span>
+                      </div>
+                      <p style={{ color: "white", lineHeight: "1.35" }}>"{res.comment}"</p>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}

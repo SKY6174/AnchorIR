@@ -8,6 +8,7 @@ import BudgetItemsManager from "./components/BudgetItemsManager";
 import BudgetExecutionManager from "./components/BudgetExecutionManager";
 import ProgramProgressManager from "./components/ProgramProgressManager";
 import MajorProgramsManager from "./components/MajorProgramsManager";
+import SatisfactionManager from "./components/SatisfactionManager";
 import LLMWiki from "./components/LLMWiki";
 import OrgChartManager from "./components/OrgChartManager";
 import PartnerManager from "./components/PartnerManager";
@@ -6327,6 +6328,22 @@ export default function App() {
               >
                 주요 프로그램
               </button>
+              <button
+                onClick={() => setProgressSubTab("satisfaction_survey")}
+                style={{
+                  background: "transparent",
+                  border: "none",
+                  fontSize: "1rem",
+                  fontWeight: "800",
+                  cursor: "pointer",
+                  padding: "0.5rem 1rem",
+                  color: progressSubTab === "satisfaction_survey" ? "var(--accent-color)" : "var(--text-secondary-dark)",
+                  borderBottom: progressSubTab === "satisfaction_survey" ? "2px solid var(--accent-color)" : "none",
+                  transition: "all 0.2s ease"
+                }}
+              >
+                만족도 조사
+              </button>
             </div>
 
             {/* 본문 콘텐츠 스위칭 */}
@@ -6342,8 +6359,12 @@ export default function App() {
                   setSelectedProgId(progId);
                 }}
               />
-            ) : (
+            ) : progressSubTab === "major_programs" ? (
               <MajorProgramsManager
+                selectedYear={selectedYear}
+              />
+            ) : (
+              <SatisfactionManager
                 selectedYear={selectedYear}
               />
             )}
