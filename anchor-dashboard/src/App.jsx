@@ -621,6 +621,100 @@ const getNormalizedKpi = (k, selectedYear) => {
   if (!k) return null;
   if (selectedYear !== 1) return k;
 
+  if (k.id.startsWith("C-")) {
+    if (k.id === "C-1") {
+      return {
+        ...k,
+        description: "지자체 대표 프로젝트 및 단위과제들의 종합 연도별 목표치 달성률",
+        formula: "\\text{대표과제 달성률(\\%)} = \\frac{\\text{당해연도 대표과제 성과 달성치}}{\\text{당해연도 대표과제 목표 설정치}} \\times 100",
+        subItems: [
+          {
+            id: "C-1-1",
+            name: "대표과제 목표 달성 개수",
+            unit: "건",
+            years: { 1: { target: 5, current: 5 } }
+          }
+        ]
+      };
+    } else if (k.id === "C-2") {
+      return {
+        ...k,
+        description: "대학, 산업체, 연구소, 지자체 간의 협약 건수 및 공동 R&BD 유입 실적 증가 비율",
+        formula: "\\text{협업 증가율(\\%)} = \\frac{\\text{평가연도 실적} - \\text{기준연도(24년) 실적}}{\\text{기준연도(24년) 실적}} \\times 100",
+        subItems: [
+          {
+            id: "C-2-1",
+            name: "지산학연 협력협약 체결 건수",
+            unit: "건",
+            years: { 1: { target: 45, current: 52 } }
+          },
+          {
+            id: "C-2-2",
+            name: "공동 R&BD 및 기술이전 체결액",
+            unit: "백만원",
+            years: { 1: { target: 800, current: 950 } }
+          }
+        ]
+      };
+    } else if (k.id === "C-3") {
+      return {
+        ...k,
+        description: "성인학습자의 직업 능력 제고를 위한 비학위 및 평생직업교육과정 참여생 증가 추이",
+        formula: "\\text{성인학습자 증가율(\\%)} = \\frac{\\text{평가연도 실적} - \\text{기준연도(24년) 실적}}{\\text{기준연도(24년) 실적}} \\times 100",
+        subItems: [
+          {
+            id: "C-3-1",
+            name: "평생직업교육 비학위과정 이수 인원",
+            unit: "명",
+            years: { 1: { target: 1500, current: 1680 } }
+          }
+        ]
+      };
+    } else if (k.id === "C-4") {
+      return {
+        ...k,
+        description: "졸업생 중 울산광역시 및 인접 동일생활권 내 기업체에 취업하여 정주한 졸업생 증가율",
+        formula: "\\text{정주 취업 증가율(\\%)} = \\frac{\\text{평가연도 실적} - \\text{기준연도(24년) 실적}}{\\text{기준연도(24년) 실적}} \\times 100",
+        subItems: [
+          {
+            id: "C-4-1",
+            name: "관내 기업체 취업 졸업생 수",
+            unit: "명",
+            years: { 1: { target: 650, current: 698 } }
+          }
+        ]
+      };
+    } else if (k.id === "C-5") {
+      return {
+        ...k,
+        description: "RISE 사업 및 지산학 협력 거버넌스 전반에 대한 시도 내 만족도 조사 향상율",
+        formula: "\\text{만족도 증가율(\\%)} = \\frac{\\text{평가연도 실적} - \\text{기준연도(24년) 실적}}{\\text{기준연도(24년) 실적}} \\times 100",
+        subItems: [
+          {
+            id: "C-5-1",
+            name: "종합 지산학연 연계 체제 만족도 지수",
+            unit: "점",
+            years: { 1: { target: 80, current: 82 } }
+          }
+        ]
+      };
+    } else if (k.id === "C-6") {
+      return {
+        ...k,
+        description: "대학의 생산 유발 및 고용 창출 등 지역 경제 활성화에 기여한 영향력 성장도",
+        formula: "\\text{경제영향력 증가율(\\%)} = \\frac{\\text{평가연도 실적} - \\text{기준연도(24년) 실적}}{\\text{기준연도(24년) 실적}} \\times 100",
+        subItems: [
+          {
+            id: "C-6-1",
+            name: "생산 및 고용 유발 파급효과 추정액",
+            unit: "억원",
+            years: { 1: { target: 1200, current: 1280 } }
+          }
+        ]
+      };
+    }
+  }
+
   if (k.id === "L-1") {
     return {
       ...k,
@@ -5734,8 +5828,13 @@ export default function App() {
                       });
 
                       const sortedKpis = Array.from(kpiMap.values()).sort((a, b) => {
-                        const numA = parseInt(a.nk.id.replace("L-", ""), 10) || 0;
-                        const numB = parseInt(b.nk.id.replace("L-", ""), 10) || 0;
+                        const prefixA = a.nk.id.startsWith("C-") ? "C" : "L";
+                        const prefixB = b.nk.id.startsWith("C-") ? "C" : "L";
+                        if (prefixA !== prefixB) {
+                          return prefixA.localeCompare(prefixB);
+                        }
+                        const numA = parseInt(a.nk.id.replace("L-", "").replace("C-", ""), 10) || 0;
+                        const numB = parseInt(b.nk.id.replace("L-", "").replace("C-", ""), 10) || 0;
                         return numA - numB;
                       });
 
@@ -5814,7 +5913,7 @@ export default function App() {
                             <td style={{ fontFamily: "var(--font-data)", fontWeight: "700" }}>{nk.id}</td>
                             <td style={{ fontWeight: isSelected ? "700" : "normal" }}>{nk.name}</td>
                             <td>
-                              <span className={`badge ${nk.type === "자율" ? "badge-blue" : "badge-yellow"}`}>
+                              <span className={`badge ${nk.type === "공통" ? "badge-green" : nk.type === "자율" ? "badge-blue" : "badge-yellow"}`}>
                                 {nk.type}
                               </span>
                             </td>
@@ -6025,8 +6124,45 @@ export default function App() {
                         </div>
 
                         <div>
-                          <span style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)", display: "block", marginBottom: "0.4rem" }}>성과지표 산출공식</span>
-                          <RenderLatexFormula formula={nk.formula} />
+                          <span style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)", display: "block", marginBottom: "0.4rem" }}>성과지표 산출공식 및 세부산식 분석</span>
+                          <div style={{ background: "rgba(255, 255, 255, 0.02)", border: "1px solid var(--border-color-dark)", padding: "0.6rem 0.8rem", borderRadius: "0.375rem" }}>
+                            <div style={{ marginBottom: "0.5rem" }}>
+                              <RenderLatexFormula formula={nk.formula} />
+                            </div>
+                            {nk.type === "공통" && (
+                              <div style={{ fontSize: "0.72rem", color: "var(--text-secondary-dark)", borderTop: "1px dashed rgba(255,255,255,0.1)", paddingTop: "0.5rem", lineHeight: "1.45" }}>
+                                <p style={{ fontWeight: "800", color: "#60a5fa", marginBottom: "0.25rem" }}>💡 교육부 RISE 공통성과지표 상세 가이드</p>
+                                <p>• <strong>평가 메커니즘</strong>: 단순 실적 달성도가 아닌, <strong>2024년 기준연도 대비 당해연도의 순 증가 비율(성장률)</strong>을 계산합니다.</p>
+                                <p>• <strong>산식 세부 분석</strong>: 
+                                  {nk.id === "C-1" && " 지자체 대표과제 성과 달성도 평균수식을 적용하여 각 대표과제의 개별 목표 달성률의 평균을 냅니다."}
+                                  {nk.id === "C-2" && " 지산학연 연계 건수 및 연구 계약 체결 금액의 기준연도(24년) 총합 대비 성장 비율을 구합니다."}
+                                  {nk.id === "C-3" && " 대학 평생직업교육 수료생 수 및 정원외 전형 입학생 수의 24년 모수 대비 증가율을 측정합니다."}
+                                  {nk.id === "C-4" && " 졸업자 중 울산광역시 및 인접 관내 취업자의 절대 인원 증가 추이를 백분율로 추적합니다."}
+                                  {nk.id === "C-5" && " RISE 지산학 협력체계 만족도 평점의 24년 기초 조사 평점 대비 성장 추이를 측정합니다."}
+                                  {nk.id === "C-6" && " 대학 경제 영향력 평가(IMPACT) 모델에 따른 지역 경제 생산 유발 효과(억원)의 향상률을 계산합니다."}
+                                </p>
+                                <p style={{ marginTop: "0.25rem" }}>• <strong>지표 활용시기</strong>: {
+                                  nk.id === "C-1" || nk.id === "C-2" || nk.id === "C-3"
+                                    ? "2차년도 중간평가 및 5차년도 종합평가에 모두 활용됩니다."
+                                    : "5차년도 최종 종합평가 시에만 활용되는 중장기 결과지표입니다."
+                                }</p>
+                              </div>
+                            )}
+                            {nk.type === "자율" && (
+                              <div style={{ fontSize: "0.72rem", color: "var(--text-secondary-dark)", borderTop: "1px dashed rgba(255,255,255,0.1)", paddingTop: "0.5rem", lineHeight: "1.45" }}>
+                                <p style={{ fontWeight: "800", color: "#ec4899", marginBottom: "0.25rem" }}>💡 지자체(울산) 자율성과지표 안내</p>
+                                <p>• <strong>평가 메커니즘</strong>: 울산 RISE 비전 및 지역 주도 대학지원을 위해 시도와 대학이 합의하여 지정한 정량 지표입니다.</p>
+                                <p>• <strong>활용 시기</strong>: 매년 실시되는 지자체 자체평가 및 교육부의 연차점검, 중간·종합평가 시 연차별 달성도가 전면 반영됩니다.</p>
+                              </div>
+                            )}
+                            {nk.type === "중점" && (
+                              <div style={{ fontSize: "0.72rem", color: "var(--text-secondary-dark)", borderTop: "1px dashed rgba(255,255,255,0.1)", paddingTop: "0.5rem", lineHeight: "1.45" }}>
+                                <p style={{ fontWeight: "800", color: "#f472b6", marginBottom: "0.25rem" }}>💡 대학 중점관리지표 안내</p>
+                                <p>• <strong>평가 메커니즘</strong>: 대학 강점·특성화 분야 육성 및 경쟁력 제고를 목적으로 대학이 설정한 집중 관리 핵심성과지표입니다.</p>
+                                <p>• <strong>활용 시기</strong>: 대학 자체 성과관리 환류 및 시도 컨설팅 환류 지표로 연중 활용됩니다.</p>
+                              </div>
+                            )}
+                          </div>
                         </div>
 
                         <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.8rem", borderTop: "1px solid var(--border-color-dark)", paddingTop: "0.8rem" }}>
