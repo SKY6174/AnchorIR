@@ -874,11 +874,12 @@ ${commentList || "(없음)"}
                 className="user-selector"
                 style={{ width: "100%" }}
               >
-                <option value="ECC">ECC (산학공동장비지원센터)</option>
+                <option value="ECC">ECC (지산학교육센터)</option>
                 <option value="ICC">ICC (기업협업센터)</option>
-                <option value="RCC">RCC (지역사회공헌센터)</option>
-                <option value="AID-X">AID-X (인공지능디지털혁신센터)</option>
-                <option value="늘봄누리센터">늘봄누리센터 (돌봄복지센터)</option>
+                <option value="RCC">RCC (지역협업센터)</option>
+                <option value="AIDX">AIDX (AID-X지원센터)</option>
+                <option value="NURI">NURI (울산늘봄누리센터)</option>
+                <option value="SEVeN">SEVeN (신산업특화센터)</option>
               </select>
             </div>
             <div>
