@@ -251,7 +251,7 @@ export default function UnitSystemView() {
           </div>
           <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid var(--border-color-dark)", padding: "0.8rem 1rem", borderRadius: "0.4rem" }}>
             <div style={{ fontSize: "0.68rem", color: "#f59e0b", fontWeight: "900", marginBottom: "0.2rem" }}>4단계: T</div>
-            <div style={{ fontSize: "0.85rem", fontWeight: "800", color: "white" }}>추진과제 (Task)</div>
+            <div style={{ fontSize: "0.85rem", fontWeight: "800", color: "white" }}>추진과제 (Strategic Task)</div>
             <div style={{ fontSize: "0.72rem", color: "var(--text-secondary-dark)", marginTop: "0.25rem" }}>전략 실현을 위한 고유 중점 분야</div>
           </div>
           <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid var(--border-color-dark)", padding: "0.8rem 1rem", borderRadius: "0.4rem" }}>
