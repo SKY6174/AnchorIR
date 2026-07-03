@@ -107,6 +107,11 @@ export default function ScheduleManager({
       const headers = ["구분", "매체", "제목", "보도일시", "보도 링크(URL)"];
       const rows = pressReleases
         .filter(p => selectedPressType === "all" || p.type === selectedPressType)
+        .sort((a, b) => {
+          const dateA = a.broadcastDate ? new Date(a.broadcastDate) : new Date(0);
+          const dateB = b.broadcastDate ? new Date(b.broadcastDate) : new Date(0);
+          return dateB - dateA;
+        })
         .map(p => [
           p.type,
           p.media,
@@ -131,7 +136,13 @@ export default function ScheduleManager({
 
   // 언론보도 데이터가 로드되거나 필터가 바뀔 때 기본적으로 첫 번째 항목을 활성화
   useEffect(() => {
-    const filtered = pressReleases.filter(p => selectedPressType === "all" || p.type === selectedPressType);
+    const filtered = pressReleases
+      .filter(p => selectedPressType === "all" || p.type === selectedPressType)
+      .sort((a, b) => {
+        const dateA = a.broadcastDate ? new Date(a.broadcastDate) : new Date(0);
+        const dateB = b.broadcastDate ? new Date(b.broadcastDate) : new Date(0);
+        return dateB - dateA;
+      });
     if (filtered.length > 0) {
       if (!activePressId || !filtered.some(p => p.id === activePressId)) {
         setActivePressId(filtered[0].id);
@@ -1451,6 +1462,11 @@ export default function ScheduleManager({
               {pressReleases.filter(p => selectedPressType === "all" || p.type === selectedPressType).length > 0 ? (
                 pressReleases
                   .filter(p => selectedPressType === "all" || p.type === selectedPressType)
+                  .sort((a, b) => {
+                    const dateA = a.broadcastDate ? new Date(a.broadcastDate) : new Date(0);
+                    const dateB = b.broadcastDate ? new Date(b.broadcastDate) : new Date(0);
+                    return dateB - dateA;
+                  })
                   .map((press) => {
                     const isActive = activePressId === press.id;
                     return (
