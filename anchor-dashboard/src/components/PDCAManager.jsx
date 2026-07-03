@@ -1984,15 +1984,22 @@ export default function PDCAManager({
                     const isDone = status === "완료";
                     const isProgress = status === "진행";
                     return (
-                      <div key={stage} className={`pdca-step-item ${isDone ? "done" : isProgress ? "in-progress" : ""}`}>
+                      <div 
+                        key={stage} 
+                        className={`pdca-step-item ${isDone ? "done" : isProgress ? "in-progress" : ""}`}
+                        style={{ cursor: "pointer", transition: "transform 0.2s" }}
+                        onClick={() => setActivePdcaStage(stage.toUpperCase())}
+                        title={`${stage.toUpperCase()} 단계 실무 폼 열기`}
+                      >
                         <div className="pdca-circle" style={{ width: "24px", height: "24px", fontSize: "0.75rem" }}>{stage.toUpperCase()}</div>
                         <span style={{ fontSize: "0.65rem", fontWeight: "700" }}>
                           {stage === "p" ? "Plan" : stage === "d" ? "Do" : stage === "c" ? "Check" : "Act"}
                         </span>
                         {(isResearcher || currentRole.rank <= 2) && (
                           <select
-                            style={{ fontSize: "0.6rem", background: "#18181b", color: "white", border: "1px solid var(--border-color-dark)", borderRadius: "0.2" }}
+                            style={{ fontSize: "0.6rem", background: "#18181b", color: "white", border: "1px solid var(--border-color-dark)", borderRadius: "0.2px" }}
                             value={status}
+                            onClick={(e) => e.stopPropagation()}
                             onChange={(e) => handleUpdatePDCA(stage, e.target.value)}
                           >
                             <option value="대기">대기</option>
