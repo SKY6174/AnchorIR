@@ -340,7 +340,7 @@ export default function OrgChartManager() {
         </h2>
         <p style={{ fontSize: "0.9rem", color: "var(--text-secondary-dark)", lineHeight: "1.5" }}>
           울산과학대학교의 학부(과), 대학본부, 평생교육원, 산학협력단, 부속기관 등 핵심 행정 및 교육 조직 계통을 한눈에 조회합니다.
-          조직을 선택하면 하위 소속 팀 및 연계된 앵커연계 과제 정보를 조회하실 수 있습니다.
+          조직을 선택하면 하위 소속 팀 및 연계된 앵커수행 과제 정보를 조회하실 수 있습니다.
         </p>
       </div>
 
@@ -426,7 +426,7 @@ export default function OrgChartManager() {
                         borderRadius: "4px",
                         fontWeight: "800"
                       }}>
-                        앵커연계
+                        앵커수행
                       </span>
                     )}
                   </div>
@@ -474,7 +474,7 @@ export default function OrgChartManager() {
                           borderRadius: "4px",
                           fontWeight: "800"
                         }}>
-                          {selectedKey === "academic" ? "주문식교육과정" : "앵커연계"}
+                          {selectedKey === "academic" ? "주문식교육과정" : "앵커수행"}
                         </span>
                       )}
                     </div>
@@ -571,7 +571,7 @@ export default function OrgChartManager() {
                                             borderRadius: "4px",
                                             fontWeight: "800"
                                           }}>
-                                            {selectedKey === "academic" ? "주문식교육과정" : "앵커연계"}
+                                            {selectedKey === "academic" ? "주문식교육과정" : "앵커수행"}
                                           </span>
                                         )}
                                       </div>
@@ -610,7 +610,7 @@ export default function OrgChartManager() {
                                   borderRadius: "4px",
                                   fontWeight: "800"
                                 }}>
-                                  {selectedKey === "academic" ? "주문식교육과정" : "앵커연계"}
+                                  {selectedKey === "academic" ? "주문식교육과정" : "앵커수행"}
                                 </span>
                               )}
                             </div>
@@ -674,7 +674,7 @@ export default function OrgChartManager() {
                   }}>
                     <span style={{ fontSize: "0.75rem", color: "#10B981", fontWeight: "800", display: "flex", alignItems: "center", gap: "0.25rem" }}>
                       <Award size={14} />
-                      {selectedKey === "academic" ? "주문식교육과정 주요 협업 과제" : "앵커연계 주요 협업 과제"}
+                      {selectedKey === "academic" ? "주문식교육과정 주요 협업 과제" : "앵커수행 주요 협업 과제"}
                     </span>
                     <span style={{ fontSize: "0.8rem", fontWeight: "800" }}>{selectedTeam.rise}</span>
                   </div>
@@ -685,7 +685,7 @@ export default function OrgChartManager() {
             <div className="glass-card" style={{ padding: "2.5rem", textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: "300px", gap: "0.75rem" }}>
               <BookOpen size={36} style={{ color: "var(--text-secondary-dark)" }} />
               <p style={{ fontSize: "0.85rem", color: "var(--text-secondary-dark)" }}>
-                조직도에서 특정 학과/팀을 선택하시면 전화번호, 위치, 담당업무 및 {selectedKey === "academic" ? "주문식교육과정" : "앵커연계"} 상세 정보를 이곳에서 조회하실 수 있습니다.
+                조직도에서 특정 학과/팀을 선택하시면 전화번호, 위치, 담당업무 및 {selectedKey === "academic" ? "주문식교육과정" : "앵커수행"} 상세 정보를 이곳에서 조회하실 수 있습니다.
               </p>
             </div>
           )}
