@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Plus, Trash2, Edit, FileText, Search, Download, Upload, X, Shield, Globe, Award, Database, Filter } from "lucide-react";
+import { Plus, Trash2, Edit, FileText, Search, Download, Upload, X, Shield, Globe, Award, Database, Filter, ArrowUpDown } from "lucide-react";
 import * as XLSX from "xlsx";
 import { supabase } from "../supabaseClient";
 
@@ -68,6 +68,10 @@ export default function PartnerManager({ selectedYear }) {
   const [filterCategory, setFilterCategory] = useState("all");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingPartner, setEditingPartner] = useState(null);
+
+  // 정렬 관련 상태
+  const [sortField, setSortField] = useState("name");
+  const [sortDirection, setSortDirection] = useState("asc");
 
   // 폼 입력 상태
   const [formName, setFormName] = useState("");
@@ -326,6 +330,46 @@ export default function PartnerManager({ selectedYear }) {
     return matchesSearch && matchesCategory;
   });
 
+  // 정렬 핸들러
+  const handleSort = (field) => {
+    if (sortField === field) {
+      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+    } else {
+      setSortField(field);
+      setSortDirection("asc");
+    }
+  };
+
+  // 정렬 아이콘 렌더러
+  const renderSortIcon = (field) => {
+    const isActive = sortField === field;
+    return (
+      <ArrowUpDown 
+        size={13} 
+        style={{ 
+          marginLeft: "0.4rem", 
+          verticalAlign: "middle",
+          color: isActive ? "var(--accent-color)" : "rgba(255,255,255,0.2)",
+          transform: isActive && sortDirection === "desc" ? "rotate(180deg)" : "none",
+          transition: "all 0.2s ease"
+        }} 
+      />
+    );
+  };
+
+  // 정렬 적용된 최종 데이터
+  const sortedPartners = [...filteredPartners].sort((a, b) => {
+    let valA = a[sortField] || "";
+    let valB = b[sortField] || "";
+    
+    if (typeof valA === "string") {
+      return sortDirection === "asc"
+        ? valA.localeCompare(valB, "ko")
+        : valB.localeCompare(valA, "ko");
+    }
+    return sortDirection === "asc" ? valA - valB : valB - valA;
+  });
+
   // 통계 계산
   const categoryStats = CATEGORY_OPTIONS.reduce((acc, curr) => {
     acc[curr] = partners.filter(p => p.category === curr).length;
@@ -482,10 +526,30 @@ export default function PartnerManager({ selectedYear }) {
         <table className="mini-table" style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.85rem", textAlign: "left" }}>
           <thead>
             <tr style={{ borderBottom: "1px solid rgba(255, 255, 255, 0.08)", color: "var(--text-secondary-dark)" }}>
-              <th style={{ padding: "0.75rem 1rem" }}>기관명</th>
-              <th style={{ padding: "0.75rem 1rem" }}>분류</th>
-              <th style={{ padding: "0.75rem 1rem" }}>세부분류</th>
-              <th style={{ padding: "0.75rem 1rem" }}>지역</th>
+              <th 
+                onClick={() => handleSort("name")}
+                style={{ padding: "0.75rem 1rem", cursor: "pointer", userSelect: "none" }}
+              >
+                기관명{renderSortIcon("name")}
+              </th>
+              <th 
+                onClick={() => handleSort("category")}
+                style={{ padding: "0.75rem 1rem", cursor: "pointer", userSelect: "none" }}
+              >
+                분류{renderSortIcon("category")}
+              </th>
+              <th 
+                onClick={() => handleSort("sub_category")}
+                style={{ padding: "0.75rem 1rem", cursor: "pointer", userSelect: "none" }}
+              >
+                세부분류{renderSortIcon("sub_category")}
+              </th>
+              <th 
+                onClick={() => handleSort("location")}
+                style={{ padding: "0.75rem 1rem", cursor: "pointer", userSelect: "none" }}
+              >
+                지역{renderSortIcon("location")}
+              </th>
               <th style={{ padding: "0.75rem 1rem" }}>협력 분야</th>
               <th style={{ padding: "0.75rem 1rem" }}>담당자 (연락처)</th>
               <th style={{ padding: "0.75rem 1rem" }}>주요 성과 / 메모</th>
@@ -493,8 +557,8 @@ export default function PartnerManager({ selectedYear }) {
             </tr>
           </thead>
           <tbody>
-            {filteredPartners.length > 0 ? (
-              filteredPartners.map((p) => (
+            {sortedPartners.length > 0 ? (
+              sortedPartners.map((p) => (
                 <tr
                   key={p.id || p.name}
                   style={{
