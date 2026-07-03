@@ -431,7 +431,19 @@ export default function ScheduleManager({
       meetingDate: defaultEventDate,
       meetingStartTime: "10:00",
       meetingEndTime: "11:00",
-      writer: (members && members.length > 0) ? `${members[0].name} ${members[0].position || ""}`.trim() : "박지현 팀장",
+      writer: (() => {
+        const activeWriters = (members || []).filter(m => 
+          m.status !== "미참여" && 
+          m.email && 
+          (m.role === "운영팀장" || m.grade === "책임연구원" || m.grade === "선임연구원" || m.grade === "연구원")
+        );
+        if (activeWriters.length > 0) {
+          const first = activeWriters[0];
+          const titleOrGrade = first.role === "운영팀장" ? "운영팀장" : (first.grade || "연구원");
+          return `${first.name} ${titleOrGrade}`.trim();
+        }
+        return "박지현 팀장";
+      })(),
       attendees: "",
       agendaList: [""]
     });
@@ -1403,20 +1415,27 @@ export default function ScheduleManager({
                     <div>
                       <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>작성자</label>
                       <select name="writer" value={formData.writer} onChange={handleInputChange} style={{ width: "100%", padding: "0.5rem", background: "var(--panel-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }}>
-                        {members && members.length > 0 ? (
-                          members.map(m => {
-                            const displayName = `${m.name} ${m.position || ""}`.trim();
-                            return (
-                              <option key={m.id || m.email} value={displayName}>
-                                {displayName}
-                              </option>
-                            );
-                          })
-                        ) : (
-                          ["박지현 팀장", "김민수 단장", "이진우 PD", "최성훈 PD", "한아름 PD"].map(w => (
+                        {(() => {
+                          const activeWriters = (members || []).filter(m => 
+                            m.status !== "미참여" && 
+                            m.email && 
+                            (m.role === "운영팀장" || m.grade === "책임연구원" || m.grade === "선임연구원" || m.grade === "연구원")
+                          );
+                          if (activeWriters.length > 0) {
+                            return activeWriters.map(m => {
+                              const titleOrGrade = m.role === "운영팀장" ? "운영팀장" : (m.grade || "연구원");
+                              const displayName = `${m.name} ${titleOrGrade}`.trim();
+                              return (
+                                <option key={m.id || m.email} value={displayName}>
+                                  {displayName}
+                                </option>
+                              );
+                            });
+                          }
+                          return ["박지현 팀장", "김민수 단장", "이진우 PD", "최성훈 PD", "한아름 PD"].map(w => (
                             <option key={w} value={w}>{w}</option>
-                          ))
-                        )}
+                          ));
+                        })()}
                       </select>
                     </div>
                   </div>
