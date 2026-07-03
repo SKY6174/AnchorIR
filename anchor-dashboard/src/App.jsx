@@ -5150,6 +5150,7 @@ export default function App() {
               setEventSchedules={setEventSchedules}
               meetingSchedules={meetingSchedules}
               setMeetingSchedules={setMeetingSchedules}
+              members={members}
             />
           </div>
         )}

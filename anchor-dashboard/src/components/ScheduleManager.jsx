@@ -15,7 +15,8 @@ export default function ScheduleManager({
   eventSchedules = [],
   setEventSchedules,
   meetingSchedules = [],
-  setMeetingSchedules
+  setMeetingSchedules,
+  members = []
 }) {
   // 모달 제어 상태
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -430,7 +431,7 @@ export default function ScheduleManager({
       meetingDate: defaultEventDate,
       meetingStartTime: "10:00",
       meetingEndTime: "11:00",
-      writer: "박지현 팀장",
+      writer: (members && members.length > 0) ? `${members[0].name} ${members[0].position || ""}`.trim() : "박지현 팀장",
       attendees: "",
       agendaList: [""]
     });
@@ -1402,9 +1403,20 @@ export default function ScheduleManager({
                     <div>
                       <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>작성자</label>
                       <select name="writer" value={formData.writer} onChange={handleInputChange} style={{ width: "100%", padding: "0.5rem", background: "var(--panel-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }}>
-                        {["박지현 팀장", "김민수 단장", "이진우 PD", "최성훈 PD", "한아름 PD"].map(w => (
-                          <option key={w} value={w}>{w}</option>
-                        ))}
+                        {members && members.length > 0 ? (
+                          members.map(m => {
+                            const displayName = `${m.name} ${m.position || ""}`.trim();
+                            return (
+                              <option key={m.id || m.email} value={displayName}>
+                                {displayName}
+                              </option>
+                            );
+                          })
+                        ) : (
+                          ["박지현 팀장", "김민수 단장", "이진우 PD", "최성훈 PD", "한아름 PD"].map(w => (
+                            <option key={w} value={w}>{w}</option>
+                          ))
+                        )}
                       </select>
                     </div>
                   </div>
