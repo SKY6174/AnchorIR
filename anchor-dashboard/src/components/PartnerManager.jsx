@@ -25,11 +25,11 @@ const SUB_CATEGORY_OPTIONS = {
 
 // 2차년도 기본 모의 데이터셋 (데이터가 비어있을 시 자동 폴백 적재용)
 const MOCK_PARTNERS = [
-  { name: "울산광역시청", category: "공공기관", sub_category: "시청", location: "울산", sectors: ["지역현안해결", "도시재생", "AIDX"], contact_person: "정민우 서기관", contact_phone: "052-229-2000", remarks: "울산 라이즈(RISE) 기획 기본 수립 및 예산 배분 총괄" },
+  { name: "울산광역시청", category: "공공기관", sub_category: "시청", location: "울산", sectors: ["지역현안해결", "도시재생", "AIDX"], contact_person: "정민우 서기관", contact_phone: "052-229-2000", remarks: "울산 앵커 기획 기본 수립 및 예산 배분 총괄" },
   { name: "울산 동구청", category: "공공기관", sub_category: "구청", location: "울산", sectors: ["지역현안해결", "창업", "평생교육"], contact_person: "한서진 팀장", contact_phone: "052-209-3000", remarks: "동구 청년친화도시 조성 및 T:IM 1219 청소년 벽화 공동 추진" },
   { name: "울산정보산업진흥원", category: "유관기관", sub_category: "진흥원", location: "울산", sectors: ["AIDX", "R&BD"], contact_person: "이승호 연구원", contact_phone: "052-210-0200", remarks: "AIDX 재학생/재직자 40시간 현장 융합 교육 장비 공동 운영" },
   { name: "HD현대중공업", category: "산업체", sub_category: "대기업", location: "울산", sectors: ["주문식교육", "글로벌"], contact_person: "김두환 실장", contact_phone: "052-202-2114", remarks: "조선해양 미래 전문기술인재 채용연계 맞춤형 주문식 트랙 가동" },
-  { name: "제주한라대학교", category: "대학", sub_category: "전문대학", location: "제주", sectors: ["글로벌", "AIDX"], contact_person: "고지혁 처장", contact_phone: "064-741-7500", remarks: "AI 인재양성 및 초광역 라이즈 협력 추진 협약 체결 대학" },
+  { name: "제주한라대학교", category: "대학", sub_category: "전문대학", location: "제주", sectors: ["글로벌", "AIDX"], contact_person: "고지혁 처장", contact_phone: "064-741-7500", remarks: "AI 인재양성 및 초광역 앵커 협력 추진 협약 체결 대학" },
   { name: "HHS", category: "산업체", sub_category: "스타트업", location: "울산", sectors: ["창업", "R&BD"], contact_person: "한형섭 대표", contact_phone: "052-911-3000", remarks: "안전 헬멧 스마트 바이오 센서 기술이전 및 산학공동 R&D 과제 협력" }
 ];
 
@@ -313,7 +313,7 @@ export default function PartnerManager({ selectedYear }) {
           파트너기관 정보 관리 (지·산·학 파트너십 CRM)
         </h2>
         <p style={{ fontSize: "0.9rem", color: "var(--text-secondary-dark)", lineHeight: "1.5" }}>
-          울산과학대학교 라이즈(RISE)사업 및 앵커 사업의 핵심 동반자인 지자체, 공공기관, 유관 협회, 주요 산업체 및 교류 대학들의 파트너십 정보를 집중 보존하고 관리합니다.
+          울산과학대학교 앵커 사업의 핵심 동반자인 지자체, 공공기관, 유관 협회, 주요 산업체 및 교류 대학들의 파트너십 정보를 집중 보존하고 관리합니다.
           협약 관리 대장과도 유기적으로 연동하여 분야별 협력 역량을 통합 조회합니다.
         </p>
       </div>

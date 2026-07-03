@@ -74,7 +74,7 @@ const getRealUnitId = (unitId, yr) => {
   return yr === 1 ? (REVERSE_UNIT_MAPPING_Y1[unitId] || unitId) : unitId;
 };
 
-// RISE 사업단 초기 구성원 주소록 명단 데이터셋
+// 앵커 사업단 초기 구성원 주소록 명단 데이터셋
 const INITIAL_MEMBERS = [
   // 교수 및 리더진
   { id: "m-01", name: "송경영", role: "사업단장", grade: "정교수", dept: "-", phoneOffice: "052-279-3154", phoneMobile: "010-7627-7123", email: "kysong@uc.ac.kr", room: "교수연구실/E1-307", hireDate: "2026-03-01" },

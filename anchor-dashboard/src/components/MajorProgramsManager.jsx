@@ -13,7 +13,7 @@ const majorProgramsData = {
     A2: {
       label: "A2 (지역 창업 생태계 혁신을 위한 글로컬 창업인재 양성)",
       programs: [
-        { id: "A2_urise_star", name: "U-RISE 스타", desc: "라이즈 체계 기반 스타트업 육성 및 글로컬 창업동아리 활성화" }
+        { id: "A2_urise_star", name: "앵커 스타", desc: "앵커 체계 기반 스타트업 육성 및 글로컬 창업동아리 활성화" }
       ]
     },
     B2: {
@@ -32,7 +32,7 @@ const majorProgramsData = {
       label: "C2 (지산학 밀착형 지역 현안 대응 및 성과 창출)",
       programs: [
         { id: "C2_aidx", name: "AIDX", desc: "재학생·재직자 AI/DX 공동 융합 교육 및 기술 실증" },
-        { id: "C2_mani", name: "동남권-제주MANI", desc: "동남권 및 제주 지역 대학 간 초광역 라이즈 협력 모델" }
+        { id: "C2_mani", name: "동남권-제주MANI", desc: "동남권 및 제주 지역 대학 간 초광역 앵커 협력 모델" }
       ]
     }
   },
@@ -57,7 +57,7 @@ const majorProgramsData = {
 export default function MajorProgramsManager({ selectedYear }) {
   // 현재 연도에 해당하는 단위과제 목록 추출
   const yearData = majorProgramsData[selectedYear] || {};
-  const unitKeys = Object.keys(yearData);
+  const unitKeys = Object.keys(yearData);Offset: 0
 
   // 현재 선택된 단위과제 상태 (첫 번째 항목을 디폴트로 설정)
   const [selectedUnit, setSelectedUnit] = useState("");
@@ -96,7 +96,7 @@ export default function MajorProgramsManager({ selectedYear }) {
           {selectedYear}차년도 주요 프로그램 관리
         </h2>
         <p style={{ fontSize: "0.9rem", color: "var(--text-secondary-dark)", lineHeight: "1.5" }}>
-          울산과학대학교 라이즈(RISE)사업단에서 추진하는 핵심 과제별 주요 프로그램을 조회하고 관리할 수 있습니다. 
+          울산과학대학교 앵커사업단에서 추진하는 핵심 과제별 주요 프로그램을 조회하고 관리할 수 있습니다. 
           좌측 원형 버튼에서 <strong>단위과제</strong>를 선택한 뒤, 하단의 <strong>주요 프로그램</strong>을 골라 상세 현황을 확인하세요.
         </p>
       </div>
