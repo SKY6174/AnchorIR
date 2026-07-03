@@ -1013,26 +1013,52 @@ const getNormalizedKpi = (k, selectedYear) => {
 
 // 월별 추진일정 상세 대조 렌더러
 const renderTimelineDiff = (timelineStr) => {
-  const parts = (timelineStr || "").split(",");
-  const months = ["3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월", "1월", "2월"];
+  const parts = (timelineStr || "").split(",").map(p => p.trim());
+  const months = ["25.3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월", "26.1월", "2월"];
+
+  const getStatusColor = (v) => {
+    if (!v || typeof v !== "string") return "transparent";
+    if (v.startsWith("P/D")) return "#1e3a8a";
+    if (v.startsWith("D/C")) return "#064e3b";
+    if (v.startsWith("C/A")) return "#78350f";
+    if (v.startsWith("P")) return "#2563eb";
+    if (v.startsWith("D")) return "#10b981";
+    if (v.startsWith("C")) return "#f59e0b";
+    if (v.startsWith("A")) return "#d946ef";
+    return "transparent";
+  };
+
   return (
-    <div style={{ display: "flex", flexWrap: "wrap", gap: "0.25rem", marginTop: "0.4rem" }}>
+    <div style={{ display: "grid", gridTemplateColumns: "repeat(12, 1fr)", gap: "0.2rem", marginTop: "0.4rem", width: "100%" }}>
       {months.map((m, idx) => {
-        const isActive = parts[idx] && parts[idx].trim() === "P";
+        const val = parts[idx] || "";
+        const bg = getStatusColor(val);
+        const hasValue = val && val !== "-";
+        
         return (
-          <div 
-            key={idx} 
-            style={{
-              padding: "0.15rem 0.3rem",
-              fontSize: "0.6rem",
-              borderRadius: "4px",
-              background: isActive ? "rgba(59,130,246,0.15)" : "rgba(255,255,255,0.01)",
-              border: isActive ? "1px solid #3b82f6" : "1px solid var(--border-color-dark)",
-              color: isActive ? "#60a5fa" : "var(--text-secondary-dark)",
-              fontWeight: isActive ? "800" : "normal"
-            }}
-          >
-            {m}
+          <div key={idx} style={{ textAlign: "center", minWidth: "40px" }}>
+            {/* 윗줄: 월 표시 */}
+            <div style={{ fontSize: "0.6rem", color: "var(--text-secondary-dark)", marginBottom: "0.15rem" }}>
+              {m}
+            </div>
+            {/* 아랫줄: P, D, C, A 일정 표기 */}
+            <div 
+              style={{
+                padding: "0.15rem 0.2rem",
+                fontSize: "0.65rem",
+                background: bg !== "transparent" ? bg : "rgba(255,255,255,0.02)",
+                color: bg !== "transparent" ? "white" : "var(--text-secondary-dark)",
+                border: "1px solid var(--border-color-dark)",
+                borderRadius: "4px",
+                fontWeight: bg !== "transparent" ? "800" : "normal",
+                minHeight: "1.1rem",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center"
+              }}
+            >
+              {hasValue ? val : "-"}
+            </div>
           </div>
         );
       })}
@@ -4942,6 +4968,10 @@ export default function App() {
         {selectedRequest && (() => {
           const reqIndex = versionRequests.findIndex(r => r.id === selectedRequest.id);
           const displaySeq = reqIndex !== -1 ? reqIndex + 1 : selectedRequest.id;
+          const changesAfter = selectedRequest.changes?.after || {};
+          const showTarget1 = (changesAfter.target_participants && changesAfter.target_participants !== 0 && String(changesAfter.target_participants).trim() !== "" && String(changesAfter.target_participants).trim() !== "0") || (changesAfter.target_participants_name && changesAfter.target_participants_name.trim() !== "");
+          const showTarget2 = (changesAfter.target_developments && changesAfter.target_developments !== 0 && String(changesAfter.target_developments).trim() !== "" && String(changesAfter.target_developments).trim() !== "0") || (changesAfter.target_developments_name && changesAfter.target_developments_name.trim() !== "");
+          const showTarget3 = (changesAfter.target_etc && changesAfter.target_etc !== 0 && String(changesAfter.target_etc).trim() !== "" && String(changesAfter.target_etc).trim() !== "0") || (changesAfter.target_etc_name && changesAfter.target_etc_name.trim() !== "");
           let beforeVersion = "최초계획";
           let afterVersion = selectedRequest.version_name || "신청 계획";
           if (afterVersion.includes("차 수정")) {
@@ -5019,16 +5049,24 @@ export default function App() {
                           {renderTimelineDiff(selectedRequest.changes.before.timeline)}
                         </div>
 
-                        <div>
-                          <span style={{ color: "var(--text-secondary-dark)", fontWeight: "700", display: "block", fontSize: "0.75rem", marginBottom: "0.25rem" }}>🎯 실적 목표치</span>
-                          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.7rem" }}>
-                            <tbody>
-                              <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.02)" }}><td style={{ padding: "0.15rem 0" }}>{selectedRequest.changes.before.target_participants_name || "참여인원"}</td><td style={{ textAlign: "right", fontWeight: "700" }}>{selectedRequest.changes.before.target_participants || 0} {selectedRequest.changes.before.target_participants_unit || "명"}</td></tr>
-                              <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.02)" }}><td style={{ padding: "0.15rem 0" }}>{selectedRequest.changes.before.target_developments_name || "개발건수"}</td><td style={{ textAlign: "right", fontWeight: "700" }}>{selectedRequest.changes.before.target_developments || 0} {selectedRequest.changes.before.target_developments_unit || "건"}</td></tr>
-                              <tr><td style={{ padding: "0.15rem 0" }}>{selectedRequest.changes.before.target_etc_name || "기타"}</td><td style={{ textAlign: "right", fontWeight: "700" }}>{selectedRequest.changes.before.target_etc || 0} {selectedRequest.changes.before.target_etc_unit || "개"}</td></tr>
-                            </tbody>
-                          </table>
-                        </div>
+                        {(showTarget1 || showTarget2 || showTarget3) && (
+                          <div>
+                            <span style={{ color: "var(--text-secondary-dark)", fontWeight: "700", display: "block", fontSize: "0.75rem", marginBottom: "0.25rem" }}>🎯 실적 목표치</span>
+                            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.7rem" }}>
+                              <tbody>
+                                {showTarget1 && (
+                                  <tr style={{ borderBottom: (showTarget2 || showTarget3) ? "1px solid rgba(255,255,255,0.02)" : "none" }}><td style={{ padding: "0.15rem 0" }}>{selectedRequest.changes.before.target_participants_name || "참여인원"}</td><td style={{ textAlign: "right", fontWeight: "700" }}>{selectedRequest.changes.before.target_participants || 0} {selectedRequest.changes.before.target_participants_unit || "명"}</td></tr>
+                                )}
+                                {showTarget2 && (
+                                  <tr style={{ borderBottom: showTarget3 ? "1px solid rgba(255,255,255,0.02)" : "none" }}><td style={{ padding: "0.15rem 0" }}>{selectedRequest.changes.before.target_developments_name || "개발건수"}</td><td style={{ textAlign: "right", fontWeight: "700" }}>{selectedRequest.changes.before.target_developments || 0} {selectedRequest.changes.before.target_developments_unit || "건"}</td></tr>
+                                )}
+                                {showTarget3 && (
+                                  <tr><td style={{ padding: "0.15rem 0" }}>{selectedRequest.changes.before.target_etc_name || "기타"}</td><td style={{ textAlign: "right", fontWeight: "700" }}>{selectedRequest.changes.before.target_etc || 0} {selectedRequest.changes.before.target_etc_unit || "개"}</td></tr>
+                                )}
+                              </tbody>
+                            </table>
+                          </div>
+                        )}
 
                         <div>
                           <span style={{ color: "var(--text-secondary-dark)", display: "block", fontSize: "0.75rem" }}>👥 연계 대상 및 부서</span>
@@ -5064,16 +5102,24 @@ export default function App() {
                           {renderTimelineDiff(selectedRequest.changes.after.timeline)}
                         </div>
 
-                        <div>
-                          <span style={{ color: "var(--text-secondary-dark)", fontWeight: "700", display: "block", fontSize: "0.75rem", marginBottom: "0.25rem" }}>🎯 실적 목표치</span>
-                          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.7rem" }}>
-                            <tbody>
-                              <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.02)" }}><td style={{ padding: "0.15rem 0" }}>{selectedRequest.changes.after.target_participants_name || "참여인원"}</td><td style={{ textAlign: "right", fontWeight: "700" }}>{selectedRequest.changes.after.target_participants || 0} {selectedRequest.changes.after.target_participants_unit || "명"}</td></tr>
-                              <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.02)" }}><td style={{ padding: "0.15rem 0" }}>{selectedRequest.changes.after.target_developments_name || "개발건수"}</td><td style={{ textAlign: "right", fontWeight: "700" }}>{selectedRequest.changes.after.target_developments || 0} {selectedRequest.changes.after.target_developments_unit || "건"}</td></tr>
-                              <tr><td style={{ padding: "0.15rem 0" }}>{selectedRequest.changes.after.target_etc_name || "기타"}</td><td style={{ textAlign: "right", fontWeight: "700" }}>{selectedRequest.changes.after.target_etc || 0} {selectedRequest.changes.after.target_etc_unit || "개"}</td></tr>
-                            </tbody>
-                          </table>
-                        </div>
+                        {(showTarget1 || showTarget2 || showTarget3) && (
+                          <div>
+                            <span style={{ color: "var(--text-secondary-dark)", fontWeight: "700", display: "block", fontSize: "0.75rem", marginBottom: "0.25rem" }}>🎯 실적 목표치</span>
+                            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.7rem" }}>
+                              <tbody>
+                                {showTarget1 && (
+                                  <tr style={{ borderBottom: (showTarget2 || showTarget3) ? "1px solid rgba(255,255,255,0.02)" : "none" }}><td style={{ padding: "0.15rem 0" }}>{selectedRequest.changes.after.target_participants_name || "참여인원"}</td><td style={{ textAlign: "right", fontWeight: "700" }}>{selectedRequest.changes.after.target_participants || 0} {selectedRequest.changes.after.target_participants_unit || "명"}</td></tr>
+                                )}
+                                {showTarget2 && (
+                                  <tr style={{ borderBottom: showTarget3 ? "1px solid rgba(255,255,255,0.02)" : "none" }}><td style={{ padding: "0.15rem 0" }}>{selectedRequest.changes.after.target_developments_name || "개발건수"}</td><td style={{ textAlign: "right", fontWeight: "700" }}>{selectedRequest.changes.after.target_developments || 0} {selectedRequest.changes.after.target_developments_unit || "건"}</td></tr>
+                                )}
+                                {showTarget3 && (
+                                  <tr><td style={{ padding: "0.15rem 0" }}>{selectedRequest.changes.after.target_etc_name || "기타"}</td><td style={{ textAlign: "right", fontWeight: "700" }}>{selectedRequest.changes.after.target_etc || 0} {selectedRequest.changes.after.target_etc_unit || "개"}</td></tr>
+                                )}
+                              </tbody>
+                            </table>
+                          </div>
+                        )}
 
                         <div>
                           <span style={{ color: "var(--text-secondary-dark)", display: "block", fontSize: "0.75rem" }}>👥 연계 대상 및 부서</span>
