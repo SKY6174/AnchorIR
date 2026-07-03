@@ -1669,7 +1669,15 @@ export default function PDCAManager({
                       
                       {/* 비목별 예산 집행액 입력 */}
                       <div style={{ borderBottom: "1px solid var(--border-color-dark)", paddingBottom: "0.5rem", marginBottom: "0.2rem" }}>
-                        <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)", display: "block", marginBottom: "0.25rem" }}>비목별 집행 등록 (백만원 단위)</span>
+                        <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)", display: "block", marginBottom: "0.3rem", fontWeight: "700" }}>비목별 집행 등록</span>
+                        
+                        {/* 본예산과 이월예산 구분 헤더 라인 */}
+                        <div style={{ display: "grid", gridTemplateColumns: "1.2fr 1fr 1fr", gap: "0.2rem", marginBottom: "0.2rem", paddingBottom: "0.15rem", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+                          <div style={{ fontSize: "0.6rem", color: "var(--text-secondary-dark)", fontWeight: "700" }}>비목명</div>
+                          <div style={{ fontSize: "0.6rem", color: "#10b981", fontWeight: "700" }}>본집행 (단위 : 백만원)</div>
+                          <div style={{ fontSize: "0.6rem", color: "#a78bfa", fontWeight: "700" }}>이월집행 (단위 : 백만원)</div>
+                        </div>
+
                         <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
                           {inputBudgetCategories
                             .filter(item => item.category && item.category !== "")
