@@ -2093,7 +2093,30 @@ export default function App() {
   useEffect(() => {
     const fetchAllDashboardData = async () => {
       try {
-        setIsDbLoaded(false);
+        // 0. 로컬 스토리지 캐시 데이터 선 로드 (깜빡임 방지 및 0초 반응)
+        const cachedProj = localStorage.getItem(`anchor_cache_proj_y${selectedYear}`);
+        const cachedAgr = localStorage.getItem(`anchor_cache_agr_y${selectedYear}`);
+        const cachedEnv = localStorage.getItem(`anchor_cache_env_y${selectedYear}`);
+        const cachedEquip = localStorage.getItem(`anchor_cache_equip_y${selectedYear}`);
+        const cachedServ = localStorage.getItem(`anchor_cache_serv_y${selectedYear}`);
+        const cachedMonth = localStorage.getItem(`anchor_cache_month_y${selectedYear}`);
+        const cachedEvent = localStorage.getItem(`anchor_cache_event_y${selectedYear}`);
+        const cachedMeet = localStorage.getItem(`anchor_cache_meet_y${selectedYear}`);
+
+        if (cachedProj) setProjects(JSON.parse(cachedProj));
+        if (cachedAgr) setAgreements(JSON.parse(cachedAgr));
+        if (cachedEnv) setEnvData(JSON.parse(cachedEnv));
+        if (cachedEquip) setEquipData(JSON.parse(cachedEquip));
+        if (cachedServ) setServiceData(JSON.parse(cachedServ));
+        if (cachedMonth) setMonthlySchedules(JSON.parse(cachedMonth));
+        if (cachedEvent) setEventSchedules(JSON.parse(cachedEvent));
+        if (cachedMeet) setMeetingSchedules(JSON.parse(cachedMeet));
+
+        if (cachedProj || cachedMonth) {
+          setIsDbLoaded(true);
+        } else {
+          setIsDbLoaded(false);
+        }
 
         // 1. Projects 복구
         const { data: projData } = await supabase
@@ -2104,11 +2127,11 @@ export default function App() {
         
         if (projData && projData.data) {
           setProjects(projData.data);
+          localStorage.setItem(`anchor_cache_proj_y${selectedYear}`, JSON.stringify(projData.data));
         } else {
-          // 데이터가 존재하지 않으면 기본값을 formatDataToMultiYear로 구성하여 set
           const multiYearInitialData = formatDataToMultiYear(initialProjectsData);
           setProjects(multiYearInitialData);
-          // 최초로 DB에 기본값 캐싱 저장 시도
+          localStorage.setItem(`anchor_cache_proj_y${selectedYear}`, JSON.stringify(multiYearInitialData));
           await supabase.from("projects_data").upsert({ year: selectedYear, data: multiYearInitialData });
         }
 
@@ -2119,7 +2142,7 @@ export default function App() {
           .eq("year", selectedYear);
         
         if (agrData) {
-          setAgreements(agrData.map(a => ({
+          const formatted = agrData.map(a => ({
             id: Number(a.id),
             year: a.year,
             date: a.date,
@@ -2131,7 +2154,9 @@ export default function App() {
             contents: a.contents,
             fileName: a.file_name,
             fileData: a.file_data
-          })));
+          }));
+          setAgreements(formatted);
+          localStorage.setItem(`anchor_cache_agr_y${selectedYear}`, JSON.stringify(formatted));
         }
 
         // 3. Procurement (환경개선, 기자재, 주요용역) 복구
@@ -2139,27 +2164,51 @@ export default function App() {
         const { data: pEquip } = await supabase.from("procurement_equipment").select("*").eq("year", selectedYear);
         const { data: pServ } = await supabase.from("procurement_services").select("*").eq("year", selectedYear);
         
-        if (pEnv) setEnvData(pEnv.map(x => ({ ...x, id: Number(x.id), budgetPlan: Number(x.budget_plan), budgetSpent: Number(x.budget_spent) })));
-        if (pEquip) setEquipData(pEquip.map(x => ({ ...x, id: Number(x.id), budgetPlan: Number(x.budget_plan), budgetSpent: Number(x.budget_spent) })));
-        if (pServ) setServiceData(pServ.map(x => ({ ...x, id: Number(x.id), budgetPlan: Number(x.budget_plan), budgetSpent: Number(x.budget_spent) })));
+        if (pEnv) {
+          const formatted = pEnv.map(x => ({ ...x, id: Number(x.id), budgetPlan: Number(x.budget_plan), budgetSpent: Number(x.budget_spent) }));
+          setEnvData(formatted);
+          localStorage.setItem(`anchor_cache_env_y${selectedYear}`, JSON.stringify(formatted));
+        }
+        if (pEquip) {
+          const formatted = pEquip.map(x => ({ ...x, id: Number(x.id), budgetPlan: Number(x.budget_plan), budgetSpent: Number(x.budget_spent) }));
+          setEquipData(formatted);
+          localStorage.setItem(`anchor_cache_equip_y${selectedYear}`, JSON.stringify(formatted));
+        }
+        if (pServ) {
+          const formatted = pServ.map(x => ({ ...x, id: Number(x.id), budgetPlan: Number(x.budget_plan), budgetSpent: Number(x.budget_spent) }));
+          setServiceData(formatted);
+          localStorage.setItem(`anchor_cache_serv_y${selectedYear}`, JSON.stringify(formatted));
+        }
 
         // 4. Schedule (월간일정, 행사일정, 회의일정) 복구
         const { data: sMonth } = await supabase.from("schedule_monthly").select("*").eq("year", selectedYear);
         const { data: sEvent } = await supabase.from("schedule_events").select("*").eq("year", selectedYear);
         const { data: sMeet } = await supabase.from("schedule_meetings").select("*").eq("year", selectedYear);
         
-        if (sMonth) setMonthlySchedules(sMonth.map(x => ({
-          id: Number(x.id),
-          year: x.year,
-          title: x.title,
-          type: x.type,
-          dept: x.dept,
-          startAt: x.start_at,
-          endAt: x.end_at,
-          location: x.location
-        })));
-        if (sEvent) setEventSchedules(sEvent.map(x => ({ ...x, id: Number(x.id), month: Number(x.month) })));
-        if (sMeet) setMeetingSchedules(sMeet.map(x => ({ ...x, id: Number(x.id), month: Number(x.month) })));
+        if (sMonth) {
+          const formatted = sMonth.map(x => ({
+            id: Number(x.id),
+            year: x.year,
+            title: x.title,
+            type: x.type,
+            dept: x.dept,
+            startAt: x.start_at,
+            endAt: x.end_at,
+            location: x.location
+          }));
+          setMonthlySchedules(formatted);
+          localStorage.setItem(`anchor_cache_month_y${selectedYear}`, JSON.stringify(formatted));
+        }
+        if (sEvent) {
+          const formatted = sEvent.map(x => ({ ...x, id: Number(x.id), month: Number(x.month) }));
+          setEventSchedules(formatted);
+          localStorage.setItem(`anchor_cache_event_y${selectedYear}`, JSON.stringify(formatted));
+        }
+        if (sMeet) {
+          const formatted = sMeet.map(x => ({ ...x, id: Number(x.id), month: Number(x.month) }));
+          setMeetingSchedules(formatted);
+          localStorage.setItem(`anchor_cache_meet_y${selectedYear}`, JSON.stringify(formatted));
+        }
 
         setIsDbLoaded(true);
       } catch (e) {
@@ -2174,6 +2223,7 @@ export default function App() {
   // 2) Projects 자동 저장 디바운스 훅
   useEffect(() => {
     if (!isDbLoaded) return;
+    localStorage.setItem(`anchor_cache_proj_y${selectedYear}`, JSON.stringify(projects));
     setSyncStatus("syncing");
     const timer = setTimeout(async () => {
       try {
@@ -2192,6 +2242,7 @@ export default function App() {
   // 3) Agreements 자동 저장 디바운스 훅
   useEffect(() => {
     if (!isDbLoaded) return;
+    localStorage.setItem(`anchor_cache_agr_y${selectedYear}`, JSON.stringify(agreements));
     setSyncStatus("syncing");
     const timer = setTimeout(async () => {
       try {
@@ -2226,6 +2277,7 @@ export default function App() {
   // 4) Procurement Env 자동 저장 디바운스 훅
   useEffect(() => {
     if (!isDbLoaded) return;
+    localStorage.setItem(`anchor_cache_env_y${selectedYear}`, JSON.stringify(envData));
     setSyncStatus("syncing");
     const timer = setTimeout(async () => {
       try {
@@ -2261,6 +2313,7 @@ export default function App() {
   // 5) Procurement Equipment 자동 저장 디바운스 훅
   useEffect(() => {
     if (!isDbLoaded) return;
+    localStorage.setItem(`anchor_cache_equip_y${selectedYear}`, JSON.stringify(equipData));
     setSyncStatus("syncing");
     const timer = setTimeout(async () => {
       try {
@@ -2293,6 +2346,7 @@ export default function App() {
   // 6) Procurement Services 자동 저장 디바운스 훅
   useEffect(() => {
     if (!isDbLoaded) return;
+    localStorage.setItem(`anchor_cache_serv_y${selectedYear}`, JSON.stringify(serviceData));
     setSyncStatus("syncing");
     const timer = setTimeout(async () => {
       try {
@@ -2323,6 +2377,7 @@ export default function App() {
   // 7) Schedule Monthly 자동 저장 디바운스 훅
   useEffect(() => {
     if (!isDbLoaded) return;
+    localStorage.setItem(`anchor_cache_month_y${selectedYear}`, JSON.stringify(monthlySchedules));
     setSyncStatus("syncing");
     const timer = setTimeout(async () => {
       try {
@@ -2353,6 +2408,7 @@ export default function App() {
   // 8) Schedule Events 자동 저장 디바운스 훅
   useEffect(() => {
     if (!isDbLoaded) return;
+    localStorage.setItem(`anchor_cache_event_y${selectedYear}`, JSON.stringify(eventSchedules));
     setSyncStatus("syncing");
     const timer = setTimeout(async () => {
       try {
@@ -2386,6 +2442,7 @@ export default function App() {
   // 9) Schedule Meetings 자동 저장 디바운스 훅
   useEffect(() => {
     if (!isDbLoaded) return;
+    localStorage.setItem(`anchor_cache_meet_y${selectedYear}`, JSON.stringify(meetingSchedules));
     setSyncStatus("syncing");
     const timer = setTimeout(async () => {
       try {
