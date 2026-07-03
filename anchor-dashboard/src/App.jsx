@@ -12,7 +12,7 @@ import AuthManager from "./components/AuthManager";
 import ProcurementManager from "./components/ProcurementManager";
 import ScheduleManager from "./components/ScheduleManager";
 import { initialProjectsData, userRoles, YEAR_1_PROGRAMS, Y1_UNIT_META } from "./data/mockData";
-import { Sun, Moon, LogOut, HelpCircle, ArrowUpRight, Lock as LockIcon } from "lucide-react";
+import { Sun, Moon, LogOut, HelpCircle, ArrowUpRight, Lock as LockIcon, Info } from "lucide-react";
 import { supabase } from "./supabaseClient";
 import CryptoJS from "crypto-js";
 import "./styles/dashboard.css";
