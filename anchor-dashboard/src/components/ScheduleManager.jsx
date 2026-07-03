@@ -44,6 +44,7 @@ export default function ScheduleManager({
     endDate: "2026-07-15",
     endTime: "11:00",
     location: "",
+    noTime: false,
     // 행사 & 회의용
     month: 7,
     department: "",
@@ -62,12 +63,20 @@ export default function ScheduleManager({
     setFormData({ ...formData, [name]: value });
   };
 
+  const handleCheckboxChange = (e) => {
+    const { name, checked } = e.target;
+    setFormData(prev => ({ ...prev, [name]: checked }));
+  };
+
   const handleFormSubmit = (e) => {
     e.preventDefault();
 
     if (modalType === "monthly" || modalType === "task" || modalType === "deadline") {
       const isTaskVal = modalType === "task";
       const isDeadlineVal = modalType === "deadline";
+      const hasTime = !formData.noTime;
+      const startAtVal = hasTime ? `${formData.startDate} ${formData.startTime}` : formData.startDate;
+
       if (isEditMode) {
         setMonthlySchedules(monthlySchedules.map(s => 
           s.id === editingItemId 
@@ -76,8 +85,8 @@ export default function ScheduleManager({
                 title: formData.title || "새 일정",
                 type: isTaskVal ? "할일" : (isDeadlineVal ? "마감" : (formData.type || "기타")),
                 dept: (isTaskVal || isDeadlineVal) ? "사업운영팀" : (formData.dept || "사업운영팀"),
-                startAt: `${formData.startDate} ${formData.startTime}`,
-                endAt: (isTaskVal || isDeadlineVal) ? `${formData.startDate} ${formData.startTime}` : `${formData.endDate} ${formData.endTime}`,
+                startAt: startAtVal,
+                endAt: (isTaskVal || isDeadlineVal) ? startAtVal : (hasTime ? `${formData.endDate} ${formData.endTime}` : formData.endDate),
                 location: (isTaskVal || isDeadlineVal) ? "" : (formData.location || "-"),
                 isTask: isTaskVal,
                 isDeadline: isDeadlineVal
@@ -90,8 +99,8 @@ export default function ScheduleManager({
           title: formData.title || "새 일정",
           type: isTaskVal ? "할일" : (isDeadlineVal ? "마감" : (formData.type || "기타")),
           dept: (isTaskVal || isDeadlineVal) ? "사업운영팀" : (formData.dept || "사업운영팀"),
-          startAt: `${formData.startDate} ${formData.startTime}`,
-          endAt: (isTaskVal || isDeadlineVal) ? `${formData.startDate} ${formData.startTime}` : `${formData.endDate} ${formData.endTime}`,
+          startAt: startAtVal,
+          endAt: (isTaskVal || isDeadlineVal) ? startAtVal : (hasTime ? `${formData.endDate} ${formData.endTime}` : formData.endDate),
           location: (isTaskVal || isDeadlineVal) ? "" : (formData.location || "-"),
           isTask: isTaskVal,
           isDeadline: isDeadlineVal,
@@ -142,6 +151,7 @@ export default function ScheduleManager({
       endDate: "2026-07-15",
       endTime: "11:00",
       location: "",
+      noTime: false,
       month: 7,
       department: "",
       datetime: "",
@@ -170,6 +180,7 @@ export default function ScheduleManager({
 
     const startParts = sched.startAt ? sched.startAt.split(" ") : ["2026-07-15", "10:00"];
     const endParts = sched.endAt ? sched.endAt.split(" ") : ["2026-07-15", "11:00"];
+    const noTimeVal = startParts.length < 2 || !startParts[1];
 
     setFormData({
       title: sched.title,
@@ -180,6 +191,7 @@ export default function ScheduleManager({
       endDate: endParts[0] || "2026-07-15",
       endTime: endParts[1] || "11:00",
       location: sched.location || "",
+      noTime: noTimeVal,
       month: 7,
       department: "",
       datetime: "",
@@ -498,7 +510,18 @@ export default function ScheduleManager({
                         <div style={{ display: "flex", flexDirection: "column", gap: "0.2rem", fontSize: "0.75rem", color: "var(--text-secondary-dark)" }}>
                           <span style={{ display: "flex", alignItems: "center", gap: "0.25rem" }}>
                             <Clock size={12} />
-                            {isDeadline ? `${sched.startAt.split(" ")[1]} (마감 기한)` : (isTask ? `${sched.startAt.split(" ")[1]} (할일 기한)` : `${sched.startAt} ~ ${sched.endAt}`)}
+                            {(() => {
+                              const parts = sched.startAt ? sched.startAt.split(" ") : [];
+                              const hasTime = parts.length >= 2 && parts[1];
+                              const timeStr = hasTime ? parts[1] : "(종일)";
+                              if (isDeadline) {
+                                return `${timeStr} (마감 기한)`;
+                              }
+                              if (isTask) {
+                                return `${timeStr} (할일 기한)`;
+                              }
+                              return sched.startAt === sched.endAt ? sched.startAt : `${sched.startAt} ~ ${sched.endAt}`;
+                            })()}
                           </span>
                           {!(isTask || isDeadline) && sched.location && (
                             <span style={{ display: "flex", alignItems: "center", gap: "0.25rem" }}>
@@ -822,14 +845,27 @@ export default function ScheduleManager({
                     <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>마감일 내용</label>
                     <input type="text" name="title" value={formData.title} onChange={handleInputChange} required placeholder="예: 2차년도 RISE 최종 계획서 마감" style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} />
                   </div>
-                  <div style={{ display: "grid", gridTemplateColumns: "1.2fr 0.8fr", gap: "1rem" }}>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
                     <div>
                       <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>마감 기한 (일자)</label>
                       <input type="date" name="startDate" value={formData.startDate} onChange={handleInputChange} style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} />
                     </div>
                     <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>마감 시간</label>
-                      <input type="time" name="startTime" value={formData.startTime} onChange={handleInputChange} style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} />
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.25rem" }}>
+                        <label style={{ fontSize: "0.8rem", color: "var(--text-secondary-dark)" }}>마감 시간</label>
+                        <label style={{ fontSize: "0.75rem", color: "white", display: "flex", alignItems: "center", gap: "0.25rem", cursor: "pointer" }}>
+                          <input type="checkbox" name="noTime" checked={formData.noTime} onChange={handleCheckboxChange} style={{ cursor: "pointer" }} />
+                          시간 지정 안 함
+                        </label>
+                      </div>
+                      <input 
+                        type="time" 
+                        name="startTime" 
+                        value={formData.startTime} 
+                        onChange={handleInputChange} 
+                        disabled={formData.noTime}
+                        style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: formData.noTime ? "rgba(255,255,255,0.2)" : "white", cursor: formData.noTime ? "not-allowed" : "text", opacity: formData.noTime ? 0.5 : 1 }} 
+                      />
                     </div>
                   </div>
                 </>
@@ -850,14 +886,27 @@ export default function ScheduleManager({
                       ))}
                     </select>
                   </div>
-                  <div style={{ display: "grid", gridTemplateColumns: "1.2fr 0.8fr", gap: "1rem" }}>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
                     <div>
                       <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>할일 일자</label>
                       <input type="date" name="startDate" value={formData.startDate} onChange={handleInputChange} style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} />
                     </div>
                     <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>할일 시간</label>
-                      <input type="time" name="startTime" value={formData.startTime} onChange={handleInputChange} style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} />
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.25rem" }}>
+                        <label style={{ fontSize: "0.8rem", color: "var(--text-secondary-dark)" }}>할일 시간</label>
+                        <label style={{ fontSize: "0.75rem", color: "white", display: "flex", alignItems: "center", gap: "0.25rem", cursor: "pointer" }}>
+                          <input type="checkbox" name="noTime" checked={formData.noTime} onChange={handleCheckboxChange} style={{ cursor: "pointer" }} />
+                          시간 지정 안 함
+                        </label>
+                      </div>
+                      <input 
+                        type="time" 
+                        name="startTime" 
+                        value={formData.startTime} 
+                        onChange={handleInputChange} 
+                        disabled={formData.noTime}
+                        style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: formData.noTime ? "rgba(255,255,255,0.2)" : "white", cursor: formData.noTime ? "not-allowed" : "text", opacity: formData.noTime ? 0.5 : 1 }} 
+                      />
                     </div>
                   </div>
                 </>
