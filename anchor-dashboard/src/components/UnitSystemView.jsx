@@ -47,37 +47,36 @@ const PROJECTS_DATA = [
 const PROJECTS_DATA_Y1 = [
   {
     id: "A",
-    title: "프로젝트 A : 울산에 뿌리내리는 정주형 실전 인재 양성(Dynamic TALENT)",
+    title: "A. 지역 혁신 인재를 양성하는 Brain 대학",
     units: [
-      { id: "A1", title: "지역과 미래를 만드는 UC-HYPER 전문기술인재 양성" },
+      { id: "A1", title: "지역과 미래를 만드는 UC-HYPER 전문기술 인재 양성" },
       { id: "A2", title: "지역 창업 생태계 혁신을 위한 글로컬 창업 문화 조성" }
     ]
   },
   {
     id: "B",
-    title: "프로젝트 B : 기업과 하나되는 지⋅산⋅학⋅연 초연결 생태계 조성(Dynamic BRIDGE)",
+    title: "B. 지역과 상생하는 Bridge 대학",
     units: [
       { id: "B1", title: "중소·중견기업 맞춤형 기술지원·공동연구 활성화" },
-      { id: "B2", title: "AID 역량강화 기반 지역산업 전환 지원" },
-      { id: "B3", title: "중소·중견기업과의 지산학 공동연구 협력 체계 구축" },
-      { id: "B4", title: "지자체 연계형 지역문제 해결 및 종합 기업 지원 체계" }
+      { id: "B2", title: "U-LIFE 평생직업교육 플랫폼 구축" },
+      { id: "B3", title: "지역을 키우는 지역문제 해결 협력 체계 구축" }
     ]
   },
   {
     id: "C",
-    title: "프로젝트 C : 다시 뛰게 만드는 생애 ‘직무 도약’ 체계 구축(Dynamic JUMP)",
+    title: "C. 혁신 모델을 확산하는 국가 대표 Brand 대학",
     units: [
       { id: "C1", title: "복합재난 대응 산업안전·보건 관리시스템 개발" },
-      { id: "C2", title: "내일을 밝히는 위드아이 늘봄 생태계 조성" },
-      { id: "C3", title: "U-LIFE 평생직업교육 기반 취∙창업 연계모델 구축" }
+      { id: "C2", title: "AID 역량강화 기반 지역산업 전환 지원" },
+      { id: "C3", title: "교육·산업·복지가 조화로운 지속가능한 탄소중립" }
     ]
   },
   {
     id: "D",
-    title: "프로젝트 D : 지역생활 안전⋅의료⋅정주 협력체계 구축(Dynamic CARE)",
+    title: "D. 매력적인 도시로의 변화를 촉진하는 Booster 대학",
     units: [
       { id: "D1", title: "통합형 인재양성 기반 포용적 보건복지서비스 구현" },
-      { id: "D2", title: "교육·산업·복지가 조화로운 지속가능한 탄소중립" },
+      { id: "D2", title: "내일을 밝히는 ‘위드아이’ 늘봄 생태계 조성" },
       { id: "D3", title: "에코 컬처로 만드는 꿀잼도시 울산" },
       { id: "D4", title: "지역산업 연계 글로벌 협력 거점 대학 육성" }
     ]
@@ -509,10 +508,7 @@ export default function UnitSystemView({ selectedYear = 2 }) {
             >
               {currentProjectsData.map(p => (
                 <option key={p.id} value={p.id} style={{ background: "#1e1e1e", color: "white" }}>
-                  {p.id === "A" ? "A. 울산에 뿌리내리는 정주형 실전 인재 양성(Dynamic TALENT)" :
-                   p.id === "B" ? "B. 기업과 하나되는 지⋅산⋅학⋅연 초연결 생태계 조성(Dynamic BRIDGE)" :
-                   p.id === "C" ? "C. 다시 뛰게 만드는 생애 ‘직무 도약’ 체계 구축(Dynamic JUMP)" :
-                   "D. 지역생활 안전⋅의료⋅정주 협력체계 구축(Dynamic CARE)"}
+                  {p.title}
                 </option>
               ))}
             </select>
