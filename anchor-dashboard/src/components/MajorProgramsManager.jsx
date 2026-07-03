@@ -306,7 +306,7 @@ export default function MajorProgramsManager({ selectedYear }) {
               gap: "12px", 
               alignItems: "center",
               transformStyle: "preserve-3d",
-              transition: "transform 0.45s cubic-bezier(0.25, 1, 0.5, 1)",
+              transition: "transform 0.85s cubic-bezier(0.25, 1, 0.5, 1)", // 속도를 부드럽게 절반 수준으로 조절
               // 활성화 버튼을 정확히 수직 중앙으로 정렬하는 트랜슬레이션 수식 적용
               // 높이 400px 중앙은 Y=200px. 버튼지름 56px, gap 12px -> 1개 높이 68px.
               // 오프셋 기점: 200 - 28 = 172px.
@@ -341,7 +341,8 @@ export default function MajorProgramsManager({ selectedYear }) {
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
-                      transition: "transform 0.45s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.45s, background 0.3s, border-color 0.3s",
+                      flexShrink: 0, // flex 수축 방지하여 완벽한 원형 유지
+                      transition: "transform 0.85s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.85s, background 0.3s, border-color 0.3s", // 속도를 절반 수준으로 조절
                       
                       // 3D Cylinder transform 공식 적용!
                       transform: `rotateX(${rotateX}deg) translateZ(${translateZ}px) translateY(${translateY}px) scale(${scale})`,
@@ -412,7 +413,7 @@ export default function MajorProgramsManager({ selectedYear }) {
 
               {/* 주요 프로그램별 프레임 (상세 화면 준비 중 카드) */}
               {selectedProg ? (
-                <div className="glass-card" style={{ padding: "2.5rem", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: "280px", textAlign: "center", gap: "1rem" }}>
+                <div className="glass-card" style={{ padding: "2.5rem", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: "420px", textAlign: "center", gap: "1rem" }}>
                   <div style={{ width: "64px", height: "64px", borderRadius: "50%", background: "rgba(59, 130, 246, 0.08)", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--accent-color)" }}>
                     <BookOpen size={32} />
                   </div>
