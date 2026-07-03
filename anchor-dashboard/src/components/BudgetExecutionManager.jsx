@@ -252,7 +252,9 @@ export default function BudgetExecutionManager({ projects, currentRole, selected
         {/* 본예산 요약 */}
         <div className="card" style={{ padding: "1.25rem", borderRadius: "10px", background: "var(--bg-card-dark)", display: "flex", flexDirection: "column", gap: "0.75rem", border: "1px solid var(--border-color-dark)" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <span style={{ fontSize: "0.9rem", color: "var(--text-secondary-dark)", fontWeight: "600" }}>본예산 집행률 현황</span>
+            <span style={{ fontSize: "0.9rem", color: "var(--text-secondary-dark)", fontWeight: "600" }}>
+              {viewType === "total" ? "[전체] " : `[${selectedUnit}] `}본예산 집행률 현황
+            </span>
             <DollarSign size={20} style={{ color: "#3B82F6" }} />
           </div>
           <div style={{ display: "flex", alignItems: "baseline", gap: "0.5rem" }}>
@@ -269,7 +271,9 @@ export default function BudgetExecutionManager({ projects, currentRole, selected
         {/* 이월예산 요약 */}
         <div className="card" style={{ padding: "1.25rem", borderRadius: "10px", background: "var(--bg-card-dark)", display: "flex", flexDirection: "column", gap: "0.75rem", border: "1px solid var(--border-color-dark)" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <span style={{ fontSize: "0.9rem", color: "var(--text-secondary-dark)", fontWeight: "600" }}>이월예산 집행률 현황 (8/31 마감)</span>
+            <span style={{ fontSize: "0.9rem", color: "var(--text-secondary-dark)", fontWeight: "600" }}>
+              {viewType === "total" ? "[전체] " : `[${selectedUnit}] `}이월예산 집행률 현황 (8/31 마감)
+            </span>
             <Calendar size={20} style={{ color: "#EF4444" }} />
           </div>
           <div style={{ display: "flex", alignItems: "baseline", gap: "0.5rem" }}>
