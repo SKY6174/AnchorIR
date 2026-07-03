@@ -152,8 +152,10 @@ const RenderLatexFormula = ({ formula }) => {
   const cleanLatex = (str) => {
     if (!str) return "";
     return str
-      // \text{...} 또는 [탭]ext{...} 구조 모두 매칭
-      .replace(/(?:\\|[\t\f])?text\{([^}]+)\}/g, "$1")
+      // \text{...} 또는 [Tab]ext{...} 구조 모두 매칭
+      .replace(/(?:\\text|[\t]ext)\{([^}]+)\}/g, "$1")
+      // 백슬래시 유실로 단독 남은 text{...} 및 ext{...} 제거
+      .replace(/(?:text|ext)\{([^}]+)\}/g, "$1")
       // LaTeX 퍼센트 이스케이프(\%) 복구
       .replace(/\\%/g, "%")
       // 남은 백슬래시 제거
@@ -170,12 +172,12 @@ const RenderLatexFormula = ({ formula }) => {
     const rightSide = parts[1].trim();
 
     // 우항에서 \frac{분자}{분모} 추출 (탭 제어문자 \f 도 고려)
-    const fracMatch = rightSide.match(/(?:\\|[\t\f])?frac\{([\s\S]+?)\}\{([\s\S]+?)\}/);
+    const fracMatch = rightSide.match(/(?:\\frac|[\f]rac|frac)\{([\s\S]+?)\}\{([\s\S]+?)\}/);
     if (fracMatch) {
       let num = cleanLatex(fracMatch[1]);
       let den = cleanLatex(fracMatch[2]);
       
-      const timesMatch = rightSide.match(/(?:\\|[\t\f])?times\s*([\d.]+)/);
+      const timesMatch = rightSide.match(/(?:\\times|[\t\f\s]times|times)\s*([\d.]+)/);
       const weight = timesMatch ? timesMatch[1] : null;
 
       return (
@@ -202,7 +204,7 @@ const RenderLatexFormula = ({ formula }) => {
   }
 
   // 2. 만약 일반 다항식 분수라면 (L-1 ~ L-24 공식 등)
-  const containsFrac = formula.includes("frac");
+  const containsFrac = formula.includes("frac") || formula.includes("rac");
   if (!containsFrac) {
     return <span style={{ fontSize: "0.85rem", color: "var(--text-secondary-dark)" }}>{formula}</span>;
   }
@@ -214,7 +216,7 @@ const RenderLatexFormula = ({ formula }) => {
       {terms.map((termStr, index) => {
         const trimmed = termStr.trim();
         // \frac 및 \text 가 \f, \t 등으로 쪼개진 가능성까지 포함한 Regex
-        const fracRegex = /(?:\\|[\t\f])?frac\{(?:\\|[\t\f])?text\{([^}]+)\}\}\{(?:\\|[\t\f])?text\{([^}]+)\}\}(?:\s*(?:\\|[\t\f])?times\s*([\d.]+))?/;
+        const fracRegex = /(?:\\frac|[\f]rac|frac)\{(?:\\text|[\t]ext|text|ext)\{([^}]+)\}\}\{(?:\\text|[\t]ext|text|ext)\{([^}]+)\}\}(?:\s*(?:\\times|times)\s*([\d.]+))?/;
         const match = trimmed.match(fracRegex);
 
         if (match) {
