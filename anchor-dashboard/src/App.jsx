@@ -1299,7 +1299,7 @@ export default function App() {
       }
       localStorage.setItem("anchor_last_self_healing_reset", String(now));
       localStorage.removeItem("anchor_logged_in_user");
-      localStorage.removeItem("anchor_projects_data_v22");
+      localStorage.removeItem("anchor_projects_data_v23");
       localStorage.removeItem("anchor_selected_kpi");
       window.location.reload();
     };
@@ -1330,8 +1330,8 @@ export default function App() {
     return null;
   });
   const [projects, setProjects] = useState(() => {
-    // D4 1차년도 실제 예산 및 집행 데이터 롤업 정합성 연동을 위해 로컬스토리지 키 버전을 v22로 업그레이드합니다.
-    const cached = localStorage.getItem("anchor_projects_data_v22");
+    // 2차년도 세부 프로그램 ID를 5단계 위계 규정에 맞게 대대적으로 갱신하기 위해 로컬스토리지 버전을 v23으로 업그레이드합니다.
+    const cached = localStorage.getItem("anchor_projects_data_v23");
     if (cached) {
       try {
         const loaded = JSON.parse(cached);
@@ -3200,18 +3200,18 @@ export default function App() {
   // projects 상태 변경 시 localStorage 자동 기입 (새로고침 휘발 방지 우회책)
   useEffect(() => {
     try {
-      localStorage.setItem("anchor_projects_data_v22", JSON.stringify(projects));
+      localStorage.setItem("anchor_projects_data_v23", JSON.stringify(projects));
     } catch (e) {
       const isQuotaError = e.name === "QuotaExceededError" || e.code === 22 || e.number === -2147024882;
       if (isQuotaError) {
         console.warn("로컬 스토리지 공간이 부족합니다. 이전 구버전 캐시를 청소하고 재시도합니다...");
         try {
           Object.keys(localStorage).forEach((key) => {
-            if (key.startsWith("anchor_projects_data_") && key !== "anchor_projects_data_v22") {
+            if (key.startsWith("anchor_projects_data_") && key !== "anchor_projects_data_v23") {
               localStorage.removeItem(key);
             }
           });
-          localStorage.setItem("anchor_projects_data_v22", JSON.stringify(projects));
+          localStorage.setItem("anchor_projects_data_v23", JSON.stringify(projects));
           console.log("이전 캐시 청소 및 데이터 재저장 성공");
         } catch (retryError) {
           console.error("이전 캐시 청소 후에도 로컬 스토리지 기입 실패:", retryError);

@@ -18,38 +18,38 @@ export const initialProjectsData = [
         spent_2025_carry: 0,
         manager: "이동은 ECC센터장",
         programs: [
-          { id: "A1가-01", title: "UC-HYPER 교수법 개발(공학/비공학)", budget_2026: 12000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "박기범 연구원", pdca: { p: "대기", d: "대기", c: "대기", a: "대기" } },
-          { id: "A1가-02", title: "주문식 교육과정 운영", budget_2026: 202000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "정자윤 연구원", pdca: { p: "대기", d: "대기", c: "대기", a: "대기" } },
-          { id: "A1가-03", title: "주문식(지역맞춤형) 교육과정 개발 및 개편 보고서", budget_2026: 20000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "정자윤 연구원", pdca: { p: "대기", d: "대기", c: "대기", a: "대기" } },
-          { id: "A1가-04", title: "주문식 교육과정 자체평가 보고서", budget_2026: 20000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "정자윤 연구원", pdca: { p: "대기", d: "대기", c: "대기", a: "대기" } },
-          { id: "A1가-05", title: "과정평가형 교육과정개발(3개 학과)", budget_2026: 12000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "정자윤 연구원", pdca: { p: "대기", d: "대기", c: "대기", a: "대기" } },
-          { id: "A1가-06", title: "학점교류 교과목 운영", budget_2026: 20000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "서란 연구원, 이은주 선임연구원", pdca: { p: "대기", d: "대기", c: "대기", a: "대기" } },
-          { id: "A1가-07", title: "학과별 실험실습재료비 지원", budget_2026: 100000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "정자윤 연구원", pdca: { p: "대기", d: "대기", c: "대기", a: "대기" } },
-          { id: "A1가-08", title: "특화분야 자격증/전문가 과정 운영", budget_2026: 45000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "정자윤 연구원", pdca: { p: "대기", d: "대기", c: "대기", a: "대기" } },
-          { id: "A1가-09", title: "지산학 페스티벌 운영 창의설계 경진대회", budget_2026: 10000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "이은주 선임연구원", pdca: { p: "대기", d: "대기", c: "대기", a: "대기" } },
-          { id: "A1가-10", title: "개방형설계센터 전문가활용교육 개발 및 운영", budget_2026: 60000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "서란 연구원, 이은주 선임연구원", pdca: { p: "대기", d: "대기", c: "대기", a: "대기" } },
-          { id: "A1가-11", title: "교직원 역량강화 프로그램 운영", budget_2026: 40000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "정자윤 연구원", pdca: { p: "대기", d: "대기", c: "대기", a: "대기" } },
-          { id: "A1가-12", title: "울산형 데이터센터 기술인재 양성을 위한 자격증과정 운영", budget_2026: 15000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "정자윤 연구원", pdca: { p: "대기", d: "대기", c: "대기", a: "대기" } },
-          { id: "A1가-13", title: "울산형 데이터센터 기술인재 양성을 위한 마이크로디그리 개발", budget_2026: 4000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "박기범 연구원", pdca: { p: "대기", d: "대기", c: "대기", a: "대기" } },
-          { id: "A1가-14", title: "표준형 현장실습 교과목 운영", budget_2026: 50000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "정자윤 연구원", pdca: { p: "대기", d: "대기", c: "대기", a: "대기" } },
-          { id: "A1가-15", title: "기업 PBL 문제해결 지원과제 운영", budget_2026: 90000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "박기범 연구원", pdca: { p: "대기", d: "대기", c: "대기", a: "대기" } },
-          { id: "A1가-16", title: "전문기술석사 과정 워크숍", budget_2026: 4000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "박기범 연구원", pdca: { p: "대기", d: "대기", c: "대기", a: "대기" } },
-          { id: "A1가-17", title: "전공심화 산학 PBL과제", budget_2026: 10000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "박기범 연구원", pdca: { p: "대기", d: "대기", c: "대기", a: "대기" } },
-          { id: "A1가-18", title: "교육환경개선", budget_2026: 300000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "이은주 선임연구원", pdca: { p: "대기", d: "대기", c: "대기", a: "대기" } },
-          { id: "A1가-19", title: "생성형 AI 지원 플랫폼 구축", budget_2026: 50000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "이은주 선임연구원", pdca: { p: "대기", d: "대기", c: "대기", a: "대기" } },
-          { id: "A1가-20", title: "실시간 쌍방향 소통 수업 플랫폼 구축", budget_2026: 20000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "이은주 선임연구원", pdca: { p: "대기", d: "대기", c: "대기", a: "대기" } },
-          { id: "A1가-21", title: "기자재 및 실습장비 구축", budget_2026: 546000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "이은주 선임연구원", pdca: { p: "대기", d: "대기", c: "대기", a: "대기" } },
-          { id: "A1가-22", title: "ECC플랫폼 구축(2단계)", budget_2026: 15000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "이은주 선임연구원", pdca: { p: "대기", d: "대기", c: "대기", a: "대기" } },
-          { id: "A1가-23", title: "특화분야 온라인 교육 콘텐츠 개발", budget_2026: 60000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "서란 연구원, 이은주 선임연구원", pdca: { p: "대기", d: "대기", c: "대기", a: "대기" } },
-          { id: "A1가-24", title: "AI리터러시 교과목 운영", budget_2026: 50000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "정자윤 연구원", pdca: { p: "대기", d: "대기", c: "대기", a: "대기" } },
-          { id: "A1가-25", title: "전자연구노트 이용료", budget_2026: 0, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "박기범 연구원", pdca: { p: "대기", d: "대기", c: "대기", a: "대기" } },
-          { id: "A1가-26", title: "이전 공공기관 합동 채용설명회 및 취업 아카데미 운영", budget_2026: 5000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "김소연 연구원", pdca: { p: "대기", d: "대기", c: "대기", a: "대기" } },
-          { id: "A1가-27", title: "산학협력 간담회", budget_2026: 6000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "정자윤 연구원", pdca: { p: "대기", d: "대기", c: "대기", a: "대기" } },
-          { id: "A1가-28", title: "정책연구", budget_2026: 10000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "박기범 연구원", pdca: { p: "대기", d: "대기", c: "대기", a: "대기" } },
-          { id: "A1가-29", title: "강소기업 현장견학 프로그램 운영", budget_2026: 10000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "정자윤 연구원", pdca: { p: "대기", d: "대기", c: "대기", a: "대기" } },
-          { id: "A1가-30", title: "학과 전공 맞춤형 모듈식 취업캠프", budget_2026: 24000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "정지윤 연구원", pdca: { p: "대기", d: "대기", c: "대기", a: "대기" } },
-          { id: "A1가-31", title: "시그니처 클래스 운영", budget_2026: 40000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "정자윤 연구원", pdca: { p: "대기", d: "대기", c: "대기", a: "대기" } },
-          { id: "A1가-32", title: "벤치마킹", budget_2026: 14000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "서란 연구원", pdca: { p: "대기", d: "대기", c: "대기", a: "대기" } }
+          { id: "A1가-S1T1-1", title: "UC-HYPER 교수법 개발(공학/비공학)", budget_2026: 12000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "박기범 연구원", pdca: { p: "대기", d: "대기", c: "대기", a: "대기" } },
+          { id: "A1가-S1T1-2", title: "주문식 교육과정 운영", budget_2026: 202000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "정자윤 연구원", pdca: { p: "대기", d: "대기", c: "대기", a: "대기" } },
+          { id: "A1가-S1T1-3", title: "주문식(지역맞춤형) 교육과정 개발 및 개편 보고서", budget_2026: 20000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "정자윤 연구원", pdca: { p: "대기", d: "대기", c: "대기", a: "대기" } },
+          { id: "A1가-S1T1-4", title: "주문식 교육과정 자체평가 보고서", budget_2026: 20000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "정자윤 연구원", pdca: { p: "대기", d: "대기", c: "대기", a: "대기" } },
+          { id: "A1가-S1T1-5", title: "과정평가형 교육과정개발(3개 학과)", budget_2026: 12000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "정자윤 연구원", pdca: { p: "대기", d: "대기", c: "대기", a: "대기" } },
+          { id: "A1가-S1T1-6", title: "학점교류 교과목 운영", budget_2026: 20000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "서란 연구원, 이은주 선임연구원", pdca: { p: "대기", d: "대기", c: "대기", a: "대기" } },
+          { id: "A1가-S1T1-7", title: "학과별 실험실습재료비 지원", budget_2026: 100000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "정자윤 연구원", pdca: { p: "대기", d: "대기", c: "대기", a: "대기" } },
+          { id: "A1가-S1T1-8", title: "특화분야 자격증/전문가 과정 운영", budget_2026: 45000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "정자윤 연구원", pdca: { p: "대기", d: "대기", c: "대기", a: "대기" } },
+          { id: "A1가-S1T1-9", title: "지산학 페스티벌 운영 창의설계 경진대회", budget_2026: 10000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "이은주 선임연구원", pdca: { p: "대기", d: "대기", c: "대기", a: "대기" } },
+          { id: "A1가-S1T1-10", title: "개방형설계센터 전문가활용교육 개발 및 운영", budget_2026: 60000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "서란 연구원, 이은주 선임연구원", pdca: { p: "대기", d: "대기", c: "대기", a: "대기" } },
+          { id: "A1가-S3T3-1", title: "교직원 역량강화 프로그램 운영", budget_2026: 40000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "정자윤 연구원", pdca: { p: "대기", d: "대기", c: "대기", a: "대기" } },
+          { id: "A1가-S1T1-11", title: "울산형 데이터센터 기술인재 양성을 위한 자격증과정 운영", budget_2026: 15000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "정자윤 연구원", pdca: { p: "대기", d: "대기", c: "대기", a: "대기" } },
+          { id: "A1가-S1T1-12", title: "울산형 데이터센터 기술인재 양성을 위한 마이크로디그리 개발", budget_2026: 4000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "박기범 연구원", pdca: { p: "대기", d: "대기", c: "대기", a: "대기" } },
+          { id: "A1가-S3T3-2", title: "표준형 현장실습 교과목 운영", budget_2026: 50000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "정자윤 연구원", pdca: { p: "대기", d: "대기", c: "대기", a: "대기" } },
+          { id: "A1가-S3T3-3", title: "기업 PBL 문제해결 지원과제 운영", budget_2026: 90000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "박기범 연구원", pdca: { p: "대기", d: "대기", c: "대기", a: "대기" } },
+          { id: "A1가-S3T3-4", title: "전문기술석사 과정 워크숍", budget_2026: 4000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "박기범 연구원", pdca: { p: "대기", d: "대기", c: "대기", a: "대기" } },
+          { id: "A1가-S3T3-5", title: "전공심화 산학 PBL과제", budget_2026: 10000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "박기범 연구원", pdca: { p: "대기", d: "대기", c: "대기", a: "대기" } },
+          { id: "A1가-S4T4-1", title: "교육환경개선", budget_2026: 300000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "이은주 선임연구원", pdca: { p: "대기", d: "대기", c: "대기", a: "대기" } },
+          { id: "A1가-S4T4-2", title: "생성형 AI 지원 플랫폼 구축", budget_2026: 50000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "이은주 선임연구원", pdca: { p: "대기", d: "대기", c: "대기", a: "대기" } },
+          { id: "A1가-S4T4-3", title: "실시간 쌍방향 소통 수업 플랫폼 구축", budget_2026: 20000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "이은주 선임연구원", pdca: { p: "대기", d: "대기", c: "대기", a: "대기" } },
+          { id: "A1가-S4T4-4", title: "기자재 및 실습장비 구축", budget_2026: 546000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "이은주 선임연구원", pdca: { p: "대기", d: "대기", c: "대기", a: "대기" } },
+          { id: "A1가-S4T4-5", title: "ECC플랫폼 구축(2단계)", budget_2026: 15000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "이은주 선임연구원", pdca: { p: "대기", d: "대기", c: "대기", a: "대기" } },
+          { id: "A1가-S4T4-6", title: "특화분야 온라인 교육 콘텐츠 개발", budget_2026: 60000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "서란 연구원, 이은주 선임연구원", pdca: { p: "대기", d: "대기", c: "대기", a: "대기" } },
+          { id: "A1가-S4T4-7", title: "AI리터러시 교과목 운영", budget_2026: 50000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "정자윤 연구원", pdca: { p: "대기", d: "대기", c: "대기", a: "대기" } },
+          { id: "A1가-S3T3-6", title: "전자연구노트 이용료", budget_2026: 0, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "박기범 연구원", pdca: { p: "대기", d: "대기", c: "대기", a: "대기" } },
+          { id: "A1가-S5T5-1", title: "이전 공공기관 합동 채용설명회 및 취업 아카데미 운영", budget_2026: 5000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "김소연 연구원", pdca: { p: "대기", d: "대기", c: "대기", a: "대기" } },
+          { id: "A1가-S5T5-2", title: "산학협력 간담회", budget_2026: 6000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "정자윤 연구원", pdca: { p: "대기", d: "대기", c: "대기", a: "대기" } },
+          { id: "A1가-S5T5-3", title: "정책연구", budget_2026: 10000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "박기범 연구원", pdca: { p: "대기", d: "대기", c: "대기", a: "대기" } },
+          { id: "A1가-S5T5-4", title: "강소기업 현장견학 프로그램 운영", budget_2026: 10000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "정자윤 연구원", pdca: { p: "대기", d: "대기", c: "대기", a: "대기" } },
+          { id: "A1가-S5T5-5", title: "학과 전공 맞춤형 모듈식 취업캠프", budget_2026: 24000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "정지윤 연구원", pdca: { p: "대기", d: "대기", c: "대기", a: "대기" } },
+          { id: "A1가-S5T5-6", title: "시그니처 클래스 운영", budget_2026: 40000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "정자윤 연구원", pdca: { p: "대기", d: "대기", c: "대기", a: "대기" } },
+          { id: "A1가-S5T5-7", title: "벤치마킹", budget_2026: 14000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "서란 연구원", pdca: { p: "대기", d: "대기", c: "대기", a: "대기" } }
         ],
         budgetDetails: {
           "인건비": { budget_2026: 200000000, spent_2026: 60000000, budget_2025_carry: 30000000, spent_2025_carry: 2000000 },
@@ -332,9 +332,9 @@ export const initialProjectsData = [
         spent_2025_carry: 0,
         manager: "홍진숙 신산업특화센터장",
         programs: [
-          { id: "A1나-01", title: "융합전공 세미나", budget_2026: 2000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "정호성 연구원", pdca: { p: "대기", d: "대기", c: "대기", a: "대기" } },
-          { id: "A1나-02", title: "이수학생 장학금 - 30명", budget_2026: 8000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "김나희 연구원", pdca: { p: "대기", d: "대기", c: "대기", a: "대기" } },
-          { id: "A1나-03", title: "역량 디지털배지", budget_2026: 5000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "정호성 연구원", pdca: { p: "대기", d: "대기", c: "대기", a: "대기" } },
+          { id: "A1나-S1T1-1", title: "융합전공 세미나", budget_2026: 2000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "정호성 연구원", pdca: { p: "대기", d: "대기", c: "대기", a: "대기" } },
+          { id: "A1나-S2T2-1", title: "이수학생 장학금 - 30명", budget_2026: 8000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "김나희 연구원", pdca: { p: "대기", d: "대기", c: "대기", a: "대기" } },
+          { id: "A1나-S3T3-1", title: "역량 디지털배지", budget_2026: 5000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "정호성 연구원", pdca: { p: "대기", d: "대기", c: "대기", a: "대기" } },
           { id: "A1나-04", title: "학과 홍보물 구입", budget_2026: 3000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "김나희 연구원", pdca: { p: "대기", d: "대기", c: "대기", a: "대기" } },
           { id: "A1나-05", title: "지역 고교 입시 담당자 협의회", budget_2026: 2400000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "김나희 연구원", pdca: { p: "대기", d: "대기", c: "대기", a: "대기" } },
           { id: "A1나-06", title: "스마트·친환경 선박 직무역량강화 연수", budget_2026: 3000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "김나희 연구원", pdca: { p: "대기", d: "대기", c: "대기", a: "대기" } },
@@ -431,11 +431,11 @@ export const initialProjectsData = [
         spent_2025_carry: 70000000,
         manager: "이동은 ECC센터장",
         programs: [
-          { id: "A2-01", title: "재학생 및 교직원 창업 교육과정 운영", budget_2026: 63000000, spent_2026: 30000000, budget_2025_carry: 20000000, spent_2025_carry: 18000000, assignee: "이은주 선임연구원", pdca: { p: "완료", d: "완료", c: "진행", a: "대기" } },
-          { id: "A2-02", title: "창업지원 제도 개선 및 메이커스페이스 구축", budget_2026: 210000000, spent_2026: 70000000, budget_2025_carry: 50000000, spent_2025_carry: 40000000, assignee: "서란 연구원", pdca: { p: "완료", d: "완료", c: "진행", a: "대기" } },
-          { id: "A2-03", title: "예비창업자 인큐베이팅 및 AI 경영 교육", budget_2026: 85000000, spent_2026: 30000000, budget_2025_carry: 20000000, spent_2025_carry: 10000000, assignee: "정자윤 연구원", pdca: { p: "완료", d: "완료", c: "대기", a: "대기" } },
-          { id: "A2-04", title: "창업 성공 도약 패키지 지원", budget_2026: 45000000, spent_2026: 8000000, budget_2025_carry: 10000000, spent_2025_carry: 2000000, assignee: "박기범 연구원", pdca: { p: "완료", d: "진행", c: "대기", a: "대기" } },
-          { id: "A2-05", title: "로컬 및 글로벌 창업 네트워크 경진대회", budget_2026: 67000000, spent_2026: 12000000, budget_2025_carry: 20000000, spent_2025_carry: 0, assignee: "김소연 연구원", pdca: { p: "진행", d: "대기", c: "대기", a: "대기" } }
+          { id: "A2-S1T1-1", title: "재학생 및 교직원 창업 교육과정 운영", budget_2026: 63000000, spent_2026: 30000000, budget_2025_carry: 20000000, spent_2025_carry: 18000000, assignee: "이은주 선임연구원", pdca: { p: "완료", d: "완료", c: "진행", a: "대기" } },
+          { id: "A2-S1T2-1", title: "창업지원 제도 개선 및 메이커스페이스 구축", budget_2026: 210000000, spent_2026: 70000000, budget_2025_carry: 50000000, spent_2025_carry: 40000000, assignee: "서란 연구원", pdca: { p: "완료", d: "완료", c: "진행", a: "대기" } },
+          { id: "A2-S2T3-1", title: "예비창업자 인큐베이팅 및 AI 경영 교육", budget_2026: 85000000, spent_2026: 30000000, budget_2025_carry: 20000000, spent_2025_carry: 10000000, assignee: "정자윤 연구원", pdca: { p: "완료", d: "완료", c: "대기", a: "대기" } },
+          { id: "A2-S2T4-1", title: "창업 성공 도약 패키지 지원", budget_2026: 45000000, spent_2026: 8000000, budget_2025_carry: 10000000, spent_2025_carry: 2000000, assignee: "박기범 연구원", pdca: { p: "완료", d: "진행", c: "대기", a: "대기" } },
+          { id: "A2-S3T5-1", title: "로컬 및 글로벌 창업 네트워크 경진대회", budget_2026: 67000000, spent_2026: 12000000, budget_2025_carry: 20000000, spent_2025_carry: 0, assignee: "김소연 연구원", pdca: { p: "진행", d: "대기", c: "대기", a: "대기" } }
         ],
         budgetDetails: {
           "인건비": { budget_2026: 40000000, spent_2026: 15000000, budget_2025_carry: 10000000, spent_2025_carry: 5000000 },
@@ -568,10 +568,10 @@ export const initialProjectsData = [
         spent_2025_carry: 25000000,
         manager: "이동은 ECC센터장",
         programs: [
-          { id: "A3-01", title: "해외 우수 대학 교류 협약 및 네트워크 구축", budget_2026: 80000000, spent_2026: 20000000, budget_2025_carry: 20000000, spent_2025_carry: 10000000, assignee: "이은주 선임연구원", pdca: { p: "완료", d: "진행", c: "대기", a: "대기" } },
-          { id: "A3-02", title: "유학생 통합관리 플랫폼 및 상담지원", budget_2026: 42000000, spent_2026: 1000000, budget_2025_carry: 1200000, spent_2025_carry: 200000, assignee: "서란 연구원", pdca: { p: "완료", d: "진행", c: "대기", a: "대기" } },
-          { id: "A3-03", title: "외국인 특화 정규과정 개설 및 장학 지원", budget_2026: 77000000, spent_2026: 20000000, budget_2025_carry: 20000000, spent_2025_carry: 8000000, assignee: "정자윤 연구원", pdca: { p: "완료", d: "완료", c: "진행", a: "대기" } },
-          { id: "A3-04", title: "TOPIK 한국어 교육 및 다문화 지원", budget_2026: 41000000, spent_2026: 10000000, budget_2025_carry: 8000000, spent_2025_carry: 5000000, assignee: "박기범 연구원", pdca: { p: "완료", d: "진행", c: "대기", a: "대기" } }
+          { id: "A3-S1T1-1", title: "해외 우수 대학 교류 협약 및 네트워크 구축", budget_2026: 80000000, spent_2026: 20000000, budget_2025_carry: 20000000, spent_2025_carry: 10000000, assignee: "이은주 선임연구원", pdca: { p: "완료", d: "진행", c: "대기", a: "대기" } },
+          { id: "A3-S1T2-1", title: "유학생 통합관리 플랫폼 및 상담지원", budget_2026: 42000000, spent_2026: 1000000, budget_2025_carry: 1200000, spent_2025_carry: 200000, assignee: "서란 연구원", pdca: { p: "완료", d: "진행", c: "대기", a: "대기" } },
+          { id: "A3-S2T3-1", title: "외국인 특화 정규과정 개설 및 장학 지원", budget_2026: 77000000, spent_2026: 20000000, budget_2025_carry: 20000000, spent_2025_carry: 8000000, assignee: "정자윤 연구원", pdca: { p: "완료", d: "완료", c: "진행", a: "대기" } },
+          { id: "A3-S2T4-1", title: "TOPIK 한국어 교육 및 다문화 지원", budget_2026: 41000000, spent_2026: 10000000, budget_2025_carry: 8000000, spent_2025_carry: 5000000, assignee: "박기범 연구원", pdca: { p: "완료", d: "진행", c: "대기", a: "대기" } }
         ],
         budgetDetails: {
           "인건비": { budget_2026: 20000000, spent_2026: 8000000, budget_2025_carry: 8000000, spent_2025_carry: 2000000 },
@@ -712,10 +712,10 @@ export const initialProjectsData = [
         spent_2025_carry: 60000000,
         manager: "김기범 ICC센터장",
         programs: [
-          { id: "B1-01", title: "기업협업센터(ICC) 고도화 및 교원 역량 강화", budget_2026: 38000000, spent_2026: 21000000, budget_2025_carry: 10000000, spent_2025_carry: 10000000, assignee: "이정은 선임연구원", pdca: { p: "완료", d: "완료", c: "진행", a: "대기" } },
-          { id: "B1-02", title: "지산학 거버넌스 및 신규 가족회사 매칭", budget_2026: 14000000, spent_2026: 6000000, budget_2025_carry: 4000000, spent_2025_carry: 3000000, assignee: "이혜성 연구원", pdca: { p: "완료", d: "완료", c: "완료", a: "진행" } },
-          { id: "B1-03", title: "대기업 및 신산업 연계 공동 R&D 과제 수행", budget_2026: 270000000, spent_2026: 80000000, budget_2025_carry: 76000000, spent_2025_carry: 40000000, assignee: "도지은 연구원", pdca: { p: "완료", d: "완료", c: "진행", a: "대기" } },
-          { id: "B1-04", title: "중소기업 기술 애로 해결 자문 지도", budget_2026: 28000000, spent_2026: 13000000, budget_2025_carry: 10000000, spent_2025_carry: 7000000, assignee: "김예담 연구원", pdca: { p: "완료", d: "완료", c: "진행", a: "대기" } }
+          { id: "B1-S1T1-1", title: "기업협업센터(ICC) 고도화 및 교원 역량 강화", budget_2026: 38000000, spent_2026: 21000000, budget_2025_carry: 10000000, spent_2025_carry: 10000000, assignee: "이정은 선임연구원", pdca: { p: "완료", d: "완료", c: "진행", a: "대기" } },
+          { id: "B1-S1T2-1", title: "지산학 거버넌스 및 신규 가족회사 매칭", budget_2026: 14000000, spent_2026: 6000000, budget_2025_carry: 4000000, spent_2025_carry: 3000000, assignee: "이혜성 연구원", pdca: { p: "완료", d: "완료", c: "완료", a: "진행" } },
+          { id: "B1-S2T3-1", title: "대기업 및 신산업 연계 공동 R&D 과제 수행", budget_2026: 270000000, spent_2026: 80000000, budget_2025_carry: 76000000, spent_2025_carry: 40000000, assignee: "도지은 연구원", pdca: { p: "완료", d: "완료", c: "진행", a: "대기" } },
+          { id: "B1-S3T4-1", title: "중소기업 기술 애로 해결 자문 지도", budget_2026: 28000000, spent_2026: 13000000, budget_2025_carry: 10000000, spent_2025_carry: 7000000, assignee: "김예담 연구원", pdca: { p: "완료", d: "완료", c: "진행", a: "대기" } }
         ],
         budgetDetails: {
           "인건비": { budget_2026: 30000000, spent_2026: 10000000, budget_2025_carry: 10000000, spent_2025_carry: 5000000 },
@@ -848,11 +848,11 @@ export const initialProjectsData = [
         spent_2025_carry: 150000000,
         manager: "김현수 AID-X지원센터장",
         programs: [
-          { id: "B2-01", title: "AID-X지원센터 및 AWS C3 교육센터 리모델링", budget_2026: 222000000, spent_2026: 100000000, budget_2025_carry: 72000000, spent_2025_carry: 50000000, assignee: "임은애 선임연구원", pdca: { p: "완료", d: "완료", c: "진행", a: "대기" } },
-          { id: "B2-02", title: "교원 대상 AI·DX 실습 및 전문 연수 과정", budget_2026: 35000000, spent_2026: 15000000, budget_2025_carry: 10000000, spent_2025_carry: 5000000, assignee: "서은지 연구원", pdca: { p: "완료", d: "완료", c: "진행", a: "대기" } },
-          { id: "B2-03", title: "전학부 공통 AI 리터러시 융합 교육 개설", budget_2026: 82000000, spent_2026: 38000000, budget_2025_carry: 20000000, spent_2025_carry: 12000000, assignee: "채민지 연구원", pdca: { p: "완료", d: "완료", c: "진행", a: "대기" } },
-          { id: "B2-04", title: "중소기업 맞춤형 AI·DX 기술 실증 R&D", budget_2026: 145000000, spent_2026: 60000000, budget_2025_carry: 40000000, spent_2025_carry: 20000000, assignee: "임은애 선임연구원", pdca: { p: "완료", d: "완료", c: "대기", a: "대기" } },
-          { id: "B2-05", title: "MANI 초광역 협력 로봇 AI 실습 장치 구축", budget_2026: 536000000, spent_2026: 72000000, budget_2025_carry: 158000000, spent_2025_carry: 63000000, assignee: "서은지 연구원", pdca: { p: "완료", d: "진행", c: "대기", a: "대기" } }
+          { id: "B2-S1T1-1", title: "AID-X지원센터 및 AWS C3 교육센터 리모델링", budget_2026: 222000000, spent_2026: 100000000, budget_2025_carry: 72000000, spent_2025_carry: 50000000, assignee: "임은애 선임연구원", pdca: { p: "완료", d: "완료", c: "진행", a: "대기" } },
+          { id: "B2-S2T2-1", title: "교원 대상 AI·DX 실습 및 전문 연수 과정", budget_2026: 35000000, spent_2026: 15000000, budget_2025_carry: 10000000, spent_2025_carry: 5000000, assignee: "서은지 연구원", pdca: { p: "완료", d: "완료", c: "진행", a: "대기" } },
+          { id: "B2-S2T3-1", title: "전학부 공통 AI 리터러시 융합 교육 개설", budget_2026: 82000000, spent_2026: 38000000, budget_2025_carry: 20000000, spent_2025_carry: 12000000, assignee: "채민지 연구원", pdca: { p: "완료", d: "완료", c: "진행", a: "대기" } },
+          { id: "B2-S3T4-1", title: "중소기업 맞춤형 AI·DX 기술 실증 R&D", budget_2026: 145000000, spent_2026: 60000000, budget_2025_carry: 40000000, spent_2025_carry: 20000000, assignee: "임은애 선임연구원", pdca: { p: "완료", d: "완료", c: "대기", a: "대기" } },
+          { id: "B2-S4T5-1", title: "MANI 초광역 협력 로봇 AI 실습 장치 구축", budget_2026: 536000000, spent_2026: 72000000, budget_2025_carry: 158000000, spent_2025_carry: 63000000, assignee: "서은지 연구원", pdca: { p: "완료", d: "진행", c: "대기", a: "대기" } }
         ],
         budgetDetails: {
           "인건비": { budget_2026: 100000000, spent_2026: 35000000, budget_2025_carry: 30000000, spent_2025_carry: 15000000 },
@@ -985,9 +985,9 @@ export const initialProjectsData = [
         spent_2025_carry: 40000000,
         manager: "김기범 ICC센터장",
         programs: [
-          { id: "B3-01", title: "탄소중립·ESG 캠퍼스 아카데미 개설 및 운영", budget_2026: 44000000, spent_2026: 25000000, budget_2025_carry: 14000000, spent_2025_carry: 9000000, assignee: "이정은 선임연구원", pdca: { p: "완료", d: "완료", c: "진행", a: "대기" } },
-          { id: "B3-02", title: "중소기업 온실가스 탄소배출 모니터링 연구", budget_2026: 207000000, spent_2026: 60000000, budget_2025_carry: 56000000, spent_2025_carry: 26000000, assignee: "이혜성 연구원", pdca: { p: "완료", d: "완료", c: "진행", a: "대기" } },
-          { id: "B3-03", title: "캠퍼스 내 전동화 배터리 스왑 실증", budget_2026: 49000000, spent_2026: 15000000, budget_2025_carry: 10000000, spent_2025_carry: 5000000, assignee: "도지은 연구원", pdca: { p: "완료", d: "진행", c: "대기", a: "대기" } }
+          { id: "B3-S1T1-1", title: "탄소중립·ESG 캠퍼스 아카데미 개설 및 운영", budget_2026: 44000000, spent_2026: 25000000, budget_2025_carry: 14000000, spent_2025_carry: 9000000, assignee: "이정은 선임연구원", pdca: { p: "완료", d: "완료", c: "진행", a: "대기" } },
+          { id: "B3-S2T2-1", title: "중소기업 온실가스 탄소배출 모니터링 연구", budget_2026: 207000000, spent_2026: 60000000, budget_2025_carry: 56000000, spent_2025_carry: 26000000, assignee: "이혜성 연구원", pdca: { p: "완료", d: "완료", c: "진행", a: "대기" } },
+          { id: "B3-S3T3-1", title: "캠퍼스 내 전동화 배터리 스왑 실증", budget_2026: 49000000, spent_2026: 15000000, budget_2025_carry: 10000000, spent_2025_carry: 5000000, assignee: "도지은 연구원", pdca: { p: "완료", d: "진행", c: "대기", a: "대기" } }
         ],
         budgetDetails: {
           "인건비": { budget_2026: 25000000, spent_2026: 8000000, budget_2025_carry: 5000000, spent_2025_carry: 2000000 },
@@ -1120,9 +1120,9 @@ export const initialProjectsData = [
         spent_2025_carry: 40000000,
         manager: "김기범 ICC센터장",
         programs: [
-          { id: "B4-01", title: "산업안전 보건 교육과정 개편 및 K-MOOC 제작", budget_2026: 127000000, spent_2026: 60000000, budget_2025_carry: 37000000, spent_2025_carry: 27000000, assignee: "도지은 연구원", pdca: { p: "완료", d: "완료", c: "진행", a: "대기" } },
-          { id: "B4-02", title: "중소기업 공정 안전 진단 및 매뉴얼 배포", budget_2026: 49000000, spent_2026: 8000000, budget_2025_carry: 14000000, spent_2025_carry: 2000000, assignee: "김예담 연구원", pdca: { p: "완료", d: "진행", c: "대기", a: "대기" } },
-          { id: "B4-03", title: "간호시뮬레이션센터 실감형 재난 안전 장비 도입", budget_2026: 124000000, spent_2026: 12000000, budget_2025_carry: 39000000, spent_2025_carry: 11000000, assignee: "도지은 연구원", pdca: { p: "완료", d: "진행", c: "대기", a: "대기" } }
+          { id: "B4-S1T1-1", title: "산업안전 보건 교육과정 개편 및 K-MOOC 제작", budget_2026: 127000000, spent_2026: 60000000, budget_2025_carry: 37000000, spent_2025_carry: 27000000, assignee: "도지은 연구원", pdca: { p: "완료", d: "완료", c: "진행", a: "대기" } },
+          { id: "B4-S2T2-1", title: "중소기업 공정 안전 진단 및 매뉴얼 배포", budget_2026: 49000000, spent_2026: 8000000, budget_2025_carry: 14000000, spent_2025_carry: 2000000, assignee: "김예담 연구원", pdca: { p: "완료", d: "진행", c: "대기", a: "대기" } },
+          { id: "B4-S3T3-1", title: "간호시뮬레이션센터 실감형 재난 안전 장비 도입", budget_2026: 124000000, spent_2026: 12000000, budget_2025_carry: 39000000, spent_2025_carry: 11000000, assignee: "도지은 연구원", pdca: { p: "완료", d: "진행", c: "대기", a: "대기" } }
         ],
         budgetDetails: {
           "인건비": { budget_2026: 25000000, spent_2026: 8000000, budget_2025_carry: 5000000, spent_2025_carry: 2000000 },
@@ -1263,10 +1263,10 @@ export const initialProjectsData = [
         spent_2025_carry: 50000000,
         manager: "현용환 RCC센터장",
         programs: [
-          { id: "C1-01", title: "평생직업교육 거점센터 플랫폼 고도화 및 장학 제도", budget_2026: 44000000, spent_2026: 18000000, budget_2025_carry: 14000000, spent_2025_carry: 6000000, assignee: "이현섭 책임연구원", pdca: { p: "완료", d: "완료", c: "진행", a: "대기" } },
-          { id: "C1-02", title: "생애주기 직무 야간 집중 자격증 취득반 운영", budget_2026: 4000000, spent_2026: 200000, budget_2025_carry: 1000000, spent_2025_carry: 0, assignee: "박인숙 선임연구원", pdca: { p: "완료", d: "진행", c: "대기", a: "대기" } },
-          { id: "C1-03", title: "스마트테크 및 라이프케어 4대 아카데미 실무 교육", budget_2026: 82000000, spent_2026: 20000000, budget_2025_carry: 15000000, spent_2025_carry: 10000000, assignee: "이연향 연구원", pdca: { p: "완료", d: "완료", c: "진행", a: "대기" } },
-          { id: "C1-04", title: "평생학습관 건물 리모델링 및 실습 기자재 조달", budget_2026: 220000000, spent_2026: 51800000, budget_2025_carry: 70000000, spent_2025_carry: 34000000, assignee: "김소정 연구원", pdca: { p: "완료", d: "진행", c: "대기", a: "대기" } }
+          { id: "C1-S1T1-1", title: "평생직업교육 거점센터 플랫폼 고도화 및 장학 제도", budget_2026: 44000000, spent_2026: 18000000, budget_2025_carry: 14000000, spent_2025_carry: 6000000, assignee: "이현섭 책임연구원", pdca: { p: "완료", d: "완료", c: "진행", a: "대기" } },
+          { id: "C1-S2T2-1", title: "생애주기 직무 야간 집중 자격증 취득반 운영", budget_2026: 4000000, spent_2026: 200000, budget_2025_carry: 1000000, spent_2025_carry: 0, assignee: "박인숙 선임연구원", pdca: { p: "완료", d: "진행", c: "대기", a: "대기" } },
+          { id: "C1-S3T3-1", title: "스마트테크 및 라이프케어 4대 아카데미 실무 교육", budget_2026: 82000000, spent_2026: 20000000, budget_2025_carry: 15000000, spent_2025_carry: 10000000, assignee: "이연향 연구원", pdca: { p: "완료", d: "완료", c: "진행", a: "대기" } },
+          { id: "C1-S4T4-1", title: "평생학습관 건물 리모델링 및 실습 기자재 조달", budget_2026: 220000000, spent_2026: 51800000, budget_2025_carry: 70000000, spent_2025_carry: 34000000, assignee: "김소정 연구원", pdca: { p: "완료", d: "진행", c: "대기", a: "대기" } }
         ],
         budgetDetails: {
           "인건비": { budget_2026: 25000000, spent_2026: 8000000, budget_2025_carry: 5000000, spent_2025_carry: 2000000 },
@@ -1399,10 +1399,10 @@ export const initialProjectsData = [
         spent_2025_carry: 80000000,
         manager: "홍광표 울산늘봄누리센터장",
         programs: [
-          { id: "C2-01", title: "초등/유치원 방과후 및 방학 늘봄 표준 교육 교안 개발", budget_2026: 220000000, spent_2026: 104000000, budget_2025_carry: 60000000, spent_2025_carry: 40000000, assignee: "홍광표 교수", pdca: { p: "완료", d: "완료", c: "진행", a: "대기" } },
-          { id: "C2-02", title: "지역아동센터 및 복지관 늘봄 프로그램 위탁 운영", budget_2026: 156000000, spent_2026: 30000000, budget_2025_carry: 40000000, spent_2025_carry: 10000000, assignee: "홍광표 교수", pdca: { p: "완료", d: "진행", c: "대기", a: "대기" } },
-          { id: "C2-03", title: "늘봄 모니터링 품질평가 및 전용 홈페이지 제작", budget_2026: 116000000, spent_2026: 26000000, budget_2025_carry: 40000000, spent_2025_carry: 10000000, assignee: "홍광표 교수", pdca: { p: "완료", d: "완료", c: "진행", a: "대기" } },
-          { id: "C2-04", title: "K-pop/브리지게임 등 특화 패키지 도입 및 교사 양성", budget_2026: 208000000, spent_2026: 40000000, budget_2025_carry: 60000000, spent_2025_carry: 20000000, assignee: "홍광표 교수", pdca: { p: "완료", d: "진행", c: "대기", a: "대기" } }
+          { id: "C2-S1T1-1", title: "초등/유치원 방과후 및 방학 늘봄 표준 교육 교안 개발", budget_2026: 220000000, spent_2026: 104000000, budget_2025_carry: 60000000, spent_2025_carry: 40000000, assignee: "홍광표 교수", pdca: { p: "완료", d: "완료", c: "진행", a: "대기" } },
+          { id: "C2-S2T2-1", title: "지역아동센터 및 복지관 늘봄 프로그램 위탁 운영", budget_2026: 156000000, spent_2026: 30000000, budget_2025_carry: 40000000, spent_2025_carry: 10000000, assignee: "홍광표 교수", pdca: { p: "완료", d: "진행", c: "대기", a: "대기" } },
+          { id: "C2-S3T3-1", title: "늘봄 모니터링 품질평가 및 전용 홈페이지 제작", budget_2026: 116000000, spent_2026: 26000000, budget_2025_carry: 40000000, spent_2025_carry: 10000000, assignee: "홍광표 교수", pdca: { p: "완료", d: "완료", c: "진행", a: "대기" } },
+          { id: "C2-S4T4-1", title: "K-pop/브리지게임 등 특화 패키지 도입 및 교사 양성", budget_2026: 208000000, spent_2026: 40000000, budget_2025_carry: 60000000, spent_2025_carry: 20000000, assignee: "홍광표 교수", pdca: { p: "완료", d: "진행", c: "대기", a: "대기" } }
         ],
         budgetDetails: {
           "인건비": { budget_2026: 45000000, spent_2026: 15000000, budget_2025_carry: 20000000, spent_2025_carry: 5000000 },
@@ -1543,9 +1543,9 @@ export const initialProjectsData = [
         spent_2025_carry: 30000000,
         manager: "현용환 RCC센터장",
         programs: [
-          { id: "D1-01", title: "지역사회 공헌 융합 봉사 및 리씽크 울산 프로젝트", budget_2026: 117000000, spent_2026: 30000000, budget_2025_carry: 30000000, spent_2025_carry: 20000000, assignee: "오영경 연구원", pdca: { p: "완료", d: "완료", c: "진행", a: "대기" } },
-          { id: "D1-02", title: "주민 참여형 생활밀착 에코-리빙랩 운영 실증", budget_2026: 36000000, spent_2026: 8000000, budget_2025_carry: 10000000, spent_2025_carry: 2000000, assignee: "최승혜 연구원", pdca: { p: "완료", d: "진행", c: "대기", a: "대기" } },
-          { id: "D1-03", title: "울산형 2주기 앵커 모델 발전 정책 연구 R&D", budget_2026: 47000000, spent_2026: 12000000, budget_2025_carry: 10000000, spent_2025_carry: 8000000, assignee: "오영경 연구원", pdca: { p: "완료", d: "진행", c: "대기", a: "대기" } }
+          { id: "D1-S1T1-1", title: "지역사회 공헌 융합 봉사 및 리씽크 울산 프로젝트", budget_2026: 117000000, spent_2026: 30000000, budget_2025_carry: 30000000, spent_2025_carry: 20000000, assignee: "오영경 연구원", pdca: { p: "완료", d: "완료", c: "진행", a: "대기" } },
+          { id: "D1-S2T2-1", title: "주민 참여형 생활밀착 에코-리빙랩 운영 실증", budget_2026: 36000000, spent_2026: 8000000, budget_2025_carry: 10000000, spent_2025_carry: 2000000, assignee: "최승혜 연구원", pdca: { p: "완료", d: "진행", c: "대기", a: "대기" } },
+          { id: "D1-S2T3-1", title: "울산형 2주기 앵커 모델 발전 정책 연구 R&D", budget_2026: 47000000, spent_2026: 12000000, budget_2025_carry: 10000000, spent_2025_carry: 8000000, assignee: "오영경 연구원", pdca: { p: "완료", d: "진행", c: "대기", a: "대기" } }
         ],
         budgetDetails: {
           "인건비": { budget_2026: 20000000, spent_2026: 8000000, budget_2025_carry: 5000000, spent_2025_carry: 2000000 },
@@ -1678,9 +1678,9 @@ export const initialProjectsData = [
         spent_2025_carry: 60000000,
         manager: "현용환 RCC센터장",
         programs: [
-          { id: "D2-01", title: "지산학 보건 거버넌스 및 실물 융합 임상 실습 프로그램", budget_2026: 139000000, spent_2026: 80000000, budget_2025_carry: 40000000, spent_2025_carry: 30000000, assignee: "이현섭 책임연구원", pdca: { p: "완료", d: "완료", c: "진행", a: "대기" } },
-          { id: "D2-02", title: "의료 사각지대 주민 구강/근골격 복지케어 모니터링", budget_2026: 111000000, spent_2026: 30000000, budget_2025_carry: 30000000, spent_2025_carry: 10000000, assignee: "박인숙 선임연구원", pdca: { p: "완료", d: "완료", c: "진행", a: "대기" } },
-          { id: "D2-03", title: "반려동물보건과 등 신규 학과 전용 스마트 기자재 조달", budget_2026: 150000000, spent_2026: 20000000, budget_2025_carry: 50000000, spent_2025_carry: 20000000, assignee: "이연향 연구원", pdca: { p: "완료", d: "진행", c: "대기", a: "대기" } }
+          { id: "D2-S1T1-1", title: "지산학 보건 거버넌스 및 실물 융합 임상 실습 프로그램", budget_2026: 139000000, spent_2026: 80000000, budget_2025_carry: 40000000, spent_2025_carry: 30000000, assignee: "이현섭 책임연구원", pdca: { p: "완료", d: "완료", c: "진행", a: "대기" } },
+          { id: "D2-S1T2-1", title: "의료 사각지대 주민 구강/근골격 복지케어 모니터링", budget_2026: 111000000, spent_2026: 30000000, budget_2025_carry: 30000000, spent_2025_carry: 10000000, assignee: "박인숙 선임연구원", pdca: { p: "완료", d: "완료", c: "진행", a: "대기" } },
+          { id: "D2-S2T3-1", title: "반려동물보건과 등 신규 학과 전용 스마트 기자재 조달", budget_2026: 150000000, spent_2026: 20000000, budget_2025_carry: 50000000, spent_2025_carry: 20000000, assignee: "이연향 연구원", pdca: { p: "완료", d: "진행", c: "대기", a: "대기" } }
         ],
         budgetDetails: {
           "인건비": { budget_2026: 30000000, spent_2026: 10000000, budget_2025_carry: 10000000, spent_2025_carry: 5000000 },
@@ -1779,9 +1779,9 @@ export const initialProjectsData = [
         manager: "현용환 RCC센터장",
         // 2차년도 사업계획서에 맞춘 D3 세부 프로그램 명칭 반영 (기존 가칭에서 정식 명칭으로 변경)
         programs: [
-          { id: "D3-01", title: "시민 참여형 에코컬처 체험 프로그램 및 브랜드 디자인 운영", budget_2026: 115000000, spent_2026: 30000000, budget_2025_carry: 30000000, spent_2025_carry: 10000000, assignee: "김소정 연구원", pdca: { p: "완료", d: "완료", c: "진행", a: "대기" } },
-          { id: "D3-02", title: "청년 주도형 유휴공간 활성화 및 도시재생 융합 프로젝트", budget_2026: 251000000, spent_2026: 50000000, budget_2025_carry: 70000000, spent_2025_carry: 20000000, assignee: "오영경 연구원", pdca: { p: "완료", d: "진행", c: "대기", a: "대기" } },
-          { id: "D3-03", title: "지역 밀착형 문화예술 체험 및 울산 꿀잼 축제 기획 운영", budget_2026: 24000000, spent_2026: 10000000, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "최승혜 연구원", pdca: { p: "완료", d: "진행", c: "대기", a: "대기" } }
+          { id: "D3-S1T1-1", title: "시민 참여형 에코컬처 체험 프로그램 및 브랜드 디자인 운영", budget_2026: 115000000, spent_2026: 30000000, budget_2025_carry: 30000000, spent_2025_carry: 10000000, assignee: "김소정 연구원", pdca: { p: "완료", d: "완료", c: "진행", a: "대기" } },
+          { id: "D3-S1T2-1", title: "청년 주도형 유휴공간 활성화 및 도시재생 융합 프로젝트", budget_2026: 251000000, spent_2026: 50000000, budget_2025_carry: 70000000, spent_2025_carry: 20000000, assignee: "오영경 연구원", pdca: { p: "완료", d: "진행", c: "대기", a: "대기" } },
+          { id: "D3-S2T3-1", title: "지역 밀착형 문화예술 체험 및 울산 꿀잼 축제 기획 운영", budget_2026: 24000000, spent_2026: 10000000, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "최승혜 연구원", pdca: { p: "완료", d: "진행", c: "대기", a: "대기" } }
         ],
         budgetDetails: {
           "인건비": { budget_2026: 25000000, spent_2026: 8000000, budget_2025_carry: 5000000, spent_2025_carry: 2000000 },
