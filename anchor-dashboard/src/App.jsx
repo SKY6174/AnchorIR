@@ -4888,89 +4888,100 @@ export default function App() {
                                 </td>
                               </tr>
                             ) : (
-                              versionRequests.map((req, idx) => (
-                                <tr key={req.id}>
-                                  <td style={{ fontFamily: "var(--font-data)", fontWeight: "700" }}>{2024 + req.year}-{req.unit_id}-{versionRequests.length - idx}</td>
-                                  <td>{req.program_id}</td>
-                                  <td style={{ fontWeight: "700" }}>{req.program_title}</td>
-                                  <td>
-                                    <span className="badge badge-blue" style={{ fontSize: "0.65rem" }}>
-                                      {req.version_name}
-                                    </span>
-                                  </td>
-                                  <td>
-                                    <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-                                      <span className={`badge ${
-                                        req.status === "승인완료" ? "badge-green" : (req.status === "반려" ? "badge-red" : "badge-gray")
-                                      }`} style={{ fontSize: "0.65rem" }}>
-                                        {req.status}
+                              versionRequests.map((req, idx) => {
+                                const approvedRequests = versionRequests.filter(r => r.status === "승인완료");
+                                const isApproved = req.status === "승인완료";
+                                let displayNo = "-";
+                                if (isApproved) {
+                                  const approvedIdx = approvedRequests.findIndex(r => r.id === req.id);
+                                  const seq = approvedIdx !== -1 ? (approvedRequests.length - approvedIdx) : 1;
+                                  displayNo = `${2024 + req.year}-${req.unit_id}-${seq}`;
+                                }
+
+                                return (
+                                  <tr key={req.id}>
+                                    <td style={{ fontFamily: "var(--font-data)", fontWeight: "700" }}>{displayNo}</td>
+                                    <td>{req.program_id}</td>
+                                    <td style={{ fontWeight: "700" }}>{req.program_title}</td>
+                                    <td>
+                                      <span className="badge badge-blue" style={{ fontSize: "0.65rem" }}>
+                                        {req.version_name}
                                       </span>
-                                      {(req.status === "승인완료" || req.status === "반려") && req.approved_by && (
-                                        <span style={{ fontSize: "0.62rem", color: "var(--text-secondary-dark)", marginTop: "0.15rem" }}>
-                                          ({req.approved_by})
+                                    </td>
+                                    <td>
+                                      <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                                        <span className={`badge ${
+                                          req.status === "승인완료" ? "badge-green" : (req.status === "반려" ? "badge-red" : "badge-gray")
+                                        }`} style={{ fontSize: "0.65rem" }}>
+                                          {req.status}
                                         </span>
-                                      )}
-                                    </div>
-                                  </td>
-                                  <td>{(req.requested_by || "").replace(/\s*\(.*?\)/g, "")}</td>
-                                  <td style={{ fontFamily: "var(--font-data)", lineHeight: "1.4" }}>
-                                    <div>
-                                      <span style={{ color: "var(--text-secondary-dark)", fontSize: "0.65rem" }}>신청: </span>
-                                      {new Date(req.requested_at).toLocaleString("ko-KR")}
-                                    </div>
-                                    <div style={{ marginTop: "0.15rem" }}>
-                                      <span style={{ color: "var(--text-secondary-dark)", fontSize: "0.65rem" }}>처리: </span>
-                                      {req.approved_at 
-                                        ? new Date(req.approved_at).toLocaleString("ko-KR") 
-                                        : <span style={{ color: "var(--text-secondary-dark)" }}>대기 중</span>
-                                      }
-                                    </div>
-                                  </td>
-                                  <td style={{ textAlign: "center" }}>
-                                    <div style={{ display: "flex", gap: "0.25rem", justifyContent: "center" }}>
-                                      <button
-                                        onClick={() => setSelectedRequest(req)}
-                                        className="btn-primary"
-                                        style={{ padding: "0.2rem 0.5rem", fontSize: "0.7rem", borderRadius: "0.3rem", background: "var(--accent-color)", cursor: "pointer", border: "none", color: "white" }}
-                                      >
-                                        상세보기
-                                      </button>
-                                      {req.status === "승인대기" && (
-                                        <>
+                                        {(req.status === "승인완료" || req.status === "반려") && req.approved_by && (
+                                          <span style={{ fontSize: "0.62rem", color: "var(--text-secondary-dark)", marginTop: "0.15rem" }}>
+                                            ({req.approved_by})
+                                          </span>
+                                        )}
+                                      </div>
+                                    </td>
+                                    <td>{(req.requested_by || "").replace(/\s*\(.*?\)/g, "")}</td>
+                                    <td style={{ fontFamily: "var(--font-data)", lineHeight: "1.4" }}>
+                                      <div>
+                                        <span style={{ color: "var(--text-secondary-dark)", fontSize: "0.65rem" }}>신청: </span>
+                                        {new Date(req.requested_at).toLocaleString("ko-KR")}
+                                      </div>
+                                      <div style={{ marginTop: "0.15rem" }}>
+                                        <span style={{ color: "var(--text-secondary-dark)", fontSize: "0.65rem" }}>처리: </span>
+                                        {req.approved_at 
+                                          ? new Date(req.approved_at).toLocaleString("ko-KR") 
+                                          : <span style={{ color: "var(--text-secondary-dark)" }}>대기 중</span>
+                                        }
+                                      </div>
+                                    </td>
+                                    <td style={{ textAlign: "center" }}>
+                                      <div style={{ display: "flex", gap: "0.25rem", justifyContent: "center" }}>
+                                        <button
+                                          onClick={() => setSelectedRequest(req)}
+                                          className="btn-primary"
+                                          style={{ padding: "0.2rem 0.5rem", fontSize: "0.7rem", borderRadius: "0.3rem", background: "var(--accent-color)", cursor: "pointer", border: "none", color: "white" }}
+                                        >
+                                          상세보기
+                                        </button>
+                                        {req.status === "승인대기" && (
+                                          <>
+                                            <button
+                                              onClick={() => handleApproveRequest(req)}
+                                              className="btn-primary"
+                                              style={{ padding: "0.2rem 0.5rem", fontSize: "0.7rem", borderRadius: "0.3rem", background: "#10B981", cursor: "pointer", border: "none", color: "white" }}
+                                            >
+                                              승인
+                                            </button>
+                                            <button
+                                              onClick={() => handleRejectRequest(req)}
+                                              className="btn-primary"
+                                              style={{ padding: "0.2rem 0.5rem", fontSize: "0.7rem", borderRadius: "0.3rem", background: "#EF4444", cursor: "pointer", border: "none", color: "white" }}
+                                            >
+                                              반려
+                                            </button>
+                                          </>
+                                        )}
+                                        {currentUser && (
+                                          (currentUser.name || "").includes("송경영") ||
+                                          currentUser.role_key === "DIRECTOR" ||
+                                          currentUser.role === "사업단장" ||
+                                          currentUser.id === "director"
+                                        ) && (
                                           <button
-                                            onClick={() => handleApproveRequest(req)}
-                                            className="btn-primary"
-                                            style={{ padding: "0.2rem 0.5rem", fontSize: "0.7rem", borderRadius: "0.3rem", background: "#10B981", cursor: "pointer", border: "none", color: "white" }}
-                                          >
-                                            승인
-                                          </button>
-                                          <button
-                                            onClick={() => handleRejectRequest(req)}
+                                            onClick={() => handleDeleteRequest(req)}
                                             className="btn-primary"
                                             style={{ padding: "0.2rem 0.5rem", fontSize: "0.7rem", borderRadius: "0.3rem", background: "#EF4444", cursor: "pointer", border: "none", color: "white" }}
                                           >
-                                            반려
+                                            삭제
                                           </button>
-                                        </>
-                                      )}
-                                      {currentUser && (
-                                        (currentUser.name || "").includes("송경영") ||
-                                        currentUser.role_key === "DIRECTOR" ||
-                                        currentUser.role === "사업단장" ||
-                                        currentUser.id === "director"
-                                      ) && (
-                                        <button
-                                          onClick={() => handleDeleteRequest(req)}
-                                          className="btn-primary"
-                                          style={{ padding: "0.2rem 0.5rem", fontSize: "0.7rem", borderRadius: "0.3rem", background: "#EF4444", cursor: "pointer", border: "none", color: "white" }}
-                                        >
-                                          삭제
-                                        </button>
-                                      )}
-                                    </div>
-                                  </td>
-                                </tr>
-                              ))
+                                        )}
+                                      </div>
+                                    </td>
+                                  </tr>
+                                );
+                              })
                             )}
                           </tbody>
                         </table>
@@ -4985,8 +4996,14 @@ export default function App() {
 
         {/* 결재 상세 비교 Diff 모달 */}
         {selectedRequest && (() => {
-          const reqIndex = versionRequests.findIndex(r => r.id === selectedRequest.id);
-          const displaySeq = reqIndex !== -1 ? (versionRequests.length - reqIndex) : selectedRequest.id;
+          const approvedRequests = versionRequests.filter(r => r.status === "승인완료");
+          const isApproved = selectedRequest.status === "승인완료";
+          let displaySeq = "-";
+          if (isApproved) {
+            const approvedIdx = approvedRequests.findIndex(r => r.id === selectedRequest.id);
+            const seq = approvedIdx !== -1 ? (approvedRequests.length - approvedIdx) : 1;
+            displaySeq = `${2024 + selectedRequest.year}-${selectedRequest.unit_id}-${seq}`;
+          }
           const changesAfter = selectedRequest.changes?.after || {};
           const showTarget1 = (changesAfter.target_participants && changesAfter.target_participants !== 0 && String(changesAfter.target_participants).trim() !== "" && String(changesAfter.target_participants).trim() !== "0") || (changesAfter.target_participants_name && changesAfter.target_participants_name.trim() !== "");
           const showTarget2 = (changesAfter.target_developments && changesAfter.target_developments !== 0 && String(changesAfter.target_developments).trim() !== "" && String(changesAfter.target_developments).trim() !== "0") || (changesAfter.target_developments_name && changesAfter.target_developments_name.trim() !== "");
@@ -5026,7 +5043,7 @@ export default function App() {
                   {/* 1. 기본 기안 정보 */}
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: "1rem", background: "rgba(255,255,255,0.02)", padding: "0.6rem 0.8rem", borderRadius: "8px", border: "1px solid var(--border-color-dark)" }}>
                     <div>
-                      <span style={{ color: "var(--text-secondary-dark)" }}>결재번호:</span> <strong style={{ color: "var(--text-primary)", fontFamily: "var(--font-data)" }}>{2024 + selectedRequest.year}-{selectedRequest.unit_id}-{displaySeq}</strong>
+                      <span style={{ color: "var(--text-secondary-dark)" }}>결재번호:</span> <strong style={{ color: "var(--text-primary)", fontFamily: "var(--font-data)" }}>{displaySeq}</strong>
                     </div>
                     <div>
                       <span style={{ color: "var(--text-secondary-dark)" }}>신청자:</span> <strong style={{ color: "var(--text-primary)" }}>{(selectedRequest.requested_by || "").replace(/\s*\(.*?\)/g, "")}</strong>
