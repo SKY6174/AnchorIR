@@ -305,6 +305,194 @@ export default function AgreementManager({
     }
   }, [sortedAgreements, sortedCertificates, sortedAwards, selectedYear, agreementsSubTab]);
 
+  // 엑셀 서식 다운로드 (템플릿)
+  const handleDownloadTemplate = () => {
+    let templateData = [];
+    let fileName = "";
+    
+    if (agreementsSubTab === "agreements") {
+      templateData = [
+        {
+          "체결일자": "2025-05-15",
+          "관련 센터": "ECC센터",
+          "협약 대상기관": "HD현대중공업, 정테크",
+          "대학 측 협약주체(UC)": "단장",
+          "기관 측 협약주체": "HD현대중공업(대표이사), 정테크(대표)",
+          "관련 단위과제": "A1",
+          "협약내용 범주": "주문식교육, R&BD"
+        }
+      ];
+      fileName = `UC_ANCHOR_협약서_업로드_서식.xlsx`;
+    } else if (agreementsSubTab === "certificates") {
+      templateData = [
+        {
+          "발급번호": "제 2025-001 호",
+          "발급대상 소속": "게임영상학과",
+          "발급대상 성명": "홍길동",
+          "발급일자": "2025-06-20",
+          "발급주체": "사업단장"
+        }
+      ];
+      fileName = `UC_ANCHOR_이수증_업로드_서식.xlsx`;
+    } else if (agreementsSubTab === "awards") {
+      templateData = [
+        {
+          "발급번호": "제 2025-002 호",
+          "발급대상 소속": "기계시스템전공",
+          "발급대상 성명": "이순신",
+          "발급일자": "2025-07-05",
+          "발급주체": "사업단장"
+        }
+      ];
+      fileName = `UC_ANCHOR_상장_업로드_서식.xlsx`;
+    }
+
+    const ws = XLSX.utils.json_to_sheet(templateData);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "업로드템플릿");
+    ws["!cols"] = Array(7).fill({ wch: 25 });
+    XLSX.writeFile(wb, fileName);
+  };
+
+  // 엑셀 업로드 (가져오기)
+  const handleExcelImport = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+      try {
+        const binaryStr = evt.target.result;
+        const workbook = XLSX.read(binaryStr, { type: "binary" });
+        const sheetName = workbook.SheetNames[0];
+        const ws = workbook.Sheets[sheetName];
+        const rawRows = XLSX.utils.sheet_to_json(ws);
+
+        if (rawRows.length === 0) {
+          alert("엑셀 파일에 데이터가 존재하지 않습니다.");
+          return;
+        }
+
+        let importedCount = 0;
+
+        if (agreementsSubTab === "agreements") {
+          rawRows.forEach((row, index) => {
+            const dateVal = row["체결일자"];
+            const centerVal = row["관련 센터"];
+            const orgsVal = row["협약 대상기관"];
+
+            if (!dateVal || !centerVal || !orgsVal) {
+              return;
+            }
+
+            const orgList = String(orgsVal).split(",").map(o => o.trim()).filter(Boolean);
+            const rawSubjects = row["기관 측 협약주체"] || "";
+            const subjectsList = String(rawSubjects).split(",").map(s => s.trim()).filter(Boolean);
+            
+            const organizations = orgList.map((name, i) => {
+              let subject = "";
+              const match = name.match(/([^\(]+)\(([^)]+)\)/);
+              let finalName = name;
+              if (match) {
+                finalName = match[1].trim();
+                subject = match[2].trim();
+              } else if (subjectsList[i]) {
+                const subMatch = subjectsList[i].match(/([^\(]+)\(([^)]+)\)/);
+                if (subMatch && subMatch[1].trim() === name) {
+                  subject = subMatch[2].trim();
+                } else {
+                  subject = subjectsList[i];
+                }
+              }
+              return { name: finalName, subject };
+            });
+
+            const contentsVal = row["협약내용 범주"] || "";
+            const contents = String(contentsVal).split(",")
+              .map(c => c.trim())
+              .filter(c => AGREEMENT_CONTENTS_OPTIONS.includes(c));
+
+            const newAgr = {
+              year: selectedYear,
+              date: String(dateVal).trim(),
+              center: CENTERS_LIST.includes(String(centerVal).trim()) ? String(centerVal).trim() : "ECC센터",
+              organizations,
+              subjectUniversity: row["대학 측 협약주체(UC)"] ? String(row["대학 측 협약주체(UC)"]).trim() : "단장",
+              unitId: row["관련 단위과제"] ? String(row["관련 단위과제"]).trim() : "",
+              contents,
+              fileName: "",
+              fileData: ""
+            };
+
+            onAddAgreement(newAgr);
+            importedCount++;
+          });
+          alert(`${importedCount}개의 협약서 정보가 성공적으로 적재되었습니다.`);
+
+        } else if (agreementsSubTab === "certificates") {
+          rawRows.forEach((row, index) => {
+            const certNoVal = row["발급번호"];
+            const deptVal = row["발급대상 소속"];
+            const nameVal = row["발급대상 성명"];
+            const dateVal = row["발급일자"];
+
+            if (!certNoVal || !deptVal || !nameVal || !dateVal) {
+              return;
+            }
+
+            const newCert = {
+              year: selectedYear,
+              certNo: String(certNoVal).trim(),
+              recipientDept: String(deptVal).trim(),
+              recipientName: String(nameVal).trim(),
+              issueDate: String(dateVal).trim(),
+              issuer: row["발급주체"] ? String(row["발급주체"]).trim() : "사업단장",
+              fileName: "",
+              fileData: ""
+            };
+
+            onAddCertificate(newCert);
+            importedCount++;
+          });
+          alert(`${importedCount}개의 이수증 발급 정보가 성공적으로 적재되었습니다.`);
+
+        } else if (agreementsSubTab === "awards") {
+          rawRows.forEach((row, index) => {
+            const awardNoVal = row["발급번호"];
+            const deptVal = row["발급대상 소속"];
+            const nameVal = row["발급대상 성명"];
+            const dateVal = row["발급일자"];
+
+            if (!awardNoVal || !deptVal || !nameVal || !dateVal) {
+              return;
+            }
+
+            const newAward = {
+              year: selectedYear,
+              awardNo: String(awardNoVal).trim(),
+              recipientDept: String(deptVal).trim(),
+              recipientName: String(nameVal).trim(),
+              issueDate: String(dateVal).trim(),
+              issuer: row["발급주체"] ? String(row["발급주체"]).trim() : "사업단장",
+              fileName: "",
+              fileData: ""
+            };
+
+            onAddAward(newAward);
+            importedCount++;
+          });
+          alert(`${importedCount}개의 상장 발급 정보가 성공적으로 적재되었습니다.`);
+        }
+
+      } catch (err) {
+        console.error("Excel Import Error:", err);
+        alert("엑셀 파일 파싱 중 에러가 발생했습니다. 규정된 서식 파일과 컬럼 헤더가 일치하는지 확인해 주세요.");
+      }
+    };
+    reader.readAsBinaryString(file);
+    e.target.value = "";
+  };
+
   // 1-1. 협약기관 동적 추가/제거
   const handleAddOrgField = () => {
     setInputOrganizations([...inputOrganizations, { name: "", subject: "" }]);
@@ -573,6 +761,52 @@ export default function AgreementManager({
         {/* 신규 등록 & 엑셀 다운로드 제어부 */}
         {(currentRole.rank <= 2) && (
           <div style={{ display: "flex", gap: "0.4rem", alignItems: "center" }}>
+            {/* 엑셀 서식 다운로드 */}
+            <button
+              onClick={handleDownloadTemplate}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "0.25rem",
+                padding: "0.35rem 0.7rem",
+                fontSize: "0.7rem",
+                background: "rgba(255, 255, 255, 0.05)",
+                border: "1px solid rgba(255, 255, 255, 0.1)",
+                color: "rgba(255, 255, 255, 0.8)",
+                borderRadius: "0.25rem",
+                cursor: "pointer",
+                fontWeight: "700"
+              }}
+            >
+              <FileText size={12} /> 엑셀 서식
+            </button>
+
+            {/* 엑셀 업로드 */}
+            <label
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "0.25rem",
+                padding: "0.35rem 0.7rem",
+                fontSize: "0.7rem",
+                background: "rgba(99, 102, 241, 0.1)",
+                border: "1px solid rgba(99, 102, 241, 0.2)",
+                color: "#818CF8",
+                borderRadius: "0.25rem",
+                cursor: "pointer",
+                fontWeight: "700"
+              }}
+            >
+              <Upload size={12} /> 엑셀 업로드
+              <input
+                type="file"
+                accept=".xlsx, .xls"
+                onChange={handleExcelImport}
+                style={{ display: "none" }}
+              />
+            </label>
+
+            {/* 엑셀 다운로드 */}
             <a 
               href={excelDownloadUrl || "#"}
               download={excelDownloadUrl ? `${agreementsSubTab === "agreements" ? "Agreement" : agreementsSubTab === "certificates" ? "Certificate" : "Award"}_List_Year_${selectedYear}.xlsx` : undefined}
@@ -599,18 +833,20 @@ export default function AgreementManager({
             >
               <Download size={12} /> 엑셀 다운로드
             </a>
+
+            {/* 신규 추가 */}
             {currentRole.id !== "GUEST" && agreementsSubTab === "agreements" && (
-              <button className="btn-primary" onClick={() => { resetForm(); setIsModalOpen(true); }} style={{ display: "flex", alignItems: "center", gap: "0.25rem", padding: "0.35rem 0.7 child", fontSize: "0.7rem" }}>
+              <button className="btn-primary" onClick={() => { resetForm(); setIsModalOpen(true); }} style={{ display: "flex", alignItems: "center", gap: "0.25rem", padding: "0.35rem 0.7rem", fontSize: "0.7rem" }}>
                 <Plus size={14} /> 신규 협약서 등록
               </button>
             )}
             {currentRole.id !== "GUEST" && agreementsSubTab === "certificates" && (
-              <button className="btn-primary" onClick={() => { resetCertForm(); setIsCertModalOpen(true); }} style={{ display: "flex", alignItems: "center", gap: "0.25rem", padding: "0.35rem 0.7 child", fontSize: "0.7rem" }}>
+              <button className="btn-primary" onClick={() => { resetCertForm(); setIsCertModalOpen(true); }} style={{ display: "flex", alignItems: "center", gap: "0.25rem", padding: "0.35rem 0.7rem", fontSize: "0.7rem" }}>
                 <Plus size={14} /> 신규 이수증 등록
               </button>
             )}
             {currentRole.id !== "GUEST" && agreementsSubTab === "awards" && (
-              <button className="btn-primary" onClick={() => { resetAwardForm(); setIsAwardModalOpen(true); }} style={{ display: "flex", alignItems: "center", gap: "0.25rem", padding: "0.35rem 0.7 child", fontSize: "0.7rem" }}>
+              <button className="btn-primary" onClick={() => { resetAwardForm(); setIsAwardModalOpen(true); }} style={{ display: "flex", alignItems: "center", gap: "0.25rem", padding: "0.35rem 0.7rem", fontSize: "0.7rem" }}>
                 <Plus size={14} /> 신규 상장 등록
               </button>
             )}
