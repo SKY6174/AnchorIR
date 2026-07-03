@@ -4862,9 +4862,9 @@ export default function App() {
                                 </td>
                               </tr>
                             ) : (
-                              versionRequests.map((req) => (
+                              versionRequests.map((req, idx) => (
                                 <tr key={req.id}>
-                                  <td style={{ fontFamily: "var(--font-data)", fontWeight: "700" }}>{2024 + req.year}-{req.unit_id}-{req.id}</td>
+                                  <td style={{ fontFamily: "var(--font-data)", fontWeight: "700" }}>{2024 + req.year}-{req.unit_id}-{idx + 1}</td>
                                   <td>{req.program_id}</td>
                                   <td style={{ fontWeight: "700" }}>{req.program_title}</td>
                                   <td>
@@ -4940,6 +4940,8 @@ export default function App() {
 
         {/* 결재 상세 비교 Diff 모달 */}
         {selectedRequest && (() => {
+          const reqIndex = versionRequests.findIndex(r => r.id === selectedRequest.id);
+          const displaySeq = reqIndex !== -1 ? reqIndex + 1 : selectedRequest.id;
           let beforeVersion = "최초계획";
           let afterVersion = selectedRequest.version_name || "신청 계획";
           if (afterVersion.includes("차 수정")) {
@@ -4975,7 +4977,7 @@ export default function App() {
                   {/* 1. 기본 기안 정보 */}
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: "1rem", background: "rgba(255,255,255,0.02)", padding: "0.6rem 0.8rem", borderRadius: "8px", border: "1px solid var(--border-color-dark)" }}>
                     <div>
-                      <span style={{ color: "var(--text-secondary-dark)" }}>결재번호:</span> <strong style={{ color: "var(--text-primary)", fontFamily: "var(--font-data)" }}>{2024 + selectedRequest.year}-{selectedRequest.unit_id}-{selectedRequest.id}</strong>
+                      <span style={{ color: "var(--text-secondary-dark)" }}>결재번호:</span> <strong style={{ color: "var(--text-primary)", fontFamily: "var(--font-data)" }}>{2024 + selectedRequest.year}-{selectedRequest.unit_id}-{displaySeq}</strong>
                     </div>
                     <div>
                       <span style={{ color: "var(--text-secondary-dark)" }}>신청자:</span> <strong style={{ color: "var(--text-primary)" }}>{selectedRequest.requested_by}</strong>
