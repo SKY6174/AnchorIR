@@ -4876,7 +4876,7 @@ export default function App() {
                               <th>변경 차수</th>
                               <th>상태</th>
                               <th>신청자</th>
-                              <th>신청 일시</th>
+                              <th>신청 및 처리 일시</th>
                               <th style={{ textAlign: "center", width: "180px" }}>결재 처리</th>
                             </tr>
                           </thead>
@@ -4899,14 +4899,33 @@ export default function App() {
                                     </span>
                                   </td>
                                   <td>
-                                    <span className={`badge ${
-                                      req.status === "승인완료" ? "badge-green" : (req.status === "반려" ? "badge-red" : "badge-gray")
-                                    }`} style={{ fontSize: "0.65rem" }}>
-                                      {req.status}
-                                    </span>
+                                    <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                                      <span className={`badge ${
+                                        req.status === "승인완료" ? "badge-green" : (req.status === "반려" ? "badge-red" : "badge-gray")
+                                      }`} style={{ fontSize: "0.65rem" }}>
+                                        {req.status}
+                                      </span>
+                                      {(req.status === "승인완료" || req.status === "반려") && req.approved_by && (
+                                        <span style={{ fontSize: "0.62rem", color: "var(--text-secondary-dark)", marginTop: "0.15rem" }}>
+                                          ({req.approved_by})
+                                        </span>
+                                      )}
+                                    </div>
                                   </td>
                                   <td>{req.requested_by}</td>
-                                  <td style={{ fontFamily: "var(--font-data)" }}>{new Date(req.requested_at).toLocaleString("ko-KR")}</td>
+                                  <td style={{ fontFamily: "var(--font-data)", lineHeight: "1.4" }}>
+                                    <div>
+                                      <span style={{ color: "var(--text-secondary-dark)", fontSize: "0.65rem" }}>신청: </span>
+                                      {new Date(req.requested_at).toLocaleString("ko-KR")}
+                                    </div>
+                                    <div style={{ marginTop: "0.15rem" }}>
+                                      <span style={{ color: "var(--text-secondary-dark)", fontSize: "0.65rem" }}>처리: </span>
+                                      {req.approved_at 
+                                        ? new Date(req.approved_at).toLocaleString("ko-KR") 
+                                        : <span style={{ color: "var(--text-secondary-dark)" }}>대기 중</span>
+                                      }
+                                    </div>
+                                  </td>
                                   <td style={{ textAlign: "center" }}>
                                     <div style={{ display: "flex", gap: "0.25rem", justifyContent: "center" }}>
                                       <button
