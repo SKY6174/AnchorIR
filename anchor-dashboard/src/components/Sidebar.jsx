@@ -27,7 +27,11 @@ export default function Sidebar({
   return (
     <aside className="sidebar">
       <div>
-        <div className="logo-section">
+        <div 
+          className="logo-section" 
+          onClick={() => onChangeTab("dashboard")} 
+          style={{ cursor: "pointer" }}
+        >
           <img src="/logo.png" alt="울산과학대학교 로고" className="logo-img" />
           <span className="logo-text">ANCHOR Portal</span>
         </div>
