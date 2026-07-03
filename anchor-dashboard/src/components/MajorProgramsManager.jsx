@@ -16,12 +16,6 @@ const majorProgramsData = {
         { id: "A2_urise_star", name: "U-RISE 스타", desc: "RISE 체계 기반 스타트업 육성 및 글로컬 창업동아리 활성화" }
       ]
     },
-    A3: {
-      label: "A3 (지역산업 연계 글로벌 협력 거점 대학 육성)",
-      programs: [
-        { id: "A3_global", name: "글로벌 파트너십", desc: "글로벌 유수 대학 및 연구소 연계 국제 공동 연구 교류" }
-      ]
-    },
     B1: {
       label: "B1 (중소·중견기업 맞춤형 기술지원·공동연구 활성화)",
       programs: [
@@ -35,46 +29,52 @@ const majorProgramsData = {
       ]
     },
     B3: {
-      label: "B3 (성인학습자 친화형 평생직업교육 과정 개발/운영)",
+      label: "B3 (지역을 키우는 지역문제 해결 협력 체계 구축)",
       programs: [
-        { id: "B3_academy", name: "아카데미별", desc: "평생직업교육 아카데미 다변화 및 특화 과정 운영" }
-      ]
-    },
-    B4: {
-      label: "B4 (복합재난 대응 산업안전·보건 관리시스템 개발)",
-      programs: [
-        { id: "B4_safety", name: "산업안전 보건교육", desc: "산업안전 관리 고도화 및 재난 안전 예방 아카데미" }
+        { id: "B3_local_collab", name: "지역 밀착 협업", desc: "지자체-대학-산업계 연계 지역 사회문제 해결 모델 구축" }
       ]
     },
     C1: {
-      label: "C1 (U-LIFE 평생직업교육 플랫폼 구축)",
+      label: "C1 (복합재난 대응 산업안전·보건 관리시스템 개발)",
       programs: [
-        { id: "C1_lifelong", name: "평생학습 활성화", desc: "성인학습자 맞춤형 친화 학사학위 및 비학위 과정 개발" }
+        { id: "C1_safety", name: "산업안전 보건교육", desc: "복합 재난안전 관리체계 수립 및 전문 안전 인력 교육" }
       ]
     },
     C2: {
-      label: "C2 (지산학 밀착형 지역 현안 대응 및 성과 창출)",
+      label: "C2 (AID 역량강화 기반 지역산업 전환 지원)",
       programs: [
         { id: "C2_aidx", name: "AIDX", desc: "재학생·재직자 AI/DX 공동 융합 교육 및 기술 실증" },
         { id: "C2_mani", name: "동남권-제주MANI", desc: "동남권 및 제주 지역 대학 간 초광역 앵커 협력 모델" }
       ]
     },
-    D1: {
-      label: "D1 (지역을 키우는 지역문제 해결 협력 체계 구축)",
+    C3: {
+      label: "C3 (교육·산업·복지가 조화로운 지속가능한 탄소중립)",
       programs: [
-        { id: "D1_local_problem", name: "지역 현안 해결", desc: "대학-공공기관 협력 체제 구축 및 지역 리빙랩 과제 수행" }
+        { id: "C3_netzero", name: "탄소중립 그린캠퍼스", desc: "캠퍼스 내 친환경 그린인재 육성 및 모의 환경 정화 교실" }
+      ]
+    },
+    D1: {
+      label: "D1 (통합형 인재양성 기반 포용적 보건복지서비스 구현)",
+      programs: [
+        { id: "D1_welfare", name: "보건복지 서비스", desc: "물리치료 및 보건 복지 연계 포용적 지역 지원 아카데미" }
       ]
     },
     D2: {
-      label: "D2 (통합형 인재양성 기반 포용적 보건복지서비스 구현)",
+      label: "D2 (내일을 밝히는 '위드아이' 늘봄 생태계 조성)",
       programs: [
-        { id: "D2_welfare", name: "보건복지 아카데미", desc: "지역밀착형 시니어 헬스케어 및 복지 서비스 인재 육성" }
+        { id: "D2_care", name: "위드아이 늘봄", desc: "지역 아동 돌봄 생태계 조성 및 늘봄 복지 모델 운영" }
       ]
     },
     D3: {
       label: "D3 (에코 컬처로 만드는 꿀잼도시 울산)",
       programs: [
         { id: "D3_culture", name: "로컬 컬처 콘텐츠", desc: "울산 해양/문화 관광 브랜드 콘텐츠 발굴 및 아카데미" }
+      ]
+    },
+    D4: {
+      label: "D4 (지역산업 연계 글로벌 협력 거점 대학 육성)",
+      programs: [
+        { id: "D4_global", name: "글로벌 파트너십", desc: "글로벌 유수 대학 및 연구소 연계 국제 공동 연구 교류" }
       ]
     }
   },
