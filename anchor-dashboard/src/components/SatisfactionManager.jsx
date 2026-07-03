@@ -318,7 +318,7 @@ export default function SatisfactionManager({ selectedYear }) {
 
   // 단축 주소 복사 액션 시뮬레이션
   const handleCopyUrl = (id) => {
-    const surveyUrl = `https://anchor.uc.ac.kr/sv/${id}`;
+    const surveyUrl = `https://uc-anchor.vercel.app/sv/${id}`;
     navigator.clipboard.writeText(surveyUrl).then(() => {
       setCopiedId(id);
       setTimeout(() => setCopiedId(null), 2000);
@@ -1078,7 +1078,7 @@ ${commentList || "(없음)"}
                 <div style={{ background: "white", padding: "0.5rem", borderRadius: "0.5rem", display: "flex", alignItems: "center", justifyContent: "center", width: "120px", height: "120px" }}>
                   {/* qrcode.react를 이용한 SVG QR코드 실시간 생성 */}
                   <QRCodeSVG 
-                    value={`https://anchor.uc.ac.kr/sv/${selectedSurvey.id}`} 
+                    value={`https://uc-anchor.vercel.app/sv/${selectedSurvey.id}`} 
                     size={110}
                     level="H"
                     includeMargin={false}
@@ -1095,7 +1095,7 @@ ${commentList || "(없음)"}
                     <input
                       type="text"
                       readOnly
-                      value={`https://anchor.uc.ac.kr/sv/${selectedSurvey.id}`}
+                      value={`https://uc-anchor.vercel.app/sv/${selectedSurvey.id}`}
                       className="user-selector"
                       style={{ flex: 1, fontSize: "0.75rem", background: "rgba(255,255,255,0.03)", color: "var(--text-secondary)" }}
                     />

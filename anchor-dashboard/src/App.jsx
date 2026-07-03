@@ -9,6 +9,7 @@ import BudgetExecutionManager from "./components/BudgetExecutionManager";
 import ProgramProgressManager from "./components/ProgramProgressManager";
 import MajorProgramsManager from "./components/MajorProgramsManager";
 import SatisfactionManager from "./components/SatisfactionManager";
+import SurveyResponder from "./components/SurveyResponder";
 import LLMWiki from "./components/LLMWiki";
 import OrgChartManager from "./components/OrgChartManager";
 import PartnerManager from "./components/PartnerManager";
@@ -1627,6 +1628,10 @@ export default function App() {
     return formatDataToMultiYear(initialProjectsData);
   });
   const [activeTab, setActiveTab] = useState(() => {
+    // 💡 URL 패스가 /sv/로 시작하면 설문 응답 모드로 즉시 기동 (SPA 라우터 폴백 대응)
+    if (window.location.pathname.startsWith("/sv/")) {
+      return "survey_respond";
+    }
     return localStorage.getItem("anchor_active_tab") || "dashboard";
   });
   // 결재 변경 승인요청 상태 및 상세 보기 모달 제어용
@@ -4348,6 +4353,11 @@ export default function App() {
       </strong>
     );
   };
+
+  // 💡 참여자 전용 설문조사 모바일 입력 폼 (로그인 우회)
+  if (activeTab === "survey_respond") {
+    return <SurveyResponder />;
+  }
 
   if (!currentUser) {
     return <AuthManager onLoginSuccess={handleLoginSuccess} members={members} />;

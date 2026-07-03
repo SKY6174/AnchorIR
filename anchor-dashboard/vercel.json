@@ -1,0 +1,12 @@
+{
+  "rewrites": [
+    {
+      "source": "/sv/:id",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
