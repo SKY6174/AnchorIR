@@ -385,14 +385,16 @@ export default function Sidebar({
             <span>앵커Wiki</span>
           </div>
 
-          {(currentRole.id === "ADMIN" || currentRole.id === "DIRECTOR" || currentRole.id === "HQ_HEAD") && (
+          {/* 모든 역할(연구원 포함)이 사업단 관리 메뉴에 접근하여 대학조직도/파트너기관을 볼 수 있도록 허용합니다. */}
+          {currentRole && (
             <div className={`mgmt-nav-wrapper ${activeTab === "management" ? "active" : ""}`}>
               <div
                 className={`nav-item ${activeTab === "management" ? "active" : ""}`}
                 onClick={() => {
                   onChangeTab("management");
                   if (onChangeMgmtSubTab) {
-                    onChangeMgmtSubTab("members");
+                    const isManager = currentRole.id === "ADMIN" || currentRole.id === "DIRECTOR" || currentRole.id === "HQ_HEAD";
+                    onChangeMgmtSubTab(isManager ? "members" : "org_chart");
                   }
                 }}
               >
@@ -400,54 +402,60 @@ export default function Sidebar({
                 <span>사업단 관리</span>
               </div>
               <div className="nav-sub-menu">
-                <div
-                  className={`nav-sub-item ${activeTab === "management" && mgmtSubTab === "members" ? "active" : ""}`}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onChangeTab("management");
-                    if (onChangeMgmtSubTab) {
-                      onChangeMgmtSubTab("members");
-                    }
-                  }}
-                >
-                  - 구성원 관리
-                </div>
-                <div
-                  className={`nav-sub-item ${activeTab === "management" && mgmtSubTab === "users" ? "active" : ""}`}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onChangeTab("management");
-                    if (onChangeMgmtSubTab) {
-                      onChangeMgmtSubTab("users");
-                    }
-                  }}
-                >
-                  - 회원현황
-                </div>
-                <div
-                  className={`nav-sub-item ${activeTab === "management" && mgmtSubTab === "approvals" ? "active" : ""}`}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onChangeTab("management");
-                    if (onChangeMgmtSubTab) {
-                      onChangeMgmtSubTab("approvals");
-                    }
-                  }}
-                >
-                  - 승인처리
-                </div>
-                <div
-                  className={`nav-sub-item ${activeTab === "management" && mgmtSubTab === "programs" ? "active" : ""}`}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onChangeTab("management");
-                    if (onChangeMgmtSubTab) {
-                      onChangeMgmtSubTab("programs");
-                    }
-                  }}
-                >
-                  - 프로그램 배정
-                </div>
+                {/* 관리자 권한 전용 서브 탭 가드 */}
+                {(currentRole.id === "ADMIN" || currentRole.id === "DIRECTOR" || currentRole.id === "HQ_HEAD") && (
+                  <>
+                    <div
+                      className={`nav-sub-item ${activeTab === "management" && mgmtSubTab === "members" ? "active" : ""}`}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onChangeTab("management");
+                        if (onChangeMgmtSubTab) {
+                          onChangeMgmtSubTab("members");
+                        }
+                      }}
+                    >
+                      - 구성원 관리
+                    </div>
+                    <div
+                      className={`nav-sub-item ${activeTab === "management" && mgmtSubTab === "users" ? "active" : ""}`}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onChangeTab("management");
+                        if (onChangeMgmtSubTab) {
+                          onChangeMgmtSubTab("users");
+                        }
+                      }}
+                    >
+                      - 회원현황
+                    </div>
+                    <div
+                      className={`nav-sub-item ${activeTab === "management" && mgmtSubTab === "approvals" ? "active" : ""}`}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onChangeTab("management");
+                        if (onChangeMgmtSubTab) {
+                          onChangeMgmtSubTab("approvals");
+                        }
+                      }}
+                    >
+                      - 승인처리
+                    </div>
+                    <div
+                      className={`nav-sub-item ${activeTab === "management" && mgmtSubTab === "programs" ? "active" : ""}`}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onChangeTab("management");
+                        if (onChangeMgmtSubTab) {
+                          onChangeMgmtSubTab("programs");
+                        }
+                      }}
+                    >
+                      - 프로그램 배정
+                    </div>
+                  </>
+                )}
+                {/* 일반 공용 서브 탭 (대학조직도, 파트너기관) */}
                 <div
                   className={`nav-sub-item ${activeTab === "management" && mgmtSubTab === "org_chart" ? "active" : ""}`}
                   onClick={(e) => {

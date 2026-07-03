@@ -4616,76 +4616,82 @@ export default function App() {
             </div>
 
             <div style={{ display: "flex", gap: "0.5rem", borderBottom: "1px solid var(--border-color-dark)", paddingBottom: "0.8rem", marginBottom: "1.2rem" }}>
-              <button
-                type="button"
-                onClick={() => setMgmtSubTab("members")}
-                style={{
-                  border: "none",
-                  background: "transparent",
-                  padding: "0.5rem 1rem",
-                  fontSize: "0.85rem",
-                  fontWeight: "800",
-                  cursor: "pointer",
-                  color: mgmtSubTab === "members" ? "var(--accent-color)" : "var(--text-secondary-dark)",
-                  borderBottom: mgmtSubTab === "members" ? "2px solid var(--accent-color)" : "none",
-                  transition: "all 0.2s"
-                }}
-              >
-                구성원 관리
-              </button>
-              {currentRole.rank <= 2 && (
-                <button
-                  type="button"
-                  onClick={() => setMgmtSubTab("users")}
-                  style={{
-                    border: "none",
-                    background: "transparent",
-                    padding: "0.5rem 1rem",
-                    fontSize: "0.85rem",
-                    fontWeight: "800",
-                    cursor: "pointer",
-                    color: mgmtSubTab === "users" ? "var(--accent-color)" : "var(--text-secondary-dark)",
-                    borderBottom: mgmtSubTab === "users" ? "2px solid var(--accent-color)" : "none",
-                    transition: "all 0.2s"
-                  }}
-                >
-                  회원현황
-                </button>
+              {currentRole && (currentRole.id === "ADMIN" || currentRole.id === "DIRECTOR" || currentRole.id === "HQ_HEAD") && (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => setMgmtSubTab("members")}
+                    style={{
+                      border: "none",
+                      background: "transparent",
+                      padding: "0.5rem 1rem",
+                      fontSize: "0.85rem",
+                      fontWeight: "800",
+                      cursor: "pointer",
+                      color: mgmtSubTab === "members" ? "var(--accent-color)" : "var(--text-secondary-dark)",
+                      borderBottom: mgmtSubTab === "members" ? "2px solid var(--accent-color)" : "none",
+                      transition: "all 0.2s"
+                    }}
+                  >
+                    구성원 관리
+                  </button>
+                  {currentRole.rank <= 2 && (
+                    <button
+                      type="button"
+                      onClick={() => setMgmtSubTab("users")}
+                      style={{
+                        border: "none",
+                        background: "transparent",
+                        padding: "0.5rem 1rem",
+                        fontSize: "0.85rem",
+                        fontWeight: "800",
+                        cursor: "pointer",
+                        color: mgmtSubTab === "users" ? "var(--accent-color)" : "var(--text-secondary-dark)",
+                        borderBottom: mgmtSubTab === "users" ? "2px solid var(--accent-color)" : "none",
+                        transition: "all 0.2s"
+                      }}
+                    >
+                      회원현황
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => setMgmtSubTab("approvals")}
+                    style={{
+                      border: "none",
+                      background: "transparent",
+                      padding: "0.5rem 1rem",
+                      fontSize: "0.85rem",
+                      fontWeight: "800",
+                      cursor: "pointer",
+                      color: mgmtSubTab === "approvals" ? "var(--accent-color)" : "var(--text-secondary-dark)",
+                      borderBottom: mgmtSubTab === "approvals" ? "2px solid var(--accent-color)" : "none",
+                      transition: "all 0.2s"
+                    }}
+                  >
+                    승인처리
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setMgmtSubTab("programs")}
+                    style={{
+                      border: "none",
+                      background: "transparent",
+                      padding: "0.5rem 1rem",
+                      fontSize: "0.85rem",
+                      fontWeight: "800",
+                      cursor: "pointer",
+                      color: mgmtSubTab === "programs" ? "var(--accent-color)" : "var(--text-secondary-dark)",
+                      borderBottom: mgmtSubTab === "programs" ? "2px solid var(--accent-color)" : "none",
+                      transition: "all 0.2s"
+                    }}
+                  >
+                    프로그램 배정
+                  </button>
+                </>
               )}
-              <button
-                type="button"
-                onClick={() => setMgmtSubTab("approvals")}
-                style={{
-                  border: "none",
-                  background: "transparent",
-                  padding: "0.5rem 1rem",
-                  fontSize: "0.85rem",
-                  fontWeight: "800",
-                  cursor: "pointer",
-                  color: mgmtSubTab === "approvals" ? "var(--accent-color)" : "var(--text-secondary-dark)",
-                  borderBottom: mgmtSubTab === "approvals" ? "2px solid var(--accent-color)" : "none",
-                  transition: "all 0.2s"
-                }}
-              >
-                승인처리
-              </button>
-              <button
-                type="button"
-                onClick={() => setMgmtSubTab("programs")}
-                style={{
-                  border: "none",
-                  background: "transparent",
-                  padding: "0.5rem 1rem",
-                  fontSize: "0.85rem",
-                  fontWeight: "800",
-                  cursor: "pointer",
-                  color: mgmtSubTab === "programs" ? "var(--accent-color)" : "var(--text-secondary-dark)",
-                  borderBottom: mgmtSubTab === "programs" ? "2px solid var(--accent-color)" : "none",
-                  transition: "all 0.2s"
-                }}
-              >
-                프로그램 배정
-              </button>
+              
+              {/* 공용 sub-tab 버튼 */}
               <button
                 type="button"
                 onClick={() => setMgmtSubTab("org_chart")}
