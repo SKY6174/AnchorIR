@@ -1380,7 +1380,10 @@ export default function PDCAManager({
                       {/* 버전 선택 드롭다운 */}
                       {(() => {
                         const latestApproved = (programVersions || []).find(v => v.status === "승인완료");
-                        const currentVersionName = latestApproved ? latestApproved.version_name : "최초계획";
+                        let currentVersionName = "최초";
+                        if (latestApproved) {
+                          currentVersionName = latestApproved.version_name === "최초계획" ? "최초" : latestApproved.version_name;
+                        }
                         return (
                           <div style={{ display: "flex", alignItems: "center", gap: "0.3rem" }}>
                             <span style={{ fontSize: "0.62rem", color: "var(--text-secondary-dark)" }}>📄 현재 버전:</span>
@@ -1401,7 +1404,7 @@ export default function PDCAManager({
                               <option value="current">실시간 현재 버전 [{currentVersionName}] (수정 가능)</option>
                               {programVersions.map(v => (
                                 <option key={v.id} value={v.id}>
-                                  {v.version_name} ({v.status})
+                                  {v.version_name === "최초계획" ? "최초" : v.version_name} ({v.status})
                                 </option>
                               ))}
                             </select>
@@ -1420,10 +1423,10 @@ export default function PDCAManager({
                         borderRadius: "6px",
                         fontSize: "0.72rem",
                         color: "var(--text-secondary)",
-                        lineHeight: "1.4",
+                        lineHeight: "1.45",
                         display: "flex",
                         flexDirection: "column",
-                        gap: "0.25rem",
+                        gap: "0.35rem",
                         boxShadow: "inset 0 1px 2px rgba(59, 130, 246, 0.02)"
                       }}>
                         <div style={{ display: "flex", alignItems: "center", gap: "0.3rem", fontWeight: "800", color: "#60a5fa" }}>
@@ -1435,9 +1438,19 @@ export default function PDCAManager({
                         <p style={{ margin: 0, color: "var(--text-secondary-dark)" }}>
                           - 운영팀장, 본부장, 단장 결재 승인이 완료되면 최종 반영되며 새로운 변경 차수 버전이 영구 기록됩니다.
                         </p>
-                        <p style={{ margin: 0, color: "#93c5fd", fontWeight: "700" }}>
-                          * 단, 송경영 단장님이 직접 수정하는 경우는 결재 대기 절차 없이 즉시 최종 반영됩니다.
-                        </p>
+                        <div style={{
+                          marginTop: "0.3rem",
+                          padding: "0.4rem 0.6rem",
+                          background: "rgba(239, 68, 68, 0.08)",
+                          border: "1px solid rgba(239, 68, 68, 0.2)",
+                          borderRadius: "4px",
+                          color: "#f87171",
+                          fontWeight: "700",
+                          fontSize: "0.7rem",
+                          lineHeight: "1.35"
+                        }}>
+                          📌 [변경 원칙] 재원별 예산 배정, 비목별 예산 배정, 월별 추진 일정, 실적목표 중 1개 이상, 참여대상(연계대상)은 무조건 입력되어야 합니다.
+                        </div>
                       </div>
 
                       <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
