@@ -2148,7 +2148,16 @@ export default function App() {
         const { data: sEvent } = await supabase.from("schedule_events").select("*").eq("year", selectedYear);
         const { data: sMeet } = await supabase.from("schedule_meetings").select("*").eq("year", selectedYear);
         
-        if (sMonth) setMonthlySchedules(sMonth.map(x => ({ ...x, id: Number(x.id) })));
+        if (sMonth) setMonthlySchedules(sMonth.map(x => ({
+          id: Number(x.id),
+          year: x.year,
+          title: x.title,
+          type: x.type,
+          dept: x.dept,
+          startAt: x.start_at,
+          endAt: x.end_at,
+          location: x.location
+        })));
         if (sEvent) setEventSchedules(sEvent.map(x => ({ ...x, id: Number(x.id), month: Number(x.month) })));
         if (sMeet) setMeetingSchedules(sMeet.map(x => ({ ...x, id: Number(x.id), month: Number(x.month) })));
 
@@ -2322,16 +2331,19 @@ export default function App() {
           const { error } = await supabase.from("schedule_monthly").insert(
             monthlySchedules.map(s => ({
               year: selectedYear,
-              date: s.date,
               title: s.title,
-              time: s.time,
-              location: s.location
+              type: s.type || "기타",
+              dept: s.dept || "사업운영팀",
+              start_at: s.startAt,
+              end_at: s.endAt,
+              location: s.location || ""
             }))
           );
           if (error) throw error;
         }
         setSyncStatus("synced");
       } catch (e) {
+        console.error("Failed to sync monthly schedules:", e);
         setSyncStatus("error");
       }
     }, 1500);

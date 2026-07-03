@@ -34,8 +34,12 @@ export default function ScheduleManager({
   // 4. 입력 폼 임시 State
   const [formData, setFormData] = useState({
     title: "",
-    date: "2026-07-15",
-    time: "10:00",
+    type: "행사",
+    dept: "사업운영팀",
+    startDate: "2026-07-15",
+    startTime: "10:00",
+    endDate: "2026-07-15",
+    endTime: "11:00",
     location: "",
     // 행사 & 회의용
     month: 7,
@@ -61,9 +65,11 @@ export default function ScheduleManager({
     if (modalType === "monthly") {
       const newItem = {
         id: Date.now(),
-        date: formData.date,
         title: formData.title || "새 일정",
-        time: formData.time || "12:00",
+        type: formData.type || "기타",
+        dept: formData.dept || "사업운영팀",
+        startAt: `${formData.startDate} ${formData.startTime}`,
+        endAt: `${formData.endDate} ${formData.endTime}`,
         location: formData.location || "-"
       };
       setMonthlySchedules([newItem, ...monthlySchedules]);
@@ -101,8 +107,12 @@ export default function ScheduleManager({
     setIsAddModalOpen(false);
     setFormData({
       title: "",
-      date: "2026-07-15",
-      time: "10:00",
+      type: "행사",
+      dept: "사업운영팀",
+      startDate: "2026-07-15",
+      startTime: "10:00",
+      endDate: "2026-07-15",
+      endTime: "11:00",
       location: "",
       month: 7,
       department: "",
@@ -150,8 +160,8 @@ export default function ScheduleManager({
 
     // 날짜 채우기
     for (let day = 1; day <= daysInMonth; day++) {
-      const dateString = `2026-07-${day < 10 ? "0" + day : day}`;
-      const daySchedules = monthlySchedules.filter(s => s.date === dateString);
+      const dateString = `2026-${currentMonth < 10 ? "0" + currentMonth : currentMonth}-${day < 10 ? "0" + day : day}`;
+      const daySchedules = monthlySchedules.filter(s => s.startAt && s.startAt.substring(0, 10) === dateString);
       const isSelected = selectedDay === day;
 
       cells.push(
@@ -178,7 +188,7 @@ export default function ScheduleManager({
                 key={sched.id} 
                 style={{
                   fontSize: "0.65rem",
-                  background: "var(--accent-color)",
+                  background: sched.type === "행사" ? "#3B82F6" : sched.type === "회의" ? "#10B981" : sched.type === "위원회" ? "#F59E0B" : "#8B5CF6",
                   color: "white",
                   padding: "0.1rem 0.25rem",
                   borderRadius: "2px",
@@ -186,7 +196,7 @@ export default function ScheduleManager({
                   textOverflow: "ellipsis",
                   overflow: "hidden"
                 }}
-                title={sched.title}
+                title={`${sched.title} (${sched.type}/${sched.dept})`}
               >
                 {sched.title}
               </div>
@@ -200,8 +210,8 @@ export default function ScheduleManager({
   };
 
   const getSelectedDaySchedules = () => {
-    const dateString = `2026-07-${selectedDay < 10 ? "0" + selectedDay : selectedDay}`;
-    return monthlySchedules.filter(s => s.date === dateString);
+    const dateString = `2026-${currentMonth < 10 ? "0" + currentMonth : currentMonth}-${selectedDay < 10 ? "0" + selectedDay : selectedDay}`;
+    return monthlySchedules.filter(s => s.startAt && s.startAt.substring(0, 10) === dateString);
   };
 
   return (
@@ -297,10 +307,18 @@ export default function ScheduleManager({
                       <strong style={{ fontSize: "0.9rem", color: "white", display: "block", marginBottom: "0.25rem" }}>
                         {sched.title}
                       </strong>
+                      <div style={{ display: "flex", gap: "0.3rem", flexWrap: "wrap", marginBottom: "0.4rem" }}>
+                        <span style={{ fontSize: "0.65rem", padding: "0.1rem 0.4rem", borderRadius: "4px", background: sched.type === "행사" ? "rgba(59, 130, 246, 0.2)" : sched.type === "회의" ? "rgba(16, 185, 129, 0.2)" : sched.type === "위원회" ? "rgba(245, 158, 11, 0.2)" : "rgba(139, 92, 246, 0.2)", color: sched.type === "행사" ? "#60A5FA" : sched.type === "회의" ? "#34D399" : sched.type === "위원회" ? "#FBBF24" : "#A78BFA", fontWeight: "700" }}>
+                          {sched.type || "기타"}
+                        </span>
+                        <span style={{ fontSize: "0.65rem", padding: "0.1rem 0.4rem", borderRadius: "4px", background: "rgba(255, 255, 255, 0.05)", color: "var(--text-secondary-dark)", fontWeight: "700" }}>
+                          {sched.dept || "사업운영팀"}
+                        </span>
+                      </div>
                       <div style={{ display: "flex", flexDirection: "column", gap: "0.2rem", fontSize: "0.75rem", color: "var(--text-secondary-dark)" }}>
                         <span style={{ display: "flex", alignItems: "center", gap: "0.25rem" }}>
                           <Clock size={12} />
-                          {sched.time}
+                          {sched.startAt} ~ {sched.endAt}
                         </span>
                         <span style={{ display: "flex", alignItems: "center", gap: "0.25rem" }}>
                           <MapPin size={12} />
@@ -617,12 +635,40 @@ export default function ScheduleManager({
                   </div>
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
                     <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>일자</label>
-                      <input type="date" name="date" value={formData.date} onChange={handleInputChange} style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} />
+                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>일정 유형</label>
+                      <select name="type" value={formData.type} onChange={handleInputChange} style={{ width: "100%", padding: "0.5rem", background: "var(--bg-card-dark)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }}>
+                        {["행사", "회의", "위원회", "기타"].map(t => (
+                          <option key={t} value={t}>{t}</option>
+                        ))}
+                      </select>
                     </div>
                     <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>시간</label>
-                      <input type="time" name="time" value={formData.time} onChange={handleInputChange} style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} />
+                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>관련 부서</label>
+                      <select name="dept" value={formData.dept} onChange={handleInputChange} style={{ width: "100%", padding: "0.5rem", background: "var(--bg-card-dark)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }}>
+                        {["사업운영팀", "ECC센터", "ICC센터", "RCC센터", "AID-X지원센터", "울산늘봄누리센터", "신산업특화센터"].map(d => (
+                          <option key={d} value={d}>{d}</option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                  <div style={{ display: "grid", gridTemplateColumns: "1.2fr 0.8fr", gap: "1rem" }}>
+                    <div>
+                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>시작일시 (일자)</label>
+                      <input type="date" name="startDate" value={formData.startDate} onChange={handleInputChange} style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} />
+                    </div>
+                    <div>
+                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>시작 시간</label>
+                      <input type="time" name="startTime" value={formData.startTime} onChange={handleInputChange} style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} />
+                    </div>
+                  </div>
+                  <div style={{ display: "grid", gridTemplateColumns: "1.2fr 0.8fr", gap: "1rem" }}>
+                    <div>
+                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>종료일시 (일자)</label>
+                      <input type="date" name="endDate" value={formData.endDate} onChange={handleInputChange} style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} />
+                    </div>
+                    <div>
+                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>종료 시간</label>
+                      <input type="time" name="endTime" value={formData.endTime} onChange={handleInputChange} style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} />
                     </div>
                   </div>
                   <div>
