@@ -440,7 +440,7 @@ export default function UnitSystemView() {
             >
               {PROJECTS_DATA.map(p => (
                 <option key={p.id} value={p.id} style={{ background: "#1e1e1e", color: "white" }}>
-                  {p.id} 프로젝트 ({p.id === "A" ? "TALENT" : p.id === "B" ? "BRIDGE" : p.id === "C" ? "JUMP" : "CARE"})
+                  {p.id} 프로젝트 ({p.id === "A" ? "Dynamic TALENT" : p.id === "B" ? "Dynamic BRIDGE" : p.id === "C" ? "Dynamic JUMP" : "Dynamic CARE"})
                 </option>
               ))}
             </select>
@@ -467,7 +467,7 @@ export default function UnitSystemView() {
             >
               {PROJECTS_DATA.find(p => p.id === selectedProjectId)?.units.map(u => (
                 <option key={u.id} value={u.id} style={{ background: "#1e1e1e", color: "white" }}>
-                  {u.id} : {u.title.substring(0, 24)}...
+                  {u.id} : {u.title}
                 </option>
               ))}
             </select>
@@ -494,7 +494,7 @@ export default function UnitSystemView() {
             >
               {selectedUnitData.strategies.map(s => (
                 <option key={s.id} value={s.id} style={{ background: "#1e1e1e", color: "white" }}>
-                  {s.id} : {s.title.substring(0, 24)}...
+                  {s.id} : {s.title}
                 </option>
               ))}
             </select>
