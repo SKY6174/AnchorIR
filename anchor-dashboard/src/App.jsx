@@ -148,36 +148,37 @@ const RenderLatexFormula = ({ formula }) => {
     boxSizing: "border-box"
   };
 
-  // LaTeX 수식 문자열을 한글 평문으로 깨끗하게 다듬어주는 헬퍼
-  const cleanLatex = (str) => {
+  // 1단계: LaTeX 문자열에서 오염된 text{...} 구조와 제어문자들을 완전히 평문화
+  const purifyLatexString = (str) => {
     if (!str) return "";
     return str
-      // \text{...} 또는 [Tab]ext{...} 구조 모두 매칭
+      // \text{...} 또는 [Tab]ext{...} 구조 매칭하여 중괄호 안의 글자만 추출
       .replace(/(?:\\text|[\t]ext)\{([^}]+)\}/g, "$1")
-      // 백슬래시 유실로 단독 남은 text{...} 및 ext{...} 제거
+      // 혹시 백슬래시 탈락해서 남은 text{...} 및 ext{...} 정화
       .replace(/(?:text|ext)\{([^}]+)\}/g, "$1")
-      // LaTeX 퍼센트 이스케이프(\%) 복구
+      // LaTeX 퍼센트 이스케이프 복구
       .replace(/\\%/g, "%")
       // 남은 백슬래시 제거
-      .replace(/\\/g, "")
-      // 혹시 매칭에 누락되어 남은 단독 중괄호 제거
-      .replace(/[\{\}]/g, "")
-      .trim();
+      .replace(/\\/g, "");
   };
 
-  // 1. 만약 수식에 "="이 있다면 (예: C-1 ~ C-6 공식 등)
-  if (formula.includes("=")) {
-    const parts = formula.split("=");
-    let label = cleanLatex(parts[0]);
+  // 먼저 전체 수식 문자열을 평문화 처리한다! (중괄호 중첩 구조가 여기서 선제 정화됨)
+  const purifiedFormula = purifyLatexString(formula);
+
+  // 2단계: 평문화된 수식에서 분수 및 연산자 파싱
+  // 2.1. 만약 수식에 "="이 있다면 (C-1 ~ C-6 공식 등)
+  if (purifiedFormula.includes("=")) {
+    const parts = purifiedFormula.split("=");
+    const label = parts[0].trim();
     const rightSide = parts[1].trim();
 
-    // 우항에서 \frac{분자}{분모} 추출 (탭 제어문자 \f 도 고려)
-    const fracMatch = rightSide.match(/(?:\\frac|[\f]rac|frac)\{([\s\S]+?)\}\{([\s\S]+?)\}/);
+    // 평문화 상태이므로 단순히 frac{분자}{분모} 구조만 감지하면 됨! (오염된 rac도 지원)
+    const fracMatch = rightSide.match(/(?:frac|rac)\{([^}]+)\}\s*\{([^}]+)\}/);
     if (fracMatch) {
-      let num = cleanLatex(fracMatch[1]);
-      let den = cleanLatex(fracMatch[2]);
+      const num = fracMatch[1].trim();
+      const den = fracMatch[2].trim();
       
-      const timesMatch = rightSide.match(/(?:\\times|[\t\f\s]times|times)\s*([\d.]+)/);
+      const timesMatch = rightSide.match(/times\s*([\d.]+)/);
       const weight = timesMatch ? timesMatch[1] : null;
 
       return (
@@ -203,26 +204,24 @@ const RenderLatexFormula = ({ formula }) => {
     }
   }
 
-  // 2. 만약 일반 다항식 분수라면 (L-1 ~ L-24 공식 등)
-  const containsFrac = formula.includes("frac") || formula.includes("rac");
+  // 2.2. 일반 다항식 분수라면 (L-1 ~ L-24 공식 등)
+  const containsFrac = purifiedFormula.includes("frac") || purifiedFormula.includes("rac");
   if (!containsFrac) {
-    return <span style={{ fontSize: "0.85rem", color: "var(--text-secondary-dark)" }}>{formula}</span>;
+    return <span style={{ fontSize: "0.85rem", color: "var(--text-secondary-dark)" }}>{purifiedFormula}</span>;
   }
 
-  const terms = formula.split("+");
+  const terms = purifiedFormula.split("+");
 
   return (
     <div style={containerStyle}>
       {terms.map((termStr, index) => {
         const trimmed = termStr.trim();
-        // \frac 및 \text 가 \f, \t 등으로 쪼개진 가능성까지 포함한 Regex
-        const fracRegex = /(?:\\frac|[\f]rac|frac)\{(?:\\text|[\t]ext|text|ext)\{([^}]+)\}\}\{(?:\\text|[\t]ext|text|ext)\{([^}]+)\}\}(?:\s*(?:\\times|times)\s*([\d.]+))?/;
-        const match = trimmed.match(fracRegex);
+        const fracMatch = trimmed.match(/(?:frac|rac)\{([^}]+)\}\s*\{([^}]+)\}(?:\s*times\s*([\d.]+))?/);
 
-        if (match) {
-          const num = match[1];
-          const den = match[2];
-          const weight = match[3];
+        if (fracMatch) {
+          const num = fracMatch[1].trim();
+          const den = fracMatch[2].trim();
+          const weight = fracMatch[3];
 
           return (
             <React.Fragment key={index}>
@@ -245,7 +244,7 @@ const RenderLatexFormula = ({ formula }) => {
         return (
           <React.Fragment key={index}>
             {index > 0 && <span style={{ margin: "0 0.1rem", fontWeight: "700", color: "var(--text-secondary-dark)" }}>+</span>}
-            <span style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)" }}>{cleanLatex(trimmed)}</span>
+            <span style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)" }}>{trimmed}</span>
           </React.Fragment>
         );
       })}
