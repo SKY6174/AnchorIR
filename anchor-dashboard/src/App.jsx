@@ -2149,7 +2149,8 @@ export default function App() {
           .select("*")
           .eq("year", selectedYear);
         
-        if (agrData) {
+        // 원격 DB에 진짜 저장된 데이터가 존재할 때만 덮어써서 로컬 캐시 유실을 방지합니다.
+        if (agrData && agrData.length > 0) {
           const formatted = agrData.map(a => ({
             id: Number(a.id),
             year: a.year,
@@ -2172,17 +2173,17 @@ export default function App() {
         const { data: pEquip } = await supabase.from("procurement_equipment").select("*").eq("year", selectedYear);
         const { data: pServ } = await supabase.from("procurement_services").select("*").eq("year", selectedYear);
         
-        if (pEnv) {
+        if (pEnv && pEnv.length > 0) {
           const formatted = pEnv.map(x => ({ ...x, id: Number(x.id), budgetPlan: Number(x.budget_plan), budgetSpent: Number(x.budget_spent) }));
           setEnvData(formatted);
           localStorage.setItem(`anchor_cache_env_y${selectedYear}`, JSON.stringify(formatted));
         }
-        if (pEquip) {
+        if (pEquip && pEquip.length > 0) {
           const formatted = pEquip.map(x => ({ ...x, id: Number(x.id), budgetPlan: Number(x.budget_plan), budgetSpent: Number(x.budget_spent) }));
           setEquipData(formatted);
           localStorage.setItem(`anchor_cache_equip_y${selectedYear}`, JSON.stringify(formatted));
         }
-        if (pServ) {
+        if (pServ && pServ.length > 0) {
           const formatted = pServ.map(x => ({ ...x, id: Number(x.id), budgetPlan: Number(x.budget_plan), budgetSpent: Number(x.budget_spent) }));
           setServiceData(formatted);
           localStorage.setItem(`anchor_cache_serv_y${selectedYear}`, JSON.stringify(formatted));
@@ -2193,7 +2194,7 @@ export default function App() {
         const { data: sEvent } = await supabase.from("schedule_events").select("*").eq("year", selectedYear);
         const { data: sMeet } = await supabase.from("schedule_meetings").select("*").eq("year", selectedYear);
         
-        if (sMonth) {
+        if (sMonth && sMonth.length > 0) {
           const formatted = sMonth.map(x => ({
             id: Number(x.id),
             year: x.year,
@@ -2210,12 +2211,12 @@ export default function App() {
           setMonthlySchedules(formatted);
           localStorage.setItem(`anchor_cache_month_y${selectedYear}`, JSON.stringify(formatted));
         }
-        if (sEvent) {
+        if (sEvent && sEvent.length > 0) {
           const formatted = sEvent.map(x => ({ ...x, id: Number(x.id), month: Number(x.month) }));
           setEventSchedules(formatted);
           localStorage.setItem(`anchor_cache_event_y${selectedYear}`, JSON.stringify(formatted));
         }
-        if (sMeet) {
+        if (sMeet && sMeet.length > 0) {
           const formatted = sMeet.map(x => ({ ...x, id: Number(x.id), month: Number(x.month) }));
           setMeetingSchedules(formatted);
           localStorage.setItem(`anchor_cache_meet_y${selectedYear}`, JSON.stringify(formatted));
