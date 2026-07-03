@@ -1742,8 +1742,8 @@ export default function App() {
 
   const [assignFilterUnitId, setAssignFilterUnitId] = useState("all");
   const [mgmtSubTab, setMgmtSubTab] = useState(() => {
-    return localStorage.getItem("anchor_mgmt_sub_tab") || "members";
-  }); // "members", "programs", "approvals"
+    return localStorage.getItem("anchor_mgmt_sub_tab") || "approvals";
+  }); // "approvals", "members", "programs", "users"
   useEffect(() => {
     localStorage.setItem("anchor_mgmt_sub_tab", mgmtSubTab);
   }, [mgmtSubTab]);
@@ -4620,6 +4620,23 @@ export default function App() {
                 <>
                   <button
                     type="button"
+                    onClick={() => setMgmtSubTab("approvals")}
+                    style={{
+                      border: "none",
+                      background: "transparent",
+                      padding: "0.5rem 1rem",
+                      fontSize: "0.85rem",
+                      fontWeight: "800",
+                      cursor: "pointer",
+                      color: mgmtSubTab === "approvals" ? "var(--accent-color)" : "var(--text-secondary-dark)",
+                      borderBottom: mgmtSubTab === "approvals" ? "2px solid var(--accent-color)" : "none",
+                      transition: "all 0.2s"
+                    }}
+                  >
+                    승인처리
+                  </button>
+                  <button
+                    type="button"
                     onClick={() => setMgmtSubTab("members")}
                     style={{
                       border: "none",
@@ -4654,23 +4671,6 @@ export default function App() {
                       회원현황
                     </button>
                   )}
-                  <button
-                    type="button"
-                    onClick={() => setMgmtSubTab("approvals")}
-                    style={{
-                      border: "none",
-                      background: "transparent",
-                      padding: "0.5rem 1rem",
-                      fontSize: "0.85rem",
-                      fontWeight: "800",
-                      cursor: "pointer",
-                      color: mgmtSubTab === "approvals" ? "var(--accent-color)" : "var(--text-secondary-dark)",
-                      borderBottom: mgmtSubTab === "approvals" ? "2px solid var(--accent-color)" : "none",
-                      transition: "all 0.2s"
-                    }}
-                  >
-                    승인처리
-                  </button>
                   <button
                     type="button"
                     onClick={() => setMgmtSubTab("programs")}

@@ -394,7 +394,7 @@ export default function Sidebar({
                   onChangeTab("management");
                   if (onChangeMgmtSubTab) {
                     const isManager = currentRole.id === "ADMIN" || currentRole.id === "DIRECTOR" || currentRole.id === "HQ_HEAD";
-                    onChangeMgmtSubTab(isManager ? "members" : "org_chart");
+                    onChangeMgmtSubTab(isManager ? "approvals" : "org_chart");
                   }
                 }}
               >
@@ -405,6 +405,18 @@ export default function Sidebar({
                 {/* 관리자 권한 전용 서브 탭 가드 */}
                 {(currentRole.id === "ADMIN" || currentRole.id === "DIRECTOR" || currentRole.id === "HQ_HEAD") && (
                   <>
+                    <div
+                      className={`nav-sub-item ${activeTab === "management" && mgmtSubTab === "approvals" ? "active" : ""}`}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onChangeTab("management");
+                        if (onChangeMgmtSubTab) {
+                          onChangeMgmtSubTab("approvals");
+                        }
+                      }}
+                    >
+                      - 승인처리
+                    </div>
                     <div
                       className={`nav-sub-item ${activeTab === "management" && mgmtSubTab === "members" ? "active" : ""}`}
                       onClick={(e) => {
@@ -428,18 +440,6 @@ export default function Sidebar({
                       }}
                     >
                       - 회원현황
-                    </div>
-                    <div
-                      className={`nav-sub-item ${activeTab === "management" && mgmtSubTab === "approvals" ? "active" : ""}`}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onChangeTab("management");
-                        if (onChangeMgmtSubTab) {
-                          onChangeMgmtSubTab("approvals");
-                        }
-                      }}
-                    >
-                      - 승인처리
                     </div>
                     <div
                       className={`nav-sub-item ${activeTab === "management" && mgmtSubTab === "programs" ? "active" : ""}`}
