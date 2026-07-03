@@ -20,7 +20,9 @@ export default function Sidebar({
   scheduleSubTab,
   onChangeScheduleSubTab,
   agreementsSubTab,
-  onChangeAgreementsSubTab
+  onChangeAgreementsSubTab,
+  progressSubTab,
+  onChangeProgressSubTab
 }) {
   return (
     <aside className="sidebar">
@@ -39,12 +41,45 @@ export default function Sidebar({
             <span>IR 대시보드</span>
           </div>
 
-          <div
-            className={`nav-item ${activeTab === "progress" ? "active" : ""}`}
-            onClick={() => onChangeTab("progress")}
-          >
-            <ClipboardList size={24} />
-            <span>프로그램 진행</span>
+          <div className={`progress-nav-wrapper ${activeTab === "progress" ? "active" : ""}`}>
+            <div
+              className={`nav-item ${activeTab === "progress" ? "active" : ""}`}
+              onClick={() => {
+                onChangeTab("progress");
+                if (onChangeProgressSubTab) {
+                  onChangeProgressSubTab("progress_status");
+                }
+              }}
+            >
+              <ClipboardList size={24} />
+              <span>프로그램 진행</span>
+            </div>
+            <div className="nav-sub-menu">
+              <div
+                className={`nav-sub-item ${activeTab === "progress" && progressSubTab === "progress_status" ? "active" : ""}`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onChangeTab("progress");
+                  if (onChangeProgressSubTab) {
+                    onChangeProgressSubTab("progress_status");
+                  }
+                }}
+              >
+                - 프로그램 진행 상황
+              </div>
+              <div
+                className={`nav-sub-item ${activeTab === "progress" && progressSubTab === "major_programs" ? "active" : ""}`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onChangeTab("progress");
+                  if (onChangeProgressSubTab) {
+                    onChangeProgressSubTab("major_programs");
+                  }
+                }}
+              >
+                - 주요 프로그램
+              </div>
+            </div>
           </div>
 
           <div className={`projects-nav-wrapper ${activeTab === "projects" ? "active" : ""}`}>

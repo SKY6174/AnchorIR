@@ -7,6 +7,7 @@ import AgreementManager from "./components/AgreementManager";
 import BudgetItemsManager from "./components/BudgetItemsManager";
 import BudgetExecutionManager from "./components/BudgetExecutionManager";
 import ProgramProgressManager from "./components/ProgramProgressManager";
+import MajorProgramsManager from "./components/MajorProgramsManager";
 import LLMWiki from "./components/LLMWiki";
 import AuthManager from "./components/AuthManager";
 import ProcurementManager from "./components/ProcurementManager";
@@ -2180,6 +2181,9 @@ export default function App() {
   const [scheduleSubTab, setScheduleSubTab] = useState(() => {
     return localStorage.getItem("anchor_schedule_sub_tab") || "monthly";
   });
+  const [progressSubTab, setProgressSubTab] = useState(() => {
+    return localStorage.getItem("anchor_progress_sub_tab") || "progress_status";
+  });
   const [selectedUnitId, setSelectedUnitId] = useState(() => {
     return localStorage.getItem("anchor_selected_unit_id") || "A1가";
   });
@@ -2206,6 +2210,10 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem("anchor_projects_sub_tab", projectsSubTab);
   }, [projectsSubTab]);
+
+  useEffect(() => {
+    localStorage.setItem("anchor_progress_sub_tab", progressSubTab);
+  }, [progressSubTab]);
 
   useEffect(() => {
     localStorage.setItem("anchor_budget_sub_tab", budgetSubTab);
@@ -4170,6 +4178,8 @@ export default function App() {
         onChangeScheduleSubTab={setScheduleSubTab}
         agreementsSubTab={agreementsSubTab}
         onChangeAgreementsSubTab={setAgreementsSubTab}
+        progressSubTab={progressSubTab}
+        onChangeProgressSubTab={setProgressSubTab}
       />
 
       {/* 메인 뷰 */}
@@ -5955,17 +5965,62 @@ export default function App() {
         )}
 
         {activeTab === "progress" && (
-          <ProgramProgressManager
-            projects={displayProjects}
-            selectedYear={selectedYear}
-            onUpdateProgramDetails={handleUpdateProgramDetails}
-            onSelectProgram={(unitId, progId) => {
-              setActiveTab("projects");
-              setProjectsSubTab("program_mgmt");
-              setSelectedUnitId(unitId);
-              setSelectedProgId(progId);
-            }}
-          />
+          <div className="progress-management-wrapper" style={{ display: "flex", flexDirection: "column", gap: "1rem", width: "100%" }}>
+            {/* 프로그램 진행 본문 가로 탭바 헤더 */}
+            <div style={{ display: "flex", gap: "1.5rem", borderBottom: "1px solid rgba(255,255,255,0.1)", paddingBottom: "0.2rem", marginBottom: "0.5rem" }}>
+              <button
+                onClick={() => setProgressSubTab("progress_status")}
+                style={{
+                  background: "transparent",
+                  border: "none",
+                  fontSize: "1rem",
+                  fontWeight: "800",
+                  cursor: "pointer",
+                  padding: "0.5rem 1rem",
+                  color: progressSubTab === "progress_status" ? "var(--accent-color)" : "var(--text-secondary-dark)",
+                  borderBottom: progressSubTab === "progress_status" ? "2px solid var(--accent-color)" : "none",
+                  transition: "all 0.2s ease"
+                }}
+              >
+                프로그램 진행 상황
+              </button>
+              <button
+                onClick={() => setProgressSubTab("major_programs")}
+                style={{
+                  background: "transparent",
+                  border: "none",
+                  fontSize: "1rem",
+                  fontWeight: "800",
+                  cursor: "pointer",
+                  padding: "0.5rem 1rem",
+                  color: progressSubTab === "major_programs" ? "var(--accent-color)" : "var(--text-secondary-dark)",
+                  borderBottom: progressSubTab === "major_programs" ? "2px solid var(--accent-color)" : "none",
+                  transition: "all 0.2s ease"
+                }}
+              >
+                주요 프로그램
+              </button>
+            </div>
+
+            {/* 본문 콘텐츠 스위칭 */}
+            {progressSubTab === "progress_status" ? (
+              <ProgramProgressManager
+                projects={displayProjects}
+                selectedYear={selectedYear}
+                onUpdateProgramDetails={handleUpdateProgramDetails}
+                onSelectProgram={(unitId, progId) => {
+                  setActiveTab("projects");
+                  setProjectsSubTab("program_mgmt");
+                  setSelectedUnitId(unitId);
+                  setSelectedProgId(progId);
+                }}
+              />
+            ) : (
+              <MajorProgramsManager
+                selectedYear={selectedYear}
+              />
+            )}
+          </div>
         )}
 
         {activeTab === "budget" && (
