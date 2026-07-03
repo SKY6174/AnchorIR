@@ -1044,14 +1044,14 @@ const renderTimelineDiff = (timelineStr) => {
             {/* 아랫줄: P, D, C, A 일정 표기 */}
             <div 
               style={{
-                padding: "0.15rem 0.2rem",
-                fontSize: "0.65rem",
+                padding: "0.08rem 0.15rem",
+                fontSize: "0.58rem",
                 background: bg !== "transparent" ? bg : "rgba(255,255,255,0.02)",
                 color: bg !== "transparent" ? "white" : "var(--text-secondary-dark)",
                 border: "1px solid var(--border-color-dark)",
-                borderRadius: "4px",
+                borderRadius: "3px",
                 fontWeight: bg !== "transparent" ? "800" : "normal",
-                minHeight: "1.1rem",
+                minHeight: "0.88rem",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center"
