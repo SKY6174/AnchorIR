@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Info, Award, Layout, GitFork } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { Info, Award, Layout, GitFork, ArrowRight, List } from "lucide-react";
 
 // 1. 프로젝트 및 단위과제 매핑 정보 정의 (2차년도 기준)
 const PROJECTS_DATA = [
@@ -42,154 +42,257 @@ const PROJECTS_DATA = [
   }
 ];
 
-// 2. 단위과제별 전략(S) 및 추진과제(T) 매핑 사전 정의
+// 2. proposal 실재 데이터 기반 전략(S) 및 추진과제(T) & 프로그램(PG) 연동 맵핑 테이블
 const STRATEGY_TASK_MAPPING = {
   "A1가": {
-    strategy: "S1: 정주형 산업실전 인재 양성 (Dynamic TALENT)",
+    strategies: [
+      { id: "S1", title: "지역인력 수요분석 기반 UC-HYPER 실무인재 양성" },
+      { id: "S2", title: "교육과정 모니터링 체계 구축 및 성과 확산" },
+      { id: "S3", title: "지역정주 지산학 맞춤형 고급 기술인재 양성" },
+      { id: "S4", title: "하이퍼(Hyper-connected) 캠퍼스 구축 및 운영" },
+      { id: "S5", title: "지역혁신 선도 인재양성 거버넌스 체계 구축 및 확산" }
+    ],
     tasks: [
-      "T1: UC-HYPER 전문기술인재 양성을 위한 교육과정 혁신",
-      "T2: 지역 특화 핵심 교원 교육역량 및 연구 혁신성 제고",
-      "T3: 첨단 특화 실습실(ECC) 인프라 구축 및 지역 공동 개방"
+      { strat: "S1", id: "1-1", title: "UC-HYPER 기반 주문식 교육과정 및 혁신 교수법 개발" },
+      { strat: "S2", id: "2-1", title: "교육과정 성과 모니터링 및 대외 성과공유 확산" },
+      { strat: "S3", id: "3-1", title: "지산학 연계 고숙련 기술 인재 육성 및 현장 실무 지원" },
+      { strat: "S4", id: "4-1", title: "하이퍼 캠퍼스 교육환경 및 데이터 활용 인프라 구축" },
+      { strat: "S5", id: "5-1", title: "울산형 및 글로벌 지산학 거버넌스 협력 체계 구축" }
     ],
     programs: [
-      { id: "A1가-S1T1-1", title: "UC-HYPER 교수법 개발 및 교재 보급" },
-      { id: "A1가-S1T1-2", title: "지역 연계형 주문식 교육과정 및 마이크로디그리 설계" },
-      { id: "A1가-S1T2-3", title: "특화분야 자격증 및 전문가 실무과정 지원" },
-      { id: "A1가-S1T3-4", title: "개방형설계센터 인프라 및 공동 실험장비 고도화" }
+      { strat: "S1", id: "A1가-S1T1-1", title: "UC-HYPER 교수학습 모델 및 혁신 교수법 개발 운영" },
+      { strat: "S1", id: "A1가-S1T1-2", title: "미래 핵심 산업 맞춤형 정규 주문식 교과정 개편 및 운영" },
+      { strat: "S1", id: "A1가-S1T1-3", title: "특화 분야 비교과 자격증 과정 및 학점교류 운영" },
+      { strat: "S2", id: "A1가-S2T1-1", title: "전주기 이력 추적형 진로개발 시스템 운영" },
+      { strat: "S2", id: "A1가-S2T1-2", title: "산학 성과 공유를 위한 경진대회 및 대외 워크숍 개최" },
+      { strat: "S3", id: "A1가-S3T1-1", title: "지역 산업체 연계 고숙련 기술 교육 및 인턴십" },
+      { strat: "S4", id: "A1가-S4T1-1", title: "하이퍼 캠퍼스 온라인 실습 시스템 구축" },
+      { strat: "S5", id: "A1가-S5T1-1", title: "울산 앵커 사업단 거버넌스 활성화 성과 세미나" }
     ]
   },
   "A1나": {
-    strategy: "S1: 정주형 산업실전 인재 양성 (Dynamic TALENT)",
+    strategies: [
+      { id: "S1", title: "지역인력 수요분석 기반 UC-HYPER 실무인재 양성" },
+      { id: "S2", title: "교육과정 모니터링 체계 구축 및 성과 확산" },
+      { id: "S3", title: "지역정주 지산학 맞춤형 고급 기술인재 양성" },
+      { id: "S4", title: "하이퍼(Hyper-connected) 캠퍼스 구축 및 운영" },
+      { id: "S5", title: "지역혁신 선도 인재양성 거버넌스 체계 구축 및 확산" }
+    ],
     tasks: [
-      "T1: 글로벌 친환경선박 분야 기술표준 직업교육 체계 구축",
-      "T2: 스마트 친환경선박 신호 및 제어 전공과정 도입",
-      "T3: 글로벌 인턴십 및 취업 연계 환류 시스템 구축"
+      { strat: "S1", id: "1-1", title: "신산업 특화 스마트·친환경선박 직업교육체계 고도화" },
+      { strat: "S2", id: "2-1", title: "신산업 이관 과제 모니터링 및 교육 품질 관리" },
+      { strat: "S3", id: "3-1", title: "글로벌 친환경선박 신기술 정주 인력 교육" },
+      { strat: "S4", id: "4-1", title: "미래 친환경선박 가상 교육 기자재 인프라 확충" },
+      { strat: "S5", id: "5-1", title: "스마트·친환경선박 산학관 거버넌스 네트워크 강화" }
     ],
     programs: [
-      { id: "A1나-S1T1-1", title: "친환경선박 직업교육 글로벌 표준 표준 교과 개편" },
-      { id: "A1나-S1T2-2", title: "신산업 이관 전담 실무 교육장비 가동" },
-      { id: "A1나-S1T3-3", title: "선도 조선소 연계 맞춤형 글로벌 인턴십 프로그램" }
+      { strat: "S1", id: "A1나-S1T1-1", title: "친환경선박 직업교육 글로벌 표준 표준 교과 개편" },
+      { strat: "S2", id: "A1나-S2T1-1", title: "신산업 이관 전담 실무 교육장비 가동" },
+      { strat: "S3", id: "A1나-S3T1-1", title: "선도 조선소 연계 맞춤형 글로벌 인턴십 프로그램" }
     ]
   },
   "A2": {
-    strategy: "S2: 로컬 창업 활성화 및 혁신 인프라 확산",
+    strategies: [
+      { id: "S1", title: "대학 구성원 창업 역량 강화 및 창업 인프라 구축" },
+      { id: "S2", title: "예비창업자 발굴 및 기술/일반 창업 지원 강화" },
+      { id: "S3", title: "지역 연계창업 네트워크 활성화 및 글로컬 창업 생태계 확장" }
+    ],
     tasks: [
-      "T1: 글로컬 연계 대학생 창업동아리 및 생태계 조성",
-      "T2: 지역 창업 유관기관 네트워크 통합 및 비즈니스 인큐베이팅"
+      { strat: "S1", id: "1-1", title: "대학 구성원 창업 마인드 확산 및 교육 (P1-AP1-AP2 통합)" },
+      { strat: "S1", id: "1-2", title: "창업 지원 제도 개선 및 F.A.B. Lab. 인프라 구축 (P2-AP3-AP4 통합)" },
+      { strat: "S2", id: "2-1", title: "예비창업자 모집·선발 및 투자 연계 지원 (P3-AP5-AP6 통합)" },
+      { strat: "S2", id: "2-2", title: "창업 기업 사업화 후속 지원 및 마케팅 연계 (P4-AP7-AP8 통합)" },
+      { strat: "S3", id: "3-1", title: "초중고/지역민 창업 교육 생태계 구축 (P5-AP9-AP10 통합)" },
+      { strat: "S3", id: "3-2", title: "글로벌/초광역 창업 네트워크 구축 및 경진대회 참가 (P6-AP11-AP12 통합)" }
     ],
     programs: [
-      { id: "A2-S2T1-1", title: "창업 경진대회 및 시드 머니 지원 사업" },
-      { id: "A2-S2T2-2", title: "지산학 연계 스타트업 엑셀러레이팅 프로그램" }
+      { strat: "S1", id: "A2-S1T1-1", title: "대학 구성원 창업 마인드 확산 세미나" },
+      { strat: "S1", id: "A2-S1T2-2", title: "창업 지원 제도 개선 및 FAB Lab 구축" },
+      { strat: "S2", id: "A2-S2T1-1", title: "예비창업자 엑셀러레이팅 패키지 지원" },
+      { strat: "S2", id: "A2-S2T2-2", title: "창업 기업 홍보·마케팅 및 해외 바이어 매칭" },
+      { strat: "S3", id: "A2-S3T1-1", title: "초중고 리더십 창업 캠프 개설" },
+      { strat: "S3", id: "A2-S3T2-2", title: "글로벌 창업 네트워크 데이 워크숍 참관" }
     ]
   },
   "A3": {
-    strategy: "S2: 로컬 창업 활성화 및 혁신 인프라 확산",
+    strategies: [
+      { id: "S1", title: "글로벌 인재 유치·정착 중심 통합지원 생태계 구축" },
+      { id: "S2", title: "지역 산업 연계 실무교육 및 취업·정주 연계 강화" }
+    ],
     tasks: [
-      "T1: 창업 기업 맞춤형 지식재산권(IP) 확보 및 기술이전 지원",
-      "T2: 예비 청년 창업가 멘토링 프로그램 운영"
+      { strat: "S1", id: "1-1", title: "해외 대학 및 글로벌 산업체 협력 네트워크 강화 (P1-AP1-AP2 통합)" },
+      { strat: "S1", id: "1-2", title: "유학생 통합관리 플랫폼 구축 및 상담 지원 (P2-AP3 통합)" },
+      { strat: "S2", id: "2-1", title: "글로벌 실무 교육과정 및 현장실습 운영 (P3-AP4-AP5 통합)" },
+      { strat: "S2", id: "2-2", title: "외국인 유학생 및 근로자 정착 지원 프로그램 운영 (P4-AP6-AP7 통합)" }
     ],
     programs: [
-      { id: "A3-S2T1-1", title: "기술 연계형 특허 분석 및 상용화 지원 사업" },
-      { id: "A3-S2T2-2", title: "울산 청년 창업 아카데미 멘토단 운영" }
+      { strat: "S1", id: "A3-S1T1-1", title: "글로벌 산업체 협력 거버넌스 및 네트워킹 구축" },
+      { strat: "S1", id: "A3-S1T2-2", title: "다국어 스마트 유학생 케어 앱 론칭 및 상담소 운영" },
+      { strat: "S2", id: "A3-S2T1-1", title: "외국인 전용 특화 직무 단기 아카데미 개편" },
+      { strat: "S2", id: "A3-S2T2-2", title: "유학생 정주 촉진을 위한 법률 및 취업 설명회" }
     ]
   },
   "B1": {
-    strategy: "S3: 지·산·학·연 초연결 생태계 구축 (Dynamic BRIDGE)",
+    strategies: [
+      { id: "S1", title: "종합 공동 연구 협업지원 체계 강화" },
+      { id: "S2", title: "대학-기업-연구기관(출연연) 연계 울산 주력/신사업 분야 기술개발 지원" },
+      { id: "S3", title: "중소·중견기업 기술 혁신 및 사업 경쟁력 강화 지원" }
+    ],
     tasks: [
-      "T1: 울산 주력산업 맞춤형 원스톱 기술지도·공동연구망 개설",
-      "T2: 특화 신산업 재직자 직무 업스킬링 교육체계 도입"
+      { strat: "S1", id: "1-1", title: "산학협력 연계 기업협업센터(ICC) 고도화 및 교원 역량 강화 (P1-AP1-AP2 통합)" },
+      { strat: "S1", id: "1-2", title: "주력/신산업 분야 산학협력 거버넌스 및 기술교류 활성화 (P2-AP3-AP4 통합)" },
+      { strat: "S2", id: "2-1", title: "ICC 연계 초광역 공동연구 및 전문기술석사 프로젝트 활성화 (P3-P4-AP5-AP6-AP7-AP8 통합)" },
+      { strat: "S3", id: "3-1", title: "중소·중견기업 애로기술 지도 및 공용장비 활용 활성화 (P5-P6-AP9-AP10-AP11-AP12 통합)" }
     ],
     programs: [
-      { id: "B1-S3T1-1", title: "신산업 산학 공동 연구과제 발굴 및 매칭" },
-      { id: "B1-S3T2-2", title: "주력산업 재직자 기술 고도화 특별반 과정" }
+      { strat: "S1", id: "B1-S1T1-1", title: "기업협업센터(ICC) 실무 간담회 및 성과 분석" },
+      { strat: "S1", id: "B1-S1T2-2", title: "주력 신산업 분야 지산학 융합 컨퍼런스 세미나" },
+      { strat: "S2", id: "B1-S2T1-1", title: "전문기술석사 연계 연구실(Lab) 활성화 지원" },
+      { strat: "S3", id: "B1-S3T1-1", title: "공용 고가 정밀 분석 장비 실무 교육 및 지원" }
     ]
   },
   "B2": {
-    strategy: "S4: 지역산업 디지털 전환 (AID-X 역량강화)",
+    strategies: [
+      { id: "S1", title: "AID-X지원센터 구축 및 운영" },
+      { id: "S2", title: "AI·DX 분야 기술중심 교육과정 운영" },
+      { id: "S3", title: "AI·DX 정착을 위한 첨단 기술 확보" },
+      { id: "S4", title: "MANI 초광역 협력 기반 인재양성 및 확산체계 구축" }
+    ],
     tasks: [
-      "T1: 제조/화학 등 지역 전통 기업의 AI/DX 진단 프로그램 운영",
-      "T2: 인공지능 기반 공정자동화 실무인력 재교육 시스템 구축"
+      { strat: "S1", id: "1-1", title: "AID-X지원센터 운영 고도화 및 AWS C3 인증센터 구축 (P1-AP1-AP2 통합)" },
+      { strat: "S2", id: "2-1", title: "AI·DX 분야 교원 역량 강화 프로그램 운영 (P2-AP3-AP4 통합)" },
+      { strat: "S2", id: "2-2", title: "전 학부(과) 참여형 AI·DX 교육과정 개편 및 운영 (P3-P4-AP5-AP6-AP7-AP8 통합)" },
+      { strat: "S3", id: "3-1", title: "AI·DX 분야 산학공동기술개발 및 현장 실증 지원 (P5-P6-AP9-AP10-AP11-AP12 통합)" },
+      { strat: "S4", id: "4-1", title: "MANI 초광역 협력체계 확립 및 AI·DX 성과 확산 (P7-P8-P9-AP13~AP19 통합)" }
     ],
     programs: [
-      { id: "B2-S4T1-1", title: "전통 중소제조기업 디지털 전환 컨설팅" },
-      { id: "B2-S4T2-2", title: "AI/DX 융합 제조혁신 인재 아카데미 운영" }
+      { strat: "S1", id: "B2-S1T1-1", title: "AID-X 지원실 구축 및 정밀 서버 장비 도입" },
+      { strat: "S2", id: "B2-S2T1-2", title: "교원 대상 파이썬/딥러닝 역량강화 연수 코스" },
+      { strat: "S2", id: "B2-S2T2-3", title: "AI 기본 리터러시 융합 연계 전공 마이크로디그리" },
+      { strat: "S3", id: "B2-S3T1-4", title: "중소기업 현장 실증형 AI 알고리즘 적용 프로젝트" },
+      { strat: "S4", id: "B2-S4T1-5", title: "초광역 MANI 워크숍 공동 개최 및 연구성과 배포" }
     ]
   },
   "B3": {
-    strategy: "S5: 지산학 협력 탄소중립 실천 플랫폼 구축",
+    strategies: [
+      { id: "S1", title: "지산학 협력 기반 탄소중립 실무 인재 양성" },
+      { id: "S2", title: "디지털 전환 기반 중소기업 탄소 대응체계 구축" },
+      { id: "S3", title: "지역 사회 상생 및 탄소중립 실천문화 확산" }
+    ],
     tasks: [
-      "T1: 탄소중립 그린 파트너십 구축 및 성과 교류회 개최",
-      "T2: 기후 위기 탄소배출 진단 및 모니터링 환경 조성"
+      { strat: "S1", id: "1-1", title: "AI 기반 탄소중립 및 ESG 교육과정 개발 운영 (P1-P2-AP1~AP4 통합)" },
+      { strat: "S2", id: "2-1", title: "중소기업 탄소배출 진단 및 저탄소 플랫폼 지원 (P3-P4-AP5~AP8 통합)" },
+      { strat: "S3", id: "3-1", title: "캠퍼스 에코-리빙랩 탄소감축 실증 및 업사이클링 강화 (P5-P6-AP9~AP12 통합)" }
     ],
     programs: [
-      { id: "B3-S5T1-1", title: "울산 탄소중립 지산학 실천위원회 구성 및 세미나" },
-      { id: "B3-S5T2-2", title: "지역사회 그린 실천 캠페인 프로그램 지원" }
+      { strat: "S1", id: "B3-S1T1-1", title: "ESG 등급 분석 전문가 연계 대학 특강 개설" },
+      { strat: "S2", id: "B3-S2T1-2", title: "중소 제조 사업장 온실가스 배출 정밀 실태 진단" },
+      { strat: "S3", id: "B3-S3T1-3", title: "에코 캠퍼스 리빙랩 프로젝트 및 친환경 일회용품 저감" }
     ]
   },
   "B4": {
-    strategy: "S6: 복합재난 대응 산업안전·보건 관리체계",
+    strategies: [
+      { id: "S1", title: "복합재난 대응 역량 강화를 위한 인재 양성" },
+      { id: "S2", title: "재난 단계별 복합재난 대응 체계 구축" },
+      { id: "S3", title: "지·산·학·연 복합재난 협력 네트워크 구축 및 운영" }
+    ],
     tasks: [
-      "T1: 화학단지 재난예방 가상 시뮬레이션 교육훈련센터 구축",
-      "T2: 중소기업 산업안전보건 컨설팅 지원단 운영"
+      { strat: "S1", id: "1-1", title: "재난 대응 안전보건 인재 양성 및 AI 다국어 콘텐츠 실증 (P1-P2-AP1~AP4 통합)" },
+      { strat: "S2", id: "2-1", title: "산업군별 맞춤형 재난 기술지원 및 매뉴얼 안전 진단 (P3-P4-AP5~AP8 통합)" },
+      { strat: "S3", id: "3-1", title: "간호시뮬레이션 연계 재난 교육장 운영 및 거버넌스 활성화 (P5-P6-AP9~AP12 통합)" }
     ],
     programs: [
-      { id: "B4-S6T1-1", title: "산업안전 시뮬레이션 가상 훈련 교재 개발" },
-      { id: "B4-S6T2-2", title: "안전보건 진단 컨설팅 및 소기업 가이드 배포" }
+      { strat: "S1", id: "B4-S1T1-1", title: "VR 활용 복합 가상 대피/화재 재난 안전훈련 체험" },
+      { strat: "S2", id: "B4-S2T1-2", title: "화학 공장 폭발 위험요소 진단 가이드북 배포" },
+      { strat: "S3", id: "B4-S3T1-3", title: "재난 긴급 의료 구호 지산학 세미나 개최" }
     ]
   },
   "C1": {
-    strategy: "S7: 평생직업교육 활성화를 통한 생애주기 도약 (Dynamic JUMP)",
+    strategies: [
+      { id: "S1", title: "울산 특화형 평생·직업교육 거점센터 기능 고도화 및 다양화" },
+      { id: "S2", title: "지역산업 연계형 자격기반 평생직업교육 모델 개발 및 운영" },
+      { id: "S3", title: "지역산업 수요기반 취·창업 평생학습 프로그램 운영" },
+      { id: "S4", title: "지역산업의 인력수요 대응형 평생직업교육 운영 및 협력체계 확장" }
+    ],
     tasks: [
-      "T1: U-LIFE 평생교육 아카데미 및 맞춤형 직무 단기과정",
-      "T2: 지역 취업 취약계층 일자리 상담 및 재취업 매칭 연계"
+      { strat: "S1", id: "1-1", title: "울산 평생직업교육 거점센터 운영 및 통합 플랫폼 고도화 (P1-P2-AP1-AP2 통합)" },
+      { strat: "S2", id: "2-1", title: "생애주기 맞춤형 학습트랙 개설 및 성인학습자 학과 운영 (P3-P4-AP3-AP4 통합)" },
+      { strat: "S3", id: "3-1", title: "취약계층 취·창업 연계 직무교육 및 평생학습 교육과정 확대 (P5-P6-AP9~AP12 통합)" },
+      { strat: "S4", id: "4-1", title: "평생직업교육 거버넌스 및 협력형 맞춤 평생직업교육 확대 (P7-P8-AP13~AP16 통합)" }
     ],
     programs: [
-      { id: "C1-S7T1-1", title: "U-LIFE 생애주기 맞춤형 자격증 단기 코스" },
-      { id: "C1-S7T2-2", title: "은퇴자 직무 전환 및 정착 일자리 매칭 아카데미" }
+      { strat: "S1", id: "C1-S1T1-1", title: "평생직업 교육 정보 포털 시스템 유지보수 고도화" },
+      { strat: "S2", id: "C1-S2T1-2", title: "성인학습자 친화형 유연 학사 제도 설계 연구" },
+      { strat: "S3", id: "C1-S3T1-3", title: "소외 계층 취업 연계 제과제빵 및 용접 등 단기 자격" },
+      { strat: "S4", id: "C1-S4T1-4", title: "지역사회 취약계층 재취업 평생교육 추진단 출범" }
     ]
   },
   "C2": {
-    strategy: "S8: 동남권 돌봄 생태계 및 울산愛 실현",
+    strategies: [
+      { id: "S1", title: "수요 기반 운영 모델 표준화" },
+      { id: "S2", title: "산·학·연·관 네트워크 통합 운영" },
+      { id: "S3", title: "데이터 기반 품질관리·성과확산 선순환" },
+      { id: "S4", title: "동남권 지역자원·대학역량 결합 특화 패키지 확산" }
+    ],
     tasks: [
-      "T1: 초고령화 및 보육 보완형 전문 돌봄 복지인재 양성",
-      "T2: 지역사회 취약가정 복지 거버넌스 케어 연계 활동"
+      { strat: "S1", id: "1-1", title: "방과후/방학 늘봄 프로그램 표준모델 개발 및 시범운영 (P1-P2-AP1~AP4 통합)" },
+      { strat: "S2", id: "2-1", title: "동남권 유관기관 돌봄 거버넌스 및 파트너십 구축 (P3-P4-AP5~AP8 통합)" },
+      { strat: "S3", id: "3-1", title: "늘봄학교 모니터링 품질관리 체계 및 브랜딩 홍보 구축 (P5-P6-AP9~AP12 통합)" },
+      { strat: "S4", id: "4-1", title: "K-pop/브리지게임 등 특화 패키지 확산 및 돌봄교사 양성 (P7-P8-AP13~AP16 통합)" }
     ],
     programs: [
-      { id: "C2-S8T1-1", title: "동남권 표준 영유아 및 실버 케어 자격 지원" },
-      { id: "C2-S8T2-2", title: "울산愛 커뮤니티 돌봄 홈서비스 실증 프로젝트" }
+      { strat: "S1", id: "C2-S1T1-1", title: "초등학생 맞춤형 방학 체험 프로그램 개발" },
+      { strat: "S2", id: "C2-S2T1-2", title: "동남권 아동 복지 보육 연대 파트너십 회의" },
+      { strat: "S3", id: "C2-S3T1-3", title: "늘봄 교강사 품질 모니터링 결과 보고서" },
+      { strat: "S4", id: "C2-S4T1-4", title: "돌봄 자격 연수 교재 제작 및 아동 교육과정 론칭" }
     ]
   },
   "D1": {
-    strategy: "S9: 울산형 리빙랩 및 혁신 솔루션 (Dynamic CARE)",
+    strategies: [
+      { id: "S1", title: "지역기반 문제해결형 프로젝트 추진" },
+      { id: "S2", title: "울산형 2주기 RISE 모델 설계 및 지역연계 실행체계 구축" }
+    ],
     tasks: [
-      "T1: 지역 밀착형 사회문제 해결을 위한 다자간 리빙랩 운영",
-      "T2: 도시재생 및 교통·환경 인프라 개선 지원단 조직"
+      { strat: "S1", id: "1-1", title: "지역전문가 연계 공동 설계 및 대학 연계 문제해결 프로젝트 (P1-AP1-AP2 통합)" },
+      { strat: "S2", id: "2-1", title: "주민 참여형 생활밀착 에코-리빙랩 운영 및 현장 코디네이터 (P2-AP3-AP4 통합)" },
+      { strat: "S2", id: "2-2", title: "울산형 2주기 RISE 모델 연구 및 지역연계 정책 연구 (P3-P4-AP5~AP8 통합)" }
     ],
     programs: [
-      { id: "D1-S9T1-1", title: "리빙랩 기반 지역 현안 발굴 및 개선 프로젝트" },
-      { id: "D1-S9T2-2", title: "울산 원도심 활성화 및 청년 유입 환경 조사" }
+      { strat: "S1", id: "D1-S1T1-1", title: "대학 교수 및 연구원 참여 리빙랩 과제 3개년 설계" },
+      { strat: "S2", id: "D1-S2T1-2", title: "주민 참여형 에코 리빙랩 활성화 캠프" },
+      { strat: "S2", id: "D1-S2T2-3", title: "2차년도 지자체 요구 RISE 정책 연구 포럼 개최" }
     ]
   },
   "D2": {
-    strategy: "S10: 보건복지 보육 특성화 및 정주 촉진",
+    strategies: [
+      { id: "S1", title: "지역 의료·돌봄 연계 강화를 통한 협력 운영 체계 정착" },
+      { id: "S2", title: "지역 인재 순환과 성과관리를 통한 지속 가능 운영 확립" }
+    ],
     tasks: [
-      "T1: 정주 선진 보건의료 서비스 인력 육성 인프라 보강",
-      "T2: 늘봄 누리 교사 연계형 아동 복지 보육 연수 과정"
+      { strat: "S1", id: "1-1", title: "지역사회 기반 보건복지 거버넌스 구축 및 융합 모델 고도화 (P1-AP1-AP2 통합)" },
+      { strat: "S1", id: "1-2", title: "맞춤형 보건복지 인재 양성 및 복지케어 모니터링 체계 구축 (P2-P3-AP3~AP6 통합)" },
+      { strat: "S2", id: "2-1", title: "지역 맞춤형 보건의료 정주인력 양성 및 실버산업 인력 지원 (P4-P5-AP7~AP10 통합)" }
     ],
     programs: [
-      { id: "D2-S10T1-1", title: "보건복지 계열 특성화 실습 시설 및 전문가 파견" },
-      { id: "D2-S10T2-2", title: "교육청 연계 늘봄 프로그램 교구 및 콘텐츠 연수" }
+      { strat: "S1", id: "D2-S1T1-1", title: "울산 의료/간호 지산학 상생 교류 포럼" },
+      { strat: "S1", id: "D2-S1T2-2", title: "지역사회 독거노인 맞춤 케어 실무 학생 인력 파견" },
+      { strat: "S2", id: "D2-S2T1-3", title: "실버산업 맞춤형 요양 보호 기술 교육 강좌" }
     ]
   },
   "D3": {
-    strategy: "S11: 에코 컬처 기반 울산 문화 콘텐츠 확산",
+    strategies: [
+      { id: "S1", title: "지역과 문화 연계 협력 네트워크 구축" },
+      { id: "S2", title: "지역사회 환경·문화 꿀잼 역량 강화" }
+    ],
     tasks: [
-      "T1: 에코 관광·문화예술 로컬 크리에이터 양성 프로그램",
-      "T2: 시민 참여형 문화축제 기획 및 도시 재미 요소 개발"
+      { strat: "S1", id: "1-1", title: "캠퍼스-로컬 연계 에코컬처 프로젝트 및 브랜드 디자인 (P1-AP1-AP2 통합)" },
+      { strat: "S1", id: "1-2", title: "청년 중심 상업공간 재활성화 및 도시재생 프로젝트 (P2-P3-AP3~AP6 통합)" },
+      { strat: "S2", id: "2-1", title: "시민체험형 문화예술 프로그램 및 축제 연계 운영 (P4-P5-AP7~AP10 통합)" }
     ],
     programs: [
-      { id: "D3-S11T1-1", title: "에코 투어 전문 해설 크리에이터 창업 캠프" },
-      { id: "D3-S11T2-2", title: "울산 대표 축제 연계 체험 콘텐츠 및 굿즈 기획" }
+      { strat: "S1", id: "D3-S1T1-1", title: "대학생 참여형 공공 디자인 개선 과제" },
+      { strat: "S1", id: "D3-S1T2-2", title: "청년 유입 촉진을 위한 대학가 꿀잼 문화축제 설계" },
+      { strat: "S2", id: "D3-S2T1-3", title: "지역민과 함께하는 주말 꿀잼 에코 버스킹 기획" }
     ]
   }
 };
@@ -200,23 +303,49 @@ export default function UnitSystemView() {
   // 선택한 프로젝트 소속 단위과제들 중 첫 번째 과제를 기본값으로 설정
   const currentProject = PROJECTS_DATA.find(p => p.id === selectedProjectId);
   const defaultUnitId = currentProject && currentProject.units.length > 0 ? currentProject.units[0].id : "";
-  
   const [selectedUnitId, setSelectedUnitId] = useState(defaultUnitId);
 
-  // 프로젝트 변경 시 단위과제 선택도 자동 스위칭
+  // 선택한 단위과제 소속 전략 정보 로드
+  const selectedUnitData = STRATEGY_TASK_MAPPING[selectedUnitId] || {
+    strategies: [],
+    tasks: [],
+    programs: []
+  };
+
+  // 선택한 추진전략(S)의 ID 상태
+  const defaultStratId = selectedUnitData.strategies.length > 0 ? selectedUnitData.strategies[0].id : "";
+  const [selectedStratId, setSelectedStratId] = useState(defaultStratId);
+
+  // 단위과제 변경 시 추진전략 드롭다운도 첫 번째로 자동 연동
+  useEffect(() => {
+    if (selectedUnitData.strategies.length > 0) {
+      setSelectedStratId(selectedUnitData.strategies[0].id);
+    } else {
+      setSelectedStratId("");
+    }
+  }, [selectedUnitId]);
+
+  // 프로젝트 변경 시 단위과제 및 추진전략 자동 갱신
   const handleProjectChange = (projId) => {
     setSelectedProjectId(projId);
     const targetProj = PROJECTS_DATA.find(p => p.id === projId);
     if (targetProj && targetProj.units.length > 0) {
-      setSelectedUnitId(targetProj.units[0].id);
+      const nextUnitId = targetProj.units[0].id;
+      setSelectedUnitId(nextUnitId);
+      const nextUnitData = STRATEGY_TASK_MAPPING[nextUnitId];
+      if (nextUnitData && nextUnitData.strategies.length > 0) {
+        setSelectedStratId(nextUnitData.strategies[0].id);
+      } else {
+        setSelectedStratId("");
+      }
     }
   };
 
-  const selectedUnitData = STRATEGY_TASK_MAPPING[selectedUnitId] || {
-    strategy: "추진전략 미등록",
-    tasks: ["추진과제 정보가 등록되지 않았습니다."],
-    programs: []
-  };
+  // 선택된 추진전략에 부속되는 추진과제(T) 필터링
+  const filteredTasks = selectedUnitData.tasks.filter(t => t.strat === selectedStratId);
+
+  // 선택된 추진전략에 부속되는 프로그램(PG) 필터링
+  const filteredPrograms = selectedUnitData.programs.filter(p => p.strat === selectedStratId);
 
   return (
     <div className="unit-system-container" style={{ display: "flex", flexDirection: "column", gap: "1.5rem", width: "100%" }}>
@@ -280,20 +409,20 @@ export default function UnitSystemView() {
         </div>
       </div>
 
-      {/* 🛠️ 하단 블록: 프로젝트/단위과제 선택 드롭다운 & 매핑 뷰 */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: "1.5rem", minHeight: "350px" }}>
+      {/* 🛠️ 하단 블록: 3단 드롭다운 연동 레이아웃 */}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: "1.5rem", minHeight: "450px" }}>
         
-        {/* 좌측: 상하 디스플레이 드롭다운 패널 */}
+        {/* 좌측: PJ -> WS -> S 3단 드롭다운 선택 패널 */}
         <div className="glass-card" style={{ padding: "1.5rem", display: "flex", flexDirection: "column", gap: "1.2rem" }}>
           <h4 style={{ fontSize: "0.9rem", fontWeight: "900", color: "white", display: "flex", alignItems: "center", gap: "0.4rem", borderBottom: "1px solid var(--border-color-dark)", paddingBottom: "0.6rem" }}>
             <Layout size={16} />
-            과제 내비게이터
+            과제&전략 내비게이터
           </h4>
 
           {/* 1. 프로젝트 드롭다운 */}
           <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
-            <label style={{ fontSize: "0.78rem", color: "var(--text-secondary-dark)", fontWeight: "700" }}>
-              [프로젝트 선택] 4 PJ
+            <label style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)", fontWeight: "700" }}>
+              1단계: 프로젝트 선택 (4 PJ)
             </label>
             <select
               value={selectedProjectId}
@@ -317,22 +446,10 @@ export default function UnitSystemView() {
             </select>
           </div>
 
-          {/* 프로젝트 한 줄 정보 */}
-          <div style={{
-            fontSize: "0.76rem",
-            color: "var(--text-secondary)",
-            padding: "0.6rem 0.8rem",
-            background: "rgba(255,255,255,0.01)",
-            borderLeft: "3px solid var(--accent-color)",
-            borderRadius: "0.2rem"
-          }}>
-            {PROJECTS_DATA.find(p => p.id === selectedProjectId)?.title}
-          </div>
-
           {/* 2. 단위과제 드롭다운 */}
           <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
-            <label style={{ fontSize: "0.78rem", color: "var(--text-secondary-dark)", fontWeight: "700" }}>
-              [단위과제 선택] 12 WS
+            <label style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)", fontWeight: "700" }}>
+              2단계: 단위과제 선택 (12 WS)
             </label>
             <select
               value={selectedUnitId}
@@ -356,24 +473,55 @@ export default function UnitSystemView() {
             </select>
           </div>
 
-          {/* 단위과제 한 줄 정보 */}
+          {/* 3. 추진전략 드롭다운 (신설) */}
+          <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
+            <label style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)", fontWeight: "700" }}>
+              3단계: 추진전략 선택 (Strategy; S)
+            </label>
+            <select
+              value={selectedStratId}
+              onChange={(e) => setSelectedStratId(e.target.value)}
+              className="user-selector"
+              style={{
+                width: "100%",
+                fontSize: "0.8rem",
+                padding: "0.6rem 0.8rem",
+                background: "rgba(255,255,255,0.02)",
+                border: "1px solid var(--border-color-dark)",
+                color: "white",
+                borderRadius: "0.4rem"
+              }}
+            >
+              {selectedUnitData.strategies.map(s => (
+                <option key={s.id} value={s.id} style={{ background: "#1e1e1e", color: "white" }}>
+                  {s.id} : {s.title.substring(0, 24)}...
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* 현재 선택 디버깅 한 줄 정보 */}
           <div style={{
-            fontSize: "0.75rem",
-            color: "var(--text-secondary)",
-            padding: "0.6rem 0.8rem",
+            fontSize: "0.72rem",
+            color: "var(--text-secondary-dark)",
+            padding: "0.8rem",
             background: "rgba(255,255,255,0.01)",
-            borderLeft: "3px solid #10b981",
-            borderRadius: "0.2rem"
+            border: "1px dashed rgba(255,255,255,0.06)",
+            borderRadius: "0.4rem",
+            display: "flex",
+            flexDirection: "column",
+            gap: "0.3rem"
           }}>
-            <strong>{selectedUnitId}</strong>: {PROJECTS_DATA.flatMap(p => p.units).find(u => u.id === selectedUnitId)?.title}
+            <div><strong>과제 WS</strong>: {selectedUnitId}</div>
+            <div><strong>전략 S</strong>: {selectedStratId}</div>
           </div>
         </div>
 
-        {/* 우측: 추진전략(S) 및 추진과제(T) 매핑 출력 영역 */}
-        <div className="glass-card" style={{ padding: "1.8rem", display: "flex", flexDirection: "column", gap: "1.2rem" }}>
+        {/* 우측: 선택한 전략에 연동된 추진과제(T) 및 프로그램(PG) 출력 영역 */}
+        <div className="glass-card" style={{ padding: "1.8rem", display: "flex", flexDirection: "column", gap: "1.5rem" }}>
           
-          {/* 상단: 전략 (S) 헤더 */}
-          <div>
+          {/* 상단: 현재 선택된 추진전략 상세 */}
+          <div style={{ borderBottom: "1px solid var(--border-color-dark)", paddingBottom: "1rem" }}>
             <span style={{
               fontSize: "0.65rem",
               background: "rgba(236,72,153,0.12)",
@@ -384,18 +532,18 @@ export default function UnitSystemView() {
               fontWeight: "900",
               textTransform: "uppercase",
               display: "inline-block",
-              marginBottom: "0.4rem"
+              marginBottom: "0.5rem"
             }}>
-              추진전략 (Strategy)
+              선택된 추진전략 (Strategy)
             </span>
-            <h4 style={{ fontSize: "1rem", color: "white", fontWeight: "800", display: "flex", alignItems: "center", gap: "0.3rem" }}>
-              <Award size={18} style={{ color: "#ec4899" }} />
-              {selectedUnitData.strategy}
+            <h4 style={{ fontSize: "1.05rem", color: "white", fontWeight: "800", display: "flex", alignItems: "center", gap: "0.4rem", lineHeight: "1.4" }}>
+              <Award size={20} style={{ color: "#ec4899" }} />
+              {selectedUnitData.strategies.find(s => s.id === selectedStratId)?.title || "선택된 전략이 없습니다."}
             </h4>
           </div>
 
-          {/* 중단: 추진과제 (T) 리스트 */}
-          <div style={{ flex: 1 }}>
+          {/* 중단: 필터링된 추진과제 (T) 리스트 */}
+          <div>
             <span style={{
               fontSize: "0.65rem",
               background: "rgba(245,158,11,0.12)",
@@ -406,91 +554,106 @@ export default function UnitSystemView() {
               fontWeight: "900",
               textTransform: "uppercase",
               display: "inline-block",
-              marginBottom: "0.6rem"
+              marginBottom: "0.7rem"
             }}>
-              추진과제 (Strategic Tasks)
+              매핑된 추진과제 (Strategic Tasks)
             </span>
             
             <div style={{ display: "flex", flexDirection: "column", gap: "0.6rem" }}>
-              {selectedUnitData.tasks.map((task, idx) => (
-                <div key={idx} style={{
-                  background: "rgba(255,255,255,0.01)",
-                  border: "1px solid var(--border-color-dark)",
-                  padding: "0.8rem 1rem",
-                  borderRadius: "0.4rem",
-                  fontSize: "0.8rem",
-                  color: "#ddd",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "0.6rem"
-                }}>
-                  <div style={{
-                    width: "22px",
-                    height: "22px",
-                    borderRadius: "50%",
-                    background: "rgba(245,158,11,0.1)",
-                    color: "#f59e0b",
+              {filteredTasks.length === 0 ? (
+                <div style={{ fontSize: "0.78rem", color: "var(--text-secondary-dark)", textAlign: "center", padding: "2rem", border: "1px dashed rgba(255,255,255,0.04)" }}>
+                  본 전략에 매핑된 세부 추진과제가 아직 존재하지 않습니다.
+                </div>
+              ) : (
+                filteredTasks.map((task, idx) => (
+                  <div key={task.id} style={{
+                    background: "rgba(255,255,255,0.01)",
+                    border: "1px solid var(--border-color-dark)",
+                    padding: "0.8rem 1rem",
+                    borderRadius: "0.4rem",
+                    fontSize: "0.8rem",
+                    color: "#ddd",
                     display: "flex",
                     alignItems: "center",
-                    justifyContent: "center",
-                    fontSize: "0.7rem",
-                    fontWeight: "900",
-                    border: "1px solid rgba(245,158,11,0.25)"
+                    gap: "0.6rem"
                   }}>
-                    {idx + 1}
+                    <div style={{
+                      width: "22px",
+                      height: "22px",
+                      borderRadius: "50%",
+                      background: "rgba(245,158,11,0.1)",
+                      color: "#f59e0b",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      fontSize: "0.7rem",
+                      fontWeight: "900",
+                      border: "1px solid rgba(245,158,11,0.25)"
+                    }}>
+                      T{task.id}
+                    </div>
+                    <span>{task.title}</span>
                   </div>
-                  <span>{task}</span>
-                </div>
-              ))}
+                ))
+              )}
             </div>
           </div>
 
-          {/* 하단: 대표 연계 프로그램 (PG) 리스트 */}
-          {selectedUnitData.programs && selectedUnitData.programs.length > 0 && (
-            <div style={{ borderTop: "1px dashed rgba(255,255,255,0.06)", paddingTop: "1rem" }}>
-              <span style={{
-                fontSize: "0.65rem",
-                background: "rgba(139,92,246,0.12)",
-                border: "1px solid rgba(139,92,246,0.25)",
-                color: "#8b5cf6",
-                padding: "0.15rem 0.4rem",
-                borderRadius: "0.2rem",
-                fontWeight: "900",
-                textTransform: "uppercase",
-                display: "inline-block",
-                marginBottom: "0.6rem"
-              }}>
-                체계 연계 프로그램 예시
-              </span>
-              
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: "0.5rem" }}>
-                {selectedUnitData.programs.map((prog) => (
+          {/* 하단: 필터링된 연계 프로그램 (PG) 리스트 */}
+          <div style={{ borderTop: "1px dashed rgba(255,255,255,0.06)", paddingTop: "1.2rem", flex: 1 }}>
+            <span style={{
+              fontSize: "0.65rem",
+              background: "rgba(139,92,246,0.12)",
+              border: "1px solid rgba(139,92,246,0.25)",
+              color: "#8b5cf6",
+              padding: "0.15rem 0.4rem",
+              borderRadius: "0.2rem",
+              fontWeight: "900",
+              textTransform: "uppercase",
+              display: "inline-block",
+              marginBottom: "0.7rem"
+            }}>
+              소속 프로그램 내역 (Programs)
+            </span>
+            
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: "0.6rem" }}>
+              {filteredPrograms.length === 0 ? (
+                <div style={{ gridColumn: "1/-1", fontSize: "0.78rem", color: "var(--text-secondary-dark)", textAlign: "center", padding: "2rem" }}>
+                  본 전략에 매핑되어 작동 중인 실무 프로그램이 아직 존재하지 않습니다.
+                </div>
+              ) : (
+                filteredPrograms.map((prog) => (
                   <div key={prog.id} style={{
                     background: "rgba(255,255,255,0.02)",
-                    padding: "0.5rem 0.75rem",
-                    borderRadius: "0.3rem",
-                    fontSize: "0.72rem",
+                    padding: "0.7rem 0.9rem",
+                    borderRadius: "0.4rem",
+                    fontSize: "0.76rem",
                     display: "flex",
                     justifyContent: "space-between",
                     alignItems: "center",
-                    border: "1px solid rgba(255,255,255,0.03)"
+                    border: "1px solid rgba(255,255,255,0.04)"
                   }}>
-                    <span style={{ color: "#aaa" }}>{prog.title}</span>
+                    <span style={{ color: "var(--text-secondary)", display: "flex", alignItems: "center", gap: "0.4rem" }}>
+                      <ArrowRight size={12} style={{ color: "#8b5cf6" }} />
+                      {prog.title}
+                    </span>
                     <code style={{
                       color: "#8b5cf6",
                       fontWeight: "700",
                       background: "rgba(139,92,246,0.08)",
-                      padding: "0.1rem 0.35rem",
+                      padding: "0.15rem 0.4rem",
                       borderRadius: "0.25rem",
-                      fontFamily: "monospace"
+                      fontFamily: "monospace",
+                      fontSize: "0.68rem"
                     }}>
                       {prog.id}
                     </code>
                   </div>
-                ))}
-              </div>
+                ))
+              )}
             </div>
-          )}
+
+          </div>
 
         </div>
 
