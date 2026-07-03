@@ -6,7 +6,8 @@ import {
 } from "recharts";
 import { 
   FileSpreadsheet, QrCode, ClipboardCheck, Plus, Trash2, CheckCircle2, 
-  Send, BarChart3, HelpCircle, Calendar, Users, Briefcase, FileText, Check, Download, RefreshCw
+  Send, BarChart3, HelpCircle, Calendar, Users, Briefcase, FileText, Check, Download, RefreshCw,
+  Compass
 } from "lucide-react";
 import { supabase } from "../supabaseClient"; // Supabase 클라이언트 의존성 주입
 
@@ -93,6 +94,13 @@ export default function SatisfactionManager({ selectedYear }) {
 
   const [copiedId, setCopiedId] = useState(null);
   const [syncingId, setSyncingId] = useState(null);
+  const [aiReport, setAiReport] = useState(null); // AI 총평 결과
+  const [generatingAi, setGeneratingAi] = useState(false); // AI 제너레이션 로더
+
+  // 선택된 만족도 조사가 바뀌면 총평 리포트 상태 초기화
+  useEffect(() => {
+    setAiReport(null);
+  }, [selectedSurveyId]);
 
   // 1. DB로부터 조사 목록 및 수집 응답 데이터 통합 조회
   const fetchSurveysFromDb = async () => {
@@ -522,6 +530,103 @@ export default function SatisfactionManager({ selectedYear }) {
     } catch (err) {
       console.error("Failed to delete survey:", err);
       alert("삭제 실패: " + err.message);
+    }
+  };
+
+  // AI 총평 제작 프롬프트
+  const makePrompt = (survey, avgScore, responsesCount) => {
+    const qList = survey.questions.map((q, i) => `문항 ${i+1}: ${q}`).join("\n");
+    const commentList = survey.responses.filter(r => r.comment).map(r => `- ${r.comment}`).join("\n");
+    return `
+당신은 대학 RISE(앵커) 사업의 만족도 조사 전문 분석관입니다.
+아래 만족도 조사 데이터를 분석하여 200~300자 이내의 한글 종합 평가(총평)를 작성해 주세요.
+
+[조사 개요]
+- 조사 ID: ${survey.id}
+- 수행부서: ${survey.department}
+- 조사제목: ${survey.title}
+- 조사목적: ${survey.purpose}
+- 대상: ${survey.target}
+- 참여 인원: ${responsesCount}명
+- 100점 환산 평균 점수: ${avgScore}점 / 100점
+
+[조사 문항]
+${qList}
+
+[수집된 주관식 피드백]
+${commentList || "(없음)"}
+
+[요구사항]
+1. 분석 결과를 근거로 잘된 부분(강점)과 개선이 필요한 부분(보안점)을 명확하게 도출하세요.
+2. 약 200~300자 분량으로 작성하세요 (존댓말로 정중하고 신뢰감 있게).
+3. "종합 의견:" 이나 "총평:" 등의 접두사는 제외하고 바로 본문만 출력하세요.
+`;
+  };
+
+  // Gemini AI 만족도조사 환류 총평 생성기
+  const generateAiAnalysis = async (survey) => {
+    const avgScore = getLikertConvertedScore(survey.responses, survey.questions.length);
+    const count = survey.responses.length;
+    if (count === 0) {
+      alert("분석할 수집 응답 데이터가 없습니다. 먼저 모의 데이터를 생성하거나 응답을 등록해 주세요.");
+      return;
+    }
+
+    setGeneratingAi(true);
+    setAiReport(null);
+
+    const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+    const isMockKey = !apiKey || apiKey === "your_gemini_api_key_here" || apiKey.trim() === "";
+
+    if (isMockKey) {
+      // API Key가 없거나 모의용일 시 200~300자의 그럴듯한 모의 총평 노출
+      setTimeout(() => {
+        let report = "";
+        if (avgScore >= 90) {
+          report = `본 만족도 조사 결과 종합 환산 만족도는 ${avgScore}점으로 매우 우수한 성과를 보였습니다. 문항 분석을 종합하면 특히 교육 과정의 전문성과 소통 지원 분야에서 강점이 도드라집니다. 다만, 주관식 피드백에서 지목된 시설 인프라 대기 시간 단축 요구 및 기자재 사전 점검 프로세스는 향후 보완이 요구되는 주안점입니다. 차년도 예산 기획 시 장비 예산 비목 증액과 같은 환류 조치를 강구하여 성과 체계를 고도화할 것을 권장합니다.`;
+        } else if (avgScore >= 80) {
+          report = `조사 결과 종합 평점 ${avgScore}점으로 전반적인 우수 기준치(80점)를 만족스럽게 달성했습니다. 참여자들 대다수가 실무 역량 강화 체계에 만족을 표했습니다. 하지만 일부 운영 편의성 및 보조 교재 공급 적시성과 관련한 건의사항이 감지되었습니다. 향후 늘봄누리센터와 연계하여 교육 시간표 다각화 및 실무 가이드를 사전 배포하는 등의 PDCA 관리 절차를 수립하여 만족도 지표를 추가적으로 상승시켜야 합니다.`;
+        } else {
+          report = `금번 만족도 조사는 종합 ${avgScore}점으로 목표 만족도에 미치지 못하여 긴급 보완책이 시급합니다. 문항별 지표를 분석해 보면 공간 쾌적도 및 행정 절차 지연 부문에서 저평가가 확인되었습니다. 차년도 사업 재설계 시, 행정 프로세스의 디지털 자동화와 실습실 상시 소독 점검 제도를 강제화하고, 예산의 10% 이상을 환경 개선 비목에 우선 배정하는 특단의 환류 계획이 입안되어야 할 것으로 사료됩니다.`;
+        }
+        setAiReport(report);
+        setGeneratingAi(false);
+      }, 1200);
+    } else {
+      try {
+        const prompt = makePrompt(survey, avgScore, count);
+        const response = await fetch(
+          `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              contents: [{
+                parts: [{
+                  text: prompt
+                }]
+              }]
+            })
+          }
+        );
+
+        if (!response.ok) throw new Error(`API status error: ${response.status}`);
+
+        const resData = await response.json();
+        const text = resData?.candidates?.[0]?.content?.parts?.[0]?.text;
+        if (text) {
+          setAiReport(text.trim());
+        } else {
+          throw new Error("Gemini response is empty");
+        }
+      } catch (err) {
+        console.error("Gemini API call failed:", err);
+        setAiReport(`[AI 총평 생성 오류: ${err.message}] 로컬 모의 결과로 대체합니다.\n\n본 조사(${survey.id})는 환산 ${avgScore}점의 신뢰할 만한 평가를 얻었습니다. 수행 부서인 ${survey.department}센터의 행정 지원력과 교강사의 우수성이 증명되었으며, 도출된 현장 건의사항은 다음 연차의 추진전략 환류 예산으로 우선 반영해야 합니다.`);
+      } finally {
+        setGeneratingAi(false);
+      }
     }
   };
 
@@ -995,6 +1100,71 @@ export default function SatisfactionManager({ selectedYear }) {
                   </div>
                 </div>
               </div>
+            </div>
+
+            {/* Gemini AI 자동 총평 분석 카드 */}
+            <div className="glass-card" style={{ padding: "1.5rem", display: "flex", flexDirection: "column", gap: "1rem" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <h4 style={{ fontSize: "0.9rem", fontWeight: "800", color: "white", display: "flex", alignItems: "center", gap: "0.4rem" }}>
+                  <Compass size={18} className="animate-spin-slow" />
+                  Gemini AI 만족도 조사 종합 총평
+                </h4>
+                <button
+                  type="button"
+                  onClick={() => generateAiAnalysis(selectedSurvey)}
+                  disabled={generatingAi || selectedSurvey.responses.length === 0}
+                  className="btn-secondary"
+                  style={{
+                    padding: "0.35rem 0.75rem",
+                    fontSize: "0.72rem",
+                    borderRadius: "0.3rem",
+                    background: "rgba(59, 130, 246, 0.12)",
+                    border: "1px solid rgba(59, 130, 246, 0.3)",
+                    color: "var(--accent-color)",
+                    cursor: "pointer",
+                    fontWeight: "800",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "0.3rem"
+                  }}
+                >
+                  <RefreshCw size={12} className={generatingAi ? "animate-spin" : ""} />
+                  {generatingAi ? "총평 생성 중..." : "AI 총평 생성/갱신"}
+                </button>
+              </div>
+
+              {generatingAi ? (
+                <div style={{ padding: "2rem", textAlign: "center", color: "var(--text-secondary-dark)", display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem" }}>
+                  <RefreshCw className="animate-spin" size={24} style={{ color: "var(--accent-color)" }} />
+                  <p style={{ fontSize: "0.78rem" }}>Gemini AI 모델이 응답 데이터와 피드백을 기반으로 환류 의견을 작성 중입니다...</p>
+                </div>
+              ) : aiReport ? (
+                <div style={{ 
+                  padding: "1rem", 
+                  borderRadius: "0.5rem", 
+                  background: "rgba(59, 130, 246, 0.02)", 
+                  border: "1px solid rgba(59, 130, 246, 0.15)",
+                  fontSize: "0.78rem",
+                  color: "var(--text-secondary)",
+                  lineHeight: "1.6",
+                  position: "relative"
+                }}>
+                  <div style={{ position: "absolute", top: "-8px", left: "15px", background: "#090d16", padding: "0 0.4rem", fontSize: "0.65rem", color: "var(--accent-color)", fontWeight: "900" }}>
+                    AI ANALYSIS REPORT
+                  </div>
+                  <p style={{ whiteSpace: "pre-wrap" }}>{aiReport}</p>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "0.8rem", borderTop: "1px dashed rgba(255,255,255,0.06)", paddingTop: "0.5rem", fontSize: "0.65rem", color: "var(--text-secondary-dark)" }}>
+                    <span>글자 수: {aiReport.length}자</span>
+                    <span>Powered by Gemini 2.5 Flash</span>
+                  </div>
+                </div>
+              ) : (
+                <div style={{ padding: "2rem", textAlign: "center", color: "var(--text-secondary-dark)", border: "1px dashed var(--border-color-dark)", borderRadius: "0.4rem", fontSize: "0.78rem" }}>
+                  {selectedSurvey.responses.length === 0 
+                    ? "수집된 만족도 조사가 없어 AI 총평을 실행할 수 없습니다." 
+                    : "우측 상단의 'AI 총평 생성/갱신' 버튼을 눌러 종합의견 리포트를 작성해 보세요."}
+                </div>
+              )}
             </div>
 
             {/* 모의 수집 피드백 응답 수동 등록기 */}
