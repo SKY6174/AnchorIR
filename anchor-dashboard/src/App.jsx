@@ -2196,6 +2196,7 @@ export default function App() {
             endAt: x.end_at,
             location: x.location,
             isTask: x.is_task || false,
+            isDeadline: x.is_deadline || false,
             completed: x.completed || false
           }));
           setMonthlySchedules(formatted);
@@ -2395,6 +2396,7 @@ export default function App() {
               end_at: s.endAt,
               location: s.location || "",
               is_task: s.isTask || false,
+              is_deadline: s.isDeadline || false,
               completed: s.completed || false
             }))
           );

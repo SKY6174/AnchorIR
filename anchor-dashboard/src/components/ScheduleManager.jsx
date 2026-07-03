@@ -65,20 +65,22 @@ export default function ScheduleManager({
   const handleFormSubmit = (e) => {
     e.preventDefault();
 
-    if (modalType === "monthly" || modalType === "task") {
+    if (modalType === "monthly" || modalType === "task" || modalType === "deadline") {
       const isTaskVal = modalType === "task";
+      const isDeadlineVal = modalType === "deadline";
       if (isEditMode) {
         setMonthlySchedules(monthlySchedules.map(s => 
           s.id === editingItemId 
             ? {
                 ...s,
                 title: formData.title || "새 일정",
-                type: isTaskVal ? "할일" : (formData.type || "기타"),
-                dept: formData.dept || "사업운영팀",
+                type: isTaskVal ? "할일" : (isDeadlineVal ? "마감" : (formData.type || "기타")),
+                dept: (isTaskVal || isDeadlineVal) ? "사업운영팀" : (formData.dept || "사업운영팀"),
                 startAt: `${formData.startDate} ${formData.startTime}`,
-                endAt: isTaskVal ? `${formData.startDate} ${formData.startTime}` : `${formData.endDate} ${formData.endTime}`,
-                location: isTaskVal ? "" : (formData.location || "-"),
-                isTask: isTaskVal
+                endAt: (isTaskVal || isDeadlineVal) ? `${formData.startDate} ${formData.startTime}` : `${formData.endDate} ${formData.endTime}`,
+                location: (isTaskVal || isDeadlineVal) ? "" : (formData.location || "-"),
+                isTask: isTaskVal,
+                isDeadline: isDeadlineVal
               }
             : s
         ));
@@ -86,12 +88,13 @@ export default function ScheduleManager({
         const newItem = {
           id: Date.now(),
           title: formData.title || "새 일정",
-          type: isTaskVal ? "할일" : (formData.type || "기타"),
-          dept: formData.dept || "사업운영팀",
+          type: isTaskVal ? "할일" : (isDeadlineVal ? "마감" : (formData.type || "기타")),
+          dept: (isTaskVal || isDeadlineVal) ? "사업운영팀" : (formData.dept || "사업운영팀"),
           startAt: `${formData.startDate} ${formData.startTime}`,
-          endAt: isTaskVal ? `${formData.startDate} ${formData.startTime}` : `${formData.endDate} ${formData.endTime}`,
-          location: isTaskVal ? "" : (formData.location || "-"),
+          endAt: (isTaskVal || isDeadlineVal) ? `${formData.startDate} ${formData.startTime}` : `${formData.endDate} ${formData.endTime}`,
+          location: (isTaskVal || isDeadlineVal) ? "" : (formData.location || "-"),
           isTask: isTaskVal,
+          isDeadline: isDeadlineVal,
           completed: false
         };
         setMonthlySchedules([newItem, ...monthlySchedules]);
@@ -163,7 +166,7 @@ export default function ScheduleManager({
   const handleEditSchedule = (sched) => {
     setIsEditMode(true);
     setEditingItemId(sched.id);
-    setModalType(sched.isTask ? "task" : "monthly");
+    setModalType(sched.isDeadline ? "deadline" : (sched.isTask ? "task" : "monthly"));
 
     const startParts = sched.startAt ? sched.startAt.split(" ") : ["2026-07-15", "10:00"];
     const endParts = sched.endAt ? sched.endAt.split(" ") : ["2026-07-15", "11:00"];
@@ -256,13 +259,24 @@ export default function ScheduleManager({
           <div style={{ display: "flex", flexDirection: "column", gap: "0.15rem", marginTop: "0.25rem", maxHeight: "40px", overflow: "hidden" }}>
             {daySchedules.map(sched => {
               const isTask = sched.isTask || false;
+              const isDeadline = sched.isDeadline || false;
               const isCompleted = sched.completed || false;
+              
+              let bgColor = "#4B5563";
+              if (isDeadline) {
+                bgColor = isCompleted ? "rgba(239, 68, 68, 0.4)" : "#EF4444";
+              } else if (isTask) {
+                bgColor = isCompleted ? "rgba(139, 92, 246, 0.4)" : "#8B5CF6";
+              } else {
+                bgColor = sched.type === "행사" ? "#3B82F6" : sched.type === "회의" ? "#10B981" : sched.type === "위원회" ? "#F59E0B" : "#4B5563";
+              }
+
               return (
                 <div 
                   key={sched.id} 
                   style={{
                     fontSize: "0.65rem",
-                    background: isTask ? (isCompleted ? "rgba(139, 92, 246, 0.4)" : "#8B5CF6") : (sched.type === "행사" ? "#3B82F6" : sched.type === "회의" ? "#10B981" : sched.type === "위원회" ? "#F59E0B" : "#4B5563"),
+                    background: bgColor,
                     color: "white",
                     padding: "0.1rem 0.25rem",
                     borderRadius: "2px",
@@ -272,9 +286,9 @@ export default function ScheduleManager({
                     textDecoration: isCompleted ? "line-through" : "none",
                     opacity: isCompleted ? 0.6 : 1
                   }}
-                  title={`${isTask ? "[할일]" : `[${sched.type}]`} ${sched.title} (${sched.dept})`}
+                  title={`${isDeadline ? "[마감]" : (isTask ? "[할일]" : `[${sched.type}]`)} ${sched.title} (${sched.dept})`}
                 >
-                  {isTask ? "✔️ " : ""}{sched.title}
+                  {isDeadline ? "🚨 " : (isTask ? "✔️ " : "")}{sched.title}
                 </div>
               );
             })}
@@ -310,6 +324,17 @@ export default function ScheduleManager({
             
             <div style={{ display: "flex", gap: "0.5rem" }}>
               <button 
+                className="btn btn-primary"
+                onClick={() => openAddModal("monthly")}
+                style={{
+                  display: "flex", alignItems: "center", gap: "0.25rem", padding: "0.4rem 1rem", borderRadius: "6px",
+                  background: "var(--accent-color)", border: "none", color: "white", fontWeight: "600", fontSize: "0.85rem", cursor: "pointer"
+                }}
+              >
+                <Plus size={16} />
+                일정 추가
+              </button>
+              <button 
                 onClick={() => openAddModal("task")}
                 style={{
                   display: "flex", alignItems: "center", gap: "0.25rem", padding: "0.4rem 1rem", borderRadius: "6px",
@@ -323,15 +348,17 @@ export default function ScheduleManager({
                 할일 추가
               </button>
               <button 
-                className="btn btn-primary"
-                onClick={() => openAddModal("monthly")}
+                onClick={() => openAddModal("deadline")}
                 style={{
                   display: "flex", alignItems: "center", gap: "0.25rem", padding: "0.4rem 1rem", borderRadius: "6px",
-                  background: "var(--accent-color)", border: "none", color: "white", fontWeight: "600", fontSize: "0.85rem", cursor: "pointer"
+                  background: "#EF4444", border: "none", color: "white", fontWeight: "600", fontSize: "0.85rem", cursor: "pointer",
+                  transition: "background 0.15s"
                 }}
+                onMouseOver={(e) => e.currentTarget.style.background = "#DC2626"}
+                onMouseOut={(e) => e.currentTarget.style.background = "#EF4444"}
               >
                 <Plus size={16} />
-                일정 추가
+                마감일 등록
               </button>
             </div>
           </div>
@@ -390,26 +417,38 @@ export default function ScheduleManager({
                 <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
                   {getSelectedDaySchedules().map(sched => {
                     const isTask = sched.isTask || false;
+                    const isDeadline = sched.isDeadline || false;
                     const isCompleted = sched.completed || false;
+                    
+                    let cardBg = "rgba(255,255,255,0.02)";
+                    let cardBorder = "1px solid rgba(255,255,255,0.05)";
+                    if (isDeadline) {
+                      cardBg = "rgba(239, 68, 68, 0.03)";
+                      cardBorder = "1px solid rgba(239, 68, 68, 0.15)";
+                    } else if (isTask) {
+                      cardBg = "rgba(139, 92, 246, 0.03)";
+                      cardBorder = "1px solid rgba(139, 92, 246, 0.15)";
+                    }
+
                     return (
                       <div 
                         key={sched.id} 
                         style={{
                           padding: "0.75rem", borderRadius: "6px",
-                          background: isTask ? "rgba(139, 92, 246, 0.03)" : "rgba(255,255,255,0.02)",
-                          border: isTask ? "1px solid rgba(139, 92, 246, 0.15)" : "1px solid rgba(255,255,255,0.05)",
+                          background: cardBg,
+                          border: cardBorder,
                           position: "relative",
                           opacity: isCompleted ? 0.6 : 1
                         }}
                       >
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "0.5rem" }}>
                           <div style={{ display: "flex", alignItems: "flex-start", gap: "0.5rem", flex: 1 }}>
-                            {isTask && (
+                            {(isTask || isDeadline) && (
                               <input 
                                 type="checkbox" 
                                 checked={isCompleted} 
                                 onChange={() => handleToggleTaskCompleted(sched.id)}
-                                style={{ marginTop: "0.2rem", cursor: "pointer", width: "15px", height: "15px", accentColor: "#8B5CF6" }}
+                                style={{ marginTop: "0.2rem", cursor: "pointer", width: "15px", height: "15px", accentColor: isDeadline ? "#EF4444" : "#8B5CF6" }}
                               />
                             )}
                             <strong style={{ 
@@ -446,11 +485,11 @@ export default function ScheduleManager({
                         <div style={{ display: "flex", gap: "0.3rem", flexWrap: "wrap", marginBottom: "0.4rem" }}>
                           <span style={{ 
                             fontSize: "0.65rem", padding: "0.1rem 0.4rem", borderRadius: "4px", 
-                            background: isTask ? "rgba(139, 92, 246, 0.2)" : (sched.type === "행사" ? "rgba(59, 130, 246, 0.2)" : sched.type === "회의" ? "rgba(16, 185, 129, 0.2)" : sched.type === "위원회" ? "rgba(245, 158, 11, 0.2)" : "rgba(255, 255, 255, 0.05)"), 
-                            color: isTask ? "#A78BFA" : (sched.type === "행사" ? "#60A5FA" : sched.type === "회의" ? "#34D399" : sched.type === "위원회" ? "#FBBF24" : "#FFFFFF"), 
+                            background: isDeadline ? "rgba(239, 68, 68, 0.2)" : (isTask ? "rgba(139, 92, 246, 0.2)" : (sched.type === "행사" ? "rgba(59, 130, 246, 0.2)" : sched.type === "회의" ? "rgba(16, 185, 129, 0.2)" : sched.type === "위원회" ? "rgba(245, 158, 11, 0.2)" : "rgba(255, 255, 255, 0.05)")), 
+                            color: isDeadline ? "#EF4444" : (isTask ? "#A78BFA" : (sched.type === "행사" ? "#60A5FA" : sched.type === "회의" ? "#34D399" : sched.type === "위원회" ? "#FBBF24" : "#FFFFFF")), 
                             fontWeight: "700" 
                           }}>
-                            {isTask ? "할일" : (sched.type || "기타")}
+                            {isDeadline ? "마감" : (isTask ? "할일" : (sched.type || "기타"))}
                           </span>
                           <span style={{ fontSize: "0.65rem", padding: "0.1rem 0.4rem", borderRadius: "4px", background: "rgba(255, 255, 255, 0.05)", color: "var(--text-secondary-dark)", fontWeight: "700" }}>
                             {sched.dept || "사업운영팀"}
@@ -459,9 +498,9 @@ export default function ScheduleManager({
                         <div style={{ display: "flex", flexDirection: "column", gap: "0.2rem", fontSize: "0.75rem", color: "var(--text-secondary-dark)" }}>
                           <span style={{ display: "flex", alignItems: "center", gap: "0.25rem" }}>
                             <Clock size={12} />
-                            {isTask ? `${sched.startAt.split(" ")[1]} (할일 기한)` : `${sched.startAt} ~ ${sched.endAt}`}
+                            {isDeadline ? `${sched.startAt.split(" ")[1]} (마감 기한)` : (isTask ? `${sched.startAt.split(" ")[1]} (할일 기한)` : `${sched.startAt} ~ ${sched.endAt}`)}
                           </span>
-                          {!isTask && sched.location && (
+                          {!(isTask || isDeadline) && sched.location && (
                             <span style={{ display: "flex", alignItems: "center", gap: "0.25rem" }}>
                               <MapPin size={12} />
                               {sched.location}
@@ -759,8 +798,8 @@ export default function ScheduleManager({
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid rgba(255,255,255,0.05)", paddingBottom: "0.75rem", marginBottom: "1rem" }}>
               <h3 style={{ margin: 0, fontSize: "1.1rem", fontWeight: "800", color: "white" }}>
                 {isEditMode 
-                  ? (modalType === "task" ? "✏️ 할일 수정" : "✏️ 일반 일정 수정") 
-                  : (modalType === "monthly" ? "➕ 새 일반 일정 등록" : modalType === "task" ? "➕ 새 할일 등록" : modalType === "event" ? "➕ 새 행사 일정 기획 등록" : "➕ 새 회의 일정 회의록 등록")}
+                  ? (modalType === "deadline" ? "✏️ 마감일 수정" : modalType === "task" ? "✏️ 할일 수정" : "✏️ 일반 일정 수정") 
+                  : (modalType === "monthly" ? "➕ 새 일반 일정 등록" : modalType === "task" ? "➕ 새 할일 등록" : modalType === "deadline" ? "🚨 새 마감일 등록" : modalType === "event" ? "➕ 새 행사 일정 기획 등록" : "➕ 새 회의 일정 회의록 등록")}
               </h3>
               <button 
                 onClick={() => {
@@ -776,6 +815,26 @@ export default function ScheduleManager({
 
             <form onSubmit={handleFormSubmit} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
               
+              {/* 마감일 입력 */}
+              {modalType === "deadline" && (
+                <>
+                  <div>
+                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>마감일 내용</label>
+                    <input type="text" name="title" value={formData.title} onChange={handleInputChange} required placeholder="예: 2차년도 RISE 최종 계획서 마감" style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} />
+                  </div>
+                  <div style={{ display: "grid", gridTemplateColumns: "1.2fr 0.8fr", gap: "1rem" }}>
+                    <div>
+                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>마감 기한 (일자)</label>
+                      <input type="date" name="startDate" value={formData.startDate} onChange={handleInputChange} style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} />
+                    </div>
+                    <div>
+                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>마감 시간</label>
+                      <input type="time" name="startTime" value={formData.startTime} onChange={handleInputChange} style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} />
+                    </div>
+                  </div>
+                </>
+              )}
+
               {/* 할일 입력 */}
               {modalType === "task" && (
                 <>
