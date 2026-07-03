@@ -192,13 +192,16 @@ export default function BudgetExecutionManager({ projects, currentRole, selected
                   unit="%"
                 />
                 <Tooltip 
-                  contentStyle={{ 
-                    backgroundColor: "var(--bg-card-dark)", 
-                    borderColor: "var(--border-color-dark)", 
-                    color: "white",
-                    borderRadius: "6px",
-                    fontSize: "0.8rem"
-                  }} 
+                  formatter={(value) => `${value}%`}
+                  contentStyle={{
+                    background: "rgba(224, 235, 246, 0.95)",
+                    border: "1px solid var(--border-color)",
+                    borderRadius: "0.5rem",
+                    fontSize: "11px",
+                    boxShadow: "0 4px 12px rgba(0,0,0,0.15)"
+                  }}
+                  labelStyle={{ color: "#111827", fontWeight: "700", marginBottom: "0.2rem" }}
+                  itemStyle={{ color: "#1f2937", padding: "0.1rem 0" }}
                 />
                 <Legend 
                   wrapperStyle={{ fontSize: 11, paddingTop: 10 }}
@@ -210,7 +213,7 @@ export default function BudgetExecutionManager({ projects, currentRole, selected
                   label={{ value: "이월마감 (8/31)", fill: "#F87171", position: "insideTopLeft", fontSize: 11, fontWeight: "bold" }}
                 />
                 <Line 
-                  name="본예산 누적률" 
+                  name="본예산 누적 집행률" 
                   type="monotone" 
                   dataKey="mainBudget" 
                   stroke="#3B82F6" 
@@ -218,7 +221,7 @@ export default function BudgetExecutionManager({ projects, currentRole, selected
                   activeDot={{ r: 6 }} 
                 />
                 <Line 
-                  name="이월예산 누적률" 
+                  name="이월예산 누적 집행률" 
                   type="monotone" 
                   dataKey="carryoverBudget" 
                   stroke="#EF4444" 
