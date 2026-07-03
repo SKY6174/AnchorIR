@@ -224,6 +224,32 @@ export default function PDCAManager({
     localStorage.setItem("anchor_active_pdca_stage", activePdcaStage);
   }, [activePdcaStage]);
 
+  // 프로그램별 변경 버전 차수 리스트 관리 및 선택 상태
+  const [programVersions, setProgramVersions] = useState([]);
+  const [selectedVersionId, setSelectedVersionId] = useState("current");
+
+  // 활성 프로그램 변경 시 Supabase로부터 변경이력(결재완료/대기 목록) 조회
+  useEffect(() => {
+    if (activeProg && supabase) {
+      supabase
+        .from("program_version_requests")
+        .select("*")
+        .eq("program_id", activeProg.id)
+        .order("requested_at", { ascending: true })
+        .then(({ data, error }) => {
+          if (data) {
+            setProgramVersions(data);
+          } else {
+            setProgramVersions([]);
+          }
+        });
+      setSelectedVersionId("current");
+    } else {
+      setProgramVersions([]);
+      setSelectedVersionId("current");
+    }
+  }, [selectedProgId, selectedYear, supabase]);
+
   // 모든 프로그램 수집
   const allPrograms = [];
   const allUnits = [];
@@ -299,20 +325,30 @@ export default function PDCAManager({
     setInputAchieveRate(String(rate));
   }, [inputParticipants, inputActualDevelopments, inputActualEtc, activeProg]);
 
-  // selectedProgId 또는 selectedYear가 바뀔 때 모든 기획/환류/재원 상태 로드
+  // selectedProgId, selectedYear, selectedVersionId가 바뀔 때 모든 기획/환류/재원 상태 로드
   React.useEffect(() => {
     if (selectedProgId) {
       const prog = allPrograms.find((p) => p.id === selectedProgId);
       if (prog) {
-        const py = prog.years?.[selectedYear] || {};
-        setInputTimeline(prog.timeline || "");
+        let dataSrc = prog;
+        let py = prog.years?.[selectedYear] || {};
+
+        if (selectedVersionId !== "current") {
+          const verObj = programVersions.find(v => v.id === Number(selectedVersionId));
+          if (verObj && verObj.changes && verObj.changes.after) {
+            dataSrc = verObj.changes.after;
+            py = verObj.changes.after.years?.[selectedYear] || {};
+          }
+        }
+
+        setInputTimeline(dataSrc.timeline || "");
         
-        const { start, end } = parseTimelineDates(prog.timeline || "");
+        const { start, end } = parseTimelineDates(dataSrc.timeline || "");
         setInputStartDate(start);
         setInputEndDate(end);
 
-        setInputTargetAudience(prog.targetAudience || "");
-        const coopParts = (prog.coopDept || "").split(",").map(s => s.trim());
+        setInputTargetAudience(dataSrc.targetAudience || "");
+        const coopParts = (dataSrc.coopDept || "").split(",").map(s => s.trim());
         setInputCoopDept1(coopParts[0] || "");
         setInputCoopDept2(coopParts[1] || "");
         
@@ -346,39 +382,39 @@ export default function PDCAManager({
         setInputBudgetCategories(loadedCategories);
 
         // 월별 PDCA일정 바인딩
-        setInputMonthlyPDCA(parseTimelineToMonths(prog.timeline || ""));
-        setInputMonthlyPDCAActual(parseTimelineToMonths(prog.actual_timeline || ""));
+        setInputMonthlyPDCA(parseTimelineToMonths(dataSrc.timeline || ""));
+        setInputMonthlyPDCAActual(parseTimelineToMonths(dataSrc.actual_timeline || ""));
 
         setInputSpentNational(py.spent_national !== undefined ? (py.spent_national / 1000000).toFixed(1) : "0.0");
         setInputSpentCity(py.spent_city !== undefined ? (py.spent_city / 1000000).toFixed(1) : "0.0");
         setInputSpentExternal(py.spent_external !== undefined ? (py.spent_external / 1000000).toFixed(1) : "0.0");
 
-        setInputParticipants(String(prog.participants ?? 0));
-        setInputActualDevelopments(prog.actual_developments !== undefined ? String(prog.actual_developments) : "");
-        setInputActualEtc(prog.actual_etc !== undefined ? String(prog.actual_etc) : "");
-        setInputSatisfaction(String(prog.satisfaction ?? 0));
-        setInputAchievements(prog.achievements || "");
+        setInputParticipants(String(dataSrc.participants ?? 0));
+        setInputActualDevelopments(dataSrc.actual_developments !== undefined ? String(dataSrc.actual_developments) : "");
+        setInputActualEtc(dataSrc.actual_etc !== undefined ? String(dataSrc.actual_etc) : "");
+        setInputSatisfaction(String(dataSrc.satisfaction ?? 0));
+        setInputAchievements(dataSrc.achievements || "");
 
-        setInputEvalType(prog.evalType || "우수");
-        setInputExcellent(prog.excellent || "");
-        setInputImprovePlan(prog.improvePlan || "");
-        setInputDeficiency(prog.deficiency || "");
-        setInputActionItem(prog.actionItem || "");
+        setInputEvalType(dataSrc.evalType || "우수");
+        setInputExcellent(dataSrc.excellent || "");
+        setInputImprovePlan(dataSrc.improvePlan || "");
+        setInputDeficiency(dataSrc.deficiency || "");
+        setInputActionItem(dataSrc.actionItem || "");
 
-        setInputFrequency(prog.frequency !== undefined ? String(prog.frequency) : "");
-        setInputTargetParticipants(prog.target_participants !== undefined ? String(prog.target_participants) : "");
-        setInputTargetDevelopments(prog.target_developments !== undefined ? String(prog.target_developments) : "");
-        setInputTargetEtc(prog.target_etc !== undefined ? String(prog.target_etc) : "");
-        setInputTargetParticipantsUnit(prog.target_participants_unit || "명");
-        setInputTargetDevelopmentsUnit(prog.target_developments_unit || "건");
-        setInputTargetEtcUnit(prog.target_etc_unit || "개");
-        setInputTargetParticipantsName(prog.target_participants_name || "참여인원");
-        setInputTargetDevelopmentsName(prog.target_developments_name || "개발수");
-        setInputTargetEtcName(prog.target_etc_name || "기타");
-        setInputKpiType(prog.kpi_type || "자율");
-        setInputKpiLink(prog.kpi_link || "");
-        setInputActualFrequency(prog.actualFrequency !== undefined ? String(prog.actualFrequency) : "");
-        setInputAchieveRate(prog.achieveRate !== undefined ? String(prog.achieveRate) : "");
+        setInputFrequency(dataSrc.frequency !== undefined ? String(dataSrc.frequency) : "");
+        setInputTargetParticipants(dataSrc.target_participants !== undefined ? String(dataSrc.target_participants) : "");
+        setInputTargetDevelopments(dataSrc.target_developments !== undefined ? String(dataSrc.target_developments) : "");
+        setInputTargetEtc(dataSrc.target_etc !== undefined ? String(dataSrc.target_etc) : "");
+        setInputTargetParticipantsUnit(dataSrc.target_participants_unit || "명");
+        setInputTargetDevelopmentsUnit(dataSrc.target_developments_unit || "건");
+        setInputTargetEtcUnit(dataSrc.target_etc_unit || "개");
+        setInputTargetParticipantsName(dataSrc.target_participants_name || "참여인원");
+        setInputTargetDevelopmentsName(dataSrc.target_developments_name || "개발수");
+        setInputTargetEtcName(dataSrc.target_etc_name || "기타");
+        setInputKpiType(dataSrc.kpi_type || "자율");
+        setInputKpiLink(dataSrc.kpi_link || "");
+        setInputActualFrequency(dataSrc.actualFrequency !== undefined ? String(dataSrc.actualFrequency) : "");
+        setInputAchieveRate(dataSrc.achieveRate !== undefined ? String(dataSrc.achieveRate) : "");
       }
     } else {
       setInputKpiType("자율");
@@ -425,7 +461,7 @@ export default function PDCAManager({
       setInputActualFrequency("");
       setInputAchieveRate("");
     }
-  }, [selectedProgId, selectedYear, projects]);
+  }, [selectedProgId, selectedYear, projects, selectedVersionId, programVersions]);
 
   // 추진일정 변경 이벤트 핸들러 (기존 호환 유지)
   const handleTimelineChange = (start, end) => {
@@ -1257,8 +1293,38 @@ export default function PDCAManager({
                 {/* P 단계: 기획 정보 수립 & 예산 세부 배정 */}
                 {activePdcaStage === "P" && (isResearcher || currentRole.rank <= 2) && (
                   <form onSubmit={handleUpdatePDetails} style={{ padding: "0.75rem", background: "rgba(59,130,246,0.02)", border: "1px solid var(--border-color-dark)", borderRadius: "0.5rem" }}>
-                    <h4 style={{ fontSize: "0.8rem", fontWeight: "800", marginBottom: "0.6rem", color: "var(--accent-color)" }}>P 단계: 예산 기획 및 세부 추진계획</h4>
-                    <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.6rem", flexWrap: "wrap", gap: "0.5rem" }}>
+                      <h4 style={{ fontSize: "0.8rem", fontWeight: "800", color: "var(--accent-color)", margin: 0 }}>P 단계: 예산 기획 및 세부 추진계획</h4>
+                      
+                      {/* 버전 선택 드롭다운 */}
+                      <div style={{ display: "flex", alignItems: "center", gap: "0.3rem" }}>
+                        <span style={{ fontSize: "0.62rem", color: "var(--text-secondary-dark)" }}>📄 변경 차수 확인:</span>
+                        <select
+                          value={selectedVersionId}
+                          onChange={(e) => setSelectedVersionId(e.target.value)}
+                          style={{
+                            padding: "0.25rem 0.4rem",
+                            fontSize: "0.68rem",
+                            background: "var(--panel-bg)",
+                            border: "1px solid var(--border-color)",
+                            borderRadius: "4px",
+                            color: "var(--text-primary)",
+                            outline: "none",
+                            cursor: "pointer"
+                          }}
+                        >
+                          <option value="current">현재 실시간 데이터 (수정 가능)</option>
+                          {programVersions.map(v => (
+                            <option key={v.id} value={v.id}>
+                              {v.version_name} ({v.status})
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+                    
+                    <fieldset disabled={selectedVersionId !== "current"} style={{ border: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                      <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
                       
                       {/* 1영역: 재원별 예산 */}
                       <div>
@@ -1741,12 +1807,20 @@ export default function PDCAManager({
                         })()}
                       </div>
                       
+                      </div>
+                    </fieldset>
+
+                    {selectedVersionId === "current" ? (
                       <div style={{ display: "flex", justifyContent: "center", marginTop: "0.4rem" }}>
                         <button type="submit" className="btn-primary" style={{ width: "55%", padding: "0.35rem 0.5rem", fontSize: "0.75rem" }}>
-                          P(기획정보) 저장
+                          P(기획정보) 변경 신청 / 저장
                         </button>
                       </div>
-                    </div>
+                    ) : (
+                      <div style={{ padding: "0.4rem", background: "rgba(255,255,255,0.02)", border: "1px dashed var(--border-color-dark)", borderRadius: "6px", color: "var(--text-secondary-dark)", textAlign: "center", fontSize: "0.68rem", marginTop: "0.4rem" }}>
+                        🔒 {programVersions.find(v => v.id === Number(selectedVersionId))?.version_name} 조회 모드입니다. (수정 불가)
+                      </div>
+                    )}
                   </form>
                 )}
 

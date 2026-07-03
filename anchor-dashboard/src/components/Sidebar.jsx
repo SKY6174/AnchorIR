@@ -319,6 +319,18 @@ export default function Sidebar({
                   - 구성원 관리
                 </div>
                 <div
+                  className={`nav-sub-item ${activeTab === "management" && mgmtSubTab === "users" ? "active" : ""}`}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onChangeTab("management");
+                    if (onChangeMgmtSubTab) {
+                      onChangeMgmtSubTab("users");
+                    }
+                  }}
+                >
+                  - 회원현황
+                </div>
+                <div
                   className={`nav-sub-item ${activeTab === "management" && mgmtSubTab === "approvals" ? "active" : ""}`}
                   onClick={(e) => {
                     e.stopPropagation();
@@ -328,7 +340,7 @@ export default function Sidebar({
                     }
                   }}
                 >
-                  - 회원현황
+                  - 승인처리
                 </div>
                 <div
                   className={`nav-sub-item ${activeTab === "management" && mgmtSubTab === "programs" ? "active" : ""}`}
