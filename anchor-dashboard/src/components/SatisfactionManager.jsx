@@ -75,7 +75,7 @@ export default function SatisfactionManager({ selectedYear }) {
   const [newTitle, setNewTitle] = useState("");
   const [newPurpose, setNewPurpose] = useState("");
   const [newTarget, setNewTarget] = useState("");
-  const [newDept, setNewDept] = useState("ECC");
+  const [newDepts, setNewDepts] = useState(["ECC"]); // 다중 선택 체크박스 대응
   const [newStartDate, setNewStartDate] = useState("2026-03-01");
   const [newEndDate, setNewEndDate] = useState("2026-03-15");
   const [newQuestions, setNewQuestions] = useState([
@@ -253,10 +253,11 @@ export default function SatisfactionManager({ selectedYear }) {
     });
   };
 
-  // 부서별 새 조사 ID 자동 추천 생성기
-  const getNextSurveyId = (dept) => {
+  // 부서별 새 조사 ID 자동 추천 생성기 (다중 선택 대응)
+  const getNextSurveyId = (depts) => {
     const currentYear = 2024 + selectedYear;
-    const sameDeptSurveys = surveys.filter(s => s.id.startsWith(`${currentYear}-${dept}-`));
+    const mainDept = depts && depts.length > 0 ? depts[0] : "ECC";
+    const sameDeptSurveys = surveys.filter(s => s.id.startsWith(`${currentYear}-${mainDept}-`));
     
     // 번호 산출 (예: 2026-ECC-1)
     let maxNum = 0;
@@ -267,7 +268,7 @@ export default function SatisfactionManager({ selectedYear }) {
         maxNum = num;
       }
     });
-    return `${currentYear}-${dept}-${maxNum + 1}`;
+    return `${currentYear}-${mainDept}-${maxNum + 1}`;
   };
 
   const handleCreateSurvey = async (e) => {
@@ -276,8 +277,12 @@ export default function SatisfactionManager({ selectedYear }) {
       alert("조사제목과 조사목적은 필수 항목입니다.");
       return;
     }
+    if (newDepts.length === 0) {
+      alert("최소 1개 이상의 담당 부서를 선택해야 합니다.");
+      return;
+    }
 
-    const generatedId = getNextSurveyId(newDept);
+    const generatedId = getNextSurveyId(newDepts);
     const newSurvey = {
       id: generatedId,
       title: newTitle.trim(),
@@ -285,9 +290,9 @@ export default function SatisfactionManager({ selectedYear }) {
       startDate: newStartDate,
       endDate: newEndDate,
       target: newTarget.trim() || "프로그램 대상 전체",
-      department: newDept,
+      department: newDepts.join(", "),
       status: "작성",
-      googleSheetUrl: `https://docs.google.com/spreadsheets/d/1x${newDept}_${generatedId.replace(/-/g, "_")}/edit`,
+      googleSheetUrl: `https://docs.google.com/spreadsheets/d/1x${newDepts[0]}_${generatedId.replace(/-/g, "_")}/edit`,
       questions: newQuestions.filter(q => q.trim() !== ""),
       responses: []
     };
@@ -314,7 +319,7 @@ export default function SatisfactionManager({ selectedYear }) {
       setNewTitle("");
       setNewPurpose("");
       setNewTarget("");
-      setNewDept("ECC");
+      setNewDepts(["ECC"]);
       setActiveSurveyTab("list");
       alert("만족도 조사 기획서가 DB와 연동되어 안전하게 생성되었습니다!");
     } catch (err) {
@@ -944,32 +949,88 @@ ${commentList || "(없음)"}
             새로운 만족도 조사지 제작 폼
           </h3>
 
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.5rem" }}>
             <div>
-              <label style={{ fontSize: "0.78rem", color: "var(--text-secondary)", display: "block", marginBottom: "0.4rem" }}>수행 부서 선택</label>
-              <select
-                value={newDept}
-                onChange={(e) => setNewDept(e.target.value)}
-                className="user-selector"
-                style={{ width: "100%" }}
-              >
-                <option value="ECC">ECC (지산학교육센터)</option>
-                <option value="ICC">ICC (기업협업센터)</option>
-                <option value="RCC">RCC (지역협업센터)</option>
-                <option value="AIDX">AIDX (AID-X지원센터)</option>
-                <option value="NURI">NURI (울산늘봄누리센터)</option>
-                <option value="SEVeN">SEVeN (신산업특화센터)</option>
-              </select>
+              <label style={{ fontSize: "0.78rem", color: "var(--text-secondary)", display: "block", marginBottom: "0.5rem" }}>
+                담당 부서 선택 (다중 선택 가능)
+              </label>
+              <div style={{ 
+                display: "grid", 
+                gridTemplateColumns: "repeat(2, 1fr)", 
+                gap: "0.6rem", 
+                background: "rgba(255,255,255,0.01)", 
+                padding: "0.8rem 1rem", 
+                borderRadius: "0.375rem", 
+                border: "1px solid var(--border-color-dark)",
+                minHeight: "115px"
+              }}>
+                {[
+                  { key: "ECC", label: "ECC (지산학교육센터)" },
+                  { key: "ICC", label: "ICC (기업협업센터)" },
+                  { key: "RCC", label: "RCC (지역협업센터)" },
+                  { key: "AIDX", label: "AIDX (AID-X지원센터)" },
+                  { key: "NURI", label: "NURI (울산늘봄누리센터)" },
+                  { key: "SEVeN", label: "SEVeN (신산업특화센터)" }
+                ].map((deptObj) => {
+                  const isChecked = newDepts.includes(deptObj.key);
+                  return (
+                    <label 
+                      key={deptObj.key} 
+                      style={{ 
+                        display: "flex", 
+                        alignItems: "center", 
+                        gap: "0.5rem", 
+                        fontSize: "0.76rem", 
+                        color: isChecked ? "white" : "var(--text-secondary)",
+                        cursor: "pointer",
+                        fontWeight: isChecked ? "800" : "500",
+                        transition: "all 0.15s"
+                      }}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={isChecked}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setNewDepts([...newDepts, deptObj.key]);
+                          } else {
+                            if (newDepts.length > 1) {
+                              setNewDepts(newDepts.filter(d => d !== deptObj.key));
+                            } else {
+                              alert("최소 1개 이상의 담당 부서를 선택하셔야 합니다.");
+                            }
+                          }
+                        }}
+                        style={{ accentColor: "var(--accent-color)" }}
+                      />
+                      {deptObj.label}
+                    </label>
+                  );
+                })}
+              </div>
             </div>
-            <div>
-              <label style={{ fontSize: "0.78rem", color: "var(--text-secondary)", display: "block", marginBottom: "0.4rem" }}>추천 자동발급 ID</label>
+            <div style={{ display: "flex", flexDirection: "column", justifyContent: "flex-end" }}>
+              <label style={{ fontSize: "0.78rem", color: "var(--text-secondary)", display: "block", marginBottom: "0.5rem" }}>
+                추천 자동발급 ID (선택한 첫 번째 부서 기준)
+              </label>
               <input
                 type="text"
-                value={getNextSurveyId(newDept)}
+                value={getNextSurveyId(newDepts)}
                 disabled
                 className="user-selector"
-                style={{ width: "100%", background: "rgba(255,255,255,0.03)", color: "var(--text-secondary-dark)" }}
+                style={{ 
+                  width: "100%", 
+                  background: "rgba(255,255,255,0.03)", 
+                  color: "var(--text-secondary-dark)",
+                  padding: "0.6rem 0.8rem",
+                  fontSize: "0.85rem",
+                  border: "1px solid var(--border-color-dark)",
+                  borderRadius: "0.375rem"
+                }}
               />
+              <span style={{ fontSize: "0.68rem", color: "var(--text-secondary-dark)", marginTop: "0.4rem" }}>
+                * 다중 부서 공동 설문일 경우 첫 번째 체크된 부서명이 접두사 ID로 활용됩니다.
+              </span>
             </div>
           </div>
 
