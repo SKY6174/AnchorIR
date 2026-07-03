@@ -4845,7 +4845,6 @@ export default function App() {
                           <thead>
                             <tr>
                               <th>결재번호</th>
-                              <th>연도</th>
                               <th>프로그램 ID</th>
                               <th>프로그램명</th>
                               <th>변경 차수</th>
@@ -4858,15 +4857,14 @@ export default function App() {
                           <tbody>
                             {versionRequests.length === 0 ? (
                               <tr>
-                                <td colSpan="9" style={{ textAlign: "center", color: "var(--text-secondary-dark)", padding: "2.5rem" }}>
+                                <td colSpan="8" style={{ textAlign: "center", color: "var(--text-secondary-dark)", padding: "2.5rem" }}>
                                   결재 대기 중이거나 처리된 변경 요청 문서가 없습니다.
                                 </td>
                               </tr>
                             ) : (
                               versionRequests.map((req) => (
                                 <tr key={req.id}>
-                                  <td style={{ fontFamily: "var(--font-data)", fontWeight: "700" }}>{req.id}</td>
-                                  <td>{req.year}차년도</td>
+                                  <td style={{ fontFamily: "var(--font-data)", fontWeight: "700" }}>{2024 + req.year}-{req.unit_id}-{req.id}</td>
                                   <td>{req.program_id}</td>
                                   <td style={{ fontWeight: "700" }}>{req.program_title}</td>
                                   <td>
@@ -4975,7 +4973,10 @@ export default function App() {
 
                 <div style={{ display: "flex", flexDirection: "column", gap: "1rem", fontSize: "0.78rem" }}>
                   {/* 1. 기본 기안 정보 */}
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "1rem", background: "rgba(255,255,255,0.02)", padding: "0.6rem 0.8rem", borderRadius: "8px", border: "1px solid var(--border-color-dark)" }}>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: "1rem", background: "rgba(255,255,255,0.02)", padding: "0.6rem 0.8rem", borderRadius: "8px", border: "1px solid var(--border-color-dark)" }}>
+                    <div>
+                      <span style={{ color: "var(--text-secondary-dark)" }}>결재번호:</span> <strong style={{ color: "var(--text-primary)", fontFamily: "var(--font-data)" }}>{2024 + selectedRequest.year}-{selectedRequest.unit_id}-{selectedRequest.id}</strong>
+                    </div>
                     <div>
                       <span style={{ color: "var(--text-secondary-dark)" }}>신청자:</span> <strong style={{ color: "var(--text-primary)" }}>{selectedRequest.requested_by}</strong>
                     </div>
