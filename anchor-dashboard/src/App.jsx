@@ -148,19 +148,34 @@ const RenderLatexFormula = ({ formula }) => {
     boxSizing: "border-box"
   };
 
-  // 1. 만약 수식에 "="이 있다면 (예: C-2 ~ C-6 공식 등)
+  // LaTeX 수식 문자열을 한글 평문으로 깨끗하게 다듬어주는 헬퍼
+  const cleanLatex = (str) => {
+    if (!str) return "";
+    return str
+      // \text{...} 또는 [탭]ext{...} 구조 모두 매칭
+      .replace(/(?:\\|[\t\f])?text\{([^}]+)\}/g, "$1")
+      // LaTeX 퍼센트 이스케이프(\%) 복구
+      .replace(/\\%/g, "%")
+      // 남은 백슬래시 제거
+      .replace(/\\/g, "")
+      // 혹시 매칭에 누락되어 남은 단독 중괄호 제거
+      .replace(/[\{\}]/g, "")
+      .trim();
+  };
+
+  // 1. 만약 수식에 "="이 있다면 (예: C-1 ~ C-6 공식 등)
   if (formula.includes("=")) {
     const parts = formula.split("=");
-    let label = parts[0].replace(/\\text\{([^}]+)\}/g, "$1").replace(/\\%/g, "%").replace(/\\/g, "").trim();
+    let label = cleanLatex(parts[0]);
     const rightSide = parts[1].trim();
 
-    // 우항에서 \frac{분자}{분모} 추출
-    const fracMatch = rightSide.match(/\\frac\{([\s\S]+?)\}\{([\s\S]+?)\}/);
+    // 우항에서 \frac{분자}{분모} 추출 (탭 제어문자 \f 도 고려)
+    const fracMatch = rightSide.match(/(?:\\|[\t\f])?frac\{([\s\S]+?)\}\{([\s\S]+?)\}/);
     if (fracMatch) {
-      let num = fracMatch[1].replace(/\\text\{([^}]+)\}/g, "$1").replace(/\\%/g, "%").replace(/\\/g, "").trim();
-      let den = fracMatch[2].replace(/\\text\{([^}]+)\}/g, "$1").replace(/\\%/g, "%").replace(/\\/g, "").trim();
+      let num = cleanLatex(fracMatch[1]);
+      let den = cleanLatex(fracMatch[2]);
       
-      const timesMatch = rightSide.match(/\\times\s*([\d.]+)/);
+      const timesMatch = rightSide.match(/(?:\\|[\t\f])?times\s*([\d.]+)/);
       const weight = timesMatch ? timesMatch[1] : null;
 
       return (
@@ -187,7 +202,8 @@ const RenderLatexFormula = ({ formula }) => {
   }
 
   // 2. 만약 일반 다항식 분수라면 (L-1 ~ L-24 공식 등)
-  if (!formula.includes("\\frac")) {
+  const containsFrac = formula.includes("frac");
+  if (!containsFrac) {
     return <span style={{ fontSize: "0.85rem", color: "var(--text-secondary-dark)" }}>{formula}</span>;
   }
 
@@ -197,7 +213,8 @@ const RenderLatexFormula = ({ formula }) => {
     <div style={containerStyle}>
       {terms.map((termStr, index) => {
         const trimmed = termStr.trim();
-        const fracRegex = /\\frac\{\\text\{([^}]+)\}\}\{\\text\{([^}]+)\}\}(?:\s*\\times\s*([\d.]+))?/;
+        // \frac 및 \text 가 \f, \t 등으로 쪼개진 가능성까지 포함한 Regex
+        const fracRegex = /(?:\\|[\t\f])?frac\{(?:\\|[\t\f])?text\{([^}]+)\}\}\{(?:\\|[\t\f])?text\{([^}]+)\}\}(?:\s*(?:\\|[\t\f])?times\s*([\d.]+))?/;
         const match = trimmed.match(fracRegex);
 
         if (match) {
@@ -226,7 +243,7 @@ const RenderLatexFormula = ({ formula }) => {
         return (
           <React.Fragment key={index}>
             {index > 0 && <span style={{ margin: "0 0.1rem", fontWeight: "700", color: "var(--text-secondary-dark)" }}>+</span>}
-            <span style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)" }}>{trimmed}</span>
+            <span style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)" }}>{cleanLatex(trimmed)}</span>
           </React.Fragment>
         );
       })}
