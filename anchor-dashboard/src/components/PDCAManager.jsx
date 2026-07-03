@@ -1921,19 +1921,49 @@ export default function PDCAManager({
                           return (
                             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.4rem", borderTop: "1px solid var(--border-color-dark)", paddingTop: "0.4rem" }}>
                               <div>
-                                <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)" }}>참여대상</span>
-                                <select
-                                  className="user-selector"
-                                  value={inputTargetAudience}
-                                  onChange={(e) => setInputTargetAudience(e.target.value)}
-                                  style={{ width: "100%", padding: "0.25rem 0.4rem", fontSize: "0.75rem", background: "#18181b", color: "white", border: "1px solid var(--border-color-dark)", borderRadius: "0.25rem" }}
-                                >
-                                  <option value="" style={{ background: "#18181b", color: "white" }}>-- 참여대상 선택 --</option>
-                                  <option value="재학생" style={{ background: "#18181b", color: "white" }}>재학생</option>
-                                  <option value="성인학습자" style={{ background: "#18181b", color: "white" }}>성인학습자</option>
-                                  <option value="재직자" style={{ background: "#18181b", color: "white" }}>재직자</option>
-                                  <option value="기타" style={{ background: "#18181b", color: "white" }}>기타</option>
-                                </select>
+                                <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)", display: "block", marginBottom: "0.2rem" }}>참여대상 (복수선택 가능)</span>
+                                <div style={{ display: "flex", gap: "0.3rem", flexWrap: "wrap" }}>
+                                  {["재학생", "성인학습자", "재직자", "기타"].map((option) => {
+                                    const selectedList = inputTargetAudience ? inputTargetAudience.split(",").map(s => s.trim()) : [];
+                                    const isChecked = selectedList.includes(option);
+                                    
+                                    return (
+                                      <label 
+                                        key={option} 
+                                        style={{
+                                          display: "flex",
+                                          alignItems: "center",
+                                          gap: "0.25rem",
+                                          fontSize: "0.68rem",
+                                          color: "var(--text-primary)",
+                                          background: isChecked ? "rgba(37,99,235,0.15)" : "#18181b",
+                                          border: isChecked ? "1px solid var(--accent-color)" : "1px solid var(--border-color-dark)",
+                                          padding: "0.22rem 0.4rem",
+                                          borderRadius: "4px",
+                                          cursor: "pointer",
+                                          userSelect: "none",
+                                          transition: "all 0.15s"
+                                        }}
+                                      >
+                                        <input 
+                                          type="checkbox"
+                                          checked={isChecked}
+                                          onChange={(e) => {
+                                            let newList = [...selectedList];
+                                            if (e.target.checked) {
+                                              newList.push(option);
+                                            } else {
+                                              newList = newList.filter(item => item !== option);
+                                            }
+                                            setInputTargetAudience(newList.join(", "));
+                                          }}
+                                          style={{ cursor: "pointer", accentColor: "var(--accent-color)" }}
+                                        />
+                                        {option}
+                                      </label>
+                                    );
+                                  })}
+                                </div>
                               </div>
                               <div>
                                 <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)" }}>연계부서 (최대 2개 선택)</span>
