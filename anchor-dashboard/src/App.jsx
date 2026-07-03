@@ -4846,7 +4846,7 @@ export default function App() {
                             <tr>
                               <th>결재번호</th>
                               <th>연도</th>
-                              <th>단위과제</th>
+                              <th>프로그램 ID</th>
                               <th>프로그램명</th>
                               <th>변경 차수</th>
                               <th>상태</th>
@@ -4867,7 +4867,7 @@ export default function App() {
                                 <tr key={req.id}>
                                   <td style={{ fontFamily: "var(--font-data)", fontWeight: "700" }}>{req.id}</td>
                                   <td>{req.year}차년도</td>
-                                  <td>{req.unit_id}</td>
+                                  <td>{req.program_id}</td>
                                   <td style={{ fontWeight: "700" }}>{req.program_title}</td>
                                   <td>
                                     <span className="badge badge-blue" style={{ fontSize: "0.65rem" }}>
