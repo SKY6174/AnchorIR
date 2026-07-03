@@ -708,3 +708,22 @@ body.light-mode {
   margin-top: 0.25rem;
   margin-bottom: 0.25rem;
 }
+
+/* 날짜/시간 입력창 내장 달력 및 피커 아이콘 시인성 고대비 설정 */
+input[type="date"],
+input[type="time"] {
+  color-scheme: dark;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator,
+input[type="time"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+  cursor: pointer;
+  opacity: 0.8;
+  transition: opacity 0.15s ease;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator:hover,
+input[type="time"]::-webkit-calendar-picker-indicator:hover {
+  opacity: 1;
+}
