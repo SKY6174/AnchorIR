@@ -382,9 +382,14 @@ export default function ScheduleManager({
               
               {/* 캘린더 월 조작용 헤더 */}
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
-                <span style={{ fontSize: "1rem", fontWeight: "800", color: "var(--text-primary)" }}>
-                  2026년 {currentMonth}월
-                </span>
+                <div style={{ display: "flex", alignItems: "baseline", gap: "0.35rem" }}>
+                  <span style={{ fontSize: "1.15rem", fontWeight: "800", color: "var(--text-primary)" }}>
+                    2026년
+                  </span>
+                  <span style={{ fontSize: "1.45rem", fontWeight: "900", color: "var(--accent-color)" }}>
+                    {currentMonth}월
+                  </span>
+                </div>
                 <div style={{ display: "flex", gap: "0.25rem" }}>
                   <button 
                     onClick={() => setCurrentMonth(currentMonth === 7 ? 8 : 7)}
