@@ -1452,7 +1452,7 @@ export default function PDCAManager({
                           💡 프로그램 기획 및 예산 변경 방법 안내
                         </div>
                         <p style={{ margin: 0 }}>
-                          <strong>[변경 원칙]</strong>에 맞춰 <strong>재원별 예산 배정, 비목별 예산 배정, 월별 추진 일정, 실적목표 중 1개 이상</strong>을 수정하고, <strong>참여대상(연계대상)</strong>을 무조건 입력한 뒤 하단의 <strong>[저장 및 결재 요청]</strong> 버튼을 누르시면 승인 대기 상태로 등록됩니다.
+                          <strong>[변경 원칙]</strong> 재원별 예산 배정, 비목별 예산 배정, 월별 추진 일정(PDCA가 모두 반영), 실적목표(1개 이상), 참여대상 중 하나 이상의 수정사항을 반영하여 입력한 뒤 하단의 <strong>[저장 및 결재 요청]</strong> 버튼을 누르시면 '승인대기' 상태로 등록됩니다.
                         </p>
                         <p style={{ margin: 0, color: "var(--text-secondary-dark)" }}>
                           - 운영팀장, 본부장, 단장 결재 승인이 완료되면 최종 반영되며 새로운 변경 차수 버전이 영구 기록됩니다.
