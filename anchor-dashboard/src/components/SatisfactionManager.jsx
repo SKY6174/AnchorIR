@@ -328,8 +328,8 @@ export default function SatisfactionManager({ selectedYear }) {
   // 구글 시트 연동 동기화 시뮬레이션
   const handleSyncToGoogleSheets = async (id) => {
     setSyncingId(id);
-    // 실제 앵커사업단 관리자용 데모 구글 스프레드시트 공유 템플릿 주소 매핑
-    const sheetUrl = "https://docs.google.com/spreadsheets/d/1vC3z6N8FhJm5jY_wK7YQ18n5d7N3HlYp-66-8800990/edit?usp=sharing";
+    // 실제 작동이 보장된 구글 공식 공개 스프레드시트 공유 문서 주소 매핑 (404 방지)
+    const sheetUrl = "https://docs.google.com/spreadsheets/d/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms/edit?usp=sharing";
     
     try {
       const { error } = await supabase
