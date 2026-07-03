@@ -1695,6 +1695,20 @@ export default function App() {
       return 0;
     });
   };
+  // Supabase 실시간 동기화 상태 배지 및 로드 플래그
+  const [isDbLoaded, setIsDbLoaded] = useState(false);
+  const [syncStatus, setSyncStatus] = useState("synced"); // "synced", "syncing", "error"
+
+  // 구매용역 관리 DB 보존 상태
+  const [envData, setEnvData] = useState([]);
+  const [equipData, setEquipData] = useState([]);
+  const [serviceData, setServiceData] = useState([]);
+
+  // 일정관리 DB 보존 상태
+  const [monthlySchedules, setMonthlySchedules] = useState([]);
+  const [eventSchedules, setEventSchedules] = useState([]);
+  const [meetingSchedules, setMeetingSchedules] = useState([]);
+
   const [projectsSubTab, setProjectsSubTab] = useState(() => {
     return localStorage.getItem("anchor_projects_sub_tab") || "unit_status";
   }); // "unit_status" (단위과제 집행현황) 또는 "program_mgmt" (프로그램 관리)
@@ -2064,6 +2078,321 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem("anchor_pdca_view_mode", pdcaViewMode);
   }, [pdcaViewMode]);
+
+  // ==========================================
+  // Supabase DB 실시간 패칭 및 자동 동기화 훅
+  // ==========================================
+  
+  // 1) 최초 마운트 및 연차 변경 시 DB 데이터 Fetch 연동
+  useEffect(() => {
+    const fetchAllDashboardData = async () => {
+      try {
+        setIsDbLoaded(false);
+
+        // 1. Projects 복구
+        const { data: projData } = await supabase
+          .from("projects_data")
+          .select("*")
+          .eq("year", selectedYear)
+          .single();
+        
+        if (projData && projData.data) {
+          setProjects(projData.data);
+        } else {
+          // 데이터가 존재하지 않으면 기본값을 formatDataToMultiYear로 구성하여 set
+          const multiYearInitialData = formatDataToMultiYear(initialProjectsData);
+          setProjects(multiYearInitialData);
+          // 최초로 DB에 기본값 캐싱 저장 시도
+          await supabase.from("projects_data").upsert({ year: selectedYear, data: multiYearInitialData });
+        }
+
+        // 2. Agreements 복구
+        const { data: agrData } = await supabase
+          .from("agreements")
+          .select("*")
+          .eq("year", selectedYear);
+        
+        if (agrData) {
+          setAgreements(agrData.map(a => ({
+            id: Number(a.id),
+            year: a.year,
+            date: a.date,
+            center: a.center,
+            organizations: a.organizations,
+            subject_univ: a.subject_univ,
+            unit_id: a.unit_id,
+            contents: a.contents,
+            file_name: a.file_name,
+            file_data: a.file_data
+          })));
+        }
+
+        // 3. Procurement (환경개선, 기자재, 주요용역) 복구
+        const { data: pEnv } = await supabase.from("procurement_env").select("*").eq("year", selectedYear);
+        const { data: pEquip } = await supabase.from("procurement_equipment").select("*").eq("year", selectedYear);
+        const { data: pServ } = await supabase.from("procurement_services").select("*").eq("year", selectedYear);
+        
+        if (pEnv) setEnvData(pEnv.map(x => ({ ...x, id: Number(x.id), budgetPlan: Number(x.budget_plan), budgetSpent: Number(x.budget_spent) })));
+        if (pEquip) setEquipData(pEquip.map(x => ({ ...x, id: Number(x.id), budgetPlan: Number(x.budget_plan), budgetSpent: Number(x.budget_spent) })));
+        if (pServ) setServiceData(pServ.map(x => ({ ...x, id: Number(x.id), budgetPlan: Number(x.budget_plan), budgetSpent: Number(x.budget_spent) })));
+
+        // 4. Schedule (월간일정, 행사일정, 회의일정) 복구
+        const { data: sMonth } = await supabase.from("schedule_monthly").select("*").eq("year", selectedYear);
+        const { data: sEvent } = await supabase.from("schedule_events").select("*").eq("year", selectedYear);
+        const { data: sMeet } = await supabase.from("schedule_meetings").select("*").eq("year", selectedYear);
+        
+        if (sMonth) setMonthlySchedules(sMonth.map(x => ({ ...x, id: Number(x.id) })));
+        if (sEvent) setEventSchedules(sEvent.map(x => ({ ...x, id: Number(x.id), month: Number(x.month) })));
+        if (sMeet) setMeetingSchedules(sMeet.map(x => ({ ...x, id: Number(x.id), month: Number(x.month) })));
+
+        setIsDbLoaded(true);
+      } catch (e) {
+        console.error("Error loading dashboard data from Supabase:", e);
+        setIsDbLoaded(true);
+      }
+    };
+
+    fetchAllDashboardData();
+  }, [selectedYear]);
+
+  // 2) Projects 자동 저장 디바운스 훅
+  useEffect(() => {
+    if (!isDbLoaded) return;
+    setSyncStatus("syncing");
+    const timer = setTimeout(async () => {
+      try {
+        const { error } = await supabase
+          .from("projects_data")
+          .upsert({ year: selectedYear, data: projects, updated_at: new Date().toISOString() }, { onConflict: "year" });
+        if (error) throw error;
+        setSyncStatus("synced");
+      } catch (e) {
+        setSyncStatus("error");
+      }
+    }, 1500);
+    return () => clearTimeout(timer);
+  }, [projects, selectedYear, isDbLoaded]);
+
+  // 3) Agreements 자동 저장 디바운스 훅
+  useEffect(() => {
+    if (!isDbLoaded) return;
+    setSyncStatus("syncing");
+    const timer = setTimeout(async () => {
+      try {
+        await supabase.from("agreements").delete().eq("year", selectedYear);
+        const filtered = agreements.filter(a => a.year === selectedYear);
+        if (filtered.length > 0) {
+          const { error } = await supabase.from("agreements").insert(
+            filtered.map(a => ({
+              year: a.year,
+              date: a.date,
+              center: a.center,
+              organizations: a.organizations,
+              subject_univ: a.subject_univ,
+              unit_id: a.unit_id,
+              contents: a.contents,
+              file_name: a.file_name,
+              file_data: a.file_data
+            }))
+          );
+          if (error) throw error;
+        }
+        setSyncStatus("synced");
+      } catch (e) {
+        setSyncStatus("error");
+      }
+    }, 1500);
+    return () => clearTimeout(timer);
+  }, [agreements, selectedYear, isDbLoaded]);
+
+  // 4) Procurement Env 자동 저장 디바운스 훅
+  useEffect(() => {
+    if (!isDbLoaded) return;
+    setSyncStatus("syncing");
+    const timer = setTimeout(async () => {
+      try {
+        await supabase.from("procurement_env").delete().eq("year", selectedYear);
+        if (envData.length > 0) {
+          const { error } = await supabase.from("procurement_env").insert(
+            envData.map(e => ({
+              year: selectedYear,
+              title: e.title,
+              unit: e.unit,
+              plan: e.plan,
+              meeting_result: e.meetingResult,
+              progress: e.progress,
+              budget_plan: e.budgetPlan,
+              budget_spent: e.budgetSpent,
+              location: e.location,
+              purpose: e.purpose,
+              birdseye_view: e.birdseyeView,
+              blueprints: e.blueprints,
+              utilization: e.utilization
+            }))
+          );
+          if (error) throw error;
+        }
+        setSyncStatus("synced");
+      } catch (e) {
+        setSyncStatus("error");
+      }
+    }, 1500);
+    return () => clearTimeout(timer);
+  }, [envData, selectedYear, isDbLoaded]);
+
+  // 5) Procurement Equipment 자동 저장 디바운스 훅
+  useEffect(() => {
+    if (!isDbLoaded) return;
+    setSyncStatus("syncing");
+    const timer = setTimeout(async () => {
+      try {
+        await supabase.from("procurement_equipment").delete().eq("year", selectedYear);
+        if (equipData.length > 0) {
+          const { error } = await supabase.from("procurement_equipment").insert(
+            equipData.map(e => ({
+              year: selectedYear,
+              unit: e.unit,
+              name: e.name,
+              program: e.program,
+              department: e.department,
+              schedule: e.schedule,
+              budget_plan: e.budgetPlan,
+              budget_spent: e.budgetSpent,
+              op_plan: e.opPlan,
+              op_performance: e.opPerformance
+            }))
+          );
+          if (error) throw error;
+        }
+        setSyncStatus("synced");
+      } catch (e) {
+        setSyncStatus("error");
+      }
+    }, 1500);
+    return () => clearTimeout(timer);
+  }, [equipData, selectedYear, isDbLoaded]);
+
+  // 6) Procurement Services 자동 저장 디바운스 훅
+  useEffect(() => {
+    if (!isDbLoaded) return;
+    setSyncStatus("syncing");
+    const timer = setTimeout(async () => {
+      try {
+        await supabase.from("procurement_services").delete().eq("year", selectedYear);
+        if (serviceData.length > 0) {
+          const { error } = await supabase.from("procurement_services").insert(
+            serviceData.map(s => ({
+              year: selectedYear,
+              title: s.title,
+              purpose: s.purpose,
+              provider_qual: s.providerQual,
+              step: s.step,
+              budget_plan: s.budgetPlan,
+              budget_spent: s.budgetSpent,
+              op_result: s.opResult
+            }))
+          );
+          if (error) throw error;
+        }
+        setSyncStatus("synced");
+      } catch (e) {
+        setSyncStatus("error");
+      }
+    }, 1500);
+    return () => clearTimeout(timer);
+  }, [serviceData, selectedYear, isDbLoaded]);
+
+  // 7) Schedule Monthly 자동 저장 디바운스 훅
+  useEffect(() => {
+    if (!isDbLoaded) return;
+    setSyncStatus("syncing");
+    const timer = setTimeout(async () => {
+      try {
+        await supabase.from("schedule_monthly").delete().eq("year", selectedYear);
+        if (monthlySchedules.length > 0) {
+          const { error } = await supabase.from("schedule_monthly").insert(
+            monthlySchedules.map(s => ({
+              year: selectedYear,
+              date: s.date,
+              title: s.title,
+              time: s.time,
+              location: s.location
+            }))
+          );
+          if (error) throw error;
+        }
+        setSyncStatus("synced");
+      } catch (e) {
+        setSyncStatus("error");
+      }
+    }, 1500);
+    return () => clearTimeout(timer);
+  }, [monthlySchedules, selectedYear, isDbLoaded]);
+
+  // 8) Schedule Events 자동 저장 디바운스 훅
+  useEffect(() => {
+    if (!isDbLoaded) return;
+    setSyncStatus("syncing");
+    const timer = setTimeout(async () => {
+      try {
+        await supabase.from("schedule_events").delete().eq("year", selectedYear);
+        if (eventSchedules.length > 0) {
+          const { error } = await supabase.from("schedule_events").insert(
+            eventSchedules.map(s => ({
+              year: selectedYear,
+              month: s.month,
+              title: s.title,
+              department: s.department,
+              datetime: s.datetime,
+              location: s.location,
+              attendees_internal: s.attendeesInternal,
+              attendees_external: s.attendeesExternal,
+              program: s.program,
+              purpose: s.purpose,
+              result: s.result
+            }))
+          );
+          if (error) throw error;
+        }
+        setSyncStatus("synced");
+      } catch (e) {
+        setSyncStatus("error");
+      }
+    }, 1500);
+    return () => clearTimeout(timer);
+  }, [eventSchedules, selectedYear, isDbLoaded]);
+
+  // 9) Schedule Meetings 자동 저장 디바운스 훅
+  useEffect(() => {
+    if (!isDbLoaded) return;
+    setSyncStatus("syncing");
+    const timer = setTimeout(async () => {
+      try {
+        await supabase.from("schedule_meetings").delete().eq("year", selectedYear);
+        if (meetingSchedules.length > 0) {
+          const { error } = await supabase.from("schedule_meetings").insert(
+            meetingSchedules.map(s => ({
+              year: selectedYear,
+              month: s.month,
+              category: s.category,
+              title: s.title,
+              datetime: s.datetime,
+              location: s.location,
+              attendees_internal: s.attendeesInternal,
+              attendees_external: s.attendeesExternal,
+              agenda: s.agenda,
+              result: s.result
+            }))
+          );
+          if (error) throw error;
+        }
+        setSyncStatus("synced");
+      } catch (e) {
+        setSyncStatus("error");
+      }
+    }, 1500);
+    return () => clearTimeout(timer);
+  }, [meetingSchedules, selectedYear, isDbLoaded]);
 
   // 1차년도용 단위과제 필터링 및 이름/ID 변환
   const getNormalizedProjectsForRendering = (rawProjects, yr) => {
@@ -3160,6 +3489,35 @@ export default function App() {
           </div>
 
           <div className="controls-section" style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
+            {/* Supabase 실시간 동기화 상태 배지 */}
+            <span style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "0.25rem",
+              fontSize: "0.75rem",
+              padding: "0.25rem 0.6rem",
+              borderRadius: "4px",
+              background: syncStatus === "synced" 
+                ? "rgba(16, 185, 129, 0.1)" 
+                : syncStatus === "syncing" 
+                ? "rgba(245, 158, 11, 0.1)" 
+                : "rgba(239, 68, 68, 0.1)",
+              color: syncStatus === "synced" 
+                ? "#10B981" 
+                : syncStatus === "syncing" 
+                ? "#F59E0B" 
+                : "#EF4444",
+              border: syncStatus === "synced" 
+                ? "1px solid rgba(16, 185, 129, 0.2)" 
+                : syncStatus === "syncing" 
+                ? "1px solid rgba(245, 158, 11, 0.2)" 
+                : "1px solid rgba(239, 68, 68, 0.2)",
+              marginRight: "0.5rem",
+              fontWeight: "700"
+            }}>
+              {syncStatus === "synced" ? "☁️ DB 동기화 완료" : syncStatus === "syncing" ? "🔄 DB 저장 중..." : "⚠️ 동기화 실패"}
+            </span>
+
             <span style={{ fontSize: "0.85rem", color: "var(--text-secondary)", marginRight: "0.4rem" }}>
               {getWelcomeMessage()}
             </span>
@@ -4621,6 +4979,12 @@ export default function App() {
               selectedYear={selectedYear}
               subTab={procurementSubTab}
               onChangeSubTab={setProcurementSubTab}
+              envData={envData}
+              setEnvData={setEnvData}
+              equipData={equipData}
+              setEquipData={setEquipData}
+              serviceData={serviceData}
+              setServiceData={setServiceData}
             />
           </div>
         )}
@@ -4685,6 +5049,12 @@ export default function App() {
               selectedYear={selectedYear}
               subTab={scheduleSubTab}
               onChangeSubTab={setScheduleSubTab}
+              monthlySchedules={monthlySchedules}
+              setMonthlySchedules={setMonthlySchedules}
+              eventSchedules={eventSchedules}
+              setEventSchedules={setEventSchedules}
+              meetingSchedules={meetingSchedules}
+              setMeetingSchedules={setMeetingSchedules}
             />
           </div>
         )}

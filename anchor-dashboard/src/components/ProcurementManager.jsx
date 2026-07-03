@@ -5,7 +5,18 @@ import {
   Eye, FileText, FileImage, LayoutGrid, ListFilter
 } from "lucide-react";
 
-export default function ProcurementManager({ currentRole, selectedYear, subTab, onChangeSubTab }) {
+export default function ProcurementManager({
+  currentRole,
+  selectedYear,
+  subTab,
+  onChangeSubTab,
+  envData = [],
+  setEnvData,
+  equipData = [],
+  setEquipData,
+  serviceData = [],
+  setServiceData
+}) {
   // 모달 제어 상태
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [modalType, setModalType] = useState("env"); // "env", "equip", "service"
@@ -15,94 +26,6 @@ export default function ProcurementManager({ currentRole, selectedYear, subTab, 
 
   // 기자재 탭 단위과제 필터 상태
   const [selectedEquipUnit, setSelectedEquipUnit] = useState("A1");
-
-  // 1. 환경개선 목업 데이터 (1차년도/2차년도 통합 리스트)
-  const [envData, setEnvData] = useState([
-    {
-      id: 1,
-      year: 1,
-      title: "UC-HYPER 교육과정 운영용 하이퍼 팩토리 교육환경 개선 구축",
-      unit: "A1",
-      plan: "하이퍼 팩토리 핵심 교육 과정 진행을 위해 기존 로봇실습실의 환기 및 배선 전면 개조 계획 수립",
-      meetingResult: "2026.04.12. 사업단 내부 회의 결과: 배선 규격을 3상 380V로 승압 확정 및 LED 조도 개선 의결",
-      progress: "기본 설계 완료 ➔ 내부 결재 완료 ➔ 리모델링 시공 완료 ➔ 준공 검사 대기 중 (90% 완료)",
-      budgetPlan: 45000000,
-      budgetSpent: 42300000,
-      location: "울산과학대학교 동부캠퍼스 3공학관 204호",
-      purpose: "미래형 친환경 모빌리티 로봇 제어 교육 및 실습용 공간 확보",
-      birdseyeView: "공간 조감도: 현대적인 다크 톤 벽면, 개별 집진 설비 및 유리 파티션 분할 레이아웃 적용",
-      blueprints: "도면 정보: 전면 배선 회로도 설계 및 소방 대피로 확보 설계 완료",
-      utilization: "연간 4개 학과 (컴퓨터IT전공, 기계공학과 등) 전공 교과 및 재직자 직무 교육 공간으로 활용"
-    },
-    {
-      id: 2,
-      year: 1,
-      title: "바이오 융합 실험실 교육 환경 개선 리모델링",
-      unit: "B2",
-      plan: "바이오 안전 등급 클래스 2 수준의 무균 작업대 구성을 위한 배관 및 인테리어 개선 구축",
-      meetingResult: "2026.05.02. 학과 간담회 결과: 무균 벤치 인근 동선을 단순화하기 위한 중앙 작업실 벽체 철거 승인",
-      progress: "철거 완료 ➔ 방수 및 특수 도장 시공 중 (진행률 60%)",
-      budgetPlan: 32000000,
-      budgetSpent: 18500000,
-      location: "서부캠퍼스 1공학관 412호",
-      purpose: "바이오 메디컬 융합 인재 양성을 위한 분자생물학 기초/심화 실험 공간",
-      birdseyeView: "공간 조감도: 클린룸 패널 및 에어샤워 설치 구조",
-      blueprints: "도면 정보: 환기 덕트 경로 및 배수 라인 특수 정화조 연동 도면 작성",
-      utilization: "바이오제약 및 정밀화학 분야 산학 공동 연구 및 학생 캡스톤 프로젝트용 공간으로 연중 개방"
-    }
-  ]);
-
-  // 2. 기자재 구입·운영 목업 데이터
-  const [equipData, setEquipData] = useState([
-    {
-      id: 1,
-      unit: "A1",
-      name: "다축 교육용 수직다관절 산업용 로봇 팔 (6축)",
-      program: "지능형 로봇 스마트 팩토리 인력 양성 프로그램",
-      department: "기계공학과 / 기계IT융합전공",
-      schedule: "2026.06.01 발주 완료 ➔ 2026.07.15 납품 및 셋업 예정",
-      budgetPlan: 55000000,
-      budgetSpent: 55000000,
-      opPlan: "전문 기술 인력 1인 전담 지정하여 매주 금요일 예방 정비 실행 및 학생 자율 조작 예약제 실시",
-      opPerformance: "학기 중 매주 평균 28시간 학생 로봇 티칭 실습 활용, 캡스톤 디자인 대회 출품작 3건 제작 지원 완료"
-    },
-    {
-      id: 2,
-      unit: "B2",
-      name: "고분자 정밀 크로마토그래피 분석 분석기 (HPLC)",
-      program: "신소재 정밀화학 분석 전문성 강화 프로그램",
-      department: "화학공학과 / 바이오화학 신소재 센터",
-      schedule: "2026.04.20 결재 ➔ 2026.05.30 검수 및 설치 완료",
-      budgetPlan: 48000000,
-      budgetSpent: 47600000,
-      opPlan: "바이오화학 전공 석/박사 및 전문 분석 연구원 기기 정기 캘리브레이션 운영",
-      opPerformance: "지역 정밀화학 협력 기업 시료 공동 분석 12건 수행, 관련 졸업 논문 2편 데이터 획득 기여"
-    }
-  ]);
-
-  // 3. 주요 용역 목업 데이터 (500만원 이상)
-  const [serviceData, setServiceData] = useState([
-    {
-      id: 1,
-      title: "울산형 RISE 앵커 과제 고도화를 위한 교육과정 표준 개편 용역",
-      purpose: "대학 내 자율/중점 지표 달성을 위한 미래 모빌리티 융합 교과 체계 수립 및 혁신 모델 검증",
-      providerQual: "국내 4년제 대학 교육 혁신 컨설팅 유경험 법인 (최근 3년간 유사 국책사업 실적 5건 이상 보유)",
-      step: 2, // 1: 결재완료, 2: 발주완료, 3: 검수/종료
-      budgetPlan: 18000000,
-      budgetSpent: 18000000,
-      opResult: "교과과정 표준 가이드라인 1부 납품 및 4개 학부 연동 교육 모델 시뮬레이션 결과 반영 완료"
-    },
-    {
-      id: 2,
-      title: "재학생 현장 밀착형 실습 공간 안전 진단 및 정밀 분석 컨설팅 용역",
-      purpose: "학내 실험/실습실 유해 위험 요인 분석 및 특수화학 물질 취급 시설 정밀 계측",
-      providerQual: "정부 지정 안전진단 전문 대행 기관 (자본금 3억 이상 및 정밀 계측 설비 보유 업체)",
-      step: 1, // 1: 결재완료, 2: 발주완료, 3: 검수/종료
-      budgetPlan: 95000000,
-      budgetSpent: 0,
-      opResult: "안전 진단 기획 단계 완료 및 총무팀 구매 입찰 공고 대기 상태 기술 대기 중"
-    }
-  ]);
 
   // 4. 입력 폼 임시 State
   const [formData, setFormData] = useState({

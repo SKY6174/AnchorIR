@@ -4,7 +4,18 @@ import {
   FileText, Award, Layers, Plus, CheckCircle, Info, ChevronLeft, ChevronRight
 } from "lucide-react";
 
-export default function ScheduleManager({ currentRole, selectedYear, subTab, onChangeSubTab }) {
+export default function ScheduleManager({
+  currentRole,
+  selectedYear,
+  subTab,
+  onChangeSubTab,
+  monthlySchedules = [],
+  setMonthlySchedules,
+  eventSchedules = [],
+  setEventSchedules,
+  meetingSchedules = [],
+  setMeetingSchedules
+}) {
   // 모달 제어 상태
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [modalType, setModalType] = useState("monthly"); // "monthly", "event", "meeting"
@@ -19,98 +30,6 @@ export default function ScheduleManager({ currentRole, selectedYear, subTab, onC
 
   // 회의 대분류 상태 ("operating": 사업단 운영회의, "center": 센터별 회의, "committee": 각종 위원회 회의)
   const [activeMeetingCat, setActiveMeetingCat] = useState("operating");
-
-  // 1. 월간 일정 기본 목업 데이터
-  const [monthlySchedules, setMonthlySchedules] = useState([
-    { id: 1, date: "2026-07-10", title: "사업단 정기 운영 회의", time: "14:00", location: "본관 3층 소회의실" },
-    { id: 2, date: "2026-07-15", title: "하이퍼 팩토리 시공 준공 검수", time: "10:00", location: "동부캠퍼스 3공학관 204호" },
-    { id: 3, date: "2026-07-24", title: "현장 안전진단 컨설팅 용역 품의 결재", time: "16:00", location: "온라인 결재 시스템" },
-    { id: 4, date: "2026-07-28", title: "RISE 사업 주간 성과 중간 점검회", time: "11:00", location: "ECC센터 회의룸" },
-    { id: 5, date: "2026-08-05", title: "지역 산업 안전 보건 지수 위원회", time: "15:00", location: "울산 시청 의사당" }
-  ]);
-
-  // 2. 행사 일정 목업 데이터
-  const [eventSchedules, setEventSchedules] = useState([
-    {
-      id: 1,
-      month: 7,
-      title: "울산형 RISE 앵커 사업단 출범 페스티벌",
-      department: "ECC센터 / 사업운영팀",
-      datetime: "2026-07-12 14:00 - 18:00",
-      location: "울산과학대학교 동부캠퍼스 대강당 및 아산홀",
-      attendeesInternal: "사업단장, 총괄본부장, 각 센터장 및 실무 책임연구원 45명",
-      attendeesExternal: "울산광역시 시장, 시의회 의장, 협력 중견/중소기업 대표 30명",
-      program: "지역 맞춤형 인재 육성 교과 혁신 선포 및 거버넌스 킥오프",
-      purpose: "RISE 사업의 성과 목표와 대학-기업-지자체 3자 동맹의 유기적 협력 비전 대외 선언",
-      result: "울산형 지산학 연동 선언서 공동 서명 완료 및 지역 언론 보도 5건 성료"
-    },
-    {
-      id: 2,
-      month: 7,
-      title: "U-LIFE 평생직업교육 재직자 드론 정밀 제어 단기 실무 워크숍",
-      department: "RCC센터 LIFE교육팀",
-      datetime: "2026-07-20 09:00 - 17:00",
-      location: "서부캠퍼스 실습 드론 교육장 및 2공학관 301호",
-      attendeesInternal: "드론전공 지도교수 3명, 연구원 5명",
-      attendeesExternal: "울산 지역 조선/물류 협력업체 재직근로자 18명",
-      program: "U-LIFE 평생직업교육 플랫폼 활성화 프로그램",
-      purpose: "조선 산업 혁신을 위한 무인 자율 이동 기술의 재직자 정밀 직무 업스킬링",
-      result: "수료 인원 18명 전원 단기 직무 기술 이수증 발급 완료 및 만족도 조사 94.2점 달성"
-    },
-    {
-      id: 3,
-      month: 8,
-      title: "고분자 신소재 공동 기기 사용성 강화 기업 매칭 간담회",
-      department: "ICC센터 R&BD지원팀",
-      datetime: "2026-08-11 15:00",
-      location: "화학공학과 세미나실",
-      attendeesInternal: "김기범 ICC센터장, 전담 교수 4명",
-      attendeesExternal: "울산 정밀화학 단지 입주 8개사 연구개발 팀장",
-      program: "중소·중견기업 맞춤형 기술지원 활성화",
-      purpose: "대학 내 특수 크로마토그래피 등 핵심 공유 연구 장비의 사용성 확대 협의",
-      result: "차기 월간 공동 분석 장비 예약 스케줄표 합의 완료"
-    }
-  ]);
-
-  // 3. 회의 일정 목업 데이터
-  const [meetingSchedules, setMeetingSchedules] = useState([
-    {
-      id: 1,
-      month: 7,
-      category: "operating", // operating, center, committee
-      title: "제4차 사업단 운영위원회 정기 주간 의사록",
-      datetime: "2026-07-10 14:00 - 16:00",
-      location: "본관 3층 소회의실",
-      attendeesInternal: "송경영 사업단장, 김현수 총괄본부장, 센터장 전원",
-      attendeesExternal: "배석 외부 평가 위원 1명 (자문역)",
-      agenda: "2차년도 이월예산 8월 말 반납 마감 관련 각 단위과제별 집행 가속화 대책 수립 건",
-      result: "미집행률이 높은 3개 단위과제에 대해 이월예산을 우선 집행하도록 실무 독려하고 부득이한 반납 최소화 지침 의결"
-    },
-    {
-      id: 2,
-      month: 7,
-      category: "center",
-      title: "ECC센터 하이퍼교육 실무 프로그램 기획 긴급 회의",
-      datetime: "2026-07-18 10:30",
-      location: "ECC센터 소통라운지",
-      attendeesInternal: "이동은 ECC센터장, 장광일 교수, 이은주 선임연구원, 정자윤 연구원",
-      attendeesExternal: "없음 (내부 실무 회의)",
-      agenda: "UC-HYPER 교과과정 개편을 위한 자문 위원 3인의 1차 피드백 검토 및 수정안 마련",
-      result: "교직원 역량강화 세부 프로그램 추진 일정을 당초 8월 말에서 8월 중순으로 앞당겨 개최하기로 확정"
-    },
-    {
-      id: 3,
-      month: 7,
-      category: "committee",
-      title: "울산 남구 늘봄 생태계 조성 늘봄 자문 심의위원회",
-      datetime: "2026-07-22 15:00",
-      location: "서부캠퍼스 산학협력 대회의실",
-      attendeesInternal: "홍광표 울산늘봄누리센터장, 황수진 선임연구원",
-      attendeesExternal: "울산교육청 장학사 1명, 남구 초등학교 교감 2명, 외부 교육 전문가 2명",
-      agenda: "방과 후 늘봄 연계 전문 인프라 시범 적용 프로그램 운영 모델 심의",
-      result: "남구 소재 3개 초등학교 시범 사업 적용안을 최종 승인함 (가결)"
-    }
-  ]);
 
   // 4. 입력 폼 임시 State
   const [formData, setFormData] = useState({
