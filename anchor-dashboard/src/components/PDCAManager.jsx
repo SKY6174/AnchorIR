@@ -881,7 +881,8 @@ export default function PDCAManager({
         alert(`📝 [${versionName}] 승인 대기 요청이 정상적으로 전송되었습니다!\n사업단 결재권자(심현미, 김현수, 송경영)의 승인이 완료되면 최종 반영됩니다.`);
       } catch (err) {
         console.error("Failed to insert version request:", err);
-        alert("승인 요청을 전송하는 도중 에러가 발생했습니다.");
+        const detailMsg = err.message || err.details || JSON.stringify(err);
+        alert("승인 요청을 전송하는 도중 에러가 발생했습니다:\n" + detailMsg);
       }
     }
   };
