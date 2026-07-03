@@ -599,18 +599,18 @@ export default function AgreementManager({
             >
               <Download size={12} /> 엑셀 다운로드
             </a>
-            {agreementsSubTab === "agreements" && (
-              <button className="btn-primary" onClick={() => { resetForm(); setIsModalOpen(true); }} style={{ display: "flex", alignItems: "center", gap: "0.25rem", padding: "0.35rem 0.7rem", fontSize: "0.7rem" }}>
+            {currentRole.id !== "GUEST" && agreementsSubTab === "agreements" && (
+              <button className="btn-primary" onClick={() => { resetForm(); setIsModalOpen(true); }} style={{ display: "flex", alignItems: "center", gap: "0.25rem", padding: "0.35rem 0.7 child", fontSize: "0.7rem" }}>
                 <Plus size={14} /> 신규 협약서 등록
               </button>
             )}
-            {agreementsSubTab === "certificates" && (
-              <button className="btn-primary" onClick={() => { resetCertForm(); setIsCertModalOpen(true); }} style={{ display: "flex", alignItems: "center", gap: "0.25rem", padding: "0.35rem 0.7rem", fontSize: "0.7rem" }}>
+            {currentRole.id !== "GUEST" && agreementsSubTab === "certificates" && (
+              <button className="btn-primary" onClick={() => { resetCertForm(); setIsCertModalOpen(true); }} style={{ display: "flex", alignItems: "center", gap: "0.25rem", padding: "0.35rem 0.7 child", fontSize: "0.7rem" }}>
                 <Plus size={14} /> 신규 이수증 등록
               </button>
             )}
-            {agreementsSubTab === "awards" && (
-              <button className="btn-primary" onClick={() => { resetAwardForm(); setIsAwardModalOpen(true); }} style={{ display: "flex", alignItems: "center", gap: "0.25rem", padding: "0.35rem 0.7rem", fontSize: "0.7rem" }}>
+            {currentRole.id !== "GUEST" && agreementsSubTab === "awards" && (
+              <button className="btn-primary" onClick={() => { resetAwardForm(); setIsAwardModalOpen(true); }} style={{ display: "flex", alignItems: "center", gap: "0.25rem", padding: "0.35rem 0.7 child", fontSize: "0.7rem" }}>
                 <Plus size={14} /> 신규 상장 등록
               </button>
             )}
@@ -702,23 +702,27 @@ export default function AgreementManager({
                         {(currentRole.rank <= 2) && (
                           <td style={{ padding: "0.6rem 0.8rem", textAlign: "center" }}>
                             <div style={{ display: "flex", gap: "0.25rem", justifyContent: "center" }}>
-                              <button onClick={() => {
-                                setEditingId(agr.id);
-                                setInputDate(agr.date || "");
-                                setInputCenter(agr.center || "ECC센터");
-                                setInputOrganizations(Array.isArray(agr.organizations) ? agr.organizations.map(o => typeof o === "object" ? { name: o.name || "", subject: o.subject || "" } : { name: o, subject: "" }) : [{ name: "", subject: "" }]);
-                                setInputSubjectUniv(agr.subjectUniversity || "단장");
-                                setInputUnitId(agr.unitId || "");
-                                setInputContents(Array.isArray(agr.contents) ? [...agr.contents] : []);
-                                setInputFileName(agr.fileName || "");
-                                setInputFileData(agr.fileData || "");
-                                setIsModalOpen(true);
-                              }} style={{ background: "none", border: "none", color: "#a1a1aa", cursor: "pointer" }} title="수정">
-                                <Edit size={14} />
-                              </button>
-                              <button onClick={() => { if(confirm("이 협약서를 삭제하시겠습니까?")) onDeleteAgreement(agr.id); }} style={{ background: "none", border: "none", color: "#ef4444", cursor: "pointer" }} title="삭제">
-                                <Trash size={14} />
-                              </button>
+                              {currentRole.id !== "GUEST" && (
+                                <>
+                                  <button onClick={() => {
+                                    setEditingId(agr.id);
+                                    setInputDate(agr.date || "");
+                                    setInputCenter(agr.center || "ECC센터");
+                                    setInputOrganizations(Array.isArray(agr.organizations) ? agr.organizations.map(o => typeof o === "object" ? { name: o.name || "", subject: o.subject || "" } : { name: o, subject: "" }) : [{ name: "", subject: "" }]);
+                                    setInputSubjectUniv(agr.subjectUniversity || "단장");
+                                    setInputUnitId(agr.unitId || "");
+                                    setInputContents(Array.isArray(agr.contents) ? [...agr.contents] : []);
+                                    setInputFileName(agr.fileName || "");
+                                    setInputFileData(agr.fileData || "");
+                                    setIsModalOpen(true);
+                                  }} style={{ background: "none", border: "none", color: "#a1a1aa", cursor: "pointer" }} title="수정">
+                                    <Edit size={14} />
+                                  </button>
+                                  <button onClick={() => { if(confirm("이 협약서를 삭제하시겠습니까?")) onDeleteAgreement(agr.id); }} style={{ background: "none", border: "none", color: "#ef4444", cursor: "pointer" }} title="삭제">
+                                    <Trash size={14} />
+                                  </button>
+                                </>
+                              )}
                             </div>
                           </td>
                         )}
@@ -783,22 +787,26 @@ export default function AgreementManager({
                       {(currentRole.rank <= 2) && (
                         <td style={{ padding: "0.6rem 0.8rem", textAlign: "center" }}>
                           <div style={{ display: "flex", gap: "0.25rem", justifyContent: "center" }}>
-                            <button onClick={() => {
-                              setEditingCertId(cert.id);
-                              setCertNo(cert.certNo || "");
-                              setCertDept(cert.recipientDept || "");
-                              setCertName(cert.recipientName || "");
-                              setCertDate(cert.issueDate || "");
-                              setCertIssuer(cert.issuer || "사업단장");
-                              setCertFileName(cert.fileName || "");
-                              setCertFileData(cert.fileData || "");
-                              setIsCertModalOpen(true);
-                            }} style={{ background: "none", border: "none", color: "#a1a1aa", cursor: "pointer" }} title="수정">
-                              <Edit size={14} />
-                            </button>
-                            <button onClick={() => { if(confirm("이 이수증을 삭제하시겠습니까?")) onDeleteCertificate(cert.id); }} style={{ background: "none", border: "none", color: "#ef4444", cursor: "pointer" }} title="삭제">
-                              <Trash size={14} />
-                            </button>
+                            {currentRole.id !== "GUEST" && (
+                              <>
+                                <button onClick={() => {
+                                  setEditingCertId(cert.id);
+                                  setCertNo(cert.certNo || "");
+                                  setCertDept(cert.recipientDept || "");
+                                  setCertName(cert.recipientName || "");
+                                  setCertDate(cert.issueDate || "");
+                                  setCertIssuer(cert.issuer || "사업단장");
+                                  setCertFileName(cert.fileName || "");
+                                  setCertFileData(cert.fileData || "");
+                                  setIsCertModalOpen(true);
+                                }} style={{ background: "none", border: "none", color: "#a1a1aa", cursor: "pointer" }} title="수정">
+                                  <Edit size={14} />
+                                </button>
+                                <button onClick={() => { if(confirm("이 이수증을 삭제하시겠습니까?")) onDeleteCertificate(cert.id); }} style={{ background: "none", border: "none", color: "#ef4444", cursor: "pointer" }} title="삭제">
+                                  <Trash size={14} />
+                                </button>
+                              </>
+                            )}
                           </div>
                         </td>
                       )}
@@ -862,22 +870,26 @@ export default function AgreementManager({
                       {(currentRole.rank <= 2) && (
                         <td style={{ padding: "0.6rem 0.8rem", textAlign: "center" }}>
                           <div style={{ display: "flex", gap: "0.25rem", justifyContent: "center" }}>
-                            <button onClick={() => {
-                              setEditingAwardId(award.id);
-                              setAwardNo(award.awardNo || "");
-                              setAwardDept(award.recipientDept || "");
-                              setAwardName(award.recipientName || "");
-                              setAwardDate(award.issueDate || "");
-                              setAwardIssuer(award.issuer || "사업단장");
-                              setAwardFileName(award.fileName || "");
-                              setAwardFileData(award.fileData || "");
-                              setIsAwardModalOpen(true);
-                            }} style={{ background: "none", border: "none", color: "#a1a1aa", cursor: "pointer" }} title="수정">
-                              <Edit size={14} />
-                            </button>
-                            <button onClick={() => { if(confirm("이 상장을 삭제하시겠습니까?")) onDeleteAward(award.id); }} style={{ background: "none", border: "none", color: "#ef4444", cursor: "pointer" }} title="삭제">
-                              <Trash size={14} />
-                            </button>
+                            {currentRole.id !== "GUEST" && (
+                              <>
+                                <button onClick={() => {
+                                  setEditingAwardId(award.id);
+                                  setAwardNo(award.awardNo || "");
+                                  setAwardDept(award.recipientDept || "");
+                                  setAwardName(award.recipientName || "");
+                                  setAwardDate(award.issueDate || "");
+                                  setAwardIssuer(award.issuer || "사업단장");
+                                  setAwardFileName(award.fileName || "");
+                                  setAwardFileData(award.fileData || "");
+                                  setIsAwardModalOpen(true);
+                                }} style={{ background: "none", border: "none", color: "#a1a1aa", cursor: "pointer" }} title="수정">
+                                  <Edit size={14} />
+                                </button>
+                                <button onClick={() => { if(confirm("이 상장을 삭제하시겠습니까?")) onDeleteAward(award.id); }} style={{ background: "none", border: "none", color: "#ef4444", cursor: "pointer" }} title="삭제">
+                                  <Trash size={14} />
+                                </button>
+                              </>
+                            )}
                           </div>
                         </td>
                       )}

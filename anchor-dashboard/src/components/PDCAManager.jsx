@@ -644,6 +644,10 @@ export default function PDCAManager({
 
   // PDCA 단계 완료 조건 검증 및 강제 롤백 방어
   const handleUpdatePDCA = (stage, status) => {
+    if (currentRole.id === "GUEST") {
+      alert("게스트(방문자) 계정은 읽기 전용으로만 이용하실 수 있습니다.");
+      return;
+    }
     if (!activeProg) return;
 
     const py = activeProg.years?.[selectedYear] || {};
@@ -722,6 +726,10 @@ export default function PDCAManager({
   // P 단계 기획 정보 및 세부 재원 예산 등록
   const handleUpdatePDetails = async (e) => {
     e.preventDefault();
+    if (currentRole.id === "GUEST") {
+      alert("게스트(방문자) 계정은 읽기 전용으로만 이용하실 수 있습니다.");
+      return;
+    }
     if (!activeProg) return;
 
     const bNational = Math.round(parseDecimalFromCommas(inputBudgetNational) * 1000000);
@@ -1014,6 +1022,10 @@ export default function PDCAManager({
   // D 단계 집행 및 실적 등록 (재원별 집행 및 이수인원 기입)
   const handleUpdateBudget = (e) => {
     e.preventDefault();
+    if (currentRole.id === "GUEST") {
+      alert("게스트(방문자) 계정은 읽기 전용으로만 이용하실 수 있습니다.");
+      return;
+    }
     if (!activeProg) return;
 
     const sNational = Math.round(parseDecimalFromCommas(inputSpentNational) * 1000000);
@@ -1083,6 +1095,10 @@ export default function PDCAManager({
   // 프로그램 추가 처리 핸들러
   const handleCreateProgram = (e) => {
     e.preventDefault();
+    if (currentRole.id === "GUEST") {
+      alert("게스트(방문자) 계정은 읽기 전용으로만 이용하실 수 있습니다.");
+      return;
+    }
     if (!selectedUnitId) {
       alert("단위과제를 먼저 선택해 주세요.");
       return;
@@ -1113,6 +1129,10 @@ export default function PDCAManager({
   // C 단계 실적 입력 (성과사항 서술 및 만족도 기입)
   const handleUpdateCDetails = (e) => {
     e.preventDefault();
+    if (currentRole.id === "GUEST") {
+      alert("게스트(방문자) 계정은 읽기 전용으로만 이용하실 수 있습니다.");
+      return;
+    }
     if (!activeProg) return;
 
     const parsedSatisfaction = parseFloat(inputSatisfaction) || 0;
@@ -1149,6 +1169,10 @@ export default function PDCAManager({
   // A 단계 자체 평가 및 환류 2분할 방안 저장
   const handleUpdateA = (e) => {
     e.preventDefault();
+    if (currentRole.id === "GUEST") {
+      alert("게스트(방문자) 계정은 읽기 전용으로만 이용하실 수 있습니다.");
+      return;
+    }
     if (!activeProg) return;
 
     // A단계 자동 완료/대기 판정
@@ -1276,7 +1300,7 @@ export default function PDCAManager({
             </div>
             
             {/* 프로그램 신규 생성 추가 버튼 */}
-            {currentRole.rank <= 1 && (
+            {currentRole.rank <= 1 && currentRole.id !== "GUEST" && (
               <button
                 type="button"
                 className="btn-primary"
@@ -2014,7 +2038,7 @@ export default function PDCAManager({
                       </div>
                     </fieldset>
 
-                    {selectedVersionId === "current" ? (
+                    {selectedVersionId === "current" && currentRole.id !== "GUEST" ? (
                       <div style={{ display: "flex", justifyContent: "center", marginTop: "0.4rem" }}>
                         <button type="submit" className="btn-primary" style={{ width: "55%", padding: "0.35rem 0.5rem", fontSize: "0.75rem" }}>
                           P(기획정보) 변경 신청 / 저장
@@ -2022,7 +2046,7 @@ export default function PDCAManager({
                       </div>
                     ) : (
                       <div style={{ padding: "0.4rem", background: "rgba(255,255,255,0.02)", border: "1px dashed var(--border-color-dark)", borderRadius: "6px", color: "var(--text-secondary-dark)", textAlign: "center", fontSize: "0.68rem", marginTop: "0.4rem" }}>
-                        🔒 {programVersions.find(v => v.id === Number(selectedVersionId))?.version_name} 조회 모드입니다. (수정 불가)
+                        🔒 {currentRole.id === "GUEST" ? "게스트(방문자) 계정은 읽기 전용입니다. (수정 불가)" : `${programVersions.find(v => v.id === Number(selectedVersionId))?.version_name} 조회 모드입니다. (수정 불가)`}
                       </div>
                     )}
                   </form>
@@ -2230,11 +2254,17 @@ export default function PDCAManager({
                         </div>
                       </div>
                       
-                      <div style={{ display: "flex", justifyContent: "center", marginTop: "0.4rem" }}>
-                        <button type="submit" className="btn-primary" style={{ width: "55%", padding: "0.35rem 0.5rem", fontSize: "0.75rem", background: "#10b981", color: "white" }}>
-                          D(수행실적) 저장
-                        </button>
-                      </div>
+                      {currentRole.id !== "GUEST" ? (
+                        <div style={{ display: "flex", justifyContent: "center", marginTop: "0.4rem" }}>
+                          <button type="submit" className="btn-primary" style={{ width: "55%", padding: "0.35rem 0.5rem", fontSize: "0.75rem", background: "#10b981", color: "white" }}>
+                            D(수행실적) 저장
+                          </button>
+                        </div>
+                      ) : (
+                        <div style={{ padding: "0.4rem", background: "rgba(255,255,255,0.02)", border: "1px dashed var(--border-color-dark)", borderRadius: "6px", color: "var(--text-secondary-dark)", textAlign: "center", fontSize: "0.68rem", marginTop: "0.4rem" }}>
+                          🔒 게스트(방문자) 계정은 읽기 전용입니다. (수정 불가)
+                        </div>
+                      )}
                     </div>
                   </form>
                 )}
@@ -2252,11 +2282,17 @@ export default function PDCAManager({
                         <span style={{ fontSize: "0.75rem", width: "140px", color: "var(--text-secondary-dark)" }}>만족도 (점 / 100점):</span>
                         <input type="text" className="user-selector" placeholder="예: 95" value={inputSatisfaction} onChange={(e) => setInputSatisfaction(e.target.value)} style={{ flexGrow: 1 }} />
                       </div>
-                      <div style={{ display: "flex", justifyContent: "center", marginTop: "0.4rem" }}>
-                        <button type="submit" className="btn-primary" style={{ width: "55%", padding: "0.35rem 0.5rem", fontSize: "0.75rem", background: "#f59e0b", color: "white" }}>
-                          C(성과검증) 저장
-                        </button>
-                      </div>
+                      {currentRole.id !== "GUEST" ? (
+                        <div style={{ display: "flex", justifyContent: "center", marginTop: "0.4rem" }}>
+                          <button type="submit" className="btn-primary" style={{ width: "55%", padding: "0.35rem 0.5rem", fontSize: "0.75rem", background: "#f59e0b", color: "white" }}>
+                            C(성과검증) 저장
+                          </button>
+                        </div>
+                      ) : (
+                        <div style={{ padding: "0.4rem", background: "rgba(255,255,255,0.02)", border: "1px dashed var(--border-color-dark)", borderRadius: "6px", color: "var(--text-secondary-dark)", textAlign: "center", fontSize: "0.68rem", marginTop: "0.4rem" }}>
+                          🔒 게스트(방문자) 계정은 읽기 전용입니다. (수정 불가)
+                        </div>
+                      )}
                     </div>
                   </form>
                 )}
@@ -2305,11 +2341,17 @@ export default function PDCAManager({
                         </div>
                       </div>
                     )}
-                    <div style={{ display: "flex", justifyContent: "center", marginTop: "0.5rem" }}>
-                      <button type="submit" className="btn-primary" style={{ width: "55%", padding: "0.35rem 0.5rem", fontSize: "0.75rem", background: "#d946ef", color: "white" }}>
-                        A(환류조치) 저장
-                      </button>
-                    </div>
+                    {currentRole.id !== "GUEST" ? (
+                      <div style={{ display: "flex", justifyContent: "center", marginTop: "0.5rem" }}>
+                        <button type="submit" className="btn-primary" style={{ width: "55%", padding: "0.35rem 0.5rem", fontSize: "0.75rem", background: "#d946ef", color: "white" }}>
+                          A(환류조치) 저장
+                        </button>
+                      </div>
+                    ) : (
+                      <div style={{ padding: "0.4rem", background: "rgba(255,255,255,0.02)", border: "1px dashed var(--border-color-dark)", borderRadius: "6px", color: "var(--text-secondary-dark)", textAlign: "center", fontSize: "0.68rem", marginTop: "0.5rem" }}>
+                        🔒 게스트(방문자) 계정은 읽기 전용입니다. (수정 불가)
+                      </div>
+                    )}
                   </form>
                 )}
 

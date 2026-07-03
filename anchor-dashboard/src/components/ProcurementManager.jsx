@@ -61,6 +61,10 @@ export default function ProcurementManager({
 
   const handleFormSubmit = (e) => {
     e.preventDefault();
+    if (currentRole.id === "GUEST") {
+      alert("게스트(방문자) 계정은 읽기 전용으로만 이용하실 수 있습니다.");
+      return;
+    }
 
     if (modalType === "env") {
       const newItem = {
@@ -157,26 +161,28 @@ export default function ProcurementManager({
                 안전하고 현대적인 실습실 인프라 및 교육환경 구축 관리 1차 정리 대장
               </p>
             </div>
-            <button 
-              className="btn btn-primary"
-              onClick={() => openAddModal("env")}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "0.25rem",
-                padding: "0.4rem 1rem",
-                borderRadius: "6px",
-                background: "var(--accent-color)",
-                border: "none",
-                color: "white",
-                fontWeight: "600",
-                fontSize: "0.85rem",
-                cursor: "pointer"
-              }}
-            >
-              <Plus size={16} />
-              새 환경개선 건 등록
-            </button>
+            {currentRole.id !== "GUEST" && (
+              <button 
+                className="btn btn-primary"
+                onClick={() => openAddModal("env")}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "0.25rem",
+                  padding: "0.4rem 1rem",
+                  borderRadius: "6px",
+                  background: "var(--accent-color)",
+                  border: "none",
+                  color: "white",
+                  fontWeight: "600",
+                  fontSize: "0.85rem",
+                  cursor: "pointer"
+                }}
+              >
+                <Plus size={16} />
+                새 환경개선 건 등록
+              </button>
+            )}
           </div>
 
           <div style={{ display: "grid", gridTemplateColumns: "1.2fr 0.8fr", gap: "1.5rem" }}>
@@ -350,26 +356,28 @@ export default function ProcurementManager({
                 </select>
               </div>
 
-              <button 
-                className="btn btn-primary"
-                onClick={() => openAddModal("equip")}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "0.25rem",
-                  padding: "0.4rem 1rem",
-                  borderRadius: "6px",
-                  background: "var(--accent-color)",
-                  border: "none",
-                  color: "white",
-                  fontWeight: "600",
-                  fontSize: "0.85rem",
-                  cursor: "pointer"
-                }}
-              >
-                <Plus size={16} />
-                기자재 추가
-              </button>
+              {currentRole.id !== "GUEST" && (
+                <button 
+                  className="btn btn-primary"
+                  onClick={() => openAddModal("equip")}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "0.25rem",
+                    padding: "0.4rem 1rem",
+                    borderRadius: "6px",
+                    background: "var(--accent-color)",
+                    border: "none",
+                    color: "white",
+                    fontWeight: "600",
+                    fontSize: "0.85rem",
+                    cursor: "pointer"
+                  }}
+                >
+                  <Plus size={16} />
+                  기자재 추가
+                </button>
+              )}
             </div>
           </div>
 
@@ -462,26 +470,28 @@ export default function ProcurementManager({
                 기획 결재부터 입찰/발주 및 최종 검수 완료까지의 전 과정 트래킹 프레임
               </p>
             </div>
-            <button 
-              className="btn btn-primary"
-              onClick={() => openAddModal("service")}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "0.25rem",
-                padding: "0.4rem 1rem",
-                borderRadius: "6px",
-                background: "var(--accent-color)",
-                border: "none",
-                color: "white",
-                fontWeight: "600",
-                fontSize: "0.85rem",
-                cursor: "pointer"
-              }}
-            >
-              <Plus size={16} />
-              새 주요 용역 건 등록
-            </button>
+            {currentRole.id !== "GUEST" && (
+              <button 
+                className="btn btn-primary"
+                onClick={() => openAddModal("service")}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "0.25rem",
+                  padding: "0.4rem 1rem",
+                  borderRadius: "6px",
+                  background: "var(--accent-color)",
+                  border: "none",
+                  color: "white",
+                  fontWeight: "600",
+                  fontSize: "0.85rem",
+                  cursor: "pointer"
+                }}
+              >
+                <Plus size={16} />
+                새 주요 용역 건 등록
+              </button>
+            )}
           </div>
 
           {/* 용역 리스트 뷰 */}

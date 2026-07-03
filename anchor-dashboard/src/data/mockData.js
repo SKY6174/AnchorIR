@@ -1807,7 +1807,8 @@ export const userRoles = {
   CENTER_NULBOM: { id: "CENTER_NULBOM", name: "CENTER_NULBOM", rank: 3, desc: "소속 단위과제(C2) 늘봄 표준 교안 및 특화 교육 관리" },
   CENTER_SPECIAL: { id: "CENTER_SPECIAL", name: "CENTER_SPECIAL", rank: 3, desc: "소속 단위과제(A1나 신산업 이관 분 4억 원 총괄)" },
   TEAM_LEADER: { id: "TEAM_LEADER", name: "TEAM_LEADER", rank: 4, desc: "공통 영역 및 운영 행정비 집행 관리 총괄" },
-  RESEARCHER: { id: "RESEARCHER", name: "실무 연구원", rank: 5, desc: "담당 프로그램 세부 예산 실시간 집행 등록 및 PDCA 업데이트 권한" }
+  RESEARCHER: { id: "RESEARCHER", name: "실무 연구원", rank: 5, desc: "담당 프로그램 세부 예산 실시간 집행 등록 및 PDCA 업데이트 권한" },
+  GUEST: { id: "GUEST", name: "게스트 (방문자)", rank: 9, desc: "사업단 외 일반 게스트 전용, 읽기 전용 권한 (사업단 관리 조회 불가)" }
 };
 
 

@@ -152,6 +152,10 @@ export default function ScheduleManager({
 
   const handleFormSubmit = (e) => {
     e.preventDefault();
+    if (currentRole.id === "GUEST") {
+      alert("게스트(방문자) 계정은 읽기 전용으로만 이용하실 수 있습니다.");
+      return;
+    }
 
     if (modalType === "monthly" || modalType === "task" || modalType === "deadline") {
       const isTaskVal = modalType === "task";
@@ -340,6 +344,10 @@ export default function ScheduleManager({
 
   // 일정 삭제 핸들러
   const handleDeleteSchedule = (id) => {
+    if (currentRole.id === "GUEST") {
+      alert("게스트(방문자) 계정은 읽기 전용으로만 이용하실 수 있습니다.");
+      return;
+    }
     if (window.confirm("선택한 일정을 삭제하시겠습니까?")) {
       setMonthlySchedules(monthlySchedules.filter(s => s.id !== id));
     }
@@ -381,6 +389,10 @@ export default function ScheduleManager({
 
   // 할일 완료 상태 토글
   const handleToggleTaskCompleted = (id) => {
+    if (currentRole.id === "GUEST") {
+      alert("게스트(방문자) 계정은 읽기 전용으로만 이용하실 수 있습니다.");
+      return;
+    }
     setMonthlySchedules(prev => prev.map(s => 
       s.id === id ? { ...s, completed: !s.completed } : s
     ));
@@ -388,6 +400,10 @@ export default function ScheduleManager({
 
   // 행사 및 결과 기획 삭제 핸들러
   const handleDeleteEvent = (id) => {
+    if (currentRole.id === "GUEST") {
+      alert("게스트(방문자) 계정은 읽기 전용으로만 이용하실 수 있습니다.");
+      return;
+    }
     if (window.confirm("선택한 행사 기획 및 결과 내역을 삭제하시겠습니까?")) {
       setEventSchedules(eventSchedules.filter(e => e.id !== id));
     }
@@ -444,6 +460,10 @@ export default function ScheduleManager({
 
   // 회의록 삭제 핸들러
   const handleDeleteMeeting = (id) => {
+    if (currentRole.id === "GUEST") {
+      alert("게스트(방문자) 계정은 읽기 전용으로만 이용하실 수 있습니다.");
+      return;
+    }
     if (window.confirm("선택한 회의록을 삭제하시겠습니까?")) {
       setMeetingSchedules(meetingSchedules.filter(m => m.id !== id));
     }
@@ -517,6 +537,10 @@ export default function ScheduleManager({
 
   // 언론보도 삭제 핸들러
   const handleDeletePress = (id) => {
+    if (currentRole.id === "GUEST") {
+      alert("게스트(방문자) 계정은 읽기 전용으로만 이용하실 수 있습니다.");
+      return;
+    }
     if (window.confirm("선택한 언론보도 내역을 삭제하시겠습니까?")) {
       setPressReleases(prev => prev.filter(p => p.id !== id));
       if (id === activePressId) {
@@ -751,45 +775,47 @@ export default function ScheduleManager({
               </p>
             </div>
             
-            <div style={{ display: "flex", gap: "0.5rem" }}>
-              <button 
-                className="btn btn-primary"
-                onClick={() => openAddModal("monthly")}
-                style={{
-                  display: "flex", alignItems: "center", gap: "0.25rem", padding: "0.4rem 1rem", borderRadius: "6px",
-                  background: "var(--accent-color)", border: "none", color: "var(--text-primary)", fontWeight: "600", fontSize: "0.85rem", cursor: "pointer"
-                }}
-              >
-                <Plus size={16} />
-                일정 추가
-              </button>
-              <button 
-                onClick={() => openAddModal("task")}
-                style={{
-                  display: "flex", alignItems: "center", gap: "0.25rem", padding: "0.4rem 1rem", borderRadius: "6px",
-                  background: "#8B5CF6", border: "none", color: "var(--text-primary)", fontWeight: "600", fontSize: "0.85rem", cursor: "pointer",
-                  transition: "background 0.15s"
-                }}
-                onMouseOver={(e) => e.currentTarget.style.background = "#7C3AED"}
-                onMouseOut={(e) => e.currentTarget.style.background = "#8B5CF6"}
-              >
-                <Plus size={16} />
-                할일 추가
-              </button>
-              <button 
-                onClick={() => openAddModal("deadline")}
-                style={{
-                  display: "flex", alignItems: "center", gap: "0.25rem", padding: "0.4rem 1rem", borderRadius: "6px",
-                  background: "#EF4444", border: "none", color: "var(--text-primary)", fontWeight: "600", fontSize: "0.85rem", cursor: "pointer",
-                  transition: "background 0.15s"
-                }}
-                onMouseOver={(e) => e.currentTarget.style.background = "#DC2626"}
-                onMouseOut={(e) => e.currentTarget.style.background = "#EF4444"}
-              >
-                <Plus size={16} />
-                마감일 등록
-              </button>
-            </div>
+            {currentRole.id !== "GUEST" && (
+              <div style={{ display: "flex", gap: "0.5rem" }}>
+                <button 
+                  className="btn btn-primary"
+                  onClick={() => openAddModal("monthly")}
+                  style={{
+                    display: "flex", alignItems: "center", gap: "0.25rem", padding: "0.4rem 1rem", borderRadius: "6px",
+                    background: "var(--accent-color)", border: "none", color: "var(--text-primary)", fontWeight: "600", fontSize: "0.85rem", cursor: "pointer"
+                  }}
+                >
+                  <Plus size={16} />
+                  일정 추가
+                </button>
+                <button 
+                  onClick={() => openAddModal("task")}
+                  style={{
+                    display: "flex", alignItems: "center", gap: "0.25rem", padding: "0.4rem 1rem", borderRadius: "6px",
+                    background: "#8B5CF6", border: "none", color: "var(--text-primary)", fontWeight: "600", fontSize: "0.85rem", cursor: "pointer",
+                    transition: "background 0.15s"
+                  }}
+                  onMouseOver={(e) => e.currentTarget.style.background = "#7C3AED"}
+                  onMouseOut={(e) => e.currentTarget.style.background = "#8B5CF6"}
+                >
+                  <Plus size={16} />
+                  할일 추가
+                </button>
+                <button 
+                  onClick={() => openAddModal("deadline")}
+                  style={{
+                    display: "flex", alignItems: "center", gap: "0.25rem", padding: "0.4rem 1rem", borderRadius: "6px",
+                    background: "#EF4444", border: "none", color: "var(--text-primary)", fontWeight: "600", fontSize: "0.85rem", cursor: "pointer",
+                    transition: "background 0.15s"
+                  }}
+                  onMouseOver={(e) => e.currentTarget.style.background = "#DC2626"}
+                  onMouseOut={(e) => e.currentTarget.style.background = "#EF4444"}
+                >
+                  <Plus size={16} />
+                  마감일 등록
+                </button>
+              </div>
+            )}
           </div>
 
           <div style={{ display: "grid", gridTemplateColumns: "1.3fr 0.7fr", gap: "1.5rem" }}>
@@ -895,26 +921,28 @@ export default function ScheduleManager({
                               {sched.title}
                             </strong>
                           </div>
-                          <div style={{ display: "flex", gap: "0.25rem" }}>
-                            <button 
-                              onClick={() => handleEditSchedule(sched)}
-                              title="수정"
-                              style={{ background: "transparent", border: "none", color: "var(--text-secondary)", cursor: "pointer", padding: "0.2rem", transition: "color 0.15s" }}
-                              onMouseOver={(e) => e.currentTarget.style.color = "var(--accent-color)"}
-                              onMouseOut={(e) => e.currentTarget.style.color = "var(--text-secondary)"}
-                            >
-                              <Edit size={14} />
-                            </button>
-                            <button 
-                              onClick={() => handleDeleteSchedule(sched.id)}
-                              title="삭제"
-                              style={{ background: "transparent", border: "none", color: "var(--text-secondary)", cursor: "pointer", padding: "0.2rem", transition: "color 0.15s" }}
-                              onMouseOver={(e) => e.currentTarget.style.color = "#EF4444"}
-                              onMouseOut={(e) => e.currentTarget.style.color = "var(--text-secondary)"}
-                            >
-                              <Trash2 size={14} />
-                            </button>
-                          </div>
+                          {currentRole.id !== "GUEST" && (
+                            <div style={{ display: "flex", gap: "0.25rem" }}>
+                              <button 
+                                onClick={() => handleEditSchedule(sched)}
+                                title="수정"
+                                style={{ background: "transparent", border: "none", color: "var(--text-secondary)", cursor: "pointer", padding: "0.2rem", transition: "color 0.15s" }}
+                                onMouseOver={(e) => e.currentTarget.style.color = "var(--accent-color)"}
+                                onMouseOut={(e) => e.currentTarget.style.color = "var(--text-secondary)"}
+                              >
+                                <Edit size={14} />
+                              </button>
+                              <button 
+                                onClick={() => handleDeleteSchedule(sched.id)}
+                                title="삭제"
+                                style={{ background: "transparent", border: "none", color: "var(--text-secondary)", cursor: "pointer", padding: "0.2rem", transition: "color 0.15s" }}
+                                onMouseOver={(e) => e.currentTarget.style.color = "#EF4444"}
+                                onMouseOut={(e) => e.currentTarget.style.color = "var(--text-secondary)"}
+                              >
+                                <Trash2 size={14} />
+                              </button>
+                            </div>
+                          )}
                         </div>
                         <div style={{ display: "flex", gap: "0.3rem", flexWrap: "wrap", marginBottom: "0.4rem" }}>
                           <span style={{ 
@@ -984,17 +1012,19 @@ export default function ScheduleManager({
               </p>
             </div>
 
-            <button 
-              className="btn btn-primary"
-              onClick={() => openAddModal("event")}
-              style={{
-                display: "flex", alignItems: "center", gap: "0.25rem", padding: "0.4rem 1rem", borderRadius: "6px",
-                background: "var(--accent-color)", border: "none", color: "white", fontWeight: "600", fontSize: "0.85rem", cursor: "pointer"
-              }}
-            >
-              <Plus size={16} />
-              행사 기획 및 결과 등록
-            </button>
+            {currentRole.id !== "GUEST" && (
+              <button 
+                className="btn btn-primary"
+                onClick={() => openAddModal("event")}
+                style={{
+                  display: "flex", alignItems: "center", gap: "0.25rem", padding: "0.4rem 1rem", borderRadius: "6px",
+                  background: "var(--accent-color)", border: "none", color: "white", fontWeight: "600", fontSize: "0.85rem", cursor: "pointer"
+                }}
+              >
+                <Plus size={16} />
+                행사 기획 및 결과 등록
+              </button>
+            )}
           </div>
 
           {/* 💡 월별 가로 탭바 헤더 */}
@@ -1033,24 +1063,28 @@ export default function ScheduleManager({
                         <Clock size={14} />
                         {event.datetime}
                       </span>
-                      <button 
-                        onClick={() => handleEditEvent(event)}
-                        title="수정"
-                        style={{ background: "transparent", border: "none", color: "var(--text-secondary)", cursor: "pointer", padding: "0.2rem", transition: "color 0.15s" }}
-                        onMouseOver={(e) => e.currentTarget.style.color = "var(--accent-color)"}
-                        onMouseOut={(e) => e.currentTarget.style.color = "var(--text-secondary)"}
-                      >
-                        <Edit size={14} />
-                      </button>
-                      <button 
-                        onClick={() => handleDeleteEvent(event.id)}
-                        title="삭제"
-                        style={{ background: "transparent", border: "none", color: "var(--text-secondary)", cursor: "pointer", padding: "0.2rem", transition: "color 0.15s" }}
-                        onMouseOver={(e) => e.currentTarget.style.color = "#EF4444"}
-                        onMouseOut={(e) => e.currentTarget.style.color = "var(--text-secondary)"}
-                      >
-                        <Trash2 size={14} />
-                      </button>
+                      {currentRole.id !== "GUEST" && (
+                        <>
+                          <button 
+                            onClick={() => handleEditEvent(event)}
+                            title="수정"
+                            style={{ background: "transparent", border: "none", color: "var(--text-secondary)", cursor: "pointer", padding: "0.2rem", transition: "color 0.15s" }}
+                            onMouseOver={(e) => e.currentTarget.style.color = "var(--accent-color)"}
+                            onMouseOut={(e) => e.currentTarget.style.color = "var(--text-secondary)"}
+                          >
+                            <Edit size={14} />
+                          </button>
+                          <button 
+                            onClick={() => handleDeleteEvent(event.id)}
+                            title="삭제"
+                            style={{ background: "transparent", border: "none", color: "var(--text-secondary)", cursor: "pointer", padding: "0.2rem", transition: "color 0.15s" }}
+                            onMouseOver={(e) => e.currentTarget.style.color = "#EF4444"}
+                            onMouseOut={(e) => e.currentTarget.style.color = "var(--text-secondary)"}
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                        </>
+                      )}
                     </div>
                   </div>
 
@@ -1125,17 +1159,19 @@ export default function ScheduleManager({
               </p>
             </div>
 
-            <button 
-              className="btn btn-primary"
-              onClick={() => openAddModal("meeting")}
-              style={{
-                display: "flex", alignItems: "center", gap: "0.25rem", padding: "0.4rem 1rem", borderRadius: "6px",
-                background: "var(--accent-color)", border: "none", color: "white", fontWeight: "600", fontSize: "0.85rem", cursor: "pointer"
-              }}
-            >
-              <Plus size={16} />
-              회의록 등록
-            </button>
+            {currentRole.id !== "GUEST" && (
+              <button 
+                className="btn btn-primary"
+                onClick={() => openAddModal("meeting")}
+                style={{
+                  display: "flex", alignItems: "center", gap: "0.25rem", padding: "0.4rem 1rem", borderRadius: "6px",
+                  background: "var(--accent-color)", border: "none", color: "white", fontWeight: "600", fontSize: "0.85rem", cursor: "pointer"
+                }}
+              >
+                <Plus size={16} />
+                회의록 등록
+              </button>
+            )}
           </div>
 
           {/* 월별 선택 가로바 */}
@@ -1230,24 +1266,28 @@ export default function ScheduleManager({
                               <Clock size={14} />
                               {meeting.datetime}
                             </span>
-                            <button 
-                              onClick={() => handleEditMeeting(meeting)}
-                              title="수정"
-                              style={{ background: "transparent", border: "none", color: "var(--text-secondary)", cursor: "pointer", padding: "0.2rem", transition: "color 0.15s" }}
-                              onMouseOver={(e) => e.currentTarget.style.color = "var(--accent-color)"}
-                              onMouseOut={(e) => e.currentTarget.style.color = "var(--text-secondary)"}
-                            >
-                              <Edit size={14} />
-                            </button>
-                            <button 
-                              onClick={() => handleDeleteMeeting(meeting.id)}
-                              title="삭제"
-                              style={{ background: "transparent", border: "none", color: "var(--text-secondary)", cursor: "pointer", padding: "0.2rem", transition: "color 0.15s" }}
-                              onMouseOver={(e) => e.currentTarget.style.color = "#EF4444"}
-                              onMouseOut={(e) => e.currentTarget.style.color = "var(--text-secondary)"}
-                            >
-                              <Trash2 size={14} />
-                            </button>
+                            {currentRole.id !== "GUEST" && (
+                              <>
+                                <button 
+                                  onClick={() => handleEditMeeting(meeting)}
+                                  title="수정"
+                                  style={{ background: "transparent", border: "none", color: "var(--text-secondary)", cursor: "pointer", padding: "0.2rem", transition: "color 0.15s" }}
+                                  onMouseOver={(e) => e.currentTarget.style.color = "var(--accent-color)"}
+                                  onMouseOut={(e) => e.currentTarget.style.color = "var(--text-secondary)"}
+                                >
+                                  <Edit size={14} />
+                                </button>
+                                <button 
+                                  onClick={() => handleDeleteMeeting(meeting.id)}
+                                  title="삭제"
+                                  style={{ background: "transparent", border: "none", color: "var(--text-secondary)", cursor: "pointer", padding: "0.2rem", transition: "color 0.15s" }}
+                                  onMouseOver={(e) => e.currentTarget.style.color = "#EF4444"}
+                                  onMouseOut={(e) => e.currentTarget.style.color = "var(--text-secondary)"}
+                                >
+                                  <Trash2 size={14} />
+                                </button>
+                              </>
+                            )}
                           </div>
                         </div>
 
@@ -1384,15 +1424,17 @@ export default function ScheduleManager({
                 📥 엑셀 다운로드
               </button>
 
-              <button 
-                type="button"
-                onClick={() => openAddModal("press")}
-                className="btn btn-primary"
-                style={{ fontSize: "0.8rem", fontWeight: "700", display: "flex", alignItems: "center", gap: "0.3rem", padding: "0.45rem 0.9rem", background: "var(--accent-color)", border: "none", color: "white", cursor: "pointer", borderRadius: "6px" }}
-              >
-                <Plus size={14} />
-                신규 언론보도 등록
-              </button>
+              {currentRole.id !== "GUEST" && (
+                <button 
+                  type="button"
+                  onClick={() => openAddModal("press")}
+                  className="btn btn-primary"
+                  style={{ fontSize: "0.8rem", fontWeight: "700", display: "flex", alignItems: "center", gap: "0.3rem", padding: "0.45rem 0.9rem", background: "var(--accent-color)", border: "none", color: "white", cursor: "pointer", borderRadius: "6px" }}
+                >
+                  <Plus size={14} />
+                  신규 언론보도 등록
+                </button>
+              )}
             </div>
           </div>
 
@@ -1436,26 +1478,30 @@ export default function ScheduleManager({
                           
                           {/* 제어 버튼 */}
                           <div style={{ display: "flex", gap: "0.3rem" }} onClick={(e) => e.stopPropagation()}>
-                            <button 
-                              type="button"
-                              onClick={() => handleEditPress(press)}
-                              title="수정"
-                              style={{ background: "transparent", border: "none", color: "var(--text-secondary)", cursor: "pointer", padding: "0.2rem" }}
-                              onMouseOver={(e) => e.currentTarget.style.color = "var(--accent-color)"}
-                              onMouseOut={(e) => e.currentTarget.style.color = "var(--text-secondary)"}
-                            >
-                              <Edit size={13} />
-                            </button>
-                            <button 
-                              type="button"
-                              onClick={() => handleDeletePress(press.id)}
-                              title="삭제"
-                              style={{ background: "transparent", border: "none", color: "var(--text-secondary)", cursor: "pointer", padding: "0.2rem" }}
-                              onMouseOver={(e) => e.currentTarget.style.color = "#EF4444"}
-                              onMouseOut={(e) => e.currentTarget.style.color = "var(--text-secondary)"}
-                            >
-                              <Trash2 size={13} />
-                            </button>
+                            {currentRole.id !== "GUEST" && (
+                              <>
+                                <button 
+                                  type="button"
+                                  onClick={() => handleEditPress(press)}
+                                  title="수정"
+                                  style={{ background: "transparent", border: "none", color: "var(--text-secondary)", cursor: "pointer", padding: "0.2rem" }}
+                                  onMouseOver={(e) => e.currentTarget.style.color = "var(--accent-color)"}
+                                  onMouseOut={(e) => e.currentTarget.style.color = "var(--text-secondary)"}
+                                >
+                                  <Edit size={13} />
+                                </button>
+                                <button 
+                                  type="button"
+                                  onClick={() => handleDeletePress(press.id)}
+                                  title="삭제"
+                                  style={{ background: "transparent", border: "none", color: "var(--text-secondary)", cursor: "pointer", padding: "0.2rem" }}
+                                  onMouseOver={(e) => e.currentTarget.style.color = "#EF4444"}
+                                  onMouseOut={(e) => e.currentTarget.style.color = "var(--text-secondary)"}
+                                >
+                                  <Trash2 size={13} />
+                                </button>
+                              </>
+                            )}
                           </div>
                         </div>
                         

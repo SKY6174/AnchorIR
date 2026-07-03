@@ -3872,6 +3872,10 @@ export default function App() {
 
   // 협약서 신규 등록 핸들러
   const handleAddAgreement = (newAgr) => {
+    if (currentRole.id === "GUEST") {
+      alert("게스트(방문자) 계정은 읽기 전용으로만 이용하실 수 있습니다.");
+      return;
+    }
     setAgreements((prev) => [
       ...prev,
       {
@@ -3883,6 +3887,10 @@ export default function App() {
 
   // 협약서 수정 핸들러
   const handleUpdateAgreement = (id, updatedFields) => {
+    if (currentRole.id === "GUEST") {
+      alert("게스트(방문자) 계정은 읽기 전용으로만 이용하실 수 있습니다.");
+      return;
+    }
     setAgreements((prev) =>
       prev.map((a) => (a.id === id ? { ...a, ...updatedFields } : a))
     );
@@ -3890,11 +3898,19 @@ export default function App() {
 
   // 협약서 삭제 핸들러
   const handleDeleteAgreement = (id) => {
+    if (currentRole.id === "GUEST") {
+      alert("게스트(방문자) 계정은 읽기 전용으로만 이용하실 수 있습니다.");
+      return;
+    }
     setAgreements((prev) => prev.filter((a) => a.id !== id));
   };
 
   // 이수증 신규 등록 핸들러
   const handleAddCertificate = (newCert) => {
+    if (currentRole.id === "GUEST") {
+      alert("게스트(방문자) 계정은 읽기 전용으로만 이용하실 수 있습니다.");
+      return;
+    }
     setCertificates((prev) => [
       ...prev,
       {
@@ -3906,6 +3922,10 @@ export default function App() {
 
   // 이수증 수정 핸들러
   const handleUpdateCertificate = (id, updatedFields) => {
+    if (currentRole.id === "GUEST") {
+      alert("게스트(방문자) 계정은 읽기 전용으로만 이용하실 수 있습니다.");
+      return;
+    }
     setCertificates((prev) =>
       prev.map((c) => (c.id === id ? { ...c, ...updatedFields } : c))
     );
@@ -3913,11 +3933,19 @@ export default function App() {
 
   // 이수증 삭제 핸들러
   const handleDeleteCertificate = (id) => {
+    if (currentRole.id === "GUEST") {
+      alert("게스트(방문자) 계정은 읽기 전용으로만 이용하실 수 있습니다.");
+      return;
+    }
     setCertificates((prev) => prev.filter((c) => c.id !== id));
   };
 
   // 상장 신규 등록 핸들러
   const handleAddAward = (newAward) => {
+    if (currentRole.id === "GUEST") {
+      alert("게스트(방문자) 계정은 읽기 전용으로만 이용하실 수 있습니다.");
+      return;
+    }
     setAwards((prev) => [
       ...prev,
       {
@@ -3929,6 +3957,10 @@ export default function App() {
 
   // 상장 수정 핸들러
   const handleUpdateAward = (id, updatedFields) => {
+    if (currentRole.id === "GUEST") {
+      alert("게스트(방문자) 계정은 읽기 전용으로만 이용하실 수 있습니다.");
+      return;
+    }
     setAwards((prev) =>
       prev.map((a) => (a.id === id ? { ...a, ...updatedFields } : a))
     );
@@ -3936,11 +3968,19 @@ export default function App() {
 
   // 상장 삭제 핸들러
   const handleDeleteAward = (id) => {
+    if (currentRole.id === "GUEST") {
+      alert("게스트(방문자) 계정은 읽기 전용으로만 이용하실 수 있습니다.");
+      return;
+    }
     setAwards((prev) => prev.filter((a) => a.id !== id));
   };
 
   // 성과지표 목표치/실적치 직접 수정 핸들러
   const handleUpdateKpiValue = (subItemId, field, value) => {
+    if (currentRole.id === "GUEST") {
+      alert("게스트(방문자) 계정은 읽기 전용으로만 이용하실 수 있습니다.");
+      return;
+    }
     setProjects((prevProjects) => {
       const updated = JSON.parse(JSON.stringify(prevProjects));
       updated.forEach((p) => {
@@ -3966,6 +4006,10 @@ export default function App() {
 
   // 비목 예산 세부 조율 갱신 핸들러 (5개년 연쇄 이월 계산 연계)
   const handleUpdateBudgetDetails = (unitId, updatedBudgetDetails) => {
+    if (currentRole.id === "GUEST") {
+      alert("게스트(방문자) 계정은 읽기 전용으로만 이용하실 수 있습니다.");
+      return;
+    }
     const realUnitId = getRealUnitId(unitId, selectedYear);
     setProjects(prevProjects => {
       const updated = JSON.parse(JSON.stringify(prevProjects));
@@ -4019,6 +4063,10 @@ export default function App() {
 
   // 연구원 배정 핸들러
   const handleAssignChange = (unitId, progId, newAssignee) => {
+    if (currentRole.id === "GUEST") {
+      alert("게스트(방문자) 계정은 읽기 전용으로만 이용하실 수 있습니다.");
+      return;
+    }
     const realUnitId = getRealUnitId(unitId, selectedYear);
     setProjects((prevProjects) => {
       const updated = JSON.parse(JSON.stringify(prevProjects));
@@ -4470,7 +4518,7 @@ export default function App() {
         </>
         )}
 
-        {activeTab === "management" && (
+        {activeTab === "management" && currentRole.id !== "GUEST" && (
           <div className="glass-card" style={{ position: "relative" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.2rem", flexWrap: "wrap", gap: "0.8rem" }}>
               <div>

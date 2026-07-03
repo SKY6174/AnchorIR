@@ -32,8 +32,8 @@ export default function AuthManager({ onLoginSuccess, members = [] }) {
       const targetHashedPw = hashPassword(userPw);
 
       // 테스트 목적 예외 계정 비밀번호 및 우회 처리
-      const isTestAccount = ["director", "team_leader", "researcher", "admin"].includes(targetId);
-      const expectedTestPw = targetId === "admin" ? "uc_anchor" : "1234";
+      const isTestAccount = ["director", "team_leader", "researcher", "admin", "guest"].includes(targetId);
+      const expectedTestPw = targetId === "admin" ? "uc_anchor" : targetId === "guest" ? "guest" : "1234";
 
       // 1. Supabase rise_users 테이블에서 계정 조회 시도
       let foundUser = null;
@@ -67,6 +67,7 @@ export default function AuthManager({ onLoginSuccess, members = [] }) {
           if (targetId === "director") { roleKey = "DIRECTOR"; name = "송경영 단장(테스트)"; }
           if (targetId === "team_leader") { roleKey = "TEAM_LEADER"; name = "심현미 팀장(테스트)"; }
           if (targetId === "admin") { roleKey = "DIRECTOR"; name = "시스템 관리자"; }
+          if (targetId === "guest") { roleKey = "GUEST"; name = "게스트 (방문자)"; }
           
           sessionUser = {
             id: targetId,
@@ -208,9 +209,10 @@ export default function AuthManager({ onLoginSuccess, members = [] }) {
             />
           </div>
 
-          <div style={{ fontSize: "0.72rem", color: "var(--text-secondary-dark)", lineHeight: "1.4", padding: "0.5rem", background: "rgba(255,255,255,0.02)", border: "1px dashed var(--border-color-dark)", borderRadius: "0.25rem" }}>
-            <p>※ 별도의 회원가입 없이 주소록에 등록된 이메일로 로그인하세요.</p>
-            <p>※ 초기 비밀번호는 본인의 휴대전화 뒷번호 4자리입니다.</p>
+          <div style={{ fontSize: "0.72rem", color: "var(--text-secondary-dark)", lineHeight: "1.4", padding: "0.5rem", background: "rgba(255,255,255,0.02)", border: "1px dashed var(--border-color-dark)", borderRadius: "0.25rem", display: "flex", flexDirection: "column", gap: "0.25rem" }}>
+            <p style={{ margin: 0 }}>※ 별도의 회원가입 없이 주소록에 등록된 이메일로 로그인하세요.</p>
+            <p style={{ margin: 0 }}>※ 초기 비밀번호는 본인의 휴대전화 뒷번호 4자리입니다.</p>
+            <p style={{ margin: 0, color: "#60A5FA", fontWeight: "700" }}>🔑 게스트 로그인 안내: ID: <span style={{ textDecoration: "underline" }}>guest</span> / PW: <span style={{ textDecoration: "underline" }}>guest</span></p>
           </div>
 
           <button type="submit" className="btn-primary" style={{ justifyContent: "center", marginTop: "0.5rem" }}>
