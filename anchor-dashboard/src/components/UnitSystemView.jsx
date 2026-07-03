@@ -518,10 +518,25 @@ export default function UnitSystemView() {
               display: "inline-block",
               marginBottom: "0.5rem"
             }}>
-              선택된 추진전략 (Strategy)
+              추진전략 (Strategy)
             </span>
-            <h4 style={{ fontSize: "1.05rem", color: "white", fontWeight: "800", display: "flex", alignItems: "center", gap: "0.4rem", lineHeight: "1.4" }}>
-              <Award size={20} style={{ color: "#ec4899" }} />
+            <h4 style={{ fontSize: "1.05rem", color: "white", fontWeight: "800", display: "flex", alignItems: "center", gap: "0.6rem", lineHeight: "1.4" }}>
+              <div style={{
+                width: "22px",
+                height: "22px",
+                borderRadius: "50%",
+                background: "rgba(236,72,153,0.1)",
+                color: "#ec4899",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: "0.7rem",
+                fontWeight: "900",
+                border: "1px solid rgba(236,72,153,0.25)",
+                flexShrink: 0
+              }}>
+                {selectedStratId}
+              </div>
               {selectedUnitData.strategies.find(s => s.id === selectedStratId)?.title || "선택된 전략이 없습니다."}
             </h4>
           </div>
@@ -540,7 +555,7 @@ export default function UnitSystemView() {
               display: "inline-block",
               marginBottom: "0.7rem"
             }}>
-              매핑된 추진과제 (Strategic Tasks)
+              {selectedStratId}와 연계한 추진과제 (Strategic Tasks)
             </span>
             
             <div style={{ display: "flex", flexDirection: "column", gap: "0.6rem" }}>
