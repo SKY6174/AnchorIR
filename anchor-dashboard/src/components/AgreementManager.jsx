@@ -4,7 +4,7 @@ import * as XLSX from "xlsx";
 
 const AGREEMENT_CONTENTS_OPTIONS = [
   "주문식교육", "창업", "글로벌", "R&BD", "AIDX", "탄소중립",
-  "복합재난", "평생교육", "늘봄", "지역현안해결", "보건복지서비스", "에코컬처"
+  "복합재난", "평생교육", "늘봄", "지역현안해결", "보건복지서비스", "에코컬처", "도시재생"
 ];
 
 const CENTERS_LIST = [
