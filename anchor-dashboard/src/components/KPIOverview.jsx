@@ -405,18 +405,6 @@ export default function KPIOverview({ projects, currentRole, selectedYear = 2 })
             <div style={{ display: "flex", flexDirection: "column", gap: "0.6rem", height: "100%" }}>
               <div className="glass-card" style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "space-between", padding: "0.8rem 1.1rem" }}>
                 <div className="kpi-header">
-                  <span>(교육부)공통성과지표</span>
-                  <Award size={16} style={{ color: "#3b82f6" }} />
-                </div>
-                <div>
-                  <div className="kpi-value" style={{ color: "#3b82f6", fontSize: "1.3rem", margin: "0.15rem 0" }}>
-                    {avgCommonKpi.toFixed(1)}%
-                  </div>
-                  <div className="kpi-subtext" style={{ fontSize: "0.65rem" }}>{selectedYear}차년도 교육부 필수 공통성과지표</div>
-                </div>
-              </div>
-              <div className="glass-card" style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "space-between", padding: "0.8rem 1.1rem" }}>
-                <div className="kpi-header">
                   <span>(지자체)자율성과지표</span>
                   <Award size={16} style={{ color: "#ec4899" }} />
                 </div>
@@ -472,18 +460,6 @@ export default function KPIOverview({ projects, currentRole, selectedYear = 2 })
             </div>
 
             <div style={{ display: "flex", flexDirection: "column", gap: "0.6rem", height: "100%" }}>
-              <div className="glass-card" style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "space-between", padding: "0.8rem 1.1rem" }}>
-                <div className="kpi-header">
-                  <span>(교육부)공통성과지표</span>
-                  <Award size={16} style={{ color: "#3b82f6" }} />
-                </div>
-                <div>
-                  <div className="kpi-value" style={{ color: "#3b82f6", fontSize: "1.3rem", margin: "0.15rem 0" }}>
-                    {avgCommonKpi.toFixed(1)}%
-                  </div>
-                  <div className="kpi-subtext" style={{ fontSize: "0.65rem" }}>{selectedYear}차년도 교육부 필수 공통성과지표</div>
-                </div>
-              </div>
               <div className="glass-card" style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "space-between", padding: "0.8rem 1.1rem" }}>
                 <div className="kpi-header">
                   <span>(지자체)자율성과지표</span>
