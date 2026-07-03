@@ -126,7 +126,9 @@ export default function PDCAManager({
   selectedProgId,
   setSelectedProgId,
   viewMode = "unit",
-  setViewMode
+  setViewMode,
+  currentUser,
+  supabase
 }) {
   const startYrShort = String(2024 + selectedYear).slice(-2);
   const endYrShort = String(2025 + selectedYear).slice(-2);
@@ -662,7 +664,7 @@ export default function PDCAManager({
   };
 
   // P 단계 기획 정보 및 세부 재원 예산 등록
-  const handleUpdatePDetails = (e) => {
+  const handleUpdatePDetails = async (e) => {
     e.preventDefault();
     if (!activeProg) return;
 
@@ -719,7 +721,7 @@ export default function PDCAManager({
 
     const combinedCoopDept = [inputCoopDept1, inputCoopDept2].filter(Boolean).join(", ");
 
-    onUpdateProgramDetails(activeProg.unitId, activeProg.id, {
+    const afterData = {
       pdca: { ...activeProg.pdca, p: autoPState },
       timeline: inputMonthlyPDCA.join(","), // 12개월 쉼표 직렬화 저장
       targetAudience: inputTargetAudience,
@@ -736,17 +738,116 @@ export default function PDCAManager({
       target_etc_name: inputTargetEtcName,
       kpi_type: inputKpiType,
       kpi_link: inputKpiLink,
-      budget_national: bNational,
-      budget_city: bCity,
-      budget_external: bExternal,
-      budget_carry_national: bCarryNational,
-      budget_carry_city: bCarryCity,
-      budget_carry_external: bCarryExternal,
-      budget_categories: categoriesToSave
-    });
+      years: {
+        [selectedYear]: {
+          budget_national: bNational,
+          budget_city: bCity,
+          budget_external: bExternal,
+          budget_carry_national: bCarryNational,
+          budget_carry_city: bCarryCity,
+          budget_carry_external: bCarryExternal,
+          budget_categories: categoriesToSave
+        }
+      }
+    };
 
-    setFeedbackMsg("P 단계 기획 정보 및 세부 재원별 예산 배정이 적용되었습니다.");
-    setTimeout(() => setFeedbackMsg(""), 3000);
+    // 승인권자 권한 검사
+    const approverNames = ["심현미", "김현수", "송경영"];
+    const isApprover = currentUser && approverNames.some(name => (currentUser.name || "").includes(name));
+
+    if (isApprover) {
+      onUpdateProgramDetails(activeProg.unitId, activeProg.id, {
+        ...afterData,
+        budget_national: bNational,
+        budget_city: bCity,
+        budget_external: bExternal,
+        budget_carry_national: bCarryNational,
+        budget_carry_city: bCarryCity,
+        budget_carry_external: bCarryExternal,
+        budget_categories: categoriesToSave
+      });
+      setFeedbackMsg("P 단계 기획 정보 및 예산 배정이 최종 승인되어 즉시 적용되었습니다.");
+      setTimeout(() => setFeedbackMsg(""), 3000);
+    } else {
+      try {
+        if (!supabase) {
+          alert("데이터베이스 연동 설정이 되어있지 않습니다.");
+          return;
+        }
+
+        const { data: pending } = await supabase
+          .from("program_version_requests")
+          .select("id")
+          .eq("program_id", activeProg.id)
+          .eq("status", "승인대기");
+        
+        if (pending && pending.length > 0) {
+          alert("⚠️ 이미 승인 대기 중인 변경 요청 건이 있습니다. 기존 요청이 처리된 이후에 추가 변경을 신청할 수 있습니다.");
+          return;
+        }
+
+        const { data: approvedList } = await supabase
+          .from("program_version_requests")
+          .select("id")
+          .eq("program_id", activeProg.id)
+          .eq("status", "승인완료");
+        
+        const approvedCount = approvedList ? approvedList.length : 0;
+        const versionName = approvedCount === 0 ? "최초 계획" : `${approvedCount}차 수정 계획`;
+
+        const beforeData = {
+          pdca: activeProg.pdca || { p: "대기", d: "대기", c: "대기", a: "대기" },
+          timeline: activeProg.timeline || "",
+          targetAudience: activeProg.targetAudience || "",
+          coopDept: activeProg.coopDept || "",
+          target_participants: activeProg.target_participants || 0,
+          target_developments: activeProg.target_developments || 0,
+          target_etc: activeProg.target_etc || 0,
+          target_participants_unit: activeProg.target_participants_unit || "명",
+          target_developments_unit: activeProg.target_developments_unit || "건",
+          target_etc_unit: activeProg.target_etc_unit || "개",
+          target_participants_name: activeProg.target_participants_name || "참여인원",
+          target_developments_name: activeProg.target_developments_name || "개발건수",
+          target_etc_name: activeProg.target_etc_name || "기타",
+          kpi_type: activeProg.kpi_type || "자율",
+          kpi_link: activeProg.kpi_link || "",
+          years: {
+            [selectedYear]: {
+              budget_national: activeProg.years?.[selectedYear]?.budget_national || 0,
+              budget_city: activeProg.years?.[selectedYear]?.budget_city || 0,
+              budget_external: activeProg.years?.[selectedYear]?.budget_external || 0,
+              budget_carry_national: activeProg.years?.[selectedYear]?.budget_carry_national || 0,
+              budget_carry_city: activeProg.years?.[selectedYear]?.budget_carry_city || 0,
+              budget_carry_external: activeProg.years?.[selectedYear]?.budget_carry_external || 0,
+              budget_categories: activeProg.years?.[selectedYear]?.budget_categories || []
+            }
+          }
+        };
+
+        const { error: insertErr } = await supabase
+          .from("program_version_requests")
+          .insert({
+            year: selectedYear,
+            unit_id: activeProg.unitId,
+            program_id: activeProg.id,
+            program_title: activeProg.title,
+            version_name: versionName,
+            changes: {
+              before: beforeData,
+              after: afterData
+            },
+            status: "승인대기",
+            requested_by: currentUser ? `${currentUser.name} (${currentUser.role || "실무자"})` : "실무 연구원"
+          });
+
+        if (insertErr) throw insertErr;
+
+        alert(`📝 [${versionName}] 승인 대기 요청이 정상적으로 전송되었습니다!\n사업단 결재권자(심현미, 김현수, 송경영)의 승인이 완료되면 최종 반영됩니다.`);
+      } catch (err) {
+        console.error("Failed to insert version request:", err);
+        alert("승인 요청을 전송하는 도중 에러가 발생했습니다.");
+      }
+    }
   };
 
 

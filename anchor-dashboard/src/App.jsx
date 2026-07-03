@@ -1387,6 +1387,9 @@ export default function App() {
   const [activeTab, setActiveTab] = useState(() => {
     return localStorage.getItem("anchor_active_tab") || "dashboard";
   });
+  // 결재 변경 승인요청 상태 및 상세 보기 모달 제어용
+  const [versionRequests, setVersionRequests] = useState([]);
+  const [selectedRequest, setSelectedRequest] = useState(null);
   const [darkMode, setDarkMode] = useState(() => {
     const saved = localStorage.getItem("anchor_dark_mode");
     return saved !== null ? JSON.parse(saved) : true;
@@ -2945,6 +2948,124 @@ export default function App() {
     });
   };
 
+  // 결재 변경 승인요청 DB 조회 및 갱신 API 연동
+  const fetchVersionRequests = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("program_version_requests")
+        .select("*")
+        .order("requested_at", { ascending: false });
+      if (data) setVersionRequests(data);
+    } catch (e) {
+      console.error("Failed to fetch version requests:", e);
+    }
+  };
+
+  useEffect(() => {
+    if (activeTab === "management" && mgmtSubTab === "approvals") {
+      fetchVersionRequests();
+    }
+  }, [activeTab, mgmtSubTab]);
+
+  const handleApproveRequest = async (req) => {
+    try {
+      const approverName = currentUser ? currentUser.name : "승인자";
+      const { error: updateErr } = await supabase
+        .from("program_version_requests")
+        .update({
+          status: "승인완료",
+          approved_by: approverName,
+          approved_at: new Date().toISOString()
+        })
+        .eq("id", req.id);
+      
+      if (updateErr) throw updateErr;
+
+      // 실제 project_data에 적용 (changes.after 병합)
+      const afterFields = req.changes.after;
+      const targetUnitId = getRealUnitId(req.unit_id, selectedYear);
+      
+      setProjects((prevProjects) => {
+        const updated = JSON.parse(JSON.stringify(prevProjects));
+        let dataUpdated = false;
+
+        updated.forEach((p) => {
+          // p.year 매칭 확인
+          const pYearVal = p.year === 2024 + selectedYear || p.year === selectedYear;
+          if (pYearVal) {
+            p.units.forEach((u) => {
+              if (u.id === targetUnitId) {
+                u.programs.forEach((prog) => {
+                  if (prog.id === req.program_id) {
+                    // 예산, 기획, 추진실적, 환류방안, KPI 등 changes.after의 정보를 전체 병합
+                    Object.keys(afterFields).forEach((key) => {
+                      if (key === "years" && afterFields.years) {
+                        if (!prog.years) prog.years = {};
+                        if (afterFields.years[selectedYear]) {
+                          prog.years[selectedYear] = {
+                            ...prog.years[selectedYear],
+                            ...afterFields.years[selectedYear]
+                          };
+                        }
+                      } else if (key === "pdca" && afterFields.pdca) {
+                        prog.pdca = { ...prog.pdca, ...afterFields.pdca };
+                      } else {
+                        prog[key] = afterFields[key];
+                      }
+                    });
+                    dataUpdated = true;
+                  }
+                });
+              }
+            });
+            
+            // Supabase 반영
+            if (dataUpdated) {
+              supabase.from("projects_data")
+                .update({ data: p.data || p }) // p 통째로 갱신하여 JSON 트리 동기화
+                .eq("year", 2024 + selectedYear)
+                .then(({ error }) => {
+                  if (error) console.error("Failed to sync project data after approval:", error);
+                });
+            }
+          }
+        });
+
+        return updated;
+      });
+
+      alert("🎉 변경 사항 승인 완료! 프로그램 상세 기획 및 예산에 즉각 반영되었습니다.");
+      setSelectedRequest(null);
+      fetchVersionRequests();
+    } catch (e) {
+      console.error("Approve request error:", e);
+      alert("승인 처리 도중 데이터베이스 오류가 발생했습니다.");
+    }
+  };
+
+  const handleRejectRequest = async (req) => {
+    try {
+      const approverName = currentUser ? currentUser.name : "승인자";
+      const { error } = await supabase
+        .from("program_version_requests")
+        .update({
+          status: "반려",
+          approved_by: approverName,
+          approved_at: new Date().toISOString()
+        })
+        .eq("id", req.id);
+      
+      if (error) throw error;
+      
+      alert("🚨 변경 신청 반려 처리가 완료되었습니다.");
+      setSelectedRequest(null);
+      fetchVersionRequests();
+    } catch (e) {
+      console.error("Reject request error:", e);
+      alert("반려 처리 도중 데이터베이스 오류가 발생했습니다.");
+    }
+  };
+
   // 실무진 수동 갱신 (프로그램 PDCA 및 실적 등록)
   const handleUpdateProgramDetails = (unitId, progId, updatedFields) => {
     const realUnitId = getRealUnitId(unitId, selectedYear);
@@ -3879,6 +4000,8 @@ export default function App() {
                   setSelectedProgId={setSelectedProgId}
                   viewMode={pdcaViewMode}
                   setViewMode={setPdcaViewMode}
+                  currentUser={currentUser}
+                  supabase={supabase}
                 />
                 {/* 단위과제 및 프로그램 전용 예산 엑셀 업로더 (mode="BUDGET") */}
                 <ExcelUploader
@@ -3954,7 +4077,7 @@ export default function App() {
               {currentRole.rank <= 2 && (
                 <button
                   type="button"
-                  onClick={() => setMgmtSubTab("approvals")}
+                  onClick={() => setMgmtSubTab("users")}
                   style={{
                     border: "none",
                     background: "transparent",
@@ -3962,14 +4085,31 @@ export default function App() {
                     fontSize: "0.85rem",
                     fontWeight: "800",
                     cursor: "pointer",
-                    color: mgmtSubTab === "approvals" ? "var(--accent-color)" : "var(--text-secondary-dark)",
-                    borderBottom: mgmtSubTab === "approvals" ? "2px solid var(--accent-color)" : "none",
+                    color: mgmtSubTab === "users" ? "var(--accent-color)" : "var(--text-secondary-dark)",
+                    borderBottom: mgmtSubTab === "users" ? "2px solid var(--accent-color)" : "none",
                     transition: "all 0.2s"
                   }}
                 >
                   회원현황
                 </button>
               )}
+              <button
+                type="button"
+                onClick={() => setMgmtSubTab("approvals")}
+                style={{
+                  border: "none",
+                  background: "transparent",
+                  padding: "0.5rem 1rem",
+                  fontSize: "0.85rem",
+                  fontWeight: "800",
+                  cursor: "pointer",
+                  color: mgmtSubTab === "approvals" ? "var(--accent-color)" : "var(--text-secondary-dark)",
+                  borderBottom: mgmtSubTab === "approvals" ? "2px solid var(--accent-color)" : "none",
+                  transition: "all 0.2s"
+                }}
+              >
+                승인처리
+              </button>
               <button
                 type="button"
                 onClick={() => setMgmtSubTab("programs")}
@@ -4357,7 +4497,7 @@ export default function App() {
               </div>
             )}
 
-            {mgmtSubTab === "approvals" && currentRole.rank <= 2 && (
+            {mgmtSubTab === "users" && currentRole.rank <= 2 && (
               <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
                 {/* 1. 시스템 고정 계정 목록 테이블 */}
                 <div>
@@ -4526,6 +4666,250 @@ export default function App() {
                 </div>
               </div>
             )}
+
+            {mgmtSubTab === "approvals" && (
+              <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+                {(() => {
+                  const approverNames = ["심현미", "김현수", "송경영"];
+                  const isApprover = currentUser && approverNames.some(name => (currentUser.name || "").includes(name));
+
+                  if (!isApprover) {
+                    return (
+                      <div className="card" style={{ padding: "3rem", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", background: "var(--panel-bg)", border: "1px solid var(--border-color)", color: "var(--text-secondary)", textAlign: "center" }}>
+                        <Info size={40} style={{ marginBottom: "0.75rem", opacity: 0.4, color: "var(--accent-color)" }} />
+                        <span style={{ fontSize: "1.1rem", fontWeight: "800", color: "var(--text-primary)", marginBottom: "0.5rem" }}>결재 승인 권한 없음</span>
+                        <span>프로그램 기획 및 예산 변경 결재 권한은 <strong>심현미 운영팀장, 김현수 본부장, 송경영 단장</strong> 3인에게만 부여되어 있습니다.</span>
+                      </div>
+                    );
+                  }
+
+                  return (
+                    <div>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.5rem" }}>
+                        <h3 style={{ fontSize: "0.9rem", fontWeight: "800", color: "var(--accent-color)", borderLeft: "3px solid var(--accent-color)", paddingLeft: "0.4rem" }}>프로그램 기획 및 예산 변경 결재함</h3>
+                        <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)" }}>연구원들의 기획 리비전 신청 관리</span>
+                      </div>
+                      <div className="table-panel">
+                        <table className="custom-table" style={{ fontSize: "0.75rem" }}>
+                          <thead>
+                            <tr>
+                              <th>결재번호</th>
+                              <th>연도</th>
+                              <th>단위과제</th>
+                              <th>프로그램명</th>
+                              <th>변경 차수</th>
+                              <th>상태</th>
+                              <th>신청자</th>
+                              <th>신청 일시</th>
+                              <th style={{ textAlign: "center", width: "180px" }}>결재 처리</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {versionRequests.length === 0 ? (
+                              <tr>
+                                <td colSpan="9" style={{ textAlign: "center", color: "var(--text-secondary-dark)", padding: "2.5rem" }}>
+                                  결재 대기 중이거나 처리된 변경 요청 문서가 없습니다.
+                                </td>
+                              </tr>
+                            ) : (
+                              versionRequests.map((req) => (
+                                <tr key={req.id}>
+                                  <td style={{ fontFamily: "var(--font-data)", fontWeight: "700" }}>{req.id}</td>
+                                  <td>{req.year}차년도</td>
+                                  <td>{req.unit_id}</td>
+                                  <td style={{ fontWeight: "700" }}>{req.program_title}</td>
+                                  <td>
+                                    <span className="badge badge-blue" style={{ fontSize: "0.65rem" }}>
+                                      {req.version_name}
+                                    </span>
+                                  </td>
+                                  <td>
+                                    <span className={`badge ${
+                                      req.status === "승인완료" ? "badge-green" : (req.status === "반려" ? "badge-red" : "badge-gray")
+                                    }`} style={{ fontSize: "0.65rem" }}>
+                                      {req.status}
+                                    </span>
+                                  </td>
+                                  <td>{req.requested_by}</td>
+                                  <td style={{ fontFamily: "var(--font-data)" }}>{new Date(req.requested_at).toLocaleString("ko-KR")}</td>
+                                  <td style={{ textAlign: "center" }}>
+                                    <div style={{ display: "flex", gap: "0.25rem", justifyContent: "center" }}>
+                                      <button
+                                        onClick={() => setSelectedRequest(req)}
+                                        className="btn-primary"
+                                        style={{ padding: "0.2rem 0.5rem", fontSize: "0.7rem", borderRadius: "0.3rem", background: "var(--accent-color)", cursor: "pointer", border: "none", color: "white" }}
+                                      >
+                                        상세보기
+                                      </button>
+                                      {req.status === "승인대기" && (
+                                        <>
+                                          <button
+                                            onClick={() => handleApproveRequest(req)}
+                                            className="btn-primary"
+                                            style={{ padding: "0.2rem 0.5rem", fontSize: "0.7rem", borderRadius: "0.3rem", background: "#10B981", cursor: "pointer", border: "none", color: "white" }}
+                                          >
+                                            승인
+                                          </button>
+                                          <button
+                                            onClick={() => handleRejectRequest(req)}
+                                            className="btn-primary"
+                                            style={{ padding: "0.2rem 0.5rem", fontSize: "0.7rem", borderRadius: "0.3rem", background: "#EF4444", cursor: "pointer", border: "none", color: "white" }}
+                                          >
+                                            반려
+                                          </button>
+                                        </>
+                                      )}
+                                    </div>
+                                  </td>
+                                </tr>
+                              ))
+                            )}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  );
+                })()}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* 결재 상세 비교 Diff 모달 */}
+        {selectedRequest && (
+          <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(0,0,0,0.8)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1200 }}>
+            <div className="card" style={{ width: "800px", maxHeight: "85vh", overflowY: "auto", padding: "2rem", borderRadius: "12px", background: "var(--panel-bg)", border: "1px solid var(--border-color)" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid var(--border-color)", paddingBottom: "0.75rem", marginBottom: "1rem" }}>
+                <h3 style={{ margin: 0, fontSize: "1.1rem", fontWeight: "800", color: "var(--text-primary)" }}>
+                  📄 [{selectedRequest.program_title}] 기획 변경 상세 대조표 ({selectedRequest.version_name})
+                </h3>
+                <button 
+                  onClick={() => setSelectedRequest(null)}
+                  style={{ background: "transparent", border: "none", color: "var(--text-secondary)", cursor: "pointer", fontSize: "1.2rem" }}
+                >
+                  ✕
+                </button>
+              </div>
+
+              <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem", fontSize: "0.8rem" }}>
+                {/* 1. 기본 기안 정보 */}
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", background: "rgba(255,255,255,0.02)", padding: "0.75rem", borderRadius: "8px" }}>
+                  <div>
+                    <span style={{ color: "var(--text-secondary)" }}>신청자:</span> <strong>{selectedRequest.requested_by}</strong>
+                  </div>
+                  <div>
+                    <span style={{ color: "var(--text-secondary)" }}>신청 일시:</span> <strong>{new Date(selectedRequest.requested_at).toLocaleString("ko-KR")}</strong>
+                  </div>
+                  <div>
+                    <span style={{ color: "var(--text-secondary)" }}>상태:</span> <strong style={{ color: selectedRequest.status === "승인완료" ? "#34D399" : (selectedRequest.status === "반려" ? "#F87171" : "#FBBF24") }}>{selectedRequest.status}</strong>
+                  </div>
+                  {selectedRequest.approved_by && (
+                    <div>
+                      <span style={{ color: "var(--text-secondary)" }}>결재 처리자:</span> <strong>{selectedRequest.approved_by} ({new Date(selectedRequest.approved_at).toLocaleDateString()})</strong>
+                    </div>
+                  )}
+                </div>
+
+                {/* 2. 대조 비교 테이블 (이전 vs 신청) */}
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.5rem" }}>
+                  {/* 변경 전 (Before) */}
+                  <div style={{ border: "1px solid var(--border-color)", padding: "1rem", borderRadius: "8px", background: "rgba(239, 68, 68, 0.02)" }}>
+                    <h4 style={{ margin: "0 0 0.5rem 0", color: "#F87171", fontWeight: "800", display: "flex", alignItems: "center", gap: "0.25rem" }}>
+                      🔴 변경 전 (기존 계획)
+                    </h4>
+                    <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+                      <div>
+                        <span style={{ color: "var(--text-secondary)", display: "block" }}>💰 예산 배정 (백만원)</span>
+                        <ul>
+                          <li>국고: {((selectedRequest.changes.before.years?.[selectedYear]?.budget_national || 0) / 1000000).toFixed(1)}</li>
+                          <li>시비: {((selectedRequest.changes.before.years?.[selectedYear]?.budget_city || 0) / 1000000).toFixed(1)}</li>
+                          <li>외부: {((selectedRequest.changes.before.years?.[selectedYear]?.budget_external || 0) / 1000000).toFixed(1)}</li>
+                          <li>이월(국고): {((selectedRequest.changes.before.years?.[selectedYear]?.budget_carry_national || 0) / 1000000).toFixed(1)}</li>
+                          <li>이월(시비): {((selectedRequest.changes.before.years?.[selectedYear]?.budget_carry_city || 0) / 1000000).toFixed(1)}</li>
+                        </ul>
+                      </div>
+                      <div>
+                        <span style={{ color: "var(--text-secondary)", display: "block" }}>📅 월별 추진 일정 (PDCA)</span>
+                        <span style={{ fontFamily: "var(--font-data)" }}>{selectedRequest.changes.before.timeline || "미입력"}</span>
+                      </div>
+                      <div>
+                        <span style={{ color: "var(--text-secondary)", display: "block" }}>👥 참여 대상 및 연계 부서</span>
+                        <span>대상: {selectedRequest.changes.before.targetAudience || "미입력"}<br/>부서: {selectedRequest.changes.before.coopDept || "미입력"}</span>
+                      </div>
+                      <div>
+                        <span style={{ color: "var(--text-secondary)", display: "block" }}>🎯 실적 목표</span>
+                        <ul>
+                          <li>{selectedRequest.changes.before.target_participants_name || "참여인원"}: {selectedRequest.changes.before.target_participants || 0} {selectedRequest.changes.before.target_participants_unit || "명"}</li>
+                          <li>{selectedRequest.changes.before.target_developments_name || "개발건수"}: {selectedRequest.changes.before.target_developments || 0} {selectedRequest.changes.before.target_developments_unit || "건"}</li>
+                          <li>{selectedRequest.changes.before.target_etc_name || "기타"}: {selectedRequest.changes.before.target_etc || 0} {selectedRequest.changes.before.target_etc_unit || "개"}</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 변경 후 (After) */}
+                  <div style={{ border: "1px solid var(--border-color)", padding: "1rem", borderRadius: "8px", background: "rgba(16, 185, 129, 0.02)" }}>
+                    <h4 style={{ margin: "0 0 0.5rem 0", color: "#34D399", fontWeight: "800", display: "flex", alignItems: "center", gap: "0.25rem" }}>
+                      🟢 변경 후 (신청 계획)
+                    </h4>
+                    <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+                      <div>
+                        <span style={{ color: "var(--text-secondary)", display: "block" }}>💰 예산 배정 (백만원)</span>
+                        <ul>
+                          <li>국고: {((selectedRequest.changes.after.years?.[selectedYear]?.budget_national || 0) / 1000000).toFixed(1)}</li>
+                          <li>시비: {((selectedRequest.changes.after.years?.[selectedYear]?.budget_city || 0) / 1000000).toFixed(1)}</li>
+                          <li>외부: {((selectedRequest.changes.after.years?.[selectedYear]?.budget_external || 0) / 1000000).toFixed(1)}</li>
+                          <li>이월(국고): {((selectedRequest.changes.after.years?.[selectedYear]?.budget_carry_national || 0) / 1000000).toFixed(1)}</li>
+                          <li>이월(시비): {((selectedRequest.changes.after.years?.[selectedYear]?.budget_carry_city || 0) / 1000000).toFixed(1)}</li>
+                        </ul>
+                      </div>
+                      <div>
+                        <span style={{ color: "var(--text-secondary)", display: "block" }}>📅 월별 추진 일정 (PDCA)</span>
+                        <span style={{ fontFamily: "var(--font-data)" }}>{selectedRequest.changes.after.timeline || "미입력"}</span>
+                      </div>
+                      <div>
+                        <span style={{ color: "var(--text-secondary)", display: "block" }}>👥 참여 대상 및 연계 부서</span>
+                        <span>대상: {selectedRequest.changes.after.targetAudience || "미입력"}<br/>부서: {selectedRequest.changes.after.coopDept || "미입력"}</span>
+                      </div>
+                      <div>
+                        <span style={{ color: "var(--text-secondary)", display: "block" }}>🎯 실적 목표</span>
+                        <ul>
+                          <li>{selectedRequest.changes.after.target_participants_name || "참여인원"}: {selectedRequest.changes.after.target_participants || 0} {selectedRequest.changes.after.target_participants_unit || "명"}</li>
+                          <li>{selectedRequest.changes.after.target_developments_name || "개발건수"}: {selectedRequest.changes.after.target_developments || 0} {selectedRequest.changes.after.target_developments_unit || "건"}</li>
+                          <li>{selectedRequest.changes.after.target_etc_name || "기타"}: {selectedRequest.changes.after.target_etc || 0} {selectedRequest.changes.after.target_etc_unit || "개"}</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* 하단 결재 버튼 */}
+              <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.75rem", borderTop: "1px solid var(--border-color)", paddingTop: "1rem", marginTop: "1.5rem" }}>
+                <button 
+                  onClick={() => setSelectedRequest(null)}
+                  style={{ padding: "0.5rem 1rem", borderRadius: "6px", background: "transparent", border: "1px solid var(--border-color)", color: "var(--text-primary)", cursor: "pointer" }}
+                >
+                  닫기
+                </button>
+                {selectedRequest.status === "승인대기" && (
+                  <>
+                    <button 
+                      onClick={() => handleApproveRequest(selectedRequest)}
+                      style={{ padding: "0.5rem 1.5rem", borderRadius: "6px", background: "#10B981", border: "none", color: "white", fontWeight: "600", cursor: "pointer" }}
+                    >
+                      승인 처리
+                    </button>
+                    <button 
+                      onClick={() => handleRejectRequest(selectedRequest)}
+                      style={{ padding: "0.5rem 1.5rem", borderRadius: "6px", background: "#EF4444", border: "none", color: "white", fontWeight: "600", cursor: "pointer" }}
+                    >
+                      반려 처리
+                    </button>
+                  </>
+                )}
+              </div>
+            </div>
           </div>
         )}
 
