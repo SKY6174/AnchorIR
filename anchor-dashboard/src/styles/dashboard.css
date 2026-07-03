@@ -698,6 +698,7 @@ body.light-mode {
 
 .kpis-nav-wrapper,
 .mgmt-nav-wrapper,
+.progress-nav-wrapper,
 .budget-nav-wrapper {
   position: relative;
   display: flex;
@@ -705,7 +706,9 @@ body.light-mode {
 }
 
 .kpis-nav-wrapper:hover .nav-sub-menu,
-.kpis-nav-wrapper.active .nav-sub-menu {
+.kpis-nav-wrapper.active .nav-sub-menu,
+.progress-nav-wrapper:hover .nav-sub-menu,
+.progress-nav-wrapper.active .nav-sub-menu {
   max-height: 80px;
   opacity: 1;
   margin-top: 0.25rem;
