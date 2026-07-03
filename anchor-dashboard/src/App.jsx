@@ -1655,7 +1655,12 @@ export default function App() {
   }, [agreements]);
 
   const [assignFilterUnitId, setAssignFilterUnitId] = useState("all");
-  const [mgmtSubTab, setMgmtSubTab] = useState("members"); // "members", "programs", "approvals"
+  const [mgmtSubTab, setMgmtSubTab] = useState(() => {
+    return localStorage.getItem("anchor_mgmt_sub_tab") || "members";
+  }); // "members", "programs", "approvals"
+  useEffect(() => {
+    localStorage.setItem("anchor_mgmt_sub_tab", mgmtSubTab);
+  }, [mgmtSubTab]);
   const [memberFilter, setMemberFilter] = useState("all"); // "all", "active", "retired"
   const [memberSortConfig, setMemberSortConfig] = useState({ key: null, direction: "asc" });
 
