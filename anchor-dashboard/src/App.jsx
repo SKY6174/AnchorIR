@@ -1029,7 +1029,7 @@ const renderTimelineDiff = (timelineStr) => {
   };
 
   return (
-    <div style={{ display: "grid", gridTemplateColumns: "repeat(12, 1fr)", gap: "0.2rem", marginTop: "0.4rem", width: "100%" }}>
+    <div style={{ display: "grid", gridTemplateColumns: "repeat(12, 1fr)", gap: "0.2rem", marginTop: "0.4rem", width: "80%" }}>
       {months.map((m, idx) => {
         const val = parts[idx] || "";
         const bg = getStatusColor(val);
