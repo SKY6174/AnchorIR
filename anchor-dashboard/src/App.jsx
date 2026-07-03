@@ -2442,7 +2442,8 @@ export default function App() {
             media: x.media,
             title: x.title,
             broadcastDate: x.broadcast_date,
-            contentUrl: x.content_url
+            contentUrl: x.content_url,
+            pressContent: x.press_content || ""
           }));
           setPressReleases(formatted);
           localStorage.setItem(`anchor_cache_press_y${selectedYear}`, JSON.stringify(formatted));
@@ -2799,7 +2800,8 @@ export default function App() {
               media: s.media,
               title: s.title,
               broadcast_date: s.broadcastDate,
-              content_url: s.contentUrl
+              content_url: s.contentUrl,
+              press_content: s.pressContent || ""
             }))
           );
           if (error) throw error;

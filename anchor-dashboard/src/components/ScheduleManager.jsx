@@ -68,7 +68,8 @@ export default function ScheduleManager({
     pressTime: "10:00",
     pressMedia: "",
     pressUrl: "",
-    pressType: "방송"
+    pressType: "방송",
+    pressContent: ""
   });
 
   // 유튜브 임베드용 ID 추출 헬퍼
@@ -293,7 +294,8 @@ export default function ScheduleManager({
                 media: formData.pressMedia || "미상",
                 title: formData.title || "새 보도자료",
                 broadcastDate: combinedDatetime,
-                contentUrl: formData.pressUrl || ""
+                contentUrl: formData.pressUrl || "",
+                pressContent: formData.pressContent || ""
               }
             : p
         ));
@@ -305,7 +307,8 @@ export default function ScheduleManager({
           media: formData.pressMedia || "미상",
           title: formData.title || "새 보도자료",
           broadcastDate: combinedDatetime,
-          contentUrl: formData.pressUrl || ""
+          contentUrl: formData.pressUrl || "",
+          pressContent: formData.pressContent || ""
         };
         setPressReleases([newItem, ...pressReleases]);
       }
@@ -338,7 +341,8 @@ export default function ScheduleManager({
       pressTime: "10:00",
       pressMedia: "",
       pressUrl: "",
-      pressType: "방송"
+      pressType: "방송",
+      pressContent: ""
     });
   };
 
@@ -590,7 +594,8 @@ export default function ScheduleManager({
       pressTime: pTime,
       pressMedia: press.media || "",
       pressUrl: press.contentUrl || "",
-      pressType: press.type || "방송"
+      pressType: press.type || "방송",
+      pressContent: press.pressContent || ""
     });
     setIsAddModalOpen(true);
   };
@@ -1576,6 +1581,25 @@ export default function ScheduleManager({
                       {activePress.title}
                     </h3>
 
+                    {/* 보도내용 텍스트 추가 */}
+                    {activePress.pressContent && (
+                      <div 
+                        style={{ 
+                          background: "rgba(255, 255, 255, 0.02)", 
+                          padding: "1rem", 
+                          borderRadius: "8px", 
+                          border: "1px solid rgba(255, 255, 255, 0.05)", 
+                          fontSize: "0.85rem", 
+                          color: "var(--text-secondary)", 
+                          lineHeight: "1.6", 
+                          whiteSpace: "pre-wrap" 
+                        }}
+                      >
+                        <strong style={{ display: "block", marginBottom: "0.5rem", color: "var(--text-primary)", fontSize: "0.85rem" }}>📝 보도내용</strong>
+                        {activePress.pressContent}
+                      </div>
+                    )}
+
                     {/* 상세 본문 및 미디어 뷰어 */}
                     <div style={{ marginTop: "0.5rem" }}>
                       {embedUrl ? (
@@ -2031,6 +2055,11 @@ export default function ScheduleManager({
                       <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>보도/방송 시간</label>
                       <input type="time" name="pressTime" value={formData.pressTime} onChange={handleInputChange} required style={{ width: "100%", padding: "0.5rem", background: "rgba(128,128,128,0.1)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", colorScheme: "dark" }} />
                     </div>
+                  </div>
+
+                  <div>
+                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>보도내용 (기사 상세 본문)</label>
+                    <textarea name="pressContent" value={formData.pressContent || ""} onChange={handleInputChange} placeholder="기사 본문 또는 세부 보도 내용을 기술해 주세요." style={{ width: "100%", height: "100px", padding: "0.5rem", background: "rgba(128,128,128,0.1)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", resize: "none" }} />
                   </div>
 
                   <div>
