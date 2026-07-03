@@ -76,7 +76,7 @@ export default function SatisfactionManager({ selectedYear }) {
   const [newPurpose, setNewPurpose] = useState("");
   const [newTarget, setNewTarget] = useState("");
   const [newDept, setNewDept] = useState("ECC");
-  const [filterDept, setFilterDept] = useState("ALL"); // 부서별 필터링 상태 추가
+  const [filterDepts, setFilterDepts] = useState(["ECC", "ICC", "RCC", "AIDX", "NURI", "SEVeN"]); // 부서별 다중 필터링 상태 추가
   const [newStartDate, setNewStartDate] = useState("2026-03-01");
   const [newEndDate, setNewEndDate] = useState("2026-03-15");
   const [newQuestions, setNewQuestions] = useState([
@@ -777,26 +777,80 @@ ${commentList || "(없음)"}
       {activeSurveyTab === "list" && (
         <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
           
-          {/* 만족도조사 목록 하부 부서 선택 필터 셀렉터 */}
+          {/* 만족도조사 목록 하부 부서 선택 멀티 체크박스 필터 */}
           {surveys.length > 0 && (
-            <div className="glass-card" style={{ padding: "0.8rem 1.5rem", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <span style={{ fontSize: "0.82rem", color: "var(--text-secondary)", fontWeight: "800" }}>
-                조회할 부서 선택
-              </span>
-              <select
-                value={filterDept}
-                onChange={(e) => setFilterDept(e.target.value)}
-                className="user-selector"
-                style={{ width: "260px", fontSize: "0.78rem", padding: "0.45rem 0.75rem", border: "1px solid var(--border-color-dark)", borderRadius: "0.3rem" }}
-              >
-                <option value="ALL">전체 부서 (ECC / ICC / RCC / AIDX / NURI / SEVeN)</option>
-                <option value="ECC">지산학교육센터 (ECC)</option>
-                <option value="ICC">기업협업센터 (ICC)</option>
-                <option value="RCC">지역협업센터 (RCC)</option>
-                <option value="AIDX">AID-X지원센터 (AIDX)</option>
-                <option value="NURI">울산늘봄누리센터 (NURI)</option>
-                <option value="SEVeN">신산업특화센터 (SEVeN)</option>
-              </select>
+            <div className="glass-card" style={{ padding: "1rem 1.5rem", display: "flex", flexDirection: "column", gap: "0.8rem" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <span style={{ fontSize: "0.82rem", color: "var(--text-secondary)", fontWeight: "800" }}>
+                  조회할 부서 선택 (복수 선택 가능)
+                </span>
+                <div style={{ display: "flex", gap: "0.5rem" }}>
+                  <button
+                    type="button"
+                    onClick={() => setFilterDepts(["ECC", "ICC", "RCC", "AIDX", "NURI", "SEVeN"])}
+                    style={{ background: "rgba(255,255,255,0.04)", border: "1px solid var(--border-color-dark)", color: "white", padding: "0.25rem 0.5rem", fontSize: "0.68rem", borderRadius: "0.25rem", cursor: "pointer", fontWeight: "700" }}
+                  >
+                    전체 선택
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setFilterDepts([])}
+                    style={{ background: "rgba(255,255,255,0.04)", border: "1px solid var(--border-color-dark)", color: "white", padding: "0.25rem 0.5rem", fontSize: "0.68rem", borderRadius: "0.25rem", cursor: "pointer", fontWeight: "700" }}
+                  >
+                    전체 해제
+                  </button>
+                </div>
+              </div>
+              
+              <div style={{ 
+                display: "flex", 
+                flexWrap: "wrap", 
+                gap: "0.6rem 1.2rem", 
+                background: "rgba(255,255,255,0.01)", 
+                padding: "0.6rem 1rem", 
+                borderRadius: "0.375rem", 
+                border: "1px solid var(--border-color-dark)" 
+              }}>
+                {[
+                  { key: "ECC", label: "ECC (지산학)" },
+                  { key: "ICC", label: "ICC (기업협업)" },
+                  { key: "RCC", label: "RCC (지역협업)" },
+                  { key: "AIDX", label: "AIDX (AID-X)" },
+                  { key: "NURI", label: "NURI (늘봄누리)" },
+                  { key: "SEVeN", label: "SEVeN (신산업)" }
+                ].map((deptObj) => {
+                  const isChecked = filterDepts.includes(deptObj.key);
+                  return (
+                    <label 
+                      key={deptObj.key} 
+                      style={{ 
+                        display: "flex", 
+                        alignItems: "center", 
+                        gap: "0.4rem", 
+                        fontSize: "0.76rem", 
+                        color: isChecked ? "white" : "var(--text-secondary)",
+                        cursor: "pointer",
+                        fontWeight: isChecked ? "700" : "500",
+                        transition: "all 0.15s"
+                      }}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={isChecked}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setFilterDepts([...filterDepts, deptObj.key]);
+                          } else {
+                            setFilterDepts(filterDepts.filter(d => d !== deptObj.key));
+                          }
+                        }}
+                        style={{ accentColor: "var(--accent-color)" }}
+                      />
+                      {deptObj.label}
+                    </label>
+                  );
+                })}
+              </div>
             </div>
           )}
 
@@ -807,7 +861,7 @@ ${commentList || "(없음)"}
           ) : (
             <div style={{ display: "flex", flexDirection: "column", gap: "2rem" }}>
               {DEPARTMENTS_GROUP
-                .filter(group => filterDept === "ALL" || group.key === filterDept)
+                .filter(group => filterDepts.includes(group.key))
                 .map((group) => {
                   const deptSurveys = getSurveysByDept(group.key);
                   return (
