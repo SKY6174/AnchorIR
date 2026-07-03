@@ -42,6 +42,17 @@ const PROJECTS_DATA = [
   }
 ];
 
+// 한글 조사의 은/는, 이/가, 을/를, 와/과를 문자열 끝자리 숫자의 받침 유무에 따라 자동 결정해주는 도우미 함수
+const getJosa = (id) => {
+  if (!id) return "과";
+  const lastChar = id.slice(-1);
+  // 1(일), 3(삼), 6(육), 7(칠), 8(팔), 0(영) 은 받침이 있어 '과'가 적절함.
+  if (["1", "3", "6", "7", "8", "0"].includes(lastChar)) {
+    return "과";
+  }
+  return "와";
+};
+
 // 2. proposal 실재 데이터 기반 전략(S) 및 추진과제(T) & 프로그램(PG) 연동 맵핑 테이블
 const STRATEGY_TASK_MAPPING = {
   "A1가": {
@@ -410,7 +421,7 @@ export default function UnitSystemView() {
       </div>
 
       {/* 🛠️ 하단 블록: 3단 드롭다운 연동 레이아웃 */}
-      <div style={{ display: "grid", gridTemplateColumns: "4fr 6fr", gap: "1.5rem", minHeight: "450px" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.5rem", minHeight: "450px" }}>
         
         {/* 좌측: PJ -> WS -> S 3단 드롭다운 선택 패널 */}
         <div className="glass-card" style={{ padding: "1.5rem", display: "flex", flexDirection: "column", gap: "1.2rem" }}>
@@ -440,7 +451,10 @@ export default function UnitSystemView() {
             >
               {PROJECTS_DATA.map(p => (
                 <option key={p.id} value={p.id} style={{ background: "#1e1e1e", color: "white" }}>
-                  {p.id} 프로젝트 ({p.id === "A" ? "Dynamic TALENT" : p.id === "B" ? "Dynamic BRIDGE" : p.id === "C" ? "Dynamic JUMP" : "Dynamic CARE"})
+                  {p.id === "A" ? "A. 울산에 뿌리내리는 정주형 실전 인재 양성(Dynamic TALENT)" :
+                   p.id === "B" ? "B. 기업과 하나되는 지⋅산⋅학⋅연 초연결 생태계 조성(Dynamic BRIDGE)" :
+                   p.id === "C" ? "C. 다시 뛰게 만드는 생애 ‘직무 도약’ 체계 구축(Dynamic JUMP)" :
+                   "D. 지역생활 안전⋅의료⋅정주 협력체계 구축(Dynamic CARE)"}
                 </option>
               ))}
             </select>
@@ -507,11 +521,11 @@ export default function UnitSystemView() {
           {/* 상단: 현재 선택된 추진전략 상세 */}
           <div style={{ borderBottom: "1px solid var(--border-color-dark)", paddingBottom: "1rem" }}>
             <span style={{
-              fontSize: "0.65rem",
+              fontSize: "0.8rem",
               background: "rgba(236,72,153,0.12)",
               border: "1px solid rgba(236,72,153,0.25)",
               color: "#ec4899",
-              padding: "0.15rem 0.4rem",
+              padding: "0.2rem 0.5rem",
               borderRadius: "0.2rem",
               fontWeight: "900",
               textTransform: "uppercase",
@@ -522,15 +536,15 @@ export default function UnitSystemView() {
             </span>
             <h4 style={{ fontSize: "1.05rem", color: "white", fontWeight: "800", display: "flex", alignItems: "center", gap: "0.6rem", lineHeight: "1.4" }}>
               <div style={{
-                width: "22px",
-                height: "22px",
+                width: "26px",
+                height: "26px",
                 borderRadius: "50%",
                 background: "rgba(236,72,153,0.1)",
                 color: "#ec4899",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                fontSize: "0.7rem",
+                fontSize: "0.85rem",
                 fontWeight: "900",
                 border: "1px solid rgba(236,72,153,0.25)",
                 flexShrink: 0
@@ -544,18 +558,18 @@ export default function UnitSystemView() {
           {/* 중단: 필터링된 추진과제 (T) 리스트 */}
           <div>
             <span style={{
-              fontSize: "0.65rem",
+              fontSize: "0.8rem",
               background: "rgba(245,158,11,0.12)",
               border: "1px solid rgba(245,158,11,0.25)",
               color: "#f59e0b",
-              padding: "0.15rem 0.4rem",
+              padding: "0.2rem 0.5rem",
               borderRadius: "0.2rem",
               fontWeight: "900",
               textTransform: "uppercase",
               display: "inline-block",
               marginBottom: "0.7rem"
             }}>
-              {selectedStratId}와 연계한 추진과제 (Strategic Tasks)
+              {selectedStratId}{getJosa(selectedStratId)} 연계한 추진과제 (Strategic Tasks)
             </span>
             
             <div style={{ display: "flex", flexDirection: "column", gap: "0.6rem" }}>
@@ -601,11 +615,11 @@ export default function UnitSystemView() {
           {/* 하단: 필터링된 연계 프로그램 (PG) 리스트 */}
           <div style={{ borderTop: "1px dashed rgba(255,255,255,0.06)", paddingTop: "1.2rem", flex: 1 }}>
             <span style={{
-              fontSize: "0.65rem",
+              fontSize: "0.8rem",
               background: "rgba(139,92,246,0.12)",
               border: "1px solid rgba(139,92,246,0.25)",
               color: "#8b5cf6",
-              padding: "0.15rem 0.4rem",
+              padding: "0.2rem 0.5rem",
               borderRadius: "0.2rem",
               fontWeight: "900",
               textTransform: "uppercase",
