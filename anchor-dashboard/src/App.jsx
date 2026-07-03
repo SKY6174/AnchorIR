@@ -2217,7 +2217,13 @@ export default function App() {
           localStorage.setItem(`anchor_cache_event_y${selectedYear}`, JSON.stringify(formatted));
         }
         if (sMeet && sMeet.length > 0) {
-          const formatted = sMeet.map(x => ({ ...x, id: Number(x.id), month: Number(x.month) }));
+          const formatted = sMeet.map(x => ({
+            ...x,
+            id: Number(x.id),
+            month: Number(x.month),
+            attendeesInternal: x.attendees_internal,
+            attendeesExternal: x.attendees_external
+          }));
           setMeetingSchedules(formatted);
           localStorage.setItem(`anchor_cache_meet_y${selectedYear}`, JSON.stringify(formatted));
         }

@@ -357,7 +357,7 @@ export default function ScheduleManager({
     }
 
     // 작성자 및 부서 파싱
-    const ext = meeting.attendeesExternal || "";
+    const ext = meeting.attendeesExternal || meeting.attendees_external || "";
     let writer = "박지현 팀장";
     let dept = "사업운영팀";
     if (ext.includes("작성자:") && ext.includes("부서:")) {
@@ -387,7 +387,7 @@ export default function ScheduleManager({
       meetingStartTime: meetingStartTime,
       meetingEndTime: meetingEndTime,
       writer: writer,
-      attendees: meeting.attendeesInternal || "",
+      attendees: meeting.attendeesInternal || meeting.attendees_internal || "",
       agendaList: agendaList,
       category: meeting.category || "operating",
       result: meeting.result || ""
@@ -1019,7 +1019,7 @@ export default function ScheduleManager({
                 >
                   {/* 작성자, 관련부서 정보 동적 파싱 로직 */}
                   {(() => {
-                    const ext = meeting.attendeesExternal || "";
+                    const ext = meeting.attendeesExternal || meeting.attendees_external || "";
                     let writer = "작성자 미정";
                     let dept = "사업운영팀";
                     let isCustomFormatted = false;
@@ -1080,7 +1080,7 @@ export default function ScheduleManager({
                             {isCustomFormatted ? (
                               <div>
                                 <span style={{ color: "var(--text-secondary)", display: "block", marginBottom: "0.15rem" }}>👥 참석자</span>
-                                <strong>{meeting.attendeesInternal}</strong>
+                                <strong>{meeting.attendeesInternal || meeting.attendees_internal}</strong>
                               </div>
                             ) : (
                               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem" }}>
