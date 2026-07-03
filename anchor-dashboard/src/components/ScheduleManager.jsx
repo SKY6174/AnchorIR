@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { 
   Calendar as CalendarIcon, Clock, MapPin, Users, 
-  FileText, Award, Layers, Plus, CheckCircle, Info, ChevronLeft, ChevronRight
+  FileText, Award, Layers, Plus, CheckCircle, Info, ChevronLeft, ChevronRight,
+  Edit, Trash2
 } from "lucide-react";
 
 export default function ScheduleManager({
@@ -19,6 +20,8 @@ export default function ScheduleManager({
   // 모달 제어 상태
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [modalType, setModalType] = useState("monthly"); // "monthly", "event", "meeting"
+  const [isEditMode, setIsEditMode] = useState(false);   // 수정 모드 활성화 여부
+  const [editingItemId, setEditingItemId] = useState(null); // 편집 대상 일정 ID
 
   // 캘린더 월 상태 (2026년 7월 기준)
   const [currentMonth, setCurrentMonth] = useState(7); // 7월
@@ -63,16 +66,32 @@ export default function ScheduleManager({
     e.preventDefault();
 
     if (modalType === "monthly") {
-      const newItem = {
-        id: Date.now(),
-        title: formData.title || "새 일정",
-        type: formData.type || "기타",
-        dept: formData.dept || "사업운영팀",
-        startAt: `${formData.startDate} ${formData.startTime}`,
-        endAt: `${formData.endDate} ${formData.endTime}`,
-        location: formData.location || "-"
-      };
-      setMonthlySchedules([newItem, ...monthlySchedules]);
+      if (isEditMode) {
+        setMonthlySchedules(monthlySchedules.map(s => 
+          s.id === editingItemId 
+            ? {
+                ...s,
+                title: formData.title || "새 일정",
+                type: formData.type || "기타",
+                dept: formData.dept || "사업운영팀",
+                startAt: `${formData.startDate} ${formData.startTime}`,
+                endAt: `${formData.endDate} ${formData.endTime}`,
+                location: formData.location || "-"
+              }
+            : s
+        ));
+      } else {
+        const newItem = {
+          id: Date.now(),
+          title: formData.title || "새 일정",
+          type: formData.type || "기타",
+          dept: formData.dept || "사업운영팀",
+          startAt: `${formData.startDate} ${formData.startTime}`,
+          endAt: `${formData.endDate} ${formData.endTime}`,
+          location: formData.location || "-"
+        };
+        setMonthlySchedules([newItem, ...monthlySchedules]);
+      }
     } else if (modalType === "event") {
       const newItem = {
         id: Date.now(),
@@ -105,6 +124,8 @@ export default function ScheduleManager({
     }
 
     setIsAddModalOpen(false);
+    setIsEditMode(false);
+    setEditingItemId(null);
     setFormData({
       title: "",
       type: "행사",
@@ -125,6 +146,45 @@ export default function ScheduleManager({
       category: "operating",
       agenda: ""
     });
+  };
+
+  // 일정 삭제 핸들러
+  const handleDeleteSchedule = (id) => {
+    if (window.confirm("선택한 일정을 삭제하시겠습니까?")) {
+      setMonthlySchedules(monthlySchedules.filter(s => s.id !== id));
+    }
+  };
+
+  // 일정 수정 모달 트리거
+  const handleEditSchedule = (sched) => {
+    setIsEditMode(true);
+    setEditingItemId(sched.id);
+    setModalType("monthly");
+
+    const startParts = sched.startAt ? sched.startAt.split(" ") : ["2026-07-15", "10:00"];
+    const endParts = sched.endAt ? sched.endAt.split(" ") : ["2026-07-15", "11:00"];
+
+    setFormData({
+      title: sched.title,
+      type: sched.type || "행사",
+      dept: sched.dept || "사업운영팀",
+      startDate: startParts[0] || "2026-07-15",
+      startTime: startParts[1] || "10:00",
+      endDate: endParts[0] || "2026-07-15",
+      endTime: endParts[1] || "11:00",
+      location: sched.location || "",
+      month: 7,
+      department: "",
+      datetime: "",
+      attendeesInternal: "",
+      attendeesExternal: "",
+      program: "",
+      purpose: "",
+      result: "",
+      category: "operating",
+      agenda: ""
+    });
+    setIsAddModalOpen(true);
   };
 
   const openAddModal = (type) => {
@@ -301,12 +361,35 @@ export default function ScheduleManager({
                       key={sched.id} 
                       style={{
                         padding: "0.75rem", borderRadius: "6px",
-                        background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.05)"
+                        background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.05)",
+                        position: "relative"
                       }}
                     >
-                      <strong style={{ fontSize: "0.9rem", color: "white", display: "block", marginBottom: "0.25rem" }}>
-                        {sched.title}
-                      </strong>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "0.5rem" }}>
+                        <strong style={{ fontSize: "0.9rem", color: "white", display: "block", marginBottom: "0.25rem", flex: 1 }}>
+                          {sched.title}
+                        </strong>
+                        <div style={{ display: "flex", gap: "0.25rem" }}>
+                          <button 
+                            onClick={() => handleEditSchedule(sched)}
+                            title="수정"
+                            style={{ background: "transparent", border: "none", color: "rgba(255,255,255,0.4)", cursor: "pointer", padding: "0.2rem", transition: "color 0.15s" }}
+                            onMouseOver={(e) => e.currentTarget.style.color = "var(--accent-color)"}
+                            onMouseOut={(e) => e.currentTarget.style.color = "rgba(255,255,255,0.4)"}
+                          >
+                            <Edit size={14} />
+                          </button>
+                          <button 
+                            onClick={() => handleDeleteSchedule(sched.id)}
+                            title="삭제"
+                            style={{ background: "transparent", border: "none", color: "rgba(255,255,255,0.4)", cursor: "pointer", padding: "0.2rem", transition: "color 0.15s" }}
+                            onMouseOver={(e) => e.currentTarget.style.color = "#EF4444"}
+                            onMouseOut={(e) => e.currentTarget.style.color = "rgba(255,255,255,0.4)"}
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                        </div>
+                      </div>
                       <div style={{ display: "flex", gap: "0.3rem", flexWrap: "wrap", marginBottom: "0.4rem" }}>
                         <span style={{ fontSize: "0.65rem", padding: "0.1rem 0.4rem", borderRadius: "4px", background: sched.type === "행사" ? "rgba(59, 130, 246, 0.2)" : sched.type === "회의" ? "rgba(16, 185, 129, 0.2)" : sched.type === "위원회" ? "rgba(245, 158, 11, 0.2)" : "rgba(139, 92, 246, 0.2)", color: sched.type === "행사" ? "#60A5FA" : sched.type === "회의" ? "#34D399" : sched.type === "위원회" ? "#FBBF24" : "#A78BFA", fontWeight: "700" }}>
                           {sched.type || "기타"}
@@ -614,10 +697,14 @@ export default function ScheduleManager({
             
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid rgba(255,255,255,0.05)", paddingBottom: "0.75rem", marginBottom: "1rem" }}>
               <h3 style={{ margin: 0, fontSize: "1.1rem", fontWeight: "800", color: "white" }}>
-                ➕ {modalType === "monthly" ? "새 일반 일정 등록" : modalType === "event" ? "새 행사 일정 기획 등록" : "새 회의 일정 회의록 등록"}
+                {isEditMode ? "✏️ 일반 일정 수정" : (modalType === "monthly" ? "➕ 새 일반 일정 등록" : modalType === "event" ? "➕ 새 행사 일정 기획 등록" : "➕ 새 회의 일정 회의록 등록")}
               </h3>
               <button 
-                onClick={() => setIsAddModalOpen(false)}
+                onClick={() => {
+                  setIsAddModalOpen(false);
+                  setIsEditMode(false);
+                  setEditingItemId(null);
+                }}
                 style={{ background: "transparent", border: "none", color: "var(--text-secondary-dark)", cursor: "pointer", fontSize: "1.2rem" }}
               >
                 ✕
@@ -794,7 +881,11 @@ export default function ScheduleManager({
               <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.75rem", borderTop: "1px solid rgba(255,255,255,0.05)", paddingTop: "1rem", marginTop: "0.5rem" }}>
                 <button 
                   type="button" 
-                  onClick={() => setIsAddModalOpen(false)}
+                  onClick={() => {
+                    setIsAddModalOpen(false);
+                    setIsEditMode(false);
+                    setEditingItemId(null);
+                  }}
                   style={{ padding: "0.5rem 1rem", borderRadius: "6px", background: "transparent", border: "1px solid var(--border-color-dark)", color: "white", cursor: "pointer" }}
                 >
                   취소
@@ -803,7 +894,7 @@ export default function ScheduleManager({
                   type="submit" 
                   style={{ padding: "0.5rem 1.25rem", borderRadius: "6px", background: "var(--accent-color)", border: "none", color: "white", fontWeight: "600", cursor: "pointer" }}
                 >
-                  새 등록 완료
+                  {isEditMode ? "수정 완료" : "새 등록 완료"}
                 </button>
               </div>
 
