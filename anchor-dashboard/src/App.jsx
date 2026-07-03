@@ -4890,7 +4890,7 @@ export default function App() {
                             ) : (
                               versionRequests.map((req, idx) => (
                                 <tr key={req.id}>
-                                  <td style={{ fontFamily: "var(--font-data)", fontWeight: "700" }}>{2024 + req.year}-{req.unit_id}-{idx + 1}</td>
+                                  <td style={{ fontFamily: "var(--font-data)", fontWeight: "700" }}>{2024 + req.year}-{req.unit_id}-{versionRequests.length - idx}</td>
                                   <td>{req.program_id}</td>
                                   <td style={{ fontWeight: "700" }}>{req.program_title}</td>
                                   <td>
@@ -4986,7 +4986,7 @@ export default function App() {
         {/* 결재 상세 비교 Diff 모달 */}
         {selectedRequest && (() => {
           const reqIndex = versionRequests.findIndex(r => r.id === selectedRequest.id);
-          const displaySeq = reqIndex !== -1 ? reqIndex + 1 : selectedRequest.id;
+          const displaySeq = reqIndex !== -1 ? (versionRequests.length - reqIndex) : selectedRequest.id;
           const changesAfter = selectedRequest.changes?.after || {};
           const showTarget1 = (changesAfter.target_participants && changesAfter.target_participants !== 0 && String(changesAfter.target_participants).trim() !== "" && String(changesAfter.target_participants).trim() !== "0") || (changesAfter.target_participants_name && changesAfter.target_participants_name.trim() !== "");
           const showTarget2 = (changesAfter.target_developments && changesAfter.target_developments !== 0 && String(changesAfter.target_developments).trim() !== "" && String(changesAfter.target_developments).trim() !== "0") || (changesAfter.target_developments_name && changesAfter.target_developments_name.trim() !== "");
