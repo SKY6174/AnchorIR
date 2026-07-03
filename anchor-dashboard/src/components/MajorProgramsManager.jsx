@@ -169,6 +169,7 @@ export default function MajorProgramsManager({ selectedYear }) {
   // 휠 스크롤 회전 제어를 위한 틱 제어 상태 및 Ref
   const containerRef = React.useRef(null);
   const [lastWheelTime, setLastWheelTime] = useState(0);
+  const [isHovered, setIsHovered] = useState(false); // 마우스 호버 추적용 상태 추가
   const activeIndex = unitKeys.indexOf(selectedUnit);
 
   // 연도가 변경되면 단위과제 선택 초기화
@@ -183,6 +184,38 @@ export default function MajorProgramsManager({ selectedYear }) {
       setSelectedProg(null);
     }
   }, [selectedYear]);
+
+  // 마우스 호버 상태에서 키보드 up/down 방향키 입력 시 단위과제 선택 회전 동기화
+  useEffect(() => {
+    if (!isHovered) return;
+
+    const handleKeyDown = (e) => {
+      if (e.key === "ArrowUp" || e.key === "ArrowDown") {
+        // 브라우저 기본 스크롤(페이지 전체 이동) 차단
+        e.preventDefault();
+        
+        const now = Date.now();
+        if (now - lastWheelTime < 160) return; // 동일 스로틀 데드타임 적용
+
+        if (e.key === "ArrowDown") {
+          // 아래 방향키: 다음 단위과제
+          const nextIndex = (activeIndex + 1) % unitKeys.length;
+          handleUnitChange(unitKeys[nextIndex]);
+          setLastWheelTime(now);
+        } else if (e.key === "ArrowUp") {
+          // 위 방향키: 이전 단위과제
+          const prevIndex = (activeIndex - 1 + unitKeys.length) % unitKeys.length;
+          handleUnitChange(unitKeys[prevIndex]);
+          setLastWheelTime(now);
+        }
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isHovered, activeIndex, unitKeys, lastWheelTime]);
 
   // 마우스 휠 스크롤과 단위과제 선택 회전 동기화
   useEffect(() => {
@@ -246,6 +279,8 @@ export default function MajorProgramsManager({ selectedYear }) {
         {/* 좌측 단위과제 원형 버튼 세트 - 3D 회전 실린더 휠 다이얼 */}
         <div 
           ref={containerRef}
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
           style={{ 
             display: "flex", 
             flexDirection: "column", 
@@ -306,7 +341,7 @@ export default function MajorProgramsManager({ selectedYear }) {
               gap: "12px", 
               alignItems: "center",
               transformStyle: "preserve-3d",
-              transition: "transform 0.85s cubic-bezier(0.25, 1, 0.5, 1)", // 속도를 부드럽게 절반 수준으로 조절
+              transition: "transform 0.65s cubic-bezier(0.25, 1, 0.5, 1)", // 스크롤 전환 모션 0.65s로 속도감 튜닝
               // 활성화 버튼을 정확히 수직 중앙으로 정렬하는 트랜슬레이션 수식 적용
               // 높이 400px 중앙은 Y=200px. 버튼지름 56px, gap 12px -> 1개 높이 68px.
               // 오프셋 기점: 200 - 28 = 172px.
@@ -342,7 +377,7 @@ export default function MajorProgramsManager({ selectedYear }) {
                       alignItems: "center",
                       justifyContent: "center",
                       flexShrink: 0, // flex 수축 방지하여 완벽한 원형 유지
-                      transition: "transform 0.85s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.85s, background 0.3s, border-color 0.3s", // 속도를 절반 수준으로 조절
+                      transition: "transform 0.65s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.65s, background 0.3s, border-color 0.3s", // 스크롤 전환 모션 0.65s로 속도감 튜닝
                       
                       // 3D Cylinder transform 공식 적용!
                       transform: `rotateX(${rotateX}deg) translateZ(${translateZ}px) translateY(${translateY}px) scale(${scale})`,
