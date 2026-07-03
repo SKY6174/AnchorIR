@@ -537,27 +537,58 @@ export default function PDCAManager({
     return { ok: true };
   };
 
+  // C단계 완료 조건 판정 공통 함수
+  const checkCStageCompletion = (prog, py, draftData = {}) => {
+    // 1. 이전 단계인 D가 완료여야 함
+    const currentDPdca = prog.pdca?.d || "대기";
+    if (currentDPdca !== "완료") {
+      return { ok: false, reason: "D(Do) 단계가 아직 완료되지 않았습니다." };
+    }
+    
+    // 2. 성과사항 및 만족도 입력 검증
+    const ach = draftData.achievements !== undefined ? draftData.achievements : (prog.achievements || "");
+    const sat = draftData.satisfaction !== undefined ? parseFloat(draftData.satisfaction) : (parseFloat(prog.satisfaction) || 0);
+    
+    if (!ach.trim()) {
+      return { ok: false, reason: "성과사항이 빈칸 없이 서술되어야 합니다." };
+    }
+    if (sat <= 0) {
+      return { ok: false, reason: "수요자 만족도가 0점 초과여야 합니다." };
+    }
+    return { ok: true };
+  };
+
+  // A단계 완료 조건 판정 공통 함수
+  const checkAStageCompletion = (prog, py, draftData = {}) => {
+    // 1. 이전 단계인 C가 완료여야 함
+    const currentCPdca = prog.pdca?.c || "대기";
+    if (currentCPdca !== "완료") {
+      return { ok: false, reason: "C(Check) 단계가 아직 완료되지 않았습니다." };
+    }
+    
+    // 2. 자체평가 구분에 따른 환류 서술 입력 검증
+    const type = draftData.evalType !== undefined ? draftData.evalType : (prog.evalType || "우수");
+    if (type === "우수") {
+      const good = draftData.excellent !== undefined ? draftData.excellent : (prog.excellent || "");
+      const dev = draftData.improvePlan !== undefined ? draftData.improvePlan : (prog.improvePlan || "");
+      if (!good.trim() || !dev.trim()) {
+        return { ok: false, reason: "우수한 점 및 발전방안이 기재되어야 합니다." };
+      }
+    } else {
+      const bad = draftData.deficiency !== undefined ? draftData.deficiency : (prog.deficiency || "");
+      const imp = draftData.actionItem !== undefined ? draftData.actionItem : (prog.actionItem || "");
+      if (!bad.trim() || !imp.trim()) {
+        return { ok: false, reason: "미비점 및 개선사항이 기재되어야 합니다." };
+      }
+    }
+    return { ok: true };
+  };
+
   // PDCA 단계 완료 조건 검증 및 강제 롤백 방어
   const handleUpdatePDCA = (stage, status) => {
     if (!activeProg) return;
 
     const py = activeProg.years?.[selectedYear] || {};
-    const budgetMain = py.budget_main || 0;
-    const spentMain = py.spent_main || 0;
-    
-    const timeline = activeProg.timeline || "";
-    const targetAudience = activeProg.targetAudience || "";
-    const coopDept = activeProg.coopDept || "";
-    
-    const participants = activeProg.participants || 0;
-    const satisfaction = activeProg.satisfaction || 0;
-    
-    const evalType = activeProg.evalType || "우수";
-    const excellent = activeProg.excellent || "";
-    const improvePlan = activeProg.improvePlan || "";
-    const deficiency = activeProg.deficiency || "";
-    const actionItem = activeProg.actionItem || "";
-
     const currentP = activeProg.pdca?.p || "대기";
     const currentD = activeProg.pdca?.d || "대기";
     const currentC = activeProg.pdca?.c || "대기";
@@ -592,26 +623,16 @@ export default function PDCAManager({
           return;
         }
       } else if (stage === "c") {
-        const achievements = activeProg.achievements || "";
-        if (!achievements.trim()) {
-          alert(`[검증 실패] C(Check) 단계를 완료하려면 성과사항이 기입되어야 합니다.`);
-          return;
-        }
-        if (satisfaction <= 0) {
-          alert(`[검증 실패] C(Check) 단계를 완료하려면 만족도(0점 초과)가 기재되어야 합니다.`);
+        const compC = checkCStageCompletion(activeProg, py);
+        if (!compC.ok) {
+          alert(`[검증 실패] C(Check) 단계를 완료할 수 없습니다.\n- 원인: ${compC.reason}`);
           return;
         }
       } else if (stage === "a") {
-        if (evalType === "우수") {
-          if (!excellent.trim() || !improvePlan.trim()) {
-            alert(`[검증 실패] A(Act) 우수 프로그램 상태를 완료하려면 '우수한 점'과 '발전방안'을 모두 기입해 주셔야 합니다.`);
-            return;
-          }
-        } else {
-          if (!deficiency.trim() || !actionItem.trim()) {
-            alert(`[검증 실패] A(Act) 미흡 프로그램 상태를 완료하려면 '미비점'과 '개선사항'을 모두 기입해 주셔야 합니다.`);
-            return;
-          }
+        const compA = checkAStageCompletion(activeProg, py);
+        if (!compA.ok) {
+          alert(`[검증 실패] A(Act) 단계를 완료할 수 없습니다.\n- 원인: ${compA.reason}`);
+          return;
         }
       }
     }
@@ -622,13 +643,13 @@ export default function PDCAManager({
     if (status !== "완료") {
       if (stage === "p") {
         newPdca.d = "진행";
-        newPdca.c = "진행";
-        newPdca.a = "진행";
+        newPdca.c = "대기";
+        newPdca.a = "대기";
       } else if (stage === "d") {
-        newPdca.c = "진행";
-        newPdca.a = "진행";
+        newPdca.c = "대기";
+        newPdca.a = "대기";
       } else if (stage === "c") {
-        newPdca.a = "진행";
+        newPdca.a = "대기";
       }
     }
 
@@ -834,20 +855,31 @@ export default function PDCAManager({
     e.preventDefault();
     if (!activeProg) return;
 
-    const parsedSatisfaction = parseFloat(inputSatisfaction);
+    const parsedSatisfaction = parseFloat(inputSatisfaction) || 0;
 
-    if (!inputAchievements.trim()) {
-      alert("성과사항을 서술해 주세요.");
-      return;
-    }
     if (isNaN(parsedSatisfaction) || parsedSatisfaction < 0 || parsedSatisfaction > 100) {
       alert("만족도는 0~100 사이의 숫자로 입력해 주세요.");
       return;
     }
 
-    onUpdateProgramDetails(activeProg.unitId, activeProg.id, {
+    // C단계 자동 완료/대기 판정
+    const compC = checkCStageCompletion(activeProg, activeProg.years?.[selectedYear] || {}, {
       achievements: inputAchievements,
       satisfaction: parsedSatisfaction
+    });
+    
+    const autoCState = compC.ok ? "완료" : "대기";
+    const newPdca = { ...activeProg.pdca, c: autoCState };
+    
+    // C가 대기 상태가 되면 A도 자동으로 대기 상태로 연쇄 롤백
+    if (autoCState === "대기") {
+      newPdca.a = "대기";
+    }
+
+    onUpdateProgramDetails(activeProg.unitId, activeProg.id, {
+      achievements: inputAchievements,
+      satisfaction: parsedSatisfaction,
+      pdca: newPdca
     });
 
     setFeedbackMsg("C 단계 성과 실적(성과사항, 만족도)이 안전하게 저장되었습니다.");
@@ -859,24 +891,24 @@ export default function PDCAManager({
     e.preventDefault();
     if (!activeProg) return;
 
-    if (inputEvalType === "우수") {
-      if (!inputExcellent.trim() || !inputImprovePlan.trim()) {
-        alert("우수 프로그램 환류 사항(우수한 점 및 발전방안)을 모두 기재해 주세요.");
-        return;
-      }
-    } else {
-      if (!inputDeficiency.trim() || !inputActionItem.trim()) {
-        alert("미흡 프로그램 환류 사항(미비점 및 개선사항)을 모두 기재해 주세요.");
-        return;
-      }
-    }
+    // A단계 자동 완료/대기 판정
+    const compA = checkAStageCompletion(activeProg, activeProg.years?.[selectedYear] || {}, {
+      evalType: inputEvalType,
+      excellent: inputExcellent,
+      improvePlan: inputImprovePlan,
+      deficiency: inputDeficiency,
+      actionItem: inputActionItem
+    });
+    
+    const autoAState = compA.ok ? "완료" : "대기";
 
     onUpdateProgramDetails(activeProg.unitId, activeProg.id, {
       evalType: inputEvalType,
       excellent: inputExcellent,
       improvePlan: inputImprovePlan,
       deficiency: inputDeficiency,
-      actionItem: inputActionItem
+      actionItem: inputActionItem,
+      pdca: { ...activeProg.pdca, a: autoAState }
     });
 
     setFeedbackMsg("A 단계 평가 환류 방안이 영구 반영되었습니다.");
@@ -1046,27 +1078,29 @@ export default function PDCAManager({
                             <select
                               style={{ 
                                 fontSize: "0.65rem", 
-                                background: isAutoStage ? "#27272a" : "#18181b", 
-                                color: isAutoStage ? "#a1a1aa" : "white", 
+                                background: "#27272a", 
+                                color: "#a1a1aa", 
                                 border: "1px solid var(--border-color-dark)", 
                                 borderRadius: "0.25rem", 
                                 marginTop: "0.2rem",
-                                cursor: isAutoStage ? "not-allowed" : "pointer"
+                                cursor: "not-allowed"
                               }}
                               value={status}
-                              disabled={isAutoStage}
+                              disabled={true}
                               title={
                                 stage === "p" 
                                   ? "Plan 단계 상태는 기획 정보 입력량에 따라 자동으로 설정됩니다." 
                                   : stage === "d"
                                   ? "Do 단계 상태는 집행 및 수행 실적 저장 시 자동으로 설정됩니다."
-                                  : ""
+                                  : stage === "c"
+                                  ? "Check 단계 상태는 성과 실적 저장 시 자동으로 설정됩니다."
+                                  : "Act 단계 상태는 환류 평가 저장 시 자동으로 설정됩니다."
                               }
                               onClick={(e) => e.stopPropagation()}
                               onChange={(e) => handleUpdatePDCA(stage, e.target.value)}
                             >
                               <option value="대기">대기</option>
-                              <option value="진행">진행</option>
+                              {stage !== "c" && stage !== "a" && <option value="진행">진행</option>}
                               <option value="완료">완료</option>
                             </select>
                           )}
@@ -2013,26 +2047,28 @@ export default function PDCAManager({
                           <select
                             style={{ 
                               fontSize: "0.6rem", 
-                              background: (stage === "p" || stage === "d") ? "#27272a" : "#18181b", 
-                              color: (stage === "p" || stage === "d") ? "#a1a1aa" : "white", 
+                              background: "#27272a", 
+                              color: "#a1a1aa", 
                               border: "1px solid var(--border-color-dark)", 
                               borderRadius: "0.2px",
-                              cursor: (stage === "p" || stage === "d") ? "not-allowed" : "pointer"
+                              cursor: "not-allowed"
                             }}
                             value={status}
-                            disabled={stage === "p" || stage === "d"}
+                            disabled={true}
                             title={
                               stage === "p" 
                                 ? "Plan 단계 상태는 기획 정보 입력량에 따라 자동으로 설정됩니다." 
                                 : stage === "d"
                                 ? "Do 단계 상태는 집행 및 수행 실적 저장 시 자동으로 설정됩니다."
-                                : ""
+                                : stage === "c"
+                                ? "Check 단계 상태는 성과 실적 저장 시 자동으로 설정됩니다."
+                                : "Act 단계 상태는 환류 평가 저장 시 자동으로 설정됩니다."
                             }
                             onClick={(e) => e.stopPropagation()}
                             onChange={(e) => handleUpdatePDCA(stage, e.target.value)}
                           >
                             <option value="대기">대기</option>
-                            <option value="진행">진행</option>
+                            {stage !== "c" && stage !== "a" && <option value="진행">진행</option>}
                             <option value="완료">완료</option>
                           </select>
                         )}
