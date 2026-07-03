@@ -147,7 +147,7 @@ const universityOrgData = {
         subTeams: [
           { name: "재학생맞춤형고용서비스사업단", tel: "052-230-0190", loc: "학생회관 2층", task: "재학생 학년별 포트폴리오 설계 및 일경험 매칭" },
           { name: "고교생맞춤형고용서비스사업단", tel: "052-230-0191", loc: "학생회관 2층", task: "울산 지역 특성화고 대상 맞춤형 취업 진로 지도" },
-          { name: "졸업생특화프로그램사업단", tel: "052-230-0192", loc: "학생회관 2층", task: "미취업 졸업생 집중 모니터링 및 기업 연계 채용 매칭" }
+          { name: "졸업생특화프로그램사업단", tel: "052-230-0192", loc: "학생회관 2층", task: "미취업 졸업생 집중 모니상 관리 및 기업 연계 채용 매칭" }
         ]
       },
       {
@@ -278,6 +278,24 @@ const universityOrgData = {
         ]
       }
     ]
+  },
+  anchor: {
+    title: "앵커사업 부서",
+    desc: "울산과학대학교 라이즈(RISE)사업 및 앵커 실무를 직접 관장하는 사업 부서",
+    departments: [
+      {
+        name: "앵커사업 부서",
+        subTeams: [
+          { name: "사업운영팀", tel: "052-230-0500", loc: "산학협력관 4층", task: "RISE 사업 예산 총괄, 회계 처리, 정산 및 사업비 모니터링 관리", rise: "RISE 예산 총괄 및 모니터링 관리" },
+          { name: "ECC센터", tel: "052-230-0501", loc: "산학협력관 4층", task: "교육혁신(Education Innovation) 부문 총괄 및 주문식 교육과정 가동", rise: "A1 (주문식 교육과정 매핑)" },
+          { name: "ICC센터", tel: "052-230-0502", loc: "산학협력관 4층", task: "기업협업(Industry Cooperation) 부문 총괄 및 지산학 공동 연구 개발 기술 지원", rise: "A2 (글로컬 창업인재 연계)" },
+          { name: "RCC센터", tel: "052-230-0503", loc: "산학협력관 4층", task: "지역협업(Region Cooperation) 부문 총괄 및 지역현안해결, 도시재생/에코컬처 연계", rise: "B1/B2/D3 (도시재생/에코컬처/늘봄 연계)" },
+          { name: "AID-X지원센터", tel: "052-230-0504", loc: "산학협력관 4.5층", task: "AID-X 디지털 전환 특화 직업교육과정 개발 및 AI 융합 교육 모델 실증", rise: "A1 (AIDX 교육 매핑)" },
+          { name: "울산늘봄누리센터", tel: "052-230-0505", loc: "보건관 1층", task: "울산 지역 늘봄 교육 프로그램 개발, 연계 및 강사 풀(Pool) 매칭 관리", rise: "B2 (늘봄 누리 플랫폼 연계)" },
+          { name: "신산업특화센터", tel: "052-230-0506", loc: "공학관 B동 2층", task: "2차전지, 미래 모빌리티 등 지역 신산업 분야 재직자 훈련 과정 개설 운영", rise: "A1 (신산업 트랙 매핑)" }
+        ]
+      }
+    ]
   }
 };
 
@@ -287,7 +305,7 @@ export default function OrgChartManager() {
   const [selectedTeam, setSelectedTeam] = useState(null);
   const [expandedFaculties, setExpandedFaculties] = useState({});
 
-  const currentCategory = universityOrgData[selectedKey];
+  const currentCategory = universityOrgData[selectedKey] || universityOrgData.university;
   const listDepts = currentCategory.departments;
 
   const handleCategoryChange = (key) => {
@@ -337,7 +355,13 @@ export default function OrgChartManager() {
               const isAnchor = key === "anchor";
               return (
                 <React.Fragment key={key}>
-                  {isAnchor && <div style={{ height: "1px", background: "rgba(255,255,255,0.06)", margin: "0.5rem 0" }} />} {/* 한 칸의 공백 구분선 */}
+                  {isAnchor && (
+                    <div style={{ 
+                      height: "1px", 
+                      background: "rgba(255,255,255,0.1)", 
+                      margin: "1.25rem 0 0.8rem 0" 
+                    }} />
+                  )}
                   <button
                     onClick={() => handleCategoryChange(key)}
                     style={{
@@ -351,7 +375,8 @@ export default function OrgChartManager() {
                       transition: "all 0.2s ease",
                       background: selectedKey === key ? "rgba(59, 130, 246, 0.15)" : "transparent",
                       color: selectedKey === key ? "var(--accent-color)" : "var(--text-secondary-dark)",
-                      borderLeft: selectedKey === key ? "4px solid var(--accent-color)" : "4px solid transparent"
+                      borderLeft: selectedKey === key ? "4px solid var(--accent-color)" : "4px solid transparent",
+                      marginTop: isAnchor ? "0.2rem" : "0"
                     }}
                   >
                     {universityOrgData[key].title}
