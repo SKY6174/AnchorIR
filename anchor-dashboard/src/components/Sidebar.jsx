@@ -265,7 +265,7 @@ export default function Sidebar({
                   }
                 }}
               >
-                - 행사 일정
+                - 주요 행사
               </div>
               <div
                 className={`nav-sub-item ${activeTab === "schedule" && scheduleSubTab === "meetings" ? "active" : ""}`}
@@ -277,7 +277,7 @@ export default function Sidebar({
                   }
                 }}
               >
-                - 회의 일정
+                - 회의록 등록
               </div>
             </div>
           </div>
