@@ -636,7 +636,14 @@ body.light-mode {
 }
 
 /* Sidebar Submenu */
-.projects-nav-wrapper {
+.projects-nav-wrapper,
+.budget-nav-wrapper,
+.kpis-nav-wrapper,
+.agreements-nav-wrapper,
+.procurement-nav-wrapper,
+.schedule-nav-wrapper,
+.progress-nav-wrapper,
+.mgmt-nav-wrapper {
   position: relative;
   display: flex;
   flex-direction: column;
@@ -661,7 +668,9 @@ body.light-mode {
 .procurement-nav-wrapper:hover .nav-sub-menu,
 .procurement-nav-wrapper.active .nav-sub-menu,
 .schedule-nav-wrapper:hover .nav-sub-menu,
-.schedule-nav-wrapper.active .nav-sub-menu {
+.schedule-nav-wrapper.active .nav-sub-menu,
+.agreements-nav-wrapper:hover .nav-sub-menu,
+.agreements-nav-wrapper.active .nav-sub-menu {
   max-height: 120px;
   opacity: 1;
   margin-top: 0.25rem;
@@ -696,14 +705,6 @@ body.light-mode {
   color: var(--accent-color);
 }
 
-.kpis-nav-wrapper,
-.mgmt-nav-wrapper,
-.progress-nav-wrapper,
-.budget-nav-wrapper {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-}
 
 .kpis-nav-wrapper:hover .nav-sub-menu,
 .kpis-nav-wrapper.active .nav-sub-menu,
