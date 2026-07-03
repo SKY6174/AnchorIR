@@ -709,7 +709,7 @@ export default function ScheduleManager({
                   fontSize: "0.8rem", fontWeight: "700", cursor: "pointer", transition: "all 0.15s ease"
                 }}
               >
-                {m}월
+                {m === 3 ? "2026년 3월" : m === 1 ? "2027년 1월" : `${m}월`}
               </button>
             ))}
           </div>
@@ -838,7 +838,7 @@ export default function ScheduleManager({
           </div>
 
           {/* 월별 선택 가로바 */}
-          <div style={{ display: "flex", gap: "0.5rem", background: "rgba(255,255,255,0.02)", padding: "0.4rem", borderRadius: "8px", border: "1px solid rgba(255,255,255,0.05)" }}>
+          <div style={{ display: "flex", gap: "0.5rem", background: "rgba(255,255,255,0.02)", padding: "0.4rem", borderRadius: "8px", border: "1px solid var(--border-color)" }}>
             {[3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 1, 2].map((m) => (
               <button
                 key={m}
@@ -850,7 +850,7 @@ export default function ScheduleManager({
                   fontSize: "0.8rem", fontWeight: "700", cursor: "pointer", transition: "all 0.15s ease"
                 }}
               >
-                {m}월
+                {m === 3 ? "2026년 3월" : m === 1 ? "2027년 1월" : `${m}월`}
               </button>
             ))}
           </div>
