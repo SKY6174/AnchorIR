@@ -5118,7 +5118,7 @@ export default function App() {
                   transition: "all 0.2s ease"
                 }}
               >
-                행사 내용
+                주요 행사
               </button>
               <button
                 onClick={() => setScheduleSubTab("meetings")}
@@ -5134,7 +5134,7 @@ export default function App() {
                   transition: "all 0.2s ease"
                 }}
               >
-                회의 일정
+                회의록 등록
               </button>
             </div>
 
