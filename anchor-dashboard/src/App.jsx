@@ -4485,21 +4485,60 @@ export default function App() {
           />
         )}
 
-        {activeTab === "budget" && budgetSubTab === "budget_categories" && (
-          <BudgetItemsManager
-            projects={displayProjects}
-            currentRole={currentRole}
-            onUpdateBudgetDetails={handleUpdateBudgetDetails}
-            selectedYear={selectedYear}
-          />
-        )}
+        {activeTab === "budget" && (
+          <div className="budget-management-wrapper" style={{ display: "flex", flexDirection: "column", gap: "1rem", width: "100%" }}>
+            {/* 예산 관리 본문 가로 탭바 헤더 */}
+            <div style={{ display: "flex", gap: "1.5rem", borderBottom: "1px solid rgba(255,255,255,0.1)", paddingBottom: "0.2rem", marginBottom: "0.5rem" }}>
+              <button
+                onClick={() => setBudgetSubTab("budget_categories")}
+                style={{
+                  background: "transparent",
+                  border: "none",
+                  fontSize: "1rem",
+                  fontWeight: "800",
+                  cursor: "pointer",
+                  padding: "0.5rem 1rem",
+                  color: budgetSubTab === "budget_categories" ? "var(--accent-color)" : "var(--text-secondary-dark)",
+                  borderBottom: budgetSubTab === "budget_categories" ? "2px solid var(--accent-color)" : "none",
+                  transition: "all 0.2s ease"
+                }}
+              >
+                비목별 관리
+              </button>
+              <button
+                onClick={() => setBudgetSubTab("execution_rate")}
+                style={{
+                  background: "transparent",
+                  border: "none",
+                  fontSize: "1rem",
+                  fontWeight: "800",
+                  cursor: "pointer",
+                  padding: "0.5rem 1rem",
+                  color: budgetSubTab === "execution_rate" ? "var(--accent-color)" : "var(--text-secondary-dark)",
+                  borderBottom: budgetSubTab === "execution_rate" ? "2px solid var(--accent-color)" : "none",
+                  transition: "all 0.2s ease"
+                }}
+              >
+                집행률 관리
+              </button>
+            </div>
 
-        {activeTab === "budget" && budgetSubTab === "execution_rate" && (
-          <BudgetExecutionManager
-            projects={displayProjects}
-            currentRole={currentRole}
-            selectedYear={selectedYear}
-          />
+            {/* 본문 콘텐츠 스위칭 */}
+            {budgetSubTab === "budget_categories" ? (
+              <BudgetItemsManager
+                projects={displayProjects}
+                currentRole={currentRole}
+                onUpdateBudgetDetails={handleUpdateBudgetDetails}
+                selectedYear={selectedYear}
+              />
+            ) : (
+              <BudgetExecutionManager
+                projects={displayProjects}
+                currentRole={currentRole}
+                selectedYear={selectedYear}
+              />
+            )}
+          </div>
         )}
 
         {activeTab === "llm_wiki" && (
