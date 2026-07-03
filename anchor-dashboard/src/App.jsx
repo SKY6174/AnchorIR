@@ -4838,157 +4838,175 @@ export default function App() {
         )}
 
         {/* 결재 상세 비교 Diff 모달 */}
-        {selectedRequest && (
-          <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(0,0,0,0.85)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1200 }}>
-            <div className="card" style={{ width: "950px", maxHeight: "90vh", overflowY: "auto", padding: "1.5rem", borderRadius: "12px", background: "var(--panel-bg)", border: "1px solid var(--border-color)" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid var(--border-color)", paddingBottom: "0.75rem", marginBottom: "1rem" }}>
-                <h3 style={{ margin: 0, fontSize: "1.05rem", fontWeight: "800", color: "var(--text-primary)" }}>
-                  📄 [{selectedRequest.program_title}] 기획 변경 상세 대조표 ({selectedRequest.version_name})
-                </h3>
-                <button 
-                  onClick={() => setSelectedRequest(null)}
-                  style={{ background: "transparent", border: "none", color: "var(--text-secondary)", cursor: "pointer", fontSize: "1.2rem" }}
-                >
-                  ✕
-                </button>
-              </div>
+        {selectedRequest && (() => {
+          let beforeVersion = "최초계획";
+          let afterVersion = selectedRequest.version_name || "신청 계획";
+          if (afterVersion.includes("차 수정")) {
+            const numMatch = afterVersion.match(/(\d+)차/);
+            if (numMatch) {
+              const num = parseInt(numMatch[1], 10);
+              if (num === 1) {
+                beforeVersion = "최초계획";
+              } else {
+                beforeVersion = `${num - 1}차 수정`;
+              }
+            }
+          } else if (afterVersion === "송경영 단장 직접 수정") {
+            beforeVersion = "이전 계획";
+          }
 
-              <div style={{ display: "flex", flexDirection: "column", gap: "1rem", fontSize: "0.78rem" }}>
-                {/* 1. 기본 기안 정보 */}
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "1rem", background: "rgba(255,255,255,0.02)", padding: "0.6rem 0.8rem", borderRadius: "8px", border: "1px solid var(--border-color-dark)" }}>
-                  <div>
-                    <span style={{ color: "var(--text-secondary-dark)" }}>신청자:</span> <strong style={{ color: "var(--text-primary)" }}>{selectedRequest.requested_by}</strong>
-                  </div>
-                  <div>
-                    <span style={{ color: "var(--text-secondary-dark)" }}>신청 일시:</span> <strong style={{ color: "var(--text-primary)" }}>{new Date(selectedRequest.requested_at).toLocaleString("ko-KR")}</strong>
-                  </div>
-                  <div>
-                    <span style={{ color: "var(--text-secondary-dark)" }}>상태:</span> <strong style={{ color: selectedRequest.status === "승인완료" ? "#10B981" : (selectedRequest.status === "반려" ? "#EF4444" : "#FBBF24") }}>{selectedRequest.status}</strong>
-                  </div>
+          return (
+            <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(0,0,0,0.85)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1200 }}>
+              <div className="card" style={{ width: "950px", maxHeight: "90vh", overflowY: "auto", padding: "1.5rem", borderRadius: "12px", background: "var(--panel-bg)", border: "1px solid var(--border-color)" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid var(--border-color)", paddingBottom: "0.75rem", marginBottom: "1rem" }}>
+                  <h3 style={{ margin: 0, fontSize: "1.05rem", fontWeight: "800", color: "var(--text-primary)" }}>
+                    📄 [{selectedRequest.program_title}] 기획 변경 상세 대조표 ({selectedRequest.version_name})
+                  </h3>
+                  <button 
+                    onClick={() => setSelectedRequest(null)}
+                    style={{ background: "transparent", border: "none", color: "var(--text-secondary)", cursor: "pointer", fontSize: "1.2rem" }}
+                  >
+                    ✕
+                  </button>
                 </div>
 
-                {/* 2. 대조 비교 테이블 (이전 vs 신청) */}
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.25rem" }}>
-                  {/* 변경 전 (Before) */}
-                  <div style={{ border: "1px solid rgba(239, 68, 68, 0.2)", padding: "1rem", borderRadius: "8px", background: "rgba(239, 68, 68, 0.015)" }}>
-                    <h4 style={{ margin: "0 0 0.6rem 0", color: "#F87171", fontWeight: "800", display: "flex", alignItems: "center", gap: "0.25rem", borderBottom: "1px solid rgba(239, 68, 68, 0.1)", paddingBottom: "0.3rem" }}>
-                      🔴 변경 전 (기존 계획)
-                    </h4>
-                    <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-                      <div>
-                        <span style={{ color: "var(--text-secondary-dark)", fontWeight: "700", display: "block", fontSize: "0.75rem", marginBottom: "0.25rem" }}>💰 재원별 예산 배정</span>
-                        <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.7rem" }}>
-                          <tbody>
-                            <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.02)" }}><td style={{ padding: "0.15rem 0" }}>국고 본예산 / 이월</td><td style={{ textAlign: "right", fontWeight: "700", color: "#F87171" }}>{((selectedRequest.changes.before.years?.[selectedYear]?.budget_national || 0) / 1000000).toFixed(1)} / {((selectedRequest.changes.before.years?.[selectedYear]?.budget_carry_national || 0) / 1000000).toFixed(1)} 백만원</td></tr>
-                            <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.02)" }}><td style={{ padding: "0.15rem 0" }}>시비 본예산 / 이월</td><td style={{ textAlign: "right", fontWeight: "700", color: "#F87171" }}>{((selectedRequest.changes.before.years?.[selectedYear]?.budget_city || 0) / 1000000).toFixed(1)} / {((selectedRequest.changes.before.years?.[selectedYear]?.budget_carry_city || 0) / 1000000).toFixed(1)} 백만원</td></tr>
-                            <tr><td style={{ padding: "0.15rem 0" }}>외부사업비</td><td style={{ textAlign: "right", fontWeight: "700", color: "#F87171" }}>{((selectedRequest.changes.before.years?.[selectedYear]?.budget_external || 0) / 1000000).toFixed(1)} 백만원</td></tr>
-                          </tbody>
-                        </table>
-                      </div>
-
-                      <div>
-                        <span style={{ color: "var(--text-secondary-dark)", fontWeight: "700", display: "block", fontSize: "0.75rem", marginBottom: "0.25rem" }}>📁 비목별 예산 세부 배정</span>
-                        {renderBudgetCategoriesDiff(selectedRequest.changes.before.years?.[selectedYear]?.budget_categories)}
-                      </div>
-
-                      <div>
-                        <span style={{ color: "var(--text-secondary-dark)", fontWeight: "700", display: "block", fontSize: "0.75rem" }}>📅 월별 추진 일정 (PDCA)</span>
-                        {renderTimelineDiff(selectedRequest.changes.before.timeline)}
-                      </div>
-
-                      <div>
-                        <span style={{ color: "var(--text-secondary-dark)", fontWeight: "700", display: "block", fontSize: "0.75rem", marginBottom: "0.25rem" }}>🎯 실적 목표치</span>
-                        <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.7rem" }}>
-                          <tbody>
-                            <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.02)" }}><td style={{ padding: "0.15rem 0" }}>{selectedRequest.changes.before.target_participants_name || "참여인원"}</td><td style={{ textAlign: "right", fontWeight: "700" }}>{selectedRequest.changes.before.target_participants || 0} {selectedRequest.changes.before.target_participants_unit || "명"}</td></tr>
-                            <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.02)" }}><td style={{ padding: "0.15rem 0" }}>{selectedRequest.changes.before.target_developments_name || "개발건수"}</td><td style={{ textAlign: "right", fontWeight: "700" }}>{selectedRequest.changes.before.target_developments || 0} {selectedRequest.changes.before.target_developments_unit || "건"}</td></tr>
-                            <tr><td style={{ padding: "0.15rem 0" }}>{selectedRequest.changes.before.target_etc_name || "기타"}</td><td style={{ textAlign: "right", fontWeight: "700" }}>{selectedRequest.changes.before.target_etc || 0} {selectedRequest.changes.before.target_etc_unit || "개"}</td></tr>
-                          </tbody>
-                        </table>
-                      </div>
-
-                      <div>
-                        <span style={{ color: "var(--text-secondary-dark)", display: "block", fontSize: "0.75rem" }}>👥 연계 대상 및 부서</span>
-                        <span style={{ fontSize: "0.7rem", color: "var(--text-primary)" }}>대상: {selectedRequest.changes.before.targetAudience || "미입력"} | 부서: {selectedRequest.changes.before.coopDept || "미입력"}</span>
-                      </div>
+                <div style={{ display: "flex", flexDirection: "column", gap: "1rem", fontSize: "0.78rem" }}>
+                  {/* 1. 기본 기안 정보 */}
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "1rem", background: "rgba(255,255,255,0.02)", padding: "0.6rem 0.8rem", borderRadius: "8px", border: "1px solid var(--border-color-dark)" }}>
+                    <div>
+                      <span style={{ color: "var(--text-secondary-dark)" }}>신청자:</span> <strong style={{ color: "var(--text-primary)" }}>{selectedRequest.requested_by}</strong>
+                    </div>
+                    <div>
+                      <span style={{ color: "var(--text-secondary-dark)" }}>신청 일시:</span> <strong style={{ color: "var(--text-primary)" }}>{new Date(selectedRequest.requested_at).toLocaleString("ko-KR")}</strong>
+                    </div>
+                    <div>
+                      <span style={{ color: "var(--text-secondary-dark)" }}>상태:</span> <strong style={{ color: selectedRequest.status === "승인완료" ? "#10B981" : (selectedRequest.status === "반려" ? "#EF4444" : "#FBBF24") }}>{selectedRequest.status}</strong>
                     </div>
                   </div>
 
-                  {/* 변경 후 (After) */}
-                  <div style={{ border: "1px solid rgba(16, 185, 129, 0.2)", padding: "1rem", borderRadius: "8px", background: "rgba(16, 185, 129, 0.015)" }}>
-                    <h4 style={{ margin: "0 0 0.6rem 0", color: "#34D399", fontWeight: "800", display: "flex", alignItems: "center", gap: "0.25rem", borderBottom: "1px solid rgba(16, 185, 129, 0.1)", paddingBottom: "0.3rem" }}>
-                      🟢 변경 후 (신청 계획)
-                    </h4>
-                    <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-                      <div>
-                        <span style={{ color: "var(--text-secondary-dark)", fontWeight: "700", display: "block", fontSize: "0.75rem", marginBottom: "0.25rem" }}>💰 재원별 예산 배정</span>
-                        <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.7rem" }}>
-                          <tbody>
-                            <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.02)" }}><td style={{ padding: "0.15rem 0" }}>국고 본예산 / 이월</td><td style={{ textAlign: "right", fontWeight: "700", color: "#34D399" }}>{((selectedRequest.changes.after.years?.[selectedYear]?.budget_national || 0) / 1000000).toFixed(1)} / {((selectedRequest.changes.after.years?.[selectedYear]?.budget_carry_national || 0) / 1000000).toFixed(1)} 백만원</td></tr>
-                            <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.02)" }}><td style={{ padding: "0.15rem 0" }}>시비 본예산 / 이월</td><td style={{ textAlign: "right", fontWeight: "700", color: "#34D399" }}>{((selectedRequest.changes.after.years?.[selectedYear]?.budget_city || 0) / 1000000).toFixed(1)} / {((selectedRequest.changes.after.years?.[selectedYear]?.budget_carry_city || 0) / 1000000).toFixed(1)} 백만원</td></tr>
-                            <tr><td style={{ padding: "0.15rem 0" }}>외부사업비</td><td style={{ textAlign: "right", fontWeight: "700", color: "#34D399" }}>{((selectedRequest.changes.after.years?.[selectedYear]?.budget_external || 0) / 1000000).toFixed(1)} 백만원</td></tr>
-                          </tbody>
-                        </table>
-                      </div>
+                  {/* 2. 대조 비교 테이블 (이전 vs 신청) */}
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.25rem" }}>
+                    {/* 변경 전 (Before) */}
+                    <div style={{ border: "1px solid rgba(239, 68, 68, 0.2)", padding: "1rem", borderRadius: "8px", background: "rgba(239, 68, 68, 0.015)" }}>
+                      <h4 style={{ margin: "0 0 0.6rem 0", color: "#F87171", fontWeight: "800", display: "flex", alignItems: "center", gap: "0.25rem", borderBottom: "1px solid rgba(239, 68, 68, 0.1)", paddingBottom: "0.3rem" }}>
+                        🔴 변경 전 ({beforeVersion})
+                      </h4>
+                      <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+                        <div>
+                          <span style={{ color: "var(--text-secondary-dark)", fontWeight: "700", display: "block", fontSize: "0.75rem", marginBottom: "0.25rem" }}>💰 재원별 예산 배정</span>
+                          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.7rem" }}>
+                            <tbody>
+                              <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.02)" }}><td style={{ padding: "0.15rem 0" }}>국고 본예산 / 이월</td><td style={{ textAlign: "right", fontWeight: "700", color: "#F87171" }}>{((selectedRequest.changes.before.years?.[selectedYear]?.budget_national || 0) / 1000000).toFixed(1)} / {((selectedRequest.changes.before.years?.[selectedYear]?.budget_carry_national || 0) / 1000000).toFixed(1)} 백만원</td></tr>
+                              <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.02)" }}><td style={{ padding: "0.15rem 0" }}>시비 본예산 / 이월</td><td style={{ textAlign: "right", fontWeight: "700", color: "#F87171" }}>{((selectedRequest.changes.before.years?.[selectedYear]?.budget_city || 0) / 1000000).toFixed(1)} / {((selectedRequest.changes.before.years?.[selectedYear]?.budget_carry_city || 0) / 1000000).toFixed(1)} 백만원</td></tr>
+                              <tr><td style={{ padding: "0.15rem 0" }}>외부사업비</td><td style={{ textAlign: "right", fontWeight: "700", color: "#F87171" }}>{((selectedRequest.changes.before.years?.[selectedYear]?.budget_external || 0) / 1000000).toFixed(1)} 백만원</td></tr>
+                            </tbody>
+                          </table>
+                        </div>
 
-                      <div>
-                        <span style={{ color: "var(--text-secondary-dark)", fontWeight: "700", display: "block", fontSize: "0.75rem", marginBottom: "0.25rem" }}>📁 비목별 예산 세부 배정</span>
-                        {renderBudgetCategoriesDiff(selectedRequest.changes.after.years?.[selectedYear]?.budget_categories)}
-                      </div>
+                        <div>
+                          <span style={{ color: "var(--text-secondary-dark)", fontWeight: "700", display: "block", fontSize: "0.75rem", marginBottom: "0.25rem" }}>📁 비목별 예산 세부 배정</span>
+                          {renderBudgetCategoriesDiff(selectedRequest.changes.before.years?.[selectedYear]?.budget_categories)}
+                        </div>
 
-                      <div>
-                        <span style={{ color: "var(--text-secondary-dark)", fontWeight: "700", display: "block", fontSize: "0.75rem" }}>📅 월별 추진 일정 (PDCA)</span>
-                        {renderTimelineDiff(selectedRequest.changes.after.timeline)}
-                      </div>
+                        <div>
+                          <span style={{ color: "var(--text-secondary-dark)", fontWeight: "700", display: "block", fontSize: "0.75rem" }}>📅 월별 추진 일정 (PDCA)</span>
+                          {renderTimelineDiff(selectedRequest.changes.before.timeline)}
+                        </div>
 
-                      <div>
-                        <span style={{ color: "var(--text-secondary-dark)", fontWeight: "700", display: "block", fontSize: "0.75rem", marginBottom: "0.25rem" }}>🎯 실적 목표치</span>
-                        <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.7rem" }}>
-                          <tbody>
-                            <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.02)" }}><td style={{ padding: "0.15rem 0" }}>{selectedRequest.changes.after.target_participants_name || "참여인원"}</td><td style={{ textAlign: "right", fontWeight: "700" }}>{selectedRequest.changes.after.target_participants || 0} {selectedRequest.changes.after.target_participants_unit || "명"}</td></tr>
-                            <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.02)" }}><td style={{ padding: "0.15rem 0" }}>{selectedRequest.changes.after.target_developments_name || "개발건수"}</td><td style={{ textAlign: "right", fontWeight: "700" }}>{selectedRequest.changes.after.target_developments || 0} {selectedRequest.changes.after.target_developments_unit || "건"}</td></tr>
-                            <tr><td style={{ padding: "0.15rem 0" }}>{selectedRequest.changes.after.target_etc_name || "기타"}</td><td style={{ textAlign: "right", fontWeight: "700" }}>{selectedRequest.changes.after.target_etc || 0} {selectedRequest.changes.after.target_etc_unit || "개"}</td></tr>
-                          </tbody>
-                        </table>
-                      </div>
+                        <div>
+                          <span style={{ color: "var(--text-secondary-dark)", fontWeight: "700", display: "block", fontSize: "0.75rem", marginBottom: "0.25rem" }}>🎯 실적 목표치</span>
+                          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.7rem" }}>
+                            <tbody>
+                              <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.02)" }}><td style={{ padding: "0.15rem 0" }}>{selectedRequest.changes.before.target_participants_name || "참여인원"}</td><td style={{ textAlign: "right", fontWeight: "700" }}>{selectedRequest.changes.before.target_participants || 0} {selectedRequest.changes.before.target_participants_unit || "명"}</td></tr>
+                              <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.02)" }}><td style={{ padding: "0.15rem 0" }}>{selectedRequest.changes.before.target_developments_name || "개발건수"}</td><td style={{ textAlign: "right", fontWeight: "700" }}>{selectedRequest.changes.before.target_developments || 0} {selectedRequest.changes.before.target_developments_unit || "건"}</td></tr>
+                              <tr><td style={{ padding: "0.15rem 0" }}>{selectedRequest.changes.before.target_etc_name || "기타"}</td><td style={{ textAlign: "right", fontWeight: "700" }}>{selectedRequest.changes.before.target_etc || 0} {selectedRequest.changes.before.target_etc_unit || "개"}</td></tr>
+                            </tbody>
+                          </table>
+                        </div>
 
-                      <div>
-                        <span style={{ color: "var(--text-secondary-dark)", display: "block", fontSize: "0.75rem" }}>👥 연계 대상 및 부서</span>
-                        <span style={{ fontSize: "0.7rem", color: "var(--text-primary)" }}>대상: {selectedRequest.changes.after.targetAudience || "미입력"} | 부서: {selectedRequest.changes.after.coopDept || "미입력"}</span>
+                        <div>
+                          <span style={{ color: "var(--text-secondary-dark)", display: "block", fontSize: "0.75rem" }}>👥 연계 대상 및 부서</span>
+                          <span style={{ fontSize: "0.7rem", color: "var(--text-primary)" }}>대상: {selectedRequest.changes.before.targetAudience || "미입력"} | 부서: {selectedRequest.changes.before.coopDept || "미입력"}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* 변경 후 (After) */}
+                    <div style={{ border: "1px solid rgba(16, 185, 129, 0.2)", padding: "1rem", borderRadius: "8px", background: "rgba(16, 185, 129, 0.015)" }}>
+                      <h4 style={{ margin: "0 0 0.6rem 0", color: "#34D399", fontWeight: "800", display: "flex", alignItems: "center", gap: "0.25rem", borderBottom: "1px solid rgba(16, 185, 129, 0.1)", paddingBottom: "0.3rem" }}>
+                        🟢 변경 후 ({afterVersion})
+                      </h4>
+                      <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+                        <div>
+                          <span style={{ color: "var(--text-secondary-dark)", fontWeight: "700", display: "block", fontSize: "0.75rem", marginBottom: "0.25rem" }}>💰 재원별 예산 배정</span>
+                          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.7rem" }}>
+                            <tbody>
+                              <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.02)" }}><td style={{ padding: "0.15rem 0" }}>국고 본예산 / 이월</td><td style={{ textAlign: "right", fontWeight: "700", color: "#34D399" }}>{((selectedRequest.changes.after.years?.[selectedYear]?.budget_national || 0) / 1000000).toFixed(1)} / {((selectedRequest.changes.after.years?.[selectedYear]?.budget_carry_national || 0) / 1000000).toFixed(1)} 백만원</td></tr>
+                              <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.02)" }}><td style={{ padding: "0.15rem 0" }}>시비 본예산 / 이월</td><td style={{ textAlign: "right", fontWeight: "700", color: "#34D399" }}>{((selectedRequest.changes.after.years?.[selectedYear]?.budget_city || 0) / 1000000).toFixed(1)} / {((selectedRequest.changes.after.years?.[selectedYear]?.budget_carry_city || 0) / 1000000).toFixed(1)} 백만원</td></tr>
+                              <tr><td style={{ padding: "0.15rem 0" }}>외부사업비</td><td style={{ textAlign: "right", fontWeight: "700", color: "#34D399" }}>{((selectedRequest.changes.after.years?.[selectedYear]?.budget_external || 0) / 1000000).toFixed(1)} 백만원</td></tr>
+                            </tbody>
+                          </table>
+                        </div>
+
+                        <div>
+                          <span style={{ color: "var(--text-secondary-dark)", fontWeight: "700", display: "block", fontSize: "0.75rem", marginBottom: "0.25rem" }}>📁 비목별 예산 세부 배정</span>
+                          {renderBudgetCategoriesDiff(selectedRequest.changes.after.years?.[selectedYear]?.budget_categories)}
+                        </div>
+
+                        <div>
+                          <span style={{ color: "var(--text-secondary-dark)", fontWeight: "700", display: "block", fontSize: "0.75rem" }}>📅 월별 추진 일정 (PDCA)</span>
+                          {renderTimelineDiff(selectedRequest.changes.after.timeline)}
+                        </div>
+
+                        <div>
+                          <span style={{ color: "var(--text-secondary-dark)", fontWeight: "700", display: "block", fontSize: "0.75rem", marginBottom: "0.25rem" }}>🎯 실적 목표치</span>
+                          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.7rem" }}>
+                            <tbody>
+                              <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.02)" }}><td style={{ padding: "0.15rem 0" }}>{selectedRequest.changes.after.target_participants_name || "참여인원"}</td><td style={{ textAlign: "right", fontWeight: "700" }}>{selectedRequest.changes.after.target_participants || 0} {selectedRequest.changes.after.target_participants_unit || "명"}</td></tr>
+                              <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.02)" }}><td style={{ padding: "0.15rem 0" }}>{selectedRequest.changes.after.target_developments_name || "개발건수"}</td><td style={{ textAlign: "right", fontWeight: "700" }}>{selectedRequest.changes.after.target_developments || 0} {selectedRequest.changes.after.target_developments_unit || "건"}</td></tr>
+                              <tr><td style={{ padding: "0.15rem 0" }}>{selectedRequest.changes.after.target_etc_name || "기타"}</td><td style={{ textAlign: "right", fontWeight: "700" }}>{selectedRequest.changes.after.target_etc || 0} {selectedRequest.changes.after.target_etc_unit || "개"}</td></tr>
+                            </tbody>
+                          </table>
+                        </div>
+
+                        <div>
+                          <span style={{ color: "var(--text-secondary-dark)", display: "block", fontSize: "0.75rem" }}>👥 연계 대상 및 부서</span>
+                          <span style={{ fontSize: "0.7rem", color: "var(--text-primary)" }}>대상: {selectedRequest.changes.after.targetAudience || "미입력"} | 부서: {selectedRequest.changes.after.coopDept || "미입력"}</span>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
 
-              {/* 하단 결재 버튼 */}
-              <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.75rem", borderTop: "1px solid var(--border-color)", paddingTop: "1rem", marginTop: "1rem" }}>
-                <button 
-                  onClick={() => setSelectedRequest(null)}
-                  style={{ padding: "0.45rem 1rem", borderRadius: "6px", background: "transparent", border: "1px solid var(--border-color)", color: "var(--text-primary)", cursor: "pointer", fontSize: "0.75rem" }}
-                >
-                  닫기
-                </button>
-                {selectedRequest.status === "승인대기" && (
-                  <>
-                    <button 
-                      onClick={() => handleApproveRequest(selectedRequest)}
-                      style={{ padding: "0.45rem 1.5rem", borderRadius: "6px", background: "#10B981", border: "none", color: "white", fontWeight: "700", cursor: "pointer", fontSize: "0.75rem" }}
-                    >
-                      승인 처리
-                    </button>
-                    <button 
-                      onClick={() => handleRejectRequest(selectedRequest)}
-                      style={{ padding: "0.45rem 1.5rem", borderRadius: "6px", background: "#EF4444", border: "none", color: "white", fontWeight: "700", cursor: "pointer", fontSize: "0.75rem" }}
-                    >
-                      반려 처리
-                    </button>
-                  </>
-                )}
+                {/* 하단 결재 버튼 */}
+                <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.75rem", borderTop: "1px solid var(--border-color)", paddingTop: "1rem", marginTop: "1rem" }}>
+                  <button 
+                    onClick={() => setSelectedRequest(null)}
+                    style={{ padding: "0.45rem 1rem", borderRadius: "6px", background: "transparent", border: "1px solid var(--border-color)", color: "var(--text-primary)", cursor: "pointer", fontSize: "0.75rem" }}
+                  >
+                    닫기
+                  </button>
+                  {selectedRequest.status === "승인대기" && (
+                    <>
+                      <button 
+                        onClick={() => handleApproveRequest(selectedRequest)}
+                        style={{ padding: "0.45rem 1.5rem", borderRadius: "6px", background: "#10B981", border: "none", color: "white", fontWeight: "700", cursor: "pointer", fontSize: "0.75rem" }}
+                      >
+                        승인 처리
+                      </button>
+                      <button 
+                        onClick={() => handleRejectRequest(selectedRequest)}
+                        style={{ padding: "0.45rem 1.5rem", borderRadius: "6px", background: "#EF4444", border: "none", color: "white", fontWeight: "700", cursor: "pointer", fontSize: "0.75rem" }}
+                      >
+                        반려 처리
+                      </button>
+                    </>
+                  )}
               </div>
             </div>
           </div>
-        )}
+        );
+      })()}
 
         {/* 탭 개편: 반응형 사이드 2분할 레이아웃 및 목표치/실적 미니 표 */}
         {activeTab === "kpis" && (

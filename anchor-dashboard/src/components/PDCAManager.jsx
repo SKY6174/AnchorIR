@@ -717,6 +717,34 @@ export default function PDCAManager({
       return;
     }
 
+    // 1) 월별 추진 일정 유효성 체크 (P, D, C, A 모두 1회 이상 반영 의무)
+    const hasP = inputMonthlyPDCA.includes("P");
+    const hasD = inputMonthlyPDCA.includes("D");
+    const hasC = inputMonthlyPDCA.includes("C");
+    const hasA = inputMonthlyPDCA.includes("A");
+    if (!hasP || !hasD || !hasC || !hasA) {
+      alert("월별 추진 일정에는 반드시 P(Plan), D(Do), C(Check), A(Action) 단계가 최소 1회 이상 모두 포함되도록 일정을 계획하셔야 합니다.");
+      return;
+    }
+
+    // 최신 임시 데이터들을 취합하여 P단계의 자동 완료/진행 판정
+    const freqVal = inputTargetParticipants !== "" ? parseInt(inputTargetParticipants, 10) : 0;
+    const tPartVal = inputTargetParticipants !== "" ? parseInt(inputTargetParticipants, 10) : 0;
+    const tDevVal = inputTargetDevelopments !== "" ? parseInt(inputTargetDevelopments, 10) : 0;
+    const tEtcVal = inputTargetEtc !== "" ? parseInt(inputTargetEtc, 10) : 0;
+
+    // 2) 실적 목표치 유효성 체크 (참여인원, 개발건수, 기타 목표 중 최소 1개는 양수 입력)
+    if (tPartVal <= 0 && tDevVal <= 0 && tEtcVal <= 0) {
+      alert("실적 목표치(참여인원, 개발건수, 기타 목표) 중 최소 1개 항목은 반드시 입력되어야 합니다.");
+      return;
+    }
+
+    // 3) 연계대상 필수 검사
+    if (!inputTargetAudience || inputTargetAudience.trim() === "" || inputTargetAudience.trim() === "미입력") {
+      alert("연계 대상은 필수 입력 사항입니다.");
+      return;
+    }
+
     // 비목별 예산 및 집행 데이터 조립 및 복원 (본예산/이월예산 및 집행액 구분)
     const categoriesToSave = inputBudgetCategories
       .filter((c) => c.category && c.category !== "")
@@ -727,12 +755,6 @@ export default function PDCAManager({
         spent: Math.round(parseDecimalFromCommas(c.spent || "0.0") * 1000000),
         spent_carry: selectedYear === 1 ? 0 : Math.round(parseDecimalFromCommas(c.spent_carry || "0.0") * 1000000)
       }));
-
-    // 최신 임시 데이터들을 취합하여 P단계의 자동 완료/진행 판정
-    const freqVal = inputTargetParticipants !== "" ? parseInt(inputTargetParticipants, 10) : 0;
-    const tPartVal = inputTargetParticipants !== "" ? parseInt(inputTargetParticipants, 10) : 0;
-    const tDevVal = inputTargetDevelopments !== "" ? parseInt(inputTargetDevelopments, 10) : 0;
-    const tEtcVal = inputTargetEtc !== "" ? parseInt(inputTargetEtc, 10) : 0;
 
     const draftData = {
       budget_national: bNational,
@@ -802,6 +824,63 @@ export default function PDCAManager({
         budget_carry_external: bCarryExternal,
         budget_categories: categoriesToSave
       });
+
+      // 송경영 단장 직접 수정 시, 변경 이력(승인완료 상태) DB 즉시 적재 (차수는 변경시키지 않고 기록)
+      if (currentUser && currentUser.name === "송경영") {
+        try {
+          if (supabase) {
+            const beforeData = {
+              pdca: activeProg.pdca || { p: "대기", d: "대기", c: "대기", a: "대기" },
+              timeline: activeProg.timeline || "",
+              targetAudience: activeProg.targetAudience || "",
+              coopDept: activeProg.coopDept || "",
+              target_participants: activeProg.target_participants || 0,
+              target_developments: activeProg.target_developments || 0,
+              target_etc: activeProg.target_etc || 0,
+              target_participants_unit: activeProg.target_participants_unit || "명",
+              target_developments_unit: activeProg.target_developments_unit || "건",
+              target_etc_unit: activeProg.target_etc_unit || "개",
+              target_participants_name: activeProg.target_participants_name || "참여인원",
+              target_developments_name: activeProg.target_developments_name || "개발건수",
+              target_etc_name: activeProg.target_etc_name || "기타",
+              kpi_type: activeProg.kpi_type || "자율",
+              kpi_link: activeProg.kpi_link || "",
+              years: {
+                [selectedYear]: {
+                  budget_national: activeProg.years?.[selectedYear]?.budget_national || 0,
+                  budget_city: activeProg.years?.[selectedYear]?.budget_city || 0,
+                  budget_external: activeProg.years?.[selectedYear]?.budget_external || 0,
+                  budget_carry_national: activeProg.years?.[selectedYear]?.budget_carry_national || 0,
+                  budget_carry_city: activeProg.years?.[selectedYear]?.budget_carry_city || 0,
+                  budget_carry_external: activeProg.years?.[selectedYear]?.budget_carry_external || 0,
+                  budget_categories: activeProg.years?.[selectedYear]?.budget_categories || []
+                }
+              }
+            };
+
+            await supabase
+              .from("program_version_requests")
+              .insert({
+                year: selectedYear,
+                unit_id: activeProg.unitId,
+                program_id: activeProg.id,
+                program_title: activeProg.title,
+                version_name: "송경영 단장 직접 수정",
+                changes: {
+                  before: beforeData,
+                  after: afterData
+                },
+                status: "승인완료",
+                requested_by: `${currentUser.name} (${typeof currentUser.role === "object" ? currentUser.role.name : (currentUser.role || "사업단장")})`,
+                approved_by: currentUser.name,
+                approved_at: new Date().toISOString()
+              });
+          }
+        } catch (err) {
+          console.error("Failed to insert direct version request log for Song:", err);
+        }
+      }
+
       setFeedbackMsg("P 단계 기획 정보 및 예산 배정이 최종 승인되어 즉시 적용되었습니다.");
       setTimeout(() => setFeedbackMsg(""), 3000);
     } else {
@@ -822,14 +901,15 @@ export default function PDCAManager({
           return;
         }
 
-        const { data: approvedList } = await supabase
+        const { data: requestList } = await supabase
           .from("program_version_requests")
-          .select("id")
+          .select("id, version_name")
           .eq("program_id", activeProg.id)
-          .eq("status", "승인완료");
+          .eq("year", selectedYear);
         
-        const approvedCount = approvedList ? approvedList.length : 0;
-        const versionName = approvedCount === 0 ? "최초 계획" : `${approvedCount}차 수정 계획`;
+        // "송경영 단장 직접 수정" 처럼 차수 번호가 없는 경우는 제외하고 연구원 변경요청 수만 필터링 카운트
+        const filteredCount = requestList ? requestList.filter(r => (r.version_name || "").includes("차 수정")).length : 0;
+        const versionName = `${filteredCount + 1}차 수정`;
 
         const beforeData = {
           pdca: activeProg.pdca || { p: "대기", d: "대기", c: "대기", a: "대기" },
@@ -873,7 +953,7 @@ export default function PDCAManager({
               after: afterData
             },
             status: "승인대기",
-            requested_by: currentUser ? `${currentUser.name} (${currentUser.role || "실무자"})` : "실무 연구원"
+            requested_by: currentUser ? `${currentUser.name} (${typeof currentUser.role === "object" ? currentUser.role.name : (currentUser.role || "실무자")})` : "실무 연구원"
           });
 
         if (insertErr) throw insertErr;
