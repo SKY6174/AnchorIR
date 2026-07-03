@@ -14,5 +14,13 @@ CREATE TABLE IF NOT EXISTS program_version_requests (
     approved_at TIMESTAMP WITH TIME ZONE
 );
 
--- RLS 비활성화 (개발자 로컬 편의성 보장)
-ALTER TABLE program_version_requests DISABLE ROW LEVEL SECURITY;
+-- RLS 정책 활성화 및 익명/인증 사용자 무제한 통과 허용 (기존 테이블 권한 패턴 준수)
+ALTER TABLE program_version_requests ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Allow anon and auth on program_version_requests" ON program_version_requests;
+CREATE POLICY "Allow anon and auth on program_version_requests" ON program_version_requests
+    TO anon, authenticated USING (true) WITH CHECK (true);
+
+-- API 접근 및 시퀀스 번호 증감 권한 명시 부여
+GRANT ALL ON TABLE program_version_requests TO anon, authenticated, service_role;
+GRANT ALL ON SEQUENCE program_version_requests_id_seq TO anon, authenticated, service_role;
