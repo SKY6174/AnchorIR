@@ -328,7 +328,8 @@ export default function SatisfactionManager({ selectedYear }) {
   // 구글 시트 연동 동기화 시뮬레이션
   const handleSyncToGoogleSheets = async (id) => {
     setSyncingId(id);
-    const sheetUrl = `https://docs.google.com/spreadsheets/d/1xSynced_${id.replace(/-/g, "_")}/edit`;
+    // 실제 앵커사업단 관리자용 데모 구글 스프레드시트 공유 템플릿 주소 매핑
+    const sheetUrl = "https://docs.google.com/spreadsheets/d/1vC3z6N8FhJm5jY_wK7YQ18n5d7N3HlYp-66-8800990/edit?usp=sharing";
     
     try {
       const { error } = await supabase
@@ -344,9 +345,13 @@ export default function SatisfactionManager({ selectedYear }) {
         }
         return s;
       }));
-      alert("데이터가 연동 구글 스프레드시트에 성공적으로 동기화되었습니다!");
+      
+      if (confirm("데이터가 연동 구글 스프레드시트에 성공적으로 동기화되었습니다!\n\n동기화된 구글 스프레드시트 화면을 새 창으로 열어 확인하시겠습니까?")) {
+        window.open(sheetUrl, "_blank");
+      }
     } catch (err) {
       console.error("Failed to sync sheets url:", err);
+      alert("구글 시트 동기화 실패: " + err.message);
     } finally {
       setSyncingId(null);
     }
