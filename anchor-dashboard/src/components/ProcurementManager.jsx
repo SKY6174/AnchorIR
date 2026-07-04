@@ -5,18 +5,18 @@ import {
   Eye, FileText, FileImage, LayoutGrid, ListFilter, Trash2
 } from "lucide-react";
 
-// 단장님이 지시하신 10개 필드로 구성된 10줄의 초기 프레임 기자재 품목 데이터셋
+// 단장님이 지시하신 10개 필드로 구성되고 '26.3월 ~ '27.2월 12개월 체크가 적용된 초기 기자재 품목 데이터셋
 const defaultEquipments = [
-  { id: 1, unit: "A1", seq: 1, deptName: "간호학과", itemName: "임상 시뮬레이터 스마트 실습 베드", unitPrice: 12000000, quantity: 2, description: "간호학 임상 실습 고도화 교육 환경 인프라 조달", step: "검수", operation: "교과목(정규)", mgrDept: "ECC" },
-  { id: 2, unit: "A2", seq: 2, deptName: "화학공학과", itemName: "고정밀 가스 크로마토그래피 측정기", unitPrice: 24500000, quantity: 1, description: "화공 정밀 분석 및 대외 기업 애로기술 분석 지원용", step: "구매", operation: "교과목(비정규)", mgrDept: "ICC" },
-  { id: 3, unit: "B1", seq: 3, deptName: "컴퓨터공학과", itemName: "가상현실/메타버스 전용 GPU 렌더링 서버", unitPrice: 15000000, quantity: 3, description: "신기술 가상현실 융합인재양성 교육 장비 구축", step: "승인", operation: "교과목(정규)", mgrDept: "신산업" },
-  { id: 4, unit: "B2", seq: 4, deptName: "기계공학과", itemName: "3D 메탈 프린터 조달", unitPrice: 38000000, quantity: 1, description: "지산학 스마트 제조 부품 시제품 제작 지원 인프라", step: "기획", operation: "교과목(정규)", mgrDept: "ICC" },
-  { id: 5, unit: "B3", seq: 5, deptName: "전기전자공학과", itemName: "반도체 회로 분석 계측기 (Oscilloscope)", unitPrice: 8500000, quantity: 4, description: "반도체 인력양성 실습용 고가 계측 장비 확충", step: "검수", operation: "교과목(비정규)", mgrDept: "AIDX" },
-  { id: 6, unit: "B4", seq: 6, deptName: "유아교육과", itemName: "늘봄 교실용 스마트 대화형 교육 패드", unitPrice: 850000, quantity: 15, description: "대학 기자재 활용형 아동 늘봄교육 교재 조달", step: "구매", operation: "교과목(비정규)", mgrDept: "늘봄" },
-  { id: 7, unit: "C1", seq: 7, deptName: "스마트팩토리전공", itemName: "다축 협동 산업용 로봇 팔 암 (Robot Arm)", unitPrice: 28000000, quantity: 1, description: "로봇제어 전공 정규 실험실습 공간 인프라 구축", step: "검수", operation: "교과목(정규)", mgrDept: "AIDX" },
-  { id: 8, unit: "C2", seq: 8, deptName: "반려동물보건과", itemName: "동물 전용 디지털 초음파 진단 장치", unitPrice: 19000000, quantity: 1, description: "신설학과 실무 미러형 임상 실습실 조달 품목", step: "승인", operation: "교과목(정규)", mgrDept: "신산업" },
-  { id: 9, unit: "D1", seq: 9, deptName: "스마트선박학과", itemName: "미래 친환경선박 가상 운항 교육 시뮬레이터", unitPrice: 45000000, quantity: 1, description: "5극3특 가상 운항 실습 교육 과정 지원용 장비", step: "기획", operation: "교과목(정규)", mgrDept: "RCC" },
-  { id: 10, unit: "D2", seq: 10, deptName: "미용예술학과", itemName: "메디컬 스킨케어 다기능 뷰티 디바이스", unitPrice: 6500000, quantity: 5, description: "웰니스 뷰티 케어 실습 및 지역 상생 뷰티 아카데미 활용", step: "검수", operation: "교과목(비정규)", mgrDept: "RCC" }
+  { id: 1, unit: "A1", seq: 1, deptName: "간호학과", itemName: "임상 시뮬레이터 스마트 실습 베드", unitPrice: 12000000, quantity: 2, description: "간호학 임상 실습 고도화 교육 환경 인프라 조달", operation: "교과목(정규)", mgrDept: "ECC", scheduleMilestones: { "기획": ["3", "4"], "승인": ["4", "5"], "구매": ["6", "7", "8"], "검수": ["9", "10"] } },
+  { id: 2, unit: "A2", seq: 2, deptName: "화학공학과", itemName: "고정밀 가스 크로마토그래피 측정기", unitPrice: 24500000, quantity: 1, description: "화공 정밀 분석 및 대외 기업 애로기술 분석 지원용", operation: "교과목(비정규)", mgrDept: "ICC", scheduleMilestones: { "기획": ["3"], "승인": ["4"], "구매": ["5", "6"], "검수": ["7", "8"] } },
+  { id: 3, unit: "B1", seq: 3, deptName: "컴퓨터공학과", itemName: "가상현실/메타버스 전용 GPU 렌더링 서버", unitPrice: 15000000, quantity: 3, description: "신기술 가상현실 융합인재양성 교육 장비 구축", operation: "교과목(정규)", mgrDept: "신산업", scheduleMilestones: { "기획": ["4", "5"], "승인": ["6"], "구매": ["7", "8"], "검수": ["9"] } },
+  { id: 4, unit: "B2", seq: 4, deptName: "기계공학과", itemName: "3D 메탈 프린터 조달", unitPrice: 38000000, quantity: 1, description: "지산학 스마트 제조 부품 시제품 제작 지원 인프라", operation: "교과목(정규)", mgrDept: "ICC", scheduleMilestones: { "기획": ["3", "4"], "승인": ["5"], "구매": ["6", "7"], "검수": ["8", "9"] } },
+  { id: 5, unit: "B3", seq: 5, deptName: "전기전자공학과", itemName: "반도체 회로 분석 계측기 (Oscilloscope)", unitPrice: 8500000, quantity: 4, description: "반도체 인력양성 실습용 고가 계측 장비 확충", operation: "교과목(비정규)", mgrDept: "AIDX", scheduleMilestones: { "기획": ["3", "4"], "승인": ["5", "6"], "구매": ["7", "8", "9"], "검수": ["10", "11", "12"] } },
+  { id: 6, unit: "B4", seq: 6, deptName: "유아교육과", itemName: "늘봄 교실용 스마트 대화형 교육 패드", unitPrice: 850000, quantity: 15, description: "대학 기자재 활용형 아동 늘봄교육 교재 조달", operation: "교과목(비정규)", mgrDept: "늘봄", scheduleMilestones: { "기획": ["5", "6"], "승인": ["7"], "구매": ["8", "9"], "검수": ["10", "11"] } },
+  { id: 7, unit: "C1", seq: 7, deptName: "스마트팩토리전공", itemName: "다축 협동 산업용 로봇 팔 암 (Robot Arm)", unitPrice: 28000000, quantity: 1, description: "로봇제어 전공 정규 실험실습 공간 인프라 구축", operation: "교과목(정규)", mgrDept: "AIDX", scheduleMilestones: { "기획": ["3", "4"], "승인": ["4", "5"], "구매": ["6", "7"], "검수": ["8", "9", "10"] } },
+  { id: 8, unit: "C2", seq: 8, deptName: "반려동물보건과", itemName: "동물 전용 디지털 초음파 진단 장치", unitPrice: 19000000, quantity: 1, description: "신설학과 실무 미러형 임상 실습실 조달 품목", operation: "교과목(정규)", mgrDept: "신산업", scheduleMilestones: { "기획": ["4", "5"], "승인": ["6"], "구매": ["7", "8"], "검수": ["9"] } },
+  { id: 9, unit: "D1", seq: 9, deptName: "스마트선박학과", itemName: "미래 친환경선박 가상 운항 교육 시뮬레이터", unitPrice: 45000000, quantity: 1, description: "5극3특 가상 운항 실습 교육 과정 지원용 장비", operation: "교과목(정규)", mgrDept: "RCC", scheduleMilestones: { "기획": ["3", "4", "5"], "승인": ["6", "7"], "구매": ["8", "9", "10"], "검수": ["11", "12", "1", "2"] } },
+  { id: 10, unit: "D2", seq: 10, deptName: "미용예술학과", itemName: "메디컬 스킨케어 다기능 뷰티 디바이스", unitPrice: 6500000, quantity: 5, description: "웰니스 뷰티 케어 실습 및 지역 상생 뷰티 아카데미 활용", operation: "교과목(비정규)", mgrDept: "RCC", scheduleMilestones: { "기획": ["3", "4"], "승인": ["5"], "구매": ["6", "7"], "검수": ["8", "9"] } }
 ];
 
 export default function ProcurementManager({
@@ -69,6 +69,38 @@ export default function ProcurementManager({
     opResult: ""
   });
 
+  // 월별 마일스톤 체크 클릭 토글 함수
+  const handleMilestoneToggle = (equipId, stepName, month) => {
+    if (currentRole.id === "GUEST") {
+      alert("게스트(방문자) 계정은 읽기 전용으로만 이용하실 수 있습니다.");
+      return;
+    }
+    const activeEquipList = equipData.length > 0 ? equipData : defaultEquipments;
+    const updated = activeEquipList.map(e => {
+      if (e.id === equipId) {
+        const currentMilestones = e.scheduleMilestones || { "기획": [], "승인": [], "구매": [], "검수": [] };
+        const currentMonths = currentMilestones[stepName] || [];
+        
+        let nextMonths;
+        if (currentMonths.includes(month)) {
+          nextMonths = currentMonths.filter(m => m !== month);
+        } else {
+          nextMonths = [...currentMonths, month];
+        }
+        
+        return {
+          ...e,
+          scheduleMilestones: {
+            ...currentMilestones,
+            [stepName]: nextMonths
+          }
+        };
+      }
+      return e;
+    });
+    setEquipData(updated);
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
@@ -113,9 +145,14 @@ export default function ProcurementManager({
         unitPrice: Number(formData.unitPrice) || 0,
         quantity: Number(formData.quantity) || 1,
         description: formData.description || "-",
-        step: formData.step || "기획",
         operation: formData.operation || "교과목(정규)",
-        mgrDept: formData.mgrDept || "ECC"
+        mgrDept: formData.mgrDept || "ECC",
+        scheduleMilestones: {
+          "기획": formData.step === "기획" ? ["3"] : [],
+          "승인": formData.step === "승인" ? ["3"] : [],
+          "구매": formData.step === "구매" ? ["3"] : [],
+          "검수": formData.step === "검수" ? ["3"] : []
+        }
       };
       setEquipData([...activeEquipList, newItem]);
     } else if (modalType === "service") {
@@ -405,22 +442,22 @@ export default function ProcurementManager({
 
           {/* 기자재 리스트 (스프레드시트 스타일 표 뷰) */}
           <div className="glass-card" style={{ padding: "0.5rem", borderRadius: "10px", overflowX: "auto" }}>
-            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.82rem", color: "var(--text-primary)", minWidth: "950px" }}>
+            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.82rem", color: "var(--text-primary)", minWidth: "1150px" }}>
               <thead>
                 <tr style={{ background: "rgba(255, 255, 255, 0.03)", borderBottom: "2px solid rgba(255,255,255,0.08)" }}>
-                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "50px" }}>순번</th>
-                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "60px" }}>과제</th>
-                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "left", fontWeight: "800", width: "120px" }}>학과 / 부서</th>
-                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "left", fontWeight: "800", width: "200px" }}>품명</th>
-                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "right", fontWeight: "800", width: "95px" }}>단가</th>
-                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "60px" }}>수량</th>
-                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "right", fontWeight: "800", width: "105px" }}>견적총액</th>
+                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "45px" }}>순번</th>
+                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "55px" }}>과제</th>
+                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "left", fontWeight: "800", width: "110px" }}>학과 / 부서</th>
+                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "left", fontWeight: "800", width: "180px" }}>품명</th>
+                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "right", fontWeight: "800", width: "90px" }}>단가</th>
+                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "50px" }}>수량</th>
+                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "right", fontWeight: "800", width: "100px" }}>견적총액</th>
                   <th style={{ padding: "0.75rem 0.5rem", textAlign: "left", fontWeight: "800" }}>관련내용</th>
-                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "80px" }}>구매단계</th>
-                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "110px" }}>운영</th>
-                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "90px" }}>담당부서</th>
+                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "290px" }}>구매단계 ('26.3월 ~ '27.2월 월별 체크)</th>
+                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "100px" }}>운영</th>
+                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "80px" }}>담당부서</th>
                   {currentRole.id !== "GUEST" && (
-                    <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "50px" }}>작업</th>
+                    <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "45px" }}>작업</th>
                   )}
                 </tr>
               </thead>
@@ -437,13 +474,6 @@ export default function ProcurementManager({
                       const qty = Number(equip.quantity) || 0;
                       const total = price * qty;
                       
-                      // 구매단계 칩 컬러 바인딩
-                      let stepBg = "rgba(245, 158, 11, 0.15)";
-                      let stepColor = "#f59e0b";
-                      if (equip.step === "승인") { stepBg = "rgba(59, 130, 246, 0.15)"; stepColor = "#3b82f6"; }
-                      else if (equip.step === "구매") { stepBg = "rgba(167, 139, 250, 0.15)"; stepColor = "#a78bfa"; }
-                      else if (equip.step === "검수") { stepBg = "rgba(16, 185, 129, 0.15)"; stepColor = "#10b981"; }
-
                       // 담당부서 칩 컬러 바인딩
                       let deptBg = "rgba(236, 72, 153, 0.12)";
                       let deptColor = "#EC4899";
@@ -479,14 +509,62 @@ export default function ProcurementManager({
                           <td style={{ padding: "0.8rem 0.5rem", textAlign: "right", fontWeight: "700", color: "#10B981" }}>
                             {total.toLocaleString()}원
                           </td>
-                          <td style={{ padding: "0.8rem 0.5rem", textAlign: "left", color: "var(--text-secondary)", maxWidth: "250px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={equip.description || equip.opPlan}>
+                          <td style={{ padding: "0.8rem 0.5rem", textAlign: "left", color: "var(--text-secondary)", maxWidth: "200px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={equip.description || equip.opPlan}>
                             {equip.description || equip.opPlan || "-"}
                           </td>
-                          <td style={{ padding: "0.8rem 0.5rem", textAlign: "center" }}>
-                            <span style={{ display: "inline-block", padding: "0.15rem 0.45rem", borderRadius: "0.25rem", fontSize: "0.68rem", fontWeight: "800", background: stepBg, color: stepColor }}>
-                              {equip.step}
-                            </span>
+                          
+                          {/* 12개월 타임라인 Gantt 마일스톤 멀티 체크 그리드 */}
+                          <td style={{ padding: "0.4rem 0.5rem", textAlign: "left", width: "290px", borderLeft: "1px solid rgba(255,255,255,0.03)", borderRight: "1px solid rgba(255,255,255,0.03)" }}>
+                            <div style={{ display: "flex", flexDirection: "column", gap: "3px" }}>
+                              {["기획", "승인", "구매", "검수"].map((stepName) => {
+                                let activeColor = "#f59e0b"; // 기획: 주황
+                                if (stepName === "승인") activeColor = "#3b82f6"; // 승인: 파랑
+                                else if (stepName === "구매") activeColor = "#a78bfa"; // 구매: 보라
+                                else if (stepName === "검수") activeColor = "#10b981"; // 검수: 초록
+
+                                const milestoneMonths = equip.scheduleMilestones?.[stepName] || [];
+
+                                return (
+                                  <div key={stepName} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                                    <span style={{ fontSize: "0.68rem", fontWeight: "800", width: "22px", color: "var(--text-secondary-dark)", display: "inline-block", textAlign: "left" }}>
+                                      {stepName}
+                                    </span>
+                                    <div style={{ display: "flex", gap: "2px" }}>
+                                      {["3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "1", "2"].map((m) => {
+                                        const isChecked = milestoneMonths.includes(m);
+                                        return (
+                                          <div
+                                            key={m}
+                                            onClick={() => handleMilestoneToggle(equip.id, stepName, m)}
+                                            style={{
+                                              width: "16px",
+                                              height: "16px",
+                                              borderRadius: "3px",
+                                              fontSize: "0.55rem",
+                                              fontWeight: "800",
+                                              display: "flex",
+                                              alignItems: "center",
+                                              justifyContent: "center",
+                                              cursor: "pointer",
+                                              transition: "all 0.1s ease",
+                                              background: isChecked ? activeColor : "rgba(255,255,255,0.02)",
+                                              color: isChecked ? "white" : "rgba(255,255,255,0.15)",
+                                              border: isChecked ? `1px solid ${activeColor}` : "1px solid rgba(255,255,255,0.05)",
+                                              boxShadow: isChecked ? `0 0 3px ${activeColor}60` : "none"
+                                            }}
+                                            title={`'26.${m}월 ${stepName} 단계`}
+                                          >
+                                            {m}
+                                          </div>
+                                        );
+                                      })}
+                                    </div>
+                                  </div>
+                                );
+                              })}
+                            </div>
                           </td>
+
                           <td style={{ padding: "0.8rem 0.5rem", textAlign: "center", color: "var(--text-secondary)" }}>
                             {equip.operation || "-"}
                           </td>
