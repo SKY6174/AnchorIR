@@ -6729,6 +6729,7 @@ export default function App() {
               currentUser={currentUser}
               currentRole={currentRole}
               selectedYear={selectedYear}
+              darkMode={darkMode}
               subTab={scheduleSubTab}
               onChangeSubTab={setScheduleSubTab}
               monthlySchedules={monthlySchedules}

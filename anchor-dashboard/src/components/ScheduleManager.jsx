@@ -163,6 +163,7 @@ export default function ScheduleManager({
   currentUser,
   currentRole,
   selectedYear,
+  darkMode = true,
   subTab,
   onChangeSubTab,
   monthlySchedules = [],
@@ -2552,7 +2553,7 @@ export default function ScheduleManager({
                                         작성자: {writer}
                                       </span>
                                     </div>
-                                    <h3 style={{ margin: 0, fontSize: "1.15rem", fontWeight: "800", color: "white" }}>
+                                    <h3 style={{ margin: 0, fontSize: "1.15rem", fontWeight: "800", color: "var(--text-primary)" }}>
                                       {selectedMeeting.title}
                                     </h3>
                                   </div>
@@ -2582,7 +2583,7 @@ export default function ScheduleManager({
                                 </div>
 
                                 {/* 상세 정보 내용 */}
-                                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", fontSize: "0.825rem" }}>
+                                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", fontSize: "0.825rem", color: "var(--text-primary)" }}>
                                   <div>
                                     <span style={{ color: "var(--text-secondary)", display: "block", marginBottom: "0.2rem" }}>📅 회의 시간</span>
                                     <strong>{selectedMeeting.datetime}</strong>
@@ -2600,7 +2601,7 @@ export default function ScheduleManager({
                                 {/* 주요 의제 */}
                                 <div style={{ borderTop: "1px solid var(--border-color)", paddingTop: "1rem" }}>
                                   <span style={{ color: "var(--text-secondary)", display: "block", fontSize: "0.825rem", marginBottom: "0.4rem" }}>📋 주요 의제 및 논의 사항</span>
-                                  <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem", fontSize: "0.825rem" }}>
+                                  <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem", fontSize: "0.825rem", color: "var(--text-primary)" }}>
                                     {(selectedMeeting.agenda || "").split("\n").filter(Boolean).map((agendaItem, idx) => (
                                       <span key={idx} style={{ display: "block", lineHeight: "1.4" }}>
                                         의제 {idx + 1}. {agendaItem}
@@ -2612,7 +2613,7 @@ export default function ScheduleManager({
 
                                 {/* 결정 사항 결과 박스 */}
                                 <div style={{ 
-                                  background: "rgba(59, 130, 246, 0.05)", 
+                                  background: darkMode ? "rgba(59, 130, 246, 0.05)" : "rgba(59, 130, 246, 0.08)", 
                                   padding: "0.85rem 1rem", 
                                   borderRadius: "8px", 
                                   border: "1px solid rgba(59, 130, 246, 0.15)", 
@@ -2620,13 +2621,13 @@ export default function ScheduleManager({
                                   flexDirection: "column", 
                                   gap: "0.35rem" 
                                 }}>
-                                  <span style={{ color: "#60A5FA", fontWeight: "700", fontSize: "0.8rem", display: "flex", alignItems: "center", gap: "0.25rem" }}>
-                                    <CheckCircle size={14} />
+                                  <span style={{ color: darkMode ? "#60A5FA" : "#1E3A8A", fontWeight: "700", fontSize: "0.8rem", display: "flex", alignItems: "center", gap: "0.25rem" }}>
+                                    <CheckCircle size={14} style={{ color: darkMode ? "#60A5FA" : "#2563EB" }} />
                                     주요 결정 및 조치 사항 (요점 정리)
                                   </span>
-                                  <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", fontSize: "0.8rem", color: "#E2E8F0", lineHeight: "1.45" }}>
+                                  <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", fontSize: "0.8rem", color: "var(--text-primary)", lineHeight: "1.45" }}>
                                     {(selectedMeeting.result || "").split("\n").filter(Boolean).map((resultItem, idx) => (
-                                      <div key={idx} style={{ borderBottom: idx < (selectedMeeting.result || "").split("\n").filter(Boolean).length - 1 ? "1px dashed rgba(255,255,255,0.03)" : "none", paddingBottom: "0.3rem" }}>
+                                      <div key={idx} style={{ borderBottom: idx < (selectedMeeting.result || "").split("\n").filter(Boolean).length - 1 ? "1px dashed var(--border-color)" : "none", paddingBottom: "0.3rem" }}>
                                         <strong>결과 {idx + 1}.</strong> {resultItem}
                                       </div>
                                     ))}
@@ -2685,8 +2686,8 @@ export default function ScheduleManager({
                                   onClick={() => alert("🎙️ PLAUD 음성 녹음 및 AI 회의록 자동 요약 기능 연동 데모\n\n향후 PLAUD 디바이스 및 API와 실시간 동기화하여, 회의 음성 녹음본이 업로드되면 AI가 발화자별 텍스트 변환(STT) 및 핵심 결정을 자동으로 요약하여 이 회의록에 자동으로 채워주는 스마트 기능이 활성화될 예정입니다.")}
                                   style={{
                                     display: "flex", alignItems: "center", justifyContent: "center", gap: "0.25rem",
-                                    padding: "0.45rem", borderRadius: "6px", background: "rgba(139, 92, 246, 0.15)",
-                                    border: "1px solid rgba(139, 92, 246, 0.3)", color: "#C084FC", fontSize: "0.72rem", fontWeight: "700", cursor: "pointer",
+                                    padding: "0.45rem", borderRadius: "6px", background: darkMode ? "rgba(139, 92, 246, 0.15)" : "rgba(139, 92, 246, 0.1)",
+                                    border: darkMode ? "1px solid rgba(139, 92, 246, 0.3)" : "1px solid rgba(139, 92, 246, 0.25)", color: darkMode ? "#C084FC" : "#6D28D9", fontSize: "0.72rem", fontWeight: "700", cursor: "pointer",
                                     marginTop: "auto"
                                   }}
                                 >
@@ -2826,7 +2827,7 @@ export default function ScheduleManager({
 
                               <div>
                                 <span style={{ color: "var(--text-secondary)", display: "block", marginBottom: "0.25rem" }}>📝 회의 의제 (주요 안건)</span>
-                                <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem", margin: "0.1rem 0 0 0" }}>
+                                <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem", margin: "0.1rem 0 0 0", color: "var(--text-primary)" }}>
                                   {meeting.agenda && meeting.agenda.split("\n").filter(Boolean).map((agendaItem, idx) => (
                                     <span key={idx} style={{ display: "block", lineHeight: "1.3" }}>
                                       의제 {idx + 1}. {agendaItem}
@@ -2842,14 +2843,14 @@ export default function ScheduleManager({
                             </div>
 
                             <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-                              <div style={{ background: "rgba(59, 130, 246, 0.05)", padding: "0.75rem", borderRadius: "8px", border: "1px solid rgba(59, 130, 246, 0.1)", display: "flex", flexDirection: "column", gap: "0.25rem", flex: 1 }}>
-                                <span style={{ color: "#60A5FA", fontWeight: "700", fontSize: "0.75rem", display: "flex", alignItems: "center", gap: "0.25rem" }}>
-                                  <CheckCircle size={14} />
+                              <div style={{ background: darkMode ? "rgba(59, 130, 246, 0.05)" : "rgba(59, 130, 246, 0.08)", padding: "0.75rem", borderRadius: "8px", border: "1px solid rgba(59, 130, 246, 0.1)", display: "flex", flexDirection: "column", gap: "0.25rem", flex: 1 }}>
+                                <span style={{ color: darkMode ? "#60A5FA" : "#1E3A8A", fontWeight: "700", fontSize: "0.75rem", display: "flex", alignItems: "center", gap: "0.25rem" }}>
+                                  <CheckCircle size={14} style={{ color: darkMode ? "#60A5FA" : "#2563EB" }} />
                                   회의 결정 결과
                                 </span>
-                                <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", fontSize: "0.75rem", color: "#E2E8F0", lineHeight: "1.45" }}>
+                                <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", fontSize: "0.75rem", color: "var(--text-primary)", lineHeight: "1.45" }}>
                                   {(meeting.result || "").split("\n").filter(Boolean).map((resultItem, idx) => (
-                                    <div key={idx} style={{ borderBottom: idx < (meeting.result || "").split("\n").filter(Boolean).length - 1 ? "1px dashed rgba(255,255,255,0.03)" : "none", paddingBottom: "0.3rem" }}>
+                                    <div key={idx} style={{ borderBottom: idx < (meeting.result || "").split("\n").filter(Boolean).length - 1 ? "1px dashed var(--border-color)" : "none", paddingBottom: "0.3rem" }}>
                                       <strong>결과 {idx + 1}.</strong> {resultItem}
                                     </div>
                                   ))}
@@ -2907,8 +2908,8 @@ export default function ScheduleManager({
                                 onClick={() => alert("🎙️ PLAUD 음성 녹음 및 AI 회의록 자동 요약 기능 연동 데모\n\n향후 PLAUD 디바이스 및 API와 실시간 동기화하여, 회의 음성 녹음본이 업로드되면 AI가 발화자별 텍스트 변환(STT) 및 핵심 결정을 자동으로 요약하여 이 회의록에 자동으로 채워주는 스마트 기능이 활성화될 예정입니다.")}
                                 style={{
                                   display: "flex", alignItems: "center", justifyContent: "center", gap: "0.25rem",
-                                  padding: "0.35rem", borderRadius: "6px", background: "rgba(139, 92, 246, 0.15)",
-                                  border: "1px solid rgba(139, 92, 246, 0.3)", color: "#C084FC", fontSize: "0.7rem", fontWeight: "700", cursor: "pointer"
+                                  padding: "0.35rem", borderRadius: "6px", background: darkMode ? "rgba(139, 92, 246, 0.15)" : "rgba(139, 92, 246, 0.1)",
+                                  border: darkMode ? "1px solid rgba(139, 92, 246, 0.3)" : "1px solid rgba(139, 92, 246, 0.25)", color: darkMode ? "#C084FC" : "#6D28D9", fontSize: "0.7rem", fontWeight: "700", cursor: "pointer"
                                 }}
                               >
                                 🎙️ PLAUD 녹음 자동 연동 (베타 예정)
