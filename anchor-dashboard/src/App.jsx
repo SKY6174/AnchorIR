@@ -2499,7 +2499,9 @@ export default function App() {
       try {
         // 0. 로컬 스토리지 캐시 데이터 선 로드 (깜빡임 방지 및 0초 반응)
         const cachedProj = localStorage.getItem(`anchor_cache_proj_y${selectedYear}`);
-        const cachedAgr = localStorage.getItem(`anchor_cache_agr_y${selectedYear}`);
+        const cachedAgr = localStorage.getItem("anchor_cache_agreements_all");
+        const cachedCert = localStorage.getItem("anchor_cache_certificates_all");
+        const cachedAward = localStorage.getItem("anchor_cache_awards_all");
         const cachedEnv = localStorage.getItem(`anchor_cache_env_y${selectedYear}`);
         const cachedEquip = localStorage.getItem(`anchor_cache_equip_y${selectedYear}`);
         const cachedServ = localStorage.getItem(`anchor_cache_serv_y${selectedYear}`);
@@ -2510,6 +2512,8 @@ export default function App() {
 
         if (cachedProj) setProjects(migrateProgramIds(JSON.parse(cachedProj)));
         if (cachedAgr) setAgreements(JSON.parse(cachedAgr));
+        if (cachedCert) setCertificates(JSON.parse(cachedCert));
+        if (cachedAward) setAwards(JSON.parse(cachedAward));
         if (cachedEnv) setEnvData(JSON.parse(cachedEnv));
         if (cachedEquip) setEquipData(JSON.parse(cachedEquip));
         if (cachedServ) setServiceData(JSON.parse(cachedServ));
@@ -2556,11 +2560,10 @@ export default function App() {
           await supabase.from("projects_data").upsert({ year: selectedYear, data: multiYearInitialData }, { onConflict: "year" });
         }
 
-        // 2. Agreements 복구
+        // 2. Agreements 복구 (전체 연차 데이터를 한 번에 가져와 메모리에 유지)
         const { data: agrData } = await supabase
           .from("agreements")
-          .select("*")
-          .eq("year", selectedYear);
+          .select("*");
         
         // 원격 DB에 진짜 저장된 데이터가 존재할 때만 덮어써서 로컬 캐시 유실을 방지합니다.
         if (agrData && agrData.length > 0) {
@@ -2581,7 +2584,7 @@ export default function App() {
           setAgreements(formatted);
           try {
             const clean = formatted.map(item => ({ ...item, fileData: null }));
-            localStorage.setItem(`anchor_cache_agr_y${selectedYear}`, JSON.stringify(clean));
+            localStorage.setItem("anchor_cache_agreements_all", JSON.stringify(clean));
           } catch (e) {
             console.error("Failed to save agreements cache:", e);
           }
@@ -2589,11 +2592,10 @@ export default function App() {
           setAgreements([]);
         }
 
-        // 2-2. Certificates 복구
+        // 2-2. Certificates 복구 (전체 연차 데이터를 한 번에 가져와 메모리에 유지)
         const { data: certData } = await supabase
           .from("certificates")
-          .select("*")
-          .eq("year", selectedYear);
+          .select("*");
         if (certData && certData.length > 0) {
           const formatted = certData.map(c => ({
             id: Number(c.id),
@@ -2609,7 +2611,7 @@ export default function App() {
           setCertificates(formatted);
           try {
             const clean = formatted.map(item => ({ ...item, fileData: null }));
-            localStorage.setItem(`anchor_cache_cert_y${selectedYear}`, JSON.stringify(clean));
+            localStorage.setItem("anchor_cache_certificates_all", JSON.stringify(clean));
           } catch (e) {
             console.error("Failed to save certificates cache:", e);
           }
@@ -2617,11 +2619,10 @@ export default function App() {
           setCertificates([]);
         }
 
-        // 2-3. Awards 복구
+        // 2-3. Awards 복구 (전체 연차 데이터를 한 번에 가져와 메모리에 유지)
         const { data: awardData } = await supabase
           .from("awards")
-          .select("*")
-          .eq("year", selectedYear);
+          .select("*");
         if (awardData && awardData.length > 0) {
           const formatted = awardData.map(a => ({
             id: Number(a.id),
@@ -2637,7 +2638,7 @@ export default function App() {
           setAwards(formatted);
           try {
             const clean = formatted.map(item => ({ ...item, fileData: null }));
-            localStorage.setItem(`anchor_cache_award_y${selectedYear}`, JSON.stringify(clean));
+            localStorage.setItem("anchor_cache_awards_all", JSON.stringify(clean));
           } catch (e) {
             console.error("Failed to save awards cache:", e);
           }
@@ -2755,12 +2756,12 @@ export default function App() {
     return () => clearTimeout(timer);
   }, [projects, selectedYear, isDbLoaded, isFetchCompleted]);
 
-  // 3) Agreements 자동 저장 디바운스 훅
+  // 3) Agreements 자동 저장 디바운스 훅 (통합 캐시 사용 및 selectedYear 의존성 배제)
   useEffect(() => {
     if (!isDbLoaded || !isFetchCompleted) return;
     try {
       const clean = agreements.map(item => ({ ...item, fileData: null }));
-      localStorage.setItem(`anchor_cache_agr_y${selectedYear}`, JSON.stringify(clean));
+      localStorage.setItem("anchor_cache_agreements_all", JSON.stringify(clean));
     } catch (e) {
       console.warn("Failed to write agreements cache:", e);
     }
@@ -2797,14 +2798,14 @@ export default function App() {
       }
     }, 150);
     return () => clearTimeout(timer);
-  }, [agreements, selectedYear, isDbLoaded, isFetchCompleted]);
+  }, [agreements, isDbLoaded, isFetchCompleted]);
 
-  // 3-2) Certificates 자동 저장 디바운스 훅
+  // 3-2) Certificates 자동 저장 디바운스 훅 (통합 캐시 사용 및 selectedYear 의존성 배제)
   useEffect(() => {
     if (!isDbLoaded || !isFetchCompleted) return;
     try {
       const clean = certificates.map(item => ({ ...item, fileData: null }));
-      localStorage.setItem(`anchor_cache_cert_y${selectedYear}`, JSON.stringify(clean));
+      localStorage.setItem("anchor_cache_certificates_all", JSON.stringify(clean));
     } catch (e) {
       console.warn("Failed to write certificates cache:", e);
     }
@@ -2838,14 +2839,14 @@ export default function App() {
       }
     }, 150);
     return () => clearTimeout(timer);
-  }, [certificates, selectedYear, isDbLoaded, isFetchCompleted]);
+  }, [certificates, isDbLoaded, isFetchCompleted]);
 
-  // 3-3) Awards 자동 저장 디바운스 훅
+  // 3-3) Awards 자동 저장 디바운스 훅 (통합 캐시 사용 및 selectedYear 의존성 배제)
   useEffect(() => {
     if (!isDbLoaded || !isFetchCompleted) return;
     try {
       const clean = awards.map(item => ({ ...item, fileData: null }));
-      localStorage.setItem(`anchor_cache_award_y${selectedYear}`, JSON.stringify(clean));
+      localStorage.setItem("anchor_cache_awards_all", JSON.stringify(clean));
     } catch (e) {
       console.warn("Failed to write awards cache:", e);
     }
@@ -2879,7 +2880,7 @@ export default function App() {
       }
     }, 150);
     return () => clearTimeout(timer);
-  }, [awards, selectedYear, isDbLoaded, isFetchCompleted]);
+  }, [awards, isDbLoaded, isFetchCompleted]);
 
   // 4) Procurement Env 자동 저장 디바운스 훅
   useEffect(() => {
