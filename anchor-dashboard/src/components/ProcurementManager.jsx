@@ -2,8 +2,22 @@ import React, { useState } from "react";
 import { 
   Building2, Laptop, ShieldCheck, Plus, CheckCircle, 
   MapPin, Landmark, DollarSign, Calendar, Info, 
-  Eye, FileText, FileImage, LayoutGrid, ListFilter
+  Eye, FileText, FileImage, LayoutGrid, ListFilter, Trash2
 } from "lucide-react";
+
+// 단장님이 지시하신 10개 필드로 구성된 10줄의 초기 프레임 기자재 품목 데이터셋
+const defaultEquipments = [
+  { id: 1, unit: "A1", seq: 1, deptName: "간호학과", itemName: "임상 시뮬레이터 스마트 실습 베드", unitPrice: 12000000, quantity: 2, description: "간호학 임상 실습 고도화 교육 환경 인프라 조달", step: "검수", operation: "교과목(정규)", mgrDept: "ECC" },
+  { id: 2, unit: "A2", seq: 2, deptName: "화학공학과", itemName: "고정밀 가스 크로마토그래피 측정기", unitPrice: 24500000, quantity: 1, description: "화공 정밀 분석 및 대외 기업 애로기술 분석 지원용", step: "구매", operation: "교과목(비정규)", mgrDept: "ICC" },
+  { id: 3, unit: "B1", seq: 3, deptName: "컴퓨터공학과", itemName: "가상현실/메타버스 전용 GPU 렌더링 서버", unitPrice: 15000000, quantity: 3, description: "신기술 가상현실 융합인재양성 교육 장비 구축", step: "승인", operation: "교과목(정규)", mgrDept: "신산업" },
+  { id: 4, unit: "B2", seq: 4, deptName: "기계공학과", itemName: "3D 메탈 프린터 조달", unitPrice: 38000000, quantity: 1, description: "지산학 스마트 제조 부품 시제품 제작 지원 인프라", step: "기획", operation: "교과목(정규)", mgrDept: "ICC" },
+  { id: 5, unit: "B3", seq: 5, deptName: "전기전자공학과", itemName: "반도체 회로 분석 계측기 (Oscilloscope)", unitPrice: 8500000, quantity: 4, description: "반도체 인력양성 실습용 고가 계측 장비 확충", step: "검수", operation: "교과목(비정규)", mgrDept: "AIDX" },
+  { id: 6, unit: "B4", seq: 6, deptName: "유아교육과", itemName: "늘봄 교실용 스마트 대화형 교육 패드", unitPrice: 850000, quantity: 15, description: "대학 기자재 활용형 아동 늘봄교육 교재 조달", step: "구매", operation: "교과목(비정규)", mgrDept: "늘봄" },
+  { id: 7, unit: "C1", seq: 7, deptName: "스마트팩토리전공", itemName: "다축 협동 산업용 로봇 팔 암 (Robot Arm)", unitPrice: 28000000, quantity: 1, description: "로봇제어 전공 정규 실험실습 공간 인프라 구축", step: "검수", operation: "교과목(정규)", mgrDept: "AIDX" },
+  { id: 8, unit: "C2", seq: 8, deptName: "반려동물보건과", itemName: "동물 전용 디지털 초음파 진단 장치", unitPrice: 19000000, quantity: 1, description: "신설학과 실무 미러형 임상 실습실 조달 품목", step: "승인", operation: "교과목(정규)", mgrDept: "신산업" },
+  { id: 9, unit: "D1", seq: 9, deptName: "스마트선박학과", itemName: "미래 친환경선박 가상 운항 교육 시뮬레이터", unitPrice: 45000000, quantity: 1, description: "5극3특 가상 운항 실습 교육 과정 지원용 장비", step: "기획", operation: "교과목(정규)", mgrDept: "RCC" },
+  { id: 10, unit: "D2", seq: 10, deptName: "미용예술학과", itemName: "메디컬 스킨케어 다기능 뷰티 디바이스", unitPrice: 6500000, quantity: 5, description: "웰니스 뷰티 케어 실습 및 지역 상생 뷰티 아카데미 활용", step: "검수", operation: "교과목(비정규)", mgrDept: "RCC" }
+];
 
 export default function ProcurementManager({
   currentRole,
@@ -24,8 +38,8 @@ export default function ProcurementManager({
   // 환경개선 상세 팝업 상태
   const [selectedEnvItem, setSelectedEnvItem] = useState(null);
 
-  // 기자재 탭 단위과제 필터 상태
-  const [selectedEquipUnit, setSelectedEquipUnit] = useState("A1");
+  // 기자재 탭 단위과제 필터 상태 (전체 과제 보기를 위해 "ALL" 옵션도 기본 지원)
+  const [selectedEquipUnit, setSelectedEquipUnit] = useState("ALL");
 
   // 4. 입력 폼 임시 State
   const [formData, setFormData] = useState({
@@ -41,16 +55,17 @@ export default function ProcurementManager({
     birdseyeView: "",
     blueprints: "",
     utilization: "",
-    // 기자재용
+    // 기자재용 10대 필드 맵
     name: "",
-    program: "",
     department: "",
-    schedule: "",
-    opPlan: "",
-    opPerformance: "",
+    unitPrice: "",
+    quantity: "",
+    description: "",
+    step: "기획",
+    operation: "교과목(정규)",
+    mgrDept: "ECC",
     // 용역용
     providerQual: "",
-    step: 1,
     opResult: ""
   });
 
@@ -85,19 +100,24 @@ export default function ProcurementManager({
       };
       setEnvData([newItem, ...envData]);
     } else if (modalType === "equip") {
+      // 실 기자재 데이터가 비어 있으면 defaultEquipments를 얹고 시작
+      const activeEquipList = equipData.length > 0 ? equipData : defaultEquipments;
+      const nextSeq = activeEquipList.length + 1;
+      
       const newItem = {
         id: Date.now(),
         unit: formData.unit,
-        name: formData.name || "새 기자재 항목",
-        program: formData.program || "-",
-        department: formData.department || "-",
-        schedule: formData.schedule || "-",
-        budgetPlan: Number(formData.budgetPlan) || 0,
-        budgetSpent: Number(formData.budgetSpent) || 0,
-        opPlan: formData.opPlan || "-",
-        opPerformance: formData.opPerformance || "-"
+        seq: nextSeq,
+        deptName: formData.department || "미지정 학과",
+        itemName: formData.name || "새 기자재 항목",
+        unitPrice: Number(formData.unitPrice) || 0,
+        quantity: Number(formData.quantity) || 1,
+        description: formData.description || "-",
+        step: formData.step || "기획",
+        operation: formData.operation || "교과목(정규)",
+        mgrDept: formData.mgrDept || "ECC"
       };
-      setEquipData([newItem, ...equipData]);
+      setEquipData([...activeEquipList, newItem]);
     } else if (modalType === "service") {
       const newItem = {
         id: Date.now(),
@@ -128,13 +148,14 @@ export default function ProcurementManager({
       blueprints: "",
       utilization: "",
       name: "",
-      program: "",
       department: "",
-      schedule: "",
-      opPlan: "",
-      opPerformance: "",
+      unitPrice: "",
+      quantity: "",
+      description: "",
+      step: "기획",
+      operation: "교과목(정규)",
+      mgrDept: "ECC",
       providerQual: "",
-      step: 1,
       opResult: ""
     });
   };
@@ -350,6 +371,7 @@ export default function ProcurementManager({
                     width: "auto"
                   }}
                 >
+                  <option value="ALL">전체 과제</option>
                   {["A1", "A2", "B1", "B2", "B3", "B4", "C1", "C2", "D1", "D2", "D3", "D4"].map(u => (
                     <option key={u} value={u}>{u} 과제</option>
                   ))}
@@ -381,74 +403,131 @@ export default function ProcurementManager({
             </div>
           </div>
 
-          {/* 기자재 리스트 (카드 그리드 뷰) */}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.5rem" }}>
-            {equipData.filter(e => e.unit === selectedEquipUnit).length > 0 ? (
-              equipData.filter(e => e.unit === selectedEquipUnit).map((equip) => (
-                <div 
-                  key={equip.id} 
-                  className="glass-card" 
-                  style={{ 
-                    padding: "1.25rem", 
-                    borderRadius: "10px", 
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "0.75rem"
-                  }}
-                >
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                    <span style={{ fontSize: "0.75rem", padding: "0.25rem 0.5rem", borderRadius: "4px", background: "rgba(52, 211, 153, 0.2)", color: "#34D399", fontWeight: "700" }}>
-                      기자재 승인 완료
-                    </span>
-                    <span style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>
-                      단위과제: {equip.unit}
-                    </span>
-                  </div>
+          {/* 기자재 리스트 (스프레드시트 스타일 표 뷰) */}
+          <div className="glass-card" style={{ padding: "0.5rem", borderRadius: "10px", overflowX: "auto" }}>
+            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.82rem", color: "var(--text-primary)", minWidth: "950px" }}>
+              <thead>
+                <tr style={{ background: "rgba(255, 255, 255, 0.03)", borderBottom: "2px solid rgba(255,255,255,0.08)" }}>
+                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "50px" }}>순번</th>
+                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "60px" }}>과제</th>
+                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "left", fontWeight: "800", width: "120px" }}>학과 / 부서</th>
+                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "left", fontWeight: "800", width: "200px" }}>품명</th>
+                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "right", fontWeight: "800", width: "95px" }}>단가</th>
+                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "60px" }}>수량</th>
+                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "right", fontWeight: "800", width: "105px" }}>견적총액</th>
+                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "left", fontWeight: "800" }}>관련내용</th>
+                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "80px" }}>구매단계</th>
+                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "110px" }}>운영</th>
+                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "90px" }}>담당부서</th>
+                  {currentRole.id !== "GUEST" && (
+                    <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "50px" }}>작업</th>
+                  )}
+                </tr>
+              </thead>
+              <tbody>
+                {(() => {
+                  const activeEquipList = equipData.length > 0 ? equipData : defaultEquipments;
+                  const filteredEquips = selectedEquipUnit === "ALL" 
+                    ? activeEquipList 
+                    : activeEquipList.filter(e => e.unit === selectedEquipUnit);
 
-                  <h4 style={{ margin: 0, fontSize: "1.05rem", fontWeight: "800", color: "var(--text-primary)" }}>
-                    {equip.name}
-                  </h4>
+                  if (filteredEquips.length > 0) {
+                    return filteredEquips.map((equip, idx) => {
+                      const price = Number(equip.unitPrice) || 0;
+                      const qty = Number(equip.quantity) || 0;
+                      const total = price * qty;
+                      
+                      // 구매단계 칩 컬러 바인딩
+                      let stepBg = "rgba(245, 158, 11, 0.15)";
+                      let stepColor = "#f59e0b";
+                      if (equip.step === "승인") { stepBg = "rgba(59, 130, 246, 0.15)"; stepColor = "#3b82f6"; }
+                      else if (equip.step === "구매") { stepBg = "rgba(167, 139, 250, 0.15)"; stepColor = "#a78bfa"; }
+                      else if (equip.step === "검수") { stepBg = "rgba(16, 185, 129, 0.15)"; stepColor = "#10b981"; }
 
-                  <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", fontSize: "0.8rem", color: "var(--text-primary)", borderTop: "1px solid rgba(255,255,255,0.05)", paddingTop: "0.5rem" }}>
-                    <div>
-                      <span style={{ color: "var(--text-secondary)" }}>🔗 관련 프로그램:</span> {equip.program}
-                    </div>
-                    <div>
-                      <span style={{ color: "var(--text-secondary)" }}>🏫 소속 학부(과)/센터:</span> {equip.department}
-                    </div>
-                    <div>
-                      <span style={{ color: "var(--text-secondary)" }}>📅 추진 일정:</span> {equip.schedule}
-                    </div>
-                    
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem", marginTop: "0.25rem" }}>
-                      <div>
-                        <span style={{ color: "var(--text-secondary)", display: "block" }}>사업비 계획</span>
-                        <strong style={{ color: "#3B82F6" }}>{(equip.budgetPlan / 10000).toLocaleString()}만 원</strong>
-                      </div>
-                      <div>
-                        <span style={{ color: "var(--text-secondary)", display: "block" }}>실제 집행액</span>
-                        <strong style={{ color: "#10B981" }}>{(equip.budgetSpent / 10000).toLocaleString()}만 원</strong>
-                      </div>
-                    </div>
+                      // 담당부서 칩 컬러 바인딩
+                      let deptBg = "rgba(236, 72, 153, 0.12)";
+                      let deptColor = "#EC4899";
+                      const mDept = equip.mgrDept || "ECC";
+                      if (mDept === "ICC") { deptBg = "rgba(59, 130, 246, 0.12)"; deptColor = "#3b82f6"; }
+                      else if (mDept === "RCC") { deptBg = "rgba(16, 185, 129, 0.12)"; deptColor = "#10b981"; }
+                      else if (mDept === "AID-X") { deptBg = "rgba(167, 139, 250, 0.12)"; deptColor = "#a78bfa"; }
+                      else if (mDept === "늘봄") { deptBg = "rgba(245, 158, 11, 0.12)"; deptColor = "#f59e0b"; }
 
-                    <div style={{ background: "var(--border-color)", padding: "0.5rem", borderRadius: "6px", border: "1px solid rgba(255,255,255,0.05)", marginTop: "0.25rem" }}>
-                      <span style={{ color: "#FBBF24", fontWeight: "700", display: "block", fontSize: "0.75rem", marginBottom: "0.2rem" }}>⚙️ 운영 및 활성화 방안</span>
-                      <p style={{ margin: 0, fontSize: "0.75rem", lineHeight: "1.3" }}>{equip.opPlan}</p>
-                    </div>
-
-                    <div style={{ background: "rgba(52, 211, 153, 0.05)", padding: "0.5rem", borderRadius: "6px", border: "1px solid rgba(52, 211, 153, 0.1)" }}>
-                      <span style={{ color: "#34D399", fontWeight: "700", display: "block", fontSize: "0.75rem", marginBottom: "0.2rem" }}>📈 운영 실적 (활용 성과)</span>
-                      <p style={{ margin: 0, fontSize: "0.75rem", lineHeight: "1.3" }}>{equip.opPerformance}</p>
-                    </div>
-                  </div>
-                </div>
-              ))
-            ) : (
-              <div className="glass-card" style={{ gridColumn: "span 2", padding: "3rem", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", color: "var(--text-secondary)", textAlign: "center" }}>
-                <Laptop size={40} style={{ marginBottom: "0.75rem", opacity: 0.4 }} />
-                <span>선택하신 <strong>{selectedEquipUnit} 과제</strong>에 등록된 기자재 내역이 없습니다.<br />우측 상단 [기자재 추가] 버튼을 눌러 초기 프레임 데이터를 채워주세요.</span>
-              </div>
-            )}
+                      return (
+                        <tr 
+                          key={equip.id || idx} 
+                          style={{ borderBottom: "1px solid rgba(255,255,255,0.05)", transition: "background 0.15s ease" }}
+                        >
+                          <td style={{ padding: "0.8rem 0.5rem", textAlign: "center", color: "var(--text-secondary)" }}>
+                            {idx + 1}
+                          </td>
+                          <td style={{ padding: "0.8rem 0.5rem", textAlign: "center", fontWeight: "750", color: "var(--accent-color)" }}>
+                            {equip.unit}
+                          </td>
+                          <td style={{ padding: "0.8rem 0.5rem", textAlign: "left", fontWeight: "600" }}>
+                            {equip.deptName || equip.department || "-"}
+                          </td>
+                          <td style={{ padding: "0.8rem 0.5rem", textAlign: "left", fontWeight: "700", color: "white" }}>
+                            {equip.itemName || equip.name || "-"}
+                          </td>
+                          <td style={{ padding: "0.8rem 0.5rem", textAlign: "right", color: "var(--text-secondary)" }}>
+                            {price.toLocaleString()}원
+                          </td>
+                          <td style={{ padding: "0.8rem 0.5rem", textAlign: "center", fontWeight: "600" }}>
+                            {qty}
+                          </td>
+                          <td style={{ padding: "0.8rem 0.5rem", textAlign: "right", fontWeight: "700", color: "#10B981" }}>
+                            {total.toLocaleString()}원
+                          </td>
+                          <td style={{ padding: "0.8rem 0.5rem", textAlign: "left", color: "var(--text-secondary)", maxWidth: "250px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={equip.description || equip.opPlan}>
+                            {equip.description || equip.opPlan || "-"}
+                          </td>
+                          <td style={{ padding: "0.8rem 0.5rem", textAlign: "center" }}>
+                            <span style={{ display: "inline-block", padding: "0.15rem 0.45rem", borderRadius: "0.25rem", fontSize: "0.68rem", fontWeight: "800", background: stepBg, color: stepColor }}>
+                              {equip.step}
+                            </span>
+                          </td>
+                          <td style={{ padding: "0.8rem 0.5rem", textAlign: "center", color: "var(--text-secondary)" }}>
+                            {equip.operation || "-"}
+                          </td>
+                          <td style={{ padding: "0.8rem 0.5rem", textAlign: "center" }}>
+                            <span style={{ display: "inline-block", padding: "0.15rem 0.45rem", borderRadius: "0.25rem", fontSize: "0.68rem", fontWeight: "850", background: deptBg, color: deptColor }}>
+                              {mDept}
+                            </span>
+                          </td>
+                          {currentRole.id !== "GUEST" && (
+                            <td style={{ padding: "0.8rem 0.5rem", textAlign: "center" }}>
+                              <button
+                                onClick={() => {
+                                  if (confirm("해당 기자재 항목을 삭제하시겠습니까?")) {
+                                    setEquipData(activeEquipList.filter(e => e.id !== equip.id));
+                                  }
+                                }}
+                                style={{ background: "transparent", border: "none", color: "rgba(255,255,255,0.25)", cursor: "pointer", transition: "color 0.15s" }}
+                                onMouseOver={(e) => e.currentTarget.style.color = "#ef4444"}
+                                onMouseOut={(e) => e.currentTarget.style.color = "rgba(255,255,255,0.25)"}
+                                title="삭제"
+                              >
+                                <Trash2 size={13} />
+                              </button>
+                            </td>
+                          )}
+                        </tr>
+                      );
+                    });
+                  } else {
+                    return (
+                      <tr>
+                        <td colSpan={currentRole.id !== "GUEST" ? 12 : 11} style={{ padding: "3rem", textAlign: "center", color: "var(--text-secondary)" }}>
+                          <Laptop size={36} style={{ marginBottom: "0.75rem", opacity: 0.3, display: "inline-block" }} />
+                          <p style={{ margin: 0 }}>선택하신 {selectedEquipUnit === "ALL" ? "전체" : `${selectedEquipUnit} 과제`}에 등록된 기자재 내역이 없습니다.</p>
+                        </td>
+                      </tr>
+                    );
+                  }
+                })()}
+              </tbody>
+            </table>
           </div>
 
         </div>
@@ -702,38 +781,55 @@ export default function ProcurementManager({
               {modalType === "equip" && (
                 <>
                   <div>
-                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>기자재 명칭</label>
-                    <input type="text" name="name" value={formData.name} onChange={handleInputChange} required placeholder="예: 고해상도 금속 3D 프린터" style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} />
+                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>학과 / 부서</label>
+                    <input type="text" name="department" value={formData.department} onChange={handleInputChange} required placeholder="예: 간호학과 / 공동기자재지원센터" style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} />
                   </div>
                   <div>
-                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>관련 프로그램</label>
-                    <input type="text" name="program" value={formData.program} onChange={handleInputChange} placeholder="예: 신산업 대응 스마트팩토리 특화 인재 육성" style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} />
-                  </div>
-                  <div>
-                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>관련 학부(과) 또는 센터</label>
-                    <input type="text" name="department" value={formData.department} onChange={handleInputChange} placeholder="예: AI로봇전공 / 공동기자재지원센터" style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} />
-                  </div>
-                  <div>
-                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>추진 일정</label>
-                    <input type="text" name="schedule" value={formData.schedule} onChange={handleInputChange} placeholder="예: 2026.06 발주완료 ➔ 08월 말 검수완료" style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} />
+                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>품명</label>
+                    <input type="text" name="name" value={formData.name} onChange={handleInputChange} required placeholder="예: 임상 실습용 스마트 베드" style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} />
                   </div>
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
                     <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>사업비 계획액 (원)</label>
-                      <input type="number" name="budgetPlan" value={formData.budgetPlan} onChange={handleInputChange} placeholder="예: 60000000" style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} />
+                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>단가 (원)</label>
+                      <input type="number" name="unitPrice" value={formData.unitPrice} onChange={handleInputChange} required placeholder="예: 12000000" style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} />
                     </div>
                     <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>실제 집행액 (원)</label>
-                      <input type="number" name="budgetSpent" value={formData.budgetSpent} onChange={handleInputChange} placeholder="예: 59800000" style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} />
+                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>수량</label>
+                      <input type="number" name="quantity" value={formData.quantity} onChange={handleInputChange} required placeholder="예: 2" style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} />
                     </div>
                   </div>
                   <div>
-                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>기자재 운영 및 활성화 방안</label>
-                    <textarea name="opPlan" value={formData.opPlan} onChange={handleInputChange} placeholder="이용 매뉴얼 작성, 담당 기술조교 운영 방안 기술" style={{ width: "100%", height: "60px", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white", resize: "none" }} />
+                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>관련내용</label>
+                    <textarea name="description" value={formData.description} onChange={handleInputChange} required placeholder="기자재의 사용 목적 및 핵심 구입 연계 사유 기술" style={{ width: "100%", height: "60px", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white", resize: "none" }} />
                   </div>
-                  <div>
-                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>운영 실적 및 활용 성과</label>
-                    <textarea name="opPerformance" value={formData.opPerformance} onChange={handleInputChange} placeholder="현재까지 교육 지원 및 대외 연구 지원 건수 기입" style={{ width: "100%", height: "60px", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white", resize: "none" }} />
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "0.5rem" }}>
+                    <div>
+                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>구매단계</label>
+                      <select name="step" value={formData.step} onChange={handleInputChange} className="user-selector">
+                        <option value="기획">기획</option>
+                        <option value="승인">승인</option>
+                        <option value="구매">구매</option>
+                        <option value="검수">검수</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>운영 구분</label>
+                      <select name="operation" value={formData.operation} onChange={handleInputChange} className="user-selector">
+                        <option value="교과목(정규)">교과목(정규)</option>
+                        <option value="교과목(비정규)">교과목(비정규)</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>담당부서</label>
+                      <select name="mgrDept" value={formData.mgrDept} onChange={handleInputChange} className="user-selector">
+                        <option value="ECC">ECC</option>
+                        <option value="ICC">ICC</option>
+                        <option value="RCC">RCC</option>
+                        <option value="AID-X">AID-X</option>
+                        <option value="늘봄">늘봄</option>
+                        <option value="신산업">신산업</option>
+                      </select>
+                    </div>
                   </div>
                 </>
               )}
