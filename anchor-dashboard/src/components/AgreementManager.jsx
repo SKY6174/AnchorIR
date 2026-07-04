@@ -653,15 +653,20 @@ export default function AgreementManager({
 
           // B. 협약주체(성명) 비교 (+40점)
           if (item.subjectUniversity) {
-            const nameMatch = item.subjectUniversity.match(/[가-힣]{2,4}/g);
-            if (nameMatch) {
-              nameMatch.forEach(nm => {
-                if (extractedName && extractedName.includes(nm)) {
-                  nameScore = 40;
-                } else if (fileBaseName.includes(nm)) {
-                  nameScore = Math.max(nameScore, 25);
-                }
-              });
+            const extractSubjectName = (str) => {
+              const parts = str.trim().split(/\s+/);
+              const last = parts[parts.length - 1];
+              if (last && /^[가-힣]{2,4}$/.test(last)) return last;
+              const match = str.match(/[가-힣]{2,4}$/);
+              return match ? match[0] : null;
+            };
+            const subName = extractSubjectName(item.subjectUniversity);
+            if (subName) {
+              if (extractedName && extractedName.includes(subName)) {
+                nameScore = 40;
+              } else if (fileBaseName.includes(subName)) {
+                nameScore = 25;
+              }
             }
           }
 
