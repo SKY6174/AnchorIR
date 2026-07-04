@@ -570,10 +570,12 @@ export default function AgreementManager({
     const results = [];
     const cleanName = (name) => {
       if (!name) return "";
-      const corpRegex = new RegExp("\\(\\s*주\\s*\\)|\\(\\s*유\\s*\\)|\\(\\s*합\\s*\\)|\\(\\s*합자\\s*\\)|\\(\\s*재\\s*\\)|\\(\\s*사\\s*\\)|\\(\\s*재단\\s*\\)|\\(\\s*사단\\s*\\)|주\\s*식\\s*회\\s*사|유\\s*한\\s*회\\s*사|㈜|㈔|㈎", "g");
-      return name.replace(corpRegex, "")
-                 .replace(/[\(\)]/g, "")
-                 .replace(/\s/g, "");
+      // 1) 공백 선제적 소거 (정규식 공백 매칭 오류 방지)
+      const noSpace = name.replace(/\s/g, "");
+      // 2) 일반 문자열 기반 법인명 정규식 생성자
+      const corpRegex = new RegExp("\\(주\\)|\\(유\\)|\\(합\\)|\\(합자\\)|\\(재\\)|\\(사\\)|\\(재단\\)|\\(사단\\)|주식회사|유한회사|㈜|㈔|㈎", "g");
+      return noSpace.replace(corpRegex, "")
+                    .replace(/[\(\)]/g, ""); // 남은 괄호 완벽 제거
     };
 
     // 파일명에서 끝 괄호 안의 성명 정밀 추출 (예: (김지수) -> 김지수)
@@ -584,19 +586,19 @@ export default function AgreementManager({
 
     // 파일명에서 언더바(_) 뒤, 괄호 앞의 기관명 정밀 추출
     const extractOrgName = (str) => {
-      let temp = str;
-      const parenIndex = str.lastIndexOf("(");
+      // 1) 공백 선제적 소거
+      let temp = str.replace(/\s/g, "");
+      const parenIndex = temp.lastIndexOf("(");
       if (parenIndex !== -1) {
-        temp = str.substring(0, parenIndex);
+        temp = temp.substring(0, parenIndex);
       }
       const underIndex = temp.lastIndexOf("_");
       if (underIndex !== -1) {
         temp = temp.substring(underIndex + 1);
       }
-      const corpRegex = new RegExp("\\(\\s*주\\s*\\)|\\(\\s*유\\s*\\)|\\(\\s*합\\s*\\)|\\(\\s*합자\\s*\\)|\\(\\s*재\\s*\\)|\\(\\s*사\\s*\\)|\\(\\s*재단\\s*\\)|\\(\\s*사단\\s*\\)|주\\s*식\\s*회\\s*사|유\\s*한\\s*회\\s*사|㈜|㈔|㈎", "g");
+      const corpRegex = new RegExp("\\(주\\)|\\(유\\)|\\(합\\)|\\(합자\\)|\\(재\\)|\\(사\\)|\\(재단\\)|\\(사단\\)|주식회사|유한회사|㈜|㈔|㈎", "g");
       return temp.replace(corpRegex, "")
-                 .replace(/[\(\)]/g, "")
-                 .trim();
+                 .replace(/[\(\)]/g, "");
     };
 
     for (const file of files) {
@@ -619,8 +621,8 @@ export default function AgreementManager({
       const has2025 = fileBaseName.includes("2025") || fileBaseName.includes("25") || fileBaseName.includes("1차");
       const has2026 = fileBaseName.includes("2026") || fileBaseName.includes("26") || fileBaseName.includes("2차");
 
-      const extractedOrg = extractOrgName(fileBaseName);
-      const extractedName = extractNameInParentheses(fileBaseName);
+      const extractedOrg = extractOrgName(fileBaseName);          
+      const extractedName = extractNameInParentheses(fileBaseName); 
 
       let bestScore = 0;
       let matchedTarget = null;
@@ -632,18 +634,16 @@ export default function AgreementManager({
         nameScore: 0,
         yearScore: 0,
         dateScore: 0,
-        breakdown: "매칭 흔적 없음"
+        breakdown: "매칭 실패"
       };
 
       if (agreementsSubTab === "agreements") {
         targetType = "agreement";
         filteredAgreements.forEach(item => {
-          let orgScore = 0;
-          let nameScore = 0;
-          let yearScore = 0;
-          let dateScore = 0;
+          let orgMatch = false;
+          let nameMatch = false;
           
-          // A. 기관명 정밀 비교 (+50점)
+          // A. 기관명 포함 검증 (파일명 추출 기관이 대시보드 데이터에 포함되거나 그 반대)
           const compareOrg = (orgInput) => {
             if (!orgInput) return;
             const orgsArray = Array.isArray(orgInput) ? orgInput : [orgInput];
@@ -652,167 +652,125 @@ export default function AgreementManager({
               const rawOrgName = typeof org === "object" && org !== null ? org.name : org;
               const orgClean = cleanName(rawOrgName);
               const fileOrgClean = cleanName(extractedOrg);
-              if (orgClean && fileOrgClean && orgClean.includes(fileOrgClean)) {
-                orgScore = 50;
-              } else if (orgClean && cleanName(fileBaseName).includes(orgClean)) {
-                orgScore = Math.max(orgScore, 30);
+              if (orgClean && fileOrgClean && (orgClean.includes(fileOrgClean) || fileOrgClean.includes(orgClean))) {
+                orgMatch = true;
               }
             });
           };
           compareOrg(item.organizations);
 
-          // B. 협약주체(성명) 비교 (+40점)
+          // B. 성명 포함 검증 (추출된 이름이 협약주체의 '학과+이름'에 포함되면 OK)
           if (item.subjectUniversity && extractedName) {
             const subClean = cleanName(item.subjectUniversity);
             const nameClean = cleanName(extractedName);
             if (subClean && nameClean && subClean.includes(nameClean)) {
-              nameScore = 40;
-            } else if (nameClean && cleanName(fileBaseName).includes(nameClean)) {
-              nameScore = 25;
+              nameMatch = true;
             }
           }
 
-          // C. 연도/날짜 비교 (+30점 / 추가 +10점 보너스)
+          // C. 연도/날짜 비교 (가산용)
           const itemYear = getYearFromDate(item.date);
-          if (itemYear === 1 && has2025) yearScore = 30;
-          if (itemYear === 2 && has2026) yearScore = 30;
-          
-          if (parsedDate && item.date === parsedDate) {
-            dateScore = 10;
-          }
+          const yearMatch = (itemYear === 1 && has2025) || (itemYear === 2 && has2026);
+          const dateMatchCheck = parsedDate && item.date === parsedDate;
 
-          const score = orgScore + nameScore + yearScore + dateScore;
+          // 두 핵심 조건이 모두 충족되면 매칭 성공(100점) 처리
+          const isMatched = orgMatch && nameMatch;
+          const score = isMatched ? 100 : 0;
 
-          if (score > bestScore) {
+          if (score > bestScore || (score === bestScore && score === 100)) {
             bestScore = score;
             matchedTarget = item;
-
-            const breakdownParts = [];
-            if (orgScore > 0) breakdownParts.push(`기관명(+${orgScore})`);
-            if (nameScore > 0) breakdownParts.push(`성명(+${nameScore})`);
-            if (yearScore > 0) breakdownParts.push(`연도(+${yearScore})`);
-            if (dateScore > 0) breakdownParts.push(`날짜(+${dateScore})`);
 
             bestScoreDetails = {
               extractedOrg: extractedOrg || "없음",
               extractedName: extractedName || "없음",
-              orgScore,
-              nameScore,
-              yearScore,
-              dateScore,
-              breakdown: breakdownParts.join(" + ")
+              orgScore: orgMatch ? 50 : 0,
+              nameScore: nameMatch ? 50 : 0,
+              yearScore: yearMatch ? 30 : 0,
+              dateScore: dateMatchCheck ? 10 : 0,
+              breakdown: `기관명:${orgMatch ? "일치" : "불일치"} + 성명:${nameMatch ? "일치" : "불일치"} (${yearMatch ? "연도부합" : "연도교차"})`
             };
           }
         });
       } else if (agreementsSubTab === "certificates") {
         targetType = "certificate";
         filteredCertificates.forEach(item => {
-          let orgScore = 0;
-          let nameScore = 0;
-          let yearScore = 0;
-          let dateScore = 0;
+          let orgMatch = false;
+          let nameMatch = false;
 
-          // A. 발급번호 매핑 (+50점)
+          // A. 발급번호 매핑
           if (item.certNo && (fileBaseName.includes(item.certNo) || (extractedOrg && extractedOrg.includes(item.certNo)))) {
-            orgScore = 50;
+            orgMatch = true;
           }
 
-          // B. 성명 비교 (+40점)
+          // B. 성명 포함 검증 (추출 성명이 대시보드 수급자에 포함되면 인정)
           if (item.recipientName && extractedName) {
             const recClean = cleanName(item.recipientName);
             const nameClean = cleanName(extractedName);
             if (recClean && nameClean && recClean.includes(nameClean)) {
-              nameScore = 40;
-            } else if (nameClean && cleanName(fileBaseName).includes(nameClean)) {
-              nameScore = 25;
+              nameMatch = true;
             }
           }
 
-          // C. 연도/날짜 비교 (+30점 / 추가 +10점)
           const itemYear = getYearFromDate(item.issueDate);
-          if (itemYear === 1 && has2025) yearScore = 30;
-          if (itemYear === 2 && has2026) yearScore = 30;
+          const yearMatch = (itemYear === 1 && has2025) || (itemYear === 2 && has2026);
 
-          if (parsedDate && item.issueDate === parsedDate) {
-            dateScore = 10;
-          }
+          const isMatched = orgMatch && nameMatch;
+          const score = isMatched ? 100 : 0;
 
-          const score = orgScore + nameScore + yearScore + dateScore;
-
-          if (score > bestScore) {
+          if (score > bestScore || (score === bestScore && score === 100)) {
             bestScore = score;
             matchedTarget = item;
-
-            const breakdownParts = [];
-            if (orgScore > 0) breakdownParts.push(`발급번호(+${orgScore})`);
-            if (nameScore > 0) breakdownParts.push(`성명(+${nameScore})`);
-            if (yearScore > 0) breakdownParts.push(`연도(+${yearScore})`);
-            if (dateScore > 0) breakdownParts.push(`날짜(+${dateScore})`);
 
             bestScoreDetails = {
               extractedOrg: extractedOrg || "없음",
               extractedName: extractedName || "없음",
-              orgScore,
-              nameScore,
-              yearScore,
-              dateScore,
-              breakdown: breakdownParts.join(" + ")
+              orgScore: orgMatch ? 50 : 0,
+              nameScore: nameMatch ? 50 : 0,
+              yearScore: yearMatch ? 30 : 0,
+              dateScore: 0,
+              breakdown: `발급번호:${orgMatch ? "일치" : "불일치"} + 성명:${nameMatch ? "일치" : "불일치"}`
             };
           }
         });
       } else if (agreementsSubTab === "awards") {
         targetType = "award";
         filteredAwards.forEach(item => {
-          let orgScore = 0;
-          let nameScore = 0;
-          let yearScore = 0;
-          let dateScore = 0;
+          let orgMatch = false;
+          let nameMatch = false;
 
-          // A. 발급번호 매핑 (+50점)
+          // A. 발급번호 매핑
           if (item.awardNo && (fileBaseName.includes(item.awardNo) || (extractedOrg && extractedOrg.includes(item.awardNo)))) {
-            orgScore = 50;
+            orgMatch = true;
           }
 
-          // B. 성명 비교 (+40점)
+          // B. 성명 포함 검증 (추출 성명이 대시보드 수급자에 포함되면 인정)
           if (item.recipientName && extractedName) {
             const recClean = cleanName(item.recipientName);
             const nameClean = cleanName(extractedName);
             if (recClean && nameClean && recClean.includes(nameClean)) {
-              nameScore = 40;
-            } else if (nameClean && cleanName(fileBaseName).includes(nameClean)) {
-              nameScore = 25;
+              nameMatch = true;
             }
           }
 
-          // C. 연도/날짜 비교 (+30점 / 추가 +10점)
           const itemYear = getYearFromDate(item.issueDate);
-          if (itemYear === 1 && has2025) yearScore = 30;
-          if (itemYear === 2 && has2026) yearScore = 30;
+          const yearMatch = (itemYear === 1 && has2025) || (itemYear === 2 && has2026);
 
-          if (parsedDate && item.issueDate === parsedDate) {
-            dateScore = 10;
-          }
+          const isMatched = orgMatch && nameMatch;
+          const score = isMatched ? 100 : 0;
 
-          const score = orgScore + nameScore + yearScore + dateScore;
-
-          if (score > bestScore) {
+          if (score > bestScore || (score === bestScore && score === 100)) {
             bestScore = score;
             matchedTarget = item;
-
-            const breakdownParts = [];
-            if (orgScore > 0) breakdownParts.push(`발급번호(+${orgScore})`);
-            if (nameScore > 0) breakdownParts.push(`성명(+${nameScore})`);
-            if (yearScore > 0) breakdownParts.push(`연도(+${yearScore})`);
-            if (dateScore > 0) breakdownParts.push(`날짜(+${dateScore})`);
 
             bestScoreDetails = {
               extractedOrg: extractedOrg || "없음",
               extractedName: extractedName || "없음",
-              orgScore,
-              nameScore,
-              yearScore,
-              dateScore,
-              breakdown: breakdownParts.join(" + ")
+              orgScore: orgMatch ? 50 : 0,
+              nameScore: nameMatch ? 50 : 0,
+              yearScore: yearMatch ? 30 : 0,
+              dateScore: 0,
+              breakdown: `발급번호:${orgMatch ? "일치" : "불일치"} + 성명:${nameMatch ? "일치" : "불일치"}`
             };
           }
         });
@@ -825,7 +783,7 @@ export default function AgreementManager({
         reader.readAsDataURL(file);
       });
 
-      // 컷오프 한계선을 70점 이상으로 설정 (이중 조건 만족 필수 ➔ 오매칭 방지 및 정밀 매칭)
+      // 컷오프 한계선을 70점 이상으로 설정 (성공 점수는 100점이므로 조건 충족 시 무조건 매핑완료)
       if (bestScore >= 70 && matchedTarget) {
         results.push({
           fileName,
@@ -844,8 +802,8 @@ export default function AgreementManager({
           fileData,
           status: "fail",
           targetId: null,
-          targetDesc: "일치하는 데이터를 찾지 못함 (과락)",
-          score: bestScore,
+          targetDesc: "일치하는 데이터를 찾지 못함 (기관명 또는 성명 불일치)",
+          score: 0,
           details: {
             extractedOrg: extractedOrg || "없음",
             extractedName: extractedName || "없음",
@@ -853,7 +811,7 @@ export default function AgreementManager({
             nameScore: 0,
             yearScore: 0,
             dateScore: 0,
-            breakdown: `최고 적합도: ${bestScore}점 (기준 점수 70점 미달)`
+            breakdown: "조건 미달 (기관명 또는 성명 불일치)"
           }
         });
       }
