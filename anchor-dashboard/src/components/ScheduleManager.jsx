@@ -3393,11 +3393,24 @@ export default function ScheduleManager({
                     </label>
                     {(() => {
                       const deptMembers = (members || []).filter(m => {
-                        if (!m.dept) return false;
-                        if (m.dept === formData.dept) return true;
-                        // 신산업특화지원센터와 신산업특화센터 명칭 호환성 예외 처리
-                        if (formData.dept === "신산업특화지원센터" && m.dept === "신산업특화센터") return true;
-                        return false;
+                        // 1. 부서 일치 검사
+                        let isDeptMatch = m.dept === formData.dept;
+                        if (formData.dept === "신산업특화지원센터" && m.dept === "신산업특화센터") isDeptMatch = true;
+                        if (!isDeptMatch) return false;
+
+                        // 2. 해당 회의 일자 기준 재직(참여) 기간 포함 여부 판정
+                        const start = m.startDate || m.start_date || m.hireDate || m.hire_date || "2025-03-01";
+                        const end = m.endDate || m.end_date || "";
+                        const status = m.status || "참여중";
+
+                        const meetingDateStr = formData.meetingDate;
+                        if (meetingDateStr) {
+                          if (start && meetingDateStr < start) return false;
+                          if (end && meetingDateStr > end) return false;
+                        }
+
+                        // 3. 최종 활성 참여중 상태 판별
+                        return status === "참여중";
                       });
 
                       if (deptMembers.length === 0) {
