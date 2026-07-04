@@ -1344,7 +1344,12 @@ export default function App() {
   // 캐시 오염 등으로 렌더링 에러가 날 경우, 화이트스크린 방지를 위해 로컬 세션을 비우고 클린 샌드박스로 자동 복원합니다.
   useEffect(() => {
     const handleGlobalError = (event) => {
-      const err = event.error || event.reason;
+      // 비동기 API 통신 오류(unhandledrejection)는 렌더링 화이트스크린 유발 주범이 아니므로 자가치유에서 전면 제외
+      if (event.type === "unhandledrejection") {
+        return;
+      }
+
+      const err = event.error;
       if (!err) return;
       
       const errMsg = String(err.message || err);
@@ -1357,7 +1362,15 @@ export default function App() {
         errMsg.includes("null") ||
         errMsg.includes("is not a function");
         
-      if (!isCriticalRenderError) {
+      // Supabase 통신이나 네트워크 관련 에러 메시지는 자가치유 튕김 대상에서 전면 차단
+      const isNetworkOrDbError =
+        errMsg.includes("PostgrestError") ||
+        errMsg.includes("supabase") ||
+        errMsg.includes("FetchError") ||
+        errMsg.includes("NetworkError") ||
+        errMsg.includes("Failed to fetch");
+
+      if (!isCriticalRenderError || isNetworkOrDbError) {
         return; // API 요청 실패, CORS, 406 에러 등의 네트워크 지연/차단 오류는 자가치유 리로드를 타지 않고 넘어갑니다.
       }
 

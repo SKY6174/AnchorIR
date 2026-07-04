@@ -1103,103 +1103,103 @@ export default function ScheduleManager({
     const mockPress = [
       {
         id: Date.now() + 1,
+        year: selectedYear,
         type: "신문",
         media: "경상일보",
         title: `[ANCHOR] "2026년부터 RISE체계, 지역성장 인재양성체계 'ANCHOR'로 전면 명칭 변경 및 개편"`,
-        broadcastDate: `${targetYearNum}-01-20`,
-        broadcastTime: "09:00",
+        broadcastDate: `${targetYearNum}-01-20T09:00:00+09:00`,
         pressContent: "울산 지역 대학과 산업계의 혁신을 주도해 온 지역혁신중심 대학지원체계(RISE)가 2026년부터 '지역성장 인재양성체계(ANCHOR, 앵커)'로 명칭이 변경되고 대대적인 실행 체계가 개편되어 작동할 예정이다. 지자체 중심의 정주 인재 확보를 다진다.",
-        pressUrl: "https://www.ksilbo.co.kr/news/articleView.html?idxno=100123"
+        contentUrl: "https://www.ksilbo.co.kr/news/articleView.html?idxno=100123"
       },
       {
         id: Date.now() + 2,
+        year: selectedYear,
         type: "기타",
         media: "대학 뉴스룸",
         title: `송경영 울산과학대 RISE사업단장, ANCHOR 체계 전환에 따른 전문대학 대응 전략 발표`,
-        broadcastDate: `${targetYearNum}-02-15`,
-        broadcastTime: "11:00",
+        broadcastDate: `${targetYearNum}-02-15T11:00:00+09:00`,
         pressContent: "송경영 울산과학대 RISE사업단장(전문대학RISE사업단협의회 부회장)은 전국 전문대 관리자 연수회에서 RISE 1차년도 성과를 기반으로 앵커(ANCHOR) 체계 전환에 따른 전문대학의 대응 방향 및 지산학연 연계 현장 소통 방안을 적극 개진했다.",
-        pressUrl: "https://www.uc.ac.kr/pr/news/view?id=9876"
+        contentUrl: "https://www.uc.ac.kr/pr/news/view?id=9876"
       },
       {
         id: Date.now() + 3,
+        year: selectedYear,
         type: "신문",
         media: "울산신문",
         title: `울산과학대 기계공학부 김기범 교수, 교육부 주관 '2025 라이즈스타' 선정 영예`,
-        broadcastDate: `${targetYearNum}-03-05`,
-        broadcastTime: "14:30",
+        broadcastDate: `${targetYearNum}-03-05T14:30:00+09:00`,
         pressContent: "울산과학대 기계공학부 김기범 교수가 RISE 사업을 기반으로 지역 산업 발전과 산학협력 생태계 구축에 기여한 공로를 인정받아 교육부 주관 '2025 라이즈스타'에 최종 선정되는 영예를 안았다.",
-        pressUrl: "https://www.ulsanpress.net/news/articleView.html?idxno=200345"
+        contentUrl: "https://www.ulsanpress.net/news/articleView.html?idxno=200345"
       },
       {
         id: Date.now() + 4,
+        year: selectedYear,
         type: "방송",
         media: "KBS울산",
         title: `초등 늘봄학교 안정적 안착 돕는 울산과학대 늘봄누리센터... 문화예술 교육 강사 매칭 우수사례 주목`,
-        broadcastDate: `${targetYearNum}-04-18`,
-        broadcastTime: "21:30",
+        broadcastDate: `${targetYearNum}-04-18T21:30:00+09:00`,
         pressContent: "초등 늘봄학교의 현장 정착을 적극 지원하는 울산과학대학교 늘봄누리센터가 울산시교육청과 밀접하게 연동하여 우수한 문화예술 및 체육 강사를 초등학교 현장에 매칭하여 90% 이상의 교내 만족도를 거두며 순항하고 있다.",
-        pressUrl: "https://www.youtube.com/watch?v=kbs_ulsan_neulbom_2026"
+        contentUrl: "https://www.youtube.com/watch?v=kbs_ulsan_neulbom_2026"
       },
       {
         id: Date.now() + 5,
+        year: selectedYear,
         type: "기타",
         media: "블로그",
         title: `[현장 소식] 울산과학대 지역협업센터, 재학생 참여 '울리단길 런케이션' 지역 활성화 성공적 종료`,
-        broadcastDate: `${targetYearNum}-05-22`,
-        broadcastTime: "11:00",
+        broadcastDate: `${targetYearNum}-05-22T11:00:00+09:00`,
         pressContent: "울산과학대학교 지역협업센터(RCC)는 재학생들이 직접 참가해 지역 상권의 정량 문제를 분석하고 창업 브랜딩 솔루션을 도출해내는 '울리단길 런케이션' 프로젝트를 성황리에 종료하며 청년 정주 여건을 대폭 개선했다.",
-        pressUrl: "https://blog.naver.com/uc_rise_anchor/22055667"
+        contentUrl: "https://blog.naver.com/uc_rise_anchor/22055667"
       },
       {
         id: Date.now() + 6,
+        year: selectedYear,
         type: "신문",
         media: "한국대학신문",
         title: `울산과학대 RISE사업단, 청년 여성 대상 AI 리터러시 교육 및 AI 실무 창업 전문가 배출`,
-        broadcastDate: `${targetYearNum}-06-12`,
-        broadcastTime: "10:00",
+        broadcastDate: `${targetYearNum}-06-12T10:00:00+09:00`,
         pressContent: "울산과학대학교 RISE사업단은 지역 청년 여성들의 디지털 격차를 해소하고 신산업 일자리를 발굴하기 위해 AI 리터러시 고도화 교육을 실시하여 다수의 AI 융합 실무 창업 전문가를 배출하는 우수한 성과를 달성했다.",
-        pressUrl: "https://news.unn.net/news/articleView.html?idxno=300789"
+        contentUrl: "https://news.unn.net/news/articleView.html?idxno=300789"
       },
       {
         id: Date.now() + 7,
+        year: selectedYear,
         type: "방송",
         media: "UBC울산방송",
         title: `울산과학대, 글로컬 지산학 협력을 통한 지속 가능 도시 울산 혁신 모델 'UC-HYPER' 공표`,
-        broadcastDate: `${targetYearNum}-07-15`,
-        broadcastTime: "18:30",
+        broadcastDate: `${targetYearNum}-07-15T18:30:00+09:00`,
         pressContent: "울산과학대학교는 지자체 및 산업계와 공동 협업하여 지속 가능한 도시 혁신 모델인 'UC-HYPER' 전문기술인재 양성을 추진하며, 울산의 핵심 기업들과 지산학 협력을 대폭 강화하는 업무협약을 체결했다.",
-        pressUrl: "https://www.youtube.com/watch?v=ubc_ulsan_glocal_rise"
+        contentUrl: "https://www.youtube.com/watch?v=ubc_ulsan_glocal_rise"
       },
       {
         id: Date.now() + 8,
+        year: selectedYear,
         type: "신문",
         media: "울산매일신문",
         title: `울산과학대 신산업특화지원센터, 친환경 화학 및 이차전지 분야 산학 공동 R&BD 착수`,
-        broadcastDate: `${targetYearNum}-08-20`,
-        broadcastTime: "09:30",
+        broadcastDate: `${targetYearNum}-08-20T09:30:00+09:00`,
         pressContent: "신산업특화지원센터는 울산의 미래 주력 산업인 화학 및 이차전지 신소재 고도화를 위해 대기업 및 중소 협력업체들과 공동 R&BD 과제를 발굴하고 지산학연 연계를 통한 성과 창출에 돌입했다.",
-        pressUrl: "https://www.iusm.co.kr/news/articleView.html?idxno=400123"
+        contentUrl: "https://www.iusm.co.kr/news/articleView.html?idxno=400123"
       },
       {
         id: Date.now() + 9,
+        year: selectedYear,
         type: "기타",
         media: "RISE 뉴스레터",
         title: `지산학교육센터(ECC)와 늘봄누리센터의 연계 활성화: 초등 돌봄 교실 창의 코딩 교구 및 멘토링 매칭`,
-        broadcastDate: `${targetYearNum}-09-15`,
-        broadcastTime: "17:00",
+        broadcastDate: `${targetYearNum}-09-15T17:00:00+09:00`,
         pressContent: "지산학교육센터(ECC)의 IT 교육 노하우와 늘봄누리센터의 초등 인프라망을 결합해 울산 지역 돌봄 교실 아동들에게 창의적인 코딩 교구와 재학생 멘토링 지도를 공동 제공하는 융합 성과를 창출해냈다.",
-        pressUrl: "https://newsletter.uc-rise.kr/issue-5-collab"
+        contentUrl: "https://newsletter.uc-rise.kr/issue-5-collab"
       },
       {
         id: Date.now() + 10,
+        year: selectedYear,
         type: "신문",
         media: "울산포커스",
         title: `울산과학대 RISE 앵커사업단, 사업 예산 집행 건전성 정밀 모니터링 및 실무 가이드라인 수립`,
-        broadcastDate: `${targetYearNum}-10-08`,
-        broadcastTime: "11:30",
+        broadcastDate: `${targetYearNum}-10-08T11:30:00+09:00`,
         pressContent: "RISE사업비관리위원회는 연차별 재정 건전성 관리 지침에 의거해 국고 및 시비 매칭 집행 실태를 정밀 분석했으며, 신산업 트랙 지원 분야의 예산 효율화를 도모하기 위한 예산 재배분안을 의결했다.",
-        pressUrl: "https://www.ulsanfocus.co.kr/news/articleView.html?idxno=500789"
+        contentUrl: "https://www.ulsanfocus.co.kr/news/articleView.html?idxno=500789"
       }
     ];
 
