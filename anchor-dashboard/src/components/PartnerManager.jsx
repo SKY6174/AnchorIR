@@ -268,7 +268,14 @@ export default function PartnerManager({ selectedYear }) {
     const ws = XLSX.utils.json_to_sheet(dataToExport);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "파트너기관_대장");
-    XLSX.writeFile(wb, `UC_ANCHOR_파트너기관_대장_${selectedYear}차년도.xlsx`);
+
+    const wbout = XLSX.write(wb, { bookType: "xlsx", type: "base64" });
+    const a = document.createElement("a");
+    a.href = `data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,${wbout}`;
+    a.download = `UC_ANCHOR_파트너기관_대장_${selectedYear}차년도.xlsx`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
   };
 
   // 엑셀 서식 다운로드 (템플릿)
@@ -292,8 +299,14 @@ export default function PartnerManager({ selectedYear }) {
     
     // 열 너비 설정
     ws["!cols"] = Array(8).fill({ wch: 25 });
-    
-    XLSX.writeFile(wb, "UC_ANCHOR_파트너기관_업로드_서식.xlsx");
+
+    const wbout = XLSX.write(wb, { bookType: "xlsx", type: "base64" });
+    const a = document.createElement("a");
+    a.href = `data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,${wbout}`;
+    a.download = "UC_ANCHOR_파트너기관_업로드_서식.xlsx";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
   };
 
   // 엑셀 업로드 (가져오기)

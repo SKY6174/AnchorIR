@@ -351,7 +351,14 @@ export default function AgreementManager({
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "업로드템플릿");
     ws["!cols"] = Array(7).fill({ wch: 25 });
-    XLSX.writeFile(wb, fileName);
+
+    const wbout = XLSX.write(wb, { bookType: "xlsx", type: "base64" });
+    const a = document.createElement("a");
+    a.href = `data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,${wbout}`;
+    a.download = fileName;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
   };
 
   // 엑셀 업로드 (가져오기)
