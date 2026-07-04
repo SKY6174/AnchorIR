@@ -4984,6 +4984,26 @@ export default function ScheduleManager({
               {/* 언론보도 일정 등록 */}
               {modalType === "press" && (
                 <>
+                  {/* ✨ AI 자동 입력 안내 배너 */}
+                  <div style={{
+                    background: "rgba(139, 92, 246, 0.08)",
+                    border: "1px dashed rgba(139, 92, 246, 0.25)",
+                    borderRadius: "8px",
+                    padding: "0.75rem 1rem",
+                    marginBottom: "1.25rem",
+                    fontSize: "0.78rem",
+                    color: "var(--text-primary)",
+                    lineHeight: "1.4",
+                    display: "flex",
+                    alignItems: "flex-start",
+                    gap: "0.5rem"
+                  }}>
+                    <span style={{ fontSize: "1rem" }}>💡</span>
+                    <span>
+                      <strong style={{ color: "#a78bfa" }}>간편 입력 팁</strong>: 맨 아래의 <strong style={{ textDecoration: "underline" }}>보도 내용 URL</strong>만 입력하신 뒤 우측의 <strong style={{ color: "#a78bfa" }}>[✨ AI 자동 입력]</strong> 버튼을 누르면, 방송 구분 / 매체 / 제목 / 일시 / 상세 내용까지 AI(Gemini)가 실시간으로 수집하여 일괄 입력해 줍니다.
+                    </span>
+                  </div>
+
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
                     <div>
                       <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>보도 구분</label>
