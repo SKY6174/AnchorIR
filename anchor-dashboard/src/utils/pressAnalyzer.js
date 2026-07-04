@@ -89,7 +89,7 @@ export async function analyzePressUrlWithAiConsensus({ url, selectedYear, apiKey
           const m = html.match(rx);
           if (m && m[1]) {
             const innerStr = m[1].trim();
-            const dateMatch = innerStr.match(/(202\d)[.\-/]?(0[1-9]|1[0-2])[.\-/]?([0-9]|[12]\d|3[01])/);
+            const dateMatch = innerStr.match(/(202\d)[.\-/]?(0[1-9]|1[0-2])[.\-/]?([0-2]\d|3[01]|[1-9])/);
             if (dateMatch) {
               const year = dateMatch[1];
               const month = dateMatch[2].padStart(2, '0');
@@ -102,7 +102,7 @@ export async function analyzePressUrlWithAiConsensus({ url, selectedYear, apiKey
 
         // B. 메타태그에서 못 찾은 경우 전체 텍스트에서 2020년대 YYYY.MM.DD 표준 패턴 스캔
         if (!fetchedDate) {
-          const standardDateMatch = html.match(/(202\d)[.\-/](0[1-9]|1[0-2])[.\-/](0[1-9]|[12]\d|3[01])/);
+          const standardDateMatch = html.match(/(202\d)[.\-/](0[1-9]|1[0-2])[.\-/]([0-2]\d|3[01]|[1-9])/);
           if (standardDateMatch) {
             fetchedDate = `${standardDateMatch[1]}-${standardDateMatch[2].padStart(2, '0')}-${standardDateMatch[3].padStart(2, '0')}`;
           }

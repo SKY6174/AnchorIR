@@ -101,7 +101,7 @@ export default async function handler(req, res) {
             const m = html.match(rx);
             if (m && m[1]) {
               const innerStr = m[1].trim();
-              const dateMatch = innerStr.match(/(202\d)[.\-/]?(0[1-9]|1[0-2])[.\-/]?([0-9]|[12]\d|3[01])/);
+              const dateMatch = innerStr.match(/(202\d)[.\-/]?(0[1-9]|1[0-2])[.\-/]?([0-2]\d|3[01]|[1-9])/);
               if (dateMatch) {
                 const year = dateMatch[1];
                 const month = dateMatch[2].padStart(2, '0');
@@ -114,7 +114,7 @@ export default async function handler(req, res) {
 
           // B. 메타태그 누락 시 전체 텍스트 YYYY.MM.DD 검색
           if (!fetchedDate) {
-            const standardDateMatch = html.match(/(202\d)[.\-/](0[1-9]|1[0-2])[.\-/](0[1-9]|[12]\d|3[01])/);
+            const standardDateMatch = html.match(/(202\d)[.\-/](0[1-9]|1[0-2])[.\-/]([0-2]\d|3[01]|[1-9])/);
             if (standardDateMatch) {
               fetchedDate = `${standardDateMatch[1]}-${standardDateMatch[2].padStart(2, '0')}-${standardDateMatch[3].padStart(2, '0')}`;
             }
