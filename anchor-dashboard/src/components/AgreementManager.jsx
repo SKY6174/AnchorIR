@@ -37,6 +37,7 @@ export default function AgreementManager({
   const [inputCenter, setInputCenter] = useState("ECC센터");
   const [inputOrganizations, setInputOrganizations] = useState([{ name: "", subject: "" }]);
   const [inputSubjectUniv, setInputSubjectUniv] = useState("단장");
+  const [univSubjectType, setUnivSubjectType] = useState("단장");
   const [inputUnitId, setInputUnitId] = useState("");
   const [inputContents, setInputContents] = useState([]);
   const [inputFileName, setInputFileName] = useState("");
@@ -588,6 +589,7 @@ export default function AgreementManager({
     setInputCenter("ECC센터");
     setInputOrganizations([{ name: "", subject: "" }]);
     setInputSubjectUniv("단장");
+    setUnivSubjectType("단장");
     setInputUnitId(availableUnits[0]?.id || "");
     setInputContents([]);
     setInputFileName("");
@@ -974,7 +976,15 @@ export default function AgreementManager({
                                     setInputDate(agr.date || "");
                                     setInputCenter(agr.center || "ECC센터");
                                     setInputOrganizations(Array.isArray(agr.organizations) ? agr.organizations.map(o => typeof o === "object" ? { name: o.name || "", subject: o.subject || "" } : { name: o, subject: "" }) : [{ name: "", subject: "" }]);
-                                    setInputSubjectUniv(agr.subjectUniversity || "단장");
+                                    
+                                    const subUniv = agr.subjectUniversity || "단장";
+                                    setInputSubjectUniv(subUniv);
+                                    if (["단장", "센터장"].includes(subUniv)) {
+                                      setUnivSubjectType(subUniv);
+                                    } else {
+                                      setUnivSubjectType("기타");
+                                    }
+
                                     setInputUnitId(agr.unitId || "");
                                     setInputContents(Array.isArray(agr.contents) ? [...agr.contents] : []);
                                     setInputFileName(agr.fileName || "");
@@ -1215,12 +1225,58 @@ export default function AgreementManager({
                 </div>
               </div>
               <div>
-                <label style={{ display: "block", fontSize: "0.65rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>대학 측 협약주체 (UC)</label>
-                <select value={inputSubjectUniv} onChange={(e) => setInputSubjectUniv(e.target.value)} style={{ width: "100%", padding: "0.35rem 0.5rem", fontSize: "0.75rem", background: "#27272a", color: "white", border: "1px solid var(--border-color-dark)", borderRadius: "0.25rem" }}>
-                  <option value="총장">총장</option>
-                  <option value="단장">단장</option>
-                  <option value="센터장">센터장</option>
-                </select>
+                <label style={{ display: "block", fontSize: "0.65rem", color: "var(--text-secondary-dark)", marginBottom: "0.4rem" }}>대학 측 협약주체 (UC)</label>
+                <div style={{ display: "flex", gap: "0.4rem", marginBottom: univSubjectType === "기타" ? "0.4rem" : "0" }}>
+                  {["단장", "센터장", "기타"].map((t) => {
+                    const isSelected = univSubjectType === t;
+                    return (
+                      <button
+                        key={t}
+                        type="button"
+                        onClick={() => {
+                          setUnivSubjectType(t);
+                          if (t !== "기타") {
+                            setInputSubjectUniv(t);
+                          } else {
+                            setInputSubjectUniv("");
+                          }
+                        }}
+                        style={{
+                          flex: 1,
+                          padding: "0.35rem 0.5rem",
+                          fontSize: "0.7rem",
+                          fontWeight: "700",
+                          borderRadius: "0.25rem",
+                          border: isSelected ? "1px solid #38bdf8" : "1px solid #52525b",
+                          background: isSelected ? "rgba(56, 189, 248, 0.15)" : "#27272a",
+                          color: isSelected ? "#38bdf8" : "#d4d4d8",
+                          cursor: "pointer",
+                          textAlign: "center",
+                          transition: "all 0.2s ease"
+                        }}
+                      >
+                        {t}
+                      </button>
+                    );
+                  })}
+                </div>
+                {univSubjectType === "기타" && (
+                  <input
+                    type="text"
+                    placeholder="대학 측 주체 직접 입력 (예: 기계공학과 교수)"
+                    value={inputSubjectUniv}
+                    onChange={(e) => setInputSubjectUniv(e.target.value)}
+                    style={{
+                      width: "100%",
+                      padding: "0.35rem 0.5rem",
+                      fontSize: "0.75rem",
+                      background: "#27272a",
+                      color: "white",
+                      border: "1px solid var(--border-color-dark)",
+                      borderRadius: "0.25rem"
+                    }}
+                  />
+                )}
               </div>
               <div>
                 <label style={{ display: "block", fontSize: "0.65rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>관련 단위과제</label>
