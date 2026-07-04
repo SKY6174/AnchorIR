@@ -4,6 +4,7 @@ import {
   FileText, Award, Layers, Plus, CheckCircle, Info, ChevronLeft, ChevronRight,
   Edit, Trash2
 } from "lucide-react";
+import { supabase } from "../supabaseClient";
 
 // RISE 사업을 이끌어가는 5대 거버넌스 위원회 상세 정의 상수
 const COMMITTEES_DATA = [
@@ -182,6 +183,143 @@ export default function ScheduleManager({
   // 위원회 관리 상태 정의
   const [selectedCommitteeId, setSelectedCommitteeId] = useState("total"); // 선택된 위원회 ID ("total", "planning" 등)
   const [activeCommitteeDetailTab, setActiveCommitteeDetailTab] = useState("members"); // 위원회 세부 정보 탭 ("members": 명단, "purpose": 목적/기능)
+
+  // 위원회 및 위원 명단 상태 (초기값은 하드코딩 백업 데이터)
+  const [committees, setCommittees] = useState(COMMITTEES_DATA);
+  const [isMemberModalOpen, setIsMemberModalOpen] = useState(false);
+  const [editingMember, setEditingMember] = useState(null); // 수정할 위원 정보 (null 이면 신규 추가)
+  const [memberFormData, setMemberFormData] = useState({
+    type: "위원",
+    name: "",
+    org: "울산과학대학교",
+    dept: "",
+    rank: "",
+    location: "교내",
+    note: ""
+  });
+
+  // 위원회 명단 수정 권한 통제 (송경영, 김현수, 심현미 3명에게만 부여)
+  const currentUserName = currentRole?.name ? currentRole.name.split(" ")[0] : "";
+  const hasCommitteeEditPermission = ["송경영", "김현수", "심현미"].includes(currentUserName);
+
+  // Supabase 실시간 위원회 명단 조회 함수
+  const loadCommitteesData = async () => {
+    try {
+      const { data: comms, error: commsErr } = await supabase
+        .from("committees")
+        .select("*")
+        .order("id");
+      if (commsErr) throw commsErr;
+
+      if (comms && comms.length > 0) {
+        const { data: mems, error: memsErr } = await supabase
+          .from("committee_members")
+          .select("*")
+          .order("sort_order", { ascending: true })
+          .order("id", { ascending: true });
+        if (memsErr) throw memsErr;
+
+        const combined = comms.map(c => ({
+          ...c,
+          desc: c.description, // desc 필드를 description 컬럼으로 상호 치환 대응
+          members: (mems || [])
+            .filter(m => m.committee_id === c.id)
+            .map(m => ({
+              id: m.id,
+              type: m.type,
+              name: m.name,
+              org: m.org,
+              dept: m.dept,
+              rank: m.rank,
+              location: m.location,
+              note: m.note
+            }))
+        }));
+        setCommittees(combined);
+      }
+    } catch (e) {
+      console.warn("Supabase 위원회 명단 조회 실패, 로컬 캐시 사용:", e);
+    }
+  };
+
+  useEffect(() => {
+    loadCommitteesData();
+  }, []);
+
+  // 위원 삭제 처리 함수
+  const handleDeleteMember = async (memberId) => {
+    if (!window.confirm("이 위원을 명단에서 정말 삭제하시겠습니까?")) return;
+    try {
+      const { error } = await supabase
+        .from("committee_members")
+        .delete()
+        .eq("id", memberId);
+      if (error) throw error;
+      
+      // DB 삭제 후 화면 데이터 실시간 갱신
+      await loadCommitteesData();
+    } catch (e) {
+      console.error("위원을 삭제하는 데 실패했습니다:", e);
+      alert("삭제 중 오류가 발생했습니다: " + e.message);
+    }
+  };
+
+  // 위원 추가/수정 저장 처리 함수
+  const handleSaveMember = async (e) => {
+    e.preventDefault();
+    if (!memberFormData.name.trim()) {
+      alert("성명을 입력해 주세요.");
+      return;
+    }
+    
+    try {
+      if (editingMember) {
+        // 기존 멤버 정보 업데이트 (UPDATE)
+        const { error } = await supabase
+          .from("committee_members")
+          .update({
+            type: memberFormData.type,
+            name: memberFormData.name,
+            org: memberFormData.org,
+            dept: memberFormData.dept,
+            rank: memberFormData.rank,
+            location: memberFormData.location,
+            note: memberFormData.note
+          })
+          .eq("id", editingMember.id);
+        if (error) throw error;
+      } else {
+        // 신규 멤버 정보 추가 (INSERT)
+        const currentMembers = committees.find(c => c.id === selectedCommitteeId)?.members || [];
+        const nextSortOrder = currentMembers.length + 1;
+        
+        const { error } = await supabase
+          .from("committee_members")
+          .insert({
+            committee_id: selectedCommitteeId,
+            type: memberFormData.type,
+            name: memberFormData.name,
+            org: memberFormData.org,
+            dept: memberFormData.dept,
+            rank: memberFormData.rank,
+            location: memberFormData.location,
+            note: memberFormData.note,
+            sort_order: nextSortOrder
+          });
+        if (error) throw error;
+      }
+      
+      // 모달 닫기 및 상태 초기화
+      setIsMemberModalOpen(false);
+      setEditingMember(null);
+      
+      // DB 반영 후 화면 데이터 실시간 갱신
+      await loadCommitteesData();
+    } catch (e) {
+      console.error("위원을 저장하는 데 실패했습니다:", e);
+      alert("저장 중 오류가 발생했습니다: " + e.message);
+    }
+  };
 
   // 캘린더 월 상태 (2026년 7월 기준)
   const [currentMonth, setCurrentMonth] = useState(7); // 7월
@@ -1339,7 +1477,7 @@ export default function ScheduleManager({
             
             {/* 좌측: 5대 위원회 카드 목록 */}
             <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
-              {COMMITTEES_DATA.map((comm) => {
+              {committees.map((comm) => {
                 const isSelected = selectedCommitteeId === comm.id;
                 return (
                   <div
@@ -1392,9 +1530,9 @@ export default function ScheduleManager({
               })}
             </div>
 
-            {/* 우측: 선택된 위원회 상세 정보 */}
+            {/* 우측: 5대 위원회 상세 정보 */}
             {(() => {
-              const activeComm = COMMITTEES_DATA.find(c => c.id === selectedCommitteeId) || COMMITTEES_DATA[0];
+              const activeComm = committees.find(c => c.id === selectedCommitteeId) || committees[0];
               return (
                 <div className="card" style={{
                   background: "var(--panel-bg)",
@@ -1449,7 +1587,7 @@ export default function ScheduleManager({
                         transition: "all 0.15s ease"
                       }}
                     >
-                      👥 위원 명단 (추후 입력)
+                      👥 위원 명단
                     </button>
                     <button
                       onClick={() => setActiveCommitteeDetailTab("purpose")}
@@ -1473,90 +1611,179 @@ export default function ScheduleManager({
                   {/* 상세 탭 콘텐츠 */}
                   <div style={{ padding: "1.5rem", flex: 1, display: "flex", flexDirection: "column", gap: "1rem" }}>
                     {activeCommitteeDetailTab === "members" ? (
-                      activeComm.members && activeComm.members.length > 0 ? (
-                        <div style={{ flex: 1, overflowY: "auto", maxHeight: "400px" }} className="custom-scrollbar">
-                          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.78rem", textAlign: "left" }}>
-                            <thead>
-                              <tr style={{ borderBottom: "1px solid var(--border-color)", color: "var(--text-secondary-dark)" }}>
-                                <th style={{ padding: "0.5rem 0.75rem", fontWeight: "700" }}>구분</th>
-                                <th style={{ padding: "0.5rem 0.75rem", fontWeight: "700" }}>성명</th>
-                                <th style={{ padding: "0.5rem 0.75rem", fontWeight: "700" }}>소속기관</th>
-                                <th style={{ padding: "0.5rem 0.75rem", fontWeight: "700" }}>부서/학과</th>
-                                <th style={{ padding: "0.5rem 0.75rem", fontWeight: "700" }}>직위</th>
-                                <th style={{ padding: "0.5rem 0.75rem", fontWeight: "700", textAlign: "center" }}>교내외</th>
-                                <th style={{ padding: "0.5rem 0.75rem", fontWeight: "700" }}>비고</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {activeComm.members.map((member) => (
-                                <tr 
-                                  key={member.id} 
-                                  style={{ 
-                                    borderBottom: "1px solid rgba(255, 255, 255, 0.03)", 
-                                    color: "var(--text-primary)",
-                                    background: member.type === "위원장" ? "rgba(236, 72, 153, 0.03)" : "transparent"
-                                  }}
-                                  className="table-row-hover"
-                                >
-                                  <td style={{ padding: "0.6rem 0.75rem" }}>
-                                    <span style={{
-                                      padding: "0.15rem 0.4rem",
-                                      borderRadius: "4px",
-                                      fontSize: "0.68rem",
-                                      fontWeight: "800",
-                                      background: member.type === "위원장" ? "rgba(236, 72, 153, 0.15)" : member.type === "간사" ? "rgba(59, 130, 246, 0.15)" : "rgba(255, 255, 255, 0.05)",
-                                      color: member.type === "위원장" ? "var(--accent-color)" : member.type === "간사" ? "#3b82f6" : "var(--text-secondary)"
-                                    }}>
-                                      {member.type}
-                                    </span>
-                                  </td>
-                                  <td style={{ padding: "0.6rem 0.75rem", fontWeight: "700" }}>{member.name}</td>
-                                  <td style={{ padding: "0.6rem 0.75rem", color: "var(--text-secondary)" }}>{member.org}</td>
-                                  <td style={{ padding: "0.6rem 0.75rem", color: "var(--text-secondary)" }}>{member.dept || "-"}</td>
-                                  <td style={{ padding: "0.6rem 0.75rem", color: "var(--text-secondary)" }}>{member.rank || "-"}</td>
-                                  <td style={{ padding: "0.6rem 0.75rem", textAlign: "center" }}>
-                                    <span style={{
-                                      padding: "0.1rem 0.3rem",
-                                      borderRadius: "3px",
-                                      fontSize: "0.65rem",
-                                      background: member.location === "교내" ? "rgba(16, 185, 129, 0.1)" : "rgba(245, 158, 11, 0.1)",
-                                      color: member.location === "교내" ? "#10b981" : "#f59e0b"
-                                    }}>
-                                      {member.location}
-                                    </span>
-                                  </td>
-                                  <td style={{ padding: "0.6rem 0.75rem", color: "var(--accent-color)", fontSize: "0.7rem", fontWeight: "600" }}>
-                                    {member.note}
-                                  </td>
-                                </tr>
-                              ))}
-                            </tbody>
-                          </table>
-                        </div>
-                      ) : (
-                        <div style={{
-                          display: "flex",
-                          flexDirection: "column",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          flex: 1,
-                          padding: "2.5rem 1rem",
-                          background: "rgba(255,255,255,0.01)",
-                          border: "1px dashed var(--border-color)",
-                          borderRadius: "8px",
-                          textAlign: "center",
-                          color: "var(--text-secondary)"
-                        }}>
-                          <Users size={36} style={{ color: "var(--accent-color)", opacity: 0.6, marginBottom: "0.75rem" }} />
-                          <span style={{ fontSize: "0.85rem", fontWeight: "700", color: "var(--text-primary)", marginBottom: "0.25rem" }}>
-                            위원 명단 준비 중
+                      <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem", flex: 1 }}>
+                        {/* 명단 상단 제어 바 (총 위원수 + 명단 편집 추가 버튼) */}
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingBottom: "0.5rem", borderBottom: "1px solid rgba(255, 255, 255, 0.05)" }}>
+                          <span style={{ fontSize: "0.78rem", color: "var(--text-secondary)", fontWeight: "600" }}>
+                            총 {(activeComm.members || []).length}명의 위원 등록됨
                           </span>
-                          <p style={{ margin: 0, fontSize: "0.76rem", color: "var(--text-secondary-dark)", lineHeight: "1.5" }}>
-                            본 위원회의 명단 정보는 추후 구성 완료 시 시스템에 직접 입력될 예정입니다.<br />
-                            관련 권한을 가진 관리자 또는 사업단 총괄 책임자가 추후 업데이트할 수 있습니다.
-                          </p>
+                          {hasCommitteeEditPermission && (
+                            <button
+                              onClick={() => {
+                                setEditingMember(null);
+                                setMemberFormData({
+                                  type: "위원",
+                                  name: "",
+                                  org: "울산과학대학교",
+                                  dept: "",
+                                  rank: "",
+                                  location: "교내",
+                                  note: ""
+                                });
+                                setIsMemberModalOpen(true);
+                              }}
+                              style={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "0.3rem",
+                                padding: "0.35rem 0.75rem",
+                                borderRadius: "4px",
+                                background: "rgba(236, 72, 153, 0.1)",
+                                border: "1px solid rgba(236, 72, 153, 0.3)",
+                                color: "var(--accent-color)",
+                                fontSize: "0.72rem",
+                                fontWeight: "800",
+                                cursor: "pointer",
+                                transition: "all 0.15s ease"
+                              }}
+                            >
+                              <Plus size={12} />
+                              위원 추가
+                            </button>
+                          )}
                         </div>
-                      )
+
+                        {/* 위원 테이블 */}
+                        {activeComm.members && activeComm.members.length > 0 ? (
+                          <div style={{ flex: 1, overflowY: "auto", maxHeight: "350px" }} className="custom-scrollbar">
+                            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.78rem", textAlign: "left" }}>
+                              <thead>
+                                <tr style={{ borderBottom: "1px solid var(--border-color)", color: "var(--text-secondary-dark)" }}>
+                                  <th style={{ padding: "0.5rem 0.75rem", fontWeight: "700" }}>구분</th>
+                                  <th style={{ padding: "0.5rem 0.75rem", fontWeight: "700" }}>성명</th>
+                                  <th style={{ padding: "0.5rem 0.75rem", fontWeight: "700" }}>소속기관</th>
+                                  <th style={{ padding: "0.5rem 0.75rem", fontWeight: "700" }}>부서/학과</th>
+                                  <th style={{ padding: "0.5rem 0.75rem", fontWeight: "700" }}>직위</th>
+                                  <th style={{ padding: "0.5rem 0.75rem", fontWeight: "700", textAlign: "center" }}>교내외</th>
+                                  <th style={{ padding: "0.5rem 0.75rem", fontWeight: "700" }}>비고</th>
+                                  {hasCommitteeEditPermission && <th style={{ padding: "0.5rem 0.75rem", fontWeight: "700", textAlign: "right" }}>제어</th>}
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {activeComm.members.map((member) => (
+                                  <tr 
+                                    key={member.id} 
+                                    style={{ 
+                                      borderBottom: "1px solid rgba(255, 255, 255, 0.03)", 
+                                      color: "var(--text-primary)",
+                                      background: member.type === "위원장" ? "rgba(236, 72, 153, 0.03)" : "transparent"
+                                    }}
+                                    className="table-row-hover"
+                                  >
+                                    <td style={{ padding: "0.6rem 0.75rem" }}>
+                                      <span style={{
+                                        padding: "0.15rem 0.4rem",
+                                        borderRadius: "4px",
+                                        fontSize: "0.68rem",
+                                        fontWeight: "800",
+                                        background: member.type === "위원장" ? "rgba(236, 72, 153, 0.15)" : member.type === "간사" ? "rgba(59, 130, 246, 0.15)" : "rgba(255, 255, 255, 0.05)",
+                                        color: member.type === "위원장" ? "var(--accent-color)" : member.type === "간사" ? "#3b82f6" : "var(--text-secondary)"
+                                      }}>
+                                        {member.type}
+                                      </span>
+                                    </td>
+                                    <td style={{ padding: "0.6rem 0.75rem", fontWeight: "700" }}>{member.name}</td>
+                                    <td style={{ padding: "0.6rem 0.75rem", color: "var(--text-secondary)" }}>{member.org}</td>
+                                    <td style={{ padding: "0.6rem 0.75rem", color: "var(--text-secondary)" }}>{member.dept || "-"}</td>
+                                    <td style={{ padding: "0.6rem 0.75rem", color: "var(--text-secondary)" }}>{member.rank || "-"}</td>
+                                    <td style={{ padding: "0.6rem 0.75rem", textAlign: "center" }}>
+                                      <span style={{
+                                        padding: "0.1rem 0.3rem",
+                                        borderRadius: "3px",
+                                        fontSize: "0.65rem",
+                                        background: member.location === "교내" ? "rgba(16, 185, 129, 0.1)" : "rgba(245, 158, 11, 0.1)",
+                                        color: member.location === "교내" ? "#10b981" : "#f59e0b"
+                                      }}>
+                                        {member.location}
+                                      </span>
+                                    </td>
+                                    <td style={{ padding: "0.6rem 0.75rem", color: "var(--accent-color)", fontSize: "0.7rem", fontWeight: "600" }}>
+                                      {member.note}
+                                    </td>
+                                    {hasCommitteeEditPermission && (
+                                      <td style={{ padding: "0.6rem 0.75rem", textAlign: "right" }}>
+                                        <div style={{ display: "flex", gap: "0.4rem", justifyContent: "flex-end" }}>
+                                          <button
+                                            onClick={() => {
+                                              setEditingMember(member);
+                                              setMemberFormData({
+                                                type: member.type,
+                                                name: member.name,
+                                                org: member.org,
+                                                dept: member.dept || "",
+                                                rank: member.rank || "",
+                                                location: member.location,
+                                                note: member.note || ""
+                                              });
+                                              setIsMemberModalOpen(true);
+                                            }}
+                                            style={{
+                                              border: "none",
+                                              background: "transparent",
+                                              color: "var(--text-secondary)",
+                                              cursor: "pointer",
+                                              padding: "0.2rem"
+                                            }}
+                                            title="수정"
+                                          >
+                                            <Edit size={12} />
+                                          </button>
+                                          <button
+                                            onClick={() => handleDeleteMember(member.id)}
+                                            style={{
+                                              border: "none",
+                                              background: "transparent",
+                                              color: "#ef4444",
+                                              cursor: "pointer",
+                                              padding: "0.2rem"
+                                            }}
+                                            title="삭제"
+                                          >
+                                            <Trash2 size={12} />
+                                          </button>
+                                        </div>
+                                      </td>
+                                    )}
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                          </div>
+                        ) : (
+                          <div style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            flex: 1,
+                            padding: "2.5rem 1rem",
+                            background: "rgba(255,255,255,0.01)",
+                            border: "1px dashed var(--border-color)",
+                            borderRadius: "8px",
+                            textAlign: "center",
+                            color: "var(--text-secondary)"
+                          }}>
+                            <Users size={36} style={{ color: "var(--accent-color)", opacity: 0.6, marginBottom: "0.75rem" }} />
+                            <span style={{ fontSize: "0.85rem", fontWeight: "700", color: "var(--text-primary)", marginBottom: "0.25rem" }}>
+                              위원 명단 준비 중
+                            </span>
+                            <p style={{ margin: 0, fontSize: "0.76rem", color: "var(--text-secondary-dark)", lineHeight: "1.5" }}>
+                              본 위원회의 명단 정보는 추후 구성 완료 시 시스템에 직접 입력될 예정입니다.<br />
+                              관련 권한을 가진 관리자 또는 사업단 총괄 책임자가 추후 업데이트할 수 있습니다.
+                            </p>
+                          </div>
+                        )}
+                      </div>
                     ) : (
                       <div style={{ display: "flex", flexDirection: "column", gap: "1.2rem" }}>
                         <div>
@@ -2125,6 +2352,161 @@ export default function ScheduleManager({
               })()}
             </div>
 
+          </div>
+        </div>
+      )}
+
+      {/* 위원 명단 편집/추가 모달 */}
+      {isMemberModalOpen && (
+        <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(0,0,0,0.8)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1100 }}>
+          <div className="card" style={{ width: "500px", padding: "1.5rem", borderRadius: "12px", background: "var(--panel-bg)", border: "1px solid var(--border-color)" }}>
+            
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid var(--border-color)", paddingBottom: "0.75rem", marginBottom: "1.2rem" }}>
+              <h3 style={{ margin: 0, fontSize: "1.1rem", fontWeight: "800", color: "var(--text-primary)" }}>
+                {editingMember ? "✏️ 위원 정보 수정" : "➕ 새 위원 추가 등록"}
+              </h3>
+              <button 
+                onClick={() => {
+                  setIsMemberModalOpen(false);
+                  setEditingMember(null);
+                }}
+                style={{ background: "transparent", border: "none", color: "var(--text-secondary)", fontSize: "1.2rem", cursor: "pointer" }}
+              >
+                &times;
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveMember} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+              {/* 구분 선택/입력 */}
+              <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
+                <label style={{ fontSize: "0.78rem", fontWeight: "700", color: "var(--text-secondary)" }}>구분 (type)</label>
+                <div style={{ display: "flex", gap: "0.5rem" }}>
+                  <select 
+                    value={["위원장", "위원", "위원(자문겸직)", "간사"].includes(memberFormData.type) ? memberFormData.type : "custom"}
+                    onChange={(e) => {
+                      if (e.target.value !== "custom") {
+                        setMemberFormData(prev => ({ ...prev, type: e.target.value }));
+                      } else {
+                        setMemberFormData(prev => ({ ...prev, type: "" }));
+                      }
+                    }}
+                    style={{ padding: "0.5rem", background: "rgba(128,128,128,0.1)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", fontSize: "0.8rem", width: "40%" }}
+                  >
+                    <option value="위원">위원</option>
+                    <option value="위원장">위원장</option>
+                    <option value="위원(자문겸직)">위원(자문겸직)</option>
+                    <option value="간사">간사</option>
+                    <option value="custom">직접 입력...</option>
+                  </select>
+                  {!["위원장", "위원", "위원(자문겸직)", "간사"].includes(memberFormData.type) && (
+                    <input 
+                      type="text" 
+                      required
+                      placeholder="구분 직접 입력"
+                      value={memberFormData.type}
+                      onChange={(e) => setMemberFormData(prev => ({ ...prev, type: e.target.value }))}
+                      style={{ flex: 1, padding: "0.5rem", background: "rgba(128,128,128,0.1)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", fontSize: "0.8rem" }}
+                    />
+                  )}
+                </div>
+              </div>
+
+              {/* 성명 */}
+              <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
+                <label style={{ fontSize: "0.78rem", fontWeight: "700", color: "var(--text-secondary)" }}>성명 (name) *</label>
+                <input 
+                  type="text" 
+                  required
+                  placeholder="예: 홍길동"
+                  value={memberFormData.name}
+                  onChange={(e) => setMemberFormData(prev => ({ ...prev, name: e.target.value }))}
+                  style={{ padding: "0.5rem", background: "rgba(128,128,128,0.1)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", fontSize: "0.8rem" }}
+                />
+              </div>
+
+              {/* 소속기관 */}
+              <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
+                <label style={{ fontSize: "0.78rem", fontWeight: "700", color: "var(--text-secondary)" }}>소속기관 (org)</label>
+                <input 
+                  type="text" 
+                  placeholder="예: 울산과학대학교, HD한국조선해양 등"
+                  value={memberFormData.org}
+                  onChange={(e) => setMemberFormData(prev => ({ ...prev, org: e.target.value }))}
+                  style={{ padding: "0.5rem", background: "rgba(128,128,128,0.1)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", fontSize: "0.8rem" }}
+                />
+              </div>
+
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+                {/* 부서/학과 */}
+                <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
+                  <label style={{ fontSize: "0.78rem", fontWeight: "700", color: "var(--text-secondary)" }}>부서/학과 (dept)</label>
+                  <input 
+                    type="text" 
+                    placeholder="예: 기획처, 화학공학과 등"
+                    value={memberFormData.dept}
+                    onChange={(e) => setMemberFormData(prev => ({ ...prev, dept: e.target.value }))}
+                    style={{ padding: "0.5rem", background: "rgba(128,128,128,0.1)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", fontSize: "0.8rem" }}
+                  />
+                </div>
+
+                {/* 직위 */}
+                <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
+                  <label style={{ fontSize: "0.78rem", fontWeight: "700", color: "var(--text-secondary)" }}>직위 (rank)</label>
+                  <input 
+                    type="text" 
+                    placeholder="예: 교수, 처장, 대표 등"
+                    value={memberFormData.rank}
+                    onChange={(e) => setMemberFormData(prev => ({ ...prev, rank: e.target.value }))}
+                    style={{ padding: "0.5rem", background: "rgba(128,128,128,0.1)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", fontSize: "0.8rem" }}
+                  />
+                </div>
+              </div>
+
+              {/* 교내외 및 비고 */}
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: "1rem" }}>
+                <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
+                  <label style={{ fontSize: "0.78rem", fontWeight: "700", color: "var(--text-secondary)" }}>교내외 구분</label>
+                  <select 
+                    value={memberFormData.location}
+                    onChange={(e) => setMemberFormData(prev => ({ ...prev, location: e.target.value }))}
+                    style={{ padding: "0.5rem", background: "rgba(128,128,128,0.1)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", fontSize: "0.8rem" }}
+                  >
+                    <option value="교내">교내</option>
+                    <option value="교외">교외</option>
+                  </select>
+                </div>
+                <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
+                  <label style={{ fontSize: "0.78rem", fontWeight: "700", color: "var(--text-secondary)" }}>비고 (note)</label>
+                  <input 
+                    type="text" 
+                    placeholder="예: 신규 추가 등"
+                    value={memberFormData.note}
+                    onChange={(e) => setMemberFormData(prev => ({ ...prev, note: e.target.value }))}
+                    style={{ padding: "0.5rem", background: "rgba(128,128,128,0.1)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", fontSize: "0.8rem" }}
+                  />
+                </div>
+              </div>
+
+              {/* 버튼 */}
+              <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.75rem", borderTop: "1px solid rgba(255,255,255,0.05)", paddingTop: "1rem", marginTop: "0.5rem" }}>
+                <button 
+                  type="button" 
+                  onClick={() => {
+                    setIsMemberModalOpen(false);
+                    setEditingMember(null);
+                  }}
+                  style={{ padding: "0.5rem 1rem", borderRadius: "6px", background: "transparent", border: "1px solid var(--border-color)", color: "var(--text-primary)", cursor: "pointer", fontSize: "0.8rem" }}
+                >
+                  취소
+                </button>
+                <button 
+                  type="submit" 
+                  style={{ padding: "0.5rem 1.25rem", borderRadius: "6px", background: "var(--accent-color)", border: "none", color: "var(--text-primary)", fontWeight: "600", cursor: "pointer", fontSize: "0.8rem" }}
+                >
+                  저장 완료
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}
