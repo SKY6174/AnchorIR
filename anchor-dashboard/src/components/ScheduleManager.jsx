@@ -1128,10 +1128,10 @@ export default function ScheduleManager({
       }));
 
       // 합의 판정 완료 모달 알럿 표출
-      if (usedModel.includes("합의")) {
+      if (usedModel.includes("Consensus") || usedModel.includes("합의")) {
         alert("🏆 [GPT & Gemini AI 교차 검증 합의 완료]\n\n두 AI 모델이 각각의 분석 결과를 대조하고, 팩트 기반 교차 토론(Debate)을 진행하여 할루시네이션이 완벽히 차단된 정밀 합의안을 도출했습니다!");
       } else {
-        alert(`✨ [${usedModel}] AI 분석 단독 처리를 성료하여 보도자료 입력을 자동 완성했습니다.`);
+        alert(`✨ [${usedModel}] AI 분석 처리를 완료하여 보도자료 입력을 자동 완성했습니다.`);
       }
 
       setIsAnalyzingUrl(false);
