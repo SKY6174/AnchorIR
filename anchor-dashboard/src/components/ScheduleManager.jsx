@@ -337,6 +337,96 @@ export default function ScheduleManager({
   // 회의 대분류 상태 ("operating": 사업단 운영회의, "center": 센터별 회의, "committee": 각종 위원회 회의)
   const [activeMeetingCat, setActiveMeetingCat] = useState("operating");
 
+  // 월간일정 상세 링킹 기능 (행사, 회의록 연계 이동)
+  const handleLinkToDetail = (sched) => {
+    if (!sched) return;
+    
+    // 일정 시작일자에서 월 파싱
+    let parsedMonth = currentMonth;
+    if (sched.startAt) {
+      const parts = sched.startAt.split(" ")[0].split("-");
+      if (parts.length >= 2) {
+        parsedMonth = parseInt(parts[1], 10) || currentMonth;
+      }
+    }
+
+    if (sched.type === "행사") {
+      // 1. 행사 월 이동 및 탭 전환
+      setSelectedEventMonth(parsedMonth);
+      if (onChangeSubTab) {
+        onChangeSubTab("event");
+      }
+
+      // 2. 행사 매칭 및 스크롤
+      const matchedEvent = eventSchedules.find(e => {
+        const dateMatch = e.datetime && e.datetime.includes(sched.startAt.split(" ")[0]);
+        const titleMatch = e.title && (e.title.includes(sched.title) || sched.title.includes(e.title));
+        return dateMatch || titleMatch;
+      });
+
+      if (matchedEvent) {
+        setTimeout(() => {
+          const el = document.getElementById(`event-card-${matchedEvent.id}`);
+          if (el) {
+            el.scrollIntoView({ behavior: "smooth", block: "center" });
+            el.style.transition = "outline 0.3s ease, transform 0.3s ease";
+            el.style.outline = "2px solid #3B82F6";
+            el.style.outlineOffset = "4px";
+            el.style.transform = "scale(1.02)";
+            setTimeout(() => {
+              el.style.outline = "none";
+              el.style.transform = "scale(1)";
+            }, 2500);
+          }
+        }, 150);
+      } else {
+        console.warn("매칭되는 행사를 찾지 못했습니다.");
+      }
+    } 
+    else if (sched.type === "회의" || sched.type === "위원회") {
+      // 1. 회의록 검색
+      const matchedMeeting = meetingSchedules.find(m => {
+        const dateMatch = m.datetime && m.datetime.includes(sched.startAt.split(" ")[0]);
+        const titleMatch = m.title && (m.title.includes(sched.title) || sched.title.includes(m.title));
+        return dateMatch || titleMatch;
+      });
+
+      if (matchedMeeting) {
+        // 2. 회의 카테고리, 월, 탭 전환
+        setSelectedMeetingMonth(parsedMonth);
+        if (matchedMeeting.category) {
+          setActiveMeetingCat(matchedMeeting.category);
+        }
+        setSelectedMeetingId(matchedMeeting.id);
+        
+        if (onChangeSubTab) {
+          onChangeSubTab("meeting");
+        }
+
+        // 3. 목록 엘리먼트로 스크롤
+        setTimeout(() => {
+          const el = document.getElementById(`meeting-item-${matchedMeeting.id}`);
+          if (el) {
+            el.scrollIntoView({ behavior: "smooth", block: "center" });
+            el.style.transition = "outline 0.3s ease, background 0.3s ease";
+            el.style.outline = "2px solid #10B981";
+            el.style.outlineOffset = "2px";
+            setTimeout(() => {
+              el.style.outline = "none";
+            }, 2500);
+          }
+        }, 150);
+      } else {
+        // 매칭되지 않는 회의록의 경우, 단순히 회의 탭으로 월을 설정하여 전환
+        setSelectedMeetingMonth(parsedMonth);
+        if (onChangeSubTab) {
+          onChangeSubTab("meeting");
+        }
+        console.warn("매칭되는 회의록을 찾지 못했습니다.");
+      }
+    }
+  };
+
   // 4. 입력 폼 임시 State
   const [formData, setFormData] = useState({
     title: "",
@@ -1509,6 +1599,7 @@ export default function ScheduleManager({
                     const isTask = sched.isTask || false;
                     const isDeadline = sched.isDeadline || false;
                     const isCompleted = sched.completed || false;
+                    const isLinkable = sched.type === "행사" || sched.type === "회의" || sched.type === "위원회";
                     
                     let cardBg = "rgba(255,255,255,0.02)";
                     let cardBorder = "1px solid rgba(255,255,255,0.05)";
@@ -1518,17 +1609,39 @@ export default function ScheduleManager({
                     } else if (isTask) {
                       cardBg = "rgba(139, 92, 246, 0.03)";
                       cardBorder = "1px solid rgba(139, 92, 246, 0.15)";
+                    } else if (isLinkable) {
+                      cardBg = "rgba(59, 130, 246, 0.03)";
+                      cardBorder = "1px solid rgba(59, 130, 246, 0.15)";
                     }
 
                     return (
                       <div 
                         key={sched.id} 
+                        onClick={() => {
+                          if (isLinkable) {
+                            handleLinkToDetail(sched);
+                          }
+                        }}
+                        onMouseEnter={(e) => {
+                          if (isLinkable) {
+                            e.currentTarget.style.borderColor = "var(--accent-color)";
+                            e.currentTarget.style.background = "rgba(59, 130, 246, 0.08)";
+                          }
+                        }}
+                        onMouseLeave={(e) => {
+                          if (isLinkable) {
+                            e.currentTarget.style.borderColor = isDeadline ? "rgba(239, 68, 68, 0.15)" : (isTask ? "rgba(139, 92, 246, 0.15)" : "rgba(255,255,255,0.05)");
+                            e.currentTarget.style.background = cardBg;
+                          }
+                        }}
                         style={{
                           padding: "0.75rem", borderRadius: "6px",
                           background: cardBg,
                           border: cardBorder,
                           position: "relative",
-                          opacity: isCompleted ? 0.6 : 1
+                          opacity: isCompleted ? 0.6 : 1,
+                          cursor: isLinkable ? "pointer" : "default",
+                          transition: "all 0.15s ease"
                         }}
                       >
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "0.5rem" }}>
@@ -1537,22 +1650,34 @@ export default function ScheduleManager({
                               <input 
                                 type="checkbox" 
                                 checked={isCompleted} 
-                                onChange={() => handleToggleTaskCompleted(sched.id)}
+                                onChange={(e) => {
+                                  e.stopPropagation();
+                                  handleToggleTaskCompleted(sched.id);
+                                }}
                                 style={{ marginTop: "0.2rem", cursor: "pointer", width: "15px", height: "15px", accentColor: isDeadline ? "#EF4444" : "#8B5CF6" }}
                               />
                             )}
-                            <strong style={{ 
-                              fontSize: "0.9rem", 
-                              color: "var(--text-primary)", 
-                              display: "block", 
-                              marginBottom: "0.25rem",
-                              textDecoration: isCompleted ? "line-through" : "none"
-                            }}>
-                              {sched.title}
-                            </strong>
+                            <div>
+                              <strong style={{ 
+                                fontSize: "0.9rem", 
+                                color: "var(--text-primary)", 
+                                display: "inline-flex", 
+                                alignItems: "center",
+                                gap: "0.3rem",
+                                marginBottom: "0.25rem",
+                                textDecoration: isCompleted ? "line-through" : "none"
+                              }}>
+                                {sched.title}
+                                {isLinkable && (
+                                  <span style={{ fontSize: "0.68rem", color: "#60A5FA", fontWeight: "700", display: "inline-flex", alignItems: "center", gap: "0.1rem" }} title="상세 정보 연계 이동">
+                                    🔗
+                                  </span>
+                                )}
+                              </strong>
+                            </div>
                           </div>
                           {currentRole.id !== "GUEST" && (
-                            <div style={{ display: "flex", gap: "0.25rem" }}>
+                            <div style={{ display: "flex", gap: "0.25rem" }} onClick={(e) => e.stopPropagation()}>
                               <button 
                                 onClick={() => handleEditSchedule(sched)}
                                 title="수정"
@@ -1681,6 +1806,7 @@ export default function ScheduleManager({
               eventSchedules.filter(e => e.month === selectedEventMonth).map(event => (
                 <div 
                   key={event.id}
+                  id={`event-card-${event.id}`}
                   className="card"
                   style={{ padding: "1.5rem", borderRadius: "10px", background: "var(--panel-bg)", border: "1px solid var(--border-color)", display: "flex", flexDirection: "column", gap: "1rem" }}
                 >
@@ -2356,6 +2482,7 @@ export default function ScheduleManager({
                             return (
                               <div
                                 key={meeting.id}
+                                id={`meeting-item-${meeting.id}`}
                                 onClick={() => setSelectedMeetingId(meeting.id)}
                                 style={{
                                   padding: "0.65rem 0.85rem",
