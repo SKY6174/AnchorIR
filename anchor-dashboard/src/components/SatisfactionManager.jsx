@@ -967,7 +967,21 @@ ${commentList || "(없음)"}
                             </div>
                           </div>
                           
-                          <h4 style={{ fontSize: "0.95rem", fontWeight: "800", marginBottom: "0.5rem", color: "var(--text-primary)", lineHeight: "1.3" }}>
+                          <h4 
+                            onClick={() => { setSelectedSurveyId(survey.id); setActiveSurveyTab("detail"); }}
+                            style={{ 
+                              fontSize: "0.95rem", 
+                              fontWeight: "800", 
+                              marginBottom: "0.5rem", 
+                              color: "var(--text-primary)", 
+                              lineHeight: "1.3",
+                              cursor: "pointer",
+                              transition: "color 0.15s ease"
+                            }}
+                            onMouseOver={(e) => e.currentTarget.style.color = "var(--accent-color)"}
+                            onMouseOut={(e) => e.currentTarget.style.color = "var(--text-primary)"}
+                            title="상세보기 / 관리"
+                          >
                             {survey.title}
                           </h4>
                           <p style={{ fontSize: "0.78rem", color: "var(--text-secondary-dark)", marginBottom: "1rem", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden", lineHeight: "1.4" }}>
