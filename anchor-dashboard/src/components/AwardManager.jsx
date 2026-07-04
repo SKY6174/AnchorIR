@@ -164,9 +164,9 @@ export default function AwardManager({
       const normalizedName = file.name.normalize("NFC");
       setAwardFileName("업로드 중...");
       try {
-        // 대괄호, 공백 등 Storage 에러를 유발하는 특수기호를 정제하여 안전한 파일 키 생성
-        const cleanKey = normalizedName.replace(/[\[\]\(\)\s]/g, "_").replace(/[^a-zA-Z0-9ㄱ-ㅎㅏ-ㅣ가-힣_.-]/g, "");
-        const storagePath = `${Date.now()}_${cleanKey}`; // awards 전용 버킷 루트에 업로드
+        // 한글 깨짐 및 Storage 특수기호 에러(Invalid key) 방지를 위해 물리 파일명은 영문/숫자 고유 ID로 치환
+        const fileExt = normalizedName.substring(normalizedName.lastIndexOf(".")).toLowerCase();
+        const storagePath = `${Date.now()}_${Math.random().toString(36).substring(2, 8)}${fileExt}`; // awards 전용 버킷 루트에 업로드
         const { data, error } = await supabase.storage
           .from("awards") // awards 버킷명 반영
           .upload(storagePath, file);
@@ -345,9 +345,9 @@ export default function AwardManager({
         if (!targetFile) continue;
 
         const normalizedName = targetFile.name.normalize("NFC");
-        // 대괄호, 공백 등 Storage 에러를 유발하는 특수기호를 정제하여 안전한 파일 키 생성
-        const cleanKey = normalizedName.replace(/[\[\]\(\)\s]/g, "_").replace(/[^a-zA-Z0-9ㄱ-ㅎㅏ-ㅣ가-힣_.-]/g, "");
-        const storagePath = `${Date.now()}_${cleanKey}`;
+        // 한글 깨짐 및 Storage 특수기호 에러(Invalid key) 방지를 위해 물리 파일명은 영문/숫자 고유 ID로 치환
+        const fileExt = normalizedName.substring(normalizedName.lastIndexOf(".")).toLowerCase();
+        const storagePath = `${Date.now()}_${Math.random().toString(36).substring(2, 8)}${fileExt}`;
 
         const { data, error } = await supabase.storage
           .from("awards")
