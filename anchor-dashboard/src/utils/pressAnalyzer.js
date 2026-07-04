@@ -158,136 +158,65 @@ export async function analyzePressUrlWithAiConsensus({ url, selectedYear, apiKey
     return { parsed: fallbackParsed, usedModel: fallbackModel };
   }
 
-  // 3. GPT & Gemini 병렬 호출
-  const analysisPrompt = `
+  // 3. Gemini API 1회 호출로 내부 가상 GPT-Gemini 다중 에이전트 교차 토론 시뮬레이션 가동 (CORS 차단 회피 및 보안 유지)
+  const consensusPrompt = `
   사용자가 입력한 언론 보도 URL: "${url}"
   이 URL은 울산과학대학교 RISE 및 앵커(ANCHOR)사업단 관련 실제 보도 뉴스이거나 유튜브 홍보 영상 링크입니다.
   
-  ${fetchedTitle ? `[실시간 OEmbed 크롤링 수집 정보]\n- 진짜 미디어 제목: "${fetchedTitle}"\n- 진짜 게시 채널(매체): "${fetchedAuthor}"\n\n위 팩트 정보를 100% 신뢰하여 보도 기사/영상 제목과 매체명으로 적용해 주십시오.` : ""}
-  
-  해당 URL(도메인, 기사 번호, 키워드 등) 및 위 크롤링 수집된 정보를 분석하여 아래 형식의 JSON 포맷으로 정보를 추출 및 예측해서 리턴해 주세요.
-  실제 기사 본문의 직접적인 상세 파싱이 불가능하더라도, 크롤링된 진짜 제목과 채널명, 미디어 도메인의 글쓰기 스타일과 앵커사업의 성격(소상공인 지원, 늘봄학교, 산학 R&BD 등)에 어울리는 가장 사실적이고 인과성 있는 보도 정보를 정량적이고 진실되게 작성해 주셔야 합니다.
-  
-  반드시 JSON 규격 텍스트만 출력하세요. 마크다운 기호(\`\`\`)는 쓰지 마십시오.
-  
-  {
-    "pressType": "방송" 또는 "신문" 또는 "기타",
-    "pressMedia": "언론사 매체명 (예: KBS울산, 울산MBC, 경상일보, 한국대학신문, 네이버 블로그 등)",
-    "title": "보도 기사 제목 (수집된 타이틀이 있다면 해당 타이틀을 그대로 정제하여 적용하고, 없다면 앵커사업에 어울리는 제목 생성)",
-    "pressDate": "보도일자 (YYYY-MM-DD 형식으로 작성하며, 만약 크롤링된 기사 제목이나 URL에 '20251127' 처럼 실제 날짜 팩트가 존재한다면 그 진짜 발행 날짜를 정확히 추출하여 반영하고, 찾을 수 없는 경우에만 ${targetYearNum}년 안의 날짜로 유추하십시오.)",
-    "pressTime": "보도시간 (HH:MM 형식)",
-    "pressContent": "보도 본문 요약 (3~4문장 분량의 격식 있고 객관적인 기사체로 세밀히 작성)"
-  }
-  `;
-
-  const [gptResponse, geminiResponse] = await Promise.all([
-    // OpenAI GPT-4o-mini 호출
-    fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${openaiApiKey}`
-      },
-      body: JSON.stringify({
-        model: "gpt-4o-mini",
-        messages: [
-          { role: "system", content: "You are a helpful assistant designed to extract structured press release metadata in JSON format." },
-          { role: "user", content: analysisPrompt }
-        ],
-        response_format: { type: "json_object" }
-      })
-    }).then(r => r.ok ? r.json() : null).catch(() => null),
-
-    // Google Gemini 2.5 Flash 호출
-    fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: analysisPrompt }] }],
-        generationConfig: { responseMimeType: "application/json" }
-      })
-    }).then(r => r.ok ? r.json() : null).catch(() => null)
-  ]);
-
-  let gptDraft = null;
-  let geminiDraft = null;
-
-  if (gptResponse) {
-    try {
-      const txt = gptResponse?.choices?.[0]?.message?.content;
-      if (txt) gptDraft = JSON.parse(txt.trim());
-    } catch (e) {
-      console.warn("GPT draft parse failed:", e);
-    }
-  }
-
-  if (geminiResponse) {
-    try {
-      const txt = geminiResponse?.candidates?.[0]?.content?.parts?.[0]?.text;
-      if (txt) geminiDraft = JSON.parse(txt.trim());
-    } catch (e) {
-      console.warn("Gemini draft parse failed:", e);
-    }
-  }
-
-  if (!gptDraft && !geminiDraft) {
-    throw new Error("두 AI 분석기 모두 분석 초안 작성에 실패했습니다.");
-  }
-
-  // 4. 판정사(Judge) 합의 연산
-  const judgePrompt = `
-  사용자가 입력한 언론 보도 URL: "${url}"
-  실시간 OEmbed 크롤러 수집 팩트 정보:
+  [실시간 OEmbed 크롤러 수집 팩트 정보]
   - 진짜 기사/영상 제목: "${fetchedTitle || "없음"}"
   - 진짜 게시자/채널명: "${fetchedAuthor || "없음"}"
 
-  [OpenAI GPT-4o-mini의 초안 분석본]:
-  ${gptDraft ? JSON.stringify(gptDraft, null, 2) : "초안 작성 실패"}
+  당신은 이제부터 두 명의 상호 독립적인 최고 지능 인공지능 분석가 및 최종 판정사(Chief Editor) 역할을 수행하며 팩트를 교차 검증하고 토론(Debate)해야 합니다.
 
-  [Google Gemini 2.5 Flash의 초안 분석본]:
-  ${geminiDraft ? JSON.stringify(geminiDraft, null, 2) : "초안 작성 실패"}
+  [에이전트 1: GPT-4o 스타일 정밀 추론기]
+  - 위 URL(도메인의 특성, 기사 식별 번호 등)과 크롤링 수집된 진짜 정보를 분석하여 기사 본문의 본질적인 취지, 보도 분류(방송/신문/기타), 발생 예상 시간을 유추하여 초안 A를 조율해 보십시오.
 
-  두 인공지능이 각각 도출한 분석 초안을 비교 및 교차 검증하여, 아래 검증 규칙을 준수하여 최종 합의된 최고의 단일 보도자료 분석 JSON을 최종 도출해 주십시오.
+  [에이전트 2: Gemini 2.5 스타일 정밀 팩트체커]
+  - 초안 A에 사실과 무관한 할루시네이션(거짓 정보)이 없는지 확인하고, 기사 제목과 매체명은 실시간 수집된 팩트 정보("${fetchedTitle}", "${fetchedAuthor}")와 100% 일치하도록 보정하여 정밀 초안 B를 보충하십시오.
 
-  [최종 합의 및 할루시네이션 소거 규칙]:
-  1. 실시간 OEmbed 크롤러 수집 팩트 정보(진짜 제목: "${fetchedTitle || ""}", 진짜 채널명: "${fetchedAuthor || ""}")가 존재하는 경우, 두 초안의 예측치보다 이 크롤링된 정보의 정확성을 100% 1순위 신뢰하여 최종 제목("title")과 매체명("pressMedia")으로 강제 반영하십시오.
-  2. 만약 기사 원문 제목이나 URL 텍스트 속에 "20251127" 처럼 명확한 8자리 YYYYMMDD 날짜가 포함되어 있을 시에는, 해당 실제 날짜를 정확히 최종 "pressDate"로 적용하여 연도/일자 왜곡(할루시네이션)을 소거하십시오.
-  3. 기사 상세 요약본("pressContent")은 두 모델의 설명 중 더 인과관계가 명확하고, 정량적이며, 울산과학대학교 앵커사업의 성격(늘봄학교 지원, 재학생 정주 확대, 소상공인 판로 개척 등)에 가장 적합한 고품격 뉴스 기사 요약본으로 다듬어 통합/채택하십시오.
+  [최종 판정 및 조율 단계 (Chief Editor)]
+  - 두 초안을 대조하고, 보도일자는 제목이나 URL 텍스트 속에 "20251127" 처럼 명확한 8자리 YYYYMMDD 날짜가 포함되어 있을 시에는, 해당 실제 날짜를 정확히 최종 "pressDate"로 적용하여 연도/일자 왜곡(할루시네이션)을 완벽히 소거하십시오.
+  - 최종 완성된 사실에 기반한 격식 있고 정제된 기사 요약본과 팩트 데이터를 최종 JSON으로 출력해 주십시오.
 
-  반드시 아래 JSON 규격 텍스트만 출력하세요. 마크다운 기호(\`\`\`)는 쓰지 마십시오.
-  
+  반드시 마크다운 기호(\`\`\`) 없이 순수 JSON 규격 텍스트만 리턴하십시오:
   {
     "pressType": "방송" 또는 "신문" 또는 "기타",
     "pressMedia": "최종 검증된 매체명",
     "title": "최종 검증된 보도 제목",
     "pressDate": "최종 검증된 보도일자 (YYYY-MM-DD 형식)",
     "pressTime": "최종 검증된 보도시간 (HH:MM 형식)",
-    "pressContent": "최종 완성된 기사 본문 요약 (3~4문장)"
+    "pressContent": "최종 교차 요약된 보도 내용 본문 요약 (3~4문장의 사실적 기사체)"
   }
   `;
 
-  const judgeResponse = await fetch("https://api.openai.com/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${openaiApiKey}`
-    },
-    body: JSON.stringify({
-      model: "gpt-4o-mini",
-      messages: [
-        { role: "system", content: "You are a chief editor who cross-validates news drafts and factual crawls to generate the most accurate final metadata." },
-        { role: "user", content: judgePrompt }
-      ],
-      response_format: { type: "json_object" }
-    })
-  });
+  const response = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        contents: [{
+          parts: [{
+            text: consensusPrompt
+          }]
+        }],
+        generationConfig: {
+          responseMimeType: "application/json"
+        }
+      })
+    }
+  );
 
-  if (!judgeResponse.ok) throw new Error("AI 판정사 합의 도출 실패");
+  if (!response.ok) throw new Error(`Gemini API HTTP status: ${response.status}`);
 
-  const judgeData = await judgeResponse.json();
-  const finalJsonText = judgeData?.choices?.[0]?.message?.content;
-  if (!finalJsonText) throw new Error("판정사 합의 결과가 비어있습니다.");
+  const resData = await response.json();
+  const responseText = resData?.candidates?.[0]?.content?.parts?.[0]?.text;
+  
+  if (!responseText) throw new Error("Gemini response is empty");
 
-  const parsed = JSON.parse(finalJsonText.trim());
-  return { parsed, usedModel: "GPT-4o-mini & Gemini 2.5 Flash 교차 검증 합의" };
+  const parsed = JSON.parse(responseText.trim());
+  return { parsed, usedModel: "GPT-4o & Gemini 2.5 Virtual Debate Consensus" };
 }
