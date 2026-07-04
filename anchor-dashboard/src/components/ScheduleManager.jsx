@@ -581,10 +581,10 @@ export default function ScheduleManager({
 
   // 필터링된 회의 목록의 첫 번째 아이템을 기본 선택 상태로 유지하는 이펙트 훅
   useEffect(() => {
-    if (subTab === "meetings" && activeMeetingCat === "center") {
+    if (subTab === "meetings") {
       const filteredList = meetingSchedules.filter(m => {
         const isMonthMatch = m.month === selectedMeetingMonth;
-        const isCatMatch = m.category === "center";
+        const isCatMatch = m.category === activeMeetingCat;
         
         if (!isMonthMatch || !isCatMatch) return false;
         if (selectedDeptFilters.length === 0) return true;
@@ -2435,7 +2435,7 @@ export default function ScheduleManager({
                 // 부서 필터링 수행
                 const filteredList = meetingSchedules.filter(m => {
                   const isMonthMatch = m.month === selectedMeetingMonth;
-                  const isCatMatch = m.category === "center";
+                  const isCatMatch = m.category === activeMeetingCat;
                   
                   if (!isMonthMatch || !isCatMatch) return false;
                   if (selectedDeptFilters.length === 0) return true;
