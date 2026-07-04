@@ -3,6 +3,30 @@
  * 두 최고 수준의 AI 모델이 병렬적으로 초안을 뽑고, 판정사(Judge)가 교차 검증하여 할루시네이션을 최소화합니다.
  */
 export async function analyzePressUrlWithAiConsensus({ url, selectedYear, apiKey, openaiApiKey }) {
+  // --- [하이브리드 스마트 라우터 가동] ---
+  // 프로덕션 배포(PROD) 환경일 때는 Vercel 서버리스 백엔드로 안전하게 요청을 전송합니다.
+  if (import.meta.env.PROD) {
+    try {
+      const response = await fetch("/api/analyze", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ url, selectedYear })
+      });
+      
+      if (response.ok) {
+        const resData = await response.json();
+        return { parsed: resData.parsed, usedModel: resData.usedModel };
+      } else {
+        const errData = await response.json().catch(() => ({}));
+        console.warn(`Vercel Serverless Function returned error: ${errData.error || response.status}`);
+      }
+    } catch (apiErr) {
+      console.warn("Vercel Serverless API call failed, sliding down to client-side logic:", apiErr);
+    }
+  }
+
   const isMockGemini = !apiKey || apiKey === "your_gemini_api_key_here" || apiKey.trim() === "";
   const isMockOpenai = !openaiApiKey || openaiApiKey === "your_openai_api_key_here" || openaiApiKey.trim() === "";
 
