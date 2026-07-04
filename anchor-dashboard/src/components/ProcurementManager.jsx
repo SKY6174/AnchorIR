@@ -5,39 +5,46 @@ import {
   Eye, FileText, FileImage, LayoutGrid, ListFilter, Trash2
 } from "lucide-react";
 
-// 단장님이 지시하신 10개 필드로 구성되고 '26.3월 ~ '27.2월 12개월 월별로 기획(P)-승인(D)-구매(C)-검수(A)가 매핑된 초기 기자재 품목 데이터셋
+// 단장님이 지시하신 10개 필드로 구성되고 '26.3월 ~ '27.2월 12개월 월별로 기획(P)-승인(A)-입찰(B)-구매(Pr)-검수(I) 다중 선택이 적용된 초기 기자재 품목 데이터셋
 const defaultEquipments = [
   { id: 1, unit: "A1", seq: 1, deptName: "간호학과", divisionName: "공동기자재지원센터", itemName: "임상 시뮬레이터 스마트 실습 베드", unitPrice: 12000000, quantity: 2, description: "간호학 임상 실습 고도화 교육 환경 인프라 조달", operation: "교과목(정규)", 
-    milestones: { "3": "기획", "4": "기획", "5": "승인", "6": "승인", "7": "구매", "8": "구매", "9": "검수", "10": "검수", "11": "", "12": "", "1": "", "2": "" } 
+    milestones: { "3": ["기획"], "4": ["기획", "승인"], "5": ["승인"], "6": ["승인"], "7": ["입찰"], "8": ["구매"], "9": ["검수"], "10": ["검수"], "11": [], "12": [], "1": [], "2": [] } 
   },
   { id: 2, unit: "A2", seq: 2, deptName: "화학공학과", divisionName: "", itemName: "고정밀 가스 크로마토그래피 측정기", unitPrice: 24500000, quantity: 1, description: "화공 정밀 분석 및 대외 기업 애로기술 분석 지원용", operation: "교과목(비정규)", 
-    milestones: { "3": "기획", "4": "승인", "5": "승인", "6": "구매", "7": "구매", "8": "검수", "9": "", "10": "", "11": "", "12": "", "1": "", "2": "" } 
+    milestones: { "3": ["기획"], "4": ["승인"], "5": ["승인", "입찰"], "6": ["구매"], "7": ["구매"], "8": ["검수"], "9": [], "10": [], "11": [], "12": [], "1": [], "2": [] } 
   },
   { id: 3, unit: "B1", seq: 3, deptName: "컴퓨터공학과", divisionName: "원격교육지원센터", itemName: "가상현실/메타버스 전용 GPU 렌더링 서버", unitPrice: 15000000, quantity: 3, description: "신기술 가상현실 융합인재양성 교육 장비 구축", operation: "교과목(정규)", 
-    milestones: { "3": "", "4": "기획", "5": "기획", "6": "승인", "7": "구매", "8": "구매", "9": "검수", "10": "", "11": "", "12": "", "1": "", "2": "" } 
+    milestones: { "3": [], "4": ["기획"], "5": ["기획", "승인"], "6": ["승인"], "7": ["입찰"], "8": ["구매", "검수"], "9": ["검수"], "10": [], "11": [], "12": [], "1": [], "2": [] } 
   },
   { id: 4, unit: "B2", seq: 4, deptName: "기계공학과", divisionName: "", itemName: "3D 메탈 프린터 조달", unitPrice: 38000000, quantity: 1, description: "지산학 스마트 제조 부품 시제품 제작 지원 인프라", operation: "교과목(정규)", 
-    milestones: { "3": "기획", "4": "기획", "5": "승인", "6": "구매", "7": "구매", "8": "검수", "9": "검수", "10": "", "11": "", "12": "", "1": "", "2": "" } 
+    milestones: { "3": ["기획"], "4": ["기획", "승인"], "5": ["승인"], "6": ["입찰", "구매"], "7": ["구매"], "8": ["검수"], "9": ["검수"], "10": [], "11": [], "12": [], "1": [], "2": [] } 
   },
   { id: 5, unit: "B3", seq: 5, deptName: "전기전자공학과", divisionName: "공동기자재지원센터", itemName: "반도체 회로 분석 계측기 (Oscilloscope)", unitPrice: 8500000, quantity: 4, description: "반도체 인력양성 실습용 고가 계측 장비 확충", operation: "교과목(비정규)", 
-    milestones: { "3": "기획", "4": "기획", "5": "승인", "6": "승인", "7": "구매", "8": "구매", "9": "구매", "10": "검수", "11": "검수", "12": "검수", "1": "", "2": "" } 
+    milestones: { "3": ["기획"], "4": ["기획"], "5": ["승인"], "6": ["승인"], "7": ["입찰"], "8": ["구매"], "9": ["구매", "검수"], "10": ["검수"], "11": ["검수"], "12": ["검수"], "1": [], "2": [] } 
   },
   { id: 6, unit: "B4", seq: 6, deptName: "", divisionName: "늘봄누리센터", itemName: "늘봄 교실용 스마트 대화형 교육 패드", unitPrice: 850000, quantity: 15, description: "대학 기자재 활용형 아동 늘봄교육 교재 조달", operation: "교과목(비정규)", 
-    milestones: { "3": "", "4": "", "5": "기획", "6": "기획", "7": "승인", "8": "구매", "9": "구매", "10": "검수", "11": "검수", "12": "", "1": "", "2": "" } 
+    milestones: { "3": [], "4": [], "5": ["기획"], "6": ["기획", "승인"], "7": ["승인"], "8": ["구매"], "9": ["구매"], "10": ["검수"], "11": ["검수"], "12": [], "1": [], "2": [] } 
   },
   { id: 7, unit: "C1", seq: 7, deptName: "스마트팩토리전공", divisionName: "", itemName: "다축 협동 산업용 로봇 팔 암 (Robot Arm)", unitPrice: 28000000, quantity: 1, description: "로봇제어 전공 정규 실험실습 공간 인프라 구축", operation: "교과목(정규)", 
-    milestones: { "3": "기획", "4": "기획", "5": "승인", "6": "구매", "7": "구매", "8": "검수", "9": "검수", "10": "", "11": "", "12": "", "1": "", "2": "" } 
+    milestones: { "3": ["기획"], "4": ["기획", "승인"], "5": ["승인"], "6": ["구매"], "7": ["구매"], "8": ["검수"], "9": ["검수"], "10": [], "11": [], "12": [], "1": [], "2": [] } 
   },
   { id: 8, unit: "C2", seq: 8, deptName: "반려동물보건과", divisionName: "", itemName: "동물 전용 디지털 초음파 진단 장치", unitPrice: 19000000, quantity: 1, description: "신설학과 실무 미러형 임상 실습실 조달 품목", operation: "교과목(정규)", 
-    milestones: { "3": "", "4": "기획", "5": "기획", "6": "승인", "7": "구매", "8": "구매", "9": "검수", "10": "", "11": "", "12": "", "1": "", "2": "" } 
+    milestones: { "3": [], "4": ["기획"], "5": ["기획", "승인"], "6": ["승인"], "7": ["구매"], "8": ["구매"], "9": ["검수"], "10": [], "11": [], "12": [], "1": [], "2": [] } 
   },
   { id: 9, unit: "D1", seq: 9, deptName: "스마트선박학과", divisionName: "", itemName: "미래 친환경선박 가상 운항 교육 시뮬레이터", unitPrice: 45000000, quantity: 1, description: "5극3특 가상 운항 실습 교육 과정 지원용 장비", operation: "교과목(정규)", 
-    milestones: { "3": "기획", "4": "기획", "5": "기획", "6": "승인", "7": "승인", "8": "구매", "9": "구매", "10": "구매", "11": "검수", "12": "검수", "1": "검수", "2": "검수" } 
+    milestones: { "3": ["기획"], "4": ["기획"], "5": ["기획", "승인"], "6": ["승인"], "7": ["입찰"], "8": ["입찰", "구매"], "9": ["구매"], "10": ["구매"], "11": ["검수"], "12": ["검수"], "1": ["검수"], "2": ["검수"] } 
   },
   { id: 10, unit: "D2", seq: 10, deptName: "미용예술학과", divisionName: "", itemName: "메디컬 스킨케어 다기능 뷰티 디바이스", unitPrice: 6500000, quantity: 5, description: "웰니스 뷰티 케어 실습 및 지역 상생 뷰티 아카데미 활용", operation: "교과목(비정규)", 
-    milestones: { "3": "기획", "4": "기획", "5": "승인", "6": "구매", "7": "구매", "8": "검수", "9": "검수", "10": "", "11": "", "12": "", "1": "", "2": "" } 
+    milestones: { "3": ["기획"], "4": ["기획", "승인"], "5": ["승인"], "6": ["구매"], "7": ["구매"], "8": ["검수"], "9": ["검수"], "10": [], "11": [], "12": [], "1": [], "2": [] } 
   }
 ];
+
+// 단일 문자열로 저장되어 있을 유스케이스 방어용 헬퍼 함수
+const getMilestoneArray = (val) => {
+  if (!val) return [];
+  if (Array.isArray(val)) return val;
+  return [val];
+};
 
 export default function ProcurementManager({
   currentRole,
@@ -60,6 +67,9 @@ export default function ProcurementManager({
 
   // 기자재 탭 단위과제 필터 상태 (전체 과제 보기를 위해 "ALL" 옵션도 기본 지원)
   const [selectedEquipUnit, setSelectedEquipUnit] = useState("ALL");
+
+  // 월별 마일스톤 멀티 체크 팝오버 상태 추가
+  const [activePopover, setActivePopover] = useState(null); // { equipId, month, x, y }
 
   // 4. 입력 폼 임시 State
   const [formData, setFormData] = useState({
@@ -90,37 +100,108 @@ export default function ProcurementManager({
     opResult: ""
   });
 
-  // 월별 PDCA 단계 순환 토글 함수
-  const handleMilestoneToggle = (equipId, month) => {
+  // 팝오버를 열기 위한 트리거 함수
+  const handleMilestoneClick = (e, equipId, month) => {
+    e.stopPropagation();
     if (currentRole.id === "GUEST") {
       alert("게스트(방문자) 계정은 읽기 전용으로만 이용하실 수 있습니다.");
       return;
     }
+    const rect = e.currentTarget.getBoundingClientRect();
+    setActivePopover({
+      equipId,
+      month,
+      x: rect.left + rect.width / 2,
+      y: rect.top
+    });
+  };
+
+  // 다중 체크 시 해당 단계 배열 토글 함수
+  const handleMilestoneMultiToggle = (equipId, month, stepName) => {
     const activeEquipList = equipData.length > 0 ? equipData : defaultEquipments;
     const updated = activeEquipList.map(e => {
       if (e.id === equipId) {
-        const currentMilestones = e.milestones || { "3": "", "4": "", "5": "", "6": "", "7": "", "8": "", "9": "", "10": "", "11": "", "12": "", "1": "", "2": "" };
-        const currentVal = currentMilestones[month] || "";
+        const currentMilestones = e.milestones || {};
+        const currentList = getMilestoneArray(currentMilestones[month]);
         
-        // 순환 규칙: 없음 ➔ 기획(P) ➔ 승인(D) ➔ 구매(C) ➔ 검수(A) ➔ 없음
-        let nextVal = "";
-        if (currentVal === "") nextVal = "기획";
-        else if (currentVal === "기획") nextVal = "승인";
-        else if (currentVal === "승인") nextVal = "구매";
-        else if (currentVal === "구매") nextVal = "검수";
-        else if (currentVal === "검수") nextVal = "";
+        let nextList;
+        if (currentList.includes(stepName)) {
+          nextList = currentList.filter(s => s !== stepName);
+        } else {
+          nextList = [...currentList, stepName];
+        }
         
         return {
           ...e,
           milestones: {
             ...currentMilestones,
-            [month]: nextVal
+            [month]: nextList
           }
         };
       }
       return e;
     });
     setEquipData(updated);
+  };
+
+  // 월별 PDCA 1줄 Gantt의 색상 및 텍스트를 다중 선택 상태에 맞춰 반환해 주는 헬퍼 스타일 함수
+  const getMilestoneStyle = (stepList, monthNum) => {
+    const list = getMilestoneArray(stepList);
+    
+    // 0개 선택
+    if (list.length === 0) {
+      return {
+        bg: "rgba(255, 255, 255, 0.02)",
+        border: "1px solid rgba(255, 255, 255, 0.05)",
+        color: "rgba(255, 255, 255, 0.2)",
+        text: monthNum,
+        shadow: "none"
+      };
+    }
+    
+    // 각 단계별 텍스트 및 색상 매핑 (기획 P, 승인 A, 입찰 B, 구매 Pr, 검수 I)
+    const stepMeta = {
+      "기획": { text: "P", color: "#f59e0b" },
+      "승인": { text: "A", color: "#3b82f6" },
+      "입찰": { text: "B", color: "#06b6d4" },
+      "구매": { text: "Pr", color: "#a78bfa" },
+      "검수": { text: "I", color: "#10b981" }
+    };
+    
+    // 1개 선택 시
+    if (list.length === 1) {
+      const meta = stepMeta[list[0]] || { text: "?", color: "#6b7280" };
+      return {
+        bg: meta.color,
+        border: `1px solid ${meta.color}`,
+        color: "white",
+        text: meta.text,
+        shadow: `0 0 5px ${meta.color}80`
+      };
+    }
+    
+    // 2개 선택 시 (대각선 분할 그라데이션 적용)
+    if (list.length === 2) {
+      const meta1 = stepMeta[list[0]] || { text: "?", color: "#6b7280" };
+      const meta2 = stepMeta[list[1]] || { text: "?", color: "#6b7280" };
+      return {
+        bg: `linear-gradient(135deg, ${meta1.color} 50%, ${meta2.color} 50%)`,
+        border: "1px solid rgba(255, 255, 255, 0.3)",
+        color: "white",
+        text: `${meta1.text}/${meta2.text}`,
+        shadow: `0 0 6px rgba(255, 255, 255, 0.3)`
+      };
+    }
+    
+    // 3개 이상 선택 시
+    const firstMeta = stepMeta[list[0]] || { text: "?", color: "#6b7280" };
+    return {
+      bg: `linear-gradient(135deg, ${firstMeta.color} 30%, #374151 70%)`,
+      border: "1px solid rgba(255, 255, 255, 0.4)",
+      color: "white",
+      text: `${firstMeta.text}+`,
+      shadow: "0 0 6px rgba(255, 255, 255, 0.4)"
+    };
   };
 
   const handleInputChange = (e) => {
@@ -177,8 +258,8 @@ export default function ProcurementManager({
         operation: formData.operation || "교과목(정규)",
         mgrDept: formData.mgrDept || "ECC",
         milestones: {
-          "3": formData.step === "기획" ? "기획" : formData.step === "승인" ? "승인" : formData.step === "구매" ? "구매" : formData.step === "검수" ? "검수" : "",
-          "4": "", "5": "", "6": "", "7": "", "8": "", "9": "", "10": "", "11": "", "12": "", "1": "", "2": ""
+          "3": formData.step ? [formData.step] : [],
+          "4": [], "5": [], "6": [], "7": [], "8": [], "9": [], "10": [], "11": [], "12": [], "1": [], "2": []
         }
       };
       setEquipData([...activeEquipList, newItem]);
@@ -537,69 +618,37 @@ export default function ProcurementManager({
                             {equip.description || equip.opPlan || "-"}
                           </td>
                           
-                           {/* 12개월 단일 행 Gantt 마일스톤 인터랙티브 PDCA 순환 그리드 */}
+                           {/* 12개월 단일 행 Gantt 마일스톤 인터랙티브 멀티 체크 (P-A-B-Pr-I) 그리드 */}
                            <td style={{ padding: "0.8rem 0.5rem", textAlign: "center", width: "290px", borderLeft: "1px solid rgba(255,255,255,0.03)", borderRight: "1px solid rgba(255,255,255,0.03)" }}>
                              <div style={{ display: "flex", justifyContent: "center", gap: "3px" }}>
                                {["3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "1", "2"].map((m) => {
                                  const itemMilestones = equip.milestones || {};
-                                 const stepVal = itemMilestones[m] || ""; // "기획", "승인", "구매", "검수" 또는 ""
+                                 const stepList = itemMilestones[m] || [];
+                                 const style = getMilestoneStyle(stepList, m);
                                  
-                                 // PDCA 테마 색상 및 표시용 텍스트 매핑
-                                 let bg = "rgba(255, 255, 255, 0.02)";
-                                 let border = "1px solid rgba(255, 255, 255, 0.05)";
-                                 let color = "rgba(255, 255, 255, 0.2)";
-                                 let displayText = m; // 비어 있을 때는 월(Month) 숫자를 표시하여 시인성 확보
-                                 let shadow = "none";
- 
-                                 if (stepVal === "기획") {
-                                   bg = "#f59e0b"; // P: 주황
-                                   border = "1px solid #f59e0b";
-                                   color = "white";
-                                   displayText = "P";
-                                   shadow = "0 0 5px rgba(245, 158, 11, 0.5)";
-                                 } else if (stepVal === "승인") {
-                                   bg = "#3b82f6"; // D: 파랑
-                                   border = "1px solid #3b82f6";
-                                   color = "white";
-                                   displayText = "D";
-                                   shadow = "0 0 5px rgba(59, 130, 246, 0.5)";
-                                 } else if (stepVal === "구매") {
-                                   bg = "#a78bfa"; // C: 보라
-                                   border = "1px solid #a78bfa";
-                                   color = "white";
-                                   displayText = "C";
-                                   shadow = "0 0 5px rgba(167, 139, 250, 0.5)";
-                                 } else if (stepVal === "검수") {
-                                   bg = "#10b981"; // A: 초록
-                                   border = "1px solid #10b981";
-                                   color = "white";
-                                   displayText = "A";
-                                   shadow = "0 0 5px rgba(16, 185, 129, 0.5)";
-                                 }
- 
                                  return (
                                    <div
                                      key={m}
-                                     onClick={() => handleMilestoneToggle(equip.id, m)}
+                                     onClick={(e) => handleMilestoneClick(e, equip.id, m)}
                                      style={{
-                                       width: "20px",
-                                       height: "20px",
+                                       width: "22px",
+                                       height: "22px",
                                        borderRadius: "50%",
-                                       fontSize: "0.68rem",
-                                       fontWeight: "850",
+                                       fontSize: style.text.length > 2 ? "0.48rem" : style.text.length > 1 ? "0.52rem" : "0.68rem",
+                                       fontWeight: "900",
                                        display: "flex",
                                        alignItems: "center",
                                        justifyContent: "center",
                                        cursor: "pointer",
                                        transition: "all 0.15s ease",
-                                       background: bg,
-                                       color: color,
-                                       border: border,
-                                       boxShadow: shadow
+                                       background: style.bg,
+                                       color: style.color,
+                                       border: style.border,
+                                       boxShadow: style.shadow
                                      }}
-                                     title={`'26.${m}월 단계: ${stepVal || "없음"} (클릭 시 순환 토글)`}
+                                     title={`'26.${m}월 단계: ${getMilestoneArray(stepList).join(", ") || "없음"} (클릭하여 중복 지정)`}
                                    >
-                                     {displayText}
+                                     {style.text}
                                    </div>
                                  );
                                })}
@@ -964,10 +1013,11 @@ export default function ProcurementManager({
                     <div>
                       <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>구매단계</label>
                       <select name="step" value={formData.step} onChange={handleInputChange} className="user-selector">
-                        <option value="기획">기획</option>
-                        <option value="승인">승인</option>
-                        <option value="구매">구매</option>
-                        <option value="검수">검수</option>
+                        <option value="기획">기획 (P)</option>
+                        <option value="승인">승인 (A)</option>
+                        <option value="입찰">입찰 (B)</option>
+                        <option value="구매">구매 (Pr)</option>
+                        <option value="검수">검수 (I)</option>
                       </select>
                     </div>
                     <div>
@@ -1046,6 +1096,78 @@ export default function ProcurementManager({
             </form>
           </div>
         </div>
+      )}
+
+      {/* 월별 Gantt 단계 다중 선택 플로팅 팝오버 컴포넌트 */}
+      {activePopover && (
+        <>
+          <div 
+            onClick={() => setActivePopover(null)} 
+            style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, zIndex: 1200, background: "transparent" }} 
+          />
+          <div 
+            style={{
+              position: "fixed",
+              top: `${activePopover.y}px`,
+              left: `${activePopover.x}px`,
+              transform: "translate(-50%, -100%) translateY(-10px)",
+              background: "var(--bg-card-dark)",
+              border: "1px solid var(--border-color-dark)",
+              borderRadius: "8px",
+              padding: "0.75rem",
+              boxShadow: "0 10px 25px -5px rgba(0,0,0,0.6), 0 8px 10px -6px rgba(0,0,0,0.6)",
+              zIndex: 1251,
+              width: "160px",
+              display: "flex",
+              flexDirection: "column",
+              gap: "0.4rem"
+            }}
+          >
+            <div style={{ fontSize: "0.75rem", fontWeight: "800", color: "var(--text-secondary)", marginBottom: "0.2rem", borderBottom: "1px solid rgba(255,255,255,0.05)", paddingBottom: "0.25rem", textAlign: "center" }}>
+              {activePopover.month}월 단계 중복 선택
+            </div>
+            {[
+              { label: "기획 (P)", val: "기획", color: "#f59e0b" },
+              { label: "승인 (A)", val: "승인", color: "#3b82f6" },
+              { label: "입찰 (B)", val: "입찰", color: "#06b6d4" },
+              { label: "구매 (Pr)", val: "구매", color: "#a78bfa" },
+              { label: "검수 (I)", val: "검수", color: "#10b981" }
+            ].map((step) => {
+              const activeEquipList = equipData.length > 0 ? equipData : defaultEquipments;
+              const targetEquip = activeEquipList.find(e => e.id === activePopover.equipId);
+              const currentList = targetEquip ? getMilestoneArray(targetEquip.milestones?.[activePopover.month]) : [];
+              const isChecked = currentList.includes(step.val);
+
+              return (
+                <label 
+                  key={step.val} 
+                  style={{ 
+                    display: "flex", 
+                    alignItems: "center", 
+                    gap: "8px", 
+                    fontSize: "0.75rem", 
+                    color: "white", 
+                    cursor: "pointer", 
+                    userSelect: "none",
+                    padding: "0.2rem 0.35rem",
+                    borderRadius: "4px",
+                    transition: "background 0.1s ease"
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.background = "rgba(255,255,255,0.05)"}
+                  onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}
+                >
+                  <input
+                    type="checkbox"
+                    checked={isChecked}
+                    onChange={() => handleMilestoneMultiToggle(activePopover.equipId, activePopover.month, step.val)}
+                    style={{ cursor: "pointer", accentColor: step.color }}
+                  />
+                  <span style={{ color: step.color, fontWeight: "800" }}>{step.label}</span>
+                </label>
+              );
+            })}
+          </div>
+        </>
       )}
 
     </div>
