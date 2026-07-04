@@ -38,6 +38,8 @@ export default function AgreementManager({
   const [inputOrganizations, setInputOrganizations] = useState([{ name: "", subject: "" }]);
   const [inputSubjectUniv, setInputSubjectUniv] = useState("단장");
   const [univSubjectType, setUnivSubjectType] = useState("단장");
+  const [inputSubjectUnivDept, setInputSubjectUnivDept] = useState("");
+  const [inputSubjectUnivName, setInputSubjectUnivName] = useState("");
   const [inputUnitId, setInputUnitId] = useState("");
   const [inputContents, setInputContents] = useState([]);
   const [inputFileName, setInputFileName] = useState("");
@@ -319,7 +321,7 @@ export default function AgreementManager({
           "체결일자": "2025-05-15",
           "관련 센터": "ECC센터",
           "협약 대상기관": "HD현대중공업, 정테크",
-          "대학 측 협약주체(UC)": "단장",
+          "대학 측 협약주체(UC)": "기계공학과 홍길동",
           "기관 측 협약주체": "HD현대중공업(대표이사), 정테크(대표)",
           "관련 단위과제": "A1",
           "협약유형": "프리미엄",
@@ -590,6 +592,8 @@ export default function AgreementManager({
     setInputOrganizations([{ name: "", subject: "" }]);
     setInputSubjectUniv("단장");
     setUnivSubjectType("단장");
+    setInputSubjectUnivDept("");
+    setInputSubjectUnivName("");
     setInputUnitId(availableUnits[0]?.id || "");
     setInputContents([]);
     setInputFileName("");
@@ -635,13 +639,21 @@ export default function AgreementManager({
     if (!inputUnitId) return alert("관련 단위과제를 선택해 주세요.");
     if (inputContents.length === 0) return alert("협약내용 범주를 선택해 주세요.");
 
+    let finalSubjectUniv = inputSubjectUniv;
+    if (univSubjectType === "기타") {
+      if (!inputSubjectUnivDept.trim() || !inputSubjectUnivName.trim()) {
+        return alert("대학 측 협약주체의 학과와 성명을 모두 입력해 주세요.");
+      }
+      finalSubjectUniv = `${inputSubjectUnivDept.trim()} ${inputSubjectUnivName.trim()}`;
+    }
+
     const combinedSubjectOrg = cleanOrgs.map(o => `${o.name} (${o.subject})`).join(", ");
     const payload = {
       year: selectedYear,
       date: inputDate,
       center: inputCenter,
       organizations: cleanOrgs,
-      subjectUniversity: inputSubjectUniv,
+      subjectUniversity: finalSubjectUniv,
       subjectOrganization: combinedSubjectOrg,
       unitId: inputUnitId,
       contents: inputContents,
@@ -981,8 +993,18 @@ export default function AgreementManager({
                                     setInputSubjectUniv(subUniv);
                                     if (["단장", "센터장"].includes(subUniv)) {
                                       setUnivSubjectType(subUniv);
+                                      setInputSubjectUnivDept("");
+                                      setInputSubjectUnivName("");
                                     } else {
                                       setUnivSubjectType("기타");
+                                      const parts = subUniv.trim().split(/\s+/);
+                                      if (parts.length >= 2) {
+                                        setInputSubjectUnivName(parts[parts.length - 1]);
+                                        setInputSubjectUnivDept(parts.slice(0, parts.length - 1).join(" "));
+                                      } else {
+                                        setInputSubjectUnivDept("");
+                                        setInputSubjectUnivName(subUniv);
+                                      }
                                     }
 
                                     setInputUnitId(agr.unitId || "");
@@ -1261,21 +1283,38 @@ export default function AgreementManager({
                   })}
                 </div>
                 {univSubjectType === "기타" && (
-                  <input
-                    type="text"
-                    placeholder="대학 측 주체 직접 입력 (예: 기계공학과 교수)"
-                    value={inputSubjectUniv}
-                    onChange={(e) => setInputSubjectUniv(e.target.value)}
-                    style={{
-                      width: "100%",
-                      padding: "0.35rem 0.5rem",
-                      fontSize: "0.75rem",
-                      background: "#27272a",
-                      color: "white",
-                      border: "1px solid var(--border-color-dark)",
-                      borderRadius: "0.25rem"
-                    }}
-                  />
+                  <div style={{ display: "flex", gap: "0.35rem" }}>
+                    <input
+                      type="text"
+                      placeholder="학과 입력 (예: 기계공학과)"
+                      value={inputSubjectUnivDept}
+                      onChange={(e) => setInputSubjectUnivDept(e.target.value)}
+                      style={{
+                        flex: 1.3,
+                        padding: "0.35rem 0.5rem",
+                        fontSize: "0.75rem",
+                        background: "#27272a",
+                        color: "white",
+                        border: "1px solid var(--border-color-dark)",
+                        borderRadius: "0.25rem"
+                      }}
+                    />
+                    <input
+                      type="text"
+                      placeholder="성명 (예: 홍길동 교수)"
+                      value={inputSubjectUnivName}
+                      onChange={(e) => setInputSubjectUnivName(e.target.value)}
+                      style={{
+                        flex: 1,
+                        padding: "0.35rem 0.5rem",
+                        fontSize: "0.75rem",
+                        background: "#27272a",
+                        color: "white",
+                        border: "1px solid var(--border-color-dark)",
+                        borderRadius: "0.25rem"
+                      }}
+                    />
+                  </div>
                 )}
               </div>
               <div>
