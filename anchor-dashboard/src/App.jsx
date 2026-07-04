@@ -4436,7 +4436,7 @@ export default function App() {
     }
 
     return (
-      <strong style={{ fontWeight: "800", color: "var(--text-primary-dark)" }}>
+      <strong style={{ fontWeight: "800", color: "var(--text-primary)" }}>
         [{cleanName} {roleOrPosition}]
       </strong>
     );
