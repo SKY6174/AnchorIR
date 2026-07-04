@@ -132,7 +132,7 @@ export default function AgreementManager({
     if (isNaN(d.getTime())) return null;
     const year = d.getFullYear();
     const month = d.getMonth() + 1;
-    
+
     // 3월 1일부터 다음 해 2월 말일까지가 해당 차년도
     if (month >= 3) {
       return year - 2024;
@@ -149,7 +149,7 @@ export default function AgreementManager({
     const minDate = new Date(`${startYear}-03-01T00:00:00`);
     const maxDate = new Date(`${endYear}-03-01T00:00:00`);
     maxDate.setMilliseconds(-1);
-    
+
     const selectedDate = new Date(`${dateStr}T00:00:00`);
     return selectedDate >= minDate && selectedDate <= maxDate;
   };
@@ -193,7 +193,7 @@ export default function AgreementManager({
       sorted.sort((a, b) => {
         let valA = a[sortConfig.key] || "";
         let valB = b[sortConfig.key] || "";
-        
+
         // 협약기관 컬럼 정렬 시 객체 배열 내의 명칭을 결합한 텍스트로 비교하되,
         // (주), 주식회사 등 상호명 접두 특수기호 및 문자를 정화(Sanitize)하여 실질 상호명 기준으로 정렬합니다.
         if (sortConfig.key === "organizations") {
@@ -358,7 +358,7 @@ export default function AgreementManager({
   const handleDownloadTemplate = () => {
     let templateData = [];
     let fileName = "";
-    
+
     if (agreementsSubTab === "agreements") {
       templateData = [
         {
@@ -445,7 +445,7 @@ export default function AgreementManager({
             const orgList = String(orgsVal).split(",").map(o => o.trim()).filter(Boolean);
             const rawSubjects = row["기관 측 협약주체"] || "";
             const subjectsList = String(rawSubjects).split(",").map(s => s.trim()).filter(Boolean);
-            
+
             const organizations = orgList.map((name, i) => {
               let subject = "";
               const match = name.match(/([^\(]+)\(([^)]+)\)/);
@@ -608,7 +608,7 @@ export default function AgreementManager({
     for (const file of files) {
       const fileName = file.name;
       const fileBaseName = fileName.substring(0, fileName.lastIndexOf('.')) || fileName;
-      
+
       // 1) 날짜 판별 정규식 (YY.MM.DD 또는 YYYY.MM.DD)
       const dateRegex = /(20\d{2}|\d{2})[-.]?(0[1-9]|1[0-2])[-.]?(0[1-9]|[12]\d|3[01])/;
       const dateMatch = fileBaseName.match(dateRegex);
@@ -625,8 +625,8 @@ export default function AgreementManager({
       const has2025 = fileBaseName.includes("2025") || fileBaseName.includes("25") || fileBaseName.includes("1차");
       const has2026 = fileBaseName.includes("2026") || fileBaseName.includes("26") || fileBaseName.includes("2차");
 
-      const extractedOrg = extractOrgName(fileBaseName);          
-      const extractedName = extractNameInParentheses(fileBaseName); 
+      const extractedOrg = extractOrgName(fileBaseName);
+      const extractedName = extractNameInParentheses(fileBaseName);
 
       let bestScore = 0;
       let matchedTarget = null;
@@ -647,12 +647,12 @@ export default function AgreementManager({
         agreements.forEach(item => {
           let orgMatch = false;
           let nameMatch = false;
-          
+
           // A. 기관명 포함 검증 (파일명 추출 기관이 대시보드 데이터에 포함되거나 그 반대)
           const compareOrg = (orgInput) => {
             if (!orgInput) return;
             const orgsArray = Array.isArray(orgInput) ? orgInput : [orgInput];
-            
+
             orgsArray.forEach(org => {
               const rawOrgName = typeof org === "object" && org !== null ? org.name : org;
               const orgClean = cleanName(rawOrgName);
@@ -668,7 +668,7 @@ export default function AgreementManager({
           if (item.subjectUniversity && extractedName) {
             const subClean = cleanName(item.subjectUniversity);
             const nameClean = cleanName(extractedName);
-            if (subClean && nameClean && subClean.includes(nameClean)) {
+            if (subClean.includes(nameClean)) {
               nameMatch = true;
             }
           }
@@ -797,7 +797,7 @@ export default function AgreementManager({
           fileData,
           status: "success",
           targetId: matchedTarget.id,
-          targetDesc: targetType === "agreement" 
+          targetDesc: targetType === "agreement"
             ? `${matchedTarget.organizations.map(o => o.name).join(", ")} (${matchedTarget.date})`
             : `${matchedTarget.recipientName} [${matchedTarget.recipientDept}] (${matchedTarget.issueDate || matchedTarget.date})`,
           score: bestScore,
@@ -826,13 +826,13 @@ export default function AgreementManager({
 
     setBatchFileResults(results);
     setIsBatchFileModalOpen(true);
-    e.target.value = ""; 
+    e.target.value = "";
   };
 
   // 일괄 매핑 반영 핸들러
   const handleApplyBatchFiles = () => {
     let appliedCount = 0;
-    
+
     const successMap = new Map();
     batchFileResults.forEach(res => {
       if (res.status === "success" && res.targetId) {
@@ -843,7 +843,7 @@ export default function AgreementManager({
     if (successMap.size === 0) return;
 
     if (agreementsSubTab === "agreements") {
-      setAgreements(prev => 
+      setAgreements(prev =>
         prev.map(item => {
           const match = successMap.get(item.id);
           if (match) {
@@ -858,7 +858,7 @@ export default function AgreementManager({
         })
       );
     } else if (agreementsSubTab === "certificates") {
-      setCertificates(prev => 
+      setCertificates(prev =>
         prev.map(item => {
           const match = successMap.get(item.id);
           if (match) {
@@ -873,7 +873,7 @@ export default function AgreementManager({
         })
       );
     } else if (agreementsSubTab === "awards") {
-      setAwards(prev => 
+      setAwards(prev =>
         prev.map(item => {
           const match = successMap.get(item.id);
           if (match) {
@@ -1013,7 +1013,7 @@ export default function AgreementManager({
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!inputDate) return alert("협약 체결일자를 선택해 주세요.");
-    
+
     const calculatedYear = getYearFromDate(inputDate);
     if (!calculatedYear || calculatedYear < 1 || calculatedYear > 5) {
       alert("유효한 RISE 사업 기간 내의 날짜를 선택해 주세요. (2025년 3월 이후)");
@@ -1065,7 +1065,7 @@ export default function AgreementManager({
     if (!certDept.trim()) return alert("발급대상 소속을 입력해 주세요.");
     if (!certName.trim()) return alert("발급대상 성명을 입력해 주세요.");
     if (!certDate) return alert("발급일을 선택해 주세요.");
-    
+
     const calculatedYear = getYearFromDate(certDate);
     if (!calculatedYear || calculatedYear < 1 || calculatedYear > 5) {
       alert("유효한 RISE 사업 기간 내의 날짜를 선택해 주세요. (2025년 3월 이후)");
@@ -1099,7 +1099,7 @@ export default function AgreementManager({
     if (!awardDept.trim()) return alert("발급대상 소속을 입력해 주세요.");
     if (!awardName.trim()) return alert("발급대상 성명을 입력해 주세요.");
     if (!awardDate) return alert("발급일을 선택해 주세요.");
-    
+
     const calculatedYear = getYearFromDate(awardDate);
     if (!calculatedYear || calculatedYear < 1 || calculatedYear > 5) {
       alert("유효한 RISE 사업 기간 내의 날짜를 선택해 주세요. (2025년 3월 이후)");
@@ -1128,11 +1128,11 @@ export default function AgreementManager({
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-      
+
       {/* 탭 헤더 컨트롤 */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid var(--border-color-dark)", paddingBottom: "0.5rem" }}>
         <div style={{ display: "flex", gap: "0.5rem" }}>
-          <button 
+          <button
             onClick={() => onChangeAgreementsSubTab("agreements")}
             style={{
               padding: "0.4rem 0.8rem",
@@ -1147,7 +1147,7 @@ export default function AgreementManager({
           >
             ⚓ 협약 관리
           </button>
-          <button 
+          <button
             onClick={() => onChangeAgreementsSubTab("certificates")}
             style={{
               padding: "0.4rem 0.8rem",
@@ -1162,7 +1162,7 @@ export default function AgreementManager({
           >
             📄 이수증 관리
           </button>
-          <button 
+          <button
             onClick={() => onChangeAgreementsSubTab("awards")}
             style={{
               padding: "0.4rem 0.8rem",
@@ -1254,7 +1254,7 @@ export default function AgreementManager({
             </label>
 
             {/* 엑셀 다운로드 */}
-            <a 
+            <a
               href={excelDownloadUrl || "#"}
               download={excelDownloadUrl ? `${agreementsSubTab === "agreements" ? "Agreement" : agreementsSubTab === "certificates" ? "Certificate" : "Award"}_List_Year_${selectedYear}.xlsx` : undefined}
               onClick={(e) => {
@@ -1263,17 +1263,17 @@ export default function AgreementManager({
                   alert("다운로드할 데이터가 없습니다.");
                 }
               }}
-              style={{ 
-                display: "flex", 
-                alignItems: "center", 
-                gap: "0.25rem", 
-                padding: "0.35rem 0.7rem", 
-                fontSize: "0.7rem", 
-                background: "#16a34a", 
-                border: "none", 
-                color: "white", 
-                borderRadius: "0.25rem", 
-                cursor: excelDownloadUrl ? "pointer" : "not-allowed", 
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "0.25rem",
+                padding: "0.35rem 0.7rem",
+                fontSize: "0.7rem",
+                background: "#16a34a",
+                border: "none",
+                color: "white",
+                borderRadius: "0.25rem",
+                cursor: excelDownloadUrl ? "pointer" : "not-allowed",
                 fontWeight: "700",
                 textDecoration: "none"
               }}
@@ -1378,7 +1378,7 @@ export default function AgreementManager({
                         </td>
                         <td style={{ padding: "0.6rem 0.8rem", fontWeight: "700" }}>{agr.unitId}</td>
                         <td style={{ padding: "0.6rem 0.8rem" }}>
-                          <span style={{ 
+                          <span style={{
                             background: agr.agreementType === "프리미엄" ? "rgba(236,72,153,0.15)" : agr.agreementType === "무료" ? "rgba(59,130,246,0.15)" : "transparent",
                             color: agr.agreementType === "프리미엄" ? "#ec4899" : agr.agreementType === "무료" ? "#3b82f6" : "#a1a1aa",
                             padding: agr.agreementType !== "-" ? "0.15rem 0.35rem" : "0",
@@ -1409,7 +1409,7 @@ export default function AgreementManager({
                                     setInputDate(agr.date || "");
                                     setInputCenter(agr.center || "ECC센터");
                                     setInputOrganizations(Array.isArray(agr.organizations) ? agr.organizations.map(o => typeof o === "object" ? { name: o.name || "", subject: o.subject || "" } : { name: o, subject: "" }) : [{ name: "", subject: "" }]);
-                                    
+
                                     const subUniv = agr.subjectUniversity || "단장";
                                     setInputSubjectUniv(subUniv);
                                     if (["단장", "센터장"].includes(subUniv)) {
@@ -1437,7 +1437,7 @@ export default function AgreementManager({
                                   }} style={{ background: "none", border: "none", color: "#a1a1aa", cursor: "pointer" }} title="수정">
                                     <Edit size={14} />
                                   </button>
-                                  <button onClick={() => { if(confirm("이 협약서를 삭제하시겠습니까?")) onDeleteAgreement(agr.id); }} style={{ background: "none", border: "none", color: "#ef4444", cursor: "pointer" }} title="삭제">
+                                  <button onClick={() => { if (confirm("이 협약서를 삭제하시겠습니까?")) onDeleteAgreement(agr.id); }} style={{ background: "none", border: "none", color: "#ef4444", cursor: "pointer" }} title="삭제">
                                     <Trash size={14} />
                                   </button>
                                 </>
@@ -1521,7 +1521,7 @@ export default function AgreementManager({
                                 }} style={{ background: "none", border: "none", color: "#a1a1aa", cursor: "pointer" }} title="수정">
                                   <Edit size={14} />
                                 </button>
-                                <button onClick={() => { if(confirm("이 이수증을 삭제하시겠습니까?")) onDeleteCertificate(cert.id); }} style={{ background: "none", border: "none", color: "#ef4444", cursor: "pointer" }} title="삭제">
+                                <button onClick={() => { if (confirm("이 이수증을 삭제하시겠습니까?")) onDeleteCertificate(cert.id); }} style={{ background: "none", border: "none", color: "#ef4444", cursor: "pointer" }} title="삭제">
                                   <Trash size={14} />
                                 </button>
                               </>
@@ -1604,7 +1604,7 @@ export default function AgreementManager({
                                 }} style={{ background: "none", border: "none", color: "#a1a1aa", cursor: "pointer" }} title="수정">
                                   <Edit size={14} />
                                 </button>
-                                <button onClick={() => { if(confirm("이 상장을 삭제하시겠습니까?")) onDeleteAward(award.id); }} style={{ background: "none", border: "none", color: "#ef4444", cursor: "pointer" }} title="삭제">
+                                <button onClick={() => { if (confirm("이 상장을 삭제하시겠습니까?")) onDeleteAward(award.id); }} style={{ background: "none", border: "none", color: "#ef4444", cursor: "pointer" }} title="삭제">
                                   <Trash size={14} />
                                 </button>
                               </>
@@ -1937,7 +1937,7 @@ export default function AgreementManager({
                 <X size={18} />
               </button>
             </div>
-            
+
             <div style={{ padding: "1.25rem", flex: 1, overflowY: "auto", display: "flex", flexDirection: "column", gap: "1rem" }}>
               <div style={{ fontSize: "0.75rem", color: "#a1a1aa", background: "#27272a", padding: "0.75rem", borderRadius: "0.35rem", border: "1px solid var(--border-color-dark)" }}>
                 💡 파일 이름에서 추출된 기관명/발급번호 및 성명이 대시보드의 데이터 정보에 포함되면 매칭 대상(100점)으로 판정하여 자동 연결해 줍니다.
@@ -1967,16 +1967,16 @@ export default function AgreementManager({
                         <td style={{ padding: "0.5rem", border: "1px solid var(--border-color-dark)" }}>
                           <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
                             <div style={{ fontSize: "0.68rem", color: "#a1a1aa" }}>
-                              🏢 추출기관: <span style={{ color: "white", fontWeight: "700" }}>{res.details?.extractedOrg || "없음"}</span> | 
+                              🏢 추출기관: <span style={{ color: "white", fontWeight: "700" }}>{res.details?.extractedOrg || "없음"}</span> |
                               👤 추출성명: <span style={{ color: "white", fontWeight: "700" }}>{res.details?.extractedName || "없음"}</span>
                             </div>
-                            <div style={{ 
-                              fontSize: "0.62rem", 
-                              color: res.status === "success" ? "#34d399" : "#f87171", 
-                              background: "rgba(255,255,255,0.02)", 
-                              padding: "0.15rem 0.35rem", 
-                              borderRadius: "0.2rem", 
-                              display: "inline-block", 
+                            <div style={{
+                              fontSize: "0.62rem",
+                              color: res.status === "success" ? "#34d399" : "#f87171",
+                              background: "rgba(255,255,255,0.02)",
+                              padding: "0.15rem 0.35rem",
+                              borderRadius: "0.2rem",
+                              display: "inline-block",
                               width: "fit-content",
                               border: "1px solid rgba(255,255,255,0.05)"
                             }}>
@@ -2012,13 +2012,13 @@ export default function AgreementManager({
 
             <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.5rem", borderTop: "1px solid var(--border-color-dark)", padding: "0.85rem 1.25rem", flexShrink: 0 }}>
               <button type="button" className="btn-secondary" onClick={() => setIsBatchFileModalOpen(false)} style={{ padding: "0.35rem 0.75rem", fontSize: "0.75rem" }}>취소</button>
-              <button 
-                type="button" 
-                className="btn-primary" 
+              <button
+                type="button"
+                className="btn-primary"
                 onClick={handleApplyBatchFiles}
                 disabled={batchFileResults.filter(r => r.status === "success").length === 0}
-                style={{ 
-                  padding: "0.35rem 0.75rem", 
+                style={{
+                  padding: "0.35rem 0.75rem",
                   fontSize: "0.75rem",
                   background: batchFileResults.filter(r => r.status === "success").length === 0 ? "#52525b" : "var(--primary-color)",
                   cursor: batchFileResults.filter(r => r.status === "success").length === 0 ? "not-allowed" : "pointer"
