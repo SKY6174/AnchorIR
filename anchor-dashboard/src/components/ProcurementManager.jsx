@@ -550,22 +550,53 @@ export default function ProcurementManager({
 
           {/* 기자재 리스트 (스프레드시트 스타일 표 뷰) */}
           <div className="glass-card" style={{ padding: "0.5rem", borderRadius: "10px", overflowX: "auto" }}>
-            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.82rem", color: "var(--text-primary)", minWidth: "1080px" }}>
+            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.82rem", color: "var(--text-primary)", minWidth: "1200px" }}>
               <thead>
-                <tr style={{ background: "rgba(255, 255, 255, 0.03)", borderBottom: "2px solid rgba(255,255,255,0.08)" }}>
-                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "45px" }}>순번</th>
-                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "55px" }}>과제</th>
-                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "left", fontWeight: "800", width: "120px" }}>학과 / 부서</th>
-                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "left", fontWeight: "800", width: "180px" }}>품명</th>
-                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "right", fontWeight: "800", width: "90px" }}>단가</th>
-                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "50px" }}>수량</th>
-                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "right", fontWeight: "800", width: "100px" }}>견적총액</th>
-                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "left", fontWeight: "800" }}>관련내용</th>
-                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "290px" }}>구매단계 (월별 P-D-C-A 지정)</th>
-                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "100px" }}>운영</th>
+                {/* 1행: 대분류 헤더 */}
+                <tr style={{ background: "rgba(255, 255, 255, 0.03)", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+                  <th rowSpan={3} style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "45px", verticalAlign: "middle" }}>순번</th>
+                  <th rowSpan={3} style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "55px", verticalAlign: "middle" }}>과제</th>
+                  <th rowSpan={3} style={{ padding: "0.75rem 0.5rem", textAlign: "left", fontWeight: "800", width: "120px", verticalAlign: "middle" }}>학과 / 부서</th>
+                  <th rowSpan={3} style={{ padding: "0.75rem 0.5rem", textAlign: "left", fontWeight: "800", width: "180px", verticalAlign: "middle" }}>품명</th>
+                  <th rowSpan={3} style={{ padding: "0.75rem 0.5rem", textAlign: "right", fontWeight: "800", width: "90px", verticalAlign: "middle" }}>단가</th>
+                  <th rowSpan={3} style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "50px", verticalAlign: "middle" }}>수량</th>
+                  <th rowSpan={3} style={{ padding: "0.75rem 0.5rem", textAlign: "right", fontWeight: "800", width: "100px", verticalAlign: "middle" }}>견적총액</th>
+                  <th rowSpan={3} style={{ padding: "0.75rem 0.5rem", textAlign: "left", fontWeight: "800", verticalAlign: "middle" }}>관련내용</th>
+                  <th colSpan={12} style={{ padding: "0.5rem", textAlign: "center", fontWeight: "800", borderBottom: "1px solid rgba(255,255,255,0.08)", background: "rgba(255, 255, 255, 0.01)" }}>
+                    구매단계 (기획:P ➔ 승인:A ➔ 입찰:B ➔ 구매:Pr ➔ 검수:I)
+                  </th>
+                  <th rowSpan={3} style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "100px", verticalAlign: "middle" }}>운영</th>
                   {currentRole.id !== "GUEST" && (
-                    <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "45px" }}>작업</th>
+                    <th rowSpan={3} style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "45px", verticalAlign: "middle" }}>작업</th>
                   )}
+                </tr>
+                {/* 2행: 연도 분할 */}
+                <tr style={{ background: "rgba(255, 255, 255, 0.02)", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+                  <th colSpan={10} style={{ padding: "0.25rem 0.5rem", textAlign: "center", fontWeight: "750", fontSize: "0.75rem", color: "var(--accent-color)", borderRight: "1px solid rgba(255,255,255,0.05)" }}>
+                    2026년
+                  </th>
+                  <th colSpan={2} style={{ padding: "0.25rem 0.5rem", textAlign: "center", fontWeight: "750", fontSize: "0.75rem", color: "var(--accent-color)" }}>
+                    2027년
+                  </th>
+                </tr>
+                {/* 3행: 월 리스트 */}
+                <tr style={{ background: "rgba(255, 255, 255, 0.01)", borderBottom: "2px solid rgba(255,255,255,0.08)" }}>
+                  {["3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월", "1월", "2월"].map((m, idx) => (
+                    <th 
+                      key={m} 
+                      style={{ 
+                        padding: "0.3rem 0.2rem", 
+                        textAlign: "center", 
+                        fontWeight: "800", 
+                        fontSize: "0.72rem", 
+                        color: "var(--text-secondary-dark)",
+                        width: "28px",
+                        borderRight: idx < 11 ? "1px solid rgba(255,255,255,0.03)" : "none"
+                      }}
+                    >
+                      {m}
+                    </th>
+                  ))}
                 </tr>
               </thead>
               <tbody>
@@ -618,42 +649,49 @@ export default function ProcurementManager({
                             {equip.description || equip.opPlan || "-"}
                           </td>
                           
-                           {/* 12개월 단일 행 Gantt 마일스톤 인터랙티브 멀티 체크 (P-A-B-Pr-I) 그리드 */}
-                           <td style={{ padding: "0.8rem 0.5rem", textAlign: "center", width: "290px", borderLeft: "1px solid rgba(255,255,255,0.03)", borderRight: "1px solid rgba(255,255,255,0.03)" }}>
-                             <div style={{ display: "flex", justifyContent: "center", gap: "3px" }}>
-                               {["3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "1", "2"].map((m) => {
-                                 const itemMilestones = equip.milestones || {};
-                                 const stepList = itemMilestones[m] || [];
-                                 const style = getMilestoneStyle(stepList, m);
-                                 
-                                 return (
-                                   <div
-                                     key={m}
-                                     onClick={(e) => handleMilestoneClick(e, equip.id, m)}
-                                     style={{
-                                       width: "22px",
-                                       height: "22px",
-                                       borderRadius: "50%",
-                                       fontSize: style.text.length > 2 ? "0.48rem" : style.text.length > 1 ? "0.52rem" : "0.68rem",
-                                       fontWeight: "900",
-                                       display: "flex",
-                                       alignItems: "center",
-                                       justifyContent: "center",
-                                       cursor: "pointer",
-                                       transition: "all 0.15s ease",
-                                       background: style.bg,
-                                       color: style.color,
-                                       border: style.border,
-                                       boxShadow: style.shadow
-                                     }}
-                                     title={`'26.${m}월 단계: ${getMilestoneArray(stepList).join(", ") || "없음"} (클릭하여 중복 지정)`}
-                                   >
-                                     {style.text}
-                                   </div>
-                                 );
-                               })}
-                             </div>
-                           </td>
+                          {/* 12개월 개별 분리 격자 셀 Gantt 타임라인 (세로 경계선 없이 깨끗하게 칩 나열) */}
+                          {["3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "1", "2"].map((m, mIdx) => {
+                            const itemMilestones = equip.milestones || {};
+                            const stepList = itemMilestones[m] || [];
+                            const style = getMilestoneStyle(stepList, m);
+                            
+                            return (
+                              <td 
+                                key={m} 
+                                style={{ 
+                                  padding: "0.4rem 0.1rem", 
+                                  textAlign: "center", 
+                                  width: "28px",
+                                  border: "none",
+                                  background: "transparent"
+                                }}
+                              >
+                                <div
+                                  onClick={(e) => handleMilestoneClick(e, equip.id, m)}
+                                  style={{
+                                    width: "22px",
+                                    height: "22px",
+                                    borderRadius: "50%",
+                                    fontSize: style.text.length > 2 ? "0.48rem" : style.text.length > 1 ? "0.52rem" : "0.68rem",
+                                    fontWeight: "900",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    cursor: "pointer",
+                                    margin: "0 auto",
+                                    transition: "all 0.15s ease",
+                                    background: style.bg,
+                                    color: style.color,
+                                    border: style.border,
+                                    boxShadow: style.shadow
+                                  }}
+                                  title={`'26.${m}월 단계: ${getMilestoneArray(stepList).join(", ") || "없음"} (클릭하여 중복 지정)`}
+                                >
+                                  {style.text}
+                                </div>
+                              </td>
+                            );
+                          })}
 
                           <td style={{ padding: "0.8rem 0.5rem", textAlign: "center", color: "var(--text-secondary)" }}>
                             {equip.operation || "-"}
