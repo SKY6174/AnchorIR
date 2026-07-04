@@ -2355,14 +2355,14 @@ export default function ScheduleManager({
                 display: "flex",
                 flexDirection: "column",
                 gap: "0.5rem",
-                background: "rgba(30, 41, 59, 0.4)",
+                background: darkMode ? "rgba(30, 41, 59, 0.4)" : "rgba(0, 0, 0, 0.03)",
                 padding: "0.85rem 1.25rem",
                 borderRadius: "8px",
                 border: "1px solid var(--border-color)",
                 marginBottom: "0.25rem"
               }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                  <span style={{ fontSize: "0.75rem", fontWeight: "700", color: "#94a3b8" }}>
+                  <span style={{ fontSize: "0.75rem", fontWeight: "700", color: darkMode ? "#94a3b8" : "var(--text-secondary)" }}>
                     🔍 부서(센터) 선택 필터 (다중 선택)
                   </span>
                   {selectedDeptFilters.length > 0 && (
@@ -2371,7 +2371,7 @@ export default function ScheduleManager({
                       style={{
                         background: "none",
                         border: "none",
-                        color: "#38bdf8",
+                        color: darkMode ? "#38bdf8" : "var(--accent-color)",
                         fontSize: "0.68rem",
                         cursor: "pointer",
                         fontWeight: "600",
@@ -2391,9 +2391,9 @@ export default function ScheduleManager({
                       fontWeight: "700",
                       borderRadius: "4px",
                       cursor: "pointer",
-                      border: "1px solid " + (selectedDeptFilters.length === 0 ? "var(--accent-color)" : "rgba(255,255,255,0.1)"),
+                      border: "1px solid " + (selectedDeptFilters.length === 0 ? "var(--accent-color)" : (darkMode ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.08)")),
                       background: selectedDeptFilters.length === 0 ? "var(--accent-color)" : "transparent",
-                      color: selectedDeptFilters.length === 0 ? "white" : "#94a3b8",
+                      color: selectedDeptFilters.length === 0 ? "white" : (darkMode ? "#94a3b8" : "var(--text-secondary)"),
                       transition: "all 0.15s ease"
                     }}
                   >
@@ -2415,9 +2415,9 @@ export default function ScheduleManager({
                           fontWeight: "700",
                           borderRadius: "4px",
                           cursor: "pointer",
-                          border: "1px solid " + (isSelected ? "#38bdf8" : "rgba(255,255,255,0.06)"),
-                          background: isSelected ? "rgba(56, 189, 248, 0.15)" : "rgba(255, 255, 255, 0.02)",
-                          color: isSelected ? "#38bdf8" : "#94a3b8",
+                          border: "1px solid " + (isSelected ? (darkMode ? "#38bdf8" : "var(--accent-color)") : (darkMode ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.08)")),
+                          background: isSelected ? (darkMode ? "rgba(56, 189, 248, 0.15)" : "rgba(59, 130, 246, 0.1)") : (darkMode ? "rgba(255, 255, 255, 0.02)" : "rgba(0, 0, 0, 0.02)"),
+                          color: isSelected ? (darkMode ? "#38bdf8" : "var(--accent-color)") : (darkMode ? "#94a3b8" : "var(--text-secondary)"),
                           transition: "all 0.15s ease"
                         }}
                       >
