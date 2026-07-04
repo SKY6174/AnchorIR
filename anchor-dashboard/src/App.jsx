@@ -2573,7 +2573,8 @@ export default function App() {
             unitId: a.unit_id,
             contents: a.contents,
             fileName: a.file_name,
-            fileData: a.file_data
+            fileData: a.file_data,
+            agreementType: a.agreement_type || "-"
           }));
           setAgreements(formatted);
           try {
@@ -2778,7 +2779,8 @@ export default function App() {
               unit_id: a.unitId || "",
               contents: a.contents || [],
               file_name: a.fileName || null,
-              file_data: a.fileData || null
+              file_data: a.fileData || null,
+              agreement_type: a.agreementType || "-"
             }))
           );
           if (error) throw error;

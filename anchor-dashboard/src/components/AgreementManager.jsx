@@ -41,6 +41,7 @@ export default function AgreementManager({
   const [inputContents, setInputContents] = useState([]);
   const [inputFileName, setInputFileName] = useState("");
   const [inputFileData, setInputFileData] = useState("");
+  const [inputAgreementType, setInputAgreementType] = useState("-");
 
   // 2. 이수증 모달 및 입력 폼 상태
   const [isCertModalOpen, setIsCertModalOpen] = useState(false);
@@ -254,12 +255,13 @@ export default function AgreementManager({
           "대학 측 협약주체(UC)": agr.subjectUniversity || "",
           "기관 측 협약주체": orgSubjectsStr,
           "관련 단위과제": agr.unitId || "",
+          "협약유형": agr.agreementType || "-",
           "협약내용 범주": Array.isArray(agr.contents) ? agr.contents.join(", ") : "",
           "사본 파일명": agr.fileName || "미첨부"
         };
       });
       sheetName = `${selectedYear}차년도 협약서 목록`;
-      cols = [{ wch: 15 }, { wch: 15 }, { wch: 30 }, { wch: 20 }, { wch: 35 }, { wch: 15 }, { wch: 30 }, { wch: 35 }];
+      cols = [{ wch: 15 }, { wch: 15 }, { wch: 30 }, { wch: 20 }, { wch: 35 }, { wch: 15 }, { wch: 15 }, { wch: 30 }, { wch: 35 }];
     } else if (agreementsSubTab === "certificates") {
       if (sortedCertificates.length === 0) {
         setExcelDownloadUrl("");
@@ -319,6 +321,7 @@ export default function AgreementManager({
           "대학 측 협약주체(UC)": "단장",
           "기관 측 협약주체": "HD현대중공업(대표이사), 정테크(대표)",
           "관련 단위과제": "A1",
+          "협약유형": "프리미엄",
           "협약내용 범주": "주문식교육, R&BD"
         }
       ];
@@ -350,7 +353,7 @@ export default function AgreementManager({
     const ws = XLSX.utils.json_to_sheet(templateData);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "업로드템플릿");
-    ws["!cols"] = Array(7).fill({ wch: 25 });
+    ws["!cols"] = Array(agreementsSubTab === "agreements" ? 8 : 7).fill({ wch: 25 });
 
     const wbout = XLSX.write(wb, { bookType: "xlsx", type: "base64" });
     const a = document.createElement("a");
@@ -419,6 +422,9 @@ export default function AgreementManager({
               .map(c => c.trim())
               .filter(c => AGREEMENT_CONTENTS_OPTIONS.includes(c));
 
+            const typeVal = row["협약유형"] ? String(row["협약유형"]).trim() : "-";
+            const finalType = ["프리미엄", "무료", "-"].includes(typeVal) ? typeVal : "-";
+
             const newAgr = {
               year: selectedYear,
               date: String(dateVal).trim(),
@@ -426,6 +432,7 @@ export default function AgreementManager({
               organizations,
               subjectUniversity: row["대학 측 협약주체(UC)"] ? String(row["대학 측 협약주체(UC)"]).trim() : "단장",
               unitId: row["관련 단위과제"] ? String(row["관련 단위과제"]).trim() : "",
+              agreementType: finalType,
               contents,
               fileName: "",
               fileData: ""
@@ -585,6 +592,7 @@ export default function AgreementManager({
     setInputContents([]);
     setInputFileName("");
     setInputFileData("");
+    setInputAgreementType("-");
   };
 
   // 2-1. 이수증 폼 초기화
@@ -636,7 +644,8 @@ export default function AgreementManager({
       unitId: inputUnitId,
       contents: inputContents,
       fileName: inputFileName,
-      fileData: inputFileData
+      fileData: inputFileData,
+      agreementType: inputAgreementType
     };
 
     if (editingId) {
@@ -882,17 +891,18 @@ export default function AgreementManager({
             <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.75rem", color: "white" }}>
               <thead>
                 <tr style={{ background: "rgba(255,255,255,0.03)", borderBottom: "1px solid var(--border-color-dark)" }}>
-                  <th onClick={() => requestSort("date")} style={{ padding: "0.6rem 0.8rem", textAlign: "left", width: "12%", cursor: "pointer" }}>
+                  <th onClick={() => requestSort("date")} style={{ padding: "0.6rem 0.8rem", textAlign: "left", width: "10%", cursor: "pointer" }}>
                     날짜 {sortConfig.key === "date" ? (sortConfig.direction === "asc" ? "▲" : "▼") : "⇅"}
                   </th>
-                  <th onClick={() => requestSort("center")} style={{ padding: "0.6rem 0.8rem", textAlign: "left", width: "12%", cursor: "pointer" }}>
+                  <th onClick={() => requestSort("center")} style={{ padding: "0.6rem 0.8rem", textAlign: "left", width: "10%", cursor: "pointer" }}>
                     관련 센터 {sortConfig.key === "center" ? (sortConfig.direction === "asc" ? "▲" : "▼") : "⇅"}
                   </th>
-                  <th style={{ padding: "0.6rem 0.8rem", textAlign: "left", width: "18%" }}>협약기관</th>
-                  <th style={{ padding: "0.6rem 0.8rem", textAlign: "left", width: "24%" }}>협약주체 (UC & 타기관)</th>
-                  <th onClick={() => requestSort("unitId")} style={{ padding: "0.6rem 0.8rem", textAlign: "left", width: "10%", cursor: "pointer" }}>
+                  <th style={{ padding: "0.6rem 0.8rem", textAlign: "left", width: "16%" }}>협약기관</th>
+                  <th style={{ padding: "0.6rem 0.8rem", textAlign: "left", width: "22%" }}>협약주체 (UC & 타기관)</th>
+                  <th onClick={() => requestSort("unitId")} style={{ padding: "0.6rem 0.8rem", textAlign: "left", width: "8%", cursor: "pointer" }}>
                     단위과제 {sortConfig.key === "unitId" ? (sortConfig.direction === "asc" ? "▲" : "▼") : "⇅"}
                   </th>
+                  <th style={{ padding: "0.6rem 0.8rem", textAlign: "left", width: "10%" }}>협약유형</th>
                   <th style={{ padding: "0.6rem 0.8rem", textAlign: "left", width: "14%" }}>협약내용 범주</th>
                   <th style={{ padding: "0.6rem 0.8rem", textAlign: "center", width: "5%" }}>사본</th>
                   {(currentRole.rank <= 2) && <th style={{ padding: "0.6rem 0.8rem", textAlign: "center", width: "5%" }}>제어</th>}
@@ -901,7 +911,7 @@ export default function AgreementManager({
               <tbody>
                 {sortedAgreements.length === 0 ? (
                   <tr>
-                    <td colSpan={currentRole.rank <= 2 ? 8 : 7} style={{ padding: "2rem", textAlign: "center", color: "var(--text-secondary-dark)" }}>
+                    <td colSpan={currentRole.rank <= 2 ? 9 : 8} style={{ padding: "2rem", textAlign: "center", color: "var(--text-secondary-dark)" }}>
                       등록된 협약서 내역이 없습니다.
                     </td>
                   </tr>
@@ -933,6 +943,18 @@ export default function AgreementManager({
                         </td>
                         <td style={{ padding: "0.6rem 0.8rem", fontWeight: "700" }}>{agr.unitId}</td>
                         <td style={{ padding: "0.6rem 0.8rem" }}>
+                          <span style={{ 
+                            background: agr.agreementType === "프리미엄" ? "rgba(236,72,153,0.15)" : agr.agreementType === "무료" ? "rgba(59,130,246,0.15)" : "transparent",
+                            color: agr.agreementType === "프리미엄" ? "#ec4899" : agr.agreementType === "무료" ? "#3b82f6" : "#a1a1aa",
+                            padding: agr.agreementType !== "-" ? "0.15rem 0.35rem" : "0",
+                            borderRadius: "0.25rem",
+                            fontSize: "0.65rem",
+                            fontWeight: agr.agreementType !== "-" ? "700" : "normal"
+                          }}>
+                            {agr.agreementType || "-"}
+                          </span>
+                        </td>
+                        <td style={{ padding: "0.6rem 0.8rem" }}>
                           {Array.isArray(agr.contents) && agr.contents.map((c, i) => (
                             <span key={i} style={{ background: "rgba(52,211,153,0.1)", color: "#34d399", padding: "0.1rem 0.3rem", borderRadius: "0.2rem", fontSize: "0.65rem", marginRight: "0.2rem" }}>{c}</span>
                           ))}
@@ -957,6 +979,7 @@ export default function AgreementManager({
                                     setInputContents(Array.isArray(agr.contents) ? [...agr.contents] : []);
                                     setInputFileName(agr.fileName || "");
                                     setInputFileData(agr.fileData || "");
+                                    setInputAgreementType(agr.agreementType || "-");
                                     setIsModalOpen(true);
                                   }} style={{ background: "none", border: "none", color: "#a1a1aa", cursor: "pointer" }} title="수정">
                                     <Edit size={14} />
@@ -1207,6 +1230,36 @@ export default function AgreementManager({
                     <option key={u.id} value={u.id}>{u.id}. {u.title}</option>
                   ))}
                 </select>
+              </div>
+              <div>
+                <label style={{ display: "block", fontSize: "0.65rem", color: "var(--text-secondary-dark)", marginBottom: "0.4rem" }}>협약유형</label>
+                <div style={{ display: "flex", gap: "0.4rem" }}>
+                  {["프리미엄", "무료", "-"].map((t) => {
+                    const isSelected = inputAgreementType === t;
+                    return (
+                      <button
+                        key={t}
+                        type="button"
+                        onClick={() => setInputAgreementType(t)}
+                        style={{
+                          flex: 1,
+                          padding: "0.35rem 0.5rem",
+                          fontSize: "0.7rem",
+                          fontWeight: "700",
+                          borderRadius: "0.25rem",
+                          border: isSelected ? "1px solid #ec4899" : "1px solid #52525b",
+                          background: isSelected ? "rgba(236, 72, 153, 0.15)" : "#27272a",
+                          color: isSelected ? "#ec4899" : "#d4d4d8",
+                          cursor: "pointer",
+                          textAlign: "center",
+                          transition: "all 0.2s ease"
+                        }}
+                      >
+                        {t}
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
               <div>
                 <label style={{ display: "block", fontSize: "0.65rem", color: "var(--text-secondary-dark)", marginBottom: "0.4rem" }}>협약 내용 범주 (다중 선택)</label>
