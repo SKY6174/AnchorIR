@@ -12,6 +12,7 @@ export async function analyzePressUrlWithAiConsensus({ url, selectedYear, apiKey
 
   let fetchedTitle = "";
   let fetchedAuthor = "";
+  let fetchedDate = ""; // 초정밀 기사 발행 날짜 보관 변수
   let isYoutube = false;
   let articleTextContext = ""; // 뉴스 기사용 팩트 컨텍스트 보관 변수
 
@@ -48,6 +49,39 @@ export async function analyzePressUrlWithAiConsensus({ url, selectedYear, apiKey
             .replace(/ - 울산매일신문/g, "")
             .replace(/ - 한국대학신문/g, "")
             .replace(/ : 네이버 뉴스/g, "");
+        }
+
+        // --- [초정밀 기사 발행날짜 추출 파서 가동] ---
+        // A. HTML 메타 태그 검색 (article:published_time, og:regDate, pubdate 등 표준 탐색)
+        const metaDateRegexes = [
+          /property="article:published_time"\s+content="([^"]+)"/i,
+          /name="pubdate"\s+content="([^"]+)"/i,
+          /property="og:regDate"\s+content="([^"]+)"/i,
+          /class="date"\s*>([^<]+)</i,
+          /class="publish-date"\s*>([^<]+)</i
+        ];
+        
+        for (const rx of metaDateRegexes) {
+          const m = html.match(rx);
+          if (m && m[1]) {
+            const innerStr = m[1].trim();
+            const dateMatch = innerStr.match(/(202\d)[.\-/]?(0[1-9]|1[0-2])[.\-/]?([0-9]|[12]\d|3[01])/);
+            if (dateMatch) {
+              const year = dateMatch[1];
+              const month = dateMatch[2].padStart(2, '0');
+              const day = dateMatch[3].padStart(2, '0');
+              fetchedDate = `${year}-${month}-${day}`;
+              break;
+            }
+          }
+        }
+
+        // B. 메타태그에서 못 찾은 경우 전체 텍스트에서 2020년대 YYYY.MM.DD 표준 패턴 스캔
+        if (!fetchedDate) {
+          const standardDateMatch = html.match(/(202\d)[.\-/](0[1-9]|1[0-2])[.\-/](0[1-9]|[12]\d|3[01])/);
+          if (standardDateMatch) {
+            fetchedDate = `${standardDateMatch[1]}-${standardDateMatch[2].padStart(2, '0')}-${standardDateMatch[3].padStart(2, '0')}`;
+          }
         }
 
         // HTML 태그 탈수 및 기사 핵심 텍스트 영역 발췌
@@ -203,6 +237,7 @@ export async function analyzePressUrlWithAiConsensus({ url, selectedYear, apiKey
   [실시간 크롤링 수집 정보]
   - 진짜 기사/영상 제목: "${fetchedTitle || "없음"}"
   - 진짜 게시자/채널명(매체): "${fetchedAuthor || "없음"}"
+  - 크롤러 감지 기사 작성/발행일자: "${fetchedDate || "없음"}"
   
   ${articleTextContext ? `[실시간 뉴스 기사 본문 일부 (100% 실존 팩트 소스)]:\n${articleTextContext}\n위 본문 텍스트를 최우선적으로 정밀 정독하여 기사의 진짜 내용과 보도 취지를 이해하십시오.` : ""}
 
@@ -215,7 +250,8 @@ export async function analyzePressUrlWithAiConsensus({ url, selectedYear, apiKey
   - 초안 A의 내용 중 실제 제공된 뉴스 본문 텍스트에 들어있지 않은 거짓 할루시네이션(예: 제목 "없음" 혹은 엉뚱한 날짜 유추)이 존재하는지 샅샅이 비판하고, 실재하는 기사 제목과 매체명으로 100% 보정하여 정밀 초안 B를 완성하십시오.
 
   [최종 판정 및 조율 단계 (Chief Editor)]
-  - 두 초안을 대조하고, 보도일자는 제목이나 URL 텍스트 속에 "20251127" 처럼 명확한 8자리 YYYYMMDD 날짜가 포함되어 있을 시에는, 해당 실제 날짜를 정확히 최종 "pressDate"로 적용하여 연도/일자 왜곡(할루시네이션)을 완벽히 소거하십시오.
+  - 두 초안을 대조하고, 보도일자("pressDate")는 크롤러가 감지한 기사 작성/발행일자("${fetchedDate || ""}")가 존재하는 경우, 두 초안의 예측치나 본문의 다른 일자보다 이 감지된 날짜를 최우선 순위로 신용하여 최종 반영하십시오.
+  - 만약 감지된 기사 발행일자가 없고 제목이나 URL 텍스트 속에 "20251127" 처럼 명확한 8자리 YYYYMMDD 날짜가 포함되어 있을 시에는, 해당 실제 날짜를 정확히 최종 "pressDate"로 적용하여 연도/일자 왜곡(할루시네이션)을 완벽히 소거하십시오.
   - 제공된 본문 텍스트의 팩트를 기초로 하여, 3~4문장의 아주 객관적이고 사실적인 진짜 뉴스 기사체 요약본("pressContent")을 생성하십시오. 절대 '추정된다' 와 같은 모호한 문장을 쓰지 말고, 본문 팩트를 직접 명시하십시오.
 
   반드시 마크다운 기호(\`\`\`) 없이 순수 JSON 규격 텍스트만 리턴하십시오:
