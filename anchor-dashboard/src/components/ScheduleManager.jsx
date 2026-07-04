@@ -360,6 +360,7 @@ export default function ScheduleManager({
     category: "operating",
     agenda: "",
     audioUrl: "",
+    pdfUrl: "",
     // 언론보도용
     pressDate: "2026-07-15",
     pressTime: "10:00",
@@ -398,14 +399,22 @@ export default function ScheduleManager({
   const [isUploadingFile, setIsUploadingFile] = useState(false);
 
   // 회의록 음성 녹음 파일(MP3/PDF) 업로드 핸들러
-  const handleAudioUpload = async (e) => {
+  // 회의록 음성 녹음 파일(MP3) 및 문서(PDF) 개별 업로드 핸들러
+  const handleMinutesFileUpload = async (e, type) => {
     const file = e.target.files[0];
     if (!file) return;
 
-    // MIME 타입 및 파일 크기 유효성 검사 (5MB 제한)
-    const allowedTypes = ["audio/mp3", "audio/mpeg", "application/pdf"];
-    if (!allowedTypes.includes(file.type)) {
-      alert("MP3 음성오디오 파일 또는 PDF 문서 파일만 업로드할 수 있습니다.");
+    // MIME 타입 유효성 검사 및 파일 크기 제한 (5MB)
+    const isAudio = type === "audio";
+    const allowedTypes = isAudio ? ["audio/mp3", "audio/mpeg", "audio/x-mpeg"] : ["application/pdf"];
+    const typeLabel = isAudio ? "MP3 오디오 파일" : "PDF 문서 파일";
+
+    // 브라우저에 따라 file.type이 빈값일 수 있으므로 확장자 2차 검증 포함
+    const fileExt = file.name.substring(file.name.lastIndexOf(".")).toLowerCase();
+    const isAllowedExt = isAudio ? [".mp3", ".mpeg"].includes(fileExt) : [".pdf"].includes(fileExt);
+
+    if (!allowedTypes.includes(file.type) && !isAllowedExt) {
+      alert(`${typeLabel}만 업로드할 수 있습니다.`);
       return;
     }
     if (file.size > 5 * 1024 * 1024) {
@@ -416,7 +425,6 @@ export default function ScheduleManager({
     setIsUploadingFile(true);
     try {
       // 한글 깨짐 및 Storage 특수기호 에러(Invalid key) 방지를 위해 물리 파일명은 영문/숫자 고유 ID로 치환
-      const fileExt = file.name.substring(file.name.lastIndexOf(".")).toLowerCase();
       const storagePath = `meeting_audios/${Date.now()}_${Math.random().toString(36).substring(2, 8)}${fileExt}`;
 
       const { data, error } = await supabase.storage
@@ -432,13 +440,13 @@ export default function ScheduleManager({
 
       const publicUrl = publicUrlData.publicUrl;
 
-      // formData에 저장
+      // formData의 해당 필드에 저장
       setFormData(prev => ({
         ...prev,
-        audioUrl: publicUrl
+        [isAudio ? "audioUrl" : "pdfUrl"]: publicUrl
       }));
       
-      alert("회의록 파일이 성공적으로 업로드되었습니다!");
+      alert(`${typeLabel}이 성공적으로 업로드되었습니다!`);
     } catch (err) {
       console.error("File upload error:", err);
       alert("파일 업로드 실패: " + err.message);
@@ -704,7 +712,8 @@ export default function ScheduleManager({
                 attendeesExternal: combinedAttendeesExternal,
                 agenda: combinedAgenda || "-",
                 result: combinedResult || "-",
-                audioUrl: formData.audioUrl || ""
+                audioUrl: formData.audioUrl || "",
+                pdfUrl: formData.pdfUrl || ""
               }
             : m
         ));
@@ -720,7 +729,8 @@ export default function ScheduleManager({
           attendeesExternal: combinedAttendeesExternal,
           agenda: combinedAgenda || "-",
           result: combinedResult || "-",
-          audioUrl: formData.audioUrl || ""
+          audioUrl: formData.audioUrl || "",
+          pdfUrl: formData.pdfUrl || ""
         };
         setMeetingSchedules([newItem, ...meetingSchedules]);
       }
@@ -1141,6 +1151,7 @@ export default function ScheduleManager({
       category: meeting.category || "operating",
       result: meeting.result || "",
       audioUrl: meeting.audioUrl || meeting.audio_url || "",
+      pdfUrl: meeting.pdfUrl || meeting.pdf_url || "",
       pressDate: "2026-07-15",
       pressTime: "10:00",
       pressMedia: "",
@@ -1264,6 +1275,7 @@ export default function ScheduleManager({
       attendees: "",
       agendaList: [""],
       audioUrl: "",
+      pdfUrl: "",
       // 언론보도용 추가
       pressDate: defaultEventDate,
       pressTime: "10:00",
@@ -2464,7 +2476,7 @@ export default function ScheduleManager({
                                   <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem", fontSize: "0.825rem" }}>
                                     {(selectedMeeting.agenda || "").split("\n").filter(Boolean).map((agendaItem, idx) => (
                                       <span key={idx} style={{ display: "block", lineHeight: "1.4" }}>
-                                        • {agendaItem}
+                                        의제 {idx + 1}. {agendaItem}
                                       </span>
                                     ))}
                                     {!(selectedMeeting.agenda) && <span>등록된 의제가 없습니다.</span>}
@@ -2485,10 +2497,60 @@ export default function ScheduleManager({
                                     <CheckCircle size={14} />
                                     주요 결정 및 조치 사항 (요점 정리)
                                   </span>
-                                  <p style={{ margin: 0, fontSize: "0.8rem", lineHeight: "1.45", whiteSpace: "pre-wrap", color: "#E2E8F0" }}>
-                                    {selectedMeeting.result || "등록된 결정 사항이 없습니다."}
-                                  </p>
+                                  <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", fontSize: "0.8rem", color: "#E2E8F0", lineHeight: "1.45" }}>
+                                    {(selectedMeeting.result || "").split("\n").filter(Boolean).map((resultItem, idx) => (
+                                      <div key={idx} style={{ borderBottom: idx < (selectedMeeting.result || "").split("\n").filter(Boolean).length - 1 ? "1px dashed rgba(255,255,255,0.03)" : "none", paddingBottom: "0.3rem" }}>
+                                        <strong>결과 {idx + 1}.</strong> {resultItem}
+                                      </div>
+                                    ))}
+                                    {!(selectedMeeting.result) && <span>등록된 결정 사항이 없습니다.</span>}
+                                  </div>
                                 </div>
+
+                                {/* 회의록 첨부파일 개별 분리 렌더링 */}
+                                {(selectedMeeting.audioUrl || selectedMeeting.pdfUrl) && (
+                                  <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", marginTop: "0.5rem", marginBottom: "0.5rem" }}>
+                                    {selectedMeeting.audioUrl && (
+                                      <div style={{ 
+                                        background: "rgba(255,255,255,0.02)", 
+                                        padding: "0.55rem 0.75rem", 
+                                        borderRadius: "8px", 
+                                        border: "1px solid var(--border-color)", 
+                                        display: "flex", 
+                                        flexDirection: "column", 
+                                        gap: "0.2rem"
+                                      }}>
+                                        <span style={{ fontSize: "0.72rem", fontWeight: "700", color: "var(--text-secondary)", display: "flex", alignItems: "center", gap: "0.25rem" }}>
+                                          🎙️ 첨부 음성 녹음본
+                                        </span>
+                                        <audio controls src={selectedMeeting.audioUrl} style={{ width: "100%", height: "26px", marginTop: "0.1rem" }} />
+                                      </div>
+                                    )}
+                                    {selectedMeeting.pdfUrl && (
+                                      <div style={{ 
+                                        background: "rgba(255,255,255,0.02)", 
+                                        padding: "0.55rem 0.75rem", 
+                                        borderRadius: "8px", 
+                                        border: "1px solid var(--border-color)", 
+                                        display: "flex", 
+                                        alignItems: "center", 
+                                        justifyContent: "space-between"
+                                      }}>
+                                        <span style={{ fontSize: "0.72rem", fontWeight: "700", color: "var(--text-secondary)" }}>
+                                          📄 첨부 회의록 문서 (PDF)
+                                        </span>
+                                        <a
+                                          href={selectedMeeting.pdfUrl}
+                                          target="_blank"
+                                          rel="noreferrer"
+                                          style={{ color: "#60A5FA", fontSize: "0.72rem", fontWeight: "700", textDecoration: "none" }}
+                                        >
+                                          [PDF 바로보기 ➔]
+                                        </a>
+                                      </div>
+                                    )}
+                                  </div>
+                                )}
 
                                 {/* PLAUD 음성 녹음 배너 */}
                                 <button
@@ -2640,7 +2702,7 @@ export default function ScheduleManager({
                                 <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem", margin: "0.1rem 0 0 0" }}>
                                   {meeting.agenda && meeting.agenda.split("\n").filter(Boolean).map((agendaItem, idx) => (
                                     <span key={idx} style={{ display: "block", lineHeight: "1.3" }}>
-                                      • {agendaItem}
+                                      의제 {idx + 1}. {agendaItem}
                                     </span>
                                   ))}
                                 </div>
@@ -2658,47 +2720,57 @@ export default function ScheduleManager({
                                   <CheckCircle size={14} />
                                   회의 결정 결과
                                 </span>
-                                <p style={{ margin: 0, fontSize: "0.75rem", lineHeight: "1.4", whiteSpace: "pre-wrap" }}>{meeting.result}</p>
+                                <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", fontSize: "0.75rem", color: "#E2E8F0", lineHeight: "1.45" }}>
+                                  {(meeting.result || "").split("\n").filter(Boolean).map((resultItem, idx) => (
+                                    <div key={idx} style={{ borderBottom: idx < (meeting.result || "").split("\n").filter(Boolean).length - 1 ? "1px dashed rgba(255,255,255,0.03)" : "none", paddingBottom: "0.3rem" }}>
+                                      <strong>결과 {idx + 1}.</strong> {resultItem}
+                                    </div>
+                                  ))}
+                                  {!(meeting.result) && <span>등록된 결정 사항이 없습니다.</span>}
+                                </div>
                               </div>
                               
-                              {/* 회의록 첨부파일 (MP3 재생 및 PDF 바로보기) */}
-                              {meeting.audioUrl && (
-                                <div style={{ 
-                                  background: "rgba(255,255,255,0.02)", 
-                                  padding: "0.6rem 0.75rem", 
-                                  borderRadius: "8px", 
-                                  border: "1px solid var(--border-color)", 
-                                  display: "flex", 
-                                  flexDirection: "column", 
-                                  gap: "0.35rem",
-                                  marginTop: "0.25rem"
-                                }}>
-                                  <span style={{ fontSize: "0.72rem", fontWeight: "700", color: "var(--text-secondary)", display: "flex", alignItems: "center", gap: "0.25rem" }}>
-                                    🎙️ 첨부파일: {meeting.audioUrl.toLowerCase().endsWith(".pdf") ? "PDF 문서" : "음성 녹음본"}
-                                  </span>
-                                  {meeting.audioUrl.toLowerCase().endsWith(".pdf") ? (
-                                    <a
-                                      href={meeting.audioUrl}
-                                      target="_blank"
-                                      rel="noreferrer"
-                                      style={{ 
-                                        display: "inline-flex", 
-                                        alignItems: "center", 
-                                        gap: "0.25rem", 
-                                        color: "#60A5FA", 
-                                        fontSize: "0.72rem", 
-                                        fontWeight: "700", 
-                                        textDecoration: "none" 
-                                      }}
-                                    >
-                                      📄 첨부 PDF 문서 바로보기 ➔
-                                    </a>
-                                  ) : (
-                                    <audio 
-                                      controls 
-                                      src={meeting.audioUrl} 
-                                      style={{ width: "100%", height: "28px", marginTop: "0.15rem" }} 
-                                    />
+                              {/* 회의록 첨부파일 개별 분리 렌더링 */}
+                              {(meeting.audioUrl || meeting.pdfUrl) && (
+                                <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", marginTop: "0.25rem" }}>
+                                  {meeting.audioUrl && (
+                                    <div style={{ 
+                                      background: "rgba(255,255,255,0.02)", 
+                                      padding: "0.5rem 0.75rem", 
+                                      borderRadius: "8px", 
+                                      border: "1px solid var(--border-color)", 
+                                      display: "flex", 
+                                      flexDirection: "column", 
+                                      gap: "0.2rem"
+                                    }}>
+                                      <span style={{ fontSize: "0.72rem", fontWeight: "700", color: "var(--text-secondary)" }}>
+                                        🎙️ 첨부 음성 녹음본
+                                      </span>
+                                      <audio controls src={meeting.audioUrl} style={{ width: "100%", height: "26px", marginTop: "0.1rem" }} />
+                                    </div>
+                                  )}
+                                  {meeting.pdfUrl && (
+                                    <div style={{ 
+                                      background: "rgba(255,255,255,0.02)", 
+                                      padding: "0.5rem 0.75rem", 
+                                      borderRadius: "8px", 
+                                      border: "1px solid var(--border-color)", 
+                                      display: "flex", 
+                                      alignItems: "center", 
+                                      justifyContent: "space-between"
+                                    }}>
+                                      <span style={{ fontSize: "0.72rem", fontWeight: "700", color: "var(--text-secondary)" }}>
+                                        📄 첨부 회의록 문서
+                                      </span>
+                                      <a
+                                        href={meeting.pdfUrl}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        style={{ color: "#60A5FA", fontSize: "0.72rem", fontWeight: "700", textDecoration: "none" }}
+                                      >
+                                        [PDF 바로보기 ➔]
+                                      </a>
+                                    </div>
                                   )}
                                 </div>
                               )}
@@ -3555,7 +3627,9 @@ export default function ScheduleManager({
                       );
                     })()}
 
-                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>참석자 (직접 입력)</label>
+                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>
+                      참석자 (위의 버튼을 누르면 자동으로 입력되며, 타 부서 인원의 경우 수기입력 가능)
+                    </label>
                     <input 
                       type="text" 
                       name="attendees" 
@@ -3566,87 +3640,159 @@ export default function ScheduleManager({
                     />
                   </div>
 
-                  {/* 회의록 음성 녹음 파일(MP3/PDF) 업로드 */}
-                  <div style={{ marginTop: "1rem" }}>
-                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.4rem" }}>
-                      🎙️ 회의록 음성 녹음 또는 PDF 첨부파일 (최대 5MB)
-                    </label>
-                    {formData.audioUrl ? (
-                      <div style={{ 
-                        display: "flex", 
-                        alignItems: "center", 
-                        gap: "0.5rem", 
-                        background: "rgba(85, 182, 133, 0.1)", 
-                        padding: "0.5rem 0.75rem", 
-                        borderRadius: "6px", 
-                        border: "1px solid rgba(85, 182, 133, 0.2)" 
-                      }}>
-                        <span style={{ fontSize: "0.75rem", color: "#55b685", fontWeight: "700" }}>
-                          ✓ 파일 업로드됨
-                        </span>
-                        <a 
-                          href={formData.audioUrl} 
-                          target="_blank" 
-                          rel="noreferrer" 
-                          style={{ fontSize: "0.72rem", color: "#60A5FA", textDecoration: "none" }}
-                        >
-                          [등록 파일 다운로드 / 확인 ➔]
-                        </a>
-                        <button
-                          type="button"
-                          onClick={() => setFormData(prev => ({ ...prev, audioUrl: "" }))}
-                          style={{ 
-                            marginLeft: "auto", 
-                            background: "rgba(239, 68, 68, 0.15)", 
-                            border: "none", 
-                            color: "#EF4444", 
-                            cursor: "pointer", 
-                            fontSize: "0.7rem", 
-                            fontWeight: "700",
-                            padding: "0.2rem 0.4rem",
-                            borderRadius: "4px"
-                          }}
-                        >
-                          파일 제거 ✕
-                        </button>
-                      </div>
-                    ) : (
-                      <div style={{ position: "relative" }}>
-                        <input
-                          type="file"
-                          accept=".mp3,audio/mp3,audio/mpeg,application/pdf"
-                          onChange={handleAudioUpload}
-                          disabled={isUploadingFile}
-                          style={{ display: "none" }}
-                          id="minutes-file-upload-input"
-                        />
-                        <label
-                          htmlFor="minutes-file-upload-input"
-                          style={{
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            gap: "0.4rem",
-                            width: "100%",
-                            padding: "0.6rem",
-                            background: "rgba(128,128,128,0.05)",
-                            border: "1px dashed var(--border-color)",
-                            borderRadius: "6px",
-                            color: "var(--text-secondary)",
-                            cursor: isUploadingFile ? "not-allowed" : "pointer",
-                            fontSize: "0.75rem",
-                            textAlign: "center",
-                            transition: "all 0.2s"
-                          }}
-                        >
-                          {isUploadingFile ? "⏳ 파일 업로드 중..." : "📁 MP3 녹음 파일 또는 PDF 첨부문서 등록"}
-                        </label>
-                      </div>
-                    )}
+                  {/* 회의록 첨부파일 개별 분리 업로드 (2칸 설계) */}
+                  <div style={{ marginTop: "1rem", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem" }}>
+                    {/* 1번째 칸: MP3 음성 파일 */}
+                    <div>
+                      <label style={{ display: "block", fontSize: "0.78rem", color: "var(--text-secondary)", marginBottom: "0.4rem" }}>
+                        🎙️ 음성 녹음 파일 (MP3 전용, 최대 5MB)
+                      </label>
+                      {formData.audioUrl ? (
+                        <div style={{ 
+                          display: "flex", 
+                          alignItems: "center", 
+                          gap: "0.4rem", 
+                          background: "rgba(85, 182, 133, 0.08)", 
+                          padding: "0.45rem 0.6rem", 
+                          borderRadius: "6px", 
+                          border: "1px solid rgba(85, 182, 133, 0.15)" 
+                        }}>
+                          <span style={{ fontSize: "0.7rem", color: "#55b685", fontWeight: "700" }}>✓ 등록됨</span>
+                          <a 
+                            href={formData.audioUrl} 
+                            target="_blank" 
+                            rel="noreferrer" 
+                            style={{ fontSize: "0.7rem", color: "#60A5FA", textDecoration: "none", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: "100px" }}
+                          >
+                            [듣기/다운로드 ➔]
+                          </a>
+                          <button
+                            type="button"
+                            onClick={() => setFormData(prev => ({ ...prev, audioUrl: "" }))}
+                            style={{ 
+                              marginLeft: "auto", 
+                              background: "none", 
+                              border: "none", 
+                              color: "#EF4444", 
+                              cursor: "pointer", 
+                              fontSize: "0.68rem", 
+                              fontWeight: "700"
+                            }}
+                          >
+                            ✕
+                          </button>
+                        </div>
+                      ) : (
+                        <div style={{ position: "relative" }}>
+                          <input
+                            type="file"
+                            accept=".mp3,audio/mp3,audio/mpeg"
+                            onChange={(e) => handleMinutesFileUpload(e, "audio")}
+                            disabled={isUploadingFile}
+                            style={{ display: "none" }}
+                            id="minutes-audio-file-input"
+                          />
+                          <label
+                            htmlFor="minutes-audio-file-input"
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              gap: "0.25rem",
+                              width: "100%",
+                              padding: "0.5rem",
+                              background: "rgba(128,128,128,0.04)",
+                              border: "1px dashed var(--border-color)",
+                              borderRadius: "6px",
+                              color: "var(--text-secondary)",
+                              cursor: isUploadingFile ? "not-allowed" : "pointer",
+                              fontSize: "0.7rem",
+                              textAlign: "center"
+                            }}
+                          >
+                            {isUploadingFile ? "⏳ 전송 중..." : "📁 MP3 파일 등록"}
+                          </label>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* 2번째 칸: PDF 문서 파일 */}
+                    <div>
+                      <label style={{ display: "block", fontSize: "0.78rem", color: "var(--text-secondary)", marginBottom: "0.4rem" }}>
+                        📄 회의록 첨부 문서 (PDF 전용, 최대 5MB)
+                      </label>
+                      {formData.pdfUrl ? (
+                        <div style={{ 
+                          display: "flex", 
+                          alignItems: "center", 
+                          gap: "0.4rem", 
+                          background: "rgba(85, 182, 133, 0.08)", 
+                          padding: "0.45rem 0.6rem", 
+                          borderRadius: "6px", 
+                          border: "1px solid rgba(85, 182, 133, 0.15)" 
+                        }}>
+                          <span style={{ fontSize: "0.7rem", color: "#55b685", fontWeight: "700" }}>✓ 등록됨</span>
+                          <a 
+                            href={formData.pdfUrl} 
+                            target="_blank" 
+                            rel="noreferrer" 
+                            style={{ fontSize: "0.7rem", color: "#60A5FA", textDecoration: "none", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: "100px" }}
+                          >
+                            [문서 확인 ➔]
+                          </a>
+                          <button
+                            type="button"
+                            onClick={() => setFormData(prev => ({ ...prev, pdfUrl: "" }))}
+                            style={{ 
+                              marginLeft: "auto", 
+                              background: "none", 
+                              border: "none", 
+                              color: "#EF4444", 
+                              cursor: "pointer", 
+                              fontSize: "0.68rem", 
+                              fontWeight: "700"
+                            }}
+                          >
+                            ✕
+                          </button>
+                        </div>
+                      ) : (
+                        <div style={{ position: "relative" }}>
+                          <input
+                            type="file"
+                            accept="application/pdf"
+                            onChange={(e) => handleMinutesFileUpload(e, "pdf")}
+                            disabled={isUploadingFile}
+                            style={{ display: "none" }}
+                            id="minutes-pdf-file-input"
+                          />
+                          <label
+                            htmlFor="minutes-pdf-file-input"
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              gap: "0.25rem",
+                              width: "100%",
+                              padding: "0.5rem",
+                              background: "rgba(128,128,128,0.04)",
+                              border: "1px dashed var(--border-color)",
+                              borderRadius: "6px",
+                              color: "var(--text-secondary)",
+                              cursor: isUploadingFile ? "not-allowed" : "pointer",
+                              fontSize: "0.7rem",
+                              textAlign: "center"
+                            }}
+                          >
+                            {isUploadingFile ? "⏳ 전송 중..." : "📁 PDF 파일 등록"}
+                          </label>
+                        </div>
+                      )}
+                    </div>
                   </div>
 
                   {/* 주요 의제 및 회의 결과 1:1 대칭 대응 입력 목록 */}
-                  <div>
+                  <div style={{ marginTop: "1rem" }}>
                     <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.4rem" }}>
                       📝 회의 의제 및 결과 관리 (1:1 대응 입력)
                     </label>
@@ -3658,7 +3804,7 @@ export default function ScheduleManager({
                             display: "grid", 
                             gridTemplateColumns: "1fr 1.2fr 40px", 
                             gap: "0.5rem", 
-                            alignItems: "center",
+                            alignItems: "stretch",
                             background: "rgba(255, 255, 255, 0.01)",
                             padding: "0.5rem",
                             borderRadius: "6px",
@@ -3674,18 +3820,18 @@ export default function ScheduleManager({
                               setAgendaResultPairs(newPairs);
                             }}
                             placeholder={`의제 ${index + 1} (예: 2차년도 예산 검토)`}
-                            style={{ padding: "0.45rem", background: "rgba(128,128,128,0.1)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", fontSize: "0.75rem" }}
+                            style={{ padding: "0.45rem", background: "rgba(128,128,128,0.1)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", fontSize: "0.75rem", height: "100%" }}
                           />
-                          <input 
-                            type="text" 
+                          <textarea 
                             value={pair.result} 
                             onChange={(e) => {
                               const newPairs = [...agendaResultPairs];
                               newPairs[index].result = e.target.value;
                               setAgendaResultPairs(newPairs);
                             }}
-                            placeholder={`결정 및 조치 사항 ${index + 1}`}
-                            style={{ padding: "0.45rem", background: "rgba(128,128,128,0.1)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", fontSize: "0.75rem" }}
+                            placeholder={`결정 및 조치 사항 ${index + 1} (상세 결과 2줄 분량)`}
+                            rows={2}
+                            style={{ padding: "0.45rem", background: "rgba(128,128,128,0.1)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", fontSize: "0.75rem", resize: "vertical", fontFamily: "inherit", lineHeight: "1.3" }}
                           />
                           {agendaResultPairs.length > 1 ? (
                             <button
