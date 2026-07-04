@@ -1013,15 +1013,38 @@ export default function ScheduleManager({
       return;
     }
 
-    // 보안 삭제 비밀번호 확인 프롬프트 신설 (비밀번호: anchor123!)
-    const pw = window.prompt("⚠️ 회의록 삭제는 되돌릴 수 없습니다!\n\n삭제 승인 비밀번호를 입력해 주세요.\n(관리 비밀번호: anchor123!)");
+    // 로그인된 롤 이름 식별에 따른 본인 개인 비밀번호 맵핑
+    const userName = currentRole.name || "";
+    let expectedPw = "";
+    let userPromptName = "";
+    let hint = "";
+
+    if (userName.includes("송경영")) {
+      userPromptName = "송경영 단장님";
+      expectedPw = "song123!";
+      hint = "song123!";
+    } else if (userName.includes("심현미")) {
+      userPromptName = "심현미 선생님";
+      expectedPw = "shim123!";
+      hint = "shim123!";
+    } else if (currentRole.id === "ADMIN") {
+      userPromptName = "최고 관리자(ADMIN)";
+      expectedPw = "admin123!";
+      hint = "admin123!";
+    } else {
+      alert("❌ 삭제 권한이 없는 계정입니다. 삭제는 송경영, 심현미 계정만 가능합니다.");
+      return;
+    }
+
+    // 본인 인증 비밀번호 입력 프롬프트
+    const pw = window.prompt(`⚠️ 회의록 삭제는 되돌릴 수 없습니다!\n\n${userPromptName} 본인의 삭제 승인 비밀번호를 입력해 주세요.\n(비밀번호 힌트: ${hint})`);
     
     if (pw === null) {
       // 사용자가 취소(Cancel)를 누른 경우
       return;
     }
 
-    if (pw !== "anchor123!") {
+    if (pw !== expectedPw) {
       alert("❌ 비밀번호가 올바르지 않습니다. 삭제가 취소되었습니다.");
       return;
     }
