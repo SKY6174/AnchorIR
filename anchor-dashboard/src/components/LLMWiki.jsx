@@ -42,9 +42,70 @@ export default function LLMWiki({ selectedYear = 2 }) {
     setQuery("");
     setLoading(true);
 
-    // AI RAG 시뮬레이션 지연 실행 (마치 서버에서 연산하는 효과)
+    const apiKey = import.meta.env.VITE_OPENAI_API_KEY;
+    const hasKey = apiKey && apiKey !== "your_openai_api_key_here" && apiKey.trim() !== "";
+
+    // 1. 키워드 점수 기반 모의 RAG 검색 가동 (유관 지식 조각 추출)
+    const ragResult = simulateRAGQuery(activeText, selectedYear);
+
+    if (hasKey) {
+      try {
+        // 검색된 상위 조각들의 실제 본문 텍스트를 RAG 컨텍스트로 조립
+        const contextStr = (ragResult.sources || [])
+          .map(src => {
+            const fullChunk = WIKI_CHUNKS.find(c => c.id === src.id);
+            return `[지식 자료: ${fullChunk?.title} (${fullChunk?.category})]\n${fullChunk?.content}`;
+          })
+          .join("\n\n");
+
+        const systemPrompt = `당신은 울산과학대학교 RISE 및 앵커(ANCHOR)사업단 전담 AI RAG 어시스턴트입니다. 
+제공되는 [지식베이스 콘텍스트] 소스의 팩트에 기반하여 사용자의 질문에 정확하고 친절하게 한국어로 대답해야 합니다.
+
+[지식베이스 콘텍스트]:
+${contextStr || "관련된 직접적인 지식 문서가 없습니다. 일반 지식과 앵커사업 기획 방향에 기반해 답변해 주십시오."}
+
+[주의사항]:
+1. 반드시 제공된 콘텍스트의 팩트에 기반해서 답변을 구성하고, 모르는 부분이나 팩트에 없는 부분은 억지로 거짓말하지 마십시오.
+2. 금액이나 식비, 초과근무 수당 한도 등 지침 규정 질문에는 콘텍스트 속의 명확한 수치를 콕 집어 명시적으로 대답하십시오.
+3. 2차년도인지 1차년도인지 연차 구분이 질문에 언급되거나 문맥상 파악되면 해당 연도 기준 지침에 맞춤 대조하여 상세히 대답하십시오.`;
+
+        const response = await fetch("https://api.openai.com/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${apiKey}`
+          },
+          body: JSON.stringify({
+            model: "gpt-4o-mini",
+            messages: [
+              { role: "system", content: systemPrompt },
+              { role: "user", content: activeText }
+            ],
+            temperature: 0.3
+          })
+        });
+
+        if (response.ok) {
+          const resData = await response.json();
+          const answerText = resData?.choices?.[0]?.message?.content;
+          
+          setMessages(prev => [...prev, {
+            sender: "ai",
+            text: answerText || "답변을 가져오지 못했습니다.",
+            sources: ragResult.sources
+          }]);
+          setLoading(false);
+          return;
+        } else {
+          console.warn("OpenAI API returned non-OK status, falling back to mock RAG:", response.status);
+        }
+      } catch (err) {
+        console.warn("Real OpenAI RAG fetch failed, sliding down to mock RAG:", err);
+      }
+    }
+
+    // 폴백: 모의 RAG 실행
     setTimeout(() => {
-      const ragResult = simulateRAGQuery(activeText, selectedYear);
       setMessages(prev => [...prev, {
         sender: "ai",
         text: ragResult.answer,
