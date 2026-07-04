@@ -1850,7 +1850,7 @@ export default function PDCAManager({
                                 placeholder="예시) 0" 
                                 value={inputTargetParticipants} 
                                 onChange={(e) => setInputTargetParticipants(e.target.value)} 
-                                style={{ padding: "0.25rem 0.4rem", fontSize: "0.75rem", flex: 2, minWidth: 0 }} 
+                                style={{ padding: "0.25rem 0.4rem", fontSize: "0.75rem", flex: 2, minWidth: 0, background: "rgba(255,255,255,0.02)", color: "var(--text-primary)", border: "1px solid var(--border-color-dark)", borderRadius: "0.25rem" }} 
                               />
                               <input 
                                 type="text" 
@@ -1858,7 +1858,7 @@ export default function PDCAManager({
                                 placeholder="예시) 명" 
                                 value={inputTargetParticipantsUnit} 
                                 onChange={(e) => setInputTargetParticipantsUnit(e.target.value)} 
-                                style={{ padding: "0.25rem 0.4rem", fontSize: "0.75rem", flex: 1, minWidth: 0, textAlign: "center" }} 
+                                style={{ padding: "0.25rem 0.4rem", fontSize: "0.75rem", flex: 1, minWidth: 0, textAlign: "center", background: "rgba(255,255,255,0.02)", color: "var(--text-primary)", border: "1px solid var(--border-color-dark)", borderRadius: "0.25rem" }} 
                               />
                             </div>
                           </div>
@@ -1881,7 +1881,7 @@ export default function PDCAManager({
                                 placeholder="예시) 0" 
                                 value={inputTargetDevelopments} 
                                 onChange={(e) => setInputTargetDevelopments(e.target.value)} 
-                                style={{ padding: "0.25rem 0.4rem", fontSize: "0.75rem", flex: 2, minWidth: 0 }} 
+                                style={{ padding: "0.25rem 0.4rem", fontSize: "0.75rem", flex: 2, minWidth: 0, background: "rgba(255,255,255,0.02)", color: "var(--text-primary)", border: "1px solid var(--border-color-dark)", borderRadius: "0.25rem" }} 
                               />
                               <input 
                                 type="text" 
@@ -1889,7 +1889,7 @@ export default function PDCAManager({
                                 placeholder="예시) 건" 
                                 value={inputTargetDevelopmentsUnit} 
                                 onChange={(e) => setInputTargetDevelopmentsUnit(e.target.value)} 
-                                style={{ padding: "0.25rem 0.4rem", fontSize: "0.75rem", flex: 1, minWidth: 0, textAlign: "center" }} 
+                                style={{ padding: "0.25rem 0.4rem", fontSize: "0.75rem", flex: 1, minWidth: 0, textAlign: "center", background: "rgba(255,255,255,0.02)", color: "var(--text-primary)", border: "1px solid var(--border-color-dark)", borderRadius: "0.25rem" }} 
                               />
                             </div>
                           </div>
@@ -1912,7 +1912,7 @@ export default function PDCAManager({
                                 placeholder="예시) 0" 
                                 value={inputTargetEtc} 
                                 onChange={(e) => setInputTargetEtc(e.target.value)} 
-                                style={{ padding: "0.25rem 0.4rem", fontSize: "0.75rem", flex: 2, minWidth: 0 }} 
+                                style={{ padding: "0.25rem 0.4rem", fontSize: "0.75rem", flex: 2, minWidth: 0, background: "rgba(255,255,255,0.02)", color: "var(--text-primary)", border: "1px solid var(--border-color-dark)", borderRadius: "0.25rem" }} 
                               />
                               <input 
                                 type="text" 
@@ -1920,7 +1920,7 @@ export default function PDCAManager({
                                 placeholder="예시) 개" 
                                 value={inputTargetEtcUnit} 
                                 onChange={(e) => setInputTargetEtcUnit(e.target.value)} 
-                                style={{ padding: "0.25rem 0.4rem", fontSize: "0.75rem", flex: 1, minWidth: 0, textAlign: "center" }} 
+                                style={{ padding: "0.25rem 0.4rem", fontSize: "0.75rem", flex: 1, minWidth: 0, textAlign: "center", background: "rgba(255,255,255,0.02)", color: "var(--text-primary)", border: "1px solid var(--border-color-dark)", borderRadius: "0.25rem" }} 
                               />
                             </div>
                           </div>
@@ -1980,7 +1980,7 @@ export default function PDCAManager({
                                           gap: "0.25rem",
                                           fontSize: "0.68rem",
                                           color: "var(--text-primary)",
-                                          background: isChecked ? "rgba(37,99,235,0.15)" : "#18181b",
+                                          background: isChecked ? "rgba(37,99,235,0.15)" : "var(--background-card, rgba(255,255,255,0.02))",
                                           border: isChecked ? "1px solid var(--accent-color)" : "1px solid var(--border-color-dark)",
                                           padding: "0.22rem 0.4rem",
                                           borderRadius: "4px",

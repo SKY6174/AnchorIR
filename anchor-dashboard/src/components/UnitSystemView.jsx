@@ -484,7 +484,7 @@ export default function UnitSystemView({ selectedYear = 2 }) {
         
         {/* 좌측: PJ -> WS -> S 3단 드롭다운 선택 패널 */}
         <div className="glass-card" style={{ padding: "1.5rem", display: "flex", flexDirection: "column", gap: "1.2rem" }}>
-          <h4 style={{ fontSize: "0.9rem", fontWeight: "900", color: "white", display: "flex", alignItems: "center", gap: "0.4rem", borderBottom: "1px solid var(--border-color-dark)", paddingBottom: "0.6rem" }}>
+          <h4 style={{ fontSize: "0.9rem", fontWeight: "900", color: "var(--text-primary)", display: "flex", alignItems: "center", gap: "0.4rem", borderBottom: "1px solid var(--border-color-dark)", paddingBottom: "0.6rem" }}>
             <Layout size={16} />
             과제&전략 내비게이터
           </h4>
@@ -504,12 +504,12 @@ export default function UnitSystemView({ selectedYear = 2 }) {
                 padding: "0.6rem 0.8rem",
                 background: "rgba(255,255,255,0.02)",
                 border: "1px solid var(--border-color-dark)",
-                color: "white",
+                color: "var(--text-primary)",
                 borderRadius: "0.4rem"
               }}
             >
               {currentProjectsData.map(p => (
-                <option key={p.id} value={p.id} style={{ background: "#1e1e1e", color: "white" }}>
+                <option key={p.id} value={p.id} style={{ background: "var(--background-card, #1e1e1e)", color: "var(--text-primary)" }}>
                   {p.title}
                 </option>
               ))}
@@ -531,12 +531,12 @@ export default function UnitSystemView({ selectedYear = 2 }) {
                 padding: "0.6rem 0.8rem",
                 background: "rgba(255,255,255,0.02)",
                 border: "1px solid var(--border-color-dark)",
-                color: "white",
+                color: "var(--text-primary)",
                 borderRadius: "0.4rem"
               }}
             >
               {currentProjectsData.find(p => p.id === selectedProjectId)?.units.map(u => (
-                <option key={u.id} value={u.id} style={{ background: "#1e1e1e", color: "white" }}>
+                <option key={u.id} value={u.id} style={{ background: "var(--background-card, #1e1e1e)", color: "var(--text-primary)" }}>
                   {u.id} : {u.title}
                 </option>
               ))}
@@ -558,12 +558,12 @@ export default function UnitSystemView({ selectedYear = 2 }) {
                 padding: "0.6rem 0.8rem",
                 background: "rgba(255,255,255,0.02)",
                 border: "1px solid var(--border-color-dark)",
-                color: "white",
+                color: "var(--text-primary)",
                 borderRadius: "0.4rem"
               }}
             >
               {selectedUnitData.strategies.map(s => (
-                <option key={s.id} value={s.id} style={{ background: "#1e1e1e", color: "white" }}>
+                <option key={s.id} value={s.id} style={{ background: "var(--background-card, #1e1e1e)", color: "var(--text-primary)" }}>
                   {s.id} : {s.title}
                 </option>
               ))}
@@ -590,7 +590,7 @@ export default function UnitSystemView({ selectedYear = 2 }) {
             }}>
               추진전략 (Strategy)
             </span>
-            <h4 style={{ fontSize: "1.05rem", color: "white", fontWeight: "800", display: "flex", alignItems: "center", gap: "0.6rem", lineHeight: "1.4" }}>
+            <h4 style={{ fontSize: "1.05rem", color: "var(--text-primary)", fontWeight: "800", display: "flex", alignItems: "center", gap: "0.6rem", lineHeight: "1.4" }}>
               <div style={{
                 width: "26px",
                 height: "26px",
@@ -641,7 +641,7 @@ export default function UnitSystemView({ selectedYear = 2 }) {
                     padding: "0.8rem 1rem",
                     borderRadius: "0.4rem",
                     fontSize: "0.8rem",
-                    color: "#ddd",
+                    color: "var(--text-primary)",
                     display: "flex",
                     alignItems: "center",
                     gap: "0.6rem"

@@ -810,14 +810,14 @@ ${commentList || "(없음)"}
                   <button
                     type="button"
                     onClick={() => setFilterDepts(["ECC", "ICC", "RCC", "AIDX", "NURI", "SEVeN"])}
-                    style={{ background: "rgba(255,255,255,0.04)", border: "1px solid var(--border-color-dark)", color: "white", padding: "0.25rem 0.5rem", fontSize: "0.68rem", borderRadius: "0.25rem", cursor: "pointer", fontWeight: "700" }}
+                    style={{ background: "rgba(255,255,255,0.04)", border: "1px solid var(--border-color-dark)", color: "var(--text-primary)", padding: "0.25rem 0.5rem", fontSize: "0.68rem", borderRadius: "0.25rem", cursor: "pointer", fontWeight: "700" }}
                   >
                     전체 선택
                   </button>
                   <button
                     type="button"
                     onClick={() => setFilterDepts([])}
-                    style={{ background: "rgba(255,255,255,0.04)", border: "1px solid var(--border-color-dark)", color: "white", padding: "0.25rem 0.5rem", fontSize: "0.68rem", borderRadius: "0.25rem", cursor: "pointer", fontWeight: "700" }}
+                    style={{ background: "rgba(255,255,255,0.04)", border: "1px solid var(--border-color-dark)", color: "var(--text-primary)", padding: "0.25rem 0.5rem", fontSize: "0.68rem", borderRadius: "0.25rem", cursor: "pointer", fontWeight: "700" }}
                   >
                     전체 해제
                   </button>
@@ -850,7 +850,7 @@ ${commentList || "(없음)"}
                         alignItems: "center", 
                         gap: "0.4rem", 
                         fontSize: "0.76rem", 
-                        color: isChecked ? "white" : "var(--text-secondary)",
+                        color: isChecked ? "var(--text-primary)" : "var(--text-secondary)",
                         cursor: "pointer",
                         fontWeight: isChecked ? "700" : "500",
                         transition: "all 0.15s"
@@ -951,7 +951,7 @@ ${commentList || "(없음)"}
                             </div>
                           </div>
                           
-                          <h4 style={{ fontSize: "0.95rem", fontWeight: "800", marginBottom: "0.5rem", color: "white", lineHeight: "1.3" }}>
+                          <h4 style={{ fontSize: "0.95rem", fontWeight: "800", marginBottom: "0.5rem", color: "var(--text-primary)", lineHeight: "1.3" }}>
                             {survey.title}
                           </h4>
                           <p style={{ fontSize: "0.78rem", color: "var(--text-secondary-dark)", marginBottom: "1rem", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden", lineHeight: "1.4" }}>
@@ -984,7 +984,7 @@ ${commentList || "(없음)"}
                                 borderRadius: "0.3rem",
                                 border: "1px solid var(--border-color-dark)",
                                 background: "rgba(255,255,255,0.02)",
-                                color: "white",
+                                color: "var(--text-primary)",
                                 cursor: "pointer",
                                 fontWeight: "700"
                               }}
@@ -1020,7 +1020,7 @@ ${commentList || "(없음)"}
 
       {activeSurveyTab === "create" && (
         <form onSubmit={handleCreateSurvey} className="glass-card" style={{ padding: "2rem", display: "flex", flexDirection: "column", gap: "1.2rem" }}>
-          <h3 style={{ fontSize: "1.05rem", fontWeight: "800", color: "white", borderBottom: "1px solid var(--border-color-dark)", paddingBottom: "0.6rem" }}>
+          <h3 style={{ fontSize: "1.05rem", fontWeight: "800", color: "var(--text-primary)", borderBottom: "1px solid var(--border-color-dark)", paddingBottom: "0.6rem" }}>
             새로운 만족도 조사지 제작 폼
           </h3>
 
@@ -1202,7 +1202,7 @@ ${commentList || "(없음)"}
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid var(--border-color-dark)", paddingBottom: "0.6rem" }}>
                 <div>
                   <span style={{ fontSize: "0.72rem", color: "var(--accent-color)", fontWeight: "900" }}>ID: {selectedSurvey.id}</span>
-                  <h3 style={{ fontSize: "1.1rem", fontWeight: "800", marginTop: "0.15rem", color: "white" }}>{selectedSurvey.title}</h3>
+                  <h3 style={{ fontSize: "1.1rem", fontWeight: "800", marginTop: "0.15rem", color: "var(--text-primary)" }}>{selectedSurvey.title}</h3>
                 </div>
                 <button
                   onClick={() => handleCompleteSurveyStatus(selectedSurvey.id)}
@@ -1214,7 +1214,7 @@ ${commentList || "(없음)"}
                     borderRadius: "0.25rem",
                     background: selectedSurvey.status === "완료" ? "rgba(16, 185, 129, 0.15)" : "rgba(255,255,255,0.05)",
                     border: "1px solid var(--border-color-dark)",
-                    color: selectedSurvey.status === "완료" ? "#10b981" : "white",
+                    color: selectedSurvey.status === "완료" ? "#10b981" : "var(--text-primary)",
                     cursor: selectedSurvey.status === "완료" ? "default" : "pointer"
                   }}
                 >
@@ -1225,9 +1225,9 @@ ${commentList || "(없음)"}
               <div style={{ fontSize: "0.85rem", display: "flex", flexDirection: "column", gap: "0.5rem", color: "var(--text-secondary)" }}>
                 <div><strong>조사 목적:</strong> <span style={{ color: "var(--text-secondary-dark)" }}>{selectedSurvey.purpose}</span></div>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem", background: "rgba(255,255,255,0.01)", padding: "0.6rem", borderRadius: "0.3rem" }}>
-                  <div><strong>수행 부서:</strong> <span style={{ color: "white" }}>{selectedSurvey.department}센터</span></div>
-                  <div><strong>조사 대상:</strong> <span style={{ color: "white" }}>{selectedSurvey.target}</span></div>
-                  <div><strong>조사 일정:</strong> <span style={{ color: "white" }}>{selectedSurvey.startDate} ~ {selectedSurvey.endDate}</span></div>
+                  <div><strong>수행 부서:</strong> <span style={{ color: "var(--text-primary)" }}>{selectedSurvey.department}센터</span></div>
+                  <div><strong>조사 대상:</strong> <span style={{ color: "var(--text-primary)" }}>{selectedSurvey.target}</span></div>
+                  <div><strong>조사 일정:</strong> <span style={{ color: "var(--text-primary)" }}>{selectedSurvey.startDate} ~ {selectedSurvey.endDate}</span></div>
                   <div><strong>진행 상태:</strong> <span style={{ color: "var(--accent-color)", fontWeight: "700" }}>{selectedSurvey.status}</span></div>
                 </div>
               </div>
@@ -1235,7 +1235,7 @@ ${commentList || "(없음)"}
 
             {/* 배포용 QR 코드 및 모바일 단축주소 카드 */}
             <div className="glass-card" style={{ padding: "1.5rem", display: "flex", flexDirection: "column", gap: "1rem" }}>
-              <h4 style={{ fontSize: "0.9rem", fontWeight: "800", color: "white", display: "flex", alignItems: "center", gap: "0.4rem" }}>
+              <h4 style={{ fontSize: "0.9rem", fontWeight: "800", color: "var(--text-primary)", display: "flex", alignItems: "center", gap: "0.4rem" }}>
                 <QrCode size={18} /> 실시간 배포용 QR코드 & 모바일 링크
               </h4>
               
@@ -1279,7 +1279,7 @@ ${commentList || "(없음)"}
             {/* Gemini AI 자동 총평 분석 카드 */}
             <div className="glass-card" style={{ padding: "1.5rem", display: "flex", flexDirection: "column", gap: "1rem" }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <h4 style={{ fontSize: "0.9rem", fontWeight: "800", color: "white", display: "flex", alignItems: "center", gap: "0.4rem" }}>
+                <h4 style={{ fontSize: "0.9rem", fontWeight: "800", color: "var(--text-primary)", display: "flex", alignItems: "center", gap: "0.4rem" }}>
                   <Compass size={18} className="animate-spin-slow" />
                   Gemini AI 만족도 조사 종합 총평
                 </h4>
@@ -1345,7 +1345,7 @@ ${commentList || "(없음)"}
             {selectedSurvey.status !== "완료" && (
               <div className="glass-card" style={{ padding: "1.5rem", display: "flex", flexDirection: "column", gap: "1rem" }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                  <h4 style={{ fontSize: "0.9rem", fontWeight: "800", color: "white", display: "flex", alignItems: "center", gap: "0.4rem" }}>
+                  <h4 style={{ fontSize: "0.9rem", fontWeight: "800", color: "var(--text-primary)", display: "flex", alignItems: "center", gap: "0.4rem" }}>
                     <RefreshCw size={16} /> 실시간 응답 수집 시뮬레이터 (DB 저장)
                   </h4>
                   <button
@@ -1436,7 +1436,7 @@ ${commentList || "(없음)"}
             {/* 결과 통계 차트 및 시트 동기화 */}
             <div className="glass-card" style={{ padding: "1.8rem" }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.2rem", flexWrap: "wrap", gap: "0.5rem" }}>
-                <h4 style={{ fontSize: "0.95rem", fontWeight: "800", color: "white", display: "flex", alignItems: "center", gap: "0.4rem" }}>
+                <h4 style={{ fontSize: "0.95rem", fontWeight: "800", color: "var(--text-primary)", display: "flex", alignItems: "center", gap: "0.4rem" }}>
                   <BarChart3 size={18} /> 문항별 만족도 점수 (100점 만점)
                 </h4>
                 
@@ -1493,7 +1493,7 @@ ${commentList || "(없음)"}
               ) : (
                 <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
                   <div style={{ display: "flex", justifyContent: "space-between", background: "rgba(255,255,255,0.01)", padding: "0.6rem 1rem", borderRadius: "0.3rem", border: "1px solid var(--border-color-dark)" }}>
-                    <span style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>수집 응답 건수: <strong style={{ color: "white" }}>{selectedSurvey.responses.length}건</strong></span>
+                    <span style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>수집 응답 건수: <strong style={{ color: "var(--text-primary)" }}>{selectedSurvey.responses.length}건</strong></span>
                     <span style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>종합 환산 점수: <strong style={{ color: "var(--accent-color)" }}>{currentLikertAverage} / 100점</strong></span>
                   </div>
 
@@ -1537,7 +1537,7 @@ ${commentList || "(없음)"}
 
             {/* 수집된 주관식 건의사항 / 의견 피드백 카드 목록 */}
             <div className="glass-card" style={{ padding: "1.5rem", display: "flex", flexDirection: "column", gap: "0.8rem" }}>
-              <h4 style={{ fontSize: "0.9rem", fontWeight: "800", color: "white", display: "flex", alignItems: "center", gap: "0.4rem" }}>
+              <h4 style={{ fontSize: "0.9rem", fontWeight: "800", color: "var(--text-primary)", display: "flex", alignItems: "center", gap: "0.4rem" }}>
                 <FileText size={18} /> 주관식 건의사항 및 환류 의견 ({selectedSurvey.responses.filter(r => r.comment).length}건)
               </h4>
 
@@ -1562,7 +1562,7 @@ ${commentList || "(없음)"}
                         <span>응답자: <strong style={{ color: "var(--text-secondary)" }}>{res.responder}</strong></span>
                         <span>{res.date}</span>
                       </div>
-                      <p style={{ color: "white", lineHeight: "1.35" }}>"{res.comment}"</p>
+                      <p style={{ color: "var(--text-primary)", lineHeight: "1.35" }}>"{res.comment}"</p>
                     </div>
                   ))
                 )}

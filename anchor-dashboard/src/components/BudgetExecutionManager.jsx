@@ -211,10 +211,10 @@ export default function BudgetExecutionManager({ projects, currentRole, selected
       {/* 헤더 섹션 */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <div>
-          <h2 style={{ fontSize: "1.5rem", fontWeight: "800", margin: 0, color: "var(--text-primary-dark)" }}>
+          <h2 style={{ fontSize: "1.5rem", fontWeight: "800", margin: 0, color: "var(--text-primary)" }}>
             {selectedYear}차년도 예산 집행률 관리
           </h2>
-          <p style={{ fontSize: "0.875rem", color: "var(--text-secondary-dark)", margin: "0.25rem 0 0 0" }}>
+          <p style={{ fontSize: "0.875rem", color: "var(--text-secondary)", margin: "0.25rem 0 0 0" }}>
             월별 집행현황 관리 및 본예산·이월예산 통합 정산 프레임워크
           </p>
         </div>
@@ -250,43 +250,43 @@ export default function BudgetExecutionManager({ projects, currentRole, selected
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
         
         {/* 본예산 요약 */}
-        <div className="card" style={{ padding: "1.25rem", borderRadius: "10px", background: "var(--bg-card-dark)", display: "flex", flexDirection: "column", gap: "0.75rem", border: "1px solid var(--border-color-dark)" }}>
+        <div className="glass-card" style={{ padding: "1.25rem", borderRadius: "10px", display: "flex", flexDirection: "column", gap: "0.75rem" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <span style={{ fontSize: "0.9rem", color: "var(--text-secondary-dark)", fontWeight: "600" }}>
+            <span style={{ fontSize: "0.9rem", color: "var(--text-secondary)", fontWeight: "600" }}>
               {viewType === "total" ? "[전체] " : `[${selectedUnit}] `}본예산 집행률 현황
             </span>
             <DollarSign size={20} style={{ color: "#3B82F6" }} />
           </div>
           <div style={{ display: "flex", alignItems: "baseline", gap: "0.5rem" }}>
-            <span style={{ fontSize: "2rem", fontWeight: "800", color: "var(--text-primary-dark)" }}>{activeData.mainRate}</span>
-            <span style={{ fontSize: "0.85rem", color: "var(--text-secondary-dark)" }}>(누적 {activeData.mainSpent} / 총 {activeData.mainTotal})</span>
+            <span style={{ fontSize: "2rem", fontWeight: "800", color: "var(--text-primary)" }}>{activeData.mainRate}</span>
+            <span style={{ fontSize: "0.85rem", color: "var(--text-secondary)" }}>(누적 {activeData.mainSpent} / 총 {activeData.mainTotal})</span>
           </div>
           {/* 가상 프로그레스 바 */}
-          <div style={{ width: "100%", height: "8px", background: "rgba(255,255,255,0.1)", borderRadius: "4px", overflow: "hidden" }}>
+          <div style={{ width: "100%", height: "8px", background: "var(--border-color)", borderRadius: "4px", overflow: "hidden" }}>
             <div style={{ width: activeData.mainRate, height: "100%", background: "#3B82F6", borderRadius: "4px" }}></div>
           </div>
           <span style={{ fontSize: "0.75rem", color: "#60A5FA" }}>ℹ️ 전체 12개월 중 현재 6개월(8월 말 기준) 누적 통계</span>
         </div>
 
         {/* 이월예산 요약 */}
-        <div className="card" style={{ padding: "1.25rem", borderRadius: "10px", background: "var(--bg-card-dark)", display: "flex", flexDirection: "column", gap: "0.75rem", border: "1px solid var(--border-color-dark)" }}>
+        <div className="glass-card" style={{ padding: "1.25rem", borderRadius: "10px", display: "flex", flexDirection: "column", gap: "0.75rem" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <span style={{ fontSize: "0.9rem", color: "var(--text-secondary-dark)", fontWeight: "600" }}>
+            <span style={{ fontSize: "0.9rem", color: "var(--text-secondary)", fontWeight: "600" }}>
               {viewType === "total" ? "[전체] " : `[${selectedUnit}] `}이월예산 집행률 현황 (8/31 마감)
             </span>
             <Calendar size={20} style={{ color: "#EF4444" }} />
           </div>
           <div style={{ display: "flex", alignItems: "baseline", gap: "0.5rem" }}>
             <span style={{ fontSize: "2rem", fontWeight: "800", color: "#F87171" }}>{activeData.carryoverRate}</span>
-            <span style={{ fontSize: "0.85rem", color: "var(--text-secondary-dark)" }}>(누적 {activeData.carryoverSpent} / 총 {activeData.carryoverTotal})</span>
+            <span style={{ fontSize: "0.85rem", color: "var(--text-secondary)" }}>(누적 {activeData.carryoverSpent} / 총 {activeData.carryoverTotal})</span>
           </div>
           {/* 가상 프로그레스 바 */}
-          <div style={{ width: "100%", height: "8px", background: "rgba(255,255,255,0.1)", borderRadius: "4px", overflow: "hidden" }}>
+          <div style={{ width: "100%", height: "8px", background: "var(--border-color)", borderRadius: "4px", overflow: "hidden" }}>
             <div style={{ width: activeData.carryoverRate, height: "100%", background: "#EF4444", borderRadius: "4px" }}></div>
           </div>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "0.75rem" }}>
             <span style={{ color: "#FCA5A5" }}>{selectedYear === 1 ? "ℹ️ 1차년도는 이월배정금이 없습니다." : "⚠️ 8월 31일 기한 마감 완료"}</span>
-            {selectedYear === 2 && <span style={{ color: "var(--text-secondary-dark)" }}>잔액 반납 예정액: **{activeData.carryoverBalance}**</span>}
+            {selectedYear === 2 && <span style={{ color: "var(--text-secondary)" }}>잔액 반납 예정액: **{activeData.carryoverBalance}**</span>}
           </div>
         </div>
 
@@ -296,19 +296,19 @@ export default function BudgetExecutionManager({ projects, currentRole, selected
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.5rem" }}>
         
         {/* 1. 월별 집행현황 꺾은선 차트 카드 (조회 필터 추가) */}
-        <div className="card" style={{ padding: "1.25rem", borderRadius: "10px", background: "var(--bg-card-dark)", border: "1px solid var(--border-color-dark)", display: "flex", flexDirection: "column", gap: "1rem" }}>
+        <div className="glass-card" style={{ padding: "1.25rem", borderRadius: "10px", display: "flex", flexDirection: "column", gap: "1rem" }}>
           
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "0.75rem" }}>
             <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
               <TrendingUp size={18} style={{ color: "var(--accent-color)" }} />
-              <h3 style={{ margin: 0, fontSize: "1rem", fontWeight: "700", color: "var(--text-primary-dark)" }}>월별 누적 집행률 추이</h3>
+              <h3 style={{ margin: 0, fontSize: "1rem", fontWeight: "700", color: "var(--text-primary)" }}>월별 누적 집행률 추이</h3>
             </div>
             
             {/* 💡 [조회 구분 변경 컨트롤러 장착] */}
             <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
               
               {/* 사업전체 / 단위과제별 라디오 버튼 */}
-              <div style={{ display: "flex", gap: "0.75rem", fontSize: "0.85rem", color: "var(--text-secondary-dark)", fontWeight: "600" }}>
+              <div style={{ display: "flex", gap: "0.75rem", fontSize: "0.85rem", color: "var(--text-secondary)", fontWeight: "600" }}>
                 <label style={{ display: "flex", alignItems: "center", gap: "0.25rem", cursor: "pointer" }}>
                   <input 
                     type="radio" 
@@ -340,7 +340,7 @@ export default function BudgetExecutionManager({ projects, currentRole, selected
                   onChange={(e) => setSelectedUnit(e.target.value)}
                   style={{
                     background: "rgba(255, 255, 255, 0.05)",
-                    color: "var(--text-primary-dark)",
+                    color: "var(--text-primary)",
                     border: "1px solid var(--border-color-dark)",
                     borderRadius: "6px",
                     padding: "0.25rem 0.5rem",
@@ -351,7 +351,7 @@ export default function BudgetExecutionManager({ projects, currentRole, selected
                   }}
                 >
                   {unitList.map((unit) => (
-                    <option key={unit} value={unit} style={{ background: "var(--bg-card-dark)", color: "white" }}>
+                    <option key={unit} value={unit} style={{ background: "var(--background-card, #1e1e1e)", color: "var(--text-primary)" }}>
                       {unit} 과제
                     </option>
                   ))}
@@ -370,12 +370,12 @@ export default function BudgetExecutionManager({ projects, currentRole, selected
                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
                 <XAxis 
                   dataKey="month" 
-                  stroke="var(--text-secondary-dark)" 
-                  tick={{ fontSize: 11, fill: "var(--text-secondary-dark)" }}
+                  stroke="var(--text-secondary)" 
+                  tick={{ fontSize: 11, fill: "var(--text-secondary)" }}
                 />
                 <YAxis 
-                  stroke="var(--text-secondary-dark)" 
-                  tick={{ fontSize: 11, fill: "var(--text-secondary-dark)" }}
+                  stroke="var(--text-secondary)" 
+                  tick={{ fontSize: 11, fill: "var(--text-secondary)" }}
                   domain={[0, 100]}
                   unit="%"
                 />
@@ -423,11 +423,10 @@ export default function BudgetExecutionManager({ projects, currentRole, selected
 
         {/* 2. 엑셀 파일 수집 업로더 카드 (프레임) */}
         <div 
-          className="card" 
+          className="glass-card" 
           style={{ 
             padding: "1.5rem", 
             borderRadius: "10px", 
-            background: "var(--bg-card-dark)", 
             border: dragActive ? "2px dashed var(--accent-color)" : "1px solid var(--border-color-dark)",
             display: "flex", 
             flexDirection: "column", 
@@ -447,10 +446,10 @@ export default function BudgetExecutionManager({ projects, currentRole, selected
             <Upload size={32} style={{ color: "var(--accent-color)" }} />
           </div>
           <div>
-            <h3 style={{ margin: 0, fontSize: "1.1rem", fontWeight: "700", color: "var(--text-primary-dark)" }}>
+            <h3 style={{ margin: 0, fontSize: "1.1rem", fontWeight: "700", color: "var(--text-primary)" }}>
               월별 집행현황 엑셀 파일 수집
             </h3>
-            <p style={{ margin: "0.5rem 0 0 0", fontSize: "0.85rem", color: "var(--text-secondary-dark)", maxWidth: "280px", lineHeight: "1.4" }}>
+            <p style={{ margin: "0.5rem 0 0 0", fontSize: "0.85rem", color: "var(--text-secondary)", maxWidth: "280px", lineHeight: "1.4" }}>
               정산 엑셀 파일을 드래그 앤 드롭하거나 아래의 찾아보기 버튼을 눌러 선택해 주세요.
             </p>
           </div>
@@ -479,13 +478,13 @@ export default function BudgetExecutionManager({ projects, currentRole, selected
           </label>
 
           {uploadedFile && (
-            <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", background: "rgba(255,255,255,0.05)", padding: "0.5rem 1rem", borderRadius: "6px", fontSize: "0.8rem", color: "var(--text-primary-dark)" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", background: "rgba(255,255,255,0.05)", padding: "0.5rem 1rem", borderRadius: "6px", fontSize: "0.8rem", color: "var(--text-primary)" }}>
               <FileText size={16} style={{ color: "#10B981" }} />
               <span>{uploadedFile.name} ({(uploadedFile.size / 1024).toFixed(1)} KB)</span>
             </div>
           )}
 
-          <div style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)" }}>
+          <div style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>
             * 업로드 형식: 대학 회계 월별 집행 현황 양식 (.xlsx)
           </div>
         </div>
