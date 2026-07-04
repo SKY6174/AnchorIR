@@ -2857,6 +2857,11 @@ ${aiRawText}
                     <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
                       <span style={{ fontSize: "0.8rem", color: "var(--text-secondary)", display: "flex", alignItems: "center", gap: "0.25rem", marginRight: "0.5rem" }}>
                         <Clock size={14} />
+                        {event.department && (
+                          <span style={{ fontWeight: "700", color: "#EC4899", marginRight: "0.4rem" }}>
+                            {event.department}
+                          </span>
+                        )}
                         {event.datetime}
                       </span>
                       {currentRole.id !== "GUEST" && (
@@ -4134,6 +4139,11 @@ ${aiRawText}
                             <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
                               <span style={{ fontSize: "0.8rem", color: "var(--text-secondary)", display: "flex", alignItems: "center", gap: "0.25rem", marginRight: "0.5rem" }}>
                                 <Clock size={14} />
+                                {dept && (
+                                  <span style={{ fontWeight: "700", color: "#EC4899", marginRight: "0.4rem" }}>
+                                    {dept}
+                                  </span>
+                                )}
                                 {meeting.datetime}
                               </span>
                               {currentRole.id !== "GUEST" && (
