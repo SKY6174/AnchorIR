@@ -538,6 +538,7 @@ export default function ScheduleManager({
   const [aiRawText, setAiRawText] = useState(""); // 기획서 원본 텍스트 직접 입력/저장용
   const [aiProgress, setAiProgress] = useState(0);
   const [aiStatusText, setAiStatusText] = useState("");
+  const [aiEngine, setAiEngine] = useState("gemini"); // "gemini" or "gpt"
 
   // 샘플 파일 로드
   const handleLoadSampleFile = () => {
@@ -710,37 +711,10 @@ export default function ScheduleManager({
       return;
     }
 
-    // 1. API 키 판별 (환경변수 시도 -> 없으면 로컬 스토리지 시도 -> 없으면 사용자 프롬프트 입력 유도)
-    let apiKey = import.meta.env.VITE_GEMINI_API_KEY || "";
-    
-    // 환경변수 값이 비어있거나, 구글 정식 API Key(AIzaSy) 또는 단장님 전용 키(AQ.) 접두사 중 어느 것으로도 시작하지 않을 시 로컬스토리지 활용
-    if (!apiKey || (apiKey.startsWith("AIzaSy") === false && apiKey.startsWith("AQ.") === false)) {
-      apiKey = localStorage.getItem("user_gemini_api_key") || "";
-    }
-
-    if (!apiKey) {
-      const inputKey = prompt(
-        "🔑 실시간 AI 분석을 사용하려면 구글 제미나이(Gemini) API Key가 필요합니다.\n무료 API Key를 입력해 주세요 (입력한 키는 브라우저 로컬 스토리지에만 저장됩니다):",
-        ""
-      );
-      if (!inputKey) {
-        alert("⚠️ API Key가 입력되지 않아 시뮬레이션 모드로 전환 기입합니다.");
-        runSimulationFallback();
-        return;
-      }
-      apiKey = inputKey.trim();
-      localStorage.setItem("user_gemini_api_key", apiKey);
-    }
-
     setIsAiLoading(true);
     setAiProgress(10);
-    setAiStatusText("Google Gemini 1.5 Flash API 연결 요청 중...");
 
-    try {
-      setAiProgress(30);
-      setAiStatusText("기획안 원문 텍스트 토큰 전송 중...");
-
-      const promptText = `
+    const promptText = `
 너는 대학교 RISE(지역혁신중심 대학지원체계) 사업단의 행사 등록 정보 생성 전문가이다.
 제공된 행사 기획서 또는 결과보고서 텍스트 내용을 바탕으로 행사 등록 폼에 입력할 11가지 항목의 데이터를 정확하게 추출하고 가공해라.
 
@@ -763,73 +737,167 @@ JSON 구조:
 
 행사 기획서/결과보고서 원문 텍스트:
 ${aiRawText}
-      `.trim();
+    `.trim();
 
-      setAiProgress(60);
-      setAiStatusText("제미나이 1.5 Flash 모델 심층 요약 분석 진행 중...");
+    try {
+      // A. OpenAI GPT-4o-mini 엔진을 선택했을 경우
+      if (aiEngine === "gpt") {
+        setAiStatusText("OpenAI GPT API 인증 검증 및 키 로드 중...");
+        let apiKey = import.meta.env.VITE_OPENAI_API_KEY || "";
+        
+        if (!apiKey || apiKey.startsWith("sk-") === false) {
+          apiKey = localStorage.getItem("user_openai_api_key") || "";
+        }
 
-      // REST API 호출을 통한 SDK 버전 충돌 및 404 모델 매핑 에러 완전 우회
-      const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
-        {
+        if (!apiKey) {
+          const inputKey = prompt(
+            "🔑 실시간 GPT 분석을 사용하려면 OpenAI API Key가 필요합니다.\nsk-로 시작하는 API Key를 입력해 주세요 (브라우저 로컬 스토리지에만 임시 저장됩니다):",
+            ""
+          );
+          if (!inputKey) {
+            alert("⚠️ API Key가 입력되지 않아 지능형 시뮬레이션 폴백 모드로 기입합니다.");
+            runSimulationFallback();
+            return;
+          }
+          apiKey = inputKey.trim();
+          localStorage.setItem("user_openai_api_key", apiKey);
+        }
+
+        setAiProgress(30);
+        setAiStatusText("OpenAI GPT-4o-mini 분석 요청 전송 중...");
+
+        const response = await fetch("https://api.openai.com/v1/chat/completions", {
           method: "POST",
           headers: {
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${apiKey}`
           },
           body: JSON.stringify({
-            contents: [
+            model: "gpt-4o-mini",
+            messages: [
               {
-                parts: [
-                  { text: promptText }
-                ]
+                role: "user",
+                content: promptText
               }
-            ]
+            ],
+            temperature: 0.1
           })
+        });
+
+        if (!response.ok) {
+          const errData = await response.json().catch(() => ({}));
+          throw new Error(errData?.error?.message || `HTTP 에러 ${response.status}`);
         }
-      );
 
-      if (!response.ok) {
-        const errData = await response.json().catch(() => ({}));
-        throw new Error(errData?.error?.message || `HTTP 에러 상태코드 ${response.status}`);
-      }
+        const resData = await response.json();
+        const responseText = resData?.choices?.[0]?.message?.content || "";
 
-      const resData = await response.json();
-      const responseText = resData?.candidates?.[0]?.content?.parts?.[0]?.text || "";
+        setAiProgress(90);
+        setAiStatusText("GPT 분석 데이터 파싱 및 폼 기입 중...");
 
-      if (!responseText) {
-        throw new Error("Gemini 응답 내용이 비어있습니다.");
-      }
-
-      setAiProgress(90);
-      setAiStatusText("제미나이 반환 데이터 파싱 중...");
-
-      // JSON 데이터 추출
-      let jsonStr = responseText;
-      const jsonMatch = responseText.match(/```json\s*([\s\S]*?)\s*```/);
-      if (jsonMatch && jsonMatch[1]) {
-        jsonStr = jsonMatch[1];
-      } else {
-        const cleanMatch = responseText.match(/```\s*([\s\S]*?)\s*```/);
-        if (cleanMatch && cleanMatch[1]) {
-          jsonStr = cleanMatch[1];
+        let jsonStr = responseText;
+        const jsonMatch = responseText.match(/```json\s*([\s\S]*?)\s*```/);
+        if (jsonMatch && jsonMatch[1]) {
+          jsonStr = jsonMatch[1];
+        } else {
+          const cleanMatch = responseText.match(/```\s*([\s\S]*?)\s*```/);
+          if (cleanMatch && cleanMatch[1]) {
+            jsonStr = cleanMatch[1];
+          }
         }
+
+        const cleanJson = JSON.parse(jsonStr.trim());
+        setFormData(prev => ({ ...prev, ...cleanJson }));
+
+        setIsAiLoading(false);
+        setAiProgress(100);
+        setAiStatusText("");
+        alert("🎉 OpenAI GPT-4o-mini 모델이 기획서를 분석하여 행사 등록 정보 11개 항목을 완벽하게 기입하였습니다!");
+
+      } 
+      // B. 구글 제미나이(Gemini 1.5 Flash) 엔진을 선택했을 경우
+      else {
+        setAiStatusText("Google Gemini 1.5 Flash API 연결 요청 중...");
+        let apiKey = import.meta.env.VITE_GEMINI_API_KEY || "";
+        
+        // 환경변수 값이 비어있거나 구글 공식 API Key 서명인 "AIzaSy"로 시작하지 않을 시 로컬스토리지 활용
+        if (!apiKey || (apiKey.startsWith("AIzaSy") === false && apiKey.startsWith("AQ.") === false)) {
+          apiKey = localStorage.getItem("user_gemini_api_key") || "";
+        }
+
+        if (!apiKey) {
+          const inputKey = prompt(
+            "🔑 실시간 AI 분석을 사용하려면 구글 제미나이(Gemini) API Key가 필요합니다.\n무료 API Key를 입력해 주세요 (입력한 키는 브라우저 로컬 스토리지에만 저장됩니다):",
+            ""
+          );
+          if (!inputKey) {
+            alert("⚠️ API Key가 입력되지 않아 지능형 시뮬레이션 폴백 모드로 기입합니다.");
+            runSimulationFallback();
+            return;
+          }
+          apiKey = inputKey.trim();
+          localStorage.setItem("user_gemini_api_key", apiKey);
+        }
+
+        setAiProgress(30);
+        setAiStatusText("Google Gemini 분석 요청 전송 중...");
+
+        const response = await fetch(
+          `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              contents: [
+                {
+                  parts: [
+                    { text: promptText }
+                  ]
+                }
+              ]
+            })
+          }
+        );
+
+        if (!response.ok) {
+          const errData = await response.json().catch(() => ({}));
+          throw new Error(errData?.error?.message || `HTTP 에러 상태코드 ${response.status}`);
+        }
+
+        const resData = await response.json();
+        const responseText = resData?.candidates?.[0]?.content?.parts?.[0]?.text || "";
+
+        if (!responseText) {
+          throw new Error("Gemini 응답 내용이 비어있습니다.");
+        }
+
+        setAiProgress(90);
+        setAiStatusText("제미나이 반환 데이터 파싱 중...");
+
+        let jsonStr = responseText;
+        const jsonMatch = responseText.match(/```json\s*([\s\S]*?)\s*```/);
+        if (jsonMatch && jsonMatch[1]) {
+          jsonStr = jsonMatch[1];
+        } else {
+          const cleanMatch = responseText.match(/```\s*([\s\S]*?)\s*```/);
+          if (cleanMatch && cleanMatch[1]) {
+            jsonStr = cleanMatch[1];
+          }
+        }
+
+        const cleanJson = JSON.parse(jsonStr.trim());
+        setFormData(prev => ({ ...prev, ...cleanJson }));
+
+        setIsAiLoading(false);
+        setAiProgress(100);
+        setAiStatusText("");
+        alert("🎉 Gemini-1.5-flash 모델이 기획서를 실시간으로 분석하여 행사 등록 정보 11개 항목을 완벽하게 기입하였습니다!");
       }
-
-      const cleanJson = JSON.parse(jsonStr.trim());
-      
-      // 폼 데이터 상태 갱신
-      setFormData(prev => ({
-        ...prev,
-        ...cleanJson
-      }));
-
-      setIsAiLoading(false);
-      setAiProgress(100);
-      setAiStatusText("");
-      alert("🎉 Gemini-1.5-flash 모델이 기획서를 실시간으로 분석하여 행사 등록 정보 11개 항목을 완벽하게 기입하였습니다!");
 
     } catch (error) {
-      console.error("Gemini API 호출 에러 (시뮬레이션 모드 자동 폴백):", error);
+      console.error("AI API 호출 에러 (시뮬레이션 모드 자동 폴백):", error);
       // 사용자 인터럽트를 방지하기 위해 경고창을 띄우지 않고, 콘솔에 에러 기록 후 자동으로 시뮬레이터 데이터를 기입하여 마감합니다.
       runSimulationFallback();
     }
@@ -4977,10 +5045,48 @@ ${aiRawText}
                     gap: "0.5rem",
                     marginBottom: "0.5rem"
                   }}>
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                      <span style={{ fontSize: "0.75rem", fontWeight: "700", color: "#a78bfa", display: "flex", alignItems: "center", gap: "0.25rem" }}>
-                        ✨ AI 기획서∙결과보고서 자동 기입 (Gemini-1.5-flash 모델 연동)
-                      </span>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "0.5rem" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                        <span style={{ fontSize: "0.75rem", fontWeight: "700", color: "#a78bfa" }}>
+                          ✨ AI 기획서∙결과보고서 자동 기입
+                        </span>
+                        <div style={{ display: "flex", gap: "0.2rem", background: "rgba(255,255,255,0.05)", padding: "0.15rem", borderRadius: "6px", border: "1px solid var(--border-color)" }}>
+                          <button
+                            type="button"
+                            onClick={() => setAiEngine("gemini")}
+                            style={{
+                              fontSize: "0.62rem",
+                              padding: "0.15rem 0.4rem",
+                              borderRadius: "4px",
+                              background: aiEngine === "gemini" ? "var(--accent-color)" : "transparent",
+                              color: aiEngine === "gemini" ? "white" : "var(--text-secondary)",
+                              border: "none",
+                              cursor: "pointer",
+                              fontWeight: "bold",
+                              transition: "all 0.15s"
+                            }}
+                          >
+                            Gemini 1.5
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setAiEngine("gpt")}
+                            style={{
+                              fontSize: "0.62rem",
+                              padding: "0.15rem 0.4rem",
+                              borderRadius: "4px",
+                              background: aiEngine === "gpt" ? "var(--accent-color)" : "transparent",
+                              color: aiEngine === "gpt" ? "white" : "var(--text-secondary)",
+                              border: "none",
+                              cursor: "pointer",
+                              fontWeight: "bold",
+                              transition: "all 0.15s"
+                            }}
+                          >
+                            GPT-4o-mini
+                          </button>
+                        </div>
+                      </div>
                       <button
                         type="button"
                         onClick={handleLoadSampleFile}
@@ -5068,10 +5174,18 @@ ${aiRawText}
                       <button
                         type="button"
                         onClick={() => {
-                          const newKey = prompt("🔑 Google Gemini API Key 변경:", localStorage.getItem("user_gemini_api_key") || "");
-                          if (newKey !== null) {
-                            localStorage.setItem("user_gemini_api_key", newKey.trim());
-                            alert("API Key가 브라우저에 안전하게 저장되었습니다.");
+                          if (aiEngine === "gpt") {
+                            const newKey = prompt("🔑 OpenAI GPT API Key 변경 (sk-로 시작):", localStorage.getItem("user_openai_api_key") || "");
+                            if (newKey !== null) {
+                              localStorage.setItem("user_openai_api_key", newKey.trim());
+                              alert("OpenAI API Key가 브라우저 로컬 스토리지에 안전하게 저장되었습니다.");
+                            }
+                          } else {
+                            const newKey = prompt("🔑 Google Gemini API Key 변경 (AQ. 또는 AIzaSy):", localStorage.getItem("user_gemini_api_key") || "");
+                            if (newKey !== null) {
+                              localStorage.setItem("user_gemini_api_key", newKey.trim());
+                              alert("Gemini API Key가 브라우저 로컬 스토리지에 안전하게 저장되었습니다.");
+                            }
                           }
                         }}
                         style={{ fontSize: "0.68rem", color: "var(--accent-color)", background: "transparent", border: "none", cursor: "pointer", display: "flex", alignItems: "center", gap: "0.15rem" }}
