@@ -2350,85 +2350,87 @@ export default function ScheduleManager({
           </div>
 
           {/* 회의 목록 분기 */}
-          {activeMeetingCat === "center" ? (
+          {(activeMeetingCat === "center" || activeMeetingCat === "operating") ? (
             <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-              {/* 부서별 필터 버튼 그룹 */}
-              <div style={{
-                display: "flex",
-                flexDirection: "column",
-                gap: "0.5rem",
-                background: darkMode ? "rgba(30, 41, 59, 0.4)" : "rgba(0, 0, 0, 0.03)",
-                padding: "0.85rem 1.25rem",
-                borderRadius: "8px",
-                border: "1px solid var(--border-color)",
-                marginBottom: "0.25rem"
-              }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                  <span style={{ fontSize: "0.75rem", fontWeight: "700", color: darkMode ? "#94a3b8" : "var(--text-secondary)" }}>
-                    🔍 부서(센터) 선택 필터 (다중 선택)
-                  </span>
-                  {selectedDeptFilters.length > 0 && (
+              {/* 부서별 필터 버튼 그룹 (센터 회의인 경우에만 렌더링) */}
+              {activeMeetingCat === "center" && (
+                <div style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "0.5rem",
+                  background: darkMode ? "rgba(30, 41, 59, 0.4)" : "rgba(0, 0, 0, 0.03)",
+                  padding: "0.85rem 1.25rem",
+                  borderRadius: "8px",
+                  border: "1px solid var(--border-color)",
+                  marginBottom: "0.25rem"
+                }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <span style={{ fontSize: "0.75rem", fontWeight: "700", color: darkMode ? "#94a3b8" : "var(--text-secondary)" }}>
+                      🔍 부서(센터) 선택 필터 (다중 선택)
+                    </span>
+                    {selectedDeptFilters.length > 0 && (
+                      <button
+                        onClick={() => setSelectedDeptFilters([])}
+                        style={{
+                          background: "none",
+                          border: "none",
+                          color: darkMode ? "#38bdf8" : "var(--accent-color)",
+                          fontSize: "0.68rem",
+                          cursor: "pointer",
+                          fontWeight: "600",
+                          padding: 0
+                        }}
+                      >
+                        필터 초기화
+                      </button>
+                    )}
+                  </div>
+                  <div style={{ display: "flex", gap: "0.4rem", flexWrap: "wrap" }}>
                     <button
                       onClick={() => setSelectedDeptFilters([])}
                       style={{
-                        background: "none",
-                        border: "none",
-                        color: darkMode ? "#38bdf8" : "var(--accent-color)",
-                        fontSize: "0.68rem",
+                        padding: "0.3rem 0.65rem",
+                        fontSize: "0.7rem",
+                        fontWeight: "700",
+                        borderRadius: "4px",
                         cursor: "pointer",
-                        fontWeight: "600",
-                        padding: 0
+                        border: "1px solid " + (selectedDeptFilters.length === 0 ? "var(--accent-color)" : (darkMode ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.08)")),
+                        background: selectedDeptFilters.length === 0 ? "var(--accent-color)" : "transparent",
+                        color: selectedDeptFilters.length === 0 ? "white" : (darkMode ? "#94a3b8" : "var(--text-secondary)"),
+                        transition: "all 0.15s ease"
                       }}
                     >
-                      필터 초기화
+                      전체
                     </button>
-                  )}
+                    {["사업운영팀", "ECC센터", "ICC센터", "RCC센터", "AID-X지원센터", "울산늘봄누리센터", "신산업특화지원센터"].map((deptName) => {
+                      const isSelected = selectedDeptFilters.includes(deptName);
+                      return (
+                        <button
+                          key={deptName}
+                          onClick={() => {
+                            setSelectedDeptFilters(prev => 
+                              prev.includes(deptName) ? prev.filter(d => d !== deptName) : [...prev, deptName]
+                            );
+                          }}
+                          style={{
+                            padding: "0.3rem 0.65rem",
+                            fontSize: "0.7rem",
+                            fontWeight: "700",
+                            borderRadius: "4px",
+                            cursor: "pointer",
+                            border: "1px solid " + (isSelected ? (darkMode ? "#38bdf8" : "var(--accent-color)") : (darkMode ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.08)")),
+                            background: isSelected ? (darkMode ? "rgba(56, 189, 248, 0.15)" : "rgba(59, 130, 246, 0.1)") : (darkMode ? "rgba(255, 255, 255, 0.02)" : "rgba(0, 0, 0, 0.02)"),
+                            color: isSelected ? (darkMode ? "#38bdf8" : "var(--accent-color)") : (darkMode ? "#94a3b8" : "var(--text-secondary)"),
+                            transition: "all 0.15s ease"
+                          }}
+                        >
+                          {deptName}
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
-                <div style={{ display: "flex", gap: "0.4rem", flexWrap: "wrap" }}>
-                  <button
-                    onClick={() => setSelectedDeptFilters([])}
-                    style={{
-                      padding: "0.3rem 0.65rem",
-                      fontSize: "0.7rem",
-                      fontWeight: "700",
-                      borderRadius: "4px",
-                      cursor: "pointer",
-                      border: "1px solid " + (selectedDeptFilters.length === 0 ? "var(--accent-color)" : (darkMode ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.08)")),
-                      background: selectedDeptFilters.length === 0 ? "var(--accent-color)" : "transparent",
-                      color: selectedDeptFilters.length === 0 ? "white" : (darkMode ? "#94a3b8" : "var(--text-secondary)"),
-                      transition: "all 0.15s ease"
-                    }}
-                  >
-                    전체
-                  </button>
-                  {["사업운영팀", "ECC센터", "ICC센터", "RCC센터", "AID-X지원센터", "울산늘봄누리센터", "신산업특화지원센터"].map((deptName) => {
-                    const isSelected = selectedDeptFilters.includes(deptName);
-                    return (
-                      <button
-                        key={deptName}
-                        onClick={() => {
-                          setSelectedDeptFilters(prev => 
-                            prev.includes(deptName) ? prev.filter(d => d !== deptName) : [...prev, deptName]
-                          );
-                        }}
-                        style={{
-                          padding: "0.3rem 0.65rem",
-                          fontSize: "0.7rem",
-                          fontWeight: "700",
-                          borderRadius: "4px",
-                          cursor: "pointer",
-                          border: "1px solid " + (isSelected ? (darkMode ? "#38bdf8" : "var(--accent-color)") : (darkMode ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.08)")),
-                          background: isSelected ? (darkMode ? "rgba(56, 189, 248, 0.15)" : "rgba(59, 130, 246, 0.1)") : (darkMode ? "rgba(255, 255, 255, 0.02)" : "rgba(0, 0, 0, 0.02)"),
-                          color: isSelected ? (darkMode ? "#38bdf8" : "var(--accent-color)") : (darkMode ? "#94a3b8" : "var(--text-secondary)"),
-                          transition: "all 0.15s ease"
-                        }}
-                      >
-                        {deptName}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
+              )}
 
               {/* 좌우 Split 뷰 */}
               {(() => {
