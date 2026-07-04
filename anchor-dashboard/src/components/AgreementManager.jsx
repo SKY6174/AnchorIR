@@ -985,10 +985,10 @@ export default function AgreementManager({
           display: "flex",
           flexDirection: "column",
           gap: "0.6rem",
-          background: "rgba(30, 41, 59, 0.4)",
+          background: "var(--background-card, rgba(30, 41, 59, 0.05))",
           padding: "0.85rem 1.25rem",
           borderRadius: "0.5rem",
-          border: "1px solid var(--border-color-dark)",
+          border: "1px solid var(--border-color)",
           marginBottom: "0.25rem"
         }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -1001,7 +1001,7 @@ export default function AgreementManager({
                 style={{
                   background: "none",
                   border: "none",
-                  color: "#38bdf8",
+                  color: "var(--accent-color)",
                   fontSize: "0.68rem",
                   cursor: "pointer",
                   fontWeight: "600",
@@ -1021,9 +1021,9 @@ export default function AgreementManager({
                 fontWeight: "700",
                 borderRadius: "0.25rem",
                 cursor: "pointer",
-                border: "1px solid " + (selectedUnits.length === 0 ? "var(--primary-color)" : "rgba(255,255,255,0.1)"),
-                background: selectedUnits.length === 0 ? "var(--primary-color)" : "transparent",
-                color: selectedUnits.length === 0 ? "white" : "var(--text-secondary)",
+                border: "1px solid " + (selectedUnits.length === 0 ? "var(--accent-color)" : "var(--border-color)"),
+                background: selectedUnits.length === 0 ? "var(--accent-color)" : "transparent",
+                color: selectedUnits.length === 0 ? "white" : "var(--text-primary)",
                 transition: "all 0.15s ease"
               }}
             >
@@ -1042,9 +1042,9 @@ export default function AgreementManager({
                     fontWeight: "700",
                     borderRadius: "0.25rem",
                     cursor: "pointer",
-                    border: "1px solid " + (isSelected ? "#38bdf8" : "rgba(255,255,255,0.06)"),
-                    background: isSelected ? "rgba(56, 189, 248, 0.15)" : "rgba(255, 255, 255, 0.02)",
-                    color: isSelected ? "var(--accent-color)" : "var(--text-secondary)",
+                    border: "1px solid " + (isSelected ? "var(--accent-color)" : "var(--border-color)"),
+                    background: isSelected ? "rgba(59, 130, 246, 0.15)" : "var(--background-card, rgba(255, 255, 255, 0.5))",
+                    color: isSelected ? "var(--accent-color)" : "var(--text-primary)",
                     transition: "all 0.15s ease"
                   }}
                 >
