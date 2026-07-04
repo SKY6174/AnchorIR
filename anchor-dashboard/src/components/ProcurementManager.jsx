@@ -450,12 +450,12 @@ export default function ProcurementManager({
 
           {/* 기자재 리스트 (스프레드시트 스타일 표 뷰) */}
           <div className="glass-card" style={{ padding: "0.5rem", borderRadius: "10px", overflowX: "auto" }}>
-            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.82rem", color: "var(--text-primary)", minWidth: "1150px" }}>
+            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.82rem", color: "var(--text-primary)", minWidth: "1080px" }}>
               <thead>
                 <tr style={{ background: "rgba(255, 255, 255, 0.03)", borderBottom: "2px solid rgba(255,255,255,0.08)" }}>
                   <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "45px" }}>순번</th>
                   <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "55px" }}>과제</th>
-                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "left", fontWeight: "800", width: "110px" }}>학과 / 부서</th>
+                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "left", fontWeight: "800", width: "120px" }}>학과 / 부서</th>
                   <th style={{ padding: "0.75rem 0.5rem", textAlign: "left", fontWeight: "800", width: "180px" }}>품명</th>
                   <th style={{ padding: "0.75rem 0.5rem", textAlign: "right", fontWeight: "800", width: "90px" }}>단가</th>
                   <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "50px" }}>수량</th>
@@ -463,7 +463,6 @@ export default function ProcurementManager({
                   <th style={{ padding: "0.75rem 0.5rem", textAlign: "left", fontWeight: "800" }}>관련내용</th>
                   <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "290px" }}>구매단계 ('26.3월 ~ '27.2월 월별 체크)</th>
                   <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "100px" }}>운영</th>
-                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "80px" }}>담당부서</th>
                   {currentRole.id !== "GUEST" && (
                     <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "45px" }}>작업</th>
                   )}
@@ -481,15 +480,6 @@ export default function ProcurementManager({
                       const price = Number(equip.unitPrice) || 0;
                       const qty = Number(equip.quantity) || 0;
                       const total = price * qty;
-                      
-                      // 담당부서 칩 컬러 바인딩
-                      let deptBg = "rgba(236, 72, 153, 0.12)";
-                      let deptColor = "#EC4899";
-                      const mDept = equip.mgrDept || "ECC";
-                      if (mDept === "ICC") { deptBg = "rgba(59, 130, 246, 0.12)"; deptColor = "#3b82f6"; }
-                      else if (mDept === "RCC") { deptBg = "rgba(16, 185, 129, 0.12)"; deptColor = "#10b981"; }
-                      else if (mDept === "AID-X") { deptBg = "rgba(167, 139, 250, 0.12)"; deptColor = "#a78bfa"; }
-                      else if (mDept === "늘봄") { deptBg = "rgba(245, 158, 11, 0.12)"; deptColor = "#f59e0b"; }
 
                       return (
                         <tr 
@@ -534,8 +524,8 @@ export default function ProcurementManager({
                               {["기획", "승인", "구매", "검수"].map((stepName) => {
                                 let activeColor = "#f59e0b"; // 기획: 주황
                                 if (stepName === "승인") activeColor = "#3b82f6"; // 승인: 파랑
-                                else if (stepName === "구매") activeColor = "#a78bfa"; // 구매: 보라
-                                else if (stepName === "검수") activeColor = "#10b981"; // 검수: 초록
+                                if (stepName === "구매") activeColor = "#a78bfa"; // 구매: 보라
+                                if (stepName === "검수") activeColor = "#10b981"; // 검수: 초록
 
                                 const milestoneMonths = equip.scheduleMilestones?.[stepName] || [];
 
@@ -582,11 +572,6 @@ export default function ProcurementManager({
 
                           <td style={{ padding: "0.8rem 0.5rem", textAlign: "center", color: "var(--text-secondary)" }}>
                             {equip.operation || "-"}
-                          </td>
-                          <td style={{ padding: "0.8rem 0.5rem", textAlign: "center" }}>
-                            <span style={{ display: "inline-block", padding: "0.15rem 0.45rem", borderRadius: "0.25rem", fontSize: "0.68rem", fontWeight: "850", background: deptBg, color: deptColor }}>
-                              {mDept}
-                            </span>
                           </td>
                           {currentRole.id !== "GUEST" && (
                             <td style={{ padding: "0.8rem 0.5rem", textAlign: "center" }}>
@@ -939,7 +924,7 @@ export default function ProcurementManager({
                     <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>관련내용</label>
                     <textarea name="description" value={formData.description} onChange={handleInputChange} required placeholder="기자재의 사용 목적 및 핵심 구입 연계 사유 기술" style={{ width: "100%", height: "60px", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white", resize: "none" }} />
                   </div>
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "0.5rem" }}>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
                     <div>
                       <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>구매단계</label>
                       <select name="step" value={formData.step} onChange={handleInputChange} className="user-selector">
@@ -954,17 +939,6 @@ export default function ProcurementManager({
                       <select name="operation" value={formData.operation} onChange={handleInputChange} className="user-selector">
                         <option value="교과목(정규)">교과목(정규)</option>
                         <option value="교과목(비정규)">교과목(비정규)</option>
-                      </select>
-                    </div>
-                    <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>담당부서</label>
-                      <select name="mgrDept" value={formData.mgrDept} onChange={handleInputChange} className="user-selector">
-                        <option value="ECC">ECC</option>
-                        <option value="ICC">ICC</option>
-                        <option value="RCC">RCC</option>
-                        <option value="AID-X">AID-X</option>
-                        <option value="늘봄">늘봄</option>
-                        <option value="신산업">신산업</option>
                       </select>
                     </div>
                   </div>
