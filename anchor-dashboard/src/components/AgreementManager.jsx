@@ -569,6 +569,26 @@ export default function AgreementManager({
     const results = [];
     const cleanName = (name) => name.replace(/\(주\)|\(유\)|주식회사|\s/g, "");
 
+    // 파일명에서 끝 괄호 안의 성명 정밀 추출 (예: (김지수) -> 김지수)
+    const extractNameInParentheses = (str) => {
+      const match = str.match(/\(([^)]+)\)$/);
+      return match ? match[1].trim() : null;
+    };
+
+    // 파일명에서 언더바(_) 뒤, 괄호 앞의 기관명 정밀 추출
+    const extractOrgName = (str) => {
+      let temp = str;
+      const parenIndex = str.lastIndexOf("(");
+      if (parenIndex !== -1) {
+        temp = str.substring(0, parenIndex);
+      }
+      const underIndex = temp.lastIndexOf("_");
+      if (underIndex !== -1) {
+        temp = temp.substring(underIndex + 1);
+      }
+      return temp.trim();
+    };
+
     for (const file of files) {
       const fileName = file.name;
       const fileBaseName = fileName.substring(0, fileName.lastIndexOf('.')) || fileName;
@@ -589,36 +609,46 @@ export default function AgreementManager({
       let matchedTarget = null;
       let targetType = ""; // "agreement" | "certificate" | "award"
 
-      // 연도 키워드 감지 (예: 2025, 2026)
-      const has2025 = fileBaseName.includes("2025") || fileBaseName.includes("25년") || fileBaseName.includes("1차");
-      const has2026 = fileBaseName.includes("2026") || fileBaseName.includes("26년") || fileBaseName.includes("2차");
+      // 연도 키워드 감지 (예: 2025, 2026, 25, 26)
+      const has2025 = fileBaseName.includes("2025") || fileBaseName.includes("25") || fileBaseName.includes("1차");
+      const has2026 = fileBaseName.includes("2026") || fileBaseName.includes("26") || fileBaseName.includes("2차");
+
+      const extractedOrg = extractOrgName(fileBaseName);
+      const extractedName = extractNameInParentheses(fileBaseName);
 
       if (agreementsSubTab === "agreements") {
         targetType = "agreement";
         filteredAgreements.forEach(item => {
           let score = 0;
           
-          // A. 기관명 비교 (+40점)
+          // A. 기관명 정밀 비교 (+50점)
           item.organizations.forEach(org => {
             const orgClean = cleanName(org.name);
-            if (orgClean && cleanName(fileBaseName).includes(orgClean)) {
-              score += 40;
+            if (orgClean) {
+              const fileOrgClean = cleanName(extractedOrg);
+              if (fileOrgClean && (fileOrgClean.includes(orgClean) || orgClean.includes(fileOrgClean))) {
+                score += 50;
+              } else if (cleanName(fileBaseName).includes(orgClean)) {
+                score += 30; // 파일명 어딘가에 포함되어 있으면 보정점수
+              }
             }
           });
 
-          // B. 대학 측 주체(교수 성명) 비교 (+30점)
+          // B. 협약주체(성명) 비교 (+40점)
           if (item.subjectUniversity) {
             const nameMatch = item.subjectUniversity.match(/[가-힣]{2,4}/g);
             if (nameMatch) {
               nameMatch.forEach(nm => {
-                if (fileBaseName.includes(nm)) {
-                  score += 30;
+                if (extractedName && extractedName.includes(nm)) {
+                  score += 40;
+                } else if (fileBaseName.includes(nm)) {
+                  score += 25; // 단순 포함 시 보정
                 }
               });
             }
           }
 
-          // C. 연도/날짜 비교 (+30점/ 추가 +10점)
+          // C. 연도/날짜 비교 (+30점 / 추가 +10점 보너스)
           const itemYear = getYearFromDate(item.date);
           if (itemYear === 1 && has2025) score += 30;
           if (itemYear === 2 && has2026) score += 30;
@@ -637,17 +667,21 @@ export default function AgreementManager({
         filteredCertificates.forEach(item => {
           let score = 0;
 
-          // A. 발급번호 매핑 (+40점)
-          if (item.certNo && fileBaseName.includes(item.certNo)) {
-            score += 40;
+          // A. 발급번호 매핑 (+50점)
+          if (item.certNo && (fileBaseName.includes(item.certNo) || (extractedOrg && extractedOrg.includes(item.certNo)))) {
+            score += 50;
           }
 
-          // B. 성명 비교 (+30점)
-          if (item.recipientName && fileBaseName.includes(item.recipientName)) {
-            score += 30;
+          // B. 성명 비교 (+40점)
+          if (item.recipientName) {
+            if (extractedName && extractedName.includes(item.recipientName)) {
+              score += 40;
+            } else if (fileBaseName.includes(item.recipientName)) {
+              score += 25;
+            }
           }
 
-          // C. 연도/날짜 비교 (+30점/ 추가 +10점)
+          // C. 연도/날짜 비교 (+30점 / 추가 +10점)
           const itemYear = getYearFromDate(item.issueDate);
           if (itemYear === 1 && has2025) score += 30;
           if (itemYear === 2 && has2026) score += 30;
@@ -666,17 +700,21 @@ export default function AgreementManager({
         filteredAwards.forEach(item => {
           let score = 0;
 
-          // A. 발급번호 매핑 (+40점)
-          if (item.awardNo && fileBaseName.includes(item.awardNo)) {
-            score += 40;
+          // A. 발급번호 매핑 (+50점)
+          if (item.awardNo && (fileBaseName.includes(item.awardNo) || (extractedOrg && extractedOrg.includes(item.awardNo)))) {
+            score += 50;
           }
 
-          // B. 성명 비교 (+30점)
-          if (item.recipientName && fileBaseName.includes(item.recipientName)) {
-            score += 30;
+          // B. 성명 비교 (+40점)
+          if (item.recipientName) {
+            if (extractedName && extractedName.includes(item.recipientName)) {
+              score += 40;
+            } else if (fileBaseName.includes(item.recipientName)) {
+              score += 25;
+            }
           }
 
-          // C. 연도/날짜 비교 (+30점/ 추가 +10점)
+          // C. 연도/날짜 비교 (+30점 / 추가 +10점)
           const itemYear = getYearFromDate(item.issueDate);
           if (itemYear === 1 && has2025) score += 30;
           if (itemYear === 2 && has2026) score += 30;
@@ -699,8 +737,8 @@ export default function AgreementManager({
         reader.readAsDataURL(file);
       });
 
-      // 컷오프 한계선 조율 (두 개 이상의 키워드 조합 일치 요구 ➔ 50점 이상)
-      if (bestScore >= 50 && matchedTarget) {
+      // 컷오프 한계선을 70점 이상으로 설정 (이중 조건 만족 필수 ➔ 오매칭 방지 및 정밀 매칭)
+      if (bestScore >= 70 && matchedTarget) {
         results.push({
           fileName,
           fileData,
@@ -1838,7 +1876,7 @@ export default function AgreementManager({
             <div style={{ padding: "1.25rem", flex: 1, overflowY: "auto", display: "flex", flexDirection: "column", gap: "1rem" }}>
               <div style={{ fontSize: "0.75rem", color: "#a1a1aa", background: "#27272a", padding: "0.75rem", borderRadius: "0.35rem", border: "1px solid var(--border-color-dark)" }}>
                 💡 파일 이름에 포함된 <b>[연도, 기관명, 성명, 발급번호]</b> 등의 키워드를 분석하여 데이터와 비교 매칭했습니다.<br/>
-                적합도 점수가 50점 이상인 대상을 식별하여 자동 연결해 줍니다.
+                적합도 점수가 70점 이상인 대상을 식별하여 자동 연결해 줍니다.
               </div>
 
               <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.75rem", fontWeight: "700" }}>
