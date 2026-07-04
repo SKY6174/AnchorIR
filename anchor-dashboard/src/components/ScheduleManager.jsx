@@ -752,12 +752,9 @@ ${aiRawText}
       setAiProgress(60);
       setAiStatusText("제미나이 1.5 Flash 모델 심층 요약 분석 진행 중...");
 
-      // API Key 종류에 따라 URL 버전을 유연하게 분기 (AQ. 계열 키는 v1 엔드포인트에서 더 완벽히 작동)
-      const apiVersion = apiKey.startsWith("AQ.") ? "v1" : "v1beta";
-
       // REST API 호출을 통한 SDK 버전 충돌 및 404 모델 매핑 에러 완전 우회
       const response = await fetch(
-        `https://generativelanguage.googleapis.com/${apiVersion}/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
         {
           method: "POST",
           headers: {
