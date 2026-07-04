@@ -568,9 +568,13 @@ export default function AgreementManager({
     }
 
     const results = [];
-    const cleanName = (name) => 
-      name.replace(/\(\s*주\s*\)|\(\s*유\s*\)|\(\s*합\s*\)|\(\s*합자\s*\)|\(\s*재\s*\)|\(\s*사\s*\)|\(\s*재단\s*\)|\(\s*사단\s*\)|주\s*식\s*회\s*사|유\s*한\s*회\s*사|㈜|㈔|㈎|\s/g, "")
-          .replace(/[\(\)]/g, "");
+    const cleanName = (name) => {
+      if (!name) return "";
+      const corpRegex = new RegExp("\\(\\s*주\\s*\\)|\\(\\s*유\\s*\\)|\\(\\s*합\\s*\\)|\\(\\s*합자\\s*\\)|\\(\\s*재\\s*\\)|\\(\\s*사\\s*\\)|\\(\\s*재단\\s*\\)|\\(\\s*사단\\s*\\)|주\\s*식\\s*회\\s*사|유\\s*한\\s*회\\s*사|㈜|㈔|㈎", "g");
+      return name.replace(corpRegex, "")
+                 .replace(/[\(\)]/g, "")
+                 .replace(/\s/g, "");
+    };
 
     // 파일명에서 끝 괄호 안의 성명 정밀 추출 (예: (김지수) -> 김지수)
     const extractNameInParentheses = (str) => {
@@ -589,7 +593,8 @@ export default function AgreementManager({
       if (underIndex !== -1) {
         temp = temp.substring(underIndex + 1);
       }
-      return temp.replace(/\(\s*주\s*\)|\(\s*유\s*\)|\(\s*합\s*\)|\(\s*합자\s*\)|\(\s*재\s*\)|\(\s*사\s*\)|\(\s*재단\s*\)|\(\s*사단\s*\)|주\s*식\s*회\s*사|유\s*한\s*회\s*사|㈜|㈔|㈎/g, "")
+      const corpRegex = new RegExp("\\(\\s*주\\s*\\)|\\(\\s*유\\s*\\)|\\(\\s*합\\s*\\)|\\(\\s*합자\\s*\\)|\\(\\s*재\\s*\\)|\\(\\s*사\\s*\\)|\\(\\s*재단\\s*\\)|\\(\\s*사단\\s*\\)|주\\s*식\\s*회\\s*사|유\\s*한\\s*회\\s*사|㈜|㈔|㈎", "g");
+      return temp.replace(corpRegex, "")
                  .replace(/[\(\)]/g, "")
                  .trim();
     };
