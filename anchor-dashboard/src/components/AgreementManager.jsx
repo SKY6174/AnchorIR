@@ -568,7 +568,9 @@ export default function AgreementManager({
     }
 
     const results = [];
-    const cleanName = (name) => name.replace(/\(주\)|\(유\)|주식회사|\s/g, "");
+    const cleanName = (name) => 
+      name.replace(/\(주\)|\(유\)|\(합\)|\(합자\)|\(재\)|\(사\)|\(재단\)|\(사단\)|주식회사|유한회사|㈜|㈔|㈎|\s/g, "")
+          .replace(/[\(\)]/g, "");
 
     // 파일명에서 끝 괄호 안의 성명 정밀 추출 (예: (김지수) -> 김지수)
     const extractNameInParentheses = (str) => {
@@ -587,7 +589,9 @@ export default function AgreementManager({
       if (underIndex !== -1) {
         temp = temp.substring(underIndex + 1);
       }
-      return temp.replace(/\(주\)|\(유\)|주식회사/g, "").trim();
+      return temp.replace(/\(주\)|\(유\)|\(합\)|\(합자\)|\(재\)|\(사\)|\(재단\)|\(사단\)|주식회사|유한회사|㈜|㈔|㈎/g, "")
+                 .replace(/[\(\)]/g, "")
+                 .trim();
     };
 
     for (const file of files) {
