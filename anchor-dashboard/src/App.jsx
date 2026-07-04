@@ -3090,10 +3090,15 @@ export default function App() {
               pdf_url: s.pdfUrl
             }))
           );
-          if (error) throw error;
+          if (error) {
+            console.error("Failed to sync meeting schedules with database:", error);
+            setSyncStatus("error");
+            return;
+          }
         }
         setSyncStatus("synced");
       } catch (e) {
+        console.error("Failed to sync meeting schedules:", e);
         setSyncStatus("error");
       }
     }, 1500);
@@ -3112,15 +3117,19 @@ export default function App() {
           const { error } = await supabase.from("press_releases").insert(
             pressReleases.map(s => ({
               year: selectedYear,
-              type: s.type,
-              media: s.media,
-              title: s.title,
-              broadcast_date: s.broadcastDate,
-              content_url: s.contentUrl,
+              type: s.type || "기타",
+              media: s.media || "미상",
+              title: s.title || "새 보도자료",
+              broadcast_date: s.broadcastDate || new Date().toISOString(),
+              content_url: s.contentUrl || "https://www.uc.ac.kr",
               press_content: s.pressContent || ""
             }))
           );
-          if (error) throw error;
+          if (error) {
+            console.error("Failed to sync press releases with database:", error);
+            setSyncStatus("error");
+            return;
+          }
         }
         setSyncStatus("synced");
       } catch (e) {
