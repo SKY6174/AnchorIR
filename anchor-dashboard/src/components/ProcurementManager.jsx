@@ -95,6 +95,8 @@ export default function ProcurementManager({
     step: "기획",
     operation: "교과목(정규)",
     mgrDept: "ECC",
+    // 신규 추가 폼에서 월별 구매단계 다중 입력을 위한 milestones 상태
+    milestones: { "3": [], "4": [], "5": [], "6": [], "7": [], "8": [], "9": [], "10": [], "11": [], "12": [], "1": [], "2": [] },
     // 용역용
     providerQual: "",
     opResult: ""
@@ -118,6 +120,28 @@ export default function ProcurementManager({
 
   // 다중 체크 시 해당 단계 배열 토글 함수
   const handleMilestoneMultiToggle = (equipId, month, stepName) => {
+    // 신규 추가 폼 내 마일스톤 조작 대응
+    if (equipId === "NEW_FORM") {
+      setFormData(prev => {
+        const currentMilestones = prev.milestones || {};
+        const currentList = getMilestoneArray(currentMilestones[month]);
+        let nextList;
+        if (currentList.includes(stepName)) {
+          nextList = currentList.filter(s => s !== stepName);
+        } else {
+          nextList = [...currentList, stepName];
+        }
+        return {
+          ...prev,
+          milestones: {
+            ...currentMilestones,
+            [month]: nextList
+          }
+        };
+      });
+      return;
+    }
+
     const activeEquipList = equipData.length > 0 ? equipData : defaultEquipments;
     const updated = activeEquipList.map(e => {
       if (e.id === equipId) {
@@ -257,9 +281,8 @@ export default function ProcurementManager({
         description: formData.description || "-",
         operation: formData.operation || "교과목(정규)",
         mgrDept: formData.mgrDept || "ECC",
-        milestones: {
-          "3": formData.step ? [formData.step] : [],
-          "4": [], "5": [], "6": [], "7": [], "8": [], "9": [], "10": [], "11": [], "12": [], "1": [], "2": []
+        milestones: formData.milestones || {
+          "3": [], "4": [], "5": [], "6": [], "7": [], "8": [], "9": [], "10": [], "11": [], "12": [], "1": [], "2": []
         }
       };
       setEquipData([...activeEquipList, newItem]);
@@ -293,13 +316,15 @@ export default function ProcurementManager({
       blueprints: "",
       utilization: "",
       name: "",
-      department: "",
+      deptName: "",
+      divisionName: "",
       unitPrice: "",
       quantity: "",
       description: "",
       step: "기획",
       operation: "교과목(정규)",
       mgrDept: "ECC",
+      milestones: { "3": [], "4": [], "5": [], "6": [], "7": [], "8": [], "9": [], "10": [], "11": [], "12": [], "1": [], "2": [] },
       providerQual: "",
       opResult: ""
     });
@@ -307,6 +332,32 @@ export default function ProcurementManager({
 
   const openAddModal = (type) => {
     setModalType(type);
+    setFormData({
+      title: "",
+      unit: "A1",
+      plan: "",
+      meetingResult: "",
+      progress: "",
+      budgetPlan: "",
+      budgetSpent: "",
+      location: "",
+      purpose: "",
+      birdseyeView: "",
+      blueprints: "",
+      utilization: "",
+      name: "",
+      deptName: "",
+      divisionName: "",
+      unitPrice: "",
+      quantity: "",
+      description: "",
+      step: "기획",
+      operation: "교과목(정규)",
+      mgrDept: "ECC",
+      milestones: { "3": [], "4": [], "5": [], "6": [], "7": [], "8": [], "9": [], "10": [], "11": [], "12": [], "1": [], "2": [] },
+      providerQual: "",
+      opResult: ""
+    });
     setIsAddModalOpen(true);
   };
 
@@ -573,10 +624,10 @@ export default function ProcurementManager({
                 {/* 2행: 연도 분할 */}
                 <tr style={{ background: "rgba(255, 255, 255, 0.02)", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
                   <th colSpan={10} style={{ padding: "0.25rem 0.5rem", textAlign: "center", fontWeight: "750", fontSize: "0.75rem", color: "var(--accent-color)", borderRight: "1px solid rgba(255,255,255,0.05)" }}>
-                    2026년
+                    {2024 + (Number(selectedYear) || 1)}년
                   </th>
                   <th colSpan={2} style={{ padding: "0.25rem 0.5rem", textAlign: "center", fontWeight: "750", fontSize: "0.75rem", color: "var(--accent-color)" }}>
-                    2027년
+                    {2024 + (Number(selectedYear) || 1) + 1}년
                   </th>
                 </tr>
                 {/* 3행: 월 리스트 */}
@@ -1048,19 +1099,58 @@ export default function ProcurementManager({
                     <textarea name="description" value={formData.description} onChange={handleInputChange} required placeholder="기자재의 사용 목적 및 핵심 구입 연계 사유 기술" style={{ width: "100%", height: "60px", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white", resize: "none" }} />
                   </div>
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
-                    <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>구매단계</label>
-                      <select name="step" value={formData.step} onChange={handleInputChange} className="user-selector">
-                        <option value="기획">기획 (P)</option>
-                        <option value="승인">승인 (A)</option>
-                        <option value="입찰">입찰 (B)</option>
-                        <option value="구매">구매 (Pr)</option>
-                        <option value="검수">검수 (I)</option>
-                      </select>
+                    <div style={{ gridColumn: "span 2" }}>
+                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.5rem" }}>
+                        월별 구매단계 입력 ({2024 + (Number(selectedYear) || 1)}년 3월 ~ {2024 + (Number(selectedYear) || 1) + 1}년 2월)
+                      </label>
+                      <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", background: "rgba(0,0,0,0.2)", padding: "0.6rem 0.8rem", borderRadius: "8px", border: "1px solid var(--border-color-dark)" }}>
+                        {["3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "1", "2"].map((m) => {
+                          const stepList = formData.milestones?.[m] || [];
+                          const style = getMilestoneStyle(stepList, m);
+                          
+                          return (
+                            <div 
+                              key={m}
+                              style={{ 
+                                display: "flex", 
+                                flexDirection: "column", 
+                                alignItems: "center", 
+                                gap: "0.25rem",
+                                width: "32px" 
+                              }}
+                            >
+                              <span style={{ fontSize: "0.65rem", color: "var(--text-secondary)", fontWeight: "600" }}>
+                                {m}월
+                              </span>
+                              <div
+                                onClick={(e) => handleMilestoneClick(e, "NEW_FORM", m)}
+                                style={{
+                                  width: "22px",
+                                  height: "22px",
+                                  borderRadius: "50%",
+                                  fontSize: style.text.length > 2 ? "0.48rem" : style.text.length > 1 ? "0.52rem" : "0.68rem",
+                                  fontWeight: "900",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                  cursor: "pointer",
+                                  transition: "all 0.15s ease",
+                                  background: style.bg,
+                                  color: style.color,
+                                  border: style.border,
+                                  boxShadow: style.shadow
+                                }}
+                              >
+                                {style.text}
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
                     </div>
-                    <div>
+                    <div style={{ gridColumn: "span 2" }}>
                       <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>운영 구분</label>
-                      <select name="operation" value={formData.operation} onChange={handleInputChange} className="user-selector">
+                      <select name="operation" value={formData.operation} onChange={handleInputChange} className="user-selector" style={{ width: "100%" }}>
                         <option value="교과목(정규)">교과목(정규)</option>
                         <option value="교과목(비정규)">교과목(비정규)</option>
                       </select>
@@ -1171,10 +1261,16 @@ export default function ProcurementManager({
               { label: "구매 (Pr)", val: "구매", color: "#a78bfa" },
               { label: "검수 (I)", val: "검수", color: "#10b981" }
             ].map((step) => {
-              const activeEquipList = equipData.length > 0 ? equipData : defaultEquipments;
-              const targetEquip = activeEquipList.find(e => e.id === activePopover.equipId);
-              const currentList = targetEquip ? getMilestoneArray(targetEquip.milestones?.[activePopover.month]) : [];
-              const isChecked = currentList.includes(step.val);
+              let isChecked = false;
+              if (activePopover.equipId === "NEW_FORM") {
+                const currentList = getMilestoneArray(formData.milestones?.[activePopover.month]);
+                isChecked = currentList.includes(step.val);
+              } else {
+                const activeEquipList = equipData.length > 0 ? equipData : defaultEquipments;
+                const targetEquip = activeEquipList.find(e => e.id === activePopover.equipId);
+                const currentList = targetEquip ? getMilestoneArray(targetEquip.milestones?.[activePopover.month]) : [];
+                isChecked = currentList.includes(step.val);
+              }
 
               return (
                 <label 
