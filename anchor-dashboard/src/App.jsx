@@ -2704,7 +2704,33 @@ export default function App() {
           localStorage.setItem(`anchor_cache_env_y${selectedYear}`, JSON.stringify(formatted));
         }
         if (pEquip && pEquip.length > 0) {
-          const formatted = pEquip.map(x => ({ ...x, id: Number(x.id), budgetPlan: Number(x.budget_plan), budgetSpent: Number(x.budget_spent) }));
+          const formatted = pEquip.map(x => {
+            let miles = {};
+            let uPrice = Number(x.budget_spent) || 0;
+            let qty = 1;
+            try {
+              if (x.schedule) {
+                const parsed = JSON.parse(x.schedule);
+                miles = parsed.milestones || {};
+                if (parsed.unitPrice !== undefined) uPrice = Number(parsed.unitPrice);
+                if (parsed.quantity !== undefined) qty = Number(parsed.quantity);
+              }
+            } catch (err) {
+              console.error("Failed to parse schedule milestones:", err);
+            }
+            return {
+              id: Number(x.id),
+              unit: x.unit || "A1",
+              deptName: x.department || "",
+              divisionName: x.program || "",
+              itemName: x.name || "",
+              unitPrice: uPrice,
+              quantity: qty,
+              description: x.op_plan || "",
+              operation: x.op_performance || "교과목(정규)",
+              milestones: miles
+            };
+          });
           setEquipData(formatted);
           localStorage.setItem(`anchor_cache_equip_y${selectedYear}`, JSON.stringify(formatted));
         }
@@ -2988,15 +3014,15 @@ export default function App() {
           const { error } = await supabase.from("procurement_equipment").insert(
             equipData.map(e => ({
               year: selectedYear,
-              unit: e.unit,
-              name: e.name,
-              program: e.program,
-              department: e.department,
-              schedule: e.schedule,
-              budget_plan: e.budgetPlan,
-              budget_spent: e.budgetSpent,
-              op_plan: e.opPlan,
-              op_performance: e.opPerformance
+              unit: e.unit || "A1",
+              name: e.itemName || e.name || "",
+              program: e.divisionName || "",
+              department: e.deptName || "",
+              schedule: JSON.stringify({ milestones: e.milestones || {}, unitPrice: e.unitPrice || 0, quantity: e.quantity || 1 }),
+              budget_plan: (Number(e.unitPrice) || 0) * (Number(e.quantity) || 1),
+              budget_spent: Number(e.unitPrice) || 0,
+              op_plan: e.description || "",
+              op_performance: e.operation || ""
             }))
           );
           if (error) throw error;
