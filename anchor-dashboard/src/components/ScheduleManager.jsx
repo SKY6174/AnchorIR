@@ -336,7 +336,14 @@ export default function ScheduleManager({
   const [activePressId, setActivePressId] = useState(null);
 
   // 회의 대분류 상태 ("operating": 사업단 운영회의, "center": 센터별 회의, "committee": 각종 위원회 회의)
-  const [activeMeetingCat, setActiveMeetingCat] = useState("operating");
+  const [activeMeetingCat, setActiveMeetingCat] = useState(() => {
+    return localStorage.getItem("anchor_active_meeting_cat") || "operating";
+  });
+
+  // 회의 카테고리 탭 변경 시 localStorage에 저장하여 새로고침 시에도 탭 유지
+  useEffect(() => {
+    localStorage.setItem("anchor_active_meeting_cat", activeMeetingCat);
+  }, [activeMeetingCat]);
 
   // 월간일정 상세 링킹 기능 (행사, 회의록 연계 이동)
   const handleLinkToDetail = (sched) => {
