@@ -586,7 +586,7 @@ export default function AgreementManager({
       if (underIndex !== -1) {
         temp = temp.substring(underIndex + 1);
       }
-      return temp.trim();
+      return temp.replace(/\(주\)|\(유\)|주식회사/g, "").trim();
     };
 
     for (const file of files) {
