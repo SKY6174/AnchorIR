@@ -569,7 +569,7 @@ export default function AgreementManager({
 
     const results = [];
     const cleanName = (name) => 
-      name.replace(/\(주\)|\(유\)|\(합\)|\(합자\)|\(재\)|\(사\)|\(재단\)|\(사단\)|주식회사|유한회사|㈜|㈔|㈎|\s/g, "")
+      name.replace(/\(\s*주\s*\)|\(\s*유\s*\)|\(\s*합\s*\)|\(\s*합자\s*\)|\(\s*재\s*\)|\(\s*사\s*\)|\(\s*재단\s*\)|\(\s*사단\s*\)|주\s*식\s*회\s*사|유\s*한\s*회\s*사|㈜|㈔|㈎|\s/g, "")
           .replace(/[\(\)]/g, "");
 
     // 파일명에서 끝 괄호 안의 성명 정밀 추출 (예: (김지수) -> 김지수)
@@ -589,7 +589,7 @@ export default function AgreementManager({
       if (underIndex !== -1) {
         temp = temp.substring(underIndex + 1);
       }
-      return temp.replace(/\(주\)|\(유\)|\(합\)|\(합자\)|\(재\)|\(사\)|\(재단\)|\(사단\)|주식회사|유한회사|㈜|㈔|㈎/g, "")
+      return temp.replace(/\(\s*주\s*\)|\(\s*유\s*\)|\(\s*합\s*\)|\(\s*합자\s*\)|\(\s*재\s*\)|\(\s*사\s*\)|\(\s*재단\s*\)|\(\s*사단\s*\)|주\s*식\s*회\s*사|유\s*한\s*회\s*사|㈜|㈔|㈎/g, "")
                  .replace(/[\(\)]/g, "")
                  .trim();
     };
