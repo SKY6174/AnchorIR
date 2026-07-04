@@ -657,7 +657,7 @@ export default function AgreementManager({
               const rawOrgName = typeof org === "object" && org !== null ? org.name : org;
               const orgClean = cleanName(rawOrgName);
               const fileOrgClean = cleanName(extractedOrg);
-              if (orgClean && fileOrgClean && (orgClean.includes(fileOrgClean) || fileOrgClean.includes(orgClean))) {
+              if ((orgClean.includes(fileOrgClean) || fileOrgClean.includes(orgClean))) {
                 orgMatch = true;
               }
             });
