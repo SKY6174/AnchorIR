@@ -415,22 +415,20 @@ export default function ScheduleManager({
 
     setIsUploadingFile(true);
     try {
-      // 한글 인코딩 깨짐 및 키 충돌 방지를 위한 안전한 영문/숫자 파일명 생성 (NFC 보장)
-      const fileExt = file.name.split(".").pop();
-      const sanitizedName = file.name.split(".")[0].normalize("NFC").replace(/[^a-zA-Z0-9가-힣]/g, "_");
-      const fileName = `${Date.now()}_${sanitizedName}.${fileExt}`;
-      const filePath = `meeting_audios/${fileName}`;
+      // 한글 깨짐 및 Storage 특수기호 에러(Invalid key) 방지를 위해 물리 파일명은 영문/숫자 고유 ID로 치환
+      const fileExt = file.name.substring(file.name.lastIndexOf(".")).toLowerCase();
+      const storagePath = `meeting_audios/${Date.now()}_${Math.random().toString(36).substring(2, 8)}${fileExt}`;
 
       const { data, error } = await supabase.storage
         .from("minutes")
-        .upload(filePath, file);
+        .upload(storagePath, file);
 
       if (error) throw error;
 
       // Public URL 받아오기
       const { data: publicUrlData } = supabase.storage
         .from("minutes")
-        .getPublicUrl(filePath);
+        .getPublicUrl(storagePath);
 
       const publicUrl = publicUrlData.publicUrl;
 
@@ -2676,7 +2674,7 @@ export default function ScheduleManager({
                                   marginTop: "0.25rem"
                                 }}>
                                   <span style={{ fontSize: "0.72rem", fontWeight: "700", color: "var(--text-secondary)", display: "flex", alignItems: "center", gap: "0.25rem" }}>
-                                    🎙️ 첨부파일: {meeting.audioUrl.split("/").pop().replace(/^\d+_/, "")}
+                                    🎙️ 첨부파일: {meeting.audioUrl.toLowerCase().endsWith(".pdf") ? "PDF 문서" : "음성 녹음본"}
                                   </span>
                                   {meeting.audioUrl.toLowerCase().endsWith(".pdf") ? (
                                     <a
@@ -3590,9 +3588,9 @@ export default function ScheduleManager({
                           href={formData.audioUrl} 
                           target="_blank" 
                           rel="noreferrer" 
-                          style={{ fontSize: "0.72rem", color: "#60A5FA", textDecoration: "none", textOverflow: "ellipsis", overflow: "hidden", whiteSpace: "nowrap", maxWidth: "250px" }}
+                          style={{ fontSize: "0.72rem", color: "#60A5FA", textDecoration: "none" }}
                         >
-                          {formData.audioUrl.split("/").pop().replace(/^\d+_/, "")}
+                          [등록 파일 다운로드 / 확인 ➔]
                         </a>
                         <button
                           type="button"
