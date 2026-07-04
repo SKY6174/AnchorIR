@@ -2370,7 +2370,7 @@ export default function ScheduleManager({
           </div>
 
           {/* 회의 목록 분기 */}
-          {(activeMeetingCat === "center" || activeMeetingCat === "operating") ? (
+          {(activeMeetingCat === "center" || activeMeetingCat === "operating" || activeMeetingCat === "committee") ? (
             <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
               {/* 부서별 필터 버튼 그룹 (센터 회의인 경우에만 렌더링) */}
               {activeMeetingCat === "center" && (
