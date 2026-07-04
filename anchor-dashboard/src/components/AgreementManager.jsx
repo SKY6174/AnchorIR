@@ -220,51 +220,24 @@ export default function AgreementManager({
 
   // 엑셀 서식 다운로드 (템플릿)
   const handleDownloadTemplate = () => {
-    let templateData = [];
-    let fileName = "";
-
-    if (agreementsSubTab === "agreements") {
-      templateData = [
-        {
-          "체결일자": "2025-05-15",
-          "관련 센터": "ECC센터",
-          "협약 대상기관": "HD현대중공업, 정테크",
-          "대학 측 협약주체(UC)": "기계공학과 홍길동",
-          "기관 측 협약주체": "HD현대중공업(대표이사), 정테크(대표)",
-          "관련 단위과제": "A1",
-          "협약유형": "프리미엄",
-          "협약내용 범주": "주문식교육, R&BD"
-        }
-      ];
-      fileName = `UC_ANCHOR_협약서_업로드_서식.xlsx`;
-    } else if (agreementsSubTab === "certificates") {
-      templateData = [
-        {
-          "발급번호": "제 2025-001 호",
-          "발급대상 소속": "게임영상학과",
-          "발급대상 성명": "홍길동",
-          "발급일자": "2025-06-20",
-          "발급주체": "사업단장"
-        }
-      ];
-      fileName = `UC_ANCHOR_이수증_업로드_서식.xlsx`;
-    } else if (agreementsSubTab === "awards") {
-      templateData = [
-        {
-          "발급번호": "제 2025-002 호",
-          "발급대상 소속": "기계시스템전공",
-          "발급대상 성명": "이순신",
-          "발급일자": "2025-07-05",
-          "발급주체": "사업단장"
-        }
-      ];
-      fileName = `UC_ANCHOR_상장_업로드_서식.xlsx`;
-    }
+    const templateData = [
+      {
+        "체결일자": "2025-05-15",
+        "관련 센터": "ECC센터",
+        "협약 대상기관": "HD현대중공업, 정테크",
+        "대학 측 협약주체(UC)": "기계공학과 홍길동",
+        "기관 측 협약주체": "HD현대중공업(대표이사), 정테크(대표)",
+        "관련 단위과제": "A1",
+        "협약유형": "프리미엄",
+        "협약내용 범주": "주문식교육, R&BD"
+      }
+    ];
+    const fileName = `UC_ANCHOR_협약서_업로드_서식.xlsx`;
 
     const ws = XLSX.utils.json_to_sheet(templateData);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "업로드템플릿");
-    ws["!cols"] = Array(agreementsSubTab === "agreements" ? 8 : 7).fill({ wch: 25 });
+    ws["!cols"] = Array(8).fill({ wch: 25 });
 
     const wbout = XLSX.write(wb, { bookType: "xlsx", type: "base64" });
     const a = document.createElement("a");
@@ -296,122 +269,63 @@ export default function AgreementManager({
 
         let importedCount = 0;
 
-        if (agreementsSubTab === "agreements") {
-          rawRows.forEach((row, index) => {
-            const dateVal = row["체결일자"];
-            const centerVal = row["관련 센터"];
-            const orgsVal = row["협약 대상기관"];
+        rawRows.forEach((row, index) => {
+          const dateVal = row["체결일자"];
+          const centerVal = row["관련 센터"];
+          const orgsVal = row["협약 대상기관"];
 
-            if (!dateVal || !centerVal || !orgsVal) {
-              return;
-            }
+          if (!dateVal || !centerVal || !orgsVal) {
+            return;
+          }
 
-            const orgList = String(orgsVal).split(",").map(o => o.trim()).filter(Boolean);
-            const rawSubjects = row["기관 측 협약주체"] || "";
-            const subjectsList = String(rawSubjects).split(",").map(s => s.trim()).filter(Boolean);
+          const orgList = String(orgsVal).split(",").map(o => o.trim()).filter(Boolean);
+          const rawSubjects = row["기관 측 협약주체"] || "";
+          const subjectsList = String(rawSubjects).split(",").map(s => s.trim()).filter(Boolean);
 
-            const organizations = orgList.map((name, i) => {
-              let subject = "";
-              const match = name.match(/([^\(]+)\(([^)]+)\)/);
-              let finalName = name;
-              if (match) {
-                finalName = match[1].trim();
-                subject = match[2].trim();
-              } else if (subjectsList[i]) {
-                const subMatch = subjectsList[i].match(/([^\(]+)\(([^)]+)\)/);
-                if (subMatch && subMatch[1].trim() === name) {
-                  subject = subMatch[2].trim();
-                } else {
-                  subject = subjectsList[i];
-                }
+          const organizations = orgList.map((name, i) => {
+            let subject = "";
+            const match = name.match(/([^\(]+)\(([^)]+)\)/);
+            let finalName = name;
+            if (match) {
+              finalName = match[1].trim();
+              subject = match[2].trim();
+            } else if (subjectsList[i]) {
+              const subMatch = subjectsList[i].match(/([^\(]+)\(([^)]+)\)/);
+              if (subMatch && subMatch[1].trim() === name) {
+                subject = subMatch[2].trim();
+              } else {
+                subject = subjectsList[i];
               }
-              return { name: finalName, subject };
-            });
-
-            const contentsVal = row["협약내용 범주"] || "";
-            const contents = String(contentsVal).split(",")
-              .map(c => c.trim())
-              .filter(c => AGREEMENT_CONTENTS_OPTIONS.includes(c));
-
-            const typeVal = row["협약유형"] ? String(row["협약유형"]).trim() : "-";
-            const finalType = ["프리미엄", "무료", "-"].includes(typeVal) ? typeVal : "-";
-
-            const calculatedYear = getYearFromDate(String(dateVal).trim());
-            const newAgr = {
-              year: calculatedYear || selectedYear,
-              date: String(dateVal).trim(),
-              center: CENTERS_LIST.includes(String(centerVal).trim()) ? String(centerVal).trim() : "ECC센터",
-              organizations,
-              subjectUniversity: row["대학 측 협약주체(UC)"] ? String(row["대학 측 협약주체(UC)"]).trim() : "단장",
-              unitId: row["관련 단위과제"] ? String(row["관련 단위과제"]).trim() : "",
-              agreementType: finalType,
-              contents,
-              fileName: "",
-              fileData: ""
-            };
-
-            onAddAgreement(newAgr);
-            importedCount++;
-          });
-          alert(`${importedCount}개의 협약서 정보가 성공적으로 적재되었습니다.`);
-
-        } else if (agreementsSubTab === "certificates") {
-          rawRows.forEach((row, index) => {
-            const certNoVal = row["발급번호"];
-            const deptVal = row["발급대상 소속"];
-            const nameVal = row["발급대상 성명"];
-            const dateVal = row["발급일자"];
-
-            if (!certNoVal || !deptVal || !nameVal || !dateVal) {
-              return;
             }
-
-            const calculatedYear = getYearFromDate(String(dateVal).trim());
-            const newCert = {
-              year: calculatedYear || selectedYear,
-              certNo: String(certNoVal).trim(),
-              recipientDept: String(deptVal).trim(),
-              recipientName: String(nameVal).trim(),
-              issueDate: String(dateVal).trim(),
-              issuer: row["발급주체"] ? String(row["발급주체"]).trim() : "사업단장",
-              fileName: "",
-              fileData: ""
-            };
-
-            onAddCertificate(newCert);
-            importedCount++;
+            return { name: finalName, subject };
           });
-          alert(`${importedCount}개의 이수증 발급 정보가 성공적으로 적재되었습니다.`);
 
-        } else if (agreementsSubTab === "awards") {
-          rawRows.forEach((row, index) => {
-            const awardNoVal = row["발급번호"];
-            const deptVal = row["발급대상 소속"];
-            const nameVal = row["발급대상 성명"];
-            const dateVal = row["발급일자"];
+          const contentsVal = row["협약내용 범주"] || "";
+          const contents = String(contentsVal).split(",")
+            .map(c => c.trim())
+            .filter(c => AGREEMENT_CONTENTS_OPTIONS.includes(c));
 
-            if (!awardNoVal || !deptVal || !nameVal || !dateVal) {
-              return;
-            }
+          const typeVal = row["협약유형"] ? String(row["협약유형"]).trim() : "-";
+          const finalType = ["프리미엄", "무료", "-"].includes(typeVal) ? typeVal : "-";
 
-            const calculatedYear = getYearFromDate(String(dateVal).trim());
-            const newAward = {
-              year: calculatedYear || selectedYear,
-              awardNo: String(awardNoVal).trim(),
-              recipientDept: String(deptVal).trim(),
-              recipientName: String(nameVal).trim(),
-              issueDate: String(dateVal).trim(),
-              issuer: row["발급주체"] ? String(row["발급주체"]).trim() : "사업단장",
-              fileName: "",
-              fileData: ""
-            };
+          const calculatedYear = getYearFromDate(String(dateVal).trim());
+          const newAgr = {
+            year: calculatedYear || selectedYear,
+            date: String(dateVal).trim(),
+            center: CENTERS_LIST.includes(String(centerVal).trim()) ? String(centerVal).trim() : "ECC센터",
+            organizations,
+            subjectUniversity: row["대학 측 협약주체(UC)"] ? String(row["대학 측 협약주체(UC)"]).trim() : "단장",
+            unitId: row["관련 단위과제"] ? String(row["관련 단위과제"]).trim() : "",
+            agreementType: finalType,
+            contents,
+            fileName: "",
+            fileData: ""
+          };
 
-            onAddAward(newAward);
-            importedCount++;
-          });
-          alert(`${importedCount}개의 상장 발급 정보가 성공적으로 적재되었습니다.`);
-        }
-
+          onAddAgreement(newAgr);
+          importedCount++;
+        });
+        alert(`${importedCount}개의 협약서 정보가 성공적으로 적재되었습니다.`);
       } catch (err) {
         console.error("Excel Import Error:", err);
         alert("엑셀 파일 파싱 중 에러가 발생했습니다. 규정된 서식 파일과 컬럼 헤더가 일치하는지 확인해 주세요.");
@@ -1219,156 +1133,156 @@ export default function AgreementManager({
 
       {/* 1. 협약 관리 View */}
       <>
-          <div>
-            <h2 style={{ fontSize: "1.0rem", fontWeight: "800", color: "white" }}>⚓ {selectedYear}차년도 협약서 통합 관리</h2>
-            <p style={{ fontSize: "0.72rem", color: "var(--text-secondary-dark)" }}>단위과제별 가족회사 및 기관과의 대외 협약 체결 내용을 연차별로 영속 보존합니다.</p>
+        <div>
+          <h2 style={{ fontSize: "1.0rem", fontWeight: "800", color: "white" }}>⚓ {selectedYear}차년도 협약서 통합 관리</h2>
+          <p style={{ fontSize: "0.72rem", color: "var(--text-secondary-dark)" }}>단위과제별 가족회사 및 기관과의 대외 협약 체결 내용을 연차별로 영속 보존합니다.</p>
+        </div>
+
+        {filteredAgreements.filter(a => !isDateValidForYear(a.date, selectedYear)).length > 0 && (
+          <div style={{ background: "rgba(239, 68, 68, 0.1)", border: "1px solid rgba(239, 68, 68, 0.3)", borderRadius: "0.375rem", padding: "0.6rem 0.8rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
+            <AlertTriangle color="#ef4444" size={14} style={{ flexShrink: 0 }} />
+            <span style={{ fontSize: "0.72rem", color: "#fca5a5" }}>
+              <strong>⚠️ 사업기간 불일치 협약서 감지:</strong> 선택하신 차년도의 정식 사업기간을 벗어난 체결 건이 있습니다. 수정 아이콘을 통해 일자를 조정하십시오.
+            </span>
           </div>
+        )}
 
-          {filteredAgreements.filter(a => !isDateValidForYear(a.date, selectedYear)).length > 0 && (
-            <div style={{ background: "rgba(239, 68, 68, 0.1)", border: "1px solid rgba(239, 68, 68, 0.3)", borderRadius: "0.375rem", padding: "0.6rem 0.8rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
-              <AlertTriangle color="#ef4444" size={14} style={{ flexShrink: 0 }} />
-              <span style={{ fontSize: "0.72rem", color: "#fca5a5" }}>
-                <strong>⚠️ 사업기간 불일치 협약서 감지:</strong> 선택하신 차년도의 정식 사업기간을 벗어난 체결 건이 있습니다. 수정 아이콘을 통해 일자를 조정하십시오.
-              </span>
-            </div>
-          )}
-
-          <div className="table-container" style={{ background: "var(--card-bg-dark)", border: "1px solid var(--border-color-dark)", borderRadius: "0.5rem", overflow: "hidden" }}>
-            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.75rem", color: "white" }}>
-              <thead>
-                <tr style={{ background: "rgba(255,255,255,0.03)", borderBottom: "1px solid var(--border-color-dark)" }}>
-                  <th onClick={() => requestSort("date")} style={{ padding: "0.6rem 0.8rem", textAlign: "left", width: "10%", cursor: "pointer" }}>
-                    날짜 {sortConfig.key === "date" ? (sortConfig.direction === "asc" ? "▲" : "▼") : "⇅"}
-                  </th>
-                  <th onClick={() => requestSort("center")} style={{ padding: "0.6rem 0.8rem", textAlign: "left", width: "10%", cursor: "pointer" }}>
-                    관련 센터 {sortConfig.key === "center" ? (sortConfig.direction === "asc" ? "▲" : "▼") : "⇅"}
-                  </th>
-                  <th onClick={() => requestSort("organizations")} style={{ padding: "0.6rem 0.8rem", textAlign: "left", width: "16%", cursor: "pointer" }}>
-                    협약기관 {sortConfig.key === "organizations" ? (sortConfig.direction === "asc" ? "▲" : "▼") : "⇅"}
-                  </th>
-                  <th style={{ padding: "0.6rem 0.8rem", textAlign: "left", width: "22%" }}>협약주체 (UC & 타기관)</th>
-                  <th onClick={() => requestSort("unitId")} style={{ padding: "0.6rem 0.8rem", textAlign: "left", width: "8%", cursor: "pointer" }}>
-                    단위과제 {sortConfig.key === "unitId" ? (sortConfig.direction === "asc" ? "▲" : "▼") : "⇅"}
-                  </th>
-                  <th onClick={() => requestSort("agreementType")} style={{ padding: "0.6rem 0.8rem", textAlign: "left", width: "10%", cursor: "pointer" }}>
-                    협약유형 {sortConfig.key === "agreementType" ? (sortConfig.direction === "asc" ? "▲" : "▼") : "⇅"}
-                  </th>
-                  <th style={{ padding: "0.6rem 0.8rem", textAlign: "left", width: "14%" }}>협약내용 범주</th>
-                  <th style={{ padding: "0.6rem 0.8rem", textAlign: "center", width: "5%" }}>사본</th>
-                  {(currentRole.rank <= 2) && <th style={{ padding: "0.6rem 0.8rem", textAlign: "center", width: "5%" }}>제어</th>}
+        <div className="table-container" style={{ background: "var(--card-bg-dark)", border: "1px solid var(--border-color-dark)", borderRadius: "0.5rem", overflow: "hidden" }}>
+          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.75rem", color: "white" }}>
+            <thead>
+              <tr style={{ background: "rgba(255,255,255,0.03)", borderBottom: "1px solid var(--border-color-dark)" }}>
+                <th onClick={() => requestSort("date")} style={{ padding: "0.6rem 0.8rem", textAlign: "left", width: "10%", cursor: "pointer" }}>
+                  날짜 {sortConfig.key === "date" ? (sortConfig.direction === "asc" ? "▲" : "▼") : "⇅"}
+                </th>
+                <th onClick={() => requestSort("center")} style={{ padding: "0.6rem 0.8rem", textAlign: "left", width: "10%", cursor: "pointer" }}>
+                  관련 센터 {sortConfig.key === "center" ? (sortConfig.direction === "asc" ? "▲" : "▼") : "⇅"}
+                </th>
+                <th onClick={() => requestSort("organizations")} style={{ padding: "0.6rem 0.8rem", textAlign: "left", width: "16%", cursor: "pointer" }}>
+                  협약기관 {sortConfig.key === "organizations" ? (sortConfig.direction === "asc" ? "▲" : "▼") : "⇅"}
+                </th>
+                <th style={{ padding: "0.6rem 0.8rem", textAlign: "left", width: "22%" }}>협약주체 (UC & 타기관)</th>
+                <th onClick={() => requestSort("unitId")} style={{ padding: "0.6rem 0.8rem", textAlign: "left", width: "8%", cursor: "pointer" }}>
+                  단위과제 {sortConfig.key === "unitId" ? (sortConfig.direction === "asc" ? "▲" : "▼") : "⇅"}
+                </th>
+                <th onClick={() => requestSort("agreementType")} style={{ padding: "0.6rem 0.8rem", textAlign: "left", width: "10%", cursor: "pointer" }}>
+                  협약유형 {sortConfig.key === "agreementType" ? (sortConfig.direction === "asc" ? "▲" : "▼") : "⇅"}
+                </th>
+                <th style={{ padding: "0.6rem 0.8rem", textAlign: "left", width: "14%" }}>협약내용 범주</th>
+                <th style={{ padding: "0.6rem 0.8rem", textAlign: "center", width: "5%" }}>사본</th>
+                {(currentRole.rank <= 2) && <th style={{ padding: "0.6rem 0.8rem", textAlign: "center", width: "5%" }}>제어</th>}
+              </tr>
+            </thead>
+            <tbody>
+              {sortedAgreements.length === 0 ? (
+                <tr>
+                  <td colSpan={currentRole.rank <= 2 ? 9 : 8} style={{ padding: "2rem", textAlign: "center", color: "var(--text-secondary-dark)" }}>
+                    등록된 협약서 내역이 없습니다.
+                  </td>
                 </tr>
-              </thead>
-              <tbody>
-                {sortedAgreements.length === 0 ? (
-                  <tr>
-                    <td colSpan={currentRole.rank <= 2 ? 9 : 8} style={{ padding: "2rem", textAlign: "center", color: "var(--text-secondary-dark)" }}>
-                      등록된 협약서 내역이 없습니다.
-                    </td>
-                  </tr>
-                ) : (
-                  sortedAgreements.map((agr) => {
-                    const hasInvalidDate = !isDateValidForYear(agr.date, selectedYear);
-                    return (
-                      <tr key={agr.id} style={{ borderBottom: "1px solid var(--border-color-dark)", background: hasInvalidDate ? "rgba(239, 68, 68, 0.03)" : "rgba(255,255,255,0.01)" }}>
-                        <td style={{ padding: "0.6rem 0.8rem" }}>{agr.date}</td>
-                        <td style={{ padding: "0.6rem 0.8rem" }}>
-                          <span style={{ background: "rgba(96,165,250,0.1)", color: "#60a5fa", padding: "0.15rem 0.35rem", borderRadius: "0.25rem", fontSize: "0.65rem", fontWeight: "700" }}>{agr.center}</span>
-                        </td>
-                        <td style={{ padding: "0.6rem 0.8rem" }}>
-                          {Array.isArray(agr.organizations) ? (
-                            agr.organizations.map((org, i) => (
-                              <span key={i} style={{ background: "#27272a", padding: "0.15rem 0.35rem", borderRadius: "0.25rem", color: "#e4e4e7", marginRight: "0.2rem" }}>
-                                {typeof org === "object" ? org.name : org}
-                              </span>
-                            ))
-                          ) : (
-                            <span style={{ background: "#27272a", padding: "0.15rem 0.35rem", borderRadius: "0.25rem", color: "#e4e4e7" }}>{agr.organizations}</span>
-                          )}
-                        </td>
-                        <td style={{ padding: "0.6rem 0.8rem" }}>
-                          <div style={{ display: "flex", flexDirection: "column", gap: "0.15rem" }}>
-                            <span style={{ color: "#a1a1aa" }}>🏫 UC: {agr.subjectUniversity}</span>
-                            <span style={{ color: "#38bdf8" }}>🤝 타기관: {agr.subjectOrganization}</span>
+              ) : (
+                sortedAgreements.map((agr) => {
+                  const hasInvalidDate = !isDateValidForYear(agr.date, selectedYear);
+                  return (
+                    <tr key={agr.id} style={{ borderBottom: "1px solid var(--border-color-dark)", background: hasInvalidDate ? "rgba(239, 68, 68, 0.03)" : "rgba(255,255,255,0.01)" }}>
+                      <td style={{ padding: "0.6rem 0.8rem" }}>{agr.date}</td>
+                      <td style={{ padding: "0.6rem 0.8rem" }}>
+                        <span style={{ background: "rgba(96,165,250,0.1)", color: "#60a5fa", padding: "0.15rem 0.35rem", borderRadius: "0.25rem", fontSize: "0.65rem", fontWeight: "700" }}>{agr.center}</span>
+                      </td>
+                      <td style={{ padding: "0.6rem 0.8rem" }}>
+                        {Array.isArray(agr.organizations) ? (
+                          agr.organizations.map((org, i) => (
+                            <span key={i} style={{ background: "#27272a", padding: "0.15rem 0.35rem", borderRadius: "0.25rem", color: "#e4e4e7", marginRight: "0.2rem" }}>
+                              {typeof org === "object" ? org.name : org}
+                            </span>
+                          ))
+                        ) : (
+                          <span style={{ background: "#27272a", padding: "0.15rem 0.35rem", borderRadius: "0.25rem", color: "#e4e4e7" }}>{agr.organizations}</span>
+                        )}
+                      </td>
+                      <td style={{ padding: "0.6rem 0.8rem" }}>
+                        <div style={{ display: "flex", flexDirection: "column", gap: "0.15rem" }}>
+                          <span style={{ color: "#a1a1aa" }}>🏫 UC: {agr.subjectUniversity}</span>
+                          <span style={{ color: "#38bdf8" }}>🤝 타기관: {agr.subjectOrganization}</span>
+                        </div>
+                      </td>
+                      <td style={{ padding: "0.6rem 0.8rem", fontWeight: "700" }}>{agr.unitId}</td>
+                      <td style={{ padding: "0.6rem 0.8rem" }}>
+                        <span style={{
+                          background: agr.agreementType === "프리미엄" ? "rgba(236,72,153,0.15)" : agr.agreementType === "무료" ? "rgba(59,130,246,0.15)" : "transparent",
+                          color: agr.agreementType === "프리미엄" ? "#ec4899" : agr.agreementType === "무료" ? "#3b82f6" : "#a1a1aa",
+                          padding: agr.agreementType !== "-" ? "0.15rem 0.35rem" : "0",
+                          borderRadius: "0.25rem",
+                          fontSize: "0.65rem",
+                          fontWeight: agr.agreementType !== "-" ? "700" : "normal"
+                        }}>
+                          {agr.agreementType || "-"}
+                        </span>
+                      </td>
+                      <td style={{ padding: "0.6rem 0.8rem" }}>
+                        {Array.isArray(agr.contents) && agr.contents.map((c, i) => (
+                          <span key={i} style={{ background: "rgba(52,211,153,0.1)", color: "#34d399", padding: "0.1rem 0.3rem", borderRadius: "0.2rem", fontSize: "0.65rem", marginRight: "0.2rem" }}>{c}</span>
+                        ))}
+                      </td>
+                      <td style={{ padding: "0.6rem 0.8rem", textAlign: "center" }}>
+                        {agr.fileName ? (
+                          <FileText size={16} style={{ color: "#60a5fa", cursor: "pointer" }} onClick={() => handleViewFile(agr.fileData)} />
+                        ) : "-"}
+                      </td>
+                      {(currentRole.rank <= 2) && (
+                        <td style={{ padding: "0.6rem 0.8rem", textAlign: "center" }}>
+                          <div style={{ display: "flex", gap: "0.25rem", justifyContent: "center" }}>
+                            {currentRole.id !== "GUEST" && (
+                              <>
+                                <button onClick={() => {
+                                  setEditingId(agr.id);
+                                  setInputDate(agr.date || "");
+                                  setInputCenter(agr.center || "ECC센터");
+                                  setInputOrganizations(Array.isArray(agr.organizations) ? agr.organizations.map(o => typeof o === "object" ? { name: o.name || "", subject: o.subject || "" } : { name: o, subject: "" }) : [{ name: "", subject: "" }]);
+
+                                  const subUniv = agr.subjectUniversity || "단장";
+                                  setInputSubjectUniv(subUniv);
+                                  if (["단장", "센터장"].includes(subUniv)) {
+                                    setUnivSubjectType(subUniv);
+                                    setInputSubjectUnivDept("");
+                                    setInputSubjectUnivName("");
+                                  } else {
+                                    setUnivSubjectType("기타");
+                                    const parts = subUniv.trim().split(/\s+/);
+                                    if (parts.length >= 2) {
+                                      setInputSubjectUnivName(parts[parts.length - 1]);
+                                      setInputSubjectUnivDept(parts.slice(0, parts.length - 1).join(" "));
+                                    } else {
+                                      setInputSubjectUnivDept("");
+                                      setInputSubjectUnivName(subUniv);
+                                    }
+                                  }
+
+                                  setInputUnitId(agr.unitId || "");
+                                  setInputContents(Array.isArray(agr.contents) ? [...agr.contents] : []);
+                                  setInputFileName(agr.fileName || "");
+                                  setInputFileData(agr.fileData || "");
+                                  setInputAgreementType(agr.agreementType || "-");
+                                  setIsModalOpen(true);
+                                }} style={{ background: "none", border: "none", color: "#a1a1aa", cursor: "pointer" }} title="수정">
+                                  <Edit size={14} />
+                                </button>
+                                <button onClick={() => { if (confirm("이 협약서를 삭제하시겠습니까?")) onDeleteAgreement(agr.id); }} style={{ background: "none", border: "none", color: "#ef4444", cursor: "pointer" }} title="삭제">
+                                  <Trash size={14} />
+                                </button>
+                              </>
+                            )}
                           </div>
                         </td>
-                        <td style={{ padding: "0.6rem 0.8rem", fontWeight: "700" }}>{agr.unitId}</td>
-                        <td style={{ padding: "0.6rem 0.8rem" }}>
-                          <span style={{
-                            background: agr.agreementType === "프리미엄" ? "rgba(236,72,153,0.15)" : agr.agreementType === "무료" ? "rgba(59,130,246,0.15)" : "transparent",
-                            color: agr.agreementType === "프리미엄" ? "#ec4899" : agr.agreementType === "무료" ? "#3b82f6" : "#a1a1aa",
-                            padding: agr.agreementType !== "-" ? "0.15rem 0.35rem" : "0",
-                            borderRadius: "0.25rem",
-                            fontSize: "0.65rem",
-                            fontWeight: agr.agreementType !== "-" ? "700" : "normal"
-                          }}>
-                            {agr.agreementType || "-"}
-                          </span>
-                        </td>
-                        <td style={{ padding: "0.6rem 0.8rem" }}>
-                          {Array.isArray(agr.contents) && agr.contents.map((c, i) => (
-                            <span key={i} style={{ background: "rgba(52,211,153,0.1)", color: "#34d399", padding: "0.1rem 0.3rem", borderRadius: "0.2rem", fontSize: "0.65rem", marginRight: "0.2rem" }}>{c}</span>
-                          ))}
-                        </td>
-                        <td style={{ padding: "0.6rem 0.8rem", textAlign: "center" }}>
-                          {agr.fileName ? (
-                            <FileText size={16} style={{ color: "#60a5fa", cursor: "pointer" }} onClick={() => handleViewFile(agr.fileData)} />
-                          ) : "-"}
-                        </td>
-                        {(currentRole.rank <= 2) && (
-                          <td style={{ padding: "0.6rem 0.8rem", textAlign: "center" }}>
-                            <div style={{ display: "flex", gap: "0.25rem", justifyContent: "center" }}>
-                              {currentRole.id !== "GUEST" && (
-                                <>
-                                  <button onClick={() => {
-                                    setEditingId(agr.id);
-                                    setInputDate(agr.date || "");
-                                    setInputCenter(agr.center || "ECC센터");
-                                    setInputOrganizations(Array.isArray(agr.organizations) ? agr.organizations.map(o => typeof o === "object" ? { name: o.name || "", subject: o.subject || "" } : { name: o, subject: "" }) : [{ name: "", subject: "" }]);
+                      )}
+                    </tr>
+                  );
+                })
+              )}
+            </tbody>
+          </table>
+        </div>
+      </>
 
-                                    const subUniv = agr.subjectUniversity || "단장";
-                                    setInputSubjectUniv(subUniv);
-                                    if (["단장", "센터장"].includes(subUniv)) {
-                                      setUnivSubjectType(subUniv);
-                                      setInputSubjectUnivDept("");
-                                      setInputSubjectUnivName("");
-                                    } else {
-                                      setUnivSubjectType("기타");
-                                      const parts = subUniv.trim().split(/\s+/);
-                                      if (parts.length >= 2) {
-                                        setInputSubjectUnivName(parts[parts.length - 1]);
-                                        setInputSubjectUnivDept(parts.slice(0, parts.length - 1).join(" "));
-                                      } else {
-                                        setInputSubjectUnivDept("");
-                                        setInputSubjectUnivName(subUniv);
-                                      }
-                                    }
-
-                                    setInputUnitId(agr.unitId || "");
-                                    setInputContents(Array.isArray(agr.contents) ? [...agr.contents] : []);
-                                    setInputFileName(agr.fileName || "");
-                                    setInputFileData(agr.fileData || "");
-                                    setInputAgreementType(agr.agreementType || "-");
-                                    setIsModalOpen(true);
-                                  }} style={{ background: "none", border: "none", color: "#a1a1aa", cursor: "pointer" }} title="수정">
-                                    <Edit size={14} />
-                                  </button>
-                                  <button onClick={() => { if (confirm("이 협약서를 삭제하시겠습니까?")) onDeleteAgreement(agr.id); }} style={{ background: "none", border: "none", color: "#ef4444", cursor: "pointer" }} title="삭제">
-                                    <Trash size={14} />
-                                  </button>
-                                </>
-                              )}
-                            </div>
-                          </td>
-                        )}
-                      </tr>
-                    );
-                  })
-                )}
-              </tbody>
-            </table>
-          </div>
-        </>
-      
       {/* A. 협약서 등록 및 수정 모달 */}
       {isModalOpen && createPortal(
         <div style={{ position: "fixed", top: 0, left: 0, width: "100vw", height: "100vh", background: "rgba(0,0,0,0.6)", zIndex: 9999, display: "flex", justifyContent: "center", alignItems: "center", overflowY: "auto", padding: "2rem 1rem" }}>
