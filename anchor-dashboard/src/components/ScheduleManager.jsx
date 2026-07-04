@@ -368,6 +368,31 @@ export default function ScheduleManager({
     pressContent: ""
   });
 
+  // 의제-결과 1:1 매핑 상태 추가
+  const [agendaResultPairs, setAgendaResultPairs] = useState([{ agenda: "", result: "" }]);
+
+  // 연구원 선택 칩 클릭 시 참석자(내부) 텍스트 필드에 추가/삭제 토글해 주는 헬퍼 함수
+  const handleToggleAttendee = (name) => {
+    setFormData(prev => {
+      const current = prev.attendees || "";
+      // 쉼표로 쪼개고 빈값 제거, 공백 다듬기
+      let list = current.split(",").map(x => x.trim()).filter(Boolean);
+      
+      if (list.includes(name)) {
+        // 이미 들어있다면 제거
+        list = list.filter(x => x !== name);
+      } else {
+        // 들어있지 않다면 새로 추가
+        list.push(name);
+      }
+      
+      return {
+        ...prev,
+        attendees: list.join(", ")
+      };
+    });
+  };
+
   // 유튜브 임베드용 ID 추출 헬퍼
   const getYoutubeEmbedUrl = (url) => {
     if (!url) return null;
@@ -601,8 +626,15 @@ export default function ScheduleManager({
       // 작성자 및 부서 정보를 attendeesExternal에 조합하여 저장 (하위호환성 유지)
       const combinedAttendeesExternal = `작성자: ${formData.writer || "작성자 미정"} | 부서: ${formData.dept || "부서 미정"}`;
 
-      // 의제 목록을 줄바꿈으로 묶어서 저장
-      const combinedAgenda = (formData.agendaList || []).filter(Boolean).join("\n");
+      // 의제 및 결과를 1:1 매핑 데이터로부터 직렬화
+      const combinedAgenda = (agendaResultPairs || [])
+        .map(p => p.agenda.trim())
+        .filter(Boolean)
+        .join("\n");
+      const combinedResult = (agendaResultPairs || [])
+        .map(p => p.result.trim())
+        .filter(Boolean)
+        .join("\n");
 
       if (isEditMode) {
         setMeetingSchedules(meetingSchedules.map(m => 
@@ -617,7 +649,7 @@ export default function ScheduleManager({
                 attendeesInternal: formData.attendees || "-",
                 attendeesExternal: combinedAttendeesExternal,
                 agenda: combinedAgenda || "-",
-                result: formData.result || "-"
+                result: combinedResult || "-"
               }
             : m
         ));
@@ -632,7 +664,7 @@ export default function ScheduleManager({
           attendeesInternal: formData.attendees || "-",
           attendeesExternal: combinedAttendeesExternal,
           agenda: combinedAgenda || "-",
-          result: formData.result || "-"
+          result: combinedResult || "-"
         };
         setMeetingSchedules([newItem, ...meetingSchedules]);
       }
@@ -1018,6 +1050,19 @@ export default function ScheduleManager({
     const agendaStr = meeting.agenda || "";
     const agendaList = agendaStr ? agendaStr.split("\n") : [""];
 
+    // 의제 및 결과 1:1 매핑 데이터 로드
+    const agendaLines = (meeting.agenda || "").split("\n").filter(Boolean);
+    const resultLines = (meeting.result || "").split("\n").filter(Boolean);
+    const maxLen = Math.max(agendaLines.length, resultLines.length, 1);
+    const initialPairs = [];
+    for (let i = 0; i < maxLen; i++) {
+      initialPairs.push({
+        agenda: agendaLines[i] || "",
+        result: resultLines[i] || ""
+      });
+    }
+    setAgendaResultPairs(initialPairs);
+
     setFormData({
       title: meeting.title,
       type: "회의",
@@ -1113,6 +1158,7 @@ export default function ScheduleManager({
     setModalType(type);
     setIsEditMode(false);
     setEditingItemId(null);
+    setAgendaResultPairs([{ agenda: "", result: "" }]); // 의제-결과 쌍 초기화
 
     // 현재 선택된 행사 월에 맞춰 기본 날짜 세팅
     const formattedMonth = selectedEventMonth < 10 ? `0${selectedEventMonth}` : selectedEventMonth;
@@ -3302,10 +3348,10 @@ export default function ScheduleManager({
                     </div>
                   </div>
 
-                  {/* 관련 부서 및 작성자 드롭다운 배치 */}
+                  {/* 부서명 및 작성자 드롭다운 배치 */}
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
                     <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>관련 부서</label>
+                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>부서명</label>
                       <select name="dept" value={formData.dept} onChange={handleInputChange} style={{ width: "100%", padding: "0.5rem", background: "var(--panel-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }}>
                         {["사업운영팀", "ECC센터", "ICC센터", "RCC센터", "AID-X지원센터", "울산늘봄누리센터", "신산업특화지원센터"].map(d => (
                           <option key={d} value={d}>{d}</option>
@@ -3340,55 +3386,151 @@ export default function ScheduleManager({
                     </div>
                   </div>
 
-                  {/* 참석자 직접 입력 */}
+                  {/* 참석자 선택 및 입력 */}
                   <div>
+                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>
+                      👥 소속 연구원 선택 (부서별 자동 연동)
+                    </label>
+                    {(() => {
+                      const deptMembers = (members || []).filter(m => {
+                        if (!m.dept) return false;
+                        if (m.dept === formData.dept) return true;
+                        // 신산업특화지원센터와 신산업특화센터 명칭 호환성 예외 처리
+                        if (formData.dept === "신산업특화지원센터" && m.dept === "신산업특화센터") return true;
+                        return false;
+                      });
+
+                      if (deptMembers.length === 0) {
+                        return (
+                          <div style={{ fontSize: "0.72rem", color: "var(--text-secondary)", marginBottom: "0.5rem", padding: "0.25rem", background: "rgba(255,255,255,0.02)", borderRadius: "4px" }}>
+                            소속 부서를 먼저 선택해 주세요.
+                          </div>
+                        );
+                      }
+
+                      return (
+                        <div style={{ display: "flex", gap: "0.35rem", flexWrap: "wrap", marginBottom: "0.5rem", padding: "0.5rem", background: "rgba(255,255,255,0.02)", borderRadius: "6px", border: "1px solid rgba(255,255,255,0.04)" }}>
+                          {deptMembers.map(m => {
+                            const displayName = `${m.name} ${m.grade || "연구원"}`;
+                            const isSelected = (formData.attendees || "")
+                              .split(",")
+                              .map(x => x.trim())
+                              .includes(m.name);
+
+                            return (
+                              <button
+                                key={m.id || m.email}
+                                type="button"
+                                onClick={() => handleToggleAttendee(m.name)}
+                                style={{
+                                  padding: "0.25rem 0.5rem",
+                                  fontSize: "0.7rem",
+                                  borderRadius: "4px",
+                                  border: "1px solid " + (isSelected ? "var(--accent-color)" : "rgba(255,255,255,0.1)"),
+                                  background: isSelected ? "rgba(59, 130, 246, 0.15)" : "transparent",
+                                  color: isSelected ? "#60A5FA" : "var(--text-secondary)",
+                                  cursor: "pointer",
+                                  transition: "all 0.1s ease",
+                                  fontWeight: "700"
+                                }}
+                              >
+                                {displayName} {isSelected ? "✓" : "+"}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      );
+                    })()}
+
                     <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>참석자 (직접 입력)</label>
-                    <input type="text" name="attendees" value={formData.attendees} onChange={handleInputChange} placeholder="예: 박지현 팀장, 이진우 PD, 김현주 실무 위원 (총 3명)" style={{ width: "100%", padding: "0.5rem", background: "rgba(128,128,128,0.1)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} />
+                    <input 
+                      type="text" 
+                      name="attendees" 
+                      value={formData.attendees || ""} 
+                      onChange={handleInputChange} 
+                      placeholder="위 칩을 선택하거나 직접 입력 (예: 박지현 팀장, 이진우 PD (총 2명))" 
+                      style={{ width: "100%", padding: "0.5rem", background: "rgba(128,128,128,0.1)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} 
+                    />
                   </div>
 
-                  {/* 주요의제 동적 리스트 추가/삭제 폼 */}
+                  {/* 주요 의제 및 회의 결과 1:1 대칭 대응 입력 목록 */}
                   <div>
-                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>주요 의제 (한 줄에 하나의 의제)</label>
-                    <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
-                      {formData.agendaList && formData.agendaList.map((agenda, index) => (
-                        <div key={index} style={{ display: "flex", gap: "0.5rem" }}>
+                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.4rem" }}>
+                      📝 회의 의제 및 결과 관리 (1:1 대응 입력)
+                    </label>
+                    <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+                      {agendaResultPairs.map((pair, index) => (
+                        <div 
+                          key={index} 
+                          style={{ 
+                            display: "grid", 
+                            gridTemplateColumns: "1fr 1.2fr 40px", 
+                            gap: "0.5rem", 
+                            alignItems: "center",
+                            background: "rgba(255, 255, 255, 0.01)",
+                            padding: "0.5rem",
+                            borderRadius: "6px",
+                            border: "1px solid rgba(255, 255, 255, 0.04)"
+                          }}
+                        >
                           <input 
                             type="text" 
-                            value={agenda} 
+                            value={pair.agenda} 
                             onChange={(e) => {
-                              const newList = [...formData.agendaList];
-                              newList[index] = e.target.value;
-                              setFormData({ ...formData, agendaList: newList });
+                              const newPairs = [...agendaResultPairs];
+                              newPairs[index].agenda = e.target.value;
+                              setAgendaResultPairs(newPairs);
                             }}
-                            placeholder={`의제 ${index + 1} (예: 2차년도 사업계획서 검토)`}
-                            style={{ flex: 1, padding: "0.5rem", background: "rgba(128,128,128,0.1)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }}
+                            placeholder={`의제 ${index + 1} (예: 2차년도 예산 검토)`}
+                            style={{ padding: "0.45rem", background: "rgba(128,128,128,0.1)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", fontSize: "0.75rem" }}
                           />
-                          {formData.agendaList.length > 1 && (
+                          <input 
+                            type="text" 
+                            value={pair.result} 
+                            onChange={(e) => {
+                              const newPairs = [...agendaResultPairs];
+                              newPairs[index].result = e.target.value;
+                              setAgendaResultPairs(newPairs);
+                            }}
+                            placeholder={`결정 및 조치 사항 ${index + 1}`}
+                            style={{ padding: "0.45rem", background: "rgba(128,128,128,0.1)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", fontSize: "0.75rem" }}
+                          />
+                          {agendaResultPairs.length > 1 ? (
                             <button
                               type="button"
                               onClick={() => {
-                                const newList = formData.agendaList.filter((_, idx) => idx !== index);
-                                setFormData({ ...formData, agendaList: newList });
+                                const newPairs = agendaResultPairs.filter((_, idx) => idx !== index);
+                                setAgendaResultPairs(newPairs);
                               }}
-                              style={{ padding: "0.5rem 0.75rem", background: "rgba(239,68,68,0.15)", border: "1px solid rgba(239,68,68,0.3)", borderRadius: "6px", color: "#F87171", cursor: "pointer", fontWeight: "700" }}
+                              style={{ padding: "0.45rem", background: "rgba(239,68,68,0.12)", border: "1px solid rgba(239,68,68,0.25)", borderRadius: "6px", color: "#F87171", cursor: "pointer", fontWeight: "700", fontSize: "0.75rem" }}
                             >
                               ✕
                             </button>
+                          ) : (
+                            <div />
                           )}
                         </div>
                       ))}
                       <button
                         type="button"
-                        onClick={() => setFormData({ ...formData, agendaList: [...formData.agendaList, ""] })}
-                        style={{ marginTop: "0.25rem", padding: "0.35rem 0.8rem", background: "rgba(59,130,246,0.15)", border: "1px solid rgba(59,130,246,0.3)", borderRadius: "6px", color: "#60A5FA", cursor: "pointer", fontSize: "0.75rem", display: "inline-flex", alignSelf: "flex-start", fontWeight: "700" }}
+                        onClick={() => setAgendaResultPairs([...agendaResultPairs, { agenda: "", result: "" }])}
+                        style={{ 
+                          marginTop: "0.2rem", 
+                          padding: "0.35rem 0.8rem", 
+                          background: "rgba(59,130,246,0.12)", 
+                          border: "1px solid rgba(59,130,246,0.25)", 
+                          borderRadius: "6px", 
+                          color: "#60A5FA", 
+                          cursor: "pointer", 
+                          fontSize: "0.72rem", 
+                          display: "inline-flex", 
+                          alignSelf: "flex-start", 
+                          fontWeight: "700" 
+                        }}
                       >
-                        + 의제 추가
+                        + 의제/결과 행 추가
                       </button>
                     </div>
-                  </div>
-                  <div>
-                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>회의 결과</label>
-                    <textarea name="result" value={formData.result} onChange={handleInputChange} placeholder="결정된 결의 사항 및 향후 조치 내역" style={{ width: "100%", height: "60px", padding: "0.5rem", background: "rgba(128,128,128,0.1)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", resize: "none" }} />
                   </div>
                 </>
               )}
