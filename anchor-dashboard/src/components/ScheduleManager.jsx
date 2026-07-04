@@ -1076,6 +1076,131 @@ export default function ScheduleManager({
     }
   };
 
+  // AI 언론보도 및 매체 홍보 기록 10건 일괄 자동 생성
+  const handleGenerateAiPressReleases = () => {
+    if (currentRole.id === "GUEST") {
+      alert("게스트(방문자) 계정은 홍보 기록을 자동으로 생성하실 수 없습니다.");
+      return;
+    }
+
+    if (pressReleases.length > 0) {
+      const proceed = window.confirm("이미 등록된 언론보도 내역이 존재합니다. AI 추천 홍보 기록 10건을 추가로 일괄 자동 생성하여 데이터베이스에 저장하시겠습니까?");
+      if (!proceed) return;
+    } else {
+      const proceed = window.confirm("울산과학대학교 앵커사업단의 비전 및 8대 센터의 주요 성과를 다룬 AI 추천 홍보 기사 기록 10건을 자동 생성하시겠습니까?");
+      if (!proceed) return;
+    }
+
+    // 선택된 차년도(selectedYear)에 매핑되는 연도 계산
+    const targetYearNum = selectedYear === 1 ? 2025 : selectedYear === 2 ? 2026 : selectedYear === 3 ? 2027 : selectedYear === 4 ? 2028 : 2029;
+
+    const mockPress = [
+      {
+        id: Date.now() + 1,
+        type: "방송",
+        media: "울산MBC",
+        title: `[RISE] 울산과학대, ${selectedYear}차년도 앵커사업 시동... 지산학 상생 혁신 선도`,
+        broadcastDate: `${targetYearNum}-03-15`,
+        broadcastTime: "20:00",
+        pressContent: "울산과학대학교 RISE 앵커사업단이 본격적인 성과 창출을 위해 가동되었습니다. 지자체와 유기적인 협력을 바탕으로 울산의 혁신 생태계를 이끌 핵심 인재들을 양성하고, 지역 정주 비율을 획기적으로 향상시킬 계획을 제시했습니다.",
+        pressUrl: "https://www.youtube.com/watch?v=ulsan_mbc_rise_start"
+      },
+      {
+        id: Date.now() + 2,
+        type: "신문",
+        media: "경상일보",
+        title: `울산과학대 ECC센터, 지역 소상공인 판로 개척 및 디지털 교육 확대`,
+        broadcastDate: `${targetYearNum}-04-10`,
+        broadcastTime: "09:00",
+        pressContent: "울산과학대학교 지산학교융센터(ECC)는 지역 내 소상공인과 협력하여 온라인 마케팅 플랫폼 구축 및 디지털 활용 실무 역량 강화를 전폭 지원하기로 했습니다. 이는 지역 밀착형 성장을 돕는 핵심 과제입니다.",
+        pressUrl: "https://www.ksilbo.co.kr/news/articleView.html?idxno=mock_ecc_sales"
+      },
+      {
+        id: Date.now() + 3,
+        type: "신문",
+        media: "울산신문",
+        title: `울산과학대 ICC센터, 미래 모빌리티 부품 고도화 및 기술 애로사항 자문 데이 성료`,
+        broadcastDate: `${targetYearNum}-05-18`,
+        broadcastTime: "14:30",
+        pressContent: "기업협업센터(ICC)는 지역 부품 협력업체들을 대상으로 정밀 기술 진단 및 R&BD 기술이전 자문을 수행했습니다. 애로사항 12건에 대해 전문 자문위원이 1:1 맞춤 피드백을 제공했습니다.",
+        pressUrl: "https://www.ulsanpress.net/news/articleView.html?idxno=mock_icc_consult"
+      },
+      {
+        id: Date.now() + 4,
+        type: "방송",
+        media: "KBS울산",
+        title: `[뉴스라인] 초등 늘봄학교 안착 돕는 늘봄누리센터... 우수 문화예술 교육 매칭 큰 호응`,
+        broadcastDate: `${targetYearNum}-06-25`,
+        broadcastTime: "21:30",
+        pressContent: "울산교육청과 힘을 합친 울산과학대학교 늘봄누리센터가 현업 장학사와 함께 예체능, IT 기초 강사를 초등학교와 직접 매칭하는 늘봄학교 시범 강사 사업을 진행하며 학교 현장에서 뜨거운 환영을 받고 있습니다.",
+        pressUrl: "https://www.youtube.com/watch?v=kbs_ulsan_neulbom_success"
+      },
+      {
+        id: Date.now() + 5,
+        type: "기타",
+        media: "블로그",
+        title: `[앵커 소식] 울산과학대 RCC센터, 지자체 협업 '남구 평생직업교육' 기수 수료식`,
+        broadcastDate: `${targetYearNum}-07-02`,
+        broadcastTime: "11:00",
+        pressContent: "지역협업센터(RCC)는 남구청과 긴밀히 조율해 개설한 스마트공장 기초 직무 교육 수료식을 열었습니다. 20명의 청장년 구직자가 수료했으며, 전원 관내 중소기업 인턴십 연계를 확정하는 기염을 토했습니다.",
+        pressUrl: "https://blog.naver.com/uc_rise_anchor/mock_rcc_graduate"
+      },
+      {
+        id: Date.now() + 6,
+        type: "신문",
+        media: "울산매일신문",
+        title: `울산과학대 신산업특화지원센터, 이차전지 전문 인재 교육 요강 발표`,
+        broadcastDate: `${targetYearNum}-07-28`,
+        broadcastTime: "10:00",
+        pressContent: "이차전지 분야 등 신산업 수요에 부응하기 위해 신산업특화지원센터는 화학공학과 등 참여학과 재학생 50명을 선발해 직무 중심 교육 트랙 및 패밀리 컴퍼니 정기 매칭 데이를 8월 개최할 예정입니다.",
+        pressUrl: "https://www.iusm.co.kr/news/articleView.html?idxno=mock_battery_spec"
+      },
+      {
+        id: Date.now() + 7,
+        type: "방송",
+        media: "UBC울산방송",
+        title: `울산과학대 AID-X지원센터, 대학 최초 '인공지능 융합 실습 인프라' 구축 공표`,
+        broadcastDate: `${targetYearNum}-08-14`,
+        broadcastTime: "18:30",
+        pressContent: "AID-X지원센터는 최첨단 GPU 서버를 연계 도입하여 지역 중소기업 및 청년 연구원들이 누구나 자유롭게 딥러닝 고성능 AI 추론 실습을 진행할 수 있는 지산학연 클라우드 실습관 구축을 공표했습니다.",
+        pressUrl: "https://www.youtube.com/watch?v=ubc_ulsan_aidx_server"
+      },
+      {
+        id: Date.now() + 8,
+        type: "기타",
+        media: "대학 뉴스룸",
+        title: `[보도자료] 울산과학대 RISE 앵커사업단, 1차년도 성과 기반 우수 혁신사례 발굴`,
+        broadcastDate: `${targetYearNum}-09-02`,
+        broadcastTime: "09:30",
+        pressContent: "대학 홍보팀은 RISE 앵커사업단이 발굴한 지산학연 주요 협력사례 중 3건이 교육부 최우수 우수사례 후보로 추천되었다고 전했습니다. 지역 인재 양성 및 취업률 연계 실적이 크게 작용했습니다.",
+        pressUrl: "https://www.uc.ac.kr/pr/news/view?id=mock_press_newsroom"
+      },
+      {
+        id: Date.now() + 9,
+        type: "기타",
+        media: "RISE 뉴스레터",
+        title: `[기획] 앵커사업 핵심 성과 보고: 관내 특성화고와의 늘봄 교육과정 연계 강화`,
+        broadcastDate: `${targetYearNum}-10-20`,
+        broadcastTime: "17:00",
+        pressContent: "늘봄누리센터와 ECC가 연합하여 관내 우수 특성화고등학교 학생들을 예비 늘봄 강사로 육성하고, 실제 초등 돌봄 교실의 교구 지도 보조로 채용하여 고교생 직업 체험과 늘봄 일자리 부족을 동시 해결하는 혁신 성과를 냈습니다.",
+        pressUrl: "https://newsletter.uc-rise.kr/issue-4-mock-pr"
+      },
+      {
+        id: Date.now() + 10,
+        type: "신문",
+        media: "울산포커스",
+        title: `울산과학대, RISE 예산 전면 재조정 회의... 신산업 트랙 예산 15% 확대 배정`,
+        broadcastDate: `${targetYearNum}-11-05`,
+        broadcastTime: "11:30",
+        pressContent: "RISE총괄위원회는 2차년도 사업 예산의 일부 잔여금을 신산업 중심 분야 트랙과 8대 센터의 애로기술 매칭 연구비로 15% 전환 편성하여 적극적인 실무 지원 인프라를 확대해 주기로 긴급 의결했습니다.",
+        pressUrl: "https://www.ulsanfocus.co.kr/news/articleView.html?idxno=mock_focus_budget"
+      }
+    ];
+
+    setPressReleases([...mockPress, ...pressReleases]);
+    alert("⚡ AI 추천 홍보 기록 10건이 생성되어 데이터베이스에 성공적으로 저장되었습니다!");
+  };
+
   // 테스트용 가상 부서 회의록 10건 일괄 생성 핸들러
   const handleGenerateMockMeetings = async () => {
     if (currentRole.id === "GUEST") {
@@ -3371,6 +3496,30 @@ export default function ScheduleManager({
               >
                 📥 엑셀 다운로드
               </button>
+
+              {currentRole.id !== "GUEST" && (
+                <button 
+                  type="button"
+                  onClick={handleGenerateAiPressReleases}
+                  style={{ 
+                    fontSize: "0.8rem", 
+                    fontWeight: "800", 
+                    display: "flex", 
+                    alignItems: "center", 
+                    gap: "0.3rem", 
+                    padding: "0.45rem 0.9rem", 
+                    background: "linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%)", 
+                    border: "none", 
+                    color: "white", 
+                    cursor: "pointer", 
+                    borderRadius: "6px",
+                    boxShadow: "0 0 10px rgba(139, 92, 246, 0.3)",
+                    transition: "all 0.2s ease"
+                  }}
+                >
+                  ⚡ AI 홍보 기록 자동 생성
+                </button>
+              )}
 
               {currentRole.id !== "GUEST" && (
                 <button 
