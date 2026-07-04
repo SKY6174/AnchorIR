@@ -15,6 +15,7 @@ import SurveyResponder from "./components/SurveyResponder";
 import LLMWiki from "./components/LLMWiki";
 import OrgChartManager from "./components/OrgChartManager";
 import PartnerManager from "./components/PartnerManager";
+import PortalConfigManager from "./components/PortalConfigManager";
 import AuthManager from "./components/AuthManager";
 import ProcurementManager from "./components/ProcurementManager";
 import ScheduleManager from "./components/ScheduleManager";
@@ -1420,6 +1421,31 @@ export default function App() {
     }
     return null;
   });
+
+  const isSongDirector = currentUser && (
+    (currentUser.name || "").includes("송경영") ||
+    currentUser.role_key === "DIRECTOR" ||
+    currentUser.role === "사업단장" ||
+    currentUser.id === "director"
+  );
+
+  const [menuVisibility, setMenuVisibility] = useState(() => {
+    const cached = localStorage.getItem("anchor_menu_visibility");
+    if (cached) {
+      try {
+        return JSON.parse(cached);
+      } catch (e) {
+        return {};
+      }
+    }
+    return {};
+  });
+
+  const handleSaveMenuVisibility = (nextVisibility) => {
+    setMenuVisibility(nextVisibility);
+    localStorage.setItem("anchor_menu_visibility", JSON.stringify(nextVisibility));
+  };
+
   const [projects, setProjects] = useState(() => {
     // 2차년도 세부 프로그램 ID를 5단계 위계 규정에 맞게 대대적으로 갱신하기 위해 로컬스토리지 버전을 v23으로 업그레이드합니다.
     const cached = localStorage.getItem("anchor_projects_data_v23");
@@ -3393,6 +3419,13 @@ export default function App() {
     localStorage.setItem("anchor_dark_mode", JSON.stringify(darkMode));
   }, [darkMode]);
 
+  // 비활성화된 메뉴에 접근 시 대시보드로 자동 리다이렉트하는 가드
+  useEffect(() => {
+    if (activeTab && activeTab !== "dashboard" && menuVisibility[activeTab] === false) {
+      setActiveTab("dashboard");
+    }
+  }, [activeTab, menuVisibility]);
+
   // projects 상태 변경 시 localStorage 자동 기입 (새로고침 휘발 방지 우회책)
   useEffect(() => {
     try {
@@ -4589,6 +4622,8 @@ export default function App() {
         onChangeAgreementsSubTab={setAgreementsSubTab}
         progressSubTab={progressSubTab}
         onChangeProgressSubTab={setProgressSubTab}
+        menuVisibility={menuVisibility}
+        isSongDirector={isSongDirector}
       />
 
       {/* 메인 뷰 */}
@@ -5115,6 +5150,25 @@ export default function App() {
               >
                 파트너기관
               </button>
+              {isSongDirector && (
+                <button
+                  type="button"
+                  onClick={() => setMgmtSubTab("portal_config")}
+                  style={{
+                    border: "none",
+                    background: "transparent",
+                    padding: "0.5rem 1rem",
+                    fontSize: "0.85rem",
+                    fontWeight: "800",
+                    cursor: "pointer",
+                    color: mgmtSubTab === "portal_config" ? "var(--accent-color)" : "var(--text-secondary-dark)",
+                    borderBottom: mgmtSubTab === "portal_config" ? "2px solid var(--accent-color)" : "none",
+                    transition: "all 0.2s"
+                  }}
+                >
+                  앵커 포털 관리
+                </button>
+              )}
             </div>
 
             {mgmtSubTab === "members" && (
@@ -5811,6 +5865,13 @@ export default function App() {
 
             {mgmtSubTab === "partners" && (
               <PartnerManager selectedYear={selectedYear} />
+            )}
+
+            {mgmtSubTab === "portal_config" && isSongDirector && (
+              <PortalConfigManager 
+                initialVisibility={menuVisibility} 
+                onSave={handleSaveMenuVisibility} 
+              />
             )}
           </div>
         )}
