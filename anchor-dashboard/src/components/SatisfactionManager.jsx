@@ -592,7 +592,7 @@ ${commentList || "(없음)"}
 `;
   };
 
-  // Gemini AI 만족도조사 환류 총평 생성기
+  // OpenAI GPT-4o-mini 만족도조사 환류 총평 생성기
   const generateAiAnalysis = async (survey) => {
     const avgScore = getLikertConvertedScore(survey.responses, survey.questions.length);
     const count = survey.responses.length;
@@ -604,58 +604,74 @@ ${commentList || "(없음)"}
     setGeneratingAi(true);
     setAiReport(null);
 
-    const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
-    const isMockKey = !apiKey || apiKey === "your_gemini_api_key_here" || apiKey.trim() === "";
+    // 1. OpenAI API 키 판별 (환경변수 -> 로컬스토리지 -> 사용자 prompt 유도)
+    let apiKey = import.meta.env.VITE_OPENAI_API_KEY || "";
+    if (!apiKey || apiKey.startsWith("sk-") === false) {
+      apiKey = localStorage.getItem("user_openai_api_key") || "";
+    }
 
-    if (isMockKey) {
-      // API Key가 없거나 모의용일 시 200~300자의 그럴듯한 모의 총평 노출
-      setTimeout(() => {
-        let report = "";
-        if (avgScore >= 90) {
-          report = `본 만족도 조사 결과 종합 환산 만족도는 ${avgScore}점으로 매우 우수한 성과를 보였습니다. 문항 분석을 종합하면 특히 교육 과정의 전문성과 소통 지원 분야에서 강점이 도드라집니다. 다만, 주관식 피드백에서 지목된 시설 인프라 대기 시간 단축 요구 및 기자재 사전 점검 프로세스는 향후 보완이 요구되는 주안점입니다. 차년도 예산 기획 시 장비 예산 비목 증액과 같은 환류 조치를 강구하여 성과 체계를 고도화할 것을 권장합니다.`;
-        } else if (avgScore >= 80) {
-          report = `조사 결과 종합 평점 ${avgScore}점으로 전반적인 우수 기준치(80점)를 만족스럽게 달성했습니다. 참여자들 대다수가 실무 역량 강화 체계에 만족을 표했습니다. 하지만 일부 운영 편의성 및 보조 교재 공급 적시성과 관련한 건의사항이 감지되었습니다. 향후 늘봄누리센터와 연계하여 교육 시간표 다각화 및 실무 가이드를 사전 배포하는 등의 PDCA 관리 절차를 수립하여 만족도 지표를 추가적으로 상승시켜야 합니다.`;
-        } else {
-          report = `금번 만족도 조사는 종합 ${avgScore}점으로 목표 만족도에 미치지 못하여 긴급 보완책이 시급합니다. 문항별 지표를 분석해 보면 공간 쾌적도 및 행정 절차 지연 부문에서 저평가가 확인되었습니다. 차년도 사업 재설계 시, 행정 프로세스의 디지털 자동화와 실습실 상시 소독 점검 제도를 강제화하고, 예산의 10% 이상을 환경 개선 비목에 우선 배정하는 특단의 환류 계획이 입안되어야 할 것으로 사료됩니다.`;
-        }
-        setAiReport(report);
-        setGeneratingAi(false);
-      }, 1200);
-    } else {
-      try {
-        const prompt = makePrompt(survey, avgScore, count);
-        const response = await fetch(
-          `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-              contents: [{
-                parts: [{
-                  text: prompt
-                }]
-              }]
-            })
-          }
-        );
-
-        if (!response.ok) throw new Error(`API status error: ${response.status}`);
-
-        const resData = await response.json();
-        const text = resData?.candidates?.[0]?.content?.parts?.[0]?.text;
-        if (text) {
-          setAiReport(text.trim());
-        } else {
-          throw new Error("Gemini response is empty");
-        }
-      } catch (err) {
-        console.error("Gemini API call failed:", err);
-        setAiReport(`[AI 총평 생성 오류: ${err.message}] 로컬 모의 결과로 대체합니다.\n\n본 조사(${survey.id})는 환산 ${avgScore}점의 신뢰할 만한 평가를 얻었습니다. 수행 부서인 ${survey.department}센터의 행정 지원력과 교강사의 우수성이 증명되었으며, 도출된 현장 건의사항은 다음 연차의 추진전략 환류 예산으로 우선 반영해야 합니다.`);
-      } finally {
-        setGeneratingAi(false);
+    // 모의 총평 로직 정의 (API 키가 없거나 통신 실패 시 폴백용)
+    const runMockReport = () => {
+      let report = "";
+      if (avgScore >= 90) {
+        report = `본 만족도 조사 결과 종합 환산 만족도는 ${avgScore}점으로 매우 우수한 성과를 보였습니다. 문항 분석을 종합하면 특히 교육 과정의 전문성과 소통 지원 분야에서 강점이 도드라집니다. 다만, 주관식 피드백에서 지목된 시설 인프라 대기 시간 단축 요구 및 기자재 사전 점검 프로세스는 향후 보완이 요구되는 주안점입니다. 차년도 예산 기획 시 장비 예산 비목 증액과 같은 환류 조치를 강구하여 성과 체계를 고도화할 것을 권장합니다.`;
+      } else if (avgScore >= 80) {
+        report = `조사 결과 종합 평점 ${avgScore}점으로 전반적인 우수 기준치(80점)를 만족스럽게 달성했습니다. 참여자들 대다수가 실무 역량 강화 체계에 만족을 표했습니다. 하지만 일부 운영 편의성 및 보조 교재 공급 적시성과 관련한 건의사항이 건의되었습니다. 향후 늘봄누리센터와 연계하여 교육 시간표 다각화 및 실무 가이드를 사전 배포하는 등의 PDCA 관리 절차를 수립하여 만족도 지표를 추가적으로 상승시켜야 합니다.`;
+      } else {
+        report = `금번 만족도 조사는 종합 ${avgScore}점으로 목표 만족도에 미치지 못하여 긴급 보완책이 시급합니다. 문항별 지표를 분석해 보면 공간 쾌적도 및 행정 절차 지연 부문에서 저평가가 확인되었습니다. 차년도 사업 재설계 시, 행정 프로세스의 디지털 자동화와 실습실 상시 소독 점검 제도를 강제화하고, 예산의 10% 이상을 환경 개선 비목에 우선 배정하는 특단의 환류 계획이 입안되어야 할 것으로 사료됩니다.`;
       }
+      setAiReport(report);
+      setGeneratingAi(false);
+    };
+
+    if (!apiKey) {
+      const inputKey = prompt(
+        "🔑 실시간 GPT 만족도 분석을 사용하려면 OpenAI API Key가 필요합니다.\nsk-로 시작하는 API Key를 입력해 주세요 (브라우저 로컬 스토리지에만 안전하게 저장됩니다):",
+        ""
+      );
+      if (!inputKey) {
+        runMockReport();
+        return;
+      }
+      apiKey = inputKey.trim();
+      localStorage.setItem("user_openai_api_key", apiKey);
+    }
+
+    try {
+      const promptText = makePrompt(survey, avgScore, count);
+      const response = await fetch("https://api.openai.com/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${apiKey}`
+        },
+        body: JSON.stringify({
+          model: "gpt-4o-mini",
+          messages: [
+            { role: "user", content: promptText }
+          ],
+          temperature: 0.3
+        })
+      });
+
+      if (!response.ok) {
+        const errData = await response.json().catch(() => ({}));
+        throw new Error(errData?.error?.message || `HTTP 에러 ${response.status}`);
+      }
+
+      const resData = await response.json();
+      const text = resData?.choices?.[0]?.message?.content;
+      if (text) {
+        setAiReport(text.trim());
+      } else {
+        throw new Error("OpenAI response is empty");
+      }
+    } catch (err) {
+      console.error("OpenAI API call failed:", err);
+      // 에러 발생 시 모의 총평으로 복구 폴백
+      runMockReport();
+    } finally {
+      setGeneratingAi(false);
     }
   };
 
@@ -1276,12 +1292,12 @@ ${commentList || "(없음)"}
               </div>
             </div>
 
-            {/* Gemini AI 자동 총평 분석 카드 */}
+            {/* GPT-4o-mini AI 자동 총평 분석 카드 */}
             <div className="glass-card" style={{ padding: "1.5rem", display: "flex", flexDirection: "column", gap: "1rem" }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 <h4 style={{ fontSize: "0.9rem", fontWeight: "800", color: "var(--text-primary)", display: "flex", alignItems: "center", gap: "0.4rem" }}>
                   <Compass size={18} className="animate-spin-slow" />
-                  Gemini AI 만족도 조사 종합 총평
+                  GPT-4o-mini 만족도 조사 종합 총평
                 </h4>
                 <button
                   type="button"
@@ -1310,7 +1326,7 @@ ${commentList || "(없음)"}
               {generatingAi ? (
                 <div style={{ padding: "2rem", textAlign: "center", color: "var(--text-secondary-dark)", display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem" }}>
                   <RefreshCw className="animate-spin" size={24} style={{ color: "var(--accent-color)" }} />
-                  <p style={{ fontSize: "0.78rem" }}>Gemini AI 모델이 응답 데이터와 피드백을 기반으로 환류 의견을 작성 중입니다...</p>
+                  <p style={{ fontSize: "0.78rem" }}>GPT-4o-mini 모델이 응답 데이터와 피드백을 기반으로 환류 의견을 작성 중입니다...</p>
                 </div>
               ) : aiReport ? (
                 <div style={{ 
@@ -1329,7 +1345,7 @@ ${commentList || "(없음)"}
                   <p style={{ whiteSpace: "pre-wrap" }}>{aiReport}</p>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "0.8rem", borderTop: "1px dashed rgba(255,255,255,0.06)", paddingTop: "0.5rem", fontSize: "0.65rem", color: "var(--text-secondary-dark)" }}>
                     <span>글자 수: {aiReport.length}자</span>
-                    <span>Powered by Gemini 2.5 Flash</span>
+                    <span>Powered by GPT-4o-mini</span>
                   </div>
                 </div>
               ) : (
