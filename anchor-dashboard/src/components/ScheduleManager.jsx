@@ -1798,7 +1798,7 @@ export default function ScheduleManager({
                   fontSize: "0.8rem", fontWeight: "700", cursor: "pointer", transition: "all 0.15s ease"
                 }}
               >
-                {m === 3 ? `'${selectedYear % 100}.3월` : m === 1 ? `'${(selectedYear + 1) % 100}.1월` : `${m}월`}
+                {m === 3 ? `'${24 + selectedYear}.3월` : m === 1 ? `'${25 + selectedYear}.1월` : `${m}월`}
               </button>
             ))}
           </div>
@@ -2310,7 +2310,7 @@ export default function ScheduleManager({
                   fontSize: "0.8rem", fontWeight: "700", cursor: "pointer", transition: "all 0.15s ease"
                 }}
               >
-                {m === 3 ? `'${selectedYear % 100}.3월` : m === 1 ? `'${(selectedYear + 1) % 100}.1월` : `${m}월`}
+                {m === 3 ? `'${24 + selectedYear}.3월` : m === 1 ? `'${25 + selectedYear}.1월` : `${m}월`}
               </button>
             ))}
           </div>
