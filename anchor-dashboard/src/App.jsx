@@ -4,6 +4,8 @@ import KPIOverview from "./components/KPIOverview";
 import ExcelUploader from "./components/ExcelUploader";
 import PDCAManager from "./components/PDCAManager";
 import AgreementManager from "./components/AgreementManager";
+import CertificateManager from "./components/CertificateManager";
+import AwardManager from "./components/AwardManager";
 import BudgetItemsManager from "./components/BudgetItemsManager";
 import BudgetExecutionManager from "./components/BudgetExecutionManager";
 import ProgramProgressManager from "./components/ProgramProgressManager";
@@ -6382,28 +6384,47 @@ export default function App() {
 
         {activeTab === "agreements" && (
           <div className="glass-card" style={{ padding: "1.25rem" }}>
-            <AgreementManager
-              projects={displayProjects}
-              agreements={agreements}
-              certificates={certificates}
-              awards={awards}
-              selectedYear={selectedYear}
-              agreementsSubTab={agreementsSubTab}
-              onChangeAgreementsSubTab={setAgreementsSubTab}
-              onAddAgreement={handleAddAgreement}
-              onUpdateAgreement={handleUpdateAgreement}
-              onDeleteAgreement={handleDeleteAgreement}
-              onAddCertificate={handleAddCertificate}
-              onUpdateCertificate={handleUpdateCertificate}
-              onDeleteCertificate={handleDeleteCertificate}
-              onAddAward={handleAddAward}
-              onUpdateAward={handleUpdateAward}
-              onDeleteAward={handleDeleteAward}
-              setAgreements={setAgreements}
-              setCertificates={setCertificates}
-              setAwards={setAwards}
-              currentRole={currentRole}
-            />
+            {/* 협약서 서브탭 활성화 시 협약서 단독 매니저 마운트 */}
+            {agreementsSubTab === "agreements" && (
+              <AgreementManager
+                projects={displayProjects}
+                agreements={agreements}
+                selectedYear={selectedYear}
+                onAddAgreement={handleAddAgreement}
+                onUpdateAgreement={handleUpdateAgreement}
+                onDeleteAgreement={handleDeleteAgreement}
+                setAgreements={setAgreements}
+                currentRole={currentRole}
+              />
+            )}
+
+            {/* 이수증 서브탭 활성화 시 이수증 단독 매니저 마운트 */}
+            {agreementsSubTab === "certificates" && (
+              <CertificateManager
+                projects={displayProjects}
+                certificates={certificates}
+                selectedYear={selectedYear}
+                onAddCertificate={handleAddCertificate}
+                onUpdateCertificate={handleUpdateCertificate}
+                onDeleteCertificate={handleDeleteCertificate}
+                setCertificates={setCertificates}
+                currentRole={currentRole}
+              />
+            )}
+
+            {/* 상장 서브탭 활성화 시 상장 단독 매니저 마운트 */}
+            {agreementsSubTab === "awards" && (
+              <AwardManager
+                projects={displayProjects}
+                awards={awards}
+                selectedYear={selectedYear}
+                onAddAward={handleAddAward}
+                onUpdateAward={handleUpdateAward}
+                onDeleteAward={handleDeleteAward}
+                setAwards={setAwards}
+                currentRole={currentRole}
+              />
+            )}
           </div>
         )}
 

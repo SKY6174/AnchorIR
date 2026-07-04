@@ -1,0 +1,686 @@
+import React, { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
+import { Plus, Trash2, Edit, Trash, FileText, Upload, X, AlertTriangle, Download, Award as AwardIcon, FileCheck } from "lucide-react";
+import * as XLSX from "xlsx";
+
+/**
+ * AwardManager:
+ * 공모전, 경진대회 및 우수 성과 발표에 따른 상장 발급 내역을 단독으로 기록하고 보존하는 컴포넌트입니다.
+ * 상장 등록/수정, 엑셀 다운로드, 개별 사본 업로드 및 사본 파일명 기반 일괄 자동 매핑 기능을 제공합니다.
+ */
+export default function AwardManager({
+  projects = [],
+  awards = [],
+  selectedYear,
+  onAddAward,
+  onUpdateAward,
+  onDeleteAward,
+  setAwards,
+  currentRole
+}) {
+  // 1. 상장 입력 폼 및 개별 등록/수정 모달 상태
+  const [isAwardModalOpen, setIsAwardModalOpen] = useState(false);
+  const [editingAwardId, setEditingAwardId] = useState(null);
+  const [awardNo, setAwardNo] = useState("");
+  const [awardDept, setAwardDept] = useState("");
+  const [awardName, setAwardName] = useState("");
+  const [awardDate, setAwardDate] = useState("");
+  const [awardIssuer, setAwardIssuer] = useState("사업단장");
+  const [awardFileName, setAwardFileName] = useState("");
+  const [awardFileData, setAwardFileData] = useState("");
+
+  // 2. 사본 파일명 기반 일괄 매핑 모달 상태
+  const [isAwardBatchModalOpen, setIsAwardBatchModalOpen] = useState(false);
+  const [batchAwardResults, setBatchAwardResults] = useState([]);
+
+  // 3. 정렬 상태 설정
+  const [awardSortConfig, setAwardSortConfig] = useState({ key: "date", direction: "asc" });
+
+  // 4. 엑셀 다운로드 캐시용 URL 상태
+  const [excelDownloadUrl, setExcelDownloadUrl] = useState("");
+
+  /**
+   * cleanName: 파일명에서 공백 및 불필요한 단체 지시어(주식회사, (주) 등)를 제거하여
+   * 순수한 이름 텍스트 대조가 가능하도록 정화하는 헬퍼 함수입니다.
+   */
+  const cleanName = (name) => {
+    if (!name) return "";
+    let temp = name.replace(/\s/g, "");
+    const keywords = ["(주)", "(유)", "(합)", "(합자)", "(재)", "(사)", "(재단)", "(사단)", "주식회사", "유한회사", "㈜", "㈔", "㈎"];
+    keywords.forEach(kw => {
+      temp = temp.replaceAll(kw, "");
+    });
+    return temp.replace(/[\(\)]/g, "");
+  };
+
+  /**
+   * getYearFromDate: 선택된 발급일자로부터 RISE 사업 기획 체계 연차(1~5차년도)를 자동 도출합니다.
+   * RISE 회계연도 기준(3월 1일 ~ 익년 2월 말일)에 기반합니다.
+   */
+  const getYearFromDate = (dateStr) => {
+    if (!dateStr) return null;
+    const d = new Date(`${dateStr}T00:00:00`);
+    if (isNaN(d.getTime())) return null;
+    const year = d.getFullYear();
+    const month = d.getMonth() + 1;
+
+    if (month >= 3) {
+      return year - 2024;
+    } else {
+      return year - 2025;
+    }
+  };
+
+  // 현재 연차(selectedYear)에 해당하는 상장만 필터링합니다.
+  const filteredAwards = awards.filter(a => a.year === selectedYear);
+
+  // 정렬 컬럼 토글 핸들러
+  const requestAwardSort = (key) => {
+    let direction = "asc";
+    if (awardSortConfig.key === key && awardSortConfig.direction === "asc") {
+      direction = "desc";
+    }
+    setAwardSortConfig({ key, direction });
+  };
+
+  // 정렬 조건에 맞는 정렬된 상장 목록 반환
+  const getSortedAwards = () => {
+    const sorted = [...filteredAwards];
+    const key = awardSortConfig.key;
+    if (key) {
+      sorted.sort((a, b) => {
+        let valA = (key === "date" ? a.issueDate : a[key]) || "";
+        let valB = (key === "date" ? b.issueDate : b[key]) || "";
+        if (typeof valA === "string" && typeof valB === "string") {
+          return awardSortConfig.direction === "asc"
+            ? valA.localeCompare(valB, undefined, { numeric: true })
+            : valB.localeCompare(valA, undefined, { numeric: true });
+        }
+        if (valA < valB) return awardSortConfig.direction === "asc" ? -1 : 1;
+        if (valA > valB) return awardSortConfig.direction === "asc" ? 1 : -1;
+        return 0;
+      });
+    }
+    return sorted;
+  };
+
+  const sortedAwards = getSortedAwards();
+
+  // 상장 등록/수정 입력폼 내용 초기화 헬퍼
+  const resetAwardForm = () => {
+    setEditingAwardId(null);
+    setAwardNo("");
+    setAwardDept("");
+    setAwardName("");
+    setAwardDate("");
+    setAwardIssuer("사업단장");
+    setAwardFileName("");
+    setAwardFileData("");
+  };
+
+  // 상장 개별 등록 및 수정 제출 핸들러
+  const handleAwardSubmit = (e) => {
+    e.preventDefault();
+    if (!awardNo.trim()) return alert("발급번호를 입력해 주세요.");
+    if (!awardDept.trim()) return alert("발급대상 소속을 입력해 주세요.");
+    if (!awardName.trim()) return alert("발급대상 성명을 입력해 주세요.");
+    if (!awardDate) return alert("발급일을 선택해 주세요.");
+
+    const calculatedYear = getYearFromDate(awardDate);
+    if (!calculatedYear || calculatedYear < 1 || calculatedYear > 5) {
+      alert("유효한 RISE 사업 기간 내의 날짜를 선택해 주세요. (2025년 3월 이후)");
+      return;
+    }
+
+    const payload = {
+      year: calculatedYear,
+      awardNo: awardNo.trim(),
+      recipientDept: awardDept.trim(),
+      recipientName: awardName.trim(),
+      issueDate: awardDate,
+      issuer: awardIssuer,
+      fileName: awardFileName,
+      fileData: awardFileData
+    };
+
+    if (editingAwardId) {
+      onUpdateAward(editingAwardId, payload);
+    } else {
+      onAddAward(payload);
+    }
+    setIsAwardModalOpen(false);
+    resetAwardForm();
+  };
+
+  // 모의 파일 업로드 (Base64 변환)
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setAwardFileName(file.name);
+        setAwardFileData(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  // 상장 파일 사본 열기 핸들러
+  const handleViewFile = (fileData) => {
+    try {
+      if (!fileData) {
+        window.open("https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf", "_blank");
+        return;
+      }
+      let mimeType = "application/pdf";
+      let base64 = fileData;
+      const parts = fileData.split(",");
+      if (parts.length > 1) {
+        const mimeMatch = parts[0].match(/:(.*?);/);
+        if (mimeMatch) mimeType = mimeMatch[1];
+        base64 = parts[1];
+      }
+      const byteCharacters = window.atob(base64);
+      const byteNumbers = new Array(byteCharacters.length);
+      for (let i = 0; i < byteCharacters.length; i++) {
+        byteNumbers[i] = byteCharacters.charCodeAt(i);
+      }
+      const byteArray = new Uint8Array(byteNumbers);
+      const blob = new Blob([byteArray], { type: mimeType });
+      const blobUrl = URL.createObjectURL(blob);
+      window.open(blobUrl, "_blank");
+    } catch (err) {
+      alert("파일 사본을 여는 도중 문제가 발생했습니다.");
+    }
+  };
+
+  // 상장 파일 일괄 업로드 매핑 핸들러 (합집합 매칭 적용)
+  const handleBatchAwardImport = async (e) => {
+    const files = Array.from(e.target.files);
+    if (files.length === 0) return;
+
+    if (currentRole.id === "GUEST") {
+      alert("게스트(방문자) 계정은 읽기 전용으로만 이용하실 수 있습니다.");
+      return;
+    }
+
+    const results = [];
+
+    for (const file of files) {
+      const fileName = file.name;
+      const fileBaseName = fileName.substring(0, fileName.lastIndexOf('.')) || fileName;
+      const fileClean = cleanName(fileBaseName);
+
+      let matchedTarget = null;
+      let isMatched = false;
+      let matchBreakdown = "매칭 실패";
+
+      // 현재 차년도의 모든 상장 대장을 순회하며 포함 관계 체크
+      awards.forEach(item => {
+        if (isMatched) return;
+
+        let awardNoMatch = false;
+        let nameMatch = false;
+
+        // A. 발급번호 비교
+        if (item.awardNo && fileBaseName.includes(item.awardNo)) {
+          awardNoMatch = true;
+        }
+
+        // B. 성명 비교
+        if (item.recipientName) {
+          const recClean = cleanName(item.recipientName);
+          if (recClean && fileClean.includes(recClean)) {
+            nameMatch = true;
+          }
+        }
+
+        // [합집합]: 발급번호 또는 수급자명이 이름 내에 있는 경우 통과
+        if (awardNoMatch || nameMatch) {
+          isMatched = true;
+          matchedTarget = item;
+          matchBreakdown = awardNoMatch ? "발급번호 일치" : "성명 일치";
+        }
+      });
+
+      const fileData = await new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = (e) => resolve(e.target.result);
+        reader.onerror = () => resolve(null);
+        reader.readAsDataURL(file);
+      });
+
+      if (isMatched && matchedTarget) {
+        results.push({
+          fileName,
+          fileData,
+          status: "success",
+          targetId: matchedTarget.id,
+          targetDesc: `${matchedTarget.recipientName} [${matchedTarget.recipientDept}] (${matchedTarget.issueDate || matchedTarget.date})`,
+          score: 100,
+          details: {
+            extractedOrg: matchedTarget.awardNo || "없음",
+            extractedName: matchedTarget.recipientName || "없음",
+            breakdown: matchBreakdown
+          }
+        });
+      } else {
+        results.push({
+          fileName,
+          fileData,
+          status: "fail",
+          targetId: null,
+          targetDesc: "일치하는 상장 데이터를 찾지 못함 (발급번호 또는 성명 불일치)",
+          score: 0,
+          details: {
+            extractedOrg: "없음",
+            extractedName: "없음",
+            breakdown: "조건 미달 (파일명 매칭 정보 없음)"
+          }
+        });
+      }
+    }
+
+    setBatchAwardResults(results);
+    setIsAwardBatchModalOpen(true);
+    e.target.value = "";
+  };
+
+  // 분석된 일괄 파일 매핑 반영 핸들러
+  const handleApplyBatchAwards = () => {
+    let appliedCount = 0;
+    const successMap = new Map();
+    batchAwardResults.forEach(res => {
+      if (res.status === "success" && res.targetId) {
+        successMap.set(res.targetId, res);
+      }
+    });
+
+    if (successMap.size === 0) return;
+
+    setAwards(prev =>
+      prev.map(item => {
+        const match = successMap.get(item.id);
+        if (match) {
+          appliedCount++;
+          return {
+            ...item,
+            fileName: match.fileName,
+            fileData: match.fileData
+          };
+        }
+        return item;
+      })
+    );
+
+    alert(`${appliedCount}개의 상장 사본이 성공적으로 매핑 및 적재되었습니다.`);
+    setIsAwardBatchModalOpen(false);
+    setBatchAwardResults([]);
+  };
+
+  // 엑셀 다운로드 Caching URL 갱신
+  useEffect(() => {
+    if (sortedAwards.length === 0) {
+      setExcelDownloadUrl("");
+      return;
+    }
+
+    const excelData = sortedAwards.map((award) => ({
+      "발급번호": award.awardNo,
+      "소속 부서": award.recipientDept,
+      "성명": award.recipientName,
+      "발급일자": award.issueDate,
+      "발급주체": award.issuer,
+      "사본 첨부여부": award.fileName ? "유 (첨부됨)" : "무"
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(excelData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Awards");
+
+    const wscols = [
+      { wch: 25 }, // 발급번호
+      { wch: 25 }, // 소속
+      { wch: 15 }, // 성명
+      { wch: 15 }, // 발급일
+      { wch: 15 }, // 발급주체
+      { wch: 15 }  // 사본
+    ];
+    worksheet["!cols"] = wscols;
+
+    const excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
+    const blob = new Blob([excelBuffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+    const url = URL.createObjectURL(blob);
+    setExcelDownloadUrl(url);
+
+    return () => {
+      URL.revokeObjectURL(url);
+    };
+  }, [sortedAwards]);
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: "1rem", width: "100%" }}>
+      {/* 상장 툴바 영역 */}
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "1rem", flexWrap: "wrap" }}>
+        <div>
+          <h2 style={{ fontSize: "1.0rem", fontWeight: "800", color: "white" }}>🏆 {selectedYear}차년도 상장 발급 내역</h2>
+          <p style={{ fontSize: "0.72rem", color: "var(--text-secondary-dark)" }}>공모전 및 경진대회 상장 발급 대장을 영속 보존합니다.</p>
+        </div>
+
+        <div style={{ display: "flex", gap: "0.4rem", alignItems: "center" }}>
+          {currentRole.rank <= 2 && currentRole.id !== "GUEST" && (
+            <>
+              {/* 등록하기 */}
+              <button
+                className="btn-primary"
+                onClick={() => { resetAwardForm(); setIsAwardModalOpen(true); }}
+                style={{ display: "flex", alignItems: "center", gap: "0.25rem", padding: "0.35rem 0.7rem", fontSize: "0.7rem" }}
+              >
+                <Plus size={12} /> 신규 발급 등록
+              </button>
+
+              {/* 사본 일괄 매핑 */}
+              <label
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "0.25rem",
+                  padding: "0.35rem 0.7rem",
+                  fontSize: "0.7rem",
+                  background: "rgba(16, 185, 129, 0.1)",
+                  border: "1px solid rgba(16, 185, 129, 0.2)",
+                  color: "#34D399",
+                  borderRadius: "0.25rem",
+                  cursor: "pointer",
+                  fontWeight: "700"
+                }}
+              >
+                <FileCheck size={12} /> 사본 일괄 매핑
+                <input
+                  type="file"
+                  multiple
+                  accept=".pdf, .hwp, .hwpx, .jpg, .jpeg, .png"
+                  onChange={handleBatchAwardImport}
+                  style={{ display: "none" }}
+                />
+              </label>
+            </>
+          )}
+
+          {/* 엑셀 다운로드 */}
+          <a
+            href={excelDownloadUrl || "#"}
+            download={excelDownloadUrl ? `Award_List_Year_${selectedYear}.xlsx` : undefined}
+            onClick={(e) => {
+              if (!excelDownloadUrl) {
+                e.preventDefault();
+                alert("다운로드할 데이터가 없습니다.");
+              }
+            }}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "0.25rem",
+              padding: "0.35rem 0.7rem",
+              fontSize: "0.7rem",
+              background: "#27272a",
+              color: "white",
+              borderRadius: "0.25rem",
+              textDecoration: "none",
+              border: "1px solid var(--border-color-dark)"
+            }}
+          >
+            <Download size={12} /> 엑셀 다운로드
+          </a>
+        </div>
+      </div>
+
+      {/* 상장 리스트 테이블 */}
+      <div className="table-container" style={{ background: "var(--card-bg-dark)", border: "1px solid var(--border-color-dark)", borderRadius: "0.5rem", overflow: "hidden" }}>
+        <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.75rem", color: "white" }}>
+          <thead>
+            <tr style={{ background: "rgba(255,255,255,0.03)", borderBottom: "1px solid var(--border-color-dark)" }}>
+              <th onClick={() => requestAwardSort("awardNo")} style={{ padding: "0.6rem 0.8rem", textAlign: "left", width: "20%", cursor: "pointer" }}>
+                발급번호 {awardSortConfig.key === "awardNo" ? (awardSortConfig.direction === "asc" ? "▲" : "▼") : "⇅"}
+              </th>
+              <th style={{ padding: "0.6rem 0.8rem", textAlign: "left", width: "35%" }}>발급대상 인적사항</th>
+              <th onClick={() => requestAwardSort("date")} style={{ padding: "0.6rem 0.8rem", textAlign: "left", width: "15%", cursor: "pointer" }}>
+                발급일 {awardSortConfig.key === "date" ? (awardSortConfig.direction === "asc" ? "▲" : "▼") : "⇅"}
+              </th>
+              <th style={{ padding: "0.6rem 0.8rem", textAlign: "left", width: "18%" }}>발급주체</th>
+              <th style={{ padding: "0.6rem 0.8rem", textAlign: "center", width: "6%" }}>사본</th>
+              {currentRole.rank <= 2 && <th style={{ padding: "0.6rem 0.8rem", textAlign: "center", width: "6%" }}>제어</th>}
+            </tr>
+          </thead>
+          <tbody>
+            {sortedAwards.length === 0 ? (
+              <tr>
+                <td colSpan={currentRole.rank <= 2 ? 6 : 5} style={{ padding: "2rem", textAlign: "center", color: "var(--text-secondary-dark)" }}>
+                  등록된 상장 발급 내역이 없습니다.
+                </td>
+              </tr>
+            ) : (
+              sortedAwards.map((award) => (
+                <tr key={award.id} style={{ borderBottom: "1px solid var(--border-color-dark)", background: "rgba(255,255,255,0.01)" }}>
+                  <td style={{ padding: "0.6rem 0.8rem", fontWeight: "700" }}>{award.awardNo}</td>
+                  <td style={{ padding: "0.6rem 0.8rem" }}>
+                    <span style={{ color: "#a1a1aa", marginRight: "0.4rem" }}>[{award.recipientDept}]</span>
+                    <strong style={{ color: "white" }}>{award.recipientName}</strong>
+                  </td>
+                  <td style={{ padding: "0.6rem 0.8rem" }}>{award.issueDate}</td>
+                  <td style={{ padding: "0.6rem 0.8rem" }}>
+                    <span style={{ background: "rgba(167,139,250,0.1)", color: "#c084fc", padding: "0.15rem 0.4rem", borderRadius: "0.25rem", fontSize: "0.65rem", fontWeight: "700" }}>{award.issuer}</span>
+                  </td>
+                  <td style={{ padding: "0.6rem 0.8rem", textAlign: "center" }}>
+                    {award.fileName ? (
+                      <AwardIcon size={16} style={{ color: "#f59e0b", cursor: "pointer" }} onClick={() => handleViewFile(award.fileData)} />
+                    ) : "-"}
+                  </td>
+                  {currentRole.rank <= 2 && (
+                    <td style={{ padding: "0.6rem 0.8rem", textAlign: "center" }}>
+                      <div style={{ display: "flex", gap: "0.25rem", justifyContent: "center" }}>
+                        {currentRole.id !== "GUEST" && (
+                          <>
+                            <button
+                              onClick={() => {
+                                setEditingAwardId(award.id);
+                                setAwardNo(award.awardNo || "");
+                                setAwardDept(award.recipientDept || "");
+                                setAwardName(award.recipientName || "");
+                                setAwardDate(award.issueDate || "");
+                                setAwardIssuer(award.issuer || "사업단장");
+                                setAwardFileName(award.fileName || "");
+                                setAwardFileData(award.fileData || "");
+                                setIsAwardModalOpen(true);
+                              }}
+                              style={{ background: "none", border: "none", color: "#a1a1aa", cursor: "pointer" }}
+                              title="수정"
+                            >
+                              <Edit size={14} />
+                            </button>
+                            <button
+                              onClick={() => { if (confirm("이 상장을 삭제하시겠습니까?")) onDeleteAward(award.id); }}
+                              style={{ background: "none", border: "none", color: "#ef4444", cursor: "pointer" }}
+                              title="삭제"
+                            >
+                              <Trash size={14} />
+                            </button>
+                          </>
+                        )}
+                      </div>
+                    </td>
+                  )}
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
+
+      {/* 상장 개별 등록 및 수정 모달 */}
+      {isAwardModalOpen && createPortal(
+        <div style={{ position: "fixed", top: 0, left: 0, width: "100vw", height: "100vh", background: "rgba(0,0,0,0.6)", zIndex: 9999, display: "flex", justifyContent: "center", alignItems: "center", overflowY: "auto", padding: "2rem 1rem" }}>
+          <div style={{ background: "#18181b", border: "1px solid var(--border-color-dark)", borderRadius: "0.75rem", width: "100%", maxWidth: "500px", maxHeight: "85vh", display: "flex", flexDirection: "column", color: "white", boxShadow: "0 20px 25px -5px rgba(0,0,0,0.3)", margin: "auto" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "0.85rem 1.25rem", borderBottom: "1px solid var(--border-color-dark)", flexShrink: 0 }}>
+              <h3 style={{ fontSize: "0.9rem", fontWeight: "800" }}>🏆 {editingAwardId ? "상장 정보 수정" : "신규 상장 등록"}</h3>
+              <button onClick={() => setIsAwardModalOpen(false)} style={{ background: "none", border: "none", color: "#a1a1aa", cursor: "pointer" }}>
+                <X size={18} />
+              </button>
+            </div>
+            <form onSubmit={handleAwardSubmit} style={{ padding: "1.25rem", display: "flex", flexDirection: "column", gap: "0.8rem", flex: 1, overflowY: "auto" }}>
+              <div>
+                <label style={{ display: "block", fontSize: "0.65rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>발급번호</label>
+                <input type="text" placeholder="예: 제 2026-상장-0001 호" value={awardNo} onChange={(e) => setAwardNo(e.target.value)} style={{ width: "100%", padding: "0.35rem 0.5rem", fontSize: "0.75rem", background: "#27272a", color: "white", border: "1px solid var(--border-color-dark)", borderRadius: "0.25rem" }} />
+              </div>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem" }}>
+                <div>
+                  <label style={{ display: "block", fontSize: "0.65rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>발급대상 소속</label>
+                  <input type="text" placeholder="예: 울산과학대학교" value={awardDept} onChange={(e) => setAwardDept(e.target.value)} style={{ width: "100%", padding: "0.35rem 0.5rem", fontSize: "0.75rem", background: "#27272a", color: "white", border: "1px solid var(--border-color-dark)", borderRadius: "0.25rem" }} />
+                </div>
+                <div>
+                  <label style={{ display: "block", fontSize: "0.65rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>발급대상 성명</label>
+                  <input type="text" placeholder="예: 홍길동" value={awardName} onChange={(e) => setAwardName(e.target.value)} style={{ width: "100%", padding: "0.35rem 0.5rem", fontSize: "0.75rem", background: "#27272a", color: "white", border: "1px solid var(--border-color-dark)", borderRadius: "0.25rem" }} />
+                </div>
+              </div>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem" }}>
+                <div>
+                  <label style={{ display: "block", fontSize: "0.65rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>발급일자</label>
+                  <input type="date" value={awardDate} onChange={(e) => setAwardDate(e.target.value)} style={{ width: "100%", padding: "0.35rem 0.5rem", fontSize: "0.75rem", background: "#27272a", color: "white", border: "1px solid var(--border-color-dark)", borderRadius: "0.25rem" }} />
+                </div>
+                <div>
+                  <label style={{ display: "block", fontSize: "0.65rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>발급주체</label>
+                  <select value={awardIssuer} onChange={(e) => setAwardIssuer(e.target.value)} style={{ width: "100%", padding: "0.35rem 0.5rem", fontSize: "0.75rem", background: "#27272a", color: "white", border: "1px solid var(--border-color-dark)", borderRadius: "0.25rem" }}>
+                    <option value="사업단장">사업단장</option>
+                    <option value="늘봄누리센터장">늘봄누리센터장</option>
+                  </select>
+                </div>
+              </div>
+              <div>
+                <label style={{ display: "block", fontSize: "0.65rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>상장 사본 업로드</label>
+                <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                  <label style={{ display: "inline-flex", alignItems: "center", gap: "0.25rem", padding: "0.35rem 0.6rem", fontSize: "0.7rem", background: "#3f3f46", color: "white", borderRadius: "0.25rem", cursor: "pointer", border: "1px solid var(--border-color-dark)" }}>
+                    <Upload size={14} /> 파일 선택
+                    <input type="file" onChange={handleFileChange} style={{ display: "none" }} accept=".pdf,.doc,.docx,.png,.jpg,.jpeg" />
+                  </label>
+                  <span style={{ fontSize: "0.7rem", color: "#a1a1aa" }}>{awardFileName ? `📁 ${awardFileName}` : "선택된 파일 없음"}</span>
+                </div>
+              </div>
+              <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.5rem", borderTop: "1px solid var(--border-color-dark)", paddingTop: "0.85rem", marginTop: "0.5rem" }}>
+                <button type="button" className="btn-secondary" onClick={() => setIsAwardModalOpen(false)} style={{ padding: "0.35rem 0.75rem", fontSize: "0.75rem" }}>취소</button>
+                <button type="submit" className="btn-primary" style={{ padding: "0.35rem 0.75rem", fontSize: "0.75rem" }}>저장하기</button>
+              </div>
+            </form>
+          </div>
+        </div>,
+        document.body
+      )}
+
+      {/* 상장 일괄 매핑 결과 리포트 모달 */}
+      {isAwardBatchModalOpen && createPortal(
+        <div style={{ position: "fixed", top: 0, left: 0, width: "100vw", height: "100vh", background: "rgba(0,0,0,0.6)", zIndex: 9999, display: "flex", justifyContent: "center", alignItems: "center", overflowY: "auto", padding: "2rem 1rem" }}>
+          <div style={{ background: "#18181b", border: "1px solid var(--border-color-dark)", borderRadius: "0.75rem", width: "100%", maxWidth: "680px", maxHeight: "85vh", display: "flex", flexDirection: "column", color: "white", boxShadow: "0 20px 25px -5px rgba(0,0,0,0.3)", margin: "auto" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "0.85rem 1.25rem", borderBottom: "1px solid var(--border-color-dark)", flexShrink: 0 }}>
+              <h3 style={{ fontSize: "0.9rem", fontWeight: "800", display: "flex", alignItems: "center", gap: "0.4rem" }}>
+                <FileCheck size={18} style={{ color: "#10B981" }} /> 상장 사본 일괄 자동 매핑 리포트
+              </h3>
+              <button onClick={() => setIsAwardBatchModalOpen(false)} style={{ background: "none", border: "none", color: "#a1a1aa", cursor: "pointer" }}>
+                <X size={18} />
+              </button>
+            </div>
+
+            <div style={{ padding: "1.25rem", flex: 1, overflowY: "auto", display: "flex", flexDirection: "column", gap: "1rem" }}>
+              <div style={{ fontSize: "0.75rem", color: "#a1a1aa", background: "#27272a", padding: "0.75rem", borderRadius: "0.35rem", border: "1px solid var(--border-color-dark)" }}>
+                💡 [매칭 조건]: 파일 이름 내에 대시보드의 <b>발급번호</b> 또는 <b>수급자 성명</b> 중 하나라도 포함되어 있는 대상 데이터를 즉시 매핑 처리합니다.
+              </div>
+
+              <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.75rem", fontWeight: "700" }}>
+                <span>분석 대상 파일: {batchAwardResults.length}개</span>
+                <span style={{ color: "#34D399" }}>매칭 성공: {batchAwardResults.filter(r => r.status === "success").length}개</span>
+              </div>
+
+              <div style={{ overflowX: "auto" }}>
+                <table style={{ width: "100%", fontSize: "0.75rem", borderCollapse: "collapse", border: "1px solid var(--border-color-dark)" }}>
+                  <thead>
+                    <tr style={{ background: "#27272a", borderBottom: "1px solid var(--border-color-dark)" }}>
+                      <th style={{ padding: "0.5rem", textAlign: "left", border: "1px solid var(--border-color-dark)", width: "32%" }}>파일명</th>
+                      <th style={{ padding: "0.5rem", textAlign: "left", border: "1px solid var(--border-color-dark)", width: "38%" }}>추출 및 대조 정보</th>
+                      <th style={{ padding: "0.5rem", textAlign: "left", border: "1px solid var(--border-color-dark)", width: "20%" }}>매칭된 데이터 대상</th>
+                      <th style={{ padding: "0.5rem", textAlign: "center", border: "1px solid var(--border-color-dark)", width: "10%" }}>매칭 상태</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {batchAwardResults.map((res, i) => (
+                      <tr key={i} style={{ borderBottom: "1px solid var(--border-color-dark)", background: res.status === "success" ? "rgba(16,185,129,0.03)" : "rgba(239,68,68,0.03)" }}>
+                        <td style={{ padding: "0.5rem", color: "#e4e4e7", fontWeight: "500", border: "1px solid var(--border-color-dark)" }}>
+                          <div style={{ wordBreak: "break-all" }}>📁 {res.fileName}</div>
+                        </td>
+                        <td style={{ padding: "0.5rem", border: "1px solid var(--border-color-dark)" }}>
+                          <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
+                            <div style={{ fontSize: "0.68rem", color: "#a1a1aa" }}>
+                              🔢 발급번호: <span style={{ color: "white", fontWeight: "700" }}>{res.details?.extractedOrg || "없음"}</span> |
+                              👤 수급성명: <span style={{ color: "white", fontWeight: "700" }}>{res.details?.extractedName || "없음"}</span>
+                            </div>
+                            <div style={{
+                              fontSize: "0.62rem",
+                              color: res.status === "success" ? "#34d399" : "#f87171",
+                              background: "rgba(255,255,255,0.02)",
+                              padding: "0.15rem 0.35rem",
+                              borderRadius: "0.2rem",
+                              display: "inline-block",
+                              width: "fit-content",
+                              border: "1px solid rgba(255,255,255,0.05)"
+                            }}>
+                              ⚡ 매칭방식: {res.details?.breakdown || "매칭 실패"}
+                            </div>
+                          </div>
+                        </td>
+                        <td style={{ padding: "0.5rem", border: "1px solid var(--border-color-dark)" }}>
+                          {res.status === "success" ? (
+                            <span style={{ color: "#38bdf8", fontWeight: "600" }}>🟢 {res.targetDesc}</span>
+                          ) : (
+                            <span style={{ color: "#ef4444" }}>❌ {res.targetDesc}</span>
+                          )}
+                        </td>
+                        <td style={{ padding: "0.5rem", textAlign: "center", border: "1px solid var(--border-color-dark)" }}>
+                          <span style={{
+                            padding: "0.15rem 0.4rem",
+                            borderRadius: "0.25rem",
+                            fontSize: "0.6rem",
+                            fontWeight: "700",
+                            background: res.status === "success" ? "rgba(52,211,153,0.15)" : "rgba(239,68,68,0.15)",
+                            color: res.status === "success" ? "#34D399" : "#F87171"
+                          }}>
+                            {res.status === "success" ? "매칭완료" : "매칭실패"}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.5rem", borderTop: "1px solid var(--border-color-dark)", padding: "0.85rem 1.25rem", flexShrink: 0 }}>
+              <button type="button" className="btn-secondary" onClick={() => setIsAwardBatchModalOpen(false)} style={{ padding: "0.35rem 0.75rem", fontSize: "0.75rem" }}>취소</button>
+              <button
+                type="button"
+                className="btn-primary"
+                onClick={handleApplyBatchAwards}
+                disabled={batchAwardResults.filter(r => r.status === "success").length === 0}
+                style={{
+                  padding: "0.35rem 0.75rem",
+                  fontSize: "0.75rem",
+                  background: batchAwardResults.filter(r => r.status === "success").length === 0 ? "#52525b" : "var(--primary-color)",
+                  cursor: batchAwardResults.filter(r => r.status === "success").length === 0 ? "not-allowed" : "pointer"
+                }}
+              >
+                일괄 적용 및 저장하기
+              </button>
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
+    </div>
+  );
+}
