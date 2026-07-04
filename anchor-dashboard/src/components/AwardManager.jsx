@@ -34,6 +34,10 @@ export default function AwardManager({
   const [isAwardBatchModalOpen, setIsAwardBatchModalOpen] = useState(false);
   const [batchAwardResults, setBatchAwardResults] = useState([]);
 
+  // 스토리지 파일 대량 업로드 로딩 상태 관리
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadStatusText, setUploadStatusText] = useState("");
+
   // 3. 정렬 상태 설정
   const [awardSortConfig, setAwardSortConfig] = useState({ key: "date", direction: "asc" });
 
@@ -314,27 +318,35 @@ export default function AwardManager({
     e.target.value = "";
   };
 
-  // 분석된 일괄 파일 매핑 반영 핸들러 (Supabase Storage 실시간 업로드 구현)
+  // 분석된 일괄 파일 매핑 반영 핸들러 (Supabase Storage 실시간 순차 업로드 구현)
   const handleApplyBatchAwards = async () => {
     const successItems = batchAwardResults.filter(res => res.status === "success" && res.targetId);
     if (successItems.length === 0) return;
 
     let appliedCount = 0;
 
-    const isConfirmed = window.confirm(`매칭 성공된 ${successItems.length}개의 파일을 Supabase Storage 저장소에 실시간 업로드하고 동기화할까요?`);
+    const isConfirmed = window.confirm(`매칭 성공된 ${successItems.length}개의 파일을 Supabase Storage 저장소에 순서대로 업로드하고 동기화할까요?`);
     if (!isConfirmed) return;
 
-    // 병렬로 파일 업로드 진행 및 공개 URL 획득
-    const uploadPromises = successItems.map(async (res) => {
+    setIsUploading(true);
+    setUploadStatusText(`업로드 대기 중... (0 / ${successItems.length})`);
+
+    const uploadResults = [];
+
+    // 병목 및 타임아웃 예방을 위해 1건씩 안전하게 순차 업로드합니다.
+    for (let i = 0; i < successItems.length; i++) {
+      const res = successItems[i];
+      setUploadStatusText(`파일 전송 중... (${i + 1} / ${successItems.length})\n[${res.fileName}]`);
+
       try {
         const targetFile = res.file;
-        if (!targetFile) return null;
+        if (!targetFile) continue;
 
         const normalizedName = targetFile.name.normalize("NFC");
-        const storagePath = `${Date.now()}_${normalizedName}`; // awards 전용 버킷 루트에 업로드
+        const storagePath = `${Date.now()}_${normalizedName}`;
 
         const { data, error } = await supabase.storage
-          .from("awards") // awards 버킷명 반영
+          .from("awards")
           .upload(storagePath, targetFile);
 
         if (error) throw error;
@@ -344,18 +356,21 @@ export default function AwardManager({
           .from("awards")
           .getPublicUrl(data.path);
 
-        return {
+        uploadResults.push({
           targetId: res.targetId,
           fileName: normalizedName,
           publicUrl
-        };
+        });
       } catch (err) {
         console.error("Storage upload failed for file:", res.fileName, err);
-        return null;
       }
-    });
 
-    const uploadResults = await Promise.all(uploadPromises);
+      // 서버 과부하 방지 미세 대기
+      await new Promise(resolve => setTimeout(resolve, 50));
+    }
+
+    setIsUploading(false);
+
     const successMap = new Map();
     uploadResults.forEach(res => {
       if (res) {
@@ -364,7 +379,7 @@ export default function AwardManager({
     });
 
     if (successMap.size === 0) {
-      alert("파일 저장소 업로드에 실패했습니다. Supabase Storage 버킷 정책을 확인해 주세요.");
+      alert("파일 저장소 업로드에 모두 실패했습니다. Supabase Storage 버킷 정책 및 파일 형식(Allowed MIME Types)을 확인해 주세요.");
       return;
     }
 
@@ -748,6 +763,51 @@ export default function AwardManager({
               </button>
             </div>
           </div>
+        </div>,
+        document.body
+      )}
+
+      {/* 스토리지 파일 대량 업로드 진행 상황 로딩 모달 오버레이 */}
+      {isUploading && createPortal(
+        <div style={{
+          position: "fixed",
+          top: 0, left: 0, right: 0, bottom: 0,
+          backgroundColor: "rgba(0,0,0,0.65)",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+          zIndex: 9999,
+          color: "#fff",
+          fontFamily: "sans-serif"
+        }}>
+          <div style={{
+            backgroundColor: "#1e293b",
+            padding: "30px 40px",
+            borderRadius: "12px",
+            textAlign: "center",
+            boxShadow: "0 20px 25px -5px rgba(0,0,0,0.35)",
+            border: "1px solid #334155",
+            maxWidth: "400px",
+            width: "90%"
+          }}>
+            <div style={{
+              width: "40px",
+              height: "40px",
+              border: "4px solid #38bdf8",
+              borderTopColor: "transparent",
+              borderRadius: "50%",
+              animation: "spin 1s linear infinite",
+              margin: "0 auto 20px"
+            }} />
+            <h3 style={{ margin: "0 0 10px 0", fontSize: "16px", fontWeight: "700", color: "#f8fafc" }}>서버 저장소 업로드 중</h3>
+            <p style={{ margin: 0, color: "#94a3b8", fontSize: "13px", whiteSpace: "pre-line", lineHeight: "1.5" }}>{uploadStatusText}</p>
+          </div>
+          <style>{`
+            @keyframes spin {
+              to { transform: rotate(360deg); }
+            }
+          `}</style>
         </div>,
         document.body
       )}
