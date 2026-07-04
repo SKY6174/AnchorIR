@@ -6675,22 +6675,6 @@ export default function App() {
                 주요 행사
               </button>
               <button
-                onClick={() => setScheduleSubTab("committees")}
-                style={{
-                  background: "transparent",
-                  border: "none",
-                  fontSize: "1rem",
-                  fontWeight: "800",
-                  cursor: "pointer",
-                  padding: "0.5rem 1rem",
-                  color: scheduleSubTab === "committees" ? "var(--accent-color)" : "var(--text-secondary-dark)",
-                  borderBottom: scheduleSubTab === "committees" ? "2px solid var(--accent-color)" : "none",
-                  transition: "all 0.2s ease"
-                }}
-              >
-                위원회 관리
-              </button>
-              <button
                 onClick={() => setScheduleSubTab("meetings")}
                 style={{
                   background: "transparent",
@@ -6705,6 +6689,22 @@ export default function App() {
                 }}
               >
                 회의록 등록
+              </button>
+              <button
+                onClick={() => setScheduleSubTab("committees")}
+                style={{
+                  background: "transparent",
+                  border: "none",
+                  fontSize: "1rem",
+                  fontWeight: "800",
+                  cursor: "pointer",
+                  padding: "0.5rem 1rem",
+                  color: scheduleSubTab === "committees" ? "var(--accent-color)" : "var(--text-secondary-dark)",
+                  borderBottom: scheduleSubTab === "committees" ? "2px solid var(--accent-color)" : "none",
+                  transition: "all 0.2s ease"
+                }}
+              >
+                위원회 관리
               </button>
               <button
                 onClick={() => setScheduleSubTab("press")}
