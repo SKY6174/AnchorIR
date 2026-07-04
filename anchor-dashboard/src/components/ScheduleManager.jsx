@@ -3711,7 +3711,8 @@ export default function ScheduleManager({
                 📥 엑셀 다운로드
               </button>
 
-              {currentRole.id !== "GUEST" && (
+              {/* 임시 비활성화 처리 (개별 URL 자동 입력 기능 우선 제공을 위해 숨김) */}
+              {false && currentRole.id !== "GUEST" && (
                 <button 
                   type="button"
                   onClick={handleGenerateAiPressReleases}
