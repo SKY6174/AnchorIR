@@ -115,7 +115,7 @@ body.light-mode {
 .nav-menu {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.3rem;
   flex-grow: 1;
 }
 
@@ -123,7 +123,7 @@ body.light-mode {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.6rem 0.5rem;
+  padding: 0.45rem 0.5rem;
   border-radius: 0.75rem;
   color: var(--text-secondary-dark);
   text-decoration: none;
@@ -666,10 +666,16 @@ body.light-mode {
 .budget-nav-wrapper:hover .nav-sub-menu,
 .budget-nav-wrapper.active .nav-sub-menu,
 .procurement-nav-wrapper:hover .nav-sub-menu,
-.procurement-nav-wrapper.active .nav-sub-menu,
+.procurement-nav-wrapper.active .nav-sub-menu {
+  max-height: 120px;
+  opacity: 1;
+  margin-top: 0.25rem;
+  margin-bottom: 0.25rem;
+}
+
 .schedule-nav-wrapper:hover .nav-sub-menu,
 .schedule-nav-wrapper.active .nav-sub-menu {
-  max-height: 120px;
+  max-height: 180px;
   opacity: 1;
   margin-top: 0.25rem;
   margin-bottom: 0.25rem;
@@ -678,7 +684,7 @@ body.light-mode {
 .nav-sub-item {
   font-size: 0.65rem;
   color: var(--text-secondary-dark);
-  padding: 0.35rem 0.4rem;
+  padding: 0.25rem 0.4rem;
   border-radius: 0.5rem;
   cursor: pointer;
   transition: all 0.2s ease;
