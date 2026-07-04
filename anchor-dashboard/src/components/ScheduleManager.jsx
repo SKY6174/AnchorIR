@@ -75,6 +75,33 @@ const COMMITTEES_DATA = [
     ]
   },
   {
+    id: "budget",
+    name: "RISE사업비관리위원회",
+    fullName: "RISE사업비관리위원회",
+    badge: "재정투명성",
+    color: "linear-gradient(135deg, #f59e0b 0%, #b45309 100%)",
+    purpose: "사업비 집행 가이드라인에 따라 사업 예산 집행 모니터링 / 집행률 점검 및 관리 / 사업비 조정 심의 등",
+    desc: "사업 예산 집행의 규정 준수 여부를 모니터링하고 집행률을 극대화하기 위해 재정 건전성을 상시 관리·심의하는 특별 재정 관리 기구입니다.",
+    constitution: "RISE사업단장을 포함하여 7인 내외 (내부 6인, 외부 1인)",
+    cycle: "매 분기 정기 개최 (예산 변경 수시 심의 병행)",
+    functions: [
+      "국고 및 시비 매칭 자금 집행 가이드라인 점검 및 통제",
+      "분기별 예산 집행률 분석 및 집행 촉진 대책 심의",
+      "단위과제(UP) 간 대규모 예산 조정 및 재배분 심의",
+      "사업비 정산 및 가이드 준수 여부 정밀 감독"
+    ],
+    members: [
+      { id: 1, type: "위원장", name: "김성철", org: "울산과학대학교", dept: "-", rank: "부총장", location: "교내", note: "" },
+      { id: 2, type: "위원", name: "김강연", org: "울산과학대학교", dept: "기획처", rank: "처장", location: "교내", note: "" },
+      { id: 3, type: "위원", name: "박일현", org: "울산과학대학교", dept: "총무처", rank: "처장", location: "교내", note: "" },
+      { id: 4, type: "위원", name: "송경영", org: "울산과학대학교", dept: "RISE사업단", rank: "단장", location: "교내", note: "" },
+      { id: 5, type: "위원", name: "김현수", org: "울산과학대학교", dept: "RISE사업단", rank: "본부장", location: "교내", note: "" },
+      { id: 6, type: "위원", name: "고우근", org: "울산과학대학교", dept: "기획팀", rank: "팀장", location: "교내", note: "" },
+      { id: 7, type: "위원", name: "강신욱", org: "인택스세무법인", dept: "세무팀", rank: "부대표", location: "교외", note: "" },
+      { id: 8, type: "간사", name: "심현미", org: "울산과학대학교", dept: "RISE사업단운영팀", rank: "팀장", location: "교내", note: "" }
+    ]
+  },
+  {
     id: "eval",
     name: "RISE사업자체평가위원회",
     fullName: "RISE사업자체평가위원회 (상임)",
@@ -101,33 +128,6 @@ const COMMITTEES_DATA = [
       { id: 8, type: "위원(자문겸직)", name: "류지호", org: "아주자동차대학교", dept: "교학처", rank: "처장", location: "교외", note: "" },
       { id: 9, type: "위원(자문겸직)", name: "박준", org: "광주보건대학교", dept: "글로벌혁신처", rank: "처장", location: "교외", note: "" },
       { id: 10, type: "간사", name: "심현미", org: "울산과학대학교", dept: "RISE사업단운영팀", rank: "팀장", location: "교내", note: "" }
-    ]
-  },
-  {
-    id: "budget",
-    name: "RISE사업비관리위원회",
-    fullName: "RISE사업비관리위원회",
-    badge: "재정투명성",
-    color: "linear-gradient(135deg, #f59e0b 0%, #b45309 100%)",
-    purpose: "사업비 집행 가이드라인에 따라 사업 예산 집행 모니터링 / 집행률 점검 및 관리 / 사업비 조정 심의 등",
-    desc: "사업 예산 집행의 규정 준수 여부를 모니터링하고 집행률을 극대화하기 위해 재정 건전성을 상시 관리·심의하는 특별 재정 관리 기구입니다.",
-    constitution: "RISE사업단장을 포함하여 7인 내외 (내부 6인, 외부 1인)",
-    cycle: "매 분기 정기 개최 (예산 변경 수시 심의 병행)",
-    functions: [
-      "국고 및 시비 매칭 자금 집행 가이드라인 점검 및 통제",
-      "분기별 예산 집행률 분석 및 집행 촉진 대책 심의",
-      "단위과제(UP) 간 대규모 예산 조정 및 재배분 심의",
-      "사업비 정산 및 가이드 준수 여부 정밀 감독"
-    ],
-    members: [
-      { id: 1, type: "위원장", name: "김성철", org: "울산과학대학교", dept: "-", rank: "부총장", location: "교내", note: "" },
-      { id: 2, type: "위원", name: "김강연", org: "울산과학대학교", dept: "기획처", rank: "처장", location: "교내", note: "" },
-      { id: 3, type: "위원", name: "박일현", org: "울산과학대학교", dept: "총무처", rank: "처장", location: "교내", note: "" },
-      { id: 4, type: "위원", name: "송경영", org: "울산과학대학교", dept: "RISE사업단", rank: "단장", location: "교내", note: "" },
-      { id: 5, type: "위원", name: "김현수", org: "울산과학대학교", dept: "RISE사업단", rank: "본부장", location: "교내", note: "" },
-      { id: 6, type: "위원", name: "고우근", org: "울산과학대학교", dept: "기획팀", rank: "팀장", location: "교내", note: "" },
-      { id: 7, type: "위원", name: "강신욱", org: "인택스세무법인", dept: "세무팀", rank: "부대표", location: "교외", note: "" },
-      { id: 8, type: "간사", name: "심현미", org: "울산과학대학교", dept: "RISE사업단운영팀", rank: "팀장", location: "교내", note: "" }
     ]
   },
   {
@@ -190,6 +190,12 @@ export default function ScheduleManager({
   const [committees, setCommittees] = useState(COMMITTEES_DATA);
   const [isMemberModalOpen, setIsMemberModalOpen] = useState(false);
   const [editingMember, setEditingMember] = useState(null); // 수정할 위원 정보 (null 이면 신규 추가)
+  
+
+
+  // 위원회 종류 필터 상태
+  const [selectedCommitteeFilters, setSelectedCommitteeFilters] = useState([]);
+
   const [memberFormData, setMemberFormData] = useState({
     type: "위원",
     name: "",
@@ -214,6 +220,16 @@ export default function ScheduleManager({
       if (commsErr) throw commsErr;
 
       if (comms && comms.length > 0) {
+        // 공식 거버넌스 중요도 순 정렬 매핑 (알파벳순 정렬 오류 차단)
+        const orderMap = {
+          "total": 1,      // RISE총괄위원회
+          "planning": 2,   // RISE기획위원회
+          "budget": 3,     // RISE사업비관리위원회
+          "eval": 4,       // RISE사업자체평가위원회
+          "advisory": 5    // RISE사업자문회의
+        };
+        const sortedComms = [...comms].sort((a, b) => (orderMap[a.id] || 99) - (orderMap[b.id] || 99));
+
         const { data: mems, error: memsErr } = await supabase
           .from("committee_members")
           .select("*")
@@ -221,7 +237,7 @@ export default function ScheduleManager({
           .order("id", { ascending: true });
         if (memsErr) throw memsErr;
 
-        const combined = comms.map(c => ({
+        const combined = sortedComms.map(c => ({
           ...c,
           desc: c.description, // desc 필드를 description 컬럼으로 상호 치환 대응
           members: (mems || [])
@@ -2459,22 +2475,156 @@ export default function ScheduleManager({
                 </div>
               )}
 
+              {/* 위원회별 필터 버튼 그룹 (각종 위원회 탭인 경우에만 렌더링) */}
+              {activeMeetingCat === "committee" && (
+                <div style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "0.5rem",
+                  background: darkMode ? "rgba(30, 41, 59, 0.4)" : "rgba(0, 0, 0, 0.03)",
+                  padding: "0.85rem 1.25rem",
+                  borderRadius: "8px",
+                  border: "1px solid var(--border-color)",
+                  marginBottom: "0.25rem"
+                }}>
+                  {/* 사업단 위원회 라인 */}
+                  <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                      <span style={{ fontSize: "0.75rem", fontWeight: "700", color: "var(--accent-color)" }}>
+                        🏛️ 사업단 위원회 종류
+                      </span>
+                      {selectedCommitteeFilters.length > 0 && (
+                        <button
+                          onClick={() => setSelectedCommitteeFilters([])}
+                          style={{ background: "none", border: "none", color: darkMode ? "#38bdf8" : "var(--accent-color)", fontSize: "0.68rem", cursor: "pointer", fontWeight: "600", padding: 0 }}
+                        >
+                          필터 초기화
+                        </button>
+                      )}
+                    </div>
+                    <div style={{ display: "flex", gap: "0.4rem", flexWrap: "wrap" }}>
+                      <button
+                        onClick={() => setSelectedCommitteeFilters([])}
+                        style={{
+                          padding: "0.25rem 0.55rem", fontSize: "0.68rem", fontWeight: "700", borderRadius: "4px", cursor: "pointer",
+                          border: "1px solid " + (selectedCommitteeFilters.length === 0 ? "var(--accent-color)" : (darkMode ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.08)")),
+                          background: selectedCommitteeFilters.length === 0 ? "var(--accent-color)" : "transparent",
+                          color: selectedCommitteeFilters.length === 0 ? "white" : (darkMode ? "#94a3b8" : "var(--text-secondary)"),
+                          transition: "all 0.15s ease"
+                        }}
+                      >
+                        전체
+                      </button>
+                      {[
+                        "RISE총괄위원회", "RISE기획위원회", "RISE사업비관리위원회", 
+                        "RISE사업자체평가위원회", "RISE사업자문회의", "RISE사업운영위원회"
+                      ].map(cName => {
+                        const isSelected = selectedCommitteeFilters.includes(cName);
+                        return (
+                          <button
+                            key={cName}
+                            onClick={() => {
+                              setSelectedCommitteeFilters(prev => 
+                                prev.includes(cName) ? prev.filter(x => x !== cName) : [...prev, cName]
+                              );
+                            }}
+                            style={{
+                              padding: "0.25rem 0.55rem", fontSize: "0.68rem", fontWeight: "700", borderRadius: "4px", cursor: "pointer",
+                              border: "1px solid " + (isSelected ? (darkMode ? "#38bdf8" : "var(--accent-color)") : (darkMode ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.08)")),
+                              background: isSelected ? (darkMode ? "rgba(56, 189, 248, 0.15)" : "rgba(59, 130, 246, 0.1)") : (darkMode ? "rgba(255, 255, 255, 0.02)" : "rgba(0, 0, 0, 0.02)"),
+                              color: isSelected ? (darkMode ? "#38bdf8" : "var(--accent-color)") : (darkMode ? "#94a3b8" : "var(--text-secondary)"),
+                              transition: "all 0.15s ease"
+                            }}
+                          >
+                            {cName.replace("위원회", "").replace("회의", "")}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* 센터 위원회 라인 */}
+                  <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem", marginTop: "0.4rem", borderTop: "1px dashed rgba(255,255,255,0.05)", paddingTop: "0.4rem" }}>
+                    <span style={{ fontSize: "0.75rem", fontWeight: "700", color: "#34D399" }}>
+                      ⚡ 센터 위원회 종류
+                    </span>
+                    <div style={{ display: "flex", gap: "0.4rem", flexWrap: "wrap" }}>
+                      {[
+                        "ECC운영위원회", "ICC운영위원회", "RCC운영위원회", "늘봄누리센터운영위원회"
+                      ].map(cName => {
+                        const isSelected = selectedCommitteeFilters.includes(cName);
+                        return (
+                          <button
+                            key={cName}
+                            onClick={() => {
+                              setSelectedCommitteeFilters(prev => 
+                                prev.includes(cName) ? prev.filter(x => x !== cName) : [...prev, cName]
+                              );
+                            }}
+                            style={{
+                              padding: "0.25rem 0.55rem", fontSize: "0.68rem", fontWeight: "700", borderRadius: "4px", cursor: "pointer",
+                              border: "1px solid " + (isSelected ? "#34D399" : (darkMode ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.08)")),
+                              background: isSelected ? "rgba(52, 211, 153, 0.15)" : (darkMode ? "rgba(255, 255, 255, 0.02)" : "rgba(0, 0, 0, 0.02)"),
+                              color: isSelected ? "#34D399" : (darkMode ? "#94a3b8" : "var(--text-secondary)"),
+                              transition: "all 0.15s ease"
+                            }}
+                          >
+                            {cName.replace("위원회", "")}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+              )}
+
               {/* 좌우 Split 뷰 */}
               {(() => {
-                // 부서 필터링 수행
+                // 부서 및 위원회별 다중 필터링 적용
                 const filteredList = meetingSchedules.filter(m => {
                   const isCatMatch = m.category === activeMeetingCat;
-                  
                   if (!isCatMatch) return false;
-                  if (selectedDeptFilters.length === 0) return true;
 
-                  const ext = m.attendeesExternal || m.attendees_external || "";
-                  let dept = "사업운영팀";
-                  if (ext.includes("부서:")) {
-                    const parts = ext.split("|");
-                    dept = parts[1] ? parts[1].replace("부서:", "").trim() : "사업운영팀";
+                  // 1) 부서별 회의인 경우 부서 필터 작동
+                  if (activeMeetingCat === "center") {
+                    if (selectedDeptFilters.length === 0) return true;
+                    const ext = m.attendeesExternal || m.attendees_external || "";
+                    let dept = "사업운영팀";
+                    if (ext.includes("부서:")) {
+                      const parts = ext.split("|");
+                      dept = parts[1] ? parts[1].replace("부서:", "").trim() : "사업운영팀";
+                    }
+                    return selectedDeptFilters.includes(dept);
                   }
-                  return selectedDeptFilters.includes(dept);
+
+                  // 2) 각종 위원회인 경우 위원회 종류 필터 작동
+                  if (activeMeetingCat === "committee") {
+                    if (selectedCommitteeFilters.length === 0) return true;
+                    
+                    const ext = m.attendeesExternal || m.attendees_external || "";
+                    let committeeName = "";
+                    if (ext.includes("위원회:")) {
+                      const parts = ext.split("|");
+                      const committeePart = parts.find(p => p.includes("위원회:"));
+                      if (committeePart) {
+                        committeeName = committeePart.replace("위원회:", "").trim();
+                      }
+                    }
+                    
+                    if (!committeeName) {
+                      // 제목에서 위원회 키워드로 매칭 Fallback
+                      const allCommittees = [
+                        "RISE총괄위원회", "RISE기획위원회", "RISE사업비관리위원회", 
+                        "RISE사업자체평가위원회", "RISE사업자문회의", "RISE사업운영위원회",
+                        "ECC운영위원회", "ICC운영위원회", "RCC운영위원회", "늘봄누리센터운영위원회"
+                      ];
+                      const matched = allCommittees.find(c => m.title && m.title.includes(c));
+                      if (matched) committeeName = matched;
+                    }
+                    return selectedCommitteeFilters.includes(committeeName);
+                  }
+
+                  return true;
                 });
 
                 const selectedMeeting = filteredList.find(m => m.id === selectedMeetingId) || filteredList[0];

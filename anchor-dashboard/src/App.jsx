@@ -7018,7 +7018,7 @@ export default function App() {
                   type="text"
                   disabled
                   className="user-selector"
-                  style={{ width: "100%", padding: "0.4rem", color: "rgba(255,255,255,0.4)", background: "rgba(255,255,255,0.02)" }}
+                  style={{ width: "100%", padding: "0.4rem", color: "rgba(255,255,255,0.85)", background: "rgba(255,255,255,0.08)", cursor: "not-allowed" }}
                   value={currentUser.id}
                 />
               </div>
@@ -7029,7 +7029,7 @@ export default function App() {
                   type="text"
                   disabled
                   className="user-selector"
-                  style={{ width: "100%", padding: "0.4rem", color: "rgba(255,255,255,0.4)", background: "rgba(255,255,255,0.02)" }}
+                  style={{ width: "100%", padding: "0.4rem", color: "rgba(255,255,255,0.85)", background: "rgba(255,255,255,0.08)", cursor: "not-allowed" }}
                   value={currentUser.name}
                 />
               </div>
