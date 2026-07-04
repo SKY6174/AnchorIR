@@ -464,8 +464,9 @@ export default function AgreementManager({
             const typeVal = row["협약유형"] ? String(row["협약유형"]).trim() : "-";
             const finalType = ["프리미엄", "무료", "-"].includes(typeVal) ? typeVal : "-";
 
+            const calculatedYear = getYearFromDate(String(dateVal).trim());
             const newAgr = {
-              year: selectedYear,
+              year: calculatedYear || selectedYear,
               date: String(dateVal).trim(),
               center: CENTERS_LIST.includes(String(centerVal).trim()) ? String(centerVal).trim() : "ECC센터",
               organizations,
@@ -493,8 +494,9 @@ export default function AgreementManager({
               return;
             }
 
+            const calculatedYear = getYearFromDate(String(dateVal).trim());
             const newCert = {
-              year: selectedYear,
+              year: calculatedYear || selectedYear,
               certNo: String(certNoVal).trim(),
               recipientDept: String(deptVal).trim(),
               recipientName: String(nameVal).trim(),
@@ -520,8 +522,9 @@ export default function AgreementManager({
               return;
             }
 
+            const calculatedYear = getYearFromDate(String(dateVal).trim());
             const newAward = {
-              year: selectedYear,
+              year: calculatedYear || selectedYear,
               awardNo: String(awardNoVal).trim(),
               recipientDept: String(deptVal).trim(),
               recipientName: String(nameVal).trim(),
