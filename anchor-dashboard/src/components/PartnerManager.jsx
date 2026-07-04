@@ -440,12 +440,12 @@ export default function PartnerManager({ selectedYear }) {
               textAlign: "center",
               cursor: "pointer",
               transition: "all 0.2s ease",
-              background: filterCategory === cat ? "rgba(59, 130, 246, 0.12)" : "rgba(255, 255, 255, 0.02)",
-              border: filterCategory === cat ? "1px solid var(--accent-color)" : "1px solid rgba(255, 255, 255, 0.05)"
+              background: filterCategory === cat ? "rgba(59, 130, 246, 0.15)" : "var(--background-card, rgba(255, 255, 255, 0.02))",
+              border: filterCategory === cat ? "1px solid var(--accent-color)" : "1px solid var(--border-color, rgba(255, 255, 255, 0.05))"
             }}
           >
-            <span style={{ fontSize: "0.8rem", color: "var(--text-secondary-dark)", fontWeight: "700" }}>{cat}</span>
-            <div style={{ fontSize: "1.5rem", fontWeight: "900", marginTop: "0.25rem", color: filterCategory === cat ? "var(--accent-color)" : "white" }}>
+            <span style={{ fontSize: "0.8rem", color: "var(--text-secondary)", fontWeight: "700" }}>{cat}</span>
+            <div style={{ fontSize: "1.5rem", fontWeight: "900", marginTop: "0.25rem", color: filterCategory === cat ? "var(--accent-color)" : "var(--text-primary)" }}>
               {categoryStats[cat] || 0} <span style={{ fontSize: "0.85rem", fontWeight: "700" }}>개소</span>
             </div>
           </div>
@@ -456,7 +456,7 @@ export default function PartnerManager({ selectedYear }) {
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "1rem", flexWrap: "wrap" }}>
         <div style={{ display: "flex", gap: "0.6rem", alignItems: "center" }}>
           <div style={{ position: "relative" }}>
-            <Search size={16} style={{ position: "absolute", left: "10px", top: "50%", transform: "translateY(-50%)", color: "var(--text-secondary-dark)" }} />
+            <Search size={16} style={{ position: "absolute", left: "10px", top: "50%", transform: "translateY(-50%)", color: "var(--text-secondary)" }} />
             <input
               type="text"
               placeholder="기관명, 지역, 담당자 검색..."
@@ -465,9 +465,9 @@ export default function PartnerManager({ selectedYear }) {
               style={{
                 padding: "0.5rem 1rem 0.5rem 2rem",
                 borderRadius: "6px",
-                border: "1px solid rgba(255, 255, 255, 0.1)",
-                background: "rgba(0, 0, 0, 0.2)",
-                color: "white",
+                border: "1px solid var(--border-color)",
+                background: "var(--background-card, rgba(0, 0, 0, 0.05))",
+                color: "var(--text-primary)",
                 fontSize: "0.85rem",
                 width: "240px"
               }}
@@ -585,7 +585,7 @@ export default function PartnerManager({ selectedYear }) {
       <div className="glass-card" style={{ padding: "0.5rem", overflowX: "auto" }}>
         <table className="mini-table" style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.85rem", textAlign: "left" }}>
           <thead>
-            <tr style={{ borderBottom: "1px solid rgba(255, 255, 255, 0.08)", color: "var(--text-secondary-dark)" }}>
+            <tr style={{ borderBottom: "1px solid var(--border-color-dark)", color: "var(--text-secondary)" }}>
               <th 
                 onClick={() => handleSort("name")}
                 style={{ padding: "0.75rem 1rem", cursor: "pointer", userSelect: "none" }}
@@ -622,7 +622,7 @@ export default function PartnerManager({ selectedYear }) {
                 <tr
                   key={p.id || p.name}
                   style={{
-                    borderBottom: "1px solid rgba(255, 255, 255, 0.04)",
+                    borderBottom: "1px solid var(--border-color, rgba(255, 255, 255, 0.04))",
                     transition: "all 0.15s ease",
                     cursor: "pointer"
                   }}
@@ -641,7 +641,7 @@ export default function PartnerManager({ selectedYear }) {
                       {p.category}
                     </span>
                   </td>
-                  <td style={{ padding: "0.85rem 1rem", color: "var(--text-secondary-dark)" }}>
+                  <td style={{ padding: "0.85rem 1rem", color: "var(--text-secondary)" }}>
                     {p.sub_category || "-"}
                   </td>
                   <td style={{ padding: "0.85rem 1rem" }}>{p.location}</td>
@@ -652,9 +652,9 @@ export default function PartnerManager({ selectedYear }) {
                           key={sec}
                           style={{
                             fontSize: "0.7rem",
-                            background: "rgba(255, 255, 255, 0.04)",
-                            color: "var(--text-secondary-dark)",
-                            border: "1px solid rgba(255, 255, 255, 0.08)",
+                            background: "var(--border-color)",
+                            color: "var(--text-secondary)",
+                            border: "1px solid var(--border-color-dark)",
                             padding: "0.1rem 0.35rem",
                             borderRadius: "4px"
                           }}
@@ -662,7 +662,7 @@ export default function PartnerManager({ selectedYear }) {
                           {sec}
                         </span>
                       ))}
-                      {(p.sectors || []).length === 0 && <span style={{ color: "var(--text-secondary-dark)" }}>-</span>}
+                      {(p.sectors || []).length === 0 && <span style={{ color: "var(--text-secondary)" }}>-</span>}
                     </div>
                   </td>
                   <td style={{ padding: "0.85rem 1rem" }}>
@@ -670,7 +670,7 @@ export default function PartnerManager({ selectedYear }) {
                       <div>
                         <span style={{ fontWeight: "700" }}>{p.contact_person}</span>
                         {p.contact_phone && (
-                          <span style={{ display: "block", fontSize: "0.75rem", color: "var(--text-secondary-dark)" }}>
+                          <span style={{ display: "block", fontSize: "0.75rem", color: "var(--text-secondary)" }}>
                             {p.contact_phone}
                           </span>
                         )}
@@ -679,14 +679,14 @@ export default function PartnerManager({ selectedYear }) {
                       "-"
                     )}
                   </td>
-                  <td style={{ padding: "0.85rem 1rem", maxWidth: "250px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", color: "var(--text-secondary-dark)" }} title={p.remarks}>
+                  <td style={{ padding: "0.85rem 1rem", maxWidth: "250px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", color: "var(--text-secondary)" }} title={p.remarks}>
                     {p.remarks || "-"}
                   </td>
                   <td style={{ padding: "0.85rem 1rem", textAlign: "center" }}>
                     <div style={{ display: "flex", gap: "0.5rem", justifyContent: "center" }}>
                       <button
                         onClick={(e) => { e.stopPropagation(); openEditModal(p); }}
-                        style={{ border: "none", background: "transparent", cursor: "pointer", color: "var(--text-secondary-dark)" }}
+                        style={{ border: "none", background: "transparent", cursor: "pointer", color: "var(--text-secondary)" }}
                         title="수정"
                       >
                         <Edit size={16} />
