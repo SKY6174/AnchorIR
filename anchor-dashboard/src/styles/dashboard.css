@@ -673,8 +673,7 @@ body.light-mode {
   margin-bottom: 0.25rem;
 }
 
-.schedule-nav-wrapper:hover .nav-sub-menu,
-.schedule-nav-wrapper.active .nav-sub-menu {
+.schedule-nav-wrapper:hover .nav-sub-menu {
   max-height: 180px;
   opacity: 1;
   margin-top: 0.25rem;
