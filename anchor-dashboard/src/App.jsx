@@ -1362,13 +1362,21 @@ export default function App() {
         errMsg.includes("null") ||
         errMsg.includes("is not a function");
         
-      // Supabase 통신이나 네트워크 관련 에러 메시지는 자가치유 튕김 대상에서 전면 차단
+      // Supabase 통신, DB 쿼리, RLS 정책, 네트워크 연결 실패 등의 에러 메시지는 자가치유 튕김 대상에서 완벽히 배제
       const isNetworkOrDbError =
         errMsg.includes("PostgrestError") ||
         errMsg.includes("supabase") ||
         errMsg.includes("FetchError") ||
         errMsg.includes("NetworkError") ||
-        errMsg.includes("Failed to fetch");
+        errMsg.includes("Failed to fetch") ||
+        errMsg.includes("constraint") ||
+        errMsg.includes("violation") ||
+        errMsg.includes("violates") ||
+        errMsg.includes("not-null") ||
+        errMsg.includes("database") ||
+        errMsg.includes("query") ||
+        errMsg.includes("RLS") ||
+        errMsg.includes("policy");
 
       if (!isCriticalRenderError || isNetworkOrDbError) {
         return; // API 요청 실패, CORS, 406 에러 등의 네트워크 지연/차단 오류는 자가치유 리로드를 타지 않고 넘어갑니다.
@@ -1381,7 +1389,7 @@ export default function App() {
         return;
       }
       localStorage.setItem("anchor_last_self_healing_reset", String(now));
-      localStorage.removeItem("anchor_logged_in_user");
+      // 로그인 세션(anchor_logged_in_user)은 리셋하지 않고 보존하여 튕김(로그아웃) 방지!
       localStorage.removeItem("anchor_projects_data_v23");
       localStorage.removeItem("anchor_selected_kpi");
       window.location.reload();
