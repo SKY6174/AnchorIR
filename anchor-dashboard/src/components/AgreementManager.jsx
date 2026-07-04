@@ -606,6 +606,13 @@ export default function AgreementManager({
         parsedDate = `${yr}-${mo}-${dy}`;
       }
 
+      // 연도 키워드 감지 (예: 2025, 2026, 25, 26)
+      const has2025 = fileBaseName.includes("2025") || fileBaseName.includes("25") || fileBaseName.includes("1차");
+      const has2026 = fileBaseName.includes("2026") || fileBaseName.includes("26") || fileBaseName.includes("2차");
+
+      const extractedOrg = extractOrgName(fileBaseName);
+      const extractedName = extractNameInParentheses(fileBaseName);
+
       let bestScore = 0;
       let matchedTarget = null;
       let targetType = ""; // "agreement" | "certificate" | "award"
