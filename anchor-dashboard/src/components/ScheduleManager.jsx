@@ -647,8 +647,8 @@ export default function ScheduleManager({
     // 1. API 키 판별 (환경변수 시도 -> 없으면 로컬 스토리지 시도 -> 없으면 사용자 프롬프트 입력 유도)
     let apiKey = import.meta.env.VITE_GEMINI_API_KEY || "";
     
-    // 환경변수 값이 비어있거나 마스킹 형태일 시 로컬스토리지 활용
-    if (!apiKey || apiKey.startsWith("AQ.") === false) {
+    // 환경변수 값이 비어있거나 구글 공식 API Key 서명인 "AIzaSy"로 시작하지 않을 시 로컬스토리지 활용
+    if (!apiKey || apiKey.startsWith("AIzaSy") === false) {
       apiKey = localStorage.getItem("user_gemini_api_key") || "";
     }
 
@@ -668,13 +668,9 @@ export default function ScheduleManager({
 
     setIsAiLoading(true);
     setAiProgress(10);
-    setAiStatusText("Google Gemini API 초기화 중...");
+    setAiStatusText("Google Gemini 1.5 Flash API 연결 요청 중...");
 
     try {
-      // 2. Gemini SDK 클라이언트 인스턴스 생성
-      const genAI = new GoogleGenerativeAI(apiKey);
-      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-
       setAiProgress(30);
       setAiStatusText("기획안 원문 텍스트 토큰 전송 중...");
 
@@ -706,9 +702,37 @@ ${aiRawText}
       setAiProgress(60);
       setAiStatusText("제미나이 1.5 Flash 모델 심층 요약 분석 진행 중...");
 
-      const result = await model.generateContent(promptText);
-      const response = await result.response;
-      const responseText = response.text();
+      // REST API 호출을 통한 SDK 버전 충돌 및 404 모델 매핑 에러 완전 우회
+      const response = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            contents: [
+              {
+                parts: [
+                  { text: promptText }
+                ]
+              }
+            ]
+          })
+        }
+      );
+
+      if (!response.ok) {
+        const errData = await response.json().catch(() => ({}));
+        throw new Error(errData?.error?.message || `HTTP 에러 상태코드 ${response.status}`);
+      }
+
+      const resData = await response.json();
+      const responseText = resData?.candidates?.[0]?.content?.parts?.[0]?.text || "";
+
+      if (!responseText) {
+        throw new Error("Gemini 응답 내용이 비어있습니다.");
+      }
 
       setAiProgress(90);
       setAiStatusText("제미나이 반환 데이터 파싱 중...");
@@ -740,7 +764,7 @@ ${aiRawText}
 
     } catch (error) {
       console.error("Gemini API 호출 에러:", error);
-      alert(`❌ Gemini API 분석 실패: ${error.message}\n네트워크 불안정 또는 API 키 에러로 인해 시뮬레이션 모드로 전환 기입합니다.`);
+      alert(`❌ Gemini API 분석 실패: ${error.message}\n올바르지 않은 API Key이거나 네트워크 에러로 인해 시뮬레이션 모드로 자동 전환 기입합니다.\n(우측의 ⚙️ API 설정 버튼을 눌러 AIzaSy로 시작하는 올바른 무료 API Key를 등록해 주세요.)`);
       runSimulationFallback();
     }
   };
