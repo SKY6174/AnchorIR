@@ -647,8 +647,8 @@ export default function ScheduleManager({
     // 1. API 키 판별 (환경변수 시도 -> 없으면 로컬 스토리지 시도 -> 없으면 사용자 프롬프트 입력 유도)
     let apiKey = import.meta.env.VITE_GEMINI_API_KEY || "";
     
-    // 환경변수 값이 비어있거나 구글 공식 API Key 서명인 "AIzaSy"로 시작하지 않을 시 로컬스토리지 활용
-    if (!apiKey || apiKey.startsWith("AIzaSy") === false) {
+    // 환경변수 값이 비어있거나, 구글 정식 API Key(AIzaSy) 또는 단장님 전용 키(AQ.) 접두사 중 어느 것으로도 시작하지 않을 시 로컬스토리지 활용
+    if (!apiKey || (apiKey.startsWith("AIzaSy") === false && apiKey.startsWith("AQ.") === false)) {
       apiKey = localStorage.getItem("user_gemini_api_key") || "";
     }
 
@@ -702,9 +702,12 @@ ${aiRawText}
       setAiProgress(60);
       setAiStatusText("제미나이 1.5 Flash 모델 심층 요약 분석 진행 중...");
 
+      // API Key 종류에 따라 URL 버전을 유연하게 분기 (AQ. 계열 키는 v1 엔드포인트에서 더 완벽히 작동)
+      const apiVersion = apiKey.startsWith("AQ.") ? "v1" : "v1beta";
+
       // REST API 호출을 통한 SDK 버전 충돌 및 404 모델 매핑 에러 완전 우회
       const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
+        `https://generativelanguage.googleapis.com/${apiVersion}/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
         {
           method: "POST",
           headers: {
