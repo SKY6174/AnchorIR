@@ -3811,7 +3811,7 @@ export default function ScheduleManager({
                             <span style={{ fontSize: "0.65rem", padding: "0.15rem 0.4rem", borderRadius: "4px", background: press.type === "방송" ? "rgba(239, 68, 68, 0.15)" : press.type === "신문" ? "rgba(59, 130, 246, 0.15)" : "rgba(139, 92, 246, 0.15)", color: press.type === "방송" ? "#EF4444" : press.type === "신문" ? "#60A5FA" : "#A78BFA", fontWeight: "800" }}>
                               {press.type}
                             </span>
-                            <span style={{ fontSize: "0.65rem", padding: "0.15rem 0.4rem", borderRadius: "4px", background: "rgba(255,255,255,0.05)", color: "var(--text-secondary)", fontWeight: "700" }}>
+                            <span style={{ fontSize: "0.65rem", padding: "0.15rem 0.4rem", borderRadius: "4px", background: "rgba(128,128,128,0.12)", color: "var(--text-secondary)", fontWeight: "700" }}>
                               {press.media}
                             </span>
                           </div>
@@ -3845,7 +3845,7 @@ export default function ScheduleManager({
                           </div>
                         </div>
                         
-                        <h4 style={{ margin: 0, fontSize: "0.85rem", fontWeight: "800", color: isActive ? "white" : "var(--text-primary)", lineHeight: "1.4", overflow: "hidden", textOverflow: "ellipsis", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>
+                        <h4 style={{ margin: 0, fontSize: "0.85rem", fontWeight: "800", color: "var(--text-primary)", lineHeight: "1.4", overflow: "hidden", textOverflow: "ellipsis", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>
                           {press.title}
                         </h4>
                         
