@@ -1250,7 +1250,7 @@ export default function AgreementManager({
       {/* A. 협약서 등록 및 수정 모달 */}
       {isModalOpen && (
         <div style={{ position: "fixed", top: 0, left: 0, width: "100%", height: "100%", background: "rgba(0,0,0,0.6)", zIndex: 9999, display: "grid", placeItems: "center", overflowY: "auto", padding: "2rem 1rem" }}>
-          <div style={{ background: "#18181b", border: "1px solid var(--border-color-dark)", borderRadius: "0.75rem", width: "100%", maxWidth: "550px", height: "85vh", display: "flex", flexDirection: "column", color: "white", boxShadow: "0 20px 25px -5px rgba(0,0,0,0.3)" }}>
+          <div style={{ background: "#18181b", border: "1px solid var(--border-color-dark)", borderRadius: "0.75rem", width: "100%", maxWidth: "550px", maxHeight: "85vh", display: "flex", flexDirection: "column", color: "white", boxShadow: "0 20px 25px -5px rgba(0,0,0,0.3)" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "0.85rem 1.25rem", borderBottom: "1px solid var(--border-color-dark)", flexShrink: 0 }}>
               <h3 style={{ fontSize: "0.9rem", fontWeight: "800" }}>⚓ {editingId ? "협약서 정보 수정" : "신규 협약서 등록"}</h3>
               <button onClick={() => setIsModalOpen(false)} style={{ background: "none", border: "none", color: "#a1a1aa", cursor: "pointer" }}>
@@ -1438,7 +1438,7 @@ export default function AgreementManager({
       {/* B. 이수증 등록 및 수정 모달 */}
       {isCertModalOpen && (
         <div style={{ position: "fixed", top: 0, left: 0, width: "100%", height: "100%", background: "rgba(0,0,0,0.6)", zIndex: 9999, display: "grid", placeItems: "center", overflowY: "auto", padding: "2rem 1rem" }}>
-          <div style={{ background: "#18181b", border: "1px solid var(--border-color-dark)", borderRadius: "0.75rem", width: "100%", maxWidth: "500px", height: "85vh", display: "flex", flexDirection: "column", color: "white", boxShadow: "0 20px 25px -5px rgba(0,0,0,0.3)" }}>
+          <div style={{ background: "#18181b", border: "1px solid var(--border-color-dark)", borderRadius: "0.75rem", width: "100%", maxWidth: "500px", maxHeight: "85vh", display: "flex", flexDirection: "column", color: "white", boxShadow: "0 20px 25px -5px rgba(0,0,0,0.3)" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "0.85rem 1.25rem", borderBottom: "1px solid var(--border-color-dark)", flexShrink: 0 }}>
               <h3 style={{ fontSize: "0.9rem", fontWeight: "800" }}>📄 {editingCertId ? "이수증 정보 수정" : "신규 이수증 등록"}</h3>
               <button onClick={() => setIsCertModalOpen(false)} style={{ background: "none", border: "none", color: "#a1a1aa", cursor: "pointer" }}>
@@ -1495,7 +1495,7 @@ export default function AgreementManager({
       {/* C. 상장 등록 및 수정 모달 */}
       {isAwardModalOpen && (
         <div style={{ position: "fixed", top: 0, left: 0, width: "100%", height: "100%", background: "rgba(0,0,0,0.6)", zIndex: 9999, display: "grid", placeItems: "center", overflowY: "auto", padding: "2rem 1rem" }}>
-          <div style={{ background: "#18181b", border: "1px solid var(--border-color-dark)", borderRadius: "0.75rem", width: "100%", maxWidth: "500px", height: "85vh", display: "flex", flexDirection: "column", color: "white", boxShadow: "0 20px 25px -5px rgba(0,0,0,0.3)" }}>
+          <div style={{ background: "#18181b", border: "1px solid var(--border-color-dark)", borderRadius: "0.75rem", width: "100%", maxWidth: "500px", maxHeight: "85vh", display: "flex", flexDirection: "column", color: "white", boxShadow: "0 20px 25px -5px rgba(0,0,0,0.3)" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "0.85rem 1.25rem", borderBottom: "1px solid var(--border-color-dark)", flexShrink: 0 }}>
               <h3 style={{ fontSize: "0.9rem", fontWeight: "800" }}>🏆 {editingAwardId ? "상장 정보 수정" : "신규 상장 등록"}</h3>
               <button onClick={() => setIsAwardModalOpen(false)} style={{ background: "none", border: "none", color: "#a1a1aa", cursor: "pointer" }}>

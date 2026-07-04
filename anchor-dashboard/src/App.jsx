@@ -4178,7 +4178,7 @@ export default function App() {
       ...prev,
       {
         ...newAgr,
-        id: `agr-${Date.now()}` // 유니크 모의 ID 생성
+        id: `agr-${Date.now()}-${Math.random().toString(36).substr(2, 9)}` // 난수 결합형 고유 ID 생성
       }
     ]);
   };
@@ -4213,7 +4213,7 @@ export default function App() {
       ...prev,
       {
         ...newCert,
-        id: `cert-${Date.now()}` // 유니크 모의 ID 생성
+        id: `cert-${Date.now()}-${Math.random().toString(36).substr(2, 9)}` // 난수 결합형 고유 ID 생성
       }
     ]);
   };
@@ -4248,7 +4248,7 @@ export default function App() {
       ...prev,
       {
         ...newAward,
-        id: `award-${Date.now()}` // 유니크 모의 ID 생성
+        id: `award-${Date.now()}-${Math.random().toString(36).substr(2, 9)}` // 난수 결합형 고유 ID 생성
       }
     ]);
   };
