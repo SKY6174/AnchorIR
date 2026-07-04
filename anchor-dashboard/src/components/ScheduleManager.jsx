@@ -1332,12 +1332,21 @@ export default function ScheduleManager({
             detectedTitle = "송경영 울산과학대 RISE사업단장, 전문대 고등직업교육 방향성 릴레이 포럼 개최";
           }
 
+
+          // 텍스트/URL 속의 YYYYMMDD 날짜 패턴 (예: 20251127) 정밀 추출 및 자동 파싱 대입
+          let detectedDate = defaultDate;
+          const dateMatch = (detectedTitle + url).match(/(?:202\d)(?:0[1-9]|1[0-2])(?:0[1-9]|[12]\d|3[01])/);
+          if (dateMatch) {
+            const dStr = dateMatch[0];
+            detectedDate = `${dStr.substring(0, 4)}-${dStr.substring(4, 6)}-${dStr.substring(6, 8)}`;
+          }
+
           setFormData(prev => ({
             ...prev,
             pressType: detectedType,
             pressMedia: detectedMedia,
             title: detectedTitle,
-            pressDate: defaultDate,
+            pressDate: detectedDate,
             pressTime: "10:00",
             pressContent: detectedContent
           }));
@@ -1362,7 +1371,7 @@ export default function ScheduleManager({
           "pressType": "방송" 또는 "신문" 또는 "기타",
           "pressMedia": "언론사 매체명 (예: KBS울산, 울산MBC, 경상일보, 한국대학신문, 네이버 블로그 등)",
           "title": "보도 기사 제목 (수집된 타이틀이 있다면 해당 타이틀을 그대로 정제하여 적용하고, 없다면 앵커사업에 어울리는 제목 생성)",
-          "pressDate": "보도일자 (YYYY-MM-DD 형식으로 작성하며, 반드시 ${targetYearNum}년 안의 날짜로 작성)",
+          "pressDate": "보도일자 (YYYY-MM-DD 형식으로 작성하며, 만약 크롤링된 기사 제목이나 URL에 '20251127' 처럼 실제 날짜 팩트가 존재한다면 그 진짜 발행 날짜를 정확히 추출하여 반영하고, 찾을 수 없는 경우에만 ${targetYearNum}년 안의 날짜로 유추하십시오.)",
           "pressTime": "보도시간 (HH:MM 형식)",
           "pressContent": "보도 본문 요약 (3~4문장 분량의 격식 있고 객관적인 기사체로 세밀히 작성)"
         }
@@ -1396,12 +1405,21 @@ export default function ScheduleManager({
         if (!responseText) throw new Error("Gemini response is empty");
 
         const parsed = JSON.parse(responseText.trim());
+        
+        // 진짜 날짜 팩트 추출을 위한 프론트엔드 안전 보완 필터
+        let finalPressDate = parsed.pressDate || defaultDate;
+        const dateMatch = (parsed.title + url).match(/(?:202\d)(?:0[1-9]|1[0-2])(?:0[1-9]|[12]\d|3[01])/);
+        if (dateMatch) {
+          const dStr = dateMatch[0];
+          finalPressDate = `${dStr.substring(0, 4)}-${dStr.substring(4, 6)}-${dStr.substring(6, 8)}`;
+        }
+
         setFormData(prev => ({
           ...prev,
           pressType: parsed.pressType || (isYoutube ? "방송" : "기타"),
           pressMedia: parsed.pressMedia || fetchedAuthor || "미상",
           title: parsed.title || fetchedTitle || "새 보도자료",
-          pressDate: parsed.pressDate || defaultDate,
+          pressDate: finalPressDate,
           pressTime: parsed.pressTime || "10:00",
           pressContent: parsed.pressContent || ""
         }));
