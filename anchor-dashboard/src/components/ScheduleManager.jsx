@@ -2853,18 +2853,26 @@ ${aiRawText}
                   className="card"
                   style={{ padding: "1.5rem", borderRadius: "10px", background: "var(--panel-bg)", border: "1px solid var(--border-color)", display: "flex", flexDirection: "column", gap: "1rem" }}
                 >
-                  {/* 1) 맨 윗줄: [담당부서]   행사일정 (부서 옆 1cm)   행사제목 (우측 정렬 및 수정 마크보다 1cm 좌측)   수정/삭제 */}
+                  {/* 1) 맨 윗줄: [담당부서]   일시 (부서 옆 1.5cm)   장소 (일시 옆 0.5cm)   행사제목 (수정 마크보다 1cm 좌측)   수정/삭제 */}
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%", borderBottom: "1px solid rgba(255,255,255,0.06)", paddingBottom: "0.6rem" }}>
-                    {/* 왼쪽 영역: [담당부서]와 [행사일정] */}
-                    <div style={{ display: "flex", alignItems: "center" }}>
-                      {/* 담당부서 (볼드, 짙은 분홍색) */}
-                      <span style={{ fontWeight: "800", color: "#EC4899", fontSize: "0.85rem", whiteSpace: "nowrap" }}>
-                        {event.department || "사업운영팀"}
+                    {/* 왼쪽 영역: [담당부서], 일시, 장소 한 줄 정리 */}
+                    <div style={{ display: "flex", alignItems: "center", flexWrap: "wrap" }}>
+                      {/* 담당부서 (대괄호 감싸기, 볼드, 짙은 분홍색, 폰트크기 2pt 키워 1.0rem 적용) */}
+                      <span style={{ fontWeight: "850", color: "#EC4899", fontSize: "1.0rem", whiteSpace: "nowrap" }}>
+                        [{event.department || "사업운영팀"}]
                       </span>
                       
-                      {/* 담당부서 오른쪽으로 1cm (38px) 떨어진 행사일정 */}
-                      <span style={{ fontSize: "0.8rem", color: "var(--text-secondary)", marginLeft: "38px", whiteSpace: "nowrap" }}>
-                        {event.datetime}
+                      {/* 소속부서에서 1.5cm (56px) 띄우고 일시 */}
+                      <span style={{ fontSize: "0.8rem", color: "var(--text-secondary)", marginLeft: "56px", whiteSpace: "nowrap" }}>
+                        일시 : {event.datetime}
+                      </span>
+
+                      {/* 일시에서 0.5cm (19px) 띄우고 | 구분선 */}
+                      <span style={{ color: "rgba(255,255,255,0.15)", marginLeft: "19px" }}>|</span>
+                      
+                      {/* 구분선에서 0.5cm (19px) 띄우고 장소 */}
+                      <span style={{ fontSize: "0.8rem", color: "var(--text-secondary)", marginLeft: "19px", whiteSpace: "nowrap" }}>
+                        장소 : <span style={{ color: "var(--text-primary)", fontWeight: "600" }}>{event.location || "미정"}</span>
                       </span>
                     </div>
 
@@ -2901,16 +2909,13 @@ ${aiRawText}
                     </div>
                   </div>
 
-                  {/* 2) 바디 영역: 좌측(장소 & 참석자 & 목적) / 우측(결과 보고 작성 블록) -> 1:1 비율 */}
+                  {/* 2) 바디 영역: 좌측(참석자 & 목적) / 우측(결과 보고 작성 블록) -> 1:1 비율 */}
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.5rem", alignItems: "stretch", fontSize: "0.82rem", color: "var(--text-primary)" }}>
                     
                     {/* 좌측 정보 컬럼 */}
                     <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem", justifyContent: "center" }}>
-                      {/* 행사장소, 참석자(내부), 참석자(외부) -> 1:1:1 비율 그리드 정비 */}
-                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "0.5rem", width: "100%" }}>
-                        <div>
-                          <strong>행사장소 :</strong> {event.location || "미정"}
-                        </div>
+                      {/* 참석자(내부) : 참석자(외부) -> 1:1 비율 그리드 정비 */}
+                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", width: "100%" }}>
                         <div>
                           <strong>참석자(내부) :</strong> {event.attendeesInternal || "없음"}
                         </div>
