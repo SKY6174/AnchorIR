@@ -651,34 +651,24 @@ export default function AgreementManager({
             orgsArray.forEach(org => {
               const rawOrgName = typeof org === "object" && org !== null ? org.name : org;
               const orgClean = cleanName(rawOrgName);
-              if (orgClean) {
-                const fileOrgClean = cleanName(extractedOrg);
-                if (fileOrgClean && (fileOrgClean.includes(orgClean) || orgClean.includes(fileOrgClean))) {
-                  orgScore = 50;
-                } else if (cleanName(fileBaseName).includes(orgClean)) {
-                  orgScore = Math.max(orgScore, 30);
-                }
+              const fileOrgClean = cleanName(extractedOrg);
+              if (orgClean && fileOrgClean && orgClean.includes(fileOrgClean)) {
+                orgScore = 50;
+              } else if (orgClean && cleanName(fileBaseName).includes(orgClean)) {
+                orgScore = Math.max(orgScore, 30);
               }
             });
           };
           compareOrg(item.organizations);
 
           // B. 협약주체(성명) 비교 (+40점)
-          if (item.subjectUniversity) {
-            const extractSubjectName = (str) => {
-              const parts = str.trim().split(/\s+/);
-              const last = parts[parts.length - 1];
-              if (last && /^[가-힣]{2,4}$/.test(last)) return last;
-              const match = str.match(/[가-힣]{2,4}$/);
-              return match ? match[0] : null;
-            };
-            const subName = extractSubjectName(item.subjectUniversity);
-            if (subName) {
-              if (extractedName && extractedName.includes(subName)) {
-                nameScore = 40;
-              } else if (fileBaseName.includes(subName)) {
-                nameScore = 25;
-              }
+          if (item.subjectUniversity && extractedName) {
+            const subClean = cleanName(item.subjectUniversity);
+            const nameClean = cleanName(extractedName);
+            if (subClean && nameClean && subClean.includes(nameClean)) {
+              nameScore = 40;
+            } else if (nameClean && cleanName(fileBaseName).includes(nameClean)) {
+              nameScore = 25;
             }
           }
 
