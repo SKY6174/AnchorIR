@@ -7,16 +7,16 @@ import {
 
 // 단장님이 지시하신 10개 필드로 구성되고 '26.3월 ~ '27.2월 12개월 체크가 적용된 초기 기자재 품목 데이터셋
 const defaultEquipments = [
-  { id: 1, unit: "A1", seq: 1, deptName: "간호학과", itemName: "임상 시뮬레이터 스마트 실습 베드", unitPrice: 12000000, quantity: 2, description: "간호학 임상 실습 고도화 교육 환경 인프라 조달", operation: "교과목(정규)", mgrDept: "ECC", scheduleMilestones: { "기획": ["3", "4"], "승인": ["4", "5"], "구매": ["6", "7", "8"], "검수": ["9", "10"] } },
-  { id: 2, unit: "A2", seq: 2, deptName: "화학공학과", itemName: "고정밀 가스 크로마토그래피 측정기", unitPrice: 24500000, quantity: 1, description: "화공 정밀 분석 및 대외 기업 애로기술 분석 지원용", operation: "교과목(비정규)", mgrDept: "ICC", scheduleMilestones: { "기획": ["3"], "승인": ["4"], "구매": ["5", "6"], "검수": ["7", "8"] } },
-  { id: 3, unit: "B1", seq: 3, deptName: "컴퓨터공학과", itemName: "가상현실/메타버스 전용 GPU 렌더링 서버", unitPrice: 15000000, quantity: 3, description: "신기술 가상현실 융합인재양성 교육 장비 구축", operation: "교과목(정규)", mgrDept: "신산업", scheduleMilestones: { "기획": ["4", "5"], "승인": ["6"], "구매": ["7", "8"], "검수": ["9"] } },
-  { id: 4, unit: "B2", seq: 4, deptName: "기계공학과", itemName: "3D 메탈 프린터 조달", unitPrice: 38000000, quantity: 1, description: "지산학 스마트 제조 부품 시제품 제작 지원 인프라", operation: "교과목(정규)", mgrDept: "ICC", scheduleMilestones: { "기획": ["3", "4"], "승인": ["5"], "구매": ["6", "7"], "검수": ["8", "9"] } },
-  { id: 5, unit: "B3", seq: 5, deptName: "전기전자공학과", itemName: "반도체 회로 분석 계측기 (Oscilloscope)", unitPrice: 8500000, quantity: 4, description: "반도체 인력양성 실습용 고가 계측 장비 확충", operation: "교과목(비정규)", mgrDept: "AIDX", scheduleMilestones: { "기획": ["3", "4"], "승인": ["5", "6"], "구매": ["7", "8", "9"], "검수": ["10", "11", "12"] } },
-  { id: 6, unit: "B4", seq: 6, deptName: "유아교육과", itemName: "늘봄 교실용 스마트 대화형 교육 패드", unitPrice: 850000, quantity: 15, description: "대학 기자재 활용형 아동 늘봄교육 교재 조달", operation: "교과목(비정규)", mgrDept: "늘봄", scheduleMilestones: { "기획": ["5", "6"], "승인": ["7"], "구매": ["8", "9"], "검수": ["10", "11"] } },
-  { id: 7, unit: "C1", seq: 7, deptName: "스마트팩토리전공", itemName: "다축 협동 산업용 로봇 팔 암 (Robot Arm)", unitPrice: 28000000, quantity: 1, description: "로봇제어 전공 정규 실험실습 공간 인프라 구축", operation: "교과목(정규)", mgrDept: "AIDX", scheduleMilestones: { "기획": ["3", "4"], "승인": ["4", "5"], "구매": ["6", "7"], "검수": ["8", "9", "10"] } },
-  { id: 8, unit: "C2", seq: 8, deptName: "반려동물보건과", itemName: "동물 전용 디지털 초음파 진단 장치", unitPrice: 19000000, quantity: 1, description: "신설학과 실무 미러형 임상 실습실 조달 품목", operation: "교과목(정규)", mgrDept: "신산업", scheduleMilestones: { "기획": ["4", "5"], "승인": ["6"], "구매": ["7", "8"], "검수": ["9"] } },
-  { id: 9, unit: "D1", seq: 9, deptName: "스마트선박학과", itemName: "미래 친환경선박 가상 운항 교육 시뮬레이터", unitPrice: 45000000, quantity: 1, description: "5극3특 가상 운항 실습 교육 과정 지원용 장비", operation: "교과목(정규)", mgrDept: "RCC", scheduleMilestones: { "기획": ["3", "4", "5"], "승인": ["6", "7"], "구매": ["8", "9", "10"], "검수": ["11", "12", "1", "2"] } },
-  { id: 10, unit: "D2", seq: 10, deptName: "미용예술학과", itemName: "메디컬 스킨케어 다기능 뷰티 디바이스", unitPrice: 6500000, quantity: 5, description: "웰니스 뷰티 케어 실습 및 지역 상생 뷰티 아카데미 활용", operation: "교과목(비정규)", mgrDept: "RCC", scheduleMilestones: { "기획": ["3", "4"], "승인": ["5"], "구매": ["6", "7"], "검수": ["8", "9"] } }
+  { id: 1, unit: "A1", seq: 1, deptName: "간호학과", divisionName: "공동기자재지원센터", itemName: "임상 시뮬레이터 스마트 실습 베드", unitPrice: 12000000, quantity: 2, description: "간호학 임상 실습 고도화 교육 환경 인프라 조달", operation: "교과목(정규)", mgrDept: "ECC", scheduleMilestones: { "기획": ["3", "4"], "승인": ["4", "5"], "구매": ["6", "7", "8"], "검수": ["9", "10"] } },
+  { id: 2, unit: "A2", seq: 2, deptName: "화학공학과", divisionName: "", itemName: "고정밀 가스 크로마토그래피 측정기", unitPrice: 24500000, quantity: 1, description: "화공 정밀 분석 및 대외 기업 애로기술 분석 지원용", operation: "교과목(비정규)", mgrDept: "ICC", scheduleMilestones: { "기획": ["3"], "승인": ["4"], "구매": ["5", "6"], "검수": ["7", "8"] } },
+  { id: 3, unit: "B1", seq: 3, deptName: "컴퓨터공학과", divisionName: "원격교육지원센터", itemName: "가상현실/메타버스 전용 GPU 렌더링 서버", unitPrice: 15000000, quantity: 3, description: "신기술 가상현실 융합인재양성 교육 장비 구축", operation: "교과목(정규)", mgrDept: "신산업", scheduleMilestones: { "기획": ["4", "5"], "승인": ["6"], "구매": ["7", "8"], "검수": ["9"] } },
+  { id: 4, unit: "B2", seq: 4, deptName: "기계공학과", divisionName: "", itemName: "3D 메탈 프린터 조달", unitPrice: 38000000, quantity: 1, description: "지산학 스마트 제조 부품 시제품 제작 지원 인프라", operation: "교과목(정규)", mgrDept: "ICC", scheduleMilestones: { "기획": ["3", "4"], "승인": ["5"], "구매": ["6", "7"], "검수": ["8", "9"] } },
+  { id: 5, unit: "B3", seq: 5, deptName: "전기전자공학과", divisionName: "공동기자재지원센터", itemName: "반도체 회로 분석 계측기 (Oscilloscope)", unitPrice: 8500000, quantity: 4, description: "반도체 인력양성 실습용 고가 계측 장비 확충", operation: "교과목(비정규)", mgrDept: "AIDX", scheduleMilestones: { "기획": ["3", "4"], "승인": ["5", "6"], "구매": ["7", "8", "9"], "검수": ["10", "11", "12"] } },
+  { id: 6, unit: "B4", seq: 6, deptName: "", divisionName: "늘봄누리센터", itemName: "늘봄 교실용 스마트 대화형 교육 패드", unitPrice: 850000, quantity: 15, description: "대학 기자재 활용형 아동 늘봄교육 교재 조달", operation: "교과목(비정규)", mgrDept: "늘봄", scheduleMilestones: { "기획": ["5", "6"], "승인": ["7"], "구매": ["8", "9"], "검수": ["10", "11"] } },
+  { id: 7, unit: "C1", seq: 7, deptName: "스마트팩토리전공", divisionName: "", itemName: "다축 협동 산업용 로봇 팔 암 (Robot Arm)", unitPrice: 28000000, quantity: 1, description: "로봇제어 전공 정규 실험실습 공간 인프라 구축", operation: "교과목(정규)", mgrDept: "AIDX", scheduleMilestones: { "기획": ["3", "4"], "승인": ["4", "5"], "구매": ["6", "7"], "검수": ["8", "9", "10"] } },
+  { id: 8, unit: "C2", seq: 8, deptName: "반려동물보건과", divisionName: "", itemName: "동물 전용 디지털 초음파 진단 장치", unitPrice: 19000000, quantity: 1, description: "신설학과 실무 미러형 임상 실습실 조달 품목", operation: "교과목(정규)", mgrDept: "신산업", scheduleMilestones: { "기획": ["4", "5"], "승인": ["6"], "구매": ["7", "8"], "검수": ["9"] } },
+  { id: 9, unit: "D1", seq: 9, deptName: "스마트선박학과", divisionName: "", itemName: "미래 친환경선박 가상 운항 교육 시뮬레이터", unitPrice: 45000000, quantity: 1, description: "5극3특 가상 운항 실습 교육 과정 지원용 장비", operation: "교과목(정규)", mgrDept: "RCC", scheduleMilestones: { "기획": ["3", "4", "5"], "승인": ["6", "7"], "구매": ["8", "9", "10"], "검수": ["11", "12", "1", "2"] } },
+  { id: 10, unit: "D2", seq: 10, deptName: "미용예술학과", divisionName: "", itemName: "메디컬 스킨케어 다기능 뷰티 디바이스", unitPrice: 6500000, quantity: 5, description: "웰니스 뷰티 케어 실습 및 지역 상생 뷰티 아카데미 활용", operation: "교과목(비정규)", mgrDept: "RCC", scheduleMilestones: { "기획": ["3", "4"], "승인": ["5"], "구매": ["6", "7"], "검수": ["8", "9"] } }
 ];
 
 export default function ProcurementManager({
@@ -57,7 +57,8 @@ export default function ProcurementManager({
     utilization: "",
     // 기자재용 10대 필드 맵
     name: "",
-    department: "",
+    deptName: "",      // 학과 선택
+    divisionName: "",  // 부서 선택
     unitPrice: "",
     quantity: "",
     description: "",
@@ -132,6 +133,12 @@ export default function ProcurementManager({
       };
       setEnvData([newItem, ...envData]);
     } else if (modalType === "equip") {
+      // 단장님 조건: 학과 또는 부서 중 최소 하나는 반드시 선택되어야 함
+      if (!formData.deptName && !formData.divisionName) {
+        alert("⚠️ 학과 또는 부서 중 최소 한 곳은 반드시 지정하셔야 합니다.");
+        return;
+      }
+
       // 실 기자재 데이터가 비어 있으면 defaultEquipments를 얹고 시작
       const activeEquipList = equipData.length > 0 ? equipData : defaultEquipments;
       const nextSeq = activeEquipList.length + 1;
@@ -140,7 +147,8 @@ export default function ProcurementManager({
         id: Date.now(),
         unit: formData.unit,
         seq: nextSeq,
-        deptName: formData.department || "미지정 학과",
+        deptName: formData.deptName || "",
+        divisionName: formData.divisionName || "",
         itemName: formData.name || "새 기자재 항목",
         unitPrice: Number(formData.unitPrice) || 0,
         quantity: Number(formData.quantity) || 1,
@@ -495,7 +503,14 @@ export default function ProcurementManager({
                             {equip.unit}
                           </td>
                           <td style={{ padding: "0.8rem 0.5rem", textAlign: "left", fontWeight: "600" }}>
-                            {equip.deptName || equip.department || "-"}
+                            {(() => {
+                              const dName = equip.deptName || "";
+                              const divName = equip.divisionName || "";
+                              if (dName && divName) {
+                                return `${dName} / ${divName}`;
+                              }
+                              return dName || divName || "-";
+                            })()}
                           </td>
                           <td style={{ padding: "0.8rem 0.5rem", textAlign: "left", fontWeight: "700", color: "white" }}>
                             {equip.itemName || equip.name || "-"}
@@ -858,10 +873,54 @@ export default function ProcurementManager({
               {/* 기자재용 입력 필드들 */}
               {modalType === "equip" && (
                 <>
-                  <div>
-                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>학과 / 부서</label>
-                    <input type="text" name="department" value={formData.department} onChange={handleInputChange} required placeholder="예: 간호학과 / 공동기자재지원센터" style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} />
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+                    <div>
+                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>학과 선택</label>
+                      <select 
+                        name="deptName" 
+                        value={formData.deptName} 
+                        onChange={handleInputChange}
+                        className="user-selector"
+                      >
+                        <option value="">-- 선택 안 함 --</option>
+                        <option value="간호학과">간호학과</option>
+                        <option value="화학공학과">화학공학과</option>
+                        <option value="컴퓨터공학과">컴퓨터공학과</option>
+                        <option value="기계공학과">기계공학과</option>
+                        <option value="전기전자공학과">전기전자공학과</option>
+                        <option value="유아교육과">유아교육과</option>
+                        <option value="스마트팩토리전공">스마트팩토리전공</option>
+                        <option value="반려동물보건과">반려동물보건과</option>
+                        <option value="스마트선박학과">스마트선박학과</option>
+                        <option value="미용예술학과">미용예술학과</option>
+                        <option value="물리치료학과">물리치료학과</option>
+                        <option value="호텔조리제빵과">호텔조리제빵과</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>부서 선택</label>
+                      <select 
+                        name="divisionName" 
+                        value={formData.divisionName} 
+                        onChange={handleInputChange}
+                        className="user-selector"
+                      >
+                        <option value="">-- 선택 안 함 --</option>
+                        <option value="공동기자재지원센터">공동기자재지원센터</option>
+                        <option value="산학협력단">산학협력단</option>
+                        <option value="LINC3.0사업단">LINC3.0사업단</option>
+                        <option value="RISE사업센터">RISE사업센터</option>
+                        <option value="늘봄누리센터">늘봄누리센터</option>
+                        <option value="신산업역량강화지원센터">신산업역량강화지원센터</option>
+                        <option value="학생직무체험지원센터">학생직무체험지원센터</option>
+                        <option value="국제교류원">국제교류원</option>
+                        <option value="원격교육지원센터">원격교육지원센터</option>
+                      </select>
+                    </div>
                   </div>
+                  <span style={{ fontSize: "0.75rem", color: "#fbbf24", display: "block", marginTop: "-0.5rem" }}>
+                    * 학과 또는 부서 중 최소 한 곳은 필수로 지정되어야 합니다.
+                  </span>
                   <div>
                     <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>품명</label>
                     <input type="text" name="name" value={formData.name} onChange={handleInputChange} required placeholder="예: 임상 실습용 스마트 베드" style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} />
