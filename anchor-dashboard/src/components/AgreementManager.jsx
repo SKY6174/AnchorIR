@@ -1940,8 +1940,7 @@ export default function AgreementManager({
             
             <div style={{ padding: "1.25rem", flex: 1, overflowY: "auto", display: "flex", flexDirection: "column", gap: "1rem" }}>
               <div style={{ fontSize: "0.75rem", color: "#a1a1aa", background: "#27272a", padding: "0.75rem", borderRadius: "0.35rem", border: "1px solid var(--border-color-dark)" }}>
-                💡 파일 이름에 포함된 <b>[연도, 기관명, 성명, 발급번호]</b> 등의 키워드를 분석하여 데이터와 비교 매칭했습니다.<br/>
-                적합도 점수가 70점 이상인 대상을 식별하여 자동 연결해 줍니다.
+                💡 파일 이름에서 추출된 기관명/발급번호 및 성명이 대시보드의 데이터 정보에 포함되면 매칭 대상(100점)으로 판정하여 자동 연결해 줍니다.
               </div>
 
               <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.75rem", fontWeight: "700" }}>
