@@ -196,6 +196,11 @@ export default function ScheduleManager({
   // 위원회 종류 필터 상태
   const [selectedCommitteeFilters, setSelectedCommitteeFilters] = useState([]);
 
+  // AI 언론 기사 크롤링 시뮬레이션 상태
+  const [isCrawlerModalOpen, setIsCrawlerModalOpen] = useState(false);
+  const [crawlerLogs, setCrawlerLogs] = useState([]);
+  const [crawlerProgress, setCrawlerProgress] = useState(0);
+
   const [memberFormData, setMemberFormData] = useState({
     type: "위원",
     name: "",
