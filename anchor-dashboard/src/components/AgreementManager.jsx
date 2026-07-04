@@ -570,12 +570,14 @@ export default function AgreementManager({
     const results = [];
     const cleanName = (name) => {
       if (!name) return "";
-      // 1) 공백 선제적 소거 (정규식 공백 매칭 오류 방지)
-      const noSpace = name.replace(/\s/g, "");
-      // 2) 일반 문자열 기반 법인명 정규식 생성자
-      const corpRegex = new RegExp("\\(주\\)|\\(유\\)|\\(합\\)|\\(합자\\)|\\(재\\)|\\(사\\)|\\(재단\\)|\\(사단\\)|주식회사|유한회사|㈜|㈔|㈎", "g");
-      return noSpace.replace(corpRegex, "")
-                    .replace(/[\(\)]/g, ""); // 남은 괄호 완벽 제거
+      // 1) 공백 선제적 소거
+      let temp = name.replace(/\s/g, "");
+      // 2) 정규식 대신 백슬래시 탈락이 없는 안전한 replaceAll 순회
+      const keywords = ["(주)", "(유)", "(합)", "(합자)", "(재)", "(사)", "(재단)", "(사단)", "주식회사", "유한회사", "㈜", "㈔", "㈎"];
+      keywords.forEach(kw => {
+        temp = temp.replaceAll(kw, "");
+      });
+      return temp.replace(/[\(\)]/g, ""); // 남은 괄호 완벽 제거
     };
 
     // 파일명에서 끝 괄호 안의 성명 정밀 추출 (예: (김지수) -> 김지수)
@@ -596,9 +598,11 @@ export default function AgreementManager({
       if (underIndex !== -1) {
         temp = temp.substring(underIndex + 1);
       }
-      const corpRegex = new RegExp("\\(주\\)|\\(유\\)|\\(합\\)|\\(합자\\)|\\(재\\)|\\(사\\)|\\(재단\\)|\\(사단\\)|주식회사|유한회사|㈜|㈔|㈎", "g");
-      return temp.replace(corpRegex, "")
-                 .replace(/[\(\)]/g, "");
+      const keywords = ["(주)", "(유)", "(합)", "(합자)", "(재)", "(사)", "(재단)", "(사단)", "주식회사", "유한회사", "㈜", "㈔", "㈎"];
+      keywords.forEach(kw => {
+        temp = temp.replaceAll(kw, "");
+      });
+      return temp.replace(/[\(\)]/g, "");
     };
 
     for (const file of files) {
@@ -639,7 +643,8 @@ export default function AgreementManager({
 
       if (agreementsSubTab === "agreements") {
         targetType = "agreement";
-        filteredAgreements.forEach(item => {
+        // filteredAgreements가 아닌 agreements 전체 데이터베이스 대상 순회로 누락 방지!
+        agreements.forEach(item => {
           let orgMatch = false;
           let nameMatch = false;
           
@@ -694,7 +699,8 @@ export default function AgreementManager({
         });
       } else if (agreementsSubTab === "certificates") {
         targetType = "certificate";
-        filteredCertificates.forEach(item => {
+        // filteredCertificates가 아닌 certificates 전체 데이터베이스 대상 순회로 누락 방지!
+        certificates.forEach(item => {
           let orgMatch = false;
           let nameMatch = false;
 
@@ -735,7 +741,8 @@ export default function AgreementManager({
         });
       } else if (agreementsSubTab === "awards") {
         targetType = "award";
-        filteredAwards.forEach(item => {
+        // filteredAwards가 아닌 awards 전체 데이터베이스 대상 순회로 누락 방지!
+        awards.forEach(item => {
           let orgMatch = false;
           let nameMatch = false;
 
