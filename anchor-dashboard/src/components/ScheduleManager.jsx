@@ -2372,7 +2372,7 @@ export default function ScheduleManager({
                 borderBottom: activeMeetingCat === "committee" ? "2px solid var(--accent-color)" : "none"
               }}
             >
-              각종 위원회 회의
+              각종 위원회
             </button>
           </div>
 
@@ -3860,7 +3860,7 @@ export default function ScheduleManager({
                       <select name="category" value={formData.category} onChange={handleInputChange} style={{ width: "100%", padding: "0.5rem", background: "var(--panel-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }}>
                         <option value="operating">사업단 운영회의</option>
                         <option value="center">부서별 회의</option>
-                        <option value="committee">각종 위원회 회의</option>
+                        <option value="committee">각종 위원회</option>
                       </select>
                     </div>
                     <div>
