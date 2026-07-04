@@ -2290,11 +2290,11 @@ ${aiRawText}
       location: "",
       noTime: false,
       month: selectedEventMonth,
-      department: "ECC센터",
+      department: "",
       datetime: "",
       eventDate: defaultEventDate,
-      eventStartTime: "10:00",
-      eventEndTime: "11:00",
+      eventStartTime: "",
+      eventEndTime: "",
       attendeesInternal: "",
       attendeesExternal: "",
       program: "",
@@ -5096,6 +5096,7 @@ ${aiRawText}
                     <div>
                       <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>담당 부서(센터)</label>
                       <select name="department" value={formData.department} onChange={handleInputChange} style={{ width: "100%", padding: "0.5rem", background: "var(--panel-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }}>
+                        <option value="">-- 부서 선택 --</option>
                         {["ECC센터", "ICC센터", "RCC센터", "AID-X지원센터", "울산늘봄누리센터", "신산업특화센터", "사업운영팀"].map(d => (
                           <option key={d} value={d}>{d}</option>
                         ))}
