@@ -2853,82 +2853,75 @@ ${aiRawText}
                   className="card"
                   style={{ padding: "1.5rem", borderRadius: "10px", background: "var(--panel-bg)", border: "1px solid var(--border-color)", display: "flex", flexDirection: "column", gap: "1rem" }}
                 >
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%" }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                      <span style={{ fontSize: "0.8rem", color: "var(--text-secondary)", display: "flex", alignItems: "center", gap: "0.25rem", marginRight: "0.5rem" }}>
-                        <Clock size={14} />
-                        {event.department && (
-                          <span style={{ fontWeight: "700", color: "#EC4899", marginRight: "0.4rem" }}>
-                            {event.department}
-                          </span>
-                        )}
+                  {/* 1) 맨 윗줄: [담당부서]   행사제목   행사일정   수정/삭제(우측 정렬) */}
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%", borderBottom: "1px solid rgba(255,255,255,0.06)", paddingBottom: "0.6rem" }}>
+                    <div style={{ display: "flex", alignItems: "center", flexWrap: "wrap" }}>
+                      {/* 담당부서 (볼드, 짙은 분홍색) */}
+                      <span style={{ fontWeight: "800", color: "#EC4899", fontSize: "0.85rem" }}>
+                        {event.department || "사업운영팀"}
+                      </span>
+                      
+                      {/* 4칸 띄우고 (1.5rem 마진) 행사제목 */}
+                      <h4 style={{ margin: "0 0 0 1.5rem", fontSize: "1.05rem", fontWeight: "800", color: "var(--text-primary)" }}>
+                        {event.title}
+                      </h4>
+
+                      {/* 4칸 띄우고 (1.5rem 마진) 행사일정 */}
+                      <span style={{ fontSize: "0.8rem", color: "var(--text-secondary)", marginLeft: "1.5rem", display: "flex", alignItems: "center", gap: "0.25rem" }}>
                         {event.datetime}
                       </span>
-                      {currentRole.id !== "GUEST" && (
-                        <>
-                          <button 
-                            onClick={() => handleEditEvent(event)}
-                            title="수정"
-                            style={{ background: "transparent", border: "none", color: "var(--text-secondary)", cursor: "pointer", padding: "0.2rem", transition: "color 0.15s" }}
-                            onMouseOver={(e) => e.currentTarget.style.color = "var(--accent-color)"}
-                            onMouseOut={(e) => e.currentTarget.style.color = "var(--text-secondary)"}
-                          >
-                            <Edit size={14} />
-                          </button>
-                          <button 
-                            onClick={() => handleDeleteEvent(event.id)}
-                            title="삭제"
-                            style={{ background: "transparent", border: "none", color: "var(--text-secondary)", cursor: "pointer", padding: "0.2rem", transition: "color 0.15s" }}
-                            onMouseOver={(e) => e.currentTarget.style.color = "#EF4444"}
-                            onMouseOut={(e) => e.currentTarget.style.color = "var(--text-secondary)"}
-                          >
-                            <Trash2 size={14} />
-                          </button>
-                        </>
-                      )}
                     </div>
+
+                    {/* 수정 & 삭제 (우측정렬) */}
+                    {currentRole.id !== "GUEST" && (
+                      <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
+                        <button 
+                          onClick={() => handleEditEvent(event)}
+                          title="수정"
+                          style={{ background: "transparent", border: "none", color: "var(--text-secondary)", cursor: "pointer", padding: "0.2rem", transition: "color 0.15s" }}
+                          onMouseOver={(e) => e.currentTarget.style.color = "var(--accent-color)"}
+                          onMouseOut={(e) => e.currentTarget.style.color = "var(--text-secondary)"}
+                        >
+                          <Edit size={14} />
+                        </button>
+                        <button 
+                          onClick={() => handleDeleteEvent(event.id)}
+                          title="삭제"
+                          style={{ background: "transparent", border: "none", color: "var(--text-secondary)", cursor: "pointer", padding: "0.2rem", transition: "color 0.15s" }}
+                          onMouseOver={(e) => e.currentTarget.style.color = "#EF4444"}
+                          onMouseOut={(e) => e.currentTarget.style.color = "var(--text-secondary)"}
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                    )}
                   </div>
 
-                  <h4 style={{ margin: 0, fontSize: "1.1rem", fontWeight: "800", color: "var(--text-primary)" }}>
-                    {event.title}
-                  </h4>
-
-                  <div style={{ display: "grid", gridTemplateColumns: "1.2fr 0.8fr", gap: "1.5rem", borderTop: "1px solid rgba(255,255,255,0.05)", paddingTop: "0.75rem", fontSize: "0.8rem", color: "var(--text-primary)" }}>
+                  {/* 2) 바디 영역: 좌측(장소 & 참석자 & 목적) / 우측(결과 보고 작성 블록) */}
+                  <div style={{ display: "grid", gridTemplateColumns: "1.3fr 0.7fr", gap: "1.5rem", alignItems: "stretch", fontSize: "0.82rem", color: "var(--text-primary)" }}>
                     
-                    <div style={{ display: "flex", flexDirection: "column", gap: "0.6rem" }}>
+                    {/* 좌측 정보 컬럼 */}
+                    <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem", justifyContent: "center" }}>
+                      {/* 행사장소 및 참석자 정보 병합 한 줄 */}
                       <div>
-                        <span style={{ color: "var(--text-secondary)", display: "block" }}>📍 행사 장소</span>
-                        <strong>{event.location}</strong>
+                        <strong>행사장소 :</strong> {event.location || "미정"} <span style={{ color: "rgba(255,255,255,0.15)", margin: "0 0.5rem" }}>|</span> <strong>참석자(내부) :</strong> {event.attendeesInternal || "없음"}, <strong>참석자(외부) :</strong> {event.attendeesExternal || "없음"}
                       </div>
                       
-                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem" }}>
-                        <div>
-                          <span style={{ color: "var(--text-secondary)", display: "block" }}>👥 참석자 (내부)</span>
-                          <span>{event.attendeesInternal}</span>
-                        </div>
-                        <div>
-                          <span style={{ color: "var(--text-secondary)", display: "block" }}>👥 참석자 (외부)</span>
-                          <span>{event.attendeesExternal}</span>
-                        </div>
-                      </div>
-
-                      <div>
-                        <span style={{ color: "var(--text-secondary)", display: "block" }}>🔗 연계 프로그램</span>
-                        <span>{event.program}</span>
-                      </div>
-                      
-                      <div>
-                        <span style={{ color: "var(--text-secondary)", display: "block" }}>🎯 행사 목적</span>
-                        <p style={{ margin: "0.1rem 0 0 0", lineHeight: "1.3" }}>{event.purpose}</p>
+                      {/* 행사목적 한 줄 */}
+                      <div style={{ lineHeight: "1.4" }}>
+                        <strong>행사목적 :</strong> <span style={{ color: "var(--text-secondary)" }}>{event.purpose || "내용 없음"}</span>
                       </div>
                     </div>
 
-                    <div style={{ background: "rgba(52, 211, 153, 0.05)", padding: "0.75rem", borderRadius: "8px", border: "1px solid rgba(52, 211, 153, 0.1)", display: "flex", flexDirection: "column", gap: "0.25rem" }}>
+                    {/* 우측 결과보고 블록 (좌측 내용물과 높이 자동 맞춤 동기화) */}
+                    <div style={{ background: "rgba(52, 211, 153, 0.04)", padding: "0.75rem 1rem", borderRadius: "8px", border: "1px solid rgba(52, 211, 153, 0.1)", display: "flex", flexDirection: "column", gap: "0.3rem", justifyContent: "center" }}>
                       <span style={{ color: "#34D399", fontWeight: "700", fontSize: "0.75rem", display: "flex", alignItems: "center", gap: "0.25rem" }}>
-                        <CheckCircle size={14} />
+                        <CheckCircle size={13} />
                         행사 결과 보고
                       </span>
-                      <p style={{ margin: 0, fontSize: "0.75rem", lineHeight: "1.4" }}>{event.result}</p>
+                      <p style={{ margin: 0, fontSize: "0.75rem", lineHeight: "1.45", color: "var(--text-secondary)" }}>
+                        {event.result || "결과 보고가 등록되지 않았습니다."}
+                      </p>
                     </div>
 
                   </div>
