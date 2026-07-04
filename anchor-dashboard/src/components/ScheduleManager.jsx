@@ -1012,7 +1012,21 @@ export default function ScheduleManager({
       alert("게스트(방문자) 계정은 읽기 전용으로만 이용하실 수 있습니다.");
       return;
     }
-    if (window.confirm("선택한 회의록을 삭제하시겠습니까?")) {
+
+    // 보안 삭제 비밀번호 확인 프롬프트 신설 (비밀번호: anchor123!)
+    const pw = window.prompt("⚠️ 회의록 삭제는 되돌릴 수 없습니다!\n\n삭제 승인 비밀번호를 입력해 주세요.\n(관리 비밀번호: anchor123!)");
+    
+    if (pw === null) {
+      // 사용자가 취소(Cancel)를 누른 경우
+      return;
+    }
+
+    if (pw !== "anchor123!") {
+      alert("❌ 비밀번호가 올바르지 않습니다. 삭제가 취소되었습니다.");
+      return;
+    }
+
+    if (window.confirm("정말로 이 회의록을 영구 삭제하시겠습니까?")) {
       setMeetingSchedules(meetingSchedules.filter(m => m.id !== id));
     }
   };
