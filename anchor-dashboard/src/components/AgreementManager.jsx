@@ -117,6 +117,22 @@ export default function AgreementManager({
 
   const availableUnits = getAvailableUnits();
 
+  // 날짜 기준 RISE 사업 연차(1~5) 자동 계산기
+  const getYearFromDate = (dateStr) => {
+    if (!dateStr) return null;
+    const d = new Date(`${dateStr}T00:00:00`);
+    if (isNaN(d.getTime())) return null;
+    const year = d.getFullYear();
+    const month = d.getMonth() + 1;
+    
+    // 3월 1일부터 다음 해 2월 말일까지가 해당 차년도
+    if (month >= 3) {
+      return year - 2024;
+    } else {
+      return year - 2025;
+    }
+  };
+
   // 날짜 범위 검증 (Y차년도: (2024 + Y)년 3월 1일 ~ (2024 + Y + 1)년 2월 말일)
   const isDateValidForYear = (dateStr, year) => {
     if (!dateStr) return false;
@@ -649,10 +665,13 @@ export default function AgreementManager({
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!inputDate) return alert("협약 체결일자를 선택해 주세요.");
-    if (!isDateValidForYear(inputDate, selectedYear)) {
-      alert(`${selectedYear}차년도 사업기간은 ${2024 + selectedYear}년 03월 01일부터 ${2024 + selectedYear + 1}년 02월 말일까지입니다.\n선택하신 날짜는 범위에 해당되지 않습니다.`);
+    
+    const calculatedYear = getYearFromDate(inputDate);
+    if (!calculatedYear || calculatedYear < 1 || calculatedYear > 5) {
+      alert("유효한 RISE 사업 기간 내의 날짜를 선택해 주세요. (2025년 3월 이후)");
       return;
     }
+
     const cleanOrgs = inputOrganizations.map(o => ({ name: o.name.trim(), subject: o.subject.trim() })).filter(o => o.name);
     if (cleanOrgs.length === 0) return alert("협약 대상기관을 입력해 주세요.");
     if (cleanOrgs.some(o => !o.subject)) return alert("기관 측 협약주체를 입력해 주세요.");
@@ -669,7 +688,7 @@ export default function AgreementManager({
 
     const combinedSubjectOrg = cleanOrgs.map(o => `${o.name} (${o.subject})`).join(", ");
     const payload = {
-      year: selectedYear,
+      year: calculatedYear,
       date: inputDate,
       center: inputCenter,
       organizations: cleanOrgs,
@@ -698,13 +717,15 @@ export default function AgreementManager({
     if (!certDept.trim()) return alert("발급대상 소속을 입력해 주세요.");
     if (!certName.trim()) return alert("발급대상 성명을 입력해 주세요.");
     if (!certDate) return alert("발급일을 선택해 주세요.");
-    if (!isDateValidForYear(certDate, selectedYear)) {
-      alert(`${selectedYear}차년도 사업기간은 ${2024 + selectedYear}년 03월 01일부터 ${2024 + selectedYear + 1}년 02월 말일까지입니다.\n선택하신 날짜는 범위에 해당되지 않습니다.`);
+    
+    const calculatedYear = getYearFromDate(certDate);
+    if (!calculatedYear || calculatedYear < 1 || calculatedYear > 5) {
+      alert("유효한 RISE 사업 기간 내의 날짜를 선택해 주세요. (2025년 3월 이후)");
       return;
     }
 
     const payload = {
-      year: selectedYear,
+      year: calculatedYear,
       certNo: certNo.trim(),
       recipientDept: certDept.trim(),
       recipientName: certName.trim(),
@@ -730,13 +751,15 @@ export default function AgreementManager({
     if (!awardDept.trim()) return alert("발급대상 소속을 입력해 주세요.");
     if (!awardName.trim()) return alert("발급대상 성명을 입력해 주세요.");
     if (!awardDate) return alert("발급일을 선택해 주세요.");
-    if (!isDateValidForYear(awardDate, selectedYear)) {
-      alert(`${selectedYear}차년도 사업기간은 ${2024 + selectedYear}년 03월 01일부터 ${2024 + selectedYear + 1}년 02월 말일까지입니다.\n선택하신 날짜는 범위에 해당되지 않습니다.`);
+    
+    const calculatedYear = getYearFromDate(awardDate);
+    if (!calculatedYear || calculatedYear < 1 || calculatedYear > 5) {
+      alert("유효한 RISE 사업 기간 내의 날짜를 선택해 주세요. (2025년 3월 이후)");
       return;
     }
 
     const payload = {
-      year: selectedYear,
+      year: calculatedYear,
       awardNo: awardNo.trim(),
       recipientDept: awardDept.trim(),
       recipientName: awardName.trim(),

@@ -2765,25 +2765,28 @@ export default function App() {
     setSyncStatus("syncing");
     const timer = setTimeout(async () => {
       try {
-        await supabase.from("agreements").delete().eq("year", selectedYear);
-        const filtered = agreements.filter(a => a.year === selectedYear);
-        if (filtered.length > 0) {
-          const { error } = await supabase.from("agreements").insert(
-            filtered.map(a => ({
-              year: a.year,
-              date: a.date,
-              center: a.center,
-              organizations: a.organizations,
-              subject_univ: a.subjectUniversity || "",
-              subject_org: a.subjectOrganization || "",
-              unit_id: a.unitId || "",
-              contents: a.contents || [],
-              file_name: a.fileName || null,
-              file_data: a.fileData || null,
-              agreement_type: a.agreementType || "-"
-            }))
-          );
-          if (error) throw error;
+        const activeYears = Array.from(new Set([selectedYear, ...agreements.map(a => a.year)]));
+        for (const yr of activeYears) {
+          await supabase.from("agreements").delete().eq("year", yr);
+          const filtered = agreements.filter(a => a.year === yr);
+          if (filtered.length > 0) {
+            const { error } = await supabase.from("agreements").insert(
+              filtered.map(a => ({
+                year: a.year,
+                date: a.date,
+                center: a.center,
+                organizations: a.organizations,
+                subject_univ: a.subjectUniversity || "",
+                subject_org: a.subjectOrganization || "",
+                unit_id: a.unitId || "",
+                contents: a.contents || [],
+                file_name: a.fileName || null,
+                file_data: a.fileData || null,
+                agreement_type: a.agreementType || "-"
+              }))
+            );
+            if (error) throw error;
+          }
         }
         setSyncStatus("synced");
       } catch (e) {
@@ -2806,22 +2809,25 @@ export default function App() {
     setSyncStatus("syncing");
     const timer = setTimeout(async () => {
       try {
-        await supabase.from("certificates").delete().eq("year", selectedYear);
-        const filtered = certificates.filter(c => c.year === selectedYear);
-        if (filtered.length > 0) {
-          const { error } = await supabase.from("certificates").insert(
-            filtered.map(c => ({
-              year: c.year,
-              cert_no: c.certNo,
-              recipient_dept: c.recipientDept,
-              recipient_name: c.recipientName,
-              issue_date: c.issueDate,
-              issuer: c.issuer,
-              file_name: c.fileName || null,
-              file_data: c.fileData || null
-            }))
-          );
-          if (error) throw error;
+        const activeYears = Array.from(new Set([selectedYear, ...certificates.map(c => c.year)]));
+        for (const yr of activeYears) {
+          await supabase.from("certificates").delete().eq("year", yr);
+          const filtered = certificates.filter(c => c.year === yr);
+          if (filtered.length > 0) {
+            const { error } = await supabase.from("certificates").insert(
+              filtered.map(c => ({
+                year: c.year,
+                cert_no: c.certNo,
+                recipient_dept: c.recipientDept,
+                recipient_name: c.recipientName,
+                issue_date: c.issueDate,
+                issuer: c.issuer,
+                file_name: c.fileName || null,
+                file_data: c.fileData || null
+              }))
+            );
+            if (error) throw error;
+          }
         }
         setSyncStatus("synced");
       } catch (e) {
@@ -2844,22 +2850,25 @@ export default function App() {
     setSyncStatus("syncing");
     const timer = setTimeout(async () => {
       try {
-        await supabase.from("awards").delete().eq("year", selectedYear);
-        const filtered = awards.filter(a => a.year === selectedYear);
-        if (filtered.length > 0) {
-          const { error } = await supabase.from("awards").insert(
-            filtered.map(a => ({
-              year: a.year,
-              award_no: a.awardNo,
-              recipient_dept: a.recipientDept,
-              recipient_name: a.recipientName,
-              issue_date: a.issueDate,
-              issuer: a.issuer,
-              file_name: a.fileName || null,
-              file_data: a.fileData || null
-            }))
-          );
-          if (error) throw error;
+        const activeYears = Array.from(new Set([selectedYear, ...awards.map(a => a.year)]));
+        for (const yr of activeYears) {
+          await supabase.from("awards").delete().eq("year", yr);
+          const filtered = awards.filter(a => a.year === yr);
+          if (filtered.length > 0) {
+            const { error } = await supabase.from("awards").insert(
+              filtered.map(a => ({
+                year: a.year,
+                award_no: a.awardNo,
+                recipient_dept: a.recipientDept,
+                recipient_name: a.recipientName,
+                issue_date: a.issueDate,
+                issuer: a.issuer,
+                file_name: a.fileName || null,
+                file_data: a.fileData || null
+              }))
+            );
+            if (error) throw error;
+          }
         }
         setSyncStatus("synced");
       } catch (e) {
