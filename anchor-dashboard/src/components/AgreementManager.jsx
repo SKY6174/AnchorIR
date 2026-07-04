@@ -618,10 +618,10 @@ export default function AgreementManager({
             }
           }
 
-          // C. 연도/날짜 비교 (+20점/ 추가 +10점)
+          // C. 연도/날짜 비교 (+30점/ 추가 +10점)
           const itemYear = getYearFromDate(item.date);
-          if (itemYear === 1 && has2025) score += 20;
-          if (itemYear === 2 && has2026) score += 20;
+          if (itemYear === 1 && has2025) score += 30;
+          if (itemYear === 2 && has2026) score += 30;
           
           if (parsedDate && item.date === parsedDate) {
             score += 10;
@@ -647,10 +647,10 @@ export default function AgreementManager({
             score += 30;
           }
 
-          // C. 연도/날짜 비교 (+20점/ 추가 +10점)
+          // C. 연도/날짜 비교 (+30점/ 추가 +10점)
           const itemYear = getYearFromDate(item.issueDate);
-          if (itemYear === 1 && has2025) score += 20;
-          if (itemYear === 2 && has2026) score += 20;
+          if (itemYear === 1 && has2025) score += 30;
+          if (itemYear === 2 && has2026) score += 30;
 
           if (parsedDate && item.issueDate === parsedDate) {
             score += 10;
@@ -676,10 +676,10 @@ export default function AgreementManager({
             score += 30;
           }
 
-          // C. 연도/날짜 비교 (+20점/ 추가 +10점)
+          // C. 연도/날짜 비교 (+30점/ 추가 +10점)
           const itemYear = getYearFromDate(item.issueDate);
-          if (itemYear === 1 && has2025) score += 20;
-          if (itemYear === 2 && has2026) score += 20;
+          if (itemYear === 1 && has2025) score += 30;
+          if (itemYear === 2 && has2026) score += 30;
 
           if (parsedDate && item.issueDate === parsedDate) {
             score += 10;
@@ -699,8 +699,8 @@ export default function AgreementManager({
         reader.readAsDataURL(file);
       });
 
-      // 컷오프 한계선을 20점 이상으로 대폭 하향 조정
-      if (bestScore >= 20 && matchedTarget) {
+      // 컷오프 한계선 조율 (두 개 이상의 키워드 조합 일치 요구 ➔ 50점 이상)
+      if (bestScore >= 50 && matchedTarget) {
         results.push({
           fileName,
           fileData,
@@ -1838,7 +1838,7 @@ export default function AgreementManager({
             <div style={{ padding: "1.25rem", flex: 1, overflowY: "auto", display: "flex", flexDirection: "column", gap: "1rem" }}>
               <div style={{ fontSize: "0.75rem", color: "#a1a1aa", background: "#27272a", padding: "0.75rem", borderRadius: "0.35rem", border: "1px solid var(--border-color-dark)" }}>
                 💡 파일 이름에 포함된 <b>[연도, 기관명, 성명, 발급번호]</b> 등의 키워드를 분석하여 데이터와 비교 매칭했습니다.<br/>
-                적합도 점수가 20점 이상인 대상을 식별하여 자동 연결해 줍니다.
+                적합도 점수가 50점 이상인 대상을 식별하여 자동 연결해 줍니다.
               </div>
 
               <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.75rem", fontWeight: "700" }}>
