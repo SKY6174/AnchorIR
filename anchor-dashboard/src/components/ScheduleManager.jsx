@@ -5210,7 +5210,7 @@ export default function ScheduleManager({
                   }}>
                     <span style={{ fontSize: "1rem" }}>💡</span>
                     <span>
-                      <strong style={{ color: "#a78bfa" }}>간편 입력 팁</strong>: 맨 아래의 <strong style={{ textDecoration: "underline" }}>보도 내용 URL</strong>만 입력하신 뒤 우측의 <strong style={{ color: "#a78bfa" }}>[✨ AI 자동 입력]</strong> 버튼을 누르면, 방송 구분 / 매체 / 제목 / 일시 / 상세 내용까지 AI(Gemini)가 실시간으로 수집하여 일괄 입력해 줍니다.
+                      <strong style={{ color: "#a78bfa" }}>간편 입력 팁</strong>: 맨 아래의 <strong style={{ textDecoration: "underline" }}>보도 내용 URL</strong>만 입력하신 뒤 우측의 <strong style={{ color: "#a78bfa" }}>[✨ AI 자동 입력]</strong> 버튼을 누르면, 방송 구분 / 매체 / 제목 / 일시 / 상세 내용까지 GPT & Gemini API 교차 검증을 거쳐 실시간으로 수집하여 일괄 입력해 줍니다.
                     </span>
                   </div>
 
