@@ -644,17 +644,24 @@ export default function AgreementManager({
           let dateScore = 0;
           
           // A. 기관명 정밀 비교 (+50점)
-          item.organizations.forEach(org => {
-            const orgClean = cleanName(org.name);
-            if (orgClean) {
-              const fileOrgClean = cleanName(extractedOrg);
-              if (fileOrgClean && (fileOrgClean.includes(orgClean) || orgClean.includes(fileOrgClean))) {
-                orgScore = 50;
-              } else if (cleanName(fileBaseName).includes(orgClean)) {
-                orgScore = Math.max(orgScore, 30);
+          const compareOrg = (orgInput) => {
+            if (!orgInput) return;
+            const orgsArray = Array.isArray(orgInput) ? orgInput : [orgInput];
+            
+            orgsArray.forEach(org => {
+              const rawOrgName = typeof org === "object" && org !== null ? org.name : org;
+              const orgClean = cleanName(rawOrgName);
+              if (orgClean) {
+                const fileOrgClean = cleanName(extractedOrg);
+                if (fileOrgClean && (fileOrgClean.includes(orgClean) || orgClean.includes(fileOrgClean))) {
+                  orgScore = 50;
+                } else if (cleanName(fileBaseName).includes(orgClean)) {
+                  orgScore = Math.max(orgScore, 30);
+                }
               }
-            }
-          });
+            });
+          };
+          compareOrg(item.organizations);
 
           // B. 협약주체(성명) 비교 (+40점)
           if (item.subjectUniversity) {
