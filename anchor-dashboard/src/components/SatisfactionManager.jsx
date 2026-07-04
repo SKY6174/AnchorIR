@@ -99,10 +99,19 @@ export default function SatisfactionManager({ selectedYear }) {
   const [aiReport, setAiReport] = useState(null); // AI 총평 결과
   const [generatingAi, setGeneratingAi] = useState(false); // AI 제너레이션 로더
 
-  // 선택된 만족도 조사가 바뀌면 총평 리포트 상태 초기화
+  // 선택된 만족도 조사가 바뀌거나 surveys가 갱신되면 해당 조사의 AI 총평 복원 로드
   useEffect(() => {
-    setAiReport(null);
-  }, [selectedSurveyId]);
+    if (selectedSurveyId && surveys.length > 0) {
+      const activeSurvey = surveys.find(s => s.id === selectedSurveyId);
+      if (activeSurvey && activeSurvey.aiReport) {
+        setAiReport(activeSurvey.aiReport);
+      } else {
+        setAiReport(null);
+      }
+    } else {
+      setAiReport(null);
+    }
+  }, [selectedSurveyId, surveys]);
 
   // 1. DB로부터 조사 목록 및 수집 응답 데이터 통합 조회
   const fetchSurveysFromDb = async () => {
@@ -144,6 +153,7 @@ export default function SatisfactionManager({ selectedYear }) {
           department: s.department,
           status: s.status,
           googleSheetUrl: s.google_sheet_url,
+          aiReport: s.ai_report || null,
           questions: [
             "제공된 교육 프로그램의 전문성 및 실무 연계성에 만족하십니까?",
             "프로그램 진행자의 전문성과 원활한 일정 소통 방식에 만족하십니까?",
@@ -210,6 +220,7 @@ export default function SatisfactionManager({ selectedYear }) {
             department: s.department,
             status: s.status,
             googleSheetUrl: s.google_sheet_url,
+            aiReport: s.ai_report || null,
             questions: defaultSurveys[0].questions,
             responses: matching
           };
@@ -611,7 +622,7 @@ ${commentList || "(없음)"}
     }
 
     // 모의 총평 로직 정의 (API 키가 없거나 통신 실패 시 폴백용)
-    const runMockReport = () => {
+    const runMockReport = async () => {
       let report = "";
       if (avgScore >= 90) {
         report = `본 만족도 조사 결과 종합 환산 만족도는 ${avgScore}점으로 매우 우수한 성과를 보였습니다. 문항 분석을 종합하면 특히 교육 과정의 전문성과 소통 지원 분야에서 강점이 도드라집니다. 다만, 주관식 피드백에서 지목된 시설 인프라 대기 시간 단축 요구 및 기자재 사전 점검 프로세스는 향후 보완이 요구되는 주안점입니다. 차년도 예산 기획 시 장비 예산 비목 증액과 같은 환류 조치를 강구하여 성과 체계를 고도화할 것을 권장합니다.`;
@@ -621,6 +632,19 @@ ${commentList || "(없음)"}
         report = `금번 만족도 조사는 종합 ${avgScore}점으로 목표 만족도에 미치지 못하여 긴급 보완책이 시급합니다. 문항별 지표를 분석해 보면 공간 쾌적도 및 행정 절차 지연 부문에서 저평가가 확인되었습니다. 차년도 사업 재설계 시, 행정 프로세스의 디지털 자동화와 실습실 상시 소독 점검 제도를 강제화하고, 예산의 10% 이상을 환경 개선 비목에 우선 배정하는 특단의 환류 계획이 입안되어야 할 것으로 사료됩니다.`;
       }
       setAiReport(report);
+      
+      try {
+        await supabase
+          .from("satisfaction_surveys")
+          .update({ ai_report: report })
+          .eq("id", survey.id);
+
+        setSurveys(prev => 
+          prev.map(s => s.id === survey.id ? { ...s, aiReport: report } : s)
+        );
+      } catch (dbErr) {
+        console.warn("Failed to save mock report to Supabase:", dbErr);
+      }
       setGeneratingAi(false);
     };
 
@@ -662,7 +686,27 @@ ${commentList || "(없음)"}
       const resData = await response.json();
       const text = resData?.choices?.[0]?.message?.content;
       if (text) {
-        setAiReport(text.trim());
+        const finalReport = text.trim();
+        setAiReport(finalReport);
+        
+        try {
+          const { error: dbUpdateError } = await supabase
+            .from("satisfaction_surveys")
+            .update({ ai_report: finalReport })
+            .eq("id", survey.id);
+
+          if (dbUpdateError) {
+            console.error("Failed to save AI report to Supabase:", dbUpdateError);
+          } else {
+            setSurveys(prevSurveys => 
+              prevSurveys.map(s => 
+                s.id === survey.id ? { ...s, aiReport: finalReport } : s
+              )
+            );
+          }
+        } catch (dbErr) {
+          console.error("Database update transaction failed:", dbErr);
+        }
       } else {
         throw new Error("OpenAI response is empty");
       }
