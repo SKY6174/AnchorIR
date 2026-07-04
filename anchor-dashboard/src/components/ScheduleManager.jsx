@@ -6,6 +6,8 @@ import {
 } from "lucide-react";
 import { supabase } from "../supabaseClient";
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import * as pdfjsLib from "pdfjs-dist";
+pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.worker.min.mjs`;
 
 // RISE 사업을 이끌어가는 5대 거버넌스 위원회 상세 정의 상수
 const COMMITTEES_DATA = [
@@ -563,21 +565,49 @@ export default function ScheduleManager({
   };
 
   // 실제 파일 선택 핸들러
-  const handleAiFileChange = (e) => {
+  const handleAiFileChange = async (e) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
       setAiFileName(file.name);
       
-      // 텍스트 파일인 경우 실시간 파일 내용 추출
+      // 1. 텍스트 파일인 경우 실시간 파일 내용 추출
       if (file.type.match('text.*') || file.name.endsWith('.txt') || file.name.endsWith('.csv')) {
         const reader = new FileReader();
         reader.onload = (event) => {
           setAiRawText(event.target.result);
         };
         reader.readAsText(file);
-      } else {
-        // HWP나 PDF 등 바이너리는 파일명을 텍스트 상자에 힌트로 주고, 수동 기입 안내
-        setAiRawText(`[${file.name}] 파일이 감지되었습니다. 텍스트 추출이 불가능한 포맷이므로, 기획서의 주요 내용을 아래 텍스트 상자에 붙여넣어 주세요.`);
+      } 
+      // 2. PDF 파일인 경우 브라우저 단독 라이브러리로 텍스트 파싱
+      else if (file.type === "application/pdf" || file.name.endsWith('.pdf')) {
+        setAiRawText("📄 PDF 파일 분석 중... (본문 텍스트 추출 진행 중)");
+        try {
+          const arrayBuffer = await file.arrayBuffer();
+          // pdfjs를 이용한 문서 로드
+          const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
+          const pdf = await loadingTask.promise;
+          let fullText = "";
+          
+          for (let i = 1; i <= pdf.numPages; i++) {
+            const page = await pdf.getPage(i);
+            const textContent = await page.getTextContent();
+            const pageText = textContent.items.map(item => item.str).join(" ");
+            fullText += `[Page ${i}]\n${pageText}\n\n`;
+          }
+          
+          if (fullText.trim()) {
+            setAiRawText(fullText.trim());
+          } else {
+            setAiRawText(`[${file.name}] 파일에서 텍스트를 추출하지 못했습니다. 스캔 이미지 형태의 PDF이거나 본문이 비어있습니다.`);
+          }
+        } catch (pdfErr) {
+          console.error("PDF 텍스트 추출 실패:", pdfErr);
+          setAiRawText(`❌ PDF 텍스트 추출에 실패했습니다. 에러: ${pdfErr.message}\n본문 내용을 복사해서 직접 입력해 주세요.`);
+        }
+      }
+      // 3. 그 외 바이너리 포맷 (HWP 등)
+      else {
+        setAiRawText(`[${file.name}] 파일이 감지되었습니다. 텍스트 직접 추출이 불가능한 한글(HWP) 파일 포맷이므로, 기획서 본문 내용을 복사해서 여기에 붙여넣어 주세요.`);
       }
     }
   };
