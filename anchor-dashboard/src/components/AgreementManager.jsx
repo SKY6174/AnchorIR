@@ -47,6 +47,9 @@ export default function AgreementManager({
   const [isUploading, setIsUploading] = useState(false);
   const [uploadStatusText, setUploadStatusText] = useState("");
 
+  // 단위과제 다중 선택 필터링 상태 추가
+  const [selectedUnits, setSelectedUnits] = useState([]);
+
   // 정렬 상태 관리 (협약서만 유지)
   const [sortConfig, setSortConfig] = useState({ key: "date", direction: "asc" });
 
@@ -93,6 +96,22 @@ export default function AgreementManager({
   };
 
   const availableUnits = getAvailableUnits();
+
+  // 단위과제 다중 선택 필터 토글 핸들러
+  const handleToggleUnitFilter = (unitId) => {
+    setSelectedUnits((prev) => {
+      if (prev.includes(unitId)) {
+        return prev.filter((id) => id !== unitId);
+      } else {
+        return [...prev, unitId];
+      }
+    });
+  };
+
+  // 단위과제 필터 전체 해제 핸들러
+  const handleClearUnitFilter = () => {
+    setSelectedUnits([]);
+  };
 
   // 날짜 기준 RISE 사업 연차(1~5) 자동 계산기
   const getYearFromDate = (dateStr) => {
@@ -177,13 +196,18 @@ export default function AgreementManager({
 
   const sortedAgreements = getSortedAgreements();
 
+  // 단위과제 다중 선택 필터가 적용된 최종 협약서 목록
+  const displayAgreements = selectedUnits.length > 0
+    ? sortedAgreements.filter(a => selectedUnits.includes(a.unitId))
+    : sortedAgreements;
+
   // 엑셀 다운로드 pre-generation 캐싱 (협약서 전용으로 축소)
   useEffect(() => {
-    if (sortedAgreements.length === 0) {
+    if (displayAgreements.length === 0) {
       setExcelDownloadUrl("");
       return;
     }
-    const excelData = sortedAgreements.map((agr) => {
+    const excelData = displayAgreements.map((agr) => {
       let orgsStr = "";
       let orgSubjectsStr = "";
       if (Array.isArray(agr.organizations)) {
@@ -221,7 +245,7 @@ export default function AgreementManager({
       console.error("Excel generation error:", err);
       setExcelDownloadUrl("");
     }
-  }, [sortedAgreements, selectedYear]);
+  }, [displayAgreements, selectedYear]);
 
   // 엑셀 서식 다운로드 (템플릿)
   const handleDownloadTemplate = () => {
@@ -956,9 +980,79 @@ export default function AgreementManager({
 
       {/* 1. 협약 관리 View */}
       <>
-        <div>
-          <h2 style={{ fontSize: "1.0rem", fontWeight: "800", color: "white" }}>⚓ {selectedYear}차년도 협약서 통합 관리</h2>
-          <p style={{ fontSize: "0.72rem", color: "var(--text-secondary-dark)" }}>단위과제별 가족회사 및 기관과의 대외 협약 체결 내용을 연차별로 영속 보존합니다.</p>
+        {/* 단위과제 필터링 다중 선택 제어부 */}
+        <div style={{
+          display: "flex",
+          flexDirection: "column",
+          gap: "0.6rem",
+          background: "rgba(30, 41, 59, 0.4)",
+          padding: "0.85rem 1.25rem",
+          borderRadius: "0.5rem",
+          border: "1px solid var(--border-color-dark)",
+          marginBottom: "0.25rem"
+        }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <span style={{ fontSize: "0.75rem", fontWeight: "700", color: "#94a3b8" }}>
+              🔍 단위과제 다중 선택 필터
+            </span>
+            {selectedUnits.length > 0 && (
+              <button
+                onClick={handleClearUnitFilter}
+                style={{
+                  background: "none",
+                  border: "none",
+                  color: "#38bdf8",
+                  fontSize: "0.68rem",
+                  cursor: "pointer",
+                  fontWeight: "600",
+                  padding: 0
+                }}
+              >
+                필터 초기화
+              </button>
+            )}
+          </div>
+          <div style={{ display: "flex", gap: "0.4rem", flexWrap: "wrap" }}>
+            <button
+              onClick={handleClearUnitFilter}
+              style={{
+                padding: "0.3rem 0.65rem",
+                fontSize: "0.7rem",
+                fontWeight: "700",
+                borderRadius: "0.25rem",
+                cursor: "pointer",
+                border: "1px solid " + (selectedUnits.length === 0 ? "var(--primary-color)" : "rgba(255,255,255,0.1)"),
+                background: selectedUnits.length === 0 ? "var(--primary-color)" : "transparent",
+                color: selectedUnits.length === 0 ? "white" : "#94a3b8",
+                transition: "all 0.15s ease"
+              }}
+            >
+              전체
+            </button>
+            {availableUnits.map((unit) => {
+              const isSelected = selectedUnits.includes(unit.id);
+              return (
+                <button
+                  key={unit.id}
+                  onClick={() => handleToggleUnitFilter(unit.id)}
+                  title={unit.title}
+                  style={{
+                    padding: "0.3rem 0.65rem",
+                    fontSize: "0.7rem",
+                    fontWeight: "700",
+                    borderRadius: "0.25rem",
+                    cursor: "pointer",
+                    border: "1px solid " + (isSelected ? "#38bdf8" : "rgba(255,255,255,0.06)"),
+                    background: isSelected ? "rgba(56, 189, 248, 0.15)" : "rgba(255, 255, 255, 0.02)",
+                    color: isSelected ? "#38bdf8" : "#94a3b8",
+                    transition: "all 0.15s ease"
+                  }}
+                >
+                  {unit.id}
+                </button>
+              );
+            })}
+          </div>
         </div>
 
         {filteredAgreements.filter(a => !isDateValidForYear(a.date, selectedYear)).length > 0 && (
@@ -996,14 +1090,14 @@ export default function AgreementManager({
               </tr>
             </thead>
             <tbody>
-              {sortedAgreements.length === 0 ? (
+              {displayAgreements.length === 0 ? (
                 <tr>
                   <td colSpan={currentRole.rank <= 2 ? 9 : 8} style={{ padding: "2rem", textAlign: "center", color: "var(--text-secondary-dark)" }}>
-                    등록된 협약서 내역이 없습니다.
+                    등록된 협약서 내역이 없거나 필터 조건에 맞는 데이터가 없습니다.
                   </td>
                 </tr>
               ) : (
-                sortedAgreements.map((agr) => {
+                displayAgreements.map((agr) => {
                   const hasInvalidDate = !isDateValidForYear(agr.date, selectedYear);
                   return (
                     <tr key={agr.id} style={{ borderBottom: "1px solid var(--border-color-dark)", background: hasInvalidDate ? "rgba(239, 68, 68, 0.03)" : "rgba(255,255,255,0.01)" }}>
