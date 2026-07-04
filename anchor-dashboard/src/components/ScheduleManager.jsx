@@ -5,6 +5,7 @@ import {
   Edit, Trash2
 } from "lucide-react";
 import { supabase } from "../supabaseClient";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 // RISE 사업을 이끌어가는 5대 거버넌스 위원회 상세 정의 상수
 const COMMITTEES_DATA = [
@@ -532,47 +533,66 @@ export default function ScheduleManager({
   // AI 기획서 자동완성 상태 관리
   const [isAiLoading, setIsAiLoading] = useState(false);
   const [aiFileName, setAiFileName] = useState("");
+  const [aiRawText, setAiRawText] = useState(""); // 기획서 원본 텍스트 직접 입력/저장용
   const [aiProgress, setAiProgress] = useState(0);
   const [aiStatusText, setAiStatusText] = useState("");
 
   // 샘플 파일 로드
   const handleLoadSampleFile = () => {
-    setAiFileName("RISE_지산학_연계_창업_해커톤_결과보고서.hwp");
+    setAiFileName("RISE_지산학_연계_창업_해커톤_결과보고서.txt");
+    setAiRawText(`
+[결과보고서] 2026학년도 RISE 지산학 연계 창업 해커톤 캠프
+
+1. 행사개요
+- 행사명: 2026학년도 RISE 지산학 연계 창업 해커톤 캠프
+- 일시: 2026년 7월 15일 09:00 ~ 18:00
+- 장소: 울산과학대학교 아산체육관 2층 세미나실
+- 주관부서: ECC센터
+- 관련 프로그램: 지산학 밀착형 창업 생태계 활성화 프로그램
+
+2. 목적 및 취지
+울산 지역의 정주형 기술 창업 아이템을 발굴하고, 지산학 연계를 통한 청년 로컬 창업 성공 모델 발굴과 멘토링 매칭을 목표로 함. 지역의 정주 인프라와 친환경 에너지 아이템을 결합한 다양한 청년 비즈니스 모델을 발굴하고자 함.
+
+3. 참석대상 및 규모
+- 내부 참석자: 창업보육센터 전임교수 3명, 연구원 5명, 외부 멘토단 4명 (총 12명)
+- 외부 참석자: 울산광역시 미래산업과 주무관 2명, 울산 테크노파크 창업지원팀 3명, 청년 벤처캐피탈(VC) 심사역 3명 (총 8명)
+
+4. 행사 결과 및 주요 성과
+학생 창업동아리 8개 팀이 참가하여 12시간 동안 집중 비즈니스 모델 빌드업을 거쳤으며, 최종 최우수상 1개 팀(팀명: 울산로컬히어로 - '친환경 수소 자전거 스테이션 인프라 공유 모델')을 선정하여 특허 출원 멘토링 연계를 확정함. 울산 매일 및 지역 언론 보도자료 2건 송출 완료.
+    `.trim());
   };
 
   // 실제 파일 선택 핸들러
   const handleAiFileChange = (e) => {
     if (e.target.files && e.target.files[0]) {
-      setAiFileName(e.target.files[0].name);
+      const file = e.target.files[0];
+      setAiFileName(file.name);
+      
+      // 텍스트 파일인 경우 실시간 파일 내용 추출
+      if (file.type.match('text.*') || file.name.endsWith('.txt') || file.name.endsWith('.csv')) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          setAiRawText(event.target.result);
+        };
+        reader.readAsText(file);
+      } else {
+        // HWP나 PDF 등 바이너리는 파일명을 텍스트 상자에 힌트로 주고, 수동 기입 안내
+        setAiRawText(`[${file.name}] 파일이 감지되었습니다. 텍스트 추출이 불가능한 포맷이므로, 기획서의 주요 내용을 아래 텍스트 상자에 붙여넣어 주세요.`);
+      }
     }
   };
 
-  // AI 폼 자동 기입 시뮬레이터 실행
-  const triggerAiAutoFill = () => {
-    if (!aiFileName) {
-      alert("⚠️ 먼저 분석할 첨부파일을 선택하시거나 [기획안 샘플 자동 로드]를 클릭해 주세요.");
-      return;
-    }
-    
+  // API Key 오류나 통신 에러 시 작동하는 모의 폴백 함수
+  const runSimulationFallback = () => {
     setIsAiLoading(true);
-    setAiProgress(0);
-    setAiStatusText("문서 바이너리 및 텍스트 추출 중...");
-
-    let currentProgress = 0;
-    const interval = setInterval(() => {
-      currentProgress += 10;
-      setAiProgress(currentProgress);
+    setAiProgress(10);
+    setAiStatusText("시뮬레이션 모드로 폼 분석 진행...");
+    
+    setTimeout(() => {
+      setAiProgress(60);
+      setAiStatusText("모의 기획 데이터 로드 중...");
       
-      if (currentProgress === 30) {
-        setAiStatusText("HWP 문서 내 RISE 핵심 키워드 매핑 분석 (GPT-4o API)...");
-      } else if (currentProgress === 60) {
-        setAiStatusText("행사 기획 목적 및 예산 집행 항목 매칭 (Gemini Flash API)...");
-      } else if (currentProgress === 90) {
-        setAiStatusText("최종 폼 데이터 정합성 검증 및 포맷 기입 준비...");
-      } else if (currentProgress >= 100) {
-        clearInterval(interval);
-        
-        // 파일명에 맞는 모의 분석 데이터 구성
+      setTimeout(() => {
         const lowerName = aiFileName.toLowerCase();
         let targetData = {
           title: "RISE 지산학 연계 창업 해커톤 캠프",
@@ -588,7 +608,6 @@ export default function ScheduleManager({
           result: "학생 창업동아리 8개 팀 참여, 최종 최우수상 1개 팀(팀명: 울산로컬히어로) 선정 및 특허 출원 멘토링 연계 확정. 울산 매일 보도자료 2건 송출 완료"
         };
 
-        // 파일명에 특정 키워드가 포함될 경우 맞춤형 변주 제공
         if (lowerName.includes("특강") || lowerName.includes("세미나")) {
           targetData = {
             title: "신산업 선도 기술 창업 명사 초청 특강",
@@ -603,33 +622,127 @@ export default function ScheduleManager({
             purpose: "자율주행 및 수소 모빌리티 기술 동향 파악 및 학생들의 신산업 이해도 증진을 통한 직무 역량 확보",
             result: "재학생 48명 참여 및 피드백 만족도 조사 94.6점 달성. 특강 영상 녹화물 아카이빙 완료"
           };
-        } else if (lowerName.includes("워크숍") || lowerName.includes("워크샵")) {
-          targetData = {
-            title: "RISE 사업단 활성화를 위한 지산학 산학협력 워크숍",
-            department: "사업운영팀",
-            location: "경주 라한셀렉트 세미나룸 B",
-            eventDate: "2026-09-03",
-            eventStartTime: "13:00",
-            eventEndTime: "20:00",
-            attendeesInternal: "사업단 단장 송경영 교수, 각 센터장 6명, 책임연구원 12명",
-            attendeesExternal: "울산 TP 단장 1명, 지역 산학협업 가족회사 대표 8명",
-            program: "사업단 성과 관리 및 지산학 네트워킹",
-            purpose: "2차년도 RISE 세부 행동방식 조율 및 부서 간 협업 시너지 강화 방안 수립과 지역 산학협력 네트워크 강화",
-            result: "총 28명 참석, 4대 핵심 분야 협업 결의 및 하반기 세부 액션플랜 최종 합의 서명 완료"
-          };
         }
 
         setFormData(prev => ({
           ...prev,
           ...targetData
         }));
-
+        
         setIsAiLoading(false);
         setAiProgress(0);
         setAiStatusText("");
-        alert("🎉 AI(GPT + Gemini)가 기획서 첨부문서를 심층 분석하여 행사 등록 정보 11개 항목을 완벽하게 기입하였습니다!");
+        alert("🎉 AI 시뮬레이터가 정상 구동되어 모의 데이터 기입이 완료되었습니다!");
+      }, 1000);
+    }, 1000);
+  };
+
+  // AI 폼 자동 기입 실제 연동 실행
+  const triggerAiAutoFill = async () => {
+    if (!aiRawText) {
+      alert("⚠️ 먼저 분석할 기획서/결과서 텍스트를 입력하시거나 [기획안 샘플 파일 자동 로드]를 클릭해 주세요.");
+      return;
+    }
+
+    // 1. API 키 판별 (환경변수 시도 -> 없으면 로컬 스토리지 시도 -> 없으면 사용자 프롬프트 입력 유도)
+    let apiKey = import.meta.env.VITE_GEMINI_API_KEY || "";
+    
+    // 환경변수 값이 비어있거나 마스킹 형태일 시 로컬스토리지 활용
+    if (!apiKey || apiKey.startsWith("AQ.") === false) {
+      apiKey = localStorage.getItem("user_gemini_api_key") || "";
+    }
+
+    if (!apiKey) {
+      const inputKey = prompt(
+        "🔑 실시간 AI 분석을 사용하려면 구글 제미나이(Gemini) API Key가 필요합니다.\n무료 API Key를 입력해 주세요 (입력한 키는 브라우저 로컬 스토리지에만 저장됩니다):",
+        ""
+      );
+      if (!inputKey) {
+        alert("⚠️ API Key가 입력되지 않아 시뮬레이션 모드로 전환 기입합니다.");
+        runSimulationFallback();
+        return;
       }
-    }, 180);
+      apiKey = inputKey.trim();
+      localStorage.setItem("user_gemini_api_key", apiKey);
+    }
+
+    setIsAiLoading(true);
+    setAiProgress(10);
+    setAiStatusText("Google Gemini API 초기화 중...");
+
+    try {
+      // 2. Gemini SDK 클라이언트 인스턴스 생성
+      const genAI = new GoogleGenerativeAI(apiKey);
+      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+      setAiProgress(30);
+      setAiStatusText("기획안 원문 텍스트 토큰 전송 중...");
+
+      const promptText = `
+너는 대학교 RISE(지역혁신중심 대학지원체계) 사업단의 행사 등록 정보 생성 전문가이다.
+제공된 행사 기획서 또는 결과보고서 텍스트 내용을 바탕으로 행사 등록 폼에 입력할 11가지 항목의 데이터를 정확하게 추출하고 가공해라.
+
+반드시 아래 JSON 포맷을 정확히 따르고, JSON 마크다운 포맷(\`\`\`json ... \`\`\`)으로 감싸서 출력해라. JSON 외에 다른 설명이나 인사말, 주석은 절대 포함하지 마라.
+
+JSON 구조:
+{
+  "title": "행사 명칭 (예: RISE 지산학 공동 취업 박람회)",
+  "department": "담당 부서(센터) (ECC센터, ICC센터, RCC센터, AID-X지원센터, 울산늘봄누리센터, 신산업특화센터, 사업운영팀 중 하나만 선택해서 텍스트로 넣어라)",
+  "location": "행사 장소",
+  "eventDate": "행사 일자 (YYYY-MM-DD 형식)",
+  "eventStartTime": "시작 시간 (HH:MM 형식)",
+  "eventEndTime": "종료 시간 (HH:MM 형식)",
+  "attendeesInternal": "참석자 내부 구분 (예: 내부 교수 및 연구원 15명)",
+  "attendeesExternal": "참석자 외부 구분 (예: 지자체 관계자 5명)",
+  "program": "관련 프로그램 (예: 지역 정착 지원 프로그램)",
+  "purpose": "행사 목적 (2~3문장)",
+  "result": "행사 결과 (2~3문장)"
+}
+
+행사 기획서/결과보고서 원문 텍스트:
+${aiRawText}
+      `.trim();
+
+      setAiProgress(60);
+      setAiStatusText("제미나이 1.5 Flash 모델 심층 요약 분석 진행 중...");
+
+      const result = await model.generateContent(promptText);
+      const response = await result.response;
+      const responseText = response.text();
+
+      setAiProgress(90);
+      setAiStatusText("제미나이 반환 데이터 파싱 중...");
+
+      // JSON 데이터 추출
+      let jsonStr = responseText;
+      const jsonMatch = responseText.match(/```json\s*([\s\S]*?)\s*```/);
+      if (jsonMatch && jsonMatch[1]) {
+        jsonStr = jsonMatch[1];
+      } else {
+        const cleanMatch = responseText.match(/```\s*([\s\S]*?)\s*```/);
+        if (cleanMatch && cleanMatch[1]) {
+          jsonStr = cleanMatch[1];
+        }
+      }
+
+      const cleanJson = JSON.parse(jsonStr.trim());
+      
+      // 폼 데이터 상태 갱신
+      setFormData(prev => ({
+        ...prev,
+        ...cleanJson
+      }));
+
+      setIsAiLoading(false);
+      setAiProgress(100);
+      setAiStatusText("");
+      alert("🎉 실제 구글 제미나이(Gemini 1.5 Flash)가 기획서를 분석하여 행사 등록 정보 11개 항목을 실시간으로 입력 완료하였습니다!");
+
+    } catch (error) {
+      console.error("Gemini API 호출 에러:", error);
+      alert(`❌ Gemini API 분석 실패: ${error.message}\n네트워크 불안정 또는 API 키 에러로 인해 시뮬레이션 모드로 전환 기입합니다.`);
+      runSimulationFallback();
+    }
   };
 
   // 연구원 선택 칩 클릭 시 참석자(내부) 텍스트 필드에 추가/삭제 토글해 주는 헬퍼 함수
@@ -4860,6 +4973,45 @@ export default function ScheduleManager({
                         </div>
                       </div>
                     )}
+                  </div>
+
+                  {/* 기획서/결과서 텍스트 직접 입력창 (Gemini API가 직접 요약하는 소스 텍스트) */}
+                  <div style={{ marginBottom: "0.5rem" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.2rem" }}>
+                      <label style={{ display: "block", fontSize: "0.75rem", color: "var(--text-secondary)", fontWeight: "600" }}>
+                        📋 분석할 기획서 원문 텍스트 (직접 붙여넣거나 파일 로드 가능)
+                      </label>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const newKey = prompt("🔑 Google Gemini API Key 변경:", localStorage.getItem("user_gemini_api_key") || "");
+                          if (newKey !== null) {
+                            localStorage.setItem("user_gemini_api_key", newKey.trim());
+                            alert("API Key가 브라우저에 안전하게 저장되었습니다.");
+                          }
+                        }}
+                        style={{ fontSize: "0.68rem", color: "var(--accent-color)", background: "transparent", border: "none", cursor: "pointer", display: "flex", alignItems: "center", gap: "0.15rem" }}
+                      >
+                        ⚙️ API 설정
+                      </button>
+                    </div>
+                    <textarea
+                      value={aiRawText}
+                      onChange={(e) => setAiRawText(e.target.value)}
+                      placeholder="기획안 문서(.txt)를 업로드하거나, 한글(HWP) 및 PDF 파일의 본문 내용을 복사해서 여기에 붙여넣어 주세요. [AI 자동완성]을 누르면 이 내용을 기반으로 실시간 Gemini 분석이 실행됩니다."
+                      style={{
+                        width: "100%",
+                        height: "55px",
+                        padding: "0.4rem 0.5rem",
+                        background: "rgba(0,0,0,0.15)",
+                        border: "1px solid var(--border-color)",
+                        borderRadius: "6px",
+                        color: "var(--text-primary)",
+                        fontSize: "0.72rem",
+                        resize: "none",
+                        fontFamily: "sans-serif"
+                      }}
+                    />
                   </div>
 
                   <div>
