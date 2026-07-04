@@ -2700,7 +2700,8 @@ export default function App() {
             id: Number(x.id),
             month: Number(x.month),
             attendeesInternal: x.attendees_internal,
-            attendeesExternal: x.attendees_external
+            attendeesExternal: x.attendees_external,
+            audioUrl: x.audio_url
           }));
           setMeetingSchedules(formatted);
           localStorage.setItem(`anchor_cache_meet_y${selectedYear}`, JSON.stringify(formatted));
@@ -3070,7 +3071,8 @@ export default function App() {
               attendees_external: s.attendeesExternal,
               agenda: s.agenda,
               result: s.result,
-              datetime: s.datetime
+              datetime: s.datetime,
+              audio_url: s.audioUrl
             }))
           );
           if (error) throw error;
