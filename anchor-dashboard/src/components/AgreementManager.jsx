@@ -28,6 +28,9 @@ export default function AgreementManager({
   onAddAward,
   onUpdateAward,
   onDeleteAward,
+  setAgreements,
+  setCertificates,
+  setAwards,
   currentRole
 }) {
   // 1. 기존 협약서 모달 및 입력 폼 상태
@@ -729,27 +732,61 @@ export default function AgreementManager({
   const handleApplyBatchFiles = () => {
     let appliedCount = 0;
     
+    const successMap = new Map();
     batchFileResults.forEach(res => {
       if (res.status === "success" && res.targetId) {
-        if (agreementsSubTab === "agreements") {
-          onUpdateAgreement(res.targetId, {
-            fileName: res.fileName,
-            fileData: res.fileData
-          });
-        } else if (agreementsSubTab === "certificates") {
-          onUpdateCertificate(res.targetId, {
-            fileName: res.fileName,
-            fileData: res.fileData
-          });
-        } else if (agreementsSubTab === "awards") {
-          onUpdateAward(res.targetId, {
-            fileName: res.fileName,
-            fileData: res.fileData
-          });
-        }
-        appliedCount++;
+        successMap.set(res.targetId, res);
       }
     });
+
+    if (successMap.size === 0) return;
+
+    if (agreementsSubTab === "agreements") {
+      setAgreements(prev => 
+        prev.map(item => {
+          const match = successMap.get(item.id);
+          if (match) {
+            appliedCount++;
+            return {
+              ...item,
+              fileName: match.fileName,
+              fileData: match.fileData
+            };
+          }
+          return item;
+        })
+      );
+    } else if (agreementsSubTab === "certificates") {
+      setCertificates(prev => 
+        prev.map(item => {
+          const match = successMap.get(item.id);
+          if (match) {
+            appliedCount++;
+            return {
+              ...item,
+              fileName: match.fileName,
+              fileData: match.fileData
+            };
+          }
+          return item;
+        })
+      );
+    } else if (agreementsSubTab === "awards") {
+      setAwards(prev => 
+        prev.map(item => {
+          const match = successMap.get(item.id);
+          if (match) {
+            appliedCount++;
+            return {
+              ...item,
+              fileName: match.fileName,
+              fileData: match.fileData
+            };
+          }
+          return item;
+        })
+      );
+    }
 
     alert(`${appliedCount}개의 사본 파일이 일치하는 데이터에 성공적으로 매핑 및 적재되었습니다.`);
     setIsBatchFileModalOpen(false);

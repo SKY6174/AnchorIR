@@ -6399,6 +6399,9 @@ export default function App() {
               onAddAward={handleAddAward}
               onUpdateAward={handleUpdateAward}
               onDeleteAward={handleDeleteAward}
+              setAgreements={setAgreements}
+              setCertificates={setCertificates}
+              setAwards={setAwards}
               currentRole={currentRole}
             />
           </div>
