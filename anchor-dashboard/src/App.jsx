@@ -2793,7 +2793,7 @@ export default function App() {
         console.error("Failed to sync agreements to Supabase:", e);
         setSyncStatus("error");
       }
-    }, 1500);
+    }, 150);
     return () => clearTimeout(timer);
   }, [agreements, selectedYear, isDbLoaded, isFetchCompleted]);
 
@@ -2834,7 +2834,7 @@ export default function App() {
         console.error("Failed to sync certificates to Supabase:", e);
         setSyncStatus("error");
       }
-    }, 1500);
+    }, 150);
     return () => clearTimeout(timer);
   }, [certificates, selectedYear, isDbLoaded, isFetchCompleted]);
 
@@ -2875,7 +2875,7 @@ export default function App() {
         console.error("Failed to sync awards to Supabase:", e);
         setSyncStatus("error");
       }
-    }, 1500);
+    }, 150);
     return () => clearTimeout(timer);
   }, [awards, selectedYear, isDbLoaded, isFetchCompleted]);
 
