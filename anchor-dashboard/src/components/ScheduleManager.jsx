@@ -641,8 +641,24 @@ export default function ScheduleManager({
           result: "학생 창업동아리 8개 팀 참여, 최종 최우수상 1개 팀(팀명: 울산로컬히어로) 선정 및 특허 출원 멘토링 연계 확정. 울산 매일 보도자료 2건 송출 완료"
         };
 
-        // 1. 단장님이 올리신 진짜 초광역 회의 PDF 내용이 감지되었을 경우 지능형 맞춤 채우기!
-        if (text.includes("초광역") || text.includes("공유협력") || text.includes("이남우") || text.includes("김상교")) {
+        // 1. 유학생 문화교류 / 세계인의 날 감지 시 (최우선 매핑)
+        if (text.includes("세계인의 날") || text.includes("유학생") || text.includes("문화교류") || lowerName.includes("유학생") || lowerName.includes("세계인의")) {
+          targetData = {
+            title: "2026년 유학생 문화교류 프로그램 '세계인의 날' 행사",
+            department: "ECC센터",
+            location: "울산과학대학교 동부캠퍼스 1대학관 대강당 및 중앙광장",
+            eventDate: "2026-05-20",
+            eventStartTime: "13:00",
+            eventEndTime: "17:30",
+            attendeesInternal: "국제교류팀 교수 3명, 전임연구원 4명, 유학생 서포터즈 20명",
+            attendeesExternal: "외국인 유학생 및 다문화 가정 주민 150여 명",
+            program: "유학생 지역 정착 및 글로벌 문화 융합 프로그램",
+            purpose: "세계인의 날을 맞이하여 교내 외국인 유학생들의 교류 증진과 지역 사회 정주 지원 및 상호 문화 이해도를 증진하고자 함",
+            result: "유학생 125명 참가, 국가별 문화 체험 부스 12개 운영 및 만족도 96.8점 획득, 지역 신문 보도자료 2건 송출 완료"
+          };
+        }
+        // 2. 단장님이 올리신 진짜 초광역 회의 PDF 내용이 감지되었을 경우
+        else if (text.includes("초광역공유") || text.includes("COSS사업") || text.includes("장기성") || text.includes("김상교") || text.includes("동아방송")) {
           targetData = {
             title: "RISE 초광역 공유협력 활성화 심포지엄 및 성과 공유회",
             department: "RCC센터",
