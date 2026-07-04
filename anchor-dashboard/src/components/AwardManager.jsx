@@ -407,6 +407,91 @@ export default function AwardManager({
     setBatchAwardResults([]);
   };
 
+  // 엑셀 업로드용 서식 템플릿 다운로드
+  const handleDownloadTemplate = () => {
+    const templateData = [
+      {
+        "발급번호": "2025-AW-001",
+        "소속": "디지털콘텐츠과",
+        "성명": "김철수",
+        "발급일자": "2025-05-15",
+        "발급기관": "사업단장"
+      }
+    ];
+
+    const fileName = `UC_ANCHOR_상장_업로드_서식.xlsx`;
+
+    const ws = XLSX.utils.json_to_sheet(templateData);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "상장서식");
+    ws["!cols"] = Array(5).fill({ wch: 25 });
+
+    const wbout = XLSX.write(wb, { bookType: "xlsx", type: "base64" });
+    const a = document.createElement("a");
+    a.href = `data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,${wbout}`;
+    a.download = fileName;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  };
+
+  // 엑셀 업로드 (데이터 대량 가져오기)
+  const handleExcelImport = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+      try {
+        const binaryStr = evt.target.result;
+        const workbook = XLSX.read(binaryStr, { type: "binary" });
+        const sheetName = workbook.SheetNames[0];
+        const ws = workbook.Sheets[sheetName];
+        const rawRows = XLSX.utils.sheet_to_json(ws);
+
+        if (rawRows.length === 0) {
+          alert("엑셀 파일에 데이터가 존재하지 않습니다.");
+          return;
+        }
+
+        let importedCount = 0;
+
+        rawRows.forEach((row) => {
+          const awardNoVal = row["발급번호"];
+          const deptVal = row["소속"];
+          const nameVal = row["성명"];
+          const dateVal = row["발급일자"];
+
+          if (!awardNoVal || !deptVal || !nameVal || !dateVal) {
+            return;
+          }
+
+          const calculatedYear = getYearFromDate(String(dateVal).trim());
+          const newAward = {
+            year: calculatedYear || selectedYear,
+            awardNo: String(awardNoVal).trim(),
+            recipientDept: String(deptVal).trim(),
+            recipientName: String(nameVal).trim(),
+            issueDate: String(dateVal).trim(),
+            issuer: row["발급기관"] ? String(row["발급기관"]).trim() : "사업단장",
+            fileName: "",
+            fileData: ""
+          };
+
+          onAddAward(newAward);
+          importedCount++;
+        });
+
+        alert(`${importedCount}개의 상장 정보가 성공적으로 적재되었습니다.`);
+      } catch (err) {
+        console.error("Excel Import Error:", err);
+        alert("엑셀 파일 파싱 중 에러가 발생했습니다. 규정된 서식 파일과 컬럼 헤더가 일치하는지 확인해 주세요.");
+      }
+    };
+    reader.readAsBinaryString(file);
+    e.target.value = "";
+  };
+
   // 엑셀 다운로드 Caching URL 갱신
   useEffect(() => {
     if (sortedAwards.length === 0) {
@@ -456,72 +541,120 @@ export default function AwardManager({
           <p style={{ fontSize: "0.72rem", color: "var(--text-secondary-dark)" }}>공모전 및 경진대회 상장 발급 대장을 영속 보존합니다.</p>
         </div>
 
-        <div style={{ display: "flex", gap: "0.4rem", alignItems: "center" }}>
-          {currentRole.rank <= 2 && currentRole.id !== "GUEST" && (
-            <>
-              {/* 등록하기 */}
+        {/* 신규 등록 & 엑셀 다운로드 제어부 */}
+        {(currentRole.rank <= 2) && (
+          <div style={{ display: "flex", gap: "0.4rem", alignItems: "center" }}>
+            {/* 엑셀 서식 다운로드 */}
+            <button
+              onClick={handleDownloadTemplate}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "0.25rem",
+                padding: "0.35rem 0.7rem",
+                fontSize: "0.7rem",
+                background: "rgba(255, 255, 255, 0.05)",
+                border: "1px solid rgba(255, 255, 255, 0.1)",
+                color: "rgba(255, 255, 255, 0.8)",
+                borderRadius: "0.25rem",
+                cursor: "pointer",
+                fontWeight: "700"
+              }}
+            >
+              <FileText size={12} /> 엑셀 서식
+            </button>
+
+            {/* 엑셀 업로드 */}
+            <label
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "0.25rem",
+                padding: "0.35rem 0.7rem",
+                fontSize: "0.7rem",
+                background: "rgba(99, 102, 241, 0.1)",
+                border: "1px solid rgba(99, 102, 241, 0.2)",
+                color: "#818CF8",
+                borderRadius: "0.25rem",
+                cursor: "pointer",
+                fontWeight: "700"
+              }}
+            >
+              <Upload size={12} /> 엑셀 업로드
+              <input
+                type="file"
+                accept=".xlsx, .xls"
+                onChange={handleExcelImport}
+                style={{ display: "none" }}
+              />
+            </label>
+
+            {/* 사본 일괄 매핑 */}
+            <label
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "0.25rem",
+                padding: "0.35rem 0.7rem",
+                fontSize: "0.7rem",
+                background: "rgba(16, 185, 129, 0.1)",
+                border: "1px solid rgba(16, 185, 129, 0.2)",
+                color: "#34D399",
+                borderRadius: "0.25rem",
+                cursor: "pointer",
+                fontWeight: "700"
+              }}
+            >
+              <FileCheck size={12} /> 사본 일괄 매핑
+              <input
+                type="file"
+                multiple
+                accept=".pdf, .hwp, .hwpx, .jpg, .jpeg, .png"
+                onChange={handleBatchAwardImport}
+                style={{ display: "none" }}
+              />
+            </label>
+
+            {/* 엑셀 다운로드 */}
+            <a
+              href={excelDownloadUrl || "#"}
+              download={excelDownloadUrl ? `Award_List_Year_${selectedYear}.xlsx` : undefined}
+              onClick={(e) => {
+                if (!excelDownloadUrl) {
+                  e.preventDefault();
+                  alert("다운로드할 데이터가 없습니다.");
+                }
+              }}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "0.25rem",
+                padding: "0.35rem 0.7rem",
+                fontSize: "0.7rem",
+                background: "#16a34a",
+                border: "none",
+                color: "white",
+                borderRadius: "0.25rem",
+                cursor: excelDownloadUrl ? "pointer" : "not-allowed",
+                fontWeight: "700",
+                textDecoration: "none"
+              }}
+            >
+              <Download size={12} /> 엑셀 다운로드
+            </a>
+
+            {/* 신규 추가 */}
+            {currentRole.id !== "GUEST" && (
               <button
                 className="btn-primary"
                 onClick={() => { resetAwardForm(); setIsAwardModalOpen(true); }}
                 style={{ display: "flex", alignItems: "center", gap: "0.25rem", padding: "0.35rem 0.7rem", fontSize: "0.7rem" }}
               >
-                <Plus size={12} /> 신규 발급 등록
+                <Plus size={14} /> 신규 발급 등록
               </button>
-
-              {/* 사본 일괄 매핑 */}
-              <label
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "0.25rem",
-                  padding: "0.35rem 0.7rem",
-                  fontSize: "0.7rem",
-                  background: "rgba(16, 185, 129, 0.1)",
-                  border: "1px solid rgba(16, 185, 129, 0.2)",
-                  color: "#34D399",
-                  borderRadius: "0.25rem",
-                  cursor: "pointer",
-                  fontWeight: "700"
-                }}
-              >
-                <FileCheck size={12} /> 사본 일괄 매핑
-                <input
-                  type="file"
-                  multiple
-                  accept=".pdf, .hwp, .hwpx, .jpg, .jpeg, .png"
-                  onChange={handleBatchAwardImport}
-                  style={{ display: "none" }}
-                />
-              </label>
-            </>
-          )}
-
-          {/* 엑셀 다운로드 */}
-          <a
-            href={excelDownloadUrl || "#"}
-            download={excelDownloadUrl ? `Award_List_Year_${selectedYear}.xlsx` : undefined}
-            onClick={(e) => {
-              if (!excelDownloadUrl) {
-                e.preventDefault();
-                alert("다운로드할 데이터가 없습니다.");
-              }
-            }}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "0.25rem",
-              padding: "0.35rem 0.7rem",
-              fontSize: "0.7rem",
-              background: "#27272a",
-              color: "white",
-              borderRadius: "0.25rem",
-              textDecoration: "none",
-              border: "1px solid var(--border-color-dark)"
-            }}
-          >
-            <Download size={12} /> 엑셀 다운로드
-          </a>
-        </div>
+            )}
+          </div>
+        )}
       </div>
 
       {/* 상장 리스트 테이블 */}
