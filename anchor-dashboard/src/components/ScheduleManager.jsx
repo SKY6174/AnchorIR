@@ -2681,13 +2681,13 @@ export default function ScheduleManager({
                                     color: "var(--text-secondary)",
                                     lineHeight: "1.4"
                                   }}>
-                                    💡 본 사업단 운영회의는 <strong>사업단, 사업운영팀, ECC, ICC, RCC, AID-X, 늘봄누리센터, 신산업특화센터</strong> 각 부서의 전달사항과 업무추진 상황을 공유하기 위하여 격주로 소집되는 회의입니다.
+                                    💡 본 사업단 운영회의는 <strong>사업단, 사업운영팀, ECC, ICC, RCC, AID-X, 늘봄누리센터, 신산업특화센터</strong> 각 부서의 주요 업무추진 현황 및 애로사항을 공유하기 위하여 격주로 소집되는 회의입니다.
                                   </div>
 
                                   {/* 8개 부서 의제 & 결과 2열 그리드 */}
                                   <div style={{ marginTop: "0.5rem" }}>
                                     <span style={{ fontSize: "0.825rem", color: "var(--text-secondary)", fontWeight: "700", display: "block", marginBottom: "0.5rem" }}>
-                                      🏢 부서별 주요 전달사항 및 업무추진 상황 (2열 그리드)
+                                      🏢 부서별 주요 업무추진 현황 및 애로사항 (2열 그리드)
                                     </span>
                                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem" }}>
                                       {operatingDepts.map(dept => {
@@ -4219,7 +4219,7 @@ export default function ScheduleManager({
                   {formData.category === "operating" ? (
                     <div style={{ marginTop: "1rem" }}>
                       <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.4rem", fontWeight: "700" }}>
-                        🏢 8대 부서별 의제 및 추진상황 입력
+                        🏢 8대 부서별 주요 업무추진 현황 및 애로사항 입력
                       </label>
                       <div style={{ display: "flex", flexDirection: "column", gap: "0.85rem", maxHeight: "250px", overflowY: "auto", paddingRight: "0.25rem" }}>
                         {["사업단", "사업운영팀", "ECC센터", "ICC센터", "RCC센터", "AID-X지원센터", "울산늘봄누리센터", "신산업특화지원센터"].map((deptName) => {
