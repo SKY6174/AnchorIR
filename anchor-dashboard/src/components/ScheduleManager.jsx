@@ -953,9 +953,12 @@ export default function ScheduleManager({
         }
       ];
 
+      // 각 데이터에 year 필드를 동적으로 결합
+      const mockMeetingsWithYear = mockMeetings.map(m => ({ ...m, year: selectedYear }));
+
       const { data: insertedData, error } = await supabase
-        .from("meeting_schedules")
-        .insert(mockMeetings)
+        .from("schedule_meetings")
+        .insert(mockMeetingsWithYear)
         .select();
 
       if (error) throw error;
