@@ -169,6 +169,17 @@ export default function AgreementManager({
       sorted.sort((a, b) => {
         let valA = a[sortConfig.key] || "";
         let valB = b[sortConfig.key] || "";
+        
+        // 협약기관 컬럼 정렬 시 객체 배열 내의 명칭을 결합한 텍스트로 비교합니다.
+        if (sortConfig.key === "organizations") {
+          valA = Array.isArray(a.organizations) 
+            ? a.organizations.map(o => typeof o === "object" ? (o.name || "") : o).join(", ") 
+            : String(a.organizations || "");
+          valB = Array.isArray(b.organizations) 
+            ? b.organizations.map(o => typeof o === "object" ? (o.name || "") : o).join(", ") 
+            : String(b.organizations || "");
+        }
+
         if (typeof valA === "string" && typeof valB === "string") {
           return sortConfig.direction === "asc"
             ? valA.localeCompare(valB, undefined, { numeric: true })
@@ -911,12 +922,16 @@ export default function AgreementManager({
                   <th onClick={() => requestSort("center")} style={{ padding: "0.6rem 0.8rem", textAlign: "left", width: "10%", cursor: "pointer" }}>
                     관련 센터 {sortConfig.key === "center" ? (sortConfig.direction === "asc" ? "▲" : "▼") : "⇅"}
                   </th>
-                  <th style={{ padding: "0.6rem 0.8rem", textAlign: "left", width: "16%" }}>협약기관</th>
+                  <th onClick={() => requestSort("organizations")} style={{ padding: "0.6rem 0.8rem", textAlign: "left", width: "16%", cursor: "pointer" }}>
+                    협약기관 {sortConfig.key === "organizations" ? (sortConfig.direction === "asc" ? "▲" : "▼") : "⇅"}
+                  </th>
                   <th style={{ padding: "0.6rem 0.8rem", textAlign: "left", width: "22%" }}>협약주체 (UC & 타기관)</th>
                   <th onClick={() => requestSort("unitId")} style={{ padding: "0.6rem 0.8rem", textAlign: "left", width: "8%", cursor: "pointer" }}>
                     단위과제 {sortConfig.key === "unitId" ? (sortConfig.direction === "asc" ? "▲" : "▼") : "⇅"}
                   </th>
-                  <th style={{ padding: "0.6rem 0.8rem", textAlign: "left", width: "10%" }}>협약유형</th>
+                  <th onClick={() => requestSort("agreementType")} style={{ padding: "0.6rem 0.8rem", textAlign: "left", width: "10%", cursor: "pointer" }}>
+                    협약유형 {sortConfig.key === "agreementType" ? (sortConfig.direction === "asc" ? "▲" : "▼") : "⇅"}
+                  </th>
                   <th style={{ padding: "0.6rem 0.8rem", textAlign: "left", width: "14%" }}>협약내용 범주</th>
                   <th style={{ padding: "0.6rem 0.8rem", textAlign: "center", width: "5%" }}>사본</th>
                   {(currentRole.rank <= 2) && <th style={{ padding: "0.6rem 0.8rem", textAlign: "center", width: "5%" }}>제어</th>}
