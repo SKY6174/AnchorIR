@@ -668,7 +668,7 @@ export default function AgreementManager({
           if (item.subjectUniversity && extractedName) {
             const subClean = cleanName(item.subjectUniversity);
             const nameClean = cleanName(extractedName);
-            if (subClean.includes(nameClean)) {
+            if (subClean && nameClean && subClean.includes(nameClean)) {
               nameMatch = true;
             }
           }
