@@ -164,7 +164,9 @@ export default function CertificateManager({
       const normalizedName = file.name.normalize("NFC");
       setCertFileName("업로드 중...");
       try {
-        const storagePath = `${Date.now()}_${normalizedName}`; // certificates 전용 버킷 루트에 업로드
+        // 대괄호, 공백 등 Storage 에러를 유발하는 특수기호를 정제하여 안전한 파일 키 생성
+        const cleanKey = normalizedName.replace(/[\[\]\(\)\s]/g, "_").replace(/[^a-zA-Z0-9ㄱ-ㅎㅏ-ㅣ가-힣_.-]/g, "");
+        const storagePath = `${Date.now()}_${cleanKey}`; // certificates 전용 버킷 루트에 업로드
         const { data, error } = await supabase.storage
           .from("certificates") // certificates 버킷명 반영
           .upload(storagePath, file);
@@ -343,7 +345,9 @@ export default function CertificateManager({
         if (!targetFile) continue;
 
         const normalizedName = targetFile.name.normalize("NFC");
-        const storagePath = `${Date.now()}_${normalizedName}`;
+        // 대괄호, 공백 등 Storage 에러를 유발하는 특수기호를 정제하여 안전한 파일 키 생성
+        const cleanKey = normalizedName.replace(/[\[\]\(\)\s]/g, "_").replace(/[^a-zA-Z0-9ㄱ-ㅎㅏ-ㅣ가-힣_.-]/g, "");
+        const storagePath = `${Date.now()}_${cleanKey}`;
 
         const { data, error } = await supabase.storage
           .from("certificates")
