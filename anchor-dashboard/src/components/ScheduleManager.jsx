@@ -1372,7 +1372,9 @@ export default function ScheduleManager({
       pressTime: "10:00",
       pressMedia: "",
       pressUrl: "",
-      pressType: "방송"
+      pressType: "방송",
+      operatingAgendas: {},
+      operatingResults: {}
     });
     setIsAddModalOpen(true);
   };
@@ -3649,124 +3651,172 @@ export default function ScheduleManager({
                   </div>
 
                   {/* 부서명 및 작성자 드롭다운 배치 */}
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
-                    <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>부서명</label>
-                      <select name="dept" value={formData.dept} onChange={handleInputChange} style={{ width: "100%", padding: "0.5rem", background: "var(--panel-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }}>
-                        {["사업운영팀", "ECC센터", "ICC센터", "RCC센터", "AID-X지원센터", "울산늘봄누리센터", "신산업특화지원센터"].map(d => (
-                          <option key={d} value={d}>{d}</option>
-                        ))}
-                      </select>
-                    </div>
-                    <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>작성자</label>
-                      <select name="writer" value={formData.writer} onChange={handleInputChange} style={{ width: "100%", padding: "0.5rem", background: "var(--panel-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }}>
-                        {(() => {
-                          const activeWriters = (members || []).filter(m => 
-                            m.status !== "미참여" && 
-                            m.email && 
-                            (m.role === "운영팀장" || m.grade === "책임연구원" || m.grade === "선임연구원" || m.grade === "연구원")
-                          );
-                          if (activeWriters.length > 0) {
-                            return activeWriters.map(m => {
-                              const titleOrGrade = m.role === "운영팀장" ? "운영팀장" : (m.grade || "연구원");
-                              const displayName = `${m.name} ${titleOrGrade}`.trim();
-                              return (
-                                <option key={m.id || m.email} value={displayName}>
-                                  {displayName}
-                                </option>
-                              );
-                            });
-                          }
-                          return ["박지현 팀장", "김민수 단장", "이진우 PD", "최성훈 PD", "한아름 PD"].map(w => (
-                            <option key={w} value={w}>{w}</option>
-                          ));
-                        })()}
-                      </select>
-                    </div>
-                  </div>
-
-                  {/* 참석자 선택 및 입력 */}
-                  <div>
-                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>
-                      👥 소속 연구원 선택 (부서별 자동 연동)
-                    </label>
-                    {(() => {
-                      const deptMembers = (members || []).filter(m => {
-                        // 1. 부서 일치 검사
-                        let isDeptMatch = m.dept === formData.dept;
-                        if (formData.dept === "신산업특화지원센터" && m.dept === "신산업특화센터") isDeptMatch = true;
-                        if (!isDeptMatch) return false;
-
-                        // 2. 해당 회의 일자 기준 재직(참여) 기간 포함 여부 판정
-                        const start = m.startDate || m.start_date || m.hireDate || m.hire_date || "2025-03-01";
-                        const end = m.endDate || m.end_date || "";
-                        const status = m.status || "참여중";
-
-                        const meetingDateStr = formData.meetingDate;
-                        if (meetingDateStr) {
-                          if (start && meetingDateStr < start) return false;
-                          if (end && meetingDateStr > end) return false;
-                        }
-
-                        // 3. 최종 활성 참여중 상태 판별
-                        return status === "참여중";
-                      });
-
-                      if (deptMembers.length === 0) {
+                  {formData.category === "operating" ? (
+                    <div style={{ marginTop: "0.75rem" }}>
+                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>
+                        👥 전체 사업단 참석자 선택 (팀장교수 포함 다중 선택)
+                      </label>
+                      {(() => {
+                        const allActiveMembers = (members || []).filter(m => m.status !== "미참여");
                         return (
-                          <div style={{ fontSize: "0.72rem", color: "var(--text-secondary)", marginBottom: "0.5rem", padding: "0.25rem", background: "rgba(255,255,255,0.02)", borderRadius: "4px" }}>
-                            소속 부서를 먼저 선택해 주세요.
+                          <div style={{ display: "flex", gap: "0.35rem", flexWrap: "wrap", padding: "0.5rem", background: "rgba(255,255,255,0.02)", borderRadius: "6px", border: "1px solid rgba(255,255,255,0.04)", maxHeight: "120px", overflowY: "auto" }}>
+                            {allActiveMembers.map(m => {
+                              const isSelected = (formData.attendees || "")
+                                .split(",")
+                                .map(x => x.trim())
+                                .includes(m.name);
+
+                              return (
+                                  <button
+                                    key={m.id || m.email}
+                                    type="button"
+                                    onClick={() => handleToggleAttendee(m.name)}
+                                    style={{
+                                      padding: "0.25rem 0.5rem",
+                                      fontSize: "0.7rem",
+                                      borderRadius: "4px",
+                                      border: "1px solid " + (isSelected ? "var(--accent-color)" : "rgba(255,255,255,0.1)"),
+                                      background: isSelected ? "rgba(59, 130, 246, 0.15)" : "transparent",
+                                      color: isSelected ? "#60A5FA" : "var(--text-secondary)",
+                                      cursor: "pointer",
+                                      fontWeight: "700"
+                                    }}
+                                  >
+                                    {m.name} {m.role === "사업단장" ? "단장" : m.role} {isSelected ? "✓" : "+"}
+                                  </button>
+                              );
+                            })}
                           </div>
                         );
-                      }
-
-                      return (
-                        <div style={{ display: "flex", gap: "0.35rem", flexWrap: "wrap", marginBottom: "0.5rem", padding: "0.5rem", background: "rgba(255,255,255,0.02)", borderRadius: "6px", border: "1px solid rgba(255,255,255,0.04)" }}>
-                          {deptMembers.map(m => {
-                            const displayName = `${m.name} ${m.grade || "연구원"}`;
-                            const isSelected = (formData.attendees || "")
-                              .split(",")
-                              .map(x => x.trim())
-                              .includes(m.name);
-
-                            return (
-                              <button
-                                key={m.id || m.email}
-                                type="button"
-                                onClick={() => handleToggleAttendee(m.name)}
-                                style={{
-                                  padding: "0.25rem 0.5rem",
-                                  fontSize: "0.7rem",
-                                  borderRadius: "4px",
-                                  border: "1px solid " + (isSelected ? "var(--accent-color)" : "rgba(255,255,255,0.1)"),
-                                  background: isSelected ? "rgba(59, 130, 246, 0.15)" : "transparent",
-                                  color: isSelected ? "#60A5FA" : "var(--text-secondary)",
-                                  cursor: "pointer",
-                                  transition: "all 0.1s ease",
-                                  fontWeight: "700"
-                                }}
-                              >
-                                {displayName} {isSelected ? "✓" : "+"}
-                              </button>
-                            );
-                          })}
+                      })()}
+                      <input 
+                        type="text" 
+                        name="attendees" 
+                        value={formData.attendees || ""} 
+                        onChange={handleInputChange} 
+                        placeholder="선택되거나 직접 콤마(,)로 구분해 입력" 
+                        style={{ width: "100%", padding: "0.5rem", marginTop: "0.35rem", background: "rgba(128,128,128,0.1)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", fontSize: "0.75rem" }} 
+                      />
+                    </div>
+                  ) : (
+                    <>
+                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+                        <div>
+                          <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>부서명</label>
+                          <select name="dept" value={formData.dept} onChange={handleInputChange} style={{ width: "100%", padding: "0.5rem", background: "var(--panel-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }}>
+                            {["사업운영팀", "ECC센터", "ICC센터", "RCC센터", "AID-X지원센터", "울산늘봄누리센터", "신산업특화지원센터"].map(d => (
+                              <option key={d} value={d}>{d}</option>
+                            ))}
+                          </select>
                         </div>
-                      );
-                    })()}
+                        <div>
+                          <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>작성자</label>
+                          <select name="writer" value={formData.writer} onChange={handleInputChange} style={{ width: "100%", padding: "0.5rem", background: "var(--panel-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }}>
+                            {(() => {
+                              const activeWriters = (members || []).filter(m => 
+                                m.status !== "미참여" && 
+                                m.email && 
+                                (m.role === "운영팀장" || m.grade === "책임연구원" || m.grade === "선임연구원" || m.grade === "연구원")
+                              );
+                              if (activeWriters.length > 0) {
+                                return activeWriters.map(m => {
+                                  const titleOrGrade = m.role === "운영팀장" ? "운영팀장" : (m.grade || "연구원");
+                                  const displayName = `${m.name} ${titleOrGrade}`.trim();
+                                  return (
+                                    <option key={m.id || m.email} value={displayName}>
+                                      {displayName}
+                                    </option>
+                                  );
+                                });
+                              }
+                              return ["박지현 팀장", "김민수 단장", "이진우 PD", "최성훈 PD", "한아름 PD"].map(w => (
+                                <option key={w} value={w}>{w}</option>
+                              ));
+                            })()}
+                          </select>
+                        </div>
+                      </div>
 
-                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>
-                      참석자 (위의 버튼을 누르면 자동으로 입력되며, 타 부서 인원의 경우 수기입력 가능)
-                    </label>
-                    <input 
-                      type="text" 
-                      name="attendees" 
-                      value={formData.attendees || ""} 
-                      onChange={handleInputChange} 
-                      placeholder="위 칩을 선택하거나 직접 입력 (예: 박지현 팀장, 이진우 PD (총 2명))" 
-                      style={{ width: "100%", padding: "0.5rem", background: "rgba(128,128,128,0.1)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} 
-                    />
-                  </div>
+                      {/* 참석자 선택 및 입력 */}
+                      <div>
+                        <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>
+                          👥 소속 연구원 선택 (부서별 자동 연동)
+                        </label>
+                        {(() => {
+                          const deptMembers = (members || []).filter(m => {
+                            let isDeptMatch = m.dept === formData.dept;
+                            if (formData.dept === "신산업특화지원센터" && m.dept === "신산업특화센터") isDeptMatch = true;
+                            if (!isDeptMatch) return false;
+
+                            const start = m.startDate || m.start_date || m.hireDate || m.hire_date || "2025-03-01";
+                            const end = m.endDate || m.end_date || "";
+                            const status = m.status || "참여중";
+
+                            const meetingDateStr = formData.meetingDate;
+                            if (meetingDateStr) {
+                              if (start && meetingDateStr < start) return false;
+                              if (end && meetingDateStr > end) return false;
+                            }
+
+                            return status === "참여중";
+                          });
+
+                          if (deptMembers.length === 0) {
+                            return (
+                              <div style={{ fontSize: "0.72rem", color: "var(--text-secondary)", marginBottom: "0.5rem", padding: "0.25rem", background: "rgba(255,255,255,0.02)", borderRadius: "4px" }}>
+                                소속 부서를 먼저 선택해 주세요.
+                              </div>
+                            );
+                          }
+
+                          return (
+                            <div style={{ display: "flex", gap: "0.35rem", flexWrap: "wrap", marginBottom: "0.5rem", padding: "0.5rem", background: "rgba(255,255,255,0.02)", borderRadius: "6px", border: "1px solid rgba(255,255,255,0.04)" }}>
+                              {deptMembers.map(m => {
+                                const displayName = `${m.name} ${m.grade || "연구원"}`;
+                                const isSelected = (formData.attendees || "")
+                                  .split(",")
+                                  .map(x => x.trim())
+                                  .includes(m.name);
+
+                                return (
+                                  <button
+                                    key={m.id || m.email}
+                                    type="button"
+                                    onClick={() => handleToggleAttendee(m.name)}
+                                    style={{
+                                      padding: "0.25rem 0.5rem",
+                                      fontSize: "0.7rem",
+                                      borderRadius: "4px",
+                                      border: "1px solid " + (isSelected ? "var(--accent-color)" : "rgba(255,255,255,0.1)"),
+                                      background: isSelected ? "rgba(59, 130, 246, 0.15)" : "transparent",
+                                      color: isSelected ? "#60A5FA" : "var(--text-secondary)",
+                                      cursor: "pointer",
+                                      transition: "all 0.1s ease",
+                                      fontWeight: "700"
+                                    }}
+                                  >
+                                    {displayName} {isSelected ? "✓" : "+"}
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          );
+                        })()}
+
+                        <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>
+                          참석자 (위의 버튼을 누르면 자동으로 입력되며, 타 부서 인원의 경우 수기입력 가능)
+                        </label>
+                        <input 
+                          type="text" 
+                          name="attendees" 
+                          value={formData.attendees || ""} 
+                          onChange={handleInputChange} 
+                          placeholder="위 칩을 선택하거나 직접 입력 (예: 박지현 팀장, 이진우 PD (총 2명))" 
+                          style={{ width: "100%", padding: "0.5rem", background: "rgba(128,128,128,0.1)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} 
+                        />
+                      </div>
+                    </>
+                  )}
 
                   {/* 회의록 첨부파일 개별 분리 업로드 (2칸 설계) */}
                   <div style={{ marginTop: "1rem", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem" }}>
@@ -3920,84 +3970,149 @@ export default function ScheduleManager({
                   </div>
 
                   {/* 주요 의제 및 회의 결과 1:1 대칭 대응 입력 목록 */}
-                  <div style={{ marginTop: "1rem" }}>
-                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.4rem" }}>
-                      📝 회의 의제 및 결과 관리 (1:1 대응 입력)
-                    </label>
-                    <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
-                      {agendaResultPairs.map((pair, index) => (
-                        <div 
-                          key={index} 
-                          style={{ 
-                            display: "grid", 
-                            gridTemplateColumns: "1fr 1.2fr 40px", 
-                            gap: "0.5rem", 
-                            alignItems: "stretch",
-                            background: "rgba(255, 255, 255, 0.01)",
-                            padding: "0.5rem",
-                            borderRadius: "6px",
-                            border: "1px solid rgba(255, 255, 255, 0.04)"
-                          }}
-                        >
-                          <input 
-                            type="text" 
-                            value={pair.agenda} 
-                            onChange={(e) => {
-                              const newPairs = [...agendaResultPairs];
-                              newPairs[index].agenda = e.target.value;
-                              setAgendaResultPairs(newPairs);
+                  {formData.category === "operating" ? (
+                    <div style={{ marginTop: "1rem" }}>
+                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.4rem", fontWeight: "700" }}>
+                        🏢 8대 부서별 의제 및 추진상황 입력
+                      </label>
+                      <div style={{ display: "flex", flexDirection: "column", gap: "0.85rem", maxHeight: "250px", overflowY: "auto", paddingRight: "0.25rem" }}>
+                        {["사업단", "사업운영팀", "ECC센터", "ICC센터", "RCC센터", "AID-X지원센터", "울산늘봄누리센터", "신산업특화지원센터"].map((deptName) => {
+                          const deptAgendaVal = formData.operatingAgendas?.[deptName] || "";
+                          const deptResultVal = formData.operatingResults?.[deptName] || "";
+
+                          return (
+                            <div 
+                              key={deptName}
+                              style={{
+                                background: "rgba(255, 255, 255, 0.01)",
+                                padding: "0.6rem",
+                                borderRadius: "6px",
+                                border: "1px solid var(--border-color)",
+                                display: "flex",
+                                flexDirection: "column",
+                                gap: "0.4rem"
+                              }}
+                            >
+                              <span style={{ fontSize: "0.75rem", fontWeight: "800", color: "var(--accent-color)" }}>
+                                📌 {deptName}
+                              </span>
+                              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem" }}>
+                                <input 
+                                  type="text"
+                                  value={deptAgendaVal}
+                                  onChange={(e) => {
+                                    setFormData(prev => ({
+                                      ...prev,
+                                      operatingAgendas: {
+                                        ...(prev.operatingAgendas || {}),
+                                        [deptName]: e.target.value
+                                      }
+                                    }));
+                                  }}
+                                  placeholder={`${deptName} 의제 / 전달사항`}
+                                  style={{ padding: "0.4rem", background: "rgba(128,128,128,0.1)", border: "1px solid var(--border-color)", borderRadius: "4px", color: "var(--text-primary)", fontSize: "0.72rem" }}
+                                />
+                                <textarea 
+                                  value={deptResultVal}
+                                  onChange={(e) => {
+                                    setFormData(prev => ({
+                                      ...prev,
+                                      operatingResults: {
+                                        ...(prev.operatingResults || {}),
+                                        [deptName]: e.target.value
+                                      }
+                                    }));
+                                  }}
+                                  placeholder={`${deptName} 추진상황 / 결과`}
+                                  rows={2}
+                                  style={{ padding: "0.4rem", background: "rgba(128,128,128,0.1)", border: "1px solid var(--border-color)", borderRadius: "4px", color: "var(--text-primary)", fontSize: "0.72rem", resize: "vertical", fontFamily: "inherit" }}
+                                />
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  ) : (
+                    <div style={{ marginTop: "1rem" }}>
+                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.4rem" }}>
+                        📝 회의 의제 및 결과 관리 (1:1 대응 입력)
+                      </label>
+                      <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+                        {agendaResultPairs.map((pair, index) => (
+                          <div 
+                            key={index} 
+                            style={{ 
+                              display: "grid", 
+                              gridTemplateColumns: "1fr 1.2fr 40px", 
+                              gap: "0.5rem", 
+                              alignItems: "stretch",
+                              background: "rgba(255, 255, 255, 0.01)",
+                              padding: "0.5rem",
+                              borderRadius: "6px",
+                              border: "1px solid rgba(255, 255, 255, 0.04)"
                             }}
-                            placeholder={`의제 ${index + 1} (예: 2차년도 예산 검토)`}
-                            style={{ padding: "0.45rem", background: "rgba(128,128,128,0.1)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", fontSize: "0.75rem", height: "100%" }}
-                          />
-                          <textarea 
-                            value={pair.result} 
-                            onChange={(e) => {
-                              const newPairs = [...agendaResultPairs];
-                              newPairs[index].result = e.target.value;
-                              setAgendaResultPairs(newPairs);
-                            }}
-                            placeholder={`결정 및 조치 사항 ${index + 1} (상세 결과 2줄 분량)`}
-                            rows={2}
-                            style={{ padding: "0.45rem", background: "rgba(128,128,128,0.1)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", fontSize: "0.75rem", resize: "vertical", fontFamily: "inherit", lineHeight: "1.3" }}
-                          />
-                          {agendaResultPairs.length > 1 ? (
-                            <button
-                              type="button"
-                              onClick={() => {
-                                const newPairs = agendaResultPairs.filter((_, idx) => idx !== index);
+                          >
+                            <input 
+                              type="text" 
+                              value={pair.agenda} 
+                              onChange={(e) => {
+                                const newPairs = [...agendaResultPairs];
+                                newPairs[index].agenda = e.target.value;
                                 setAgendaResultPairs(newPairs);
                               }}
-                              style={{ padding: "0.45rem", background: "rgba(239,68,68,0.12)", border: "1px solid rgba(239,68,68,0.25)", borderRadius: "6px", color: "#F87171", cursor: "pointer", fontWeight: "700", fontSize: "0.75rem" }}
-                            >
-                              ✕
-                            </button>
-                          ) : (
-                            <div />
-                          )}
-                        </div>
-                      ))}
-                      <button
-                        type="button"
-                        onClick={() => setAgendaResultPairs([...agendaResultPairs, { agenda: "", result: "" }])}
-                        style={{ 
-                          marginTop: "0.2rem", 
-                          padding: "0.35rem 0.8rem", 
-                          background: "rgba(59,130,246,0.12)", 
-                          border: "1px solid rgba(59,130,246,0.25)", 
-                          borderRadius: "6px", 
-                          color: "#60A5FA", 
-                          cursor: "pointer", 
-                          fontSize: "0.72rem", 
-                          display: "inline-flex", 
-                          alignSelf: "flex-start", 
-                          fontWeight: "700" 
-                        }}
-                      >
-                        + 의제/결과 행 추가
-                      </button>
+                              placeholder={`의제 ${index + 1} (예: 2차년도 예산 검토)`}
+                              style={{ padding: "0.45rem", background: "rgba(128,128,128,0.1)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", fontSize: "0.75rem", height: "100%" }}
+                            />
+                            <textarea 
+                              value={pair.result} 
+                              onChange={(e) => {
+                                const newPairs = [...agendaResultPairs];
+                                  newPairs[index].result = e.target.value;
+                                  setAgendaResultPairs(newPairs);
+                              }}
+                              placeholder={`결정 및 조치 사항 ${index + 1} (상세 결과 2줄 분량)`}
+                              rows={2}
+                              style={{ padding: "0.45rem", background: "rgba(128,128,128,0.1)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", fontSize: "0.75rem", resize: "vertical", fontFamily: "inherit", lineHeight: "1.3" }}
+                            />
+                            {agendaResultPairs.length > 1 ? (
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const newPairs = agendaResultPairs.filter((_, idx) => idx !== index);
+                                  setAgendaResultPairs(newPairs);
+                                }}
+                                style={{ padding: "0.45rem", background: "rgba(239,68,68,0.12)", border: "1px solid rgba(239,68,68,0.25)", borderRadius: "6px", color: "#F87171", cursor: "pointer", fontWeight: "700", fontSize: "0.75rem" }}
+                              >
+                                ✕
+                              </button>
+                            ) : (
+                              <div />
+                            )}
+                          </div>
+                        ))}
+                        <button
+                          type="button"
+                          onClick={() => setAgendaResultPairs([...agendaResultPairs, { agenda: "", result: "" }])}
+                          style={{ 
+                            marginTop: "0.2rem", 
+                            padding: "0.35rem 0.8rem", 
+                            background: "rgba(59,130,246,0.12)", 
+                            border: "1px solid rgba(59,130,246,0.25)", 
+                            borderRadius: "6px", 
+                            color: "#60A5FA", 
+                            cursor: "pointer", 
+                            fontSize: "0.72rem", 
+                            display: "inline-flex", 
+                            alignSelf: "flex-start", 
+                            fontWeight: "700" 
+                          }}
+                        >
+                          + 의제/결과 행 추가
+                        </button>
+                      </div>
                     </div>
-                  </div>
+                  )}
                 </>
               )}
 
