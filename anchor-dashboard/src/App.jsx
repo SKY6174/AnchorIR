@@ -3116,6 +3116,13 @@ export default function App() {
   // 10) Press Releases (언론보도) 자동 저장 디바운스 훅 (트랜잭션 복구식 안전 강화)
   useEffect(() => {
     if (!isDbLoaded || !isFetchCompleted) return;
+
+    // 연도 전환 과도기 예방 안전장치:
+    // 배열 안의 데이터 연도가 선택된 연도와 다르면, 아직 fetch 로드 중인 임시 상태이므로 저장 작업을 차단합니다.
+    if (pressReleases.length > 0 && pressReleases.some(s => s.year !== selectedYear)) {
+      return;
+    }
+
     localStorage.setItem(`anchor_cache_press_y${selectedYear}`, JSON.stringify(pressReleases));
     setSyncStatus("syncing");
     const timer = setTimeout(async () => {
