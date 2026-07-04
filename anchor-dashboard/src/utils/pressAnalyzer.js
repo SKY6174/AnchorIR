@@ -13,6 +13,7 @@ export async function analyzePressUrlWithAiConsensus({ url, selectedYear, apiKey
   let fetchedTitle = "";
   let fetchedAuthor = "";
   let isYoutube = false;
+  let articleTextContext = ""; // 뉴스 기사용 팩트 컨텍스트 보관 변수
 
   // 1. 유튜브 OEmbed 기본 수집
   if (url.toLowerCase().includes("youtube.com") || url.toLowerCase().includes("youtu.be")) {
@@ -26,6 +27,42 @@ export async function analyzePressUrlWithAiConsensus({ url, selectedYear, apiKey
       }
     } catch (ytErr) {
       console.warn("YouTube oembed fetch failed:", ytErr);
+    }
+  } 
+  // 2. 일반 뉴스 웹사이트인 경우 CORS 프록시를 거쳐 실제 기사 타이틀 및 본문 텍스트 실시간 수집
+  else {
+    try {
+      // allorigins 오픈 프록시를 경유해 HTML 긁어오기 (CORS 우회)
+      const proxyRes = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`);
+      if (proxyRes.ok) {
+        const proxyData = await proxyRes.json();
+        const html = proxyData.contents || "";
+
+        // HTML <title> 태그 추출 및 정제
+        const titleMatch = html.match(/<title[^>]*>([\s\S]*?)<\/title>/i);
+        if (titleMatch && titleMatch[1]) {
+          fetchedTitle = titleMatch[1].trim()
+            .replace(/\s+/g, " ")
+            .replace(/ - 경상일보/g, "")
+            .replace(/ - 울산신문/g, "")
+            .replace(/ - 울산매일신문/g, "")
+            .replace(/ - 한국대학신문/g, "")
+            .replace(/ : 네이버 뉴스/g, "");
+        }
+
+        // HTML 태그 탈수 및 기사 핵심 텍스트 영역 발췌
+        let cleanText = html
+          .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, "")
+          .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, "")
+          .replace(/<[^>]+>/g, " ")
+          .replace(/\s+/g, " ")
+          .trim();
+
+        // 텍스트가 너무 크면 모델 요청 한도를 초과하므로 핵심 1500자 확보
+        articleTextContext = cleanText.substring(0, 1500);
+      }
+    } catch (scrapErr) {
+      console.warn("News HTML scraping failed via CORS proxy:", scrapErr);
     }
   }
 
@@ -163,30 +200,32 @@ export async function analyzePressUrlWithAiConsensus({ url, selectedYear, apiKey
   사용자가 입력한 언론 보도 URL: "${url}"
   이 URL은 울산과학대학교 RISE 및 앵커(ANCHOR)사업단 관련 실제 보도 뉴스이거나 유튜브 홍보 영상 링크입니다.
   
-  [실시간 OEmbed 크롤러 수집 팩트 정보]
+  [실시간 크롤링 수집 정보]
   - 진짜 기사/영상 제목: "${fetchedTitle || "없음"}"
-  - 진짜 게시자/채널명: "${fetchedAuthor || "없음"}"
+  - 진짜 게시자/채널명(매체): "${fetchedAuthor || "없음"}"
+  
+  ${articleTextContext ? `[실시간 뉴스 기사 본문 일부 (100% 실존 팩트 소스)]:\n${articleTextContext}\n위 본문 텍스트를 최우선적으로 정밀 정독하여 기사의 진짜 내용과 보도 취지를 이해하십시오.` : ""}
 
   당신은 이제부터 두 명의 상호 독립적인 최고 지능 인공지능 분석가 및 최종 판정사(Chief Editor) 역할을 수행하며 팩트를 교차 검증하고 토론(Debate)해야 합니다.
 
   [에이전트 1: GPT-4o 스타일 정밀 추론기]
-  - 위 URL(도메인의 특성, 기사 식별 번호 등)과 크롤링 수집된 진짜 정보를 분석하여 기사 본문의 본질적인 취지, 보도 분류(방송/신문/기타), 발생 예상 시간을 유추하여 초안 A를 조율해 보십시오.
+  - 위 URL(도메인의 특성) 및 제공된 진짜 뉴스 기사 본문 텍스트를 읽고 기사의 정확한 진짜 제목("title"), 매체명("pressMedia"), 보도 분류(방송/신문/기타), 보도일자("pressDate")를 추출하여 초안 A를 조율해 보십시오.
 
   [에이전트 2: Gemini 2.5 스타일 정밀 팩트체커]
-  - 초안 A에 사실과 무관한 할루시네이션(거짓 정보)이 없는지 확인하고, 기사 제목과 매체명은 실시간 수집된 팩트 정보("${fetchedTitle}", "${fetchedAuthor}")와 100% 일치하도록 보정하여 정밀 초안 B를 보충하십시오.
+  - 초안 A의 내용 중 실제 제공된 뉴스 본문 텍스트에 들어있지 않은 거짓 할루시네이션(예: 제목 "없음" 혹은 엉뚱한 날짜 유추)이 존재하는지 샅샅이 비판하고, 실재하는 기사 제목과 매체명으로 100% 보정하여 정밀 초안 B를 완성하십시오.
 
   [최종 판정 및 조율 단계 (Chief Editor)]
   - 두 초안을 대조하고, 보도일자는 제목이나 URL 텍스트 속에 "20251127" 처럼 명확한 8자리 YYYYMMDD 날짜가 포함되어 있을 시에는, 해당 실제 날짜를 정확히 최종 "pressDate"로 적용하여 연도/일자 왜곡(할루시네이션)을 완벽히 소거하십시오.
-  - 최종 완성된 사실에 기반한 격식 있고 정제된 기사 요약본과 팩트 데이터를 최종 JSON으로 출력해 주십시오.
+  - 제공된 본문 텍스트의 팩트를 기초로 하여, 3~4문장의 아주 객관적이고 사실적인 진짜 뉴스 기사체 요약본("pressContent")을 생성하십시오. 절대 '추정된다' 와 같은 모호한 문장을 쓰지 말고, 본문 팩트를 직접 명시하십시오.
 
   반드시 마크다운 기호(\`\`\`) 없이 순수 JSON 규격 텍스트만 리턴하십시오:
   {
     "pressType": "방송" 또는 "신문" 또는 "기타",
-    "pressMedia": "최종 검증된 매체명",
-    "title": "최종 검증된 보도 제목",
+    "pressMedia": "최종 검증된 실제 언론사명 (예: 한국대학신문, 경상일보, 울산신문, 네이버 뉴스 등)",
+    "title": "최종 검증된 실제 기사 제목 (절대 '없음'으로 채우지 마십시오. 제공된 진짜 기사 제목 입력)",
     "pressDate": "최종 검증된 보도일자 (YYYY-MM-DD 형식)",
     "pressTime": "최종 검증된 보도시간 (HH:MM 형식)",
-    "pressContent": "최종 교차 요약된 보도 내용 본문 요약 (3~4문장의 사실적 기사체)"
+    "pressContent": "최종 교차 요약된 기사 본문 팩트 기반 요약 (3~4문장의 사실적 기사체)"
   }
   `;
 
