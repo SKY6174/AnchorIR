@@ -160,16 +160,16 @@ export default function AwardManager({
       const normalizedName = file.name.normalize("NFC");
       setAwardFileName("업로드 중...");
       try {
-        const storagePath = `awards/${Date.now()}_${normalizedName}`;
+        const storagePath = `${Date.now()}_${normalizedName}`; // awards 전용 버킷 루트에 업로드
         const { data, error } = await supabase.storage
-          .from("anchor-files")
+          .from("awards") // awards 버킷명 반영
           .upload(storagePath, file);
 
         if (error) throw error;
 
         // 업로드 완료 후 공개 읽기 주소(Public URL) 획득
         const { data: { publicUrl } } = supabase.storage
-          .from("anchor-files")
+          .from("awards")
           .getPublicUrl(data.path);
 
         setAwardFileName(normalizedName);
@@ -331,17 +331,17 @@ export default function AwardManager({
         if (!targetFile) return null;
 
         const normalizedName = targetFile.name.normalize("NFC");
-        const storagePath = `awards/${Date.now()}_${normalizedName}`;
+        const storagePath = `${Date.now()}_${normalizedName}`; // awards 전용 버킷 루트에 업로드
 
         const { data, error } = await supabase.storage
-          .from("anchor-files")
+          .from("awards") // awards 버킷명 반영
           .upload(storagePath, targetFile);
 
         if (error) throw error;
 
         // 공개 읽기 주소(Public URL) 획득
         const { data: { publicUrl } } = supabase.storage
-          .from("anchor-files")
+          .from("awards")
           .getPublicUrl(data.path);
 
         return {

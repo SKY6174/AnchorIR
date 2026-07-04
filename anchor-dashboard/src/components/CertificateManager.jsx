@@ -160,16 +160,16 @@ export default function CertificateManager({
       const normalizedName = file.name.normalize("NFC");
       setCertFileName("업로드 중...");
       try {
-        const storagePath = `certificates/${Date.now()}_${normalizedName}`;
+        const storagePath = `${Date.now()}_${normalizedName}`; // certificates 전용 버킷 루트에 업로드
         const { data, error } = await supabase.storage
-          .from("anchor-files")
+          .from("certificates") // certificates 버킷명 반영
           .upload(storagePath, file);
 
         if (error) throw error;
 
         // 업로드 완료 후 공개 읽기 주소(Public URL) 획득
         const { data: { publicUrl } } = supabase.storage
-          .from("anchor-files")
+          .from("certificates")
           .getPublicUrl(data.path);
 
         setCertFileName(normalizedName);
@@ -331,17 +331,17 @@ export default function CertificateManager({
         if (!targetFile) return null;
 
         const normalizedName = targetFile.name.normalize("NFC");
-        const storagePath = `certificates/${Date.now()}_${normalizedName}`;
+        const storagePath = `${Date.now()}_${normalizedName}`; // certificates 전용 버킷 루트에 업로드
 
         const { data, error } = await supabase.storage
-          .from("anchor-files")
+          .from("certificates") // certificates 버킷명 반영
           .upload(storagePath, targetFile);
 
         if (error) throw error;
 
         // 공개 읽기 주소(Public URL) 획득
         const { data: { publicUrl } } = supabase.storage
-          .from("anchor-files")
+          .from("certificates")
           .getPublicUrl(data.path);
 
         return {
