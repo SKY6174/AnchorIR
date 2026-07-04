@@ -4960,15 +4960,6 @@ export default function App() {
                   currentUser={currentUser}
                   supabase={supabase}
                 />
-                {/* 단위과제 및 프로그램 전용 예산 엑셀 업로더 (mode="BUDGET") */}
-                <ExcelUploader
-                  mode="BUDGET"
-                  onUpdateData={handleUpdateData}
-                  projects={displayProjects}
-                  selectedYear={selectedYear}
-                  viewMode={pdcaViewMode}
-                  selectedUnitId={selectedUnitId}
-                />
               </div>
             )}
           </div>
