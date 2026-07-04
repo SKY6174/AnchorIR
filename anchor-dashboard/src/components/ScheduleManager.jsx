@@ -182,6 +182,23 @@ export default function ScheduleManager({
   const [isEditMode, setIsEditMode] = useState(false);   // 수정 모드 활성화 여부
   const [editingItemId, setEditingItemId] = useState(null); // 편집 대상 일정 ID
 
+  // 선택 연차의 실제 회계연도 사업기간(3/1 ~ 이듬해 2/28 또는 29) 부합 여부 판별 함수
+  const isDateInSelectedYear = (dateStr, yearVal) => {
+    if (!dateStr) return false;
+    const date = new Date(dateStr);
+    if (isNaN(date.getTime())) return false;
+    
+    const targetYearNum = yearVal === 1 ? 2025 : yearVal === 2 ? 2026 : yearVal === 3 ? 2027 : yearVal === 4 ? 2028 : 2029;
+    const start = new Date(`${targetYearNum}-03-01T00:00:00+09:00`);
+    
+    const endYear = targetYearNum + 1;
+    const isLeap = (endYear % 4 === 0 && endYear % 100 !== 0) || (endYear % 400 === 0);
+    const endDay = isLeap ? "29" : "28";
+    const end = new Date(`${endYear}-02-${endDay}T23:59:59+09:00`);
+    
+    return date >= start && date <= end;
+  };
+
   // 위원회 관리 상태 정의
   const [selectedCommitteeId, setSelectedCommitteeId] = useState("total"); // 선택된 위원회 ID ("total", "planning" 등)
   const [activeCommitteeDetailTab, setActiveCommitteeDetailTab] = useState("members"); // 위원회 세부 정보 탭 ("members": 명단, "purpose": 목적/기능)
@@ -674,6 +691,7 @@ export default function ScheduleManager({
   // 언론보도 데이터가 로드되거나 필터가 바뀔 때 기본적으로 첫 번째 항목을 활성화
   useEffect(() => {
     const filtered = pressReleases
+      .filter(p => isDateInSelectedYear(p.broadcastDate, selectedYear))
       .filter(p => selectedPressType === "all" || p.type === selectedPressType)
       .sort((a, b) => {
         const dateA = a.broadcastDate ? new Date(a.broadcastDate) : new Date(0);
@@ -687,7 +705,7 @@ export default function ScheduleManager({
     } else {
       setActivePressId(null);
     }
-  }, [pressReleases, selectedPressType, activePressId]);
+  }, [pressReleases, selectedPressType, activePressId, selectedYear]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -3988,8 +4006,11 @@ export default function ScheduleManager({
             
             {/* 좌측: 리스트 영역 */}
             <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem", maxHeight: "70vh", overflowY: "auto", paddingRight: "0.5rem" }}>
-              {pressReleases.filter(p => selectedPressType === "all" || p.type === selectedPressType).length > 0 ? (
+              {pressReleases
+                .filter(p => isDateInSelectedYear(p.broadcastDate, selectedYear))
+                .filter(p => selectedPressType === "all" || p.type === selectedPressType).length > 0 ? (
                 pressReleases
+                  .filter(p => isDateInSelectedYear(p.broadcastDate, selectedYear))
                   .filter(p => selectedPressType === "all" || p.type === selectedPressType)
                   .sort((a, b) => {
                     const dateA = a.broadcastDate ? new Date(a.broadcastDate) : new Date(0);
