@@ -609,18 +609,23 @@ export default function AgreementManager({
       let bestScore = 0;
       let matchedTarget = null;
       let targetType = ""; // "agreement" | "certificate" | "award"
-
-      // 연도 키워드 감지 (예: 2025, 2026, 25, 26)
-      const has2025 = fileBaseName.includes("2025") || fileBaseName.includes("25") || fileBaseName.includes("1차");
-      const has2026 = fileBaseName.includes("2026") || fileBaseName.includes("26") || fileBaseName.includes("2차");
-
-      const extractedOrg = extractOrgName(fileBaseName);
-      const extractedName = extractNameInParentheses(fileBaseName);
+      let bestScoreDetails = {
+        extractedOrg: extractedOrg || "없음",
+        extractedName: extractedName || "없음",
+        orgScore: 0,
+        nameScore: 0,
+        yearScore: 0,
+        dateScore: 0,
+        breakdown: "매칭 흔적 없음"
+      };
 
       if (agreementsSubTab === "agreements") {
         targetType = "agreement";
         filteredAgreements.forEach(item => {
-          let score = 0;
+          let orgScore = 0;
+          let nameScore = 0;
+          let yearScore = 0;
+          let dateScore = 0;
           
           // A. 기관명 정밀 비교 (+50점)
           item.organizations.forEach(org => {
@@ -628,9 +633,9 @@ export default function AgreementManager({
             if (orgClean) {
               const fileOrgClean = cleanName(extractedOrg);
               if (fileOrgClean && (fileOrgClean.includes(orgClean) || orgClean.includes(fileOrgClean))) {
-                score += 50;
+                orgScore = 50;
               } else if (cleanName(fileBaseName).includes(orgClean)) {
-                score += 30; // 파일명 어딘가에 포함되어 있으면 보정점수
+                orgScore = Math.max(orgScore, 30);
               }
             }
           });
@@ -641,9 +646,9 @@ export default function AgreementManager({
             if (nameMatch) {
               nameMatch.forEach(nm => {
                 if (extractedName && extractedName.includes(nm)) {
-                  score += 40;
+                  nameScore = 40;
                 } else if (fileBaseName.includes(nm)) {
-                  score += 25; // 단순 포함 시 보정
+                  nameScore = Math.max(nameScore, 25);
                 }
               });
             }
@@ -651,82 +656,142 @@ export default function AgreementManager({
 
           // C. 연도/날짜 비교 (+30점 / 추가 +10점 보너스)
           const itemYear = getYearFromDate(item.date);
-          if (itemYear === 1 && has2025) score += 30;
-          if (itemYear === 2 && has2026) score += 30;
+          if (itemYear === 1 && has2025) yearScore = 30;
+          if (itemYear === 2 && has2026) yearScore = 30;
           
           if (parsedDate && item.date === parsedDate) {
-            score += 10;
+            dateScore = 10;
           }
+
+          const score = orgScore + nameScore + yearScore + dateScore;
 
           if (score > bestScore) {
             bestScore = score;
             matchedTarget = item;
+
+            const breakdownParts = [];
+            if (orgScore > 0) breakdownParts.push(`기관명(+${orgScore})`);
+            if (nameScore > 0) breakdownParts.push(`성명(+${nameScore})`);
+            if (yearScore > 0) breakdownParts.push(`연도(+${yearScore})`);
+            if (dateScore > 0) breakdownParts.push(`날짜(+${dateScore})`);
+
+            bestScoreDetails = {
+              extractedOrg: extractedOrg || "없음",
+              extractedName: extractedName || "없음",
+              orgScore,
+              nameScore,
+              yearScore,
+              dateScore,
+              breakdown: breakdownParts.join(" + ")
+            };
           }
         });
       } else if (agreementsSubTab === "certificates") {
         targetType = "certificate";
         filteredCertificates.forEach(item => {
-          let score = 0;
+          let orgScore = 0;
+          let nameScore = 0;
+          let yearScore = 0;
+          let dateScore = 0;
 
           // A. 발급번호 매핑 (+50점)
           if (item.certNo && (fileBaseName.includes(item.certNo) || (extractedOrg && extractedOrg.includes(item.certNo)))) {
-            score += 50;
+            orgScore = 50;
           }
 
           // B. 성명 비교 (+40점)
           if (item.recipientName) {
             if (extractedName && extractedName.includes(item.recipientName)) {
-              score += 40;
+              nameScore = 40;
             } else if (fileBaseName.includes(item.recipientName)) {
-              score += 25;
+              nameScore = Math.max(nameScore, 25);
             }
           }
 
           // C. 연도/날짜 비교 (+30점 / 추가 +10점)
           const itemYear = getYearFromDate(item.issueDate);
-          if (itemYear === 1 && has2025) score += 30;
-          if (itemYear === 2 && has2026) score += 30;
+          if (itemYear === 1 && has2025) yearScore = 30;
+          if (itemYear === 2 && has2026) yearScore = 30;
 
           if (parsedDate && item.issueDate === parsedDate) {
-            score += 10;
+            dateScore = 10;
           }
+
+          const score = orgScore + nameScore + yearScore + dateScore;
 
           if (score > bestScore) {
             bestScore = score;
             matchedTarget = item;
+
+            const breakdownParts = [];
+            if (orgScore > 0) breakdownParts.push(`발급번호(+${orgScore})`);
+            if (nameScore > 0) breakdownParts.push(`성명(+${nameScore})`);
+            if (yearScore > 0) breakdownParts.push(`연도(+${yearScore})`);
+            if (dateScore > 0) breakdownParts.push(`날짜(+${dateScore})`);
+
+            bestScoreDetails = {
+              extractedOrg: extractedOrg || "없음",
+              extractedName: extractedName || "없음",
+              orgScore,
+              nameScore,
+              yearScore,
+              dateScore,
+              breakdown: breakdownParts.join(" + ")
+            };
           }
         });
       } else if (agreementsSubTab === "awards") {
         targetType = "award";
         filteredAwards.forEach(item => {
-          let score = 0;
+          let orgScore = 0;
+          let nameScore = 0;
+          let yearScore = 0;
+          let dateScore = 0;
 
           // A. 발급번호 매핑 (+50점)
           if (item.awardNo && (fileBaseName.includes(item.awardNo) || (extractedOrg && extractedOrg.includes(item.awardNo)))) {
-            score += 50;
+            orgScore = 50;
           }
 
           // B. 성명 비교 (+40점)
           if (item.recipientName) {
             if (extractedName && extractedName.includes(item.recipientName)) {
-              score += 40;
+              nameScore = 40;
             } else if (fileBaseName.includes(item.recipientName)) {
-              score += 25;
+              nameScore = Math.max(nameScore, 25);
             }
           }
 
           // C. 연도/날짜 비교 (+30점 / 추가 +10점)
           const itemYear = getYearFromDate(item.issueDate);
-          if (itemYear === 1 && has2025) score += 30;
-          if (itemYear === 2 && has2026) score += 30;
+          if (itemYear === 1 && has2025) yearScore = 30;
+          if (itemYear === 2 && has2026) yearScore = 30;
 
           if (parsedDate && item.issueDate === parsedDate) {
-            score += 10;
+            dateScore = 10;
           }
+
+          const score = orgScore + nameScore + yearScore + dateScore;
 
           if (score > bestScore) {
             bestScore = score;
             matchedTarget = item;
+
+            const breakdownParts = [];
+            if (orgScore > 0) breakdownParts.push(`발급번호(+${orgScore})`);
+            if (nameScore > 0) breakdownParts.push(`성명(+${nameScore})`);
+            if (yearScore > 0) breakdownParts.push(`연도(+${yearScore})`);
+            if (dateScore > 0) breakdownParts.push(`날짜(+${dateScore})`);
+
+            bestScoreDetails = {
+              extractedOrg: extractedOrg || "없음",
+              extractedName: extractedName || "없음",
+              orgScore,
+              nameScore,
+              yearScore,
+              dateScore,
+              breakdown: breakdownParts.join(" + ")
+            };
           }
         });
       }
@@ -748,7 +813,8 @@ export default function AgreementManager({
           targetDesc: targetType === "agreement" 
             ? `${matchedTarget.organizations.map(o => o.name).join(", ")} (${matchedTarget.date})`
             : `${matchedTarget.recipientName} [${matchedTarget.recipientDept}] (${matchedTarget.issueDate || matchedTarget.date})`,
-          score: bestScore
+          score: bestScore,
+          details: bestScoreDetails
         });
       } else {
         results.push({
@@ -756,8 +822,17 @@ export default function AgreementManager({
           fileData,
           status: "fail",
           targetId: null,
-          targetDesc: "일치하는 데이터를 찾을 수 없습니다.",
-          score: 0
+          targetDesc: "일치하는 데이터를 찾지 못함 (과락)",
+          score: bestScore,
+          details: {
+            extractedOrg: extractedOrg || "없음",
+            extractedName: extractedName || "없음",
+            orgScore: 0,
+            nameScore: 0,
+            yearScore: 0,
+            dateScore: 0,
+            breakdown: `최고 적합도: ${bestScore}점 (기준 점수 70점 미달)`
+          }
         });
       }
     }
@@ -1891,20 +1966,43 @@ export default function AgreementManager({
                 <table style={{ width: "100%", fontSize: "0.75rem", borderCollapse: "collapse", border: "1px solid var(--border-color-dark)" }}>
                   <thead>
                     <tr style={{ background: "#27272a", borderBottom: "1px solid var(--border-color-dark)" }}>
-                      <th style={{ padding: "0.5rem", textAlign: "left", border: "1px solid var(--border-color-dark)" }}>파일명</th>
-                      <th style={{ padding: "0.5rem", textAlign: "left", border: "1px solid var(--border-color-dark)" }}>매칭된 데이터 대상</th>
-                      <th style={{ padding: "0.5rem", textAlign: "center", border: "1px solid var(--border-color-dark)" }}>매칭 상태</th>
+                      <th style={{ padding: "0.5rem", textAlign: "left", border: "1px solid var(--border-color-dark)", width: "32%" }}>파일명</th>
+                      <th style={{ padding: "0.5rem", textAlign: "left", border: "1px solid var(--border-color-dark)", width: "38%" }}>추출 정보 및 매칭 점수 내역</th>
+                      <th style={{ padding: "0.5rem", textAlign: "left", border: "1px solid var(--border-color-dark)", width: "20%" }}>매칭된 데이터 대상</th>
+                      <th style={{ padding: "0.5rem", textAlign: "center", border: "1px solid var(--border-color-dark)", width: "10%" }}>매칭 상태</th>
                     </tr>
                   </thead>
                   <tbody>
                     {batchFileResults.map((res, i) => (
                       <tr key={i} style={{ borderBottom: "1px solid var(--border-color-dark)", background: res.status === "success" ? "rgba(16,185,129,0.03)" : "rgba(239,68,68,0.03)" }}>
-                        <td style={{ padding: "0.5rem", color: "#e4e4e7", fontWeight: "500", border: "1px solid var(--border-color-dark)" }}>📁 {res.fileName}</td>
-                        <td style={{ padding: "0.5rem", color: res.status === "success" ? "#a1a1aa" : "#ef4444", border: "1px solid var(--border-color-dark)" }}>
+                        <td style={{ padding: "0.5rem", color: "#e4e4e7", fontWeight: "500", border: "1px solid var(--border-color-dark)" }}>
+                          <div style={{ wordBreak: "break-all" }}>📁 {res.fileName}</div>
+                        </td>
+                        <td style={{ padding: "0.5rem", border: "1px solid var(--border-color-dark)" }}>
+                          <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
+                            <div style={{ fontSize: "0.68rem", color: "#a1a1aa" }}>
+                              🏢 추출기관: <span style={{ color: "white", fontWeight: "700" }}>{res.details?.extractedOrg || "없음"}</span> | 
+                              👤 추출성명: <span style={{ color: "white", fontWeight: "700" }}>{res.details?.extractedName || "없음"}</span>
+                            </div>
+                            <div style={{ 
+                              fontSize: "0.62rem", 
+                              color: res.status === "success" ? "#34d399" : "#f87171", 
+                              background: "rgba(255,255,255,0.02)", 
+                              padding: "0.15rem 0.35rem", 
+                              borderRadius: "0.2rem", 
+                              display: "inline-block", 
+                              width: "fit-content",
+                              border: "1px solid rgba(255,255,255,0.05)"
+                            }}>
+                              ⚡ 판정식: {res.details?.breakdown || "매칭 실패"} ({res.score}점)
+                            </div>
+                          </div>
+                        </td>
+                        <td style={{ padding: "0.5rem", border: "1px solid var(--border-color-dark)" }}>
                           {res.status === "success" ? (
-                            <span>🟢 {res.targetDesc} <span style={{ fontSize: "0.6rem", background: "#3f3f46", padding: "0.1rem 0.3rem", borderRadius: "0.2rem", marginLeft: "0.3rem" }}>{res.score}점</span></span>
+                            <span style={{ color: "#38bdf8", fontWeight: "600" }}>🟢 {res.targetDesc}</span>
                           ) : (
-                            <span>❌ {res.targetDesc}</span>
+                            <span style={{ color: "#ef4444" }}>❌ {res.targetDesc}</span>
                           )}
                         </td>
                         <td style={{ padding: "0.5rem", textAlign: "center", border: "1px solid var(--border-color-dark)" }}>
