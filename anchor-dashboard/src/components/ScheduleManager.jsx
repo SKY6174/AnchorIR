@@ -5,6 +5,85 @@ import {
   Edit, Trash2
 } from "lucide-react";
 
+// RISE 사업을 이끌어가는 5대 거버넌스 위원회 상세 정의 상수
+const COMMITTEES_DATA = [
+  {
+    id: "total",
+    name: "RISE총괄위원회",
+    badge: "최고의사결정",
+    color: "linear-gradient(135deg, #ec4899 0%, #be123c 100%)",
+    purpose: "RISE 사업 총괄 방향성 심의 및 핵심 의사결정",
+    desc: "울산 지역 RISE 사업의 최고 의사 결정 기구로, 사업의 총괄 방향 설정, 주요 계획의 심의·의결, 성과 지표 평가 및 환류 체계 조율 등의 핵심 역할을 담당합니다.",
+    functions: [
+      "RISE 사업 총괄 기본계획 및 예산 배분안 최종 심의·확정",
+      "연차별 성과평가 결과에 따른 환류(인센티브/패널티) 확정",
+      "지자체-대학-산업계 간 고차원 거버넌스 협력 방향 조율 및 분쟁 조정",
+      "기타 RISE 사업 운영상 최고 의사결정이 필요한 현안 의결"
+    ],
+    cycle: "반기별 1회 개최 (필요 시 임시 위원회 소집)"
+  },
+  {
+    id: "planning",
+    name: "RISE기획위원회",
+    badge: "기획·실무조율",
+    color: "linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)",
+    purpose: "세부 추진전략 수립 및 프로그램 실무 조율",
+    desc: "세부 추진전략 수립 및 프로그램 기획을 실무적으로 조율하는 위원회로, 유관 기관과의 연계 모델 고도화 및 사업 기획의 타당성 검토를 수행합니다.",
+    functions: [
+      "추진전략(S) 및 추진과제(T)별 세부 프로그램(PG) 기획 타당성 검토",
+      "연차별 실행계획서 수립 및 지자체 RISE 계획과의 부합성 검토",
+      "신규 단위과제(UP) 도입 또는 기존 과제 개편 실무 조율",
+      "대학 내 참여 부서 간 사업 연계성 및 협력 프로세스 설계"
+    ],
+    cycle: "분기별 1회 개최 (실무 단계 상시 협의)"
+  },
+  {
+    id: "eval",
+    name: "RISE사업자평가위원회",
+    badge: "성과평가",
+    color: "linear-gradient(135deg, #10b981 0%, #047857 100%)",
+    purpose: "참여 부서 및 기업/기관 수행 실적 객관적 평가",
+    desc: "참여 부서, 연계 기업 및 위탁 기관의 사업 수행 실적을 객관적으로 평가하고, 평가 결과에 기반한 예산 조정 및 성과 극대화 방안을 도출합니다.",
+    functions: [
+      "프로그램별 핵심성과지표(KPI) 달성률 및 실적 분석·평가",
+      "참여 부서 및 외부 협력 기관의 사업비 집행 타당성 종합 평가",
+      "평가 결과에 따른 성과 등급 부여 및 예산 가감 조정(안) 도출",
+      "우수사례(Best Practice) 발굴 및 성과 미달 과제에 대한 개선 조치 요구"
+    ],
+    cycle: "연 1회 정기 평가 (필요 시 반기 모니터링 평가 병행)"
+  },
+  {
+    id: "budget",
+    name: "RISE사업비관리위원회",
+    badge: "재정투명성",
+    color: "linear-gradient(135deg, #f59e0b 0%, #b45309 100%)",
+    purpose: "사업 예산 집행 타당성 검토 및 재정 건전성 감독",
+    desc: "사업 예산의 투명하고 효율적인 집행을 보증하는 위원회로, 비목별 예산 전용 심의, 이월 예산 집행 계획 검토 및 정산 프로세스를 감시합니다.",
+    functions: [
+      "단위과제(UP) 간 또는 비목 간 대규모 예산 전용 및 변경안 적절성 심의",
+      "1차년도 이월 예산의 2차년도 집행 계획 수립 및 타당성 검토",
+      "집행률 저조 부서에 대한 원인 분석 및 예산 재배분 심의",
+      "국가 연구개발 사업비 관리 표준 지침 준수 여부 및 정산 결과 최종 검토"
+    ],
+    cycle: "매 분기 정기 심의 (예산 변경 수시 심의 병행)"
+  },
+  {
+    id: "advisory",
+    name: "RISE자문회의",
+    badge: "외부전문가자문",
+    color: "linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%)",
+    purpose: "산업계·학계·연구계 전문가 협업 정책 제안 및 조언",
+    desc: "지역 내 산업계, 학계, 연구계 전문가로 구성되어 지역 정주형 인재 양성 및 지산학연 협력 생태계 구축을 위한 자문과 네트워킹을 지원합니다.",
+    functions: [
+      "울산지역 신산업(친환경 선박, AI/DX 등) 인력 수요 트렌드 정보 제공 및 제언",
+      "글로컬 대학 위상 강화를 위한 지산학연 연계 혁신 아이디어 제안",
+      "대학 교육과정과 지역 산업계 수요 간 미스매치 해소 방안 자문",
+      "대외 유관 기관과의 네트워킹 구축 및 홍보 전략 지원"
+    ],
+    cycle: "반기별 1회 정기 회의 (현안에 따른 수시 자문 및 간담회 개최)"
+  }
+];
+
 export default function ScheduleManager({
   currentRole,
   selectedYear,
@@ -25,6 +104,10 @@ export default function ScheduleManager({
   const [modalType, setModalType] = useState("monthly"); // "monthly", "event", "meeting", "press"
   const [isEditMode, setIsEditMode] = useState(false);   // 수정 모드 활성화 여부
   const [editingItemId, setEditingItemId] = useState(null); // 편집 대상 일정 ID
+
+  // 위원회 관리 상태 정의
+  const [selectedCommitteeId, setSelectedCommitteeId] = useState("total"); // 선택된 위원회 ID ("total", "planning" 등)
+  const [activeCommitteeDetailTab, setActiveCommitteeDetailTab] = useState("members"); // 위원회 세부 정보 탭 ("members": 명단, "purpose": 목적/기능)
 
   // 캘린더 월 상태 (2026년 7월 기준)
   const [currentMonth, setCurrentMonth] = useState(7); // 7월
@@ -1155,6 +1238,219 @@ export default function ScheduleManager({
                 <span>{selectedEventMonth}월에 등록된 주요 행사 일정이 없습니다.<br />[행사 일정 등록] 버튼을 눌러 초기 계획을 채워보세요.</span>
               </div>
             )}
+          </div>
+
+        </div>
+      )}
+
+      {/* 2.5 위원회 관리 */}
+      {subTab === "committees" && (
+        <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+          
+          {/* 상단 안내 배너 카드 */}
+          <div className="card" style={{ padding: "1.25rem", borderRadius: "10px", background: "var(--panel-bg)", border: "1px solid var(--border-color)", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "1rem" }}>
+            <div>
+              <h3 style={{ margin: 0, fontSize: "1.1rem", fontWeight: "800", color: "var(--text-primary)", display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                <Users size={20} style={{ color: "var(--accent-color)" }} />
+                🏛️ RISE 사업단 의사결정 거버넌스 (위원회 관리)
+              </h3>
+              <p style={{ margin: "0.25rem 0 0 0", fontSize: "0.85rem", color: "var(--text-secondary)" }}>
+                울산과학대학교 RISE(앵커) 사업의 성공을 위한 최고 의사결정 기구 및 핵심 실무/평가 위원회 종합 현황
+              </p>
+            </div>
+          </div>
+
+          {/* 메인 레이아웃: 좌측 목록 + 우측 상세 */}
+          <div style={{ display: "grid", gridTemplateColumns: "2.5fr 3.5fr", gap: "1.5rem" }}>
+            
+            {/* 좌측: 5대 위원회 카드 목록 */}
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+              {COMMITTEES_DATA.map((comm) => {
+                const isSelected = selectedCommitteeId === comm.id;
+                return (
+                  <div
+                    key={comm.id}
+                    onClick={() => setSelectedCommitteeId(comm.id)}
+                    style={{
+                      padding: "1.25rem",
+                      borderRadius: "8px",
+                      background: isSelected ? "rgba(255, 255, 255, 0.04)" : "var(--panel-bg)",
+                      border: isSelected ? "1px solid var(--accent-color)" : "1px solid var(--border-color)",
+                      boxShadow: isSelected ? "0 4px 20px rgba(236, 72, 153, 0.15)" : "none",
+                      cursor: "pointer",
+                      transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
+                      position: "relative",
+                      overflow: "hidden"
+                    }}
+                    className="committee-item-card"
+                  >
+                    {/* 상단 그라데이션 좌측 사이드바 */}
+                    <div style={{
+                      position: "absolute",
+                      left: 0,
+                      top: 0,
+                      bottom: 0,
+                      width: "4px",
+                      background: comm.color
+                    }} />
+
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "0.5rem", paddingLeft: "0.5rem" }}>
+                      <h4 style={{ margin: 0, fontSize: "0.95rem", fontWeight: "900", color: isSelected ? "var(--text-primary)" : "var(--text-primary)" }}>
+                        {comm.name}
+                      </h4>
+                      <span style={{
+                        fontSize: "0.65rem",
+                        fontWeight: "900",
+                        padding: "0.15rem 0.4rem",
+                        borderRadius: "4px",
+                        background: isSelected ? "var(--accent-color)" : "rgba(255,255,255,0.05)",
+                        color: isSelected ? "white" : "var(--text-secondary)",
+                        border: "1px solid rgba(255,255,255,0.05)"
+                      }}>
+                        {comm.badge}
+                      </span>
+                    </div>
+                    <p style={{ margin: 0, fontSize: "0.78rem", color: "var(--text-secondary)", lineHeight: "1.4", paddingLeft: "0.5rem" }}>
+                      {comm.purpose}
+                    </p>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* 우측: 선택된 위원회 상세 정보 */}
+            {(() => {
+              const activeComm = COMMITTEES_DATA.find(c => c.id === selectedCommitteeId) || COMMITTEES_DATA[0];
+              return (
+                <div className="card" style={{
+                  background: "var(--panel-bg)",
+                  border: "1px solid var(--border-color)",
+                  borderRadius: "10px",
+                  display: "flex",
+                  flexDirection: "column",
+                  minHeight: "450px"
+                }}>
+                  {/* 상세 헤더 영역 (위원회별 고유 그라데이션) */}
+                  <div style={{
+                    padding: "1.5rem",
+                    background: activeComm.color,
+                    borderRadius: "9px 9px 0 0",
+                    position: "relative"
+                  }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                      <span style={{
+                        fontSize: "0.7rem",
+                        fontWeight: "900",
+                        background: "rgba(255,255,255,0.2)",
+                        color: "white",
+                        padding: "0.2rem 0.6rem",
+                        borderRadius: "20px",
+                        textTransform: "uppercase"
+                      }}>
+                        {activeComm.badge}
+                      </span>
+                      <span style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.8)", fontWeight: "700" }}>
+                        ⏱️ 주기: {activeComm.cycle}
+                      </span>
+                    </div>
+                    <h3 style={{ margin: "0.75rem 0 0.25rem 0", color: "white", fontSize: "1.3rem", fontWeight: "900" }}>
+                      {activeComm.name}
+                    </h3>
+                  </div>
+
+                  {/* 세부 탭 선택 바 */}
+                  <div style={{ display: "flex", borderBottom: "1px solid var(--border-color)", background: "rgba(255,255,255,0.01)" }}>
+                    <button
+                      onClick={() => setActiveCommitteeDetailTab("members")}
+                      style={{
+                        flex: 1,
+                        padding: "0.8rem",
+                        background: "transparent",
+                        border: "none",
+                        fontSize: "0.85rem",
+                        fontWeight: "800",
+                        color: activeCommitteeDetailTab === "members" ? "var(--accent-color)" : "var(--text-secondary)",
+                        borderBottom: activeCommitteeDetailTab === "members" ? "2px solid var(--accent-color)" : "none",
+                        cursor: "pointer",
+                        transition: "all 0.15s ease"
+                      }}
+                    >
+                      👥 위원 명단 (추후 입력)
+                    </button>
+                    <button
+                      onClick={() => setActiveCommitteeDetailTab("purpose")}
+                      style={{
+                        flex: 1,
+                        padding: "0.8rem",
+                        background: "transparent",
+                        border: "none",
+                        fontSize: "0.85rem",
+                        fontWeight: "800",
+                        color: activeCommitteeDetailTab === "purpose" ? "var(--accent-color)" : "var(--text-secondary)",
+                        borderBottom: activeCommitteeDetailTab === "purpose" ? "2px solid var(--accent-color)" : "none",
+                        cursor: "pointer",
+                        transition: "all 0.15s ease"
+                      }}
+                    >
+                      📋 위원회 운영 목적 & 기능
+                    </button>
+                  </div>
+
+                  {/* 상세 탭 콘텐츠 */}
+                  <div style={{ padding: "1.5rem", flex: 1, display: "flex", flexDirection: "column", gap: "1rem" }}>
+                    {activeCommitteeDetailTab === "members" ? (
+                      <div style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        flex: 1,
+                        padding: "2.5rem 1rem",
+                        background: "rgba(255,255,255,0.01)",
+                        border: "1px dashed var(--border-color)",
+                        borderRadius: "8px",
+                        textAlign: "center",
+                        color: "var(--text-secondary)"
+                      }}>
+                        <Users size={36} style={{ color: "var(--accent-color)", opacity: 0.6, marginBottom: "0.75rem" }} />
+                        <span style={{ fontSize: "0.85rem", fontWeight: "700", color: "var(--text-primary)", marginBottom: "0.25rem" }}>
+                          위원 명단 준비 중
+                        </span>
+                        <p style={{ margin: 0, fontSize: "0.76rem", color: "var(--text-secondary-dark)", lineHeight: "1.5" }}>
+                          본 위원회의 명단 정보는 추후 구성 완료 시 시스템에 직접 입력될 예정입니다.<br />
+                          관련 권한을 가진 관리자 또는 사업단 총괄 책임자가 추후 업데이트할 수 있습니다.
+                        </p>
+                      </div>
+                    ) : (
+                      <div style={{ display: "flex", flexDirection: "column", gap: "1.2rem" }}>
+                        <div>
+                          <h4 style={{ margin: "0 0 0.5rem 0", fontSize: "0.85rem", fontWeight: "800", color: "var(--text-primary)", display: "flex", alignItems: "center", gap: "0.3rem" }}>
+                            <Info size={14} style={{ color: "var(--accent-color)" }} />
+                            위원회 개요
+                          </h4>
+                          <p style={{ margin: 0, fontSize: "0.8rem", color: "var(--text-secondary)", lineHeight: "1.6" }}>
+                            {activeComm.desc}
+                          </p>
+                        </div>
+
+                        <div>
+                          <h4 style={{ margin: "0 0 0.5rem 0", fontSize: "0.85rem", fontWeight: "800", color: "var(--text-primary)", display: "flex", alignItems: "center", gap: "0.3rem" }}>
+                            <CheckCircle size={14} style={{ color: "#10b981" }} />
+                            주요 기능 및 심의 사항
+                          </h4>
+                          <ul style={{ margin: 0, paddingLeft: "1.2rem", fontSize: "0.8rem", color: "var(--text-secondary)", display: "flex", flexDirection: "column", gap: "0.4rem", lineHeight: "1.5" }}>
+                            {activeComm.functions.map((fn, i) => (
+                              <li key={i}>{fn}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              );
+            })()}
+
           </div>
 
         </div>

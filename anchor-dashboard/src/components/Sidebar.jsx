@@ -389,6 +389,19 @@ export default function Sidebar({
               >
                 - 주요 행사
               </div>
+              {/* 위원회 관리 서브 메뉴: 회의록 등록 위에 배치하여 다양한 위원회 정보를 열람할 수 있도록 지원 */}
+              <div
+                className={`nav-sub-item ${activeTab === "schedule" && scheduleSubTab === "committees" ? "active" : ""}`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onChangeTab("schedule");
+                  if (onChangeScheduleSubTab) {
+                    onChangeScheduleSubTab("committees");
+                  }
+                }}
+              >
+                - 위원회 관리
+              </div>
               <div
                 className={`nav-sub-item ${activeTab === "schedule" && scheduleSubTab === "meetings" ? "active" : ""}`}
                 onClick={(e) => {
