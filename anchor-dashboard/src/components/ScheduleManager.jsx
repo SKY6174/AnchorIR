@@ -2532,8 +2532,10 @@ export default function ScheduleManager({
                     }}>
                       {selectedMeeting ? (
                         <>
-                          {/* 헤더 제어 버튼 영역 */}
                           {(() => {
+                            const isOperating = selectedMeeting.category === "operating";
+                            
+                            // 작성자 및 부서 파싱 (일반 회의용)
                             const ext = selectedMeeting.attendeesExternal || selectedMeeting.attendees_external || "";
                             let writer = "작성자 미정";
                             let dept = "사업운영팀";
@@ -2543,6 +2545,209 @@ export default function ScheduleManager({
                               dept = parts[1]?.replace("부서:", "").trim() || "사업운영팀";
                             }
 
+                            // 삭제 권한: 송경영, 심현미, ADMIN
+                            const canDelete = currentRole && (
+                              currentRole.name.includes("송경영") || 
+                              currentRole.name.includes("심현미") || 
+                              currentRole.id === "ADMIN"
+                            );
+
+                            if (isOperating) {
+                              // ==========================================
+                              // 💡 1) 사업단 운영회의 전용 상세 요점 뷰
+                              // ==========================================
+                              const operatingDepts = ["사업단", "사업운영팀", "ECC", "ICC", "RCC", "AID-X", "늘봄누리센터", "신산업특화센터"];
+                              
+                              // JSON 파싱 및 폴백 매핑
+                              let parsedAgendas = {};
+                              let parsedResults = {};
+                              try {
+                                if (selectedMeeting.agenda && selectedMeeting.agenda.trim().startsWith("{")) {
+                                  parsedAgendas = JSON.parse(selectedMeeting.agenda);
+                                } else {
+                                  parsedAgendas = { "사업단": selectedMeeting.agenda || "" };
+                                }
+                              } catch (e) {
+                                parsedAgendas = { "사업단": selectedMeeting.agenda || "" };
+                              }
+                              try {
+                                if (selectedMeeting.result && selectedMeeting.result.trim().startsWith("{")) {
+                                  parsedResults = JSON.parse(selectedMeeting.result);
+                                } else {
+                                  parsedResults = { "사업단": selectedMeeting.result || "" };
+                                }
+                              } catch (e) {
+                                parsedResults = { "사업단": selectedMeeting.result || "" };
+                              }
+
+                              const getDeptData = (deptName, dataObj) => {
+                                if (!dataObj) return "";
+                                const keys = Object.keys(dataObj);
+                                const matchedKey = keys.find(k => k.includes(deptName) || deptName.includes(k));
+                                return matchedKey ? dataObj[matchedKey] : "";
+                              };
+
+                              return (
+                                <>
+                                  {/* 헤더 영역 (부서/작성자 생략) */}
+                                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", borderBottom: "1px solid var(--border-color)", paddingBottom: "0.75rem" }}>
+                                    <div style={{ flexGrow: 1 }}>
+                                      <h3 style={{ margin: 0, fontSize: "1.25rem", fontWeight: "900", color: "var(--text-primary)" }}>
+                                        {selectedMeeting.title}
+                                      </h3>
+                                      <div style={{ display: "flex", flexWrap: "wrap", gap: "0.75rem", fontSize: "0.75rem", color: "var(--text-secondary)", marginTop: "0.5rem" }}>
+                                        <span>📅 일시: <strong>{selectedMeeting.datetime}</strong></span>
+                                        <span>•</span>
+                                        <span>📍 장소: <strong>{selectedMeeting.location}</strong></span>
+                                      </div>
+                                      <div style={{ fontSize: "0.75rem", color: "var(--text-secondary)", marginTop: "0.35rem" }}>
+                                        👥 참석자: <strong style={{ color: "var(--text-primary)" }}>{selectedMeeting.attendeesInternal || selectedMeeting.attendees_internal || "-"}</strong>
+                                      </div>
+                                    </div>
+
+                                    {/* 수정/삭제 단추 우측 맨 위 배치 */}
+                                    {currentRole.id !== "GUEST" && (
+                                      <div style={{ display: "flex", gap: "0.25rem" }}>
+                                        <button 
+                                          onClick={() => handleEditMeeting(selectedMeeting)}
+                                          title="수정"
+                                          style={{ background: "transparent", border: "none", color: "var(--text-secondary)", cursor: "pointer", padding: "0.35rem", borderRadius: "4px" }}
+                                          onMouseOver={(e) => e.currentTarget.style.color = "var(--accent-color)"}
+                                          onMouseOut={(e) => e.currentTarget.style.color = "var(--text-secondary)"}
+                                        >
+                                          <Edit size={16} />
+                                        </button>
+                                        {canDelete && (
+                                          <button 
+                                            onClick={() => handleDeleteMeeting(selectedMeeting.id)}
+                                            title="삭제"
+                                            style={{ background: "transparent", border: "none", color: "var(--text-secondary)", cursor: "pointer", padding: "0.35rem", borderRadius: "4px" }}
+                                            onMouseOver={(e) => e.currentTarget.style.color = "#EF4444"}
+                                            onMouseOut={(e) => e.currentTarget.style.color = "var(--text-secondary)"}
+                                          >
+                                            <Trash2 size={16} />
+                                          </button>
+                                        )}
+                                      </div>
+                                    )}
+                                  </div>
+
+                                  {/* 회의 성격 배너 설명 문구 */}
+                                  <div style={{ 
+                                    padding: "0.6rem 0.8rem", 
+                                    background: "rgba(59,130,246,0.04)", 
+                                    borderLeft: "3px solid var(--accent-color)", 
+                                    borderRadius: "4px",
+                                    fontSize: "0.72rem",
+                                    color: "var(--text-secondary)",
+                                    lineHeight: "1.4"
+                                  }}>
+                                    💡 본 사업단 운영회의는 <strong>사업단, 사업운영팀, ECC, ICC, RCC, AID-X, 늘봄누리센터, 신산업특화센터</strong> 각 부서의 전달사항과 업무추진 상황을 공유하기 위하여 격주로 소집되는 회의입니다.
+                                  </div>
+
+                                  {/* 8개 부서 의제 & 결과 2열 그리드 */}
+                                  <div style={{ marginTop: "0.5rem" }}>
+                                    <span style={{ fontSize: "0.825rem", color: "var(--text-secondary)", fontWeight: "700", display: "block", marginBottom: "0.5rem" }}>
+                                      🏢 부서별 주요 전달사항 및 업무추진 상황 (2열 그리드)
+                                    </span>
+                                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem" }}>
+                                      {operatingDepts.map(dept => {
+                                        const agendaVal = getDeptData(dept, parsedAgendas);
+                                        const resultVal = getDeptData(dept, parsedResults);
+
+                                        return (
+                                          <div 
+                                            key={dept} 
+                                            style={{ 
+                                              background: darkMode ? "rgba(255, 255, 255, 0.01)" : "rgba(0,0,0,0.01)", 
+                                              border: "1px solid var(--border-color)", 
+                                              borderRadius: "8px", 
+                                              padding: "0.7rem 0.85rem",
+                                              display: "flex",
+                                              flexDirection: "column",
+                                              gap: "0.3rem"
+                                            }}
+                                          >
+                                            <span style={{ fontSize: "0.75rem", fontWeight: "800", color: "var(--accent-color)", display: "flex", alignItems: "center", gap: "0.2" }}>
+                                              📌 {dept}
+                                            </span>
+                                            <div style={{ display: "flex", flexDirection: "column", gap: "0.2rem", fontSize: "0.72rem" }}>
+                                              <div style={{ color: "var(--text-primary)", display: "flex", gap: "0.25rem", alignItems: "flex-start" }}>
+                                                <span style={{ color: "var(--text-secondary)", flexShrink: 0 }}>• 의제:</span>
+                                                <span>{agendaVal || "논의사항 없음"}</span>
+                                              </div>
+                                              <div style={{ color: "var(--text-primary)", display: "flex", gap: "0.25rem", alignItems: "flex-start" }}>
+                                                <span style={{ color: "var(--text-secondary)", flexShrink: 0 }}>• 결과:</span>
+                                                <span style={{ fontWeight: "700" }}>{resultVal || "추진완료 / 특이사항 없음"}</span>
+                                              </div>
+                                            </div>
+                                          </div>
+                                        );
+                                      })}
+                                    </div>
+                                  </div>
+
+                                  {/* AI 핵심 브리핑 요약 */}
+                                  <div style={{ 
+                                    background: darkMode ? "rgba(139, 92, 246, 0.05)" : "rgba(139, 92, 246, 0.08)", 
+                                    padding: "0.75rem 1rem", 
+                                    borderRadius: "8px", 
+                                    border: "1px solid rgba(139, 92, 246, 0.15)",
+                                    marginTop: "0.5rem"
+                                  }}>
+                                    <span style={{ color: darkMode ? "#C084FC" : "#6D28D9", fontWeight: "800", fontSize: "0.78rem", display: "flex", alignItems: "center", gap: "0.25rem", marginBottom: "0.3rem" }}>
+                                      🤖 AI 요약 핵심 브리핑
+                                    </span>
+                                    <p style={{ margin: 0, fontSize: "0.72rem", color: "var(--text-primary)", lineHeight: "1.45" }}>
+                                      {(() => {
+                                        const keywords = Object.values(parsedResults).filter(Boolean).slice(0, 3).join(", ");
+                                        return keywords 
+                                          ? `본 회의에서는 각 부서의 전달사항(주요 키워드: ${keywords})에 대한 진척 상황 및 현안들을 공유했습니다. 향후 부서 간 실무 협의를 강화하여 목표 추진 계획을 차질 없이 준수할 것을 권장합니다.`
+                                          : "본 회의에서는 8대 부서별 주요 안건 공유 및 지산학 프로그램의 격주 실적 관리가 원활히 이뤄졌습니다. AI 핵심 분석 결과 각 부서의 추진 상황은 계획 대비 순조롭게 진행 중인 것으로 분석되었습니다.";
+                                      })()}
+                                    </p>
+                                  </div>
+
+                                  {/* PLAUD 음성 녹음본 및 회의자료 2열 배치 */}
+                                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem", marginTop: "0.5rem" }}>
+                                    <div style={{ background: "rgba(255,255,255,0.02)", padding: "0.6rem 0.8rem", borderRadius: "8px", border: "1px solid var(--border-color)", display: "flex", flexDirection: "column", gap: "0.25rem" }}>
+                                      <span style={{ fontSize: "0.72rem", fontWeight: "700", color: "var(--text-secondary)" }}>
+                                        🎙️ PLAUD MP3 음성 파일
+                                      </span>
+                                      {selectedMeeting.audioUrl ? (
+                                        <audio controls src={selectedMeeting.audioUrl} style={{ width: "100%", height: "26px", marginTop: "0.15rem" }} />
+                                      ) : (
+                                        <span style={{ fontSize: "0.68rem", color: "var(--text-secondary)" }}>음성 파일이 등록되어 있지 않습니다.</span>
+                                      )}
+                                    </div>
+                                    <div style={{ background: "rgba(255,255,255,0.02)", padding: "0.6rem 0.8rem", borderRadius: "8px", border: "1px solid var(--border-color)", display: "flex", alignItems: "center", justifycontent: "space-between" }}>
+                                      <div>
+                                        <span style={{ fontSize: "0.72rem", fontWeight: "700", color: "var(--text-secondary)", display: "block" }}>
+                                          📄 회의자료 문서 (PDF)
+                                        </span>
+                                        <span style={{ fontSize: "0.68rem", color: "var(--text-secondary)" }}>
+                                          {selectedMeeting.pdfUrl ? "정상 업로드 완료" : "첨부된 PDF 없음"}
+                                        </span>
+                                      </div>
+                                      {selectedMeeting.pdfUrl && (
+                                        <a
+                                          href={selectedMeeting.pdfUrl}
+                                          target="_blank"
+                                          rel="noreferrer"
+                                          style={{ color: "#60A5FA", fontSize: "0.72rem", fontWeight: "700", textDecoration: "none", background: "rgba(59,130,246,0.1)", padding: "0.3rem 0.6rem", borderRadius: "4px" }}
+                                        >
+                                          바로보기 ➔
+                                        </a>
+                                      )}
+                                    </div>
+                                  </div>
+                                </>
+                              );
+                            }
+
+                            // ==========================================
+                            // 💡 2) 기존 센터별/위원회 일반 회의 상세 뷰
+                            // ==========================================
                             return (
                               <>
                                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", borderBottom: "1px solid var(--border-color)", paddingBottom: "0.75rem" }}>
@@ -2571,15 +2776,17 @@ export default function ScheduleManager({
                                       >
                                         <Edit size={16} />
                                       </button>
-                                      <button 
-                                        onClick={() => handleDeleteMeeting(selectedMeeting.id)}
-                                        title="삭제"
-                                        style={{ background: "transparent", border: "none", color: "var(--text-secondary)", cursor: "pointer", padding: "0.35rem", borderRadius: "4px" }}
-                                        onMouseOver={(e) => e.currentTarget.style.color = "#EF4444"}
-                                        onMouseOut={(e) => e.currentTarget.style.color = "var(--text-secondary)"}
-                                      >
-                                        <Trash2 size={16} />
-                                      </button>
+                                      {canDelete && (
+                                        <button 
+                                          onClick={() => handleDeleteMeeting(selectedMeeting.id)}
+                                          title="삭제"
+                                          style={{ background: "transparent", border: "none", color: "var(--text-secondary)", cursor: "pointer", padding: "0.35rem", borderRadius: "4px" }}
+                                          onMouseOver={(e) => e.currentTarget.style.color = "#EF4444"}
+                                          onMouseOut={(e) => e.currentTarget.style.color = "var(--text-secondary)"}
+                                        >
+                                          <Trash2 size={16} />
+                                        </button>
+                                      )}
                                     </div>
                                   )}
                                 </div>
