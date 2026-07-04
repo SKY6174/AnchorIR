@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Settings, Save, RotateCcw, ShieldAlert } from "lucide-react";
 
-// 대시보드에 노출되는 전체 메인 메뉴(탭) 및 서브메뉴(서브탭) 트리 정보 정의
+// 대시보드에 노출되는 전체 메인 메뉴(탭) 및 서브메뉴(서브탭) 트리 정보 정의 (사이드바 명칭과 100% 동기화)
 const MENU_SCHEMA = [
   {
     key: "dashboard",
@@ -34,42 +34,42 @@ const MENU_SCHEMA = [
     label: "성과지표 관리",
     description: "성과지표 목록 관리 및 목표치/실적 입력 조율",
     subMenus: [
-      { key: "kpi_status", label: "성과지표 현황" },
-      { key: "kpi_mgmt", label: "성과지표 관리" }
+      { key: "kpi_status", label: "(교육부)공통성과지표" },
+      { key: "kpi_mgmt", label: "(지자체)자율성과지표 및 (대학)중점관리지표" }
     ]
   },
   {
     key: "budget",
-    label: "예산집행 관리",
+    label: "예산 관리",
     description: "월별 본예산 및 이월예산 집행 현황과 꺾은선 차트 분석",
     subMenus: [
-      { key: "execution", label: "월별 예산 집행률" },
-      { key: "settlement", label: "본예산·이월예산 통합 정산" }
+      { key: "settlement", label: "비목별 관리" },
+      { key: "execution", label: "집행률 관리" }
     ]
   },
   {
     key: "procurement",
-    label: "인프라 조달",
+    label: "구매용역 관리",
     description: "교육환경 개선, 기자재 구입/운영 및 주요 용역 추진 과정 관리",
     subMenus: [
-      { key: "env_improvement", label: "교육환경 개선" },
-      { key: "equipment_purchase", label: "기자재 구입·운영" },
+      { key: "env_improvement", label: "환경개선" },
+      { key: "equipment_purchase", label: "기자재 구입∙운영" },
       { key: "major_services", label: "주요 용역" }
     ]
   },
   {
     key: "agreements",
-    label: "기관간 협약(MOU)",
+    label: "협약∙발급 관리",
     description: "외부 유관 기관 협약 대장 및 Seminer 이수증, 상장 발급 기록 대장",
     subMenus: [
-      { key: "agreements", label: "협약서 목록" },
-      { key: "certificates", label: "이수증 발급 내역" },
-      { key: "awards", label: "상장 발급 내역" }
+      { key: "agreements", label: "협약 관리" },
+      { key: "certificates", label: "이수증 관리" },
+      { key: "awards", label: "상장 관리" }
     ]
   },
   {
     key: "schedule",
-    label: "일정 및 회의",
+    label: "일정∙행사∙회의 관리",
     description: "월간 사업 일정, 주요 행사 관리 및 위원회 회의록, 언론보도 대장",
     subMenus: [
       { key: "monthly", label: "월간 일정" },
@@ -81,8 +81,8 @@ const MENU_SCHEMA = [
   },
   {
     key: "management",
-    label: "앵커사업단 관리",
-    description: "구성원 관리, 회원가입 승인 및 대학 조직도, 파트너기관 정보CRM 제어",
+    label: "사업단 관리",
+    description: "구성원 관리, 회원가입 승인 및 대학 조직도, 파트너기관 정보 제어",
     subMenus: [
       { key: "approvals", label: "승인처리" },
       { key: "members", label: "구성원 관리" },
