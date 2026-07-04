@@ -68,6 +68,10 @@ export default function AgreementManager({
   const [awardFileName, setAwardFileName] = useState("");
   const [awardFileData, setAwardFileData] = useState("");
 
+  // 4. 사본 일괄 매핑 모달 상태
+  const [isBatchFileModalOpen, setIsBatchFileModalOpen] = useState(false);
+  const [batchFileResults, setBatchFileResults] = useState([]);
+
   // 정렬 상태 관리
   const [sortConfig, setSortConfig] = useState({ key: "date", direction: "asc" });
   const [certSortConfig, setCertSortConfig] = useState({ key: "date", direction: "asc" });
@@ -549,6 +553,192 @@ export default function AgreementManager({
     e.target.value = "";
   };
 
+  // 사본 파일명 기반 일괄 자동 매핑 핸들러
+  const handleBatchFileImport = async (e) => {
+    const files = Array.from(e.target.files);
+    if (files.length === 0) return;
+
+    if (currentRole.id === "GUEST") {
+      alert("게스트(방문자) 계정은 읽기 전용으로만 이용하실 수 있습니다.");
+      return;
+    }
+
+    const results = [];
+    const cleanName = (name) => name.replace(/\(주\)|\(유\)|주식회사|\s/g, "");
+
+    for (const file of files) {
+      const fileName = file.name;
+      const fileBaseName = fileName.substring(0, fileName.lastIndexOf('.')) || fileName;
+      
+      // 1) 날짜 판별 정규식 (YY.MM.DD 또는 YYYY.MM.DD)
+      const dateRegex = /(20\d{2}|\d{2})[-.]?(0[1-9]|1[0-2])[-.]?(0[1-9]|[12]\d|3[01])/;
+      const dateMatch = fileBaseName.match(dateRegex);
+      let parsedDate = null;
+      if (dateMatch) {
+        let yr = dateMatch[1];
+        if (yr.length === 2) yr = "20" + yr;
+        const mo = dateMatch[2];
+        const dy = dateMatch[3];
+        parsedDate = `${yr}-${mo}-${dy}`;
+      }
+
+      let bestScore = 0;
+      let matchedTarget = null;
+      let targetType = ""; // "agreement" | "certificate" | "award"
+
+      if (agreementsSubTab === "agreements") {
+        targetType = "agreement";
+        filteredAgreements.forEach(item => {
+          let score = 0;
+          
+          // A. 기관명 비교 (+50점)
+          item.organizations.forEach(org => {
+            const orgClean = cleanName(org.name);
+            if (orgClean && cleanName(fileBaseName).includes(orgClean)) {
+              score += 50;
+            }
+          });
+
+          // B. 날짜 비교 (+30점)
+          if (parsedDate && item.date === parsedDate) {
+            score += 30;
+          }
+
+          // C. 대학 측 주체(교수명) 비교 (+20점)
+          if (item.subjectUniversity) {
+            const nameMatch = item.subjectUniversity.match(/[가-힣]{2,4}/g);
+            if (nameMatch) {
+              nameMatch.forEach(nm => {
+                if (fileBaseName.includes(nm)) {
+                  score += 20;
+                }
+              });
+            }
+          }
+
+          if (score > bestScore) {
+            bestScore = score;
+            matchedTarget = item;
+          }
+        });
+      } else if (agreementsSubTab === "certificates") {
+        targetType = "certificate";
+        filteredCertificates.forEach(item => {
+          let score = 0;
+
+          // A. 발급번호 매핑 (+50점)
+          if (item.certNo && fileBaseName.includes(item.certNo)) {
+            score += 50;
+          }
+
+          // B. 성명 비교 (+30점)
+          if (item.recipientName && fileBaseName.includes(item.recipientName)) {
+            score += 30;
+          }
+
+          // C. 날짜 비교 (+20점)
+          if (parsedDate && item.issueDate === parsedDate) {
+            score += 20;
+          }
+
+          if (score > bestScore) {
+            bestScore = score;
+            matchedTarget = item;
+          }
+        });
+      } else if (agreementsSubTab === "awards") {
+        targetType = "award";
+        filteredAwards.forEach(item => {
+          let score = 0;
+
+          // A. 발급번호 매핑 (+50점)
+          if (item.awardNo && fileBaseName.includes(item.awardNo)) {
+            score += 50;
+          }
+
+          // B. 성명 비교 (+30점)
+          if (item.recipientName && fileBaseName.includes(item.recipientName)) {
+            score += 30;
+          }
+
+          // C. 날짜 비교 (+20점)
+          if (parsedDate && item.issueDate === parsedDate) {
+            score += 20;
+          }
+
+          if (score > bestScore) {
+            bestScore = score;
+            matchedTarget = item;
+          }
+        });
+      }
+
+      const fileData = await new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = (e) => resolve(e.target.result);
+        reader.onerror = () => resolve(null);
+        reader.readAsDataURL(file);
+      });
+
+      if (bestScore >= 50 && matchedTarget) {
+        results.push({
+          fileName,
+          fileData,
+          status: "success",
+          targetId: matchedTarget.id,
+          targetDesc: targetType === "agreement" 
+            ? `${matchedTarget.organizations.map(o => o.name).join(", ")} (${matchedTarget.date})`
+            : `${matchedTarget.recipientName} [${matchedTarget.recipientDept}] (${matchedTarget.issueDate || matchedTarget.date})`,
+          score: bestScore
+        });
+      } else {
+        results.push({
+          fileName,
+          fileData,
+          status: "fail",
+          targetId: null,
+          targetDesc: "일치하는 데이터를 찾을 수 없습니다.",
+          score: 0
+        });
+      }
+    }
+
+    setBatchFileResults(results);
+    setIsBatchFileModalOpen(true);
+    e.target.value = ""; 
+  };
+
+  // 일괄 매핑 반영 핸들러
+  const handleApplyBatchFiles = () => {
+    let appliedCount = 0;
+    
+    batchFileResults.forEach(res => {
+      if (res.status === "success" && res.targetId) {
+        if (agreementsSubTab === "agreements") {
+          onUpdateAgreement(res.targetId, {
+            fileName: res.fileName,
+            fileData: res.fileData
+          });
+        } else if (agreementsSubTab === "certificates") {
+          onUpdateCertificate(res.targetId, {
+            fileName: res.fileName,
+            fileData: res.fileData
+          });
+        } else if (agreementsSubTab === "awards") {
+          onUpdateAward(res.targetId, {
+            fileName: res.fileName,
+            fileData: res.fileData
+          });
+        }
+        appliedCount++;
+      }
+    });
+
+    alert(`${appliedCount}개의 사본 파일이 일치하는 데이터에 성공적으로 매핑 및 적재되었습니다.`);
+    setIsBatchFileModalOpen(false);
+    setBatchFileResults([]);
+  };
+
   // 1-1. 협약기관 동적 추가/제거
   const handleAddOrgField = () => {
     setInputOrganizations([...inputOrganizations, { name: "", subject: "" }]);
@@ -878,6 +1068,32 @@ export default function AgreementManager({
                 type="file"
                 accept=".xlsx, .xls"
                 onChange={handleExcelImport}
+                style={{ display: "none" }}
+              />
+            </label>
+
+            {/* 사본 일괄 매핑 */}
+            <label
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "0.25rem",
+                padding: "0.35rem 0.7rem",
+                fontSize: "0.7rem",
+                background: "rgba(16, 185, 129, 0.1)",
+                border: "1px solid rgba(16, 185, 129, 0.2)",
+                color: "#34D399",
+                borderRadius: "0.25rem",
+                cursor: "pointer",
+                fontWeight: "700"
+              }}
+            >
+              <FileCheck size={12} /> 사본 일괄 매핑
+              <input
+                type="file"
+                multiple
+                accept=".pdf, .hwp, .hwpx, .jpg, .jpeg, .png"
+                onChange={handleBatchFileImport}
                 style={{ display: "none" }}
               />
             </label>
@@ -1548,6 +1764,90 @@ export default function AgreementManager({
                 <button type="submit" className="btn-primary" style={{ padding: "0.35rem 0.75rem", fontSize: "0.75rem" }}>저장하기</button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* D. 사본 파일 일괄 자동 매핑 모달 */}
+      {isBatchFileModalOpen && (
+        <div style={{ position: "fixed", top: 0, left: 0, width: "100%", height: "100%", background: "rgba(0,0,0,0.6)", zIndex: 9999, display: "flex", justifyContent: "center", alignItems: "center", overflowY: "auto", padding: "2rem 1rem" }}>
+          <div style={{ background: "#18181b", border: "1px solid var(--border-color-dark)", borderRadius: "0.75rem", width: "100%", maxWidth: "680px", maxHeight: "85vh", display: "flex", flexDirection: "column", color: "white", boxShadow: "0 20px 25px -5px rgba(0,0,0,0.3)", margin: "auto" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "0.85rem 1.25rem", borderBottom: "1px solid var(--border-color-dark)", flexShrink: 0 }}>
+              <h3 style={{ fontSize: "0.9rem", fontWeight: "800", display: "flex", alignItems: "center", gap: "0.4rem" }}>
+                <FileCheck size={18} style={{ color: "#10B981" }} /> 사본 파일명 자동 매핑 결과 리포트
+              </h3>
+              <button onClick={() => setIsBatchFileModalOpen(false)} style={{ background: "none", border: "none", color: "#a1a1aa", cursor: "pointer" }}>
+                <X size={18} />
+              </button>
+            </div>
+            
+            <div style={{ padding: "1.25rem", flex: 1, overflowY: "auto", display: "flex", flexDirection: "column", gap: "1rem" }}>
+              <div style={{ fontSize: "0.75rem", color: "#a1a1aa", background: "#27272a", padding: "0.75rem", borderRadius: "0.35rem", border: "1px solid var(--border-color-dark)" }}>
+                💡 파일 이름에 포함된 <b>[날짜, 기관명, 성명, 발급번호]</b> 등의 키워드를 분석하여 데이터와 비교 매칭했습니다.<br/>
+                적합도 점수가 50점 이상인 대상을 식별하여 자동 연결해 줍니다.
+              </div>
+
+              <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.75rem", fontWeight: "700" }}>
+                <span>분석 대상 파일: {batchFileResults.length}개</span>
+                <span style={{ color: "#34D399" }}>매칭 성공: {batchFileResults.filter(r => r.status === "success").length}개</span>
+              </div>
+
+              <div style={{ overflowX: "auto" }}>
+                <table style={{ width: "100%", fontSize: "0.75rem", borderCollapse: "collapse", border: "1px solid var(--border-color-dark)" }}>
+                  <thead>
+                    <tr style={{ background: "#27272a", borderBottom: "1px solid var(--border-color-dark)" }}>
+                      <th style={{ padding: "0.5rem", textAlign: "left", border: "1px solid var(--border-color-dark)" }}>파일명</th>
+                      <th style={{ padding: "0.5rem", textAlign: "left", border: "1px solid var(--border-color-dark)" }}>매칭된 데이터 대상</th>
+                      <th style={{ padding: "0.5rem", textAlign: "center", border: "1px solid var(--border-color-dark)" }}>매칭 상태</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {batchFileResults.map((res, i) => (
+                      <tr key={i} style={{ borderBottom: "1px solid var(--border-color-dark)", background: res.status === "success" ? "rgba(16,185,129,0.03)" : "rgba(239,68,68,0.03)" }}>
+                        <td style={{ padding: "0.5rem", color: "#e4e4e7", fontWeight: "500", border: "1px solid var(--border-color-dark)" }}>📁 {res.fileName}</td>
+                        <td style={{ padding: "0.5rem", color: res.status === "success" ? "#a1a1aa" : "#ef4444", border: "1px solid var(--border-color-dark)" }}>
+                          {res.status === "success" ? (
+                            <span>🟢 {res.targetDesc} <span style={{ fontSize: "0.6rem", background: "#3f3f46", padding: "0.1rem 0.3rem", borderRadius: "0.2rem", marginLeft: "0.3rem" }}>{res.score}점</span></span>
+                          ) : (
+                            <span>❌ {res.targetDesc}</span>
+                          )}
+                        </td>
+                        <td style={{ padding: "0.5rem", textAlign: "center", border: "1px solid var(--border-color-dark)" }}>
+                          <span style={{
+                            padding: "0.15rem 0.4rem",
+                            borderRadius: "0.25rem",
+                            fontSize: "0.6rem",
+                            fontWeight: "700",
+                            background: res.status === "success" ? "rgba(52,211,153,0.15)" : "rgba(239,68,68,0.15)",
+                            color: res.status === "success" ? "#34D399" : "#F87171"
+                          }}>
+                            {res.status === "success" ? "매칭완료" : "매칭실패"}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.5rem", borderTop: "1px solid var(--border-color-dark)", padding: "0.85rem 1.25rem", flexShrink: 0 }}>
+              <button type="button" className="btn-secondary" onClick={() => setIsBatchFileModalOpen(false)} style={{ padding: "0.35rem 0.75rem", fontSize: "0.75rem" }}>취소</button>
+              <button 
+                type="button" 
+                className="btn-primary" 
+                onClick={handleApplyBatchFiles}
+                disabled={batchFileResults.filter(r => r.status === "success").length === 0}
+                style={{ 
+                  padding: "0.35rem 0.75rem", 
+                  fontSize: "0.75rem",
+                  background: batchFileResults.filter(r => r.status === "success").length === 0 ? "#52525b" : "var(--primary-color)",
+                  cursor: batchFileResults.filter(r => r.status === "success").length === 0 ? "not-allowed" : "pointer"
+                }}
+              >
+                일괄 적용 및 저장하기
+              </button>
+            </div>
           </div>
         </div>
       )}
