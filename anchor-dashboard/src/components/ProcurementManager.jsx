@@ -1239,16 +1239,17 @@ export default function ProcurementManager({
               top: `${activePopover.y}px`,
               left: `${activePopover.x}px`,
               transform: "translate(-50%, -100%) translateY(-10px)",
-              background: "var(--bg-card-dark)",
-              border: "1px solid var(--border-color-dark)",
+              background: "#1e293b", // 불투명한 딥 슬레이트 그레이로 뒤를 완전히 가림
+              border: "1px solid rgba(255, 255, 255, 0.18)", // 뚜렷한 흰색 반투명 외곽선
               borderRadius: "8px",
               padding: "0.75rem",
-              boxShadow: "0 10px 25px -5px rgba(0,0,0,0.6), 0 8px 10px -6px rgba(0,0,0,0.6)",
+              boxShadow: "0 20px 25px -5px rgba(0,0,0,0.85), 0 10px 10px -5px rgba(0,0,0,0.85)", // 입체적인 깊은 그림자
               zIndex: 1251,
               width: "160px",
               display: "flex",
               flexDirection: "column",
-              gap: "0.4rem"
+              gap: "0.4rem",
+              backdropFilter: "blur(20px)"
             }}
           >
             <div style={{ fontSize: "0.75rem", fontWeight: "800", color: "var(--text-secondary)", marginBottom: "0.2rem", borderBottom: "1px solid rgba(255,255,255,0.05)", paddingBottom: "0.25rem", textAlign: "center" }}>
