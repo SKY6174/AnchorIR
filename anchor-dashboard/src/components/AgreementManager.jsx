@@ -170,14 +170,23 @@ export default function AgreementManager({
         let valA = a[sortConfig.key] || "";
         let valB = b[sortConfig.key] || "";
         
-        // 협약기관 컬럼 정렬 시 객체 배열 내의 명칭을 결합한 텍스트로 비교합니다.
+        // 협약기관 컬럼 정렬 시 객체 배열 내의 명칭을 결합한 텍스트로 비교하되,
+        // (주), 주식회사 등 상호명 접두 특수기호 및 문자를 정화(Sanitize)하여 실질 상호명 기준으로 정렬합니다.
         if (sortConfig.key === "organizations") {
-          valA = Array.isArray(a.organizations) 
-            ? a.organizations.map(o => typeof o === "object" ? (o.name || "") : o).join(", ") 
-            : String(a.organizations || "");
-          valB = Array.isArray(b.organizations) 
-            ? b.organizations.map(o => typeof o === "object" ? (o.name || "") : o).join(", ") 
-            : String(b.organizations || "");
+          const getCleanOrgName = (orgs) => {
+            let rawStr = "";
+            if (Array.isArray(orgs)) {
+              rawStr = orgs.map(o => typeof o === "object" ? (o.name || "") : String(o)).join(", ");
+            } else {
+              rawStr = String(orgs || "");
+            }
+            return rawStr
+              .replace(/^\((주|유|合|合資|合名|株式|有限|社|재|사|법|인|재단|사단)\)\s*/g, "")
+              .replace(/^(주식회사|유한회사|합자회사|합명회사|재단법인|사단법인)\s*/g, "")
+              .trim();
+          };
+          valA = getCleanOrgName(a.organizations);
+          valB = getCleanOrgName(b.organizations);
         }
 
         if (typeof valA === "string" && typeof valB === "string") {
