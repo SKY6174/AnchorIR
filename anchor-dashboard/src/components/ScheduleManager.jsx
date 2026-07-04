@@ -828,6 +828,157 @@ export default function ScheduleManager({
     }
   };
 
+  // 테스트용 가상 부서 회의록 10건 일괄 생성 핸들러
+  const handleGenerateMockMeetings = async () => {
+    if (currentRole.id === "GUEST") {
+      alert("게스트(방문자) 계정은 테스트 데이터를 생성하실 수 없습니다.");
+      return;
+    }
+    
+    // 로딩바 대신 alert로 진행 알림
+    const proceed = window.confirm("테스트를 위한 10가지 가상 부서 회의록(7월 일정)을 원격 데이터베이스에 일괄 생성하시겠습니까?");
+    if (!proceed) return;
+
+    try {
+      const mockMeetings = [
+        {
+          month: 7,
+          category: "center",
+          title: "2026-07-01 사업운영팀 주간회의",
+          datetime: "2026-07-01 10:00 ~ 11:30",
+          location: "사업단 회의실",
+          attendees_internal: "김민수 단장, 박지현 팀장, 최성훈 PD (총 3명)",
+          attendees_external: "작성자: 박지현 팀장 | 부서: 사업운영팀",
+          agenda: "2차년도 RISE 예산 배분 확정 및 수정 사업계획서 검토",
+          result: "각 센터별 예산 한도를 조정하고 7월 15일까지 최종 수정본 제출을 결의함."
+        },
+        {
+          month: 7,
+          category: "center",
+          title: "2026-07-02 ECC센터 주간회의",
+          datetime: "2026-07-02 14:00 ~ 15:00",
+          location: "ECC센터장실",
+          attendees_internal: "이진우 PD, 김현주 실무 위원 (총 2명)",
+          attendees_external: "작성자: 이진우 PD | 부서: ECC센터",
+          agenda: "기업 협력 네트워크 확산 및 패밀리 컴퍼니 정기 미팅 일정 수립",
+          result: "7월 20일 울산 롯데호텔에서 패밀리 컴퍼니 네트워킹 데이를 개최하기로 합의함."
+        },
+        {
+          month: 7,
+          category: "center",
+          title: "2026-07-03 ICC센터 주간회의",
+          datetime: "2026-07-03 11:00 ~ 12:00",
+          location: "제2공학관 205호",
+          attendees_internal: "한아름 PD, 박동혁 교수, 정은지 연구원 (총 3명)",
+          attendees_external: "작성자: 한아름 PD | 부서: ICC센터",
+          agenda: "미래모빌리티 산학 공동 연구 과제 발굴 및 기술 자문 연동",
+          result: "현대자동차 협력사 대상 기술애로 자문위원 5인을 확정 위촉함."
+        },
+        {
+          month: 7,
+          category: "center",
+          title: "2026-07-04 RCC센터 주간회의",
+          datetime: "2026-07-04 16:00 ~ 17:00",
+          location: "산학협력관 4층 세미나실",
+          attendees_internal: "최성훈 PD, 울산 남구청 RISE 실무관 (총 2명)",
+          attendees_external: "작성자: 최성훈 PD | 부서: RCC센터",
+          agenda: "남구 평생직업교육 프로그램 개설안 지자체 협의",
+          result: "구청 협조하에 8월 첫째 주부터 스마트공장 기초 직무 교육을 개시하기로 조율함."
+        },
+        {
+          month: 7,
+          category: "center",
+          title: "2026-07-05 AID-X지원센터 주간회의",
+          datetime: "2026-07-05 09:30 ~ 10:30",
+          location: "AID-X 융합연구실",
+          attendees_internal: "이진우 PD, 인공지능학과 박 교수, 정은지 연구원 (총 3명)",
+          attendees_external: "작성자: 이진우 PD | 부서: AID-X지원센터",
+          agenda: "AID 교육 인프라(GPU 서버) 구축 현황 점검 및 실습 환경 준비",
+          result: "인프라 도입 입찰 공고를 7월 10일까지 내기로 기획함."
+        },
+        {
+          month: 7,
+          category: "center",
+          title: "2026-07-06 울산늘봄누리센터 주간회의",
+          datetime: "2026-07-06 13:30 ~ 15:00",
+          location: "늘봄센터 교육장",
+          attendees_internal: "박지현 팀장, 울산교육청 담당 장학사, 이아름 PD (총 3명)",
+          attendees_external: "작성자: 박지현 팀장 | 부서: 울산늘봄누리센터",
+          agenda: "울산형 늘봄학교 시범 강사 매칭 프로그램 협약 준비",
+          result: "교육청과 공동 MOU 체결 문안 작성을 마쳤으며 7월 중순 조인식을 열기로 함."
+        },
+        {
+          month: 7,
+          category: "center",
+          title: "2026-07-07 신산업특화지원센터 주간회의",
+          datetime: "2026-07-07 15:00 ~ 16:30",
+          location: "특화센터 라운지",
+          attendees_internal: "한아름 PD, 화학공학과 교수진 (총 4명)",
+          attendees_external: "작성자: 한아름 PD | 부서: 신산업특화지원센터",
+          agenda: "이차전지 신소재 개발 인재 양성 트랙 참여 학생 모집 요강 확정",
+          result: "모집 공고 시점을 7월 12일로 정하고, 단과대학 단체 메일 발송 협조를 구함."
+        },
+        {
+          month: 7,
+          category: "center",
+          title: "2026-07-08 사업운영팀 주간회의",
+          datetime: "2026-07-08 10:00 ~ 11:30",
+          location: "사업단 회의실",
+          attendees_internal: "김민수 단장, 박지현 팀장, 최성훈 PD, 한아름 PD (총 4명)",
+          attendees_external: "작성자: 박지현 팀장 | 부서: 사업운영팀",
+          agenda: "상반기 실적 모니터링 및 미진 과제 컨설팅 계획 수립",
+          result: "7월 25일까지 모든 세부 과제별 진척도 자체 보고서를 수합하기로 함."
+        },
+        {
+          month: 7,
+          category: "center",
+          title: "2026-07-09 ECC센터 주간회의",
+          datetime: "2026-07-09 14:00 ~ 15:30",
+          location: "ECC 회의소",
+          attendees_internal: "이진우 PD, 현대중공업 산학협력부장 (총 2명)",
+          attendees_external: "작성자: 이진우 PD | 부서: ECC센터",
+          agenda: "친환경 조선 실무 교과 과정 공동 설계",
+          result: "조선기자재 특화 실무 교과 2과목의 교안 초안 작성을 합의함."
+        },
+        {
+          month: 7,
+          category: "center",
+          title: "2026-07-10 ICC센터 주간회의",
+          datetime: "2026-07-10 10:30 ~ 11:30",
+          location: "ICT 융합관",
+          attendees_internal: "한아름 PD, 울산 테크노파크 관계자 (총 2명)",
+          attendees_external: "작성자: 한아름 PD | 부서: ICC센터",
+          agenda: "지산학 협력 포럼 개최 장소 및 초청 대상 확정",
+          result: "포럼 일시를 8월 22일로 내정하고 울산 벤처빌딩 대강당 예약을 추진함."
+        }
+      ];
+
+      const { data: insertedData, error } = await supabase
+        .from("meeting_schedules")
+        .insert(mockMeetings)
+        .select();
+
+      if (error) throw error;
+
+      if (insertedData && insertedData.length > 0) {
+        const formatted = insertedData.map(x => ({
+          ...x,
+          id: Number(x.id),
+          month: Number(x.month),
+          attendeesInternal: x.attendees_internal,
+          attendeesExternal: x.attendees_external
+        }));
+
+        setMeetingSchedules([...formatted, ...meetingSchedules]);
+        localStorage.setItem(`anchor_cache_meet_y${selectedYear}`, JSON.stringify([...formatted, ...meetingSchedules]));
+        alert("가상 부서 회의록 10건이 데이터베이스에 성공적으로 생성 및 동기화되었습니다!");
+      }
+    } catch (err) {
+      console.error("Failed to generate mock meetings:", err);
+      alert("데이터 생성 중 오류가 발생했습니다: " + err.message);
+    }
+  };
+
   // 회의록 수정 모달 트리거
   const handleEditMeeting = (meeting) => {
     setIsEditMode(true);
@@ -2250,9 +2401,35 @@ export default function ScheduleManager({
                           })()}
                         </>
                       ) : (
-                        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "100%", color: "var(--text-secondary)" }}>
-                          <Users size={32} style={{ marginBottom: "0.5rem", opacity: 0.3 }} />
-                          <span style={{ fontSize: "0.8rem" }}>회의록 목록에서 회의를 선택해 주세요.</span>
+                        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "100%", color: "var(--text-secondary)", gap: "1rem" }}>
+                          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
+                            <Users size={32} style={{ marginBottom: "0.5rem", opacity: 0.3 }} />
+                            <span style={{ fontSize: "0.8rem" }}>회의록 목록에서 회의를 선택해 주세요.</span>
+                          </div>
+                          {currentRole.id !== "GUEST" && (
+                            <button
+                              type="button"
+                              onClick={handleGenerateMockMeetings}
+                              style={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "0.3rem",
+                                padding: "0.5rem 1rem",
+                                borderRadius: "6px",
+                                background: "rgba(59, 130, 246, 0.15)",
+                                border: "1px solid rgba(59, 130, 246, 0.3)",
+                                color: "#60A5FA",
+                                fontSize: "0.75rem",
+                                fontWeight: "700",
+                                cursor: "pointer",
+                                transition: "all 0.15s ease"
+                              }}
+                              onMouseOver={(e) => e.currentTarget.style.background = "rgba(59, 130, 246, 0.25)"}
+                              onMouseOut={(e) => e.currentTarget.style.background = "rgba(59, 130, 246, 0.15)"}
+                            >
+                              ➕ 테스트용 가상 회의록 10건 일괄 생성
+                            </button>
+                          )}
                         </div>
                       )}
                     </div>
