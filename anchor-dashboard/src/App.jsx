@@ -3113,32 +3113,78 @@ export default function App() {
     return () => clearTimeout(timer);
   }, [meetingSchedules, selectedYear, isDbLoaded, isFetchCompleted]);
 
-  // 10) Press Releases (언론보도) 자동 저장 디바운스 훅
+  // 10) Press Releases (언론보도) 자동 저장 디바운스 훅 (트랜잭션 복구식 안전 강화)
   useEffect(() => {
     if (!isDbLoaded || !isFetchCompleted) return;
     localStorage.setItem(`anchor_cache_press_y${selectedYear}`, JSON.stringify(pressReleases));
     setSyncStatus("syncing");
     const timer = setTimeout(async () => {
       try {
-        await supabase.from("press_releases").delete().eq("year", selectedYear);
+        // 기존 DB에 존재하던 실제 레코드 ID 목록을 먼저 조회하여 백업
+        const { data: currentDbItems, error: fetchErr } = await supabase
+          .from("press_releases")
+          .select("id")
+          .eq("year", selectedYear);
+          
+        if (fetchErr) {
+          console.error("Failed to fetch current press releases to rollback backup:", fetchErr);
+          setSyncStatus("error");
+          return;
+        }
+
+        const oldIds = (currentDbItems || []).map(item => item.id);
+
         if (pressReleases.length > 0) {
-          const { error } = await supabase.from("press_releases").insert(
+          // PostgreSQL에 최적화된 공백 구분 타임스탬프 문자열 포맷 변환 함수
+          const formatToPostgresTimestamp = (dateStr) => {
+            if (!dateStr) return new Date().toISOString();
+            // 만약 ISO 포맷이라면 T와 밀리초 등을 포맷팅
+            const parsed = new Date(dateStr);
+            if (isNaN(parsed.getTime())) return new Date().toISOString();
+            
+            const pad = (n) => String(n).padStart(2, "0");
+            const yyyy = parsed.getFullYear();
+            const mm = pad(parsed.getMonth() + 1);
+            const dd = pad(parsed.getDate());
+            const hh = pad(parsed.getHours());
+            const mi = pad(parsed.getMinutes());
+            const ss = pad(parsed.getSeconds());
+            return `${yyyy}-${mm}-${dd} ${hh}:${mi}:${ss}+09`;
+          };
+
+          // 1. 새 데이터를 먼저 insert 시도 (이전 레코드를 먼저 지우지 않아 실패 시 자동 롤백 보장)
+          const { error: insertErr } = await supabase.from("press_releases").insert(
             pressReleases.map(s => ({
               year: selectedYear,
               type: s.type || "기타",
               media: s.media || "미상",
               title: s.title || "새 보도자료",
-              broadcast_date: s.broadcastDate || new Date().toISOString(),
+              broadcast_date: formatToPostgresTimestamp(s.broadcastDate),
               content_url: s.contentUrl || "https://www.uc.ac.kr",
               press_content: s.pressContent || ""
             }))
           );
-          if (error) {
-            console.error("Failed to sync press releases with database:", error);
+
+          if (insertErr) {
+            console.error("Failed to insert new press releases:", insertErr);
+            alert(`📡 데이터베이스 저장 오류가 검출되었습니다.\n\n[오류 원인]: ${insertErr.message || insertErr}\n\n데이터 유실 방지를 위해 기존 보도 대장은 안전하게 롤백/보존되었습니다.`);
             setSyncStatus("error");
             return;
           }
         }
+
+        // 2. 인서트가 완벽하게 에러 없이 성공했을 때만 백업해 둔 구 레코드들 일괄 삭제 실행!
+        if (oldIds.length > 0) {
+          const { error: deleteErr } = await supabase
+            .from("press_releases")
+            .delete()
+            .in("id", oldIds);
+            
+          if (deleteErr) {
+            console.error("Failed to clean up old press releases:", deleteErr);
+          }
+        }
+
         setSyncStatus("synced");
       } catch (e) {
         console.error("Failed to sync press releases:", e);
