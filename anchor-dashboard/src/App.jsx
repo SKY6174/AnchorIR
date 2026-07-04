@@ -2729,8 +2729,17 @@ export default function App() {
           localStorage.setItem(`anchor_cache_meet_y${selectedYear}`, JSON.stringify(formatted));
         }
 
-        // press_releases 복구
-        const { data: sPress } = await supabase.from("press_releases").select("*").eq("year", selectedYear);
+        // press_releases 복구 (year 칼럼 매핑 오류와 무관하게 실제 기사 발행일 범위 기준으로 정밀 분리 패치)
+        const targetYearNum = selectedYear === 1 ? 2025 : selectedYear === 2 ? 2026 : selectedYear === 3 ? 2027 : selectedYear === 4 ? 2028 : 2029;
+        const startDateStr = `${targetYearNum}-03-01T00:00:00+09:00`;
+        const endDateStr = `${targetYearNum + 1}-03-01T00:00:00+09:00`;
+
+        const { data: sPress } = await supabase
+          .from("press_releases")
+          .select("*")
+          .gte("broadcast_date", startDateStr)
+          .lt("broadcast_date", endDateStr);
+
         if (sPress && sPress.length > 0) {
           const formatted = sPress.map(x => ({
             id: Number(x.id),
@@ -3119,7 +3128,20 @@ export default function App() {
 
     // 연도 전환 과도기 예방 안전장치:
     // 배열 안의 데이터 연도가 선택된 연도와 다르면, 아직 fetch 로드 중인 임시 상태이므로 저장 작업을 차단합니다.
-    if (pressReleases.length > 0 && pressReleases.some(s => s.year !== selectedYear)) {
+    const getCalculatedYearFromDate = (dateStr) => {
+      if (!dateStr) return selectedYear;
+      const d = new Date(dateStr);
+      if (isNaN(d.getTime())) return selectedYear;
+      const year = d.getFullYear();
+      const month = d.getMonth() + 1;
+      let calcYear = year;
+      if (month < 3) {
+        calcYear = year - 1;
+      }
+      return calcYear === 2025 ? 1 : calcYear === 2026 ? 2 : calcYear === 2027 ? 3 : calcYear === 2028 ? 4 : calcYear === 2029 ? 5 : selectedYear;
+    };
+
+    if (pressReleases.length > 0 && pressReleases.some(s => getCalculatedYearFromDate(s.broadcastDate) !== selectedYear)) {
       return;
     }
 
@@ -3127,11 +3149,16 @@ export default function App() {
     setSyncStatus("syncing");
     const timer = setTimeout(async () => {
       try {
-        // 기존 DB에 존재하던 실제 레코드 ID 목록을 먼저 조회하여 백업
+        const targetYearNum = selectedYear === 1 ? 2025 : selectedYear === 2 ? 2026 : selectedYear === 3 ? 2027 : selectedYear === 4 ? 2028 : 2029;
+        const startDateStr = `${targetYearNum}-03-01T00:00:00+09:00`;
+        const endDateStr = `${targetYearNum + 1}-03-01T00:00:00+09:00`;
+
+        // 기존 DB에 존재하던 해당 회계연도 사업기간 범위 내 실제 레코드 ID 목록 조회 백업
         const { data: currentDbItems, error: fetchErr } = await supabase
           .from("press_releases")
           .select("id")
-          .eq("year", selectedYear);
+          .gte("broadcast_date", startDateStr)
+          .lt("broadcast_date", endDateStr);
           
         if (fetchErr) {
           console.error("Failed to fetch current press releases to rollback backup:", fetchErr);
@@ -3145,7 +3172,6 @@ export default function App() {
           // PostgreSQL에 최적화된 공백 구분 타임스탬프 문자열 포맷 변환 함수
           const formatToPostgresTimestamp = (dateStr) => {
             if (!dateStr) return new Date().toISOString();
-            // 만약 ISO 포맷이라면 T와 밀리초 등을 포맷팅
             const parsed = new Date(dateStr);
             if (isNaN(parsed.getTime())) return new Date().toISOString();
             
@@ -3162,7 +3188,7 @@ export default function App() {
           // 1. 새 데이터를 먼저 insert 시도 (이전 레코드를 먼저 지우지 않아 실패 시 자동 롤백 보장)
           const { error: insertErr } = await supabase.from("press_releases").insert(
             pressReleases.map(s => ({
-              year: selectedYear,
+              year: getCalculatedYearFromDate(s.broadcastDate),
               type: s.type || "기타",
               media: s.media || "미상",
               title: s.title || "새 보도자료",
