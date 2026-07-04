@@ -1473,28 +1473,90 @@ export default function ScheduleManager({
                   {/* 상세 탭 콘텐츠 */}
                   <div style={{ padding: "1.5rem", flex: 1, display: "flex", flexDirection: "column", gap: "1rem" }}>
                     {activeCommitteeDetailTab === "members" ? (
-                      <div style={{
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        flex: 1,
-                        padding: "2.5rem 1rem",
-                        background: "rgba(255,255,255,0.01)",
-                        border: "1px dashed var(--border-color)",
-                        borderRadius: "8px",
-                        textAlign: "center",
-                        color: "var(--text-secondary)"
-                      }}>
-                        <Users size={36} style={{ color: "var(--accent-color)", opacity: 0.6, marginBottom: "0.75rem" }} />
-                        <span style={{ fontSize: "0.85rem", fontWeight: "700", color: "var(--text-primary)", marginBottom: "0.25rem" }}>
-                          위원 명단 준비 중
-                        </span>
-                        <p style={{ margin: 0, fontSize: "0.76rem", color: "var(--text-secondary-dark)", lineHeight: "1.5" }}>
-                          본 위원회의 명단 정보는 추후 구성 완료 시 시스템에 직접 입력될 예정입니다.<br />
-                          관련 권한을 가진 관리자 또는 사업단 총괄 책임자가 추후 업데이트할 수 있습니다.
-                        </p>
-                      </div>
+                      activeComm.members && activeComm.members.length > 0 ? (
+                        <div style={{ flex: 1, overflowY: "auto", maxHeight: "400px" }} className="custom-scrollbar">
+                          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.78rem", textAlign: "left" }}>
+                            <thead>
+                              <tr style={{ borderBottom: "1px solid var(--border-color)", color: "var(--text-secondary-dark)" }}>
+                                <th style={{ padding: "0.5rem 0.75rem", fontWeight: "700" }}>구분</th>
+                                <th style={{ padding: "0.5rem 0.75rem", fontWeight: "700" }}>성명</th>
+                                <th style={{ padding: "0.5rem 0.75rem", fontWeight: "700" }}>소속기관</th>
+                                <th style={{ padding: "0.5rem 0.75rem", fontWeight: "700" }}>부서/학과</th>
+                                <th style={{ padding: "0.5rem 0.75rem", fontWeight: "700" }}>직위</th>
+                                <th style={{ padding: "0.5rem 0.75rem", fontWeight: "700", textAlign: "center" }}>교내외</th>
+                                <th style={{ padding: "0.5rem 0.75rem", fontWeight: "700" }}>비고</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {activeComm.members.map((member) => (
+                                <tr 
+                                  key={member.id} 
+                                  style={{ 
+                                    borderBottom: "1px solid rgba(255, 255, 255, 0.03)", 
+                                    color: "var(--text-primary)",
+                                    background: member.type === "위원장" ? "rgba(236, 72, 153, 0.03)" : "transparent"
+                                  }}
+                                  className="table-row-hover"
+                                >
+                                  <td style={{ padding: "0.6rem 0.75rem" }}>
+                                    <span style={{
+                                      padding: "0.15rem 0.4rem",
+                                      borderRadius: "4px",
+                                      fontSize: "0.68rem",
+                                      fontWeight: "800",
+                                      background: member.type === "위원장" ? "rgba(236, 72, 153, 0.15)" : member.type === "간사" ? "rgba(59, 130, 246, 0.15)" : "rgba(255, 255, 255, 0.05)",
+                                      color: member.type === "위원장" ? "var(--accent-color)" : member.type === "간사" ? "#3b82f6" : "var(--text-secondary)"
+                                    }}>
+                                      {member.type}
+                                    </span>
+                                  </td>
+                                  <td style={{ padding: "0.6rem 0.75rem", fontWeight: "700" }}>{member.name}</td>
+                                  <td style={{ padding: "0.6rem 0.75rem", color: "var(--text-secondary)" }}>{member.org}</td>
+                                  <td style={{ padding: "0.6rem 0.75rem", color: "var(--text-secondary)" }}>{member.dept || "-"}</td>
+                                  <td style={{ padding: "0.6rem 0.75rem", color: "var(--text-secondary)" }}>{member.rank || "-"}</td>
+                                  <td style={{ padding: "0.6rem 0.75rem", textAlign: "center" }}>
+                                    <span style={{
+                                      padding: "0.1rem 0.3rem",
+                                      borderRadius: "3px",
+                                      fontSize: "0.65rem",
+                                      background: member.location === "교내" ? "rgba(16, 185, 129, 0.1)" : "rgba(245, 158, 11, 0.1)",
+                                      color: member.location === "교내" ? "#10b981" : "#f59e0b"
+                                    }}>
+                                      {member.location}
+                                    </span>
+                                  </td>
+                                  <td style={{ padding: "0.6rem 0.75rem", color: "var(--accent-color)", fontSize: "0.7rem", fontWeight: "600" }}>
+                                    {member.note}
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      ) : (
+                        <div style={{
+                          display: "flex",
+                          flexDirection: "column",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          flex: 1,
+                          padding: "2.5rem 1rem",
+                          background: "rgba(255,255,255,0.01)",
+                          border: "1px dashed var(--border-color)",
+                          borderRadius: "8px",
+                          textAlign: "center",
+                          color: "var(--text-secondary)"
+                        }}>
+                          <Users size={36} style={{ color: "var(--accent-color)", opacity: 0.6, marginBottom: "0.75rem" }} />
+                          <span style={{ fontSize: "0.85rem", fontWeight: "700", color: "var(--text-primary)", marginBottom: "0.25rem" }}>
+                            위원 명단 준비 중
+                          </span>
+                          <p style={{ margin: 0, fontSize: "0.76rem", color: "var(--text-secondary-dark)", lineHeight: "1.5" }}>
+                            본 위원회의 명단 정보는 추후 구성 완료 시 시스템에 직접 입력될 예정입니다.<br />
+                            관련 권한을 가진 관리자 또는 사업단 총괄 책임자가 추후 업데이트할 수 있습니다.
+                          </p>
+                        </div>
+                      )
                     ) : (
                       <div style={{ display: "flex", flexDirection: "column", gap: "1.2rem" }}>
                         <div>
