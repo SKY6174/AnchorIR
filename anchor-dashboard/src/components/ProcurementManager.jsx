@@ -152,12 +152,12 @@ export default function ProcurementManager({
         <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
           
           {/* 환경개선 헤더 카드 */}
-          <div className="card" style={{ padding: "1.25rem", borderRadius: "10px", background: "var(--bg-card-dark)", border: "1px solid var(--border-color-dark)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <div className="glass-card" style={{ padding: "1.25rem", borderRadius: "10px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <div>
-              <h3 style={{ margin: 0, fontSize: "1.1rem", fontWeight: "800", color: "var(--text-primary-dark)" }}>
+              <h3 style={{ margin: 0, fontSize: "1.1rem", fontWeight: "800", color: "var(--text-primary)" }}>
                 🛠️ 교육환경 개선 사업 관리
               </h3>
-              <p style={{ margin: "0.25rem 0 0 0", fontSize: "0.85rem", color: "var(--text-secondary-dark)" }}>
+              <p style={{ margin: "0.25rem 0 0 0", fontSize: "0.85rem", color: "var(--text-secondary)" }}>
                 안전하고 현대적인 실습실 인프라 및 교육환경 구축 관리 1차 정리 대장
               </p>
             </div>
@@ -188,8 +188,8 @@ export default function ProcurementManager({
           <div style={{ display: "grid", gridTemplateColumns: "1.2fr 0.8fr", gap: "1.5rem" }}>
             
             {/* 왼쪽: 리스트 프레임 */}
-            <div className="card" style={{ padding: "1.25rem", borderRadius: "10px", background: "var(--bg-card-dark)", border: "1px solid var(--border-color-dark)" }}>
-              <h4 style={{ margin: "0 0 1rem 0", fontSize: "0.95rem", fontWeight: "700", color: "var(--text-primary-dark)", borderBottom: "1px solid rgba(255,255,255,0.05)", paddingBottom: "0.5rem" }}>
+            <div className="glass-card" style={{ padding: "1.25rem", borderRadius: "10px" }}>
+              <h4 style={{ margin: "0 0 1rem 0", fontSize: "0.95rem", fontWeight: "700", color: "var(--text-primary)", borderBottom: "1px solid rgba(255,255,255,0.05)", paddingBottom: "0.5rem" }}>
                 환경개선 구축 목록
               </h4>
               <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
@@ -200,8 +200,8 @@ export default function ProcurementManager({
                     style={{
                       padding: "1rem",
                       borderRadius: "8px",
-                      background: selectedEnvItem?.id === item.id ? "rgba(59, 130, 246, 0.1)" : "rgba(255,255,255,0.02)",
-                      border: selectedEnvItem?.id === item.id ? "1px solid var(--accent-color)" : "1px solid rgba(255,255,255,0.05)",
+                      background: selectedEnvItem?.id === item.id ? "rgba(59, 130, 246, 0.15)" : "var(--background-card, rgba(255,255,255,0.01))",
+                      border: selectedEnvItem?.id === item.id ? "1px solid var(--accent-color)" : "1px solid var(--border-color, rgba(255,255,255,0.05))",
                       cursor: "pointer",
                       transition: "all 0.2s ease"
                     }}
@@ -210,11 +210,11 @@ export default function ProcurementManager({
                       <span style={{ fontSize: "0.75rem", padding: "0.2rem 0.4rem", borderRadius: "4px", background: "rgba(59, 130, 246, 0.2)", color: "#60A5FA", fontWeight: "700" }}>
                         {item.unit} 과제
                       </span>
-                      <span style={{ fontSize: "0.8rem", color: "var(--text-secondary-dark)" }}>
+                      <span style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>
                         예산: {(item.budgetPlan / 10000).toLocaleString()}만 원
                       </span>
                     </div>
-                    <h5 style={{ margin: "0.5rem 0 0.5rem 0", fontSize: "0.9rem", fontWeight: "700", color: "white", lineHeight: "1.3" }}>
+                    <h5 style={{ margin: "0.5rem 0 0.5rem 0", fontSize: "0.9rem", fontWeight: "700", color: "var(--text-primary)", lineHeight: "1.3" }}>
                       {item.title}
                     </h5>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -232,15 +232,15 @@ export default function ProcurementManager({
             </div>
 
             {/* 오른쪽: 클릭 시 상세 조회 프레임 */}
-            <div className="card" style={{ padding: "1.25rem", borderRadius: "10px", background: "var(--bg-card-dark)", border: "1px solid var(--border-color-dark)" }}>
-              <h4 style={{ margin: "0 0 1rem 0", fontSize: "0.95rem", fontWeight: "700", color: "var(--text-primary-dark)", borderBottom: "1px solid rgba(255,255,255,0.05)", paddingBottom: "0.5rem" }}>
+            <div className="glass-card" style={{ padding: "1.25rem", borderRadius: "10px" }}>
+              <h4 style={{ margin: "0 0 1rem 0", fontSize: "0.95rem", fontWeight: "700", color: "var(--text-primary)", borderBottom: "1px solid rgba(255,255,255,0.05)", paddingBottom: "0.5rem" }}>
                 🔍 구축 상세 명세서
               </h4>
               {selectedEnvItem ? (
-                <div style={{ display: "flex", flexDirection: "column", gap: "1rem", fontSize: "0.85rem", color: "var(--text-primary-dark)" }}>
+                <div style={{ display: "flex", flexDirection: "column", gap: "1rem", fontSize: "0.85rem", color: "var(--text-primary)" }}>
                   
                   <div>
-                    <span style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)", display: "block" }}>사업 건명</span>
+                    <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)", display: "block" }}>사업 건명</span>
                     <strong style={{ fontSize: "0.95rem", color: "#60A5FA" }}>{selectedEnvItem.title}</strong>
                   </div>
 
@@ -287,9 +287,9 @@ export default function ProcurementManager({
                   </div>
 
                   {/* 도면 및 조감도 예시 시각화 박스 */}
-                  <div style={{ border: "1px dashed rgba(255,255,255,0.1)", borderRadius: "6px", padding: "0.75rem", background: "rgba(0,0,0,0.2)" }}>
-                    <span style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)", display: "block", marginBottom: "0.25rem" }}>🎨 조감도 및 설계도 모형</span>
-                    <div style={{ fontSize: "0.7rem", color: "var(--text-secondary-dark)", display: "flex", flexDirection: "column", gap: "0.4rem" }}>
+                  <div style={{ border: "1px dashed var(--border-color-dark)", borderRadius: "6px", padding: "0.75rem", background: "var(--background-card, rgba(0,0,0,0.1))" }}>
+                    <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)", display: "block", marginBottom: "0.25rem" }}>🎨 조감도 및 설계도 모형</span>
+                    <div style={{ fontSize: "0.7rem", color: "var(--text-secondary)", display: "flex", flexDirection: "column", gap: "0.4rem" }}>
                       <div style={{ display: "flex", alignItems: "center", gap: "0.25rem", color: "#60A5FA" }}>
                         <FileImage size={14} />
                         <span>{selectedEnvItem.birdseyeView}</span>
@@ -302,13 +302,13 @@ export default function ProcurementManager({
                   </div>
 
                   <div>
-                    <span style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)", display: "block" }}>향후 활용 계획</span>
+                    <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)", display: "block" }}>향후 활용 계획</span>
                     <p style={{ margin: "0.2rem 0", lineHeight: "1.3" }}>{selectedEnvItem.utilization}</p>
                   </div>
 
                 </div>
               ) : (
-                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "200px", color: "var(--text-secondary-dark)", fontSize: "0.85rem", textAlign: "center" }}>
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "200px", color: "var(--text-secondary)", fontSize: "0.85rem", textAlign: "center" }}>
                   <Info size={32} style={{ marginBottom: "0.5rem", opacity: 0.5 }} />
                   <span>왼쪽 목록에서 환경개선 건을 선택하시면<br />세부 구축 계획 및 설계 도면 명세서가 조회됩니다.</span>
                 </div>
@@ -325,12 +325,12 @@ export default function ProcurementManager({
         <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
           
           {/* 기자재 상단 필터 카드 */}
-          <div className="card" style={{ padding: "1.25rem", borderRadius: "10px", background: "var(--bg-card-dark)", border: "1px solid var(--border-color-dark)", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "1rem" }}>
+          <div className="glass-card" style={{ padding: "1.25rem", borderRadius: "10px", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "1rem" }}>
             <div>
-              <h3 style={{ margin: 0, fontSize: "1.1rem", fontWeight: "800", color: "var(--text-primary-dark)" }}>
+              <h3 style={{ margin: 0, fontSize: "1.1rem", fontWeight: "800", color: "var(--text-primary)" }}>
                 🔬 기자재 구입 및 운영 현황
               </h3>
-              <p style={{ margin: "0.25rem 0 0 0", fontSize: "0.85rem", color: "var(--text-secondary-dark)" }}>
+              <p style={{ margin: "0.25rem 0 0 0", fontSize: "0.85rem", color: "var(--text-secondary)" }}>
                 단위과제별 교육/연구용 핵심 기자재의 계획·집행 및 실적 관리
               </p>
             </div>
@@ -387,12 +387,10 @@ export default function ProcurementManager({
               equipData.filter(e => e.unit === selectedEquipUnit).map((equip) => (
                 <div 
                   key={equip.id} 
-                  className="card" 
+                  className="glass-card" 
                   style={{ 
                     padding: "1.25rem", 
                     borderRadius: "10px", 
-                    background: "var(--bg-card-dark)", 
-                    border: "1px solid var(--border-color-dark)",
                     display: "flex",
                     flexDirection: "column",
                     gap: "0.75rem"
@@ -402,38 +400,38 @@ export default function ProcurementManager({
                     <span style={{ fontSize: "0.75rem", padding: "0.25rem 0.5rem", borderRadius: "4px", background: "rgba(52, 211, 153, 0.2)", color: "#34D399", fontWeight: "700" }}>
                       기자재 승인 완료
                     </span>
-                    <span style={{ fontSize: "0.8rem", color: "var(--text-secondary-dark)" }}>
+                    <span style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>
                       단위과제: {equip.unit}
                     </span>
                   </div>
 
-                  <h4 style={{ margin: 0, fontSize: "1.05rem", fontWeight: "800", color: "white" }}>
+                  <h4 style={{ margin: 0, fontSize: "1.05rem", fontWeight: "800", color: "var(--text-primary)" }}>
                     {equip.name}
                   </h4>
 
-                  <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", fontSize: "0.8rem", color: "var(--text-primary-dark)", borderTop: "1px solid rgba(255,255,255,0.05)", paddingTop: "0.5rem" }}>
+                  <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", fontSize: "0.8rem", color: "var(--text-primary)", borderTop: "1px solid rgba(255,255,255,0.05)", paddingTop: "0.5rem" }}>
                     <div>
-                      <span style={{ color: "var(--text-secondary-dark)" }}>🔗 관련 프로그램:</span> {equip.program}
+                      <span style={{ color: "var(--text-secondary)" }}>🔗 관련 프로그램:</span> {equip.program}
                     </div>
                     <div>
-                      <span style={{ color: "var(--text-secondary-dark)" }}>🏫 소속 학부(과)/센터:</span> {equip.department}
+                      <span style={{ color: "var(--text-secondary)" }}>🏫 소속 학부(과)/센터:</span> {equip.department}
                     </div>
                     <div>
-                      <span style={{ color: "var(--text-secondary-dark)" }}>📅 추진 일정:</span> {equip.schedule}
+                      <span style={{ color: "var(--text-secondary)" }}>📅 추진 일정:</span> {equip.schedule}
                     </div>
                     
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem", marginTop: "0.25rem" }}>
                       <div>
-                        <span style={{ color: "var(--text-secondary-dark)", display: "block" }}>사업비 계획</span>
+                        <span style={{ color: "var(--text-secondary)", display: "block" }}>사업비 계획</span>
                         <strong style={{ color: "#3B82F6" }}>{(equip.budgetPlan / 10000).toLocaleString()}만 원</strong>
                       </div>
                       <div>
-                        <span style={{ color: "var(--text-secondary-dark)", display: "block" }}>실제 집행액</span>
+                        <span style={{ color: "var(--text-secondary)", display: "block" }}>실제 집행액</span>
                         <strong style={{ color: "#10B981" }}>{(equip.budgetSpent / 10000).toLocaleString()}만 원</strong>
                       </div>
                     </div>
 
-                    <div style={{ background: "rgba(255,255,255,0.02)", padding: "0.5rem", borderRadius: "6px", border: "1px solid rgba(255,255,255,0.05)", marginTop: "0.25rem" }}>
+                    <div style={{ background: "var(--border-color)", padding: "0.5rem", borderRadius: "6px", border: "1px solid rgba(255,255,255,0.05)", marginTop: "0.25rem" }}>
                       <span style={{ color: "#FBBF24", fontWeight: "700", display: "block", fontSize: "0.75rem", marginBottom: "0.2rem" }}>⚙️ 운영 및 활성화 방안</span>
                       <p style={{ margin: 0, fontSize: "0.75rem", lineHeight: "1.3" }}>{equip.opPlan}</p>
                     </div>
@@ -446,7 +444,7 @@ export default function ProcurementManager({
                 </div>
               ))
             ) : (
-              <div className="card" style={{ gridColumn: "span 2", padding: "3rem", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", background: "var(--bg-card-dark)", border: "1px solid var(--border-color-dark)", color: "var(--text-secondary-dark)", textAlign: "center" }}>
+              <div className="glass-card" style={{ gridColumn: "span 2", padding: "3rem", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", color: "var(--text-secondary)", textAlign: "center" }}>
                 <Laptop size={40} style={{ marginBottom: "0.75rem", opacity: 0.4 }} />
                 <span>선택하신 <strong>{selectedEquipUnit} 과제</strong>에 등록된 기자재 내역이 없습니다.<br />우측 상단 [기자재 추가] 버튼을 눌러 초기 프레임 데이터를 채워주세요.</span>
               </div>
@@ -461,12 +459,12 @@ export default function ProcurementManager({
         <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
           
           {/* 주요 용역 상단 카드 */}
-          <div className="card" style={{ padding: "1.25rem", borderRadius: "10px", background: "var(--bg-card-dark)", border: "1px solid var(--border-color-dark)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <div className="glass-card" style={{ padding: "1.25rem", borderRadius: "10px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <div>
-              <h3 style={{ margin: 0, fontSize: "1.1rem", fontWeight: "800", color: "var(--text-primary-dark)" }}>
+              <h3 style={{ margin: 0, fontSize: "1.1rem", fontWeight: "800", color: "var(--text-primary)" }}>
                 📑 500만원 이상 주요 용역 관리 대장
               </h3>
-              <p style={{ margin: "0.25rem 0 0 0", fontSize: "0.85rem", color: "var(--text-secondary-dark)" }}>
+              <p style={{ margin: "0.25rem 0 0 0", fontSize: "0.85rem", color: "var(--text-secondary)" }}>
                 기획 결재부터 입찰/발주 및 최종 검수 완료까지의 전 과정 트래킹 프레임
               </p>
             </div>
@@ -499,12 +497,10 @@ export default function ProcurementManager({
             {serviceData.map((service) => (
               <div 
                 key={service.id} 
-                className="card" 
+                className="glass-card" 
                 style={{ 
                   padding: "1.5rem", 
                   borderRadius: "10px", 
-                  background: "var(--bg-card-dark)", 
-                  border: "1px solid var(--border-color-dark)",
                   display: "flex",
                   flexDirection: "column",
                   gap: "1rem"
@@ -512,15 +508,15 @@ export default function ProcurementManager({
               >
                 {/* 상단 명칭 및 예산 */}
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: "0.5rem" }}>
-                  <h4 style={{ margin: 0, fontSize: "1.1rem", fontWeight: "800", color: "white", maxWidth: "70%" }}>
+                  <h4 style={{ margin: 0, fontSize: "1.1rem", fontWeight: "800", color: "var(--text-primary)", maxWidth: "70%" }}>
                     {service.title}
                   </h4>
                   <div style={{ textAlign: "right" }}>
-                    <span style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)", display: "block" }}>예산 (계획 / 실제집행)</span>
+                    <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)", display: "block" }}>예산 (계획 / 실제집행)</span>
                     <strong style={{ color: "#60A5FA", fontSize: "1rem" }}>
                       {(service.budgetPlan / 10000).toLocaleString()}만 원
                     </strong>
-                    <span style={{ fontSize: "0.8rem", color: "var(--text-secondary-dark)" }}> / </span>
+                    <span style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}> / </span>
                     <strong style={{ color: "#34D399", fontSize: "1rem" }}>
                       {(service.budgetSpent / 10000).toLocaleString()}만 원
                     </strong>
@@ -528,34 +524,34 @@ export default function ProcurementManager({
                 </div>
 
                 {/* 중간 세부 내용 */}
-                <div style={{ display: "grid", gridTemplateColumns: "1.2fr 0.8fr", gap: "1.5rem", borderTop: "1px solid rgba(255,255,255,0.05)", paddingTop: "0.75rem", fontSize: "0.8rem", color: "var(--text-primary-dark)" }}>
+                <div style={{ display: "grid", gridTemplateColumns: "1.2fr 0.8fr", gap: "1.5rem", borderTop: "1px solid rgba(255,255,255,0.05)", paddingTop: "0.75rem", fontSize: "0.8rem", color: "var(--text-primary)" }}>
                   <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
                     <div>
-                      <strong style={{ color: "var(--text-secondary-dark)" }}>🎯 추진 목적 (용역 요건):</strong>
+                      <strong style={{ color: "var(--text-secondary)" }}>🎯 추진 목적 (용역 요건):</strong>
                       <p style={{ margin: "0.2rem 0 0 0", lineHeight: "1.4" }}>{service.purpose}</p>
                     </div>
                     <div style={{ marginTop: "0.25rem" }}>
-                      <strong style={{ color: "var(--text-secondary-dark)" }}>🏢 수행 기관 자격 요건:</strong>
+                      <strong style={{ color: "var(--text-secondary)" }}>🏢 수행 기관 자격 요건:</strong>
                       <p style={{ margin: "0.2rem 0 0 0", lineHeight: "1.4" }}>{service.providerQual}</p>
                     </div>
                   </div>
 
-                  <div style={{ background: "rgba(255,255,255,0.02)", padding: "0.75rem", borderRadius: "8px", border: "1px solid rgba(255,255,255,0.05)", display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                  <div style={{ background: "var(--border-color)", padding: "0.75rem", borderRadius: "8px", border: "1px solid rgba(255,255,255,0.05)", display: "flex", flexDirection: "column", gap: "0.5rem" }}>
                     <strong style={{ color: "#34D399", fontSize: "0.75rem" }}>📈 최종 운영 결과 기술</strong>
                     <p style={{ margin: 0, fontSize: "0.75rem", lineHeight: "1.4" }}>{service.opResult || "결과 정산 및 분석 보고서 검토 중..."}</p>
                   </div>
                 </div>
 
                 {/* 💡 하단 추진일정 진행 경과 스텝퍼 (Stepper) 시각화 */}
-                <div style={{ background: "rgba(0,0,0,0.15)", borderRadius: "8px", padding: "1rem", marginTop: "0.25rem" }}>
-                  <span style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)", display: "block", marginBottom: "0.5rem" }}>
+                <div style={{ background: "var(--background-card, rgba(0,0,0,0.05))", borderRadius: "8px", padding: "1rem", marginTop: "0.25rem" }}>
+                  <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)", display: "block", marginBottom: "0.5rem" }}>
                     🔄 구매 용역 행정 추진 일정 단계 현황
                   </span>
                   
                   <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", position: "relative" }}>
                     
                     {/* 가로 선 피팅 */}
-                    <div style={{ position: "absolute", left: "10%", right: "10%", top: "45%", height: "2px", background: "rgba(255,255,255,0.1)", zIndex: 1 }}>
+                    <div style={{ position: "absolute", left: "10%", right: "10%", top: "45%", height: "2px", background: "var(--border-color)", zIndex: 1 }}>
                       <div style={{ width: service.step === 1 ? "0%" : service.step === 2 ? "50%" : "100%", height: "100%", background: "var(--accent-color)", transition: "all 0.3s ease" }}></div>
                     </div>
 
@@ -563,13 +559,13 @@ export default function ProcurementManager({
                     <div style={{ display: "flex", flexDirection: "column", alignItems: "center", zIndex: 2, width: "30%" }}>
                       <div style={{
                         width: "24px", height: "24px", borderRadius: "50%",
-                        background: service.step >= 1 ? "var(--accent-color)" : "rgba(255,255,255,0.1)",
+                        background: service.step >= 1 ? "var(--accent-color)" : "var(--border-color)",
                         display: "flex", alignItems: "center", justifyContent: "center",
                         fontSize: "0.7rem", fontWeight: "700", color: "white"
                       }}>
                         {service.step >= 1 ? <CheckCircle size={14} /> : "1"}
                       </div>
-                      <span style={{ fontSize: "0.75rem", marginTop: "0.25rem", color: service.step >= 1 ? "white" : "var(--text-secondary-dark)", fontWeight: "600" }}>
+                      <span style={{ fontSize: "0.75rem", marginTop: "0.25rem", color: service.step >= 1 ? "var(--text-primary)" : "var(--text-secondary)", fontWeight: "600" }}>
                         사업단 기획 및 결재 완료
                       </span>
                     </div>
@@ -578,13 +574,13 @@ export default function ProcurementManager({
                     <div style={{ display: "flex", flexDirection: "column", alignItems: "center", zIndex: 2, width: "30%" }}>
                       <div style={{
                         width: "24px", height: "24px", borderRadius: "50%",
-                        background: service.step >= 2 ? "var(--accent-color)" : "rgba(255,255,255,0.1)",
+                        background: service.step >= 2 ? "var(--accent-color)" : "var(--border-color)",
                         display: "flex", alignItems: "center", justifyContent: "center",
                         fontSize: "0.7rem", fontWeight: "700", color: "white"
                       }}>
                         {service.step >= 2 ? <CheckCircle size={14} /> : "2"}
                       </div>
-                      <span style={{ fontSize: "0.75rem", marginTop: "0.25rem", color: service.step >= 2 ? "white" : "var(--text-secondary-dark)", fontWeight: "600" }}>
+                      <span style={{ fontSize: "0.75rem", marginTop: "0.25rem", color: service.step >= 2 ? "var(--text-primary)" : "var(--text-secondary)", fontWeight: "600" }}>
                         구매 발주 (총무팀 대행)
                       </span>
                     </div>
@@ -593,7 +589,7 @@ export default function ProcurementManager({
                     <div style={{ display: "flex", flexDirection: "column", alignItems: "center", zIndex: 2, width: "30%" }}>
                       <div style={{
                         width: "24px", height: "24px", borderRadius: "50%",
-                        background: service.step >= 3 ? "var(--accent-color)" : "rgba(255,255,255,0.1)",
+                        background: service.step >= 3 ? "var(--accent-color)" : "var(--border-color)",
                         display: "flex", alignItems: "center", justifyContent: "center",
                         fontSize: "0.7rem", fontWeight: "700", color: "white"
                       }}>

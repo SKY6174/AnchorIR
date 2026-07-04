@@ -6491,8 +6491,6 @@ export default function App() {
               </div>
             </div>
           </div>
-          {/* 성과지표 목표 및 실적 업데이트 전용 엑셀 업로더 (mode="KPI") */}
-          <ExcelUploader mode="KPI" onUpdateData={handleUpdateData} projects={displayProjects} selectedYear={selectedYear} />
         </>
         )}
 

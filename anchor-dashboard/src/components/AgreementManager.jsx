@@ -862,8 +862,8 @@ export default function AgreementManager({
       {/* 툴바 제어부 (협약서 전용으로 축소) */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid var(--border-color-dark)", paddingBottom: "0.5rem" }}>
         <div>
-          <h2 style={{ fontSize: "1.0rem", fontWeight: "800", color: "white" }}>⚓ {selectedYear}차년도 기관 간 협약(MOU) 목록</h2>
-          <p style={{ fontSize: "0.72rem", color: "var(--text-secondary-dark)" }}>지자체, 대학, 산업체 등 외부 유관 기관과의 협약서 대장을 보존합니다.</p>
+          <h2 style={{ fontSize: "1.0rem", fontWeight: "800", color: "var(--text-primary)" }}>⚓ {selectedYear}차년도 기관 간 협약(MOU) 목록</h2>
+          <p style={{ fontSize: "0.72rem", color: "var(--text-secondary)" }}>지자체, 대학, 산업체 등 외부 유관 기관과의 협약서 대장을 보존합니다.</p>
         </div>
 
         {/* 신규 등록 & 엑셀 다운로드 제어부 */}
@@ -992,7 +992,7 @@ export default function AgreementManager({
           marginBottom: "0.25rem"
         }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <span style={{ fontSize: "0.75rem", fontWeight: "700", color: "#94a3b8" }}>
+            <span style={{ fontSize: "0.75rem", fontWeight: "700", color: "var(--text-secondary)" }}>
               🔍 단위과제 다중 선택 필터
             </span>
             {selectedUnits.length > 0 && (
@@ -1023,7 +1023,7 @@ export default function AgreementManager({
                 cursor: "pointer",
                 border: "1px solid " + (selectedUnits.length === 0 ? "var(--primary-color)" : "rgba(255,255,255,0.1)"),
                 background: selectedUnits.length === 0 ? "var(--primary-color)" : "transparent",
-                color: selectedUnits.length === 0 ? "white" : "#94a3b8",
+                color: selectedUnits.length === 0 ? "white" : "var(--text-secondary)",
                 transition: "all 0.15s ease"
               }}
             >
@@ -1044,7 +1044,7 @@ export default function AgreementManager({
                     cursor: "pointer",
                     border: "1px solid " + (isSelected ? "#38bdf8" : "rgba(255,255,255,0.06)"),
                     background: isSelected ? "rgba(56, 189, 248, 0.15)" : "rgba(255, 255, 255, 0.02)",
-                    color: isSelected ? "#38bdf8" : "#94a3b8",
+                    color: isSelected ? "var(--accent-color)" : "var(--text-secondary)",
                     transition: "all 0.15s ease"
                   }}
                 >
@@ -1064,10 +1064,10 @@ export default function AgreementManager({
           </div>
         )}
 
-        <div className="table-container" style={{ background: "var(--card-bg-dark)", border: "1px solid var(--border-color-dark)", borderRadius: "0.5rem", overflow: "hidden" }}>
-          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.75rem", color: "white" }}>
+        <div className="table-container" style={{ border: "1px solid var(--border-color-dark)", borderRadius: "0.5rem", overflow: "hidden" }}>
+          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.75rem", color: "var(--text-primary)" }}>
             <thead>
-              <tr style={{ background: "rgba(255,255,255,0.03)", borderBottom: "1px solid var(--border-color-dark)" }}>
+              <tr style={{ background: "var(--border-color, rgba(255,255,255,0.03))", borderBottom: "1px solid var(--border-color-dark)" }}>
                 <th onClick={() => requestSort("date")} style={{ padding: "0.6rem 0.8rem", textAlign: "left", width: "10%", cursor: "pointer" }}>
                   날짜 {sortConfig.key === "date" ? (sortConfig.direction === "asc" ? "▲" : "▼") : "⇅"}
                 </th>
@@ -1100,7 +1100,7 @@ export default function AgreementManager({
                 displayAgreements.map((agr) => {
                   const hasInvalidDate = !isDateValidForYear(agr.date, selectedYear);
                   return (
-                    <tr key={agr.id} style={{ borderBottom: "1px solid var(--border-color-dark)", background: hasInvalidDate ? "rgba(239, 68, 68, 0.03)" : "rgba(255,255,255,0.01)" }}>
+                    <tr key={agr.id} style={{ borderBottom: "1px solid var(--border-color-dark)", background: hasInvalidDate ? "rgba(239, 68, 68, 0.05)" : "transparent" }}>
                       <td style={{ padding: "0.6rem 0.8rem" }}>{agr.date}</td>
                       <td style={{ padding: "0.6rem 0.8rem" }}>
                         <span style={{ background: "rgba(96,165,250,0.1)", color: "#60a5fa", padding: "0.15rem 0.35rem", borderRadius: "0.25rem", fontSize: "0.65rem", fontWeight: "700" }}>{agr.center}</span>
@@ -1108,25 +1108,25 @@ export default function AgreementManager({
                       <td style={{ padding: "0.6rem 0.8rem" }}>
                         {Array.isArray(agr.organizations) ? (
                           agr.organizations.map((org, i) => (
-                            <span key={i} style={{ background: "#27272a", padding: "0.15rem 0.35rem", borderRadius: "0.25rem", color: "#e4e4e7", marginRight: "0.2rem" }}>
+                            <span key={i} style={{ background: "var(--border-color)", padding: "0.15rem 0.35rem", borderRadius: "0.25rem", color: "var(--text-primary)", marginRight: "0.2rem" }}>
                               {typeof org === "object" ? org.name : org}
                             </span>
                           ))
                         ) : (
-                          <span style={{ background: "#27272a", padding: "0.15rem 0.35rem", borderRadius: "0.25rem", color: "#e4e4e7" }}>{agr.organizations}</span>
+                          <span style={{ background: "var(--border-color)", padding: "0.15rem 0.35rem", borderRadius: "0.25rem", color: "var(--text-primary)" }}>{agr.organizations}</span>
                         )}
                       </td>
                       <td style={{ padding: "0.6rem 0.8rem" }}>
                         <div style={{ display: "flex", flexDirection: "column", gap: "0.15rem" }}>
-                          <span style={{ color: "#a1a1aa" }}>🏫 UC: {agr.subjectUniversity}</span>
-                          <span style={{ color: "#38bdf8" }}>🤝 타기관: {agr.subjectOrganization}</span>
+                          <span style={{ color: "var(--text-secondary)" }}>🏫 UC: {agr.subjectUniversity}</span>
+                          <span style={{ color: "var(--accent-color)" }}>🤝 타기관: {agr.subjectOrganization}</span>
                         </div>
                       </td>
                       <td style={{ padding: "0.6rem 0.8rem", fontWeight: "700" }}>{agr.unitId}</td>
                       <td style={{ padding: "0.6rem 0.8rem" }}>
                         <span style={{
                           background: agr.agreementType === "프리미엄" ? "rgba(236,72,153,0.15)" : agr.agreementType === "무료" ? "rgba(59,130,246,0.15)" : "transparent",
-                          color: agr.agreementType === "프리미엄" ? "#ec4899" : agr.agreementType === "무료" ? "#3b82f6" : "#a1a1aa",
+                          color: agr.agreementType === "프리미엄" ? "#ec4899" : agr.agreementType === "무료" ? "#3b82f6" : "var(--text-secondary)",
                           padding: agr.agreementType !== "-" ? "0.15rem 0.35rem" : "0",
                           borderRadius: "0.25rem",
                           fontSize: "0.65rem",
@@ -1180,7 +1180,7 @@ export default function AgreementManager({
                                   setInputFileData(agr.fileData || "");
                                   setInputAgreementType(agr.agreementType || "-");
                                   setIsModalOpen(true);
-                                }} style={{ background: "none", border: "none", color: "#a1a1aa", cursor: "pointer" }} title="수정">
+                                }} style={{ background: "none", border: "none", color: "var(--text-secondary)", cursor: "pointer" }} title="수정">
                                   <Edit size={14} />
                                 </button>
                                 <button onClick={() => { if (confirm("이 협약서를 삭제하시겠습니까?")) onDeleteAgreement(agr.id); }} style={{ background: "none", border: "none", color: "#ef4444", cursor: "pointer" }} title="삭제">

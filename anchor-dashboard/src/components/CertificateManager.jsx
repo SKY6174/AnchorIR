@@ -537,8 +537,8 @@ export default function CertificateManager({
       {/* 이수증 툴바 영역 */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "1rem", flexWrap: "wrap" }}>
         <div>
-          <h2 style={{ fontSize: "1.0rem", fontWeight: "800", color: "white" }}>📄 {selectedYear}차년도 이수증 발급 내역</h2>
-          <p style={{ fontSize: "0.72rem", color: "var(--text-secondary-dark)" }}>교육과정 및 세미나 이수증 발급 대장을 영속 보존합니다.</p>
+          <h2 style={{ fontSize: "1.0rem", fontWeight: "800", color: "var(--text-primary)" }}>📄 {selectedYear}차년도 이수증 발급 내역</h2>
+          <p style={{ fontSize: "0.72rem", color: "var(--text-secondary)" }}>교육과정 및 세미나 이수증 발급 대장을 영속 보존합니다.</p>
         </div>
 
         {/* 신규 등록 & 엑셀 다운로드 제어부 */}
@@ -658,10 +658,10 @@ export default function CertificateManager({
       </div>
 
       {/* 이수증 리스트 테이블 */}
-      <div className="table-container" style={{ background: "var(--card-bg-dark)", border: "1px solid var(--border-color-dark)", borderRadius: "0.5rem", overflow: "hidden" }}>
-        <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.75rem", color: "white" }}>
+      <div className="table-container" style={{ border: "1px solid var(--border-color-dark)", borderRadius: "0.5rem", overflow: "hidden" }}>
+        <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.75rem", color: "var(--text-primary)" }}>
           <thead>
-            <tr style={{ background: "rgba(255,255,255,0.03)", borderBottom: "1px solid var(--border-color-dark)" }}>
+            <tr style={{ background: "var(--border-color, rgba(255,255,255,0.03))", borderBottom: "1px solid var(--border-color-dark)" }}>
               <th onClick={() => requestCertSort("certNo")} style={{ padding: "0.6rem 0.8rem", textAlign: "left", width: "20%", cursor: "pointer" }}>
                 발급번호 {certSortConfig.key === "certNo" ? (certSortConfig.direction === "asc" ? "▲" : "▼") : "⇅"}
               </th>
@@ -683,11 +683,11 @@ export default function CertificateManager({
               </tr>
             ) : (
               sortedCertificates.map((cert) => (
-                <tr key={cert.id} style={{ borderBottom: "1px solid var(--border-color-dark)", background: "rgba(255,255,255,0.01)" }}>
+                <tr key={cert.id} style={{ borderBottom: "1px solid var(--border-color-dark)", background: "transparent" }}>
                   <td style={{ padding: "0.6rem 0.8rem", fontWeight: "700" }}>{cert.certNo}</td>
                   <td style={{ padding: "0.6rem 0.8rem" }}>
-                    <span style={{ color: "#a1a1aa", marginRight: "0.4rem" }}>[{cert.recipientDept}]</span>
-                    <strong style={{ color: "white" }}>{cert.recipientName}</strong>
+                    <span style={{ color: "var(--text-secondary)", marginRight: "0.4rem" }}>[{cert.recipientDept}]</span>
+                    <strong style={{ color: "var(--text-primary)" }}>{cert.recipientName}</strong>
                   </td>
                   <td style={{ padding: "0.6rem 0.8rem" }}>{cert.issueDate}</td>
                   <td style={{ padding: "0.6rem 0.8rem" }}>
