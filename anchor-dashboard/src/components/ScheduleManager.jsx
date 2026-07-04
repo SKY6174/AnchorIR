@@ -2519,10 +2519,10 @@ export default function ScheduleManager({
                                   flexDirection: "column",
                                   gap: "0.25rem"
                                 }}
-                                onMouseOver={(e) => { if(!isSelected) e.currentTarget.style.background = "rgba(255,255,255,0.02)"; }}
+                                onMouseOver={(e) => { if(!isSelected) e.currentTarget.style.background = darkMode ? "rgba(255,255,255,0.02)" : "rgba(0,0,0,0.03)"; }}
                                 onMouseOut={(e) => { if(!isSelected) e.currentTarget.style.background = "transparent"; }}
                               >
-                                <span style={{ fontSize: "0.8rem", fontWeight: "700", color: isSelected ? "#60A5FA" : "white", wordBreak: "break-all" }}>
+                                <span style={{ fontSize: "0.8rem", fontWeight: "700", color: isSelected ? (darkMode ? "#60A5FA" : "var(--accent-color)") : "var(--text-primary)", wordBreak: "break-all" }}>
                                   {meeting.title}
                                 </span>
                                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "0.2rem" }}>
