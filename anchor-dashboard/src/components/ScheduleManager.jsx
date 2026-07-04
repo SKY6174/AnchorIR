@@ -1806,9 +1806,9 @@ export default function ScheduleManager({
       agendaList: [""],
       audioUrl: "",
       pdfUrl: "",
-      // 언론보도용 추가
-      pressDate: defaultEventDate,
-      pressTime: "10:00",
+      // 언론보도용 추가 (기본 픽스값 제거 및 빈칸으로 초기화)
+      pressDate: "",
+      pressTime: "",
       pressMedia: "",
       pressUrl: "",
       pressType: "방송",
