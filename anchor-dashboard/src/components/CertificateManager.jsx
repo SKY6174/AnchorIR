@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { Plus, Trash2, Edit, Trash, FileText, Upload, X, AlertTriangle, Download, FileCheck } from "lucide-react";
 import * as XLSX from "xlsx";
+import { supabase } from "../supabaseClient"; // Supabase 클라이언트 연동 추가
 
 /**
  * CertificateManager:
@@ -152,27 +153,51 @@ export default function CertificateManager({
     resetCertForm();
   };
 
-  // 모의 파일 업로드 (Base64 변환 및 한글 자모 복원)
-  const handleFileChange = (e) => {
+  // 모의 파일 업로드 (Supabase Storage 버킷 업로드 연동)
+  const handleFileChange = async (e) => {
     const file = e.target.files[0];
     if (file) {
       const normalizedName = file.name.normalize("NFC");
-      const reader = new FileReader();
-      reader.onloadend = () => {
+      setCertFileName("업로드 중...");
+      try {
+        const storagePath = `certificates/${Date.now()}_${normalizedName}`;
+        const { data, error } = await supabase.storage
+          .from("anchor-files")
+          .upload(storagePath, file);
+
+        if (error) throw error;
+
+        // 업로드 완료 후 공개 읽기 주소(Public URL) 획득
+        const { data: { publicUrl } } = supabase.storage
+          .from("anchor-files")
+          .getPublicUrl(data.path);
+
         setCertFileName(normalizedName);
-        setCertFileData(reader.result);
-      };
-      reader.readAsDataURL(file);
+        setCertFileData(publicUrl); // DB 및 상태값에 URL 저장
+      } catch (err) {
+        console.error("Storage upload error:", err);
+        alert("사본 파일 업로드에 실패했습니다. Storage 버킷 상태와 정책을 확인해 주세요.");
+        setCertFileName("");
+        setCertFileData("");
+      }
     }
   };
 
-  // 이수증 파일 사본 열기 핸들러
+  // 이수증 파일 사본 열기 핸들러 (원격 URL 및 Base64 하이브리드 지원)
   const handleViewFile = (fileData) => {
     try {
       if (!fileData) {
         window.open("https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf", "_blank");
         return;
       }
+      
+      // 만약 저장된 데이터가 웹 URL 주소 형태라면 바로 새창으로 엽니다.
+      if (fileData.startsWith("http://") || fileData.startsWith("https://")) {
+        window.open(fileData, "_blank");
+        return;
+      }
+
+      // 하위 호환성 유지: 기존의 Base64 디코딩 방식 처리
       let mimeType = "application/pdf";
       let base64 = fileData;
       const parts = fileData.split(",");
@@ -244,9 +269,9 @@ export default function CertificateManager({
         }
       });
 
-      const fileData = await new Promise((resolve) => {
+      const previewData = await new Promise((resolve) => {
         const reader = new FileReader();
-        reader.onload = (e) => resolve(e.target.result);
+        reader.onload = (ev) => resolve(ev.target.result);
         reader.onerror = () => resolve(null);
         reader.readAsDataURL(file);
       });
@@ -254,7 +279,8 @@ export default function CertificateManager({
       if (isMatched && matchedTarget) {
         results.push({
           fileName,
-          fileData,
+          file, // Storage 업로드용 원본 파일 객체 보관
+          fileData: previewData,
           status: "success",
           targetId: matchedTarget.id,
           targetDesc: `${matchedTarget.recipientName} [${matchedTarget.recipientDept}] (${matchedTarget.issueDate || matchedTarget.date})`,
@@ -268,7 +294,8 @@ export default function CertificateManager({
       } else {
         results.push({
           fileName,
-          fileData,
+          file,
+          fileData: previewData,
           status: "fail",
           targetId: null,
           targetDesc: "일치하는 이수증 데이터를 찾지 못함 (발급번호 또는 성명 불일치)",
@@ -287,17 +314,59 @@ export default function CertificateManager({
     e.target.value = "";
   };
 
-  // 분석된 일괄 파일 매핑 반영 핸들러
-  const handleApplyBatchCertificates = () => {
+  // 분석된 일괄 파일 매핑 반영 핸들러 (Supabase Storage 실시간 업로드 구현)
+  const handleApplyBatchCertificates = async () => {
+    const successItems = batchCertificateResults.filter(res => res.status === "success" && res.targetId);
+    if (successItems.length === 0) return;
+
     let appliedCount = 0;
+
+    const isConfirmed = window.confirm(`매칭 성공된 ${successItems.length}개의 파일을 Supabase Storage 저장소에 실시간 업로드하고 동기화할까요?`);
+    if (!isConfirmed) return;
+
+    // 병렬로 파일 업로드 진행 및 공개 URL 획득
+    const uploadPromises = successItems.map(async (res) => {
+      try {
+        const targetFile = res.file;
+        if (!targetFile) return null;
+
+        const normalizedName = targetFile.name.normalize("NFC");
+        const storagePath = `certificates/${Date.now()}_${normalizedName}`;
+
+        const { data, error } = await supabase.storage
+          .from("anchor-files")
+          .upload(storagePath, targetFile);
+
+        if (error) throw error;
+
+        // 공개 읽기 주소(Public URL) 획득
+        const { data: { publicUrl } } = supabase.storage
+          .from("anchor-files")
+          .getPublicUrl(data.path);
+
+        return {
+          targetId: res.targetId,
+          fileName: normalizedName,
+          publicUrl
+        };
+      } catch (err) {
+        console.error("Storage upload failed for file:", res.fileName, err);
+        return null;
+      }
+    });
+
+    const uploadResults = await Promise.all(uploadPromises);
     const successMap = new Map();
-    batchCertificateResults.forEach(res => {
-      if (res.status === "success" && res.targetId) {
+    uploadResults.forEach(res => {
+      if (res) {
         successMap.set(res.targetId, res);
       }
     });
 
-    if (successMap.size === 0) return;
+    if (successMap.size === 0) {
+      alert("파일 저장소 업로드에 실패했습니다. Supabase Storage 버킷 정책을 확인해 주세요.");
+      return;
+    }
 
     setCertificates(prev =>
       prev.map(item => {
@@ -307,14 +376,14 @@ export default function CertificateManager({
           return {
             ...item,
             fileName: match.fileName,
-            fileData: match.fileData
+            fileData: match.publicUrl // DB 저장용 URL 저장
           };
         }
         return item;
       })
     );
 
-    alert(`${appliedCount}개의 이수증 사본이 성공적으로 매핑 및 적재되었습니다.`);
+    alert(`총 ${appliedCount}건의 이수증 사본 파일이 스토리지 업로드 및 반영 완료되었습니다.`);
     setIsCertificateBatchModalOpen(false);
     setBatchCertificateResults([]);
   };

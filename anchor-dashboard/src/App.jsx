@@ -2784,7 +2784,7 @@ export default function App() {
                 unit_id: a.unitId || "",
                 contents: a.contents || [],
                 file_name: a.fileName || null,
-                file_data: null, // 용량 초과 500 에러 방지를 위해 원격 DB 전송 시 파일 데이터 본문은 제외
+                file_data: a.fileData || null, // Storage의 Public URL 주소를 원격 DB에 저장
                 agreement_type: a.agreementType || "-"
               }))
             );
@@ -2826,7 +2826,7 @@ export default function App() {
                 issue_date: c.issueDate,
                 issuer: c.issuer,
                 file_name: c.fileName || null,
-                file_data: null // 용량 초과 500 에러 방지를 위해 원격 DB 전송 시 파일 데이터 본문은 제외
+                file_data: c.fileData || null // Storage의 Public URL 주소를 원격 DB에 저장
               }))
             );
             if (error) throw error;
@@ -2867,7 +2867,7 @@ export default function App() {
                 issue_date: a.issueDate,
                 issuer: a.issuer,
                 file_name: a.fileName || null,
-                file_data: null // 용량 초과 500 에러 방지를 위해 원격 DB 전송 시 파일 데이터 본문은 제외
+                file_data: a.fileData || null // Storage의 Public URL 주소를 원격 DB에 저장
               }))
             );
             if (error) throw error;
