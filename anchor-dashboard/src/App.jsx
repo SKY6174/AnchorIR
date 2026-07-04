@@ -7040,7 +7040,7 @@ export default function App() {
                   type="password"
                   required
                   className="user-selector"
-                  style={{ width: "100%", padding: "0.4rem", color: "white" }}
+                  style={{ width: "100%", padding: "0.45rem 0.6rem", color: "#f3f4f6", background: "#1f2937", border: "1px solid var(--border-color-dark)", borderRadius: "6px" }}
                   placeholder="현재 비밀번호를 입력해 주세요"
                   value={currentPw}
                   onChange={(e) => setCurrentPw(e.target.value)}
@@ -7053,7 +7053,7 @@ export default function App() {
                   type="password"
                   required
                   className="user-selector"
-                  style={{ width: "100%", padding: "0.4rem", color: "white" }}
+                  style={{ width: "100%", padding: "0.45rem 0.6rem", color: "#f3f4f6", background: "#1f2937", border: "1px solid var(--border-color-dark)", borderRadius: "6px" }}
                   placeholder="새 비밀번호를 입력해 주세요"
                   value={newPw}
                   onChange={(e) => setNewPw(e.target.value)}
@@ -7066,7 +7066,7 @@ export default function App() {
                   type="password"
                   required
                   className="user-selector"
-                  style={{ width: "100%", padding: "0.4rem", color: "white" }}
+                  style={{ width: "100%", padding: "0.45rem 0.6rem", color: "#f3f4f6", background: "#1f2937", border: "1px solid var(--border-color-dark)", borderRadius: "6px" }}
                   placeholder="새 비밀번호를 한 번 더 입력해 주세요"
                   value={confirmNewPw}
                   onChange={(e) => setConfirmNewPw(e.target.value)}
