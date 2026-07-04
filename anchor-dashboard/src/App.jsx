@@ -3419,12 +3419,12 @@ export default function App() {
     localStorage.setItem("anchor_dark_mode", JSON.stringify(darkMode));
   }, [darkMode]);
 
-  // 비활성화된 메뉴에 접근 시 대시보드로 자동 리다이렉트하는 가드
-  useEffect(() => {
-    if (activeTab && activeTab !== "dashboard" && menuVisibility[activeTab] === false) {
-      setActiveTab("dashboard");
-    }
-  }, [activeTab, menuVisibility]);
+  // 비활성화된 메뉴에 접근 시 대시보드로 자동 리다이렉트하는 가드 (개발자 모드 활성화를 위해 주석 처리)
+  // useEffect(() => {
+  //   if (activeTab && activeTab !== "dashboard" && menuVisibility[activeTab] === false) {
+  //     setActiveTab("dashboard");
+  //   }
+  // }, [activeTab, menuVisibility]);
 
   // projects 상태 변경 시 localStorage 자동 기입 (새로고침 휘발 방지 우회책)
   useEffect(() => {
