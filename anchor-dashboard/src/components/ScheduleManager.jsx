@@ -736,7 +736,7 @@ ${aiRawText}
       setIsAiLoading(false);
       setAiProgress(100);
       setAiStatusText("");
-      alert("🎉 실제 구글 제미나이(Gemini 1.5 Flash)가 기획서를 분석하여 행사 등록 정보 11개 항목을 실시간으로 입력 완료하였습니다!");
+      alert("🎉 Gemini-1.5-flash 모델이 기획서를 실시간으로 분석하여 행사 등록 정보 11개 항목을 완벽하게 기입하였습니다!");
 
     } catch (error) {
       console.error("Gemini API 호출 에러:", error);
@@ -4895,7 +4895,7 @@ ${aiRawText}
                   }}>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                       <span style={{ fontSize: "0.75rem", fontWeight: "700", color: "#a78bfa", display: "flex", alignItems: "center", gap: "0.25rem" }}>
-                        ✨ AI 기획서∙결과보고서 자동 기입 (GPT & Gemini API 연동)
+                        ✨ AI 기획서∙결과보고서 자동 기입 (Gemini-1.5-flash 모델 연동)
                       </span>
                       <button
                         type="button"
