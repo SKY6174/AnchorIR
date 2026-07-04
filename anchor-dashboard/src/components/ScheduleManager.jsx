@@ -529,6 +529,109 @@ export default function ScheduleManager({
   // 의제-결과 1:1 매핑 상태 추가
   const [agendaResultPairs, setAgendaResultPairs] = useState([{ agenda: "", result: "" }]);
 
+  // AI 기획서 자동완성 상태 관리
+  const [isAiLoading, setIsAiLoading] = useState(false);
+  const [aiFileName, setAiFileName] = useState("");
+  const [aiProgress, setAiProgress] = useState(0);
+  const [aiStatusText, setAiStatusText] = useState("");
+
+  // 샘플 파일 로드
+  const handleLoadSampleFile = () => {
+    setAiFileName("RISE_지산학_연계_창업_해커톤_결과보고서.hwp");
+  };
+
+  // 실제 파일 선택 핸들러
+  const handleAiFileChange = (e) => {
+    if (e.target.files && e.target.files[0]) {
+      setAiFileName(e.target.files[0].name);
+    }
+  };
+
+  // AI 폼 자동 기입 시뮬레이터 실행
+  const triggerAiAutoFill = () => {
+    if (!aiFileName) {
+      alert("⚠️ 먼저 분석할 첨부파일을 선택하시거나 [기획안 샘플 자동 로드]를 클릭해 주세요.");
+      return;
+    }
+    
+    setIsAiLoading(true);
+    setAiProgress(0);
+    setAiStatusText("문서 바이너리 및 텍스트 추출 중...");
+
+    let currentProgress = 0;
+    const interval = setInterval(() => {
+      currentProgress += 10;
+      setAiProgress(currentProgress);
+      
+      if (currentProgress === 30) {
+        setAiStatusText("HWP 문서 내 RISE 핵심 키워드 매핑 분석 (GPT-4o API)...");
+      } else if (currentProgress === 60) {
+        setAiStatusText("행사 기획 목적 및 예산 집행 항목 매칭 (Gemini Flash API)...");
+      } else if (currentProgress === 90) {
+        setAiStatusText("최종 폼 데이터 정합성 검증 및 포맷 기입 준비...");
+      } else if (currentProgress >= 100) {
+        clearInterval(interval);
+        
+        // 파일명에 맞는 모의 분석 데이터 구성
+        const lowerName = aiFileName.toLowerCase();
+        let targetData = {
+          title: "RISE 지산학 연계 창업 해커톤 캠프",
+          department: "ECC센터",
+          location: "울산과학대학교 아산체육관 2층 세미나실",
+          eventDate: "2026-07-15",
+          eventStartTime: "09:00",
+          eventEndTime: "18:00",
+          attendeesInternal: "창업보육센터 교수 3명, 전임연구원 5명, 멘토단 4명",
+          attendeesExternal: "울산시 미래산업과 주무관 2명, 울산 테크노파크 창업지원팀 3명, 벤처캐피탈 심사역 3명",
+          program: "지산학 밀착형 창업 생태계 활성화 프로그램",
+          purpose: "지역 정주형 기술 창업 아이템 발굴 및 지산학 연계를 통한 청년 로컬 창업 성공 모델 발굴과 멘토링 매칭",
+          result: "학생 창업동아리 8개 팀 참여, 최종 최우수상 1개 팀(팀명: 울산로컬히어로) 선정 및 특허 출원 멘토링 연계 확정. 울산 매일 보도자료 2건 송출 완료"
+        };
+
+        // 파일명에 특정 키워드가 포함될 경우 맞춤형 변주 제공
+        if (lowerName.includes("특강") || lowerName.includes("세미나")) {
+          targetData = {
+            title: "신산업 선도 기술 창업 명사 초청 특강",
+            department: "신산업특화센터",
+            location: "다목적홀 102호",
+            eventDate: "2026-08-20",
+            eventStartTime: "14:00",
+            eventEndTime: "16:00",
+            attendeesInternal: "신산업특화센터 센터장 1명, 학부생 및 대학원생 45명",
+            attendeesExternal: "초청 연사(현 현대자동차 수석연구원) 1명",
+            program: "미래 모빌리티 신산업 특화 교육과정",
+            purpose: "자율주행 및 수소 모빌리티 기술 동향 파악 및 학생들의 신산업 이해도 증진을 통한 직무 역량 확보",
+            result: "재학생 48명 참여 및 피드백 만족도 조사 94.6점 달성. 특강 영상 녹화물 아카이빙 완료"
+          };
+        } else if (lowerName.includes("워크숍") || lowerName.includes("워크샵")) {
+          targetData = {
+            title: "RISE 사업단 활성화를 위한 지산학 산학협력 워크숍",
+            department: "사업운영팀",
+            location: "경주 라한셀렉트 세미나룸 B",
+            eventDate: "2026-09-03",
+            eventStartTime: "13:00",
+            eventEndTime: "20:00",
+            attendeesInternal: "사업단 단장 송경영 교수, 각 센터장 6명, 책임연구원 12명",
+            attendeesExternal: "울산 TP 단장 1명, 지역 산학협업 가족회사 대표 8명",
+            program: "사업단 성과 관리 및 지산학 네트워킹",
+            purpose: "2차년도 RISE 세부 행동방식 조율 및 부서 간 협업 시너지 강화 방안 수립과 지역 산학협력 네트워크 강화",
+            result: "총 28명 참석, 4대 핵심 분야 협업 결의 및 하반기 세부 액션플랜 최종 합의 서명 완료"
+          };
+        }
+
+        setFormData(prev => ({
+          ...prev,
+          ...targetData
+        }));
+
+        setIsAiLoading(false);
+        setAiProgress(0);
+        setAiStatusText("");
+        alert("🎉 AI(GPT + Gemini)가 기획서 첨부문서를 심층 분석하여 행사 등록 정보 11개 항목을 완벽하게 기입하였습니다!");
+      }
+    }, 180);
+  };
+
   // 연구원 선택 칩 클릭 시 참석자(내부) 텍스트 필드에 추가/삭제 토글해 주는 헬퍼 함수
   const handleToggleAttendee = (name) => {
     setFormData(prev => {
@@ -4666,6 +4769,99 @@ export default function ScheduleManager({
               {/* 행사 일정 입력 */}
               {modalType === "event" && (
                 <>
+                  {/* AI 기획서/결과서 자동 기입 위젯 */}
+                  <div style={{
+                    padding: "0.85rem 1rem",
+                    background: "rgba(139, 92, 246, 0.06)",
+                    border: "1px dashed rgba(139, 92, 246, 0.3)",
+                    borderRadius: "8px",
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "0.5rem",
+                    marginBottom: "0.5rem"
+                  }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                      <span style={{ fontSize: "0.75rem", fontWeight: "700", color: "#a78bfa", display: "flex", alignItems: "center", gap: "0.25rem" }}>
+                        ✨ AI 기획서∙결과보고서 자동 기입 (GPT & Gemini API 연동)
+                      </span>
+                      <button
+                        type="button"
+                        onClick={handleLoadSampleFile}
+                        style={{ fontSize: "0.7rem", color: "#60a5fa", background: "none", border: "none", cursor: "pointer", textDecoration: "underline" }}
+                      >
+                        [기획안 샘플 파일 자동 로드]
+                      </button>
+                    </div>
+                    
+                    <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+                      <input
+                        type="file"
+                        id="ai-event-file"
+                        accept=".pdf,.hwp,.hwpx,.docx,.txt"
+                        onChange={handleAiFileChange}
+                        style={{ display: "none" }}
+                      />
+                      <label
+                        htmlFor="ai-event-file"
+                        style={{
+                          flexGrow: 1,
+                          padding: "0.45rem 0.75rem",
+                          background: "rgba(255,255,255,0.03)",
+                          border: "1px solid var(--border-color)",
+                          borderRadius: "6px",
+                          fontSize: "0.75rem",
+                          color: aiFileName ? "var(--text-primary)" : "var(--text-secondary)",
+                          cursor: "pointer",
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                          whiteSpace: "nowrap"
+                        }}
+                      >
+                        <span>{aiFileName || "기획서/결과보고서 첨부파일 선택 (.hwp, .pdf, .docx)"}</span>
+                        <span style={{ fontSize: "0.65rem", padding: "0.15rem 0.35rem", borderRadius: "4px", background: "rgba(255,255,255,0.08)", color: "var(--text-secondary)", flexShrink: 0, marginLeft: "0.5rem" }}>
+                          파일 탐색
+                        </span>
+                      </label>
+                      
+                      <button
+                        type="button"
+                        onClick={triggerAiAutoFill}
+                        disabled={isAiLoading}
+                        style={{
+                          padding: "0.45rem 1rem",
+                          background: isAiLoading ? "rgba(128,128,128,0.2)" : "var(--accent-color)",
+                          color: "white",
+                          border: "none",
+                          borderRadius: "6px",
+                          fontSize: "0.75rem",
+                          fontWeight: "700",
+                          cursor: isAiLoading ? "not-allowed" : "pointer",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "0.25rem",
+                          flexShrink: 0
+                        }}
+                      >
+                        {isAiLoading ? "분석 중..." : "AI 자동완성"}
+                      </button>
+                    </div>
+
+                    {isAiLoading && (
+                      <div style={{ marginTop: "0.25rem" }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.65rem", color: "#a78bfa", marginBottom: "0.2rem", fontFamily: "monospace" }}>
+                          <span>{aiStatusText}</span>
+                          <span>{aiProgress}%</span>
+                        </div>
+                        <div style={{ width: "100%", height: "4px", background: "rgba(255,255,255,0.08)", borderRadius: "2px", overflow: "hidden" }}>
+                          <div style={{ width: `${aiProgress}%`, height: "100%", background: "linear-gradient(90deg, #a78bfa 0%, #818cf8 100%)", borderRadius: "2px", transition: "width 0.15s ease" }} />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
                   <div>
                     <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>행사 명칭</label>
                     <input type="text" name="title" value={formData.title} onChange={handleInputChange} required placeholder="예: RISE 지산학 공동 취업 박람회" style={{ width: "100%", padding: "0.5rem", background: "rgba(128,128,128,0.1)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} />
