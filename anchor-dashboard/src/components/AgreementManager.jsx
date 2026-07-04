@@ -718,11 +718,13 @@ export default function AgreementManager({
           }
 
           // B. 성명 비교 (+40점)
-          if (item.recipientName) {
-            if (extractedName && extractedName.includes(item.recipientName)) {
+          if (item.recipientName && extractedName) {
+            const recClean = cleanName(item.recipientName);
+            const nameClean = cleanName(extractedName);
+            if (recClean && nameClean && recClean.includes(nameClean)) {
               nameScore = 40;
-            } else if (fileBaseName.includes(item.recipientName)) {
-              nameScore = Math.max(nameScore, 25);
+            } else if (nameClean && cleanName(fileBaseName).includes(nameClean)) {
+              nameScore = 25;
             }
           }
 
@@ -772,11 +774,13 @@ export default function AgreementManager({
           }
 
           // B. 성명 비교 (+40점)
-          if (item.recipientName) {
-            if (extractedName && extractedName.includes(item.recipientName)) {
+          if (item.recipientName && extractedName) {
+            const recClean = cleanName(item.recipientName);
+            const nameClean = cleanName(extractedName);
+            if (recClean && nameClean && recClean.includes(nameClean)) {
               nameScore = 40;
-            } else if (fileBaseName.includes(item.recipientName)) {
-              nameScore = Math.max(nameScore, 25);
+            } else if (nameClean && cleanName(fileBaseName).includes(nameClean)) {
+              nameScore = 25;
             }
           }
 
