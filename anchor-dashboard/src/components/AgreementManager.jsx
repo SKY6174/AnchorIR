@@ -369,7 +369,7 @@ export default function AgreementManager({
     const results = [];
 
     for (const file of files) {
-      const fileName = file.name;
+      const fileName = file.name.normalize("NFC");
       const fileBaseName = fileName.substring(0, fileName.lastIndexOf('.')) || fileName;
       const fileClean = cleanName(fileBaseName);
 
@@ -540,22 +540,15 @@ export default function AgreementManager({
     }
   };
 
-  // 모의 파일 업로드 (Base64 변환)
-  const handleFileChange = (e, target) => {
+  // 모의 파일 업로드 (Base64 변환 및 한글 자모 복원)
+  const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
+      const normalizedName = file.name.normalize("NFC");
       const reader = new FileReader();
       reader.onloadend = () => {
-        if (target === "agreement") {
-          setInputFileName(file.name);
-          setInputFileData(reader.result);
-        } else if (target === "certificate") {
-          setCertFileName(file.name);
-          setCertFileData(reader.result);
-        } else if (target === "award") {
-          setAwardFileName(file.name);
-          setAwardFileData(reader.result);
-        }
+        setInputFileName(normalizedName);
+        setInputFileData(reader.result);
       };
       reader.readAsDataURL(file);
     }

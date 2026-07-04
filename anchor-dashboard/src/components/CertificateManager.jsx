@@ -152,13 +152,14 @@ export default function CertificateManager({
     resetCertForm();
   };
 
-  // 모의 파일 업로드 (Base64 변환)
+  // 모의 파일 업로드 (Base64 변환 및 한글 자모 복원)
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
+      const normalizedName = file.name.normalize("NFC");
       const reader = new FileReader();
       reader.onloadend = () => {
-        setCertFileName(file.name);
+        setCertFileName(normalizedName);
         setCertFileData(reader.result);
       };
       reader.readAsDataURL(file);
@@ -207,7 +208,7 @@ export default function CertificateManager({
     const results = [];
 
     for (const file of files) {
-      const fileName = file.name;
+      const fileName = file.name.normalize("NFC");
       const fileBaseName = fileName.substring(0, fileName.lastIndexOf('.')) || fileName;
       const fileClean = cleanName(fileBaseName);
 
