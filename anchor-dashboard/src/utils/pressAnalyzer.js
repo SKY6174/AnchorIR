@@ -63,6 +63,39 @@ export async function analyzePressUrlWithAiConsensus({ url, selectedYear, apiKey
         const proxyData = await proxyRes.json();
         const html = proxyData.contents || "";
 
+        // 1. URL 도메인을 분석하여 대표 언론사명 1차 식별
+        const lowerUrl = url.toLowerCase();
+        if (lowerUrl.includes("news.unn.net") || lowerUrl.includes("unn.net")) {
+          fetchedAuthor = "한국대학신문";
+        } else if (lowerUrl.includes("ksilbo.co.kr")) {
+          fetchedAuthor = "경상일보";
+        } else if (lowerUrl.includes("ulsanpress.net")) {
+          fetchedAuthor = "울산신문";
+        } else if (lowerUrl.includes("iusm.co.kr")) {
+          fetchedAuthor = "울산매일신문";
+        } else if (lowerUrl.includes("ytn.co.kr")) {
+          fetchedAuthor = "YTN";
+        } else if (lowerUrl.includes("kbs.co.kr")) {
+          fetchedAuthor = "KBS";
+        } else if (lowerUrl.includes("mbc.co.kr")) {
+          fetchedAuthor = "MBC";
+        } else if (lowerUrl.includes("sbs.co.kr")) {
+          fetchedAuthor = "SBS";
+        }
+
+        // 2. 만약 도메인 매칭에 실패했거나 추가적인 메타 정보가 있다면 og:site_name 등으로 정밀 보완
+        if (!fetchedAuthor) {
+          const siteNameMatch = html.match(/property="og:site_name"\s+content="([^"]+)"/i);
+          if (siteNameMatch && siteNameMatch[1]) {
+            fetchedAuthor = siteNameMatch[1].trim();
+          } else {
+            const authorMatch = html.match(/name="author"\s+content="([^"]+)"/i);
+            if (authorMatch && authorMatch[1]) {
+              fetchedAuthor = authorMatch[1].trim();
+            }
+          }
+        }
+
         // HTML <title> 태그 추출 및 정제
         const titleMatch = html.match(/<title[^>]*>([\s\S]*?)<\/title>/i);
         if (titleMatch && titleMatch[1]) {
