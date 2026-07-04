@@ -538,7 +538,7 @@ export default function ScheduleManager({
   const [aiRawText, setAiRawText] = useState(""); // 기획서 원본 텍스트 직접 입력/저장용
   const [aiProgress, setAiProgress] = useState(0);
   const [aiStatusText, setAiStatusText] = useState("");
-  const [aiEngine, setAiEngine] = useState("gemini"); // "gemini" or "gpt"
+  const [aiEngine, setAiEngine] = useState("gpt"); // "gemini" or "gpt"
 
   // 샘플 파일 로드
   const handleLoadSampleFile = () => {
@@ -5056,47 +5056,9 @@ ${aiRawText}
                     marginBottom: "0.5rem"
                   }}>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "0.5rem" }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                        <span style={{ fontSize: "0.75rem", fontWeight: "700", color: "#a78bfa" }}>
-                          ✨ AI 기획서∙결과보고서 자동 기입
-                        </span>
-                        <div style={{ display: "flex", gap: "0.2rem", background: "rgba(255,255,255,0.05)", padding: "0.15rem", borderRadius: "6px", border: "1px solid var(--border-color)" }}>
-                          <button
-                            type="button"
-                            onClick={() => setAiEngine("gemini")}
-                            style={{
-                              fontSize: "0.62rem",
-                              padding: "0.15rem 0.4rem",
-                              borderRadius: "4px",
-                              background: aiEngine === "gemini" ? "var(--accent-color)" : "transparent",
-                              color: aiEngine === "gemini" ? "white" : "var(--text-secondary)",
-                              border: "none",
-                              cursor: "pointer",
-                              fontWeight: "bold",
-                              transition: "all 0.15s"
-                            }}
-                          >
-                            Gemini 1.5
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => setAiEngine("gpt")}
-                            style={{
-                              fontSize: "0.62rem",
-                              padding: "0.15rem 0.4rem",
-                              borderRadius: "4px",
-                              background: aiEngine === "gpt" ? "var(--accent-color)" : "transparent",
-                              color: aiEngine === "gpt" ? "white" : "var(--text-secondary)",
-                              border: "none",
-                              cursor: "pointer",
-                              fontWeight: "bold",
-                              transition: "all 0.15s"
-                            }}
-                          >
-                            GPT-4o-mini
-                          </button>
-                        </div>
-                      </div>
+                      <span style={{ fontSize: "0.75rem", fontWeight: "700", color: "#a78bfa" }}>
+                        ✨ AI 기획서∙결과보고서 자동 기입 (GPT-4o-mini 모델 연동)
+                      </span>
                       <button
                         type="button"
                         onClick={handleLoadSampleFile}
@@ -5184,18 +5146,10 @@ ${aiRawText}
                       <button
                         type="button"
                         onClick={() => {
-                          if (aiEngine === "gpt") {
-                            const newKey = prompt("🔑 OpenAI GPT API Key 변경 (sk-로 시작):", localStorage.getItem("user_openai_api_key") || "");
-                            if (newKey !== null) {
-                              localStorage.setItem("user_openai_api_key", newKey.trim());
-                              alert("OpenAI API Key가 브라우저 로컬 스토리지에 안전하게 저장되었습니다.");
-                            }
-                          } else {
-                            const newKey = prompt("🔑 Google Gemini API Key 변경 (AQ. 또는 AIzaSy):", localStorage.getItem("user_gemini_api_key") || "");
-                            if (newKey !== null) {
-                              localStorage.setItem("user_gemini_api_key", newKey.trim());
-                              alert("Gemini API Key가 브라우저 로컬 스토리지에 안전하게 저장되었습니다.");
-                            }
+                          const newKey = prompt("🔑 OpenAI GPT API Key 변경 (sk-로 시작):", localStorage.getItem("user_openai_api_key") || "");
+                          if (newKey !== null) {
+                            localStorage.setItem("user_openai_api_key", newKey.trim());
+                            alert("OpenAI API Key가 브라우저 로컬 스토리지에 안전하게 저장되었습니다.");
                           }
                         }}
                         style={{ fontSize: "0.68rem", color: "var(--accent-color)", background: "transparent", border: "none", cursor: "pointer", display: "flex", alignItems: "center", gap: "0.15rem" }}
@@ -5206,7 +5160,7 @@ ${aiRawText}
                     <textarea
                       value={aiRawText}
                       onChange={(e) => setAiRawText(e.target.value)}
-                      placeholder="기획안 문서(.txt)를 업로드하거나, 한글(HWP) 및 PDF 파일의 본문 내용을 복사해서 여기에 붙여넣어 주세요. [AI 자동완성]을 누르면 이 내용을 기반으로 실시간 Gemini 분석이 실행됩니다."
+                      placeholder="기획안 문서를 업로드하거나 본문 내용을 복사해서 여기에 붙여넣어 주세요. [AI 자동완성]을 누르면 이 내용을 기반으로 실시간 OpenAI GPT 분석이 실행됩니다."
                       style={{
                         width: "100%",
                         height: "55px",
