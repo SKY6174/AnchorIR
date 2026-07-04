@@ -399,9 +399,18 @@ export default function AgreementManager({
 
         // B. 성명 비교: 대시보드의 협약주체(교수/학과/담당자)명이 파일명에 포함되는가?
         if (item.subjectUniversity) {
+          // 기존 방식: "치위생학과이가연" 전체 매칭 시도
           const subClean = cleanName(item.subjectUniversity);
           if (subClean && fileClean.includes(subClean)) {
             subMatch = true;
+          } else {
+            // 전체 매칭 실패 시, 공백으로 쪼개어 맨 마지막 단어(성명)만 비교
+            // 예: "치위생학과 이가연" ➔ ["치위생학과", "이가연"] ➔ "이가연" 추출
+            const nameParts = item.subjectUniversity.trim().split(/\s+/).map(p => cleanName(p)).filter(Boolean);
+            const extractedName = nameParts[nameParts.length - 1];
+            if (extractedName && extractedName.length >= 2 && fileClean.includes(extractedName)) {
+              subMatch = true;
+            }
           }
         }
 
