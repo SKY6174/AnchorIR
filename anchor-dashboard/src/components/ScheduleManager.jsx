@@ -199,6 +199,23 @@ export default function ScheduleManager({
     return date >= start && date <= end;
   };
 
+  // 날짜 문자열을 기반으로 공식 회계연도(3/1 ~ 이듬해 2/28) 1~5차년도 값을 동적으로 리턴하는 함수
+  const getCalculatedYearFromDate = (dateStr) => {
+    if (!dateStr) return selectedYear;
+    const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return selectedYear;
+    
+    const year = d.getFullYear();
+    const month = d.getMonth() + 1;
+    
+    let calcYear = year;
+    if (month < 3) {
+      calcYear = year - 1;
+    }
+    
+    return calcYear === 2025 ? 1 : calcYear === 2026 ? 2 : calcYear === 2027 ? 3 : calcYear === 2028 ? 4 : calcYear === 2029 ? 5 : selectedYear;
+  };
+
   // 위원회 관리 상태 정의
   const [selectedCommitteeId, setSelectedCommitteeId] = useState("total"); // 선택된 위원회 ID ("total", "planning" 등)
   const [activeCommitteeDetailTab, setActiveCommitteeDetailTab] = useState("members"); // 위원회 세부 정보 탭 ("members": 명단, "purpose": 목적/기능)
@@ -881,7 +898,7 @@ export default function ScheduleManager({
           p.id === editingItemId
             ? {
                 ...p,
-                year: selectedYear,
+                year: getCalculatedYearFromDate(formData.pressDate),
                 type: formData.pressType,
                 media: formData.pressMedia || "미상",
                 title: formData.title || "새 보도자료",
@@ -894,7 +911,7 @@ export default function ScheduleManager({
       } else {
         const newItem = {
           id: Date.now(),
-          year: selectedYear,
+          year: getCalculatedYearFromDate(formData.pressDate),
           type: formData.pressType,
           media: formData.pressMedia || "미상",
           title: formData.title || "새 보도자료",
