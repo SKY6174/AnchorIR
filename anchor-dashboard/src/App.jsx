@@ -6686,6 +6686,7 @@ export default function App() {
 
             {/* 본문 콘텐츠 */}
             <ScheduleManager
+              currentUser={currentUser}
               currentRole={currentRole}
               selectedYear={selectedYear}
               subTab={scheduleSubTab}

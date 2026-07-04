@@ -160,6 +160,7 @@ const COMMITTEES_DATA = [
 ];
 
 export default function ScheduleManager({
+  currentUser,
   currentRole,
   selectedYear,
   subTab,
@@ -199,7 +200,7 @@ export default function ScheduleManager({
   });
 
   // 위원회 명단 수정 권한 통제 (송경영, 김현수, 심현미 3명에게만 부여)
-  const currentUserName = currentRole?.name ? currentRole.name.split(" ")[0] : "";
+  const currentUserName = currentUser?.name ? currentUser.name.split(" ")[0].split("(")[0].trim() : "";
   const hasCommitteeEditPermission = ["송경영", "김현수", "심현미"].includes(currentUserName);
 
   // Supabase 실시간 위원회 명단 조회 함수
