@@ -35,7 +35,8 @@ const MENU_SCHEMA = [
     description: "성과지표 목록 관리 및 목표치/실적 입력 조율",
     subMenus: [
       { key: "kpi_status", label: "(교육부)공통성과지표" },
-      { key: "kpi_mgmt", label: "(지자체)자율성과지표 및 (대학)중점관리지표" }
+      { key: "kpi_self", label: "(지자체)자율성과지표" },
+      { key: "kpi_focus", label: "(대학)중점관리지표" }
     ]
   },
   {

@@ -240,7 +240,7 @@ export default function Sidebar({
                   onChangeTab("kpis");
                   if (onChangeKpiSubTab) {
                     const subTabs = ["공통", "자율", "중점"];
-                    const schemaMapping = { "공통": "kpi_status", "자율": "kpi_mgmt", "중점": "kpi_mgmt" };
+                    const schemaMapping = { "공통": "kpi_status", "자율": "kpi_self", "중점": "kpi_focus" };
                     const firstActive = subTabs.find(tab => isSongDirector || menuVisibility[schemaMapping[tab]] !== false) || "공통";
                     onChangeKpiSubTab(firstActive);
                   }
@@ -278,45 +278,45 @@ export default function Sidebar({
                     )}
                   </div>
                 )}
-                {(menuVisibility.kpi_mgmt !== false || isSongDirector) && (
-                  <>
-                    <div
-                      className={`nav-sub-item ${activeTab === "kpis" && kpiSubTab === "자율" ? "active" : ""}`}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onChangeTab("kpis");
-                        if (onChangeKpiSubTab) {
-                          onChangeKpiSubTab("자율");
-                        }
-                      }}
-                      style={getHiddenStyle("kpi_mgmt")}
-                    >
-                      - (지자체)자율성과지표
-                      {isHidden("kpi_mgmt") && (
-                        <span style={{ fontSize: "0.6rem", color: "#ef4444", textDecoration: "none", marginLeft: "0.2rem" }}>
-                          [숨김]
-                        </span>
-                      )}
-                    </div>
-                    <div
-                      className={`nav-sub-item ${activeTab === "kpis" && kpiSubTab === "중점" ? "active" : ""}`}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onChangeTab("kpis");
-                        if (onChangeKpiSubTab) {
-                          onChangeKpiSubTab("중점");
-                        }
-                      }}
-                      style={getHiddenStyle("kpi_mgmt")}
-                    >
-                      - (대학)중점관리지표
-                      {isHidden("kpi_mgmt") && (
-                        <span style={{ fontSize: "0.6rem", color: "#ef4444", textDecoration: "none", marginLeft: "0.2rem" }}>
-                          [숨김]
-                        </span>
-                      )}
-                    </div>
-                  </>
+                {(menuVisibility.kpi_self !== false || isSongDirector) && (
+                  <div
+                    className={`nav-sub-item ${activeTab === "kpis" && kpiSubTab === "자율" ? "active" : ""}`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onChangeTab("kpis");
+                      if (onChangeKpiSubTab) {
+                        onChangeKpiSubTab("자율");
+                      }
+                    }}
+                    style={getHiddenStyle("kpi_self")}
+                  >
+                    - (지자체)자율성과지표
+                    {isHidden("kpi_self") && (
+                      <span style={{ fontSize: "0.6rem", color: "#ef4444", textDecoration: "none", marginLeft: "0.2rem" }}>
+                        [숨김]
+                      </span>
+                    )}
+                  </div>
+                )}
+                {(menuVisibility.kpi_focus !== false || isSongDirector) && (
+                  <div
+                    className={`nav-sub-item ${activeTab === "kpis" && kpiSubTab === "중점" ? "active" : ""}`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onChangeTab("kpis");
+                      if (onChangeKpiSubTab) {
+                        onChangeKpiSubTab("중점");
+                      }
+                    }}
+                    style={getHiddenStyle("kpi_focus")}
+                  >
+                    - (대학)중점관리지표
+                    {isHidden("kpi_focus") && (
+                      <span style={{ fontSize: "0.6rem", color: "#ef4444", textDecoration: "none", marginLeft: "0.2rem" }}>
+                        [숨김]
+                      </span>
+                    )}
+                  </div>
                 )}
               </div>
             </div>
