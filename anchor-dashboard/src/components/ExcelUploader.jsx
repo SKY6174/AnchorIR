@@ -276,19 +276,15 @@ export default function ExcelUploader({
     const ws = XLSX.utils.json_to_sheet(data);
     XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
     
-    // type: "array"를 사용하여 라이브러리가 원시 ArrayBuffer(Uint8Array) 바이트 배열을 직접 리턴하게 합니다.
-    // 이는 기존 binary 문자열 인코딩 및 s2ab(string to ArrayBuffer) 과정에서 한글명(프로그램/과제명)이 손상되어
-    // 정상적인 엑셀 파일이 아닌 깨진 파일로 다운로드되던 결함을 완벽히 패치합니다.
-    const wbout = XLSX.write(wb, { bookType: "xlsx", type: "array" });
-    const blob = new Blob([wbout], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
-    const url = URL.createObjectURL(blob);
+    // type: "base64"를 사용하여 원시 Base64 문자열 데이터를 리턴받아 Data URL로 브라우저에 직접 전달합니다.
+    // 이는 크롬 sandbox iframe 배포 환경 등에서 Blob 다운로드 시 파일명(download 속성)이 누락되어 UUID로 다운로드되던 브라우저 규격 제약을 방지합니다.
+    const wbout = XLSX.write(wb, { bookType: "xlsx", type: "base64" });
     const a = document.createElement("a");
-    a.href = url;
+    a.href = `data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,${wbout}`;
     a.download = filename;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
-    URL.revokeObjectURL(url);
   };
 
   return (
