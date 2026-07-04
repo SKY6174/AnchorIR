@@ -432,9 +432,9 @@ export default function AgreementManager({
         }
       });
 
-      // 기존의 무거운 Base64 변환은 화면 미리보기 등에서 활용 가능하지만,
-      // 여기서는 Storage 업로드를 위해 원본 File 객체 자체를 res.file 에 담아둡니다.
-      const previewData = await new Promise((resolve) => {
+      // 기존의 무거운 Base64 변환은 화면 미리보기 등에서 활용 가능하도록 fileData에 담아둡니다.
+      // 실제 Storage 업로드는 res.file에 보관해 둔 원본 File 객체를 활용합니다.
+      const fileData = await new Promise((resolve) => {
         const reader = new FileReader();
         reader.onload = (ev) => resolve(ev.target.result);
         reader.onerror = () => resolve(null);
@@ -444,6 +444,7 @@ export default function AgreementManager({
       if (isMatched && matchedTarget) {
         results.push({
           fileName,
+          file, // Storage 업로드용 원본 파일 객체 보관
           fileData,
           status: "success",
           targetId: matchedTarget.id,
@@ -462,6 +463,7 @@ export default function AgreementManager({
       } else {
         results.push({
           fileName,
+          file, // Storage 업로드용 원본 파일 객체 보관
           fileData,
           status: "fail",
           targetId: null,
