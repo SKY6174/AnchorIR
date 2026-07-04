@@ -583,10 +583,9 @@ export default function ScheduleManager({
   useEffect(() => {
     if (subTab === "meetings") {
       const filteredList = meetingSchedules.filter(m => {
-        const isMonthMatch = m.month === selectedMeetingMonth;
         const isCatMatch = m.category === activeMeetingCat;
         
-        if (!isMonthMatch || !isCatMatch) return false;
+        if (!isCatMatch) return false;
         if (selectedDeptFilters.length === 0) return true;
 
         const ext = m.attendeesExternal || m.attendees_external || "";
@@ -606,7 +605,7 @@ export default function ScheduleManager({
         setSelectedMeetingId(null);
       }
     }
-  }, [meetingSchedules, selectedMeetingMonth, activeMeetingCat, subTab, selectedDeptFilters, selectedMeetingId]);
+  }, [meetingSchedules, activeMeetingCat, subTab, selectedDeptFilters, selectedMeetingId]);
 
   // 언론보도 대장 실시간 CSV(엑셀) 다운로드
   const handleExportPressExcel = () => {
@@ -2334,23 +2333,7 @@ export default function ScheduleManager({
             )}
           </div>
 
-          {/* 월별 선택 가로바 */}
-          <div style={{ display: "flex", gap: "0.5rem", background: "rgba(255,255,255,0.02)", padding: "0.4rem", borderRadius: "8px", border: "1px solid var(--border-color)" }}>
-            {[3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 1, 2].map((m) => (
-              <button
-                key={m}
-                onClick={() => setSelectedMeetingMonth(m)}
-                style={{
-                  padding: "0.3rem 0.8rem", borderRadius: "4px", border: "none",
-                  background: selectedMeetingMonth === m ? "var(--accent-color)" : "transparent",
-                  color: selectedMeetingMonth === m ? "white" : "var(--text-secondary)",
-                  fontSize: "0.8rem", fontWeight: "700", cursor: "pointer", transition: "all 0.15s ease"
-                }}
-              >
-                {m === 3 ? `'${24 + selectedYear}.3월` : m === 1 ? `'${25 + selectedYear}.1월` : `${m}월`}
-              </button>
-            ))}
-          </div>
+
 
           {/* 회의 대분류 가로 단추 (운영회의, 센터회의, 위원회) */}
           <div style={{ display: "flex", gap: "1rem", borderBottom: "1px solid rgba(255,255,255,0.05)", paddingBottom: "0.2rem" }}>
@@ -2473,10 +2456,9 @@ export default function ScheduleManager({
               {(() => {
                 // 부서 필터링 수행
                 const filteredList = meetingSchedules.filter(m => {
-                  const isMonthMatch = m.month === selectedMeetingMonth;
                   const isCatMatch = m.category === activeMeetingCat;
                   
-                  if (!isMonthMatch || !isCatMatch) return false;
+                  if (!isCatMatch) return false;
                   if (selectedDeptFilters.length === 0) return true;
 
                   const ext = m.attendeesExternal || m.attendees_external || "";
@@ -2984,8 +2966,8 @@ export default function ScheduleManager({
             </div>
           ) : (
             <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
-              {meetingSchedules.filter(m => m.month === selectedMeetingMonth && m.category === activeMeetingCat).length > 0 ? (
-                meetingSchedules.filter(m => m.month === selectedMeetingMonth && m.category === activeMeetingCat).map(meeting => (
+              {meetingSchedules.filter(m => m.category === activeMeetingCat).length > 0 ? (
+                meetingSchedules.filter(m => m.category === activeMeetingCat).map(meeting => (
                   <div 
                     key={meeting.id}
                     className="card"
@@ -3173,7 +3155,7 @@ export default function ScheduleManager({
               ) : (
                 <div className="card" style={{ padding: "3rem", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", background: "var(--panel-bg)", border: "1px solid var(--border-color)", color: "var(--text-secondary)", textAlign: "center" }}>
                   <Users size={40} style={{ marginBottom: "0.75rem", opacity: 0.4 }} />
-                  <span>{selectedMeetingMonth}월에 분류된 회의 일정이 없습니다.<br />[회의 일정 등록] 버튼을 눌러 회의록 틀을 보충해 보세요.</span>
+                  <span>등록된 회의 일정이 없습니다.<br />[회의 일정 등록] 버튼을 눌러 회의록 틀을 보충해 보세요.</span>
                 </div>
               )}
             </div>
