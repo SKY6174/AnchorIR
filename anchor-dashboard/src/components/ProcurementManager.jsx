@@ -1632,7 +1632,7 @@ export default function ProcurementManager({
                       <span style={{ fontSize: "0.68rem", fontWeight: "400", color: "var(--text-secondary-dark)", marginTop: "0.1rem" }}>(백만원)</span>
                     </div>
                   </th>
-                  <th rowSpan={3} style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "384px", verticalAlign: "middle" }}>구입목적 및 활용계획</th>
+                  <th rowSpan={3} style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "384px", verticalAlign: "middle" }}>구축목적 및 활용계획</th>
                   <th colSpan={12} style={{ padding: "0.5rem", textAlign: "center", fontWeight: "800", borderBottom: "1px solid rgba(255,255,255,0.08)", background: "rgba(255, 255, 255, 0.01)", lineHeight: "1.3" }}>
                     구축단계<br />
                     <span style={{ fontSize: "0.75rem", fontWeight: "normal", color: "var(--text-secondary)" }}>(요청:Rq ➔ 검토/심의:DR ➔ 용역/인허가:DL ➔ 업체/선정:BC ➔ 시공∙감리:CS)</span>
