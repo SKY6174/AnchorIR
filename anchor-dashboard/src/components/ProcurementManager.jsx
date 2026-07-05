@@ -819,7 +819,7 @@ export default function ProcurementManager({
             </div>
             
             <div style={{ display: "flex", gap: "0.75rem", alignItems: "center", flexWrap: "wrap" }}>
-              {/* 학과 필터 (요건 3 이원화 반영) */}
+              {/* 학과 필터 (요건 1: 모달창과 동일한 고정 전체 학과 목록 맵핑) */}
               <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
                 <ListFilter size={16} style={{ color: "var(--text-secondary-dark)" }} />
                 <select
@@ -834,17 +834,37 @@ export default function ProcurementManager({
                   }}
                 >
                   <option value="">학과 전체</option>
-                  {Array.from(new Set(
-                    (equipData.length > 0 ? equipData : defaultEquipments)
-                      .map(e => e.deptName)
-                      .filter(Boolean)
-                  )).map(dept => (
-                    <option key={dept} value={dept}>{dept}</option>
-                  ))}
+                  <option value="기계공학부">기계공학부</option>
+                  <option value="전기전자공학부">전기전자공학부</option>
+                  <option value="조선해양시스템공학과">조선해양시스템공학과</option>
+                  <option value="컴퓨터공학과">컴퓨터공학과</option>
+                  <option value="화학공학과">화학공학과</option>
+                  <option value="게임영상학과">게임영상학과</option>
+                  <option value="실내건축디자인과">실내건축디자인과</option>
+                  <option value="융합안전공학과">융합안전공학과</option>
+                  <option value="인테리어시공학과">인테리어시공학과</option>
+                  <option value="간호학부">간호학부</option>
+                  <option value="물리치료학과">물리치료학과</option>
+                  <option value="치위생학과">치위생학과</option>
+                  <option value="식품영양학과">식품영양학과</option>
+                  <option value="호텔조리제빵과">호텔조리제빵과</option>
+                  <option value="스포츠재활학부">스포츠재활학부</option>
+                  <option value="스포츠건강재활학과">스포츠건강재활학과</option>
+                  <option value="푸드케어학과">푸드케어학과</option>
+                  <option value="골프산업과">골프산업과</option>
+                  <option value="반려동물보건과">반려동물보건과</option>
+                  <option value="사회복지학과">사회복지학과</option>
+                  <option value="유아교육과">유아교육과</option>
+                  <option value="세무회계학과">세무회계학과</option>
+                  <option value="사회복지상담학과">사회복지상담학과</option>
+                  <option value="국제학부">국제학부</option>
+                  <option value="미래모빌리티제조학과">미래모빌리티제조학과</option>
+                  <option value="바이오화학생산기술학과">바이오화학생산기술학과</option>
+                  <option value="인공지능기반텔레헬스학과">인공지능기반텔레헬스학과</option>
                 </select>
               </div>
 
-              {/* 부서 필터 (요건 3 이원화 반영) */}
+              {/* 부서 필터 (요건 1: 모달창과 동일한 고정 전체 본부/산단 하위 부서 목록 맵핑) */}
               <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
                 <ListFilter size={16} style={{ color: "var(--text-secondary-dark)" }} />
                 <select
@@ -859,13 +879,36 @@ export default function ProcurementManager({
                   }}
                 >
                   <option value="">부서 전체</option>
-                  {Array.from(new Set(
-                    (equipData.length > 0 ? equipData : defaultEquipments)
-                      .map(e => e.divisionName)
-                      .filter(Boolean)
-                  )).map(div => (
-                    <option key={div} value={div}>{div}</option>
-                  ))}
+                  <optgroup label="대학본부">
+                    <option value="교무팀">교무팀</option>
+                    <option value="교수학습지원센터">교수학습지원센터</option>
+                    <option value="직업교육혁신센터">직업교육혁신센터</option>
+                    <option value="교양교육혁신센터">교양교육혁신센터</option>
+                    <option value="기획팀">기획팀</option>
+                    <option value="대외협력실">대외협력실</option>
+                    <option value="입학팀">입학팀</option>
+                    <option value="진로진학지원센터">진로진학지원센터</option>
+                    <option value="총무팀">총무팀</option>
+                    <option value="재무회계팀">재무회계팀</option>
+                    <option value="국제교류원운영팀">국제교류원운영팀</option>
+                    <option value="글로컬비즈니스센터">글로컬비즈니스센터</option>
+                    <option value="인권센터">인권센터</option>
+                    <option value="IR센터">IR센터</option>
+                  </optgroup>
+                  <optgroup label="산학협력단">
+                    <option value="산학기획팀">산학기획팀</option>
+                    <option value="산학지원팀">산학지원팀</option>
+                    <option value="창업창직교육센터">창업창직교육센터</option>
+                    <option value="현장실습지원센터">현장실습지원센터</option>
+                    <option value="울산광역시 탄소중립 지원센터">울산광역시 탄소중립 지원센터</option>
+                    <option value="울산늘봄누리센터">울산늘봄누리센터</option>
+                    <option value="종합환경분석센터">종합환경분석센터</option>
+                    <option value="영상콘텐츠제작센터">영상콘텐츠제작센터</option>
+                    <option value="스포츠재활운동센터">스포츠재활운동센터</option>
+                    <option value="이차전지연구소">이차전지연구소</option>
+                    <option value="지산학혁신연구소">지산학혁신연구소</option>
+                    <option value="어린이급식관리사업단">어린이급식관리사업단</option>
+                  </optgroup>
                 </select>
               </div>
 
@@ -1071,6 +1114,29 @@ export default function ProcurementManager({
                       const qty = Number(equip.quantity) || 0;
                       const total = price * qty;
 
+                      // 3월~2월 캘린더 월 인덱스 추출 헬퍼 (구간별 화살표 선 표현용)
+                      const monthsOrder = ["3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "1", "2"];
+                      const getMonthIndexLocal = (dateStr) => {
+                        if (!dateStr) return null;
+                        const date = new Date(dateStr);
+                        if (isNaN(date.getTime())) return null;
+                        const baseYear = 2024 + Number(selectedYear || 1);
+                        const year = date.getFullYear();
+                        const month = date.getMonth() + 1;
+                        const isCurrentYearPart = (month >= 3 && month <= 12 && year === baseYear);
+                        const isNextYearPart = ((month === 1 || month === 2) && year === baseYear + 1);
+                        if (isCurrentYearPart || isNextYearPart) {
+                          return monthsOrder.indexOf(String(month));
+                        }
+                        return null;
+                      };
+
+                      const idxP = getMonthIndexLocal(equip.dateP);
+                      const idxA = getMonthIndexLocal(equip.dateA);
+                      const idxB = getMonthIndexLocal(equip.dateB);
+                      const idxPr = getMonthIndexLocal(equip.datePr);
+                      const idxI = getMonthIndexLocal(equip.dateI);
+
                       return (
                         <tr 
                           key={equip.id || idx} 
@@ -1109,12 +1175,48 @@ export default function ProcurementManager({
                           </td>
                           
                           {/* 12개월 개별 분리 격자 셀 Gantt 타임라인 (세로 경계선 없이 깨끗하게 칩 나열) */}
-                          {["3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "1", "2"].map((m) => {
+                          {monthsOrder.map((m, currIdx) => {
                             // 날짜 데이터를 분석해 해당 월의 마일스톤 단계를 계산합니다.
                             const dynamicMilestones = getMilestonesFromDates(equip, selectedYear);
                             const stepList = dynamicMilestones[m] || [];
                             const style = getMilestoneStyle(stepList, m);
-                            
+
+                            // 구간별 반선 색상 추출 헬퍼 함수
+                            const getSegmentColor = (isLeft) => {
+                              // P -> A (Blue)
+                              if (idxP !== null && idxA !== null && idxP < idxA) {
+                                const inPA = isLeft 
+                                  ? (currIdx > idxP && currIdx <= idxA)
+                                  : (currIdx >= idxP && currIdx < idxA);
+                                if (inPA) return "#60A5FA";
+                              }
+                              // A -> B (Purple)
+                              if (idxA !== null && idxB !== null && idxA < idxB) {
+                                const inAB = isLeft
+                                  ? (currIdx > idxA && currIdx <= idxB)
+                                  : (currIdx >= idxA && currIdx < idxB);
+                                if (inAB) return "#A78BFA";
+                              }
+                              // B -> Pr (Amber)
+                              if (idxB !== null && idxPr !== null && idxB < idxPr) {
+                                const inBPr = isLeft
+                                  ? (currIdx > idxB && currIdx <= idxPr)
+                                  : (currIdx >= idxB && currIdx < idxPr);
+                                if (inBPr) return "#FBBF24";
+                              }
+                              // Pr -> I (Green)
+                              if (idxPr !== null && idxI !== null && idxPr < idxI) {
+                                const inPrI = isLeft
+                                  ? (currIdx > idxPr && currIdx <= idxI)
+                                  : (currIdx >= idxPr && currIdx < idxI);
+                                if (inPrI) return "#34D399";
+                              }
+                              return "rgba(255, 255, 255, 0.12)";
+                            };
+
+                            const leftColor = getSegmentColor(true);
+                            const rightColor = getSegmentColor(false);
+
                             return (
                               <td 
                                 key={m} 
@@ -1126,21 +1228,53 @@ export default function ProcurementManager({
                                   verticalAlign: "middle"
                                 }}
                               >
-                                {/* 가로 타임라인 연결 선 */}
+                                {/* 가로 타임라인 왼쪽 연결 반선 */}
                                 <div style={{
                                   position: "absolute",
-                                  left: m === "3" ? "50%" : 0,   // 시작인 3월은 왼쪽 절반 선 제거
-                                  right: m === "2" ? "50%" : 0,  // 종료인 2월은 오른쪽 절반 선 제거
+                                  left: 0,
+                                  right: "50%",
                                   top: "50%",
                                   transform: "translateY(-50%)",
                                   height: "2px",
-                                  background: "rgba(255,255,255,0.12)",
+                                  background: leftColor,
+                                  display: m === "3" ? "none" : "block", // 3월은 왼쪽 선 생략
+                                  zIndex: 0
+                                }} />
+
+                                {/* 가로 타임라인 오른쪽 연결 반선 */}
+                                <div style={{
+                                  position: "absolute",
+                                  left: "50%",
+                                  right: 0,
+                                  top: "50%",
+                                  transform: "translateY(-50%)",
+                                  height: "2px",
+                                  background: rightColor,
+                                  display: m === "2" ? "none" : "block", // 2월은 오른쪽 선 생략
                                   zIndex: 0
                                 }} />
                                 
-                                {/* 캘린더 구매단계 점 또는 빈 노드 점 */}
-                                <div style={{ position: "relative", zIndex: 1, display: "flex", justifyContent: "center", alignItems: "center" }}>
-                                  {stepList.length > 0 ? (
+                                {/* 화살표 선 흐름 기호 (마일스톤 노드가 없는 빈 월에만 구간 유색 화살표 표시) */}
+                                {stepList.length === 0 && (leftColor !== "rgba(255, 255, 255, 0.12)" || rightColor !== "rgba(255, 255, 255, 0.12)") && (
+                                  <span style={{
+                                    position: "absolute",
+                                    left: "50%",
+                                    top: "50%",
+                                    transform: "translate(-50%, -50%)",
+                                    fontSize: "0.62rem",
+                                    fontWeight: "bold",
+                                    color: leftColor !== "rgba(255, 255, 255, 0.12)" ? leftColor : rightColor,
+                                    opacity: 0.85,
+                                    zIndex: 1,
+                                    pointerEvents: "none"
+                                  }}>
+                                    ➔
+                                  </span>
+                                )}
+
+                                {/* 캘린더 구매단계 점 (요건에 따라 P, A, B, Pr, I 마일스톤이 있는 달에만 마크 렌더링, 빈 달은 도트 점 제거) */}
+                                <div style={{ position: "relative", zIndex: 2, display: "flex", justifyContent: "center", alignItems: "center" }}>
+                                  {stepList.length > 0 && (
                                     <div 
                                       style={{
                                         width: "20px",
@@ -1154,21 +1288,12 @@ export default function ProcurementManager({
                                         alignItems: "center",
                                         justifyContent: "center",
                                         boxShadow: `0 0 8px ${style.bg}`,
-                                        border: "1px solid rgba(255,255,255,0.2)"
+                                        border: "1px solid rgba(255, 255, 255, 0.2)"
                                       }}
                                       title={`${m}월: ${stepList.join(", ")}`}
                                     >
                                       {style.text}
                                     </div>
-                                  ) : (
-                                    <div 
-                                      style={{
-                                        width: "6px",
-                                        height: "6px",
-                                        borderRadius: "50%",
-                                        background: "rgba(255,255,255,0.25)"
-                                      }}
-                                    />
                                   )}
                                 </div>
                               </td>
