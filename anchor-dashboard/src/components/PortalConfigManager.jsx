@@ -20,13 +20,12 @@ const MENU_SCHEMA = [
     ]
   },
   {
-    key: "projects",
-    label: "단위과제 관리",
-    description: "단위과제별 세부 사업 예산 집행률 및 위계 체계 관리",
+    key: "budget",
+    label: "예산 관리",
+    description: "월별 본예산 및 이월예산 집행 현황과 꺾은선 차트 분석",
     subMenus: [
-      { key: "unit_status", label: "단위과제 집행현황" },
-      { key: "unit_system", label: "단위과제 체계" },
-      { key: "program_mgmt", label: "프로그램 관리" }
+      { key: "settlement", label: "비목별 관리" },
+      { key: "execution", label: "집행률 관리" }
     ]
   },
   {
@@ -40,12 +39,13 @@ const MENU_SCHEMA = [
     ]
   },
   {
-    key: "budget",
-    label: "예산 관리",
-    description: "월별 본예산 및 이월예산 집행 현황과 꺾은선 차트 분석",
+    key: "agreements",
+    label: "협약∙발급 관리",
+    description: "외부 유관 기관 협약 대장 및 Seminer 이수증, 상장 발급 기록 대장",
     subMenus: [
-      { key: "settlement", label: "비목별 관리" },
-      { key: "execution", label: "집행률 관리" }
+      { key: "agreements", label: "협약 관리" },
+      { key: "certificates", label: "이수증 관리" },
+      { key: "awards", label: "상장 관리" }
     ]
   },
   {
@@ -59,16 +59,6 @@ const MENU_SCHEMA = [
     ]
   },
   {
-    key: "agreements",
-    label: "협약∙발급 관리",
-    description: "외부 유관 기관 협약 대장 및 Seminer 이수증, 상장 발급 기록 대장",
-    subMenus: [
-      { key: "agreements", label: "협약 관리" },
-      { key: "certificates", label: "이수증 관리" },
-      { key: "awards", label: "상장 관리" }
-    ]
-  },
-  {
     key: "schedule",
     label: "일정∙행사∙회의 관리",
     description: "월간 사업 일정, 주요 행사 관리 및 위원회 회의록, 언론보도 대장",
@@ -78,6 +68,22 @@ const MENU_SCHEMA = [
       { key: "meetings", label: "회의록 등록" },
       { key: "committees", label: "위원회 관리" },
       { key: "press", label: "언론보도" }
+    ]
+  },
+  {
+    key: "llm_wiki",
+    label: "앵커Wiki",
+    description: "앵커사업 지식 공유 및 인공지능 위키백과 정보 제공",
+    subMenus: []
+  },
+  {
+    key: "projects",
+    label: "단위과제 관리",
+    description: "단위과제별 세부 사업 예산 집행률 및 위계 체계 관리",
+    subMenus: [
+      { key: "unit_status", label: "단위과제 집행현황" },
+      { key: "unit_system", label: "단위과제 체계" },
+      { key: "program_mgmt", label: "프로그램 관리" }
     ]
   },
   {

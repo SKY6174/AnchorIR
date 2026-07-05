@@ -1507,6 +1507,13 @@ export default function App() {
     if (cached) {
       try {
         const parsed = JSON.parse(cached);
+        // 캐시 오염 복구: 기존 캐시 객체 내에 projects 키가 없거나 false 일 시 강제로 true 복구 적용
+        if (parsed.projects === undefined || parsed.projects === false) {
+          parsed.projects = true;
+          parsed.unit_status = true;
+          parsed.unit_system = true;
+          parsed.program_mgmt = true;
+        }
         return { ...defaultVisibility, ...parsed };
       } catch (e) {
         return defaultVisibility;
