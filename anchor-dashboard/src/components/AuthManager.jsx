@@ -155,22 +155,24 @@ export default function AuthManager({ onLoginSuccess, members = [] }) {
           else autoRoleKey = "CENTER_SPECIAL";
         }
 
-        // DB rise_users 테이블에 신규 가입 자동 동기화 처리!
-        const hashedPw = hashPassword(userPw);
-        try {
-          await supabase
-            .from("rise_users")
-            .insert([{
-              id: targetId,
-              pw: hashedPw,
-              name: matchedName,
-              role_key: autoRoleKey,
-              approved: true,
-              uuid: authUser.id,
-              email: targetEmail
-            }]);
-        } catch (insertErr) {
-          console.warn("DB user sync insert warning:", insertErr);
+        // DB rise_users 테이블에 신규 가입 자동 동기화 처리! (이미 존재하지 않을 때만 신규 생성)
+        if (!dbUser) {
+          const hashedPw = hashPassword(userPw);
+          try {
+            await supabase
+              .from("rise_users")
+              .insert([{
+                id: targetId,
+                pw: hashedPw,
+                name: matchedName,
+                role_key: autoRoleKey,
+                approved: true,
+                uuid: authUser.id,
+                email: targetEmail
+              }]);
+          } catch (insertErr) {
+            console.warn("DB user sync insert warning:", insertErr);
+          }
         }
       }
 
