@@ -928,7 +928,6 @@ export default function ProcurementManager({
                     <option value="재무회계팀">재무회계팀</option>
                     <option value="국제교류원운영팀">국제교류원운영팀</option>
                     <option value="글로컬비즈니스센터">글로컬비즈니스센터</option>
-                    <option value="인권센터">인권센터</option>
                     <option value="IR센터">IR센터</option>
                   </optgroup>
                   <optgroup label="산학협력단">
@@ -1780,7 +1779,6 @@ export default function ProcurementManager({
                           <option value="재무회계팀">재무회계팀</option>
                           <option value="국제교류원운영팀">국제교류원운영팀</option>
                           <option value="글로컬비즈니스센터">글로컬비즈니스센터</option>
-                          <option value="인권센터">인권센터</option>
                           <option value="IR센터">IR센터</option>
                         </optgroup>
                         {/* 산학협력단 하위 조직 */}

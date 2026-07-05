@@ -76,7 +76,8 @@ const universityOrgData = {
           { name: "창업창직교육센터", tel: "052-230-0203", loc: "산학협력관 2층", task: "창업보육센터 지원 및 학생 스타트업 교육", rise: "A2 (앵커 스타트업 연계)" },
           { name: "현장실습지원센터", tel: "052-230-0202", loc: "산학협력관 2층", task: "재학생 하계/동계 기업 인턴십 및 현장 실습 매칭", rise: "A1 (주문식 현장실습 연계)" },
           { name: "울산광역시 탄소중립 지원센터", tel: "052-230-0204", loc: "연구관 4층", task: "울산형 탄소중립 실행계획 및 정책 제안 수립", rise: "1차년도 ESG/탄소중립 연계" },
-          { name: "울산늘봄누리센터", tel: "052-230-0505", loc: "보건관 1층", task: "울산 지역 늘봄 교육 프로그램 개발, 연계 및 강사 풀(Pool) 매칭 관리", rise: "B2 (늘봄 누리 플랫폼 연계)" }
+          { name: "울산늘봄누리센터", tel: "052-230-0505", loc: "보건관 1층", task: "울산 지역 늘봄 교육 프로그램 개발, 연계 및 강사 풀(Pool) 매칭 관리", rise: "B2 (늘봄 누리 플랫폼 연계)" },
+          { name: "AID-X지원센터", tel: "052-230-0504", loc: "산학협력관 4.5층", task: "AID-X 디지털 전환 특화 직업교육과정 개발 및 AI 융합 교육 모델 실증", rise: "A1 (AIDX 교육 매핑)" }
         ]
       },
       {
@@ -305,6 +306,12 @@ export default function OrgChartManager() {
   const [selectedTeam, setSelectedTeam] = useState(null);
   const [expandedFaculties, setExpandedFaculties] = useState({});
 
+  // 앵커수행 7대 조직 판별 헬퍼
+  const isAnchorExecutionDept = (name) => {
+    const anchorDepts = ["사업운영팀", "ECC센터", "ICC센터", "RCC센터", "AID-X지원센터", "울산늘봄누리센터", "신산업특화센터"];
+    return anchorDepts.includes(name);
+  };
+
   const currentCategory = universityOrgData[selectedKey] || universityOrgData.university;
   const listDepts = currentCategory.departments;
 
@@ -468,13 +475,13 @@ export default function OrgChartManager() {
                       {team.rise && (
                         <span style={{
                           fontSize: "0.75rem",
-                          background: selectedKey === "academic" ? "rgba(16, 185, 129, 0.1)" : "rgba(59, 130, 246, 0.1)",
-                          color: selectedKey === "academic" ? "#10B981" : "var(--accent-color)",
+                          background: isAnchorExecutionDept(dept.name) || selectedKey === "academic" ? "rgba(16, 185, 129, 0.1)" : "rgba(59, 130, 246, 0.1)",
+                          color: isAnchorExecutionDept(dept.name) || selectedKey === "academic" ? "#10B981" : "var(--accent-color)",
                           padding: "0.15rem 0.4rem",
                           borderRadius: "4px",
                           fontWeight: "800"
                         }}>
-                          {selectedKey === "academic" ? "주문식교육과정" : "앵커연계"}
+                          {isAnchorExecutionDept(dept.name) ? "앵커수행" : (selectedKey === "academic" ? "주문식교육과정" : "앵커연계")}
                         </span>
                       )}
                     </div>
@@ -565,13 +572,13 @@ export default function OrgChartManager() {
                                         {major.rise && (
                                           <span style={{
                                             fontSize: "0.75rem",
-                                            background: selectedKey === "academic" ? "rgba(16, 185, 129, 0.1)" : "rgba(59, 130, 246, 0.1)",
-                                            color: selectedKey === "academic" ? "#10B981" : "var(--accent-color)",
+                                            background: isAnchorExecutionDept(major.name) || selectedKey === "academic" ? "rgba(16, 185, 129, 0.1)" : "rgba(59, 130, 246, 0.1)",
+                                            color: isAnchorExecutionDept(major.name) || selectedKey === "academic" ? "#10B981" : "var(--accent-color)",
                                             padding: "0.15rem 0.4rem",
                                             borderRadius: "4px",
                                             fontWeight: "800"
                                           }}>
-                                            {selectedKey === "academic" ? "주문식교육과정" : "앵커연계"}
+                                            {isAnchorExecutionDept(major.name) ? "앵커수행" : (selectedKey === "academic" ? "주문식교육과정" : "앵커연계")}
                                           </span>
                                         )}
                                       </div>
@@ -604,13 +611,13 @@ export default function OrgChartManager() {
                               {team.rise && (
                                 <span style={{
                                   fontSize: "0.75rem",
-                                  background: selectedKey === "academic" ? "rgba(16, 185, 129, 0.1)" : "rgba(59, 130, 246, 0.1)",
-                                  color: selectedKey === "academic" ? "#10B981" : "var(--accent-color)",
+                                  background: isAnchorExecutionDept(team.name) || selectedKey === "academic" ? "rgba(16, 185, 129, 0.1)" : "rgba(59, 130, 246, 0.1)",
+                                  color: isAnchorExecutionDept(team.name) || selectedKey === "academic" ? "#10B981" : "var(--accent-color)",
                                   padding: "0.15rem 0.4rem",
                                   borderRadius: "4px",
                                   fontWeight: "800"
                                 }}>
-                                  {selectedKey === "academic" ? "주문식교육과정" : "앵커연계"}
+                                  {isAnchorExecutionDept(team.name) ? "앵커수행" : (selectedKey === "academic" ? "주문식교육과정" : "앵커연계")}
                                 </span>
                               )}
                             </div>

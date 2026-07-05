@@ -297,6 +297,7 @@ export default function AgreementManager({
         }
 
         let importedCount = 0;
+        const partnerPayloads = [];
 
         rawRows.forEach((row, index) => {
           const dateVal = row["체결일자"];
@@ -351,9 +352,35 @@ export default function AgreementManager({
             fileData: ""
           };
 
+          // 파트너 Payload 수집
+          organizations.forEach(org => {
+            if (org.name) {
+              partnerPayloads.push({
+                name: org.name,
+                category: "산업체",         // 기본 대분류
+                sub_category: org.subject || "",
+                location: "울산",          // 기본 지역
+                sectors: contents         // 협력 분야 연동
+              });
+            }
+          });
+
           onAddAgreement(newAgr);
           importedCount++;
         });
+
+        // 엑셀 업로드 시 추출한 모든 파트너 일괄 upsert
+        if (partnerPayloads.length > 0) {
+          const uniquePartners = Array.from(new Map(partnerPayloads.map(p => [p.name, p])).values());
+          supabase.from("partner_institutions")
+            .upsert(uniquePartners, { onConflict: "name" })
+            .then(({ error }) => {
+              if (error) console.error("Excel import partner upsert fail:", error);
+              else console.log("Excel import partner upsert success.");
+            })
+            .catch(err => console.error("Excel import partner upsert error:", err));
+        }
+
         alert(`${importedCount}개의 협약서 정보가 성공적으로 적재되었습니다.`);
       } catch (err) {
         console.error("Excel Import Error:", err);
@@ -784,6 +811,27 @@ export default function AgreementManager({
     } else {
       onAddAgreement(payload);
     }
+
+    // [지산학 파트너십 CRM 연계 적재]
+    // 협약 대상기관(cleanOrgs) 목록을 파트너기관 테이블(partner_institutions)에 자동 upsert 연동합니다.
+    if (cleanOrgs.length > 0) {
+      const partnerPayloads = cleanOrgs.map(org => ({
+        name: org.name,
+        category: "산업체",         // 기본 대분류 설정
+        sub_category: org.subject || "", // 세부분류로 직책 정보 전달
+        location: "울산",          // 기본 지역 설정
+        sectors: inputContents      // 협약내용 범주를 파트너 협력분야로 자동 연계
+      }));
+
+      supabase.from("partner_institutions")
+        .upsert(partnerPayloads, { onConflict: "name" })
+        .then(({ error }) => {
+          if (error) console.error("Failed to auto-upsert partner institutions from agreement:", error);
+          else console.log("Successfully auto-upserted partner institutions from agreement.");
+        })
+        .catch(err => console.error("Error in auto-upsert partner:", err));
+    }
+
     setIsModalOpen(false);
     resetForm();
   };
