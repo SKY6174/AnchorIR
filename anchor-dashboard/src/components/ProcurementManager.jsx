@@ -1270,17 +1270,121 @@ export default function ProcurementManager({
         alert(`🔬 새 기자재 항목이 ${targetYear}차년도 사업계획서에 성공적으로 등록되었습니다.`);
       }
     } else if (modalType === "service") {
-      const newItem = {
-        id: Date.now(),
-        title: formData.title || "새 주요 용역 항목",
-        purpose: formData.purpose || "-",
-        providerQual: formData.providerQual || "-",
-        step: Number(formData.step) || 1,
-        budgetPlan: Number(formData.budgetPlan) || 0,
-        budgetSpent: Number(formData.budgetSpent) || 0,
-        opResult: formData.opResult || "-"
-      };
-      setServiceData([newItem, ...serviceData]);
+      const activeServiceList = serviceData.length > 0 ? serviceData : [];
+      const combinedDocs = [
+        formData.aiProposalData?.docNo || formData.docPlan,
+        formData.aiPurchaseData?.docNo || formData.docPurchase,
+        formData.aiBidData?.docNo || formData.docBid
+      ].filter(Boolean).join(", ");
+
+      if (isEditMode) {
+        // 수정 모드
+        const updated = activeServiceList.map(item => {
+          if (item.id === editingItemId) {
+            return {
+              ...item,
+              unit: formData.unit,
+              programId: formData.programId || "",
+              programName: formData.programName || "",
+              deptName: formData.deptName || "",
+              divisionName: formData.divisionName || "",
+              title: formData.title || "새 주요 용역 항목",
+              purpose: formData.purpose || "-",
+              providerQual: formData.providerQual || "-",
+              budgetPlan: Number(formData.budgetPlan) || 0,
+              budgetSpent: Number(formData.budgetSpent) || 0,
+              opResult: formData.opResult || "-",
+              password: formData.password || "1234",
+              
+              // 7대 행정 절차 날짜 매핑
+              datePp: formData.datePp || "",
+              dateRfo: formData.dateRfo || "",
+              dateB: formData.dateB || "",
+              dateEs: formData.dateEs || "",
+              dateC: formData.dateC || "",
+              dateE: formData.dateE || "",
+              dateI: formData.dateI || "",
+
+              // 관련문서 정보
+              relatedDocs: combinedDocs,
+              docPlan: formData.aiProposalData?.docNo || formData.docPlan || "",
+              docPurchase: formData.aiPurchaseData?.docNo || formData.docPurchase || "",
+              docBid: formData.aiBidData?.docNo || formData.docBid || "",
+              docPlanContent: formData.docPlanContent || "",
+              docPurchaseContent: formData.docPurchaseContent || "",
+              docBidContent: formData.docBidContent || "",
+              aiProposalData: formData.aiProposalData || null,
+              aiPurchaseData: formData.aiPurchaseData || null,
+              aiBidData: formData.aiBidData || null,
+              
+              // 파일 업로드 관련 메타데이터
+              docPlanFileName: formData.docPlanFileName || "",
+              docPurchaseFileName: formData.docPurchaseFileName || "",
+              docBidFileName: formData.docBidFileName || "",
+              docPlanFileSize: formData.docPlanFileSize || 0,
+              docPurchaseFileSize: formData.docPurchaseFileSize || 0,
+              docBidFileSize: formData.docBidFileSize || 0,
+              docPlanFileUrl: formData.docPlanFileUrl || "",
+              docPurchaseFileUrl: formData.docPurchaseFileUrl || "",
+              docBidFileUrl: formData.docBidFileUrl || ""
+            };
+          }
+          return item;
+        });
+        setServiceData(updated);
+        alert("💼 주요 용역 정보가 성공적으로 수정되었습니다.");
+      } else {
+        // 신규 등록 모드
+        const newItem = {
+          id: Date.now(),
+          unit: formData.unit,
+          programId: formData.programId || "",
+          programName: formData.programName || "",
+          deptName: formData.deptName || "",
+          divisionName: formData.divisionName || "",
+          title: formData.title || "새 주요 용역 항목",
+          purpose: formData.purpose || "-",
+          providerQual: formData.providerQual || "-",
+          budgetPlan: Number(formData.budgetPlan) || 0,
+          budgetSpent: Number(formData.budgetSpent) || 0,
+          opResult: formData.opResult || "-",
+          password: formData.password || "1234",
+          
+          // 7대 행정 절차 날짜 매핑
+          datePp: formData.datePp || "",
+          dateRfo: formData.dateRfo || "",
+          dateB: formData.dateB || "",
+          dateEs: formData.dateEs || "",
+          dateC: formData.dateC || "",
+          dateE: formData.dateE || "",
+          dateI: formData.dateI || "",
+
+          // 관련문서 정보
+          relatedDocs: combinedDocs,
+          docPlan: formData.aiProposalData?.docNo || formData.docPlan || "",
+          docPurchase: formData.aiPurchaseData?.docNo || formData.docPurchase || "",
+          docBid: formData.aiBidData?.docNo || formData.docBid || "",
+          docPlanContent: formData.docPlanContent || "",
+          docPurchaseContent: formData.docPurchaseContent || "",
+          docBidContent: formData.docBidContent || "",
+          aiProposalData: formData.aiProposalData || null,
+          aiPurchaseData: formData.aiPurchaseData || null,
+          aiBidData: formData.aiBidData || null,
+          
+          // 파일 업로드 관련 메타데이터
+          docPlanFileName: formData.docPlanFileName || "",
+          docPurchaseFileName: formData.docPurchaseFileName || "",
+          docBidFileName: formData.docBidFileName || "",
+          docPlanFileSize: formData.docPlanFileSize || 0,
+          docPurchaseFileSize: formData.docPurchaseFileSize || 0,
+          docBidFileSize: formData.docBidFileSize || 0,
+          docPlanFileUrl: formData.docPlanFileUrl || "",
+          docPurchaseFileUrl: formData.docPurchaseFileUrl || "",
+          docBidFileUrl: formData.docBidFileUrl || ""
+        };
+        setServiceData([newItem, ...activeServiceList]);
+        alert("💼 새 주요 용역 항목이 성공적으로 등록되었습니다.");
+      }
     }
 
     // 모달 리셋
@@ -1342,11 +1446,6 @@ export default function ProcurementManager({
       step: "기획",
       operation: selectedYear === 1 ? "미래 핵심 신산업 주문식 교육 운영" : "친환경 스마트 친조선 융합 기술 교육", // 1차년도/2차년도 기본 연계 프로그램 분기
       mgrDept: "ECC",
-      dateP: "",
-      dateA: "",
-      dateB: "",
-      datePr: "",
-      dateI: "",
       password: "",
       relatedDocs: "", // 관련문서 초기화
       docPlan: "",
@@ -1371,7 +1470,18 @@ export default function ProcurementManager({
       docPurchaseFileUrl: "",
       docBidFileUrl: "",
       providerQual: "",
-      opResult: ""
+      opResult: "",
+      
+      // 주요 용역 전용 필드들 추가
+      programId: "",
+      programName: "",
+      datePp: "",
+      dateRfo: "",
+      dateB: "",
+      dateEs: "",
+      dateC: "",
+      dateE: "",
+      dateI: ""
     });
     // 업로드 진행률 리셋
     setUploadProgressPlan(0);
@@ -1431,10 +1541,23 @@ export default function ProcurementManager({
       docPlanFileUrl: equip.docPlanFileUrl || "",
       docPurchaseFileUrl: equip.docPurchaseFileUrl || "",
       docBidFileUrl: equip.docBidFileUrl || "",
+      
+      // 기존 기자재 5대 날짜
       dateP: equip.dateP || "",
       dateA: equip.dateA || "",
       dateB: equip.dateB || "",
       datePr: equip.datePr || "",
+      dateI: equip.dateI || "",
+
+      // 주요 용역 7대 날짜 및 프로그램 메타 정보
+      programId: equip.programId || "",
+      programName: equip.programName || "",
+      datePp: equip.datePp || "",
+      dateRfo: equip.dateRfo || "",
+      dateB: equip.dateB || "",
+      dateEs: equip.dateEs || "",
+      dateC: equip.dateC || "",
+      dateE: equip.dateE || "",
       dateI: equip.dateI || ""
     });
     // 업로드 진행률 리셋
@@ -3235,41 +3358,6 @@ export default function ProcurementManager({
                 </select>
               </div>
 
-              {/* 정렬 필터 */}
-              <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                <select
-                  value={sortField}
-                  onChange={(e) => setSortField(e.target.value)}
-                  className="user-selector"
-                  style={{
-                    padding: "0.4rem 0.75rem",
-                    fontSize: "0.85rem",
-                    fontWeight: "600",
-                    width: "auto"
-                  }}
-                >
-                  <option value="id">기본 순서</option>
-                  <option value="seq">단위과제 순서</option>
-                  <option value="unitPrice">단가 순서</option>
-                  <option value="total">금액 순서</option>
-                </select>
-                <button
-                  onClick={() => setSortDirection(prev => prev === "asc" ? "desc" : "asc")}
-                  className="btn btn-secondary"
-                  style={{
-                    padding: "0.4rem 0.6rem",
-                    borderRadius: "6px",
-                    background: "rgba(255,255,255,0.05)",
-                    border: "1px solid var(--border-color-dark)",
-                    color: "white",
-                    fontWeight: "600",
-                    fontSize: "0.82rem",
-                    cursor: "pointer"
-                  }}
-                >
-                  {sortDirection === "asc" ? "▲" : "▼"}
-                </button>
-              </div>
 
               {currentRole.id !== "GUEST" && (
                 <button 
@@ -3302,34 +3390,14 @@ export default function ProcurementManager({
               <thead>
                 <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.08)", background: "rgba(255,255,255,0.01)" }}>
                   <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "45px" }}>순번</th>
-                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "60px" }}>과제</th>
-                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "180px" }}>연계 프로그램</th>
-                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "140px" }}>관련 학과/부서</th>
-                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "180px" }}>용역/사업명</th>
-                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "right", fontWeight: "800", width: "85px" }}>단가(백만원)</th>
-                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "right", fontWeight: "800", width: "45px" }}>수량</th>
-                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "right", fontWeight: "800", width: "95px" }}>금액(백만원)</th>
-                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "left", fontWeight: "800", width: "384px" }}>용역목적 및 수행결과</th>
-                  
-                  {/* 12개월 타임라인 헤더 */}
-                  {monthsOrder.map((m, idx) => (
-                    <th 
-                      key={idx} 
-                      style={{ 
-                        padding: "0.75rem 0.25rem", 
-                        textAlign: "center", 
-                        fontWeight: "600", 
-                        fontSize: "0.75rem", 
-                        color: "var(--text-secondary-dark)",
-                        width: "36px",
-                        whiteSpace: "nowrap",
-                        borderRight: idx < 11 ? "1px solid rgba(255,255,255,0.03)" : "none"
-                      }}
-                    >
-                      {m}월
-                    </th>
-                  ))}
-                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "65px" }}>제어</th>
+                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "140px" }}>프로그램 ID</th>
+                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "140px" }}>운영부서</th>
+                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "left", fontWeight: "800", width: "200px" }}>용역명</th>
+                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "right", fontWeight: "800", width: "120px" }}>사업비(백만원)</th>
+                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "left", fontWeight: "800", width: "320px" }}>용역목적 및 수행결과</th>
+                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "420px" }}>용역 절차</th>
+                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "130px" }}>관련문서</th>
+                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "70px" }}>제어</th>
                 </tr>
               </thead>
               <tbody>
@@ -3349,29 +3417,10 @@ export default function ProcurementManager({
                     filteredServices = filteredServices.filter(e => (e.divisionName || "").includes(divisionFilter));
                   }
 
-                  // 3) 정렬 적용
-                  filteredServices = [...filteredServices].sort((a, b) => {
-                    let aVal = a[sortField];
-                    let bVal = b[sortField];
-                    if (sortField === "total") {
-                      aVal = (Number(a.unitPrice) || 0) * (Number(a.quantity) || 1);
-                      bVal = (Number(b.unitPrice) || 0) * (Number(b.quantity) || 1);
-                    } else if (sortField === "unitPrice") {
-                      aVal = Number(a.unitPrice) || 0;
-                      bVal = Number(b.unitPrice) || 0;
-                    } else if (sortField === "seq" || sortField === "id") {
-                      aVal = Number(aVal) || 0;
-                      bVal = Number(bVal) || 0;
-                    }
-                    if (aVal < bVal) return sortDirection === "asc" ? -1 : 1;
-                    if (aVal > bVal) return sortDirection === "asc" ? 1 : -1;
-                    return 0;
-                  });
-
                   if (filteredServices.length === 0) {
                     return (
                       <tr>
-                        <td colSpan={11 + monthsOrder.length} style={{ padding: "3rem", textAlign: "center", color: "var(--text-secondary)" }}>
+                        <td colSpan={9} style={{ padding: "3rem", textAlign: "center", color: "var(--text-secondary)" }}>
                           📭 등록된 주요 용역 사업 내역이 없습니다.
                         </td>
                       </tr>
@@ -3379,66 +3428,30 @@ export default function ProcurementManager({
                   }
 
                   return filteredServices.map((equip, idx) => {
-                    const price = equip.unitPrice ? (equip.unitPrice / 1000000) : (equip.budgetPlan ? (equip.budgetPlan / 1000000) : 0);
-                    const qty = equip.quantity || 1;
-                    const total = price * qty;
-
-                    const idxP = getMonthIndex(equip.dateP);
-                    const idxA = getMonthIndex(equip.dateA);
-                    const idxB = getMonthIndex(equip.dateB);
-                    const idxPr = getMonthIndex(equip.datePr);
-                    const idxI = getMonthIndex(equip.dateI);
-
-                    const activePhases = [];
-                    if (idxP !== null) activePhases.push({ phase: "Rq", idx: idxP, weight: phaseWeight["P"], date: equip.dateP, label: "요청", color: "#f59e0b" });
-                    if (idxA !== null) activePhases.push({ phase: "PDR", idx: idxA, weight: phaseWeight["A"], date: equip.dateA, label: "검토∙심의∙결정", color: "#3b82f6" });
-                    if (idxB !== null) activePhases.push({ phase: "DL", idx: idxB, weight: phaseWeight["B"], date: equip.dateB, label: "설계∙인허가", color: "#06b6d4" });
-                    if (idxPr !== null) activePhases.push({ phase: "BC", idx: idxPr, weight: phaseWeight["Pr"], date: equip.datePr, label: "입찰∙계약", color: "#a78bfa" });
-                    if (idxI !== null) activePhases.push({ phase: "CS", idx: idxI, weight: phaseWeight["I"], date: equip.dateI, label: "시공∙감리", color: "#10b981" });
-
-                    let lastActivePhase = null;
-                    if (activePhases.length > 0) {
-                      const sortedActive = [...activePhases].sort((a, b) => {
-                        if (a.idx !== b.idx) return b.idx - a.idx;
-                        return b.weight - a.weight;
-                      });
-                      lastActivePhase = sortedActive[0];
-                    }
-
-                    const arrowsToRender = [];
-                    const segments = [
-                      { start: idxP, end: idxA, color: "#f59e0b" },
-                      { start: idxA, end: idxB, color: "#3b82f6" },
-                      { start: idxB, end: idxPr, color: "#06b6d4" },
-                      { start: idxPr, end: idxI, color: "#a78bfa" }
-                    ];
-
-                    segments.forEach(seg => {
-                      if (seg.start !== null && seg.end !== null && seg.start < seg.end) {
-                        const pos = (seg.start + seg.end) / 2;
-                        const cellIdx = Math.floor(pos);
-                        const rem = pos - cellIdx;
-                        const leftPercent = (rem === 0) ? "50%" : "100%";
-                        arrowsToRender.push({
-                          cellIdx,
-                          leftPercent,
-                          color: seg.color
-                        });
-                      }
-                    });
-
                     return (
                       <tr 
                         key={equip.id || idx} 
                         style={{ borderBottom: "1px solid rgba(255,255,255,0.05)", transition: "background 0.15s ease" }}
                       >
+                        {/* 1. 순번 */}
                         <td style={{ padding: "0.8rem 0.5rem", textAlign: "center", color: "var(--text-secondary)" }}>
                           {idx + 1}
                         </td>
-                        <td style={{ padding: "0.8rem 0.5rem", textAlign: "center", fontWeight: "750", color: "var(--accent-color)" }}>
-                          {equip.unit}
+
+                        {/* 2. 프로그램 ID // (프로그램명) */}
+                        <td style={{ padding: "0.8rem 0.5rem", textAlign: "center", fontWeight: "700" }}>
+                          <div style={{ color: "var(--accent-color)", fontSize: "0.82rem" }}>
+                            {equip.programId || `[${equip.unit}]`}
+                          </div>
+                          {equip.programName && (
+                            <div style={{ color: "rgba(255,255,255,0.5)", fontSize: "0.72rem", marginTop: "0.15rem", fontWeight: "normal" }}>
+                              ({equip.programName})
+                            </div>
+                          )}
                         </td>
-                        <td style={{ padding: "0.8rem 0.5rem", textAlign: "center", fontWeight: "600" }}>
+
+                        {/* 3. 운영부서 */}
+                        <td style={{ padding: "0.8rem 0.5rem", textAlign: "center", fontWeight: "600", fontSize: "0.8rem" }}>
                           {(() => {
                             const dName = equip.deptName || "";
                             const divName = equip.divisionName || "";
@@ -3448,211 +3461,188 @@ export default function ProcurementManager({
                             return dName || divName || "-";
                           })()}
                         </td>
-                        <td style={{ padding: "0.8rem 0.5rem", textAlign: "center", fontWeight: "700", color: "white" }}>
-                          {equip.title || equip.itemName || "-"}
+
+                        {/* 4. 용역명 */}
+                        <td style={{ padding: "0.8rem 0.5rem", textAlign: "left", fontWeight: "700", color: "white" }}>
+                          {equip.title || "-"}
                         </td>
-                        <td style={{ padding: "0.8rem 0.5rem", textAlign: "right", fontWeight: "700", color: "#10B981" }}>
-                          {price.toFixed(2)}
+
+                        {/* 5. 사업비(백만원) */}
+                        <td style={{ padding: "0.8rem 0.5rem", textAlign: "right" }}>
+                          <div style={{ fontSize: "0.8rem", fontWeight: "700", color: "#60A5FA" }}>
+                            계획: {((equip.budgetPlan || 0) / 1000000).toFixed(2)}
+                          </div>
+                          <div style={{ fontSize: "0.75rem", color: "#10B981", marginTop: "0.15rem", fontWeight: "700" }}>
+                            집행: {((equip.budgetSpent || 0) / 1000000).toFixed(2)}
+                          </div>
                         </td>
-                        <td style={{ padding: "0.8rem 0.75rem", textAlign: "left", color: "var(--text-secondary)", maxWidth: "384px" }} title={equip.description || equip.purpose || equip.opPlan}>
-                          {(() => {
-                            const text = equip.description || equip.purpose || equip.opPlan || "";
-                            const lines = text.split("\n").map(l => l.trim()).filter(Boolean);
-                            const purpose = lines[0] || equip.purpose || "-";
-                            const plan = lines[1] || equip.opResult || "-";
-                            return (
-                              <div style={{
-                                display: "flex",
-                                flexDirection: "column",
-                                gap: "0.35rem",
-                                lineHeight: "1.4",
-                                fontSize: "0.78rem"
-                              }}>
-                                <div style={{ wordBreak: "break-all", whiteSpace: "normal", display: "flex", alignItems: "flex-start", gap: "0.25rem" }}>
-                                  <span style={{ color: "var(--accent-color)", fontWeight: "bold" }}>•</span>
-                                  <span>
-                                    <strong style={{ color: "var(--text-primary)", fontWeight: "700", marginRight: "4px" }}>용역목적:</strong>
-                                    {purpose}
-                                  </span>
-                                </div>
-                                <div style={{ wordBreak: "break-all", whiteSpace: "normal", display: "flex", alignItems: "flex-start", gap: "0.25rem" }}>
-                                  <span style={{ color: "var(--accent-color)", fontWeight: "bold" }}>•</span>
-                                  <span>
-                                    <strong style={{ color: "var(--text-primary)", fontWeight: "700", marginRight: "4px" }}>수행결과:</strong>
-                                    {plan}
-                                  </span>
-                                </div>
-                              </div>
-                            );
-                          })()}
+
+                        {/* 6. 용역목적 및 수행결과 */}
+                        <td style={{ padding: "0.8rem 0.5rem", textAlign: "left", color: "var(--text-secondary)", maxWidth: "320px" }}>
+                          <div style={{ display: "flex", flexDirection: "column", gap: "0.35rem", lineHeight: "1.4", fontSize: "0.78rem" }}>
+                            <div style={{ wordBreak: "break-all", whiteSpace: "normal", display: "flex", alignItems: "flex-start", gap: "0.25rem" }}>
+                              <span style={{ color: "var(--accent-color)", fontWeight: "bold" }}>•</span>
+                              <span>
+                                <strong style={{ color: "var(--text-primary)", fontWeight: "700", marginRight: "4px" }}>용역목적:</strong>
+                                {equip.purpose || "-"}
+                              </span>
+                            </div>
+                            <div style={{ wordBreak: "break-all", whiteSpace: "normal", display: "flex", alignItems: "flex-start", gap: "0.25rem" }}>
+                              <span style={{ color: "#10b981", fontWeight: "bold" }}>•</span>
+                              <span>
+                                <strong style={{ color: "var(--text-primary)", fontWeight: "700", marginRight: "4px" }}>수행결과:</strong>
+                                {equip.opResult || "-"}
+                              </span>
+                            </div>
+                          </div>
                         </td>
-                        
-                        {monthsOrder.map((m, currIdx) => {
-                          const dynamicMilestones = getMilestonesFromDates(equip, selectedYear);
-                          const stepList = dynamicMilestones[m] || [];
 
-                          const getSegmentColorForPos = (pos) => {
-                            if (idxP !== null && idxA !== null && pos >= idxP && pos <= idxA) return "#f59e0b";
-                            if (idxA !== null && idxB !== null && pos >= idxA && pos <= idxB) return "#3b82f6";
-                            if (idxB !== null && idxPr !== null && pos >= idxB && pos <= idxPr) return "#06b6d4";
-                            if (idxPr !== null && idxI !== null && pos >= idxPr && pos <= idxI) return "#a78bfa";
-                            return "rgba(255, 255, 255, 0.12)";
-                          };
-
-                          const leftColor = getSegmentColorForPos(currIdx - 0.5);
-                          const rightColor = getSegmentColorForPos(currIdx + 0.5);
-
-                          const envPhaseMap = {
-                            "P": { code: "Rq", label: "요청", color: "#f59e0b" },
-                            "A": { code: "PDR", label: "검토∙심의∙결정", color: "#3b82f6" },
-                            "B": { code: "DL", label: "설계∙인허가", color: "#06b6d4" },
-                            "Pr": { code: "BC", label: "입찰∙계약", color: "#a78bfa" },
-                            "I": { code: "CS", label: "시공∙감리", color: "#10b981" }
-                          };
-
-                          const hasMilestone = stepList.length > 0;
-                          
-                          const getEnvStatusText = (item) => {
-                            if (item.dateI) return "시공∙감리 완료";
-                            if (item.datePr) return "시공∙감리 중";
-                            if (item.dateB) return "입찰∙계약 중";
-                            if (item.dateA) return "설계∙인허가 중";
-                            if (item.dateP) return "검토∙심의∙결정 중";
-                            return "요청 중";
-                          };
-                          const currentStatus = getEnvStatusText(equip);
-
-                          const shouldShowBalloon = lastActivePhase && lastActivePhase.idx === currIdx;
-                          let phaseColor = "rgba(255, 255, 255, 0.2)";
-                          let phaseLabel = "";
-                          let phaseDate = "";
-                          let primaryCode = "";
-
-                          if (hasMilestone) {
-                            const rawCode = stepList[0];
-                            const info = envPhaseMap[rawCode] || { code: rawCode, label: rawCode, color: "#38bdf8" };
-                            primaryCode = info.code;
-                            phaseLabel = info.label;
-                            phaseColor = info.color;
-                            phaseDate = rawCode === "P" ? equip.dateP :
-                                        rawCode === "A" ? equip.dateA :
-                                        rawCode === "B" ? equip.dateB :
-                                        rawCode === "Pr" ? equip.datePr :
-                                        equip.dateI;
-                          }
-
-                          const colorSet = 
-                            currentStatus.includes("요청") ? { bg: "#f59e0b", shadow: "rgba(245,158,11,0.4)", border: "#fbbf24" } :
-                            currentStatus.includes("검토") ? { bg: "#3b82f6", shadow: "rgba(59,130,246,0.4)", border: "#60a5fa" } :
-                            currentStatus.includes("설계") ? { bg: "#06b6d4", shadow: "rgba(6,182,212,0.4)", border: "#22d3ee" } :
-                            currentStatus.includes("입찰") ? { bg: "#a78bfa", shadow: "rgba(167,139,250,0.4)", border: "#c084fc" } :
-                            currentStatus.includes("시공") ? { bg: "#10b981", shadow: "rgba(16,185,129,0.4)", border: "#34d399" } :
-                            { bg: "rgba(255, 255, 255, 0.1)", shadow: "rgba(255,255,255,0.05)", border: "rgba(255,255,255,0.2)" };
-
-                          return (
-                            <td 
-                              key={currIdx} 
-                              style={{ 
-                                padding: 0, 
-                                position: "relative", 
-                                borderRight: currIdx < 11 ? "1px solid rgba(255,255,255,0.03)" : "none",
-                                verticalAlign: "middle",
-                                minWidth: "36px",
-                                width: "36px"
-                              }}
-                            >
-                              {/* 가로 진행선 (배경 선) */}
-                              <div style={{
-                                position: "absolute",
-                                left: 0,
-                                right: 0,
-                                top: "50%",
-                                transform: "translateY(-50%)",
-                                height: "2.5px",
-                                background: `linear-gradient(to right, ${leftColor} 50%, ${rightColor} 50%)`,
-                                zIndex: 0
-                              }} />
-                              
-                              {/* 화살표 선 흐름 기호 (구간 한가운데에 단 1개의 진행 화살표 렌더링) */}
-                              {arrowsToRender
-                                .filter(arr => arr.cellIdx === currIdx)
-                                .map((arr, arrIdx) => (
-                                  <div 
-                                    key={arrIdx}
-                                    style={{
-                                      position: "absolute",
-                                      left: arr.leftPercent,
-                                      top: "50%",
-                                      transform: "translate(-50%, -50%)",
-                                      width: 0,
-                                      height: 0,
-                                      borderTop: "3.5px solid transparent",
-                                      borderBottom: "3.5px solid transparent",
-                                      borderLeft: `5px solid ${arr.color}`,
-                                      zIndex: 3,
-                                      pointerEvents: "none"
-                                    }} 
-                                  />
-                                ))
+                        {/* 7. 용역 절차 가로 마일스톤 노드 */}
+                        <td style={{ padding: "0.8rem 0.5rem", verticalAlign: "middle" }}>
+                          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "0.25rem", width: "100%" }}>
+                            {[
+                              { dateKey: "datePp", label: "기획", code: "PP", color: "#f59e0b" },
+                              { dateKey: "dateRfo", label: "의뢰", code: "RFO", color: "#3b82f6" },
+                              { dateKey: "dateB", label: "입찰", code: "B", color: "#06b6d4" },
+                              { dateKey: "dateEs", label: "평가∙선정", code: "ES", color: "#ec4899" },
+                              { dateKey: "dateC", label: "계약", code: "C", color: "#a78bfa" },
+                              { dateKey: "dateE", label: "수행", code: "E", color: "#eab308" },
+                              { dateKey: "dateI", label: "검수", code: "I", color: "#10b981" }
+                            ].map((step, sIdx) => {
+                              const hasDate = !!equip[step.dateKey];
+                              const rawDate = equip[step.dateKey]; // YYYY-MM-DD
+                              let formattedDate = "";
+                              if (hasDate && rawDate.includes("-")) {
+                                const parts = rawDate.split("-");
+                                formattedDate = `${parts[1]}.${parts[2]}`; // MM.DD 포맷
                               }
 
-                              {/* 두 번째 그림 스타일의 마일스톤 노드 */}
-                              <div style={{ position: "relative", zIndex: 2, display: "flex", justifyContent: "center", alignItems: "center", height: "32px" }}>
-                                {shouldShowBalloon && (
-                                  <div 
-                                    className="status-flag-balloon"
-                                    style={{
-                                      "--bg-color": colorSet.bg,
-                                      "--shadow-color": colorSet.shadow,
-                                      "--border-color": colorSet.border,
-                                      bottom: "100%",
-                                      marginBottom: "4px"
-                                    }}
-                                  >
-                                    {currentStatus}
-                                  </div>
-                                )}
-                                {hasMilestone && (
-                                  <div 
-                                    className="milestone-tooltip-container"
-                                    style={{ display: "flex", justifyContent: "center", alignItems: "center" }}
-                                  >
-                                    <div className="milestone-tooltip" style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "2px", textAlign: "center" }}>
-                                      <span style={{ color: phaseColor, fontWeight: "900" }}>{phaseLabel} ({primaryCode})</span>
-                                      <span style={{ fontSize: "0.68rem", opacity: 0.85, fontWeight: "normal" }}>{phaseDate || "날짜 미정"}</span>
+                              return (
+                                <React.Fragment key={step.code}>
+                                  <div style={{ display: "flex", flexDirection: "column", alignItems: "center", minWidth: "46px" }}>
+                                    <div 
+                                      style={{
+                                        padding: "0.2rem 0.4rem",
+                                        borderRadius: "12px",
+                                        fontSize: "0.68rem",
+                                        fontWeight: "800",
+                                        background: hasDate ? `${step.color}22` : "rgba(255,255,255,0.03)",
+                                        color: hasDate ? step.color : "rgba(255,255,255,0.25)",
+                                        border: hasDate ? `1px solid ${step.color}66` : "1px solid rgba(255,255,255,0.08)",
+                                        whiteSpace: "nowrap",
+                                        display: "flex",
+                                        flexDirection: "column",
+                                        alignItems: "center"
+                                      }}
+                                      title={`${step.label}(${step.code}) ${hasDate ? `: ${rawDate}` : "(미지정)"}`}
+                                    >
+                                      <span>{step.code}</span>
                                     </div>
-
-                                    <svg width="28" height="32" viewBox="0 0 28 32" style={{ overflow: "visible" }}>
-                                      <defs>
-                                        <filter id={`glow-${primaryCode}`} x="-40%" y="-40%" width="180%" height="180%">
-                                          <feGaussianBlur stdDeviation="2.2" result="blur" />
-                                          <feComposite in="SourceGraphic" in2="blur" operator="over" />
-                                        </filter>
-                                      </defs>
-                                      <path 
-                                        d="M 5 7 L 14 11.5 L 23 7" 
-                                        fill="none"
-                                        stroke={phaseColor} 
-                                        strokeWidth="1.5" 
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        opacity="0.9" 
-                                      />
-                                      <text x="14" y="4.5" textAnchor="middle" fontSize="10" fontWeight="950" fill="white" style={{ fontFamily: "monospace", letterSpacing: "-0.5px" }}>
-                                        {primaryCode}
-                                      </text>
-                                      <circle cx="14" cy="17.5" r="4.5" fill={phaseColor} stroke="#ffffff" strokeWidth="1.5" filter={`url(#glow-${primaryCode})`} style={{ transition: "all 0.2s ease" }} />
-                                    </svg>
+                                    <span style={{ fontSize: "0.62rem", color: hasDate ? "white" : "rgba(255,255,255,0.2)", marginTop: "0.15rem", fontWeight: hasDate ? "700" : "normal" }}>
+                                      {hasDate ? formattedDate : "-"}
+                                    </span>
                                   </div>
-                                )}
-                              </div>
-                            </td>
-                          );
-                        })}
-                        
-                        {/* 제어 열 버튼 */}
+                                  {sIdx < 6 && (
+                                    <span style={{ color: "rgba(255,255,255,0.15)", fontSize: "0.75rem", fontWeight: "900" }}>➔</span>
+                                  )}
+                                </React.Fragment>
+                              );
+                            })}
+                          </div>
+                        </td>
+
+                        {/* 8. 관련문서 기획/구매/결과 3종 단추 */}
+                        <td style={{ padding: "0.8rem 0.2rem", textAlign: "center" }}>
+                          <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem", alignItems: "center", justifyContent: "center" }}>
+                            {/* 기획문서 */}
+                            <button
+                              onClick={() => setProposalModalData(equip)}
+                              style={{
+                                padding: "0.25rem 0.45rem",
+                                fontSize: "0.65rem",
+                                borderRadius: "4px",
+                                background: "rgba(59, 130, 246, 0.12)",
+                                color: "#60A5FA",
+                                border: "1px solid rgba(59, 130, 246, 0.25)",
+                                cursor: "pointer",
+                                transition: "all 0.2s",
+                                width: "36px",
+                                textAlign: "center"
+                              }}
+                              onMouseOver={(e) => {
+                                e.currentTarget.style.background = "rgba(59, 130, 246, 0.25)";
+                                e.currentTarget.style.borderColor = "#60A5FA";
+                              }}
+                              onMouseOut={(e) => {
+                                e.currentTarget.style.background = "rgba(59, 130, 246, 0.12)";
+                                e.currentTarget.style.borderColor = "rgba(59, 130, 246, 0.25)";
+                              }}
+                              title="기획 문서 요약 보기"
+                            >
+                              기획
+                            </button>
+
+                            {/* 구매문서 */}
+                            <button
+                              onClick={() => setPurchaseModalData(equip)}
+                              style={{
+                                padding: "0.25rem 0.45rem",
+                                fontSize: "0.65rem",
+                                borderRadius: "4px",
+                                background: "rgba(167, 139, 250, 0.12)",
+                                color: "#C084FC",
+                                border: "1px solid rgba(167, 139, 250, 0.25)",
+                                cursor: "pointer",
+                                transition: "all 0.2s",
+                                width: "36px",
+                                textAlign: "center"
+                              }}
+                              onMouseOver={(e) => {
+                                e.currentTarget.style.background = "rgba(167, 139, 250, 0.25)";
+                                e.currentTarget.style.borderColor = "#C084FC";
+                              }}
+                              onMouseOut={(e) => {
+                                e.currentTarget.style.background = "rgba(167, 139, 250, 0.12)";
+                                e.currentTarget.style.borderColor = "rgba(167, 139, 250, 0.25)";
+                              }}
+                              title="구매 문서 요약 보기"
+                            >
+                              구매
+                            </button>
+
+                            {/* 결과문서 */}
+                            <button
+                              onClick={() => setBidModalData(equip)}
+                              style={{
+                                padding: "0.25rem 0.45rem",
+                                fontSize: "0.65rem",
+                                borderRadius: "4px",
+                                background: "rgba(16, 185, 129, 0.12)",
+                                color: "#34D399",
+                                border: "1px solid rgba(16, 185, 129, 0.25)",
+                                cursor: "pointer",
+                                transition: "all 0.2s",
+                                width: "36px",
+                                textAlign: "center"
+                              }}
+                              onMouseOver={(e) => {
+                                e.currentTarget.style.background = "rgba(16, 185, 129, 0.25)";
+                                e.currentTarget.style.borderColor = "#34D399";
+                              }}
+                              onMouseOut={(e) => {
+                                e.currentTarget.style.background = "rgba(16, 185, 129, 0.12)";
+                                e.currentTarget.style.borderColor = "rgba(16, 185, 129, 0.25)";
+                              }}
+                              title="결과 문서 요약 보기"
+                            >
+                              결과
+                            </button>
+                          </div>
+                        </td>
+
+                        {/* 9. 제어 열 버튼 (세로 2층 배치) */}
                         <td style={{ padding: "0.8rem 0.5rem", textAlign: "center", whiteSpace: "nowrap" }}>
-                          <div style={{ display: "flex", gap: "0.3rem", justifyContent: "center" }}>
+                          <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem", alignItems: "center", justifyContent: "center" }}>
                             {currentRole.id !== "GUEST" && (currentRole.id === "ADMIN" || currentRole.id === "TEAM_LEADER" || !equip.created_by || equip.created_by === currentUser?.uuid) && (
                               <>
                                 <button 
@@ -3661,13 +3651,14 @@ export default function ProcurementManager({
                                   style={{
                                     padding: "0.25rem 0.45rem",
                                     fontSize: "0.65rem",
-                                    background: "rgba(255,255,255,0.06)",
-                                    border: "1px solid rgba(255,255,255,0.12)",
+                                    background: "rgba(96, 165, 250, 0.15)",
+                                    border: "1px solid rgba(96, 165, 250, 0.35)",
                                     borderRadius: "4px",
-                                    color: "white",
+                                    color: "#93c5fd",
                                     fontWeight: "700",
                                     cursor: "pointer",
-                                    whiteSpace: "nowrap"
+                                    width: "38px",
+                                    textAlign: "center"
                                   }}
                                 >
                                   수정
@@ -3688,7 +3679,8 @@ export default function ProcurementManager({
                                     color: "#f87171",
                                     fontWeight: "700",
                                     cursor: "pointer",
-                                    whiteSpace: "nowrap"
+                                    width: "38px",
+                                    textAlign: "center"
                                   }}
                                 >
                                   삭제
@@ -3706,7 +3698,6 @@ export default function ProcurementManager({
           </div>
         </div>
       )}
-
 
       {/* 추가 모달창 팝업 */}
       {isAddModalOpen && (
@@ -4414,21 +4405,130 @@ export default function ProcurementManager({
                 )}
 
               {/* 용역용 입력 필드들 */}
+              {/* 용역용 입력 필드들 */}
               {modalType === "service" && (
                 <>
+                  {/* 첫번째 줄: 단위과제, 프로그램 ID */}
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+                    <div>
+                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>단위과제</label>
+                      <select 
+                        name="unit" 
+                        value={formData.unit} 
+                        onChange={handleInputChange} 
+                        className="user-selector" 
+                        style={{ width: "100%", padding: "0.5rem", background: "var(--bg-card-dark)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }}
+                      >
+                        <option value="A1">A1 과제</option>
+                        <option value="A2">A2 과제</option>
+                        <option value="A3">A3 과제</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>프로그램 ID</label>
+                      <input 
+                        type="text" 
+                        name="programId" 
+                        value={formData.programId || ""} 
+                        onChange={handleInputChange} 
+                        placeholder="예: A1-1" 
+                        style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} 
+                      />
+                    </div>
+                  </div>
+
+                  {/* 두번째 줄: 프로그램명, 용역명 */}
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+                    <div>
+                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>프로그램명</label>
+                      <input 
+                        type="text" 
+                        name="programName" 
+                        value={formData.programName || ""} 
+                        onChange={handleInputChange} 
+                        placeholder="예: 특화 전문인재 양성 프로그램" 
+                        style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} 
+                      />
+                    </div>
+                    <div>
+                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>용역 명칭 (500만원 이상)</label>
+                      <input 
+                        type="text" 
+                        name="title" 
+                        value={formData.title} 
+                        onChange={handleInputChange} 
+                        required 
+                        placeholder="예: 앵커 산학 네트워크 포럼 기획 운영 대행 용역" 
+                        style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} 
+                      />
+                    </div>
+                  </div>
+
+                  {/* 세번째 줄: 학과 선택, 부서 선택 */}
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+                    <div>
+                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>배정 학과</label>
+                      <select 
+                        name="deptName" 
+                        value={formData.deptName} 
+                        onChange={handleInputChange} 
+                        className="user-selector" 
+                        style={{ width: "100%", padding: "0.5rem", background: "var(--bg-card-dark)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }}
+                      >
+                        <option value="">(학과 없음/전체)</option>
+                        <option value="기계공학부">기계공학부</option>
+                        <option value="기계공학부 기계시스템전공">기계공학부 - 기계시스템전공</option>
+                        <option value="기계공학부 기계설비전공">기계공학부 - 기계설비전공</option>
+                        <option value="전기전자공학부">전기전자공학부</option>
+                        <option value="전기전자공학부 전기전공">전기전자공학부 - 전기전공</option>
+                        <option value="전기전자공학부 전자공학전공">전기전자공학부 - 전자공학전공</option>
+                        <option value="전기전자공학부 반도체장비전공">전기전자공학부 - 반도체장비전공</option>
+                        <option value="IT융합학부 스마트제어전공">IT융합학부 - 스마트제어전공</option>
+                        <option value="IT융합학부 컴퓨터정보전공">IT융합학부 - 컴퓨터정보전공</option>
+                        <option value="화학공학과">화학공학과</option>
+                        <option value="간호학과">간호학과</option>
+                        <option value="물리치료학과">물리치료학과</option>
+                        <option value="치위생학과">치위생학과</option>
+                        <option value="작업치료학과">작업치료학과</option>
+                        <option value="글로벌비즈니스학과">글로벌비즈니스학과</option>
+                        <option value="글로벌비즈니스학과 세무회계전공">글로벌비즈니스학과 - 세무회계전공</option>
+                        <option value="글로벌비즈니스학과 도시유통전공">글로벌비즈니스학과 - 도시유통전공</option>
+                        <option value="호텔외식조리과 융합조리전공">호텔외식조리과 - 융합조리전공</option>
+                        <option value="호텔외식조리과 제과제빵스타일리스트전공">호텔외식조리과 - 제과제빵스타일리스트전공</option>
+                        <option value="사회복지학과">사회복지학과</option>
+                        <option value="유아교육과">유아교육과</option>
+                        <option value="스포츠지도학과">스포츠지도학과</option>
+                        <option value="공간디자인콘텐츠과">공간디자인콘텐츠과</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>배정 행정부서</label>
+                      <select 
+                        name="divisionName" 
+                        value={formData.divisionName} 
+                        onChange={handleInputChange} 
+                        className="user-selector" 
+                        style={{ width: "100%", padding: "0.5rem", background: "var(--bg-card-dark)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }}
+                      >
+                        <option value="">(부서 없음/전체)</option>
+                        <option value="ECC">ECC</option>
+                        <option value="산학협력단">산학협력단</option>
+                        <option value="어린이급식관리사업단">어린이급식관리사업단</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  {/* 네번째 줄: 추진 목적, 수행결과 */}
                   <div>
-                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>용역 명칭 (500만원 이상)</label>
-                    <input type="text" name="title" value={formData.title} onChange={handleInputChange} required placeholder="예: 앵커 산학 네트워크 포럼 기획 운영 대행 용역" style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} />
+                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>용역목적 (추진 목적)</label>
+                    <textarea name="purpose" value={formData.purpose} onChange={handleInputChange} placeholder="해당 용역이 해결하고자 하는 문제 및 목표" style={{ width: "100%", height: "50px", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white", resize: "none" }} />
                   </div>
                   <div>
-                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>추진 목적 (용역 요건)</label>
-                    <textarea name="purpose" value={formData.purpose} onChange={handleInputChange} placeholder="해당 용역이 해결하고자 하는 문제 및 목표" style={{ width: "100%", height: "60px", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white", resize: "none" }} />
+                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>수행결과 및 특이사항</label>
+                    <textarea name="opResult" value={formData.opResult} onChange={handleInputChange} placeholder="수행 결과 및 시설 인도 내역 기술" style={{ width: "100%", height: "50px", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white", resize: "none" }} />
                   </div>
-                  <div>
-                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>수행기관 자격 (규모, 실적 이력)</label>
-                    <textarea name="providerQual" value={formData.providerQual} onChange={handleInputChange} placeholder="입찰 자격 기준 (예: 연 매출 1억 이상, 동종 용역 이력 3건 이상)" style={{ width: "100%", height: "60px", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white", resize: "none" }} />
-                  </div>
-                  
+
+                  {/* 다섯번째 줄: 계획예산, 집행예산 */}
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
                     <div>
                       <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>사업비 계획액 (원)</label>
@@ -4440,20 +4540,94 @@ export default function ProcurementManager({
                     </div>
                   </div>
 
+                  {/* 여섯번째 줄: 비밀번호 설정 */}
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
                     <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>현재 행정 절차 단계</label>
-                      <select name="step" value={formData.step} onChange={handleInputChange} style={{ width: "100%", padding: "0.5rem", background: "var(--bg-card-dark)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }}>
-                        <option value={1}>1단계: 사업단 결재완료</option>
-                        <option value={2}>2단계: 구매 발주 (총무팀 대행)</option>
-                        <option value={3}>3단계: 준공 검수 완료</option>
-                      </select>
+                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>비밀번호 (수정/삭제용)</label>
+                      <input type="password" name="password" value={formData.password || "1234"} onChange={handleInputChange} placeholder="기본값: 1234" style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} />
                     </div>
                   </div>
 
-                  <div>
-                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>최종 운영 결과</label>
-                    <textarea name="opResult" value={formData.opResult} onChange={handleInputChange} placeholder="검수 결과 및 산출물 내역 요약" style={{ width: "100%", height: "60px", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white", resize: "none" }} />
+                  {/* 7대 행정 절차 날짜 입력 필드 */}
+                  <div style={{ borderTop: "1px solid rgba(255,255,255,0.05)", paddingTop: "0.75rem", marginTop: "0.5rem" }}>
+                    <span style={{ fontSize: "0.82rem", fontWeight: "800", color: "#60A5FA", display: "block", marginBottom: "0.5rem" }}>📅 7대 행정 절차 완료 일자 설정</span>
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: "0.75rem" }}>
+                      <div>
+                        <label style={{ display: "block", fontSize: "0.72rem", color: "#f59e0b", marginBottom: "0.15rem" }}>기획(PP)</label>
+                        <input type="date" name="datePp" value={formData.datePp || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.35rem", fontSize: "0.75rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} />
+                      </div>
+                      <div>
+                        <label style={{ display: "block", fontSize: "0.72rem", color: "#3b82f6", marginBottom: "0.15rem" }}>의뢰(RFO)</label>
+                        <input type="date" name="dateRfo" value={formData.dateRfo || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.35rem", fontSize: "0.75rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} />
+                      </div>
+                      <div>
+                        <label style={{ display: "block", fontSize: "0.72rem", color: "#06b6d4", marginBottom: "0.15rem" }}>입찰(B)</label>
+                        <input type="date" name="dateB" value={formData.dateB || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.35rem", fontSize: "0.75rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} />
+                      </div>
+                      <div>
+                        <label style={{ display: "block", fontSize: "0.72rem", color: "#ec4899", marginBottom: "0.15rem" }}>평가∙선정(ES)</label>
+                        <input type="date" name="dateEs" value={formData.dateEs || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.35rem", fontSize: "0.75rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} />
+                      </div>
+                      <div>
+                        <label style={{ display: "block", fontSize: "0.72rem", color: "#a78bfa", marginBottom: "0.15rem" }}>계약(C)</label>
+                        <input type="date" name="dateC" value={formData.dateC || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.35rem", fontSize: "0.75rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} />
+                      </div>
+                      <div>
+                        <label style={{ display: "block", fontSize: "0.72rem", color: "#eab308", marginBottom: "0.15rem" }}>수행(E)</label>
+                        <input type="date" name="dateE" value={formData.dateE || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.35rem", fontSize: "0.75rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} />
+                      </div>
+                      <div>
+                        <label style={{ display: "block", fontSize: "0.72rem", color: "#10b981", marginBottom: "0.15rem" }}>검수(I)</label>
+                        <input type="date" name="dateI" value={formData.dateI || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.35rem", fontSize: "0.75rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 3종 관련 문서 파일 첨부 및 AI 자동분석 패널 */}
+                  <div style={{ borderTop: "1px solid rgba(255,255,255,0.05)", paddingTop: "0.75rem", marginTop: "0.5rem" }}>
+                    <span style={{ fontSize: "0.82rem", fontWeight: "800", color: "#a78bfa", display: "block", marginBottom: "0.5rem" }}>📎 행정 서류 첨부 및 AI 분석 연계</span>
+                    
+                    {/* 1. 기획문서 첨부 */}
+                    <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem", marginBottom: "0.75rem" }}>
+                      <label style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)" }}>기획서 관련 문서 (사업단 작성 기안문)</label>
+                      <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+                        <input type="file" id="file-plan-upload-serv" onChange={(e) => handleFileChange("proposal", e)} style={{ display: "none" }} />
+                        <label htmlFor="file-plan-upload-serv" style={{ display: "block", flex: 1, textAlign: "center", padding: "0.45rem", border: "1px dashed rgba(255,255,255,0.15)", borderRadius: "6px", cursor: "pointer", background: "rgba(255,255,255,0.02)", fontSize: "0.72rem", color: "rgba(255,255,255,0.6)" }}>
+                          {formData.docPlanFileName ? `📎 ${formData.docPlanFileName}` : "📎 기획문서 파일 선택 (.pdf, .docx, .hwp)"}
+                        </label>
+                        <button type="button" onClick={() => handleAnalyzeAndUpload("proposal")} disabled={isAnalyzingPlan} style={{ padding: "0.45rem 1rem", fontSize: "0.72rem", background: "#3b82f6", border: "none", color: "white", borderRadius: "6px", fontWeight: "700", cursor: "pointer" }}>
+                          {isAnalyzingPlan ? "분석중..." : "AI 분석"}
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* 2. 구매문서 첨부 */}
+                    <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem", marginBottom: "0.75rem" }}>
+                      <label style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)" }}>구매의뢰 관련 문서 (위탁 의뢰 이송 공문)</label>
+                      <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+                        <input type="file" id="file-purchase-upload-serv" onChange={(e) => handleFileChange("purchase", e)} style={{ display: "none" }} />
+                        <label htmlFor="file-purchase-upload-serv" style={{ display: "block", flex: 1, textAlign: "center", padding: "0.45rem", border: "1px dashed rgba(255,255,255,0.15)", borderRadius: "6px", cursor: "pointer", background: "rgba(255,255,255,0.02)", fontSize: "0.72rem", color: "rgba(255,255,255,0.6)" }}>
+                          {formData.docPurchaseFileName ? `📎 ${formData.docPurchaseFileName}` : "📎 구매의뢰 문서 파일 선택 (.pdf, .docx, .hwp)"}
+                        </label>
+                        <button type="button" onClick={() => handleAnalyzeAndUpload("purchase")} disabled={isAnalyzingPurchase} style={{ padding: "0.45rem 1rem", fontSize: "0.72rem", background: "#a78bfa", border: "none", color: "white", borderRadius: "6px", fontWeight: "700", cursor: "pointer" }}>
+                          {isAnalyzingPurchase ? "분석중..." : "AI 분석"}
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* 3. 결과문서 첨부 */}
+                    <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
+                      <label style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)" }}>검수조서 관련 문서 (최종 준공/검수 보고서)</label>
+                      <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+                        <input type="file" id="file-bid-upload-serv" onChange={(e) => handleFileChange("bid", e)} style={{ display: "none" }} />
+                        <label htmlFor="file-bid-upload-serv" style={{ display: "block", flex: 1, textAlign: "center", padding: "0.45rem", border: "1px dashed rgba(255,255,255,0.15)", borderRadius: "6px", cursor: "pointer", background: "rgba(255,255,255,0.02)", fontSize: "0.72rem", color: "rgba(255,255,255,0.6)" }}>
+                          {formData.docBidFileName ? `📎 ${formData.docBidFileName}` : "📎 결과/검수 문서 파일 선택 (.pdf, .docx, .hwp)"}
+                        </label>
+                        <button type="button" onClick={() => handleAnalyzeAndUpload("bid")} disabled={isAnalyzingBid} style={{ padding: "0.45rem 1rem", fontSize: "0.72rem", background: "#10b981", border: "none", color: "white", borderRadius: "6px", fontWeight: "700", cursor: "pointer" }}>
+                          {isAnalyzingBid ? "분석중..." : "AI 분석"}
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 </>
               )}

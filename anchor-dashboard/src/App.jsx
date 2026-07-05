@@ -3001,8 +3001,106 @@ export default function App() {
             setEquipData(defaultEquipmentsSeed);
           }
         }
-        if (pServ && pServ.length > 0) {
-          const formatted = pServ.map(x => ({ ...x, id: Number(x.id), budgetPlan: Number(x.budget_plan), budgetSpent: Number(x.budget_spent) }));
+        if (pServError) {
+          console.error("Supabase procurement_services fetch error (using fallback cache):", pServError);
+          const cachedServ = localStorage.getItem(`anchor_cache_serv_y${selectedYear}`);
+          if (cachedServ) {
+            try {
+              const parsed = JSON.parse(cachedServ);
+              // 자가 치유(Self-healing): 이전 스키마(스네이크케이스 등) 캐시 데이터 호환성 보장
+              const healed = parsed.map(x => ({
+                ...x,
+                id: Number(x.id || Date.now()),
+                year: Number(x.year || selectedYear),
+                unit: x.unit || "A1",
+                programId: x.programId || x.program_id || "",
+                programName: x.programName || x.program_name || "",
+                deptName: x.deptName || x.dept_name || "",
+                divisionName: x.divisionName || x.division_name || "",
+                password: x.password || "1234",
+                title: x.title || "",
+                purpose: x.purpose || "",
+                providerQual: x.providerQual || x.provider_qual || "",
+                step: Number(x.step) || 1,
+                budgetPlan: Number(x.budgetPlan || x.budget_plan || 0),
+                budgetSpent: Number(x.budgetSpent || x.budget_spent || 0),
+                opResult: x.opResult || x.op_result || "",
+                
+                // 7대 날짜 복원
+                datePp: x.datePp || x.date_pp || "",
+                dateRfo: x.dateRfo || x.date_rfo || "",
+                dateB: x.dateB || x.date_b || "",
+                dateEs: x.dateEs || x.date_es || "",
+                dateC: x.dateC || x.date_c || "",
+                dateE: x.dateE || x.date_e || "",
+                dateI: x.dateI || x.date_i || "",
+
+                // 3종 문서
+                docPlan: x.docPlan || x.doc_plan || "",
+                docPurchase: x.docPurchase || x.doc_purchase || "",
+                docBid: x.docBid || x.doc_bid || "",
+                docPlanFileName: x.docPlanFileName || x.doc_plan_file_name || "",
+                docPurchaseFileName: x.docPurchaseFileName || x.doc_purchase_file_name || "",
+                docBidFileName: x.docBidFileName || x.doc_bid_file_name || "",
+                docPlanFileSize: Number(x.docPlanFileSize || x.doc_plan_file_size || 0),
+                docPurchaseFileSize: Number(x.docPurchaseFileSize || x.doc_purchase_file_size || 0),
+                docBidFileSize: Number(x.docBidFileSize || x.doc_bid_file_size || 0),
+                docPlanFileUrl: x.docPlanFileUrl || x.doc_plan_file_url || "",
+                docPurchaseFileUrl: x.docPurchaseFileUrl || x.doc_purchase_file_url || "",
+                docBidFileUrl: x.docBidFileUrl || "",
+                aiProposalData: x.aiProposalData || x.ai_proposal_data || null,
+                aiPurchaseData: x.aiPurchaseData || x.ai_purchase_data || null,
+                aiBidData: x.aiBidData || x.ai_bid_data || null
+              }));
+              setServiceData(healed);
+            } catch (e) {
+              console.error("Failed to parse cached services data:", e);
+            }
+          }
+        } else if (pServ && pServ.length > 0) {
+          const formatted = pServ.map(x => {
+            const docParts = (x.related_docs || "").split(",").map(d => d.trim()).filter(Boolean);
+            return {
+              ...x,
+              id: Number(x.id),
+              year: Number(x.year),
+              unit: x.unit || "A1",
+              programId: x.program_id || "",
+              programName: x.program_name || "",
+              deptName: x.dept_name || "",
+              divisionName: x.division_name || "",
+              password: x.password || "1234",
+              relatedDocs: x.related_docs || "",
+              budgetPlan: Number(x.budget_plan),
+              budgetSpent: Number(x.budget_spent),
+              step: Number(x.step) || 1,
+              opResult: x.op_result || "",
+              // 7대 절차 날짜 맵핑
+              datePp: x.date_pp || "",
+              dateRfo: x.date_rfo || "",
+              dateB: x.date_b || "",
+              dateEs: x.date_es || "",
+              dateC: x.date_c || "",
+              dateE: x.date_e || "",
+              dateI: x.date_i || "",
+              // 3종 관련 문서 및 AI 데이터 맵핑
+              docPlan: x.doc_plan || docParts[0] || "",
+              docPurchase: x.doc_purchase || docParts[1] || "",
+              docBid: x.doc_bid || docParts[2] || "",
+              docPlanFileName: x.doc_plan_file_name || "",
+              docPurchaseFileName: x.doc_purchase_file_name || "",
+              docBidFileName: x.doc_bid_file_name || "",
+              docPlanFileSize: Number(x.doc_plan_file_size) || 0,
+              docPurchaseFileSize: Number(x.doc_purchase_file_size) || 0,
+              docBidFileSize: Number(x.doc_bid_file_size) || 0,
+              docPlanFileUrl: x.doc_plan_file_url || "",
+              docPurchaseFileUrl: x.doc_purchase_file_url || "",
+              docBidFileUrl: x.doc_bid_file_url || "",
+              aiProposalData: x.ai_proposal_data || null,
+              aiPurchaseData: x.ai_purchase_data || null,
+              aiBidData: x.ai_bid_data || null
+            };
+          });
           setServiceData(formatted);
           localStorage.setItem(`anchor_cache_serv_y${selectedYear}`, JSON.stringify(formatted));
         }
@@ -3355,13 +3453,44 @@ export default function App() {
           const { error } = await supabase.from("procurement_services").insert(
             serviceData.map(s => ({
               year: selectedYear,
+              unit: s.unit || "A1",
+              program_id: s.programId || "",
+              program_name: s.programName || "",
+              dept_name: s.deptName || "",
+              division_name: s.divisionName || "",
+              password: s.password || "1234",
+              related_docs: s.relatedDocs || "",
               title: s.title,
               purpose: s.purpose,
               provider_qual: s.providerQual,
-              step: s.step,
+              step: s.step || 1,
               budget_plan: s.budgetPlan,
               budget_spent: s.budgetSpent,
-              op_result: s.opResult
+              op_result: s.opResult,
+              // 7대 절차 날짜
+              date_pp: s.datePp || null,
+              date_rfo: s.dateRfo || null,
+              date_b: s.dateB || null,
+              date_es: s.dateEs || null,
+              date_c: s.dateC || null,
+              date_e: s.dateE || null,
+              date_i: s.dateI || null,
+              // 3종 관련 문서 및 AI 데이터
+              doc_plan: s.docPlan || "",
+              doc_purchase: s.docPurchase || "",
+              doc_bid: s.doc_bid || s.docBid || "",
+              doc_plan_file_name: s.docPlanFileName || "",
+              doc_purchase_file_name: s.docPurchaseFileName || "",
+              doc_bid_file_name: s.docBidFileName || "",
+              doc_plan_file_size: Number(s.docPlanFileSize) || 0,
+              doc_purchase_file_size: Number(s.docPurchaseFileSize) || 0,
+              doc_bid_file_size: Number(s.docBidFileSize) || 0,
+              doc_plan_file_url: s.docPlanFileUrl || "",
+              doc_purchase_file_url: s.docPurchaseFileUrl || "",
+              doc_bid_file_url: s.docBidFileUrl || "",
+              ai_proposal_data: s.aiProposalData || null,
+              ai_purchase_data: s.aiPurchaseData || null,
+              ai_bid_data: s.aiBidData || null
             }))
           );
           if (error) throw error;
