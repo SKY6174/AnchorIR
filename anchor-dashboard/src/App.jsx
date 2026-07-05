@@ -6810,6 +6810,7 @@ export default function App() {
             {/* 본문 콘텐츠 */}
             <ProcurementManager
               currentRole={currentRole}
+              currentUser={currentUser}
               selectedYear={selectedYear}
               setSelectedYear={setSelectedYear}
               subTab={procurementSubTab}

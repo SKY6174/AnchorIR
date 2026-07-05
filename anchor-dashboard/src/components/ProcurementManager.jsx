@@ -202,6 +202,7 @@ const getMilestoneArray = (val) => {
 
 export default function ProcurementManager({
   currentRole,
+  currentUser,
   selectedYear,
   setSelectedYear,
   subTab,
@@ -484,7 +485,7 @@ export default function ProcurementManager({
               quantity: Number(formData.quantity) || 1,
               description: formData.description || "-",
               operation: formData.operation || "교과목(정규)",
-              password: formData.password || item.password || "1234",
+              password: currentUser?.password || formData.password || item.password || "1234", // 현재 로그인 유저 비밀번호 연동
               dateP: formData.dateP || "",
               dateA: formData.dateA || "",
               dateB: formData.dateB || "",
@@ -520,7 +521,7 @@ export default function ProcurementManager({
           description: formData.description || "-",
           operation: formData.operation || "교과목(정규)",
           mgrDept: formData.mgrDept || "ECC",
-          password: formData.password || "1234",
+          password: currentUser?.password || formData.password || "1234", // 현재 로그인 유저 비밀번호 연동
           dateP: formData.dateP || "",
           dateA: formData.dateA || "",
           dateB: formData.dateB || "",
@@ -766,32 +767,32 @@ export default function ProcurementManager({
                   </div>
 
                   <div style={{ borderTop: "1px solid rgba(255,255,255,0.03)", paddingTop: "0.75rem" }}>
-                    <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)", display: "block" }}>도면 정보 & 설계 내역</span>
+                    <span style={{ fontSize: "0.7rem", color: "var(--text-secondary)", display: "block" }}>도면 정보 & 설계 내역</span>
                     <div style={{ display: "flex", gap: "0.5rem", marginTop: "0.3rem" }}>
-                      <span style={{ padding: "0.25rem 0.5rem", background: "rgba(255,255,255,0.05)", borderRadius: "4px", fontSize: "0.75rem", color: "var(--text-primary)" }}>🖼️ 조감도: {selectedEnvItem.birdseyeView}</span>
-                      <span style={{ padding: "0.25rem 0.5rem", background: "rgba(255,255,255,0.05)", borderRadius: "4px", fontSize: "0.75rem", color: "var(--text-primary)" }}>📐 도면: {selectedEnvItem.blueprints}</span>
+                      <span style={{ padding: "0.2rem 0.4rem", background: "rgba(255,255,255,0.05)", borderRadius: "4px", fontSize: "0.7rem", color: "var(--text-primary)" }}>🖼️ 조감도: {selectedEnvItem.birdseyeView}</span>
+                      <span style={{ padding: "0.2rem 0.4rem", background: "rgba(255,255,255,0.05)", borderRadius: "4px", fontSize: "0.7rem", color: "var(--text-primary)" }}>📐 도면: {selectedEnvItem.blueprints}</span>
                     </div>
                   </div>
 
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem", borderTop: "1px solid rgba(255,255,255,0.03)", paddingTop: "0.75rem" }}>
                     <div>
-                      <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)", display: "block" }}>구축 계획</span>
+                      <span style={{ fontSize: "0.7rem", color: "var(--text-secondary)", display: "block" }}>구축 계획</span>
                       <p style={{ margin: "0.2rem 0", lineHeight: "1.3" }}>{selectedEnvItem.plan || "-"}</p>
                     </div>
                     <div>
-                      <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)", display: "block" }}>진행 상태</span>
+                      <span style={{ fontSize: "0.7rem", color: "var(--text-secondary)", display: "block" }}>진행 상태</span>
                       <p style={{ margin: "0.2rem 0", lineHeight: "1.3" }}>{selectedEnvItem.progress || "-"}</p>
                     </div>
                   </div>
 
                   <div>
-                    <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)", display: "block" }}>향후 활용 계획</span>
+                    <span style={{ fontSize: "0.7rem", color: "var(--text-secondary)", display: "block" }}>향후 활용 계획</span>
                     <p style={{ margin: "0.2rem 0", lineHeight: "1.3" }}>{selectedEnvItem.utilization}</p>
                   </div>
 
                 </div>
               ) : (
-                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "200px", color: "var(--text-secondary)", fontSize: "0.85rem", textAlign: "center" }}>
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "200px", color: "var(--text-secondary)", fontSize: "0.75rem", textAlign: "center" }}>
                   <Info size={32} style={{ marginBottom: "0.5rem", opacity: 0.5 }} />
                   <span>왼쪽 목록에서 환경개선 건을 선택하시면<br />세부 구축 계획 및 설계 도면 명세서가 조회됩니다.</span>
                 </div>
@@ -864,7 +865,7 @@ export default function ProcurementManager({
                 </select>
               </div>
 
-              {/* 부서 필터 (요건 1: 모달창과 동일한 고정 전체 본부/산단 하위 부서 목록 맵핑) */}
+              {/* 부서 필터 (요건 1: 모달창과 동일한 고정 전체 본부/산단 하위 부서 목록 맵핑 및 사업단 최상단 배치) */}
               <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
                 <ListFilter size={16} style={{ color: "var(--text-secondary-dark)" }} />
                 <select
@@ -879,6 +880,16 @@ export default function ProcurementManager({
                   }}
                 >
                   <option value="">부서 전체</option>
+                  <optgroup label="RISE사업단 및 센터">
+                    <option value="RISE사업단">RISE사업단</option>
+                    <option value="RISE사업센터">RISE사업센터</option>
+                    <option value="LINC3.0사업단">LINC3.0사업단</option>
+                    <option value="공동기자재지원센터">공동기자재지원센터</option>
+                    <option value="신산업역량강화지원센터">신산업역량강화지원센터</option>
+                    <option value="학생직무체험지원센터">학생직무체험지원센터</option>
+                    <option value="원격교육지원센터">원격교육지원센터</option>
+                    <option value="울산늘봄누리센터">울산늘봄누리센터</option>
+                  </optgroup>
                   <optgroup label="대학본부">
                     <option value="교무팀">교무팀</option>
                     <option value="교수학습지원센터">교수학습지원센터</option>
@@ -1282,7 +1293,7 @@ export default function ProcurementManager({
                                         borderRadius: "50%",
                                         background: style.bg,
                                         color: style.color,
-                                        fontSize: "0.68rem",
+                                        fontSize: "0.53rem", // 구매단계를 나타내는 글씨 font size 2pt 작게 반영
                                         fontWeight: "900",
                                         display: "flex",
                                         alignItems: "center",
@@ -1710,6 +1721,17 @@ export default function ProcurementManager({
                         className="user-selector"
                       >
                         <option value="">-- 선택 안 함 --</option>
+                        {/* RISE사업단 및 센터 */}
+                        <optgroup label="RISE사업단 및 센터">
+                          <option value="RISE사업단">RISE사업단</option>
+                          <option value="RISE사업센터">RISE사업센터</option>
+                          <option value="LINC3.0사업단">LINC3.0사업단</option>
+                          <option value="공동기자재지원센터">공동기자재지원센터</option>
+                          <option value="신산업역량강화지원센터">신산업역량강화지원센터</option>
+                          <option value="학생직무체험지원센터">학생직무체험지원센터</option>
+                          <option value="원격교육지원센터">원격교육지원센터</option>
+                          <option value="울산늘봄누리센터">울산늘봄누리센터</option>
+                        </optgroup>
                         {/* 대학본부 하위 조직 */}
                         <optgroup label="대학본부">
                           <option value="교무팀">교무팀</option>
@@ -1802,20 +1824,6 @@ export default function ProcurementManager({
                         <option value="교과목(정규)">교과목(정규)</option>
                         <option value="교과목(비정규)">교과목(비정규)</option>
                       </select>
-                    </div>
-                    <div style={{ gridColumn: "span 2" }}>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>
-                        🔒 등록/수정 비밀번호
-                      </label>
-                      <input 
-                        type="password" 
-                        name="password" 
-                        value={formData.password || ""} 
-                        onChange={handleInputChange} 
-                        required 
-                        placeholder="삭제 및 수정 권한 검증용 비밀번호 입력 (예: 1234)" 
-                        style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} 
-                      />
                     </div>
                   </div>
                 </>

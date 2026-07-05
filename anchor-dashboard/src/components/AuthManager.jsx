@@ -58,7 +58,8 @@ export default function AuthManager({ onLoginSuccess, members = [] }) {
           sessionUser = {
             id: foundUser.id,
             name: foundUser.name,
-            role: mappedRole
+            role: mappedRole,
+            password: userPw // 테스트 비밀번호 자동 주입 (1234 등)
           };
         } else {
           // 가상 유저 객체 생성
@@ -72,7 +73,8 @@ export default function AuthManager({ onLoginSuccess, members = [] }) {
           sessionUser = {
             id: targetId,
             name: name,
-            role: userRoles[roleKey]
+            role: userRoles[roleKey],
+            password: userPw || "1234" // 테스트 비밀번호 연동
           };
         }
         onLoginSuccess(sessionUser);
@@ -132,7 +134,8 @@ export default function AuthManager({ onLoginSuccess, members = [] }) {
           const sessionUser = {
             id: foundUser.id,
             name: foundUser.name,
-            role: mappedRole
+            role: mappedRole,
+            password: userPw // 로그인시 입력했던 유효 비밀번호 주입
           };
           onLoginSuccess(sessionUser);
           return;
@@ -147,7 +150,8 @@ export default function AuthManager({ onLoginSuccess, members = [] }) {
           const sessionUser = {
             id: matchedMember.email || targetId,
             name: `${matchedMember.name} ${mappedRole.name.split(" ")[1] || "연구원"}`,
-            role: mappedRole
+            role: mappedRole,
+            password: rawPw // 휴대폰 뒷자리 4자리 자동 주입
           };
           onLoginSuccess(sessionUser);
           return;
