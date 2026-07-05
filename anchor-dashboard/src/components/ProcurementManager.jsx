@@ -1408,9 +1408,19 @@ export default function ProcurementManager({
                                                  lastActivePhase.phase === primaryCode && 
                                                  lastActivePhase.idx === currIdx;
 
-                            const isTodayMonth = (Number(selectedYear) === 2 && m === "7");
+                            const hasAnyMilestoneInActiveYear = (activePhases.length > 0);
                             const hasTodayInTimeline = (Number(selectedYear) === 2);
-                            const shouldShowBalloon = hasTodayInTimeline ? isTodayMonth : isLastActive;
+                            const isTodayMonth = (m === "7");
+                            let shouldShowBalloon = false;
+                            if (hasAnyMilestoneInActiveYear) {
+                              if (hasTodayInTimeline) {
+                                shouldShowBalloon = isTodayMonth;
+                              } else {
+                                shouldShowBalloon = isLastActive;
+                              }
+                            } else {
+                              shouldShowBalloon = false;
+                            }
 
                             const statusColors = {
                               "준비중": { bg: "#64748b", border: "#94a3b8", shadow: "rgba(100, 116, 139, 0.3)" },
