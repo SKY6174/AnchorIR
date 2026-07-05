@@ -5307,7 +5307,7 @@ export default function App() {
         </>
         )}
 
-        {activeTab === "management" && currentRole.id !== "GUEST" && (
+        {activeTab === "management" && ["ADMIN", "DIRECTOR", "HQ_HEAD", "TEAM_LEADER"].includes(currentRole.id) && (
           <div className="glass-card" style={{ position: "relative" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.2rem", flexWrap: "wrap", gap: "0.8rem" }}>
               <div>

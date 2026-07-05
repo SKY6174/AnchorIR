@@ -755,8 +755,8 @@ export default function Sidebar({
             <span>앵커Wiki</span>
           </div>
 
-          {/* 모든 역할(연구원 포함)이 사업단 관리 메뉴에 접근하여 대학조직도/파트너기관을 볼 수 있도록 허용합니다. */}
-          {currentRole && (
+          {/* '사업단 관리' 메뉴는 ADMIN, DIRECTOR, HQ_HEAD, TEAM_LEADER에게만 노출하도록 제한합니다. */}
+          {currentRole && (["ADMIN", "DIRECTOR", "HQ_HEAD", "TEAM_LEADER"].includes(currentRole.id) || isSongDirector) && (
             <div 
               className={`mgmt-nav-wrapper ${(activeTab === "management" || hoveredTab === "management") ? "active" : ""}`}
               onMouseEnter={() => setHoveredTab("management")}
