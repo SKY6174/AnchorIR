@@ -1682,7 +1682,7 @@ export default function ProcurementManager({
                   </th>
                   <th rowSpan={3} style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "80px", verticalAlign: "middle" }}>관련문서</th>
                   {currentRole.id !== "GUEST" && (
-                    <th rowSpan={3} style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "55px", verticalAlign: "middle" }}>제어</th>
+                    <th rowSpan={3} style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "65px", verticalAlign: "middle" }}>제어</th>
                   )}
                 </tr>
                 {/* 2행: 연도 분할 */}
@@ -2180,8 +2180,8 @@ export default function ProcurementManager({
                             </div>
                           </td>
                           {currentRole.id !== "GUEST" && (
-                            <td style={{ padding: "0.8rem 0.5rem", textAlign: "center", verticalAlign: "middle" }}>
-                              <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem", alignItems: "center" }}>
+                            <td style={{ padding: "0.8rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap" }}>
+                              <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem", alignItems: "center", width: "100%" }}>
                                 <button
                                   onClick={() => openEditModal(equip)}
                                   style={{
@@ -2193,7 +2193,8 @@ export default function ProcurementManager({
                                     fontSize: "0.65rem",
                                     cursor: "pointer",
                                     transition: "all 0.15s ease",
-                                    textAlign: "center"
+                                    textAlign: "center",
+                                    whiteSpace: "nowrap"
                                   }}
                                   onMouseOver={(e) => {
                                     e.currentTarget.style.background = "rgba(59, 130, 246, 0.2)";
@@ -2233,7 +2234,8 @@ export default function ProcurementManager({
                                     fontSize: "0.65rem",
                                     cursor: "pointer",
                                     transition: "all 0.15s ease",
-                                    textAlign: "center"
+                                    textAlign: "center",
+                                    whiteSpace: "nowrap"
                                   }}
                                   onMouseOver={(e) => {
                                     e.currentTarget.style.background = "rgba(239, 68, 68, 0.25)";
