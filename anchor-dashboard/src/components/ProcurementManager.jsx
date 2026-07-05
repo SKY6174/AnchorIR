@@ -667,6 +667,30 @@ export default function ProcurementManager({
     progressSetter(0);
   };
 
+  // AI 분석용 예산 문자열 파서 (예: "120,000천원" 또는 "1.2억원" => 백만원 단위 변환)
+  const parseBudgetStringToMillions = (budgetString) => {
+    if (!budgetString) return "";
+    const cleanStr = budgetString.toString().replace(/,/g, "");
+    const numMatch = cleanStr.match(/\d+(\.\d+)?/);
+    if (numMatch) {
+      const val = parseFloat(numMatch[0]);
+      if (cleanStr.includes("천원")) {
+        return parseFloat((val * 1000 / 1000000).toFixed(2));
+      }
+      if (cleanStr.includes("억원")) {
+        return val * 100;
+      }
+      if (cleanStr.includes("만원")) {
+        return parseFloat((val / 100).toFixed(2));
+      }
+      if (val >= 100000) {
+        return parseFloat((val / 1000000).toFixed(2));
+      }
+      return val;
+    }
+    return "";
+  };
+
   const handleAnalyzeAndUpload = async (docType) => {
     const fieldPrefix = docType === "proposal" ? "docPlan" : docType === "purchase" ? "docPurchase" : "docBid";
     const file = formData[`${fieldPrefix}File`];
@@ -713,17 +737,68 @@ export default function ProcurementManager({
         totalPrice
       );
 
-      // 3. 분석 요약 정보 및 업로드된 파일 URL을 formData에 최종 갱신
-      setFormData(prev => ({
-        ...prev,
-        [`${fieldPrefix}FileName`]: uploadedFileMeta.name,
-        [`${fieldPrefix}FileSize`]: uploadedFileMeta.size,
-        [`${fieldPrefix}FileUrl`]: uploadedFileMeta.url,
-        [`ai${docType === "proposal" ? "Proposal" : docType === "purchase" ? "Purchase" : "Bid"}Data`]: aiResult,
-        [fieldPrefix === "docPlan" ? "docPlan" : fieldPrefix === "docPurchase" ? "docPurchase" : "docBid"]: aiResult.docNo
-      }));
+      // 3. 분석 요약 정보 및 업로드된 파일 URL을 formData에 최종 갱신 및 자동 완성
+      setFormData(prev => {
+        const nextData = {
+          ...prev,
+          [`${fieldPrefix}FileName`]: uploadedFileMeta.name,
+          [`${fieldPrefix}FileSize`]: uploadedFileMeta.size,
+          [`${fieldPrefix}FileUrl`]: uploadedFileMeta.url,
+          [`ai${docType === "proposal" ? "Proposal" : docType === "purchase" ? "Purchase" : "Bid"}Data`]: aiResult,
+          [fieldPrefix === "docPlan" ? "docPlan" : fieldPrefix === "docPurchase" ? "docPurchase" : "docBid"]: aiResult.docNo
+        };
 
-      alert(`🤖 GPT AI 분석 및 ${docType === "proposal" ? "기획" : docType === "purchase" ? "구매" : "입찰"}문서 업로드가 완료되었습니다!`);
+        // --- AI 분석 결과를 기반으로 폼 필드 자동 완성 및 정리 ---
+        
+        // 1. 기획/구매 문서 예산 파싱 => 사업비(unitPrice) 자동 완성
+        if (docType === "proposal" || docType === "purchase") {
+          const parsedBudget = parseBudgetStringToMillions(aiResult.budget);
+          if (parsedBudget) {
+            nextData.unitPrice = parsedBudget;
+          }
+        }
+        
+        // 2. 결과(입찰) 문서 예산 파싱 => 실제 집행액(budgetSpent) 자동 완성
+        if (docType === "bid") {
+          const parsedSpent = parseBudgetStringToMillions(aiResult.budget);
+          if (parsedSpent) {
+            nextData.budgetSpent = parsedSpent;
+          }
+        }
+
+        // 3. 기획 문서 분석 결과 기반 자동 채우기
+        if (docType === "proposal") {
+          // 단위과제 자동 선택 (A1, A2, B1, B2, C1, C2 등 매칭)
+          if (aiResult.unit) {
+            const matchedUnit = ["A1", "A2", "B1", "B2", "C1", "C2"].find(u => 
+              aiResult.unit.toUpperCase().includes(u)
+            );
+            if (matchedUnit) {
+              nextData.unit = matchedUnit;
+            }
+          }
+          // 주관 부서 자동 선택
+          if (aiResult.dept) {
+            nextData.deptName = aiResult.dept;
+          }
+          // 기획 목표를 바탕으로 구축 목적(purpose)과 계획(plan) 자동완성
+          if (aiResult.goals && Array.isArray(aiResult.goals) && aiResult.goals.length > 0) {
+            nextData.descriptionPurpose = aiResult.goals[0] || "";
+            nextData.descriptionPlan = aiResult.goals.slice(1).join("\n") || "";
+          }
+        }
+
+        // 4. 구매 문서 분석 결과 기반 자동 채우기
+        if (docType === "purchase") {
+          if (aiResult.fromDept) {
+            nextData.deptName = aiResult.fromDept;
+          }
+        }
+
+        return nextData;
+      });
+
+      alert(`🤖 GPT AI 분석 및 ${docType === "proposal" ? "기획" : docType === "purchase" ? "구매" : "결과"}문서 업로드가 완료되었습니다!`);
     } catch (error) {
       console.error("문서 분석 에러:", error);
       alert("❌ 문서 분석 중 예상치 못한 에러가 발생했습니다.");
@@ -2021,66 +2096,68 @@ export default function ProcurementManager({
                         {/* 관련문서 열 */}
                         <td style={{ padding: "0.8rem 0.2rem", textAlign: "center", color: "var(--text-secondary)" }}>
                           <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem", alignItems: "center", width: "100%" }}>
-                            {equip.docPlan && (
-                              <button
-                                onClick={() => setProposalModalData(equip)}
-                                style={{
-                                  padding: "0.25rem 0.45rem",
-                                  fontSize: "0.65rem",
-                                  borderRadius: "4px",
-                                  background: "rgba(59, 130, 246, 0.12)",
-                                  color: "#60A5FA",
-                                  border: "1px solid rgba(59, 130, 246, 0.25)",
-                                  cursor: "pointer",
-                                  transition: "all 0.2s",
-                                  width: "36px",
-                                  textAlign: "center"
-                                }}
-                                title="기획(사업단 ➔ 시설안전관리팀) 문서 요약 보기"
-                              >
-                                기획
-                              </button>
-                            )}
-                            {equip.docPurchase && (
-                              <button
-                                onClick={() => setPurchaseModalData(equip)}
-                                style={{
-                                  padding: "0.25rem 0.45rem",
-                                  fontSize: "0.65rem",
-                                  borderRadius: "4px",
-                                  background: "rgba(167, 139, 250, 0.12)",
-                                  color: "#C084FC",
-                                  border: "1px solid rgba(167, 139, 250, 0.25)",
-                                  cursor: "pointer",
-                                  transition: "all 0.2s",
-                                  width: "36px",
-                                  textAlign: "center"
-                                }}
-                                title="구매(시설안전관리팀) 문서 요약 보기"
-                              >
-                                구매
-                              </button>
-                            )}
-                            {equip.docBid && (
-                              <button
-                                onClick={() => setBidModalData(equip)}
-                                style={{
-                                  padding: "0.25rem 0.45rem",
-                                  fontSize: "0.65rem",
-                                  borderRadius: "4px",
-                                  background: "rgba(16, 185, 129, 0.12)",
-                                  color: "#34D399",
-                                  border: "1px solid rgba(16, 185, 129, 0.25)",
-                                  cursor: "pointer",
-                                  transition: "all 0.2s",
-                                  width: "36px",
-                                  textAlign: "center"
-                                }}
-                                title="결과(시설안전관리팀 시공/준공) 문서 요약 보기"
-                              >
-                                결과
-                              </button>
-                            )}
+                            {/* 1. 기획문서 */}
+                            <button
+                              disabled={!equip.docPlan}
+                              onClick={() => setProposalModalData(equip)}
+                              style={{
+                                padding: "0.25rem 0.45rem",
+                                fontSize: "0.65rem",
+                                borderRadius: "4px",
+                                background: equip.docPlan ? "rgba(59, 130, 246, 0.12)" : "rgba(255, 255, 255, 0.03)",
+                                color: equip.docPlan ? "#60A5FA" : "rgba(255, 255, 255, 0.25)",
+                                border: equip.docPlan ? "1px solid rgba(59, 130, 246, 0.25)" : "1px solid rgba(255, 255, 255, 0.08)",
+                                cursor: equip.docPlan ? "pointer" : "not-allowed",
+                                transition: "all 0.2s",
+                                width: "36px",
+                                textAlign: "center"
+                              }}
+                              title={equip.docPlan ? "기획(사업단 ➔ 시설안전관리팀) 문서 요약 보기" : "기획 문서가 아직 등록되지 않았습니다."}
+                            >
+                              기획
+                            </button>
+
+                            {/* 2. 구매문서 */}
+                            <button
+                              disabled={!equip.docPurchase}
+                              onClick={() => setPurchaseModalData(equip)}
+                              style={{
+                                padding: "0.25rem 0.45rem",
+                                fontSize: "0.65rem",
+                                borderRadius: "4px",
+                                background: equip.docPurchase ? "rgba(167, 139, 250, 0.12)" : "rgba(255, 255, 255, 0.03)",
+                                color: equip.docPurchase ? "#C084FC" : "rgba(255, 255, 255, 0.25)",
+                                border: equip.docPurchase ? "1px solid rgba(167, 139, 250, 0.25)" : "1px solid rgba(255, 255, 255, 0.08)",
+                                cursor: equip.docPurchase ? "pointer" : "not-allowed",
+                                transition: "all 0.2s",
+                                width: "36px",
+                                textAlign: "center"
+                              }}
+                              title={equip.docPurchase ? "구매(시설안전관리팀) 문서 요약 보기" : "구매 문서가 아직 등록되지 않았습니다."}
+                            >
+                              구매
+                            </button>
+
+                            {/* 3. 결과문서 */}
+                            <button
+                              disabled={!equip.docBid}
+                              onClick={() => setBidModalData(equip)}
+                              style={{
+                                padding: "0.25rem 0.45rem",
+                                fontSize: "0.65rem",
+                                borderRadius: "4px",
+                                background: equip.docBid ? "rgba(16, 185, 129, 0.12)" : "rgba(255, 255, 255, 0.03)",
+                                color: equip.docBid ? "#34D399" : "rgba(255, 255, 255, 0.25)",
+                                border: equip.docBid ? "1px solid rgba(16, 185, 129, 0.25)" : "1px solid rgba(255, 255, 255, 0.08)",
+                                cursor: equip.docBid ? "pointer" : "not-allowed",
+                                transition: "all 0.2s",
+                                width: "36px",
+                                textAlign: "center"
+                              }}
+                              title={equip.docBid ? "결과(시설안전관리팀 시공/준공) 문서 요약 보기" : "결과 문서가 아직 등록되지 않았습니다."}
+                            >
+                              결과
+                            </button>
                           </div>
                         </td>
                         {/* 제어 열 버튼 */}
