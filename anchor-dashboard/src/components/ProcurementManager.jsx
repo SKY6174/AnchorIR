@@ -511,7 +511,8 @@ export default function ProcurementManager({
   equipData = [],
   setEquipData,
   serviceData = [],
-  setServiceData
+  setServiceData,
+  projects = []
 }) {
   // 모달 제어 상태
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -838,13 +839,31 @@ export default function ProcurementManager({
     };
   };
 
+  // 동적으로 연계 프로그램을 획득하는 헬퍼 함수 (projects prop 연계 및 하드코딩 Fallback 제공)
+  const getDynamicPrograms = (targetUnit) => {
+    const unitKey = targetUnit || formData.unit;
+    if (projects && projects.length > 0) {
+      for (const proj of projects) {
+        if (proj.units && proj.units.length > 0) {
+          const matchedUnit = proj.units.find(u => u.id === unitKey);
+          if (matchedUnit && matchedUnit.programs) {
+            return matchedUnit.programs.map(prog => ({
+              id: prog.id,
+              name: prog.title
+            }));
+          }
+        }
+      }
+    }
+    return PROGRAMS_BY_UNIT[unitKey] || [];
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     if (name === "year") {
       const nextYear = Number(value);
-      // 연차 변경 시 유효한 단위과제 기본값 매핑
       const nextUnit = nextYear === 1 ? "A1" : "A1가";
-      const progs = PROGRAMS_BY_UNIT[nextUnit] || [];
+      const progs = getDynamicPrograms(nextUnit);
       const defaultProg = progs.length > 0 ? progs[0].name : "";
       setFormData(prev => ({
         ...prev,
@@ -854,7 +873,7 @@ export default function ProcurementManager({
       }));
     } else if (name === "unit") {
       const nextUnit = value;
-      const progs = PROGRAMS_BY_UNIT[nextUnit] || [];
+      const progs = getDynamicPrograms(nextUnit);
       const defaultProg = progs.length > 0 ? progs[0].name : "";
       setFormData(prev => ({
         ...prev,
@@ -2483,7 +2502,7 @@ export default function ProcurementManager({
                       className="user-selector" 
                       style={{ width: "100%" }}
                     >
-                      {(PROGRAMS_BY_UNIT[formData.unit] || []).map(p => (
+                      {getDynamicPrograms().map(p => (
                         <option key={p.id} value={p.name}>[{p.id}] {p.name}</option>
                       ))}
                     </select>

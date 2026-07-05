@@ -26,6 +26,8 @@ export default function Sidebar({
   menuVisibility = {},
   isSongDirector = false
 }) {
+  const [hoveredTab, setHoveredTab] = React.useState(null);
+
   // 해당 메뉴 키가 숨김 상태로 설정되었는지 판별
   const isHidden = (key) => menuVisibility[key] === false;
 
@@ -73,13 +75,16 @@ export default function Sidebar({
           )}
 
           {(menuVisibility.progress !== false || isSongDirector) && (
-            <div className={`progress-nav-wrapper ${activeTab === "progress" ? "active" : ""}`}>
+            <div 
+              className={`progress-nav-wrapper ${(activeTab === "progress" || hoveredTab === "progress") ? "active" : ""}`}
+              onMouseEnter={() => setHoveredTab("progress")}
+              onMouseLeave={() => setHoveredTab(null)}
+            >
               <div
                 className={`nav-item ${activeTab === "progress" ? "active" : ""}`}
                 onClick={() => {
                   onChangeTab("progress");
                   if (onChangeProgressSubTab) {
-                    // 켜져 있는 서브탭 중 첫 번째 탭으로 초기화 활성화 (단장님은 전부 활성화로 판단)
                     const subTabs = ["progress_status", "major_programs", "satisfaction_survey"];
                     const firstActive = subTabs.find(tab => isSongDirector || menuVisibility[tab] !== false) || "progress_status";
                     onChangeProgressSubTab(firstActive);
@@ -163,7 +168,11 @@ export default function Sidebar({
           )}
 
           {(menuVisibility.budget !== false || isSongDirector) && (
-            <div className={`budget-nav-wrapper ${activeTab === "budget" ? "active" : ""}`}>
+            <div 
+              className={`budget-nav-wrapper ${(activeTab === "budget" || hoveredTab === "budget") ? "active" : ""}`}
+              onMouseEnter={() => setHoveredTab("budget")}
+              onMouseLeave={() => setHoveredTab(null)}
+            >
               <div
                 className={`nav-item ${activeTab === "budget" ? "active" : ""}`}
                 onClick={() => {
@@ -233,7 +242,11 @@ export default function Sidebar({
           )}
 
           {(menuVisibility.kpis !== false || isSongDirector) && (
-            <div className={`kpis-nav-wrapper ${activeTab === "kpis" ? "active" : ""}`}>
+            <div 
+              className={`kpis-nav-wrapper ${(activeTab === "kpis" || hoveredTab === "kpis") ? "active" : ""}`}
+              onMouseEnter={() => setHoveredTab("kpis")}
+              onMouseLeave={() => setHoveredTab(null)}
+            >
               <div
                 className={`nav-item ${activeTab === "kpis" ? "active" : ""}`}
                 onClick={() => {
@@ -323,7 +336,11 @@ export default function Sidebar({
           )}
 
           {(menuVisibility.agreements !== false || isSongDirector) && (
-            <div className={`agreements-nav-wrapper ${activeTab === "agreements" ? "active" : ""}`}>
+            <div 
+              className={`agreements-nav-wrapper ${(activeTab === "agreements" || hoveredTab === "agreements") ? "active" : ""}`}
+              onMouseEnter={() => setHoveredTab("agreements")}
+              onMouseLeave={() => setHoveredTab(null)}
+            >
               <div
                 className={`nav-item ${activeTab === "agreements" ? "active" : ""}`}
                 onClick={() => {
@@ -411,14 +428,16 @@ export default function Sidebar({
             </div>
           )}
 
-          <div className={`procurement-nav-wrapper ${activeTab === "procurement" ? "active" : ""}`}>
+          <div 
+            className={`procurement-nav-wrapper ${(activeTab === "procurement" || hoveredTab === "procurement") ? "active" : ""}`}
+            onMouseEnter={() => setHoveredTab("procurement")}
+            onMouseLeave={() => setHoveredTab(null)}
+          >
             <div
               className={`nav-item ${activeTab === "procurement" ? "active" : ""}`}
               onClick={() => {
                 onChangeTab("procurement");
                 if (onChangeProcurementSubTab) {
-                  const subTabs = ["env_improvement", "equipment_purchase", "major_services"];
-                  // 숨김 설정과 무관하게 기본적으로 env_improvement를 첫 활성 탭으로 활성화
                   onChangeProcurementSubTab("env_improvement");
                 }
               }}
@@ -493,7 +512,11 @@ export default function Sidebar({
           </div>
 
           {(menuVisibility.schedule !== false || isSongDirector) && (
-            <div className={`schedule-nav-wrapper ${activeTab === "schedule" ? "active" : ""}`}>
+            <div 
+              className={`schedule-nav-wrapper ${(activeTab === "schedule" || hoveredTab === "schedule") ? "active" : ""}`}
+              onMouseEnter={() => setHoveredTab("schedule")}
+              onMouseLeave={() => setHoveredTab(null)}
+            >
               <div
                 className={`nav-item ${activeTab === "schedule" ? "active" : ""}`}
                 onClick={() => {
@@ -630,9 +653,107 @@ export default function Sidebar({
             <span>앵커Wiki</span>
           </div>
 
+          {/* 1) 단위과제 관리 탭 복구 (요구사항 1 반영) */}
+          {(menuVisibility.projects !== false || isSongDirector) && (
+            <div 
+              className={`projects-nav-wrapper ${(activeTab === "projects" || hoveredTab === "projects") ? "active" : ""}`}
+              onMouseEnter={() => setHoveredTab("projects")}
+              onMouseLeave={() => setHoveredTab(null)}
+            >
+              <div
+                className={`nav-item ${activeTab === "projects" ? "active" : ""}`}
+                onClick={() => {
+                  onChangeTab("projects");
+                  if (onChangeProjectsSubTab) {
+                    const subTabs = ["unit_status", "unit_system", "program_mgmt"];
+                    const firstActive = subTabs.find(tab => isSongDirector || menuVisibility[tab] !== false) || "unit_status";
+                    onChangeProjectsSubTab(firstActive);
+                  }
+                }}
+                style={getHiddenStyle("projects")}
+              >
+                <FolderKanban size={24} />
+                <span>
+                  단위과제 관리
+                  {isHidden("projects") && (
+                    <span style={{ fontSize: "0.65rem", color: "#ef4444", fontWeight: "bold", textDecoration: "none", display: "inline-block", marginLeft: "0.25rem" }}>
+                      [숨김]
+                    </span>
+                  )}
+                </span>
+              </div>
+              <div className="nav-sub-menu">
+                {(menuVisibility.unit_status !== false || isSongDirector) && (
+                  <div
+                    className={`nav-sub-item ${activeTab === "projects" && projectsSubTab === "unit_status" ? "active" : ""}`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onChangeTab("projects");
+                      if (onChangeProjectsSubTab) {
+                        onChangeProjectsSubTab("unit_status");
+                      }
+                    }}
+                    style={getHiddenStyle("unit_status")}
+                  >
+                    - 단위과제 집행현황
+                    {isHidden("unit_status") && (
+                      <span style={{ fontSize: "0.6rem", color: "#ef4444", textDecoration: "none", marginLeft: "0.2rem" }}>
+                        [숨김]
+                      </span>
+                    )}
+                  </div>
+                )}
+                {(menuVisibility.unit_system !== false || isSongDirector) && (
+                  <div
+                    className={`nav-sub-item ${activeTab === "projects" && projectsSubTab === "unit_system" ? "active" : ""}`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onChangeTab("projects");
+                      if (onChangeProjectsSubTab) {
+                        onChangeProjectsSubTab("unit_system");
+                      }
+                    }}
+                    style={getHiddenStyle("unit_system")}
+                  >
+                    - 단위과제 체계
+                    {isHidden("unit_system") && (
+                      <span style={{ fontSize: "0.6rem", color: "#ef4444", textDecoration: "none", marginLeft: "0.2rem" }}>
+                        [숨김]
+                      </span>
+                    )}
+                  </div>
+                )}
+                {(menuVisibility.program_mgmt !== false || isSongDirector) && (
+                  <div
+                    className={`nav-sub-item ${activeTab === "projects" && projectsSubTab === "program_mgmt" ? "active" : ""}`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onChangeTab("projects");
+                      if (onChangeProjectsSubTab) {
+                        onChangeProjectsSubTab("program_mgmt");
+                      }
+                    }}
+                    style={getHiddenStyle("program_mgmt")}
+                  >
+                    - 프로그램 관리
+                    {isHidden("program_mgmt") && (
+                      <span style={{ fontSize: "0.6rem", color: "#ef4444", textDecoration: "none", marginLeft: "0.2rem" }}>
+                        [숨김]
+                      </span>
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
           {/* 모든 역할(연구원 포함)이 사업단 관리 메뉴에 접근하여 대학조직도/파트너기관을 볼 수 있도록 허용합니다. */}
           {currentRole && (
-            <div className={`mgmt-nav-wrapper ${activeTab === "management" ? "active" : ""}`}>
+            <div 
+              className={`mgmt-nav-wrapper ${(activeTab === "management" || hoveredTab === "management") ? "active" : ""}`}
+              onMouseEnter={() => setHoveredTab("management")}
+              onMouseLeave={() => setHoveredTab(null)}
+            >
               <div
                 className={`nav-item ${activeTab === "management" ? "active" : ""}`}
                 onClick={() => {

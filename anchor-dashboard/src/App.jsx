@@ -6930,6 +6930,7 @@ export default function App() {
               setEquipData={setEquipData}
               serviceData={serviceData}
               setServiceData={setServiceData}
+              projects={projects}
             />
           </div>
         )}
