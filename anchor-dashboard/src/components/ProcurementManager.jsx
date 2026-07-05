@@ -1,43 +1,133 @@
 import React, { useState } from "react";
-import { 
-  Building2, Laptop, ShieldCheck, Plus, CheckCircle, 
-  MapPin, Landmark, DollarSign, Calendar, Info, 
-  Eye, FileText, FileImage, LayoutGrid, ListFilter, Trash2
-} from "lucide-react";
+import { Plus, Trash2, Info, ListFilter } from "lucide-react";
 
-// 단장님이 지시하신 10개 필드로 구성되고 '26.3월 ~ '27.2월 12개월 월별로 기획(P)-승인(A)-입찰(B)-구매(Pr)-검수(I) 다중 선택이 적용된 초기 기자재 품목 데이터셋
+// 1. 10대 기자재 초기 모의 데이터 정의
 const defaultEquipments = [
-  { id: 1, unit: "A1", seq: 1, deptName: "간호학과", divisionName: "공동기자재지원센터", itemName: "임상 시뮬레이터 스마트 실습 베드", unitPrice: 12000000, quantity: 2, description: "간호학 임상 실습 고도화 교육 환경 인프라 조달", operation: "교과목(정규)", 
-    milestones: { "3": ["기획"], "4": ["기획", "승인"], "5": ["승인"], "6": ["승인"], "7": ["입찰"], "8": ["구매"], "9": ["검수"], "10": ["검수"], "11": [], "12": [], "1": [], "2": [] } 
+  { id: 1, unit: "A1", seq: 1, deptName: "간호학과", divisionName: "", itemName: "스마트 환자 시뮬레이터 (중환자 케어 실습 장비)", unitPrice: 120000000, quantity: 1, description: "글로벌 앵커 혁신 교육과정 임상 실습 고도화 핵심 기기", operation: "교과목(정규)", 
+    milestones: { "3": ["기획"], "4": ["기획", "승인"], "5": ["승인"], "6": ["입찰"], "7": ["구매"], "8": ["구매"], "9": ["검수"], "10": ["검수"], "11": [], "12": [], "1": [], "2": [] }
   },
-  { id: 2, unit: "A2", seq: 2, deptName: "화학공학과", divisionName: "", itemName: "고정밀 가스 크로마토그래피 측정기", unitPrice: 24500000, quantity: 1, description: "화공 정밀 분석 및 대외 기업 애로기술 분석 지원용", operation: "교과목(비정규)", 
-    milestones: { "3": ["기획"], "4": ["승인"], "5": ["승인", "입찰"], "6": ["구매"], "7": ["구매"], "8": ["검수"], "9": [], "10": [], "11": [], "12": [], "1": [], "2": [] } 
+  { id: 2, unit: "A2", seq: 2, deptName: "화학공학과", divisionName: "", itemName: "정밀 화학 분석 크로마토그래피 시스템", unitPrice: 245000000, quantity: 1, description: "신산업 저탄소 에너지 트랙 화학 정밀 분석 실습 장비", operation: "교과목(정규)", 
+    milestones: { "3": ["기획"], "4": ["승인"], "5": ["승인"], "6": ["입찰"], "7": ["구매"], "8": ["구매"], "9": ["검수"], "10": [], "11": [], "12": [], "1": [], "2": [] }
   },
-  { id: 3, unit: "B1", seq: 3, deptName: "컴퓨터공학과", divisionName: "원격교육지원센터", itemName: "가상현실/메타버스 전용 GPU 렌더링 서버", unitPrice: 15000000, quantity: 3, description: "신기술 가상현실 융합인재양성 교육 장비 구축", operation: "교과목(정규)", 
-    milestones: { "3": [], "4": ["기획"], "5": ["기획", "승인"], "6": ["승인"], "7": ["입찰"], "8": ["구매", "검수"], "9": ["검수"], "10": [], "11": [], "12": [], "1": [], "2": [] } 
+  { id: 3, unit: "B1", seq: 3, deptName: "컴퓨터공학과", divisionName: "", itemName: "AI 알고리즘 모델링 연산용 고성능 GPU 워크스테이션", unitPrice: 15000000, quantity: 3, description: "RCC 특화산업 AI 융합 실감형 교육 센터 실무 교육 지원", operation: "교과목(정규)", 
+    milestones: { "3": ["기획"], "4": ["기획", "승인"], "5": ["승인"], "6": ["구매"], "7": ["구매"], "8": ["검수"], "9": [], "10": [], "11": [], "12": [], "1": [], "2": [] }
   },
-  { id: 4, unit: "B2", seq: 4, deptName: "기계공학과", divisionName: "", itemName: "3D 메탈 프린터 조달", unitPrice: 38000000, quantity: 1, description: "지산학 스마트 제조 부품 시제품 제작 지원 인프라", operation: "교과목(정규)", 
-    milestones: { "3": ["기획"], "4": ["기획", "승인"], "5": ["승인"], "6": ["입찰", "구매"], "7": ["구매"], "8": ["검수"], "9": ["검수"], "10": [], "11": [], "12": [], "1": [], "2": [] } 
+  { id: 4, unit: "B2", seq: 4, deptName: "기계공학과", divisionName: "", itemName: "스마트 팩토리 모듈 제어 및 3D 정밀 프린팅 모듈", unitPrice: 38000000, quantity: 1, description: "지산학 연계 제조 혁신 엔지니어 교육 기자재", operation: "교과목(정규)", 
+    milestones: { "3": ["기획"], "4": ["기획"], "5": ["승인"], "6": ["구매"], "7": ["구매"], "8": ["검수"], "9": [], "10": [], "11": [], "12": [], "1": [], "2": [] }
   },
-  { id: 5, unit: "B3", seq: 5, deptName: "전기전자공학과", divisionName: "공동기자재지원센터", itemName: "반도체 회로 분석 계측기 (Oscilloscope)", unitPrice: 8500000, quantity: 4, description: "반도체 인력양성 실습용 고가 계측 장비 확충", operation: "교과목(비정규)", 
-    milestones: { "3": ["기획"], "4": ["기획"], "5": ["승인"], "6": ["승인"], "7": ["입찰"], "8": ["구매"], "9": ["구매", "검수"], "10": ["검수"], "11": ["검수"], "12": ["검수"], "1": [], "2": [] } 
+  { id: 5, unit: "B3", seq: 5, deptName: "전기전자공학과", divisionName: "", itemName: "반도체 임베디드 코딩 및 고정밀 계측 오실로스코프", unitPrice: 8500000, quantity: 4, description: "반도체 전공 대학 연계 실무 미러형 교육 설계용 장비", operation: "교과목(정규)", 
+    milestones: { "3": ["기획"], "4": ["승인"], "5": ["승인"], "6": ["구매"], "7": ["구매"], "8": ["검수"], "9": [], "10": [], "11": [], "12": [], "1": [], "2": [] }
   },
-  { id: 6, unit: "B4", seq: 6, deptName: "", divisionName: "늘봄누리센터", itemName: "늘봄 교실용 스마트 대화형 교육 패드", unitPrice: 850000, quantity: 15, description: "대학 기자재 활용형 아동 늘봄교육 교재 조달", operation: "교과목(비정규)", 
-    milestones: { "3": [], "4": [], "5": ["기획"], "6": ["기획", "승인"], "7": ["승인"], "8": ["구매"], "9": ["구매"], "10": ["검수"], "11": ["검수"], "12": [], "1": [], "2": [] } 
+  { id: 6, unit: "B4", seq: 6, deptName: "유아교육과", divisionName: "", itemName: "늘봄 연계 창의 놀이 실증용 스마트 인터랙티브 디스플레이", unitPrice: 8500000, quantity: 2, description: "에듀테크 기반 창의적 교육 콘텐츠 제작 교육 과정 운영", operation: "교과목(비정규)", 
+    milestones: { "3": ["기획"], "4": ["기획"], "5": ["승인"], "6": ["구매"], "7": ["구매"], "8": ["검수"], "9": [], "10": [], "11": [], "12": [], "1": [], "2": [] }
   },
-  { id: 7, unit: "C1", seq: 7, deptName: "스마트팩토리전공", divisionName: "", itemName: "다축 협동 산업용 로봇 팔 암 (Robot Arm)", unitPrice: 28000000, quantity: 1, description: "로봇제어 전공 정규 실험실습 공간 인프라 구축", operation: "교과목(정규)", 
-    milestones: { "3": ["기획"], "4": ["기획", "승인"], "5": ["승인"], "6": ["구매"], "7": ["구매"], "8": ["검수"], "9": ["검수"], "10": [], "11": [], "12": [], "1": [], "2": [] } 
+  { id: 7, unit: "C1", seq: 7, deptName: "스마트팩토리전공", divisionName: "", itemName: "다목적 6축 소형 스마트 교육용 협동 로봇 머니퓰레이터", unitPrice: 28000000, quantity: 1, description: "미래 지능형 로봇 운용/제어 교과목 현장 중심 실습", operation: "교과목(정규)", 
+    milestones: { "3": ["기획"], "4": ["기획"], "5": ["승인"], "6": ["구매"], "7": ["구매"], "8": ["검수"], "9": [], "10": [], "11": [], "12": [], "1": [], "2": [] }
   },
   { id: 8, unit: "C2", seq: 8, deptName: "반려동물보건과", divisionName: "", itemName: "동물 전용 디지털 초음파 진단 장치", unitPrice: 19000000, quantity: 1, description: "신설학과 실무 미러형 임상 실습실 조달 품목", operation: "교과목(정규)", 
-    milestones: { "3": [], "4": ["기획"], "5": ["기획", "승인"], "6": ["승인"], "7": ["구매"], "8": ["구매"], "9": ["검수"], "10": [], "11": [], "12": [], "1": [], "2": [] } 
+    milestones: { "3": [], "4": ["기획"], "5": ["기획", "승인"], "6": ["승인"], "7": ["구매"], "8": ["구매"], "9": ["검수"], "10": [], "11": [], "12": [], "1": [], "2": [] }
   },
   { id: 9, unit: "D1", seq: 9, deptName: "스마트선박학과", divisionName: "", itemName: "미래 친환경선박 가상 운항 교육 시뮬레이터", unitPrice: 45000000, quantity: 1, description: "5극3특 가상 운항 실습 교육 과정 지원용 장비", operation: "교과목(정규)", 
-    milestones: { "3": ["기획"], "4": ["기획"], "5": ["기획", "승인"], "6": ["승인"], "7": ["입찰"], "8": ["입찰", "구매"], "9": ["구매"], "10": ["구매"], "11": ["검수"], "12": ["검수"], "1": ["검수"], "2": ["검수"] } 
+    milestones: { "3": ["기획"], "4": ["기획"], "5": ["기획", "승인"], "6": ["승인"], "7": ["입찰"], "8": ["입찰", "구매"], "9": ["구매"], "10": ["구매"], "11": ["검수"], "12": ["검수"], "1": ["검수"], "2": ["검수"] }
   },
   { id: 10, unit: "D2", seq: 10, deptName: "미용예술학과", divisionName: "", itemName: "메디컬 스킨케어 다기능 뷰티 디바이스", unitPrice: 6500000, quantity: 5, description: "웰니스 뷰티 케어 실습 및 지역 상생 뷰티 아카데미 활용", operation: "교과목(비정규)", 
-    milestones: { "3": ["기획"], "4": ["기획", "승인"], "5": ["승인"], "6": ["구매"], "7": ["구매"], "8": ["검수"], "9": ["검수"], "10": [], "11": [], "12": [], "1": [], "2": [] } 
+    milestones: { "3": ["기획"], "4": ["기획", "승인"], "5": ["승인"], "6": ["구매"], "7": ["구매"], "8": ["검수"], "9": ["검수"], "10": [], "11": [], "12": [], "1": [], "2": [] }
   }
 ];
+
+// 백만원 단위 포맷팅 헬퍼 함수 (소수점 첫째자리까지 표현 및 천단위 쉼표 추가)
+const formatToMillionWon = (value) => {
+  if (value === undefined || value === null || isNaN(value)) return "0.0";
+  return (value / 1000000).toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+};
+
+// 단위과제별 2차년도 사업계획서 요약 모의 데이터 (기획문서용)
+const PROPOSAL_SUMMARIES = {
+  "A1": {
+    title: "지역과 미래를 만드는 UC-HYPER 전문기술인재 양성",
+    dept: "ECC센터 (교육혁신센터)",
+    goals: ["조선 정밀 가공 실무 교육과정 수립", "하이퍼팩토리 리모델링 구축", "미래 핵심 신산업 주문식 교육 운영"],
+    budget: "2,540백만원"
+  },
+  "A1가": {
+    title: "지역과 미래를 만드는 UC-HYPER 전문기술인재 양성",
+    dept: "ECC센터 (교육혁신센터)",
+    goals: ["교수학습 모델 전면 개편", "미래 모빌리티/보건 융합 주문식 교육과정 운영", "하이퍼 캠퍼스 온라인 실습 시스템 구축"],
+    budget: "2,540백만원"
+  },
+  "A1나": {
+    title: "신산업특화 전문기술인재 양성",
+    dept: "신산업특화센터",
+    goals: ["정밀 화학, 이차전지, 친환경 선박 가공 인재 육성", "신산업 이관 전담 실무 교육장비 가동", "선도 조선소 연계 맞춤형 글로벌 인턴십"],
+    budget: "310백만원"
+  },
+  "A2": {
+    title: "지역 창업 생태계 혁신을 위한 글로컬 창업 문화 조성",
+    dept: "창업창직교육센터 / SCOUT사업단 협력",
+    goals: ["창업캠프 및 창업 아이디어 설명회 개최", "창업동아리 엑셀러레이팅 패키지 지원", "FAB Lab 구축 및 메이커스페이스 활성화"],
+    budget: "512백만원"
+  },
+  "A3": {
+    title: "지역산업 연계 글로벌 협력 거점 대학 육성",
+    dept: "ECC센터 (교육혁신센터)",
+    goals: ["해외 대학 및 글로벌 산업체 협력 네트워크 강화", "다국어 스마트 유학생 케어 앱 론칭 및 상담소 운영", "외국인 전용 특화 직무 단기 아카데미 개편"],
+    budget: "1,115백만원"
+  },
+  "B1": {
+    title: "중소·중견기업 맞춤형 기술지원·공동연구 활성화",
+    dept: "ICC (기업협업센터)",
+    goals: ["공용 고가 정밀 분석 장비 실무 교육 및 지원", "주력 신산업 분야 지산학 융합 컨퍼런스 세미나", "전문기술석사 연계 연구실(Lab) 활성화 지원"],
+    budget: "1,320백만원"
+  },
+  "B2": {
+    title: "AID 역량강화 기반 지역산업 전환 지원",
+    dept: "AID-X지원센터",
+    goals: ["AID-X 지원실 구축 및 정밀 서버 장비 도입", "전 학부(과) 참여형 AI·DX 교육과정 개편", "중소기업 현장 실증형 AI 알고리즘 적용 프로젝트"],
+    budget: "710백만원"
+  },
+  "B3": {
+    title: "지･산･학 협력 탄소중립 실천 플랫폼 구축",
+    dept: "ICC (기업협업센터)",
+    goals: ["AI 기반 탄소중립 및 ESG 교육과정 개발 운영", "중소기업 탄소배출 진단 및 저탄소 플랫폼 지원", "캠퍼스 에코-리빙랩 탄소감축 실증"],
+    budget: "915백만원"
+  },
+  "B4": {
+    title: "복합재난 대응 산업안전·보건 통합 운영체계 구축",
+    dept: "ICC (기업협업센터)",
+    goals: ["VR 활용 복합 가상 대피/화재 재난 안전훈련", "산업군별 맞춤형 재난 기술지원 및 매뉴얼 안전 진단", "간호시뮬레이션 연계 재난 교육장 운영"],
+    budget: "540백만원"
+  },
+  "C1": {
+    title: "U-LIFE 평생직업교육 기반 취∙창업 연계모델 구축",
+    dept: "RCC (지역협업센터)",
+    goals: ["성인학습자 친화형 유연 학사 제도 설계 연구", "취약계층 취·창업 연계 직무교육 및 자격 과정", "평생학습 교육과정 및 평생교육 추진단 운영"],
+    budget: "985백만원"
+  },
+  "C2": {
+    title: "동남권과 함께 성장하는 돌봄생태계, 울산愛 구현",
+    dept: "울산늘봄누리센터",
+    goals: ["방과후/방학 늘봄 프로그램 표준모델 개발 및 시범운영", "동남권 유관기관 돌봄 거버넌스 및 파트너십 구축", "늘봄학교 모니터링 품질관리 체계 및 브랜딩"],
+    budget: "760백만원"
+  },
+  "D1": {
+    title: "지역문제해결을 위한 울산형 혁신 솔루션 구축",
+    dept: "RCC (지역협업센터)",
+    goals: ["대학 교수 및 연구원 참여 리빙랩 과제 설계", "주민 참여형 생활밀착 에코-리빙랩 운영", "지자체 요구 RISE 정책 연구 포럼 개최"],
+    budget: "1,180백만원"
+  },
+  "D2": {
+    title: "지속가능한 보건복지 특성화 및 인재양성 체계 구축",
+    dept: "RCC (지역협업센터)",
+    goals: ["지역사회 기반 보건복지 거버넌스 구축", "맞춤형 보건복지 인재 양성 및 복지케어 모니터링", "실버산업 맞춤형 요양 보호 기술 교육 강좌"],
+    budget: "690백만원"
+  },
+  "D3": {
+    title: "에코 컬처로 만드는 꿀잼도시 울산",
+    dept: "RCC (지역협업센터)",
+    goals: ["캠퍼스-로컬 연계 에코컬처 프로젝트 및 브랜드 디자인", "청년 중심 상업공간 재활성화 및 도시재생", "시민체험형 문화예술 프로그램 및 축제 연계"],
+    budget: "865백만원"
+  }
+};
 
 // 단일 문자열로 저장되어 있을 유스케이스 방어용 헬퍼 함수
 const getMilestoneArray = (val) => {
@@ -62,13 +152,17 @@ export default function ProcurementManager({
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [modalType, setModalType] = useState("env"); // "env", "equip", "service"
   
+  // 기획문서 및 입찰문서 팝업용 상태 추가 (사용자 요건 3 대응)
+  const [proposalModalData, setProposalModalData] = useState(null);
+  const [bidModalData, setBidModalData] = useState(null);
+  
   // 환경개선 상세 팝업 상태
   const [selectedEnvItem, setSelectedEnvItem] = useState(null);
 
-  // 기자재 탭 단위과제 필터 상태 (전체 과제 보기를 위해 "ALL" 옵션도 기본 지원)
+  // 기자재 탭 단위과제 필터 상태
   const [selectedEquipUnit, setSelectedEquipUnit] = useState("ALL");
 
-  // 월별 마일스톤 멀티 체크 팝오버 상태 추가
+  // 월별 마일스톤 멀티 체크 팝오버 상태
   const [activePopover, setActivePopover] = useState(null); // { equipId, month, x, y }
 
   // 4. 입력 폼 임시 State
@@ -375,7 +469,7 @@ export default function ProcurementManager({
                 🛠️ 교육환경 개선 사업 관리
               </h3>
               <p style={{ margin: "0.25rem 0 0 0", fontSize: "0.85rem", color: "var(--text-secondary)" }}>
-                안전하고 현대적인 실습실 인프라 및 교육환경 구축 관리 1차 정리 대장
+                지자체 라이즈 대학 특화 공간 및 스마트 첨단 강의실 구축 진행 현황
               </p>
             </div>
             {currentRole.id !== "GUEST" && (
@@ -397,124 +491,108 @@ export default function ProcurementManager({
                 }}
               >
                 <Plus size={16} />
-                새 환경개선 건 등록
+                환경개선 항목 추가
               </button>
             )}
           </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "1.2fr 0.8fr", gap: "1.5rem" }}>
-            
-            {/* 왼쪽: 리스트 프레임 */}
-            <div className="glass-card" style={{ padding: "1.25rem", borderRadius: "10px" }}>
-              <h4 style={{ margin: "0 0 1rem 0", fontSize: "0.95rem", fontWeight: "700", color: "var(--text-primary)", borderBottom: "1px solid rgba(255,255,255,0.05)", paddingBottom: "0.5rem" }}>
-                환경개선 구축 목록
-              </h4>
-              <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.5rem" }}>
+            {/* 좌측 리스트 카드 */}
+            <div className="glass-card" style={{ padding: "1rem", borderRadius: "10px", display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+              <div style={{ fontSize: "0.9rem", fontWeight: "800", color: "var(--text-primary)", borderBottom: "1px solid rgba(255,255,255,0.05)", paddingBottom: "0.5rem" }}>
+                공간 구축 실적 및 현황 목록
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", maxHeight: "400px", overflowY: "auto" }}>
                 {envData.map((item) => (
                   <div 
                     key={item.id}
                     onClick={() => setSelectedEnvItem(item)}
                     style={{
-                      padding: "1rem",
-                      borderRadius: "8px",
-                      background: selectedEnvItem?.id === item.id ? "rgba(59, 130, 246, 0.15)" : "var(--background-card, rgba(255,255,255,0.01))",
-                      border: selectedEnvItem?.id === item.id ? "1px solid var(--accent-color)" : "1px solid var(--border-color, rgba(255,255,255,0.05))",
+                      padding: "0.75rem",
+                      borderRadius: "6px",
+                      background: selectedEnvItem?.id === item.id ? "rgba(255,255,255,0.08)" : "rgba(255,255,255,0.02)",
+                      border: selectedEnvItem?.id === item.id ? "1px solid var(--accent-color)" : "1px solid rgba(255,255,255,0.05)",
                       cursor: "pointer",
-                      transition: "all 0.2s ease"
+                      transition: "all 0.15s ease",
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center"
                     }}
                   >
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "1rem" }}>
-                      <span style={{ fontSize: "0.75rem", padding: "0.2rem 0.4rem", borderRadius: "4px", background: "rgba(59, 130, 246, 0.2)", color: "#60A5FA", fontWeight: "700" }}>
-                        {item.unit} 과제
-                      </span>
-                      <span style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>
-                        예산: {(item.budgetPlan / 10000).toLocaleString()}만 원
-                      </span>
+                    <div>
+                      <div style={{ fontWeight: "750", color: "white", fontSize: "0.85rem" }}>{item.title}</div>
+                      <div style={{ fontSize: "0.75rem", color: "var(--text-secondary)", marginTop: "0.2rem" }}>
+                        단위과제: <span style={{ fontWeight: "700", color: "var(--accent-color)" }}>{item.unit}</span> | 예산계획: {item.budgetPlan.toLocaleString()}원
+                      </div>
                     </div>
-                    <h5 style={{ margin: "0.5rem 0 0.5rem 0", fontSize: "0.9rem", fontWeight: "700", color: "var(--text-primary)", lineHeight: "1.3" }}>
-                      {item.title}
-                    </h5>
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                      <span style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)" }}>
-                        📍 {item.location}
-                      </span>
-                      <span style={{ fontSize: "0.75rem", color: "var(--accent-color)", display: "flex", alignItems: "center", gap: "0.25rem", fontWeight: "600" }}>
-                        <Eye size={12} />
-                        자세히 보기
-                      </span>
-                    </div>
+                    {currentRole.id !== "GUEST" && (
+                      <button 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (confirm("해당 환경개선 건을 삭제하시겠습니까?")) {
+                            setEnvData(envData.filter(x => x.id !== item.id));
+                            if (selectedEnvItem?.id === item.id) setSelectedEnvItem(null);
+                          }
+                        }}
+                        style={{ background: "transparent", border: "none", color: "rgba(255,255,255,0.2)", cursor: "pointer", padding: "0.25rem" }}
+                        onMouseOver={(e) => e.currentTarget.style.color = "#ef4444"}
+                        onMouseOut={(e) => e.currentTarget.style.color = "rgba(255,255,255,0.2)"}
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    )}
                   </div>
                 ))}
               </div>
             </div>
 
-            {/* 오른쪽: 클릭 시 상세 조회 프레임 */}
-            <div className="glass-card" style={{ padding: "1.25rem", borderRadius: "10px" }}>
-              <h4 style={{ margin: "0 0 1rem 0", fontSize: "0.95rem", fontWeight: "700", color: "var(--text-primary)", borderBottom: "1px solid rgba(255,255,255,0.05)", paddingBottom: "0.5rem" }}>
-                🔍 구축 상세 명세서
-              </h4>
+            {/* 우측 상세 정보 조회 카드 */}
+            <div className="glass-card" style={{ padding: "1.25rem", borderRadius: "10px", background: "rgba(255,255,255,0.01)" }}>
               {selectedEnvItem ? (
-                <div style={{ display: "flex", flexDirection: "column", gap: "1rem", fontSize: "0.85rem", color: "var(--text-primary)" }}>
+                <div style={{ display: "flex", flexDirection: "column", gap: "1rem", fontSize: "0.82rem" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", borderBottom: "1px solid rgba(255,255,255,0.05)", paddingBottom: "0.5rem" }}>
+                    <span style={{ fontSize: "0.95rem", fontWeight: "800", color: "white" }}>🔍 {selectedEnvItem.title} 상세 조회</span>
+                    <span style={{ padding: "0.2rem 0.5rem", borderRadius: "4px", background: "var(--accent-color)", color: "white", fontWeight: "800", fontSize: "0.72rem" }}>{selectedEnvItem.unit} 과제</span>
+                  </div>
                   
-                  <div>
-                    <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)", display: "block" }}>사업 건명</span>
-                    <strong style={{ fontSize: "0.95rem", color: "#60A5FA" }}>{selectedEnvItem.title}</strong>
-                  </div>
-
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem" }}>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem" }}>
                     <div>
-                      <span style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)", display: "block" }}>배정 단위과제</span>
-                      <strong>{selectedEnvItem.unit} 과제</strong>
+                      <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>구축 위치</span>
+                      <p style={{ margin: "0.2rem 0", fontWeight: "600" }}>{selectedEnvItem.location || "-"}</p>
                     </div>
                     <div>
-                      <span style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)", display: "block" }}>구축 위치</span>
-                      <span>{selectedEnvItem.location}</span>
+                      <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>주요 용도</span>
+                      <p style={{ margin: "0.2rem 0", fontWeight: "600" }}>{selectedEnvItem.purpose || "-"}</p>
                     </div>
                   </div>
 
-                  <div>
-                    <span style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)", display: "block" }}>사용 목적</span>
-                    <p style={{ margin: "0.2rem 0", lineHeight: "1.3" }}>{selectedEnvItem.purpose}</p>
-                  </div>
-
-                  <div>
-                    <span style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)", display: "block" }}>교육환경 구축 계획</span>
-                    <p style={{ margin: "0.2rem 0", lineHeight: "1.3" }}>{selectedEnvItem.plan}</p>
-                  </div>
-
-                  <div>
-                    <span style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)", display: "block" }}>회의 결과 / 결정 사항</span>
-                    <p style={{ margin: "0.2rem 0", lineHeight: "1.3", color: "#FBBF24" }}>{selectedEnvItem.meetingResult}</p>
-                  </div>
-
-                  <div>
-                    <span style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)", display: "block" }}>진행 경과</span>
-                    <p style={{ margin: "0.2rem 0", lineHeight: "1.3", color: "#34D399" }}>{selectedEnvItem.progress}</p>
-                  </div>
-
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem" }}>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem" }}>
                     <div>
-                      <span style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)", display: "block" }}>사업비 계획액</span>
-                      <strong style={{ color: "#3B82F6" }}>{(selectedEnvItem.budgetPlan / 10000).toLocaleString()}만 원</strong>
+                      <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>사업비 계획액</span>
+                      <p style={{ margin: "0.2rem 0", fontWeight: "700", color: "white" }}>{selectedEnvItem.budgetPlan.toLocaleString()}원</p>
                     </div>
                     <div>
-                      <span style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)", display: "block" }}>실제 집행액</span>
-                      <strong style={{ color: "#10B981" }}>{(selectedEnvItem.budgetSpent / 10000).toLocaleString()}만 원</strong>
+                      <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>실제 집행액</span>
+                      <p style={{ margin: "0.2rem 0", fontWeight: "700", color: "#10B981" }}>{selectedEnvItem.budgetSpent.toLocaleString()}원</p>
                     </div>
                   </div>
 
-                  {/* 도면 및 조감도 예시 시각화 박스 */}
-                  <div style={{ border: "1px dashed var(--border-color-dark)", borderRadius: "6px", padding: "0.75rem", background: "var(--background-card, rgba(0,0,0,0.1))" }}>
-                    <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)", display: "block", marginBottom: "0.25rem" }}>🎨 조감도 및 설계도 모형</span>
-                    <div style={{ fontSize: "0.7rem", color: "var(--text-secondary)", display: "flex", flexDirection: "column", gap: "0.4rem" }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: "0.25rem", color: "#60A5FA" }}>
-                        <FileImage size={14} />
-                        <span>{selectedEnvItem.birdseyeView}</span>
-                      </div>
-                      <div style={{ display: "flex", alignItems: "center", gap: "0.25rem", color: "#A7F3D0" }}>
-                        <FileText size={14} />
-                        <span>{selectedEnvItem.blueprints}</span>
-                      </div>
+                  <div style={{ borderTop: "1px solid rgba(255,255,255,0.03)", paddingTop: "0.75rem" }}>
+                    <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)", display: "block" }}>도면 정보 & 설계 내역</span>
+                    <div style={{ display: "flex", gap: "0.5rem", marginTop: "0.3rem" }}>
+                      <span style={{ padding: "0.25rem 0.5rem", background: "rgba(255,255,255,0.05)", borderRadius: "4px", fontSize: "0.75rem", color: "var(--text-primary)" }}>🖼️ 조감도: {selectedEnvItem.birdseyeView}</span>
+                      <span style={{ padding: "0.25rem 0.5rem", background: "rgba(255,255,255,0.05)", borderRadius: "4px", fontSize: "0.75rem", color: "var(--text-primary)" }}>📐 도면: {selectedEnvItem.blueprints}</span>
+                    </div>
+                  </div>
+
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem", borderTop: "1px solid rgba(255,255,255,0.03)", paddingTop: "0.75rem" }}>
+                    <div>
+                      <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)", display: "block" }}>구축 계획</span>
+                      <p style={{ margin: "0.2rem 0", lineHeight: "1.3" }}>{selectedEnvItem.plan || "-"}</p>
+                    </div>
+                    <div>
+                      <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)", display: "block" }}>진행 상태</span>
+                      <p style={{ margin: "0.2rem 0", lineHeight: "1.3" }}>{selectedEnvItem.progress || "-"}</p>
                     </div>
                   </div>
 
@@ -611,12 +689,12 @@ export default function ProcurementManager({
                   <th rowSpan={3} style={{ padding: "0.75rem 0.5rem", textAlign: "left", fontWeight: "800", width: "180px", verticalAlign: "middle" }}>품명</th>
                   <th rowSpan={3} style={{ padding: "0.75rem 0.5rem", textAlign: "right", fontWeight: "800", width: "90px", verticalAlign: "middle" }}>단가</th>
                   <th rowSpan={3} style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "50px", verticalAlign: "middle" }}>수량</th>
-                  <th rowSpan={3} style={{ padding: "0.75rem 0.5rem", textAlign: "right", fontWeight: "800", width: "100px", verticalAlign: "middle" }}>견적총액</th>
+                  <th rowSpan={3} style={{ padding: "0.75rem 0.5rem", textAlign: "right", fontWeight: "800", width: "100px", verticalAlign: "middle" }}>금액</th>
                   <th rowSpan={3} style={{ padding: "0.75rem 0.5rem", textAlign: "left", fontWeight: "800", verticalAlign: "middle" }}>관련내용</th>
                   <th colSpan={12} style={{ padding: "0.5rem", textAlign: "center", fontWeight: "800", borderBottom: "1px solid rgba(255,255,255,0.08)", background: "rgba(255, 255, 255, 0.01)" }}>
                     구매단계 (기획:P ➔ 승인:A ➔ 입찰:B ➔ 구매:Pr ➔ 검수:I)
                   </th>
-                  <th rowSpan={3} style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "100px", verticalAlign: "middle" }}>운영</th>
+                  <th rowSpan={3} style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "135px", verticalAlign: "middle" }}>문서번호</th>
                   {currentRole.id !== "GUEST" && (
                     <th rowSpan={3} style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "45px", verticalAlign: "middle" }}>작업</th>
                   )}
@@ -688,13 +766,13 @@ export default function ProcurementManager({
                             {equip.itemName || equip.name || "-"}
                           </td>
                           <td style={{ padding: "0.8rem 0.5rem", textAlign: "right", color: "var(--text-secondary)" }}>
-                            {price.toLocaleString()}원
+                            {formatToMillionWon(price)}백만원
                           </td>
                           <td style={{ padding: "0.8rem 0.5rem", textAlign: "center", fontWeight: "600" }}>
                             {qty}
                           </td>
                           <td style={{ padding: "0.8rem 0.5rem", textAlign: "right", fontWeight: "700", color: "#10B981" }}>
-                            {total.toLocaleString()}원
+                            {formatToMillionWon(total)}백만원
                           </td>
                           <td style={{ padding: "0.8rem 0.5rem", textAlign: "left", color: "var(--text-secondary)", maxWidth: "200px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={equip.description || equip.opPlan}>
                             {equip.description || equip.opPlan || "-"}
@@ -745,7 +823,50 @@ export default function ProcurementManager({
                           })}
 
                           <td style={{ padding: "0.8rem 0.5rem", textAlign: "center", color: "var(--text-secondary)" }}>
-                            {equip.operation || "-"}
+                            <div style={{ display: "flex", flexDirection: "column", gap: "0.35rem", alignItems: "center" }}>
+                              {/* 고유 문서번호 생성 (예: UC-EQ-A1-001) */}
+                              <span style={{ fontSize: "0.75rem", fontFamily: "monospace", fontWeight: "700", color: "white" }}>
+                                {`UC-EQ-${equip.unit}-${String(equip.seq || equip.id).slice(-3).padStart(3, "0")}`}
+                              </span>
+                              <div style={{ display: "flex", gap: "0.3rem" }}>
+                                <button
+                                  onClick={() => setProposalModalData(equip)}
+                                  style={{
+                                    padding: "0.2rem 0.4rem",
+                                    fontSize: "0.68rem",
+                                    borderRadius: "4px",
+                                    background: "rgba(59, 130, 246, 0.15)",
+                                    color: "#60A5FA",
+                                    border: "1px solid rgba(59, 130, 246, 0.3)",
+                                    cursor: "pointer",
+                                    transition: "background 0.2s"
+                                  }}
+                                  onMouseOver={(e) => e.currentTarget.style.background = "rgba(59, 130, 246, 0.25)"}
+                                  onMouseOut={(e) => e.currentTarget.style.background = "rgba(59, 130, 246, 0.15)"}
+                                  title="기획 제안서 요약 보기"
+                                >
+                                  기획문서
+                                </button>
+                                <button
+                                  onClick={() => setBidModalData(equip)}
+                                  style={{
+                                    padding: "0.2rem 0.4rem",
+                                    fontSize: "0.68rem",
+                                    borderRadius: "4px",
+                                    background: "rgba(16, 185, 129, 0.15)",
+                                    color: "#34D399",
+                                    border: "1px solid rgba(16, 185, 129, 0.3)",
+                                    cursor: "pointer",
+                                    transition: "background 0.2s"
+                                  }}
+                                  onMouseOver={(e) => e.currentTarget.style.background = "rgba(16, 185, 129, 0.25)"}
+                                  onMouseOut={(e) => e.currentTarget.style.background = "rgba(16, 185, 129, 0.15)"}
+                                  title="입찰 규격 공고 보기"
+                                >
+                                  입찰문서
+                                </button>
+                              </div>
+                            </div>
                           </td>
                           {currentRole.id !== "GUEST" && (
                             <td style={{ padding: "0.8rem 0.5rem", textAlign: "center" }}>
@@ -770,9 +891,8 @@ export default function ProcurementManager({
                   } else {
                     return (
                       <tr>
-                        <td colSpan={currentRole.id !== "GUEST" ? 12 : 11} style={{ padding: "3rem", textAlign: "center", color: "var(--text-secondary)" }}>
-                          <Laptop size={36} style={{ marginBottom: "0.75rem", opacity: 0.3, display: "inline-block" }} />
-                          <p style={{ margin: 0 }}>선택하신 {selectedEquipUnit === "ALL" ? "전체" : `${selectedEquipUnit} 과제`}에 등록된 기자재 내역이 없습니다.</p>
+                        <td colSpan={24} style={{ padding: "2rem", textAlign: "center", color: "var(--text-secondary)" }}>
+                          필터링된 기자재 내역이 존재하지 않습니다.
                         </td>
                       </tr>
                     );
@@ -781,22 +901,19 @@ export default function ProcurementManager({
               </tbody>
             </table>
           </div>
-
         </div>
       )}
 
       {/* 3. 주요 용역 탭 본문 */}
       {subTab === "major_services" && (
         <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
-          
-          {/* 주요 용역 상단 카드 */}
           <div className="glass-card" style={{ padding: "1.25rem", borderRadius: "10px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <div>
               <h3 style={{ margin: 0, fontSize: "1.1rem", fontWeight: "800", color: "var(--text-primary)" }}>
-                📑 500만원 이상 주요 용역 관리 대장
+                💼 주요 사업 운영 및 외주 용역 현황
               </h3>
               <p style={{ margin: "0.25rem 0 0 0", fontSize: "0.85rem", color: "var(--text-secondary)" }}>
-                기획 결재부터 입찰/발주 및 최종 검수 완료까지의 전 과정 트래킹 프레임
+                500만원 이상의 대행 및 전산 개발/기획 용역 진행 일정 및 예산 집행률 관리
               </p>
             </div>
             {currentRole.id !== "GUEST" && (
@@ -818,201 +935,133 @@ export default function ProcurementManager({
                 }}
               >
                 <Plus size={16} />
-                새 주요 용역 건 등록
+                용역 추가
               </button>
             )}
           </div>
 
-          {/* 용역 리스트 뷰 */}
-          <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
-            {serviceData.map((service) => (
-              <div 
-                key={service.id} 
-                className="glass-card" 
-                style={{ 
-                  padding: "1.5rem", 
-                  borderRadius: "10px", 
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "1rem"
-                }}
-              >
-                {/* 상단 명칭 및 예산 */}
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: "0.5rem" }}>
-                  <h4 style={{ margin: 0, fontSize: "1.1rem", fontWeight: "800", color: "var(--text-primary)", maxWidth: "70%" }}>
-                    {service.title}
-                  </h4>
-                  <div style={{ textAlign: "right" }}>
-                    <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)", display: "block" }}>예산 (계획 / 실제집행)</span>
-                    <strong style={{ color: "#60A5FA", fontSize: "1rem" }}>
-                      {(service.budgetPlan / 10000).toLocaleString()}만 원
-                    </strong>
-                    <span style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}> / </span>
-                    <strong style={{ color: "#34D399", fontSize: "1rem" }}>
-                      {(service.budgetSpent / 10000).toLocaleString()}만 원
-                    </strong>
-                  </div>
-                </div>
-
-                {/* 중간 세부 내용 */}
-                <div style={{ display: "grid", gridTemplateColumns: "1.2fr 0.8fr", gap: "1.5rem", borderTop: "1px solid rgba(255,255,255,0.05)", paddingTop: "0.75rem", fontSize: "0.8rem", color: "var(--text-primary)" }}>
-                  <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-                    <div>
-                      <strong style={{ color: "var(--text-secondary)" }}>🎯 추진 목적 (용역 요건):</strong>
-                      <p style={{ margin: "0.2rem 0 0 0", lineHeight: "1.4" }}>{service.purpose}</p>
-                    </div>
-                    <div style={{ marginTop: "0.25rem" }}>
-                      <strong style={{ color: "var(--text-secondary)" }}>🏢 수행 기관 자격 요건:</strong>
-                      <p style={{ margin: "0.2rem 0 0 0", lineHeight: "1.4" }}>{service.providerQual}</p>
-                    </div>
-                  </div>
-
-                  <div style={{ background: "var(--border-color)", padding: "0.75rem", borderRadius: "8px", border: "1px solid rgba(255,255,255,0.05)", display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-                    <strong style={{ color: "#34D399", fontSize: "0.75rem" }}>📈 최종 운영 결과 기술</strong>
-                    <p style={{ margin: 0, fontSize: "0.75rem", lineHeight: "1.4" }}>{service.opResult || "결과 정산 및 분석 보고서 검토 중..."}</p>
-                  </div>
-                </div>
-
-                {/* 💡 하단 추진일정 진행 경과 스텝퍼 (Stepper) 시각화 */}
-                <div style={{ background: "var(--background-card, rgba(0,0,0,0.05))", borderRadius: "8px", padding: "1rem", marginTop: "0.25rem" }}>
-                  <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)", display: "block", marginBottom: "0.5rem" }}>
-                    🔄 구매 용역 행정 추진 일정 단계 현황
-                  </span>
-                  
-                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", position: "relative" }}>
-                    
-                    {/* 가로 선 피팅 */}
-                    <div style={{ position: "absolute", left: "10%", right: "10%", top: "45%", height: "2px", background: "var(--border-color)", zIndex: 1 }}>
-                      <div style={{ width: service.step === 1 ? "0%" : service.step === 2 ? "50%" : "100%", height: "100%", background: "var(--accent-color)", transition: "all 0.3s ease" }}></div>
-                    </div>
-
-                    {/* Step 1 */}
-                    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", zIndex: 2, width: "30%" }}>
-                      <div style={{
-                        width: "24px", height: "24px", borderRadius: "50%",
-                        background: service.step >= 1 ? "var(--accent-color)" : "var(--border-color)",
-                        display: "flex", alignItems: "center", justifyContent: "center",
-                        fontSize: "0.7rem", fontWeight: "700", color: "white"
-                      }}>
-                        {service.step >= 1 ? <CheckCircle size={14} /> : "1"}
-                      </div>
-                      <span style={{ fontSize: "0.75rem", marginTop: "0.25rem", color: service.step >= 1 ? "var(--text-primary)" : "var(--text-secondary)", fontWeight: "600" }}>
-                        사업단 기획 및 결재 완료
-                      </span>
-                    </div>
-
-                    {/* Step 2 */}
-                    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", zIndex: 2, width: "30%" }}>
-                      <div style={{
-                        width: "24px", height: "24px", borderRadius: "50%",
-                        background: service.step >= 2 ? "var(--accent-color)" : "var(--border-color)",
-                        display: "flex", alignItems: "center", justifyContent: "center",
-                        fontSize: "0.7rem", fontWeight: "700", color: "white"
-                      }}>
-                        {service.step >= 2 ? <CheckCircle size={14} /> : "2"}
-                      </div>
-                      <span style={{ fontSize: "0.75rem", marginTop: "0.25rem", color: service.step >= 2 ? "var(--text-primary)" : "var(--text-secondary)", fontWeight: "600" }}>
-                        구매 발주 (총무팀 대행)
-                      </span>
-                    </div>
-
-                    {/* Step 3 */}
-                    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", zIndex: 2, width: "30%" }}>
-                      <div style={{
-                        width: "24px", height: "24px", borderRadius: "50%",
-                        background: service.step >= 3 ? "var(--accent-color)" : "var(--border-color)",
-                        display: "flex", alignItems: "center", justifyContent: "center",
-                        fontSize: "0.7rem", fontWeight: "700", color: "white"
-                      }}>
-                        {service.step >= 3 ? <CheckCircle size={14} /> : "3"}
-                      </div>
-                      <span style={{ fontSize: "0.75rem", marginTop: "0.25rem", color: service.step >= 3 ? "white" : "var(--text-secondary-dark)", fontWeight: "600" }}>
-                        납품 및 준공 검수
-                      </span>
-                    </div>
-
-                  </div>
-                </div>
-
-              </div>
-            ))}
+          <div className="glass-card" style={{ padding: "0.5rem", borderRadius: "10px", overflowX: "auto" }}>
+            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.82rem", color: "var(--text-primary)", minWidth: "960px" }}>
+              <thead>
+                <tr style={{ background: "rgba(255, 255, 255, 0.03)", borderBottom: "2px solid rgba(255,255,255,0.08)" }}>
+                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "50px" }}>순번</th>
+                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "left", fontWeight: "800", width: "220px" }}>용역 명칭 (500만원 이상)</th>
+                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "left", fontWeight: "800" }}>추진 목적 (용역 요건)</th>
+                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "left", fontWeight: "800", width: "180px" }}>수행기관 자격 기준</th>
+                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "right", fontWeight: "800", width: "100px" }}>계획액</th>
+                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "right", fontWeight: "800", width: "100px" }}>실집행액</th>
+                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "160px" }}>현재 행정단계</th>
+                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "left", fontWeight: "800", width: "180px" }}>최종 운영 결과</th>
+                  {currentRole.id !== "GUEST" && (
+                    <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "50px" }}>작업</th>
+                  )}
+                </tr>
+              </thead>
+              <tbody>
+                {serviceData.length > 0 ? (
+                  serviceData.map((item, index) => (
+                    <tr 
+                      key={item.id} 
+                      style={{ borderBottom: "1px solid rgba(255,255,255,0.05)", transition: "background 0.15s ease" }}
+                    >
+                      <td style={{ padding: "0.8rem 0.5rem", textAlign: "center", color: "var(--text-secondary)" }}>{index + 1}</td>
+                      <td style={{ padding: "0.8rem 0.5rem", textAlign: "left", fontWeight: "700", color: "white" }}>{item.title}</td>
+                      <td style={{ padding: "0.8rem 0.5rem", textAlign: "left", color: "var(--text-secondary)", maxWidth: "250px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={item.purpose}>{item.purpose}</td>
+                      <td style={{ padding: "0.8rem 0.5rem", textAlign: "left", color: "var(--text-secondary)", maxWidth: "180px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={item.providerQual}>{item.providerQual}</td>
+                      <td style={{ padding: "0.8rem 0.5rem", textAlign: "right", fontWeight: "600" }}>{item.budgetPlan.toLocaleString()}원</td>
+                      <td style={{ padding: "0.8rem 0.5rem", textAlign: "right", fontWeight: "700", color: "#10B981" }}>{item.budgetSpent.toLocaleString()}원</td>
+                      <td style={{ padding: "0.8rem 0.5rem", textAlign: "center" }}>
+                        {item.step === 1 && <span style={{ padding: "0.2rem 0.5rem", borderRadius: "4px", background: "rgba(245,158,11,0.15)", color: "#f59e0b", fontSize: "0.75rem", fontWeight: "700" }}>1단계: 결재완료</span>}
+                        {item.step === 2 && <span style={{ padding: "0.2rem 0.5rem", borderRadius: "4px", background: "rgba(59,130,246,0.15)", color: "#3b82f6", fontSize: "0.75rem", fontWeight: "700" }}>2단계: 구매 발주</span>}
+                        {item.step === 3 && <span style={{ padding: "0.2rem 0.5rem", borderRadius: "4px", background: "rgba(16,185,129,0.15)", color: "#10b981", fontSize: "0.75rem", fontWeight: "700" }}>3단계: 검수 완료</span>}
+                      </td>
+                      <td style={{ padding: "0.8rem 0.5rem", textAlign: "left", color: "var(--text-secondary)", maxWidth: "180px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={item.opResult}>{item.opResult || "-"}</td>
+                      {currentRole.id !== "GUEST" && (
+                        <td style={{ padding: "0.8rem 0.5rem", textAlign: "center" }}>
+                          <button
+                            onClick={() => {
+                              if (confirm("해당 주요 용역을 삭제하시겠습니까?")) {
+                                setServiceData(serviceData.filter(x => x.id !== item.id));
+                              }
+                            }}
+                            style={{ background: "transparent", border: "none", color: "rgba(255,255,255,0.25)", cursor: "pointer", transition: "color 0.15s" }}
+                            onMouseOver={(e) => e.currentTarget.style.color = "#ef4444"}
+                            onMouseOut={(e) => e.currentTarget.style.color = "rgba(255,255,255,0.25)"}
+                            title="삭제"
+                          >
+                            <Trash2 size={13} />
+                          </button>
+                        </td>
+                      )}
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={9} style={{ padding: "2rem", textAlign: "center", color: "var(--text-secondary)" }}>
+                      등록된 주요 용역 내역이 존재하지 않습니다.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
           </div>
-
         </div>
       )}
 
-      {/* 4. 공통 신규 등록 폼 모달 (데이터를 채워가는 유스케이스 대처) */}
+      {/* 추가 모달창 팝업 */}
       {isAddModalOpen && (
-        <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(0,0,0,0.8)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1100 }}>
-          <div className="card" style={{ width: "600px", maxHeight: "85vh", overflowY: "auto", padding: "1.5rem", borderRadius: "12px", background: "var(--bg-card-dark)", border: "1px solid var(--border-color-dark)" }}>
+        <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(0,0,0,0.7)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1100 }}>
+          <div className="glass-card" style={{ width: "500px", maxHeight: "85vh", overflowY: "auto", padding: "1.5rem", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.1)" }}>
+            <h3 style={{ margin: "0 0 1rem 0", color: "white", fontWeight: "800", borderBottom: "1px solid rgba(255,255,255,0.05)", paddingBottom: "0.5rem" }}>
+              {modalType === "env" && "🛠️ 신규 교육환경 개선 사업 등록"}
+              {modalType === "equip" && "🔬 신규 핵심 기자재 도입 등록"}
+              {modalType === "service" && "💼 신규 주요 용역 계약 등록"}
+            </h3>
             
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid rgba(255,255,255,0.05)", paddingBottom: "0.75rem", marginBottom: "1rem" }}>
-              <h3 style={{ margin: 0, fontSize: "1.1rem", fontWeight: "800", color: "white" }}>
-                ➕ {modalType === "env" ? "새 환경개선 사업 등록" : modalType === "equip" ? "새 기자재 구매 항목 등록" : "새 주요 용역 사업 등록"}
-              </h3>
-              <button 
-                onClick={() => setIsAddModalOpen(false)}
-                style={{ background: "transparent", border: "none", color: "var(--text-secondary-dark)", cursor: "pointer", fontSize: "1.2rem" }}
-              >
-                ✕
-              </button>
-            </div>
-
             <form onSubmit={handleFormSubmit} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
               
-              {/* 공통 1: 단위과제 선택 */}
-              {(modalType === "env" || modalType === "equip") && (
-                <div>
-                  <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>귀속 단위과제</label>
-                  <select 
-                    name="unit" 
-                    value={formData.unit} 
-                    onChange={handleInputChange}
-                    className="user-selector"
-                  >
-                    {["A1", "A2", "B1", "B2", "B3", "B4", "C1", "C2", "D1", "D2", "D3", "D4"].map(u => (
-                      <option key={u} value={u}>{u} 과제</option>
-                    ))}
-                  </select>
-                </div>
-              )}
-
               {/* 환경개선용 입력 필드들 */}
               {modalType === "env" && (
                 <>
                   <div>
-                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>사업 건명</label>
-                    <input type="text" name="title" value={formData.title} onChange={handleInputChange} required placeholder="예: 미래형 친환경 하이퍼 실습실 환경 리모델링" style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} />
-                  </div>
-                  <div>
-                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>구축 위치</label>
-                    <input type="text" name="location" value={formData.location} onChange={handleInputChange} placeholder="예: 동부캠퍼스 2공학관 102호" style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} />
-                  </div>
-                  <div>
-                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>사용 목적</label>
-                    <textarea name="purpose" value={formData.purpose} onChange={handleInputChange} placeholder="공간 개조의 궁극적 이용 형태" style={{ width: "100%", height: "60px", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white", resize: "none" }} />
-                  </div>
-                  <div>
-                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>교육환경 구축을 위한 계획</label>
-                    <textarea name="plan" value={formData.plan} onChange={handleInputChange} placeholder="인테리어, 전기, 소방, 급배수 조치 계획 기술" style={{ width: "100%", height: "60px", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white", resize: "none" }} />
-                  </div>
-                  <div>
-                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>회의 결과</label>
-                    <input type="text" name="meetingResult" value={formData.meetingResult} onChange={handleInputChange} placeholder="심의 의결 내역 요약" style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} />
-                  </div>
-                  <div>
-                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>진행 경과</label>
-                    <input type="text" name="progress" value={formData.progress} onChange={handleInputChange} placeholder="예: 시공 착수 ➔ 배선 조율 중" style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} />
+                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>사업 공간 명칭</label>
+                    <input type="text" name="title" value={formData.title} onChange={handleInputChange} required placeholder="예: 3층 RISE 바이오 메디컬 실습실 구축" style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} />
                   </div>
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
                     <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>사업비 계획액 (원)</label>
-                      <input type="number" name="budgetPlan" value={formData.budgetPlan} onChange={handleInputChange} placeholder="예: 30000000" style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} />
+                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>연계 단위과제</label>
+                      <select name="unit" value={formData.unit} onChange={handleInputChange} className="user-selector">
+                        {["A1", "A2", "B1", "B2", "B3", "B4", "C1", "C2", "D1", "D2", "D3", "D4"].map(u => (
+                          <option key={u} value={u}>{u} 과제</option>
+                        ))}
+                      </select>
                     </div>
                     <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>실제 집행액 (원)</label>
-                      <input type="number" name="budgetSpent" value={formData.budgetSpent} onChange={handleInputChange} placeholder="예: 28500000" style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} />
+                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>구축 위치 (지정 호실)</label>
+                      <input type="text" name="location" value={formData.location} onChange={handleInputChange} required placeholder="예: 대학 본관 302호" style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} />
                     </div>
+                  </div>
+                  <div>
+                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>구축 목적 (공간 용도)</label>
+                    <textarea name="purpose" value={formData.purpose} onChange={handleInputChange} required placeholder="특화 인력 양성을 위한 핵심 시너지 공간 용도 상세 기술" style={{ width: "100%", height: "50px", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white", resize: "none" }} />
+                  </div>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+                    <div>
+                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>사업 예산 계획액 (원)</label>
+                      <input type="number" name="budgetPlan" value={formData.budgetPlan} onChange={handleInputChange} required placeholder="예: 50000000" style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} />
+                    </div>
+                    <div>
+                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>현재 실제 집행액 (원)</label>
+                      <input type="number" name="budgetSpent" value={formData.budgetSpent} onChange={handleInputChange} placeholder="예: 0" style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} />
+                    </div>
+                  </div>
+                  <div>
+                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>세부 공간 구축 설계 계획</label>
+                    <textarea name="plan" value={formData.plan} onChange={handleInputChange} required placeholder="예: 바닥 전선 몰딩, 방음벽 흡음 패널 시공 및 스마트 미러링 보드 마운팅 작업" style={{ width: "100%", height: "50px", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white", resize: "none" }} />
+                  </div>
+                  <div>
+                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>공사 진행 실적 현황</label>
+                    <textarea name="progress" value={formData.progress} onChange={handleInputChange} required placeholder="현재 진행 실무 정보 기술" style={{ width: "100%", height: "50px", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white", resize: "none" }} />
                   </div>
                   <div>
                     <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>조감도 파일 설명</label>
@@ -1239,28 +1288,27 @@ export default function ProcurementManager({
               top: `${activePopover.y}px`,
               left: `${activePopover.x}px`,
               transform: "translate(-50%, -100%) translateY(-10px)",
-              background: "#1e293b", // 불투명한 딥 슬레이트 그레이로 뒤를 완전히 가림
-              border: "1px solid rgba(255, 255, 255, 0.18)", // 뚜렷한 흰색 반투명 외곽선
+              background: "#ffffff", // 완전히 밝은 흰색 배경으로 교체
+              border: "1px solid #cbd5e1", // 밝고 고상한 실버 테두리
               borderRadius: "8px",
               padding: "0.75rem",
-              boxShadow: "0 20px 25px -5px rgba(0,0,0,0.85), 0 10px 10px -5px rgba(0,0,0,0.85)", // 입체적인 깊은 그림자
+              boxShadow: "0 10px 25px rgba(0,0,0,0.25), 0 8px 10px rgba(0,0,0,0.15)", // 자연스러운 음영 그림자
               zIndex: 1251,
               width: "160px",
               display: "flex",
               flexDirection: "column",
-              gap: "0.4rem",
-              backdropFilter: "blur(20px)"
+              gap: "0.4rem"
             }}
           >
-            <div style={{ fontSize: "0.75rem", fontWeight: "800", color: "var(--text-secondary)", marginBottom: "0.2rem", borderBottom: "1px solid rgba(255,255,255,0.05)", paddingBottom: "0.25rem", textAlign: "center" }}>
+            <div style={{ fontSize: "0.75rem", fontWeight: "800", color: "#475569", marginBottom: "0.2rem", borderBottom: "1px solid #e2e8f0", paddingBottom: "0.25rem", textAlign: "center" }}>
               {activePopover.month}월 단계 중복 선택
             </div>
             {[
-              { label: "기획 (P)", val: "기획", color: "#f59e0b" },
-              { label: "승인 (A)", val: "승인", color: "#3b82f6" },
-              { label: "입찰 (B)", val: "입찰", color: "#06b6d4" },
-              { label: "구매 (Pr)", val: "구매", color: "#a78bfa" },
-              { label: "검수 (I)", val: "검수", color: "#10b981" }
+              { label: "기획 (P)", val: "기획", color: "#ea580c" }, // 밝은 배경에 선명한 오렌지
+              { label: "승인 (A)", val: "승인", color: "#1d4ed8" }, // 선명한 다크 블루
+              { label: "입찰 (B)", val: "입찰", color: "#0e7490" }, // 진한 시안
+              { label: "구매 (Pr)", val: "구매", color: "#6d28d9" }, // 선명한 퍼플
+              { label: "검수 (I)", val: "검수", color: "#047857" }  // 진한 에메랄드 그린
             ].map((step) => {
               let isChecked = false;
               if (activePopover.equipId === "NEW_FORM") {
@@ -1281,14 +1329,14 @@ export default function ProcurementManager({
                     alignItems: "center", 
                     gap: "8px", 
                     fontSize: "0.75rem", 
-                    color: "white", 
+                    color: "#0f172a", // 어두운 텍스트로 가독성 확보
                     cursor: "pointer", 
                     userSelect: "none",
                     padding: "0.2rem 0.35rem",
                     borderRadius: "4px",
                     transition: "background 0.1s ease"
                   }}
-                  onMouseEnter={(e) => e.currentTarget.style.background = "rgba(255,255,255,0.05)"}
+                  onMouseEnter={(e) => e.currentTarget.style.background = "rgba(0,0,0,0.05)"}
                   onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}
                 >
                   <input
@@ -1303,6 +1351,158 @@ export default function ProcurementManager({
             })}
           </div>
         </>
+      )}
+
+      {/* 기획문서 팝업 모달 (사용자 요건 3 대응) */}
+      {proposalModalData && (
+        <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(0,0,0,0.75)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1300 }}>
+          <div className="glass-card" style={{ width: "500px", padding: "1.5rem", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.1)", background: "#1e293b", color: "white" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid rgba(255,255,255,0.1)", paddingBottom: "0.75rem", marginBottom: "1rem" }}>
+              <h4 style={{ margin: 0, fontSize: "1.05rem", fontWeight: "800", color: "#60A5FA" }}>
+                📄 기획문서 (사업계획 제안서 요약)
+              </h4>
+              <button 
+                onClick={() => setProposalModalData(null)}
+                style={{ background: "transparent", border: "none", color: "rgba(255,255,255,0.5)", cursor: "pointer", fontSize: "1.2rem" }}
+              >
+                ✕
+              </button>
+            </div>
+            
+            {(() => {
+              const summary = PROPOSAL_SUMMARIES[proposalModalData.unit] || {
+                title: "알 수 없는 단위과제",
+                dept: "미지정 센터",
+                goals: ["상세 계획 확인 중"],
+                budget: "0.0백만원"
+              };
+              
+              return (
+                <div style={{ display: "flex", flexDirection: "column", gap: "1rem", fontSize: "0.85rem" }}>
+                  <div>
+                    <span style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)", display: "block" }}>문서번호</span>
+                    <strong style={{ fontFamily: "monospace", color: "#FBBF24" }}>
+                      {`UC-EQ-${proposalModalData.unit}-${String(proposalModalData.seq || proposalModalData.id).slice(-3).padStart(3, "0")}`}
+                    </strong>
+                  </div>
+                  <div>
+                    <span style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)", display: "block" }}>단위과제</span>
+                    <strong style={{ fontSize: "0.9rem" }}>{proposalModalData.unit} : {summary.title}</strong>
+                  </div>
+                  <div>
+                    <span style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)", display: "block" }}>주관 부서</span>
+                    <span>{summary.dept}</span>
+                  </div>
+                  <div>
+                    <span style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)", display: "block" }}>과제 배정 예산</span>
+                    <strong style={{ color: "#3b82f6" }}>{summary.budget}</strong>
+                  </div>
+                  <div style={{ borderTop: "1px solid rgba(255,255,255,0.05)", paddingTop: "0.75rem" }}>
+                    <span style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)", display: "block", marginBottom: "0.4rem" }}>주요 추진 전략 목표</span>
+                    <ul style={{ margin: 0, paddingLeft: "1.2rem", lineHeight: "1.5", display: "flex", flexDirection: "column", gap: "0.25rem" }}>
+                      {summary.goals.map((goal, idx) => (
+                        <li key={idx} style={{ color: "rgba(255,255,255,0.85)" }}>{goal}</li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              );
+            })()}
+            
+            <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "1.5rem", borderTop: "1px solid rgba(255,255,255,0.1)", paddingTop: "1rem" }}>
+              <button 
+                onClick={() => setProposalModalData(null)}
+                style={{ padding: "0.4rem 1.25rem", borderRadius: "6px", background: "var(--accent-color)", border: "none", color: "white", fontWeight: "600", cursor: "pointer" }}
+              >
+                확인
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 입찰문서 팝업 모달 (사용자 요건 3 대응) */}
+      {bidModalData && (
+        <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(0,0,0,0.75)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1300 }}>
+          <div className="glass-card" style={{ width: "550px", padding: "1.5rem", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.1)", background: "#1e293b", color: "white" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid rgba(255,255,255,0.1)", paddingBottom: "0.75rem", marginBottom: "1rem" }}>
+              <h4 style={{ margin: 0, fontSize: "1.05rem", fontWeight: "800", color: "#10B981" }}>
+                📜 입찰문서 (조달 규격 구매 공고서)
+              </h4>
+              <button 
+                onClick={() => setBidModalData(null)}
+                style={{ background: "transparent", border: "none", color: "rgba(255,255,255,0.5)", cursor: "pointer", fontSize: "1.2rem" }}
+              >
+                ✕
+              </button>
+            </div>
+            
+            {(() => {
+              const price = Number(bidModalData.unitPrice) || 0;
+              const qty = Number(bidModalData.quantity) || 0;
+              const total = price * qty;
+              
+              return (
+                <div style={{ display: "flex", flexDirection: "column", gap: "1rem", fontSize: "0.82rem" }}>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem" }}>
+                    <div>
+                      <span style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)", display: "block" }}>문서번호</span>
+                      <strong style={{ fontFamily: "monospace", color: "#FBBF24" }}>
+                        {`UC-EQ-${bidModalData.unit}-${String(bidModalData.seq || bidModalData.id).slice(-3).padStart(3, "0")}-BID`}
+                      </strong>
+                    </div>
+                    <div>
+                      <span style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)", display: "block" }}>입찰 구분</span>
+                      <span style={{ fontWeight: "700", color: "#10b981" }}>제한경쟁입찰 (규격/가격 동시)</span>
+                    </div>
+                  </div>
+
+                  <table style={{ width: "100%", borderCollapse: "collapse", marginTop: "0.5rem", border: "1px solid rgba(255,255,255,0.1)" }}>
+                    <tbody>
+                      <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+                        <td style={{ padding: "0.5rem", background: "rgba(255,255,255,0.05)", fontWeight: "700", width: "100px" }}>품명</td>
+                        <td style={{ padding: "0.5rem", color: "white", fontWeight: "700" }}>{bidModalData.itemName || bidModalData.name || "-"}</td>
+                      </tr>
+                      <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+                        <td style={{ padding: "0.5rem", background: "rgba(255,255,255,0.05)", fontWeight: "700" }}>구매 수량</td>
+                        <td style={{ padding: "0.5rem" }}>{qty} 대(세트)</td>
+                      </tr>
+                      <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+                        <td style={{ padding: "0.5rem", background: "rgba(255,255,255,0.05)", fontWeight: "700" }}>도입 단가</td>
+                        <td style={{ padding: "0.5rem", fontWeight: "700", color: "#60A5FA" }}>{formatToMillionWon(price)} 백만원</td>
+                      </tr>
+                      <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+                        <td style={{ padding: "0.5rem", background: "rgba(255,255,255,0.05)", fontWeight: "700" }}>소요 예산</td>
+                        <td style={{ padding: "0.5rem", fontWeight: "800", color: "#10B981" }}>{formatToMillionWon(total)} 백만원 (부가가치세 포함)</td>
+                      </tr>
+                      <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+                        <td style={{ padding: "0.5rem", background: "rgba(255,255,255,0.05)", fontWeight: "700" }}>납품 장소</td>
+                        <td style={{ padding: "0.5rem" }}>울산과학대학교 지정 실습 공간 및 지정 교수연구실</td>
+                      </tr>
+                      <tr>
+                        <td style={{ padding: "0.5rem", background: "rgba(255,255,255,0.05)", fontWeight: "700" }}>요구 성능 규격</td>
+                        <td style={{ padding: "0.5rem", color: "rgba(255,255,255,0.85)", lineHeight: "1.4" }}>
+                          - 앵커 사업단 실무위원회 통과 규격서 준수<br />
+                          - 무상 유지보수 기한 2년 이상 보장 조건<br />
+                          - {bidModalData.description || "상세 사양서 별도 첨부 참조"}
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              );
+            })()}
+            
+            <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "1.5rem", borderTop: "1px solid rgba(255,255,255,0.1)", paddingTop: "1rem" }}>
+              <button 
+                onClick={() => setBidModalData(null)}
+                style={{ padding: "0.4rem 1.25rem", borderRadius: "6px", background: "var(--accent-color)", border: "none", color: "white", fontWeight: "600", cursor: "pointer" }}
+              >
+                확인
+              </button>
+            </div>
+          </div>
+        </div>
       )}
 
     </div>
