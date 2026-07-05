@@ -3264,7 +3264,7 @@ export default function ProcurementManager({
                 💼 주요 용역 사업 현황
               </h3>
               <p style={{ margin: "0.25rem 0 0 0", fontSize: "0.85rem", color: "var(--text-secondary)" }}>
-                지자체 라이즈 대학 협력 체계 및 용역/컨설팅 계약 진행 현황
+                앵커사업 주요 용역사업 계약 및 진행 현황
               </p>
             </div>
             
@@ -3289,31 +3289,38 @@ export default function ProcurementManager({
                   <option value="기계설비전공">{"\u00A0-\u00A0기계설비전공"}</option>
                   <option value="전기전자공학부">전기전자공학부</option>
                   <option value="전기전공">{"\u00A0-\u00A0전기전공"}</option>
-                  <option value="전자공학전공">{"\u00A0-\u00A0전자공학전공"}</option>
-                  <option value="반도체장비전공">{"\u00A0-\u00A0반도체장비전공"}</option>
-                  <option value="IT융합학부">IT융합학부</option>
-                  <option value="컴퓨터정보전공">{"\u00A0-\u00A0컴퓨터정보전공"}</option>
-                  <option value="스마트제어전공">{"\u00A0-\u00A0스마트제어전공"}</option>
+                  <option value="스마트전자전공">{"\u00A0-\u00A0스마트전자전공"}</option>
+                  <option value="조선해양시스템공학과">조선해양시스템공학과</option>
+                  <option value="컴퓨터공학과">컴퓨터공학과</option>
                   <option value="화학공학과">화학공학과</option>
-                  <option value="간호학과">간호학과</option>
+                  <option value="게임영상학과">게임영상학과</option>
+                  <option value="실내건축디자인과">실내건축디자인과</option>
+                  <option value="융합안전공학과">융합안전공학과</option>
+                  <option value="인테리어시공학과">인테리어시공학과</option>
+                  <option value="간호학부">간호학부</option>
                   <option value="물리치료학과">물리치료학과</option>
                   <option value="치위생학과">치위생학과</option>
-                  <option value="작업치료학과">작업치료학과</option>
-                  <option value="글로벌비즈니스학과">글로벌비즈니스학과</option>
-                  <option value="세무회계전공">{"\u00A0-\u00A0세무회계전공"}</option>
-                  <option value="도시유통전공">{"\u00A0-\u00A0도시유통전공"}</option>
-                  <option value="호텔외식조리과">호텔외식조리과</option>
-                  <option value="융합조리전공">{"\u00A0- 융합조리전공"}</option>
-                  <option value="제과제빵스타일리스트전공">{"\u00A0- 제과제빵스타일리스트전공"}</option>
+                  <option value="식품영양학과">식품영양학과</option>
+                  <option value="호텔조리제빵과">호텔조리제빵과</option>
+                  <option value="스포츠재활학부">스포츠재활학부</option>
+                  <option value="스포츠건강재활학과">스포츠건강재활학과</option>
+                  <option value="푸드케어학과">푸드케어학과</option>
+                  <option value="골프산업과">골프산업과</option>
+                  <option value="반려동물보건과">반려동물보건과</option>
                   <option value="사회복지학과">사회복지학과</option>
                   <option value="유아교육과">유아교육과</option>
-                  <option value="스포츠지도학과">스포츠지도학과</option>
-                  <option value="공간디자인콘텐츠과">공간디자인콘텐츠과</option>
+                  <option value="세무회계학과">세무회계학과</option>
+                  <option value="사회복지상담학과">사회복지상담학과</option>
+                  <option value="국제학부">국제학부</option>
+                  <option value="미래모빌리티제조학과">미래모빌리티제조학과</option>
+                  <option value="바이오화학생산기술학과">바이오화학생산기술학과</option>
+                  <option value="인공지능기반텔레헬스학과">인공지능기반텔레헬스학과</option>
                 </select>
               </div>
 
               {/* 부서 필터 */}
               <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                <ListFilter size={16} style={{ color: "var(--text-secondary-dark)" }} />
                 <select
                   value={divisionFilter}
                   onChange={(e) => setDivisionFilter(e.target.value)}
@@ -3326,14 +3333,50 @@ export default function ProcurementManager({
                   }}
                 >
                   <option value="">부서 전체</option>
-                  <option value="ECC">ECC</option>
-                  <option value="산학협력단">산학협력단</option>
-                  <option value="어린이급식관리사업단">어린이급식관리사업단</option>
+                  <optgroup label="앵커사업단 및 센터">
+                    <option value="사업운영팀">사업운영팀</option>
+                    <option value="ECC센터">ECC센터</option>
+                    <option value="ICC센터">ICC센터</option>
+                    <option value="RCC센터">RCC센터</option>
+                    <option value="AID-X지원센터">AID-X지원센터</option>
+                    <option value="울산늘봄누리센터">울산늘봄누리센터</option>
+                    <option value="신산업특화센터">신산업특화센터</option>
+                  </optgroup>
+                  <optgroup label="대학본부">
+                    <option value="교무팀">교무팀</option>
+                    <option value="교수학습지원센터">교수학습지원센터</option>
+                    <option value="직업교육혁신센터">직업교육혁신센터</option>
+                    <option value="교양교육혁신센터">교양교육혁신센터</option>
+                    <option value="기획팀">기획팀</option>
+                    <option value="대외협력실">대외협력실</option>
+                    <option value="입학팀">입학팀</option>
+                    <option value="진로진학지원센터">진로진학지원센터</option>
+                    <option value="총무팀">총무팀</option>
+                    <option value="재무회계팀">재무회계팀</option>
+                    <option value="국제교류원운영팀">국제교류원운영팀</option>
+                    <option value="글로컬비즈니스센터">글로컬비즈니스센터</option>
+                    <option value="IR센터">IR센터</option>
+                  </optgroup>
+                  <optgroup label="산학협력단">
+                    <option value="산학기획팀">산학기획팀</option>
+                    <option value="산학지원팀">산학지원팀</option>
+                    <option value="창업창직교육센터">창업창직교육센터</option>
+                    <option value="현장실습지원센터">현장실습지원센터</option>
+                    <option value="울산광역시 탄소중립 지원센터">울산광역시 탄소중립 지원센터</option>
+                    <option value="울산늘봄누리센터">울산늘봄누리센터</option>
+                    <option value="종합환경분석센터">종합환경분석센터</option>
+                    <option value="영상콘텐츠제작센터">영상콘텐츠제작센터</option>
+                    <option value="스포츠재활운동센터">스포츠재활운동센터</option>
+                    <option value="이차전지연구소">이차전지연구소</option>
+                    <option value="지산학혁신연구소">지산학혁신연구소</option>
+                    <option value="어린이급식관리사업단">어린이급식관리사업단</option>
+                  </optgroup>
                 </select>
               </div>
 
-              {/* 과제별 필터 */}
+              {/* 전체 과제 필터 */}
               <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                <ListFilter size={16} style={{ color: "var(--text-secondary-dark)" }} />
                 <select
                   value={selectedEquipUnit}
                   onChange={(e) => setSelectedEquipUnit(e.target.value)}
@@ -3346,18 +3389,16 @@ export default function ProcurementManager({
                   }}
                 >
                   <option value="ALL">전체 과제</option>
-                  <option value={selectedYear === 1 ? "A1" : "A1가"}>
-                    {selectedYear === 1 ? "A1" : "A1가"} 단위과제
-                  </option>
-                  <option value={selectedYear === 1 ? "A2" : "A2가"}>
-                    {selectedYear === 1 ? "A2" : "A2가"} 단위과제
-                  </option>
-                  <option value={selectedYear === 1 ? "A3" : "A3가"}>
-                    {selectedYear === 1 ? "A3" : "A3가"} 단위과제
-                  </option>
+                  {Number(selectedYear) === 1 
+                    ? ["A1", "A2", "B1", "B2", "B3", "B4", "C1", "C2", "D1", "D2", "D3", "D4"].map(u => (
+                        <option key={u} value={u}>{u} 과제</option>
+                      ))
+                    : ["A1가", "A1나", "A2", "A3", "B1", "B2", "B3", "B4", "C1", "C2", "D1", "D2", "D3"].map(u => (
+                        <option key={u} value={u}>{u} 과제</option>
+                      ))
+                  }
                 </select>
               </div>
-
 
               {currentRole.id !== "GUEST" && (
                 <button 
