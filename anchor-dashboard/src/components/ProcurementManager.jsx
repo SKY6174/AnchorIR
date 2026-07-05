@@ -1248,6 +1248,27 @@ export default function ProcurementManager({
                       const qty = Number(equip.quantity) || 0;
                       const total = price * qty;
 
+                      const getEquipStatus = (eq) => {
+                        if (!eq.dateP && !eq.dateA && !eq.dateB && !eq.datePr && !eq.dateI) {
+                          return "준비중";
+                        }
+                        const todayStr = "2026-07-05";
+                        if (eq.dateI && todayStr >= eq.dateI) return "검수완료";
+                        if (eq.datePr && todayStr >= eq.datePr) return "구매중";
+                        if (eq.dateB && todayStr >= eq.dateB) return "구매중";
+                        if (eq.dateA && todayStr >= eq.dateA) return "입찰중";
+                        if (eq.dateP && todayStr >= eq.dateP) return "결재중";
+                        if (eq.dateP && todayStr < eq.dateP) return "준비중";
+                        
+                        if (eq.datePr) return "구매중";
+                        if (eq.dateB) return "구매중";
+                        if (eq.dateA) return "입찰중";
+                        if (eq.dateP) return "결재중";
+                        return "준비중";
+                      };
+
+                      const currentStatus = getEquipStatus(equip);
+
                       const monthsOrder = ["3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "1", "2"];
                       const getMonthIndexLocal = (dateStr) => {
                         if (!dateStr) return null;
