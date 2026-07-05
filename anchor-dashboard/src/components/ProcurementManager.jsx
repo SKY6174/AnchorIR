@@ -1850,6 +1850,28 @@ export default function ProcurementManager({
                         lastActivePhase = sortedActive[0];
                       }
 
+                      const arrowsToRender = [];
+                      const segments = [
+                        { start: idxP, end: idxA, color: "#f59e0b" },
+                        { start: idxA, end: idxB, color: "#3b82f6" },
+                        { start: idxB, end: idxPr, color: "#06b6d4" },
+                        { start: idxPr, end: idxI, color: "#a78bfa" }
+                      ];
+
+                      segments.forEach(seg => {
+                        if (seg.start !== null && seg.end !== null && seg.start < seg.end) {
+                          const pos = (seg.start + seg.end) / 2;
+                          const cellIdx = Math.floor(pos);
+                          const rem = pos - cellIdx;
+                          const leftPercent = (rem === 0) ? "50%" : "100%";
+                          arrowsToRender.push({
+                            cellIdx,
+                            leftPercent,
+                            color: seg.color
+                          });
+                        }
+                      });
+
                       return (
                         <tr 
                           key={equip.id || idx} 
@@ -2000,22 +2022,28 @@ export default function ProcurementManager({
                                   zIndex: 0
                                 }} />
                                 
-                                {/* 화살표 선 흐름 기호 (마일스톤 노드가 없는 빈 월에만 구간 유색 화살표 표시) */}
-                                {stepList.length === 0 && (leftColor !== "rgba(255, 255, 255, 0.12)" || rightColor !== "rgba(255, 255, 255, 0.12)") && (
-                                  <div style={{
-                                    position: "absolute",
-                                    left: "50%",
-                                    top: "50%",
-                                    transform: "translate(-50%, -50%)",
-                                    width: 0,
-                                    height: 0,
-                                    borderTop: "4px solid transparent",
-                                    borderBottom: "4px solid transparent",
-                                    borderLeft: `6px solid ${leftColor !== "rgba(255, 255, 255, 0.12)" ? leftColor : rightColor}`,
-                                    zIndex: 1,
-                                    pointerEvents: "none"
-                                  }} />
-                                )}
+                                {/* 화살표 선 흐름 기호 (구간 한가운데에 단 1개의 진행 화살표 렌더링) */}
+                                {arrowsToRender
+                                  .filter(arr => arr.cellIdx === currIdx)
+                                  .map((arr, arrIdx) => (
+                                    <div 
+                                      key={arrIdx}
+                                      style={{
+                                        position: "absolute",
+                                        left: arr.leftPercent,
+                                        top: "50%",
+                                        transform: "translate(-50%, -50%)",
+                                        width: 0,
+                                        height: 0,
+                                        borderTop: "3.5px solid transparent",
+                                        borderBottom: "3.5px solid transparent",
+                                        borderLeft: `5px solid ${arr.color}`,
+                                        zIndex: 3,
+                                        pointerEvents: "none"
+                                      }} 
+                                    />
+                                  ))
+                                }
 
                                 {/* 두 번째 그림 스타일의 마일스톤 노드 (중앙 도트점 + 상단 텍스트 및 양쪽 사선 깃대 날개) */}
                                 <div style={{ position: "relative", zIndex: 2, display: "flex", justifyContent: "center", alignItems: "center", height: "32px" }}>
