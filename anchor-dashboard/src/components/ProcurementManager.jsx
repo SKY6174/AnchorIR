@@ -1270,6 +1270,27 @@ export default function ProcurementManager({
         alert(`🔬 새 기자재 항목이 ${targetYear}차년도 사업계획서에 성공적으로 등록되었습니다.`);
       }
     } else if (modalType === "service") {
+      // 1. 관련학과, 관련부서 중 최소 하나는 반드시 지정해야 함
+      if (!formData.deptName && !formData.divisionName) {
+        alert("⚠️ 배정 학과(관련학과) 혹은 배정 행정부서(관련부서) 중 최소 하나는 반드시 입력해야 합니다.");
+        return;
+      }
+
+      const priceVal = parseFloat(formData.budgetPlan || 0);
+      const spentVal = parseFloat(formData.budgetSpent || 0);
+
+      // 2. 실제 집행액은 사업예산 이하여야 함
+      if (spentVal > priceVal) {
+        alert("⚠️ 실제 집행액은 사업예산 계획액을 초과할 수 없습니다. 금액을 확인해 주세요.");
+        return;
+      }
+
+      // 3. 금액 오입력(천원 단위 대신 원화 전체 기입) 방지 가드
+      if (priceVal >= 10000000 || spentVal >= 10000000) {
+        alert("⚠️ 금액 입력 단위를 확인해 주세요!\n현재 주요 용역의 금액 입력란은 '천 원 단위'입니다.\n(예: 1,000만 원 입력 시 -> 10000 입력, 1억 원 입력 시 -> 100000 입력)");
+        return;
+      }
+
       const activeServiceList = serviceData.length > 0 ? serviceData : [];
       const combinedDocs = [
         formData.aiProposalData?.docNo || formData.docPlan,
@@ -1291,8 +1312,9 @@ export default function ProcurementManager({
               title: formData.title || "새 주요 용역 항목",
               purpose: formData.purpose || "-",
               providerQual: formData.providerQual || "-",
-              budgetPlan: Number(formData.budgetPlan) || 0,
-              budgetSpent: Number(formData.budgetSpent) || 0,
+              // 천원 단위 입력을 원화 단위로 곱하여 저장
+              budgetPlan: Math.round(parseFloat(formData.budgetPlan || 0) * 1000),
+              budgetSpent: Math.round(parseFloat(formData.budgetSpent || 0) * 1000),
               opResult: formData.opResult || "-",
               password: formData.password || "1234",
               
@@ -1345,8 +1367,9 @@ export default function ProcurementManager({
           title: formData.title || "새 주요 용역 항목",
           purpose: formData.purpose || "-",
           providerQual: formData.providerQual || "-",
-          budgetPlan: Number(formData.budgetPlan) || 0,
-          budgetSpent: Number(formData.budgetSpent) || 0,
+          // 천원 단위 입력을 원화 단위로 곱하여 저장
+          budgetPlan: Math.round(parseFloat(formData.budgetPlan || 0) * 1000),
+          budgetSpent: Math.round(parseFloat(formData.budgetSpent || 0) * 1000),
           opResult: formData.opResult || "-",
           password: formData.password || "1234",
           
@@ -1510,8 +1533,12 @@ export default function ProcurementManager({
       description: equip.description || "",
       descriptionPurpose: equip.purpose || descParts[0] || "",
       descriptionPlan: equip.plan || descParts[1] || "",
-      budgetPlan: equip.budgetPlan ? parseFloat((equip.budgetPlan / 1000000).toFixed(2)) : (equip.unitPrice ? parseFloat((equip.unitPrice / 1000000).toFixed(2)) : ""),
-      budgetSpent: equip.budgetSpent ? parseFloat((equip.budgetSpent / 1000000).toFixed(2)) : "",
+      budgetPlan: currentModalType === "service"
+        ? (equip.budgetPlan ? Math.round(equip.budgetPlan / 1000) : "")
+        : (equip.budgetPlan ? parseFloat((equip.budgetPlan / 1000000).toFixed(2)) : (equip.unitPrice ? parseFloat((equip.unitPrice / 1000000).toFixed(2)) : "")),
+      budgetSpent: currentModalType === "service"
+        ? (equip.budgetSpent ? Math.round(equip.budgetSpent / 1000) : "")
+        : (equip.budgetSpent ? parseFloat((equip.budgetSpent / 1000000).toFixed(2)) : ""),
       location: equip.location || "",
       utilization: equip.utilization || "",
       progress: equip.progress || "",
@@ -4449,14 +4476,24 @@ export default function ProcurementManager({
               {/* 용역용 입력 필드들 */}
               {modalType === "service" && (
                 <>
-                  {/* 첫번째 줄: 단위과제, 프로그램(ID / 명칭) (비율 = 1:2) */}
+                  {/* 첫번째 줄: 단위과제, 프로그램 진행 상황 (비율 = 1:2) */}
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: "1rem" }}>
                     <div>
                       <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>단위과제</label>
                       <select 
                         name="unit" 
                         value={formData.unit} 
-                        onChange={handleInputChange} 
+                        onChange={(e) => {
+                          const nextUnit = e.target.value;
+                          // 단위과제 변경 시 관련 프로그램 목록이 갱신되므로 첫 번째 프로그램으로 자동 셋해줍니다.
+                          const nextProgs = getDynamicPrograms(nextUnit);
+                          setFormData(prev => ({
+                            ...prev,
+                            unit: nextUnit,
+                            programId: nextProgs.length > 0 ? nextProgs[0].id : "",
+                            programName: nextProgs.length > 0 ? nextProgs[0].name : ""
+                          }));
+                        }}
                         className="user-selector" 
                         style={{ width: "100%", padding: "0.5rem", background: "var(--bg-card-dark)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }}
                       >
@@ -4466,25 +4503,37 @@ export default function ProcurementManager({
                       </select>
                     </div>
                     <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>프로그램 정보 (ID / 프로그램명)</label>
-                      <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: "0.5rem" }}>
-                        <input 
-                          type="text" 
-                          name="programId" 
-                          value={formData.programId || ""} 
-                          onChange={handleInputChange} 
-                          placeholder="프로그램 ID (예: A1-1)" 
-                          style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} 
-                        />
-                        <input 
-                          type="text" 
-                          name="programName" 
-                          value={formData.programName || ""} 
-                          onChange={handleInputChange} 
-                          placeholder="프로그램 명칭 (예: 특화 전문인재 양성)" 
-                          style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} 
-                        />
-                      </div>
+                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>연계 프로그램 (진행 상황)</label>
+                      <select 
+                        name="programSelect" 
+                        value={formData.programId && formData.programName ? `${formData.programId}|${formData.programName}` : ""}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          if (val) {
+                            const [pId, pName] = val.split("|");
+                            setFormData(prev => ({
+                              ...prev,
+                              programId: pId,
+                              programName: pName
+                            }));
+                          } else {
+                            setFormData(prev => ({
+                              ...prev,
+                              programId: "",
+                              programName: ""
+                            }));
+                          }
+                        }}
+                        className="user-selector" 
+                        style={{ width: "100%", padding: "0.5rem", background: "var(--bg-card-dark)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }}
+                      >
+                        <option value="">(연계 프로그램 선택 안 함)</option>
+                        {getDynamicPrograms(formData.unit).map(prog => (
+                          <option key={prog.id} value={`${prog.id}|${prog.name}`}>
+                            [{prog.id}] {prog.name}
+                          </option>
+                        ))}
+                      </select>
                     </div>
                   </div>
 
