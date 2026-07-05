@@ -10,6 +10,16 @@ const MENU_SCHEMA = [
     subMenus: []
   },
   {
+    key: "projects",
+    label: "단위과제 관리",
+    description: "단위과제별 세부 사업 예산 집행률 및 위계 체계 관리",
+    subMenus: [
+      { key: "unit_status", label: "단위과제 집행현황" },
+      { key: "unit_system", label: "단위과제 체계" },
+      { key: "program_mgmt", label: "프로그램 관리" }
+    ]
+  },
+  {
     key: "progress",
     label: "프로그램 진행",
     description: "각 프로그램 진행 단계 관리 및 만족도 조사 추이 추적",
@@ -75,16 +85,6 @@ const MENU_SCHEMA = [
     label: "앵커Wiki",
     description: "앵커사업 지식 공유 및 인공지능 위키백과 정보 제공",
     subMenus: []
-  },
-  {
-    key: "projects",
-    label: "단위과제 관리",
-    description: "단위과제별 세부 사업 예산 집행률 및 위계 체계 관리",
-    subMenus: [
-      { key: "unit_status", label: "단위과제 집행현황" },
-      { key: "unit_system", label: "단위과제 체계" },
-      { key: "program_mgmt", label: "프로그램 관리" }
-    ]
   },
   {
     key: "management",

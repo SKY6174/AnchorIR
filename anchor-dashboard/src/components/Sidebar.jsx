@@ -74,6 +74,100 @@ export default function Sidebar({
             </div>
           )}
 
+          {/* 1) 단위과제 관리 탭 복구 (요구사항 1 반영) */}
+          {(menuVisibility.projects !== false || isSongDirector) && (
+            <div 
+              className={`projects-nav-wrapper ${(activeTab === "projects" || hoveredTab === "projects") ? "active" : ""}`}
+              onMouseEnter={() => setHoveredTab("projects")}
+              onMouseLeave={() => setHoveredTab(null)}
+            >
+              <div
+                className={`nav-item ${activeTab === "projects" ? "active" : ""}`}
+                onClick={() => {
+                  onChangeTab("projects");
+                  if (onChangeProjectsSubTab) {
+                    const subTabs = ["unit_status", "unit_system", "program_mgmt"];
+                    const firstActive = subTabs.find(tab => isSongDirector || menuVisibility[tab] !== false) || "unit_status";
+                    onChangeProjectsSubTab(firstActive);
+                  }
+                }}
+                style={getHiddenStyle("projects")}
+              >
+                <FolderKanban size={24} />
+                <span>
+                  단위과제 관리
+                  {isHidden("projects") && (
+                    <span style={{ fontSize: "0.65rem", color: "#ef4444", fontWeight: "bold", textDecoration: "none", display: "inline-block", marginLeft: "0.25rem" }}>
+                      [숨김]
+                    </span>
+                  )}
+                </span>
+              </div>
+              <div className="nav-sub-menu">
+                {(menuVisibility.unit_status !== false || isSongDirector) && (
+                  <div
+                    className={`nav-sub-item ${activeTab === "projects" && projectsSubTab === "unit_status" ? "active" : ""}`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onChangeTab("projects");
+                      if (onChangeProjectsSubTab) {
+                        onChangeProjectsSubTab("unit_status");
+                      }
+                    }}
+                    style={getHiddenStyle("unit_status")}
+                  >
+                    - 단위과제 집행현황
+                    {isHidden("unit_status") && (
+                      <span style={{ fontSize: "0.6rem", color: "#ef4444", textDecoration: "none", marginLeft: "0.2rem" }}>
+                        [숨김]
+                      </span>
+                    )}
+                  </div>
+                )}
+                {(menuVisibility.unit_system !== false || isSongDirector) && (
+                  <div
+                    className={`nav-sub-item ${activeTab === "projects" && projectsSubTab === "unit_system" ? "active" : ""}`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onChangeTab("projects");
+                      if (onChangeProjectsSubTab) {
+                        onChangeProjectsSubTab("unit_system");
+                      }
+                    }}
+                    style={getHiddenStyle("unit_system")}
+                  >
+                    - 단위과제 체계
+                    {isHidden("unit_system") && (
+                      <span style={{ fontSize: "0.6rem", color: "#ef4444", textDecoration: "none", marginLeft: "0.2rem" }}>
+                        [숨김]
+                      </span>
+                    )}
+                  </div>
+                )}
+                {(menuVisibility.program_mgmt !== false || isSongDirector) && (
+                  <div
+                    className={`nav-sub-item ${activeTab === "projects" && projectsSubTab === "program_mgmt" ? "active" : ""}`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onChangeTab("projects");
+                      if (onChangeProjectsSubTab) {
+                        onChangeProjectsSubTab("program_mgmt");
+                      }
+                    }}
+                    style={getHiddenStyle("program_mgmt")}
+                  >
+                    - 프로그램 관리
+                    {isHidden("program_mgmt") && (
+                      <span style={{ fontSize: "0.6rem", color: "#ef4444", textDecoration: "none", marginLeft: "0.2rem" }}>
+                        [숨김]
+                      </span>
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
           {(menuVisibility.progress !== false || isSongDirector) && (
             <div 
               className={`progress-nav-wrapper ${(activeTab === "progress" || hoveredTab === "progress") ? "active" : ""}`}
@@ -652,100 +746,6 @@ export default function Sidebar({
             <BookOpen size={24} />
             <span>앵커Wiki</span>
           </div>
-
-          {/* 1) 단위과제 관리 탭 복구 (요구사항 1 반영) */}
-          {(menuVisibility.projects !== false || isSongDirector) && (
-            <div 
-              className={`projects-nav-wrapper ${(activeTab === "projects" || hoveredTab === "projects") ? "active" : ""}`}
-              onMouseEnter={() => setHoveredTab("projects")}
-              onMouseLeave={() => setHoveredTab(null)}
-            >
-              <div
-                className={`nav-item ${activeTab === "projects" ? "active" : ""}`}
-                onClick={() => {
-                  onChangeTab("projects");
-                  if (onChangeProjectsSubTab) {
-                    const subTabs = ["unit_status", "unit_system", "program_mgmt"];
-                    const firstActive = subTabs.find(tab => isSongDirector || menuVisibility[tab] !== false) || "unit_status";
-                    onChangeProjectsSubTab(firstActive);
-                  }
-                }}
-                style={getHiddenStyle("projects")}
-              >
-                <FolderKanban size={24} />
-                <span>
-                  단위과제 관리
-                  {isHidden("projects") && (
-                    <span style={{ fontSize: "0.65rem", color: "#ef4444", fontWeight: "bold", textDecoration: "none", display: "inline-block", marginLeft: "0.25rem" }}>
-                      [숨김]
-                    </span>
-                  )}
-                </span>
-              </div>
-              <div className="nav-sub-menu">
-                {(menuVisibility.unit_status !== false || isSongDirector) && (
-                  <div
-                    className={`nav-sub-item ${activeTab === "projects" && projectsSubTab === "unit_status" ? "active" : ""}`}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onChangeTab("projects");
-                      if (onChangeProjectsSubTab) {
-                        onChangeProjectsSubTab("unit_status");
-                      }
-                    }}
-                    style={getHiddenStyle("unit_status")}
-                  >
-                    - 단위과제 집행현황
-                    {isHidden("unit_status") && (
-                      <span style={{ fontSize: "0.6rem", color: "#ef4444", textDecoration: "none", marginLeft: "0.2rem" }}>
-                        [숨김]
-                      </span>
-                    )}
-                  </div>
-                )}
-                {(menuVisibility.unit_system !== false || isSongDirector) && (
-                  <div
-                    className={`nav-sub-item ${activeTab === "projects" && projectsSubTab === "unit_system" ? "active" : ""}`}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onChangeTab("projects");
-                      if (onChangeProjectsSubTab) {
-                        onChangeProjectsSubTab("unit_system");
-                      }
-                    }}
-                    style={getHiddenStyle("unit_system")}
-                  >
-                    - 단위과제 체계
-                    {isHidden("unit_system") && (
-                      <span style={{ fontSize: "0.6rem", color: "#ef4444", textDecoration: "none", marginLeft: "0.2rem" }}>
-                        [숨김]
-                      </span>
-                    )}
-                  </div>
-                )}
-                {(menuVisibility.program_mgmt !== false || isSongDirector) && (
-                  <div
-                    className={`nav-sub-item ${activeTab === "projects" && projectsSubTab === "program_mgmt" ? "active" : ""}`}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onChangeTab("projects");
-                      if (onChangeProjectsSubTab) {
-                        onChangeProjectsSubTab("program_mgmt");
-                      }
-                    }}
-                    style={getHiddenStyle("program_mgmt")}
-                  >
-                    - 프로그램 관리
-                    {isHidden("program_mgmt") && (
-                      <span style={{ fontSize: "0.6rem", color: "#ef4444", textDecoration: "none", marginLeft: "0.2rem" }}>
-                        [숨김]
-                      </span>
-                    )}
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
 
           {/* 모든 역할(연구원 포함)이 사업단 관리 메뉴에 접근하여 대학조직도/파트너기관을 볼 수 있도록 허용합니다. */}
           {currentRole && (
