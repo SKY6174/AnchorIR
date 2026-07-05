@@ -514,6 +514,8 @@ export default function ProcurementManager({
   setServiceData,
   projects = []
 }) {
+  const monthsOrder = ["3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "1", "2"];
+
   // 모달 제어 상태
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [modalType, setModalType] = useState("env"); // "env", "equip", "service"
