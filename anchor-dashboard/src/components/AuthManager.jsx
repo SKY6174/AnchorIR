@@ -59,7 +59,7 @@ export default function AuthManager({ onLoginSuccess, members = [] }) {
 
           // 휴대폰 뒷자리가 일치하거나, 테스트용 계정이면서 비밀번호가 1234 혹은 uc_anchor(admin) 등일 때
           const isTestAccount = ["director", "team_leader", "researcher", "admin", "guest", "hq_head", "ecc_head", "special_head", "manager"].includes(targetId);
-          const expectedTestPw = targetId === "admin" ? "uc_anchor" : targetId === "guest" ? "guest" : "1234";
+          const expectedTestPw = targetId === "admin" ? "uc_anchor" : targetId === "guest" ? "guest123" : "1234";
 
           if (userPw === expectedPhonePw || (isTestAccount && userPw === expectedTestPw)) {
             // Supabase Auth의 비밀번호 최소 자릿수 규정(6자) 충족을 위한 안전 처리
@@ -253,7 +253,7 @@ export default function AuthManager({ onLoginSuccess, members = [] }) {
           <div style={{ fontSize: "0.72rem", color: "var(--text-secondary-dark)", lineHeight: "1.4", padding: "0.5rem", background: "rgba(255,255,255,0.02)", border: "1px dashed var(--border-color-dark)", borderRadius: "0.25rem", display: "flex", flexDirection: "column", gap: "0.25rem" }}>
             <p style={{ margin: 0 }}>※ 별도의 회원가입 없이 주소록에 등록된 이메일로 로그인하세요.</p>
             <p style={{ margin: 0 }}>※ 초기 비밀번호는 본인의 휴대전화 뒷번호 4자리입니다.</p>
-            <p style={{ margin: 0, color: "#60A5FA", fontWeight: "700" }}>🔑 게스트 로그인 안내: ID: <span style={{ textDecoration: "underline" }}>guest</span> / PW: <span style={{ textDecoration: "underline" }}>guest</span></p>
+            <p style={{ margin: 0, color: "#60A5FA", fontWeight: "700" }}>🔑 게스트 로그인 안내: ID: <span style={{ textDecoration: "underline" }}>guest</span> / PW: <span style={{ textDecoration: "underline" }}>guest123</span></p>
           </div>
 
           <button type="submit" className="btn-primary" style={{ justifyContent: "center", marginTop: "0.5rem" }}>
