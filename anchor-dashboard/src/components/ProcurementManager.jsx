@@ -1165,12 +1165,12 @@ export default function ProcurementManager({
                       <span style={{ fontSize: "0.68rem", fontWeight: "400", color: "var(--text-secondary-dark)", marginTop: "0.1rem" }}>(백만원)</span>
                     </div>
                   </th>
-                  <th rowSpan={3} style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", verticalAlign: "middle" }}>구입목적 및 활용계획</th>
+                  <th rowSpan={3} style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "600px", verticalAlign: "middle" }}>구입목적 및 활용계획</th>
                   <th colSpan={12} style={{ padding: "0.5rem", textAlign: "center", fontWeight: "800", borderBottom: "1px solid rgba(255,255,255,0.08)", background: "rgba(255, 255, 255, 0.01)", lineHeight: "1.3" }}>
                     구매단계<br />
                     <span style={{ fontSize: "0.75rem", fontWeight: "normal", color: "var(--text-secondary)" }}>(기획:P ➔ 승인:A ➔ 입찰:B ➔ 구매:Pr ➔ 검수:I)</span>
                   </th>
-                  <th rowSpan={3} style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "145px", verticalAlign: "middle" }}>관련문서</th>
+                  <th rowSpan={3} style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "80px", verticalAlign: "middle" }}>관련문서</th>
                   {currentRole.id !== "GUEST" && (
                     <th rowSpan={3} style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "45px", verticalAlign: "middle" }}>작업</th>
                   )}
@@ -1372,7 +1372,7 @@ export default function ProcurementManager({
                           <td style={{ padding: "0.8rem 0.5rem", textAlign: "right", fontWeight: "700", color: "#10B981" }}>
                             {formatToMillionWon(total)}
                           </td>
-                          <td style={{ padding: "0.8rem 0.5rem", textAlign: "left", color: "var(--text-secondary)", maxWidth: "200px" }} title={equip.description || equip.opPlan}>
+                          <td style={{ padding: "0.8rem 0.5rem", textAlign: "left", color: "var(--text-secondary)", maxWidth: "600px" }} title={equip.description || equip.opPlan}>
                             <div style={{
                               display: "-webkit-box",
                               WebkitLineClamp: 3,
@@ -1587,8 +1587,8 @@ export default function ProcurementManager({
                             );
                           })}
 
-                          <td style={{ padding: "0.8rem 0.5rem", textAlign: "center", color: "var(--text-secondary)" }}>
-                            <div style={{ display: "flex", gap: "0.3rem", justifyContent: "center", flexWrap: "wrap", width: "100%" }}>
+                          <td style={{ padding: "0.8rem 0.2rem", textAlign: "center", color: "var(--text-secondary)" }}>
+                            <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem", alignItems: "center", width: "100%" }}>
                               {/* 1. 기획문서 버튼 (파란색 테마) */}
                               <button
                                 onClick={() => setProposalModalData(equip)}
