@@ -2861,7 +2861,23 @@ export default function App() {
             dateA: x.date_a || "",
             dateB: x.date_b || "",
             datePr: x.date_pr || "",
-            dateI: x.date_i || ""
+            dateI: x.date_i || "",
+            docPlan: x.doc_plan || "",
+            docPurchase: x.doc_purchase || "",
+            docBid: x.doc_bid || "",
+            docPlanFileName: x.doc_plan_file_name || "",
+            docPurchaseFileName: x.doc_purchase_file_name || "",
+            docBidFileName: x.doc_bid_file_name || "",
+            docPlanFileSize: Number(x.doc_plan_file_size) || 0,
+            docPurchaseFileSize: Number(x.doc_purchase_file_size) || 0,
+            docBidFileSize: Number(x.doc_bid_file_size) || 0,
+            docPlanFileUrl: x.doc_plan_file_url || "",
+            docPurchaseFileUrl: x.doc_purchase_file_url || "",
+            docBidFileUrl: x.doc_bid_file_url || "",
+            aiProposalData: x.ai_proposal_data || null,
+            aiPurchaseData: x.ai_purchase_data || null,
+            aiBidData: x.ai_bid_data || null,
+            relatedDocs: x.related_docs || ""
           }));
           setEnvData(formatted);
           localStorage.setItem(`anchor_cache_env_y${selectedYear}`, JSON.stringify(formatted));
@@ -3231,7 +3247,23 @@ export default function App() {
               date_a: e.dateA || null,
               date_b: e.dateB || null,
               date_pr: e.datePr || null,
-              date_i: e.dateI || null
+              date_i: e.dateI || null,
+              doc_plan: e.docPlan || "",
+              doc_purchase: e.docPurchase || "",
+              doc_bid: e.docBid || "",
+              doc_plan_file_name: e.docPlanFileName || "",
+              doc_purchase_file_name: e.docPurchaseFileName || "",
+              doc_bid_file_name: e.docBidFileName || "",
+              doc_plan_file_size: Number(e.docPlanFileSize) || 0,
+              doc_purchase_file_size: Number(e.docPurchaseFileSize) || 0,
+              doc_bid_file_size: Number(e.docBidFileSize) || 0,
+              doc_plan_file_url: e.docPlanFileUrl || "",
+              doc_purchase_file_url: e.docPurchaseFileUrl || "",
+              doc_bid_file_url: e.docBidFileUrl || "",
+              ai_proposal_data: e.aiProposalData || null,
+              ai_purchase_data: e.aiPurchaseData || null,
+              ai_bid_data: e.aiBidData || null,
+              related_docs: e.relatedDocs || ""
             }))
           );
           if (error) throw error;
