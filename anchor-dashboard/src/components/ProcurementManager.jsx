@@ -2670,7 +2670,7 @@ export default function ProcurementManager({
                   {(() => {
                     const priceVal = parseFloat(formData.unitPrice || 0);
                     const qtyVal = parseFloat(formData.quantity || 0);
-                    const totalInMillion = ((priceVal * qtyVal) / 1000).toFixed(2);
+                    const totalInThousand = (priceVal * qtyVal).toLocaleString();
                     return (
                       <>
                         <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr 2fr", gap: "1rem" }}>
@@ -2683,8 +2683,8 @@ export default function ProcurementManager({
                             <input type="number" name="quantity" value={formData.quantity} onChange={handleInputChange} required placeholder="예: 2" style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} />
                           </div>
                           <div>
-                            <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>금액 (백만원)</label>
-                            <input type="text" value={`${totalInMillion} 백만원`} readOnly style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.02)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "#10B981", fontWeight: "bold" }} />
+                            <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>금액 (천원)</label>
+                            <input type="text" value={`${totalInThousand} 천원`} readOnly style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.02)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "#10B981", fontWeight: "bold" }} />
                           </div>
                         </div>
                         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
