@@ -1665,7 +1665,7 @@ export default function ProcurementManager({
                   <th rowSpan={3} style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "384px", verticalAlign: "middle" }}>구축목적 및 활용계획</th>
                   <th colSpan={12} style={{ padding: "0.5rem", textAlign: "center", fontWeight: "800", borderBottom: "1px solid rgba(255,255,255,0.08)", background: "rgba(255, 255, 255, 0.01)", lineHeight: "1.3" }}>
                     구축단계<br />
-                    <span style={{ fontSize: "0.75rem", fontWeight: "normal", color: "var(--text-secondary)" }}>[요청(Rq) ➔ 검토∙심의∙결정(PDR) ➔ 설계∙인허가(DL) ➔ 업체∙계약(BC) ➔ 시공∙감리(CS)]</span>
+                    <span style={{ fontSize: "0.63rem", fontWeight: "normal", color: "var(--text-secondary)", whiteSpace: "nowrap" }}>[요청(Rq) ➔ 검토∙심의∙결정(PDR) ➔ 설계∙인허가(DL) ➔ 업체∙계약(BC) ➔ 시공∙감리(CS)]</span>
                   </th>
                   <th rowSpan={3} style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "80px", verticalAlign: "middle" }}>관련문서</th>
                   {currentRole.id !== "GUEST" && (
