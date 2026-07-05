@@ -1420,7 +1420,7 @@ export default function ProcurementManager({
                   <option value="total">금액 순서</option>
                 </select>
                 <button
-                  onClick={() => setSortOrder(prev => prev === "asc" ? "desc" : "asc")}
+                  onClick={() => setSortDirection(prev => prev === "asc" ? "desc" : "asc")}
                   className="btn btn-secondary"
                   style={{
                     padding: "0.4rem 0.6rem",
@@ -1433,7 +1433,7 @@ export default function ProcurementManager({
                     cursor: "pointer"
                   }}
                 >
-                  {sortOrder === "asc" ? "▲" : "▼"}
+                  {sortDirection === "asc" ? "▲" : "▼"}
                 </button>
               </div>
 
@@ -1529,8 +1529,8 @@ export default function ProcurementManager({
                       aVal = Number(aVal) || 0;
                       bVal = Number(bVal) || 0;
                     }
-                    if (aVal < bVal) return sortOrder === "asc" ? -1 : 1;
-                    if (aVal > bVal) return sortOrder === "asc" ? 1 : -1;
+                    if (aVal < bVal) return sortDirection === "asc" ? -1 : 1;
+                    if (aVal > bVal) return sortDirection === "asc" ? 1 : -1;
                     return 0;
                   });
 
@@ -2866,7 +2866,7 @@ export default function ProcurementManager({
                   <option value="total">금액 순서</option>
                 </select>
                 <button
-                  onClick={() => setSortOrder(prev => prev === "asc" ? "desc" : "asc")}
+                  onClick={() => setSortDirection(prev => prev === "asc" ? "desc" : "asc")}
                   className="btn btn-secondary"
                   style={{
                     padding: "0.4rem 0.6rem",
@@ -2879,7 +2879,7 @@ export default function ProcurementManager({
                     cursor: "pointer"
                   }}
                 >
-                  {sortOrder === "asc" ? "▲" : "▼"}
+                  {sortDirection === "asc" ? "▲" : "▼"}
                 </button>
               </div>
 
@@ -2975,8 +2975,8 @@ export default function ProcurementManager({
                       aVal = Number(aVal) || 0;
                       bVal = Number(bVal) || 0;
                     }
-                    if (aVal < bVal) return sortOrder === "asc" ? -1 : 1;
-                    if (aVal > bVal) return sortOrder === "asc" ? 1 : -1;
+                    if (aVal < bVal) return sortDirection === "asc" ? -1 : 1;
+                    if (aVal > bVal) return sortDirection === "asc" ? 1 : -1;
                     return 0;
                   });
 
