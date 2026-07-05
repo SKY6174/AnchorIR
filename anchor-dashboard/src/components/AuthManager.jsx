@@ -62,10 +62,14 @@ export default function AuthManager({ onLoginSuccess, members = [] }) {
           const expectedTestPw = targetId === "admin" ? "uc_anchor" : targetId === "guest" ? "guest" : "1234";
 
           if (userPw === expectedPhonePw || (isTestAccount && userPw === expectedTestPw)) {
+            // Supabase Auth의 비밀번호 최소 자릿수 규정(6자) 충족을 위한 안전 처리
+            // 입력 비밀번호가 6자 미만인 최초 로그인 상태라면 뒤에 "00"을 임시 패딩으로 덧붙여 6자리로 가입 진행
+            const secureSignUpPw = userPw.length < 6 ? `${userPw}00` : userPw;
+
             // 자동 회원가입 진행!
             const { data: signUpData, error: signUpErr } = await supabase.auth.signUp({
               email: targetEmail,
-              password: userPw,
+              password: secureSignUpPw,
               options: {
                 data: { name: matchedMember.name }
               }
@@ -75,7 +79,7 @@ export default function AuthManager({ onLoginSuccess, members = [] }) {
               // 가입 직후 즉시 로그인 시도
               const { data: retryData, error: retryErr } = await supabase.auth.signInWithPassword({
                 email: targetEmail,
-                password: userPw
+                password: secureSignUpPw
               });
               if (!retryErr && retryData) {
                 authUser = retryData.user;
