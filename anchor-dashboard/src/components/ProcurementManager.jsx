@@ -502,7 +502,7 @@ const getMilestoneArray = (val) => {
 // 12개월 일정 마일스톤 가중치 공용 맵 선언 (ReferenceError 방어)
 const phaseWeight = { 
   "P": 1, "A": 2, "B": 3, "Pr": 4, "I": 5,
-  "Rq": 1, "DR": 2, "DL": 3, "BC": 4, "CS": 5
+  "Rq": 1, "DR": 2, "PDR": 2, "DL": 3, "BC": 4, "CS": 5
 };
 
 export default function ProcurementManager({
@@ -1665,7 +1665,7 @@ export default function ProcurementManager({
                   <th rowSpan={3} style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "384px", verticalAlign: "middle" }}>구축목적 및 활용계획</th>
                   <th colSpan={12} style={{ padding: "0.5rem", textAlign: "center", fontWeight: "800", borderBottom: "1px solid rgba(255,255,255,0.08)", background: "rgba(255, 255, 255, 0.01)", lineHeight: "1.3" }}>
                     구축단계<br />
-                    <span style={{ fontSize: "0.75rem", fontWeight: "normal", color: "var(--text-secondary)" }}>(요청:Rq ➔ 검토/심의:DR ➔ 용역/인허가:DL ➔ 업체/선정:BC ➔ 시공∙감리:CS)</span>
+                    <span style={{ fontSize: "0.75rem", fontWeight: "normal", color: "var(--text-secondary)" }}>[요청(Rq) ➔ 검토∙심의∙결정(PDR) ➔ 설계∙인허가(DL) ➔ 업체∙계약(BC) ➔ 시공∙감리(CS)]</span>
                   </th>
                   <th rowSpan={3} style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "80px", verticalAlign: "middle" }}>관련문서</th>
                   {currentRole.id !== "GUEST" && (
@@ -1761,9 +1761,9 @@ export default function ProcurementManager({
 
                     const activePhases = [];
                     if (idxP !== null) activePhases.push({ phase: "Rq", idx: idxP, weight: phaseWeight["P"], date: equip.dateP, label: "요청", color: "#f59e0b" });
-                    if (idxA !== null) activePhases.push({ phase: "DR", idx: idxA, weight: phaseWeight["A"], date: equip.dateA, label: "검토/심의", color: "#3b82f6" });
-                    if (idxB !== null) activePhases.push({ phase: "DL", idx: idxB, weight: phaseWeight["B"], date: equip.dateB, label: "용역/인허가", color: "#06b6d4" });
-                    if (idxPr !== null) activePhases.push({ phase: "BC", idx: idxPr, weight: phaseWeight["Pr"], date: equip.datePr, label: "업체/선정", color: "#a78bfa" });
+                    if (idxA !== null) activePhases.push({ phase: "PDR", idx: idxA, weight: phaseWeight["A"], date: equip.dateA, label: "검토∙심의∙결정", color: "#3b82f6" });
+                    if (idxB !== null) activePhases.push({ phase: "DL", idx: idxB, weight: phaseWeight["B"], date: equip.dateB, label: "설계∙인허가", color: "#06b6d4" });
+                    if (idxPr !== null) activePhases.push({ phase: "BC", idx: idxPr, weight: phaseWeight["Pr"], date: equip.datePr, label: "업체∙계약", color: "#a78bfa" });
                     if (idxI !== null) activePhases.push({ phase: "CS", idx: idxI, weight: phaseWeight["I"], date: equip.dateI, label: "시공∙감리", color: "#10b981" });
 
                     let lastActivePhase = null;
@@ -1872,9 +1872,9 @@ export default function ProcurementManager({
 
                           const envPhaseMap = {
                             "P": { code: "Rq", label: "요청", color: "#f59e0b" },
-                            "A": { code: "DR", label: "검토/심의", color: "#3b82f6" },
-                            "B": { code: "DL", label: "용역/인허가", color: "#06b6d4" },
-                            "Pr": { code: "BC", label: "업체/선정", color: "#a78bfa" },
+                            "A": { code: "PDR", label: "검토∙심의∙결정", color: "#3b82f6" },
+                            "B": { code: "DL", label: "설계∙인허가", color: "#06b6d4" },
+                            "Pr": { code: "BC", label: "업체∙계약", color: "#a78bfa" },
                             "I": { code: "CS", label: "시공∙감리", color: "#10b981" }
                           };
 
@@ -1883,9 +1883,9 @@ export default function ProcurementManager({
                           const getEnvStatusText = (item) => {
                             if (item.dateI) return "시공∙감리 완료";
                             if (item.datePr) return "시공∙감리 중";
-                            if (item.dateB) return "업체/선정 중";
-                            if (item.dateA) return "용역/인허가 중";
-                            if (item.dateP) return "검토/심의 중";
+                            if (item.dateB) return "업체∙계약 중";
+                            if (item.dateA) return "설계∙인허가 중";
+                            if (item.dateP) return "검토∙심의∙결정 중";
                             return "요청 중";
                           };
                           const currentStatus = getEnvStatusText(equip);
@@ -3257,9 +3257,9 @@ export default function ProcurementManager({
 
                     const activePhases = [];
                     if (idxP !== null) activePhases.push({ phase: "Rq", idx: idxP, weight: phaseWeight["P"], date: equip.dateP, label: "요청", color: "#f59e0b" });
-                    if (idxA !== null) activePhases.push({ phase: "DR", idx: idxA, weight: phaseWeight["A"], date: equip.dateA, label: "검토/심의", color: "#3b82f6" });
-                    if (idxB !== null) activePhases.push({ phase: "DL", idx: idxB, weight: phaseWeight["B"], date: equip.dateB, label: "용역/인허가", color: "#06b6d4" });
-                    if (idxPr !== null) activePhases.push({ phase: "BC", idx: idxPr, weight: phaseWeight["Pr"], date: equip.datePr, label: "업체/선정", color: "#a78bfa" });
+                    if (idxA !== null) activePhases.push({ phase: "PDR", idx: idxA, weight: phaseWeight["A"], date: equip.dateA, label: "검토∙심의∙결정", color: "#3b82f6" });
+                    if (idxB !== null) activePhases.push({ phase: "DL", idx: idxB, weight: phaseWeight["B"], date: equip.dateB, label: "설계∙인허가", color: "#06b6d4" });
+                    if (idxPr !== null) activePhases.push({ phase: "BC", idx: idxPr, weight: phaseWeight["Pr"], date: equip.datePr, label: "업체∙계약", color: "#a78bfa" });
                     if (idxI !== null) activePhases.push({ phase: "CS", idx: idxI, weight: phaseWeight["I"], date: equip.dateI, label: "시공∙감리", color: "#10b981" });
 
                     let lastActivePhase = null;
@@ -3370,9 +3370,9 @@ export default function ProcurementManager({
 
                           const envPhaseMap = {
                             "P": { code: "Rq", label: "요청", color: "#f59e0b" },
-                            "A": { code: "DR", label: "검토/심의", color: "#3b82f6" },
-                            "B": { code: "DL", label: "용역/인허가", color: "#06b6d4" },
-                            "Pr": { code: "BC", label: "업체/선정", color: "#a78bfa" },
+                            "A": { code: "PDR", label: "검토∙심의∙결정", color: "#3b82f6" },
+                            "B": { code: "DL", label: "설계∙인허가", color: "#06b6d4" },
+                            "Pr": { code: "BC", label: "업체∙계약", color: "#a78bfa" },
                             "I": { code: "CS", label: "시공∙감리", color: "#10b981" }
                           };
 
@@ -3381,9 +3381,9 @@ export default function ProcurementManager({
                           const getEnvStatusText = (item) => {
                             if (item.dateI) return "시공∙감리 완료";
                             if (item.datePr) return "시공∙감리 중";
-                            if (item.dateB) return "업체/선정 중";
-                            if (item.dateA) return "용역/인허가 중";
-                            if (item.dateP) return "검토/심의 중";
+                            if (item.dateB) return "업체∙계약 중";
+                            if (item.dateA) return "설계∙인허가 중";
+                            if (item.dateP) return "검토∙심의∙결정 중";
                             return "요청 중";
                           };
                           const currentStatus = getEnvStatusText(equip);
@@ -3783,15 +3783,15 @@ export default function ProcurementManager({
                         <input type="date" name="dateP" value={formData.dateP || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.3rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white", fontSize: "0.7rem" }} />
                       </div>
                       <div>
-                        <label style={{ display: "block", fontSize: "0.68rem", color: "var(--text-secondary-dark)", marginBottom: "0.2rem" }}>검토/심의(DR) 일자</label>
+                        <label style={{ display: "block", fontSize: "0.68rem", color: "var(--text-secondary-dark)", marginBottom: "0.2rem" }}>검토∙심의∙결정(PDR) 일자</label>
                         <input type="date" name="dateA" value={formData.dateA || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.3rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white", fontSize: "0.7rem" }} />
                       </div>
                       <div>
-                        <label style={{ display: "block", fontSize: "0.68rem", color: "var(--text-secondary-dark)", marginBottom: "0.2rem" }}>용역/인허가(DL) 일자</label>
+                        <label style={{ display: "block", fontSize: "0.68rem", color: "var(--text-secondary-dark)", marginBottom: "0.2rem" }}>설계∙인허가(DL) 일자</label>
                         <input type="date" name="dateB" value={formData.dateB || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.3rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white", fontSize: "0.7rem" }} />
                       </div>
                       <div>
-                        <label style={{ display: "block", fontSize: "0.68rem", color: "var(--text-secondary-dark)", marginBottom: "0.2rem" }}>업체/선정(BC) 일자</label>
+                        <label style={{ display: "block", fontSize: "0.68rem", color: "var(--text-secondary-dark)", marginBottom: "0.2rem" }}>업체∙계약(BC) 일자</label>
                         <input type="date" name="datePr" value={formData.datePr || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.3rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white", fontSize: "0.7rem" }} />
                       </div>
                       <div>
