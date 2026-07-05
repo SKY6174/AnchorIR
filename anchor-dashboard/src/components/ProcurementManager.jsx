@@ -1682,7 +1682,7 @@ export default function ProcurementManager({
                   </th>
                   <th rowSpan={3} style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "80px", verticalAlign: "middle" }}>관련문서</th>
                   {currentRole.id !== "GUEST" && (
-                    <th rowSpan={3} style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "45px", verticalAlign: "middle" }}>작업</th>
+                    <th rowSpan={3} style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "55px", verticalAlign: "middle" }}>제어</th>
                   )}
                 </tr>
                 {/* 2행: 연도 분할 */}
@@ -1705,7 +1705,8 @@ export default function ProcurementManager({
                         fontWeight: "800", 
                         fontSize: "0.72rem", 
                         color: "var(--text-secondary-dark)",
-                        width: "28px",
+                        width: "36px",
+                        whiteSpace: "nowrap",
                         borderRight: idx < 11 ? "1px solid rgba(255,255,255,0.03)" : "none"
                       }}
                     >
@@ -1968,7 +1969,7 @@ export default function ProcurementManager({
                                 style={{ 
                                   padding: "0.8rem 0", 
                                   textAlign: "center", 
-                                  width: "28px",
+                                  width: "36px",
                                   position: "relative",
                                   verticalAlign: "middle"
                                 }}
@@ -2188,11 +2189,10 @@ export default function ProcurementManager({
                                     border: "1px solid rgba(255,255,255,0.1)",
                                     borderRadius: "4px",
                                     color: "rgba(255,255,255,0.8)",
-                                    padding: "0.2rem 0.4rem",
-                                    fontSize: "0.68rem",
+                                    padding: "0.25rem 0.45rem",
+                                    fontSize: "0.65rem",
                                     cursor: "pointer",
                                     transition: "all 0.15s ease",
-                                    width: "48px",
                                     textAlign: "center"
                                   }}
                                   onMouseOver={(e) => {
@@ -2229,11 +2229,10 @@ export default function ProcurementManager({
                                     border: "1px solid rgba(239, 68, 68, 0.2)",
                                     borderRadius: "4px",
                                     color: "#FCA5A5",
-                                    padding: "0.2rem 0.4rem",
-                                    fontSize: "0.68rem",
+                                    padding: "0.25rem 0.45rem",
+                                    fontSize: "0.65rem",
                                     cursor: "pointer",
                                     transition: "all 0.15s ease",
-                                    width: "48px",
                                     textAlign: "center"
                                   }}
                                   onMouseOver={(e) => {
