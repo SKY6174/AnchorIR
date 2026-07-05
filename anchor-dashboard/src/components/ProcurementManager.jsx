@@ -47,6 +47,15 @@ const formatToThousandWon = (value) => {
   return (value / 1000).toLocaleString(undefined, { maximumFractionDigits: 0 });
 };
 
+// 백만원 문자열 예산 데이터를 천원 단위 형식으로 동적 환산해 주는 파싱 헬퍼 함수
+const convertMillionWonToThousandWon = (budgetStr) => {
+  if (!budgetStr) return "0천원";
+  const numOnly = parseFloat(budgetStr.replace(/,/g, "").replace(/[^0-9.]/g, ""));
+  if (isNaN(numOnly)) return budgetStr;
+  const thousandWonVal = Math.round(numOnly * 1000);
+  return thousandWonVal.toLocaleString() + "천원";
+};
+
 // 날짜 데이터를 기반으로 3월~2월 캘린더 구매단계(P, A, B, Pr, I) 매핑 헬퍼 함수 (4번 요건 대응)
 const getMilestonesFromDates = (item, activeYear) => {
   const milestones = { "3": [], "4": [], "5": [], "6": [], "7": [], "8": [], "9": [], "10": [], "11": [], "12": [], "1": [], "2": [] };
