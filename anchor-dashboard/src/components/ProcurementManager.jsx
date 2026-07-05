@@ -782,9 +782,9 @@ export default function ProcurementManager({
             nextData.deptName = aiResult.dept;
           }
           // 기획 목표를 바탕으로 구축 목적(purpose)과 계획(plan) 자동완성
+          nextData.purpose = "특화 인력 양성을 위한 핵심 시너지 공간 용도 상세 기술";
           if (aiResult.goals && Array.isArray(aiResult.goals) && aiResult.goals.length > 0) {
-            nextData.descriptionPurpose = aiResult.goals[0] || "";
-            nextData.descriptionPlan = aiResult.goals.slice(1).join("\n") || "";
+            nextData.plan = aiResult.goals.join("\n") || "";
           }
         }
 
@@ -2106,21 +2106,28 @@ export default function ProcurementManager({
                           <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem", alignItems: "center", width: "100%" }}>
                             {/* 1. 기획문서 */}
                             <button
-                              disabled={!equip.docPlan}
                               onClick={() => setProposalModalData(equip)}
                               style={{
                                 padding: "0.25rem 0.45rem",
                                 fontSize: "0.65rem",
                                 borderRadius: "4px",
-                                background: equip.docPlan ? "rgba(59, 130, 246, 0.12)" : "rgba(255, 255, 255, 0.03)",
-                                color: equip.docPlan ? "#60A5FA" : "rgba(255, 255, 255, 0.25)",
-                                border: equip.docPlan ? "1px solid rgba(59, 130, 246, 0.25)" : "1px solid rgba(255, 255, 255, 0.08)",
-                                cursor: equip.docPlan ? "pointer" : "not-allowed",
+                                background: "rgba(59, 130, 246, 0.12)",
+                                color: "#60A5FA",
+                                border: "1px solid rgba(59, 130, 246, 0.25)",
+                                cursor: "pointer",
                                 transition: "all 0.2s",
                                 width: "36px",
                                 textAlign: "center"
                               }}
-                              title={equip.docPlan ? "기획(사업단 ➔ 시설안전관리팀) 문서 요약 보기" : "기획 문서가 아직 등록되지 않았습니다."}
+                              onMouseOver={(e) => {
+                                e.currentTarget.style.background = "rgba(59, 130, 246, 0.25)";
+                                e.currentTarget.style.borderColor = "#60A5FA";
+                              }}
+                              onMouseOut={(e) => {
+                                e.currentTarget.style.background = "rgba(59, 130, 246, 0.12)";
+                                e.currentTarget.style.borderColor = "rgba(59, 130, 246, 0.25)";
+                              }}
+                              title="기획(사업단 ➔ 시설안전관리팀) 문서 요약 보기"
                             >
                               기획
                             </button>
