@@ -5336,41 +5336,45 @@ export default function App() {
                 </>
               )}
               
-              {/* 공용 sub-tab 버튼 */}
-              <button
-                type="button"
-                onClick={() => setMgmtSubTab("org_chart")}
-                style={{
-                  border: "none",
-                  background: "transparent",
-                  padding: "0.5rem 1rem",
-                  fontSize: "0.85rem",
-                  fontWeight: "800",
-                  cursor: "pointer",
-                  color: mgmtSubTab === "org_chart" ? "var(--accent-color)" : "var(--text-secondary-dark)",
-                  borderBottom: mgmtSubTab === "org_chart" ? "2px solid var(--accent-color)" : "none",
-                  transition: "all 0.2s"
-                }}
-              >
-                대학조직도
-              </button>
-              <button
-                type="button"
-                onClick={() => setMgmtSubTab("partners")}
-                style={{
-                  border: "none",
-                  background: "transparent",
-                  padding: "0.5rem 1rem",
-                  fontSize: "0.85rem",
-                  fontWeight: "800",
-                  cursor: "pointer",
-                  color: mgmtSubTab === "partners" ? "var(--accent-color)" : "var(--text-secondary-dark)",
-                  borderBottom: mgmtSubTab === "partners" ? "2px solid var(--accent-color)" : "none",
-                  transition: "all 0.2s"
-                }}
-              >
-                파트너기관
-              </button>
+              {/* 공용 sub-tab 버튼 (보안 정책에 따라 ADMIN, DIRECTOR, HQ_HEAD, TEAM_LEADER에만 노출) */}
+              {currentRole && ["ADMIN", "DIRECTOR", "HQ_HEAD", "TEAM_LEADER"].includes(currentRole.id) && (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => setMgmtSubTab("org_chart")}
+                    style={{
+                      border: "none",
+                      background: "transparent",
+                      padding: "0.5rem 1rem",
+                      fontSize: "0.85rem",
+                      fontWeight: "800",
+                      cursor: "pointer",
+                      color: mgmtSubTab === "org_chart" ? "var(--accent-color)" : "var(--text-secondary-dark)",
+                      borderBottom: mgmtSubTab === "org_chart" ? "2px solid var(--accent-color)" : "none",
+                      transition: "all 0.2s"
+                    }}
+                  >
+                    대학조직도
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setMgmtSubTab("partners")}
+                    style={{
+                      border: "none",
+                      background: "transparent",
+                      padding: "0.5rem 1rem",
+                      fontSize: "0.85rem",
+                      fontWeight: "800",
+                      cursor: "pointer",
+                      color: mgmtSubTab === "partners" ? "var(--accent-color)" : "var(--text-secondary-dark)",
+                      borderBottom: mgmtSubTab === "partners" ? "2px solid var(--accent-color)" : "none",
+                      transition: "all 0.2s"
+                    }}
+                  >
+                    파트너기관
+                  </button>
+                </>
+              )}
               {isSongDirector && (
                 <button
                   type="button"
