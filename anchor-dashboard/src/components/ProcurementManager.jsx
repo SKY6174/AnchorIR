@@ -930,6 +930,7 @@ export default function ProcurementManager({
 
       if (isEditMode && editingItemId) {
         // 수정 모드 분기 (요건 2 대응)
+        const combinedDescription = `${formData.descriptionPurpose || ""}\n${formData.descriptionPlan || ""}`;
         const updated = activeEquipList.map(item => {
           if (item.id === editingItemId) {
             return {
@@ -941,7 +942,7 @@ export default function ProcurementManager({
               itemName: formData.name || "수정 기자재 항목",
               unitPrice: (Number(formData.unitPrice) * 1000) || 0,
               quantity: Number(formData.quantity) || 1,
-              description: formData.description || "-",
+              description: combinedDescription || "-",
               operation: formData.operation || "미래 핵심 신산업 주문식 교육 운영",
               password: currentUser?.password || formData.password || item.password || "1234", // 현재 로그인 유저 비밀번호 연동
               relatedDocs: [
@@ -990,6 +991,7 @@ export default function ProcurementManager({
       } else {
         // 신규 등록 모드
         const nextSeq = activeEquipList.length + 1;
+        const combinedDescription = `${formData.descriptionPurpose || ""}\n${formData.descriptionPlan || ""}`;
         const newItem = {
           id: Date.now(),
           year: targetYear,
@@ -1000,7 +1002,7 @@ export default function ProcurementManager({
           itemName: formData.name || "새 기자재 항목",
           unitPrice: (Number(formData.unitPrice) * 1000) || 0,
           quantity: Number(formData.quantity) || 1,
-          description: formData.description || "-",
+          description: combinedDescription || "-",
           operation: formData.operation || "미래 핵심 신산업 주문식 교육 운영",
           mgrDept: formData.mgrDept || "ECC",
           password: currentUser?.password || formData.password || "1234", // 현재 로그인 유저 비밀번호 연동
@@ -1111,6 +1113,8 @@ export default function ProcurementManager({
       unitPrice: "",
       quantity: "",
       description: "",
+      descriptionPurpose: "",
+      descriptionPlan: "",
       step: "기획",
       operation: selectedYear === 1 ? "미래 핵심 신산업 주문식 교육 운영" : "친환경 스마트 친조선 융합 기술 교육", // 1차년도/2차년도 기본 연계 프로그램 분기
       mgrDept: "ECC",
@@ -1157,6 +1161,8 @@ export default function ProcurementManager({
     setIsEditMode(true);
     setEditingItemId(equip.id);
     const docParts = (equip.relatedDocs || "").split(",").map(d => d.trim()).filter(Boolean);
+    const descText = equip.description || "";
+    const descParts = descText.split("\n").map(l => l.trim());
     setFormData({
       year: equip.year,
       unit: equip.unit,
@@ -1166,6 +1172,8 @@ export default function ProcurementManager({
       unitPrice: equip.unitPrice ? (equip.unitPrice / 1000) : "", // 요건 2: 단가 단위 천원으로 모달에 바인딩
       quantity: equip.quantity || "",
       description: equip.description || "",
+      descriptionPurpose: descParts[0] || "",
+      descriptionPlan: descParts[1] || "",
       operation: equip.operation || "미래 핵심 신산업 주문식 교육 운영",
       password: equip.password || "1234",
       relatedDocs: equip.relatedDocs || "", // 관련문서 로드
@@ -2659,20 +2667,39 @@ export default function ProcurementManager({
                     <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>품명</label>
                     <input type="text" name="name" value={formData.name} onChange={handleInputChange} required placeholder="예: 임상 실습용 스마트 베드" style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} />
                   </div>
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
-                    <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>단가 (천원)</label>
-                      <input type="number" name="unitPrice" value={formData.unitPrice} onChange={handleInputChange} required placeholder="예: 12000" style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} />
-                    </div>
-                    <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>수량</label>
-                      <input type="number" name="quantity" value={formData.quantity} onChange={handleInputChange} required placeholder="예: 2" style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} />
-                    </div>
-                  </div>
-                  <div>
-                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>구입목적 및 활용계획</label>
-                    <textarea name="description" value={formData.description} onChange={handleInputChange} required placeholder="기자재의 구입 목적, 핵심 활용 계획 및 예상 시너지 상세 기술" style={{ width: "100%", height: "60px", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white", resize: "none" }} />
-                  </div>
+                  {(() => {
+                    const priceVal = parseFloat(formData.unitPrice || 0);
+                    const qtyVal = parseFloat(formData.quantity || 0);
+                    const totalInMillion = ((priceVal * qtyVal) / 1000).toFixed(2);
+                    return (
+                      <>
+                        <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr 2fr", gap: "1rem" }}>
+                          <div>
+                            <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>단가 (천원)</label>
+                            <input type="number" name="unitPrice" value={formData.unitPrice} onChange={handleInputChange} required placeholder="예: 12000" style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} />
+                          </div>
+                          <div>
+                            <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>수량</label>
+                            <input type="number" name="quantity" value={formData.quantity} onChange={handleInputChange} required placeholder="예: 2" style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} />
+                          </div>
+                          <div>
+                            <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>금액 (백만원)</label>
+                            <input type="text" value={`${totalInMillion} 백만원`} readOnly style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.02)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "#10B981", fontWeight: "bold" }} />
+                          </div>
+                        </div>
+                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+                          <div>
+                            <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>구입목적</label>
+                            <textarea name="descriptionPurpose" value={formData.descriptionPurpose || ""} onChange={handleInputChange} required placeholder="기자재의 구입 목적 및 타당성 상세 기술" style={{ width: "100%", height: "60px", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white", resize: "none" }} />
+                          </div>
+                          <div>
+                            <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>활용계획</label>
+                            <textarea name="descriptionPlan" value={formData.descriptionPlan || ""} onChange={handleInputChange} required placeholder="핵심 활용 계획 및 예상 시너지 상세 기술" style={{ width: "100%", height: "60px", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white", resize: "none" }} />
+                          </div>
+                        </div>
+                      </>
+                    );
+                  })()}
                   
                   <div style={{ background: "rgba(255,255,255,0.02)", padding: "1rem", borderRadius: "8px", border: "1px solid var(--border-color-dark)" }}>
                     <span style={{ display: "block", fontSize: "0.82rem", fontWeight: "800", color: "white", marginBottom: "0.75rem" }}>
