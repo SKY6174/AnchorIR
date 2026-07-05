@@ -2034,7 +2034,7 @@ export default function ProcurementManager({
                         {/* 제어 열 버튼 */}
                         <td style={{ padding: "0.8rem 0.5rem", textAlign: "center", whiteSpace: "nowrap" }}>
                           <div style={{ display: "flex", gap: "0.3rem", justifyContent: "center" }}>
-                            {currentRole.id !== "GUEST" && (
+                            {currentRole.id !== "GUEST" && (currentRole.id === "ADMIN" || !equip.created_by || equip.created_by === currentUser?.uuid) && (
                               <>
                                 <button 
                                   onClick={() => openEditModal(equip)}
@@ -2873,75 +2873,79 @@ export default function ProcurementManager({
                           {currentRole.id !== "GUEST" && (
                             <td style={{ padding: "0.8rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap" }}>
                               <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem", alignItems: "center", width: "100%" }}>
-                                <button
-                                  onClick={() => openEditModal(equip)}
-                                  style={{
-                                    background: "rgba(255,255,255,0.06)",
-                                    border: "1px solid rgba(255,255,255,0.1)",
-                                    borderRadius: "4px",
-                                    color: "rgba(255,255,255,0.8)",
-                                    padding: "0.25rem 0.45rem",
-                                    fontSize: "0.65rem",
-                                    cursor: "pointer",
-                                    transition: "all 0.15s ease",
-                                    textAlign: "center",
-                                    whiteSpace: "nowrap"
-                                  }}
-                                  onMouseOver={(e) => {
-                                    e.currentTarget.style.background = "rgba(59, 130, 246, 0.2)";
-                                    e.currentTarget.style.borderColor = "rgba(59, 130, 246, 0.4)";
-                                    e.currentTarget.style.color = "#60A5FA";
-                                  }}
-                                  onMouseOut={(e) => {
-                                    e.currentTarget.style.background = "rgba(255,255,255,0.06)";
-                                    e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)";
-                                    e.currentTarget.style.color = "rgba(255,255,255,0.8)";
-                                  }}
-                                  title="기자재 수정"
-                                >
-                                  수정
-                                </button>
-                                <button
-                                  onClick={() => {
-                                    if (confirm("🚨 이 작업은 되돌릴 수 없습니다. 해당 기자재 항목을 정말로 삭제하시겠습니까?")) {
-                                      const inputPw = prompt("🔒 삭제 안전장치: 등록 시 설정한 비밀번호를 입력해 주세요.");
-                                      const registeredPw = equip.password || "1234";
-                                      
-                                      if (inputPw === null) return; // 취소
-                                      if (inputPw === registeredPw) {
-                                        setEquipData(activeEquipList.filter(e => e.id !== equip.id));
-                                        alert("🗑️ 기자재 항목이 안전하게 삭제되었습니다.");
-                                      } else {
-                                        alert("⚠️ 비밀번호가 일치하지 않습니다. 삭제 권한이 거부되었습니다.");
+                                {(currentRole.id === "ADMIN" || !equip.created_by || equip.created_by === currentUser?.uuid) && (
+                                  <button
+                                    onClick={() => openEditModal(equip)}
+                                    style={{
+                                      background: "rgba(255,255,255,0.06)",
+                                      border: "1px solid rgba(255,255,255,0.1)",
+                                      borderRadius: "4px",
+                                      color: "rgba(255,255,255,0.8)",
+                                      padding: "0.25rem 0.45rem",
+                                      fontSize: "0.65rem",
+                                      cursor: "pointer",
+                                      transition: "all 0.15s ease",
+                                      textAlign: "center",
+                                      whiteSpace: "nowrap"
+                                    }}
+                                    onMouseOver={(e) => {
+                                      e.currentTarget.style.background = "rgba(59, 130, 246, 0.2)";
+                                      e.currentTarget.style.borderColor = "rgba(59, 130, 246, 0.4)";
+                                      e.currentTarget.style.color = "#60A5FA";
+                                    }}
+                                    onMouseOut={(e) => {
+                                      e.currentTarget.style.background = "rgba(255,255,255,0.06)";
+                                      e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)";
+                                      e.currentTarget.style.color = "rgba(255,255,255,0.8)";
+                                    }}
+                                    title="기자재 수정"
+                                  >
+                                    수정
+                                  </button>
+                                )}
+                                {(currentRole.id === "ADMIN" || !equip.created_by || equip.created_by === currentUser?.uuid) && (
+                                  <button
+                                    onClick={() => {
+                                      if (confirm("🚨 이 작업은 되돌릴 수 없습니다. 해당 기자재 항목을 정말로 삭제하시겠습니까?")) {
+                                        const inputPw = prompt("🔒 삭제 안전장치: 등록 시 설정한 비밀번호를 입력해 주세요.");
+                                        const registeredPw = equip.password || "1234";
+                                        
+                                        if (inputPw === null) return; // 취소
+                                        if (inputPw === registeredPw) {
+                                          setEquipData(activeEquipList.filter(e => e.id !== equip.id));
+                                          alert("🗑️ 기자재 항목이 안전하게 삭제되었습니다.");
+                                        } else {
+                                          alert("⚠️ 비밀번호가 일치하지 않습니다. 삭제 권한이 거부되었습니다.");
+                                        }
                                       }
-                                    }
-                                  }}
-                                  style={{
-                                    background: "rgba(239, 68, 68, 0.1)",
-                                    border: "1px solid rgba(239, 68, 68, 0.2)",
-                                    borderRadius: "4px",
-                                    color: "#FCA5A5",
-                                    padding: "0.25rem 0.45rem",
-                                    fontSize: "0.65rem",
-                                    cursor: "pointer",
-                                    transition: "all 0.15s ease",
-                                    textAlign: "center",
-                                    whiteSpace: "nowrap"
-                                  }}
-                                  onMouseOver={(e) => {
-                                    e.currentTarget.style.background = "rgba(239, 68, 68, 0.25)";
-                                    e.currentTarget.style.borderColor = "rgba(239, 68, 68, 0.5)";
-                                    e.currentTarget.style.color = "#F87171";
-                                  }}
-                                  onMouseOut={(e) => {
-                                    e.currentTarget.style.background = "rgba(239, 68, 68, 0.1)";
-                                    e.currentTarget.style.borderColor = "rgba(239, 68, 68, 0.2)";
-                                    e.currentTarget.style.color = "#FCA5A5";
-                                  }}
-                                  title="기자재 삭제"
-                                >
-                                  삭제
-                                </button>
+                                    }}
+                                    style={{
+                                      background: "rgba(239, 68, 68, 0.1)",
+                                      border: "1px solid rgba(239, 68, 68, 0.2)",
+                                      borderRadius: "4px",
+                                      color: "#FCA5A5",
+                                      padding: "0.25rem 0.45rem",
+                                      fontSize: "0.65rem",
+                                      cursor: "pointer",
+                                      transition: "all 0.15s ease",
+                                      textAlign: "center",
+                                      whiteSpace: "nowrap"
+                                    }}
+                                    onMouseOver={(e) => {
+                                      e.currentTarget.style.background = "rgba(239, 68, 68, 0.25)";
+                                      e.currentTarget.style.borderColor = "rgba(239, 68, 68, 0.5)";
+                                      e.currentTarget.style.color = "#F87171";
+                                    }}
+                                    onMouseOut={(e) => {
+                                      e.currentTarget.style.background = "rgba(239, 68, 68, 0.1)";
+                                      e.currentTarget.style.borderColor = "rgba(239, 68, 68, 0.2)";
+                                      e.currentTarget.style.color = "#FCA5A5";
+                                    }}
+                                    title="기자재 삭제"
+                                  >
+                                    삭제
+                                  </button>
+                                )}
                               </div>
                             </td>
                           )}
@@ -3487,7 +3491,7 @@ export default function ProcurementManager({
                         {/* 제어 열 버튼 */}
                         <td style={{ padding: "0.8rem 0.5rem", textAlign: "center", whiteSpace: "nowrap" }}>
                           <div style={{ display: "flex", gap: "0.3rem", justifyContent: "center" }}>
-                            {currentRole.id !== "GUEST" && (
+                            {currentRole.id !== "GUEST" && (currentRole.id === "ADMIN" || !equip.created_by || equip.created_by === currentUser?.uuid) && (
                               <>
                                 <button 
                                   onClick={() => openEditModal(equip)}

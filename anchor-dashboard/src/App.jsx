@@ -2245,6 +2245,14 @@ export default function App() {
       alert("모든 필드를 입력해 주세요.");
       return;
     }
+    
+    // 비밀번호 복잡도 검증: 최소 8자 이상, 영문자, 숫자, 특수문자(@$!%*#?&) 각각 최소 1개 포함
+    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
+    if (!passwordRegex.test(newPw)) {
+      alert("새 비밀번호는 최소 8자 이상이어야 하며, 영문자, 숫자, 특수문자(@$!%*#?&)가 각각 최소 1개 이상 포함되어야 합니다.");
+      return;
+    }
+
     if (newPw !== confirmNewPw) {
       alert("새 비밀번호와 비밀번호 확인이 일치하지 않습니다.");
       return;
