@@ -1031,11 +1031,20 @@ export default function ProcurementManager({
       {isAddModalOpen && (
         <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(0,0,0,0.7)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1100 }}>
           <div className="glass-card" style={{ width: "500px", maxHeight: "85vh", overflowY: "auto", padding: "1.5rem", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.1)" }}>
-            <h3 style={{ margin: "0 0 1rem 0", color: "white", fontWeight: "800", borderBottom: "1px solid rgba(255,255,255,0.05)", paddingBottom: "0.5rem" }}>
-              {modalType === "env" && "🛠️ 신규 교육환경 개선 사업 등록"}
-              {modalType === "equip" && "🔬 신규 핵심 기자재 도입 등록"}
-              {modalType === "service" && "💼 신규 주요 용역 계약 등록"}
-            </h3>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid rgba(255,255,255,0.05)", paddingBottom: "0.5rem", marginBottom: "1rem" }}>
+              <h3 style={{ margin: 0, color: "white", fontWeight: "800", fontSize: "1.1rem" }}>
+                {modalType === "env" && "🛠️ 신규 교육환경 개선 사업 등록"}
+                {modalType === "equip" && "🔬 신규 핵심 기자재 도입 등록"}
+                {modalType === "service" && "💼 신규 주요 용역 계약 등록"}
+              </h3>
+              <button 
+                type="button" 
+                onClick={() => setIsAddModalOpen(false)}
+                style={{ background: "transparent", border: "none", color: "rgba(255,255,255,0.5)", cursor: "pointer", fontSize: "1.2rem", fontWeight: "bold", padding: "0.2rem" }}
+              >
+                ✕
+              </button>
+            </div>
             
             <form onSubmit={handleFormSubmit} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
               
@@ -1145,18 +1154,34 @@ export default function ProcurementManager({
                         className="user-selector"
                       >
                         <option value="">-- 선택 안 함 --</option>
-                        <option value="간호학과">간호학과</option>
-                        <option value="화학공학과">화학공학과</option>
+                        {/* 1) 학과는 사업단관리 탭의 대학조직도에 나온 학부(과)를 기준으로 렌더링 */}
+                        <option value="기계공학부">기계공학부</option>
+                        <option value="전기전자공학부">전기전자공학부</option>
+                        <option value="조선해양시스템공학과">조선해양시스템공학과</option>
                         <option value="컴퓨터공학과">컴퓨터공학과</option>
-                        <option value="기계공학과">기계공학과</option>
-                        <option value="전기전자공학과">전기전자공학과</option>
-                        <option value="유아교육과">유아교육과</option>
-                        <option value="스마트팩토리전공">스마트팩토리전공</option>
-                        <option value="반려동물보건과">반려동물보건과</option>
-                        <option value="스마트선박학과">스마트선박학과</option>
-                        <option value="미용예술학과">미용예술학과</option>
+                        <option value="화학공학과">화학공학과</option>
+                        <option value="게임영상학과">게임영상학과</option>
+                        <option value="실내건축디자인과">실내건축디자인과</option>
+                        <option value="융합안전공학과">융합안전공학과</option>
+                        <option value="인테리어시공학과">인테리어시공학과</option>
+                        <option value="간호학부">간호학부</option>
                         <option value="물리치료학과">물리치료학과</option>
+                        <option value="치위생학과">치위생학과</option>
+                        <option value="식품영양학과">식품영양학과</option>
                         <option value="호텔조리제빵과">호텔조리제빵과</option>
+                        <option value="스포츠재활학부">스포츠재활학부</option>
+                        <option value="스포츠건강재활학과">스포츠건강재활학과</option>
+                        <option value="푸드케어학과">푸드케어학과</option>
+                        <option value="골프산업과">골프산업과</option>
+                        <option value="반려동물보건과">반려동물보건과</option>
+                        <option value="사회복지학과">사회복지학과</option>
+                        <option value="유아교육과">유아교육과</option>
+                        <option value="세무회계학과">세무회계학과</option>
+                        <option value="사회복지상담학과">사회복지상담학과</option>
+                        <option value="국제학부">국제학부</option>
+                        <option value="미래모빌리티제조학과">미래모빌리티제조학과</option>
+                        <option value="바이오화학생산기술학과">바이오화학생산기술학과</option>
+                        <option value="인공지능기반텔레헬스학과">인공지능기반텔레헬스학과</option>
                       </select>
                     </div>
                     <div>
@@ -1232,8 +1257,14 @@ export default function ProcurementManager({
                                   const activeYear = Number(formData.year || selectedYear);
                                   const yyStart = String(2024 + activeYear).slice(-2);
                                   const yyEnd = String(2024 + activeYear + 1).slice(-2);
-                                  const isNextYear = ["1", "2"].includes(m);
-                                  return `${isNextYear ? yyEnd : yyStart}.${m}월`;
+                                  
+                                  // 3월과 1월만 연도 연차를 붙여서 출력하고, 나머지는 단순 월 이름만 출력합니다.
+                                  if (m === "3") {
+                                    return `'${yyStart}.3월`;
+                                  } else if (m === "1") {
+                                    return `'${yyEnd}.1월`;
+                                  }
+                                  return `${m}월`;
                                 })()}
                               </span>
                               <div
