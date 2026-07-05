@@ -1134,15 +1134,15 @@ export default function ProcurementManager({
                       <ArrowUpDown size={12} style={{ opacity: sortField === "unit" ? 1 : 0.4 }} />
                     </div>
                   </th>
-                  <th rowSpan={3} style={{ padding: "0.75rem 0.5rem", textAlign: "left", fontWeight: "800", width: "130px", verticalAlign: "middle" }}>학과 / 부서</th>
-                  <th rowSpan={3} style={{ padding: "0.75rem 0.5rem", textAlign: "left", fontWeight: "800", width: "180px", verticalAlign: "middle" }}>품명</th>
+                  <th rowSpan={3} style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "130px", verticalAlign: "middle" }}>학과 / 부서</th>
+                  <th rowSpan={3} style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "180px", verticalAlign: "middle" }}>품명</th>
                   <th 
                     rowSpan={3} 
                     onClick={() => handleSort("unitPrice")} 
-                    style={{ padding: "0.5rem 0.3rem", textAlign: "right", fontWeight: "800", width: "95px", verticalAlign: "middle", cursor: "pointer", userSelect: "none" }}
+                    style={{ padding: "0.5rem 0.3rem", textAlign: "center", fontWeight: "800", width: "95px", verticalAlign: "middle", cursor: "pointer", userSelect: "none" }}
                     title="단가 기준 정렬"
                   >
-                    <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", justifyContent: "center" }}>
+                    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
                       <div style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}>
                         단가
                         <ArrowUpDown size={12} style={{ opacity: sortField === "unitPrice" ? 1 : 0.4 }} />
@@ -1154,10 +1154,10 @@ export default function ProcurementManager({
                   <th 
                     rowSpan={3} 
                     onClick={() => handleSort("total")} 
-                    style={{ padding: "0.5rem 0.3rem", textAlign: "right", fontWeight: "800", width: "105px", verticalAlign: "middle", cursor: "pointer", userSelect: "none" }}
+                    style={{ padding: "0.5rem 0.3rem", textAlign: "center", fontWeight: "800", width: "105px", verticalAlign: "middle", cursor: "pointer", userSelect: "none" }}
                     title="금액 기준 정렬"
                   >
-                    <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", justifyContent: "center" }}>
+                    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
                       <div style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}>
                         금액
                         <ArrowUpDown size={12} style={{ opacity: sortField === "total" ? 1 : 0.4 }} />
@@ -1165,7 +1165,7 @@ export default function ProcurementManager({
                       <span style={{ fontSize: "0.68rem", fontWeight: "400", color: "var(--text-secondary-dark)", marginTop: "0.1rem" }}>(백만원)</span>
                     </div>
                   </th>
-                  <th rowSpan={3} style={{ padding: "0.75rem 0.5rem", textAlign: "left", fontWeight: "800", verticalAlign: "middle" }}>구입목적 및 활용계획</th>
+                  <th rowSpan={3} style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", verticalAlign: "middle" }}>구입목적 및 활용계획</th>
                   <th colSpan={12} style={{ padding: "0.5rem", textAlign: "center", fontWeight: "800", borderBottom: "1px solid rgba(255,255,255,0.08)", background: "rgba(255, 255, 255, 0.01)", lineHeight: "1.3" }}>
                     구매단계<br />
                     <span style={{ fontSize: "0.75rem", fontWeight: "normal", color: "var(--text-secondary)" }}>(기획:P ➔ 승인:A ➔ 입찰:B ➔ 구매:Pr ➔ 검수:I)</span>
@@ -1178,10 +1178,10 @@ export default function ProcurementManager({
                 {/* 2행: 연도 분할 */}
                 <tr style={{ background: "rgba(255, 255, 255, 0.02)", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
                   <th colSpan={10} style={{ padding: "0.25rem 0.5rem", textAlign: "center", fontWeight: "750", fontSize: "0.75rem", color: "var(--accent-color)", borderRight: "1px solid rgba(255,255,255,0.05)" }}>
-                    {2024 + (Number(selectedYear) || 1)}년
+                    '{String(2024 + (Number(selectedYear) || 1)).slice(-2)}년
                   </th>
                   <th colSpan={2} style={{ padding: "0.25rem 0.5rem", textAlign: "center", fontWeight: "750", fontSize: "0.75rem", color: "var(--accent-color)" }}>
-                    {2024 + (Number(selectedYear) || 1) + 1}년
+                    '{String(2024 + (Number(selectedYear) || 1) + 1).slice(-2)}년
                   </th>
                 </tr>
                 {/* 3행: 월 리스트 */}
@@ -1372,8 +1372,19 @@ export default function ProcurementManager({
                           <td style={{ padding: "0.8rem 0.5rem", textAlign: "right", fontWeight: "700", color: "#10B981" }}>
                             {formatToMillionWon(total)}
                           </td>
-                          <td style={{ padding: "0.8rem 0.5rem", textAlign: "left", color: "var(--text-secondary)", maxWidth: "200px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={equip.description || equip.opPlan}>
-                            {equip.description || equip.opPlan || "-"}
+                          <td style={{ padding: "0.8rem 0.5rem", textAlign: "left", color: "var(--text-secondary)", maxWidth: "200px" }} title={equip.description || equip.opPlan}>
+                            <div style={{
+                              display: "-webkit-box",
+                              WebkitLineClamp: 3,
+                              WebkitBoxOrient: "vertical",
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
+                              lineHeight: "1.4",
+                              wordBreak: "break-all",
+                              whiteSpace: "normal"
+                            }}>
+                              {equip.description || equip.opPlan || "-"}
+                            </div>
                           </td>
                           
                           {monthsOrder.map((m, currIdx) => {
@@ -1451,6 +1462,24 @@ export default function ProcurementManager({
                                   verticalAlign: "middle"
                                 }}
                               >
+                                {shouldShowBalloon && (
+                                  <div 
+                                    className="status-flag-balloon"
+                                    style={{
+                                      "--bg-color": colorSet.bg,
+                                      "--shadow-color": colorSet.shadow,
+                                      "--border-color": colorSet.border,
+                                      bottom: "100%",
+                                      marginBottom: "6px"
+                                    }}
+                                  >
+                                    {currentStatus === "구매중" ? "구매 중" :
+                                     currentStatus === "결재중" ? "결재 중" :
+                                     currentStatus === "입찰중" ? "입찰 중" :
+                                     currentStatus}
+                                  </div>
+                                )}
+
                                 {/* 가로 타임라인 왼쪽 연결 반선 */}
                                 <div style={{
                                   position: "absolute",
@@ -1506,20 +1535,6 @@ export default function ProcurementManager({
                                         <span style={{ color: phaseColor, fontWeight: "900", marginRight: "4px" }}>{phaseLabel} ({primaryCode})</span>
                                         <span>{phaseDate || "날짜 미정"}</span>
                                       </div>
-
-                                      {/* 현재 단계 진행 중 말풍선 뱃지 (마지막 활성 단계일 때만 상시 노출) */}
-                                      {isLastActive && (
-                                        <div 
-                                          className="status-flag-balloon"
-                                          style={{
-                                            "--bg-color": phaseColor,
-                                            "--shadow-color": `${phaseColor}4D`,
-                                            "--border-color": `${phaseColor}80`
-                                          }}
-                                        >
-                                          {phaseLabel}
-                                        </div>
-                                      )}
 
                                       <svg width="28" height="32" viewBox="0 0 28 32" style={{ overflow: "visible" }}>
                                         <defs>
