@@ -3434,7 +3434,7 @@ export default function ProcurementManager({
                   <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "140px" }}>프로그램 ID</th>
                   <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "140px" }}>운영부서</th>
                   <th style={{ padding: "0.75rem 0.5rem", textAlign: "left", fontWeight: "800", width: "200px" }}>용역명</th>
-                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "right", fontWeight: "800", width: "120px" }}>사업비(백만원)</th>
+                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "right", fontWeight: "800", width: "135px" }}>사업예산/집행액(천원)</th>
                   <th style={{ padding: "0.75rem 0.5rem", textAlign: "left", fontWeight: "800", width: "320px" }}>용역목적 및 수행결과</th>
                   <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "420px" }}>용역 절차</th>
                   <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "130px" }}>관련문서</th>
@@ -3508,13 +3508,13 @@ export default function ProcurementManager({
                           {equip.title || "-"}
                         </td>
 
-                        {/* 5. 사업비(백만원) */}
+                        {/* 5. 사업예산 / 집행액(천원) */}
                         <td style={{ padding: "0.8rem 0.5rem", textAlign: "right" }}>
                           <div style={{ fontSize: "0.8rem", fontWeight: "700", color: "#60A5FA" }}>
-                            계획: {((equip.budgetPlan || 0) / 1000000).toFixed(2)}
+                            예산: {Math.round((equip.budgetPlan || 0) / 1000).toLocaleString()}
                           </div>
                           <div style={{ fontSize: "0.75rem", color: "#10B981", marginTop: "0.15rem", fontWeight: "700" }}>
-                            집행: {((equip.budgetSpent || 0) / 1000000).toFixed(2)}
+                            집행: {Math.round((equip.budgetSpent || 0) / 1000).toLocaleString()}
                           </div>
                         </td>
 
@@ -4449,8 +4449,8 @@ export default function ProcurementManager({
               {/* 용역용 입력 필드들 */}
               {modalType === "service" && (
                 <>
-                  {/* 첫번째 줄: 단위과제, 프로그램 ID */}
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+                  {/* 첫번째 줄: 단위과제, 프로그램(ID / 명칭) (비율 = 1:2) */}
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: "1rem" }}>
                     <div>
                       <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>단위과제</label>
                       <select 
@@ -4466,49 +4466,32 @@ export default function ProcurementManager({
                       </select>
                     </div>
                     <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>프로그램 ID</label>
-                      <input 
-                        type="text" 
-                        name="programId" 
-                        value={formData.programId || ""} 
-                        onChange={handleInputChange} 
-                        placeholder="예: A1-1" 
-                        style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} 
-                      />
+                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>프로그램 정보 (ID / 프로그램명)</label>
+                      <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: "0.5rem" }}>
+                        <input 
+                          type="text" 
+                          name="programId" 
+                          value={formData.programId || ""} 
+                          onChange={handleInputChange} 
+                          placeholder="프로그램 ID (예: A1-1)" 
+                          style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} 
+                        />
+                        <input 
+                          type="text" 
+                          name="programName" 
+                          value={formData.programName || ""} 
+                          onChange={handleInputChange} 
+                          placeholder="프로그램 명칭 (예: 특화 전문인재 양성)" 
+                          style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} 
+                        />
+                      </div>
                     </div>
                   </div>
 
-                  {/* 두번째 줄: 프로그램명, 용역명 */}
+                  {/* 두번째 줄: 관련학과, 관련부서 (학과, 부서 중 택1 필수) */}
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
                     <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>프로그램명</label>
-                      <input 
-                        type="text" 
-                        name="programName" 
-                        value={formData.programName || ""} 
-                        onChange={handleInputChange} 
-                        placeholder="예: 특화 전문인재 양성 프로그램" 
-                        style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} 
-                      />
-                    </div>
-                    <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>용역 명칭 (500만원 이상)</label>
-                      <input 
-                        type="text" 
-                        name="title" 
-                        value={formData.title} 
-                        onChange={handleInputChange} 
-                        required 
-                        placeholder="예: 앵커 산학 네트워크 포럼 기획 운영 대행 용역" 
-                        style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} 
-                      />
-                    </div>
-                  </div>
-
-                  {/* 세번째 줄: 학과 선택, 부서 선택 */}
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
-                    <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>배정 학과</label>
+                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>관련학과 (배정 학과) <span style={{ color: "#f59e0b", fontSize: "0.75rem", fontWeight: "700" }}>(학과/부서 중 택1 필수)</span></label>
                       <select 
                         name="deptName" 
                         value={formData.deptName} 
@@ -4543,7 +4526,7 @@ export default function ProcurementManager({
                       </select>
                     </div>
                     <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>배정 행정부서</label>
+                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>관련부서 (배정 행정부서) <span style={{ color: "#f59e0b", fontSize: "0.75rem", fontWeight: "700" }}>(학과/부서 중 택1 필수)</span></label>
                       <select 
                         name="divisionName" 
                         value={formData.divisionName} 
@@ -4558,34 +4541,73 @@ export default function ProcurementManager({
                       </select>
                     </div>
                   </div>
-
-                  {/* 네번째 줄: 추진 목적, 수행결과 */}
-                  <div>
-                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>용역목적 (추진 목적)</label>
-                    <textarea name="purpose" value={formData.purpose} onChange={handleInputChange} placeholder="해당 용역이 해결하고자 하는 문제 및 목표" style={{ width: "100%", height: "50px", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white", resize: "none" }} />
-                  </div>
-                  <div>
-                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>수행결과 및 특이사항</label>
-                    <textarea name="opResult" value={formData.opResult} onChange={handleInputChange} placeholder="수행 결과 및 시설 인도 내역 기술" style={{ width: "100%", height: "50px", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white", resize: "none" }} />
+                  <div style={{ fontSize: "0.72rem", color: "#f59e0b", marginTop: "-0.5rem", marginBottom: "0.5rem", fontWeight: "600" }}>
+                    * 관련학과 혹은 관련부서 중 최소한 하나는 반드시 지정해야 합니다.
                   </div>
 
-                  {/* 다섯번째 줄: 계획예산, 집행예산 */}
+                  {/* 세번째 줄: 용역명칭, 용역목적 (둘 다 필수 입력) */}
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
                     <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>사업비 계획액 (원)</label>
-                      <input type="number" name="budgetPlan" value={formData.budgetPlan} onChange={handleInputChange} placeholder="예: 25000000" style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} />
+                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>용역 명칭 (500만원 이상) <span style={{ color: "var(--danger-color)" }}>*</span></label>
+                      <input 
+                        type="text" 
+                        name="title" 
+                        value={formData.title} 
+                        onChange={handleInputChange} 
+                        required 
+                        placeholder="예: 앵커 산학 네트워크 포럼 기획 운영 대행 용역" 
+                        style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} 
+                      />
                     </div>
                     <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>실제 집행액 (원)</label>
-                      <input type="number" name="budgetSpent" value={formData.budgetSpent} onChange={handleInputChange} placeholder="예: 0" style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} />
+                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>용역목적 (추진 목적) <span style={{ color: "var(--danger-color)" }}>*</span></label>
+                      <input 
+                        type="text" 
+                        name="purpose" 
+                        value={formData.purpose} 
+                        onChange={handleInputChange} 
+                        required 
+                        placeholder="예: 해당 용역이 해결하고자 하는 문제 및 목표" 
+                        style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} 
+                      />
                     </div>
                   </div>
 
-                  {/* 여섯번째 줄: 비밀번호 설정 */}
+                  {/* 네번째 줄: 특이 요청사항 (선택 입력) */}
+                  <div>
+                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>특이 요청사항 (선택)</label>
+                    <textarea 
+                      name="opResult" 
+                      value={formData.opResult} 
+                      onChange={handleInputChange} 
+                      placeholder="예: 수행 결과 및 계약 시 특이사항 기술" 
+                      style={{ width: "100%", height: "50px", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white", resize: "none" }} 
+                    />
+                  </div>
+
+                  {/* 다섯번째 줄: 사업예산(천원), 집행액(천원) */}
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
                     <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>비밀번호 (수정/삭제용)</label>
-                      <input type="password" name="password" value={formData.password || "1234"} onChange={handleInputChange} placeholder="기본값: 1234" style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} />
+                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>사업예산 (천원)</label>
+                      <input 
+                        type="number" 
+                        name="budgetPlan" 
+                        value={formData.budgetPlan} 
+                        onChange={handleInputChange} 
+                        placeholder="예: 25000 (2천5백만원)" 
+                        style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} 
+                      />
+                    </div>
+                    <div>
+                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>집행액 (천원)</label>
+                      <input 
+                        type="number" 
+                        name="budgetSpent" 
+                        value={formData.budgetSpent} 
+                        onChange={handleInputChange} 
+                        placeholder="예: 20000 (2천만원)" 
+                        style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} 
+                      />
                     </div>
                   </div>
 
