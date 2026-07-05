@@ -217,7 +217,7 @@ const uploadFileToSupabase = async (docType, file, onProgress) => {
 
   const fileExt = file.name.split(".").pop();
   const randomId = Math.random().toString(36).substring(2, 10);
-  const filePath = `procurement/${docType}/${Date.now()}_${randomId}.${fileExt}`;
+  const filePath = `equipment/${docType}/${Date.now()}_${randomId}.${fileExt}`;
 
   // 모의 프로그레스 진행 바 작동 (사용자 시각적 흐름 연출)
   let currentProgress = 0;
@@ -231,10 +231,10 @@ const uploadFileToSupabase = async (docType, file, onProgress) => {
   }, 150);
 
   try {
-    // 실제 Supabase 스토리지 버킷 업로드 시도
-    // 버킷명: procurement-docs
+    // 실제 Supabase Storage 버킷 업로드 시도 (요구사항 반영)
+    // 버킷명: document_procument
     const { data, error } = await supabase.storage
-      .from("procurement-docs")
+      .from("document_procument")
       .upload(filePath, file, {
         cacheControl: "3600",
         upsert: false
@@ -246,7 +246,7 @@ const uploadFileToSupabase = async (docType, file, onProgress) => {
 
     // 파일의 Public URL 취득
     const { data: { publicUrl } } = supabase.storage
-      .from("procurement-docs")
+      .from("document_procument")
       .getPublicUrl(filePath);
 
     // 완료 대기
