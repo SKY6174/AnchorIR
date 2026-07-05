@@ -1274,8 +1274,8 @@ export default function ProcurementManager({
                                   right: "50%",
                                   top: "50%",
                                   transform: "translateY(-50%)",
-                                  height: "2px",
-                                  background: leftColor,
+                                  height: "3px", // 선 두께 강화
+                                  background: leftColor === "rgba(255, 255, 255, 0.12)" ? "rgba(255, 255, 255, 0.08)" : leftColor,
                                   display: m === "3" ? "none" : "block", // 3월은 왼쪽 선 생략
                                   zIndex: 0
                                 }} />
@@ -1287,51 +1287,69 @@ export default function ProcurementManager({
                                   right: 0,
                                   top: "50%",
                                   transform: "translateY(-50%)",
-                                  height: "2px",
-                                  background: rightColor,
+                                  height: "3px", // 선 두께 강화
+                                  background: rightColor === "rgba(255, 255, 255, 0.12)" ? "rgba(255, 255, 255, 0.08)" : rightColor,
                                   display: m === "2" ? "none" : "block", // 2월은 오른쪽 선 생략
                                   zIndex: 0
                                 }} />
                                 
                                 {/* 화살표 선 흐름 기호 (마일스톤 노드가 없는 빈 월에만 구간 유색 화살표 표시) */}
                                 {stepList.length === 0 && (leftColor !== "rgba(255, 255, 255, 0.12)" || rightColor !== "rgba(255, 255, 255, 0.12)") && (
-                                  <span style={{
+                                  <div style={{
                                     position: "absolute",
                                     left: "50%",
                                     top: "50%",
                                     transform: "translate(-50%, -50%)",
-                                    fontSize: "0.62rem",
-                                    fontWeight: "bold",
-                                    color: leftColor !== "rgba(255, 255, 255, 0.12)" ? leftColor : rightColor,
-                                    opacity: 0.85,
+                                    width: 0,
+                                    height: 0,
+                                    borderTop: "4px solid transparent",
+                                    borderBottom: "4px solid transparent",
+                                    borderLeft: `6px solid ${leftColor !== "rgba(255, 255, 255, 0.12)" ? leftColor : rightColor}`,
                                     zIndex: 1,
                                     pointerEvents: "none"
-                                  }}>
-                                    ➔
-                                  </span>
+                                  }} />
                                 )}
 
-                                {/* 캘린더 구매단계 점 (요건에 따라 P, A, B, Pr, I 마일스톤이 있는 달에만 마크 렌더링, 빈 달은 도트 점 제거) */}
-                                <div style={{ position: "relative", zIndex: 2, display: "flex", justifyContent: "center", alignItems: "center" }}>
+                                {/* 두 번째 그림 스타일의 마일스톤 노드 (중앙 도트점 + 상단 텍스트 및 양쪽 사선 깃대 날개) */}
+                                <div style={{ position: "relative", zIndex: 2, display: "flex", justifyContent: "center", alignItems: "center", height: "32px" }}>
                                   {stepList.length > 0 && (
-                                    <div 
-                                      style={{
-                                        width: "20px",
-                                        height: "20px",
-                                        borderRadius: "50%",
-                                        background: style.bg,
-                                        color: style.color,
-                                        fontSize: "0.53rem", // 구매단계를 나타내는 글씨 font size 2pt 작게 반영
-                                        fontWeight: "900",
-                                        display: "flex",
-                                        alignItems: "center",
-                                        justifyContent: "center",
-                                        boxShadow: `0 0 8px ${style.bg}`,
-                                        border: "1px solid rgba(255, 255, 255, 0.2)"
-                                      }}
-                                      title={`${m}월: ${stepList.join(", ")}`}
-                                    >
-                                      {style.text}
+                                    <div title={`${m}월: ${stepList.join(", ")}`}>
+                                      <svg width="28" height="32" viewBox="0 0 28 32" style={{ overflow: "visible" }}>
+                                        <defs>
+                                          <filter id="glow-blue" x="-30%" y="-30%" width="160%" height="160%">
+                                            <feGaussianBlur stdDeviation="1.8" result="blur" />
+                                            <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                                          </filter>
+                                        </defs>
+
+                                        {/* 1. 사선 깃대 안테나 날개 (V자) */}
+                                        <line x1="5" y1="11" x2="14" y2="20" stroke="rgba(255,255,255,0.7)" strokeWidth="1.5" />
+                                        <line x1="23" y1="11" x2="14" y2="20" stroke="rgba(255,255,255,0.7)" strokeWidth="1.5" />
+
+                                        {/* 2. 상단 텍스트 (P, A, B, Pr, I) */}
+                                        <text 
+                                          x="14" 
+                                          y="7" 
+                                          textAnchor="middle" 
+                                          fontSize="11" 
+                                          fontWeight="900" 
+                                          fill="white"
+                                          style={{ fontFamily: "monospace" }}
+                                        >
+                                          {style.text}
+                                        </text>
+
+                                        {/* 3. 중앙 하늘색 도트 점 */}
+                                        <circle 
+                                          cx="14" 
+                                          cy="20" 
+                                          r="4.5" 
+                                          fill="#38bdf8" 
+                                          stroke="rgba(255,255,255,0.6)" 
+                                          strokeWidth="1"
+                                          filter="url(#glow-blue)"
+                                        />
+                                      </svg>
                                     </div>
                                   )}
                                 </div>
