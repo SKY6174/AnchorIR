@@ -3587,6 +3587,9 @@ export default function App() {
 
   // 성과지표 subTab이 노출 여부 설정에 의해 가려졌을 때 활성화 탭을 자동으로 숨겨지지 않은 유효 탭으로 보정
   useEffect(() => {
+    // 관리자(단장, 운영팀장, 본부장, ADMIN 등)는 숨겨진 탭도 직접 관리할 수 있도록 튕김 예외 처리
+    if (isSongDirector) return;
+
     if (activeTab === "kpis" && menuVisibility) {
       const isStatusVisible = menuVisibility.kpi_status !== false;
       const isSelfVisible = menuVisibility.kpi_self !== false;
@@ -6392,7 +6395,7 @@ export default function App() {
                   <h2 style={{ fontSize: "1.25rem", fontWeight: "800" }}>성과지표(KPI) 통합 목록</h2>
                   {/* 자율 / 중점 성과지표 서브탭 제어기 */}
                   <div style={{ display: "flex", gap: "0.3rem", background: "rgba(255,255,255,0.02)", border: "1px solid var(--border-color-dark)", padding: "0.25rem", borderRadius: "0.5rem", marginTop: "0.5rem", width: "fit-content" }}>
-                    {(menuVisibility.kpi_status !== false) && (
+                    {(menuVisibility.kpi_status !== false || isSongDirector) && (
                       <button
                         onClick={() => {
                           setKpiSubTab("공통");
@@ -6408,14 +6411,17 @@ export default function App() {
                           fontWeight: "700",
                           cursor: "pointer",
                           background: kpiSubTab === "공통" ? "var(--accent-color)" : "transparent",
-                          color: kpiSubTab === "공통" ? "white" : "var(--text-secondary-dark)",
+                          color: kpiSubTab === "공통" ? "white" : (menuVisibility.kpi_status === false ? "#EF4444" : "var(--text-secondary-dark)"),
                           transition: "all 0.2s"
                         }}
                       >
                         (교육부)공통성과지표
+                        {menuVisibility.kpi_status === false && (
+                          <span style={{ fontSize: "0.6rem", color: "#EF4444", fontWeight: "800", marginLeft: "3px" }}>[숨김]</span>
+                        )}
                       </button>
                     )}
-                    {(menuVisibility.kpi_self !== false) && (
+                    {(menuVisibility.kpi_self !== false || isSongDirector) && (
                       <button
                         onClick={() => {
                           setKpiSubTab("자율");
@@ -6431,14 +6437,17 @@ export default function App() {
                           fontWeight: "700",
                           cursor: "pointer",
                           background: kpiSubTab === "자율" ? "var(--accent-color)" : "transparent",
-                          color: kpiSubTab === "자율" ? "white" : "var(--text-secondary-dark)",
+                          color: kpiSubTab === "자율" ? "white" : (menuVisibility.kpi_self === false ? "#EF4444" : "var(--text-secondary-dark)"),
                           transition: "all 0.2s"
                         }}
                       >
                         (지자체)자율성과지표
+                        {menuVisibility.kpi_self === false && (
+                          <span style={{ fontSize: "0.6rem", color: "#EF4444", fontWeight: "800", marginLeft: "3px" }}>[숨김]</span>
+                        )}
                       </button>
                     )}
-                    {(menuVisibility.kpi_focus !== false) && (
+                    {(menuVisibility.kpi_focus !== false || isSongDirector) && (
                       <button
                         onClick={() => {
                           setKpiSubTab("중점");
