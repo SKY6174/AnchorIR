@@ -1810,12 +1810,10 @@ export default function ProcurementManager({
                         <td style={{ padding: "0.8rem 0.5rem", textAlign: "right", fontWeight: "700", color: "#10B981" }}>
                           {price.toFixed(2)}
                         </td>
-                        <td style={{ padding: "0.8rem 0.75rem", textAlign: "left", color: "var(--text-secondary)", maxWidth: "384px" }} title={equip.description || equip.purpose || equip.opPlan}>
+                        <td style={{ padding: "0.8rem 0.75rem", textAlign: "left", color: "var(--text-secondary)", maxWidth: "384px" }} title={equip.purpose || equip.utilization}>
                           {(() => {
-                            const text = equip.description || equip.purpose || equip.opPlan || "";
-                            const lines = text.split("\n").map(l => l.trim()).filter(Boolean);
-                            const purpose = lines[0] || "-";
-                            const plan = lines[1] || "-";
+                            const purpose = equip.purpose || "-";
+                            const plan = equip.utilization || "-";
                             return (
                               <div style={{
                                 display: "flex",
@@ -1827,7 +1825,7 @@ export default function ProcurementManager({
                                 <div style={{ wordBreak: "break-all", whiteSpace: "normal", display: "flex", alignItems: "flex-start", gap: "0.25rem" }}>
                                   <span style={{ color: "var(--accent-color)", fontWeight: "bold" }}>•</span>
                                   <span>
-                                    <strong style={{ color: "var(--text-primary)", fontWeight: "700", marginRight: "4px" }}>구입목적:</strong>
+                                    <strong style={{ color: "var(--text-primary)", fontWeight: "700", marginRight: "4px" }}>구축목적:</strong>
                                     {purpose}
                                   </span>
                                 </div>
@@ -3759,21 +3757,51 @@ export default function ProcurementManager({
                       />
                     </div>
                   </div>
+
+                  {/* 다섯번째 줄: 구축단계 일정 지정 (선택 입력) */}
+                  <div style={{ background: "rgba(255,255,255,0.01)", padding: "0.85rem", borderRadius: "8px", border: "1px solid var(--border-color-dark)", marginBottom: "1rem" }}>
+                    <span style={{ display: "block", fontSize: "0.78rem", fontWeight: "800", color: "white", marginBottom: "0.5rem" }}>
+                      📅 구축단계 일정 지정 (선택 입력)
+                    </span>
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: "0.5rem" }}>
+                      <div>
+                        <label style={{ display: "block", fontSize: "0.68rem", color: "var(--text-secondary-dark)", marginBottom: "0.2rem" }}>요청(Rq) 일자</label>
+                        <input type="date" name="dateP" value={formData.dateP || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.3rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white", fontSize: "0.7rem" }} />
+                      </div>
+                      <div>
+                        <label style={{ display: "block", fontSize: "0.68rem", color: "var(--text-secondary-dark)", marginBottom: "0.2rem" }}>검토/심의(DR) 일자</label>
+                        <input type="date" name="dateA" value={formData.dateA || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.3rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white", fontSize: "0.7rem" }} />
+                      </div>
+                      <div>
+                        <label style={{ display: "block", fontSize: "0.68rem", color: "var(--text-secondary-dark)", marginBottom: "0.2rem" }}>용역/인허가(DL) 일자</label>
+                        <input type="date" name="dateB" value={formData.dateB || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.3rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white", fontSize: "0.7rem" }} />
+                      </div>
+                      <div>
+                        <label style={{ display: "block", fontSize: "0.68rem", color: "var(--text-secondary-dark)", marginBottom: "0.2rem" }}>업체/선정(BC) 일자</label>
+                        <input type="date" name="datePr" value={formData.datePr || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.3rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white", fontSize: "0.7rem" }} />
+                      </div>
+                      <div>
+                        <label style={{ display: "block", fontSize: "0.68rem", color: "var(--text-secondary-dark)", marginBottom: "0.2rem" }}>시공∙감리(CS) 일자</label>
+                        <input type="date" name="dateI" value={formData.dateI || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.3rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white", fontSize: "0.7rem" }} />
+                      </div>
+                    </div>
+                  </div>
+
                   <div>
                     <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>구축 목적 (공간 용도)</label>
                     <textarea name="purpose" value={formData.purpose} onChange={handleInputChange} required placeholder="특화 인력 양성을 위한 핵심 시너지 공간 용도 상세 기술" style={{ width: "100%", height: "50px", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white", resize: "none" }} />
                   </div>
                   <div>
-                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>세부 공간 구축 설계 계획</label>
-                    <textarea name="plan" value={formData.plan} onChange={handleInputChange} required placeholder="예: 바닥 전선 몰딩, 방음벽 흡음 패널 시공 및 스마트 미러링 보드 마운팅 작업" style={{ width: "100%", height: "50px", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white", resize: "none" }} />
-                  </div>
-                  <div>
-                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>공사 진행 실적 현황</label>
-                    <textarea name="progress" value={formData.progress} onChange={handleInputChange} required placeholder="현재 진행 실무 정보 기술" style={{ width: "100%", height: "50px", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white", resize: "none" }} />
-                  </div>
-                  <div>
                     <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>향후 활용 계획</label>
-                    <input type="text" name="utilization" value={formData.utilization} onChange={handleInputChange} placeholder="공간 연계 교육과정 활용 방식" style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} />
+                    <input type="text" name="utilization" value={formData.utilization} onChange={handleInputChange} required placeholder="예: 공간 연계 교육과정 활용 방식 및 융합 연구 활용" style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} />
+                  </div>
+                  <div>
+                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>세부 공간 구축 설계 계획 (선택)</label>
+                    <textarea name="plan" value={formData.plan} onChange={handleInputChange} placeholder="예: 바닥 전선 몰딩, 방음벽 흡음 패널 시공 및 스마트 미러링 보드 마운팅 작업" style={{ width: "100%", height: "50px", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white", resize: "none" }} />
+                  </div>
+                  <div>
+                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>공사 진행 실적 현황 (선택)</label>
+                    <textarea name="progress" value={formData.progress} onChange={handleInputChange} placeholder="현재 진행 실무 정보 기술" style={{ width: "100%", height: "50px", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white", resize: "none" }} />
                   </div>
                 </>
               )}
