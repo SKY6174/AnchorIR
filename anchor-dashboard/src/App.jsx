@@ -2751,6 +2751,7 @@ export default function App() {
             description: x.description || "",
             operation: x.operation || "교과목(정규)",
             password: x.password || "1234",
+            relatedDocs: x.related_docs || "", // 관련문서 필드 로드 매핑
             dateP: x.date_p || "",
             dateA: x.date_a || "",
             dateB: x.date_b || "",
@@ -2773,6 +2774,7 @@ export default function App() {
             description: e.description,
             operation: e.operation,
             password: e.password,
+            related_docs: e.relatedDocs || "", // 관련문서 시드 매핑
             date_p: e.dateP || null,
             date_a: e.dateA || null,
             date_b: e.dateB || null,
@@ -2798,6 +2800,7 @@ export default function App() {
                 description: x.description || "",
                 operation: x.operation || "교과목(정규)",
                 password: x.password || "1234",
+                relatedDocs: x.related_docs || "", // 관련문서 재조회 매핑
                 dateP: x.date_p || "",
                 dateA: x.date_a || "",
                 dateB: x.date_b || "",
@@ -3102,6 +3105,7 @@ export default function App() {
               description: e.description || "",
               operation: e.operation || "교과목(정규)",
               password: e.password || "1234",
+              related_docs: e.relatedDocs || "", // 관련문서 저장 매핑
               date_p: e.dateP || null,
               date_a: e.dateA || null,
               date_b: e.dateB || null,

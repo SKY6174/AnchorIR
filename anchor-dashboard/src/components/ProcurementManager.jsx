@@ -486,6 +486,7 @@ export default function ProcurementManager({
               description: formData.description || "-",
               operation: formData.operation || "교과목(정규)",
               password: currentUser?.password || formData.password || item.password || "1234", // 현재 로그인 유저 비밀번호 연동
+              relatedDocs: formData.relatedDocs || "", // 관련문서 기입 연동
               dateP: formData.dateP || "",
               dateA: formData.dateA || "",
               dateB: formData.dateB || "",
@@ -522,6 +523,7 @@ export default function ProcurementManager({
           operation: formData.operation || "교과목(정규)",
           mgrDept: formData.mgrDept || "ECC",
           password: currentUser?.password || formData.password || "1234", // 현재 로그인 유저 비밀번호 연동
+          relatedDocs: formData.relatedDocs || "", // 관련문서 기입 연동
           dateP: formData.dateP || "",
           dateA: formData.dateA || "",
           dateB: formData.dateB || "",
@@ -614,6 +616,7 @@ export default function ProcurementManager({
       datePr: "",
       dateI: "",
       password: "",
+      relatedDocs: "", // 관련문서 초기화
       providerQual: "",
       opResult: ""
     });
@@ -635,6 +638,7 @@ export default function ProcurementManager({
       description: equip.description || "",
       operation: equip.operation || "교과목(정규)",
       password: equip.password || "1234",
+      relatedDocs: equip.relatedDocs || "", // 관련문서 로드
       dateP: equip.dateP || "",
       dateA: equip.dateA || "",
       dateB: equip.dateB || "",
@@ -880,15 +884,14 @@ export default function ProcurementManager({
                   }}
                 >
                   <option value="">부서 전체</option>
-                  <optgroup label="RISE사업단 및 센터">
-                    <option value="RISE사업단">RISE사업단</option>
-                    <option value="RISE사업센터">RISE사업센터</option>
-                    <option value="LINC3.0사업단">LINC3.0사업단</option>
-                    <option value="공동기자재지원센터">공동기자재지원센터</option>
-                    <option value="신산업역량강화지원센터">신산업역량강화지원센터</option>
-                    <option value="학생직무체험지원센터">학생직무체험지원센터</option>
-                    <option value="원격교육지원센터">원격교육지원센터</option>
+                  <optgroup label="앵커사업단 및 센터">
+                    <option value="사업운영팀">사업운영팀</option>
+                    <option value="ECC센터">ECC센터</option>
+                    <option value="ICC센터">ICC센터</option>
+                    <option value="RCC센터">RCC센터</option>
+                    <option value="AID-X지원센터">AID-X지원센터</option>
                     <option value="울산늘봄누리센터">울산늘봄누리센터</option>
+                    <option value="신산업특화센터">신산업특화센터</option>
                   </optgroup>
                   <optgroup label="대학본부">
                     <option value="교무팀">교무팀</option>
@@ -1038,7 +1041,7 @@ export default function ProcurementManager({
                     구매단계<br />
                     <span style={{ fontSize: "0.75rem", fontWeight: "normal", color: "var(--text-secondary)" }}>(기획:P ➔ 승인:A ➔ 입찰:B ➔ 구매:Pr ➔ 검수:I)</span>
                   </th>
-                  <th rowSpan={3} style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "135px", verticalAlign: "middle" }}>문서번호</th>
+                  <th rowSpan={3} style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "145px", verticalAlign: "middle" }}>관련문서</th>
                   {currentRole.id !== "GUEST" && (
                     <th rowSpan={3} style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "45px", verticalAlign: "middle" }}>작업</th>
                   )}
@@ -1312,49 +1315,59 @@ export default function ProcurementManager({
                           })}
 
                           <td style={{ padding: "0.8rem 0.5rem", textAlign: "center", color: "var(--text-secondary)" }}>
-                            <div style={{ display: "flex", flexDirection: "column", gap: "0.35rem", alignItems: "center" }}>
-                              {/* 고유 문서번호 생성 (예: UC-EQ-A1-001) */}
-                              <span style={{ fontSize: "0.75rem", fontFamily: "monospace", fontWeight: "700", color: "white" }}>
-                                {`UC-EQ-${equip.unit}-${String(equip.seq || equip.id).slice(-3).padStart(3, "0")}`}
-                              </span>
-                              <div style={{ display: "flex", gap: "0.3rem" }}>
-                                <button
-                                  onClick={() => setProposalModalData(equip)}
-                                  style={{
-                                    padding: "0.2rem 0.4rem",
-                                    fontSize: "0.68rem",
-                                    borderRadius: "4px",
-                                    background: "rgba(59, 130, 246, 0.15)",
-                                    color: "#60A5FA",
-                                    border: "1px solid rgba(59, 130, 246, 0.3)",
-                                    cursor: "pointer",
-                                    transition: "background 0.2s"
-                                  }}
-                                  onMouseOver={(e) => e.currentTarget.style.background = "rgba(59, 130, 246, 0.25)"}
-                                  onMouseOut={(e) => e.currentTarget.style.background = "rgba(59, 130, 246, 0.15)"}
-                                  title="기획 제안서 요약 보기"
-                                >
-                                  기획문서
-                                </button>
-                                <button
-                                  onClick={() => setBidModalData(equip)}
-                                  style={{
-                                    padding: "0.2rem 0.4rem",
-                                    fontSize: "0.68rem",
-                                    borderRadius: "4px",
-                                    background: "rgba(16, 185, 129, 0.15)",
-                                    color: "#34D399",
-                                    border: "1px solid rgba(16, 185, 129, 0.3)",
-                                    cursor: "pointer",
-                                    transition: "background 0.2s"
-                                  }}
-                                  onMouseOver={(e) => e.currentTarget.style.background = "rgba(16, 185, 129, 0.25)"}
-                                  onMouseOut={(e) => e.currentTarget.style.background = "rgba(16, 185, 129, 0.15)"}
-                                  title="입찰 규격 공고 보기"
-                                >
-                                  입찰문서
-                                </button>
-                              </div>
+                            <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem", alignItems: "center" }}>
+                              {(() => {
+                                // 관련문서 번호 다중 파싱 (쉼표 구분)
+                                const docList = equip.relatedDocs
+                                  ? equip.relatedDocs.split(",").map(d => d.trim()).filter(Boolean)
+                                  : [`UC-EQ-${equip.unit}-${String(equip.seq || equip.id).slice(-3).padStart(3, "0")}`];
+                                
+                                return docList.map((docNum, idx) => (
+                                  <div key={idx} style={{ display: "flex", flexDirection: "column", gap: "0.25rem", alignItems: "center", borderBottom: idx < docList.length - 1 ? "1px dashed rgba(255,255,255,0.08)" : "none", paddingBottom: idx < docList.length - 1 ? "0.4rem" : "0", width: "100%" }}>
+                                    <span style={{ fontSize: "0.72rem", fontFamily: "monospace", fontWeight: "700", color: "#FBBF24" }}>
+                                      {docNum}
+                                    </span>
+                                    <div style={{ display: "flex", gap: "0.25rem" }}>
+                                      <button
+                                        onClick={() => setProposalModalData({ ...equip, selectedDoc: docNum })}
+                                        style={{
+                                          padding: "0.15rem 0.35rem",
+                                          fontSize: "0.62rem",
+                                          borderRadius: "4px",
+                                          background: "rgba(59, 130, 246, 0.12)",
+                                          color: "#60A5FA",
+                                          border: "1px solid rgba(59, 130, 246, 0.25)",
+                                          cursor: "pointer",
+                                          transition: "background 0.2s"
+                                        }}
+                                        onMouseOver={(e) => e.currentTarget.style.background = "rgba(59, 130, 246, 0.22)"}
+                                        onMouseOut={(e) => e.currentTarget.style.background = "rgba(59, 130, 246, 0.12)"}
+                                        title="기획 제안서 요약 보기"
+                                      >
+                                        기획문서
+                                      </button>
+                                      <button
+                                        onClick={() => setBidModalData({ ...equip, selectedDoc: docNum })}
+                                        style={{
+                                          padding: "0.15rem 0.35rem",
+                                          fontSize: "0.62rem",
+                                          borderRadius: "4px",
+                                          background: "rgba(16, 185, 129, 0.12)",
+                                          color: "#34D399",
+                                          border: "1px solid rgba(16, 185, 129, 0.25)",
+                                          cursor: "pointer",
+                                          transition: "background 0.2s"
+                                        }}
+                                        onMouseOver={(e) => e.currentTarget.style.background = "rgba(16, 185, 129, 0.22)"}
+                                        onMouseOut={(e) => e.currentTarget.style.background = "rgba(16, 185, 129, 0.12)"}
+                                        title="입찰 규격 공고 보기"
+                                      >
+                                        입찰문서
+                                      </button>
+                                    </div>
+                                  </div>
+                                ));
+                              })()}
                             </div>
                           </td>
                           {currentRole.id !== "GUEST" && (
@@ -1721,16 +1734,15 @@ export default function ProcurementManager({
                         className="user-selector"
                       >
                         <option value="">-- 선택 안 함 --</option>
-                        {/* RISE사업단 및 센터 */}
-                        <optgroup label="RISE사업단 및 센터">
-                          <option value="RISE사업단">RISE사업단</option>
-                          <option value="RISE사업센터">RISE사업센터</option>
-                          <option value="LINC3.0사업단">LINC3.0사업단</option>
-                          <option value="공동기자재지원센터">공동기자재지원센터</option>
-                          <option value="신산업역량강화지원센터">신산업역량강화지원센터</option>
-                          <option value="학생직무체험지원센터">학생직무체험지원센터</option>
-                          <option value="원격교육지원센터">원격교육지원센터</option>
+                        {/* 앵커사업단 및 센터 */}
+                        <optgroup label="앵커사업단 및 센터">
+                          <option value="사업운영팀">사업운영팀</option>
+                          <option value="ECC센터">ECC센터</option>
+                          <option value="ICC센터">ICC센터</option>
+                          <option value="RCC센터">RCC센터</option>
+                          <option value="AID-X지원센터">AID-X지원센터</option>
                           <option value="울산늘봄누리센터">울산늘봄누리센터</option>
+                          <option value="신산업특화센터">신산업특화센터</option>
                         </optgroup>
                         {/* 대학본부 하위 조직 */}
                         <optgroup label="대학본부">
@@ -1818,12 +1830,25 @@ export default function ProcurementManager({
                   </div>
 
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
-                    <div style={{ gridColumn: "span 2" }}>
+                    <div>
                       <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>운영 구분</label>
                       <select name="operation" value={formData.operation} onChange={handleInputChange} className="user-selector" style={{ width: "100%" }}>
                         <option value="교과목(정규)">교과목(정규)</option>
                         <option value="교과목(비정규)">교과목(비정규)</option>
                       </select>
+                    </div>
+                    <div>
+                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>
+                        📄 관련문서 번호 (쉼표 구분 다중입력 가능)
+                      </label>
+                      <input 
+                        type="text" 
+                        name="relatedDocs" 
+                        value={formData.relatedDocs || ""} 
+                        onChange={handleInputChange} 
+                        placeholder="예: UC-EQ-B1-260, UC-EQ-B1-261" 
+                        style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white", fontSize: "0.85rem" }} 
+                      />
                     </div>
                   </div>
                 </>
@@ -2001,9 +2026,9 @@ export default function ProcurementManager({
               return (
                 <div style={{ display: "flex", flexDirection: "column", gap: "1rem", fontSize: "0.85rem" }}>
                   <div>
-                    <span style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)", display: "block" }}>문서번호</span>
+                    <span style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)", display: "block" }}>관련문서</span>
                     <strong style={{ fontFamily: "monospace", color: "#FBBF24" }}>
-                      {`UC-EQ-${proposalModalData.unit}-${String(proposalModalData.seq || proposalModalData.id).slice(-3).padStart(3, "0")}`}
+                      {proposalModalData.selectedDoc || proposalModalData.relatedDocs || `UC-EQ-${proposalModalData.unit}-${String(proposalModalData.seq || proposalModalData.id).slice(-3).padStart(3, "0")}`}
                     </strong>
                   </div>
                   <div>
@@ -2067,9 +2092,9 @@ export default function ProcurementManager({
                 <div style={{ display: "flex", flexDirection: "column", gap: "1rem", fontSize: "0.82rem" }}>
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem" }}>
                     <div>
-                      <span style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)", display: "block" }}>문서번호</span>
+                      <span style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)", display: "block" }}>관련문서</span>
                       <strong style={{ fontFamily: "monospace", color: "#FBBF24" }}>
-                        {`UC-EQ-${bidModalData.unit}-${String(bidModalData.seq || bidModalData.id).slice(-3).padStart(3, "0")}-BID`}
+                        {bidModalData.selectedDoc || bidModalData.relatedDocs || `UC-EQ-${bidModalData.unit}-${String(bidModalData.seq || bidModalData.id).slice(-3).padStart(3, "0")}`}
                       </strong>
                     </div>
                     <div>

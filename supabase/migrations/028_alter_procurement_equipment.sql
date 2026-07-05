@@ -12,9 +12,10 @@ CREATE TABLE IF NOT EXISTS procurement_equipment (
     item_name TEXT NOT NULL,                    -- 기자재 명칭
     unit_price BIGINT NOT NULL DEFAULT 0,       -- 기자재 단가 (원화 기준)
     quantity INTEGER NOT NULL DEFAULT 1,        -- 구입 수량
-    description TEXT DEFAULT '',                -- 구입 목적 및 활용 계획
+    description TEXT DEFAULT '',                -- 구입 목적 및 활용 계획 (관련 내용 -> 구입목적 및 활용계획)
     operation TEXT DEFAULT '교과목(정규)',       -- 운영 구분 (정규/비정규)
     password TEXT DEFAULT '1234',               -- 수정 및 삭제 검증 비밀번호
+    related_docs TEXT DEFAULT '',               -- 관련문서 번호 (쉼표로 구분된 다중 문서번호)
     date_p DATE,                                -- 기획(P) 단계 지정일자
     date_a DATE,                                -- 승인(A) 단계 지정일자
     date_b DATE,                                -- 입찰(B) 단계 지정일자
