@@ -1905,20 +1905,38 @@ export default function ProcurementManager({
                           <td style={{ padding: "0.8rem 0.5rem", textAlign: "right", fontWeight: "700", color: "#10B981" }}>
                             {formatToMillionWon(total)}
                           </td>
-                          <td style={{ padding: "0.8rem 0.5rem", textAlign: "center", color: "var(--text-secondary)", maxWidth: "384px" }} title={equip.description || equip.opPlan}>
-                            <div style={{
-                              display: "-webkit-box",
-                              WebkitLineClamp: 3,
-                              WebkitBoxOrient: "vertical",
-                              overflow: "hidden",
-                              textOverflow: "ellipsis",
-                              lineHeight: "1.4",
-                              wordBreak: "break-all",
-                              whiteSpace: "normal",
-                              textAlign: "center"
-                            }}>
-                              {equip.description || equip.opPlan || "-"}
-                            </div>
+                          <td style={{ padding: "0.8rem 0.75rem", textAlign: "left", color: "var(--text-secondary)", maxWidth: "384px" }} title={equip.description || equip.opPlan}>
+                            {(() => {
+                              // 개행으로 구분된 데이터를 구입목적과 활용계획으로 쪼갭니다 (요구사항 3)
+                              const text = equip.description || equip.opPlan || "";
+                              const lines = text.split("\n").map(l => l.trim()).filter(Boolean);
+                              const purpose = lines[0] || "-";
+                              const plan = lines[1] || "-";
+                              return (
+                                <div style={{
+                                  display: "flex",
+                                  flexDirection: "column",
+                                  gap: "0.35rem",
+                                  lineHeight: "1.4",
+                                  fontSize: "0.78rem"
+                                }}>
+                                  <div style={{ wordBreak: "break-all", whiteSpace: "normal", display: "flex", alignItems: "flex-start", gap: "0.25rem" }}>
+                                    <span style={{ color: "var(--accent-color)", fontWeight: "bold" }}>•</span>
+                                    <span>
+                                      <strong style={{ color: "var(--text-primary)", fontWeight: "700", marginRight: "4px" }}>구입목적:</strong>
+                                      {purpose}
+                                    </span>
+                                  </div>
+                                  <div style={{ wordBreak: "break-all", whiteSpace: "normal", display: "flex", alignItems: "flex-start", gap: "0.25rem" }}>
+                                    <span style={{ color: "var(--accent-color)", fontWeight: "bold" }}>•</span>
+                                    <span>
+                                      <strong style={{ color: "var(--text-primary)", fontWeight: "700", marginRight: "4px" }}>활용계획:</strong>
+                                      {plan}
+                                    </span>
+                                  </div>
+                                </div>
+                              );
+                            })()}
                           </td>
                           
                           {monthsOrder.map((m, currIdx) => {
@@ -2069,10 +2087,10 @@ export default function ProcurementManager({
                                       className="milestone-tooltip-container"
                                       style={{ display: "flex", justifyContent: "center", alignItems: "center" }}
                                     >
-                                      {/* 커스텀 호버 툴팁 날짜 표기 */}
-                                      <div className="milestone-tooltip">
-                                        <span style={{ color: phaseColor, fontWeight: "900", marginRight: "4px" }}>{phaseLabel} ({primaryCode})</span>
-                                        <span>{phaseDate || "날짜 미정"}</span>
+                                      {/* 커스텀 호버 툴팁 날짜 표기 (요구사항 1: 두 줄로 표현) */}
+                                      <div className="milestone-tooltip" style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "2px", textAlign: "center" }}>
+                                        <span style={{ color: phaseColor, fontWeight: "900" }}>{phaseLabel} ({primaryCode})</span>
+                                        <span style={{ fontSize: "0.68rem", opacity: 0.85, fontWeight: "normal" }}>{phaseDate || "날짜 미정"}</span>
                                       </div>
 
                                       <svg width="28" height="32" viewBox="0 0 28 32" style={{ overflow: "visible" }}>
