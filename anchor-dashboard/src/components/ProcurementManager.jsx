@@ -516,6 +516,22 @@ export default function ProcurementManager({
 }) {
   const monthsOrder = ["3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "1", "2"];
 
+  // 날짜 문자열로부터 해당 연도 회계연도 기준(3월~익년2월) 월 인덱스(0~11)를 반환하는 로컬 헬퍼
+  const getMonthIndex = (dateStr) => {
+    if (!dateStr) return null;
+    const date = new Date(dateStr);
+    if (isNaN(date.getTime())) return null;
+    const baseYear = 2024 + Number(selectedYear || 2);
+    const year = date.getFullYear();
+    const month = date.getMonth() + 1;
+    const isCurrentYearPart = (month >= 3 && month <= 12 && year === baseYear);
+    const isNextYearPart = ((month === 1 || month === 2) && year === baseYear + 1);
+    if (isCurrentYearPart || isNextYearPart) {
+      return monthsOrder.indexOf(String(month));
+    }
+    return null;
+  };
+
   // 모달 제어 상태
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [modalType, setModalType] = useState("env"); // "env", "equip", "service"
@@ -3754,14 +3770,6 @@ export default function ProcurementManager({
                   <div>
                     <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>공사 진행 실적 현황</label>
                     <textarea name="progress" value={formData.progress} onChange={handleInputChange} required placeholder="현재 진행 실무 정보 기술" style={{ width: "100%", height: "50px", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white", resize: "none" }} />
-                  </div>
-                  <div>
-                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>조감도 파일 설명</label>
-                    <input type="text" name="birdseyeView" value={formData.birdseyeView} onChange={handleInputChange} placeholder="예: 3D 실내 투시 조감도 파일 첨부" style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} />
-                  </div>
-                  <div>
-                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>설계도 정보</label>
-                    <input type="text" name="blueprints" value={formData.blueprints} onChange={handleInputChange} placeholder="예: 캐드 소방 배선 기계 덕트 설계 도면" style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} />
                   </div>
                   <div>
                     <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>향후 활용 계획</label>
