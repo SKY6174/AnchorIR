@@ -80,8 +80,17 @@ const getMilestonesFromDates = (item, activeYear) => {
   return milestones;
 };
 
-// 단계별 입력 일정 순차 검증 헬퍼 함수 (4번 요건 대응)
-const validateDatesChronological = (dateP, dateA, dateB, datePr, dateI) => {
+// 단계별 입력 일정 순차 및 사업연차 적합성 검증 헬퍼 함수 (연차-단계별 일자 연계)
+const validateDatesChronological = (yearVal, dateP, dateA, dateB, datePr, dateI) => {
+  const targetYear = Number(yearVal) || 1; // 1차년도 또는 2차년도
+  
+  // 1) 사업연차별 유효기간 논리 범위 정의
+  // 1차년도: '25.3월 ~ '26.2월 -> 2025-03-01 ~ 2026-02-29
+  // 2차년도: '26.3월 ~ '27.2월 -> 2026-03-01 ~ 2027-02-28
+  const baseStart = targetYear === 1 ? new Date("2025-03-01") : new Date("2026-03-01");
+  const baseEnd = targetYear === 1 ? new Date("2026-02-29") : new Date("2027-02-28");
+  const periodStr = targetYear === 1 ? "'25.3월 ~ '26.2월" : "'26.3월 ~ '27.2월";
+
   const dates = [
     { name: "기획(P)", val: dateP },
     { name: "승인(A)", val: dateA },
@@ -89,7 +98,19 @@ const validateDatesChronological = (dateP, dateA, dateB, datePr, dateI) => {
     { name: "구매(Pr)", val: datePr },
     { name: "검수(I)", val: dateI }
   ].filter(d => d.val); // 값이 채워진 것만 필터링
-  
+
+  // 2) 선택한 사업 연차 범위 내에 일자가 속하는지 검증
+  for (let i = 0; i < dates.length; i++) {
+    const dVal = new Date(dates[i].val);
+    if (dVal < baseStart || dVal > baseEnd) {
+      return {
+        isValid: false,
+        msg: `⚠️ 연차 일치 위배: ${targetYear}차년도 기자재의 ${dates[i].name} 단계 일자(${dates[i].val})는 ${targetYear}차년도 사업 기간(${periodStr}) 범위를 벗어납니다. 날짜를 확인해 주세요.`
+      };
+    }
+  }
+
+  // 3) 각 단계가 시간 순서상 순차적인지 검증
   for (let i = 0; i < dates.length - 1; i++) {
     const current = new Date(dates[i].val);
     const next = new Date(dates[i + 1].val);
@@ -460,15 +481,16 @@ export default function ProcurementManager({
         return;
       }
 
-      // 2) 요건 4: 단계별 입력 일정 순차 검증
-      const dateCheck = validateDatesChronological(formData.dateP, formData.dateA, formData.dateB, formData.datePr, formData.dateI);
+      const targetYear = Number(formData.year) || Number(selectedYear);
+
+      // 2) 요건 4: 단계별 입력 일정 순차 및 연차 범위 정합성 검증
+      const dateCheck = validateDatesChronological(targetYear, formData.dateP, formData.dateA, formData.dateB, formData.datePr, formData.dateI);
       if (!dateCheck.isValid) {
         alert(dateCheck.msg);
         return;
       }
 
       const activeEquipList = equipData.length > 0 ? equipData : defaultEquipments;
-      const targetYear = Number(formData.year) || Number(selectedYear);
 
       if (isEditMode && editingItemId) {
         // 수정 모드 분기 (요건 2 대응)
