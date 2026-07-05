@@ -499,6 +499,12 @@ const getMilestoneArray = (val) => {
   return [val];
 };
 
+// 12개월 일정 마일스톤 가중치 공용 맵 선언 (ReferenceError 방어)
+const phaseWeight = { 
+  "P": 1, "A": 2, "B": 3, "Pr": 4, "I": 5,
+  "Rq": 1, "DR": 2, "DL": 3, "BC": 4, "CS": 5
+};
+
 export default function ProcurementManager({
   currentRole,
   currentUser,
@@ -913,6 +919,14 @@ export default function ProcurementManager({
     if (modalType === "env") {
       const targetYear = Number(formData.year) || Number(selectedYear);
 
+      // 금액 오입력(원화 단위 입력) 방지 가드
+      const priceVal = parseFloat(formData.unitPrice || 0);
+      const spentVal = parseFloat(formData.budgetSpent || 0);
+      if (priceVal >= 100000 || spentVal >= 100000) {
+        alert("⚠️ 금액 입력 단위를 확인해 주세요!\n현재 금액 입력란은 '백만 원 단위'입니다.\n(예: 1,100만 원 입력 시 -> 11 입력, 5,000만 원 입력 시 -> 50 입력)");
+        return;
+      }
+
       // 날짜 순차 정합성 검증
       const dateCheck = validateDatesChronological(targetYear, formData.dateP, formData.dateA, formData.dateB, formData.datePr, formData.dateI);
       if (!dateCheck.isValid) {
@@ -921,7 +935,7 @@ export default function ProcurementManager({
       }
 
       const activeEnvList = envData.length > 0 ? envData : [];
-      const combinedDescription = `${formData.descriptionPurpose || ""}\n${formData.descriptionPlan || ""}`;
+      const combinedDescription = `${formData.purpose || ""}\n${formData.utilization || ""}`;
 
       if (isEditMode && editingItemId) {
         // 수정 모드
@@ -940,8 +954,8 @@ export default function ProcurementManager({
               budgetPlan: Math.round(parseFloat(formData.unitPrice || 0) * 1000000),
               budgetSpent: Math.round(parseFloat(formData.budgetSpent || 0) * 1000000),
               description: combinedDescription || "-",
-              purpose: formData.descriptionPurpose || "-",
-              plan: formData.descriptionPlan || "-",
+              purpose: formData.purpose || "-",
+              plan: formData.plan || "-",
               location: formData.location || "-",
               utilization: formData.utilization || "-",
               progress: formData.progress || "-",
@@ -1003,8 +1017,8 @@ export default function ProcurementManager({
           budgetPlan: Math.round(parseFloat(formData.unitPrice || 0) * 1000000),
           budgetSpent: Math.round(parseFloat(formData.budgetSpent || 0) * 1000000),
           description: combinedDescription || "-",
-          purpose: formData.descriptionPurpose || "-",
-          plan: formData.descriptionPlan || "-",
+          purpose: formData.purpose || "-",
+          plan: formData.plan || "-",
           location: formData.location || "-",
           utilization: formData.utilization || "-",
           progress: formData.progress || "-",

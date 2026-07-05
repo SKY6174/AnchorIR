@@ -2850,7 +2850,19 @@ export default function App() {
         const { data: pServ } = await supabase.from("procurement_services").select("*").eq("year", selectedYear);
         
         if (pEnv && pEnv.length > 0) {
-          const formatted = pEnv.map(x => ({ ...x, id: Number(x.id), budgetPlan: Number(x.budget_plan), budgetSpent: Number(x.budget_spent) }));
+          const formatted = pEnv.map(x => ({ 
+            ...x, 
+            id: Number(x.id), 
+            budgetPlan: Number(x.budget_plan), 
+            budgetSpent: Number(x.budget_spent),
+            deptName: x.dept_name || "",
+            divisionName: x.division_name || "",
+            dateP: x.date_p || "",
+            dateA: x.date_a || "",
+            dateB: x.date_b || "",
+            datePr: x.date_pr || "",
+            dateI: x.date_i || ""
+          }));
           setEnvData(formatted);
           localStorage.setItem(`anchor_cache_env_y${selectedYear}`, JSON.stringify(formatted));
         }
@@ -3212,7 +3224,14 @@ export default function App() {
               purpose: e.purpose,
               birdseye_view: e.birdseyeView,
               blueprints: e.blueprints,
-              utilization: e.utilization
+              utilization: e.utilization,
+              dept_name: e.deptName || "",
+              division_name: e.divisionName || "",
+              date_p: e.dateP || null,
+              date_a: e.dateA || null,
+              date_b: e.dateB || null,
+              date_pr: e.datePr || null,
+              date_i: e.dateI || null
             }))
           );
           if (error) throw error;
