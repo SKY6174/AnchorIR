@@ -2253,7 +2253,7 @@ export default function App() {
     try {
       const hashedCurrent = CryptoJS.SHA256(currentPw).toString();
 
-      // 1. Supabase에서 현재 사용자의 비밀번호 조회
+      // 1. Supabase에서 현재 사용자의 비밀번호 조회 및 검증
       const { data: user, error: fetchError } = await supabase
         .from("rise_users")
         .select("pw")
@@ -2270,7 +2270,17 @@ export default function App() {
         return;
       }
 
-      // 2. 비밀번호 업데이트
+      // 2. Supabase Auth의 비밀번호도 동시에 업데이트 진행!
+      const { error: authUpdateError } = await supabase.auth.updateUser({
+        password: newPw
+      });
+
+      if (authUpdateError) {
+        alert(`인증 비밀번호 변경 실패: ${authUpdateError.message}`);
+        return;
+      }
+
+      // 3. 로컬 DB(rise_users) 비밀번호 필드도 동기화 업데이트
       const hashedNew = CryptoJS.SHA256(newPw).toString();
       const { error: updateError } = await supabase
         .from("rise_users")
@@ -2278,7 +2288,7 @@ export default function App() {
         .eq("id", currentUser.id);
 
       if (updateError) {
-        alert("비밀번호 변경 처리 중 오류가 발생했습니다.");
+        alert("로컬 회원 DB 비밀번호 변경 처리 중 오류가 발생했습니다. (인증 비밀번호는 정상 변경됨)");
         return;
       }
 

@@ -16,7 +16,7 @@ export default function AuthManager({ onLoginSuccess, members = [] }) {
   const [errorMsg, setErrorMsg] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
 
-  // 로그인 핸들러 (자동 회원가입 및 이중 검증 연동)
+  // 로그인 핸들러 (Supabase Auth 연동 및 주소록 기반 자동 회원가입 설계)
   const handleLogin = async (e) => {
     e.preventDefault();
     setErrorMsg("");
@@ -29,84 +29,111 @@ export default function AuthManager({ onLoginSuccess, members = [] }) {
 
     try {
       const targetId = userId.trim().toLowerCase();
-      const targetHashedPw = hashPassword(userPw);
+      // 입력값이 이메일 형식이 아니면 @anchor.ac.kr 을 자동으로 붙임
+      const targetEmail = targetId.includes("@") ? targetId : `${targetId}@anchor.ac.kr`;
 
-      // 테스트 목적 예외 계정 비밀번호 및 우회 처리
-      const isTestAccount = ["director", "team_leader", "researcher", "admin", "guest"].includes(targetId);
-      const expectedTestPw = targetId === "admin" ? "uc_anchor" : targetId === "guest" ? "guest" : "1234";
+      // 1. Supabase Auth 로그인 시도
+      let authUser = null;
+      let authSession = null;
+      
+      const { data: authData, error: authErr } = await supabase.auth.signInWithPassword({
+        email: targetEmail,
+        password: userPw
+      });
 
-      // 1. Supabase rise_users 테이블에서 계정 조회 시도
-      let foundUser = null;
+      if (!authErr && authData && authData.user) {
+        authUser = authData.user;
+        authSession = authData.session;
+      } else {
+        // 2. 만약 비밀번호 불일치 혹은 미가입 등으로 에러가 발생했을 때,
+        // 기존의 주소록(members) 뒷자리 4자리 및 자동 회원가입(signUp) 연동 시도
+        const matchedMember = members.find((m) => {
+          const mEmail = (m.email || "").trim().toLowerCase();
+          if (targetId === "special_head" && mEmail === "cshong@uc.ac.kr") return true;
+          return mEmail === targetId || mEmail.split("@")[0] === targetId;
+        });
+
+        if (matchedMember && matchedMember.status !== "퇴직") {
+          const cleanPhone = (matchedMember.phoneMobile || "").replace(/[^0-9]/g, "");
+          const expectedPhonePw = cleanPhone.slice(-4);
+
+          // 휴대폰 뒷자리가 일치하거나, 테스트용 계정이면서 비밀번호가 1234 혹은 uc_anchor(admin) 등일 때
+          const isTestAccount = ["director", "team_leader", "researcher", "admin", "guest", "hq_head", "ecc_head", "special_head", "manager"].includes(targetId);
+          const expectedTestPw = targetId === "admin" ? "uc_anchor" : targetId === "guest" ? "guest" : "1234";
+
+          if (userPw === expectedPhonePw || (isTestAccount && userPw === expectedTestPw)) {
+            // 자동 회원가입 진행!
+            const { data: signUpData, error: signUpErr } = await supabase.auth.signUp({
+              email: targetEmail,
+              password: userPw,
+              options: {
+                data: { name: matchedMember.name }
+              }
+            });
+
+            if (!signUpErr) {
+              // 가입 직후 즉시 로그인 시도
+              const { data: retryData, error: retryErr } = await supabase.auth.signInWithPassword({
+                email: targetEmail,
+                password: userPw
+              });
+              if (!retryErr && retryData) {
+                authUser = retryData.user;
+                authSession = retryData.session;
+              }
+            } else {
+              console.error("Auto sign-up error:", signUpErr);
+            }
+          }
+        }
+      }
+
+      if (!authUser) {
+        setErrorMsg("아이디 또는 비밀번호가 일치하지 않습니다.");
+        return;
+      }
+
+      // 3. 로그인 성공 시, 기존 rise_users 및 주소록 데이터를 매핑하여 sessionUser 생성
+      // DB의 rise_users 테이블에 해당 사용자가 존재하는지 확인하고, 없으면 삽입(동기화)해 줍니다.
+      let dbUser = null;
       try {
         const { data, error } = await supabase
           .from("rise_users")
           .select("*")
-          .eq("id", targetId)
-          .single();
+          .or(`id.eq.${targetId},email.eq.${targetEmail}`)
+          .maybeSingle();
         if (!error && data) {
-          foundUser = data;
+          dbUser = data;
+          // UUID 컬럼이 미연동 상태라면 업데이트해 줍니다.
+          if (!dbUser.uuid) {
+            await supabase
+              .from("rise_users")
+              .update({ uuid: authUser.id, email: targetEmail })
+              .eq("id", dbUser.id);
+          }
         }
       } catch (dbErr) {
-        console.warn("DB query warning for login user:", dbErr);
+        console.warn("DB query warning for rise_users sync:", dbErr);
       }
 
-      // 2. 테스트 계정 우회 로그인 처리
-      if (isTestAccount && userPw === expectedTestPw) {
-        let sessionUser = null;
-        if (foundUser) {
-          const mappedRole = userRoles[foundUser.role_key] || userRoles.RESEARCHER;
-          sessionUser = {
-            id: foundUser.id,
-            name: foundUser.name,
-            role: mappedRole,
-            password: userPw // 테스트 비밀번호 자동 주입 (1234 등)
-          };
-        } else {
-          // 가상 유저 객체 생성
-          let roleKey = "RESEARCHER";
-          let name = "테스트 연구원";
-          if (targetId === "director") { roleKey = "DIRECTOR"; name = "송경영 단장(테스트)"; }
-          if (targetId === "team_leader") { roleKey = "TEAM_LEADER"; name = "심현미 팀장(테스트)"; }
-          if (targetId === "admin") { roleKey = "DIRECTOR"; name = "시스템 관리자"; }
-          if (targetId === "guest") { roleKey = "GUEST"; name = "게스트 (방문자)"; }
-          
-          sessionUser = {
-            id: targetId,
-            name: name,
-            role: userRoles[roleKey],
-            password: userPw || "1234" // 테스트 비밀번호 연동
-          };
-        }
-        onLoginSuccess(sessionUser);
-        return;
-      }
-
-      // 3. 주소록(members)에서 해당 이메일 또는 ID 기준 구성원 탐색
+      // 주소록 매칭을 통해 세부 역할군 자동 판별
       const matchedMember = members.find((m) => {
         const mEmail = (m.email || "").trim().toLowerCase();
         if (targetId === "special_head" && mEmail === "cshong@uc.ac.kr") return true;
         return mEmail === targetId || mEmail.split("@")[0] === targetId;
       });
 
-      if (!matchedMember) {
-        setErrorMsg("등록되지 않은 이메일(아이디)입니다. 관리자에게 구성원 등록을 먼저 요청해 주세요.");
-        return;
-      }
-
-      // 4. 퇴직 상태 차단 검증
-      if (matchedMember.status === "퇴직") {
-        setErrorMsg("퇴직 처리된 구성원은 로그인이 불가능합니다.");
-        return;
-      }
-
-      // 5. 역할 권한 자동 판별 매핑 규칙
       let autoRoleKey = "RESEARCHER";
-      if (foundUser && foundUser.role_key) {
-        autoRoleKey = foundUser.role_key;
-      } else {
+      let matchedName = authUser.user_metadata?.name || targetId;
+
+      if (dbUser && dbUser.role_key) {
+        autoRoleKey = dbUser.role_key;
+        matchedName = dbUser.name;
+      } else if (matchedMember) {
+        matchedName = matchedMember.name;
         const mRole = matchedMember.role || "";
         const mDept = matchedMember.dept || "";
-        if (targetId === "hmsim@uc.ac.kr" || targetId === "leegyu@uc.ac.kr") {
+        if (targetId === "hmsim@uc.ac.kr" || targetId === "leegyu@uc.ac.kr" || targetId === "admin") {
           autoRoleKey = "ADMIN";
         } else if (mRole === "사업단장") {
           autoRoleKey = "DIRECTOR";
@@ -123,42 +150,46 @@ export default function AuthManager({ onLoginSuccess, members = [] }) {
           else if (mDept === "울산늘봄누리센터") autoRoleKey = "CENTER_NURI";
           else autoRoleKey = "CENTER_SPECIAL";
         }
+
+        // DB rise_users 테이블에 신규 가입 자동 동기화 처리!
+        const hashedPw = hashPassword(userPw);
+        try {
+          await supabase
+            .from("rise_users")
+            .insert([{
+              id: targetId,
+              pw: hashedPw,
+              name: matchedName,
+              role_key: autoRoleKey,
+              approved: true,
+              uuid: authUser.id,
+              email: targetEmail
+            }]);
+        } catch (insertErr) {
+          console.warn("DB user sync insert warning:", insertErr);
+        }
+      }
+
+      // 게스트 특화 처리
+      if (targetId === "guest") {
+        autoRoleKey = "GUEST";
+        matchedName = "게스트 (방문자)";
       }
 
       const mappedRole = userRoles[autoRoleKey] || userRoles.RESEARCHER;
+      const sessionUser = {
+        id: targetId,
+        name: matchedName,
+        role: mappedRole,
+        password: userPw,
+        uuid: authUser.id,
+        email: targetEmail
+      };
 
-      // 6. 이중 비밀번호 대조
-      // 1차: DB(rise_users)에 저장된 사용자 임의 변경 비밀번호 확인
-      if (foundUser) {
-        if (foundUser.pw === targetHashedPw) {
-          const sessionUser = {
-            id: foundUser.id,
-            name: foundUser.name,
-            role: mappedRole,
-            password: userPw // 로그인시 입력했던 유효 비밀번호 주입
-          };
-          onLoginSuccess(sessionUser);
-          return;
-        }
-      }
-
-      // 2차: DB에 없거나 일치하지 않을 때 주소록 휴대전화 뒷자리 4자리와 대조
-      const cleanPhone = (matchedMember.phoneMobile || "").replace(/[^0-9]/g, "");
-      if (cleanPhone.length >= 4) {
-        const rawPw = cleanPhone.slice(-4);
-        if (userPw === rawPw) {
-          const sessionUser = {
-            id: matchedMember.email || targetId,
-            name: `${matchedMember.name} ${mappedRole.name.split(" ")[1] || "연구원"}`,
-            role: mappedRole,
-            password: rawPw // 휴대폰 뒷자리 4자리 자동 주입
-          };
-          onLoginSuccess(sessionUser);
-          return;
-        }
-      }
-
-      setErrorMsg("아이디 또는 비밀번호가 일치하지 않습니다.");
+      setSuccessMsg(`${matchedName}님, 환영합니다!`);
+      setTimeout(() => {
+        onLoginSuccess(sessionUser);
+      }, 600);
     } catch (err) {
       console.error("Login process error:", err);
       setErrorMsg("로그인 처리 중 서버 통신 에러가 발생했습니다.");
