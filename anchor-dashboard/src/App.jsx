@@ -26,6 +26,40 @@ import { supabase } from "./supabaseClient";
 import CryptoJS from "crypto-js";
 import "./styles/dashboard.css";
 
+// 초기에 적재해 둘 기자재 목록 모의 데이터셋 (Supabase 최초 시딩용)
+const defaultEquipmentsSeed = [
+  { id: 1, unit: "A1", seq: 1, deptName: "간호학부", divisionName: "", itemName: "스마트 환자 시뮬레이터 (중환자 케어 실습 장비)", unitPrice: 120000000, quantity: 1, description: "글로벌 앵커 혁신 교육과정 임상 실습 고도화 핵심 기기", operation: "교과목(정규)", password: "1234",
+    dateP: "2025-03-10", dateA: "2025-04-15", dateB: "2025-06-12", datePr: "2025-07-20", dateI: "2025-09-05"
+  },
+  { id: 2, unit: "A2", seq: 2, deptName: "화학공학과", divisionName: "", itemName: "정밀 화학 분석 크로마토그래피 시스템", unitPrice: 245000000, quantity: 1, description: "신산업 저탄소 에너지 트랙 화학 정밀 분석 실습 장비", operation: "교과목(정규)", password: "1234",
+    dateP: "2025-03-15", dateA: "2025-04-20", dateB: "2025-06-18", datePr: "2025-07-25", dateI: "2025-09-10"
+  },
+  { id: 3, unit: "B1", seq: 3, deptName: "컴퓨터공학과", divisionName: "", itemName: "AI 알고리즘 모델링 연산용 고성능 GPU 워크스테이션", unitPrice: 15000000, quantity: 3, description: "RCC 특화산업 AI 융합 실감형 교육 센터 실무 교육 지원", operation: "교과목(정규)", password: "1234",
+    dateP: "2025-03-12", dateA: "2025-04-18", dateB: "", datePr: "2025-06-25", dateI: "2025-08-14"
+  },
+  { id: 4, unit: "B2", seq: 4, deptName: "기계공학부", divisionName: "", itemName: "스마트 팩토리 모듈 제어 및 3D 정밀 프린팅 모듈", unitPrice: 38000000, quantity: 1, description: "지산학 연계 제조 혁신 엔지니어 교육 기자재", operation: "교과목(정규)", password: "1234",
+    dateP: "2025-03-20", dateA: "2025-05-15", dateB: "2025-06-08", datePr: "2025-06-20", dateI: "2025-08-18"
+  },
+  { id: 5, unit: "B3", seq: 5, deptName: "전기전자공학부", divisionName: "", itemName: "반도체 임베디드 코딩 및 고정밀 계측 오실로스코프", unitPrice: 8500000, quantity: 4, description: "반도체 전공 대학 연계 실무 미러형 교육 설계용 장비", operation: "교과목(정규)", password: "1234",
+    dateP: "2025-03-25", dateA: "2025-04-28", dateB: "2025-06-05", datePr: "2025-06-18", dateI: "2025-08-20"
+  },
+  { id: 6, unit: "B4", seq: 6, deptName: "유아교육과", divisionName: "", itemName: "늘봄 연계 창의 놀이 실증용 스마트 인터랙티브 디스플레이", unitPrice: 8500000, quantity: 2, description: "에듀테크 기반 창의적 교육 콘텐츠 제작 교육 과정 운영", operation: "교과목(비정규)", password: "1234",
+    dateP: "2025-03-18", dateA: "2025-05-10", dateB: "", datePr: "2025-06-24", dateI: "2025-08-25"
+  },
+  { id: 7, unit: "C1", seq: 7, deptName: "컴퓨터공학과", divisionName: "", itemName: "다목적 6축 소형 스마트 교육용 협동 로봇 머니퓰레이터", unitPrice: 28000000, quantity: 1, description: "미래 지능형 로봇 운용/제어 교과목 현장 중심 실습", operation: "교과목(정규)", password: "1234",
+    dateP: "2025-03-22", dateA: "2025-05-12", dateB: "2025-06-15", datePr: "2025-06-28", dateI: "2025-08-28"
+  },
+  { id: 8, unit: "C2", seq: 8, deptName: "반려동물보건과", divisionName: "", itemName: "동물 전용 디지털 초음파 진단 장치", unitPrice: 19000000, quantity: 1, description: "신설학과 실무 미러형 임상 실습실 조달 품목", operation: "교과목(정규)", password: "1234",
+    dateP: "2025-04-10", dateA: "2025-05-20", dateB: "2025-06-18", datePr: "2025-07-15", dateI: "2025-09-12"
+  },
+  { id: 9, unit: "D1", seq: 9, deptName: "조선해양시스템공학과", divisionName: "", itemName: "미래 친환경선박 가상 운항 교육 시뮬레이터", unitPrice: 45000000, quantity: 1, description: "5극3특 가상 운항 실습 교육 과정 지원용 장비", operation: "교과목(정규)", password: "1234",
+    dateP: "2025-03-08", dateA: "2025-05-08", dateB: "2025-07-10", datePr: "2025-08-20", dateI: "2025-11-15"
+  },
+  { id: 10, unit: "D2", seq: 10, deptName: "물리치료학과", divisionName: "", itemName: "메디컬 스킨케어 다기능 뷰티 디바이스", unitPrice: 6500000, quantity: 5, description: "웰니스 뷰티 케어 실습 및 지역 상생 뷰티 아카데미 활용", operation: "교과목(비정규)", password: "1234",
+    dateP: "2025-03-14", dateA: "2025-04-24", dateB: "", datePr: "2025-06-22", dateI: "2025-08-29"
+  }
+];
+
 // 초기에 적재해 둘 협약서 목록 모의 데이터셋 (1차년도 샘플 2개 제공)
 const INITIAL_AGREEMENTS = [
   {
@@ -2704,35 +2738,79 @@ export default function App() {
           localStorage.setItem(`anchor_cache_env_y${selectedYear}`, JSON.stringify(formatted));
         }
         if (pEquip && pEquip.length > 0) {
-          const formatted = pEquip.map(x => {
-            let miles = {};
-            let uPrice = Number(x.budget_spent) || 0;
-            let qty = 1;
-            try {
-              if (x.schedule) {
-                const parsed = JSON.parse(x.schedule);
-                miles = parsed.milestones || {};
-                if (parsed.unitPrice !== undefined) uPrice = Number(parsed.unitPrice);
-                if (parsed.quantity !== undefined) qty = Number(parsed.quantity);
-              }
-            } catch (err) {
-              console.error("Failed to parse schedule milestones:", err);
-            }
-            return {
-              id: Number(x.id),
-              unit: x.unit || "A1",
-              deptName: x.department || "",
-              divisionName: x.program || "",
-              itemName: x.name || "",
-              unitPrice: uPrice,
-              quantity: qty,
-              description: x.op_plan || "",
-              operation: x.op_performance || "교과목(정규)",
-              milestones: miles
-            };
-          });
+          const formatted = pEquip.map(x => ({
+            id: Number(x.id),
+            year: Number(x.year),
+            unit: x.unit || "A1",
+            seq: Number(x.seq) || 1,
+            deptName: x.dept_name || "",
+            divisionName: x.division_name || "",
+            itemName: x.item_name || "",
+            unitPrice: Number(x.unit_price) || 0,
+            quantity: Number(x.quantity) || 1,
+            description: x.description || "",
+            operation: x.operation || "교과목(정규)",
+            password: x.password || "1234",
+            dateP: x.date_p || "",
+            dateA: x.date_a || "",
+            dateB: x.date_b || "",
+            datePr: x.date_pr || "",
+            dateI: x.date_i || ""
+          }));
           setEquipData(formatted);
           localStorage.setItem(`anchor_cache_equip_y${selectedYear}`, JSON.stringify(formatted));
+        } else {
+          // DB가 비어있는 최초 구동 시: 기본 모의 데이터(defaultEquipmentsSeed)를 Supabase DB에 세팅(시딩)
+          const initialSeed = defaultEquipmentsSeed.map(e => ({
+            year: selectedYear,
+            unit: e.unit,
+            seq: e.seq,
+            dept_name: e.deptName,
+            division_name: e.divisionName,
+            item_name: e.itemName,
+            unit_price: e.unitPrice,
+            quantity: e.quantity,
+            description: e.description,
+            operation: e.operation,
+            password: e.password,
+            date_p: e.dateP || null,
+            date_a: e.dateA || null,
+            date_b: e.dateB || null,
+            date_pr: e.datePr || null,
+            date_i: e.dateI || null
+          }));
+          
+          const { error: seedErr } = await supabase.from("procurement_equipment").insert(initialSeed);
+          if (!seedErr) {
+            // 시딩 성공 시 즉시 DB 재조회하여 프론트 데이터 갱신
+            const { data: refetched } = await supabase.from("procurement_equipment").select("*").eq("year", selectedYear);
+            if (refetched) {
+              const formatted = refetched.map(x => ({
+                id: Number(x.id),
+                year: Number(x.year),
+                unit: x.unit || "A1",
+                seq: Number(x.seq) || 1,
+                deptName: x.dept_name || "",
+                divisionName: x.division_name || "",
+                itemName: x.item_name || "",
+                unitPrice: Number(x.unit_price) || 0,
+                quantity: Number(x.quantity) || 1,
+                description: x.description || "",
+                operation: x.operation || "교과목(정규)",
+                password: x.password || "1234",
+                dateP: x.date_p || "",
+                dateA: x.date_a || "",
+                dateB: x.date_b || "",
+                datePr: x.date_pr || "",
+                dateI: x.date_i || ""
+              }));
+              setEquipData(formatted);
+              localStorage.setItem(`anchor_cache_equip_y${selectedYear}`, JSON.stringify(formatted));
+            }
+          } else {
+            console.error("Failed to seed default equipments:", seedErr);
+            setEquipData([]);
+          }
         }
         if (pServ && pServ.length > 0) {
           const formatted = pServ.map(x => ({ ...x, id: Number(x.id), budgetPlan: Number(x.budget_plan), budgetSpent: Number(x.budget_spent) }));
@@ -3015,20 +3093,27 @@ export default function App() {
             equipData.map(e => ({
               year: selectedYear,
               unit: e.unit || "A1",
-              name: e.itemName || e.name || "",
-              program: e.divisionName || "",
-              department: e.deptName || "",
-              schedule: JSON.stringify({ milestones: e.milestones || {}, unitPrice: e.unitPrice || 0, quantity: e.quantity || 1 }),
-              budget_plan: (Number(e.unitPrice) || 0) * (Number(e.quantity) || 1),
-              budget_spent: Number(e.unitPrice) || 0,
-              op_plan: e.description || "",
-              op_performance: e.operation || ""
+              seq: Number(e.seq) || 1,
+              dept_name: e.deptName || "",
+              division_name: e.divisionName || "",
+              item_name: e.itemName || e.name || "",
+              unit_price: Number(e.unitPrice) || 0,
+              quantity: Number(e.quantity) || 1,
+              description: e.description || "",
+              operation: e.operation || "교과목(정규)",
+              password: e.password || "1234",
+              date_p: e.dateP || null,
+              date_a: e.dateA || null,
+              date_b: e.dateB || null,
+              date_pr: e.datePr || null,
+              date_i: e.dateI || null
             }))
           );
           if (error) throw error;
         }
         setSyncStatus("synced");
       } catch (e) {
+        console.error("Failed to sync procurement_equipment:", e);
         setSyncStatus("error");
       }
     }, 1500);
