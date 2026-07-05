@@ -2985,6 +2985,7 @@ export default function App() {
   // 2) Projects 자동 저장 디바운스 훅
   useEffect(() => {
     if (!isDbLoaded || !isFetchCompleted) return;
+    if (!currentUser || currentRole?.id === "GUEST") return;
     localStorage.setItem(`anchor_cache_proj_y${selectedYear}`, JSON.stringify(projects));
     setSyncStatus("syncing");
     const timer = setTimeout(async () => {
@@ -3004,6 +3005,7 @@ export default function App() {
   // 3) Agreements 자동 저장 디바운스 훅 (통합 캐시 사용 및 selectedYear 의존성 배제)
   useEffect(() => {
     if (!isDbLoaded || !isFetchCompleted) return;
+    if (!currentUser || currentRole?.id === "GUEST") return;
     try {
       const clean = agreements.map(item => ({ ...item, fileData: null }));
       localStorage.setItem("anchor_cache_agreements_all", JSON.stringify(clean));
@@ -3048,6 +3050,7 @@ export default function App() {
   // 3-2) Certificates 자동 저장 디바운스 훅 (통합 캐시 사용 및 selectedYear 의존성 배제)
   useEffect(() => {
     if (!isDbLoaded || !isFetchCompleted) return;
+    if (!currentUser || currentRole?.id === "GUEST") return;
     try {
       const clean = certificates.map(item => ({ ...item, fileData: null }));
       localStorage.setItem("anchor_cache_certificates_all", JSON.stringify(clean));
@@ -3089,6 +3092,7 @@ export default function App() {
   // 3-3) Awards 자동 저장 디바운스 훅 (통합 캐시 사용 및 selectedYear 의존성 배제)
   useEffect(() => {
     if (!isDbLoaded || !isFetchCompleted) return;
+    if (!currentUser || currentRole?.id === "GUEST") return;
     try {
       const clean = awards.map(item => ({ ...item, fileData: null }));
       localStorage.setItem("anchor_cache_awards_all", JSON.stringify(clean));
@@ -3130,6 +3134,7 @@ export default function App() {
   // 4) Procurement Env 자동 저장 디바운스 훅
   useEffect(() => {
     if (!isDbLoaded || !isFetchCompleted) return;
+    if (!currentUser || currentRole?.id === "GUEST") return;
     localStorage.setItem(`anchor_cache_env_y${selectedYear}`, JSON.stringify(envData));
     setSyncStatus("syncing");
     const timer = setTimeout(async () => {
@@ -3166,6 +3171,7 @@ export default function App() {
   // 5) Procurement Equipment 자동 저장 디바운스 훅
   useEffect(() => {
     if (!isDbLoaded || !isFetchCompleted) return;
+    if (!currentUser || currentRole?.id === "GUEST") return;
     localStorage.setItem(`anchor_cache_equip_y${selectedYear}`, JSON.stringify(equipData));
     setSyncStatus("syncing");
     const timer = setTimeout(async () => {
@@ -3210,6 +3216,7 @@ export default function App() {
   // 6) Procurement Services 자동 저장 디바운스 훅
   useEffect(() => {
     if (!isDbLoaded || !isFetchCompleted) return;
+    if (!currentUser || currentRole?.id === "GUEST") return;
     localStorage.setItem(`anchor_cache_serv_y${selectedYear}`, JSON.stringify(serviceData));
     setSyncStatus("syncing");
     const timer = setTimeout(async () => {
@@ -3241,6 +3248,7 @@ export default function App() {
   // 7) Schedule Monthly 자동 저장 디바운스 훅
   useEffect(() => {
     if (!isDbLoaded || !isFetchCompleted) return;
+    if (!currentUser || currentRole?.id === "GUEST") return;
     localStorage.setItem(`anchor_cache_month_y${selectedYear}`, JSON.stringify(monthlySchedules));
     setSyncStatus("syncing");
     const timer = setTimeout(async () => {
@@ -3275,6 +3283,7 @@ export default function App() {
   // 8) Schedule Events 자동 저장 디바운스 훅
   useEffect(() => {
     if (!isDbLoaded || !isFetchCompleted) return;
+    if (!currentUser || currentRole?.id === "GUEST") return;
     localStorage.setItem(`anchor_cache_event_y${selectedYear}`, JSON.stringify(eventSchedules));
     setSyncStatus("syncing");
     const timer = setTimeout(async () => {
@@ -3309,6 +3318,7 @@ export default function App() {
   // 9) Schedule Meetings 자동 저장 디바운스 훅
   useEffect(() => {
     if (!isDbLoaded || !isFetchCompleted) return;
+    if (!currentUser || currentRole?.id === "GUEST") return;
     localStorage.setItem(`anchor_cache_meet_y${selectedYear}`, JSON.stringify(meetingSchedules));
     setSyncStatus("syncing");
     const timer = setTimeout(async () => {
@@ -3368,6 +3378,7 @@ export default function App() {
     if (pressReleases.length > 0 && pressReleases.some(s => getCalculatedYearFromDate(s.broadcastDate) !== selectedYear)) {
       return;
     }
+    if (!currentUser || currentRole?.id === "GUEST") return;
 
     localStorage.setItem(`anchor_cache_press_y${selectedYear}`, JSON.stringify(pressReleases));
     setSyncStatus("syncing");
