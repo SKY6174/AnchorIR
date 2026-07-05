@@ -41,6 +41,12 @@ const formatToMillionWon = (value) => {
   return (value / 1000000).toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
 };
 
+// 천원 단위 포맷팅 헬퍼 함수 (정수 표현 및 천단위 쉼표 추가)
+const formatToThousandWon = (value) => {
+  if (value === undefined || value === null || isNaN(value)) return "0";
+  return (value / 1000).toLocaleString(undefined, { maximumFractionDigits: 0 });
+};
+
 // 단위과제별 2차년도 사업계획서 요약 모의 데이터 (기획문서용)
 const PROPOSAL_SUMMARIES = {
   "A1": {
@@ -324,7 +330,18 @@ export default function ProcurementManager({
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    if (name === "year") {
+      const nextYear = Number(value);
+      // 연차 변경 시 유효한 단위과제 기본값 매핑
+      const nextUnit = nextYear === 1 ? "A1" : "A1가";
+      setFormData(prev => ({
+        ...prev,
+        year: nextYear,
+        unit: nextUnit
+      }));
+    } else {
+      setFormData(prev => ({ ...prev, [name]: value }));
+    }
   };
 
   const handleFormSubmit = (e) => {
@@ -365,6 +382,7 @@ export default function ProcurementManager({
       
       const newItem = {
         id: Date.now(),
+        year: Number(formData.year) || Number(selectedYear),
         unit: formData.unit,
         seq: nextSeq,
         deptName: formData.deptName || "",
@@ -427,8 +445,9 @@ export default function ProcurementManager({
   const openAddModal = (type) => {
     setModalType(type);
     setFormData({
+      year: selectedYear,
+      unit: selectedYear === 1 ? "A1" : "A1가",
       title: "",
-      unit: "A1",
       plan: "",
       meetingResult: "",
       progress: "",
@@ -687,7 +706,7 @@ export default function ProcurementManager({
                   <th rowSpan={3} style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "55px", verticalAlign: "middle" }}>과제</th>
                   <th rowSpan={3} style={{ padding: "0.75rem 0.5rem", textAlign: "left", fontWeight: "800", width: "120px", verticalAlign: "middle" }}>학과 / 부서</th>
                   <th rowSpan={3} style={{ padding: "0.75rem 0.5rem", textAlign: "left", fontWeight: "800", width: "180px", verticalAlign: "middle" }}>품명</th>
-                  <th rowSpan={3} style={{ padding: "0.75rem 0.5rem", textAlign: "right", fontWeight: "800", width: "90px", verticalAlign: "middle" }}>단가</th>
+                  <th rowSpan={3} style={{ padding: "0.75rem 0.5rem", textAlign: "right", fontWeight: "800", width: "90px", verticalAlign: "middle" }}>단가(천원)</th>
                   <th rowSpan={3} style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "50px", verticalAlign: "middle" }}>수량</th>
                   <th rowSpan={3} style={{ padding: "0.75rem 0.5rem", textAlign: "right", fontWeight: "800", width: "100px", verticalAlign: "middle" }}>금액</th>
                   <th rowSpan={3} style={{ padding: "0.75rem 0.5rem", textAlign: "left", fontWeight: "800", verticalAlign: "middle" }}>관련내용</th>
@@ -766,7 +785,7 @@ export default function ProcurementManager({
                             {equip.itemName || equip.name || "-"}
                           </td>
                           <td style={{ padding: "0.8rem 0.5rem", textAlign: "right", color: "var(--text-secondary)" }}>
-                            {formatToMillionWon(price)}백만원
+                            {formatToThousandWon(price)}천원
                           </td>
                           <td style={{ padding: "0.8rem 0.5rem", textAlign: "center", fontWeight: "600" }}>
                             {qty}
@@ -1081,6 +1100,41 @@ export default function ProcurementManager({
               {/* 기자재용 입력 필드들 */}
               {modalType === "equip" && (
                 <>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginBottom: "1rem" }}>
+                    <div>
+                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>연계 단위과제</label>
+                      <select 
+                        name="unit" 
+                        value={formData.unit} 
+                        onChange={handleInputChange} 
+                        className="user-selector" 
+                        style={{ width: "100%" }}
+                      >
+                        {Number(formData.year || selectedYear) === 1 
+                          ? ["A1", "A2", "B1", "B2", "B3", "B4", "C1", "C2", "D1", "D2", "D3", "D4"].map(u => (
+                              <option key={u} value={u}>{u} 과제</option>
+                            ))
+                          : ["A1가", "A1나", "A2", "A3", "B1", "B2", "B3", "B4", "C1", "C2", "D1", "D2", "D3", "Common"].map(u => (
+                              <option key={u} value={u}>{u} 과제</option>
+                            ))
+                        }
+                      </select>
+                    </div>
+                    <div>
+                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>사업연차 선택</label>
+                      <select 
+                        name="year" 
+                        value={formData.year || selectedYear} 
+                        onChange={handleInputChange} 
+                        className="user-selector" 
+                        style={{ width: "100%" }}
+                      >
+                        <option value={1}>1차년도 (2025년)</option>
+                        <option value={2}>2차년도 (2026년)</option>
+                      </select>
+                    </div>
+                  </div>
+
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
                     <div>
                       <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>학과 선택</label>
