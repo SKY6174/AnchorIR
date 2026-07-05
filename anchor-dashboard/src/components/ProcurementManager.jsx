@@ -1234,7 +1234,6 @@ export default function ProcurementManager({
                       const qty = Number(equip.quantity) || 0;
                       const total = price * qty;
 
-                      // 3월~2월 캘린더 월 인덱스 추출 헬퍼 (구간별 화살표 선 표현용)
                       const monthsOrder = ["3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "1", "2"];
                       const getMonthIndexLocal = (dateStr) => {
                         if (!dateStr) return null;
@@ -1257,14 +1256,13 @@ export default function ProcurementManager({
                       const idxPr = getMonthIndexLocal(equip.datePr);
                       const idxI = getMonthIndexLocal(equip.dateI);
 
-                      // 각 마일스톤 단계별 색상 및 한글 라벨 헬퍼 함수
                       const getPhaseColor = (code) => {
                         const colors = {
-                          "P": "#f59e0b",  // 주황
-                          "A": "#3b82f6",  // 파랑
-                          "B": "#06b6d4",  // 청록
-                          "Pr": "#a78bfa", // 보라
-                          "I": "#10b981"   // 초록
+                          "P": "#f59e0b",
+                          "A": "#3b82f6",
+                          "B": "#06b6d4",
+                          "Pr": "#a78bfa",
+                          "I": "#10b981"
                         };
                         return colors[code] || "#38bdf8";
                       };
@@ -1280,7 +1278,6 @@ export default function ProcurementManager({
                         return labels[code] || "미정";
                       };
 
-                      // 마지막 활성 단계 분석
                       const activePhases = [];
                       const phaseWeight = { "P": 1, "A": 2, "B": 3, "Pr": 4, "I": 5 };
                       if (idxP !== null) activePhases.push({ phase: "P", idx: idxP, weight: phaseWeight["P"], date: equip.dateP, label: "기획", color: "#f59e0b" });
@@ -1335,50 +1332,29 @@ export default function ProcurementManager({
                             {equip.description || equip.opPlan || "-"}
                           </td>
                           
-                          {/* 12개월 개별 분리 격자 셀 Gantt 타임라인 (세로 경계선 없이 깨끗하게 칩 나열) */}
                           {monthsOrder.map((m, currIdx) => {
-                            // 날짜 데이터를 분석해 해당 월의 마일스톤 단계를 계산합니다.
                             const dynamicMilestones = getMilestonesFromDates(equip, selectedYear);
                             const stepList = dynamicMilestones[m] || [];
-                            const style = getMilestoneStyle(stepList, m);
 
-                            // 구간별 반선 색상 추출 헬퍼 함수
-                            const getSegmentColor = (isLeft) => {
-                              // P -> A (Blue)
+                            const getSegmentColorForPos = (pos) => {
                               if (idxP !== null && idxA !== null && idxP < idxA) {
-                                const inPA = isLeft 
-                                  ? (currIdx > idxP && currIdx <= idxA)
-                                  : (currIdx >= idxP && currIdx < idxA);
-                                if (inPA) return "#60A5FA";
+                                if (pos >= idxP && pos < idxA) return "#f59e0b";
                               }
-                              // A -> B (Purple)
                               if (idxA !== null && idxB !== null && idxA < idxB) {
-                                const inAB = isLeft
-                                  ? (currIdx > idxA && currIdx <= idxB)
-                                  : (currIdx >= idxA && currIdx < idxB);
-                                if (inAB) return "#A78BFA";
+                                if (pos >= idxA && pos < idxB) return "#3b82f6";
                               }
-                              // B -> Pr (Amber)
                               if (idxB !== null && idxPr !== null && idxB < idxPr) {
-                                const inBPr = isLeft
-                                  ? (currIdx > idxB && currIdx <= idxPr)
-                                  : (currIdx >= idxB && currIdx < idxPr);
-                                if (inBPr) return "#FBBF24";
+                                if (pos >= idxB && pos < idxPr) return "#06b6d4";
                               }
-                              // Pr -> I (Green)
                               if (idxPr !== null && idxI !== null && idxPr < idxI) {
-                                const inPrI = isLeft
-                                  ? (currIdx > idxPr && currIdx <= idxI)
-                                  : (currIdx >= idxPr && currIdx < idxI);
-                                if (inPrI) return "#34D399";
+                                if (pos >= idxPr && pos < idxI) return "#a78bfa";
                               }
                               return "rgba(255, 255, 255, 0.12)";
                             };
 
-                            const leftColor = getSegmentColor(true);
-                            const rightColor = getSegmentColor(false);
+                            const leftColor = getSegmentColorForPos(currIdx - 0.5);
+                            const rightColor = getSegmentColorForPos(currIdx + 0.5);
 
-                            // 현재 월(m)에 해당하는 마일스톤 정보 가공
                             const hasMilestone = stepList.length > 0;
                             const primaryCode = hasMilestone ? stepList[0] : null;
                             const phaseColor = primaryCode ? getPhaseColor(primaryCode) : "#38bdf8";
@@ -1487,16 +1463,23 @@ export default function ProcurementManager({
                                           </filter>
                                         </defs>
 
-                                        {/* 1. 사선 깃대 안테나 날개 (단계별 고유 색상을 은은하게 칠하여 가독성 강화) */}
-                                        <line x1="5" y1="11" x2="14" y2="20" stroke={phaseColor} strokeWidth="1.2" opacity="0.85" />
-                                        <line x1="23" y1="11" x2="14" y2="20" stroke={phaseColor} strokeWidth="1.2" opacity="0.85" />
+                                        {/* 1. 꺾인 V 형태 구분선 (도트 정수리 바로 위 11.5 지점에서 부드럽게 꺾이는 path 설계) */}
+                                        <path 
+                                          d="M 5 7 L 14 11.5 L 23 7" 
+                                          fill="none"
+                                          stroke={phaseColor} 
+                                          strokeWidth="1.5" 
+                                          strokeLinecap="round"
+                                          strokeLinejoin="round"
+                                          opacity="0.9" 
+                                        />
 
-                                        {/* 2. 상단 텍스트 (P, A, B, Pr, I) */}
+                                        {/* 2. V 꺾임선 위의 텍스트 (P, A, B, Pr, I) */}
                                         <text 
                                           x="14" 
-                                          y="7" 
+                                          y="4.5" 
                                           textAnchor="middle" 
-                                          fontSize="11" 
+                                          fontSize="10" 
                                           fontWeight="950" 
                                           fill="white"
                                           style={{ fontFamily: "monospace", letterSpacing: "-0.5px" }}
@@ -1504,10 +1487,10 @@ export default function ProcurementManager({
                                           {primaryCode}
                                         </text>
 
-                                        {/* 3. 중앙 고유 단계 컬러 도트 점 */}
+                                        {/* 3. 중앙 고유 단계 컬러 도트 점 (vertically center align을 위해 cy=16으로 정확히 중앙 매칭) */}
                                         <circle 
                                           cx="14" 
-                                          cy="20" 
+                                          cy="16" 
                                           r="4.5" 
                                           fill={phaseColor} 
                                           stroke="rgba(255,255,255,0.7)" 
