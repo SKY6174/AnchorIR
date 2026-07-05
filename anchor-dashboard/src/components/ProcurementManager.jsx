@@ -1,36 +1,149 @@
 import React, { useState } from "react";
 import { Plus, Trash2, Info, ListFilter, ArrowUpDown, Edit } from "lucide-react";
 
+// 1차년도 및 2차년도 단위과제별 연계 프로그램 데이터셋
+const PROGRAMS_BY_UNIT = {
+  "A1": [
+    { id: "A1-1", name: "미래 핵심 신산업 주문식 교육 운영" },
+    { id: "A1-2", name: "글로컬 앵커 교육과정 고도화" },
+    { id: "A1-3", name: "앵커 혁신 교육과정 및 인프라 구축" }
+  ],
+  "A2": [
+    { id: "A2-1", name: "지역 특화 산업 맞춤형 실무 인재 양성" },
+    { id: "A2-2", name: "지산학관 공유 협력 네트워크 구축" }
+  ],
+  "B1": [
+    { id: "B1-1", name: "지역 정주형 취창업 지원 프로그램" },
+    { id: "B1-2", name: "생애 주기별 맞춤형 직업 교육 고도화" }
+  ],
+  "B2": [
+    { id: "B2-1", name: "신산업 선도형 글로벌 직업 교육 브랜드 구축" },
+    { id: "B2-2", name: "해외 우수 대학 및 산업체 교류 협력 활성화" }
+  ],
+  "B3": [
+    { id: "B3-1", name: "지역 사회 문제 해결 및 나눔 실천" },
+    { id: "B3-2", name: "문화 예술 콘텐츠 활성화 및 정서 지원" }
+  ],
+  "B4": [
+    { id: "B4-1", name: "소외 계층 맞춤형 교육 서비스 및 장학" },
+    { id: "B4-2", name: "다문화 및 다양성 가치 확산 캠페인" }
+  ],
+  "C1": [
+    { id: "C1-1", name: "대학 연구 역량 강화 및 원천 기술 개발" },
+    { id: "C1-2", name: "혁신 기술 특허 출원 및 사업화 이전" }
+  ],
+  "C2": [
+    { id: "C2-1", name: "산학 공동 기술 개발 및 연구 센터 운영" },
+    { id: "C2-2", name: "기업 애로 기술 지도 및 컨설팅 지원" }
+  ],
+  "D1": [
+    { id: "D1-1", name: "지역 평생 교육 포털 구축 및 운영" },
+    { id: "D1-2", name: "시민 역량 강화 교양 및 실무 아카데미" }
+  ],
+  "D2": [
+    { id: "D2-1", name: "성인 학습자 대상 취창업 역량 강화 패키지" },
+    { id: "D2-2", name: "재취업 및 전직 지원 맞춤형 컨설팅" }
+  ],
+  "D3": [
+    { id: "D3-1", name: "소상공인 및 전통시장 활성화 기술 지원" },
+    { id: "D3-2", name: "지역 특화 소상공인 사업화 멘토링" }
+  ],
+  "D4": [
+    { id: "D4-1", name: "글로벌 한인 차세대 네트워크 공유 교류" },
+    { id: "D4-2", name: "글로벌 평생 교육 선도 모델 정립" }
+  ],
+  "A1가": [
+    { id: "A1가-1", name: "친환경 스마트 친조선 융합 기술 교육" },
+    { id: "A1가-2", name: "글로벌 선박 정밀 가공 실무 양성" }
+  ],
+  "A1나": [
+    { id: "A1나-1", name: "미래형 스마트 모빌리티 설계 및 제어 교육" },
+    { id: "A1나-2", name: "모빌리티 정비 및 튜닝 전문 인재 육성" }
+  ],
+  "A3": [
+    { id: "A3-1", name: "바이오 메디컬 융합 서비스 전문가 육성" },
+    { id: "A3-2", name: "디지털 헬스케어 기기 및 인프라 구축" }
+  ],
+  "Common": [
+    { id: "COM-1", name: "앵커 사업단 공통 프로그램 기획 및 성과 관리" },
+    { id: "COM-2", name: "전체 참여 과제 공유 워크숍 및 혁신 포럼" }
+  ]
+};
+
+// AI 가상 문서요약 분석 시뮬레이터 함수 (사용자 요구사항 2 반영)
+const runAiMockAnalysis = (docType, textContent, itemName, deptName, totalPrice) => {
+  const randomNo = Math.floor(Math.random() * 900) + 100;
+  const priceThousand = totalPrice ? Math.round(totalPrice / 1000) : 120000;
+  
+  if (docType === "proposal") {
+    return {
+      docNo: `UC-EQ-P-${randomNo}`,
+      unit: "A1 : 지역과 미래를 만드는 UC-HYPER 전문기술인재 양성",
+      dept: deptName || "간호학부 (사업단 협업)",
+      budget: `${priceThousand.toLocaleString()}천원`,
+      goals: [
+        `${itemName || "도입 핵심 기재"} 기반 전문 실무 교육과정 수립`,
+        "선진 시뮬레이션 인프라 구축 및 융합 실습 환경 리모델링",
+        "지산학 연계 라이즈 사업의 교육 실적 성과 관리 및 모니터링"
+      ]
+    };
+  } else if (docType === "purchase") {
+    return {
+      docNo: `UC-EQ-PR-${randomNo}`,
+      fromDept: deptName || "간호학부",
+      toDept: "대학본부 총무팀",
+      budget: `${priceThousand.toLocaleString()}천원`,
+      specs: [
+        `${itemName || "도입 요청 기재"} 핵심 조달 기술 사양 충족 검토`,
+        "정밀 제어 칩셋 탑재 및 고정밀 수치 보정 기능 보장",
+        "전문 엔지니어 1:1 무상 온사이트 유지보수 기한 2년 이상 보증 조건"
+      ]
+    };
+  } else { // bid
+    return {
+      docNo: `UC-EQ-B-${randomNo}`,
+      method: "제한경쟁입찰 (협상에 의한 계약)",
+      budget: `${priceThousand.toLocaleString()}천원`,
+      qualifications: [
+        "국가종합전자조달시스템에 조달용 기자재 공급업으로 등록을 필한 업체",
+        "최근 3개년 이내 대학 및 교육기관 대상 관련 실적 유효 보유 업체",
+        "신속 사후 관리 A/S 기술 확약서 및 원제조업체 물품공급확약서 제출 가능 업체"
+      ],
+      deadline: "2026-07-25 18:00"
+    };
+  }
+};
+
 // 1. 10대 기자재 초기 모의 데이터 정의 (4번 요건 및 삭제용 패스워드 "1234" 추가)
 const defaultEquipments = [
-  { id: 1, unit: "A1", seq: 1, deptName: "간호학부", divisionName: "", itemName: "스마트 환자 시뮬레이터 (중환자 케어 실습 장비)", unitPrice: 120000000, quantity: 1, description: "글로벌 앵커 혁신 교육과정 임상 실습 고도화 핵심 기기", operation: "교과목(정규)", password: "1234",
+  { id: 1, unit: "A1", seq: 1, deptName: "간호학부", divisionName: "", itemName: "스마트 환자 시뮬레이터 (중환자 케어 실습 장비)", unitPrice: 120000000, quantity: 1, description: "글로벌 앵커 혁신 교육과정 임상 실습 고도화 핵심 기기", operation: "글로컬 앵커 교육과정 고도화", password: "1234",
     dateP: "2025-03-10", dateA: "2025-04-15", dateB: "2025-06-12", datePr: "2025-07-20", dateI: "2025-09-05"
   },
-  { id: 2, unit: "A2", seq: 2, deptName: "화학공학과", divisionName: "", itemName: "정밀 화학 분석 크로마토그래피 시스템", unitPrice: 245000000, quantity: 1, description: "신산업 저탄소 에너지 트랙 화학 정밀 분석 실습 장비", operation: "교과목(정규)", password: "1234",
+  { id: 2, unit: "A2", seq: 2, deptName: "화학공학과", divisionName: "", itemName: "정밀 화학 분석 크로마토그래피 시스템", unitPrice: 245000000, quantity: 1, description: "신산업 저탄소 에너지 트랙 화학 정밀 분석 실습 장비", operation: "지역 특화 산업 맞춤형 실무 인재 양성", password: "1234",
     dateP: "2025-03-15", dateA: "2025-04-20", dateB: "2025-06-18", datePr: "2025-07-25", dateI: "2025-09-10"
   },
-  { id: 3, unit: "B1", seq: 3, deptName: "컴퓨터공학과", divisionName: "", itemName: "AI 알고리즘 모델링 연산용 고성능 GPU 워크스테이션", unitPrice: 15000000, quantity: 3, description: "RCC 특화산업 AI 융합 실감형 교육 센터 실무 교육 지원", operation: "교과목(정규)", password: "1234",
+  { id: 3, unit: "B1", seq: 3, deptName: "컴퓨터공학과", divisionName: "", itemName: "AI 알고리즘 모델링 연산용 고성능 GPU 워크스테이션", unitPrice: 15000000, quantity: 3, description: "RCC 특화산업 AI 융합 실감형 교육 센터 실무 교육 지원", operation: "지역 정주형 취창업 지원 프로그램", password: "1234",
     dateP: "2025-03-12", dateA: "2025-04-18", dateB: "", datePr: "2025-06-25", dateI: "2025-08-14"
   },
-  { id: 4, unit: "B2", seq: 4, deptName: "기계공학부", divisionName: "", itemName: "스마트 팩토리 모듈 제어 및 3D 정밀 프린팅 모듈", unitPrice: 38000000, quantity: 1, description: "지산학 연계 제조 혁신 엔지니어 교육 기자재", operation: "교과목(정규)", password: "1234",
+  { id: 4, unit: "B2", seq: 4, deptName: "기계공학부", divisionName: "", itemName: "스마트 팩토리 모듈 제어 및 3D 정밀 프린팅 모듈", unitPrice: 38000000, quantity: 1, description: "지산학 연계 제조 혁신 엔지니어 교육 기자재", operation: "신산업 선도형 글로벌 직업 교육 브랜드 구축", password: "1234",
     dateP: "2025-03-20", dateA: "2025-05-15", dateB: "2025-06-08", datePr: "2025-06-20", dateI: "2025-08-18"
   },
-  { id: 5, unit: "B3", seq: 5, deptName: "전기전자공학부", divisionName: "", itemName: "반도체 임베디드 코딩 및 고정밀 계측 오실로스코프", unitPrice: 8500000, quantity: 4, description: "반도체 전공 대학 연계 실무 미러형 교육 설계용 장비", operation: "교과목(정규)", password: "1234",
+  { id: 5, unit: "B3", seq: 5, deptName: "전기전자공학부", divisionName: "", itemName: "반도체 임베디드 코딩 및 고정밀 계측 오실로스코프", unitPrice: 8500000, quantity: 4, description: "반도체 전공 대학 연계 실무 미러형 교육 설계용 장비", operation: "지역 사회 문제 해결 및 나눔 실천", password: "1234",
     dateP: "2025-03-25", dateA: "2025-04-28", dateB: "2025-06-05", datePr: "2025-06-18", dateI: "2025-08-20"
   },
-  { id: 6, unit: "B4", seq: 6, deptName: "유아교육과", divisionName: "", itemName: "늘봄 연계 창의 놀이 실증용 스마트 인터랙티브 디스플레이", unitPrice: 8500000, quantity: 2, description: "에듀테크 기반 창의적 교육 콘텐츠 제작 교육 과정 운영", operation: "교과목(비정규)", password: "1234",
+  { id: 6, unit: "B4", seq: 6, deptName: "유아교육과", divisionName: "", itemName: "늘봄 연계 창의 놀이 실증용 스마트 인터랙티브 디스플레이", unitPrice: 8500000, quantity: 2, description: "에듀테크 기반 창의적 교육 콘텐츠 제작 교육 과정 운영", operation: "소외 계층 맞춤형 교육 서비스 및 장학", password: "1234",
     dateP: "2025-03-18", dateA: "2025-05-10", dateB: "", datePr: "2025-06-24", dateI: "2025-08-25"
   },
-  { id: 7, unit: "C1", seq: 7, deptName: "컴퓨터공학과", divisionName: "", itemName: "다목적 6축 소형 스마트 교육용 협동 로봇 머니퓰레이터", unitPrice: 28000000, quantity: 1, description: "미래 지능형 로봇 운용/제어 교과목 현장 중심 실습", operation: "교과목(정규)", password: "1234",
+  { id: 7, unit: "C1", seq: 7, deptName: "컴퓨터공학과", divisionName: "", itemName: "다목적 6축 소형 스마트 교육용 협동 로봇 머니퓰레이터", unitPrice: 28000000, quantity: 1, description: "미래 지능형 로봇 운용/제어 교과목 현장 중심 실습", operation: "대학 연구 역량 강화 및 원천 기술 개발", password: "1234",
     dateP: "2025-03-22", dateA: "2025-05-12", dateB: "2025-06-15", datePr: "2025-06-28", dateI: "2025-08-28"
   },
-  { id: 8, unit: "C2", seq: 8, deptName: "반려동물보건과", divisionName: "", itemName: "동물 전용 디지털 초음파 진단 장치", unitPrice: 19000000, quantity: 1, description: "신설학과 실무 미러형 임상 실습실 조달 품목", operation: "교과목(정규)", password: "1234",
+  { id: 8, unit: "C2", seq: 8, deptName: "반려동물보건과", divisionName: "", itemName: "동물 전용 디지털 초음파 진단 장치", unitPrice: 19000000, quantity: 1, description: "신설학과 실무 미러형 임상 실습실 조달 품목", operation: "산학 공동 기술 개발 및 연구 센터 운영", password: "1234",
     dateP: "2025-04-10", dateA: "2025-05-20", dateB: "2025-06-18", datePr: "2025-07-15", dateI: "2025-09-12"
   },
-  { id: 9, unit: "D1", seq: 9, deptName: "조선해양시스템공학과", divisionName: "", itemName: "미래 친환경선박 가상 운항 교육 시뮬레이터", unitPrice: 45000000, quantity: 1, description: "5극3특 가상 운항 실습 교육 과정 지원용 장비", operation: "교과목(정규)", password: "1234",
+  { id: 9, unit: "D1", seq: 9, deptName: "조선해양시스템공학과", divisionName: "", itemName: "미래 친환경선박 가상 운항 교육 시뮬레이터", unitPrice: 45000000, quantity: 1, description: "5극3특 가상 운항 실습 교육 과정 지원용 장비", operation: "지역 평생 교육 포털 구축 및 운영", password: "1234",
     dateP: "2025-03-08", dateA: "2025-05-08", dateB: "2025-07-10", datePr: "2025-08-20", dateI: "2025-11-15"
   },
-  { id: 10, unit: "D2", seq: 10, deptName: "물리치료학과", divisionName: "", itemName: "메디컬 스킨케어 다기능 뷰티 디바이스", unitPrice: 6500000, quantity: 5, description: "웰니스 뷰티 케어 실습 및 지역 상생 뷰티 아카데미 활용", operation: "교과목(비정규)", password: "1234",
+  { id: 10, unit: "D2", seq: 10, deptName: "물리치료학과", divisionName: "", itemName: "메디컬 스킨케어 다기능 뷰티 디바이스", unitPrice: 6500000, quantity: 5, description: "웰니스 뷰티 케어 실습 및 지역 상생 뷰티 아카데미 활용", operation: "성인 학습자 대상 취창업 역량 강화 패키지", password: "1234",
     dateP: "2025-03-14", dateA: "2025-04-24", dateB: "", datePr: "2025-06-22", dateI: "2025-08-29"
   }
 ];
@@ -281,6 +394,11 @@ export default function ProcurementManager({
   // 월별 마일스톤 멀티 체크 팝오버 상태
   const [activePopover, setActivePopover] = useState(null); // { equipId, month, x, y }
 
+  // AI 분석 상태 제어
+  const [isAnalyzingPlan, setIsAnalyzingPlan] = useState(false);
+  const [isAnalyzingPurchase, setIsAnalyzingPurchase] = useState(false);
+  const [isAnalyzingBid, setIsAnalyzingBid] = useState(false);
+
   // 4. 입력 폼 임시 State
   const [formData, setFormData] = useState({
     title: "",
@@ -303,8 +421,15 @@ export default function ProcurementManager({
     quantity: "",
     description: "",
     step: "기획",
-    operation: "교과목(정규)",
+    operation: "미래 핵심 신산업 주문식 교육 운영", // 기본 연계 프로그램 지정
     mgrDept: "ECC",
+    // AI 관련문서 원본 텍스트 및 가상 요약 데이터 필드 추가 (요건 2 반영)
+    docPlanContent: "",
+    docPurchaseContent: "",
+    docBidContent: "",
+    aiProposalData: null,
+    aiPurchaseData: null,
+    aiBidData: null,
     // 신규 추가 폼에서 월별 구매단계 다중 입력을 위한 milestones 상태
     milestones: { "3": [], "4": [], "5": [], "6": [], "7": [], "8": [], "9": [], "10": [], "11": [], "12": [], "1": [], "2": [] },
     // 용역용
@@ -449,10 +574,22 @@ export default function ProcurementManager({
       const nextYear = Number(value);
       // 연차 변경 시 유효한 단위과제 기본값 매핑
       const nextUnit = nextYear === 1 ? "A1" : "A1가";
+      const progs = PROGRAMS_BY_UNIT[nextUnit] || [];
+      const defaultProg = progs.length > 0 ? progs[0].name : "";
       setFormData(prev => ({
         ...prev,
         year: nextYear,
-        unit: nextUnit
+        unit: nextUnit,
+        operation: defaultProg
+      }));
+    } else if (name === "unit") {
+      const nextUnit = value;
+      const progs = PROGRAMS_BY_UNIT[nextUnit] || [];
+      const defaultProg = progs.length > 0 ? progs[0].name : "";
+      setFormData(prev => ({
+        ...prev,
+        unit: nextUnit,
+        operation: defaultProg
       }));
     } else {
       setFormData(prev => ({ ...prev, [name]: value }));
@@ -516,12 +653,22 @@ export default function ProcurementManager({
               unitPrice: (Number(formData.unitPrice) * 1000) || 0,
               quantity: Number(formData.quantity) || 1,
               description: formData.description || "-",
-              operation: formData.operation || "교과목(정규)",
+              operation: formData.operation || "미래 핵심 신산업 주문식 교육 운영",
               password: currentUser?.password || formData.password || item.password || "1234", // 현재 로그인 유저 비밀번호 연동
-              relatedDocs: [formData.docPlan, formData.docPurchase, formData.docBid].filter(Boolean).join(", "),
-              docPlan: formData.docPlan || "",
-              docPurchase: formData.docPurchase || "",
-              docBid: formData.docBid || "",
+              relatedDocs: [
+                formData.aiProposalData?.docNo || formData.docPlan,
+                formData.aiPurchaseData?.docNo || formData.docPurchase,
+                formData.aiBidData?.docNo || formData.docBid
+              ].filter(Boolean).join(", "),
+              docPlan: formData.aiProposalData?.docNo || formData.docPlan || "",
+              docPurchase: formData.aiPurchaseData?.docNo || formData.docPurchase || "",
+              docBid: formData.aiBidData?.docNo || formData.docBid || "",
+              docPlanContent: formData.docPlanContent || "",
+              docPurchaseContent: formData.docPurchaseContent || "",
+              docBidContent: formData.docBidContent || "",
+              aiProposalData: formData.aiProposalData || null,
+              aiPurchaseData: formData.aiPurchaseData || null,
+              aiBidData: formData.aiBidData || null,
               dateP: formData.dateP || "",
               dateA: formData.dateA || "",
               dateB: formData.dateB || "",
@@ -555,13 +702,23 @@ export default function ProcurementManager({
           unitPrice: (Number(formData.unitPrice) * 1000) || 0,
           quantity: Number(formData.quantity) || 1,
           description: formData.description || "-",
-          operation: formData.operation || "교과목(정규)",
+          operation: formData.operation || "미래 핵심 신산업 주문식 교육 운영",
           mgrDept: formData.mgrDept || "ECC",
           password: currentUser?.password || formData.password || "1234", // 현재 로그인 유저 비밀번호 연동
-          relatedDocs: [formData.docPlan, formData.docPurchase, formData.docBid].filter(Boolean).join(", "),
-          docPlan: formData.docPlan || "",
-          docPurchase: formData.docPurchase || "",
-          docBid: formData.docBid || "",
+          relatedDocs: [
+            formData.aiProposalData?.docNo || formData.docPlan,
+            formData.aiPurchaseData?.docNo || formData.docPurchase,
+            formData.aiBidData?.docNo || formData.docBid
+          ].filter(Boolean).join(", "),
+          docPlan: formData.aiProposalData?.docNo || formData.docPlan || "",
+          docPurchase: formData.aiPurchaseData?.docNo || formData.docPurchase || "",
+          docBid: formData.aiBidData?.docNo || formData.docBid || "",
+          docPlanContent: formData.docPlanContent || "",
+          docPurchaseContent: formData.docPurchaseContent || "",
+          docBidContent: formData.docBidContent || "",
+          aiProposalData: formData.aiProposalData || null,
+          aiPurchaseData: formData.aiPurchaseData || null,
+          aiBidData: formData.aiBidData || null,
           dateP: formData.dateP || "",
           dateA: formData.dateA || "",
           dateB: formData.dateB || "",
@@ -646,7 +803,7 @@ export default function ProcurementManager({
       quantity: "",
       description: "",
       step: "기획",
-      operation: "교과목(정규)",
+      operation: selectedYear === 1 ? "미래 핵심 신산업 주문식 교육 운영" : "친환경 스마트 친조선 융합 기술 교육", // 1차년도/2차년도 기본 연계 프로그램 분기
       mgrDept: "ECC",
       dateP: "",
       dateA: "",
@@ -658,6 +815,12 @@ export default function ProcurementManager({
       docPlan: "",
       docPurchase: "",
       docBid: "",
+      docPlanContent: "",
+      docPurchaseContent: "",
+      docBidContent: "",
+      aiProposalData: null,
+      aiPurchaseData: null,
+      aiBidData: null,
       providerQual: "",
       opResult: ""
     });
@@ -678,12 +841,18 @@ export default function ProcurementManager({
       unitPrice: equip.unitPrice ? (equip.unitPrice / 1000) : "", // 요건 2: 단가 단위 천원으로 모달에 바인딩
       quantity: equip.quantity || "",
       description: equip.description || "",
-      operation: equip.operation || "교과목(정규)",
+      operation: equip.operation || "미래 핵심 신산업 주문식 교육 운영",
       password: equip.password || "1234",
       relatedDocs: equip.relatedDocs || "", // 관련문서 로드
       docPlan: equip.docPlan || docParts[0] || "",
       docPurchase: equip.docPurchase || docParts[1] || "",
       docBid: equip.docBid || docParts[2] || "",
+      docPlanContent: equip.docPlanContent || "",
+      docPurchaseContent: equip.docPurchaseContent || "",
+      docBidContent: equip.docBidContent || "",
+      aiProposalData: equip.aiProposalData || null,
+      aiPurchaseData: equip.aiPurchaseData || null,
+      aiBidData: equip.aiBidData || null,
       dateP: equip.dateP || "",
       dateA: equip.dateA || "",
       dateB: equip.dateB || "",
@@ -1983,6 +2152,21 @@ export default function ProcurementManager({
                     </div>
                   </div>
 
+                  <div style={{ marginBottom: "1rem" }}>
+                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>연계 프로그램</label>
+                    <select 
+                      name="operation" 
+                      value={formData.operation} 
+                      onChange={handleInputChange} 
+                      className="user-selector" 
+                      style={{ width: "100%" }}
+                    >
+                      {(PROGRAMS_BY_UNIT[formData.unit] || []).map(p => (
+                        <option key={p.id} value={p.name}>[{p.id}] {p.name}</option>
+                      ))}
+                    </select>
+                  </div>
+
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
                     <div>
                       <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>학과 선택</label>
@@ -2130,52 +2314,144 @@ export default function ProcurementManager({
                     </div>
                   </div>
 
-                  <div>
-                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>운영 구분</label>
-                    <select name="operation" value={formData.operation} onChange={handleInputChange} className="user-selector" style={{ width: "100%" }}>
-                      <option value="교과목(정규)">교과목(정규)</option>
-                      <option value="교과목(비정규)">교과목(비정규)</option>
-                    </select>
-                  </div>
-
-                  <div style={{ background: "rgba(255,255,255,0.02)", padding: "1rem", borderRadius: "8px", border: "1px solid var(--border-color-dark)" }}>
-                    <span style={{ display: "block", fontSize: "0.82rem", fontWeight: "800", color: "white", marginBottom: "0.75rem" }}>
-                      📝 단계별 결재/발송 문서번호 입력 (기획, 구매, 입찰)
+                  <div style={{ background: "rgba(255,255,255,0.02)", padding: "1rem", borderRadius: "8px", border: "1px solid var(--border-color-dark)", marginTop: "1rem" }}>
+                    <span style={{ display: "block", fontSize: "0.85rem", fontWeight: "800", color: "#60A5FA", marginBottom: "0.75rem" }}>
+                      🤖 AI 문서 분석 및 요약 등록 (기획, 구매, 입찰)
                     </span>
-                    <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "0.8rem" }}>
-                      <div>
-                        <label style={{ display: "block", fontSize: "0.75rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>기획문서 결재번호</label>
-                        <input 
-                          type="text" 
-                          name="docPlan" 
-                          value={formData.docPlan || ""} 
-                          onChange={handleInputChange} 
-                          placeholder="예: UC-EQ-P-001" 
-                          style={{ width: "100%", padding: "0.4rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white", fontSize: "0.8rem" }} 
-                        />
+                    <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+                      
+                      {/* 1. 기획문서 AI 분석 */}
+                      <div style={{ background: "rgba(255,255,255,0.01)", padding: "0.75rem", borderRadius: "6px", border: "1px solid rgba(255,255,255,0.04)" }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.4rem" }}>
+                          <span style={{ fontSize: "0.78rem", fontWeight: "700", color: "#93C5FD" }}>1. 기획문서 (사업단 작성/결재)</span>
+                          {formData.aiProposalData && (
+                            <span style={{ fontSize: "0.7rem", color: "#10B981", fontWeight: "700" }}>
+                              ✅ AI 분석완료 ({formData.aiProposalData.docNo})
+                            </span>
+                          )}
+                        </div>
+                        <div style={{ display: "flex", gap: "0.4rem" }}>
+                          <textarea
+                            name="docPlanContent"
+                            value={formData.docPlanContent || ""}
+                            onChange={handleInputChange}
+                            placeholder="기획문서 본문 텍스트를 붙여넣거나 입력하세요."
+                            style={{ flex: 1, height: "42px", padding: "0.4rem", background: "rgba(0,0,0,0.2)", border: "1px solid var(--border-color-dark)", borderRadius: "4px", color: "white", fontSize: "0.75rem", resize: "none" }}
+                          />
+                          <button
+                            type="button"
+                            onClick={() => {
+                              if (!formData.docPlanContent) {
+                                alert("기획문서 텍스트를 먼저 입력해주세요!");
+                                return;
+                              }
+                              setIsAnalyzingPlan(true);
+                              setTimeout(() => {
+                                const result = runAiMockAnalysis("proposal", formData.docPlanContent, formData.name, formData.deptName, (Number(formData.unitPrice) * Number(formData.quantity) * 1000));
+                                setFormData(prev => ({
+                                  ...prev,
+                                  aiProposalData: result,
+                                  docPlan: result.docNo
+                                }));
+                                setIsAnalyzingPlan(false);
+                              }, 1000);
+                            }}
+                            disabled={isAnalyzingPlan}
+                            style={{ padding: "0 0.75rem", fontSize: "0.72rem", background: "#3b82f6", border: "none", color: "white", borderRadius: "4px", fontWeight: "600", cursor: "pointer", opacity: isAnalyzingPlan ? 0.6 : 1 }}
+                          >
+                            {isAnalyzingPlan ? "분석중..." : "AI 분석"}
+                          </button>
+                        </div>
                       </div>
-                      <div>
-                        <label style={{ display: "block", fontSize: "0.75rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>구매문서 결재번호</label>
-                        <input 
-                          type="text" 
-                          name="docPurchase" 
-                          value={formData.docPurchase || ""} 
-                          onChange={handleInputChange} 
-                          placeholder="예: UC-EQ-PR-001" 
-                          style={{ width: "100%", padding: "0.4rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white", fontSize: "0.8rem" }} 
-                        />
+
+                      {/* 2. 구매문서 AI 분석 */}
+                      <div style={{ background: "rgba(255,255,255,0.01)", padding: "0.75rem", borderRadius: "6px", border: "1px solid rgba(255,255,255,0.04)" }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.4rem" }}>
+                          <span style={{ fontSize: "0.78rem", fontWeight: "700", color: "#C084FC" }}>2. 구매문서 (총무팀 발송)</span>
+                          {formData.aiPurchaseData && (
+                            <span style={{ fontSize: "0.7rem", color: "#10B981", fontWeight: "700" }}>
+                              ✅ AI 분석완료 ({formData.aiPurchaseData.docNo})
+                            </span>
+                          )}
+                        </div>
+                        <div style={{ display: "flex", gap: "0.4rem" }}>
+                          <textarea
+                            name="docPurchaseContent"
+                            value={formData.docPurchaseContent || ""}
+                            onChange={handleInputChange}
+                            placeholder="구매요청 문서 본문 텍스트를 붙여넣으세요."
+                            style={{ flex: 1, height: "42px", padding: "0.4rem", background: "rgba(0,0,0,0.2)", border: "1px solid var(--border-color-dark)", borderRadius: "4px", color: "white", fontSize: "0.75rem", resize: "none" }}
+                          />
+                          <button
+                            type="button"
+                            onClick={() => {
+                              if (!formData.docPurchaseContent) {
+                                alert("구매문서 텍스트를 먼저 입력해주세요!");
+                                return;
+                              }
+                              setIsAnalyzingPurchase(true);
+                              setTimeout(() => {
+                                const result = runAiMockAnalysis("purchase", formData.docPurchaseContent, formData.name, formData.deptName, (Number(formData.unitPrice) * Number(formData.quantity) * 1000));
+                                setFormData(prev => ({
+                                  ...prev,
+                                  aiPurchaseData: result,
+                                  docPurchase: result.docNo
+                                }));
+                                setIsAnalyzingPurchase(false);
+                              }, 1000);
+                            }}
+                            disabled={isAnalyzingPurchase}
+                            style={{ padding: "0 0.75rem", fontSize: "0.72rem", background: "#a78bfa", border: "none", color: "white", borderRadius: "4px", fontWeight: "600", cursor: "pointer", opacity: isAnalyzingPurchase ? 0.6 : 1 }}
+                          >
+                            {isAnalyzingPurchase ? "분석중..." : "AI 분석"}
+                          </button>
+                        </div>
                       </div>
-                      <div>
-                        <label style={{ display: "block", fontSize: "0.75rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>입찰문서 결재번호</label>
-                        <input 
-                          type="text" 
-                          name="docBid" 
-                          value={formData.docBid || ""} 
-                          onChange={handleInputChange} 
-                          placeholder="예: UC-EQ-B-001" 
-                          style={{ width: "100%", padding: "0.4rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white", fontSize: "0.8rem" }} 
-                        />
+
+                      {/* 3. 입찰문서 AI 분석 */}
+                      <div style={{ background: "rgba(255,255,255,0.01)", padding: "0.75rem", borderRadius: "6px", border: "1px solid rgba(255,255,255,0.04)" }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.4rem" }}>
+                          <span style={{ fontSize: "0.78rem", fontWeight: "700", color: "#34D399" }}>3. 입찰문서 (총무팀 작성)</span>
+                          {formData.aiBidData && (
+                            <span style={{ fontSize: "0.7rem", color: "#10B981", fontWeight: "700" }}>
+                              ✅ AI 분석완료 ({formData.aiBidData.docNo})
+                            </span>
+                          )}
+                        </div>
+                        <div style={{ display: "flex", gap: "0.4rem" }}>
+                          <textarea
+                            name="docBidContent"
+                            value={formData.docBidContent || ""}
+                            onChange={handleInputChange}
+                            placeholder="입찰공고 및 규격서 텍스트를 붙여넣으세요."
+                            style={{ flex: 1, height: "42px", padding: "0.4rem", background: "rgba(0,0,0,0.2)", border: "1px solid var(--border-color-dark)", borderRadius: "4px", color: "white", fontSize: "0.75rem", resize: "none" }}
+                          />
+                          <button
+                            type="button"
+                            onClick={() => {
+                              if (!formData.docBidContent) {
+                                alert("입찰문서 텍스트를 먼저 입력해주세요!");
+                                return;
+                              }
+                              setIsAnalyzingBid(true);
+                              setTimeout(() => {
+                                const result = runAiMockAnalysis("bid", formData.docBidContent, formData.name, formData.deptName, (Number(formData.unitPrice) * Number(formData.quantity) * 1000));
+                                setFormData(prev => ({
+                                  ...prev,
+                                  aiBidData: result,
+                                  docBid: result.docNo
+                                }));
+                                setIsAnalyzingBid(false);
+                              }, 1000);
+                            }}
+                            disabled={isAnalyzingBid}
+                            style={{ padding: "0 0.75rem", fontSize: "0.72rem", background: "#10b981", border: "none", color: "white", borderRadius: "4px", fontWeight: "600", cursor: "pointer", opacity: isAnalyzingBid ? 0.6 : 1 }}
+                          >
+                            {isAnalyzingBid ? "분석중..." : "AI 분석"}
+                          </button>
+                        </div>
                       </div>
+
                     </div>
                   </div>
                 </>
@@ -2343,6 +2619,42 @@ export default function ProcurementManager({
             </div>
             
             {(() => {
+              // AI 요약 데이터가 존재할 경우 최우선 반영 (요건 5 반영)
+              if (proposalModalData.aiProposalData) {
+                const ai = proposalModalData.aiProposalData;
+                return (
+                  <div style={{ display: "flex", flexDirection: "column", gap: "1.2rem", fontSize: "0.85rem" }}>
+                    <div style={{ background: "rgba(96, 165, 250, 0.08)", padding: "0.85rem", borderRadius: "8px", border: "1px solid rgba(96, 165, 250, 0.25)" }}>
+                      <span style={{ fontSize: "0.72rem", color: "#93C5FD", display: "block", marginBottom: "0.2rem", fontWeight: "700" }}>📝 기획문서 결재번호 (AI 분석 완료)</span>
+                      <strong style={{ fontFamily: "monospace", color: "#FBBF24", fontSize: "1.2rem", letterSpacing: "0.5px" }}>
+                        {ai.docNo}
+                      </strong>
+                    </div>
+                    <div>
+                      <span style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)", display: "block" }}>단위과제</span>
+                      <strong style={{ fontSize: "0.9rem" }}>{ai.unit}</strong>
+                    </div>
+                    <div>
+                      <span style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)", display: "block" }}>주관 부서</span>
+                      <span>{ai.dept}</span>
+                    </div>
+                    <div>
+                      <span style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)", display: "block" }}>과제 배정 예산 (단위: 천원)</span>
+                      <strong style={{ color: "#3b82f6" }}>{ai.budget}</strong>
+                    </div>
+                    <div style={{ borderTop: "1px solid rgba(255,255,255,0.05)", paddingTop: "0.75rem" }}>
+                      <span style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)", display: "block", marginBottom: "0.4rem" }}>주요 추진 전략 목표</span>
+                      <ul style={{ margin: 0, paddingLeft: "1.2rem", lineHeight: "1.5", display: "flex", flexDirection: "column", gap: "0.25rem" }}>
+                        {(ai.goals || []).map((goal, idx) => (
+                          <li key={idx} style={{ color: "rgba(255,255,255,0.85)" }}>{goal}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                );
+              }
+
+              // 기존 폴백(Fallback) 기획 모의 데이터
               const summary = PROPOSAL_SUMMARIES[proposalModalData.unit] || {
                 title: "알 수 없는 단위과제",
                 dept: "미지정 센터",
@@ -2414,6 +2726,41 @@ export default function ProcurementManager({
               const price = Number(purchaseModalData.unitPrice) || 0;
               const qty = Number(purchaseModalData.quantity) || 0;
               const total = price * qty;
+
+              // AI 요약 데이터가 존재할 경우 반영
+              if (purchaseModalData.aiPurchaseData) {
+                const ai = purchaseModalData.aiPurchaseData;
+                return (
+                  <div style={{ display: "flex", flexDirection: "column", gap: "1.2rem", fontSize: "0.85rem" }}>
+                    <div style={{ background: "rgba(167, 139, 250, 0.08)", padding: "0.85rem", borderRadius: "8px", border: "1px solid rgba(167, 139, 250, 0.25)" }}>
+                      <span style={{ fontSize: "0.72rem", color: "#D8B4FE", display: "block", marginBottom: "0.2rem", fontWeight: "700" }}>📦 구매문서 결재번호 (AI 분석 완료)</span>
+                      <strong style={{ fontFamily: "monospace", color: "#FBBF24", fontSize: "1.2rem", letterSpacing: "0.5px" }}>
+                        {ai.docNo}
+                      </strong>
+                    </div>
+                    <div>
+                      <span style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)", display: "block" }}>품명 및 수량</span>
+                      <strong style={{ fontSize: "0.9rem" }}>{purchaseModalData.itemName || purchaseModalData.name || "-"} / {qty}대 (세트)</strong>
+                    </div>
+                    <div>
+                      <span style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)", display: "block" }}>발신 부서 / 발송처</span>
+                      <span>{ai.fromDept} / <strong>{ai.toDept}</strong></span>
+                    </div>
+                    <div>
+                      <span style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)", display: "block" }}>도입 소요예산 (단위: 천원)</span>
+                      <strong style={{ color: "#a78bfa" }}>{ai.budget}</strong>
+                    </div>
+                    <div style={{ borderTop: "1px solid rgba(255,255,255,0.05)", paddingTop: "0.75rem" }}>
+                      <span style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)", display: "block", marginBottom: "0.4rem" }}>조달 위탁 요청 기술 사양</span>
+                      <ul style={{ margin: 0, paddingLeft: "1.2rem", lineHeight: "1.5", display: "flex", flexDirection: "column", gap: "0.25rem" }}>
+                        {(ai.specs || []).map((spec, idx) => (
+                          <li key={idx} style={{ color: "rgba(255,255,255,0.85)" }}>{spec}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                );
+              }
               
               return (
                 <div style={{ display: "flex", flexDirection: "column", gap: "1.2rem", fontSize: "0.85rem" }}>
@@ -2477,6 +2824,61 @@ export default function ProcurementManager({
               const price = Number(bidModalData.unitPrice) || 0;
               const qty = Number(bidModalData.quantity) || 0;
               const total = price * qty;
+
+              // AI 요약 데이터가 존재할 경우 반영
+              if (bidModalData.aiBidData) {
+                const ai = bidModalData.aiBidData;
+                return (
+                  <div style={{ display: "flex", flexDirection: "column", gap: "1.2rem", fontSize: "0.85rem" }}>
+                    <div style={{ background: "rgba(16, 185, 129, 0.08)", padding: "0.85rem", borderRadius: "8px", border: "1px solid rgba(16, 185, 129, 0.25)" }}>
+                      <span style={{ fontSize: "0.72rem", color: "#A7F3D0", display: "block", marginBottom: "0.2rem", fontWeight: "700" }}>⚖️ 입찰문서 결재번호 (AI 분석 완료)</span>
+                      <strong style={{ fontFamily: "monospace", color: "#FBBF24", fontSize: "1.2rem", letterSpacing: "0.5px" }}>
+                        {ai.docNo}
+                      </strong>
+                    </div>
+                    
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem" }}>
+                      <div>
+                        <span style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)", display: "block" }}>공고 및 낙찰 부서</span>
+                        <strong style={{ color: "#34D399" }}>대학본부 총무팀</strong>
+                      </div>
+                      <div>
+                        <span style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)", display: "block" }}>입찰 계약 방식</span>
+                        <span style={{ fontWeight: "700", color: "#10b981" }}>{ai.method}</span>
+                      </div>
+                    </div>
+
+                    <table style={{ width: "100%", borderCollapse: "collapse", marginTop: "0.5rem", border: "1px solid rgba(255,255,255,0.1)" }}>
+                      <tbody>
+                        <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+                          <td style={{ padding: "0.5rem", background: "rgba(255,255,255,0.05)", fontWeight: "700", width: "120px" }}>품명</td>
+                          <td style={{ padding: "0.5rem", color: "white", fontWeight: "700" }}>{bidModalData.itemName || bidModalData.name || "-"}</td>
+                        </tr>
+                        <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+                          <td style={{ padding: "0.5rem", background: "rgba(255,255,255,0.05)", fontWeight: "700" }}>도입 단가 / 수량</td>
+                          <td style={{ padding: "0.5rem" }}>{(price / 1000).toLocaleString()}천원 / {qty}대</td>
+                        </tr>
+                        <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+                          <td style={{ padding: "0.5rem", background: "rgba(255,255,255,0.05)", fontWeight: "700" }}>배정 예산 규모</td>
+                          <td style={{ padding: "0.5rem", fontWeight: "800", color: "#10B981" }}>{ai.budget}</td>
+                        </tr>
+                        <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+                          <td style={{ padding: "0.5rem", background: "rgba(255,255,255,0.05)", fontWeight: "700" }}>입찰 등록 마감</td>
+                          <td style={{ padding: "0.5rem", color: "#FBBF24", fontWeight: "700" }}>{ai.deadline}</td>
+                        </tr>
+                        <tr>
+                          <td style={{ padding: "0.5rem", background: "rgba(255,255,255,0.05)", fontWeight: "700" }}>참가 자격 및 규격</td>
+                          <td style={{ padding: "0.5rem", color: "rgba(255,255,255,0.85)", lineHeight: "1.4" }}>
+                            {(ai.qualifications || []).map((qual, idx) => (
+                              <div key={idx} style={{ marginBottom: "0.2rem" }}>- {qual}</div>
+                            ))}
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                );
+              }
               
               return (
                 <div style={{ display: "flex", flexDirection: "column", gap: "1.2rem", fontSize: "0.82rem" }}>
@@ -2518,7 +2920,7 @@ export default function ProcurementManager({
                       </tr>
                       <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
                         <td style={{ padding: "0.5rem", background: "rgba(255,255,255,0.05)", fontWeight: "700" }}>납품 장소</td>
-                        <td style={{ padding: "0.5rem" }}>울산과학대학교 지정 실습 공간 및 지정 교수연구실</td>
+                        <td style={{ padding: "0.5rem" }}>물산과학대학교 지정 실습 공간 및 지정 교수연구실</td>
                       </tr>
                       <tr>
                         <td style={{ padding: "0.5rem", background: "rgba(255,255,255,0.05)", fontWeight: "700" }}>요구 성능 규격</td>
