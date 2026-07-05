@@ -2578,46 +2578,6 @@ export default function App() {
     return localStorage.getItem("anchor_selected_prog_id") || null;
   });
 
-  // 성과지표 subTab이 노출 여부 설정에 의해 가려졌을 때 활성화 탭을 자동으로 숨겨지지 않은 유효 탭으로 보정
-  useEffect(() => {
-    if (activeTab === "kpis" && menuVisibility) {
-      const isStatusVisible = menuVisibility.kpi_status !== false;
-      const isSelfVisible = menuVisibility.kpi_self !== false;
-      const isFocusVisible = menuVisibility.kpi_focus !== false;
-
-      if (kpiSubTab === "공통" && !isStatusVisible) {
-        if (isSelfVisible) {
-          setKpiSubTab("자율");
-          const first = displayProjects.flatMap(p => p.units.flatMap(u => u.kpis)).find(k => k.type === "자율");
-          setSelectedKpi(first || null);
-        } else if (isFocusVisible) {
-          setKpiSubTab("중점");
-          const first = displayProjects.flatMap(p => p.units.flatMap(u => u.kpis)).find(k => k.type === "중점");
-          setSelectedKpi(first || null);
-        }
-      } else if (kpiSubTab === "자율" && !isSelfVisible) {
-        if (isStatusVisible) {
-          setKpiSubTab("공통");
-          const first = displayProjects.flatMap(p => p.units.flatMap(u => u.kpis)).find(k => k.type === "공통");
-          setSelectedKpi(first || null);
-        } else if (isFocusVisible) {
-          setKpiSubTab("중점");
-          const first = displayProjects.flatMap(p => p.units.flatMap(u => u.kpis)).find(k => k.type === "중점");
-          setSelectedKpi(first || null);
-        }
-      } else if (kpiSubTab === "중점" && !isFocusVisible) {
-        if (isStatusVisible) {
-          setKpiSubTab("공통");
-          const first = displayProjects.flatMap(p => p.units.flatMap(u => u.kpis)).find(k => k.type === "공통");
-          setSelectedKpi(first || null);
-        } else if (isSelfVisible) {
-          setKpiSubTab("자율");
-          const first = displayProjects.flatMap(p => p.units.flatMap(u => u.kpis)).find(k => k.type === "자율");
-          setSelectedKpi(first || null);
-        }
-      }
-    }
-  }, [activeTab, menuVisibility, kpiSubTab, displayProjects]);
 
   useEffect(() => {
     if (selectedKpi) {
@@ -3584,6 +3544,47 @@ export default function App() {
   };
 
   const displayProjects = getNormalizedProjectsForRendering(projects, selectedYear);
+
+  // 성과지표 subTab이 노출 여부 설정에 의해 가려졌을 때 활성화 탭을 자동으로 숨겨지지 않은 유효 탭으로 보정
+  useEffect(() => {
+    if (activeTab === "kpis" && menuVisibility) {
+      const isStatusVisible = menuVisibility.kpi_status !== false;
+      const isSelfVisible = menuVisibility.kpi_self !== false;
+      const isFocusVisible = menuVisibility.kpi_focus !== false;
+
+      if (kpiSubTab === "공통" && !isStatusVisible) {
+        if (isSelfVisible) {
+          setKpiSubTab("자율");
+          const first = displayProjects.flatMap(p => p.units.flatMap(u => u.kpis)).find(k => k.type === "자율");
+          setSelectedKpi(first || null);
+        } else if (isFocusVisible) {
+          setKpiSubTab("중점");
+          const first = displayProjects.flatMap(p => p.units.flatMap(u => u.kpis)).find(k => k.type === "중점");
+          setSelectedKpi(first || null);
+        }
+      } else if (kpiSubTab === "자율" && !isSelfVisible) {
+        if (isStatusVisible) {
+          setKpiSubTab("공통");
+          const first = displayProjects.flatMap(p => p.units.flatMap(u => u.kpis)).find(k => k.type === "공통");
+          setSelectedKpi(first || null);
+        } else if (isFocusVisible) {
+          setKpiSubTab("중점");
+          const first = displayProjects.flatMap(p => p.units.flatMap(u => u.kpis)).find(k => k.type === "중점");
+          setSelectedKpi(first || null);
+        }
+      } else if (kpiSubTab === "중점" && !isFocusVisible) {
+        if (isStatusVisible) {
+          setKpiSubTab("공통");
+          const first = displayProjects.flatMap(p => p.units.flatMap(u => u.kpis)).find(k => k.type === "공통");
+          setSelectedKpi(first || null);
+        } else if (isSelfVisible) {
+          setKpiSubTab("자율");
+          const first = displayProjects.flatMap(p => p.units.flatMap(u => u.kpis)).find(k => k.type === "자율");
+          setSelectedKpi(first || null);
+        }
+      }
+    }
+  }, [activeTab, menuVisibility, kpiSubTab, displayProjects]);
 
 
   // 새로고침 시 스크롤 위치 영속성 복원 훅 (.main-content 컨테이너 대상)
