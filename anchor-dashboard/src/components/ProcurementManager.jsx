@@ -243,8 +243,9 @@ export default function ProcurementManager({
   const [isEditMode, setIsEditMode] = useState(false);
   const [editingItemId, setEditingItemId] = useState(null);
 
-  // 기획문서 및 입찰문서 팝업용 상태 추가 (사용자 요건 3 대응)
+  // 기획문서, 구매문서 및 입찰문서 팝업용 상태 추가 (사용자 요건 3 대응)
   const [proposalModalData, setProposalModalData] = useState(null);
+  const [purchaseModalData, setPurchaseModalData] = useState(null);
   const [bidModalData, setBidModalData] = useState(null);
 
   // 학과 및 부서 필터 이원화 및 정렬 상태 (3번 요건 대응)
@@ -508,7 +509,10 @@ export default function ProcurementManager({
               description: formData.description || "-",
               operation: formData.operation || "교과목(정규)",
               password: currentUser?.password || formData.password || item.password || "1234", // 현재 로그인 유저 비밀번호 연동
-              relatedDocs: formData.relatedDocs || "", // 관련문서 기입 연동
+              relatedDocs: [formData.docPlan, formData.docPurchase, formData.docBid].filter(Boolean).join(", "),
+              docPlan: formData.docPlan || "",
+              docPurchase: formData.docPurchase || "",
+              docBid: formData.docBid || "",
               dateP: formData.dateP || "",
               dateA: formData.dateA || "",
               dateB: formData.dateB || "",
@@ -545,7 +549,10 @@ export default function ProcurementManager({
           operation: formData.operation || "교과목(정규)",
           mgrDept: formData.mgrDept || "ECC",
           password: currentUser?.password || formData.password || "1234", // 현재 로그인 유저 비밀번호 연동
-          relatedDocs: formData.relatedDocs || "", // 관련문서 기입 연동
+          relatedDocs: [formData.docPlan, formData.docPurchase, formData.docBid].filter(Boolean).join(", "),
+          docPlan: formData.docPlan || "",
+          docPurchase: formData.docPurchase || "",
+          docBid: formData.docBid || "",
           dateP: formData.dateP || "",
           dateA: formData.dateA || "",
           dateB: formData.dateB || "",
@@ -639,6 +646,9 @@ export default function ProcurementManager({
       dateI: "",
       password: "",
       relatedDocs: "", // 관련문서 초기화
+      docPlan: "",
+      docPurchase: "",
+      docBid: "",
       providerQual: "",
       opResult: ""
     });
@@ -649,6 +659,7 @@ export default function ProcurementManager({
     setModalType("equip");
     setIsEditMode(true);
     setEditingItemId(equip.id);
+    const docParts = (equip.relatedDocs || "").split(",").map(d => d.trim()).filter(Boolean);
     setFormData({
       year: equip.year,
       unit: equip.unit,
@@ -661,6 +672,9 @@ export default function ProcurementManager({
       operation: equip.operation || "교과목(정규)",
       password: equip.password || "1234",
       relatedDocs: equip.relatedDocs || "", // 관련문서 로드
+      docPlan: equip.docPlan || docParts[0] || "",
+      docPurchase: equip.docPurchase || docParts[1] || "",
+      docBid: equip.docBid || docParts[2] || "",
       dateP: equip.dateP || "",
       dateA: equip.dateA || "",
       dateB: equip.dateB || "",
@@ -1506,59 +1520,84 @@ export default function ProcurementManager({
                           })}
 
                           <td style={{ padding: "0.8rem 0.5rem", textAlign: "center", color: "var(--text-secondary)" }}>
-                            <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem", alignItems: "center" }}>
-                              {(() => {
-                                // 관련문서 번호 다중 파싱 (쉼표 구분)
-                                const docList = equip.relatedDocs
-                                  ? equip.relatedDocs.split(",").map(d => d.trim()).filter(Boolean)
-                                  : [`UC-EQ-${equip.unit}-${String(equip.seq || equip.id).slice(-3).padStart(3, "0")}`];
-                                
-                                return docList.map((docNum, idx) => (
-                                  <div key={idx} style={{ display: "flex", flexDirection: "column", gap: "0.25rem", alignItems: "center", borderBottom: idx < docList.length - 1 ? "1px dashed rgba(255,255,255,0.08)" : "none", paddingBottom: idx < docList.length - 1 ? "0.4rem" : "0", width: "100%" }}>
-                                    <span style={{ fontSize: "0.72rem", fontFamily: "monospace", fontWeight: "700", color: "#FBBF24" }}>
-                                      {docNum}
-                                    </span>
-                                    <div style={{ display: "flex", gap: "0.25rem" }}>
-                                      <button
-                                        onClick={() => setProposalModalData({ ...equip, selectedDoc: docNum })}
-                                        style={{
-                                          padding: "0.15rem 0.35rem",
-                                          fontSize: "0.62rem",
-                                          borderRadius: "4px",
-                                          background: "rgba(59, 130, 246, 0.12)",
-                                          color: "#60A5FA",
-                                          border: "1px solid rgba(59, 130, 246, 0.25)",
-                                          cursor: "pointer",
-                                          transition: "background 0.2s"
-                                        }}
-                                        onMouseOver={(e) => e.currentTarget.style.background = "rgba(59, 130, 246, 0.22)"}
-                                        onMouseOut={(e) => e.currentTarget.style.background = "rgba(59, 130, 246, 0.12)"}
-                                        title="기획 제안서 요약 보기"
-                                      >
-                                        기획문서
-                                      </button>
-                                      <button
-                                        onClick={() => setBidModalData({ ...equip, selectedDoc: docNum })}
-                                        style={{
-                                          padding: "0.15rem 0.35rem",
-                                          fontSize: "0.62rem",
-                                          borderRadius: "4px",
-                                          background: "rgba(16, 185, 129, 0.12)",
-                                          color: "#34D399",
-                                          border: "1px solid rgba(16, 185, 129, 0.25)",
-                                          cursor: "pointer",
-                                          transition: "background 0.2s"
-                                        }}
-                                        onMouseOver={(e) => e.currentTarget.style.background = "rgba(16, 185, 129, 0.22)"}
-                                        onMouseOut={(e) => e.currentTarget.style.background = "rgba(16, 185, 129, 0.12)"}
-                                        title="입찰 규격 공고 보기"
-                                      >
-                                        입찰문서
-                                      </button>
-                                    </div>
-                                  </div>
-                                ));
-                              })()}
+                            <div style={{ display: "flex", gap: "0.3rem", justifyContent: "center", flexWrap: "wrap", width: "100%" }}>
+                              {/* 1. 기획문서 버튼 (파란색 테마) */}
+                              <button
+                                onClick={() => setProposalModalData(equip)}
+                                style={{
+                                  padding: "0.25rem 0.45rem",
+                                  fontSize: "0.65rem",
+                                  borderRadius: "4px",
+                                  background: "rgba(59, 130, 246, 0.12)",
+                                  color: "#60A5FA",
+                                  border: "1px solid rgba(59, 130, 246, 0.25)",
+                                  cursor: "pointer",
+                                  transition: "all 0.2s"
+                                }}
+                                onMouseOver={(e) => {
+                                  e.currentTarget.style.background = "rgba(59, 130, 246, 0.25)";
+                                  e.currentTarget.style.borderColor = "#60A5FA";
+                                }}
+                                onMouseOut={(e) => {
+                                  e.currentTarget.style.background = "rgba(59, 130, 246, 0.12)";
+                                  e.currentTarget.style.borderColor = "rgba(59, 130, 246, 0.25)";
+                                }}
+                                title="기획 제안서 요약 보기"
+                              >
+                                기획문서
+                              </button>
+
+                              {/* 2. 구매문서 버튼 (보라색 테마) */}
+                              <button
+                                onClick={() => setPurchaseModalData(equip)}
+                                style={{
+                                  padding: "0.25rem 0.45rem",
+                                  fontSize: "0.65rem",
+                                  borderRadius: "4px",
+                                  background: "rgba(167, 139, 250, 0.12)",
+                                  color: "#C084FC",
+                                  border: "1px solid rgba(167, 139, 250, 0.25)",
+                                  cursor: "pointer",
+                                  transition: "all 0.2s"
+                                }}
+                                onMouseOver={(e) => {
+                                  e.currentTarget.style.background = "rgba(167, 139, 250, 0.25)";
+                                  e.currentTarget.style.borderColor = "#C084FC";
+                                }}
+                                onMouseOut={(e) => {
+                                  e.currentTarget.style.background = "rgba(167, 139, 250, 0.12)";
+                                  e.currentTarget.style.borderColor = "rgba(167, 139, 250, 0.25)";
+                                }}
+                                title="구매 발송문서 요약 보기"
+                              >
+                                구매문서
+                              </button>
+
+                              {/* 3. 입찰문서 버튼 (초록색 테마) */}
+                              <button
+                                onClick={() => setBidModalData(equip)}
+                                style={{
+                                  padding: "0.25rem 0.45rem",
+                                  fontSize: "0.65rem",
+                                  borderRadius: "4px",
+                                  background: "rgba(16, 185, 129, 0.12)",
+                                  color: "#34D399",
+                                  border: "1px solid rgba(16, 185, 129, 0.25)",
+                                  cursor: "pointer",
+                                  transition: "all 0.2s"
+                                }}
+                                onMouseOver={(e) => {
+                                  e.currentTarget.style.background = "rgba(16, 185, 129, 0.25)";
+                                  e.currentTarget.style.borderColor = "#34D399";
+                                }}
+                                onMouseOut={(e) => {
+                                  e.currentTarget.style.background = "rgba(16, 185, 129, 0.12)";
+                                  e.currentTarget.style.borderColor = "rgba(16, 185, 129, 0.25)";
+                                }}
+                                title="입찰 규격 공고 보기"
+                              >
+                                입찰문서
+                              </button>
                             </div>
                           </td>
                           {currentRole.id !== "GUEST" && (
@@ -1762,7 +1801,7 @@ export default function ProcurementManager({
       {/* 추가 모달창 팝업 */}
       {isAddModalOpen && (
         <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(0,0,0,0.7)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1100 }}>
-          <div className="glass-card" style={{ width: "500px", maxHeight: "85vh", overflowY: "auto", padding: "1.5rem", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.1)" }}>
+          <div className="glass-card" style={{ width: "650px", maxHeight: "85vh", overflowY: "auto", padding: "1.5rem", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.1)" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid rgba(255,255,255,0.05)", paddingBottom: "0.5rem", marginBottom: "1rem" }}>
               <h3 style={{ margin: 0, color: "white", fontWeight: "800", fontSize: "1.1rem" }}>
                 {modalType === "env" && "🛠️ 신규 교육환경 개선 사업 등록"}
@@ -1999,50 +2038,76 @@ export default function ProcurementManager({
                     <span style={{ display: "block", fontSize: "0.82rem", fontWeight: "800", color: "white", marginBottom: "0.75rem" }}>
                       📅 단계별 이벤트 일자 입력 (선택 입력)
                     </span>
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.8rem" }}>
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: "0.5rem" }}>
                       <div>
-                        <label style={{ display: "block", fontSize: "0.75rem", color: "var(--text-secondary-dark)", marginBottom: "0.2rem" }}>기획(P) 단계 일자</label>
-                        <input type="date" name="dateP" value={formData.dateP || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.4rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white", fontSize: "0.8rem" }} />
+                        <label style={{ display: "block", fontSize: "0.7rem", color: "var(--text-secondary-dark)", marginBottom: "0.2rem" }}>기획(P) 일자</label>
+                        <input type="date" name="dateP" value={formData.dateP || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.3rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white", fontSize: "0.72rem" }} />
                       </div>
                       <div>
-                        <label style={{ display: "block", fontSize: "0.75rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>승인(A) 단계 일자</label>
-                        <input type="date" name="dateA" value={formData.dateA || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.4rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white", fontSize: "0.8rem" }} />
+                        <label style={{ display: "block", fontSize: "0.7rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>승인(A) 일자</label>
+                        <input type="date" name="dateA" value={formData.dateA || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.3rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white", fontSize: "0.72rem" }} />
                       </div>
                       <div>
-                        <label style={{ display: "block", fontSize: "0.75rem", color: "var(--text-secondary-dark)", marginBottom: "0.2rem" }}>입찰(B) 단계 일자</label>
-                        <input type="date" name="dateB" value={formData.dateB || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.4rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white", fontSize: "0.8rem" }} />
+                        <label style={{ display: "block", fontSize: "0.7rem", color: "var(--text-secondary-dark)", marginBottom: "0.2rem" }}>입찰(B) 일자</label>
+                        <input type="date" name="dateB" value={formData.dateB || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.3rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white", fontSize: "0.72rem" }} />
                       </div>
                       <div>
-                        <label style={{ display: "block", fontSize: "0.75rem", color: "var(--text-secondary-dark)", marginBottom: "0.2rem" }}>구매(Pr) 단계 일자</label>
-                        <input type="date" name="datePr" value={formData.datePr || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.4rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white", fontSize: "0.8rem" }} />
+                        <label style={{ display: "block", fontSize: "0.7rem", color: "var(--text-secondary-dark)", marginBottom: "0.2rem" }}>구매(Pr) 일자</label>
+                        <input type="date" name="datePr" value={formData.datePr || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.3rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white", fontSize: "0.72rem" }} />
                       </div>
-                      <div style={{ gridColumn: "span 2" }}>
-                        <label style={{ display: "block", fontSize: "0.75rem", color: "var(--text-secondary-dark)", marginBottom: "0.2rem" }}>검수(I) 단계 일자</label>
-                        <input type="date" name="dateI" value={formData.dateI || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.4rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white", fontSize: "0.8rem" }} />
+                      <div>
+                        <label style={{ display: "block", fontSize: "0.7rem", color: "var(--text-secondary-dark)", marginBottom: "0.2rem" }}>검수(I) 일자</label>
+                        <input type="date" name="dateI" value={formData.dateI || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.3rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white", fontSize: "0.72rem" }} />
                       </div>
                     </div>
                   </div>
 
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
-                    <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>운영 구분</label>
-                      <select name="operation" value={formData.operation} onChange={handleInputChange} className="user-selector" style={{ width: "100%" }}>
-                        <option value="교과목(정규)">교과목(정규)</option>
-                        <option value="교과목(비정규)">교과목(비정규)</option>
-                      </select>
-                    </div>
-                    <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>
-                        📄 관련문서 번호 (쉼표 구분 다중입력 가능)
-                      </label>
-                      <input 
-                        type="text" 
-                        name="relatedDocs" 
-                        value={formData.relatedDocs || ""} 
-                        onChange={handleInputChange} 
-                        placeholder="예: UC-EQ-B1-260, UC-EQ-B1-261" 
-                        style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white", fontSize: "0.85rem" }} 
-                      />
+                  <div>
+                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>운영 구분</label>
+                    <select name="operation" value={formData.operation} onChange={handleInputChange} className="user-selector" style={{ width: "100%" }}>
+                      <option value="교과목(정규)">교과목(정규)</option>
+                      <option value="교과목(비정규)">교과목(비정규)</option>
+                    </select>
+                  </div>
+
+                  <div style={{ background: "rgba(255,255,255,0.02)", padding: "1rem", borderRadius: "8px", border: "1px solid var(--border-color-dark)" }}>
+                    <span style={{ display: "block", fontSize: "0.82rem", fontWeight: "800", color: "white", marginBottom: "0.75rem" }}>
+                      📝 단계별 결재/발송 문서번호 입력 (기획, 구매, 입찰)
+                    </span>
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "0.8rem" }}>
+                      <div>
+                        <label style={{ display: "block", fontSize: "0.75rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>기획문서 결재번호</label>
+                        <input 
+                          type="text" 
+                          name="docPlan" 
+                          value={formData.docPlan || ""} 
+                          onChange={handleInputChange} 
+                          placeholder="예: UC-EQ-P-001" 
+                          style={{ width: "100%", padding: "0.4rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white", fontSize: "0.8rem" }} 
+                        />
+                      </div>
+                      <div>
+                        <label style={{ display: "block", fontSize: "0.75rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>구매문서 결재번호</label>
+                        <input 
+                          type="text" 
+                          name="docPurchase" 
+                          value={formData.docPurchase || ""} 
+                          onChange={handleInputChange} 
+                          placeholder="예: UC-EQ-PR-001" 
+                          style={{ width: "100%", padding: "0.4rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white", fontSize: "0.8rem" }} 
+                        />
+                      </div>
+                      <div>
+                        <label style={{ display: "block", fontSize: "0.75rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>입찰문서 결재번호</label>
+                        <input 
+                          type="text" 
+                          name="docBid" 
+                          value={formData.docBid || ""} 
+                          onChange={handleInputChange} 
+                          placeholder="예: UC-EQ-B-001" 
+                          style={{ width: "100%", padding: "0.4rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white", fontSize: "0.8rem" }} 
+                        />
+                      </div>
                     </div>
                   </div>
                 </>
@@ -2193,13 +2258,13 @@ export default function ProcurementManager({
         </>
       )}
 
-      {/* 기획문서 팝업 모달 (사용자 요건 3 대응) */}
+      {/* 기획문서 팝업 모달 */}
       {proposalModalData && (
         <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(0,0,0,0.75)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1300 }}>
           <div className="glass-card" style={{ width: "500px", padding: "1.5rem", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.1)", background: "#1e293b", color: "white" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid rgba(255,255,255,0.1)", paddingBottom: "0.75rem", marginBottom: "1rem" }}>
-              <h4 style={{ margin: 0, fontSize: "1.05rem", fontWeight: "800", color: "#60A5FA" }}>
-                📄 기획문서 (사업계획 제안서 요약)
+              <h4 style={{ margin: 0, fontSize: "1.1rem", fontWeight: "800", color: "#60A5FA", display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                📄 기획문서 <span style={{ fontSize: "0.75rem", fontWeight: "400", color: "rgba(255,255,255,0.6)" }}>(사업단 작성 및 결재 문서)</span>
               </h4>
               <button 
                 onClick={() => setProposalModalData(null)}
@@ -2218,11 +2283,11 @@ export default function ProcurementManager({
               };
               
               return (
-                <div style={{ display: "flex", flexDirection: "column", gap: "1rem", fontSize: "0.85rem" }}>
-                  <div>
-                    <span style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)", display: "block" }}>관련문서</span>
-                    <strong style={{ fontFamily: "monospace", color: "#FBBF24" }}>
-                      {proposalModalData.selectedDoc || proposalModalData.relatedDocs || `UC-EQ-${proposalModalData.unit}-${String(proposalModalData.seq || proposalModalData.id).slice(-3).padStart(3, "0")}`}
+                <div style={{ display: "flex", flexDirection: "column", gap: "1.2rem", fontSize: "0.85rem" }}>
+                  <div style={{ background: "rgba(96, 165, 250, 0.08)", padding: "0.85rem", borderRadius: "8px", border: "1px solid rgba(96, 165, 250, 0.25)" }}>
+                    <span style={{ fontSize: "0.72rem", color: "#93C5FD", display: "block", marginBottom: "0.2rem", fontWeight: "700" }}>📝 기획문서 결재번호</span>
+                    <strong style={{ fontFamily: "monospace", color: "#FBBF24", fontSize: "1.2rem", letterSpacing: "0.5px" }}>
+                      {proposalModalData.docPlan || `UC-EQ-${proposalModalData.unit}-${String(proposalModalData.seq || proposalModalData.id).slice(-3).padStart(3, "0")}`}
                     </strong>
                   </div>
                   <div>
@@ -2261,13 +2326,76 @@ export default function ProcurementManager({
         </div>
       )}
 
-      {/* 입찰문서 팝업 모달 (사용자 요건 3 대응) */}
+      {/* 구매문서 팝업 모달 */}
+      {purchaseModalData && (
+        <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(0,0,0,0.75)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1300 }}>
+          <div className="glass-card" style={{ width: "500px", padding: "1.5rem", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.1)", background: "#1e293b", color: "white" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid rgba(255,255,255,0.1)", paddingBottom: "0.75rem", marginBottom: "1rem" }}>
+              <h4 style={{ margin: 0, fontSize: "1.1rem", fontWeight: "800", color: "#C084FC", display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                📦 구매문서 <span style={{ fontSize: "0.75rem", fontWeight: "400", color: "rgba(255,255,255,0.6)" }}>(사업단 ➡️ 총무팀 발송문서)</span>
+              </h4>
+              <button 
+                onClick={() => setPurchaseModalData(null)}
+                style={{ background: "transparent", border: "none", color: "rgba(255,255,255,0.5)", cursor: "pointer", fontSize: "1.2rem" }}
+              >
+                ✕
+              </button>
+            </div>
+            
+            {(() => {
+              const price = Number(purchaseModalData.unitPrice) || 0;
+              const qty = Number(purchaseModalData.quantity) || 0;
+              const total = price * qty;
+              
+              return (
+                <div style={{ display: "flex", flexDirection: "column", gap: "1.2rem", fontSize: "0.85rem" }}>
+                  <div style={{ background: "rgba(167, 139, 250, 0.08)", padding: "0.85rem", borderRadius: "8px", border: "1px solid rgba(167, 139, 250, 0.25)" }}>
+                    <span style={{ fontSize: "0.72rem", color: "#D8B4FE", display: "block", marginBottom: "0.2rem", fontWeight: "700" }}>📦 구매문서 결재번호 (총무팀 수신부서 이송공문)</span>
+                    <strong style={{ fontFamily: "monospace", color: "#FBBF24", fontSize: "1.2rem", letterSpacing: "0.5px" }}>
+                      {purchaseModalData.docPurchase || `UC-PR-${purchaseModalData.unit}-${String(purchaseModalData.seq || purchaseModalData.id).slice(-3).padStart(3, "0")}`}
+                    </strong>
+                  </div>
+                  <div>
+                    <span style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)", display: "block" }}>품명 및 수량</span>
+                    <strong style={{ fontSize: "0.9rem" }}>{purchaseModalData.itemName || purchaseModalData.name || "-"} / {qty}대 (세트)</strong>
+                  </div>
+                  <div>
+                    <span style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)", display: "block" }}>발신 부서 / 발송처</span>
+                    <span>{purchaseModalData.divisionName || purchaseModalData.deptName || "라이즈(앵커)사업단"} / <strong>총무팀 (구매 위탁 요청)</strong></span>
+                  </div>
+                  <div>
+                    <span style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)", display: "block" }}>도도입 소요예산</span>
+                    <strong style={{ color: "#a78bfa" }}>{total.toLocaleString()}원 (VAT 포함)</strong>
+                  </div>
+                  <div style={{ borderTop: "1px solid rgba(255,255,255,0.05)", paddingTop: "0.75rem" }}>
+                    <span style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)", display: "block", marginBottom: "0.3rem" }}>발송 공문 비고</span>
+                    <span style={{ color: "rgba(255,255,255,0.8)" }}>
+                      본 문서는 사업단 내부 기획/결재가 완료되어, 조달 진행 및 위탁 발주를 위해 총무팀으로 발송 처리된 행정 이송 결재 연계 상태 문서입니다.
+                    </span>
+                  </div>
+                </div>
+              );
+            })()}
+            
+            <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "1.5rem", borderTop: "1px solid rgba(255,255,255,0.1)", paddingTop: "1rem" }}>
+              <button 
+                onClick={() => setPurchaseModalData(null)}
+                style={{ padding: "0.4rem 1.25rem", borderRadius: "6px", background: "var(--accent-color)", border: "none", color: "white", fontWeight: "600", cursor: "pointer" }}
+              >
+                확인
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 입찰문서 팝업 모달 */}
       {bidModalData && (
         <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(0,0,0,0.75)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1300 }}>
           <div className="glass-card" style={{ width: "550px", padding: "1.5rem", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.1)", background: "#1e293b", color: "white" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid rgba(255,255,255,0.1)", paddingBottom: "0.75rem", marginBottom: "1rem" }}>
-              <h4 style={{ margin: 0, fontSize: "1.05rem", fontWeight: "800", color: "#10B981" }}>
-                📜 입찰문서 (조달 규격 구매 공고서)
+              <h4 style={{ margin: 0, fontSize: "1.1rem", fontWeight: "800", color: "#10B981", display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                📜 입찰문서 <span style={{ fontSize: "0.75rem", fontWeight: "400", color: "rgba(255,255,255,0.6)" }}>(총무팀 작성 문서)</span>
               </h4>
               <button 
                 onClick={() => setBidModalData(null)}
@@ -2283,13 +2411,18 @@ export default function ProcurementManager({
               const total = price * qty;
               
               return (
-                <div style={{ display: "flex", flexDirection: "column", gap: "1rem", fontSize: "0.82rem" }}>
+                <div style={{ display: "flex", flexDirection: "column", gap: "1.2rem", fontSize: "0.82rem" }}>
+                  <div style={{ background: "rgba(16, 185, 129, 0.08)", padding: "0.85rem", borderRadius: "8px", border: "1px solid rgba(16, 185, 129, 0.25)" }}>
+                    <span style={{ fontSize: "0.72rem", color: "#A7F3D0", display: "block", marginBottom: "0.2rem", fontWeight: "700" }}>⚖️ 입찰문서 결재번호</span>
+                    <strong style={{ fontFamily: "monospace", color: "#FBBF24", fontSize: "1.2rem", letterSpacing: "0.5px" }}>
+                      {bidModalData.docBid || `UC-BID-${bidModalData.unit}-${String(bidModalData.seq || bidModalData.id).slice(-3).padStart(3, "0")}`}
+                    </strong>
+                  </div>
+                  
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem" }}>
                     <div>
-                      <span style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)", display: "block" }}>관련문서</span>
-                      <strong style={{ fontFamily: "monospace", color: "#FBBF24" }}>
-                        {bidModalData.selectedDoc || bidModalData.relatedDocs || `UC-EQ-${bidModalData.unit}-${String(bidModalData.seq || bidModalData.id).slice(-3).padStart(3, "0")}`}
-                      </strong>
+                      <span style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)", display: "block" }}>작성 부서</span>
+                      <strong style={{ color: "#34D399" }}>대학본부 총무팀</strong>
                     </div>
                     <div>
                       <span style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)", display: "block" }}>입찰 구분</span>

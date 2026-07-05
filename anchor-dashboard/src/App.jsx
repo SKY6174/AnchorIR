@@ -2738,26 +2738,32 @@ export default function App() {
           localStorage.setItem(`anchor_cache_env_y${selectedYear}`, JSON.stringify(formatted));
         }
         if (pEquip && pEquip.length > 0) {
-          const formatted = pEquip.map(x => ({
-            id: Number(x.id),
-            year: Number(x.year),
-            unit: x.unit || "A1",
-            seq: Number(x.seq) || 1,
-            deptName: x.dept_name || "",
-            divisionName: x.division_name || "",
-            itemName: x.item_name || "",
-            unitPrice: Number(x.unit_price) || 0,
-            quantity: Number(x.quantity) || 1,
-            description: x.description || "",
-            operation: x.operation || "교과목(정규)",
-            password: x.password || "1234",
-            relatedDocs: x.related_docs || "", // 관련문서 필드 로드 매핑
-            dateP: x.date_p || "",
-            dateA: x.date_a || "",
-            dateB: x.date_b || "",
-            datePr: x.date_pr || "",
-            dateI: x.date_i || ""
-          }));
+          const formatted = pEquip.map(x => {
+            const docParts = (x.related_docs || "").split(",").map(d => d.trim()).filter(Boolean);
+            return {
+              id: Number(x.id),
+              year: Number(x.year),
+              unit: x.unit || "A1",
+              seq: Number(x.seq) || 1,
+              deptName: x.dept_name || "",
+              divisionName: x.division_name || "",
+              itemName: x.item_name || "",
+              unitPrice: Number(x.unit_price) || 0,
+              quantity: Number(x.quantity) || 1,
+              description: x.description || "",
+              operation: x.operation || "교과목(정규)",
+              password: x.password || "1234",
+              relatedDocs: x.related_docs || "", // 관련문서 필드 로드 매핑
+              docPlan: x.doc_plan || docParts[0] || "", // 기획문서 결재번호 (호환 처리)
+              docPurchase: x.doc_purchase || docParts[1] || "", // 구매문서 결재번호 (호환 처리)
+              docBid: x.doc_bid || docParts[2] || "", // 입찰문서 결재번호 (호환 처리)
+              dateP: x.date_p || "",
+              dateA: x.date_a || "",
+              dateB: x.date_b || "",
+              datePr: x.date_pr || "",
+              dateI: x.date_i || ""
+            };
+          });
           setEquipData(formatted);
           localStorage.setItem(`anchor_cache_equip_y${selectedYear}`, JSON.stringify(formatted));
         } else {
@@ -2775,6 +2781,9 @@ export default function App() {
             operation: e.operation,
             password: e.password,
             related_docs: e.relatedDocs || "", // 관련문서 시드 매핑
+            doc_plan: e.docPlan || "",
+            doc_purchase: e.docPurchase || "",
+            doc_bid: e.docBid || "",
             date_p: e.dateP || null,
             date_a: e.dateA || null,
             date_b: e.dateB || null,
@@ -2787,26 +2796,32 @@ export default function App() {
             // 시딩 성공 시 즉시 DB 재조회하여 프론트 데이터 갱신
             const { data: refetched } = await supabase.from("procurement_equipment").select("*").eq("year", selectedYear);
             if (refetched) {
-              const formatted = refetched.map(x => ({
-                id: Number(x.id),
-                year: Number(x.year),
-                unit: x.unit || "A1",
-                seq: Number(x.seq) || 1,
-                deptName: x.dept_name || "",
-                divisionName: x.division_name || "",
-                itemName: x.item_name || "",
-                unitPrice: Number(x.unit_price) || 0,
-                quantity: Number(x.quantity) || 1,
-                description: x.description || "",
-                operation: x.operation || "교과목(정규)",
-                password: x.password || "1234",
-                relatedDocs: x.related_docs || "", // 관련문서 재조회 매핑
-                dateP: x.date_p || "",
-                dateA: x.date_a || "",
-                dateB: x.date_b || "",
-                datePr: x.date_pr || "",
-                dateI: x.date_i || ""
-              }));
+              const formatted = refetched.map(x => {
+                const docParts = (x.related_docs || "").split(",").map(d => d.trim()).filter(Boolean);
+                return {
+                  id: Number(x.id),
+                  year: Number(x.year),
+                  unit: x.unit || "A1",
+                  seq: Number(x.seq) || 1,
+                  deptName: x.dept_name || "",
+                  divisionName: x.division_name || "",
+                  itemName: x.item_name || "",
+                  unitPrice: Number(x.unit_price) || 0,
+                  quantity: Number(x.quantity) || 1,
+                  description: x.description || "",
+                  operation: x.operation || "교과목(정규)",
+                  password: x.password || "1234",
+                  relatedDocs: x.related_docs || "", // 관련문서 재조회 매핑
+                  docPlan: x.doc_plan || docParts[0] || "",
+                  docPurchase: x.doc_purchase || docParts[1] || "",
+                  docBid: x.doc_bid || docParts[2] || "",
+                  dateP: x.date_p || "",
+                  dateA: x.date_a || "",
+                  dateB: x.date_b || "",
+                  datePr: x.date_pr || "",
+                  dateI: x.date_i || ""
+                };
+              });
               setEquipData(formatted);
               localStorage.setItem(`anchor_cache_equip_y${selectedYear}`, JSON.stringify(formatted));
             }
@@ -3105,12 +3120,15 @@ export default function App() {
               description: e.description || "",
               operation: e.operation || "교과목(정규)",
               password: e.password || "1234",
-              related_docs: e.relatedDocs || "", // 관련문서 저장 매핑
+              related_docs: e.relatedDocs || [e.docPlan, e.docPurchase, e.docBid].filter(Boolean).join(", "),
+              doc_plan: e.docPlan || "",
+              doc_purchase: e.docPurchase || "",
+              doc_bid: e.docBid || "",
               date_p: e.dateP || null,
               date_a: e.dateA || null,
               date_b: e.dateB || null,
               date_pr: e.datePr || null,
-              date_i: e.dateI || null
+              date_i: e.date_i || e.dateI || null
             }))
           );
           if (error) throw error;
