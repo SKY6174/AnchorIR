@@ -55,21 +55,17 @@ export default function AuthManager({ onLoginSuccess, members = [] }) {
 
         if (matchedMember && matchedMember.status !== "퇴직") {
           const cleanPhone = (matchedMember.phoneMobile || "").replace(/[^0-9]/g, "");
-          const expectedPhonePw = cleanPhone.slice(-4);
+          const expectedPhonePw = cleanPhone.slice(-4) + "00";
 
           // 휴대폰 뒷자리가 일치하거나, 테스트용 계정이면서 비밀번호가 1234 혹은 uc_anchor(admin) 등일 때
           const isTestAccount = ["director", "team_leader", "researcher", "admin", "guest", "hq_head", "ecc_head", "special_head", "manager"].includes(targetId);
           const expectedTestPw = targetId === "admin" ? "uc_anchor" : targetId === "guest" ? "guest123" : "1234";
 
           if (userPw === expectedPhonePw || (isTestAccount && userPw === expectedTestPw)) {
-            // Supabase Auth의 비밀번호 최소 자릿수 규정(6자) 충족을 위한 안전 처리
-            // 입력 비밀번호가 6자 미만인 최초 로그인 상태라면 뒤에 "00"을 임시 패딩으로 덧붙여 6자리로 가입 진행
-            const secureSignUpPw = userPw.length < 6 ? `${userPw}00` : userPw;
-
-            // 자동 회원가입 진행!
+            // 자동 회원가입 진행! (이미 6자리 이상이 보장됨)
             const { data: signUpData, error: signUpErr } = await supabase.auth.signUp({
               email: targetEmail,
-              password: secureSignUpPw,
+              password: userPw,
               options: {
                 data: { name: matchedMember.name }
               }
@@ -79,7 +75,7 @@ export default function AuthManager({ onLoginSuccess, members = [] }) {
               // 가입 직후 즉시 로그인 시도
               const { data: retryData, error: retryErr } = await supabase.auth.signInWithPassword({
                 email: targetEmail,
-                password: secureSignUpPw
+                password: userPw
               });
               if (!retryErr && retryData) {
                 authUser = retryData.user;
@@ -252,7 +248,7 @@ export default function AuthManager({ onLoginSuccess, members = [] }) {
 
           <div style={{ fontSize: "0.72rem", color: "var(--text-secondary-dark)", lineHeight: "1.4", padding: "0.5rem", background: "rgba(255,255,255,0.02)", border: "1px dashed var(--border-color-dark)", borderRadius: "0.25rem", display: "flex", flexDirection: "column", gap: "0.25rem" }}>
             <p style={{ margin: 0 }}>※ 별도의 회원가입 없이 주소록에 등록된 이메일로 로그인하세요.</p>
-            <p style={{ margin: 0 }}>※ 초기 비밀번호는 본인의 휴대전화 뒷번호 4자리입니다.</p>
+            <p style={{ margin: 0 }}>※ 초기 비밀번호는 본인의 휴대전화 뒷번호 4자리 뒤에 00을 붙인 6자리입니다. (예: 7123 이면 712300)</p>
             <p style={{ margin: 0, color: "#60A5FA", fontWeight: "700" }}>🔑 게스트 로그인 안내: ID: <span style={{ textDecoration: "underline" }}>guest</span> / PW: <span style={{ textDecoration: "underline" }}>guest123</span></p>
           </div>
 
