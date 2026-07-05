@@ -6811,6 +6811,7 @@ export default function App() {
             <ProcurementManager
               currentRole={currentRole}
               selectedYear={selectedYear}
+              setSelectedYear={setSelectedYear}
               subTab={procurementSubTab}
               onChangeSubTab={setProcurementSubTab}
               envData={envData}

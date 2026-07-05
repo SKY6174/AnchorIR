@@ -1,36 +1,36 @@
 import React, { useState } from "react";
-import { Plus, Trash2, Info, ListFilter, ArrowUpDown } from "lucide-react";
+import { Plus, Trash2, Info, ListFilter, ArrowUpDown, Edit } from "lucide-react";
 
-// 1. 10대 기자재 초기 모의 데이터 정의 (4번 요건에 따라 날짜 주입형으로 개편)
+// 1. 10대 기자재 초기 모의 데이터 정의 (4번 요건 및 삭제용 패스워드 "1234" 추가)
 const defaultEquipments = [
-  { id: 1, unit: "A1", seq: 1, deptName: "간호학부", divisionName: "", itemName: "스마트 환자 시뮬레이터 (중환자 케어 실습 장비)", unitPrice: 120000000, quantity: 1, description: "글로벌 앵커 혁신 교육과정 임상 실습 고도화 핵심 기기", operation: "교과목(정규)", 
+  { id: 1, unit: "A1", seq: 1, deptName: "간호학부", divisionName: "", itemName: "스마트 환자 시뮬레이터 (중환자 케어 실습 장비)", unitPrice: 120000000, quantity: 1, description: "글로벌 앵커 혁신 교육과정 임상 실습 고도화 핵심 기기", operation: "교과목(정규)", password: "1234",
     dateP: "2025-03-10", dateA: "2025-04-15", dateB: "2025-06-12", datePr: "2025-07-20", dateI: "2025-09-05"
   },
-  { id: 2, unit: "A2", seq: 2, deptName: "화학공학과", divisionName: "", itemName: "정밀 화학 분석 크로마토그래피 시스템", unitPrice: 245000000, quantity: 1, description: "신산업 저탄소 에너지 트랙 화학 정밀 분석 실습 장비", operation: "교과목(정규)", 
+  { id: 2, unit: "A2", seq: 2, deptName: "화학공학과", divisionName: "", itemName: "정밀 화학 분석 크로마토그래피 시스템", unitPrice: 245000000, quantity: 1, description: "신산업 저탄소 에너지 트랙 화학 정밀 분석 실습 장비", operation: "교과목(정규)", password: "1234",
     dateP: "2025-03-15", dateA: "2025-04-20", dateB: "2025-06-18", datePr: "2025-07-25", dateI: "2025-09-10"
   },
-  { id: 3, unit: "B1", seq: 3, deptName: "컴퓨터공학과", divisionName: "", itemName: "AI 알고리즘 모델링 연산용 고성능 GPU 워크스테이션", unitPrice: 15000000, quantity: 3, description: "RCC 특화산업 AI 융합 실감형 교육 센터 실무 교육 지원", operation: "교과목(정규)", 
+  { id: 3, unit: "B1", seq: 3, deptName: "컴퓨터공학과", divisionName: "", itemName: "AI 알고리즘 모델링 연산용 고성능 GPU 워크스테이션", unitPrice: 15000000, quantity: 3, description: "RCC 특화산업 AI 융합 실감형 교육 센터 실무 교육 지원", operation: "교과목(정규)", password: "1234",
     dateP: "2025-03-12", dateA: "2025-04-18", dateB: "", datePr: "2025-06-25", dateI: "2025-08-14"
   },
-  { id: 4, unit: "B2", seq: 4, deptName: "기계공학부", divisionName: "", itemName: "스마트 팩토리 모듈 제어 및 3D 정밀 프린팅 모듈", unitPrice: 38000000, quantity: 1, description: "지산학 연계 제조 혁신 엔지니어 교육 기자재", operation: "교과목(정규)", 
+  { id: 4, unit: "B2", seq: 4, deptName: "기계공학부", divisionName: "", itemName: "스마트 팩토리 모듈 제어 및 3D 정밀 프린팅 모듈", unitPrice: 38000000, quantity: 1, description: "지산학 연계 제조 혁신 엔지니어 교육 기자재", operation: "교과목(정규)", password: "1234",
     dateP: "2025-03-20", dateA: "2025-05-15", dateB: "2025-06-08", datePr: "2025-06-20", dateI: "2025-08-18"
   },
-  { id: 5, unit: "B3", seq: 5, deptName: "전기전자공학부", divisionName: "", itemName: "반도체 임베디드 코딩 및 고정밀 계측 오실로스코프", unitPrice: 8500000, quantity: 4, description: "반도체 전공 대학 연계 실무 미러형 교육 설계용 장비", operation: "교과목(정규)", 
+  { id: 5, unit: "B3", seq: 5, deptName: "전기전자공학부", divisionName: "", itemName: "반도체 임베디드 코딩 및 고정밀 계측 오실로스코프", unitPrice: 8500000, quantity: 4, description: "반도체 전공 대학 연계 실무 미러형 교육 설계용 장비", operation: "교과목(정규)", password: "1234",
     dateP: "2025-03-25", dateA: "2025-04-28", dateB: "2025-06-05", datePr: "2025-06-18", dateI: "2025-08-20"
   },
-  { id: 6, unit: "B4", seq: 6, deptName: "유아교육과", divisionName: "", itemName: "늘봄 연계 창의 놀이 실증용 스마트 인터랙티브 디스플레이", unitPrice: 8500000, quantity: 2, description: "에듀테크 기반 창의적 교육 콘텐츠 제작 교육 과정 운영", operation: "교과목(비정규)", 
+  { id: 6, unit: "B4", seq: 6, deptName: "유아교육과", divisionName: "", itemName: "늘봄 연계 창의 놀이 실증용 스마트 인터랙티브 디스플레이", unitPrice: 8500000, quantity: 2, description: "에듀테크 기반 창의적 교육 콘텐츠 제작 교육 과정 운영", operation: "교과목(비정규)", password: "1234",
     dateP: "2025-03-18", dateA: "2025-05-10", dateB: "", datePr: "2025-06-24", dateI: "2025-08-25"
   },
-  { id: 7, unit: "C1", seq: 7, deptName: "컴퓨터공학과", divisionName: "", itemName: "다목적 6축 소형 스마트 교육용 협동 로봇 머니퓰레이터", unitPrice: 28000000, quantity: 1, description: "미래 지능형 로봇 운용/제어 교과목 현장 중심 실습", operation: "교과목(정규)", 
+  { id: 7, unit: "C1", seq: 7, deptName: "컴퓨터공학과", divisionName: "", itemName: "다목적 6축 소형 스마트 교육용 협동 로봇 머니퓰레이터", unitPrice: 28000000, quantity: 1, description: "미래 지능형 로봇 운용/제어 교과목 현장 중심 실습", operation: "교과목(정규)", password: "1234",
     dateP: "2025-03-22", dateA: "2025-05-12", dateB: "2025-06-15", datePr: "2025-06-28", dateI: "2025-08-28"
   },
-  { id: 8, unit: "C2", seq: 8, deptName: "반려동물보건과", divisionName: "", itemName: "동물 전용 디지털 초음파 진단 장치", unitPrice: 19000000, quantity: 1, description: "신설학과 실무 미러형 임상 실습실 조달 품목", operation: "교과목(정규)", 
+  { id: 8, unit: "C2", seq: 8, deptName: "반려동물보건과", divisionName: "", itemName: "동물 전용 디지털 초음파 진단 장치", unitPrice: 19000000, quantity: 1, description: "신설학과 실무 미러형 임상 실습실 조달 품목", operation: "교과목(정규)", password: "1234",
     dateP: "2025-04-10", dateA: "2025-05-20", dateB: "2025-06-18", datePr: "2025-07-15", dateI: "2025-09-12"
   },
-  { id: 9, unit: "D1", seq: 9, deptName: "조선해양시스템공학과", divisionName: "", itemName: "미래 친환경선박 가상 운항 교육 시뮬레이터", unitPrice: 45000000, quantity: 1, description: "5극3특 가상 운항 실습 교육 과정 지원용 장비", operation: "교과목(정규)", 
+  { id: 9, unit: "D1", seq: 9, deptName: "조선해양시스템공학과", divisionName: "", itemName: "미래 친환경선박 가상 운항 교육 시뮬레이터", unitPrice: 45000000, quantity: 1, description: "5극3특 가상 운항 실습 교육 과정 지원용 장비", operation: "교과목(정규)", password: "1234",
     dateP: "2025-03-08", dateA: "2025-05-08", dateB: "2025-07-10", datePr: "2025-08-20", dateI: "2025-11-15"
   },
-  { id: 10, unit: "D2", seq: 10, deptName: "물리치료학과", divisionName: "", itemName: "메디컬 스킨케어 다기능 뷰티 디바이스", unitPrice: 6500000, quantity: 5, description: "웰니스 뷰티 케어 실습 및 지역 상생 뷰티 아카데미 활용", operation: "교과목(비정규)", 
+  { id: 10, unit: "D2", seq: 10, deptName: "물리치료학과", divisionName: "", itemName: "메디컬 스킨케어 다기능 뷰티 디바이스", unitPrice: 6500000, quantity: 5, description: "웰니스 뷰티 케어 실습 및 지역 상생 뷰티 아카데미 활용", operation: "교과목(비정규)", password: "1234",
     dateP: "2025-03-14", dateA: "2025-04-24", dateB: "", datePr: "2025-06-22", dateI: "2025-08-29"
   }
 ];
@@ -78,6 +78,29 @@ const getMilestonesFromDates = (item, activeYear) => {
   checkAndAdd(item.dateI, "I");
   
   return milestones;
+};
+
+// 단계별 입력 일정 순차 검증 헬퍼 함수 (4번 요건 대응)
+const validateDatesChronological = (dateP, dateA, dateB, datePr, dateI) => {
+  const dates = [
+    { name: "기획(P)", val: dateP },
+    { name: "승인(A)", val: dateA },
+    { name: "입찰(B)", val: dateB },
+    { name: "구매(Pr)", val: datePr },
+    { name: "검수(I)", val: dateI }
+  ].filter(d => d.val); // 값이 채워진 것만 필터링
+  
+  for (let i = 0; i < dates.length - 1; i++) {
+    const current = new Date(dates[i].val);
+    const next = new Date(dates[i + 1].val);
+    if (current > next) {
+      return {
+        isValid: false,
+        msg: `⚠️ 일정 순서 위배: ${dates[i].name} 단계 일자(${dates[i].val})가 ${dates[i+1].name} 단계 일자(${dates[i+1].val})보다 늦을 수 없습니다. 일정을 순차적으로 기입해 주세요.`
+      };
+    }
+  }
+  return { isValid: true };
 };
 
 
@@ -180,6 +203,7 @@ const getMilestoneArray = (val) => {
 export default function ProcurementManager({
   currentRole,
   selectedYear,
+  setSelectedYear,
   subTab,
   onChangeSubTab,
   envData = [],
@@ -193,12 +217,17 @@ export default function ProcurementManager({
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [modalType, setModalType] = useState("env"); // "env", "equip", "service"
   
+  // 수정 모드 상태 추가 (2번 요건 대응)
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [editingItemId, setEditingItemId] = useState(null);
+
   // 기획문서 및 입찰문서 팝업용 상태 추가 (사용자 요건 3 대응)
   const [proposalModalData, setProposalModalData] = useState(null);
   const [bidModalData, setBidModalData] = useState(null);
 
-  // 학과/부서 필터 및 정렬 상태 추가 (사용자 요건 3 대응)
+  // 학과 및 부서 필터 이원화 및 정렬 상태 (3번 요건 대응)
   const [deptFilter, setDeptFilter] = useState("");
+  const [divisionFilter, setDivisionFilter] = useState("");
   const [sortField, setSortField] = useState("seq"); // 기본값 순번
   const [sortDirection, setSortDirection] = useState("asc"); // 기본값 오름차순
 
@@ -424,36 +453,89 @@ export default function ProcurementManager({
       };
       setEnvData([newItem, ...envData]);
     } else if (modalType === "equip") {
-      // 단장님 조건: 학과 또는 부서 중 최소 하나는 반드시 선택되어야 함
+      // 1) 단장님 조건: 학과 또는 부서 중 최소 하나는 반드시 선택되어야 함
       if (!formData.deptName && !formData.divisionName) {
         alert("⚠️ 학과 또는 부서 중 최소 한 곳은 반드시 지정하셔야 합니다.");
         return;
       }
 
-      // 실 기자재 데이터가 비어 있으면 defaultEquipments를 얹고 시작
+      // 2) 요건 4: 단계별 입력 일정 순차 검증
+      const dateCheck = validateDatesChronological(formData.dateP, formData.dateA, formData.dateB, formData.datePr, formData.dateI);
+      if (!dateCheck.isValid) {
+        alert(dateCheck.msg);
+        return;
+      }
+
       const activeEquipList = equipData.length > 0 ? equipData : defaultEquipments;
-      const nextSeq = activeEquipList.length + 1;
-      
-      const newItem = {
-        id: Date.now(),
-        year: Number(formData.year) || Number(selectedYear),
-        unit: formData.unit,
-        seq: nextSeq,
-        deptName: formData.deptName || "",
-        divisionName: formData.divisionName || "",
-        itemName: formData.name || "새 기자재 항목",
-        unitPrice: (Number(formData.unitPrice) * 1000) || 0,
-        quantity: Number(formData.quantity) || 1,
-        description: formData.description || "-",
-        operation: formData.operation || "교과목(정규)",
-        mgrDept: formData.mgrDept || "ECC",
-        dateP: formData.dateP || "",
-        dateA: formData.dateA || "",
-        dateB: formData.dateB || "",
-        datePr: formData.datePr || "",
-        dateI: formData.dateI || ""
-      };
-      setEquipData([...activeEquipList, newItem]);
+      const targetYear = Number(formData.year) || Number(selectedYear);
+
+      if (isEditMode && editingItemId) {
+        // 수정 모드 분기 (요건 2 대응)
+        const updated = activeEquipList.map(item => {
+          if (item.id === editingItemId) {
+            return {
+              ...item,
+              year: targetYear,
+              unit: formData.unit,
+              deptName: formData.deptName || "",
+              divisionName: formData.divisionName || "",
+              itemName: formData.name || "수정 기자재 항목",
+              unitPrice: (Number(formData.unitPrice) * 1000) || 0,
+              quantity: Number(formData.quantity) || 1,
+              description: formData.description || "-",
+              operation: formData.operation || "교과목(정규)",
+              password: formData.password || item.password || "1234",
+              dateP: formData.dateP || "",
+              dateA: formData.dateA || "",
+              dateB: formData.dateB || "",
+              datePr: formData.datePr || "",
+              dateI: formData.dateI || ""
+            };
+          }
+          return item;
+        });
+        setEquipData(updated);
+        setIsAddModalOpen(false);
+        setIsEditMode(false);
+        setEditingItemId(null);
+        
+        // 요건 6: 화면 연차 자동 전환
+        if (setSelectedYear) {
+          setSelectedYear(targetYear);
+        }
+        alert("🔬 기자재 정보가 성공적으로 수정되었습니다.");
+      } else {
+        // 신규 등록 모드
+        const nextSeq = activeEquipList.length + 1;
+        const newItem = {
+          id: Date.now(),
+          year: targetYear,
+          unit: formData.unit,
+          seq: nextSeq,
+          deptName: formData.deptName || "",
+          divisionName: formData.divisionName || "",
+          itemName: formData.name || "새 기자재 항목",
+          unitPrice: (Number(formData.unitPrice) * 1000) || 0,
+          quantity: Number(formData.quantity) || 1,
+          description: formData.description || "-",
+          operation: formData.operation || "교과목(정규)",
+          mgrDept: formData.mgrDept || "ECC",
+          password: formData.password || "1234",
+          dateP: formData.dateP || "",
+          dateA: formData.dateA || "",
+          dateB: formData.dateB || "",
+          datePr: formData.datePr || "",
+          dateI: formData.dateI || ""
+        };
+        setEquipData([...activeEquipList, newItem]);
+        setIsAddModalOpen(false);
+        
+        // 요건 6: 화면 연차 자동 전환
+        if (setSelectedYear) {
+          setSelectedYear(targetYear);
+        }
+        alert(`🔬 새 기자재 항목이 ${targetYear}차년도 사업계획서에 성공적으로 등록되었습니다.`);
+      }
     } else if (modalType === "service") {
       const newItem = {
         id: Date.now(),
@@ -500,6 +582,8 @@ export default function ProcurementManager({
 
   const openAddModal = (type) => {
     setModalType(type);
+    setIsEditMode(false);
+    setEditingItemId(null);
     setFormData({
       year: selectedYear,
       unit: selectedYear === 1 ? "A1" : "A1가",
@@ -528,8 +612,33 @@ export default function ProcurementManager({
       dateB: "",
       datePr: "",
       dateI: "",
+      password: "",
       providerQual: "",
       opResult: ""
+    });
+    setIsAddModalOpen(true);
+  };
+
+  const openEditModal = (equip) => {
+    setModalType("equip");
+    setIsEditMode(true);
+    setEditingItemId(equip.id);
+    setFormData({
+      year: equip.year,
+      unit: equip.unit,
+      name: equip.itemName || equip.name || "",
+      deptName: equip.deptName || "",
+      divisionName: equip.divisionName || "",
+      unitPrice: equip.unitPrice ? (equip.unitPrice / 1000) : "", // 요건 2: 단가 단위 천원으로 모달에 바인딩
+      quantity: equip.quantity || "",
+      description: equip.description || "",
+      operation: equip.operation || "교과목(정규)",
+      password: equip.password || "1234",
+      dateP: equip.dateP || "",
+      dateA: equip.dateA || "",
+      dateB: equip.dateB || "",
+      datePr: equip.datePr || "",
+      dateI: equip.dateI || ""
     });
     setIsAddModalOpen(true);
   };
@@ -710,7 +819,7 @@ export default function ProcurementManager({
             </div>
             
             <div style={{ display: "flex", gap: "0.75rem", alignItems: "center", flexWrap: "wrap" }}>
-              {/* 학과/부서 필터 (사용자 요건 3 대응) */}
+              {/* 학과 필터 (요건 3 이원화 반영) */}
               <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
                 <ListFilter size={16} style={{ color: "var(--text-secondary-dark)" }} />
                 <select
@@ -724,13 +833,38 @@ export default function ProcurementManager({
                     width: "auto"
                   }}
                 >
-                  <option value="">전체 학과/부서</option>
+                  <option value="">학과 전체</option>
                   {Array.from(new Set(
                     (equipData.length > 0 ? equipData : defaultEquipments)
-                      .map(e => e.deptName || e.divisionName)
+                      .map(e => e.deptName)
                       .filter(Boolean)
                   )).map(dept => (
                     <option key={dept} value={dept}>{dept}</option>
+                  ))}
+                </select>
+              </div>
+
+              {/* 부서 필터 (요건 3 이원화 반영) */}
+              <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                <ListFilter size={16} style={{ color: "var(--text-secondary-dark)" }} />
+                <select
+                  value={divisionFilter}
+                  onChange={(e) => setDivisionFilter(e.target.value)}
+                  className="user-selector"
+                  style={{
+                    padding: "0.4rem 0.75rem",
+                    fontSize: "0.85rem",
+                    fontWeight: "600",
+                    width: "auto"
+                  }}
+                >
+                  <option value="">부서 전체</option>
+                  {Array.from(new Set(
+                    (equipData.length > 0 ? equipData : defaultEquipments)
+                      .map(e => e.divisionName)
+                      .filter(Boolean)
+                  )).map(div => (
+                    <option key={div} value={div}>{div}</option>
                   ))}
                 </select>
               </div>
@@ -846,8 +980,9 @@ export default function ProcurementManager({
                     </div>
                   </th>
                   <th rowSpan={3} style={{ padding: "0.75rem 0.5rem", textAlign: "left", fontWeight: "800", verticalAlign: "middle" }}>구입목적 및 활용계획</th>
-                  <th colSpan={12} style={{ padding: "0.5rem", textAlign: "center", fontWeight: "800", borderBottom: "1px solid rgba(255,255,255,0.08)", background: "rgba(255, 255, 255, 0.01)" }}>
-                    구매단계 (기획:P ➔ 승인:A ➔ 입찰:B ➔ 구매:Pr ➔ 검수:I)
+                  <th colSpan={12} style={{ padding: "0.5rem", textAlign: "center", fontWeight: "800", borderBottom: "1px solid rgba(255,255,255,0.08)", background: "rgba(255, 255, 255, 0.01)", lineHeight: "1.3" }}>
+                    구매단계<br />
+                    <span style={{ fontSize: "0.75rem", fontWeight: "normal", color: "var(--text-secondary)" }}>(기획:P ➔ 승인:A ➔ 입찰:B ➔ 구매:Pr ➔ 검수:I)</span>
                   </th>
                   <th rowSpan={3} style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "135px", verticalAlign: "middle" }}>문서번호</th>
                   {currentRole.id !== "GUEST" && (
@@ -892,12 +1027,17 @@ export default function ProcurementManager({
                     ? activeEquipList 
                     : activeEquipList.filter(e => e.unit === selectedEquipUnit);
 
-                  // 2) 학과/부서 필터링 (사용자 요건 3 대응)
+                  // 2) 학과 및 부서 필터 이원화 적용 (요건 3 AND 연산 연계)
                   if (deptFilter) {
                     filteredEquips = filteredEquips.filter(e => {
                       const dName = e.deptName || "";
+                      return dName.includes(deptFilter);
+                    });
+                  }
+                  if (divisionFilter) {
+                    filteredEquips = filteredEquips.filter(e => {
                       const divName = e.divisionName || "";
-                      return dName.includes(deptFilter) || divName.includes(deptFilter);
+                      return divName.includes(divisionFilter);
                     });
                   }
 
@@ -1082,20 +1222,78 @@ export default function ProcurementManager({
                             </div>
                           </td>
                           {currentRole.id !== "GUEST" && (
-                            <td style={{ padding: "0.8rem 0.5rem", textAlign: "center" }}>
-                              <button
-                                onClick={() => {
-                                  if (confirm("해당 기자재 항목을 삭제하시겠습니까?")) {
-                                    setEquipData(activeEquipList.filter(e => e.id !== equip.id));
-                                  }
-                                }}
-                                style={{ background: "transparent", border: "none", color: "rgba(255,255,255,0.25)", cursor: "pointer", transition: "color 0.15s" }}
-                                onMouseOver={(e) => e.currentTarget.style.color = "#ef4444"}
-                                onMouseOut={(e) => e.currentTarget.style.color = "rgba(255,255,255,0.25)"}
-                                title="삭제"
-                              >
-                                <Trash2 size={13} />
-                              </button>
+                            <td style={{ padding: "0.8rem 0.5rem", textAlign: "center", verticalAlign: "middle" }}>
+                              <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem", alignItems: "center" }}>
+                                <button
+                                  onClick={() => openEditModal(equip)}
+                                  style={{
+                                    background: "rgba(255,255,255,0.06)",
+                                    border: "1px solid rgba(255,255,255,0.1)",
+                                    borderRadius: "4px",
+                                    color: "rgba(255,255,255,0.8)",
+                                    padding: "0.2rem 0.4rem",
+                                    fontSize: "0.68rem",
+                                    cursor: "pointer",
+                                    transition: "all 0.15s ease",
+                                    width: "48px",
+                                    textAlign: "center"
+                                  }}
+                                  onMouseOver={(e) => {
+                                    e.currentTarget.style.background = "rgba(59, 130, 246, 0.2)";
+                                    e.currentTarget.style.borderColor = "rgba(59, 130, 246, 0.4)";
+                                    e.currentTarget.style.color = "#60A5FA";
+                                  }}
+                                  onMouseOut={(e) => {
+                                    e.currentTarget.style.background = "rgba(255,255,255,0.06)";
+                                    e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)";
+                                    e.currentTarget.style.color = "rgba(255,255,255,0.8)";
+                                  }}
+                                  title="기자재 수정"
+                                >
+                                  수정
+                                </button>
+                                <button
+                                  onClick={() => {
+                                    if (confirm("🚨 이 작업은 되돌릴 수 없습니다. 해당 기자재 항목을 정말로 삭제하시겠습니까?")) {
+                                      const inputPw = prompt("🔒 삭제 안전장치: 등록 시 설정한 비밀번호를 입력해 주세요.");
+                                      const registeredPw = equip.password || "1234";
+                                      
+                                      if (inputPw === null) return; // 취소
+                                      if (inputPw === registeredPw) {
+                                        setEquipData(activeEquipList.filter(e => e.id !== equip.id));
+                                        alert("🗑️ 기자재 항목이 안전하게 삭제되었습니다.");
+                                      } else {
+                                        alert("⚠️ 비밀번호가 일치하지 않습니다. 삭제 권한이 거부되었습니다.");
+                                      }
+                                    }
+                                  }}
+                                  style={{
+                                    background: "rgba(239, 68, 68, 0.1)",
+                                    border: "1px solid rgba(239, 68, 68, 0.2)",
+                                    borderRadius: "4px",
+                                    color: "#FCA5A5",
+                                    padding: "0.2rem 0.4rem",
+                                    fontSize: "0.68rem",
+                                    cursor: "pointer",
+                                    transition: "all 0.15s ease",
+                                    width: "48px",
+                                    textAlign: "center"
+                                  }}
+                                  onMouseOver={(e) => {
+                                    e.currentTarget.style.background = "rgba(239, 68, 68, 0.25)";
+                                    e.currentTarget.style.borderColor = "rgba(239, 68, 68, 0.5)";
+                                    e.currentTarget.style.color = "#F87171";
+                                  }}
+                                  onMouseOut={(e) => {
+                                    e.currentTarget.style.background = "rgba(239, 68, 68, 0.1)";
+                                    e.currentTarget.style.borderColor = "rgba(239, 68, 68, 0.2)";
+                                    e.currentTarget.style.color = "#FCA5A5";
+                                  }}
+                                  title="기자재 삭제"
+                                >
+                                  삭제
+                                </button>
+                              </div>
                             </td>
                           )}
                         </tr>
@@ -1228,7 +1426,7 @@ export default function ProcurementManager({
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid rgba(255,255,255,0.05)", paddingBottom: "0.5rem", marginBottom: "1rem" }}>
               <h3 style={{ margin: 0, color: "white", fontWeight: "800", fontSize: "1.1rem" }}>
                 {modalType === "env" && "🛠️ 신규 교육환경 개선 사업 등록"}
-                {modalType === "equip" && "🔬 신규 핵심 기자재 도입 등록"}
+                {modalType === "equip" && (isEditMode ? "🔬 핵심 기자재 도입 정보 수정" : "🔬 신규 핵심 기자재 도입 등록")}
                 {modalType === "service" && "💼 신규 주요 용역 계약 등록"}
               </h3>
               <button 
@@ -1387,15 +1585,38 @@ export default function ProcurementManager({
                         className="user-selector"
                       >
                         <option value="">-- 선택 안 함 --</option>
-                        <option value="공동기자재지원센터">공동기자재지원센터</option>
-                        <option value="산학협력단">산학협력단</option>
-                        <option value="LINC3.0사업단">LINC3.0사업단</option>
-                        <option value="RISE사업센터">RISE사업센터</option>
-                        <option value="늘봄누리센터">늘봄누리센터</option>
-                        <option value="신산업역량강화지원센터">신산업역량강화지원센터</option>
-                        <option value="학생직무체험지원센터">학생직무체험지원센터</option>
-                        <option value="국제교류원">국제교류원</option>
-                        <option value="원격교육지원센터">원격교육지원센터</option>
+                        {/* 대학본부 하위 조직 */}
+                        <optgroup label="대학본부">
+                          <option value="교무팀">교무팀</option>
+                          <option value="교수학습지원센터">교수학습지원센터</option>
+                          <option value="직업교육혁신센터">직업교육혁신센터</option>
+                          <option value="교양교육혁신센터">교양교육혁신센터</option>
+                          <option value="기획팀">기획팀</option>
+                          <option value="대외협력실">대외협력실</option>
+                          <option value="입학팀">입학팀</option>
+                          <option value="진로진학지원센터">진로진학지원센터</option>
+                          <option value="총무팀">총무팀</option>
+                          <option value="재무회계팀">재무회계팀</option>
+                          <option value="국제교류원운영팀">국제교류원운영팀</option>
+                          <option value="글로컬비즈니스센터">글로컬비즈니스센터</option>
+                          <option value="인권센터">인권센터</option>
+                          <option value="IR센터">IR센터</option>
+                        </optgroup>
+                        {/* 산학협력단 하위 조직 */}
+                        <optgroup label="산학협력단">
+                          <option value="산학기획팀">산학기획팀</option>
+                          <option value="산학지원팀">산학지원팀</option>
+                          <option value="창업창직교육센터">창업창직교육센터</option>
+                          <option value="현장실습지원센터">현장실습지원센터</option>
+                          <option value="울산광역시 탄소중립 지원센터">울산광역시 탄소중립 지원센터</option>
+                          <option value="울산늘봄누리센터">울산늘봄누리센터</option>
+                          <option value="종합환경분석센터">종합환경분석센터</option>
+                          <option value="영상콘텐츠제작센터">영상콘텐츠제작센터</option>
+                          <option value="스포츠재활운동센터">스포츠재활운동센터</option>
+                          <option value="이차전지연구소">이차전지연구소</option>
+                          <option value="지산학혁신연구소">지산학혁신연구소</option>
+                          <option value="어린이급식관리사업단">어린이급식관리사업단</option>
+                        </optgroup>
                       </select>
                     </div>
                   </div>
@@ -1456,6 +1677,20 @@ export default function ProcurementManager({
                         <option value="교과목(정규)">교과목(정규)</option>
                         <option value="교과목(비정규)">교과목(비정규)</option>
                       </select>
+                    </div>
+                    <div style={{ gridColumn: "span 2" }}>
+                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>
+                        🔒 등록/수정 비밀번호
+                      </label>
+                      <input 
+                        type="password" 
+                        name="password" 
+                        value={formData.password || ""} 
+                        onChange={handleInputChange} 
+                        required 
+                        placeholder="삭제 및 수정 권한 검증용 비밀번호 입력 (예: 1234)" 
+                        style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} 
+                      />
                     </div>
                   </div>
                 </>
