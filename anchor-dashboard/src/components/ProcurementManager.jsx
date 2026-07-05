@@ -2034,7 +2034,7 @@ export default function ProcurementManager({
                         {/* 제어 열 버튼 */}
                         <td style={{ padding: "0.8rem 0.5rem", textAlign: "center", whiteSpace: "nowrap" }}>
                           <div style={{ display: "flex", gap: "0.3rem", justifyContent: "center" }}>
-                            {currentRole.id !== "GUEST" && (currentRole.id === "ADMIN" || !equip.created_by || equip.created_by === currentUser?.uuid) && (
+                            {currentRole.id !== "GUEST" && (currentRole.id === "ADMIN" || currentRole.id === "TEAM_LEADER" || !equip.created_by || equip.created_by === currentUser?.uuid) && (
                               <>
                                 <button 
                                   onClick={() => openEditModal(equip)}
@@ -2873,7 +2873,7 @@ export default function ProcurementManager({
                           {currentRole.id !== "GUEST" && (
                             <td style={{ padding: "0.8rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap" }}>
                               <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem", alignItems: "center", width: "100%" }}>
-                                {(currentRole.id === "ADMIN" || !equip.created_by || equip.created_by === currentUser?.uuid) && (
+                                {(currentRole.id === "ADMIN" || currentRole.id === "TEAM_LEADER" || !equip.created_by || equip.created_by === currentUser?.uuid) && (
                                   <button
                                     onClick={() => openEditModal(equip)}
                                     style={{
@@ -2903,7 +2903,7 @@ export default function ProcurementManager({
                                     수정
                                   </button>
                                 )}
-                                {(currentRole.id === "ADMIN" || !equip.created_by || equip.created_by === currentUser?.uuid) && (
+                                {(currentRole.id === "ADMIN" || currentRole.id === "TEAM_LEADER" || !equip.created_by || equip.created_by === currentUser?.uuid) && (
                                   <button
                                     onClick={() => {
                                       if (confirm("🚨 이 작업은 되돌릴 수 없습니다. 해당 기자재 항목을 정말로 삭제하시겠습니까?")) {
@@ -3491,7 +3491,7 @@ export default function ProcurementManager({
                         {/* 제어 열 버튼 */}
                         <td style={{ padding: "0.8rem 0.5rem", textAlign: "center", whiteSpace: "nowrap" }}>
                           <div style={{ display: "flex", gap: "0.3rem", justifyContent: "center" }}>
-                            {currentRole.id !== "GUEST" && (currentRole.id === "ADMIN" || !equip.created_by || equip.created_by === currentUser?.uuid) && (
+                            {currentRole.id !== "GUEST" && (currentRole.id === "ADMIN" || currentRole.id === "TEAM_LEADER" || !equip.created_by || equip.created_by === currentUser?.uuid) && (
                               <>
                                 <button 
                                   onClick={() => openEditModal(equip)}

@@ -1459,8 +1459,12 @@ export default function App() {
   const isSongDirector = currentUser && (
     (currentUser.name || "").includes("송경영") ||
     currentUser.role_key === "DIRECTOR" ||
+    currentUser.role_key === "TEAM_LEADER" ||
+    currentUser.role_key === "ADMIN" ||
     currentUser.role === "사업단장" ||
-    currentUser.id === "director"
+    currentUser.role === "운영팀장" ||
+    currentUser.id === "director" ||
+    currentUser.id === "manager"
   );
 
   const [menuVisibility, setMenuVisibility] = useState(() => {
@@ -4052,15 +4056,9 @@ export default function App() {
   };
 
   const handleDeleteRequest = async (req) => {
-    // 1) 권한 검사: 송경영 단장(이름, 역할키, 아이디 등 종합 검사)
-    const isSongDirector = currentUser && (
-      (currentUser.name || "").includes("송경영") ||
-      currentUser.role_key === "DIRECTOR" ||
-      currentUser.role === "사업단장" ||
-      currentUser.id === "director"
-    );
+    // 1) 권한 검사
     if (!isSongDirector) {
-      alert("⚠️ 결재 내역 삭제 권한은 송경영 단장에게만 있습니다.");
+      alert("⚠️ 결재 내역 삭제 권한은 송경영 단장 및 관리자에게 있습니다.");
       return;
     }
 
@@ -6053,12 +6051,7 @@ export default function App() {
                                             </button>
                                           </>
                                         )}
-                                        {currentUser && (
-                                          (currentUser.name || "").includes("송경영") ||
-                                          currentUser.role_key === "DIRECTOR" ||
-                                          currentUser.role === "사업단장" ||
-                                          currentUser.id === "director"
-                                        ) && (
+                                        {isSongDirector && (
                                           <button
                                             onClick={() => handleDeleteRequest(req)}
                                             className="btn-primary"
