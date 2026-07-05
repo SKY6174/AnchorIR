@@ -532,7 +532,9 @@ export default function Sidebar({
               onClick={() => {
                 onChangeTab("procurement");
                 if (onChangeProcurementSubTab) {
-                  onChangeProcurementSubTab("env_improvement");
+                  const subTabs = ["env_improvement", "equipment_purchase", "major_services"];
+                  const firstActive = subTabs.find(tab => isSongDirector || menuVisibility[tab] !== false) || "env_improvement";
+                  onChangeProcurementSubTab(firstActive);
                 }
               }}
               style={getHiddenStyle("procurement")}
@@ -548,60 +550,66 @@ export default function Sidebar({
               </span>
             </div>
             <div className="nav-sub-menu">
-              <div
-                className={`nav-sub-item ${activeTab === "procurement" && procurementSubTab === "env_improvement" ? "active" : ""}`}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onChangeTab("procurement");
-                  if (onChangeProcurementSubTab) {
-                    onChangeProcurementSubTab("env_improvement");
-                  }
-                }}
-                style={getHiddenStyle("env_improvement")}
-              >
-                - 환경개선
-                {isHidden("env_improvement") && (
-                  <span style={{ fontSize: "0.6rem", color: "#ef4444", textDecoration: "none", marginLeft: "0.2rem" }}>
-                    [숨김]
-                  </span>
-                )}
-              </div>
-              <div
-                className={`nav-sub-item ${activeTab === "procurement" && procurementSubTab === "equipment_purchase" ? "active" : ""}`}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onChangeTab("procurement");
-                  if (onChangeProcurementSubTab) {
-                    onChangeProcurementSubTab("equipment_purchase");
-                  }
-                }}
-                style={getHiddenStyle("equipment_purchase")}
-              >
-                - 기자재 구입∙운영
-                {isHidden("equipment_purchase") && (
-                  <span style={{ fontSize: "0.6rem", color: "#ef4444", textDecoration: "none", marginLeft: "0.2rem" }}>
-                    [숨김]
-                  </span>
-                )}
-              </div>
-              <div
-                className={`nav-sub-item ${activeTab === "procurement" && procurementSubTab === "major_services" ? "active" : ""}`}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onChangeTab("procurement");
-                  if (onChangeProcurementSubTab) {
-                    onChangeProcurementSubTab("major_services");
-                  }
-                }}
-                style={getHiddenStyle("major_services")}
-              >
-                - 주요 용역
-                {isHidden("major_services") && (
-                  <span style={{ fontSize: "0.6rem", color: "#ef4444", textDecoration: "none", marginLeft: "0.2rem" }}>
-                    [숨김]
-                  </span>
-                )}
-              </div>
+              {(menuVisibility.env_improvement !== false || isSongDirector) && (
+                <div
+                  className={`nav-sub-item ${activeTab === "procurement" && procurementSubTab === "env_improvement" ? "active" : ""}`}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onChangeTab("procurement");
+                    if (onChangeProcurementSubTab) {
+                      onChangeProcurementSubTab("env_improvement");
+                    }
+                  }}
+                  style={getHiddenStyle("env_improvement")}
+                >
+                  - 환경개선
+                  {isHidden("env_improvement") && (
+                    <span style={{ fontSize: "0.6rem", color: "#ef4444", textDecoration: "none", marginLeft: "0.2rem" }}>
+                      [숨김]
+                    </span>
+                  )}
+                </div>
+              )}
+              {(menuVisibility.equipment_purchase !== false || isSongDirector) && (
+                <div
+                  className={`nav-sub-item ${activeTab === "procurement" && procurementSubTab === "equipment_purchase" ? "active" : ""}`}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onChangeTab("procurement");
+                    if (onChangeProcurementSubTab) {
+                      onChangeProcurementSubTab("equipment_purchase");
+                    }
+                  }}
+                  style={getHiddenStyle("equipment_purchase")}
+                >
+                  - 기자재 구입∙운영
+                  {isHidden("equipment_purchase") && (
+                    <span style={{ fontSize: "0.6rem", color: "#ef4444", textDecoration: "none", marginLeft: "0.2rem" }}>
+                      [숨김]
+                    </span>
+                  )}
+                </div>
+              )}
+              {(menuVisibility.major_services !== false || isSongDirector) && (
+                <div
+                  className={`nav-sub-item ${activeTab === "procurement" && procurementSubTab === "major_services" ? "active" : ""}`}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onChangeTab("procurement");
+                    if (onChangeProcurementSubTab) {
+                      onChangeProcurementSubTab("major_services");
+                    }
+                  }}
+                  style={getHiddenStyle("major_services")}
+                >
+                  - 주요 용역
+                  {isHidden("major_services") && (
+                    <span style={{ fontSize: "0.6rem", color: "#ef4444", textDecoration: "none", marginLeft: "0.2rem" }}>
+                      [숨김]
+                    </span>
+                  )}
+                </div>
+              )}
             </div>
           </div>
 
