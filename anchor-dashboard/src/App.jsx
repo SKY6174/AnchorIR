@@ -1465,14 +1465,54 @@ export default function App() {
 
   const [menuVisibility, setMenuVisibility] = useState(() => {
     const cached = localStorage.getItem("anchor_menu_visibility");
+    const defaultVisibility = {
+      dashboard: true,
+      progress: true,
+      progress_status: true,
+      major_programs: true,
+      satisfaction_survey: true,
+      projects: true,
+      unit_status: true,
+      unit_system: true,
+      program_mgmt: true,
+      kpis: true,
+      kpi_status: true,
+      kpi_self: true,
+      kpi_focus: true,
+      budget: true,
+      settlement: true,
+      execution: true,
+      procurement: true,
+      env_improvement: true,
+      equipment_purchase: true,
+      major_services: true,
+      agreements: true,
+      certificates: true,
+      awards: true,
+      schedule: true,
+      monthly: true,
+      events: true,
+      meetings: true,
+      committees: true,
+      press: true,
+      management: true,
+      approvals: true,
+      members: true,
+      users: true,
+      programs: true,
+      org_chart: true,
+      partners: true
+    };
+
     if (cached) {
       try {
-        return JSON.parse(cached);
+        const parsed = JSON.parse(cached);
+        return { ...defaultVisibility, ...parsed };
       } catch (e) {
-        return {};
+        return defaultVisibility;
       }
     }
-    return {};
+    return defaultVisibility;
   });
 
   const handleSaveMenuVisibility = (nextVisibility) => {
