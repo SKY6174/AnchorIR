@@ -2578,6 +2578,47 @@ export default function App() {
     return localStorage.getItem("anchor_selected_prog_id") || null;
   });
 
+  // 성과지표 subTab이 노출 여부 설정에 의해 가려졌을 때 활성화 탭을 자동으로 숨겨지지 않은 유효 탭으로 보정
+  useEffect(() => {
+    if (activeTab === "kpis" && menuVisibility) {
+      const isStatusVisible = menuVisibility.kpi_status !== false;
+      const isSelfVisible = menuVisibility.kpi_self !== false;
+      const isFocusVisible = menuVisibility.kpi_focus !== false;
+
+      if (kpiSubTab === "공통" && !isStatusVisible) {
+        if (isSelfVisible) {
+          setKpiSubTab("자율");
+          const first = displayProjects.flatMap(p => p.units.flatMap(u => u.kpis)).find(k => k.type === "자율");
+          setSelectedKpi(first || null);
+        } else if (isFocusVisible) {
+          setKpiSubTab("중점");
+          const first = displayProjects.flatMap(p => p.units.flatMap(u => u.kpis)).find(k => k.type === "중점");
+          setSelectedKpi(first || null);
+        }
+      } else if (kpiSubTab === "자율" && !isSelfVisible) {
+        if (isStatusVisible) {
+          setKpiSubTab("공통");
+          const first = displayProjects.flatMap(p => p.units.flatMap(u => u.kpis)).find(k => k.type === "공통");
+          setSelectedKpi(first || null);
+        } else if (isFocusVisible) {
+          setKpiSubTab("중점");
+          const first = displayProjects.flatMap(p => p.units.flatMap(u => u.kpis)).find(k => k.type === "중점");
+          setSelectedKpi(first || null);
+        }
+      } else if (kpiSubTab === "중점" && !isFocusVisible) {
+        if (isStatusVisible) {
+          setKpiSubTab("공통");
+          const first = displayProjects.flatMap(p => p.units.flatMap(u => u.kpis)).find(k => k.type === "공통");
+          setSelectedKpi(first || null);
+        } else if (isSelfVisible) {
+          setKpiSubTab("자율");
+          const first = displayProjects.flatMap(p => p.units.flatMap(u => u.kpis)).find(k => k.type === "자율");
+          setSelectedKpi(first || null);
+        }
+      }
+    }
+  }, [activeTab, menuVisibility, kpiSubTab, displayProjects]);
+
   useEffect(() => {
     if (selectedKpi) {
       localStorage.setItem("anchor_selected_kpi", JSON.stringify(selectedKpi));
@@ -6310,69 +6351,75 @@ export default function App() {
                   <h2 style={{ fontSize: "1.25rem", fontWeight: "800" }}>성과지표(KPI) 통합 목록</h2>
                   {/* 자율 / 중점 성과지표 서브탭 제어기 */}
                   <div style={{ display: "flex", gap: "0.3rem", background: "rgba(255,255,255,0.02)", border: "1px solid var(--border-color-dark)", padding: "0.25rem", borderRadius: "0.5rem", marginTop: "0.5rem", width: "fit-content" }}>
-                    <button
-                      onClick={() => {
-                        setKpiSubTab("공통");
-                        // 공통 탭에 해당하는 첫 번째 지표 자동 선택
-                        const first = displayProjects.flatMap(p => p.units.flatMap(u => u.kpis)).find(k => k.type === "공통");
-                        setSelectedKpi(first || null);
-                      }}
-                      style={{
-                        border: "none",
-                        padding: "0.3rem 0.8rem",
-                        borderRadius: "0.35rem",
-                        fontSize: "0.7rem",
-                        fontWeight: "700",
-                        cursor: "pointer",
-                        background: kpiSubTab === "공통" ? "var(--accent-color)" : "transparent",
-                        color: kpiSubTab === "공통" ? "white" : "var(--text-secondary-dark)",
-                        transition: "all 0.2s"
-                      }}
-                    >
-                      (교육부)공통성과지표
-                    </button>
-                    <button
-                      onClick={() => {
-                        setKpiSubTab("자율");
-                        // 자율 탭에 해당하는 첫 번째 지표 자동 선택
-                        const first = displayProjects.flatMap(p => p.units.flatMap(u => u.kpis)).find(k => k.type === "자율");
-                        setSelectedKpi(first || null);
-                      }}
-                      style={{
-                        border: "none",
-                        padding: "0.3rem 0.8rem",
-                        borderRadius: "0.35rem",
-                        fontSize: "0.7rem",
-                        fontWeight: "700",
-                        cursor: "pointer",
-                        background: kpiSubTab === "자율" ? "var(--accent-color)" : "transparent",
-                        color: kpiSubTab === "자율" ? "white" : "var(--text-secondary-dark)",
-                        transition: "all 0.2s"
-                      }}
-                    >
-                      (지자체)자율성과지표
-                    </button>
-                    <button
-                      onClick={() => {
-                        setKpiSubTab("중점");
-                        // 중점 탭에 해당하는 첫 번째 지표 자동 선택
-                        const first = displayProjects.flatMap(p => p.units.flatMap(u => u.kpis)).find(k => k.type === "중점");
-                        setSelectedKpi(first || null);
-                      }}
-                      style={{
-                        border: "none",
-                        padding: "0.3rem 0.8rem",
-                        borderRadius: "0.35rem",
-                        fontSize: "0.7rem",
-                        fontWeight: "700",
-                        cursor: "pointer",
-                        background: kpiSubTab === "중점" ? "var(--accent-color)" : "transparent",
-                        color: kpiSubTab === "중점" ? "white" : "var(--text-secondary-dark)",
-                        transition: "all 0.2s"
-                      }}
-                    >
-                      (대학)중점관리지표
-                    </button>
+                    {(menuVisibility.kpi_status !== false) && (
+                      <button
+                        onClick={() => {
+                          setKpiSubTab("공통");
+                          // 공통 탭에 해당하는 첫 번째 지표 자동 선택
+                          const first = displayProjects.flatMap(p => p.units.flatMap(u => u.kpis)).find(k => k.type === "공통");
+                          setSelectedKpi(first || null);
+                        }}
+                        style={{
+                          border: "none",
+                          padding: "0.3rem 0.8rem",
+                          borderRadius: "0.35rem",
+                          fontSize: "0.7rem",
+                          fontWeight: "700",
+                          cursor: "pointer",
+                          background: kpiSubTab === "공통" ? "var(--accent-color)" : "transparent",
+                          color: kpiSubTab === "공통" ? "white" : "var(--text-secondary-dark)",
+                          transition: "all 0.2s"
+                        }}
+                      >
+                        (교육부)공통성과지표
+                      </button>
+                    )}
+                    {(menuVisibility.kpi_self !== false) && (
+                      <button
+                        onClick={() => {
+                          setKpiSubTab("자율");
+                          // 자율 탭에 해당하는 첫 번째 지표 자동 선택
+                          const first = displayProjects.flatMap(p => p.units.flatMap(u => u.kpis)).find(k => k.type === "자율");
+                          setSelectedKpi(first || null);
+                        }}
+                        style={{
+                          border: "none",
+                          padding: "0.3rem 0.8rem",
+                          borderRadius: "0.35rem",
+                          fontSize: "0.7rem",
+                          fontWeight: "700",
+                          cursor: "pointer",
+                          background: kpiSubTab === "자율" ? "var(--accent-color)" : "transparent",
+                          color: kpiSubTab === "자율" ? "white" : "var(--text-secondary-dark)",
+                          transition: "all 0.2s"
+                        }}
+                      >
+                        (지자체)자율성과지표
+                      </button>
+                    )}
+                    {(menuVisibility.kpi_focus !== false) && (
+                      <button
+                        onClick={() => {
+                          setKpiSubTab("중점");
+                          // 중점 탭에 해당하는 첫 번째 지표 자동 선택
+                          const first = displayProjects.flatMap(p => p.units.flatMap(u => u.kpis)).find(k => k.type === "중점");
+                          setSelectedKpi(first || null);
+                        }}
+                        style={{
+                          border: "none",
+                          padding: "0.3rem 0.8rem",
+                          borderRadius: "0.35rem",
+                          fontSize: "0.7rem",
+                          fontWeight: "700",
+                          cursor: "pointer",
+                          background: kpiSubTab === "중점" ? "var(--accent-color)" : "transparent",
+                          color: kpiSubTab === "중점" ? "white" : "var(--text-secondary-dark)",
+                          transition: "all 0.2s"
+                        }}
+                      >
+                        (대학)중점관리지표
+                      </button>
+                    )}
                   </div>
                 </div>
                 
