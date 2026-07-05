@@ -3463,7 +3463,12 @@ export default function ProcurementManager({
                   <th style={{ padding: "0.75rem 0.5rem", textAlign: "left", fontWeight: "800", width: "200px" }}>용역명</th>
                   <th style={{ padding: "0.75rem 0.5rem", textAlign: "right", fontWeight: "800", width: "135px" }}>사업예산/집행액(천원)</th>
                   <th style={{ padding: "0.75rem 0.5rem", textAlign: "left", fontWeight: "800", width: "320px" }}>용역목적 및 수행결과</th>
-                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "420px" }}>용역 절차</th>
+                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "490px" }}>
+                    용역 절차
+                    <span style={{ display: "block", fontSize: "0.7rem", color: "var(--text-secondary-dark)", fontWeight: "500", marginTop: "0.15rem" }}>
+                      [기획(PP) ➔ 의뢰(RFO) ➔ 입찰(B) ➔ 평가∙선정(ES) ➔ 계약(C) ➔ 수행(E) ➔ 검수(I)]
+                    </span>
+                  </th>
                   <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "130px" }}>관련문서</th>
                   <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "70px" }}>제어</th>
                 </tr>
