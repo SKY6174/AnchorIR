@@ -1,37 +1,37 @@
 import React, { useState } from "react";
-import { Plus, Trash2, Info, ListFilter } from "lucide-react";
+import { Plus, Trash2, Info, ListFilter, ArrowUpDown } from "lucide-react";
 
-// 1. 10대 기자재 초기 모의 데이터 정의
+// 1. 10대 기자재 초기 모의 데이터 정의 (4번 요건에 따라 날짜 주입형으로 개편)
 const defaultEquipments = [
-  { id: 1, unit: "A1", seq: 1, deptName: "간호학과", divisionName: "", itemName: "스마트 환자 시뮬레이터 (중환자 케어 실습 장비)", unitPrice: 120000000, quantity: 1, description: "글로벌 앵커 혁신 교육과정 임상 실습 고도화 핵심 기기", operation: "교과목(정규)", 
-    milestones: { "3": ["기획"], "4": ["기획", "승인"], "5": ["승인"], "6": ["입찰"], "7": ["구매"], "8": ["구매"], "9": ["검수"], "10": ["검수"], "11": [], "12": [], "1": [], "2": [] }
+  { id: 1, unit: "A1", seq: 1, deptName: "간호학부", divisionName: "", itemName: "스마트 환자 시뮬레이터 (중환자 케어 실습 장비)", unitPrice: 120000000, quantity: 1, description: "글로벌 앵커 혁신 교육과정 임상 실습 고도화 핵심 기기", operation: "교과목(정규)", 
+    dateP: "2025-03-10", dateA: "2025-04-15", dateB: "2025-06-12", datePr: "2025-07-20", dateI: "2025-09-05"
   },
   { id: 2, unit: "A2", seq: 2, deptName: "화학공학과", divisionName: "", itemName: "정밀 화학 분석 크로마토그래피 시스템", unitPrice: 245000000, quantity: 1, description: "신산업 저탄소 에너지 트랙 화학 정밀 분석 실습 장비", operation: "교과목(정규)", 
-    milestones: { "3": ["기획"], "4": ["승인"], "5": ["승인"], "6": ["입찰"], "7": ["구매"], "8": ["구매"], "9": ["검수"], "10": [], "11": [], "12": [], "1": [], "2": [] }
+    dateP: "2025-03-15", dateA: "2025-04-20", dateB: "2025-06-18", datePr: "2025-07-25", dateI: "2025-09-10"
   },
   { id: 3, unit: "B1", seq: 3, deptName: "컴퓨터공학과", divisionName: "", itemName: "AI 알고리즘 모델링 연산용 고성능 GPU 워크스테이션", unitPrice: 15000000, quantity: 3, description: "RCC 특화산업 AI 융합 실감형 교육 센터 실무 교육 지원", operation: "교과목(정규)", 
-    milestones: { "3": ["기획"], "4": ["기획", "승인"], "5": ["승인"], "6": ["구매"], "7": ["구매"], "8": ["검수"], "9": [], "10": [], "11": [], "12": [], "1": [], "2": [] }
+    dateP: "2025-03-12", dateA: "2025-04-18", dateB: "", datePr: "2025-06-25", dateI: "2025-08-14"
   },
-  { id: 4, unit: "B2", seq: 4, deptName: "기계공학과", divisionName: "", itemName: "스마트 팩토리 모듈 제어 및 3D 정밀 프린팅 모듈", unitPrice: 38000000, quantity: 1, description: "지산학 연계 제조 혁신 엔지니어 교육 기자재", operation: "교과목(정규)", 
-    milestones: { "3": ["기획"], "4": ["기획"], "5": ["승인"], "6": ["구매"], "7": ["구매"], "8": ["검수"], "9": [], "10": [], "11": [], "12": [], "1": [], "2": [] }
+  { id: 4, unit: "B2", seq: 4, deptName: "기계공학부", divisionName: "", itemName: "스마트 팩토리 모듈 제어 및 3D 정밀 프린팅 모듈", unitPrice: 38000000, quantity: 1, description: "지산학 연계 제조 혁신 엔지니어 교육 기자재", operation: "교과목(정규)", 
+    dateP: "2025-03-20", dateA: "2025-05-15", dateB: "2025-06-08", datePr: "2025-06-20", dateI: "2025-08-18"
   },
-  { id: 5, unit: "B3", seq: 5, deptName: "전기전자공학과", divisionName: "", itemName: "반도체 임베디드 코딩 및 고정밀 계측 오실로스코프", unitPrice: 8500000, quantity: 4, description: "반도체 전공 대학 연계 실무 미러형 교육 설계용 장비", operation: "교과목(정규)", 
-    milestones: { "3": ["기획"], "4": ["승인"], "5": ["승인"], "6": ["구매"], "7": ["구매"], "8": ["검수"], "9": [], "10": [], "11": [], "12": [], "1": [], "2": [] }
+  { id: 5, unit: "B3", seq: 5, deptName: "전기전자공학부", divisionName: "", itemName: "반도체 임베디드 코딩 및 고정밀 계측 오실로스코프", unitPrice: 8500000, quantity: 4, description: "반도체 전공 대학 연계 실무 미러형 교육 설계용 장비", operation: "교과목(정규)", 
+    dateP: "2025-03-25", dateA: "2025-04-28", dateB: "2025-06-05", datePr: "2025-06-18", dateI: "2025-08-20"
   },
   { id: 6, unit: "B4", seq: 6, deptName: "유아교육과", divisionName: "", itemName: "늘봄 연계 창의 놀이 실증용 스마트 인터랙티브 디스플레이", unitPrice: 8500000, quantity: 2, description: "에듀테크 기반 창의적 교육 콘텐츠 제작 교육 과정 운영", operation: "교과목(비정규)", 
-    milestones: { "3": ["기획"], "4": ["기획"], "5": ["승인"], "6": ["구매"], "7": ["구매"], "8": ["검수"], "9": [], "10": [], "11": [], "12": [], "1": [], "2": [] }
+    dateP: "2025-03-18", dateA: "2025-05-10", dateB: "", datePr: "2025-06-24", dateI: "2025-08-25"
   },
-  { id: 7, unit: "C1", seq: 7, deptName: "스마트팩토리전공", divisionName: "", itemName: "다목적 6축 소형 스마트 교육용 협동 로봇 머니퓰레이터", unitPrice: 28000000, quantity: 1, description: "미래 지능형 로봇 운용/제어 교과목 현장 중심 실습", operation: "교과목(정규)", 
-    milestones: { "3": ["기획"], "4": ["기획"], "5": ["승인"], "6": ["구매"], "7": ["구매"], "8": ["검수"], "9": [], "10": [], "11": [], "12": [], "1": [], "2": [] }
+  { id: 7, unit: "C1", seq: 7, deptName: "컴퓨터공학과", divisionName: "", itemName: "다목적 6축 소형 스마트 교육용 협동 로봇 머니퓰레이터", unitPrice: 28000000, quantity: 1, description: "미래 지능형 로봇 운용/제어 교과목 현장 중심 실습", operation: "교과목(정규)", 
+    dateP: "2025-03-22", dateA: "2025-05-12", dateB: "2025-06-15", datePr: "2025-06-28", dateI: "2025-08-28"
   },
   { id: 8, unit: "C2", seq: 8, deptName: "반려동물보건과", divisionName: "", itemName: "동물 전용 디지털 초음파 진단 장치", unitPrice: 19000000, quantity: 1, description: "신설학과 실무 미러형 임상 실습실 조달 품목", operation: "교과목(정규)", 
-    milestones: { "3": [], "4": ["기획"], "5": ["기획", "승인"], "6": ["승인"], "7": ["구매"], "8": ["구매"], "9": ["검수"], "10": [], "11": [], "12": [], "1": [], "2": [] }
+    dateP: "2025-04-10", dateA: "2025-05-20", dateB: "2025-06-18", datePr: "2025-07-15", dateI: "2025-09-12"
   },
-  { id: 9, unit: "D1", seq: 9, deptName: "스마트선박학과", divisionName: "", itemName: "미래 친환경선박 가상 운항 교육 시뮬레이터", unitPrice: 45000000, quantity: 1, description: "5극3특 가상 운항 실습 교육 과정 지원용 장비", operation: "교과목(정규)", 
-    milestones: { "3": ["기획"], "4": ["기획"], "5": ["기획", "승인"], "6": ["승인"], "7": ["입찰"], "8": ["입찰", "구매"], "9": ["구매"], "10": ["구매"], "11": ["검수"], "12": ["검수"], "1": ["검수"], "2": ["검수"] }
+  { id: 9, unit: "D1", seq: 9, deptName: "조선해양시스템공학과", divisionName: "", itemName: "미래 친환경선박 가상 운항 교육 시뮬레이터", unitPrice: 45000000, quantity: 1, description: "5극3특 가상 운항 실습 교육 과정 지원용 장비", operation: "교과목(정규)", 
+    dateP: "2025-03-08", dateA: "2025-05-08", dateB: "2025-07-10", datePr: "2025-08-20", dateI: "2025-11-15"
   },
-  { id: 10, unit: "D2", seq: 10, deptName: "미용예술학과", divisionName: "", itemName: "메디컬 스킨케어 다기능 뷰티 디바이스", unitPrice: 6500000, quantity: 5, description: "웰니스 뷰티 케어 실습 및 지역 상생 뷰티 아카데미 활용", operation: "교과목(비정규)", 
-    milestones: { "3": ["기획"], "4": ["기획", "승인"], "5": ["승인"], "6": ["구매"], "7": ["구매"], "8": ["검수"], "9": ["검수"], "10": [], "11": [], "12": [], "1": [], "2": [] }
+  { id: 10, unit: "D2", seq: 10, deptName: "물리치료학과", divisionName: "", itemName: "메디컬 스킨케어 다기능 뷰티 디바이스", unitPrice: 6500000, quantity: 5, description: "웰니스 뷰티 케어 실습 및 지역 상생 뷰티 아카데미 활용", operation: "교과목(비정규)", 
+    dateP: "2025-03-14", dateA: "2025-04-24", dateB: "", datePr: "2025-06-22", dateI: "2025-08-29"
   }
 ];
 
@@ -46,6 +46,41 @@ const formatToThousandWon = (value) => {
   if (value === undefined || value === null || isNaN(value)) return "0";
   return (value / 1000).toLocaleString(undefined, { maximumFractionDigits: 0 });
 };
+
+// 날짜 데이터를 기반으로 3월~2월 캘린더 구매단계(P, A, B, Pr, I) 매핑 헬퍼 함수 (4번 요건 대응)
+const getMilestonesFromDates = (item, activeYear) => {
+  const milestones = { "3": [], "4": [], "5": [], "6": [], "7": [], "8": [], "9": [], "10": [], "11": [], "12": [], "1": [], "2": [] };
+  const baseYear = 2024 + Number(activeYear || 1); // 1차년도: 2025, 2차년도: 2026
+  
+  const checkAndAdd = (dateStr, phaseCode) => {
+    if (!dateStr) return;
+    const date = new Date(dateStr);
+    if (isNaN(date.getTime())) return;
+    
+    const year = date.getFullYear();
+    const month = date.getMonth() + 1;
+    
+    const isCurrentYearPart = (month >= 3 && month <= 12 && year === baseYear);
+    const isNextYearPart = ((month === 1 || month === 2) && year === baseYear + 1);
+    
+    if (isCurrentYearPart || isNextYearPart) {
+      const monthKey = String(month);
+      if (milestones[monthKey] && !milestones[monthKey].includes(phaseCode)) {
+        milestones[monthKey].push(phaseCode);
+      }
+    }
+  };
+  
+  checkAndAdd(item.dateP, "P");
+  checkAndAdd(item.dateA, "A");
+  checkAndAdd(item.dateB, "B");
+  checkAndAdd(item.datePr, "Pr");
+  checkAndAdd(item.dateI, "I");
+  
+  return milestones;
+};
+
+
 
 // 단위과제별 2차년도 사업계획서 요약 모의 데이터 (기획문서용)
 const PROPOSAL_SUMMARIES = {
@@ -161,6 +196,20 @@ export default function ProcurementManager({
   // 기획문서 및 입찰문서 팝업용 상태 추가 (사용자 요건 3 대응)
   const [proposalModalData, setProposalModalData] = useState(null);
   const [bidModalData, setBidModalData] = useState(null);
+
+  // 학과/부서 필터 및 정렬 상태 추가 (사용자 요건 3 대응)
+  const [deptFilter, setDeptFilter] = useState("");
+  const [sortField, setSortField] = useState("seq"); // 기본값 순번
+  const [sortDirection, setSortDirection] = useState("asc"); // 기본값 오름차순
+
+  const handleSort = (field) => {
+    if (sortField === field) {
+      setSortDirection(prev => (prev === "asc" ? "desc" : "asc"));
+    } else {
+      setSortField(field);
+      setSortDirection("asc");
+    }
+  };
   
   // 환경개선 상세 팝업 상태
   const [selectedEnvItem, setSelectedEnvItem] = useState(null);
@@ -283,13 +332,18 @@ export default function ProcurementManager({
       };
     }
     
-    // 각 단계별 텍스트 및 색상 매핑 (기획 P, 승인 A, 입찰 B, 구매 Pr, 검수 I)
+    // 각 단계별 텍스트 및 색상 매핑 (기획 P, 승인 A, 입찰 B, 구매 Pr, 검수 I 및 영문 약어 호환)
     const stepMeta = {
       "기획": { text: "P", color: "#f59e0b" },
       "승인": { text: "A", color: "#3b82f6" },
       "입찰": { text: "B", color: "#06b6d4" },
       "구매": { text: "Pr", color: "#a78bfa" },
-      "검수": { text: "I", color: "#10b981" }
+      "검수": { text: "I", color: "#10b981" },
+      "P": { text: "P", color: "#f59e0b" },
+      "A": { text: "A", color: "#3b82f6" },
+      "B": { text: "B", color: "#06b6d4" },
+      "Pr": { text: "Pr", color: "#a78bfa" },
+      "I": { text: "I", color: "#10b981" }
     };
     
     // 1개 선택 시
@@ -393,9 +447,11 @@ export default function ProcurementManager({
         description: formData.description || "-",
         operation: formData.operation || "교과목(정규)",
         mgrDept: formData.mgrDept || "ECC",
-        milestones: formData.milestones || {
-          "3": [], "4": [], "5": [], "6": [], "7": [], "8": [], "9": [], "10": [], "11": [], "12": [], "1": [], "2": []
-        }
+        dateP: formData.dateP || "",
+        dateA: formData.dateA || "",
+        dateB: formData.dateB || "",
+        datePr: formData.datePr || "",
+        dateI: formData.dateI || ""
       };
       setEquipData([...activeEquipList, newItem]);
     } else if (modalType === "service") {
@@ -467,7 +523,11 @@ export default function ProcurementManager({
       step: "기획",
       operation: "교과목(정규)",
       mgrDept: "ECC",
-      milestones: { "3": [], "4": [], "5": [], "6": [], "7": [], "8": [], "9": [], "10": [], "11": [], "12": [], "1": [], "2": [] },
+      dateP: "",
+      dateA: "",
+      dateB: "",
+      datePr: "",
+      dateI: "",
       providerQual: "",
       opResult: ""
     });
@@ -649,7 +709,32 @@ export default function ProcurementManager({
               </p>
             </div>
             
-            <div style={{ display: "flex", gap: "0.75rem", alignItems: "center" }}>
+            <div style={{ display: "flex", gap: "0.75rem", alignItems: "center", flexWrap: "wrap" }}>
+              {/* 학과/부서 필터 (사용자 요건 3 대응) */}
+              <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                <ListFilter size={16} style={{ color: "var(--text-secondary-dark)" }} />
+                <select
+                  value={deptFilter}
+                  onChange={(e) => setDeptFilter(e.target.value)}
+                  className="user-selector"
+                  style={{
+                    padding: "0.4rem 0.75rem",
+                    fontSize: "0.85rem",
+                    fontWeight: "600",
+                    width: "auto"
+                  }}
+                >
+                  <option value="">전체 학과/부서</option>
+                  {Array.from(new Set(
+                    (equipData.length > 0 ? equipData : defaultEquipments)
+                      .map(e => e.deptName || e.divisionName)
+                      .filter(Boolean)
+                  )).map(dept => (
+                    <option key={dept} value={dept}>{dept}</option>
+                  ))}
+                </select>
+              </div>
+
               {/* 단위과제 필터 */}
               <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
                 <ListFilter size={16} style={{ color: "var(--text-secondary-dark)" }} />
@@ -665,9 +750,14 @@ export default function ProcurementManager({
                   }}
                 >
                   <option value="ALL">전체 과제</option>
-                  {["A1", "A2", "B1", "B2", "B3", "B4", "C1", "C2", "D1", "D2", "D3", "D4"].map(u => (
-                    <option key={u} value={u}>{u} 과제</option>
-                  ))}
+                  {Number(selectedYear) === 1 
+                    ? ["A1", "A2", "B1", "B2", "B3", "B4", "C1", "C2", "D1", "D2", "D3", "D4"].map(u => (
+                        <option key={u} value={u}>{u} 과제</option>
+                      ))
+                    : ["A1가", "A1나", "A2", "A3", "B1", "B2", "B3", "B4", "C1", "C2", "D1", "D2", "D3"].map(u => (
+                        <option key={u} value={u}>{u} 과제</option>
+                      ))
+                  }
                 </select>
               </div>
 
@@ -702,14 +792,60 @@ export default function ProcurementManager({
               <thead>
                 {/* 1행: 대분류 헤더 */}
                 <tr style={{ background: "rgba(255, 255, 255, 0.03)", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
-                  <th rowSpan={3} style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "45px", verticalAlign: "middle" }}>순번</th>
-                  <th rowSpan={3} style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "55px", verticalAlign: "middle" }}>과제</th>
-                  <th rowSpan={3} style={{ padding: "0.75rem 0.5rem", textAlign: "left", fontWeight: "800", width: "120px", verticalAlign: "middle" }}>학과 / 부서</th>
+                  <th 
+                    rowSpan={3} 
+                    onClick={() => handleSort("seq")} 
+                    style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "55px", verticalAlign: "middle", cursor: "pointer", userSelect: "none" }}
+                    title="순번 기준 정렬"
+                  >
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "0.2rem" }}>
+                      순번
+                      <ArrowUpDown size={12} style={{ opacity: sortField === "seq" ? 1 : 0.4 }} />
+                    </div>
+                  </th>
+                  <th 
+                    rowSpan={3} 
+                    onClick={() => handleSort("unit")} 
+                    style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "65px", verticalAlign: "middle", cursor: "pointer", userSelect: "none" }}
+                    title="과제 기준 정렬"
+                  >
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "0.2rem" }}>
+                      과제
+                      <ArrowUpDown size={12} style={{ opacity: sortField === "unit" ? 1 : 0.4 }} />
+                    </div>
+                  </th>
+                  <th rowSpan={3} style={{ padding: "0.75rem 0.5rem", textAlign: "left", fontWeight: "800", width: "130px", verticalAlign: "middle" }}>학과 / 부서</th>
                   <th rowSpan={3} style={{ padding: "0.75rem 0.5rem", textAlign: "left", fontWeight: "800", width: "180px", verticalAlign: "middle" }}>품명</th>
-                  <th rowSpan={3} style={{ padding: "0.75rem 0.5rem", textAlign: "right", fontWeight: "800", width: "90px", verticalAlign: "middle" }}>단가(천원)</th>
+                  <th 
+                    rowSpan={3} 
+                    onClick={() => handleSort("unitPrice")} 
+                    style={{ padding: "0.5rem 0.3rem", textAlign: "right", fontWeight: "800", width: "95px", verticalAlign: "middle", cursor: "pointer", userSelect: "none" }}
+                    title="단가 기준 정렬"
+                  >
+                    <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", justifyContent: "center" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}>
+                        단가
+                        <ArrowUpDown size={12} style={{ opacity: sortField === "unitPrice" ? 1 : 0.4 }} />
+                      </div>
+                      <span style={{ fontSize: "0.68rem", fontWeight: "400", color: "var(--text-secondary-dark)", marginTop: "0.1rem" }}>(백만원)</span>
+                    </div>
+                  </th>
                   <th rowSpan={3} style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "50px", verticalAlign: "middle" }}>수량</th>
-                  <th rowSpan={3} style={{ padding: "0.75rem 0.5rem", textAlign: "right", fontWeight: "800", width: "100px", verticalAlign: "middle" }}>금액</th>
-                  <th rowSpan={3} style={{ padding: "0.75rem 0.5rem", textAlign: "left", fontWeight: "800", verticalAlign: "middle" }}>관련내용</th>
+                  <th 
+                    rowSpan={3} 
+                    onClick={() => handleSort("total")} 
+                    style={{ padding: "0.5rem 0.3rem", textAlign: "right", fontWeight: "800", width: "105px", verticalAlign: "middle", cursor: "pointer", userSelect: "none" }}
+                    title="금액 기준 정렬"
+                  >
+                    <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", justifyContent: "center" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}>
+                        금액
+                        <ArrowUpDown size={12} style={{ opacity: sortField === "total" ? 1 : 0.4 }} />
+                      </div>
+                      <span style={{ fontSize: "0.68rem", fontWeight: "400", color: "var(--text-secondary-dark)", marginTop: "0.1rem" }}>(백만원)</span>
+                    </div>
+                  </th>
+                  <th rowSpan={3} style={{ padding: "0.75rem 0.5rem", textAlign: "left", fontWeight: "800", verticalAlign: "middle" }}>구입목적 및 활용계획</th>
                   <th colSpan={12} style={{ padding: "0.5rem", textAlign: "center", fontWeight: "800", borderBottom: "1px solid rgba(255,255,255,0.08)", background: "rgba(255, 255, 255, 0.01)" }}>
                     구매단계 (기획:P ➔ 승인:A ➔ 입찰:B ➔ 구매:Pr ➔ 검수:I)
                   </th>
@@ -750,9 +886,44 @@ export default function ProcurementManager({
               <tbody>
                 {(() => {
                   const activeEquipList = equipData.length > 0 ? equipData : defaultEquipments;
-                  const filteredEquips = selectedEquipUnit === "ALL" 
+                  
+                  // 1) 과제 필터링
+                  let filteredEquips = selectedEquipUnit === "ALL" 
                     ? activeEquipList 
                     : activeEquipList.filter(e => e.unit === selectedEquipUnit);
+
+                  // 2) 학과/부서 필터링 (사용자 요건 3 대응)
+                  if (deptFilter) {
+                    filteredEquips = filteredEquips.filter(e => {
+                      const dName = e.deptName || "";
+                      const divName = e.divisionName || "";
+                      return dName.includes(deptFilter) || divName.includes(deptFilter);
+                    });
+                  }
+
+                  // 3) 순번, 과제, 단가, 금액 정렬 적용 (사용자 요건 3 대응)
+                  filteredEquips = [...filteredEquips].sort((a, b) => {
+                    let aVal = a[sortField];
+                    let bVal = b[sortField];
+                    
+                    if (sortField === "total") {
+                      aVal = (Number(a.unitPrice) || 0) * (Number(a.quantity) || 1);
+                      bVal = (Number(b.unitPrice) || 0) * (Number(b.quantity) || 1);
+                    } else if (sortField === "unitPrice") {
+                      aVal = Number(a.unitPrice) || 0;
+                      bVal = Number(b.unitPrice) || 0;
+                    } else if (sortField === "seq" || sortField === "id") {
+                      aVal = Number(a.seq || a.id) || 0;
+                      bVal = Number(b.seq || b.id) || 0;
+                    } else {
+                      aVal = String(aVal || "");
+                      bVal = String(bVal || "");
+                    }
+                    
+                    if (aVal < bVal) return sortDirection === "asc" ? -1 : 1;
+                    if (aVal > bVal) return sortDirection === "asc" ? 1 : -1;
+                    return 0;
+                  });
 
                   if (filteredEquips.length > 0) {
                     return filteredEquips.map((equip, idx) => {
@@ -784,58 +955,81 @@ export default function ProcurementManager({
                           <td style={{ padding: "0.8rem 0.5rem", textAlign: "left", fontWeight: "700", color: "white" }}>
                             {equip.itemName || equip.name || "-"}
                           </td>
-                          <td style={{ padding: "0.8rem 0.5rem", textAlign: "right", color: "var(--text-secondary)" }}>
-                            {formatToThousandWon(price)}천원
+                          <td style={{ padding: "0.8rem 0.5rem", textAlign: "right", color: "var(--text-secondary)", fontWeight: "600" }}>
+                            {formatToMillionWon(price)}
                           </td>
                           <td style={{ padding: "0.8rem 0.5rem", textAlign: "center", fontWeight: "600" }}>
                             {qty}
                           </td>
                           <td style={{ padding: "0.8rem 0.5rem", textAlign: "right", fontWeight: "700", color: "#10B981" }}>
-                            {formatToMillionWon(total)}백만원
+                            {formatToMillionWon(total)}
                           </td>
                           <td style={{ padding: "0.8rem 0.5rem", textAlign: "left", color: "var(--text-secondary)", maxWidth: "200px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={equip.description || equip.opPlan}>
                             {equip.description || equip.opPlan || "-"}
                           </td>
                           
                           {/* 12개월 개별 분리 격자 셀 Gantt 타임라인 (세로 경계선 없이 깨끗하게 칩 나열) */}
-                          {["3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "1", "2"].map((m, mIdx) => {
-                            const itemMilestones = equip.milestones || {};
-                            const stepList = itemMilestones[m] || [];
+                          {["3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "1", "2"].map((m) => {
+                            // 날짜 데이터를 분석해 해당 월의 마일스톤 단계를 계산합니다.
+                            const dynamicMilestones = getMilestonesFromDates(equip, selectedYear);
+                            const stepList = dynamicMilestones[m] || [];
                             const style = getMilestoneStyle(stepList, m);
                             
                             return (
                               <td 
                                 key={m} 
                                 style={{ 
-                                  padding: "0.4rem 0.1rem", 
+                                  padding: "0.8rem 0", 
                                   textAlign: "center", 
                                   width: "28px",
-                                  border: "none",
-                                  background: "transparent"
+                                  position: "relative",
+                                  verticalAlign: "middle"
                                 }}
                               >
-                                <div
-                                  onClick={(e) => handleMilestoneClick(e, equip.id, m)}
-                                  style={{
-                                    width: "22px",
-                                    height: "22px",
-                                    borderRadius: "50%",
-                                    fontSize: style.text.length > 2 ? "0.48rem" : style.text.length > 1 ? "0.52rem" : "0.68rem",
-                                    fontWeight: "900",
-                                    display: "flex",
-                                    alignItems: "center",
-                                    justifyContent: "center",
-                                    cursor: "pointer",
-                                    margin: "0 auto",
-                                    transition: "all 0.15s ease",
-                                    background: style.bg,
-                                    color: style.color,
-                                    border: style.border,
-                                    boxShadow: style.shadow
-                                  }}
-                                  title={`'26.${m}월 단계: ${getMilestoneArray(stepList).join(", ") || "없음"} (클릭하여 중복 지정)`}
-                                >
-                                  {style.text}
+                                {/* 가로 타임라인 연결 선 */}
+                                <div style={{
+                                  position: "absolute",
+                                  left: m === "3" ? "50%" : 0,   // 시작인 3월은 왼쪽 절반 선 제거
+                                  right: m === "2" ? "50%" : 0,  // 종료인 2월은 오른쪽 절반 선 제거
+                                  top: "50%",
+                                  transform: "translateY(-50%)",
+                                  height: "2px",
+                                  background: "rgba(255,255,255,0.12)",
+                                  zIndex: 0
+                                }} />
+                                
+                                {/* 캘린더 구매단계 점 또는 빈 노드 점 */}
+                                <div style={{ position: "relative", zIndex: 1, display: "flex", justifyContent: "center", alignItems: "center" }}>
+                                  {stepList.length > 0 ? (
+                                    <div 
+                                      style={{
+                                        width: "20px",
+                                        height: "20px",
+                                        borderRadius: "50%",
+                                        background: style.bg,
+                                        color: style.color,
+                                        fontSize: "0.68rem",
+                                        fontWeight: "900",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        boxShadow: `0 0 8px ${style.bg}`,
+                                        border: "1px solid rgba(255,255,255,0.2)"
+                                      }}
+                                      title={`${m}월: ${stepList.join(", ")}`}
+                                    >
+                                      {style.text}
+                                    </div>
+                                  ) : (
+                                    <div 
+                                      style={{
+                                        width: "6px",
+                                        height: "6px",
+                                        borderRadius: "50%",
+                                        background: "rgba(255,255,255,0.25)"
+                                      }}
+                                    />
+                                  )}
                                 </div>
                               </td>
                             );
@@ -1223,76 +1417,39 @@ export default function ProcurementManager({
                     </div>
                   </div>
                   <div>
-                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>관련내용</label>
-                    <textarea name="description" value={formData.description} onChange={handleInputChange} required placeholder="기자재의 사용 목적 및 핵심 구입 연계 사유 기술" style={{ width: "100%", height: "60px", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white", resize: "none" }} />
+                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>구입목적 및 활용계획</label>
+                    <textarea name="description" value={formData.description} onChange={handleInputChange} required placeholder="기자재의 구입 목적, 핵심 활용 계획 및 예상 시너지 상세 기술" style={{ width: "100%", height: "60px", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white", resize: "none" }} />
                   </div>
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
-                    <div style={{ gridColumn: "span 2" }}>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.5rem" }}>
-                        {(() => {
-                          const activeYear = Number(formData.year || selectedYear);
-                          const yyStart = String(2024 + activeYear).slice(-2);
-                          const yyEnd = String(2024 + activeYear + 1).slice(-2);
-                          return `월별 구매단계 입력 ('${yyStart}.3월 ~ '${yyEnd}.2월)`;
-                        })()}
-                      </label>
-                      <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", background: "rgba(0,0,0,0.2)", padding: "0.6rem 0.8rem", borderRadius: "8px", border: "1px solid var(--border-color-dark)" }}>
-                        {["3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "1", "2"].map((m) => {
-                          const stepList = formData.milestones?.[m] || [];
-                          const style = getMilestoneStyle(stepList, m);
-                          
-                          return (
-                            <div 
-                              key={m}
-                              style={{ 
-                                display: "flex", 
-                                flexDirection: "column", 
-                                alignItems: "center", 
-                                gap: "0.25rem",
-                                width: "32px" 
-                              }}
-                            >
-                              <span style={{ fontSize: "0.65rem", color: "var(--text-secondary)", fontWeight: "600", whiteSpace: "nowrap" }}>
-                                {(() => {
-                                  const activeYear = Number(formData.year || selectedYear);
-                                  const yyStart = String(2024 + activeYear).slice(-2);
-                                  const yyEnd = String(2024 + activeYear + 1).slice(-2);
-                                  
-                                  // 3월과 1월만 연도 연차를 붙여서 출력하고, 나머지는 단순 월 이름만 출력합니다.
-                                  if (m === "3") {
-                                    return `'${yyStart}.3월`;
-                                  } else if (m === "1") {
-                                    return `'${yyEnd}.1월`;
-                                  }
-                                  return `${m}월`;
-                                })()}
-                              </span>
-                              <div
-                                onClick={(e) => handleMilestoneClick(e, "NEW_FORM", m)}
-                                style={{
-                                  width: "22px",
-                                  height: "22px",
-                                  borderRadius: "50%",
-                                  fontSize: style.text.length > 2 ? "0.48rem" : style.text.length > 1 ? "0.52rem" : "0.68rem",
-                                  fontWeight: "900",
-                                  display: "flex",
-                                  alignItems: "center",
-                                  justifyContent: "center",
-                                  cursor: "pointer",
-                                  transition: "all 0.15s ease",
-                                  background: style.bg,
-                                  color: style.color,
-                                  border: style.border,
-                                  boxShadow: style.shadow
-                                }}
-                              >
-                                {style.text}
-                              </div>
-                            </div>
-                          );
-                        })}
+                  
+                  <div style={{ background: "rgba(255,255,255,0.02)", padding: "1rem", borderRadius: "8px", border: "1px solid var(--border-color-dark)" }}>
+                    <span style={{ display: "block", fontSize: "0.82rem", fontWeight: "800", color: "white", marginBottom: "0.75rem" }}>
+                      📅 단계별 이벤트 일자 입력 (선택 입력)
+                    </span>
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.8rem" }}>
+                      <div>
+                        <label style={{ display: "block", fontSize: "0.75rem", color: "var(--text-secondary-dark)", marginBottom: "0.2rem" }}>기획(P) 단계 일자</label>
+                        <input type="date" name="dateP" value={formData.dateP || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.4rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white", fontSize: "0.8rem" }} />
+                      </div>
+                      <div>
+                        <label style={{ display: "block", fontSize: "0.75rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>승인(A) 단계 일자</label>
+                        <input type="date" name="dateA" value={formData.dateA || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.4rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white", fontSize: "0.8rem" }} />
+                      </div>
+                      <div>
+                        <label style={{ display: "block", fontSize: "0.75rem", color: "var(--text-secondary-dark)", marginBottom: "0.2rem" }}>입찰(B) 단계 일자</label>
+                        <input type="date" name="dateB" value={formData.dateB || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.4rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white", fontSize: "0.8rem" }} />
+                      </div>
+                      <div>
+                        <label style={{ display: "block", fontSize: "0.75rem", color: "var(--text-secondary-dark)", marginBottom: "0.2rem" }}>구매(Pr) 단계 일자</label>
+                        <input type="date" name="datePr" value={formData.datePr || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.4rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white", fontSize: "0.8rem" }} />
+                      </div>
+                      <div style={{ gridColumn: "span 2" }}>
+                        <label style={{ display: "block", fontSize: "0.75rem", color: "var(--text-secondary-dark)", marginBottom: "0.2rem" }}>검수(I) 단계 일자</label>
+                        <input type="date" name="dateI" value={formData.dateI || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.4rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white", fontSize: "0.8rem" }} />
                       </div>
                     </div>
+                  </div>
+
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
                     <div style={{ gridColumn: "span 2" }}>
                       <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>운영 구분</label>
                       <select name="operation" value={formData.operation} onChange={handleInputChange} className="user-selector" style={{ width: "100%" }}>
