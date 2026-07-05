@@ -1387,6 +1387,19 @@ export default function ProcurementManager({
                                                  lastActivePhase.phase === primaryCode && 
                                                  lastActivePhase.idx === currIdx;
 
+                            const isTodayMonth = (Number(selectedYear) === 2 && m === "7");
+                            const hasTodayInTimeline = (Number(selectedYear) === 2);
+                            const shouldShowBalloon = hasTodayInTimeline ? isTodayMonth : isLastActive;
+
+                            const statusColors = {
+                              "준비중": { bg: "#64748b", border: "#94a3b8", shadow: "rgba(100, 116, 139, 0.3)" },
+                              "결재중": { bg: "#3b82f6", border: "#60a5fa", shadow: "rgba(59, 130, 246, 0.3)" },
+                              "입찰중": { bg: "#f59e0b", border: "#fbbf24", shadow: "rgba(245, 158, 11, 0.3)" },
+                              "구매중": { bg: "#a78bfa", border: "#c084fc", shadow: "rgba(167, 139, 250, 0.3)" },
+                              "검수완료": { bg: "#10b981", border: "#34d399", shadow: "rgba(16, 185, 129, 0.3)" }
+                            };
+                            const colorSet = statusColors[currentStatus] || statusColors["준비중"];
+
                             return (
                               <td 
                                 key={m} 
@@ -1828,7 +1841,7 @@ export default function ProcurementManager({
                   </div>
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
                     <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>연계 단위과제</label>
+                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>단위과제</label>
                       <select name="unit" value={formData.unit} onChange={handleInputChange} className="user-selector">
                         {["A1", "A2", "B1", "B2", "B3", "B4", "C1", "C2", "D1", "D2", "D3", "D4"].map(u => (
                           <option key={u} value={u}>{u} 과제</option>
@@ -1882,7 +1895,7 @@ export default function ProcurementManager({
                 <>
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginBottom: "1rem" }}>
                     <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>연계 단위과제</label>
+                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>단위과제</label>
                       <select 
                         name="unit" 
                         value={formData.unit} 
@@ -2300,7 +2313,7 @@ export default function ProcurementManager({
                   </div>
                   <div>
                     <span style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)", display: "block" }}>과제 배정 예산</span>
-                    <strong style={{ color: "#3b82f6" }}>{summary.budget}</strong>
+                    <strong style={{ color: "#3b82f6" }}>{convertMillionWonToThousandWon(summary.budget)}</strong>
                   </div>
                   <div style={{ borderTop: "1px solid rgba(255,255,255,0.05)", paddingTop: "0.75rem" }}>
                     <span style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)", display: "block", marginBottom: "0.4rem" }}>주요 추진 전략 목표</span>
@@ -2364,8 +2377,8 @@ export default function ProcurementManager({
                     <span>{purchaseModalData.divisionName || purchaseModalData.deptName || "라이즈(앵커)사업단"} / <strong>총무팀 (구매 위탁 요청)</strong></span>
                   </div>
                   <div>
-                    <span style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)", display: "block" }}>도도입 소요예산</span>
-                    <strong style={{ color: "#a78bfa" }}>{total.toLocaleString()}원 (VAT 포함)</strong>
+                    <span style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)", display: "block" }}>도입 소요예산</span>
+                    <strong style={{ color: "#a78bfa" }}>{(total / 1000).toLocaleString()}천원 (VAT 포함)</strong>
                   </div>
                   <div style={{ borderTop: "1px solid rgba(255,255,255,0.05)", paddingTop: "0.75rem" }}>
                     <span style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)", display: "block", marginBottom: "0.3rem" }}>발송 공문 비고</span>
@@ -2442,11 +2455,11 @@ export default function ProcurementManager({
                       </tr>
                       <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
                         <td style={{ padding: "0.5rem", background: "rgba(255,255,255,0.05)", fontWeight: "700" }}>도입 단가</td>
-                        <td style={{ padding: "0.5rem", fontWeight: "700", color: "#60A5FA" }}>{formatToMillionWon(price)} 백만원</td>
+                        <td style={{ padding: "0.5rem", fontWeight: "700", color: "#60A5FA" }}>{(price / 1000).toLocaleString()}천원</td>
                       </tr>
                       <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
                         <td style={{ padding: "0.5rem", background: "rgba(255,255,255,0.05)", fontWeight: "700" }}>소요 예산</td>
-                        <td style={{ padding: "0.5rem", fontWeight: "800", color: "#10B981" }}>{formatToMillionWon(total)} 백만원 (부가가치세 포함)</td>
+                        <td style={{ padding: "0.5rem", fontWeight: "800", color: "#10B981" }}>{(total / 1000).toLocaleString()}천원 (부가가치세 포함)</td>
                       </tr>
                       <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
                         <td style={{ padding: "0.5rem", background: "rgba(255,255,255,0.05)", fontWeight: "700" }}>납품 장소</td>
