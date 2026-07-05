@@ -940,7 +940,7 @@ export default function ProcurementManager({
               deptName: formData.deptName || "",
               divisionName: formData.divisionName || "",
               itemName: formData.name || "수정 기자재 항목",
-              unitPrice: (Number(formData.unitPrice) * 1000) || 0,
+              unitPrice: Math.round(parseFloat(formData.unitPrice || 0) * 1000000),
               quantity: Number(formData.quantity) || 1,
               description: combinedDescription || "-",
               operation: formData.operation || "미래 핵심 신산업 주문식 교육 운영",
@@ -1000,7 +1000,7 @@ export default function ProcurementManager({
           deptName: formData.deptName || "",
           divisionName: formData.divisionName || "",
           itemName: formData.name || "새 기자재 항목",
-          unitPrice: (Number(formData.unitPrice) * 1000) || 0,
+          unitPrice: Math.round(parseFloat(formData.unitPrice || 0) * 1000000),
           quantity: Number(formData.quantity) || 1,
           description: combinedDescription || "-",
           operation: formData.operation || "미래 핵심 신산업 주문식 교육 운영",
@@ -1169,7 +1169,7 @@ export default function ProcurementManager({
       name: equip.itemName || equip.name || "",
       deptName: equip.deptName || "",
       divisionName: equip.divisionName || "",
-      unitPrice: equip.unitPrice ? (equip.unitPrice / 1000) : "", // 요건 2: 단가 단위 천원으로 모달에 바인딩
+      unitPrice: equip.unitPrice ? parseFloat((equip.unitPrice / 1000000).toFixed(2)) : "", // 단가 단위 백만원으로 모달에 바인딩 (소수점 둘째자리 허용)
       quantity: equip.quantity || "",
       description: equip.description || "",
       descriptionPurpose: descParts[0] || "",
@@ -2670,21 +2670,21 @@ export default function ProcurementManager({
                   {(() => {
                     const priceVal = parseFloat(formData.unitPrice || 0);
                     const qtyVal = parseFloat(formData.quantity || 0);
-                    const totalInThousand = (priceVal * qtyVal).toLocaleString();
+                    const totalInMillion = (priceVal * qtyVal).toFixed(2);
                     return (
                       <>
                         <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr 2fr", gap: "1rem" }}>
                           <div>
-                            <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>단가 (천원)</label>
-                            <input type="number" name="unitPrice" value={formData.unitPrice} onChange={handleInputChange} required placeholder="예: 12000" style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} />
+                            <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>단가 (백만원)</label>
+                            <input type="number" name="unitPrice" step="0.01" value={formData.unitPrice} onChange={handleInputChange} required placeholder="예: 120.00" style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} />
                           </div>
                           <div>
                             <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>수량</label>
                             <input type="number" name="quantity" value={formData.quantity} onChange={handleInputChange} required placeholder="예: 2" style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} />
                           </div>
                           <div>
-                            <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>금액 (천원)</label>
-                            <input type="text" value={`${totalInThousand} 천원`} readOnly style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.02)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "#10B981", fontWeight: "bold" }} />
+                            <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>금액 (백만원)</label>
+                            <input type="text" value={`${parseFloat(totalInMillion).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} 백만원`} readOnly style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.02)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "#10B981", fontWeight: "bold" }} />
                           </div>
                         </div>
                         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
