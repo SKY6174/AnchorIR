@@ -2032,7 +2032,9 @@ export default function ProcurementManager({
                                   color: "#60A5FA",
                                   border: "1px solid rgba(59, 130, 246, 0.25)",
                                   cursor: "pointer",
-                                  transition: "all 0.2s"
+                                  transition: "all 0.2s",
+                                  width: "36px",
+                                  textAlign: "center"
                                 }}
                                 title="기획(사업단 ➔ 시설안전관리팀) 문서 요약 보기"
                               >
@@ -2050,18 +2052,40 @@ export default function ProcurementManager({
                                   color: "#C084FC",
                                   border: "1px solid rgba(167, 139, 250, 0.25)",
                                   cursor: "pointer",
-                                  transition: "all 0.2s"
+                                  transition: "all 0.2s",
+                                  width: "36px",
+                                  textAlign: "center"
                                 }}
                                 title="구매(시설안전관리팀) 문서 요약 보기"
                               >
                                 구매
                               </button>
                             )}
+                            {equip.docBid && (
+                              <button
+                                onClick={() => setBidModalData(equip)}
+                                style={{
+                                  padding: "0.25rem 0.45rem",
+                                  fontSize: "0.65rem",
+                                  borderRadius: "4px",
+                                  background: "rgba(16, 185, 129, 0.12)",
+                                  color: "#34D399",
+                                  border: "1px solid rgba(16, 185, 129, 0.25)",
+                                  cursor: "pointer",
+                                  transition: "all 0.2s",
+                                  width: "36px",
+                                  textAlign: "center"
+                                }}
+                                title="결과(시설안전관리팀 시공/준공) 문서 요약 보기"
+                              >
+                                결과
+                              </button>
+                            )}
                           </div>
                         </td>
                         {/* 제어 열 버튼 */}
                         <td style={{ padding: "0.8rem 0.5rem", textAlign: "center", whiteSpace: "nowrap" }}>
-                          <div style={{ display: "flex", gap: "0.3rem", justifyContent: "center" }}>
+                          <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem", alignItems: "center", justifyContent: "center" }}>
                             {currentRole.id !== "GUEST" && (currentRole.id === "ADMIN" || currentRole.id === "TEAM_LEADER" || !equip.created_by || equip.created_by === currentUser?.uuid) && (
                               <>
                                 <button 
@@ -2076,7 +2100,9 @@ export default function ProcurementManager({
                                     color: "white",
                                     fontWeight: "700",
                                     cursor: "pointer",
-                                    whiteSpace: "nowrap"
+                                    whiteSpace: "nowrap",
+                                    width: "36px",
+                                    textAlign: "center"
                                   }}
                                 >
                                   수정
@@ -2097,7 +2123,9 @@ export default function ProcurementManager({
                                     color: "#f87171",
                                     fontWeight: "700",
                                     cursor: "pointer",
-                                    whiteSpace: "nowrap"
+                                    whiteSpace: "nowrap",
+                                    width: "36px",
+                                    textAlign: "center"
                                   }}
                                 >
                                   삭제
