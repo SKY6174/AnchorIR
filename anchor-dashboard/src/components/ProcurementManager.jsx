@@ -388,7 +388,7 @@ export default function ProcurementManager({
         deptName: formData.deptName || "",
         divisionName: formData.divisionName || "",
         itemName: formData.name || "새 기자재 항목",
-        unitPrice: Number(formData.unitPrice) || 0,
+        unitPrice: (Number(formData.unitPrice) * 1000) || 0,
         quantity: Number(formData.quantity) || 1,
         description: formData.description || "-",
         operation: formData.operation || "교과목(정규)",
@@ -1189,8 +1189,8 @@ export default function ProcurementManager({
                   </div>
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
                     <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>단가 (원)</label>
-                      <input type="number" name="unitPrice" value={formData.unitPrice} onChange={handleInputChange} required placeholder="예: 12000000" style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} />
+                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>단가 (천원)</label>
+                      <input type="number" name="unitPrice" value={formData.unitPrice} onChange={handleInputChange} required placeholder="예: 12000" style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} />
                     </div>
                     <div>
                       <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>수량</label>
@@ -1204,7 +1204,12 @@ export default function ProcurementManager({
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
                     <div style={{ gridColumn: "span 2" }}>
                       <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.5rem" }}>
-                        월별 구매단계 입력 ({2024 + (Number(selectedYear) || 1)}년 3월 ~ {2024 + (Number(selectedYear) || 1) + 1}년 2월)
+                        {(() => {
+                          const activeYear = Number(formData.year || selectedYear);
+                          const yyStart = String(2024 + activeYear).slice(-2);
+                          const yyEnd = String(2024 + activeYear + 1).slice(-2);
+                          return `월별 구매단계 입력 ('${yyStart}.3월 ~ '${yyEnd}.2월)`;
+                        })()}
                       </label>
                       <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", background: "rgba(0,0,0,0.2)", padding: "0.6rem 0.8rem", borderRadius: "8px", border: "1px solid var(--border-color-dark)" }}>
                         {["3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "1", "2"].map((m) => {
@@ -1222,8 +1227,14 @@ export default function ProcurementManager({
                                 width: "32px" 
                               }}
                             >
-                              <span style={{ fontSize: "0.65rem", color: "var(--text-secondary)", fontWeight: "600" }}>
-                                {m}월
+                              <span style={{ fontSize: "0.65rem", color: "var(--text-secondary)", fontWeight: "600", whiteSpace: "nowrap" }}>
+                                {(() => {
+                                  const activeYear = Number(formData.year || selectedYear);
+                                  const yyStart = String(2024 + activeYear).slice(-2);
+                                  const yyEnd = String(2024 + activeYear + 1).slice(-2);
+                                  const isNextYear = ["1", "2"].includes(m);
+                                  return `${isNextYear ? yyEnd : yyStart}.${m}월`;
+                                })()}
                               </span>
                               <div
                                 onClick={(e) => handleMilestoneClick(e, "NEW_FORM", m)}
