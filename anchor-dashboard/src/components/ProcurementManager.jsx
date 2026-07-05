@@ -1675,41 +1675,7 @@ export default function ProcurementManager({
                 </select>
               </div>
 
-              {/* 정렬 필터 */}
-              <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                <select
-                  value={sortField}
-                  onChange={(e) => setSortField(e.target.value)}
-                  className="user-selector"
-                  style={{
-                    padding: "0.4rem 0.75rem",
-                    fontSize: "0.85rem",
-                    fontWeight: "600",
-                    width: "auto"
-                  }}
-                >
-                  <option value="id">기본 순서</option>
-                  <option value="seq">단위과제 순서</option>
-                  <option value="unitPrice">단가 순서</option>
-                  <option value="total">금액 순서</option>
-                </select>
-                <button
-                  onClick={() => setSortDirection(prev => prev === "asc" ? "desc" : "asc")}
-                  className="btn btn-secondary"
-                  style={{
-                    padding: "0.4rem 0.6rem",
-                    borderRadius: "6px",
-                    background: "rgba(255,255,255,0.05)",
-                    border: "1px solid var(--border-color-dark)",
-                    color: "white",
-                    fontWeight: "600",
-                    fontSize: "0.82rem",
-                    cursor: "pointer"
-                  }}
-                >
-                  {sortDirection === "asc" ? "▲" : "▼"}
-                </button>
-              </div>
+
 
               {currentRole.id !== "GUEST" && (
                 <button 
