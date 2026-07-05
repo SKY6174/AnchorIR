@@ -2701,12 +2701,16 @@ export default function App() {
           });
           setProjects(dbProjData);
           localStorage.setItem(`anchor_cache_proj_y${selectedYear}`, JSON.stringify(dbProjData));
-          await supabase.from("projects_data").upsert({ year: selectedYear, data: dbProjData }, { onConflict: "year" });
+          if (currentUser && currentRole?.id !== "GUEST") {
+            await supabase.from("projects_data").upsert({ year: selectedYear, data: dbProjData }, { onConflict: "year" });
+          }
         } else {
           const multiYearInitialData = migrateProgramIds(formatDataToMultiYear(initialProjectsData));
           setProjects(multiYearInitialData);
           localStorage.setItem(`anchor_cache_proj_y${selectedYear}`, JSON.stringify(multiYearInitialData));
-          await supabase.from("projects_data").upsert({ year: selectedYear, data: multiYearInitialData }, { onConflict: "year" });
+          if (currentUser && currentRole?.id !== "GUEST") {
+            await supabase.from("projects_data").upsert({ year: selectedYear, data: multiYearInitialData }, { onConflict: "year" });
+          }
         }
 
         // 2. Agreements 복구 (전체 연차 데이터를 한 번에 가져와 메모리에 유지)
@@ -2859,43 +2863,48 @@ export default function App() {
             date_i: e.dateI || null
           }));
           
-          const { error: seedErr } = await supabase.from("procurement_equipment").insert(initialSeed);
-          if (!seedErr) {
-            // 시딩 성공 시 즉시 DB 재조회하여 프론트 데이터 갱신
-            const { data: refetched } = await supabase.from("procurement_equipment").select("*").eq("year", selectedYear);
-            if (refetched) {
-              const formatted = refetched.map(x => {
-                const docParts = (x.related_docs || "").split(",").map(d => d.trim()).filter(Boolean);
-                return {
-                  id: Number(x.id),
-                  year: Number(x.year),
-                  unit: x.unit || "A1",
-                  seq: Number(x.seq) || 1,
-                  deptName: x.dept_name || "",
-                  divisionName: x.division_name || "",
-                  itemName: x.item_name || "",
-                  unitPrice: Number(x.unit_price) || 0,
-                  quantity: Number(x.quantity) || 1,
-                  description: x.description || "",
-                  operation: x.operation || "교과목(정규)",
-                  password: x.password || "1234",
-                  relatedDocs: x.related_docs || "", // 관련문서 재조회 매핑
-                  docPlan: x.doc_plan || docParts[0] || "",
-                  docPurchase: x.doc_purchase || docParts[1] || "",
-                  docBid: x.doc_bid || docParts[2] || "",
-                  dateP: x.date_p || "",
-                  dateA: x.date_a || "",
-                  dateB: x.date_b || "",
-                  datePr: x.date_pr || "",
-                  dateI: x.date_i || ""
-                };
-              });
-              setEquipData(formatted);
-              localStorage.setItem(`anchor_cache_equip_y${selectedYear}`, JSON.stringify(formatted));
+          if (currentUser && currentRole?.id !== "GUEST") {
+            const { error: seedErr } = await supabase.from("procurement_equipment").insert(initialSeed);
+            if (!seedErr) {
+              // 시딩 성공 시 즉시 DB 재조회하여 프론트 데이터 갱신
+              const { data: refetched } = await supabase.from("procurement_equipment").select("*").eq("year", selectedYear);
+              if (refetched) {
+                const formatted = refetched.map(x => {
+                  const docParts = (x.related_docs || "").split(",").map(d => d.trim()).filter(Boolean);
+                  return {
+                    id: Number(x.id),
+                    year: Number(x.year),
+                    unit: x.unit || "A1",
+                    seq: Number(x.seq) || 1,
+                    deptName: x.dept_name || "",
+                    divisionName: x.division_name || "",
+                    itemName: x.item_name || "",
+                    unitPrice: Number(x.unit_price) || 0,
+                    quantity: Number(x.quantity) || 1,
+                    description: x.description || "",
+                    operation: x.operation || "교과목(정규)",
+                    password: x.password || "1234",
+                    relatedDocs: x.related_docs || "", // 관련문서 재조회 매핑
+                    docPlan: x.doc_plan || docParts[0] || "",
+                    docPurchase: x.doc_purchase || docParts[1] || "",
+                    docBid: x.doc_bid || docParts[2] || "",
+                    dateP: x.date_p || "",
+                    dateA: x.date_a || "",
+                    dateB: x.date_b || "",
+                    datePr: x.date_pr || "",
+                    dateI: x.date_i || ""
+                  };
+                });
+                setEquipData(formatted);
+                localStorage.setItem(`anchor_cache_equip_y${selectedYear}`, JSON.stringify(formatted));
+              }
+            } else {
+              console.error("Failed to seed default equipments:", seedErr);
+              setEquipData([]);
             }
           } else {
-            console.error("Failed to seed default equipments:", seedErr);
-            setEquipData([]);
+            // 비로그인 상태이거나 GUEST일 때는 모의 데이터를 메모리에만 로드
+            setEquipData(defaultEquipmentsSeed);
           }
         }
         if (pServ && pServ.length > 0) {
