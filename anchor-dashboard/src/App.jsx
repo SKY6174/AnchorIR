@@ -1526,10 +1526,50 @@ export default function App() {
     return defaultVisibility;
   });
 
-  const handleSaveMenuVisibility = (nextVisibility) => {
+  const handleSaveMenuVisibility = async (nextVisibility) => {
     setMenuVisibility(nextVisibility);
     localStorage.setItem("anchor_menu_visibility", JSON.stringify(nextVisibility));
+
+    // Supabase DB에 설정 저장 동기화
+    try {
+      const { error } = await supabase
+        .from("portal_configs")
+        .upsert({
+          key: "menu_visibility",
+          value: nextVisibility,
+          updated_at: new Date().toISOString()
+        });
+      if (error) {
+        console.error("Failed to save portal config to DB:", error);
+      }
+    } catch (err) {
+      console.error("DB save error:", err);
+    }
   };
+
+  // 로그인 성공 혹은 세션 로드 시 Supabase DB로부터 마스터 포털 노출 설정 수신
+  useEffect(() => {
+    const fetchPortalConfig = async () => {
+      try {
+        const { data, error } = await supabase
+          .from("portal_configs")
+          .select("value")
+          .eq("key", "menu_visibility")
+          .maybeSingle();
+
+        if (!error && data && data.value) {
+          setMenuVisibility(data.value);
+          localStorage.setItem("anchor_menu_visibility", JSON.stringify(data.value));
+        }
+      } catch (err) {
+        console.error("Failed to fetch portal config from DB:", err);
+      }
+    };
+
+    if (currentUser) {
+      fetchPortalConfig();
+    }
+  }, [currentUser]);
 
   const [projects, setProjects] = useState(() => {
     // 2차년도 세부 프로그램 ID를 5단계 위계 규정에 맞게 대대적으로 갱신하기 위해 로컬스토리지 버전을 v23으로 업그레이드합니다.
