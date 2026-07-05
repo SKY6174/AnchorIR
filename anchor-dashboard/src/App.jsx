@@ -2845,11 +2845,21 @@ export default function App() {
         }
 
         // 3. Procurement (환경개선, 기자재, 주요용역) 복구
-        const { data: pEnv } = await supabase.from("procurement_env").select("*").eq("year", selectedYear);
-        const { data: pEquip } = await supabase.from("procurement_equipment").select("*").eq("year", selectedYear);
-        const { data: pServ } = await supabase.from("procurement_services").select("*").eq("year", selectedYear);
+        const { data: pEnv, error: pEnvError } = await supabase.from("procurement_env").select("*").eq("year", selectedYear);
+        const { data: pEquip, error: pEquipError } = await supabase.from("procurement_equipment").select("*").eq("year", selectedYear);
+        const { data: pServ, error: pServError } = await supabase.from("procurement_services").select("*").eq("year", selectedYear);
         
-        if (pEnv && pEnv.length > 0) {
+        if (pEnvError) {
+          console.error("Supabase procurement_env fetch error (using fallback cache):", pEnvError);
+          const cachedEnv = localStorage.getItem(`anchor_cache_env_y${selectedYear}`);
+          if (cachedEnv) {
+            try {
+              setEnvData(JSON.parse(cachedEnv));
+            } catch (e) {
+              console.error("Failed to parse cached env data:", e);
+            }
+          }
+        } else if (pEnv && pEnv.length > 0) {
           const formatted = pEnv.map(x => ({ 
             ...x, 
             id: Number(x.id), 
@@ -2882,7 +2892,18 @@ export default function App() {
           setEnvData(formatted);
           localStorage.setItem(`anchor_cache_env_y${selectedYear}`, JSON.stringify(formatted));
         }
-        if (pEquip && pEquip.length > 0) {
+
+        if (pEquipError) {
+          console.error("Supabase procurement_equipment fetch error (using fallback cache):", pEquipError);
+          const cachedEquip = localStorage.getItem(`anchor_cache_equip_y${selectedYear}`);
+          if (cachedEquip) {
+            try {
+              setEquipData(JSON.parse(cachedEquip));
+            } catch (e) {
+              console.error("Failed to parse cached equip data:", e);
+            }
+          }
+        } else if (pEquip && pEquip.length > 0) {
           const formatted = pEquip.map(x => {
             const docParts = (x.related_docs || "").split(",").map(d => d.trim()).filter(Boolean);
             return {
