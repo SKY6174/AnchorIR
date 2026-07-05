@@ -2134,42 +2134,56 @@ export default function ProcurementManager({
 
                             {/* 2. 구매문서 */}
                             <button
-                              disabled={!equip.docPurchase}
                               onClick={() => setPurchaseModalData(equip)}
                               style={{
                                 padding: "0.25rem 0.45rem",
                                 fontSize: "0.65rem",
                                 borderRadius: "4px",
-                                background: equip.docPurchase ? "rgba(167, 139, 250, 0.12)" : "rgba(255, 255, 255, 0.03)",
-                                color: equip.docPurchase ? "#C084FC" : "rgba(255, 255, 255, 0.25)",
-                                border: equip.docPurchase ? "1px solid rgba(167, 139, 250, 0.25)" : "1px solid rgba(255, 255, 255, 0.08)",
-                                cursor: equip.docPurchase ? "pointer" : "not-allowed",
+                                background: "rgba(167, 139, 250, 0.12)",
+                                color: "#C084FC",
+                                border: "1px solid rgba(167, 139, 250, 0.25)",
+                                cursor: "pointer",
                                 transition: "all 0.2s",
                                 width: "36px",
                                 textAlign: "center"
                               }}
-                              title={equip.docPurchase ? "구매(시설안전관리팀) 문서 요약 보기" : "구매 문서가 아직 등록되지 않았습니다."}
+                              onMouseOver={(e) => {
+                                e.currentTarget.style.background = "rgba(167, 139, 250, 0.25)";
+                                e.currentTarget.style.borderColor = "#C084FC";
+                              }}
+                              onMouseOut={(e) => {
+                                e.currentTarget.style.background = "rgba(167, 139, 250, 0.12)";
+                                e.currentTarget.style.borderColor = "rgba(167, 139, 250, 0.25)";
+                              }}
+                              title="구매(시설안전관리팀) 문서 요약 보기"
                             >
                               구매
                             </button>
 
                             {/* 3. 결과문서 */}
                             <button
-                              disabled={!equip.docBid}
                               onClick={() => setBidModalData(equip)}
                               style={{
                                 padding: "0.25rem 0.45rem",
                                 fontSize: "0.65rem",
                                 borderRadius: "4px",
-                                background: equip.docBid ? "rgba(16, 185, 129, 0.12)" : "rgba(255, 255, 255, 0.03)",
-                                color: equip.docBid ? "#34D399" : "rgba(255, 255, 255, 0.25)",
-                                border: equip.docBid ? "1px solid rgba(16, 185, 129, 0.25)" : "1px solid rgba(255, 255, 255, 0.08)",
-                                cursor: equip.docBid ? "pointer" : "not-allowed",
+                                background: "rgba(16, 185, 129, 0.12)",
+                                color: "#34D399",
+                                border: "1px solid rgba(16, 185, 129, 0.25)",
+                                cursor: "pointer",
                                 transition: "all 0.2s",
                                 width: "36px",
                                 textAlign: "center"
                               }}
-                              title={equip.docBid ? "결과(시설안전관리팀 시공/준공) 문서 요약 보기" : "결과 문서가 아직 등록되지 않았습니다."}
+                              onMouseOver={(e) => {
+                                e.currentTarget.style.background = "rgba(16, 185, 129, 0.25)";
+                                e.currentTarget.style.borderColor = "#34D399";
+                              }}
+                               onMouseOut={(e) => {
+                                 e.currentTarget.style.background = "rgba(16, 185, 129, 0.12)";
+                                 e.currentTarget.style.borderColor = "rgba(16, 185, 129, 0.25)";
+                               }}
+                              title="결과(시설안전관리팀 시공/준공) 문서 요약 보기"
                             >
                               결과
                             </button>
