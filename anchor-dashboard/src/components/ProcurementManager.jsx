@@ -1157,7 +1157,8 @@ export default function ProcurementManager({
   };
 
   const openEditModal = (equip) => {
-    setModalType("equip");
+    const currentModalType = subTab === "env_improvement" ? "env" : subTab === "major_services" ? "service" : "equip";
+    setModalType(currentModalType);
     setIsEditMode(true);
     setEditingItemId(equip.id);
     const docParts = (equip.relatedDocs || "").split(",").map(d => d.trim()).filter(Boolean);
@@ -1299,158 +1300,572 @@ export default function ProcurementManager({
       {subTab === "env_improvement" && (
         <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
           
-          {/* 환경개선 헤더 카드 */}
-          <div className="glass-card" style={{ padding: "1.25rem", borderRadius: "10px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          {/* 환경개선 상단 필터 카드 */}
+          <div className="glass-card" style={{ padding: "1.25rem", borderRadius: "10px", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "1rem" }}>
             <div>
               <h3 style={{ margin: 0, fontSize: "1.1rem", fontWeight: "800", color: "var(--text-primary)" }}>
-                🛠️ 교육환경 개선 사업 관리
+                🛠️ 교육환경 개선 사업 현황
               </h3>
               <p style={{ margin: "0.25rem 0 0 0", fontSize: "0.85rem", color: "var(--text-secondary)" }}>
                 지자체 라이즈 대학 특화 공간 및 스마트 첨단 강의실 구축 진행 현황
               </p>
             </div>
-            {currentRole.id !== "GUEST" && (
-              <button 
-                className="btn btn-primary"
-                onClick={() => openAddModal("env")}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "0.25rem",
-                  padding: "0.4rem 1rem",
-                  borderRadius: "6px",
-                  background: "var(--accent-color)",
-                  border: "none",
-                  color: "white",
-                  fontWeight: "600",
-                  fontSize: "0.85rem",
-                  cursor: "pointer"
-                }}
-              >
-                <Plus size={16} />
-                환경개선 항목 추가
-              </button>
-            )}
-          </div>
-
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.5rem" }}>
-            {/* 좌측 리스트 카드 */}
-            <div className="glass-card" style={{ padding: "1rem", borderRadius: "10px", display: "flex", flexDirection: "column", gap: "0.75rem" }}>
-              <div style={{ fontSize: "0.9rem", fontWeight: "800", color: "var(--text-primary)", borderBottom: "1px solid rgba(255,255,255,0.05)", paddingBottom: "0.5rem" }}>
-                공간 구축 실적 및 현황 목록
+            
+            <div style={{ display: "flex", gap: "0.75rem", alignItems: "center", flexWrap: "wrap" }}>
+              {/* 학과 필터 */}
+              <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                <ListFilter size={16} style={{ color: "var(--text-secondary-dark)" }} />
+                <select
+                  value={deptFilter}
+                  onChange={(e) => setDeptFilter(e.target.value)}
+                  className="user-selector"
+                  style={{
+                    padding: "0.4rem 0.75rem",
+                    fontSize: "0.85rem",
+                    fontWeight: "600",
+                    width: "auto"
+                  }}
+                >
+                  <option value="">학과 전체</option>
+                  <option value="기계공학부">기계공학부</option>
+                  <option value="기계시스템전공">{"\u00A0-\u00A0기계시스템전공"}</option>
+                  <option value="기계설비전공">{"\u00A0-\u00A0기계설비전공"}</option>
+                  <option value="전기전자공학부">전기전자공학부</option>
+                  <option value="전기전공">{"\u00A0-\u00A0전기전공"}</option>
+                  <option value="전자공학전공">{"\u00A0-\u00A0전자공학전공"}</option>
+                  <option value="반도체장비전공">{"\u00A0-\u00A0반도체장비전공"}</option>
+                  <option value="IT융합학부">IT융합학부</option>
+                  <option value="컴퓨터정보전공">{"\u00A0-\u00A0컴퓨터정보전공"}</option>
+                  <option value="스마트제어전공">{"\u00A0-\u00A0스마트제어전공"}</option>
+                  <option value="화학공학과">화학공학과</option>
+                  <option value="간호학과">간호학과</option>
+                  <option value="물리치료학과">물리치료학과</option>
+                  <option value="치위생학과">치위생학과</option>
+                  <option value="작업치료학과">작업치료학과</option>
+                  <option value="글로벌비즈니스학과">글로벌비즈니스학과</option>
+                  <option value="세무회계전공">{"\u00A0-\u00A0세무회계전공"}</option>
+                  <option value="도시유통전공">{"\u00A0-\u00A0도시유통전공"}</option>
+                  <option value="호텔외식조리과">호텔외식조리과</option>
+                  <option value="융합조리전공">{"\u00A0- 융합조리전공"}</option>
+                  <option value="제과제빵스타일리스트전공">{"\u00A0- 제과제빵스타일리스트전공"}</option>
+                  <option value="사회복지학과">사회복지학과</option>
+                  <option value="유아교육과">유아교육과</option>
+                  <option value="스포츠지도학과">스포츠지도학과</option>
+                  <option value="공간디자인콘텐츠과">공간디자인콘텐츠과</option>
+                </select>
               </div>
-              <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", maxHeight: "400px", overflowY: "auto" }}>
-                {envData.map((item) => (
-                  <div 
-                    key={item.id}
-                    onClick={() => setSelectedEnvItem(item)}
-                    style={{
-                      padding: "0.75rem",
-                      borderRadius: "6px",
-                      background: selectedEnvItem?.id === item.id ? "rgba(255,255,255,0.08)" : "rgba(255,255,255,0.02)",
-                      border: selectedEnvItem?.id === item.id ? "1px solid var(--accent-color)" : "1px solid rgba(255,255,255,0.05)",
-                      cursor: "pointer",
-                      transition: "all 0.15s ease",
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center"
-                    }}
-                  >
-                    <div>
-                      <div style={{ fontWeight: "750", color: "white", fontSize: "0.85rem" }}>{item.title}</div>
-                      <div style={{ fontSize: "0.75rem", color: "var(--text-secondary)", marginTop: "0.2rem" }}>
-                        단위과제: <span style={{ fontWeight: "700", color: "var(--accent-color)" }}>{item.unit}</span> | 예산계획: {item.budgetPlan.toLocaleString()}원
-                      </div>
-                    </div>
-                    {currentRole.id !== "GUEST" && (
-                      <button 
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          if (confirm("해당 환경개선 건을 삭제하시겠습니까?")) {
-                            setEnvData(envData.filter(x => x.id !== item.id));
-                            if (selectedEnvItem?.id === item.id) setSelectedEnvItem(null);
-                          }
-                        }}
-                        style={{ background: "transparent", border: "none", color: "rgba(255,255,255,0.2)", cursor: "pointer", padding: "0.25rem" }}
-                        onMouseOver={(e) => e.currentTarget.style.color = "#ef4444"}
-                        onMouseOut={(e) => e.currentTarget.style.color = "rgba(255,255,255,0.2)"}
-                      >
-                        <Trash2 size={14} />
-                      </button>
-                    )}
-                  </div>
-                ))}
+
+              {/* 부서 필터 */}
+              <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                <select
+                  value={divisionFilter}
+                  onChange={(e) => setDivisionFilter(e.target.value)}
+                  className="user-selector"
+                  style={{
+                    padding: "0.4rem 0.75rem",
+                    fontSize: "0.85rem",
+                    fontWeight: "600",
+                    width: "auto"
+                  }}
+                >
+                  <option value="">부서 전체</option>
+                  <option value="ECC">ECC</option>
+                  <option value="산학협력단">산학협력단</option>
+                  <option value="어린이급식관리사업단">어린이급식관리사업단</option>
+                </select>
               </div>
-            </div>
 
-            {/* 우측 상세 정보 조회 카드 */}
-            <div className="glass-card" style={{ padding: "1.25rem", borderRadius: "10px", background: "rgba(255,255,255,0.01)" }}>
-              {selectedEnvItem ? (
-                <div style={{ display: "flex", flexDirection: "column", gap: "1rem", fontSize: "0.82rem" }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", borderBottom: "1px solid rgba(255,255,255,0.05)", paddingBottom: "0.5rem" }}>
-                    <span style={{ fontSize: "0.95rem", fontWeight: "800", color: "white" }}>🔍 {selectedEnvItem.title} 상세 조회</span>
-                    <span style={{ padding: "0.2rem 0.5rem", borderRadius: "4px", background: "var(--accent-color)", color: "white", fontWeight: "800", fontSize: "0.72rem" }}>{selectedEnvItem.unit} 과제</span>
-                  </div>
-                  
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem" }}>
-                    <div>
-                      <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>구축 위치</span>
-                      <p style={{ margin: "0.2rem 0", fontWeight: "600" }}>{selectedEnvItem.location || "-"}</p>
-                    </div>
-                    <div>
-                      <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>주요 용도</span>
-                      <p style={{ margin: "0.2rem 0", fontWeight: "600" }}>{selectedEnvItem.purpose || "-"}</p>
-                    </div>
-                  </div>
+              {/* 과제별 필터 */}
+              <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                <select
+                  value={selectedEquipUnit}
+                  onChange={(e) => setSelectedEquipUnit(e.target.value)}
+                  className="user-selector"
+                  style={{
+                    padding: "0.4rem 0.75rem",
+                    fontSize: "0.85rem",
+                    fontWeight: "600",
+                    width: "auto"
+                  }}
+                >
+                  <option value="ALL">전체 과제</option>
+                  <option value={selectedYear === 1 ? "A1" : "A1가"}>
+                    {selectedYear === 1 ? "A1" : "A1가"} 단위과제
+                  </option>
+                  <option value={selectedYear === 1 ? "A2" : "A2가"}>
+                    {selectedYear === 1 ? "A2" : "A2가"} 단위과제
+                  </option>
+                  <option value={selectedYear === 1 ? "A3" : "A3가"}>
+                    {selectedYear === 1 ? "A3" : "A3가"} 단위과제
+                  </option>
+                </select>
+              </div>
 
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem" }}>
-                    <div>
-                      <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>사업비 계획액</span>
-                      <p style={{ margin: "0.2rem 0", fontWeight: "700", color: "white" }}>{selectedEnvItem.budgetPlan.toLocaleString()}원</p>
-                    </div>
-                    <div>
-                      <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>실제 집행액</span>
-                      <p style={{ margin: "0.2rem 0", fontWeight: "700", color: "#10B981" }}>{selectedEnvItem.budgetSpent.toLocaleString()}원</p>
-                    </div>
-                  </div>
+              {/* 정렬 필터 */}
+              <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                <select
+                  value={sortField}
+                  onChange={(e) => setSortField(e.target.value)}
+                  className="user-selector"
+                  style={{
+                    padding: "0.4rem 0.75rem",
+                    fontSize: "0.85rem",
+                    fontWeight: "600",
+                    width: "auto"
+                  }}
+                >
+                  <option value="id">기본 순서</option>
+                  <option value="seq">단위과제 순서</option>
+                  <option value="unitPrice">단가 순서</option>
+                  <option value="total">금액 순서</option>
+                </select>
+                <button
+                  onClick={() => setSortOrder(prev => prev === "asc" ? "desc" : "asc")}
+                  className="btn btn-secondary"
+                  style={{
+                    padding: "0.4rem 0.6rem",
+                    borderRadius: "6px",
+                    background: "rgba(255,255,255,0.05)",
+                    border: "1px solid var(--border-color-dark)",
+                    color: "white",
+                    fontWeight: "600",
+                    fontSize: "0.82rem",
+                    cursor: "pointer"
+                  }}
+                >
+                  {sortOrder === "asc" ? "▲" : "▼"}
+                </button>
+              </div>
 
-                  <div style={{ borderTop: "1px solid rgba(255,255,255,0.03)", paddingTop: "0.75rem" }}>
-                    <span style={{ fontSize: "0.7rem", color: "var(--text-secondary)", display: "block" }}>도면 정보 & 설계 내역</span>
-                    <div style={{ display: "flex", gap: "0.5rem", marginTop: "0.3rem" }}>
-                      <span style={{ padding: "0.2rem 0.4rem", background: "rgba(255,255,255,0.05)", borderRadius: "4px", fontSize: "0.7rem", color: "var(--text-primary)" }}>🖼️ 조감도: {selectedEnvItem.birdseyeView}</span>
-                      <span style={{ padding: "0.2rem 0.4rem", background: "rgba(255,255,255,0.05)", borderRadius: "4px", fontSize: "0.7rem", color: "var(--text-primary)" }}>📐 도면: {selectedEnvItem.blueprints}</span>
-                    </div>
-                  </div>
-
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem", borderTop: "1px solid rgba(255,255,255,0.03)", paddingTop: "0.75rem" }}>
-                    <div>
-                      <span style={{ fontSize: "0.7rem", color: "var(--text-secondary)", display: "block" }}>구축 계획</span>
-                      <p style={{ margin: "0.2rem 0", lineHeight: "1.3" }}>{selectedEnvItem.plan || "-"}</p>
-                    </div>
-                    <div>
-                      <span style={{ fontSize: "0.7rem", color: "var(--text-secondary)", display: "block" }}>진행 상태</span>
-                      <p style={{ margin: "0.2rem 0", lineHeight: "1.3" }}>{selectedEnvItem.progress || "-"}</p>
-                    </div>
-                  </div>
-
-                  <div>
-                    <span style={{ fontSize: "0.7rem", color: "var(--text-secondary)", display: "block" }}>향후 활용 계획</span>
-                    <p style={{ margin: "0.2rem 0", lineHeight: "1.3" }}>{selectedEnvItem.utilization}</p>
-                  </div>
-
-                </div>
-              ) : (
-                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "200px", color: "var(--text-secondary)", fontSize: "0.75rem", textAlign: "center" }}>
-                  <Info size={32} style={{ marginBottom: "0.5rem", opacity: 0.5 }} />
-                  <span>왼쪽 목록에서 환경개선 건을 선택하시면<br />세부 구축 계획 및 설계 도면 명세서가 조회됩니다.</span>
-                </div>
+              {currentRole.id !== "GUEST" && (
+                <button 
+                  className="btn btn-primary"
+                  onClick={() => openAddModal("env")}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "0.25rem",
+                    padding: "0.4rem 1rem",
+                    borderRadius: "6px",
+                    background: "var(--accent-color)",
+                    border: "none",
+                    color: "white",
+                    fontWeight: "600",
+                    fontSize: "0.85rem",
+                    cursor: "pointer"
+                  }}
+                >
+                  <Plus size={16} />
+                  환경개선 항목 추가
+                </button>
               )}
             </div>
-
           </div>
 
+          {/* 환경개선 테이블 */}
+          <div className="glass-card" style={{ padding: "0.25rem", borderRadius: "12px", overflowX: "auto", border: "1px solid rgba(255,255,255,0.06)", background: "rgba(10, 15, 30, 0.4)" }}>
+            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.82rem", color: "white" }}>
+              <thead>
+                <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.08)", background: "rgba(255,255,255,0.01)" }}>
+                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "45px" }}>순번</th>
+                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "60px" }}>과제</th>
+                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "180px" }}>연계 프로그램</th>
+                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "140px" }}>관련 학과/부서</th>
+                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "180px" }}>구축 사업명</th>
+                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "right", fontWeight: "800", width: "85px" }}>단가(백만원)</th>
+                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "right", fontWeight: "800", width: "45px" }}>수량</th>
+                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "right", fontWeight: "800", width: "95px" }}>금액(백만원)</th>
+                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "left", fontWeight: "800", width: "384px" }}>구입목적 및 활용계획</th>
+                  
+                  {/* 12개월 타임라인 헤더 */}
+                  {monthsOrder.map((m, idx) => (
+                    <th 
+                      key={idx} 
+                      style={{ 
+                        padding: "0.75rem 0.25rem", 
+                        textAlign: "center", 
+                        fontWeight: "600", 
+                        fontSize: "0.75rem", 
+                        color: "var(--text-secondary-dark)",
+                        width: "36px",
+                        whiteSpace: "nowrap",
+                        borderRight: idx < 11 ? "1px solid rgba(255,255,255,0.03)" : "none"
+                      }}
+                    >
+                      {m}
+                    </th>
+                  ))}
+                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "65px" }}>제어</th>
+                </tr>
+              </thead>
+              <tbody>
+                {(() => {
+                  const activeEnvList = envData.length > 0 ? envData : [];
+                  
+                  // 1) 과제 필터링
+                  let filteredEnvs = selectedEquipUnit === "ALL" 
+                    ? activeEnvList 
+                    : activeEnvList.filter(e => e.unit === selectedEquipUnit);
+
+                  // 2) 학과 및 부서 필터
+                  if (deptFilter) {
+                    filteredEnvs = filteredEnvs.filter(e => (e.deptName || "").includes(deptFilter));
+                  }
+                  if (divisionFilter) {
+                    filteredEnvs = filteredEnvs.filter(e => (e.divisionName || "").includes(divisionFilter));
+                  }
+
+                  // 3) 정렬 적용
+                  filteredEnvs = [...filteredEnvs].sort((a, b) => {
+                    let aVal = a[sortField];
+                    let bVal = b[sortField];
+                    if (sortField === "total") {
+                      aVal = (Number(a.unitPrice) || 0) * (Number(a.quantity) || 1);
+                      bVal = (Number(b.unitPrice) || 0) * (Number(b.quantity) || 1);
+                    } else if (sortField === "unitPrice") {
+                      aVal = Number(a.unitPrice) || 0;
+                      bVal = Number(b.unitPrice) || 0;
+                    } else if (sortField === "seq" || sortField === "id") {
+                      aVal = Number(aVal) || 0;
+                      bVal = Number(bVal) || 0;
+                    }
+                    if (aVal < bVal) return sortOrder === "asc" ? -1 : 1;
+                    if (aVal > bVal) return sortOrder === "asc" ? 1 : -1;
+                    return 0;
+                  });
+
+                  if (filteredEnvs.length === 0) {
+                    return (
+                      <tr>
+                        <td colSpan={11 + monthsOrder.length} style={{ padding: "3rem", textAlign: "center", color: "var(--text-secondary)" }}>
+                          📭 등록된 교육환경 개선 사업 내역이 없습니다.
+                        </td>
+                      </tr>
+                    );
+                  }
+
+                  return filteredEnvs.map((equip, idx) => {
+                    const price = equip.unitPrice ? (equip.unitPrice / 1000000) : (equip.budgetPlan ? (equip.budgetPlan / 1000000) : 0);
+                    const qty = equip.quantity || 1;
+                    const total = price * qty;
+
+                    const idxP = getMonthIndex(equip.dateP);
+                    const idxA = getMonthIndex(equip.dateA);
+                    const idxB = getMonthIndex(equip.dateB);
+                    const idxPr = getMonthIndex(equip.datePr);
+                    const idxI = getMonthIndex(equip.dateI);
+
+                    const activePhases = [];
+                    if (idxP !== null) activePhases.push({ phase: "P", idx: idxP, weight: phaseWeight["P"], date: equip.dateP, label: "기획", color: "#f59e0b" });
+                    if (idxA !== null) activePhases.push({ phase: "A", idx: idxA, weight: phaseWeight["A"], date: equip.dateA, label: "승인", color: "#3b82f6" });
+                    if (idxB !== null) activePhases.push({ phase: "B", idx: idxB, weight: phaseWeight["B"], date: equip.dateB, label: "입찰", color: "#06b6d4" });
+                    if (idxPr !== null) activePhases.push({ phase: "Pr", idx: idxPr, weight: phaseWeight["Pr"], date: equip.datePr, label: "구매", color: "#a78bfa" });
+                    if (idxI !== null) activePhases.push({ phase: "I", idx: idxI, weight: phaseWeight["I"], date: equip.dateI, label: "검수", color: "#10b981" });
+
+                    let lastActivePhase = null;
+                    if (activePhases.length > 0) {
+                      const sortedActive = [...activePhases].sort((a, b) => {
+                        if (a.idx !== b.idx) return b.idx - a.idx;
+                        return b.weight - a.weight;
+                      });
+                      lastActivePhase = sortedActive[0];
+                    }
+
+                    const arrowsToRender = [];
+                    const segments = [
+                      { start: idxP, end: idxA, color: "#f59e0b" },
+                      { start: idxA, end: idxB, color: "#3b82f6" },
+                      { start: idxB, end: idxPr, color: "#06b6d4" },
+                      { start: idxPr, end: idxI, color: "#a78bfa" }
+                    ];
+
+                    segments.forEach(seg => {
+                      if (seg.start !== null && seg.end !== null && seg.start < seg.end) {
+                        const pos = (seg.start + seg.end) / 2;
+                        const cellIdx = Math.floor(pos);
+                        const rem = pos - cellIdx;
+                        const leftPercent = (rem === 0) ? "50%" : "100%";
+                        arrowsToRender.push({
+                          cellIdx,
+                          leftPercent,
+                          color: seg.color
+                        });
+                      }
+                    });
+
+                    return (
+                      <tr 
+                        key={equip.id || idx} 
+                        style={{ borderBottom: "1px solid rgba(255,255,255,0.05)", transition: "background 0.15s ease" }}
+                      >
+                        <td style={{ padding: "0.8rem 0.5rem", textAlign: "center", color: "var(--text-secondary)" }}>
+                          {idx + 1}
+                        </td>
+                        <td style={{ padding: "0.8rem 0.5rem", textAlign: "center", fontWeight: "750", color: "var(--accent-color)" }}>
+                          {equip.unit}
+                        </td>
+                        <td style={{ padding: "0.8rem 0.5rem", textAlign: "center", fontWeight: "600" }}>
+                          {(() => {
+                            const matchedProj = displayProjects.find(p => p.unit === equip.unit);
+                            return matchedProj ? matchedProj.title : equip.operation || "-";
+                          })()}
+                        </td>
+                        <td style={{ padding: "0.8rem 0.5rem", textAlign: "center", fontWeight: "600" }}>
+                          {(() => {
+                            const dName = equip.deptName || "";
+                            const divName = equip.divisionName || "";
+                            if (dName && divName) {
+                              return `${dName} / ${divName}`;
+                            }
+                            return dName || divName || "-";
+                          })()}
+                        </td>
+                        <td style={{ padding: "0.8rem 0.5rem", textAlign: "center", fontWeight: "700", color: "white" }}>
+                          {equip.itemName || equip.title || "-"}
+                        </td>
+                        <td style={{ padding: "0.8rem 0.5rem", textAlign: "right", color: "var(--text-secondary)", fontWeight: "600" }}>
+                          {price.toFixed(2)}
+                        </td>
+                        <td style={{ padding: "0.8rem 0.5rem", textAlign: "right", fontWeight: "600" }}>
+                          {qty}
+                        </td>
+                        <td style={{ padding: "0.8rem 0.5rem", textAlign: "right", fontWeight: "700", color: "#10B981" }}>
+                          {total.toFixed(2)}
+                        </td>
+                        <td style={{ padding: "0.8rem 0.75rem", textAlign: "left", color: "var(--text-secondary)", maxWidth: "384px" }} title={equip.description || equip.purpose || equip.opPlan}>
+                          {(() => {
+                            const text = equip.description || equip.purpose || equip.opPlan || "";
+                            const lines = text.split("\n").map(l => l.trim()).filter(Boolean);
+                            const purpose = lines[0] || "-";
+                            const plan = lines[1] || "-";
+                            return (
+                              <div style={{
+                                display: "flex",
+                                flexDirection: "column",
+                                gap: "0.35rem",
+                                lineHeight: "1.4",
+                                fontSize: "0.78rem"
+                              }}>
+                                <div style={{ wordBreak: "break-all", whiteSpace: "normal", display: "flex", alignItems: "flex-start", gap: "0.25rem" }}>
+                                  <span style={{ color: "var(--accent-color)", fontWeight: "bold" }}>•</span>
+                                  <span>
+                                    <strong style={{ color: "var(--text-primary)", fontWeight: "700", marginRight: "4px" }}>구입목적:</strong>
+                                    {purpose}
+                                  </span>
+                                </div>
+                                <div style={{ wordBreak: "break-all", whiteSpace: "normal", display: "flex", alignItems: "flex-start", gap: "0.25rem" }}>
+                                  <span style={{ color: "var(--accent-color)", fontWeight: "bold" }}>•</span>
+                                  <span>
+                                    <strong style={{ color: "var(--text-primary)", fontWeight: "700", marginRight: "4px" }}>활용계획:</strong>
+                                    {plan}
+                                  </span>
+                                </div>
+                              </div>
+                            );
+                          })()}
+                        </td>
+                        
+                        {monthsOrder.map((m, currIdx) => {
+                          const dynamicMilestones = getMilestonesFromDates(equip, selectedYear);
+                          const stepList = dynamicMilestones[m] || [];
+
+                          const getSegmentColorForPos = (pos) => {
+                            if (idxP !== null && idxA !== null && pos >= idxP && pos <= idxA) return "#f59e0b";
+                            if (idxA !== null && idxB !== null && pos >= idxA && pos <= idxB) return "#3b82f6";
+                            if (idxB !== null && idxPr !== null && pos >= idxB && pos <= idxPr) return "#06b6d4";
+                            if (idxPr !== null && idxI !== null && pos >= idxPr && pos <= idxI) return "#a78bfa";
+                            return "rgba(255, 255, 255, 0.12)";
+                          };
+
+                          const leftColor = getSegmentColorForPos(currIdx - 0.5);
+                          const rightColor = getSegmentColorForPos(currIdx + 0.5);
+
+                          const hasMilestone = stepList.length > 0;
+                          const currentStatus = lastActivePhase ? lastActivePhase.label + "중" : "대기";
+
+                          const shouldShowBalloon = lastActivePhase && lastActivePhase.idx === currIdx;
+                          let phaseColor = "rgba(255, 255, 255, 0.2)";
+                          let phaseLabel = "";
+                          let phaseDate = "";
+                          let primaryCode = "";
+
+                          if (hasMilestone) {
+                            const primaryMilestone = stepList[0];
+                            phaseColor = primaryMilestone.color;
+                            phaseLabel = primaryMilestone.label;
+                            phaseDate = primaryMilestone.date;
+                            primaryCode = primaryMilestone.phase;
+                          }
+
+                          const colorSet = 
+                            currentStatus === "기획중" ? { bg: "#f59e0b", shadow: "rgba(245,158,11,0.4)", border: "#fbbf24" } :
+                            currentStatus === "승인중" ? { bg: "#3b82f6", shadow: "rgba(59,130,246,0.4)", border: "#60a5fa" } :
+                            currentStatus === "입찰중" ? { bg: "#06b6d4", shadow: "rgba(6,182,212,0.4)", border: "#22d3ee" } :
+                            currentStatus === "구매중" ? { bg: "#a78bfa", shadow: "rgba(167,139,250,0.4)", border: "#c084fc" } :
+                            currentStatus === "검수중" ? { bg: "#10b981", shadow: "rgba(16,185,129,0.4)", border: "#34d399" } :
+                            { bg: "rgba(255, 255, 255, 0.1)", shadow: "rgba(255,255,255,0.05)", border: "rgba(255,255,255,0.2)" };
+
+                          return (
+                            <td 
+                              key={currIdx} 
+                              style={{ 
+                                padding: 0, 
+                                position: "relative", 
+                                borderRight: currIdx < 11 ? "1px solid rgba(255,255,255,0.03)" : "none",
+                                verticalAlign: "middle",
+                                minWidth: "36px",
+                                width: "36px"
+                              }}
+                            >
+                              {/* 가로 진행선 (배경 선) */}
+                              <div style={{
+                                position: "absolute",
+                                left: 0,
+                                right: 0,
+                                top: "50%",
+                                transform: "translateY(-50%)",
+                                height: "2.5px",
+                                background: `linear-gradient(to right, ${leftColor} 50%, ${rightColor} 50%)`,
+                                zIndex: 0
+                              }} />
+                              
+                              {/* 화살표 선 흐름 기호 (구간 한가운데에 단 1개의 진행 화살표 렌더링) */}
+                              {arrowsToRender
+                                .filter(arr => arr.cellIdx === currIdx)
+                                .map((arr, arrIdx) => (
+                                  <div 
+                                    key={arrIdx}
+                                    style={{
+                                      position: "absolute",
+                                      left: arr.leftPercent,
+                                      top: "50%",
+                                      transform: "translate(-50%, -50%)",
+                                      width: 0,
+                                      height: 0,
+                                      borderTop: "3.5px solid transparent",
+                                      borderBottom: "3.5px solid transparent",
+                                      borderLeft: `5px solid ${arr.color}`,
+                                      zIndex: 3,
+                                      pointerEvents: "none"
+                                    }} 
+                                  />
+                                ))
+                              }
+
+                              {/* 두 번째 그림 스타일의 마일스톤 노드 */}
+                              <div style={{ position: "relative", zIndex: 2, display: "flex", justifyContent: "center", alignItems: "center", height: "32px" }}>
+                                {shouldShowBalloon && (
+                                  <div 
+                                    className="status-flag-balloon"
+                                    style={{
+                                      "--bg-color": colorSet.bg,
+                                      "--shadow-color": colorSet.shadow,
+                                      "--border-color": colorSet.border,
+                                      bottom: "100%",
+                                      marginBottom: "4px"
+                                    }}
+                                  >
+                                    {currentStatus === "구매중" ? "구매 중" :
+                                     currentStatus === "결재중" ? "결재 중" :
+                                     currentStatus === "입찰중" ? "입찰 중" :
+                                     currentStatus}
+                                  </div>
+                                )}
+                                {hasMilestone && (
+                                  <div 
+                                    className="milestone-tooltip-container"
+                                    style={{ display: "flex", justifyContent: "center", alignItems: "center" }}
+                                  >
+                                    <div className="milestone-tooltip" style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "2px", textAlign: "center" }}>
+                                      <span style={{ color: phaseColor, fontWeight: "900" }}>{phaseLabel} ({primaryCode})</span>
+                                      <span style={{ fontSize: "0.68rem", opacity: 0.85, fontWeight: "normal" }}>{phaseDate || "날짜 미정"}</span>
+                                    </div>
+
+                                    <svg width="28" height="32" viewBox="0 0 28 32" style={{ overflow: "visible" }}>
+                                      <defs>
+                                        <filter id={`glow-${primaryCode}`} x="-40%" y="-40%" width="180%" height="180%">
+                                          <feGaussianBlur stdDeviation="2.2" result="blur" />
+                                          <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                                        </filter>
+                                      </defs>
+                                      <path 
+                                        d="M 5 7 L 14 11.5 L 23 7" 
+                                        fill="none"
+                                        stroke={phaseColor} 
+                                        strokeWidth="1.5" 
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        opacity="0.9" 
+                                      />
+                                      <text x="14" y="4.5" textAnchor="middle" fontSize="10" fontWeight="950" fill="white" style={{ fontFamily: "monospace", letterSpacing: "-0.5px" }}>
+                                        {primaryCode}
+                                      </text>
+                                      <circle cx="14" cy="17.5" r="4.5" fill={phaseColor} stroke="#ffffff" strokeWidth="1.5" filter={`url(#glow-${primaryCode})`} style={{ transition: "all 0.2s ease" }} />
+                                    </svg>
+                                  </div>
+                                )}
+                              </div>
+                            </td>
+                          );
+                        })}
+                        
+                        {/* 제어 열 버튼 */}
+                        <td style={{ padding: "0.8rem 0.5rem", textAlign: "center", whiteSpace: "nowrap" }}>
+                          <div style={{ display: "flex", gap: "0.3rem", justifyContent: "center" }}>
+                            {currentRole.id !== "GUEST" && (
+                              <>
+                                <button 
+                                  onClick={() => openEditModal(equip)}
+                                  className="btn btn-secondary"
+                                  style={{
+                                    padding: "0.25rem 0.45rem",
+                                    fontSize: "0.65rem",
+                                    background: "rgba(255,255,255,0.06)",
+                                    border: "1px solid rgba(255,255,255,0.12)",
+                                    borderRadius: "4px",
+                                    color: "white",
+                                    fontWeight: "700",
+                                    cursor: "pointer",
+                                    whiteSpace: "nowrap"
+                                  }}
+                                >
+                                  수정
+                                </button>
+                                <button 
+                                  onClick={() => {
+                                    if (confirm("정말 이 환경개선 건을 삭제하시겠습니까?")) {
+                                      setEnvData(activeEnvList.filter(e => e.id !== equip.id));
+                                    }
+                                  }}
+                                  className="btn btn-danger"
+                                  style={{
+                                    padding: "0.25rem 0.45rem",
+                                    fontSize: "0.65rem",
+                                    background: "rgba(239, 68, 68, 0.2)",
+                                    border: "1px solid rgba(239, 68, 68, 0.4)",
+                                    borderRadius: "4px",
+                                    color: "#f87171",
+                                    fontWeight: "700",
+                                    cursor: "pointer",
+                                    whiteSpace: "nowrap"
+                                  }}
+                                >
+                                  삭제
+                                </button>
+                              </>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  });
+                })()}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
+
 
       {/* 2. 기자재 구입·운영 탭 본문 */}
       {subTab === "equipment_purchase" && (
@@ -2330,106 +2745,573 @@ export default function ProcurementManager({
       {/* 3. 주요 용역 탭 본문 */}
       {subTab === "major_services" && (
         <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
-          <div className="glass-card" style={{ padding: "1.25rem", borderRadius: "10px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          
+          {/* 용역 상단 필터 카드 */}
+          <div className="glass-card" style={{ padding: "1.25rem", borderRadius: "10px", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "1rem" }}>
             <div>
               <h3 style={{ margin: 0, fontSize: "1.1rem", fontWeight: "800", color: "var(--text-primary)" }}>
-                💼 주요 사업 운영 및 외주 용역 현황
+                💼 주요 용역 사업 현황
               </h3>
               <p style={{ margin: "0.25rem 0 0 0", fontSize: "0.85rem", color: "var(--text-secondary)" }}>
-                500만원 이상의 대행 및 전산 개발/기획 용역 진행 일정 및 예산 집행률 관리
+                지자체 라이즈 대학 협력 체계 및 용역/컨설팅 계약 진행 현황
               </p>
             </div>
-            {currentRole.id !== "GUEST" && (
-              <button 
-                className="btn btn-primary"
-                onClick={() => openAddModal("service")}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "0.25rem",
-                  padding: "0.4rem 1rem",
-                  borderRadius: "6px",
-                  background: "var(--accent-color)",
-                  border: "none",
-                  color: "white",
-                  fontWeight: "600",
-                  fontSize: "0.85rem",
-                  cursor: "pointer"
-                }}
-              >
-                <Plus size={16} />
-                용역 추가
-              </button>
-            )}
+            
+            <div style={{ display: "flex", gap: "0.75rem", alignItems: "center", flexWrap: "wrap" }}>
+              {/* 학과 필터 */}
+              <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                <ListFilter size={16} style={{ color: "var(--text-secondary-dark)" }} />
+                <select
+                  value={deptFilter}
+                  onChange={(e) => setDeptFilter(e.target.value)}
+                  className="user-selector"
+                  style={{
+                    padding: "0.4rem 0.75rem",
+                    fontSize: "0.85rem",
+                    fontWeight: "600",
+                    width: "auto"
+                  }}
+                >
+                  <option value="">학과 전체</option>
+                  <option value="기계공학부">기계공학부</option>
+                  <option value="기계시스템전공">{"\u00A0-\u00A0기계시스템전공"}</option>
+                  <option value="기계설비전공">{"\u00A0-\u00A0기계설비전공"}</option>
+                  <option value="전기전자공학부">전기전자공학부</option>
+                  <option value="전기전공">{"\u00A0-\u00A0전기전공"}</option>
+                  <option value="전자공학전공">{"\u00A0-\u00A0전자공학전공"}</option>
+                  <option value="반도체장비전공">{"\u00A0-\u00A0반도체장비전공"}</option>
+                  <option value="IT융합학부">IT융합학부</option>
+                  <option value="컴퓨터정보전공">{"\u00A0-\u00A0컴퓨터정보전공"}</option>
+                  <option value="스마트제어전공">{"\u00A0-\u00A0스마트제어전공"}</option>
+                  <option value="화학공학과">화학공학과</option>
+                  <option value="간호학과">간호학과</option>
+                  <option value="물리치료학과">물리치료학과</option>
+                  <option value="치위생학과">치위생학과</option>
+                  <option value="작업치료학과">작업치료학과</option>
+                  <option value="글로벌비즈니스학과">글로벌비즈니스학과</option>
+                  <option value="세무회계전공">{"\u00A0-\u00A0세무회계전공"}</option>
+                  <option value="도시유통전공">{"\u00A0-\u00A0도시유통전공"}</option>
+                  <option value="호텔외식조리과">호텔외식조리과</option>
+                  <option value="융합조리전공">{"\u00A0- 융합조리전공"}</option>
+                  <option value="제과제빵스타일리스트전공">{"\u00A0- 제과제빵스타일리스트전공"}</option>
+                  <option value="사회복지학과">사회복지학과</option>
+                  <option value="유아교육과">유아교육과</option>
+                  <option value="스포츠지도학과">스포츠지도학과</option>
+                  <option value="공간디자인콘텐츠과">공간디자인콘텐츠과</option>
+                </select>
+              </div>
+
+              {/* 부서 필터 */}
+              <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                <select
+                  value={divisionFilter}
+                  onChange={(e) => setDivisionFilter(e.target.value)}
+                  className="user-selector"
+                  style={{
+                    padding: "0.4rem 0.75rem",
+                    fontSize: "0.85rem",
+                    fontWeight: "600",
+                    width: "auto"
+                  }}
+                >
+                  <option value="">부서 전체</option>
+                  <option value="ECC">ECC</option>
+                  <option value="산학협력단">산학협력단</option>
+                  <option value="어린이급식관리사업단">어린이급식관리사업단</option>
+                </select>
+              </div>
+
+              {/* 과제별 필터 */}
+              <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                <select
+                  value={selectedEquipUnit}
+                  onChange={(e) => setSelectedEquipUnit(e.target.value)}
+                  className="user-selector"
+                  style={{
+                    padding: "0.4rem 0.75rem",
+                    fontSize: "0.85rem",
+                    fontWeight: "600",
+                    width: "auto"
+                  }}
+                >
+                  <option value="ALL">전체 과제</option>
+                  <option value={selectedYear === 1 ? "A1" : "A1가"}>
+                    {selectedYear === 1 ? "A1" : "A1가"} 단위과제
+                  </option>
+                  <option value={selectedYear === 1 ? "A2" : "A2가"}>
+                    {selectedYear === 1 ? "A2" : "A2가"} 단위과제
+                  </option>
+                  <option value={selectedYear === 1 ? "A3" : "A3가"}>
+                    {selectedYear === 1 ? "A3" : "A3가"} 단위과제
+                  </option>
+                </select>
+              </div>
+
+              {/* 정렬 필터 */}
+              <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                <select
+                  value={sortField}
+                  onChange={(e) => setSortField(e.target.value)}
+                  className="user-selector"
+                  style={{
+                    padding: "0.4rem 0.75rem",
+                    fontSize: "0.85rem",
+                    fontWeight: "600",
+                    width: "auto"
+                  }}
+                >
+                  <option value="id">기본 순서</option>
+                  <option value="seq">단위과제 순서</option>
+                  <option value="unitPrice">단가 순서</option>
+                  <option value="total">금액 순서</option>
+                </select>
+                <button
+                  onClick={() => setSortOrder(prev => prev === "asc" ? "desc" : "asc")}
+                  className="btn btn-secondary"
+                  style={{
+                    padding: "0.4rem 0.6rem",
+                    borderRadius: "6px",
+                    background: "rgba(255,255,255,0.05)",
+                    border: "1px solid var(--border-color-dark)",
+                    color: "white",
+                    fontWeight: "600",
+                    fontSize: "0.82rem",
+                    cursor: "pointer"
+                  }}
+                >
+                  {sortOrder === "asc" ? "▲" : "▼"}
+                </button>
+              </div>
+
+              {currentRole.id !== "GUEST" && (
+                <button 
+                  className="btn btn-primary"
+                  onClick={() => openAddModal("service")}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "0.25rem",
+                    padding: "0.4rem 1rem",
+                    borderRadius: "6px",
+                    background: "var(--accent-color)",
+                    border: "none",
+                    color: "white",
+                    fontWeight: "600",
+                    fontSize: "0.85rem",
+                    cursor: "pointer"
+                  }}
+                >
+                  <Plus size={16} />
+                  주요 용역 추가
+                </button>
+              )}
+            </div>
           </div>
 
-          <div className="glass-card" style={{ padding: "0.5rem", borderRadius: "10px", overflowX: "auto" }}>
-            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.82rem", color: "var(--text-primary)", minWidth: "960px" }}>
+          {/* 주요 용역 테이블 */}
+          <div className="glass-card" style={{ padding: "0.25rem", borderRadius: "12px", overflowX: "auto", border: "1px solid rgba(255,255,255,0.06)", background: "rgba(10, 15, 30, 0.4)" }}>
+            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.82rem", color: "white" }}>
               <thead>
-                <tr style={{ background: "rgba(255, 255, 255, 0.03)", borderBottom: "2px solid rgba(255,255,255,0.08)" }}>
-                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "50px" }}>순번</th>
-                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "left", fontWeight: "800", width: "220px" }}>용역 명칭 (500만원 이상)</th>
-                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "left", fontWeight: "800" }}>추진 목적 (용역 요건)</th>
-                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "left", fontWeight: "800", width: "180px" }}>수행기관 자격 기준</th>
-                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "right", fontWeight: "800", width: "100px" }}>계획액</th>
-                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "right", fontWeight: "800", width: "100px" }}>실집행액</th>
-                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "160px" }}>현재 행정단계</th>
-                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "left", fontWeight: "800", width: "180px" }}>최종 운영 결과</th>
-                  {currentRole.id !== "GUEST" && (
-                    <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "50px" }}>작업</th>
-                  )}
+                <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.08)", background: "rgba(255,255,255,0.01)" }}>
+                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "45px" }}>순번</th>
+                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "60px" }}>과제</th>
+                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "180px" }}>연계 프로그램</th>
+                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "140px" }}>관련 학과/부서</th>
+                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "180px" }}>용역/사업명</th>
+                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "right", fontWeight: "800", width: "85px" }}>단가(백만원)</th>
+                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "right", fontWeight: "800", width: "45px" }}>수량</th>
+                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "right", fontWeight: "800", width: "95px" }}>금액(백만원)</th>
+                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "left", fontWeight: "800", width: "384px" }}>용역목적 및 수행결과</th>
+                  
+                  {/* 12개월 타임라인 헤더 */}
+                  {monthsOrder.map((m, idx) => (
+                    <th 
+                      key={idx} 
+                      style={{ 
+                        padding: "0.75rem 0.25rem", 
+                        textAlign: "center", 
+                        fontWeight: "600", 
+                        fontSize: "0.75rem", 
+                        color: "var(--text-secondary-dark)",
+                        width: "36px",
+                        whiteSpace: "nowrap",
+                        borderRight: idx < 11 ? "1px solid rgba(255,255,255,0.03)" : "none"
+                      }}
+                    >
+                      {m}
+                    </th>
+                  ))}
+                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "65px" }}>제어</th>
                 </tr>
               </thead>
               <tbody>
-                {serviceData.length > 0 ? (
-                  serviceData.map((item, index) => (
-                    <tr 
-                      key={item.id} 
-                      style={{ borderBottom: "1px solid rgba(255,255,255,0.05)", transition: "background 0.15s ease" }}
-                    >
-                      <td style={{ padding: "0.8rem 0.5rem", textAlign: "center", color: "var(--text-secondary)" }}>{index + 1}</td>
-                      <td style={{ padding: "0.8rem 0.5rem", textAlign: "left", fontWeight: "700", color: "white" }}>{item.title}</td>
-                      <td style={{ padding: "0.8rem 0.5rem", textAlign: "left", color: "var(--text-secondary)", maxWidth: "250px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={item.purpose}>{item.purpose}</td>
-                      <td style={{ padding: "0.8rem 0.5rem", textAlign: "left", color: "var(--text-secondary)", maxWidth: "180px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={item.providerQual}>{item.providerQual}</td>
-                      <td style={{ padding: "0.8rem 0.5rem", textAlign: "right", fontWeight: "600" }}>{item.budgetPlan.toLocaleString()}원</td>
-                      <td style={{ padding: "0.8rem 0.5rem", textAlign: "right", fontWeight: "700", color: "#10B981" }}>{item.budgetSpent.toLocaleString()}원</td>
-                      <td style={{ padding: "0.8rem 0.5rem", textAlign: "center" }}>
-                        {item.step === 1 && <span style={{ padding: "0.2rem 0.5rem", borderRadius: "4px", background: "rgba(245,158,11,0.15)", color: "#f59e0b", fontSize: "0.75rem", fontWeight: "700" }}>1단계: 결재완료</span>}
-                        {item.step === 2 && <span style={{ padding: "0.2rem 0.5rem", borderRadius: "4px", background: "rgba(59,130,246,0.15)", color: "#3b82f6", fontSize: "0.75rem", fontWeight: "700" }}>2단계: 구매 발주</span>}
-                        {item.step === 3 && <span style={{ padding: "0.2rem 0.5rem", borderRadius: "4px", background: "rgba(16,185,129,0.15)", color: "#10b981", fontSize: "0.75rem", fontWeight: "700" }}>3단계: 검수 완료</span>}
-                      </td>
-                      <td style={{ padding: "0.8rem 0.5rem", textAlign: "left", color: "var(--text-secondary)", maxWidth: "180px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={item.opResult}>{item.opResult || "-"}</td>
-                      {currentRole.id !== "GUEST" && (
-                        <td style={{ padding: "0.8rem 0.5rem", textAlign: "center" }}>
-                          <button
-                            onClick={() => {
-                              if (confirm("해당 주요 용역을 삭제하시겠습니까?")) {
-                                setServiceData(serviceData.filter(x => x.id !== item.id));
-                              }
-                            }}
-                            style={{ background: "transparent", border: "none", color: "rgba(255,255,255,0.25)", cursor: "pointer", transition: "color 0.15s" }}
-                            onMouseOver={(e) => e.currentTarget.style.color = "#ef4444"}
-                            onMouseOut={(e) => e.currentTarget.style.color = "rgba(255,255,255,0.25)"}
-                            title="삭제"
-                          >
-                            <Trash2 size={13} />
-                          </button>
+                {(() => {
+                  const activeServiceList = serviceData.length > 0 ? serviceData : [];
+                  
+                  // 1) 과제 필터링
+                  let filteredServices = selectedEquipUnit === "ALL" 
+                    ? activeServiceList 
+                    : activeServiceList.filter(e => e.unit === selectedEquipUnit);
+
+                  // 2) 학과 및 부서 필터
+                  if (deptFilter) {
+                    filteredServices = filteredServices.filter(e => (e.deptName || "").includes(deptFilter));
+                  }
+                  if (divisionFilter) {
+                    filteredServices = filteredServices.filter(e => (e.divisionName || "").includes(divisionFilter));
+                  }
+
+                  // 3) 정렬 적용
+                  filteredServices = [...filteredServices].sort((a, b) => {
+                    let aVal = a[sortField];
+                    let bVal = b[sortField];
+                    if (sortField === "total") {
+                      aVal = (Number(a.unitPrice) || 0) * (Number(a.quantity) || 1);
+                      bVal = (Number(b.unitPrice) || 0) * (Number(b.quantity) || 1);
+                    } else if (sortField === "unitPrice") {
+                      aVal = Number(a.unitPrice) || 0;
+                      bVal = Number(b.unitPrice) || 0;
+                    } else if (sortField === "seq" || sortField === "id") {
+                      aVal = Number(aVal) || 0;
+                      bVal = Number(bVal) || 0;
+                    }
+                    if (aVal < bVal) return sortOrder === "asc" ? -1 : 1;
+                    if (aVal > bVal) return sortOrder === "asc" ? 1 : -1;
+                    return 0;
+                  });
+
+                  if (filteredServices.length === 0) {
+                    return (
+                      <tr>
+                        <td colSpan={11 + monthsOrder.length} style={{ padding: "3rem", textAlign: "center", color: "var(--text-secondary)" }}>
+                          📭 등록된 주요 용역 사업 내역이 없습니다.
                         </td>
-                      )}
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan={9} style={{ padding: "2rem", textAlign: "center", color: "var(--text-secondary)" }}>
-                      등록된 주요 용역 내역이 존재하지 않습니다.
-                    </td>
-                  </tr>
-                )}
+                      </tr>
+                    );
+                  }
+
+                  return filteredServices.map((equip, idx) => {
+                    const price = equip.unitPrice ? (equip.unitPrice / 1000000) : (equip.budgetPlan ? (equip.budgetPlan / 1000000) : 0);
+                    const qty = equip.quantity || 1;
+                    const total = price * qty;
+
+                    const idxP = getMonthIndex(equip.dateP);
+                    const idxA = getMonthIndex(equip.dateA);
+                    const idxB = getMonthIndex(equip.dateB);
+                    const idxPr = getMonthIndex(equip.datePr);
+                    const idxI = getMonthIndex(equip.dateI);
+
+                    const activePhases = [];
+                    if (idxP !== null) activePhases.push({ phase: "P", idx: idxP, weight: phaseWeight["P"], date: equip.dateP, label: "기획", color: "#f59e0b" });
+                    if (idxA !== null) activePhases.push({ phase: "A", idx: idxA, weight: phaseWeight["A"], date: equip.dateA, label: "승인", color: "#3b82f6" });
+                    if (idxB !== null) activePhases.push({ phase: "B", idx: idxB, weight: phaseWeight["B"], date: equip.dateB, label: "입찰", color: "#06b6d4" });
+                    if (idxPr !== null) activePhases.push({ phase: "Pr", idx: idxPr, weight: phaseWeight["Pr"], date: equip.datePr, label: "구매", color: "#a78bfa" });
+                    if (idxI !== null) activePhases.push({ phase: "I", idx: idxI, weight: phaseWeight["I"], date: equip.dateI, label: "검수", color: "#10b981" });
+
+                    let lastActivePhase = null;
+                    if (activePhases.length > 0) {
+                      const sortedActive = [...activePhases].sort((a, b) => {
+                        if (a.idx !== b.idx) return b.idx - a.idx;
+                        return b.weight - a.weight;
+                      });
+                      lastActivePhase = sortedActive[0];
+                    }
+
+                    const arrowsToRender = [];
+                    const segments = [
+                      { start: idxP, end: idxA, color: "#f59e0b" },
+                      { start: idxA, end: idxB, color: "#3b82f6" },
+                      { start: idxB, end: idxPr, color: "#06b6d4" },
+                      { start: idxPr, end: idxI, color: "#a78bfa" }
+                    ];
+
+                    segments.forEach(seg => {
+                      if (seg.start !== null && seg.end !== null && seg.start < seg.end) {
+                        const pos = (seg.start + seg.end) / 2;
+                        const cellIdx = Math.floor(pos);
+                        const rem = pos - cellIdx;
+                        const leftPercent = (rem === 0) ? "50%" : "100%";
+                        arrowsToRender.push({
+                          cellIdx,
+                          leftPercent,
+                          color: seg.color
+                        });
+                      }
+                    });
+
+                    return (
+                      <tr 
+                        key={equip.id || idx} 
+                        style={{ borderBottom: "1px solid rgba(255,255,255,0.05)", transition: "background 0.15s ease" }}
+                      >
+                        <td style={{ padding: "0.8rem 0.5rem", textAlign: "center", color: "var(--text-secondary)" }}>
+                          {idx + 1}
+                        </td>
+                        <td style={{ padding: "0.8rem 0.5rem", textAlign: "center", fontWeight: "750", color: "var(--accent-color)" }}>
+                          {equip.unit}
+                        </td>
+                        <td style={{ padding: "0.8rem 0.5rem", textAlign: "center", fontWeight: "600" }}>
+                          {(() => {
+                            const matchedProj = displayProjects.find(p => p.unit === equip.unit);
+                            return matchedProj ? matchedProj.title : equip.operation || "-";
+                          })()}
+                        </td>
+                        <td style={{ padding: "0.8rem 0.5rem", textAlign: "center", fontWeight: "600" }}>
+                          {(() => {
+                            const dName = equip.deptName || "";
+                            const divName = equip.divisionName || "";
+                            if (dName && divName) {
+                              return `${dName} / ${divName}`;
+                            }
+                            return dName || divName || "-";
+                          })()}
+                        </td>
+                        <td style={{ padding: "0.8rem 0.5rem", textAlign: "center", fontWeight: "700", color: "white" }}>
+                          {equip.itemName || equip.title || "-"}
+                        </td>
+                        <td style={{ padding: "0.8rem 0.5rem", textAlign: "right", color: "var(--text-secondary)", fontWeight: "600" }}>
+                          {price.toFixed(2)}
+                        </td>
+                        <td style={{ padding: "0.8rem 0.5rem", textAlign: "right", fontWeight: "600" }}>
+                          {qty}
+                        </td>
+                        <td style={{ padding: "0.8rem 0.5rem", textAlign: "right", fontWeight: "700", color: "#10B981" }}>
+                          {total.toFixed(2)}
+                        </td>
+                        <td style={{ padding: "0.8rem 0.75rem", textAlign: "left", color: "var(--text-secondary)", maxWidth: "384px" }} title={equip.description || equip.purpose || equip.opPlan}>
+                          {(() => {
+                            const text = equip.description || equip.purpose || equip.opPlan || "";
+                            const lines = text.split("\n").map(l => l.trim()).filter(Boolean);
+                            const purpose = lines[0] || equip.purpose || "-";
+                            const plan = lines[1] || equip.opResult || "-";
+                            return (
+                              <div style={{
+                                display: "flex",
+                                flexDirection: "column",
+                                gap: "0.35rem",
+                                lineHeight: "1.4",
+                                fontSize: "0.78rem"
+                              }}>
+                                <div style={{ wordBreak: "break-all", whiteSpace: "normal", display: "flex", alignItems: "flex-start", gap: "0.25rem" }}>
+                                  <span style={{ color: "var(--accent-color)", fontWeight: "bold" }}>•</span>
+                                  <span>
+                                    <strong style={{ color: "var(--text-primary)", fontWeight: "700", marginRight: "4px" }}>용역목적:</strong>
+                                    {purpose}
+                                  </span>
+                                </div>
+                                <div style={{ wordBreak: "break-all", whiteSpace: "normal", display: "flex", alignItems: "flex-start", gap: "0.25rem" }}>
+                                  <span style={{ color: "var(--accent-color)", fontWeight: "bold" }}>•</span>
+                                  <span>
+                                    <strong style={{ color: "var(--text-primary)", fontWeight: "700", marginRight: "4px" }}>수행결과:</strong>
+                                    {plan}
+                                  </span>
+                                </div>
+                              </div>
+                            );
+                          })()}
+                        </td>
+                        
+                        {monthsOrder.map((m, currIdx) => {
+                          const dynamicMilestones = getMilestonesFromDates(equip, selectedYear);
+                          const stepList = dynamicMilestones[m] || [];
+
+                          const getSegmentColorForPos = (pos) => {
+                            if (idxP !== null && idxA !== null && pos >= idxP && pos <= idxA) return "#f59e0b";
+                            if (idxA !== null && idxB !== null && pos >= idxA && pos <= idxB) return "#3b82f6";
+                            if (idxB !== null && idxPr !== null && pos >= idxB && pos <= idxPr) return "#06b6d4";
+                            if (idxPr !== null && idxI !== null && pos >= idxPr && pos <= idxI) return "#a78bfa";
+                            return "rgba(255, 255, 255, 0.12)";
+                          };
+
+                          const leftColor = getSegmentColorForPos(currIdx - 0.5);
+                          const rightColor = getSegmentColorForPos(currIdx + 0.5);
+
+                          const hasMilestone = stepList.length > 0;
+                          const currentStatus = lastActivePhase ? lastActivePhase.label + "중" : "대기";
+
+                          const shouldShowBalloon = lastActivePhase && lastActivePhase.idx === currIdx;
+                          let phaseColor = "rgba(255, 255, 255, 0.2)";
+                          let phaseLabel = "";
+                          let phaseDate = "";
+                          let primaryCode = "";
+
+                          if (hasMilestone) {
+                            const primaryMilestone = stepList[0];
+                            phaseColor = primaryMilestone.color;
+                            phaseLabel = primaryMilestone.label;
+                            phaseDate = primaryMilestone.date;
+                            primaryCode = primaryMilestone.phase;
+                          }
+
+                          const colorSet = 
+                            currentStatus === "기획중" ? { bg: "#f59e0b", shadow: "rgba(245,158,11,0.4)", border: "#fbbf24" } :
+                            currentStatus === "승인중" ? { bg: "#3b82f6", shadow: "rgba(59,130,246,0.4)", border: "#60a5fa" } :
+                            currentStatus === "입찰중" ? { bg: "#06b6d4", shadow: "rgba(6,182,212,0.4)", border: "#22d3ee" } :
+                            currentStatus === "구매중" ? { bg: "#a78bfa", shadow: "rgba(167,139,250,0.4)", border: "#c084fc" } :
+                            currentStatus === "검수중" ? { bg: "#10b981", shadow: "rgba(16,185,129,0.4)", border: "#34d399" } :
+                            { bg: "rgba(255, 255, 255, 0.1)", shadow: "rgba(255,255,255,0.05)", border: "rgba(255,255,255,0.2)" };
+
+                          return (
+                            <td 
+                              key={currIdx} 
+                              style={{ 
+                                padding: 0, 
+                                position: "relative", 
+                                borderRight: currIdx < 11 ? "1px solid rgba(255,255,255,0.03)" : "none",
+                                verticalAlign: "middle",
+                                minWidth: "36px",
+                                width: "36px"
+                              }}
+                            >
+                              {/* 가로 진행선 (배경 선) */}
+                              <div style={{
+                                position: "absolute",
+                                left: 0,
+                                right: 0,
+                                top: "50%",
+                                transform: "translateY(-50%)",
+                                height: "2.5px",
+                                background: `linear-gradient(to right, ${leftColor} 50%, ${rightColor} 50%)`,
+                                zIndex: 0
+                              }} />
+                              
+                              {/* 화살표 선 흐름 기호 (구간 한가운데에 단 1개의 진행 화살표 렌더링) */}
+                              {arrowsToRender
+                                .filter(arr => arr.cellIdx === currIdx)
+                                .map((arr, arrIdx) => (
+                                  <div 
+                                    key={arrIdx}
+                                    style={{
+                                      position: "absolute",
+                                      left: arr.leftPercent,
+                                      top: "50%",
+                                      transform: "translate(-50%, -50%)",
+                                      width: 0,
+                                      height: 0,
+                                      borderTop: "3.5px solid transparent",
+                                      borderBottom: "3.5px solid transparent",
+                                      borderLeft: `5px solid ${arr.color}`,
+                                      zIndex: 3,
+                                      pointerEvents: "none"
+                                    }} 
+                                  />
+                                ))
+                              }
+
+                              {/* 두 번째 그림 스타일의 마일스톤 노드 */}
+                              <div style={{ position: "relative", zIndex: 2, display: "flex", justifyContent: "center", alignItems: "center", height: "32px" }}>
+                                {shouldShowBalloon && (
+                                  <div 
+                                    className="status-flag-balloon"
+                                    style={{
+                                      "--bg-color": colorSet.bg,
+                                      "--shadow-color": colorSet.shadow,
+                                      "--border-color": colorSet.border,
+                                      bottom: "100%",
+                                      marginBottom: "4px"
+                                    }}
+                                  >
+                                    {currentStatus === "구매중" ? "구매 중" :
+                                     currentStatus === "결재중" ? "결재 중" :
+                                     currentStatus === "입찰중" ? "입찰 중" :
+                                     currentStatus}
+                                  </div>
+                                )}
+                                {hasMilestone && (
+                                  <div 
+                                    className="milestone-tooltip-container"
+                                    style={{ display: "flex", justifyContent: "center", alignItems: "center" }}
+                                  >
+                                    <div className="milestone-tooltip" style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "2px", textAlign: "center" }}>
+                                      <span style={{ color: phaseColor, fontWeight: "900" }}>{phaseLabel} ({primaryCode})</span>
+                                      <span style={{ fontSize: "0.68rem", opacity: 0.85, fontWeight: "normal" }}>{phaseDate || "날짜 미정"}</span>
+                                    </div>
+
+                                    <svg width="28" height="32" viewBox="0 0 28 32" style={{ overflow: "visible" }}>
+                                      <defs>
+                                        <filter id={`glow-${primaryCode}`} x="-40%" y="-40%" width="180%" height="180%">
+                                          <feGaussianBlur stdDeviation="2.2" result="blur" />
+                                          <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                                        </filter>
+                                      </defs>
+                                      <path 
+                                        d="M 5 7 L 14 11.5 L 23 7" 
+                                        fill="none"
+                                        stroke={phaseColor} 
+                                        strokeWidth="1.5" 
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        opacity="0.9" 
+                                      />
+                                      <text x="14" y="4.5" textAnchor="middle" fontSize="10" fontWeight="950" fill="white" style={{ fontFamily: "monospace", letterSpacing: "-0.5px" }}>
+                                        {primaryCode}
+                                      </text>
+                                      <circle cx="14" cy="17.5" r="4.5" fill={phaseColor} stroke="#ffffff" strokeWidth="1.5" filter={`url(#glow-${primaryCode})`} style={{ transition: "all 0.2s ease" }} />
+                                    </svg>
+                                  </div>
+                                )}
+                              </div>
+                            </td>
+                          );
+                        })}
+                        
+                        {/* 제어 열 버튼 */}
+                        <td style={{ padding: "0.8rem 0.5rem", textAlign: "center", whiteSpace: "nowrap" }}>
+                          <div style={{ display: "flex", gap: "0.3rem", justifyContent: "center" }}>
+                            {currentRole.id !== "GUEST" && (
+                              <>
+                                <button 
+                                  onClick={() => openEditModal(equip)}
+                                  className="btn btn-secondary"
+                                  style={{
+                                    padding: "0.25rem 0.45rem",
+                                    fontSize: "0.65rem",
+                                    background: "rgba(255,255,255,0.06)",
+                                    border: "1px solid rgba(255,255,255,0.12)",
+                                    borderRadius: "4px",
+                                    color: "white",
+                                    fontWeight: "700",
+                                    cursor: "pointer",
+                                    whiteSpace: "nowrap"
+                                  }}
+                                >
+                                  수정
+                                </button>
+                                <button 
+                                  onClick={() => {
+                                    if (confirm("정말 이 주요 용역 건을 삭제하시겠습니까?")) {
+                                      setServiceData(activeServiceList.filter(e => e.id !== equip.id));
+                                    }
+                                  }}
+                                  className="btn btn-danger"
+                                  style={{
+                                    padding: "0.25rem 0.45rem",
+                                    fontSize: "0.65rem",
+                                    background: "rgba(239, 68, 68, 0.2)",
+                                    border: "1px solid rgba(239, 68, 68, 0.4)",
+                                    borderRadius: "4px",
+                                    color: "#f87171",
+                                    fontWeight: "700",
+                                    cursor: "pointer",
+                                    whiteSpace: "nowrap"
+                                  }}
+                                >
+                                  삭제
+                                </button>
+                              </>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  });
+                })()}
               </tbody>
             </table>
           </div>
         </div>
       )}
+
 
       {/* 추가 모달창 팝업 */}
       {isAddModalOpen && (
