@@ -1165,7 +1165,7 @@ export default function ProcurementManager({
                       <span style={{ fontSize: "0.68rem", fontWeight: "400", color: "var(--text-secondary-dark)", marginTop: "0.1rem" }}>(백만원)</span>
                     </div>
                   </th>
-                  <th rowSpan={3} style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "600px", verticalAlign: "middle" }}>구입목적 및 활용계획</th>
+                  <th rowSpan={3} style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "480px", verticalAlign: "middle" }}>구입목적 및 활용계획</th>
                   <th colSpan={12} style={{ padding: "0.5rem", textAlign: "center", fontWeight: "800", borderBottom: "1px solid rgba(255,255,255,0.08)", background: "rgba(255, 255, 255, 0.01)", lineHeight: "1.3" }}>
                     구매단계<br />
                     <span style={{ fontSize: "0.75rem", fontWeight: "normal", color: "var(--text-secondary)" }}>(기획:P ➔ 승인:A ➔ 입찰:B ➔ 구매:Pr ➔ 검수:I)</span>
@@ -1372,7 +1372,7 @@ export default function ProcurementManager({
                           <td style={{ padding: "0.8rem 0.5rem", textAlign: "right", fontWeight: "700", color: "#10B981" }}>
                             {formatToMillionWon(total)}
                           </td>
-                          <td style={{ padding: "0.8rem 0.5rem", textAlign: "left", color: "var(--text-secondary)", maxWidth: "600px" }} title={equip.description || equip.opPlan}>
+                          <td style={{ padding: "0.8rem 0.5rem", textAlign: "left", color: "var(--text-secondary)", maxWidth: "480px" }} title={equip.description || equip.opPlan}>
                             <div style={{
                               display: "-webkit-box",
                               WebkitLineClamp: 3,
@@ -1462,24 +1462,6 @@ export default function ProcurementManager({
                                   verticalAlign: "middle"
                                 }}
                               >
-                                {shouldShowBalloon && (
-                                  <div 
-                                    className="status-flag-balloon"
-                                    style={{
-                                      "--bg-color": colorSet.bg,
-                                      "--shadow-color": colorSet.shadow,
-                                      "--border-color": colorSet.border,
-                                      bottom: "100%",
-                                      marginBottom: "6px"
-                                    }}
-                                  >
-                                    {currentStatus === "구매중" ? "구매 중" :
-                                     currentStatus === "결재중" ? "결재 중" :
-                                     currentStatus === "입찰중" ? "입찰 중" :
-                                     currentStatus}
-                                  </div>
-                                )}
-
                                 {/* 가로 타임라인 왼쪽 연결 반선 */}
                                 <div style={{
                                   position: "absolute",
@@ -1525,6 +1507,23 @@ export default function ProcurementManager({
 
                                 {/* 두 번째 그림 스타일의 마일스톤 노드 (중앙 도트점 + 상단 텍스트 및 양쪽 사선 깃대 날개) */}
                                 <div style={{ position: "relative", zIndex: 2, display: "flex", justifyContent: "center", alignItems: "center", height: "32px" }}>
+                                  {shouldShowBalloon && (
+                                    <div 
+                                      className="status-flag-balloon"
+                                      style={{
+                                        "--bg-color": colorSet.bg,
+                                        "--shadow-color": colorSet.shadow,
+                                        "--border-color": colorSet.border,
+                                        bottom: "100%",
+                                        marginBottom: "4px"
+                                      }}
+                                    >
+                                      {currentStatus === "구매중" ? "구매 중" :
+                                       currentStatus === "결재중" ? "결재 중" :
+                                       currentStatus === "입찰중" ? "입찰 중" :
+                                       currentStatus}
+                                    </div>
+                                  )}
                                   {hasMilestone && (
                                     <div 
                                       className="milestone-tooltip-container"
