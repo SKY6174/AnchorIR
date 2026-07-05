@@ -862,7 +862,11 @@ export default function ProcurementManager({
                 >
                   <option value="">학과 전체</option>
                   <option value="기계공학부">기계공학부</option>
+                  <option value="기계시스템전공">{"\u00A0\u00A0기계시스템전공"}</option>
+                  <option value="기계설비전공">{"\u00A0\u00A0기계설비전공"}</option>
                   <option value="전기전자공학부">전기전자공학부</option>
+                  <option value="전기전공">{"\u00A0\u00A0전기전공"}</option>
+                  <option value="스마트전자전공">{"\u00A0\u00A0스마트전자전공"}</option>
                   <option value="조선해양시스템공학과">조선해양시스템공학과</option>
                   <option value="컴퓨터공학과">컴퓨터공학과</option>
                   <option value="화학공학과">화학공학과</option>
@@ -1718,7 +1722,11 @@ export default function ProcurementManager({
                         <option value="">-- 선택 안 함 --</option>
                         {/* 1) 학과는 사업단관리 탭의 대학조직도에 나온 학부(과)를 기준으로 렌더링 */}
                         <option value="기계공학부">기계공학부</option>
+                        <option value="기계시스템전공">{"\u00A0\u00A0기계시스템전공"}</option>
+                        <option value="기계설비전공">{"\u00A0\u00A0기계설비전공"}</option>
                         <option value="전기전자공학부">전기전자공학부</option>
+                        <option value="전기전공">{"\u00A0\u00A0전기전공"}</option>
+                        <option value="스마트전자전공">{"\u00A0\u00A0스마트전자전공"}</option>
                         <option value="조선해양시스템공학과">조선해양시스템공학과</option>
                         <option value="컴퓨터공학과">컴퓨터공학과</option>
                         <option value="화학공학과">화학공학과</option>
