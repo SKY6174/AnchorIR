@@ -1958,6 +1958,9 @@ export default function App() {
 
   // Supabase 원격 rise_members 테이블에서 구성원 주소록 실시간 동기화 및 자가 치유 시딩 로드
   useEffect(() => {
+    // 비로그인 상태이거나 GUEST 권한일 때는 조회를 생략합니다. (401 RLS 방지)
+    if (!currentUser || currentRole?.id === "GUEST") return;
+
     const fetchDbMembers = async () => {
       try {
         const { data, error } = await supabase
@@ -2009,7 +2012,7 @@ export default function App() {
     };
 
     fetchDbMembers();
-  }, []);
+  }, [currentUser]);
 
   // members 로컬 상태 갱신 시 로컬스토리지 보조 백업 (네트워크 지연 시 즉시 피드백 및 영속성 보장)
   useEffect(() => {
