@@ -672,6 +672,87 @@ export default function ProcurementManager({
 
   return (
     <div className="procurement-manager-container" style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+      <style>{`
+        /* 툴팁 기본 스타일 */
+        .milestone-tooltip-container {
+          position: relative;
+        }
+        
+        .milestone-tooltip {
+          position: absolute;
+          bottom: 135%;
+          left: 50%;
+          transform: translate(-50%, 8px);
+          background: rgba(15, 23, 42, 0.96);
+          color: #ffffff;
+          padding: 6px 10px;
+          border-radius: 6px;
+          font-size: 0.72rem;
+          font-weight: 600;
+          white-space: nowrap;
+          opacity: 0;
+          visibility: hidden;
+          transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6), 0 0 1px rgba(255, 255, 255, 0.2);
+          border: 1px solid rgba(255, 255, 255, 0.12);
+          z-index: 999;
+          pointer-events: none;
+        }
+        
+        .milestone-tooltip::after {
+          content: "";
+          position: absolute;
+          top: 100%;
+          left: 50%;
+          transform: translateX(-50%);
+          border: 5px solid transparent;
+          border-top-color: rgba(15, 23, 42, 0.96);
+        }
+        
+        .milestone-tooltip-container:hover .milestone-tooltip {
+          opacity: 1;
+          visibility: visible;
+          transform: translate(-50%, 0);
+        }
+
+        /* 현재 단계 동적 말풍선(상시 노출) */
+        .status-flag-balloon {
+          position: absolute;
+          bottom: 140%;
+          left: 50%;
+          transform: translateX(-50%);
+          background: var(--bg-color);
+          color: #ffffff;
+          padding: 3px 8px;
+          border-radius: 12px;
+          font-size: 0.65rem;
+          font-weight: 800;
+          white-space: nowrap;
+          box-shadow: 0 3px 8px var(--shadow-color);
+          border: 1px solid var(--border-color);
+          z-index: 10;
+          animation: statusPulse 2s infinite ease-in-out;
+        }
+
+        .status-flag-balloon::after {
+          content: "";
+          position: absolute;
+          top: 100%;
+          left: 50%;
+          transform: translateX(-50%);
+          border: 4px solid transparent;
+          border-top-color: var(--bg-color);
+        }
+
+        @keyframes statusPulse {
+          0%, 100% {
+            transform: translate(-50%, 0px);
+          }
+          50% {
+            transform: translate(-50%, -4px);
+          }
+        }
+      `}</style>
       
       {/* 1. 환경개선 탭 본문 */}
       {subTab === "env_improvement" && (
@@ -1176,6 +1257,47 @@ export default function ProcurementManager({
                       const idxPr = getMonthIndexLocal(equip.datePr);
                       const idxI = getMonthIndexLocal(equip.dateI);
 
+                      // 각 마일스톤 단계별 색상 및 한글 라벨 헬퍼 함수
+                      const getPhaseColor = (code) => {
+                        const colors = {
+                          "P": "#f59e0b",  // 주황
+                          "A": "#3b82f6",  // 파랑
+                          "B": "#06b6d4",  // 청록
+                          "Pr": "#a78bfa", // 보라
+                          "I": "#10b981"   // 초록
+                        };
+                        return colors[code] || "#38bdf8";
+                      };
+
+                      const getPhaseLabel = (code) => {
+                        const labels = {
+                          "P": "기획",
+                          "A": "승인",
+                          "B": "입찰",
+                          "Pr": "구매",
+                          "I": "검수"
+                        };
+                        return labels[code] || "미정";
+                      };
+
+                      // 마지막 활성 단계 분석
+                      const activePhases = [];
+                      const phaseWeight = { "P": 1, "A": 2, "B": 3, "Pr": 4, "I": 5 };
+                      if (idxP !== null) activePhases.push({ phase: "P", idx: idxP, weight: phaseWeight["P"], date: equip.dateP, label: "기획", color: "#f59e0b" });
+                      if (idxA !== null) activePhases.push({ phase: "A", idx: idxA, weight: phaseWeight["A"], date: equip.dateA, label: "승인", color: "#3b82f6" });
+                      if (idxB !== null) activePhases.push({ phase: "B", idx: idxB, weight: phaseWeight["B"], date: equip.dateB, label: "입찰", color: "#06b6d4" });
+                      if (idxPr !== null) activePhases.push({ phase: "Pr", idx: idxPr, weight: phaseWeight["Pr"], date: equip.datePr, label: "구매", color: "#a78bfa" });
+                      if (idxI !== null) activePhases.push({ phase: "I", idx: idxI, weight: phaseWeight["I"], date: equip.dateI, label: "검수", color: "#10b981" });
+
+                      let lastActivePhase = null;
+                      if (activePhases.length > 0) {
+                        const sortedActive = [...activePhases].sort((a, b) => {
+                          if (a.idx !== b.idx) return b.idx - a.idx;
+                          return b.weight - a.weight;
+                        });
+                        lastActivePhase = sortedActive[0];
+                      }
+
                       return (
                         <tr 
                           key={equip.id || idx} 
@@ -1256,6 +1378,25 @@ export default function ProcurementManager({
                             const leftColor = getSegmentColor(true);
                             const rightColor = getSegmentColor(false);
 
+                            // 현재 월(m)에 해당하는 마일스톤 정보 가공
+                            const hasMilestone = stepList.length > 0;
+                            const primaryCode = hasMilestone ? stepList[0] : null;
+                            const phaseColor = primaryCode ? getPhaseColor(primaryCode) : "#38bdf8";
+                            const phaseLabel = primaryCode ? getPhaseLabel(primaryCode) : "";
+                            const phaseDate = primaryCode ? (
+                              primaryCode === "P" ? equip.dateP :
+                              primaryCode === "A" ? equip.dateA :
+                              primaryCode === "B" ? equip.dateB :
+                              primaryCode === "Pr" ? equip.datePr :
+                              equip.dateI
+                            ) : "";
+
+                            // 현재 마일스톤이 이 장비의 마지막 활성 마일스톤인지 판단
+                            const isLastActive = lastActivePhase && 
+                                                 primaryCode && 
+                                                 lastActivePhase.phase === primaryCode && 
+                                                 lastActivePhase.idx === currIdx;
+
                             return (
                               <td 
                                 key={m} 
@@ -1312,19 +1453,43 @@ export default function ProcurementManager({
 
                                 {/* 두 번째 그림 스타일의 마일스톤 노드 (중앙 도트점 + 상단 텍스트 및 양쪽 사선 깃대 날개) */}
                                 <div style={{ position: "relative", zIndex: 2, display: "flex", justifyContent: "center", alignItems: "center", height: "32px" }}>
-                                  {stepList.length > 0 && (
-                                    <div title={`${m}월: ${stepList.join(", ")}`}>
+                                  {hasMilestone && (
+                                    <div 
+                                      className="milestone-tooltip-container"
+                                      style={{ display: "flex", justifyContent: "center", alignItems: "center" }}
+                                    >
+                                      {/* 커스텀 호버 툴팁 날짜 표기 */}
+                                      <div className="milestone-tooltip">
+                                        <span style={{ color: phaseColor, fontWeight: "900", marginRight: "4px" }}>{phaseLabel} ({primaryCode})</span>
+                                        <span>{phaseDate || "날짜 미정"}</span>
+                                      </div>
+
+                                      {/* 현재 단계 진행 중 말풍선 뱃지 (마지막 활성 단계일 때만 상시 노출) */}
+                                      {isLastActive && (
+                                        <div 
+                                          className="status-flag-balloon"
+                                          style={{
+                                            "--bg-color": phaseColor,
+                                            "--shadow-color": `${phaseColor}4D`,
+                                            "--border-color": `${phaseColor}80`
+                                          }}
+                                        >
+                                          {phaseLabel}
+                                        </div>
+                                      )}
+
                                       <svg width="28" height="32" viewBox="0 0 28 32" style={{ overflow: "visible" }}>
                                         <defs>
-                                          <filter id="glow-blue" x="-30%" y="-30%" width="160%" height="160%">
-                                            <feGaussianBlur stdDeviation="1.8" result="blur" />
+                                          {/* 마일스톤별 고유 글로우 필터 */}
+                                          <filter id={`glow-${primaryCode}`} x="-40%" y="-40%" width="180%" height="180%">
+                                            <feGaussianBlur stdDeviation="2.2" result="blur" />
                                             <feComposite in="SourceGraphic" in2="blur" operator="over" />
                                           </filter>
                                         </defs>
 
-                                        {/* 1. 사선 깃대 안테나 날개 (V자) */}
-                                        <line x1="5" y1="11" x2="14" y2="20" stroke="rgba(255,255,255,0.7)" strokeWidth="1.5" />
-                                        <line x1="23" y1="11" x2="14" y2="20" stroke="rgba(255,255,255,0.7)" strokeWidth="1.5" />
+                                        {/* 1. 사선 깃대 안테나 날개 (단계별 고유 색상을 은은하게 칠하여 가독성 강화) */}
+                                        <line x1="5" y1="11" x2="14" y2="20" stroke={phaseColor} strokeWidth="1.2" opacity="0.85" />
+                                        <line x1="23" y1="11" x2="14" y2="20" stroke={phaseColor} strokeWidth="1.2" opacity="0.85" />
 
                                         {/* 2. 상단 텍스트 (P, A, B, Pr, I) */}
                                         <text 
@@ -1332,22 +1497,22 @@ export default function ProcurementManager({
                                           y="7" 
                                           textAnchor="middle" 
                                           fontSize="11" 
-                                          fontWeight="900" 
+                                          fontWeight="950" 
                                           fill="white"
-                                          style={{ fontFamily: "monospace" }}
+                                          style={{ fontFamily: "monospace", letterSpacing: "-0.5px" }}
                                         >
-                                          {style.text}
+                                          {primaryCode}
                                         </text>
 
-                                        {/* 3. 중앙 하늘색 도트 점 */}
+                                        {/* 3. 중앙 고유 단계 컬러 도트 점 */}
                                         <circle 
                                           cx="14" 
                                           cy="20" 
                                           r="4.5" 
-                                          fill="#38bdf8" 
-                                          stroke="rgba(255,255,255,0.6)" 
+                                          fill={phaseColor} 
+                                          stroke="rgba(255,255,255,0.7)" 
                                           strokeWidth="1"
-                                          filter="url(#glow-blue)"
+                                          filter={`url(#glow-${primaryCode})`}
                                         />
                                       </svg>
                                     </div>
