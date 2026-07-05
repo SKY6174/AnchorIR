@@ -1135,7 +1135,7 @@ export default function ProcurementManager({
                     </div>
                   </th>
                   <th rowSpan={3} style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "130px", verticalAlign: "middle" }}>학과 / 부서</th>
-                  <th rowSpan={3} style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "180px", verticalAlign: "middle" }}>품명</th>
+                  <th rowSpan={3} style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "270px", verticalAlign: "middle" }}>품명</th>
                   <th 
                     rowSpan={3} 
                     onClick={() => handleSort("unitPrice")} 
@@ -1165,7 +1165,7 @@ export default function ProcurementManager({
                       <span style={{ fontSize: "0.68rem", fontWeight: "400", color: "var(--text-secondary-dark)", marginTop: "0.1rem" }}>(백만원)</span>
                     </div>
                   </th>
-                  <th rowSpan={3} style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "480px", verticalAlign: "middle" }}>구입목적 및 활용계획</th>
+                  <th rowSpan={3} style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "384px", verticalAlign: "middle" }}>구입목적 및 활용계획</th>
                   <th colSpan={12} style={{ padding: "0.5rem", textAlign: "center", fontWeight: "800", borderBottom: "1px solid rgba(255,255,255,0.08)", background: "rgba(255, 255, 255, 0.01)", lineHeight: "1.3" }}>
                     구매단계<br />
                     <span style={{ fontSize: "0.75rem", fontWeight: "normal", color: "var(--text-secondary)" }}>(기획:P ➔ 승인:A ➔ 입찰:B ➔ 구매:Pr ➔ 검수:I)</span>
@@ -1350,7 +1350,7 @@ export default function ProcurementManager({
                           <td style={{ padding: "0.8rem 0.5rem", textAlign: "center", fontWeight: "750", color: "var(--accent-color)" }}>
                             {equip.unit}
                           </td>
-                          <td style={{ padding: "0.8rem 0.5rem", textAlign: "left", fontWeight: "600" }}>
+                          <td style={{ padding: "0.8rem 0.5rem", textAlign: "center", fontWeight: "600" }}>
                             {(() => {
                               const dName = equip.deptName || "";
                               const divName = equip.divisionName || "";
@@ -1360,19 +1360,19 @@ export default function ProcurementManager({
                               return dName || divName || "-";
                             })()}
                           </td>
-                          <td style={{ padding: "0.8rem 0.5rem", textAlign: "left", fontWeight: "700", color: "white" }}>
+                          <td style={{ padding: "0.8rem 0.5rem", textAlign: "center", fontWeight: "700", color: "white" }}>
                             {equip.itemName || equip.name || "-"}
                           </td>
                           <td style={{ padding: "0.8rem 0.5rem", textAlign: "right", color: "var(--text-secondary)", fontWeight: "600" }}>
                             {formatToMillionWon(price)}
                           </td>
-                          <td style={{ padding: "0.8rem 0.5rem", textAlign: "center", fontWeight: "600" }}>
+                          <td style={{ padding: "0.8rem 0.5rem", textAlign: "right", fontWeight: "600" }}>
                             {qty}
                           </td>
                           <td style={{ padding: "0.8rem 0.5rem", textAlign: "right", fontWeight: "700", color: "#10B981" }}>
                             {formatToMillionWon(total)}
                           </td>
-                          <td style={{ padding: "0.8rem 0.5rem", textAlign: "left", color: "var(--text-secondary)", maxWidth: "480px" }} title={equip.description || equip.opPlan}>
+                          <td style={{ padding: "0.8rem 0.5rem", textAlign: "center", color: "var(--text-secondary)", maxWidth: "384px" }} title={equip.description || equip.opPlan}>
                             <div style={{
                               display: "-webkit-box",
                               WebkitLineClamp: 3,
@@ -1381,7 +1381,8 @@ export default function ProcurementManager({
                               textOverflow: "ellipsis",
                               lineHeight: "1.4",
                               wordBreak: "break-all",
-                              whiteSpace: "normal"
+                              whiteSpace: "normal",
+                              textAlign: "center"
                             }}>
                               {equip.description || equip.opPlan || "-"}
                             </div>
@@ -1611,7 +1612,7 @@ export default function ProcurementManager({
                                 }}
                                 title="기획 제안서 요약 보기"
                               >
-                                기획문서
+                                기획
                               </button>
 
                               {/* 2. 구매문서 버튼 (보라색 테마) */}
@@ -1637,7 +1638,7 @@ export default function ProcurementManager({
                                 }}
                                 title="구매 발송문서 요약 보기"
                               >
-                                구매문서
+                                구매
                               </button>
 
                               {/* 3. 입찰문서 버튼 (초록색 테마) */}
@@ -1663,7 +1664,7 @@ export default function ProcurementManager({
                                 }}
                                 title="입찰 규격 공고 보기"
                               >
-                                입찰문서
+                                입찰
                               </button>
                             </div>
                           </td>
