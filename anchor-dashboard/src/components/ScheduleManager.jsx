@@ -1268,7 +1268,7 @@ ${aiRawText}
       const combinedDatetime = `${formData.pressDate}T${formData.pressTime}:00+09:00`;
 
       if (isEditMode) {
-        setPressReleases(pressReleases.map(p => 
+        setPressReleases(prev => prev.map(p => 
           p.id === editingItemId
             ? {
                 ...p,
@@ -1293,7 +1293,7 @@ ${aiRawText}
           contentUrl: formData.pressUrl || "",
           pressContent: formData.pressContent || ""
         };
-        setPressReleases([newItem, ...pressReleases]);
+        setPressReleases(prev => [newItem, ...prev]);
       }
     }
 
@@ -1747,7 +1747,7 @@ ${aiRawText}
         clearInterval(interval);
         // 상태값 업데이트 병합
         if (uniqueNewPress.length > 0) {
-          setPressReleases([...uniqueNewPress, ...pressReleases]);
+          setPressReleases(prev => [...uniqueNewPress, ...prev]);
         }
         // 1초 뒤에 모달을 자동으로 닫고 결과 얼럿 표출
         setTimeout(() => {
