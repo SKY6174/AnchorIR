@@ -3709,18 +3709,38 @@ export default function App() {
           };
 
           // 1. 새 데이터를 먼저 insert 시도 (이전 레코드를 먼저 지우지 않아 실패 시 자동 롤백 보장)
-          const { error: insertErr } = await supabase.from("press_releases").insert(
-            currentYearPress.map(s => ({
+          const insertPayload = currentYearPress.map(s => {
+            const item = {
               year: selectedYear,
               type: s.type || "기타",
               media: s.media || "미상",
               title: s.title || "새 보도자료",
               broadcast_date: formatToPostgresTimestamp(s.broadcastDate),
               content_url: s.contentUrl || "https://www.uc.ac.kr",
-              press_content: s.pressContent || "",
-              image_url: s.imageUrl || null
-            }))
-          );
+              press_content: s.pressContent || ""
+            };
+            if (s.imageUrl) {
+              item.image_url = s.imageUrl;
+            }
+            return item;
+          });
+
+          let { error: insertErr } = await supabase.from("press_releases").insert(insertPayload);
+
+          // 💡 Fail-safe Fallback: 만약 DB 스키마에 image_url 컬럼이 아직 선언되지 않아 오류가 났을 때
+          if (insertErr && (
+            insertErr.message?.includes("image_url") || 
+            insertErr.message?.includes("column") || 
+            String(insertErr).includes("image_url")
+          )) {
+            console.warn("DB에 image_url 컬럼이 식별되지 않아 안전 폴백 저장을 시작합니다.");
+            const safePayload = insertPayload.map(item => {
+              const { image_url, ...rest } = item;
+              return rest;
+            });
+            const { error: retryErr } = await supabase.from("press_releases").insert(safePayload);
+            insertErr = retryErr;
+          }
 
           if (insertErr) {
             console.error("Failed to insert new press releases:", insertErr);
