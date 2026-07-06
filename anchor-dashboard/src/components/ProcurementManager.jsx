@@ -1892,7 +1892,7 @@ export default function ProcurementManager({
                         사업비
                         <ArrowUpDown size={12} style={{ opacity: sortField === "unitPrice" ? 1 : 0.4 }} />
                       </div>
-                      <span style={{ fontSize: "0.68rem", fontWeight: "400", color: "var(--text-secondary-dark)", marginTop: "0.1rem" }}>(백만원)</span>
+                      <span style={{ fontSize: "0.68rem", fontWeight: "400", color: "var(--text-secondary)", marginTop: "0.1rem" }}>(백만원)</span>
                     </div>
                   </th>
                   <th rowSpan={3} style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "384px", verticalAlign: "middle" }}>구축목적 및 활용계획</th>
@@ -1924,10 +1924,10 @@ export default function ProcurementManager({
                         textAlign: "center", 
                         fontWeight: "800", 
                         fontSize: "0.75rem", 
-                        color: "var(--text-secondary-dark)",
+                        color: "var(--text-secondary)",
                         width: "36px",
                         whiteSpace: "nowrap",
-                        borderRight: idx < 11 ? "1px solid rgba(255,255,255,0.03)" : "none"
+                        borderRight: idx < 11 ? "1px solid var(--border-color)" : "none"
                       }}
                     >
                       {m}월
@@ -2156,7 +2156,7 @@ export default function ProcurementManager({
                               style={{ 
                                 padding: 0, 
                                 position: "relative", 
-                                borderRight: currIdx < 11 ? "1px solid rgba(255,255,255,0.03)" : "none",
+                                borderRight: currIdx < 11 ? "1px solid var(--border-color)" : "none",
                                 verticalAlign: "middle",
                                 minWidth: "36px",
                                 width: "36px"
@@ -2629,7 +2629,7 @@ export default function ProcurementManager({
                         금액
                         <ArrowUpDown size={12} style={{ opacity: sortField === "total" ? 1 : 0.4 }} />
                       </div>
-                      <span style={{ fontSize: "0.68rem", fontWeight: "400", color: "var(--text-secondary-dark)", marginTop: "0.1rem" }}>(백만원)</span>
+                      <span style={{ fontSize: "0.68rem", fontWeight: "400", color: "var(--text-secondary)", marginTop: "0.1rem" }}>(백만원)</span>
                     </div>
                   </th>
                   <th rowSpan={3} style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "384px", verticalAlign: "middle" }}>구입목적 및 활용계획</th>
@@ -2661,10 +2661,10 @@ export default function ProcurementManager({
                         textAlign: "center", 
                         fontWeight: "800", 
                         fontSize: "0.72rem", 
-                        color: "var(--text-secondary-dark)",
+                        color: "var(--text-secondary)",
                         width: "36px",
                         whiteSpace: "nowrap",
-                        borderRight: idx < 11 ? "1px solid rgba(255,255,255,0.03)" : "none"
+                        borderRight: idx < 11 ? "1px solid var(--border-color)" : "none"
                       }}
                     >
                       {m}
@@ -3465,7 +3465,7 @@ export default function ProcurementManager({
                   <th style={{ padding: "0.75rem 0.5rem", textAlign: "left", fontWeight: "800", width: "320px" }}>용역목적 및 수행결과</th>
                   <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "490px" }}>
                     용역 절차
-                    <span style={{ display: "block", fontSize: "0.7rem", color: "var(--text-secondary-dark)", fontWeight: "500", marginTop: "0.15rem" }}>
+                    <span style={{ display: "block", fontSize: "0.7rem", color: "var(--text-secondary)", fontWeight: "500", marginTop: "0.15rem" }}>
                       [기획(PP) ➔ 의뢰(RFO) ➔ 입찰(B) ➔ 평가∙선정(ES) ➔ 계약(C) ➔ 수행(E) ➔ 검수(I)]
                     </span>
                   </th>
@@ -3599,9 +3599,9 @@ export default function ProcurementManager({
                                         borderRadius: "12px",
                                         fontSize: "0.68rem",
                                         fontWeight: "800",
-                                        background: hasDate ? `${step.color}22` : "rgba(255,255,255,0.03)",
-                                        color: hasDate ? step.color : "rgba(255,255,255,0.25)",
-                                        border: hasDate ? `1px solid ${step.color}66` : "1px solid rgba(255,255,255,0.08)",
+                                        background: hasDate ? `${step.color}18` : "rgba(113, 113, 122, 0.08)",
+                                        color: hasDate ? step.color : "var(--text-secondary)",
+                                        border: hasDate ? `1px solid ${step.color}44` : "1px solid var(--border-color)",
                                         whiteSpace: "nowrap",
                                         display: "flex",
                                         flexDirection: "column",
@@ -3611,12 +3611,12 @@ export default function ProcurementManager({
                                     >
                                       <span>{step.code}</span>
                                     </div>
-                                    <span style={{ fontSize: "0.62rem", color: hasDate ? "white" : "rgba(255,255,255,0.2)", marginTop: "0.15rem", fontWeight: hasDate ? "700" : "normal" }}>
+                                    <span style={{ fontSize: "0.62rem", color: hasDate ? "var(--text-primary)" : "var(--text-secondary)", marginTop: "0.15rem", fontWeight: hasDate ? "700" : "normal" }}>
                                       {hasDate ? formattedDate : "-"}
                                     </span>
                                   </div>
                                   {sIdx < 6 && (
-                                    <span style={{ color: "rgba(255,255,255,0.15)", fontSize: "0.75rem", fontWeight: "900" }}>➔</span>
+                                    <span style={{ color: "var(--text-secondary)", fontSize: "0.75rem", fontWeight: "900", opacity: 0.35 }}>➔</span>
                                   )}
                                 </React.Fragment>
                               );
