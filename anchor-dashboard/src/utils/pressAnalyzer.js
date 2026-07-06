@@ -142,30 +142,38 @@ export async function analyzePressUrlWithAiConsensus({ url, selectedYear, apiKey
           }
         }
 
-        // 본문 내 첫 번째 이미지 URL 추출 파서 가동 (상대 경로인 경우 절대 경로로 복원)
-        const imgMatch = html.match(/<img[^>]+src=["']([^"']+)["']/i);
-        if (imgMatch && imgMatch[1]) {
-          let detectedSrc = imgMatch[1];
+        // 본문 내 유효한 첫 번째 이미지 URL 추출 파서 가동 (data: base64 인라인 이미지 건너뜀)
+        const imgMatches = html.matchAll(/<img[^>]+src=["']([^"']+)["']/gi);
+        for (const match of imgMatches) {
+          const detectedSrc = match[1]?.trim();
+          if (!detectedSrc || detectedSrc.startsWith("data:")) continue;
+
+          let candidateUrl = "";
           if (detectedSrc.startsWith("//")) {
-            firstImageUrl = "https:" + detectedSrc;
+            candidateUrl = "https:" + detectedSrc;
           } else if (detectedSrc.startsWith("/")) {
             try {
               const urlObj = new URL(url);
-              firstImageUrl = urlObj.origin + detectedSrc;
+              candidateUrl = urlObj.origin + detectedSrc;
             } catch (e) {
-              firstImageUrl = detectedSrc;
+              candidateUrl = detectedSrc;
             }
           } else if (!detectedSrc.startsWith("http")) {
             try {
               const urlObj = new URL(url);
               const pathParts = urlObj.pathname.split('/');
               pathParts.pop();
-              firstImageUrl = urlObj.origin + pathParts.join('/') + '/' + detectedSrc;
+              candidateUrl = urlObj.origin + pathParts.join('/') + '/' + detectedSrc;
             } catch (e) {
-              firstImageUrl = detectedSrc;
+              candidateUrl = detectedSrc;
             }
           } else {
-            firstImageUrl = detectedSrc;
+            candidateUrl = detectedSrc;
+          }
+
+          if (candidateUrl && candidateUrl.startsWith("http")) {
+            firstImageUrl = candidateUrl;
+            break; // 유효한 첫 번째 이미지 발견 시 루프 즉시 종료
           }
         }
 

@@ -4572,7 +4572,7 @@ ${aiRawText}
                     )}
 
                     {/* 보도 기사 대표 이미지 렌더링 */}
-                    {activePress.imageUrl && (
+                    {activePress.imageUrl && activePress.imageUrl.startsWith("http") && !activePress.imageUrl.startsWith("data:") && (
                       <div style={{ marginTop: "1rem", display: "flex", flexDirection: "column", gap: "0.5rem" }}>
                         <span style={{ fontSize: "0.85rem", color: "var(--text-secondary)", fontWeight: "600" }}>🖼️ 기사 대표 이미지</span>
                         <div style={{ 
