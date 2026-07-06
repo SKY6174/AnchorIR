@@ -1689,7 +1689,7 @@ export default function ProcurementManager({
                 🛠️ 교육환경 개선 사업 현황
               </h3>
               <p style={{ margin: "0.25rem 0 0 0", fontSize: "0.85rem", color: "var(--text-secondary)" }}>
-                지자체 라이즈 대학 특화 공간 및 스마트 첨단 강의실 구축 진행 현황
+                앵커사업을 통한 대학 특화 공간 및 스마트 첨단 강의실 구축 진행 현황
               </p>
             </div>
             
