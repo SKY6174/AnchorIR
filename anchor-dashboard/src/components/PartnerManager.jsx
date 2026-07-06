@@ -506,8 +506,8 @@ export default function PartnerManager({ selectedYear }) {
               alignItems: "center",
               gap: "0.4rem",
               background: "var(--input-bg)",
-              border: "1px solid rgba(255, 255, 255, 0.1)",
-              color: "rgba(255, 255, 255, 0.8)"
+              border: "1px solid var(--border-color)", // 💡 가변 테두리로 대응
+              color: "var(--text-secondary)" // 💡 가변 폰트칼라로 대응
             }}
           >
             <FileText size={14} />

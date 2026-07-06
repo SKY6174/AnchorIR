@@ -962,8 +962,8 @@ export default function AgreementManager({
                 padding: "0.35rem 0.7rem",
                 fontSize: "0.7rem",
                 background: "var(--input-bg)",
-                border: "1px solid rgba(255, 255, 255, 0.1)",
-                color: "rgba(255, 255, 255, 0.8)",
+                border: "1px solid var(--border-color)", // 💡 가변 테두리로 대응
+                color: "var(--text-secondary)", // 💡 가변 폰트칼라로 대응
                 borderRadius: "0.25rem",
                 cursor: "pointer",
                 fontWeight: "700"
