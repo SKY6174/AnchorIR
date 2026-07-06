@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { BookOpen, Send, Sparkles, AlertCircle, Bookmark, RefreshCw, MessageSquare } from "lucide-react";
 import { simulateRAGQuery, WIKI_CHUNKS } from "../data/mockWikiData";
 
-export default function LLMWiki({ selectedYear = 2 }) {
+export default function LLMWiki({ selectedYear = 2, darkMode = true }) {
   const [query, setQuery] = useState("");
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -173,7 +173,7 @@ ${contextStr || "관련된 직접적인 지식 문서가 없습니다. 일반 �
                 fontSize: "0.72rem",
                 fontWeight: "700",
                 cursor: "pointer",
-                background: selectedCategory === cat ? "var(--accent-color)" : "rgba(255, 255, 255, 0.04)",
+                background: selectedCategory === cat ? "var(--accent-color)" : (darkMode ? "rgba(255, 255, 255, 0.04)" : "rgba(0, 0, 0, 0.05)"),
                 color: selectedCategory === cat ? "white" : "var(--text-secondary)",
                 transition: "all 0.2s ease"
               }}
@@ -292,7 +292,7 @@ ${contextStr || "관련된 직접적인 지식 문서가 없습니다. 일반 �
 
                 {/* AI 응답일 때 RAG 참고 출처 칩 표기 */}
                 {msg.sender === "ai" && msg.sources && msg.sources.length > 0 && (
-                  <div style={{ marginTop: "0.75rem", paddingTop: "0.6rem", borderTop: "1px solid rgba(255,255,255,0.08)" }}>
+                  <div style={{ marginTop: "0.75rem", paddingTop: "0.6rem", borderTop: `1px solid ${darkMode ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)"}` }}>
                     <div style={{ fontSize: "0.65rem", fontWeight: "700", color: "var(--text-secondary)", marginBottom: "0.3rem", display: "flex", alignItems: "center", gap: "0.25rem" }}>
                       <Bookmark size={10} />
                       참고 성과/지침 문서 출처:
@@ -352,13 +352,17 @@ ${contextStr || "관련된 직접적인 지식 문서가 없습니다. 일반 �
           style={{ 
             display: "flex", 
             gap: "0.5rem", 
-            background: isFocused ? "rgba(30, 41, 59, 0.65)" : "rgba(24, 24, 27, 0.9)", 
-            border: isFocused ? "2px solid var(--accent-color)" : "2px solid rgba(59, 130, 246, 0.45)", 
+            background: isFocused 
+              ? (darkMode ? "rgba(30, 41, 59, 0.65)" : "white") 
+              : (darkMode ? "rgba(24, 24, 27, 0.9)" : "rgba(241, 245, 249, 1)"), 
+            border: isFocused 
+              ? "2px solid var(--accent-color)" 
+              : (darkMode ? "2px solid rgba(59, 130, 246, 0.45)" : "2px solid rgba(0, 0, 0, 0.1)"), 
             padding: "0.5rem 0.8rem", 
             borderRadius: "0.75rem",
             boxShadow: isFocused 
-              ? "0 0 20px rgba(59, 130, 246, 0.6), inset 0 0 10px rgba(59, 130, 246, 0.2)" 
-              : "0 0 12px rgba(59, 130, 246, 0.25), 0 4px 15px rgba(0, 0, 0, 0.35)",
+              ? (darkMode ? "0 0 20px rgba(59, 130, 246, 0.6), inset 0 0 10px rgba(59, 130, 246, 0.2)" : "0 0 0 3px rgba(59, 130, 246, 0.2)") 
+              : (darkMode ? "0 0 12px rgba(59, 130, 246, 0.25), 0 4px 15px rgba(0, 0, 0, 0.35)" : "none"),
             transition: "all 0.25s cubic-bezier(0.4, 0, 0.2, 1)"
           }}
         >
@@ -385,7 +389,7 @@ ${contextStr || "관련된 직접적인 지식 문서가 없습니다. 일반 �
             disabled={loading || !query.trim()}
             style={{
               border: "none",
-              background: query.trim() && !loading ? "var(--accent-color)" : "rgba(255,255,255,0.03)",
+              background: query.trim() && !loading ? "var(--accent-color)" : (darkMode ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.05)"),
               color: query.trim() && !loading ? "white" : "var(--text-secondary)",
               cursor: query.trim() && !loading ? "pointer" : "default",
               padding: "0.45rem 0.75rem",
