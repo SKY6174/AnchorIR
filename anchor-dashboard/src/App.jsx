@@ -5330,6 +5330,10 @@ export default function App() {
               <button
                 key={yr}
                 onClick={() => {
+                  // 💡 탭 변경 즉시 비동기 로딩 플래그를 동기적으로 리셋하여 자동 저장 Race Condition을 완전히 원천 봉쇄
+                  setIsFetchCompleted(false);
+                  setIsDbLoaded(false);
+                  
                   setSelectedYear(yr);
                   setSelectedKpi(null);
                   if (yr === 1) {
