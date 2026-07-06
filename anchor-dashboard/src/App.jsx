@@ -2793,6 +2793,7 @@ export default function App() {
             managerName: c.manager_name,
             certNo: c.cert_no,
             certType: c.cert_type,
+            awardType: c.award_type,
             note: c.note,
             teamName: c.team_name,
             recipientName: c.recipient_name,
