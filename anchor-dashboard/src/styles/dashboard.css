@@ -3,6 +3,7 @@
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap');
 
 :root {
+  color-scheme: dark;
   --bg-gradient-dark: linear-gradient(135deg, #09090b 0%, #18181b 100%);
   --bg-gradient-light: linear-gradient(135deg, #f4f4f5 0%, #e4e4e7 100%);
   
@@ -41,6 +42,7 @@
 
 /* 라이트 테마 가변 변수 오버라이드 (:root 레벨에서 동적 감지 가능하게 함) */
 :root.light-mode {
+  color-scheme: light;
   --text-primary: var(--text-primary-light);
   --text-secondary: var(--text-secondary-light);
   --border-color: var(--border-color-light);
@@ -726,11 +728,6 @@ body.light-mode {
 }
 
 /* 날짜/시간 입력창 내장 달력 및 피커 아이콘 시인성 고대비 설정 */
-input[type="date"],
-input[type="time"] {
-  color-scheme: dark !important;
-}
-
 input[type="date"]::-webkit-calendar-picker-indicator,
 input[type="time"]::-webkit-calendar-picker-indicator {
   cursor: pointer;
