@@ -60,7 +60,7 @@ export default function UnifiedCertificateManager({
     };
     if (members && Array.isArray(members)) {
       members.forEach(m => {
-        if (m.dept && m.name && m.status !== "미참여") {
+        if (m.dept && m.name && m.status !== "미참여" && m.role === "연구원") {
           const d = m.dept.trim();
           if (map[d]) {
             map[d].push(m.name);
@@ -75,10 +75,11 @@ export default function UnifiedCertificateManager({
   }, [members]);
 
   useEffect(() => {
-    if (issueDate) {
+    if (issueDate && certNo) {
       const acYear = getAcademicYear(issueDate);
-      if (!certNo || certNo.match(/^제\d*-?$/)) {
-        setCertNo(`제${acYear}-`);
+      const match = certNo.match(/^제\d*-(.*호)$/);
+      if (match) {
+        setCertNo(`제${acYear}-${match[1]}`);
       }
     }
   }, [issueDate]);
@@ -441,7 +442,24 @@ export default function UnifiedCertificateManager({
                   </div>
                   <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
                     <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>증서번호</label>
-                    <input type="text" value={certNo} onChange={e => setCertNo(e.target.value)} placeholder={`예: 제${getAcademicYear(issueDate)}-001호`} style={{ padding: "0.5rem", borderRadius: "0.5rem", background: "var(--bg-tertiary)", border: "1px solid var(--border-color)", color: "var(--text-primary)" }} />
+                    <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                      <span style={{ fontSize: "0.85rem", color: "var(--text-secondary)", whiteSpace: "nowrap" }}>제{getAcademicYear(issueDate)}-</span>
+                      <input 
+                        type="text" 
+                        value={(certNo || "").replace(/^제\d*-?/, '').replace(/호$/, '')} 
+                        onChange={e => {
+                          const val = e.target.value.replace(/\D/g, "");
+                          if (val) {
+                            setCertNo(`제${getAcademicYear(issueDate)}-${val}호`);
+                          } else {
+                            setCertNo("");
+                          }
+                        }} 
+                        placeholder="001" 
+                        style={{ flex: 1, minWidth: "50px", padding: "0.5rem", borderRadius: "0.5rem", background: "var(--bg-tertiary)", border: "1px solid var(--border-color)", color: "var(--text-primary)" }} 
+                      />
+                      <span style={{ fontSize: "0.85rem", color: "var(--text-secondary)", whiteSpace: "nowrap" }}>호</span>
+                    </div>
                   </div>
                 </div>
 
@@ -466,7 +484,12 @@ export default function UnifiedCertificateManager({
                     <>
                       <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
                         <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>상훈</label>
-                        <input type="text" value={awardType} onChange={e => setAwardType(e.target.value)} placeholder="예: 최우수상" style={{ padding: "0.5rem", borderRadius: "0.5rem", background: "var(--bg-tertiary)", border: "1px solid var(--border-color)", color: "var(--text-primary)" }} />
+                        <select value={awardType} onChange={e => setAwardType(e.target.value)} style={{ padding: "0.5rem", borderRadius: "0.5rem", background: "var(--bg-tertiary)", border: "1px solid var(--border-color)", color: "var(--text-primary)" }}>
+                          <option value="">선택</option>
+                          {["대상", "최우수상", "우수상", "장려상", "금상", "은상", "동상"].map(aw => (
+                            <option key={aw} value={aw}>{aw}</option>
+                          ))}
+                        </select>
                       </div>
                       <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
                         <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>팀명</label>
@@ -488,7 +511,7 @@ export default function UnifiedCertificateManager({
                   </div>
                   <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
                     <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>생년월일</label>
-                    <input type="text" value={birthDate} onChange={e => setBirthDate(e.target.value)} placeholder="YYYYMMDD" style={{ padding: "0.5rem", borderRadius: "0.5rem", background: "var(--bg-tertiary)", border: "1px solid var(--border-color)", color: "var(--text-primary)" }} />
+                    <input type="text" value={birthDate} onChange={e => setBirthDate(e.target.value)} placeholder="MM/DD/YYYY" style={{ padding: "0.5rem", borderRadius: "0.5rem", background: "var(--bg-tertiary)", border: "1px solid var(--border-color)", color: "var(--text-primary)" }} />
                   </div>
                   <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
                     <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>휴대폰</label>
