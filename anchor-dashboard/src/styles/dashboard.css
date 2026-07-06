@@ -48,7 +48,7 @@
 
 body {
   background: var(--bg-gradient-dark);
-  color: var(--text-primary);
+  color: var(--text-primary-dark);
   min-height: 100vh;
   overflow-x: hidden;
   transition: background 0.3s ease, color 0.3s ease;
@@ -65,7 +65,7 @@ body {
 
 body.light-mode {
   background: var(--bg-gradient-light);
-  color: var(--text-primary);
+  color: var(--text-primary-light);
   
   /* 라이트 모드 오버라이드 테마 변수 */
   --text-primary: var(--text-primary-light);
