@@ -2,11 +2,9 @@
 CREATE TABLE IF NOT EXISTS unified_certificates (
     id BIGSERIAL PRIMARY KEY,
     year INTEGER NOT NULL,
-    manager_dept TEXT,
-    manager_name TEXT,
     cert_no TEXT,
     cert_type TEXT NOT NULL, -- '상장', '수료증', '이수증' 등
-    note TEXT,
+    award_type TEXT, -- 상훈
     team_name TEXT,
     recipient_name TEXT NOT NULL,
     student_id TEXT,
@@ -16,8 +14,9 @@ CREATE TABLE IF NOT EXISTS unified_certificates (
     project_group TEXT,
     issuer TEXT,
     content TEXT,
-    file_name TEXT,
-    file_data TEXT, -- Base64 원본 텍스트 또는 CDN URL
+    manager_dept TEXT,
+    manager_name TEXT,
+    note TEXT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
 );
 

@@ -36,8 +36,6 @@ export default function UnifiedCertificateManager({
   const [content, setContent] = useState("");
   const [awardType, setAwardType] = useState("");
   
-  const [certFileName, setCertFileName] = useState("");
-  const [certFileData, setCertFileData] = useState("");
 
   const [sortConfig, setSortConfig] = useState({ key: "issueDate", direction: "desc" });
 
@@ -86,8 +84,6 @@ export default function UnifiedCertificateManager({
     setIssuer("사업단장");
     setContent("");
     setAwardType("");
-    setCertFileName("");
-    setCertFileData("");
     setIsModalOpen(true);
   };
 
@@ -108,8 +104,6 @@ export default function UnifiedCertificateManager({
     setIssuer(cert.issuer || "사업단장");
     setContent(cert.content || "");
     setAwardType(cert.awardType || "");
-    setCertFileName(cert.fileName || "");
-    setCertFileData(cert.fileData || "");
     setIsModalOpen(true);
   };
 
@@ -135,9 +129,7 @@ export default function UnifiedCertificateManager({
       projectGroup,
       issuer,
       content,
-      awardType,
-      fileName: certFileName,
-      fileData: certFileData
+      awardType
     };
 
     if (editingId) {
@@ -182,32 +174,6 @@ export default function UnifiedCertificateManager({
 
   const sequenceErrors = getSequenceErrors();
 
-  const handleFileUpload = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    if (file.size > 5 * 1024 * 1024) {
-      alert("파일 크기는 5MB 이하여야 합니다.");
-      return;
-    }
-    setCertFileName(file.name);
-    try {
-      const fileExt = file.name.split('.').pop();
-      const storagePath = `${Date.now()}_${Math.random().toString(36).substring(2, 8)}.${fileExt}`;
-      const { data, error } = await supabase.storage
-        .from("unified_certificates")
-        .upload(storagePath, file, { cacheControl: "3600", upsert: false });
-      if (error) {
-        throw error;
-      }
-      const { data: publicData } = supabase.storage
-        .from("unified_certificates")
-        .getPublicUrl(storagePath);
-      setCertFileData(publicData.publicUrl);
-    } catch (err) {
-      console.error("Upload error:", err);
-      alert("파일 업로드 실패");
-    }
-  };
 
   const handleExcelUpload = (e) => {
     const file = e.target.files[0];
@@ -494,17 +460,6 @@ export default function UnifiedCertificateManager({
                   <input type="text" value={note} onChange={e => setNote(e.target.value)} />
                 </div>
 
-                <div className="form-group">
-                  <label>스캔본 업로드 (선택)</label>
-                  <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
-                    <input type="file" onChange={handleFileUpload} accept="image/*,.pdf" />
-                    {certFileData && (
-                      <a href={certFileData} target="_blank" rel="noopener noreferrer" style={{ color: "var(--accent-color)" }}>
-                        첨부됨: {certFileName}
-                      </a>
-                    )}
-                  </div>
-                </div>
 
                 <div className="modal-actions" style={{ marginTop: "1rem" }}>
                   <button type="button" className="action-btn" style={{ background: "var(--bg-tertiary)", color: "var(--text-primary)" }} onClick={() => setIsModalOpen(false)}>취소</button>
