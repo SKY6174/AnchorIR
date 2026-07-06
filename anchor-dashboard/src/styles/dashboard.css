@@ -57,12 +57,17 @@
   font-family: var(--font-content);
 }
 
+/* 💡 전역 헤딩 및 텍스트 렌더링 보장 규칙 */
+h1, h2, h3, h4, h5, h6 {
+  color: var(--text-primary);
+}
+
 body {
   background: var(--bg-gradient-dark);
   color: var(--text-primary-dark);
   min-height: 100vh;
   overflow-x: hidden;
-  transition: background 0.3s ease, color 0.3s ease;
+  transition: background 0.3s ease; /* color 트랜지션을 제거하여 브라우저의 보간 연산 락 방지 */
 }
 
 body.light-mode {
@@ -295,7 +300,8 @@ body.light-mode {
 
 .glass-card {
   background: var(--panel-bg-dark);
-  border: 1px solid var(--border-color-dark);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
   border-radius: 1.25rem;
   padding: 1.5rem;
   backdrop-filter: blur(12px);
@@ -305,7 +311,7 @@ body.light-mode {
 
 .light-mode .glass-card {
   background: var(--panel-bg-light);
-  border: 1px solid var(--border-color-light);
+  border: 1px solid var(--border-color);
   box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.05);
 }
 
