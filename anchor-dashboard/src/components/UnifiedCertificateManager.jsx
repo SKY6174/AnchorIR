@@ -290,9 +290,9 @@ export default function UnifiedCertificateManager({
             issueDate: row[8] || "",
             projectGroup: row[9] || "",
             issuer: row[10] || "",
-            managerDept: row[11] || "",
-            managerName: row[12] || "",
-            content: row[13] || "",
+            content: row[11] || "",
+            managerDept: row[12] || "",
+            managerName: row[13] || "",
             note: row[14] || ""
           };
         });
@@ -315,12 +315,12 @@ export default function UnifiedCertificateManager({
     const headers = [
       "증서번호", "상장/이수증", "상훈", "팀명", "성명", "학번", 
       "생년월일", "휴대폰", "수상일(수료일)", "발급부서", "발급자명의", 
-      "담당자-소속", "담당자-성명", "시상내용(과정명)", "비고"
+      "시상내용(과정명)", "담당자-소속", "담당자-성명", "비고"
     ];
     const data = getSortedCerts().map((c) => [
       c.certNo, c.certType, c.awardType, c.teamName, c.recipientName, c.studentId, 
       c.birthDate, c.phone, c.issueDate, c.projectGroup, c.issuer, 
-      c.managerDept, c.managerName, c.content, c.note
+      c.content, c.managerDept, c.managerName, c.note
     ]);
     const ws = XLSX.utils.aoa_to_sheet([headers, ...data]);
     
