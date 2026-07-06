@@ -3525,46 +3525,65 @@ export default function App() {
       try {
         await supabase.from("procurement_env").delete().eq("year", selectedYear);
         if (envData.length > 0) {
-          const { error } = await supabase.from("procurement_env").insert(
-            envData.map(e => ({
-              year: selectedYear,
-              title: e.title,
-              unit: e.unit,
-              plan: e.plan,
-              meeting_result: e.meetingResult,
-              progress: e.progress,
-              budget_plan: e.budgetPlan,
-              budget_spent: e.budgetSpent,
-              location: e.location,
-              purpose: e.purpose,
-              birdseye_view: e.birdseyeView,
-              blueprints: e.blueprints,
-              utilization: e.utilization,
-              dept_name: e.deptName || "",
-              division_name: e.divisionName || "",
-              date_p: e.dateP || null,
-              date_a: e.dateA || null,
-              date_b: e.dateB || null,
-              date_pr: e.datePr || null,
-              date_i: e.dateI || null,
-              doc_plan: e.docPlan || "",
-              doc_purchase: e.docPurchase || "",
-              doc_bid: e.docBid || "",
-              doc_plan_file_name: e.docPlanFileName || "",
-              doc_purchase_file_name: e.docPurchaseFileName || "",
-              doc_bid_file_name: e.docBidFileName || "",
-              doc_plan_file_size: Number(e.docPlanFileSize) || 0,
-              doc_purchase_file_size: Number(e.docPurchaseFileSize) || 0,
-              doc_bid_file_size: Number(e.docBidFileSize) || 0,
-              doc_plan_file_url: e.docPlanFileUrl || "",
-              doc_purchase_file_url: e.docPurchaseFileUrl || "",
-              doc_bid_file_url: e.docBidFileUrl || "",
-              ai_proposal_data: e.aiProposalData || null,
-              ai_purchase_data: e.aiPurchaseData || null,
-              ai_bid_data: e.aiBidData || null,
-              related_docs: e.relatedDocs || ""
-            }))
-          );
+          const insertPayload = envData.map(e => ({
+            year: selectedYear,
+            title: e.title,
+            unit: e.unit,
+            plan: e.plan,
+            meeting_result: e.meetingResult,
+            progress: e.progress,
+            budget_plan: e.budgetPlan,
+            budget_spent: e.budgetSpent,
+            location: e.location,
+            purpose: e.purpose,
+            birdseye_view: e.birdseyeView,
+            blueprints: e.blueprints,
+            utilization: e.utilization,
+            dept_name: e.deptName || "",
+            division_name: e.divisionName || "",
+            date_p: e.dateP || null,
+            date_a: e.dateA || null,
+            date_b: e.dateB || null,
+            date_pr: e.datePr || null,
+            date_i: e.dateI || null,
+            doc_plan: e.docPlan || "",
+            doc_purchase: e.docPurchase || "",
+            doc_bid: e.docBid || "",
+            doc_plan_file_name: e.docPlanFileName || "",
+            doc_purchase_file_name: e.docPurchaseFileName || "",
+            doc_bid_file_name: e.docBidFileName || "",
+            doc_plan_file_size: Number(e.docPlanFileSize) || 0,
+            doc_purchase_file_size: Number(e.docPurchaseFileSize) || 0,
+            doc_bid_file_size: Number(e.docBidFileSize) || 0,
+            doc_plan_file_url: e.docPlanFileUrl || "",
+            doc_purchase_file_url: e.docPurchaseFileUrl || "",
+            doc_bid_file_url: e.docBidFileUrl || "",
+            ai_proposal_data: e.aiProposalData || null,
+            ai_purchase_data: e.aiPurchaseData || null,
+            ai_bid_data: e.aiBidData || null,
+            related_docs: e.relatedDocs || ""
+          }));
+
+          let { error } = await supabase.from("procurement_env").insert(insertPayload);
+
+          if (error) {
+            console.warn("DB에 procurement_env 신규 컬럼이 식별되지 않아 안전 폴백 저장을 시도합니다.", error);
+            const safePayload = insertPayload.map(item => {
+              const { 
+                dept_name, division_name, date_p, date_a, date_b, date_pr, date_i,
+                doc_plan, doc_purchase, doc_bid,
+                doc_plan_file_name, doc_purchase_file_name, doc_bid_file_name,
+                doc_plan_file_size, doc_purchase_file_size, doc_bid_file_size,
+                doc_plan_file_url, doc_purchase_file_url, doc_bid_file_url,
+                ai_proposal_data, ai_purchase_data, ai_bid_data, related_docs,
+                ...rest 
+              } = item;
+              return rest;
+            });
+            const { error: retryErr } = await supabase.from("procurement_env").insert(safePayload);
+            error = retryErr;
+          }
+
           if (error) throw error;
         }
         setSyncStatus("synced");
@@ -3585,30 +3604,46 @@ export default function App() {
       try {
         await supabase.from("procurement_equipment").delete().eq("year", selectedYear);
         if (equipData.length > 0) {
-          const { error } = await supabase.from("procurement_equipment").insert(
-            equipData.map(e => ({
-              year: selectedYear,
-              unit: e.unit || "A1",
-              seq: Number(e.seq) || 1,
-              dept_name: e.deptName || "",
-              division_name: e.divisionName || "",
-              item_name: e.itemName || e.name || "",
-              unit_price: Number(e.unitPrice) || 0,
-              quantity: Number(e.quantity) || 1,
-              description: e.description || "",
-              operation: e.operation || "교과목(정규)",
-              password: e.password || "1234",
-              related_docs: e.relatedDocs || [e.docPlan, e.docPurchase, e.docBid].filter(Boolean).join(", "),
-              doc_plan: e.docPlan || "",
-              doc_purchase: e.docPurchase || "",
-              doc_bid: e.docBid || "",
-              date_p: e.dateP || null,
-              date_a: e.dateA || null,
-              date_b: e.dateB || null,
-              date_pr: e.datePr || null,
-              date_i: e.date_i || e.dateI || null
-            }))
-          );
+          const insertPayload = equipData.map(e => ({
+            year: selectedYear,
+            unit: e.unit || "A1",
+            seq: Number(e.seq) || 1,
+            dept_name: e.deptName || "",
+            division_name: e.divisionName || "",
+            item_name: e.itemName || e.name || "",
+            unit_price: Number(e.unitPrice) || 0,
+            quantity: Number(e.quantity) || 1,
+            description: e.description || "",
+            operation: e.operation || "교과목(정규)",
+            password: e.password || "1234",
+            related_docs: e.relatedDocs || [e.docPlan, e.docPurchase, e.docBid].filter(Boolean).join(", "),
+            doc_plan: e.docPlan || "",
+            doc_purchase: e.docPurchase || "",
+            doc_bid: e.docBid || "",
+            date_p: e.dateP || null,
+            date_a: e.dateA || null,
+            date_b: e.dateB || null,
+            date_pr: e.datePr || null,
+            date_i: e.date_i || e.dateI || null
+          }));
+
+          let { error } = await supabase.from("procurement_equipment").insert(insertPayload);
+
+          if (error) {
+            console.warn("DB에 procurement_equipment 신규 컬럼이 식별되지 않아 안전 폴백 저장을 시도합니다.", error);
+            const safePayload = insertPayload.map(item => {
+              const { 
+                seq, dept_name, division_name, password, related_docs,
+                doc_plan, doc_purchase, doc_bid,
+                date_p, date_a, date_b, date_pr, date_i,
+                ...rest 
+              } = item;
+              return rest;
+            });
+            const { error: retryErr } = await supabase.from("procurement_equipment").insert(safePayload);
+            error = retryErr;
+          }
+
           if (error) throw error;
         }
         setSyncStatus("synced");
@@ -3674,15 +3709,20 @@ export default function App() {
 
         let { error } = await supabase.from("procurement_services").insert(insertPayload);
 
-        // 💡 Fail-safe Fallback: ai_bid_data 등 새로 추가된 컬럼이 실제 DB 스키마에 없어서 400 에러가 난 경우
-        if (error && (
-          error.message?.includes("ai_bid_data") || 
-          error.message?.includes("column") || 
-          String(error).includes("ai_bid_data")
-        )) {
-          console.warn("DB에 ai_bid_data 등 고도화 컬럼이 식별되지 않아 안전 폴백 저장을 시도합니다.");
+        // 💡 Fail-safe Fallback: 040번 고도화 컬럼들이 실제 DB 스키마에 없어서 400 에러가 난 경우
+        if (error) {
+          console.warn("DB에 procurement_services 고도화 컬럼이 식별되지 않아 안전 폴백 저장을 시도합니다.", error);
           const safePayload = insertPayload.map(item => {
-            const { ai_proposal_data, ai_purchase_data, ai_bid_data, ...rest } = item;
+            const { 
+              unit, program_id, program_name, dept_name, division_name, password, related_docs,
+              date_pp, date_rfo, date_b, date_es, date_c, date_e, date_i,
+              doc_plan, doc_purchase, doc_bid, 
+              doc_plan_file_name, doc_purchase_file_name, doc_bid_file_name,
+              doc_plan_file_size, doc_purchase_file_size, doc_bid_file_size,
+              doc_plan_file_url, doc_purchase_file_url, doc_bid_file_url,
+              ai_proposal_data, ai_purchase_data, ai_bid_data,
+              ...rest 
+            } = item;
             return rest;
           });
           const { error: retryErr } = await supabase.from("procurement_services").insert(safePayload);
