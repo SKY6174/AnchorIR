@@ -142,38 +142,60 @@ export async function analyzePressUrlWithAiConsensus({ url, selectedYear, apiKey
           }
         }
 
-        // 본문 내 유효한 첫 번째 이미지 URL 추출 파서 가동 (data: base64 인라인 이미지 건너뜀)
-        const imgMatches = html.matchAll(/<img[^>]+src=["']([^"']+)["']/gi);
-        for (const match of imgMatches) {
-          const detectedSrc = match[1]?.trim();
-          if (!detectedSrc || detectedSrc.startsWith("data:")) continue;
+        // 💡 1순위: HTML 메타 태그에서 대표 공유 이미지(og:image, twitter:image) 검색
+        const metaImgRegexes = [
+          /property="og:image"\s+content="([^"]+)"/i,
+          /content="([^"]+)"\s+property="og:image"/i,
+          /name="twitter:image"\s+content="([^"]+)"/i,
+          /content="([^"]+)"\s+name="twitter:image"/i
+        ];
 
-          let candidateUrl = "";
-          if (detectedSrc.startsWith("//")) {
-            candidateUrl = "https:" + detectedSrc;
-          } else if (detectedSrc.startsWith("/")) {
-            try {
-              const urlObj = new URL(url);
-              candidateUrl = urlObj.origin + detectedSrc;
-            } catch (e) {
-              candidateUrl = detectedSrc;
+        let foundMetaImage = "";
+        for (const rx of metaImgRegexes) {
+          const m = html.match(rx);
+          if (m && m[1]) {
+            const detectedSrc = m[1].trim();
+            if (detectedSrc && !detectedSrc.startsWith("data:")) {
+              foundMetaImage = detectedSrc;
+              break;
             }
-          } else if (!detectedSrc.startsWith("http")) {
-            try {
-              const urlObj = new URL(url);
-              const pathParts = urlObj.pathname.split('/');
-              pathParts.pop();
-              candidateUrl = urlObj.origin + pathParts.join('/') + '/' + detectedSrc;
-            } catch (e) {
-              candidateUrl = detectedSrc;
-            }
-          } else {
-            candidateUrl = detectedSrc;
           }
+        }
 
-          if (candidateUrl && candidateUrl.startsWith("http")) {
-            firstImageUrl = candidateUrl;
-            break; // 유효한 첫 번째 이미지 발견 시 루프 즉시 종료
+        // 상대 경로인 경우 절대 경로로 전환해 주는 헬퍼 함수
+        const makeAbsoluteUrl = (srcPath) => {
+          if (!srcPath) return "";
+          if (srcPath.startsWith("//")) return "https:" + srcPath;
+          if (srcPath.startsWith("http")) return srcPath;
+          try {
+            const urlObj = new URL(url);
+            if (srcPath.startsWith("/")) {
+              return urlObj.origin + srcPath;
+            }
+            const pathParts = urlObj.pathname.split('/');
+            pathParts.pop();
+            return urlObj.origin + pathParts.join('/') + '/' + srcPath;
+          } catch (e) {
+            return srcPath;
+          }
+        };
+
+        if (foundMetaImage) {
+          firstImageUrl = makeAbsoluteUrl(foundMetaImage);
+        }
+
+        // 💡 2순위: og:image 가 없는 경우에만 본문 내 <img> 태그 뒤져서 추출 (지연 로딩 data-src, lazy-src 등 속성까지 추적)
+        if (!firstImageUrl) {
+          const imgMatches = html.matchAll(/<img[^>]+(?:src|data-src|data-original|lazy-src)=["']([^"']+)["']/gi);
+          for (const match of imgMatches) {
+            const detectedSrc = match[1]?.trim();
+            if (!detectedSrc || detectedSrc.startsWith("data:")) continue;
+
+            const candidateUrl = makeAbsoluteUrl(detectedSrc);
+            if (candidateUrl && candidateUrl.startsWith("http")) {
+              firstImageUrl = candidateUrl;
+              break;
+            }
           }
         }
 
