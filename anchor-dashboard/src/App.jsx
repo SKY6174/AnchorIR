@@ -5034,7 +5034,7 @@ export default function App() {
       ...prev,
       {
         ...newCert,
-        id: `unified-${Date.now()}-${Math.random().toString(36).substr(2, 9)}` // 난수 결합형 고유 ID 생성
+        id: `unified-y${newCert.year}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}` // 연차 구분 및 난수 결합형 고유 ID
       }
     ]);
   };
