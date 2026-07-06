@@ -43,9 +43,9 @@ export default function UnifiedCertificateManager({
     const riseStart = new Date("2025-03-01");
     const anchorStart = new Date("2026-07-01");
     if (date >= anchorStart) {
-      setIssuer("앵커사업단장");
+      setIssuer("산학협력단장, 앵커사업단장");
     } else if (date >= riseStart) {
-      setIssuer("RISE사업단장");
+      setIssuer("산학협력단장, RISE사업단장");
     } else {
       setIssuer("산학협력단장");
     }
