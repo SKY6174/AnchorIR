@@ -539,7 +539,7 @@ export default function ScheduleManager({
   const [aiProgress, setAiProgress] = useState(0);
   const [aiStatusText, setAiStatusText] = useState("");
   const [aiEngine, setAiEngine] = useState("gpt"); // "gemini" or "gpt"
-  const [includeProfessors, setIncludeProfessors] = useState(true); // 팀장교수 포함 여부
+  const [includeProfessors, setIncludeProfessors] = useState(false); // 팀장교수 포함 여부
 
 
   // 샘플 파일 로드
