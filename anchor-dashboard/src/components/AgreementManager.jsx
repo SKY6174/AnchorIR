@@ -430,65 +430,66 @@ export default function AgreementManager({
       const fileClean = cleanName(fileBaseName);
 
       let matchedTarget = null;
-      let isMatched = false;
-      let matchBreakdown = "매칭 실패";
+      let maxScore = 0;
+      let bestDetails = null;
 
-      // 전체 협약 목록을 순회하며 매칭 규칙을 검사합니다.
+      // 전체 협약 목록을 순회하며 매칭 점수를 산출합니다.
       agreements.forEach(item => {
-        if (isMatched) return;
+        let orgScore = 0;
+        let nameScore = 0;
+        let dateScore = 0;
 
-        let orgMatch = false;
-        let subMatch = false;
-        let dateMatch = false;
-
-        // A. 기관명 비교: 대시보드의 기관명이 파일명에 완벽히 포함되는가?
+        // A. 기관명 비교 (40점): 대시보드의 기관명이 파일명에 포함되는가?
         if (item.organizations) {
           const orgsArray = Array.isArray(item.organizations) ? item.organizations : [item.organizations];
           orgsArray.forEach(org => {
             const rawOrgName = typeof org === "object" && org !== null ? org.name : org;
             const orgClean = cleanName(rawOrgName);
             if (orgClean && fileClean.includes(orgClean)) {
-              orgMatch = true;
+              orgScore = 40;
             }
           });
         }
 
-        // B. 성명 비교: 대시보드의 협약주체(교수/학과/담당자)명이 파일명에 포함되는가?
+        // B. 성명 비교 (30점): 대시보드의 협약주체(교수 성명)가 파일명에 포함되는가?
         if (item.subjectUniversity) {
-          // 기존 방식: "치위생학과이가연" 전체 매칭 시도
           const subClean = cleanName(item.subjectUniversity);
           if (subClean && fileClean.includes(subClean)) {
-            subMatch = true;
+            nameScore = 30;
           } else {
-            // 전체 매칭 실패 시, 공백으로 쪼개어 맨 마지막 단어(성명)만 비교
-            // 예: "치위생학과 이가연" ➔ ["치위생학과", "이가연"] ➔ "이가연" 추출
             const nameParts = item.subjectUniversity.trim().split(/\s+/).map(p => cleanName(p)).filter(Boolean);
             const extractedName = nameParts[nameParts.length - 1];
             if (extractedName && extractedName.length >= 2 && fileClean.includes(extractedName)) {
-              subMatch = true;
+              nameScore = 30;
             }
           }
         }
 
-        // C. 날짜 비교: 파일명에 연도가 들어있고 협약 일자의 연도와 일치하는가?
+        // C. 협약일 비교 (30점): 협약일 YYYYMMDD가 파일명에 포함되는가?
         if (item.date) {
-          const year = item.date.split("-")[0]; // YYYY 추출
-          const yearShort = year.substring(2);  // YY 추출
-          if (fileBaseName.includes(year) || fileBaseName.includes(yearShort)) {
-            dateMatch = true;
+          const dateYmd = item.date.replace(/-/g, ""); // YYYYMMDD
+          if (fileBaseName.includes(dateYmd)) {
+            dateScore = 30;
           }
         }
 
-        // [협약 매칭 조건]: 기관명이 파일명에 반드시 포함(orgMatch)되어 있고, 추가로 협약주체명(subMatch) 또는 날짜(dateMatch) 중 하나가 들어있어야 최종 성공!
-        if (orgMatch && (subMatch || dateMatch)) {
-          isMatched = true;
+        const totalScore = orgScore + nameScore + dateScore;
+
+        // 70점 이상이면서, 이전 매칭보다 높은 점수를 얻은 대상을 선정
+        if (totalScore >= 70 && totalScore > maxScore) {
+          maxScore = totalScore;
           matchedTarget = item;
-          matchBreakdown = subMatch ? "기관명 및 성명 일치" : "기관명 및 연도 일치";
+          bestDetails = {
+            extractedOrg: item.organizations.map(o => o.name).join(", "),
+            extractedName: item.subjectUniversity || "없음",
+            orgScore,
+            nameScore,
+            dateScore,
+            breakdown: `${orgScore > 0 ? "기관명(" + orgScore + "점) " : ""}${nameScore > 0 ? "교수명(" + nameScore + "점) " : ""}${dateScore > 0 ? "협약일(" + dateScore + "점) " : ""}`
+          };
         }
       });
 
-      // 기존의 무거운 Base64 변환은 화면 미리보기 등에서 활용 가능하도록 fileData에 담아둡니다.
-      // 실제 Storage 업로드는 res.file에 보관해 둔 원본 File 객체를 활용합니다.
       const fileData = await new Promise((resolve) => {
         const reader = new FileReader();
         reader.onload = (ev) => resolve(ev.target.result);
@@ -496,42 +497,33 @@ export default function AgreementManager({
         reader.readAsDataURL(file);
       });
 
-      if (isMatched && matchedTarget) {
+      if (maxScore >= 70 && matchedTarget) {
         results.push({
           fileName,
-          file, // Storage 업로드용 원본 파일 객체 보관
+          file,
           fileData,
           status: "success",
           targetId: matchedTarget.id,
           targetDesc: `${matchedTarget.organizations.map(o => o.name).join(", ")} (${matchedTarget.date})`,
-          score: 100,
-          details: {
-            extractedOrg: matchedTarget.organizations.map(o => o.name).join(", "),
-            extractedName: matchedTarget.subjectUniversity || "없음",
-            orgScore: 50,
-            nameScore: 50,
-            yearScore: 0,
-            dateScore: 0,
-            breakdown: matchBreakdown
-          }
+          score: maxScore,
+          details: bestDetails
         });
       } else {
         results.push({
           fileName,
-          file, // Storage 업로드용 원본 파일 객체 보관
+          file,
           fileData,
           status: "fail",
           targetId: null,
-          targetDesc: "일치하는 협약 데이터를 찾지 못함 (기관명 또는 성명/일자 불일치)",
-          score: 0,
+          targetDesc: "일치하는 협약 데이터를 찾지 못함 (매칭 점수 70점 미만)",
+          score: maxScore,
           details: {
             extractedOrg: "없음",
             extractedName: "없음",
             orgScore: 0,
             nameScore: 0,
-            yearScore: 0,
             dateScore: 0,
-            breakdown: "조건 미달 (파일명 매칭 정보 없음)"
+            breakdown: "조건 미달 (70점 미만)"
           }
         });
       }
@@ -1454,7 +1446,7 @@ export default function AgreementManager({
 
             <div style={{ padding: "1.25rem", flex: 1, overflowY: "auto", display: "flex", flexDirection: "column", gap: "1rem" }}>
               <div style={{ fontSize: "0.75rem", color: "#a1a1aa", background: "#27272a", padding: "0.75rem", borderRadius: "0.35rem", border: "1px solid var(--border-color-dark)" }}>
-                💡 [매칭 조건]: 파일 이름 내에 대시보드의 <b>기관명</b>이 반드시 들어있고, 추가로 <b>협약주체(교수명)</b> 혹은 <b>협약연도</b>가 함께 포함되어 있는 대상을 자동 매칭합니다.
+                💡 [매칭 조건]: 파일명에 포함된 <b>기관명(40점)</b>, <b>교수성명(30점)</b>, <b>협약일 YYYYMMDD(30점)</b>의 가중치를 계산하여, 합산 점수가 <b>70점 이상</b>인 데이터를 자동 매칭 및 매핑합니다.
               </div>
 
               <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.75rem", fontWeight: "700" }}>
@@ -1481,8 +1473,17 @@ export default function AgreementManager({
                         <td style={{ padding: "0.5rem", border: "1px solid var(--border-color-dark)" }}>
                           <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
                             <div style={{ fontSize: "0.68rem", color: "#a1a1aa" }}>
-                              🏢 기관명: <span style={{ color: "white", fontWeight: "700" }}>{res.details?.extractedOrg || "없음"}</span> |
-                              👤 협약주체: <span style={{ color: "white", fontWeight: "700" }}>{res.details?.extractedName || "없음"}</span>
+                              🏢 기관명: <span style={{ color: "white", fontWeight: "700" }}>{res.details?.extractedOrg || "없음"} ({res.details?.orgScore || 0}점)</span> |
+                              👤 교수명: <span style={{ color: "white", fontWeight: "700" }}>{res.details?.extractedName || "없음"} ({res.details?.nameScore || 0}점)</span> |
+                              📅 협약일: <span style={{ color: "white", fontWeight: "700" }}>{res.details?.dateScore > 0 ? "일치" : "불일치"} ({res.details?.dateScore || 0}점)</span>
+                            </div>
+                            <div style={{
+                              fontSize: "0.68rem",
+                              color: "var(--text-primary)",
+                              fontWeight: "700",
+                              marginTop: "0.15rem"
+                            }}>
+                              🏆 총점: <span style={{ color: res.status === "success" ? "#34D399" : "#F87171" }}>{res.score}점</span> (기준: 70점 이상)
                             </div>
                             <div style={{
                               fontSize: "0.62rem",
@@ -1492,9 +1493,10 @@ export default function AgreementManager({
                               borderRadius: "0.2rem",
                               display: "inline-block",
                               width: "fit-content",
-                              border: "1px solid rgba(255,255,255,0.05)"
+                              border: "1px solid rgba(255,255,255,0.05)",
+                              marginTop: "0.15rem"
                             }}>
-                              ⚡ 매칭방식: {res.details?.breakdown || "매칭 실패"}
+                              ⚡ 득점 항목: {res.details?.breakdown || "조건 미달 (70점 미만)"}
                             </div>
                           </div>
                         </td>
