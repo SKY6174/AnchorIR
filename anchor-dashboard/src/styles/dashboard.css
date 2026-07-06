@@ -10,13 +10,13 @@
   --panel-bg-light: rgba(255, 255, 255, 0.75);
   
   --border-color-dark: rgba(255, 255, 255, 0.18);
-  --border-color-light: rgba(113, 113, 122, 0.65);
+  --border-color-light: #d4d4d8;
   
   --text-primary-dark: #fafafa;
   --text-primary-light: #18181b;
   
   --text-secondary-dark: #a1a1aa;
-  --text-secondary-light: #71717a;
+  --text-secondary-light: #52525b;
   
   --accent-color: #3b82f6; /* Ulsan Blue */
   --accent-hover: #2563eb;
@@ -48,7 +48,7 @@
 
 body {
   background: var(--bg-gradient-dark);
-  color: var(--text-primary-dark);
+  color: var(--text-primary);
   min-height: 100vh;
   overflow-x: hidden;
   transition: background 0.3s ease, color 0.3s ease;
@@ -130,7 +130,7 @@ body.light-mode {
   gap: 0.5rem;
   padding: 0.45rem 0.5rem;
   border-radius: 0.75rem;
-  color: var(--text-secondary-dark);
+  color: var(--text-secondary);
   text-decoration: none;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -138,18 +138,13 @@ body.light-mode {
   font-weight: 700;
 }
 
-.light-mode .nav-item {
-  color: var(--text-secondary-light);
-}
-
 .nav-item:hover, .nav-item.active {
   background: rgba(59, 130, 246, 0.15);
-  color: var(--text-primary-dark);
+  color: var(--text-primary);
 }
 
 .light-mode .nav-item:hover, .light-mode .nav-item.active {
   background: rgba(59, 130, 246, 0.1);
-  color: var(--text-primary-light);
 }
 
 /* User Profile Selector Card */
@@ -254,15 +249,12 @@ body.light-mode {
   font-size: 1.75rem;
   font-weight: 800;
   letter-spacing: -0.03em;
+  color: var(--text-primary);
 }
 
 .page-title p {
-  color: var(--text-secondary-dark);
+  color: var(--text-secondary);
   font-size: 0.9rem;
-}
-
-.light-mode .page-title p {
-  color: var(--text-secondary-light);
 }
 
 .controls-section {
@@ -273,8 +265,8 @@ body.light-mode {
 
 .theme-toggle-btn {
   background: rgba(255, 255, 255, 0.05);
-  border: 1px solid var(--border-color-dark);
-  color: var(--text-primary-dark);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
   padding: 0.6rem;
   border-radius: 0.75rem;
   cursor: pointer;
@@ -283,8 +275,6 @@ body.light-mode {
 
 .light-mode .theme-toggle-btn {
   background: rgba(0, 0, 0, 0.05);
-  border: 1px solid var(--border-color-light);
-  color: var(--text-primary-light);
 }
 
 .theme-toggle-btn:hover {
@@ -324,14 +314,10 @@ body.light-mode {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  color: var(--text-secondary-dark);
+  color: var(--text-secondary);
   font-size: 0.85rem;
   font-weight: 600;
   margin-bottom: 0.75rem;
-}
-
-.light-mode .kpi-header {
-  color: var(--text-secondary-light);
 }
 
 .kpi-value {
@@ -343,11 +329,7 @@ body.light-mode {
 
 .kpi-subtext {
   font-size: 0.75rem;
-  color: var(--text-secondary-dark);
-}
-
-.light-mode .kpi-subtext {
-  color: var(--text-secondary-light);
+  color: var(--text-secondary);
 }
 
 /* Visualization Panel */
@@ -614,15 +596,13 @@ body.light-mode {
 
 .mini-table th {
   background: rgba(255, 255, 255, 0.03);
-  color: var(--text-secondary-dark);
+  color: var(--text-secondary);
   font-weight: 700;
-  border-bottom: 1px solid var(--border-color-dark);
+  border-bottom: 1px solid var(--border-color);
 }
 
 .light-mode .mini-table th {
   background: rgba(0, 0, 0, 0.02);
-  color: var(--text-secondary-light);
-  border-bottom: 1px solid var(--border-color-light);
 }
 
 .mini-table td {
@@ -680,17 +660,13 @@ body.light-mode {
 
 .nav-sub-item {
   font-size: 0.65rem;
-  color: var(--text-secondary-dark);
+  color: var(--text-secondary);
   padding: 0.25rem 0.4rem;
   border-radius: 0.5rem;
   cursor: pointer;
   transition: all 0.2s ease;
   white-space: nowrap;
   font-weight: 500;
-}
-
-.light-mode .nav-sub-item {
-  color: var(--text-secondary-light);
 }
 
 .nav-sub-item:hover,
