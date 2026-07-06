@@ -148,7 +148,18 @@ export default function UnifiedCertificateManager({
 
   const [sortConfig, setSortConfig] = useState({ key: "issueDate", direction: "desc" });
 
-  const filteredCerts = certificates.filter(c => c.year === selectedYear);
+  const getCalculatedYearFromDate = (dateStr, fallbackYear) => {
+    if (!dateStr) return fallbackYear;
+    const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return fallbackYear;
+    const year = d.getFullYear();
+    const month = d.getMonth() + 1;
+    let calcYear = year;
+    if (month < 3) calcYear = year - 1;
+    return calcYear === 2025 ? 1 : calcYear === 2026 ? 2 : calcYear === 2027 ? 3 : calcYear === 2028 ? 4 : calcYear === 2029 ? 5 : fallbackYear;
+  };
+
+  const filteredCerts = certificates.filter(c => getCalculatedYearFromDate(c.issueDate, c.year) === selectedYear);
 
   const requestSort = (key) => {
     let direction = "asc";
@@ -229,8 +240,9 @@ export default function UnifiedCertificateManager({
       alert("성명과 구분(상장/이수증 등)은 필수입니다.");
       return;
     }
+    const calcYear = getCalculatedYearFromDate(issueDate, selectedYear);
     const payload = {
-      year: selectedYear,
+      year: calcYear,
       managerDept,
       managerName,
       certNo,
@@ -316,8 +328,9 @@ export default function UnifiedCertificateManager({
         if (data.length <= 1) return;
         const rows = data.slice(1);
         const imported = rows.filter(row => row[4]).map(row => { // 성명이 인덱스 4
+          const formattedIssueDate = formatDateString(row[8]);
           return {
-            year: selectedYear,
+            year: getCalculatedYearFromDate(formattedIssueDate, selectedYear),
             certNo: row[0] || "",
             certType: row[1] || defaultType,
             awardType: row[2] || "",
@@ -326,7 +339,7 @@ export default function UnifiedCertificateManager({
             studentId: row[5] || "",
             birthDate: formatDateString(row[6]),
             phone: row[7] || "",
-            issueDate: formatDateString(row[8]),
+            issueDate: formattedIssueDate,
             projectGroup: row[9] || "",
             issuer: row[10] || "",
             content: row[11] || "",
