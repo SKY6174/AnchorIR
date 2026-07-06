@@ -3430,9 +3430,9 @@ ${aiRawText}
                         fontWeight: "700",
                         borderRadius: "4px",
                         cursor: "pointer",
-                        border: "1px solid " + (selectedDeptFilters.length === 0 ? "var(--accent-color)" : (darkMode ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.08)")),
-                        background: selectedDeptFilters.length === 0 ? "var(--accent-color)" : "transparent",
-                        color: selectedDeptFilters.length === 0 ? "white" : (darkMode ? "#94a3b8" : "var(--text-secondary)"),
+                        border: "1px solid " + (selectedDeptFilters.length === 0 ? "var(--accent-color)" : (darkMode ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.15)")),
+                        background: selectedDeptFilters.length === 0 ? "var(--accent-color)" : (darkMode ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.05)"),
+                        color: selectedDeptFilters.length === 0 ? "white" : (darkMode ? "#cbd5e1" : "var(--text-secondary)"),
                         transition: "all 0.15s ease"
                       }}
                     >
@@ -3454,9 +3454,9 @@ ${aiRawText}
                             fontWeight: "700",
                             borderRadius: "4px",
                             cursor: "pointer",
-                            border: "1px solid " + (isSelected ? (darkMode ? "#38bdf8" : "var(--accent-color)") : (darkMode ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.08)")),
-                            background: isSelected ? (darkMode ? "rgba(56, 189, 248, 0.15)" : "rgba(59, 130, 246, 0.1)") : (darkMode ? "rgba(255, 255, 255, 0.02)" : "rgba(0, 0, 0, 0.02)"),
-                            color: isSelected ? (darkMode ? "#38bdf8" : "var(--accent-color)") : (darkMode ? "#94a3b8" : "var(--text-secondary)"),
+                            border: "1px solid " + (isSelected ? (darkMode ? "#38bdf8" : "var(--accent-color)") : (darkMode ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.15)")),
+                            background: isSelected ? (darkMode ? "rgba(56, 189, 248, 0.15)" : "rgba(59, 130, 246, 0.1)") : (darkMode ? "rgba(255, 255, 255, 0.08)" : "rgba(0, 0, 0, 0.05)"),
+                            color: isSelected ? (darkMode ? "#38bdf8" : "var(--accent-color)") : (darkMode ? "#cbd5e1" : "var(--text-secondary)"),
                             transition: "all 0.15s ease"
                           }}
                         >
@@ -3500,17 +3500,17 @@ ${aiRawText}
                         onClick={() => setSelectedCommitteeFilters([])}
                         style={{
                           padding: "0.25rem 0.55rem", fontSize: "0.68rem", fontWeight: "700", borderRadius: "4px", cursor: "pointer",
-                          border: "1px solid " + (selectedCommitteeFilters.length === 0 ? "var(--accent-color)" : (darkMode ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.08)")),
-                          background: selectedCommitteeFilters.length === 0 ? "var(--accent-color)" : "transparent",
-                          color: selectedCommitteeFilters.length === 0 ? "white" : (darkMode ? "#94a3b8" : "var(--text-secondary)"),
+                          border: "1px solid " + (selectedCommitteeFilters.length === 0 ? "var(--accent-color)" : (darkMode ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.15)")),
+                          background: selectedCommitteeFilters.length === 0 ? "var(--accent-color)" : (darkMode ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.05)"),
+                          color: selectedCommitteeFilters.length === 0 ? "white" : (darkMode ? "#cbd5e1" : "var(--text-secondary)"),
                           transition: "all 0.15s ease"
                         }}
                       >
                         전체
                       </button>
                       {[
-                        "RISE총괄위원회", "RISE기획위원회", "RISE사업비관리위원회", 
-                        "RISE사업자체평가위원회", "RISE사업자문회의", "RISE사업운영위원회"
+                        "앵커총괄위원회", "앵커기획위원회", "앵커사업비관리위원회", 
+                        "앵커사업자체평가위원회", "앵커사업자문회의", "앵커사업운영위원회"
                       ].map(cName => {
                         const isSelected = selectedCommitteeFilters.includes(cName);
                         return (
@@ -3523,9 +3523,9 @@ ${aiRawText}
                             }}
                             style={{
                               padding: "0.25rem 0.55rem", fontSize: "0.68rem", fontWeight: "700", borderRadius: "4px", cursor: "pointer",
-                              border: "1px solid " + (isSelected ? (darkMode ? "#38bdf8" : "var(--accent-color)") : (darkMode ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.08)")),
-                              background: isSelected ? (darkMode ? "rgba(56, 189, 248, 0.15)" : "rgba(59, 130, 246, 0.1)") : (darkMode ? "rgba(255, 255, 255, 0.02)" : "rgba(0, 0, 0, 0.02)"),
-                              color: isSelected ? (darkMode ? "#38bdf8" : "var(--accent-color)") : (darkMode ? "#94a3b8" : "var(--text-secondary)"),
+                              border: "1px solid " + (isSelected ? (darkMode ? "#38bdf8" : "var(--accent-color)") : (darkMode ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.15)")),
+                              background: isSelected ? (darkMode ? "rgba(56, 189, 248, 0.15)" : "rgba(59, 130, 246, 0.1)") : (darkMode ? "rgba(255, 255, 255, 0.08)" : "rgba(0, 0, 0, 0.05)"),
+                              color: isSelected ? (darkMode ? "#38bdf8" : "var(--accent-color)") : (darkMode ? "#cbd5e1" : "var(--text-secondary)"),
                               transition: "all 0.15s ease"
                             }}
                           >
@@ -3556,9 +3556,9 @@ ${aiRawText}
                             }}
                             style={{
                               padding: "0.25rem 0.55rem", fontSize: "0.68rem", fontWeight: "700", borderRadius: "4px", cursor: "pointer",
-                              border: "1px solid " + (isSelected ? "#34D399" : (darkMode ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.08)")),
-                              background: isSelected ? "rgba(52, 211, 153, 0.15)" : (darkMode ? "rgba(255, 255, 255, 0.02)" : "rgba(0, 0, 0, 0.02)"),
-                              color: isSelected ? "#34D399" : (darkMode ? "#94a3b8" : "var(--text-secondary)"),
+                              border: "1px solid " + (isSelected ? "#34D399" : (darkMode ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.15)")),
+                              background: isSelected ? "rgba(52, 211, 153, 0.15)" : (darkMode ? "rgba(255, 255, 255, 0.08)" : "rgba(0, 0, 0, 0.05)"),
+                              color: isSelected ? "#34D399" : (darkMode ? "#cbd5e1" : "var(--text-secondary)"),
                               transition: "all 0.15s ease"
                             }}
                           >
@@ -3604,14 +3604,18 @@ ${aiRawText}
                       }
                     }
                     
+                    if (committeeName) {
+                      committeeName = committeeName.replace(/RISE/g, '앵커');
+                    }
+                    
                     if (!committeeName) {
                       // 제목에서 위원회 키워드로 매칭 Fallback
                       const allCommittees = [
-                        "RISE총괄위원회", "RISE기획위원회", "RISE사업비관리위원회", 
-                        "RISE사업자체평가위원회", "RISE사업자문회의", "RISE사업운영위원회",
+                        "앵커총괄위원회", "앵커기획위원회", "앵커사업비관리위원회", 
+                        "앵커사업자체평가위원회", "앵커사업자문회의", "앵커사업운영위원회",
                         "ECC운영위원회", "ICC운영위원회", "RCC운영위원회", "늘봄누리센터운영위원회"
                       ];
-                      const matched = allCommittees.find(c => m.title && m.title.includes(c));
+                      const matched = allCommittees.find(c => m.title && m.title.replace(/RISE/g, '앵커').includes(c));
                       if (matched) committeeName = matched;
                     }
                     return selectedCommitteeFilters.includes(committeeName);
