@@ -3775,9 +3775,9 @@ export default function ProcurementManager({
       {/* 추가 모달창 팝업 */}
       {isAddModalOpen && (
         <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(0,0,0,0.7)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1100 }}>
-          <div className="glass-card" style={{ width: "780px", maxHeight: "85vh", overflowY: "auto", padding: "1.5rem", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.1)" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid rgba(255,255,255,0.05)", paddingBottom: "0.5rem", marginBottom: "1rem" }}>
-              <h3 style={{ margin: 0, color: "white", fontWeight: "800", fontSize: "1.1rem" }}>
+          <div className="glass-card" style={{ width: "780px", maxHeight: "85vh", overflowY: "auto", padding: "1.5rem", borderRadius: "12px", border: "1px solid var(--border-color, rgba(255,255,255,0.1))" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid var(--border-color, rgba(255,255,255,0.05))", paddingBottom: "0.5rem", marginBottom: "1rem" }}>
+              <h3 style={{ margin: 0, color: "var(--text-primary)", fontWeight: "800", fontSize: "1.1rem" }}>
                 {modalType === "env" && "🛠️ 신규 교육환경 개선 사업 등록"}
                 {modalType === "equip" && (isEditMode ? "🔬 핵심 기자재 도입 정보 수정" : "🔬 신규 핵심 기자재 도입 등록")}
                 {modalType === "service" && "💼 신규 주요 용역 계약 등록"}
@@ -3785,7 +3785,7 @@ export default function ProcurementManager({
               <button 
                 type="button" 
                 onClick={() => setIsAddModalOpen(false)}
-                style={{ background: "transparent", border: "none", color: "rgba(255,255,255,0.5)", cursor: "pointer", fontSize: "1.2rem", fontWeight: "bold", padding: "0.2rem" }}
+                style={{ background: "transparent", border: "none", color: "var(--text-secondary)", cursor: "pointer", fontSize: "1.2rem", fontWeight: "bold", padding: "0.2rem" }}
               >
                 ✕
               </button>
@@ -3972,7 +3972,7 @@ export default function ProcurementManager({
 
                   {/* 다섯번째 줄: 구축단계 일정 지정 (선택 입력) */}
                   <div style={{ background: "rgba(255,255,255,0.01)", padding: "0.95rem", borderRadius: "8px", border: "1px solid var(--border-color)", marginBottom: "1rem" }}>
-                    <span style={{ display: "block", fontSize: "0.78rem", fontWeight: "800", color: "white", marginBottom: "0.5rem" }}>
+                    <span style={{ display: "block", fontSize: "0.78rem", fontWeight: "800", color: "var(--text-primary)", marginBottom: "0.5rem" }}>
                       📅 구축단계 일정 지정 (선택 입력)
                     </span>
                     <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: "0.75rem" }}>
@@ -4223,7 +4223,7 @@ export default function ProcurementManager({
                   )}
                   
                   <div style={{ background: "rgba(255,255,255,0.02)", padding: "1rem", borderRadius: "8px", border: "1px solid var(--border-color)" }}>
-                    <span style={{ display: "block", fontSize: "0.82rem", fontWeight: "800", color: "white", marginBottom: "0.75rem" }}>
+                    <span style={{ display: "block", fontSize: "0.82rem", fontWeight: "800", color: "var(--text-primary)", marginBottom: "0.75rem" }}>
                       📅 단계별 이벤트 일자 입력 (선택 입력)
                     </span>
                     <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: "0.5rem" }}>
@@ -4500,7 +4500,7 @@ export default function ProcurementManager({
                           }));
                         }}
                         className="user-selector" 
-                        style={{ width: "100%", padding: "0.5rem", background: "var(--bg-card-dark)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "white" }}
+                        style={{ width: "100%", padding: "0.5rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }}
                       >
                         <option value="A1">A1 과제</option>
                         <option value="A2">A2 과제</option>
@@ -4530,7 +4530,7 @@ export default function ProcurementManager({
                           }
                         }}
                         className="user-selector" 
-                        style={{ width: "100%", padding: "0.5rem", background: "var(--bg-card-dark)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "white" }}
+                        style={{ width: "100%", padding: "0.5rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }}
                       >
                         <option value="">(연계 프로그램 선택 안 함)</option>
                         {getDynamicPrograms(formData.unit).map(prog => (
@@ -4797,7 +4797,7 @@ export default function ProcurementManager({
                 <button 
                   type="button" 
                   onClick={() => setIsAddModalOpen(false)}
-                  style={{ padding: "0.5rem 1rem", borderRadius: "6px", background: "transparent", border: "1px solid var(--border-color)", color: "white", cursor: "pointer" }}
+                  style={{ padding: "0.5rem 1rem", borderRadius: "6px", background: "transparent", border: "1px solid var(--border-color)", color: "var(--text-primary)", cursor: "pointer" }}
                 >
                   취소
                 </button>
