@@ -6849,14 +6849,15 @@ export default function App() {
                               </tr>
                             </thead>
                             <tbody>
-                              {nk.subItems && nk.subItems.map((sub) => {
+                              {nk.subItems && nk.subItems.map((sub, index) => {
                                 const yData = sub.years?.[selectedYear] || { target: 0, current: 0 };
                                 const subRate = yData.target > 0 ? (yData.current / yData.target) * 100 : 0;
                                 const canEditTarget = currentRole.rank <= 4;
                                 const cleanName = sub.name.replace(/\s*\(기준값:\s*\d+\)/, "");
+                                const letter = String.fromCharCode(65 + index); // 0 -> A, 1 -> B, 2 -> C ...
                                 return (
                                   <tr key={sub.id}>
-                                    <td style={{ fontWeight: "700" }}>{cleanName}</td>
+                                    <td style={{ fontWeight: "700" }}>{`[${letter}] ${cleanName}`}</td>
                                     <td style={{ textAlign: "right", color: "var(--text-secondary-dark)" }}>
                                       {sub.base !== undefined ? `${sub.base.toLocaleString()} ${sub.unit}` : "-"}
                                     </td>
