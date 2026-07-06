@@ -222,24 +222,24 @@ export default function UnifiedCertificateManager({
         const data = XLSX.utils.sheet_to_json(ws, { header: 1 });
         if (data.length <= 1) return;
         const rows = data.slice(1);
-        const imported = rows.filter(row => row[7]).map(row => {
+        const imported = rows.filter(row => row[4]).map(row => {
           return {
             year: selectedYear,
             certNo: row[0] || "",
-            managerDept: row[1] || "",
-            managerName: row[2] || "",
-            certType: row[3] || defaultType,
-            awardType: row[4] || "",
-            note: row[5] || "",
-            teamName: row[6] || "",
-            recipientName: row[7] || "",
-            studentId: row[8] || "",
-            birthDate: row[9] || "",
-            phone: row[10] || "",
-            issueDate: row[11] || "",
-            projectGroup: row[12] || "",
-            issuer: row[13] || "",
-            content: row[14] || ""
+            certType: row[1] || defaultType,
+            awardType: row[2] || "",
+            teamName: row[3] || "",
+            recipientName: row[4] || "",
+            studentId: row[5] || "",
+            birthDate: row[6] || "",
+            phone: row[7] || "",
+            issueDate: row[8] || "",
+            projectGroup: row[9] || "",
+            issuer: row[10] || "",
+            content: row[11] || "",
+            managerDept: row[12] || "",
+            managerName: row[13] || "",
+            note: row[14] || ""
           };
         });
         if (imported.length > 0) {
@@ -259,14 +259,16 @@ export default function UnifiedCertificateManager({
 
   const downloadExcel = () => {
     const headers = [
-      "증서번호", "담당자-소속", "담당자-성명", "상장/수료증/이수증", "상훈",
-      "비고", "팀명", "성명", "학번", "생년월일", "휴대폰", "수상일(수료일)",
-      "사업단명", "발급자명의", "시상내용(과정명)"
+      "증서번호", "상장/수료증/이수증", "상훈", 
+      "팀명", "성명", "학번", "생년월일", "휴대폰", "수상일(수료일)",
+      "사업단명", "발급자명의", "시상내용(과정명)", 
+      "담당자 소속", "담당자 성명", "비고"
     ];
     const data = getSortedCerts().map((c) => [
-      c.certNo, c.managerDept, c.managerName, c.certType, c.awardType, c.note,
-      c.teamName, c.recipientName, c.studentId, c.birthDate, c.phone,
-      c.issueDate, c.projectGroup, c.issuer, c.content
+      c.certNo, c.certType, c.awardType, 
+      c.teamName, c.recipientName, c.studentId, c.birthDate, c.phone, c.issueDate,
+      c.projectGroup, c.issuer, c.content, 
+      c.managerDept, c.managerName, c.note
     ]);
     const ws = XLSX.utils.aoa_to_sheet([headers, ...data]);
     
@@ -324,10 +326,7 @@ export default function UnifiedCertificateManager({
         <table className="data-table" style={{ minWidth: "1600px" }}>
           <thead>
             <tr>
-              <th>No</th>
               <th onClick={() => requestSort("certNo")} style={{ cursor: "pointer" }}>증서번호</th>
-              <th onClick={() => requestSort("managerDept")} style={{ cursor: "pointer" }}>담당자 소속</th>
-              <th onClick={() => requestSort("managerName")} style={{ cursor: "pointer" }}>담당자 성명</th>
               <th onClick={() => requestSort("certType")} style={{ cursor: "pointer" }}>구분</th>
               <th onClick={() => requestSort("awardType")} style={{ cursor: "pointer" }}>상훈</th>
               <th onClick={() => requestSort("teamName")} style={{ cursor: "pointer" }}>팀명</th>
@@ -337,7 +336,9 @@ export default function UnifiedCertificateManager({
               <th>사업단명</th>
               <th>발급자</th>
               <th>시상내용(과정명)</th>
-              <th>첨부파일</th>
+              <th onClick={() => requestSort("managerDept")} style={{ cursor: "pointer" }}>담당자 소속</th>
+              <th onClick={() => requestSort("managerName")} style={{ cursor: "pointer" }}>담당자 성명</th>
+              <th>비고</th>
               {currentRole?.id !== "GUEST" && <th>관리</th>}
             </tr>
           </thead>
@@ -345,10 +346,7 @@ export default function UnifiedCertificateManager({
             {getSortedCerts().length > 0 ? (
               getSortedCerts().map((c, idx) => (
                 <tr key={c.id}>
-                  <td style={{ textAlign: "center" }}>{idx + 1}</td>
                   <td>{c.certNo}</td>
-                  <td>{c.managerDept}</td>
-                  <td>{c.managerName}</td>
                   <td style={{ textAlign: "center" }}>
                     <span className={`status-badge ${c.certType === "상장" ? "completed" : "ongoing"}`}>
                       {c.certType}
@@ -362,15 +360,9 @@ export default function UnifiedCertificateManager({
                   <td>{c.projectGroup}</td>
                   <td>{c.issuer}</td>
                   <td>{c.content}</td>
-                  <td style={{ textAlign: "center" }}>
-                    {c.fileData ? (
-                      <a href={c.fileData} target="_blank" rel="noopener noreferrer" style={{ color: "var(--accent-color)", display: "flex", alignItems: "center", justifyContent: "center", gap: "4px", textDecoration: "none" }}>
-                        <FileCheck size={16} /> 확인
-                      </a>
-                    ) : (
-                      <span style={{ color: "var(--text-tertiary)", fontSize: "0.85rem" }}>-</span>
-                    )}
-                  </td>
+                  <td>{c.managerDept}</td>
+                  <td>{c.managerName}</td>
+                  <td>{c.note}</td>
                   {currentRole?.id !== "GUEST" && (
                     <td style={{ textAlign: "center" }}>
                       <div style={{ display: "flex", gap: "0.5rem", justifyContent: "center" }}>
