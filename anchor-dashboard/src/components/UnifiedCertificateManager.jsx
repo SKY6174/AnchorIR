@@ -373,15 +373,15 @@ export default function UnifiedCertificateManager({
             </div>
           </div>
         )}
-        <table className="custom-table" style={{ minWidth: "1900px", fontSize: "0.85rem" }}>
+        <table className="custom-table" style={{ minWidth: "1750px", fontSize: "0.85rem" }}>
           <thead>
             <tr>
               <th onClick={() => requestSort("certNo")} style={{ cursor: "pointer", whiteSpace: "nowrap", minWidth: "110px" }}>증서번호</th>
               <th onClick={() => requestSort("certType")} style={{ cursor: "pointer", whiteSpace: "nowrap", minWidth: "60px" }}>구분</th>
               <th onClick={() => requestSort("awardType")} style={{ cursor: "pointer", whiteSpace: "nowrap", minWidth: "80px" }}>상훈</th>
               <th onClick={() => requestSort("teamName")} style={{ cursor: "pointer", whiteSpace: "nowrap", minWidth: "130px" }}>팀명</th>
-              <th onClick={() => requestSort("recipientName")} style={{ cursor: "pointer", whiteSpace: "nowrap", minWidth: "180px" }}>성명</th>
-              <th onClick={() => requestSort("studentId")} style={{ cursor: "pointer", whiteSpace: "nowrap", minWidth: "200px" }}>학번</th>
+              <th onClick={() => requestSort("recipientName")} style={{ cursor: "pointer", whiteSpace: "nowrap", minWidth: "100px" }}>성명</th>
+              <th onClick={() => requestSort("studentId")} style={{ cursor: "pointer", whiteSpace: "nowrap", minWidth: "110px" }}>학번</th>
               <th onClick={() => requestSort("issueDate")} style={{ cursor: "pointer", whiteSpace: "nowrap", minWidth: "100px" }}>수상(수료)일</th>
               <th style={{ whiteSpace: "nowrap", minWidth: "100px" }}>사업단명</th>
               <th style={{ whiteSpace: "nowrap", minWidth: "120px" }}>발급자</th>
@@ -405,10 +405,10 @@ export default function UnifiedCertificateManager({
                   <td style={{ whiteSpace: "nowrap" }}>{c.awardType}</td>
                   <td style={{ wordBreak: "keep-all", lineHeight: "1.4" }}>{c.teamName}</td>
                   <td style={{ fontWeight: "600", wordBreak: "keep-all", lineHeight: "1.5" }}>
-                    {c.recipientName ? String(c.recipientName).split(/[\s,]+/).filter(Boolean).join(", ") : ""}
+                    {c.recipientName ? String(c.recipientName).split(/[\s,]+/).filter(Boolean).map((name, i) => <div key={i}>{name}</div>) : ""}
                   </td>
                   <td style={{ wordBreak: "keep-all", lineHeight: "1.5", fontSize: "0.8rem", color: "var(--text-secondary)" }}>
-                    {c.studentId ? String(c.studentId).split(/[\s,]+/).filter(Boolean).join(", ") : ""}
+                    {c.studentId ? String(c.studentId).split(/[\s,]+/).filter(Boolean).map((id, i) => <div key={i}>{id}</div>) : ""}
                   </td>
                   <td style={{ textAlign: "center", whiteSpace: "nowrap" }}>{c.issueDate}</td>
                   <td style={{ whiteSpace: "nowrap" }}>{c.projectGroup}</td>
