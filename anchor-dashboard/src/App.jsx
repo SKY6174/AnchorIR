@@ -3630,50 +3630,66 @@ export default function App() {
       try {
         await supabase.from("procurement_services").delete().eq("year", selectedYear);
         if (serviceData.length > 0) {
-          const { error } = await supabase.from("procurement_services").insert(
-            serviceData.map(s => ({
-              year: selectedYear,
-              unit: s.unit || "A1",
-              program_id: s.programId || "",
-              program_name: s.programName || "",
-              dept_name: s.deptName || "",
-              division_name: s.divisionName || "",
-              password: s.password || "1234",
-              related_docs: s.relatedDocs || "",
-              title: s.title,
-              purpose: s.purpose,
-              provider_qual: s.providerQual,
-              step: s.step || 1,
-              budget_plan: s.budgetPlan,
-              budget_spent: s.budgetSpent,
-              op_result: s.opResult,
-              // 7대 절차 날짜
-              date_pp: s.datePp || null,
-              date_rfo: s.dateRfo || null,
-              date_b: s.dateB || null,
-              date_es: s.dateEs || null,
-              date_c: s.dateC || null,
-              date_e: s.dateE || null,
-              date_i: s.dateI || null,
-              // 3종 관련 문서 및 AI 데이터
-              doc_plan: s.docPlan || "",
-              doc_purchase: s.docPurchase || "",
-              doc_bid: s.doc_bid || s.docBid || "",
-              doc_plan_file_name: s.docPlanFileName || "",
-              doc_purchase_file_name: s.docPurchaseFileName || "",
-              doc_bid_file_name: s.docBidFileName || "",
-              doc_plan_file_size: Number(s.docPlanFileSize) || 0,
-              doc_purchase_file_size: Number(s.docPurchaseFileSize) || 0,
-              doc_bid_file_size: Number(s.docBidFileSize) || 0,
-              doc_plan_file_url: s.docPlanFileUrl || "",
-              doc_purchase_file_url: s.docPurchaseFileUrl || "",
-              doc_bid_file_url: s.docBidFileUrl || "",
-              ai_proposal_data: s.aiProposalData || null,
-              ai_purchase_data: s.aiPurchaseData || null,
-              ai_bid_data: s.aiBidData || null
-            }))
-          );
-          if (error) throw error;
+          const insertPayload = serviceData.map(s => ({
+          year: selectedYear,
+          unit: s.unit || "A1",
+          program_id: s.programId || "",
+          program_name: s.programName || "",
+          dept_name: s.deptName || "",
+          division_name: s.divisionName || "",
+          password: s.password || "1234",
+          related_docs: s.relatedDocs || "",
+          title: s.title,
+          purpose: s.purpose,
+          provider_qual: s.providerQual,
+          step: s.step || 1,
+          budget_plan: s.budgetPlan,
+          budget_spent: s.budgetSpent,
+          op_result: s.opResult,
+          // 7대 절차 날짜
+          date_pp: s.datePp || null,
+          date_rfo: s.dateRfo || null,
+          date_b: s.dateB || null,
+          date_es: s.dateEs || null,
+          date_c: s.dateC || null,
+          date_e: s.dateE || null,
+          date_i: s.dateI || null,
+          // 3종 관련 문서 및 AI 데이터
+          doc_plan: s.docPlan || "",
+          doc_purchase: s.docPurchase || "",
+          doc_bid: s.doc_bid || s.docBid || "",
+          doc_plan_file_name: s.docPlanFileName || "",
+          doc_purchase_file_name: s.docPurchaseFileName || "",
+          doc_bid_file_name: s.docBidFileName || "",
+          doc_plan_file_size: Number(s.docPlanFileSize) || 0,
+          doc_purchase_file_size: Number(s.docPurchaseFileSize) || 0,
+          doc_bid_file_size: Number(s.docBidFileSize) || 0,
+          doc_plan_file_url: s.docPlanFileUrl || "",
+          doc_purchase_file_url: s.docPurchaseFileUrl || "",
+          doc_bid_file_url: s.docBidFileUrl || "",
+          ai_proposal_data: s.aiProposalData || null,
+          ai_purchase_data: s.aiPurchaseData || null,
+          ai_bid_data: s.aiBidData || null
+        }));
+
+        let { error } = await supabase.from("procurement_services").insert(insertPayload);
+
+        // 💡 Fail-safe Fallback: ai_bid_data 등 새로 추가된 컬럼이 실제 DB 스키마에 없어서 400 에러가 난 경우
+        if (error && (
+          error.message?.includes("ai_bid_data") || 
+          error.message?.includes("column") || 
+          String(error).includes("ai_bid_data")
+        )) {
+          console.warn("DB에 ai_bid_data 등 고도화 컬럼이 식별되지 않아 안전 폴백 저장을 시도합니다.");
+          const safePayload = insertPayload.map(item => {
+            const { ai_proposal_data, ai_purchase_data, ai_bid_data, ...rest } = item;
+            return rest;
+          });
+          const { error: retryErr } = await supabase.from("procurement_services").insert(safePayload);
+          error = retryErr;
+        }
+
+        if (error) throw error;
         }
         setSyncStatus("synced");
       } catch (e) {
