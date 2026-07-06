@@ -54,8 +54,7 @@ const MENU_SCHEMA = [
     description: "유관기관(산업체, 지역사회, 대학 등) 협약 대장 및 교육 이수증, 상장 발급 기록 대장",
     subMenus: [
       { key: "agreements", label: "협약 관리" },
-      { key: "certificates", label: "이수증 관리" },
-      { key: "awards", label: "상장 관리" }
+      { key: "unified_certificates", label: "상장∙이수증 관리" }
     ]
   },
   {

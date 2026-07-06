@@ -4,8 +4,7 @@ import KPIOverview from "./components/KPIOverview";
 import ExcelUploader from "./components/ExcelUploader";
 import PDCAManager from "./components/PDCAManager";
 import AgreementManager from "./components/AgreementManager";
-import CertificateManager from "./components/CertificateManager";
-import AwardManager from "./components/AwardManager";
+import UnifiedCertificateManager from "./components/UnifiedCertificateManager";
 import BudgetItemsManager from "./components/BudgetItemsManager";
 import BudgetExecutionManager from "./components/BudgetExecutionManager";
 import ProgramProgressManager from "./components/ProgramProgressManager";
@@ -1492,8 +1491,7 @@ export default function App() {
       equipment_purchase: true,
       major_services: true,
       agreements: true,
-      certificates: true,
-      awards: true,
+      unified_certificates: true,
       schedule: true,
       monthly: true,
       events: true,
@@ -2100,8 +2098,8 @@ export default function App() {
     localStorage.setItem("anchor_agreements_sub_tab", agreementsSubTab);
   }, [agreementsSubTab]);
 
-  const [certificates, setCertificates] = useState(() => {
-    const cached = localStorage.getItem("anchor_certificates_data_v1");
+  const [unifiedCertificates, setUnifiedCertificates] = useState(() => {
+    const cached = localStorage.getItem("anchor_unified_certificates_data_v1");
     if (cached) {
       try {
         return JSON.parse(cached);
@@ -2114,39 +2112,15 @@ export default function App() {
 
   useEffect(() => {
     try {
-      const certsForStorage = certificates.map((item) => {
+      const unifiedCertsForStorage = unifiedCertificates.map((item) => {
         const { fileData, ...rest } = item;
         return rest;
       });
-      localStorage.setItem("anchor_certificates_data_v1", JSON.stringify(certsForStorage));
+      localStorage.setItem("anchor_unified_certificates_data_v1", JSON.stringify(unifiedCertsForStorage));
     } catch (e) {
-      console.error("Failed to save certificates to localStorage:", e);
+      console.error("Failed to save unified certificates to localStorage:", e);
     }
-  }, [certificates]);
-
-  const [awards, setAwards] = useState(() => {
-    const cached = localStorage.getItem("anchor_awards_data_v1");
-    if (cached) {
-      try {
-        return JSON.parse(cached);
-      } catch (e) {
-        return [];
-      }
-    }
-    return [];
-  });
-
-  useEffect(() => {
-    try {
-      const awardsForStorage = awards.map((item) => {
-        const { fileData, ...rest } = item;
-        return rest;
-      });
-      localStorage.setItem("anchor_awards_data_v1", JSON.stringify(awardsForStorage));
-    } catch (e) {
-      console.error("Failed to save awards to localStorage:", e);
-    }
-  }, [awards]);
+  }, [unifiedCertificates]);
 
   const [assignFilterUnitId, setAssignFilterUnitId] = useState("all");
   
@@ -2713,8 +2687,7 @@ export default function App() {
         // 0. 로컬 스토리지 캐시 데이터 선 로드 (깜빡임 방지 및 0초 반응)
         const cachedProj = localStorage.getItem(`anchor_cache_proj_y${selectedYear}`);
         const cachedAgr = localStorage.getItem("anchor_cache_agreements_all");
-        const cachedCert = localStorage.getItem("anchor_cache_certificates_all");
-        const cachedAward = localStorage.getItem("anchor_cache_awards_all");
+        const cachedUnifiedCert = localStorage.getItem("anchor_cache_unified_certificates_all");
         const cachedEnv = localStorage.getItem(`anchor_cache_env_y${selectedYear}`);
         const cachedEquip = localStorage.getItem(`anchor_cache_equip_y${selectedYear}`);
         const cachedServ = localStorage.getItem(`anchor_cache_serv_y${selectedYear}`);
@@ -2725,8 +2698,7 @@ export default function App() {
 
         if (cachedProj) setProjects(migrateProgramIds(JSON.parse(cachedProj)));
         if (cachedAgr) setAgreements(JSON.parse(cachedAgr));
-        if (cachedCert) setCertificates(JSON.parse(cachedCert));
-        if (cachedAward) setAwards(JSON.parse(cachedAward));
+        if (cachedUnifiedCert) setUnifiedCertificates(JSON.parse(cachedUnifiedCert));
         if (cachedEnv) setEnvData(JSON.parse(cachedEnv));
         if (cachedEquip) setEquipData(JSON.parse(cachedEquip));
         if (cachedServ) setServiceData(JSON.parse(cachedServ));
@@ -2809,58 +2781,40 @@ export default function App() {
           setAgreements([]);
         }
 
-        // 2-2. Certificates 복구 (전체 연차 데이터를 한 번에 가져와 메모리에 유지)
-        const { data: certData } = await supabase
-          .from("certificates")
+        // 2-2. Unified Certificates 복구 (전체 연차 데이터를 한 번에 가져와 메모리에 유지)
+        const { data: unifiedCertData } = await supabase
+          .from("unified_certificates")
           .select("*");
-        if (certData && certData.length > 0) {
-          const formatted = certData.map(c => ({
+        if (unifiedCertData && unifiedCertData.length > 0) {
+          const formatted = unifiedCertData.map(c => ({
             id: Number(c.id),
             year: c.year,
+            managerDept: c.manager_dept,
+            managerName: c.manager_name,
             certNo: c.cert_no,
-            recipientDept: c.recipient_dept,
+            certType: c.cert_type,
+            note: c.note,
+            teamName: c.team_name,
             recipientName: c.recipient_name,
+            studentId: c.student_id,
+            birthDate: c.birth_date,
+            phone: c.phone,
             issueDate: c.issue_date,
+            projectGroup: c.project_group,
             issuer: c.issuer,
+            content: c.content,
             fileName: c.file_name,
             fileData: c.file_data
           }));
-          setCertificates(formatted);
+          setUnifiedCertificates(formatted);
           try {
             const clean = formatted.map(item => ({ ...item, fileData: null }));
-            localStorage.setItem("anchor_cache_certificates_all", JSON.stringify(clean));
+            localStorage.setItem("anchor_cache_unified_certificates_all", JSON.stringify(clean));
           } catch (e) {
-            console.error("Failed to save certificates cache:", e);
+            console.error("Failed to save unified certificates cache:", e);
           }
         } else {
-          setCertificates([]);
-        }
-
-        // 2-3. Awards 복구 (전체 연차 데이터를 한 번에 가져와 메모리에 유지)
-        const { data: awardData } = await supabase
-          .from("awards")
-          .select("*");
-        if (awardData && awardData.length > 0) {
-          const formatted = awardData.map(a => ({
-            id: Number(a.id),
-            year: a.year,
-            awardNo: a.award_no,
-            recipientDept: a.recipient_dept,
-            recipientName: a.recipient_name,
-            issueDate: a.issue_date,
-            issuer: a.issuer,
-            fileName: a.file_name,
-            fileData: a.file_data
-          }));
-          setAwards(formatted);
-          try {
-            const clean = formatted.map(item => ({ ...item, fileData: null }));
-            localStorage.setItem("anchor_cache_awards_all", JSON.stringify(clean));
-          } catch (e) {
-            console.error("Failed to save awards cache:", e);
-          }
-        } else {
-          setAwards([]);
+          setUnifiedCertificates([]);
         }
 
         // 3. Procurement (환경개선, 기자재, 주요용역) 복구
@@ -3493,34 +3447,43 @@ export default function App() {
     syncPressImmediate();
   }, [pressReleases, selectedYear, isDbLoaded, isFetchCompleted]);
 
-  // 3-2) Certificates 자동 저장 디바운스 훅 (통합 캐시 사용 및 selectedYear 의존성 배제)
+  // 3-2) Unified Certificates 자동 저장 디바운스 훅 (통합 캐시 사용 및 selectedYear 의존성 배제)
   useEffect(() => {
     if (!isDbLoaded || !isFetchCompleted) return;
     if (!currentUser || currentRole?.id === "GUEST") return;
     try {
-      const clean = certificates.map(item => ({ ...item, fileData: null }));
-      localStorage.setItem("anchor_cache_certificates_all", JSON.stringify(clean));
+      const clean = unifiedCertificates.map(item => ({ ...item, fileData: null }));
+      localStorage.setItem("anchor_cache_unified_certificates_all", JSON.stringify(clean));
     } catch (e) {
-      console.warn("Failed to write certificates cache:", e);
+      console.warn("Failed to write unified certificates cache:", e);
     }
     setSyncStatus("syncing");
     const timer = setTimeout(async () => {
       try {
-        const activeYears = Array.from(new Set([selectedYear, ...certificates.map(c => c.year)]));
+        const activeYears = Array.from(new Set([selectedYear, ...unifiedCertificates.map(c => c.year)]));
         for (const yr of activeYears) {
-          await supabase.from("certificates").delete().eq("year", yr);
-          const filtered = certificates.filter(c => c.year === yr);
+          await supabase.from("unified_certificates").delete().eq("year", yr);
+          const filtered = unifiedCertificates.filter(c => c.year === yr);
           if (filtered.length > 0) {
-            const { error } = await supabase.from("certificates").insert(
+            const { error } = await supabase.from("unified_certificates").insert(
               filtered.map(c => ({
                 year: c.year,
+                manager_dept: c.managerDept,
+                manager_name: c.managerName,
                 cert_no: c.certNo,
-                recipient_dept: c.recipientDept,
+                cert_type: c.certType,
+                note: c.note,
+                team_name: c.teamName,
                 recipient_name: c.recipientName,
+                student_id: c.studentId,
+                birth_date: c.birthDate,
+                phone: c.phone,
                 issue_date: c.issueDate,
+                project_group: c.projectGroup,
                 issuer: c.issuer,
+                content: c.content,
                 file_name: c.fileName || null,
-                file_data: c.fileData || null // Storage의 Public URL 주소를 원격 DB에 저장
+                file_data: c.fileData || null
               }))
             );
             if (error) throw error;
@@ -3528,54 +3491,12 @@ export default function App() {
         }
         setSyncStatus("synced");
       } catch (e) {
-        console.error("Failed to sync certificates to Supabase:", e);
+        console.error("Failed to sync unified certificates to Supabase:", e);
         setSyncStatus("error");
       }
     }, 150);
     return () => clearTimeout(timer);
-  }, [certificates, isDbLoaded, isFetchCompleted]);
-
-  // 3-3) Awards 자동 저장 디바운스 훅 (통합 캐시 사용 및 selectedYear 의존성 배제)
-  useEffect(() => {
-    if (!isDbLoaded || !isFetchCompleted) return;
-    if (!currentUser || currentRole?.id === "GUEST") return;
-    try {
-      const clean = awards.map(item => ({ ...item, fileData: null }));
-      localStorage.setItem("anchor_cache_awards_all", JSON.stringify(clean));
-    } catch (e) {
-      console.warn("Failed to write awards cache:", e);
-    }
-    setSyncStatus("syncing");
-    const timer = setTimeout(async () => {
-      try {
-        const activeYears = Array.from(new Set([selectedYear, ...awards.map(a => a.year)]));
-        for (const yr of activeYears) {
-          await supabase.from("awards").delete().eq("year", yr);
-          const filtered = awards.filter(a => a.year === yr);
-          if (filtered.length > 0) {
-            const { error } = await supabase.from("awards").insert(
-              filtered.map(a => ({
-                year: a.year,
-                award_no: a.awardNo,
-                recipient_dept: a.recipientDept,
-                recipient_name: a.recipientName,
-                issue_date: a.issueDate,
-                issuer: a.issuer,
-                file_name: a.fileName || null,
-                file_data: a.fileData || null // Storage의 Public URL 주소를 원격 DB에 저장
-              }))
-            );
-            if (error) throw error;
-          }
-        }
-        setSyncStatus("synced");
-      } catch (e) {
-        console.error("Failed to sync awards to Supabase:", e);
-        setSyncStatus("error");
-      }
-    }, 150);
-    return () => clearTimeout(timer);
-  }, [awards, isDbLoaded, isFetchCompleted]);
+  }, [unifiedCertificates, isDbLoaded, isFetchCompleted]);
 
   // 4) Procurement Env 자동 저장 디바운스 훅
   useEffect(() => {
@@ -5102,74 +5023,39 @@ export default function App() {
     setAgreements((prev) => prev.filter((a) => a.id !== id));
   };
 
-  // 이수증 신규 등록 핸들러
-  const handleAddCertificate = (newCert) => {
+  // 통합 상장/이수증 신규 등록 핸들러
+  const handleAddUnifiedCertificate = (newCert) => {
     if (currentRole.id === "GUEST") {
       alert("게스트(방문자) 계정은 읽기 전용으로만 이용하실 수 있습니다.");
       return;
     }
-    setCertificates((prev) => [
+    setUnifiedCertificates((prev) => [
       ...prev,
       {
         ...newCert,
-        id: `cert-${Date.now()}-${Math.random().toString(36).substr(2, 9)}` // 난수 결합형 고유 ID 생성
+        id: `unified-${Date.now()}-${Math.random().toString(36).substr(2, 9)}` // 난수 결합형 고유 ID 생성
       }
     ]);
   };
 
-  // 이수증 수정 핸들러
-  const handleUpdateCertificate = (id, updatedFields) => {
+  // 통합 상장/이수증 수정 핸들러
+  const handleUpdateUnifiedCertificate = (id, updatedFields) => {
     if (currentRole.id === "GUEST") {
       alert("게스트(방문자) 계정은 읽기 전용으로만 이용하실 수 있습니다.");
       return;
     }
-    setCertificates((prev) =>
+    setUnifiedCertificates((prev) =>
       prev.map((c) => (c.id === id ? { ...c, ...updatedFields } : c))
     );
   };
 
-  // 이수증 삭제 핸들러
-  const handleDeleteCertificate = (id) => {
+  // 통합 상장/이수증 삭제 핸들러
+  const handleDeleteUnifiedCertificate = (id) => {
     if (currentRole.id === "GUEST") {
       alert("게스트(방문자) 계정은 읽기 전용으로만 이용하실 수 있습니다.");
       return;
     }
-    setCertificates((prev) => prev.filter((c) => c.id !== id));
-  };
-
-  // 상장 신규 등록 핸들러
-  const handleAddAward = (newAward) => {
-    if (currentRole.id === "GUEST") {
-      alert("게스트(방문자) 계정은 읽기 전용으로만 이용하실 수 있습니다.");
-      return;
-    }
-    setAwards((prev) => [
-      ...prev,
-      {
-        ...newAward,
-        id: `award-${Date.now()}-${Math.random().toString(36).substr(2, 9)}` // 난수 결합형 고유 ID 생성
-      }
-    ]);
-  };
-
-  // 상장 수정 핸들러
-  const handleUpdateAward = (id, updatedFields) => {
-    if (currentRole.id === "GUEST") {
-      alert("게스트(방문자) 계정은 읽기 전용으로만 이용하실 수 있습니다.");
-      return;
-    }
-    setAwards((prev) =>
-      prev.map((a) => (a.id === id ? { ...a, ...updatedFields } : a))
-    );
-  };
-
-  // 상장 삭제 핸들러
-  const handleDeleteAward = (id) => {
-    if (currentRole.id === "GUEST") {
-      alert("게스트(방문자) 계정은 읽기 전용으로만 이용하실 수 있습니다.");
-      return;
-    }
-    setAwards((prev) => prev.filter((a) => a.id !== id));
+    setUnifiedCertificates((prev) => prev.filter((c) => c.id !== id));
   };
 
   // 성과지표 목표치/실적치 직접 수정 핸들러
@@ -7471,32 +7357,17 @@ export default function App() {
               />
             )}
 
-            {/* 이수증 서브탭 활성화 시 이수증 단독 매니저 마운트 */}
-            {agreementsSubTab === "certificates" && (
-              <CertificateManager
-                key={`certificate-${darkMode}-${selectedYear}`}
+            {/* 통합 상장/이수증 서브탭 활성화 시 통합 매니저 마운트 */}
+            {agreementsSubTab === "unified_certificates" && (
+              <UnifiedCertificateManager
+                key={`unified-certificate-${darkMode}-${selectedYear}`}
                 projects={displayProjects}
-                certificates={certificates}
+                certificates={unifiedCertificates}
                 selectedYear={selectedYear}
-                onAddCertificate={handleAddCertificate}
-                onUpdateCertificate={handleUpdateCertificate}
-                onDeleteCertificate={handleDeleteCertificate}
-                setCertificates={setCertificates}
-                currentRole={currentRole}
-              />
-            )}
-
-            {/* 상장 서브탭 활성화 시 상장 단독 매니저 마운트 */}
-            {agreementsSubTab === "awards" && (
-              <AwardManager
-                key={`award-${darkMode}-${selectedYear}`}
-                projects={displayProjects}
-                awards={awards}
-                selectedYear={selectedYear}
-                onAddAward={handleAddAward}
-                onUpdateAward={handleUpdateAward}
-                onDeleteAward={handleDeleteAward}
-                setAwards={setAwards}
+                onAddCertificate={handleAddUnifiedCertificate}
+                onUpdateCertificate={handleUpdateUnifiedCertificate}
+                onDeleteCertificate={handleDeleteUnifiedCertificate}
+                setCertificates={setUnifiedCertificates}
                 currentRole={currentRole}
               />
             )}

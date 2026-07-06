@@ -440,7 +440,7 @@ export default function Sidebar({
                 onClick={() => {
                   onChangeTab("agreements");
                   if (onChangeAgreementsSubTab) {
-                    const subTabs = ["agreements", "certificates", "awards"];
+                    const subTabs = ["agreements", "unified_certificates"];
                     const firstActive = subTabs.find(tab => isSongDirector || menuVisibility[tab] !== false) || "agreements";
                     onChangeAgreementsSubTab(firstActive);
                   }
@@ -478,40 +478,20 @@ export default function Sidebar({
                     )}
                   </div>
                 )}
-                {(menuVisibility.certificates !== false || isSongDirector) && (
+                {(menuVisibility.unified_certificates !== false || isSongDirector) && (
                   <div
-                    className={`nav-sub-item ${activeTab === "agreements" && agreementsSubTab === "certificates" ? "active" : ""}`}
+                    className={`nav-sub-item ${activeTab === "agreements" && agreementsSubTab === "unified_certificates" ? "active" : ""}`}
                     onClick={(e) => {
                       e.stopPropagation();
                       onChangeTab("agreements");
                       if (onChangeAgreementsSubTab) {
-                        onChangeAgreementsSubTab("certificates");
+                        onChangeAgreementsSubTab("unified_certificates");
                       }
                     }}
-                    style={getHiddenStyle("certificates")}
+                    style={getHiddenStyle("unified_certificates")}
                   >
-                    - 이수증 관리
-                    {isHidden("certificates") && (
-                      <span style={{ fontSize: "0.6rem", color: "#ef4444", textDecoration: "none", marginLeft: "0.2rem" }}>
-                        [숨김]
-                      </span>
-                    )}
-                  </div>
-                )}
-                {(menuVisibility.awards !== false || isSongDirector) && (
-                  <div
-                    className={`nav-sub-item ${activeTab === "agreements" && agreementsSubTab === "awards" ? "active" : ""}`}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onChangeTab("agreements");
-                      if (onChangeAgreementsSubTab) {
-                        onChangeAgreementsSubTab("awards");
-                      }
-                    }}
-                    style={getHiddenStyle("awards")}
-                  >
-                    - 상장 관리
-                    {isHidden("awards") && (
+                    - 상장∙이수증 관리
+                    {isHidden("unified_certificates") && (
                       <span style={{ fontSize: "0.6rem", color: "#ef4444", textDecoration: "none", marginLeft: "0.2rem" }}>
                         [숨김]
                       </span>
