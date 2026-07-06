@@ -14,6 +14,13 @@ const getAcademicYear = (dateStr) => {
   return month <= 2 ? year - 1 : year;
 };
 
+const getDynamicTeamName = (dateStr) => {
+  if (!dateStr) return "RISE사업단";
+  const date = new Date(dateStr);
+  const splitDate = new Date("2026-07-01");
+  return date >= splitDate ? "앵커사업단" : "RISE사업단";
+};
+
 export default function UnifiedCertificateManager({
   projects = [],
   certificates = [],
@@ -81,6 +88,15 @@ export default function UnifiedCertificateManager({
       if (match) {
         setCertNo(`제${acYear}-${match[1]}`);
       }
+    }
+    
+    const newDynamicName = getDynamicTeamName(issueDate);
+    const oldDynamicName = newDynamicName === "RISE사업단" ? "앵커사업단" : "RISE사업단";
+    if (projectGroup === oldDynamicName || !projectGroup) {
+      setProjectGroup(newDynamicName);
+    }
+    if (issuer === `${oldDynamicName}장` || !issuer) {
+      setIssuer(`${newDynamicName}장`);
     }
   }, [issueDate]);
 
@@ -523,11 +539,20 @@ export default function UnifiedCertificateManager({
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
                   <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
                     <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>주관부서</label>
-                    <input type="text" value={projectGroup} onChange={e => setProjectGroup(e.target.value)} style={{ padding: "0.5rem", borderRadius: "0.5rem", background: "var(--bg-tertiary)", border: "1px solid var(--border-color)", color: "var(--text-primary)" }} />
+                    <select value={projectGroup} onChange={e => setProjectGroup(e.target.value)} style={{ padding: "0.5rem", borderRadius: "0.5rem", background: "var(--bg-tertiary)", border: "1px solid var(--border-color)", color: "var(--text-primary)" }}>
+                      <option value="">선택</option>
+                      <option value={getDynamicTeamName(issueDate)}>{getDynamicTeamName(issueDate)}</option>
+                      <option value="산학협력단">산학협력단</option>
+                      <option value="창업창직교육센터">창업창직교육센터</option>
+                    </select>
                   </div>
                   <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
                     <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>발급자명의</label>
-                    <input type="text" value={issuer} onChange={e => setIssuer(e.target.value)} style={{ padding: "0.5rem", borderRadius: "0.5rem", background: "var(--bg-tertiary)", border: "1px solid var(--border-color)", color: "var(--text-primary)" }} />
+                    <select value={issuer} onChange={e => setIssuer(e.target.value)} style={{ padding: "0.5rem", borderRadius: "0.5rem", background: "var(--bg-tertiary)", border: "1px solid var(--border-color)", color: "var(--text-primary)" }}>
+                      <option value="">선택</option>
+                      <option value={`${getDynamicTeamName(issueDate)}장`}>{getDynamicTeamName(issueDate)}장</option>
+                      <option value="산학협력단장">산학협력단장</option>
+                    </select>
                   </div>
                 </div>
 
