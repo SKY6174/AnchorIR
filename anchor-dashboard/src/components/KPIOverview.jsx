@@ -242,7 +242,7 @@ export default function KPIOverview({ projects, currentRole, selectedYear = 2 })
             </div>
             <div className="kpi-value" style={{ color: "var(--accent-color)", fontSize: "1.45rem", display: "flex", alignItems: "baseline", gap: "0.4rem", flexWrap: "wrap" }}>
               <span>{formatToMillionWon(totalBudget)} 백만원</span>
-              <span style={{ fontSize: "0.85rem", color: "var(--text-secondary-dark)", fontWeight: "normal" }}>
+              <span style={{ fontSize: "0.85rem", color: "var(--text-secondary)", fontWeight: "normal" }}>
                 (외부사업비: {formatToMillionWon(totalExternalBudget)} 백만원)
               </span>
             </div>
@@ -493,7 +493,7 @@ export default function KPIOverview({ projects, currentRole, selectedYear = 2 })
       <div className="vis-panel">
         {/* 프로젝트별 재원 집행 2중 막대 그래프 */}
         <div className="glass-card" style={{ minHeight: "380px" }}>
-          <h3 style={{ marginBottom: "1.2rem", fontSize: "1.1rem", fontWeight: "800" }}>
+          <h3 style={{ marginBottom: "1.2rem", fontSize: "1.1rem", fontWeight: "800", color: "var(--text-primary)" }}>
             프로젝트별 재원 배정 및 누적 집행 현황 (단위: 백만원)
           </h3>
           <div style={{ width: "100%", height: "280px" }}>
@@ -543,7 +543,7 @@ export default function KPIOverview({ projects, currentRole, selectedYear = 2 })
 
         {/* 예산 분배 비율 */}
         <div className="glass-card" style={{ minHeight: "380px" }}>
-          <h3 style={{ marginBottom: "1.2rem", fontSize: "1.1rem", fontWeight: "800" }}>
+          <h3 style={{ marginBottom: "1.2rem", fontSize: "1.1rem", fontWeight: "800", color: "var(--text-primary)" }}>
             재원 배분 구조 {selectedYear === 1 ? "(공통경비 제외)" : "(공통경비 포함)"}
           </h3>
           <div style={{ width: "100%", height: "300px", display: "flex", justifyContent: "center", alignItems: "center" }}>

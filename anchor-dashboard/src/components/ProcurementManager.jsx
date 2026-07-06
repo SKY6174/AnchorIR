@@ -1854,7 +1854,7 @@ export default function ProcurementManager({
 
           {/* 환경개선 테이블 */}
           <div className="glass-card" style={{ padding: "0.25rem", borderRadius: "12px", overflowX: "auto", border: "1px solid rgba(255,255,255,0.06)", background: "rgba(10, 15, 30, 0.4)" }}>
-            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.82rem", color: "white" }}>
+            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.82rem", color: "var(--text-primary)" }}>
               <thead>
                 <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.08)", background: "rgba(255,255,255,0.01)" }}>
                   <th 
@@ -2051,7 +2051,7 @@ export default function ProcurementManager({
                             return dName || divName || "-";
                           })()}
                         </td>
-                        <td style={{ padding: "0.8rem 0.5rem", textAlign: "center", fontWeight: "700", color: "white" }}>
+                        <td style={{ padding: "0.8rem 0.5rem", textAlign: "center", fontWeight: "700", color: "var(--text-primary)" }}>
                           {equip.title || equip.itemName || "-"}
                         </td>
                         <td style={{ padding: "0.8rem 0.5rem", textAlign: "right", fontWeight: "700", color: "#10B981" }}>
@@ -3454,7 +3454,7 @@ export default function ProcurementManager({
 
           {/* 주요 용역 테이블 */}
           <div className="glass-card" style={{ padding: "0.25rem", borderRadius: "12px", overflowX: "auto", border: "1px solid rgba(255,255,255,0.06)", background: "rgba(10, 15, 30, 0.4)" }}>
-            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.82rem", color: "white" }}>
+            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.82rem", color: "var(--text-primary)" }}>
               <thead>
                 <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.08)", background: "rgba(255,255,255,0.01)" }}>
                   <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "45px" }}>순번</th>
@@ -3517,7 +3517,7 @@ export default function ProcurementManager({
                             {equip.programId || `[${equip.unit}]`}
                           </div>
                           {equip.programName && (
-                            <div style={{ color: "rgba(255,255,255,0.5)", fontSize: "0.72rem", marginTop: "0.15rem", fontWeight: "normal" }}>
+                            <div style={{ color: "var(--text-secondary)", fontSize: "0.72rem", marginTop: "0.15rem", fontWeight: "normal" }}>
                               ({equip.programName})
                             </div>
                           )}
@@ -3536,7 +3536,7 @@ export default function ProcurementManager({
                         </td>
 
                         {/* 4. 용역명 */}
-                        <td style={{ padding: "0.8rem 0.5rem", textAlign: "left", fontWeight: "700", color: "white" }}>
+                        <td style={{ padding: "0.8rem 0.5rem", textAlign: "left", fontWeight: "700", color: "var(--text-primary)" }}>
                           {equip.title || "-"}
                         </td>
 
