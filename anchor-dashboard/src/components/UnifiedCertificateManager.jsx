@@ -373,23 +373,23 @@ export default function UnifiedCertificateManager({
             </div>
           </div>
         )}
-        <table className="custom-table" style={{ minWidth: "1600px", fontSize: "0.85rem" }}>
+        <table className="custom-table" style={{ minWidth: "1900px", fontSize: "0.85rem" }}>
           <thead>
             <tr>
-              <th onClick={() => requestSort("certNo")} style={{ cursor: "pointer", whiteSpace: "nowrap" }}>증서번호</th>
-              <th onClick={() => requestSort("certType")} style={{ cursor: "pointer", whiteSpace: "nowrap" }}>구분</th>
-              <th onClick={() => requestSort("awardType")} style={{ cursor: "pointer", whiteSpace: "nowrap" }}>상훈</th>
-              <th onClick={() => requestSort("teamName")} style={{ cursor: "pointer", whiteSpace: "nowrap" }}>팀명</th>
-              <th onClick={() => requestSort("recipientName")} style={{ cursor: "pointer", whiteSpace: "nowrap" }}>성명</th>
-              <th onClick={() => requestSort("studentId")} style={{ cursor: "pointer", whiteSpace: "nowrap" }}>학번</th>
-              <th onClick={() => requestSort("issueDate")} style={{ cursor: "pointer", whiteSpace: "nowrap" }}>수상(수료)일</th>
-              <th style={{ whiteSpace: "nowrap" }}>사업단명</th>
-              <th style={{ whiteSpace: "nowrap" }}>발급자</th>
-              <th style={{ whiteSpace: "nowrap" }}>시상내용(과정명)</th>
-              <th onClick={() => requestSort("managerDept")} style={{ cursor: "pointer", whiteSpace: "nowrap" }}>담당자 소속</th>
-              <th onClick={() => requestSort("managerName")} style={{ cursor: "pointer", whiteSpace: "nowrap" }}>담당자 성명</th>
-              <th style={{ whiteSpace: "nowrap" }}>비고</th>
-              {currentRole?.id !== "GUEST" && <th style={{ whiteSpace: "nowrap" }}>관리</th>}
+              <th onClick={() => requestSort("certNo")} style={{ cursor: "pointer", whiteSpace: "nowrap", minWidth: "110px" }}>증서번호</th>
+              <th onClick={() => requestSort("certType")} style={{ cursor: "pointer", whiteSpace: "nowrap", minWidth: "60px" }}>구분</th>
+              <th onClick={() => requestSort("awardType")} style={{ cursor: "pointer", whiteSpace: "nowrap", minWidth: "80px" }}>상훈</th>
+              <th onClick={() => requestSort("teamName")} style={{ cursor: "pointer", whiteSpace: "nowrap", minWidth: "130px" }}>팀명</th>
+              <th onClick={() => requestSort("recipientName")} style={{ cursor: "pointer", whiteSpace: "nowrap", minWidth: "180px" }}>성명</th>
+              <th onClick={() => requestSort("studentId")} style={{ cursor: "pointer", whiteSpace: "nowrap", minWidth: "200px" }}>학번</th>
+              <th onClick={() => requestSort("issueDate")} style={{ cursor: "pointer", whiteSpace: "nowrap", minWidth: "100px" }}>수상(수료)일</th>
+              <th style={{ whiteSpace: "nowrap", minWidth: "100px" }}>사업단명</th>
+              <th style={{ whiteSpace: "nowrap", minWidth: "120px" }}>발급자</th>
+              <th style={{ whiteSpace: "nowrap", minWidth: "220px" }}>시상내용(과정명)</th>
+              <th onClick={() => requestSort("managerDept")} style={{ cursor: "pointer", whiteSpace: "nowrap", minWidth: "110px" }}>담당자 소속</th>
+              <th onClick={() => requestSort("managerName")} style={{ cursor: "pointer", whiteSpace: "nowrap", minWidth: "80px" }}>담당자 성명</th>
+              <th style={{ whiteSpace: "nowrap", minWidth: "100px" }}>비고</th>
+              {currentRole?.id !== "GUEST" && <th style={{ whiteSpace: "nowrap", minWidth: "80px" }}>관리</th>}
             </tr>
           </thead>
           <tbody>
@@ -403,20 +403,20 @@ export default function UnifiedCertificateManager({
                     </span>
                   </td>
                   <td style={{ whiteSpace: "nowrap" }}>{c.awardType}</td>
-                  <td style={{ wordBreak: "keep-all", minWidth: "120px", lineHeight: "1.4" }}>{c.teamName}</td>
-                  <td style={{ fontWeight: "600", wordBreak: "keep-all", minWidth: "150px", lineHeight: "1.5" }}>
+                  <td style={{ wordBreak: "keep-all", lineHeight: "1.4" }}>{c.teamName}</td>
+                  <td style={{ fontWeight: "600", wordBreak: "keep-all", lineHeight: "1.5" }}>
                     {c.recipientName ? String(c.recipientName).split(/[\s,]+/).filter(Boolean).join(", ") : ""}
                   </td>
-                  <td style={{ wordBreak: "keep-all", minWidth: "180px", lineHeight: "1.5", fontSize: "0.8rem", color: "var(--text-secondary)" }}>
+                  <td style={{ wordBreak: "keep-all", lineHeight: "1.5", fontSize: "0.8rem", color: "var(--text-secondary)" }}>
                     {c.studentId ? String(c.studentId).split(/[\s,]+/).filter(Boolean).join(", ") : ""}
                   </td>
                   <td style={{ textAlign: "center", whiteSpace: "nowrap" }}>{c.issueDate}</td>
                   <td style={{ whiteSpace: "nowrap" }}>{c.projectGroup}</td>
                   <td style={{ whiteSpace: "nowrap" }}>{c.issuer}</td>
-                  <td style={{ wordBreak: "keep-all", minWidth: "150px", lineHeight: "1.4" }}>{c.content}</td>
+                  <td style={{ wordBreak: "keep-all", lineHeight: "1.4" }}>{c.content}</td>
                   <td style={{ whiteSpace: "nowrap", fontSize: "0.8rem", color: "var(--text-secondary)" }}>{c.managerDept}</td>
                   <td style={{ whiteSpace: "nowrap", fontWeight: "600" }}>{c.managerName}</td>
-                  <td style={{ wordBreak: "keep-all", minWidth: "100px" }}>{c.note}</td>
+                  <td style={{ wordBreak: "keep-all" }}>{c.note}</td>
                   {currentRole?.id !== "GUEST" && (
                     <td style={{ textAlign: "center" }}>
                       <div style={{ display: "flex", gap: "0.5rem", justifyContent: "center" }}>
