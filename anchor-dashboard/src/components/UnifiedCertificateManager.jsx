@@ -4,7 +4,39 @@ import { Plus, Trash2, Edit, Trash, FileText, Upload, X, AlertTriangle, Download
 import * as XLSX from "xlsx";
 import { supabase } from "../supabaseClient";
 
+const formatDateString = (dateStr) => {
+  if (!dateStr) return "";
+  let str = String(dateStr).trim();
+  
+  // 1. Excel serial date (e.g. 45000)
+  if (!isNaN(str) && Number(str) > 20000) {
+    const d = new Date(Math.round((Number(str) - 25569) * 86400 * 1000));
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, "0");
+    const dd = String(d.getDate()).padStart(2, "0");
+    return `${yyyy}-${mm}-${dd}`;
+  }
+  
+  // 2. Format YYYY.MM.DD. or YYYY. MM. DD.
+  const dotMatch = str.match(/^(\d{4})\s*\.\s*(\d{1,2})\s*\.\s*(\d{1,2})\s*\.?$/);
+  if (dotMatch) {
+    return `${dotMatch[1]}-${dotMatch[2].padStart(2, "0")}-${dotMatch[3].padStart(2, "0")}`;
+  }
+  
+  // 3. Format MM/DD/YYYY
+  const slashMatch = str.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+  if (slashMatch) {
+    return `${slashMatch[3]}-${slashMatch[1].padStart(2, "0")}-${slashMatch[2].padStart(2, "0")}`;
+  }
 
+  // 4. Format YYYY-MM-DD
+  const dashMatch = str.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
+  if (dashMatch) {
+    return `${dashMatch[1]}-${dashMatch[2].padStart(2, "0")}-${dashMatch[3].padStart(2, "0")}`;
+  }
+
+  return str;
+};
 
 const getAcademicYear = (dateStr) => {
   if (!dateStr) return new Date().getFullYear();
@@ -174,9 +206,9 @@ export default function UnifiedCertificateManager({
     setTeamName(cert.teamName || "");
     setRecipientName(cert.recipientName || "");
     setStudentId(cert.studentId || "");
-    setBirthDate(cert.birthDate || "");
+    setBirthDate(formatDateString(cert.birthDate) || "");
     setPhone(cert.phone || "");
-    setIssueDate(cert.issueDate || "");
+    setIssueDate(formatDateString(cert.issueDate) || "");
     setProjectGroup(cert.projectGroup || "");
     setIssuer(cert.issuer || "사업단장");
     setContent(cert.content || "");
@@ -285,9 +317,9 @@ export default function UnifiedCertificateManager({
             teamName: row[3] || "",
             recipientName: row[4] || "",
             studentId: row[5] || "",
-            birthDate: row[6] || "",
+            birthDate: formatDateString(row[6]),
             phone: row[7] || "",
-            issueDate: row[8] || "",
+            issueDate: formatDateString(row[8]),
             projectGroup: row[9] || "",
             issuer: row[10] || "",
             content: row[11] || "",
@@ -410,7 +442,7 @@ export default function UnifiedCertificateManager({
                   <td style={{ wordBreak: "keep-all", lineHeight: "1.5", fontSize: "0.8rem", color: "var(--text-secondary)" }}>
                     {c.studentId ? String(c.studentId).split(/[\s,]+/).filter(Boolean).map((id, i) => <div key={i}>{id}</div>) : ""}
                   </td>
-                  <td style={{ textAlign: "center", whiteSpace: "nowrap" }}>{c.issueDate}</td>
+                  <td style={{ textAlign: "center", whiteSpace: "nowrap" }}>{formatDateString(c.issueDate)}</td>
                   <td style={{ whiteSpace: "nowrap" }}>{c.projectGroup}</td>
                   <td style={{ whiteSpace: "nowrap" }}>{c.issuer}</td>
                   <td style={{ wordBreak: "keep-all", lineHeight: "1.4" }}>{c.content}</td>
