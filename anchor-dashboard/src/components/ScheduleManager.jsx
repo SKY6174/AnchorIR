@@ -5349,7 +5349,7 @@ ${aiRawText}
                           });
 
                         return (
-                          <div style={{ display: "flex", gap: "0.35rem", flexWrap: "wrap", padding: "0.5rem", background: "rgba(255,255,255,0.02)", borderRadius: "6px", border: "1px solid rgba(255,255,255,0.04)", maxHeight: "120px", overflowY: "auto" }}>
+                          <div style={{ display: "flex", gap: "0.35rem", flexWrap: "wrap", padding: "0.5rem", background: "var(--panel-bg)", borderRadius: "6px", border: "1px solid var(--border-color)", maxHeight: "120px", overflowY: "auto" }}>
                             {allActiveMembers.map(m => {
                               const isSelected = (formData.attendees || "")
                                 .split(",")
@@ -5367,8 +5367,8 @@ ${aiRawText}
                                       padding: "0.25rem 0.5rem",
                                       fontSize: "0.7rem",
                                       borderRadius: "4px",
-                                      border: "1px solid " + (isSelected ? "var(--accent-color)" : "rgba(255,255,255,0.1)"),
-                                      background: isSelected ? "rgba(59, 130, 246, 0.15)" : "transparent",
+                                      border: "1px solid " + (isSelected ? "var(--accent-color)" : "var(--border-color)"),
+                                      background: isSelected ? "rgba(59, 130, 246, 0.15)" : "var(--input-bg)",
                                       color: isSelected ? "#60A5FA" : "var(--text-secondary)",
                                       cursor: "pointer",
                                       fontWeight: "700"
@@ -5571,8 +5571,8 @@ ${aiRawText}
                               gap: "0.25rem",
                               width: "100%",
                               padding: "0.5rem",
-                              background: "rgba(128,128,128,0.04)",
-                              border: "1px dashed var(--border-color)",
+                              background: "rgba(59, 130, 246, 0.05)",
+                              border: "1px dashed rgba(59, 130, 246, 0.4)",
                               borderRadius: "6px",
                               color: "var(--text-secondary)",
                               cursor: isUploadingFile ? "not-allowed" : "pointer",
@@ -5645,8 +5645,8 @@ ${aiRawText}
                               gap: "0.25rem",
                               width: "100%",
                               padding: "0.5rem",
-                              background: "rgba(128,128,128,0.04)",
-                              border: "1px dashed var(--border-color)",
+                              background: "rgba(59, 130, 246, 0.05)",
+                              border: "1px dashed rgba(59, 130, 246, 0.4)",
                               borderRadius: "6px",
                               color: "var(--text-secondary)",
                               cursor: isUploadingFile ? "not-allowed" : "pointer",
