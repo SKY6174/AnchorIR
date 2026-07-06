@@ -6287,16 +6287,16 @@ export default function App() {
                   </div>
                   {currentRole.rank <= 2 && (
                     <div style={{ display: "flex", gap: "0.5rem" }}>
-                      <button onClick={handleOpenAddProgram} className="btn-green" style={{ padding: "0.4rem 0.8rem", fontSize: "0.75rem" }}>
-                        + 신규 프로그램
-                      </button>
-                      <button onClick={handleDownloadExcel} className="btn-green-outline" style={{ padding: "0.4rem 0.8rem", fontSize: "0.75rem" }}>
-                        엑셀 다운로드
-                      </button>
                       <label className="btn-green-outline" style={{ padding: "0.4rem 0.8rem", fontSize: "0.75rem", cursor: "pointer", margin: 0 }}>
                         엑셀 업로드
                         <input type="file" accept=".xlsx, .xls" style={{ display: "none" }} ref={fileInputRef} onChange={handleUploadExcel} />
                       </label>
+                      <button onClick={handleDownloadExcel} className="btn-green-outline" style={{ padding: "0.4rem 0.8rem", fontSize: "0.75rem" }}>
+                        엑셀 다운로드
+                      </button>
+                      <button onClick={handleOpenAddProgram} className="btn-green" style={{ padding: "0.4rem 0.8rem", fontSize: "0.75rem" }}>
+                        + 신규 프로그램
+                      </button>
                     </div>
                   )}
                 </div>
