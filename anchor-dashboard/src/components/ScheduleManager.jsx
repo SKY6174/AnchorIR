@@ -13,19 +13,19 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdn.jsdelivr.net/npm/pdfjs-dis
 const COMMITTEES_DATA = [
   {
     id: "total",
-    name: "RISE총괄위원회",
-    fullName: "RISE총괄위원회 (구. RISE사업위원회)",
+    name: "앵커총괄위원회",
+    fullName: "앵커총괄위원회 (구. RISE사업위원회)",
     badge: "최고의사결정",
     color: "linear-gradient(135deg, #ec4899 0%, #be123c 100%)",
-    purpose: "RISE 사업 총괄 / 사업계획서 심의 / 교육환경 및 기자재 구축심의 / 예산변경안 최종승인 등",
-    desc: "울산 지역 RISE 사업의 최고 의사 결정 기구로, 사업의 총괄 방향 설정, 주요 계획의 심의·의결, 성과 지표 평가 및 환류 체계 조율 등의 핵심 역할을 담당합니다. 본 대학 대학혁신위원회규정(UCS-D-314)에 의한 대학혁신위원회에서 그 기능을 대신합니다.",
+    purpose: "앵커 사업 총괄 / 사업계획서 심의 / 교육환경 및 기자재 구축심의 / 예산변경안 최종승인 등",
+    desc: "울산 지역 앵커 사업의 최고 의사 결정 기구로, 사업의 총괄 방향 설정, 주요 계획의 심의·의결, 성과 지표 평가 및 환류 체계 조율 등의 핵심 역할을 담당합니다. 본 대학 대학혁신위원회규정(UCS-D-314)에 의한 대학혁신위원회에서 그 기능을 대신합니다.",
     constitution: "내부 9인, 외부 2인을 포함한 11인 내외",
     cycle: "반기별 1회 개최 (필요 시 임시 위원회 소집)",
     functions: [
-      "RISE 사업 총괄 및 연도별 사업계획서 심의·의결",
+      "앵커 사업 총괄 및 연도별 사업계획서 심의·의결",
       "교육환경 개선 및 기자재 구축 심의·확정",
       "사업비 대규모 변경(예산변경안) 최종 승인 및 조율",
-      "기타 RISE 사업 운영 상 최고 의사결정이 필요한 현안 해결"
+      "기타 앵커 사업 운영 상 최고 의사결정이 필요한 현안 해결"
     ],
     members: [
       { id: 1, type: "위원장", name: "조홍래", org: "울산과학대학교", dept: "-", rank: "총장", location: "교내", note: "" },
@@ -34,7 +34,7 @@ const COMMITTEES_DATA = [
       { id: 4, type: "위원", name: "김강연", org: "울산과학대학교", dept: "기획처", rank: "처장", location: "교내", note: "인사발령으로 인한 변경" },
       { id: 5, type: "위원", name: "이주영", org: "울산과학대학교", dept: "학생취업처", rank: "처장", location: "교내", note: "" },
       { id: 6, type: "위원", name: "박일현", org: "울산과학대학교", dept: "총무처", rank: "처장", location: "교내", note: "" },
-      { id: 7, type: "위원", name: "송경영", org: "울산과학대학교", dept: "산학협력단(RISE)", rank: "단장", location: "교내", note: "" },
+      { id: 7, type: "위원", name: "송경영", org: "울산과학대학교", dept: "산학협력단(앵커)", rank: "단장", location: "교내", note: "" },
       { id: 8, type: "위원", name: "미지정", org: "울산과학대학교", dept: "직원노동조합", rank: "위원장", location: "교내", note: "" },
       { id: 9, type: "위원", name: "미지정", org: "울산과학대학교", dept: "총학생회", rank: "회장", location: "교내", note: "" },
       { id: 10, type: "위원", name: "정문호", org: "정테크", dept: "-", rank: "대표", location: "교외", note: "신규 추가" },
@@ -44,24 +44,24 @@ const COMMITTEES_DATA = [
   },
   {
     id: "planning",
-    name: "RISE기획위원회",
-    fullName: "RISE기획위원회 (구. RISE사업추진위원회)",
+    name: "앵커기획위원회",
+    fullName: "앵커기획위원회 (구. RISE사업추진위원회)",
     badge: "기획·실무조율",
     color: "linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)",
-    purpose: "대학/지자체 발전계획에 의거한 RISE사업계획서 작성 및 타당성 검토 / 사업계획서 및 사업결과보고서 운영 등",
-    desc: "세부 추진전략 수립 및 프로그램 기획을 실무적으로 조율하는 위원회로, 대학발전계획 및 울산광역시 발전계획에 근거하여 사업계획의 적합성과 타당성을 검토합니다. 위원장은 RISE사업단장과 기획처장이 공동으로 맡습니다.",
-    constitution: "RISE사업단장 및 내부위원 11인, 외부위원 4인을 포함한 15인 내외",
+    purpose: "대학/지자체 발전계획에 의거한 앵커사업계획서 작성 및 타당성 검토 / 사업계획서 및 사업결과보고서 운영 등",
+    desc: "세부 추진전략 수립 및 프로그램 기획을 실무적으로 조율하는 위원회로, 대학발전계획 및 울산광역시 발전계획에 근거하여 사업계획의 적합성과 타당성을 검토합니다. 위원장은 앵커사업단장과 기획처장이 공동으로 맡습니다.",
+    constitution: "앵커사업단장 및 내부위원 11인, 외부위원 4인을 포함한 15인 내외",
     cycle: "분기별 1회 개최 (실무 단계 상시 협의)",
     functions: [
       "대학발전계획 및 울산광역시 기본계획 연계성 타당성 검토",
-      "RISE 사업계획서 기획·작성 및 결과보고서 운영 검토",
+      "앵커 사업계획서 기획·작성 및 결과보고서 운영 검토",
       "추진전략(S) 및 프로그램(PG) 실무 심의 및 조율",
       "참여 대학 및 외부 대학/기관과의 협력 연계 프로세스 설계"
     ],
     members: [
       { id: 1, type: "위원장", name: "김강연", org: "울산과학대학교", dept: "기획처", rank: "처장", location: "교내", note: "" },
-      { id: 2, type: "위원장", name: "송경영", org: "울산과학대학교", dept: "RISE사업단", rank: "단장", location: "교내", note: "" },
-      { id: 3, type: "위원", name: "김현수", org: "울산과학대학교", dept: "RISE사업단", rank: "본부장", location: "교내", note: "" },
+      { id: 2, type: "위원장", name: "송경영", org: "울산과학대학교", dept: "앵커사업단", rank: "단장", location: "교내", note: "" },
+      { id: 3, type: "위원", name: "김현수", org: "울산과학대학교", dept: "앵커사업단", rank: "본부장", location: "교내", note: "" },
       { id: 4, type: "위원", name: "최윤아", org: "울산과학대학교", dept: "기획처", rank: "부처장", location: "교내", note: "신규 추가" },
       { id: 5, type: "위원", name: "이동은", org: "울산과학대학교", dept: "지산학교육센터(ECC)", rank: "센터장", location: "교내", note: "" },
       { id: 6, type: "위원", name: "김기범", org: "울산과학대학교", dept: "기업협업센터(ICC)", rank: "센터장", location: "교내", note: "" },
@@ -74,18 +74,18 @@ const COMMITTEES_DATA = [
       { id: 13, type: "위원", name: "남기석", org: "영남이공대학교", dept: "물리치료학과", rank: "교수", location: "교외", note: "" },
       { id: 14, type: "위원", name: "이상희", org: "청강문화산업대학교", dept: "전략지원처", rank: "처장", location: "교외", note: "" },
       { id: 15, type: "위원", name: "황영국", org: "조선이공대학교", dept: "산학협력단", rank: "단장", location: "교외", note: "" },
-      { id: 16, type: "간사", name: "심현미", org: "울산과학대학교", dept: "RISE사업단운영팀", rank: "팀장", location: "교내", note: "" }
+      { id: 16, type: "간사", name: "심현미", org: "울산과학대학교", dept: "앵커사업단운영팀", rank: "팀장", location: "교내", note: "" }
     ]
   },
   {
     id: "budget",
-    name: "RISE사업비관리위원회",
-    fullName: "RISE사업비관리위원회",
+    name: "앵커사업비관리위원회",
+    fullName: "앵커사업비관리위원회",
     badge: "재정투명성",
     color: "linear-gradient(135deg, #f59e0b 0%, #b45309 100%)",
     purpose: "사업비 집행 가이드라인에 따라 사업 예산 집행 모니터링 / 집행률 점검 및 관리 / 사업비 조정 심의 등",
     desc: "사업 예산 집행의 규정 준수 여부를 모니터링하고 집행률을 극대화하기 위해 재정 건전성을 상시 관리·심의하는 특별 재정 관리 기구입니다.",
-    constitution: "RISE사업단장을 포함하여 7인 내외 (내부 6인, 외부 1인)",
+    constitution: "앵커사업단장을 포함하여 7인 내외 (내부 6인, 외부 1인)",
     cycle: "매 분기 정기 개최 (예산 변경 수시 심의 병행)",
     functions: [
       "국고 및 시비 매칭 자금 집행 가이드라인 점검 및 통제",
@@ -97,17 +97,17 @@ const COMMITTEES_DATA = [
       { id: 1, type: "위원장", name: "김성철", org: "울산과학대학교", dept: "-", rank: "부총장", location: "교내", note: "" },
       { id: 2, type: "위원", name: "김강연", org: "울산과학대학교", dept: "기획처", rank: "처장", location: "교내", note: "" },
       { id: 3, type: "위원", name: "박일현", org: "울산과학대학교", dept: "총무처", rank: "처장", location: "교내", note: "" },
-      { id: 4, type: "위원", name: "송경영", org: "울산과학대학교", dept: "RISE사업단", rank: "단장", location: "교내", note: "" },
-      { id: 5, type: "위원", name: "김현수", org: "울산과학대학교", dept: "RISE사업단", rank: "본부장", location: "교내", note: "" },
+      { id: 4, type: "위원", name: "송경영", org: "울산과학대학교", dept: "앵커사업단", rank: "단장", location: "교내", note: "" },
+      { id: 5, type: "위원", name: "김현수", org: "울산과학대학교", dept: "앵커사업단", rank: "본부장", location: "교내", note: "" },
       { id: 6, type: "위원", name: "고우근", org: "울산과학대학교", dept: "기획팀", rank: "팀장", location: "교내", note: "" },
       { id: 7, type: "위원", name: "강신욱", org: "인택스세무법인", dept: "세무팀", rank: "부대표", location: "교외", note: "" },
-      { id: 8, type: "간사", name: "심현미", org: "울산과학대학교", dept: "RISE사업단운영팀", rank: "팀장", location: "교내", note: "" }
+      { id: 8, type: "간사", name: "심현미", org: "울산과학대학교", dept: "앵커사업단운영팀", rank: "팀장", location: "교내", note: "" }
     ]
   },
   {
     id: "eval",
-    name: "RISE사업자체평가위원회",
-    fullName: "RISE사업자체평가위원회 (상임)",
+    name: "앵커사업자체평가위원회",
+    fullName: "앵커사업자체평가위원회 (상임)",
     badge: "성과평가",
     color: "linear-gradient(135deg, #10b981 0%, #047857 100%)",
     purpose: "사업계획서 및 목표에 기반한 사업성과 평가 (중간평가/최종평가)",
@@ -130,16 +130,16 @@ const COMMITTEES_DATA = [
       { id: 7, type: "위원", name: "한동호", org: "석원기공", dept: "-", rank: "대표이사", location: "교외", note: "" },
       { id: 8, type: "위원(자문겸직)", name: "류지호", org: "아주자동차대학교", dept: "교학처", rank: "처장", location: "교외", note: "" },
       { id: 9, type: "위원(자문겸직)", name: "박준", org: "광주보건대학교", dept: "글로벌혁신처", rank: "처장", location: "교외", note: "" },
-      { id: 10, type: "간사", name: "심현미", org: "울산과학대학교", dept: "RISE사업단운영팀", rank: "팀장", location: "교내", note: "" }
+      { id: 10, type: "간사", name: "심현미", org: "울산과학대학교", dept: "앵커사업단운영팀", rank: "팀장", location: "교내", note: "" }
     ]
   },
   {
     id: "advisory",
-    name: "RISE사업자문회의",
-    fullName: "RISE사업자문회의",
+    name: "앵커사업자문회의",
+    fullName: "앵커사업자문회의",
     badge: "외부전문가자문",
     color: "linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%)",
-    purpose: "RISE 사업 정책 방향 및 지역 정주형 인재 양성을 위한 다변화 정책 자문",
+    purpose: "앵커 사업 정책 방향 및 지역 정주형 인재 양성을 위한 다변화 정책 자문",
     desc: "타 대학 혁신사업단 및 외부 전문기관의 전략적 자문을 구하고 지산학연 광역 네트워킹을 확대하기 위해 학계 및 행정계 전문가로 구성된 자문 기구입니다.",
     constitution: "외부전문가 중심 (교외 위원 7인 및 간사 교내 1인)",
     cycle: "반기별 1회 정기 회의 (현안에 따른 수시 자문 개최)",
@@ -157,7 +157,7 @@ const COMMITTEES_DATA = [
       { id: 5, type: "위원", name: "최영오", org: "영남이공대학교", dept: "-", rank: "교수", location: "교외", note: "" },
       { id: 6, type: "위원", name: "남현욱", org: "춘해보건대학교", dept: "기획처", rank: "처장", location: "교외", note: "" },
       { id: 7, type: "위원", name: "이종향", org: "거제대학교", dept: "-", rank: "교수", location: "교외", note: "" },
-      { id: 8, type: "간사", name: "심현미", org: "울산과학대학교", dept: "RISE사업단운영팀", rank: "팀장", location: "교내", note: "" }
+      { id: 8, type: "간사", name: "심현미", org: "울산과학대학교", dept: "앵커사업단운영팀", rank: "팀장", location: "교내", note: "" }
     ]
   }
 ];
@@ -2964,10 +2964,10 @@ ${aiRawText}
             <div>
               <h3 style={{ margin: 0, fontSize: "1.1rem", fontWeight: "800", color: "var(--text-primary)", display: "flex", alignItems: "center", gap: "0.5rem" }}>
                 <Users size={20} style={{ color: "var(--accent-color)" }} />
-                🏛️ RISE 사업단 의사결정 거버넌스 (위원회 관리)
+                🏛️ 앵커 사업단 의사결정 거버넌스 (위원회 관리)
               </h3>
               <p style={{ margin: "0.25rem 0 0 0", fontSize: "0.85rem", color: "var(--text-secondary)" }}>
-                울산과학대학교 RISE(앵커) 사업의 성공을 위한 최고 의사결정 기구 및 핵심 실무/평가 위원회 종합 현황
+                울산과학대학교 앵커 사업의 성공을 위한 최고 의사결정 기구 및 핵심 실무/평가 위원회 종합 현황
               </p>
             </div>
           </div>
