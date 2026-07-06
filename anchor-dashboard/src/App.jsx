@@ -2110,6 +2110,18 @@ export default function App() {
     return [];
   });
 
+  const [scholarships, setScholarships] = useState(() => {
+    const cached = localStorage.getItem("anchor_cache_scholarships_all");
+    if (cached) {
+      try {
+        return JSON.parse(cached);
+      } catch (e) {
+        return [];
+      }
+    }
+    return [];
+  });
+
   useEffect(() => {
     try {
       const unifiedCertsForStorage = unifiedCertificates.map((item) => {
@@ -2121,6 +2133,15 @@ export default function App() {
       console.error("Failed to save unified certificates to localStorage:", e);
     }
   }, [unifiedCertificates]);
+
+  useEffect(() => {
+    try {
+      const clean = scholarships.map((item) => ({ ...item }));
+      localStorage.setItem("anchor_cache_scholarships_all", JSON.stringify(clean));
+    } catch (e) {
+      console.error("Failed to save scholarships to localStorage:", e);
+    }
+  }, [scholarships]);
 
   const [assignFilterUnitId, setAssignFilterUnitId] = useState("all");
   
@@ -2688,6 +2709,7 @@ export default function App() {
         const cachedProj = localStorage.getItem(`anchor_cache_proj_y${selectedYear}`);
         const cachedAgr = localStorage.getItem("anchor_cache_agreements_all");
         const cachedUnifiedCert = localStorage.getItem("anchor_cache_unified_certificates_all");
+        const cachedScholarships = localStorage.getItem("anchor_cache_scholarships_all");
         const cachedEnv = localStorage.getItem(`anchor_cache_env_y${selectedYear}`);
         const cachedEquip = localStorage.getItem(`anchor_cache_equip_y${selectedYear}`);
         const cachedServ = localStorage.getItem(`anchor_cache_serv_y${selectedYear}`);
@@ -2699,6 +2721,7 @@ export default function App() {
         if (cachedProj) setProjects(migrateProgramIds(JSON.parse(cachedProj)));
         if (cachedAgr) setAgreements(JSON.parse(cachedAgr));
         if (cachedUnifiedCert) setUnifiedCertificates(JSON.parse(cachedUnifiedCert));
+        if (cachedScholarships) setScholarships(JSON.parse(cachedScholarships));
         if (cachedEnv) setEnvData(JSON.parse(cachedEnv));
         if (cachedEquip) setEquipData(JSON.parse(cachedEquip));
         if (cachedServ) setServiceData(JSON.parse(cachedServ));
@@ -2816,6 +2839,39 @@ export default function App() {
           }
         } else {
           setUnifiedCertificates([]);
+        }
+
+        // 2-3. Scholarships 복구
+        const { data: scholarshipData, error: scholarshipError } = await supabase
+          .from("scholarships_view")
+          .select("*");
+        if (scholarshipData && scholarshipData.length > 0) {
+          const formatted = scholarshipData.map(c => ({
+            id: Number(c.id) || Date.now() + Math.random(),
+            year: c.year,
+            dept: c.dept,
+            major: c.major,
+            course: c.course,
+            studentId: c.student_id,
+            name: c.name,
+            residentId: c.resident_id,
+            grade: c.grade,
+            enrollStatus: c.enroll_status,
+            regStatus: c.reg_status,
+            amount: c.amount,
+            bankName: c.bank_name,
+            accountNum: c.account_num,
+            accountHolder: c.account_holder
+          }));
+          setScholarships(formatted);
+          try {
+            const clean = formatted.map(item => ({ ...item }));
+            localStorage.setItem("anchor_cache_scholarships_all", JSON.stringify(clean));
+          } catch (e) {
+            console.error("Failed to save scholarships cache:", e);
+          }
+        } else {
+          setScholarships([]);
         }
 
         // 3. Procurement (환경개선, 기자재, 주요용역) 복구
@@ -3498,6 +3554,53 @@ export default function App() {
     }, 150);
     return () => clearTimeout(timer);
   }, [unifiedCertificates, isDbLoaded, isFetchCompleted]);
+
+  // 3-3) Scholarships 자동 저장 디바운스 훅
+  useEffect(() => {
+    if (!isDbLoaded || !isFetchCompleted) return;
+    if (!currentUser || currentRole?.id === "GUEST") return;
+    try {
+      const clean = scholarships.map(item => ({ ...item }));
+      localStorage.setItem("anchor_cache_scholarships_all", JSON.stringify(clean));
+    } catch (e) {
+      console.warn("Failed to write scholarships cache:", e);
+    }
+    setSyncStatus("syncing");
+    const timer = setTimeout(async () => {
+      try {
+        const activeYears = Array.from(new Set([selectedYear, ...scholarships.map(c => c.year)]));
+        for (const yr of activeYears) {
+          await supabase.from("scholarships_view").delete().eq("year", yr);
+          const filtered = scholarships.filter(c => c.year === yr);
+          if (filtered.length > 0) {
+            const payload = filtered.map(item => ({
+              year: item.year,
+              dept: item.dept,
+              major: item.major,
+              course: item.course,
+              student_id: item.studentId,
+              name: item.name,
+              resident_id: item.residentId,
+              grade: item.grade,
+              enroll_status: item.enrollStatus,
+              reg_status: item.regStatus,
+              amount: item.amount,
+              bank_name: item.bankName,
+              account_num: item.accountNum,
+              account_holder: item.accountHolder
+            }));
+            const { error } = await supabase.from("scholarships_view").insert(payload);
+            if (error) throw error;
+          }
+        }
+        setSyncStatus("synced");
+      } catch (e) {
+        console.error("Failed to sync scholarships to Supabase:", e);
+        setSyncStatus("error");
+      }
+    }, 150);
+    return () => clearTimeout(timer);
+  }, [scholarships, isDbLoaded, isFetchCompleted]);
 
   // 4) Procurement Env 자동 저장 디바운스 훅
   useEffect(() => {

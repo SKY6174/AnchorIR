@@ -440,7 +440,7 @@ export default function Sidebar({
                 onClick={() => {
                   onChangeTab("agreements");
                   if (onChangeAgreementsSubTab) {
-                    const subTabs = ["agreements", "unified_certificates"];
+                    const subTabs = ["agreements", "unified_certificates", "scholarships"];
                     const firstActive = subTabs.find(tab => isSongDirector || menuVisibility[tab] !== false) || "agreements";
                     onChangeAgreementsSubTab(firstActive);
                   }
@@ -492,6 +492,26 @@ export default function Sidebar({
                   >
                     - 상장∙이수증 관리
                     {isHidden("unified_certificates") && (
+                      <span style={{ fontSize: "0.6rem", color: "#ef4444", textDecoration: "none", marginLeft: "0.2rem" }}>
+                        [숨김]
+                      </span>
+                    )}
+                  </div>
+                )}
+                {(menuVisibility.scholarships !== false || isSongDirector) && (
+                  <div
+                    className={`nav-sub-item ${activeTab === "agreements" && agreementsSubTab === "scholarships" ? "active" : ""}`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onChangeTab("agreements");
+                      if (onChangeAgreementsSubTab) {
+                        onChangeAgreementsSubTab("scholarships");
+                      }
+                    }}
+                    style={getHiddenStyle("scholarships")}
+                  >
+                    - 장학금 관리
+                    {isHidden("scholarships") && (
                       <span style={{ fontSize: "0.6rem", color: "#ef4444", textDecoration: "none", marginLeft: "0.2rem" }}>
                         [숨김]
                       </span>
