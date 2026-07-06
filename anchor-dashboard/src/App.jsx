@@ -3213,7 +3213,7 @@ export default function App() {
       console.warn("Failed to write agreements cache:", e);
     }
     setSyncStatus("syncing");
-    const timer = setTimeout(async () => {
+    const syncImmediate = async () => {
       try {
         const activeYears = Array.from(new Set([selectedYear, ...agreements.map(a => a.year)]));
         for (const yr of activeYears) {
@@ -3275,8 +3275,8 @@ export default function App() {
         console.error("Failed to sync agreements to Supabase:", e);
         setSyncStatus("error");
       }
-    }, 150);
-    return () => clearTimeout(timer);
+    };
+    syncImmediate();
   }, [agreements, isDbLoaded, isFetchCompleted]);
 
   // 3-2) Certificates 자동 저장 디바운스 훅 (통합 캐시 사용 및 selectedYear 의존성 배제)
@@ -3661,14 +3661,16 @@ export default function App() {
       return calcYear === 2025 ? 1 : calcYear === 2026 ? 2 : calcYear === 2027 ? 3 : calcYear === 2028 ? 4 : calcYear === 2029 ? 5 : selectedYear;
     };
 
-    if (pressReleases.length > 0 && pressReleases.some(s => getCalculatedYearFromDate(s.broadcastDate) !== selectedYear)) {
-      return;
-    }
     if (!currentUser || currentRole?.id === "GUEST") return;
 
-    localStorage.setItem(`anchor_cache_press_y${selectedYear}`, JSON.stringify(pressReleases));
+    // 현재 선택된 연차에 해당하는 보도자료들만 추출
+    const currentYearPress = pressReleases.filter(s => getCalculatedYearFromDate(s.broadcastDate) === selectedYear);
+
+    // 로컬스토리지에는 현재 연차 보도자료 즉시 저장
+    localStorage.setItem(`anchor_cache_press_y${selectedYear}`, JSON.stringify(currentYearPress));
     setSyncStatus("syncing");
-    const timer = setTimeout(async () => {
+    
+    const syncPressImmediate = async () => {
       try {
         const targetYearNum = selectedYear === 1 ? 2025 : selectedYear === 2 ? 2026 : selectedYear === 3 ? 2027 : selectedYear === 4 ? 2028 : 2029;
         const startDateStr = `${targetYearNum}-03-01T00:00:00+09:00`;
@@ -3689,8 +3691,7 @@ export default function App() {
 
         const oldIds = (currentDbItems || []).map(item => item.id);
 
-        if (pressReleases.length > 0) {
-          // PostgreSQL에 최적화된 공백 구분 타임스탬프 문자열 포맷 변환 함수
+        if (currentYearPress.length > 0) {
           const formatToPostgresTimestamp = (dateStr) => {
             if (!dateStr) return new Date().toISOString();
             const parsed = new Date(dateStr);
@@ -3708,8 +3709,8 @@ export default function App() {
 
           // 1. 새 데이터를 먼저 insert 시도 (이전 레코드를 먼저 지우지 않아 실패 시 자동 롤백 보장)
           const { error: insertErr } = await supabase.from("press_releases").insert(
-            pressReleases.map(s => ({
-              year: getCalculatedYearFromDate(s.broadcastDate),
+            currentYearPress.map(s => ({
+              year: selectedYear,
               type: s.type || "기타",
               media: s.media || "미상",
               title: s.title || "새 보도자료",
@@ -3744,8 +3745,8 @@ export default function App() {
         console.error("Failed to sync press releases:", e);
         setSyncStatus("error");
       }
-    }, 1500);
-    return () => clearTimeout(timer);
+    };
+    syncPressImmediate();
   }, [pressReleases, selectedYear, isDbLoaded, isFetchCompleted]);
 
   // 1차년도용 단위과제 필터링 및 이름/ID 변환
