@@ -3631,15 +3631,15 @@ export default function App() {
 
           if (error) {
             console.warn("DB에 procurement_equipment 신규 컬럼이 식별되지 않아 안전 폴백 저장을 시도합니다.", error);
-            const safePayload = insertPayload.map(item => {
-              const { 
-                seq, dept_name, division_name, password, related_docs,
-                doc_plan, doc_purchase, doc_bid,
-                date_p, date_a, date_b, date_pr, date_i,
-                ...rest 
-              } = item;
-              return rest;
-            });
+            const safePayload = insertPayload.map(item => ({
+              year: item.year,
+              unit: item.unit,
+              name: item.item_name || "",
+              program: item.operation || "",
+              department: item.dept_name || "",
+              budget_plan: Number(item.unit_price) * Number(item.quantity) || 0,
+              budget_spent: 0
+            }));
             const { error: retryErr } = await supabase.from("procurement_equipment").insert(safePayload);
             error = retryErr;
           }
@@ -3712,19 +3712,14 @@ export default function App() {
         // 💡 Fail-safe Fallback: 040번 고도화 컬럼들이 실제 DB 스키마에 없어서 400 에러가 난 경우
         if (error) {
           console.warn("DB에 procurement_services 고도화 컬럼이 식별되지 않아 안전 폴백 저장을 시도합니다.", error);
-          const safePayload = insertPayload.map(item => {
-            const { 
-              unit, program_id, program_name, dept_name, division_name, password, related_docs,
-              date_pp, date_rfo, date_b, date_es, date_c, date_e, date_i,
-              doc_plan, doc_purchase, doc_bid, 
-              doc_plan_file_name, doc_purchase_file_name, doc_bid_file_name,
-              doc_plan_file_size, doc_purchase_file_size, doc_bid_file_size,
-              doc_plan_file_url, doc_purchase_file_url, doc_bid_file_url,
-              ai_proposal_data, ai_purchase_data, ai_bid_data,
-              ...rest 
-            } = item;
-            return rest;
-          });
+          const safePayload = insertPayload.map(item => ({
+            year: item.year,
+            title: item.title,
+            step: item.step,
+            budget_plan: item.budget_plan,
+            budget_spent: item.budget_spent,
+            op_result: item.op_result
+          }));
           const { error: retryErr } = await supabase.from("procurement_services").insert(safePayload);
           error = retryErr;
         }
