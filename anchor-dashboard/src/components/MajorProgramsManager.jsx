@@ -267,7 +267,7 @@ export default function MajorProgramsManager({ selectedYear }) {
           <Compass size={22} className="animate-spin-slow" />
           {selectedYear}차년도 주요 프로그램 관리
         </h2>
-        <p style={{ fontSize: "0.9rem", color: "var(--text-secondary-dark)", lineHeight: "1.5" }}>
+        <p style={{ fontSize: "0.9rem", color: "var(--text-secondary)", lineHeight: "1.5" }}>
           울산과학대학교 앵커사업단에서 추진하는 핵심 과제별 주요 프로그램을 조회하고 관리할 수 있습니다. 
           좌측 3D 롤링 다이얼에서 마우스 휠 스크롤 또는 클릭으로 <strong>단위과제</strong>를 선택하여 현황을 확인하세요.
         </p>
@@ -340,7 +340,7 @@ export default function MajorProgramsManager({ selectedYear }) {
           <span style={{ 
             fontSize: "0.75rem", 
             fontWeight: "800", 
-            color: "var(--text-secondary-dark)", 
+            color: "var(--text-secondary)", 
             textTransform: "uppercase", 
             letterSpacing: "1px", 
             marginBottom: "1rem",
@@ -429,7 +429,7 @@ export default function MajorProgramsManager({ selectedYear }) {
                       background: selectedUnit === unit 
                         ? "linear-gradient(135deg, var(--accent-color), #3b82f6)" 
                         : "rgba(255, 255, 255, 0.04)",
-                      color: selectedUnit === unit ? "#fff" : "var(--text-secondary-dark)",
+                      color: selectedUnit === unit ? "#fff" : "var(--text-secondary)",
                       boxShadow: selectedUnit === unit 
                         ? "0 4px 15px rgba(59, 130, 246, 0.35)" 
                         : "none",
@@ -442,7 +442,7 @@ export default function MajorProgramsManager({ selectedYear }) {
                 );
               })
             ) : (
-              <div style={{ fontSize: "0.85rem", color: "var(--text-secondary-dark)", textAlign: "center" }}>과제 없음</div>
+              <div style={{ fontSize: "0.85rem", color: "var(--text-secondary)", textAlign: "center" }}>과제 없음</div>
             )}
           </div>
         </div>
@@ -478,7 +478,7 @@ export default function MajorProgramsManager({ selectedYear }) {
                         : "rgba(255, 255, 255, 0.03)",
                       color: selectedProg?.id === prog.id 
                         ? "var(--accent-color)" 
-                        : "var(--text-secondary-dark)",
+                        : "var(--text-secondary)",
                       border: selectedProg?.id === prog.id 
                         ? "1px solid var(--accent-color)" 
                         : "1px solid rgba(255, 255, 255, 0.08)"
@@ -499,7 +499,7 @@ export default function MajorProgramsManager({ selectedYear }) {
                     <h4 style={{ fontSize: "1.2rem", fontWeight: "800", marginBottom: "0.5rem" }}>
                       {selectedProg.name}
                     </h4>
-                    <p style={{ fontSize: "0.9rem", color: "var(--text-secondary-dark)", maxWidth: "500px", margin: "0 auto 1.5rem" }}>
+                    <p style={{ fontSize: "0.9rem", color: "var(--text-secondary)", maxWidth: "500px", margin: "0 auto 1.5rem" }}>
                       {selectedProg.desc}
                     </p>
                   </div>
@@ -513,20 +513,20 @@ export default function MajorProgramsManager({ selectedYear }) {
                     background: "rgba(255, 255, 255, 0.04)",
                     border: "1px solid rgba(255,255,255,0.06)",
                     fontSize: "0.85rem",
-                    color: "var(--text-secondary-dark)"
+                    color: "var(--text-secondary)"
                   }}>
                     <Settings size={14} className="animate-spin-slow" />
                     <span>프로그램별 상세 성과/관리 화면 구성 준비 중</span>
                   </div>
                 </div>
               ) : (
-                <div className="glass-card" style={{ padding: "3rem", textAlign: "center", color: "var(--text-secondary-dark)" }}>
+                <div className="glass-card" style={{ padding: "3rem", textAlign: "center", color: "var(--text-secondary)" }}>
                   주요 프로그램을 선택해 주세요.
                 </div>
               )}
             </>
           ) : (
-            <div className="glass-card" style={{ padding: "3rem", textAlign: "center", color: "var(--text-secondary-dark)" }}>
+            <div className="glass-card" style={{ padding: "3rem", textAlign: "center", color: "var(--text-secondary)" }}>
               과제 정보를 가져올 수 없습니다.
             </div>
           )}

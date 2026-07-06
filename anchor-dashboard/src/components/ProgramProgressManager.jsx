@@ -341,7 +341,7 @@ export default function ProgramProgressManager({ projects, selectedYear, onSelec
             <div style={{ borderBottom: "1px solid var(--border-color-dark)", paddingBottom: "1rem", marginBottom: "1.5rem" }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "0.5rem" }}>
                 <div>
-                  <span style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)", fontWeight: "700" }}>
+                  <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)", fontWeight: "700" }}>
                     {activeUnit.id} 단위과제 진행 현황
                   </span>
                   <h2 style={{ fontSize: "1.25rem", fontWeight: "800", marginTop: "0.2rem" }}>
@@ -431,11 +431,11 @@ export default function ProgramProgressManager({ projects, selectedYear, onSelec
                           <td>
                             <div style={{ display: "flex", flexDirection: "column", gap: "0.15rem", fontFamily: "var(--font-data)" }}>
                               <div style={{ display: "flex", justifyContent: "space-between" }}>
-                                <span style={{ color: "var(--text-secondary-dark)", fontSize: "0.7rem" }}>배정:</span>
+                                <span style={{ color: "var(--text-secondary)", fontSize: "0.7rem" }}>배정:</span>
                                 <span style={{ fontWeight: "700" }}>{formatToMillionWon(totalProgBudget)} 백만원</span>
                               </div>
                               <div style={{ display: "flex", justifyContent: "space-between" }}>
-                                <span style={{ color: "var(--text-secondary-dark)", fontSize: "0.7rem" }}>집행:</span>
+                                <span style={{ color: "var(--text-secondary)", fontSize: "0.7rem" }}>집행:</span>
                                 <span style={{ color: "var(--success-color)", fontWeight: "700" }}>{formatToMillionWon(totalProgSpent)} 백만원</span>
                               </div>
                             </div>
@@ -709,7 +709,7 @@ export default function ProgramProgressManager({ projects, selectedYear, onSelec
                     })
                   ) : (
                     <tr>
-                      <td colSpan="5" style={{ textAlign: "center", color: "var(--text-secondary-dark)", padding: "2rem" }}>
+                      <td colSpan="5" style={{ textAlign: "center", color: "var(--text-secondary)", padding: "2rem" }}>
                         소속된 세부 프로그램이 없습니다.
                       </td>
                     </tr>
@@ -719,7 +719,7 @@ export default function ProgramProgressManager({ projects, selectedYear, onSelec
             </div>
           </div>
         ) : (
-          <div className="glass-card" style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "350px", color: "var(--text-secondary-dark)" }}>
+          <div className="glass-card" style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "350px", color: "var(--text-secondary)" }}>
             좌측에서 단위를 선택해주십시오.
           </div>
         )}

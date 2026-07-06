@@ -1462,7 +1462,7 @@ export default function PDCAManager({
                         }
                         return (
                           <div style={{ display: "flex", alignItems: "center", gap: "0.3rem" }}>
-                            <span style={{ fontSize: "0.62rem", color: "var(--text-secondary-dark)" }}>📄 현재 버전:</span>
+                            <span style={{ fontSize: "0.62rem", color: "var(--text-secondary)" }}>📄 현재 버전:</span>
                             <select
                               value={selectedVersionId}
                               onChange={(e) => setSelectedVersionId(e.target.value)}
@@ -2370,7 +2370,7 @@ export default function PDCAManager({
         <div className="glass-card" style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
           <div>
             <h3 style={{ fontSize: "1.1rem", fontWeight: "800" }}>사업단 전체 프로그램 추진 상태</h3>
-            <p style={{ fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginTop: "0.2rem" }}>
+            <p style={{ fontSize: "0.8rem", color: "var(--text-secondary)", marginTop: "0.2rem" }}>
               행을 클릭하거나 우측 [정보 등록] 버튼을 눌러 실시간 PDCA 수치 및 집행 실적을 입력하실 수 있습니다.
             </p>
           </div>
@@ -2440,7 +2440,7 @@ export default function PDCAManager({
             <div style={{ marginTop: "1rem", padding: "1.5rem", border: "1px solid var(--accent-color)", borderRadius: "1rem", background: "rgba(59,130,246,0.03)", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2rem" }}>
               <div>
                 <h4 style={{ fontSize: "0.95rem", fontWeight: "800", marginBottom: "0.5rem" }}>[{activeProg.id}] {activeProg.title}</h4>
-                <div style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)", display: "flex", flexDirection: "column", gap: "0.3rem" }}>
+                <div style={{ fontSize: "0.75rem", color: "var(--text-secondary)", display: "flex", flexDirection: "column", gap: "0.3rem" }}>
                   <div>국고 예산: {formatToMillionWon(activeProg.years?.[selectedYear]?.budget_national)}백만원 (집행: {formatToMillionWon(activeProg.years?.[selectedYear]?.spent_national)}백만원)</div>
                   <div>시비 예산: {formatToMillionWon(activeProg.years?.[selectedYear]?.budget_city)}백만원 (집행: {formatToMillionWon(activeProg.years?.[selectedYear]?.spent_city)}백만원)</div>
                   <div>외부 예산: {formatToMillionWon(activeProg.years?.[selectedYear]?.budget_external)}백만원 (집행: {formatToMillionWon(activeProg.years?.[selectedYear]?.spent_external)}백만원)</div>
@@ -2501,7 +2501,7 @@ export default function PDCAManager({
 
               <div>
                 <h5 style={{ fontSize: "0.8rem", fontWeight: "700", marginBottom: "0.5rem", color: "var(--accent-color)" }}>기획 / 성과 / 환류 실무 정보 입력</h5>
-                <p style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)" }}>좌측 단위과제별 모드를 활성화하여 더욱 상세한 다변화 재원 및 2분할 환류 폼을 편집하실 수 있습니다.</p>
+                <p style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>좌측 단위과제별 모드를 활성화하여 더욱 상세한 다변화 재원 및 2분할 환류 폼을 편집하실 수 있습니다.</p>
               </div>
             </div>
           )}
@@ -2550,7 +2550,7 @@ export default function PDCAManager({
               <Check size={24} strokeWidth={4} />
             </div>
             <span style={{ fontSize: "1.15rem", fontWeight: "800", color: "#34d399", letterSpacing: "-0.03em" }}>설정 완료</span>
-            <span style={{ fontSize: "0.92rem", color: "var(--text-secondary-dark)", fontWeight: "600", lineHeight: "1.4" }}>{feedbackMsg}</span>
+            <span style={{ fontSize: "0.92rem", color: "var(--text-secondary)", fontWeight: "600", lineHeight: "1.4" }}>{feedbackMsg}</span>
           </div>
         </div>
       )}
@@ -2573,18 +2573,19 @@ export default function PDCAManager({
             width: "480px",
             padding: "1.5rem",
             borderRadius: "1rem",
-            border: "1px solid var(--border-color-dark)",
+            border: "1px solid var(--border-color)",
+            background: "var(--modal-bg)",
             display: "flex",
             flexDirection: "column",
             gap: "1rem",
             boxShadow: "0 20px 40px rgba(0,0,0,0.5)"
           }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid var(--border-color-dark)", paddingBottom: "0.5rem" }}>
-              <h3 style={{ fontSize: "1.05rem", fontWeight: "800", color: "white" }}>신규 프로그램 생성 등록</h3>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid var(--border-color)", paddingBottom: "0.5rem" }}>
+              <h3 style={{ fontSize: "1.05rem", fontWeight: "800", color: "var(--text-primary)" }}>신규 프로그램 생성 등록</h3>
               <button 
                 type="button" 
                 onClick={() => setShowAddModal(false)}
-                style={{ background: "transparent", border: "none", color: "var(--text-secondary-dark)", cursor: "pointer", fontSize: "1.2rem" }}
+                style={{ background: "transparent", border: "none", color: "var(--text-secondary)", cursor: "pointer", fontSize: "1.2rem" }}
               >
                 &times;
               </button>
@@ -2592,7 +2593,7 @@ export default function PDCAManager({
 
             <form onSubmit={handleCreateProgram} style={{ display: "flex", flexDirection: "column", gap: "0.8rem" }}>
               <div>
-                <label style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)", display: "block", marginBottom: "0.25rem" }}>프로그램명 *</label>
+                <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)", display: "block", marginBottom: "0.25rem" }}>프로그램명 *</label>
                 <input 
                   type="text" 
                   required 
@@ -2605,7 +2606,7 @@ export default function PDCAManager({
               </div>
 
               <div>
-                <label style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)", display: "block", marginBottom: "0.25rem" }}>담당 실무자</label>
+                <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)", display: "block", marginBottom: "0.25rem" }}>담당 실무자</label>
                 <input 
                   type="text" 
                   className="user-selector" 
@@ -2618,7 +2619,7 @@ export default function PDCAManager({
 
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem" }}>
                 <div>
-                  <label style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)", display: "block", marginBottom: "0.25rem" }}>2차년도 배정 본예산 (백만원)</label>
+                  <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)", display: "block", marginBottom: "0.25rem" }}>2차년도 배정 본예산 (백만원)</label>
                   <input 
                     type="text" 
                     className="user-selector" 
@@ -2629,7 +2630,7 @@ export default function PDCAManager({
                   />
                 </div>
                 <div>
-                  <label style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)", display: "block", marginBottom: "0.25rem" }}>2차년도 이월 예산액 (백만원)</label>
+                  <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)", display: "block", marginBottom: "0.25rem" }}>2차년도 이월 예산액 (백만원)</label>
                   <input 
                     type="text" 
                     className="user-selector" 
@@ -2641,8 +2642,8 @@ export default function PDCAManager({
                       width: "100%", 
                       padding: "0.4rem", 
                       fontSize: "0.8rem",
-                      background: selectedYear === 1 ? "rgba(255,255,255,0.02)" : "#18181b",
-                      color: selectedYear === 1 ? "rgba(255,255,255,0.2)" : "white",
+                      background: selectedYear === 1 ? "rgba(0,0,0,0.02)" : "var(--input-bg)",
+                      color: selectedYear === 1 ? "rgba(0,0,0,0.25)" : "var(--text-primary)",
                       cursor: selectedYear === 1 ? "not-allowed" : "text"
                     }} 
                   />
@@ -2654,7 +2655,7 @@ export default function PDCAManager({
                   type="button" 
                   className="btn-primary" 
                   onClick={() => setShowAddModal(false)}
-                  style={{ flex: 1, justifyContent: "center", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", color: "white" }}
+                  style={{ flex: 1, justifyContent: "center", background: "var(--input-bg)", border: "1px solid var(--border-color)", color: "var(--text-primary)" }}
                 >
                   취소
                 </button>

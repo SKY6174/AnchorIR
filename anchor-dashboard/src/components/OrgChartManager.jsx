@@ -345,7 +345,7 @@ export default function OrgChartManager() {
           <Network size={22} />
           울산과학대학교 대학조직도
         </h2>
-        <p style={{ fontSize: "0.9rem", color: "var(--text-secondary-dark)", lineHeight: "1.5" }}>
+        <p style={{ fontSize: "0.9rem", color: "var(--text-secondary)", lineHeight: "1.5" }}>
           울산과학대학교의 학부(과), 대학본부, 평생교육원, 산학협력단, 부속기관 등 핵심 행정 및 교육 조직 계통을 한눈에 조회합니다.
           조직을 선택하면 하위 소속 팀 및 연계된 앵커수행 또는 앵커연계 과제 정보를 조회하실 수 있습니다.
         </p>
@@ -356,7 +356,7 @@ export default function OrgChartManager() {
         
         {/* [좌측] 1차 분류 및 부서 아코디언 트리 */}
         <div className="glass-card" style={{ padding: "1rem", display: "flex", flexDirection: "column", gap: "1rem" }}>
-          <span style={{ fontSize: "0.8rem", fontWeight: "800", color: "var(--text-secondary-dark)", letterSpacing: "1px" }}>대분류 선택</span>
+          <span style={{ fontSize: "0.8rem", fontWeight: "800", color: "var(--text-secondary)", letterSpacing: "1px" }}>대분류 선택</span>
           <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
             {Object.keys(universityOrgData).map((key) => {
               const isAnchor = key === "anchor";
@@ -381,7 +381,7 @@ export default function OrgChartManager() {
                       cursor: "pointer",
                       transition: "all 0.2s ease",
                       background: selectedKey === key ? "rgba(59, 130, 246, 0.15)" : "transparent",
-                      color: selectedKey === key ? "var(--accent-color)" : "var(--text-secondary-dark)",
+                      color: selectedKey === key ? "var(--accent-color)" : "var(--text-secondary)",
                       borderLeft: selectedKey === key ? "4px solid var(--accent-color)" : "4px solid transparent",
                       marginTop: isAnchor ? "0.2rem" : "0"
                     }}
@@ -398,7 +398,7 @@ export default function OrgChartManager() {
         <div className="glass-card" style={{ padding: "1.5rem", minHeight: "500px", display: "flex", flexDirection: "column", gap: "1.2rem" }}>
           <div>
             <h3 style={{ fontSize: "1.1rem", fontWeight: "800", marginBottom: "0.2rem" }}>{currentCategory.title} 세부 조직도</h3>
-            <p style={{ fontSize: "0.8rem", color: "var(--text-secondary-dark)" }}>{currentCategory.desc}</p>
+            <p style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>{currentCategory.desc}</p>
           </div>
 
           <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
@@ -416,7 +416,7 @@ export default function OrgChartManager() {
                       fontSize: "0.9rem",
                       transition: "all 0.2s ease",
                       background: selectedTeam?.name === team.name ? "rgba(59, 130, 246, 0.12)" : "rgba(255,255,255,0.02)",
-                      color: selectedTeam?.name === team.name ? "var(--accent-color)" : "var(--text-primary-dark)",
+                      color: selectedTeam?.name === team.name ? "var(--accent-color)" : "var(--text-primary)",
                       border: selectedTeam?.name === team.name ? "1px solid rgba(59, 130, 246, 0.3)" : "1px solid rgba(255,255,255,0.05)",
                       display: "flex",
                       justifyContent: "space-between",
@@ -464,7 +464,7 @@ export default function OrgChartManager() {
                         fontWeight: "800",
                         transition: "all 0.2s ease",
                         background: isSelected ? "rgba(59, 130, 246, 0.12)" : "rgba(255, 255, 255, 0.01)",
-                        color: isSelected ? "var(--accent-color)" : "var(--text-primary-dark)",
+                        color: isSelected ? "var(--accent-color)" : "var(--text-primary)",
                         border: isSelected ? "1px solid rgba(59, 130, 246, 0.3)" : "1px solid rgba(255, 255, 255, 0.05)",
                         display: "flex",
                         justifyContent: "space-between",
@@ -560,7 +560,7 @@ export default function OrgChartManager() {
                                           fontSize: "0.8rem",
                                           transition: "all 0.2s ease",
                                           background: selectedTeam?.name === major.name ? "rgba(59, 130, 246, 0.1)" : "rgba(255,255,255,0.01)",
-                                          color: selectedTeam?.name === major.name ? "var(--accent-color)" : "var(--text-primary-dark)",
+                                          color: selectedTeam?.name === major.name ? "var(--accent-color)" : "var(--text-primary)",
                                           border: selectedTeam?.name === major.name ? "1px solid rgba(59, 130, 246, 0.25)" : "1px solid transparent",
                                           display: "flex",
                                           justifyContent: "space-between",
@@ -600,7 +600,7 @@ export default function OrgChartManager() {
                                 fontSize: "0.85rem",
                                 transition: "all 0.2s ease",
                                 background: selectedTeam?.name === team.name ? "rgba(59, 130, 246, 0.1)" : "rgba(255,255,255,0.02)",
-                                color: selectedTeam?.name === team.name ? "var(--accent-color)" : "var(--text-primary-dark)",
+                                color: selectedTeam?.name === team.name ? "var(--accent-color)" : "var(--text-primary)",
                                 border: selectedTeam?.name === team.name ? "1px solid rgba(59, 130, 246, 0.3)" : "1px solid transparent",
                                 display: "flex",
                                 justifyContent: "space-between",
@@ -645,25 +645,25 @@ export default function OrgChartManager() {
 
               <div style={{ display: "flex", flexDirection: "column", gap: "0.8rem", fontSize: "0.85rem" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                  <Phone size={16} style={{ color: "var(--text-secondary-dark)" }} />
+                  <Phone size={16} style={{ color: "var(--text-secondary)" }} />
                   <div>
-                    <span style={{ color: "var(--text-secondary-dark)", display: "block", fontSize: "0.75rem" }}>전화번호</span>
+                    <span style={{ color: "var(--text-secondary)", display: "block", fontSize: "0.75rem" }}>전화번호</span>
                     <span style={{ fontWeight: "700" }}>{selectedTeam.tel}</span>
                   </div>
                 </div>
 
                 <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                  <MapPin size={16} style={{ color: "var(--text-secondary-dark)" }} />
+                  <MapPin size={16} style={{ color: "var(--text-secondary)" }} />
                   <div>
-                    <span style={{ color: "var(--text-secondary-dark)", display: "block", fontSize: "0.75rem" }}>위치(캠퍼스/호실)</span>
+                    <span style={{ color: "var(--text-secondary)", display: "block", fontSize: "0.75rem" }}>위치(캠퍼스/호실)</span>
                     <span style={{ fontWeight: "700" }}>{selectedTeam.loc}</span>
                   </div>
                 </div>
 
                 <div style={{ display: "flex", alignItems: "start", gap: "0.5rem" }}>
-                  <Layers size={16} style={{ color: "var(--text-secondary-dark)", marginTop: "0.1rem" }} />
+                  <Layers size={16} style={{ color: "var(--text-secondary)", marginTop: "0.1rem" }} />
                   <div>
-                    <span style={{ color: "var(--text-secondary-dark)", display: "block", fontSize: "0.75rem" }}>담당 업무</span>
+                    <span style={{ color: "var(--text-secondary)", display: "block", fontSize: "0.75rem" }}>담당 업무</span>
                     <span style={{ fontWeight: "600", lineHeight: "1.4" }}>{selectedTeam.task}</span>
                   </div>
                 </div>
@@ -699,8 +699,8 @@ export default function OrgChartManager() {
             </div>
           ) : (
             <div className="glass-card" style={{ padding: "2.5rem", textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: "300px", gap: "0.75rem" }}>
-              <BookOpen size={36} style={{ color: "var(--text-secondary-dark)" }} />
-              <p style={{ fontSize: "0.85rem", color: "var(--text-secondary-dark)" }}>
+              <BookOpen size={36} style={{ color: "var(--text-secondary)" }} />
+              <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)" }}>
                 조직도에서 특정 학과/팀을 선택하시면 전화번호, 위치, 담당업무 및 {selectedKey === "academic" ? "주문식교육과정" : (selectedKey === "anchor" ? "앵커수행" : "앵커연계")} 상세 정보를 이곳에서 조회하실 수 있습니다.
               </p>
             </div>

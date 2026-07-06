@@ -804,7 +804,7 @@ ${commentList || "(없음)"}
           <ClipboardCheck size={22} className="animate-spin-slow" />
           {selectedYearFull}년도 만족도 조사 관리 플랫폼
         </h2>
-        <p style={{ fontSize: "0.9rem", color: "var(--text-secondary-dark)", lineHeight: "1.5" }}>
+        <p style={{ fontSize: "0.9rem", color: "var(--text-secondary)", lineHeight: "1.5" }}>
           부서별(ECC, ICC, RCC 등) 만족도 조사를 기획·생성하고, 실시간 QR코드 및 URL 배포, 
           데이터베이스 저장, 구글 스프레드시트 동기화, 리커트 5점 척도 기반 100점 만점 환산 통계 분석을 전 주기로 관리하는 통합 공간입니다.
         </p>
@@ -822,7 +822,7 @@ ${commentList || "(없음)"}
             fontSize: "0.85rem",
             fontWeight: "800",
             cursor: "pointer",
-            color: activeSurveyTab === "list" ? "var(--accent-color)" : "var(--text-secondary-dark)",
+            color: activeSurveyTab === "list" ? "var(--accent-color)" : "var(--text-secondary)",
             borderBottom: activeSurveyTab === "list" ? "2px solid var(--accent-color)" : "none",
             transition: "all 0.2s"
           }}
@@ -937,7 +937,7 @@ ${commentList || "(없음)"}
           )}
 
           {surveys.length === 0 ? (
-            <div className="glass-card" style={{ padding: "4rem", textAlign: "center", color: "var(--text-secondary-dark)" }}>
+            <div className="glass-card" style={{ padding: "4rem", textAlign: "center", color: "var(--text-secondary)" }}>
               등록된 만족도 조사지가 없습니다. 우측 상단의 '신규 만족도조사지 제작' 버튼을 클릭해 새 설문을 생성해 보세요!
             </div>
           ) : (
@@ -954,7 +954,7 @@ ${commentList || "(없음)"}
                   <div style={{ 
                     padding: "3rem", 
                     textAlign: "center", 
-                    color: "var(--text-secondary-dark)", 
+                    color: "var(--text-secondary)", 
                     border: "1px dashed rgba(255,255,255,0.06)", 
                     borderRadius: "0.5rem",
                     fontSize: "0.8rem",
@@ -1028,7 +1028,7 @@ ${commentList || "(없음)"}
                           >
                             {survey.title}
                           </h4>
-                          <p style={{ fontSize: "0.78rem", color: "var(--text-secondary-dark)", marginBottom: "1rem", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden", lineHeight: "1.4" }}>
+                          <p style={{ fontSize: "0.78rem", color: "var(--text-secondary)", marginBottom: "1rem", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden", lineHeight: "1.4" }}>
                             {survey.purpose}
                           </p>
 
@@ -1042,7 +1042,7 @@ ${commentList || "(없음)"}
 
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderTop: "1px solid var(--border-color-dark)", paddingTop: "0.8rem", marginTop: "0.5rem" }}>
                           <div style={{ display: "flex", flexDirection: "column" }}>
-                            <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)" }}>100점 환산 평균</span>
+                            <span style={{ fontSize: "0.65rem", color: "var(--text-secondary)" }}>100점 환산 평균</span>
                             <strong style={{ fontSize: "1.1rem", color: "var(--accent-color)" }}>
                               {survey.responses.length > 0 ? `${convertedAvg}점` : "자료 없음"}
                             </strong>
@@ -1122,7 +1122,7 @@ ${commentList || "(없음)"}
                 value={getNextSurveyId(newDept)}
                 disabled
                 className="user-selector"
-                style={{ width: "100%", background: "rgba(255,255,255,0.03)", color: "var(--text-secondary-dark)" }}
+                style={{ width: "100%", background: "rgba(255,255,255,0.03)", color: "var(--text-secondary)" }}
               />
             </div>
           </div>
@@ -1297,7 +1297,7 @@ ${commentList || "(없음)"}
               </div>
 
               <div style={{ fontSize: "0.85rem", display: "flex", flexDirection: "column", gap: "0.5rem", color: "var(--text-secondary)" }}>
-                <div><strong>조사 목적:</strong> <span style={{ color: "var(--text-secondary-dark)" }}>{selectedSurvey.purpose}</span></div>
+                <div><strong>조사 목적:</strong> <span style={{ color: "var(--text-secondary)" }}>{selectedSurvey.purpose}</span></div>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem", background: "rgba(255,255,255,0.01)", padding: "0.6rem", borderRadius: "0.3rem" }}>
                   <div><strong>수행 부서:</strong> <span style={{ color: "var(--text-primary)" }}>{selectedSurvey.department}센터</span></div>
                   <div><strong>조사 대상:</strong> <span style={{ color: "var(--text-primary)" }}>{selectedSurvey.target}</span></div>
@@ -1325,7 +1325,7 @@ ${commentList || "(없음)"}
                 </div>
 
                 <div style={{ display: "flex", flexDirection: "column", gap: "0.6rem" }}>
-                  <p style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)", lineHeight: "1.4" }}>
+                  <p style={{ fontSize: "0.75rem", color: "var(--text-secondary)", lineHeight: "1.4" }}>
                     모바일 카메라나 현장 안내용 프린트물에 아래 QR코드를 부착하세요. 
                     스캔 시 해당 조사지로 직통 연결됩니다.
                   </p>
@@ -1382,7 +1382,7 @@ ${commentList || "(없음)"}
               </div>
 
               {generatingAi ? (
-                <div style={{ padding: "2rem", textAlign: "center", color: "var(--text-secondary-dark)", display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem" }}>
+                <div style={{ padding: "2rem", textAlign: "center", color: "var(--text-secondary)", display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem" }}>
                   <RefreshCw className="animate-spin" size={24} style={{ color: "var(--accent-color)" }} />
                   <p style={{ fontSize: "0.78rem" }}>GPT-4o-mini 모델이 응답 데이터와 피드백을 기반으로 환류 의견을 작성 중입니다...</p>
                 </div>
@@ -1401,13 +1401,13 @@ ${commentList || "(없음)"}
                     AI ANALYSIS REPORT
                   </div>
                   <p style={{ whiteSpace: "pre-wrap" }}>{aiReport}</p>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "0.8rem", borderTop: "1px dashed rgba(255,255,255,0.06)", paddingTop: "0.5rem", fontSize: "0.65rem", color: "var(--text-secondary-dark)" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "0.8rem", borderTop: "1px dashed rgba(255,255,255,0.06)", paddingTop: "0.5rem", fontSize: "0.65rem", color: "var(--text-secondary)" }}>
                     <span>글자 수: {aiReport.length}자</span>
                     <span>Powered by GPT-4o-mini</span>
                   </div>
                 </div>
               ) : (
-                <div style={{ padding: "2rem", textAlign: "center", color: "var(--text-secondary-dark)", border: "1px dashed var(--border-color-dark)", borderRadius: "0.4rem", fontSize: "0.78rem" }}>
+                <div style={{ padding: "2rem", textAlign: "center", color: "var(--text-secondary)", border: "1px dashed var(--border-color-dark)", borderRadius: "0.4rem", fontSize: "0.78rem" }}>
                   {selectedSurvey.responses.length === 0 
                     ? "수집된 만족도 조사가 없어 AI 총평을 실행할 수 없습니다." 
                     : "우측 상단의 'AI 총평 생성/갱신' 버튼을 눌러 종합의견 리포트를 작성해 보세요."}
@@ -1444,7 +1444,7 @@ ${commentList || "(없음)"}
                 <div style={{ display: "flex", flexDirection: "column", gap: "0.8rem", background: "rgba(255,255,255,0.01)", padding: "1rem", borderRadius: "0.4rem", border: "1px solid var(--border-color-dark)" }}>
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.8rem" }}>
                     <div>
-                      <label style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)" }}>응답자 정보</label>
+                      <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>응답자 정보</label>
                       <input
                         type="text"
                         value={simulatedResponder}
@@ -1454,7 +1454,7 @@ ${commentList || "(없음)"}
                       />
                     </div>
                     <div>
-                      <label style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)" }}>개별 문항 점수 부여 (1~5점)</label>
+                      <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>개별 문항 점수 부여 (1~5점)</label>
                       <div style={{ display: "flex", gap: "0.3rem", marginTop: "0.2rem" }}>
                         {selectedSurvey.questions.map((_, qIdx) => (
                           <select
@@ -1480,7 +1480,7 @@ ${commentList || "(없음)"}
                   </div>
 
                   <div>
-                    <label style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)" }}>주관식 기타 건의사항</label>
+                    <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>주관식 기타 건의사항</label>
                     <input
                       type="text"
                       placeholder="예) 교재 상태가 아주 훌륭했습니다."
@@ -1561,7 +1561,7 @@ ${commentList || "(없음)"}
               </div>
 
               {selectedSurvey.responses.length === 0 ? (
-                <div style={{ height: "200px", display: "flex", alignItems: "center", justifyContent: "center", border: "1px dashed var(--border-color-dark)", borderRadius: "0.4rem", color: "var(--text-secondary-dark)", fontSize: "0.8rem" }}>
+                <div style={{ height: "200px", display: "flex", alignItems: "center", justifyContent: "center", border: "1px dashed var(--border-color-dark)", borderRadius: "0.4rem", color: "var(--text-secondary)", fontSize: "0.8rem" }}>
                   수집된 만족도 응답이 없어 통계가 산출되지 않았습니다.
                 </div>
               ) : (
@@ -1576,8 +1576,8 @@ ${commentList || "(없음)"}
                     <ResponsiveContainer width="100%" height="100%">
                       <BarChart data={chartData} margin={{ top: 10, right: 10, left: -25, bottom: 0 }}>
                         <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
-                        <XAxis dataKey="name" stroke="var(--text-secondary-dark)" />
-                        <YAxis domain={[0, 100]} stroke="var(--text-secondary-dark)" />
+                        <XAxis dataKey="name" stroke="var(--text-secondary)" />
+                        <YAxis domain={[0, 100]} stroke="var(--text-secondary)" />
                         <Tooltip 
                           contentStyle={{ background: "#0f172a", border: "1px solid var(--border-color-dark)", borderRadius: "0.3rem" }}
                           labelStyle={{ color: "white", fontWeight: "700" }}
@@ -1600,7 +1600,7 @@ ${commentList || "(없음)"}
                     <span style={{ fontWeight: "700", color: "var(--accent-color)", display: "block", marginBottom: "0.2rem" }}>[질문 문항 가이드 명세]</span>
                     {selectedSurvey.questions.map((q, idx) => (
                       <div key={idx} style={{ padding: "0.15rem 0", borderBottom: "1px solid rgba(255,255,255,0.02)", display: "flex", gap: "0.25rem" }}>
-                        <span style={{ color: "var(--text-secondary-dark)", fontWeight: "700" }}>문항 {idx + 1}:</span>
+                        <span style={{ color: "var(--text-secondary)", fontWeight: "700" }}>문항 {idx + 1}:</span>
                         <span style={{ color: "var(--text-secondary)" }}>{q}</span>
                       </div>
                     ))}
@@ -1617,7 +1617,7 @@ ${commentList || "(없음)"}
 
               <div style={{ maxHeight: "250px", overflowY: "auto", display: "flex", flexDirection: "column", gap: "0.5rem" }}>
                 {selectedSurvey.responses.filter(r => r.comment).length === 0 ? (
-                  <p style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)", textAlign: "center", padding: "2rem" }}>
+                  <p style={{ fontSize: "0.75rem", color: "var(--text-secondary)", textAlign: "center", padding: "2rem" }}>
                     제출된 의견 피드백이 없습니다.
                   </p>
                 ) : (
@@ -1632,7 +1632,7 @@ ${commentList || "(없음)"}
                         fontSize: "0.75rem"
                       }}
                     >
-                      <div style={{ display: "flex", justifyContent: "space-between", color: "var(--text-secondary-dark)", fontSize: "0.68rem", marginBottom: "0.25rem" }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", color: "var(--text-secondary)", fontSize: "0.68rem", marginBottom: "0.25rem" }}>
                         <span>응답자: <strong style={{ color: "var(--text-secondary)" }}>{res.responder}</strong></span>
                         <span>{res.date}</span>
                       </div>
@@ -1824,7 +1824,7 @@ ${commentList || "(없음)"}
               justifyContent: "space-between",
               alignItems: "center",
               fontSize: "0.7rem",
-              color: "var(--text-secondary-dark)"
+              color: "var(--text-secondary)"
             }}>
               <span>총 {selectedSurvey.responses.length}행의 데이터 연동 완료</span>
               <span>100점 환산 평균: <strong style={{ color: "var(--accent-color)" }}>{currentLikertAverage}점</strong></span>

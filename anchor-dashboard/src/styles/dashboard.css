@@ -375,27 +375,20 @@ body.light-mode {
   border-collapse: collapse;
   text-align: left;
   font-size: 0.9rem;
+  color: var(--text-primary);
 }
 
 .custom-table th {
   padding: 1rem;
-  color: var(--text-secondary-dark);
+  color: var(--text-secondary);
   font-weight: 600;
-  border-bottom: 1px solid var(--border-color-dark);
-}
-
-.light-mode .custom-table th {
-  color: var(--text-secondary-light);
-  border-bottom: 1px solid var(--border-color-light);
+  border-bottom: 1px solid var(--border-color);
 }
 
 .custom-table td {
   padding: 1rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-.light-mode .custom-table td {
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--border-color);
 }
 
 .custom-table tr:hover {

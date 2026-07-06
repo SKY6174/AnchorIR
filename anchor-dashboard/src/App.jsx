@@ -299,7 +299,7 @@ const RenderLatexFormula = ({ formula }) => {
           <div style={{ display: "inline-flex", alignItems: "center", gap: "0.4rem" }}>
             <div style={{ display: "inline-flex", flexDirection: "column", alignItems: "center", minWidth: "80px" }}>
               <span style={{ borderBottom: "1px solid var(--text-secondary)", paddingBottom: "2px", width: "100%", textAlign: "center", fontSize: "0.75rem", fontWeight: "600" }}>{num}</span>
-              <span style={{ paddingTop: "2px", width: "100%", textAlign: "center", fontSize: "0.75rem", color: "var(--text-secondary-dark)" }}>{den}</span>
+              <span style={{ paddingTop: "2px", width: "100%", textAlign: "center", fontSize: "0.75rem", color: "var(--text-secondary)" }}>{den}</span>
             </div>
             {weight && (
               <span style={{ fontSize: "0.8rem", fontWeight: "700", color: "var(--accent-color)" }}>
@@ -315,7 +315,7 @@ const RenderLatexFormula = ({ formula }) => {
   // 2.2. 일반 다항식 분수라면 (L-1 ~ L-24 공식 등)
   const containsFrac = purifiedFormula.includes("frac") || purifiedFormula.includes("rac");
   if (!containsFrac) {
-    return <span style={{ fontSize: "0.85rem", color: "var(--text-secondary-dark)" }}>{purifiedFormula}</span>;
+    return <span style={{ fontSize: "0.85rem", color: "var(--text-secondary)" }}>{purifiedFormula}</span>;
   }
 
   const terms = purifiedFormula.split("+");
@@ -333,11 +333,11 @@ const RenderLatexFormula = ({ formula }) => {
 
           return (
             <React.Fragment key={index}>
-              {index > 0 && <span style={{ margin: "0 0.1rem", fontWeight: "700", color: "var(--text-secondary-dark)" }}>+</span>}
+              {index > 0 && <span style={{ margin: "0 0.1rem", fontWeight: "700", color: "var(--text-secondary)" }}>+</span>}
               <div style={{ display: "inline-flex", alignItems: "center", gap: "0.4rem" }}>
                 <div style={{ display: "inline-flex", flexDirection: "column", alignItems: "center", minWidth: "65px" }}>
                   <span style={{ borderBottom: "1px solid var(--text-secondary)", paddingBottom: "2px", width: "100%", textAlign: "center", fontSize: "0.75rem", fontWeight: "600" }}>{num}</span>
-                  <span style={{ paddingTop: "2px", width: "100%", textAlign: "center", fontSize: "0.75rem", color: "var(--text-secondary-dark)" }}>{den}</span>
+                  <span style={{ paddingTop: "2px", width: "100%", textAlign: "center", fontSize: "0.75rem", color: "var(--text-secondary)" }}>{den}</span>
                 </div>
                 {weight && (
                   <span style={{ fontSize: "0.8rem", fontWeight: "700", color: "var(--accent-color)" }}>
@@ -351,8 +351,8 @@ const RenderLatexFormula = ({ formula }) => {
 
         return (
           <React.Fragment key={index}>
-            {index > 0 && <span style={{ margin: "0 0.1rem", fontWeight: "700", color: "var(--text-secondary-dark)" }}>+</span>}
-            <span style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)" }}>{trimmed}</span>
+            {index > 0 && <span style={{ margin: "0 0.1rem", fontWeight: "700", color: "var(--text-secondary)" }}>+</span>}
+            <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>{trimmed}</span>
           </React.Fragment>
         );
       })}
@@ -1304,7 +1304,7 @@ const renderTimelineDiff = (timelineStr) => {
         return (
           <div key={idx} style={{ textAlign: "center", minWidth: "25px" }}>
             {/* 윗줄: 월 표시 */}
-            <div style={{ fontSize: "0.55rem", color: "var(--text-secondary-dark)", marginBottom: "0.12rem", whiteSpace: "nowrap" }}>
+            <div style={{ fontSize: "0.55rem", color: "var(--text-secondary)", marginBottom: "0.12rem", whiteSpace: "nowrap" }}>
               {m}
             </div>
             {/* 아랫줄: P, D, C, A 일정 표기 */}
@@ -1313,7 +1313,7 @@ const renderTimelineDiff = (timelineStr) => {
                 padding: "0.08rem 0",
                 fontSize: "0.58rem",
                 background: bg !== "transparent" ? bg : "rgba(255,255,255,0.02)",
-                color: bg !== "transparent" ? "white" : "var(--text-secondary-dark)",
+                color: bg !== "transparent" ? "white" : "var(--text-secondary)",
                 border: "1px solid var(--border-color-dark)",
                 borderRadius: "3px",
                 fontWeight: bg !== "transparent" ? "800" : "normal",
@@ -1336,7 +1336,7 @@ const renderTimelineDiff = (timelineStr) => {
 const renderBudgetCategoriesDiff = (categories) => {
   const validList = (categories || []).filter(c => c.category);
   if (validList.length === 0) {
-    return <div style={{ fontSize: "0.7rem", color: "var(--text-secondary-dark)" }}>등록된 비목별 예산이 없습니다.</div>;
+    return <div style={{ fontSize: "0.7rem", color: "var(--text-secondary)" }}>등록된 비목별 예산이 없습니다.</div>;
   }
   return (
     <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.68rem", marginTop: "0.3rem" }}>
@@ -5290,7 +5290,7 @@ export default function App() {
                   fontSize: "0.85rem",
                   fontWeight: "800",
                   cursor: "pointer",
-                  color: projectsSubTab === "unit_status" ? "var(--accent-color)" : "var(--text-secondary-dark)",
+                  color: projectsSubTab === "unit_status" ? "var(--accent-color)" : "var(--text-secondary)",
                   borderBottom: projectsSubTab === "unit_status" ? "2px solid var(--accent-color)" : "none",
                   transition: "all 0.2s"
                 }}
@@ -5307,7 +5307,7 @@ export default function App() {
                   fontSize: "0.85rem",
                   fontWeight: "800",
                   cursor: "pointer",
-                  color: projectsSubTab === "unit_system" ? "var(--accent-color)" : "var(--text-secondary-dark)",
+                  color: projectsSubTab === "unit_system" ? "var(--accent-color)" : "var(--text-secondary)",
                   borderBottom: projectsSubTab === "unit_system" ? "2px solid var(--accent-color)" : "none",
                   transition: "all 0.2s"
                 }}
@@ -5324,7 +5324,7 @@ export default function App() {
                   fontSize: "0.85rem",
                   fontWeight: "800",
                   cursor: "pointer",
-                  color: projectsSubTab === "program_mgmt" ? "var(--accent-color)" : "var(--text-secondary-dark)",
+                  color: projectsSubTab === "program_mgmt" ? "var(--accent-color)" : "var(--text-secondary)",
                   borderBottom: projectsSubTab === "program_mgmt" ? "2px solid var(--accent-color)" : "none",
                   transition: "all 0.2s"
                 }}
@@ -5448,7 +5448,7 @@ export default function App() {
                                 <td style={{ fontFamily: "var(--font-data)", textAlign: "center" }}>
                                   {totalPrograms}개
                                 </td>
-                                <td style={{ fontFamily: "var(--font-data)", textAlign: "center", color: "var(--text-secondary-dark)" }}>
+                                <td style={{ fontFamily: "var(--font-data)", textAlign: "center", color: "var(--text-secondary)" }}>
                                   {readyCount}
                                 </td>
                                 <td style={{ fontFamily: "var(--font-data)", textAlign: "center", color: "#f59e0b" }}>
@@ -5509,7 +5509,7 @@ export default function App() {
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.2rem", flexWrap: "wrap", gap: "0.8rem" }}>
               <div>
                 <h2 style={{ fontSize: "1.25rem", fontWeight: "800" }}>앵커사업단 관리</h2>
-                <p style={{ fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginTop: "0.2rem" }}>
+                <p style={{ fontSize: "0.8rem", color: "var(--text-secondary)", marginTop: "0.2rem" }}>
                   울산과학대학교 라이즈(앵커) 사업단 구성원을 관리하고, 각 세부 프로그램의 실무 연구원을 매핑하는 통합 업무 공간입니다.
                 </p>
               </div>
@@ -5555,7 +5555,7 @@ export default function App() {
                       fontSize: "0.85rem",
                       fontWeight: "800",
                       cursor: "pointer",
-                      color: mgmtSubTab === "approvals" ? "var(--accent-color)" : "var(--text-secondary-dark)",
+                      color: mgmtSubTab === "approvals" ? "var(--accent-color)" : "var(--text-secondary)",
                       borderBottom: mgmtSubTab === "approvals" ? "2px solid var(--accent-color)" : "none",
                       transition: "all 0.2s"
                     }}
@@ -5572,7 +5572,7 @@ export default function App() {
                       fontSize: "0.85rem",
                       fontWeight: "800",
                       cursor: "pointer",
-                      color: mgmtSubTab === "members" ? "var(--accent-color)" : "var(--text-secondary-dark)",
+                      color: mgmtSubTab === "members" ? "var(--accent-color)" : "var(--text-secondary)",
                       borderBottom: mgmtSubTab === "members" ? "2px solid var(--accent-color)" : "none",
                       transition: "all 0.2s"
                     }}
@@ -5590,7 +5590,7 @@ export default function App() {
                         fontSize: "0.85rem",
                         fontWeight: "800",
                         cursor: "pointer",
-                        color: mgmtSubTab === "users" ? "var(--accent-color)" : "var(--text-secondary-dark)",
+                        color: mgmtSubTab === "users" ? "var(--accent-color)" : "var(--text-secondary)",
                         borderBottom: mgmtSubTab === "users" ? "2px solid var(--accent-color)" : "none",
                         transition: "all 0.2s"
                       }}
@@ -5608,7 +5608,7 @@ export default function App() {
                       fontSize: "0.85rem",
                       fontWeight: "800",
                       cursor: "pointer",
-                      color: mgmtSubTab === "programs" ? "var(--accent-color)" : "var(--text-secondary-dark)",
+                      color: mgmtSubTab === "programs" ? "var(--accent-color)" : "var(--text-secondary)",
                       borderBottom: mgmtSubTab === "programs" ? "2px solid var(--accent-color)" : "none",
                       transition: "all 0.2s"
                     }}
@@ -5631,7 +5631,7 @@ export default function App() {
                       fontSize: "0.85rem",
                       fontWeight: "800",
                       cursor: "pointer",
-                      color: mgmtSubTab === "org_chart" ? "var(--accent-color)" : "var(--text-secondary-dark)",
+                      color: mgmtSubTab === "org_chart" ? "var(--accent-color)" : "var(--text-secondary)",
                       borderBottom: mgmtSubTab === "org_chart" ? "2px solid var(--accent-color)" : "none",
                       transition: "all 0.2s"
                     }}
@@ -5648,7 +5648,7 @@ export default function App() {
                       fontSize: "0.85rem",
                       fontWeight: "800",
                       cursor: "pointer",
-                      color: mgmtSubTab === "partners" ? "var(--accent-color)" : "var(--text-secondary-dark)",
+                      color: mgmtSubTab === "partners" ? "var(--accent-color)" : "var(--text-secondary)",
                       borderBottom: mgmtSubTab === "partners" ? "2px solid var(--accent-color)" : "none",
                       transition: "all 0.2s"
                     }}
@@ -5668,7 +5668,7 @@ export default function App() {
                     fontSize: "0.85rem",
                     fontWeight: "800",
                     cursor: "pointer",
-                    color: mgmtSubTab === "portal_config" ? "var(--accent-color)" : "var(--text-secondary-dark)",
+                    color: mgmtSubTab === "portal_config" ? "var(--accent-color)" : "var(--text-secondary)",
                     borderBottom: mgmtSubTab === "portal_config" ? "2px solid var(--accent-color)" : "none",
                     transition: "all 0.2s"
                   }}
@@ -6032,7 +6032,7 @@ export default function App() {
                                       정보 등록
                                     </button>
                                   ) : (
-                                    <span style={{ fontSize: "0.7rem", color: "var(--text-secondary-dark)" }}>권한 없음</span>
+                                    <span style={{ fontSize: "0.7rem", color: "var(--text-secondary)" }}>권한 없음</span>
                                   )}
                                 </td>
                               </tr>
@@ -6052,7 +6052,7 @@ export default function App() {
                 <div>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.5rem" }}>
                     <h3 style={{ fontSize: "0.9rem", fontWeight: "800", color: "var(--accent-color)", borderLeft: "3px solid var(--accent-color)", paddingLeft: "0.4rem" }}>시스템 고정 계정 현황</h3>
-                    <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)" }}>관리자용 데모 및 시스템 고유 계정</span>
+                    <span style={{ fontSize: "0.65rem", color: "var(--text-secondary)" }}>관리자용 데모 및 시스템 고유 계정</span>
                   </div>
                   <div className="table-panel" style={{ maxHeight: "250px", overflowY: "auto" }}>
                     <table className="custom-table" style={{ fontSize: "0.75rem" }}>
@@ -6069,7 +6069,7 @@ export default function App() {
                       <tbody>
                         {registeredUsers.filter(u => ["admin", "director", "hq_head", "center_director", "team_leader", "researcher"].includes(u.id.toLowerCase())).length === 0 ? (
                           <tr>
-                            <td colSpan="6" style={{ textAlign: "center", color: "var(--text-secondary-dark)", padding: "1.5rem" }}>
+                            <td colSpan="6" style={{ textAlign: "center", color: "var(--text-secondary)", padding: "1.5rem" }}>
                               등록된 고정 계정이 없습니다.
                             </td>
                           </tr>
@@ -6115,7 +6115,7 @@ export default function App() {
                                   </td>
                                   <td style={{ fontFamily: "var(--font-data)" }}>{u.role_key}</td>
                                   <td style={{ fontFamily: "var(--font-data)" }}>{new Date(u.created_at).toLocaleDateString()}</td>
-                                  <td style={{ textAlign: "center", color: "var(--text-secondary-dark)", fontWeight: "700" }}>고정 계정</td>
+                                  <td style={{ textAlign: "center", color: "var(--text-secondary)", fontWeight: "700" }}>고정 계정</td>
                                 </tr>
                               );
                             })
@@ -6129,7 +6129,7 @@ export default function App() {
                 <div>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.5rem" }}>
                     <h3 style={{ fontSize: "0.9rem", fontWeight: "800", color: "var(--accent-color)", borderLeft: "3px solid var(--accent-color)", paddingLeft: "0.4rem" }}>주소록 연동 회원 현황</h3>
-                    <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)" }}>인사 주소록 기반 가입 계정</span>
+                    <span style={{ fontSize: "0.65rem", color: "var(--text-secondary)" }}>인사 주소록 기반 가입 계정</span>
                   </div>
                   <div className="table-panel" style={{ maxHeight: "300px", overflowY: "auto" }}>
                     <table className="custom-table" style={{ fontSize: "0.75rem" }}>
@@ -6146,7 +6146,7 @@ export default function App() {
                       <tbody>
                         {registeredUsers.filter(u => !["admin", "director", "hq_head", "center_director", "team_leader", "researcher"].includes(u.id.toLowerCase())).length === 0 ? (
                           <tr>
-                            <td colSpan="6" style={{ textAlign: "center", color: "var(--text-secondary-dark)", padding: "2rem" }}>
+                            <td colSpan="6" style={{ textAlign: "center", color: "var(--text-secondary)", padding: "2rem" }}>
                               연동된 주소록 회원이 없습니다.
                             </td>
                           </tr>
@@ -6204,7 +6204,7 @@ export default function App() {
                                         삭제
                                       </button>
                                     ) : (
-                                      <span style={{ fontSize: "0.7rem", color: "var(--text-secondary-dark)", fontWeight: "700" }}>주소록 회원</span>
+                                      <span style={{ fontSize: "0.7rem", color: "var(--text-secondary)", fontWeight: "700" }}>주소록 회원</span>
                                     )}
                                   </td>
                                 </tr>
@@ -6238,7 +6238,7 @@ export default function App() {
                     <div>
                       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.5rem" }}>
                         <h3 style={{ fontSize: "0.9rem", fontWeight: "800", color: "var(--accent-color)", borderLeft: "3px solid var(--accent-color)", paddingLeft: "0.4rem" }}>프로그램 기획 및 예산 변경 결재함</h3>
-                        <span style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)" }}>연구원들의 기획 리비전 신청 관리</span>
+                        <span style={{ fontSize: "0.65rem", color: "var(--text-secondary)" }}>연구원들의 기획 리비전 신청 관리</span>
                       </div>
                       <div className="table-panel">
                         <table className="custom-table" style={{ fontSize: "0.75rem" }}>
@@ -6257,7 +6257,7 @@ export default function App() {
                           <tbody>
                             {versionRequests.length === 0 ? (
                               <tr>
-                                <td colSpan="8" style={{ textAlign: "center", color: "var(--text-secondary-dark)", padding: "2.5rem" }}>
+                                <td colSpan="8" style={{ textAlign: "center", color: "var(--text-secondary)", padding: "2.5rem" }}>
                                   결재 대기 중이거나 처리된 변경 요청 문서가 없습니다.
                                 </td>
                               </tr>
@@ -6290,7 +6290,7 @@ export default function App() {
                                           {req.status}
                                         </span>
                                         {(req.status === "승인완료" || req.status === "반려") && req.approved_by && (
-                                          <span style={{ fontSize: "0.62rem", color: "var(--text-secondary-dark)", marginTop: "0.15rem" }}>
+                                          <span style={{ fontSize: "0.62rem", color: "var(--text-secondary)", marginTop: "0.15rem" }}>
                                             ({req.approved_by})
                                           </span>
                                         )}
@@ -6299,14 +6299,14 @@ export default function App() {
                                     <td>{(req.requested_by || "").replace(/\s*\(.*?\)/g, "")}</td>
                                     <td style={{ fontFamily: "var(--font-data)", lineHeight: "1.4" }}>
                                       <div>
-                                        <span style={{ color: "var(--text-secondary-dark)", fontSize: "0.65rem" }}>신청: </span>
+                                        <span style={{ color: "var(--text-secondary)", fontSize: "0.65rem" }}>신청: </span>
                                         {new Date(req.requested_at).toLocaleString("ko-KR")}
                                       </div>
                                       <div style={{ marginTop: "0.15rem" }}>
-                                        <span style={{ color: "var(--text-secondary-dark)", fontSize: "0.65rem" }}>처리: </span>
+                                        <span style={{ color: "var(--text-secondary)", fontSize: "0.65rem" }}>처리: </span>
                                         {req.approved_at 
                                           ? new Date(req.approved_at).toLocaleString("ko-KR") 
-                                          : <span style={{ color: "var(--text-secondary-dark)" }}>대기 중</span>
+                                          : <span style={{ color: "var(--text-secondary)" }}>대기 중</span>
                                         }
                                       </div>
                                     </td>
@@ -6427,16 +6427,16 @@ export default function App() {
                   {/* 1. 기본 기안 정보 */}
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: "1rem", background: "rgba(255,255,255,0.02)", padding: "0.6rem 0.8rem", borderRadius: "8px", border: "1px solid var(--border-color-dark)" }}>
                     <div>
-                      <span style={{ color: "var(--text-secondary-dark)" }}>결재번호:</span> <strong style={{ color: "var(--text-primary)", fontFamily: "var(--font-data)" }}>{displaySeq}</strong>
+                      <span style={{ color: "var(--text-secondary)" }}>결재번호:</span> <strong style={{ color: "var(--text-primary)", fontFamily: "var(--font-data)" }}>{displaySeq}</strong>
                     </div>
                     <div>
-                      <span style={{ color: "var(--text-secondary-dark)" }}>신청자:</span> <strong style={{ color: "var(--text-primary)" }}>{(selectedRequest.requested_by || "").replace(/\s*\(.*?\)/g, "")}</strong>
+                      <span style={{ color: "var(--text-secondary)" }}>신청자:</span> <strong style={{ color: "var(--text-primary)" }}>{(selectedRequest.requested_by || "").replace(/\s*\(.*?\)/g, "")}</strong>
                     </div>
                     <div>
-                      <span style={{ color: "var(--text-secondary-dark)" }}>신청 일시:</span> <strong style={{ color: "var(--text-primary)" }}>{new Date(selectedRequest.requested_at).toLocaleString("ko-KR")}</strong>
+                      <span style={{ color: "var(--text-secondary)" }}>신청 일시:</span> <strong style={{ color: "var(--text-primary)" }}>{new Date(selectedRequest.requested_at).toLocaleString("ko-KR")}</strong>
                     </div>
                     <div>
-                      <span style={{ color: "var(--text-secondary-dark)" }}>상태:</span> <strong style={{ color: selectedRequest.status === "승인완료" ? "#10B981" : (selectedRequest.status === "반려" ? "#EF4444" : "#FBBF24") }}>{selectedRequest.status}</strong>
+                      <span style={{ color: "var(--text-secondary)" }}>상태:</span> <strong style={{ color: selectedRequest.status === "승인완료" ? "#10B981" : (selectedRequest.status === "반려" ? "#EF4444" : "#FBBF24") }}>{selectedRequest.status}</strong>
                     </div>
                   </div>
 
@@ -6449,7 +6449,7 @@ export default function App() {
                       </h4>
                       <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
                         <div>
-                          <span style={{ color: "var(--text-secondary-dark)", fontWeight: "700", display: "block", fontSize: "0.75rem", marginBottom: "0.25rem" }}>💰 재원별 예산 배정</span>
+                          <span style={{ color: "var(--text-secondary)", fontWeight: "700", display: "block", fontSize: "0.75rem", marginBottom: "0.25rem" }}>💰 재원별 예산 배정</span>
                           <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.7rem" }}>
                             <tbody>
                               <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.02)" }}><td style={{ padding: "0.15rem 0" }}>국고 본예산 / 이월</td><td style={{ textAlign: "right", fontWeight: "700", color: "#F87171" }}>{((selectedRequest.changes.before.years?.[selectedYear]?.budget_national || 0) / 1000000).toFixed(1)} / {((selectedRequest.changes.before.years?.[selectedYear]?.budget_carry_national || 0) / 1000000).toFixed(1)} 백만원</td></tr>
@@ -6460,18 +6460,18 @@ export default function App() {
                         </div>
 
                         <div>
-                          <span style={{ color: "var(--text-secondary-dark)", fontWeight: "700", display: "block", fontSize: "0.75rem", marginBottom: "0.25rem" }}>📁 비목별 예산 세부 배정</span>
+                          <span style={{ color: "var(--text-secondary)", fontWeight: "700", display: "block", fontSize: "0.75rem", marginBottom: "0.25rem" }}>📁 비목별 예산 세부 배정</span>
                           {renderBudgetCategoriesDiff(selectedRequest.changes.before.years?.[selectedYear]?.budget_categories)}
                         </div>
 
                         <div>
-                          <span style={{ color: "var(--text-secondary-dark)", fontWeight: "700", display: "block", fontSize: "0.75rem" }}>📅 월별 추진 일정 (PDCA)</span>
+                          <span style={{ color: "var(--text-secondary)", fontWeight: "700", display: "block", fontSize: "0.75rem" }}>📅 월별 추진 일정 (PDCA)</span>
                           {renderTimelineDiff(selectedRequest.changes.before.timeline)}
                         </div>
 
                         {(showTarget1 || showTarget2 || showTarget3) && (
                           <div>
-                            <span style={{ color: "var(--text-secondary-dark)", fontWeight: "700", display: "block", fontSize: "0.75rem", marginBottom: "0.25rem" }}>🎯 실적 목표치</span>
+                            <span style={{ color: "var(--text-secondary)", fontWeight: "700", display: "block", fontSize: "0.75rem", marginBottom: "0.25rem" }}>🎯 실적 목표치</span>
                             <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.7rem" }}>
                               <tbody>
                                 {showTarget1 && (
@@ -6489,7 +6489,7 @@ export default function App() {
                         )}
 
                         <div>
-                          <span style={{ color: "var(--text-secondary-dark)", display: "block", fontSize: "0.75rem" }}>👥 참여대상 및 부서</span>
+                          <span style={{ color: "var(--text-secondary)", display: "block", fontSize: "0.75rem" }}>👥 참여대상 및 부서</span>
                           <span style={{ fontSize: "0.7rem", color: "var(--text-primary)" }}>참여대상: {selectedRequest.changes.before.targetAudience || "미입력"} | 부서: {selectedRequest.changes.before.coopDept || "미입력"}</span>
                         </div>
                       </div>
@@ -6502,7 +6502,7 @@ export default function App() {
                       </h4>
                       <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
                         <div>
-                          <span style={{ color: "var(--text-secondary-dark)", fontWeight: "700", display: "block", fontSize: "0.75rem", marginBottom: "0.25rem" }}>💰 재원별 예산 배정</span>
+                          <span style={{ color: "var(--text-secondary)", fontWeight: "700", display: "block", fontSize: "0.75rem", marginBottom: "0.25rem" }}>💰 재원별 예산 배정</span>
                           <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.7rem" }}>
                             <tbody>
                               <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.02)" }}><td style={{ padding: "0.15rem 0" }}>국고 본예산 / 이월</td><td style={{ textAlign: "right", fontWeight: "700", color: "#34D399" }}>{((selectedRequest.changes.after.years?.[selectedYear]?.budget_national || 0) / 1000000).toFixed(1)} / {((selectedRequest.changes.after.years?.[selectedYear]?.budget_carry_national || 0) / 1000000).toFixed(1)} 백만원</td></tr>
@@ -6513,18 +6513,18 @@ export default function App() {
                         </div>
 
                         <div>
-                          <span style={{ color: "var(--text-secondary-dark)", fontWeight: "700", display: "block", fontSize: "0.75rem", marginBottom: "0.25rem" }}>📁 비목별 예산 세부 배정</span>
+                          <span style={{ color: "var(--text-secondary)", fontWeight: "700", display: "block", fontSize: "0.75rem", marginBottom: "0.25rem" }}>📁 비목별 예산 세부 배정</span>
                           {renderBudgetCategoriesDiff(selectedRequest.changes.after.years?.[selectedYear]?.budget_categories)}
                         </div>
 
                         <div>
-                          <span style={{ color: "var(--text-secondary-dark)", fontWeight: "700", display: "block", fontSize: "0.75rem" }}>📅 월별 추진 일정 (PDCA)</span>
+                          <span style={{ color: "var(--text-secondary)", fontWeight: "700", display: "block", fontSize: "0.75rem" }}>📅 월별 추진 일정 (PDCA)</span>
                           {renderTimelineDiff(selectedRequest.changes.after.timeline)}
                         </div>
 
                         {(showTarget1 || showTarget2 || showTarget3) && (
                           <div>
-                            <span style={{ color: "var(--text-secondary-dark)", fontWeight: "700", display: "block", fontSize: "0.75rem", marginBottom: "0.25rem" }}>🎯 실적 목표치</span>
+                            <span style={{ color: "var(--text-secondary)", fontWeight: "700", display: "block", fontSize: "0.75rem", marginBottom: "0.25rem" }}>🎯 실적 목표치</span>
                             <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.7rem" }}>
                               <tbody>
                                 {showTarget1 && (
@@ -6542,7 +6542,7 @@ export default function App() {
                         )}
 
                         <div>
-                          <span style={{ color: "var(--text-secondary-dark)", display: "block", fontSize: "0.75rem" }}>👥 참여대상 및 부서</span>
+                          <span style={{ color: "var(--text-secondary)", display: "block", fontSize: "0.75rem" }}>👥 참여대상 및 부서</span>
                           <span style={{ fontSize: "0.7rem", color: "var(--text-primary)" }}>참여대상: {selectedRequest.changes.after.targetAudience || "미입력"} | 부서: {selectedRequest.changes.after.coopDept || "미입력"}</span>
                         </div>
                       </div>
@@ -6608,7 +6608,7 @@ export default function App() {
                           fontWeight: "700",
                           cursor: "pointer",
                           background: kpiSubTab === "공통" ? "var(--accent-color)" : "transparent",
-                          color: kpiSubTab === "공통" ? "white" : (menuVisibility.kpi_status === false ? "#EF4444" : "var(--text-secondary-dark)"),
+                          color: kpiSubTab === "공통" ? "white" : (menuVisibility.kpi_status === false ? "#EF4444" : "var(--text-secondary)"),
                           transition: "all 0.2s"
                         }}
                       >
@@ -6634,7 +6634,7 @@ export default function App() {
                           fontWeight: "700",
                           cursor: "pointer",
                           background: kpiSubTab === "자율" ? "var(--accent-color)" : "transparent",
-                          color: kpiSubTab === "자율" ? "white" : (menuVisibility.kpi_self === false ? "#EF4444" : "var(--text-secondary-dark)"),
+                          color: kpiSubTab === "자율" ? "white" : (menuVisibility.kpi_self === false ? "#EF4444" : "var(--text-secondary)"),
                           transition: "all 0.2s"
                         }}
                       >
@@ -6660,7 +6660,7 @@ export default function App() {
                           fontWeight: "700",
                           cursor: "pointer",
                           background: kpiSubTab === "중점" ? "var(--accent-color)" : "transparent",
-                          color: kpiSubTab === "중점" ? "white" : "var(--text-secondary-dark)",
+                          color: kpiSubTab === "중점" ? "white" : "var(--text-secondary)",
                           transition: "all 0.2s"
                         }}
                       >
@@ -6854,7 +6854,7 @@ export default function App() {
                                 return (
                                   <tr key={sub.id}>
                                     <td style={{ fontWeight: "700" }}>{`[${letter}] ${cleanName}`}</td>
-                                    <td style={{ textAlign: "right", color: "var(--text-secondary-dark)" }}>
+                                    <td style={{ textAlign: "right", color: "var(--text-secondary)" }}>
                                       {sub.base !== undefined ? `${sub.base.toLocaleString()} ${sub.unit}` : "-"}
                                     </td>
                                     <td style={{ textAlign: "right" }}>
@@ -6884,7 +6884,7 @@ export default function App() {
                                             cursor: !canEditTarget ? "not-allowed" : "text"
                                           }}
                                         />
-                                        <span style={{ fontSize: "0.7rem", color: "var(--text-secondary-dark)" }}>{sub.unit}</span>
+                                        <span style={{ fontSize: "0.7rem", color: "var(--text-secondary)" }}>{sub.unit}</span>
                                       </div>
                                     </td>
                                     <td style={{ textAlign: "right" }}>
@@ -6911,7 +6911,7 @@ export default function App() {
                                             borderRadius: "0.25rem"
                                           }}
                                         />
-                                        <span style={{ fontSize: "0.7rem", color: "var(--text-secondary-dark)" }}>{sub.unit}</span>
+                                        <span style={{ fontSize: "0.7rem", color: "var(--text-secondary)" }}>{sub.unit}</span>
                                       </div>
                                     </td>
                                     <td style={{ textAlign: "right", fontFamily: "var(--font-data)", fontWeight: "800", color: subRate >= 100 ? "var(--success-color)" : "var(--warning-color)" }}>
@@ -7001,7 +7001,7 @@ export default function App() {
                               <RenderLatexFormula formula={nk.formula} />
                             </div>
                             {nk.type === "공통" && (
-                              <div style={{ fontSize: "0.72rem", color: "var(--text-secondary-dark)", borderTop: "1px dashed rgba(255,255,255,0.1)", paddingTop: "0.5rem", lineHeight: "1.45" }}>
+                              <div style={{ fontSize: "0.72rem", color: "var(--text-secondary)", borderTop: "1px dashed rgba(255,255,255,0.1)", paddingTop: "0.5rem", lineHeight: "1.45" }}>
                                 <p style={{ fontWeight: "800", color: "#60a5fa", marginBottom: "0.25rem" }}>💡 교육부 RISE 공통성과지표 상세 가이드</p>
                                 <p>• <strong>평가 메커니즘</strong>: 단순 실적 달성도가 아닌, <strong>2024년 기준연도 대비 당해연도의 순 증가 비율(성장률)</strong>을 계산합니다.</p>
                                 <p>• <strong>산식 세부 분석</strong>: 
@@ -7020,14 +7020,14 @@ export default function App() {
                               </div>
                             )}
                             {nk.type === "자율" && (
-                              <div style={{ fontSize: "0.72rem", color: "var(--text-secondary-dark)", borderTop: "1px dashed rgba(255,255,255,0.1)", paddingTop: "0.5rem", lineHeight: "1.45" }}>
+                              <div style={{ fontSize: "0.72rem", color: "var(--text-secondary)", borderTop: "1px dashed rgba(255,255,255,0.1)", paddingTop: "0.5rem", lineHeight: "1.45" }}>
                                 <p style={{ fontWeight: "800", color: "#ec4899", marginBottom: "0.25rem" }}>💡 지자체(울산) 자율성과지표 안내</p>
                                 <p>• <strong>평가 메커니즘</strong>: 울산 RISE 비전 및 지역 주도 대학지원을 위해 시도와 대학이 합의하여 지정한 정량 지표입니다.</p>
                                 <p>• <strong>활용 시기</strong>: 매년 실시되는 지자체 자체평가 및 교육부의 연차점검, 중간·종합평가 시 연차별 달성도가 전면 반영됩니다.</p>
                               </div>
                             )}
                             {nk.type === "중점" && (
-                              <div style={{ fontSize: "0.72rem", color: "var(--text-secondary-dark)", borderTop: "1px dashed rgba(255,255,255,0.1)", paddingTop: "0.5rem", lineHeight: "1.45" }}>
+                              <div style={{ fontSize: "0.72rem", color: "var(--text-secondary)", borderTop: "1px dashed rgba(255,255,255,0.1)", paddingTop: "0.5rem", lineHeight: "1.45" }}>
                                 <p style={{ fontWeight: "800", color: "#f472b6", marginBottom: "0.25rem" }}>💡 대학 중점관리지표 안내</p>
                                 <p>• <strong>평가 메커니즘</strong>: 대학 강점·특성화 분야 육성 및 경쟁력 제고를 목적으로 대학이 설정한 집중 관리 핵심성과지표입니다.</p>
                                 <p>• <strong>활용 시기</strong>: 대학 자체 성과관리 환류 및 시도 컨설팅 환류 지표로 연중 활용됩니다.</p>
@@ -7038,11 +7038,11 @@ export default function App() {
 
                         <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.8rem", borderTop: "1px solid var(--border-color-dark)", paddingTop: "0.8rem" }}>
                           <div>
-                            <span style={{ fontSize: "0.7rem", color: "var(--text-secondary-dark)" }}>주관 부서</span>
+                            <span style={{ fontSize: "0.7rem", color: "var(--text-secondary)" }}>주관 부서</span>
                             <p style={{ fontWeight: "700" }}>{nk.owner}</p>
                           </div>
                           <div style={{ textAlign: "right" }}>
-                            <span style={{ fontSize: "0.7rem", color: "var(--text-secondary-dark)" }}>측정 주기</span>
+                            <span style={{ fontSize: "0.7rem", color: "var(--text-secondary)" }}>측정 주기</span>
                             <p style={{ fontWeight: "700" }}>{nk.cycle}</p>
                           </div>
                         </div>
@@ -7050,7 +7050,7 @@ export default function App() {
                     </div>
                   );
                 })() : (
-                  <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: "320px", color: "var(--text-secondary-dark)", gap: "0.5rem" }}>
+                  <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: "320px", color: "var(--text-secondary)", gap: "0.5rem" }}>
                     <HelpCircle size={32} style={{ color: "var(--accent-color)" }} />
                     <span style={{ fontSize: "0.8rem" }}>좌측 목록의 성과지표 행을 클릭하시면 상세 비교 정보가 나타납니다.</span>
                   </div>
@@ -7120,7 +7120,7 @@ export default function App() {
                   fontWeight: "800",
                   cursor: "pointer",
                   padding: "0.5rem 1rem",
-                  color: progressSubTab === "progress_status" ? "var(--accent-color)" : "var(--text-secondary-dark)",
+                  color: progressSubTab === "progress_status" ? "var(--accent-color)" : "var(--text-secondary)",
                   borderBottom: progressSubTab === "progress_status" ? "2px solid var(--accent-color)" : "none",
                   transition: "all 0.2s ease"
                 }}
@@ -7136,7 +7136,7 @@ export default function App() {
                   fontWeight: "800",
                   cursor: "pointer",
                   padding: "0.5rem 1rem",
-                  color: progressSubTab === "major_programs" ? "var(--accent-color)" : "var(--text-secondary-dark)",
+                  color: progressSubTab === "major_programs" ? "var(--accent-color)" : "var(--text-secondary)",
                   borderBottom: progressSubTab === "major_programs" ? "2px solid var(--accent-color)" : "none",
                   transition: "all 0.2s ease"
                 }}
@@ -7152,7 +7152,7 @@ export default function App() {
                   fontWeight: "800",
                   cursor: "pointer",
                   padding: "0.5rem 1rem",
-                  color: progressSubTab === "satisfaction_survey" ? "var(--accent-color)" : "var(--text-secondary-dark)",
+                  color: progressSubTab === "satisfaction_survey" ? "var(--accent-color)" : "var(--text-secondary)",
                   borderBottom: progressSubTab === "satisfaction_survey" ? "2px solid var(--accent-color)" : "none",
                   transition: "all 0.2s ease"
                 }}
@@ -7199,7 +7199,7 @@ export default function App() {
                   fontWeight: "800",
                   cursor: "pointer",
                   padding: "0.5rem 1rem",
-                  color: budgetSubTab === "budget_categories" ? "var(--accent-color)" : "var(--text-secondary-dark)",
+                  color: budgetSubTab === "budget_categories" ? "var(--accent-color)" : "var(--text-secondary)",
                   borderBottom: budgetSubTab === "budget_categories" ? "2px solid var(--accent-color)" : "none",
                   transition: "all 0.2s ease"
                 }}
@@ -7215,7 +7215,7 @@ export default function App() {
                   fontWeight: "800",
                   cursor: "pointer",
                   padding: "0.5rem 1rem",
-                  color: budgetSubTab === "execution_rate" ? "var(--accent-color)" : "var(--text-secondary-dark)",
+                  color: budgetSubTab === "execution_rate" ? "var(--accent-color)" : "var(--text-secondary)",
                   borderBottom: budgetSubTab === "execution_rate" ? "2px solid var(--accent-color)" : "none",
                   transition: "all 0.2s ease"
                 }}
@@ -7255,7 +7255,7 @@ export default function App() {
                   fontWeight: "800",
                   cursor: "pointer",
                   padding: "0.5rem 1rem",
-                  color: procurementSubTab === "env_improvement" ? "var(--accent-color)" : "var(--text-secondary-dark)",
+                  color: procurementSubTab === "env_improvement" ? "var(--accent-color)" : "var(--text-secondary)",
                   borderBottom: procurementSubTab === "env_improvement" ? "2px solid var(--accent-color)" : "none",
                   transition: "all 0.2s ease"
                 }}
@@ -7271,7 +7271,7 @@ export default function App() {
                   fontWeight: "800",
                   cursor: "pointer",
                   padding: "0.5rem 1rem",
-                  color: procurementSubTab === "equipment_purchase" ? "var(--accent-color)" : "var(--text-secondary-dark)",
+                  color: procurementSubTab === "equipment_purchase" ? "var(--accent-color)" : "var(--text-secondary)",
                   borderBottom: procurementSubTab === "equipment_purchase" ? "2px solid var(--accent-color)" : "none",
                   transition: "all 0.2s ease"
                 }}
@@ -7287,7 +7287,7 @@ export default function App() {
                   fontWeight: "800",
                   cursor: "pointer",
                   padding: "0.5rem 1rem",
-                  color: procurementSubTab === "major_services" ? "var(--accent-color)" : "var(--text-secondary-dark)",
+                  color: procurementSubTab === "major_services" ? "var(--accent-color)" : "var(--text-secondary)",
                   borderBottom: procurementSubTab === "major_services" ? "2px solid var(--accent-color)" : "none",
                   transition: "all 0.2s ease"
                 }}
@@ -7328,7 +7328,7 @@ export default function App() {
                   fontWeight: "800",
                   cursor: "pointer",
                   padding: "0.5rem 1rem",
-                  color: scheduleSubTab === "monthly" ? "var(--accent-color)" : "var(--text-secondary-dark)",
+                  color: scheduleSubTab === "monthly" ? "var(--accent-color)" : "var(--text-secondary)",
                   borderBottom: scheduleSubTab === "monthly" ? "2px solid var(--accent-color)" : "none",
                   transition: "all 0.2s ease"
                 }}
@@ -7344,7 +7344,7 @@ export default function App() {
                   fontWeight: "800",
                   cursor: "pointer",
                   padding: "0.5rem 1rem",
-                  color: scheduleSubTab === "events" ? "var(--accent-color)" : "var(--text-secondary-dark)",
+                  color: scheduleSubTab === "events" ? "var(--accent-color)" : "var(--text-secondary)",
                   borderBottom: scheduleSubTab === "events" ? "2px solid var(--accent-color)" : "none",
                   transition: "all 0.2s ease"
                 }}
@@ -7360,7 +7360,7 @@ export default function App() {
                   fontWeight: "800",
                   cursor: "pointer",
                   padding: "0.5rem 1rem",
-                  color: scheduleSubTab === "meetings" ? "var(--accent-color)" : "var(--text-secondary-dark)",
+                  color: scheduleSubTab === "meetings" ? "var(--accent-color)" : "var(--text-secondary)",
                   borderBottom: scheduleSubTab === "meetings" ? "2px solid var(--accent-color)" : "none",
                   transition: "all 0.2s ease"
                 }}
@@ -7376,7 +7376,7 @@ export default function App() {
                   fontWeight: "800",
                   cursor: "pointer",
                   padding: "0.5rem 1rem",
-                  color: scheduleSubTab === "committees" ? "var(--accent-color)" : "var(--text-secondary-dark)",
+                  color: scheduleSubTab === "committees" ? "var(--accent-color)" : "var(--text-secondary)",
                   borderBottom: scheduleSubTab === "committees" ? "2px solid var(--accent-color)" : "none",
                   transition: "all 0.2s ease"
                 }}
@@ -7392,7 +7392,7 @@ export default function App() {
                   fontWeight: "800",
                   cursor: "pointer",
                   padding: "0.5rem 1rem",
-                  color: scheduleSubTab === "press" ? "var(--accent-color)" : "var(--text-secondary-dark)",
+                  color: scheduleSubTab === "press" ? "var(--accent-color)" : "var(--text-secondary)",
                   borderBottom: scheduleSubTab === "press" ? "2px solid var(--accent-color)" : "none",
                   transition: "all 0.2s ease"
                 }}
@@ -7690,7 +7690,7 @@ export default function App() {
 
             <div style={{ display: "flex", flexDirection: "column", gap: "1rem", fontSize: "0.8rem" }}>
               <div>
-                <label style={{ display: "block", marginBottom: "0.3rem", fontWeight: "700", color: "var(--text-secondary-dark)" }}>아이디 (이메일)</label>
+                <label style={{ display: "block", marginBottom: "0.3rem", fontWeight: "700", color: "var(--text-secondary)" }}>아이디 (이메일)</label>
                 <input
                   type="text"
                   disabled
@@ -7701,7 +7701,7 @@ export default function App() {
               </div>
 
               <div>
-                <label style={{ display: "block", marginBottom: "0.3rem", fontWeight: "700", color: "var(--text-secondary-dark)" }}>성명</label>
+                <label style={{ display: "block", marginBottom: "0.3rem", fontWeight: "700", color: "var(--text-secondary)" }}>성명</label>
                 <input
                   type="text"
                   disabled

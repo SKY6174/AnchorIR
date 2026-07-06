@@ -3158,7 +3158,7 @@ ${aiRawText}
                           <div style={{ flex: 1, overflowY: "auto", maxHeight: "350px" }} className="custom-scrollbar">
                             <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.78rem", textAlign: "left" }}>
                               <thead>
-                                <tr style={{ borderBottom: "1px solid var(--border-color)", color: "var(--text-secondary-dark)" }}>
+                                <tr style={{ borderBottom: "1px solid var(--border-color)", color: "var(--text-secondary)" }}>
                                   <th style={{ padding: "0.5rem 0.75rem", fontWeight: "700" }}>구분</th>
                                   <th style={{ padding: "0.5rem 0.75rem", fontWeight: "700" }}>성명</th>
                                   <th style={{ padding: "0.5rem 0.75rem", fontWeight: "700" }}>소속기관</th>
@@ -3277,7 +3277,7 @@ ${aiRawText}
                             <span style={{ fontSize: "0.85rem", fontWeight: "700", color: "var(--text-primary)", marginBottom: "0.25rem" }}>
                               위원 명단 준비 중
                             </span>
-                            <p style={{ margin: 0, fontSize: "0.76rem", color: "var(--text-secondary-dark)", lineHeight: "1.5" }}>
+                            <p style={{ margin: 0, fontSize: "0.76rem", color: "var(--text-secondary)", lineHeight: "1.5" }}>
                               본 위원회의 명단 정보는 추후 구성 완료 시 시스템에 직접 입력될 예정입니다.<br />
                               관련 권한을 가진 관리자 또는 사업단 총괄 책임자가 추후 업데이트할 수 있습니다.
                             </p>

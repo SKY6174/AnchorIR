@@ -95,7 +95,7 @@ export default function SurveyResponder() {
     return (
       <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "100vh", background: "#090d16", color: "white", gap: "1rem" }}>
         <div className="animate-spin" style={{ width: "30px", height: "30px", border: "3px solid var(--accent-color)", borderTopColor: "transparent", borderRadius: "50%" }} />
-        <p style={{ fontSize: "0.9rem", color: "var(--text-secondary-dark)" }}>설문 조사지를 로딩 중입니다...</p>
+        <p style={{ fontSize: "0.9rem", color: "var(--text-secondary)" }}>설문 조사지를 로딩 중입니다...</p>
       </div>
     );
   }
@@ -105,7 +105,7 @@ export default function SurveyResponder() {
       <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "100vh", background: "#090d16", color: "white", padding: "2rem", textAlign: "center", gap: "1rem" }}>
         <AlertCircle size={40} style={{ color: "#ef4444" }} />
         <h3 style={{ fontSize: "1.1rem", fontWeight: "800" }}>설문 로드 불가</h3>
-        <p style={{ fontSize: "0.85rem", color: "var(--text-secondary-dark)", lineHeight: "1.5", maxWidth: "320px" }}>{errorMsg}</p>
+        <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)", lineHeight: "1.5", maxWidth: "320px" }}>{errorMsg}</p>
       </div>
     );
   }
@@ -146,12 +146,12 @@ export default function SurveyResponder() {
             </div>
             <div>
               <h3 style={{ fontSize: "1.1rem", fontWeight: "800", color: "white", marginBottom: "0.5rem" }}>설문 제출 완료!</h3>
-              <p style={{ fontSize: "0.85rem", color: "var(--text-secondary-dark)", lineHeight: "1.5" }}>
+              <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)", lineHeight: "1.5" }}>
                 작성해 주신 만족도 결과가 시스템에 소중하게 기록되었습니다.<br />
                 보내주신 고견은 앵커 사업단의 내년도 사업 환류 계획에 유용하게 사용됩니다. 대단히 감사합니다.
               </p>
             </div>
-            <span style={{ fontSize: "0.7rem", color: "var(--text-secondary-dark)" }}>울산과학대학교 앵커사업단 드림</span>
+            <span style={{ fontSize: "0.7rem", color: "var(--text-secondary)" }}>울산과학대학교 앵커사업단 드림</span>
           </div>
         ) : (
           <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
@@ -159,7 +159,7 @@ export default function SurveyResponder() {
             <div className="glass-card" style={{ padding: "1.2rem", display: "flex", flexDirection: "column", gap: "0.5rem" }}>
               <span style={{ fontSize: "0.68rem", color: "var(--accent-color)", fontWeight: "900" }}>수행부서: {survey.department}센터</span>
               <h3 style={{ fontSize: "0.95rem", fontWeight: "800", color: "white", lineHeight: "1.3" }}>{survey.title}</h3>
-              <p style={{ fontSize: "0.78rem", color: "var(--text-secondary-dark)", lineHeight: "1.4" }}>{survey.purpose}</p>
+              <p style={{ fontSize: "0.78rem", color: "var(--text-secondary)", lineHeight: "1.4" }}>{survey.purpose}</p>
             </div>
 
             {/* 응답자명 작성 (익명 허용) */}

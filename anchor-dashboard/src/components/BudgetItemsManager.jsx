@@ -48,7 +48,7 @@ const CustomizedAxisTick = (props) => {
 
   return (
     <g transform={`translate(${x},${y})`}>
-      <text x={0} y={10} textAnchor="middle" fill="var(--text-secondary-dark)" style={{ fontSize: isMobile ? "0.55rem" : "0.62rem", fontWeight: "600", lineHeight: "1.4" }}>
+      <text x={0} y={10} textAnchor="middle" fill="var(--text-secondary)" style={{ fontSize: isMobile ? "0.55rem" : "0.62rem", fontWeight: "600", lineHeight: "1.4" }}>
         {lines.map((line, idx) => (
           <tspan key={idx} x={0} dy={idx === 0 ? 0 : 11}>
             {line}
@@ -545,7 +545,7 @@ export default function BudgetItemsManager({ projects, currentRole, onUpdateBudg
             <div style={{ borderBottom: "1px solid var(--border-color-dark)", paddingBottom: "1rem", marginBottom: "1.5rem" }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: "0.5rem" }}>
                 <div>
-                  <span style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)" }}>{activeProjectTitle}</span>
+                  <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>{activeProjectTitle}</span>
                   <h3 style={{ fontSize: "1.25rem", fontWeight: "800", marginTop: "0.2rem" }}>
                     {activeUnit.id} {activeUnit.title}
                   </h3>
@@ -563,7 +563,7 @@ export default function BudgetItemsManager({ projects, currentRole, onUpdateBudg
                       fontWeight: "700",
                       cursor: "pointer",
                       background: subTab === "main" ? "var(--accent-color)" : "transparent",
-                      color: subTab === "main" ? "white" : "var(--text-secondary-dark)",
+                      color: subTab === "main" ? "white" : "var(--text-secondary)",
                       transition: "all 0.2s ease"
                     }}
                   >
@@ -581,7 +581,7 @@ export default function BudgetItemsManager({ projects, currentRole, onUpdateBudg
                         fontWeight: "700",
                         cursor: "pointer",
                         background: subTab === "carry" ? "var(--accent-color)" : "transparent",
-                        color: subTab === "carry" ? "white" : "var(--text-secondary-dark)",
+                        color: subTab === "carry" ? "white" : "var(--text-secondary)",
                         transition: "all 0.2s ease"
                       }}
                     >
@@ -591,7 +591,7 @@ export default function BudgetItemsManager({ projects, currentRole, onUpdateBudg
                 </div>
               </div>
               
-              <div style={{ display: "flex", gap: "1rem", marginTop: "0.8rem", fontSize: "0.8rem", color: "var(--text-secondary-dark)" }}>
+              <div style={{ display: "flex", gap: "1rem", marginTop: "0.8rem", fontSize: "0.8rem", color: "var(--text-secondary)" }}>
                 {subTab === "main" ? (
                   <span>본예산 한도: <strong style={{ color: "white" }}>{formatToMillionWon(activeUnit.years?.[selectedYear]?.budget_main)} 백만원</strong></span>
                 ) : (
@@ -604,8 +604,8 @@ export default function BudgetItemsManager({ projects, currentRole, onUpdateBudg
             <div style={{ height: "280px", width: "100%", marginBottom: "1.5rem" }}>
               <ResponsiveContainer>
                 <BarChart data={chartData} margin={{ top: 20 }}>
-                  <XAxis dataKey="name" stroke="var(--text-secondary-dark)" height={90} interval={0} tick={<CustomizedAxisTick isMobile={isMobile} />} />
-                  <YAxis stroke="var(--text-secondary-dark)" fontSize={9} />
+                  <XAxis dataKey="name" stroke="var(--text-secondary)" height={90} interval={0} tick={<CustomizedAxisTick isMobile={isMobile} />} />
+                  <YAxis stroke="var(--text-secondary)" fontSize={9} />
                   <Tooltip
                     formatter={value => `${value.toLocaleString()} 백만원`}
                     contentStyle={{
@@ -721,7 +721,7 @@ export default function BudgetItemsManager({ projects, currentRole, onUpdateBudg
                 </table>
               </div>
 
-              <div style={{ display: "flex", alignItems: "center", gap: "0.4rem", fontSize: "0.8rem", color: "var(--text-secondary-dark)", background: "rgba(255,255,255,0.02)", padding: "0.75rem", borderRadius: "0.5rem", border: "1px solid var(--border-color-dark)" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "0.4rem", fontSize: "0.8rem", color: "var(--text-secondary)", background: "rgba(255,255,255,0.02)", padding: "0.75rem", borderRadius: "0.5rem", border: "1px solid var(--border-color-dark)" }}>
                 <Info size={14} style={{ color: "var(--accent-color)" }} />
                 <span>모든 비목의 예산 배정액은 세부 프로그램 기획(P) 단계에서 입력하신 금액의 합계로 실시간 자동 동기화됩니다 (임의 수정 불가).</span>
               </div>
@@ -735,7 +735,7 @@ export default function BudgetItemsManager({ projects, currentRole, onUpdateBudg
             )}
           </div>
         ) : (
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "300px", color: "var(--text-secondary-dark)" }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "300px", color: "var(--text-secondary)" }}>
             <Wallet size={36} style={{ marginRight: "0.5rem" }} />
             <span>좌측 목록에서 관리할 단위과제를 선택해 주세요.</span>
           </div>

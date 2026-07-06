@@ -1132,7 +1132,7 @@ export default function AgreementManager({
             <tbody>
               {displayAgreements.length === 0 ? (
                 <tr>
-                  <td colSpan={currentRole.rank <= 2 ? 9 : 8} style={{ padding: "2rem", textAlign: "center", color: "var(--text-secondary-dark)" }}>
+                  <td colSpan={currentRole.rank <= 2 ? 9 : 8} style={{ padding: "2rem", textAlign: "center", color: "var(--text-secondary)" }}>
                     등록된 협약서 내역이 없거나 필터 조건에 맞는 데이터가 없습니다.
                   </td>
                 </tr>
@@ -1254,11 +1254,11 @@ export default function AgreementManager({
             <form onSubmit={handleSubmit} style={{ padding: "1.25rem", display: "flex", flexDirection: "column", gap: "0.8rem", flex: 1, overflowY: "auto" }}>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem" }}>
                 <div>
-                  <label style={{ display: "block", fontSize: "0.65rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>협약 체결일자</label>
+                  <label style={{ display: "block", fontSize: "0.65rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>협약 체결일자</label>
                   <input type="date" value={inputDate} onChange={(e) => setInputDate(e.target.value)} style={{ width: "100%", padding: "0.35rem 0.5rem", fontSize: "0.75rem", background: "var(--input-bg)", color: "var(--text-primary)", border: "1px solid var(--border-color)", borderRadius: "0.25rem" }} />
                 </div>
                 <div>
-                  <label style={{ display: "block", fontSize: "0.65rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>관련 센터</label>
+                  <label style={{ display: "block", fontSize: "0.65rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>관련 센터</label>
                   <select value={inputCenter} onChange={(e) => setInputCenter(e.target.value)} style={{ width: "100%", padding: "0.35rem 0.5rem", fontSize: "0.75rem", background: "var(--input-bg)", color: "var(--text-primary)", border: "1px solid var(--border-color)", borderRadius: "0.25rem" }}>
                     {CENTERS_LIST.map((c) => (
                       <option key={c} value={c}>{c}</option>
@@ -1268,7 +1268,7 @@ export default function AgreementManager({
               </div>
               <div>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.4rem" }}>
-                  <label style={{ fontSize: "0.65rem", color: "var(--text-secondary-dark)" }}>협약 대상기관 및 기관 측 협약주체 목록</label>
+                  <label style={{ fontSize: "0.65rem", color: "var(--text-secondary)" }}>협약 대상기관 및 기관 측 협약주체 목록</label>
                   <button type="button" onClick={handleAddOrgField} style={{ background: "none", border: "none", color: "#60a5fa", cursor: "pointer", fontSize: "0.65rem", display: "flex", alignItems: "center", gap: "0.1rem" }}>
                     <Plus size={12} /> 기관 추가
                   </button>
@@ -1288,7 +1288,7 @@ export default function AgreementManager({
                 </div>
               </div>
               <div>
-                <label style={{ display: "block", fontSize: "0.65rem", color: "var(--text-secondary-dark)", marginBottom: "0.4rem" }}>대학 측 협약주체 (UC)</label>
+                <label style={{ display: "block", fontSize: "0.65rem", color: "var(--text-secondary)", marginBottom: "0.4rem" }}>대학 측 협약주체 (UC)</label>
                 <div style={{ display: "flex", gap: "0.4rem", marginBottom: univSubjectType === "기타" ? "0.4rem" : "0" }}>
                   // 대학 측 협약주체 고유 유형 버튼 목록에 '총장'을 추가하여 선택할 수 있도록 개선합니다.
                   {["총장", "단장", "센터장", "기타"].map((t) => {
@@ -1360,7 +1360,7 @@ export default function AgreementManager({
                 )}
               </div>
               <div>
-                <label style={{ display: "block", fontSize: "0.65rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>관련 단위과제</label>
+                <label style={{ display: "block", fontSize: "0.65rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>관련 단위과제</label>
                 <select value={inputUnitId} onChange={(e) => setInputUnitId(e.target.value)} style={{ width: "100%", padding: "0.35rem 0.5rem", fontSize: "0.75rem", background: "var(--input-bg)", color: "var(--text-primary)", border: "1px solid var(--border-color)", borderRadius: "0.25rem" }}>
                   <option value="">-- 관련 단위과제 선택 --</option>
                   {availableUnits.map((u) => (
@@ -1369,7 +1369,7 @@ export default function AgreementManager({
                 </select>
               </div>
               <div>
-                <label style={{ display: "block", fontSize: "0.65rem", color: "var(--text-secondary-dark)", marginBottom: "0.4rem" }}>협약유형</label>
+                <label style={{ display: "block", fontSize: "0.65rem", color: "var(--text-secondary)", marginBottom: "0.4rem" }}>협약유형</label>
                 <div style={{ display: "flex", gap: "0.4rem" }}>
                   {["프리미엄", "무료", "-"].map((t) => {
                     const isSelected = inputAgreementType === t;
@@ -1399,7 +1399,7 @@ export default function AgreementManager({
                 </div>
               </div>
               <div>
-                <label style={{ display: "block", fontSize: "0.65rem", color: "var(--text-secondary-dark)", marginBottom: "0.4rem" }}>협약 내용 범주 (다중 선택)</label>
+                <label style={{ display: "block", fontSize: "0.65rem", color: "var(--text-secondary)", marginBottom: "0.4rem" }}>협약 내용 범주 (다중 선택)</label>
                 <div style={{ display: "flex", flexWrap: "wrap", gap: "0.3rem" }}>
                   {AGREEMENT_CONTENTS_OPTIONS.map((c) => {
                     const isSelected = inputContents.includes(c);
@@ -1412,7 +1412,7 @@ export default function AgreementManager({
                 </div>
               </div>
               <div>
-                <label style={{ display: "block", fontSize: "0.65rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>협약서 사본 업로드</label>
+                <label style={{ display: "block", fontSize: "0.65rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>협약서 사본 업로드</label>
                 <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
                   <label style={{ display: "inline-flex", alignItems: "center", gap: "0.25rem", padding: "0.35rem 0.6rem", fontSize: "0.7rem", background: "var(--input-bg)", color: "var(--text-primary)", borderRadius: "0.25rem", cursor: "pointer", border: "1px solid var(--border-color)" }}>
                     <Upload size={14} /> 파일 선택

@@ -491,7 +491,7 @@ export default function UnitSystemView({ selectedYear = 2 }) {
 
           {/* 1. 프로젝트 드롭다운 */}
           <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
-            <label style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)", fontWeight: "700" }}>
+            <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)", fontWeight: "700" }}>
               1단계: 프로젝트 선택 (4 PJ)
             </label>
             <select
@@ -518,7 +518,7 @@ export default function UnitSystemView({ selectedYear = 2 }) {
 
           {/* 2. 단위과제 드롭다운 */}
           <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
-            <label style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)", fontWeight: "700" }}>
+            <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)", fontWeight: "700" }}>
               2단계: 단위과제 선택 (12 UP)
             </label>
             <select
@@ -545,7 +545,7 @@ export default function UnitSystemView({ selectedYear = 2 }) {
 
           {/* 3. 추진전략 드롭다운 (신설) */}
           <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
-            <label style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)", fontWeight: "700" }}>
+            <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)", fontWeight: "700" }}>
               3단계: 추진전략 선택 (Strategy; S)
             </label>
             <select

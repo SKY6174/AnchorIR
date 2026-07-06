@@ -677,7 +677,7 @@ export default function AwardManager({
           <tbody>
             {sortedAwards.length === 0 ? (
               <tr>
-                <td colSpan={currentRole.rank <= 2 ? 6 : 5} style={{ padding: "2rem", textAlign: "center", color: "var(--text-secondary-dark)" }}>
+                <td colSpan={currentRole.rank <= 2 ? 6 : 5} style={{ padding: "2rem", textAlign: "center", color: "var(--text-secondary)" }}>
                   등록된 상장 발급 내역이 없습니다.
                 </td>
               </tr>
@@ -751,26 +751,26 @@ export default function AwardManager({
             </div>
             <form onSubmit={handleAwardSubmit} style={{ padding: "1.25rem", display: "flex", flexDirection: "column", gap: "0.8rem", flex: 1, overflowY: "auto" }}>
               <div>
-                <label style={{ display: "block", fontSize: "0.65rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>발급번호</label>
+                <label style={{ display: "block", fontSize: "0.65rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>발급번호</label>
                 <input type="text" placeholder="예: 제 2026-상장-0001 호" value={awardNo} onChange={(e) => setAwardNo(e.target.value)} style={{ width: "100%", padding: "0.35rem 0.5rem", fontSize: "0.75rem", background: "var(--input-bg)", color: "var(--text-primary)", border: "1px solid var(--border-color)", borderRadius: "0.25rem" }} />
               </div>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem" }}>
                 <div>
-                  <label style={{ display: "block", fontSize: "0.65rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>발급대상 소속</label>
+                  <label style={{ display: "block", fontSize: "0.65rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>발급대상 소속</label>
                   <input type="text" placeholder="예: 울산과학대학교" value={awardDept} onChange={(e) => setAwardDept(e.target.value)} style={{ width: "100%", padding: "0.35rem 0.5rem", fontSize: "0.75rem", background: "var(--input-bg)", color: "var(--text-primary)", border: "1px solid var(--border-color)", borderRadius: "0.25rem" }} />
                 </div>
                 <div>
-                  <label style={{ display: "block", fontSize: "0.65rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>발급대상 성명</label>
+                  <label style={{ display: "block", fontSize: "0.65rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>발급대상 성명</label>
                   <input type="text" placeholder="예: 홍길동" value={awardName} onChange={(e) => setAwardName(e.target.value)} style={{ width: "100%", padding: "0.35rem 0.5rem", fontSize: "0.75rem", background: "var(--input-bg)", color: "var(--text-primary)", border: "1px solid var(--border-color)", borderRadius: "0.25rem" }} />
                 </div>
               </div>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem" }}>
                 <div>
-                  <label style={{ display: "block", fontSize: "0.65rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>발급일자</label>
+                  <label style={{ display: "block", fontSize: "0.65rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>발급일자</label>
                   <input type="date" value={awardDate} onChange={(e) => setAwardDate(e.target.value)} style={{ width: "100%", padding: "0.35rem 0.5rem", fontSize: "0.75rem", background: "var(--input-bg)", color: "var(--text-primary)", border: "1px solid var(--border-color)", borderRadius: "0.25rem" }} />
                 </div>
                 <div>
-                  <label style={{ display: "block", fontSize: "0.65rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>발급주체</label>
+                  <label style={{ display: "block", fontSize: "0.65rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>발급주체</label>
                   <select value={awardIssuer} onChange={(e) => setAwardIssuer(e.target.value)} style={{ width: "100%", padding: "0.35rem 0.5rem", fontSize: "0.75rem", background: "var(--input-bg)", color: "var(--text-primary)", border: "1px solid var(--border-color)", borderRadius: "0.25rem" }}>
                     <option value="사업단장">사업단장</option>
                     <option value="늘봄누리센터장">늘봄누리센터장</option>
@@ -778,7 +778,7 @@ export default function AwardManager({
                 </div>
               </div>
               <div>
-                <label style={{ display: "block", fontSize: "0.65rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>상장 사본 업로드</label>
+                <label style={{ display: "block", fontSize: "0.65rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>상장 사본 업로드</label>
                 <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
                   <label style={{ display: "inline-flex", alignItems: "center", gap: "0.25rem", padding: "0.35rem 0.6rem", fontSize: "0.7rem", background: "var(--input-bg)", color: "var(--text-primary)", borderRadius: "0.25rem", cursor: "pointer", border: "1px solid var(--border-color)" }}>
                     <Upload size={14} /> 파일 선택

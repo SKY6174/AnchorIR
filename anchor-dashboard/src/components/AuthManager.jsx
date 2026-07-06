@@ -204,7 +204,7 @@ export default function AuthManager({ onLoginSuccess, members = [] }) {
         <div style={{ textAlign: "center", marginBottom: "2rem" }}>
           <Award size={48} style={{ color: "var(--accent-color)", marginBottom: "0.75rem", animation: "float 3s ease-in-out infinite" }} />
           <h2 style={{ fontSize: "1.5rem", fontWeight: "800", letterSpacing: "-0.04em" }}>UC ANCHOR Portal</h2>
-          <p style={{ fontSize: "0.85rem", color: "var(--text-secondary-dark)", marginTop: "0.25rem" }}>
+          <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)", marginTop: "0.25rem" }}>
             앵커사업 통합 대시보드 로그인
           </p>
         </div>
@@ -223,7 +223,7 @@ export default function AuthManager({ onLoginSuccess, members = [] }) {
 
         <form onSubmit={handleLogin} style={{ display: "flex", flexDirection: "column", gap: "1.2rem" }}>
           <div style={{ position: "relative" }}>
-            <User size={16} style={{ position: "absolute", left: "1rem", top: "50%", transform: "translateY(-50%)", color: "var(--text-secondary-dark)" }} />
+            <User size={16} style={{ position: "absolute", left: "1rem", top: "50%", transform: "translateY(-50%)", color: "var(--text-secondary)" }} />
             <input
               type="text"
               placeholder="이메일 (또는 아이디)"
@@ -235,7 +235,7 @@ export default function AuthManager({ onLoginSuccess, members = [] }) {
           </div>
 
           <div style={{ position: "relative" }}>
-            <Lock size={16} style={{ position: "absolute", left: "1rem", top: "50%", transform: "translateY(-50%)", color: "var(--text-secondary-dark)" }} />
+            <Lock size={16} style={{ position: "absolute", left: "1rem", top: "50%", transform: "translateY(-50%)", color: "var(--text-secondary)" }} />
             <input
               type="password"
               placeholder="비밀번호"
@@ -246,7 +246,7 @@ export default function AuthManager({ onLoginSuccess, members = [] }) {
             />
           </div>
 
-          <div style={{ fontSize: "0.72rem", color: "var(--text-secondary-dark)", lineHeight: "1.4", padding: "0.5rem", background: "rgba(255,255,255,0.02)", border: "1px dashed var(--border-color-dark)", borderRadius: "0.25rem", display: "flex", flexDirection: "column", gap: "0.25rem" }}>
+          <div style={{ fontSize: "0.72rem", color: "var(--text-secondary)", lineHeight: "1.4", padding: "0.5rem", background: "rgba(255,255,255,0.02)", border: "1px dashed var(--border-color-dark)", borderRadius: "0.25rem", display: "flex", flexDirection: "column", gap: "0.25rem" }}>
             <p style={{ margin: 0 }}>※ 별도의 회원가입 없이 주소록에 등록된 이메일로 로그인하세요.</p>
             <p style={{ margin: 0 }}>※ 초기 비밀번호는 본인의 휴대전화 뒷번호 4자리 뒤에 00을 붙인 6자리입니다. (예: 7123 이면 712300)</p>
             <p style={{ margin: 0, color: "#60A5FA", fontWeight: "700" }}>🔑 게스트 로그인 안내: ID: <span style={{ textDecoration: "underline" }}>guest</span> / PW: <span style={{ textDecoration: "underline" }}>guest123</span></p>

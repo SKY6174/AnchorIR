@@ -294,7 +294,7 @@ export default function ExcelUploader({
           <h3 style={{ fontSize: "1.1rem", fontWeight: "800" }}>
             {mode === "BUDGET" ? "예산 및 프로그램 엑셀 데이터 업데이트" : "성과지표 엑셀 데이터 업데이트"}
           </h3>
-          <p style={{ fontSize: "0.85rem", color: "var(--text-secondary-dark)", marginTop: "0.2rem" }}>
+          <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)", marginTop: "0.2rem" }}>
             {mode === "BUDGET"
               ? "2026년 본사업비/2025년 이월비 재원이 구분된 예산 엑셀 양식을 업로드하여 실시간으로 반영합니다."
               : "각 단위과제별 성과지표 및 세부항목의 목표치/실적 엑셀 양식을 업로드하여 실시간으로 반영합니다."}
@@ -302,7 +302,7 @@ export default function ExcelUploader({
         </div>
         <div style={{ display: "flex", gap: "0.75rem" }}>
           {mode === "BUDGET" ? (
-            <button className="btn-primary" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", color: "var(--text-primary-dark)" }} onClick={() => downloadSample("BUDGET")}>
+            <button className="btn-primary" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", color: "var(--text-primary)" }} onClick={() => downloadSample("BUDGET")}>
               <Download size={16} />
               <span>
                 {viewMode === "unit" && selectedUnitId 
@@ -311,7 +311,7 @@ export default function ExcelUploader({
               </span>
             </button>
           ) : (
-            <button className="btn-primary" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", color: "var(--text-primary-dark)" }} onClick={() => downloadSample("KPI")}>
+            <button className="btn-primary" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", color: "var(--text-primary)" }} onClick={() => downloadSample("KPI")}>
               <Download size={16} />
               <span>성과지표 양식 받기</span>
             </button>
@@ -356,7 +356,7 @@ export default function ExcelUploader({
               <FileSpreadsheet size={48} style={{ color: "var(--accent-color)" }} />
               <div>
                 <span style={{ fontWeight: "700" }}>파일을 끌어다 놓거나, 클릭하여 찾아보기</span>
-                <p style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)", marginTop: "0.3rem" }}>
+                <p style={{ fontSize: "0.75rem", color: "var(--text-secondary)", marginTop: "0.3rem" }}>
                   지원 포맷: .xlsx, .xls ({mode === "BUDGET" ? "앵커사업 재원 구분 예산양식" : "성과지표 관리양식"})
                 </p>
               </div>

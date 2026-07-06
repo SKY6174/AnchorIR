@@ -422,7 +422,7 @@ export default function PartnerManager({ selectedYear }) {
           <Globe size={22} />
           파트너기관 정보 관리 (지·산·학 파트너십 CRM)
         </h2>
-        <p style={{ fontSize: "0.9rem", color: "var(--text-secondary-dark)", lineHeight: "1.5" }}>
+        <p style={{ fontSize: "0.9rem", color: "var(--text-secondary)", lineHeight: "1.5" }}>
           울산과학대학교 앵커 사업의 핵심 동반자인 지자체, 공공기관, 유관 협회, 주요 산업체 및 교류 대학들의 파트너십 정보를 집중 보존하고 관리합니다.
           협약 관리 대장과도 유기적으로 연동하여 분야별 협력 역량을 통합 조회합니다.
         </p>
@@ -704,7 +704,7 @@ export default function PartnerManager({ selectedYear }) {
               ))
             ) : (
               <tr>
-                <td colSpan={8} style={{ padding: "3rem", textAlign: "center", color: "var(--text-secondary-dark)" }}>
+                <td colSpan={8} style={{ padding: "3rem", textAlign: "center", color: "var(--text-secondary)" }}>
                   검색 조건에 부합하는 파트너기관 정보가 존재하지 않습니다.
                 </td>
               </tr>
@@ -752,7 +752,7 @@ export default function PartnerManager({ selectedYear }) {
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
                 {/* 기관명 */}
                 <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
-                  <label style={{ fontSize: "0.8rem", color: "var(--text-secondary-dark)" }}>기관명 *</label>
+                  <label style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>기관명 *</label>
                   <input
                     type="text"
                     required
@@ -770,7 +770,7 @@ export default function PartnerManager({ selectedYear }) {
 
                 {/* 지역 */}
                 <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
-                  <label style={{ fontSize: "0.8rem", color: "var(--text-secondary-dark)" }}>지역/도시 *</label>
+                  <label style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>지역/도시 *</label>
                   <input
                     type="text"
                     required
@@ -790,7 +790,7 @@ export default function PartnerManager({ selectedYear }) {
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
                 {/* 대분류 */}
                 <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
-                  <label style={{ fontSize: "0.8rem", color: "var(--text-secondary-dark)" }}>기관 대분류</label>
+                  <label style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>기관 대분류</label>
                   <select
                     value={formCategory}
                     onChange={(e) => setFormCategory(e.target.value)}
@@ -810,7 +810,7 @@ export default function PartnerManager({ selectedYear }) {
 
                 {/* 세부분류 */}
                 <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
-                  <label style={{ fontSize: "0.8rem", color: "var(--text-secondary-dark)" }}>세부 분류</label>
+                  <label style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>세부 분류</label>
                   <select
                     value={formSubCategory}
                     onChange={(e) => setFormSubCategory(e.target.value)}
@@ -832,7 +832,7 @@ export default function PartnerManager({ selectedYear }) {
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
                 {/* 담당자 */}
                 <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
-                  <label style={{ fontSize: "0.8rem", color: "var(--text-secondary-dark)" }}>담당자 성명</label>
+                  <label style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>담당자 성명</label>
                   <input
                     type="text"
                     value={formContactPerson}
@@ -849,7 +849,7 @@ export default function PartnerManager({ selectedYear }) {
 
                 {/* 연락처 */}
                 <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
-                  <label style={{ fontSize: "0.8rem", color: "var(--text-secondary-dark)" }}>연락처 (전화번호)</label>
+                  <label style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>연락처 (전화번호)</label>
                   <input
                     type="text"
                     value={formContactPhone}
@@ -868,7 +868,7 @@ export default function PartnerManager({ selectedYear }) {
 
               {/* 협력 분야 다중 선택 */}
               <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
-                <label style={{ fontSize: "0.8rem", color: "var(--text-secondary-dark)" }}>협력분야 (다중선택)</label>
+                <label style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>협력분야 (다중선택)</label>
                 <div style={{ display: "flex", gap: "0.4rem", flexWrap: "wrap", maxHeight: "120px", overflowY: "auto", padding: "0.5rem", background: "rgba(0,0,0,0.2)", borderRadius: "6px" }}>
                   {SECTOR_OPTIONS.map((sec) => {
                     const isSelected = formSectors.includes(sec);
@@ -886,7 +886,7 @@ export default function PartnerManager({ selectedYear }) {
                           cursor: "pointer",
                           transition: "all 0.15s ease",
                           background: isSelected ? "rgba(59, 130, 246, 0.2)" : "rgba(255, 255, 255, 0.03)",
-                          color: isSelected ? "var(--accent-color)" : "var(--text-secondary-dark)",
+                          color: isSelected ? "var(--accent-color)" : "var(--text-secondary)",
                           border: isSelected ? "1px solid var(--accent-color)" : "1px solid rgba(255, 255, 255, 0.08)"
                         }}
                       >
@@ -899,7 +899,7 @@ export default function PartnerManager({ selectedYear }) {
 
               {/* 메모 */}
               <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
-                <label style={{ fontSize: "0.8rem", color: "var(--text-secondary-dark)" }}>주요 협력 메모 / 추진 실적</label>
+                <label style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>주요 협력 메모 / 추진 실적</label>
                 <textarea
                   value={formRemarks}
                   onChange={(e) => setFormRemarks(e.target.value)}

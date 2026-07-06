@@ -1696,7 +1696,7 @@ export default function ProcurementManager({
             <div style={{ display: "flex", gap: "0.75rem", alignItems: "center", flexWrap: "wrap" }}>
               {/* 학과 필터 */}
               <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                <ListFilter size={16} style={{ color: "var(--text-secondary-dark)" }} />
+                <ListFilter size={16} style={{ color: "var(--text-secondary)" }} />
                 <select
                   value={deptFilter}
                   onChange={(e) => setDeptFilter(e.target.value)}
@@ -1745,7 +1745,7 @@ export default function ProcurementManager({
 
               {/* 부서 필터 */}
               <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                <ListFilter size={16} style={{ color: "var(--text-secondary-dark)" }} />
+                <ListFilter size={16} style={{ color: "var(--text-secondary)" }} />
                 <select
                   value={divisionFilter}
                   onChange={(e) => setDivisionFilter(e.target.value)}
@@ -1801,7 +1801,7 @@ export default function ProcurementManager({
 
               {/* 전체 과제 필터 */}
               <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                <ListFilter size={16} style={{ color: "var(--text-secondary-dark)" }} />
+                <ListFilter size={16} style={{ color: "var(--text-secondary)" }} />
                 <select
                   value={selectedEquipUnit}
                   onChange={(e) => setSelectedEquipUnit(e.target.value)}
@@ -2419,7 +2419,7 @@ export default function ProcurementManager({
             <div style={{ display: "flex", gap: "0.75rem", alignItems: "center", flexWrap: "wrap" }}>
               {/* 학과 필터 (요건 1: 모달창과 동일한 고정 전체 학과 목록 맵핑) */}
               <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                <ListFilter size={16} style={{ color: "var(--text-secondary-dark)" }} />
+                <ListFilter size={16} style={{ color: "var(--text-secondary)" }} />
                 <select
                   value={deptFilter}
                   onChange={(e) => setDeptFilter(e.target.value)}
@@ -2468,7 +2468,7 @@ export default function ProcurementManager({
 
               {/* 부서 필터 (요건 1: 모달창과 동일한 고정 전체 본부/산단 하위 부서 목록 맵핑 및 사업단 최상단 배치) */}
               <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                <ListFilter size={16} style={{ color: "var(--text-secondary-dark)" }} />
+                <ListFilter size={16} style={{ color: "var(--text-secondary)" }} />
                 <select
                   value={divisionFilter}
                   onChange={(e) => setDivisionFilter(e.target.value)}
@@ -2524,7 +2524,7 @@ export default function ProcurementManager({
 
               {/* 단위과제 필터 */}
               <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                <ListFilter size={16} style={{ color: "var(--text-secondary-dark)" }} />
+                <ListFilter size={16} style={{ color: "var(--text-secondary)" }} />
                 <select
                   value={selectedEquipUnit}
                   onChange={(e) => setSelectedEquipUnit(e.target.value)}
@@ -2614,7 +2614,7 @@ export default function ProcurementManager({
                         단가
                         <ArrowUpDown size={12} style={{ opacity: sortField === "unitPrice" ? 1 : 0.4 }} />
                       </div>
-                      <span style={{ fontSize: "0.68rem", fontWeight: "400", color: "var(--text-secondary-dark)", marginTop: "0.1rem" }}>(백만원)</span>
+                      <span style={{ fontSize: "0.68rem", fontWeight: "400", color: "var(--text-secondary)", marginTop: "0.1rem" }}>(백만원)</span>
                     </div>
                   </th>
                   <th rowSpan={3} style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "50px", verticalAlign: "middle" }}>수량</th>
@@ -3298,7 +3298,7 @@ export default function ProcurementManager({
             <div style={{ display: "flex", gap: "0.75rem", alignItems: "center", flexWrap: "wrap" }}>
               {/* 학과 필터 */}
               <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                <ListFilter size={16} style={{ color: "var(--text-secondary-dark)" }} />
+                <ListFilter size={16} style={{ color: "var(--text-secondary)" }} />
                 <select
                   value={deptFilter}
                   onChange={(e) => setDeptFilter(e.target.value)}
@@ -3347,7 +3347,7 @@ export default function ProcurementManager({
 
               {/* 부서 필터 */}
               <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                <ListFilter size={16} style={{ color: "var(--text-secondary-dark)" }} />
+                <ListFilter size={16} style={{ color: "var(--text-secondary)" }} />
                 <select
                   value={divisionFilter}
                   onChange={(e) => setDivisionFilter(e.target.value)}
@@ -3403,7 +3403,7 @@ export default function ProcurementManager({
 
               {/* 전체 과제 필터 */}
               <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                <ListFilter size={16} style={{ color: "var(--text-secondary-dark)" }} />
+                <ListFilter size={16} style={{ color: "var(--text-secondary)" }} />
                 <select
                   value={selectedEquipUnit}
                   onChange={(e) => setSelectedEquipUnit(e.target.value)}
@@ -3799,7 +3799,7 @@ export default function ProcurementManager({
                   {/* 첫번째 줄: 단위과제, 사업연차 */}
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginBottom: "1rem" }}>
                     <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>단위과제</label>
+                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>단위과제</label>
                       <select 
                         name="unit" 
                         value={formData.unit} 
@@ -3818,7 +3818,7 @@ export default function ProcurementManager({
                       </select>
                     </div>
                     <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>사업연차</label>
+                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>사업연차</label>
                       <select 
                         name="year" 
                         value={formData.year || selectedYear} 
@@ -3835,7 +3835,7 @@ export default function ProcurementManager({
                   {/* 두번째 줄: 학과 선택, 부서 선택 */}
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginBottom: "0.25rem" }}>
                     <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>학과 선택</label>
+                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>학과 선택</label>
                       <select 
                         name="deptName" 
                         value={formData.deptName} 
@@ -3877,7 +3877,7 @@ export default function ProcurementManager({
                       </select>
                     </div>
                     <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>부서 선택</label>
+                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>부서 선택</label>
                       <select 
                         name="divisionName" 
                         value={formData.divisionName} 
@@ -3933,18 +3933,18 @@ export default function ProcurementManager({
                   {/* 세번째 줄: 구축 공간명, 구축 위치(지정 호실) */}
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginBottom: "1rem" }}>
                     <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>구축 공간명</label>
+                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>구축 공간명</label>
                       <input type="text" name="title" value={formData.title} onChange={handleInputChange} required placeholder="예: 3층 RISE 바이오 메디컬 실습실 구축" style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} />
                     </div>
                     <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>구축 위치 (지정 호실)</label>
+                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>구축 위치 (지정 호실)</label>
                       <input type="text" name="location" value={formData.location} onChange={handleInputChange} required placeholder="예: 대학 본관 302호" style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} />
                     </div>
                   </div>
 
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginBottom: "1rem" }}>
                     <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>사업비 (백만원)</label>
+                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>사업비 (백만원)</label>
                       <input 
                         type="number" 
                         name="unitPrice" 
@@ -3957,7 +3957,7 @@ export default function ProcurementManager({
                       />
                     </div>
                     <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>현재 실제 집행액 (백만원)</label>
+                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>현재 실제 집행액 (백만원)</label>
                       <input 
                         type="number" 
                         name="budgetSpent" 
@@ -3977,42 +3977,42 @@ export default function ProcurementManager({
                     </span>
                     <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: "0.75rem" }}>
                       <div>
-                        <label style={{ display: "block", fontSize: "0.68rem", color: "var(--text-secondary-dark)", marginBottom: "0.2rem", whiteSpace: "nowrap" }}>요청(Rq) 일</label>
+                        <label style={{ display: "block", fontSize: "0.68rem", color: "var(--text-secondary)", marginBottom: "0.2rem", whiteSpace: "nowrap" }}>요청(Rq) 일</label>
                         <input type="date" name="dateP" value={formData.dateP || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.4rem 0.35rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white", fontSize: "0.72rem" }} />
                       </div>
                       <div>
-                        <label style={{ display: "block", fontSize: "0.68rem", color: "var(--text-secondary-dark)", marginBottom: "0.2rem", whiteSpace: "nowrap" }}>검토∙심의∙결정(PDR) 일</label>
+                        <label style={{ display: "block", fontSize: "0.68rem", color: "var(--text-secondary)", marginBottom: "0.2rem", whiteSpace: "nowrap" }}>검토∙심의∙결정(PDR) 일</label>
                         <input type="date" name="dateA" value={formData.dateA || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.4rem 0.35rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white", fontSize: "0.72rem" }} />
                       </div>
                       <div>
-                        <label style={{ display: "block", fontSize: "0.68rem", color: "var(--text-secondary-dark)", marginBottom: "0.2rem", whiteSpace: "nowrap" }}>설계∙인허가(DL) 일</label>
+                        <label style={{ display: "block", fontSize: "0.68rem", color: "var(--text-secondary)", marginBottom: "0.2rem", whiteSpace: "nowrap" }}>설계∙인허가(DL) 일</label>
                         <input type="date" name="dateB" value={formData.dateB || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.4rem 0.35rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white", fontSize: "0.72rem" }} />
                       </div>
                       <div>
-                        <label style={{ display: "block", fontSize: "0.68rem", color: "var(--text-secondary-dark)", marginBottom: "0.2rem", whiteSpace: "nowrap" }}>입찰∙계약(BC) 일</label>
+                        <label style={{ display: "block", fontSize: "0.68rem", color: "var(--text-secondary)", marginBottom: "0.2rem", whiteSpace: "nowrap" }}>입찰∙계약(BC) 일</label>
                         <input type="date" name="datePr" value={formData.datePr || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.4rem 0.35rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white", fontSize: "0.72rem" }} />
                       </div>
                       <div>
-                        <label style={{ display: "block", fontSize: "0.68rem", color: "var(--text-secondary-dark)", marginBottom: "0.2rem", whiteSpace: "nowrap" }}>시공∙감리(CS) 일</label>
+                        <label style={{ display: "block", fontSize: "0.68rem", color: "var(--text-secondary)", marginBottom: "0.2rem", whiteSpace: "nowrap" }}>시공∙감리(CS) 일</label>
                         <input type="date" name="dateI" value={formData.dateI || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.4rem 0.35rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white", fontSize: "0.72rem" }} />
                       </div>
                     </div>
                   </div>
 
                   <div>
-                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>구축 목적 (공간 용도)</label>
+                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>구축 목적 (공간 용도)</label>
                     <textarea name="purpose" value={formData.purpose} onChange={handleInputChange} required placeholder="특화 인력 양성을 위한 핵심 시너지 공간 용도 상세 기술" style={{ width: "100%", height: "50px", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white", resize: "none" }} />
                   </div>
                   <div>
-                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>향후 활용 계획</label>
+                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>향후 활용 계획</label>
                     <input type="text" name="utilization" value={formData.utilization} onChange={handleInputChange} required placeholder="예: 공간 연계 교육과정 활용 방식 및 융합 연구 활용" style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} />
                   </div>
                   <div>
-                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>세부 공간 구축 설계 계획 (선택)</label>
+                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>세부 공간 구축 설계 계획 (선택)</label>
                     <textarea name="plan" value={formData.plan} onChange={handleInputChange} placeholder="예: 바닥 전선 몰딩, 방음벽 흡음 패널 시공 및 스마트 미러링 보드 마운팅 작업" style={{ width: "100%", height: "50px", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white", resize: "none" }} />
                   </div>
                   <div>
-                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>공사 진행 실적 현황 (선택)</label>
+                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>공사 진행 실적 현황 (선택)</label>
                     <textarea name="progress" value={formData.progress} onChange={handleInputChange} placeholder="현재 진행 실무 정보 기술" style={{ width: "100%", height: "50px", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white", resize: "none" }} />
                   </div>
                 </>
@@ -4023,7 +4023,7 @@ export default function ProcurementManager({
                 <>
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginBottom: "1rem" }}>
                     <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>단위과제</label>
+                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>단위과제</label>
                       <select 
                         name="unit" 
                         value={formData.unit} 
@@ -4042,7 +4042,7 @@ export default function ProcurementManager({
                       </select>
                     </div>
                     <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>사업연차 선택</label>
+                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>사업연차 선택</label>
                       <select 
                         name="year" 
                         value={formData.year || selectedYear} 
@@ -4057,7 +4057,7 @@ export default function ProcurementManager({
                   </div>
 
                   <div style={{ marginBottom: "1rem" }}>
-                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>연계 프로그램</label>
+                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>연계 프로그램</label>
                     <select 
                       name="operation" 
                       value={formData.operation} 
@@ -4073,7 +4073,7 @@ export default function ProcurementManager({
 
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
                     <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>학과 선택</label>
+                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>학과 선택</label>
                       <select 
                         name="deptName" 
                         value={formData.deptName} 
@@ -4116,7 +4116,7 @@ export default function ProcurementManager({
                       </select>
                     </div>
                     <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>부서 선택</label>
+                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>부서 선택</label>
                       <select 
                         name="divisionName" 
                         value={formData.divisionName} 
@@ -4172,7 +4172,7 @@ export default function ProcurementManager({
                     * 학과 또는 부서 중 최소 한 곳은 필수로 지정되어야 합니다.
                   </span>
                   <div>
-                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>품명</label>
+                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>품명</label>
                     <input type="text" name="name" value={formData.name} onChange={handleInputChange} required placeholder="예: 임상 실습용 스마트 베드" style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} />
                   </div>
                   {modalType !== "env" && (() => {
@@ -4183,25 +4183,25 @@ export default function ProcurementManager({
                       <>
                         <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr 2fr", gap: "1rem" }}>
                           <div>
-                            <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>단가 (백만원)</label>
+                            <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>단가 (백만원)</label>
                             <input type="number" name="unitPrice" step="0.01" value={formData.unitPrice} onChange={handleInputChange} required placeholder="예: 120.00" style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} />
                           </div>
                           <div>
-                            <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>수량</label>
+                            <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>수량</label>
                             <input type="number" name="quantity" value={formData.quantity} onChange={handleInputChange} required placeholder="예: 2" style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} />
                           </div>
                           <div>
-                            <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>금액 (백만원)</label>
+                            <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>금액 (백만원)</label>
                             <input type="text" value={`${parseFloat(totalInMillion).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} 백만원`} readOnly style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.02)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "#10B981", fontWeight: "bold" }} />
                           </div>
                         </div>
                         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
                           <div>
-                            <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>구입목적</label>
+                            <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>구입목적</label>
                             <textarea name="descriptionPurpose" value={formData.descriptionPurpose || ""} onChange={handleInputChange} required placeholder="기자재의 구입 목적 및 타당성 상세 기술" style={{ width: "100%", height: "60px", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white", resize: "none" }} />
                           </div>
                           <div>
-                            <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>활용계획</label>
+                            <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>활용계획</label>
                             <textarea name="descriptionPlan" value={formData.descriptionPlan || ""} onChange={handleInputChange} required placeholder="핵심 활용 계획 및 예상 시너지 상세 기술" style={{ width: "100%", height: "60px", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white", resize: "none" }} />
                           </div>
                         </div>
@@ -4212,11 +4212,11 @@ export default function ProcurementManager({
                   {modalType === "env" && (
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
                       <div>
-                        <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>구축목적</label>
+                        <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>구축목적</label>
                         <textarea name="descriptionPurpose" value={formData.descriptionPurpose || ""} onChange={handleInputChange} required placeholder="환경구축의 목적 및 타당성 상세 기술" style={{ width: "100%", height: "60px", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white", resize: "none" }} />
                       </div>
                       <div>
-                        <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>활용계획</label>
+                        <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>활용계획</label>
                         <textarea name="descriptionPlan" value={formData.descriptionPlan || ""} onChange={handleInputChange} required placeholder="핵심 활용 계획 및 예상 시너지 상세 기술" style={{ width: "100%", height: "60px", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white", resize: "none" }} />
                       </div>
                     </div>
@@ -4228,31 +4228,31 @@ export default function ProcurementManager({
                     </span>
                     <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: "0.5rem" }}>
                       <div>
-                        <label style={{ display: "block", fontSize: "0.7rem", color: "var(--text-secondary-dark)", marginBottom: "0.2rem" }}>
+                        <label style={{ display: "block", fontSize: "0.7rem", color: "var(--text-secondary)", marginBottom: "0.2rem" }}>
                           {modalType === "env" ? "요청(Rq) 일자" : "기획(P) 일자"}
                         </label>
                         <input type="date" name="dateP" value={formData.dateP || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.3rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white", fontSize: "0.72rem" }} />
                       </div>
                       <div>
-                        <label style={{ display: "block", fontSize: "0.7rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>
+                        <label style={{ display: "block", fontSize: "0.7rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>
                           {modalType === "env" ? "심의(DR) 일자" : "승인(A) 일자"}
                         </label>
                         <input type="date" name="dateA" value={formData.dateA || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.3rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white", fontSize: "0.72rem" }} />
                       </div>
                       <div>
-                        <label style={{ display: "block", fontSize: "0.7rem", color: "var(--text-secondary-dark)", marginBottom: "0.2rem" }}>
+                        <label style={{ display: "block", fontSize: "0.7rem", color: "var(--text-secondary)", marginBottom: "0.2rem" }}>
                           {modalType === "env" ? "용역(DL) 일자" : "입찰(B) 일자"}
                         </label>
                         <input type="date" name="dateB" value={formData.dateB || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.3rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white", fontSize: "0.72rem" }} />
                       </div>
                       <div>
-                        <label style={{ display: "block", fontSize: "0.7rem", color: "var(--text-secondary-dark)", marginBottom: "0.2rem" }}>
+                        <label style={{ display: "block", fontSize: "0.7rem", color: "var(--text-secondary)", marginBottom: "0.2rem" }}>
                           {modalType === "env" ? "선정(BC) 일자" : "구매(Pr) 일자"}
                         </label>
                         <input type="date" name="datePr" value={formData.datePr || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.3rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white", fontSize: "0.72rem" }} />
                       </div>
                       <div>
-                        <label style={{ display: "block", fontSize: "0.7rem", color: "var(--text-secondary-dark)", marginBottom: "0.2rem" }}>
+                        <label style={{ display: "block", fontSize: "0.7rem", color: "var(--text-secondary)", marginBottom: "0.2rem" }}>
                           {modalType === "env" ? "시공(CS) 일자" : "검수(I) 일자"}
                         </label>
                         <input type="date" name="dateI" value={formData.dateI || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.3rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white", fontSize: "0.72rem" }} />
@@ -4312,7 +4312,7 @@ export default function ProcurementManager({
                             ) : (
                               <label 
                                 htmlFor="file-plan-upload" 
-                                style={{ display: "block", flex: 1, textAlign: "center", padding: "0.6rem", border: "1px dashed rgba(255,255,255,0.2)", borderRadius: "6px", cursor: "pointer", background: "rgba(255,255,255,0.02)", fontSize: "0.75rem", color: "var(--text-secondary-dark)", transition: "background 0.2s" }}
+                                style={{ display: "block", flex: 1, textAlign: "center", padding: "0.6rem", border: "1px dashed rgba(255,255,255,0.2)", borderRadius: "6px", cursor: "pointer", background: "rgba(255,255,255,0.02)", fontSize: "0.75rem", color: "var(--text-secondary)", transition: "background 0.2s" }}
                                 onMouseOver={(e) => e.target.style.background = "rgba(255,255,255,0.05)"}
                                 onMouseOut={(e) => e.target.style.background = "rgba(255,255,255,0.02)"}
                               >
@@ -4379,7 +4379,7 @@ export default function ProcurementManager({
                             ) : (
                               <label 
                                 htmlFor="file-purchase-upload" 
-                                style={{ display: "block", flex: 1, textAlign: "center", padding: "0.6rem", border: "1px dashed rgba(255,255,255,0.2)", borderRadius: "6px", cursor: "pointer", background: "rgba(255,255,255,0.02)", fontSize: "0.75rem", color: "var(--text-secondary-dark)", transition: "background 0.2s" }}
+                                style={{ display: "block", flex: 1, textAlign: "center", padding: "0.6rem", border: "1px dashed rgba(255,255,255,0.2)", borderRadius: "6px", cursor: "pointer", background: "rgba(255,255,255,0.02)", fontSize: "0.75rem", color: "var(--text-secondary)", transition: "background 0.2s" }}
                                 onMouseOver={(e) => e.target.style.background = "rgba(255,255,255,0.05)"}
                                 onMouseOut={(e) => e.target.style.background = "rgba(255,255,255,0.02)"}
                               >
@@ -4446,7 +4446,7 @@ export default function ProcurementManager({
                             ) : (
                               <label 
                                 htmlFor="file-bid-upload" 
-                                style={{ display: "block", flex: 1, textAlign: "center", padding: "0.6rem", border: "1px dashed rgba(255,255,255,0.2)", borderRadius: "6px", cursor: "pointer", background: "rgba(255,255,255,0.02)", fontSize: "0.75rem", color: "var(--text-secondary-dark)", transition: "background 0.2s" }}
+                                style={{ display: "block", flex: 1, textAlign: "center", padding: "0.6rem", border: "1px dashed rgba(255,255,255,0.2)", borderRadius: "6px", cursor: "pointer", background: "rgba(255,255,255,0.02)", fontSize: "0.75rem", color: "var(--text-secondary)", transition: "background 0.2s" }}
                                 onMouseOver={(e) => e.target.style.background = "rgba(255,255,255,0.05)"}
                                 onMouseOut={(e) => e.target.style.background = "rgba(255,255,255,0.02)"}
                               >
@@ -4484,7 +4484,7 @@ export default function ProcurementManager({
                   {/* 첫번째 줄: 단위과제, 프로그램 진행 상황 (비율 = 1:2) */}
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: "1rem" }}>
                     <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>단위과제</label>
+                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>단위과제</label>
                       <select 
                         name="unit" 
                         value={formData.unit} 
@@ -4508,7 +4508,7 @@ export default function ProcurementManager({
                       </select>
                     </div>
                     <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>연계 프로그램 (진행 상황)</label>
+                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>연계 프로그램 (진행 상황)</label>
                       <select 
                         name="programSelect" 
                         value={formData.programId && formData.programName ? `${formData.programId}|${formData.programName}` : ""}
@@ -4545,7 +4545,7 @@ export default function ProcurementManager({
                   {/* 두번째 줄: 관련학과, 관련부서 (학과, 부서 중 택1 필수) */}
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
                     <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>관련학과 (배정 학과) <span style={{ color: "#f59e0b", fontSize: "0.75rem", fontWeight: "700" }}>(학과/부서 중 택1 필수)</span></label>
+                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>관련학과 (배정 학과) <span style={{ color: "#f59e0b", fontSize: "0.75rem", fontWeight: "700" }}>(학과/부서 중 택1 필수)</span></label>
                       <select 
                         name="deptName" 
                         value={formData.deptName} 
@@ -4588,7 +4588,7 @@ export default function ProcurementManager({
                       </select>
                     </div>
                     <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>관련부서 (배정 행정부서) <span style={{ color: "#f59e0b", fontSize: "0.75rem", fontWeight: "700" }}>(학과/부서 중 택1 필수)</span></label>
+                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>관련부서 (배정 행정부서) <span style={{ color: "#f59e0b", fontSize: "0.75rem", fontWeight: "700" }}>(학과/부서 중 택1 필수)</span></label>
                       <select 
                         name="divisionName" 
                         value={formData.divisionName} 
@@ -4645,7 +4645,7 @@ export default function ProcurementManager({
                   {/* 세번째 줄: 용역명칭, 용역목적 (둘 다 필수 입력) */}
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
                     <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>용역 명칭 (500만원 이상) <span style={{ color: "var(--danger-color)" }}>*</span></label>
+                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>용역 명칭 (500만원 이상) <span style={{ color: "var(--danger-color)" }}>*</span></label>
                       <input 
                         type="text" 
                         name="title" 
@@ -4657,7 +4657,7 @@ export default function ProcurementManager({
                       />
                     </div>
                     <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>용역목적 (추진 목적) <span style={{ color: "var(--danger-color)" }}>*</span></label>
+                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>용역목적 (추진 목적) <span style={{ color: "var(--danger-color)" }}>*</span></label>
                       <input 
                         type="text" 
                         name="purpose" 
@@ -4672,7 +4672,7 @@ export default function ProcurementManager({
 
                   {/* 네번째 줄: 특이 요청사항 (선택 입력) */}
                   <div>
-                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>특이 요청사항 (선택)</label>
+                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>특이 요청사항 (선택)</label>
                     <textarea 
                       name="opResult" 
                       value={formData.opResult} 
@@ -4685,7 +4685,7 @@ export default function ProcurementManager({
                   {/* 다섯번째 줄: 사업예산(천원), 집행액(천원) */}
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
                     <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>사업예산 (천원)</label>
+                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>사업예산 (천원)</label>
                       <input 
                         type="number" 
                         name="budgetPlan" 
@@ -4696,7 +4696,7 @@ export default function ProcurementManager({
                       />
                     </div>
                     <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>집행액 (천원)</label>
+                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>집행액 (천원)</label>
                       <input 
                         type="number" 
                         name="budgetSpent" 
@@ -4749,7 +4749,7 @@ export default function ProcurementManager({
                     
                     {/* 1. 기획문서 첨부 */}
                     <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem", marginBottom: "0.75rem" }}>
-                      <label style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)" }}>기획서 관련 문서 (사업단 작성 기안문)</label>
+                      <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>기획서 관련 문서 (사업단 작성 기안문)</label>
                       <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
                         <input type="file" id="file-plan-upload-serv" onChange={(e) => handleFileChange("proposal", e)} style={{ display: "none" }} />
                         <label htmlFor="file-plan-upload-serv" style={{ display: "block", flex: 1, textAlign: "center", padding: "0.45rem", border: "1px dashed rgba(255,255,255,0.15)", borderRadius: "6px", cursor: "pointer", background: "rgba(255,255,255,0.02)", fontSize: "0.72rem", color: "rgba(255,255,255,0.6)" }}>
@@ -4763,7 +4763,7 @@ export default function ProcurementManager({
 
                     {/* 2. 구매문서 첨부 */}
                     <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem", marginBottom: "0.75rem" }}>
-                      <label style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)" }}>구매의뢰 관련 문서 (위탁 의뢰 이송 공문)</label>
+                      <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>구매의뢰 관련 문서 (위탁 의뢰 이송 공문)</label>
                       <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
                         <input type="file" id="file-purchase-upload-serv" onChange={(e) => handleFileChange("purchase", e)} style={{ display: "none" }} />
                         <label htmlFor="file-purchase-upload-serv" style={{ display: "block", flex: 1, textAlign: "center", padding: "0.45rem", border: "1px dashed rgba(255,255,255,0.15)", borderRadius: "6px", cursor: "pointer", background: "rgba(255,255,255,0.02)", fontSize: "0.72rem", color: "rgba(255,255,255,0.6)" }}>
@@ -4777,7 +4777,7 @@ export default function ProcurementManager({
 
                     {/* 3. 결과문서 첨부 */}
                     <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
-                      <label style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)" }}>검수조서 관련 문서 (최종 준공/검수 보고서)</label>
+                      <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>검수조서 관련 문서 (최종 준공/검수 보고서)</label>
                       <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
                         <input type="file" id="file-bid-upload-serv" onChange={(e) => handleFileChange("bid", e)} style={{ display: "none" }} />
                         <label htmlFor="file-bid-upload-serv" style={{ display: "block", flex: 1, textAlign: "center", padding: "0.45rem", border: "1px dashed rgba(255,255,255,0.15)", borderRadius: "6px", cursor: "pointer", background: "rgba(255,255,255,0.02)", fontSize: "0.72rem", color: "rgba(255,255,255,0.6)" }}>
@@ -4921,19 +4921,19 @@ export default function ProcurementManager({
                       </strong>
                     </div>
                     <div>
-                      <span style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)", display: "block" }}>단위과제</span>
+                      <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)", display: "block" }}>단위과제</span>
                       <strong style={{ fontSize: "0.9rem" }}>{ai.unit}</strong>
                     </div>
                     <div>
-                      <span style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)", display: "block" }}>주관 부서</span>
+                      <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)", display: "block" }}>주관 부서</span>
                       <span>{ai.dept}</span>
                     </div>
                     <div>
-                      <span style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)", display: "block" }}>과제 배정 예산 (단위: 천원)</span>
+                      <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)", display: "block" }}>과제 배정 예산 (단위: 천원)</span>
                       <strong style={{ color: "#3b82f6" }}>{ai.budget}</strong>
                     </div>
                     <div style={{ borderTop: "1px solid rgba(255,255,255,0.05)", paddingTop: "0.75rem" }}>
-                      <span style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)", display: "block", marginBottom: "0.4rem" }}>주요 추진 전략 목표</span>
+                      <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)", display: "block", marginBottom: "0.4rem" }}>주요 추진 전략 목표</span>
                       <ul style={{ margin: 0, paddingLeft: "1.2rem", lineHeight: "1.5", display: "flex", flexDirection: "column", gap: "0.25rem" }}>
                         {(ai.goals || []).map((goal, idx) => (
                           <li key={idx} style={{ color: "rgba(255,255,255,0.85)" }}>{goal}</li>
@@ -4961,19 +4961,19 @@ export default function ProcurementManager({
                     </strong>
                   </div>
                   <div>
-                    <span style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)", display: "block" }}>단위과제</span>
+                    <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)", display: "block" }}>단위과제</span>
                     <strong style={{ fontSize: "0.9rem" }}>{proposalModalData.unit} : {summary.title}</strong>
                   </div>
                   <div>
-                    <span style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)", display: "block" }}>주관 부서</span>
+                    <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)", display: "block" }}>주관 부서</span>
                     <span>{summary.dept}</span>
                   </div>
                   <div>
-                    <span style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)", display: "block" }}>과제 배정 예산</span>
+                    <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)", display: "block" }}>과제 배정 예산</span>
                     <strong style={{ color: "#3b82f6" }}>{convertMillionWonToThousandWon(summary.budget)}</strong>
                   </div>
                   <div style={{ borderTop: "1px solid rgba(255,255,255,0.05)", paddingTop: "0.75rem" }}>
-                    <span style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)", display: "block", marginBottom: "0.4rem" }}>주요 추진 전략 목표</span>
+                    <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)", display: "block", marginBottom: "0.4rem" }}>주요 추진 전략 목표</span>
                     <ul style={{ margin: 0, paddingLeft: "1.2rem", lineHeight: "1.5", display: "flex", flexDirection: "column", gap: "0.25rem" }}>
                       {summary.goals.map((goal, idx) => (
                         <li key={idx} style={{ color: "rgba(255,255,255,0.85)" }}>{goal}</li>
@@ -5041,19 +5041,19 @@ export default function ProcurementManager({
                       </strong>
                     </div>
                     <div>
-                      <span style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)", display: "block" }}>품명 및 수량</span>
+                      <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)", display: "block" }}>품명 및 수량</span>
                       <strong style={{ fontSize: "0.9rem" }}>{purchaseModalData.itemName || purchaseModalData.name || "-"} / {qty}대 (세트)</strong>
                     </div>
                     <div>
-                      <span style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)", display: "block" }}>발신 부서 / 발송처</span>
+                      <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)", display: "block" }}>발신 부서 / 발송처</span>
                       <span>{ai.fromDept} / <strong>{ai.toDept}</strong></span>
                     </div>
                     <div>
-                      <span style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)", display: "block" }}>도입 소요예산 (단위: 천원)</span>
+                      <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)", display: "block" }}>도입 소요예산 (단위: 천원)</span>
                       <strong style={{ color: "#a78bfa" }}>{ai.budget}</strong>
                     </div>
                     <div style={{ borderTop: "1px solid rgba(255,255,255,0.05)", paddingTop: "0.75rem" }}>
-                      <span style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)", display: "block", marginBottom: "0.4rem" }}>조달 위탁 요청 기술 사양</span>
+                      <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)", display: "block", marginBottom: "0.4rem" }}>조달 위탁 요청 기술 사양</span>
                       <ul style={{ margin: 0, paddingLeft: "1.2rem", lineHeight: "1.5", display: "flex", flexDirection: "column", gap: "0.25rem" }}>
                         {(ai.specs || []).map((spec, idx) => (
                           <li key={idx} style={{ color: "rgba(255,255,255,0.85)" }}>{spec}</li>
@@ -5073,19 +5073,19 @@ export default function ProcurementManager({
                     </strong>
                   </div>
                   <div>
-                    <span style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)", display: "block" }}>품명 및 수량</span>
+                    <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)", display: "block" }}>품명 및 수량</span>
                     <strong style={{ fontSize: "0.9rem" }}>{purchaseModalData.itemName || purchaseModalData.name || "-"} / {qty}대 (세트)</strong>
                   </div>
                   <div>
-                    <span style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)", display: "block" }}>발신 부서 / 발송처</span>
+                    <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)", display: "block" }}>발신 부서 / 발송처</span>
                     <span>{purchaseModalData.divisionName || purchaseModalData.deptName || "라이즈(앵커)사업단"} / <strong>총무팀 (구매 위탁 요청)</strong></span>
                   </div>
                   <div>
-                    <span style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)", display: "block" }}>도입 소요예산</span>
+                    <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)", display: "block" }}>도입 소요예산</span>
                     <strong style={{ color: "#a78bfa" }}>{(total / 1000).toLocaleString()}천원 (VAT 포함)</strong>
                   </div>
                   <div style={{ borderTop: "1px solid rgba(255,255,255,0.05)", paddingTop: "0.75rem" }}>
-                    <span style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)", display: "block", marginBottom: "0.3rem" }}>발송 공문 비고</span>
+                    <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)", display: "block", marginBottom: "0.3rem" }}>발송 공문 비고</span>
                     <span style={{ color: "rgba(255,255,255,0.8)" }}>
                       본 문서는 사업단 내부 기획/결재가 완료되어, 조달 진행 및 위탁 발주를 위해 총무팀으로 발송 처리된 행정 이송 결재 연계 상태 문서입니다.
                     </span>
@@ -5160,7 +5160,7 @@ export default function ProcurementManager({
                     
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem" }}>
                       <div>
-                        <span style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)", display: "block" }}>
+                        <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)", display: "block" }}>
                           {isEnv ? "준공 및 검수 부서" : "공고 및 낙찰 부서"}
                         </span>
                         <strong style={{ color: "#34D399" }}>
@@ -5168,7 +5168,7 @@ export default function ProcurementManager({
                         </strong>
                       </div>
                       <div>
-                        <span style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)", display: "block" }}>
+                        <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)", display: "block" }}>
                           {isEnv ? "준공 시공 상태" : "입찰 계약 방식"}
                         </span>
                         <span style={{ fontWeight: "700", color: "#10b981" }}>{ai.method}</span>
@@ -5238,13 +5238,13 @@ export default function ProcurementManager({
                   
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem" }}>
                     <div>
-                      <span style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)", display: "block" }}>작성 부서</span>
+                      <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)", display: "block" }}>작성 부서</span>
                       <strong style={{ color: "#34D399" }}>
                         {isEnv ? "시설안전관리팀" : "대학본부 총무팀"}
                       </strong>
                     </div>
                     <div>
-                      <span style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)", display: "block" }}>
+                      <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)", display: "block" }}>
                         {isEnv ? "보고 구분" : "입찰 구분"}
                       </span>
                       <span style={{ fontWeight: "700", color: "#10b981" }}>
