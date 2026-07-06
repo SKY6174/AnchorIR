@@ -127,9 +127,6 @@ export default function UnifiedCertificateManager({
     if (projectGroup === oldDynamicName || !projectGroup) {
       setProjectGroup(newDynamicName);
     }
-    if (issuer === `${oldDynamicName}장` || !issuer) {
-      setIssuer(`${newDynamicName}장`);
-    }
   }, [issueDate]);
 
   useEffect(() => {
@@ -137,14 +134,17 @@ export default function UnifiedCertificateManager({
     const date = new Date(issueDate);
     const riseStart = new Date("2025-03-01");
     const anchorStart = new Date("2026-07-01");
-    if (date >= anchorStart) {
-      setIssuer("산학협력단장, 앵커사업단장");
-    } else if (date >= riseStart) {
-      setIssuer("산학협력단장, RISE사업단장");
+    
+    let dynamicName = "";
+    if (date >= anchorStart) dynamicName = "앵커사업단장";
+    else if (date >= riseStart) dynamicName = "RISE사업단장";
+
+    if (certType === "수료증") {
+      setIssuer(dynamicName ? `울산과학대학교총장, ${dynamicName}` : "울산과학대학교총장");
     } else {
-      setIssuer("산학협력단장");
+      setIssuer(dynamicName ? `산학협력단장, ${dynamicName}` : "산학협력단장");
     }
-  }, [issueDate]);
+  }, [issueDate, certType]);
 
   const [sortConfig, setSortConfig] = useState({ key: "issueDate", direction: "desc" });
 
@@ -606,6 +606,9 @@ export default function UnifiedCertificateManager({
                     <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>발급자명의</label>
                     <select value={issuer} onChange={e => setIssuer(e.target.value)} style={{ padding: "0.5rem", borderRadius: "0.5rem", background: "var(--bg-tertiary)", border: "1px solid var(--border-color)", color: "var(--text-primary)" }}>
                       <option value="">선택</option>
+                      <option value="울산과학대학교총장">울산과학대학교총장</option>
+                      <option value={`울산과학대학교총장, ${getDynamicTeamName(issueDate)}장`}>울산과학대학교총장, {getDynamicTeamName(issueDate)}장</option>
+                      <option value={`산학협력단장, ${getDynamicTeamName(issueDate)}장`}>산학협력단장, {getDynamicTeamName(issueDate)}장</option>
                       <option value={`${getDynamicTeamName(issueDate)}장`}>{getDynamicTeamName(issueDate)}장</option>
                       <option value="산학협력단장">산학협력단장</option>
                     </select>
