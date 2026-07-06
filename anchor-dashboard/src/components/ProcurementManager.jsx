@@ -2097,7 +2097,7 @@ export default function ProcurementManager({
                             if (idxA !== null && idxB !== null && pos >= idxA && pos <= idxB) return "#3b82f6";
                             if (idxB !== null && idxPr !== null && pos >= idxB && pos <= idxPr) return "#06b6d4";
                             if (idxPr !== null && idxI !== null && pos >= idxPr && pos <= idxI) return "#a78bfa";
-                            return "rgba(255, 255, 255, 0.12)";
+                            return "var(--border-color)";
                           };
 
                           const leftColor = getSegmentColorForPos(currIdx - 0.5);
@@ -2169,7 +2169,7 @@ export default function ProcurementManager({
                                 right: 0,
                                 top: "50%",
                                 transform: "translateY(-50%)",
-                                height: "2.5px",
+                                height: "1.5px",
                                 background: `linear-gradient(to right, ${leftColor} 50%, ${rightColor} 50%)`,
                                 zIndex: 0
                               }} />
@@ -2187,9 +2187,9 @@ export default function ProcurementManager({
                                       transform: "translate(-50%, -50%)",
                                       width: 0,
                                       height: 0,
-                                      borderTop: "3.5px solid transparent",
-                                      borderBottom: "3.5px solid transparent",
-                                      borderLeft: `5px solid ${arr.color}`,
+                                      borderTop: "2px solid transparent",
+                                      borderBottom: "2px solid transparent",
+                                      borderLeft: `4.5px solid ${arr.color}`,
                                       zIndex: 3,
                                       pointerEvents: "none"
                                     }} 
@@ -2342,7 +2342,7 @@ export default function ProcurementManager({
                         {/* 제어 열 버튼 */}
                         <td style={{ padding: "0.8rem 0.5rem", textAlign: "center", whiteSpace: "nowrap" }}>
                           <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem", alignItems: "center", justifyContent: "center" }}>
-                            {currentRole.id !== "GUEST" && (currentRole.id === "ADMIN" || currentRole.id === "TEAM_LEADER" || !equip.created_by || equip.created_by === currentUser?.uuid) && (
+                            {currentRole.id !== "GUEST" && (["ADMIN", "DIRECTOR", "HQ_HEAD", "TEAM_LEADER"].includes(currentRole.id) || !equip.created_by || equip.created_by === currentUser?.uuid) && (
                               <>
                                 <button 
                                   onClick={() => openEditModal(equip)}
@@ -3185,7 +3185,7 @@ export default function ProcurementManager({
                           {currentRole.id !== "GUEST" && (
                             <td style={{ padding: "0.8rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap" }}>
                               <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem", alignItems: "center", width: "100%" }}>
-                                {(currentRole.id === "ADMIN" || currentRole.id === "TEAM_LEADER" || !equip.created_by || equip.created_by === currentUser?.uuid) && (
+                                {(["ADMIN", "DIRECTOR", "HQ_HEAD", "TEAM_LEADER"].includes(currentRole.id) || !equip.created_by || equip.created_by === currentUser?.uuid) && (
                                   <button
                                     onClick={() => openEditModal(equip)}
                                     style={{
@@ -3215,7 +3215,7 @@ export default function ProcurementManager({
                                     수정
                                   </button>
                                 )}
-                                {(currentRole.id === "ADMIN" || currentRole.id === "TEAM_LEADER" || !equip.created_by || equip.created_by === currentUser?.uuid) && (
+                                {(["ADMIN", "DIRECTOR", "HQ_HEAD", "TEAM_LEADER"].includes(currentRole.id) || !equip.created_by || equip.created_by === currentUser?.uuid) && (
                                   <button
                                     onClick={() => {
                                       if (confirm("🚨 이 작업은 되돌릴 수 없습니다. 해당 기자재 항목을 정말로 삭제하시겠습니까?")) {
@@ -3716,7 +3716,7 @@ export default function ProcurementManager({
                         {/* 9. 제어 열 버튼 (세로 2층 배치) */}
                         <td style={{ padding: "0.8rem 0.5rem", textAlign: "center", whiteSpace: "nowrap" }}>
                           <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem", alignItems: "center", justifyContent: "center" }}>
-                            {currentRole.id !== "GUEST" && (currentRole.id === "ADMIN" || currentRole.id === "TEAM_LEADER" || !equip.created_by || equip.created_by === currentUser?.uuid) && (
+                            {currentRole.id !== "GUEST" && (["ADMIN", "DIRECTOR", "HQ_HEAD", "TEAM_LEADER"].includes(currentRole.id) || !equip.created_by || equip.created_by === currentUser?.uuid) && (
                               <>
                                 <button 
                                   onClick={() => openEditModal(equip)}
