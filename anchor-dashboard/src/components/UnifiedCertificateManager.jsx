@@ -4,6 +4,16 @@ import { Plus, Trash2, Edit, Trash, FileText, Upload, X, AlertTriangle, Download
 import * as XLSX from "xlsx";
 import { supabase } from "../supabaseClient";
 
+
+
+const getAcademicYear = (dateStr) => {
+  if (!dateStr) return new Date().getFullYear();
+  const date = new Date(dateStr);
+  const year = date.getFullYear();
+  const month = date.getMonth() + 1;
+  return month <= 2 ? year - 1 : year;
+};
+
 export default function UnifiedCertificateManager({
   projects = [],
   certificates = [],
@@ -13,6 +23,7 @@ export default function UnifiedCertificateManager({
   onDeleteCertificate,
   setCertificates,
   currentRole,
+  members = [],
   managerType = "all" // "award", "certificate", or "all"
 }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -37,6 +48,41 @@ export default function UnifiedCertificateManager({
   const [content, setContent] = useState("");
   const [awardType, setAwardType] = useState("");
   
+  const departmentMembers = React.useMemo(() => {
+    const map = {
+      "ECC센터": [],
+      "ICC센터": [],
+      "RCC센터": [],
+      "AID-X지원센터": [],
+      "울산늘봄누리센터": [],
+      "신산업특화센터": [],
+      "기타": []
+    };
+    if (members && Array.isArray(members)) {
+      members.forEach(m => {
+        if (m.dept && m.name && m.status !== "미참여") {
+          const d = m.dept.trim();
+          if (map[d]) {
+            map[d].push(m.name);
+          }
+        }
+      });
+    }
+    Object.keys(map).forEach(key => {
+      map[key] = [...new Set(map[key])];
+    });
+    return map;
+  }, [members]);
+
+  useEffect(() => {
+    if (issueDate) {
+      const acYear = getAcademicYear(issueDate);
+      if (!certNo || certNo.match(/^제\d*-?$/)) {
+        setCertNo(`제${acYear}-`);
+      }
+    }
+  }, [issueDate]);
+
   useEffect(() => {
     if (!issueDate) return;
     const date = new Date(issueDate);
@@ -155,36 +201,44 @@ export default function UnifiedCertificateManager({
   };
 
   const getSequenceErrors = () => {
-    const certNumbers = filteredCerts
-      .map(c => c.certNo)
-      .filter(Boolean)
-      .map(n => {
-        const match = n.match(/(\d+)[^\d]*$/);
-        return match ? parseInt(match[1], 10) : NaN;
-      })
-      .filter(n => !isNaN(n))
-      .sort((a, b) => a - b);
-      
-    if (certNumbers.length === 0) return null;
-    
-    let duplicates = [];
-    let gaps = [];
-    
-    const seen = new Set();
-    certNumbers.forEach(n => {
-      if (seen.has(n)) duplicates.push(n);
-      seen.add(n);
-    });
-    
-    const max = certNumbers[certNumbers.length - 1];
-    for (let i = 1; i <= max; i++) {
-      if (!seen.has(i)) {
-        gaps.push(i);
+    const certsByYear = {};
+    filteredCerts.forEach(c => {
+      if (!c.certNo) return;
+      const acYear = getAcademicYear(c.issueDate);
+      if (!certsByYear[acYear]) certsByYear[acYear] = [];
+      const match = c.certNo.match(/(\d+)[^\d]*$/);
+      if (match) {
+        certsByYear[acYear].push(parseInt(match[1], 10));
       }
-    }
-    
-    if (duplicates.length > 0 || gaps.length > 0) {
-      return { duplicates: [...new Set(duplicates)], gaps };
+    });
+
+    let allDuplicates = [];
+    let allGaps = [];
+
+    Object.keys(certsByYear).forEach(year => {
+      const numbers = certsByYear[year].filter(n => !isNaN(n)).sort((a, b) => a - b);
+      if (numbers.length === 0) return;
+
+      let duplicates = [];
+      let gaps = [];
+      const seen = new Set();
+      numbers.forEach(n => {
+        if (seen.has(n)) duplicates.push(`${year}년도 ${n}번`);
+        seen.add(n);
+      });
+      
+      const max = numbers[numbers.length - 1];
+      for (let i = 1; i <= max; i++) {
+        if (!seen.has(i)) {
+          gaps.push(`${year}년도 ${i}번`);
+        }
+      }
+      allDuplicates.push(...duplicates);
+      allGaps.push(...gaps);
+    });
+
+    if (allDuplicates.length > 0 || allGaps.length > 0) {
+      return { duplicates: [...new Set(allDuplicates)], gaps: allGaps };
     }
     return null;
   };
@@ -379,8 +433,20 @@ export default function UnifiedCertificateManager({
             </div>
             <div style={{ padding: "1.25rem", display: "flex", flexDirection: "column", gap: "0.8rem", flex: 1, overflowY: "auto" }}>
               <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-                {/* 1st Row: 구분, 증서번호, (상훈 - 상장일 경우에만) */}
-                <div style={{ display: "grid", gridTemplateColumns: certType === "상장" ? "1fr 1fr 1fr" : "1fr 1fr", gap: "1rem" }}>
+                {/* 1st Row: 수상(수료)일, 증서번호 */}
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+                  <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
+                    <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>수상(수료)일</label>
+                    <input type="date" value={issueDate} onChange={e => setIssueDate(e.target.value)} style={{ padding: "0.5rem", borderRadius: "0.5rem", background: "var(--bg-tertiary)", border: "1px solid var(--border-color)", color: "var(--text-primary)", colorScheme: "dark" }} className="date-input" />
+                  </div>
+                  <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
+                    <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>증서번호</label>
+                    <input type="text" value={certNo} onChange={e => setCertNo(e.target.value)} placeholder={`예: 제${getAcademicYear(issueDate)}-001호`} style={{ padding: "0.5rem", borderRadius: "0.5rem", background: "var(--bg-tertiary)", border: "1px solid var(--border-color)", color: "var(--text-primary)" }} />
+                  </div>
+                </div>
+
+                {/* 2nd Row: 구분, 상훈(상장), 팀명(상장) */}
+                <div style={{ display: "grid", gridTemplateColumns: certType === "상장" ? "1fr 1fr 1fr" : "1fr", gap: "1rem" }}>
                   <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
                     <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>구분 <span style={{ color: "red" }}>*</span></label>
                     <select value={certType} onChange={e => {
@@ -396,30 +462,18 @@ export default function UnifiedCertificateManager({
                       <option value="기타">기타</option>
                     </select>
                   </div>
-                  <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
-                    <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>증서번호</label>
-                    <input type="text" value={certNo} onChange={e => setCertNo(e.target.value)} placeholder="예: 제2025-01호" style={{ padding: "0.5rem", borderRadius: "0.5rem", background: "var(--bg-tertiary)", border: "1px solid var(--border-color)", color: "var(--text-primary)" }} />
-                  </div>
                   {certType === "상장" && (
-                    <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
-                      <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>상훈</label>
-                      <input type="text" value={awardType} onChange={e => setAwardType(e.target.value)} placeholder="예: 최우수상" style={{ padding: "0.5rem", borderRadius: "0.5rem", background: "var(--bg-tertiary)", border: "1px solid var(--border-color)", color: "var(--text-primary)" }} />
-                    </div>
+                    <>
+                      <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
+                        <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>상훈</label>
+                        <input type="text" value={awardType} onChange={e => setAwardType(e.target.value)} placeholder="예: 최우수상" style={{ padding: "0.5rem", borderRadius: "0.5rem", background: "var(--bg-tertiary)", border: "1px solid var(--border-color)", color: "var(--text-primary)" }} />
+                      </div>
+                      <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
+                        <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>팀명</label>
+                        <input type="text" value={teamName} onChange={e => setTeamName(e.target.value)} style={{ padding: "0.5rem", borderRadius: "0.5rem", background: "var(--bg-tertiary)", border: "1px solid var(--border-color)", color: "var(--text-primary)" }} />
+                      </div>
+                    </>
                   )}
-                </div>
-
-                {/* 2nd Row: 팀명 (상장일 경우에만), 수상(수료)일 */}
-                <div style={{ display: "grid", gridTemplateColumns: certType === "상장" ? "1fr 1fr" : "1fr", gap: "1rem" }}>
-                  {certType === "상장" && (
-                    <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
-                      <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>팀명</label>
-                      <input type="text" value={teamName} onChange={e => setTeamName(e.target.value)} style={{ padding: "0.5rem", borderRadius: "0.5rem", background: "var(--bg-tertiary)", border: "1px solid var(--border-color)", color: "var(--text-primary)" }} />
-                    </div>
-                  )}
-                  <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
-                    <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>수상(수료)일</label>
-                    <input type="date" value={issueDate} onChange={e => setIssueDate(e.target.value)} style={{ padding: "0.5rem", borderRadius: "0.5rem", background: "var(--bg-tertiary)", border: "1px solid var(--border-color)", color: "var(--text-primary)", colorScheme: "dark" }} className="date-input" />
-                  </div>
                 </div>
 
                 {/* 3rd Row: 성명, 학번, 생년월일, 휴대폰 */}
@@ -458,19 +512,28 @@ export default function UnifiedCertificateManager({
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
                   <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
                     <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>담당자 소속</label>
-                    <select value={managerDept} onChange={e => setManagerDept(e.target.value)} style={{ padding: "0.5rem", borderRadius: "0.5rem", background: "var(--bg-tertiary)", border: "1px solid var(--border-color)", color: "var(--text-primary)" }}>
+                    <select value={managerDept} onChange={e => {
+                      setManagerDept(e.target.value);
+                      setManagerName("");
+                    }} style={{ padding: "0.5rem", borderRadius: "0.5rem", background: "var(--bg-tertiary)", border: "1px solid var(--border-color)", color: "var(--text-primary)" }}>
                       <option value="">선택 안함</option>
-                      <option value="ECC">ECC</option>
-                      <option value="ICC">ICC</option>
-                      <option value="RCC">RCC</option>
-                      <option value="AID-X">AID-X</option>
-                      <option value="늘봄누리">늘봄누리</option>
-                      <option value="기타">기타</option>
+                      {Object.keys(departmentMembers).map(dept => (
+                        <option key={dept} value={dept}>{dept}</option>
+                      ))}
                     </select>
                   </div>
                   <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
                     <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>담당자 성명</label>
-                    <input type="text" value={managerName} onChange={e => setManagerName(e.target.value)} style={{ padding: "0.5rem", borderRadius: "0.5rem", background: "var(--bg-tertiary)", border: "1px solid var(--border-color)", color: "var(--text-primary)" }} />
+                    {managerDept && managerDept !== "기타" ? (
+                      <select value={managerName} onChange={e => setManagerName(e.target.value)} style={{ padding: "0.5rem", borderRadius: "0.5rem", background: "var(--bg-tertiary)", border: "1px solid var(--border-color)", color: "var(--text-primary)" }}>
+                        <option value="">선택</option>
+                        {departmentMembers[managerDept]?.map(name => (
+                          <option key={name} value={name}>{name}</option>
+                        ))}
+                      </select>
+                    ) : (
+                      <input type="text" value={managerName} onChange={e => setManagerName(e.target.value)} placeholder={managerDept === "기타" ? "직접 입력" : ""} style={{ padding: "0.5rem", borderRadius: "0.5rem", background: "var(--bg-tertiary)", border: "1px solid var(--border-color)", color: "var(--text-primary)" }} />
+                    )}
                   </div>
                 </div>
 

@@ -7368,6 +7368,7 @@ export default function App() {
                 onDeleteCertificate={handleDeleteUnifiedCertificate}
                 setCertificates={setUnifiedCertificates}
                 currentRole={currentRole}
+                members={members}
               />
             )}
           </div>
