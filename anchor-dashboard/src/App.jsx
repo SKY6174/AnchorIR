@@ -3328,6 +3328,7 @@ export default function App() {
       try {
         // --- 1단계: 타 연차 기사가 발견되었을 경우 해당 연차 DB에 단독 Insert 및 청소 ---
         if (otherYearPress.length > 0) {
+          let hasError = false;
           for (const item of otherYearPress) {
             const targetYear = getCalculatedYearFromDate(item.broadcastDate);
             console.log(`타 연차 기사 감지: ${item.title} -> ${targetYear}차년도 DB로 직접 저장합니다.`);
@@ -3344,13 +3345,29 @@ export default function App() {
 
             if (singleInsertErr) {
               console.error(`Failed to insert press release to year ${targetYear}:`, singleInsertErr);
+              alert(`📡 타 연차 보도자료 DB 저장 중 오류가 발생했습니다.\n\n[오류 원인]: ${singleInsertErr.message || singleInsertErr}`);
+              hasError = true;
+            } else {
+              // 💡 성공 시 해당 연차의 로컬 캐시도 즉시 업데이트하여 깜빡임 및 누락 예방
+              try {
+                const cachedPressStr = localStorage.getItem(`anchor_cache_press_y${targetYear}`);
+                const cachedPressList = cachedPressStr ? JSON.parse(cachedPressStr) : [];
+                if (!cachedPressList.some(p => p.title === item.title && p.broadcastDate === item.broadcastDate)) {
+                  const updatedCache = [item, ...cachedPressList];
+                  localStorage.setItem(`anchor_cache_press_y${targetYear}`, JSON.stringify(updatedCache));
+                }
+              } catch (cacheErr) {
+                console.warn("Failed to update target year cache:", cacheErr);
+              }
             }
           }
 
-          // 💡 다른 연차 DB에 성공적으로 우회 주입했으므로, 현재 React State(pressReleases) 배열에서 해당 항목 제거
-          setPressReleases(prev => prev.filter(s => getCalculatedYearFromDate(s.broadcastDate) === selectedYear));
-          alert(`📢 입력하신 보도자료는 기사 일시 기준에 따라 [${getCalculatedYearFromDate(otherYearPress[0].broadcastDate)}차년도] 언론보도 대장에 안전하게 자동 분리 저장되었습니다.\n\n해당 연차 탭으로 이동하시면 확인하실 수 있습니다.`);
-          setSyncStatus("synced");
+          if (!hasError) {
+            // 성공했을 때만 현재 연차 상태에서 제거
+            setPressReleases(prev => prev.filter(s => getCalculatedYearFromDate(s.broadcastDate) === selectedYear));
+            alert(`📢 입력하신 보도자료는 기사 일시 기준에 따라 [${getCalculatedYearFromDate(otherYearPress[0].broadcastDate)}차년도] 언론보도 대장에 안전하게 자동 분리 저장되었습니다.\n\n해당 연차 탭으로 이동하시면 확인하실 수 있습니다.`);
+          }
+          setSyncStatus(hasError ? "error" : "synced");
           return;
         }
 
