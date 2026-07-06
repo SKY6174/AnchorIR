@@ -357,17 +357,17 @@ export default function UnifiedCertificateManager({
       </div>
 
       {isModalOpen && createPortal(
-        <div className="modal-overlay" onClick={() => setIsModalOpen(false)}>
-          <div className="modal-content" style={{ maxWidth: "800px" }} onClick={e => e.stopPropagation()}>
-            <div className="modal-header">
-              <h3>{editingId ? "내역 수정" : "신규 내역 등록"}</h3>
-              <button className="close-btn" onClick={() => setIsModalOpen(false)}><X size={20} /></button>
+        <div style={{ position: "fixed", top: 0, left: 0, width: "100vw", height: "100vh", background: "rgba(0,0,0,0.6)", zIndex: 9999, display: "flex", justifyContent: "center", alignItems: "center", overflowY: "auto", padding: "2rem 1rem" }} onClick={() => setIsModalOpen(false)}>
+          <div style={{ background: "var(--modal-bg)", border: "1px solid var(--border-color)", borderRadius: "0.75rem", width: "100%", maxWidth: "800px", maxHeight: "85vh", display: "flex", flexDirection: "column", color: "var(--text-primary)", boxShadow: "0 20px 25px -5px rgba(0,0,0,0.3)", margin: "auto" }} onClick={e => e.stopPropagation()}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "0.85rem 1.25rem", borderBottom: "1px solid var(--border-color)", flexShrink: 0 }}>
+              <h3 style={{ fontSize: "0.9rem", fontWeight: "800" }}>{editingId ? "내역 수정" : "신규 내역 등록"}</h3>
+              <button onClick={() => setIsModalOpen(false)} style={{ background: "none", border: "none", color: "#a1a1aa", cursor: "pointer" }}><X size={20} /></button>
             </div>
-            <div className="modal-body">
+            <div style={{ padding: "1.25rem", display: "flex", flexDirection: "column", gap: "0.8rem", flex: 1, overflowY: "auto" }}>
               <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
-                  <div className="form-group">
-                    <label>구분 <span style={{ color: "red" }}>*</span></label>
+                  <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
+                    <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>구분 <span style={{ color: "red" }}>*</span></label>
                     <select value={certType} onChange={e => {
                       setCertType(e.target.value);
                       if (e.target.value !== "상장") setAwardType("");
@@ -378,15 +378,15 @@ export default function UnifiedCertificateManager({
                       <option value="기타">기타</option>
                     </select>
                   </div>
-                  <div className="form-group">
-                    <label>증서번호</label>
-                    <input type="text" value={certNo} onChange={e => setCertNo(e.target.value)} placeholder="예: 제2025-01호" />
+                  <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
+                    <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>증서번호</label>
+                    <input type="text" value={certNo} onChange={e => setCertNo(e.target.value)} placeholder="예: 제2025-01호" style={{ padding: "0.5rem", borderRadius: "0.5rem", background: "var(--bg-tertiary)", border: "1px solid var(--border-color)", color: "var(--text-primary)" }} />
                   </div>
                 </div>
 
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "1rem" }}>
-                  <div className="form-group">
-                    <label>담당자 소속</label>
+                  <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
+                    <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>담당자 소속</label>
                     <select value={managerDept} onChange={e => setManagerDept(e.target.value)}>
                       <option value="">선택 안함</option>
                       <option value="ECC">ECC</option>
@@ -396,71 +396,71 @@ export default function UnifiedCertificateManager({
                       <option value="늘봄누리">늘봄누리</option>
                     </select>
                   </div>
-                  <div className="form-group">
-                    <label>담당자 성명</label>
-                    <input type="text" value={managerName} onChange={e => setManagerName(e.target.value)} />
+                  <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
+                    <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>담당자 성명</label>
+                    <input type="text" value={managerName} onChange={e => setManagerName(e.target.value)} style={{ padding: "0.5rem", borderRadius: "0.5rem", background: "var(--bg-tertiary)", border: "1px solid var(--border-color)", color: "var(--text-primary)" }} />
                   </div>
                   {certType === "상장" && (
-                    <div className="form-group">
-                      <label>상훈</label>
-                      <input type="text" value={awardType} onChange={e => setAwardType(e.target.value)} placeholder="예: 최우수상" />
+                    <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
+                      <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>상훈</label>
+                      <input type="text" value={awardType} onChange={e => setAwardType(e.target.value)} placeholder="예: 최우수상" style={{ padding: "0.5rem", borderRadius: "0.5rem", background: "var(--bg-tertiary)", border: "1px solid var(--border-color)", color: "var(--text-primary)" }} />
                     </div>
                   )}
                 </div>
 
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "1rem" }}>
-                  <div className="form-group">
-                    <label>성명 <span style={{ color: "red" }}>*</span></label>
-                    <input type="text" value={recipientName} onChange={e => setRecipientName(e.target.value)} required />
+                  <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
+                    <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>성명 <span style={{ color: "red" }}>*</span></label>
+                    <input type="text" value={recipientName} onChange={e => setRecipientName(e.target.value)} required style={{ padding: "0.5rem", borderRadius: "0.5rem", background: "var(--bg-tertiary)", border: "1px solid var(--border-color)", color: "var(--text-primary)" }} />
                   </div>
-                  <div className="form-group">
-                    <label>팀명</label>
-                    <input type="text" value={teamName} onChange={e => setTeamName(e.target.value)} />
+                  <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
+                    <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>팀명</label>
+                    <input type="text" value={teamName} onChange={e => setTeamName(e.target.value)} style={{ padding: "0.5rem", borderRadius: "0.5rem", background: "var(--bg-tertiary)", border: "1px solid var(--border-color)", color: "var(--text-primary)" }} />
                   </div>
-                  <div className="form-group">
-                    <label>학번</label>
-                    <input type="text" value={studentId} onChange={e => setStudentId(e.target.value)} />
+                  <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
+                    <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>학번</label>
+                    <input type="text" value={studentId} onChange={e => setStudentId(e.target.value)} style={{ padding: "0.5rem", borderRadius: "0.5rem", background: "var(--bg-tertiary)", border: "1px solid var(--border-color)", color: "var(--text-primary)" }} />
                   </div>
                 </div>
 
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "1rem" }}>
-                  <div className="form-group">
-                    <label>생년월일</label>
-                    <input type="text" value={birthDate} onChange={e => setBirthDate(e.target.value)} placeholder="YYYYMMDD" />
+                  <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
+                    <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>생년월일</label>
+                    <input type="text" value={birthDate} onChange={e => setBirthDate(e.target.value)} placeholder="YYYYMMDD" style={{ padding: "0.5rem", borderRadius: "0.5rem", background: "var(--bg-tertiary)", border: "1px solid var(--border-color)", color: "var(--text-primary)" }} />
                   </div>
-                  <div className="form-group">
-                    <label>휴대폰</label>
-                    <input type="text" value={phone} onChange={e => setPhone(e.target.value)} />
+                  <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
+                    <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>휴대폰</label>
+                    <input type="text" value={phone} onChange={e => setPhone(e.target.value)} style={{ padding: "0.5rem", borderRadius: "0.5rem", background: "var(--bg-tertiary)", border: "1px solid var(--border-color)", color: "var(--text-primary)" }} />
                   </div>
-                  <div className="form-group">
-                    <label>수상(수료)일</label>
-                    <input type="date" value={issueDate} onChange={e => setIssueDate(e.target.value)} />
+                  <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
+                    <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>수상(수료)일</label>
+                    <input type="date" value={issueDate} onChange={e => setIssueDate(e.target.value)} style={{ padding: "0.5rem", borderRadius: "0.5rem", background: "var(--bg-tertiary)", border: "1px solid var(--border-color)", color: "var(--text-primary)", colorScheme: "dark" }} className="date-input" />
                   </div>
                 </div>
 
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
-                  <div className="form-group">
-                    <label>사업단명</label>
-                    <input type="text" value={projectGroup} onChange={e => setProjectGroup(e.target.value)} />
+                  <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
+                    <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>사업단명</label>
+                    <input type="text" value={projectGroup} onChange={e => setProjectGroup(e.target.value)} style={{ padding: "0.5rem", borderRadius: "0.5rem", background: "var(--bg-tertiary)", border: "1px solid var(--border-color)", color: "var(--text-primary)" }} />
                   </div>
-                  <div className="form-group">
-                    <label>발급자명의</label>
-                    <input type="text" value={issuer} onChange={e => setIssuer(e.target.value)} />
+                  <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
+                    <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>발급자명의</label>
+                    <input type="text" value={issuer} onChange={e => setIssuer(e.target.value)} style={{ padding: "0.5rem", borderRadius: "0.5rem", background: "var(--bg-tertiary)", border: "1px solid var(--border-color)", color: "var(--text-primary)" }} />
                   </div>
                 </div>
 
-                <div className="form-group">
-                  <label>시상내용(과정명)</label>
-                  <input type="text" value={content} onChange={e => setContent(e.target.value)} />
+                <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
+                  <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>시상내용(과정명)</label>
+                  <input type="text" value={content} onChange={e => setContent(e.target.value)} style={{ padding: "0.5rem", borderRadius: "0.5rem", background: "var(--bg-tertiary)", border: "1px solid var(--border-color)", color: "var(--text-primary)" }} />
                 </div>
 
-                <div className="form-group">
-                  <label>비고</label>
-                  <input type="text" value={note} onChange={e => setNote(e.target.value)} />
+                <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
+                  <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>비고</label>
+                  <input type="text" value={note} onChange={e => setNote(e.target.value)} style={{ padding: "0.5rem", borderRadius: "0.5rem", background: "var(--bg-tertiary)", border: "1px solid var(--border-color)", color: "var(--text-primary)" }} />
                 </div>
 
 
-                <div className="modal-actions" style={{ marginTop: "1rem" }}>
+                <div style={{ marginTop: "1rem", display: "flex", justifyContent: "flex-end", gap: "0.5rem" }}>
                   <button type="button" className="action-btn" style={{ background: "var(--bg-tertiary)", color: "var(--text-primary)" }} onClick={() => setIsModalOpen(false)}>취소</button>
                   <button type="submit" className="action-btn submit-btn">저장</button>
                 </div>
