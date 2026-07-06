@@ -3361,7 +3361,8 @@ export default function App() {
           if (!hasError) {
             // 성공했을 때만 현재 연차 상태에서 제거
             setPressReleases(prev => prev.filter(s => getCalculatedYearFromDate(s.broadcastDate) === selectedYear));
-            alert(`📢 입력하신 보도자료는 기사 일시 기준에 따라 [${getCalculatedYearFromDate(otherYearPress[0].broadcastDate)}차년도] 언론보도 대장에 안전하게 자동 분리 저장되었습니다.\n\n해당 연차 탭으로 이동하시면 확인하실 수 있습니다.`);
+            // alert는 다른 화면(상장/이수증 등)을 보고 있을 때 방해되므로 제거하고 조용히 백그라운드 처리
+            console.log(`[언론보도] 타 연차(${getCalculatedYearFromDate(otherYearPress[0].broadcastDate)}차년도)로 기사가 자동 이동되었습니다.`);
           }
           setSyncStatus(hasError ? "error" : "synced");
           return;
