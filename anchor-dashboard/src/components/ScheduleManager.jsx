@@ -5106,7 +5106,7 @@ ${aiRawText}
                         }}
                       >
                         <span>{aiFileName || "기획서/결과보고서 첨부파일 선택 (.hwp, .pdf, .docx)"}</span>
-                        <span style={{ fontSize: "0.65rem", padding: "0.15rem 0.35rem", borderRadius: "4px", background: "rgba(255,255,255,0.08)", color: "var(--text-secondary)", flexShrink: 0, marginLeft: "0.5rem" }}>
+                        <span style={{ fontSize: "0.65rem", padding: "0.15rem 0.35rem", borderRadius: "4px", background: "var(--input-bg)", color: "var(--text-secondary)", flexShrink: 0, marginLeft: "0.5rem" }}>
                           파일 탐색
                         </span>
                       </label>
@@ -5140,7 +5140,7 @@ ${aiRawText}
                           <span>{aiStatusText}</span>
                           <span>{aiProgress}%</span>
                         </div>
-                        <div style={{ width: "100%", height: "4px", background: "rgba(255,255,255,0.08)", borderRadius: "2px", overflow: "hidden" }}>
+                        <div style={{ width: "100%", height: "4px", background: "var(--input-bg)", borderRadius: "2px", overflow: "hidden" }}>
                           <div style={{ width: `${aiProgress}%`, height: "100%", background: "linear-gradient(90deg, #a78bfa 0%, #818cf8 100%)", borderRadius: "2px", transition: "width 0.15s ease" }} />
                         </div>
                       </div>

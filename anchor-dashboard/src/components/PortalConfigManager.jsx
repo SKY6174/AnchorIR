@@ -216,7 +216,7 @@ export default function PortalConfigManager({ initialVisibility, onSave }) {
           <button 
             onClick={handleResetConfig} 
             className="btn btn-secondary"
-            style={{ display: "flex", alignItems: "center", gap: "0.3rem", padding: "0.45rem 1rem", fontSize: "0.8rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color)", color: "var(--text-primary)", cursor: "pointer", borderRadius: "0.3rem" }}
+            style={{ display: "flex", alignItems: "center", gap: "0.3rem", padding: "0.45rem 1rem", fontSize: "0.8rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", color: "var(--text-primary)", cursor: "pointer", borderRadius: "0.3rem" }}
           >
             전체 초기화
           </button>

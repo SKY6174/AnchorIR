@@ -870,14 +870,14 @@ ${commentList || "(없음)"}
                   <button
                     type="button"
                     onClick={() => setFilterDepts(["ECC", "ICC", "RCC", "AIDX", "NURI", "SEVeN"])}
-                    style={{ background: "rgba(255,255,255,0.04)", border: "1px solid var(--border-color-dark)", color: "var(--text-primary)", padding: "0.25rem 0.5rem", fontSize: "0.68rem", borderRadius: "0.25rem", cursor: "pointer", fontWeight: "700" }}
+                    style={{ background: "rgba(255,255,255,0.04)", border: "1px solid var(--border-color)", color: "var(--text-primary)", padding: "0.25rem 0.5rem", fontSize: "0.68rem", borderRadius: "0.25rem", cursor: "pointer", fontWeight: "700" }}
                   >
                     전체 선택
                   </button>
                   <button
                     type="button"
                     onClick={() => setFilterDepts([])}
-                    style={{ background: "rgba(255,255,255,0.04)", border: "1px solid var(--border-color-dark)", color: "var(--text-primary)", padding: "0.25rem 0.5rem", fontSize: "0.68rem", borderRadius: "0.25rem", cursor: "pointer", fontWeight: "700" }}
+                    style={{ background: "rgba(255,255,255,0.04)", border: "1px solid var(--border-color)", color: "var(--text-primary)", padding: "0.25rem 0.5rem", fontSize: "0.68rem", borderRadius: "0.25rem", cursor: "pointer", fontWeight: "700" }}
                   >
                     전체 해제
                   </button>
@@ -891,7 +891,7 @@ ${commentList || "(없음)"}
                 background: "rgba(255,255,255,0.01)", 
                 padding: "0.6rem 1rem", 
                 borderRadius: "0.375rem", 
-                border: "1px solid var(--border-color-dark)" 
+                border: "1px solid var(--border-color)" 
               }}>
                 {[
                   { key: "ECC", label: "ECC (지산학)" },
@@ -993,7 +993,7 @@ ${commentList || "(없음)"}
                                 borderRadius: "0.25rem",
                                 fontSize: "0.65rem",
                                 fontWeight: "800",
-                                background: "rgba(255,255,255,0.05)",
+                                background: "var(--input-bg)",
                                 color: "var(--text-secondary)"
                               }}>
                                 {survey.department}
@@ -1056,7 +1056,7 @@ ${commentList || "(없음)"}
                                 padding: "0.4rem 0.8rem",
                                 fontSize: "0.75rem",
                                 borderRadius: "0.3rem",
-                                border: "1px solid var(--border-color-dark)",
+                                border: "1px solid var(--border-color)",
                                 background: "rgba(255,255,255,0.02)",
                                 color: "var(--text-primary)",
                                 cursor: "pointer",
@@ -1231,7 +1231,7 @@ ${commentList || "(없음)"}
                 type="button"
                 onClick={handleAddQuestion}
                 className="btn-secondary"
-                style={{ display: "flex", alignItems: "center", gap: "0.2rem", padding: "0.5rem 1rem", fontSize: "0.78rem", cursor: "pointer", borderRadius: "0.3rem", border: "1px solid var(--border-color-dark)" }}
+                style={{ display: "flex", alignItems: "center", gap: "0.2rem", padding: "0.5rem 1rem", fontSize: "0.78rem", cursor: "pointer", borderRadius: "0.3rem", border: "1px solid var(--border-color)" }}
               >
                 <Plus size={14} /> 문항 추가
               </button>
@@ -1287,7 +1287,7 @@ ${commentList || "(없음)"}
                     fontSize: "0.72rem",
                     borderRadius: "0.25rem",
                     background: selectedSurvey.status === "완료" ? "rgba(16, 185, 129, 0.15)" : "rgba(255,255,255,0.05)",
-                    border: "1px solid var(--border-color-dark)",
+                    border: "1px solid var(--border-color)",
                     color: selectedSurvey.status === "완료" ? "#10b981" : "var(--text-primary)",
                     cursor: selectedSurvey.status === "완료" ? "default" : "pointer"
                   }}
@@ -1341,7 +1341,7 @@ ${commentList || "(없음)"}
                     <button
                       onClick={() => handleCopyUrl(selectedSurvey.id)}
                       className="btn-secondary"
-                      style={{ padding: "0.45rem 0.8rem", fontSize: "0.75rem", cursor: "pointer", borderRadius: "0.3rem", border: "1px solid var(--border-color-dark)" }}
+                      style={{ padding: "0.45rem 0.8rem", fontSize: "0.75rem", cursor: "pointer", borderRadius: "0.3rem", border: "1px solid var(--border-color)" }}
                     >
                       {copiedId === selectedSurvey.id ? "복사완료!" : "링크복사"}
                     </button>
@@ -1441,7 +1441,7 @@ ${commentList || "(없음)"}
                   </button>
                 </div>
 
-                <div style={{ display: "flex", flexDirection: "column", gap: "0.8rem", background: "rgba(255,255,255,0.01)", padding: "1rem", borderRadius: "0.4rem", border: "1px solid var(--border-color-dark)" }}>
+                <div style={{ display: "flex", flexDirection: "column", gap: "0.8rem", background: "rgba(255,255,255,0.01)", padding: "1rem", borderRadius: "0.4rem", border: "1px solid var(--border-color)" }}>
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.8rem" }}>
                     <div>
                       <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>응답자 정보</label>
@@ -1566,7 +1566,7 @@ ${commentList || "(없음)"}
                 </div>
               ) : (
                 <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", background: "rgba(255,255,255,0.01)", padding: "0.6rem 1rem", borderRadius: "0.3rem", border: "1px solid var(--border-color-dark)" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", background: "rgba(255,255,255,0.01)", padding: "0.6rem 1rem", borderRadius: "0.3rem", border: "1px solid var(--border-color)" }}>
                     <span style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>수집 응답 건수: <strong style={{ color: "var(--text-primary)" }}>{selectedSurvey.responses.length}건</strong></span>
                     <span style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>종합 환산 점수: <strong style={{ color: "var(--accent-color)" }}>{currentLikertAverage} / 100점</strong></span>
                   </div>
@@ -1579,7 +1579,7 @@ ${commentList || "(없음)"}
                         <XAxis dataKey="name" stroke="var(--text-secondary)" />
                         <YAxis domain={[0, 100]} stroke="var(--text-secondary)" />
                         <Tooltip 
-                          contentStyle={{ background: "#0f172a", border: "1px solid var(--border-color-dark)", borderRadius: "0.3rem" }}
+                          contentStyle={{ background: "#0f172a", border: "1px solid var(--border-color)", borderRadius: "0.3rem" }}
                           labelStyle={{ color: "white", fontWeight: "700" }}
                           itemStyle={{ color: "var(--accent-color)" }}
                           formatter={(value, name, props) => [`${value}점`, "환산 만족도"]}
@@ -1596,7 +1596,7 @@ ${commentList || "(없음)"}
                     </ResponsiveContainer>
                   </div>
 
-                  <div style={{ maxHeight: "120px", overflowY: "auto", fontSize: "0.72rem", border: "1px solid var(--border-color-dark)", borderRadius: "0.3rem", padding: "0.5rem" }}>
+                  <div style={{ maxHeight: "120px", overflowY: "auto", fontSize: "0.72rem", border: "1px solid var(--border-color)", borderRadius: "0.3rem", padding: "0.5rem" }}>
                     <span style={{ fontWeight: "700", color: "var(--accent-color)", display: "block", marginBottom: "0.2rem" }}>[질문 문항 가이드 명세]</span>
                     {selectedSurvey.questions.map((q, idx) => (
                       <div key={idx} style={{ padding: "0.15rem 0", borderBottom: "1px solid rgba(255,255,255,0.02)", display: "flex", gap: "0.25rem" }}>
@@ -1628,7 +1628,7 @@ ${commentList || "(없음)"}
                         padding: "0.6rem 0.8rem", 
                         borderRadius: "0.4rem", 
                         background: "rgba(255,255,255,0.01)", 
-                        border: "1px solid var(--border-color-dark)",
+                        border: "1px solid var(--border-color)",
                         fontSize: "0.75rem"
                       }}
                     >
@@ -1760,52 +1760,52 @@ ${commentList || "(없음)"}
                 <thead>
                   {/* 시트 고유 A, B, C, D 헤더 */}
                   <tr style={{ background: "#2e2e2e" }}>
-                    <th style={{ width: "40px", border: "1px solid #3a3a3a", textAlign: "center", color: "#888", padding: "0.4rem" }}></th>
-                    <th style={{ border: "1px solid #3a3a3a", padding: "0.4rem", color: "#888", textAlign: "center", width: "50px" }}>A</th>
-                    <th style={{ border: "1px solid #3a3a3a", padding: "0.4rem", color: "#888", textAlign: "center", width: "100px" }}>B</th>
-                    <th style={{ border: "1px solid #3a3a3a", padding: "0.4rem", color: "#888", textAlign: "center", width: "160px" }}>C</th>
-                    <th style={{ border: "1px solid #3a3a3a", padding: "0.4rem", color: "#888", textAlign: "center", width: "70px" }}>D</th>
-                    <th style={{ border: "1px solid #3a3a3a", padding: "0.4rem", color: "#888", textAlign: "center", width: "70px" }}>E</th>
-                    <th style={{ border: "1px solid #3a3a3a", padding: "0.4rem", color: "#888", textAlign: "center", width: "70px" }}>F</th>
-                    <th style={{ border: "1px solid #3a3a3a", padding: "0.4rem", color: "#888", textAlign: "center", width: "70px" }}>G</th>
-                    <th style={{ border: "1px solid #3a3a3a", padding: "0.4rem", color: "#888", textAlign: "center", width: "70px" }}>H</th>
-                    <th style={{ border: "1px solid #3a3a3a", padding: "0.4rem", color: "#888", textAlign: "center" }}>I</th>
+                    <th style={{ width: "40px", border: "1px solid var(--border-color)", textAlign: "center", color: "#888", padding: "0.4rem" }}></th>
+                    <th style={{ border: "1px solid var(--border-color)", padding: "0.4rem", color: "#888", textAlign: "center", width: "50px" }}>A</th>
+                    <th style={{ border: "1px solid var(--border-color)", padding: "0.4rem", color: "#888", textAlign: "center", width: "100px" }}>B</th>
+                    <th style={{ border: "1px solid var(--border-color)", padding: "0.4rem", color: "#888", textAlign: "center", width: "160px" }}>C</th>
+                    <th style={{ border: "1px solid var(--border-color)", padding: "0.4rem", color: "#888", textAlign: "center", width: "70px" }}>D</th>
+                    <th style={{ border: "1px solid var(--border-color)", padding: "0.4rem", color: "#888", textAlign: "center", width: "70px" }}>E</th>
+                    <th style={{ border: "1px solid var(--border-color)", padding: "0.4rem", color: "#888", textAlign: "center", width: "70px" }}>F</th>
+                    <th style={{ border: "1px solid var(--border-color)", padding: "0.4rem", color: "#888", textAlign: "center", width: "70px" }}>G</th>
+                    <th style={{ border: "1px solid var(--border-color)", padding: "0.4rem", color: "#888", textAlign: "center", width: "70px" }}>H</th>
+                    <th style={{ border: "1px solid var(--border-color)", padding: "0.4rem", color: "#888", textAlign: "center" }}>I</th>
                   </tr>
                   {/* 실제 필드 타이틀 행 */}
                   <tr style={{ background: "#252525" }}>
-                    <td style={{ border: "1px solid #3a3a3a", textAlign: "center", color: "#888", fontWeight: "bold" }}>1</td>
-                    <td style={{ border: "1px solid #3a3a3a", padding: "0.5rem", fontWeight: "bold", color: "white", textAlign: "center" }}>No</td>
-                    <td style={{ border: "1px solid #3a3a3a", padding: "0.5rem", fontWeight: "bold", color: "white" }}>제출자명</td>
-                    <td style={{ border: "1px solid #3a3a3a", padding: "0.5rem", fontWeight: "bold", color: "white", textAlign: "center" }}>제출 일시</td>
-                    <td style={{ border: "1px solid #3a3a3a", padding: "0.5rem", fontWeight: "bold", color: "white", textAlign: "center" }}>문항 1</td>
-                    <td style={{ border: "1px solid #3a3a3a", padding: "0.5rem", fontWeight: "bold", color: "white", textAlign: "center" }}>문항 2</td>
-                    <td style={{ border: "1px solid #3a3a3a", padding: "0.5rem", fontWeight: "bold", color: "white", textAlign: "center" }}>문항 3</td>
-                    <td style={{ border: "1px solid #3a3a3a", padding: "0.5rem", fontWeight: "bold", color: "white", textAlign: "center" }}>문항 4</td>
-                    <td style={{ border: "1px solid #3a3a3a", padding: "0.5rem", fontWeight: "bold", color: "white", textAlign: "center" }}>문항 5</td>
-                    <td style={{ border: "1px solid #3a3a3a", padding: "0.5rem", fontWeight: "bold", color: "white" }}>기타 건의사항 및 피드백</td>
+                    <td style={{ border: "1px solid var(--border-color)", textAlign: "center", color: "#888", fontWeight: "bold" }}>1</td>
+                    <td style={{ border: "1px solid var(--border-color)", padding: "0.5rem", fontWeight: "bold", color: "var(--text-primary)", textAlign: "center" }}>No</td>
+                    <td style={{ border: "1px solid var(--border-color)", padding: "0.5rem", fontWeight: "bold", color: "var(--text-primary)" }}>제출자명</td>
+                    <td style={{ border: "1px solid var(--border-color)", padding: "0.5rem", fontWeight: "bold", color: "var(--text-primary)", textAlign: "center" }}>제출 일시</td>
+                    <td style={{ border: "1px solid var(--border-color)", padding: "0.5rem", fontWeight: "bold", color: "var(--text-primary)", textAlign: "center" }}>문항 1</td>
+                    <td style={{ border: "1px solid var(--border-color)", padding: "0.5rem", fontWeight: "bold", color: "var(--text-primary)", textAlign: "center" }}>문항 2</td>
+                    <td style={{ border: "1px solid var(--border-color)", padding: "0.5rem", fontWeight: "bold", color: "var(--text-primary)", textAlign: "center" }}>문항 3</td>
+                    <td style={{ border: "1px solid var(--border-color)", padding: "0.5rem", fontWeight: "bold", color: "var(--text-primary)", textAlign: "center" }}>문항 4</td>
+                    <td style={{ border: "1px solid var(--border-color)", padding: "0.5rem", fontWeight: "bold", color: "var(--text-primary)", textAlign: "center" }}>문항 5</td>
+                    <td style={{ border: "1px solid var(--border-color)", padding: "0.5rem", fontWeight: "bold", color: "var(--text-primary)" }}>기타 건의사항 및 피드백</td>
                   </tr>
                 </thead>
                 <tbody>
                   {selectedSurvey.responses.length === 0 ? (
                     <tr>
-                      <td style={{ border: "1px solid #3a3a3a", textAlign: "center", color: "#888", background: "#2e2e2e" }}>2</td>
-                      <td colSpan={9} style={{ border: "1px solid #3a3a3a", padding: "1.5rem", textAlign: "center", color: "#777" }}>
+                      <td style={{ border: "1px solid var(--border-color)", textAlign: "center", color: "#888", background: "#2e2e2e" }}>2</td>
+                      <td colSpan={9} style={{ border: "1px solid var(--border-color)", padding: "1.5rem", textAlign: "center", color: "#777" }}>
                         현재 수집된 원시 응답 데이터가 존재하지 않습니다.
                       </td>
                     </tr>
                   ) : (
                     selectedSurvey.responses.map((res, rIdx) => (
                       <tr key={res.id} style={{ background: rIdx % 2 === 0 ? "rgba(255,255,255,0.01)" : "rgba(255,255,255,0.03)" }}>
-                        <td style={{ border: "1px solid #3a3a3a", textAlign: "center", color: "#888", background: "#2e2e2e" }}>{rIdx + 2}</td>
-                        <td style={{ border: "1px solid #3a3a3a", padding: "0.45rem", textAlign: "center" }}>{rIdx + 1}</td>
-                        <td style={{ border: "1px solid #3a3a3a", padding: "0.45rem", color: "#fff", fontWeight: "700" }}>{res.responder}</td>
-                        <td style={{ border: "1px solid #3a3a3a", padding: "0.45rem", color: "var(--text-secondary)", textAlign: "center" }}>{res.date}</td>
-                        <td style={{ border: "1px solid #3a3a3a", padding: "0.45rem", textAlign: "center", color: "#10b981", fontWeight: "700" }}>{res.scores[0]}점</td>
-                        <td style={{ border: "1px solid #3a3a3a", padding: "0.45rem", textAlign: "center", color: "#10b981", fontWeight: "700" }}>{res.scores[1]}점</td>
-                        <td style={{ border: "1px solid #3a3a3a", padding: "0.45rem", textAlign: "center", color: "#10b981", fontWeight: "700" }}>{res.scores[2]}점</td>
-                        <td style={{ border: "1px solid #3a3a3a", padding: "0.45rem", textAlign: "center", color: "#10b981", fontWeight: "700" }}>{res.scores[3]}점</td>
-                        <td style={{ border: "1px solid #3a3a3a", padding: "0.45rem", textAlign: "center", color: "#10b981", fontWeight: "700" }}>{res.scores[4]}점</td>
-                        <td style={{ border: "1px solid #3a3a3a", padding: "0.45rem", color: "#ccc", fontStyle: res.comment ? "normal" : "italic" }}>
+                        <td style={{ border: "1px solid var(--border-color)", textAlign: "center", color: "#888", background: "#2e2e2e" }}>{rIdx + 2}</td>
+                        <td style={{ border: "1px solid var(--border-color)", padding: "0.45rem", textAlign: "center" }}>{rIdx + 1}</td>
+                        <td style={{ border: "1px solid var(--border-color)", padding: "0.45rem", color: "var(--text-primary)", fontWeight: "700" }}>{res.responder}</td>
+                        <td style={{ border: "1px solid var(--border-color)", padding: "0.45rem", color: "var(--text-secondary)", textAlign: "center" }}>{res.date}</td>
+                        <td style={{ border: "1px solid var(--border-color)", padding: "0.45rem", textAlign: "center", color: "#10b981", fontWeight: "700" }}>{res.scores[0]}점</td>
+                        <td style={{ border: "1px solid var(--border-color)", padding: "0.45rem", textAlign: "center", color: "#10b981", fontWeight: "700" }}>{res.scores[1]}점</td>
+                        <td style={{ border: "1px solid var(--border-color)", padding: "0.45rem", textAlign: "center", color: "#10b981", fontWeight: "700" }}>{res.scores[2]}점</td>
+                        <td style={{ border: "1px solid var(--border-color)", padding: "0.45rem", textAlign: "center", color: "#10b981", fontWeight: "700" }}>{res.scores[3]}점</td>
+                        <td style={{ border: "1px solid var(--border-color)", padding: "0.45rem", textAlign: "center", color: "#10b981", fontWeight: "700" }}>{res.scores[4]}점</td>
+                        <td style={{ border: "1px solid var(--border-color)", padding: "0.45rem", color: "#ccc", fontStyle: res.comment ? "normal" : "italic" }}>
                           {res.comment || "(공백 피드백)"}
                         </td>
                       </tr>

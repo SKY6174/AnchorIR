@@ -551,7 +551,7 @@ export default function BudgetItemsManager({ projects, currentRole, onUpdateBudg
                   </h3>
                 </div>
                 {/* 본사업비 / 이월사업비 / 전체예산 분리를 위한 서브탭 스위치 제어기 */}
-                <div style={{ display: "flex", gap: "0.3rem", background: "rgba(255,255,255,0.02)", border: "1px solid var(--border-color-dark)", padding: "0.3rem", borderRadius: "0.5rem" }}>
+                <div style={{ display: "flex", gap: "0.3rem", background: "rgba(255,255,255,0.02)", border: "1px solid var(--border-color)", padding: "0.3rem", borderRadius: "0.5rem" }}>
                   <button
                     type="button"
                     onClick={() => setSubTab("main")}
@@ -610,7 +610,7 @@ export default function BudgetItemsManager({ projects, currentRole, onUpdateBudg
                     formatter={value => `${value.toLocaleString()} 백만원`}
                     contentStyle={{
                       background: "rgba(24, 24, 27, 0.9)",
-                      border: "1px solid var(--border-color-dark)",
+                      border: "1px solid var(--border-color)",
                       borderRadius: "0.5rem",
                       color: "white"
                     }}
@@ -721,7 +721,7 @@ export default function BudgetItemsManager({ projects, currentRole, onUpdateBudg
                 </table>
               </div>
 
-              <div style={{ display: "flex", alignItems: "center", gap: "0.4rem", fontSize: "0.8rem", color: "var(--text-secondary)", background: "rgba(255,255,255,0.02)", padding: "0.75rem", borderRadius: "0.5rem", border: "1px solid var(--border-color-dark)" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "0.4rem", fontSize: "0.8rem", color: "var(--text-secondary)", background: "rgba(255,255,255,0.02)", padding: "0.75rem", borderRadius: "0.5rem", border: "1px solid var(--border-color)" }}>
                 <Info size={14} style={{ color: "var(--accent-color)" }} />
                 <span>모든 비목의 예산 배정액은 세부 프로그램 기획(P) 단계에서 입력하신 금액의 합계로 실시간 자동 동기화됩니다 (임의 수정 불가).</span>
               </div>

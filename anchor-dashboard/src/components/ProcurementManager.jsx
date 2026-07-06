@@ -3934,11 +3934,11 @@ export default function ProcurementManager({
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginBottom: "1rem" }}>
                     <div>
                       <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>구축 공간명</label>
-                      <input type="text" name="title" value={formData.title} onChange={handleInputChange} required placeholder="예: 3층 RISE 바이오 메디컬 실습실 구축" style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} />
+                      <input type="text" name="title" value={formData.title} onChange={handleInputChange} required placeholder="예: 3층 RISE 바이오 메디컬 실습실 구축" style={{ width: "100%", padding: "0.5rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} />
                     </div>
                     <div>
                       <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>구축 위치 (지정 호실)</label>
-                      <input type="text" name="location" value={formData.location} onChange={handleInputChange} required placeholder="예: 대학 본관 302호" style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} />
+                      <input type="text" name="location" value={formData.location} onChange={handleInputChange} required placeholder="예: 대학 본관 302호" style={{ width: "100%", padding: "0.5rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} />
                     </div>
                   </div>
 
@@ -3953,7 +3953,7 @@ export default function ProcurementManager({
                         onChange={handleInputChange} 
                         required 
                         placeholder="예: 50.00" 
-                        style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} 
+                        style={{ width: "100%", padding: "0.5rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} 
                       />
                     </div>
                     <div>
@@ -3965,55 +3965,55 @@ export default function ProcurementManager({
                         value={formData.budgetSpent} 
                         onChange={handleInputChange} 
                         placeholder="예: 10.50" 
-                        style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} 
+                        style={{ width: "100%", padding: "0.5rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} 
                       />
                     </div>
                   </div>
 
                   {/* 다섯번째 줄: 구축단계 일정 지정 (선택 입력) */}
-                  <div style={{ background: "rgba(255,255,255,0.01)", padding: "0.95rem", borderRadius: "8px", border: "1px solid var(--border-color-dark)", marginBottom: "1rem" }}>
+                  <div style={{ background: "rgba(255,255,255,0.01)", padding: "0.95rem", borderRadius: "8px", border: "1px solid var(--border-color)", marginBottom: "1rem" }}>
                     <span style={{ display: "block", fontSize: "0.78rem", fontWeight: "800", color: "white", marginBottom: "0.5rem" }}>
                       📅 구축단계 일정 지정 (선택 입력)
                     </span>
                     <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: "0.75rem" }}>
                       <div>
                         <label style={{ display: "block", fontSize: "0.68rem", color: "var(--text-secondary)", marginBottom: "0.2rem", whiteSpace: "nowrap" }}>요청(Rq) 일</label>
-                        <input type="date" name="dateP" value={formData.dateP || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.4rem 0.35rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white", fontSize: "0.72rem" }} />
+                        <input type="date" name="dateP" value={formData.dateP || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.4rem 0.35rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", fontSize: "0.72rem" }} />
                       </div>
                       <div>
                         <label style={{ display: "block", fontSize: "0.68rem", color: "var(--text-secondary)", marginBottom: "0.2rem", whiteSpace: "nowrap" }}>검토∙심의∙결정(PDR) 일</label>
-                        <input type="date" name="dateA" value={formData.dateA || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.4rem 0.35rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white", fontSize: "0.72rem" }} />
+                        <input type="date" name="dateA" value={formData.dateA || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.4rem 0.35rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", fontSize: "0.72rem" }} />
                       </div>
                       <div>
                         <label style={{ display: "block", fontSize: "0.68rem", color: "var(--text-secondary)", marginBottom: "0.2rem", whiteSpace: "nowrap" }}>설계∙인허가(DL) 일</label>
-                        <input type="date" name="dateB" value={formData.dateB || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.4rem 0.35rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white", fontSize: "0.72rem" }} />
+                        <input type="date" name="dateB" value={formData.dateB || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.4rem 0.35rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", fontSize: "0.72rem" }} />
                       </div>
                       <div>
                         <label style={{ display: "block", fontSize: "0.68rem", color: "var(--text-secondary)", marginBottom: "0.2rem", whiteSpace: "nowrap" }}>입찰∙계약(BC) 일</label>
-                        <input type="date" name="datePr" value={formData.datePr || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.4rem 0.35rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white", fontSize: "0.72rem" }} />
+                        <input type="date" name="datePr" value={formData.datePr || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.4rem 0.35rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", fontSize: "0.72rem" }} />
                       </div>
                       <div>
                         <label style={{ display: "block", fontSize: "0.68rem", color: "var(--text-secondary)", marginBottom: "0.2rem", whiteSpace: "nowrap" }}>시공∙감리(CS) 일</label>
-                        <input type="date" name="dateI" value={formData.dateI || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.4rem 0.35rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white", fontSize: "0.72rem" }} />
+                        <input type="date" name="dateI" value={formData.dateI || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.4rem 0.35rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", fontSize: "0.72rem" }} />
                       </div>
                     </div>
                   </div>
 
                   <div>
                     <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>구축 목적 (공간 용도)</label>
-                    <textarea name="purpose" value={formData.purpose} onChange={handleInputChange} required placeholder="특화 인력 양성을 위한 핵심 시너지 공간 용도 상세 기술" style={{ width: "100%", height: "50px", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white", resize: "none" }} />
+                    <textarea name="purpose" value={formData.purpose} onChange={handleInputChange} required placeholder="특화 인력 양성을 위한 핵심 시너지 공간 용도 상세 기술" style={{ width: "100%", height: "50px", padding: "0.5rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", resize: "none" }} />
                   </div>
                   <div>
                     <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>향후 활용 계획</label>
-                    <input type="text" name="utilization" value={formData.utilization} onChange={handleInputChange} required placeholder="예: 공간 연계 교육과정 활용 방식 및 융합 연구 활용" style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} />
+                    <input type="text" name="utilization" value={formData.utilization} onChange={handleInputChange} required placeholder="예: 공간 연계 교육과정 활용 방식 및 융합 연구 활용" style={{ width: "100%", padding: "0.5rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} />
                   </div>
                   <div>
                     <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>세부 공간 구축 설계 계획 (선택)</label>
-                    <textarea name="plan" value={formData.plan} onChange={handleInputChange} placeholder="예: 바닥 전선 몰딩, 방음벽 흡음 패널 시공 및 스마트 미러링 보드 마운팅 작업" style={{ width: "100%", height: "50px", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white", resize: "none" }} />
+                    <textarea name="plan" value={formData.plan} onChange={handleInputChange} placeholder="예: 바닥 전선 몰딩, 방음벽 흡음 패널 시공 및 스마트 미러링 보드 마운팅 작업" style={{ width: "100%", height: "50px", padding: "0.5rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", resize: "none" }} />
                   </div>
                   <div>
                     <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>공사 진행 실적 현황 (선택)</label>
-                    <textarea name="progress" value={formData.progress} onChange={handleInputChange} placeholder="현재 진행 실무 정보 기술" style={{ width: "100%", height: "50px", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white", resize: "none" }} />
+                    <textarea name="progress" value={formData.progress} onChange={handleInputChange} placeholder="현재 진행 실무 정보 기술" style={{ width: "100%", height: "50px", padding: "0.5rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", resize: "none" }} />
                   </div>
                 </>
               )}
@@ -4173,7 +4173,7 @@ export default function ProcurementManager({
                   </span>
                   <div>
                     <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>품명</label>
-                    <input type="text" name="name" value={formData.name} onChange={handleInputChange} required placeholder="예: 임상 실습용 스마트 베드" style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} />
+                    <input type="text" name="name" value={formData.name} onChange={handleInputChange} required placeholder="예: 임상 실습용 스마트 베드" style={{ width: "100%", padding: "0.5rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} />
                   </div>
                   {modalType !== "env" && (() => {
                     const priceVal = parseFloat(formData.unitPrice || 0);
@@ -4184,25 +4184,25 @@ export default function ProcurementManager({
                         <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr 2fr", gap: "1rem" }}>
                           <div>
                             <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>단가 (백만원)</label>
-                            <input type="number" name="unitPrice" step="0.01" value={formData.unitPrice} onChange={handleInputChange} required placeholder="예: 120.00" style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} />
+                            <input type="number" name="unitPrice" step="0.01" value={formData.unitPrice} onChange={handleInputChange} required placeholder="예: 120.00" style={{ width: "100%", padding: "0.5rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} />
                           </div>
                           <div>
                             <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>수량</label>
-                            <input type="number" name="quantity" value={formData.quantity} onChange={handleInputChange} required placeholder="예: 2" style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} />
+                            <input type="number" name="quantity" value={formData.quantity} onChange={handleInputChange} required placeholder="예: 2" style={{ width: "100%", padding: "0.5rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} />
                           </div>
                           <div>
                             <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>금액 (백만원)</label>
-                            <input type="text" value={`${parseFloat(totalInMillion).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} 백만원`} readOnly style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.02)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "#10B981", fontWeight: "bold" }} />
+                            <input type="text" value={`${parseFloat(totalInMillion).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} 백만원`} readOnly style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.02)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "#10B981", fontWeight: "bold" }} />
                           </div>
                         </div>
                         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
                           <div>
                             <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>구입목적</label>
-                            <textarea name="descriptionPurpose" value={formData.descriptionPurpose || ""} onChange={handleInputChange} required placeholder="기자재의 구입 목적 및 타당성 상세 기술" style={{ width: "100%", height: "60px", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white", resize: "none" }} />
+                            <textarea name="descriptionPurpose" value={formData.descriptionPurpose || ""} onChange={handleInputChange} required placeholder="기자재의 구입 목적 및 타당성 상세 기술" style={{ width: "100%", height: "60px", padding: "0.5rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", resize: "none" }} />
                           </div>
                           <div>
                             <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>활용계획</label>
-                            <textarea name="descriptionPlan" value={formData.descriptionPlan || ""} onChange={handleInputChange} required placeholder="핵심 활용 계획 및 예상 시너지 상세 기술" style={{ width: "100%", height: "60px", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white", resize: "none" }} />
+                            <textarea name="descriptionPlan" value={formData.descriptionPlan || ""} onChange={handleInputChange} required placeholder="핵심 활용 계획 및 예상 시너지 상세 기술" style={{ width: "100%", height: "60px", padding: "0.5rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", resize: "none" }} />
                           </div>
                         </div>
                       </>
@@ -4213,16 +4213,16 @@ export default function ProcurementManager({
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
                       <div>
                         <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>구축목적</label>
-                        <textarea name="descriptionPurpose" value={formData.descriptionPurpose || ""} onChange={handleInputChange} required placeholder="환경구축의 목적 및 타당성 상세 기술" style={{ width: "100%", height: "60px", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white", resize: "none" }} />
+                        <textarea name="descriptionPurpose" value={formData.descriptionPurpose || ""} onChange={handleInputChange} required placeholder="환경구축의 목적 및 타당성 상세 기술" style={{ width: "100%", height: "60px", padding: "0.5rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", resize: "none" }} />
                       </div>
                       <div>
                         <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>활용계획</label>
-                        <textarea name="descriptionPlan" value={formData.descriptionPlan || ""} onChange={handleInputChange} required placeholder="핵심 활용 계획 및 예상 시너지 상세 기술" style={{ width: "100%", height: "60px", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white", resize: "none" }} />
+                        <textarea name="descriptionPlan" value={formData.descriptionPlan || ""} onChange={handleInputChange} required placeholder="핵심 활용 계획 및 예상 시너지 상세 기술" style={{ width: "100%", height: "60px", padding: "0.5rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", resize: "none" }} />
                       </div>
                     </div>
                   )}
                   
-                  <div style={{ background: "rgba(255,255,255,0.02)", padding: "1rem", borderRadius: "8px", border: "1px solid var(--border-color-dark)" }}>
+                  <div style={{ background: "rgba(255,255,255,0.02)", padding: "1rem", borderRadius: "8px", border: "1px solid var(--border-color)" }}>
                     <span style={{ display: "block", fontSize: "0.82rem", fontWeight: "800", color: "white", marginBottom: "0.75rem" }}>
                       📅 단계별 이벤트 일자 입력 (선택 입력)
                     </span>
@@ -4231,31 +4231,31 @@ export default function ProcurementManager({
                         <label style={{ display: "block", fontSize: "0.7rem", color: "var(--text-secondary)", marginBottom: "0.2rem" }}>
                           {modalType === "env" ? "요청(Rq) 일자" : "기획(P) 일자"}
                         </label>
-                        <input type="date" name="dateP" value={formData.dateP || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.3rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white", fontSize: "0.72rem" }} />
+                        <input type="date" name="dateP" value={formData.dateP || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.3rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", fontSize: "0.72rem" }} />
                       </div>
                       <div>
                         <label style={{ display: "block", fontSize: "0.7rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>
                           {modalType === "env" ? "심의(DR) 일자" : "승인(A) 일자"}
                         </label>
-                        <input type="date" name="dateA" value={formData.dateA || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.3rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white", fontSize: "0.72rem" }} />
+                        <input type="date" name="dateA" value={formData.dateA || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.3rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", fontSize: "0.72rem" }} />
                       </div>
                       <div>
                         <label style={{ display: "block", fontSize: "0.7rem", color: "var(--text-secondary)", marginBottom: "0.2rem" }}>
                           {modalType === "env" ? "용역(DL) 일자" : "입찰(B) 일자"}
                         </label>
-                        <input type="date" name="dateB" value={formData.dateB || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.3rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white", fontSize: "0.72rem" }} />
+                        <input type="date" name="dateB" value={formData.dateB || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.3rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", fontSize: "0.72rem" }} />
                       </div>
                       <div>
                         <label style={{ display: "block", fontSize: "0.7rem", color: "var(--text-secondary)", marginBottom: "0.2rem" }}>
                           {modalType === "env" ? "선정(BC) 일자" : "구매(Pr) 일자"}
                         </label>
-                        <input type="date" name="datePr" value={formData.datePr || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.3rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white", fontSize: "0.72rem" }} />
+                        <input type="date" name="datePr" value={formData.datePr || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.3rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", fontSize: "0.72rem" }} />
                       </div>
                       <div>
                         <label style={{ display: "block", fontSize: "0.7rem", color: "var(--text-secondary)", marginBottom: "0.2rem" }}>
                           {modalType === "env" ? "시공(CS) 일자" : "검수(I) 일자"}
                         </label>
-                        <input type="date" name="dateI" value={formData.dateI || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.3rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white", fontSize: "0.72rem" }} />
+                        <input type="date" name="dateI" value={formData.dateI || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.3rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", fontSize: "0.72rem" }} />
                       </div>
                     </div>
                   </div>
@@ -4263,7 +4263,7 @@ export default function ProcurementManager({
               )}
 
               {(modalType === "env" || modalType === "equip") && (
-                <div style={{ background: "rgba(255,255,255,0.02)", padding: "1rem", borderRadius: "8px", border: "1px solid var(--border-color-dark)", marginTop: "1rem" }}>
+                <div style={{ background: "rgba(255,255,255,0.02)", padding: "1rem", borderRadius: "8px", border: "1px solid var(--border-color)", marginTop: "1rem" }}>
                   <span style={{ display: "block", fontSize: "0.85rem", fontWeight: "800", color: "#60A5FA", marginBottom: "0.75rem" }}>
                     {modalType === "env" ? "🤖 AI 문서 분석 및 요약 등록 (기획, 구매, 결과)" : "🤖 AI 문서 분석 및 요약 등록 (기획, 구매, 입찰)"}
                   </span>
@@ -4500,7 +4500,7 @@ export default function ProcurementManager({
                           }));
                         }}
                         className="user-selector" 
-                        style={{ width: "100%", padding: "0.5rem", background: "var(--bg-card-dark)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }}
+                        style={{ width: "100%", padding: "0.5rem", background: "var(--bg-card-dark)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "white" }}
                       >
                         <option value="A1">A1 과제</option>
                         <option value="A2">A2 과제</option>
@@ -4530,7 +4530,7 @@ export default function ProcurementManager({
                           }
                         }}
                         className="user-selector" 
-                        style={{ width: "100%", padding: "0.5rem", background: "var(--bg-card-dark)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }}
+                        style={{ width: "100%", padding: "0.5rem", background: "var(--bg-card-dark)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "white" }}
                       >
                         <option value="">(연계 프로그램 선택 안 함)</option>
                         {getDynamicPrograms(formData.unit).map(prog => (
@@ -4551,7 +4551,7 @@ export default function ProcurementManager({
                         value={formData.deptName} 
                         onChange={handleInputChange} 
                         className="user-selector" 
-                        style={{ width: "100%", padding: "0.5rem", background: "var(--bg-card-dark)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }}
+                        style={{ width: "100%", padding: "0.5rem", background: "var(--bg-card-dark)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }}
                       >
                         <option value="">(학과 없음/전체)</option>
                         <option value="기계공학부">기계공학부</option>
@@ -4594,7 +4594,7 @@ export default function ProcurementManager({
                         value={formData.divisionName} 
                         onChange={handleInputChange} 
                         className="user-selector" 
-                        style={{ width: "100%", padding: "0.5rem", background: "var(--bg-card-dark)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }}
+                        style={{ width: "100%", padding: "0.5rem", background: "var(--bg-card-dark)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }}
                       >
                         <option value="">(부서 없음/전체)</option>
                         <optgroup label="앵커사업단 및 센터">
@@ -4653,7 +4653,7 @@ export default function ProcurementManager({
                         onChange={handleInputChange} 
                         required 
                         placeholder="예: 앵커 산학 네트워크 포럼 기획 운영 대행 용역" 
-                        style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} 
+                        style={{ width: "100%", padding: "0.5rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} 
                       />
                     </div>
                     <div>
@@ -4665,7 +4665,7 @@ export default function ProcurementManager({
                         onChange={handleInputChange} 
                         required 
                         placeholder="예: 해당 용역이 해결하고자 하는 문제 및 목표" 
-                        style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} 
+                        style={{ width: "100%", padding: "0.5rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} 
                       />
                     </div>
                   </div>
@@ -4678,7 +4678,7 @@ export default function ProcurementManager({
                       value={formData.opResult} 
                       onChange={handleInputChange} 
                       placeholder="예: 수행 결과 및 계약 시 특이사항 기술" 
-                      style={{ width: "100%", height: "50px", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white", resize: "none" }} 
+                      style={{ width: "100%", height: "50px", padding: "0.5rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", resize: "none" }} 
                     />
                   </div>
 
@@ -4692,7 +4692,7 @@ export default function ProcurementManager({
                         value={formData.budgetPlan} 
                         onChange={handleInputChange} 
                         placeholder="예: 25000 (2천5백만원)" 
-                        style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} 
+                        style={{ width: "100%", padding: "0.5rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} 
                       />
                     </div>
                     <div>
@@ -4703,7 +4703,7 @@ export default function ProcurementManager({
                         value={formData.budgetSpent} 
                         onChange={handleInputChange} 
                         placeholder="예: 20000 (2천만원)" 
-                        style={{ width: "100%", padding: "0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} 
+                        style={{ width: "100%", padding: "0.5rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} 
                       />
                     </div>
                   </div>
@@ -4714,31 +4714,31 @@ export default function ProcurementManager({
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: "0.75rem" }}>
                       <div>
                         <label style={{ display: "block", fontSize: "0.72rem", color: "#f59e0b", marginBottom: "0.15rem" }}>기획(PP)</label>
-                        <input type="date" name="datePp" value={formData.datePp || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.35rem", fontSize: "0.75rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} />
+                        <input type="date" name="datePp" value={formData.datePp || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.35rem", fontSize: "0.75rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} />
                       </div>
                       <div>
                         <label style={{ display: "block", fontSize: "0.72rem", color: "#3b82f6", marginBottom: "0.15rem" }}>의뢰(RFO)</label>
-                        <input type="date" name="dateRfo" value={formData.dateRfo || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.35rem", fontSize: "0.75rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} />
+                        <input type="date" name="dateRfo" value={formData.dateRfo || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.35rem", fontSize: "0.75rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} />
                       </div>
                       <div>
                         <label style={{ display: "block", fontSize: "0.72rem", color: "#06b6d4", marginBottom: "0.15rem" }}>입찰(B)</label>
-                        <input type="date" name="dateB" value={formData.dateB || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.35rem", fontSize: "0.75rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} />
+                        <input type="date" name="dateB" value={formData.dateB || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.35rem", fontSize: "0.75rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} />
                       </div>
                       <div>
                         <label style={{ display: "block", fontSize: "0.72rem", color: "#ec4899", marginBottom: "0.15rem" }}>평가∙선정(ES)</label>
-                        <input type="date" name="dateEs" value={formData.dateEs || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.35rem", fontSize: "0.75rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} />
+                        <input type="date" name="dateEs" value={formData.dateEs || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.35rem", fontSize: "0.75rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} />
                       </div>
                       <div>
                         <label style={{ display: "block", fontSize: "0.72rem", color: "#a78bfa", marginBottom: "0.15rem" }}>계약(C)</label>
-                        <input type="date" name="dateC" value={formData.dateC || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.35rem", fontSize: "0.75rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} />
+                        <input type="date" name="dateC" value={formData.dateC || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.35rem", fontSize: "0.75rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} />
                       </div>
                       <div>
                         <label style={{ display: "block", fontSize: "0.72rem", color: "#eab308", marginBottom: "0.15rem" }}>수행(E)</label>
-                        <input type="date" name="dateE" value={formData.dateE || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.35rem", fontSize: "0.75rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} />
+                        <input type="date" name="dateE" value={formData.dateE || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.35rem", fontSize: "0.75rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} />
                       </div>
                       <div>
                         <label style={{ display: "block", fontSize: "0.72rem", color: "#10b981", marginBottom: "0.15rem" }}>검수(I)</label>
-                        <input type="date" name="dateI" value={formData.dateI || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.35rem", fontSize: "0.75rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", borderRadius: "6px", color: "white" }} />
+                        <input type="date" name="dateI" value={formData.dateI || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.35rem", fontSize: "0.75rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} />
                       </div>
                     </div>
                   </div>
@@ -4797,7 +4797,7 @@ export default function ProcurementManager({
                 <button 
                   type="button" 
                   onClick={() => setIsAddModalOpen(false)}
-                  style={{ padding: "0.5rem 1rem", borderRadius: "6px", background: "transparent", border: "1px solid var(--border-color-dark)", color: "white", cursor: "pointer" }}
+                  style={{ padding: "0.5rem 1rem", borderRadius: "6px", background: "transparent", border: "1px solid var(--border-color)", color: "white", cursor: "pointer" }}
                 >
                   취소
                 </button>
@@ -5178,36 +5178,36 @@ export default function ProcurementManager({
                     <table style={{ width: "100%", borderCollapse: "collapse", marginTop: "0.5rem", border: "1px solid rgba(255,255,255,0.1)" }}>
                       <tbody>
                         <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
-                          <td style={{ padding: "0.5rem", background: "rgba(255,255,255,0.05)", fontWeight: "700", width: "140px" }}>
+                          <td style={{ padding: "0.5rem", background: "var(--input-bg)", fontWeight: "700", width: "140px" }}>
                             {isEnv ? "구축 공간명" : "품명"}
                           </td>
-                          <td style={{ padding: "0.5rem", color: "white", fontWeight: "700" }}>{bidModalData.itemName || bidModalData.name || "-"}</td>
+                          <td style={{ padding: "0.5rem", color: "var(--text-primary)", fontWeight: "700" }}>{bidModalData.itemName || bidModalData.name || "-"}</td>
                         </tr>
                         {isEnv ? (
                           <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
-                            <td style={{ padding: "0.5rem", background: "rgba(255,255,255,0.05)", fontWeight: "700" }}>지정 호실/위치</td>
+                            <td style={{ padding: "0.5rem", background: "var(--input-bg)", fontWeight: "700" }}>지정 호실/위치</td>
                             <td style={{ padding: "0.5rem" }}>{bidModalData.location || "지정 안 됨"}</td>
                           </tr>
                         ) : (
                           <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
-                            <td style={{ padding: "0.5rem", background: "rgba(255,255,255,0.05)", fontWeight: "700" }}>도입 단가 / 수량</td>
+                            <td style={{ padding: "0.5rem", background: "var(--input-bg)", fontWeight: "700" }}>도입 단가 / 수량</td>
                             <td style={{ padding: "0.5rem" }}>{(price / 1000).toLocaleString()}천원 / {qty}대</td>
                           </tr>
                         )}
                         <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
-                          <td style={{ padding: "0.5rem", background: "rgba(255,255,255,0.05)", fontWeight: "700" }}>
+                          <td style={{ padding: "0.5rem", background: "var(--input-bg)", fontWeight: "700" }}>
                             {isEnv ? "총 집행 공사비" : "배정 예산 규모"}
                           </td>
                           <td style={{ padding: "0.5rem", fontWeight: "800", color: "#10B981" }}>{ai.budget}</td>
                         </tr>
                         <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
-                          <td style={{ padding: "0.5rem", background: "rgba(255,255,255,0.05)", fontWeight: "700" }}>
+                          <td style={{ padding: "0.5rem", background: "var(--input-bg)", fontWeight: "700" }}>
                             {isEnv ? "최종 시공 완료일" : "입찰 등록 마감"}
                           </td>
                           <td style={{ padding: "0.5rem", color: "#FBBF24", fontWeight: "700" }}>{ai.deadline}</td>
                         </tr>
                         <tr>
-                          <td style={{ padding: "0.5rem", background: "rgba(255,255,255,0.05)", fontWeight: "700" }}>
+                          <td style={{ padding: "0.5rem", background: "var(--input-bg)", fontWeight: "700" }}>
                             {isEnv ? "시공 범위 및 실적" : "참가 자격 및 규격"}
                           </td>
                           <td style={{ padding: "0.5rem", color: "rgba(255,255,255,0.85)", lineHeight: "1.4" }}>
@@ -5256,40 +5256,40 @@ export default function ProcurementManager({
                   <table style={{ width: "100%", borderCollapse: "collapse", marginTop: "0.5rem", border: "1px solid rgba(255,255,255,0.1)" }}>
                     <tbody>
                       <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
-                        <td style={{ padding: "0.5rem", background: "rgba(255,255,255,0.05)", fontWeight: "700", width: "120px" }}>
+                        <td style={{ padding: "0.5rem", background: "var(--input-bg)", fontWeight: "700", width: "120px" }}>
                           {isEnv ? "구축 공간명" : "품명"}
                         </td>
-                        <td style={{ padding: "0.5rem", color: "white", fontWeight: "700" }}>{bidModalData.itemName || bidModalData.name || "-"}</td>
+                        <td style={{ padding: "0.5rem", color: "var(--text-primary)", fontWeight: "700" }}>{bidModalData.itemName || bidModalData.name || "-"}</td>
                       </tr>
                       {isEnv ? (
                         <>
                           <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
-                            <td style={{ padding: "0.5rem", background: "rgba(255,255,255,0.05)", fontWeight: "700" }}>구축 위치</td>
+                            <td style={{ padding: "0.5rem", background: "var(--input-bg)", fontWeight: "700" }}>구축 위치</td>
                             <td style={{ padding: "0.5rem" }}>{bidModalData.location || "지정 안 됨"}</td>
                           </tr>
                           <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
-                            <td style={{ padding: "0.5rem", background: "rgba(255,255,255,0.05)", fontWeight: "700" }}>최종 집행액</td>
+                            <td style={{ padding: "0.5rem", background: "var(--input-bg)", fontWeight: "700" }}>최종 집행액</td>
                             <td style={{ padding: "0.5rem", fontWeight: "800", color: "#10B981" }}>{(Number(bidModalData.budgetSpent || 0) / 1000).toLocaleString()}천원</td>
                           </tr>
                         </>
                       ) : (
                         <>
                           <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
-                            <td style={{ padding: "0.5rem", background: "rgba(255,255,255,0.05)", fontWeight: "700" }}>구매 수량</td>
+                            <td style={{ padding: "0.5rem", background: "var(--input-bg)", fontWeight: "700" }}>구매 수량</td>
                             <td style={{ padding: "0.5rem" }}>{qty} 대(세트)</td>
                           </tr>
                           <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
-                            <td style={{ padding: "0.5rem", background: "rgba(255,255,255,0.05)", fontWeight: "700" }}>도입 단가</td>
+                            <td style={{ padding: "0.5rem", background: "var(--input-bg)", fontWeight: "700" }}>도입 단가</td>
                             <td style={{ padding: "0.5rem", fontWeight: "700", color: "#60A5FA" }}>{(price / 1000).toLocaleString()}천원</td>
                           </tr>
                           <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
-                            <td style={{ padding: "0.5rem", background: "rgba(255,255,255,0.05)", fontWeight: "700" }}>소요 예산</td>
+                            <td style={{ padding: "0.5rem", background: "var(--input-bg)", fontWeight: "700" }}>소요 예산</td>
                             <td style={{ padding: "0.5rem", fontWeight: "800", color: "#10B981" }}>{(total / 1000).toLocaleString()}천원 (부가가치세 포함)</td>
                           </tr>
                         </>
                       )}
                       <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
-                        <td style={{ padding: "0.5rem", background: "rgba(255,255,255,0.05)", fontWeight: "700" }}>
+                        <td style={{ padding: "0.5rem", background: "var(--input-bg)", fontWeight: "700" }}>
                           {isEnv ? "최종 구축 공간" : "납품 장소"}
                         </td>
                         <td style={{ padding: "0.5rem" }}>
@@ -5300,7 +5300,7 @@ export default function ProcurementManager({
                         </td>
                       </tr>
                       <tr>
-                        <td style={{ padding: "0.5rem", background: "rgba(255,255,255,0.05)", fontWeight: "700" }}>
+                        <td style={{ padding: "0.5rem", background: "var(--input-bg)", fontWeight: "700" }}>
                           {isEnv ? "시공 특이 사항" : "요구 성능 규격"}
                         </td>
                         <td style={{ padding: "0.5rem", color: "rgba(255,255,255,0.85)", lineHeight: "1.4" }}>

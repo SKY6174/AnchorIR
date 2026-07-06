@@ -1203,7 +1203,7 @@ export default function PDCAManager({
     <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
       {/* 상단: 단위과제별 / 전체보기 탭 버튼 */}
       {!isResearcher && (
-        <div style={{ display: "flex", gap: "0.5rem", background: "rgba(255,255,255,0.02)", border: "1px solid var(--border-color-dark)", padding: "0.4rem", borderRadius: "0.75rem", width: "fit-content" }}>
+        <div style={{ display: "flex", gap: "0.5rem", background: "rgba(255,255,255,0.02)", border: "1px solid var(--border-color)", padding: "0.4rem", borderRadius: "0.75rem", width: "fit-content" }}>
           <button
             onClick={() => { setViewMode("unit"); setSelectedProgId(null); }}
             style={{
@@ -1439,7 +1439,7 @@ export default function PDCAManager({
 
                 {/* P 단계: 기획 정보 수립 & 예산 세부 배정 */}
                 {activePdcaStage === "P" && (isResearcher || currentRole.rank <= 2) && (
-                  <form onSubmit={handleUpdatePDetails} style={{ padding: "0.75rem", background: "rgba(59,130,246,0.02)", border: "1px solid var(--border-color-dark)", borderRadius: "0.5rem" }}>
+                  <form onSubmit={handleUpdatePDetails} style={{ padding: "0.75rem", background: "rgba(59,130,246,0.02)", border: "1px solid var(--border-color)", borderRadius: "0.5rem" }}>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.6rem", flexWrap: "wrap", gap: "0.5rem" }}>
                       <h4 style={{ fontSize: "0.8rem", fontWeight: "800", color: "var(--accent-color)", margin: 0 }}>P 단계: 예산 기획 및 세부 추진계획</h4>
                       

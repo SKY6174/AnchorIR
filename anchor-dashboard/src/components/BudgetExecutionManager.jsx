@@ -339,9 +339,9 @@ export default function BudgetExecutionManager({ projects, currentRole, selected
                   value={selectedUnit}
                   onChange={(e) => setSelectedUnit(e.target.value)}
                   style={{
-                    background: "rgba(255, 255, 255, 0.05)",
+                    background: "var(--input-bg)",
                     color: "var(--text-primary)",
-                    border: "1px solid var(--border-color-dark)",
+                    border: "1px solid var(--border-color)",
                     borderRadius: "6px",
                     padding: "0.25rem 0.5rem",
                     fontSize: "0.8rem",
@@ -478,7 +478,7 @@ export default function BudgetExecutionManager({ projects, currentRole, selected
           </label>
 
           {uploadedFile && (
-            <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", background: "rgba(255,255,255,0.05)", padding: "0.5rem 1rem", borderRadius: "6px", fontSize: "0.8rem", color: "var(--text-primary)" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", background: "var(--input-bg)", padding: "0.5rem 1rem", borderRadius: "6px", fontSize: "0.8rem", color: "var(--text-primary)" }}>
               <FileText size={16} style={{ color: "#10B981" }} />
               <span>{uploadedFile.name} ({(uploadedFile.size / 1024).toFixed(1)} KB)</span>
             </div>

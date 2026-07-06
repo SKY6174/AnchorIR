@@ -302,7 +302,7 @@ export default function ExcelUploader({
         </div>
         <div style={{ display: "flex", gap: "0.75rem" }}>
           {mode === "BUDGET" ? (
-            <button className="btn-primary" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", color: "var(--text-primary)" }} onClick={() => downloadSample("BUDGET")}>
+            <button className="btn-primary" style={{ background: "var(--input-bg)", border: "1px solid var(--border-color)", color: "var(--text-primary)" }} onClick={() => downloadSample("BUDGET")}>
               <Download size={16} />
               <span>
                 {viewMode === "unit" && selectedUnitId 
@@ -311,7 +311,7 @@ export default function ExcelUploader({
               </span>
             </button>
           ) : (
-            <button className="btn-primary" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", color: "var(--text-primary)" }} onClick={() => downloadSample("KPI")}>
+            <button className="btn-primary" style={{ background: "var(--input-bg)", border: "1px solid var(--border-color)", color: "var(--text-primary)" }} onClick={() => downloadSample("KPI")}>
               <Download size={16} />
               <span>성과지표 양식 받기</span>
             </button>

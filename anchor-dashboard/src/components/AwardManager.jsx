@@ -553,7 +553,7 @@ export default function AwardManager({
                 gap: "0.25rem",
                 padding: "0.35rem 0.7rem",
                 fontSize: "0.7rem",
-                background: "rgba(255, 255, 255, 0.05)",
+                background: "var(--input-bg)",
                 border: "1px solid rgba(255, 255, 255, 0.1)",
                 color: "rgba(255, 255, 255, 0.8)",
                 borderRadius: "0.25rem",
@@ -658,7 +658,7 @@ export default function AwardManager({
       </div>
 
       {/* 상장 리스트 테이블 */}
-      <div className="table-container" style={{ border: "1px solid var(--border-color-dark)", borderRadius: "0.5rem", overflow: "hidden" }}>
+      <div className="table-container" style={{ border: "1px solid var(--border-color)", borderRadius: "0.5rem", overflow: "hidden" }}>
         <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.75rem", color: "var(--text-primary)" }}>
           <thead>
             <tr style={{ background: "var(--border-color, rgba(255,255,255,0.03))", borderBottom: "1px solid var(--border-color-dark)" }}>
@@ -863,7 +863,7 @@ export default function AwardManager({
                             <span style={{ color: "#ef4444" }}>❌ {res.targetDesc}</span>
                           )}
                         </td>
-                        <td style={{ padding: "0.5rem", textAlign: "center", border: "1px solid var(--border-color-dark)" }}>
+                        <td style={{ padding: "0.5rem", textAlign: "center", border: "1px solid var(--border-color)" }}>
                           <span style={{
                             padding: "0.15rem 0.4rem",
                             borderRadius: "0.25rem",
@@ -915,7 +915,7 @@ export default function AwardManager({
           justifyContent: "center",
           alignItems: "center",
           zIndex: 9999,
-          color: "#fff",
+          color: "var(--text-primary)",
           fontFamily: "sans-serif"
         }}>
           <div style={{

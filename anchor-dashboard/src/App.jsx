@@ -251,7 +251,7 @@ const RenderLatexFormula = ({ formula }) => {
     background: "rgba(255,255,255,0.01)",
     padding: "0.6rem 0.8rem",
     borderRadius: "0.4rem",
-    border: "1px solid var(--border-color-dark)",
+    border: "1px solid var(--border-color)",
     width: "100%",
     boxSizing: "border-box"
   };
@@ -1314,7 +1314,7 @@ const renderTimelineDiff = (timelineStr) => {
                 fontSize: "0.58rem",
                 background: bg !== "transparent" ? bg : "rgba(255,255,255,0.02)",
                 color: bg !== "transparent" ? "white" : "var(--text-secondary)",
-                border: "1px solid var(--border-color-dark)",
+                border: "1px solid var(--border-color)",
                 borderRadius: "3px",
                 fontWeight: bg !== "transparent" ? "800" : "normal",
                 minHeight: "0.88rem",
@@ -5138,7 +5138,7 @@ export default function App() {
           </div>
 
           {/* 전역 연도 선택 컨트롤러 */}
-          <div style={{ display: "flex", gap: "0.2rem", background: "rgba(255, 255, 255, 0.03)", padding: "0.2rem", borderRadius: "2rem", border: "1px solid var(--border-color-dark)" }}>
+          <div style={{ display: "flex", gap: "0.2rem", background: "rgba(255, 255, 255, 0.03)", padding: "0.2rem", borderRadius: "2rem", border: "1px solid var(--border-color)" }}>
             {[1, 2, 3, 4, 5].map((yr) => (
               <button
                 key={yr}
@@ -5222,7 +5222,7 @@ export default function App() {
               style={{
                 padding: "0.4rem 0.8rem",
                 fontSize: "0.75rem",
-                background: "rgba(255,255,255,0.05)",
+                background: "var(--input-bg)",
                 border: "1px solid var(--border-color)",
                 borderRadius: "0.375rem",
                 color: "var(--text-primary)",
@@ -6425,7 +6425,7 @@ export default function App() {
 
                 <div style={{ display: "flex", flexDirection: "column", gap: "1rem", fontSize: "0.78rem" }}>
                   {/* 1. 기본 기안 정보 */}
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: "1rem", background: "rgba(255,255,255,0.02)", padding: "0.6rem 0.8rem", borderRadius: "8px", border: "1px solid var(--border-color-dark)" }}>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: "1rem", background: "rgba(255,255,255,0.02)", padding: "0.6rem 0.8rem", borderRadius: "8px", border: "1px solid var(--border-color)" }}>
                     <div>
                       <span style={{ color: "var(--text-secondary)" }}>결재번호:</span> <strong style={{ color: "var(--text-primary)", fontFamily: "var(--font-data)" }}>{displaySeq}</strong>
                     </div>
@@ -6591,7 +6591,7 @@ export default function App() {
                 <div>
                   <h2 style={{ fontSize: "1.25rem", fontWeight: "800" }}>성과지표(KPI) 통합 목록</h2>
                   {/* 자율 / 중점 성과지표 서브탭 제어기 */}
-                  <div style={{ display: "flex", gap: "0.3rem", background: "rgba(255,255,255,0.02)", border: "1px solid var(--border-color-dark)", padding: "0.25rem", borderRadius: "0.5rem", marginTop: "0.5rem", width: "fit-content" }}>
+                  <div style={{ display: "flex", gap: "0.3rem", background: "rgba(255,255,255,0.02)", border: "1px solid var(--border-color)", padding: "0.25rem", borderRadius: "0.5rem", marginTop: "0.5rem", width: "fit-content" }}>
                     {(menuVisibility.kpi_status !== false || isSongDirector) && (
                       <button
                         onClick={() => {
@@ -6879,7 +6879,7 @@ export default function App() {
                                             padding: "0.1rem 0.2rem",
                                             background: !canEditTarget ? "rgba(128, 128, 128, 0.25)" : "rgb(128, 128, 128)",
                                             color: !canEditTarget ? "rgba(255, 255, 255, 0.4)" : "white",
-                                            border: "1px solid var(--border-color-dark)",
+                                            border: "1px solid var(--border-color)",
                                             borderRadius: "0.25rem",
                                             cursor: !canEditTarget ? "not-allowed" : "text"
                                           }}
@@ -6907,7 +6907,7 @@ export default function App() {
                                             padding: "0.1rem 0.2rem",
                                             background: "rgb(128, 128, 128)",
                                             color: "white",
-                                            border: "1px solid var(--border-color-dark)",
+                                            border: "1px solid var(--border-color)",
                                             borderRadius: "0.25rem"
                                           }}
                                         />
@@ -6996,7 +6996,7 @@ export default function App() {
 
                         <div>
                           <span style={{ fontSize: "0.95rem", color: "rgb(36, 88, 108)", fontWeight: "bold", display: "block", marginBottom: "0.4rem" }}>성과지표 산출공식 및 세부산식 분석</span>
-                          <div style={{ background: "rgba(255, 255, 255, 0.02)", border: "1px solid var(--border-color-dark)", padding: "0.6rem 0.8rem", borderRadius: "0.375rem" }}>
+                          <div style={{ background: "rgba(255, 255, 255, 0.02)", border: "1px solid var(--border-color)", padding: "0.6rem 0.8rem", borderRadius: "0.375rem" }}>
                             <div style={{ marginBottom: "0.5rem" }}>
                               <RenderLatexFormula formula={nk.formula} />
                             </div>
@@ -7477,7 +7477,7 @@ export default function App() {
               setEditingMember(null);
             }}
             className="glass-card"
-            style={{ width: "480px", maxHeight: "85vh", overflowY: "auto", padding: "2rem", border: "1px solid var(--border-color-dark)", background: "var(--bg-dark)", boxShadow: "0 10px 25px rgba(0,0,0,0.5)" }}
+            style={{ width: "480px", maxHeight: "85vh", overflowY: "auto", padding: "2rem", border: "1px solid var(--border-color)", background: "var(--bg-dark)", boxShadow: "0 10px 25px rgba(0,0,0,0.5)" }}
           >
             <h3 style={{ fontSize: "1.1rem", fontWeight: "800", marginBottom: "1.5rem" }}>
               {editingMember.id ? "구성원 정보 수정" : "신규 구성원 등록"}
@@ -7656,7 +7656,7 @@ export default function App() {
               <button
                 type="button"
                 className="btn-primary"
-                style={{ background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", padding: "0.4rem 1rem", borderRadius: "0.35rem", fontSize: "0.75rem" }}
+                style={{ background: "var(--input-bg)", border: "1px solid var(--border-color)", padding: "0.4rem 1rem", borderRadius: "0.35rem", fontSize: "0.75rem" }}
                 onClick={() => {
                   setIsMemberModalOpen(false);
                   setEditingMember(null);
@@ -7681,7 +7681,7 @@ export default function App() {
           <form
             onSubmit={handlePasswordChange}
             className="glass-card"
-            style={{ width: "400px", padding: "2rem", border: "1px solid var(--border-color-dark)", background: "var(--bg-dark)", boxShadow: "0 10px 25px rgba(0,0,0,0.5)" }}
+            style={{ width: "400px", padding: "2rem", border: "1px solid var(--border-color)", background: "var(--bg-dark)", boxShadow: "0 10px 25px rgba(0,0,0,0.5)" }}
           >
             <h3 style={{ fontSize: "1.1rem", fontWeight: "800", marginBottom: "1.5rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
               <LockIcon size={20} style={{ color: "var(--accent-color)" }} />
@@ -7695,7 +7695,7 @@ export default function App() {
                   type="text"
                   disabled
                   className="user-selector"
-                  style={{ width: "100%", padding: "0.4rem", color: "rgba(255,255,255,0.85)", background: "rgba(255,255,255,0.08)", cursor: "not-allowed" }}
+                  style={{ width: "100%", padding: "0.4rem", color: "rgba(255,255,255,0.85)", background: "var(--input-bg)", cursor: "not-allowed" }}
                   value={currentUser.id}
                 />
               </div>
@@ -7706,7 +7706,7 @@ export default function App() {
                   type="text"
                   disabled
                   className="user-selector"
-                  style={{ width: "100%", padding: "0.4rem", color: "rgba(255,255,255,0.85)", background: "rgba(255,255,255,0.08)", cursor: "not-allowed" }}
+                  style={{ width: "100%", padding: "0.4rem", color: "rgba(255,255,255,0.85)", background: "var(--input-bg)", cursor: "not-allowed" }}
                   value={currentUser.name}
                 />
               </div>
@@ -7717,7 +7717,7 @@ export default function App() {
                   type="password"
                   required
                   className="user-selector"
-                  style={{ width: "100%", padding: "0.45rem 0.6rem", color: "#f3f4f6", background: "#1f2937", border: "1px solid var(--border-color-dark)", borderRadius: "6px" }}
+                  style={{ width: "100%", padding: "0.45rem 0.6rem", color: "#f3f4f6", background: "#1f2937", border: "1px solid var(--border-color)", borderRadius: "6px" }}
                   placeholder="현재 비밀번호를 입력해 주세요"
                   value={currentPw}
                   onChange={(e) => setCurrentPw(e.target.value)}
@@ -7730,7 +7730,7 @@ export default function App() {
                   type="password"
                   required
                   className="user-selector"
-                  style={{ width: "100%", padding: "0.45rem 0.6rem", color: "#f3f4f6", background: "#1f2937", border: "1px solid var(--border-color-dark)", borderRadius: "6px" }}
+                  style={{ width: "100%", padding: "0.45rem 0.6rem", color: "#f3f4f6", background: "#1f2937", border: "1px solid var(--border-color)", borderRadius: "6px" }}
                   placeholder="새 비밀번호를 입력해 주세요"
                   value={newPw}
                   onChange={(e) => setNewPw(e.target.value)}
@@ -7743,7 +7743,7 @@ export default function App() {
                   type="password"
                   required
                   className="user-selector"
-                  style={{ width: "100%", padding: "0.45rem 0.6rem", color: "#f3f4f6", background: "#1f2937", border: "1px solid var(--border-color-dark)", borderRadius: "6px" }}
+                  style={{ width: "100%", padding: "0.45rem 0.6rem", color: "#f3f4f6", background: "#1f2937", border: "1px solid var(--border-color)", borderRadius: "6px" }}
                   placeholder="새 비밀번호를 한 번 더 입력해 주세요"
                   value={confirmNewPw}
                   onChange={(e) => setConfirmNewPw(e.target.value)}
@@ -7755,7 +7755,7 @@ export default function App() {
               <button
                 type="button"
                 className="btn-primary"
-                style={{ background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color-dark)", padding: "0.4rem 1rem", borderRadius: "0.35rem", fontSize: "0.75rem" }}
+                style={{ background: "var(--input-bg)", border: "1px solid var(--border-color)", padding: "0.4rem 1rem", borderRadius: "0.35rem", fontSize: "0.75rem" }}
                 onClick={() => {
                   setIsPasswordModalOpen(false);
                   setCurrentPw("");

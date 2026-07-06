@@ -503,7 +503,7 @@ export default function UnitSystemView({ selectedYear = 2 }) {
                 fontSize: "0.8rem",
                 padding: "0.6rem 0.8rem",
                 background: "rgba(255,255,255,0.02)",
-                border: "1px solid var(--border-color-dark)",
+                border: "1px solid var(--border-color)",
                 color: "var(--text-primary)",
                 borderRadius: "0.4rem"
               }}
@@ -530,7 +530,7 @@ export default function UnitSystemView({ selectedYear = 2 }) {
                 fontSize: "0.8rem",
                 padding: "0.6rem 0.8rem",
                 background: "rgba(255,255,255,0.02)",
-                border: "1px solid var(--border-color-dark)",
+                border: "1px solid var(--border-color)",
                 color: "var(--text-primary)",
                 borderRadius: "0.4rem"
               }}

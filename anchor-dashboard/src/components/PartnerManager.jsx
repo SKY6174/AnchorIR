@@ -481,7 +481,7 @@ export default function PartnerManager({ selectedYear }) {
                 padding: "0.5rem 0.75rem",
                 borderRadius: "6px",
                 border: "none",
-                background: "rgba(255, 255, 255, 0.05)",
+                background: "var(--input-bg)",
                 color: "white",
                 fontSize: "0.8rem",
                 cursor: "pointer"
@@ -505,7 +505,7 @@ export default function PartnerManager({ selectedYear }) {
               display: "flex",
               alignItems: "center",
               gap: "0.4rem",
-              background: "rgba(255, 255, 255, 0.05)",
+              background: "var(--input-bg)",
               border: "1px solid rgba(255, 255, 255, 0.1)",
               color: "rgba(255, 255, 255, 0.8)"
             }}
@@ -654,7 +654,7 @@ export default function PartnerManager({ selectedYear }) {
                             fontSize: "0.7rem",
                             background: "var(--border-color)",
                             color: "var(--text-secondary)",
-                            border: "1px solid var(--border-color-dark)",
+                            border: "1px solid var(--border-color)",
                             padding: "0.1rem 0.35rem",
                             borderRadius: "4px"
                           }}
