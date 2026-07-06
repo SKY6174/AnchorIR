@@ -1896,7 +1896,7 @@ export default function ProcurementManager({
                     </div>
                   </th>
                   <th rowSpan={3} style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "384px", verticalAlign: "middle" }}>구축목적 및 활용계획</th>
-                  <th colSpan={12} style={{ padding: "0.5rem", textAlign: "center", fontWeight: "800", borderBottom: "1px solid rgba(255,255,255,0.08)", background: "rgba(255, 255, 255, 0.01)", lineHeight: "1.3" }}>
+                  <th colSpan={12} style={{ padding: "0.5rem", textAlign: "center", fontWeight: "800", borderBottom: "1px solid var(--border-color)", background: "rgba(255, 255, 255, 0.01)", lineHeight: "1.3" }}>
                     구축단계<br />
                     <span style={{ fontSize: "0.63rem", fontWeight: "normal", color: "var(--text-secondary)", whiteSpace: "nowrap" }}>[요청(Rq) ➔ 검토∙심의∙결정(PDR) ➔ 설계∙인허가(DL) ➔ 입찰∙계약(BC) ➔ 시공∙감리(CS)]</span>
                   </th>
@@ -1906,8 +1906,8 @@ export default function ProcurementManager({
                   )}
                 </tr>
                 {/* 2행: 연도 분할 */}
-                <tr style={{ background: "rgba(255, 255, 255, 0.02)", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
-                  <th colSpan={10} style={{ padding: "0.25rem 0.5rem", textAlign: "center", fontWeight: "750", fontSize: "0.75rem", color: "var(--accent-color)", borderRight: "1px solid rgba(255,255,255,0.05)" }}>
+                <tr style={{ background: "rgba(255, 255, 255, 0.02)", borderBottom: "1px solid var(--border-color)" }}>
+                  <th colSpan={10} style={{ padding: "0.25rem 0.5rem", textAlign: "center", fontWeight: "750", fontSize: "0.75rem", color: "var(--accent-color)", borderRight: "1px solid var(--border-color)" }}>
                     '{String(2024 + (Number(selectedYear) || 1)).slice(-2)}년
                   </th>
                   <th colSpan={2} style={{ padding: "0.25rem 0.5rem", textAlign: "center", fontWeight: "750", fontSize: "0.75rem", color: "var(--accent-color)" }}>
@@ -1915,7 +1915,7 @@ export default function ProcurementManager({
                   </th>
                 </tr>
                 {/* 3행: 월 리스트 */}
-                <tr style={{ background: "rgba(255, 255, 255, 0.01)", borderBottom: "2px solid rgba(255,255,255,0.08)" }}>
+                <tr style={{ background: "rgba(255, 255, 255, 0.01)", borderBottom: "2px solid var(--border-color)" }}>
                   {monthsOrder.map((m, idx) => (
                     <th 
                       key={m} 
@@ -2578,7 +2578,7 @@ export default function ProcurementManager({
             <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.82rem", color: "var(--text-primary)", minWidth: "1200px" }}>
               <thead>
                 {/* 1행: 대분류 헤더 */}
-                <tr style={{ background: "rgba(255, 255, 255, 0.03)", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+                <tr style={{ background: "rgba(255, 255, 255, 0.03)", borderBottom: "1px solid var(--border-color)" }}>
                   <th 
                     rowSpan={3} 
                     onClick={() => handleSort("seq")} 
@@ -2633,7 +2633,7 @@ export default function ProcurementManager({
                     </div>
                   </th>
                   <th rowSpan={3} style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "384px", verticalAlign: "middle" }}>구입목적 및 활용계획</th>
-                  <th colSpan={12} style={{ padding: "0.5rem", textAlign: "center", fontWeight: "800", borderBottom: "1px solid rgba(255,255,255,0.08)", background: "rgba(255, 255, 255, 0.01)", lineHeight: "1.3" }}>
+                  <th colSpan={12} style={{ padding: "0.5rem", textAlign: "center", fontWeight: "800", borderBottom: "1px solid var(--border-color)", background: "rgba(255, 255, 255, 0.01)", lineHeight: "1.3" }}>
                     구매단계<br />
                     <span style={{ fontSize: "0.75rem", fontWeight: "normal", color: "var(--text-secondary)" }}>(기획:P ➔ 승인:A ➔ 입찰:B ➔ 구매:Pr ➔ 검수:I)</span>
                   </th>
@@ -2643,8 +2643,8 @@ export default function ProcurementManager({
                   )}
                 </tr>
                 {/* 2행: 연도 분할 */}
-                <tr style={{ background: "rgba(255, 255, 255, 0.02)", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
-                  <th colSpan={10} style={{ padding: "0.25rem 0.5rem", textAlign: "center", fontWeight: "750", fontSize: "0.75rem", color: "var(--accent-color)", borderRight: "1px solid rgba(255,255,255,0.05)" }}>
+                <tr style={{ background: "rgba(255, 255, 255, 0.02)", borderBottom: "1px solid var(--border-color)" }}>
+                  <th colSpan={10} style={{ padding: "0.25rem 0.5rem", textAlign: "center", fontWeight: "750", fontSize: "0.75rem", color: "var(--accent-color)", borderRight: "1px solid var(--border-color)" }}>
                     '{String(2024 + (Number(selectedYear) || 1)).slice(-2)}년
                   </th>
                   <th colSpan={2} style={{ padding: "0.25rem 0.5rem", textAlign: "center", fontWeight: "750", fontSize: "0.75rem", color: "var(--accent-color)" }}>
@@ -2652,7 +2652,7 @@ export default function ProcurementManager({
                   </th>
                 </tr>
                 {/* 3행: 월 리스트 */}
-                <tr style={{ background: "rgba(255, 255, 255, 0.01)", borderBottom: "2px solid rgba(255,255,255,0.08)" }}>
+                <tr style={{ background: "rgba(255, 255, 255, 0.01)", borderBottom: "2px solid var(--border-color)" }}>
                   {["3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월", "1월", "2월"].map((m, idx) => (
                     <th 
                       key={m} 
@@ -2832,7 +2832,7 @@ export default function ProcurementManager({
                       return (
                         <tr 
                           key={equip.id || idx} 
-                          style={{ borderBottom: "1px solid rgba(255,255,255,0.05)", transition: "background 0.15s ease" }}
+                          style={{ borderBottom: "1px solid var(--border-color)", transition: "background 0.15s ease" }}
                         >
                           <td style={{ padding: "0.8rem 0.5rem", textAlign: "center", color: "var(--text-secondary)" }}>
                             {idx + 1}
@@ -2850,7 +2850,7 @@ export default function ProcurementManager({
                               return dName || divName || "-";
                             })()}
                           </td>
-                          <td style={{ padding: "0.8rem 0.5rem", textAlign: "center", fontWeight: "700", color: "white" }}>
+                          <td style={{ padding: "0.8rem 0.5rem", textAlign: "center", fontWeight: "700", color: "var(--text-primary)" }}>
                             {equip.itemName || equip.name || "-"}
                           </td>
                           <td style={{ padding: "0.8rem 0.5rem", textAlign: "right", color: "var(--text-secondary)", fontWeight: "600" }}>
