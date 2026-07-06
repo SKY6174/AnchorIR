@@ -226,25 +226,28 @@ export default function BudgetExecutionManager({ projects, currentRole, selected
       </div>
 
       {/* 2차년도 기준 1차년도 이월예산 8월 31일 한계점 경고 배너 */}
-      <div style={{
-        background: "rgba(239, 68, 68, 0.1)",
-        border: "1px solid rgba(239, 68, 68, 0.3)",
-        borderRadius: "8px",
-        padding: "1rem 1.25rem",
-        display: "flex",
-        alignItems: "flex-start",
-        gap: "0.75rem"
-      }}>
-        <AlertTriangle size={24} style={{ color: "#EF4444", flexShrink: 0, marginTop: "2px" }} />
-        <div>
-          <h4 style={{ margin: 0, fontSize: "0.95rem", fontWeight: "700", color: "#F87171" }}>
-            [중요] 1차년도 이월예산 집행 기한 및 반납 원칙 안내
-          </h4>
-          <p style={{ margin: "0.25rem 0 0 0", fontSize: "0.85rem", color: "#FCA5A5", lineHeight: "1.4" }}>
-            2차년도 운영 지침에 따라, 1차년도에서 이월된 예산은 **8월 31일까지만 집행이 유효하게 인정**되며, 해당 기한 이후 미집행된 잔액은 **전액 반납하는 것이 원칙**입니다. 기한 내에 이월 예산이 우선 집행될 수 있도록 각 단위과제 실무 부서(ECC센터, ICC, RCC 등)는 집행 일정을 특별 관리해 주시기 바랍니다.
-          </p>
+      {selectedYear !== 1 && (
+        <div style={{
+          background: "rgba(239, 68, 68, 0.1)",
+          border: "1px solid rgba(239, 68, 68, 0.3)",
+          borderRadius: "8px",
+          padding: "1rem 1.25rem",
+          display: "flex",
+          alignItems: "flex-start",
+          gap: "0.75rem",
+          marginBottom: "1rem"
+        }}>
+          <AlertTriangle size={24} style={{ color: "#EF4444", flexShrink: 0, marginTop: "2px" }} />
+          <div>
+            <h4 style={{ margin: 0, fontSize: "0.95rem", fontWeight: "700", color: "#F87171" }}>
+              [중요] 1차년도 이월예산 집행 기한 및 반납 원칙 안내
+            </h4>
+            <p style={{ margin: "0.25rem 0 0 0", fontSize: "0.85rem", color: "#FCA5A5", lineHeight: "1.4" }}>
+              2차년도 운영 지침에 따라, 1차년도에서 이월된 예산은 **8월 31일까지만 집행이 유효하게 인정**되며, 해당 기한 이후 미집행된 잔액은 **전액 반납하는 것이 원칙**입니다. 기한 내에 이월 예산이 우선 집행될 수 있도록 각 단위과제 실무 부서(ECC센터, ICC, RCC 등)는 집행 일정을 특별 관리해 주시기 바랍니다.
+            </p>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* 본예산 vs 이월예산 핵심 지표 현황판 (activeData 연동) */}
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
@@ -421,12 +424,14 @@ export default function BudgetExecutionManager({ projects, currentRole, selected
                 <Legend 
                   wrapperStyle={{ fontSize: 11, paddingTop: 10 }}
                 />
-                <ReferenceLine 
-                  x="8월" 
-                  stroke="#EF4444" 
-                  strokeDasharray="4 4" 
-                  label={{ value: "이월마감 (8/31)", fill: "#F87171", position: "insideTopLeft", fontSize: 11, fontWeight: "bold" }}
-                />
+                {selectedYear !== 1 && (
+                  <ReferenceLine 
+                    x="8월" 
+                    stroke="#EF4444" 
+                    strokeDasharray="4 4" 
+                    label={{ value: "이월마감 (8/31)", fill: "#F87171", position: "insideTopLeft", fontSize: 11, fontWeight: "bold" }}
+                  />
+                )}
                 <Line 
                   name="본예산 누적 집행률" 
                   type="monotone" 
@@ -435,14 +440,16 @@ export default function BudgetExecutionManager({ projects, currentRole, selected
                   strokeWidth={3}
                   activeDot={{ r: 6 }} 
                 />
-                <Line 
-                  name="이월예산 누적 집행률" 
-                  type="monotone" 
-                  dataKey="carryoverBudget" 
-                  stroke="#EF4444" 
-                  strokeWidth={3}
-                  activeDot={{ r: 6 }} 
-                />
+                {selectedYear !== 1 && (
+                  <Line 
+                    name="이월예산 누적 집행률" 
+                    type="monotone" 
+                    dataKey="carryoverBudget" 
+                    stroke="#EF4444" 
+                    strokeWidth={3}
+                    activeDot={{ r: 6 }} 
+                  />
+                )}
               </LineChart>
             </ResponsiveContainer>
           </div>
