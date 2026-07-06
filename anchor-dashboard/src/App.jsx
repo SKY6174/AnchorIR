@@ -3350,7 +3350,7 @@ export default function App() {
             const targetYear = getCalculatedYearFromDate(item.broadcastDate);
             console.log(`타 연차 기사 감지: ${item.title} -> ${targetYear}차년도 DB로 직접 저장합니다.`);
             
-            const { error: singleInsertErr } = await supabase.from("press_releases").insert({
+            let insertPayload = {
               year: targetYear,
               type: item.type || "기타",
               media: item.media || "미상",
@@ -3358,7 +3358,24 @@ export default function App() {
               broadcast_date: formatToPostgresTimestamp(item.broadcastDate),
               content_url: item.contentUrl || "https://www.uc.ac.kr",
               press_content: item.pressContent || ""
-            });
+            };
+
+            let singleInsertErr = null;
+            if (window.__HAS_NO_ADVANCED_PRESS_COLUMNS__) {
+              const { press_content, ...rest } = insertPayload;
+              const { error } = await supabase.from("press_releases").insert(rest);
+              singleInsertErr = error;
+            } else {
+              const { error } = await supabase.from("press_releases").insert(insertPayload);
+              singleInsertErr = error;
+              if (singleInsertErr) {
+                console.warn("DB에 press_releases 신규 컬럼이 식별되지 않아 안전 폴백 저장을 시도합니다.", singleInsertErr);
+                window.__HAS_NO_ADVANCED_PRESS_COLUMNS__ = true;
+                const { press_content, ...rest } = insertPayload;
+                const { error: fallbackErr } = await supabase.from("press_releases").insert(rest);
+                singleInsertErr = fallbackErr;
+              }
+            }
 
             if (singleInsertErr) {
               console.error(`Failed to insert press release to year ${targetYear}:`, singleInsertErr);
@@ -3408,17 +3425,38 @@ export default function App() {
         const oldIds = (currentDbItems || []).map(item => item.id);
 
         if (currentYearPress.length > 0) {
-          const { error: insertErr } = await supabase.from("press_releases").insert(
-            currentYearPress.map(s => ({
-              year: selectedYear,
-              type: s.type || "기타",
-              media: s.media || "미상",
-              title: s.title || "새 보도자료",
-              broadcast_date: formatToPostgresTimestamp(s.broadcastDate),
-              content_url: s.contentUrl || "https://www.uc.ac.kr",
-              press_content: s.pressContent || ""
-            }))
-          );
+          const insertPayload = currentYearPress.map(s => ({
+            year: selectedYear,
+            type: s.type || "기타",
+            media: s.media || "미상",
+            title: s.title || "새 보도자료",
+            broadcast_date: formatToPostgresTimestamp(s.broadcastDate),
+            content_url: s.contentUrl || "https://www.uc.ac.kr",
+            press_content: s.pressContent || ""
+          }));
+
+          let insertErr = null;
+          if (window.__HAS_NO_ADVANCED_PRESS_COLUMNS__) {
+            const safePayload = insertPayload.map(item => {
+              const { press_content, ...rest } = item;
+              return rest;
+            });
+            const { error } = await supabase.from("press_releases").insert(safePayload);
+            insertErr = error;
+          } else {
+            const { error } = await supabase.from("press_releases").insert(insertPayload);
+            insertErr = error;
+            if (insertErr) {
+              console.warn("DB에 press_releases 신규 컬럼이 식별되지 않아 안전 폴백 저장을 시도합니다.", insertErr);
+              window.__HAS_NO_ADVANCED_PRESS_COLUMNS__ = true;
+              const safePayload = insertPayload.map(item => {
+                const { press_content, ...rest } = item;
+                return rest;
+              });
+              const { error: fallbackErr } = await supabase.from("press_releases").insert(safePayload);
+              insertErr = fallbackErr;
+            }
+          }
 
           if (insertErr) {
             console.error("Failed to insert new press releases:", insertErr);
@@ -3981,17 +4019,38 @@ export default function App() {
           };
 
           // 1. 새 데이터를 먼저 insert 시도 (이전 레코드를 먼저 지우지 않아 실패 시 자동 롤백 보장)
-          const { error: insertErr } = await supabase.from("press_releases").insert(
-            currentYearPress.map(s => ({
-              year: selectedYear,
-              type: s.type || "기타",
-              media: s.media || "미상",
-              title: s.title || "새 보도자료",
-              broadcast_date: formatToPostgresTimestamp(s.broadcastDate),
-              content_url: s.contentUrl || "https://www.uc.ac.kr",
-              press_content: s.pressContent || ""
-            }))
-          );
+          const insertPayload = currentYearPress.map(s => ({
+            year: selectedYear,
+            type: s.type || "기타",
+            media: s.media || "미상",
+            title: s.title || "새 보도자료",
+            broadcast_date: formatToPostgresTimestamp(s.broadcastDate),
+            content_url: s.contentUrl || "https://www.uc.ac.kr",
+            press_content: s.pressContent || ""
+          }));
+
+          let insertErr = null;
+          if (window.__HAS_NO_ADVANCED_PRESS_COLUMNS__) {
+            const safePayload = insertPayload.map(item => {
+              const { press_content, ...rest } = item;
+              return rest;
+            });
+            const { error } = await supabase.from("press_releases").insert(safePayload);
+            insertErr = error;
+          } else {
+            const { error } = await supabase.from("press_releases").insert(insertPayload);
+            insertErr = error;
+            if (insertErr) {
+              console.warn("DB에 press_releases 신규 컬럼이 식별되지 않아 안전 폴백 저장을 시도합니다.", insertErr);
+              window.__HAS_NO_ADVANCED_PRESS_COLUMNS__ = true;
+              const safePayload = insertPayload.map(item => {
+                const { press_content, ...rest } = item;
+                return rest;
+              });
+              const { error: fallbackErr } = await supabase.from("press_releases").insert(safePayload);
+              insertErr = fallbackErr;
+            }
+          }
 
           if (insertErr) {
             console.error("Failed to insert new press releases:", insertErr);
