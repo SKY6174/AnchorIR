@@ -3313,6 +3313,7 @@ export default function App() {
       return calcYear === 2025 ? 1 : calcYear === 2026 ? 2 : calcYear === 2027 ? 3 : calcYear === 2028 ? 4 : calcYear === 2029 ? 5 : selectedYear;
     };
 
+    if (!isDbLoaded || !isFetchCompleted) return;
     if (!currentUser || currentRole?.id === "GUEST") return;
 
     // 💡 타 연차에 해당하는 기사들 (예: selectedYear 가 2인데 1차년도 기사가 섞여 있는 경우)
