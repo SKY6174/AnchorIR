@@ -23,6 +23,9 @@ export default function AgreementManager({
   setAgreements,
   currentRole
 }) {
+  // 💡 라이트/다크 테마 전환 시 모달 내부의 시인성을 완벽히 조율하기 위해 HTML 클래스 감지
+  const isLight = document.documentElement.classList.contains("light-mode");
+
   // 1. 기존 협약서 모달 및 입력 폼 상태
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingId, setEditingId] = useState(null);
@@ -1489,8 +1492,12 @@ export default function AgreementManager({
                             </div>
                             <div style={{
                               fontSize: "0.62rem",
-                              color: res.status === "success" ? "#34d399" : "#f87171",
-                              background: "rgba(255,255,255,0.02)",
+                              color: res.status === "success"
+                                ? (isLight ? "#059669" : "#34D399") // 성공 글자색 (라이트: 진한 초록, 다크: 밝은 민트)
+                                : (isLight ? "#DC2626" : "#F87171"), // 실패 글자색 (라이트: 진한 빨간색, 다크: 밝은 핑크)
+                              background: res.status === "success"
+                                ? (isLight ? "rgba(16,185,129,0.08)" : "rgba(52,211,153,0.15)") // 성공 배경색
+                                : (isLight ? "rgba(239,68,68,0.08)" : "rgba(239,68,68,0.15)"), // 실패 배경색
                               padding: "0.15rem 0.35rem",
                               borderRadius: "0.2rem",
                               display: "inline-block",
@@ -1528,7 +1535,7 @@ export default function AgreementManager({
               </div>
             </div>
 
-            <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.5rem", borderTop: "1px solid var(--border-color-dark)", padding: "0.85rem 1.25rem", flexShrink: 0 }}>
+            <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.5rem", borderTop: "1px solid var(--border-color)", padding: "0.85rem 1.25rem", flexShrink: 0 }}>
               <button type="button" className="btn-secondary" onClick={() => setIsAgreementBatchModalOpen(false)} style={{ padding: "0.35rem 0.75rem", fontSize: "0.75rem" }}>취소</button>
               <button
                 type="button"
@@ -1538,7 +1545,7 @@ export default function AgreementManager({
                 style={{
                   padding: "0.35rem 0.75rem",
                   fontSize: "0.75rem",
-                  background: batchAgreementResults.filter(r => r.status === "success").length === 0 ? "#52525b" : "var(--primary-color)",
+                  background: batchAgreementResults.filter(r => r.status === "success").length === 0 ? "#52525b" : "var(--accent-color)", // 💡 var(--primary-color)를 var(--accent-color)로 안전하게 교체
                   cursor: batchAgreementResults.filter(r => r.status === "success").length === 0 ? "not-allowed" : "pointer"
                 }}
               >
