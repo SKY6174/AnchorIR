@@ -1198,7 +1198,8 @@ export default function AgreementManager({
 
                                   const subUniv = agr.subjectUniversity || "단장";
                                   setInputSubjectUniv(subUniv);
-                                  if (["단장", "센터장"].includes(subUniv)) {
+                                  // 대학 측 협약주체가 고정 유형('총장', '단장', '센터장')에 해당하는지 검사하여 해당 버튼을 활성화합니다.
+                                  if (["총장", "단장", "센터장"].includes(subUniv)) {
                                     setUnivSubjectType(subUniv);
                                     setInputSubjectUnivDept("");
                                     setInputSubjectUnivName("");
@@ -1289,7 +1290,8 @@ export default function AgreementManager({
               <div>
                 <label style={{ display: "block", fontSize: "0.65rem", color: "var(--text-secondary-dark)", marginBottom: "0.4rem" }}>대학 측 협약주체 (UC)</label>
                 <div style={{ display: "flex", gap: "0.4rem", marginBottom: univSubjectType === "기타" ? "0.4rem" : "0" }}>
-                  {["단장", "센터장", "기타"].map((t) => {
+                  // 대학 측 협약주체 고유 유형 버튼 목록에 '총장'을 추가하여 선택할 수 있도록 개선합니다.
+                  {["총장", "단장", "센터장", "기타"].map((t) => {
                     const isSelected = univSubjectType === t;
                     return (
                       <button
