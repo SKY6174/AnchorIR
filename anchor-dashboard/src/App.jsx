@@ -5132,7 +5132,7 @@ export default function App() {
       />
 
       {/* 메인 뷰 */}
-      <main className="main-content" style={{ opacity: isScrollRestored ? 1 : 0, transition: "opacity 0.22s ease-in-out" }}>
+      <main key={`main-viewport-${darkMode}`} className="main-content" style={{ opacity: isScrollRestored ? 1 : 0, transition: "opacity 0.22s ease-in-out" }}>
         <header className="top-nav" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "1rem" }}>
           <div className="page-title">
             <h1>앵커사업 통합 IR 대시보드</h1>
