@@ -1341,7 +1341,7 @@ const renderBudgetCategoriesDiff = (categories) => {
   return (
     <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.68rem", marginTop: "0.3rem" }}>
       <thead>
-        <tr style={{ borderBottom: "1px solid var(--border-color-dark)", background: "rgba(255,255,255,0.01)" }}>
+        <tr style={{ borderBottom: "1px solid var(--border-color)", background: "rgba(255,255,255,0.01)" }}>
           <th style={{ textAlign: "left", padding: "0.2rem" }}>비목명</th>
           <th style={{ textAlign: "right", padding: "0.2rem" }}>본예산</th>
           <th style={{ textAlign: "right", padding: "0.2rem" }}>이월예산</th>
@@ -1349,7 +1349,7 @@ const renderBudgetCategoriesDiff = (categories) => {
       </thead>
       <tbody>
         {validList.map((c, idx) => (
-          <tr key={idx} style={{ borderBottom: "1px solid rgba(255,255,255,0.02)" }}>
+          <tr key={idx} style={{ borderBottom: "1px solid var(--border-color)" }}>
             <td style={{ padding: "0.2rem", color: "var(--text-primary)" }}>{c.category}</td>
             <td style={{ textAlign: "right", padding: "0.2rem", color: "var(--text-primary)" }}>{c.budget ? (parseFloat(c.budget) / 1000000).toFixed(1) + "백만원" : "-"}</td>
             <td style={{ textAlign: "right", padding: "0.2rem", color: "var(--text-primary)" }}>{c.budget_carry ? (parseFloat(c.budget_carry) / 1000000).toFixed(1) + "백만원" : "-"}</td>
@@ -5281,7 +5281,7 @@ export default function App() {
             </div>
 
             {/* 서브탭 내비게이션 바 */}
-            <div style={{ display: "flex", gap: "0.5rem", borderBottom: "1px solid var(--border-color-dark)", paddingBottom: "0.8rem", marginBottom: "1.2rem" }}>
+            <div style={{ display: "flex", gap: "0.5rem", borderBottom: "1px solid var(--border-color)", paddingBottom: "0.8rem", marginBottom: "1.2rem" }}>
               <button
                 type="button"
                 onClick={() => setProjectsSubTab("unit_status")}
@@ -5544,7 +5544,7 @@ export default function App() {
               )}
             </div>
 
-            <div style={{ display: "flex", gap: "0.5rem", borderBottom: "1px solid var(--border-color-dark)", paddingBottom: "0.8rem", marginBottom: "1.2rem" }}>
+            <div style={{ display: "flex", gap: "0.5rem", borderBottom: "1px solid var(--border-color)", paddingBottom: "0.8rem", marginBottom: "1.2rem" }}>
               {currentRole && (currentRole.id === "ADMIN" || currentRole.id === "DIRECTOR" || currentRole.id === "HQ_HEAD") && (
                 <>
                   <button
