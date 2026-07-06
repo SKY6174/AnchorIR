@@ -159,7 +159,15 @@ export default function UnifiedCertificateManager({
     return calcYear === 2025 ? 1 : calcYear === 2026 ? 2 : calcYear === 2027 ? 3 : calcYear === 2028 ? 4 : calcYear === 2029 ? 5 : fallbackYear;
   };
 
-  const filteredCerts = certificates.filter(c => getCalculatedYearFromDate(c.issueDate, c.year) === selectedYear);
+  const uniqueKeys = new Set();
+  const filteredCerts = certificates
+    .filter(c => getCalculatedYearFromDate(c.issueDate, c.year) === selectedYear)
+    .filter(c => {
+      const key = `${c.certNo}_${c.certType}_${c.awardType}_${c.teamName}_${c.recipientName}_${c.studentId}_${c.issueDate}_${c.content}`;
+      if (uniqueKeys.has(key)) return false;
+      uniqueKeys.add(key);
+      return true;
+    });
 
   const requestSort = (key) => {
     let direction = "asc";
@@ -348,11 +356,23 @@ export default function UnifiedCertificateManager({
             note: row[14] || ""
           };
         });
-        if (imported.length > 0) {
-          if (window.confirm(`${imported.length}건을 추가하시겠습니까?`)) {
-            imported.forEach(cert => onAddCertificate(cert));
+
+        // 엑셀 업로드 시 기존 데이터 및 엑셀 내부 중복 방지
+        const existingKeys = new Set(certificates.map(c => `${c.certNo}_${c.certType}_${c.awardType}_${c.teamName}_${c.recipientName}_${c.studentId}_${c.issueDate}_${c.content}`));
+        const uniqueImported = imported.filter(cert => {
+          const key = `${cert.certNo}_${cert.certType}_${cert.awardType}_${cert.teamName}_${cert.recipientName}_${cert.studentId}_${cert.issueDate}_${cert.content}`;
+          if (existingKeys.has(key)) return false;
+          existingKeys.add(key);
+          return true;
+        });
+
+        if (uniqueImported.length > 0) {
+          if (window.confirm(`${uniqueImported.length}건을 추가하시겠습니까?`)) {
+            uniqueImported.forEach(cert => onAddCertificate(cert));
             alert("업로드 성공");
           }
+        } else {
+          alert("추가할 새로운 데이터가 없습니다. (모두 중복됨)");
         }
       } catch (err) {
         console.error(err);
