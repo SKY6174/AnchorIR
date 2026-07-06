@@ -2687,6 +2687,22 @@ export default function App() {
   useEffect(() => {
     const fetchAllDashboardData = async () => {
       try {
+        // 0-0. 원격 DB 040 고도화 컬럼 실존 여부 조용히 선제 노크 (콘솔 400 에러 원천 차단 목적)
+        try {
+          const { error: chkErr } = await supabase.from("procurement_services").select("date_b").limit(1);
+          if (chkErr) {
+            window.__HAS_NO_ADVANCED_SERVICES_COLUMNS__ = true;
+            window.__HAS_NO_ADVANCED_ENV_COLUMNS__ = true;
+            window.__HAS_NO_ADVANCED_EQUIP_COLUMNS__ = true;
+          } else {
+            window.__HAS_NO_ADVANCED_SERVICES_COLUMNS__ = false;
+            window.__HAS_NO_ADVANCED_ENV_COLUMNS__ = false;
+            window.__HAS_NO_ADVANCED_EQUIP_COLUMNS__ = false;
+          }
+        } catch (e) {
+          window.__HAS_NO_ADVANCED_SERVICES_COLUMNS__ = true;
+        }
+
         // 0. 로컬 스토리지 캐시 데이터 선 로드 (깜빡임 방지 및 0초 반응)
         const cachedProj = localStorage.getItem(`anchor_cache_proj_y${selectedYear}`);
         const cachedAgr = localStorage.getItem("anchor_cache_agreements_all");
