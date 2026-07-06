@@ -3920,8 +3920,10 @@ export default function App() {
   useEffect(() => {
     if (darkMode) {
       document.body.classList.remove("light-mode");
+      document.documentElement.classList.remove("light-mode");
     } else {
       document.body.classList.add("light-mode");
+      document.documentElement.classList.add("light-mode");
     }
     localStorage.setItem("anchor_dark_mode", JSON.stringify(darkMode));
   }, [darkMode]);

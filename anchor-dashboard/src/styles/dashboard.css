@@ -25,18 +25,29 @@
   --warning-color: #e9a23b;
   --danger-color: #ef4444;
   
+  /* 다크 테마 가변 변수 매핑 (기본값) */
   --text-primary: var(--text-primary-dark);
   --text-secondary: var(--text-secondary-dark);
   --border-color: var(--border-color-dark);
   --panel-bg: var(--panel-bg-dark);
   --tooltip-bg: rgba(24, 24, 27, 0.95);
-  
   --modal-bg: #18181b;
   --input-bg: #27272a;
   
   /* Font Families */
   --font-content: 'DM Sans', sans-serif;
   --font-data: 'JetBrains Mono', monospace;
+}
+
+/* 라이트 테마 가변 변수 오버라이드 (:root 레벨에서 동적 감지 가능하게 함) */
+:root.light-mode {
+  --text-primary: var(--text-primary-light);
+  --text-secondary: var(--text-secondary-light);
+  --border-color: var(--border-color-light);
+  --panel-bg: var(--panel-bg-light);
+  --tooltip-bg: rgba(255, 255, 255, 0.95);
+  --modal-bg: #ffffff;
+  --input-bg: #f4f4f5;
 }
 
 * {
@@ -52,29 +63,11 @@ body {
   min-height: 100vh;
   overflow-x: hidden;
   transition: background 0.3s ease, color 0.3s ease;
-  
-  /* 다크 모드 기본 테마 변수 (body 스코프에 직접 선언하여 상속 결함 차단) */
-  --text-primary: var(--text-primary-dark);
-  --text-secondary: var(--text-secondary-dark);
-  --border-color: var(--border-color-dark);
-  --panel-bg: var(--panel-bg-dark);
-  --tooltip-bg: rgba(24, 24, 27, 0.95);
-  --modal-bg: #18181b;
-  --input-bg: #27272a;
 }
 
 body.light-mode {
   background: var(--bg-gradient-light);
   color: var(--text-primary-light);
-  
-  /* 라이트 모드 오버라이드 테마 변수 */
-  --text-primary: var(--text-primary-light);
-  --text-secondary: var(--text-secondary-light);
-  --border-color: var(--border-color-light);
-  --panel-bg: var(--panel-bg-light);
-  --tooltip-bg: rgba(255, 255, 255, 0.95);
-  --modal-bg: #ffffff;
-  --input-bg: #f4f4f5;
 }
 
 /* Dashboard Container */
