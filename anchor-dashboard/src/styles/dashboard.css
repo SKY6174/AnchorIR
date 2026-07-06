@@ -883,4 +883,71 @@ input[type="time"]::-webkit-calendar-picker-indicator:hover {
   display: none !important;
 }
 
+/* Action Button Base Styles */
+.action-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  padding: 0.5rem 0.85rem;
+  border-radius: 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
 
+/* Add Button (신규 등록) */
+.action-btn.add-btn, .action-btn.submit-btn {
+  background: rgba(59, 130, 246, 0.15); /* Primary Blue tint */
+  color: #60a5fa;
+  border: 1px solid rgba(59, 130, 246, 0.3);
+}
+.action-btn.add-btn:hover, .action-btn.submit-btn:hover {
+  background: rgba(59, 130, 246, 0.25);
+}
+.light-mode .action-btn.add-btn, .light-mode .action-btn.submit-btn {
+  background: #eff6ff;
+  color: #2563eb;
+  border: 1px solid #3b82f6;
+}
+.light-mode .action-btn.add-btn:hover, .light-mode .action-btn.submit-btn:hover {
+  background: #dbeafe;
+}
+
+/* Upload Button (엑셀 업로드) */
+.action-btn.upload-btn {
+  background: rgba(16, 185, 129, 0.15); /* Emerald tint */
+  color: #10b981;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+.action-btn.upload-btn:hover {
+  background: rgba(16, 185, 129, 0.25);
+}
+.light-mode .action-btn.upload-btn {
+  background: #ecfdf5;
+  color: #059669;
+  border: 1px solid #10b981;
+}
+.light-mode .action-btn.upload-btn:hover {
+  background: #d1fae5;
+}
+
+/* Download Button (엑셀 다운로드) */
+.action-btn.download-btn {
+  background: rgba(139, 92, 246, 0.15); /* Violet/Purple tint */
+  color: #a78bfa;
+  border: 1px solid rgba(139, 92, 246, 0.3);
+}
+.action-btn.download-btn:hover {
+  background: rgba(139, 92, 246, 0.25);
+}
+.light-mode .action-btn.download-btn {
+  background: #f5f3ff;
+  color: #7c3aed;
+  border: 1px solid #8b5cf6;
+}
+.light-mode .action-btn.download-btn:hover {
+  background: #ede9fe;
+}

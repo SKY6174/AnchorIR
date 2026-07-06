@@ -259,16 +259,14 @@ export default function UnifiedCertificateManager({
         </h2>
         <div style={{ display: "flex", gap: "0.5rem" }}>
           {currentRole?.id !== "GUEST" && (
-            <>
-              <label className="action-btn upload-btn">
-                <Upload size={16} /> 엑셀 업로드
-                <input type="file" accept=".xlsx, .xls" hidden onChange={handleExcelUpload} />
-              </label>
-            </>
+            <button className="action-btn upload-btn" onClick={() => fileInputRef.current?.click()}>
+              <Upload size={16} /> 엑셀 업로드
+            </button>
           )}
           <button className="action-btn download-btn" onClick={downloadExcel}>
             <Download size={16} /> 엑셀 다운로드
           </button>
+          <input type="file" ref={fileInputRef} onChange={handleExcelUpload} accept=".xlsx, .xls" style={{ display: "none" }} />
           {currentRole?.id !== "GUEST" && (
             <button className="action-btn add-btn" onClick={openModalForNew}>
               <Plus size={16} /> 신규 등록

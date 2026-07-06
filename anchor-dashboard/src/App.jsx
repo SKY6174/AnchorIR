@@ -3482,8 +3482,7 @@ export default function App() {
                 project_group: c.projectGroup,
                 issuer: c.issuer,
                 content: c.content,
-                file_name: c.fileName || null,
-                file_data: c.fileData || null
+                award_type: c.awardType || null
               }))
             );
             if (error) throw error;
