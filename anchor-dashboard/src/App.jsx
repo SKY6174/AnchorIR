@@ -2391,9 +2391,7 @@ export default function App() {
           let autoRoleKey = "RESEARCHER";
           const mRole = m.role || "";
           const mDept = m.dept || "";
-          if (emailId === "hmsim@uc.ac.kr") {
-            autoRoleKey = "ADMIN";
-          } else if (emailId === "leegyu@uc.ac.kr") {
+          if (emailId === "leegyu@uc.ac.kr") {
             autoRoleKey = "RESEARCH";
           } else if (mRole === "사업단장") {
             autoRoleKey = "DIRECTOR";
@@ -2435,9 +2433,7 @@ export default function App() {
       // DB 실제 회원 계정 주입 (최종 우선순위 보장)
       dbUsers.forEach(u => {
         const idLower = u.id.trim().toLowerCase();
-        if (idLower === "hmsim@uc.ac.kr") {
-          u.role_key = "ADMIN";
-        } else if (idLower === "leegyu@uc.ac.kr") {
+        if (idLower === "leegyu@uc.ac.kr") {
           u.role_key = "RESEARCH";
         }
         finalUsersMap.set(idLower, u);

@@ -133,7 +133,7 @@ export default function AuthManager({ onLoginSuccess, members = [] }) {
         matchedName = matchedMember.name;
         const mRole = matchedMember.role || "";
         const mDept = matchedMember.dept || "";
-        if (targetId === "hmsim@uc.ac.kr" || targetId === "leegyu@uc.ac.kr" || targetId === "admin") {
+        if (targetId === "leegyu@uc.ac.kr" || targetId === "admin") {
           autoRoleKey = "ADMIN";
         } else if (mRole === "사업단장") {
           autoRoleKey = "DIRECTOR";
