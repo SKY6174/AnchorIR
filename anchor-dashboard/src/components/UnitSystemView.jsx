@@ -431,49 +431,49 @@ export default function UnitSystemView({ selectedYear = 2 }) {
 
         {/* 5단계 체계 카드 리스트 */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: "0.8rem", marginBottom: "1.5rem" }}>
-          <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid var(--border-color-dark)", padding: "0.8rem 1rem", borderRadius: "0.4rem" }}>
+          <div style={{ background: "rgba(120,120,120,0.05)", border: "1px solid var(--border-color)", padding: "0.8rem 1rem", borderRadius: "0.4rem" }}>
             <div style={{ fontSize: "0.68rem", color: "var(--accent-color)", fontWeight: "900", marginBottom: "0.2rem" }}>1단계: PJ</div>
-            <div style={{ fontSize: "0.85rem", fontWeight: "800", color: "white" }}>프로젝트 (Project)</div>
-            <div style={{ fontSize: "0.72rem", color: "var(--text-secondary-dark)", marginTop: "0.25rem" }}>울산시가 제시한 4대 핵심 사업 분야</div>
+            <div style={{ fontSize: "0.85rem", fontWeight: "800", color: "var(--text-primary)" }}>프로젝트 (Project)</div>
+            <div style={{ fontSize: "0.72rem", color: "var(--text-secondary)", marginTop: "0.25rem" }}>울산시가 제시한 4대 핵심 사업 분야</div>
           </div>
-          <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid var(--border-color-dark)", padding: "0.8rem 1rem", borderRadius: "0.4rem" }}>
+          <div style={{ background: "rgba(120,120,120,0.05)", border: "1px solid var(--border-color)", padding: "0.8rem 1rem", borderRadius: "0.4rem" }}>
             <div style={{ fontSize: "0.68rem", color: "#10b981", fontWeight: "900", marginBottom: "0.2rem" }}>2단계: UP</div>
-            <div style={{ fontSize: "0.85rem", fontWeight: "800", color: "white" }}>단위과제 (Unit Project)</div>
-            <div style={{ fontSize: "0.72rem", color: "var(--text-secondary-dark)", marginTop: "0.25rem" }}>
+            <div style={{ fontSize: "0.85rem", fontWeight: "800", color: "var(--text-primary)" }}>단위과제 (Unit Project)</div>
+            <div style={{ fontSize: "0.72rem", color: "var(--text-secondary)", marginTop: "0.25rem" }}>
               {selectedYear === 1 ? "목표 달성을 위한 12대 단위 사업 (A1~D4)" : "목표 달성을 위한 12대 단위 사업 (A1가~D3)"}
             </div>
           </div>
-          <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid var(--border-color-dark)", padding: "0.8rem 1rem", borderRadius: "0.4rem" }}>
+          <div style={{ background: "rgba(120,120,120,0.05)", border: "1px solid var(--border-color)", padding: "0.8rem 1rem", borderRadius: "0.4rem" }}>
             <div style={{ fontSize: "0.68rem", color: "#ec4899", fontWeight: "900", marginBottom: "0.2rem" }}>3단계: S</div>
-            <div style={{ fontSize: "0.85rem", fontWeight: "800", color: "white" }}>추진전략 (Strategy)</div>
-            <div style={{ fontSize: "0.72rem", color: "var(--text-secondary-dark)", marginTop: "0.25rem" }}>단위과제 달성을 위한 거시적 사업 비전</div>
+            <div style={{ fontSize: "0.85rem", fontWeight: "800", color: "var(--text-primary)" }}>추진전략 (Strategy)</div>
+            <div style={{ fontSize: "0.72rem", color: "var(--text-secondary)", marginTop: "0.25rem" }}>단위과제 달성을 위한 거시적 사업 비전</div>
           </div>
-          <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid var(--border-color-dark)", padding: "0.8rem 1rem", borderRadius: "0.4rem" }}>
+          <div style={{ background: "rgba(120,120,120,0.05)", border: "1px solid var(--border-color)", padding: "0.8rem 1rem", borderRadius: "0.4rem" }}>
             <div style={{ fontSize: "0.68rem", color: "#f59e0b", fontWeight: "900", marginBottom: "0.2rem" }}>4단계: T</div>
-            <div style={{ fontSize: "0.85rem", fontWeight: "800", color: "white" }}>추진과제 (Strategic Task)</div>
-            <div style={{ fontSize: "0.72rem", color: "var(--text-secondary-dark)", marginTop: "0.25rem" }}>전략 실현을 위한 고유 중점 분야</div>
+            <div style={{ fontSize: "0.85rem", fontWeight: "800", color: "var(--text-primary)" }}>추진과제 (Strategic Task)</div>
+            <div style={{ fontSize: "0.72rem", color: "var(--text-secondary)", marginTop: "0.25rem" }}>전략 실현을 위한 고유 중점 분야</div>
           </div>
-          <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid var(--border-color-dark)", padding: "0.8rem 1rem", borderRadius: "0.4rem" }}>
+          <div style={{ background: "rgba(120,120,120,0.05)", border: "1px solid var(--border-color)", padding: "0.8rem 1rem", borderRadius: "0.4rem" }}>
             <div style={{ fontSize: "0.68rem", color: "#8b5cf6", fontWeight: "900", marginBottom: "0.2rem" }}>5단계: PG</div>
-            <div style={{ fontSize: "0.85rem", fontWeight: "800", color: "white" }}>프로그램 (Program)</div>
-            <div style={{ fontSize: "0.72rem", color: "var(--text-secondary-dark)", marginTop: "0.25rem" }}>실질적 예산 및 KPI가 매핑되는 행동 단위</div>
+            <div style={{ fontSize: "0.85rem", fontWeight: "800", color: "var(--text-primary)" }}>프로그램 (Program)</div>
+            <div style={{ fontSize: "0.72rem", color: "var(--text-secondary)", marginTop: "0.25rem" }}>실질적 예산 및 KPI가 매핑되는 행동 단위</div>
           </div>
         </div>
 
         {/* 💡 프로그램 ID 작명 규칙 및 액션플랜 설명 */}
-        <div style={{ background: "rgba(59,130,246,0.04)", border: "1px solid rgba(59,130,246,0.15)", padding: "1rem 1.2rem", borderRadius: "0.4rem" }}>
+        <div style={{ background: "rgba(59,130,246,0.06)", border: "1px solid rgba(59,130,246,0.25)", padding: "1rem 1.2rem", borderRadius: "0.4rem" }}>
           <div style={{ display: "flex", gap: "0.5rem", alignItems: "center", marginBottom: "0.3rem" }}>
             <GitFork size={15} style={{ color: "var(--accent-color)" }} />
-            <strong style={{ fontSize: "0.82rem", color: "white" }}>프로그램 고유 ID 작명 룰 (ID Rule)</strong>
+            <strong style={{ fontSize: "0.82rem", color: "var(--text-primary)" }}>프로그램 고유 ID 작명 룰 (ID Rule)</strong>
           </div>
           <p style={{ fontSize: "0.78rem", color: "var(--text-secondary)", lineHeight: "1.4", margin: 0 }}>
-            <code style={{ background: "rgba(255,255,255,0.08)", padding: "0.1rem 0.3rem", borderRadius: "0.2rem", color: "var(--accent-color)", fontFamily: "monospace" }}>
+            <code style={{ background: "var(--border-color)", padding: "0.1rem 0.3rem", borderRadius: "0.2rem", color: "var(--accent-color)", fontFamily: "monospace" }}>
               단위과제번호-(추진전략번호+추진과제번호)-프로그램번호
             </code>
-            <span style={{ margin: "0 0.5rem", color: "#444" }}>|</span>
-            예시: <strong style={{ color: "white" }}>{selectedYear === 1 ? "A1-S1T1-1" : "A1가-S1T1-1"}</strong> ➔ 단위과제 <strong style={{ color: "#10b981" }}>{selectedYear === 1 ? "A1" : "A1가"}</strong>, 추진전략 <strong style={{ color: "#ec4899" }}>S1</strong>, 추진과제 <strong style={{ color: "#f59e0b" }}>T1</strong>에 매핑된 <strong style={{ color: "#8b5cf6" }}>1번 프로그램</strong>을 의미함.
+            <span style={{ margin: "0 0.5rem", color: "var(--border-color)" }}>|</span>
+            예시: <strong style={{ color: "var(--text-primary)" }}>{selectedYear === 1 ? "A1-S1T1-1" : "A1가-S1T1-1"}</strong> ➔ 단위과제 <strong style={{ color: "#10b981" }}>{selectedYear === 1 ? "A1" : "A1가"}</strong>, 추진전략 <strong style={{ color: "#ec4899" }}>S1</strong>, 추진과제 <strong style={{ color: "#f59e0b" }}>T1</strong>에 매핑된 <strong style={{ color: "#8b5cf6" }}>1번 프로그램</strong>을 의미함.
           </p>
-          <p style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)", marginTop: "0.4rem", fontStyle: "italic" }}>
+          <p style={{ fontSize: "0.75rem", color: "var(--text-secondary)", marginTop: "0.4rem", fontStyle: "italic" }}>
             * 액션플랜(Action Plan; AP): 각 프로그램 수행을 위해 예산(본사업비/이월비), 담당자, 추진 단계, 마일스톤 기한 등을 상세히 테이블로 명시한 최하위 실천 명세입니다.
           </p>
         </div>
@@ -557,7 +557,7 @@ export default function UnitSystemView({ selectedYear = 2 }) {
                 fontSize: "0.8rem",
                 padding: "0.6rem 0.8rem",
                 background: "rgba(255,255,255,0.02)",
-                border: "1px solid var(--border-color-dark)",
+                border: "1px solid var(--border-color)",
                 color: "var(--text-primary)",
                 borderRadius: "0.4rem"
               }}
@@ -575,7 +575,7 @@ export default function UnitSystemView({ selectedYear = 2 }) {
         <div className="glass-card" style={{ padding: "1.8rem", display: "flex", flexDirection: "column", gap: "1.5rem" }}>
           
           {/* 상단: 현재 선택된 추진전략 상세 */}
-          <div style={{ borderBottom: "1px solid var(--border-color-dark)", paddingBottom: "1rem" }}>
+          <div style={{ borderBottom: "1px solid var(--border-color)", paddingBottom: "1rem" }}>
             <span style={{
               fontSize: "0.8rem",
               background: "rgba(236,72,153,0.12)",
@@ -630,14 +630,14 @@ export default function UnitSystemView({ selectedYear = 2 }) {
             
             <div style={{ display: "flex", flexDirection: "column", gap: "0.6rem" }}>
               {filteredTasks.length === 0 ? (
-                <div style={{ fontSize: "0.78rem", color: "var(--text-secondary-dark)", textAlign: "center", padding: "2rem", border: "1px dashed rgba(255,255,255,0.04)" }}>
+                <div style={{ fontSize: "0.78rem", color: "var(--text-secondary)", textAlign: "center", padding: "2rem", border: "1px dashed var(--border-color)" }}>
                   본 전략에 매핑된 세부 추진과제가 아직 존재하지 않습니다.
                 </div>
               ) : (
                 filteredTasks.map((task, idx) => (
                   <div key={task.id} style={{
                     background: "rgba(255,255,255,0.01)",
-                    border: "1px solid var(--border-color-dark)",
+                    border: "1px solid var(--border-color)",
                     padding: "0.8rem 1rem",
                     borderRadius: "0.4rem",
                     fontSize: "0.8rem",
@@ -669,7 +669,7 @@ export default function UnitSystemView({ selectedYear = 2 }) {
           </div>
 
           {/* 하단: 필터링된 연계 프로그램 (PG) 리스트 */}
-          <div style={{ borderTop: "1px dashed rgba(255,255,255,0.06)", paddingTop: "1.2rem", flex: 1 }}>
+          <div style={{ borderTop: "1px dashed var(--border-color)", paddingTop: "1.2rem", flex: 1 }}>
             <span style={{
               fontSize: "0.8rem",
               background: "rgba(139,92,246,0.12)",
@@ -687,20 +687,20 @@ export default function UnitSystemView({ selectedYear = 2 }) {
             
             <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "0.6rem" }}>
               {filteredPrograms.length === 0 ? (
-                <div style={{ gridColumn: "1/-1", fontSize: "0.78rem", color: "var(--text-secondary-dark)", textAlign: "center", padding: "2rem" }}>
+                <div style={{ gridColumn: "1/-1", fontSize: "0.78rem", color: "var(--text-secondary)", textAlign: "center", padding: "2rem" }}>
                   본 전략에 매핑되어 작동 중인 실무 프로그램이 아직 존재하지 않습니다.
                 </div>
               ) : (
                 filteredPrograms.map((prog) => (
                   <div key={prog.id} style={{
-                    background: "rgba(255,255,255,0.02)",
+                    background: "rgba(120,120,120,0.03)",
                     padding: "0.7rem 0.9rem",
                     borderRadius: "0.4rem",
                     fontSize: "0.76rem",
                     display: "flex",
                     justifyContent: "space-between",
                     alignItems: "center",
-                    border: "1px solid rgba(255,255,255,0.04)"
+                    border: "1px solid var(--border-color)"
                   }}>
                     <span style={{ color: "var(--text-secondary)", display: "flex", alignItems: "center", gap: "0.4rem" }}>
                       <ArrowRight size={12} style={{ color: "#8b5cf6" }} />
