@@ -413,6 +413,59 @@ body.light-mode {
   background: var(--accent-hover);
 }
 
+.btn-green {
+  background: #059669;
+  color: #ffffff;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  box-shadow: 0 2px 4px rgba(5, 150, 105, 0.2);
+}
+
+.btn-green:hover {
+  background: #047857;
+  box-shadow: 0 4px 6px rgba(5, 150, 105, 0.3);
+}
+
+.btn-green-outline {
+  background: transparent;
+  color: #10b981;
+  border: 1.5px solid #10b981;
+  padding: 0.6rem 1.2rem;
+  border-radius: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.btn-green-outline:hover {
+  background: rgba(16, 185, 129, 0.15);
+  color: #059669;
+  border-color: #059669;
+}
+
+.light-mode .btn-green-outline {
+  color: #059669;
+  border-color: #059669;
+}
+
+.light-mode .btn-green-outline:hover {
+  background: rgba(5, 150, 105, 0.1);
+  color: #047857;
+  border-color: #047857;
+}
+
 /* Drag and Drop Uploader */
 .dropzone {
   border: 2px dashed var(--border-color-dark);
