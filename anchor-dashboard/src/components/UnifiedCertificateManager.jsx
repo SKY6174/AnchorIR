@@ -548,6 +548,7 @@ export default function UnifiedCertificateManager({
                     }} required style={{ padding: "0.5rem", borderRadius: "0.5rem", background: "var(--bg-tertiary)", border: "1px solid var(--border-color)", color: "var(--text-primary)" }}>
                       {(managerType === "all" || managerType === "award") && <option value="상장">상장</option>}
                       {(managerType === "all" || managerType === "certificate") && <option value="이수증">이수증</option>}
+                      {(managerType === "all" || managerType === "certificate") && <option value="수료증">수료증</option>}
                       <option value="기타">기타</option>
                     </select>
                   </div>
