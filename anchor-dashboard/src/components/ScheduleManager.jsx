@@ -2859,8 +2859,8 @@ ${aiRawText}
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%", borderBottom: "1px solid rgba(255,255,255,0.06)", paddingBottom: "0.6rem" }}>
                     {/* 왼쪽 영역: [담당부서], 일시, 장소 한 줄 정리 */}
                     <div style={{ display: "flex", alignItems: "center", flexWrap: "wrap" }}>
-                      {/* 담당부서 (대괄호 감싸기, 볼드, 짙은 분홍색, 폰트크기 2pt 키워 1.0rem 적용) */}
-                      <span style={{ fontWeight: "850", color: "#EC4899", fontSize: "1.0rem", whiteSpace: "nowrap" }}>
+                      {/* 담당부서 (대괄호 감싸기, 볼드, 짙은 분홍색, 폰트크기 0.85rem 적용) */}
+                      <span style={{ fontWeight: "850", color: "#EC4899", fontSize: "0.85rem", whiteSpace: "nowrap" }}>
                         [{event.department || "사업운영팀"}]
                       </span>
                       
@@ -2880,8 +2880,8 @@ ${aiRawText}
 
                     {/* 오른쪽 영역: [행사제목]과 [수정/삭제] */}
                     <div style={{ display: "flex", alignItems: "center", flexGrow: 1, justifyContent: "flex-end", overflow: "hidden" }}>
-                      {/* 행사제목: 폰트 크기 2pt 더 크게 (1.2rem), '수정' 마크보다 왼쪽으로 1cm (38px) 떨어지게 */}
-                      <h4 style={{ margin: "0 38px 0 1.5rem", fontSize: "1.2rem", fontWeight: "800", color: "var(--text-primary)", textAlign: "right", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }} title={event.title}>
+                      {/* 행사제목: 폰트 크기 2pt 더 크게 (1.35rem), '수정' 마크보다 왼쪽으로 1cm (38px) 떨어지게 */}
+                      <h4 style={{ margin: "0 38px 0 1.5rem", fontSize: "1.35rem", fontWeight: "800", color: "var(--text-primary)", textAlign: "right", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }} title={event.title}>
                         {event.title}
                       </h4>
 
