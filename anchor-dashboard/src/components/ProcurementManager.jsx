@@ -4502,9 +4502,14 @@ export default function ProcurementManager({
                         className="user-selector" 
                         style={{ width: "100%", padding: "0.5rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }}
                       >
-                        <option value="A1">A1 과제</option>
-                        <option value="A2">A2 과제</option>
-                        <option value="A3">A3 과제</option>
+                        {Number(formData.year || selectedYear) === 1 
+                          ? ["A1", "A2", "B1", "B2", "B3", "B4", "C1", "C2", "D1", "D2", "D3", "D4"].map(u => (
+                              <option key={u} value={u}>{u} 과제</option>
+                            ))
+                          : ["A1가", "A1나", "A2", "A3", "B1", "B2", "B3", "B4", "C1", "C2", "D1", "D2", "D3", "Common"].map(u => (
+                              <option key={u} value={u}>{u} 과제</option>
+                            ))
+                        }
                       </select>
                     </div>
                     <div>
@@ -4752,7 +4757,7 @@ export default function ProcurementManager({
                       <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>기획서 관련 문서 (사업단 작성 기안문)</label>
                       <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
                         <input type="file" id="file-plan-upload-serv" onChange={(e) => handleFileChange("proposal", e)} style={{ display: "none" }} />
-                        <label htmlFor="file-plan-upload-serv" style={{ display: "block", flex: 1, textAlign: "center", padding: "0.45rem", border: "1px dashed rgba(255,255,255,0.15)", borderRadius: "6px", cursor: "pointer", background: "rgba(255,255,255,0.02)", fontSize: "0.72rem", color: "rgba(255,255,255,0.6)" }}>
+                        <label htmlFor="file-plan-upload-serv" style={{ display: "block", flex: 1, textAlign: "center", padding: "0.45rem", border: "1px dashed var(--border-color)", borderRadius: "6px", cursor: "pointer", background: "rgba(255,255,255,0.02)", fontSize: "0.72rem", color: "var(--text-secondary)" }}>
                           {formData.docPlanFileName ? `📎 ${formData.docPlanFileName}` : "📎 기획문서 파일 선택 (.pdf, .docx, .hwp)"}
                         </label>
                         <button type="button" onClick={() => handleAnalyzeAndUpload("proposal")} disabled={isAnalyzingPlan} style={{ padding: "0.45rem 1rem", fontSize: "0.72rem", background: "#3b82f6", border: "none", color: "white", borderRadius: "6px", fontWeight: "700", cursor: "pointer" }}>
@@ -4766,7 +4771,7 @@ export default function ProcurementManager({
                       <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>구매의뢰 관련 문서 (위탁 의뢰 이송 공문)</label>
                       <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
                         <input type="file" id="file-purchase-upload-serv" onChange={(e) => handleFileChange("purchase", e)} style={{ display: "none" }} />
-                        <label htmlFor="file-purchase-upload-serv" style={{ display: "block", flex: 1, textAlign: "center", padding: "0.45rem", border: "1px dashed rgba(255,255,255,0.15)", borderRadius: "6px", cursor: "pointer", background: "rgba(255,255,255,0.02)", fontSize: "0.72rem", color: "rgba(255,255,255,0.6)" }}>
+                        <label htmlFor="file-purchase-upload-serv" style={{ display: "block", flex: 1, textAlign: "center", padding: "0.45rem", border: "1px dashed var(--border-color)", borderRadius: "6px", cursor: "pointer", background: "rgba(255,255,255,0.02)", fontSize: "0.72rem", color: "var(--text-secondary)" }}>
                           {formData.docPurchaseFileName ? `📎 ${formData.docPurchaseFileName}` : "📎 구매의뢰 문서 파일 선택 (.pdf, .docx, .hwp)"}
                         </label>
                         <button type="button" onClick={() => handleAnalyzeAndUpload("purchase")} disabled={isAnalyzingPurchase} style={{ padding: "0.45rem 1rem", fontSize: "0.72rem", background: "#a78bfa", border: "none", color: "white", borderRadius: "6px", fontWeight: "700", cursor: "pointer" }}>
@@ -4780,7 +4785,7 @@ export default function ProcurementManager({
                       <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>검수조서 관련 문서 (최종 준공/검수 보고서)</label>
                       <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
                         <input type="file" id="file-bid-upload-serv" onChange={(e) => handleFileChange("bid", e)} style={{ display: "none" }} />
-                        <label htmlFor="file-bid-upload-serv" style={{ display: "block", flex: 1, textAlign: "center", padding: "0.45rem", border: "1px dashed rgba(255,255,255,0.15)", borderRadius: "6px", cursor: "pointer", background: "rgba(255,255,255,0.02)", fontSize: "0.72rem", color: "rgba(255,255,255,0.6)" }}>
+                        <label htmlFor="file-bid-upload-serv" style={{ display: "block", flex: 1, textAlign: "center", padding: "0.45rem", border: "1px dashed var(--border-color)", borderRadius: "6px", cursor: "pointer", background: "rgba(255,255,255,0.02)", fontSize: "0.72rem", color: "var(--text-secondary)" }}>
                           {formData.docBidFileName ? `📎 ${formData.docBidFileName}` : "📎 결과/검수 문서 파일 선택 (.pdf, .docx, .hwp)"}
                         </label>
                         <button type="button" onClick={() => handleAnalyzeAndUpload("bid")} disabled={isAnalyzingBid} style={{ padding: "0.45rem 1rem", fontSize: "0.72rem", background: "#10b981", border: "none", color: "white", borderRadius: "6px", fontWeight: "700", cursor: "pointer" }}>
