@@ -3564,10 +3564,9 @@ export default function App() {
             related_docs: e.relatedDocs || ""
           }));
 
-          let { error } = await supabase.from("procurement_env").insert(insertPayload);
+          let error = null;
 
-          if (error) {
-            console.warn("DB에 procurement_env 신규 컬럼이 식별되지 않아 안전 폴백 저장을 시도합니다.", error);
+          if (window.__HAS_NO_ADVANCED_ENV_COLUMNS__) {
             const safePayload = insertPayload.map(item => {
               const { 
                 dept_name, division_name, date_p, date_a, date_b, date_pr, date_i,
@@ -3582,6 +3581,28 @@ export default function App() {
             });
             const { error: retryErr } = await supabase.from("procurement_env").insert(safePayload);
             error = retryErr;
+          } else {
+            const { error: firstErr } = await supabase.from("procurement_env").insert(insertPayload);
+            error = firstErr;
+
+            if (error) {
+              console.warn("DB에 procurement_env 신규 컬럼이 식별되지 않아 안전 폴백 저장을 시도합니다.", error);
+              window.__HAS_NO_ADVANCED_ENV_COLUMNS__ = true;
+              const safePayload = insertPayload.map(item => {
+                const { 
+                  dept_name, division_name, date_p, date_a, date_b, date_pr, date_i,
+                  doc_plan, doc_purchase, doc_bid,
+                  doc_plan_file_name, doc_purchase_file_name, doc_bid_file_name,
+                  doc_plan_file_size, doc_purchase_file_size, doc_bid_file_size,
+                  doc_plan_file_url, doc_purchase_file_url, doc_bid_file_url,
+                  ai_proposal_data, ai_purchase_data, ai_bid_data, related_docs,
+                  ...rest 
+                } = item;
+                return rest;
+              });
+              const { error: retryErr } = await supabase.from("procurement_env").insert(safePayload);
+              error = retryErr;
+            }
           }
 
           if (error) throw error;
@@ -3627,10 +3648,9 @@ export default function App() {
             date_i: e.date_i || e.dateI || null
           }));
 
-          let { error } = await supabase.from("procurement_equipment").insert(insertPayload);
+          let error = null;
 
-          if (error) {
-            console.warn("DB에 procurement_equipment 신규 컬럼이 식별되지 않아 안전 폴백 저장을 시도합니다.", error);
+          if (window.__HAS_NO_ADVANCED_EQUIP_COLUMNS__) {
             const safePayload = insertPayload.map(item => ({
               year: item.year,
               unit: item.unit,
@@ -3642,6 +3662,25 @@ export default function App() {
             }));
             const { error: retryErr } = await supabase.from("procurement_equipment").insert(safePayload);
             error = retryErr;
+          } else {
+            const { error: firstErr } = await supabase.from("procurement_equipment").insert(insertPayload);
+            error = firstErr;
+
+            if (error) {
+              console.warn("DB에 procurement_equipment 신규 컬럼이 식별되지 않아 안전 폴백 저장을 시도합니다.", error);
+              window.__HAS_NO_ADVANCED_EQUIP_COLUMNS__ = true;
+              const safePayload = insertPayload.map(item => ({
+                year: item.year,
+                unit: item.unit,
+                name: item.item_name || "",
+                program: item.operation || "",
+                department: item.dept_name || "",
+                budget_plan: Number(item.unit_price) * Number(item.quantity) || 0,
+                budget_spent: 0
+              }));
+              const { error: retryErr } = await supabase.from("procurement_equipment").insert(safePayload);
+              error = retryErr;
+            }
           }
 
           if (error) throw error;
@@ -3707,11 +3746,9 @@ export default function App() {
           ai_bid_data: s.aiBidData || null
         }));
 
-        let { error } = await supabase.from("procurement_services").insert(insertPayload);
+        let error = null;
 
-        // 💡 Fail-safe Fallback: 040번 고도화 컬럼들이 실제 DB 스키마에 없어서 400 에러가 난 경우
-        if (error) {
-          console.warn("DB에 procurement_services 고도화 컬럼이 식별되지 않아 안전 폴백 저장을 시도합니다.", error);
+        if (window.__HAS_NO_ADVANCED_SERVICES_COLUMNS__) {
           const safePayload = insertPayload.map(item => ({
             year: item.year,
             title: item.title,
@@ -3722,6 +3759,24 @@ export default function App() {
           }));
           const { error: retryErr } = await supabase.from("procurement_services").insert(safePayload);
           error = retryErr;
+        } else {
+          const { error: firstErr } = await supabase.from("procurement_services").insert(insertPayload);
+          error = firstErr;
+
+          if (error) {
+            console.warn("DB에 procurement_services 고도화 컬럼이 식별되지 않아 안전 폴백 저장을 시도합니다.", error);
+            window.__HAS_NO_ADVANCED_SERVICES_COLUMNS__ = true;
+            const safePayload = insertPayload.map(item => ({
+              year: item.year,
+              title: item.title,
+              step: item.step,
+              budget_plan: item.budget_plan,
+              budget_spent: item.budget_spent,
+              op_result: item.op_result
+            }));
+            const { error: retryErr } = await supabase.from("procurement_services").insert(safePayload);
+            error = retryErr;
+          }
         }
 
         if (error) throw error;
