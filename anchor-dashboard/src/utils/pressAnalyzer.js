@@ -39,7 +39,6 @@ export async function analyzePressUrlWithAiConsensus({ url, selectedYear, apiKey
   let fetchedDate = ""; // 초정밀 기사 발행 날짜 보관 변수
   let isYoutube = false;
   let articleTextContext = ""; // 뉴스 기사용 팩트 컨텍스트 보관 변수
-  let firstImageUrl = ""; // 💡 기사 본문 내 첫 번째 이미지 URL 보관 변수
 
   // 1. 유튜브 OEmbed 기본 수집
   if (url.toLowerCase().includes("youtube.com") || url.toLowerCase().includes("youtu.be")) {
@@ -139,63 +138,6 @@ export async function analyzePressUrlWithAiConsensus({ url, selectedYear, apiKey
           const standardDateMatch = html.match(/(202\d)[.\-/](0[1-9]|1[0-2])[.\-/]([0-2]\d|3[01]|[1-9])/);
           if (standardDateMatch) {
             fetchedDate = `${standardDateMatch[1]}-${standardDateMatch[2].padStart(2, '0')}-${standardDateMatch[3].padStart(2, '0')}`;
-          }
-        }
-
-        // 💡 1순위: HTML 메타 태그에서 대표 공유 이미지(og:image, twitter:image) 검색
-        const metaImgRegexes = [
-          /property="og:image"\s+content="([^"]+)"/i,
-          /content="([^"]+)"\s+property="og:image"/i,
-          /name="twitter:image"\s+content="([^"]+)"/i,
-          /content="([^"]+)"\s+name="twitter:image"/i
-        ];
-
-        let foundMetaImage = "";
-        for (const rx of metaImgRegexes) {
-          const m = html.match(rx);
-          if (m && m[1]) {
-            const detectedSrc = m[1].trim();
-            if (detectedSrc && !detectedSrc.startsWith("data:")) {
-              foundMetaImage = detectedSrc;
-              break;
-            }
-          }
-        }
-
-        // 상대 경로인 경우 절대 경로로 전환해 주는 헬퍼 함수
-        const makeAbsoluteUrl = (srcPath) => {
-          if (!srcPath) return "";
-          if (srcPath.startsWith("//")) return "https:" + srcPath;
-          if (srcPath.startsWith("http")) return srcPath;
-          try {
-            const urlObj = new URL(url);
-            if (srcPath.startsWith("/")) {
-              return urlObj.origin + srcPath;
-            }
-            const pathParts = urlObj.pathname.split('/');
-            pathParts.pop();
-            return urlObj.origin + pathParts.join('/') + '/' + srcPath;
-          } catch (e) {
-            return srcPath;
-          }
-        };
-
-        if (foundMetaImage) {
-          firstImageUrl = makeAbsoluteUrl(foundMetaImage);
-        }
-
-        // 💡 2순위: og:image 가 없는 경우에만 본문 내 <img> 태그 뒤져서 추출 (지연 로딩 data-src, lazy-src 등 속성까지 추적)
-        if (!firstImageUrl) {
-          const imgMatches = html.matchAll(/<img[^>]+(?:src|data-src|data-original|lazy-src)=["']([^"']+)["']/gi);
-          for (const match of imgMatches) {
-            const detectedSrc = match[1]?.trim();
-            if (!detectedSrc || detectedSrc.startsWith("data:")) continue;
-
-            const candidateUrl = makeAbsoluteUrl(detectedSrc);
-            if (candidateUrl && candidateUrl.startsWith("http")) {
-              firstImageUrl = candidateUrl;
-              break;
-            }
           }
         }
 
@@ -337,8 +279,7 @@ export async function analyzePressUrlWithAiConsensus({ url, selectedYear, apiKey
         title: detectedTitle,
         pressDate: detectedDate,
         pressTime: "10:00",
-        pressContent: detectedContent,
-        imageUrl: firstImageUrl
+        pressContent: detectedContent
       };
     }
 
@@ -409,6 +350,5 @@ export async function analyzePressUrlWithAiConsensus({ url, selectedYear, apiKey
   if (!responseText) throw new Error("Gemini response is empty");
 
   const parsed = JSON.parse(responseText.trim());
-  parsed.imageUrl = firstImageUrl;
   return { parsed, usedModel: "GPT-4o & Gemini 2.5 Virtual Debate Consensus" };
 }
