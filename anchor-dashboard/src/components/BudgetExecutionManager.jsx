@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import { Upload, AlertTriangle, CheckCircle2, TrendingUp, DollarSign, Calendar, FileText } from "lucide-react";
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ReferenceLine } from "recharts";
 
-export default function BudgetExecutionManager({ projects, currentRole, selectedYear }) {
+export default function BudgetExecutionManager({ projects, currentRole, selectedYear: rawYear }) {
+  const selectedYear = Number(rawYear); // 💡 타입 불일치로 인한 분기문 미동작 버그를 해결하기 위해 정수로 안전하게 변환
   const [dragActive, setDragActive] = useState(false);
   const [uploadedFile, setUploadedFile] = useState(null);
   const [showToast, setShowToast] = useState(false);
@@ -86,64 +87,84 @@ export default function BudgetExecutionManager({ projects, currentRole, selected
   };
 
   // 4) 동적 가상 데이터 생성기 (사용자가 임의의 단위과제를 선택 시, 고유 시드 기반 그래프 곡선 및 지표 연출)
+  // 4) 동적 가상 데이터 생성기 (사용자가 임의의 단위과제를 선택 시, 고유 시드 기반 그래프 곡선 및 지표 연출)
   const getExecutionData = () => {
+    let data;
     if (viewType === "total") {
-      return executionDataMap.total;
+      data = { ...executionDataMap.total };
+    } else {
+      const targetUnit = selectedUnit || unitList[0];
+      
+      // 이미 사전에 정의된 데이터 맵이 있으면 바로 반환
+      if (executionDataMap[targetUnit]) {
+        data = { ...executionDataMap[targetUnit] };
+      } else {
+        // 시드 연산 실행
+        let seed = 0;
+        for (let i = 0; i < targetUnit.length; i++) {
+          seed += targetUnit.charCodeAt(i);
+        }
+
+        const baseMainRate = 50 + (seed % 35); // 50% ~ 85%
+        const baseCarryRate = selectedYear === 1 ? 0 : 75 + (seed % 21); // 1차년도는 이월 없음, 2차년도는 75% ~ 96%
+        
+        const mainTotal = 3.5 + (seed % 12); // 3.5억 ~ 15.5억
+        const mainSpent = (mainTotal * (baseMainRate / 100)).toFixed(2);
+        
+        const carryoverTotal = selectedYear === 1 ? 0 : 0.4 + (seed % 3) * 0.4; // 1차년도는 0, 2차년도는 0.4억 ~ 1.2억
+        const carryoverSpent = (carryoverTotal * (baseCarryRate / 100)).toFixed(2);
+        const carryoverBalance = (carryoverTotal - parseFloat(carryoverSpent)).toFixed(2);
+
+        const chartData = [];
+        for (let m = 3; m <= 14; m++) {
+          const monthNum = m > 12 ? m - 12 : m;
+          const monthLabel = `${monthNum}월`;
+
+          const progressRatio = Math.min(1, (m - 2) / 10); // 3월 ~ 익년 2월 누적 비중
+
+          const currentMain = Math.min(baseMainRate, Math.round(baseMainRate * progressRatio * (0.85 + (seed % 3) * 0.05)));
+          const isPostAugust = m > 8; // 8월(8월=8, 9월=9...)
+          const currentCarry = selectedYear === 1 
+            ? 0 
+            : (isPostAugust ? baseCarryRate : Math.round(baseCarryRate * Math.min(1, (m - 2) / 6)));
+
+          chartData.push({
+            month: monthLabel,
+            mainBudget: currentMain,
+            carryoverBudget: currentCarry
+          });
+        }
+
+        data = {
+          mainRate: `${baseMainRate.toFixed(1)}%`,
+          carryoverRate: `${baseCarryRate.toFixed(1)}%`,
+          mainSpent: `${mainSpent}억 원`,
+          mainTotal: `${mainTotal.toFixed(2)}억 원`,
+          carryoverSpent: `${carryoverSpent}억 원`,
+          carryoverTotal: `${carryoverTotal.toFixed(2)}억 원`,
+          carryoverBalance: `${carryoverBalance}억 원`,
+          chartData
+        };
+      }
     }
 
-    const targetUnit = selectedUnit || unitList[0];
-    
-    // 이미 사전에 정의된 데이터 맵이 있으면 바로 반환
-    if (executionDataMap[targetUnit]) {
-      return executionDataMap[targetUnit];
+    // 💡 1차년도인 경우, 전체/단위과제 무관하게 이월예산 지표와 차트 값을 완벽히 소거하여 렌더링 오류 및 차트 라인 표출 방지
+    if (selectedYear === 1) {
+      data = {
+        ...data,
+        carryoverRate: "N/A",
+        carryoverSpent: "0원",
+        carryoverTotal: "0원",
+        carryoverBalance: "0원",
+        chartData: data.chartData.map(item => {
+          const cleanItem = { ...item };
+          delete cleanItem.carryoverBudget; // 1차년도 차트에서 이월 데이터 전면 제거 (recharts 꺾은선 실종)
+          return cleanItem;
+        })
+      };
     }
 
-    // 시드 연산 실행
-    let seed = 0;
-    for (let i = 0; i < targetUnit.length; i++) {
-      seed += targetUnit.charCodeAt(i);
-    }
-
-    const baseMainRate = 50 + (seed % 35); // 50% ~ 85%
-    const baseCarryRate = selectedYear === 1 ? 0 : 75 + (seed % 21); // 1차년도는 이월 없음, 2차년도는 75% ~ 96%
-    
-    const mainTotal = 3.5 + (seed % 12); // 3.5억 ~ 15.5억
-    const mainSpent = (mainTotal * (baseMainRate / 100)).toFixed(2);
-    
-    const carryoverTotal = selectedYear === 1 ? 0 : 0.4 + (seed % 3) * 0.4; // 1차년도는 0, 2차년도는 0.4억 ~ 1.2억
-    const carryoverSpent = (carryoverTotal * (baseCarryRate / 100)).toFixed(2);
-    const carryoverBalance = (carryoverTotal - parseFloat(carryoverSpent)).toFixed(2);
-
-    const chartData = [];
-    for (let m = 3; m <= 14; m++) {
-      const monthNum = m > 12 ? m - 12 : m;
-      const monthLabel = `${monthNum}월`;
-
-      const progressRatio = Math.min(1, (m - 2) / 10); // 3월 ~ 익년 2월 누적 비중
-
-      const currentMain = Math.min(baseMainRate, Math.round(baseMainRate * progressRatio * (0.85 + (seed % 3) * 0.05)));
-      const isPostAugust = m > 8; // 8월(8월=8, 9월=9...)
-      const currentCarry = selectedYear === 1 
-        ? 0 
-        : (isPostAugust ? baseCarryRate : Math.round(baseCarryRate * Math.min(1, (m - 2) / 6)));
-
-      chartData.push({
-        month: monthLabel,
-        mainBudget: currentMain,
-        carryoverBudget: currentCarry
-      });
-    }
-
-    return {
-      mainRate: `${baseMainRate.toFixed(1)}%`,
-      carryoverRate: `${baseCarryRate.toFixed(1)}%`,
-      mainSpent: `${mainSpent}억 원`,
-      mainTotal: `${mainTotal.toFixed(2)}억 원`,
-      carryoverSpent: `${carryoverSpent}억 원`,
-      carryoverTotal: `${carryoverTotal.toFixed(2)}억 원`,
-      carryoverBalance: `${carryoverBalance}억 원`,
-      chartData
-    };
+    return data;
   };
 
   const activeData = getExecutionData();
