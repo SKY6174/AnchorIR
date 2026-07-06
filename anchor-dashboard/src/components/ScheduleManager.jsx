@@ -539,6 +539,8 @@ export default function ScheduleManager({
   const [aiProgress, setAiProgress] = useState(0);
   const [aiStatusText, setAiStatusText] = useState("");
   const [aiEngine, setAiEngine] = useState("gpt"); // "gemini" or "gpt"
+  const [includeProfessors, setIncludeProfessors] = useState(true); // 팀장교수 포함 여부
+
 
   // 샘플 파일 로드
   const handleLoadSampleFile = () => {
@@ -5293,9 +5295,20 @@ ${aiRawText}
                   {/* 부서명 및 작성자 드롭다운 배치 */}
                   {formData.category === "operating" ? (
                     <div style={{ marginTop: "0.75rem" }}>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>
-                        👥 전체 사업단 참석자 선택 (팀장교수 포함 다중 선택)
-                      </label>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.25rem" }}>
+                        <label style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>
+                          👥 전체 사업단 참석자 선택
+                        </label>
+                        <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)", display: "flex", alignItems: "center", gap: "0.35rem", cursor: "pointer" }}>
+                          <input 
+                            type="checkbox" 
+                            checked={includeProfessors} 
+                            onChange={(e) => setIncludeProfessors(e.target.checked)} 
+                            style={{ cursor: "pointer", width: "14px", height: "14px" }}
+                          />
+                          팀장교수 포함
+                        </label>
+                      </div>
                       {(() => {
                         const ROLE_PRIORITY = {
                           "사업단장": 1,
@@ -5328,6 +5341,7 @@ ${aiRawText}
                             const end = m.endDate ? new Date(m.endDate) : null;
                             if (start > meetingDateObj) return false;
                             if (end && end < meetingDateObj) return false;
+                            if (!includeProfessors && m.role === "팀장교수") return false;
                             return true;
                           })
                           .sort((a, b) => {
