@@ -24,6 +24,7 @@ import { initialProjectsData, userRoles, YEAR_1_PROGRAMS, Y1_UNIT_META } from ".
 import { Sun, Moon, LogOut, HelpCircle, ArrowUpRight, Lock as LockIcon, Info } from "lucide-react";
 import { supabase } from "./supabaseClient";
 import CryptoJS from "crypto-js";
+import * as XLSX from "xlsx";
 import "./styles/dashboard.css";
 
 // 초기에 적재해 둘 기자재 목록 모의 데이터셋 (Supabase 최초 시딩용)
@@ -2148,6 +2149,12 @@ export default function App() {
   }, [awards]);
 
   const [assignFilterUnitId, setAssignFilterUnitId] = useState("all");
+  
+  // 프로그램 CRUD 상태
+  const [showProgramEditor, setShowProgramEditor] = useState(false);
+  const [editingProgram, setEditingProgram] = useState(null);
+  const [programForm, setProgramForm] = useState({ unitId: "", id: "", title: "", dept: "사업운영팀" });
+  const fileInputRef = React.useRef(null);
   const [mgmtSubTab, setMgmtSubTab] = useState(() => {
     return localStorage.getItem("anchor_mgmt_sub_tab") || "approvals";
   }); // "approvals", "members", "programs", "users"
@@ -5250,6 +5257,130 @@ export default function App() {
       return updated;
     });
   };;;
+  const handleOpenAddProgram = () => {
+    setEditingProgram(null);
+    setProgramForm({ unitId: displayProjects[0]?.units[0]?.id || "", id: "", title: "", dept: "사업운영팀" });
+    setShowProgramEditor(true);
+  };
+
+  const handleOpenEditProgram = (unitId, prog) => {
+    setEditingProgram(prog);
+    setProgramForm({ unitId, id: prog.id, title: prog.title, dept: prog.dept || "사업운영팀" });
+    setShowProgramEditor(true);
+  };
+
+  const handleSaveProgram = () => {
+    if (!programForm.unitId || !programForm.id || !programForm.title) {
+      alert("모든 필드를 입력해주세요.");
+      return;
+    }
+    setProjects((prev) => {
+      const updated = JSON.parse(JSON.stringify(prev));
+      const targetUnit = updated.flatMap(p => p.units).find(u => u.id === programForm.unitId);
+      if (targetUnit) {
+        if (editingProgram) {
+          // Edit
+          const prog = targetUnit.programs.find(p => p.id === editingProgram.id);
+          if (prog) {
+            prog.id = programForm.id;
+            prog.title = programForm.title;
+            // Dept might not be directly in prog originally, but we'll add it
+            prog.dept = programForm.dept;
+          }
+        } else {
+          // Add
+          if (targetUnit.programs.some(p => p.id === programForm.id)) {
+            alert("이미 존재하는 프로그램 ID입니다.");
+            return updated;
+          }
+          targetUnit.programs.push({
+            id: programForm.id,
+            title: programForm.title,
+            dept: programForm.dept,
+            assignees: {},
+            years: { [selectedYear]: {} },
+            kpis: []
+          });
+        }
+      }
+      return updated;
+    });
+    setShowProgramEditor(false);
+  };
+
+  const handleDeleteProgram = (unitId, progId) => {
+    if (!window.confirm("정말 이 프로그램을 삭제하시겠습니까? 관련 KPI 및 예산 내역이 있다면 함께 영향 받을 수 있습니다.")) return;
+    setProjects((prev) => {
+      const updated = JSON.parse(JSON.stringify(prev));
+      const targetUnit = updated.flatMap(p => p.units).find(u => u.id === unitId);
+      if (targetUnit) {
+        targetUnit.programs = targetUnit.programs.filter(p => p.id !== progId);
+      }
+      return updated;
+    });
+  };
+
+  const handleDownloadExcel = () => {
+    const data = [];
+    displayProjects.flatMap(p => p.units).forEach(u => {
+      u.programs.forEach(prog => {
+        data.push({
+          "단위과제 ID": u.id,
+          "단위과제명": u.title,
+          "프로그램 ID": prog.id,
+          "프로그램명": prog.title,
+          "담당연구원": prog.assignees?.[selectedYear] || prog.assignee || ""
+        });
+      });
+    });
+    const ws = XLSX.utils.json_to_sheet(data);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "프로그램 배정");
+    XLSX.writeFile(wb, `프로그램_배정_${selectedYear}차년도.xlsx`);
+  };
+
+  const handleUploadExcel = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+      const bstr = evt.target.result;
+      const wb = XLSX.read(bstr, { type: "binary" });
+      const wsname = wb.SheetNames[0];
+      const ws = wb.Sheets[wsname];
+      const data = XLSX.utils.sheet_to_json(ws);
+
+      setProjects(prev => {
+        const updated = JSON.parse(JSON.stringify(prev));
+        data.forEach(row => {
+          const unitId = row["단위과제 ID"];
+          const progId = row["프로그램 ID"];
+          const title = row["프로그램명"];
+          const assignee = row["담당연구원"];
+
+          const targetUnit = updated.flatMap(p => p.units).find(u => u.id === unitId);
+          if (targetUnit) {
+            let prog = targetUnit.programs.find(p => p.id === progId);
+            if (!prog) {
+              prog = { id: progId, title: title, assignees: {}, years: { [selectedYear]: {} }, kpis: [] };
+              targetUnit.programs.push(prog);
+            } else {
+              prog.title = title;
+            }
+            if (!prog.assignees) prog.assignees = {};
+            if (assignee !== undefined) {
+              prog.assignees[selectedYear] = assignee;
+              prog.assignee = assignee;
+            }
+          }
+        });
+        return updated;
+      });
+      alert("엑셀 데이터가 성공적으로 반영되었습니다.");
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    };
+    reader.readAsBinaryString(file);
+  };
 
   // 연구원 배정 핸들러
   const handleAssignChange = (unitId, progId, newAssignee) => {
@@ -6125,33 +6256,49 @@ export default function App() {
 
             {mgmtSubTab === "programs" && (
               <div>
-                <div style={{ marginBottom: "1.2rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                  <span style={{ fontSize: "0.8rem", fontWeight: "700", color: "var(--text-secondary)" }}>단위과제 필터:</span>
-                  <select
-                    className="user-selector"
-                    value={assignFilterUnitId}
-                    onChange={(e) => setAssignFilterUnitId(e.target.value)}
-                    style={{
-                      padding: "0.3rem 0.6rem",
-                      fontSize: "0.78rem",
-                      borderRadius: "0.25rem",
-                      background: "var(--panel-bg)",
-                      border: "1px solid var(--border-color)",
-                      color: "var(--text-primary)",
-                      outline: "none"
-                    }}
-                  >
-                    <option value="all" style={{ background: "var(--panel-bg)", color: "var(--text-primary)" }}>전체 단위과제</option>
-                    {displayProjects.flatMap((p) => p.units)
-                      .sort((a, b) => {
-                        if (a.id === "Common") return 1;
-                        if (b.id === "Common") return -1;
-                        return a.id.localeCompare(b.id, undefined, { numeric: true, sensitivity: 'base' });
-                      })
-                      .map((u) => (
-                        <option key={u.id} value={u.id} style={{ background: "var(--panel-bg)", color: "var(--text-primary)" }}>{u.id === "Common" ? "" : `${u.id}. `}{u.title}</option>
-                      ))}
-                  </select>
+                <div style={{ marginBottom: "1.2rem", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                    <span style={{ fontSize: "0.8rem", fontWeight: "700", color: "var(--text-secondary)" }}>단위과제 필터:</span>
+                    <select
+                      className="user-selector"
+                      value={assignFilterUnitId}
+                      onChange={(e) => setAssignFilterUnitId(e.target.value)}
+                      style={{
+                        padding: "0.3rem 0.6rem",
+                        fontSize: "0.78rem",
+                        borderRadius: "0.25rem",
+                        background: "var(--panel-bg)",
+                        border: "1px solid var(--border-color)",
+                        color: "var(--text-primary)",
+                        outline: "none"
+                      }}
+                    >
+                      <option value="all" style={{ background: "var(--panel-bg)", color: "var(--text-primary)" }}>전체 단위과제</option>
+                      {displayProjects.flatMap((p) => p.units)
+                        .sort((a, b) => {
+                          if (a.id === "Common") return 1;
+                          if (b.id === "Common") return -1;
+                          return a.id.localeCompare(b.id, undefined, { numeric: true, sensitivity: 'base' });
+                        })
+                        .map((u) => (
+                          <option key={u.id} value={u.id} style={{ background: "var(--panel-bg)", color: "var(--text-primary)" }}>{u.id === "Common" ? "" : `${u.id}. `}{u.title}</option>
+                        ))}
+                    </select>
+                  </div>
+                  {currentRole.rank <= 2 && (
+                    <div style={{ display: "flex", gap: "0.5rem" }}>
+                      <button onClick={handleOpenAddProgram} className="btn btn-primary" style={{ padding: "0.4rem 0.8rem", fontSize: "0.75rem" }}>
+                        + 신규 프로그램
+                      </button>
+                      <button onClick={handleDownloadExcel} className="btn btn-secondary" style={{ padding: "0.4rem 0.8rem", fontSize: "0.75rem" }}>
+                        엑셀 다운로드
+                      </button>
+                      <label className="btn btn-secondary" style={{ padding: "0.4rem 0.8rem", fontSize: "0.75rem", cursor: "pointer", margin: 0 }}>
+                        엑셀 업로드
+                        <input type="file" accept=".xlsx, .xls" style={{ display: "none" }} ref={fileInputRef} onChange={handleUploadExcel} />
+                      </label>
+                    </div>
+                  )}
                 </div>
                 <p style={{ fontSize: "0.75rem", color: "var(--text-secondary)", marginBottom: "1rem" }}>
                   * 실무 연구원으로 등록된 구성원(직책: 연구원)만 프로그램 담당연구원 목록으로 매핑됩니다.
@@ -7928,6 +8075,99 @@ export default function App() {
               </button>
             </div>
           </form>
+        </div>
+      )}
+
+      {showProgramEditor && (
+        <div style={{
+          position: "fixed", top: 0, left: 0, width: "100%", height: "100%",
+          background: "rgba(0,0,0,0.5)", zIndex: 1000,
+          display: "flex", justifyContent: "center", alignItems: "center"
+        }}>
+          <div style={{
+            background: "var(--bg-color)", padding: "1.5rem", borderRadius: "0.5rem",
+            width: "400px", border: "1px solid var(--border-color)"
+          }}>
+            <h3 style={{ marginBottom: "1rem", fontSize: "1rem", fontWeight: "700", color: "var(--text-primary)" }}>
+              {editingProgram ? "프로그램 수정" : "신규 프로그램 추가"}
+            </h3>
+            
+            <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+              <div>
+                <label style={{ display: "block", marginBottom: "0.3rem", fontSize: "0.8rem", fontWeight: "700" }}>단위과제 *</label>
+                <select
+                  value={programForm.unitId}
+                  onChange={(e) => setProgramForm({ ...programForm, unitId: e.target.value })}
+                  className="user-selector"
+                  style={{ width: "100%", padding: "0.4rem", fontSize: "0.8rem", borderRadius: "0.25rem", background: "var(--panel-bg)", border: "1px solid var(--border-color)", color: "var(--text-primary)" }}
+                  disabled={!!editingProgram}
+                >
+                  <option value="">단위과제를 선택하세요</option>
+                  {displayProjects.flatMap(p => p.units).map(u => (
+                    <option key={u.id} value={u.id}>{u.id === "Common" ? "" : `${u.id}. `}{u.title}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label style={{ display: "block", marginBottom: "0.3rem", fontSize: "0.8rem", fontWeight: "700" }}>프로그램 ID *</label>
+                <input
+                  type="text"
+                  value={programForm.id}
+                  onChange={(e) => setProgramForm({ ...programForm, id: e.target.value })}
+                  placeholder="예: 1-1, Common-1 등"
+                  style={{ width: "100%", padding: "0.4rem", fontSize: "0.8rem", borderRadius: "0.25rem", background: "var(--panel-bg)", border: "1px solid var(--border-color)", color: "var(--text-primary)", outline: "none" }}
+                  disabled={!!editingProgram}
+                />
+              </div>
+
+              <div>
+                <label style={{ display: "block", marginBottom: "0.3rem", fontSize: "0.8rem", fontWeight: "700" }}>프로그램명 *</label>
+                <input
+                  type="text"
+                  value={programForm.title}
+                  onChange={(e) => setProgramForm({ ...programForm, title: e.target.value })}
+                  placeholder="프로그램명을 입력하세요"
+                  style={{ width: "100%", padding: "0.4rem", fontSize: "0.8rem", borderRadius: "0.25rem", background: "var(--panel-bg)", border: "1px solid var(--border-color)", color: "var(--text-primary)", outline: "none" }}
+                />
+              </div>
+
+              <div>
+                <label style={{ display: "block", marginBottom: "0.3rem", fontSize: "0.8rem", fontWeight: "700" }}>담당부서</label>
+                <select
+                  value={programForm.dept}
+                  onChange={(e) => setProgramForm({ ...programForm, dept: e.target.value })}
+                  className="user-selector"
+                  style={{ width: "100%", padding: "0.4rem", fontSize: "0.8rem", borderRadius: "0.25rem", background: "var(--panel-bg)", border: "1px solid var(--border-color)", color: "var(--text-primary)" }}
+                >
+                  <option value="사업운영팀">사업운영팀</option>
+                  <option value="늘봄누리센터">늘봄누리센터</option>
+                  <option value="신산업특화센터">신산업특화센터</option>
+                  <option value="ECC">ECC</option>
+                  <option value="ICC">ICC</option>
+                  <option value="RCC">RCC</option>
+                  <option value="AID-X">AID-X</option>
+                </select>
+              </div>
+            </div>
+
+            <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.5rem", marginTop: "1.5rem" }}>
+              <button
+                className="btn-secondary"
+                style={{ padding: "0.4rem 0.8rem", fontSize: "0.8rem" }}
+                onClick={() => setShowProgramEditor(false)}
+              >
+                취소
+              </button>
+              <button
+                className="btn-primary"
+                style={{ padding: "0.4rem 0.8rem", fontSize: "0.8rem" }}
+                onClick={handleSaveProgram}
+              >
+                저장
+              </button>
+            </div>
+          </div>
         </div>
       )}
 
