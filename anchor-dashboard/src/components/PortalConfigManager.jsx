@@ -51,7 +51,7 @@ const MENU_SCHEMA = [
   {
     key: "agreements",
     label: "협약∙발급 관리",
-    description: "외부 유관 기관 협약 대장 및 Seminer 이수증, 상장 발급 기록 대장",
+    description: "유관기관(산업체, 지역사회, 대학 등) 협약 대장 및 교육 이수증, 상장 발급 기록 대장",
     subMenus: [
       { key: "agreements", label: "협약 관리" },
       { key: "certificates", label: "이수증 관리" },
