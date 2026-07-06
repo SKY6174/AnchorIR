@@ -630,14 +630,12 @@ export default function PartnerManager({ selectedYear }) {
                 >
                   <td style={{ padding: "0.85rem 1rem", fontWeight: "800" }}>{p.name}</td>
                   <td style={{ padding: "0.85rem 1rem" }}>
-                    <span style={{
-                      padding: "0.2rem 0.5rem",
-                      borderRadius: "4px",
-                      background: "rgba(59, 130, 246, 0.08)",
-                      color: "var(--accent-color)",
-                      fontWeight: "700",
-                      fontSize: "0.75rem"
-                    }}>
+                    <span className={`badge ${
+                      p.category === "대학" ? "badge-blue" :
+                      p.category === "산업체" ? "badge-orange" :
+                      p.category === "연구기관" ? "badge-purple" :
+                      p.category === "지자체/공공기관" ? "badge-green" : "badge-outline"
+                    }`}>
                       {p.category}
                     </span>
                   </td>
@@ -648,17 +646,7 @@ export default function PartnerManager({ selectedYear }) {
                   <td style={{ padding: "0.85rem 1rem" }}>
                     <div style={{ display: "flex", gap: "0.3rem", flexWrap: "wrap", maxWidth: "240px" }}>
                       {(p.sectors || []).map((sec) => (
-                        <span
-                          key={sec}
-                          style={{
-                            fontSize: "0.7rem",
-                            background: "var(--border-color)",
-                            color: "var(--text-secondary)",
-                            border: "1px solid var(--border-color)",
-                            padding: "0.1rem 0.35rem",
-                            borderRadius: "4px"
-                          }}
-                        >
+                        <span key={sec} className="badge-tag">
                           {sec}
                         </span>
                       ))}
