@@ -328,7 +328,7 @@ export default function MajorProgramsManager({ selectedYear }) {
             display: "flex", 
             flexDirection: "column", 
             alignItems: "center", 
-            borderRight: "1px solid rgba(255,255,255,0.08)", 
+            borderRight: "1px solid var(--border-color)", 
             paddingRight: "1.5rem",
             height: "400px", // 휠 회전 컨테이너의 최적 세로 높이
             overflow: "hidden",
@@ -345,7 +345,7 @@ export default function MajorProgramsManager({ selectedYear }) {
             letterSpacing: "1px", 
             marginBottom: "1rem",
             zIndex: 10,
-            background: "#090d16", // 배경 불투명 처리하여 고정
+            background: "var(--modal-bg)", // 배경 테마 가변 처리하여 융합
             padding: "0.2rem 0.5rem",
             borderRadius: "0.25rem",
             position: "absolute",
@@ -361,7 +361,7 @@ export default function MajorProgramsManager({ selectedYear }) {
             left: 0,
             right: 0,
             height: "55px",
-            background: "linear-gradient(to bottom, #090d16 15%, transparent 100%)",
+            background: "linear-gradient(to bottom, var(--modal-bg) 15%, transparent 100%)",
             pointerEvents: "none",
             zIndex: 5
           }} />
@@ -371,7 +371,7 @@ export default function MajorProgramsManager({ selectedYear }) {
             left: 0,
             right: 0,
             height: "55px",
-            background: "linear-gradient(to top, #090d16 15%, transparent 100%)",
+            background: "linear-gradient(to top, var(--modal-bg) 15%, transparent 100%)",
             pointerEvents: "none",
             zIndex: 5
           }} />
