@@ -39,6 +39,7 @@ export async function analyzePressUrlWithAiConsensus({ url, selectedYear, apiKey
   let fetchedDate = ""; // 초정밀 기사 발행 날짜 보관 변수
   let isYoutube = false;
   let articleTextContext = ""; // 뉴스 기사용 팩트 컨텍스트 보관 변수
+  let firstImageUrl = ""; // 💡 기사 본문 내 첫 번째 이미지 URL 보관 변수
 
   // 1. 유튜브 OEmbed 기본 수집
   if (url.toLowerCase().includes("youtube.com") || url.toLowerCase().includes("youtu.be")) {
@@ -138,6 +139,33 @@ export async function analyzePressUrlWithAiConsensus({ url, selectedYear, apiKey
           const standardDateMatch = html.match(/(202\d)[.\-/](0[1-9]|1[0-2])[.\-/]([0-2]\d|3[01]|[1-9])/);
           if (standardDateMatch) {
             fetchedDate = `${standardDateMatch[1]}-${standardDateMatch[2].padStart(2, '0')}-${standardDateMatch[3].padStart(2, '0')}`;
+          }
+        }
+
+        // 본문 내 첫 번째 이미지 URL 추출 파서 가동 (상대 경로인 경우 절대 경로로 복원)
+        const imgMatch = html.match(/<img[^>]+src=["']([^"']+)["']/i);
+        if (imgMatch && imgMatch[1]) {
+          let detectedSrc = imgMatch[1];
+          if (detectedSrc.startsWith("//")) {
+            firstImageUrl = "https:" + detectedSrc;
+          } else if (detectedSrc.startsWith("/")) {
+            try {
+              const urlObj = new URL(url);
+              firstImageUrl = urlObj.origin + detectedSrc;
+            } catch (e) {
+              firstImageUrl = detectedSrc;
+            }
+          } else if (!detectedSrc.startsWith("http")) {
+            try {
+              const urlObj = new URL(url);
+              const pathParts = urlObj.pathname.split('/');
+              pathParts.pop();
+              firstImageUrl = urlObj.origin + pathParts.join('/') + '/' + detectedSrc;
+            } catch (e) {
+              firstImageUrl = detectedSrc;
+            }
+          } else {
+            firstImageUrl = detectedSrc;
           }
         }
 
@@ -279,7 +307,8 @@ export async function analyzePressUrlWithAiConsensus({ url, selectedYear, apiKey
         title: detectedTitle,
         pressDate: detectedDate,
         pressTime: "10:00",
-        pressContent: detectedContent
+        pressContent: detectedContent,
+        imageUrl: firstImageUrl
       };
     }
 
@@ -350,5 +379,6 @@ export async function analyzePressUrlWithAiConsensus({ url, selectedYear, apiKey
   if (!responseText) throw new Error("Gemini response is empty");
 
   const parsed = JSON.parse(responseText.trim());
+  parsed.imageUrl = firstImageUrl;
   return { parsed, usedModel: "GPT-4o & Gemini 2.5 Virtual Debate Consensus" };
 }

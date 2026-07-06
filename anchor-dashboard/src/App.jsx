@@ -3162,7 +3162,8 @@ export default function App() {
             title: x.title,
             broadcastDate: x.broadcast_date,
             contentUrl: x.content_url,
-            pressContent: x.press_content || ""
+            pressContent: x.press_content || "",
+            imageUrl: x.image_url || ""
           }));
           setPressReleases(formatted);
           localStorage.setItem(`anchor_cache_press_y${selectedYear}`, JSON.stringify(formatted));
@@ -3716,7 +3717,8 @@ export default function App() {
               title: s.title || "새 보도자료",
               broadcast_date: formatToPostgresTimestamp(s.broadcastDate),
               content_url: s.contentUrl || "https://www.uc.ac.kr",
-              press_content: s.pressContent || ""
+              press_content: s.pressContent || "",
+              image_url: s.imageUrl || null
             }))
           );
 

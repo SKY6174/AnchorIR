@@ -4571,8 +4571,41 @@ ${aiRawText}
                       </div>
                     )}
 
+                    {/* 보도 기사 대표 이미지 렌더링 */}
+                    {activePress.imageUrl && (
+                      <div style={{ marginTop: "1rem", display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                        <span style={{ fontSize: "0.85rem", color: "var(--text-secondary)", fontWeight: "600" }}>🖼️ 기사 대표 이미지</span>
+                        <div style={{ 
+                          width: "100%", 
+                          maxHeight: "360px", 
+                          overflow: "hidden", 
+                          borderRadius: "8px", 
+                          border: "1px solid var(--border-color)", 
+                          display: "flex", 
+                          justifyContent: "center", 
+                          alignItems: "center", 
+                          background: "rgba(0, 0, 0, 0.15)",
+                          padding: "0.5rem"
+                        }}>
+                          <img 
+                            src={activePress.imageUrl} 
+                            alt="보도 이미지" 
+                            style={{ 
+                              maxWidth: "100%", 
+                              maxHeight: "340px", 
+                              objectFit: "contain", 
+                              borderRadius: "4px" 
+                            }} 
+                            onError={(e) => {
+                              e.currentTarget.parentElement.parentElement.style.display = "none";
+                            }}
+                          />
+                        </div>
+                      </div>
+                    )}
+
                     {/* 상세 본문 및 미디어 뷰어 */}
-                    <div style={{ marginTop: "0.5rem" }}>
+                    <div style={{ marginTop: "1rem" }}>
                       {embedUrl ? (
                         <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
                           <div style={{ position: "relative", width: "100%", paddingBottom: "56.25%", height: 0, overflow: "hidden", borderRadius: "8px", border: "1px solid rgba(255,255,255,0.08)" }}>
