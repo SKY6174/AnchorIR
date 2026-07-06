@@ -6826,7 +6826,7 @@ export default function App() {
                       
                       <div style={{ display: "flex", flexDirection: "column", gap: "1.2rem" }}>
                         <div>
-                          <span style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)", display: "block" }}>지표 정의</span>
+                          <span style={{ fontSize: "0.95rem", color: "rgb(36, 88, 108)", fontWeight: "bold", display: "block" }}>지표 정의</span>
                           <p style={{ fontSize: "0.85rem", fontWeight: "700", marginTop: "0.2rem", lineHeight: "1.4" }}>
                             {nk.description}
                           </p>
@@ -6835,7 +6835,7 @@ export default function App() {
                         {/* 세부지표 목푯값 및 실적값을 보여주는 미니 표 추가 */}
                         <div>
                           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.4rem" }}>
-                            <span style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)" }}>지표 구성 세부항목 목표 대비 실적 표</span>
+                            <span style={{ fontSize: "0.95rem", color: "rgb(36, 88, 108)", fontWeight: "bold" }}>지표 구성 세부항목 목표 대비 실적 표</span>
                             <span className="badge badge-yellow" style={{ fontSize: "0.75rem", padding: "0.15rem 0.4rem" }}>{selectedYear}차년도 세부지표</span>
                           </div>
                           <table className="mini-table" style={{ fontSize: "0.75rem" }}>
@@ -6881,8 +6881,8 @@ export default function App() {
                                             textAlign: "right",
                                             fontSize: "0.75rem",
                                             padding: "0.1rem 0.2rem",
-                                            background: !canEditTarget ? "rgba(255,255,255,0.02)" : "#18181b",
-                                            color: !canEditTarget ? "rgba(255,255,255,0.3)" : "white",
+                                            background: !canEditTarget ? "rgba(128, 128, 128, 0.25)" : "rgb(128, 128, 128)",
+                                            color: !canEditTarget ? "rgba(255, 255, 255, 0.4)" : "white",
                                             border: "1px solid var(--border-color-dark)",
                                             borderRadius: "0.25rem",
                                             cursor: !canEditTarget ? "not-allowed" : "text"
@@ -6909,8 +6909,8 @@ export default function App() {
                                             textAlign: "right",
                                             fontSize: "0.75rem",
                                             padding: "0.1rem 0.2rem",
-                                            background: "#18181b",
-                                            color: "var(--accent-color)",
+                                            background: "rgb(128, 128, 128)",
+                                            color: "white",
                                             border: "1px solid var(--border-color-dark)",
                                             borderRadius: "0.25rem"
                                           }}
@@ -6999,7 +6999,7 @@ export default function App() {
                         </div>
 
                         <div>
-                          <span style={{ fontSize: "0.75rem", color: "var(--text-secondary-dark)", display: "block", marginBottom: "0.4rem" }}>성과지표 산출공식 및 세부산식 분석</span>
+                          <span style={{ fontSize: "0.95rem", color: "rgb(36, 88, 108)", fontWeight: "bold", display: "block", marginBottom: "0.4rem" }}>성과지표 산출공식 및 세부산식 분석</span>
                           <div style={{ background: "rgba(255, 255, 255, 0.02)", border: "1px solid var(--border-color-dark)", padding: "0.6rem 0.8rem", borderRadius: "0.375rem" }}>
                             <div style={{ marginBottom: "0.5rem" }}>
                               <RenderLatexFormula formula={nk.formula} />
