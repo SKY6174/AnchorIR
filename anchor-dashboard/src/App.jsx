@@ -5268,7 +5268,7 @@ export default function App() {
         {activeTab === "dashboard" && (
           <div>
             {/* 메인 대시보드 탭: 사용자의 요청에 따라 엑셀 업로더 영역을 제거하고 KPI 요약 카드만 노출합니다. */}
-            <KPIOverview projects={displayProjects} currentRole={currentRole} selectedYear={selectedYear} />
+            <KPIOverview key={`kpi-${darkMode}-${selectedYear}`} projects={displayProjects} currentRole={currentRole} selectedYear={selectedYear} />
           </div>
         )}
 
@@ -5479,13 +5479,14 @@ export default function App() {
             )}
 
             {projectsSubTab === "unit_system" && (
-              <UnitSystemView selectedYear={selectedYear} />
+              <UnitSystemView key={`unit-system-${darkMode}-${selectedYear}`} selectedYear={selectedYear} />
             )}
 
             {projectsSubTab === "program_mgmt" && (
               <div id="pdca-manager-section">
                 <h3 style={{ fontSize: "1.1rem", fontWeight: "800", marginBottom: "1rem" }}>프로그램 관리</h3>
                 <PDCAManager
+                  key={`pdca-${darkMode}-${selectedYear}`}
                   projects={displayProjects}
                   currentRole={currentRole}
                   onUpdateProgramDetails={handleUpdateProgramDetails}
@@ -6364,15 +6365,16 @@ export default function App() {
             )}
 
             {mgmtSubTab === "org_chart" && (
-              <OrgChartManager />
+              <OrgChartManager key={`org-${darkMode}`} />
             )}
 
             {mgmtSubTab === "partners" && (
-              <PartnerManager selectedYear={selectedYear} />
+              <PartnerManager key={`partner-${darkMode}-${selectedYear}`} selectedYear={selectedYear} />
             )}
 
             {mgmtSubTab === "portal_config" && isSongDirector && (
               <PortalConfigManager 
+                key={`config-${darkMode}`}
                 initialVisibility={menuVisibility} 
                 onSave={handleSaveMenuVisibility} 
               />
@@ -7068,6 +7070,7 @@ export default function App() {
             {/* 협약서 서브탭 활성화 시 협약서 단독 매니저 마운트 */}
             {agreementsSubTab === "agreements" && (
               <AgreementManager
+                key={`agreement-${darkMode}-${selectedYear}`}
                 projects={displayProjects}
                 agreements={agreements}
                 selectedYear={selectedYear}
@@ -7082,6 +7085,7 @@ export default function App() {
             {/* 이수증 서브탭 활성화 시 이수증 단독 매니저 마운트 */}
             {agreementsSubTab === "certificates" && (
               <CertificateManager
+                key={`certificate-${darkMode}-${selectedYear}`}
                 projects={displayProjects}
                 certificates={certificates}
                 selectedYear={selectedYear}
@@ -7096,6 +7100,7 @@ export default function App() {
             {/* 상장 서브탭 활성화 시 상장 단독 매니저 마운트 */}
             {agreementsSubTab === "awards" && (
               <AwardManager
+                key={`award-${darkMode}-${selectedYear}`}
                 projects={displayProjects}
                 awards={awards}
                 selectedYear={selectedYear}
@@ -7178,10 +7183,12 @@ export default function App() {
               />
             ) : progressSubTab === "major_programs" ? (
               <MajorProgramsManager
+                key={`major-prog-${darkMode}-${selectedYear}`}
                 selectedYear={selectedYear}
               />
             ) : (
               <SatisfactionManager
+                key={`satisfaction-${darkMode}-${selectedYear}`}
                 selectedYear={selectedYear}
               />
             )}
@@ -7229,6 +7236,7 @@ export default function App() {
             {/* 본문 콘텐츠 스위칭 */}
             {budgetSubTab === "budget_categories" ? (
               <BudgetItemsManager
+                key={`budget-items-${darkMode}-${selectedYear}`}
                 projects={displayProjects}
                 currentRole={currentRole}
                 onUpdateBudgetDetails={handleUpdateBudgetDetails}
@@ -7236,6 +7244,7 @@ export default function App() {
               />
             ) : (
               <BudgetExecutionManager
+                key={`budget-exec-${darkMode}-${selectedYear}`}
                 projects={displayProjects}
                 currentRole={currentRole}
                 selectedYear={selectedYear}
@@ -7300,6 +7309,7 @@ export default function App() {
 
             {/* 본문 콘텐츠 */}
             <ProcurementManager
+              key={`procurement-${darkMode}-${selectedYear}`}
               currentRole={currentRole}
               currentUser={currentUser}
               selectedYear={selectedYear}
@@ -7405,6 +7415,7 @@ export default function App() {
 
             {/* 본문 콘텐츠 */}
             <ScheduleManager
+              key={`schedule-${darkMode}-${selectedYear}`}
               currentUser={currentUser}
               currentRole={currentRole}
               selectedYear={selectedYear}
