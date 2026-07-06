@@ -2901,20 +2901,20 @@ export default function ProcurementManager({
                             const stepList = dynamicMilestones[m] || [];
 
                             const getSegmentColorForPos = (pos) => {
-                              if (idxP !== null && idxA !== null && idxP < idxA) {
-                                if (pos >= idxP && pos < idxA) return "#f59e0b";
-                              }
-                              if (idxA !== null && idxB !== null && idxA < idxB) {
-                                if (pos >= idxA && pos < idxB) return "#3b82f6";
-                              }
-                              if (idxB !== null && idxPr !== null && idxB < idxPr) {
-                                if (pos >= idxB && pos < idxPr) return "#06b6d4";
-                              }
-                              if (idxPr !== null && idxI !== null && idxPr < idxI) {
-                                if (pos >= idxPr && pos < idxI) return "#a78bfa";
-                              }
-                              return "rgba(255, 255, 255, 0.12)";
-                            };
+                               if (idxP !== null && idxA !== null && idxP < idxA) {
+                                 if (pos >= idxP && pos < idxA) return "#f59e0b";
+                               }
+                               if (idxA !== null && idxB !== null && idxA < idxB) {
+                                 if (pos >= idxA && pos < idxB) return "#3b82f6";
+                               }
+                               if (idxB !== null && idxPr !== null && idxB < idxPr) {
+                                 if (pos >= idxB && pos < idxPr) return "#06b6d4";
+                               }
+                               if (idxPr !== null && idxI !== null && idxPr < idxI) {
+                                 if (pos >= idxPr && pos < idxI) return "#a78bfa";
+                               }
+                               return "var(--border-color)";
+                             };
 
                             const leftColor = getSegmentColorForPos(currIdx - 0.5);
                             const rightColor = getSegmentColorForPos(currIdx + 0.5);
@@ -2978,8 +2978,8 @@ export default function ProcurementManager({
                                   right: "50%",
                                   top: "50%",
                                   transform: "translateY(-50%)",
-                                  height: "3px", // 선 두께 강화
-                                  background: leftColor === "rgba(255, 255, 255, 0.12)" ? "rgba(255, 255, 255, 0.08)" : leftColor,
+                                  height: "1.5px",
+                                  background: leftColor === "var(--border-color)" ? "var(--border-color)" : leftColor,
                                   display: m === "3" ? "none" : "block", // 3월은 왼쪽 선 생략
                                   zIndex: 0
                                 }} />
@@ -2991,8 +2991,8 @@ export default function ProcurementManager({
                                   right: 0,
                                   top: "50%",
                                   transform: "translateY(-50%)",
-                                  height: "3px", // 선 두께 강화
-                                  background: rightColor === "rgba(255, 255, 255, 0.12)" ? "rgba(255, 255, 255, 0.08)" : rightColor,
+                                  height: "1.5px",
+                                  background: rightColor === "var(--border-color)" ? "var(--border-color)" : rightColor,
                                   display: m === "2" ? "none" : "block", // 2월은 오른쪽 선 생략
                                   zIndex: 0
                                 }} />
@@ -3010,9 +3010,9 @@ export default function ProcurementManager({
                                         transform: "translate(-50%, -50%)",
                                         width: 0,
                                         height: 0,
-                                        borderTop: "3.5px solid transparent",
-                                        borderBottom: "3.5px solid transparent",
-                                        borderLeft: `5px solid ${arr.color}`,
+                                        borderTop: "2px solid transparent",
+                                        borderBottom: "2px solid transparent",
+                                        borderLeft: `4.5px solid ${arr.color}`,
                                         zIndex: 3,
                                         pointerEvents: "none"
                                       }} 
@@ -3189,10 +3189,10 @@ export default function ProcurementManager({
                                   <button
                                     onClick={() => openEditModal(equip)}
                                     style={{
-                                      background: "rgba(255,255,255,0.06)",
-                                      border: "1px solid rgba(255,255,255,0.1)",
+                                      background: "var(--input-bg)",
+                                      border: "1px solid var(--border-color)",
                                       borderRadius: "4px",
-                                      color: "rgba(255,255,255,0.8)",
+                                      color: "var(--text-primary)",
                                       padding: "0.25rem 0.45rem",
                                       fontSize: "0.65rem",
                                       cursor: "pointer",
