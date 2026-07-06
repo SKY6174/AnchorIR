@@ -269,23 +269,50 @@ export default function BudgetExecutionManager({ projects, currentRole, selected
         </div>
 
         {/* 이월예산 요약 */}
-        <div className="glass-card" style={{ padding: "1.25rem", borderRadius: "10px", display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+        <div className="glass-card" style={{ 
+          padding: "1.25rem", 
+          borderRadius: "10px", 
+          display: "flex", 
+          flexDirection: "column", 
+          gap: "0.75rem",
+          opacity: selectedYear === 1 ? 0.55 : 1, // 1차년도 비활성화 흐림 효과
+          position: "relative"
+        }}>
+          {selectedYear === 1 && (
+            <div style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              background: "rgba(0,0,0,0.03)",
+              borderRadius: "10px",
+              pointerEvents: "none",
+              zIndex: 2
+            }} />
+          )}
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <span style={{ fontSize: "0.9rem", color: "var(--text-secondary)", fontWeight: "600" }}>
               {viewType === "total" ? "[전체] " : `[${selectedUnit}] `}이월예산 집행률 현황 (8/31 마감)
             </span>
-            <Calendar size={20} style={{ color: "#EF4444" }} />
+            <Calendar size={20} style={{ color: selectedYear === 1 ? "var(--text-secondary)" : "#EF4444" }} />
           </div>
           <div style={{ display: "flex", alignItems: "baseline", gap: "0.5rem" }}>
-            <span style={{ fontSize: "2rem", fontWeight: "800", color: "#F87171" }}>{activeData.carryoverRate}</span>
-            <span style={{ fontSize: "0.85rem", color: "var(--text-secondary)" }}>(누적 {activeData.carryoverSpent} / 총 {activeData.carryoverTotal})</span>
+            <span style={{ fontSize: "2rem", fontWeight: "800", color: selectedYear === 1 ? "var(--text-secondary)" : "#F87171" }}>
+              {selectedYear === 1 ? "N/A" : activeData.carryoverRate}
+            </span>
+            <span style={{ fontSize: "0.85rem", color: "var(--text-secondary)" }}>
+              {selectedYear === 1 ? "(이월배정금 없음)" : `(누적 ${activeData.carryoverSpent} / 총 ${activeData.carryoverTotal})`}
+            </span>
           </div>
           {/* 가상 프로그레스 바 */}
           <div style={{ width: "100%", height: "8px", background: "var(--border-color)", borderRadius: "4px", overflow: "hidden" }}>
-            <div style={{ width: activeData.carryoverRate, height: "100%", background: "#EF4444", borderRadius: "4px" }}></div>
+            <div style={{ width: selectedYear === 1 ? "0%" : activeData.carryoverRate, height: "100%", background: "#EF4444", borderRadius: "4px" }}></div>
           </div>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "0.75rem" }}>
-            <span style={{ color: "#FCA5A5" }}>{selectedYear === 1 ? "ℹ️ 1차년도는 이월배정금이 없습니다." : "⚠️ 8월 31일 기한 마감 완료"}</span>
+            <span style={{ color: selectedYear === 1 ? "#ef4444" : "#FCA5A5", fontWeight: selectedYear === 1 ? "800" : "normal" }}>
+              {selectedYear === 1 ? "💡 1차년도는 최초 협약 연도로서 이월예산이 존재하지 않습니다." : "⚠️ 8월 31일 기한 마감 완료"}
+            </span>
             {selectedYear === 2 && <span style={{ color: "var(--text-secondary)" }}>잔액 반납 예정액: **{activeData.carryoverBalance}**</span>}
           </div>
         </div>
