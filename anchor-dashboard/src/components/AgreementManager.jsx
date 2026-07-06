@@ -132,6 +132,44 @@ export default function AgreementManager({
     }
   };
 
+  // 💡 날짜 문자열 안전 정화기 (PostgreSQL DATE 타입 호환 보장 및 오입력 데이터 정제)
+  const sanitizeDateStr = (dateStr, fallbackYear) => {
+    if (!dateStr) return `${fallbackYear === 1 ? 2025 : 2026}-05-15`;
+    
+    let clean = String(dateStr).trim().replace(/[^0-9-]/g, ""); // 숫자와 대시만 필터링
+    
+    // 만약 YYYY-MM-DD 정밀 규격이면 그대로 통과
+    if (/^\d{4}-\d{2}-\d{2}$/.test(clean)) {
+      return clean;
+    }
+
+    // "2025.05.15" 이나 "2025/05/15" 대시로 치환
+    const dottedMatch = String(dateStr).trim().match(/^(\d{4})[./](\d{1,2})[./](\d{1,2})$/);
+    if (dottedMatch) {
+      const y = dottedMatch[1];
+      const m = dottedMatch[2].padStart(2, '0');
+      const d = dottedMatch[3].padStart(2, '0');
+      return `${y}-${m}-${d}`;
+    }
+
+    // "20250515" 형식 대시 삽입
+    if (/^\d{8}$/.test(clean)) {
+      return `${clean.substring(0, 4)}-${clean.substring(4, 6)}-${clean.substring(6, 8)}`;
+    }
+
+    // "25-05-15" 이나 "250515" 2000년대 연도 복원
+    if (/^\d{2}-\d{2}-\d{2}$/.test(clean)) {
+      return `20${clean}`;
+    }
+    if (/^\d{6}$/.test(clean)) {
+      return `20${clean.substring(0, 2)}-${clean.substring(2, 4)}-${clean.substring(4, 6)}`;
+    }
+
+    // 깨진 포맷(예: "610-98-81") -> 연차별 기본 날짜 부여
+    const baseYear = fallbackYear === 1 ? 2025 : (fallbackYear === 2 ? 2026 : (fallbackYear === 3 ? 2027 : (fallbackYear === 4 ? 2028 : 2029)));
+    return `${baseYear}-05-15`;
+  };
+
   // 날짜 범위 검증 (Y차년도: (2024 + Y)년 3월 1일 ~ (2024 + Y + 1)년 2월 말일)
   const isDateValidForYear = (dateStr, year) => {
     if (!dateStr) return false;
@@ -342,9 +380,11 @@ export default function AgreementManager({
           const finalType = ["프리미엄", "무료", "-"].includes(typeVal) ? typeVal : "-";
 
           const calculatedYear = getYearFromDate(String(dateVal).trim());
+          const cleanDate = sanitizeDateStr(String(dateVal).trim(), calculatedYear || selectedYear);
+          const finalYear = getYearFromDate(cleanDate) || calculatedYear || selectedYear;
           const newAgr = {
-            year: calculatedYear || selectedYear,
-            date: String(dateVal).trim(),
+            year: finalYear,
+            date: cleanDate,
             center: CENTERS_LIST.includes(String(centerVal).trim()) ? String(centerVal).trim() : "ECC센터",
             organizations,
             subjectUniversity: row["대학 측 협약주체(UC)"] ? String(row["대학 측 협약주체(UC)"]).trim() : "단장",
