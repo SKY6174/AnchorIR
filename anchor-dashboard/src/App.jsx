@@ -3279,6 +3279,141 @@ export default function App() {
     syncImmediate();
   }, [agreements, isDbLoaded, isFetchCompleted]);
 
+  // 10) Press Releases (언론보도) 자동 저장 디바운스 훅 (타 연차 기사 지능형 즉시 분배 저장 탑재)
+  useEffect(() => {
+    if (!isDbLoaded || !isFetchCompleted) return;
+
+    // 기사 날짜 기준 연차(1~5) 자동 계산 헬퍼
+    const getCalculatedYearFromDate = (dateStr) => {
+      if (!dateStr) return selectedYear;
+      const d = new Date(dateStr);
+      if (isNaN(d.getTime())) return selectedYear;
+      const year = d.getFullYear();
+      const month = d.getMonth() + 1;
+      let calcYear = year;
+      if (month < 3) {
+        calcYear = year - 1;
+      }
+      return calcYear === 2025 ? 1 : calcYear === 2026 ? 2 : calcYear === 2027 ? 3 : calcYear === 2028 ? 4 : calcYear === 2029 ? 5 : selectedYear;
+    };
+
+    if (!currentUser || currentRole?.id === "GUEST") return;
+
+    // 💡 타 연차에 해당하는 기사들 (예: selectedYear 가 2인데 1차년도 기사가 섞여 있는 경우)
+    const otherYearPress = pressReleases.filter(s => getCalculatedYearFromDate(s.broadcastDate) !== selectedYear);
+
+    // 현재 선택된 연차에 속하는 기사들만 추출
+    const currentYearPress = pressReleases.filter(s => getCalculatedYearFromDate(s.broadcastDate) === selectedYear);
+
+    // 로컬스토리지에는 현재 연차 보도자료 저장
+    localStorage.setItem(`anchor_cache_press_y${selectedYear}`, JSON.stringify(currentYearPress));
+    setSyncStatus("syncing");
+
+    const formatToPostgresTimestamp = (dateStr) => {
+      if (!dateStr) return new Date().toISOString();
+      const parsed = new Date(dateStr);
+      if (isNaN(parsed.getTime())) return new Date().toISOString();
+      
+      const pad = (n) => String(n).padStart(2, "0");
+      const yyyy = parsed.getFullYear();
+      const mm = pad(parsed.getMonth() + 1);
+      const dd = pad(parsed.getDate());
+      const hh = pad(parsed.getHours());
+      const mi = pad(parsed.getMinutes());
+      const ss = pad(parsed.getSeconds());
+      return `${yyyy}-${mm}-${dd} ${hh}:${mi}:${ss}+09`;
+    };
+    
+    const syncPressImmediate = async () => {
+      try {
+        // --- 1단계: 타 연차 기사가 발견되었을 경우 해당 연차 DB에 단독 Insert 및 청소 ---
+        if (otherYearPress.length > 0) {
+          for (const item of otherYearPress) {
+            const targetYear = getCalculatedYearFromDate(item.broadcastDate);
+            console.log(`타 연차 기사 감지: ${item.title} -> ${targetYear}차년도 DB로 직접 저장합니다.`);
+            
+            const { error: singleInsertErr } = await supabase.from("press_releases").insert({
+              year: targetYear,
+              type: item.type || "기타",
+              media: item.media || "미상",
+              title: item.title || "새 보도자료",
+              broadcast_date: formatToPostgresTimestamp(item.broadcastDate),
+              content_url: item.contentUrl || "https://www.uc.ac.kr",
+              press_content: item.pressContent || ""
+            });
+
+            if (singleInsertErr) {
+              console.error(`Failed to insert press release to year ${targetYear}:`, singleInsertErr);
+            }
+          }
+
+          // 💡 다른 연차 DB에 성공적으로 우회 주입했으므로, 현재 React State(pressReleases) 배열에서 해당 항목 제거
+          setPressReleases(prev => prev.filter(s => getCalculatedYearFromDate(s.broadcastDate) === selectedYear));
+          alert(`📢 입력하신 보도자료는 기사 일시 기준에 따라 [${getCalculatedYearFromDate(otherYearPress[0].broadcastDate)}차년도] 언론보도 대장에 안전하게 자동 분리 저장되었습니다.\n\n해당 연차 탭으로 이동하시면 확인하실 수 있습니다.`);
+          setSyncStatus("synced");
+          return;
+        }
+
+        // --- 2단계: 원래 선택된 현재 연차 기사들의 정상 동기화 처리 ---
+        const targetYearNum = selectedYear === 1 ? 2025 : selectedYear === 2 ? 2026 : selectedYear === 3 ? 2027 : selectedYear === 4 ? 2028 : 2029;
+        const startDateStr = `${targetYearNum}-03-01T00:00:00+09:00`;
+        const endDateStr = `${targetYearNum + 1}-03-01T00:00:00+09:00`;
+
+        const { data: currentDbItems, error: fetchErr } = await supabase
+          .from("press_releases")
+          .select("id")
+          .gte("broadcast_date", startDateStr)
+          .lt("broadcast_date", endDateStr);
+          
+        if (fetchErr) {
+          console.error("Failed to fetch current press releases to rollback backup:", fetchErr);
+          setSyncStatus("error");
+          return;
+        }
+
+        const oldIds = (currentDbItems || []).map(item => item.id);
+
+        if (currentYearPress.length > 0) {
+          const { error: insertErr } = await supabase.from("press_releases").insert(
+            currentYearPress.map(s => ({
+              year: selectedYear,
+              type: s.type || "기타",
+              media: s.media || "미상",
+              title: s.title || "새 보도자료",
+              broadcast_date: formatToPostgresTimestamp(s.broadcastDate),
+              content_url: s.contentUrl || "https://www.uc.ac.kr",
+              press_content: s.pressContent || ""
+            }))
+          );
+
+          if (insertErr) {
+            console.error("Failed to insert new press releases:", insertErr);
+            alert(`📡 데이터베이스 저장 오류가 검출되었습니다.\n\n[오류 원인]: ${insertErr.message || insertErr}\n\n데이터 유실 방지를 위해 기존 보도 대장은 안전하게 롤백/보존되었습니다.`);
+            setSyncStatus("error");
+            return;
+          }
+        }
+
+        if (oldIds.length > 0) {
+          const { error: deleteErr } = await supabase
+            .from("press_releases")
+            .delete()
+            .in("id", oldIds);
+            
+          if (deleteErr) {
+            console.error("Failed to clean up old press releases:", deleteErr);
+          }
+        }
+
+        setSyncStatus("synced");
+      } catch (e) {
+        console.error("Failed to sync press releases:", e);
+        setSyncStatus("error");
+      }
+    };
+    syncPressImmediate();
+  }, [pressReleases, selectedYear, isDbLoaded, isFetchCompleted]);
+
   // 3-2) Certificates 자동 저장 디바운스 훅 (통합 캐시 사용 및 selectedYear 의존성 배제)
   useEffect(() => {
     if (!isDbLoaded || !isFetchCompleted) return;
