@@ -1853,10 +1853,10 @@ export default function ProcurementManager({
           </div>
 
           {/* 환경개선 테이블 */}
-          <div className="glass-card" style={{ padding: "0.25rem", borderRadius: "12px", overflowX: "auto", border: "1px solid rgba(255,255,255,0.06)", background: "rgba(10, 15, 30, 0.4)" }}>
+          <div className="glass-card" style={{ padding: "0.25rem", borderRadius: "12px", overflowX: "auto", border: "1px solid var(--border-color)", background: "var(--panel-bg)" }}>
             <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.82rem", color: "var(--text-primary)" }}>
               <thead>
-                <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.08)", background: "rgba(255,255,255,0.01)" }}>
+                <tr style={{ borderBottom: "1px solid var(--border-color)", background: "transparent" }}>
                   <th 
                     rowSpan={3} 
                     onClick={() => handleSort("seq")} 
@@ -2033,7 +2033,7 @@ export default function ProcurementManager({
                     return (
                       <tr 
                         key={equip.id || idx} 
-                        style={{ borderBottom: "1px solid rgba(255,255,255,0.05)", transition: "background 0.15s ease" }}
+                        style={{ borderBottom: "1px solid var(--border-color)", transition: "background 0.15s ease" }}
                       >
                         <td style={{ padding: "0.8rem 0.5rem", textAlign: "center", color: "var(--text-secondary)" }}>
                           {idx + 1}
@@ -3453,10 +3453,10 @@ export default function ProcurementManager({
           </div>
 
           {/* 주요 용역 테이블 */}
-          <div className="glass-card" style={{ padding: "0.25rem", borderRadius: "12px", overflowX: "auto", border: "1px solid rgba(255,255,255,0.06)", background: "rgba(10, 15, 30, 0.4)" }}>
+          <div className="glass-card" style={{ padding: "0.25rem", borderRadius: "12px", overflowX: "auto", border: "1px solid var(--border-color)", background: "var(--panel-bg)" }}>
             <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.82rem", color: "var(--text-primary)" }}>
               <thead>
-                <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.08)", background: "rgba(255,255,255,0.01)" }}>
+                <tr style={{ borderBottom: "1px solid var(--border-color)", background: "transparent" }}>
                   <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "45px" }}>순번</th>
                   <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "140px" }}>프로그램 ID</th>
                   <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "140px" }}>운영부서</th>
@@ -3504,7 +3504,7 @@ export default function ProcurementManager({
                     return (
                       <tr 
                         key={equip.id || idx} 
-                        style={{ borderBottom: "1px solid rgba(255,255,255,0.05)", transition: "background 0.15s ease" }}
+                        style={{ borderBottom: "1px solid var(--border-color)", transition: "background 0.15s ease" }}
                       >
                         {/* 1. 순번 */}
                         <td style={{ padding: "0.8rem 0.5rem", textAlign: "center", color: "var(--text-secondary)" }}>
