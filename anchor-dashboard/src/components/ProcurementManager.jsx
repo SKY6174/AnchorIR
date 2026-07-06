@@ -2239,7 +2239,7 @@ export default function ProcurementManager({
                                         strokeLinejoin="round"
                                         opacity="0.9" 
                                       />
-                                      <text x="14" y="4.5" textAnchor="middle" fontSize="10" fontWeight="950" fill="white" style={{ fontFamily: "monospace", letterSpacing: "-0.5px" }}>
+                                      <text x="14" y="4.5" textAnchor="middle" fontSize="10" fontWeight="950" fill="var(--text-primary)" style={{ fontFamily: "monospace", letterSpacing: "-0.5px" }}>
                                         {primaryCode}
                                       </text>
                                       <circle cx="14" cy="17.5" r="4.5" fill={phaseColor} stroke="#ffffff" strokeWidth="1.5" filter={`url(#glow-${primaryCode})`} style={{ transition: "all 0.2s ease" }} />
@@ -3077,7 +3077,7 @@ export default function ProcurementManager({
                                           textAnchor="middle" 
                                           fontSize="10" 
                                           fontWeight="950" 
-                                          fill="white"
+                                          fill="var(--text-primary)"
                                           style={{ fontFamily: "monospace", letterSpacing: "-0.5px" }}
                                         >
                                           {primaryCode}
