@@ -5297,7 +5297,57 @@ ${aiRawText}
                         👥 전체 사업단 참석자 선택 (팀장교수 포함 다중 선택)
                       </label>
                       {(() => {
-                        const allActiveMembers = (members || []).filter(m => m.status !== "미참여");
+                        const ROLE_PRIORITY = {
+                          "사업단장": 1,
+                          "본부장": 2,
+                          "센터장": 3,
+                          "운영팀장": 4,
+                          "팀장교수": 5,
+                          "연구원": 6
+                        };
+                        const DEPT_PRIORITY = {
+                          "ECC센터": 1,
+                          "ICC센터": 2,
+                          "RCC센터": 3,
+                          "AID-X지원센터": 4,
+                          "울산늘봄누리센터": 5,
+                          "신산업특화센터": 6,
+                          "사업운영팀": 7
+                        };
+                        const GRADE_PRIORITY = {
+                          "책임연구원": 1,
+                          "선임연구원": 2,
+                          "연구원": 3
+                        };
+
+                        const meetingDateObj = new Date(formData.meetingDate || new Date());
+                        
+                        const allActiveMembers = (members || [])
+                          .filter(m => {
+                            const start = new Date(m.startDate || m.hireDate || "2026-03-01");
+                            const end = m.endDate ? new Date(m.endDate) : null;
+                            if (start > meetingDateObj) return false;
+                            if (end && end < meetingDateObj) return false;
+                            return true;
+                          })
+                          .sort((a, b) => {
+                            const rA = ROLE_PRIORITY[a.role] || 99;
+                            const rB = ROLE_PRIORITY[b.role] || 99;
+                            if (rA !== rB) return rA - rB;
+                            
+                            const dA = DEPT_PRIORITY[a.dept] || 99;
+                            const dB = DEPT_PRIORITY[b.dept] || 99;
+                            if (dA !== dB) return dA - dB;
+                            
+                            const gA = GRADE_PRIORITY[a.grade] || 99;
+                            const gB = GRADE_PRIORITY[b.grade] || 99;
+                            if (gA !== gB) return gA - gB;
+                            
+                            const sA = new Date(a.startDate || a.hireDate || "2026-03-01").getTime();
+                            const sB = new Date(b.startDate || b.hireDate || "2026-03-01").getTime();
+                            return sA - sB;
+                          });
+
                         return (
                           <div style={{ display: "flex", gap: "0.35rem", flexWrap: "wrap", padding: "0.5rem", background: "rgba(255,255,255,0.02)", borderRadius: "6px", border: "1px solid rgba(255,255,255,0.04)", maxHeight: "120px", overflowY: "auto" }}>
                             {allActiveMembers.map(m => {
@@ -5305,6 +5355,8 @@ ${aiRawText}
                                 .split(",")
                                 .map(x => x.trim())
                                 .includes(m.name);
+
+                              const displayRole = m.role === "연구원" ? (m.grade || "연구원") : (m.role === "사업단장" ? "단장" : m.role);
 
                               return (
                                   <button
@@ -5322,7 +5374,7 @@ ${aiRawText}
                                       fontWeight: "700"
                                     }}
                                   >
-                                    {m.name} {m.role === "사업단장" ? "단장" : m.role} {isSelected ? "✓" : "+"}
+                                    {m.name} {displayRole} {isSelected ? "✓" : "+"}
                                   </button>
                               );
                             })}
