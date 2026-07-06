@@ -405,10 +405,10 @@ export default function UnifiedCertificateManager({
                   <td style={{ whiteSpace: "nowrap" }}>{c.awardType}</td>
                   <td style={{ wordBreak: "keep-all", minWidth: "120px", lineHeight: "1.4" }}>{c.teamName}</td>
                   <td style={{ fontWeight: "600", wordBreak: "keep-all", minWidth: "150px", lineHeight: "1.5" }}>
-                    {c.recipientName ? c.recipientName.split(/[\s,]+/).filter(Boolean).join(", ") : ""}
+                    {c.recipientName ? String(c.recipientName).split(/[\s,]+/).filter(Boolean).join(", ") : ""}
                   </td>
                   <td style={{ wordBreak: "keep-all", minWidth: "180px", lineHeight: "1.5", fontSize: "0.8rem", color: "var(--text-secondary)" }}>
-                    {c.studentId ? c.studentId.split(/[\s,]+/).filter(Boolean).join(", ") : ""}
+                    {c.studentId ? String(c.studentId).split(/[\s,]+/).filter(Boolean).join(", ") : ""}
                   </td>
                   <td style={{ textAlign: "center", whiteSpace: "nowrap" }}>{c.issueDate}</td>
                   <td style={{ whiteSpace: "nowrap" }}>{c.projectGroup}</td>
