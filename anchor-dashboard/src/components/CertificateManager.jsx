@@ -742,8 +742,8 @@ export default function CertificateManager({
       {/* 이수증 개별 등록 및 수정 모달 */}
       {isCertModalOpen && createPortal(
         <div style={{ position: "fixed", top: 0, left: 0, width: "100vw", height: "100vh", background: "rgba(0,0,0,0.6)", zIndex: 9999, display: "flex", justifyContent: "center", alignItems: "center", overflowY: "auto", padding: "2rem 1rem" }}>
-          <div style={{ background: "#18181b", border: "1px solid var(--border-color-dark)", borderRadius: "0.75rem", width: "100%", maxWidth: "500px", maxHeight: "85vh", display: "flex", flexDirection: "column", color: "white", boxShadow: "0 20px 25px -5px rgba(0,0,0,0.3)", margin: "auto" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "0.85rem 1.25rem", borderBottom: "1px solid var(--border-color-dark)", flexShrink: 0 }}>
+          <div style={{ background: "var(--modal-bg)", border: "1px solid var(--border-color)", borderRadius: "0.75rem", width: "100%", maxWidth: "500px", maxHeight: "85vh", display: "flex", flexDirection: "column", color: "var(--text-primary)", boxShadow: "0 20px 25px -5px rgba(0,0,0,0.3)", margin: "auto" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "0.85rem 1.25rem", borderBottom: "1px solid var(--border-color)", flexShrink: 0 }}>
               <h3 style={{ fontSize: "0.9rem", fontWeight: "800" }}>📄 {editingCertId ? "이수증 정보 수정" : "신규 이수증 등록"}</h3>
               <button onClick={() => setIsCertModalOpen(false)} style={{ background: "none", border: "none", color: "#a1a1aa", cursor: "pointer" }}>
                 <X size={18} />
@@ -752,26 +752,26 @@ export default function CertificateManager({
             <form onSubmit={handleCertSubmit} style={{ padding: "1.25rem", display: "flex", flexDirection: "column", gap: "0.8rem", flex: 1, overflowY: "auto" }}>
               <div>
                 <label style={{ display: "block", fontSize: "0.65rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>발급번호</label>
-                <input type="text" placeholder="예: 제 2026-이수-0001 호" value={certNo} onChange={(e) => setCertNo(e.target.value)} style={{ width: "100%", padding: "0.35rem 0.5rem", fontSize: "0.75rem", background: "#27272a", color: "white", border: "1px solid var(--border-color-dark)", borderRadius: "0.25rem" }} />
+                <input type="text" placeholder="예: 제 2026-이수-0001 호" value={certNo} onChange={(e) => setCertNo(e.target.value)} style={{ width: "100%", padding: "0.35rem 0.5rem", fontSize: "0.75rem", background: "var(--input-bg)", color: "var(--text-primary)", border: "1px solid var(--border-color)", borderRadius: "0.25rem" }} />
               </div>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem" }}>
                 <div>
                   <label style={{ display: "block", fontSize: "0.65rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>발급대상 소속</label>
-                  <input type="text" placeholder="예: 울산과학대학교" value={certDept} onChange={(e) => setCertDept(e.target.value)} style={{ width: "100%", padding: "0.35rem 0.5rem", fontSize: "0.75rem", background: "#27272a", color: "white", border: "1px solid var(--border-color-dark)", borderRadius: "0.25rem" }} />
+                  <input type="text" placeholder="예: 울산과학대학교" value={certDept} onChange={(e) => setCertDept(e.target.value)} style={{ width: "100%", padding: "0.35rem 0.5rem", fontSize: "0.75rem", background: "var(--input-bg)", color: "var(--text-primary)", border: "1px solid var(--border-color)", borderRadius: "0.25rem" }} />
                 </div>
                 <div>
                   <label style={{ display: "block", fontSize: "0.65rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>발급대상 성명</label>
-                  <input type="text" placeholder="예: 홍길동" value={certName} onChange={(e) => setCertName(e.target.value)} style={{ width: "100%", padding: "0.35rem 0.5rem", fontSize: "0.75rem", background: "#27272a", color: "white", border: "1px solid var(--border-color-dark)", borderRadius: "0.25rem" }} />
+                  <input type="text" placeholder="예: 홍길동" value={certName} onChange={(e) => setCertName(e.target.value)} style={{ width: "100%", padding: "0.35rem 0.5rem", fontSize: "0.75rem", background: "var(--input-bg)", color: "var(--text-primary)", border: "1px solid var(--border-color)", borderRadius: "0.25rem" }} />
                 </div>
               </div>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem" }}>
                 <div>
                   <label style={{ display: "block", fontSize: "0.65rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>발급일자</label>
-                  <input type="date" value={certDate} onChange={(e) => setCertDate(e.target.value)} style={{ width: "100%", padding: "0.35rem 0.5rem", fontSize: "0.75rem", background: "#27272a", color: "white", border: "1px solid var(--border-color-dark)", borderRadius: "0.25rem" }} />
+                  <input type="date" value={certDate} onChange={(e) => setCertDate(e.target.value)} style={{ width: "100%", padding: "0.35rem 0.5rem", fontSize: "0.75rem", background: "var(--input-bg)", color: "var(--text-primary)", border: "1px solid var(--border-color)", borderRadius: "0.25rem" }} />
                 </div>
                 <div>
                   <label style={{ display: "block", fontSize: "0.65rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>발급주체</label>
-                  <select value={certIssuer} onChange={(e) => setCertIssuer(e.target.value)} style={{ width: "100%", padding: "0.35rem 0.5rem", fontSize: "0.75rem", background: "#27272a", color: "white", border: "1px solid var(--border-color-dark)", borderRadius: "0.25rem" }}>
+                  <select value={certIssuer} onChange={(e) => setCertIssuer(e.target.value)} style={{ width: "100%", padding: "0.35rem 0.5rem", fontSize: "0.75rem", background: "var(--input-bg)", color: "var(--text-primary)", border: "1px solid var(--border-color)", borderRadius: "0.25rem" }}>
                     <option value="사업단장">사업단장</option>
                     <option value="늘봄누리센터장">늘봄누리센터장</option>
                   </select>
@@ -780,14 +780,14 @@ export default function CertificateManager({
               <div>
                 <label style={{ display: "block", fontSize: "0.65rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>증서 사본 업로드</label>
                 <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                  <label style={{ display: "inline-flex", alignItems: "center", gap: "0.25rem", padding: "0.35rem 0.6rem", fontSize: "0.7rem", background: "#3f3f46", color: "white", borderRadius: "0.25rem", cursor: "pointer", border: "1px solid var(--border-color-dark)" }}>
+                  <label style={{ display: "inline-flex", alignItems: "center", gap: "0.25rem", padding: "0.35rem 0.6rem", fontSize: "0.7rem", background: "var(--input-bg)", color: "var(--text-primary)", borderRadius: "0.25rem", cursor: "pointer", border: "1px solid var(--border-color)" }}>
                     <Upload size={14} /> 파일 선택
                     <input type="file" onChange={handleFileChange} style={{ display: "none" }} accept=".pdf,.doc,.docx,.png,.jpg,.jpeg" />
                   </label>
                   <span style={{ fontSize: "0.7rem", color: "#a1a1aa" }}>{certFileName ? `📁 ${certFileName}` : "선택된 파일 없음"}</span>
                 </div>
               </div>
-              <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.5rem", borderTop: "1px solid var(--border-color-dark)", paddingTop: "0.85rem", marginTop: "0.5rem" }}>
+              <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.5rem", borderTop: "1px solid var(--border-color)", paddingTop: "0.85rem", marginTop: "0.5rem" }}>
                 <button type="button" className="btn-secondary" onClick={() => setIsCertModalOpen(false)} style={{ padding: "0.35rem 0.75rem", fontSize: "0.75rem" }}>취소</button>
                 <button type="submit" className="btn-primary" style={{ padding: "0.35rem 0.75rem", fontSize: "0.75rem" }}>저장하기</button>
               </div>
@@ -800,8 +800,8 @@ export default function CertificateManager({
       {/* 이수증 일괄 매핑 결과 리포트 모달 */}
       {isCertificateBatchModalOpen && createPortal(
         <div style={{ position: "fixed", top: 0, left: 0, width: "100vw", height: "100vh", background: "rgba(0,0,0,0.6)", zIndex: 9999, display: "flex", justifyContent: "center", alignItems: "center", overflowY: "auto", padding: "2rem 1rem" }}>
-          <div style={{ background: "#18181b", border: "1px solid var(--border-color-dark)", borderRadius: "0.75rem", width: "100%", maxWidth: "680px", maxHeight: "85vh", display: "flex", flexDirection: "column", color: "white", boxShadow: "0 20px 25px -5px rgba(0,0,0,0.3)", margin: "auto" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "0.85rem 1.25rem", borderBottom: "1px solid var(--border-color-dark)", flexShrink: 0 }}>
+          <div style={{ background: "var(--modal-bg)", border: "1px solid var(--border-color)", borderRadius: "0.75rem", width: "100%", maxWidth: "680px", maxHeight: "85vh", display: "flex", flexDirection: "column", color: "var(--text-primary)", boxShadow: "0 20px 25px -5px rgba(0,0,0,0.3)", margin: "auto" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "0.85rem 1.25rem", borderBottom: "1px solid var(--border-color)", flexShrink: 0 }}>
               <h3 style={{ fontSize: "0.9rem", fontWeight: "800", display: "flex", alignItems: "center", gap: "0.4rem" }}>
                 <FileCheck size={18} style={{ color: "#10B981" }} /> 이수증 사본 일괄 자동 매핑 리포트
               </h3>
@@ -811,7 +811,7 @@ export default function CertificateManager({
             </div>
 
             <div style={{ padding: "1.25rem", flex: 1, overflowY: "auto", display: "flex", flexDirection: "column", gap: "1rem" }}>
-              <div style={{ fontSize: "0.75rem", color: "#a1a1aa", background: "#27272a", padding: "0.75rem", borderRadius: "0.35rem", border: "1px solid var(--border-color-dark)" }}>
+              <div style={{ fontSize: "0.75rem", color: "var(--text-secondary)", background: "var(--input-bg)", padding: "0.75rem", borderRadius: "0.35rem", border: "1px solid var(--border-color)" }}>
                 💡 [매칭 조건]: 파일 이름 내에 대시보드의 <b>발급번호</b> 또는 <b>수급자 성명</b> 중 하나라도 포함되어 있는 대상 데이터를 즉시 매핑 처리합니다.
               </div>
 
@@ -821,26 +821,26 @@ export default function CertificateManager({
               </div>
 
               <div style={{ overflowX: "auto" }}>
-                <table style={{ width: "100%", fontSize: "0.75rem", borderCollapse: "collapse", border: "1px solid var(--border-color-dark)" }}>
+                <table style={{ width: "100%", fontSize: "0.75rem", borderCollapse: "collapse", border: "1px solid var(--border-color)" }}>
                   <thead>
-                    <tr style={{ background: "#27272a", borderBottom: "1px solid var(--border-color-dark)" }}>
-                      <th style={{ padding: "0.5rem", textAlign: "left", border: "1px solid var(--border-color-dark)", width: "32%" }}>파일명</th>
-                      <th style={{ padding: "0.5rem", textAlign: "left", border: "1px solid var(--border-color-dark)", width: "38%" }}>추출 및 대조 정보</th>
-                      <th style={{ padding: "0.5rem", textAlign: "left", border: "1px solid var(--border-color-dark)", width: "20%" }}>매칭된 데이터 대상</th>
-                      <th style={{ padding: "0.5rem", textAlign: "center", border: "1px solid var(--border-color-dark)", width: "10%" }}>매칭 상태</th>
+                    <tr style={{ background: "var(--input-bg)", borderBottom: "1px solid var(--border-color)" }}>
+                      <th style={{ padding: "0.5rem", textAlign: "left", border: "1px solid var(--border-color)", width: "32%" }}>파일명</th>
+                      <th style={{ padding: "0.5rem", textAlign: "left", border: "1px solid var(--border-color)", width: "38%" }}>추출 및 대조 정보</th>
+                      <th style={{ padding: "0.5rem", textAlign: "left", border: "1px solid var(--border-color)", width: "20%" }}>매칭된 데이터 대상</th>
+                      <th style={{ padding: "0.5rem", textAlign: "center", border: "1px solid var(--border-color)", width: "10%" }}>매칭 상태</th>
                     </tr>
                   </thead>
                   <tbody>
                     {batchCertificateResults.map((res, i) => (
-                      <tr key={i} style={{ borderBottom: "1px solid var(--border-color-dark)", background: res.status === "success" ? "rgba(16,185,129,0.03)" : "rgba(239,68,68,0.03)" }}>
-                        <td style={{ padding: "0.5rem", color: "#e4e4e7", fontWeight: "500", border: "1px solid var(--border-color-dark)" }}>
+                      <tr key={i} style={{ borderBottom: "1px solid var(--border-color)", background: res.status === "success" ? "rgba(16,185,129,0.03)" : "rgba(239,68,68,0.03)" }}>
+                        <td style={{ padding: "0.5rem", color: "var(--text-primary)", fontWeight: "500", border: "1px solid var(--border-color)" }}>
                           <div style={{ wordBreak: "break-all" }}>📁 {res.fileName}</div>
                         </td>
-                        <td style={{ padding: "0.5rem", border: "1px solid var(--border-color-dark)" }}>
+                        <td style={{ padding: "0.5rem", border: "1px solid var(--border-color)" }}>
                           <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
-                            <div style={{ fontSize: "0.68rem", color: "#a1a1aa" }}>
-                              🔢 발급번호: <span style={{ color: "white", fontWeight: "700" }}>{res.details?.extractedOrg || "없음"}</span> |
-                              👤 수급성명: <span style={{ color: "white", fontWeight: "700" }}>{res.details?.extractedName || "없음"}</span>
+                            <div style={{ fontSize: "0.68rem", color: "var(--text-secondary)" }}>
+                              🔢 발급번호: <span style={{ color: "var(--text-primary)", fontWeight: "700" }}>{res.details?.extractedOrg || "없음"}</span> |
+                              👤 수급성명: <span style={{ color: "var(--text-primary)", fontWeight: "700" }}>{res.details?.extractedName || "없음"}</span>
                             </div>
                             <div style={{
                               fontSize: "0.62rem",
@@ -850,13 +850,13 @@ export default function CertificateManager({
                               borderRadius: "0.2rem",
                               display: "inline-block",
                               width: "fit-content",
-                              border: "1px solid rgba(255,255,255,0.05)"
+                              border: "1px solid var(--border-color)"
                             }}>
                               ⚡ 매칭방식: {res.details?.breakdown || "매칭 실패"}
                             </div>
                           </div>
                         </td>
-                        <td style={{ padding: "0.5rem", border: "1px solid var(--border-color-dark)" }}>
+                        <td style={{ padding: "0.5rem", border: "1px solid var(--border-color)" }}>
                           {res.status === "success" ? (
                             <span style={{ color: "#38bdf8", fontWeight: "600" }}>🟢 {res.targetDesc}</span>
                           ) : (

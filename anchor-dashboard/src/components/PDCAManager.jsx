@@ -1930,34 +1930,34 @@ export default function PDCAManager({
                         {(() => {
                           const coopDeptOptions = (
                             <>
-                              <option value="" style={{ background: "#18181b", color: "#a1a1aa" }}>-- 선택 안 함 --</option>
-                              <optgroup label="RISE(앵커)사업단 센터" style={{ background: "#18181b", color: "#60a5fa" }}>
-                                <option value="ECC센터" style={{ background: "#18181b", color: "white" }}>ECC센터</option>
-                                <option value="ICC센터" style={{ background: "#18181b", color: "white" }}>ICC센터</option>
-                                <option value="RCC센터" style={{ background: "#18181b", color: "white" }}>RCC센터</option>
-                                <option value="AID-X지원센터" style={{ background: "#18181b", color: "white" }}>AID-X지원센터</option>
-                                <option value="울산늘봄누리센터" style={{ background: "#18181b", color: "white" }}>울산늘봄누리센터</option>
-                                <option value="신산업특화센터" style={{ background: "#18181b", color: "white" }}>신산업특화센터</option>
-                                <option value="사업운영팀" style={{ background: "#18181b", color: "white" }}>사업운영팀</option>
+                              <option value="" style={{ background: "var(--modal-bg)", color: "var(--text-secondary)" }}>-- 선택 안 함 --</option>
+                              <optgroup label="RISE(앵커)사업단 센터" style={{ background: "var(--modal-bg)", color: "#60a5fa" }}>
+                                <option value="ECC센터" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>ECC센터</option>
+                                <option value="ICC센터" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>ICC센터</option>
+                                <option value="RCC센터" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>RCC센터</option>
+                                <option value="AID-X지원센터" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>AID-X지원센터</option>
+                                <option value="울산늘봄누리센터" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>울산늘봄누리센터</option>
+                                <option value="신산업특화센터" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>신산업특화센터</option>
+                                <option value="사업운영팀" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>사업운영팀</option>
                               </optgroup>
-                              <optgroup label="대학본부 및 부속기관" style={{ background: "#18181b", color: "#34d399" }}>
-                                <option value="기획팀" style={{ background: "#18181b", color: "white" }}>기획팀</option>
-                                <option value="교무팀" style={{ background: "#18181b", color: "white" }}>교무팀</option>
-                                <option value="교수학습지원센터" style={{ background: "#18181b", color: "white" }}>교수학습지원센터</option>
-                                <option value="직업교육혁신센터" style={{ background: "#18181b", color: "white" }}>직업교육혁신센터</option>
-                                <option value="취업지원팀" style={{ background: "#18181b", color: "white" }}>취업지원팀</option>
-                                <option value="학생복지팀" style={{ background: "#18181b", color: "white" }}>학생복지팀</option>
-                                <option value="입학팀" style={{ background: "#18181b", color: "white" }}>입학팀</option>
-                                <option value="평생교육원" style={{ background: "#18181b", color: "white" }}>평생교육원</option>
-                                <option value="국제교류원" style={{ background: "#18181b", color: "white" }}>국제교류원</option>
+                              <optgroup label="대학본부 및 부속기관" style={{ background: "var(--modal-bg)", color: "#34d399" }}>
+                                <option value="기획팀" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>기획팀</option>
+                                <option value="교무팀" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>교무팀</option>
+                                <option value="교수학습지원센터" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>교수학습지원센터</option>
+                                <option value="직업교육혁신센터" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>직업교육혁신센터</option>
+                                <option value="취업지원팀" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>취업지원팀</option>
+                                <option value="학생복지팀" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>학생복지팀</option>
+                                <option value="입학팀" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>입학팀</option>
+                                <option value="평생교육원" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>평생교육원</option>
+                                <option value="국제교류원" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>국제교류원</option>
                               </optgroup>
-                              <optgroup label="산학협력단 및 연구소/기타 센터" style={{ background: "#18181b", color: "#fbbf24" }}>
-                                <option value="산학기획팀" style={{ background: "#18181b", color: "white" }}>산학기획팀</option>
-                                <option value="산학지원팀" style={{ background: "#18181b", color: "white" }}>산학지원팀</option>
-                                <option value="이차전지연구소" style={{ background: "#18181b", color: "white" }}>이차전지연구소</option>
-                                <option value="탄소중립지원센터" style={{ background: "#18181b", color: "white" }}>탄소중립지원센터</option>
-                                <option value="현장실습지원센터" style={{ background: "#18181b", color: "white" }}>현장실습지원센터</option>
-                                <option value="창업창직교육센터" style={{ background: "#18181b", color: "white" }}>창업창직교육센터</option>
+                              <optgroup label="산학협력단 및 연구소/기타 센터" style={{ background: "var(--modal-bg)", color: "#fbbf24" }}>
+                                <option value="산학기획팀" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>산학기획팀</option>
+                                <option value="산학지원팀" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>산학지원팀</option>
+                                <option value="이차전지연구소" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>이차전지연구소</option>
+                                <option value="탄소중립지원센터" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>탄소중립지원센터</option>
+                                <option value="현장실습지원센터" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>현장실습지원센터</option>
+                                <option value="창업창직교육센터" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>창업창직교육센터</option>
                               </optgroup>
                             </>
                           );
@@ -2468,9 +2468,9 @@ export default function PDCAManager({
                           <select
                             style={{ 
                               fontSize: "0.6rem", 
-                              background: "#27272a", 
-                              color: "#a1a1aa", 
-                              border: "1px solid var(--border-color-dark)", 
+                              background: "var(--input-bg)", 
+                              color: "var(--text-secondary)", 
+                              border: "1px solid var(--border-color)", 
                               borderRadius: "0.2px",
                               cursor: "not-allowed"
                             }}

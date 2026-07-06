@@ -1244,8 +1244,8 @@ export default function AgreementManager({
       {/* A. 협약서 등록 및 수정 모달 */}
       {isModalOpen && createPortal(
         <div style={{ position: "fixed", top: 0, left: 0, width: "100vw", height: "100vh", background: "rgba(0,0,0,0.6)", zIndex: 9999, display: "flex", justifyContent: "center", alignItems: "center", overflowY: "auto", padding: "2rem 1rem" }}>
-          <div style={{ background: "#18181b", border: "1px solid var(--border-color-dark)", borderRadius: "0.75rem", width: "100%", maxWidth: "550px", maxHeight: "85vh", display: "flex", flexDirection: "column", color: "white", boxShadow: "0 20px 25px -5px rgba(0,0,0,0.3)", margin: "auto" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "0.85rem 1.25rem", borderBottom: "1px solid var(--border-color-dark)", flexShrink: 0 }}>
+          <div style={{ background: "var(--modal-bg)", border: "1px solid var(--border-color)", borderRadius: "0.75rem", width: "100%", maxWidth: "550px", maxHeight: "85vh", display: "flex", flexDirection: "column", color: "var(--text-primary)", boxShadow: "0 20px 25px -5px rgba(0,0,0,0.3)", margin: "auto" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "0.85rem 1.25rem", borderBottom: "1px solid var(--border-color)", flexShrink: 0 }}>
               <h3 style={{ fontSize: "0.9rem", fontWeight: "800" }}>⚓ {editingId ? "협약서 정보 수정" : "신규 협약서 등록"}</h3>
               <button onClick={() => setIsModalOpen(false)} style={{ background: "none", border: "none", color: "#a1a1aa", cursor: "pointer" }}>
                 <X size={18} />
@@ -1255,11 +1255,11 @@ export default function AgreementManager({
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem" }}>
                 <div>
                   <label style={{ display: "block", fontSize: "0.65rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>협약 체결일자</label>
-                  <input type="date" value={inputDate} onChange={(e) => setInputDate(e.target.value)} style={{ width: "100%", padding: "0.35rem 0.5rem", fontSize: "0.75rem", background: "#27272a", color: "white", border: "1px solid var(--border-color-dark)", borderRadius: "0.25rem" }} />
+                  <input type="date" value={inputDate} onChange={(e) => setInputDate(e.target.value)} style={{ width: "100%", padding: "0.35rem 0.5rem", fontSize: "0.75rem", background: "var(--input-bg)", color: "var(--text-primary)", border: "1px solid var(--border-color)", borderRadius: "0.25rem" }} />
                 </div>
                 <div>
                   <label style={{ display: "block", fontSize: "0.65rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>관련 센터</label>
-                  <select value={inputCenter} onChange={(e) => setInputCenter(e.target.value)} style={{ width: "100%", padding: "0.35rem 0.5rem", fontSize: "0.75rem", background: "#27272a", color: "white", border: "1px solid var(--border-color-dark)", borderRadius: "0.25rem" }}>
+                  <select value={inputCenter} onChange={(e) => setInputCenter(e.target.value)} style={{ width: "100%", padding: "0.35rem 0.5rem", fontSize: "0.75rem", background: "var(--input-bg)", color: "var(--text-primary)", border: "1px solid var(--border-color)", borderRadius: "0.25rem" }}>
                     {CENTERS_LIST.map((c) => (
                       <option key={c} value={c}>{c}</option>
                     ))}
@@ -1276,8 +1276,8 @@ export default function AgreementManager({
                 <div style={{ display: "flex", flexDirection: "column", gap: "0.40rem" }}>
                   {inputOrganizations.map((org, index) => (
                     <div key={index} style={{ display: "flex", gap: "0.35rem", alignItems: "center" }}>
-                      <input type="text" placeholder={`협약 대상기관 ${index + 1}`} value={org.name || ""} onChange={(e) => handleOrgChange(index, "name", e.target.value)} style={{ flex: 1.3, padding: "0.35rem 0.5rem", fontSize: "0.75rem", background: "#27272a", color: "white", border: "1px solid var(--border-color-dark)", borderRadius: "0.25rem" }} />
-                      <input type="text" placeholder="직위/성명 (예: 총장 오연천)" value={org.subject || ""} onChange={(e) => handleOrgChange(index, "subject", e.target.value)} style={{ flex: 1, padding: "0.35rem 0.5rem", fontSize: "0.75rem", background: "#27272a", color: "white", border: "1px solid var(--border-color-dark)", borderRadius: "0.25rem" }} />
+                      <input type="text" placeholder={`협약 대상기관 ${index + 1}`} value={org.name || ""} onChange={(e) => handleOrgChange(index, "name", e.target.value)} style={{ flex: 1.3, padding: "0.35rem 0.5rem", fontSize: "0.75rem", background: "var(--input-bg)", color: "var(--text-primary)", border: "1px solid var(--border-color)", borderRadius: "0.25rem" }} />
+                      <input type="text" placeholder="직위/성명 (예: 총장 오연천)" value={org.subject || ""} onChange={(e) => handleOrgChange(index, "subject", e.target.value)} style={{ flex: 1, padding: "0.35rem 0.5rem", fontSize: "0.75rem", background: "var(--input-bg)", color: "var(--text-primary)", border: "1px solid var(--border-color)", borderRadius: "0.25rem" }} />
                       {inputOrganizations.length > 1 && (
                         <button type="button" onClick={() => handleRemoveOrgField(index)} style={{ background: "#3f3f46", border: "none", color: "#ef4444", borderRadius: "0.25rem", padding: "0.25rem", cursor: "pointer" }}>
                           <Trash2 size={14} />
@@ -1312,8 +1312,8 @@ export default function AgreementManager({
                           fontWeight: "700",
                           borderRadius: "0.25rem",
                           border: isSelected ? "1px solid #38bdf8" : "1px solid #52525b",
-                          background: isSelected ? "rgba(56, 189, 248, 0.15)" : "#27272a",
-                          color: isSelected ? "#38bdf8" : "#d4d4d8",
+                          background: isSelected ? "rgba(56, 189, 248, 0.15)" : "var(--input-bg)",
+                          color: isSelected ? "#38bdf8" : "var(--text-secondary)",
                           cursor: "pointer",
                           textAlign: "center",
                           transition: "all 0.2s ease"
@@ -1335,9 +1335,9 @@ export default function AgreementManager({
                         flex: 1.3,
                         padding: "0.35rem 0.5rem",
                         fontSize: "0.75rem",
-                        background: "#27272a",
-                        color: "white",
-                        border: "1px solid var(--border-color-dark)",
+                        background: "var(--input-bg)",
+                        color: "var(--text-primary)",
+                        border: "1px solid var(--border-color)",
                         borderRadius: "0.25rem"
                       }}
                     />
@@ -1350,9 +1350,9 @@ export default function AgreementManager({
                         flex: 1,
                         padding: "0.35rem 0.5rem",
                         fontSize: "0.75rem",
-                        background: "#27272a",
-                        color: "white",
-                        border: "1px solid var(--border-color-dark)",
+                        background: "var(--input-bg)",
+                        color: "var(--text-primary)",
+                        border: "1px solid var(--border-color)",
                         borderRadius: "0.25rem"
                       }}
                     />
@@ -1361,7 +1361,7 @@ export default function AgreementManager({
               </div>
               <div>
                 <label style={{ display: "block", fontSize: "0.65rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>관련 단위과제</label>
-                <select value={inputUnitId} onChange={(e) => setInputUnitId(e.target.value)} style={{ width: "100%", padding: "0.35rem 0.5rem", fontSize: "0.75rem", background: "#27272a", color: "white", border: "1px solid var(--border-color-dark)", borderRadius: "0.25rem" }}>
+                <select value={inputUnitId} onChange={(e) => setInputUnitId(e.target.value)} style={{ width: "100%", padding: "0.35rem 0.5rem", fontSize: "0.75rem", background: "var(--input-bg)", color: "var(--text-primary)", border: "1px solid var(--border-color)", borderRadius: "0.25rem" }}>
                   <option value="">-- 관련 단위과제 선택 --</option>
                   {availableUnits.map((u) => (
                     <option key={u.id} value={u.id}>{u.id}. {u.title}</option>
@@ -1385,8 +1385,8 @@ export default function AgreementManager({
                           fontWeight: "700",
                           borderRadius: "0.25rem",
                           border: isSelected ? "1px solid #ec4899" : "1px solid #52525b",
-                          background: isSelected ? "rgba(236, 72, 153, 0.15)" : "#27272a",
-                          color: isSelected ? "#ec4899" : "#d4d4d8",
+                          background: isSelected ? "rgba(236, 72, 153, 0.15)" : "var(--input-bg)",
+                          color: isSelected ? "#ec4899" : "var(--text-secondary)",
                           cursor: "pointer",
                           textAlign: "center",
                           transition: "all 0.2s ease"
@@ -1404,7 +1404,7 @@ export default function AgreementManager({
                   {AGREEMENT_CONTENTS_OPTIONS.map((c) => {
                     const isSelected = inputContents.includes(c);
                     return (
-                      <button key={c} type="button" onClick={() => handleToggleContent(c)} style={{ padding: "0.25rem 0.5rem", fontSize: "0.65rem", borderRadius: "2rem", border: isSelected ? "1px solid #34d399" : "1px solid #52525b", background: isSelected ? "rgba(52,211,153,0.15)" : "#27272a", color: isSelected ? "#34d399" : "#d4d4d8", cursor: "pointer" }}>
+                      <button key={c} type="button" onClick={() => handleToggleContent(c)} style={{ padding: "0.25rem 0.5rem", fontSize: "0.65rem", borderRadius: "2rem", border: isSelected ? "1px solid #34d399" : "1px solid #52525b", background: isSelected ? "rgba(52,211,153,0.15)" : "var(--input-bg)", color: isSelected ? "#34d399" : "var(--text-secondary)", cursor: "pointer" }}>
                         {c}
                       </button>
                     );
@@ -1414,14 +1414,14 @@ export default function AgreementManager({
               <div>
                 <label style={{ display: "block", fontSize: "0.65rem", color: "var(--text-secondary-dark)", marginBottom: "0.25rem" }}>협약서 사본 업로드</label>
                 <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                  <label style={{ display: "inline-flex", alignItems: "center", gap: "0.25rem", padding: "0.35rem 0.6rem", fontSize: "0.7rem", background: "#3f3f46", color: "white", borderRadius: "0.25rem", cursor: "pointer", border: "1px solid var(--border-color-dark)" }}>
+                  <label style={{ display: "inline-flex", alignItems: "center", gap: "0.25rem", padding: "0.35rem 0.6rem", fontSize: "0.7rem", background: "var(--input-bg)", color: "var(--text-primary)", borderRadius: "0.25rem", cursor: "pointer", border: "1px solid var(--border-color)" }}>
                     <Upload size={14} /> 파일 선택
                     <input type="file" onChange={(e) => handleFileChange(e, "agreement")} style={{ display: "none" }} accept=".pdf,.doc,.docx,.png,.jpg,.jpeg" />
                   </label>
                   <span style={{ fontSize: "0.7rem", color: "#a1a1aa" }}>{inputFileName ? `📁 ${inputFileName}` : "선택된 파일 없음"}</span>
                 </div>
               </div>
-              <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.5rem", borderTop: "1px solid var(--border-color-dark)", paddingTop: "0.85rem", marginTop: "0.5rem" }}>
+              <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.5rem", borderTop: "1px solid var(--border-color)", paddingTop: "0.85rem", marginTop: "0.5rem" }}>
                 <button type="button" className="btn-secondary" onClick={() => setIsModalOpen(false)} style={{ padding: "0.35rem 0.75rem", fontSize: "0.75rem" }}>취소</button>
                 <button type="submit" className="btn-primary" style={{ padding: "0.35rem 0.75rem", fontSize: "0.75rem" }}>저장하기</button>
               </div>
@@ -1436,8 +1436,8 @@ export default function AgreementManager({
       {/* ========================================== */}
       {isAgreementBatchModalOpen && createPortal(
         <div style={{ position: "fixed", top: 0, left: 0, width: "100vw", height: "100vh", background: "rgba(0,0,0,0.6)", zIndex: 9999, display: "flex", justifyContent: "center", alignItems: "center", overflowY: "auto", padding: "2rem 1rem" }}>
-          <div style={{ background: "#18181b", border: "1px solid var(--border-color-dark)", borderRadius: "0.75rem", width: "100%", maxWidth: "680px", maxHeight: "85vh", display: "flex", flexDirection: "column", color: "white", boxShadow: "0 20px 25px -5px rgba(0,0,0,0.3)", margin: "auto" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "0.85rem 1.25rem", borderBottom: "1px solid var(--border-color-dark)", flexShrink: 0 }}>
+          <div style={{ background: "var(--modal-bg)", border: "1px solid var(--border-color)", borderRadius: "0.75rem", width: "100%", maxWidth: "680px", maxHeight: "85vh", display: "flex", flexDirection: "column", color: "var(--text-primary)", boxShadow: "0 20px 25px -5px rgba(0,0,0,0.3)", margin: "auto" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "0.85rem 1.25rem", borderBottom: "1px solid var(--border-color)", flexShrink: 0 }}>
               <h3 style={{ fontSize: "0.9rem", fontWeight: "800", display: "flex", alignItems: "center", gap: "0.4rem" }}>
                 <FileCheck size={18} style={{ color: "#10B981" }} /> 협약서 사본 일괄 자동 매핑 리포트
               </h3>
@@ -1447,7 +1447,7 @@ export default function AgreementManager({
             </div>
 
             <div style={{ padding: "1.25rem", flex: 1, overflowY: "auto", display: "flex", flexDirection: "column", gap: "1rem" }}>
-              <div style={{ fontSize: "0.75rem", color: "#a1a1aa", background: "#27272a", padding: "0.75rem", borderRadius: "0.35rem", border: "1px solid var(--border-color-dark)" }}>
+              <div style={{ fontSize: "0.75rem", color: "var(--text-secondary)", background: "var(--input-bg)", padding: "0.75rem", borderRadius: "0.35rem", border: "1px solid var(--border-color)" }}>
                 💡 [매칭 조건]: 파일명에 포함된 <b>기관명(40점)</b>, <b>교수성명(30점)</b>, <b>협약일 YYYYMMDD(30점)</b>의 가중치를 계산하여, 합산 점수가 <b>70점 이상</b>인 데이터를 자동 매칭 및 매핑합니다.
               </div>
 
@@ -1457,27 +1457,27 @@ export default function AgreementManager({
               </div>
 
               <div style={{ overflowX: "auto" }}>
-                <table style={{ width: "100%", fontSize: "0.75rem", borderCollapse: "collapse", border: "1px solid var(--border-color-dark)" }}>
+                <table style={{ width: "100%", fontSize: "0.75rem", borderCollapse: "collapse", border: "1px solid var(--border-color)" }}>
                   <thead>
-                    <tr style={{ background: "#27272a", borderBottom: "1px solid var(--border-color-dark)" }}>
-                      <th style={{ padding: "0.5rem", textAlign: "left", border: "1px solid var(--border-color-dark)", width: "32%" }}>파일명</th>
-                      <th style={{ padding: "0.5rem", textAlign: "left", border: "1px solid var(--border-color-dark)", width: "38%" }}>추출 및 대조 정보</th>
-                      <th style={{ padding: "0.5rem", textAlign: "left", border: "1px solid var(--border-color-dark)", width: "20%" }}>매칭된 데이터 대상</th>
-                      <th style={{ padding: "0.5rem", textAlign: "center", border: "1px solid var(--border-color-dark)", width: "10%" }}>매칭 상태</th>
+                    <tr style={{ background: "var(--input-bg)", borderBottom: "1px solid var(--border-color)" }}>
+                      <th style={{ padding: "0.5rem", textAlign: "left", border: "1px solid var(--border-color)", width: "32%" }}>파일명</th>
+                      <th style={{ padding: "0.5rem", textAlign: "left", border: "1px solid var(--border-color)", width: "38%" }}>추출 및 대조 정보</th>
+                      <th style={{ padding: "0.5rem", textAlign: "left", border: "1px solid var(--border-color)", width: "20%" }}>매칭된 데이터 대상</th>
+                      <th style={{ padding: "0.5rem", textAlign: "center", border: "1px solid var(--border-color)", width: "10%" }}>매칭 상태</th>
                     </tr>
                   </thead>
                   <tbody>
                     {batchAgreementResults.map((res, i) => (
-                      <tr key={i} style={{ borderBottom: "1px solid var(--border-color-dark)", background: res.status === "success" ? "rgba(16,185,129,0.03)" : "rgba(239,68,68,0.03)" }}>
-                        <td style={{ padding: "0.5rem", color: "#e4e4e7", fontWeight: "500", border: "1px solid var(--border-color-dark)" }}>
+                      <tr key={i} style={{ borderBottom: "1px solid var(--border-color)", background: res.status === "success" ? "rgba(16,185,129,0.03)" : "rgba(239,68,68,0.03)" }}>
+                        <td style={{ padding: "0.5rem", color: "var(--text-primary)", fontWeight: "500", border: "1px solid var(--border-color)" }}>
                           <div style={{ wordBreak: "break-all" }}>📁 {res.fileName}</div>
                         </td>
-                        <td style={{ padding: "0.5rem", border: "1px solid var(--border-color-dark)" }}>
+                        <td style={{ padding: "0.5rem", border: "1px solid var(--border-color)" }}>
                           <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
-                            <div style={{ fontSize: "0.68rem", color: "#a1a1aa" }}>
-                              🏢 기관명: <span style={{ color: "white", fontWeight: "700" }}>{res.details?.extractedOrg || "없음"} ({res.details?.orgScore || 0}점)</span> |
-                              👤 교수명: <span style={{ color: "white", fontWeight: "700" }}>{res.details?.extractedName || "없음"} ({res.details?.nameScore || 0}점)</span> |
-                              📅 협약일: <span style={{ color: "white", fontWeight: "700" }}>{res.details?.dateScore > 0 ? "일치" : "불일치"} ({res.details?.dateScore || 0}점)</span>
+                            <div style={{ fontSize: "0.68rem", color: "var(--text-secondary)" }}>
+                              🏢 기관명: <span style={{ color: "var(--text-primary)", fontWeight: "700" }}>{res.details?.extractedOrg || "없음"} ({res.details?.orgScore || 0}점)</span> |
+                              👤 교수명: <span style={{ color: "var(--text-primary)", fontWeight: "700" }}>{res.details?.extractedName || "없음"} ({res.details?.nameScore || 0}점)</span> |
+                              📅 협약일: <span style={{ color: "var(--text-primary)", fontWeight: "700" }}>{res.details?.dateScore > 0 ? "일치" : "불일치"} ({res.details?.dateScore || 0}점)</span>
                             </div>
                             <div style={{
                               fontSize: "0.68rem",
@@ -1495,14 +1495,14 @@ export default function AgreementManager({
                               borderRadius: "0.2rem",
                               display: "inline-block",
                               width: "fit-content",
-                              border: "1px solid rgba(255,255,255,0.05)",
+                              border: "1px solid var(--border-color)",
                               marginTop: "0.15rem"
                             }}>
                               ⚡ 득점 항목: {res.details?.breakdown || "조건 미달 (70점 미만)"}
                             </div>
                           </div>
                         </td>
-                        <td style={{ padding: "0.5rem", border: "1px solid var(--border-color-dark)" }}>
+                        <td style={{ padding: "0.5rem", border: "1px solid var(--border-color)" }}>
                           {res.status === "success" ? (
                             <span style={{ color: "#38bdf8", fontWeight: "600" }}>🟢 {res.targetDesc}</span>
                           ) : (
