@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { Plus, Trash2, Edit, Trash, FileText, Upload, X, AlertTriangle, Download, FileCheck, Award } from "lucide-react";
 import * as XLSX from "xlsx";
@@ -17,6 +17,7 @@ export default function UnifiedCertificateManager({
 }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingId, setEditingId] = useState(null);
+  const fileInputRef = useRef(null);
   
   // 폼 필드
   const [managerDept, setManagerDept] = useState("");
