@@ -1251,7 +1251,7 @@ export default function PDCAManager({
       {viewMode === "unit" ? (
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1.2fr", gap: "1.5rem" }}>
           {/* 좌측: 프로그램 목록 */}
-          <div className="glass-card" style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: "1rem", padding: "1.5rem", borderRadius: "1.25rem", border: "1px solid var(--border-color)", background: "rgba(0,0,0,0.02)" }}>
             <div>
               <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)", display: "block", marginBottom: "0.3rem" }}>단위과제 필터 선택</span>
               <select
@@ -1323,7 +1323,7 @@ export default function PDCAManager({
           </div>
 
           {/* 우측: 프로그램 편집 패널 */}
-          <div className="glass-card">
+          <div style={{ padding: "1.5rem", borderRadius: "1.25rem", border: "1px solid var(--border-color)", background: "rgba(0,0,0,0.02)" }}>
             {activeProg ? (
               <div style={{ display: "flex", flexDirection: "column", gap: "1.2rem" }}>
                 <div style={{ borderBottom: "1px solid var(--border-color)", paddingBottom: "0.75rem" }}>
@@ -1492,7 +1492,7 @@ export default function PDCAManager({
                     <fieldset disabled={selectedVersionId !== "current"} style={{ border: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: "0.5rem" }}>
                       
                       {/* 💡 프로그램 기획 및 예산 변경 방법 안내 카드 */}
-                      <div className="glass-card" style={{
+                      <div className="" style={{
                         padding: "0.6rem 0.8rem",
                         background: "rgba(239, 68, 68, 0.04)",
                         border: "1px solid rgba(239, 68, 68, 0.15)",
@@ -2367,7 +2367,7 @@ export default function PDCAManager({
         </div>
       ) : (
         /* 전체 목록 모드 */
-        <div className="glass-card" style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem", padding: "1.5rem", borderRadius: "1.25rem", border: "1px solid var(--border-color)", background: "rgba(0,0,0,0.02)" }}>
           <div>
             <h3 style={{ fontSize: "1.1rem", fontWeight: "800" }}>사업단 전체 프로그램 추진 상태</h3>
             <p style={{ fontSize: "0.8rem", color: "var(--text-secondary)", marginTop: "0.2rem" }}>
