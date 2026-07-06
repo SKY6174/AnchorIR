@@ -158,6 +158,13 @@ export default function UnifiedCertificateManager({
     setSortConfig({ key, direction });
   };
 
+  const renderSortIndicator = (key) => {
+    if (sortConfig.key === key) {
+      return sortConfig.direction === "asc" ? " ▴" : " ▾";
+    }
+    return "";
+  };
+
   const getSortedCerts = () => {
     const sorted = [...filteredCerts];
     const key = sortConfig.key;
@@ -408,18 +415,18 @@ export default function UnifiedCertificateManager({
         <table className="custom-table" style={{ minWidth: "1750px", fontSize: "0.85rem" }}>
           <thead>
             <tr>
-              <th onClick={() => requestSort("certNo")} style={{ cursor: "pointer", whiteSpace: "nowrap", minWidth: "110px" }}>증서번호</th>
-              <th onClick={() => requestSort("certType")} style={{ cursor: "pointer", whiteSpace: "nowrap", minWidth: "60px" }}>구분</th>
-              <th onClick={() => requestSort("awardType")} style={{ cursor: "pointer", whiteSpace: "nowrap", minWidth: "80px" }}>상훈</th>
-              <th onClick={() => requestSort("teamName")} style={{ cursor: "pointer", whiteSpace: "nowrap", minWidth: "130px" }}>팀명</th>
-              <th onClick={() => requestSort("recipientName")} style={{ cursor: "pointer", whiteSpace: "nowrap", minWidth: "100px" }}>성명</th>
-              <th onClick={() => requestSort("studentId")} style={{ cursor: "pointer", whiteSpace: "nowrap", minWidth: "110px" }}>학번</th>
-              <th onClick={() => requestSort("issueDate")} style={{ cursor: "pointer", whiteSpace: "nowrap", minWidth: "100px" }}>수상(수료)일</th>
+              <th onClick={() => requestSort("certNo")} style={{ cursor: "pointer", whiteSpace: "nowrap", minWidth: "110px" }}>증서번호{renderSortIndicator("certNo")}</th>
+              <th onClick={() => requestSort("certType")} style={{ cursor: "pointer", whiteSpace: "nowrap", minWidth: "60px" }}>구분{renderSortIndicator("certType")}</th>
+              <th onClick={() => requestSort("awardType")} style={{ cursor: "pointer", whiteSpace: "nowrap", minWidth: "80px" }}>상훈{renderSortIndicator("awardType")}</th>
+              <th onClick={() => requestSort("teamName")} style={{ cursor: "pointer", whiteSpace: "nowrap", minWidth: "130px" }}>팀명{renderSortIndicator("teamName")}</th>
+              <th onClick={() => requestSort("recipientName")} style={{ cursor: "pointer", whiteSpace: "nowrap", minWidth: "100px" }}>성명{renderSortIndicator("recipientName")}</th>
+              <th onClick={() => requestSort("studentId")} style={{ cursor: "pointer", whiteSpace: "nowrap", minWidth: "110px" }}>학번{renderSortIndicator("studentId")}</th>
+              <th onClick={() => requestSort("issueDate")} style={{ cursor: "pointer", whiteSpace: "nowrap", minWidth: "100px" }}>수상(수료)일{renderSortIndicator("issueDate")}</th>
               <th style={{ whiteSpace: "nowrap", minWidth: "100px" }}>사업단명</th>
-              <th style={{ whiteSpace: "nowrap", minWidth: "120px" }}>발급자</th>
+              <th onClick={() => requestSort("issuer")} style={{ cursor: "pointer", whiteSpace: "nowrap", minWidth: "120px" }}>발급자{renderSortIndicator("issuer")}</th>
               <th style={{ whiteSpace: "nowrap", minWidth: "220px" }}>시상내용(과정명)</th>
-              <th onClick={() => requestSort("managerDept")} style={{ cursor: "pointer", whiteSpace: "nowrap", minWidth: "110px" }}>담당자 소속</th>
-              <th onClick={() => requestSort("managerName")} style={{ cursor: "pointer", whiteSpace: "nowrap", minWidth: "80px" }}>담당자 성명</th>
+              <th onClick={() => requestSort("managerDept")} style={{ cursor: "pointer", whiteSpace: "nowrap", minWidth: "110px" }}>담당자 소속{renderSortIndicator("managerDept")}</th>
+              <th onClick={() => requestSort("managerName")} style={{ cursor: "pointer", whiteSpace: "nowrap", minWidth: "80px" }}>담당자 성명{renderSortIndicator("managerName")}</th>
               <th style={{ whiteSpace: "nowrap", minWidth: "100px" }}>비고</th>
               {currentRole?.id !== "GUEST" && <th style={{ whiteSpace: "nowrap", minWidth: "80px" }}>관리</th>}
             </tr>
