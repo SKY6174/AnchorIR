@@ -387,11 +387,11 @@ export default function PDCAManager({
           category: c.category || "",
           budget: c.budget !== undefined ? (c.budget / 1000000).toFixed(1) : "",
           budget_carry: selectedYear === 1 ? "0.0" : (c.budget_carry !== undefined ? (c.budget_carry / 1000000).toFixed(1) : ""),
-          spent: c.spent !== undefined ? (c.spent / 1000000).toFixed(1) : "0.0",
-          spent_carry: selectedYear === 1 ? "0.0" : (c.spent_carry !== undefined ? (c.spent_carry / 1000000).toFixed(1) : "0.0")
+          spent: c.spent !== undefined ? c.spent.toLocaleString() : "0",
+          spent_carry: selectedYear === 1 ? "0" : (c.spent_carry !== undefined ? c.spent_carry.toLocaleString() : "0")
         }));
         while (loadedCategories.length < 4) {
-          loadedCategories.push({ category: "", budget: "", budget_carry: "", spent: "0.0", spent_carry: "0.0" });
+          loadedCategories.push({ category: "", budget: "", budget_carry: "", spent: "0", spent_carry: "0" });
         }
         setInputBudgetCategories(loadedCategories);
 
@@ -1054,8 +1054,8 @@ export default function PDCAManager({
         category: c.category,
         budget: Math.round(parseDecimalFromCommas(c.budget || "0.0") * 1000000),
         budget_carry: selectedYear === 1 ? 0 : Math.round(parseDecimalFromCommas(c.budget_carry || "0.0") * 1000000),
-        spent: Math.round(parseDecimalFromCommas(c.spent || "0.0") * 1000000),
-        spent_carry: selectedYear === 1 ? 0 : Math.round(parseDecimalFromCommas(c.spent_carry || "0.0") * 1000000)
+        spent: Math.round(parseDecimalFromCommas(c.spent || "0")),
+        spent_carry: selectedYear === 1 ? 0 : Math.round(parseDecimalFromCommas(c.spent_carry || "0"))
       }));
 
     // D단계 자동 완료/진행 판정
@@ -2064,8 +2064,8 @@ export default function PDCAManager({
                         {/* 본예산과 이월예산 구분 헤더 라인 */}
                         <div style={{ display: "grid", gridTemplateColumns: "1.2fr 1fr 1fr", gap: "0.2rem", marginBottom: "0.2rem", paddingBottom: "0.15rem", borderBottom: "1px solid var(--border-color)" }}>
                           <div style={{ fontSize: "0.6rem", color: "var(--text-secondary)", fontWeight: "700" }}>비목명</div>
-                          <div style={{ fontSize: "0.6rem", color: "#10b981", fontWeight: "700" }}>본집행 (단위 : 백만원)</div>
-                          <div style={{ fontSize: "0.6rem", color: "#a78bfa", fontWeight: "700" }}>이월집행 (단위 : 백만원)</div>
+                          <div style={{ fontSize: "0.6rem", color: "#10b981", fontWeight: "700" }}>본집행 (단위 : 원)</div>
+                          <div style={{ fontSize: "0.6rem", color: "#a78bfa", fontWeight: "700" }}>이월집행 (단위 : 원)</div>
                         </div>
 
                         <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
@@ -2093,10 +2093,11 @@ export default function PDCAManager({
                                     type="text"
                                     className="user-selector"
                                     placeholder="본집행액"
-                                    value={item.spent || "0.0"}
+                                    value={item.spent || "0"}
                                     onChange={(e) => {
                                       const newCats = [...inputBudgetCategories];
-                                      newCats[originalIdx].spent = e.target.value.replace(/[^0-9.]/g, "");
+                                      const raw = e.target.value.replace(/[^0-9]/g, "");
+                                      newCats[originalIdx].spent = raw ? Number(raw).toLocaleString() : "0";
                                       setInputBudgetCategories(newCats);
                                     }}
                                     style={{ padding: "0.2rem 0.4rem", fontSize: "0.7rem" }}
@@ -2105,12 +2106,13 @@ export default function PDCAManager({
                                     type="text"
                                     className="user-selector"
                                     placeholder="이월집행"
-                                    value={selectedYear === 1 ? 0 : item.spent_carry || "0.0"}
+                                    value={selectedYear === 1 ? "0" : item.spent_carry || "0"}
                                     disabled={selectedYear === 1}
                                     onChange={(e) => {
                                       if (selectedYear === 1) return;
                                       const newCats = [...inputBudgetCategories];
-                                      newCats[originalIdx].spent_carry = e.target.value.replace(/[^0-9.]/g, "");
+                                      const raw = e.target.value.replace(/[^0-9]/g, "");
+                                      newCats[originalIdx].spent_carry = raw ? Number(raw).toLocaleString() : "0";
                                       setInputBudgetCategories(newCats);
                                     }}
                                     style={{ padding: "0.2rem 0.4rem", fontSize: "0.7rem" }}
