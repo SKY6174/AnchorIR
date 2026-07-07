@@ -928,6 +928,61 @@ ${aiRawText}
     });
   };
 
+  // 날짜/시간 포맷 정밀 파싱 헬퍼 함수
+  const parseDateTime = (dateTimeStr, defaultVal = ["2026-07-15", "10:00"]) => {
+    if (!dateTimeStr) return defaultVal;
+    let date = "";
+    let time = "";
+    if (dateTimeStr.includes("T")) {
+      const parts = dateTimeStr.split("T");
+      date = parts[0];
+      if (parts[1]) {
+        time = parts[1].substring(0, 5);
+      }
+    } else if (dateTimeStr.includes(" ")) {
+      const parts = dateTimeStr.split(" ");
+      date = parts[0];
+      time = parts[1];
+    } else {
+      date = dateTimeStr;
+    }
+    return [date || defaultVal[0], time || defaultVal[1]];
+  };
+
+  // 관련 부서 멀티 체크박스 토글 핸들러
+  const handleDeptCheckboxChange = (deptName) => {
+    const ALL_DEPTS = ["사업운영팀", "ECC센터", "ICC센터", "RCC센터", "AID-X지원센터", "울산늘봄누리센터", "신산업특화센터"];
+    setFormData(prev => {
+      let currentDepts = prev.dept ? prev.dept.split(",").map(x => x.trim()).filter(Boolean) : [];
+      
+      if (deptName === "전체") {
+        const hasAll = currentDepts.includes("전체");
+        if (hasAll) {
+          // '전체'가 이미 있으면 전부 해제
+          return { ...prev, dept: "" };
+        } else {
+          // '전체'가 없으면 '전체' 및 모든 부서 추가
+          return { ...prev, dept: ["전체", ...ALL_DEPTS].join(", ") };
+        }
+      } else {
+        // 개별 부서 토글
+        if (currentDepts.includes(deptName)) {
+          currentDepts = currentDepts.filter(d => d !== deptName);
+          // 개별 부서를 해제하면 '전체' 체크도 해제
+          currentDepts = currentDepts.filter(d => d !== "전체");
+        } else {
+          currentDepts.push(deptName);
+          // 모든 부서가 선택되었는지 체크하여 '전체'도 추가
+          const hasAllIndividual = ALL_DEPTS.every(d => currentDepts.includes(d));
+          if (hasAllIndividual && !currentDepts.includes("전체")) {
+            currentDepts.push("전체");
+          }
+        }
+        return { ...prev, dept: currentDepts.join(", ") };
+      }
+    });
+  };
+
   // 파일 업로드 로딩 상태
   const [isUploadingFile, setIsUploadingFile] = useState(false);
 
@@ -1386,9 +1441,9 @@ ${aiRawText}
     setEditingItemId(sched.id);
     setModalType(sched.isDeadline ? "deadline" : (sched.isTask ? "task" : "monthly"));
 
-    const startParts = sched.startAt ? sched.startAt.split(" ") : ["2026-07-15", "10:00"];
-    const endParts = sched.endAt ? sched.endAt.split(" ") : ["2026-07-15", "11:00"];
-    const noTimeVal = startParts.length < 2 || !startParts[1];
+    const startParts = parseDateTime(sched.startAt, ["2026-07-15", "10:00"]);
+    const endParts = parseDateTime(sched.endAt, ["2026-07-15", "11:00"]);
+    const noTimeVal = !startParts[1];
 
     setFormData({
       title: sched.title,
@@ -2489,7 +2544,7 @@ ${aiRawText}
     // 날짜 채우기
     for (let day = 1; day <= daysInMonth; day++) {
       const dateString = `2026-${currentMonth < 10 ? "0" + currentMonth : currentMonth}-${day < 10 ? "0" + day : day}`;
-      const filtered = selectedDeptFilter === "전체" ? monthlySchedules : monthlySchedules.filter(s => s.dept === selectedDeptFilter);
+      const filtered = selectedDeptFilter === "전체" ? monthlySchedules : monthlySchedules.filter(s => s.dept && (s.dept === "전체" || s.dept.split(",").map(x => x.trim()).includes(selectedDeptFilter)));
       const daySchedules = filtered.filter(s => s.startAt && s.startAt.substring(0, 10) === dateString);
       const isSelected = selectedDay === day;
 
@@ -2560,7 +2615,7 @@ ${aiRawText}
 
   const getSelectedDaySchedules = () => {
     const dateString = `2026-${currentMonth < 10 ? "0" + currentMonth : currentMonth}-${selectedDay < 10 ? "0" + selectedDay : selectedDay}`;
-    const filtered = selectedDeptFilter === "전체" ? monthlySchedules : monthlySchedules.filter(s => s.dept === selectedDeptFilter);
+    const filtered = selectedDeptFilter === "전체" ? monthlySchedules : monthlySchedules.filter(s => s.dept && (s.dept === "전체" || s.dept.split(",").map(x => x.trim()).includes(selectedDeptFilter)));
     return filtered.filter(s => s.startAt && s.startAt.substring(0, 10) === dateString);
   };
 
@@ -5092,7 +5147,7 @@ ${aiRawText}
                     <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>일정 명칭</label>
                     <input type="text" name="title" value={formData.title} onChange={handleInputChange} required placeholder="예: 2차년도 1차 보고서 제출 마감" style={{ width: "100%", padding: "0.5rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} />
                   </div>
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "1rem" }}>
                     <div>
                       <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>일정 유형</label>
                       <select name="type" value={formData.type} onChange={handleInputChange} style={{ width: "100%", padding: "0.5rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }}>
@@ -5102,12 +5157,23 @@ ${aiRawText}
                       </select>
                     </div>
                     <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>관련 부서</label>
-                      <select name="dept" value={formData.dept} onChange={handleInputChange} style={{ width: "100%", padding: "0.5rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }}>
-                        {["사업운영팀", "ECC센터", "ICC센터", "RCC센터", "AID-X지원센터", "울산늘봄누리센터", "신산업특화센터"].map(d => (
-                          <option key={d} value={d}>{d}</option>
-                        ))}
-                      </select>
+                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.4rem" }}>관련 부서 (중복 선택 가능)</label>
+                      <div style={{ display: "flex", gap: "0.5rem 0.75rem", flexWrap: "wrap", padding: "0.5rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px" }}>
+                        {["전체", "사업운영팀", "ECC센터", "ICC센터", "RCC센터", "AID-X지원센터", "울산늘봄누리센터", "신산업특화센터"].map(d => {
+                          const checked = formData.dept ? formData.dept.split(",").map(x => x.trim()).includes(d) : false;
+                          return (
+                            <label key={d} style={{ display: "flex", alignItems: "center", gap: "0.35rem", fontSize: "0.78rem", color: "var(--text-primary)", cursor: "pointer", userSelect: "none" }}>
+                              <input 
+                                type="checkbox" 
+                                checked={checked} 
+                                onChange={() => handleDeptCheckboxChange(d)} 
+                                style={{ cursor: "pointer", width: "14px", height: "14px" }} 
+                              />
+                              {d}
+                            </label>
+                          );
+                        })}
+                      </div>
                     </div>
                   </div>
                   <div style={{ display: "grid", gridTemplateColumns: "1.2fr 0.8fr", gap: "1rem" }}>
