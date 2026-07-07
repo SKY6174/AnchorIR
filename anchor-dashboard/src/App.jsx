@@ -2680,6 +2680,11 @@ export default function App() {
 
   // Supabase 원격 서버 데이터 fetch 완료 여부를 체크하는 이중 안전 잠금장치 State
   const [isFetchCompleted, setIsFetchCompleted] = useState(false);
+  // 💡 데이터 불일치 보호망: 현재 화면에 로드된 데이터가 몇 차년도 데이터인지 명확하게 추적합니다.
+  const [activeDataYear, setActiveDataYear] = useState(selectedYear);
+  
+  // 💡 Race Condition 방지: 원격에서 막 가져온 순수 데이터를 기억하여, 사용자가 직접 수정한 경우에만 Auto-save 동작하도록 보장
+  const fetchedPressReleasesRef = useRef("");
 
   // selectedYear가 변경될 때 fetch 완료 플래그를 false로 초기화
   useEffect(() => {
@@ -3208,13 +3213,17 @@ export default function App() {
             pressContent: x.press_content || ""
           }));
           setPressReleases(formatted);
+          fetchedPressReleasesRef.current = JSON.stringify(formatted);
           localStorage.setItem(`anchor_cache_press_y${selectedYear}`, JSON.stringify(formatted));
         } else {
           setPressReleases([]);
+          fetchedPressReleasesRef.current = "[]";
+          localStorage.removeItem(`anchor_cache_press_y${selectedYear}`);
         }
 
         setIsDbLoaded(true);
         setIsFetchCompleted(true);
+        setActiveDataYear(selectedYear); // 💡 패치가 완전히 적용된 연차를 기록하여 동기화 혼선 차단
       } catch (e) {
         console.error("Error loading dashboard data from Supabase:", e);
         setIsDbLoaded(true);
@@ -3343,6 +3352,16 @@ export default function App() {
     if (!isDbLoaded || !isFetchCompleted) return;
     if (!currentUser || currentRole?.id === "GUEST") return;
 
+    // 💡 철통 방어망: 현재 화면의 데이터가 속한 연차(activeDataYear)와 탭 연차(selectedYear)가 다르면 즉시 중단!
+    // 이는 비동기 로딩 및 탭 전환 타이밍에 발생하는 치명적인 Race Condition 삭제 버그를 완벽히 막아줍니다.
+    if (activeDataYear !== selectedYear) return;
+
+    // 💡 Race Condition 방지: 방금 DB에서 가져온 상태 그대로라면(사용자 수정 없음) Auto-save를 수행하지 않음.
+    // 이는 빈 배열([])일 때 isStaleState 가 실패하여 타 연차 DB를 싹 지워버리는 치명적인 버그를 완벽히 막아줍니다.
+    if (JSON.stringify(pressReleases) === fetchedPressReleasesRef.current) {
+      return;
+    }
+
     // 💡 탭(연차) 전환 시, 데이터를 새로 패치하기 전의 과거 연차 상태(Stale State)에서 자동저장이 도는 것을 방지
     // 이 처리가 없으면 과거 연차 데이터가 '타 연차 기사'로 오인되어 이전 연차 DB에 계속 무한 중복 Insert 됨!
     const isStaleState = pressReleases.length > 0 && pressReleases.some(s => s.year !== selectedYear);
@@ -3431,8 +3450,9 @@ export default function App() {
           }
 
           if (!hasError) {
-            // 성공했을 때만 현재 연차 상태에서 제거
-            setPressReleases(prev => prev.filter(s => getCalculatedYearFromDate(s.broadcastDate) === selectedYear));
+            // 성공했을 때만 현재 연차 상태에서 제거 (클로저 Race Condition 방지를 위해 ID 기반 필터링 적용)
+            const otherIds = otherYearPress.map(item => item.id);
+            setPressReleases(prev => prev.filter(s => !otherIds.includes(s.id)));
             // alert는 다른 화면(상장/이수증 등)을 보고 있을 때 방해되므로 제거하고 조용히 백그라운드 처리
             console.log(`[언론보도] 타 연차(${getCalculatedYearFromDate(otherYearPress[0].broadcastDate)}차년도)로 기사가 자동 이동되었습니다.`);
           }
@@ -3511,7 +3531,8 @@ export default function App() {
             console.error("Failed to clean up old press releases:", deleteErr);
           }
         }
-
+        // 💡 성공적인 Sync 완료 후, 현재 화면의 상태를 "순수 상태"로 참조 업데이트하여 무한 루프 방지
+        fetchedPressReleasesRef.current = JSON.stringify(pressReleases);
         setSyncStatus("synced");
       } catch (e) {
         console.error("Failed to sync press releases:", e);
