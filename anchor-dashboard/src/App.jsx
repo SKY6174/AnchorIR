@@ -2773,12 +2773,13 @@ export default function App() {
         }
 
         // 2. Agreements 복구 (전체 연차 데이터를 한 번에 가져와 메모리에 유지)
-        const { data: agrData } = await supabase
+        const { data: agrData, error: agrErr } = await supabase
           .from("agreements")
           .select("*");
         
-        // 원격 DB에 진짜 저장된 데이터가 존재할 때만 덮어써서 로컬 캐시 유실을 방지합니다.
-        if (agrData && agrData.length > 0) {
+        if (agrErr) {
+          console.error("Failed to fetch agreements:", agrErr);
+        } else if (agrData && agrData.length > 0) {
           const formatted = agrData.map(a => ({
             id: Number(a.id),
             year: a.year,
@@ -2805,10 +2806,12 @@ export default function App() {
         }
 
         // 2-2. Unified Certificates 복구 (전체 연차 데이터를 한 번에 가져와 메모리에 유지)
-        const { data: unifiedCertData } = await supabase
+        const { data: unifiedCertData, error: unifiedCertErr } = await supabase
           .from("unified_certificates")
           .select("*");
-        if (unifiedCertData && unifiedCertData.length > 0) {
+        if (unifiedCertErr) {
+          console.error("Failed to fetch unified certificates:", unifiedCertErr);
+        } else if (unifiedCertData && unifiedCertData.length > 0) {
           const formatted = unifiedCertData.map(c => ({
             id: Number(c.id),
             year: c.year,
@@ -2845,7 +2848,9 @@ export default function App() {
         const { data: scholarshipData, error: scholarshipError } = await supabase
           .from("scholarships_view")
           .select("*");
-        if (scholarshipData && scholarshipData.length > 0) {
+        if (scholarshipError) {
+          console.error("Failed to fetch scholarships:", scholarshipError);
+        } else if (scholarshipData && scholarshipData.length > 0) {
           const formatted = scholarshipData.map(c => ({
             id: Number(c.id) || Date.now() + Math.random(),
             year: c.year,
@@ -3181,13 +3186,15 @@ export default function App() {
         const startDateStr = `${targetYearNum}-03-01T00:00:00+09:00`;
         const endDateStr = `${targetYearNum + 1}-03-01T00:00:00+09:00`;
 
-        const { data: sPress } = await supabase
+        const { data: sPress, error: sPressErr } = await supabase
           .from("press_releases")
           .select("*")
           .gte("broadcast_date", startDateStr)
           .lt("broadcast_date", endDateStr);
 
-        if (sPress && sPress.length > 0) {
+        if (sPressErr) {
+          console.error("Failed to fetch press releases:", sPressErr);
+        } else if (sPress && sPress.length > 0) {
           const formatted = sPress.map(x => ({
             id: Number(x.id),
             year: x.year,
