@@ -12,12 +12,22 @@ const VALID_COURSES = ["일반과정", "전문기술석사", "평생직업교육
 const extractYear = (dateStr) => {
   if (!dateStr) return null;
   const str = String(dateStr);
+  let actualYear = null;
   const match = str.match(/(20\d{2})/);
-  if (match) return Number(match[1]);
-  const num = Number(str);
-  if (!isNaN(num) && num > 40000 && num < 50000) {
-    const d = new Date(Math.round((num - 25569) * 86400 * 1000));
-    if (!isNaN(d.getTime())) return d.getFullYear();
+  if (match) {
+    actualYear = Number(match[1]);
+  } else {
+    const num = Number(str);
+    if (!isNaN(num) && num > 40000 && num < 50000) {
+      const d = new Date(Math.round((num - 25569) * 86400 * 1000));
+      if (!isNaN(d.getTime())) actualYear = d.getFullYear();
+    }
+  }
+  
+  if (actualYear) {
+    if (actualYear >= 2025 && actualYear <= 2029) {
+      return actualYear - 2024;
+    }
   }
   return null;
 };

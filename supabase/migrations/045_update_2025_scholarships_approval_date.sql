@@ -3,4 +3,4 @@
 
 UPDATE public.scholarships
 SET approval_date = '2025-12-31'
-WHERE year = 2025;
+WHERE year = 1;
