@@ -2582,7 +2582,7 @@ ${aiRawText}
     setIsAddModalOpen(true);
   };
 
-  const openAddModal = (type) => {
+  const openAddModal = (type, defaultDateStr = null) => {
     setModalType(type);
     setIsEditMode(false);
     setEditingItemId(null);
@@ -2590,22 +2590,21 @@ ${aiRawText}
 
     // 현재 선택된 행사 월에 맞춰 기본 날짜 세팅
     const formattedMonth = selectedEventMonth < 10 ? `0${selectedEventMonth}` : selectedEventMonth;
-    const defaultEventDate = `2026-${formattedMonth}-15`;
+    const defaultDate = defaultDateStr || `2026-${formattedMonth}-15`;
 
     setFormData({
       title: "",
       type: "행사",
       dept: "사업운영팀",
-      startDate: "2026-07-15",
+      startDate: defaultDate,
       startTime: "10:00",
-      endDate: "2026-07-15",
+      endDate: defaultDate,
       endTime: "11:00",
       location: "",
-      noTime: false,
       month: selectedEventMonth,
       department: "",
       datetime: "",
-      eventDate: defaultEventDate,
+      eventDate: defaultDate,
       eventStartTime: "",
       eventEndTime: "",
       attendeesInternal: "",
@@ -2616,7 +2615,7 @@ ${aiRawText}
       category: "operating",
       agenda: "",
       // 회의록용 추가
-      meetingDate: defaultEventDate,
+      meetingDate: defaultDate,
       meetingStartTime: "10:00",
       meetingEndTime: "11:00",
       writer: (() => {
@@ -2685,6 +2684,11 @@ ${aiRawText}
         <div 
           key={`day-${day}`}
           onClick={() => setSelectedDay(day)}
+          onDoubleClick={() => {
+            if (currentRole.id !== "GUEST") {
+              openAddModal("monthly", dateString);
+            }
+          }}
           onDragOver={(e) => e.preventDefault()}
           onDragEnter={() => setDragOverDate(dateString)}
           onDragLeave={() => setDragOverDate(null)}
@@ -2738,6 +2742,10 @@ ${aiRawText}
                   }}
                   onDragEnd={() => {
                     setDraggingId(null);
+                  }}
+                  onDoubleClick={(e) => {
+                    e.stopPropagation();
+                    handleEditSchedule(sched);
                   }}
                   style={{
                     fontSize: "0.65rem",
