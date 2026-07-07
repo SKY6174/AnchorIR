@@ -1150,7 +1150,8 @@ ${aiRawText}
                 endAt: (isTaskVal || isDeadlineVal) ? startAtVal : (hasTime ? `${formData.endDate} ${formData.endTime}` : formData.endDate),
                 location: (isTaskVal || isDeadlineVal) ? "" : (formData.location || "-"),
                 isTask: isTaskVal,
-                isDeadline: isDeadlineVal
+                isDeadline: isDeadlineVal,
+                attendees: formData.attendees || ""
               }
             : s
         ));
@@ -1165,7 +1166,8 @@ ${aiRawText}
           location: (isTaskVal || isDeadlineVal) ? "" : (formData.location || "-"),
           isTask: isTaskVal,
           isDeadline: isDeadlineVal,
-          completed: false
+          completed: false,
+          attendees: formData.attendees || ""
         };
         setMonthlySchedules([newItem, ...monthlySchedules]);
       }
@@ -1406,7 +1408,8 @@ ${aiRawText}
       purpose: "",
       result: "",
       category: "operating",
-      agenda: ""
+      agenda: "",
+      attendees: sched.attendees || ""
     });
     setIsAddModalOpen(true);
   };
@@ -5088,6 +5091,116 @@ ${aiRawText}
                   <div>
                     <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>장소</label>
                     <input type="text" name="location" value={formData.location} onChange={handleInputChange} placeholder="예: 대학 본부 대회의실" style={{ width: "100%", padding: "0.5rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} />
+                  </div>
+                  <div style={{ marginTop: "0.75rem" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.25rem" }}>
+                      <label style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>
+                        👥 전체 사업단 참석자 선택
+                      </label>
+                      <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)", display: "flex", alignItems: "center", gap: "0.35rem", cursor: "pointer" }}>
+                        <input 
+                          type="checkbox" 
+                          checked={includeProfessors} 
+                          onChange={(e) => setIncludeProfessors(e.target.checked)} 
+                          style={{ cursor: "pointer", width: "14px", height: "14px" }}
+                        />
+                        팀장교수 포함
+                      </label>
+                    </div>
+                    {(() => {
+                      const ROLE_PRIORITY = {
+                        "사업단장": 1,
+                        "본부장": 2,
+                        "센터장": 3,
+                        "운영팀장": 4,
+                        "팀장교수": 5,
+                        "연구원": 6
+                      };
+                      const DEPT_PRIORITY = {
+                        "ECC센터": 1,
+                        "ICC센터": 2,
+                        "RCC센터": 3,
+                        "AID-X지원센터": 4,
+                        "울산늘봄누리센터": 5,
+                        "신산업특화센터": 6,
+                        "사업운영팀": 7
+                      };
+                      const GRADE_PRIORITY = {
+                        "책임연구원": 1,
+                        "선임연구원": 2,
+                        "연구원": 3
+                      };
+
+                      const referenceDateObj = new Date(formData.startDate || new Date());
+                      
+                      const allActiveMembers = (members || [])
+                        .filter(m => {
+                          const start = new Date(m.startDate || m.hireDate || "2026-03-01");
+                          const end = m.endDate ? new Date(m.endDate) : null;
+                          if (start > referenceDateObj) return false;
+                          if (end && end < referenceDateObj) return false;
+                          if (!includeProfessors && m.role === "팀장교수") return false;
+                          return true;
+                        })
+                        .sort((a, b) => {
+                          const rA = ROLE_PRIORITY[a.role] || 99;
+                          const rB = ROLE_PRIORITY[b.role] || 99;
+                          if (rA !== rB) return rA - rB;
+                          
+                          const dA = DEPT_PRIORITY[a.dept] || 99;
+                          const dB = DEPT_PRIORITY[b.dept] || 99;
+                          if (dA !== dB) return dA - dB;
+                          
+                          const gA = GRADE_PRIORITY[a.grade] || 99;
+                          const gB = GRADE_PRIORITY[b.grade] || 99;
+                          if (gA !== gB) return gA - gB;
+                          
+                          const sA = new Date(a.startDate || a.hireDate || "2026-03-01").getTime();
+                          const sB = new Date(b.startDate || b.hireDate || "2026-03-01").getTime();
+                          return sA - sB;
+                        });
+
+                      return (
+                        <div style={{ display: "flex", gap: "0.35rem", flexWrap: "wrap", padding: "0.5rem", background: "var(--panel-bg)", borderRadius: "6px", border: "1px solid var(--border-color)", maxHeight: "120px", overflowY: "auto" }}>
+                          {allActiveMembers.map(m => {
+                            const isSelected = (formData.attendees || "")
+                              .split(",")
+                              .map(x => x.trim())
+                              .includes(m.name);
+
+                            const displayRole = m.role === "연구원" ? (m.grade || "연구원") : (m.role === "사업단장" ? "단장" : m.role);
+
+                            return (
+                                <button
+                                  key={m.id || m.email}
+                                  type="button"
+                                  onClick={() => handleToggleAttendee(m.name)}
+                                  style={{
+                                    padding: "0.25rem 0.5rem",
+                                    fontSize: "0.7rem",
+                                    borderRadius: "4px",
+                                    border: "1px solid " + (isSelected ? "var(--accent-color)" : "var(--border-color)"),
+                                    background: isSelected ? "rgba(59, 130, 246, 0.15)" : "var(--input-bg)",
+                                    color: isSelected ? "#60A5FA" : "var(--text-secondary)",
+                                    cursor: "pointer",
+                                    fontWeight: "700"
+                                  }}
+                                >
+                                  {m.name} {displayRole} {isSelected ? "✓" : "+"}
+                                </button>
+                            );
+                          })}
+                        </div>
+                      );
+                    })()}
+                    <input 
+                      type="text" 
+                      name="attendees" 
+                      value={formData.attendees || ""} 
+                      onChange={handleInputChange} 
+                      placeholder="선택되거나 직접 콤마(,)로 구분해 입력" 
+                      style={{ width: "100%", padding: "0.5rem", marginTop: "0.35rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", fontSize: "0.75rem" }} 
+                    />
                   </div>
                 </>
               )}

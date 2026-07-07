@@ -3193,7 +3193,8 @@ export default function App() {
             location: x.location,
             isTask: x.is_task || false,
             isDeadline: x.is_deadline || false,
-            completed: x.completed || false
+            completed: x.completed || false,
+            attendees: x.attendees || ""
           }));
           setMonthlySchedules(formatted);
           localStorage.setItem(`anchor_cache_month_y${selectedYear}`, JSON.stringify(formatted));
@@ -3969,7 +3970,8 @@ export default function App() {
               location: s.location || "",
               is_task: s.isTask || false,
               is_deadline: s.isDeadline || false,
-              completed: s.completed || false
+              completed: s.completed || false,
+              attendees: s.attendees || ""
             }))
           );
           if (error) throw error;
