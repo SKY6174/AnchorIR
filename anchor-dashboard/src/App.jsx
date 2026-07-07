@@ -2867,7 +2867,8 @@ export default function App() {
             amount: c.amount,
             bankName: c.bank_name,
             accountNum: c.account_num,
-            accountHolder: c.account_holder
+            accountHolder: c.account_holder,
+            approvalDate: c.approval_date
           }));
           setScholarships(formatted);
           try {
@@ -3595,7 +3596,8 @@ export default function App() {
               amount: item.amount,
               bank_name: item.bankName,
               account_num: item.accountNum,
-              account_holder: item.accountHolder
+              account_holder: item.accountHolder,
+              approval_date: item.approvalDate
             }));
             const { error } = await supabase.from("scholarships_view").insert(payload);
             if (error) throw error;

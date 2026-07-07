@@ -79,6 +79,7 @@ export default function ScholarshipManager({
   const [bankName, setBankName] = useState("");
   const [accountNum, setAccountNum] = useState("");
   const [accountHolder, setAccountHolder] = useState("");
+  const [approvalDate, setApprovalDate] = useState("");
   const [isCustomDept, setIsCustomDept] = useState(false);
 
   const [sortConfig, setSortConfig] = useState({ key: "id", direction: "desc" });
@@ -154,6 +155,7 @@ export default function ScholarshipManager({
     setBankName("");
     setAccountNum("");
     setAccountHolder("");
+    setApprovalDate("");
     setIsCustomDept(false);
     setIsModalOpen(true);
   };
@@ -178,6 +180,7 @@ export default function ScholarshipManager({
     setBankName(item.bankName || "");
     setAccountNum(formatAccountNum(item.bankName, item.accountNum || ""));
     setAccountHolder(item.accountHolder || "");
+    setApprovalDate(item.approvalDate || "");
     setIsModalOpen(true);
   };
 
@@ -203,8 +206,33 @@ export default function ScholarshipManager({
       dept, major, course, studentId, name,
       residentId, grade, enrollStatus, regStatus,
       amount: amount.toString().replace(/,/g, ''), // 숫자만 저장
-      bankName, accountNum, accountHolder
+      bankName, accountNum, accountHolder, approvalDate
     };
+
+    if (!editingId) {
+      const isDuplicate = scholarships.some(
+        c =>
+          c.year === payload.year &&
+          c.dept === payload.dept &&
+          c.major === payload.major &&
+          c.course === payload.course &&
+          c.studentId === payload.studentId &&
+          c.name === payload.name &&
+          c.residentId === payload.residentId &&
+          c.grade === payload.grade &&
+          c.enrollStatus === payload.enrollStatus &&
+          c.regStatus === payload.regStatus &&
+          c.amount === payload.amount &&
+          c.bankName === payload.bankName &&
+          c.accountNum === payload.accountNum &&
+          c.accountHolder === payload.accountHolder &&
+          c.approvalDate === payload.approvalDate
+      );
+      if (isDuplicate) {
+        alert("이미 동일한 내용의 데이터가 존재합니다.");
+        return;
+      }
+    }
 
     if (editingId) {
       onUpdateScholarship(editingId, payload);
@@ -247,6 +275,7 @@ export default function ScholarshipManager({
       const iBankName = getIndex("은행명");
       const iAccountNum = getIndex("계좌");
       const iAccountHolder = getIndex("예금주");
+      const iApprovalDate = getIndex("승인일") !== -1 ? getIndex("승인일") : getIndex("결재일");
 
       if (iName === -1 || iAmount === -1) {
         alert("필수 열(이름, 지급금액)을 찾을 수 없습니다. 양식을 확인해주세요.");
@@ -274,14 +303,45 @@ export default function ScholarshipManager({
           amount: String(row[iAmount]).replace(/,/g, ''),
           bankName: iBankName !== -1 && row[iBankName] ? String(row[iBankName]) : "",
           accountNum: iAccountNum !== -1 && row[iAccountNum] ? String(row[iAccountNum]) : "",
-          accountHolder: iAccountHolder !== -1 && row[iAccountHolder] ? String(row[iAccountHolder]) : ""
+          accountHolder: iAccountHolder !== -1 && row[iAccountHolder] ? String(row[iAccountHolder]) : "",
+          approvalDate: iApprovalDate !== -1 && row[iApprovalDate] ? String(row[iApprovalDate]) : ""
         };
 
         const isDuplicate = filteredItems.some(
-          c => c.studentId === newRec.studentId && c.name === newRec.name && c.amount === newRec.amount
+          c =>
+            c.year === newRec.year &&
+            c.dept === newRec.dept &&
+            c.major === newRec.major &&
+            c.course === newRec.course &&
+            c.studentId === newRec.studentId &&
+            c.name === newRec.name &&
+            c.residentId === newRec.residentId &&
+            c.grade === newRec.grade &&
+            c.enrollStatus === newRec.enrollStatus &&
+            c.regStatus === newRec.regStatus &&
+            c.amount === newRec.amount &&
+            c.bankName === newRec.bankName &&
+            c.accountNum === newRec.accountNum &&
+            c.accountHolder === newRec.accountHolder &&
+            c.approvalDate === newRec.approvalDate
         );
         const isImportedDuplicate = imported.some(
-          c => c.studentId === newRec.studentId && c.name === newRec.name && c.amount === newRec.amount
+          c =>
+            c.year === newRec.year &&
+            c.dept === newRec.dept &&
+            c.major === newRec.major &&
+            c.course === newRec.course &&
+            c.studentId === newRec.studentId &&
+            c.name === newRec.name &&
+            c.residentId === newRec.residentId &&
+            c.grade === newRec.grade &&
+            c.enrollStatus === newRec.enrollStatus &&
+            c.regStatus === newRec.regStatus &&
+            c.amount === newRec.amount &&
+            c.bankName === newRec.bankName &&
+            c.accountNum === newRec.accountNum &&
+            c.accountHolder === newRec.accountHolder &&
+            c.approvalDate === newRec.approvalDate
         );
 
         if (!isDuplicate && !isImportedDuplicate) {
@@ -318,10 +378,10 @@ export default function ScholarshipManager({
       "학년": item.grade || "",
       "학적": item.enrollStatus || "",
       "등록여부": item.regStatus || "",
-      "지급금액": item.amount || "",
       "은행명": item.bankName || "",
       "계좌": item.accountNum || "", 
-      "예금주": item.accountHolder || ""
+      "예금주": item.accountHolder || "",
+      "승인일": item.approvalDate || ""
     }));
 
     const worksheet = XLSX.utils.json_to_sheet(dataToExport);
@@ -333,7 +393,7 @@ export default function ScholarshipManager({
   const handleExcelTemplateDownload = () => {
     const headers = [
       "학과", "전공", "과정", "학번", "이름", "주민번호", 
-      "학년", "학적", "등록여부", "지급금액", "은행명", "계좌", "예금주"
+      "학년", "학적", "등록여부", "지급금액", "은행명", "계좌", "예금주", "승인일"
     ];
     const data = [[]]; // 빈 데이터 한 줄
     const ws = XLSX.utils.aoa_to_sheet([headers, ...data]);
@@ -397,6 +457,7 @@ export default function ScholarshipManager({
               <th style={{ textAlign: "center" }}>은행명</th>
               <th style={{ textAlign: "center" }}>계좌번호</th>
               <th style={{ textAlign: "center" }}>예금주</th>
+              <th onClick={() => requestSort("approvalDate")} style={{ cursor: "pointer", textAlign: "center" }}>승인일{renderSortIndicator("approvalDate")}</th>
               <th style={{ width: "100px", textAlign: "center" }}>관리</th>
             </tr>
           </thead>
@@ -418,6 +479,7 @@ export default function ScholarshipManager({
                   <td style={{ textAlign: "center" }}>{item.bankName}</td>
                   <td style={{ textAlign: "center", color: "var(--text-secondary)" }}>{maskAccountNum(item.accountNum)}</td>
                   <td style={{ textAlign: "center" }}>{item.accountHolder}</td>
+                  <td style={{ textAlign: "center" }}>{item.approvalDate}</td>
                   <td style={{ textAlign: "center" }}>
                     <div style={{ display: "flex", justifyContent: "center", gap: "0.5rem" }}>
                       <button className="icon-btn" onClick={() => openModalForEdit(item)} title="수정" style={{ color: "var(--text-secondary)" }}>
@@ -566,6 +628,13 @@ export default function ScholarshipManager({
                   <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
                     <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>예금주</label>
                     <input type="text" value={accountHolder} onChange={e => setAccountHolder(e.target.value)} style={{ padding: "0.5rem", borderRadius: "0.5rem", background: "var(--bg-tertiary)", border: "1px solid var(--border-color)", color: "var(--text-primary)" }} />
+                  </div>
+                </div>
+
+                <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "1rem" }}>
+                  <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
+                    <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>승인일(결재일)</label>
+                    <input type="date" value={approvalDate} onChange={e => setApprovalDate(e.target.value)} style={{ padding: "0.5rem", borderRadius: "0.5rem", background: "var(--bg-tertiary)", border: "1px solid var(--border-color)", color: "var(--text-primary)" }} />
                   </div>
                 </div>
 
