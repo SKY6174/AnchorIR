@@ -540,6 +540,7 @@ export default function ScheduleManager({
   const [aiStatusText, setAiStatusText] = useState("");
   const [aiEngine, setAiEngine] = useState("gpt"); // "gemini" or "gpt"
   const [includeProfessors, setIncludeProfessors] = useState(false); // 팀장교수 포함 여부
+  const [selectedDeptFilter, setSelectedDeptFilter] = useState("전체"); // 부서 필터 상태
 
 
   // 샘플 파일 로드
@@ -2488,7 +2489,8 @@ ${aiRawText}
     // 날짜 채우기
     for (let day = 1; day <= daysInMonth; day++) {
       const dateString = `2026-${currentMonth < 10 ? "0" + currentMonth : currentMonth}-${day < 10 ? "0" + day : day}`;
-      const daySchedules = monthlySchedules.filter(s => s.startAt && s.startAt.substring(0, 10) === dateString);
+      const filtered = selectedDeptFilter === "전체" ? monthlySchedules : monthlySchedules.filter(s => s.dept === selectedDeptFilter);
+      const daySchedules = filtered.filter(s => s.startAt && s.startAt.substring(0, 10) === dateString);
       const isSelected = selectedDay === day;
 
       cells.push(
@@ -2558,7 +2560,8 @@ ${aiRawText}
 
   const getSelectedDaySchedules = () => {
     const dateString = `2026-${currentMonth < 10 ? "0" + currentMonth : currentMonth}-${selectedDay < 10 ? "0" + selectedDay : selectedDay}`;
-    return monthlySchedules.filter(s => s.startAt && s.startAt.substring(0, 10) === dateString);
+    const filtered = selectedDeptFilter === "전체" ? monthlySchedules : monthlySchedules.filter(s => s.dept === selectedDeptFilter);
+    return filtered.filter(s => s.startAt && s.startAt.substring(0, 10) === dateString);
   };
 
   return (
@@ -2650,6 +2653,45 @@ ${aiRawText}
                     <ChevronRight size={16} />
                   </button>
                 </div>
+              </div>
+
+              {/* 부서 필터 칩 */}
+              <div style={{ 
+                display: "flex", 
+                gap: "0.35rem", 
+                flexWrap: "wrap", 
+                marginBottom: "1rem", 
+                paddingBottom: "0.5rem", 
+                borderBottom: "1px solid rgba(255, 255, 255, 0.05)" 
+              }}>
+                {["전체", "사업운영팀", "ECC센터", "ICC센터", "RCC센터", "AID-X지원센터", "울산늘봄누리센터", "신산업특화센터"].map(dept => {
+                  const isActive = selectedDeptFilter === dept;
+                  return (
+                    <button
+                      key={dept}
+                      onClick={() => setSelectedDeptFilter(dept)}
+                      style={{
+                        padding: "0.35rem 0.75rem",
+                        fontSize: "0.75rem",
+                        borderRadius: "20px",
+                        border: "1px solid " + (isActive ? "var(--accent-color)" : "var(--border-color)"),
+                        background: isActive ? "rgba(59, 130, 246, 0.15)" : "var(--input-bg)",
+                        color: isActive ? "#60A5FA" : "var(--text-secondary)",
+                        cursor: "pointer",
+                        fontWeight: isActive ? "800" : "500",
+                        transition: "all 0.15s ease",
+                      }}
+                      onMouseOver={(e) => {
+                        if (!isActive) e.currentTarget.style.borderColor = "var(--text-secondary)";
+                      }}
+                      onMouseOut={(e) => {
+                        if (!isActive) e.currentTarget.style.borderColor = "var(--border-color)";
+                      }}
+                    >
+                      {dept}
+                    </button>
+                  );
+                })}
               </div>
 
               {/* 요일 행 */}
