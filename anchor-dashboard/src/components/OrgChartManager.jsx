@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Network, ChevronRight, ChevronDown, Award, Phone, MapPin, Layers, BookOpen } from "lucide-react";
 
 // 대학조직도 데이터 셋트
-const universityOrgData = {
+export const universityOrgData = {
   university: {
     title: "대학본부",
     desc: "대학의 행정 및 교육 지원 전반을 관장하는 본부 부서",

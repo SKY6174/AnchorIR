@@ -3,14 +3,11 @@ import { createPortal } from "react-dom";
 import { Plus, Edit, Trash, Upload, X, Download, DollarSign } from "lucide-react";
 import * as XLSX from "xlsx";
 
-const VALID_DEPARTMENTS = [
-  "컴퓨터공학과", "게임영상학과", "실내건축디자인과", "기계공학부", "전기전자공학부", 
-  "조선해양시스템공학과", "화학공학과", "융합안전공학과", "인테리어시공학과",
-  "간호학부", "물리치료학과", "치위생학과", "식품영양학과", "호텔조리제빵과", 
-  "스포츠재활학부", "스포츠건강재활학과", "푸드케어학과", "골프산업과", "반려동물보건과",
-  "사회복지학과", "유아교육과", "세무회계학과", "사회복지상담학과", "국제학부",
-  "미래모빌리티제조학과", "바이오화학생산기술학과", "인공지능기반텔레헬스학과"
-];
+import { universityOrgData } from "./OrgChartManager";
+
+const VALID_DEPARTMENTS = universityOrgData.academic.departments.flatMap(group => 
+  group.subTeams.map(team => team.name)
+);
 
 const VALID_COURSES = ["일반과정", "전문기술석사", "평생직업교육", "기타"];
 
@@ -439,7 +436,10 @@ export default function ScholarshipManager({
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "1rem" }}>
                   <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
                     <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>학부(과) <span style={{ color: "red" }}>*</span></label>
-                    <input type="text" value={dept} onChange={e => setDept(e.target.value)} required style={{ padding: "0.5rem", borderRadius: "0.5rem", background: "var(--bg-tertiary)", border: "1px solid var(--border-color)", color: "var(--text-primary)" }} />
+                    <select value={dept} onChange={e => setDept(e.target.value)} required style={{ padding: "0.5rem", borderRadius: "0.5rem", background: "var(--bg-tertiary)", border: "1px solid var(--border-color)", color: "var(--text-primary)" }}>
+                      <option value="">선택안함</option>
+                      {VALID_DEPARTMENTS.map(d => <option key={d} value={d}>{d}</option>)}
+                    </select>
                   </div>
                   <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
                     <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>전공</label>
