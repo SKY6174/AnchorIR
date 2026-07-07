@@ -247,13 +247,14 @@ export const academicYears = {
 
 export const getAllValidDepartments = () => {
   const depts = new Set();
-  Object.values(academicYears).forEach(yearData => {
-    yearData.departments.forEach(group => {
+  const currentYearData = academicYears[2026];
+  if (currentYearData) {
+    currentYearData.departments.forEach(group => {
       group.subTeams.forEach(team => {
         depts.add(team.name);
       });
     });
-  });
+  }
   return Array.from(depts);
 };
 export const universityOrgData = {

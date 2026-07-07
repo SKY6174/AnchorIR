@@ -478,6 +478,7 @@ export default function ScholarshipManager({
                         <option value="custom">직접입력</option>
                       </select>
                     )}
+                    <p style={{ fontSize: "0.65rem", color: "var(--text-secondary)", marginTop: "0.1rem" }}>목록에 없는 과거 학과명 등은 '직접입력'을 선택하여 기재해 주세요.</p>
                   </div>
                   <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
                     <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>전공</label>
