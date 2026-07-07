@@ -541,6 +541,8 @@ export default function ScheduleManager({
   const [aiEngine, setAiEngine] = useState("gpt"); // "gemini" or "gpt"
   const [includeProfessors, setIncludeProfessors] = useState(false); // 팀장교수 포함 여부
   const [selectedDeptFilter, setSelectedDeptFilter] = useState("전체"); // 부서 필터 상태
+  const [draggingId, setDraggingId] = useState(null); // 드래그 중인 일정 ID
+  const [dragOverDate, setDragOverDate] = useState(null); // 드래그 호버 중인 날짜 셀 YYYY-MM-DD
 
 
   // 샘플 파일 로드
@@ -980,6 +982,55 @@ ${aiRawText}
         }
         return { ...prev, dept: currentDepts.join(", ") };
       }
+    });
+  };
+
+  // 캘린더 일정 드래그 앤 드롭 이동 핸들러
+  const handleScheduleDrop = (schedId, targetDateStr) => {
+    if (currentRole.id === "GUEST") {
+      alert("게스트(방문자) 계정은 읽기 전용으로만 이용하실 수 있습니다.");
+      return;
+    }
+    
+    const targetId = Number(schedId);
+    setMonthlySchedules(prev => {
+      return prev.map(s => {
+        if (s.id !== targetId) return s;
+
+        // 기존 시작/종료 일시 파싱
+        const [oldStartDate, oldStartTime] = parseDateTime(s.startAt, ["2026-07-15", "10:00"]);
+        const [oldEndDate, oldEndTime] = parseDateTime(s.endAt, ["2026-07-15", "11:00"]);
+
+        // 시작 날짜 계산
+        const newStartAt = oldStartTime ? `${targetDateStr} ${oldStartTime}` : targetDateStr;
+
+        // 기간 오프셋 계산 (시작 날짜 기준 며칠이 지속되는지)
+        const oldStartVal = new Date(oldStartDate).getTime();
+        const oldEndVal = new Date(oldEndDate).getTime();
+        const diffTime = oldEndVal - oldStartVal;
+        
+        let newEndAt = newStartAt;
+        if (diffTime > 0) {
+          // 기간 일정이면 오프셋만큼 종료일도 이동
+          const targetStartVal = new Date(targetDateStr).getTime();
+          const targetEndVal = targetStartVal + diffTime;
+          const targetEndDateObj = new Date(targetEndVal);
+          const yyyy = targetEndDateObj.getFullYear();
+          const mm = String(targetEndDateObj.getMonth() + 1).padStart(2, "0");
+          const dd = String(targetEndDateObj.getDate()).padStart(2, "0");
+          const newEndDateStr = `${yyyy}-${mm}-${dd}`;
+          newEndAt = oldEndTime ? `${newEndDateStr} ${oldEndTime}` : newEndDateStr;
+        } else {
+          // 단일 날짜 일정이면 시작일자와 종료일자를 같게 설정
+          newEndAt = oldEndTime ? `${targetDateStr} ${oldEndTime}` : targetDateStr;
+        }
+
+        return {
+          ...s,
+          startAt: newStartAt,
+          endAt: newEndAt
+        };
+      });
     });
   };
 
@@ -2552,13 +2603,24 @@ ${aiRawText}
         <div 
           key={`day-${day}`}
           onClick={() => setSelectedDay(day)}
+          onDragOver={(e) => e.preventDefault()}
+          onDragEnter={() => setDragOverDate(dateString)}
+          onDragLeave={() => setDragOverDate(null)}
+          onDrop={(e) => {
+            e.preventDefault();
+            const droppedId = draggingId || e.dataTransfer.getData("text/plain");
+            if (droppedId) {
+              handleScheduleDrop(droppedId, dateString);
+            }
+            setDragOverDate(null);
+          }}
           style={{
             minHeight: "85px",
             height: "auto",
             padding: "0.25rem 0.25rem 0.4rem 0.25rem",
             borderBottom: "1px solid var(--border-color)",
             borderRight: "1px solid var(--border-color)",
-            background: isSelected ? "rgba(59, 130, 246, 0.15)" : "transparent",
+            background: dragOverDate === dateString ? "rgba(59, 130, 246, 0.25)" : (isSelected ? "rgba(59, 130, 246, 0.15)" : "transparent"),
             cursor: "pointer",
             position: "relative",
             transition: "all 0.15s ease",
@@ -2587,6 +2649,14 @@ ${aiRawText}
               return (
                 <div 
                   key={sched.id} 
+                  draggable={true}
+                  onDragStart={(e) => {
+                    setDraggingId(sched.id);
+                    e.dataTransfer.setData("text/plain", sched.id);
+                  }}
+                  onDragEnd={() => {
+                    setDraggingId(null);
+                  }}
                   style={{
                     fontSize: "0.65rem",
                     background: bgColor,
@@ -2597,7 +2667,9 @@ ${aiRawText}
                     textOverflow: "ellipsis",
                     overflow: "hidden",
                     textDecoration: isCompleted ? "line-through" : "none",
-                    opacity: isCompleted ? 0.6 : 1
+                    opacity: isCompleted ? 0.6 : 1,
+                    cursor: draggingId === sched.id ? "grabbing" : "grab",
+                    userSelect: "none"
                   }}
                   title={`${isDeadline ? "[마감]" : (isTask ? "[할일]" : `[${sched.type}]`)} ${sched.title} (${sched.dept})`}
                 >
