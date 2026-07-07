@@ -1267,7 +1267,42 @@ ${aiRawText}
         setMeetingSchedules([newItem, ...meetingSchedules]);
       }
     } else if (modalType === "press") {
-      const combinedDatetime = `${formData.pressDate}T${formData.pressTime}:00+09:00`;
+      let safeDate = formData.pressDate;
+      if (safeDate && safeDate.includes("/")) {
+        const parts = safeDate.split("/");
+        if (parts.length === 3 && parts[2].length === 4) {
+          safeDate = `${parts[2]}-${parts[0].padStart(2, "0")}-${parts[1].padStart(2, "0")}`;
+        }
+      } else if (!safeDate || !/^\d{4}-\d{2}-\d{2}$/.test(safeDate)) {
+        safeDate = new Date().toISOString().split("T")[0];
+      }
+      
+      let safeTime = formData.pressTime || "10:00";
+      if (!/^\d{2}:\d{2}$/.test(safeTime)) {
+        if (safeTime.toLowerCase().includes("pm")) {
+          const m = safeTime.match(/(\d{1,2}):(\d{2})/);
+          if (m) {
+            let h = parseInt(m[1], 10);
+            if (h < 12) h += 12;
+            safeTime = `${h.toString().padStart(2, "0")}:${m[2]}`;
+          } else {
+            safeTime = "14:00";
+          }
+        } else if (safeTime.toLowerCase().includes("am")) {
+          const m = safeTime.match(/(\d{1,2}):(\d{2})/);
+          if (m) {
+            let h = parseInt(m[1], 10);
+            if (h === 12) h = 0;
+            safeTime = `${h.toString().padStart(2, "0")}:${m[2]}`;
+          } else {
+            safeTime = "10:00";
+          }
+        } else {
+          safeTime = "10:00";
+        }
+      }
+
+      const combinedDatetime = `${safeDate}T${safeTime}:00+09:00`;
 
       if (isEditMode) {
         setPressReleases(prev => prev.map(p => 
@@ -5845,7 +5880,7 @@ ${aiRawText}
                     </span>
                   </div>
 
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: "1rem" }}>
                     <div>
                       <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>보도 구분</label>
                       <select name="pressType" value={formData.pressType} onChange={handleInputChange} style={{ width: "100%", padding: "0.5rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }}>
