@@ -2,6 +2,260 @@ import React, { useState } from "react";
 import { Network, ChevronRight, ChevronDown, Award, Phone, MapPin, Layers, BookOpen } from "lucide-react";
 
 // 대학조직도 데이터 셋트
+export const academicYears = {
+  2023: {
+    title: "학부(과)",
+    desc: "2023학년도 학부(과) 조직",
+    departments: [
+      {
+        name: "공학계열",
+        subTeams: [
+          { name: "컴퓨터IT학부", isFaculty: true, majors: [{ name: "소프트웨어개발전공" }, { name: "IoT기술전공" }] },
+          { name: "디지털콘텐츠디자인학과" },
+          { name: "건축과" },
+          { name: "실내건축디자인과" },
+          { name: "기계공학부", isFaculty: true, majors: [{ name: "기계시스템전공" }, { name: "기계설비전공" }, { name: "스마트해양수송시스템전공" }] },
+          { name: "전기전자공학부", isFaculty: true, majors: [{ name: "전기전공" }, { name: "스마트전자전공" }, { name: "반도체응용전공" }] },
+          { name: "화학공학과" },
+          { name: "스마트제조공학과" },
+          { name: "융합안전공학과" }
+        ]
+      },
+      {
+        name: "자연과학계열",
+        subTeams: [
+          { name: "간호학부" },
+          { name: "물리치료학과" },
+          { name: "치위생학과" },
+          { name: "식품영양학과" },
+          { name: "호텔조리제빵과" }
+        ]
+      },
+      {
+        name: "인문사회계열",
+        subTeams: [
+          { name: "사회복지학과" },
+          { name: "유아교육과" },
+          { name: "세무회계학과" },
+          { name: "융복합유통플랫폼학과" },
+          { name: "글로벌비즈니스학과" }
+        ]
+      },
+      {
+        name: "예체능계열",
+        subTeams: [
+          { name: "스포츠재활학부", isFaculty: true, majors: [{ name: "스포츠지도전공" }, { name: "스포츠재활전공" }] }
+        ]
+      }
+    ]
+  },
+  2024: {
+    title: "학부(과)",
+    desc: "2024학년도 학부(과) 조직",
+    departments: [
+      {
+        name: "공학계열",
+        subTeams: [
+          { name: "컴퓨터IT·보안학과" },
+          { name: "영상콘텐츠디자인과" },
+          { name: "실내건축디자인과" },
+          { name: "기계공학부", isFaculty: true, majors: [{ name: "기계시스템전공" }, { name: "기계설비전공" }] },
+          { name: "조선해양시스템공학과" },
+          { name: "전기전자공학부", isFaculty: true, majors: [{ name: "전기전공" }, { name: "스마트전자전공" }] },
+          { name: "반도체공학과" },
+          { name: "화학공학과" },
+          { name: "융합안전공학과" }
+        ]
+      },
+      {
+        name: "자연과학계열",
+        subTeams: [
+          { name: "간호학부" },
+          { name: "물리치료학과" },
+          { name: "치위생학과" },
+          { name: "식품영양학과" },
+          { name: "호텔조리제빵과" },
+          { name: "스포츠재활학부", isFaculty: true, majors: [{ name: "스포츠지도전공" }, { name: "스포츠재활전공" }] },
+          { name: "스포츠건강재활학과" }
+        ]
+      },
+      {
+        name: "인문사회계열",
+        subTeams: [
+          { name: "사회복지학과" },
+          { name: "유아교육과" },
+          { name: "세무회계학과" },
+          { name: "글로벌비즈니스학과" },
+          { name: "사회복지상담학과" }
+        ]
+      }
+    ]
+  },
+  2025: {
+    title: "학부(과)",
+    desc: "2025학년도 학부(과) 조직",
+    departments: [
+      {
+        name: "공학계열",
+        subTeams: [
+          { name: "컴퓨터공학과" },
+          { name: "영상콘텐츠디자인과" },
+          { name: "실내건축디자인과" },
+          { name: "기계공학부", isFaculty: true, majors: [{ name: "기계시스템전공" }, { name: "기계설비전공" }] },
+          { name: "조선해양시스템공학과" },
+          { name: "전기전자공학부", isFaculty: true, majors: [{ name: "전기전공" }, { name: "스마트전자전공" }] },
+          { name: "반도체공학과" },
+          { name: "화학공학과" },
+          { name: "융합안전공학과" }
+        ]
+      },
+      {
+        name: "자연과학계열",
+        subTeams: [
+          { name: "간호학과" },
+          { name: "물리치료학과" },
+          { name: "치위생학과" },
+          { name: "식품영양학과" },
+          { name: "푸드케어학과" },
+          { name: "호텔조리제빵과" },
+          { name: "스포츠재활학부", isFaculty: true, majors: [{ name: "스포츠지도전공" }, { name: "스포츠재활전공" }] },
+          { name: "스포츠건강재활학과" },
+          { name: "골프산업과" }
+        ]
+      },
+      {
+        name: "인문사회계열",
+        subTeams: [
+          { name: "사회복지학과" },
+          { name: "사회복지상담학과" },
+          { name: "유아교육과" },
+          { name: "세무회계학과" },
+          { name: "글로벌비즈니스학과" },
+          { name: "국제학부" }
+        ]
+      }
+    ]
+  },
+  2026: {
+    title: "학부(과)",
+    desc: "2026학년도 학부(과) 조직",
+    departments: [
+      {
+        name: "공학계열",
+        subTeams: [
+          { name: "컴퓨터공학과" },
+          { name: "게임영상학과" },
+          { name: "실내건축디자인과" },
+          { name: "인테리어시공학과" },
+          { name: "기계공학부", isFaculty: true, majors: [{ name: "기계시스템전공" }, { name: "기계설비전공" }] },
+          { name: "조선해양시스템공학과" },
+          { name: "전기전자공학부", isFaculty: true, majors: [{ name: "전기전공" }, { name: "스마트전자전공" }] },
+          { name: "반도체공학과" },
+          { name: "화학공학과" },
+          { name: "융합안전공학과" }
+        ]
+      },
+      {
+        name: "자연과학계열",
+        subTeams: [
+          { name: "간호학부" },
+          { name: "물리치료학과" },
+          { name: "치위생학과" },
+          { name: "반려동물보건과" },
+          { name: "식품영양학과" },
+          { name: "푸드케어학과" },
+          { name: "호텔조리제빵과" },
+          { name: "스포츠재활학부", isFaculty: true, majors: [{ name: "스포츠지도전공" }, { name: "스포츠재활전공" }] },
+          { name: "스포츠건강재활학과" },
+          { name: "골프산업과" }
+        ]
+      },
+      {
+        name: "인문사회계열",
+        subTeams: [
+          { name: "사회복지학과" },
+          { name: "사회복지상담학과" },
+          { name: "유아교육과" },
+          { name: "세무회계학과" },
+          { name: "국제학부" }
+        ]
+      },
+      {
+        name: "전문기술석사과정",
+        subTeams: [
+          { name: "미래모빌리티제조학과" },
+          { name: "바이오화학생산기술학과" },
+          { name: "인공지능기반텔레헬스학과" }
+        ]
+      }
+    ]
+  },
+  2027: {
+    title: "학부(과)",
+    desc: "2027학년도 학부(과) 조직",
+    departments: [
+      {
+        name: "공학계열",
+        subTeams: [
+          { name: "컴퓨터공학과" },
+          { name: "게임영상학과" },
+          { name: "실내건축디자인과" },
+          { name: "인테리어시공학과" },
+          { name: "조선해양시스템공학과" },
+          { name: "기계공학부", isFaculty: true, majors: [{ name: "기계시스템전공" }, { name: "기계설비전공" }] },
+          { name: "전기전자공학부", isFaculty: true, majors: [{ name: "전기전공" }, { name: "스마트전자전공" }] },
+          { name: "반도체공학과" },
+          { name: "화학공학과" },
+          { name: "융합안전공학과" }
+        ]
+      },
+      {
+        name: "자연과학계열",
+        subTeams: [
+          { name: "간호학과" },
+          { name: "물리치료학과" },
+          { name: "치위생학과" },
+          { name: "반려동물보건과" },
+          { name: "식품영양학과" },
+          { name: "푸드케어학과" },
+          { name: "호텔조리제빵과" },
+          { name: "스포츠재활학부", isFaculty: true, majors: [{ name: "스포츠지도전공" }, { name: "스포츠재활전공" }] },
+          { name: "골프산업과" }
+        ]
+      },
+      {
+        name: "인문사회계열",
+        subTeams: [
+          { name: "사회복지학과" },
+          { name: "사회복지상담학과" },
+          { name: "유아교육과" },
+          { name: "세무회계학과" },
+          { name: "국제학부" }
+        ]
+      },
+      {
+        name: "전문기술석사과정",
+        subTeams: [
+          { name: "미래모빌리티제조학과" },
+          { name: "바이오화학생산기술학과" },
+          { name: "인공지능기반텔레헬스학과" }
+        ]
+      }
+    ]
+  }
+};
+
+export const getAllValidDepartments = () => {
+  const depts = new Set();
+  Object.values(academicYears).forEach(yearData => {
+    yearData.departments.forEach(group => {
+      group.subTeams.forEach(team => {
+        depts.add(team.name);
+      });
+    });
+  });
+  return Array.from(depts);
+};
 export const universityOrgData = {
   university: {
     title: "대학본부",
@@ -213,73 +467,7 @@ export const universityOrgData = {
       }
     ]
   },
-  academic: {
-    title: "학부(과)",
-    desc: "공학, 자연과학, 인문사회 및 전문 석사과정 교육 부서",
-    departments: [
-      {
-        name: "공학계열",
-        subTeams: [
-          { name: "컴퓨터공학과", tel: "052-230-1140", loc: "창의관 3층", task: "소프트웨어 코딩, 웹/앱 개발 및 AI 플랫폼 교육" },
-          { name: "게임영상학과", tel: "052-230-1150", loc: "창의관 4층", task: "실시간 게임 그래픽, 3D 애니메이션 및 엔진 코딩" },
-          { name: "실내건축디자인과", tel: "052-230-1160", loc: "조형관 2층", task: "실내 인테리어 공간 디자인 및 3D CAD/BIM 실무" },
-          {
-            name: "기계공학부",
-            isFaculty: true,
-            majors: [
-              { name: "기계시스템전공", tel: "052-230-1110", loc: "공학관 B동 1층", task: "선박/자동차 제조 및 정밀 기계 부품 설계 실무", rise: "A1 (HD현대이앤티 공동 교육 연계)" },
-              { name: "기계설비전공", tel: "052-230-1111", loc: "공학관 B동 2층", task: "플랜트 및 빌딩 에너지 기계설비 운용 및 자동제어 실습", rise: "A1 (에너지 기계설비 트랙 연계)" }
-            ]
-          },
-          {
-            name: "전기전자공학부",
-            isFaculty: true,
-            majors: [
-              { name: "전기전공", tel: "052-230-1100", loc: "공학관 A동 1층", task: "전력 수배전 설비, 스마트 그리드 및 산업용 모터 제어 실무" },
-              { name: "스마트전자전공", tel: "052-230-1101", loc: "공학관 A동 2층", task: "반도체 임베디드 제어, IoT 및 펌웨어 설계 융합 교육" }
-            ]
-          },
-          { name: "조선해양시스템공학과", tel: "052-230-1112", loc: "공학관 B동 2층", task: "조선해양 설계 엔지니어링 및 선박 건조 의장 실무", rise: "A1 (현대중공업 채용연계 트랙)" },
-          { name: "화학공학과", tel: "052-230-1120", loc: "공학관 C동", task: "정밀 석유화학 및 바이오 화공 신기술 배양" },
-          { name: "융합안전공학과", tel: "052-230-1130", loc: "공학관 A동", task: "산업 현장 유해 위험 진단 및 예방 안전 교육" },
-          { name: "인테리어시공학과", tel: "052-230-1170", loc: "조형관 1층", task: "친환경 내장재 시공, 목공 실습 및 견적 실무" }
-        ]
-      },
-      {
-        name: "자연과학계열",
-        subTeams: [
-          { name: "간호학부", tel: "052-230-1200", loc: "간호관", task: "전문 보건의료 간호사 육성 및 임상 시뮬레이션 훈련" },
-          { name: "물리치료학과", tel: "052-230-1220", loc: "보건관 3층", task: "도수 치료, 신경계 재활 및 체형 교정 임상 기술" },
-          { name: "치위생학과", tel: "052-230-1210", loc: "보건관 2층", task: "구강 예방 치위생 지식 및 치과 임상 실무 교육" },
-          { name: "식품영양학과", tel: "052-230-1230", loc: "자연과학관 1층", task: "단체 급식 식단 설계 및 영양 분석 상담 실습" },
-          { name: "호텔조리제빵과", tel: "052-230-1250", loc: "자연과학관 3층", task: "이탈리안/양식 조리 및 디저트 베이킹 특화 과정" },
-          { name: "스포츠재활학부", tel: "052-230-1260", loc: "체육관 2층", task: "선수 트레이닝 코칭 및 체력 진단 분석법", rise: "지역사회 시니어 헬스케어 평생교육" },
-          { name: "스포츠건강재활학과", tel: "052-230-1262", loc: "체육관 2층", task: "근골격 건강 관리, 운동 처방 및 시민 피트니스 가이드" },
-          { name: "푸드케어학과", tel: "052-230-1240", loc: "자연과학관 2층", task: "맞춤형 케어푸드 처방 및 영양 관리 실무" },
-          { name: "골프산업과", tel: "052-230-1270", loc: "체육관 1층", task: "골프 레슨 피팅 실무, 시설 운영 매니지먼트" },
-          { name: "반려동물보건과", tel: "052-230-1280", loc: "자연과학관 4층", task: "반려동물 간호보건 교육 및 행동교정 임상 실무" }
-        ]
-      },
-      {
-        name: "인문사회계열",
-        subTeams: [
-          { name: "사회복지학과", tel: "052-230-1320", loc: "인문관 3층", task: "사회복지 정책론, 지역사회 보장 계획 수립 실습" },
-          { name: "유아교육과", tel: "052-230-1310", loc: "인문관 2층", task: "유치원/보육교사 자격 취득 및 아동 심리 미술 프로그램" },
-          { name: "세무회계학과", tel: "052-230-1330", loc: "인문관 1층", task: "전산세무 1급 자격 취득, 세법 해석 및 세무조사 대행 실무" },
-          { name: "사회복지상담학과", tel: "052-230-1340", loc: "인문관 3층", task: "청소년/가족 심리상담 치료 실증 과정" },
-          { name: "국제학부", tel: "052-230-1300", loc: "대학본부 4층", task: "비즈니스 영어/일어/중국어 통역 및 글로벌 무역 실무", rise: "A1 (글로벌 융합 역량 강화 연계)" }
-        ]
-      },
-      {
-        name: "전문기술석사과정",
-        subTeams: [
-          { name: "미래모빌리티제조학과", tel: "052-230-1400", loc: "공학관 B동", task: "전기/수소 친환경 자동차 고성능 부품 가공 및 모빌리티 정비 기술" },
-          { name: "바이오화학생산기술학과", tel: "052-230-1420", loc: "공학관 C동", task: "바이오 의약품 생산 제조 및 친환경 미세 석유화학 정밀 공정 고도화" },
-          { name: "인공지능기반텔레헬스학과", tel: "052-230-1410", loc: "보건관 4층", task: "비대면 원격 의료 장비 제어 및 바이오 IT 인공지능 융합 텔레헬스 석사과정" }
-        ]
-      }
-    ]
-  },
+  academic: academicYears[2026],
   anchor: {
     title: "앵커사업단(부속기관)",
     desc: "울산과학대학교 앵커 사업 및 실무를 직접 관장하는 사업단",
@@ -302,6 +490,7 @@ export const universityOrgData = {
 
 export default function OrgChartManager() {
   const [selectedKey, setSelectedKey] = useState("university");
+  const [selectedYear, setSelectedYear] = useState(2026);
   const [expandedDept, setExpandedDept] = useState(null);
   const [selectedTeam, setSelectedTeam] = useState(null);
   const [expandedFaculties, setExpandedFaculties] = useState({});
@@ -312,8 +501,10 @@ export default function OrgChartManager() {
     return anchorDepts.includes(name);
   };
 
-  const currentCategory = universityOrgData[selectedKey] || universityOrgData.university;
-  const listDepts = currentCategory.departments;
+  const currentCategory = selectedKey === "academic" 
+    ? academicYears[selectedYear] 
+    : (universityOrgData[selectedKey] || universityOrgData.university);
+  const listDepts = currentCategory?.departments || [];
 
   const handleCategoryChange = (key) => {
     setSelectedKey(key);
@@ -396,9 +587,32 @@ export default function OrgChartManager() {
 
         {/* [중앙] 2차 부서/처 아코디언 목록 */}
         <div className="glass-card" style={{ padding: "1.5rem", minHeight: "500px", display: "flex", flexDirection: "column", gap: "1.2rem" }}>
-          <div>
-            <h3 style={{ fontSize: "1.1rem", fontWeight: "800", marginBottom: "0.2rem" }}>{currentCategory.title} 세부 조직도</h3>
-            <p style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>{currentCategory.desc}</p>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <h3 style={{ fontSize: "1.1rem", fontWeight: "800", marginBottom: "0.2rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
+              {currentCategory?.title} 세부 조직도
+              {selectedKey === "academic" && (
+                <select
+                  value={selectedYear}
+                  onChange={(e) => setSelectedYear(Number(e.target.value))}
+                  style={{
+                    marginLeft: "0.5rem",
+                    padding: "0.2rem 0.5rem",
+                    borderRadius: "4px",
+                    background: "rgba(255,255,255,0.05)",
+                    border: "1px solid rgba(255,255,255,0.1)",
+                    color: "var(--text-primary)",
+                    fontSize: "0.9rem",
+                    fontWeight: "600",
+                    cursor: "pointer"
+                  }}
+                >
+                  {Object.keys(academicYears).sort((a,b) => b - a).map(year => (
+                    <option key={year} value={year} style={{ background: "#1f2937" }}>{year}학년도</option>
+                  ))}
+                </select>
+              )}
+            </h3>
+            <p style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>{currentCategory?.desc}</p>
           </div>
 
           <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>

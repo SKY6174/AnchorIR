@@ -3,11 +3,9 @@ import { createPortal } from "react-dom";
 import { Plus, Edit, Trash, Upload, X, Download, DollarSign } from "lucide-react";
 import * as XLSX from "xlsx";
 
-import { universityOrgData } from "./OrgChartManager";
+import { universityOrgData, getAllValidDepartments } from "./OrgChartManager";
 
-const VALID_DEPARTMENTS = universityOrgData.academic.departments.flatMap(group => 
-  group.subTeams.map(team => team.name)
-);
+const VALID_DEPARTMENTS = getAllValidDepartments();
 
 const VALID_COURSES = ["일반과정", "전문기술석사", "평생직업교육", "기타"];
 
