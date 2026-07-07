@@ -86,6 +86,7 @@ export default function ScholarshipManager({
   const [accountHolder, setAccountHolder] = useState("");
 
   const [sortConfig, setSortConfig] = useState({ key: "id", direction: "desc" });
+  const fileInputRef = useRef(null);
 
   useEffect(() => {
     if (dept !== "기계공학부" && dept !== "전기전자공학부") {
