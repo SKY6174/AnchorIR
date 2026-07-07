@@ -5,6 +5,7 @@ import ExcelUploader from "./components/ExcelUploader";
 import PDCAManager from "./components/PDCAManager";
 import AgreementManager from "./components/AgreementManager";
 import UnifiedCertificateManager from "./components/UnifiedCertificateManager";
+import ScholarshipManager from "./components/ScholarshipManager";
 import BudgetItemsManager from "./components/BudgetItemsManager";
 import BudgetExecutionManager from "./components/BudgetExecutionManager";
 import ProgramProgressManager from "./components/ProgramProgressManager";
@@ -7479,6 +7480,18 @@ export default function App() {
                 onUpdateCertificate={handleUpdateUnifiedCertificate}
                 onDeleteCertificate={handleDeleteUnifiedCertificate}
                 setCertificates={setUnifiedCertificates}
+                currentRole={currentRole}
+                members={members}
+              />
+            )}
+
+            {/* 장학금 관리 서브탭 활성화 시 장학금 매니저 마운트 */}
+            {agreementsSubTab === "scholarships" && (
+              <ScholarshipManager
+                key={`scholarship-${darkMode}-${selectedYear}`}
+                scholarships={scholarships}
+                setScholarships={setScholarships}
+                selectedYear={selectedYear}
                 currentRole={currentRole}
                 members={members}
               />
