@@ -472,47 +472,47 @@ export default function UnifiedCertificateManager({
         <table className="custom-table" style={{ minWidth: "1750px", fontSize: "0.85rem" }}>
           <thead>
             <tr>
-              <th onClick={() => requestSort("certNo")} style={{ cursor: "pointer", whiteSpace: "nowrap", minWidth: "110px" }}>증서번호{renderSortIndicator("certNo")}</th>
-              <th onClick={() => requestSort("certType")} style={{ cursor: "pointer", whiteSpace: "nowrap", minWidth: "60px" }}>구분{renderSortIndicator("certType")}</th>
-              <th onClick={() => requestSort("awardType")} style={{ cursor: "pointer", whiteSpace: "nowrap", minWidth: "80px" }}>상훈{renderSortIndicator("awardType")}</th>
-              <th onClick={() => requestSort("teamName")} style={{ cursor: "pointer", whiteSpace: "nowrap", minWidth: "130px" }}>팀명{renderSortIndicator("teamName")}</th>
-              <th onClick={() => requestSort("recipientName")} style={{ cursor: "pointer", whiteSpace: "nowrap", minWidth: "100px" }}>성명{renderSortIndicator("recipientName")}</th>
-              <th onClick={() => requestSort("studentId")} style={{ cursor: "pointer", whiteSpace: "nowrap", minWidth: "110px" }}>학번{renderSortIndicator("studentId")}</th>
-              <th onClick={() => requestSort("issueDate")} style={{ cursor: "pointer", whiteSpace: "nowrap", minWidth: "100px" }}>수상(수료)일{renderSortIndicator("issueDate")}</th>
-              <th style={{ whiteSpace: "nowrap", minWidth: "100px" }}>사업단명</th>
-              <th onClick={() => requestSort("issuer")} style={{ cursor: "pointer", whiteSpace: "nowrap", minWidth: "120px" }}>발급자{renderSortIndicator("issuer")}</th>
-              <th style={{ whiteSpace: "nowrap", minWidth: "220px" }}>시상내용(과정명)</th>
-              <th onClick={() => requestSort("managerDept")} style={{ cursor: "pointer", whiteSpace: "nowrap", minWidth: "110px" }}>담당자 소속{renderSortIndicator("managerDept")}</th>
-              <th onClick={() => requestSort("managerName")} style={{ cursor: "pointer", whiteSpace: "nowrap", minWidth: "80px" }}>담당자 성명{renderSortIndicator("managerName")}</th>
-              <th style={{ whiteSpace: "nowrap", minWidth: "100px" }}>비고</th>
-              {currentRole?.id !== "GUEST" && <th style={{ whiteSpace: "nowrap", minWidth: "80px" }}>관리</th>}
+              <th onClick={() => requestSort("certNo")} style={{ cursor: "pointer", whiteSpace: "nowrap", minWidth: "110px", textAlign: "center" }}>증서번호{renderSortIndicator("certNo")}</th>
+              <th onClick={() => requestSort("certType")} style={{ cursor: "pointer", whiteSpace: "nowrap", minWidth: "60px", textAlign: "center" }}>구분{renderSortIndicator("certType")}</th>
+              <th onClick={() => requestSort("awardType")} style={{ cursor: "pointer", whiteSpace: "nowrap", minWidth: "80px", textAlign: "center" }}>상훈{renderSortIndicator("awardType")}</th>
+              <th onClick={() => requestSort("teamName")} style={{ cursor: "pointer", whiteSpace: "nowrap", minWidth: "130px", textAlign: "center" }}>팀명{renderSortIndicator("teamName")}</th>
+              <th onClick={() => requestSort("recipientName")} style={{ cursor: "pointer", whiteSpace: "nowrap", minWidth: "100px", textAlign: "center" }}>성명{renderSortIndicator("recipientName")}</th>
+              <th onClick={() => requestSort("studentId")} style={{ cursor: "pointer", whiteSpace: "nowrap", minWidth: "110px", textAlign: "center" }}>학번{renderSortIndicator("studentId")}</th>
+              <th onClick={() => requestSort("issueDate")} style={{ cursor: "pointer", whiteSpace: "nowrap", minWidth: "100px", textAlign: "center" }}>수상(수료)일{renderSortIndicator("issueDate")}</th>
+              <th style={{ whiteSpace: "nowrap", minWidth: "100px", textAlign: "center" }}>사업단명</th>
+              <th onClick={() => requestSort("issuer")} style={{ cursor: "pointer", whiteSpace: "nowrap", minWidth: "120px", textAlign: "center" }}>발급자{renderSortIndicator("issuer")}</th>
+              <th style={{ whiteSpace: "nowrap", minWidth: "220px", textAlign: "center" }}>시상내용(과정명)</th>
+              <th onClick={() => requestSort("managerDept")} style={{ cursor: "pointer", whiteSpace: "nowrap", minWidth: "110px", textAlign: "center" }}>담당자 소속{renderSortIndicator("managerDept")}</th>
+              <th onClick={() => requestSort("managerName")} style={{ cursor: "pointer", whiteSpace: "nowrap", minWidth: "80px", textAlign: "center" }}>담당자 성명{renderSortIndicator("managerName")}</th>
+              <th style={{ whiteSpace: "nowrap", minWidth: "100px", textAlign: "center" }}>비고</th>
+              {currentRole?.id !== "GUEST" && <th style={{ whiteSpace: "nowrap", minWidth: "80px", textAlign: "center" }}>관리</th>}
             </tr>
           </thead>
           <tbody>
             {getSortedCerts().length > 0 ? (
               getSortedCerts().map((c, idx) => (
                 <tr key={c.id}>
-                  <td style={{ whiteSpace: "nowrap" }}>{c.certNo}</td>
+                  <td style={{ whiteSpace: "nowrap", textAlign: "center" }}>{c.certNo}</td>
                   <td style={{ textAlign: "center", whiteSpace: "nowrap" }}>
                     <span className={`status-badge ${c.certType === "상장" ? "completed" : "ongoing"}`}>
                       {c.certType}
                     </span>
                   </td>
-                  <td style={{ whiteSpace: "nowrap" }}>{c.awardType}</td>
-                  <td style={{ wordBreak: "keep-all", lineHeight: "1.4" }}>{c.teamName}</td>
-                  <td style={{ fontWeight: "600", wordBreak: "keep-all", lineHeight: "1.5" }}>
+                  <td style={{ whiteSpace: "nowrap", textAlign: "center" }}>{c.awardType}</td>
+                  <td style={{ wordBreak: "keep-all", lineHeight: "1.4", textAlign: "center" }}>{c.teamName}</td>
+                  <td style={{ fontWeight: "600", wordBreak: "keep-all", lineHeight: "1.5", textAlign: "center" }}>
                     {c.recipientName ? String(c.recipientName).split(/[\s,]+/).filter(Boolean).map((name, i) => <div key={i}>{name}</div>) : ""}
                   </td>
-                  <td style={{ wordBreak: "keep-all", lineHeight: "1.5", fontSize: "0.8rem", color: "var(--text-secondary)" }}>
+                  <td style={{ wordBreak: "keep-all", lineHeight: "1.5", fontSize: "0.8rem", color: "var(--text-secondary)", textAlign: "center" }}>
                     {c.studentId ? String(c.studentId).split(/[\s,]+/).filter(Boolean).map((id, i) => <div key={i}>{id}</div>) : ""}
                   </td>
                   <td style={{ textAlign: "center", whiteSpace: "nowrap" }}>{formatDateString(c.issueDate)}</td>
-                  <td style={{ whiteSpace: "nowrap" }}>{c.projectGroup}</td>
-                  <td style={{ whiteSpace: "nowrap" }}>{c.issuer}</td>
-                  <td style={{ wordBreak: "keep-all", lineHeight: "1.4" }}>{c.content}</td>
-                  <td style={{ whiteSpace: "nowrap", fontSize: "0.8rem", color: "var(--text-secondary)" }}>{c.managerDept}</td>
-                  <td style={{ whiteSpace: "nowrap", fontWeight: "600" }}>{c.managerName}</td>
-                  <td style={{ wordBreak: "keep-all" }}>{c.note}</td>
+                  <td style={{ whiteSpace: "nowrap", textAlign: "center" }}>{c.projectGroup}</td>
+                  <td style={{ whiteSpace: "nowrap", textAlign: "center" }}>{c.issuer}</td>
+                  <td style={{ wordBreak: "keep-all", lineHeight: "1.4", textAlign: "center" }}>{c.content}</td>
+                  <td style={{ whiteSpace: "nowrap", fontSize: "0.8rem", color: "var(--text-secondary)", textAlign: "center" }}>{c.managerDept}</td>
+                  <td style={{ whiteSpace: "nowrap", fontWeight: "600", textAlign: "center" }}>{c.managerName}</td>
+                  <td style={{ wordBreak: "keep-all", textAlign: "center" }}>{c.note}</td>
                   {currentRole?.id !== "GUEST" && (
                     <td style={{ textAlign: "center" }}>
                       <div style={{ display: "flex", gap: "0.5rem", justifyContent: "center" }}>
