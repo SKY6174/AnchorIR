@@ -1207,11 +1207,35 @@ ${aiRawText}
     }
   }, [pressReleases, selectedPressType, activePressId, selectedYear]);
 
+  // 시작시간 기준으로 1시간 경과된 시간 문자열을 반환하는 헬퍼 함수
+  const getOneHourLater = (timeStr) => {
+    if (!timeStr) return "";
+    const parts = timeStr.split(":");
+    if (parts.length < 2) return "";
+    let hours = parseInt(parts[0], 10);
+    let minutes = parseInt(parts[1], 10);
+    hours = (hours + 1) % 24;
+    const mm = String(minutes).padStart(2, "0");
+    const hh = String(hours).padStart(2, "0");
+    return `${hh}:${mm}`;
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => {
       const updated = { ...prev, [name]: value };
       
+      // 시작시간 입력 시 종료시간을 자동으로 1시간 뒤로 자동완성
+      if (name === "startTime" && value) {
+        updated.endTime = getOneHourLater(value);
+      }
+      if (name === "eventStartTime" && value) {
+        updated.eventEndTime = getOneHourLater(value);
+      }
+      if (name === "meetingStartTime" && value) {
+        updated.meetingEndTime = getOneHourLater(value);
+      }
+
       // 회의록 등록 모달에서 날짜(meetingDate)나 부서(dept)가 변경될 때 제목을 자동 제안
       if (modalType === "meeting" && (name === "meetingDate" || name === "dept")) {
         const datePart = updated.meetingDate || "";
@@ -1237,6 +1261,64 @@ ${aiRawText}
     if (currentRole.id === "GUEST") {
       alert("게스트(방문자) 계정은 읽기 전용으로만 이용하실 수 있습니다.");
       return;
+    }
+
+    // 1) 일반 일정 (monthly) 시간 선후 벨리데이션
+    if (modalType === "monthly") {
+      const hasTime = !formData.noTime;
+      const startStr = hasTime ? `${formData.startDate}T${formData.startTime || "00:00"}` : `${formData.startDate}T00:00`;
+      const endStr = hasTime ? `${formData.endDate}T${formData.endTime || "00:00"}` : `${formData.endDate}T00:00`;
+      
+      const startSecs = new Date(startStr).getTime();
+      const endSecs = new Date(endStr).getTime();
+      
+      if (isNaN(startSecs) || isNaN(endSecs)) {
+        alert("올바른 시작일시와 종료일시를 입력해 주세요.");
+        return;
+      }
+      
+      if (endSecs <= startSecs) {
+        alert("종료일시(시간)는 시작일시(시간)보다 뒤여야 합니다.");
+        return;
+      }
+    }
+
+    // 2) 행사 일정 (event) 시간 선후 벨리데이션
+    if (modalType === "event") {
+      const startStr = `${formData.eventDate}T${formData.eventStartTime || "00:00"}`;
+      const endStr = `${formData.eventDate}T${formData.eventEndTime || "00:00"}`;
+      
+      const startSecs = new Date(startStr).getTime();
+      const endSecs = new Date(endStr).getTime();
+      
+      if (isNaN(startSecs) || isNaN(endSecs)) {
+        alert("올바른 시작시간과 종료시간을 입력해 주세요.");
+        return;
+      }
+      
+      if (endSecs <= startSecs) {
+        alert("종료시간은 시작시간보다 뒤여야 합니다.");
+        return;
+      }
+    }
+
+    // 3) 회의 일정 (meeting) 시간 선후 벨리데이션
+    if (modalType === "meeting") {
+      const startStr = `${formData.meetingDate}T${formData.meetingStartTime || "00:00"}`;
+      const endStr = `${formData.meetingDate}T${formData.meetingEndTime || "00:00"}`;
+      
+      const startSecs = new Date(startStr).getTime();
+      const endSecs = new Date(endStr).getTime();
+      
+      if (isNaN(startSecs) || isNaN(endSecs)) {
+        alert("올바른 시작시간과 종료시간을 입력해 주세요.");
+        return;
+      }
+      
+      if (endSecs <= startSecs) {
+        alert("종료시간은 시작시간보다 뒤여야 합니다.");
+        return;
+      }
     }
 
     if (modalType === "monthly" || modalType === "task" || modalType === "deadline") {
