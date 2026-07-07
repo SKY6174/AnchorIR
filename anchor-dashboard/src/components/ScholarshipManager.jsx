@@ -467,25 +467,25 @@ export default function ScholarshipManager({
       </div>
 
       <div className="table-container" style={{ overflowX: "auto" }}>
-        <table className="custom-table" style={{ minWidth: "1500px", fontSize: "0.85rem" }}>
+        <table className="custom-table" style={{ minWidth: "1600px", fontSize: "0.85rem" }}>
           <thead>
             <tr>
               <th style={{ width: "60px", textAlign: "center" }}>순번</th>
-              <th onClick={() => requestSort("dept")} style={{ cursor: "pointer", textAlign: "center" }}>학부(과){renderSortIndicator("dept")}</th>
-              <th onClick={() => requestSort("major")} style={{ cursor: "pointer", textAlign: "center" }}>전공{renderSortIndicator("major")}</th>
-              <th onClick={() => requestSort("course")} style={{ cursor: "pointer", textAlign: "center" }}>과정{renderSortIndicator("course")}</th>
-              <th onClick={() => requestSort("studentId")} style={{ cursor: "pointer", textAlign: "center" }}>학번{renderSortIndicator("studentId")}</th>
-              <th onClick={() => requestSort("name")} style={{ cursor: "pointer", textAlign: "center" }}>이름{renderSortIndicator("name")}</th>
-              <th style={{ width: "120px", textAlign: "center" }}>주민번호</th>
+              <th onClick={() => requestSort("dept")} style={{ width: "150px", cursor: "pointer", textAlign: "center" }}>학부(과){renderSortIndicator("dept")}</th>
+              <th onClick={() => requestSort("major")} style={{ width: "150px", cursor: "pointer", textAlign: "center" }}>전공{renderSortIndicator("major")}</th>
+              <th onClick={() => requestSort("course")} style={{ width: "110px", cursor: "pointer", textAlign: "center" }}>과정{renderSortIndicator("course")}</th>
+              <th onClick={() => requestSort("studentId")} style={{ width: "100px", cursor: "pointer", textAlign: "center" }}>학번{renderSortIndicator("studentId")}</th>
+              <th onClick={() => requestSort("name")} style={{ width: "90px", cursor: "pointer", textAlign: "center" }}>이름{renderSortIndicator("name")}</th>
+              <th style={{ width: "140px", textAlign: "center" }}>주민번호</th>
               <th style={{ width: "60px", textAlign: "center" }}>학년</th>
               <th style={{ width: "60px", textAlign: "center" }}>학적</th>
               <th style={{ width: "80px", textAlign: "center" }}>등록여부</th>
-              <th onClick={() => requestSort("amount")} style={{ cursor: "pointer", textAlign: "right" }}>지급금액{renderSortIndicator("amount")}</th>
-              <th style={{ textAlign: "center" }}>은행명</th>
-              <th style={{ textAlign: "center" }}>계좌번호</th>
-              <th style={{ textAlign: "center" }}>예금주</th>
-              <th onClick={() => requestSort("approvalDate")} style={{ cursor: "pointer", textAlign: "center" }}>승인일{renderSortIndicator("approvalDate")}</th>
-              <th style={{ width: "100px", textAlign: "center" }}>관리</th>
+              <th onClick={() => requestSort("amount")} style={{ width: "110px", cursor: "pointer", textAlign: "right" }}>지급금액{renderSortIndicator("amount")}</th>
+              <th style={{ width: "130px", textAlign: "center" }}>은행명</th>
+              <th style={{ width: "160px", textAlign: "center" }}>계좌번호</th>
+              <th style={{ width: "90px", textAlign: "center" }}>예금주</th>
+              <th onClick={() => requestSort("approvalDate")} style={{ width: "120px", cursor: "pointer", textAlign: "center" }}>승인일{renderSortIndicator("approvalDate")}</th>
+              <th style={{ width: "90px", textAlign: "center" }}>관리</th>
             </tr>
           </thead>
           <tbody>
