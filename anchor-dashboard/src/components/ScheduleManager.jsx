@@ -2762,7 +2762,7 @@ ${aiRawText}
                   <span style={{ fontSize: "1.15rem", fontWeight: "800", color: "var(--text-primary)" }}>
                     2026년
                   </span>
-                  <span style={{ fontSize: "1.45rem", fontWeight: "900", color: "var(--accent-color)" }}>
+                  <span style={{ fontSize: "1.85rem", fontWeight: "900", color: "var(--accent-color)" }}>
                     {currentMonth}월
                   </span>
                 </div>
