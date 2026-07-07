@@ -146,7 +146,7 @@ export default function UnifiedCertificateManager({
     }
   }, [issueDate, certType]);
 
-  const [sortConfig, setSortConfig] = useState({ key: "issueDate", direction: "desc" });
+  const [sortConfig, setSortConfig] = useState({ key: "certNo", direction: "asc" });
 
   const getCalculatedYearFromDate = (dateStr, fallbackYear) => {
     if (!dateStr) return fallbackYear;
