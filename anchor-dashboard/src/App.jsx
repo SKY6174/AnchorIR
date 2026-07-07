@@ -3343,7 +3343,14 @@ export default function App() {
     if (!isDbLoaded || !isFetchCompleted) return;
     if (!currentUser || currentRole?.id === "GUEST") return;
 
-    // 💡 타 연차에 해당하는 기사들 (예: selectedYear 가 2인데 1차년도 기사가 섞여 있는 경우)
+    // 💡 탭(연차) 전환 시, 데이터를 새로 패치하기 전의 과거 연차 상태(Stale State)에서 자동저장이 도는 것을 방지
+    // 이 처리가 없으면 과거 연차 데이터가 '타 연차 기사'로 오인되어 이전 연차 DB에 계속 무한 중복 Insert 됨!
+    const isStaleState = pressReleases.length > 0 && pressReleases.some(s => s.year !== selectedYear);
+    if (isStaleState) {
+      return; // DB 패치가 완료되어 s.year === selectedYear 로 맞춰질 때까지 대기
+    }
+
+    // 💡 타 연차에 해당하는 기사들 (사용자가 날짜를 다른 연차로 수정한 경우)
     const otherYearPress = pressReleases.filter(s => getCalculatedYearFromDate(s.broadcastDate) !== selectedYear);
 
     // 현재 선택된 연차에 속하는 기사들만 추출
