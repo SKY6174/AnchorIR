@@ -2652,7 +2652,7 @@ ${aiRawText}
                   draggable={true}
                   onDragStart={(e) => {
                     setDraggingId(sched.id);
-                    e.dataTransfer.setData("text/plain", sched.id);
+                    e.dataTransfer.setData("text/plain", String(sched.id));
                   }}
                   onDragEnd={() => {
                     setDraggingId(null);
