@@ -2684,6 +2684,16 @@ export default function App() {
   const [activeDataYear, setActiveDataYear] = useState(selectedYear);
   
   // 💡 Race Condition 방지: 원격에서 막 가져온 순수 데이터를 기억하여, 사용자가 직접 수정한 경우에만 Auto-save 동작하도록 보장
+  const fetchedProjectsRef = useRef("");
+  const fetchedAgreementsRef = useRef("");
+  const fetchedUnifiedCertificatesRef = useRef("");
+  const fetchedScholarshipsRef = useRef("");
+  const fetchedEnvDataRef = useRef("");
+  const fetchedEquipDataRef = useRef("");
+  const fetchedServiceDataRef = useRef("");
+  const fetchedMonthlySchedulesRef = useRef("");
+  const fetchedEventSchedulesRef = useRef("");
+  const fetchedMeetingSchedulesRef = useRef("");
   const fetchedPressReleasesRef = useRef("");
 
   // selectedYear가 변경될 때 fetch 완료 플래그를 false로 초기화
@@ -2693,25 +2703,31 @@ export default function App() {
   
   // 1) 최초 마운트 및 연차 변경 시 DB 데이터 Fetch 연동
   useEffect(() => {
+    let active = true;
     const fetchAllDashboardData = async () => {
       try {
         // 0-0. 원격 DB 040 고도화 컬럼 실존 여부 조용히 선제 노크 (콘솔 400 에러 원천 차단 목적)
         try {
           const { error: chkServErr } = await supabase.from("procurement_services").select("date_b").limit(1);
+          if (!active) return;
           window.__HAS_NO_ADVANCED_SERVICES_COLUMNS__ = !!chkServErr;
 
           const { error: chkEnvErr } = await supabase.from("procurement_env").select("date_b").limit(1);
+          if (!active) return;
           window.__HAS_NO_ADVANCED_ENV_COLUMNS__ = !!chkEnvErr;
 
           const { error: chkEquipErr } = await supabase.from("procurement_equipment").select("date_b").limit(1);
+          if (!active) return;
           window.__HAS_NO_ADVANCED_EQUIP_COLUMNS__ = !!chkEquipErr;
         } catch (e) {
+          if (!active) return;
           window.__HAS_NO_ADVANCED_SERVICES_COLUMNS__ = true;
           window.__HAS_NO_ADVANCED_ENV_COLUMNS__ = true;
           window.__HAS_NO_ADVANCED_EQUIP_COLUMNS__ = true;
         }
 
         // 0. 로컬 스토리지 캐시 데이터 선 로드 (깜빡임 방지 및 0초 반응)
+        if (!active) return;
         const cachedProj = localStorage.getItem(`anchor_cache_proj_y${selectedYear}`);
         const cachedAgr = localStorage.getItem("anchor_cache_agreements_all");
         const cachedUnifiedCert = localStorage.getItem("anchor_cache_unified_certificates_all");
@@ -2749,6 +2765,8 @@ export default function App() {
           .eq("year", selectedYear)
           .single();
         
+        if (!active) return;
+        
         if (projData && projData.data) {
           // [성과 동기화] 원격 DB 데이터 로드 시점에도 mockData.js의 최신 KPI 구조(C-1~C-6 등)가 강제 유지되도록 동기화합니다.
           // [ID 마이그레이션] DB에서 읽어온 데이터 내의 프로그램 ID들을 5단계 위계 규정에 맞게 마이그레이션 적용합니다.
@@ -2783,6 +2801,7 @@ export default function App() {
           .from("agreements")
           .select("*");
         
+        if (!active) return;
         if (agrErr) {
           console.error("Failed to fetch agreements:", agrErr);
         } else if (agrData && agrData.length > 0) {
@@ -2815,6 +2834,8 @@ export default function App() {
         const { data: unifiedCertData, error: unifiedCertErr } = await supabase
           .from("unified_certificates")
           .select("*");
+        
+        if (!active) return;
         if (unifiedCertErr) {
           console.error("Failed to fetch unified certificates:", unifiedCertErr);
         } else if (unifiedCertData && unifiedCertData.length > 0) {
@@ -2854,6 +2875,8 @@ export default function App() {
         const { data: scholarshipData, error: scholarshipError } = await supabase
           .from("scholarships_view")
           .select("*");
+        
+        if (!active) return;
         if (scholarshipError) {
           console.error("Failed to fetch scholarships:", scholarshipError);
         } else if (scholarshipData && scholarshipData.length > 0) {
@@ -2891,6 +2914,8 @@ export default function App() {
         const { data: pEquip, error: pEquipError } = await supabase.from("procurement_equipment").select("*").eq("year", selectedYear);
         const { data: pServ, error: pServError } = await supabase.from("procurement_services").select("*").eq("year", selectedYear);
         
+        if (!active) return;
+
         if (pEnvError) {
           console.error("Supabase procurement_env fetch error (using fallback cache):", pEnvError);
           const cachedEnv = localStorage.getItem(`anchor_cache_env_y${selectedYear}`);
@@ -3001,9 +3026,11 @@ export default function App() {
           
           if (currentUser && currentRole?.id !== "GUEST") {
             const { error: seedErr } = await supabase.from("procurement_equipment").insert(initialSeed);
+            if (!active) return;
             if (!seedErr) {
               // 시딩 성공 시 즉시 DB 재조회하여 프론트 데이터 갱신
               const { data: refetched } = await supabase.from("procurement_equipment").select("*").eq("year", selectedYear);
+              if (!active) return;
               if (refetched) {
                 const formatted = refetched.map(x => {
                   const docParts = (x.related_docs || "").split(",").map(d => d.trim()).filter(Boolean);
@@ -3152,6 +3179,8 @@ export default function App() {
         const { data: sEvent } = await supabase.from("schedule_events").select("*").eq("year", selectedYear);
         const { data: sMeet } = await supabase.from("schedule_meetings").select("*").eq("year", selectedYear);
         
+        if (!active) return;
+
         if (sMonth && sMonth.length > 0) {
           const formatted = sMonth.map(x => ({
             id: Number(x.id),
@@ -3199,6 +3228,8 @@ export default function App() {
           .gte("broadcast_date", startDateStr)
           .lt("broadcast_date", endDateStr);
 
+        if (!active) return;
+
         if (sPressErr) {
           console.error("Failed to fetch press releases:", sPressErr);
         } else if (sPress && sPress.length > 0) {
@@ -3221,10 +3252,12 @@ export default function App() {
           localStorage.removeItem(`anchor_cache_press_y${selectedYear}`);
         }
 
+        if (!active) return;
         setIsDbLoaded(true);
         setIsFetchCompleted(true);
         setActiveDataYear(selectedYear); // 💡 패치가 완전히 적용된 연차를 기록하여 동기화 혼선 차단
       } catch (e) {
+        if (!active) return;
         console.error("Error loading dashboard data from Supabase:", e);
         setIsDbLoaded(true);
         setIsFetchCompleted(true);
@@ -3232,6 +3265,9 @@ export default function App() {
     };
 
     fetchAllDashboardData();
+    return () => {
+      active = false;
+    };
   }, [selectedYear]);
 
   // 2) Projects 자동 저장 디바운스 훅
