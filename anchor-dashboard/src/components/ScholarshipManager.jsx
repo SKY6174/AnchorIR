@@ -1,7 +1,18 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { Plus, Edit, Trash, Upload, X, Download, DollarSign } from "lucide-react";
 import * as XLSX from "xlsx";
+
+const VALID_DEPARTMENTS = [
+  "컴퓨터공학과", "게임영상학과", "실내건축디자인과", "기계공학부", "전기전자공학부", 
+  "조선해양시스템공학과", "화학공학과", "융합안전공학과", "인테리어시공학과",
+  "간호학부", "물리치료학과", "치위생학과", "식품영양학과", "호텔조리제빵과", 
+  "스포츠재활학부", "스포츠건강재활학과", "푸드케어학과", "골프산업과", "반려동물보건과",
+  "사회복지학과", "유아교육과", "세무회계학과", "사회복지상담학과", "국제학부",
+  "미래모빌리티제조학과", "바이오화학생산기술학과", "인공지능기반텔레헬스학과"
+];
+
+const VALID_COURSES = ["일반과정", "전문기술석사", "평생직업교육", "기타"];
 
 export default function ScholarshipManager({
   scholarships = [],
@@ -14,9 +25,12 @@ export default function ScholarshipManager({
 }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingId, setEditingId] = useState(null);
-  const fileInputRef = useRef(null);
-
   // 폼 필드
+  useEffect(() => {
+    if (dept !== "기계공학부" && dept !== "전기전자공학부") {
+      setMajor("");
+    }
+  }, [dept]);
   const [dept, setDept] = useState("");
   const [major, setMajor] = useState("");
   const [course, setCourse] = useState("");
@@ -123,7 +137,17 @@ export default function ScholarshipManager({
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!name || !dept || !amount) {
-      alert("이름, 학과, 지급금액은 필수입니다.");
+      alert("이름, 학부(과), 지급금액은 필수입니다.");
+      return;
+    }
+
+    if (!VALID_DEPARTMENTS.includes(dept)) {
+      alert("올바른 학부(과)명을 입력해주세요.");
+      return;
+    }
+
+    if (studentId && studentId.length !== 7) {
+      alert("학번은 7자리여야 합니다.");
       return;
     }
 
@@ -293,7 +317,7 @@ export default function ScholarshipManager({
           <thead>
             <tr>
               <th style={{ width: "60px", textAlign: "center" }}>순번</th>
-              <th onClick={() => requestSort("dept")} style={{ cursor: "pointer" }}>학과{renderSortIndicator("dept")}</th>
+              <th onClick={() => requestSort("dept")} style={{ cursor: "pointer" }}>학부(과){renderSortIndicator("dept")}</th>
               <th onClick={() => requestSort("major")} style={{ cursor: "pointer" }}>전공{renderSortIndicator("major")}</th>
               <th onClick={() => requestSort("course")} style={{ cursor: "pointer" }}>과정{renderSortIndicator("course")}</th>
               <th onClick={() => requestSort("studentId")} style={{ cursor: "pointer" }}>학번{renderSortIndicator("studentId")}</th>
@@ -367,16 +391,37 @@ export default function ScholarshipManager({
                 
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "1rem" }}>
                   <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
-                    <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>학과 <span style={{ color: "red" }}>*</span></label>
+                    <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>학부(과) <span style={{ color: "red" }}>*</span></label>
                     <input type="text" value={dept} onChange={e => setDept(e.target.value)} required style={{ padding: "0.5rem", borderRadius: "0.5rem", background: "var(--bg-tertiary)", border: "1px solid var(--border-color)", color: "var(--text-primary)" }} />
                   </div>
                   <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
                     <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>전공</label>
-                    <input type="text" value={major} onChange={e => setMajor(e.target.value)} style={{ padding: "0.5rem", borderRadius: "0.5rem", background: "var(--bg-tertiary)", border: "1px solid var(--border-color)", color: "var(--text-primary)" }} />
+                    {(dept === "기계공학부" || dept === "전기전자공학부") ? (
+                      <select value={major} onChange={e => setMajor(e.target.value)} style={{ padding: "0.5rem", borderRadius: "0.5rem", background: "var(--bg-tertiary)", border: "1px solid var(--border-color)", color: "var(--text-primary)" }}>
+                        <option value="">선택안함</option>
+                        {dept === "기계공학부" && (
+                          <>
+                            <option value="기계시스템전공">기계시스템전공</option>
+                            <option value="기계설비전공">기계설비전공</option>
+                          </>
+                        )}
+                        {dept === "전기전자공학부" && (
+                          <>
+                            <option value="전기전공">전기전공</option>
+                            <option value="스마트전자전공">스마트전자전공</option>
+                          </>
+                        )}
+                      </select>
+                    ) : (
+                      <input type="text" value={major} onChange={e => setMajor(e.target.value)} disabled style={{ padding: "0.5rem", borderRadius: "0.5rem", background: "var(--bg-tertiary)", border: "1px solid var(--border-color)", color: "var(--text-secondary)", opacity: 0.5, cursor: "not-allowed" }} />
+                    )}
                   </div>
                   <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
                     <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>과정</label>
-                    <input type="text" value={course} onChange={e => setCourse(e.target.value)} style={{ padding: "0.5rem", borderRadius: "0.5rem", background: "var(--bg-tertiary)", border: "1px solid var(--border-color)", color: "var(--text-primary)" }} />
+                    <select value={course} onChange={e => setCourse(e.target.value)} style={{ padding: "0.5rem", borderRadius: "0.5rem", background: "var(--bg-tertiary)", border: "1px solid var(--border-color)", color: "var(--text-primary)" }}>
+                      <option value="">선택안함</option>
+                      {VALID_COURSES.map(c => <option key={c} value={c}>{c}</option>)}
+                    </select>
                   </div>
                 </div>
 
