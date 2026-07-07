@@ -406,6 +406,25 @@ export default function UnifiedCertificateManager({
     XLSX.writeFile(wb, `${sheetName}_${selectedYear}년차.xlsx`);
   };
 
+  const downloadExcelTemplate = () => {
+    const headers = [
+      "증서번호", "상장/이수증", "상훈", "팀명", "성명", "학번", 
+      "생년월일", "휴대폰", "수상일(수료일)", "발급부서", "발급자명의", 
+      "시상내용(과정명)", "담당자-소속", "담당자-성명", "비고"
+    ];
+    const data = [[]]; // 빈 데이터 한 줄
+    const ws = XLSX.utils.aoa_to_sheet([headers, ...data]);
+    
+    // Auto width
+    const colWidths = headers.map(() => ({ wch: 15 }));
+    ws['!cols'] = colWidths;
+
+    const wb = XLSX.utils.book_new();
+    const sheetName = managerType === "award" ? "상장_업로드서식" : (managerType === "certificate" ? "이수증_업로드서식" : "상장_이수증_업로드서식");
+    XLSX.utils.book_append_sheet(wb, ws, "업로드서식");
+    XLSX.writeFile(wb, `${sheetName}.xlsx`);
+  };
+
   const titleText = managerType === "award" ? "상장 관리" : (managerType === "certificate" ? "이수증 관리" : "통합 상장∙이수증 관리");
 
   return (
@@ -417,9 +436,14 @@ export default function UnifiedCertificateManager({
         </h2>
         <div style={{ display: "flex", gap: "0.5rem" }}>
           {currentRole?.id !== "GUEST" && (
-            <button className="action-btn upload-btn" onClick={() => fileInputRef.current?.click()}>
-              <Upload size={16} /> 엑셀 업로드
-            </button>
+            <>
+              <button className="action-btn download-btn" onClick={downloadExcelTemplate} style={{ background: "var(--bg-tertiary)" }}>
+                <Download size={16} /> 엑셀 서식
+              </button>
+              <button className="action-btn upload-btn" onClick={() => fileInputRef.current?.click()}>
+                <Upload size={16} /> 엑셀 업로드
+              </button>
+            </>
           )}
           <button className="action-btn download-btn" onClick={downloadExcel}>
             <Download size={16} /> 엑셀 다운로드

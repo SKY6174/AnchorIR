@@ -260,7 +260,7 @@ export default function ScholarshipManager({
         const newRec = {
           year: selectedYear,
           dept: row[iDept] ? String(row[iDept]) : "",
-          major: iMajor !== -1 && row[iMajor] ? String(row[iMajor]) : "",
+          major: iMajor !== -1 && row[iMajor] && String(row[iMajor]) !== String(row[iDept]) ? String(row[iMajor]) : "",
           course: iCourse !== -1 && row[iCourse] ? String(row[iCourse]) : "",
           studentId: iStudentId !== -1 && row[iStudentId] ? String(row[iStudentId]) : "",
           name: String(row[iName]),
@@ -327,6 +327,23 @@ export default function ScholarshipManager({
     XLSX.writeFile(workbook, `장학금_내역_${selectedYear}차년도.xlsx`);
   };
 
+  const handleExcelTemplateDownload = () => {
+    const headers = [
+      "학과", "전공", "과정", "학번", "이름", "주민번호", 
+      "학년", "학적", "등록여부", "지급금액", "은행명", "계좌", "예금주"
+    ];
+    const data = [[]]; // 빈 데이터 한 줄
+    const ws = XLSX.utils.aoa_to_sheet([headers, ...data]);
+    
+    // Auto width
+    const colWidths = headers.map(() => ({ wch: 15 }));
+    ws['!cols'] = colWidths;
+
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, ws, "장학금_업로드서식");
+    XLSX.writeFile(workbook, "장학금_업로드서식.xlsx");
+  };
+
   const sortedData = getSortedItems();
 
   return (
@@ -344,6 +361,9 @@ export default function ScholarshipManager({
             ref={fileInputRef}
             onChange={handleExcelUpload}
           />
+          <button className="action-btn download-btn" onClick={handleExcelTemplateDownload} style={{ background: "var(--bg-tertiary)" }}>
+            <Download size={16} /> 엑셀 서식
+          </button>
           <button className="action-btn upload-btn" onClick={() => fileInputRef.current.click()}>
             <Upload size={16} /> 엑셀 업로드
           </button>
