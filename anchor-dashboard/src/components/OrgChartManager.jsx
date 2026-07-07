@@ -24,7 +24,7 @@ export const academicYears = {
       {
         name: "자연과학계열",
         subTeams: [
-          { name: "간호학부" },
+          { name: "간호학과" },
           { name: "물리치료학과" },
           { name: "치위생학과" },
           { name: "식품영양학과" },
@@ -70,7 +70,7 @@ export const academicYears = {
       {
         name: "자연과학계열",
         subTeams: [
-          { name: "간호학부" },
+          { name: "간호학과" },
           { name: "물리치료학과" },
           { name: "치위생학과" },
           { name: "식품영양학과" },
@@ -158,7 +158,7 @@ export const academicYears = {
       {
         name: "자연과학계열",
         subTeams: [
-          { name: "간호학부" },
+          { name: "간호학과" },
           { name: "물리치료학과" },
           { name: "치위생학과" },
           { name: "반려동물보건과" },

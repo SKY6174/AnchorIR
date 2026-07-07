@@ -79,15 +79,14 @@ export default function ScholarshipManager({
   const [bankName, setBankName] = useState("");
   const [accountNum, setAccountNum] = useState("");
   const [accountHolder, setAccountHolder] = useState("");
+  const [isCustomDept, setIsCustomDept] = useState(false);
 
   const [sortConfig, setSortConfig] = useState({ key: "id", direction: "desc" });
   const fileInputRef = useRef(null);
 
   useEffect(() => {
-    if (dept !== "기계공학부" && dept !== "전기전자공학부") {
-      setMajor("");
-    }
-  }, [dept]);
+    setMajor("");
+  }, [dept, isCustomDept]);
 
   const filteredItems = scholarships.filter(s => s.year === selectedYear);
 
@@ -155,11 +154,17 @@ export default function ScholarshipManager({
     setBankName("");
     setAccountNum("");
     setAccountHolder("");
+    setIsCustomDept(false);
     setIsModalOpen(true);
   };
 
   const openModalForEdit = (item) => {
     setEditingId(item.id);
+    if (!VALID_DEPARTMENTS.includes(item.dept) && item.dept) {
+      setIsCustomDept(true);
+    } else {
+      setIsCustomDept(false);
+    }
     setDept(item.dept || "");
     setMajor(item.major || "");
     setCourse(item.course || "");
@@ -454,14 +459,29 @@ export default function ScholarshipManager({
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "1rem" }}>
                   <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
                     <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>학부(과) <span style={{ color: "red" }}>*</span></label>
-                    <select value={dept} onChange={e => setDept(e.target.value)} required style={{ padding: "0.5rem", borderRadius: "0.5rem", background: "var(--bg-tertiary)", border: "1px solid var(--border-color)", color: "var(--text-primary)" }}>
-                      <option value="">선택안함</option>
-                      {VALID_DEPARTMENTS.map(d => <option key={d} value={d}>{d}</option>)}
-                    </select>
+                    {isCustomDept ? (
+                      <div style={{ display: "flex", gap: "0.5rem" }}>
+                        <input type="text" value={dept} onChange={e => setDept(e.target.value)} required placeholder="직접입력" style={{ flex: 1, padding: "0.5rem", borderRadius: "0.5rem", background: "var(--bg-tertiary)", border: "1px solid var(--border-color)", color: "var(--text-primary)" }} />
+                        <button type="button" onClick={() => { setIsCustomDept(false); setDept(""); }} style={{ padding: "0 0.8rem", borderRadius: "0.5rem", background: "rgba(255,255,255,0.1)", border: "none", color: "var(--text-primary)", cursor: "pointer", fontSize: "0.8rem", fontWeight: "600" }}>취소</button>
+                      </div>
+                    ) : (
+                      <select value={dept} onChange={e => {
+                        if (e.target.value === "custom") {
+                          setIsCustomDept(true);
+                          setDept("");
+                        } else {
+                          setDept(e.target.value);
+                        }
+                      }} required style={{ padding: "0.5rem", borderRadius: "0.5rem", background: "var(--bg-tertiary)", border: "1px solid var(--border-color)", color: "var(--text-primary)" }}>
+                        <option value="">선택안함</option>
+                        {VALID_DEPARTMENTS.map(d => <option key={d} value={d}>{d}</option>)}
+                        <option value="custom">직접입력</option>
+                      </select>
+                    )}
                   </div>
                   <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
                     <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>전공</label>
-                    {(dept === "기계공학부" || dept === "전기전자공학부") ? (
+                    {(!isCustomDept && (dept === "기계공학부" || dept === "전기전자공학부" || dept === "스포츠재활학부")) ? (
                       <select value={major} onChange={e => setMajor(e.target.value)} style={{ padding: "0.5rem", borderRadius: "0.5rem", background: "var(--bg-tertiary)", border: "1px solid var(--border-color)", color: "var(--text-primary)" }}>
                         <option value="">선택안함</option>
                         {dept === "기계공학부" && (
@@ -476,9 +496,15 @@ export default function ScholarshipManager({
                             <option value="스마트전자전공">스마트전자전공</option>
                           </>
                         )}
+                        {dept === "스포츠재활학부" && (
+                          <>
+                            <option value="스포츠지도전공">스포츠지도전공</option>
+                            <option value="스포츠재활전공">스포츠재활전공</option>
+                          </>
+                        )}
                       </select>
                     ) : (
-                      <input type="text" value={major} onChange={e => setMajor(e.target.value)} disabled style={{ padding: "0.5rem", borderRadius: "0.5rem", background: "var(--bg-tertiary)", border: "1px solid var(--border-color)", color: "var(--text-secondary)", opacity: 0.5, cursor: "not-allowed" }} />
+                      <input type="text" value={major} onChange={e => setMajor(e.target.value)} disabled={!isCustomDept && !(dept || "").endsWith("학부")} style={{ padding: "0.5rem", borderRadius: "0.5rem", background: "var(--bg-tertiary)", border: "1px solid var(--border-color)", color: "var(--text-primary)", opacity: (!isCustomDept && !(dept || "").endsWith("학부")) ? 0.5 : 1, cursor: (!isCustomDept && !(dept || "").endsWith("학부")) ? "not-allowed" : "text" }} />
                     )}
                   </div>
                   <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
