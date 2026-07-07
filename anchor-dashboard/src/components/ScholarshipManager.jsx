@@ -14,6 +14,51 @@ const VALID_DEPARTMENTS = [
 
 const VALID_COURSES = ["일반과정", "전문기술석사", "평생직업교육", "기타"];
 
+const BANK_FORMATS = {
+  "KB국민은행": "000000-00-000000",
+  "신한은행": "000-000-000000",
+  "우리은행": "0000-000-000000",
+  "하나은행": "000-000000-00000",
+  "NH농협은행": "000-0000-0000-00",
+  "IBK기업은행": "000-000000-00-000",
+  "카카오뱅크": "3333-00-0000000",
+  "토스뱅크": "1000-0000-0000",
+  "케이뱅크": "100-000-000000",
+  "새마을금고": "9000-0000-0000-0",
+  "부산은행": "000-00-000000-0",
+  "대구은행": "000-00-000000-0",
+  "경남은행": "000-00-0000000",
+  "광주은행": "000-000-000000",
+  "전북은행": "000-00-0000000",
+  "SC제일은행": "000-00-000000",
+  "수협은행": "000-00-000000",
+  "신협": "00000-00-000000",
+  "우체국": "000000-00-000000",
+  "기타은행": ""
+};
+
+const formatAccountNum = (bank, value) => {
+  if (!value) return "";
+  const digits = value.replace(/[^0-9]/g, "");
+  const format = BANK_FORMATS[bank];
+  if (!format || bank === "기타은행") return digits;
+
+  let result = "";
+  let digitIndex = 0;
+  for (let i = 0; i < format.length; i++) {
+    if (digitIndex >= digits.length) break;
+    if (format[i] === "-") {
+      result += "-";
+    } else {
+      result += digits[digitIndex++];
+    }
+  }
+  if (digitIndex < digits.length) {
+    result += "-" + digits.substring(digitIndex);
+  }
+  return result;
+};
+
 export default function ScholarshipManager({
   scholarships = [],
   selectedYear,
@@ -26,11 +71,6 @@ export default function ScholarshipManager({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingId, setEditingId] = useState(null);
   // 폼 필드
-  useEffect(() => {
-    if (dept !== "기계공학부" && dept !== "전기전자공학부") {
-      setMajor("");
-    }
-  }, [dept]);
   const [dept, setDept] = useState("");
   const [major, setMajor] = useState("");
   const [course, setCourse] = useState("");
@@ -46,6 +86,12 @@ export default function ScholarshipManager({
   const [accountHolder, setAccountHolder] = useState("");
 
   const [sortConfig, setSortConfig] = useState({ key: "id", direction: "desc" });
+
+  useEffect(() => {
+    if (dept !== "기계공학부" && dept !== "전기전자공학부") {
+      setMajor("");
+    }
+  }, [dept]);
 
   const filteredItems = scholarships.filter(s => s.year === selectedYear);
 
@@ -129,7 +175,7 @@ export default function ScholarshipManager({
     setRegStatus(item.regStatus || "");
     setAmount(item.amount || "");
     setBankName(item.bankName || "");
-    setAccountNum(item.accountNum || "");
+    setAccountNum(formatAccountNum(item.bankName, item.accountNum || ""));
     setAccountHolder(item.accountHolder || "");
     setIsModalOpen(true);
   };
@@ -462,11 +508,14 @@ export default function ScholarshipManager({
                   </div>
                   <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
                     <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>은행명</label>
-                    <input type="text" value={bankName} onChange={e => setBankName(e.target.value)} style={{ padding: "0.5rem", borderRadius: "0.5rem", background: "var(--bg-tertiary)", border: "1px solid var(--border-color)", color: "var(--text-primary)" }} />
+                    <select value={bankName} onChange={e => { setBankName(e.target.value); setAccountNum(formatAccountNum(e.target.value, accountNum)); }} style={{ padding: "0.5rem", borderRadius: "0.5rem", background: "var(--bg-tertiary)", border: "1px solid var(--border-color)", color: "var(--text-primary)" }}>
+                      <option value="">은행 선택</option>
+                      {Object.keys(BANK_FORMATS).map(b => <option key={b} value={b}>{b}</option>)}
+                    </select>
                   </div>
                   <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
                     <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>계좌번호</label>
-                    <input type="text" value={accountNum} onChange={e => setAccountNum(e.target.value)} style={{ padding: "0.5rem", borderRadius: "0.5rem", background: "var(--bg-tertiary)", border: "1px solid var(--border-color)", color: "var(--text-primary)" }} />
+                    <input type="text" value={accountNum} onChange={e => setAccountNum(formatAccountNum(bankName, e.target.value))} placeholder={BANK_FORMATS[bankName] || "계좌번호 입력 (숫자만)"} style={{ padding: "0.5rem", borderRadius: "0.5rem", background: "var(--bg-tertiary)", border: "1px solid var(--border-color)", color: "var(--text-primary)" }} />
                   </div>
                   <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
                     <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>예금주</label>
