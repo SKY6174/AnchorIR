@@ -381,19 +381,19 @@ export default function ScholarshipManager({
           <thead>
             <tr>
               <th style={{ width: "60px", textAlign: "center" }}>순번</th>
-              <th onClick={() => requestSort("dept")} style={{ cursor: "pointer" }}>학부(과){renderSortIndicator("dept")}</th>
-              <th onClick={() => requestSort("major")} style={{ cursor: "pointer" }}>전공{renderSortIndicator("major")}</th>
-              <th onClick={() => requestSort("course")} style={{ cursor: "pointer" }}>과정{renderSortIndicator("course")}</th>
-              <th onClick={() => requestSort("studentId")} style={{ cursor: "pointer" }}>학번{renderSortIndicator("studentId")}</th>
-              <th onClick={() => requestSort("name")} style={{ cursor: "pointer" }}>이름{renderSortIndicator("name")}</th>
+              <th onClick={() => requestSort("dept")} style={{ cursor: "pointer", textAlign: "center" }}>학부(과){renderSortIndicator("dept")}</th>
+              <th onClick={() => requestSort("major")} style={{ cursor: "pointer", textAlign: "center" }}>전공{renderSortIndicator("major")}</th>
+              <th onClick={() => requestSort("course")} style={{ cursor: "pointer", textAlign: "center" }}>과정{renderSortIndicator("course")}</th>
+              <th onClick={() => requestSort("studentId")} style={{ cursor: "pointer", textAlign: "center" }}>학번{renderSortIndicator("studentId")}</th>
+              <th onClick={() => requestSort("name")} style={{ cursor: "pointer", textAlign: "center" }}>이름{renderSortIndicator("name")}</th>
               <th style={{ width: "120px", textAlign: "center" }}>주민번호</th>
               <th style={{ width: "60px", textAlign: "center" }}>학년</th>
               <th style={{ width: "60px", textAlign: "center" }}>학적</th>
               <th style={{ width: "80px", textAlign: "center" }}>등록여부</th>
               <th onClick={() => requestSort("amount")} style={{ cursor: "pointer", textAlign: "right" }}>지급금액{renderSortIndicator("amount")}</th>
-              <th>은행명</th>
-              <th>계좌번호</th>
-              <th>예금주</th>
+              <th style={{ textAlign: "center" }}>은행명</th>
+              <th style={{ textAlign: "center" }}>계좌번호</th>
+              <th style={{ textAlign: "center" }}>예금주</th>
               <th style={{ width: "100px", textAlign: "center" }}>관리</th>
             </tr>
           </thead>
@@ -402,19 +402,19 @@ export default function ScholarshipManager({
               sortedData.map((item, index) => (
                 <tr key={item.id} className="table-row">
                   <td style={{ textAlign: "center" }}>{index + 1}</td>
-                  <td>{item.dept}</td>
-                  <td>{item.major}</td>
-                  <td>{item.course}</td>
-                  <td>{item.studentId}</td>
-                  <td>{item.name}</td>
+                  <td style={{ textAlign: "center" }}>{item.dept}</td>
+                  <td style={{ textAlign: "center" }}>{item.major}</td>
+                  <td style={{ textAlign: "center" }}>{item.course}</td>
+                  <td style={{ textAlign: "center" }}>{item.studentId}</td>
+                  <td style={{ textAlign: "center" }}>{item.name}</td>
                   <td style={{ textAlign: "center", color: "var(--text-secondary)" }}>{maskResidentId(item.residentId)}</td>
                   <td style={{ textAlign: "center" }}>{item.grade}</td>
                   <td style={{ textAlign: "center" }}>{item.enrollStatus}</td>
                   <td style={{ textAlign: "center" }}>{item.regStatus}</td>
                   <td style={{ textAlign: "right", fontWeight: "bold" }}>{item.amount ? Number(item.amount).toLocaleString() : ""}</td>
-                  <td>{item.bankName}</td>
-                  <td style={{ color: "var(--text-secondary)" }}>{maskAccountNum(item.accountNum)}</td>
-                  <td>{item.accountHolder}</td>
+                  <td style={{ textAlign: "center" }}>{item.bankName}</td>
+                  <td style={{ textAlign: "center", color: "var(--text-secondary)" }}>{maskAccountNum(item.accountNum)}</td>
+                  <td style={{ textAlign: "center" }}>{item.accountHolder}</td>
                   <td style={{ textAlign: "center" }}>
                     <div style={{ display: "flex", justifyContent: "center", gap: "0.5rem" }}>
                       <button className="icon-btn" onClick={() => openModalForEdit(item)} title="수정" style={{ color: "var(--text-secondary)" }}>
