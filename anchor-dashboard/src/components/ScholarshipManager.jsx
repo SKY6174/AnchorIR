@@ -9,6 +9,19 @@ const VALID_DEPARTMENTS = getAllValidDepartments();
 
 const VALID_COURSES = ["일반과정", "전문기술석사", "평생직업교육", "기타"];
 
+const extractYear = (dateStr) => {
+  if (!dateStr) return null;
+  const str = String(dateStr);
+  const match = str.match(/(20\d{2})/);
+  if (match) return Number(match[1]);
+  const num = Number(str);
+  if (!isNaN(num) && num > 40000 && num < 50000) {
+    const d = new Date(Math.round((num - 25569) * 86400 * 1000));
+    if (!isNaN(d.getTime())) return d.getFullYear();
+  }
+  return null;
+};
+
 const BANK_FORMATS = {
   "KB국민은행": "000000-00-000000",
   "신한은행": "000-000-000000",
@@ -201,8 +214,10 @@ export default function ScholarshipManager({
       return;
     }
 
+    const targetYear = extractYear(approvalDate) || selectedYear;
+
     const payload = {
-      year: selectedYear,
+      year: targetYear,
       dept, major, course, studentId, name,
       residentId, grade, enrollStatus, regStatus,
       amount: amount.toString().replace(/,/g, ''), // 숫자만 저장
@@ -307,7 +322,9 @@ export default function ScholarshipManager({
           approvalDate: iApprovalDate !== -1 && row[iApprovalDate] ? String(row[iApprovalDate]) : ""
         };
 
-        const isDuplicate = filteredItems.some(
+        newRec.year = extractYear(newRec.approvalDate) || selectedYear;
+
+        const isDuplicate = scholarships.some(
           c =>
             c.year === newRec.year &&
             c.dept === newRec.dept &&
