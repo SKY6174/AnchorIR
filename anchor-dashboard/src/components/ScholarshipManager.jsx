@@ -262,11 +262,11 @@ export default function ScholarshipManager({
   const sortedData = getSortedItems();
 
   return (
-    <div className="card" style={{ display: "flex", flexDirection: "column", height: "100%", gap: "1rem" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <h2 style={{ fontSize: "1.2rem", fontWeight: "bold", display: "flex", alignItems: "center", gap: "0.5rem" }}>
-          <DollarSign className="text-blue-400" />
-          장학금 관리 ({selectedYear}차년도)
+    <div style={{ padding: "1rem" }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
+        <h2 style={{ fontSize: "1.25rem", fontWeight: "bold", display: "flex", alignItems: "center", gap: "0.5rem" }}>
+          <DollarSign size={24} color="var(--accent-color)" />
+          장학금 관리
         </h2>
         <div style={{ display: "flex", gap: "0.5rem" }}>
           <input
@@ -276,35 +276,35 @@ export default function ScholarshipManager({
             ref={fileInputRef}
             onChange={handleExcelUpload}
           />
-          <button className="action-btn" onClick={() => fileInputRef.current.click()} style={{ background: "var(--bg-tertiary)", color: "var(--text-primary)" }}>
+          <button className="action-btn upload-btn" onClick={() => fileInputRef.current.click()}>
             <Upload size={16} /> 엑셀 업로드
           </button>
-          <button className="action-btn" onClick={handleExcelDownload} style={{ background: "var(--bg-tertiary)", color: "var(--text-primary)" }}>
+          <button className="action-btn download-btn" onClick={handleExcelDownload}>
             <Download size={16} /> 엑셀 다운로드
           </button>
-          <button className="action-btn submit-btn" onClick={openModalForNew}>
-            <Plus size={16} /> 신규 장학금 등록
+          <button className="action-btn add-btn" onClick={openModalForNew}>
+            <Plus size={16} /> 신규 등록
           </button>
         </div>
       </div>
 
-      <div className="table-container" style={{ flex: 1, overflowY: "auto" }}>
-        <table className="data-table" style={{ whiteSpace: "nowrap" }}>
+      <div className="table-container" style={{ overflowX: "auto" }}>
+        <table className="custom-table" style={{ minWidth: "1500px", fontSize: "0.85rem" }}>
           <thead>
             <tr>
-              <th style={{ width: "50px", textAlign: "center" }}>순번</th>
+              <th style={{ width: "60px", textAlign: "center" }}>순번</th>
               <th onClick={() => requestSort("dept")} style={{ cursor: "pointer" }}>학과{renderSortIndicator("dept")}</th>
               <th onClick={() => requestSort("major")} style={{ cursor: "pointer" }}>전공{renderSortIndicator("major")}</th>
               <th onClick={() => requestSort("course")} style={{ cursor: "pointer" }}>과정{renderSortIndicator("course")}</th>
               <th onClick={() => requestSort("studentId")} style={{ cursor: "pointer" }}>학번{renderSortIndicator("studentId")}</th>
               <th onClick={() => requestSort("name")} style={{ cursor: "pointer" }}>이름{renderSortIndicator("name")}</th>
-              <th style={{ width: "140px", textAlign: "center" }}>주민번호</th>
+              <th style={{ width: "120px", textAlign: "center" }}>주민번호</th>
               <th style={{ width: "60px", textAlign: "center" }}>학년</th>
               <th style={{ width: "60px", textAlign: "center" }}>학적</th>
               <th style={{ width: "80px", textAlign: "center" }}>등록여부</th>
               <th onClick={() => requestSort("amount")} style={{ cursor: "pointer", textAlign: "right" }}>지급금액{renderSortIndicator("amount")}</th>
               <th>은행명</th>
-              <th>계좌</th>
+              <th>계좌번호</th>
               <th>예금주</th>
               <th style={{ width: "100px", textAlign: "center" }}>관리</th>
             </tr>
@@ -343,8 +343,11 @@ export default function ScholarshipManager({
               ))
             ) : (
               <tr>
-                <td colSpan="15" style={{ textAlign: "center", padding: "2rem", color: "var(--text-secondary)" }}>
-                  등록된 장학금 데이터가 없습니다.
+                <td colSpan="15" style={{ textAlign: "center", padding: "3rem" }}>
+                  <div style={{ color: "var(--text-tertiary)", display: "flex", flexDirection: "column", alignItems: "center", gap: "1rem" }}>
+                    <DollarSign size={48} style={{ opacity: 0.2 }} />
+                    <p>등록된 내역이 없습니다.</p>
+                  </div>
                 </td>
               </tr>
             )}
