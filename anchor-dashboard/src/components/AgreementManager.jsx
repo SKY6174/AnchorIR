@@ -1151,23 +1151,23 @@ export default function AgreementManager({
           <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.75rem", color: "var(--text-primary)" }}>
             <thead>
               <tr style={{ background: "var(--border-color, rgba(255,255,255,0.03))", borderBottom: "1px solid var(--border-color-dark)" }}>
-                <th onClick={() => requestSort("date")} style={{ padding: "0.6rem 0.8rem", textAlign: "left", width: "10%", cursor: "pointer" }}>
+                <th onClick={() => requestSort("date")} style={{ padding: "0.6rem 0.8rem", textAlign: "center", width: "10%", cursor: "pointer" }}>
                   날짜 {sortConfig.key === "date" ? (sortConfig.direction === "asc" ? "▲" : "▼") : "⇅"}
                 </th>
-                <th onClick={() => requestSort("center")} style={{ padding: "0.6rem 0.8rem", textAlign: "left", width: "10%", cursor: "pointer" }}>
+                <th onClick={() => requestSort("center")} style={{ padding: "0.6rem 0.8rem", textAlign: "center", width: "10%", cursor: "pointer" }}>
                   관련 센터 {sortConfig.key === "center" ? (sortConfig.direction === "asc" ? "▲" : "▼") : "⇅"}
                 </th>
-                <th onClick={() => requestSort("organizations")} style={{ padding: "0.6rem 0.8rem", textAlign: "left", width: "16%", cursor: "pointer" }}>
+                <th onClick={() => requestSort("organizations")} style={{ padding: "0.6rem 0.8rem", textAlign: "center", width: "16%", cursor: "pointer" }}>
                   협약기관 {sortConfig.key === "organizations" ? (sortConfig.direction === "asc" ? "▲" : "▼") : "⇅"}
                 </th>
                 <th style={{ padding: "0.6rem 0.8rem", textAlign: "left", width: "22%" }}>협약주체 (UC & 타기관)</th>
-                <th onClick={() => requestSort("unitId")} style={{ padding: "0.6rem 0.8rem", textAlign: "left", width: "8%", cursor: "pointer" }}>
+                <th onClick={() => requestSort("unitId")} style={{ padding: "0.6rem 0.8rem", textAlign: "center", width: "8%", cursor: "pointer" }}>
                   단위과제 {sortConfig.key === "unitId" ? (sortConfig.direction === "asc" ? "▲" : "▼") : "⇅"}
                 </th>
-                <th onClick={() => requestSort("agreementType")} style={{ padding: "0.6rem 0.8rem", textAlign: "left", width: "10%", cursor: "pointer" }}>
+                <th onClick={() => requestSort("agreementType")} style={{ padding: "0.6rem 0.8rem", textAlign: "center", width: "10%", cursor: "pointer" }}>
                   협약유형 {sortConfig.key === "agreementType" ? (sortConfig.direction === "asc" ? "▲" : "▼") : "⇅"}
                 </th>
-                <th style={{ padding: "0.6rem 0.8rem", textAlign: "left", width: "14%" }}>협약내용 범주</th>
+                <th style={{ padding: "0.6rem 0.8rem", textAlign: "center", width: "14%" }}>협약내용 범주</th>
                 <th style={{ padding: "0.6rem 0.8rem", textAlign: "center", width: "5%" }}>사본</th>
                 {(currentRole.rank <= 2) && <th style={{ padding: "0.6rem 0.8rem", textAlign: "center", width: "5%" }}>제어</th>}
               </tr>
@@ -1184,11 +1184,11 @@ export default function AgreementManager({
                   const hasInvalidDate = !isDateValidForYear(agr.date, selectedYear);
                   return (
                     <tr key={agr.id} style={{ borderBottom: "1px solid var(--border-color-dark)", background: hasInvalidDate ? "rgba(239, 68, 68, 0.05)" : "transparent" }}>
-                      <td style={{ padding: "0.6rem 0.8rem" }}>{agr.date}</td>
-                      <td style={{ padding: "0.6rem 0.8rem" }}>
+                      <td style={{ padding: "0.6rem 0.8rem", textAlign: "center" }}>{agr.date}</td>
+                      <td style={{ padding: "0.6rem 0.8rem", textAlign: "center" }}>
                         <span style={{ background: "rgba(96,165,250,0.1)", color: "#60a5fa", padding: "0.15rem 0.35rem", borderRadius: "0.25rem", fontSize: "0.65rem", fontWeight: "700" }}>{agr.center}</span>
                       </td>
-                      <td style={{ padding: "0.6rem 0.8rem" }}>
+                      <td style={{ padding: "0.6rem 0.8rem", textAlign: "center" }}>
                         {Array.isArray(agr.organizations) ? (
                           agr.organizations.map((org, i) => (
                             <span key={i} style={{ background: "var(--border-color)", padding: "0.15rem 0.35rem", borderRadius: "0.25rem", color: "var(--text-primary)", marginRight: "0.2rem" }}>
@@ -1199,14 +1199,14 @@ export default function AgreementManager({
                           <span style={{ background: "var(--border-color)", padding: "0.15rem 0.35rem", borderRadius: "0.25rem", color: "var(--text-primary)" }}>{agr.organizations}</span>
                         )}
                       </td>
-                      <td style={{ padding: "0.6rem 0.8rem" }}>
+                      <td style={{ padding: "0.6rem 0.8rem", textAlign: "left" }}>
                         <div style={{ display: "flex", flexDirection: "column", gap: "0.15rem" }}>
                           <span style={{ color: "var(--text-secondary)" }}>🏫 UC: {agr.subjectUniversity}</span>
                           <span style={{ color: "var(--accent-color)" }}>🤝 타기관: {agr.subjectOrganization}</span>
                         </div>
                       </td>
-                      <td style={{ padding: "0.6rem 0.8rem", fontWeight: "700" }}>{agr.unitId}</td>
-                      <td style={{ padding: "0.6rem 0.8rem" }}>
+                      <td style={{ padding: "0.6rem 0.8rem", fontWeight: "700", textAlign: "center" }}>{agr.unitId}</td>
+                      <td style={{ padding: "0.6rem 0.8rem", textAlign: "center" }}>
                         <span style={{
                           background: agr.agreementType === "프리미엄" ? "rgba(236,72,153,0.15)" : agr.agreementType === "무료" ? "rgba(59,130,246,0.15)" : "transparent",
                           color: agr.agreementType === "프리미엄" ? "#ec4899" : agr.agreementType === "무료" ? "#3b82f6" : "var(--text-secondary)",
@@ -1218,7 +1218,7 @@ export default function AgreementManager({
                           {agr.agreementType || "-"}
                         </span>
                       </td>
-                      <td style={{ padding: "0.6rem 0.8rem" }}>
+                      <td style={{ padding: "0.6rem 0.8rem", textAlign: "center" }}>
                         {Array.isArray(agr.contents) && agr.contents.map((c, i) => (
                           <span key={i} style={{ background: "rgba(52,211,153,0.1)", color: "#34d399", padding: "0.1rem 0.3rem", borderRadius: "0.2rem", fontSize: "0.65rem", marginRight: "0.2rem" }}>{c}</span>
                         ))}
