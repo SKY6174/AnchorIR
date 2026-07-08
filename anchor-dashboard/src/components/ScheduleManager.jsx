@@ -189,7 +189,7 @@ export default function ScheduleManager({
   const [editingItemId, setEditingItemId] = useState(null); // 편집 대상 일정 ID
 
   // 교원의 경우 직급/직위를 '센터장', '팀장교수'로 이원화 표기 및 심현미 운영팀장 표기 헬퍼 함수
-  const getFormattedMemberGrade = (m) => {
+  const getFormattedMemberGrade = (m, forceTeamProfessor = false) => {
     if (!m) return "연구원";
     
     // 심현미의 경우 직위를 '운영팀장'으로 강제 표기
@@ -205,14 +205,35 @@ export default function ScheduleManager({
       ["정교수", "부교수", "조교수", "교수", "조교", "팀장교수", "교원"].includes(m.rank);
       
     if (isProfessorType) {
-      // 4대 센터장 및 신생 센터장(김현수) 명시적 센터장 직위 인원 판별
-      const realCenterHeads = ["이동은", "김기범", "현용환", "홍광표", "김현수"];
+      // 6대 센터장 정보 매핑 (이동은: ECC, 김기범: ICC, 현용환: RCC, 김현수: AID-X, 홍광표: 늘봄, 홍진숙: 신산업)
+      const centerHeads = {
+        "이동은": "ECC센터",
+        "김기범": "ICC센터",
+        "현용환": "RCC센터",
+        "김현수": "AID-X지원센터",
+        "홍광표": "울산늘봄누리센터",
+        "홍진숙": "신산업특화센터"
+      };
+
       const isCenterHead = 
         m.role === "센터장" || 
         m.rank === "센터장" || 
-        realCenterHeads.includes(m.name);
-        
-      return isCenterHead ? "센터장" : "팀장교수";
+        centerHeads[m.name] !== undefined;
+
+      if (isCenterHead) {
+        return "센터장";
+      }
+
+      // 늘봄누리센터와 신산업특화센터는 팀장교수 없음
+      const deptName = m.dept || "";
+      const isNoTeamProfDept = deptName.includes("늘봄") || deptName.includes("신산업");
+
+      if (isNoTeamProfDept) {
+        return m.grade || "교수";
+      }
+
+      // forceTeamProfessor가 true일 때만 '팀장교수'로 표기, 해제(기본) 시 원본 grade 노출
+      return forceTeamProfessor ? "팀장교수" : (m.grade || "교수");
     }
     
     // 일반 연구원 등은 기존 값을 반환
@@ -5681,24 +5702,7 @@ ${aiRawText}
                       return (
                         <div style={{ display: "flex", gap: "0.35rem", flexWrap: "wrap", padding: "0.5rem", background: "var(--panel-bg)", borderRadius: "6px", border: "1px solid var(--border-color)", maxHeight: "120px", overflowY: "auto" }}>
                           {allActiveMembers.map(m => {
-                            const isProf = ["정교수", "부교수", "조교수", "교수", "조교", "팀장교수", "교원"].includes(m.grade) ||
-                                           ["팀장교수", "센터장"].includes(m.role) ||
-                                           ["정교수", "부교수", "조교수", "교수", "조교", "팀장교수", "교원"].includes(m.role) ||
-                                           ["정교수", "부교수", "조교수", "교수", "조교", "팀장교수", "교원"].includes(m.rank);
-                            const isRealHead = ["이동은", "김기범", "현용환", "홍광표", "김현수"].includes(m.name);
-                            const isWriterLead = m.name === "심현미";
-
-                            let displayRole = "";
-                            if (isWriterLead) {
-                              displayRole = "운영팀장";
-                            } else if (isRealHead) {
-                              displayRole = "센터장";
-                            } else if (isProf) {
-                              displayRole = includeProfessors ? "팀장교수" : (m.grade || "교수");
-                            } else {
-                              displayRole = m.grade || m.role || "연구원";
-                            }
-
+                            const displayRole = getFormattedMemberGrade(m, includeProfessors);
                             const isSelected = (formData.attendees || "")
                               .split(",")
                               .map(x => x.trim())
@@ -6156,24 +6160,7 @@ ${aiRawText}
                         return (
                           <div style={{ display: "flex", gap: "0.35rem", flexWrap: "wrap", marginBottom: "0.5rem", padding: "0.5rem", background: "rgba(255,255,255,0.02)", borderRadius: "6px", border: "1px solid rgba(255,255,255,0.04)" }}>
                             {deptMembers.map(m => {
-                              const isProf = ["정교수", "부교수", "조교수", "교수", "조교", "팀장교수", "교원"].includes(m.grade) ||
-                                             ["팀장교수", "센터장"].includes(m.role) ||
-                                             ["정교수", "부교수", "조교수", "교수", "조교", "팀장교수", "교원"].includes(m.role) ||
-                                             ["정교수", "부교수", "조교수", "교수", "조교", "팀장교수", "교원"].includes(m.rank);
-                              const isRealHead = ["이동은", "김기범", "현용환", "홍광표", "김현수"].includes(m.name);
-                              const isWriterLead = m.name === "심현미";
-
-                              let displayRole = "";
-                              if (isWriterLead) {
-                                displayRole = "운영팀장";
-                              } else if (isRealHead) {
-                                displayRole = "센터장";
-                              } else if (isProf) {
-                                displayRole = includeProfessors ? "팀장교수" : (m.grade || "교수");
-                              } else {
-                                displayRole = m.grade || m.role || "연구원";
-                              }
-
+                              const displayRole = getFormattedMemberGrade(m, includeProfessors);
                               const isSelected = (formData.attendees || "")
                                 .split(",")
                                 .map(x => x.trim())
