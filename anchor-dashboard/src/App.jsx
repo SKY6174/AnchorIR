@@ -1092,6 +1092,85 @@ function mergeProjectsWithInitial(loadedData, multiYearInitialData) {
         });
         unit.programs = uniquePrograms;
 
+        // 💡 [단위과제 비목 및 예산 실시간 롤업 재집계]
+        // 세부 프로그램들의 기획 예산(budget_main) 및 비목별 배정(budget_categories)을 기반으로
+        // 단위과제의 budgetDetails와 years를 실시간으로 재집계(롤업)하여 정합성을 완벽하게 보장합니다.
+        const categorySums = {
+          "인건비": { 1: {main:0, carry:0, spent_main:0, spent_carry:0}, 2: {main:0, carry:0, spent_main:0, spent_carry:0}, 3: {main:0, carry:0, spent_main:0, spent_carry:0}, 4: {main:0, carry:0, spent_main:0, spent_carry:0}, 5: {main:0, carry:0, spent_main:0, spent_carry:0} },
+          "장학금": { 1: {main:0, carry:0, spent_main:0, spent_carry:0}, 2: {main:0, carry:0, spent_main:0, spent_carry:0}, 3: {main:0, carry:0, spent_main:0, spent_carry:0}, 4: {main:0, carry:0, spent_main:0, spent_carry:0}, 5: {main:0, carry:0, spent_main:0, spent_carry:0} },
+          "교육∙연구 프로그램 개발∙운영비": { 1: {main:0, carry:0, spent_main:0, spent_carry:0}, 2: {main:0, carry:0, spent_main:0, spent_carry:0}, 3: {main:0, carry:0, spent_main:0, spent_carry:0}, 4: {main:0, carry:0, spent_main:0, spent_carry:0}, 5: {main:0, carry:0, spent_main:0, spent_carry:0} },
+          "교육∙연구 환경개선비": { 1: {main:0, carry:0, spent_main:0, spent_carry:0}, 2: {main:0, carry:0, spent_main:0, spent_carry:0}, 3: {main:0, carry:0, spent_main:0, spent_carry:0}, 4: {main:0, carry:0, spent_main:0, spent_carry:0}, 5: {main:0, carry:0, spent_main:0, spent_carry:0} },
+          "실험∙실습장비 및 기자재 구입∙운영비": { 1: {main:0, carry:0, spent_main:0, spent_carry:0}, 2: {main:0, carry:0, spent_main:0, spent_carry:0}, 3: {main:0, carry:0, spent_main:0, spent_carry:0}, 4: {main:0, carry:0, spent_main:0, spent_carry:0}, 5: {main:0, carry:0, spent_main:0, spent_carry:0} },
+          "지역 연계∙협업 지원비": { 1: {main:0, carry:0, spent_main:0, spent_carry:0}, 2: {main:0, carry:0, spent_main:0, spent_carry:0}, 3: {main:0, carry:0, spent_main:0, spent_carry:0}, 4: {main:0, carry:0, spent_main:0, spent_carry:0}, 5: {main:0, carry:0, spent_main:0, spent_carry:0} },
+          "기업 지원∙협력 활동비": { 1: {main:0, carry:0, spent_main:0, spent_carry:0}, 2: {main:0, carry:0, spent_main:0, spent_carry:0}, 3: {main:0, carry:0, spent_main:0, spent_carry:0}, 4: {main:0, carry:0, spent_main:0, spent_carry:0}, 5: {main:0, carry:0, spent_main:0, spent_carry:0} },
+          "성과 활용∙확산 지원비": { 1: {main:0, carry:0, spent_main:0, spent_carry:0}, 2: {main:0, carry:0, spent_main:0, spent_carry:0}, 3: {main:0, carry:0, spent_main:0, spent_carry:0}, 4: {main:0, carry:0, spent_main:0, spent_carry:0}, 5: {main:0, carry:0, spent_main:0, spent_carry:0} },
+          "그 밖의 사업운영경비": { 1: {main:0, carry:0, spent_main:0, spent_carry:0}, 2: {main:0, carry:0, spent_main:0, spent_carry:0}, 3: {main:0, carry:0, spent_main:0, spent_carry:0}, 4: {main:0, carry:0, spent_main:0, spent_carry:0}, 5: {main:0, carry:0, spent_main:0, spent_carry:0} },
+          "간접비": { 1: {main:0, carry:0, spent_main:0, spent_carry:0}, 2: {main:0, carry:0, spent_main:0, spent_carry:0}, 3: {main:0, carry:0, spent_main:0, spent_carry:0}, 4: {main:0, carry:0, spent_main:0, spent_carry:0}, 5: {main:0, carry:0, spent_main:0, spent_carry:0} }
+        };
+
+        [1, 2, 3, 4, 5].forEach((yr) => {
+          unit.programs.forEach((prog) => {
+            const py = prog.years?.[yr] || {};
+            const progTotalMain = py.budget_main || 0;
+            const progTotalCarry = py.budget_carry || 0;
+            const progTotalSpent = py.spent_main || 0;
+            const progTotalSpentCarry = py.spent_carry || 0;
+
+            let allocatedMain = 0;
+            let allocatedCarry = 0;
+            let allocatedSpent = 0;
+            let allocatedSpentCarry = 0;
+
+            if (py.budget_categories && Array.isArray(py.budget_categories)) {
+              py.budget_categories.forEach((catItem) => {
+                const catName = catItem.category;
+                if (catName && categorySums[catName] && catName !== "교육∙연구 프로그램 개발∙운영비") {
+                  const mainVal = parseInt(String(catItem.budget || "0").replace(/,/g, ""), 10) || 0;
+                  const carryVal = parseInt(String(catItem.budget_carry || "0").replace(/,/g, ""), 10) || 0;
+                  const spentVal = Math.round(catItem.spent || 0);
+                  const spentCarryVal = Math.round(catItem.spent_carry || 0);
+
+                  categorySums[catName][yr].main += mainVal;
+                  categorySums[catName][yr].carry += carryVal;
+                  categorySums[catName][yr].spent_main += spentVal;
+                  categorySums[catName][yr].spent_carry += spentCarryVal;
+
+                  allocatedMain += mainVal;
+                  allocatedCarry += carryVal;
+                  allocatedSpent += spentVal;
+                  allocatedSpentCarry += spentCarryVal;
+                }
+              });
+            }
+
+            const remainMain = Math.max(0, progTotalMain - allocatedMain);
+            const remainCarry = Math.max(0, progTotalCarry - allocatedCarry);
+            const remainSpent = Math.max(0, progTotalSpent - allocatedSpent);
+            const remainSpentCarry = Math.max(0, progTotalSpentCarry - allocatedSpentCarry);
+
+            categorySums["교육∙연구 프로그램 개발∙운영비"][yr].main += remainMain;
+            categorySums["교육∙연구 프로그램 개발∙운영비"][yr].carry += remainCarry;
+            categorySums["교육∙연구 프로그램 개발∙운영비"][yr].spent_main += remainSpent;
+            categorySums["교육∙연구 프로그램 개발∙운영비"][yr].spent_carry += remainSpentCarry;
+          });
+        });
+
+        // 집계한 categorySums를 unit.budgetDetails 에 반영
+        if (!unit.budgetDetails) unit.budgetDetails = {};
+        Object.keys(categorySums).forEach((catName) => {
+          if (!unit.budgetDetails[catName]) {
+            unit.budgetDetails[catName] = { years: {} };
+          }
+          [1, 2, 3, 4, 5].forEach((yr) => {
+            unit.budgetDetails[catName].years[yr] = {
+              budget_main: categorySums[catName][yr].main,
+              budget_carry: categorySums[catName][yr].carry,
+              spent_main: categorySums[catName][yr].spent_main,
+              spent_carry: categorySums[catName][yr].spent_carry
+            };
+          });
+        });
+
         // 💡 [비목 구조 및 값 동기화] DB에서 로드된 단위과제의 비목 상세(budgetDetails)에 최신 mockData 비목 구조를 주입/병합합니다.
         if (sourceUnit && sourceUnit.budgetDetails) {
           if (!unit.budgetDetails) unit.budgetDetails = {};
@@ -1730,7 +1809,7 @@ export default function App() {
   useEffect(() => {
     try {
       Object.keys(localStorage).forEach((key) => {
-        if (key.startsWith("anchor_projects_data_") && key !== "anchor_projects_data_v40") {
+        if (key.startsWith("anchor_projects_data_") && key !== "anchor_projects_data_v41") {
           localStorage.removeItem(key);
         }
         // 💡 [연도별 복구 캐시 청소 가드] 캐시 버전 상향 시 연도별 가공 복구 캐시도 깨끗하게 동시 청소하여 구버전 예산 꼬임을 방지합니다.
@@ -1793,7 +1872,7 @@ export default function App() {
       }
       localStorage.setItem("anchor_last_self_healing_reset", String(now));
       // 로그인 세션(anchor_logged_in_user)은 리셋하지 않고 보존하여 튕김(로그아웃) 방지!
-      localStorage.removeItem("anchor_projects_data_v40");
+      localStorage.removeItem("anchor_projects_data_v41");
       localStorage.removeItem("anchor_selected_kpi");
       Object.keys(localStorage).forEach((key) => {
         if (key.startsWith("anchor_cache_proj_")) {
@@ -1944,8 +2023,8 @@ export default function App() {
   }, [currentUser]);
 
   const [projects, setProjects] = useState(() => {
-    // D2 단위과제 신규 세부 프로그램 및 예산/담당자 정보를 반영하기 위해 로컬스토리지 버전을 v40로 업그레이드합니다.
-    const cached = localStorage.getItem("anchor_projects_data_v40");
+    // D2 단위과제 신규 세부 프로그램 및 예산/담당자 정보를 반영하기 위해 로컬스토리지 버전을 v41로 업그레이드합니다.
+    const cached = localStorage.getItem("anchor_projects_data_v41");
     const multiYearInitialData = migrateProgramIds(formatDataToMultiYear(initialProjectsData));
     if (cached) {
       try {
@@ -4480,21 +4559,21 @@ export default function App() {
   // projects 상태 변경 시 localStorage 자동 기입 (새로고침 휘발 방지 우회책)
   useEffect(() => {
     try {
-      localStorage.setItem("anchor_projects_data_v40", JSON.stringify(projects));
+      localStorage.setItem("anchor_projects_data_v41", JSON.stringify(projects));
     } catch (e) {
       const isQuotaError = e.name === "QuotaExceededError" || e.code === 22 || e.number === -2147024882;
       if (isQuotaError) {
         console.warn("로컬 스토리지 공간이 부족합니다. 이전 구버전 캐시를 청소하고 재시도합니다...");
         try {
           Object.keys(localStorage).forEach((key) => {
-            if (key.startsWith("anchor_projects_data_") && key !== "anchor_projects_data_v40") {
+            if (key.startsWith("anchor_projects_data_") && key !== "anchor_projects_data_v41") {
               localStorage.removeItem(key);
             }
             if (key.startsWith("anchor_cache_proj_")) {
               localStorage.removeItem(key);
             }
           });
-          localStorage.setItem("anchor_projects_data_v40", JSON.stringify(projects));
+          localStorage.setItem("anchor_projects_data_v41", JSON.stringify(projects));
           console.log("이전 캐시 청소 및 데이터 재저장 성공");
         } catch (retryError) {
           console.error("이전 캐시 QR 청소 후에도 로컬 스토리지 기입 실패:", retryError);
