@@ -1893,19 +1893,27 @@ export const initialProjectsData = [
         spent_2025_carry: 0,
         manager: "오영경 로컬브릿지팀",
         programs: [
-          { id: "D3가-S1T1-1", title: "시민 참여형 에코컬처 체험 프로그램 및 브랜드 디자인 운영", budget_2026: 50000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "오영경", pdca: { p: "완료", d: "완료", c: "진행", a: "대기" } },
-          { id: "D3가-S1T2-1", title: "청년 주도형 유휴공간 활성화 및 도시재생 융합 프로젝트", budget_2026: 311000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "오영경", pdca: { p: "완료", d: "진행", c: "대기", a: "대기" } },
-          { id: "D3가-S2T3-1", title: "지역 밀착형 문화예술 체험 및 울산 꿀잼 축제 기획 운영", budget_2026: 18000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "오영경", pdca: { p: "완료", d: "진행", c: "대기", a: "대기" } }
+          { id: "D3가-S1T1-1", title: "문화 콘텐츠 개발 우수 사례 및 벤치마킹", budget_2026: 5000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "오영경 센터장", pdca: { p: "완료", d: "대기", c: "대기", a: "대기" } },
+          { id: "D3가-S1T1-4", title: "K-컬처 글로벌 교류 프로젝트: 대만 충유대 교류 프로그램", budget_2026: 28400000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "오영경 센터장", pdca: { p: "완료", d: "대기", c: "대기", a: "대기" } },
+          { id: "D3가-S1T2-1", title: "콘텐츠 크리에이터 연계 프로젝트(실무 프로젝트)", budget_2026: 30000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "오영경 센터장", pdca: { p: "완료", d: "대기", c: "대기", a: "대기" } },
+          { id: "D3가-S1T3-1", title: "도시재생 체험 프로젝트", budget_2026: 40000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "오영경 센터장", pdca: { p: "완료", d: "대기", c: "대기", a: "대기" } },
+          { id: "D3가-S1T3-2", title: "대학내 커뮤니티 공간 구축(북카페조성)", budget_2026: 200000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "오영경 센터장", pdca: { p: "완료", d: "대기", c: "대기", a: "대기" } },
+          { id: "D3가-S1T4-1", title: "도시공간 재생 프로젝트 거버넌스 운영", budget_2026: 1000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "오영경 센터장", pdca: { p: "완료", d: "대기", c: "대기", a: "대기" } },
+          { id: "D3가-S1T4-2", title: "서포터즈 활동비", budget_2026: 4000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "오영경 센터장", pdca: { p: "완료", d: "대기", c: "대기", a: "대기" } },
+          { id: "D3가-S2T5-1", title: "문화 예술 체험 프로젝트", budget_2026: 10000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "오영경 센터장", pdca: { p: "완료", d: "대기", c: "대기", a: "대기" } },
+          { id: "D3가-S2T6-1", title: "지역 연계 협업 예술 프로젝트(중구 배움의 뜰, 평생교육학습 축제예정)", budget_2026: 10000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "오영경 센터장", pdca: { p: "완료", d: "대기", c: "대기", a: "대기" } },
+          { id: "D3가-S2T7-1", title: "지역사회 연계 및 교류 홍보", budget_2026: 10000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "오영경 센터장", pdca: { p: "완료", d: "대기", c: "대기", a: "대기" } },
+          { id: "D3가-S2T8-1", title: "지역 연계협업 문화 콘텐츠 개발 프로젝트", budget_2026: 40600000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "오영경 센터장", pdca: { p: "완료", d: "대기", c: "대기", a: "대기" } }
         ],
         budgetDetails: {
           "인건비": { budget_2026: 0, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0 },
           "장학금": { budget_2026: 0, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0 },
-          "교육∙연구 프로그램 개발∙운영비": { budget_2026: 379000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0 },
+          "교육∙연구 프로그램 개발∙운영비": { budget_2026: 174000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0 },
           "교육∙연구 환경개선비": { budget_2026: 0, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0 },
-          "실험∙실습장비 및 기자재 구입∙운영비": { budget_2026: 0, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0 },
+          "실험∙실습장비 및 기자재 구입∙운영비": { budget_2026: 200000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0 },
           "지역 연계∙협업 지원비": { budget_2026: 0, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0 },
           "기업 지원∙협력 활동비": { budget_2026: 0, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0 },
-          "성과 활용∙확산 지원비": { budget_2026: 0, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0 },
+          "성과 활용∙확산 지원비": { budget_2026: 5000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0 },
           "그 밖의 사업운영경비": { budget_2026: 0, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0 },
           "간접비": { budget_2026: 0, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0 }
         },
