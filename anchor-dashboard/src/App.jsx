@@ -3295,6 +3295,8 @@ export default function App() {
   useEffect(() => {
     if (!isDbLoaded || !isFetchCompleted) return;
     if (!currentUser || currentRole?.id === "GUEST") return;
+    // 💡 안전 가드: 데이터 로딩이 완료되지 않았거나 일시적 통신 지연 시 빈 배열([])이 원격 DB를 덮어쓰는 사고 방지
+    if (!agreements || agreements.length === 0) return;
     try {
       const clean = agreements.map(item => ({ ...item, fileData: null }));
       localStorage.setItem("anchor_cache_agreements_all", JSON.stringify(clean));
@@ -3583,6 +3585,8 @@ export default function App() {
   useEffect(() => {
     if (!isDbLoaded || !isFetchCompleted) return;
     if (!currentUser || currentRole?.id === "GUEST") return;
+    // 💡 안전 가드: 데이터 로딩이 완료되지 않았거나 일시적 통신 지연 시 빈 배열([])이 원격 DB를 덮어쓰는 사고 방지
+    if (!unifiedCertificates || unifiedCertificates.length === 0) return;
     try {
       const clean = unifiedCertificates.map(item => ({ ...item, fileData: null }));
       localStorage.setItem("anchor_cache_unified_certificates_all", JSON.stringify(clean));
@@ -3633,6 +3637,8 @@ export default function App() {
   useEffect(() => {
     if (!isDbLoaded || !isFetchCompleted) return;
     if (!currentUser || currentRole?.id === "GUEST") return;
+    // 💡 안전 가드: 데이터 로딩이 완료되지 않았거나 일시적 통신 지연 시 빈 배열([])이 원격 DB를 덮어쓰는 사고 방지
+    if (!scholarships || scholarships.length === 0) return;
     try {
       const clean = scholarships.map(item => ({ ...item }));
       localStorage.setItem("anchor_cache_scholarships_all", JSON.stringify(clean));
