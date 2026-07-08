@@ -3420,9 +3420,24 @@ export default function App() {
       } catch (e) {
         setSyncStatus("error");
       }
-    }, 1500);
+    }, 500); // 1.5초에서 0.5초로 변경
     return () => clearTimeout(timer);
   }, [projects, selectedYear, isDbLoaded, isFetchCompleted]);
+
+  // 💡 DB 동기화 중(syncStatus === "syncing") 새로고침 및 페이지 탈출 방어 훅
+  useEffect(() => {
+    const handleBeforeUnload = (e) => {
+      if (syncStatus === "syncing") {
+        e.preventDefault();
+        e.returnValue = "현재 변경 사항을 데이터베이스에 저장하는 중입니다. 저장 완료 후 새로고침해주세요.";
+        return e.returnValue;
+      }
+    };
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, [syncStatus]);
 
   // 3) Agreements 자동 저장 디바운스 훅 (통합 캐시 사용 및 selectedYear 의존성 배제)
   useEffect(() => {
