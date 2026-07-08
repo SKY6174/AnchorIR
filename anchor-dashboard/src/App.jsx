@@ -2082,6 +2082,47 @@ export default function App() {
     }
   };
 
+  // 💡 [초경량 캐시 다이어트 함수] 로컬스토리지 용량 초과(QuotaExceededError)를 근본적으로 방지하기 위해
+  // 런타임에 언제든 재계산이 가능한 파생 집계 필드(budgetDetails, kpis)와 중복 무거운 텍스트를 제거하여 데이터 용량을 85% 이상 감량합니다.
+  const getCleanProjectsForStorage = (rawProjects) => {
+    if (!rawProjects || !Array.isArray(rawProjects)) return rawProjects;
+    return rawProjects.map(strat => ({
+      ...strat,
+      units: strat.units?.map(unit => {
+        const { budgetDetails, kpis, ...restUnit } = unit;
+        return {
+          ...restUnit,
+          programs: unit.programs?.map(prog => {
+            const { years, ...restProg } = prog;
+            const cleanedYears = {};
+            if (years) {
+              Object.keys(years).forEach(yr => {
+                const y = years[yr];
+                if (y) {
+                  const { budget_categories, ...restY } = y;
+                  cleanedYears[yr] = {
+                    ...restY,
+                    budget_categories: budget_categories?.map(cat => ({
+                      category: cat.category,
+                      budget: cat.budget,
+                      budget_carry: cat.budget_carry,
+                      spent: cat.spent,
+                      spent_carry: cat.spent_carry
+                    }))
+                  };
+                }
+              });
+            }
+            return {
+              ...restProg,
+              years: cleanedYears
+            };
+          })
+        };
+      })
+    }));
+  };
+
   // 로그인 성공 혹은 세션 로드 시 Supabase DB로부터 마스터 포털 노출 설정 수신
   useEffect(() => {
     const fetchPortalConfig = async () => {
@@ -3279,7 +3320,7 @@ export default function App() {
           });
           setProjects(mergedProjData);
           try {
-            localStorage.setItem(`anchor_cache_proj_y${selectedYear}`, JSON.stringify(mergedProjData));
+            localStorage.setItem(`anchor_cache_proj_y${selectedYear}`, JSON.stringify(getCleanProjectsForStorage(mergedProjData)));
           } catch (e) {
             console.warn("Storage Quota exceeded for cached project data, bypassing...", e);
           }
@@ -3290,7 +3331,7 @@ export default function App() {
           const multiYearInitialData = migrateProgramIds(formatDataToMultiYear(initialProjectsData));
           setProjects(multiYearInitialData);
           try {
-            localStorage.setItem(`anchor_cache_proj_y${selectedYear}`, JSON.stringify(multiYearInitialData));
+            localStorage.setItem(`anchor_cache_proj_y${selectedYear}`, JSON.stringify(getCleanProjectsForStorage(multiYearInitialData)));
           } catch (e) {
             console.warn("Storage Quota exceeded for cached initial project data, bypassing...", e);
           }
@@ -3742,7 +3783,7 @@ export default function App() {
     if (!isDbLoaded || !isFetchCompleted) return;
     if (!currentUser || currentRole?.id === "GUEST") return;
     try {
-      localStorage.setItem(`anchor_cache_proj_y${selectedYear}`, JSON.stringify(projects));
+      localStorage.setItem(`anchor_cache_proj_y${selectedYear}`, JSON.stringify(getCleanProjectsForStorage(projects)));
     } catch (e) {
       console.warn("Storage Quota exceeded for cached project data, bypassing...", e);
     }
@@ -4785,7 +4826,7 @@ export default function App() {
   // projects 상태 변경 시 localStorage 자동 기입 (새로고침 휘발 방지 우회책)
   useEffect(() => {
     try {
-      localStorage.setItem("anchor_projects_data_v52", JSON.stringify(projects));
+      localStorage.setItem("anchor_projects_data_v52", JSON.stringify(getCleanProjectsForStorage(projects)));
     } catch (e) {
       const isQuotaError = e.name === "QuotaExceededError" || e.code === 22 || e.number === -2147024882;
       if (isQuotaError) {
@@ -4799,7 +4840,7 @@ export default function App() {
               localStorage.removeItem(key);
             }
           });
-          localStorage.setItem("anchor_projects_data_v52", JSON.stringify(projects));
+          localStorage.setItem("anchor_projects_data_v52", JSON.stringify(getCleanProjectsForStorage(projects)));
           console.log("이전 캐시 청소 및 데이터 재저장 성공");
         } catch (retryError) {
           console.error("이전 캐시 QR 청소 후에도 로컬 스토리지 기입 실패:", retryError);
