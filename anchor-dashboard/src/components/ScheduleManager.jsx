@@ -1471,7 +1471,19 @@ ${aiRawText}
       const combinedDatetime = `${formData.meetingDate} ${formData.meetingStartTime} ~ ${formData.meetingEndTime}`;
 
       // 작성자 및 부서 정보를 attendeesExternal에 조합하여 저장 (하위호환성 유지)
-      const combinedAttendeesExternal = `작성자: ${formData.writer || "작성자 미정"} | 부서: ${formData.dept || "부서 미정"}`;
+      let combinedAttendeesExternal = `작성자: ${formData.writer || "작성자 미정"} | 부서: ${formData.dept || "부서 미정"}`;
+      if (formData.category === "committee") {
+        const deptToCommittee = {
+          "ECC센터": "ECC센터위원회",
+          "ICC센터": "ICC센터위원회",
+          "RCC센터": "RCC센터위원회",
+          "AID-X지원센터": "AID-X지원센터위원회",
+          "울산늘봄누리센터": "울산늘봄누리센터위원회",
+          "신산업특화센터": "신산업특화센터위원회"
+        };
+        const cName = deptToCommittee[formData.dept] || `${formData.dept}위원회`;
+        combinedAttendeesExternal = `위원회: ${cName} | 작성자: ${formData.writer || "작성자 미정"} | 부서: ${formData.dept || "부서 미정"}`;
+      }
 
       // 의제 및 결과를 1:1 매핑 데이터로부터 직렬화
       const combinedAgenda = (agendaResultPairs || [])
@@ -3799,7 +3811,7 @@ ${aiRawText}
                     >
                       전체
                     </button>
-                    {["사업운영팀", "ECC센터", "ICC센터", "RCC센터", "AID-X지원센터", "울산늘봄누리센터", "신산업특화지원센터"].map((deptName) => {
+                    {["사업운영팀", "ECC센터", "ICC센터", "RCC센터", "AID-X지원센터", "울산늘봄누리센터", "신산업특화센터"].map((deptName) => {
                       const isSelected = selectedDeptFilters.includes(deptName);
                       return (
                         <button
@@ -3904,7 +3916,8 @@ ${aiRawText}
                     </span>
                     <div style={{ display: "flex", gap: "0.4rem", flexWrap: "wrap" }}>
                       {[
-                        "ECC운영위원회", "ICC운영위원회", "RCC운영위원회", "늘봄누리센터운영위원회"
+                        "ECC센터위원회", "ICC센터위원회", "RCC센터위원회", 
+                        "AID-X지원센터위원회", "울산늘봄누리센터위원회", "신산업특화센터위원회"
                       ].map(cName => {
                         const isSelected = selectedCommitteeFilters.includes(cName);
                         return (
@@ -3975,7 +3988,8 @@ ${aiRawText}
                       const allCommittees = [
                         "앵커총괄위원회", "앵커기획위원회", "앵커사업비관리위원회", 
                         "앵커사업자체평가위원회", "앵커사업자문회의", "앵커사업운영위원회",
-                        "ECC운영위원회", "ICC운영위원회", "RCC운영위원회", "늘봄누리센터운영위원회"
+                        "ECC센터위원회", "ICC센터위원회", "RCC센터위원회", 
+                        "AID-X지원센터위원회", "울산늘봄누리센터위원회", "신산업특화센터위원회"
                       ];
                       const matched = allCommittees.find(c => m.title && m.title.replace(/RISE/g, '앵커').includes(c));
                       if (matched) committeeName = matched;
@@ -5891,7 +5905,7 @@ ${aiRawText}
                         <div>
                           <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>부서명</label>
                           <select name="dept" value={formData.dept} onChange={handleInputChange} style={{ width: "100%", padding: "0.5rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }}>
-                            {["사업운영팀", "ECC센터", "ICC센터", "RCC센터", "AID-X지원센터", "울산늘봄누리센터", "신산업특화지원센터"].map(d => (
+                            {["사업운영팀", "ECC센터", "ICC센터", "RCC센터", "AID-X지원센터", "울산늘봄누리센터", "신산업특화센터"].map(d => (
                               <option key={d} value={d}>{d}</option>
                             ))}
                           </select>
@@ -5931,8 +5945,7 @@ ${aiRawText}
                         </label>
                         {(() => {
                           const deptMembers = (members || []).filter(m => {
-                            let isDeptMatch = m.dept === formData.dept;
-                            if (formData.dept === "신산업특화지원센터" && m.dept === "신산업특화센터") isDeptMatch = true;
+                            const isDeptMatch = m.dept === formData.dept;
                             if (!isDeptMatch) return false;
 
                             const start = m.startDate || m.start_date || m.hireDate || m.hire_date || "2025-03-01";
@@ -6163,7 +6176,7 @@ ${aiRawText}
                         🏢 8대 부서별 주요 업무추진 현황 및 애로사항 입력
                       </label>
                       <div style={{ display: "flex", flexDirection: "column", gap: "0.85rem", maxHeight: "250px", overflowY: "auto", paddingRight: "0.25rem" }}>
-                        {["사업단", "사업운영팀", "ECC센터", "ICC센터", "RCC센터", "AID-X지원센터", "울산늘봄누리센터", "신산업특화지원센터"].map((deptName) => {
+                        {["사업단", "사업운영팀", "ECC센터", "ICC센터", "RCC센터", "AID-X지원센터", "울산늘봄누리센터", "신산업특화센터"].map((deptName) => {
                           const deptAgendaVal = formData.operatingAgendas?.[deptName] || "";
                           const deptResultVal = formData.operatingResults?.[deptName] || "";
 
