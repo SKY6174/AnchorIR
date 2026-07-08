@@ -187,6 +187,7 @@ export default function ScheduleManager({
   const [modalType, setModalType] = useState("monthly"); // "monthly", "event", "meeting", "press"
   const [isEditMode, setIsEditMode] = useState(false);   // 수정 모드 활성화 여부
   const [editingItemId, setEditingItemId] = useState(null); // 편집 대상 일정 ID
+  const [checkedTeamProfessors, setCheckedTeamProfessors] = useState({}); // 팀장교수 여부 체크 상태 ({ [memberName]: boolean })
 
   // 교원의 경우 직급/직위를 '센터장', '팀장교수'로 이원화 표기 및 심현미 운영팀장 표기 헬퍼 함수
   const getFormattedMemberGrade = (m) => {
@@ -946,18 +947,21 @@ ${aiRawText}
   };
 
   // 연구원 선택 칩 클릭 시 참석자(내부) 텍스트 필드에 추가/삭제 토글해 주는 헬퍼 함수
-  const handleToggleAttendee = (name) => {
+  const handleToggleAttendee = (name, gradeSuffix = "") => {
     setFormData(prev => {
       const current = prev.attendees || "";
-      // 쉼표로 쪼개고 빈값 제거, 공백 다듬기
       let list = current.split(",").map(x => x.trim()).filter(Boolean);
       
-      if (list.includes(name)) {
+      // 해당 이름이거나 해당 이름으로 시작하는 기존 항목 찾기
+      const existingItem = list.find(x => x === name || x.startsWith(name + " ") || x.startsWith(name + "("));
+      
+      if (existingItem) {
         // 이미 들어있다면 제거
-        list = list.filter(x => x !== name);
+        list = list.filter(x => x !== existingItem);
       } else {
-        // 들어있지 않다면 새로 추가
-        list.push(name);
+        // 들어있지 않다면 새로 추가 (직급 접미사가 있다면 함께 주입)
+        const fullNameWithGrade = gradeSuffix ? `${name} ${gradeSuffix}` : name;
+        list.push(fullNameWithGrade);
       }
       
       return {
@@ -6126,31 +6130,61 @@ ${aiRawText}
                         return (
                           <div style={{ display: "flex", gap: "0.35rem", flexWrap: "wrap", marginBottom: "0.5rem", padding: "0.5rem", background: "rgba(255,255,255,0.02)", borderRadius: "6px", border: "1px solid rgba(255,255,255,0.04)" }}>
                             {deptMembers.map(m => {
-                              const displayName = `${m.name} ${getFormattedMemberGrade(m)}`;
+                              const isProf = ["정교수", "부교수", "조교수", "교수", "조교", "팀장교수", "교원"].includes(m.grade) ||
+                                             ["팀장교수", "센터장"].includes(m.role) ||
+                                             ["정교수", "부교수", "조교수", "교수", "조교", "팀장교수", "교원"].includes(m.role) ||
+                                             ["정교수", "부교수", "조교수", "교수", "조교", "팀장교수", "교원"].includes(m.rank);
+                              const isRealHead = ["이동은", "김기범", "현용환", "홍광표", "김현수"].includes(m.name);
+                              const showTeamProfCheckbox = isProf && !isRealHead;
+                              const isChecked = !!checkedTeamProfessors[m.name];
+
+                              // 팀장교수 여부 체크박스가 체크되어 있으면 '팀장교수', 미체크(디폴트)이면 원본 grade(또는 교수) 노출
+                              const gradeText = showTeamProfCheckbox 
+                                ? (isChecked ? "팀장교수" : (m.grade || "교수")) 
+                                : getFormattedMemberGrade(m);
+                              const displayName = `${m.name} ${gradeText}`;
+
                               const isSelected = (formData.attendees || "")
                                 .split(",")
                                 .map(x => x.trim())
-                                .includes(m.name);
+                                .some(x => x === m.name || x.startsWith(m.name + " ") || x.startsWith(m.name + "("));
 
                               return (
-                                <button
-                                  key={m.id || m.email}
-                                  type="button"
-                                  onClick={() => handleToggleAttendee(m.name)}
-                                  style={{
-                                    padding: "0.25rem 0.5rem",
-                                    fontSize: "0.7rem",
-                                    borderRadius: "4px",
-                                    border: "1px solid " + (isSelected ? "var(--accent-color)" : "rgba(255,255,255,0.1)"),
-                                    background: isSelected ? "rgba(59, 130, 246, 0.15)" : "transparent",
-                                    color: isSelected ? "#60A5FA" : "var(--text-secondary)",
-                                    cursor: "pointer",
-                                    transition: "all 0.1s ease",
-                                    fontWeight: "700"
-                                  }}
-                                >
-                                  {displayName} {isSelected ? "✓" : "+"}
-                                </button>
+                                <div key={m.id || m.email} style={{ display: "inline-flex", alignItems: "center", gap: "0.35rem", background: "rgba(255,255,255,0.015)", border: "1px solid rgba(255,255,255,0.05)", borderRadius: "6px", padding: "0.25rem 0.45rem", marginBottom: "0.25rem" }}>
+                                  {showTeamProfCheckbox && (
+                                    <label style={{ display: "inline-flex", alignItems: "center", gap: "0.2rem", fontSize: "0.68rem", color: "var(--text-secondary)", cursor: "pointer" }}>
+                                      <input 
+                                        type="checkbox" 
+                                        checked={isChecked}
+                                        onChange={(e) => {
+                                          setCheckedTeamProfessors(prev => ({
+                                            ...prev,
+                                            [m.name]: e.target.checked
+                                          }));
+                                        }}
+                                        style={{ cursor: "pointer", width: "12px", height: "12px" }}
+                                      />
+                                      팀장
+                                    </label>
+                                  )}
+                                  <button
+                                    type="button"
+                                    onClick={() => handleToggleAttendee(m.name, gradeText)}
+                                    style={{
+                                      padding: "0.15rem 0.45rem",
+                                      fontSize: "0.7rem",
+                                      borderRadius: "4px",
+                                      border: "1px solid " + (isSelected ? "var(--accent-color)" : "transparent"),
+                                      background: isSelected ? "rgba(59, 130, 246, 0.15)" : "transparent",
+                                      color: isSelected ? "#60A5FA" : "var(--text-secondary)",
+                                      cursor: "pointer",
+                                      transition: "all 0.1s ease",
+                                      fontWeight: "700"
+                                    }}
+                                  >
+                                    {displayName} {isSelected ? "✓" : "+"}
+                                  </button>
+                                </div>
                               );
                             })}
                           </div>
