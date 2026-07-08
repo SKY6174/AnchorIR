@@ -1730,7 +1730,7 @@ export default function App() {
   useEffect(() => {
     try {
       Object.keys(localStorage).forEach((key) => {
-        if (key.startsWith("anchor_projects_data_") && key !== "anchor_projects_data_v36") {
+        if (key.startsWith("anchor_projects_data_") && key !== "anchor_projects_data_v37") {
           localStorage.removeItem(key);
         }
       });
@@ -1789,7 +1789,7 @@ export default function App() {
       }
       localStorage.setItem("anchor_last_self_healing_reset", String(now));
       // 로그인 세션(anchor_logged_in_user)은 리셋하지 않고 보존하여 튕김(로그아웃) 방지!
-      localStorage.removeItem("anchor_projects_data_v36");
+      localStorage.removeItem("anchor_projects_data_v37");
       localStorage.removeItem("anchor_selected_kpi");
       window.location.reload();
     };
@@ -1935,8 +1935,8 @@ export default function App() {
   }, [currentUser]);
 
   const [projects, setProjects] = useState(() => {
-    // D2 단위과제 신규 세부 프로그램 및 예산/담당자 정보를 반영하기 위해 로컬스토리지 버전을 v36로 업그레이드합니다.
-    const cached = localStorage.getItem("anchor_projects_data_v36");
+    // D2 단위과제 신규 세부 프로그램 및 예산/담당자 정보를 반영하기 위해 로컬스토리지 버전을 v37로 업그레이드합니다.
+    const cached = localStorage.getItem("anchor_projects_data_v37");
     const multiYearInitialData = migrateProgramIds(formatDataToMultiYear(initialProjectsData));
     if (cached) {
       try {
@@ -4471,18 +4471,18 @@ export default function App() {
   // projects 상태 변경 시 localStorage 자동 기입 (새로고침 휘발 방지 우회책)
   useEffect(() => {
     try {
-      localStorage.setItem("anchor_projects_data_v36", JSON.stringify(projects));
+      localStorage.setItem("anchor_projects_data_v37", JSON.stringify(projects));
     } catch (e) {
       const isQuotaError = e.name === "QuotaExceededError" || e.code === 22 || e.number === -2147024882;
       if (isQuotaError) {
         console.warn("로컬 스토리지 공간이 부족합니다. 이전 구버전 캐시를 청소하고 재시도합니다...");
         try {
           Object.keys(localStorage).forEach((key) => {
-            if (key.startsWith("anchor_projects_data_") && key !== "anchor_projects_data_v36") {
+            if (key.startsWith("anchor_projects_data_") && key !== "anchor_projects_data_v37") {
               localStorage.removeItem(key);
             }
           });
-          localStorage.setItem("anchor_projects_data_v36", JSON.stringify(projects));
+          localStorage.setItem("anchor_projects_data_v37", JSON.stringify(projects));
           console.log("이전 캐시 청소 및 데이터 재저장 성공");
         } catch (retryError) {
           console.error("이전 캐시 QR 청소 후에도 로컬 스토리지 기입 실패:", retryError);
@@ -5185,6 +5185,14 @@ export default function App() {
         p.spent = p.units.reduce((sum, un) => sum + (un.years[selectedYear]?.spent_main || 0) + (un.years[selectedYear]?.spent_carry || 0), 0);
         p.budget = p.units.reduce((sum, un) => sum + (un.years[selectedYear]?.budget_main || 0) + (un.years[selectedYear]?.budget_carry || 0), 0);
       });
+      // 💡 [DB 실시간 연동 가드] 프로그램 기획/예산 상세 변경 시, 원격 Supabase DB에도 즉각 동기화 저장합니다.
+      if (supabase && currentUser && currentRole?.id !== "GUEST") {
+        supabase.from("projects_data").upsert({ year: selectedYear, data: updated }, { onConflict: "year" })
+          .then(({ error }) => {
+            if (error) console.error("프로그램 기획 상세 DB 업데이트 실패:", error);
+            else console.log("프로그램 기획 상세 DB 업데이트 성공!");
+          });
+      }
       return updated;
     });
   };
@@ -5349,6 +5357,14 @@ export default function App() {
         p.spent = p.units.reduce((sum, un) => sum + (un.years[selectedYear]?.spent_main || 0) + (un.years[selectedYear]?.spent_carry || 0), 0);
         p.budget = p.units.reduce((sum, un) => sum + (un.years[selectedYear]?.budget_main || 0) + (un.years[selectedYear]?.budget_carry || 0), 0);
       });
+      // 💡 [DB 실시간 연동 가드] 프로그램 추가 시, 원격 Supabase DB에도 즉각 동기화 저장합니다.
+      if (supabase && currentUser && currentRole?.id !== "GUEST") {
+        supabase.from("projects_data").upsert({ year: selectedYear, data: updated }, { onConflict: "year" })
+          .then(({ error }) => {
+            if (error) console.error("프로그램 추가 DB 업데이트 실패:", error);
+            else console.log("프로그램 추가 DB 업데이트 성공!");
+          });
+      }
       return updated;
     });
   };
@@ -5658,6 +5674,14 @@ export default function App() {
           }
         });
       });
+      // 💡 [DB 실시간 연동 가드] 로컬 상태 갱신 직후, 원격 Supabase DB의 projects_data 테이블에도 즉각 동기화 저장합니다.
+      if (supabase && currentUser && currentRole?.id !== "GUEST") {
+        supabase.from("projects_data").upsert({ year: selectedYear, data: updated }, { onConflict: "year" })
+          .then(({ error }) => {
+            if (error) console.error("연구원 배정 DB 업데이트 실패:", error);
+            else console.log("연구원 배정 DB 업데이트 성공!");
+          });
+      }
       return updated;
     });
     alert(`[${progId}] 프로그램의 ${selectedYear}차년도 담당연구원이 "${newAssignee || "미배정"}"(으)로 배정 및 저장되었습니다.`);
