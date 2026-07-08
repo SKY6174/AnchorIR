@@ -1100,25 +1100,25 @@ ${aiRawText}
           const deptName = formData.dept || "사업운영팀";
           const meetingTitle = formData.title || "정기 회의";
           
-          // 실감 나고 리얼한 AI 의제 및 결과 자동 생성 데이터셋
+          // GPT API와 Gemini API의 생생한 Debate 토론 결과 정리 데이터셋
           const aiAgendas = [
             {
-              agenda: `[AI 추출] ${deptName} 기반 '${meetingTitle}'에 관한 실적 검증 및 현안 공유`,
-              result: `회의 시 발표된 담당 파트별 실적 보고를 기반으로, 차주 월요일까지 1차 보완 계획안을 작성하여 승인 요청하기로 협의함.`
+              agenda: `[AI Debate] '${meetingTitle}' 성과 분석 요약을 위한 LLM API 선정 (GPT-4o vs Gemini 1.5 Pro)`,
+              result: `GPT API는 정형 데이터 검증 속도와 정교한 JSON 출력 신뢰성을 강조했으나, Gemini API는 1M 토큰 범위의 음성(MP3) 및 보고서(PDF) 원본 통스캔 분석 및 멀티모달 컨텍스트의 우위를 주장함. 논쟁 끝에 실시간 일정 및 요약 검증은 GPT API를, 대규모 오디오 및 문서 데이터 심층 분석은 Gemini API를 결합 활용하기로 최종 타협함.`
             },
             {
-              agenda: `[AI 추출] 지산학 RISE 사업 RCC/ECC 연계 마일리지 장학금 지급 기준 적합성 검증`,
-              result: `산정 내역상의 일부 오기를 수정하고, RCC/ECC 센터 장학생 명단 검토를 거쳐 이번 주 금요일까지 최종 결재를 마무리하기로 확정함.`
+              agenda: `[AI Debate] RISE 사업 RCC/ECC 연계 마일리지 장학금 부정수급 탐지 알고리즘 검증`,
+              result: `GPT API는 퓨샷 프롬프트 기반의 철저한 사전 예외 필터링 모델을 제안했고, Gemini API는 대량의 장학생 데이터를 단일 컨텍스트에 올려 통계적 이상치를 검출하는 방안을 제시함. 비용 및 속도를 고려하여 1차 필터링은 GPT를, 2차 통계적 이상치 배치는 Gemini를 교차 사용하는 검증 모델을 설계하기로 합의함.`
             },
             {
-              agenda: `[AI 추출] 차기 연차별 신규 위원회 구성 및 예산 배분 조정안 검토`,
-              result: `신산업특화센터와 AID-X지원센터의 추가 예산 요구사항을 조율하여 차기 사업운영위원회에 공식 안건으로 상정하기로 결정함.`
+              agenda: `[AI Debate] AI 기반 의제/결과 자동 생성 파이프라인의 할루시네이션(환각) 방지 대책`,
+              result: `GPT는 RAG(검색 증강 생성) 아키텍처의 철저한 메타데이터 매핑을 선호한 반면, Gemini는 원본 데이터 네이티브 분석 및 자가 교정(Self-Correction) 프롬프트를 피력함. 양측 API의 요약 결과를 더블 체크(Cross-Validation)하는 유효성 검증 파이프라인을 최종 배포하기로 결정함.`
             }
           ];
 
           setAgendaResultPairs(aiAgendas);
           setIsAnalyzingAI(false);
-          alert("✨ AI 분석 완료: 음성 녹음본 분석 결과가 하단 의제 및 결과 리스트에 자동으로 추출/정리되었습니다.");
+          alert("✨ AI Debate 분석 완료: GPT와 Gemini API의 토론 결과를 요약 정리하여 하단 의제 및 결과 리스트에 자동으로 채웠습니다.");
         }, 1800);
       }
     } catch (err) {
@@ -1142,18 +1142,18 @@ ${aiRawText}
       
       const aiAgendas = [
         {
-          agenda: `[AI 추출] ${meetingTitle} 관련 부서(센터) 협업 프로세스 고도화 및 네트워킹 방안`,
-          result: `ECC/ICC 센터 간의 주간 실무 회의 일정을 조율하고 추진전략 성과 측정 지표를 이번 달 내로 정량화하기로 함.`
+          agenda: `[AI Debate] '${meetingTitle}' 관련 RISE 데이터 연동 표준 API 아키텍처 결정 (GPT vs Gemini)`,
+          result: `GPT API는 정형 API 명세의 완벽성과 스키마 신뢰성을 피력했으나, Gemini API는 다형성 데이터 구조(JSON/XML/Text 혼재)를 해석하는 유연성을 강조함. 최종적으로, 외부 기관 연동은 GPT의 Structured Output 기능을 사용하고, 내부 비정형 연구원 문서 취합은 Gemini를 사용하기로 결정함.`
         },
         {
-          agenda: `[AI 추출] 연차별 RISE 사업 핵심 성과 지표(KPI) 보완 및 수정을 위한 실무 TFT 구성`,
-          result: `TFT 공동 팀장으로 사업운영팀 책임연구원을 지정하고, 다음 주 금요일까지 Kick-off 미팅을 개최하여 초안을 도출하기로 함.`
+          agenda: `[AI Debate] AI 의제 분석 및 분류 파이프라인 탑재 시 API 모델 실무 비용 효율성 토론`,
+          result: `GPT API는 실시간 질의(Query)당 비용의 경제성을 주장했고, Gemini API는 200만 토큰 컨텍스트 윈도우를 통한 월별/분기별 벌크 데이터 처리가 전체 비용을 크게 절감할 수 있다고 피력함. 이에 따라 대량 문서 수합에는 Gemini Flash를, 개별 회의록 등록 시의 단발성 요약에는 GPT API를 혼합 배포하기로 합의함.`
         }
       ];
 
       setAgendaResultPairs(aiAgendas);
       setIsAnalyzingAI(false);
-      alert("✨ AI 분석 완료: 입력된 회의 명칭과 부서를 기반으로 AI 분석을 마쳐 의제 및 결과 쌍 2건을 자동 생성했습니다.");
+      alert("✨ AI Debate 분석 완료: GPT와 Gemini API의 토론 결과를 요약 정리하여 하단 의제 및 결과 리스트에 자동으로 채웠습니다.");
     }, 1200);
   };
 
