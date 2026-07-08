@@ -96,7 +96,7 @@ const getJosa = (id) => {
   return "와";
 };
 
-// 2. proposal 실재 데이터 기반 전략(S) 및 추진과제(T) & 프로그램(PG) 연동 맵핑 테이블
+// 2. proposal 실재 데이터 기반 전략(S) 및 전략과제(T) & 프로그램(PG) 연동 맵핑 테이블
 const STRATEGY_TASK_MAPPING = {
   "A1가": {
     strategies: [
@@ -426,10 +426,10 @@ export default function UnitSystemView({ selectedYear = 2 }) {
   const defaultStratId = selectedUnitData.strategies.length > 0 ? selectedUnitData.strategies[0].id : "";
   const [selectedStratId, setSelectedStratId] = useState(defaultStratId);
 
-  // 선택한 추진과제(T)의 ID 상태
+  // 선택한 전략과제(T)의 ID 상태
   const [selectedTaskId, setSelectedTaskId] = useState("");
 
-  // 선택된 추진전략에 부속되는 추진과제(T) 필터링
+  // 선택된 추진전략에 부속되는 전략과제(T) 필터링
   const filteredTasks = selectedUnitData.tasks ? selectedUnitData.tasks.filter(t => t.strat === selectedStratId) : [];
 
   // 연도(selectedYear)나 프로젝트가 변경될 때 현재 유닛 목록의 유효성 검사 및 리셋 처리
@@ -454,7 +454,7 @@ export default function UnitSystemView({ selectedYear = 2 }) {
     }
   }, [selectedUnitId, selectedUnitData]);
 
-  // 추진전략(S) 변경 시 추진과제(T) 드롭다운 첫 번째로 자동 연동
+  // 추진전략(S) 변경 시 전략과제(T) 드롭다운 첫 번째로 자동 연동
   useEffect(() => {
     if (filteredTasks.length > 0) {
       const exists = filteredTasks.some(t => t.id === selectedTaskId);
@@ -501,7 +501,7 @@ export default function UnitSystemView({ selectedYear = 2 }) {
 
   const rawPrograms = getRawPrograms();
 
-  // 선택된 추진전략(S) 및 추진과제(T)에 부속되는 프로그램(PG) 필터링
+  // 선택된 추진전략(S) 및 전략과제(T)에 부속되는 프로그램(PG) 필터링
   const filteredPrograms = rawPrograms.filter(p => {
     const match = p.id.match(/-S(\d+)T(\d+)-/);
     if (match) {
@@ -528,7 +528,7 @@ export default function UnitSystemView({ selectedYear = 2 }) {
         </h3>
         
         <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)", lineHeight: "1.6", marginBottom: "1.2rem" }}>
-          RISE 사업의 효율적인 기획 및 성과관리를 위해 본 대시보드는 <strong>프로젝트 - 단위과제 - 추진전략 - 추진과제 - 프로그램</strong>의 5단계 고유 연계 체계를 도입하여 관리하고 있습니다.
+          RISE 사업의 효율적인 기획 및 성과관리를 위해 본 대시보드는 <strong>프로젝트 - 단위과제 - 추진전략 - 전략과제 - 프로그램</strong>의 5단계 고유 연계 체계를 도입하여 관리하고 있습니다.
         </p>
 
         {/* 5단계 체계 카드 리스트 */}
@@ -552,7 +552,7 @@ export default function UnitSystemView({ selectedYear = 2 }) {
           </div>
           <div style={{ background: "rgba(120,120,120,0.05)", border: "1px solid var(--border-color)", padding: "0.8rem 1rem", borderRadius: "0.4rem" }}>
             <div style={{ fontSize: "0.68rem", color: "#f59e0b", fontWeight: "900", marginBottom: "0.2rem" }}>4단계: T</div>
-            <div style={{ fontSize: "0.85rem", fontWeight: "800", color: "var(--text-primary)" }}>추진과제 (Strategic Task)</div>
+            <div style={{ fontSize: "0.85rem", fontWeight: "800", color: "var(--text-primary)" }}>전략과제 (Strategic Task)</div>
             <div style={{ fontSize: "0.72rem", color: "var(--text-secondary)", marginTop: "0.25rem" }}>전략 실현을 위한 고유 중점 분야</div>
           </div>
           <div style={{ background: "rgba(120,120,120,0.05)", border: "1px solid var(--border-color)", padding: "0.8rem 1rem", borderRadius: "0.4rem" }}>
@@ -570,10 +570,10 @@ export default function UnitSystemView({ selectedYear = 2 }) {
           </div>
           <p style={{ fontSize: "0.78rem", color: "var(--text-secondary)", lineHeight: "1.4", margin: 0 }}>
             <code style={{ background: "var(--border-color)", padding: "0.1rem 0.3rem", borderRadius: "0.2rem", color: "var(--accent-color)", fontFamily: "monospace" }}>
-              단위과제번호-(추진전략번호+추진과제번호)-프로그램번호
+              단위과제번호-(추진전략번호+전략과제번호)-프로그램번호
             </code>
             <span style={{ margin: "0 0.5rem", color: "var(--border-color)" }}>|</span>
-            예시: <strong style={{ color: "var(--text-primary)" }}>{selectedYear === 1 ? "A1-S1T1-1" : "A1가-S1T1-1"}</strong> ➔ 단위과제 <strong style={{ color: "#10b981" }}>{selectedYear === 1 ? "A1" : "A1가"}</strong>, 추진전략 <strong style={{ color: "#ec4899" }}>S1</strong>, 추진과제 <strong style={{ color: "#f59e0b" }}>T1</strong>에 매핑된 <strong style={{ color: "#8b5cf6" }}>1번 프로그램</strong>을 의미함.
+            예시: <strong style={{ color: "var(--text-primary)" }}>{selectedYear === 1 ? "A1-S1T1-1" : "A1가-S1T1-1"}</strong> ➔ 단위과제 <strong style={{ color: "#10b981" }}>{selectedYear === 1 ? "A1" : "A1가"}</strong>, 추진전략 <strong style={{ color: "#ec4899" }}>S1</strong>, 전략과제 <strong style={{ color: "#f59e0b" }}>T1</strong>에 매핑된 <strong style={{ color: "#8b5cf6" }}>1번 프로그램</strong>을 의미함.
           </p>
           <p style={{ fontSize: "0.75rem", color: "var(--text-secondary)", marginTop: "0.4rem", fontStyle: "italic" }}>
             * 액션플랜(Action Plan; AP): 각 프로그램 수행을 위해 예산(본사업비/이월비), 담당자, 추진 단계, 마일스톤 기한 등을 상세히 테이블로 명시한 최하위 실천 명세입니다.
@@ -672,10 +672,10 @@ export default function UnitSystemView({ selectedYear = 2 }) {
             </select>
           </div>
 
-          {/* 4. 추진과제 드롭다운 */}
+          {/* 4. 전략과제 드롭다운 */}
           <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
             <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)", fontWeight: "700" }}>
-              4단계: 추진과제 선택(T)
+              4단계: 전략과제 선택(T)
             </label>
             <select
               value={selectedTaskId}
@@ -700,7 +700,7 @@ export default function UnitSystemView({ selectedYear = 2 }) {
           </div>
         </div>
 
-        {/* 우측: 선택한 전략에 연동된 추진과제(T) 및 프로그램(PG) 출력 영역 */}
+        {/* 우측: 선택한 전략에 연동된 전략과제(T) 및 프로그램(PG) 출력 영역 */}
         <div className="glass-card" style={{ padding: "1.8rem", display: "flex", flexDirection: "column", gap: "1.5rem" }}>
           
           {/* 상단: 현재 선택된 추진전략 상세 */}
@@ -740,7 +740,7 @@ export default function UnitSystemView({ selectedYear = 2 }) {
             </h4>
           </div>
 
-          {/* 중단: 선택된 추진과제 (T) 상세 */}
+          {/* 중단: 선택된 전략과제 (T) 상세 */}
           <div>
             <span style={{
               fontSize: "0.8rem",
@@ -754,13 +754,13 @@ export default function UnitSystemView({ selectedYear = 2 }) {
               display: "inline-block",
               marginBottom: "0.7rem"
             }}>
-              선택된 추진과제 (Strategic Task)
+              선택된 전략과제 (Strategic Task)
             </span>
             
             <div style={{ display: "flex", flexDirection: "column", gap: "0.6rem" }}>
               {!selectedTaskId ? (
                 <div style={{ fontSize: "0.78rem", color: "var(--text-secondary)", textAlign: "center", padding: "2rem", border: "1px dashed var(--border-color)" }}>
-                  본 전략에 매핑된 세부 추진과제가 아직 존재하지 않습니다.
+                  본 전략에 매핑된 세부 전략과제가 아직 존재하지 않습니다.
                 </div>
               ) : (
                 <div style={{
@@ -790,7 +790,7 @@ export default function UnitSystemView({ selectedYear = 2 }) {
                   }}>
                     T{selectedTaskId}
                   </div>
-                  <span style={{ fontWeight: "700" }}>{filteredTasks.find(t => t.id === selectedTaskId)?.title || "선택된 추진과제가 없습니다."}</span>
+                  <span style={{ fontWeight: "700" }}>{filteredTasks.find(t => t.id === selectedTaskId)?.title || "선택된 전략과제가 없습니다."}</span>
                 </div>
               )}
             </div>
