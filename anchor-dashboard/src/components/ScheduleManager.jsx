@@ -2797,6 +2797,9 @@ ${aiRawText}
               <p style={{ margin: "0.25rem 0 0 0", fontSize: "0.85rem", color: "var(--text-secondary)" }}>
                 주요 마감일정, 장비 검수, 보고서 제출 기한 등을 캘린더 형태로 일괄 체크
               </p>
+              <p style={{ margin: "0.35rem 0 0 0", fontSize: "0.8rem", color: "var(--accent-color)", fontWeight: "500", opacity: 0.95 }}>
+                (안내 : 선택된 연차에 해당되는 월(month)만 표시됩니다. '25.6월 보시려면 1차년도를 클릭하신 후 화살표로 이동하시면 됩니다.)
+              </p>
             </div>
             
             {currentRole.id !== "GUEST" && (
