@@ -951,16 +951,25 @@ function mergeProjectsWithInitial(loadedData, multiYearInitialData) {
               }
 
               if (updatedYears[yr]) {
-                // 💡 [D1, D2, D3 예산 강제 동기화 가드] D1, D2, D3 관련 프로그램들은 
-                // DB 캐시에 잘못된 옛날 예산이 남아있지 않도록 마스터 기획(sourceProg)의 예산과 비목 정보를 강제로 동기화 덮어씁니다.
+                // 💡 [D1, D2, D3 예산 강제 동기화 및 자가 치유 가드] D1, D2, D3 관련 프로그램들은 
+                // DB에 잘못된 옛날 캐시(외부사업비 오염 등)가 남아있더라도 마스터 기획(sourceProg)의 본사업비 공식 분배율(국고 50%, 시비 50%)을 정밀 강제 계산하여 실시간 보정합니다.
                 if (sourceProg.id && (sourceProg.id.startsWith("D1-") || sourceProg.id.startsWith("D2-") || sourceProg.id.startsWith("D3-"))) {
                   if (sourceProg.years && sourceProg.years[yr]) {
                     const sy = sourceProg.years[yr];
                     const y = updatedYears[yr];
-                    y.budget_main = sy.budget_main;
-                    y.budget_national = sy.budget_national;
-                    y.budget_city = sy.budget_city;
-                    y.budget_external = sy.budget_external;
+                    const rawBudgetMain = yr === 2 ? (sourceProg.budget_2026 || 0) : yr === 1 ? Math.round((sourceProg.budget_2026 || 0) * 0.9) : Math.round((sourceProg.budget_2026 || 0) * (yr === 3 ? 1.1 : yr === 4 ? 1.2 : 1.3));
+                    
+                    y.budget_main = rawBudgetMain;
+                    y.budget_national = Math.round(rawBudgetMain * 0.5);
+                    y.budget_city = rawBudgetMain - y.budget_national;
+                    y.budget_external = 0; // 특별한 언급이 없으므로 외부사업비는 0원 처리
+                    
+                    // 특별한 언급이 없으므로 이월사업비도 0원 처리
+                    y.budget_carry_national = 0;
+                    y.budget_carry_city = 0;
+                    y.budget_carry_external = 0;
+                    y.budget_carry = 0;
+                    
                     y.budget_categories = JSON.parse(JSON.stringify(sy.budget_categories || []));
                   }
                 }
@@ -1809,7 +1818,7 @@ export default function App() {
   useEffect(() => {
     try {
       Object.keys(localStorage).forEach((key) => {
-        if (key.startsWith("anchor_projects_data_") && key !== "anchor_projects_data_v42") {
+        if (key.startsWith("anchor_projects_data_") && key !== "anchor_projects_data_v43") {
           localStorage.removeItem(key);
         }
         // 💡 [연도별 복구 캐시 청소 가드] 캐시 버전 상향 시 연도별 가공 복구 캐시도 깨끗하게 동시 청소하여 구버전 예산 꼬임을 방지합니다.
@@ -1872,7 +1881,7 @@ export default function App() {
       }
       localStorage.setItem("anchor_last_self_healing_reset", String(now));
       // 로그인 세션(anchor_logged_in_user)은 리셋하지 않고 보존하여 튕김(로그아웃) 방지!
-      localStorage.removeItem("anchor_projects_data_v42");
+      localStorage.removeItem("anchor_projects_data_v43");
       localStorage.removeItem("anchor_selected_kpi");
       Object.keys(localStorage).forEach((key) => {
         if (key.startsWith("anchor_cache_proj_")) {
@@ -2023,8 +2032,8 @@ export default function App() {
   }, [currentUser]);
 
   const [projects, setProjects] = useState(() => {
-    // D2 단위과제 신규 세부 프로그램 및 예산/담당자 정보를 반영하기 위해 로컬스토리지 버전을 v42로 업그레이드합니다.
-    const cached = localStorage.getItem("anchor_projects_data_v42");
+    // D2 단위과제 신규 세부 프로그램 및 예산/담당자 정보를 반영하기 위해 로컬스토리지 버전을 v43로 업그레이드합니다.
+    const cached = localStorage.getItem("anchor_projects_data_v43");
     const multiYearInitialData = migrateProgramIds(formatDataToMultiYear(initialProjectsData));
     if (cached) {
       try {
@@ -4559,21 +4568,21 @@ export default function App() {
   // projects 상태 변경 시 localStorage 자동 기입 (새로고침 휘발 방지 우회책)
   useEffect(() => {
     try {
-      localStorage.setItem("anchor_projects_data_v42", JSON.stringify(projects));
+      localStorage.setItem("anchor_projects_data_v43", JSON.stringify(projects));
     } catch (e) {
       const isQuotaError = e.name === "QuotaExceededError" || e.code === 22 || e.number === -2147024882;
       if (isQuotaError) {
         console.warn("로컬 스토리지 공간이 부족합니다. 이전 구버전 캐시를 청소하고 재시도합니다...");
         try {
           Object.keys(localStorage).forEach((key) => {
-            if (key.startsWith("anchor_projects_data_") && key !== "anchor_projects_data_v42") {
+            if (key.startsWith("anchor_projects_data_") && key !== "anchor_projects_data_v43") {
               localStorage.removeItem(key);
             }
             if (key.startsWith("anchor_cache_proj_")) {
               localStorage.removeItem(key);
             }
           });
-          localStorage.setItem("anchor_projects_data_v42", JSON.stringify(projects));
+          localStorage.setItem("anchor_projects_data_v43", JSON.stringify(projects));
           console.log("이전 캐시 청소 및 데이터 재저장 성공");
         } catch (retryError) {
           console.error("이전 캐시 QR 청소 후에도 로컬 스토리지 기입 실패:", retryError);
