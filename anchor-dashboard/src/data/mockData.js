@@ -1808,7 +1808,7 @@ export const initialProjectsData = [
           { id: "D2-S1T4-2", title: "지역의료기관 연계 사업 운영", budget_2026: 5000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "박인숙 선임연구원", pdca: { p: "완료", d: "대기", c: "대기", a: "대기" } },
           { id: "D2-S1T5-1", title: "사회적약자 의료케어 모니터링 프로그램 운영", budget_2026: 21000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "박인숙 선임연구원", pdca: { p: "완료", d: "대기", c: "대기", a: "대기" } },
           { id: "D2-S1T6-1", title: "사회적약자 보건복지서비스 역량강화 프로그램 운영", budget_2026: 0, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "박인숙 선임연구원", pdca: { p: "완료", d: "대기", c: "대기", a: "대기" } },
-          { id: "D2-S2T7-1", title: "공공보건 의료데이터와 AI혁신 챌린지 운영", budget_2026: 0, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "박인숙 선임연구원", pdca: { p: "완료", d: "대기", c: "대기", a: "대기" } },
+          { id: "D2-S2T7-1", title: "공공보건 의료데이터와 AI혁신 챌린지 「울산 지역 건강 함께 잇다, AI 활용 지역사회 건강 공익 프로젝트」 운영", budget_2026: 0, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "박인숙 선임연구원", pdca: { p: "완료", d: "대기", c: "대기", a: "대기" } },
           { id: "D2-S2T7-2", title: "보건복지서비스 역량강화 전문인력양성 혁신 프로그램 운영", budget_2026: 30000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "박인숙 선임연구원", pdca: { p: "완료", d: "대기", c: "대기", a: "대기" } },
           { id: "D2-S2T8-1", title: "지역정주형 보건의료 인재 역량강화 프로그램 운영", budget_2026: 0, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "박인숙 선임연구원", pdca: { p: "완료", d: "대기", c: "대기", a: "대기" } },
           { id: "D2-S2T9-1", title: "지역 연계형 보건복지 취업역량 강화 프로그램 운영", budget_2026: 30000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "박인숙 선임연구원", pdca: { p: "완료", d: "대기", c: "대기", a: "대기" } },
@@ -3725,7 +3725,7 @@ export const YEAR_1_PROGRAMS = {
     },
     {
       "id": "D2-S2T7-1",
-      "title": "공공보건 의료데이터와 AI혁신 챌린지 운영",
+      "title": "공공보건 의료데이터와 AI혁신 챌린지 「울산 지역 건강 함께 잇다, AI 활용 지역사회 건강 공익 프로젝트」 운영",
       "budget": 0,
       "spent": 0,
       "assignee": "박인숙 선임연구원",
