@@ -3950,7 +3950,7 @@ export const YEAR_1_PROGRAMS = {
       "title": "국중박 벤치마킹",
       "budget": 0,
       "spent": 0,
-      "assignee": "오영경 연구원",
+      "assignee": "",
       "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
       "timeline": ",,P,D,C,A,,,,,,",
       "budget_categories": []
@@ -3960,7 +3960,7 @@ export const YEAR_1_PROGRAMS = {
       "title": "(이월사업)(문화/도시재생 체험 프로그램)북구 이화정 벤치마킹",
       "budget": 0,
       "spent": 0,
-      "assignee": "오영경 연구원",
+      "assignee": "",
       "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
       "timeline": ",,P,D,C,A,,,,,,",
       "budget_categories": []
@@ -3982,7 +3982,7 @@ export const YEAR_1_PROGRAMS = {
       "title": "(이월사업)(문화/도시재생 체험 프로그램)울리단길 런케이션",
       "budget": 0,
       "spent": 0,
-      "assignee": "오영경 연구원",
+      "assignee": "",
       "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
       "timeline": ",,P,D,C,A,,,,,,",
       "budget_categories": []
@@ -4004,7 +4004,7 @@ export const YEAR_1_PROGRAMS = {
       "title": "(이월사업)(콘텐츠 크리에이터 양성프로그램 심화과정)세계유산 도시 울산, 첫 페이지를 열다",
       "budget": 0,
       "spent": 0,
-      "assignee": "오영경 연구원",
+      "assignee": "",
       "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
       "timeline": ",,P,D,C,A,,,,,,",
       "budget_categories": []
@@ -4026,7 +4026,7 @@ export const YEAR_1_PROGRAMS = {
       "title": "대학내 커뮤니티 공간 구축(북카페조성)",
       "budget": 200000000,
       "spent": 0,
-      "assignee": "오영경 연구원",
+      "assignee": "",
       "pdca": { "p": "완료", "d": "진행", "c": "대기", "a": "대기" },
       "timeline": ",,P,D,C,A,,,,,,",
       "budget_categories": [
@@ -4038,7 +4038,7 @@ export const YEAR_1_PROGRAMS = {
       "title": "(이월사업)지역 커뮤니티 공간 기자재 구입",
       "budget": 0,
       "spent": 0,
-      "assignee": "오영경 연구원",
+      "assignee": "",
       "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
       "timeline": ",,P,D,C,A,,,,,,",
       "budget_categories": []
@@ -4096,7 +4096,7 @@ export const YEAR_1_PROGRAMS = {
       "title": "①힙합라운지-청년문화체험",
       "budget": 0,
       "spent": 0,
-      "assignee": "오영경 연구원",
+      "assignee": "",
       "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
       "timeline": ",,P,D,C,A,,,,,,",
       "budget_categories": []
@@ -4106,7 +4106,7 @@ export const YEAR_1_PROGRAMS = {
       "title": "②대학이 여는 도시재생-그래피티 운영",
       "budget": 0,
       "spent": 0,
-      "assignee": "오영경 연구원",
+      "assignee": "",
       "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
       "timeline": ",,P,D,C,A,,,,,,",
       "budget_categories": []
@@ -4116,7 +4116,7 @@ export const YEAR_1_PROGRAMS = {
       "title": "③지산학 페스티벌-그래피티 부스 운영",
       "budget": 0,
       "spent": 0,
-      "assignee": "오영경 연구원",
+      "assignee": "",
       "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
       "timeline": ",,P,D,C,A,,,,,,",
       "budget_categories": []
@@ -4126,7 +4126,7 @@ export const YEAR_1_PROGRAMS = {
       "title": "④문화-도시 재생 네트워킹 라운드 테이블",
       "budget": 0,
       "spent": 0,
-      "assignee": "오영경 연구원",
+      "assignee": "",
       "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
       "timeline": ",,P,D,C,A,,,,,,",
       "budget_categories": []
@@ -4136,7 +4136,7 @@ export const YEAR_1_PROGRAMS = {
       "title": "⑤3개대학 연합 문화관광 서포터즈 발대식",
       "budget": 0,
       "spent": 0,
-      "assignee": "오영경 연구원",
+      "assignee": "",
       "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
       "timeline": ",,P,D,C,A,,,,,,",
       "budget_categories": []
@@ -4158,7 +4158,7 @@ export const YEAR_1_PROGRAMS = {
       "title": "지산학 실내 부스 센터별 지원금",
       "budget": 0,
       "spent": 0,
-      "assignee": "오영경 연구원",
+      "assignee": "",
       "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
       "timeline": ",,P,D,C,A,,,,,,",
       "budget_categories": []
@@ -4168,7 +4168,7 @@ export const YEAR_1_PROGRAMS = {
       "title": "(이월사업)(성과활용확산)세계인의 날 연계 전통문화체험 부스 운영",
       "budget": 0,
       "spent": 0,
-      "assignee": "오영경 연구원",
+      "assignee": "",
       "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
       "timeline": ",,P,D,C,A,,,,,,",
       "budget_categories": []
@@ -4178,7 +4178,7 @@ export const YEAR_1_PROGRAMS = {
       "title": "(이월사업)(성과활용확산)도시재생 거버넌스 운영",
       "budget": 0,
       "spent": 0,
-      "assignee": "오영경 연구원",
+      "assignee": "",
       "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
       "timeline": ",,P,D,C,A,,,,,,",
       "budget_categories": []
