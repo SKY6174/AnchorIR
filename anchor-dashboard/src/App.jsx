@@ -1893,7 +1893,7 @@ export default function App() {
   useEffect(() => {
     try {
       Object.keys(localStorage).forEach((key) => {
-        if (key.startsWith("anchor_projects_data_") && key !== "anchor_projects_data_v49") {
+        if (key.startsWith("anchor_projects_data_") && key !== "anchor_projects_data_v50") {
           localStorage.removeItem(key);
         }
         // 💡 [연도별 복구 캐시 청소 가드] 캐시 버전 상향 시 연도별 가공 복구 캐시도 깨끗하게 동시 청소하여 구버전 예산 꼬임을 방지합니다.
@@ -1956,7 +1956,7 @@ export default function App() {
       }
       localStorage.setItem("anchor_last_self_healing_reset", String(now));
       // 로그인 세션(anchor_logged_in_user)은 리셋하지 않고 보존하여 튕김(로그아웃) 방지!
-      localStorage.removeItem("anchor_projects_data_v49");
+      localStorage.removeItem("anchor_projects_data_v50");
       localStorage.removeItem("anchor_selected_kpi");
       Object.keys(localStorage).forEach((key) => {
         if (key.startsWith("anchor_cache_proj_")) {
@@ -2107,8 +2107,8 @@ export default function App() {
   }, [currentUser]);
 
   const [projects, setProjects] = useState(() => {
-    // D2 단위과제 신규 세부 프로그램 및 예산/담당자 정보를 반영하기 위해 로컬스토리지 버전을 v49로 업그레이드합니다.
-    const cached = localStorage.getItem("anchor_projects_data_v49");
+    // D2 단위과제 신규 세부 프로그램 및 예산/담당자 정보를 반영하기 위해 로컬스토리지 버전을 v50으로 업그레이드합니다.
+    const cached = localStorage.getItem("anchor_projects_data_v50");
     const multiYearInitialData = migrateProgramIds(formatDataToMultiYear(initialProjectsData));
     if (cached) {
       try {
@@ -3458,6 +3458,10 @@ export default function App() {
           }));
           setEnvData(formatted);
           localStorage.setItem(`anchor_cache_env_y${selectedYear}`, JSON.stringify(formatted));
+        } else {
+          // 💡 [버그 예방] 원격 DB에서 데이터를 삭제하여 0건이 반환되었을 때는 상태와 캐시도 안전하게 완전히 지워줍니다.
+          setEnvData([]);
+          localStorage.removeItem(`anchor_cache_env_y${selectedYear}`);
         }
 
         if (pEquipError) {
@@ -3672,6 +3676,10 @@ export default function App() {
           });
           setServiceData(formatted);
           localStorage.setItem(`anchor_cache_serv_y${selectedYear}`, JSON.stringify(formatted));
+        } else {
+          // 💡 [버그 예방] 원격 DB에서 데이터를 삭제하여 0건이 반환되었을 때는 상태와 캐시도 안전하게 완전히 지워줍니다.
+          setServiceData([]);
+          localStorage.removeItem(`anchor_cache_serv_y${selectedYear}`);
         }
 
         // 4. Schedule (월간일정, 행사일정, 회의일정) 복구
@@ -4826,21 +4834,21 @@ export default function App() {
   // projects 상태 변경 시 localStorage 자동 기입 (새로고침 휘발 방지 우회책)
   useEffect(() => {
     try {
-      localStorage.setItem("anchor_projects_data_v49", JSON.stringify(projects));
+      localStorage.setItem("anchor_projects_data_v50", JSON.stringify(projects));
     } catch (e) {
       const isQuotaError = e.name === "QuotaExceededError" || e.code === 22 || e.number === -2147024882;
       if (isQuotaError) {
         console.warn("로컬 스토리지 공간이 부족합니다. 이전 구버전 캐시를 청소하고 재시도합니다...");
         try {
           Object.keys(localStorage).forEach((key) => {
-            if (key.startsWith("anchor_projects_data_") && key !== "anchor_projects_data_v49") {
+            if (key.startsWith("anchor_projects_data_") && key !== "anchor_projects_data_v50") {
               localStorage.removeItem(key);
             }
             if (key.startsWith("anchor_cache_proj_")) {
               localStorage.removeItem(key);
             }
           });
-          localStorage.setItem("anchor_projects_data_v49", JSON.stringify(projects));
+          localStorage.setItem("anchor_projects_data_v50", JSON.stringify(projects));
           console.log("이전 캐시 청소 및 데이터 재저장 성공");
         } catch (retryError) {
           console.error("이전 캐시 QR 청소 후에도 로컬 스토리지 기입 실패:", retryError);
