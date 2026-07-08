@@ -1423,11 +1423,23 @@ ${aiRawText}
             }
           }
         } else if (!isCenterMeeting) {
-          const baseWriters = (members || []).filter(m => 
+          let baseWriters = (members || []).filter(m => 
             m.status !== "미참여" && 
             m.email && 
             !isWriterExcluded(m)
           );
+          
+          // 사업단 관련 회의인 경우 심현미 운영팀장을 맨 위에 강제 포함
+          const simHyunMi = (members || []).find(m => m.name === "심현미") || {
+            id: "sim_hm_temp",
+            name: "심현미",
+            grade: "운영팀장",
+            role: "운영팀장",
+            dept: "사업운영팀",
+            email: "sim@uc.ac.kr"
+          };
+          baseWriters = [simHyunMi, ...baseWriters];
+
           const currentWriterName = (updated.writer || "").split(" ")[0];
           const isCurrentWriterInBase = baseWriters.some(w => w.name === currentWriterName);
           if (!isCurrentWriterInBase && baseWriters.length > 0) {
@@ -2909,11 +2921,23 @@ ${aiRawText}
       meetingStartTime: "10:00",
       meetingEndTime: "11:00",
       writer: (() => {
-        const activeWriters = (members || []).filter(m => 
+        let activeWriters = (members || []).filter(m => 
           m.status !== "미참여" && 
           m.email && 
           !isWriterExcluded(m)
         );
+        
+        // 사업단 관련 회의인 경우 심현미 운영팀장을 맨 위에 강제 포함
+        const simHyunMi = (members || []).find(m => m.name === "심현미") || {
+          id: "sim_hm_temp",
+          name: "심현미",
+          grade: "운영팀장",
+          role: "운영팀장",
+          dept: "사업운영팀",
+          email: "sim@uc.ac.kr"
+        };
+        activeWriters = [simHyunMi, ...activeWriters];
+
         if (activeWriters.length > 0) {
           const first = activeWriters[0];
           return `${first.name} ${getFormattedMemberGrade(first)}`.trim();
@@ -6082,6 +6106,17 @@ ${aiRawText}
                                 m.email && 
                                 !isWriterExcluded(m)
                               );
+                              
+                              // 사업단 관련 회의인 경우 심현미 운영팀장을 맨 위에 강제 포함
+                              const simHyunMi = (members || []).find(m => m.name === "심현미") || {
+                                id: "sim_hm_temp",
+                                name: "심현미",
+                                grade: "운영팀장",
+                                role: "운영팀장",
+                                dept: "사업운영팀",
+                                email: "sim@uc.ac.kr"
+                              };
+                              activeWriters = [simHyunMi, ...activeWriters.filter(m => m.name !== "심현미")];
                             }
 
                             if (activeWriters.length > 0) {
