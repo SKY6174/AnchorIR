@@ -179,6 +179,9 @@ export default function ScheduleManager({
   setPressReleases,
   members = []
 }) {
+  // 선택 연차에 동조하는 회계연도 연도 구하기 (1차년도: 2025, 2차년도: 2026 등)
+  const targetYearNum = selectedYear === 1 ? 2025 : selectedYear === 2 ? 2026 : selectedYear === 3 ? 2027 : selectedYear === 4 ? 2028 : 2029;
+
   // 모달 제어 상태
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [modalType, setModalType] = useState("monthly"); // "monthly", "event", "meeting", "press"
@@ -501,9 +504,9 @@ export default function ScheduleManager({
     title: "",
     type: "행사",
     dept: "사업운영팀",
-    startDate: "2026-07-15",
+    startDate: `${targetYearNum}-07-15`,
     startTime: "10:00",
-    endDate: "2026-07-15",
+    endDate: `${targetYearNum}-07-15`,
     endTime: "11:00",
     location: "",
     noTime: false,
@@ -521,7 +524,7 @@ export default function ScheduleManager({
     audioUrl: "",
     pdfUrl: "",
     // 언론보도용
-    pressDate: "2026-07-15",
+    pressDate: `${targetYearNum}-07-15`,
     pressTime: "10:00",
     pressMedia: "",
     pressUrl: "",
@@ -931,7 +934,7 @@ ${aiRawText}
   };
 
   // 날짜/시간 포맷 정밀 파싱 헬퍼 함수
-  const parseDateTime = (dateTimeStr, defaultVal = ["2026-07-15", "10:00"]) => {
+  const parseDateTime = (dateTimeStr, defaultVal = [`${targetYearNum}-07-15`, "10:00"]) => {
     if (!dateTimeStr) return defaultVal;
     let date = "";
     let time = "";
@@ -998,8 +1001,8 @@ ${aiRawText}
         if (s.id !== targetId) return s;
 
         // 기존 시작/종료 일시 파싱
-        const [oldStartDate, oldStartTime] = parseDateTime(s.startAt, ["2026-07-15", "10:00"]);
-        const [oldEndDate, oldEndTime] = parseDateTime(s.endAt, ["2026-07-15", "11:00"]);
+        const [oldStartDate, oldStartTime] = parseDateTime(s.startAt, [`${targetYearNum}-07-15`, "10:00"]);
+        const [oldEndDate, oldEndTime] = parseDateTime(s.endAt, [`${targetYearNum}-07-15`, "11:00"]);
 
         // 시작 날짜 계산
         const newStartAt = oldStartTime ? `${targetDateStr} ${oldStartTime}` : targetDateStr;
@@ -1574,17 +1577,17 @@ ${aiRawText}
     setEditingItemId(sched.id);
     setModalType(sched.isDeadline ? "deadline" : (sched.isTask ? "task" : "monthly"));
 
-    const startParts = parseDateTime(sched.startAt, ["2026-07-15", "10:00"]);
-    const endParts = parseDateTime(sched.endAt, ["2026-07-15", "11:00"]);
+    const startParts = parseDateTime(sched.startAt, [`${targetYearNum}-07-15`, "10:00"]);
+    const endParts = parseDateTime(sched.endAt, [`${targetYearNum}-07-15`, "11:00"]);
     const noTimeVal = !startParts[1];
 
     setFormData({
       title: sched.title,
       type: sched.type || "행사",
       dept: sched.dept || "사업운영팀",
-      startDate: startParts[0] || "2026-07-15",
+      startDate: startParts[0] || `${targetYearNum}-07-15`,
       startTime: startParts[1] || "10:00",
-      endDate: endParts[0] || "2026-07-15",
+      endDate: endParts[0] || `${targetYearNum}-07-15`,
       endTime: endParts[1] || "11:00",
       location: sched.location || "",
       noTime: noTimeVal,
@@ -1634,7 +1637,7 @@ ${aiRawText}
     // datetime 파싱 ("2026-07-25 13:00 ~ 15:00" 형식)
     const dt = event.datetime || "";
     const parts = dt.split(" ");
-    let eventDate = parts[0] || "2026-07-15";
+    let eventDate = parts[0] || `${targetYearNum}-07-15`;
     let eventStartTime = "10:00";
     let eventEndTime = "11:00";
 
@@ -1651,9 +1654,9 @@ ${aiRawText}
       title: event.title,
       type: "행사",
       dept: "사업운영팀",
-      startDate: "2026-07-15",
+      startDate: `${targetYearNum}-07-15`,
       startTime: "10:00",
-      endDate: "2026-07-15",
+      endDate: `${targetYearNum}-07-15`,
       endTime: "11:00",
       location: event.location || "",
       noTime: false,
@@ -2590,7 +2593,7 @@ ${aiRawText}
 
     // 현재 선택된 행사 월에 맞춰 기본 날짜 세팅
     const formattedMonth = selectedEventMonth < 10 ? `0${selectedEventMonth}` : selectedEventMonth;
-    const defaultDate = defaultDateStr || `2026-${formattedMonth}-15`;
+    const defaultDate = defaultDateStr || `${targetYearNum}-${formattedMonth}-15`;
 
     setFormData({
       title: "",
@@ -2675,7 +2678,7 @@ ${aiRawText}
 
     // 날짜 채우기
     for (let day = 1; day <= daysInMonth; day++) {
-      const dateString = `2026-${currentMonth < 10 ? "0" + currentMonth : currentMonth}-${day < 10 ? "0" + day : day}`;
+      const dateString = `${targetYearNum}-${currentMonth < 10 ? "0" + currentMonth : currentMonth}-${day < 10 ? "0" + day : day}`;
       const filtered = selectedDeptFilter === "전체" ? monthlySchedules : monthlySchedules.filter(s => s.dept && (s.dept === "전체" || s.dept.split(",").map(x => x.trim()).includes(selectedDeptFilter)));
       const daySchedules = filtered.filter(s => s.startAt && s.startAt.substring(0, 10) === dateString);
       const isSelected = selectedDay === day;
@@ -2776,7 +2779,7 @@ ${aiRawText}
   };
 
   const getSelectedDaySchedules = () => {
-    const dateString = `2026-${currentMonth < 10 ? "0" + currentMonth : currentMonth}-${selectedDay < 10 ? "0" + selectedDay : selectedDay}`;
+    const dateString = `${targetYearNum}-${currentMonth < 10 ? "0" + currentMonth : currentMonth}-${selectedDay < 10 ? "0" + selectedDay : selectedDay}`;
     const filtered = selectedDeptFilter === "전체" ? monthlySchedules : monthlySchedules.filter(s => s.dept && (s.dept === "전체" || s.dept.split(",").map(x => x.trim()).includes(selectedDeptFilter)));
     return filtered.filter(s => s.startAt && s.startAt.substring(0, 10) === dateString);
   };
@@ -2850,7 +2853,7 @@ ${aiRawText}
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
                 <div style={{ display: "flex", alignItems: "baseline", gap: "0.35rem" }}>
                   <span style={{ fontSize: "1.15rem", fontWeight: "800", color: "var(--text-primary)" }}>
-                    2026년
+                    {targetYearNum}년
                   </span>
                   <span style={{ fontSize: "1.85rem", fontWeight: "900", color: "var(--accent-color)" }}>
                     {currentMonth}월
