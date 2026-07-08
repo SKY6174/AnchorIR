@@ -1473,15 +1473,18 @@ ${aiRawText}
       // 작성자 및 부서 정보를 attendeesExternal에 조합하여 저장 (하위호환성 유지)
       let combinedAttendeesExternal = `작성자: ${formData.writer || "작성자 미정"} | 부서: ${formData.dept || "부서 미정"}`;
       if (formData.category === "committee") {
-        const deptToCommittee = {
-          "ECC센터": "ECC센터위원회",
-          "ICC센터": "ICC센터위원회",
-          "RCC센터": "RCC센터위원회",
-          "AID-X지원센터": "AID-X지원센터위원회",
-          "울산늘봄누리센터": "울산늘봄누리센터위원회",
-          "신산업특화센터": "신산업특화센터위원회"
-        };
-        const cName = deptToCommittee[formData.dept] || `${formData.dept}위원회`;
+        let cName = formData.dept || "";
+        if ((formData.committeeType || "agency") === "center") {
+          const deptToCommittee = {
+            "ECC센터": "ECC센터위원회",
+            "ICC센터": "ICC센터위원회",
+            "RCC센터": "RCC센터위원회",
+            "AID-X지원센터": "AID-X지원센터위원회",
+            "울산늘봄누리센터": "울산늘봄누리센터위원회",
+            "신산업특화센터": "신산업특화센터위원회"
+          };
+          cName = deptToCommittee[formData.dept] || `${formData.dept}위원회`;
+        }
         combinedAttendeesExternal = `위원회: ${cName} | 작성자: ${formData.writer || "작성자 미정"} | 부서: ${formData.dept || "부서 미정"}`;
       }
 
@@ -2548,6 +2551,33 @@ ${aiRawText}
       dept = p[1] ? p[1].replace("부서:", "").trim() : "사업운영팀";
     }
 
+    // 위원회 종류 및 세부 구분 파싱
+    let committeeType = "agency";
+    if (meeting.category === "committee") {
+      const isCenterCommittee = [
+        "ECC센터위원회", "ICC센터위원회", "RCC센터위원회", 
+        "AID-X지원센터위원회", "울산늘봄누리센터위원회", "신산업특화센터위원회"
+      ].some(c => ext.includes(c));
+      
+      committeeType = isCenterCommittee ? "center" : "agency";
+      
+      // 만약 '위원회: ' 태그가 포함되어 있다면 dept 정보도 그에 맞게 교정하여 세팅
+      if (ext.includes("위원회:")) {
+        const parts = ext.split("|");
+        const committeePart = parts.find(x => x.includes("위원회:"));
+        if (committeePart) {
+          const rawCName = committeePart.replace("위원회:", "").trim();
+          if (committeeType === "center") {
+            // ECC센터위원회 -> ECC센터 로 부서 세팅
+            dept = rawCName.replace("위원회", "");
+          } else {
+            // 앵커총괄위원회 등은 그대로 세팅
+            dept = rawCName;
+          }
+        }
+      }
+    }
+
     // 의제 목록 파싱 (줄바꿈 구분)
     const agendaStr = meeting.agenda || "";
     const agendaList = agendaStr ? agendaStr.split("\n") : [""];
@@ -2585,6 +2615,7 @@ ${aiRawText}
       attendees: meeting.attendeesInternal || meeting.attendees_internal || "",
       agendaList: agendaList,
       category: meeting.category || "operating",
+      committeeType: committeeType,
       result: meeting.result || "",
       audioUrl: meeting.audioUrl || meeting.audio_url || "",
       pdfUrl: meeting.pdfUrl || meeting.pdf_url || "",
@@ -2718,7 +2749,8 @@ ${aiRawText}
       pressUrl: "",
       pressType: "방송",
       operatingAgendas: {},
-      operatingResults: {}
+      operatingResults: {},
+      committeeType: "agency"
     });
     setIsAddModalOpen(true);
   };
@@ -5769,8 +5801,105 @@ ${aiRawText}
                     </div>
                   </div>
 
-                  {/* 회의 일시 개별 입력 필드 */}
-                  <div style={{ display: "grid", gridTemplateColumns: "1.2fr 0.9fr 0.9fr", gap: "1rem" }}>
+                  {/* 1) 각종 위원회 세부 구분 버튼메뉴 (category === "committee" 일 때 노출) */}
+                  {formData.category === "committee" && (
+                    <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem", marginTop: "0.25rem" }}>
+                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)" }}>위원회 구분</label>
+                      <div style={{ display: "flex", gap: "0.5rem", width: "100%" }}>
+                        {["agency", "center"].map((type) => {
+                          const isSelected = (formData.committeeType || "agency") === type;
+                          const label = type === "agency" ? "🏛️ 사업단 위원회" : "🏫 센터 위원회";
+                          return (
+                            <button
+                              key={type}
+                              type="button"
+                              onClick={() => {
+                                setFormData(prev => ({
+                                  ...prev,
+                                  committeeType: type,
+                                  dept: type === "agency" ? "앵커총괄위원회" : "ECC센터"
+                                }));
+                              }}
+                              style={{
+                                flex: 1,
+                                padding: "0.55rem",
+                                fontSize: "0.8rem",
+                                fontWeight: "700",
+                                borderRadius: "6px",
+                                border: "1px solid " + (isSelected ? "var(--accent-color)" : "var(--border-color)"),
+                                background: isSelected ? "rgba(59, 130, 246, 0.15)" : "var(--input-bg)",
+                                color: isSelected ? "#60A5FA" : "var(--text-secondary)",
+                                cursor: "pointer",
+                                transition: "all 0.15s ease",
+                                textAlign: "center"
+                              }}
+                            >
+                              {label}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* 2) 부서명(또는 위원회명) 및 작성자 배치 (회의일시보다 위에 위치하도록 배치 순서 변경) */}
+                  {formData.category !== "operating" && (
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginTop: "0.5rem" }}>
+                      <div>
+                        <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>
+                          {formData.category === "committee" && (formData.committeeType || "agency") === "agency" ? "위원회명" : "부서(센터)명"}
+                        </label>
+                        <select name="dept" value={formData.dept} onChange={handleInputChange} style={{ width: "100%", padding: "0.5rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }}>
+                          {(() => {
+                            if (formData.category === "committee") {
+                              if ((formData.committeeType || "agency") === "agency") {
+                                return [
+                                  "앵커총괄위원회", "앵커기획위원회", "앵커사업비관리위원회", 
+                                  "앵커사업자체평가위원회", "앵커사업자문회의", "앵커사업운영위원회"
+                                ].map(d => <option key={d} value={d}>{d}</option>);
+                              } else {
+                                return [
+                                  "ECC센터", "ICC센터", "RCC센터", "AID-X지원센터", "울산늘봄누리센터", "신산업특화센터"
+                                ].map(d => <option key={d} value={d}>{d}</option>);
+                              }
+                            }
+                            return ["사업운영팀", "ECC센터", "ICC센터", "RCC센터", "AID-X지원센터", "울산늘봄누리센터", "신산업특화센터"].map(d => (
+                              <option key={d} value={d}>{d}</option>
+                            ));
+                          })()}
+                        </select>
+                      </div>
+                      <div>
+                        <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>작성자</label>
+                        <select name="writer" value={formData.writer} onChange={handleInputChange} style={{ width: "100%", padding: "0.5rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }}>
+                          {(() => {
+                            const activeWriters = (members || []).filter(m => 
+                              m.status !== "미참여" && 
+                              m.email && 
+                              (m.role === "운영팀장" || m.grade === "책임연구원" || m.grade === "선임연구원" || m.grade === "연구원")
+                            );
+                            if (activeWriters.length > 0) {
+                              return activeWriters.map(m => {
+                                const titleOrGrade = m.role === "운영팀장" ? "운영팀장" : (m.grade || "연구원");
+                                const displayName = `${m.name} ${titleOrGrade}`.trim();
+                                return (
+                                  <option key={m.id || m.email} value={displayName}>
+                                    {displayName}
+                                  </option>
+                                );
+                              });
+                            }
+                            return ["박지현 팀장", "김민수 단장", "이진우 PD", "최성훈 PD", "한아름 PD"].map(w => (
+                              <option key={w} value={w}>{w}</option>
+                            ));
+                          })()}
+                        </select>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* 3) 회의 일자 및 시간 입력 필드 (맞바꿈에 의해 아래로 이동됨) */}
+                  <div style={{ display: "grid", gridTemplateColumns: "1.2fr 0.9fr 0.9fr", gap: "1rem", marginTop: "0.5rem" }}>
                     <div>
                       <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>회의 일자</label>
                       <input type="date" name="meetingDate" value={formData.meetingDate} onChange={handleInputChange} required style={{ width: "100%", padding: "0.5rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} />
@@ -5785,237 +5914,99 @@ ${aiRawText}
                     </div>
                   </div>
 
-
-
-                  {/* 부서명 및 작성자 드롭다운 배치 */}
-                  {formData.category === "operating" ? (
+                  {/* 4) 소속 연구원 선택 및 수기 입력창 (부서별 회의 또는 센터 위원회일 때 노출) */}
+                  {formData.category !== "operating" && (formData.category === "center" || (formData.category === "committee" && (formData.committeeType || "agency") === "center")) && (
                     <div style={{ marginTop: "0.75rem" }}>
-                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.25rem" }}>
-                        <label style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>
-                          👥 전체 사업단 참석자 선택
-                        </label>
-                        <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)", display: "flex", alignItems: "center", gap: "0.35rem", cursor: "pointer" }}>
-                          <input 
-                            type="checkbox" 
-                            checked={includeProfessors} 
-                            onChange={(e) => setIncludeProfessors(e.target.checked)} 
-                            style={{ cursor: "pointer", width: "14px", height: "14px" }}
-                          />
-                          팀장교수 포함
-                        </label>
-                      </div>
+                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>
+                        👥 소속 연구원 선택 (부서별 자동 연동)
+                      </label>
                       {(() => {
-                        const ROLE_PRIORITY = {
-                          "사업단장": 1,
-                          "본부장": 2,
-                          "센터장": 3,
-                          "운영팀장": 4,
-                          "팀장교수": 5,
-                          "연구원": 6
-                        };
-                        const DEPT_PRIORITY = {
-                          "ECC센터": 1,
-                          "ICC센터": 2,
-                          "RCC센터": 3,
-                          "AID-X지원센터": 4,
-                          "울산늘봄누리센터": 5,
-                          "신산업특화센터": 6,
-                          "사업운영팀": 7
-                        };
-                        const GRADE_PRIORITY = {
-                          "책임연구원": 1,
-                          "선임연구원": 2,
-                          "연구원": 3
-                        };
+                        const deptMembers = (members || []).filter(m => {
+                          const isDeptMatch = m.dept === formData.dept;
+                          if (!isDeptMatch) return false;
 
-                        const meetingDateObj = new Date(formData.meetingDate || new Date());
-                        
-                        const allActiveMembers = (members || [])
-                          .filter(m => {
-                            const start = new Date(m.startDate || m.hireDate || "2026-03-01");
-                            const end = m.endDate ? new Date(m.endDate) : null;
-                            if (start > meetingDateObj) return false;
-                            if (end && end < meetingDateObj) return false;
-                            if (!includeProfessors && m.role === "팀장교수") return false;
-                            return true;
-                          })
-                          .sort((a, b) => {
-                            const rA = ROLE_PRIORITY[a.role] || 99;
-                            const rB = ROLE_PRIORITY[b.role] || 99;
-                            if (rA !== rB) return rA - rB;
-                            
-                            const dA = DEPT_PRIORITY[a.dept] || 99;
-                            const dB = DEPT_PRIORITY[b.dept] || 99;
-                            if (dA !== dB) return dA - dB;
-                            
-                            const gA = GRADE_PRIORITY[a.grade] || 99;
-                            const gB = GRADE_PRIORITY[b.grade] || 99;
-                            if (gA !== gB) return gA - gB;
-                            
-                            const sA = new Date(a.startDate || a.hireDate || "2026-03-01").getTime();
-                            const sB = new Date(b.startDate || b.hireDate || "2026-03-01").getTime();
-                            return sA - sB;
-                          });
+                          const start = m.startDate || m.start_date || m.hireDate || m.hire_date || "2025-03-01";
+                          const end = m.endDate || m.end_date || "";
+                          const status = m.status || "참여중";
+
+                          const meetingDateStr = formData.meetingDate;
+                          if (meetingDateStr) {
+                            if (start && meetingDateStr < start) return false;
+                            if (end && meetingDateStr > end) return false;
+                          }
+
+                          return status === "참여중";
+                        });
+
+                        if (deptMembers.length === 0) {
+                          return (
+                            <div style={{ fontSize: "0.72rem", color: "var(--text-secondary)", marginBottom: "0.5rem", padding: "0.25rem", background: "rgba(255,255,255,0.02)", borderRadius: "4px" }}>
+                              소속 부서를 먼저 선택해 주세요.
+                            </div>
+                          );
+                        }
 
                         return (
-                          <div style={{ display: "flex", gap: "0.35rem", flexWrap: "wrap", padding: "0.5rem", background: "var(--panel-bg)", borderRadius: "6px", border: "1px solid var(--border-color)", maxHeight: "120px", overflowY: "auto" }}>
-                            {allActiveMembers.map(m => {
+                          <div style={{ display: "flex", gap: "0.35rem", flexWrap: "wrap", marginBottom: "0.5rem", padding: "0.5rem", background: "rgba(255,255,255,0.02)", borderRadius: "6px", border: "1px solid rgba(255,255,255,0.04)" }}>
+                            {deptMembers.map(m => {
+                              const displayName = `${m.name} ${m.grade || "연구원"}`;
                               const isSelected = (formData.attendees || "")
                                 .split(",")
                                 .map(x => x.trim())
                                 .includes(m.name);
 
-                              const displayRole = m.role === "연구원" ? (m.grade || "연구원") : (m.role === "사업단장" ? "단장" : m.role);
-
                               return (
-                                  <button
-                                    key={m.id || m.email}
-                                    type="button"
-                                    onClick={() => handleToggleAttendee(m.name)}
-                                    style={{
-                                      padding: "0.25rem 0.5rem",
-                                      fontSize: "0.7rem",
-                                      borderRadius: "4px",
-                                      border: "1px solid " + (isSelected ? "var(--accent-color)" : "var(--border-color)"),
-                                      background: isSelected ? "rgba(59, 130, 246, 0.15)" : "var(--input-bg)",
-                                      color: isSelected ? "#60A5FA" : "var(--text-secondary)",
-                                      cursor: "pointer",
-                                      fontWeight: "700"
-                                    }}
-                                  >
-                                    {m.name} {displayRole} {isSelected ? "✓" : "+"}
-                                  </button>
+                                <button
+                                  key={m.id || m.email}
+                                  type="button"
+                                  onClick={() => handleToggleAttendee(m.name)}
+                                  style={{
+                                    padding: "0.25rem 0.5rem",
+                                    fontSize: "0.7rem",
+                                    borderRadius: "4px",
+                                    border: "1px solid " + (isSelected ? "var(--accent-color)" : "rgba(255,255,255,0.1)"),
+                                    background: isSelected ? "rgba(59, 130, 246, 0.15)" : "transparent",
+                                    color: isSelected ? "#60A5FA" : "var(--text-secondary)",
+                                    cursor: "pointer",
+                                    transition: "all 0.1s ease",
+                                    fontWeight: "700"
+                                  }}
+                                >
+                                  {displayName} {isSelected ? "✓" : "+"}
+                                </button>
                               );
                             })}
                           </div>
                         );
                       })()}
+
+                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>
+                        참석자 (위의 버튼을 누르면 자동으로 입력되며, 타 부서 인원의 경우 수기입력 가능)
+                      </label>
                       <input 
                         type="text" 
                         name="attendees" 
                         value={formData.attendees || ""} 
                         onChange={handleInputChange} 
-                        placeholder="선택되거나 직접 콤마(,)로 구분해 입력" 
-                        style={{ width: "100%", padding: "0.5rem", marginTop: "0.35rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", fontSize: "0.75rem" }} 
+                        placeholder="위 칩을 선택하거나 직접 입력 (예: 박지현 팀장, 이진우 PD (총 2명))" 
+                        style={{ width: "100%", padding: "0.5rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} 
                       />
                     </div>
-                  ) : (
-                    <>
-                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
-                        <div>
-                          <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>부서명</label>
-                          <select name="dept" value={formData.dept} onChange={handleInputChange} style={{ width: "100%", padding: "0.5rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }}>
-                            {["사업운영팀", "ECC센터", "ICC센터", "RCC센터", "AID-X지원센터", "울산늘봄누리센터", "신산업특화센터"].map(d => (
-                              <option key={d} value={d}>{d}</option>
-                            ))}
-                          </select>
-                        </div>
-                        <div>
-                          <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>작성자</label>
-                          <select name="writer" value={formData.writer} onChange={handleInputChange} style={{ width: "100%", padding: "0.5rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }}>
-                            {(() => {
-                              const activeWriters = (members || []).filter(m => 
-                                m.status !== "미참여" && 
-                                m.email && 
-                                (m.role === "운영팀장" || m.grade === "책임연구원" || m.grade === "선임연구원" || m.grade === "연구원")
-                              );
-                              if (activeWriters.length > 0) {
-                                return activeWriters.map(m => {
-                                  const titleOrGrade = m.role === "운영팀장" ? "운영팀장" : (m.grade || "연구원");
-                                  const displayName = `${m.name} ${titleOrGrade}`.trim();
-                                  return (
-                                    <option key={m.id || m.email} value={displayName}>
-                                      {displayName}
-                                    </option>
-                                  );
-                                });
-                              }
-                              return ["박지현 팀장", "김민수 단장", "이진우 PD", "최성훈 PD", "한아름 PD"].map(w => (
-                                <option key={w} value={w}>{w}</option>
-                              ));
-                            })()}
-                          </select>
-                        </div>
-                      </div>
+                  )}
 
-                      {/* 참석자 선택 및 입력 */}
-                      <div>
-                        <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>
-                          👥 소속 연구원 선택 (부서별 자동 연동)
-                        </label>
-                        {(() => {
-                          const deptMembers = (members || []).filter(m => {
-                            const isDeptMatch = m.dept === formData.dept;
-                            if (!isDeptMatch) return false;
-
-                            const start = m.startDate || m.start_date || m.hireDate || m.hire_date || "2025-03-01";
-                            const end = m.endDate || m.end_date || "";
-                            const status = m.status || "참여중";
-
-                            const meetingDateStr = formData.meetingDate;
-                            if (meetingDateStr) {
-                              if (start && meetingDateStr < start) return false;
-                              if (end && meetingDateStr > end) return false;
-                            }
-
-                            return status === "참여중";
-                          });
-
-                          if (deptMembers.length === 0) {
-                            return (
-                              <div style={{ fontSize: "0.72rem", color: "var(--text-secondary)", marginBottom: "0.5rem", padding: "0.25rem", background: "rgba(255,255,255,0.02)", borderRadius: "4px" }}>
-                                소속 부서를 먼저 선택해 주세요.
-                              </div>
-                            );
-                          }
-
-                          return (
-                            <div style={{ display: "flex", gap: "0.35rem", flexWrap: "wrap", marginBottom: "0.5rem", padding: "0.5rem", background: "rgba(255,255,255,0.02)", borderRadius: "6px", border: "1px solid rgba(255,255,255,0.04)" }}>
-                              {deptMembers.map(m => {
-                                const displayName = `${m.name} ${m.grade || "연구원"}`;
-                                const isSelected = (formData.attendees || "")
-                                  .split(",")
-                                  .map(x => x.trim())
-                                  .includes(m.name);
-
-                                return (
-                                  <button
-                                    key={m.id || m.email}
-                                    type="button"
-                                    onClick={() => handleToggleAttendee(m.name)}
-                                    style={{
-                                      padding: "0.25rem 0.5rem",
-                                      fontSize: "0.7rem",
-                                      borderRadius: "4px",
-                                      border: "1px solid " + (isSelected ? "var(--accent-color)" : "rgba(255,255,255,0.1)"),
-                                      background: isSelected ? "rgba(59, 130, 246, 0.15)" : "transparent",
-                                      color: isSelected ? "#60A5FA" : "var(--text-secondary)",
-                                      cursor: "pointer",
-                                      transition: "all 0.1s ease",
-                                      fontWeight: "700"
-                                    }}
-                                  >
-                                    {displayName} {isSelected ? "✓" : "+"}
-                                  </button>
-                                );
-                              })}
-                            </div>
-                          );
-                        })()}
-
-                        <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>
-                          참석자 (위의 버튼을 누르면 자동으로 입력되며, 타 부서 인원의 경우 수기입력 가능)
-                        </label>
-                        <input 
-                          type="text" 
-                          name="attendees" 
-                          value={formData.attendees || ""} 
-                          onChange={handleInputChange} 
-                          placeholder="위 칩을 선택하거나 직접 입력 (예: 박지현 팀장, 이진우 PD (총 2명))" 
-                          style={{ width: "100%", padding: "0.5rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} 
-                        />
-                      </div>
-                    </>
+                  {/* 5) 일반 텍스트 수기 입력참석자창 (사업단 위원회일 때 노출) */}
+                  {formData.category === "committee" && (formData.committeeType || "agency") === "agency" && (
+                    <div style={{ marginTop: "0.75rem" }}>
+                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>참석자 입력</label>
+                      <input 
+                        type="text" 
+                        name="attendees" 
+                        value={formData.attendees || ""} 
+                        onChange={handleInputChange} 
+                        placeholder="회의 참석자명 입력 (예: 김민수 단장, 이진우 교수 등)" 
+                        style={{ width: "100%", padding: "0.5rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} 
+                      />
+                    </div>
                   )}
 
                   {/* 회의록 첨부파일 개별 분리 업로드 (2칸 설계) */}
