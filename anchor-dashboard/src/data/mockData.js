@@ -1799,20 +1799,20 @@ export const initialProjectsData = [
         spent_2025_carry: 0,
         manager: "오영경 RCC센터장",
         programs: [
-          { id: "D2-S1T1-1", title: "지산학 보건 거버넌스 구축 및 운영", budget_2026: 3000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "박인숙 연구원", pdca: { p: "완료", d: "대기", c: "대기", a: "대기" } },
-          { id: "D2-S1T2-1", title: "맞춤형 보건복지 서비스 역량강화를 위한 기자재 & 장비", budget_2026: 50000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "박인숙 연구원", pdca: { p: "완료", d: "진행", c: "대기", a: "대기" } },
-          { id: "D2-S1T2-2", title: "신규학과 (반려동물/K-뷰티/외국인요양보호사) 기자재 & 장비", budget_2026: 100000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "박인숙 연구원", pdca: { p: "완료", d: "진행", c: "대기", a: "대기" } },
-          { id: "D2-S1T3-1", title: "사회적약자 의료케어 역량강화교육 프로그램 운영(주민참여형)", budget_2026: 11000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "박인숙 연구원", pdca: { p: "완료", d: "대기", c: "대기", a: "대기" } },
-          { id: "D2-S1T3-2", title: "교내 시설 활용 주민참여 프로그램 운영", budget_2026: 5000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "박인숙 연구원", pdca: { p: "완료", d: "대기", c: "대기", a: "대기" } },
-          { id: "D2-S1T4-1", title: "AI 보건의료 빅데이터 교육 프로그램 운영", budget_2026: 9000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "박인숙 연구원", pdca: { p: "완료", d: "대기", c: "대기", a: "대기" } },
-          { id: "D2-S1T4-2", title: "지역의료기관 연계 사업 운영", budget_2026: 5000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "박인숙 연구원", pdca: { p: "완료", d: "대기", c: "대기", a: "대기" } },
-          { id: "D2-S1T5-1", title: "사회적약자 의료케어 모니터링 프로그램 운영", budget_2026: 21000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "박인숙 연구원", pdca: { p: "완료", d: "대기", c: "대기", a: "대기" } },
-          { id: "D2-S1T6-1", title: "사회적약자 보건복지서비스 역량강화 프로그램 운영", budget_2026: 0, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "박인숙 연구원", pdca: { p: "완료", d: "대기", c: "대기", a: "대기" } },
-          { id: "D2-S2T7-1", title: "공공보건 의료데이터와 AI혁신 챌린지 운영", budget_2026: 0, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "박인숙 연구원", pdca: { p: "완료", d: "대기", c: "대기", a: "대기" } },
-          { id: "D2-S2T7-2", title: "보건복지서비스 역량강화 전문인력양성 혁신 프로그램 운영", budget_2026: 30000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "박인숙 연구원", pdca: { p: "완료", d: "대기", c: "대기", a: "대기" } },
-          { id: "D2-S2T8-1", title: "지역정주형 보건의료 인재 역량강화 프로그램 운영", budget_2026: 0, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "박인숙 연구원", pdca: { p: "완료", d: "대기", c: "대기", a: "대기" } },
-          { id: "D2-S2T9-1", title: "지역 연계형 보건복지 취업역량 강화 프로그램 운영", budget_2026: 30000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "박인숙 연구원", pdca: { p: "완료", d: "대기", c: "대기", a: "대기" } },
-          { id: "D2-S2T10-1", title: "신규학과 개설&지원을 위한 통합형 보건인재 양성 교육환경 개선 + 외국인요양보호사", budget_2026: 136000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "박인숙 연구원", pdca: { p: "완료", d: "진행", c: "대기", a: "대기" } }
+          { id: "D2-S1T1-1", title: "지산학 보건 거버넌스 구축 및 운영", budget_2026: 3000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "박인숙 선임연구원", pdca: { p: "완료", d: "대기", c: "대기", a: "대기" } },
+          { id: "D2-S1T2-1", title: "맞춤형 보건복지 서비스 역량강화를 위한 기자재 & 장비", budget_2026: 50000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "박인숙 선임연구원", pdca: { p: "완료", d: "진행", c: "대기", a: "대기" } },
+          { id: "D2-S1T2-2", title: "신규학과 (반려동물/K-뷰티/외국인요양보호사) 기자재 & 장비", budget_2026: 100000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "박인숙 선임연구원", pdca: { p: "완료", d: "진행", c: "대기", a: "대기" } },
+          { id: "D2-S1T3-1", title: "사회적약자 의료케어 역량강화교육 프로그램 운영(주민참여형)", budget_2026: 11000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "박인숙 선임연구원", pdca: { p: "완료", d: "대기", c: "대기", a: "대기" } },
+          { id: "D2-S1T3-2", title: "교내 시설 활용 주민참여 프로그램 운영", budget_2026: 5000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "박인숙 선임연구원", pdca: { p: "완료", d: "대기", c: "대기", a: "대기" } },
+          { id: "D2-S1T4-1", title: "AI 보건의료 빅데이터 교육 프로그램 운영", budget_2026: 9000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "박인숙 선임연구원", pdca: { p: "완료", d: "대기", c: "대기", a: "대기" } },
+          { id: "D2-S1T4-2", title: "지역의료기관 연계 사업 운영", budget_2026: 5000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "박인숙 선임연구원", pdca: { p: "완료", d: "대기", c: "대기", a: "대기" } },
+          { id: "D2-S1T5-1", title: "사회적약자 의료케어 모니터링 프로그램 운영", budget_2026: 21000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "박인숙 선임연구원", pdca: { p: "완료", d: "대기", c: "대기", a: "대기" } },
+          { id: "D2-S1T6-1", title: "사회적약자 보건복지서비스 역량강화 프로그램 운영", budget_2026: 0, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "박인숙 선임연구원", pdca: { p: "완료", d: "대기", c: "대기", a: "대기" } },
+          { id: "D2-S2T7-1", title: "공공보건 의료데이터와 AI혁신 챌린지 운영", budget_2026: 0, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "박인숙 선임연구원", pdca: { p: "완료", d: "대기", c: "대기", a: "대기" } },
+          { id: "D2-S2T7-2", title: "보건복지서비스 역량강화 전문인력양성 혁신 프로그램 운영", budget_2026: 30000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "박인숙 선임연구원", pdca: { p: "완료", d: "대기", c: "대기", a: "대기" } },
+          { id: "D2-S2T8-1", title: "지역정주형 보건의료 인재 역량강화 프로그램 운영", budget_2026: 0, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "박인숙 선임연구원", pdca: { p: "완료", d: "대기", c: "대기", a: "대기" } },
+          { id: "D2-S2T9-1", title: "지역 연계형 보건복지 취업역량 강화 프로그램 운영", budget_2026: 30000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "박인숙 선임연구원", pdca: { p: "완료", d: "대기", c: "대기", a: "대기" } },
+          { id: "D2-S2T10-1", title: "신규학과 개설&지원을 위한 통합형 보건인재 양성 교육환경 개선 + 외국인요양보호사", budget_2026: 136000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "박인숙 선임연구원", pdca: { p: "완료", d: "진행", c: "대기", a: "대기" } }
         ],
         budgetDetails: {
           "인건비": { budget_2026: 0, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0 },
@@ -2996,7 +2996,7 @@ export const YEAR_1_PROGRAMS = {
       "title": "지역협력협의체운영",
       "budget": 6000000,
       "spent": 0,
-      "assignee": "박인숙 연구원",
+      "assignee": "박인숙 선임연구원",
       "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
       "timeline": ",,P,D,C,A,,,,,,",
       "budget_categories": [
@@ -3622,7 +3622,7 @@ export const YEAR_1_PROGRAMS = {
       "title": "지산학 보건 거버넌스 구축 및 운영",
       "budget": 3000000,
       "spent": 0,
-      "assignee": "박인숙 연구원",
+      "assignee": "박인숙 선임연구원",
       "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
       "timeline": ",,P,D,C,A,,,,,,",
       "budget_categories": [
@@ -3634,7 +3634,7 @@ export const YEAR_1_PROGRAMS = {
       "title": "맞춤형 보건복지 서비스 역량강화를 위한 기자재 & 장비",
       "budget": 50000000,
       "spent": 0,
-      "assignee": "박인숙 연구원",
+      "assignee": "박인숙 선임연구원",
       "pdca": { "p": "완료", "d": "진행", "c": "대기", "a": "대기" },
       "timeline": ",,P,D,C,A,,,,,,",
       "budget_categories": [
@@ -3646,7 +3646,7 @@ export const YEAR_1_PROGRAMS = {
       "title": "신규학과 (반려동물/K-뷰티/외국인요양보호사) 기자재 & 장비",
       "budget": 100000000,
       "spent": 0,
-      "assignee": "박인숙 연구원",
+      "assignee": "박인숙 선임연구원",
       "pdca": { "p": "완료", "d": "진행", "c": "대기", "a": "대기" },
       "timeline": ",,P,D,C,A,,,,,,",
       "budget_categories": [
@@ -3658,7 +3658,7 @@ export const YEAR_1_PROGRAMS = {
       "title": "사회적약자 의료케어 역량강화교육 프로그램 운영(주민참여형)",
       "budget": 11000000,
       "spent": 0,
-      "assignee": "박인숙 연구원",
+      "assignee": "박인숙 선임연구원",
       "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
       "timeline": ",,P,D,C,A,,,,,,",
       "budget_categories": [
@@ -3670,7 +3670,7 @@ export const YEAR_1_PROGRAMS = {
       "title": "교내 시설 활용 주민참여 프로그램 운영",
       "budget": 5000000,
       "spent": 0,
-      "assignee": "박인숙 연구원",
+      "assignee": "박인숙 선임연구원",
       "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
       "timeline": ",,P,D,C,A,,,,,,",
       "budget_categories": [
@@ -3682,7 +3682,7 @@ export const YEAR_1_PROGRAMS = {
       "title": "AI 보건의료 빅데이터 교육 프로그램 운영",
       "budget": 9000000,
       "spent": 0,
-      "assignee": "박인숙 연구원",
+      "assignee": "박인숙 선임연구원",
       "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
       "timeline": ",,P,D,C,A,,,,,,",
       "budget_categories": [
@@ -3694,7 +3694,7 @@ export const YEAR_1_PROGRAMS = {
       "title": "지역의료기관 연계 사업 운영",
       "budget": 5000000,
       "spent": 0,
-      "assignee": "박인숙 연구원",
+      "assignee": "박인숙 선임연구원",
       "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
       "timeline": ",,P,D,C,A,,,,,,",
       "budget_categories": [
@@ -3706,7 +3706,7 @@ export const YEAR_1_PROGRAMS = {
       "title": "사회적약자 의료케어 모니터링 프로그램 운영",
       "budget": 21000000,
       "spent": 0,
-      "assignee": "박인숙 연구원",
+      "assignee": "박인숙 선임연구원",
       "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
       "timeline": ",,P,D,C,A,,,,,,",
       "budget_categories": [
@@ -3718,7 +3718,7 @@ export const YEAR_1_PROGRAMS = {
       "title": "사회적약자 보건복지서비스 역량강화 프로그램 운영",
       "budget": 0,
       "spent": 0,
-      "assignee": "박인숙 연구원",
+      "assignee": "박인숙 선임연구원",
       "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
       "timeline": ",,P,D,C,A,,,,,,",
       "budget_categories": []
@@ -3728,7 +3728,7 @@ export const YEAR_1_PROGRAMS = {
       "title": "공공보건 의료데이터와 AI혁신 챌린지 운영",
       "budget": 0,
       "spent": 0,
-      "assignee": "박인숙 연구원",
+      "assignee": "박인숙 선임연구원",
       "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
       "timeline": ",,P,D,C,A,,,,,,",
       "budget_categories": []
@@ -3738,7 +3738,7 @@ export const YEAR_1_PROGRAMS = {
       "title": "보건복지서비스 역량강화 전문인력양성 혁신 프로그램 운영",
       "budget": 30000000,
       "spent": 0,
-      "assignee": "박인숙 연구원",
+      "assignee": "박인숙 선임연구원",
       "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
       "timeline": ",,P,D,C,A,,,,,,",
       "budget_categories": [
@@ -3750,7 +3750,7 @@ export const YEAR_1_PROGRAMS = {
       "title": "지역정주형 보건의료 인재 역량강화 프로그램 운영",
       "budget": 0,
       "spent": 0,
-      "assignee": "박인숙 연구원",
+      "assignee": "박인숙 선임연구원",
       "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
       "timeline": ",,P,D,C,A,,,,,,",
       "budget_categories": []
@@ -3760,7 +3760,7 @@ export const YEAR_1_PROGRAMS = {
       "title": "지역 연계형 보건복지 취업역량 강화 프로그램 운영",
       "budget": 30000000,
       "spent": 0,
-      "assignee": "박인숙 연구원",
+      "assignee": "박인숙 선임연구원",
       "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
       "timeline": ",,P,D,C,A,,,,,,",
       "budget_categories": [
@@ -3772,7 +3772,7 @@ export const YEAR_1_PROGRAMS = {
       "title": "신규학과 개설&지원을 위한 통합형 보건인재 양성 교육환경 개선 + 외국인요양보호사",
       "budget": 136000000,
       "spent": 0,
-      "assignee": "박인숙 연구원",
+      "assignee": "박인숙 선임연구원",
       "pdca": { "p": "완료", "d": "진행", "c": "대기", "a": "대기" },
       "timeline": ",,P,D,C,A,,,,,,",
       "budget_categories": [

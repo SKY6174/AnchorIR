@@ -928,6 +928,18 @@ function mergeProjectsWithInitial(loadedData, multiYearInitialData) {
         const mergedPrograms = sourceUnit.programs.map((sourceProg) => {
           const cachedProg = unit.programs?.find(cp => cp.id === sourceProg.id);
           if (cachedProg) {
+            // 💡 [Self-healing 연구원 배정 등급 호칭 불일치 자가 보정]
+            if (cachedProg.assignee === "박인숙 연구원") {
+              cachedProg.assignee = "박인숙 선임연구원";
+            }
+            if (cachedProg.assignees) {
+              Object.keys(cachedProg.assignees).forEach(yr => {
+                if (cachedProg.assignees[yr] === "박인숙 연구원") {
+                  cachedProg.assignees[yr] = "박인숙 선임연구원";
+                }
+              });
+            }
+
             if (!cachedProg.years) cachedProg.years = {};
             const updatedYears = { ...cachedProg.years };
 
