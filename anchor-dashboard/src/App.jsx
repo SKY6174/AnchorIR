@@ -3198,16 +3198,23 @@ export default function App() {
           }));
           setMonthlySchedules(formatted);
           localStorage.setItem(`anchor_cache_month_y${selectedYear}`, JSON.stringify(formatted));
+        } else {
+          setMonthlySchedules([]);
+          localStorage.removeItem(`anchor_cache_month_y${selectedYear}`);
         }
         if (sEvent && sEvent.length > 0) {
-          const formatted = sEvent.map(x => ({ ...x, id: Number(x.id), month: Number(x.month) }));
+          const formatted = sEvent.map(x => ({ ...x, id: Number(x.id), year: Number(x.year), month: Number(x.month) }));
           setEventSchedules(formatted);
           localStorage.setItem(`anchor_cache_event_y${selectedYear}`, JSON.stringify(formatted));
+        } else {
+          setEventSchedules([]);
+          localStorage.removeItem(`anchor_cache_event_y${selectedYear}`);
         }
         if (sMeet && sMeet.length > 0) {
           const formatted = sMeet.map(x => ({
             ...x,
             id: Number(x.id),
+            year: Number(x.year),
             month: Number(x.month),
             attendeesInternal: x.attendees_internal,
             attendeesExternal: x.attendees_external,
@@ -3216,6 +3223,9 @@ export default function App() {
           }));
           setMeetingSchedules(formatted);
           localStorage.setItem(`anchor_cache_meet_y${selectedYear}`, JSON.stringify(formatted));
+        } else {
+          setMeetingSchedules([]);
+          localStorage.removeItem(`anchor_cache_meet_y${selectedYear}`);
         }
 
 

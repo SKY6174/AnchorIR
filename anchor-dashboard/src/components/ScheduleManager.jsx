@@ -1378,6 +1378,7 @@ ${aiRawText}
           e.id === editingItemId 
             ? {
                 ...e,
+                year: selectedYear,
                 month: extractedMonth,
                 title: formData.title || "새 행사",
                 department: formData.department || "-",
@@ -1394,6 +1395,7 @@ ${aiRawText}
       } else {
         const newItem = {
           id: Date.now(),
+          year: selectedYear,
           month: extractedMonth,
           title: formData.title || "새 행사 일정",
           department: formData.department || "-",
@@ -1432,6 +1434,7 @@ ${aiRawText}
           m.id === editingItemId
             ? {
                 ...m,
+                year: selectedYear,
                 month: extractedMonth,
                 category: formData.category,
                 title: formData.title || "새 회의록",
@@ -1449,6 +1452,7 @@ ${aiRawText}
       } else {
         const newItem = {
           id: Date.now(),
+          year: selectedYear,
           month: extractedMonth,
           category: formData.category,
           title: formData.title || "새 회의록",
@@ -3148,8 +3152,8 @@ ${aiRawText}
 
           {/* 행사 목록 */}
           <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
-            {eventSchedules.filter(e => e.month === selectedEventMonth).length > 0 ? (
-              eventSchedules.filter(e => e.month === selectedEventMonth).map(event => (
+            {eventSchedules.filter(e => e.year === selectedYear && e.month === selectedEventMonth).length > 0 ? (
+              eventSchedules.filter(e => e.year === selectedYear && e.month === selectedEventMonth).map(event => (
                 <div 
                   key={event.id}
                   id={`event-card-${event.id}`}
@@ -3878,6 +3882,7 @@ ${aiRawText}
               {(() => {
                 // 부서 및 위원회별 다중 필터링 적용
                 const filteredList = meetingSchedules.filter(m => {
+                  if (m.year !== selectedYear) return false;
                   const isCatMatch = m.category === activeMeetingCat;
                   if (!isCatMatch) return false;
 
@@ -4423,8 +4428,8 @@ ${aiRawText}
             </div>
           ) : (
             <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
-              {meetingSchedules.filter(m => m.category === activeMeetingCat).length > 0 ? (
-                meetingSchedules.filter(m => m.category === activeMeetingCat).map(meeting => (
+              {meetingSchedules.filter(m => m.year === selectedYear && m.category === activeMeetingCat).length > 0 ? (
+                meetingSchedules.filter(m => m.year === selectedYear && m.category === activeMeetingCat).map(meeting => (
                   <div 
                     key={meeting.id}
                     className="card"
