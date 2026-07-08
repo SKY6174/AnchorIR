@@ -2680,7 +2680,7 @@ ${aiRawText}
     for (let day = 1; day <= daysInMonth; day++) {
       const dateString = `${targetYearNum}-${currentMonth < 10 ? "0" + currentMonth : currentMonth}-${day < 10 ? "0" + day : day}`;
       const filtered = selectedDeptFilter === "전체" ? monthlySchedules : monthlySchedules.filter(s => s.dept && (s.dept === "전체" || s.dept.split(",").map(x => x.trim()).includes(selectedDeptFilter)));
-      const daySchedules = filtered.filter(s => s.startAt && s.startAt.substring(0, 10) === dateString);
+      const daySchedules = filtered.filter(s => s.startAt && s.startAt.substring(0, 10) === dateString && s.year === selectedYear);
       const isSelected = selectedDay === day;
 
       cells.push(
@@ -2781,7 +2781,7 @@ ${aiRawText}
   const getSelectedDaySchedules = () => {
     const dateString = `${targetYearNum}-${currentMonth < 10 ? "0" + currentMonth : currentMonth}-${selectedDay < 10 ? "0" + selectedDay : selectedDay}`;
     const filtered = selectedDeptFilter === "전체" ? monthlySchedules : monthlySchedules.filter(s => s.dept && (s.dept === "전체" || s.dept.split(",").map(x => x.trim()).includes(selectedDeptFilter)));
-    return filtered.filter(s => s.startAt && s.startAt.substring(0, 10) === dateString);
+    return filtered.filter(s => s.startAt && s.startAt.substring(0, 10) === dateString && s.year === selectedYear);
   };
 
   return (
