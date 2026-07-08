@@ -205,8 +205,8 @@ export default function ScheduleManager({
       ["정교수", "부교수", "조교수", "교수", "조교", "팀장교수", "교원"].includes(m.rank);
       
     if (isProfessorType) {
-      // 4대 센터장 및 명시적으로 센터장 직위에 있는 인원 판별
-      const realCenterHeads = ["이동은", "김기범", "현용환", "홍광표"];
+      // 4대 센터장 및 신생 센터장(김현수) 명시적 센터장 직위 인원 판별
+      const realCenterHeads = ["이동은", "김기범", "현용환", "홍광표", "김현수"];
       const isCenterHead = 
         m.role === "센터장" || 
         m.rank === "센터장" || 
@@ -6007,7 +6007,7 @@ ${aiRawText}
                         👥 소속 연구원 선택 (부서별 자동 연동)
                       </label>
                       {(() => {
-                        const deptMembers = (members || []).filter(m => {
+                        let deptMembers = (members || []).filter(m => {
                           const isDeptMatch = m.dept === formData.dept;
                           if (!isDeptMatch) return false;
 
@@ -6023,6 +6023,28 @@ ${aiRawText}
 
                           return status === "참여중";
                         });
+
+                        // [추가] 신산업특화센터 또는 AID-X지원센터 선택 시 김현수 센터장을 맨 앞에 추가 노출
+                        if (formData.dept === "신산업특화센터" || formData.dept === "AID-X지원센터") {
+                          if (!deptMembers.some(m => m.name === "김현수")) {
+                            const kimHyunSoo = (members || []).find(m => m.name === "김현수") || {
+                              id: "kim_hs_temp",
+                              name: "김현수",
+                              grade: "센터장",
+                              role: "센터장",
+                              dept: formData.dept,
+                              status: "참여중"
+                            };
+                            const formattedKim = {
+                              ...kimHyunSoo,
+                              role: "센터장",
+                              rank: "센터장",
+                              grade: "센터장",
+                              dept: formData.dept
+                            };
+                            deptMembers = [formattedKim, ...deptMembers];
+                          }
+                        }
 
                         if (deptMembers.length === 0) {
                           return (
