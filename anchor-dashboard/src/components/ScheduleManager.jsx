@@ -240,6 +240,26 @@ export default function ScheduleManager({
     return m.grade || "연구원";
   };
 
+  // 회의록 작성자에서 센터장, 교수진(팀장교수 포함), 운영팀장을 배제하는 판별 함수
+  const isWriterExcluded = (m) => {
+    if (!m) return true;
+    const displayRole = getFormattedMemberGrade(m);
+    
+    // 센터장, 팀장교수, 운영팀장은 작성자에서 완전히 제외
+    if (displayRole === "센터장" || displayRole === "팀장교수" || displayRole === "운영팀장") {
+      return true;
+    }
+    
+    // 기타 교직원(교수) 여부 검증
+    const isProf = 
+      ["정교수", "부교수", "조교수", "교수", "조교", "팀장교수", "교원"].includes(m.grade) ||
+      ["팀장교수", "센터장"].includes(m.role) ||
+      ["정교수", "부교수", "조교수", "교수", "조교", "팀장교수", "교원"].includes(m.role) ||
+      ["정교수", "부교수", "조교수", "교수", "조교", "팀장교수", "교원"].includes(m.rank);
+      
+    return isProf;
+  };
+
   // 선택 연차의 실제 회계연도 사업기간(3/1 ~ 이듬해 2/28 또는 29) 부합 여부 판별 함수
   const isDateInSelectedYear = (dateStr, yearVal) => {
     if (!dateStr) return false;
@@ -1384,12 +1404,14 @@ ${aiRawText}
           let activeWriters = (members || []).filter(m => 
             m.status !== "미참여" && 
             m.email && 
-            m.dept === updated.dept
+            m.dept === updated.dept &&
+            !isWriterExcluded(m)
           );
           if (activeWriters.length === 0) {
             activeWriters = (members || []).filter(m => 
               m.status !== "미참여" && 
-              m.dept === updated.dept
+              m.dept === updated.dept &&
+              !isWriterExcluded(m)
             );
           }
           if (activeWriters.length > 0) {
@@ -1404,7 +1426,7 @@ ${aiRawText}
           const baseWriters = (members || []).filter(m => 
             m.status !== "미참여" && 
             m.email && 
-            (m.role === "운영팀장" || m.grade === "책임연구원" || m.grade === "선임연구원" || m.grade === "연구원" || m.name === "심현미")
+            !isWriterExcluded(m)
           );
           const currentWriterName = (updated.writer || "").split(" ")[0];
           const isCurrentWriterInBase = baseWriters.some(w => w.name === currentWriterName);
@@ -2890,7 +2912,7 @@ ${aiRawText}
         const activeWriters = (members || []).filter(m => 
           m.status !== "미참여" && 
           m.email && 
-          (m.role === "운영팀장" || m.grade === "책임연구원" || m.grade === "선임연구원" || m.grade === "연구원" || m.name === "심현미")
+          !isWriterExcluded(m)
         );
         if (activeWriters.length > 0) {
           const first = activeWriters[0];
@@ -6044,19 +6066,21 @@ ${aiRawText}
                               activeWriters = (members || []).filter(m => 
                                 m.status !== "미참여" && 
                                 m.email && 
-                                m.dept === formData.dept
+                                m.dept === formData.dept &&
+                                !isWriterExcluded(m)
                               );
                               if (activeWriters.length === 0) {
                                 activeWriters = (members || []).filter(m => 
                                   m.status !== "미참여" && 
-                                  m.dept === formData.dept
+                                  m.dept === formData.dept &&
+                                  !isWriterExcluded(m)
                                 );
                               }
                             } else {
                               activeWriters = (members || []).filter(m => 
                                 m.status !== "미참여" && 
                                 m.email && 
-                                (m.role === "운영팀장" || m.grade === "책임연구원" || m.grade === "선임연구원" || m.grade === "연구원" || m.name === "심현미")
+                                !isWriterExcluded(m)
                               );
                             }
 
