@@ -1893,7 +1893,7 @@ export default function App() {
   useEffect(() => {
     try {
       Object.keys(localStorage).forEach((key) => {
-        if (key.startsWith("anchor_projects_data_") && key !== "anchor_projects_data_v51") {
+        if (key.startsWith("anchor_projects_data_") && key !== "anchor_projects_data_v52") {
           localStorage.removeItem(key);
         }
         // 💡 [연도별 복구 캐시 청소 가드] 캐시 버전 상향 시 연도별 가공 복구 캐시도 깨끗하게 동시 청소하여 구버전 예산 꼬임을 방지합니다.
@@ -1956,7 +1956,7 @@ export default function App() {
       }
       localStorage.setItem("anchor_last_self_healing_reset", String(now));
       // 로그인 세션(anchor_logged_in_user)은 리셋하지 않고 보존하여 튕김(로그아웃) 방지!
-      localStorage.removeItem("anchor_projects_data_v51");
+      localStorage.removeItem("anchor_projects_data_v52");
       localStorage.removeItem("anchor_selected_kpi");
       Object.keys(localStorage).forEach((key) => {
         if (key.startsWith("anchor_cache_proj_")) {
@@ -2107,8 +2107,8 @@ export default function App() {
   }, [currentUser]);
 
   const [projects, setProjects] = useState(() => {
-    // D2 단위과제 신규 세부 프로그램 및 예산/담당자 정보를 반영하기 위해 로컬스토리지 버전을 v51로 업그레이드합니다.
-    const cached = localStorage.getItem("anchor_projects_data_v51");
+    // D2 단위과제 신규 세부 프로그램 및 예산/담당자 정보를 반영하기 위해 로컬스토리지 버전을 v52로 업그레이드합니다.
+    const cached = localStorage.getItem("anchor_projects_data_v52");
     const multiYearInitialData = migrateProgramIds(formatDataToMultiYear(initialProjectsData));
     if (cached) {
       try {
@@ -3516,75 +3516,10 @@ export default function App() {
           setEquipData(formatted);
           localStorage.setItem(`anchor_cache_equip_y${selectedYear}`, JSON.stringify(formatted));
         } else {
-          // DB가 비어있는 최초 구동 시: 기본 모의 데이터(defaultEquipmentsSeed)를 Supabase DB에 세팅(시딩)
-          const initialSeed = defaultEquipmentsSeed.map(e => ({
-            year: selectedYear,
-            unit: e.unit,
-            seq: e.seq,
-            dept_name: e.deptName,
-            division_name: e.divisionName,
-            item_name: e.itemName,
-            unit_price: e.unitPrice,
-            quantity: e.quantity,
-            description: e.description,
-            operation: e.operation,
-            password: e.password,
-            related_docs: e.relatedDocs || "", // 관련문서 시드 매핑
-            doc_plan: e.docPlan || "",
-            doc_purchase: e.docPurchase || "",
-            doc_bid: e.docBid || "",
-            date_p: e.dateP || null,
-            date_a: e.dateA || null,
-            date_b: e.dateB || null,
-            date_pr: e.datePr || null,
-            date_i: e.dateI || null
-          }));
-          
-          if (currentUser && currentRole?.id !== "GUEST") {
-            const { error: seedErr } = await supabase.from("procurement_equipment").insert(initialSeed);
-            if (!active) return;
-            if (!seedErr) {
-              // 시딩 성공 시 즉시 DB 재조회하여 프론트 데이터 갱신
-              const { data: refetched } = await supabase.from("procurement_equipment").select("*").eq("year", selectedYear);
-              if (!active) return;
-              if (refetched) {
-                const formatted = refetched.map(x => {
-                  const docParts = (x.related_docs || "").split(",").map(d => d.trim()).filter(Boolean);
-                  return {
-                    id: Number(x.id),
-                    year: Number(x.year),
-                    unit: x.unit || "A1",
-                    seq: Number(x.seq) || 1,
-                    deptName: x.dept_name || "",
-                    divisionName: x.division_name || "",
-                    itemName: x.item_name || "",
-                    unitPrice: Number(x.unit_price) || 0,
-                    quantity: Number(x.quantity) || 1,
-                    description: x.description || "",
-                    operation: x.operation || "교과목(정규)",
-                    password: x.password || "1234",
-                    relatedDocs: x.related_docs || "", // 관련문서 재조회 매핑
-                    docPlan: x.doc_plan || docParts[0] || "",
-                    docPurchase: x.doc_purchase || docParts[1] || "",
-                    docBid: x.doc_bid || docParts[2] || "",
-                    dateP: x.date_p || "",
-                    dateA: x.date_a || "",
-                    dateB: x.date_b || "",
-                    datePr: x.date_pr || "",
-                    dateI: x.date_i || ""
-                  };
-                });
-                setEquipData(formatted);
-                localStorage.setItem(`anchor_cache_equip_y${selectedYear}`, JSON.stringify(formatted));
-              }
-            } else {
-              console.error("Failed to seed default equipments:", seedErr);
-              setEquipData([]);
-            }
-          } else {
-            // 비로그인 상태이거나 GUEST일 때는 모의 데이터를 메모리에만 로드
-            setEquipData(defaultEquipmentsSeed);
-          }
+          // 💡 [시딩 버그 해결] 사용자가 직접 DB에서 데이터를 삭제하여 0건이 되었을 때는,
+          // 자동으로 모의 데이터를 재시딩하여 DB를 오염시키는 현상을 방지하고 완전한 빈 배열로 동기화합니다.
+          setEquipData([]);
+          localStorage.removeItem(`anchor_cache_equip_y${selectedYear}`);
         }
         if (pServError) {
           console.error("Supabase procurement_services fetch error (using fallback cache):", pServError);
@@ -4850,21 +4785,21 @@ export default function App() {
   // projects 상태 변경 시 localStorage 자동 기입 (새로고침 휘발 방지 우회책)
   useEffect(() => {
     try {
-      localStorage.setItem("anchor_projects_data_v51", JSON.stringify(projects));
+      localStorage.setItem("anchor_projects_data_v52", JSON.stringify(projects));
     } catch (e) {
       const isQuotaError = e.name === "QuotaExceededError" || e.code === 22 || e.number === -2147024882;
       if (isQuotaError) {
         console.warn("로컬 스토리지 공간이 부족합니다. 이전 구버전 캐시를 청소하고 재시도합니다...");
         try {
           Object.keys(localStorage).forEach((key) => {
-            if (key.startsWith("anchor_projects_data_") && key !== "anchor_projects_data_v51") {
+            if (key.startsWith("anchor_projects_data_") && key !== "anchor_projects_data_v52") {
               localStorage.removeItem(key);
             }
             if (key.startsWith("anchor_cache_proj_")) {
               localStorage.removeItem(key);
             }
           });
-          localStorage.setItem("anchor_projects_data_v51", JSON.stringify(projects));
+          localStorage.setItem("anchor_projects_data_v52", JSON.stringify(projects));
           console.log("이전 캐시 청소 및 데이터 재저장 성공");
         } catch (retryError) {
           console.error("이전 캐시 QR 청소 후에도 로컬 스토리지 기입 실패:", retryError);
