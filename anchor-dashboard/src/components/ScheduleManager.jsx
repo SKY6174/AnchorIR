@@ -1269,6 +1269,45 @@ ${aiRawText}
       return;
     }
 
+    // 선택된 연차의 회계연도 사업 기간 (3/1 ~ 이듬해 2/28) 범위 계산
+    const targetYearNum = selectedYear === 1 ? 2025 : selectedYear === 2 ? 2026 : selectedYear === 3 ? 2027 : selectedYear === 4 ? 2028 : 2029;
+    const startRange = new Date(`${targetYearNum}-03-01T00:00:00+09:00`);
+    const endYear = targetYearNum + 1;
+    const isLeap = (endYear % 4 === 0 && endYear % 100 !== 0) || (endYear % 400 === 0);
+    const endDay = isLeap ? "29" : "28";
+    const endRange = new Date(`${endYear}-02-${endDay}T23:59:59+09:00`);
+
+    // 날짜 유효성 검사 헬퍼 함수
+    const isDateInActiveYear = (dateStr) => {
+      if (!dateStr) return false;
+      const d = new Date(dateStr);
+      return !isNaN(d.getTime()) && d >= startRange && d <= endRange;
+    };
+
+    // 1-1) 일반 일정 날짜 범위 벨리데이션
+    if (modalType === "monthly" || modalType === "task" || modalType === "deadline") {
+      if (!isDateInActiveYear(formData.startDate)) {
+        alert(`선택하신 날짜(${formData.startDate})는 현재 선택된 ${selectedYear}차년도 사업 기간(${targetYearNum}-03-01 ~ ${endYear}-02-${endDay})에 속하지 않습니다. 해당 연차 탭으로 이동하신 후 등록해 주세요.`);
+        return;
+      }
+    }
+
+    // 1-2) 행사 일정 날짜 범위 벨리데이션
+    if (modalType === "event") {
+      if (!isDateInActiveYear(formData.eventDate)) {
+        alert(`선택하신 행사 날짜(${formData.eventDate})는 현재 선택된 ${selectedYear}차년도 사업 기간(${targetYearNum}-03-01 ~ ${endYear}-02-${endDay})에 속하지 않습니다. 해당 연차 탭으로 이동하신 후 등록해 주세요.`);
+        return;
+      }
+    }
+
+    // 1-3) 회의 일정 날짜 범위 벨리데이션
+    if (modalType === "meeting") {
+      if (!isDateInActiveYear(formData.meetingDate)) {
+        alert(`선택하신 회의 날짜(${formData.meetingDate})는 현재 선택된 ${selectedYear}차년도 사업 기간(${targetYearNum}-03-01 ~ ${endYear}-02-${endDay})에 속하지 않습니다. 해당 연차 탭으로 이동하신 후 등록해 주세요.`);
+        return;
+      }
+    }
+
     // 1) 일반 일정 (monthly) 시간 선후 벨리데이션
     if (modalType === "monthly") {
       const hasTime = !formData.noTime;

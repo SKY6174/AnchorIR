@@ -2727,6 +2727,36 @@ export default function App() {
     let active = true;
     const fetchAllDashboardData = async () => {
       try {
+        // 0-0. Supabase schedule_meetings 및 schedule_events 테이블 연차(year) 과거 데이터 자가 보정 (일회성 자가 치료)
+        (async () => {
+          try {
+            // 1) 회의록 연도 정합성 보정
+            const { data: dbMeets } = await supabase.from("schedule_meetings").select("id, datetime, year");
+            if (dbMeets && dbMeets.length > 0) {
+              for (const m of dbMeets) {
+                const correctYear = getCalculatedYearFromDate(m.datetime ? m.datetime.substring(0, 10) : null, m.year);
+                if (Number(m.year) !== correctYear) {
+                  await supabase.from("schedule_meetings").update({ year: correctYear }).eq("id", m.id);
+                  console.log(`[DB보정] 회의록 id ${m.id}의 연도를 ${m.year} -> ${correctYear}로 자가 보정 완료`);
+                }
+              }
+            }
+            // 2) 행사 연도 정합성 보정
+            const { data: dbEvents } = await supabase.from("schedule_events").select("id, datetime, year");
+            if (dbEvents && dbEvents.length > 0) {
+              for (const e of dbEvents) {
+                const correctYear = getCalculatedYearFromDate(e.datetime ? e.datetime.substring(0, 10) : null, e.year);
+                if (Number(e.year) !== correctYear) {
+                  await supabase.from("schedule_events").update({ year: correctYear }).eq("id", e.id);
+                  console.log(`[DB보정] 행사 id ${e.id}의 연도를 ${e.year} -> ${correctYear}로 자가 보정 완료`);
+                }
+              }
+            }
+          } catch (err) {
+            console.error("DB 연차 정합성 자가 보정 중 실패:", err);
+          }
+        })();
+
         // 0-0. 원격 DB 040 고도화 컬럼 실존 여부 조용히 선제 노크 (콘솔 400 에러 원천 차단 목적)
         try {
           const { error: chkServErr } = await supabase.from("procurement_services").select("date_b").limit(1);
