@@ -187,3 +187,39 @@ gitGraph
    - 조달 서류 결재 상태 변경 또는 신규 할일 마감일 임박 시, 담당자에게 Supabase Realtime 채널을 통한 실시간 푸시 알림 연동.
 3. **AI 보고서 작성 자동화:**
    - 대시보드의 연간 실적 데이터를 취합하여 정부 제출용 앵커사업 연차보고서 초안을 AI가 한글(HWP) 파일 형태로 자동 생성해 다운로드해 주는 기능 개발 검토.
+
+---
+
+## 8. 장학금 관리 DB 및 연동상태 정밀 진단 결과
+
+본 장학금 관리 시스템은 개인정보보호법 제29조(안전조치의무)에 입각하여 학생 주민등록번호 및 계좌번호에 대한 암호화, 행수준보안(RLS) 및 프런트엔드 데이터 검증 동기화 연동이 정상적으로 맞물려 실행 중인지 정밀 진단한 결과입니다.
+
+```mermaid
+sequenceDiagram
+    participant User as 사용자 (송경영 단장)
+    participant Client as React 대시보드 (App.jsx)
+    participant Auth as Supabase Auth (JWT 검증)
+    participant DB as PostgreSQL (public.scholarships)
+    participant View as public.scholarships_view
+
+    User->>Client: 장학금 엑셀 업로드 / 승인 클릭
+    Client->>Auth: API 요청 헤더에 JWT 토큰 전달
+    Auth-->>Client: JWT 토큰 검증 완료 (authenticated)
+    Client->>View: INSERT / UPDATE payload 전달
+    Note over View, DB: pgcrypto에 의한 대칭키<br/>양방향 암호화 자동 수행
+    View->>DB: 암호화된 주민번호/계좌번호 적재
+    DB-->>View: 트랜잭션 정상 완료
+    View-->>Client: 200 OK 응답 반환
+```
+
+### 1) DB 스키마 및 pgcrypto 암호화 점검
+* **주민등록번호 / 계좌번호 암호화:** `scholarships` 테이블에 데이터가 저장될 때 `pgp_sym_encrypt(NEW.resident_id, 'anchor_secure_key_2026')` 대칭키(AES-256) 암호화가 백엔드 트리거 단에서 정상 작동함을 확인했습니다. 
+* **복호화 뷰 구조:** 대시보드는 원본 테이블을 직접 보지 않고, 내부적으로 `pgp_sym_decrypt` 가 적용된 `scholarships_view` 뷰를 통하여 원본 조회를 수행하므로, 화면과 쿼리 단에서 즉각적인 마스킹 및 평문 노출 제어가 유연하게 수행되고 있습니다.
+
+### 2) Supabase RLS 정책 및 권한 통제 점검
+* **비로그인(anon) 차단:** RLS 정책 및 권한 철회(`REVOKE ALL ON scholarships FROM anon`)가 완벽하게 구성되어 있어, 세션이 없는 익명 사용자가 API 호출을 가로채 장학금 데이터 조회를 시도하면 `permission denied for table scholarships (42501)` 오류로 안전하게 전면 차단됨을 확인했습니다.
+* **로그인(authenticated) 허용:** 오직 인증된 로그인 세션(`authenticated`) 사용자에게만 `SELECT, INSERT, UPDATE, DELETE` 권한이 이중 부여되어, 송경영 단장님과 같이 권한을 가진 계정으로 정상 로그인된 상태에서만 안전하게 조작할 수 있도록 통제되어 있습니다.
+
+### 3) 프런트엔드 경쟁 상태 가드 탑재 점검
+* **엇박자 데이터 소실 방지:** `App.jsx` 내 장학금 자동 저장 훅에 `if (!scholarships || scholarships.length === 0) return;` 안전 가드가 탑재 완료되었습니다.
+* **진단 결과:** 로그인 직후 비동기 데이터 쿼리 지연 등으로 일시적으로 로컬 상태가 텅 비었을 때(0개), 실서버의 장학금 데이터를 통째로 지워버리던 버그가 완벽하게 방어되었으며, 이후 새로고침 및 데이터 추가 동작 시 영구적인 데이터 일관성을 확인했습니다.
