@@ -1191,11 +1191,20 @@ function mergeProjectsWithInitial(loadedData, multiYearInitialData) {
             unit.budgetDetails[catName] = { years: {} };
           }
           [1, 2, 3, 4, 5].forEach((yr) => {
+            const mainVal = categorySums[catName][yr].main;
+            const isD2 = (unit.id === "D2");
             unit.budgetDetails[catName].years[yr] = {
-              budget_main: categorySums[catName][yr].main,
+              budget_main: mainVal,
               budget_carry: categorySums[catName][yr].carry,
               spent_main: categorySums[catName][yr].spent_main,
-              spent_carry: categorySums[catName][yr].spent_carry
+              spent_carry: categorySums[catName][yr].spent_carry,
+              // 💡 [재원 정밀 집계] D2 단위과제는 100% 국비(국고) 본예산으로 분류하고 시비는 0원 처리합니다.
+              budget_national: isD2 ? mainVal : Math.round(mainVal * 0.5),
+              budget_city: isD2 ? 0 : mainVal - Math.round(mainVal * 0.5),
+              budget_external: 0,
+              spent_national: isD2 ? categorySums[catName][yr].spent_main : Math.round(categorySums[catName][yr].spent_main * 0.5),
+              spent_city: isD2 ? 0 : categorySums[catName][yr].spent_main - Math.round(categorySums[catName][yr].spent_main * 0.5),
+              spent_external: 0
             };
           });
         });
@@ -1236,6 +1245,38 @@ function mergeProjectsWithInitial(loadedData, multiYearInitialData) {
           unit.years[yr].budget_main = Object.values(unit.budgetDetails).reduce((sum, b) => {
             return sum + (b.years?.[yr]?.budget_main || 0);
           }, 0);
+          
+          // 💡 [단위과제 국비/시비/외부사업비 재원 실시간 롤업]
+          // D2 단위과제는 100% 국비(국고) 본예산으로 집계되도록 강제 연산하고,
+          // 다른 단위과제는 각 비목 상세에 기입된 재원 정보를 합산하여 동기화합니다.
+          if (unit.id === "D2") {
+            unit.years[yr].budget_national = unit.years[yr].budget_main;
+            unit.years[yr].budget_city = 0;
+            unit.years[yr].budget_external = 0;
+            unit.years[yr].spent_national = unit.years[yr].spent_main || 0;
+            unit.years[yr].spent_city = 0;
+            unit.years[yr].spent_external = 0;
+          } else {
+            unit.years[yr].budget_national = Object.values(unit.budgetDetails).reduce((sum, b) => {
+              return sum + (b.years?.[yr]?.budget_national || 0);
+            }, 0);
+            unit.years[yr].budget_city = Object.values(unit.budgetDetails).reduce((sum, b) => {
+              return sum + (b.years?.[yr]?.budget_city || 0);
+            }, 0);
+            unit.years[yr].budget_external = Object.values(unit.budgetDetails).reduce((sum, b) => {
+              return sum + (b.years?.[yr]?.budget_external || 0);
+            }, 0);
+            unit.years[yr].spent_national = Object.values(unit.budgetDetails).reduce((sum, b) => {
+              return sum + (b.years?.[yr]?.spent_national || 0);
+            }, 0);
+            unit.years[yr].spent_city = Object.values(unit.budgetDetails).reduce((sum, b) => {
+              return sum + (b.years?.[yr]?.spent_city || 0);
+            }, 0);
+            unit.years[yr].spent_external = Object.values(unit.budgetDetails).reduce((sum, b) => {
+              return sum + (b.years?.[yr]?.spent_external || 0);
+            }, 0);
+          }
+
           unit.years[yr].budget_carry = Object.values(unit.budgetDetails).reduce((sum, b) => {
             return sum + (b.years?.[yr]?.budget_carry || 0);
           }, 0);
@@ -1838,7 +1879,7 @@ export default function App() {
   useEffect(() => {
     try {
       Object.keys(localStorage).forEach((key) => {
-        if (key.startsWith("anchor_projects_data_") && key !== "anchor_projects_data_v44") {
+        if (key.startsWith("anchor_projects_data_") && key !== "anchor_projects_data_v45") {
           localStorage.removeItem(key);
         }
         // 💡 [연도별 복구 캐시 청소 가드] 캐시 버전 상향 시 연도별 가공 복구 캐시도 깨끗하게 동시 청소하여 구버전 예산 꼬임을 방지합니다.
@@ -1901,7 +1942,7 @@ export default function App() {
       }
       localStorage.setItem("anchor_last_self_healing_reset", String(now));
       // 로그인 세션(anchor_logged_in_user)은 리셋하지 않고 보존하여 튕김(로그아웃) 방지!
-      localStorage.removeItem("anchor_projects_data_v44");
+      localStorage.removeItem("anchor_projects_data_v45");
       localStorage.removeItem("anchor_selected_kpi");
       Object.keys(localStorage).forEach((key) => {
         if (key.startsWith("anchor_cache_proj_")) {
@@ -2052,8 +2093,8 @@ export default function App() {
   }, [currentUser]);
 
   const [projects, setProjects] = useState(() => {
-    // D2 단위과제 신규 세부 프로그램 및 예산/담당자 정보를 반영하기 위해 로컬스토리지 버전을 v44로 업그레이드합니다.
-    const cached = localStorage.getItem("anchor_projects_data_v44");
+    // D2 단위과제 신규 세부 프로그램 및 예산/담당자 정보를 반영하기 위해 로컬스토리지 버전을 v45로 업그레이드합니다.
+    const cached = localStorage.getItem("anchor_projects_data_v45");
     const multiYearInitialData = migrateProgramIds(formatDataToMultiYear(initialProjectsData));
     if (cached) {
       try {
@@ -4588,21 +4629,21 @@ export default function App() {
   // projects 상태 변경 시 localStorage 자동 기입 (새로고침 휘발 방지 우회책)
   useEffect(() => {
     try {
-      localStorage.setItem("anchor_projects_data_v44", JSON.stringify(projects));
+      localStorage.setItem("anchor_projects_data_v45", JSON.stringify(projects));
     } catch (e) {
       const isQuotaError = e.name === "QuotaExceededError" || e.code === 22 || e.number === -2147024882;
       if (isQuotaError) {
         console.warn("로컬 스토리지 공간이 부족합니다. 이전 구버전 캐시를 청소하고 재시도합니다...");
         try {
           Object.keys(localStorage).forEach((key) => {
-            if (key.startsWith("anchor_projects_data_") && key !== "anchor_projects_data_v44") {
+            if (key.startsWith("anchor_projects_data_") && key !== "anchor_projects_data_v45") {
               localStorage.removeItem(key);
             }
             if (key.startsWith("anchor_cache_proj_")) {
               localStorage.removeItem(key);
             }
           });
-          localStorage.setItem("anchor_projects_data_v44", JSON.stringify(projects));
+          localStorage.setItem("anchor_projects_data_v45", JSON.stringify(projects));
           console.log("이전 캐시 청소 및 데이터 재저장 성공");
         } catch (retryError) {
           console.error("이전 캐시 QR 청소 후에도 로컬 스토리지 기입 실패:", retryError);

@@ -70,8 +70,8 @@ async function run() {
             spent_main: 0,
             budget_carry: 0,
             spent_carry: 0,
-            budget_national: Math.round(bVal * 0.5), // 디폴트 50:50 매핑
-            budget_city: bVal - Math.round(bVal * 0.5),
+            budget_national: bVal, // 💡 [업무 규칙 준수] D2 예산은 100% 국비(국고) 본예산으로 배정합니다.
+            budget_city: 0,
             spent_national: 0,
             spent_city: 0,
             budget_categories: [
@@ -124,8 +124,8 @@ async function run() {
                 else if (catName === "성과 활용∙확산 지원비") mainVal = 3000000;
                 
                 y.budget_main = mainVal;
-                y.budget_national = Math.round(mainVal * 0.5);
-                y.budget_city = mainVal - Math.round(mainVal * 0.5);
+                y.budget_national = mainVal; // 💡 100% 국고
+                y.budget_city = 0;           // 0% 시비
               } else {
                 y.budget_national = y.budget_main || 0;
                 y.budget_city = 0;
@@ -141,8 +141,8 @@ async function run() {
           const y = d2.years[yr];
           if (parseInt(yr, 10) === 2) {
             y.budget_main = 400000000;
-            y.budget_national = 200000000; // 50% 국고
-            y.budget_city = 200000000;     // 50% 시비
+            y.budget_national = 400000000; // 💡 100% 국고 (4.0억 원)
+            y.budget_city = 0;             // 💡 0% 시비
             y.budget_carry = y.budget_carry || 0;
           } else {
             y.budget_national = y.budget_main || 0;
