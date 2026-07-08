@@ -567,7 +567,7 @@ function formatDataToMultiYear(data) {
             spentCarry = 0;
           }
 
-          const isExternalSub = !prog.id.startsWith("D") && (prog.id.endsWith("-2") || prog.id.includes("위탁") || prog.title.includes("위탁") || prog.title.includes("협력"));
+          const isExternalSub = prog.id.includes("위탁") || prog.title.includes("위탁") || prog.title.includes("협력");
           
           let budget_national = 0;
           let budget_city = 0;
@@ -693,7 +693,7 @@ function formatDataToMultiYear(data) {
 
         [2, 3, 4, 5].forEach((yr) => {
           const py = progYears[yr];
-          const isExternalSub = !prog.id.startsWith("D") && (prog.id.endsWith("-2") || prog.id.includes("위탁") || prog.title.includes("위탁") || prog.title.includes("협력"));
+          const isExternalSub = prog.id.includes("위탁") || prog.title.includes("위탁") || prog.title.includes("협력");
           if (isExternalSub) {
             py.budget_carry_external = py.budget_carry || 0;
             py.budget_carry_national = 0;
@@ -1001,7 +1001,7 @@ function mergeProjectsWithInitial(loadedData, multiYearInitialData) {
                     defaultSpentExternal = sy.spent_external || 0;
                   } else {
                     const rawBudgetMain = yr === 2 ? (sourceProg.budget_2026 || 0) : yr === 1 ? Math.round((sourceProg.budget_2026 || 0) * 0.9) : Math.round((sourceProg.budget_2026 || 0) * (yr === 3 ? 1.1 : yr === 4 ? 1.2 : 1.3));
-                    const isExternalSub = !sourceProg.id.startsWith("D") && (sourceProg.id.endsWith("-2") || sourceProg.id.includes("위탁") || sourceProg.title.includes("위탁") || sourceProg.title.includes("협력"));
+                    const isExternalSub = sourceProg.id.includes("위탁") || sourceProg.title.includes("위탁") || sourceProg.title.includes("협력");
                     if (isExternalSub) {
                       defaultExternal = rawBudgetMain;
                       defaultNational = 0;
@@ -1809,7 +1809,7 @@ export default function App() {
   useEffect(() => {
     try {
       Object.keys(localStorage).forEach((key) => {
-        if (key.startsWith("anchor_projects_data_") && key !== "anchor_projects_data_v41") {
+        if (key.startsWith("anchor_projects_data_") && key !== "anchor_projects_data_v42") {
           localStorage.removeItem(key);
         }
         // 💡 [연도별 복구 캐시 청소 가드] 캐시 버전 상향 시 연도별 가공 복구 캐시도 깨끗하게 동시 청소하여 구버전 예산 꼬임을 방지합니다.
@@ -1872,7 +1872,7 @@ export default function App() {
       }
       localStorage.setItem("anchor_last_self_healing_reset", String(now));
       // 로그인 세션(anchor_logged_in_user)은 리셋하지 않고 보존하여 튕김(로그아웃) 방지!
-      localStorage.removeItem("anchor_projects_data_v41");
+      localStorage.removeItem("anchor_projects_data_v42");
       localStorage.removeItem("anchor_selected_kpi");
       Object.keys(localStorage).forEach((key) => {
         if (key.startsWith("anchor_cache_proj_")) {
@@ -2023,8 +2023,8 @@ export default function App() {
   }, [currentUser]);
 
   const [projects, setProjects] = useState(() => {
-    // D2 단위과제 신규 세부 프로그램 및 예산/담당자 정보를 반영하기 위해 로컬스토리지 버전을 v41로 업그레이드합니다.
-    const cached = localStorage.getItem("anchor_projects_data_v41");
+    // D2 단위과제 신규 세부 프로그램 및 예산/담당자 정보를 반영하기 위해 로컬스토리지 버전을 v42로 업그레이드합니다.
+    const cached = localStorage.getItem("anchor_projects_data_v42");
     const multiYearInitialData = migrateProgramIds(formatDataToMultiYear(initialProjectsData));
     if (cached) {
       try {
@@ -4559,21 +4559,21 @@ export default function App() {
   // projects 상태 변경 시 localStorage 자동 기입 (새로고침 휘발 방지 우회책)
   useEffect(() => {
     try {
-      localStorage.setItem("anchor_projects_data_v41", JSON.stringify(projects));
+      localStorage.setItem("anchor_projects_data_v42", JSON.stringify(projects));
     } catch (e) {
       const isQuotaError = e.name === "QuotaExceededError" || e.code === 22 || e.number === -2147024882;
       if (isQuotaError) {
         console.warn("로컬 스토리지 공간이 부족합니다. 이전 구버전 캐시를 청소하고 재시도합니다...");
         try {
           Object.keys(localStorage).forEach((key) => {
-            if (key.startsWith("anchor_projects_data_") && key !== "anchor_projects_data_v41") {
+            if (key.startsWith("anchor_projects_data_") && key !== "anchor_projects_data_v42") {
               localStorage.removeItem(key);
             }
             if (key.startsWith("anchor_cache_proj_")) {
               localStorage.removeItem(key);
             }
           });
-          localStorage.setItem("anchor_projects_data_v41", JSON.stringify(projects));
+          localStorage.setItem("anchor_projects_data_v42", JSON.stringify(projects));
           console.log("이전 캐시 청소 및 데이터 재저장 성공");
         } catch (retryError) {
           console.error("이전 캐시 QR 청소 후에도 로컬 스토리지 기입 실패:", retryError);
@@ -5158,7 +5158,7 @@ export default function App() {
                     if (yr !== selectedYear) {
                       const y = prog.years?.[yr];
                       if (y) {
-                        const isExternalSub = !prog.id.startsWith("D") && (prog.id.endsWith("-2") || prog.id.includes("위탁") || prog.title.includes("위탁") || prog.title.includes("협력"));
+                        const isExternalSub = prog.id.includes("위탁") || prog.title.includes("위탁") || prog.title.includes("협력");
                         if (isExternalSub) {
                           y.budget_carry_external = y.budget_carry || 0;
                           y.budget_carry_national = 0;
