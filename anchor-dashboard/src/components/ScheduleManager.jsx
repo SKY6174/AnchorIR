@@ -188,6 +188,30 @@ export default function ScheduleManager({
   const [isEditMode, setIsEditMode] = useState(false);   // 수정 모드 활성화 여부
   const [editingItemId, setEditingItemId] = useState(null); // 편집 대상 일정 ID
 
+  // 교수의 경우 직급/직위를 '센터장', '교수팀장'으로 이원화 표기하는 헬퍼 함수
+  const getFormattedMemberGrade = (m) => {
+    if (!m) return "연구원";
+    
+    // 교수의 조건 판별 (grade 혹은 role/rank 가 교수, 조교수, 부교수, 정교수 등 교직원 형태인 경우)
+    const isProfessorType = 
+      ["정교수", "부교수", "조교수", "교수", "조교", "팀장교수", "교원"].includes(m.grade) ||
+      ["팀장교수", "센터장"].includes(m.role) ||
+      ["정교수", "부교수", "조교수", "교수", "조교", "팀장교수", "교원"].includes(m.role) ||
+      ["정교수", "부교수", "조교수", "교수", "조교", "팀장교수", "교원"].includes(m.rank);
+      
+    if (isProfessorType) {
+      const isCenterHead = 
+        m.role === "센터장" || 
+        m.rank === "센터장" || 
+        (m.dept && (m.dept.includes("센터") || m.dept.includes("RCC") || m.dept.includes("ECC") || m.dept.includes("ICC")));
+        
+      return isCenterHead ? "센터장" : "교수팀장";
+    }
+    
+    // 일반 연구원 등은 기존 값을 반환
+    return m.grade || "연구원";
+  };
+
   // 선택 연차의 실제 회계연도 사업기간(3/1 ~ 이듬해 2/28 또는 29) 부합 여부 판별 함수
   const isDateInSelectedYear = (dateStr, yearVal) => {
     if (!dateStr) return false;
@@ -5604,7 +5628,7 @@ ${aiRawText}
                               .map(x => x.trim())
                               .includes(m.name);
 
-                            const displayRole = m.role === "연구원" ? (m.grade || "연구원") : (m.role === "사업단장" ? "단장" : m.role);
+                            const displayRole = m.role === "연구원" ? getFormattedMemberGrade(m) : (m.role === "사업단장" ? "단장" : (["정교수", "부교수", "조교수", "교수", "조교", "팀장교수", "교원"].includes(m.grade) || ["팀장교수", "센터장"].includes(m.role) ? getFormattedMemberGrade(m) : m.role));
 
                             return (
                                 <button
@@ -6006,7 +6030,7 @@ ${aiRawText}
                         return (
                           <div style={{ display: "flex", gap: "0.35rem", flexWrap: "wrap", marginBottom: "0.5rem", padding: "0.5rem", background: "rgba(255,255,255,0.02)", borderRadius: "6px", border: "1px solid rgba(255,255,255,0.04)" }}>
                             {deptMembers.map(m => {
-                              const displayName = `${m.name} ${m.grade || "연구원"}`;
+                              const displayName = `${m.name} ${getFormattedMemberGrade(m)}`;
                               const isSelected = (formData.attendees || "")
                                 .split(",")
                                 .map(x => x.trim())
