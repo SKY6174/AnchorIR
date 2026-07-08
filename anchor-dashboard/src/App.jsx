@@ -125,8 +125,8 @@ const REVERSE_UNIT_MAPPING_Y1 = {
 const PROGRAM_ID_MIGRATION_MAP = {
   "A1가": {
     // 1차 마이그레이션 (원본 ID ➡️ 신규 ID)
-    "A1가-01": "A1가-S1T1-1", "A1가-02": "A1가-S1T2-1", "A1가-03": "A1가-S1T2-2", "A1가-04": "A1가-S1T2-3", "A1가-05": "A1가-S1T2-4",
-    "A1가-06": "A1가-S1T2-5", "A1가-07": "A1가-S1T2-6", "A1가-08": "A1가-S1T2-7", "A1가-09": "A1가-S1T3-1", "A1가-10": "A1가-S2T4-1",
+    "A1가-01": "A1가-S1T1-1", "A1가-02": "A1가-S1T2-1", "A1가-03": "A1가-S1T2-2", "A1가-04": "A1가-S1T2-2", "A1가-05": "A1가-S1T2-3",
+    "A1가-06": "A1가-S1T2-4", "A1가-07": "A1가-S1T2-5", "A1가-08": "A1가-S1T2-6", "A1가-09": "A1가-S1T3-1", "A1가-10": "A1가-S2T4-1",
     "A1가-11": "A1가-S2T5-1",
     "A1가-12": "A1가-S3T6-1", "A1가-13": "A1가-S3T7-1",
     "A1가-14": "A1가-S3T7-2", "A1가-15": "A1가-S3T8-1", "A1가-16": "A1가-S3T9-1", "A1가-17": "A1가-S3T9-2",
@@ -136,8 +136,8 @@ const PROGRAM_ID_MIGRATION_MAP = {
     "A1가-33": "A1가-S5T13-7", "A1가-34": "A1가-S5T13-8", "A1가-35": "A1가-S5T14-1",
 
     // 2차 구제 마이그레이션 (과거 잘못 저장된 v26 캐시 ID ➡️ 신규 ID 보정)
-    "A1가-S1T1-2": "A1가-S1T2-1", "A1가-S1T1-3": "A1가-S1T2-2", "A1가-S1T1-4": "A1가-S1T2-3", "A1가-S1T1-5": "A1가-S1T2-4",
-    "A1가-S1T1-6": "A1가-S1T2-5", "A1가-S1T1-7": "A1가-S1T2-6", "A1가-S1T1-8": "A1가-S1T2-7", "A1가-S1T1-9": "A1가-S1T3-1",
+    "A1가-S1T1-2": "A1가-S1T2-1", "A1가-S1T1-3": "A1가-S1T2-2", "A1가-S1T1-4": "A1가-S1T2-2", "A1가-S1T1-5": "A1가-S1T2-3",
+    "A1가-S1T1-6": "A1가-S1T2-4", "A1가-S1T1-7": "A1가-S1T2-5", "A1가-S1T1-8": "A1가-S1T2-6", "A1가-S1T1-9": "A1가-S1T3-1",
     "A1가-S1T1-10": "A1가-S2T4-1", "A1가-S3T3-1": "A1가-S2T5-1", "A1가-S1T1-11": "A1가-S3T6-1", "A1가-S1T1-12": "A1가-S3T7-1",
     "A1가-S3T3-2": "A1가-S3T7-2", "A1가-S3T3-3": "A1가-S3T8-1", "A1가-S3T3-4": "A1가-S3T9-1", "A1가-S3T3-5": "A1가-S3T9-2",
     "A1가-S4T4-1": "A1가-S3T9-3", "A1가-S4T4-2": "A1가-S4T10-1", "A1가-S4T4-3": "A1가-S4T10-2", "A1가-S4T4-4": "A1가-S4T10-3",
@@ -661,6 +661,32 @@ function formatDataToMultiYear(data) {
             budget_carry_external: carry_external,
             spent_carry_external: carry_spent_external
           };
+
+          // 💡 [비목 자동 주입] 2~5차년도 세부 프로그램의 비목 예산(budget_categories)을 최표준 맵 규정에 맞춰 자동 구성합니다.
+          const standardCategories = [
+            "인건비", "장학금", "교육∙연구 프로그램 개발∙운영비", "교육∙연구 환경개선비",
+            "실험∙실습장비 및 기자재 구입∙운영비", "지역 연계∙협업 지원비", "기업 지원∙협력 활동비",
+            "성과 활용∙확산 지원비", "그 밖의 사업운영경비", "간접비"
+          ];
+          
+          let targetCategory = "교육∙연구 프로그램 개발∙운영비"; // 디폴트
+          if (prog.id === "A1가-S5T13-8") targetCategory = "장학금";
+          else if (prog.id === "A1가-S4T10-4") targetCategory = "실험∙실습장비 및 기자재 구입∙운영비";
+          else if (prog.id === "A1가-S2T5-1" || prog.id === "A1가-S5T13-2" || prog.id === "A1가-S5T13-7" || prog.id === "A1가-S5T14-1") targetCategory = "성과 활용∙확산 지원비";
+          else if (prog.id === "A1가-S3T9-1" || prog.id === "A1가-S3T9-2" || prog.id === "A1가-S3T9-3" || prog.id === "A1가-S5T13-3") targetCategory = "기업 지원∙협력 활동비";
+          else if (prog.id === "A1가-S5T13-1") targetCategory = "지역 연계∙협업 지원비";
+          else if (prog.id.startsWith("A1가-S4T10-") || prog.id === "A1가-S4T11-1") targetCategory = "교육∙연구 환경개선비";
+
+          progYears[yr].budget_categories = standardCategories.map((catName) => {
+            const isMatch = catName === targetCategory;
+            return {
+              category: catName,
+              budget: isMatch ? String(budgetMain).replace(/\B(?=(\d{3})+(?!\d))/g, ",") : "0",
+              budget_carry: "0",
+              spent: isMatch ? spentMain : 0,
+              spent_carry: 0
+            };
+          });
         });
 
         recalculateCarryOver(progYears);
@@ -979,9 +1005,62 @@ function mergeProjectsWithInitial(loadedData, multiYearInitialData) {
           }
         });
         unit.programs = mergedPrograms;
+
+        // 💡 [비목 구조 및 값 동기화] DB에서 로드된 단위과제의 비목 상세(budgetDetails)에 최신 mockData 비목 구조를 주입/병합합니다.
+        if (sourceUnit && sourceUnit.budgetDetails) {
+          if (!unit.budgetDetails) unit.budgetDetails = {};
+          Object.keys(sourceUnit.budgetDetails).forEach((catName) => {
+            const sourceCat = sourceUnit.budgetDetails[catName];
+            const cachedCat = unit.budgetDetails[catName];
+            
+            if (!cachedCat) {
+              unit.budgetDetails[catName] = JSON.parse(JSON.stringify(sourceCat));
+            } else {
+              if (!cachedCat.years) cachedCat.years = {};
+              [1, 2, 3, 4, 5].forEach((yr) => {
+                if (!cachedCat.years[yr] && sourceCat.years?.[yr]) {
+                  cachedCat.years[yr] = JSON.parse(JSON.stringify(sourceCat.years[yr]));
+                }
+              });
+            }
+          });
+        }
       }
     });
   });
+
+  // 💡 [단위과제 예산 총합 재집계] 머지가 완료된 후, 단위과제별로 10대 비목의 예산/집행 정보를 연도별(1~5)로 누적 합산하여 최종 budget_main을 갱신합니다.
+  updated.forEach((strategy) => {
+    strategy.units.forEach((unit) => {
+      if (unit.budgetDetails) {
+        [1, 2, 3, 4, 5].forEach((yr) => {
+          if (!unit.years) unit.years = {};
+          if (!unit.years[yr]) {
+            unit.years[yr] = { budget_main: 0, spent_main: 0, budget_carry: 0, spent_carry: 0 };
+          }
+          
+          unit.years[yr].budget_main = Object.values(unit.budgetDetails).reduce((sum, b) => {
+            return sum + (b.years?.[yr]?.budget_main || 0);
+          }, 0);
+          unit.years[yr].budget_carry = Object.values(unit.budgetDetails).reduce((sum, b) => {
+            return sum + (b.years?.[yr]?.budget_carry || 0);
+          }, 0);
+          unit.years[yr].spent_main = Object.values(unit.budgetDetails).reduce((sum, b) => {
+            return sum + (b.years?.[yr]?.spent_main || 0);
+          }, 0);
+          unit.years[yr].spent_carry = Object.values(unit.budgetDetails).reduce((sum, b) => {
+            return sum + (b.years?.[yr]?.spent_carry || 0);
+          }, 0);
+        });
+        
+        // 레거시/기타 UI 연동용 필드 동기화
+        const yr = 2; // 2차년도 기준 디폴트 연동
+        unit.budget = (unit.years[yr]?.budget_main || 0) + (unit.years[yr]?.budget_carry || 0);
+        unit.spent = (unit.years[yr]?.spent_main || 0) + (unit.years[yr]?.spent_carry || 0);
+      }
+    });
+  });
+
   return updated;
 }
 
@@ -1565,7 +1644,7 @@ export default function App() {
   useEffect(() => {
     try {
       Object.keys(localStorage).forEach((key) => {
-        if (key.startsWith("anchor_projects_data_") && key !== "anchor_projects_data_v20") {
+        if (key.startsWith("anchor_projects_data_") && key !== "anchor_projects_data_v31") {
           localStorage.removeItem(key);
         }
       });
@@ -1624,7 +1703,7 @@ export default function App() {
       }
       localStorage.setItem("anchor_last_self_healing_reset", String(now));
       // 로그인 세션(anchor_logged_in_user)은 리셋하지 않고 보존하여 튕김(로그아웃) 방지!
-      localStorage.removeItem("anchor_projects_data_v25");
+      localStorage.removeItem("anchor_projects_data_v31");
       localStorage.removeItem("anchor_selected_kpi");
       window.location.reload();
     };
@@ -1770,8 +1849,8 @@ export default function App() {
   }, [currentUser]);
 
   const [projects, setProjects] = useState(() => {
-    // 2차년도 세부 프로그램 ID 및 예산 데이터를 PDF 실증 데이터로 정밀 동기화하기 위해 로컬스토리지 버전을 v29로 업그레이드합니다.
-    const cached = localStorage.getItem("anchor_projects_data_v29");
+    // 2차년도 세부 프로그램 ID 및 예산 데이터를 PDF 실증 데이터로 정밀 동기화하기 위해 로컬스토리지 버전을 v31으로 업그레이드합니다.
+    const cached = localStorage.getItem("anchor_projects_data_v31");
     const multiYearInitialData = migrateProgramIds(formatDataToMultiYear(initialProjectsData));
     if (cached) {
       try {
@@ -4130,6 +4209,8 @@ export default function App() {
 
   const displayProjects = getNormalizedProjectsForRendering(projects, selectedYear);
 
+
+
   // 성과지표 subTab이 노출 여부 설정에 의해 가려졌을 때 활성화 탭을 자동으로 숨겨지지 않은 유효 탭으로 보정
   useEffect(() => {
     // 관리자(단장, 운영팀장, 본부장, ADMIN 등)는 숨겨진 탭도 직접 관리할 수 있도록 튕김 예외 처리
@@ -4288,21 +4369,21 @@ export default function App() {
   // projects 상태 변경 시 localStorage 자동 기입 (새로고침 휘발 방지 우회책)
   useEffect(() => {
     try {
-      localStorage.setItem("anchor_projects_data_v29", JSON.stringify(projects));
+      localStorage.setItem("anchor_projects_data_v31", JSON.stringify(projects));
     } catch (e) {
       const isQuotaError = e.name === "QuotaExceededError" || e.code === 22 || e.number === -2147024882;
       if (isQuotaError) {
         console.warn("로컬 스토리지 공간이 부족합니다. 이전 구버전 캐시를 청소하고 재시도합니다...");
         try {
           Object.keys(localStorage).forEach((key) => {
-            if (key.startsWith("anchor_projects_data_") && key !== "anchor_projects_data_v29") {
+            if (key.startsWith("anchor_projects_data_") && key !== "anchor_projects_data_v31") {
               localStorage.removeItem(key);
             }
           });
-          localStorage.setItem("anchor_projects_data_v29", JSON.stringify(projects));
+          localStorage.setItem("anchor_projects_data_v31", JSON.stringify(projects));
           console.log("이전 캐시 청소 및 데이터 재저장 성공");
         } catch (retryError) {
-          console.error("이전 캐시 청소 후에도 로컬 스토리지 기입 실패:", retryError);
+          console.error("이전 캐시 QR 청소 후에도 로컬 스토리지 기입 실패:", retryError);
         }
       } else {
         console.error("로컬 스토리지 기입 중 알 수 없는 예외 발생:", e);
@@ -4468,10 +4549,10 @@ export default function App() {
                   py.budget_categories.forEach(catItem => {
                     const catName = catItem.category;
                     if (catName && categorySums[catName] && catName !== "교육∙연구 프로그램 개발∙운영비") {
-                      const mainVal = catItem.budget || 0;
-                      const carryVal = catItem.budget_carry || 0;
-                      const spentVal = catItem.spent || 0;
-                      const spentCarryVal = catItem.spent_carry || 0;
+                      const mainVal = parseInt(String(catItem.budget || "0").replace(/,/g, ""), 10) || 0;
+                      const carryVal = parseInt(String(catItem.budget_carry || "0").replace(/,/g, ""), 10) || 0;
+                      const spentVal = Math.round(catItem.spent || 0);
+                      const spentCarryVal = Math.round(catItem.spent_carry || 0);
 
                       categorySums[catName].main += mainVal;
                       categorySums[catName].carry += carryVal;
