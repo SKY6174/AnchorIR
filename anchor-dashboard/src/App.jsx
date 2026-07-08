@@ -965,32 +965,46 @@ function mergeProjectsWithInitial(loadedData, multiYearInitialData) {
 
               if (updatedYears[yr]) {
                 // 💡 [D1, D2, D3 예산 강제 동기화 및 자가 치유 가드] D1, D2, D3 관련 프로그램들은 
-                // DB에 잘못된 옛날 캐시(외부사업비 오염 등)가 남아있더라도 마스터 기획(sourceProg)의 본사업비 공식 분배율(D2는 100% 국비, 나머지는 국고 50%/시비 50%)을 정밀 강제 계산하여 실시간 보정합니다.
+                // DB에 잘못된 옛날 캐시(외부사업비 오염 등)가 남아있고 아직 수동 기획 저장을 거치지 않은 경우에 한해, 
+                // 마스터 기획(sourceProg)의 본사업비 공식 분배율(D2는 100% 국비, 나머지는 국고 50%/시비 50%)을 정밀 강제 계산하여 실시간 보정합니다.
                 if (sourceProg.id && (sourceProg.id.startsWith("D1-") || sourceProg.id.startsWith("D2-") || sourceProg.id.startsWith("D3-"))) {
                   if (sourceProg.years && sourceProg.years[yr]) {
                     const sy = sourceProg.years[yr];
                     const y = updatedYears[yr];
-                    const rawBudgetMain = yr === 2 ? (sourceProg.budget_2026 || 0) : yr === 1 ? Math.round((sourceProg.budget_2026 || 0) * 0.9) : Math.round((sourceProg.budget_2026 || 0) * (yr === 3 ? 1.1 : yr === 4 ? 1.2 : 1.3));
                     
-                    y.budget_main = rawBudgetMain;
-                    if (sourceProg.id.startsWith("D2-")) {
-                      // 💡 D2 단위과제는 100% 국비(국고) 본예산으로 할당합니다.
-                      y.budget_national = rawBudgetMain;
-                      y.budget_city = 0;
-                    } else {
-                      // D1, D3는 국고 50%, 시비 50% 분배 적용
-                      y.budget_national = Math.round(rawBudgetMain * 0.5);
-                      y.budget_city = rawBudgetMain - y.budget_national;
+                    // 💡 [수동 기획 보존 필터]
+                    // 만약 DB에서 이미 사용자가 기획 예산액(budget_main)이나 세원(국비/시비/외부)을 수동 기입하고
+                    // 저장(upsert)을 완료한 기저장 데이터가 실재한다면, 사용자의 수정 의도를 존중하여 덮어쓰기 복원을 건너뛰고 보존합니다.
+                    const hasUserSavedData = y && (
+                      (y.budget_main > 0 && y.budget_national !== undefined && y.budget_city !== undefined) || 
+                      y.budget_national > 0 || 
+                      y.budget_city > 0 || 
+                      y.budget_external > 0
+                    );
+
+                    if (!hasUserSavedData) {
+                      const rawBudgetMain = yr === 2 ? (sourceProg.budget_2026 || 0) : yr === 1 ? Math.round((sourceProg.budget_2026 || 0) * 0.9) : Math.round((sourceProg.budget_2026 || 0) * (yr === 3 ? 1.1 : yr === 4 ? 1.2 : 1.3));
+                      
+                      y.budget_main = rawBudgetMain;
+                      if (sourceProg.id.startsWith("D2-")) {
+                        // 💡 D2 단위과제는 100% 국비(국고) 본예산으로 할당합니다.
+                        y.budget_national = rawBudgetMain;
+                        y.budget_city = 0;
+                      } else {
+                        // D1, D3는 국고 50%, 시비 50% 분배 적용
+                        y.budget_national = Math.round(rawBudgetMain * 0.5);
+                        y.budget_city = rawBudgetMain - y.budget_national;
+                      }
+                      y.budget_external = 0; // 특별한 언급이 없으므로 외부사업비는 0원 처리
+                      
+                      // 특별한 언급이 없으므로 이월사업비도 0원 처리
+                      y.budget_carry_national = 0;
+                      y.budget_carry_city = 0;
+                      y.budget_carry_external = 0;
+                      y.budget_carry = 0;
+                      
+                      y.budget_categories = JSON.parse(JSON.stringify(sy.budget_categories || []));
                     }
-                    y.budget_external = 0; // 특별한 언급이 없으므로 외부사업비는 0원 처리
-                    
-                    // 특별한 언급이 없으므로 이월사업비도 0원 처리
-                    y.budget_carry_national = 0;
-                    y.budget_carry_city = 0;
-                    y.budget_carry_external = 0;
-                    y.budget_carry = 0;
-                    
-                    y.budget_categories = JSON.parse(JSON.stringify(sy.budget_categories || []));
                   }
                 }
 
@@ -1879,7 +1893,7 @@ export default function App() {
   useEffect(() => {
     try {
       Object.keys(localStorage).forEach((key) => {
-        if (key.startsWith("anchor_projects_data_") && key !== "anchor_projects_data_v45") {
+        if (key.startsWith("anchor_projects_data_") && key !== "anchor_projects_data_v46") {
           localStorage.removeItem(key);
         }
         // 💡 [연도별 복구 캐시 청소 가드] 캐시 버전 상향 시 연도별 가공 복구 캐시도 깨끗하게 동시 청소하여 구버전 예산 꼬임을 방지합니다.
@@ -1942,7 +1956,7 @@ export default function App() {
       }
       localStorage.setItem("anchor_last_self_healing_reset", String(now));
       // 로그인 세션(anchor_logged_in_user)은 리셋하지 않고 보존하여 튕김(로그아웃) 방지!
-      localStorage.removeItem("anchor_projects_data_v45");
+      localStorage.removeItem("anchor_projects_data_v46");
       localStorage.removeItem("anchor_selected_kpi");
       Object.keys(localStorage).forEach((key) => {
         if (key.startsWith("anchor_cache_proj_")) {
@@ -2093,8 +2107,8 @@ export default function App() {
   }, [currentUser]);
 
   const [projects, setProjects] = useState(() => {
-    // D2 단위과제 신규 세부 프로그램 및 예산/담당자 정보를 반영하기 위해 로컬스토리지 버전을 v45로 업그레이드합니다.
-    const cached = localStorage.getItem("anchor_projects_data_v45");
+    // D2 단위과제 신규 세부 프로그램 및 예산/담당자 정보를 반영하기 위해 로컬스토리지 버전을 v46로 업그레이드합니다.
+    const cached = localStorage.getItem("anchor_projects_data_v46");
     const multiYearInitialData = migrateProgramIds(formatDataToMultiYear(initialProjectsData));
     if (cached) {
       try {
@@ -4629,21 +4643,21 @@ export default function App() {
   // projects 상태 변경 시 localStorage 자동 기입 (새로고침 휘발 방지 우회책)
   useEffect(() => {
     try {
-      localStorage.setItem("anchor_projects_data_v45", JSON.stringify(projects));
+      localStorage.setItem("anchor_projects_data_v46", JSON.stringify(projects));
     } catch (e) {
       const isQuotaError = e.name === "QuotaExceededError" || e.code === 22 || e.number === -2147024882;
       if (isQuotaError) {
         console.warn("로컬 스토리지 공간이 부족합니다. 이전 구버전 캐시를 청소하고 재시도합니다...");
         try {
           Object.keys(localStorage).forEach((key) => {
-            if (key.startsWith("anchor_projects_data_") && key !== "anchor_projects_data_v45") {
+            if (key.startsWith("anchor_projects_data_") && key !== "anchor_projects_data_v46") {
               localStorage.removeItem(key);
             }
             if (key.startsWith("anchor_cache_proj_")) {
               localStorage.removeItem(key);
             }
           });
-          localStorage.setItem("anchor_projects_data_v45", JSON.stringify(projects));
+          localStorage.setItem("anchor_projects_data_v46", JSON.stringify(projects));
           console.log("이전 캐시 청소 및 데이터 재저장 성공");
         } catch (retryError) {
           console.error("이전 캐시 QR 청소 후에도 로컬 스토리지 기입 실패:", retryError);
@@ -5315,10 +5329,21 @@ export default function App() {
                 };
               }
               const tgt = u.budgetDetails[catName].years[selectedYear];
-              tgt.budget_main = categorySums[catName].main;
+              const mainVal = categorySums[catName].main;
+              const isD2 = (u.id === "D2");
+
+              tgt.budget_main = mainVal;
               tgt.budget_carry = categorySums[catName].carry;
               tgt.spent_main = categorySums[catName].spent_main;
               tgt.spent_carry = categorySums[catName].spent_carry;
+
+              // 💡 [비목 상세 수준 재원 기입] 
+              tgt.budget_national = isD2 ? mainVal : Math.round(mainVal * 0.5);
+              tgt.budget_city = isD2 ? 0 : mainVal - Math.round(mainVal * 0.5);
+              tgt.budget_external = 0;
+              tgt.spent_national = isD2 ? categorySums[catName].spent_main : Math.round(categorySums[catName].spent_main * 0.5);
+              tgt.spent_city = isD2 ? 0 : categorySums[catName].spent_main - Math.round(categorySums[catName].spent_main * 0.5);
+              tgt.spent_external = 0;
             });
             
             // 모든 비목의 이월 잔액 재계산
@@ -5333,6 +5358,24 @@ export default function App() {
               uYear.spent_carry = Object.values(u.budgetDetails).reduce((sum, b) => sum + (b.years?.[yr]?.spent_carry || 0), 0);
               uYear.budget_main = Object.values(u.budgetDetails).reduce((sum, b) => sum + (b.years?.[yr]?.budget_main || 0), 0);
               uYear.budget_carry = Object.values(u.budgetDetails).reduce((sum, b) => sum + (b.years?.[yr]?.budget_carry || 0), 0);
+
+              // 💡 [단위과제 재원 롤업] 프로그램들로부터 국비/시비/외부 재원을 실시간 누적 집계하여 단위과제 수준에 꽂아줍니다.
+              // 만약 D2 단위과제인 경우 국비 100% 가 적용되도록 처리합니다.
+              if (u.id === "D2") {
+                uYear.budget_national = uYear.budget_main;
+                uYear.budget_city = 0;
+                uYear.budget_external = 0;
+                uYear.spent_national = uYear.spent_main;
+                uYear.spent_city = 0;
+                uYear.spent_external = 0;
+              } else {
+                uYear.budget_national = u.programs.reduce((sum, prog) => sum + (prog.years?.[yr]?.budget_national || 0), 0);
+                uYear.budget_city = u.programs.reduce((sum, prog) => sum + (prog.years?.[yr]?.budget_city || 0), 0);
+                uYear.budget_external = u.programs.reduce((sum, prog) => sum + (prog.years?.[yr]?.budget_external || 0), 0);
+                uYear.spent_national = u.programs.reduce((sum, prog) => sum + (prog.years?.[yr]?.spent_national || 0), 0);
+                uYear.spent_city = u.programs.reduce((sum, prog) => sum + (prog.years?.[yr]?.spent_city || 0), 0);
+                uYear.spent_external = u.programs.reduce((sum, prog) => sum + (prog.years?.[yr]?.spent_external || 0), 0);
+              }
             });
             recalculateCarryOver(u.years);
             
