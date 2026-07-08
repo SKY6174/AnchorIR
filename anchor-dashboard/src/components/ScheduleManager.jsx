@@ -6210,27 +6210,7 @@ ${aiRawText}
                           return status === "참여중";
                         });
 
-                        // [추가] 신산업특화센터 또는 AID-X지원센터 선택 시 김현수 센터장을 맨 앞에 추가 노출
-                        if (formData.dept === "신산업특화센터" || formData.dept === "AID-X지원센터") {
-                          if (!deptMembers.some(m => m.name === "김현수")) {
-                            const kimHyunSoo = (members || []).find(m => m.name === "김현수") || {
-                              id: "kim_hs_temp",
-                              name: "김현수",
-                              grade: "센터장",
-                              role: "센터장",
-                              dept: formData.dept,
-                              status: "참여중"
-                            };
-                            const formattedKim = {
-                              ...kimHyunSoo,
-                              role: "센터장",
-                              rank: "센터장",
-                              grade: "센터장",
-                              dept: formData.dept
-                            };
-                            deptMembers = [formattedKim, ...deptMembers];
-                          }
-                        }
+
 
                         if (deptMembers.length === 0) {
                           return (
