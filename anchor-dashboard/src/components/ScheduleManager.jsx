@@ -1349,6 +1349,47 @@ ${aiRawText}
           updated.title = `${datePart} ${deptPart} 주간회의`;
         }
       }
+
+      // 센터/센터위원회 회의 분류 또는 부서 변경 시 작성자 자동 매핑 보정
+      if (modalType === "meeting" && (name === "category" || name === "committeeType" || name === "dept")) {
+        const isCenterMeeting = 
+          updated.category === "center" || 
+          (updated.category === "committee" && (updated.committeeType || "agency") === "center");
+
+        if (isCenterMeeting && updated.dept) {
+          let activeWriters = (members || []).filter(m => 
+            m.status !== "미참여" && 
+            m.email && 
+            m.dept === updated.dept
+          );
+          if (activeWriters.length === 0) {
+            activeWriters = (members || []).filter(m => 
+              m.status !== "미참여" && 
+              m.dept === updated.dept
+            );
+          }
+          if (activeWriters.length > 0) {
+            const currentWriterName = (updated.writer || "").split(" ")[0];
+            const isCurrentWriterInDept = activeWriters.some(w => w.name === currentWriterName);
+            if (!isCurrentWriterInDept) {
+              const first = activeWriters[0];
+              updated.writer = `${first.name} ${getFormattedMemberGrade(first)}`.trim();
+            }
+          }
+        } else if (!isCenterMeeting) {
+          const baseWriters = (members || []).filter(m => 
+            m.status !== "미참여" && 
+            m.email && 
+            (m.role === "운영팀장" || m.grade === "책임연구원" || m.grade === "선임연구원" || m.grade === "연구원" || m.name === "심현미")
+          );
+          const currentWriterName = (updated.writer || "").split(" ")[0];
+          const isCurrentWriterInBase = baseWriters.some(w => w.name === currentWriterName);
+          if (!isCurrentWriterInBase && baseWriters.length > 0) {
+            const first = baseWriters[0];
+            updated.writer = `${first.name} ${getFormattedMemberGrade(first)}`.trim();
+          }
+        }
+      }
       return updated;
     });
   };
@@ -5968,11 +6009,31 @@ ${aiRawText}
                         <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>작성자</label>
                         <select name="writer" value={formData.writer} onChange={handleInputChange} style={{ width: "100%", padding: "0.5rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }}>
                           {(() => {
-                            const activeWriters = (members || []).filter(m => 
-                              m.status !== "미참여" && 
-                              m.email && 
-                              (m.role === "운영팀장" || m.grade === "책임연구원" || m.grade === "선임연구원" || m.grade === "연구원" || m.name === "심현미")
-                            );
+                            const isCenterMeeting = 
+                              formData.category === "center" || 
+                              (formData.category === "committee" && (formData.committeeType || "agency") === "center");
+
+                            let activeWriters = [];
+                            if (isCenterMeeting && formData.dept) {
+                              activeWriters = (members || []).filter(m => 
+                                m.status !== "미참여" && 
+                                m.email && 
+                                m.dept === formData.dept
+                              );
+                              if (activeWriters.length === 0) {
+                                activeWriters = (members || []).filter(m => 
+                                  m.status !== "미참여" && 
+                                  m.dept === formData.dept
+                                );
+                              }
+                            } else {
+                              activeWriters = (members || []).filter(m => 
+                                m.status !== "미참여" && 
+                                m.email && 
+                                (m.role === "운영팀장" || m.grade === "책임연구원" || m.grade === "선임연구원" || m.grade === "연구원" || m.name === "심현미")
+                              );
+                            }
+
                             if (activeWriters.length > 0) {
                               return activeWriters.map(m => {
                                 const displayName = `${m.name} ${getFormattedMemberGrade(m)}`.trim();
