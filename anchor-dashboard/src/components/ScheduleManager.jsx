@@ -1378,7 +1378,7 @@ ${aiRawText}
           e.id === editingItemId 
             ? {
                 ...e,
-                year: selectedYear,
+                year: getCalculatedYearFromDate(formData.eventDate),
                 month: extractedMonth,
                 title: formData.title || "새 행사",
                 department: formData.department || "-",
@@ -1395,7 +1395,7 @@ ${aiRawText}
       } else {
         const newItem = {
           id: Date.now(),
-          year: selectedYear,
+          year: getCalculatedYearFromDate(formData.eventDate),
           month: extractedMonth,
           title: formData.title || "새 행사 일정",
           department: formData.department || "-",
@@ -1434,7 +1434,7 @@ ${aiRawText}
           m.id === editingItemId
             ? {
                 ...m,
-                year: selectedYear,
+                year: getCalculatedYearFromDate(formData.meetingDate),
                 month: extractedMonth,
                 category: formData.category,
                 title: formData.title || "새 회의록",
@@ -1452,7 +1452,7 @@ ${aiRawText}
       } else {
         const newItem = {
           id: Date.now(),
-          year: selectedYear,
+          year: getCalculatedYearFromDate(formData.meetingDate),
           month: extractedMonth,
           category: formData.category,
           title: formData.title || "새 회의록",

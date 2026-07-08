@@ -179,6 +179,27 @@ const migrateProgramIds = (data) => {
   return data;
 };
 
+const getCalculatedYearFromDate = (dateStr, fallbackYear) => {
+  if (!dateStr) return fallbackYear;
+  const date = new Date(dateStr);
+  if (isNaN(date.getTime())) return fallbackYear;
+  
+  const year = date.getFullYear();
+  const month = date.getMonth() + 1;
+  
+  // 1월과 2월은 직전 연도의 회계연도에 속함 (예: 2026년 2월 -> 2025회계연도)
+  const fiscalYear = month <= 2 ? year - 1 : year;
+  
+  // 2025년: 1차년도, 2026년: 2차년도, ...
+  if (fiscalYear === 2025) return 1;
+  if (fiscalYear === 2026) return 2;
+  if (fiscalYear === 2027) return 3;
+  if (fiscalYear === 2028) return 4;
+  if (fiscalYear === 2029) return 5;
+  
+  return fallbackYear;
+};
+
 const getRealUnitId = (unitId, yr) => {
   return yr === 1 ? (REVERSE_UNIT_MAPPING_Y1[unitId] || unitId) : unitId;
 };
@@ -4014,7 +4035,7 @@ export default function App() {
         if (eventSchedules.length > 0) {
           const { error } = await supabase.from("schedule_events").insert(
             eventSchedules.map(s => ({
-              year: selectedYear,
+              year: getCalculatedYearFromDate(s.datetime ? s.datetime.substring(0, 10) : null, selectedYear),
               month: s.month,
               title: s.title,
               department: s.department,
@@ -4049,7 +4070,7 @@ export default function App() {
         if (meetingSchedules.length > 0) {
           const { error } = await supabase.from("schedule_meetings").insert(
             meetingSchedules.map(s => ({
-              year: selectedYear,
+              year: getCalculatedYearFromDate(s.datetime ? s.datetime.substring(0, 10) : null, selectedYear),
               month: s.month,
               category: s.category,
               title: s.title,
