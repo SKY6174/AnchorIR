@@ -6584,7 +6584,7 @@ ${aiRawText}
                             key={index} 
                             style={{ 
                               display: "grid", 
-                              gridTemplateColumns: "1fr 1.2fr 40px", 
+                              gridTemplateColumns: agendaResultPairs.length > 1 ? "1fr 2.2fr 40px" : "1fr 2.2fr", 
                               gap: "0.5rem", 
                               alignItems: "stretch",
                               background: "rgba(255, 255, 255, 0.01)",
@@ -6626,9 +6626,7 @@ ${aiRawText}
                               >
                                 ✕
                               </button>
-                            ) : (
-                              <div />
-                            )}
+                            ) : null}
                           </div>
                         ))}
                         <button
