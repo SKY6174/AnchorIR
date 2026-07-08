@@ -1037,6 +1037,7 @@ function mergeProjectsWithInitial(loadedData, multiYearInitialData) {
                 }
               }
             });
+            cachedProg.years = updatedYears; // 💡 [Self-healing 참조 복원 재대입]
             return cachedProg;
           } else {
             return sourceProg;
