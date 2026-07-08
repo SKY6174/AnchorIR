@@ -1909,25 +1909,6 @@ export default function App() {
     }
     return localStorage.getItem("anchor_active_tab") || "dashboard";
   });
-  // 2인 공동배정 여부 로컬 상태 (프로그램 ID별 true/false)
-  const [jointPrograms, setJointPrograms] = useState({});
-
-  // projects 데이터 로딩 시 2명 이상으로 배정된 과제를 자동 스캔하여 체크 상태 설정
-  useEffect(() => {
-    if (!projects) return;
-    const initialJoint = {};
-    projects.forEach((p) => {
-      p.units.forEach((u) => {
-        u.programs.forEach((prog) => {
-          const currentVal = prog.assignees?.[selectedYear] !== undefined ? prog.assignees[selectedYear] : (prog.assignee || "");
-          if (currentVal.includes(",") || currentVal.includes("/")) {
-            initialJoint[prog.id] = true;
-          }
-        });
-      });
-    });
-    setJointPrograms((prev) => ({ ...initialJoint, ...prev }));
-  }, [projects, selectedYear]);
 
   // 결재 변경 승인요청 상태 및 상세 보기 모달 제어용
   const [versionRequests, setVersionRequests] = useState([]);
@@ -2647,6 +2628,27 @@ export default function App() {
     const saved = localStorage.getItem("anchor_selected_year");
     return saved ? parseInt(saved, 10) : 2;
   });
+
+  // 2인 공동배정 여부 로컬 상태 (프로그램 ID별 true/false)
+  const [jointPrograms, setJointPrograms] = useState({});
+
+  // projects 데이터 로딩 시 2명 이상으로 배정된 과제를 자동 스캔하여 체크 상태 설정
+  useEffect(() => {
+    if (!projects) return;
+    const initialJoint = {};
+    projects.forEach((p) => {
+      p.units.forEach((u) => {
+        u.programs.forEach((prog) => {
+          const currentVal = prog.assignees?.[selectedYear] !== undefined ? prog.assignees[selectedYear] : (prog.assignee || "");
+          if (currentVal.includes(",") || currentVal.includes("/")) {
+            initialJoint[prog.id] = true;
+          }
+        });
+      });
+    });
+    setJointPrograms((prev) => ({ ...initialJoint, ...prev }));
+  }, [projects, selectedYear]);
+
   const [kpiSubTab, setKpiSubTab] = useState(() => {
     return localStorage.getItem("anchor_kpi_sub_tab") || "공통";
   });
