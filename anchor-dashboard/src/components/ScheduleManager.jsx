@@ -391,6 +391,9 @@ export default function ScheduleManager({
   const [currentMonth, setCurrentMonth] = useState(7); // 7월
   const [selectedDay, setSelectedDay] = useState(15); // 디폴트 선택 일자
 
+  // 월간 일정 캘린더 표시용 연도 구하기 (회계연도 기준 1~2월은 targetYearNum + 1년)
+  const displayYear = currentMonth >= 3 ? targetYearNum : targetYearNum + 1;
+
   // 행사 및 회의 월 선택 상태
   const [selectedEventMonth, setSelectedEventMonth] = useState(7); // 7월
   const [selectedMeetingMonth, setSelectedMeetingMonth] = useState(7); // 7월
@@ -2651,24 +2654,19 @@ ${aiRawText}
   };
 
   // 캘린더 드로잉 헬퍼
-  const getDaysInMonth = (month) => {
-    // 2026년 기준 7월은 31일, 8월은 31일
-    if (month === 7) return 31;
-    if (month === 8) return 31;
-    return 30; // 간소화
+  const getDaysInMonth = (year, month) => {
+    // JavaScript Date 객체를 사용하여 해당 연도와 월의 총 일수를 동적으로 구합니다 (month는 1-indexed)
+    return new Date(year, month, 0).getDate();
   };
 
-  const getStartDayOfWeek = (month) => {
-    // 2026년 7월 1일은 수요일(3)
-    if (month === 7) return 3;
-    // 2026년 8월 1일은 토요일(6)
-    if (month === 8) return 6;
-    return 1;
+  const getStartDayOfWeek = (year, month) => {
+    // JavaScript Date 객체를 사용하여 해당 연도와 월의 1일 시작 요일을 구합니다 (0: 일요일, ..., 6: 토요일)
+    return new Date(year, month - 1, 1).getDay();
   };
 
   const renderCalendar = () => {
-    const daysInMonth = getDaysInMonth(currentMonth);
-    const startDay = getStartDayOfWeek(currentMonth);
+    const daysInMonth = getDaysInMonth(displayYear, currentMonth);
+    const startDay = getStartDayOfWeek(displayYear, currentMonth);
     const cells = [];
 
     // 빈 셀 채우기 (라이트/다크모드 유동적 border 적용 및 최소 높이 확보)
@@ -2678,7 +2676,7 @@ ${aiRawText}
 
     // 날짜 채우기
     for (let day = 1; day <= daysInMonth; day++) {
-      const dateString = `${targetYearNum}-${currentMonth < 10 ? "0" + currentMonth : currentMonth}-${day < 10 ? "0" + day : day}`;
+      const dateString = `${displayYear}-${currentMonth < 10 ? "0" + currentMonth : currentMonth}-${day < 10 ? "0" + day : day}`;
       const filtered = selectedDeptFilter === "전체" ? monthlySchedules : monthlySchedules.filter(s => s.dept && (s.dept === "전체" || s.dept.split(",").map(x => x.trim()).includes(selectedDeptFilter)));
       const daySchedules = filtered.filter(s => s.startAt && s.startAt.substring(0, 10) === dateString && s.year === selectedYear);
       const isSelected = selectedDay === day;
@@ -2779,7 +2777,7 @@ ${aiRawText}
   };
 
   const getSelectedDaySchedules = () => {
-    const dateString = `${targetYearNum}-${currentMonth < 10 ? "0" + currentMonth : currentMonth}-${selectedDay < 10 ? "0" + selectedDay : selectedDay}`;
+    const dateString = `${displayYear}-${currentMonth < 10 ? "0" + currentMonth : currentMonth}-${selectedDay < 10 ? "0" + selectedDay : selectedDay}`;
     const filtered = selectedDeptFilter === "전체" ? monthlySchedules : monthlySchedules.filter(s => s.dept && (s.dept === "전체" || s.dept.split(",").map(x => x.trim()).includes(selectedDeptFilter)));
     return filtered.filter(s => s.startAt && s.startAt.substring(0, 10) === dateString && s.year === selectedYear);
   };
@@ -2853,7 +2851,7 @@ ${aiRawText}
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
                 <div style={{ display: "flex", alignItems: "baseline", gap: "0.35rem" }}>
                   <span style={{ fontSize: "1.15rem", fontWeight: "800", color: "var(--text-primary)" }}>
-                    {targetYearNum}년
+                    {displayYear}년
                   </span>
                   <span style={{ fontSize: "1.85rem", fontWeight: "900", color: "var(--accent-color)" }}>
                     {currentMonth}월
@@ -2861,13 +2859,13 @@ ${aiRawText}
                 </div>
                 <div style={{ display: "flex", gap: "0.25rem" }}>
                   <button 
-                    onClick={() => setCurrentMonth(currentMonth === 7 ? 8 : 7)}
+                    onClick={() => setCurrentMonth(prev => prev === 1 ? 12 : prev - 1)}
                     style={{ background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "4px", color: "var(--text-primary)", padding: "0.25rem", cursor: "pointer" }}
                   >
                     <ChevronLeft size={16} />
                   </button>
                   <button 
-                    onClick={() => setCurrentMonth(currentMonth === 7 ? 8 : 7)}
+                    onClick={() => setCurrentMonth(prev => prev === 12 ? 1 : prev + 1)}
                     style={{ background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "4px", color: "var(--text-primary)", padding: "0.25rem", cursor: "pointer" }}
                   >
                     <ChevronRight size={16} />
