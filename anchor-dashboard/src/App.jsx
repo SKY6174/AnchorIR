@@ -1909,6 +1909,26 @@ export default function App() {
     }
     return localStorage.getItem("anchor_active_tab") || "dashboard";
   });
+  // 2인 공동배정 여부 로컬 상태 (프로그램 ID별 true/false)
+  const [jointPrograms, setJointPrograms] = useState({});
+
+  // projects 데이터 로딩 시 2명 이상으로 배정된 과제를 자동 스캔하여 체크 상태 설정
+  useEffect(() => {
+    if (!projects) return;
+    const initialJoint = {};
+    projects.forEach((p) => {
+      p.units.forEach((u) => {
+        u.programs.forEach((prog) => {
+          const currentVal = prog.assignees?.[selectedYear] !== undefined ? prog.assignees[selectedYear] : (prog.assignee || "");
+          if (currentVal.includes(",") || currentVal.includes("/")) {
+            initialJoint[prog.id] = true;
+          }
+        });
+      });
+    });
+    setJointPrograms((prev) => ({ ...initialJoint, ...prev }));
+  }, [projects, selectedYear]);
+
   // 결재 변경 승인요청 상태 및 상세 보기 모달 제어용
   const [versionRequests, setVersionRequests] = useState([]);
   const [selectedRequest, setSelectedRequest] = useState(null);
@@ -6499,62 +6519,136 @@ export default function App() {
                                 <td style={{ fontFamily: "var(--font-data)", fontWeight: "700" }}>{prog.id}</td>
                                 <td>{prog.title}</td>
                                 <td style={{ color: "var(--accent-color)", fontWeight: "700" }}>{dept}</td>
-                                <td>
-                                  {currentRole.rank <= 2 ? (
-                                    <select
-                                      className="user-selector"
-                                      style={{ width: "200px", padding: "0.2rem 0.4rem", fontSize: "0.75rem" }}
-                                      value={prog.assignees?.[selectedYear] !== undefined ? prog.assignees[selectedYear] : (prog.assignee || "")}
-                                      onChange={(e) => handleAssignChange(u.id, prog.id, e.target.value)}
-                                    >
-                                      <option value="">미배정</option>
-                                      {(() => {
-                                        const currentVal = prog.assignees?.[selectedYear] !== undefined ? prog.assignees[selectedYear] : (prog.assignee || "");
-                                        const isMulti = currentVal.includes(",") || currentVal.includes("/");
-                                        if (isMulti) {
-                                          return <option value={currentVal}>{formatAssignee(currentVal)}</option>;
-                                        }
-                                        return null;
-                                      })()}
-                                      {members
-                                        .filter((m) => {
-                                          if (m.role !== "연구원") return false;
-                                          const currentAssignee = prog.assignees?.[selectedYear] || prog.assignee || "";
-                                          const isCurrent = currentAssignee === `${m.name} ${m.grade}`;
-                                          const isDeptMatch = m.dept === dept;
-                                          if (!isCurrent && !isDeptMatch) return false;
-                                          
-                                          // 연차별 담당자는 당해 연도에 재직하고 있어야 함
-                                          const startYear = 2024 + selectedYear;
-                                          const endYear = 2025 + selectedYear;
-                                          const yearStart = new Date(`${startYear}-03-01T00:00:00`);
-                                          const yearEnd = new Date(`${endYear}-02-28T23:59:59`);
-                                          
-                                          const mStartStr = m.startDate || m.hireDate || "2025-03-01";
-                                          const mStartDate = new Date(mStartStr);
-                                          if (mStartDate > yearEnd) return false;
-                                          
-                                          if (m.endDate) {
-                                            const mEndDate = new Date(m.endDate);
-                                            if (mEndDate < yearStart) return false;
-                                          }
-                                          
-                                          return true;
-                                        })
-                                        .map((m) => {
-                                          const valueStr = `${m.name} ${m.grade}`;
-                                          const labelStr = `${m.name} ${m.grade} (${m.dept})`;
-                                          return (
-                                            <option key={m.id} value={valueStr}>
-                                              {labelStr}
-                                            </option>
-                                          );
-                                        })}
-                                    </select>
-                                  ) : (
-                                    <span>{formatAssignee(prog.assignees?.[selectedYear] !== undefined ? prog.assignees[selectedYear] : prog.assignee)}</span>
-                                  )}
-                                </td>
+                                 <td>
+                                   {currentRole.rank <= 2 ? (
+                                     <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
+                                       {/* 공동배정 체크박스 */}
+                                       <label style={{ display: "flex", alignItems: "center", gap: "0.25rem", fontSize: "0.7rem", cursor: "pointer", color: "var(--text-secondary)" }}>
+                                         <input
+                                           type="checkbox"
+                                           checked={!!jointPrograms[prog.id]}
+                                           onChange={(e) => {
+                                             const isChecked = e.target.checked;
+                                             setJointPrograms(prev => ({ ...prev, [prog.id]: isChecked }));
+                                             
+                                             // 체크 해제 시에는 단일 연구원으로 변경할 수 있도록 현재 값의 첫 번째 연구원을 기본값으로 넘김
+                                             if (!isChecked) {
+                                               const currentVal = prog.assignees?.[selectedYear] !== undefined ? prog.assignees[selectedYear] : (prog.assignee || "");
+                                               const parts = currentVal.split(/[,\/]/).map(p => p.trim()).filter(Boolean);
+                                               handleAssignChange(u.id, prog.id, parts[0] || "");
+                                             }
+                                           }}
+                                         />
+                                         2인 공동배정
+                                       </label>
+                                       
+                                       {jointPrograms[prog.id] ? (
+                                         <div style={{ display: "flex", alignItems: "center", gap: "0.3rem", flexWrap: "wrap" }}>
+                                           {/* 정 담당자 선택 */}
+                                           <div style={{ display: "flex", alignItems: "center", gap: "0.15rem" }}>
+                                             <span style={{ fontSize: "0.65rem", color: "var(--accent-color)", fontWeight: "700" }}>정:</span>
+                                             <select
+                                               className="user-selector"
+                                               style={{ width: "110px", padding: "0.15rem 0.3rem", fontSize: "0.7rem" }}
+                                               value={(() => {
+                                                 const currentVal = prog.assignees?.[selectedYear] !== undefined ? prog.assignees[selectedYear] : (prog.assignee || "");
+                                                 const parts = currentVal.split(/[,\/]/).map(p => p.trim()).filter(Boolean);
+                                                 return parts[0] || "";
+                                               })()}
+                                               onChange={(e) => {
+                                                 const currentVal = prog.assignees?.[selectedYear] !== undefined ? prog.assignees[selectedYear] : (prog.assignee || "");
+                                                 const parts = currentVal.split(/[,\/]/).map(p => p.trim()).filter(Boolean);
+                                                 const first = e.target.value;
+                                                 const second = parts[1] || "";
+                                                 const combined = second ? `${first}, ${second}` : first;
+                                                 handleAssignChange(u.id, prog.id, combined);
+                                               }}
+                                             >
+                                               <option value="">선택</option>
+                                               {members
+                                                 .filter((m) => m.role === "연구원" && m.dept === dept)
+                                                 .map((m) => (
+                                                   <option key={m.id} value={`${m.name} ${m.grade}`}>
+                                                     {m.name} {m.grade}
+                                                   </option>
+                                                 ))}
+                                             </select>
+                                           </div>
+                                           {/* 부 담당자 선택 */}
+                                           <div style={{ display: "flex", alignItems: "center", gap: "0.15rem" }}>
+                                             <span style={{ fontSize: "0.65rem", color: "var(--accent-color)", fontWeight: "700" }}>부:</span>
+                                             <select
+                                               className="user-selector"
+                                               style={{ width: "110px", padding: "0.15rem 0.3rem", fontSize: "0.7rem" }}
+                                               value={(() => {
+                                                 const currentVal = prog.assignees?.[selectedYear] !== undefined ? prog.assignees[selectedYear] : (prog.assignee || "");
+                                                 const parts = currentVal.split(/[,\/]/).map(p => p.trim()).filter(Boolean);
+                                                 return parts[1] || "";
+                                               })()}
+                                               onChange={(e) => {
+                                                 const currentVal = prog.assignees?.[selectedYear] !== undefined ? prog.assignees[selectedYear] : (prog.assignee || "");
+                                                 const parts = currentVal.split(/[,\/]/).map(p => p.trim()).filter(Boolean);
+                                                 const first = parts[0] || "";
+                                                 const second = e.target.value;
+                                                 const combined = second ? `${first}, ${second}` : first;
+                                                 handleAssignChange(u.id, prog.id, combined);
+                                               }}
+                                             >
+                                               <option value="">선택</option>
+                                               {members
+                                                 .filter((m) => m.role === "연구원" && m.dept === dept)
+                                                 .map((m) => (
+                                                   <option key={m.id} value={`${m.name} ${m.grade}`}>
+                                                     {m.name} {m.grade}
+                                                   </option>
+                                                 ))}
+                                             </select>
+                                           </div>
+                                         </div>
+                                       ) : (
+                                         /* 단일 배정 드롭다운 */
+                                         <select
+                                           className="user-selector"
+                                           style={{ width: "200px", padding: "0.2rem 0.4rem", fontSize: "0.75rem" }}
+                                           value={prog.assignees?.[selectedYear] !== undefined ? prog.assignees[selectedYear] : (prog.assignee || "")}
+                                           onChange={(e) => handleAssignChange(u.id, prog.id, e.target.value)}
+                                         >
+                                           <option value="">미배정</option>
+                                           {members
+                                             .filter((m) => {
+                                               if (m.role !== "연구원") return false;
+                                               const currentAssignee = prog.assignees?.[selectedYear] || prog.assignee || "";
+                                               const isCurrent = currentAssignee === `${m.name} ${m.grade}`;
+                                               const isDeptMatch = m.dept === dept;
+                                               if (!isCurrent && !isDeptMatch) return false;
+                                               
+                                               const startYear = 2024 + selectedYear;
+                                               const endYear = 2025 + selectedYear;
+                                               const yearStart = new Date(`${startYear}-03-01T00:00:00`);
+                                               const yearEnd = new Date(`${endYear}-02-28T23:59:59`);
+                                               
+                                               const mStartStr = m.startDate || m.hireDate || "2025-03-01";
+                                               const mStartDate = new Date(mStartStr);
+                                               if (mStartDate > yearEnd) return false;
+                                               
+                                               if (m.endDate) {
+                                                 const mEndDate = new Date(m.endDate);
+                                                 if (mEndDate < yearStart) return false;
+                                               }
+                                               return true;
+                                             })
+                                             .map((m) => (
+                                               <option key={m.id} value={`${m.name} ${m.grade}`}>
+                                                 {m.name} {m.grade} ({m.dept})
+                                               </option>
+                                             ))}
+                                         </select>
+                                       )}
+                                     </div>
+                                   ) : (
+                                     <span>{formatAssignee(prog.assignees?.[selectedYear] !== undefined ? prog.assignees[selectedYear] : prog.assignee)}</span>
+                                   )}
+                                 </td>
                                 <td style={{ textAlign: "center", color: prog.pdca.p === "완료" ? "var(--success-color)" : "inherit", fontWeight: "700" }}>{prog.pdca.p}</td>
                                 <td style={{ textAlign: "center", color: prog.pdca.d === "완료" ? "var(--success-color)" : "inherit", fontWeight: "700" }}>{prog.pdca.d}</td>
                                 <td style={{ textAlign: "center", color: prog.pdca.c === "완료" ? "var(--success-color)" : "inherit", fontWeight: "700" }}>{prog.pdca.c}</td>
