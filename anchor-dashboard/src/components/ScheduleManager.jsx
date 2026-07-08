@@ -188,10 +188,15 @@ export default function ScheduleManager({
   const [isEditMode, setIsEditMode] = useState(false);   // 수정 모드 활성화 여부
   const [editingItemId, setEditingItemId] = useState(null); // 편집 대상 일정 ID
 
-  // 교수의 경우 직급/직위를 '센터장', '교수팀장'으로 이원화 표기하는 헬퍼 함수
+  // 교원의 경우 직급/직위를 '센터장', '팀장교수'로 이원화 표기 및 심현미 운영팀장 표기 헬퍼 함수
   const getFormattedMemberGrade = (m) => {
     if (!m) return "연구원";
     
+    // 심현미의 경우 직위를 '운영팀장'으로 강제 표기
+    if (m.name === "심현미") {
+      return "운영팀장";
+    }
+
     // 교수의 조건 판별 (grade 혹은 role/rank 가 교수, 조교수, 부교수, 정교수 등 교직원 형태인 경우)
     const isProfessorType = 
       ["정교수", "부교수", "조교수", "교수", "조교", "팀장교수", "교원"].includes(m.grade) ||
@@ -200,12 +205,14 @@ export default function ScheduleManager({
       ["정교수", "부교수", "조교수", "교수", "조교", "팀장교수", "교원"].includes(m.rank);
       
     if (isProfessorType) {
+      // 4대 센터장 및 명시적으로 센터장 직위에 있는 인원 판별
+      const realCenterHeads = ["이동은", "김기범", "현용환", "홍광표"];
       const isCenterHead = 
         m.role === "센터장" || 
         m.rank === "센터장" || 
-        (m.dept && (m.dept.includes("센터") || m.dept.includes("RCC") || m.dept.includes("ECC") || m.dept.includes("ICC")));
+        realCenterHeads.includes(m.name);
         
-      return isCenterHead ? "센터장" : "교수팀장";
+      return isCenterHead ? "센터장" : "팀장교수";
     }
     
     // 일반 연구원 등은 기존 값을 반환
@@ -2810,12 +2817,11 @@ ${aiRawText}
         const activeWriters = (members || []).filter(m => 
           m.status !== "미참여" && 
           m.email && 
-          (m.role === "운영팀장" || m.grade === "책임연구원" || m.grade === "선임연구원" || m.grade === "연구원")
+          (m.role === "운영팀장" || m.grade === "책임연구원" || m.grade === "선임연구원" || m.grade === "연구원" || m.name === "심현미")
         );
         if (activeWriters.length > 0) {
           const first = activeWriters[0];
-          const titleOrGrade = first.role === "운영팀장" ? "운영팀장" : (first.grade || "연구원");
-          return `${first.name} ${titleOrGrade}`.trim();
+          return `${first.name} ${getFormattedMemberGrade(first)}`.trim();
         }
         return "박지현 팀장";
       })(),
@@ -5957,12 +5963,11 @@ ${aiRawText}
                             const activeWriters = (members || []).filter(m => 
                               m.status !== "미참여" && 
                               m.email && 
-                              (m.role === "운영팀장" || m.grade === "책임연구원" || m.grade === "선임연구원" || m.grade === "연구원")
+                              (m.role === "운영팀장" || m.grade === "책임연구원" || m.grade === "선임연구원" || m.grade === "연구원" || m.name === "심현미")
                             );
                             if (activeWriters.length > 0) {
                               return activeWriters.map(m => {
-                                const titleOrGrade = m.role === "운영팀장" ? "운영팀장" : (m.grade || "연구원");
-                                const displayName = `${m.name} ${titleOrGrade}`.trim();
+                                const displayName = `${m.name} ${getFormattedMemberGrade(m)}`.trim();
                                 return (
                                   <option key={m.id || m.email} value={displayName}>
                                     {displayName}
