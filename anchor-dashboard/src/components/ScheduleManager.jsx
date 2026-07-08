@@ -4144,7 +4144,7 @@ ${aiRawText}
                               transition: "all 0.15s ease"
                             }}
                           >
-                            {cName.replace("위원회", "").replace("회의", "")}
+                            {cName}
                           </button>
                         );
                       })}
@@ -4157,6 +4157,18 @@ ${aiRawText}
                       ⚡ 센터 위원회 종류
                     </span>
                     <div style={{ display: "flex", gap: "0.4rem", flexWrap: "wrap" }}>
+                      <button
+                        onClick={() => setSelectedCommitteeFilters([])}
+                        style={{
+                          padding: "0.25rem 0.55rem", fontSize: "0.68rem", fontWeight: "700", borderRadius: "4px", cursor: "pointer",
+                          border: "1px solid " + (selectedCommitteeFilters.length === 0 ? "#34D399" : (darkMode ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.15)")),
+                          background: selectedCommitteeFilters.length === 0 ? "#34D399" : (darkMode ? "rgba(255,255,255,0.08)" : "rgba(0, 0, 0, 0.05)"),
+                          color: selectedCommitteeFilters.length === 0 ? "white" : (darkMode ? "#cbd5e1" : "var(--text-secondary)"),
+                          transition: "all 0.15s ease"
+                        }}
+                      >
+                        전체
+                      </button>
                       {[
                         "ECC센터위원회", "ICC센터위원회", "RCC센터위원회", 
                         "AID-X지원센터위원회", "울산늘봄누리센터위원회", "신산업특화센터위원회"
@@ -4178,7 +4190,7 @@ ${aiRawText}
                               transition: "all 0.15s ease"
                             }}
                           >
-                            {cName.replace("위원회", "")}
+                            {cName}
                           </button>
                         );
                       })}
