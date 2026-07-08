@@ -901,8 +901,9 @@ export default function PDCAManager({
         budget_categories: categoriesToSave
       });
 
-      // 송경영 단장 직접 수정 시, 변경 이력(승인완료 상태) DB 즉시 적재 (차수는 변경시키지 않고 기록)
-      if (currentUser && currentUser.name === "송경영") {
+      // 💡 [교육용 한글 주석] 송경영 단장 직접 수정 시, 변경 이력(승인완료 상태) DB 즉시 적재 (차수는 변경시키지 않고 기록)
+      // 로그인 세션 이름이 "송경영 단장" 등으로 표기되는 경우에도 안전하게 우회하도록 includes 검사 방식을 적용합니다.
+      if (currentUser && (currentUser.name || "").includes("송경영")) {
         try {
           if (supabase) {
             const beforeData = {

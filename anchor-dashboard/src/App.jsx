@@ -1216,18 +1216,20 @@ function mergeProjectsWithInitial(loadedData, multiYearInitialData) {
           }
           [1, 2, 3, 4, 5].forEach((yr) => {
             const mainVal = categorySums[catName][yr].main;
-            const isD2 = (unit.id === "D2");
+            // 💡 [교육용 한글 주석] 기존에는 D2 단위과제만 100% 국비로 집계했으나, 
+            // D1, D3 단위과제도 시비 예산 없이 국비(국고)로만 100% 편성하도록 예외 대상을 확장합니다.
+            const isNationalOnly = ["D1", "D2", "D3"].includes(unit.id);
             unit.budgetDetails[catName].years[yr] = {
               budget_main: mainVal,
               budget_carry: categorySums[catName][yr].carry,
               spent_main: categorySums[catName][yr].spent_main,
               spent_carry: categorySums[catName][yr].spent_carry,
-              // 💡 [재원 정밀 집계] D2 단위과제는 100% 국비(국고) 본예산으로 분류하고 시비는 0원 처리합니다.
-              budget_national: isD2 ? mainVal : Math.round(mainVal * 0.5),
-              budget_city: isD2 ? 0 : mainVal - Math.round(mainVal * 0.5),
+              // 💡 [재원 정밀 집계] D1, D2, D3 단위과제는 100% 국비(국고) 본예산으로 분류하고 시비는 0원 처리합니다.
+              budget_national: isNationalOnly ? mainVal : Math.round(mainVal * 0.5),
+              budget_city: isNationalOnly ? 0 : mainVal - Math.round(mainVal * 0.5),
               budget_external: 0,
-              spent_national: isD2 ? categorySums[catName][yr].spent_main : Math.round(categorySums[catName][yr].spent_main * 0.5),
-              spent_city: isD2 ? 0 : categorySums[catName][yr].spent_main - Math.round(categorySums[catName][yr].spent_main * 0.5),
+              spent_national: isNationalOnly ? categorySums[catName][yr].spent_main : Math.round(categorySums[catName][yr].spent_main * 0.5),
+              spent_city: isNationalOnly ? 0 : categorySums[catName][yr].spent_main - Math.round(categorySums[catName][yr].spent_main * 0.5),
               spent_external: 0
             };
           });
@@ -1270,10 +1272,8 @@ function mergeProjectsWithInitial(loadedData, multiYearInitialData) {
             return sum + (b.years?.[yr]?.budget_main || 0);
           }, 0);
 
-          // 💡 [단위과제 국비/시비/외부사업비 재원 실시간 롤업]
-          // D2 단위과제는 100% 국비(국고) 본예산으로 집계되도록 강제 연산하고,
-          // 다른 단위과제는 각 비목 상세에 기입된 재원 정보를 합산하여 동기화합니다.
-          if (unit.id === "D2") {
+          // 💡 [교육용 한글 주석] D1, D2, D3 단위과제는 100% 국비(국고) 본예산으로 집계되도록 강제 연산합니다.
+          if (["D1", "D2", "D3"].includes(unit.id)) {
             unit.years[yr].budget_national = unit.years[yr].budget_main;
             unit.years[yr].budget_city = 0;
             unit.years[yr].budget_external = 0;
@@ -3278,17 +3278,18 @@ export default function App() {
                     }
                     [1, 2, 3, 4, 5].forEach((yr) => {
                       const mainVal = categorySums[catName][yr].main;
-                      const isD2 = (unit.id === "D2");
+                      // 💡 [교육용 한글 주석] 로컬 캐시 동화 시 D1, D2, D3 단위과제 국비 100%, 시비 0원 강제 연산 처리
+                      const isNationalOnly = ["D1", "D2", "D3"].includes(unit.id);
                       unit.budgetDetails[catName].years[yr] = {
                         budget_main: mainVal,
                         budget_carry: categorySums[catName][yr].carry,
                         spent_main: categorySums[catName][yr].spent_main,
                         spent_carry: categorySums[catName][yr].spent_carry,
-                        budget_national: isD2 ? mainVal : Math.round(mainVal * 0.5),
-                        budget_city: isD2 ? 0 : mainVal - Math.round(mainVal * 0.5),
+                        budget_national: isNationalOnly ? mainVal : Math.round(mainVal * 0.5),
+                        budget_city: isNationalOnly ? 0 : mainVal - Math.round(mainVal * 0.5),
                         budget_external: 0,
-                        spent_national: isD2 ? categorySums[catName][yr].spent_main : Math.round(categorySums[catName][yr].spent_main * 0.5),
-                        spent_city: isD2 ? 0 : categorySums[catName][yr].spent_main - Math.round(categorySums[catName][yr].spent_main * 0.5),
+                        spent_national: isNationalOnly ? categorySums[catName][yr].spent_main : Math.round(categorySums[catName][yr].spent_main * 0.5),
+                        spent_city: isNationalOnly ? 0 : categorySums[catName][yr].spent_main - Math.round(categorySums[catName][yr].spent_main * 0.5),
                         spent_external: 0
                       };
                     });
@@ -3301,7 +3302,8 @@ export default function App() {
                     uYear.budget_main = Object.values(unit.budgetDetails).reduce((sum, b) => sum + (b.years?.[yr]?.budget_main || 0), 0);
                     uYear.budget_carry = Object.values(unit.budgetDetails).reduce((sum, b) => sum + (b.years?.[yr]?.budget_carry || 0), 0);
 
-                    if (unit.id === "D2") {
+                    // 💡 [교육용 한글 주석] D1, D2, D3 단위과제는 국비 100%, 시비 0원 롤업 처리
+                    if (["D1", "D2", "D3"].includes(unit.id)) {
                       uYear.budget_national = uYear.budget_main;
                       uYear.budget_city = 0;
                       uYear.budget_external = 0;
@@ -5558,9 +5560,8 @@ export default function App() {
               uYear.budget_main = Object.values(u.budgetDetails).reduce((sum, b) => sum + (b.years?.[yr]?.budget_main || 0), 0);
               uYear.budget_carry = Object.values(u.budgetDetails).reduce((sum, b) => sum + (b.years?.[yr]?.budget_carry || 0), 0);
 
-              // 💡 [단위과제 재원 롤업] 프로그램들로부터 국비/시비/외부 재원을 실시간 누적 집계하여 단위과제 수준에 꽂아줍니다.
-              // 만약 D2 단위과제인 경우 국비 100% 가 적용되도록 처리합니다.
-              if (u.id === "D2") {
+              // 💡 [교육용 한글 주석] 프로그램 단위 재원 롤업 연산 시 D1, D2, D3인 경우 국비 100% 강제 동기화
+              if (["D1", "D2", "D3"].includes(u.id)) {
                 uYear.budget_national = uYear.budget_main;
                 uYear.budget_city = 0;
                 uYear.budget_external = 0;
@@ -7411,7 +7412,8 @@ export default function App() {
                               </tr>
                             ) : (
                               versionRequests.map((req, idx) => {
-                                const approvedRequests = versionRequests.filter(r => r.status === "승인완료");
+                                // 💡 [교육용 한글 주석] 송경영 단장님의 직접 수정 이력은 공식 수정 횟차(seq) 집계에 들어가지 않도록 배제 처리합니다.
+                                const approvedRequests = versionRequests.filter(r => r.status === "승인완료" && r.version_name !== "송경영 단장 직접 수정");
                                 const isApproved = req.status === "승인완료";
                                 let displayNo = "-";
                                 if (isApproved) {
@@ -7528,7 +7530,8 @@ export default function App() {
 
         {/* 결재 상세 비교 Diff 모달 */}
         {selectedRequest && (() => {
-          const approvedRequests = versionRequests.filter(r => r.status === "승인완료");
+          // 💡 [교육용 한글 주석] 송경영 단장님의 직접 수정 이력은 공식 수정 횟차(seq) 집계에 들어가지 않도록 배제 처리합니다.
+          const approvedRequests = versionRequests.filter(r => r.status === "승인완료" && r.version_name !== "송경영 단장 직접 수정");
           const isApproved = selectedRequest.status === "승인완료";
           let displaySeq = "-";
           if (isApproved) {
