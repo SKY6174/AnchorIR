@@ -847,7 +847,7 @@ export default function ProcurementManager({
       return;
     }
 
-    const activeEquipList = equipData.length > 0 ? equipData : defaultEquipments;
+    const activeEquipList = equipData;
     const updated = activeEquipList.map(e => {
       if (e.id === equipId) {
         const currentMilestones = e.milestones || {};
@@ -1150,7 +1150,7 @@ export default function ProcurementManager({
         return;
       }
 
-      const activeEquipList = equipData.length > 0 ? equipData : defaultEquipments;
+      const activeEquipList = equipData;
 
       if (isEditMode && editingItemId) {
         // 수정 모드 분기 (요건 2 대응)
@@ -2674,7 +2674,7 @@ export default function ProcurementManager({
               </thead>
               <tbody>
                 {(() => {
-                  const activeEquipList = equipData.length > 0 ? equipData : defaultEquipments;
+                  const activeEquipList = equipData;
                   
                   // 1) 과제 필터링
                   let filteredEquips = selectedEquipUnit === "ALL" 
@@ -4859,7 +4859,7 @@ export default function ProcurementManager({
                 const currentList = getMilestoneArray(formData.milestones?.[activePopover.month]);
                 isChecked = currentList.includes(step.val);
               } else {
-                const activeEquipList = equipData.length > 0 ? equipData : defaultEquipments;
+                const activeEquipList = equipData;
                 const targetEquip = activeEquipList.find(e => e.id === activePopover.equipId);
                 const currentList = targetEquip ? getMilestoneArray(targetEquip.milestones?.[activePopover.month]) : [];
                 isChecked = currentList.includes(step.val);
