@@ -928,10 +928,16 @@ function mergeProjectsWithInitial(loadedData, multiYearInitialData) {
         const mergedPrograms = sourceUnit.programs.map((sourceProg) => {
           const cachedProg = unit.programs?.find(cp => cp.id === sourceProg.id);
           if (cachedProg) {
+            if (!cachedProg.years) cachedProg.years = {};
             const updatedYears = { ...cachedProg.years };
 
             // 5개년에 대한 예산 및 집행액 정합성 복원 루프
             [1, 2, 3, 4, 5].forEach((yr) => {
+              // 💡 [Self-healing 연도별 유실 복원] 캐시 프로그램에 해당 연도 정보가 누락되어 있다면 마스터 소스의 연도 기획 정보를 강제 복구 주입합니다.
+              if (!updatedYears[yr] && sourceProg.years && sourceProg.years[yr]) {
+                updatedYears[yr] = JSON.parse(JSON.stringify(sourceProg.years[yr]));
+              }
+
               if (updatedYears[yr]) {
                 // 소스에 해당 연도가 아예 기획되지 않은 프로그램이라면 캐시 오염을 막기 위해 제거
                 if (!sourceProg.years || !sourceProg.years[yr]) {
