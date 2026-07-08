@@ -1137,8 +1137,10 @@ ${aiRawText}
       alert(`${typeLabel}만 업로드할 수 있습니다.`);
       return;
     }
-    if (file.size > 5 * 1024 * 1024) {
-      alert("파일 크기는 최대 5MB를 초과할 수 없습니다.");
+    const maxLimit = isAudio ? 5 * 1024 * 1024 : 2 * 1024 * 1024;
+    const maxLimitLabel = isAudio ? "5MB" : "2MB";
+    if (file.size > maxLimit) {
+      alert(`${typeLabel} 크기는 최대 ${maxLimitLabel}를 초과할 수 없습니다.`);
       return;
     }
 
@@ -6368,7 +6370,7 @@ ${aiRawText}
                     {/* 2번째 칸: PDF 문서 파일 */}
                     <div>
                       <label style={{ display: "block", fontSize: "0.78rem", color: "var(--text-secondary)", marginBottom: "0.4rem" }}>
-                        📄 회의록 첨부 문서 (PDF 전용, 최대 5MB)
+                        📄 회의록 첨부 문서 (PDF 전용, 최대 2MB)
                       </label>
                       {formData.pdfUrl ? (
                         <div style={{ 
