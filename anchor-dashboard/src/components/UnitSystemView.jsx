@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Info, Award, Layout, GitFork, ArrowRight, List } from "lucide-react";
 import STRATEGY_TASK_MAPPING_Y1 from "../data/extracted_1st_year.json";
+import { initialProjectsData } from "../data/mockData";
+
 
 // 1. 프로젝트 및 단위과제 매핑 정보 정의 (2차년도 기준)
 const PROJECTS_DATA = [
@@ -106,10 +108,19 @@ const STRATEGY_TASK_MAPPING = {
     ],
     tasks: [
       { strat: "S1", id: "1", title: "UC-HYPER 기반 주문식 교육과정 및 혁신 교수법 개발" },
-      { strat: "S2", id: "2", title: "교육과정 성과 모니터링 및 대외 성과공유 확산" },
-      { strat: "S3", id: "3", title: "지산학 연계 고숙련 기술 인재 육성 및 현장 실무 지원" },
-      { strat: "S4", id: "4", title: "하이퍼 캠퍼스 교육환경 및 데이터 활용 인프라 구축" },
-      { strat: "S5", id: "5", title: "울산형 및 글로벌 지산학 거버넌스 협력 체계 구축" }
+      { strat: "S1", id: "2", title: "미래 핵심 산업 맞춤형 정규 주문식 교과정 개편 및 운영" },
+      { strat: "S1", id: "3", title: "특화 분야 비교과 자격증 과정 및 학점교류 운영" },
+      { strat: "S2", id: "4", title: "전주기 이력 추적형 진로개발 시스템 운영" },
+      { strat: "S2", id: "5", title: "산학 성과 공유를 위한 경진대회 및 대외 워크숍 개최" },
+      { strat: "S3", id: "6", title: "개방형 설계센터 전문가 연계 재직자 실무 교육" },
+      { strat: "S3", id: "7", title: "울산형 데이터센터 기술인재 양성을 위한 자격증/마이크로디그리 과정" },
+      { strat: "S3", id: "8", title: "표준형 현장실습 교과목 운영" },
+      { strat: "S3", id: "9", title: "전문기술석사 과정 활용 기업 PBL 공동연구 지원" },
+      { strat: "S4", id: "10", title: "설계센터 및 생성형 AI / 양방향 수업 전산 환경 시공 및 로봇 공학 기자재 도입" },
+      { strat: "S4", id: "11", title: "ECC플랫폼 공유협업 인프라 구축" },
+      { strat: "S4", id: "12", title: "온라인 콘텐츠 및 실시간 수업을 위한 플랫폼 구축" },
+      { strat: "S5", id: "13", title: "지산학 거버넌스 협의체 운영 및 학술 정보 공유" },
+      { strat: "S5", id: "14", title: "벤치마킹 분석 보고서 작성 및 거버넌스 환류" }
     ],
     programs: [
       { strat: "S1", id: "A1가-S1T1-1", title: "UC-HYPER 교수학습 모델 및 혁신 교수법 개발 운영" },
@@ -371,6 +382,12 @@ export default function UnitSystemView({ selectedYear = 2 }) {
   const defaultStratId = selectedUnitData.strategies.length > 0 ? selectedUnitData.strategies[0].id : "";
   const [selectedStratId, setSelectedStratId] = useState(defaultStratId);
 
+  // 선택한 추진과제(T)의 ID 상태
+  const [selectedTaskId, setSelectedTaskId] = useState("");
+
+  // 선택된 추진전략에 부속되는 추진과제(T) 필터링
+  const filteredTasks = selectedUnitData.tasks ? selectedUnitData.tasks.filter(t => t.strat === selectedStratId) : [];
+
   // 연도(selectedYear)나 프로젝트가 변경될 때 현재 유닛 목록의 유효성 검사 및 리셋 처리
   useEffect(() => {
     const currentProj = currentProjectsData.find(p => p.id === selectedProjectId);
@@ -393,6 +410,18 @@ export default function UnitSystemView({ selectedYear = 2 }) {
     }
   }, [selectedUnitId, selectedUnitData]);
 
+  // 추진전략(S) 변경 시 추진과제(T) 드롭다운 첫 번째로 자동 연동
+  useEffect(() => {
+    if (filteredTasks.length > 0) {
+      const exists = filteredTasks.some(t => t.id === selectedTaskId);
+      if (!exists) {
+        setSelectedTaskId(filteredTasks[0].id);
+      }
+    } else {
+      setSelectedTaskId("");
+    }
+  }, [selectedStratId, selectedUnitId, filteredTasks, selectedTaskId]);
+
   // 프로젝트 변경 시 단위과제 및 추진전략 자동 갱신
   const handleProjectChange = (projId) => {
     setSelectedProjectId(projId);
@@ -409,11 +438,40 @@ export default function UnitSystemView({ selectedYear = 2 }) {
     }
   };
 
-  // 선택된 추진전략에 부속되는 추진과제(T) 필터링
-  const filteredTasks = selectedUnitData.tasks.filter(t => t.strat === selectedStratId);
+  // 선택한 단위과제의 프로그램 목록 동적 로드 (1차년도는 JSON, 2차년도는 mockData.js의 initialProjectsData에서 실시간 추출)
+  const getRawPrograms = () => {
+    if (selectedYear === 1) {
+      return selectedUnitData.programs || [];
+    } else {
+      let foundUnit = null;
+      for (const proj of initialProjectsData) {
+        const u = proj.units.find(unit => unit.id === selectedUnitId);
+        if (u) {
+          foundUnit = u;
+          break;
+        }
+      }
+      return foundUnit ? foundUnit.programs : [];
+    }
+  };
 
-  // 선택된 추진전략에 부속되는 프로그램(PG) 필터링
-  const filteredPrograms = selectedUnitData.programs.filter(p => p.strat === selectedStratId);
+  const rawPrograms = getRawPrograms();
+
+  // 선택된 추진전략(S) 및 추진과제(T)에 부속되는 프로그램(PG) 필터링
+  const filteredPrograms = rawPrograms.filter(p => {
+    const match = p.id.match(/-S(\d+)T(\d+)-/);
+    if (match) {
+      const stratNum = match[1];
+      const taskNum = match[2];
+      const stratId = `S${stratNum}`;
+      const taskId = taskNum;
+      return stratId === selectedStratId && taskId === selectedTaskId;
+    }
+    if (p.strat) {
+      return p.strat === selectedStratId;
+    }
+    return false;
+  });
 
   return (
     <div className="unit-system-container" style={{ display: "flex", flexDirection: "column", gap: "1.5rem", width: "100%" }}>
@@ -543,10 +601,10 @@ export default function UnitSystemView({ selectedYear = 2 }) {
             </select>
           </div>
 
-          {/* 3. 추진전략 드롭다운 (신설) */}
+          {/* 3. 추진전략 드롭다운 */}
           <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
             <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)", fontWeight: "700" }}>
-              3단계: 추진전략 선택 (Strategy; S)
+              3단계: 추진전략 선택(S)
             </label>
             <select
               value={selectedStratId}
@@ -565,6 +623,33 @@ export default function UnitSystemView({ selectedYear = 2 }) {
               {selectedUnitData.strategies.map(s => (
                 <option key={s.id} value={s.id} style={{ background: "var(--background-card, #1e1e1e)", color: "var(--text-primary)" }}>
                   {s.id} : {s.title}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* 4. 추진과제 드롭다운 */}
+          <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
+            <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)", fontWeight: "700" }}>
+              4단계: 추진과제 선택(T)
+            </label>
+            <select
+              value={selectedTaskId}
+              onChange={(e) => setSelectedTaskId(e.target.value)}
+              className="user-selector"
+              style={{
+                width: "100%",
+                fontSize: "0.8rem",
+                padding: "0.6rem 0.8rem",
+                background: "rgba(255,255,255,0.02)",
+                border: "1px solid var(--border-color)",
+                color: "var(--text-primary)",
+                borderRadius: "0.4rem"
+              }}
+            >
+              {filteredTasks.map(t => (
+                <option key={t.id} value={t.id} style={{ background: "var(--background-card, #1e1e1e)", color: "var(--text-primary)" }}>
+                  T{t.id} : {t.title}
                 </option>
               ))}
             </select>
@@ -611,7 +696,7 @@ export default function UnitSystemView({ selectedYear = 2 }) {
             </h4>
           </div>
 
-          {/* 중단: 필터링된 추진과제 (T) 리스트 */}
+          {/* 중단: 선택된 추진과제 (T) 상세 */}
           <div>
             <span style={{
               fontSize: "0.8rem",
@@ -625,45 +710,44 @@ export default function UnitSystemView({ selectedYear = 2 }) {
               display: "inline-block",
               marginBottom: "0.7rem"
             }}>
-              {selectedStratId}{getJosa(selectedStratId)} 연계한 추진과제 (Strategic Tasks)
+              선택된 추진과제 (Strategic Task)
             </span>
             
             <div style={{ display: "flex", flexDirection: "column", gap: "0.6rem" }}>
-              {filteredTasks.length === 0 ? (
+              {!selectedTaskId ? (
                 <div style={{ fontSize: "0.78rem", color: "var(--text-secondary)", textAlign: "center", padding: "2rem", border: "1px dashed var(--border-color)" }}>
                   본 전략에 매핑된 세부 추진과제가 아직 존재하지 않습니다.
                 </div>
               ) : (
-                filteredTasks.map((task, idx) => (
-                  <div key={task.id} style={{
-                    background: "rgba(255,255,255,0.01)",
-                    border: "1px solid var(--border-color)",
-                    padding: "0.8rem 1rem",
-                    borderRadius: "0.4rem",
-                    fontSize: "0.8rem",
-                    color: "var(--text-primary)",
+                <div style={{
+                  background: "rgba(255,255,255,0.01)",
+                  border: "1px solid var(--border-color)",
+                  padding: "0.8rem 1rem",
+                  borderRadius: "0.4rem",
+                  fontSize: "0.8rem",
+                  color: "var(--text-primary)",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "0.6rem"
+                }}>
+                  <div style={{
+                    width: "22px",
+                    height: "22px",
+                    borderRadius: "50%",
+                    background: "rgba(245,158,11,0.1)",
+                    color: "#f59e0b",
                     display: "flex",
                     alignItems: "center",
-                    gap: "0.6rem"
+                    justifyContent: "center",
+                    fontSize: "0.7rem",
+                    fontWeight: "900",
+                    border: "1px solid rgba(245,158,11,0.25)",
+                    flexShrink: 0
                   }}>
-                    <div style={{
-                      width: "22px",
-                      height: "22px",
-                      borderRadius: "50%",
-                      background: "rgba(245,158,11,0.1)",
-                      color: "#f59e0b",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      fontSize: "0.7rem",
-                      fontWeight: "900",
-                      border: "1px solid rgba(245,158,11,0.25)"
-                    }}>
-                      T{task.id}
-                    </div>
-                    <span>{task.title}</span>
+                    T{selectedTaskId}
                   </div>
-                ))
+                  <span style={{ fontWeight: "700" }}>{filteredTasks.find(t => t.id === selectedTaskId)?.title || "선택된 추진과제가 없습니다."}</span>
+                </div>
               )}
             </div>
           </div>
@@ -682,7 +766,7 @@ export default function UnitSystemView({ selectedYear = 2 }) {
               display: "inline-block",
               marginBottom: "0.7rem"
             }}>
-              소속 프로그램 내역 (Programs)
+              {selectedTaskId ? `T${selectedTaskId}${getJosa(selectedTaskId)} 연계한 프로그램 내역 (PROGRAMS)` : "소속 프로그램 내역 (PROGRAMS)"}
             </span>
             
             <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "0.6rem" }}>
