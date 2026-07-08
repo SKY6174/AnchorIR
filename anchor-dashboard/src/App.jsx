@@ -717,10 +717,17 @@ function formatDataToMultiYear(data) {
         [2, 3, 4, 5].forEach((yr) => {
           const py = progYears[yr];
           const isExternalSub = prog.id.includes("위탁") || prog.title.includes("위탁") || prog.title.includes("협력");
+          const isNationalOnly = ["D1-", "D2-", "D3-"].some(prefix => prog.id.startsWith(prefix));
+          
           if (isExternalSub) {
             py.budget_carry_external = py.budget_carry || 0;
             py.budget_carry_national = 0;
             py.budget_carry_city = 0;
+          } else if (isNationalOnly) {
+            // 💡 [교육용 한글 주석] D1, D2, D3 단위과제 세부 프로그램은 이월예산도 100% 국비(국고)로 처리합니다.
+            py.budget_carry_national = py.budget_carry || 0;
+            py.budget_carry_city = 0;
+            py.budget_carry_external = 0;
           } else {
             py.budget_carry_national = Math.round((py.budget_carry || 0) * 0.5);
             py.budget_carry_city = (py.budget_carry || 0) - py.budget_carry_national;
@@ -996,12 +1003,13 @@ function mergeProjectsWithInitial(loadedData, multiYearInitialData) {
                       const rawBudgetMain = yr === 2 ? (sourceProg.budget_2026 || 0) : yr === 1 ? Math.round((sourceProg.budget_2026 || 0) * 0.9) : Math.round((sourceProg.budget_2026 || 0) * (yr === 3 ? 1.1 : yr === 4 ? 1.2 : 1.3));
 
                       y.budget_main = rawBudgetMain;
-                      if (sourceProg.id.startsWith("D2-")) {
-                        // 💡 D2 단위과제는 100% 국비(국고) 본예산으로 할당합니다.
+                      const isNationalOnly = ["D1-", "D2-", "D3-"].some(prefix => sourceProg.id.startsWith(prefix));
+                      if (isNationalOnly) {
+                        // 💡 [교육용 한글 주석] D1, D2, D3 단위과제 세부 프로그램은 100% 국비(국고) 본예산으로 할당합니다.
                         y.budget_national = rawBudgetMain;
                         y.budget_city = 0;
                       } else {
-                        // D1, D3는 국고 50%, 시비 50% 분배 적용
+                        // 다른 단위과제는 국고 50%, 시비 50% 분배 적용
                         y.budget_national = Math.round(rawBudgetMain * 0.5);
                         y.budget_city = rawBudgetMain - y.budget_national;
                       }
@@ -5444,10 +5452,16 @@ export default function App() {
                       const y = prog.years?.[yr];
                       if (y) {
                         const isExternalSub = prog.id.includes("위탁") || prog.title.includes("위탁") || prog.title.includes("협력");
+                        const isNationalOnly = ["D1-", "D2-", "D3-"].some(prefix => prog.id.startsWith(prefix));
                         if (isExternalSub) {
                           y.budget_carry_external = y.budget_carry || 0;
                           y.budget_carry_national = 0;
                           y.budget_carry_city = 0;
+                        } else if (isNationalOnly) {
+                          // 💡 [교육용 한글 주석] D1, D2, D3 단위과제 세부 프로그램은 이월예산도 100% 국비(국고)로 처리합니다.
+                          y.budget_carry_national = y.budget_carry || 0;
+                          y.budget_carry_city = 0;
+                          y.budget_carry_external = 0;
                         } else {
                           y.budget_carry_national = Math.round((y.budget_carry || 0) * 0.5);
                           y.budget_carry_city = (y.budget_carry || 0) - y.budget_carry_national;
