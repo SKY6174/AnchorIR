@@ -1364,6 +1364,21 @@ ${aiRawText}
         alert("종료시간은 시작시간보다 뒤여야 합니다.");
         return;
       }
+
+      // [추가] 회의록 중복 등록 방지 벨리데이션 (같은 시간 & 같은 제목)
+      const inputTitle = formData.title || "새 회의록";
+      const combinedDatetime = `${formData.meetingDate} ${formData.meetingStartTime} ~ ${formData.meetingEndTime}`;
+      
+      const isDuplicate = meetingSchedules.some(m => {
+        // 수정 모드일 때는 현재 편집 중인 자기 자신(editingItemId)은 중복 검사 대상에서 제외합니다.
+        if (isEditMode && m.id === editingItemId) return false;
+        return m.title === inputTitle && m.datetime === combinedDatetime;
+      });
+
+      if (isDuplicate) {
+        alert(`동일한 시간(${combinedDatetime})에 같은 제목("${inputTitle}")으로 등록된 회의록이 이미 존재합니다. 중복 등록할 수 없습니다.`);
+        return;
+      }
     }
 
     if (modalType === "monthly" || modalType === "task" || modalType === "deadline") {
