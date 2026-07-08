@@ -2114,6 +2114,11 @@ export default function App() {
     localStorage.setItem("anchor_agreements_sub_tab", agreementsSubTab);
   }, [agreementsSubTab]);
 
+  // 💡 [안전 가드 퓨즈] Supabase DB 패치가 100% 정상 완료되었는지 추적하여, 401 권한에러 등으로 빈 배열 상태가 된 경우 원격 DB를 덮어써 삭제하는 사고를 방어합니다.
+  const [isAgreementsLoaded, setIsAgreementsLoaded] = useState(false);
+  const [isUnifiedCertificatesLoaded, setIsUnifiedCertificatesLoaded] = useState(false);
+  const [isScholarshipsLoaded, setIsScholarshipsLoaded] = useState(false);
+
   const [unifiedCertificates, setUnifiedCertificates] = useState(() => {
     const cached = localStorage.getItem("anchor_unified_certificates_data_v1");
     if (cached) {
@@ -2876,30 +2881,33 @@ export default function App() {
         if (!active) return;
         if (agrErr) {
           console.error("Failed to fetch agreements:", agrErr);
-        } else if (agrData && agrData.length > 0) {
-          const formatted = agrData.map(a => ({
-            id: Number(a.id),
-            year: a.year,
-            date: a.date,
-            center: a.center,
-            organizations: a.organizations,
-            subjectUniversity: a.subject_univ,
-            subjectOrganization: a.subject_org || "",
-            unitId: a.unit_id,
-            contents: a.contents,
-            fileName: a.file_name,
-            fileData: a.file_data,
-            agreementType: a.agreement_type || "-"
-          }));
-          setAgreements(formatted);
-          try {
-            const clean = formatted.map(item => ({ ...item, fileData: null }));
-            localStorage.setItem("anchor_cache_agreements_all", JSON.stringify(clean));
-          } catch (e) {
-            console.error("Failed to save agreements cache:", e);
-          }
         } else {
-          setAgreements([]);
+          setIsAgreementsLoaded(true); // 💡 로드 성공 상태 설정
+          if (agrData && agrData.length > 0) {
+            const formatted = agrData.map(a => ({
+              id: Number(a.id),
+              year: a.year,
+              date: a.date,
+              center: a.center,
+              organizations: a.organizations,
+              subjectUniversity: a.subject_univ,
+              subjectOrganization: a.subject_org || "",
+              unitId: a.unit_id,
+              contents: a.contents,
+              fileName: a.file_name,
+              fileData: a.file_data,
+              agreementType: a.agreement_type || "-"
+            }));
+            setAgreements(formatted);
+            try {
+              const clean = formatted.map(item => ({ ...item, fileData: null }));
+              localStorage.setItem("anchor_cache_agreements_all", JSON.stringify(clean));
+            } catch (e) {
+              console.error("Failed to save agreements cache:", e);
+            }
+          } else {
+            setAgreements([]);
+          }
         }
 
         // 2-2. Unified Certificates 복구 (전체 연차 데이터를 한 번에 가져와 메모리에 유지)
@@ -2910,37 +2918,40 @@ export default function App() {
         if (!active) return;
         if (unifiedCertErr) {
           console.error("Failed to fetch unified certificates:", unifiedCertErr);
-        } else if (unifiedCertData && unifiedCertData.length > 0) {
-          const formatted = unifiedCertData.map(c => ({
-            id: Number(c.id),
-            year: c.year,
-            managerDept: c.manager_dept,
-            managerName: c.manager_name,
-            certNo: c.cert_no,
-            certType: c.cert_type,
-            awardType: c.award_type,
-            note: c.note,
-            teamName: c.team_name,
-            recipientName: c.recipient_name,
-            studentId: c.student_id,
-            birthDate: c.birth_date,
-            phone: c.phone,
-            issueDate: c.issue_date,
-            projectGroup: c.project_group,
-            issuer: c.issuer,
-            content: c.content,
-            fileName: c.file_name,
-            fileData: c.file_data
-          }));
-          setUnifiedCertificates(formatted);
-          try {
-            const clean = formatted.map(item => ({ ...item, fileData: null }));
-            localStorage.setItem("anchor_cache_unified_certificates_all", JSON.stringify(clean));
-          } catch (e) {
-            console.error("Failed to save unified certificates cache:", e);
-          }
         } else {
-          setUnifiedCertificates([]);
+          setIsUnifiedCertificatesLoaded(true); // 💡 로드 성공 상태 설정
+          if (unifiedCertData && unifiedCertData.length > 0) {
+            const formatted = unifiedCertData.map(c => ({
+              id: Number(c.id),
+              year: c.year,
+              managerDept: c.manager_dept,
+              managerName: c.manager_name,
+              certNo: c.cert_no,
+              certType: c.cert_type,
+              awardType: c.award_type,
+              note: c.note,
+              teamName: c.team_name,
+              recipientName: c.recipient_name,
+              studentId: c.student_id,
+              birthDate: c.birth_date,
+              phone: c.phone,
+              issueDate: c.issue_date,
+              projectGroup: c.project_group,
+              issuer: c.issuer,
+              content: c.content,
+              fileName: c.file_name,
+              fileData: c.file_data
+            }));
+            setUnifiedCertificates(formatted);
+            try {
+              const clean = formatted.map(item => ({ ...item, fileData: null }));
+              localStorage.setItem("anchor_cache_unified_certificates_all", JSON.stringify(clean));
+            } catch (e) {
+              console.error("Failed to save unified certificates cache:", e);
+            }
+          } else {
+            setUnifiedCertificates([]);
+          }
         }
 
         // 2-3. Scholarships 복구
@@ -2951,34 +2962,37 @@ export default function App() {
         if (!active) return;
         if (scholarshipError) {
           console.error("Failed to fetch scholarships:", scholarshipError);
-        } else if (scholarshipData && scholarshipData.length > 0) {
-          const formatted = scholarshipData.map(c => ({
-            id: Number(c.id) || Date.now() + Math.random(),
-            year: c.year,
-            dept: c.dept,
-            major: c.major,
-            course: c.course,
-            studentId: c.student_id,
-            name: c.name,
-            residentId: c.resident_id,
-            grade: c.grade,
-            enrollStatus: c.enroll_status,
-            regStatus: c.reg_status,
-            amount: c.amount,
-            bankName: c.bank_name,
-            accountNum: c.account_num,
-            accountHolder: c.account_holder,
-            approvalDate: c.approval_date
-          }));
-          setScholarships(formatted);
-          try {
-            const clean = formatted.map(item => ({ ...item }));
-            localStorage.setItem("anchor_cache_scholarships_all", JSON.stringify(clean));
-          } catch (e) {
-            console.error("Failed to save scholarships cache:", e);
-          }
         } else {
-          setScholarships([]);
+          setIsScholarshipsLoaded(true); // 💡 로드 성공 상태 설정
+          if (scholarshipData && scholarshipData.length > 0) {
+            const formatted = scholarshipData.map(c => ({
+              id: Number(c.id) || Date.now() + Math.random(),
+              year: c.year,
+              dept: c.dept,
+              major: c.major,
+              course: c.course,
+              studentId: c.student_id,
+              name: c.name,
+              residentId: c.resident_id,
+              grade: c.grade,
+              enrollStatus: c.enroll_status,
+              regStatus: c.reg_status,
+              amount: c.amount,
+              bankName: c.bank_name,
+              accountNum: c.account_num,
+              accountHolder: c.account_holder,
+              approvalDate: c.approval_date
+            }));
+            setScholarships(formatted);
+            try {
+              const clean = formatted.map(item => ({ ...item }));
+              localStorage.setItem("anchor_cache_scholarships_all", JSON.stringify(clean));
+            } catch (e) {
+              console.error("Failed to save scholarships cache:", e);
+            }
+          } else {
+            setScholarships([]);
+          }
         }
 
         // 3. Procurement (환경개선, 기자재, 주요용역) 복구
@@ -3391,7 +3405,7 @@ export default function App() {
 
   // 3) Agreements 자동 저장 디바운스 훅 (통합 캐시 사용 및 selectedYear 의존성 배제)
   useEffect(() => {
-    if (!isDbLoaded || !isFetchCompleted) return;
+    if (!isDbLoaded || !isFetchCompleted || !isAgreementsLoaded) return;
     if (!currentUser || currentRole?.id === "GUEST") return;
     // 💡 안전 가드: 데이터 로딩이 완료되지 않았거나 일시적 통신 지연 시 빈 배열([])이 원격 DB를 덮어쓰는 사고 방지
     if (!agreements || agreements.length === 0) return;
@@ -3681,7 +3695,7 @@ export default function App() {
 
   // 3-2) Unified Certificates 자동 저장 디바운스 훅 (통합 캐시 사용 및 selectedYear 의존성 배제)
   useEffect(() => {
-    if (!isDbLoaded || !isFetchCompleted) return;
+    if (!isDbLoaded || !isFetchCompleted || !isUnifiedCertificatesLoaded) return;
     if (!currentUser || currentRole?.id === "GUEST") return;
     // 💡 안전 가드: 데이터 로딩이 완료되지 않았거나 일시적 통신 지연 시 빈 배열([])이 원격 DB를 덮어쓰는 사고 방지
     if (!unifiedCertificates || unifiedCertificates.length === 0) return;
@@ -3733,7 +3747,7 @@ export default function App() {
 
   // 3-3) Scholarships 자동 저장 디바운스 훅
   useEffect(() => {
-    if (!isDbLoaded || !isFetchCompleted) return;
+    if (!isDbLoaded || !isFetchCompleted || !isScholarshipsLoaded) return;
     if (!currentUser || currentRole?.id === "GUEST") return;
     // 💡 안전 가드: 데이터 로딩이 완료되지 않았거나 일시적 통신 지연 시 빈 배열([])이 원격 DB를 덮어쓰는 사고 방지
     if (!scholarships || scholarships.length === 0) return;
