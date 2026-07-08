@@ -1893,17 +1893,17 @@ export const initialProjectsData = [
         spent_2025_carry: 0,
         manager: "오영경 로컬브릿지팀",
         programs: [
-          { id: "D3가-S1T1-1", title: "문화 콘텐츠 개발 우수 사례 및 벤치마킹", budget_2026: 5000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "오영경 센터장", pdca: { p: "완료", d: "대기", c: "대기", a: "대기" } },
-          { id: "D3가-S1T1-4", title: "K-컬처 글로벌 교류 프로젝트: 대만 충유대 교류 프로그램", budget_2026: 28400000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "오영경 센터장", pdca: { p: "완료", d: "대기", c: "대기", a: "대기" } },
-          { id: "D3가-S1T2-1", title: "콘텐츠 크리에이터 연계 프로젝트(실무 프로젝트)", budget_2026: 30000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "오영경 센터장", pdca: { p: "완료", d: "대기", c: "대기", a: "대기" } },
-          { id: "D3가-S1T3-1", title: "도시재생 체험 프로젝트", budget_2026: 40000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "오영경 센터장", pdca: { p: "완료", d: "대기", c: "대기", a: "대기" } },
-          { id: "D3가-S1T3-2", title: "대학내 커뮤니티 공간 구축(북카페조성)", budget_2026: 200000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "오영경 센터장", pdca: { p: "완료", d: "대기", c: "대기", a: "대기" } },
-          { id: "D3가-S1T4-1", title: "도시공간 재생 프로젝트 거버넌스 운영", budget_2026: 1000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "오영경 센터장", pdca: { p: "완료", d: "대기", c: "대기", a: "대기" } },
-          { id: "D3가-S1T4-2", title: "서포터즈 활동비", budget_2026: 4000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "오영경 센터장", pdca: { p: "완료", d: "대기", c: "대기", a: "대기" } },
-          { id: "D3가-S2T5-1", title: "문화 예술 체험 프로젝트", budget_2026: 10000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "오영경 센터장", pdca: { p: "완료", d: "대기", c: "대기", a: "대기" } },
-          { id: "D3가-S2T6-1", title: "지역 연계 협업 예술 프로젝트(중구 배움의 뜰, 평생교육학습 축제예정)", budget_2026: 10000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "오영경 센터장", pdca: { p: "완료", d: "대기", c: "대기", a: "대기" } },
-          { id: "D3가-S2T7-1", title: "지역사회 연계 및 교류 홍보", budget_2026: 10000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "오영경 센터장", pdca: { p: "완료", d: "대기", c: "대기", a: "대기" } },
-          { id: "D3가-S2T8-1", title: "지역 연계협업 문화 콘텐츠 개발 프로젝트", budget_2026: 40600000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "오영경 센터장", pdca: { p: "완료", d: "대기", c: "대기", a: "대기" } }
+          { id: "D3-S1T1-1", title: "문화 콘텐츠 개발 우수 사례 및 벤치마킹", budget_2026: 5000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "오영경 연구원", pdca: { p: "완료", d: "대기", c: "대기", a: "대기" } },
+          { id: "D3-S1T1-4", title: "K-컬처 글로벌 교류 프로젝트: 대만 충유대 교류 프로그램", budget_2026: 28400000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "오영경 연구원", pdca: { p: "완료", d: "대기", c: "대기", a: "대기" } },
+          { id: "D3-S1T2-1", title: "콘텐츠 크리에이터 연계 프로젝트(실무 프로젝트)", budget_2026: 30000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "오영경 연구원", pdca: { p: "완료", d: "대기", c: "대기", a: "대기" } },
+          { id: "D3-S1T3-1", title: "도시재생 체험 프로젝트", budget_2026: 40000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "오영경 연구원", pdca: { p: "완료", d: "대기", c: "대기", a: "대기" } },
+          { id: "D3-S1T3-2", title: "대학내 커뮤니티 공간 구축(북카페조성)", budget_2026: 200000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "오영경 연구원", pdca: { p: "완료", d: "대기", c: "대기", a: "대기" } },
+          { id: "D3-S1T4-1", title: "도시공간 재생 프로젝트 거버넌스 운영", budget_2026: 1000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "오영경 연구원", pdca: { p: "완료", d: "대기", c: "대기", a: "대기" } },
+          { id: "D3-S1T4-2", title: "서포터즈 활동비", budget_2026: 4000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "오영경 연구원", pdca: { p: "완료", d: "대기", c: "대기", a: "대기" } },
+          { id: "D3-S2T5-1", title: "문화 예술 체험 프로젝트", budget_2026: 10000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "오영경 연구원", pdca: { p: "완료", d: "대기", c: "대기", a: "대기" } },
+          { id: "D3-S2T6-1", title: "지역 연계 협업 예술 프로젝트(중구 배움의 뜰, 평생교육학습 축제예정)", budget_2026: 10000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "오영경 연구원", pdca: { p: "완료", d: "대기", c: "대기", a: "대기" } },
+          { id: "D3-S2T7-1", title: "지역사회 연계 및 교류 홍보", budget_2026: 10000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "오영경 연구원", pdca: { p: "완료", d: "대기", c: "대기", a: "대기" } },
+          { id: "D3-S2T8-1", title: "지역 연계협업 문화 콘텐츠 개발 프로젝트", budget_2026: 40600000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "오영경 연구원", pdca: { p: "완료", d: "대기", c: "대기", a: "대기" } }
         ],
         budgetDetails: {
           "인건비": { budget_2026: 0, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0 },
