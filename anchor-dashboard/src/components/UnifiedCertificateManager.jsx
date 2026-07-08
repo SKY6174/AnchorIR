@@ -17,25 +17,49 @@ const formatDateString = (dateStr) => {
     return `${yyyy}-${mm}-${dd}`;
   }
   
-  // 2. Format YYYY.MM.DD. or YYYY. MM. DD.
-  const dotMatch = str.match(/^(\d{4})\s*\.\s*(\d{1,2})\s*\.\s*(\d{1,2})\s*\.?$/);
-  if (dotMatch) {
-    return `${dotMatch[1]}-${dotMatch[2].padStart(2, "0")}-${dotMatch[3].padStart(2, "0")}`;
+  // 괄호 및 요일 텍스트 제거 (예: "2026-07-15 (수)" -> "2026-07-15")
+  str = str.replace(/\([^)]*\)/g, "").replace(/[가-힣]/g, "").trim();
+
+  // 숫자만 남긴 패턴 매칭 시도 (예: 20260715)
+  if (/^\d{8}$/.test(str)) {
+    return `${str.substring(0, 4)}-${str.substring(4, 6)}-${str.substring(6, 8)}`;
   }
-  
-  // 3. Format MM/DD/YYYY
-  const slashMatch = str.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+
+  // 2. YYYY/MM/DD, YYYY.MM.DD, YYYY-MM-DD 등 모든 구분자 매칭 (연도 4자리)
+  const cleanMatch = str.match(/^(\d{4})[-./\s]+(\d{1,2})[-./\s]+(\d{1,2})/);
+  if (cleanMatch) {
+    return `${cleanMatch[1]}-${cleanMatch[2].padStart(2, "0")}-${cleanMatch[3].padStart(2, "0")}`;
+  }
+
+  // 3. YY/MM/DD, YY.MM.DD 등 연도 2자리 매칭
+  const shortYearMatch = str.match(/^(\d{2})[-./\s]+(\d{1,2})[-./\s]+(\d{1,2})/);
+  if (shortYearMatch) {
+    const prefix = Number(shortYearMatch[1]) > 50 ? "19" : "20";
+    return `${prefix}${shortYearMatch[1]}-${shortYearMatch[2].padStart(2, "0")}-${shortYearMatch[3].padStart(2, "0")}`;
+  }
+
+  // 4. MM/DD/YYYY 매칭 (슬래시 구분 미국식)
+  const slashMatch = str.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);
   if (slashMatch) {
     return `${slashMatch[3]}-${slashMatch[1].padStart(2, "0")}-${slashMatch[2].padStart(2, "0")}`;
   }
 
-  // 4. Format YYYY-MM-DD
-  const dashMatch = str.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
-  if (dashMatch) {
-    return `${dashMatch[1]}-${dashMatch[2].padStart(2, "0")}-${dashMatch[3].padStart(2, "0")}`;
+  // 최종 검증: YYYY-MM-DD 포맷에 부합하는지 체크
+  const finalCheck = str.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (finalCheck) {
+    return str;
+  }
+  
+  // 만약 날짜 객체로 변환 가능한 문자열이면 재가공
+  const parsedDate = new Date(str);
+  if (!isNaN(parsedDate.getTime())) {
+    const yyyy = parsedDate.getFullYear();
+    const mm = String(parsedDate.getMonth() + 1).padStart(2, "0");
+    const dd = String(parsedDate.getDate()).padStart(2, "0");
+    return `${yyyy}-${mm}-${dd}`;
   }
 
-  return str;
+  return "";
 };
 
 const getAcademicYear = (dateStr) => {

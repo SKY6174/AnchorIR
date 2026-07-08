@@ -3218,6 +3218,113 @@ export default function App() {
           localStorage.setItem(`anchor_cache_meet_y${selectedYear}`, JSON.stringify(formatted));
         }
 
+        // 3-2) Unified Certificates 자동 저장 디바운스 훅 (통합 캐시 사용 및 selectedYear 의존성 배제)
+        useEffect(() => {
+          if (!isDbLoaded || !isFetchCompleted) return;
+          if (!currentUser || currentRole?.id === "GUEST") return;
+          // 💡 안전 가드: 데이터 로딩이 완료되지 않았거나 일시적 통신 지연 시 빈 배열([])이 원격 DB를 덮어쓰는 사고 방지
+          if (!unifiedCertificates || unifiedCertificates.length === 0) return;
+          try {
+            const clean = unifiedCertificates.map(item => ({ ...item, fileData: null }));
+            localStorage.setItem("anchor_cache_unified_certificates_all", JSON.stringify(clean));
+          } catch (e) {
+            console.warn("Failed to write unified certificates cache:", e);
+          }
+          setSyncStatus("syncing");
+          const timer = setTimeout(async () => {
+            // 1. 기존 데이터 백업 로드 (동기화 실패 대비)
+            let backupData = null;
+            try {
+              const { data } = await supabase.from("unified_certificates").select("*");
+              backupData = data;
+            } catch (backupErr) {
+              console.warn("Failed to backup unified certificates:", backupErr);
+            }
+
+            try {
+              const activeYears = Array.from(new Set([selectedYear, ...unifiedCertificates.map(c => c.year)]));
+              for (const yr of activeYears) {
+                // 기존 데이터 삭제
+                await supabase.from("unified_certificates").delete().eq("year", yr);
+                const filtered = unifiedCertificates.filter(c => c.year === yr);
+                
+                if (filtered.length > 0) {
+                  // 2. 100개씩 청크로 쪼개어 분할 저장 (net::ERR_HTTP2_PROTOCOL_ERROR 예방)
+                  const chunkSize = 100;
+                  for (let i = 0; i < filtered.length; i += chunkSize) {
+                    const chunk = filtered.slice(i, i + chunkSize);
+                    const { error } = await supabase.from("unified_certificates").insert(
+                      chunk.map(c => ({
+                        year: c.year,
+                        manager_dept: c.managerDept,
+                        manager_name: c.managerName,
+                        cert_no: c.certNo,
+                        cert_type: c.certType,
+                        note: c.note,
+                        team_name: c.teamName,
+                        recipient_name: c.recipientName,
+                        student_id: c.studentId,
+                        // 빈 문자열이 PostgreSQL DATE 에 입력되어 400 Bad Request 유발하는 현상 방지
+                        birth_date: c.birthDate && c.birthDate.trim() !== "" ? c.birthDate : null,
+                        phone: c.phone,
+                        issue_date: c.issueDate && c.issueDate.trim() !== "" ? c.issueDate : null,
+                        project_group: c.projectGroup,
+                        issuer: c.issuer,
+                        content: c.content,
+                        award_type: c.awardType || null
+                      }))
+                    );
+                    if (error) throw error;
+                  }
+                }
+              }
+              fetchedUnifiedCertificatesRef.current = JSON.stringify(unifiedCertificates);
+              setSyncStatus("synced");
+            } catch (e) {
+              console.error("Failed to sync unified certificates to Supabase:", e);
+              setSyncStatus("error");
+              
+              // 3. 롤백 실행: 데이터 강제 원복
+              if (backupData && backupData.length > 0) {
+                console.warn("Sync failed. Rolling back unified certificates to previous backup state...");
+                try {
+                  // 기존 테이블 데이터 전면 정리
+                  await supabase.from("unified_certificates").delete().neq("id", 0);
+                  
+                  // 백업 데이터를 100개씩 쪼개어 복구 복원
+                  const chunkSize = 100;
+                  for (let i = 0; i < backupData.length; i += chunkSize) {
+                    const chunk = backupData.slice(i, i + chunkSize);
+                    await supabase.from("unified_certificates").insert(
+                      chunk.map(c => ({
+                        year: c.year,
+                        manager_dept: c.manager_dept,
+                        manager_name: c.manager_name,
+                        cert_no: c.cert_no,
+                        cert_type: c.cert_type,
+                        note: c.note,
+                        team_name: c.team_name,
+                        recipient_name: c.recipient_name,
+                        student_id: c.student_id,
+                        birth_date: c.birth_date,
+                        phone: c.phone,
+                        issue_date: c.issue_date,
+                        project_group: c.project_group,
+                        issuer: c.issuer,
+                        content: c.content,
+                        award_type: c.award_type
+                      }))
+                    );
+                  }
+                  console.log("Unified certificates rollback completed successfully.");
+                } catch (rollbackErr) {
+                  console.error("Failed to execute rollback for unified certificates:", rollbackErr);
+                }
+              }
+            }
+          }, 1500);
+        }, [unifiedCertificates, isDbLoaded, isFetchCompleted]);
+
         // press_releases 복구 (year 칼럼 매핑 오류와 무관하게 실제 기사 발행일 범위 기준으로 정밀 분리 패치)
         const targetYearNum = selectedYear === 1 ? 2025 : selectedYear === 2 ? 2026 : selectedYear === 3 ? 2027 : selectedYear === 4 ? 2028 : 2029;
         const startDateStr = `${targetYearNum}-03-01T00:00:00+09:00`;
