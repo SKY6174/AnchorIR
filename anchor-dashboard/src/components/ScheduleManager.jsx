@@ -1426,6 +1426,7 @@ ${aiRawText}
           let baseWriters = (members || []).filter(m => 
             m.status !== "미참여" && 
             m.email && 
+            m.dept === "사업운영팀" &&
             !isWriterExcluded(m)
           );
           
@@ -1438,7 +1439,7 @@ ${aiRawText}
             dept: "사업운영팀",
             email: "sim@uc.ac.kr"
           };
-          baseWriters = [simHyunMi, ...baseWriters];
+          baseWriters = [simHyunMi, ...baseWriters.filter(m => m.name !== "심현미")];
 
           const currentWriterName = (updated.writer || "").split(" ")[0];
           const isCurrentWriterInBase = baseWriters.some(w => w.name === currentWriterName);
@@ -2924,6 +2925,7 @@ ${aiRawText}
         let activeWriters = (members || []).filter(m => 
           m.status !== "미참여" && 
           m.email && 
+          m.dept === "사업운영팀" &&
           !isWriterExcluded(m)
         );
         
@@ -2936,13 +2938,13 @@ ${aiRawText}
           dept: "사업운영팀",
           email: "sim@uc.ac.kr"
         };
-        activeWriters = [simHyunMi, ...activeWriters];
+        activeWriters = [simHyunMi, ...activeWriters.filter(m => m.name !== "심현미")];
 
         if (activeWriters.length > 0) {
           const first = activeWriters[0];
           return `${first.name} ${getFormattedMemberGrade(first)}`.trim();
         }
-        return "박지현 팀장";
+        return "심현미 운영팀장";
       })(),
       attendees: "",
       agendaList: [""],
@@ -6104,6 +6106,7 @@ ${aiRawText}
                               activeWriters = (members || []).filter(m => 
                                 m.status !== "미참여" && 
                                 m.email && 
+                                m.dept === "사업운영팀" && // 사업운영팀 구성원만 노출
                                 !isWriterExcluded(m)
                               );
                               
