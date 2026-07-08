@@ -886,6 +886,38 @@ function formatDataToMultiYear(data) {
 function mergeProjectsWithInitial(loadedData, multiYearInitialData) {
   if (!loadedData) return multiYearInitialData;
   const updated = JSON.parse(JSON.stringify(loadedData));
+
+  // 💡 [Self-healing 누락 복원 가드] 최신 기획 템플릿(multiYearInitialData)에는 있으나
+  // DB에서 읽어온 데이터(updated)에 누락된 신규 전략(Strategy) 및 단위과제(Unit)가 있다면 
+  // 구조 유실을 막기 위해 마스터 구조 그대로 자동 복원 및 주입합니다.
+  multiYearInitialData.forEach((sourceStrat) => {
+    let targetStrat = updated.find(s => s.id === sourceStrat.id);
+    if (!targetStrat) {
+      targetStrat = {
+        id: sourceStrat.id,
+        title: sourceStrat.title,
+        units: []
+      };
+      updated.push(targetStrat);
+    }
+
+    if (sourceStrat.units && Array.isArray(sourceStrat.units)) {
+      sourceStrat.units.forEach((sourceUnit) => {
+        let targetUnit = targetStrat.units.find(u => u.id === sourceUnit.id);
+        if (!targetUnit) {
+          // 단위과제가 통째로 누락되었으므로 마스터 템플릿의 사본을 주입
+          targetUnit = JSON.parse(JSON.stringify(sourceUnit));
+          targetStrat.units.push(targetUnit);
+        } else {
+          // 단위과제는 존재하나 메타 정보가 유실되었거나 최신화가 필요할 때 보정
+          targetUnit.kpis = sourceUnit.kpis || [];
+          if (sourceUnit.title) targetUnit.title = sourceUnit.title;
+          if (sourceUnit.manager && !targetUnit.manager) targetUnit.manager = sourceUnit.manager;
+        }
+      });
+    }
+  });
+
   updated.forEach((strategy) => {
     strategy.units.forEach((unit) => {
       const sourceUnit = multiYearInitialData
