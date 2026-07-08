@@ -189,7 +189,7 @@ export default function ScheduleManager({
   const [editingItemId, setEditingItemId] = useState(null); // 편집 대상 일정 ID
 
   // 교원의 경우 직급/직위를 '센터장', '팀장교수'로 이원화 표기 및 심현미 운영팀장 표기 헬퍼 함수
-  const getFormattedMemberGrade = (m, forceTeamProfessor = false) => {
+  const getFormattedMemberGrade = (m) => {
     if (!m) return "연구원";
     
     // 심현미의 경우 직위를 '운영팀장'으로 강제 표기
@@ -232,8 +232,8 @@ export default function ScheduleManager({
         return m.grade || "교수";
       }
 
-      // forceTeamProfessor가 true일 때만 '팀장교수'로 표기, 해제(기본) 시 원본 grade 노출
-      return forceTeamProfessor ? "팀장교수" : (m.grade || "교수");
+      // 늘봄/신산업이 아닌 4대 센터 소속 일반 교수진은 무조건 '팀장교수' 고정 표기
+      return "팀장교수";
     }
     
     // 일반 연구원 등은 기존 값을 반환
@@ -5678,7 +5678,10 @@ ${aiRawText}
                           const end = m.endDate ? new Date(m.endDate) : null;
                           if (start > referenceDateObj) return false;
                           if (end && end < referenceDateObj) return false;
-                          if (!includeProfessors && m.role === "팀장교수") return false;
+                          
+                          // 팀장교수 포함 체크 해제 시 팀장교수 리스트에서 완전 숨김
+                          const displayRole = getFormattedMemberGrade(m);
+                          if (!includeProfessors && displayRole === "팀장교수") return false;
                           return true;
                         })
                         .sort((a, b) => {
@@ -6123,6 +6126,10 @@ ${aiRawText}
                             if (start && meetingDateStr < start) return false;
                             if (end && meetingDateStr > end) return false;
                           }
+
+                          // 팀장교수 포함 체크 해제 시 팀장교수 리스트에서 완전 숨김
+                          const displayRole = getFormattedMemberGrade(m);
+                          if (!includeProfessors && displayRole === "팀장교수") return false;
 
                           return status === "참여중";
                         });
