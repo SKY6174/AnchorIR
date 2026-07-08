@@ -394,15 +394,35 @@ export default function PDCAManager({
         }
 
         // 비목 예산 및 집행 바인딩 (본예산 + 이월예산 + 집행액, 4칸 구성)
-        const loadedCategories = (py.budget_categories || []).map((c) => ({
-          category: c.category || "",
-          budget: c.budget !== undefined ? (c.budget / 1000000).toFixed(1) : "",
-          budget_carry: selectedYear === 1 ? "0.0" : (c.budget_carry !== undefined ? (c.budget_carry / 1000000).toFixed(1) : ""),
-          spent: c.spent !== undefined ? c.spent.toLocaleString() : "0",
-          spent_carry: selectedYear === 1 ? "0" : (c.spent_carry !== undefined ? c.spent_carry.toLocaleString() : "0")
-        }));
+        const rawCategories = py.budget_categories || [];
+        const validCategories = rawCategories.filter((c) => {
+          const b = parseDecimalFromCommas(c.budget);
+          const bc = parseDecimalFromCommas(c.budget_carry);
+          const s = parseDecimalFromCommas(c.spent);
+          const sc = parseDecimalFromCommas(c.spent_carry);
+          return b > 0 || bc > 0 || s > 0 || sc > 0;
+        });
+
+        const loadedCategories = validCategories.map((c) => {
+          const b = parseDecimalFromCommas(c.budget);
+          const bc = parseDecimalFromCommas(c.budget_carry);
+          const s = parseDecimalFromCommas(c.spent);
+          const sc = parseDecimalFromCommas(c.spent_carry);
+
+          return {
+            category: c.category || "",
+            budget: b > 0 ? (b / 1000000).toFixed(1) : "",
+            budget_carry: selectedYear === 1 ? "0.0" : (bc > 0 ? (bc / 1000000).toFixed(1) : ""),
+            spent: s.toLocaleString(),
+            spent_carry: selectedYear === 1 ? "0" : sc.toLocaleString()
+          };
+        });
+
         while (loadedCategories.length < 4) {
           loadedCategories.push({ category: "", budget: "", budget_carry: "", spent: "0", spent_carry: "0" });
+        }
+        if (loadedCategories.length > 4) {
+          loadedCategories.length = 4;
         }
         setInputBudgetCategories(loadedCategories);
 
