@@ -124,14 +124,15 @@ const REVERSE_UNIT_MAPPING_Y1 = {
 
 const PROGRAM_ID_MIGRATION_MAP = {
   "A1가": {
-    "A1가-01": "A1가-S1T1-1", "A1가-02": "A1가-S1T1-2", "A1가-03": "A1가-S1T1-3", "A1가-04": "A1가-S1T1-4", "A1가-05": "A1가-S1T1-5",
-    "A1가-06": "A1가-S1T1-6", "A1가-07": "A1가-S1T1-7", "A1가-08": "A1가-S1T1-8", "A1가-09": "A1가-S1T1-9", "A1가-10": "A1가-S1T1-10",
-    "A1가-11": "A1가-S3T3-1",
-    "A1가-12": "A1가-S1T1-11", "A1가-13": "A1가-S1T1-12",
-    "A1가-14": "A1가-S3T3-2", "A1가-15": "A1가-S3T3-3", "A1가-16": "A1가-S3T3-4", "A1가-17": "A1가-S3T3-5",
-    "A1가-18": "A1가-S4T4-1", "A1가-19": "A1가-S4T4-2", "A1가-20": "A1가-S4T4-3", "A1가-21": "A1가-S4T4-4", "A1가-22": "A1가-S4T4-5", "A1가-23": "A1가-S4T4-6", "A1가-24": "A1가-S4T4-7",
-    "A1가-25": "A1가-S3T3-6",
-    "A1가-26": "A1가-S5T5-1", "A1가-27": "A1가-S5T5-2", "A1가-28": "A1가-S5T5-3", "A1가-29": "A1가-S5T5-4", "A1가-30": "A1가-S5T5-5", "A1가-31": "A1가-S5T5-6", "A1가-32": "A1가-S5T5-7"
+    "A1가-01": "A1가-S1T1-1", "A1가-02": "A1가-S1T2-1", "A1가-03": "A1가-S1T2-2", "A1가-04": "A1가-S1T2-3", "A1가-05": "A1가-S1T2-4",
+    "A1가-06": "A1가-S1T2-5", "A1가-07": "A1가-S1T2-6", "A1가-08": "A1가-S1T2-7", "A1가-09": "A1가-S1T3-1", "A1가-10": "A1가-S2T4-1",
+    "A1가-11": "A1가-S2T5-1",
+    "A1가-12": "A1가-S3T6-1", "A1가-13": "A1가-S3T7-1",
+    "A1가-14": "A1가-S3T7-2", "A1가-15": "A1가-S3T8-1", "A1가-16": "A1가-S3T9-1", "A1가-17": "A1가-S3T9-2",
+    "A1가-18": "A1가-S3T9-3", "A1가-19": "A1가-S4T10-1", "A1가-20": "A1가-S4T10-2", "A1가-21": "A1가-S4T10-3", "A1가-22": "A1가-S4T10-4", "A1가-23": "A1가-S4T11-1", "A1가-24": "A1가-S4T12-1",
+    "A1가-25": "A1가-S4T12-2",
+    "A1가-26": "A1가-S4T12-3", "A1가-27": "A1가-S5T13-1", "A1가-28": "A1가-S5T13-2", "A1가-29": "A1가-S5T13-3", "A1가-30": "A1가-S5T13-4", "A1가-31": "A1가-S5T13-5", "A1가-32": "A1가-S5T13-6",
+    "A1가-33": "A1가-S5T13-7", "A1가-34": "A1가-S5T13-8", "A1가-35": "A1가-S5T14-1"
   },
   "A1나": {
     "A1나-01": "A1나-S1T1-1", "A1나-02": "A1나-S2T2-1", "A1나-03": "A1나-S3T3-1"
@@ -1629,8 +1630,8 @@ export default function App() {
   }, [currentUser]);
 
   const [projects, setProjects] = useState(() => {
-    // 2차년도 세부 프로그램 ID 및 예산 데이터를 PDF 실증 데이터로 정밀 동기화하기 위해 로컬스토리지 버전을 v27으로 업그레이드합니다.
-    const cached = localStorage.getItem("anchor_projects_data_v27");
+    // 2차년도 세부 프로그램 ID 및 예산 데이터를 PDF 실증 데이터로 정밀 동기화하기 위해 로컬스토리지 버전을 v28로 업그레이드합니다.
+    const cached = localStorage.getItem("anchor_projects_data_v28");
     if (cached) {
       try {
         const loaded = migrateProgramIds(JSON.parse(cached));
@@ -4412,18 +4413,18 @@ export default function App() {
   // projects 상태 변경 시 localStorage 자동 기입 (새로고침 휘발 방지 우회책)
   useEffect(() => {
     try {
-      localStorage.setItem("anchor_projects_data_v27", JSON.stringify(projects));
+      localStorage.setItem("anchor_projects_data_v28", JSON.stringify(projects));
     } catch (e) {
       const isQuotaError = e.name === "QuotaExceededError" || e.code === 22 || e.number === -2147024882;
       if (isQuotaError) {
         console.warn("로컬 스토리지 공간이 부족합니다. 이전 구버전 캐시를 청소하고 재시도합니다...");
         try {
           Object.keys(localStorage).forEach((key) => {
-            if (key.startsWith("anchor_projects_data_") && key !== "anchor_projects_data_v27") {
+            if (key.startsWith("anchor_projects_data_") && key !== "anchor_projects_data_v28") {
               localStorage.removeItem(key);
             }
           });
-          localStorage.setItem("anchor_projects_data_v27", JSON.stringify(projects));
+          localStorage.setItem("anchor_projects_data_v28", JSON.stringify(projects));
           console.log("이전 캐시 청소 및 데이터 재저장 성공");
         } catch (retryError) {
           console.error("이전 캐시 청소 후에도 로컬 스토리지 기입 실패:", retryError);
