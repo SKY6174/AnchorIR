@@ -1,6 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { Check, ClipboardList, PenTool, Layers, LayoutList, Info, HelpCircle } from "lucide-react";
 
+// 담당연구원이 2명일 때 정/부 표기 헬퍼 함수
+const formatAssignee = (assigneeText) => {
+  if (!assigneeText) return "미배정";
+  const parts = assigneeText.split(/[,\/]/).map((p) => p.trim()).filter(Boolean);
+  if (parts.length === 2) {
+    return `${parts[0]}(정), ${parts[1]}(부)`;
+  }
+  return assigneeText;
+};
+
+
 // 백만원 단위 포맷팅 헬퍼 함수 (소수점 첫째자리까지 표현)
 const formatToMillionWon = (value) => {
   if (value === undefined || value === null || isNaN(value)) return "0.0";
@@ -1251,7 +1262,7 @@ export default function PDCAManager({
                     <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.7rem", color: "var(--text-secondary)", marginBottom: "0.2rem" }}>
                       <span>{prog.id}</span>
                       <span style={{ color: "var(--accent-color)", fontWeight: "700" }}>
-                        {(prog.assignees?.[selectedYear] !== undefined ? prog.assignees[selectedYear] : prog.assignee) || "미배정"}
+                        {formatAssignee(prog.assignees?.[selectedYear] !== undefined ? prog.assignees[selectedYear] : prog.assignee)}
                       </span>
                     </div>
                     <h5 style={{ fontSize: "0.8rem", fontWeight: "700", lineHeight: "1.3" }}>{prog.title}</h5>
@@ -2352,7 +2363,7 @@ export default function PDCAManager({
                       <td style={{ fontWeight: selectedProgId === prog.id ? "700" : "normal" }}>{prog.title}</td>
                       <td>{prog.unitId}</td>
                       <td style={{ fontWeight: "700", color: "var(--accent-color)" }}>
-                        {(prog.assignees?.[selectedYear] !== undefined ? prog.assignees[selectedYear] : prog.assignee) || "미배정"}
+                        {formatAssignee(prog.assignees?.[selectedYear] !== undefined ? prog.assignees[selectedYear] : prog.assignee)}
                       </td>
                       <td style={{ fontFamily: "var(--font-data)" }}>{formatToMillionWon(py.budget_main)}백만원</td>
                       <td style={{ fontFamily: "var(--font-data)" }}>{formatToMillionWon(py.spent_main)}백만원</td>

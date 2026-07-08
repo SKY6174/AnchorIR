@@ -27,6 +27,17 @@ import CryptoJS from "crypto-js";
 import * as XLSX from "xlsx";
 import "./styles/dashboard.css";
 
+// 담당연구원이 2명일 때 정/부 표기 헬퍼 함수
+export const formatAssignee = (assigneeText) => {
+  if (!assigneeText) return "미배정";
+  const parts = assigneeText.split(/[,\/]/).map((p) => p.trim()).filter(Boolean);
+  if (parts.length === 2) {
+    return `${parts[0]}(정), ${parts[1]}(부)`;
+  }
+  return assigneeText;
+};
+
+
 // 초기에 적재해 둘 기자재 목록 모의 데이터셋 (Supabase 최초 시딩용)
 const defaultEquipmentsSeed = [
   { id: 1, unit: "A1", seq: 1, deptName: "간호학부", divisionName: "", itemName: "스마트 환자 시뮬레이터 (중환자 케어 실습 장비)", unitPrice: 120000000, quantity: 1, description: "글로벌 앵커 혁신 교육과정 임상 실습 고도화 핵심 기기", operation: "교과목(정규)", password: "1234",
@@ -6533,7 +6544,7 @@ export default function App() {
                                         })}
                                     </select>
                                   ) : (
-                                    <span>{(prog.assignees?.[selectedYear] !== undefined ? prog.assignees[selectedYear] : prog.assignee) || "미배정"}</span>
+                                    <span>{formatAssignee(prog.assignees?.[selectedYear] !== undefined ? prog.assignees[selectedYear] : prog.assignee)}</span>
                                   )}
                                 </td>
                                 <td style={{ textAlign: "center", color: prog.pdca.p === "완료" ? "var(--success-color)" : "inherit", fontWeight: "700" }}>{prog.pdca.p}</td>
