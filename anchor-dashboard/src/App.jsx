@@ -6508,6 +6508,14 @@ export default function App() {
                                       onChange={(e) => handleAssignChange(u.id, prog.id, e.target.value)}
                                     >
                                       <option value="">미배정</option>
+                                      {(() => {
+                                        const currentVal = prog.assignees?.[selectedYear] !== undefined ? prog.assignees[selectedYear] : (prog.assignee || "");
+                                        const isMulti = currentVal.includes(",") || currentVal.includes("/");
+                                        if (isMulti) {
+                                          return <option value={currentVal}>{formatAssignee(currentVal)}</option>;
+                                        }
+                                        return null;
+                                      })()}
                                       {members
                                         .filter((m) => {
                                           if (m.role !== "연구원") return false;
@@ -6555,7 +6563,7 @@ export default function App() {
                                   {currentRole.rank <= 2 ? (
                                     <button
                                       className="btn-primary"
-                                      style={{ padding: "0.2rem 0.5rem", fontSize: "0.7rem", borderRadius: "0.3rem" }}
+                                      style={{ padding: "0.2rem 0.5rem", fontSize: "0.7rem", borderRadius: "0.3rem", lineHeight: "1.2", whiteSpace: "normal" }}
                                       onClick={() => {
                                         setSelectedUnitId(u.id);
                                         setSelectedProgId(prog.id);
@@ -6566,7 +6574,7 @@ export default function App() {
                                         }, 100);
                                       }}
                                     >
-                                      정보 등록
+                                      정보<br />등록
                                     </button>
                                   ) : (
                                     <span style={{ fontSize: "0.7rem", color: "var(--text-secondary)" }}>권한 없음</span>
