@@ -671,11 +671,11 @@ function formatDataToMultiYear(data) {
           
           let targetCategory = "교육∙연구 프로그램 개발∙운영비"; // 디폴트
           if (prog.id === "A1가-S5T13-8") targetCategory = "장학금";
-          else if (prog.id === "A1가-S4T10-4") targetCategory = "실험∙실습장비 및 기자재 구입∙운영비";
-          else if (prog.id === "A1가-S2T5-1" || prog.id === "A1가-S5T13-2" || prog.id === "A1가-S5T13-7" || prog.id === "A1가-S5T14-1") targetCategory = "성과 활용∙확산 지원비";
+          else if (prog.id === "A1가-S4T10-4" || prog.id === "D2-S1T2-1" || prog.id === "D2-S1T2-2") targetCategory = "실험∙실습장비 및 기자재 구입∙운영비";
+          else if (prog.id === "A1가-S2T5-1" || prog.id === "A1가-S5T13-2" || prog.id === "A1가-S5T13-7" || prog.id === "A1가-S5T14-1" || prog.id === "D2-S1T1-1") targetCategory = "성과 활용∙확산 지원비";
           else if (prog.id === "A1가-S3T9-1" || prog.id === "A1가-S3T9-2" || prog.id === "A1가-S3T9-3" || prog.id === "A1가-S5T13-3") targetCategory = "기업 지원∙협력 활동비";
           else if (prog.id === "A1가-S5T13-1") targetCategory = "지역 연계∙협업 지원비";
-          else if (prog.id.startsWith("A1가-S4T10-") || prog.id === "A1가-S4T11-1") targetCategory = "교육∙연구 환경개선비";
+          else if (prog.id.startsWith("A1가-S4T10-") || prog.id === "A1가-S4T11-1" || prog.id === "D2-S2T10-1") targetCategory = "교육∙연구 환경개선비";
 
           progYears[yr].budget_categories = standardCategories.map((catName) => {
             const isMatch = catName === targetCategory;
@@ -1716,7 +1716,7 @@ export default function App() {
   useEffect(() => {
     try {
       Object.keys(localStorage).forEach((key) => {
-        if (key.startsWith("anchor_projects_data_") && key !== "anchor_projects_data_v34") {
+        if (key.startsWith("anchor_projects_data_") && key !== "anchor_projects_data_v35") {
           localStorage.removeItem(key);
         }
       });
@@ -1775,7 +1775,7 @@ export default function App() {
       }
       localStorage.setItem("anchor_last_self_healing_reset", String(now));
       // 로그인 세션(anchor_logged_in_user)은 리셋하지 않고 보존하여 튕김(로그아웃) 방지!
-      localStorage.removeItem("anchor_projects_data_v34");
+      localStorage.removeItem("anchor_projects_data_v35");
       localStorage.removeItem("anchor_selected_kpi");
       window.location.reload();
     };
@@ -1921,8 +1921,8 @@ export default function App() {
   }, [currentUser]);
 
   const [projects, setProjects] = useState(() => {
-    // D2 단위과제 신규 세부 프로그램 및 예산/담당자 정보를 반영하기 위해 로컬스토리지 버전을 v34로 업그레이드합니다.
-    const cached = localStorage.getItem("anchor_projects_data_v34");
+    // D2 단위과제 신규 세부 프로그램 및 예산/담당자 정보를 반영하기 위해 로컬스토리지 버전을 v35로 업그레이드합니다.
+    const cached = localStorage.getItem("anchor_projects_data_v35");
     const multiYearInitialData = migrateProgramIds(formatDataToMultiYear(initialProjectsData));
     if (cached) {
       try {
@@ -4457,18 +4457,18 @@ export default function App() {
   // projects 상태 변경 시 localStorage 자동 기입 (새로고침 휘발 방지 우회책)
   useEffect(() => {
     try {
-      localStorage.setItem("anchor_projects_data_v34", JSON.stringify(projects));
+      localStorage.setItem("anchor_projects_data_v35", JSON.stringify(projects));
     } catch (e) {
       const isQuotaError = e.name === "QuotaExceededError" || e.code === 22 || e.number === -2147024882;
       if (isQuotaError) {
         console.warn("로컬 스토리지 공간이 부족합니다. 이전 구버전 캐시를 청소하고 재시도합니다...");
         try {
           Object.keys(localStorage).forEach((key) => {
-            if (key.startsWith("anchor_projects_data_") && key !== "anchor_projects_data_v34") {
+            if (key.startsWith("anchor_projects_data_") && key !== "anchor_projects_data_v35") {
               localStorage.removeItem(key);
             }
           });
-          localStorage.setItem("anchor_projects_data_v34", JSON.stringify(projects));
+          localStorage.setItem("anchor_projects_data_v35", JSON.stringify(projects));
           console.log("이전 캐시 청소 및 데이터 재저장 성공");
         } catch (retryError) {
           console.error("이전 캐시 QR 청소 후에도 로컬 스토리지 기입 실패:", retryError);
