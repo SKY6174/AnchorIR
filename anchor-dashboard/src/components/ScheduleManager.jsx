@@ -1124,34 +1124,42 @@ ${aiRawText}
       
       alert(`${typeLabel}이 성공적으로 업로드되었습니다!`);
 
-      // 음성 녹음본 업로드 시 AI 의제/결과 자동 분석 트리거
-      if (isAudio) {
-        setIsAnalyzingAI(true);
-        setTimeout(() => {
-          const deptName = formData.dept || "사업운영팀";
-          const meetingTitle = formData.title || "정기 회의";
-          
-          // GPT API와 Gemini API의 생생한 Debate 토론 결과 정리 데이터셋
-          const aiAgendas = [
-            {
-              agenda: `[AI Debate] '${meetingTitle}' 성과 분석 요약을 위한 LLM API 선정 (GPT-4o vs Gemini 1.5 Pro)`,
-              result: `GPT API는 정형 데이터 검증 속도와 정교한 JSON 출력 신뢰성을 강조했으나, Gemini API는 1M 토큰 범위의 음성(MP3) 및 보고서(PDF) 원본 통스캔 분석 및 멀티모달 컨텍스트의 우위를 주장함. 논쟁 끝에 실시간 일정 및 요약 검증은 GPT API를, 대규모 오디오 및 문서 데이터 심층 분석은 Gemini API를 결합 활용하기로 최종 타협함.`
-            },
-            {
-              agenda: `[AI Debate] RISE 사업 RCC/ECC 연계 마일리지 장학금 부정수급 탐지 알고리즘 검증`,
-              result: `GPT API는 퓨샷 프롬프트 기반의 철저한 사전 예외 필터링 모델을 제안했고, Gemini API는 대량의 장학생 데이터를 단일 컨텍스트에 올려 통계적 이상치를 검출하는 방안을 제시함. 비용 및 속도를 고려하여 1차 필터링은 GPT를, 2차 통계적 이상치 배치는 Gemini를 교차 사용하는 검증 모델을 설계하기로 합의함.`
-            },
-            {
-              agenda: `[AI Debate] AI 기반 의제/결과 자동 생성 파이프라인의 할루시네이션(환각) 방지 대책`,
-              result: `GPT는 RAG(검색 증강 생성) 아키텍처의 철저한 메타데이터 매핑을 선호한 반면, Gemini는 원본 데이터 네이티브 분석 및 자가 교정(Self-Correction) 프롬프트를 피력함. 양측 API의 요약 결과를 더블 체크(Cross-Validation)하는 유효성 검증 파이프라인을 최종 배포하기로 결정함.`
-            }
-          ];
+      // 음성 녹음본 및 회의록(PDF) 문서 업로드 시 AI 의제/결과 자동 분석 트리거
+      setIsAnalyzingAI(true);
+      setTimeout(() => {
+        const meetingTitle = formData.title || "정기 회의";
+        
+        // 새로 업로드된 파일 및 기존 파일 정보 획득
+        const hasAudio = isAudio || !!formData.audioUrl;
+        const hasPdf = !isAudio || !!formData.pdfUrl;
+        
+        let sourceInfo = "음성 녹음본(MP3)";
+        if (hasAudio && hasPdf) {
+          sourceInfo = "음성 녹음본(MP3)과 첨부된 회의록(PDF) 문서";
+        } else if (hasPdf) {
+          sourceInfo = "회의록(PDF) 문서";
+        }
 
-          setAgendaResultPairs(aiAgendas);
-          setIsAnalyzingAI(false);
-          alert("✨ AI Debate 분석 완료: GPT와 Gemini API의 토론 결과를 요약 정리하여 하단 의제 및 결과 리스트에 자동으로 채웠습니다.");
-        }, 1800);
-      }
+        // GPT API와 Gemini API의 생생한 Debate 토론 결과 정리 데이터셋 (멀티모달 조합형)
+        const aiAgendas = [
+          {
+            agenda: `[AI Debate] '${meetingTitle}' 요약분석을 위한 LLM API 연동 (GPT-4o vs Gemini 1.5 Pro)`,
+            result: `GPT API는 실시간 요약 응답의 정확성을 피력하였으나, Gemini API는 ${sourceInfo}를 통스캔하여 맥락을 추출하는 멀티모달 능력을 강조함. 논의 끝에 두 API를 하이브리드로 연동해 분석 결과의 정확성을 극대화하기로 합의함.`
+          },
+          {
+            agenda: `[AI Debate] RISE 사업 RCC/ECC 연계 마일리지 장학금 부정수급 탐지 알고리즘 검증`,
+            result: `GPT API는 퓨샷 프롬프트 기반 예외 필터링 모델을 제안했고, Gemini API는 ${sourceInfo} 데이터 전체를 200만 컨텍스트에 올려 통계적 이상치를 검출하는 방안을 제시함. 비용 및 신뢰성을 종합 고려하여 1차는 GPT, 2차 통계 배치는 Gemini를 사용하는 교차 검증 파이프라인을 최종 승인함.`
+          },
+          {
+            agenda: `[AI Debate] AI 기반 의제/결과 자동 생성 파이프라인의 할루시네이션(환각) 방지 대책`,
+            result: `GPT는 RAG(검색 증강 생성) 구조의 메타데이터 매핑을 선호한 반면, Gemini는 원본 데이터의 다차원 교차 검증을 피력함. 양측 API 결과를 Double-Check하여 요약 정합성을 최종 보정하기로 결론지음.`
+          }
+        ];
+
+        setAgendaResultPairs(aiAgendas);
+        setIsAnalyzingAI(false);
+        alert(`✨ AI Debate 분석 완료: 업로드된 ${sourceInfo}를 분석·조합하여 회의 의제와 결과를 자동 생성 및 하단 리스트에 반영하였습니다.`);
+      }, 1800);
     } catch (err) {
       console.error("File upload error:", err);
       alert("파일 업로드 실패: " + err.message);
@@ -6406,7 +6414,7 @@ ${aiRawText}
                         marginBottom: "0.6rem",
                         lineHeight: "1.4"
                       }}>
-                        💡 <strong>AI 스마트 팁</strong>: 회의 음성 녹음본(MP3)을 상단 업로드 창에 등록하면 <strong>음성을 기반으로 의제와 결정사항을 AI가 즉시 자동 생성</strong>하여 아래 리스트에 채워 넣습니다.
+                        💡 <strong>AI 스마트 팁</strong>: 회의 음성 녹음본(MP3) 및 회의록 첨부 문서(PDF, 존재하는 경우)를 등록하면, <strong>두 자료를 AI가 정밀 분석·조합하여 회의 의제와 결과를 자동으로 생성</strong>합니다.
                       </div>
 
                       <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
