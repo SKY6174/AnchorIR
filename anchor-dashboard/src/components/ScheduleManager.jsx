@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { 
   Calendar as CalendarIcon, Clock, MapPin, Users, 
   FileText, Award, Layers, Plus, CheckCircle, Info, ChevronLeft, ChevronRight,
@@ -2985,6 +2985,31 @@ ${aiRawText}
     return new Date(year, month - 1, 1).getDay();
   };
 
+  // 💡 [교육용 한글 주석 - 성능 최적화 설명]
+  // 기존에는 캘린더의 각 날짜(30~31개)를 렌더링할 때마다 전체 일정 목록(monthlySchedules)을 
+  // 매번 filter와 split, map 등으로 반복해서 필터링하여 반응이 극도로 느려지는 현상이 있었습니다.
+  // 이 문제를 해결하기 위해, monthlySchedules나 필터 기준이 변경될 때만 해시맵(schedulesByDate)을 딱 한 번 생성하도록 useMemo를 사용합니다.
+  // 각 날짜별 일정을 YYYY-MM-DD 키로 미리 묶어둠으로써, 날짜를 그릴 때는 O(1) 수준으로 빠르게 가져올 수 있습니다.
+  const schedulesByDate = useMemo(() => {
+    // 부서 필터링을 루프 밖에서 단 한 번만 수행하여 공통 필터링 결과 생성
+    const filtered = selectedDeptFilter === "전체" 
+      ? monthlySchedules 
+      : monthlySchedules.filter(s => s.dept && (s.dept === "전체" || s.dept.split(",").map(x => x.trim()).includes(selectedDeptFilter)));
+
+    // 날짜별로 일정을 그룹화하는 해시 맵 빌드
+    const mapped = {};
+    filtered.forEach(s => {
+      if (s.startAt && s.year === selectedYear) {
+        const dateKey = s.startAt.substring(0, 10);
+        if (!mapped[dateKey]) {
+          mapped[dateKey] = [];
+        }
+        mapped[dateKey].push(s);
+      }
+    });
+    return mapped;
+  }, [monthlySchedules, selectedDeptFilter, selectedYear]);
+
   const renderCalendar = () => {
     const daysInMonth = getDaysInMonth(displayYear, currentMonth);
     const startDay = getStartDayOfWeek(displayYear, currentMonth);
@@ -2998,8 +3023,8 @@ ${aiRawText}
     // 날짜 채우기
     for (let day = 1; day <= daysInMonth; day++) {
       const dateString = `${displayYear}-${currentMonth < 10 ? "0" + currentMonth : currentMonth}-${day < 10 ? "0" + day : day}`;
-      const filtered = selectedDeptFilter === "전체" ? monthlySchedules : monthlySchedules.filter(s => s.dept && (s.dept === "전체" || s.dept.split(",").map(x => x.trim()).includes(selectedDeptFilter)));
-      const daySchedules = filtered.filter(s => s.startAt && s.startAt.substring(0, 10) === dateString && s.year === selectedYear);
+      // 캐싱된 해시맵에서 해당 날짜(dateString)의 일정을 즉시 O(1)로 조회하여 성능을 극대화합니다.
+      const daySchedules = schedulesByDate[dateString] || [];
       const isSelected = selectedDay === day;
 
       cells.push(
@@ -3099,8 +3124,8 @@ ${aiRawText}
 
   const getSelectedDaySchedules = () => {
     const dateString = `${displayYear}-${currentMonth < 10 ? "0" + currentMonth : currentMonth}-${selectedDay < 10 ? "0" + selectedDay : selectedDay}`;
-    const filtered = selectedDeptFilter === "전체" ? monthlySchedules : monthlySchedules.filter(s => s.dept && (s.dept === "전체" || s.dept.split(",").map(x => x.trim()).includes(selectedDeptFilter)));
-    return filtered.filter(s => s.startAt && s.startAt.substring(0, 10) === dateString && s.year === selectedYear);
+    // 이미 계산 완료된 해시맵에서 클릭한 날짜의 일정을 간결하게 반환합니다.
+    return schedulesByDate[dateString] || [];
   };
 
   return (
