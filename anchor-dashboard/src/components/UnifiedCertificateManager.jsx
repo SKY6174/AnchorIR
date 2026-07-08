@@ -92,6 +92,7 @@ export default function UnifiedCertificateManager({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const fileInputRef = useRef(null);
+  const [filterYear, setFilterYear] = useState("all"); // 💡 '전체 연도 누적'을 기본값으로 지정하여 데이터 유실 오해 방지
   
   // 폼 필드
   const [managerDept, setManagerDept] = useState("");
@@ -185,7 +186,10 @@ export default function UnifiedCertificateManager({
 
   const uniqueKeys = new Set();
   const filteredCerts = certificates
-    .filter(c => getCalculatedYearFromDate(c.issueDate, c.year) === selectedYear)
+    .filter(c => {
+      if (filterYear === "all") return true;
+      return getCalculatedYearFromDate(c.issueDate, c.year) === Number(filterYear);
+    })
     .filter(c => {
       const key = `${c.certNo}_${c.certType}_${c.awardType}_${c.teamName}_${c.recipientName}_${c.studentId}_${c.issueDate}_${c.content}`;
       if (uniqueKeys.has(key)) return false;
@@ -458,7 +462,29 @@ export default function UnifiedCertificateManager({
           <Award size={24} color="var(--accent-color)" />
           {titleText}
         </h2>
-        <div style={{ display: "flex", gap: "0.5rem" }}>
+        <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+          {/* 💡 [연도 누적 선택 필터] */}
+          <select 
+            value={filterYear} 
+            onChange={(e) => setFilterYear(e.target.value)}
+            style={{
+              padding: "0.4rem 0.8rem",
+              borderRadius: "6px",
+              backgroundColor: "var(--bg-tertiary)",
+              color: "var(--text-primary)",
+              border: "1px solid rgba(255,255,255,0.15)",
+              fontSize: "0.85rem",
+              cursor: "pointer",
+              marginRight: "0.5rem"
+            }}
+          >
+            <option value="all">전체 연도 누적 조회</option>
+            <option value="1">1차년도 (2025학년도)</option>
+            <option value="2">2차년도 (2026학년도)</option>
+            <option value="3">3차년도 (2027학년도)</option>
+            <option value="4">4차년도 (2028학년도)</option>
+            <option value="5">5차년도 (2029학년도)</option>
+          </select>
           {currentRole?.id !== "GUEST" && (
             <>
               <button className="action-btn download-btn" onClick={downloadExcelTemplate} style={{ background: "var(--bg-tertiary)" }}>

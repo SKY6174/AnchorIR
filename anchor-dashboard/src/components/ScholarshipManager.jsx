@@ -88,6 +88,7 @@ export default function ScholarshipManager({
 }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingId, setEditingId] = useState(null);
+  const [filterYear, setFilterYear] = useState("all"); // 💡 '전체 연도 누적'을 기본값으로 지정하여 데이터 유실 오해 방지
   // 폼 필드
   const [dept, setDept] = useState("");
   const [major, setMajor] = useState("");
@@ -112,7 +113,10 @@ export default function ScholarshipManager({
     setMajor("");
   }, [dept, isCustomDept]);
 
-  const filteredItems = scholarships.filter(s => s.year === selectedYear);
+  const filteredItems = scholarships.filter(s => {
+    if (filterYear === "all") return true;
+    return s.year === Number(filterYear);
+  });
 
   const requestSort = (key) => {
     let direction = "asc";
@@ -443,7 +447,29 @@ export default function ScholarshipManager({
           <DollarSign size={24} color="var(--accent-color)" />
           장학금 관리
         </h2>
-        <div style={{ display: "flex", gap: "0.5rem" }}>
+        <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+          {/* 💡 [연도 누적 선택 필터] */}
+          <select 
+            value={filterYear} 
+            onChange={(e) => setFilterYear(e.target.value)}
+            style={{
+              padding: "0.4rem 0.8rem",
+              borderRadius: "6px",
+              backgroundColor: "var(--bg-tertiary)",
+              color: "var(--text-primary)",
+              border: "1px solid rgba(255,255,255,0.15)",
+              fontSize: "0.85rem",
+              cursor: "pointer",
+              marginRight: "0.5rem"
+            }}
+          >
+            <option value="all">전체 연도 누적 조회</option>
+            <option value="1">1차년도 (2025학년도)</option>
+            <option value="2">2차년도 (2026학년도)</option>
+            <option value="3">3차년도 (2027학년도)</option>
+            <option value="4">4차년도 (2028학년도)</option>
+            <option value="5">5차년도 (2029학년도)</option>
+          </select>
           <input
             type="file"
             accept=".xlsx, .xls"
