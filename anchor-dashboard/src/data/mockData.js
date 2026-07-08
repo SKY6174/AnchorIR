@@ -1337,29 +1337,42 @@ export const initialProjectsData = [
       {
         id: "C1",
         title: "U-LIFE 평생직업교육 기반 취·창업 연계모델 구축",
-        budget: 354000000,
+        budget: 350000000,
         spent: 0,
-        budget_2026: 354000000,
+        budget_2026: 0,
         spent_2026: 0,
-        budget_2025_carry: 0,
+        budget_2025_carry: 350000000,
         spent_2025_carry: 0,
-        manager: "오영경 RCC센터장",
+        manager: "이연향 연구원",
         programs: [
-          { id: "C1-S1T1-1", title: "평생직업교육 거점 플랫폼 구축(성과공유회)", budget_2026: 3000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "오영경", pdca: { p: "완료", d: "완료", c: "진행", a: "대기" } },
-          { id: "C1-S1T2-1", title: "평생교육학습자 장학금 및 마일리지 장학금 지급", budget_2026: 30000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "오영경", pdca: { p: "완료", d: "완료", c: "진행", a: "대기" } },
-          { id: "C1-S2T3-1", title: "신중년/재직자 맞춤형 직무도약 4대 아카데미 운영", budget_2026: 12000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "오영경", pdca: { p: "대기", d: "대기", c: "대기", a: "대기" } },
-          { id: "C1-S2T4-1", title: "야간 집중 자격증 취득 지원반 운영", budget_2026: 12000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "오영경", pdca: { p: "대기", d: "대기", c: "대기", a: "대기" } },
-          { id: "C1-S3T5-1", title: "서부 캠퍼스 U-LIFE 평생교육 전용 강의실 리모델링 구축", budget_2026: 200000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "오영경", pdca: { p: "완료", d: "진행", c: "대기", a: "대기" } },
-          { id: "C1-S3T6-1", title: "평생학습 실습 전용 장비 및 전산 기자재 구축", budget_2026: 57000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "오영경", pdca: { p: "완료", d: "진행", c: "대기", a: "대기" } },
-          { id: "C1-S3T7-1", title: "U-LIFE 아카데미 교육 과정 및 컨텐츠 개발 정책과제 운영", budget_2026: 10000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "오영경", pdca: { p: "완료", d: "완료", c: "진행", a: "대기" } },
-          { id: "C1-S3T8-1", title: "평생직업교육 선진모델 글로벌 벤치마킹", budget_2026: 30000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "오영경", pdca: { p: "대기", d: "대기", c: "대기", a: "대기" } }
+          { id: "C1-S1T1-1", title: "아카데미별 거버넌스 운영", budget_2026: 0, spent_2026: 0, budget_2025_carry: 5000000, spent_2025_carry: 0, assignee: "이연향", pdca: { p: "완료", d: "완료", c: "진행", a: "대기" } },
+          { id: "C1-S1T1-2", title: "평생학습관 환경개선", budget_2026: 0, spent_2026: 0, budget_2025_carry: 75000000, spent_2025_carry: 0, assignee: "이연향", pdca: { p: "완료", d: "진행", c: "대기", a: "대기" } },
+          { id: "C1-S1T1-3", title: "평생직업교육관련 기자재", budget_2026: 0, spent_2026: 0, budget_2025_carry: 30000000, spent_2025_carry: 0, assignee: "이연향", pdca: { p: "완료", d: "진행", c: "대기", a: "대기" } },
+          { id: "C1-S1T2-1", title: "평생학습 박람회 및 성과공유회", budget_2026: 0, spent_2026: 0, budget_2025_carry: 10000000, spent_2025_carry: 0, assignee: "이연향", pdca: { p: "완료", d: "완료", c: "진행", a: "대기" } },
+          { id: "C1-S1T3-1", title: "자체홈페이지플랫폼구축으로 변경필요(예산미정)", budget_2026: 0, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "이연향", pdca: { p: "완료", d: "완료", c: "진행", a: "대기" } },
+          { id: "C1-S1T4-1", title: "자체홈페이지플랫폼구축으로 변경필요(예산미정)", budget_2026: 0, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "이연향", pdca: { p: "완료", d: "완료", c: "진행", a: "대기" } },
+          { id: "C1-S2T5-1", title: "자격증 취득지원", budget_2026: 0, spent_2026: 0, budget_2025_carry: 4000000, spent_2025_carry: 0, assignee: "이연향", pdca: { p: "완료", d: "완료", c: "진행", a: "대기" } },
+          { id: "C1-S2T6-1", title: "성인학습자 학과 환경개선", budget_2026: 0, spent_2026: 0, budget_2025_carry: 95000000, spent_2025_carry: 0, assignee: "이연향", pdca: { p: "완료", d: "진행", c: "대기", a: "대기" } },
+          { id: "C1-S2T6-2", title: "성인학습자 학과 기자재 구축", budget_2026: 0, spent_2026: 0, budget_2025_carry: 20000000, spent_2025_carry: 0, assignee: "이연향", pdca: { p: "완료", d: "진행", c: "대기", a: "대기" } },
+          { id: "C1-S2T7-1", title: "평생직업교육활성화 정책연구", budget_2026: 0, spent_2026: 0, budget_2025_carry: 5000000, spent_2025_carry: 0, assignee: "이연향", pdca: { p: "완료", d: "완료", c: "진행", a: "대기" } },
+          { id: "C1-S3T8-1", title: "평생직업교육활성화 정책연구", budget_2026: 0, spent_2026: 0, budget_2025_carry: 5000000, spent_2025_carry: 0, assignee: "이연향", pdca: { p: "완료", d: "완료", c: "진행", a: "대기" } },
+          { id: "C1-S3T9-1", title: "평생학습 박람회 및 성과공유회", budget_2026: 0, spent_2026: 0, budget_2025_carry: 10000000, spent_2025_carry: 0, assignee: "이연향", pdca: { p: "완료", d: "완료", c: "진행", a: "대기" } },
+          { id: "C1-S3T10-1", title: "평생직업교육과정 개발", budget_2026: 0, spent_2026: 0, budget_2025_carry: 6000000, spent_2025_carry: 0, assignee: "이연향", pdca: { p: "완료", d: "완료", c: "진행", a: "대기" } },
+          { id: "C1-S3T11-1", title: "성인학습자 학습지원 프로그램", budget_2026: 0, spent_2026: 0, budget_2025_carry: 12000000, spent_2025_carry: 0, assignee: "이연향", pdca: { p: "완료", d: "완료", c: "진행", a: "대기" } },
+          { id: "C1-S3T11-2", title: "평생교육참여학습자장학금", budget_2026: 0, spent_2026: 0, budget_2025_carry: 10000000, spent_2025_carry: 0, assignee: "이연향", pdca: { p: "완료", d: "완료", c: "진행", a: "대기" } },
+          { id: "C1-S3T11-3", title: "운영보조인력 지원", budget_2026: 0, spent_2026: 0, budget_2025_carry: 2000000, spent_2025_carry: 0, assignee: "이연향", pdca: { p: "완료", d: "완료", c: "진행", a: "대기" } },
+          { id: "C1-S4T12-1", title: "스마트테크 아카데미 교육프로그램운영", budget_2026: 0, spent_2026: 0, budget_2025_carry: 10000000, spent_2025_carry: 0, assignee: "이연향", pdca: { p: "완료", d: "완료", c: "진행", a: "대기" } },
+          { id: "C1-S4T12-2", title: "라이프케어아카데미 교육프로그램운영", budget_2026: 0, spent_2026: 0, budget_2025_carry: 25000000, spent_2025_carry: 0, assignee: "이연향", pdca: { p: "완료", d: "완료", c: "진행", a: "대기" } },
+          { id: "C1-S4T13-1", title: "평생직업교육과정 개발", budget_2026: 0, spent_2026: 0, budget_2025_carry: 6000000, spent_2025_carry: 0, assignee: "이연향", pdca: { p: "완료", d: "완료", c: "진행", a: "대기" } },
+          { id: "C1-S4T14-1", title: "로컬창업아카데미 교육프로그램운영", budget_2026: 0, spent_2026: 0, budget_2025_carry: 10000000, spent_2025_carry: 0, assignee: "이연향", pdca: { p: "완료", d: "완료", c: "진행", a: "대기" } },
+          { id: "C1-S4T14-2", title: "팝업아카데미 교육프로그램운영", budget_2026: 0, spent_2026: 0, budget_2025_carry: 10000000, spent_2025_carry: 0, assignee: "이연향", pdca: { p: "완료", d: "완료", c: "진행", a: "대기" } }
         ],
         budgetDetails: {
           "인건비": { budget_2026: 0, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0 },
-          "장학금": { budget_2026: 30000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0 },
-          "교육∙연구 프로그램 개발∙운영비": { budget_2026: 324000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0 },
-          "교육∙연구 환경개선비": { budget_2026: 0, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0 },
-          "실험∙실습장비 및 기자재 구입∙운영비": { budget_2026: 0, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0 },
+          "장학금": { budget_2026: 0, spent_2026: 0, budget_2025_carry: 10000000, spent_2025_carry: 0 },
+          "교육∙연구 프로그램 개발∙운영비": { budget_2026: 0, spent_2026: 0, budget_2025_carry: 120000000, spent_2025_carry: 0 },
+          "교육∙연구 환경개선비": { budget_2026: 0, spent_2026: 0, budget_2025_carry: 170000000, spent_2025_carry: 0 },
+          "실험∙실습장비 및 기자재 구입∙운영비": { budget_2026: 0, spent_2026: 0, budget_2025_carry: 50000000, spent_2025_carry: 0 },
           "지역 연계∙협업 지원비": { budget_2026: 0, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0 },
           "기업 지원∙협력 활동비": { budget_2026: 0, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0 },
           "성과 활용∙확산 지원비": { budget_2026: 0, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0 },
@@ -2906,118 +2919,228 @@ export const YEAR_1_PROGRAMS = {
     }],
   "D1": [
     {
-      "id": "B3-S1T1-1",
-      "title": "지역문제해결 공용플랫폼의 협력 체계 구축",
-      "budget": 22000000,
-      "spent": 22000000,
-      "assignee": "로컬브릿지팀",
-      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
-      "timeline": ",,P,P,D,D,D,D,C,A,,",
-      "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 22000000, "spent": 22000000 }
-      ]
-    },
-    {
-      "id": "B3-S1T1-2",
-      "title": "공용 플랫폼의 협력 체계 마련",
-      "budget": 15000000,
-      "spent": 7800000,
-      "assignee": "로컬브릿지팀",
-      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
-      "timeline": ",,P,P,D,D,C,A,,,,",
-      "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 15000000, "spent": 7800000 }
-      ]
-    },
-    {
-      "id": "B3-S1T2-1",
-      "title": "지역문제해결 캡스톤 디자인 운영",
-      "budget": 38000000,
-      "spent": 23500000,
-      "assignee": "로컬브릿지팀",
-      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
-      "timeline": ",,P,D,D,D,C,A,,,,",
-      "budget_categories": [
-        { "category": "지역 연계∙협업 지원비", "budget": 38000000, "spent": 23500000 }
-      ]
-    },
-    {
-      "id": "B3-S1T2-2",
-      "title": "자매도시 또는 글로벌 지역문제해결 캡스톤 디자인 모델 개발",
-      "budget": 65400000,
-      "spent": 11100000,
-      "assignee": "로컬브릿지팀",
-      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
-      "timeline": ",,P,P,D,D,C,A,,,,",
-      "budget_categories": [
-        { "category": "지역 연계∙협업 지원비", "budget": 40000000, "spent": 0 },
-        { "category": "성과 활용∙확산 지원비", "budget": 25400000, "spent": 11100000 }
-      ]
-    },
-    {
-      "id": "B3-S2T3-1",
-      "title": "지역협력 마일리지 제도 협력 체계 구축",
-      "budget": 11500000,
-      "spent": 11500000,
-      "assignee": "로컬브릿지팀",
-      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
-      "timeline": ",,P,P,D,D,C,A,,,,",
-      "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 11500000, "spent": 11500000 }
-      ]
-    },
-    {
-      "id": "B3-S2T3-2",
-      "title": "지역협력 마일리지 형태의 지속 가능한 주민참여 운영 모델 및 제도 개발",
-      "budget": 23900000,
+      "id": "D1-S1T1-1",
+      "title": "지역사회문제해결교육과정 Re:Think 울산 운영",
+      "budget": 5000000,
       "spent": 0,
-      "assignee": "로컬브릿지팀",
-      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
-      "timeline": ",,P,P,D,D,C,A,,,,",
+      "assignee": "김소정 연구원",
+      "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
+      "timeline": ",,P,D,C,A,,,,,,",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 23900000, "spent": 0 }
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 5000000, "spent": 0 }
       ]
     },
     {
-      "id": "B3-S2T4-1",
-      "title": "학과기반의 지역사회공헌활동 프로그램 운영",
-      "budget": 33400000,
-      "spent": 19600000,
-      "assignee": "로컬브릿지팀",
-      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
-      "timeline": ",,P,P,D,D,C,A,,,,",
+      "id": "D1-S1T1-2",
+      "title": "지역사회문제해결 프로젝트(캡스톤디자인)",
+      "budget": 15000000,
+      "spent": 0,
+      "assignee": "김소정 연구원",
+      "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
+      "timeline": ",,P,D,C,A,,,,,,",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 33400000, "spent": 19600000 }
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 15000000, "spent": 0 }
       ]
     },
     {
-      "id": "B3-S2T4-2",
-      "title": "대학의 역량을 활용한 지역사회협력 연계",
-      "budget": 19000000,
-      "spent": 18700000,
-      "assignee": "로컬브릿지팀",
-      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
-      "timeline": ",,P,P,D,D,C,A,,,,",
+      "id": "D1-S1T1-3",
+      "title": "지역사회문제해결 동아리 운영",
+      "budget": 0,
+      "spent": 0,
+      "assignee": "김소정 연구원",
+      "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
+      "timeline": ",,P,D,C,A,,,,,,",
+      "budget_categories": []
+    },
+    {
+      "id": "D1-S1T1-4",
+      "title": "지역사회문제해결역량강화교육(재학생)",
+      "budget": 0,
+      "spent": 0,
+      "assignee": "김소정 연구원",
+      "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
+      "timeline": ",,P,D,C,A,,,,,,",
+      "budget_categories": []
+    },
+    {
+      "id": "D1-S1T1-5",
+      "title": "실험실습재료비",
+      "budget": 10000000,
+      "spent": 0,
+      "assignee": "김소정 연구원",
+      "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
+      "timeline": ",,P,D,C,A,,,,,,",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 19000000, "spent": 18700000 }
+        { "category": "실험∙실습장비 및 기자재 구입∙운영비", "budget": 10000000, "spent": 0 }
+      ]
+    },
+    {
+      "id": "D1-S1T2-1",
+      "title": "지역협력협의체운영",
+      "budget": 6000000,
+      "spent": 0,
+      "assignee": "박인숙 연구원",
+      "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
+      "timeline": ",,P,D,C,A,,,,,,",
+      "budget_categories": [
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 6000000, "spent": 0 }
+      ]
+    },
+    {
+      "id": "D1-S1T2-2",
+      "title": "지역기관과의 거버넌스 구축",
+      "budget": 6000000,
+      "spent": 0,
+      "assignee": "최승혜 연구원",
+      "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
+      "timeline": ",,P,D,C,A,,,,,,",
+      "budget_categories": [
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 6000000, "spent": 0 }
+      ]
+    },
+    {
+      "id": "D1-S1T2-3",
+      "title": "지역문제해결 플랫폼 구축",
+      "budget": 2000000,
+      "spent": 0,
+      "assignee": "김소정 연구원",
+      "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
+      "timeline": ",,P,D,C,A,,,,,,",
+      "budget_categories": [
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 2000000, "spent": 0 }
+      ]
+    },
+    {
+      "id": "D1-S1T3-1",
+      "title": "지역사회문제해결 리빙랩 운영",
+      "budget": 5000000,
+      "spent": 0,
+      "assignee": "김소정 연구원",
+      "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
+      "timeline": ",,P,D,C,A,,,,,,",
+      "budget_categories": [
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 5000000, "spent": 0 }
+      ]
+    },
+    {
+      "id": "D1-S1T3-2",
+      "title": "Day Out in 울산 프로그램 운영",
+      "budget": 24000000,
+      "spent": 0,
+      "assignee": "김소정 연구원",
+      "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
+      "timeline": ",,P,D,C,A,,,,,,",
+      "budget_categories": [
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 24000000, "spent": 0 }
+      ]
+    },
+    {
+      "id": "D1-S1T4-1",
+      "title": "지역사회모델 정책연구",
+      "budget": 5000000,
+      "spent": 0,
+      "assignee": "김소정 연구원",
+      "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
+      "timeline": ",,P,D,C,A,,,,,,",
+      "budget_categories": [
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 5000000, "spent": 0 }
+      ]
+    },
+    {
+      "id": "D1-S1T4-2",
+      "title": "지역사회문제해결역량강화교육(지역주민)",
+      "budget": 5000000,
+      "spent": 0,
+      "assignee": "김소정 연구원",
+      "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
+      "timeline": ",,P,D,C,A,,,,,,",
+      "budget_categories": [
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 5000000, "spent": 0 }
+      ]
+    },
+    {
+      "id": "D1-S1T5-1",
+      "title": "지역사회연계 워크숍 및 특강",
+      "budget": 5000000,
+      "spent": 0,
+      "assignee": "김소정 연구원",
+      "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
+      "timeline": ",,P,D,C,A,,,,,,",
+      "budget_categories": [
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 5000000, "spent": 0 }
+      ]
+    },
+    {
+      "id": "D1-S1T5-2",
+      "title": "지역사회문제해결 토론회",
+      "budget": 0,
+      "spent": 0,
+      "assignee": "김소정 연구원",
+      "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
+      "timeline": ",,P,D,C,A,,,,,,",
+      "budget_categories": []
+    },
+    {
+      "id": "D1-S1T6-1",
+      "title": "지역문제해결 공동 프로그램 운영",
+      "budget": 40000000,
+      "spent": 0,
+      "assignee": "김소정 연구원",
+      "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
+      "timeline": ",,P,D,C,A,,,,,,",
+      "budget_categories": [
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 40000000, "spent": 0 }
+      ]
+    },
+    {
+      "id": "D1-S1T7-1",
+      "title": "지역사회연계봉사프로그램",
+      "budget": 12000000,
+      "spent": 0,
+      "assignee": "김소정 연구원",
+      "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
+      "timeline": ",,P,D,C,A,,,,,,",
+      "budget_categories": [
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 12000000, "spent": 0 }
+      ]
+    },
+    {
+      "id": "D1-S1T8-1",
+      "title": "울산형 2주기 RISE모델 개발 정책연구",
+      "budget": 50000000,
+      "spent": 0,
+      "assignee": "김소정 연구원",
+      "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
+      "timeline": ",,P,D,C,A,,,,,,",
+      "budget_categories": [
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 50000000, "spent": 0 }
+      ]
+    },
+    {
+      "id": "D1-S1T8-2",
+      "title": "지역문제해결 프로젝트 성과공유회",
+      "budget": 5000000,
+      "spent": 0,
+      "assignee": "김소정 연구원",
+      "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
+      "timeline": ",,P,D,C,A,,,,,,",
+      "budget_categories": [
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 5000000, "spent": 0 }
+      ]
+    },
+    {
+      "id": "D1-S1T8-3",
+      "title": "지역협력협의체&거버넌스 성과공유회",
+      "budget": 5000000,
+      "spent": 0,
+      "assignee": "김소정 연구원",
+      "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
+      "timeline": ",,P,D,C,A,,,,,,",
+      "budget_categories": [
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 5000000, "spent": 0 }
       ]
     }
-  ,
-    {
-      "id": "B3-S2T5-1",
-      "title": "공통경비",
-      "budget": 71800000,
-      "spent": 65000000,
-      "assignee": "로컬브릿지팀",
-      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
-      "timeline": ",,P,P,D,D,C,A,,,,",
-      "budget_categories": [
-        { "category": "인건비", "budget": 24000000, "spent": 23200000 },
-        { "category": "장학금", "budget": 30000000, "spent": 29200000 },
-        { "category": "간접비", "budget": 9000000, "spent": 9000000 },
-        { "category": "그 밖의 사업운영경비", "budget": 8800000, "spent": 3600000 }
-      ]
-    }],
+  ],
   "B4": [
     {
       "id": "C1-S1T1-1",
@@ -3478,131 +3601,168 @@ export const YEAR_1_PROGRAMS = {
     }],
   "D2": [
     {
-      "id": "D1-S1T1-1",
-      "title": "지역사회 기반 보건복지 협의체 구축 및 운영",
-      "budget": 3200000,
-      "spent": 470000,
-      "assignee": "산학협력단",
-      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
-      "timeline": ",,P,P,D,D,D,D,C,A,,",
+      "id": "D2-S1T1-1",
+      "title": "지산학 보건 거버넌스 구축 및 운영",
+      "budget": 3000000,
+      "spent": 0,
+      "assignee": "박인숙 연구원",
+      "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
+      "timeline": ",,P,D,C,A,,,,,,",
       "budget_categories": [
-        { "category": "지역 연계∙협업 지원비", "budget": 3200000, "spent": 470000 }
+        { "category": "성과 활용∙확산 지원비", "budget": 3000000, "spent": 0 }
       ]
     },
     {
-      "id": "D1-S1T1-2",
-      "title": "보건의료 전문기관 연계 협력체계 마련",
+      "id": "D2-S1T2-1",
+      "title": "맞춤형 보건복지 서비스 역량강화를 위한 기자재 & 장비",
+      "budget": 50000000,
+      "spent": 0,
+      "assignee": "박인숙 연구원",
+      "pdca": { "p": "완료", "d": "진행", "c": "대기", "a": "대기" },
+      "timeline": ",,P,D,C,A,,,,,,",
+      "budget_categories": [
+        { "category": "실험∙실습장비 및 기자재 구입∙운영비", "budget": 50000000, "spent": 0 }
+      ]
+    },
+    {
+      "id": "D2-S1T2-2",
+      "title": "신규학과 (반려동물/K-뷰티/외국인요양보호사) 기자재 & 장비",
+      "budget": 100000000,
+      "spent": 0,
+      "assignee": "박인숙 연구원",
+      "pdca": { "p": "완료", "d": "진행", "c": "대기", "a": "대기" },
+      "timeline": ",,P,D,C,A,,,,,,",
+      "budget_categories": [
+        { "category": "실험∙실습장비 및 기자재 구입∙운영비", "budget": 100000000, "spent": 0 }
+      ]
+    },
+    {
+      "id": "D2-S1T3-1",
+      "title": "사회적약자 의료케어 역량강화교육 프로그램 운영(주민참여형)",
+      "budget": 11000000,
+      "spent": 0,
+      "assignee": "박인숙 연구원",
+      "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
+      "timeline": ",,P,D,C,A,,,,,,",
+      "budget_categories": [
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 11000000, "spent": 0 }
+      ]
+    },
+    {
+      "id": "D2-S1T3-2",
+      "title": "교내 시설 활용 주민참여 프로그램 운영",
+      "budget": 5000000,
+      "spent": 0,
+      "assignee": "박인숙 연구원",
+      "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
+      "timeline": ",,P,D,C,A,,,,,,",
+      "budget_categories": [
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 5000000, "spent": 0 }
+      ]
+    },
+    {
+      "id": "D2-S1T4-1",
+      "title": "AI 보건의료 빅데이터 교육 프로그램 운영",
+      "budget": 9000000,
+      "spent": 0,
+      "assignee": "박인숙 연구원",
+      "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
+      "timeline": ",,P,D,C,A,,,,,,",
+      "budget_categories": [
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 9000000, "spent": 0 }
+      ]
+    },
+    {
+      "id": "D2-S1T4-2",
+      "title": "지역의료기관 연계 사업 운영",
+      "budget": 5000000,
+      "spent": 0,
+      "assignee": "박인숙 연구원",
+      "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
+      "timeline": ",,P,D,C,A,,,,,,",
+      "budget_categories": [
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 5000000, "spent": 0 }
+      ]
+    },
+    {
+      "id": "D2-S1T5-1",
+      "title": "사회적약자 의료케어 모니터링 프로그램 운영",
+      "budget": 21000000,
+      "spent": 0,
+      "assignee": "박인숙 연구원",
+      "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
+      "timeline": ",,P,D,C,A,,,,,,",
+      "budget_categories": [
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 21000000, "spent": 0 }
+      ]
+    },
+    {
+      "id": "D2-S1T6-1",
+      "title": "사회적약자 보건복지서비스 역량강화 프로그램 운영",
       "budget": 0,
       "spent": 0,
-      "assignee": "산학협력단",
-      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
-      "timeline": ",,P,D,D,D,C,A,,,,",
+      "assignee": "박인숙 연구원",
+      "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
+      "timeline": ",,P,D,C,A,,,,,,",
       "budget_categories": []
     },
     {
-      "id": "D1-S1T2-1",
-      "title": "보건분야 전문기술인력 연수 프로그램 기획 및 운영",
-      "budget": 20000000,
-      "spent": 12600000,
-      "assignee": "산학협력단",
-      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
-      "timeline": ",,P,P,D,D,C,A,,,,",
-      "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 20000000, "spent": 12600000 }
-      ]
-    },
-    {
-      "id": "D1-S1T2-2",
-      "title": "요양보호사 등 재직자 대상 직무 역량 강화 교육과정 개발 및 운영",
-      "budget": 33500000,
-      "spent": 29000000,
-      "assignee": "산학협력단",
-      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
-      "timeline": ",,P,P,D,D,C,A,,,,",
-      "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 33500000, "spent": 29000000 }
-      ]
-    },
-    {
-      "id": "D1-S1T2-3",
-      "title": "대학생-재직자 매칭 보건복지 연수 과정 운영",
-      "budget": 26500000,
-      "spent": 24200000,
-      "assignee": "산학협력단",
-      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
-      "timeline": ",,P,P,D,D,C,A,,,,",
-      "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 26500000, "spent": 24200000 }
-      ]
-    },
-    {
-      "id": "D1-S2T3-1",
-      "title": "취약계층 건강모니터링 프로그램 운영",
+      "id": "D2-S2T7-1",
+      "title": "공공보건 의료데이터와 AI혁신 챌린지 운영",
       "budget": 0,
       "spent": 0,
-      "assignee": "산학협력단",
-      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
-      "timeline": ",,P,P,D,D,C,A,,,,",
+      "assignee": "박인숙 연구원",
+      "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
+      "timeline": ",,P,D,C,A,,,,,,",
       "budget_categories": []
     },
     {
-      "id": "D1-S2T3-2",
-      "title": "사회적 약자 의료케어 서포터즈 조직 및 운영",
+      "id": "D2-S2T7-2",
+      "title": "보건복지서비스 역량강화 전문인력양성 혁신 프로그램 운영",
+      "budget": 30000000,
+      "spent": 0,
+      "assignee": "박인숙 연구원",
+      "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
+      "timeline": ",,P,D,C,A,,,,,,",
+      "budget_categories": [
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 30000000, "spent": 0 }
+      ]
+    },
+    {
+      "id": "D2-S2T8-1",
+      "title": "지역정주형 보건의료 인재 역량강화 프로그램 운영",
       "budget": 0,
       "spent": 0,
-      "assignee": "서포터즈 단원",
-      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
-      "timeline": ",,P,P,D,D,C,A,,,,",
+      "assignee": "박인숙 연구원",
+      "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
+      "timeline": ",,P,D,C,A,,,,,,",
       "budget_categories": []
     },
     {
-      "id": "D1-S2T3-3",
-      "title": "디지털헬스케어 기반 시범사업 적용 및 평가",
-      "budget": 0,
+      "id": "D2-S2T9-1",
+      "title": "지역 연계형 보건복지 취업역량 강화 프로그램 운영",
+      "budget": 30000000,
       "spent": 0,
-      "assignee": "정보통신처",
-      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
-      "timeline": ",,P,P,D,D,C,A,,,,",
-      "budget_categories": []
-    },
-    {
-      "id": "D1-S2T4-1",
-      "title": "반려동물보건과 신설을 위한 학과 기반 구축",
-      "budget": 341400000,
-      "spent": 333600000,
-      "assignee": "기획처, 시설관리처",
-      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
-      "timeline": ",,P,P,D,D,C,A,,,,",
+      "assignee": "박인숙 연구원",
+      "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
+      "timeline": ",,P,D,C,A,,,,,,",
       "budget_categories": [
-        { "category": "교육∙연구 환경개선비", "budget": 341400000, "spent": 333600000 }
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 30000000, "spent": 0 }
       ]
     },
     {
-      "id": "D1-S2T4-2",
-      "title": "반려동물 매개치료 교육 프로그램 개발 및 적용",
-      "budget": 58900000,
-      "spent": 52600000,
-      "assignee": "외부 강사, 산학협력단",
-      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
-      "timeline": ",,P,P,D,D,C,A,,,,",
+      "id": "D2-S2T10-1",
+      "title": "신규학과 개설&지원을 위한 통합형 보건인재 양성 교육환경 개선 + 외국인요양보호사",
+      "budget": 136000000,
+      "spent": 0,
+      "assignee": "박인숙 연구원",
+      "pdca": { "p": "완료", "d": "진행", "c": "대기", "a": "대기" },
+      "timeline": ",,P,D,C,A,,,,,,",
       "budget_categories": [
-        { "category": "실험∙실습장비 및 기자재 구입∙운영비", "budget": 58900000, "spent": 52600000 }
+        { "category": "교육∙연구 환경개선비", "budget": 136000000, "spent": 0 }
       ]
-    },
-    {
-      "id": "D1-S2T5-1",
-      "title": "공통경비",
-      "budget": 66500000,
-      "spent": 60000000,
-      "assignee": "산학협력단",
-      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
-      "timeline": ",,P,P,D,D,C,A,,,,",
-      "budget_categories": [
-        { "category": "인건비", "budget": 35000000, "spent": 33500000 },
-        { "category": "간접비", "budget": 15000000, "spent": 15000000 },
-        { "category": "그 밖의 사업운영경비", "budget": 16500000, "spent": 11500000 }
-      ]
-    }],
+    }
+  ],
   "C2": [
     {
       "id": "D2-S1T1-1",
@@ -3775,104 +3935,267 @@ export const YEAR_1_PROGRAMS = {
   "D3": [
     {
       "id": "D3-S1T1-1",
-      "title": "울산 에코 컬처 관광·문화 콘텐츠 개발",
-      "budget": 27900000,
-      "spent": 17800000,
-      "assignee": "R&BD지원센터",
-      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
-      "timeline": ",,P,P,D,D,D,C,A,,,,",
+      "title": "문화 콘텐츠 개발 우수 사례 및 벤치마킹",
+      "budget": 5000000,
+      "spent": 0,
+      "assignee": "오영경 연구원",
+      "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
+      "timeline": ",,P,D,C,A,,,,,,",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 27900000, "spent": 17800000 }
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 5000000, "spent": 0 }
       ]
     },
     {
       "id": "D3-S1T1-2",
-      "title": "기후·문화 융합 시범 강좌 개설",
-      "budget": 12000000,
+      "title": "국중박 벤치마킹",
+      "budget": 0,
       "spent": 0,
-      "assignee": "R&BD지원센터",
-      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
-      "timeline": ",,,P,P,D,D,D,C,A,,",
+      "assignee": "오영경 연구원",
+      "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
+      "timeline": ",,P,D,C,A,,,,,,",
+      "budget_categories": []
+    },
+    {
+      "id": "D3-S1T1-3",
+      "title": "(이월사업)(문화/도시재생 체험 프로그램)북구 이화정 벤치마킹",
+      "budget": 0,
+      "spent": 0,
+      "assignee": "오영경 연구원",
+      "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
+      "timeline": ",,P,D,C,A,,,,,,",
+      "budget_categories": []
+    },
+    {
+      "id": "D3-S1T1-4",
+      "title": "K-컬처 글로벌 교류 프로젝트: 대만 충유대 교류 프로그램",
+      "budget": 28400000,
+      "spent": 0,
+      "assignee": "오영경 연구원",
+      "pdca": { "p": "완료", "d": "진행", "c": "대기", "a": "대기" },
+      "timeline": ",,P,D,C,A,,,,,,",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 12000000, "spent": 0 }
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 28400000, "spent": 0 }
       ]
     },
     {
-      "id": "D3-S1T2-1",
-      "title": "지역 문화 기획자 및 에코 도슨트 양성 과정",
-      "budget": 9200000,
+      "id": "D3-S1T1-5",
+      "title": "(이월사업)(문화/도시재생 체험 프로그램)울리단길 런케이션",
+      "budget": 0,
       "spent": 0,
-      "assignee": "R&BD지원센터",
-      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
-      "timeline": ",,P,P,D,D,C,A,,,,",
+      "assignee": "오영경 연구원",
+      "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
+      "timeline": ",,P,D,C,A,,,,,,",
+      "budget_categories": []
+    },
+    {
+      "id": "D3-S1T2-1",
+      "title": "콘텐츠 크리에이터 연계 프로젝트(실무 프로젝트)",
+      "budget": 30000000,
+      "spent": 0,
+      "assignee": "오영경 연구원",
+      "pdca": { "p": "완료", "d": "진행", "c": "대기", "a": "대기" },
+      "timeline": ",,P,D,C,A,,,,,,",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 9200000, "spent": 0 }
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 30000000, "spent": 0 }
       ]
     },
     {
       "id": "D3-S1T2-2",
-      "title": "대학생 문화 서포터즈 발굴 및 육성",
-      "budget": 124400000,
-      "spent": 118400000,
-      "assignee": "R&BD지원센터",
-      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
-      "timeline": ",,P,P,D,D,C,A,,,,",
+      "title": "(이월사업)(콘텐츠 크리에이터 양성프로그램 심화과정)세계유산 도시 울산, 첫 페이지를 열다",
+      "budget": 0,
+      "spent": 0,
+      "assignee": "오영경 연구원",
+      "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
+      "timeline": ",,P,D,C,A,,,,,,",
+      "budget_categories": []
+    },
+    {
+      "id": "D3-S1T3-1",
+      "title": "도시재생 체험 프로젝트",
+      "budget": 40000000,
+      "spent": 0,
+      "assignee": "오영경 연구원",
+      "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
+      "timeline": ",,P,D,C,A,,,,,,",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 6000000, "spent": 0 },
-        { "category": "교육∙연구 환경개선비", "budget": 118400000, "spent": 118400000 }
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 40000000, "spent": 0 }
       ]
     },
     {
-      "id": "D3-S2T3-1",
-      "title": "에코 컬처 축제 기획 및 시민 체험 행사 운영",
-      "budget": 136100000,
-      "spent": 132300000,
-      "assignee": "R&BD지원센터",
-      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
-      "timeline": ",,P,P,D,D,C,A,,,,",
+      "id": "D3-S1T3-2",
+      "title": "대학내 커뮤니티 공간 구축(북카페조성)",
+      "budget": 200000000,
+      "spent": 0,
+      "assignee": "오영경 연구원",
+      "pdca": { "p": "완료", "d": "진행", "c": "대기", "a": "대기" },
+      "timeline": ",,P,D,C,A,,,,,,",
       "budget_categories": [
-        { "category": "실험∙실습장비 및 기자재 구입∙운영비", "budget": 136100000, "spent": 132300000 }
+        { "category": "실험∙실습장비 및 기자재 구입∙운영비", "budget": 200000000, "spent": 0 }
       ]
     },
     {
-      "id": "D3-S2T4-1",
-      "title": "에코 컬처 네트워크 구축을 위한 다자간 MOU 체결",
-      "budget": 185300000,
-      "spent": 169600000,
-      "assignee": "R&BD지원센터",
-      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
-      "timeline": ",,P,P,D,D,C,A,,,,",
+      "id": "D3-S1T3-3",
+      "title": "(이월사업)지역 커뮤니티 공간 기자재 구입",
+      "budget": 0,
+      "spent": 0,
+      "assignee": "오영경 연구원",
+      "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
+      "timeline": ",,P,D,C,A,,,,,,",
+      "budget_categories": []
+    },
+    {
+      "id": "D3-S1T4-1",
+      "title": "도시공간 재생 프로젝트 거버넌스 운영",
+      "budget": 1000000,
+      "spent": 0,
+      "assignee": "오영경 연구원",
+      "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
+      "timeline": ",,P,D,C,A,,,,,,",
       "budget_categories": [
-        { "category": "지역 연계∙협업 지원비", "budget": 185300000, "spent": 169600000 }
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 1000000, "spent": 0 }
+      ]
+    },
+    {
+      "id": "D3-S1T4-2",
+      "title": "서포터즈 활동비",
+      "budget": 4000000,
+      "spent": 0,
+      "assignee": "오영경 연구원",
+      "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
+      "timeline": ",,P,D,C,A,,,,,,",
+      "budget_categories": [
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 4000000, "spent": 0 }
       ]
     },
     {
       "id": "D3-S2T5-1",
-      "title": "'꿀잼도시 울산' 콘텐츠 브랜딩 BI 개발 및 대외 홍보",
-      "budget": 57200000,
-      "spent": 34300000,
-      "assignee": "R&BD지원센터",
-      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
-      "timeline": ",,P,P,D,D,C,A,,,,",
+      "title": "문화 예술 체험 프로젝트",
+      "budget": 10000000,
+      "spent": 0,
+      "assignee": "오영경 연구원",
+      "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
+      "timeline": ",,P,D,C,A,,,,,,",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 23000000, "spent": 13200000 },
-        { "category": "성과 활용∙확산 지원비", "budget": 34200000, "spent": 21100000 }
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 10000000, "spent": 0 }
       ]
     },
     {
       "id": "D3-S2T6-1",
-      "title": "공통경비",
-      "budget": 73050000,
-      "spent": 58950000,
-      "assignee": "R&BD지원센터",
-      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
-      "timeline": ",,P,P,D,D,C,A,,,,",
+      "title": "지역 연계 협업 예술 프로젝트(중구 배움의 뜰, 평생교육학습 축제예정)",
+      "budget": 10000000,
+      "spent": 0,
+      "assignee": "오영경 연구원",
+      "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
+      "timeline": ",,P,D,C,A,,,,,,",
       "budget_categories": [
-        { "category": "인건비", "budget": 35500000, "spent": 27600000 },
-        { "category": "간접비", "budget": 18750000, "spent": 18750000 },
-        { "category": "그 밖의 사업운영경비", "budget": 18800000, "spent": 12600000 }
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 10000000, "spent": 0 }
       ]
-    }],
+    },
+    {
+      "id": "D3-S2T6-2",
+      "title": "①힙합라운지-청년문화체험",
+      "budget": 0,
+      "spent": 0,
+      "assignee": "오영경 연구원",
+      "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
+      "timeline": ",,P,D,C,A,,,,,,",
+      "budget_categories": []
+    },
+    {
+      "id": "D3-S2T6-3",
+      "title": "②대학이 여는 도시재생-그래피티 운영",
+      "budget": 0,
+      "spent": 0,
+      "assignee": "오영경 연구원",
+      "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
+      "timeline": ",,P,D,C,A,,,,,,",
+      "budget_categories": []
+    },
+    {
+      "id": "D3-S2T6-4",
+      "title": "③지산학 페스티벌-그래피티 부스 운영",
+      "budget": 0,
+      "spent": 0,
+      "assignee": "오영경 연구원",
+      "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
+      "timeline": ",,P,D,C,A,,,,,,",
+      "budget_categories": []
+    },
+    {
+      "id": "D3-S2T6-5",
+      "title": "④문화-도시 재생 네트워킹 라운드 테이블",
+      "budget": 0,
+      "spent": 0,
+      "assignee": "오영경 연구원",
+      "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
+      "timeline": ",,P,D,C,A,,,,,,",
+      "budget_categories": []
+    },
+    {
+      "id": "D3-S2T6-6",
+      "title": "⑤3개대학 연합 문화관광 서포터즈 발대식",
+      "budget": 0,
+      "spent": 0,
+      "assignee": "오영경 연구원",
+      "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
+      "timeline": ",,P,D,C,A,,,,,,",
+      "budget_categories": []
+    },
+    {
+      "id": "D3-S2T7-1",
+      "title": "지역사회 연계 및 교류 홍보",
+      "budget": 10000000,
+      "spent": 0,
+      "assignee": "오영경 연구원",
+      "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
+      "timeline": ",,P,D,C,A,,,,,,",
+      "budget_categories": [
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 10000000, "spent": 0 }
+      ]
+    },
+    {
+      "id": "D3-S2T7-2",
+      "title": "지산학 실내 부스 센터별 지원금",
+      "budget": 0,
+      "spent": 0,
+      "assignee": "오영경 연구원",
+      "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
+      "timeline": ",,P,D,C,A,,,,,,",
+      "budget_categories": []
+    },
+    {
+      "id": "D3-S2T7-3",
+      "title": "(이월사업)(성과활용확산)세계인의 날 연계 전통문화체험 부스 운영",
+      "budget": 0,
+      "spent": 0,
+      "assignee": "오영경 연구원",
+      "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
+      "timeline": ",,P,D,C,A,,,,,,",
+      "budget_categories": []
+    },
+    {
+      "id": "D3-S2T7-4",
+      "title": "(이월사업)(성과활용확산)도시재생 거버넌스 운영",
+      "budget": 0,
+      "spent": 0,
+      "assignee": "오영경 연구원",
+      "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
+      "timeline": ",,P,D,C,A,,,,,,",
+      "budget_categories": []
+    },
+    {
+      "id": "D3-S2T8-1",
+      "title": "지역 연계협업 문화 콘텐츠 개발 프로젝트",
+      "budget": 40600000,
+      "spent": 0,
+      "assignee": "오영경 연구원",
+      "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
+      "timeline": ",,P,D,C,A,,,,,,",
+      "budget_categories": [
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 40600000, "spent": 0 }
+      ]
+    }
+  ],
   "A3": [
     {
       "id": "D4-S1T1-1",
