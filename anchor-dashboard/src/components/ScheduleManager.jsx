@@ -192,6 +192,16 @@ export default function ScheduleManager({
   const getFormattedMemberGrade = (m) => {
     if (!m) return "연구원";
     
+    // 송경영의 경우 직위를 '단장'으로 강제 표기하여 목록 노출을 보정합니다.
+    if (m.name === "송경영") {
+      return "단장";
+    }
+
+    // 김현수의 경우 직위를 '본부장'으로 강제 표기하여 목록 노출을 보정합니다.
+    if (m.name === "김현수") {
+      return "본부장";
+    }
+
     // 심현미의 경우 직위를 '운영팀장'으로 강제 표기
     if (m.name === "심현미") {
       return "운영팀장";
@@ -205,12 +215,11 @@ export default function ScheduleManager({
       ["정교수", "부교수", "조교수", "교수", "조교", "팀장교수", "교원"].includes(m.rank);
       
     if (isProfessorType) {
-      // 6대 센터장 정보 매핑 (이동은: ECC, 김기범: ICC, 현용환: RCC, 김현수: AID-X, 홍광표: 늘봄, 홍진숙: 신산업)
+      // 5대 센터장 정보 매핑 (김현수 교수는 본부장으로 표시되며 센터장 매핑에서 삭제됨)
       const centerHeads = {
         "이동은": "ECC센터",
         "김기범": "ICC센터",
         "현용환": "RCC센터",
-        "김현수": "AID-X지원센터",
         "홍광표": "울산늘봄누리센터",
         "홍진숙": "신산업특화센터"
       };
@@ -5711,7 +5720,8 @@ ${aiRawText}
                     {(() => {
                       const ROLE_PRIORITY = {
                         "사업단장": 1,
-                        "본부장": 2,
+                        "단장": 1, // 송경영 단장 정렬 최우선순위 보장
+                        "본부장": 2, // 김현수 본부장 정렬 2순위 보장
                         "센터장": 3,
                         "운영팀장": 4,
                         "팀장교수": 5,

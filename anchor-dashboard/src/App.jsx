@@ -40,34 +40,44 @@ const formatAssignee = (assigneeText) => {
 
 // 초기에 적재해 둘 기자재 목록 모의 데이터셋 (Supabase 최초 시딩용)
 const defaultEquipmentsSeed = [
-  { id: 1, unit: "A1", seq: 1, deptName: "간호학부", divisionName: "", itemName: "스마트 환자 시뮬레이터 (중환자 케어 실습 장비)", unitPrice: 120000000, quantity: 1, description: "글로벌 앵커 혁신 교육과정 임상 실습 고도화 핵심 기기", operation: "교과목(정규)", password: "1234",
+  {
+    id: 1, unit: "A1", seq: 1, deptName: "간호학부", divisionName: "", itemName: "스마트 환자 시뮬레이터 (중환자 케어 실습 장비)", unitPrice: 120000000, quantity: 1, description: "글로벌 앵커 혁신 교육과정 임상 실습 고도화 핵심 기기", operation: "교과목(정규)", password: "1234",
     dateP: "2025-03-10", dateA: "2025-04-15", dateB: "2025-06-12", datePr: "2025-07-20", dateI: "2025-09-05"
   },
-  { id: 2, unit: "A2", seq: 2, deptName: "화학공학과", divisionName: "", itemName: "정밀 화학 분석 크로마토그래피 시스템", unitPrice: 245000000, quantity: 1, description: "신산업 저탄소 에너지 트랙 화학 정밀 분석 실습 장비", operation: "교과목(정규)", password: "1234",
+  {
+    id: 2, unit: "A2", seq: 2, deptName: "화학공학과", divisionName: "", itemName: "정밀 화학 분석 크로마토그래피 시스템", unitPrice: 245000000, quantity: 1, description: "신산업 저탄소 에너지 트랙 화학 정밀 분석 실습 장비", operation: "교과목(정규)", password: "1234",
     dateP: "2025-03-15", dateA: "2025-04-20", dateB: "2025-06-18", datePr: "2025-07-25", dateI: "2025-09-10"
   },
-  { id: 3, unit: "B1", seq: 3, deptName: "컴퓨터공학과", divisionName: "", itemName: "AI 알고리즘 모델링 연산용 고성능 GPU 워크스테이션", unitPrice: 15000000, quantity: 3, description: "RCC 특화산업 AI 융합 실감형 교육 센터 실무 교육 지원", operation: "교과목(정규)", password: "1234",
+  {
+    id: 3, unit: "B1", seq: 3, deptName: "컴퓨터공학과", divisionName: "", itemName: "AI 알고리즘 모델링 연산용 고성능 GPU 워크스테이션", unitPrice: 15000000, quantity: 3, description: "RCC 특화산업 AI 융합 실감형 교육 센터 실무 교육 지원", operation: "교과목(정규)", password: "1234",
     dateP: "2025-03-12", dateA: "2025-04-18", dateB: "", datePr: "2025-06-25", dateI: "2025-08-14"
   },
-  { id: 4, unit: "B2", seq: 4, deptName: "기계공학부", divisionName: "", itemName: "스마트 팩토리 모듈 제어 및 3D 정밀 프린팅 모듈", unitPrice: 38000000, quantity: 1, description: "지산학 연계 제조 혁신 엔지니어 교육 기자재", operation: "교과목(정규)", password: "1234",
+  {
+    id: 4, unit: "B2", seq: 4, deptName: "기계공학부", divisionName: "", itemName: "스마트 팩토리 모듈 제어 및 3D 정밀 프린팅 모듈", unitPrice: 38000000, quantity: 1, description: "지산학 연계 제조 혁신 엔지니어 교육 기자재", operation: "교과목(정규)", password: "1234",
     dateP: "2025-03-20", dateA: "2025-05-15", dateB: "2025-06-08", datePr: "2025-06-20", dateI: "2025-08-18"
   },
-  { id: 5, unit: "B3", seq: 5, deptName: "전기전자공학부", divisionName: "", itemName: "반도체 임베디드 코딩 및 고정밀 계측 오실로스코프", unitPrice: 8500000, quantity: 4, description: "반도체 전공 대학 연계 실무 미러형 교육 설계용 장비", operation: "교과목(정규)", password: "1234",
+  {
+    id: 5, unit: "B3", seq: 5, deptName: "전기전자공학부", divisionName: "", itemName: "반도체 임베디드 코딩 및 고정밀 계측 오실로스코프", unitPrice: 8500000, quantity: 4, description: "반도체 전공 대학 연계 실무 미러형 교육 설계용 장비", operation: "교과목(정규)", password: "1234",
     dateP: "2025-03-25", dateA: "2025-04-28", dateB: "2025-06-05", datePr: "2025-06-18", dateI: "2025-08-20"
   },
-  { id: 6, unit: "B4", seq: 6, deptName: "유아교육과", divisionName: "", itemName: "늘봄 연계 창의 놀이 실증용 스마트 인터랙티브 디스플레이", unitPrice: 8500000, quantity: 2, description: "에듀테크 기반 창의적 교육 콘텐츠 제작 교육 과정 운영", operation: "교과목(비정규)", password: "1234",
+  {
+    id: 6, unit: "B4", seq: 6, deptName: "유아교육과", divisionName: "", itemName: "늘봄 연계 창의 놀이 실증용 스마트 인터랙티브 디스플레이", unitPrice: 8500000, quantity: 2, description: "에듀테크 기반 창의적 교육 콘텐츠 제작 교육 과정 운영", operation: "교과목(비정규)", password: "1234",
     dateP: "2025-03-18", dateA: "2025-05-10", dateB: "", datePr: "2025-06-24", dateI: "2025-08-25"
   },
-  { id: 7, unit: "C1", seq: 7, deptName: "컴퓨터공학과", divisionName: "", itemName: "다목적 6축 소형 스마트 교육용 협동 로봇 머니퓰레이터", unitPrice: 28000000, quantity: 1, description: "미래 지능형 로봇 운용/제어 교과목 현장 중심 실습", operation: "교과목(정규)", password: "1234",
+  {
+    id: 7, unit: "C1", seq: 7, deptName: "컴퓨터공학과", divisionName: "", itemName: "다목적 6축 소형 스마트 교육용 협동 로봇 머니퓰레이터", unitPrice: 28000000, quantity: 1, description: "미래 지능형 로봇 운용/제어 교과목 현장 중심 실습", operation: "교과목(정규)", password: "1234",
     dateP: "2025-03-22", dateA: "2025-05-12", dateB: "2025-06-15", datePr: "2025-06-28", dateI: "2025-08-28"
   },
-  { id: 8, unit: "C2", seq: 8, deptName: "반려동물보건과", divisionName: "", itemName: "동물 전용 디지털 초음파 진단 장치", unitPrice: 19000000, quantity: 1, description: "신설학과 실무 미러형 임상 실습실 조달 품목", operation: "교과목(정규)", password: "1234",
+  {
+    id: 8, unit: "C2", seq: 8, deptName: "반려동물보건과", divisionName: "", itemName: "동물 전용 디지털 초음파 진단 장치", unitPrice: 19000000, quantity: 1, description: "신설학과 실무 미러형 임상 실습실 조달 품목", operation: "교과목(정규)", password: "1234",
     dateP: "2025-04-10", dateA: "2025-05-20", dateB: "2025-06-18", datePr: "2025-07-15", dateI: "2025-09-12"
   },
-  { id: 9, unit: "D1", seq: 9, deptName: "조선해양시스템공학과", divisionName: "", itemName: "미래 친환경선박 가상 운항 교육 시뮬레이터", unitPrice: 45000000, quantity: 1, description: "5극3특 가상 운항 실습 교육 과정 지원용 장비", operation: "교과목(정규)", password: "1234",
+  {
+    id: 9, unit: "D1", seq: 9, deptName: "조선해양시스템공학과", divisionName: "", itemName: "미래 친환경선박 가상 운항 교육 시뮬레이터", unitPrice: 45000000, quantity: 1, description: "5극3특 가상 운항 실습 교육 과정 지원용 장비", operation: "교과목(정규)", password: "1234",
     dateP: "2025-03-08", dateA: "2025-05-08", dateB: "2025-07-10", datePr: "2025-08-20", dateI: "2025-11-15"
   },
-  { id: 10, unit: "D2", seq: 10, deptName: "물리치료학과", divisionName: "", itemName: "메디컬 스킨케어 다기능 뷰티 디바이스", unitPrice: 6500000, quantity: 5, description: "웰니스 뷰티 케어 실습 및 지역 상생 뷰티 아카데미 활용", operation: "교과목(비정규)", password: "1234",
+  {
+    id: 10, unit: "D2", seq: 10, deptName: "물리치료학과", divisionName: "", itemName: "메디컬 스킨케어 다기능 뷰티 디바이스", unitPrice: 6500000, quantity: 5, description: "웰니스 뷰티 케어 실습 및 지역 상생 뷰티 아카데미 활용", operation: "교과목(비정규)", password: "1234",
     dateP: "2025-03-14", dateA: "2025-04-24", dateB: "", datePr: "2025-06-22", dateI: "2025-08-29"
   }
 ];
@@ -207,20 +217,20 @@ const getCalculatedYearFromDate = (dateStr, fallbackYear) => {
   if (!dateStr) return fallbackYear;
   const date = new Date(dateStr);
   if (isNaN(date.getTime())) return fallbackYear;
-  
+
   const year = date.getFullYear();
   const month = date.getMonth() + 1;
-  
+
   // 1월과 2월은 직전 연도의 회계연도에 속함 (예: 2026년 2월 -> 2025회계연도)
   const fiscalYear = month <= 2 ? year - 1 : year;
-  
+
   // 2025년: 1차년도, 2026년: 2차년도, ...
   if (fiscalYear === 2025) return 1;
   if (fiscalYear === 2026) return 2;
   if (fiscalYear === 2027) return 3;
   if (fiscalYear === 2028) return 4;
   if (fiscalYear === 2029) return 5;
-  
+
   return fallbackYear;
 };
 
@@ -234,23 +244,23 @@ const INITIAL_MEMBERS = [
   { id: "m-01", name: "송경영", role: "사업단장", grade: "정교수", dept: "-", phoneOffice: "052-279-3154", phoneMobile: "010-7627-7123", email: "kysong@uc.ac.kr", room: "교수연구실/E1-307", hireDate: "2026-03-01" },
   { id: "m-02", name: "김현수", role: "본부장", grade: "정교수", dept: "운영본부", phoneOffice: "052-279-3122", phoneMobile: "010-4628-7963", email: "hskim3@uc.ac.kr", room: "교수연구실/E2-414", hireDate: "2026-03-01" },
   { id: "m-03", name: "심현미", role: "운영팀장", grade: "부장", dept: "사업운영팀", phoneOffice: "052-230-0441", phoneMobile: "010-6554-8359", email: "hmsim@uc.ac.kr", room: "산학협력단/S-203", hireDate: "2026-03-01" },
-  { id: "m-04", name: "이동은", role: "센터장", grade: "정교수", dept: "ECC센터", phoneOffice: "052-230-0111", phoneMobile: "010-1234-5678", email: "delee@uc.ac.kr", room: "교수연구실/E2-201", hireDate: "2026-03-01" },
-  { id: "m-05", name: "김기범", role: "센터장", grade: "정교수", dept: "ICC센터", phoneOffice: "052-230-0222", phoneMobile: "010-2345-6789", email: "kbkim@uc.ac.kr", room: "교수연구실/E2-301", hireDate: "2026-03-01" },
-  { id: "m-06", name: "현용환", role: "센터장", grade: "정교수", dept: "RCC센터", phoneOffice: "052-230-0333", phoneMobile: "010-3456-7890", email: "yhhyun@uc.ac.kr", room: "교수연구실/E2-401", hireDate: "2026-03-01" },
-  { id: "m-07", name: "홍광표", role: "센터장", grade: "정교수", dept: "울산늘봄누리센터", phoneOffice: "052-230-0444", phoneMobile: "010-4567-8901", email: "gphong@uc.ac.kr", room: "교수연구실/E2-501", hireDate: "2026-03-01" },
+  { id: "m-04", name: "이동은", role: "센터장", grade: "부교수", dept: "ECC센터", phoneOffice: "052-230-0111", phoneMobile: "010-1234-5678", email: "delee@uc.ac.kr", room: "교수연구실/E2-201", hireDate: "2026-03-01" },
+  { id: "m-05", name: "김기범", role: "센터장", grade: "부교수", dept: "ICC센터", phoneOffice: "052-230-0222", phoneMobile: "010-2345-6789", email: "kbkim@uc.ac.kr", room: "교수연구실/E2-301", hireDate: "2026-03-01" },
+  { id: "m-06", name: "현용환", role: "센터장", grade: "조교수", dept: "RCC센터", phoneOffice: "052-230-0333", phoneMobile: "010-3456-7890", email: "yhhyun@uc.ac.kr", room: "교수연구실/E2-401", hireDate: "2026-03-01" },
+  { id: "m-07", name: "홍광표", role: "센터장", grade: "조교수", dept: "울산늘봄누리센터", phoneOffice: "052-230-0444", phoneMobile: "010-4567-8901", email: "gphong@uc.ac.kr", room: "교수연구실/E2-501", hireDate: "2026-03-01" },
   { id: "m-07b", name: "홍진숙", role: "센터장", grade: "정교수", dept: "신산업특화센터", phoneOffice: "052-279-3134", phoneMobile: "010-9120-8583", email: "cshong@uc.ac.kr", room: "센터실/N-101", hireDate: "2026-06-01" },
-  
+
   // 팀장교수
-  { id: "m-08", name: "장광일", role: "팀장교수", grade: "정교수", dept: "ECC센터", phoneOffice: "052-230-0112", phoneMobile: "010-5678-9012", email: "kijang@uc.ac.kr", room: "교수연구실/E2-202", hireDate: "2026-03-01" },
-  { id: "m-09", name: "고형석", role: "팀장교수", grade: "정교수", dept: "ECC센터", phoneOffice: "052-230-0113", phoneMobile: "010-6789-0123", email: "hsko@uc.ac.kr", room: "교수연구실/E2-203", hireDate: "2026-03-01" },
+  { id: "m-08", name: "장광일", role: "팀장교수", grade: "조교수", dept: "ECC센터", phoneOffice: "052-230-0112", phoneMobile: "010-5678-9012", email: "kijang@uc.ac.kr", room: "교수연구실/E2-202", hireDate: "2026-03-01" },
+  { id: "m-09", name: "고형석", role: "팀장교수", grade: "조교수", dept: "ECC센터", phoneOffice: "052-230-0113", phoneMobile: "010-6789-0123", email: "hsko@uc.ac.kr", room: "교수연구실/E2-203", hireDate: "2026-03-01" },
   { id: "m-10", name: "양승호", role: "팀장교수", grade: "정교수", dept: "ECC센터", phoneOffice: "052-230-0114", phoneMobile: "010-7890-1234", email: "shyang@uc.ac.kr", room: "교수연구실/E2-204", hireDate: "2026-03-01" },
-  { id: "m-11", name: "김산", role: "팀장교수", grade: "정교수", dept: "ICC센터", phoneOffice: "052-230-0223", phoneMobile: "010-8901-2345", email: "skim@uc.ac.kr", room: "교수연구실/E2-302", hireDate: "2026-03-01" },
-  { id: "m-12", name: "한미라", role: "팀장교수", grade: "정교수", dept: "ICC센터", phoneOffice: "052-230-0224", phoneMobile: "010-9012-3456", email: "mrhan@uc.ac.kr", room: "교수연구실/E2-303", hireDate: "2026-03-01" },
-  { id: "m-13", name: "김민경", role: "팀장교수", grade: "정교수", dept: "RCC센터", phoneOffice: "052-230-0334", phoneMobile: "010-0123-4567", email: "mkkim@uc.ac.kr", room: "교수연구실/E2-402", hireDate: "2026-03-01" },
-  { id: "m-14", name: "이한도", role: "팀장교수", grade: "정교수", dept: "RCC센터", phoneOffice: "052-230-0335", phoneMobile: "010-1234-8765", email: "hdlee@uc.ac.kr", room: "교수연구실/E2-403", hireDate: "2026-03-01" },
-  { id: "m-15", name: "이상현", role: "팀장교수", grade: "정교수", dept: "RCC센터", phoneOffice: "052-230-0336", phoneMobile: "010-2345-9876", email: "shlee@uc.ac.kr", room: "교수연구실/E2-404", hireDate: "2026-03-01" },
-  { id: "m-15b", name: "박성혁", role: "팀장교수", grade: "정교수", dept: "RCC센터", phoneOffice: "052-230-0337", phoneMobile: "010-8765-4321", email: "shpark@uc.ac.kr", room: "교수연구실/E2-405", hireDate: "2026-03-01" },
-  { id: "m-16", name: "이정준", role: "팀장교수", grade: "정교수", dept: "AID-X지원센터", phoneOffice: "052-230-0445", phoneMobile: "010-3456-0987", email: "jjlee@uc.ac.kr", room: "교수연구실/E2-502", hireDate: "2026-03-01" },
+  { id: "m-11", name: "김산", role: "팀장교수", grade: "조교수", dept: "ICC센터", phoneOffice: "052-230-0223", phoneMobile: "010-8901-2345", email: "skim@uc.ac.kr", room: "교수연구실/E2-302", hireDate: "2026-03-01" },
+  { id: "m-12", name: "한미라", role: "팀장교수", grade: "부교수", dept: "ICC센터", phoneOffice: "052-230-0224", phoneMobile: "010-9012-3456", email: "mrhan@uc.ac.kr", room: "교수연구실/E2-303", hireDate: "2026-03-01" },
+  { id: "m-13", name: "김민경", role: "팀장교수", grade: "조교수", dept: "RCC센터", phoneOffice: "052-230-0334", phoneMobile: "010-0123-4567", email: "mkkim@uc.ac.kr", room: "교수연구실/E2-402", hireDate: "2026-03-01" },
+  { id: "m-14", name: "이한도", role: "팀장교수", grade: "부교수", dept: "RCC센터", phoneOffice: "052-230-0335", phoneMobile: "010-1234-8765", email: "hdlee@uc.ac.kr", room: "교수연구실/E2-403", hireDate: "2026-03-01" },
+  { id: "m-15", name: "이상현", role: "팀장교수", grade: "조교수", dept: "RCC센터", phoneOffice: "052-230-0336", phoneMobile: "010-2345-9876", email: "shlee@uc.ac.kr", room: "교수연구실/E2-404", hireDate: "2026-03-01" },
+  { id: "m-15b", name: "박성혁", role: "팀장교수", grade: "조교수", dept: "RCC센터", phoneOffice: "052-230-0337", phoneMobile: "010-8765-4321", email: "shpark@uc.ac.kr", room: "교수연구실/E2-405", hireDate: "2026-03-01" },
+  { id: "m-16", name: "이정준", role: "팀장교수", grade: "조교수", dept: "AID-X지원센터", phoneOffice: "052-230-0445", phoneMobile: "010-3456-0987", email: "jjlee@uc.ac.kr", room: "교수연구실/E2-502", hireDate: "2026-03-01" },
 
   // 실무 연구원 (등급/직위 3구분 적용)
   { id: "m-17", name: "이현섭", role: "연구원", grade: "책임연구원", dept: "RCC센터", phoneOffice: "052-230-0417", phoneMobile: "010-8252-1151", email: "mogern1@uc.ac.kr", room: "연구원실/R-101", hireDate: "2026-03-01" },
@@ -331,7 +341,7 @@ const RenderLatexFormula = ({ formula }) => {
     if (fracMatch) {
       const num = fracMatch[1].trim();
       const den = fracMatch[2].trim();
-      
+
       const timesMatch = rightSide.match(/times\s*([\d.]+)/);
       const weight = timesMatch ? timesMatch[1] : null;
 
@@ -492,30 +502,30 @@ function formatDataToMultiYear(data) {
         const meta = Y1_UNIT_META[u.id] || { budget: 1, national: 1, city: 0, carry: 0 };
         const nationalRatio = meta.national / meta.budget;
         const spentRatio = (meta.budget - meta.carry) / meta.budget;
-        
+
         const budgetMain = item.budget;
         const spentMain = item.spent !== undefined ? item.spent : Math.round(item.budget * spentRatio);
-        
+
         const budget_national = Math.round(budgetMain * nationalRatio);
         const budget_city = budgetMain - budget_national;
-        
+
         const spent_national = Math.round(spentMain * nationalRatio);
         const spent_city = spentMain - spent_national;
-        
+
         const progYears = {
           1: {
             budget_main: budgetMain,
             spent_main: spentMain,
             budget_carry: 0,
             spent_carry: 0,
-            
+
             budget_national,
             spent_national,
             budget_city,
             spent_city,
             budget_external: 0,
             spent_external: 0,
-            
+
             budget_carry_national: 0,
             spent_carry_national: 0,
             budget_carry_city: 0,
@@ -525,7 +535,7 @@ function formatDataToMultiYear(data) {
             budget_categories: item.budget_categories || []
           }
         };
-        
+
         return {
           id: item.id,
           title: item.title,
@@ -568,7 +578,7 @@ function formatDataToMultiYear(data) {
           }
 
           const isExternalSub = prog.id.includes("위탁") || prog.title.includes("위탁") || prog.title.includes("협력");
-          
+
           let budget_national = 0;
           let budget_city = 0;
           let budget_external = 0;
@@ -681,7 +691,7 @@ function formatDataToMultiYear(data) {
             "실험∙실습장비 및 기자재 구입∙운영비", "지역 연계∙협업 지원비", "기업 지원∙협력 활동비",
             "성과 활용∙확산 지원비", "그 밖의 사업운영경비", "간접비"
           ];
-          
+
           let targetCategory = "교육∙연구 프로그램 개발∙운영비"; // 디폴트
           if (prog.id === "A1가-S5T13-8") targetCategory = "장학금";
           else if (prog.id === "A1가-S4T10-4" || prog.id === "D2-S1T2-1" || prog.id === "D2-S1T2-2") targetCategory = "실험∙실습장비 및 기자재 구입∙운영비";
@@ -738,7 +748,7 @@ function formatDataToMultiYear(data) {
       const newBudgetDetails = {};
       Object.keys(u.budgetDetails || {}).forEach((key) => {
         const b = u.budgetDetails[key];
-        
+
         // [비정상 오버플로우 정화] 100억 원 초과 시 오기입 및 오계산 복구 (장학금 복원)
         if (b.budget_2026 > 10000000000) {
           b.budget_2026 = Math.round(b.budget_2026 / 1000);
@@ -936,7 +946,7 @@ function mergeProjectsWithInitial(loadedData, multiYearInitialData) {
       const sourceUnit = multiYearInitialData
         ?.flatMap(s => s.units)
         ?.find(u => u.id === unit.id);
-        
+
       if (sourceUnit && sourceUnit.programs) {
         const mergedPrograms = sourceUnit.programs.map((sourceProg) => {
           const cachedProg = unit.programs?.find(cp => cp.id === sourceProg.id);
@@ -971,20 +981,20 @@ function mergeProjectsWithInitial(loadedData, multiYearInitialData) {
                   if (sourceProg.years && sourceProg.years[yr]) {
                     const sy = sourceProg.years[yr];
                     const y = updatedYears[yr];
-                    
+
                     // 💡 [수동 기획 보존 필터]
                     // 만약 DB에서 이미 사용자가 기획 예산액(budget_main)이나 세원(국비/시비/외부)을 수동 기입하고
                     // 저장(upsert)을 완료한 기저장 데이터가 실재한다면, 사용자의 수정 의도를 존중하여 덮어쓰기 복원을 건너뛰고 보존합니다.
                     const hasUserSavedData = y && (
-                      (y.budget_main > 0 && y.budget_national !== undefined && y.budget_city !== undefined) || 
-                      y.budget_national > 0 || 
-                      y.budget_city > 0 || 
+                      (y.budget_main > 0 && y.budget_national !== undefined && y.budget_city !== undefined) ||
+                      y.budget_national > 0 ||
+                      y.budget_city > 0 ||
                       y.budget_external > 0
                     );
 
                     if (!hasUserSavedData) {
                       const rawBudgetMain = yr === 2 ? (sourceProg.budget_2026 || 0) : yr === 1 ? Math.round((sourceProg.budget_2026 || 0) * 0.9) : Math.round((sourceProg.budget_2026 || 0) * (yr === 3 ? 1.1 : yr === 4 ? 1.2 : 1.3));
-                      
+
                       y.budget_main = rawBudgetMain;
                       if (sourceProg.id.startsWith("D2-")) {
                         // 💡 D2 단위과제는 100% 국비(국고) 본예산으로 할당합니다.
@@ -996,13 +1006,13 @@ function mergeProjectsWithInitial(loadedData, multiYearInitialData) {
                         y.budget_city = rawBudgetMain - y.budget_national;
                       }
                       y.budget_external = 0; // 특별한 언급이 없으므로 외부사업비는 0원 처리
-                      
+
                       // 특별한 언급이 없으므로 이월사업비도 0원 처리
                       y.budget_carry_national = 0;
                       y.budget_carry_city = 0;
                       y.budget_carry_external = 0;
                       y.budget_carry = 0;
-                      
+
                       y.budget_categories = JSON.parse(JSON.stringify(sy.budget_categories || []));
                     }
                   }
@@ -1014,10 +1024,10 @@ function mergeProjectsWithInitial(loadedData, multiYearInitialData) {
                   return;
                 }
                 const y = updatedYears[yr];
-                
+
                 // 1. 입력한 예산(세부 재원: 국고 + 시비)이 있는지 확인
                 const inputBudgetSum = (y.budget_national || 0) + (y.budget_city || 0);
-                
+
                 if (inputBudgetSum > 0) {
                   y.budget_main = inputBudgetSum;
                 } else {
@@ -1025,7 +1035,7 @@ function mergeProjectsWithInitial(loadedData, multiYearInitialData) {
                   let defaultNational = 0;
                   let defaultCity = 0;
                   let defaultExternal = 0;
-                  
+
                   let defaultSpentMain = 0;
                   let defaultSpentNational = 0;
                   let defaultSpentCity = 0;
@@ -1037,7 +1047,7 @@ function mergeProjectsWithInitial(loadedData, multiYearInitialData) {
                     defaultNational = sy.budget_national || 0;
                     defaultCity = sy.budget_city || 0;
                     defaultExternal = sy.budget_external || 0;
-                    
+
                     defaultSpentMain = (sy.spent_national || 0) + (sy.spent_city || 0);
                     defaultSpentNational = sy.spent_national || 0;
                     defaultSpentCity = sy.spent_city || 0;
@@ -1056,12 +1066,12 @@ function mergeProjectsWithInitial(loadedData, multiYearInitialData) {
                     }
                     defaultBudgetMain = defaultNational + defaultCity;
                   }
-                  
+
                   y.budget_main = defaultBudgetMain;
                   y.budget_national = defaultNational;
                   y.budget_city = defaultCity;
                   y.budget_external = defaultExternal;
-                  
+
                   y.spent_main = defaultSpentMain;
                   y.spent_national = defaultSpentNational;
                   y.spent_city = defaultSpentCity;
@@ -1139,16 +1149,16 @@ function mergeProjectsWithInitial(loadedData, multiYearInitialData) {
         // 세부 프로그램들의 기획 예산(budget_main) 및 비목별 배정(budget_categories)을 기반으로
         // 단위과제의 budgetDetails와 years를 실시간으로 재집계(롤업)하여 정합성을 완벽하게 보장합니다.
         const categorySums = {
-          "인건비": { 1: {main:0, carry:0, spent_main:0, spent_carry:0}, 2: {main:0, carry:0, spent_main:0, spent_carry:0}, 3: {main:0, carry:0, spent_main:0, spent_carry:0}, 4: {main:0, carry:0, spent_main:0, spent_carry:0}, 5: {main:0, carry:0, spent_main:0, spent_carry:0} },
-          "장학금": { 1: {main:0, carry:0, spent_main:0, spent_carry:0}, 2: {main:0, carry:0, spent_main:0, spent_carry:0}, 3: {main:0, carry:0, spent_main:0, spent_carry:0}, 4: {main:0, carry:0, spent_main:0, spent_carry:0}, 5: {main:0, carry:0, spent_main:0, spent_carry:0} },
-          "교육∙연구 프로그램 개발∙운영비": { 1: {main:0, carry:0, spent_main:0, spent_carry:0}, 2: {main:0, carry:0, spent_main:0, spent_carry:0}, 3: {main:0, carry:0, spent_main:0, spent_carry:0}, 4: {main:0, carry:0, spent_main:0, spent_carry:0}, 5: {main:0, carry:0, spent_main:0, spent_carry:0} },
-          "교육∙연구 환경개선비": { 1: {main:0, carry:0, spent_main:0, spent_carry:0}, 2: {main:0, carry:0, spent_main:0, spent_carry:0}, 3: {main:0, carry:0, spent_main:0, spent_carry:0}, 4: {main:0, carry:0, spent_main:0, spent_carry:0}, 5: {main:0, carry:0, spent_main:0, spent_carry:0} },
-          "실험∙실습장비 및 기자재 구입∙운영비": { 1: {main:0, carry:0, spent_main:0, spent_carry:0}, 2: {main:0, carry:0, spent_main:0, spent_carry:0}, 3: {main:0, carry:0, spent_main:0, spent_carry:0}, 4: {main:0, carry:0, spent_main:0, spent_carry:0}, 5: {main:0, carry:0, spent_main:0, spent_carry:0} },
-          "지역 연계∙협업 지원비": { 1: {main:0, carry:0, spent_main:0, spent_carry:0}, 2: {main:0, carry:0, spent_main:0, spent_carry:0}, 3: {main:0, carry:0, spent_main:0, spent_carry:0}, 4: {main:0, carry:0, spent_main:0, spent_carry:0}, 5: {main:0, carry:0, spent_main:0, spent_carry:0} },
-          "기업 지원∙협력 활동비": { 1: {main:0, carry:0, spent_main:0, spent_carry:0}, 2: {main:0, carry:0, spent_main:0, spent_carry:0}, 3: {main:0, carry:0, spent_main:0, spent_carry:0}, 4: {main:0, carry:0, spent_main:0, spent_carry:0}, 5: {main:0, carry:0, spent_main:0, spent_carry:0} },
-          "성과 활용∙확산 지원비": { 1: {main:0, carry:0, spent_main:0, spent_carry:0}, 2: {main:0, carry:0, spent_main:0, spent_carry:0}, 3: {main:0, carry:0, spent_main:0, spent_carry:0}, 4: {main:0, carry:0, spent_main:0, spent_carry:0}, 5: {main:0, carry:0, spent_main:0, spent_carry:0} },
-          "그 밖의 사업운영경비": { 1: {main:0, carry:0, spent_main:0, spent_carry:0}, 2: {main:0, carry:0, spent_main:0, spent_carry:0}, 3: {main:0, carry:0, spent_main:0, spent_carry:0}, 4: {main:0, carry:0, spent_main:0, spent_carry:0}, 5: {main:0, carry:0, spent_main:0, spent_carry:0} },
-          "간접비": { 1: {main:0, carry:0, spent_main:0, spent_carry:0}, 2: {main:0, carry:0, spent_main:0, spent_carry:0}, 3: {main:0, carry:0, spent_main:0, spent_carry:0}, 4: {main:0, carry:0, spent_main:0, spent_carry:0}, 5: {main:0, carry:0, spent_main:0, spent_carry:0} }
+          "인건비": { 1: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 }, 2: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 }, 3: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 }, 4: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 }, 5: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 } },
+          "장학금": { 1: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 }, 2: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 }, 3: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 }, 4: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 }, 5: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 } },
+          "교육∙연구 프로그램 개발∙운영비": { 1: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 }, 2: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 }, 3: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 }, 4: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 }, 5: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 } },
+          "교육∙연구 환경개선비": { 1: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 }, 2: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 }, 3: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 }, 4: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 }, 5: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 } },
+          "실험∙실습장비 및 기자재 구입∙운영비": { 1: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 }, 2: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 }, 3: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 }, 4: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 }, 5: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 } },
+          "지역 연계∙협업 지원비": { 1: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 }, 2: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 }, 3: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 }, 4: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 }, 5: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 } },
+          "기업 지원∙협력 활동비": { 1: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 }, 2: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 }, 3: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 }, 4: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 }, 5: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 } },
+          "성과 활용∙확산 지원비": { 1: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 }, 2: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 }, 3: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 }, 4: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 }, 5: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 } },
+          "그 밖의 사업운영경비": { 1: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 }, 2: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 }, 3: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 }, 4: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 }, 5: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 } },
+          "간접비": { 1: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 }, 2: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 }, 3: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 }, 4: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 }, 5: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 } }
         };
 
         [1, 2, 3, 4, 5].forEach((yr) => {
@@ -1229,7 +1239,7 @@ function mergeProjectsWithInitial(loadedData, multiYearInitialData) {
           Object.keys(sourceUnit.budgetDetails).forEach((catName) => {
             const sourceCat = sourceUnit.budgetDetails[catName];
             const cachedCat = unit.budgetDetails[catName];
-            
+
             if (!cachedCat) {
               unit.budgetDetails[catName] = JSON.parse(JSON.stringify(sourceCat));
             } else {
@@ -1255,11 +1265,11 @@ function mergeProjectsWithInitial(loadedData, multiYearInitialData) {
           if (!unit.years[yr]) {
             unit.years[yr] = { budget_main: 0, spent_main: 0, budget_carry: 0, spent_carry: 0 };
           }
-          
+
           unit.years[yr].budget_main = Object.values(unit.budgetDetails).reduce((sum, b) => {
             return sum + (b.years?.[yr]?.budget_main || 0);
           }, 0);
-          
+
           // 💡 [단위과제 국비/시비/외부사업비 재원 실시간 롤업]
           // D2 단위과제는 100% 국비(국고) 본예산으로 집계되도록 강제 연산하고,
           // 다른 단위과제는 각 비목 상세에 기입된 재원 정보를 합산하여 동기화합니다.
@@ -1301,7 +1311,7 @@ function mergeProjectsWithInitial(loadedData, multiYearInitialData) {
             return sum + (b.years?.[yr]?.spent_carry || 0);
           }, 0);
         });
-        
+
         // 레거시/기타 UI 연동용 필드 동기화
         const yr = 2; // 2차년도 기준 디폴트 연동
         unit.budget = (unit.years[yr]?.budget_main || 0) + (unit.years[yr]?.budget_carry || 0);
@@ -1827,7 +1837,7 @@ const renderTimelineDiff = (timelineStr) => {
         const val = parts[idx] || "";
         const bg = getStatusColor(val);
         const hasValue = val && val !== "-";
-        
+
         return (
           <div key={idx} style={{ textAlign: "center", minWidth: "25px" }}>
             {/* 윗줄: 월 표시 */}
@@ -1835,7 +1845,7 @@ const renderTimelineDiff = (timelineStr) => {
               {m}
             </div>
             {/* 아랫줄: P, D, C, A 일정 표기 */}
-            <div 
+            <div
               style={{
                 padding: "0.08rem 0",
                 fontSize: "0.58rem",
@@ -1900,10 +1910,10 @@ export default function App() {
           localStorage.removeItem(key);
         }
         // 💡 [연도별 복구 캐시 청소 가드] 캐시 버전 상향 시 연도별 가공 복구 캐시와 구버전 구매용역 캐시(기자재, 환경개선, 주요용역)도 깨끗하게 동시 청소하여 구버전 예산 꼬임을 방지합니다.
-        if (key.startsWith("anchor_cache_proj_") || 
-            key.startsWith("anchor_cache_equip_") || 
-            key.startsWith("anchor_cache_env_") || 
-            key.startsWith("anchor_cache_serv_")) {
+        if (key.startsWith("anchor_cache_proj_") ||
+          key.startsWith("anchor_cache_equip_") ||
+          key.startsWith("anchor_cache_env_") ||
+          key.startsWith("anchor_cache_serv_")) {
           localStorage.removeItem(key);
         }
       });
@@ -1923,17 +1933,17 @@ export default function App() {
 
       const err = event.error;
       if (!err) return;
-      
+
       const errMsg = String(err.message || err);
-      
+
       // 렌더링을 완전히 멈추게 만드는 치명적인 자바스크립트 오류(TypeError, undefined/null 속성 에러 등)만 선별합니다.
-      const isCriticalRenderError = 
-        errMsg.includes("TypeError") || 
-        errMsg.includes("Cannot read properties") || 
-        errMsg.includes("undefined") || 
+      const isCriticalRenderError =
+        errMsg.includes("TypeError") ||
+        errMsg.includes("Cannot read properties") ||
+        errMsg.includes("undefined") ||
         errMsg.includes("null") ||
         errMsg.includes("is not a function");
-        
+
       // Supabase 통신, DB 쿼리, RLS 정책, 네트워크 연결 실패 등의 에러 메시지는 자가치유 튕김 대상에서 완벽히 배제
       const isNetworkOrDbError =
         errMsg.includes("PostgrestError") ||
@@ -2449,7 +2459,7 @@ export default function App() {
   }, [scholarships]);
 
   const [assignFilterUnitId, setAssignFilterUnitId] = useState("all");
-  
+
   // 프로그램 CRUD 상태
   const [showProgramEditor, setShowProgramEditor] = useState(false);
   const [editingProgram, setEditingProgram] = useState(null);
@@ -2599,7 +2609,7 @@ export default function App() {
       alert("모든 필드를 입력해 주세요.");
       return;
     }
-    
+
     // 비밀번호 복잡도 검증: 최소 8자 이상, 영문자, 숫자, 특수문자(@$!%*#?&) 각각 최소 1개 포함
     const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
     if (!passwordRegex.test(newPw)) {
@@ -2693,7 +2703,7 @@ export default function App() {
         .filter(m => m.status !== "미참여" && m.email)
         .map(m => {
           const emailId = m.email.trim().toLowerCase();
-          
+
           // 역할 맵핑 규칙
           let autoRoleKey = "RESEARCHER";
           const mRole = m.role || "";
@@ -2718,9 +2728,9 @@ export default function App() {
 
           // DB에 비밀번호를 직접 변경한 이력이 존재하면 해당 가입일/이름 정보를 우선시함
           // cshong@uc.ac.kr 주소록과 DB 상의 special_head 계정 간의 예외 매핑을 함께 지원합니다.
-          const dbUser = dbMap.get(emailId) || 
-                         dbMap.get(emailId.split("@")[0]) || 
-                         (emailId === "cshong@uc.ac.kr" ? dbMap.get("special_head") : null);
+          const dbUser = dbMap.get(emailId) ||
+            dbMap.get(emailId.split("@")[0]) ||
+            (emailId === "cshong@uc.ac.kr" ? dbMap.get("special_head") : null);
           return {
             id: emailId,
             name: dbUser ? dbUser.name : m.name,
@@ -2732,7 +2742,7 @@ export default function App() {
 
       // 4. 데모 계정 + 주소록 액티브 계정 + DB 계정 우선순위 병합
       const finalUsersMap = new Map();
-      
+
       // 데모 계정 주입
       demoUsers.forEach(u => finalUsersMap.set(u.id.toLowerCase(), u));
       // 주소록 재직중인 계정 주입
@@ -2777,7 +2787,7 @@ export default function App() {
         if (rankA !== rankB) {
           return rankA - rankB;
         }
-        
+
         // 동일한 센터장 직급 내에서의 정렬 순서 적용 (이동은 -> 김기범 -> 현용환 -> 홍광표 -> 홍진숙)
         const isCenterA = a.role_key.startsWith("CENTER_");
         const isCenterB = b.role_key.startsWith("CENTER_");
@@ -2808,7 +2818,7 @@ export default function App() {
         if (a.role_key === "RESEARCHER" && b.role_key === "RESEARCHER") {
           const memberA = (members || []).find(m => m.email && m.email.trim().toLowerCase() === a.id.trim().toLowerCase());
           const memberB = (members || []).find(m => m.email && m.email.trim().toLowerCase() === b.id.trim().toLowerCase());
-          
+
           if (memberA && memberB) {
             // 1. 소속부서 정렬 순서 (ECC, ICC, RCC, AID-X, 늘봄누리, 신산업)
             const deptOrder = {
@@ -2867,7 +2877,7 @@ export default function App() {
         .from("rise_users")
         .delete()
         .eq("id", userId);
-      
+
       if (error) {
         alert("계정 삭제 중 오류가 발생했습니다.");
       } else {
@@ -3009,7 +3019,7 @@ export default function App() {
   const [isFetchCompleted, setIsFetchCompleted] = useState(false);
   // 💡 데이터 불일치 보호망: 현재 화면에 로드된 데이터가 몇 차년도 데이터인지 명확하게 추적합니다.
   const [activeDataYear, setActiveDataYear] = useState(selectedYear);
-  
+
   // 💡 Race Condition 방지: 원격에서 막 가져온 순수 데이터를 기억하여, 사용자가 직접 수정한 경우에만 Auto-save 동작하도록 보장
   const fetchedProjectsRef = useRef("");
   const fetchedAgreementsRef = useRef("");
@@ -3027,7 +3037,7 @@ export default function App() {
   useEffect(() => {
     setIsFetchCompleted(false);
   }, [selectedYear]);
-  
+
   // 1) 최초 마운트 및 연차 변경 시 DB 데이터 Fetch 연동
   useEffect(() => {
     let active = true;
@@ -3121,15 +3131,15 @@ export default function App() {
           .select("*")
           .eq("year", selectedYear)
           .single();
-        
+
         if (!active) return;
-        
+
         if (projData && projData.data) {
           // [성과 동기화] 원격 DB 데이터 로드 시점에도 mockData.js의 최신 KPI 구조(C-1~C-6 등)가 강제 유지되도록 동기화합니다.
           // [ID 마이그레이션] DB에서 읽어온 데이터 내의 프로그램 ID들을 5단계 위계 규정에 맞게 마이그레이션 적용합니다.
           const dbProjData = migrateProgramIds(projData.data);
           const multiYearInitialData = migrateProgramIds(formatDataToMultiYear(initialProjectsData));
-          
+
           // 💡 [병합 수정] Supabase에서 로드한 데이터를 최신 실증 데이터 템플릿과 머지하여 데이터 유실을 방지합니다.
           const mergedProjData = mergeProjectsWithInitial(dbProjData, multiYearInitialData);
 
@@ -3142,7 +3152,7 @@ export default function App() {
               .select("*")
               .eq("year", selectedYear)
               .eq("status", "승인대기");
-            
+
             if (pendReqs && pendReqs.length > 0) {
               mergedProjData.forEach((strat) => {
                 strat.units.forEach((unit) => {
@@ -3150,7 +3160,7 @@ export default function App() {
                     const req = pendReqs.find(r => r.program_id === prog.id);
                     if (req && req.changes && req.changes.after) {
                       const after = req.changes.after;
-                      
+
                       // P기획 및 수동 수치 오버레이 주입
                       if (after.timeline !== undefined) prog.timeline = after.timeline;
                       if (after.targetAudience !== undefined) prog.targetAudience = after.targetAudience;
@@ -3167,26 +3177,26 @@ export default function App() {
                       if (after.target_etc_name !== undefined) prog.target_etc_name = after.target_etc_name;
                       if (after.kpi_type !== undefined) prog.kpi_type = after.kpi_type;
                       if (after.kpi_link !== undefined) prog.kpi_link = after.kpi_link;
-                      
+
                       // 연차별 예산 재원 및 비목 상세 덮어쓰기 오버레이
                       if (after.years && after.years[selectedYear]) {
                         const ay = after.years[selectedYear];
                         if (!prog.years) prog.years = {};
                         if (!prog.years[selectedYear]) prog.years[selectedYear] = {};
                         const py = prog.years[selectedYear];
-                        
+
                         if (ay.budget_national !== undefined) py.budget_national = ay.budget_national;
                         if (ay.budget_city !== undefined) py.budget_city = ay.budget_city;
                         if (ay.budget_external !== undefined) py.budget_external = ay.budget_external;
                         if (ay.budget_carry_national !== undefined) py.budget_carry_national = ay.budget_carry_national;
                         if (ay.budget_carry_city !== undefined) py.budget_carry_city = ay.budget_carry_city;
                         if (ay.budget_carry_external !== undefined) py.budget_carry_external = ay.budget_carry_external;
-                        
+
                         py.budget_main = (py.budget_national || 0) + (py.budget_city || 0);
                         if (selectedYear !== 1) {
                           py.budget_carry = (py.budget_carry_national || 0) + (py.budget_carry_city || 0);
                         }
-                        
+
                         if (ay.budget_categories) py.budget_categories = JSON.parse(JSON.stringify(ay.budget_categories));
                       }
                     }
@@ -3198,16 +3208,16 @@ export default function App() {
               mergedProjData.forEach((strategy) => {
                 strategy.units.forEach((unit) => {
                   const categorySums = {
-                    "인건비": { 1: {main:0, carry:0, spent_main:0, spent_carry:0}, 2: {main:0, carry:0, spent_main:0, spent_carry:0}, 3: {main:0, carry:0, spent_main:0, spent_carry:0}, 4: {main:0, carry:0, spent_main:0, spent_carry:0}, 5: {main:0, carry:0, spent_main:0, spent_carry:0} },
-                    "장학금": { 1: {main:0, carry:0, spent_main:0, spent_carry:0}, 2: {main:0, carry:0, spent_main:0, spent_carry:0}, 3: {main:0, carry:0, spent_main:0, spent_carry:0}, 4: {main:0, carry:0, spent_main:0, spent_carry:0}, 5: {main:0, carry:0, spent_main:0, spent_carry:0} },
-                    "교육∙연구 프로그램 개발∙운영비": { 1: {main:0, carry:0, spent_main:0, spent_carry:0}, 2: {main:0, carry:0, spent_main:0, spent_carry:0}, 3: {main:0, carry:0, spent_main:0, spent_carry:0}, 4: {main:0, carry:0, spent_main:0, spent_carry:0}, 5: {main:0, carry:0, spent_main:0, spent_carry:0} },
-                    "교육∙연구 환경개선비": { 1: {main:0, carry:0, spent_main:0, spent_carry:0}, 2: {main:0, carry:0, spent_main:0, spent_carry:0}, 3: {main:0, carry:0, spent_main:0, spent_carry:0}, 4: {main:0, carry:0, spent_main:0, spent_carry:0}, 5: {main:0, carry:0, spent_main:0, spent_carry:0} },
-                    "실험∙실습장비 및 기자재 구입∙운영비": { 1: {main:0, carry:0, spent_main:0, spent_carry:0}, 2: {main:0, carry:0, spent_main:0, spent_carry:0}, 3: {main:0, carry:0, spent_main:0, spent_carry:0}, 4: {main:0, carry:0, spent_main:0, spent_carry:0}, 5: {main:0, carry:0, spent_main:0, spent_carry:0} },
-                    "지역 연계∙협업 지원비": { 1: {main:0, carry:0, spent_main:0, spent_carry:0}, 2: {main:0, carry:0, spent_main:0, spent_carry:0}, 3: {main:0, carry:0, spent_main:0, spent_carry:0}, 4: {main:0, carry:0, spent_main:0, spent_carry:0}, 5: {main:0, carry:0, spent_main:0, spent_carry:0} },
-                    "기업 지원∙협력 활동비": { 1: {main:0, carry:0, spent_main:0, spent_carry:0}, 2: {main:0, carry:0, spent_main:0, spent_carry:0}, 3: {main:0, carry:0, spent_main:0, spent_carry:0}, 4: {main:0, carry:0, spent_main:0, spent_carry:0}, 5: {main:0, carry:0, spent_main:0, spent_carry:0} },
-                    "성과 활용∙확산 지원비": { 1: {main:0, carry:0, spent_main:0, spent_carry:0}, 2: {main:0, carry:0, spent_main:0, spent_carry:0}, 3: {main:0, carry:0, spent_main:0, spent_carry:0}, 4: {main:0, carry:0, spent_main:0, spent_carry:0}, 5: {main:0, carry:0, spent_main:0, spent_carry:0} },
-                    "그 밖의 사업운영경비": { 1: {main:0, carry:0, spent_main:0, spent_carry:0}, 2: {main:0, carry:0, spent_main:0, spent_carry:0}, 3: {main:0, carry:0, spent_main:0, spent_carry:0}, 4: {main:0, carry:0, spent_main:0, spent_carry:0}, 5: {main:0, carry:0, spent_main:0, spent_carry:0} },
-                    "간접비": { 1: {main:0, carry:0, spent_main:0, spent_carry:0}, 2: {main:0, carry:0, spent_main:0, spent_carry:0}, 3: {main:0, carry:0, spent_main:0, spent_carry:0}, 4: {main:0, carry:0, spent_main:0, spent_carry:0}, 5: {main:0, carry:0, spent_main:0, spent_carry:0} }
+                    "인건비": { 1: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 }, 2: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 }, 3: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 }, 4: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 }, 5: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 } },
+                    "장학금": { 1: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 }, 2: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 }, 3: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 }, 4: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 }, 5: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 } },
+                    "교육∙연구 프로그램 개발∙운영비": { 1: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 }, 2: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 }, 3: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 }, 4: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 }, 5: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 } },
+                    "교육∙연구 환경개선비": { 1: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 }, 2: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 }, 3: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 }, 4: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 }, 5: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 } },
+                    "실험∙실습장비 및 기자재 구입∙운영비": { 1: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 }, 2: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 }, 3: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 }, 4: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 }, 5: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 } },
+                    "지역 연계∙협업 지원비": { 1: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 }, 2: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 }, 3: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 }, 4: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 }, 5: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 } },
+                    "기업 지원∙협력 활동비": { 1: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 }, 2: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 }, 3: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 }, 4: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 }, 5: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 } },
+                    "성과 활용∙확산 지원비": { 1: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 }, 2: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 }, 3: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 }, 4: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 }, 5: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 } },
+                    "그 밖의 사업운영경비": { 1: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 }, 2: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 }, 3: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 }, 4: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 }, 5: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 } },
+                    "간접비": { 1: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 }, 2: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 }, 3: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 }, 4: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 }, 5: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 } }
                   };
 
                   [1, 2, 3, 4, 5].forEach((yr) => {
@@ -3350,7 +3360,7 @@ export default function App() {
         const { data: agrData, error: agrErr } = await supabase
           .from("agreements")
           .select("*");
-        
+
         if (!active) return;
         if (agrErr) {
           console.error("Failed to fetch agreements:", agrErr);
@@ -3387,7 +3397,7 @@ export default function App() {
         const { data: unifiedCertData, error: unifiedCertErr } = await supabase
           .from("unified_certificates")
           .select("*");
-        
+
         if (!active) return;
         if (unifiedCertErr) {
           console.error("Failed to fetch unified certificates:", unifiedCertErr);
@@ -3431,7 +3441,7 @@ export default function App() {
         const { data: scholarshipData, error: scholarshipError } = await supabase
           .from("scholarships_view")
           .select("*");
-        
+
         if (!active) return;
         if (scholarshipError) {
           console.error("Failed to fetch scholarships:", scholarshipError);
@@ -3472,7 +3482,7 @@ export default function App() {
         const { data: pEnv, error: pEnvError } = await supabase.from("procurement_env").select("*").eq("year", selectedYear);
         const { data: pEquip, error: pEquipError } = await supabase.from("procurement_equipment").select("*").eq("year", selectedYear);
         const { data: pServ, error: pServError } = await supabase.from("procurement_services").select("*").eq("year", selectedYear);
-        
+
         if (!active) return;
 
         if (pEnvError) {
@@ -3486,10 +3496,10 @@ export default function App() {
             }
           }
         } else if (pEnv && pEnv.length > 0) {
-          const formatted = pEnv.map(x => ({ 
-            ...x, 
-            id: Number(x.id), 
-            budgetPlan: Number(x.budget_plan), 
+          const formatted = pEnv.map(x => ({
+            ...x,
+            id: Number(x.id),
+            budgetPlan: Number(x.budget_plan),
             budgetSpent: Number(x.budget_spent),
             deptName: x.dept_name || "",
             divisionName: x.division_name || "",
@@ -3592,7 +3602,7 @@ export default function App() {
                 budgetPlan: Number(x.budgetPlan || x.budget_plan || 0),
                 budgetSpent: Number(x.budgetSpent || x.budget_spent || 0),
                 opResult: x.opResult || x.op_result || "",
-                
+
                 // 7대 날짜 복원
                 datePp: x.datePp || x.date_pp || "",
                 dateRfo: x.dateRfo || x.date_rfo || "",
@@ -3680,7 +3690,7 @@ export default function App() {
         const { data: sMonth } = await supabase.from("schedule_monthly").select("*").eq("year", selectedYear);
         const { data: sEvent } = await supabase.from("schedule_events").select("*").eq("year", selectedYear);
         const { data: sMeet } = await supabase.from("schedule_meetings").select("*").eq("year", selectedYear);
-        
+
         if (!active) return;
 
         if (sMonth && sMonth.length > 0) {
@@ -3848,7 +3858,7 @@ export default function App() {
                 // 💡 날짜 데이터가 깨져서(예: '610-98-81' 등) DB 400 에러를 유발하는 것을 방지하는 현장 정화 필터
                 let rawDate = String(a.date || "").trim();
                 let clean = rawDate.replace(/[^0-9-]/g, ""); // 숫자와 대시만 필터
-                
+
                 let finalDate = clean;
                 // 정밀 YYYY-MM-DD 포맷 검증
                 if (!/^\d{4}-\d{2}-\d{2}$/.test(clean)) {
@@ -3874,7 +3884,7 @@ export default function App() {
                     finalDate = `${baseYear}-05-15`;
                   }
                 }
-                
+
                 return {
                   year: a.year,
                   date: finalDate,
@@ -3954,7 +3964,7 @@ export default function App() {
       if (!dateStr) return new Date().toISOString();
       const parsed = new Date(dateStr);
       if (isNaN(parsed.getTime())) return new Date().toISOString();
-      
+
       const pad = (n) => String(n).padStart(2, "0");
       const yyyy = parsed.getFullYear();
       const mm = pad(parsed.getMonth() + 1);
@@ -3964,7 +3974,7 @@ export default function App() {
       const ss = pad(parsed.getSeconds());
       return `${yyyy}-${mm}-${dd} ${hh}:${mi}:${ss}+09`;
     };
-    
+
     const syncPressImmediate = async () => {
       try {
         // --- 1단계: 타 연차 기사가 발견되었을 경우 해당 연차 DB에 단독 Insert 및 청소 ---
@@ -3973,7 +3983,7 @@ export default function App() {
           for (const item of otherYearPress) {
             const targetYear = getCalculatedYearFromDate(item.broadcastDate);
             console.log(`타 연차 기사 감지: ${item.title} -> ${targetYear}차년도 DB로 직접 저장합니다.`);
-            
+
             let insertPayload = {
               year: targetYear,
               type: item.type || "기타",
@@ -4041,7 +4051,7 @@ export default function App() {
           .select("id")
           .gte("broadcast_date", startDateStr)
           .lt("broadcast_date", endDateStr);
-          
+
         if (fetchErr) {
           console.error("Failed to fetch current press releases to rollback backup:", fetchErr);
           setSyncStatus("error");
@@ -4097,7 +4107,7 @@ export default function App() {
             .from("press_releases")
             .delete()
             .in("id", oldIds);
-            
+
           if (deleteErr) {
             console.error("Failed to clean up old press releases:", deleteErr);
           }
@@ -4268,14 +4278,14 @@ export default function App() {
 
           if (window.__HAS_NO_ADVANCED_ENV_COLUMNS__) {
             const safePayload = insertPayload.map(item => {
-              const { 
+              const {
                 dept_name, division_name, date_p, date_a, date_b, date_pr, date_i,
                 doc_plan, doc_purchase, doc_bid,
                 doc_plan_file_name, doc_purchase_file_name, doc_bid_file_name,
                 doc_plan_file_size, doc_purchase_file_size, doc_bid_file_size,
                 doc_plan_file_url, doc_purchase_file_url, doc_bid_file_url,
                 ai_proposal_data, ai_purchase_data, ai_bid_data, related_docs,
-                ...rest 
+                ...rest
               } = item;
               return rest;
             });
@@ -4289,14 +4299,14 @@ export default function App() {
               console.warn("DB에 procurement_env 신규 컬럼이 식별되지 않아 안전 폴백 저장을 시도합니다.", error);
               window.__HAS_NO_ADVANCED_ENV_COLUMNS__ = true;
               const safePayload = insertPayload.map(item => {
-                const { 
+                const {
                   dept_name, division_name, date_p, date_a, date_b, date_pr, date_i,
                   doc_plan, doc_purchase, doc_bid,
                   doc_plan_file_name, doc_purchase_file_name, doc_bid_file_name,
                   doc_plan_file_size, doc_purchase_file_size, doc_bid_file_size,
                   doc_plan_file_url, doc_purchase_file_url, doc_bid_file_url,
                   ai_proposal_data, ai_purchase_data, ai_bid_data, related_docs,
-                  ...rest 
+                  ...rest
                 } = item;
                 return rest;
               });
@@ -4352,10 +4362,10 @@ export default function App() {
 
           if (window.__HAS_NO_ADVANCED_EQUIP_COLUMNS__) {
             const safePayload = insertPayload.map(item => {
-              const { 
+              const {
                 date_p, date_a, date_b, date_pr, date_i,
                 doc_plan, doc_purchase, doc_bid,
-                ...rest 
+                ...rest
               } = item;
               return rest;
             });
@@ -4369,10 +4379,10 @@ export default function App() {
               console.warn("DB에 procurement_equipment 신규 컬럼이 식별되지 않아 안전 폴백 저장을 시도합니다.", error);
               window.__HAS_NO_ADVANCED_EQUIP_COLUMNS__ = true;
               const safePayload = insertPayload.map(item => {
-                const { 
+                const {
                   date_p, date_a, date_b, date_pr, date_i,
                   doc_plan, doc_purchase, doc_bid,
-                  ...rest 
+                  ...rest
                 } = item;
                 return rest;
               });
@@ -4403,67 +4413,50 @@ export default function App() {
         await supabase.from("procurement_services").delete().eq("year", selectedYear);
         if (serviceData.length > 0) {
           const insertPayload = serviceData.map(s => ({
-          year: selectedYear,
-          unit: s.unit || "A1",
-          program_id: s.programId || "",
-          program_name: s.programName || "",
-          dept_name: s.deptName || "",
-          division_name: s.divisionName || "",
-          password: s.password || "1234",
-          related_docs: s.relatedDocs || "",
-          title: s.title,
-          purpose: s.purpose,
-          provider_qual: s.providerQual,
-          step: s.step || 1,
-          budget_plan: s.budgetPlan,
-          budget_spent: s.budgetSpent,
-          op_result: s.opResult,
-          // 7대 절차 날짜
-          date_pp: s.datePp || null,
-          date_rfo: s.dateRfo || null,
-          date_b: s.dateB || null,
-          date_es: s.dateEs || null,
-          date_c: s.dateC || null,
-          date_e: s.dateE || null,
-          date_i: s.dateI || null,
-          // 3종 관련 문서 및 AI 데이터
-          doc_plan: s.docPlan || "",
-          doc_purchase: s.docPurchase || "",
-          doc_bid: s.doc_bid || s.docBid || "",
-          doc_plan_file_name: s.docPlanFileName || "",
-          doc_purchase_file_name: s.docPurchaseFileName || "",
-          doc_bid_file_name: s.docBidFileName || "",
-          doc_plan_file_size: Number(s.docPlanFileSize) || 0,
-          doc_purchase_file_size: Number(s.docPurchaseFileSize) || 0,
-          doc_bid_file_size: Number(s.docBidFileSize) || 0,
-          doc_plan_file_url: s.docPlanFileUrl || "",
-          doc_purchase_file_url: s.docPurchaseFileUrl || "",
-          doc_bid_file_url: s.docBidFileUrl || "",
-          ai_proposal_data: s.aiProposalData || null,
-          ai_purchase_data: s.aiPurchaseData || null,
-          ai_bid_data: s.aiBidData || null
-        }));
-
-        let error = null;
-
-        if (window.__HAS_NO_ADVANCED_SERVICES_COLUMNS__) {
-          const safePayload = insertPayload.map(item => ({
-            year: item.year,
-            title: item.title,
-            step: item.step,
-            budget_plan: item.budget_plan,
-            budget_spent: item.budget_spent,
-            op_result: item.op_result
+            year: selectedYear,
+            unit: s.unit || "A1",
+            program_id: s.programId || "",
+            program_name: s.programName || "",
+            dept_name: s.deptName || "",
+            division_name: s.divisionName || "",
+            password: s.password || "1234",
+            related_docs: s.relatedDocs || "",
+            title: s.title,
+            purpose: s.purpose,
+            provider_qual: s.providerQual,
+            step: s.step || 1,
+            budget_plan: s.budgetPlan,
+            budget_spent: s.budgetSpent,
+            op_result: s.opResult,
+            // 7대 절차 날짜
+            date_pp: s.datePp || null,
+            date_rfo: s.dateRfo || null,
+            date_b: s.dateB || null,
+            date_es: s.dateEs || null,
+            date_c: s.dateC || null,
+            date_e: s.dateE || null,
+            date_i: s.dateI || null,
+            // 3종 관련 문서 및 AI 데이터
+            doc_plan: s.docPlan || "",
+            doc_purchase: s.docPurchase || "",
+            doc_bid: s.doc_bid || s.docBid || "",
+            doc_plan_file_name: s.docPlanFileName || "",
+            doc_purchase_file_name: s.docPurchaseFileName || "",
+            doc_bid_file_name: s.docBidFileName || "",
+            doc_plan_file_size: Number(s.docPlanFileSize) || 0,
+            doc_purchase_file_size: Number(s.docPurchaseFileSize) || 0,
+            doc_bid_file_size: Number(s.docBidFileSize) || 0,
+            doc_plan_file_url: s.docPlanFileUrl || "",
+            doc_purchase_file_url: s.docPurchaseFileUrl || "",
+            doc_bid_file_url: s.docBidFileUrl || "",
+            ai_proposal_data: s.aiProposalData || null,
+            ai_purchase_data: s.aiPurchaseData || null,
+            ai_bid_data: s.aiBidData || null
           }));
-          const { error: retryErr } = await supabase.from("procurement_services").insert(safePayload);
-          error = retryErr;
-        } else {
-          const { error: firstErr } = await supabase.from("procurement_services").insert(insertPayload);
-          error = firstErr;
 
-          if (error) {
-            console.warn("DB에 procurement_services 고도화 컬럼이 식별되지 않아 안전 폴백 저장을 시도합니다.", error);
-            window.__HAS_NO_ADVANCED_SERVICES_COLUMNS__ = true;
+          let error = null;
+
+          if (window.__HAS_NO_ADVANCED_SERVICES_COLUMNS__) {
             const safePayload = insertPayload.map(item => ({
               year: item.year,
               title: item.title,
@@ -4474,10 +4467,27 @@ export default function App() {
             }));
             const { error: retryErr } = await supabase.from("procurement_services").insert(safePayload);
             error = retryErr;
-          }
-        }
+          } else {
+            const { error: firstErr } = await supabase.from("procurement_services").insert(insertPayload);
+            error = firstErr;
 
-        if (error) throw error;
+            if (error) {
+              console.warn("DB에 procurement_services 고도화 컬럼이 식별되지 않아 안전 폴백 저장을 시도합니다.", error);
+              window.__HAS_NO_ADVANCED_SERVICES_COLUMNS__ = true;
+              const safePayload = insertPayload.map(item => ({
+                year: item.year,
+                title: item.title,
+                step: item.step,
+                budget_plan: item.budget_plan,
+                budget_spent: item.budget_spent,
+                op_result: item.op_result
+              }));
+              const { error: retryErr } = await supabase.from("procurement_services").insert(safePayload);
+              error = retryErr;
+            }
+          }
+
+          if (error) throw error;
         }
         setSyncStatus("synced");
       } catch (e) {
@@ -4609,9 +4619,9 @@ export default function App() {
   // 1차년도용 단위과제 필터링 및 이름/ID 변환
   const getNormalizedProjectsForRendering = (rawProjects, yr) => {
     if (!rawProjects) return [];
-    
+
     const cloned = JSON.parse(JSON.stringify(rawProjects));
-    
+
     if (yr !== 1) {
       // 2~5차년도에는 해당 연도의 프로그램만 필터링
       return cloned.map(p => {
@@ -4752,7 +4762,7 @@ export default function App() {
     // 3. 마운트 완료 후 이전 스크롤 위치 복원 (지연 복원 보장)
     const savedScrollY = localStorage.getItem("anchor_scroll_y");
     let hasSavedScroll = false;
-    
+
     if (savedScrollY) {
       const scrollY = parseInt(savedScrollY, 10);
       if (scrollY > 0) {
@@ -4869,7 +4879,7 @@ export default function App() {
       const firstKpi = projects
         .flatMap((p) => p.units.flatMap((u) => u.kpis || []))
         .find((k) => k ? k.type === kpiSubTab : false);
-      
+
       // 검색된 첫 번째 지표가 있으면 자동으로 조회 대상으로 설정하고, 없으면 null로 초기화합니다.
       setSelectedKpi(firstKpi || null);
     }
@@ -4917,7 +4927,7 @@ export default function App() {
                     const bNational = Math.round((parseFloat(mainRow["국고"]) || 0) * 1000000);
                     const bCity = Math.round((parseFloat(mainRow["지자체시비"]) || 0) * 1000000);
                     const bExternal = Math.round((parseFloat(mainRow["외부사업비"]) || 0) * 1000000);
-                    
+
                     const bCarryNational = selectedYear === 1 ? 0 : Math.round((parseFloat(carryRow["국고"]) || 0) * 1000000);
                     const bCarryCity = selectedYear === 1 ? 0 : Math.round((parseFloat(carryRow["지자체시비"]) || 0) * 1000000);
                     const bCarryExternal = selectedYear === 1 ? 0 : Math.round((parseFloat(carryRow["외부사업비"]) || 0) * 1000000);
@@ -4950,7 +4960,7 @@ export default function App() {
                     standardCategories.forEach(cat => {
                       const budgetVal = parseFloat(mainRow[cat.label]) || 0;
                       const carryVal = parseFloat(carryRow[cat.label]) || 0;
-                      
+
                       if (budgetVal > 0 || carryVal > 0) {
                         // 기존에 이미 등록되어 있던 비목이면 spent/spent_carry 집행액 정보를 보존
                         const existing = (py.budget_categories || []).find(c => c.category === cat.dbCategory) || {};
@@ -4963,7 +4973,7 @@ export default function App() {
                         });
                       }
                     });
-                    
+
                     // UI 기획 슬롯 제약에 맞춰 금액이 0보다 큰 비목 중 선입된 최대 4개까지만 배정
                     py.budget_categories = cats.slice(0, 4);
 
@@ -4984,7 +4994,7 @@ export default function App() {
                   }
                 }
               });
-              
+
               // 해당 단위과제에 소속된 세부 프로그램들의 비목별 배정계획을 10대 표준비목으로 쪼개서 실시간 롤업 동기화
               const categorySums = {
                 "인건비": { main: 0, carry: 0, spent_main: 0, spent_carry: 0 },
@@ -5071,7 +5081,7 @@ export default function App() {
                 u.years[selectedYear].spent_main = Object.values(u.budgetDetails).reduce((sum, b) => sum + (b.years[selectedYear]?.spent_main || 0), 0);
                 u.years[selectedYear].spent_carry = Object.values(u.budgetDetails).reduce((sum, b) => sum + (b.years[selectedYear]?.spent_carry || 0), 0);
               }
-              
+
               // 단위과제 이월 재계산
               recalculateCarryOver(u.years);
             });
@@ -5081,7 +5091,7 @@ export default function App() {
         excelJson.forEach((row) => {
           const subId = row["세부항목ID"];
           const currentVal = parseFloat(row["실적값(현재값)"]);
-          
+
           if (subId && !isNaN(currentVal)) {
             updated.forEach((p) => {
               p.units.forEach((u) => {
@@ -5146,13 +5156,13 @@ export default function App() {
           approved_at: new Date().toISOString()
         })
         .eq("id", req.id);
-      
+
       if (updateErr) throw updateErr;
 
       // 실제 project_data에 적용 (changes.after 병합)
       const afterFields = req.changes.after;
       const targetUnitId = getRealUnitId(req.unit_id, selectedYear);
-      
+
       setProjects((prevProjects) => {
         const updated = JSON.parse(JSON.stringify(prevProjects));
         let dataUpdated = false;
@@ -5186,7 +5196,7 @@ export default function App() {
                 });
               }
             });
-            
+
             // Supabase 반영
             if (dataUpdated) {
               supabase.from("projects_data")
@@ -5222,9 +5232,9 @@ export default function App() {
           approved_at: new Date().toISOString()
         })
         .eq("id", req.id);
-      
+
       if (error) throw error;
-      
+
       alert("🚨 변경 신청 반려 처리가 완료되었습니다.");
       setSelectedRequest(null);
       fetchVersionRequests();
@@ -5251,7 +5261,7 @@ export default function App() {
         .from("program_version_requests")
         .delete()
         .eq("id", req.id);
-      
+
       if (deleteErr) throw deleteErr;
 
       // 3) 승인 완료된 이력인 경우 롤백(이전 계획 복원) 처리
@@ -5332,10 +5342,10 @@ export default function App() {
                 if (updatedFields.participants !== undefined) prog.participants = updatedFields.participants;
                 if (updatedFields.satisfaction !== undefined) prog.satisfaction = updatedFields.satisfaction;
                 if (updatedFields.selfEval !== undefined) prog.selfEval = updatedFields.selfEval;
-                
+
                 // 실제 실적 타임라인 갱신 (수동 입력 지원)
                 if (updatedFields.actual_timeline !== undefined) prog.actual_timeline = updatedFields.actual_timeline;
-                
+
                 // 신규 P단계 기획 필드 갱신
                 if (updatedFields.timeline !== undefined) prog.timeline = updatedFields.timeline;
                 if (updatedFields.targetAudience !== undefined) prog.targetAudience = updatedFields.targetAudience;
@@ -5351,7 +5361,7 @@ export default function App() {
                 if (updatedFields.target_etc_name !== undefined) prog.target_etc_name = updatedFields.target_etc_name;
                 if (updatedFields.kpi_type !== undefined) prog.kpi_type = updatedFields.kpi_type;
                 if (updatedFields.kpi_link !== undefined) prog.kpi_link = updatedFields.kpi_link;
-                
+
                 // 신규 A단계 2분할 환류 필드 갱신
                 if (updatedFields.evalType !== undefined) prog.evalType = updatedFields.evalType;
                 if (updatedFields.excellent !== undefined) prog.excellent = updatedFields.excellent;
@@ -5366,7 +5376,7 @@ export default function App() {
                   if (updatedFields.budget_national !== undefined) py.budget_national = updatedFields.budget_national;
                   if (updatedFields.budget_city !== undefined) py.budget_city = updatedFields.budget_city;
                   if (updatedFields.budget_external !== undefined) py.budget_external = updatedFields.budget_external;
-                  
+
                   if (updatedFields.budget_carry_national !== undefined) py.budget_carry_national = updatedFields.budget_carry_national;
                   if (updatedFields.budget_carry_city !== undefined) py.budget_carry_city = updatedFields.budget_carry_city;
                   if (updatedFields.budget_carry_external !== undefined) py.budget_carry_external = updatedFields.budget_carry_external;
@@ -5400,7 +5410,7 @@ export default function App() {
                   if (updatedFields.spent_national !== undefined) py.spent_national = Math.min(updatedFields.spent_national, py.budget_national || 0);
                   if (updatedFields.spent_city !== undefined) py.spent_city = Math.min(updatedFields.spent_city, py.budget_city || 0);
                   if (updatedFields.spent_external !== undefined) py.spent_external = Math.min(updatedFields.spent_external, py.budget_external || 0);
-                  
+
                   // 세부 재원 집행액의 합으로 총 본집행액(spent_main) 동기화 (외부사업비 제외)
                   py.spent_main = (py.spent_national || 0) + (py.spent_city || 0);
 
@@ -5421,7 +5431,7 @@ export default function App() {
                     py.budget_categories = updatedFields.budget_categories;
                   }
                 }
-                
+
                 // 프로그램 5개년 이월 잔액 재계산
                 recalculateCarryOver(prog.years);
 
@@ -5447,7 +5457,7 @@ export default function App() {
                 }
               }
             });
-            
+
             // 해당 단위과제에 소속된 세부 프로그램들의 비목별 배정계획을 10대 표준비목으로 쪼개서 실시간 롤업 동기화
             const categorySums = {
               "인건비": { main: 0, carry: 0, spent_main: 0, spent_carry: 0 },
@@ -5534,12 +5544,12 @@ export default function App() {
               tgt.spent_city = isD2 ? 0 : categorySums[catName].spent_main - Math.round(categorySums[catName].spent_main * 0.5);
               tgt.spent_external = 0;
             });
-            
+
             // 모든 비목의 이월 잔액 재계산
             Object.keys(u.budgetDetails).forEach(key => {
               recalculateCarryOver(u.budgetDetails[key].years);
             });
-            
+
             // 단위과제 연도별 전체 집행액/예산 재집계 및 이월 연쇄 재계산
             [1, 2, 3, 4, 5].forEach(yr => {
               const uYear = u.years[yr] || {};
@@ -5567,13 +5577,13 @@ export default function App() {
               }
             });
             recalculateCarryOver(u.years);
-            
+
             // 레거시/기타 UI 연동용 필드 동기화
             u.spent = (u.years[selectedYear]?.spent_main || 0) + (u.years[selectedYear]?.spent_carry || 0);
             u.budget = (u.years[selectedYear]?.budget_main || 0) + (u.years[selectedYear]?.budget_carry || 0);
           }
         });
-        
+
         // 프로젝트 전체 집행액/예산 총합 갱신
         p.spent = p.units.reduce((sum, un) => sum + (un.years[selectedYear]?.spent_main || 0) + (un.years[selectedYear]?.spent_carry || 0), 0);
         p.budget = p.units.reduce((sum, un) => sum + (un.years[selectedYear]?.budget_main || 0) + (un.years[selectedYear]?.budget_carry || 0), 0);
@@ -5910,7 +5920,7 @@ export default function App() {
             u.budget = (u.years[selectedYear]?.budget_main || 0) + (u.years[selectedYear]?.budget_carry || 0);
           }
         });
-        
+
         p.spent = p.units.reduce((sum, un) => sum + (un.years[selectedYear]?.spent_main || 0) + (un.years[selectedYear]?.spent_carry || 0), 0);
         p.budget = p.units.reduce((sum, un) => sum + (un.years[selectedYear]?.budget_main || 0) + (un.years[selectedYear]?.budget_carry || 0), 0);
       });
@@ -6083,7 +6093,7 @@ export default function App() {
   // 사용자 호칭 맵핑 웰컴 메시지 헬퍼 함수
   const getWelcomeMessage = () => {
     if (!currentUser) return "";
-    
+
     // currentUser.id 또는 name 기준으로 members 데이터에서 정보 탐색
     const currentMember = members.find((m) => {
       if (!m.email) return false;
@@ -6142,7 +6152,7 @@ export default function App() {
       {/* 사이드바 */}
       <Sidebar
         currentRole={currentRole}
-        onChangeRole={() => {}}
+        onChangeRole={() => { }}
         activeTab={activeTab}
         onChangeTab={(tab) => {
           setActiveTab(tab);
@@ -6185,7 +6195,7 @@ export default function App() {
                   // 💡 탭 변경 즉시 비동기 로딩 플래그를 동기적으로 리셋하여 자동 저장 Race Condition을 완전히 원천 봉쇄
                   setIsFetchCompleted(false);
                   setIsDbLoaded(false);
-                  
+
                   setSelectedYear(yr);
                   setSelectedKpi(null);
                   if (yr === 1) {
@@ -6214,7 +6224,7 @@ export default function App() {
 
           <div className="controls-section" style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
             {/* Supabase 실시간 동기화 상태 배지 */}
-            <span 
+            <span
               onClick={() => {
                 if (syncStatus === "error") {
                   if (confirm("로컬 캐시 데이터 간 충돌이 감지되었습니다. 로컬 캐시를 초기화하고 안전하게 새로고침하시겠습니까? (이수증/상장 등의 임시 캐시가 초기화됩니다)")) {
@@ -6233,21 +6243,21 @@ export default function App() {
                 padding: "0.25rem 0.6rem",
                 borderRadius: "4px",
                 cursor: syncStatus === "error" ? "pointer" : "default",
-                background: syncStatus === "synced" 
-                  ? "rgba(16, 185, 129, 0.1)" 
-                  : syncStatus === "syncing" 
-                  ? "rgba(245, 158, 11, 0.1)" 
-                  : "rgba(239, 68, 68, 0.1)",
-                color: syncStatus === "synced" 
-                  ? "#10B981" 
-                  : syncStatus === "syncing" 
-                  ? "#F59E0B" 
-                  : "#EF4444",
-                border: syncStatus === "synced" 
-                  ? "1px solid rgba(16, 185, 129, 0.2)" 
-                  : syncStatus === "syncing" 
-                  ? "1px solid rgba(245, 158, 11, 0.2)" 
-                  : "1px solid rgba(239, 68, 68, 0.2)",
+                background: syncStatus === "synced"
+                  ? "rgba(16, 185, 129, 0.1)"
+                  : syncStatus === "syncing"
+                    ? "rgba(245, 158, 11, 0.1)"
+                    : "rgba(239, 68, 68, 0.1)",
+                color: syncStatus === "synced"
+                  ? "#10B981"
+                  : syncStatus === "syncing"
+                    ? "#F59E0B"
+                    : "#EF4444",
+                border: syncStatus === "synced"
+                  ? "1px solid rgba(16, 185, 129, 0.2)"
+                  : syncStatus === "syncing"
+                    ? "1px solid rgba(245, 158, 11, 0.2)"
+                    : "1px solid rgba(239, 68, 68, 0.2)",
                 marginRight: "0.5rem",
                 fontWeight: "700",
                 textDecoration: syncStatus === "error" ? "underline" : "none"
@@ -6317,235 +6327,235 @@ export default function App() {
           <>
             {/* 단위과제 및 프로그램 관리 탭: 전체 카드를 Fragment로 감싼 뒤 하단에 예산 전용 엑셀 업로더를 배치합니다. */}
             <div className="glass-card">
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.2rem" }}>
-              <h2 style={{ fontSize: "1.25rem", fontWeight: "800" }}>{selectedYear}차년도 단위과제 관리 및 프로그램 관리</h2>
-            </div>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.2rem" }}>
+                <h2 style={{ fontSize: "1.25rem", fontWeight: "800" }}>{selectedYear}차년도 단위과제 관리 및 프로그램 관리</h2>
+              </div>
 
-            {/* 서브탭 내비게이션 바 */}
-            <div style={{ display: "flex", gap: "0.5rem", borderBottom: "1px solid var(--border-color)", paddingBottom: "0.8rem", marginBottom: "1.2rem" }}>
-              <button
-                type="button"
-                onClick={() => setProjectsSubTab("unit_status")}
-                style={{
-                  border: "none",
-                  background: "transparent",
-                  padding: "0.5rem 1rem",
-                  fontSize: "0.85rem",
-                  fontWeight: "800",
-                  cursor: "pointer",
-                  color: projectsSubTab === "unit_status" ? "var(--accent-color)" : "var(--text-secondary)",
-                  borderBottom: projectsSubTab === "unit_status" ? "2px solid var(--accent-color)" : "none",
-                  transition: "all 0.2s"
-                }}
-              >
-                단위과제 집행현황
-              </button>
-              <button
-                type="button"
-                onClick={() => setProjectsSubTab("unit_system")}
-                style={{
-                  border: "none",
-                  background: "transparent",
-                  padding: "0.5rem 1rem",
-                  fontSize: "0.85rem",
-                  fontWeight: "800",
-                  cursor: "pointer",
-                  color: projectsSubTab === "unit_system" ? "var(--accent-color)" : "var(--text-secondary)",
-                  borderBottom: projectsSubTab === "unit_system" ? "2px solid var(--accent-color)" : "none",
-                  transition: "all 0.2s"
-                }}
-              >
-                단위과제 체계
-              </button>
-              <button
-                type="button"
-                onClick={() => setProjectsSubTab("program_mgmt")}
-                style={{
-                  border: "none",
-                  background: "transparent",
-                  padding: "0.5rem 1rem",
-                  fontSize: "0.85rem",
-                  fontWeight: "800",
-                  cursor: "pointer",
-                  color: projectsSubTab === "program_mgmt" ? "var(--accent-color)" : "var(--text-secondary)",
-                  borderBottom: projectsSubTab === "program_mgmt" ? "2px solid var(--accent-color)" : "none",
-                  transition: "all 0.2s"
-                }}
-              >
-                프로그램 관리
-              </button>
-            </div>
-            
-            {projectsSubTab === "unit_status" && (
-              <div className="table-panel">
-                <table className="custom-table" style={{ fontSize: "0.8rem" }}>
-                  <thead>
-                    <tr style={{ background: "rgba(255,255,255,0.02)" }}>
-                      <th rowSpan={2} style={{ verticalAlign: "middle", borderBottom: "1px solid var(--border-color)", borderRight: "2px solid var(--border-color)" }}>과제/부서</th>
-                      <th colSpan={selectedYear >= 2 ? 5 : 4} style={{ textAlign: "center", borderBottom: "1px solid var(--border-color)", borderRight: "2px solid var(--border-color)", fontWeight: "800", color: "var(--accent-color)", background: "rgba(59, 130, 246, 0.08)", padding: "0.55rem 0" }}>
-                        예산 배정 및 집행 (단위: 백만원)
-                      </th>
-                      <th colSpan={5} style={{ textAlign: "center", borderBottom: "1px solid var(--border-color)", fontWeight: "800", color: "#10b981", background: "rgba(16, 185, 129, 0.08)", padding: "0.55rem 0" }}>
-                        프로그램 현황 및 진행
-                      </th>
-                    </tr>
-                    <tr>
-                      <th style={{ fontSize: "0.75rem", textAlign: "right", paddingRight: "1rem" }}>본예산</th>
-                      {selectedYear >= 2 && <th style={{ fontSize: "0.75rem", textAlign: "right", paddingRight: "1rem" }}>이월예산</th>}
-                      <th style={{ fontSize: "0.75rem", textAlign: "right", paddingRight: "1rem" }}>총 배정액</th>
-                      <th style={{ fontSize: "0.75rem", textAlign: "right", paddingRight: "1rem" }}>누적 집행</th>
-                      <th style={{ fontSize: "0.75rem", borderRight: "2px solid var(--border-color)", textAlign: "right", paddingRight: "1rem" }}>집행률</th>
-                      <th style={{ fontSize: "0.75rem", textAlign: "center" }}>총 개수</th>
-                      <th style={{ fontSize: "0.75rem", textAlign: "center" }}>준비</th>
-                      <th style={{ fontSize: "0.75rem", textAlign: "center" }}>진행</th>
-                      <th style={{ fontSize: "0.75rem", textAlign: "center" }}>완료</th>
-                      <th style={{ fontSize: "0.75rem" }}>진행률</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {displayProjects.flatMap((p) => p.units)
-                      .sort((a, b) => {
-                        if (a.id === "Common") return 1;
-                        if (b.id === "Common") return -1;
-                        return a.id.localeCompare(b.id, undefined, { numeric: true, sensitivity: 'base' });
-                      })
-                      .map((u) => {
-                        const yData = u.years?.[selectedYear] || { budget_main: 0, spent_main: 0, budget_carry: 0, spent_carry: 0 };
-                        const budgetCarryVal = selectedYear === 1 ? 0 : (yData.budget_carry || 0);
-                        const spentCarryVal = selectedYear === 1 ? 0 : (yData.spent_carry || 0);
-                        const totalBudget = (yData.budget_main || 0) + budgetCarryVal;
-                        const totalSpent = (yData.spent_main || 0) + spentCarryVal;
-                        const rate = totalBudget > 0 ? (totalSpent / totalBudget) * 100 : 0;
+              {/* 서브탭 내비게이션 바 */}
+              <div style={{ display: "flex", gap: "0.5rem", borderBottom: "1px solid var(--border-color)", paddingBottom: "0.8rem", marginBottom: "1.2rem" }}>
+                <button
+                  type="button"
+                  onClick={() => setProjectsSubTab("unit_status")}
+                  style={{
+                    border: "none",
+                    background: "transparent",
+                    padding: "0.5rem 1rem",
+                    fontSize: "0.85rem",
+                    fontWeight: "800",
+                    cursor: "pointer",
+                    color: projectsSubTab === "unit_status" ? "var(--accent-color)" : "var(--text-secondary)",
+                    borderBottom: projectsSubTab === "unit_status" ? "2px solid var(--accent-color)" : "none",
+                    transition: "all 0.2s"
+                  }}
+                >
+                  단위과제 집행현황
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setProjectsSubTab("unit_system")}
+                  style={{
+                    border: "none",
+                    background: "transparent",
+                    padding: "0.5rem 1rem",
+                    fontSize: "0.85rem",
+                    fontWeight: "800",
+                    cursor: "pointer",
+                    color: projectsSubTab === "unit_system" ? "var(--accent-color)" : "var(--text-secondary)",
+                    borderBottom: projectsSubTab === "unit_system" ? "2px solid var(--accent-color)" : "none",
+                    transition: "all 0.2s"
+                  }}
+                >
+                  단위과제 체계
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setProjectsSubTab("program_mgmt")}
+                  style={{
+                    border: "none",
+                    background: "transparent",
+                    padding: "0.5rem 1rem",
+                    fontSize: "0.85rem",
+                    fontWeight: "800",
+                    cursor: "pointer",
+                    color: projectsSubTab === "program_mgmt" ? "var(--accent-color)" : "var(--text-secondary)",
+                    borderBottom: projectsSubTab === "program_mgmt" ? "2px solid var(--accent-color)" : "none",
+                    transition: "all 0.2s"
+                  }}
+                >
+                  프로그램 관리
+                </button>
+              </div>
 
-                        // 프로그램 현황 집계 변수들
-                        const totalPrograms = u.programs?.length || 0;
-                        let readyCount = 0;
-                        let inProgressCount = 0;
-                        let completedCount = 0;
-                        let totalProgressSum = 0;
+              {projectsSubTab === "unit_status" && (
+                <div className="table-panel">
+                  <table className="custom-table" style={{ fontSize: "0.8rem" }}>
+                    <thead>
+                      <tr style={{ background: "rgba(255,255,255,0.02)" }}>
+                        <th rowSpan={2} style={{ verticalAlign: "middle", borderBottom: "1px solid var(--border-color)", borderRight: "2px solid var(--border-color)" }}>과제/부서</th>
+                        <th colSpan={selectedYear >= 2 ? 5 : 4} style={{ textAlign: "center", borderBottom: "1px solid var(--border-color)", borderRight: "2px solid var(--border-color)", fontWeight: "800", color: "var(--accent-color)", background: "rgba(59, 130, 246, 0.08)", padding: "0.55rem 0" }}>
+                          예산 배정 및 집행 (단위: 백만원)
+                        </th>
+                        <th colSpan={5} style={{ textAlign: "center", borderBottom: "1px solid var(--border-color)", fontWeight: "800", color: "#10b981", background: "rgba(16, 185, 129, 0.08)", padding: "0.55rem 0" }}>
+                          프로그램 현황 및 진행
+                        </th>
+                      </tr>
+                      <tr>
+                        <th style={{ fontSize: "0.75rem", textAlign: "right", paddingRight: "1rem" }}>본예산</th>
+                        {selectedYear >= 2 && <th style={{ fontSize: "0.75rem", textAlign: "right", paddingRight: "1rem" }}>이월예산</th>}
+                        <th style={{ fontSize: "0.75rem", textAlign: "right", paddingRight: "1rem" }}>총 배정액</th>
+                        <th style={{ fontSize: "0.75rem", textAlign: "right", paddingRight: "1rem" }}>누적 집행</th>
+                        <th style={{ fontSize: "0.75rem", borderRight: "2px solid var(--border-color)", textAlign: "right", paddingRight: "1rem" }}>집행률</th>
+                        <th style={{ fontSize: "0.75rem", textAlign: "center" }}>총 개수</th>
+                        <th style={{ fontSize: "0.75rem", textAlign: "center" }}>준비</th>
+                        <th style={{ fontSize: "0.75rem", textAlign: "center" }}>진행</th>
+                        <th style={{ fontSize: "0.75rem", textAlign: "center" }}>완료</th>
+                        <th style={{ fontSize: "0.75rem" }}>진행률</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {displayProjects.flatMap((p) => p.units)
+                        .sort((a, b) => {
+                          if (a.id === "Common") return 1;
+                          if (b.id === "Common") return -1;
+                          return a.id.localeCompare(b.id, undefined, { numeric: true, sensitivity: 'base' });
+                        })
+                        .map((u) => {
+                          const yData = u.years?.[selectedYear] || { budget_main: 0, spent_main: 0, budget_carry: 0, spent_carry: 0 };
+                          const budgetCarryVal = selectedYear === 1 ? 0 : (yData.budget_carry || 0);
+                          const spentCarryVal = selectedYear === 1 ? 0 : (yData.spent_carry || 0);
+                          const totalBudget = (yData.budget_main || 0) + budgetCarryVal;
+                          const totalSpent = (yData.spent_main || 0) + spentCarryVal;
+                          const rate = totalBudget > 0 ? (totalSpent / totalBudget) * 100 : 0;
 
-                        if (totalPrograms > 0) {
-                          u.programs.forEach((prog) => {
-                            const pdca = prog.pdca || { p: "대기", d: "대기", c: "대기", a: "대기" };
-                            const completedSteps = [pdca.p, pdca.d, pdca.c, pdca.a].filter(step => step === "완료").length;
-                            const progProgress = (completedSteps / 4) * 100;
-                            totalProgressSum += progProgress;
+                          // 프로그램 현황 집계 변수들
+                          const totalPrograms = u.programs?.length || 0;
+                          let readyCount = 0;
+                          let inProgressCount = 0;
+                          let completedCount = 0;
+                          let totalProgressSum = 0;
 
-                            if (completedSteps === 0) {
-                              readyCount++;
-                            } else if (completedSteps === 4) {
-                              completedCount++;
-                            } else {
-                              inProgressCount++;
-                            }
-                          });
-                        }
-                        const progressRate = totalPrograms > 0 ? (totalProgressSum / totalPrograms) : 0;
+                          if (totalPrograms > 0) {
+                            u.programs.forEach((prog) => {
+                              const pdca = prog.pdca || { p: "대기", d: "대기", c: "대기", a: "대기" };
+                              const completedSteps = [pdca.p, pdca.d, pdca.c, pdca.a].filter(step => step === "완료").length;
+                              const progProgress = (completedSteps / 4) * 100;
+                              totalProgressSum += progProgress;
 
-                        return (
-                          <tr 
-                            key={u.id}
-                            onClick={() => {
-                              setSelectedUnitId(u.id);
-                              setSelectedProgId(null);
-                              setProjectsSubTab("program_mgmt"); // 단위과제 클릭 시 프로그램 관리 탭으로 연계 이동
-                            }}
-                            style={{
-                              cursor: "pointer",
-                              background: selectedUnitId === u.id ? "rgba(59, 130, 246, 0.15)" : "transparent",
-                              transition: "background 0.2s"
-                            }}
-                          >
-                            <td style={{ fontWeight: "700", borderRight: "1px solid rgba(255,255,255,0.05)" }}>
-                              {u.id === "Common" ? "" : `${u.id}. `}{u.title}
-                            </td>
-                            <td style={{ fontFamily: "var(--font-data)", textAlign: "right", paddingRight: "1rem" }}>
-                              {formatToMillionWon(yData.budget_main)}
-                            </td>
-                            {selectedYear >= 2 && (
-                              <td style={{ fontFamily: "var(--font-data)", textAlign: "right", paddingRight: "1rem" }}>
-                                {formatToMillionWon(budgetCarryVal)}
+                              if (completedSteps === 0) {
+                                readyCount++;
+                              } else if (completedSteps === 4) {
+                                completedCount++;
+                              } else {
+                                inProgressCount++;
+                              }
+                            });
+                          }
+                          const progressRate = totalPrograms > 0 ? (totalProgressSum / totalPrograms) : 0;
+
+                          return (
+                            <tr
+                              key={u.id}
+                              onClick={() => {
+                                setSelectedUnitId(u.id);
+                                setSelectedProgId(null);
+                                setProjectsSubTab("program_mgmt"); // 단위과제 클릭 시 프로그램 관리 탭으로 연계 이동
+                              }}
+                              style={{
+                                cursor: "pointer",
+                                background: selectedUnitId === u.id ? "rgba(59, 130, 246, 0.15)" : "transparent",
+                                transition: "background 0.2s"
+                              }}
+                            >
+                              <td style={{ fontWeight: "700", borderRight: "1px solid rgba(255,255,255,0.05)" }}>
+                                {u.id === "Common" ? "" : `${u.id}. `}{u.title}
                               </td>
-                            )}
-                            <td style={{ fontFamily: "var(--font-data)", fontWeight: "700", textAlign: "right", paddingRight: "1rem" }}>
-                              {formatToMillionWon(totalBudget)}
-                            </td>
-                            <td style={{ fontFamily: "var(--font-data)", textAlign: "right", paddingRight: "1rem" }}>
-                              {formatToMillionWon(totalSpent)}
-                            </td>
-                            <td style={{ borderRight: "2px solid var(--border-color)" }}>
-                              <div style={{ display: "flex", alignItems: "center", gap: "0.25rem" }}>
-                                <span style={{ fontSize: "0.75rem", fontFamily: "var(--font-data)" }}>{rate.toFixed(1)}%</span>
-                              </div>
-                            </td>
-                            {u.id === "Common" ? (
-                              <>
-                                <td style={{ textAlign: "center" }}>-</td>
-                                <td style={{ textAlign: "center" }}>-</td>
-                                <td style={{ textAlign: "center" }}>-</td>
-                                <td style={{ textAlign: "center" }}>-</td>
-                                <td>-</td>
-                              </>
-                            ) : (
-                              <>
-                                <td style={{ fontFamily: "var(--font-data)", textAlign: "center" }}>
-                                  {totalPrograms}개
+                              <td style={{ fontFamily: "var(--font-data)", textAlign: "right", paddingRight: "1rem" }}>
+                                {formatToMillionWon(yData.budget_main)}
+                              </td>
+                              {selectedYear >= 2 && (
+                                <td style={{ fontFamily: "var(--font-data)", textAlign: "right", paddingRight: "1rem" }}>
+                                  {formatToMillionWon(budgetCarryVal)}
                                 </td>
-                                <td style={{ fontFamily: "var(--font-data)", textAlign: "center", color: "var(--text-secondary)" }}>
-                                  {readyCount}
-                                </td>
-                                <td style={{ fontFamily: "var(--font-data)", textAlign: "center", color: "#f59e0b" }}>
-                                  {inProgressCount}
-                                </td>
-                                <td style={{ fontFamily: "var(--font-data)", textAlign: "center", color: "var(--success-color)", fontWeight: "700" }}>
-                                  {completedCount}
-                                </td>
-                                <td>
-                                  <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
-                                    <div style={{ width: "40px", height: "6px", background: "rgba(255,255,255,0.1)", borderRadius: "3px", overflow: "hidden" }}>
-                                      <div style={{ width: `${Math.min(progressRate, 100)}%`, height: "100%", background: "#10b981" }} />
+                              )}
+                              <td style={{ fontFamily: "var(--font-data)", fontWeight: "700", textAlign: "right", paddingRight: "1rem" }}>
+                                {formatToMillionWon(totalBudget)}
+                              </td>
+                              <td style={{ fontFamily: "var(--font-data)", textAlign: "right", paddingRight: "1rem" }}>
+                                {formatToMillionWon(totalSpent)}
+                              </td>
+                              <td style={{ borderRight: "2px solid var(--border-color)" }}>
+                                <div style={{ display: "flex", alignItems: "center", gap: "0.25rem" }}>
+                                  <span style={{ fontSize: "0.75rem", fontFamily: "var(--font-data)" }}>{rate.toFixed(1)}%</span>
+                                </div>
+                              </td>
+                              {u.id === "Common" ? (
+                                <>
+                                  <td style={{ textAlign: "center" }}>-</td>
+                                  <td style={{ textAlign: "center" }}>-</td>
+                                  <td style={{ textAlign: "center" }}>-</td>
+                                  <td style={{ textAlign: "center" }}>-</td>
+                                  <td>-</td>
+                                </>
+                              ) : (
+                                <>
+                                  <td style={{ fontFamily: "var(--font-data)", textAlign: "center" }}>
+                                    {totalPrograms}개
+                                  </td>
+                                  <td style={{ fontFamily: "var(--font-data)", textAlign: "center", color: "var(--text-secondary)" }}>
+                                    {readyCount}
+                                  </td>
+                                  <td style={{ fontFamily: "var(--font-data)", textAlign: "center", color: "#f59e0b" }}>
+                                    {inProgressCount}
+                                  </td>
+                                  <td style={{ fontFamily: "var(--font-data)", textAlign: "center", color: "var(--success-color)", fontWeight: "700" }}>
+                                    {completedCount}
+                                  </td>
+                                  <td>
+                                    <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
+                                      <div style={{ width: "40px", height: "6px", background: "rgba(255,255,255,0.1)", borderRadius: "3px", overflow: "hidden" }}>
+                                        <div style={{ width: `${Math.min(progressRate, 100)}%`, height: "100%", background: "#10b981" }} />
+                                      </div>
+                                      <span style={{ fontSize: "0.75rem", fontFamily: "var(--font-data)", fontWeight: "700", color: "#10b981" }}>{progressRate.toFixed(1)}%</span>
                                     </div>
-                                    <span style={{ fontSize: "0.75rem", fontFamily: "var(--font-data)", fontWeight: "700", color: "#10b981" }}>{progressRate.toFixed(1)}%</span>
-                                  </div>
-                                </td>
-                              </>
-                            )}
-                          </tr>
-                        );
-                      })
-                    }
-                  </tbody>
-                </table>
-              </div>
-            )}
+                                  </td>
+                                </>
+                              )}
+                            </tr>
+                          );
+                        })
+                      }
+                    </tbody>
+                  </table>
+                </div>
+              )}
 
-            {projectsSubTab === "unit_system" && (
-              <UnitSystemView key={`unit-system-${darkMode}-${selectedYear}`} selectedYear={selectedYear} />
-            )}
+              {projectsSubTab === "unit_system" && (
+                <UnitSystemView key={`unit-system-${darkMode}-${selectedYear}`} selectedYear={selectedYear} />
+              )}
 
-            {projectsSubTab === "program_mgmt" && (
-              <div id="pdca-manager-section">
-                <h3 style={{ fontSize: "1.1rem", fontWeight: "800", marginBottom: "1rem" }}>프로그램 관리</h3>
-                <PDCAManager
-                  key={`pdca-${darkMode}-${selectedYear}`}
-                  projects={displayProjects}
-                  currentRole={currentRole}
-                  onUpdateProgramDetails={handleUpdateProgramDetails}
-                  onAddProgram={handleAddProgram}
-                  selectedYear={selectedYear}
-                  selectedUnitId={selectedUnitId}
-                  setSelectedUnitId={setSelectedUnitId}
-                  selectedProgId={selectedProgId}
-                  setSelectedProgId={setSelectedProgId}
-                  viewMode={pdcaViewMode}
-                  setViewMode={setPdcaViewMode}
-                  currentUser={currentUser}
-                  supabase={supabase}
-                />
-              </div>
-            )}
-          </div>
-        </>
+              {projectsSubTab === "program_mgmt" && (
+                <div id="pdca-manager-section">
+                  <h3 style={{ fontSize: "1.1rem", fontWeight: "800", marginBottom: "1rem" }}>프로그램 관리</h3>
+                  <PDCAManager
+                    key={`pdca-${darkMode}-${selectedYear}`}
+                    projects={displayProjects}
+                    currentRole={currentRole}
+                    onUpdateProgramDetails={handleUpdateProgramDetails}
+                    onAddProgram={handleAddProgram}
+                    selectedYear={selectedYear}
+                    selectedUnitId={selectedUnitId}
+                    setSelectedUnitId={setSelectedUnitId}
+                    selectedProgId={selectedProgId}
+                    setSelectedProgId={setSelectedProgId}
+                    viewMode={pdcaViewMode}
+                    setViewMode={setPdcaViewMode}
+                    currentUser={currentUser}
+                    supabase={supabase}
+                  />
+                </div>
+              )}
+            </div>
+          </>
         )}
 
         {activeTab === "management" && ["ADMIN", "DIRECTOR", "HQ_HEAD", "TEAM_LEADER"].includes(currentRole.id) && (
@@ -6661,7 +6671,7 @@ export default function App() {
                   </button>
                 </>
               )}
-              
+
               {/* 공용 sub-tab 버튼 (보안 정책에 따라 ADMIN, DIRECTOR, HQ_HEAD, TEAM_LEADER에만 노출) */}
               {currentRole && ["ADMIN", "DIRECTOR", "HQ_HEAD", "TEAM_LEADER"].includes(currentRole.id) && (
                 <>
@@ -6780,7 +6790,7 @@ export default function App() {
                   <table className="custom-table" style={{ fontSize: "0.8rem" }}>
                     <thead>
                       <tr>
-                        <th 
+                        <th
                           onClick={() => requestMemberSort("dept")}
                           style={{ cursor: "pointer", userSelect: "none" }}
                           onMouseEnter={(e) => e.target.style.color = "var(--accent-color)"}
@@ -6789,7 +6799,7 @@ export default function App() {
                           소속 부서 {memberSortConfig.key === "dept" ? (memberSortConfig.direction === "asc" ? " ▲" : " ▼") : " ⇅"}
                         </th>
                         <th>성명</th>
-                        <th 
+                        <th
                           onClick={() => requestMemberSort("role")}
                           style={{ cursor: "pointer", userSelect: "none" }}
                           onMouseEnter={(e) => e.target.style.color = "var(--accent-color)"}
@@ -6801,7 +6811,7 @@ export default function App() {
                         <th>이메일</th>
                         <th>교내 전화</th>
                         <th>휴대전화</th>
-                        <th 
+                        <th
                           onClick={() => requestMemberSort("startDate")}
                           style={{ cursor: "pointer", userSelect: "none" }}
                           onMouseEnter={(e) => e.target.style.color = "var(--accent-color)"}
@@ -6810,7 +6820,7 @@ export default function App() {
                           시작일 {memberSortConfig.key === "startDate" ? (memberSortConfig.direction === "asc" ? " ▲" : " ▼") : " ⇅"}
                         </th>
                         <th>종료일</th>
-                        <th 
+                        <th
                           onClick={() => requestMemberSort("status")}
                           style={{ cursor: "pointer", userSelect: "none" }}
                           onMouseEnter={(e) => e.target.style.color = "var(--accent-color)"}
@@ -6823,99 +6833,97 @@ export default function App() {
                     </thead>
                     <tbody>
                       {getSortedMembers().map((m) => {
-                          const isRetired = getMemberStatusForYear(m, selectedYear) === "미참여";
-                          return (
-                            <tr 
-                              key={m.id}
-                              style={{
-                                opacity: isRetired ? 0.45 : 1,
-                                background: isRetired ? "rgba(255, 255, 255, 0.01)" : "transparent",
-                                transition: "all 0.2s"
-                              }}
-                            >
-                              <td style={{ fontWeight: "700" }}>{m.dept}</td>
-                              <td style={{ fontWeight: "800", color: isRetired ? "var(--text-secondary)" : "var(--text-primary)" }}>{m.name}</td>
-                              <td>
-                                <span
-                                  className={`badge ${
-                                    isRetired
-                                      ? "badge-gray"
-                                      : m.role === "사업단장" || m.role === "본부장"
+                        const isRetired = getMemberStatusForYear(m, selectedYear) === "미참여";
+                        return (
+                          <tr
+                            key={m.id}
+                            style={{
+                              opacity: isRetired ? 0.45 : 1,
+                              background: isRetired ? "rgba(255, 255, 255, 0.01)" : "transparent",
+                              transition: "all 0.2s"
+                            }}
+                          >
+                            <td style={{ fontWeight: "700" }}>{m.dept}</td>
+                            <td style={{ fontWeight: "800", color: isRetired ? "var(--text-secondary)" : "var(--text-primary)" }}>{m.name}</td>
+                            <td>
+                              <span
+                                className={`badge ${isRetired
+                                    ? "badge-gray"
+                                    : m.role === "사업단장" || m.role === "본부장"
                                       ? "badge-red"
                                       : m.role === "센터장"
-                                      ? "badge-blue"
-                                      : m.role === "팀장교수"
-                                      ? "badge-green"
-                                      : "badge-gray"
+                                        ? "badge-blue"
+                                        : m.role === "팀장교수"
+                                          ? "badge-green"
+                                          : "badge-gray"
                                   }`}
-                                  style={{ 
-                                    fontSize: "0.65rem",
-                                    background: isRetired ? "rgba(255, 255, 255, 0.08)" : undefined,
-                                    color: isRetired ? "var(--text-secondary)" : undefined
-                                  }}
-                                >
-                                  {m.role}
-                                </span>
-                              </td>
-                              <td>{m.grade}</td>
-                              <td style={{ fontFamily: "var(--font-data)" }}>{m.email}</td>
-                              <td style={{ fontFamily: "var(--font-data)" }}>{m.phoneOffice || "-"}</td>
-                              <td style={{ fontFamily: "var(--font-data)" }}>{m.phoneMobile || "-"}</td>
-                              <td style={{ fontFamily: "var(--font-data)" }}>{m.startDate || m.hireDate || "-"}</td>
-                              <td style={{ fontFamily: "var(--font-data)" }}>{m.endDate || "-"}</td>
-                              <td>
-                                <span
-                                  className={`badge ${
-                                    isRetired ? "badge-red" : "badge-green"
-                                  }`}
-                                  style={{ 
-                                    fontSize: "0.65rem",
-                                    background: isRetired ? "rgba(239, 68, 68, 0.15)" : undefined,
-                                    color: isRetired ? "#f87171" : undefined
-                                  }}
-                                >
-                                  {getMemberStatusForYear(m, selectedYear)}
-                                </span>
-                              </td>
-                          {currentRole.rank <= 2 && (
-                            <td>
-                              <div style={{ display: "flex", gap: "0.3rem" }}>
-                                <button
-                                  className="btn-primary"
-                                  style={{ padding: "0.2rem 0.4rem", fontSize: "0.65rem", borderRadius: "0.25rem", background: "rgba(59,130,246,0.15)", border: "1px solid var(--accent-color)", color: "#60a5fa" }}
-                                  onClick={() => {
-                                    setEditingMember(m);
-                                    setIsMemberModalOpen(true);
-                                  }}
-                                >
-                                  수정
-                                </button>
-                                <button
-                                  className="btn-primary"
-                                  style={{ padding: "0.2rem 0.4rem", fontSize: "0.65rem", borderRadius: "0.25rem", background: "rgba(239,68,68,0.15)", border: "1px solid #ef4444", color: "#f87171" }}
-                                  onClick={async () => {
-                                    if (window.confirm(`정말 ${m.name} 구성원을 삭제하시겠습니까?`)) {
-                                      setMembers(members.filter((item) => item.id !== m.id));
-                                      try {
-                                        const { error } = await supabase
-                                          .from("rise_members")
-                                          .delete()
-                                          .eq("id", m.id);
-                                        if (error) throw error;
-                                      } catch (err) {
-                                        console.error("Failed to delete member from DB:", err);
-                                      }
-                                    }
-                                  }}
-                                >
-                                  삭제
-                                </button>
-                              </div>
+                                style={{
+                                  fontSize: "0.65rem",
+                                  background: isRetired ? "rgba(255, 255, 255, 0.08)" : undefined,
+                                  color: isRetired ? "var(--text-secondary)" : undefined
+                                }}
+                              >
+                                {m.role}
+                              </span>
                             </td>
-                          )}
-                        </tr>
-                      );
-                    })}
+                            <td>{m.grade}</td>
+                            <td style={{ fontFamily: "var(--font-data)" }}>{m.email}</td>
+                            <td style={{ fontFamily: "var(--font-data)" }}>{m.phoneOffice || "-"}</td>
+                            <td style={{ fontFamily: "var(--font-data)" }}>{m.phoneMobile || "-"}</td>
+                            <td style={{ fontFamily: "var(--font-data)" }}>{m.startDate || m.hireDate || "-"}</td>
+                            <td style={{ fontFamily: "var(--font-data)" }}>{m.endDate || "-"}</td>
+                            <td>
+                              <span
+                                className={`badge ${isRetired ? "badge-red" : "badge-green"
+                                  }`}
+                                style={{
+                                  fontSize: "0.65rem",
+                                  background: isRetired ? "rgba(239, 68, 68, 0.15)" : undefined,
+                                  color: isRetired ? "#f87171" : undefined
+                                }}
+                              >
+                                {getMemberStatusForYear(m, selectedYear)}
+                              </span>
+                            </td>
+                            {currentRole.rank <= 2 && (
+                              <td>
+                                <div style={{ display: "flex", gap: "0.3rem" }}>
+                                  <button
+                                    className="btn-primary"
+                                    style={{ padding: "0.2rem 0.4rem", fontSize: "0.65rem", borderRadius: "0.25rem", background: "rgba(59,130,246,0.15)", border: "1px solid var(--accent-color)", color: "#60a5fa" }}
+                                    onClick={() => {
+                                      setEditingMember(m);
+                                      setIsMemberModalOpen(true);
+                                    }}
+                                  >
+                                    수정
+                                  </button>
+                                  <button
+                                    className="btn-primary"
+                                    style={{ padding: "0.2rem 0.4rem", fontSize: "0.65rem", borderRadius: "0.25rem", background: "rgba(239,68,68,0.15)", border: "1px solid #ef4444", color: "#f87171" }}
+                                    onClick={async () => {
+                                      if (window.confirm(`정말 ${m.name} 구성원을 삭제하시겠습니까?`)) {
+                                        setMembers(members.filter((item) => item.id !== m.id));
+                                        try {
+                                          const { error } = await supabase
+                                            .from("rise_members")
+                                            .delete()
+                                            .eq("id", m.id);
+                                          if (error) throw error;
+                                        } catch (err) {
+                                          console.error("Failed to delete member from DB:", err);
+                                        }
+                                      }
+                                    }}
+                                  >
+                                    삭제
+                                  </button>
+                                </div>
+                              </td>
+                            )}
+                          </tr>
+                        );
+                      })}
                     </tbody>
                   </table>
                 </div>
@@ -7022,136 +7030,136 @@ export default function App() {
                                 <td style={{ fontFamily: "var(--font-data)", fontWeight: "700" }}>{prog.id}</td>
                                 <td>{prog.title}</td>
                                 <td style={{ color: "var(--accent-color)", fontWeight: "700" }}>{dept}</td>
-                                 <td>
-                                   {currentRole.rank <= 2 ? (
-                                     <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
-                                       {/* 공동배정 체크박스 */}
-                                       <label style={{ display: "flex", alignItems: "center", gap: "0.25rem", fontSize: "0.7rem", cursor: "pointer", color: "var(--text-secondary)" }}>
-                                         <input
-                                           type="checkbox"
-                                           checked={!!jointPrograms[prog.id]}
-                                           onChange={(e) => {
-                                             const isChecked = e.target.checked;
-                                             setJointPrograms(prev => ({ ...prev, [prog.id]: isChecked }));
-                                             
-                                             // 체크 해제 시에는 단일 연구원으로 변경할 수 있도록 현재 값의 첫 번째 연구원을 기본값으로 넘김
-                                             if (!isChecked) {
-                                               const currentVal = prog.assignees?.[selectedYear] !== undefined ? prog.assignees[selectedYear] : (prog.assignee || "");
-                                               const parts = currentVal.split(/[,\/]/).map(p => p.trim()).filter(Boolean);
-                                               handleAssignChange(u.id, prog.id, parts[0] || "");
-                                             }
-                                           }}
-                                         />
-                                         2인 공동배정
-                                       </label>
-                                       
-                                       {jointPrograms[prog.id] ? (
-                                         <div style={{ display: "flex", alignItems: "center", gap: "0.3rem", flexWrap: "wrap" }}>
-                                           {/* 정 담당자 선택 */}
-                                           <div style={{ display: "flex", alignItems: "center", gap: "0.15rem" }}>
-                                             <span style={{ fontSize: "0.65rem", color: "var(--accent-color)", fontWeight: "700" }}>정:</span>
-                                             <select
-                                               className="user-selector"
-                                               style={{ width: "110px", padding: "0.15rem 0.3rem", fontSize: "0.7rem" }}
-                                               value={(() => {
-                                                 const currentVal = prog.assignees?.[selectedYear] !== undefined ? prog.assignees[selectedYear] : (prog.assignee || "");
-                                                 const parts = currentVal.split(/[,\/]/).map(p => p.trim()).filter(Boolean);
-                                                 return parts[0] || "";
-                                               })()}
-                                               onChange={(e) => {
-                                                 const currentVal = prog.assignees?.[selectedYear] !== undefined ? prog.assignees[selectedYear] : (prog.assignee || "");
-                                                 const parts = currentVal.split(/[,\/]/).map(p => p.trim()).filter(Boolean);
-                                                 const first = e.target.value;
-                                                 const second = parts[1] || "";
-                                                 const combined = second ? `${first}, ${second}` : first;
-                                                 handleAssignChange(u.id, prog.id, combined);
-                                               }}
-                                             >
-                                               <option value="">선택</option>
-                                               {members
-                                                 .filter((m) => m.role === "연구원" && m.dept === dept)
-                                                 .map((m) => (
-                                                   <option key={m.id} value={`${m.name} ${m.grade}`}>
-                                                     {m.name} {m.grade}
-                                                   </option>
-                                                 ))}
-                                             </select>
-                                           </div>
-                                           {/* 부 담당자 선택 */}
-                                           <div style={{ display: "flex", alignItems: "center", gap: "0.15rem" }}>
-                                             <span style={{ fontSize: "0.65rem", color: "var(--accent-color)", fontWeight: "700" }}>부:</span>
-                                             <select
-                                               className="user-selector"
-                                               style={{ width: "110px", padding: "0.15rem 0.3rem", fontSize: "0.7rem" }}
-                                               value={(() => {
-                                                 const currentVal = prog.assignees?.[selectedYear] !== undefined ? prog.assignees[selectedYear] : (prog.assignee || "");
-                                                 const parts = currentVal.split(/[,\/]/).map(p => p.trim()).filter(Boolean);
-                                                 return parts[1] || "";
-                                               })()}
-                                               onChange={(e) => {
-                                                 const currentVal = prog.assignees?.[selectedYear] !== undefined ? prog.assignees[selectedYear] : (prog.assignee || "");
-                                                 const parts = currentVal.split(/[,\/]/).map(p => p.trim()).filter(Boolean);
-                                                 const first = parts[0] || "";
-                                                 const second = e.target.value;
-                                                 const combined = second ? `${first}, ${second}` : first;
-                                                 handleAssignChange(u.id, prog.id, combined);
-                                               }}
-                                             >
-                                               <option value="">선택</option>
-                                               {members
-                                                 .filter((m) => m.role === "연구원" && m.dept === dept)
-                                                 .map((m) => (
-                                                   <option key={m.id} value={`${m.name} ${m.grade}`}>
-                                                     {m.name} {m.grade}
-                                                   </option>
-                                                 ))}
-                                             </select>
-                                           </div>
-                                         </div>
-                                       ) : (
-                                         /* 단일 배정 드롭다운 */
-                                         <select
-                                           className="user-selector"
-                                           style={{ width: "200px", padding: "0.2rem 0.4rem", fontSize: "0.75rem" }}
-                                           value={prog.assignees?.[selectedYear] !== undefined ? prog.assignees[selectedYear] : (prog.assignee || "")}
-                                           onChange={(e) => handleAssignChange(u.id, prog.id, e.target.value)}
-                                         >
-                                           <option value="">미배정</option>
-                                           {members
-                                             .filter((m) => {
-                                               if (m.role !== "연구원") return false;
-                                               const currentAssignee = prog.assignees?.[selectedYear] || prog.assignee || "";
-                                               const isCurrent = currentAssignee === `${m.name} ${m.grade}`;
-                                               const isDeptMatch = m.dept === dept;
-                                               if (!isCurrent && !isDeptMatch) return false;
-                                               
-                                               const startYear = 2024 + selectedYear;
-                                               const endYear = 2025 + selectedYear;
-                                               const yearStart = new Date(`${startYear}-03-01T00:00:00`);
-                                               const yearEnd = new Date(`${endYear}-02-28T23:59:59`);
-                                               
-                                               const mStartStr = m.startDate || m.hireDate || "2025-03-01";
-                                               const mStartDate = new Date(mStartStr);
-                                               if (mStartDate > yearEnd) return false;
-                                               
-                                               if (m.endDate) {
-                                                 const mEndDate = new Date(m.endDate);
-                                                 if (mEndDate < yearStart) return false;
-                                               }
-                                               return true;
-                                             })
-                                             .map((m) => (
-                                               <option key={m.id} value={`${m.name} ${m.grade}`}>
-                                                 {m.name} {m.grade} ({m.dept})
-                                               </option>
-                                             ))}
-                                         </select>
-                                       )}
-                                     </div>
-                                   ) : (
-                                     <span>{formatAssignee(prog.assignees?.[selectedYear] !== undefined ? prog.assignees[selectedYear] : prog.assignee)}</span>
-                                   )}
-                                 </td>
+                                <td>
+                                  {currentRole.rank <= 2 ? (
+                                    <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
+                                      {/* 공동배정 체크박스 */}
+                                      <label style={{ display: "flex", alignItems: "center", gap: "0.25rem", fontSize: "0.7rem", cursor: "pointer", color: "var(--text-secondary)" }}>
+                                        <input
+                                          type="checkbox"
+                                          checked={!!jointPrograms[prog.id]}
+                                          onChange={(e) => {
+                                            const isChecked = e.target.checked;
+                                            setJointPrograms(prev => ({ ...prev, [prog.id]: isChecked }));
+
+                                            // 체크 해제 시에는 단일 연구원으로 변경할 수 있도록 현재 값의 첫 번째 연구원을 기본값으로 넘김
+                                            if (!isChecked) {
+                                              const currentVal = prog.assignees?.[selectedYear] !== undefined ? prog.assignees[selectedYear] : (prog.assignee || "");
+                                              const parts = currentVal.split(/[,\/]/).map(p => p.trim()).filter(Boolean);
+                                              handleAssignChange(u.id, prog.id, parts[0] || "");
+                                            }
+                                          }}
+                                        />
+                                        2인 공동배정
+                                      </label>
+
+                                      {jointPrograms[prog.id] ? (
+                                        <div style={{ display: "flex", alignItems: "center", gap: "0.3rem", flexWrap: "wrap" }}>
+                                          {/* 정 담당자 선택 */}
+                                          <div style={{ display: "flex", alignItems: "center", gap: "0.15rem" }}>
+                                            <span style={{ fontSize: "0.65rem", color: "var(--accent-color)", fontWeight: "700" }}>정:</span>
+                                            <select
+                                              className="user-selector"
+                                              style={{ width: "110px", padding: "0.15rem 0.3rem", fontSize: "0.7rem" }}
+                                              value={(() => {
+                                                const currentVal = prog.assignees?.[selectedYear] !== undefined ? prog.assignees[selectedYear] : (prog.assignee || "");
+                                                const parts = currentVal.split(/[,\/]/).map(p => p.trim()).filter(Boolean);
+                                                return parts[0] || "";
+                                              })()}
+                                              onChange={(e) => {
+                                                const currentVal = prog.assignees?.[selectedYear] !== undefined ? prog.assignees[selectedYear] : (prog.assignee || "");
+                                                const parts = currentVal.split(/[,\/]/).map(p => p.trim()).filter(Boolean);
+                                                const first = e.target.value;
+                                                const second = parts[1] || "";
+                                                const combined = second ? `${first}, ${second}` : first;
+                                                handleAssignChange(u.id, prog.id, combined);
+                                              }}
+                                            >
+                                              <option value="">선택</option>
+                                              {members
+                                                .filter((m) => m.role === "연구원" && m.dept === dept)
+                                                .map((m) => (
+                                                  <option key={m.id} value={`${m.name} ${m.grade}`}>
+                                                    {m.name} {m.grade}
+                                                  </option>
+                                                ))}
+                                            </select>
+                                          </div>
+                                          {/* 부 담당자 선택 */}
+                                          <div style={{ display: "flex", alignItems: "center", gap: "0.15rem" }}>
+                                            <span style={{ fontSize: "0.65rem", color: "var(--accent-color)", fontWeight: "700" }}>부:</span>
+                                            <select
+                                              className="user-selector"
+                                              style={{ width: "110px", padding: "0.15rem 0.3rem", fontSize: "0.7rem" }}
+                                              value={(() => {
+                                                const currentVal = prog.assignees?.[selectedYear] !== undefined ? prog.assignees[selectedYear] : (prog.assignee || "");
+                                                const parts = currentVal.split(/[,\/]/).map(p => p.trim()).filter(Boolean);
+                                                return parts[1] || "";
+                                              })()}
+                                              onChange={(e) => {
+                                                const currentVal = prog.assignees?.[selectedYear] !== undefined ? prog.assignees[selectedYear] : (prog.assignee || "");
+                                                const parts = currentVal.split(/[,\/]/).map(p => p.trim()).filter(Boolean);
+                                                const first = parts[0] || "";
+                                                const second = e.target.value;
+                                                const combined = second ? `${first}, ${second}` : first;
+                                                handleAssignChange(u.id, prog.id, combined);
+                                              }}
+                                            >
+                                              <option value="">선택</option>
+                                              {members
+                                                .filter((m) => m.role === "연구원" && m.dept === dept)
+                                                .map((m) => (
+                                                  <option key={m.id} value={`${m.name} ${m.grade}`}>
+                                                    {m.name} {m.grade}
+                                                  </option>
+                                                ))}
+                                            </select>
+                                          </div>
+                                        </div>
+                                      ) : (
+                                        /* 단일 배정 드롭다운 */
+                                        <select
+                                          className="user-selector"
+                                          style={{ width: "200px", padding: "0.2rem 0.4rem", fontSize: "0.75rem" }}
+                                          value={prog.assignees?.[selectedYear] !== undefined ? prog.assignees[selectedYear] : (prog.assignee || "")}
+                                          onChange={(e) => handleAssignChange(u.id, prog.id, e.target.value)}
+                                        >
+                                          <option value="">미배정</option>
+                                          {members
+                                            .filter((m) => {
+                                              if (m.role !== "연구원") return false;
+                                              const currentAssignee = prog.assignees?.[selectedYear] || prog.assignee || "";
+                                              const isCurrent = currentAssignee === `${m.name} ${m.grade}`;
+                                              const isDeptMatch = m.dept === dept;
+                                              if (!isCurrent && !isDeptMatch) return false;
+
+                                              const startYear = 2024 + selectedYear;
+                                              const endYear = 2025 + selectedYear;
+                                              const yearStart = new Date(`${startYear}-03-01T00:00:00`);
+                                              const yearEnd = new Date(`${endYear}-02-28T23:59:59`);
+
+                                              const mStartStr = m.startDate || m.hireDate || "2025-03-01";
+                                              const mStartDate = new Date(mStartStr);
+                                              if (mStartDate > yearEnd) return false;
+
+                                              if (m.endDate) {
+                                                const mEndDate = new Date(m.endDate);
+                                                if (mEndDate < yearStart) return false;
+                                              }
+                                              return true;
+                                            })
+                                            .map((m) => (
+                                              <option key={m.id} value={`${m.name} ${m.grade}`}>
+                                                {m.name} {m.grade} ({m.dept})
+                                              </option>
+                                            ))}
+                                        </select>
+                                      )}
+                                    </div>
+                                  ) : (
+                                    <span>{formatAssignee(prog.assignees?.[selectedYear] !== undefined ? prog.assignees[selectedYear] : prog.assignee)}</span>
+                                  )}
+                                </td>
                                 <td style={{ textAlign: "center", color: prog.pdca.p === "완료" ? "var(--success-color)" : "inherit", fontWeight: "700" }}>{prog.pdca.p}</td>
                                 <td style={{ textAlign: "center", color: prog.pdca.d === "완료" ? "var(--success-color)" : "inherit", fontWeight: "700" }}>{prog.pdca.d}</td>
                                 <td style={{ textAlign: "center", color: prog.pdca.c === "완료" ? "var(--success-color)" : "inherit", fontWeight: "700" }}>{prog.pdca.c}</td>
@@ -7241,15 +7249,14 @@ export default function App() {
                                   <td style={{ fontWeight: "700" }}>{cleanName}</td>
                                   <td>
                                     <span
-                                      className={`badge ${
-                                        u.role_key === "ADMIN" || u.role_key === "DIRECTOR" || u.role_key === "HQ_HEAD"
+                                      className={`badge ${u.role_key === "ADMIN" || u.role_key === "DIRECTOR" || u.role_key === "HQ_HEAD"
                                           ? "badge-red"
                                           : u.role_key.startsWith("CENTER_")
-                                          ? "badge-blue"
-                                          : u.role_key === "TEAM_LEADER"
-                                          ? "badge-green"
-                                          : "badge-gray"
-                                      }`}
+                                            ? "badge-blue"
+                                            : u.role_key === "TEAM_LEADER"
+                                              ? "badge-green"
+                                              : "badge-gray"
+                                        }`}
                                       style={{ fontSize: "0.65rem" }}
                                     >
                                       {roleNames[u.role_key] || u.role_key}
@@ -7320,15 +7327,14 @@ export default function App() {
                                   <td style={{ fontWeight: "700" }}>{cleanName}</td>
                                   <td>
                                     <span
-                                      className={`badge ${
-                                        u.role_key === "ADMIN" || u.role_key === "DIRECTOR" || u.role_key === "HQ_HEAD"
+                                      className={`badge ${u.role_key === "ADMIN" || u.role_key === "DIRECTOR" || u.role_key === "HQ_HEAD"
                                           ? "badge-red"
                                           : u.role_key.startsWith("CENTER_")
-                                          ? "badge-blue"
-                                          : u.role_key === "TEAM_LEADER"
-                                          ? "badge-green"
-                                          : "badge-gray"
-                                      }`}
+                                            ? "badge-blue"
+                                            : u.role_key === "TEAM_LEADER"
+                                              ? "badge-green"
+                                              : "badge-gray"
+                                        }`}
                                       style={{ fontSize: "0.65rem" }}
                                     >
                                       {roleNames[u.role_key] || u.role_key}
@@ -7426,9 +7432,8 @@ export default function App() {
                                     </td>
                                     <td>
                                       <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-                                        <span className={`badge ${
-                                          req.status === "승인완료" ? "badge-green" : (req.status === "반려" ? "badge-red" : "badge-gray")
-                                        }`} style={{ fontSize: "0.65rem" }}>
+                                        <span className={`badge ${req.status === "승인완료" ? "badge-green" : (req.status === "반려" ? "badge-red" : "badge-gray")
+                                          }`} style={{ fontSize: "0.65rem" }}>
                                           {req.status}
                                         </span>
                                         {(req.status === "승인완료" || req.status === "반려") && req.approved_by && (
@@ -7446,8 +7451,8 @@ export default function App() {
                                       </div>
                                       <div style={{ marginTop: "0.15rem" }}>
                                         <span style={{ color: "var(--text-secondary)", fontSize: "0.65rem" }}>처리: </span>
-                                        {req.approved_at 
-                                          ? new Date(req.approved_at).toLocaleString("ko-KR") 
+                                        {req.approved_at
+                                          ? new Date(req.approved_at).toLocaleString("ko-KR")
                                           : <span style={{ color: "var(--text-secondary)" }}>대기 중</span>
                                         }
                                       </div>
@@ -7512,10 +7517,10 @@ export default function App() {
             )}
 
             {mgmtSubTab === "portal_config" && isSongDirector && (
-              <PortalConfigManager 
+              <PortalConfigManager
                 key={`config-${darkMode}`}
-                initialVisibility={menuVisibility} 
-                onSave={handleSaveMenuVisibility} 
+                initialVisibility={menuVisibility}
+                onSave={handleSaveMenuVisibility}
               />
             )}
           </div>
@@ -7558,7 +7563,7 @@ export default function App() {
                   <h3 style={{ margin: 0, fontSize: "1.05rem", fontWeight: "800", color: "var(--text-primary)" }}>
                     📄 [{selectedRequest.program_title}] 기획 변경 상세 대조표 ({selectedRequest.version_name})
                   </h3>
-                  <button 
+                  <button
                     onClick={() => setSelectedRequest(null)}
                     style={{ background: "transparent", border: "none", color: "var(--text-secondary)", cursor: "pointer", fontSize: "1.2rem" }}
                   >
@@ -7695,7 +7700,7 @@ export default function App() {
 
                 {/* 하단 결재 버튼 */}
                 <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.75rem", borderTop: "1px solid var(--border-color)", paddingTop: "1rem", marginTop: "1rem" }}>
-                  <button 
+                  <button
                     onClick={() => setSelectedRequest(null)}
                     style={{ padding: "0.45rem 1rem", borderRadius: "6px", background: "transparent", border: "1px solid var(--border-color)", color: "var(--text-primary)", cursor: "pointer", fontSize: "0.75rem" }}
                   >
@@ -7703,13 +7708,13 @@ export default function App() {
                   </button>
                   {selectedRequest.status === "승인대기" && (
                     <>
-                      <button 
+                      <button
                         onClick={() => handleApproveRequest(selectedRequest)}
                         style={{ padding: "0.45rem 1.5rem", borderRadius: "6px", background: "#10B981", border: "none", color: "white", fontWeight: "700", cursor: "pointer", fontSize: "0.75rem" }}
                       >
                         승인 처리
                       </button>
-                      <button 
+                      <button
                         onClick={() => handleRejectRequest(selectedRequest)}
                         style={{ padding: "0.45rem 1.5rem", borderRadius: "6px", background: "#EF4444", border: "none", color: "white", fontWeight: "700", cursor: "pointer", fontSize: "0.75rem" }}
                       >
@@ -7717,491 +7722,491 @@ export default function App() {
                       </button>
                     </>
                   )}
+                </div>
               </div>
             </div>
-          </div>
-        );
-      })()}
+          );
+        })()}
 
         {/* 탭 개편: 반응형 사이드 2분할 레이아웃 및 목표치/실적 미니 표 */}
         {activeTab === "kpis" && (
           <>
             {/* 성과지표 관리 탭: 전체 영역을 Fragment로 묶어 하단에 성과지표 전용 엑셀 업로더를 배치합니다. */}
             <div className="kpi-split-layout">
-            {/* 좌측 성과지표 리스트 테이블 */}
-            <div className="glass-card">
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: "1rem", marginBottom: "1.5rem", borderBottom: "1px solid var(--border-color-dark)", paddingBottom: "1rem" }}>
-                <div>
-                  <h2 style={{ fontSize: "1.25rem", fontWeight: "800" }}>성과지표(KPI) 통합 목록</h2>
-                  {/* 자율 / 중점 성과지표 서브탭 제어기 */}
-                  <div style={{ display: "flex", gap: "0.3rem", background: "rgba(255,255,255,0.02)", border: "1px solid var(--border-color)", padding: "0.25rem", borderRadius: "0.5rem", marginTop: "0.5rem", width: "fit-content" }}>
-                    {(menuVisibility.kpi_status !== false || isSongDirector) && (
-                      <button
-                        onClick={() => {
-                          setKpiSubTab("공통");
-                          // 공통 탭에 해당하는 첫 번째 지표 자동 선택
-                          const first = displayProjects.flatMap(p => p.units.flatMap(u => u.kpis)).find(k => k.type === "공통");
-                          setSelectedKpi(first || null);
-                        }}
-                        style={{
-                          border: "none",
-                          padding: "0.3rem 0.8rem",
-                          borderRadius: "0.35rem",
-                          fontSize: "0.7rem",
-                          fontWeight: "700",
-                          cursor: "pointer",
-                          background: kpiSubTab === "공통" ? "var(--accent-color)" : "transparent",
-                          color: kpiSubTab === "공통" ? "white" : (menuVisibility.kpi_status === false ? "#EF4444" : "var(--text-secondary)"),
-                          transition: "all 0.2s"
-                        }}
-                      >
-                        (교육부)공통성과지표
-                        {menuVisibility.kpi_status === false && (
-                          <span style={{ fontSize: "0.6rem", color: "#EF4444", fontWeight: "800", marginLeft: "3px" }}>[숨김]</span>
-                        )}
-                      </button>
-                    )}
-                    {(menuVisibility.kpi_self !== false || isSongDirector) && (
-                      <button
-                        onClick={() => {
-                          setKpiSubTab("자율");
-                          // 자율 탭에 해당하는 첫 번째 지표 자동 선택
-                          const first = displayProjects.flatMap(p => p.units.flatMap(u => u.kpis)).find(k => k.type === "자율");
-                          setSelectedKpi(first || null);
-                        }}
-                        style={{
-                          border: "none",
-                          padding: "0.3rem 0.8rem",
-                          borderRadius: "0.35rem",
-                          fontSize: "0.7rem",
-                          fontWeight: "700",
-                          cursor: "pointer",
-                          background: kpiSubTab === "자율" ? "var(--accent-color)" : "transparent",
-                          color: kpiSubTab === "자율" ? "white" : (menuVisibility.kpi_self === false ? "#EF4444" : "var(--text-secondary)"),
-                          transition: "all 0.2s"
-                        }}
-                      >
-                        (지자체)자율성과지표
-                        {menuVisibility.kpi_self === false && (
-                          <span style={{ fontSize: "0.6rem", color: "#EF4444", fontWeight: "800", marginLeft: "3px" }}>[숨김]</span>
-                        )}
-                      </button>
-                    )}
-                    {(menuVisibility.kpi_focus !== false || isSongDirector) && (
-                      <button
-                        onClick={() => {
-                          setKpiSubTab("중점");
-                          // 중점 탭에 해당하는 첫 번째 지표 자동 선택
-                          const first = displayProjects.flatMap(p => p.units.flatMap(u => u.kpis)).find(k => k.type === "중점");
-                          setSelectedKpi(first || null);
-                        }}
-                        style={{
-                          border: "none",
-                          padding: "0.3rem 0.8rem",
-                          borderRadius: "0.35rem",
-                          fontSize: "0.7rem",
-                          fontWeight: "700",
-                          cursor: "pointer",
-                          background: kpiSubTab === "중점" ? "var(--accent-color)" : "transparent",
-                          color: kpiSubTab === "중점" ? "white" : "var(--text-secondary)",
-                          transition: "all 0.2s"
-                        }}
-                      >
-                        (대학)중점관리지표
-                      </button>
-                    )}
+              {/* 좌측 성과지표 리스트 테이블 */}
+              <div className="glass-card">
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: "1rem", marginBottom: "1.5rem", borderBottom: "1px solid var(--border-color-dark)", paddingBottom: "1rem" }}>
+                  <div>
+                    <h2 style={{ fontSize: "1.25rem", fontWeight: "800" }}>성과지표(KPI) 통합 목록</h2>
+                    {/* 자율 / 중점 성과지표 서브탭 제어기 */}
+                    <div style={{ display: "flex", gap: "0.3rem", background: "rgba(255,255,255,0.02)", border: "1px solid var(--border-color)", padding: "0.25rem", borderRadius: "0.5rem", marginTop: "0.5rem", width: "fit-content" }}>
+                      {(menuVisibility.kpi_status !== false || isSongDirector) && (
+                        <button
+                          onClick={() => {
+                            setKpiSubTab("공통");
+                            // 공통 탭에 해당하는 첫 번째 지표 자동 선택
+                            const first = displayProjects.flatMap(p => p.units.flatMap(u => u.kpis)).find(k => k.type === "공통");
+                            setSelectedKpi(first || null);
+                          }}
+                          style={{
+                            border: "none",
+                            padding: "0.3rem 0.8rem",
+                            borderRadius: "0.35rem",
+                            fontSize: "0.7rem",
+                            fontWeight: "700",
+                            cursor: "pointer",
+                            background: kpiSubTab === "공통" ? "var(--accent-color)" : "transparent",
+                            color: kpiSubTab === "공통" ? "white" : (menuVisibility.kpi_status === false ? "#EF4444" : "var(--text-secondary)"),
+                            transition: "all 0.2s"
+                          }}
+                        >
+                          (교육부)공통성과지표
+                          {menuVisibility.kpi_status === false && (
+                            <span style={{ fontSize: "0.6rem", color: "#EF4444", fontWeight: "800", marginLeft: "3px" }}>[숨김]</span>
+                          )}
+                        </button>
+                      )}
+                      {(menuVisibility.kpi_self !== false || isSongDirector) && (
+                        <button
+                          onClick={() => {
+                            setKpiSubTab("자율");
+                            // 자율 탭에 해당하는 첫 번째 지표 자동 선택
+                            const first = displayProjects.flatMap(p => p.units.flatMap(u => u.kpis)).find(k => k.type === "자율");
+                            setSelectedKpi(first || null);
+                          }}
+                          style={{
+                            border: "none",
+                            padding: "0.3rem 0.8rem",
+                            borderRadius: "0.35rem",
+                            fontSize: "0.7rem",
+                            fontWeight: "700",
+                            cursor: "pointer",
+                            background: kpiSubTab === "자율" ? "var(--accent-color)" : "transparent",
+                            color: kpiSubTab === "자율" ? "white" : (menuVisibility.kpi_self === false ? "#EF4444" : "var(--text-secondary)"),
+                            transition: "all 0.2s"
+                          }}
+                        >
+                          (지자체)자율성과지표
+                          {menuVisibility.kpi_self === false && (
+                            <span style={{ fontSize: "0.6rem", color: "#EF4444", fontWeight: "800", marginLeft: "3px" }}>[숨김]</span>
+                          )}
+                        </button>
+                      )}
+                      {(menuVisibility.kpi_focus !== false || isSongDirector) && (
+                        <button
+                          onClick={() => {
+                            setKpiSubTab("중점");
+                            // 중점 탭에 해당하는 첫 번째 지표 자동 선택
+                            const first = displayProjects.flatMap(p => p.units.flatMap(u => u.kpis)).find(k => k.type === "중점");
+                            setSelectedKpi(first || null);
+                          }}
+                          style={{
+                            border: "none",
+                            padding: "0.3rem 0.8rem",
+                            borderRadius: "0.35rem",
+                            fontSize: "0.7rem",
+                            fontWeight: "700",
+                            cursor: "pointer",
+                            background: kpiSubTab === "중점" ? "var(--accent-color)" : "transparent",
+                            color: kpiSubTab === "중점" ? "white" : "var(--text-secondary)",
+                            transition: "all 0.2s"
+                          }}
+                        >
+                          (대학)중점관리지표
+                        </button>
+                      )}
+                    </div>
                   </div>
-                </div>
-                
 
-              </div>
-              
-              <div className="table-panel">
-                <table className="custom-table" style={{ fontSize: "0.85rem" }}>
-                  <thead>
-                    <tr>
-                      <th>지표 ID</th>
-                      <th>지표명</th>
-                      <th>유형</th>
-                      <th>현재달성도</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {(() => {
-                      const kpiMap = new Map();
-                      displayProjects.forEach((p) => {
-                        p.units.forEach((u) => {
-                          u.kpis.forEach((k) => {
-                            if (k.type === kpiSubTab) {
-                              const nk = getNormalizedKpi(k, selectedYear);
-                              kpiMap.set(nk.id, { k, nk });
-                            }
+
+                </div>
+
+                <div className="table-panel">
+                  <table className="custom-table" style={{ fontSize: "0.85rem" }}>
+                    <thead>
+                      <tr>
+                        <th>지표 ID</th>
+                        <th>지표명</th>
+                        <th>유형</th>
+                        <th>현재달성도</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {(() => {
+                        const kpiMap = new Map();
+                        displayProjects.forEach((p) => {
+                          p.units.forEach((u) => {
+                            u.kpis.forEach((k) => {
+                              if (k.type === kpiSubTab) {
+                                const nk = getNormalizedKpi(k, selectedYear);
+                                kpiMap.set(nk.id, { k, nk });
+                              }
+                            });
                           });
                         });
-                      });
 
-                      const sortedKpis = Array.from(kpiMap.values()).sort((a, b) => {
-                        const prefixA = a.nk.id.startsWith("C-") ? "C" : "L";
-                        const prefixB = b.nk.id.startsWith("C-") ? "C" : "L";
-                        if (prefixA !== prefixB) {
-                          return prefixA.localeCompare(prefixB);
-                        }
-                        const numA = parseInt(a.nk.id.replace("L-", "").replace("C-", ""), 10) || 0;
-                        const numB = parseInt(b.nk.id.replace("L-", "").replace("C-", ""), 10) || 0;
-                        return numA - numB;
-                      });
+                        const sortedKpis = Array.from(kpiMap.values()).sort((a, b) => {
+                          const prefixA = a.nk.id.startsWith("C-") ? "C" : "L";
+                          const prefixB = b.nk.id.startsWith("C-") ? "C" : "L";
+                          if (prefixA !== prefixB) {
+                            return prefixA.localeCompare(prefixB);
+                          }
+                          const numA = parseInt(a.nk.id.replace("L-", "").replace("C-", ""), 10) || 0;
+                          const numB = parseInt(b.nk.id.replace("L-", "").replace("C-", ""), 10) || 0;
+                          return numA - numB;
+                        });
 
-                      return sortedKpis.map(({ k, nk }) => {
-                        let rate = 0;
-                        if (selectedYear === 1 && nk.id === "L-1") {
-                          rate = 111.9;
-                        } else if (selectedYear === 1 && nk.id === "L-2") {
-                          rate = 687.8;
-                        } else if (selectedYear === 1 && nk.id === "L-3") {
-                          rate = 138.6;
-                        } else if (selectedYear === 1 && nk.id === "L-4") {
-                          rate = 146.7;
-                        } else if (selectedYear === 1 && nk.id === "L-5") {
-                          rate = 81.8;
-                        } else if (selectedYear === 1 && nk.id === "L-6") {
-                          rate = 103.3;
-                        } else if (selectedYear === 1 && nk.id === "L-7") {
-                          rate = 321.3;
-                        } else if (selectedYear === 1 && nk.id === "L-8") {
-                          rate = 134.0;
-                        } else if (selectedYear === 1 && nk.id === "L-9") {
-                          rate = 106.0;
-                        } else if (selectedYear === 1 && nk.id === "L-10") {
-                          rate = 128.5;
-                        } else if (selectedYear === 1 && nk.id === "L-11") {
-                          rate = 160.0;
-                        } else if (selectedYear === 1 && nk.id === "L-12") {
-                          rate = 114.6;
-                        } else if (selectedYear === 1 && nk.id === "L-13") {
-                          rate = 108.0;
-                        } else if (selectedYear === 1 && nk.id === "L-14") {
-                          rate = 500.0;
-                        } else if (selectedYear === 1 && nk.id === "L-15") {
-                          rate = 132.2;
-                        } else if (selectedYear === 1 && nk.id === "L-16") {
-                          rate = 123.3;
-                        } else if (selectedYear === 1 && nk.id === "L-17") {
-                          rate = 0.0;
-                        } else if (selectedYear === 1 && nk.id === "L-18") {
-                          rate = 176.5;
-                        } else if (selectedYear === 1 && nk.id === "L-19") {
-                          rate = 244.0;
-                        } else if (selectedYear === 1 && nk.id === "L-20") {
-                          rate = 202.5;
-                        } else if (selectedYear === 1 && nk.id === "L-21") {
-                          rate = 100.0;
-                        } else if (selectedYear === 1 && nk.id === "L-22") {
-                          rate = 175.0;
-                        } else if (selectedYear === 1 && nk.id === "L-23") {
-                          rate = 144.3;
-                        } else if (selectedYear === 1 && nk.id === "L-24") {
-                          rate = 138.3;
-                        } else if (nk.subItems && nk.subItems.length > 0) {
-                          let sumRate = 0;
-                          nk.subItems.forEach((sub) => {
-                            const yData = sub.years?.[selectedYear] || { target: 0, current: 0 };
-                            sumRate += yData.target > 0 ? (yData.current / yData.target) * 100 : 0;
-                          });
-                          rate = sumRate / nk.subItems.length;
-                        } else {
-                          rate = nk.target > 0 ? (nk.current / nk.target) * 100 : 0;
-                        }
-                        const isSelected = selectedKpi?.id === nk.id;
-                        return (
-                          <tr
-                            key={nk.id}
-                            onClick={() => setSelectedKpi(nk)}
-                            style={{
-                              cursor: "pointer",
-                              background: isSelected ? "rgba(59,130,246,0.08)" : "inherit",
-                              borderLeft: isSelected ? "4px solid var(--accent-color)" : "none",
-                              transition: "all 0.2s ease"
-                            }}
-                          >
-                            <td style={{ fontFamily: "var(--font-data)", fontWeight: "700" }}>{nk.id}</td>
-                            <td style={{ fontWeight: isSelected ? "700" : "normal" }}>{nk.name}</td>
-                            <td>
-                              <span className={`badge ${nk.type === "공통" ? "badge-green" : nk.type === "자율" ? "badge-blue" : "badge-yellow"}`}>
-                                {nk.type}
-                              </span>
-                            </td>
-                            <td>
-                              <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                                <div style={{ width: "50px", height: "6px", background: "rgba(255,255,255,0.1)", borderRadius: "3px", overflow: "hidden" }}>
-                                  <div style={{ width: `${Math.min(rate, 100)}%`, height: "100%", background: rate >= 100 ? "var(--success-color)" : "var(--warning-color)" }} />
-                                </div>
-                                <span style={{ fontSize: "0.75rem", fontFamily: "var(--font-data)", color: rate >= 100 ? "var(--success-color)" : "inherit" }}>
-                                  {rate.toFixed(1)}%
+                        return sortedKpis.map(({ k, nk }) => {
+                          let rate = 0;
+                          if (selectedYear === 1 && nk.id === "L-1") {
+                            rate = 111.9;
+                          } else if (selectedYear === 1 && nk.id === "L-2") {
+                            rate = 687.8;
+                          } else if (selectedYear === 1 && nk.id === "L-3") {
+                            rate = 138.6;
+                          } else if (selectedYear === 1 && nk.id === "L-4") {
+                            rate = 146.7;
+                          } else if (selectedYear === 1 && nk.id === "L-5") {
+                            rate = 81.8;
+                          } else if (selectedYear === 1 && nk.id === "L-6") {
+                            rate = 103.3;
+                          } else if (selectedYear === 1 && nk.id === "L-7") {
+                            rate = 321.3;
+                          } else if (selectedYear === 1 && nk.id === "L-8") {
+                            rate = 134.0;
+                          } else if (selectedYear === 1 && nk.id === "L-9") {
+                            rate = 106.0;
+                          } else if (selectedYear === 1 && nk.id === "L-10") {
+                            rate = 128.5;
+                          } else if (selectedYear === 1 && nk.id === "L-11") {
+                            rate = 160.0;
+                          } else if (selectedYear === 1 && nk.id === "L-12") {
+                            rate = 114.6;
+                          } else if (selectedYear === 1 && nk.id === "L-13") {
+                            rate = 108.0;
+                          } else if (selectedYear === 1 && nk.id === "L-14") {
+                            rate = 500.0;
+                          } else if (selectedYear === 1 && nk.id === "L-15") {
+                            rate = 132.2;
+                          } else if (selectedYear === 1 && nk.id === "L-16") {
+                            rate = 123.3;
+                          } else if (selectedYear === 1 && nk.id === "L-17") {
+                            rate = 0.0;
+                          } else if (selectedYear === 1 && nk.id === "L-18") {
+                            rate = 176.5;
+                          } else if (selectedYear === 1 && nk.id === "L-19") {
+                            rate = 244.0;
+                          } else if (selectedYear === 1 && nk.id === "L-20") {
+                            rate = 202.5;
+                          } else if (selectedYear === 1 && nk.id === "L-21") {
+                            rate = 100.0;
+                          } else if (selectedYear === 1 && nk.id === "L-22") {
+                            rate = 175.0;
+                          } else if (selectedYear === 1 && nk.id === "L-23") {
+                            rate = 144.3;
+                          } else if (selectedYear === 1 && nk.id === "L-24") {
+                            rate = 138.3;
+                          } else if (nk.subItems && nk.subItems.length > 0) {
+                            let sumRate = 0;
+                            nk.subItems.forEach((sub) => {
+                              const yData = sub.years?.[selectedYear] || { target: 0, current: 0 };
+                              sumRate += yData.target > 0 ? (yData.current / yData.target) * 100 : 0;
+                            });
+                            rate = sumRate / nk.subItems.length;
+                          } else {
+                            rate = nk.target > 0 ? (nk.current / nk.target) * 100 : 0;
+                          }
+                          const isSelected = selectedKpi?.id === nk.id;
+                          return (
+                            <tr
+                              key={nk.id}
+                              onClick={() => setSelectedKpi(nk)}
+                              style={{
+                                cursor: "pointer",
+                                background: isSelected ? "rgba(59,130,246,0.08)" : "inherit",
+                                borderLeft: isSelected ? "4px solid var(--accent-color)" : "none",
+                                transition: "all 0.2s ease"
+                              }}
+                            >
+                              <td style={{ fontFamily: "var(--font-data)", fontWeight: "700" }}>{nk.id}</td>
+                              <td style={{ fontWeight: isSelected ? "700" : "normal" }}>{nk.name}</td>
+                              <td>
+                                <span className={`badge ${nk.type === "공통" ? "badge-green" : nk.type === "자율" ? "badge-blue" : "badge-yellow"}`}>
+                                  {nk.type}
                                 </span>
-                              </div>
-                            </td>
-                          </tr>
-                        );
-                      });
-                    })()}
-                  </tbody>
-                </table>
+                              </td>
+                              <td>
+                                <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                                  <div style={{ width: "50px", height: "6px", background: "rgba(255,255,255,0.1)", borderRadius: "3px", overflow: "hidden" }}>
+                                    <div style={{ width: `${Math.min(rate, 100)}%`, height: "100%", background: rate >= 100 ? "var(--success-color)" : "var(--warning-color)" }} />
+                                  </div>
+                                  <span style={{ fontSize: "0.75rem", fontFamily: "var(--font-data)", color: rate >= 100 ? "var(--success-color)" : "inherit" }}>
+                                    {rate.toFixed(1)}%
+                                  </span>
+                                </div>
+                              </td>
+                            </tr>
+                          );
+                        });
+                      })()}
+                    </tbody>
+                  </table>
+                </div>
               </div>
-            </div>
 
-            {/* 우측 성과지표 세부내용 상세 블록 (Sticky 고정 스크롤 효과) */}
-            <div className="sticky-panel">
-              <div className="glass-card" style={{ border: selectedKpi ? "1px solid var(--accent-color)" : "1px solid var(--border-color-dark)", minHeight: "360px" }}>
-                {selectedKpi ? (() => {
-                  const nk = getNormalizedKpi(selectedKpi, selectedYear);
-                  return (
-                    <div>
-                      <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "1rem", borderBottom: "1px solid var(--border-color-dark)", paddingBottom: "0.75rem" }}>
-                        <span className="badge badge-blue" style={{ fontSize: "0.75rem", padding: "0.25rem 0.6rem" }}>
-                          {nk.id}
-                        </span>
-                        <h3 style={{ fontSize: "1.1rem", fontWeight: "800" }}>{nk.name} 상세 명세</h3>
-                      </div>
-                      
-                      <div style={{ display: "flex", flexDirection: "column", gap: "1.2rem" }}>
-                        <div>
-                          <span style={{ fontSize: "0.95rem", color: "rgb(36, 88, 108)", fontWeight: "bold", display: "block" }}>지표 정의</span>
-                          <p style={{ fontSize: "0.85rem", fontWeight: "700", marginTop: "0.2rem", lineHeight: "1.4" }}>
-                            {nk.description}
-                          </p>
+              {/* 우측 성과지표 세부내용 상세 블록 (Sticky 고정 스크롤 효과) */}
+              <div className="sticky-panel">
+                <div className="glass-card" style={{ border: selectedKpi ? "1px solid var(--accent-color)" : "1px solid var(--border-color-dark)", minHeight: "360px" }}>
+                  {selectedKpi ? (() => {
+                    const nk = getNormalizedKpi(selectedKpi, selectedYear);
+                    return (
+                      <div>
+                        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "1rem", borderBottom: "1px solid var(--border-color-dark)", paddingBottom: "0.75rem" }}>
+                          <span className="badge badge-blue" style={{ fontSize: "0.75rem", padding: "0.25rem 0.6rem" }}>
+                            {nk.id}
+                          </span>
+                          <h3 style={{ fontSize: "1.1rem", fontWeight: "800" }}>{nk.name} 상세 명세</h3>
                         </div>
 
-                        {/* 세부지표 목푯값 및 실적값을 보여주는 미니 표 추가 */}
-                        <div>
-                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.4rem" }}>
-                            <span style={{ fontSize: "0.95rem", color: "rgb(36, 88, 108)", fontWeight: "bold" }}>지표 구성 세부항목 목표 대비 실적 표</span>
-                            <span className="badge badge-yellow" style={{ fontSize: "0.75rem", padding: "0.15rem 0.4rem" }}>{selectedYear}차년도 세부지표</span>
-                          </div>
-                          <table className="mini-table" style={{ fontSize: "0.75rem" }}>
-                            <thead>
-                              <tr>
-                                <th>세부 항목명</th>
-                                <th style={{ textAlign: "right" }}>기준값</th>
-                                <th style={{ textAlign: "right" }}>목푯값</th>
-                                <th style={{ textAlign: "right" }}>현재실적</th>
-                                <th style={{ textAlign: "right" }}>달성도</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {nk.subItems && nk.subItems.map((sub, index) => {
-                                const yData = sub.years?.[selectedYear] || { target: 0, current: 0 };
-                                const subRate = yData.target > 0 ? (yData.current / yData.target) * 100 : 0;
-                                const canEditTarget = currentRole.rank <= 4;
-                                const cleanName = sub.name.replace(/\s*\(기준값:\s*\d+\)/, "");
-                                const letter = String.fromCharCode(65 + index); // 0 -> A, 1 -> B, 2 -> C ...
-                                return (
-                                  <tr key={sub.id}>
-                                    <td style={{ fontWeight: "700" }}>{`[${letter}] ${cleanName}`}</td>
-                                    <td style={{ textAlign: "right", color: "var(--text-secondary)" }}>
-                                      {sub.base !== undefined ? `${sub.base.toLocaleString()} ${sub.unit}` : "-"}
-                                    </td>
-                                    <td style={{ textAlign: "right" }}>
-                                      <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: "0.2rem" }}>
-                                        <input
-                                          type="number"
-                                          step="any"
-                                          className="user-selector"
-                                          disabled={!canEditTarget}
-                                          defaultValue={yData.target}
-                                          onBlur={(e) => {
-                                            if (!canEditTarget) return;
-                                            const val = parseFloat(e.target.value);
-                                            if (!isNaN(val)) {
-                                              handleUpdateKpiValue(sub.id, "target", val);
-                                            }
-                                          }}
-                                          style={{
-                                            width: "55px",
-                                            textAlign: "right",
-                                            fontSize: "0.75rem",
-                                            padding: "0.1rem 0.2rem",
-                                            background: !canEditTarget ? "rgba(128, 128, 128, 0.25)" : "rgb(128, 128, 128)",
-                                            color: !canEditTarget ? "rgba(255, 255, 255, 0.4)" : "white",
-                                            border: "1px solid var(--border-color)",
-                                            borderRadius: "0.25rem",
-                                            cursor: !canEditTarget ? "not-allowed" : "text"
-                                          }}
-                                        />
-                                        <span style={{ fontSize: "0.7rem", color: "var(--text-secondary)" }}>{sub.unit}</span>
-                                      </div>
-                                    </td>
-                                    <td style={{ textAlign: "right" }}>
-                                      <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: "0.2rem" }}>
-                                        <input
-                                          type="number"
-                                          step="any"
-                                          className="user-selector"
-                                          defaultValue={yData.current}
-                                          onBlur={(e) => {
-                                            const val = parseFloat(e.target.value);
-                                            if (!isNaN(val)) {
-                                              handleUpdateKpiValue(sub.id, "current", val);
-                                            }
-                                          }}
-                                          style={{
-                                            width: "55px",
-                                            textAlign: "right",
-                                            fontSize: "0.75rem",
-                                            padding: "0.1rem 0.2rem",
-                                            background: "rgb(128, 128, 128)",
-                                            color: "white",
-                                            border: "1px solid var(--border-color)",
-                                            borderRadius: "0.25rem"
-                                          }}
-                                        />
-                                        <span style={{ fontSize: "0.7rem", color: "var(--text-secondary)" }}>{sub.unit}</span>
-                                      </div>
-                                    </td>
-                                    <td style={{ textAlign: "right", fontFamily: "var(--font-data)", fontWeight: "800", color: subRate >= 100 ? "var(--success-color)" : "var(--warning-color)" }}>
-                                      {subRate.toFixed(1)}%
-                                    </td>
-                                  </tr>
-                                );
-                              })}
-                              {(() => {
-                                let totalKpiRate = 0;
-                                if (selectedYear === 1 && nk.id === "L-1") {
-                                  totalKpiRate = 111.9;
-                                } else if (selectedYear === 1 && nk.id === "L-2") {
-                                  totalKpiRate = 687.8;
-                                } else if (selectedYear === 1 && nk.id === "L-3") {
-                                  totalKpiRate = 138.6;
-                                } else if (selectedYear === 1 && nk.id === "L-4") {
-                                  totalKpiRate = 146.7;
-                                } else if (selectedYear === 1 && nk.id === "L-5") {
-                                  totalKpiRate = 81.8;
-                                } else if (selectedYear === 1 && nk.id === "L-6") {
-                                  totalKpiRate = 103.3;
-                                } else if (selectedYear === 1 && nk.id === "L-7") {
-                                  totalKpiRate = 321.3;
-                                } else if (selectedYear === 1 && nk.id === "L-8") {
-                                  totalKpiRate = 134.0;
-                                } else if (selectedYear === 1 && nk.id === "L-9") {
-                                  totalKpiRate = 106.0;
-                                } else if (selectedYear === 1 && nk.id === "L-10") {
-                                  totalKpiRate = 128.5;
-                                } else if (selectedYear === 1 && nk.id === "L-11") {
-                                  totalKpiRate = 160.0;
-                                } else if (selectedYear === 1 && nk.id === "L-12") {
-                                  totalKpiRate = 114.6;
-                                } else if (selectedYear === 1 && nk.id === "L-13") {
-                                  totalKpiRate = 108.0;
-                                } else if (selectedYear === 1 && nk.id === "L-14") {
-                                  totalKpiRate = 500.0;
-                                } else if (selectedYear === 1 && nk.id === "L-15") {
-                                  totalKpiRate = 132.2;
-                                } else if (selectedYear === 1 && nk.id === "L-16") {
-                                  totalKpiRate = 123.3;
-                                } else if (selectedYear === 1 && nk.id === "L-17") {
-                                  totalKpiRate = 0.0;
-                                } else if (selectedYear === 1 && nk.id === "L-18") {
-                                  totalKpiRate = 176.5;
-                                } else if (selectedYear === 1 && nk.id === "L-19") {
-                                  totalKpiRate = 244.0;
-                                } else if (selectedYear === 1 && nk.id === "L-20") {
-                                  totalKpiRate = 202.5;
-                                } else if (selectedYear === 1 && nk.id === "L-21") {
-                                  totalKpiRate = 100.0;
-                                } else if (selectedYear === 1 && nk.id === "L-22") {
-                                  totalKpiRate = 175.0;
-                                } else if (selectedYear === 1 && nk.id === "L-23") {
-                                  totalKpiRate = 144.3;
-                                } else if (selectedYear === 1 && nk.id === "L-24") {
-                                  totalKpiRate = 138.3;
-                                } else if (nk.subItems && nk.subItems.length > 0) {
-                                  let sumKpiRate = 0;
-                                  nk.subItems.forEach((sub) => {
-                                    const yData = sub.years?.[selectedYear] || { target: 0, current: 0 };
-                                    sumKpiRate += yData.target > 0 ? (yData.current / yData.target) * 100 : 0;
-                                  });
-                                  totalKpiRate = sumKpiRate / nk.subItems.length;
-                                }
-                                const finalCapRate = Math.min(totalKpiRate, 100.0);
-                                return (
-                                  <tr style={{ background: "rgba(59,130,246,0.06)", borderTop: "1px solid var(--border-color-dark)" }}>
-                                    <td colSpan={2} style={{ fontWeight: "800" }}>종합 지표 달성도 (Total)</td>
-                                    <td style={{ textAlign: "right", fontFamily: "var(--font-data)" }}>100.0%</td>
-                                    <td style={{ textAlign: "right", fontFamily: "var(--font-data)", color: "var(--accent-color)", fontWeight: "700" }}>{totalKpiRate.toFixed(1)}%</td>
-                                    <td style={{ textAlign: "right", fontFamily: "var(--font-data)", fontWeight: "900", color: finalCapRate >= 100 ? "var(--success-color)" : "var(--warning-color)" }}>
-                                      {finalCapRate.toFixed(1)}%
-                                    </td>
-                                  </tr>
-                                );
-                              })()}
-                            </tbody>
-                          </table>
-                        </div>
-
-                        <div>
-                          <span style={{ fontSize: "0.95rem", color: "rgb(36, 88, 108)", fontWeight: "bold", display: "block", marginBottom: "0.4rem" }}>성과지표 산출공식 및 세부산식 분석</span>
-                          <div style={{ background: "rgba(255, 255, 255, 0.02)", border: "1px solid var(--border-color)", padding: "0.6rem 0.8rem", borderRadius: "0.375rem" }}>
-                            <div style={{ marginBottom: "0.5rem" }}>
-                              <RenderLatexFormula formula={nk.formula} />
-                            </div>
-                            {nk.type === "공통" && (
-                              <div style={{ fontSize: "0.72rem", color: "var(--text-secondary)", borderTop: "1px dashed rgba(255,255,255,0.1)", paddingTop: "0.5rem", lineHeight: "1.45" }}>
-                                <p style={{ fontWeight: "800", color: "#60a5fa", marginBottom: "0.25rem" }}>💡 교육부 RISE 공통성과지표 상세 가이드</p>
-                                <p>• <strong>평가 메커니즘</strong>: 단순 실적 달성도가 아닌, <strong>2024년 기준연도 대비 당해연도의 순 증가 비율(성장률)</strong>을 계산합니다.</p>
-                                <p>• <strong>산식 세부 분석</strong>: 
-                                  {nk.id === "C-1" && " 지자체 대표과제 성과 달성도 평균수식을 적용하여 각 대표과제의 개별 목표 달성률의 평균을 냅니다."}
-                                  {nk.id === "C-2" && " 지산학연 연계 건수 및 연구 계약 체결 금액의 기준연도(24년) 총합 대비 성장 비율을 구합니다."}
-                                  {nk.id === "C-3" && " 대학 평생직업교육 수료생 수 및 정원외 전형 입학생 수의 24년 모수 대비 증가율을 측정합니다."}
-                                  {nk.id === "C-4" && " 졸업자 중 울산광역시 및 인접 관내 취업자의 절대 인원 증가 추이를 백분율로 추적합니다."}
-                                  {nk.id === "C-5" && " RISE 지산학 협력체계 만족도 평점의 24년 기초 조사 평점 대비 성장 추이를 측정합니다."}
-                                  {nk.id === "C-6" && " 대학 경제 영향력 평가(IMPACT) 모델에 따른 지역 경제 생산 유발 효과(억원)의 향상률을 계산합니다."}
-                                </p>
-                                <p style={{ marginTop: "0.25rem" }}>• <strong>지표 활용시기</strong>: {
-                                  nk.id === "C-1" || nk.id === "C-2" || nk.id === "C-3"
-                                    ? "2차년도 중간평가 및 5차년도 종합평가에 모두 활용됩니다."
-                                    : "5차년도 최종 종합평가 시에만 활용되는 중장기 결과지표입니다."
-                                }</p>
-                              </div>
-                            )}
-                            {nk.type === "자율" && (
-                              <div style={{ fontSize: "0.72rem", color: "var(--text-secondary)", borderTop: "1px dashed rgba(255,255,255,0.1)", paddingTop: "0.5rem", lineHeight: "1.45" }}>
-                                <p style={{ fontWeight: "800", color: "#ec4899", marginBottom: "0.25rem" }}>💡 지자체(울산) 자율성과지표 안내</p>
-                                <p>• <strong>평가 메커니즘</strong>: 울산 RISE 비전 및 지역 주도 대학지원을 위해 시도와 대학이 합의하여 지정한 정량 지표입니다.</p>
-                                <p>• <strong>활용 시기</strong>: 매년 실시되는 지자체 자체평가 및 교육부의 연차점검, 중간·종합평가 시 연차별 달성도가 전면 반영됩니다.</p>
-                              </div>
-                            )}
-                            {nk.type === "중점" && (
-                              <div style={{ fontSize: "0.72rem", color: "var(--text-secondary)", borderTop: "1px dashed rgba(255,255,255,0.1)", paddingTop: "0.5rem", lineHeight: "1.45" }}>
-                                <p style={{ fontWeight: "800", color: "#f472b6", marginBottom: "0.25rem" }}>💡 대학 중점관리지표 안내</p>
-                                <p>• <strong>평가 메커니즘</strong>: 대학 강점·특성화 분야 육성 및 경쟁력 제고를 목적으로 대학이 설정한 집중 관리 핵심성과지표입니다.</p>
-                                <p>• <strong>활용 시기</strong>: 대학 자체 성과관리 환류 및 시도 컨설팅 환류 지표로 연중 활용됩니다.</p>
-                              </div>
-                            )}
-                          </div>
-                        </div>
-
-                        <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.8rem", borderTop: "1px solid var(--border-color-dark)", paddingTop: "0.8rem" }}>
+                        <div style={{ display: "flex", flexDirection: "column", gap: "1.2rem" }}>
                           <div>
-                            <span style={{ fontSize: "0.7rem", color: "var(--text-secondary)" }}>주관 부서</span>
-                            <p style={{ fontWeight: "700" }}>{nk.owner}</p>
+                            <span style={{ fontSize: "0.95rem", color: "rgb(36, 88, 108)", fontWeight: "bold", display: "block" }}>지표 정의</span>
+                            <p style={{ fontSize: "0.85rem", fontWeight: "700", marginTop: "0.2rem", lineHeight: "1.4" }}>
+                              {nk.description}
+                            </p>
                           </div>
-                          <div style={{ textAlign: "right" }}>
-                            <span style={{ fontSize: "0.7rem", color: "var(--text-secondary)" }}>측정 주기</span>
-                            <p style={{ fontWeight: "700" }}>{nk.cycle}</p>
+
+                          {/* 세부지표 목푯값 및 실적값을 보여주는 미니 표 추가 */}
+                          <div>
+                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.4rem" }}>
+                              <span style={{ fontSize: "0.95rem", color: "rgb(36, 88, 108)", fontWeight: "bold" }}>지표 구성 세부항목 목표 대비 실적 표</span>
+                              <span className="badge badge-yellow" style={{ fontSize: "0.75rem", padding: "0.15rem 0.4rem" }}>{selectedYear}차년도 세부지표</span>
+                            </div>
+                            <table className="mini-table" style={{ fontSize: "0.75rem" }}>
+                              <thead>
+                                <tr>
+                                  <th>세부 항목명</th>
+                                  <th style={{ textAlign: "right" }}>기준값</th>
+                                  <th style={{ textAlign: "right" }}>목푯값</th>
+                                  <th style={{ textAlign: "right" }}>현재실적</th>
+                                  <th style={{ textAlign: "right" }}>달성도</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {nk.subItems && nk.subItems.map((sub, index) => {
+                                  const yData = sub.years?.[selectedYear] || { target: 0, current: 0 };
+                                  const subRate = yData.target > 0 ? (yData.current / yData.target) * 100 : 0;
+                                  const canEditTarget = currentRole.rank <= 4;
+                                  const cleanName = sub.name.replace(/\s*\(기준값:\s*\d+\)/, "");
+                                  const letter = String.fromCharCode(65 + index); // 0 -> A, 1 -> B, 2 -> C ...
+                                  return (
+                                    <tr key={sub.id}>
+                                      <td style={{ fontWeight: "700" }}>{`[${letter}] ${cleanName}`}</td>
+                                      <td style={{ textAlign: "right", color: "var(--text-secondary)" }}>
+                                        {sub.base !== undefined ? `${sub.base.toLocaleString()} ${sub.unit}` : "-"}
+                                      </td>
+                                      <td style={{ textAlign: "right" }}>
+                                        <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: "0.2rem" }}>
+                                          <input
+                                            type="number"
+                                            step="any"
+                                            className="user-selector"
+                                            disabled={!canEditTarget}
+                                            defaultValue={yData.target}
+                                            onBlur={(e) => {
+                                              if (!canEditTarget) return;
+                                              const val = parseFloat(e.target.value);
+                                              if (!isNaN(val)) {
+                                                handleUpdateKpiValue(sub.id, "target", val);
+                                              }
+                                            }}
+                                            style={{
+                                              width: "55px",
+                                              textAlign: "right",
+                                              fontSize: "0.75rem",
+                                              padding: "0.1rem 0.2rem",
+                                              background: !canEditTarget ? "rgba(128, 128, 128, 0.25)" : "rgb(128, 128, 128)",
+                                              color: !canEditTarget ? "rgba(255, 255, 255, 0.4)" : "white",
+                                              border: "1px solid var(--border-color)",
+                                              borderRadius: "0.25rem",
+                                              cursor: !canEditTarget ? "not-allowed" : "text"
+                                            }}
+                                          />
+                                          <span style={{ fontSize: "0.7rem", color: "var(--text-secondary)" }}>{sub.unit}</span>
+                                        </div>
+                                      </td>
+                                      <td style={{ textAlign: "right" }}>
+                                        <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: "0.2rem" }}>
+                                          <input
+                                            type="number"
+                                            step="any"
+                                            className="user-selector"
+                                            defaultValue={yData.current}
+                                            onBlur={(e) => {
+                                              const val = parseFloat(e.target.value);
+                                              if (!isNaN(val)) {
+                                                handleUpdateKpiValue(sub.id, "current", val);
+                                              }
+                                            }}
+                                            style={{
+                                              width: "55px",
+                                              textAlign: "right",
+                                              fontSize: "0.75rem",
+                                              padding: "0.1rem 0.2rem",
+                                              background: "rgb(128, 128, 128)",
+                                              color: "white",
+                                              border: "1px solid var(--border-color)",
+                                              borderRadius: "0.25rem"
+                                            }}
+                                          />
+                                          <span style={{ fontSize: "0.7rem", color: "var(--text-secondary)" }}>{sub.unit}</span>
+                                        </div>
+                                      </td>
+                                      <td style={{ textAlign: "right", fontFamily: "var(--font-data)", fontWeight: "800", color: subRate >= 100 ? "var(--success-color)" : "var(--warning-color)" }}>
+                                        {subRate.toFixed(1)}%
+                                      </td>
+                                    </tr>
+                                  );
+                                })}
+                                {(() => {
+                                  let totalKpiRate = 0;
+                                  if (selectedYear === 1 && nk.id === "L-1") {
+                                    totalKpiRate = 111.9;
+                                  } else if (selectedYear === 1 && nk.id === "L-2") {
+                                    totalKpiRate = 687.8;
+                                  } else if (selectedYear === 1 && nk.id === "L-3") {
+                                    totalKpiRate = 138.6;
+                                  } else if (selectedYear === 1 && nk.id === "L-4") {
+                                    totalKpiRate = 146.7;
+                                  } else if (selectedYear === 1 && nk.id === "L-5") {
+                                    totalKpiRate = 81.8;
+                                  } else if (selectedYear === 1 && nk.id === "L-6") {
+                                    totalKpiRate = 103.3;
+                                  } else if (selectedYear === 1 && nk.id === "L-7") {
+                                    totalKpiRate = 321.3;
+                                  } else if (selectedYear === 1 && nk.id === "L-8") {
+                                    totalKpiRate = 134.0;
+                                  } else if (selectedYear === 1 && nk.id === "L-9") {
+                                    totalKpiRate = 106.0;
+                                  } else if (selectedYear === 1 && nk.id === "L-10") {
+                                    totalKpiRate = 128.5;
+                                  } else if (selectedYear === 1 && nk.id === "L-11") {
+                                    totalKpiRate = 160.0;
+                                  } else if (selectedYear === 1 && nk.id === "L-12") {
+                                    totalKpiRate = 114.6;
+                                  } else if (selectedYear === 1 && nk.id === "L-13") {
+                                    totalKpiRate = 108.0;
+                                  } else if (selectedYear === 1 && nk.id === "L-14") {
+                                    totalKpiRate = 500.0;
+                                  } else if (selectedYear === 1 && nk.id === "L-15") {
+                                    totalKpiRate = 132.2;
+                                  } else if (selectedYear === 1 && nk.id === "L-16") {
+                                    totalKpiRate = 123.3;
+                                  } else if (selectedYear === 1 && nk.id === "L-17") {
+                                    totalKpiRate = 0.0;
+                                  } else if (selectedYear === 1 && nk.id === "L-18") {
+                                    totalKpiRate = 176.5;
+                                  } else if (selectedYear === 1 && nk.id === "L-19") {
+                                    totalKpiRate = 244.0;
+                                  } else if (selectedYear === 1 && nk.id === "L-20") {
+                                    totalKpiRate = 202.5;
+                                  } else if (selectedYear === 1 && nk.id === "L-21") {
+                                    totalKpiRate = 100.0;
+                                  } else if (selectedYear === 1 && nk.id === "L-22") {
+                                    totalKpiRate = 175.0;
+                                  } else if (selectedYear === 1 && nk.id === "L-23") {
+                                    totalKpiRate = 144.3;
+                                  } else if (selectedYear === 1 && nk.id === "L-24") {
+                                    totalKpiRate = 138.3;
+                                  } else if (nk.subItems && nk.subItems.length > 0) {
+                                    let sumKpiRate = 0;
+                                    nk.subItems.forEach((sub) => {
+                                      const yData = sub.years?.[selectedYear] || { target: 0, current: 0 };
+                                      sumKpiRate += yData.target > 0 ? (yData.current / yData.target) * 100 : 0;
+                                    });
+                                    totalKpiRate = sumKpiRate / nk.subItems.length;
+                                  }
+                                  const finalCapRate = Math.min(totalKpiRate, 100.0);
+                                  return (
+                                    <tr style={{ background: "rgba(59,130,246,0.06)", borderTop: "1px solid var(--border-color-dark)" }}>
+                                      <td colSpan={2} style={{ fontWeight: "800" }}>종합 지표 달성도 (Total)</td>
+                                      <td style={{ textAlign: "right", fontFamily: "var(--font-data)" }}>100.0%</td>
+                                      <td style={{ textAlign: "right", fontFamily: "var(--font-data)", color: "var(--accent-color)", fontWeight: "700" }}>{totalKpiRate.toFixed(1)}%</td>
+                                      <td style={{ textAlign: "right", fontFamily: "var(--font-data)", fontWeight: "900", color: finalCapRate >= 100 ? "var(--success-color)" : "var(--warning-color)" }}>
+                                        {finalCapRate.toFixed(1)}%
+                                      </td>
+                                    </tr>
+                                  );
+                                })()}
+                              </tbody>
+                            </table>
+                          </div>
+
+                          <div>
+                            <span style={{ fontSize: "0.95rem", color: "rgb(36, 88, 108)", fontWeight: "bold", display: "block", marginBottom: "0.4rem" }}>성과지표 산출공식 및 세부산식 분석</span>
+                            <div style={{ background: "rgba(255, 255, 255, 0.02)", border: "1px solid var(--border-color)", padding: "0.6rem 0.8rem", borderRadius: "0.375rem" }}>
+                              <div style={{ marginBottom: "0.5rem" }}>
+                                <RenderLatexFormula formula={nk.formula} />
+                              </div>
+                              {nk.type === "공통" && (
+                                <div style={{ fontSize: "0.72rem", color: "var(--text-secondary)", borderTop: "1px dashed rgba(255,255,255,0.1)", paddingTop: "0.5rem", lineHeight: "1.45" }}>
+                                  <p style={{ fontWeight: "800", color: "#60a5fa", marginBottom: "0.25rem" }}>💡 교육부 RISE 공통성과지표 상세 가이드</p>
+                                  <p>• <strong>평가 메커니즘</strong>: 단순 실적 달성도가 아닌, <strong>2024년 기준연도 대비 당해연도의 순 증가 비율(성장률)</strong>을 계산합니다.</p>
+                                  <p>• <strong>산식 세부 분석</strong>:
+                                    {nk.id === "C-1" && " 지자체 대표과제 성과 달성도 평균수식을 적용하여 각 대표과제의 개별 목표 달성률의 평균을 냅니다."}
+                                    {nk.id === "C-2" && " 지산학연 연계 건수 및 연구 계약 체결 금액의 기준연도(24년) 총합 대비 성장 비율을 구합니다."}
+                                    {nk.id === "C-3" && " 대학 평생직업교육 수료생 수 및 정원외 전형 입학생 수의 24년 모수 대비 증가율을 측정합니다."}
+                                    {nk.id === "C-4" && " 졸업자 중 울산광역시 및 인접 관내 취업자의 절대 인원 증가 추이를 백분율로 추적합니다."}
+                                    {nk.id === "C-5" && " RISE 지산학 협력체계 만족도 평점의 24년 기초 조사 평점 대비 성장 추이를 측정합니다."}
+                                    {nk.id === "C-6" && " 대학 경제 영향력 평가(IMPACT) 모델에 따른 지역 경제 생산 유발 효과(억원)의 향상률을 계산합니다."}
+                                  </p>
+                                  <p style={{ marginTop: "0.25rem" }}>• <strong>지표 활용시기</strong>: {
+                                    nk.id === "C-1" || nk.id === "C-2" || nk.id === "C-3"
+                                      ? "2차년도 중간평가 및 5차년도 종합평가에 모두 활용됩니다."
+                                      : "5차년도 최종 종합평가 시에만 활용되는 중장기 결과지표입니다."
+                                  }</p>
+                                </div>
+                              )}
+                              {nk.type === "자율" && (
+                                <div style={{ fontSize: "0.72rem", color: "var(--text-secondary)", borderTop: "1px dashed rgba(255,255,255,0.1)", paddingTop: "0.5rem", lineHeight: "1.45" }}>
+                                  <p style={{ fontWeight: "800", color: "#ec4899", marginBottom: "0.25rem" }}>💡 지자체(울산) 자율성과지표 안내</p>
+                                  <p>• <strong>평가 메커니즘</strong>: 울산 RISE 비전 및 지역 주도 대학지원을 위해 시도와 대학이 합의하여 지정한 정량 지표입니다.</p>
+                                  <p>• <strong>활용 시기</strong>: 매년 실시되는 지자체 자체평가 및 교육부의 연차점검, 중간·종합평가 시 연차별 달성도가 전면 반영됩니다.</p>
+                                </div>
+                              )}
+                              {nk.type === "중점" && (
+                                <div style={{ fontSize: "0.72rem", color: "var(--text-secondary)", borderTop: "1px dashed rgba(255,255,255,0.1)", paddingTop: "0.5rem", lineHeight: "1.45" }}>
+                                  <p style={{ fontWeight: "800", color: "#f472b6", marginBottom: "0.25rem" }}>💡 대학 중점관리지표 안내</p>
+                                  <p>• <strong>평가 메커니즘</strong>: 대학 강점·특성화 분야 육성 및 경쟁력 제고를 목적으로 대학이 설정한 집중 관리 핵심성과지표입니다.</p>
+                                  <p>• <strong>활용 시기</strong>: 대학 자체 성과관리 환류 및 시도 컨설팅 환류 지표로 연중 활용됩니다.</p>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+
+                          <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.8rem", borderTop: "1px solid var(--border-color-dark)", paddingTop: "0.8rem" }}>
+                            <div>
+                              <span style={{ fontSize: "0.7rem", color: "var(--text-secondary)" }}>주관 부서</span>
+                              <p style={{ fontWeight: "700" }}>{nk.owner}</p>
+                            </div>
+                            <div style={{ textAlign: "right" }}>
+                              <span style={{ fontSize: "0.7rem", color: "var(--text-secondary)" }}>측정 주기</span>
+                              <p style={{ fontWeight: "700" }}>{nk.cycle}</p>
+                            </div>
                           </div>
                         </div>
                       </div>
+                    );
+                  })() : (
+                    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: "320px", color: "var(--text-secondary)", gap: "0.5rem" }}>
+                      <HelpCircle size={32} style={{ color: "var(--accent-color)" }} />
+                      <span style={{ fontSize: "0.8rem" }}>좌측 목록의 성과지표 행을 클릭하시면 상세 비교 정보가 나타납니다.</span>
                     </div>
-                  );
-                })() : (
-                  <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: "320px", color: "var(--text-secondary)", gap: "0.5rem" }}>
-                    <HelpCircle size={32} style={{ color: "var(--accent-color)" }} />
-                    <span style={{ fontSize: "0.8rem" }}>좌측 목록의 성과지표 행을 클릭하시면 상세 비교 정보가 나타납니다.</span>
-                  </div>
-                )}
+                  )}
+                </div>
               </div>
             </div>
-          </div>
-        </>
+          </>
         )}
 
         {activeTab === "agreements" && (
@@ -8604,8 +8609,8 @@ export default function App() {
                 }
               } else {
                 // 추가 처리
-                const newMember = { 
-                  ...editingMember, 
+                const newMember = {
+                  ...editingMember,
                   id: `m-${Date.now()}`,
                   startDate: editingMember.startDate || "2026-03-01",
                   status: editingMember.status || "참여중"
@@ -8632,7 +8637,7 @@ export default function App() {
             <h3 style={{ fontSize: "1.1rem", fontWeight: "800", marginBottom: "1.5rem" }}>
               {editingMember.id ? "구성원 정보 수정" : "신규 구성원 등록"}
             </h3>
-            
+
             <div style={{ display: "flex", flexDirection: "column", gap: "1rem", fontSize: "0.8rem" }}>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
                 <div>
@@ -8839,7 +8844,7 @@ export default function App() {
             <h3 style={{ marginBottom: "1rem", fontSize: "1rem", fontWeight: "700", color: "var(--text-primary)" }}>
               {editingProgram ? "프로그램 수정" : "신규 프로그램 추가"}
             </h3>
-            
+
             <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
               <div>
                 <label style={{ display: "block", marginBottom: "0.3rem", fontSize: "0.8rem", fontWeight: "700" }}>단위과제 *</label>
