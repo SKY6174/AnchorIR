@@ -560,22 +560,47 @@ function formatDataToMultiYear(data) {
           let budget_city = 0;
           let budget_external = 0;
 
-          if (isExternalSub) {
-            budget_external = budgetMain;
+          if (prog.id.startsWith("A1가-")) {
+            if (prog.id === "A1가-S1T2-1") {
+              const ratio = yr === 2 ? 1 : (yr === 3 ? 1.1 : yr === 4 ? 1.2 : 1.3);
+              budget_national = Math.round(112000000 * ratio);
+              budget_city = Math.round(80000000 * ratio);
+            } else if (prog.id === "A1가-S4T12-2") {
+              const ratio = yr === 2 ? 1 : (yr === 3 ? 1.1 : yr === 4 ? 1.2 : 1.3);
+              budget_city = Math.round(50000000 * ratio);
+            } else {
+              budget_national = budgetMain;
+            }
           } else {
-            budget_national = Math.round(budgetMain * 0.5);
-            budget_city = budgetMain - budget_national;
+            if (isExternalSub) {
+              budget_external = budgetMain;
+            } else {
+              budget_national = Math.round(budgetMain * 0.5);
+              budget_city = budgetMain - budget_national;
+            }
           }
 
           let spent_national = 0;
           let spent_city = 0;
           let spent_external = 0;
           if (spentMain > 0) {
-            if (isExternalSub) {
-              spent_external = spentMain;
+            if (prog.id.startsWith("A1가-")) {
+              if (prog.id === "A1가-S1T2-1") {
+                const total = 192000000;
+                spent_national = Math.round(spentMain * (112000000 / total));
+                spent_city = spentMain - spent_national;
+              } else if (prog.id === "A1가-S4T12-2") {
+                spent_city = spentMain;
+              } else {
+                spent_national = spentMain;
+              }
             } else {
-              spent_national = Math.round(spentMain * 0.5);
-              spent_city = spentMain - spent_national;
+              if (isExternalSub) {
+                spent_external = spentMain;
+              } else {
+                spent_national = Math.round(spentMain * 0.5);
+                spent_city = spentMain - spent_national;
+              }
             }
           }
 
@@ -1604,8 +1629,8 @@ export default function App() {
   }, [currentUser]);
 
   const [projects, setProjects] = useState(() => {
-    // 2차년도 세부 프로그램 ID 및 예산 데이터를 PDF 실증 데이터로 정밀 동기화하기 위해 로컬스토리지 버전을 v25로 업그레이드합니다.
-    const cached = localStorage.getItem("anchor_projects_data_v25");
+    // 2차년도 세부 프로그램 ID 및 예산 데이터를 PDF 실증 데이터로 정밀 동기화하기 위해 로컬스토리지 버전을 v26으로 업그레이드합니다.
+    const cached = localStorage.getItem("anchor_projects_data_v26");
     if (cached) {
       try {
         const loaded = migrateProgramIds(JSON.parse(cached));
@@ -4387,18 +4412,18 @@ export default function App() {
   // projects 상태 변경 시 localStorage 자동 기입 (새로고침 휘발 방지 우회책)
   useEffect(() => {
     try {
-      localStorage.setItem("anchor_projects_data_v25", JSON.stringify(projects));
+      localStorage.setItem("anchor_projects_data_v26", JSON.stringify(projects));
     } catch (e) {
       const isQuotaError = e.name === "QuotaExceededError" || e.code === 22 || e.number === -2147024882;
       if (isQuotaError) {
         console.warn("로컬 스토리지 공간이 부족합니다. 이전 구버전 캐시를 청소하고 재시도합니다...");
         try {
           Object.keys(localStorage).forEach((key) => {
-            if (key.startsWith("anchor_projects_data_") && key !== "anchor_projects_data_v25") {
+            if (key.startsWith("anchor_projects_data_") && key !== "anchor_projects_data_v26") {
               localStorage.removeItem(key);
             }
           });
-          localStorage.setItem("anchor_projects_data_v25", JSON.stringify(projects));
+          localStorage.setItem("anchor_projects_data_v26", JSON.stringify(projects));
           console.log("이전 캐시 청소 및 데이터 재저장 성공");
         } catch (retryError) {
           console.error("이전 캐시 청소 후에도 로컬 스토리지 기입 실패:", retryError);
