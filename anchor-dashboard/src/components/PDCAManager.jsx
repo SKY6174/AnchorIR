@@ -316,7 +316,9 @@ export default function PDCAManager({
       })
     : allPrograms;
 
-  const activeProg = allPrograms.find((p) => p.id === selectedProgId);
+  // 💡 [연도별 인스턴스 정밀 매칭] 1차년도/2차년도 이후 프로그램 간 ID 중복 시 현재 선택된 연도(selectedYear) 정보가 있는 인스턴스를 우선 매칭합니다.
+  // 💡 [연도별 인스턴스 정밀 매칭] 1차년도/2차년도 이후 프로그램 간 ID 중복 시 현재 선택된 연도(selectedYear) 정보가 있는 인스턴스를 우선 매칭합니다.
+  const activeProg = allPrograms.find((p) => p.id === selectedProgId && p.years && p.years[selectedYear]) || allPrograms.find((p) => p.id === selectedProgId);
 
   // D단계 실적 입력값 변경 시 계획대비 달성률 자동계산
   React.useEffect(() => {
@@ -353,7 +355,8 @@ export default function PDCAManager({
   // selectedProgId, selectedYear, selectedVersionId가 바뀔 때 모든 기획/환류/재원 상태 로드
   React.useEffect(() => {
     if (selectedProgId) {
-      const prog = allPrograms.find((p) => p.id === selectedProgId);
+      // 💡 [연도별 인스턴스 정밀 매칭] 현재 선택된 연도(selectedYear) 정보가 활성화된 인스턴스를 우선 매칭하여 바인딩합니다.
+      const prog = allPrograms.find((p) => p.id === selectedProgId && p.years && p.years[selectedYear]) || allPrograms.find((p) => p.id === selectedProgId);
       if (prog) {
         let dataSrc = prog;
         let py = prog.years?.[selectedYear] || {};
@@ -2387,10 +2390,10 @@ export default function PDCAManager({
                       </td>
                       <td style={{ fontFamily: "var(--font-data)" }}>{formatToMillionWon(py.budget_main)}백만원</td>
                       <td style={{ fontFamily: "var(--font-data)" }}>{formatToMillionWon(py.spent_main)}백만원</td>
-                      <td style={{ textAlign: "center", color: prog.pdca.p === "완료" ? "var(--success-color)" : "inherit", fontWeight: "700" }}>{prog.pdca.p}</td>
-                      <td style={{ textAlign: "center", color: prog.pdca.d === "완료" ? "var(--success-color)" : "inherit", fontWeight: "700" }}>{prog.pdca.d}</td>
-                      <td style={{ textAlign: "center", color: prog.pdca.c === "완료" ? "var(--success-color)" : "inherit", fontWeight: "700" }}>{prog.pdca.c}</td>
-                      <td style={{ textAlign: "center", color: prog.pdca.a === "완료" ? "var(--success-color)" : "inherit", fontWeight: "700" }}>{prog.pdca.a}</td>
+                      <td style={{ textAlign: "center", color: (prog.pdca?.p || "대기") === "완료" ? "var(--success-color)" : "inherit", fontWeight: "700" }}>{prog.pdca?.p || "대기"}</td>
+                      <td style={{ textAlign: "center", color: (prog.pdca?.d || "대기") === "완료" ? "var(--success-color)" : "inherit", fontWeight: "700" }}>{prog.pdca?.d || "대기"}</td>
+                      <td style={{ textAlign: "center", color: (prog.pdca?.c || "대기") === "완료" ? "var(--success-color)" : "inherit", fontWeight: "700" }}>{prog.pdca?.c || "대기"}</td>
+                      <td style={{ textAlign: "center", color: (prog.pdca?.a || "대기") === "완료" ? "var(--success-color)" : "inherit", fontWeight: "700" }}>{prog.pdca?.a || "대기"}</td>
                       <td>
                         <button
                           className="btn-primary"
@@ -2421,7 +2424,7 @@ export default function PDCAManager({
                 <h5 style={{ fontSize: "0.8rem", fontWeight: "700", marginTop: "1rem", marginBottom: "0.5rem" }}>PDCA 단계 갱신</h5>
                 <div className="pdca-stepper" style={{ marginBottom: "0" }}>
                   {["p", "d", "c", "a"].map((stage) => {
-                    const status = activeProg.pdca[stage];
+                    const status = activeProg.pdca?.[stage] || "대기";
                     const isDone = status === "완료";
                     const isProgress = status === "진행";
                     return (

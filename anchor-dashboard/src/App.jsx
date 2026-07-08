@@ -1004,7 +1004,28 @@ function mergeProjectsWithInitial(loadedData, multiYearInitialData) {
             return sourceProg;
           }
         });
-        unit.programs = mergedPrograms;
+        // 💡 [중복 ID 방지 가드] 1차년도와 다년도 프로그램 목록 병합 시 발생할 수 있는 동일 ID 프로그램 중복 노출을 차단합니다.
+        const uniquePrograms = [];
+        const seenIds = new Set();
+        mergedPrograms.forEach((prog) => {
+          if (prog && prog.id) {
+            if (!seenIds.has(prog.id)) {
+              seenIds.add(prog.id);
+              uniquePrograms.push(prog);
+            } else {
+              // 중복된 경우, 2차년도 등 유효한 상세 연도 정보(years[selectedYear])를 가진 객체를 우선하여 덮어씁니다.
+              const existingIdx = uniquePrograms.findIndex(p => p.id === prog.id);
+              if (existingIdx !== -1) {
+                const existing = uniquePrograms[existingIdx];
+                const hasCurrentData = (p) => p.years && Object.keys(p.years).some(y => p.years[y] && p.years[y].budget_main > 0);
+                if (!hasCurrentData(existing) && hasCurrentData(prog)) {
+                  uniquePrograms[existingIdx] = prog;
+                }
+              }
+            }
+          }
+        });
+        unit.programs = uniquePrograms;
 
         // 💡 [비목 구조 및 값 동기화] DB에서 로드된 단위과제의 비목 상세(budgetDetails)에 최신 mockData 비목 구조를 주입/병합합니다.
         if (sourceUnit && sourceUnit.budgetDetails) {
@@ -2631,6 +2652,8 @@ export default function App() {
   const [selectedProgId, setSelectedProgId] = useState(() => {
     return localStorage.getItem("anchor_selected_prog_id") || null;
   });
+
+
 
 
   useEffect(() => {
