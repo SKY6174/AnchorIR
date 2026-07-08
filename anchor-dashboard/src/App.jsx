@@ -1914,7 +1914,7 @@ export default function App() {
       localStorage.removeItem("anchor_members");
 
       Object.keys(localStorage).forEach((key) => {
-        if (key.startsWith("anchor_projects_data_") && key !== "anchor_projects_data_v54") {
+        if (key.startsWith("anchor_projects_data_") && key !== "anchor_projects_data_v55") {
           localStorage.removeItem(key);
         }
         // 💡 [연도별 복구 캐시 청소 가드] 캐시 버전 상향 시 연도별 가공 복구 캐시와 구버전 구매용역 캐시(기자재, 환경개선, 주요용역)도 깨끗하게 동시 청소하여 구버전 예산 꼬임을 방지합니다.
@@ -1980,7 +1980,7 @@ export default function App() {
       }
       localStorage.setItem("anchor_last_self_healing_reset", String(now));
       // 로그인 세션(anchor_logged_in_user)은 리셋하지 않고 보존하여 튕김(로그아웃) 방지!
-      localStorage.removeItem("anchor_projects_data_v54");
+      localStorage.removeItem("anchor_projects_data_v55");
       localStorage.removeItem("anchor_selected_kpi");
       Object.keys(localStorage).forEach((key) => {
         if (key.startsWith("anchor_cache_proj_")) {
@@ -2172,8 +2172,8 @@ export default function App() {
   }, [currentUser]);
 
   const [projects, setProjects] = useState(() => {
-    // D2 단위과제 신규 세부 프로그램 및 예산/담당자 정보를 반영하기 위해 로컬스토리지 버전을 v54로 업그레이드합니다.
-    const cached = localStorage.getItem("anchor_projects_data_v54");
+    // D1, D3 단위과제 신규 세부 프로그램 및 예산 정보를 반영하기 위해 로컬스토리지 버전을 v55로 업그레이드합니다.
+    const cached = localStorage.getItem("anchor_projects_data_v55");
     const multiYearInitialData = migrateProgramIds(formatDataToMultiYear(initialProjectsData));
     if (cached) {
       try {
@@ -4852,21 +4852,21 @@ export default function App() {
   // projects 상태 변경 시 localStorage 자동 기입 (새로고침 휘발 방지 우회책)
   useEffect(() => {
     try {
-      localStorage.setItem("anchor_projects_data_v54", JSON.stringify(getCleanProjectsForStorage(projects)));
+      localStorage.setItem("anchor_projects_data_v55", JSON.stringify(getCleanProjectsForStorage(projects)));
     } catch (e) {
       const isQuotaError = e.name === "QuotaExceededError" || e.code === 22 || e.number === -2147024882;
       if (isQuotaError) {
         console.warn("로컬 스토리지 공간이 부족합니다. 이전 구버전 캐시를 청소하고 재시도합니다...");
         try {
           Object.keys(localStorage).forEach((key) => {
-            if (key.startsWith("anchor_projects_data_") && key !== "anchor_projects_data_v54") {
+            if (key.startsWith("anchor_projects_data_") && key !== "anchor_projects_data_v55") {
               localStorage.removeItem(key);
             }
             if (key.startsWith("anchor_cache_proj_")) {
               localStorage.removeItem(key);
             }
           });
-          localStorage.setItem("anchor_projects_data_v54", JSON.stringify(getCleanProjectsForStorage(projects)));
+          localStorage.setItem("anchor_projects_data_v55", JSON.stringify(getCleanProjectsForStorage(projects)));
           console.log("이전 캐시 청소 및 데이터 재저장 성공");
         } catch (retryError) {
           console.error("이전 캐시 QR 청소 후에도 로컬 스토리지 기입 실패:", retryError);
