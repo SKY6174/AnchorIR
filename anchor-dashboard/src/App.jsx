@@ -2208,13 +2208,13 @@ export default function App() {
   }, [currentUser]);
 
   const [projects, setProjects] = useState(() => {
-    // D1, D3 단위과제 신규 세부 프로그램 및 예산 정보를 반영하기 위해 로컬스토리지 버전을 v55로 업그레이드합니다.
-    const cached = localStorage.getItem("anchor_projects_data_v55");
+    // 💡 [깜빡임 방지 최우선 처리] 2차년도 연도별 캐시 데이터를 최우선적으로 선제 로드하여 0초 반응을 제공합니다.
+    const cached = localStorage.getItem("anchor_cache_proj_y2") || localStorage.getItem("anchor_projects_data_v55");
     const multiYearInitialData = migrateProgramIds(formatDataToMultiYear(initialProjectsData));
     if (cached) {
       try {
         const loaded = migrateProgramIds(JSON.parse(cached));
-        // [공통 병합] 공통 헬퍼 함수를 통해 캐시 데이터와 초기 템플릿 데이터를 정밀 머지합니다.
+        // [공통 병합] 캐시 데이터와 초기 템플릿 데이터를 정밀 머지합니다.
         return mergeProjectsWithInitial(loaded, multiYearInitialData);
       } catch (e) {
         console.error("Failed to parse cached projects data:", e);
@@ -2625,15 +2625,36 @@ export default function App() {
   const [syncStatus, setSyncStatus] = useState("synced"); // "synced", "syncing", "error"
 
   // 구매용역 관리 DB 보존 상태
-  const [envData, setEnvData] = useState([]);
-  const [equipData, setEquipData] = useState([]);
-  const [serviceData, setServiceData] = useState([]);
+  const [envData, setEnvData] = useState(() => {
+    const cached = localStorage.getItem("anchor_cache_env_y2") || localStorage.getItem("anchor_cache_env_y1");
+    return cached ? JSON.parse(cached) : [];
+  });
+  const [equipData, setEquipData] = useState(() => {
+    const cached = localStorage.getItem("anchor_cache_equip_y2") || localStorage.getItem("anchor_cache_equip_y1");
+    return cached ? JSON.parse(cached) : [];
+  });
+  const [serviceData, setServiceData] = useState(() => {
+    const cached = localStorage.getItem("anchor_cache_serv_y2") || localStorage.getItem("anchor_cache_serv_y1");
+    return cached ? JSON.parse(cached) : [];
+  });
 
   // 일정관리 DB 보존 상태
-  const [monthlySchedules, setMonthlySchedules] = useState([]);
-  const [eventSchedules, setEventSchedules] = useState([]);
-  const [meetingSchedules, setMeetingSchedules] = useState([]);
-  const [pressReleases, setPressReleases] = useState([]);
+  const [monthlySchedules, setMonthlySchedules] = useState(() => {
+    const cached = localStorage.getItem("anchor_cache_month_y2") || localStorage.getItem("anchor_cache_month_y1");
+    return cached ? JSON.parse(cached) : [];
+  });
+  const [eventSchedules, setEventSchedules] = useState(() => {
+    const cached = localStorage.getItem("anchor_cache_event_y2") || localStorage.getItem("anchor_cache_event_y1");
+    return cached ? JSON.parse(cached) : [];
+  });
+  const [meetingSchedules, setMeetingSchedules] = useState(() => {
+    const cached = localStorage.getItem("anchor_cache_meet_y2") || localStorage.getItem("anchor_cache_meet_y1");
+    return cached ? JSON.parse(cached) : [];
+  });
+  const [pressReleases, setPressReleases] = useState(() => {
+    const cached = localStorage.getItem("anchor_cache_press_y2") || localStorage.getItem("anchor_cache_press_y1");
+    return cached ? JSON.parse(cached) : [];
+  });
 
   const [projectsSubTab, setProjectsSubTab] = useState(() => {
     return localStorage.getItem("anchor_projects_sub_tab") || "unit_status";
@@ -3086,6 +3107,38 @@ export default function App() {
   // 1) 최초 마운트 및 연차 변경 시 DB 데이터 Fetch 연동
   useEffect(() => {
     let active = true;
+
+    // 💡 [깜빡임 방지 및 0초 반응 최적화] 비비비동기 원격 쿼리가 시작되기 전에, 로컬 스토리지 캐시를 동기적으로 선제 로드하여 즉각 렌더링합니다.
+    const cachedProj = localStorage.getItem(`anchor_cache_proj_y${selectedYear}`);
+    const cachedAgr = localStorage.getItem("anchor_cache_agreements_all");
+    const cachedUnifiedCert = localStorage.getItem("anchor_cache_unified_certificates_all");
+    const cachedScholarships = localStorage.getItem("anchor_cache_scholarships_all");
+    const cachedEnv = localStorage.getItem(`anchor_cache_env_y${selectedYear}`);
+    const cachedEquip = localStorage.getItem(`anchor_cache_equip_y${selectedYear}`);
+    const cachedServ = localStorage.getItem(`anchor_cache_serv_y${selectedYear}`);
+    const cachedMonth = localStorage.getItem(`anchor_cache_month_y${selectedYear}`);
+    const cachedEvent = localStorage.getItem(`anchor_cache_event_y${selectedYear}`);
+    const cachedMeet = localStorage.getItem(`anchor_cache_meet_y${selectedYear}`);
+    const cachedPress = localStorage.getItem(`anchor_cache_press_y${selectedYear}`);
+
+    if (cachedProj) setProjects(migrateProgramIds(JSON.parse(cachedProj)));
+    if (cachedAgr) setAgreements(JSON.parse(cachedAgr));
+    if (cachedUnifiedCert) setUnifiedCertificates(JSON.parse(cachedUnifiedCert));
+    if (cachedScholarships) setScholarships(JSON.parse(cachedScholarships));
+    if (cachedEnv) setEnvData(JSON.parse(cachedEnv));
+    if (cachedEquip) setEquipData(JSON.parse(cachedEquip));
+    if (cachedServ) setServiceData(JSON.parse(cachedServ));
+    if (cachedMonth) setMonthlySchedules(JSON.parse(cachedMonth));
+    if (cachedEvent) setEventSchedules(JSON.parse(cachedEvent));
+    if (cachedMeet) setMeetingSchedules(JSON.parse(cachedMeet));
+    if (cachedPress) setPressReleases(JSON.parse(cachedPress));
+
+    if (cachedProj || cachedMonth) {
+      setIsDbLoaded(true);
+    } else {
+      setIsDbLoaded(false);
+    }
+
     const fetchAllDashboardData = async () => {
       try {
         // 0-0. Supabase schedule_meetings 및 schedule_events 테이블 연차(year) 과거 데이터 자가 보정 (일회성 자가 치료)
@@ -3136,38 +3189,6 @@ export default function App() {
           window.__HAS_NO_ADVANCED_SERVICES_COLUMNS__ = true;
           window.__HAS_NO_ADVANCED_ENV_COLUMNS__ = true;
           window.__HAS_NO_ADVANCED_EQUIP_COLUMNS__ = true;
-        }
-
-        // 0. 로컬 스토리지 캐시 데이터 선 로드 (깜빡임 방지 및 0초 반응)
-        if (!active) return;
-        const cachedProj = localStorage.getItem(`anchor_cache_proj_y${selectedYear}`);
-        const cachedAgr = localStorage.getItem("anchor_cache_agreements_all");
-        const cachedUnifiedCert = localStorage.getItem("anchor_cache_unified_certificates_all");
-        const cachedScholarships = localStorage.getItem("anchor_cache_scholarships_all");
-        const cachedEnv = localStorage.getItem(`anchor_cache_env_y${selectedYear}`);
-        const cachedEquip = localStorage.getItem(`anchor_cache_equip_y${selectedYear}`);
-        const cachedServ = localStorage.getItem(`anchor_cache_serv_y${selectedYear}`);
-        const cachedMonth = localStorage.getItem(`anchor_cache_month_y${selectedYear}`);
-        const cachedEvent = localStorage.getItem(`anchor_cache_event_y${selectedYear}`);
-        const cachedMeet = localStorage.getItem(`anchor_cache_meet_y${selectedYear}`);
-        const cachedPress = localStorage.getItem(`anchor_cache_press_y${selectedYear}`);
-
-        if (cachedProj) setProjects(migrateProgramIds(JSON.parse(cachedProj)));
-        if (cachedAgr) setAgreements(JSON.parse(cachedAgr));
-        if (cachedUnifiedCert) setUnifiedCertificates(JSON.parse(cachedUnifiedCert));
-        if (cachedScholarships) setScholarships(JSON.parse(cachedScholarships));
-        if (cachedEnv) setEnvData(JSON.parse(cachedEnv));
-        if (cachedEquip) setEquipData(JSON.parse(cachedEquip));
-        if (cachedServ) setServiceData(JSON.parse(cachedServ));
-        if (cachedMonth) setMonthlySchedules(JSON.parse(cachedMonth));
-        if (cachedEvent) setEventSchedules(JSON.parse(cachedEvent));
-        if (cachedMeet) setMeetingSchedules(JSON.parse(cachedMeet));
-        if (cachedPress) setPressReleases(JSON.parse(cachedPress));
-
-        if (cachedProj || cachedMonth) {
-          setIsDbLoaded(true);
-        } else {
-          setIsDbLoaded(false);
         }
 
         // 1. Projects 복구
