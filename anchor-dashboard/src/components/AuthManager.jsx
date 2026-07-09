@@ -128,13 +128,6 @@ export default function AuthManager({ onLoginSuccess, members = [] }) {
         }
       }
 
-      // 주소록 매칭을 통해 세부 역할군 자동 판별
-      const matchedMember = members.find((m) => {
-        const mEmail = (m.email || "").trim().toLowerCase();
-        if (targetId === "special_head" && mEmail === "cshong@uc.ac.kr") return true;
-        return mEmail === targetId || mEmail.split("@")[0] === targetId;
-      });
-
       let autoRoleKey = "RESEARCHER";
       let matchedName = authUser.user_metadata?.name || targetId;
 
