@@ -25,10 +25,10 @@ try {
           }
           if (unit.programs) {
             unit.programs.forEach(prog => {
-              if (prog.id.startsWith("D3-") && prog.assignee === "오영경 연구원") {
-                prog.assignee = "오영경";
+              if (prog.id.startsWith("D3-") && prog.assignee !== "오영경 연구원") {
+                prog.assignee = "오영경 연구원";
                 modifiedCount++;
-                console.log(`  - 프로그램 ${prog.id} 담당자를 '오영경'으로 정정 완료`);
+                console.log(`  - 프로그램 ${prog.id} 담당자를 '오영경 연구원'으로 정정 완료`);
               }
             });
           }
