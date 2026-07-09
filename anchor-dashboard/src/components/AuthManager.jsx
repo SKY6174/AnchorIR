@@ -61,28 +61,27 @@ export default function AuthManager({ onLoginSuccess, members = [] }) {
       let authUser = null;
       let authSession = null;
 
-      // Case A. 이미 Supabase Auth에 가입되어 연동된 사용자라면, 곧바로 로그인만 시도합니다. (불필요한 가입/실패 요청 방지)
-      if (dbUser && dbUser.uuid) {
-        const { data: authData, error: authErr } = await supabase.auth.signInWithPassword({
-          email: targetEmail,
-          password: userPw
-        });
-        if (!authErr && authData && authData.user) {
-          authUser = authData.user;
-          authSession = authData.session;
-        }
+      // 💡 [콘솔 에러 완전 박멸 혁신] 일단 로그인(signIn)을 무조건 1차 선제 시도합니다.
+      // 가입이 이미 되어 있는 계정은 이 단계에서 성공하므로, 불필요한 signUp 호출에 따른 422 에러를 원천 박멸합니다.
+      const { data: firstAuthData, error: firstAuthErr } = await supabase.auth.signInWithPassword({
+        email: targetEmail,
+        password: userPw
+      });
+
+      if (!firstAuthErr && firstAuthData && firstAuthData.user) {
+        authUser = firstAuthData.user;
+        authSession = firstAuthData.session;
       } else {
-        // 💡 테스트/가상 계정 여부 판별 (주소록에 없더라도 자동가입 및 로그인을 처리해야 함)
+        // 1차 로그인 실패 시, 아직 가입되지 않은 미연동 계정인지 판별하여 선제 자동 회원가입(signUp)을 처리합니다.
         const isTestAccount = ["director", "team_leader", "researcher", "admin", "guest", "hq_head", "ecc_head", "special_head", "manager"].includes(targetId);
         const expectedTestPw = targetId === "admin" ? "uc_anchor" : targetId === "guest" ? "guest123" : "1234";
 
-        // Case B. 아직 가입 전이거나 미연동 상태인 구성원/테스트 계정인 경우, 비밀번호 일치 검사 후 선제 자동가입(signUp)을 처리합니다.
         if ((matchedMember && matchedMember.status !== "퇴직") || isTestAccount) {
           const cleanPhone = matchedMember ? (matchedMember.phoneMobile || "").replace(/[^0-9]/g, "") : "";
           const expectedPhonePw = cleanPhone ? cleanPhone.slice(-4) + "00" : "";
 
           if ((expectedPhonePw && userPw === expectedPhonePw) || (isTestAccount && userPw === expectedTestPw)) {
-            // 선제 자동 회원가입 진행! (미연동 계정에 바로 로그인을 질러 콘솔에 400 에러가 찍히는 것을 원천 예방)
+            // 미연동 사용자의 최초 가입 처리
             const { data: signUpData, error: signUpErr } = await supabase.auth.signUp({
               email: targetEmail,
               password: userPw,
@@ -91,17 +90,18 @@ export default function AuthManager({ onLoginSuccess, members = [] }) {
               }
             });
 
-            // 💡 [혁신 가드] 가입 시 '이미 등록된 유저(User already registered)' 에러 등이 발생하더라도, 
-            // 실제 Auth 로그인 시도를 강행하여 기존에 생성되어 있던 계정과의 연결을 정상 완수합니다.
-            const { data: retryData, error: retryErr } = await supabase.auth.signInWithPassword({
-              email: targetEmail,
-              password: userPw
-            });
-            if (!retryErr && retryData) {
-              authUser = retryData.user;
-              authSession = retryData.session;
-            } else if (signUpErr) {
-              console.error("Auto sign-up & sign-in both failed:", signUpErr, retryErr);
+            if (!signUpErr) {
+              // 가입 완료 후 2차 로그인 시도
+              const { data: retryData, error: retryErr } = await supabase.auth.signInWithPassword({
+                email: targetEmail,
+                password: userPw
+              });
+              if (!retryErr && retryData) {
+                authUser = retryData.user;
+                authSession = retryData.session;
+              }
+            } else {
+              console.warn("Auto sign-up fallback warning (user may already exist):", signUpErr);
             }
           }
         }
