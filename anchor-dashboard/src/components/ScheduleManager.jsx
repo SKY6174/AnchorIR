@@ -1515,23 +1515,43 @@ ${aiRawText}
       }
     }
 
-    // 1) 일반 일정 (monthly) 시간 선후 벨리데이션
-    if (modalType === "monthly") {
-      const hasTime = !formData.noTime;
-      const startStr = hasTime ? `${formData.startDate}T${formData.startTime || "00:00"}` : `${formData.startDate}T00:00`;
-      const endStr = hasTime ? `${formData.endDate}T${formData.endTime || "00:00"}` : `${formData.endDate}T00:00`;
-      
-      const startSecs = new Date(startStr).getTime();
-      const endSecs = new Date(endStr).getTime();
-      
-      if (isNaN(startSecs) || isNaN(endSecs)) {
-        alert("올바른 시작일시와 종료일시를 입력해 주세요.");
+    // 1) 일반 일정, 할일, 마감 일정 날짜 범위 및 빈 값 벨리데이션
+    if (modalType === "monthly" || modalType === "task" || modalType === "deadline") {
+      if (!formData.startDate) {
+        alert("시작 날짜를 입력해 주세요.");
         return;
       }
-      
-      if (endSecs <= startSecs) {
-        alert("종료일시(시간)는 시작일시(시간)보다 뒤여야 합니다.");
+      if (!isDateInActiveYear(formData.startDate)) {
+        alert(`선택하신 시작 날짜(${formData.startDate})는 현재 선택된 ${selectedYear}차년도 사업 기간(${targetYearNum}-03-01 ~ ${endYear}-02-${endDay})에 속하지 않습니다. 해당 연차 탭으로 이동하신 후 등록해 주세요.`);
         return;
+      }
+
+      if (modalType === "monthly") {
+        if (!formData.endDate) {
+          alert("종료 날짜를 입력해 주세요.");
+          return;
+        }
+        if (!isDateInActiveYear(formData.endDate)) {
+          alert(`선택하신 종료 날짜(${formData.endDate})는 현재 선택된 ${selectedYear}차년도 사업 기간(${targetYearNum}-03-01 ~ ${endYear}-02-${endDay})에 속하지 않습니다.`);
+          return;
+        }
+        
+        const hasTime = !formData.noTime;
+        const startStr = hasTime ? `${formData.startDate}T${formData.startTime || "00:00"}` : `${formData.startDate}T00:00`;
+        const endStr = hasTime ? `${formData.endDate}T${formData.endTime || "00:00"}` : `${formData.endDate}T00:00`;
+        
+        const startSecs = new Date(startStr).getTime();
+        const endSecs = new Date(endStr).getTime();
+        
+        if (isNaN(startSecs) || isNaN(endSecs)) {
+          alert("올바른 시작일시와 종료일시를 입력해 주세요.");
+          return;
+        }
+        
+        if (endSecs <= startSecs) {
+          alert("종료일시(시간)는 시작일시(시간)보다 뒤여야 합니다.");
+          return;
+        }
       }
     }
 

@@ -4601,8 +4601,18 @@ export default function App() {
   useEffect(() => {
     if (!isDbLoaded || !isFetchCompleted) return;
     if (!currentUser || currentRole?.id === "GUEST") return;
-    // 💡 안전 가드: 데이터 로딩이 완료되지 않았거나 일시적 통신 지연 시 빈 배열([])이 원격 DB를 덮어쓰는 사고 방지
+    
+    // 💡 안전 가드 1: 데이터 로딩이 완료되지 않았거나 일시적 통신 지연 시 빈 배열([])이 원격 DB를 덮어쓰는 사고 방지
     if (!monthlySchedules || monthlySchedules.length === 0) return;
+
+    // 💡 안전 가드 2: 배열 내 단 하나라도 필수값(startAt, endAt, title)이 빈 값인 데이터가 있다면, 
+    // DB의 NOT NULL 제약조건 위반으로 인해 기존 데이터가 delete 된 후 insert 가 실패하여 전체가 증발하는 참사 방지
+    const hasInvalidItem = monthlySchedules.some(s => !s.title?.trim() || !s.startAt || !s.endAt);
+    if (hasInvalidItem) {
+      console.warn("Schedule sync aborted: detected invalid schedule item with missing title or dates.", monthlySchedules);
+      return;
+    }
+
     localStorage.setItem(`anchor_cache_month_y${selectedYear}`, JSON.stringify(monthlySchedules));
     setSyncStatus("syncing");
     const timer = setTimeout(async () => {
