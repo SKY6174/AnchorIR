@@ -2567,7 +2567,7 @@ export const YEAR_1_PROGRAMS = {
         { "category": "지역 연계∙협업 지원비", "budget": 25000000, "spent": 15000000 }
       ]
     }
-  ,
+    ,
     {
       "id": "A2-S3T7-1",
       "title": "공통경비",
@@ -2728,7 +2728,7 @@ export const YEAR_1_PROGRAMS = {
         { "category": "기업 지원∙협력 활동비", "budget": 35000000, "spent": 32130000 }
       ]
     }
-  ,
+    ,
     {
       "id": "B1-S3T7-1",
       "title": "공통경비",
@@ -2925,7 +2925,7 @@ export const YEAR_1_PROGRAMS = {
         { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 0, "spent": 0 }
       ]
     }
-  ,
+    ,
     {
       "id": "B2-S4T9-1",
       "title": "공통경비",
@@ -2941,6 +2941,108 @@ export const YEAR_1_PROGRAMS = {
         { "category": "성과 활용∙확산 지원비", "budget": 20000000, "spent": 20000000 }
       ]
     }],
+  "D3": [
+    {
+      "id": "D3-S1T1-1",
+      "title": "울산 에코 컬처 관광·문화 콘텐츠 개발",
+      "budget": 27900000,
+      "spent": 17800000,
+      "assignee": "R&BD지원센터",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
+      "timeline": ",,P,P,D,D,C,A,,,,",
+      "budget_categories": [
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 27900000, "spent": 17800000 }
+      ]
+    },
+    {
+      "id": "D3-S1T1-2",
+      "title": "기후·문화 융합 시범 강좌 개설",
+      "budget": 12000000,
+      "spent": 0,
+      "assignee": "R&BD지원센터",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
+      "timeline": ",,P,P,D,D,C,A,,,,",
+      "budget_categories": [
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 12000000, "spent": 0 }
+      ]
+    },
+    {
+      "id": "D3-S1T2-1",
+      "title": "지역 문화 기획자 및 에코 도슨트 양성 과정",
+      "budget": 9200000,
+      "spent": 0,
+      "assignee": "R&BD지원센터",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
+      "timeline": ",,P,P,D,D,C,A,,,,",
+      "budget_categories": [
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 9200000, "spent": 0 }
+      ]
+    },
+    {
+      "id": "D3-S1T2-2",
+      "title": "대학생 문화 서포터즈 발굴 및 육성",
+      "budget": 124400000,
+      "spent": 118400000,
+      "assignee": "R&BD지원센터",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
+      "timeline": ",,P,P,D,D,C,A,,,,",
+      "budget_categories": [
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 6000000, "spent": 0 },
+        { "category": "교육∙연구 환경개선비", "budget": 118400000, "spent": 118400000 }
+      ]
+    },
+    {
+      "id": "D3-S2T3-1",
+      "title": "에코 컬처 축제 기획 및 시민 체험 행사 운영",
+      "budget": 136100000,
+      "spent": 132300000,
+      "assignee": "R&BD지원센터",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
+      "timeline": ",,P,P,D,D,C,A,,,,",
+      "budget_categories": [
+        { "category": "실험∙실습장비 및 기자재 구입∙운영비", "budget": 136100000, "spent": 132300000 }
+      ]
+    },
+    {
+      "id": "D3-S2T4-1",
+      "title": "에코 컬처 네트워크 구축을 위한 다자간 MOU 체결",
+      "budget": 185300000,
+      "spent": 169600000,
+      "assignee": "R&BD지원센터",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
+      "timeline": ",,P,P,D,D,C,A,,,,",
+      "budget_categories": [
+        { "category": "지역 연계∙협업 지원비", "budget": 185300000, "spent": 169600000 }
+      ]
+    },
+    {
+      "id": "D3-S2T5-1",
+      "title": "'꿀잼도시 울산' 콘텐츠 브랜딩 BI 개발 및 대외 홍보",
+      "budget": 57200000,
+      "spent": 34300000,
+      "assignee": "R&BD지원센터",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
+      "timeline": ",,P,P,D,D,C,A,,,,",
+      "budget_categories": [
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 23000000, "spent": 13200000 },
+        { "category": "성과 활용∙확산 지원비", "budget": 34200000, "spent": 21100000 }
+      ]
+    },
+    {
+      "id": "D3-S2T6-1",
+      "title": "공통경비",
+      "budget": 73050000,
+      "spent": 58950000,
+      "assignee": "R&BD지원센터",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
+      "timeline": ",,P,P,D,D,C,A,,,,",
+      "budget_categories": [
+        { "category": "인건비", "budget": 35500000, "spent": 27600000 },
+        { "category": "간접비", "budget": 18750000, "spent": 18750000 },
+        { "category": "그 밖의 사업운영경비", "budget": 18800000, "spent": 12600000 }
+      ]
+    }
+  ],
   "D1": [
     {
       "id": "B3-S1T1-1",
@@ -3200,7 +3302,7 @@ export const YEAR_1_PROGRAMS = {
         { "category": "기업 지원∙협력 활동비", "budget": 18200000, "spent": 17990000 }
       ]
     }
-  ,
+    ,
     {
       "id": "C1-S3T7-1",
       "title": "공통경비",
@@ -3338,7 +3440,7 @@ export const YEAR_1_PROGRAMS = {
         { "category": "실험∙실습장비 및 기자재 구입∙운영비", "budget": 557700000, "spent": 285700000 }
       ]
     }
-  ,
+    ,
     {
       "id": "C2-S3T7-1",
       "title": "공통경비",
