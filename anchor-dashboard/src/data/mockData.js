@@ -3922,264 +3922,102 @@ export const YEAR_1_PROGRAMS = {
   "D3": [
     {
       "id": "D3-S1T1-1",
-      "title": "문화 콘텐츠 개발 우수 사례 및 벤치마킹",
-      "budget": 5000000,
-      "spent": 0,
-      "assignee": "오영경 연구원",
-      "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
-      "timeline": ",,P,D,C,A,,,,,,",
+      "title": "울산 에코 컬처 관광·문화 콘텐츠 개발",
+      "budget": 27900000,
+      "spent": 17800000,
+      "assignee": "R&BD지원센터",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
+      "timeline": ",,P,P,D,D,C,A,,,,",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 5000000, "spent": 0 }
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 27900000, "spent": 17800000 }
       ]
     },
     {
       "id": "D3-S1T1-2",
-      "title": "국중박 벤치마킹",
-      "budget": 0,
+      "title": "기후·문화 융합 시범 강좌 개설",
+      "budget": 12000000,
       "spent": 0,
-      "assignee": "",
-      "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
-      "timeline": ",,P,D,C,A,,,,,,",
-      "budget_categories": []
-    },
-    {
-      "id": "D3-S1T1-3",
-      "title": "(이월사업)(문화/도시재생 체험 프로그램)북구 이화정 벤치마킹",
-      "budget": 0,
-      "spent": 0,
-      "assignee": "",
-      "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
-      "timeline": ",,P,D,C,A,,,,,,",
-      "budget_categories": []
-    },
-    {
-      "id": "D3-S1T1-4",
-      "title": "K-컬처 글로벌 교류 프로젝트: 대만 충유대 교류 프로그램",
-      "budget": 28400000,
-      "spent": 0,
-      "assignee": "오영경 연구원",
-      "pdca": { "p": "완료", "d": "진행", "c": "대기", "a": "대기" },
-      "timeline": ",,P,D,C,A,,,,,,",
+      "assignee": "R&BD지원센터",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
+      "timeline": ",,P,P,D,D,C,A,,,,",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 28400000, "spent": 0 }
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 12000000, "spent": 0 }
       ]
     },
     {
-      "id": "D3-S1T1-5",
-      "title": "(이월사업)(문화/도시재생 체험 프로그램)울리단길 런케이션",
-      "budget": 0,
-      "spent": 0,
-      "assignee": "",
-      "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
-      "timeline": ",,P,D,C,A,,,,,,",
-      "budget_categories": []
-    },
-    {
       "id": "D3-S1T2-1",
-      "title": "콘텐츠 크리에이터 연계 프로젝트(실무 프로젝트)",
-      "budget": 30000000,
+      "title": "지역 문화 기획자 및 에코 도슨트 양성 과정",
+      "budget": 9200000,
       "spent": 0,
-      "assignee": "오영경 연구원",
-      "pdca": { "p": "완료", "d": "진행", "c": "대기", "a": "대기" },
-      "timeline": ",,P,D,C,A,,,,,,",
+      "assignee": "R&BD지원센터",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
+      "timeline": ",,P,P,D,D,C,A,,,,",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 30000000, "spent": 0 }
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 9200000, "spent": 0 }
       ]
     },
     {
       "id": "D3-S1T2-2",
-      "title": "(이월사업)(콘텐츠 크리에이터 양성프로그램 심화과정)세계유산 도시 울산, 첫 페이지를 열다",
-      "budget": 0,
-      "spent": 0,
-      "assignee": "",
-      "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
-      "timeline": ",,P,D,C,A,,,,,,",
-      "budget_categories": []
-    },
-    {
-      "id": "D3-S1T3-1",
-      "title": "도시재생 체험 프로젝트",
-      "budget": 40000000,
-      "spent": 0,
-      "assignee": "오영경 연구원",
-      "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
-      "timeline": ",,P,D,C,A,,,,,,",
+      "title": "대학생 문화 서포터즈 발굴 및 육성",
+      "budget": 124400000,
+      "spent": 118400000,
+      "assignee": "R&BD지원센터",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
+      "timeline": ",,P,P,D,D,C,A,,,,",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 40000000, "spent": 0 }
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 6000000, "spent": 0 },
+        { "category": "교육∙연구 환경개선비", "budget": 118400000, "spent": 118400000 }
       ]
     },
     {
-      "id": "D3-S1T3-2",
-      "title": "대학내 커뮤니티 공간 구축(북카페조성)",
-      "budget": 200000000,
-      "spent": 0,
-      "assignee": "",
-      "pdca": { "p": "완료", "d": "진행", "c": "대기", "a": "대기" },
-      "timeline": ",,P,D,C,A,,,,,,",
+      "id": "D3-S2T3-1",
+      "title": "에코 컬처 축제 기획 및 시민 체험 행사 운영",
+      "budget": 136100000,
+      "spent": 132300000,
+      "assignee": "R&BD지원센터",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
+      "timeline": ",,P,P,D,D,C,A,,,,",
       "budget_categories": [
-        { "category": "실험∙실습장비 및 기자재 구입∙운영비", "budget": 200000000, "spent": 0 }
+        { "category": "실험∙실습장비 및 기자재 구입∙운영비", "budget": 136100000, "spent": 132300000 }
       ]
     },
     {
-      "id": "D3-S1T3-3",
-      "title": "(이월사업)지역 커뮤니티 공간 기자재 구입",
-      "budget": 0,
-      "spent": 0,
-      "assignee": "",
-      "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
-      "timeline": ",,P,D,C,A,,,,,,",
-      "budget_categories": []
-    },
-    {
-      "id": "D3-S1T4-1",
-      "title": "도시공간 재생 프로젝트 거버넌스 운영",
-      "budget": 1000000,
-      "spent": 0,
-      "assignee": "오영경 연구원",
-      "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
-      "timeline": ",,P,D,C,A,,,,,,",
+      "id": "D3-S2T4-1",
+      "title": "에코 컬처 네트워크 구축을 위한 다자간 MOU 체결",
+      "budget": 185300000,
+      "spent": 169600000,
+      "assignee": "R&BD지원센터",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
+      "timeline": ",,P,P,D,D,C,A,,,,",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 1000000, "spent": 0 }
-      ]
-    },
-    {
-      "id": "D3-S1T4-2",
-      "title": "서포터즈 활동비",
-      "budget": 4000000,
-      "spent": 0,
-      "assignee": "오영경 연구원",
-      "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
-      "timeline": ",,P,D,C,A,,,,,,",
-      "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 4000000, "spent": 0 }
+        { "category": "지역 연계∙협업 지원비", "budget": 185300000, "spent": 169600000 }
       ]
     },
     {
       "id": "D3-S2T5-1",
-      "title": "문화 예술 체험 프로젝트",
-      "budget": 10000000,
-      "spent": 0,
-      "assignee": "오영경 연구원",
-      "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
-      "timeline": ",,P,D,C,A,,,,,,",
+      "title": "'꿀잼도시 울산' 콘텐츠 브랜딩 BI 개발 및 대외 홍보",
+      "budget": 57200000,
+      "spent": 34300000,
+      "assignee": "R&BD지원센터",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
+      "timeline": ",,P,P,D,D,C,A,,,,",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 10000000, "spent": 0 }
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 23000000, "spent": 13200000 },
+        { "category": "성과 활용∙확산 지원비", "budget": 34200000, "spent": 21100000 }
       ]
     },
     {
       "id": "D3-S2T6-1",
-      "title": "지역 연계 협업 예술 프로젝트(중구 배움의 뜰, 평생교육학습 축제예정)",
-      "budget": 10000000,
-      "spent": 0,
-      "assignee": "오영경 연구원",
-      "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
-      "timeline": ",,P,D,C,A,,,,,,",
+      "title": "공통경비",
+      "budget": 73050000,
+      "spent": 58950000,
+      "assignee": "R&BD지원센터",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
+      "timeline": ",,P,P,D,D,C,A,,,,",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 10000000, "spent": 0 }
-      ]
-    },
-    {
-      "id": "D3-S2T6-2",
-      "title": "①힙합라운지-청년문화체험",
-      "budget": 0,
-      "spent": 0,
-      "assignee": "",
-      "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
-      "timeline": ",,P,D,C,A,,,,,,",
-      "budget_categories": []
-    },
-    {
-      "id": "D3-S2T6-3",
-      "title": "②대학이 여는 도시재생-그래피티 운영",
-      "budget": 0,
-      "spent": 0,
-      "assignee": "",
-      "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
-      "timeline": ",,P,D,C,A,,,,,,",
-      "budget_categories": []
-    },
-    {
-      "id": "D3-S2T6-4",
-      "title": "③지산학 페스티벌-그래피티 부스 운영",
-      "budget": 0,
-      "spent": 0,
-      "assignee": "",
-      "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
-      "timeline": ",,P,D,C,A,,,,,,",
-      "budget_categories": []
-    },
-    {
-      "id": "D3-S2T6-5",
-      "title": "④문화-도시 재생 네트워킹 라운드 테이블",
-      "budget": 0,
-      "spent": 0,
-      "assignee": "",
-      "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
-      "timeline": ",,P,D,C,A,,,,,,",
-      "budget_categories": []
-    },
-    {
-      "id": "D3-S2T6-6",
-      "title": "⑤3개대학 연합 문화관광 서포터즈 발대식",
-      "budget": 0,
-      "spent": 0,
-      "assignee": "",
-      "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
-      "timeline": ",,P,D,C,A,,,,,,",
-      "budget_categories": []
-    },
-    {
-      "id": "D3-S2T7-1",
-      "title": "지역사회 연계 및 교류 홍보",
-      "budget": 10000000,
-      "spent": 0,
-      "assignee": "오영경 연구원",
-      "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
-      "timeline": ",,P,D,C,A,,,,,,",
-      "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 10000000, "spent": 0 }
-      ]
-    },
-    {
-      "id": "D3-S2T7-2",
-      "title": "지산학 실내 부스 센터별 지원금",
-      "budget": 0,
-      "spent": 0,
-      "assignee": "",
-      "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
-      "timeline": ",,P,D,C,A,,,,,,",
-      "budget_categories": []
-    },
-    {
-      "id": "D3-S2T7-3",
-      "title": "(이월사업)(성과활용확산)세계인의 날 연계 전통문화체험 부스 운영",
-      "budget": 0,
-      "spent": 0,
-      "assignee": "",
-      "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
-      "timeline": ",,P,D,C,A,,,,,,",
-      "budget_categories": []
-    },
-    {
-      "id": "D3-S2T7-4",
-      "title": "(이월사업)(성과활용확산)도시재생 거버넌스 운영",
-      "budget": 0,
-      "spent": 0,
-      "assignee": "",
-      "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
-      "timeline": ",,P,D,C,A,,,,,,",
-      "budget_categories": []
-    },
-    {
-      "id": "D3-S2T8-1",
-      "title": "지역 연계협업 문화 콘텐츠 개발 프로젝트",
-      "budget": 40600000,
-      "spent": 0,
-      "assignee": "오영경 연구원",
-      "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
-      "timeline": ",,P,D,C,A,,,,,,",
-      "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 40600000, "spent": 0 }
+        { "category": "인건비", "budget": 35500000, "spent": 27600000 },
+        { "category": "간접비", "budget": 18750000, "spent": 18750000 },
+        { "category": "그 밖의 사업운영경비", "budget": 18800000, "spent": 12600000 }
       ]
     }
   ],
