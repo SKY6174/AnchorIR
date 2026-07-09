@@ -597,8 +597,8 @@ function formatDataToMultiYear(data) {
           } else {
             if (isExternalSub) {
               budget_external = budgetMain;
-            } else if (prog.id.startsWith("D2-")) {
-              // 💡 [D2 단위과제 재원 표준] D2 예산은 100% 국비(국고) 본예산으로 지정합니다.
+            } else if (prog.id.startsWith("D1-") || prog.id.startsWith("D2-") || prog.id.startsWith("D3-")) {
+              // 💡 [D1, D2, D3 단위과제 재원 표준] D 단위과제의 예산은 100% 국비(국고) 본예산으로 지정합니다.
               budget_national = budgetMain;
               budget_city = 0;
             } else {
@@ -624,7 +624,7 @@ function formatDataToMultiYear(data) {
             } else {
               if (isExternalSub) {
                 spent_external = spentMain;
-              } else if (prog.id.startsWith("D2-")) {
+              } else if (prog.id.startsWith("D1-") || prog.id.startsWith("D2-") || prog.id.startsWith("D3-")) {
                 spent_national = spentMain;
                 spent_city = 0;
               } else {
@@ -640,7 +640,7 @@ function formatDataToMultiYear(data) {
           if (budgetCarry > 0) {
             if (isExternalSub) {
               carry_external = budgetCarry;
-            } else if (prog.id.startsWith("D2-")) {
+            } else if (prog.id.startsWith("D1-") || prog.id.startsWith("D2-") || prog.id.startsWith("D3-")) {
               carry_national = budgetCarry;
               carry_city = 0;
             } else {
