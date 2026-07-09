@@ -3044,6 +3044,7 @@ export default function App() {
   // selectedYear가 변경될 때 fetch 완료 플래그를 false로 초기화
   useEffect(() => {
     setIsFetchCompleted(false);
+    fetchedProjectsRef.current = ""; // 💡 [보안 가드] 연도 변경 시 원격 데이터 동기화 대기 레퍼런스를 리셋합니다.
   }, [selectedYear]);
 
   // 1) 최초 마운트 및 연차 변경 시 DB 데이터 Fetch 연동
@@ -3345,6 +3346,9 @@ export default function App() {
             });
           });
           setProjects(mergedProjData);
+          // 💡 [안전 가드] 원격 Supabase DB로부터 최신 프로젝트 데이터를 성공적으로 가져왔으므로, 레퍼런스(fetchedProjectsRef.current)에 동기화해 둡니다.
+          fetchedProjectsRef.current = JSON.stringify(getCleanProjectsForStorage(mergedProjData));
+          
           try {
             localStorage.setItem(`anchor_cache_proj_y${selectedYear}`, JSON.stringify(getCleanProjectsForStorage(mergedProjData)));
           } catch (e) {
@@ -3356,6 +3360,9 @@ export default function App() {
         } else {
           const multiYearInitialData = migrateProgramIds(formatDataToMultiYear(initialProjectsData));
           setProjects(multiYearInitialData);
+          // 💡 [안전 가드] 원격 DB에 데이터가 없어 최초 초기 템플릿을 사용하는 경우에도 레퍼런스에 동기화해 둡니다.
+          fetchedProjectsRef.current = JSON.stringify(getCleanProjectsForStorage(multiYearInitialData));
+          
           try {
             localStorage.setItem(`anchor_cache_proj_y${selectedYear}`, JSON.stringify(getCleanProjectsForStorage(multiYearInitialData)));
           } catch (e) {
@@ -3808,8 +3815,23 @@ export default function App() {
   useEffect(() => {
     if (!isDbLoaded || !isFetchCompleted) return;
     if (!currentUser || currentRole?.id === "GUEST") return;
+
+    // 💡 [Race Condition 안전 가드]
+    // 1. 원격 Supabase DB로부터 최신 데이터 조회 결과가 한 번도 들어오지 않은 경우(fetchedProjectsRef.current가 빈 문자열)
+    // 2. 혹은 현재 로컬의 projects 상태 정보가 원격 DB에서 막 조회해 온 데이터(fetchedProjectsRef.current)와 내용상 완벽히 일치하는 경우
+    // 위 두 경우(최초 페이지 마운트, 연도 전환 직후, 혹은 단순한 화면 기동)에는 Supabase DB로의 불필요한 역-업로드(덮어쓰기 오염)를 스킵합니다.
+    const currentCleanStr = JSON.stringify(getCleanProjectsForStorage(projects));
+    if (!fetchedProjectsRef.current || fetchedProjectsRef.current === currentCleanStr) {
+      try {
+        localStorage.setItem(`anchor_cache_proj_y${selectedYear}`, currentCleanStr);
+      } catch (e) {
+        console.warn("Storage Quota exceeded for cached project data, bypassing...", e);
+      }
+      return;
+    }
+
     try {
-      localStorage.setItem(`anchor_cache_proj_y${selectedYear}`, JSON.stringify(getCleanProjectsForStorage(projects)));
+      localStorage.setItem(`anchor_cache_proj_y${selectedYear}`, currentCleanStr);
     } catch (e) {
       console.warn("Storage Quota exceeded for cached project data, bypassing...", e);
     }
@@ -3820,6 +3842,9 @@ export default function App() {
           .from("projects_data")
           .upsert({ year: selectedYear, data: projects, updated_at: new Date().toISOString() }, { onConflict: "year" });
         if (error) throw error;
+        
+        // 💡 [저장 완료 동기화] DB 업로드가 성공적으로 완료되었으므로 레퍼런스 값을 현재 값으로 갱신하여 중복 업로드를 차단합니다.
+        fetchedProjectsRef.current = currentCleanStr;
         setSyncStatus("synced");
       } catch (e) {
         setSyncStatus("error");
