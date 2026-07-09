@@ -6251,6 +6251,13 @@ export default function App() {
   }
 
   const currentRole = currentUser.role;
+  const isGuest = currentUser && (
+    currentUser.id === "guest" ||
+    (currentUser.name || "").includes("게스트") ||
+    (currentUser.role_key === "GUEST") ||
+    (currentUser.role === "GUEST" || currentUser.role === "게스트") ||
+    (currentUser.role && typeof currentUser.role === "object" && (currentUser.role.id === "GUEST" || currentUser.role.id === "guest"))
+  );
 
   return (
     <div className="dashboard-container">
@@ -6375,7 +6382,7 @@ export default function App() {
             <span style={{ fontSize: "0.85rem", color: "var(--text-secondary)", marginRight: "0.4rem" }}>
               {getWelcomeMessage()}
             </span>
-            {currentUser && currentUser.id !== "guest" && currentUser.role?.id !== "GUEST" && (
+            {currentUser && !isGuest && (
               <button
                 className="btn-primary"
                 style={{
@@ -9033,7 +9040,7 @@ export default function App() {
         </div>
       )}
 
-      {isPasswordModalOpen && currentUser && currentUser.id !== "guest" && currentUser.role?.id !== "GUEST" && (
+      {isPasswordModalOpen && currentUser && !isGuest && (
         <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(0,0,0,0.7)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000 }}>
           <form
             onSubmit={handlePasswordChange}
