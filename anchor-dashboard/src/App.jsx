@@ -2208,13 +2208,14 @@ export default function App() {
   }, [currentUser]);
 
   const [projects, setProjects] = useState(() => {
-    // 💡 [깜빡임 방지 최우선 처리] 2차년도 연도별 캐시 데이터를 최우선적으로 선제 로드하여 0초 반응을 제공합니다.
-    const cached = localStorage.getItem("anchor_cache_proj_y2") || localStorage.getItem("anchor_projects_data_v55");
+    // 💡 [깜빡임 방지 최우선 처리] 현재 로컬 선택 연도별 캐시 데이터를 최우선적으로 선제 로드하여 0초 반응을 제공합니다.
+    const savedYear = localStorage.getItem("anchor_selected_year") || "2";
+    const cached = localStorage.getItem(`anchor_cache_proj_y${savedYear}`) || localStorage.getItem("anchor_projects_data_v55");
     const multiYearInitialData = migrateProgramIds(formatDataToMultiYear(initialProjectsData));
     if (cached) {
       try {
         const loaded = migrateProgramIds(JSON.parse(cached));
-        // [공통 병합] 캐시 데이터와 초기 템플릿 데이터를 정밀 머지합니다.
+        // [공통 병합] 캐시 데이터와 초기 템늘릿 데이터를 정밀 머지합니다.
         return mergeProjectsWithInitial(loaded, multiYearInitialData);
       } catch (e) {
         console.error("Failed to parse cached projects data:", e);
@@ -2626,33 +2627,40 @@ export default function App() {
 
   // 구매용역 관리 DB 보존 상태
   const [envData, setEnvData] = useState(() => {
-    const cached = localStorage.getItem("anchor_cache_env_y2") || localStorage.getItem("anchor_cache_env_y1");
+    const savedYear = localStorage.getItem("anchor_selected_year") || "2";
+    const cached = localStorage.getItem(`anchor_cache_env_y${savedYear}`);
     return cached ? JSON.parse(cached) : [];
   });
   const [equipData, setEquipData] = useState(() => {
-    const cached = localStorage.getItem("anchor_cache_equip_y2") || localStorage.getItem("anchor_cache_equip_y1");
+    const savedYear = localStorage.getItem("anchor_selected_year") || "2";
+    const cached = localStorage.getItem(`anchor_cache_equip_y${savedYear}`);
     return cached ? JSON.parse(cached) : [];
   });
   const [serviceData, setServiceData] = useState(() => {
-    const cached = localStorage.getItem("anchor_cache_serv_y2") || localStorage.getItem("anchor_cache_serv_y1");
+    const savedYear = localStorage.getItem("anchor_selected_year") || "2";
+    const cached = localStorage.getItem(`anchor_cache_serv_y${savedYear}`);
     return cached ? JSON.parse(cached) : [];
   });
 
   // 일정관리 DB 보존 상태
   const [monthlySchedules, setMonthlySchedules] = useState(() => {
-    const cached = localStorage.getItem("anchor_cache_month_y2") || localStorage.getItem("anchor_cache_month_y1");
+    const savedYear = localStorage.getItem("anchor_selected_year") || "2";
+    const cached = localStorage.getItem(`anchor_cache_month_y${savedYear}`);
     return cached ? JSON.parse(cached) : [];
   });
   const [eventSchedules, setEventSchedules] = useState(() => {
-    const cached = localStorage.getItem("anchor_cache_event_y2") || localStorage.getItem("anchor_cache_event_y1");
+    const savedYear = localStorage.getItem("anchor_selected_year") || "2";
+    const cached = localStorage.getItem(`anchor_cache_event_y${savedYear}`);
     return cached ? JSON.parse(cached) : [];
   });
   const [meetingSchedules, setMeetingSchedules] = useState(() => {
-    const cached = localStorage.getItem("anchor_cache_meet_y2") || localStorage.getItem("anchor_cache_meet_y1");
+    const savedYear = localStorage.getItem("anchor_selected_year") || "2";
+    const cached = localStorage.getItem(`anchor_cache_meet_y${savedYear}`);
     return cached ? JSON.parse(cached) : [];
   });
   const [pressReleases, setPressReleases] = useState(() => {
-    const cached = localStorage.getItem("anchor_cache_press_y2") || localStorage.getItem("anchor_cache_press_y1");
+    const savedYear = localStorage.getItem("anchor_selected_year") || "2";
+    const cached = localStorage.getItem(`anchor_cache_press_y${savedYear}`);
     return cached ? JSON.parse(cached) : [];
   });
 
