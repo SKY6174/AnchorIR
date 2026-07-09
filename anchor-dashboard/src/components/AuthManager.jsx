@@ -72,22 +72,22 @@ export default function AuthManager({ onLoginSuccess, members = [] }) {
           authSession = authData.session;
         }
       } else {
-        // Case B. 아직 가입 전이거나 미연동 상태인 구성원인 경우, 비밀번호 일치 검사 후 선제 자동가입(signUp)을 처리합니다.
-        if (matchedMember && matchedMember.status !== "퇴직") {
-          const cleanPhone = (matchedMember.phoneMobile || "").replace(/[^0-9]/g, "");
-          const expectedPhonePw = cleanPhone.slice(-4) + "00";
+        // 💡 테스트/가상 계정 여부 판별 (주소록에 없더라도 자동가입 및 로그인을 처리해야 함)
+        const isTestAccount = ["director", "team_leader", "researcher", "admin", "guest", "hq_head", "ecc_head", "special_head", "manager"].includes(targetId);
+        const expectedTestPw = targetId === "admin" ? "uc_anchor" : targetId === "guest" ? "guest123" : "1234";
 
-          // 휴대폰 뒷자리가 일치하거나, 테스트용 계정이면서 비밀번호가 1234 혹은 uc_anchor(admin) 등일 때
-          const isTestAccount = ["director", "team_leader", "researcher", "admin", "guest", "hq_head", "ecc_head", "special_head", "manager"].includes(targetId);
-          const expectedTestPw = targetId === "admin" ? "uc_anchor" : targetId === "guest" ? "guest123" : "1234";
+        // Case B. 아직 가입 전이거나 미연동 상태인 구성원/테스트 계정인 경우, 비밀번호 일치 검사 후 선제 자동가입(signUp)을 처리합니다.
+        if ((matchedMember && matchedMember.status !== "퇴직") || isTestAccount) {
+          const cleanPhone = matchedMember ? (matchedMember.phoneMobile || "").replace(/[^0-9]/g, "") : "";
+          const expectedPhonePw = cleanPhone ? cleanPhone.slice(-4) + "00" : "";
 
-          if (userPw === expectedPhonePw || (isTestAccount && userPw === expectedTestPw)) {
+          if ((expectedPhonePw && userPw === expectedPhonePw) || (isTestAccount && userPw === expectedTestPw)) {
             // 선제 자동 회원가입 진행! (미연동 계정에 바로 로그인을 질러 콘솔에 400 에러가 찍히는 것을 원천 예방)
             const { data: signUpData, error: signUpErr } = await supabase.auth.signUp({
               email: targetEmail,
               password: userPw,
               options: {
-                data: { name: matchedMember.name }
+                data: { name: matchedMember ? matchedMember.name : (targetId === "admin" ? "관리자" : targetId === "guest" ? "게스트" : targetId) }
               }
             });
 

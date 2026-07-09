@@ -2678,6 +2678,14 @@ export default function App() {
 
   const handlePasswordChange = async (e) => {
     e.preventDefault();
+    
+    // 💡 [삼중 보안 가드] 게스트(GUEST) 사용자는 어떠한 상황에서도 비밀번호 변경이 불가능합니다.
+    if (isGuest) {
+      alert("게스트(방문자) 계정은 비밀번호 변경이 불가능합니다.");
+      setIsPasswordModalOpen(false);
+      return;
+    }
+
     if (!currentPw || !newPw || !confirmNewPw) {
       alert("모든 필드를 입력해 주세요.");
       return;
@@ -4329,6 +4337,10 @@ export default function App() {
   useEffect(() => {
     if (!isDbLoaded || !isFetchCompleted) return;
     if (!currentUser || currentRole?.id === "GUEST") return;
+    
+    // 💡 안전 가드: 데이터가 없거나 로딩 중 꼬였을 때 DB 데이터를 지워버리는 대형 사고 방지
+    if (!envData || envData.length === 0) return;
+
     localStorage.setItem(`anchor_cache_env_y${selectedYear}`, JSON.stringify(envData));
     setSyncStatus("syncing");
     const timer = setTimeout(async () => {
@@ -4421,7 +4433,7 @@ export default function App() {
       } catch (e) {
         setSyncStatus("error");
       }
-    }, 1500);
+    }, 800);
     return () => clearTimeout(timer);
   }, [envData, selectedYear, isDbLoaded, isFetchCompleted]);
 
@@ -4429,6 +4441,10 @@ export default function App() {
   useEffect(() => {
     if (!isDbLoaded || !isFetchCompleted) return;
     if (!currentUser || currentRole?.id === "GUEST") return;
+
+    // 💡 안전 가드: 데이터가 없거나 로딩 중 꼬였을 때 DB 데이터를 지워버리는 대형 사고 방지
+    if (!equipData || equipData.length === 0) return;
+
     localStorage.setItem(`anchor_cache_equip_y${selectedYear}`, JSON.stringify(equipData));
     setSyncStatus("syncing");
     const timer = setTimeout(async () => {
@@ -4498,7 +4514,7 @@ export default function App() {
         console.error("Failed to sync procurement_equipment:", e);
         setSyncStatus("error");
       }
-    }, 1500);
+    }, 800);
     return () => clearTimeout(timer);
   }, [equipData, selectedYear, isDbLoaded, isFetchCompleted]);
 
@@ -4506,6 +4522,10 @@ export default function App() {
   useEffect(() => {
     if (!isDbLoaded || !isFetchCompleted) return;
     if (!currentUser || currentRole?.id === "GUEST") return;
+
+    // 💡 안전 가드: 데이터가 없거나 로딩 중 꼬였을 때 DB 데이터를 지워버리는 대형 사고 방지
+    if (!serviceData || serviceData.length === 0) return;
+
     localStorage.setItem(`anchor_cache_serv_y${selectedYear}`, JSON.stringify(serviceData));
     setSyncStatus("syncing");
     const timer = setTimeout(async () => {
@@ -4593,7 +4613,7 @@ export default function App() {
       } catch (e) {
         setSyncStatus("error");
       }
-    }, 1500);
+    }, 800);
     return () => clearTimeout(timer);
   }, [serviceData, selectedYear, isDbLoaded, isFetchCompleted]);
 
