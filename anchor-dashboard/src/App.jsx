@@ -1139,13 +1139,21 @@ function mergeProjectsWithInitial(loadedData, multiYearInitialData) {
               seenIds.add(prog.id);
               uniquePrograms.push(prog);
             } else {
-              // 중복된 경우, 2차년도 등 유효한 상세 연도 정보(years[selectedYear])를 가진 객체를 우선하여 덮어씁니다.
+              // 중복된 경우, 상세 연도 정보(years)를 서로 병합하고, 유효한 상세 연도 정보(years[selectedYear])를 가진 객체를 우선하여 속성을 덮어씁니다.
               const existingIdx = uniquePrograms.findIndex(p => p.id === prog.id);
               if (existingIdx !== -1) {
                 const existing = uniquePrograms[existingIdx];
+                existing.years = {
+                  ...(existing.years || {}),
+                  ...(prog.years || {})
+                };
                 const hasCurrentData = (p) => p.years && Object.keys(p.years).some(y => p.years[y] && p.years[y].budget_main > 0);
                 if (!hasCurrentData(existing) && hasCurrentData(prog)) {
-                  uniquePrograms[existingIdx] = prog;
+                  const mergedYears = existing.years;
+                  uniquePrograms[existingIdx] = {
+                    ...prog,
+                    years: mergedYears
+                  };
                 }
               }
             }
