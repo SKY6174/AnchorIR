@@ -159,6 +159,138 @@ const COMMITTEES_DATA = [
       { id: 7, type: "위원", name: "이종향", org: "거제대학교", dept: "-", rank: "교수", location: "교외", note: "" },
       { id: 8, type: "간사", name: "심현미", org: "울산과학대학교", dept: "앵커사업단운영팀", rank: "팀장", location: "교내", note: "" }
     ]
+  },
+  {
+    id: "ecc_op",
+    name: "ECC운영위원회",
+    fullName: "지산학교육센터(ECC) 운영위원회",
+    badge: "지산학교육",
+    color: "linear-gradient(135deg, #10b981 0%, #059669 100%)",
+    purpose: "지산학 연계 교육과정 공동 개발 및 학사운영 제도 개선 심의·운영",
+    desc: "지산학교육센터(ECC)의 효율적 운영과 교육 프로그램의 질적 제고를 위해 학계, 산업계 실무 전문가들이 연계 교육과정의 타당성 및 제도를 자문·심의하는 위원회입니다.",
+    constitution: "센터장, 내부 위원 및 협력 기관 위원 7인 내외",
+    cycle: "매 학기별 1회 정기 개최 (수시 서면 자문 병행)",
+    functions: [
+      "지산학 융합 전공 및 주문식 교육과정 심의",
+      "지산학 교육 콘텐츠 개발 및 질 관리 방안 마련",
+      "참여 대학 간 학점 상호 인정 및 교육 자원 공유 촉진"
+    ],
+    members: [
+      { id: 1, type: "위원장", name: "이동은", org: "울산과학대학교", dept: "지산학교육센터(ECC)", rank: "센터장", location: "교내", note: "" },
+      { id: 2, type: "위원", name: "최윤아", org: "울산과학대학교", dept: "기획처", rank: "부처장", location: "교내", note: "신규 추가" },
+      { id: 3, type: "위원", name: "정문호", org: "정테크", dept: "-", rank: "대표", location: "교외", note: "" },
+      { id: 4, type: "간사", name: "오영경", org: "울산과학대학교", dept: "지산학교육센터(ECC)", rank: "연구원", location: "교내", note: "" }
+    ]
+  },
+  {
+    id: "icc_op",
+    name: "ICC운영위원회",
+    fullName: "기업협업센터(ICC) 운영위원회",
+    badge: "지산학협력",
+    color: "linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)",
+    purpose: "산학협력 공동 기술개발 및 기업 애로 기술 지도 과제 심의·운영",
+    desc: "기업협업센터(ICC) 주관의 공동 기술개발 과제 공모, 특허 배분, 재직자 교육 등 산학협력 세부 액션플랜을 정밀 검토·심의하는 위원회입니다.",
+    constitution: "센터장 및 가족기업 실무 리더, 내부 교수진 포함 7인 내외",
+    cycle: "분기별 1회 개최 (기술개발 공모 시 수시 개최)",
+    functions: [
+      "산학공동 연구과제 심의 및 성과 검증",
+      "대학 보유 기술의 사업화 및 기술이전 정책 검토",
+      "산업계 재직자 단기 직무 연수 프로그램 심의"
+    ],
+    members: [
+      { id: 1, type: "위원장", name: "김기범", org: "울산과학대학교", dept: "기업협업센터(ICC)", rank: "센터장", location: "교내", note: "" },
+      { id: 2, type: "위원", name: "정회걸", org: "울산정보산업진흥원", dept: "인재교육센터", rank: "센터장", location: "교외", note: "" },
+      { id: 3, type: "위원", name: "한동호", org: "석원기공", dept: "-", rank: "대표이사", location: "교외", note: "" },
+      { id: 4, type: "간사", name: "김인숙", org: "울산과학대학교", dept: "기업협업센터(ICC)", rank: "연구원", location: "교내", note: "" }
+    ]
+  },
+  {
+    id: "rcc_op",
+    name: "RCC운영위원회",
+    fullName: "지역협업센터(RCC) 운영위원회",
+    badge: "지역사회기여",
+    color: "linear-gradient(135deg, #f59e0b 0%, #d97706 100%)",
+    purpose: "지역사회 연계 공헌 프로그램 및 마일리지 장학금 수혜 기준 심의·확정",
+    desc: "지역사회 공헌 및 지자체 협업 활성화를 위해 RCC 주관 프로그램 and 마일리지 장학 기준을 심의·평가하는 핵심 거버넌스 위원회입니다.",
+    constitution: "센터장, 지자체 실무 오피서, 지역 사회 복지/문화 리더 포함 7인 내외",
+    cycle: "학기별 1회 정기 개최",
+    functions: [
+      "지역사회 밀착형 협업 프로그램 기획 및 성과 평가",
+      "지역 정주 활성화를 위한 로컬 크리에이터 양성 자문",
+      "RCC 마일리지 장학금 지급 대상자 자격 및 실적 정밀 심사"
+    ],
+    members: [
+      { id: 1, type: "위원장", name: "현용환", org: "울산과학대학교", dept: "지역협업센터(RCC)", rank: "센터장", location: "교내", note: "" },
+      { id: 2, type: "위원", name: "이경우", org: "울산발전연구원", dept: "경제산업연구실", rank: "실장", location: "교외", note: "" },
+      { id: 3, type: "위원", name: "남기석", org: "영남이공대학교", dept: "물리치료학과", rank: "교수", location: "교외", note: "" },
+      { id: 4, type: "간사", name: "강수지", org: "울산과학대학교", dept: "지역협업센터(RCC)", rank: "연구원", location: "교내", note: "" }
+    ]
+  },
+  {
+    id: "aidx_op",
+    name: "AID-X운영위원회",
+    fullName: "AID-X지원센터 운영위원회",
+    badge: "AI·DX혁신",
+    color: "linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)",
+    purpose: "학내 AI 교육 인프라 도입 및 디지털 전환(DX) 세부 과제 검토·조율",
+    desc: "학내 전반의 인공지능(AI) 및 디지털 전환(DX) 교육 시스템 구축, 전공 장벽 완화, AI 도구 인프라 지원 정책을 기획·심의하는 첨단 인프라 조율 위원회입니다.",
+    constitution: "센터장, 디지털 융합 전공 교수진, DX 인프라 전문가 포함 5인 내외",
+    cycle: "반기별 1회 개최 (DX 인프라 신규 도입 시 상시 소집)",
+    functions: [
+      "AI 활용 교과 개발 지원비 지급 대상 심의",
+      "디지털 전환 솔루션 도입에 따른 인프라 타당성 검토",
+      "학내 메이커스페이스 및 디지털 인프라 장비 구축 협의"
+    ],
+    members: [
+      { id: 1, type: "위원장", name: "김현수", org: "울산과학대학교", dept: "AID-X지원센터", rank: "센터장", location: "교내", note: "" },
+      { id: 2, type: "위원", name: "이정준", org: "울산과학대학교", dept: "기계공학부", rank: "교수", location: "교내", note: "" },
+      { id: 3, type: "위원", name: "이상희", org: "청강문화산업대학교", dept: "혁신지원사업단", rank: "단장", location: "교외", note: "" },
+      { id: 4, type: "간사", name: "민혜란", org: "울산과학대학교", dept: "AID-X지원센터", rank: "연구원", location: "교내", note: "" }
+    ]
+  },
+  {
+    id: "neulbom_op",
+    name: "울산늘봄운영위원회",
+    fullName: "울산늘봄누리센터 운영위원회",
+    badge: "교육늘봄기여",
+    color: "linear-gradient(135deg, #ec4899 0%, #db2777 100%)",
+    purpose: "울산형 늘봄학교 교육 콘텐츠 개발 및 강사 매칭 가이드 심의·확정",
+    desc: "초등 교육 및 울산형 늘봄학교 연계 교육 프로그램의 표준화, 늘봄 강사 풀 선발 및 배치 가이드를 체계적으로 심의·조율하는 거버넌스입니다.",
+    constitution: "센터장, 교육청 실무 오피서, 늘봄학교 연구교수 포함 5인 내외",
+    cycle: "분기별 1회 정기 개최",
+    functions: [
+      "초등 맞춤형 늘봄 교육 교과 과정 공동 개발 심의",
+      "우수 늘봄 강사 선발 요건 및 처우 기준 확정",
+      "늘봄 교육 프로그램 만족도 평가 및 환류 검토"
+    ],
+    members: [
+      { id: 1, type: "위원장", name: "홍광표", org: "울산과학대학교", dept: "울산늘봄누리센터", rank: "센터장", location: "교내", note: "" },
+      { id: 2, type: "위원", name: "서현영", org: "울산과학대학교", dept: "간호학부", rank: "학부장", location: "교내", note: "" },
+      { id: 3, type: "위원", name: "이수경", org: "거제대학교", dept: "-", rank: "교수", location: "교외", note: "" },
+      { id: 4, type: "간사", name: "임서현", org: "울산과학대학교", dept: "울산늘봄누리센터", rank: "연구원", location: "교내", note: "" }
+    ]
+  },
+  {
+    id: "newind_op",
+    name: "신산업특화운영위원회",
+    fullName: "신산업특화센터 운영위원회",
+    badge: "신산업특화",
+    color: "linear-gradient(135deg, #14b8a6 0%, #0d9488 100%)",
+    purpose: "울산 특화 신산업(이차전지, 수소 등) 융합 교육과정 심의·확정",
+    desc: "지역 핵심 먹거리인 신산업 특화 전공 개설 및 산업체 연계 기자재 공동 활용 방안을 정밀 심의·조율하는 첨단 신산업 조율 위원회입니다.",
+    constitution: "센터장 및 신산업 특화 교원, 대기업/연구소 특화 전문가 포함 7인 내외",
+    cycle: "반기별 1회 정기 개최",
+    functions: [
+      "이차전지 및 수소 등 첨단 특화 융합 마이크로디그리 교과 과정 심의",
+      "신산업 특화 고가 장비 도입 및 구축 타당성 분석",
+      "특화 분야 가족기업 협의체 구성 및 재직자 연수 교육과정 자문"
+    ],
+    members: [
+      { id: 1, type: "위원장", name: "홍진숙", org: "울산과학대학교", dept: "신산업특화센터", rank: "센터장", location: "교내", note: "" },
+      { id: 2, type: "위원", name: "장광일", org: "울산과학대학교", dept: "화학공학과", rank: "교수", location: "교내", note: "" },
+      { id: 3, type: "위원", name: "황영국", org: "조선이공대학교", dept: "산학협력단", rank: "단장", location: "교외", note: "" },
+      { id: 4, type: "간사", name: "박지윤", org: "울산과학대학교", dept: "신산업특화센터", rank: "연구원", location: "교내", note: "" }
+    ]
   }
 ];
 
@@ -304,8 +436,18 @@ export default function ScheduleManager({
   };
 
   // 위원회 관리 상태 정의
+  const [selectedCommitteeGroup, setSelectedCommitteeGroup] = useState("agency"); // 위원회 대그룹 ("agency": 사업단 위원회, "center": 센터별 운영위원회)
   const [selectedCommitteeId, setSelectedCommitteeId] = useState("total"); // 선택된 위원회 ID ("total", "planning" 등)
   const [activeCommitteeDetailTab, setActiveCommitteeDetailTab] = useState("members"); // 위원회 세부 정보 탭 ("members": 명단, "purpose": 목적/기능)
+
+  // 💡 위원회 대그룹 탭 변경 시 선택된 위원회 ID를 해당 그룹의 첫 번째 항목으로 자동 초기화합니다.
+  useEffect(() => {
+    if (selectedCommitteeGroup === "agency") {
+      setSelectedCommitteeId("total");
+    } else {
+      setSelectedCommitteeId("ecc_op");
+    }
+  }, [selectedCommitteeGroup]);
 
   // 위원회 및 위원 명단 상태 (초기값은 하드코딩 백업 데이터)
   const [committees, setCommittees] = useState(COMMITTEES_DATA);
@@ -355,7 +497,13 @@ export default function ScheduleManager({
           "planning": 2,   // RISE기획위원회
           "budget": 3,     // RISE사업비관리위원회
           "eval": 4,       // RISE사업자체평가위원회
-          "advisory": 5    // RISE사업자문회의
+          "advisory": 5,   // RISE사업자문회의
+          "ecc_op": 11,    // ECC운영위원회
+          "icc_op": 12,    // ICC운영위원회
+          "rcc_op": 13,    // RCC운영위원회
+          "aidx_op": 14,   // AID-X운영위원회
+          "neulbom_op": 15,// 울산늘봄운영위원회
+          "newind_op": 16  // 신산업특화운영위원회
         };
         const sortedComms = [...comms].sort((a, b) => (orderMap[a.id] || 99) - (orderMap[b.id] || 99));
 
@@ -3642,13 +3790,54 @@ ${aiRawText}
             </div>
           </div>
 
+          {/* subsub 탭 버튼 그룹 */}
+          <div style={{ display: "flex", gap: "1rem", borderBottom: "1px solid var(--border-color)", paddingBottom: "0.5rem" }}>
+            <button
+              onClick={() => setSelectedCommitteeGroup("agency")}
+              style={{
+                background: "transparent",
+                border: "none",
+                padding: "0.5rem 1rem",
+                fontSize: "0.9rem",
+                fontWeight: selectedCommitteeGroup === "agency" ? "800" : "500",
+                color: selectedCommitteeGroup === "agency" ? "var(--accent-color)" : "var(--text-secondary)",
+                borderBottom: selectedCommitteeGroup === "agency" ? "2px solid var(--accent-color)" : "none",
+                cursor: "pointer",
+                transition: "all 0.15s ease"
+              }}
+            >
+              💼 사업단 위원회
+            </button>
+            <button
+              onClick={() => setSelectedCommitteeGroup("center")}
+              style={{
+                background: "transparent",
+                border: "none",
+                padding: "0.5rem 1rem",
+                fontSize: "0.9rem",
+                fontWeight: selectedCommitteeGroup === "center" ? "800" : "500",
+                color: selectedCommitteeGroup === "center" ? "var(--accent-color)" : "var(--text-secondary)",
+                borderBottom: selectedCommitteeGroup === "center" ? "2px solid var(--accent-color)" : "none",
+                cursor: "pointer",
+                transition: "all 0.15s ease"
+              }}
+            >
+              🏢 센터별 운영위원회
+            </button>
+          </div>
+
           {/* 메인 레이아웃: 좌측 목록 + 우측 상세 */}
           <div style={{ display: "grid", gridTemplateColumns: "2.5fr 3.5fr", gap: "1.5rem" }}>
             
-            {/* 좌측: 5대 위원회 카드 목록 */}
+            {/* 좌측: 위원회 카드 목록 */}
             <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
-              {committees.map((comm) => {
-                const isSelected = selectedCommitteeId === comm.id;
+              {committees
+                .filter(comm => selectedCommitteeGroup === "agency" 
+                  ? ["total", "planning", "budget", "eval", "advisory"].includes(comm.id) 
+                  : ["ecc_op", "icc_op", "rcc_op", "aidx_op", "neulbom_op", "newind_op"].includes(comm.id)
+                )
+                .map((comm) => {
+                  const isSelected = selectedCommitteeId === comm.id;
                 return (
                   <div
                     key={comm.id}
