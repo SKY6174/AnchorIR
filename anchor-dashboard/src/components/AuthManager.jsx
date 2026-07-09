@@ -43,21 +43,36 @@ export default function AuthManager({ onLoginSuccess, members = [] }) {
         ? (matchedMember.email || "").trim().toLowerCase() 
         : (targetId.includes("@") ? targetId : `${targetId}@anchor.ac.kr`);
 
-      // 1. Supabase Auth 로그인 시도
+      // 💡 [콘솔 오류 원천 봉쇄 혁신] DB의 rise_users 테이블에 사용자가 등록되어 있고 UUID(Auth 연동)가 있는지 먼저 조회합니다.
+      let dbUser = null;
+      try {
+        const { data, error } = await supabase
+          .from("rise_users")
+          .select("*")
+          .or(`id.eq.${targetId},email.eq.${targetEmail}`)
+          .maybeSingle();
+        if (!error && data) {
+          dbUser = data;
+        }
+      } catch (dbErr) {
+        console.warn("DB query warning for rise_users sync:", dbErr);
+      }
+
       let authUser = null;
       let authSession = null;
-      
-      const { data: authData, error: authErr } = await supabase.auth.signInWithPassword({
-        email: targetEmail,
-        password: userPw
-      });
 
-      if (!authErr && authData && authData.user) {
-        authUser = authData.user;
-        authSession = authData.session;
+      // Case A. 이미 Supabase Auth에 가입되어 연동된 사용자라면, 곧바로 로그인만 시도합니다. (불필요한 가입/실패 요청 방지)
+      if (dbUser && dbUser.uuid) {
+        const { data: authData, error: authErr } = await supabase.auth.signInWithPassword({
+          email: targetEmail,
+          password: userPw
+        });
+        if (!authErr && authData && authData.user) {
+          authUser = authData.user;
+          authSession = authData.session;
+        }
       } else {
-        // 2. 만약 비밀번호 불일치 혹은 미가입 등으로 에러가 발생했을 때,
-        // 기존의 주소록(members) 뒷자리 4자리 및 자동 회원가입(signUp) 연동 시도
+        // Case B. 아직 가입 전이거나 미연동 상태인 구성원인 경우, 비밀번호 일치 검사 후 선제 자동가입(signUp)을 처리합니다.
         if (matchedMember && matchedMember.status !== "퇴직") {
           const cleanPhone = (matchedMember.phoneMobile || "").replace(/[^0-9]/g, "");
           const expectedPhonePw = cleanPhone.slice(-4) + "00";
@@ -67,7 +82,7 @@ export default function AuthManager({ onLoginSuccess, members = [] }) {
           const expectedTestPw = targetId === "admin" ? "uc_anchor" : targetId === "guest" ? "guest123" : "1234";
 
           if (userPw === expectedPhonePw || (isTestAccount && userPw === expectedTestPw)) {
-            // 자동 회원가입 진행! (이미 6자리 이상이 보장됨)
+            // 선제 자동 회원가입 진행! (미연동 계정에 바로 로그인을 질러 콘솔에 400 에러가 찍히는 것을 원천 예방)
             const { data: signUpData, error: signUpErr } = await supabase.auth.signUp({
               email: targetEmail,
               password: userPw,
@@ -77,7 +92,7 @@ export default function AuthManager({ onLoginSuccess, members = [] }) {
             });
 
             if (!signUpErr) {
-              // 가입 직후 즉시 로그인 시도
+              // 가입 완료 후 로그인 시도
               const { data: retryData, error: retryErr } = await supabase.auth.signInWithPassword({
                 email: targetEmail,
                 password: userPw
@@ -99,26 +114,18 @@ export default function AuthManager({ onLoginSuccess, members = [] }) {
       }
 
       // 3. 로그인 성공 시, 기존 rise_users 및 주소록 데이터를 매핑하여 sessionUser 생성
-      // DB의 rise_users 테이블에 해당 사용자가 존재하는지 확인하고, 없으면 삽입(동기화)해 줍니다.
-      let dbUser = null;
-      try {
-        const { data, error } = await supabase
-          .from("rise_users")
-          .select("*")
-          .or(`id.eq.${targetId},email.eq.${targetEmail}`)
-          .maybeSingle();
-        if (!error && data) {
-          dbUser = data;
-          // UUID 컬럼이 미연동 상태라면 업데이트해 줍니다.
-          if (!dbUser.uuid) {
+      // UUID 컬럼이 미연동 상태라면 업데이트해 줍니다.
+      if (dbUser) {
+        if (!dbUser.uuid) {
+          try {
             await supabase
               .from("rise_users")
               .update({ uuid: authUser.id, email: targetEmail })
               .eq("id", dbUser.id);
+          } catch (updateErr) {
+            console.warn("UUID mapping sync warning:", updateErr);
           }
         }
-      } catch (dbErr) {
-        console.warn("DB query warning for rise_users sync:", dbErr);
       }
 
       // 주소록 매칭을 통해 세부 역할군 자동 판별
