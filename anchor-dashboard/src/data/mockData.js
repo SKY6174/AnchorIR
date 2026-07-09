@@ -3514,165 +3514,137 @@ export const YEAR_1_PROGRAMS = {
     }],
   "D2": [
     {
-      "id": "D2-S1T1-1",
-      "title": "지산학 보건 거버넌스 구축 및 운영",
-      "budget": 3000000,
-      "spent": 0,
-      "assignee": "박인숙 선임연구원",
-      "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
-      "timeline": ",,P,D,C,A,,,,,,",
+      "id": "D1-S1T1-1",
+      "title": "지역사회 기반 보건복지 협의체 구축 및 운영",
+      "budget": 3200000,
+      "spent": 3200000,
+      "assignee": "산학협력단",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
+      "timeline": ",,P,P,D,D,C,A,,,,",
       "budget_categories": [
-        { "category": "성과 활용∙확산 지원비", "budget": 3000000, "spent": 0 }
+        { "category": "지역 연계∙협업 지원비", "budget": 3200000, "spent": 3200000 }
       ]
     },
     {
-      "id": "D2-S1T2-1",
-      "title": "맞춤형 보건복지 서비스 역량강화를 위한 기자재 & 장비",
-      "budget": 50000000,
-      "spent": 0,
-      "assignee": "박인숙 선임연구원",
-      "pdca": { "p": "완료", "d": "진행", "c": "대기", "a": "대기" },
-      "timeline": ",,P,D,C,A,,,,,,",
-      "budget_categories": [
-        { "category": "실험∙실습장비 및 기자재 구입∙운영비", "budget": 50000000, "spent": 0 }
-      ]
-    },
-    {
-      "id": "D2-S1T2-2",
-      "title": "신규학과 (반려동물/K-뷰티/외국인요양보호사) 기자재 & 장비",
-      "budget": 100000000,
-      "spent": 0,
-      "assignee": "박인숙 선임연구원",
-      "pdca": { "p": "완료", "d": "진행", "c": "대기", "a": "대기" },
-      "timeline": ",,P,D,C,A,,,,,,",
-      "budget_categories": [
-        { "category": "실험∙실습장비 및 기자재 구입∙운영비", "budget": 100000000, "spent": 0 }
-      ]
-    },
-    {
-      "id": "D2-S1T3-1",
-      "title": "사회적약자 의료케어 역량강화교육 프로그램 운영(주민참여형)",
-      "budget": 11000000,
-      "spent": 0,
-      "assignee": "박인숙 선임연구원",
-      "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
-      "timeline": ",,P,D,C,A,,,,,,",
-      "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 11000000, "spent": 0 }
-      ]
-    },
-    {
-      "id": "D2-S1T3-2",
-      "title": "교내 시설 활용 주민참여 프로그램 운영",
-      "budget": 5000000,
-      "spent": 0,
-      "assignee": "박인숙 선임연구원",
-      "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
-      "timeline": ",,P,D,C,A,,,,,,",
-      "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 5000000, "spent": 0 }
-      ]
-    },
-    {
-      "id": "D2-S1T4-1",
-      "title": "AI 보건의료 빅데이터 교육 프로그램 운영",
-      "budget": 9000000,
-      "spent": 0,
-      "assignee": "박인숙 선임연구원",
-      "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
-      "timeline": ",,P,D,C,A,,,,,,",
-      "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 9000000, "spent": 0 }
-      ]
-    },
-    {
-      "id": "D2-S1T4-2",
-      "title": "지역의료기관 연계 사업 운영",
-      "budget": 5000000,
-      "spent": 0,
-      "assignee": "박인숙 선임연구원",
-      "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
-      "timeline": ",,P,D,C,A,,,,,,",
-      "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 5000000, "spent": 0 }
-      ]
-    },
-    {
-      "id": "D2-S1T5-1",
-      "title": "사회적약자 의료케어 모니터링 프로그램 운영",
-      "budget": 21000000,
-      "spent": 0,
-      "assignee": "박인숙 선임연구원",
-      "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
-      "timeline": ",,P,D,C,A,,,,,,",
-      "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 21000000, "spent": 0 }
-      ]
-    },
-    {
-      "id": "D2-S1T6-1",
-      "title": "사회적약자 보건복지서비스 역량강화 프로그램 운영",
+      "id": "D1-S1T1-2",
+      "title": "보건의료 전문기관 연계 협력체계 마련",
       "budget": 0,
       "spent": 0,
-      "assignee": "박인숙 선임연구원",
-      "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
-      "timeline": ",,P,D,C,A,,,,,,",
-      "budget_categories": []
-    },
-    {
-      "id": "D2-S2T7-1",
-      "title": "공공보건 의료데이터와 AI혁신 챌린지 「울산 지역 건강 함께 잇다, AI 활용 지역사회 건강 공익 프로젝트」 운영",
-      "budget": 0,
-      "spent": 0,
-      "assignee": "박인숙 선임연구원",
-      "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
-      "timeline": ",,P,D,C,A,,,,,,",
-      "budget_categories": []
-    },
-    {
-      "id": "D2-S2T7-2",
-      "title": "보건복지서비스 역량강화 전문인력양성 혁신 프로그램 운영",
-      "budget": 30000000,
-      "spent": 0,
-      "assignee": "박인숙 선임연구원",
-      "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
-      "timeline": ",,P,D,C,A,,,,,,",
+      "assignee": "산학협력단",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
+      "timeline": ",,P,P,D,D,C,A,,,,",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 30000000, "spent": 0 }
+        { "category": "지역 연계∙협업 지원비", "budget": 0, "spent": 0 }
       ]
     },
     {
-      "id": "D2-S2T8-1",
-      "title": "지역정주형 보건의료 인재 역량강화 프로그램 운영",
-      "budget": 0,
-      "spent": 0,
-      "assignee": "박인숙 선임연구원",
-      "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
-      "timeline": ",,P,D,C,A,,,,,,",
-      "budget_categories": []
-    },
-    {
-      "id": "D2-S2T9-1",
-      "title": "지역 연계형 보건복지 취업역량 강화 프로그램 운영",
-      "budget": 30000000,
-      "spent": 0,
-      "assignee": "박인숙 선임연구원",
-      "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
-      "timeline": ",,P,D,C,A,,,,,,",
+      "id": "D1-S1T2-1",
+      "title": "보건분야 전문기술인력 연수 프로그램 기획 및 운영",
+      "budget": 20000000,
+      "spent": 20000000,
+      "assignee": "산학협력단",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
+      "timeline": ",,P,P,D,D,C,A,,,,",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 30000000, "spent": 0 }
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 20000000, "spent": 20000000 }
       ]
     },
     {
-      "id": "D2-S2T10-1",
-      "title": "신규학과 개설&지원을 위한 통합형 보건인재 양성 교육환경 개선 + 외국인요양보호사",
-      "budget": 136000000,
-      "spent": 0,
-      "assignee": "박인숙 선임연구원",
-      "pdca": { "p": "완료", "d": "진행", "c": "대기", "a": "대기" },
-      "timeline": ",,P,D,C,A,,,,,,",
+      "id": "D1-S1T2-2",
+      "title": "요양보호사 등 재직자 대상 직무 역량 강화 교육과정 개발 및 운영",
+      "budget": 33500000,
+      "spent": 33500000,
+      "assignee": "산학협력단",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
+      "timeline": ",,P,P,D,D,C,A,,,,",
       "budget_categories": [
-        { "category": "교육∙연구 환경개선비", "budget": 136000000, "spent": 0 }
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 33500000, "spent": 33500000 }
+      ]
+    },
+    {
+      "id": "D1-S1T2-3",
+      "title": "대학생-재직자 매칭 보건복지 연수 과정 운영",
+      "budget": 26500000,
+      "spent": 26500000,
+      "assignee": "산학협력단",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
+      "timeline": ",,P,P,D,D,C,A,,,,",
+      "budget_categories": [
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 26500000, "spent": 26500000 }
+      ]
+    },
+    {
+      "id": "D1-S2T3-1",
+      "title": "취약계층 건강모니터링 프로그램 운영",
+      "budget": 0,
+      "spent": 0,
+      "assignee": "산학협력단",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
+      "timeline": ",,P,P,D,D,C,A,,,,",
+      "budget_categories": [
+        { "category": "지역 연계∙협업 지원비", "budget": 0, "spent": 0 }
+      ]
+    },
+    {
+      "id": "D1-S2T3-2",
+      "title": "사회적 약자 의료케어 서포터즈 조직 및 운영",
+      "budget": 0,
+      "spent": 0,
+      "assignee": "산학협력단",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
+      "timeline": ",,P,P,D,D,C,A,,,,",
+      "budget_categories": [
+        { "category": "지역 연계∙협업 지원비", "budget": 0, "spent": 0 }
+      ]
+    },
+    {
+      "id": "D1-S2T3-3",
+      "title": "디지털헬스케어 기반 시범사업 적용 및 평가",
+      "budget": 0,
+      "spent": 0,
+      "assignee": "산학협력단",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
+      "timeline": ",,P,P,D,D,C,A,,,,",
+      "budget_categories": [
+        { "category": "지역 연계∙협업 지원비", "budget": 0, "spent": 0 }
+      ]
+    },
+    {
+      "id": "D1-S2T4-1",
+      "title": "반려동물보건과 신설을 위한 학과 기반 구축",
+      "budget": 341400000,
+      "spent": 341400000,
+      "assignee": "산학협력단",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
+      "timeline": ",,P,P,D,D,C,A,,,,",
+      "budget_categories": [
+        { "category": "교육∙연구 환경개선비", "budget": 341400000, "spent": 341400000 }
+      ]
+    },
+    {
+      "id": "D1-S2T4-2",
+      "title": "반려동물 매개치료 교육 프로그램 개발 및 적용",
+      "budget": 58900000,
+      "spent": 58900000,
+      "assignee": "산학협력단",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
+      "timeline": ",,P,P,D,D,C,A,,,,",
+      "budget_categories": [
+        { "category": "실험∙실습장비 및 기자재 구입∙운영비", "budget": 58900000, "spent": 58900000 }
+      ]
+    },
+    {
+      "id": "D1-S2T5-1",
+      "title": "공통경비",
+      "budget": 66500000,
+      "spent": 66500000,
+      "assignee": "산학협력단",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
+      "timeline": ",,P,P,D,D,C,A,,,,",
+      "budget_categories": [
+        { "category": "인건비", "budget": 35000000, "spent": 35000000 },
+        { "category": "간접비", "budget": 15000000, "spent": 15000000 },
+        { "category": "그 밖의 사업운영경비", "budget": 16500000, "spent": 16500000 }
       ]
     }
   ],
@@ -4289,7 +4261,7 @@ export const Y1_UNIT_META = {
     "budget": 550000000,
     "national": 490000000,
     "city": 60000000,
-    "carry": 37500000
+    "carry": 0
   },
   "D3": {
     "budget": 625000000,
