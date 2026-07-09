@@ -2414,24 +2414,24 @@ export const YEAR_1_PROGRAMS = {
       "id": "A2-S1T1-1",
       "title": "창업 정규 교육과정 개발·운영",
       "budget": 9600000,
-      "spent": 7900000,
+      "spent": 9600000,
       "assignee": "글로컬창업지원팀",
       "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
-      "timeline": ",,P,D,D,C,A,,,,,,",
+      "timeline": ",,P,P,D,D,C,A,,,,",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 9600000, "spent": 7900000 }
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 9600000, "spent": 9600000 }
       ]
     },
     {
       "id": "A2-S1T1-2",
       "title": "창업 비정규 프로그램 개발·운영",
       "budget": 95900000,
-      "spent": 86500000,
+      "spent": 95900000,
       "assignee": "글로컬창업지원팀",
       "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "timeline": ",,P,P,D,D,C,A,,,,",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 95900000, "spent": 86500000 }
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 95900000, "spent": 95900000 }
       ]
     },
     {
@@ -2441,7 +2441,7 @@ export const YEAR_1_PROGRAMS = {
       "spent": 0,
       "assignee": "글로컬창업지원팀",
       "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
-      "timeline": ",,P,P,D,D,D,D,C,A,,",
+      "timeline": ",,P,P,D,D,C,A,,,,",
       "budget_categories": [
         { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 0, "spent": 0 }
       ]
@@ -2462,37 +2462,37 @@ export const YEAR_1_PROGRAMS = {
       "id": "A2-S1T2-3",
       "title": "실전 창업 환경 개선 및 하이퍼캠퍼스(창업) 구축",
       "budget": 389000000,
-      "spent": 378100000,
+      "spent": 389000000,
       "assignee": "시설관리처",
       "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "timeline": ",,P,P,D,D,C,A,,,,",
       "budget_categories": [
-        { "category": "교육∙연구 환경개선비", "budget": 79000000, "spent": 68600000 },
-        { "category": "실험∙실습장비 및 기자재 구입∙운영비", "budget": 310000000, "spent": 309500000 }
+        { "category": "교육∙연구 환경개선비", "budget": 79000000, "spent": 79000000 },
+        { "category": "실험∙실습장비 및 기자재 구입∙운영비", "budget": 310000000, "spent": 310000000 }
       ]
     },
     {
       "id": "A2-S2T3-1",
       "title": "재학생·교직원 예비창업자 지원 프로그램 운영",
       "budget": 20000000,
-      "spent": 18900000,
+      "spent": 20000000,
       "assignee": "글로컬창업지원팀",
       "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "timeline": ",,P,P,D,D,C,A,,,,",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 20000000, "spent": 18900000 }
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 20000000, "spent": 20000000 }
       ]
     },
     {
       "id": "A2-S2T3-2",
       "title": "초·중·고 및 지역민 예비창업자 지원 프로그램 운영",
       "budget": 12700000,
-      "spent": 11900000,
+      "spent": 12700000,
       "assignee": "글로컬창업지원팀",
       "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "timeline": ",,P,P,D,D,C,A,,,,",
       "budget_categories": [
-        { "category": "지역 연계∙협업 지원비", "budget": 12700000, "spent": 11900000 }
+        { "category": "지역 연계∙협업 지원비", "budget": 12700000, "spent": 12700000 }
       ]
     },
     {
@@ -2511,12 +2511,12 @@ export const YEAR_1_PROGRAMS = {
       "id": "A2-S2T4-2",
       "title": "아이디어 특허 지원",
       "budget": 38000000,
-      "spent": 30500000,
+      "spent": 38000000,
       "assignee": "산학협력단",
       "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "timeline": ",,P,P,D,D,C,A,,,,",
       "budget_categories": [
-        { "category": "지역 연계∙협업 지원비", "budget": 38000000, "spent": 30500000 }
+        { "category": "지역 연계∙협업 지원비", "budget": 38000000, "spent": 38000000 }
       ]
     },
     {
@@ -2547,27 +2547,26 @@ export const YEAR_1_PROGRAMS = {
       "id": "A2-S3T6-1",
       "title": "해외 창업 인큐베이터 연계 프로그램 기획",
       "budget": 20000000,
-      "spent": 100000,
+      "spent": 20000000,
       "assignee": "글로컬창업지원팀",
       "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "timeline": ",,P,P,D,D,C,A,,,,",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 20000000, "spent": 100000 }
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 20000000, "spent": 20000000 }
       ]
     },
     {
       "id": "A2-S3T6-2",
       "title": "창업선도모델 공동연구 및 벤치마크",
       "budget": 25000000,
-      "spent": 15000000,
+      "spent": 25000000,
       "assignee": "글로컬창업지원팀",
       "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "timeline": ",,P,P,D,D,C,A,,,,",
       "budget_categories": [
-        { "category": "지역 연계∙협업 지원비", "budget": 25000000, "spent": 15000000 }
+        { "category": "지역 연계∙협업 지원비", "budget": 25000000, "spent": 25000000 }
       ]
-    }
-    ,
+    },
     {
       "id": "A2-S3T7-1",
       "title": "공통경비",
@@ -4147,7 +4146,7 @@ export const Y1_UNIT_META = {
     "budget": 900000000,
     "national": 900000000,
     "city": 0,
-    "carry": 120000000
+    "carry": 15500000
   },
   "A3": {
     "budget": 483000000,
