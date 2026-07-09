@@ -3998,19 +3998,19 @@ export default function ProcurementManager({
                       </div>
                       <div>
                         <label style={{ display: "block", fontSize: "0.68rem", color: "var(--text-secondary)", marginBottom: "0.2rem", whiteSpace: "nowrap" }}>검토∙심의∙결정(PDR) 일</label>
-                        <input type="date" name="dateA" value={formData.dateA || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.4rem 0.35rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", fontSize: "0.72rem" }} />
+                        <input type="date" name="dateA" min={formData.dateP || ""} value={formData.dateA || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.4rem 0.35rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", fontSize: "0.72rem" }} />
                       </div>
                       <div>
                         <label style={{ display: "block", fontSize: "0.68rem", color: "var(--text-secondary)", marginBottom: "0.2rem", whiteSpace: "nowrap" }}>설계∙인허가(DL) 일</label>
-                        <input type="date" name="dateB" value={formData.dateB || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.4rem 0.35rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", fontSize: "0.72rem" }} />
+                        <input type="date" name="dateB" min={formData.dateA || formData.dateP || ""} value={formData.dateB || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.4rem 0.35rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", fontSize: "0.72rem" }} />
                       </div>
                       <div>
                         <label style={{ display: "block", fontSize: "0.68rem", color: "var(--text-secondary)", marginBottom: "0.2rem", whiteSpace: "nowrap" }}>입찰∙계약(BC) 일</label>
-                        <input type="date" name="datePr" value={formData.datePr || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.4rem 0.35rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", fontSize: "0.72rem" }} />
+                        <input type="date" name="datePr" min={formData.dateB || formData.dateA || formData.dateP || ""} value={formData.datePr || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.4rem 0.35rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", fontSize: "0.72rem" }} />
                       </div>
                       <div>
                         <label style={{ display: "block", fontSize: "0.68rem", color: "var(--text-secondary)", marginBottom: "0.2rem", whiteSpace: "nowrap" }}>시공∙감리(CS) 일</label>
-                        <input type="date" name="dateI" value={formData.dateI || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.4rem 0.35rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", fontSize: "0.72rem" }} />
+                        <input type="date" name="dateI" min={formData.datePr || formData.dateB || formData.dateA || formData.dateP || ""} value={formData.dateI || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.4rem 0.35rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", fontSize: "0.72rem" }} />
                       </div>
                     </div>
                   </div>
@@ -4739,27 +4739,27 @@ export default function ProcurementManager({
                       </div>
                       <div>
                         <label style={{ display: "block", fontSize: "0.72rem", color: "#3b82f6", marginBottom: "0.15rem" }}>의뢰(RFO)</label>
-                        <input type="date" name="dateRfo" value={formData.dateRfo || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.35rem", fontSize: "0.75rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} />
+                        <input type="date" name="dateRfo" min={formData.datePp || ""} value={formData.dateRfo || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.35rem", fontSize: "0.75rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} />
                       </div>
                       <div>
                         <label style={{ display: "block", fontSize: "0.72rem", color: "#06b6d4", marginBottom: "0.15rem" }}>입찰(B)</label>
-                        <input type="date" name="dateB" value={formData.dateB || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.35rem", fontSize: "0.75rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} />
+                        <input type="date" name="dateB" min={formData.dateRfo || formData.datePp || ""} value={formData.dateB || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.35rem", fontSize: "0.75rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} />
                       </div>
                       <div>
                         <label style={{ display: "block", fontSize: "0.72rem", color: "#ec4899", marginBottom: "0.15rem" }}>평가∙선정(ES)</label>
-                        <input type="date" name="dateEs" value={formData.dateEs || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.35rem", fontSize: "0.75rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} />
+                        <input type="date" name="dateEs" min={formData.dateB || formData.dateRfo || formData.datePp || ""} value={formData.dateEs || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.35rem", fontSize: "0.75rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} />
                       </div>
                       <div>
                         <label style={{ display: "block", fontSize: "0.72rem", color: "#a78bfa", marginBottom: "0.15rem" }}>계약(C)</label>
-                        <input type="date" name="dateC" value={formData.dateC || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.35rem", fontSize: "0.75rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} />
+                        <input type="date" name="dateC" min={formData.dateEs || formData.dateB || formData.dateRfo || formData.datePp || ""} value={formData.dateC || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.35rem", fontSize: "0.75rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} />
                       </div>
                       <div>
                         <label style={{ display: "block", fontSize: "0.72rem", color: "#eab308", marginBottom: "0.15rem" }}>수행(E)</label>
-                        <input type="date" name="dateE" value={formData.dateE || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.35rem", fontSize: "0.75rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} />
+                        <input type="date" name="dateE" min={formData.dateC || formData.dateEs || formData.dateB || formData.dateRfo || formData.datePp || ""} value={formData.dateE || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.35rem", fontSize: "0.75rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} />
                       </div>
                       <div>
                         <label style={{ display: "block", fontSize: "0.72rem", color: "#10b981", marginBottom: "0.15rem" }}>검수(I)</label>
-                        <input type="date" name="dateI" value={formData.dateI || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.35rem", fontSize: "0.75rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} />
+                        <input type="date" name="dateI" min={formData.dateE || formData.dateC || formData.dateEs || formData.dateB || formData.dateRfo || formData.datePp || ""} value={formData.dateI || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.35rem", fontSize: "0.75rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} />
                       </div>
                     </div>
                   </div>
