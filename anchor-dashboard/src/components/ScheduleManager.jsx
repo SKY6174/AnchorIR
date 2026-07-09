@@ -1634,6 +1634,7 @@ ${aiRawText}
       } else {
         const newItem = {
           id: Date.now(),
+          year: Number(selectedYear), // 💡 year 필드 누락 버그 수정! (일정 생성 직후 달력 즉시 렌더링 동기화 보장)
           title: formData.title || "새 일정",
           type: isTaskVal ? "할일" : (isDeadlineVal ? "마감" : (formData.type || "기타")),
           dept: isDeadlineVal ? "사업운영팀" : (formData.dept || "사업운영팀"),
