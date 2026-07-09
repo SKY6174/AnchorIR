@@ -3465,162 +3465,279 @@ export const YEAR_1_PROGRAMS = {
     }],
   "B3": [
     {
-      "id": "C3-S1T1-1",
-      "title": "탄소중립 교육 기본과정 개발",
-      "budget": 38000000,
-      "spent": 35400000,
-      "assignee": "산학협력단",
+      "id": "B3-S1T1-1",
+      "title": "전담연구원 인건비",
+      "budget": 16500000,
+      "spent": 15700000,
+      "assignee": "김소정",
       "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
-      "timeline": ",,P,P,D,D,D,C,A,,,,",
+      "timeline": ",,P,P,D,D,C,A,,,,",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 38000000, "spent": 35400000 }
+        { "category": "인건비", "budget": 16500000, "spent": 15700000 }
       ]
     },
     {
-      "id": "C3-S1T1-2",
-      "title": "탄소중립 시범 교육 운영",
-      "budget": 50000000,
-      "spent": 50000000,
-      "assignee": "산학협력단",
+      "id": "B3-S1T1-2",
+      "title": "교직원 성과급",
+      "budget": 7500000,
+      "spent": 7500000,
+      "assignee": "",
       "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
-      "timeline": ",,,P,D,D,D,D,C,A,,",
+      "timeline": ",,P,P,D,D,C,A,,,,",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 50000000, "spent": 50000000 }
+        { "category": "인건비", "budget": 7500000, "spent": 7500000 }
       ]
     },
     {
-      "id": "C3-S1T2-1",
-      "title": "시험 평가 기준 연구 및 시험 설계",
-      "budget": 0,
+      "id": "B3-S1T2-1",
+      "title": "참여학생 성과연계형 장학금",
+      "budget": 30000000,
+      "spent": 29200000,
+      "assignee": "",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
+      "timeline": ",,P,P,D,D,C,A,,,,",
+      "budget_categories": [
+        { "category": "장학금", "budget": 30000000, "spent": 29200000 }
+      ]
+    },
+    {
+      "id": "B3-S1T3-1",
+      "title": "지역사회연계 봉사 프로그램",
+      "budget": 25400000,
+      "spent": 13600000,
+      "assignee": "오영경 연구원",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
+      "timeline": ",,P,P,D,D,C,A,,,,",
+      "budget_categories": [
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 25400000, "spent": 13600000 }
+      ]
+    },
+    {
+      "id": "B3-S1T3-2",
+      "title": "지역사회모델 정책연구",
+      "budget": 10300000,
+      "spent": 10300000,
+      "assignee": "오영경 연구원",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
+      "timeline": ",,P,P,D,D,C,A,,,,",
+      "budget_categories": [
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 10300000, "spent": 10300000 }
+      ]
+    },
+    {
+      "id": "B3-S1T3-3",
+      "title": "[공동] Re:Think Ulsan",
+      "budget": 11700000,
+      "spent": 11700000,
+      "assignee": "오영경 연구원",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
+      "timeline": ",,P,P,D,D,C,A,,,,",
+      "budget_categories": [
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 11700000, "spent": 11700000 }
+      ]
+    },
+    {
+      "id": "B3-S1T3-4",
+      "title": "지역사회문제해결 프로젝트(캡스톤디자인) 운영",
+      "budget": 15000000,
+      "spent": 7800000,
+      "assignee": "오영경 연구원",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
+      "timeline": ",,P,P,D,D,C,A,,,,",
+      "budget_categories": [
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 15000000, "spent": 7800000 }
+      ]
+    },
+    {
+      "id": "B3-S1T3-5",
+      "title": "지역사회문제해결 리빙랩 운영",
+      "budget": 6400000,
+      "spent": 6400000,
+      "assignee": "오영경 연구원",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
+      "timeline": ",,P,P,D,D,C,A,,,,",
+      "budget_categories": [
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 6400000, "spent": 6400000 }
+      ]
+    },
+    {
+      "id": "B3-S1T3-6",
+      "title": "실험실습재료비",
+      "budget": 10000000,
+      "spent": 10000000,
+      "assignee": "오영경 연구원",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
+      "timeline": ",,P,P,D,D,C,A,,,,",
+      "budget_categories": [
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 10000000, "spent": 10000000 }
+      ]
+    },
+    {
+      "id": "B3-S1T3-7",
+      "title": "지역사회문제해결역량강화교육(재학생)",
+      "budget": 9000000,
+      "spent": 8800000,
+      "assignee": "오영경 연구원",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
+      "timeline": ",,P,P,D,D,C,A,,,,",
+      "budget_categories": [
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 9000000, "spent": 8800000 }
+      ]
+    },
+    {
+      "id": "B3-S1T3-8",
+      "title": "Day out in 울산 프로그램 운영",
+      "budget": 24000000,
       "spent": 0,
-      "assignee": "산학협력단",
+      "assignee": "오영경 연구원",
       "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
-      "timeline": ",,P,D,D,D,C,A,,,,",
+      "timeline": ",,P,P,D,D,C,A,,,,",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 0, "spent": 0 }
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 24000000, "spent": 0 }
       ]
     },
     {
-      "id": "C3-S1T2-2",
-      "title": "인증체계 구축 및 시험 운영 시범사업",
-      "budget": 0,
+      "id": "B3-S1T3-9",
+      "title": "지역사회문제해결역량강화교육(지역주민)",
+      "budget": 5100000,
+      "spent": 5100000,
+      "assignee": "오영경 연구원",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
+      "timeline": ",,P,P,D,D,C,A,,,,",
+      "budget_categories": [
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 5100000, "spent": 5100000 }
+      ]
+    },
+    {
+      "id": "B3-S1T3-10",
+      "title": "지역사회문제해결동아리운영",
+      "budget": 8000000,
+      "spent": 6000000,
+      "assignee": "오영경 연구원",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
+      "timeline": ",,P,P,D,D,C,A,,,,",
+      "budget_categories": [
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 8000000, "spent": 6000000 }
+      ]
+    },
+    {
+      "id": "B3-S1T4-1",
+      "title": "지역협력협의체운영",
+      "budget": 8500000,
+      "spent": 4000000,
+      "assignee": "오영경 연구원",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
+      "timeline": ",,P,P,D,D,C,A,,,,",
+      "budget_categories": [
+        { "category": "지역 연계∙협업 지원비", "budget": 8500000, "spent": 4000000 }
+      ]
+    },
+    {
+      "id": "B3-S1T4-2",
+      "title": "지역기관과의 거버넌스 구축 및 운영",
+      "budget": 10000000,
       "spent": 0,
-      "assignee": "산학협력단",
+      "assignee": "오영경 연구원",
       "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "timeline": ",,P,P,D,D,C,A,,,,",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 0, "spent": 0 }
+        { "category": "지역 연계∙협업 지원비", "budget": 10000000, "spent": 0 }
       ]
     },
     {
-      "id": "C3-S2T3-1",
-      "title": "ESG 경영진단 시스템 개발",
-      "budget": 15800000,
-      "spent": 15400000,
-      "assignee": "산학협력단",
+      "id": "B3-S1T4-3",
+      "title": "공용 플랫폼 구축",
+      "budget": 19500000,
+      "spent": 19500000,
+      "assignee": "오영경 연구원",
       "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "timeline": ",,P,P,D,D,C,A,,,,",
       "budget_categories": [
-        { "category": "기업 지원∙협력 활동비", "budget": 15800000, "spent": 15400000 }
+        { "category": "지역 연계∙협업 지원비", "budget": 19500000, "spent": 19500000 }
       ]
     },
     {
-      "id": "C3-S2T3-2",
-      "title": "ESG 경영 컨설팅 시범 운영",
-      "budget": 20000000,
-      "spent": 20000000,
-      "assignee": "산학협력단",
-      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
-      "timeline": ",,P,P,D,D,C,A,,,,",
-      "budget_categories": [
-        { "category": "기업 지원∙협력 활동비", "budget": 20000000, "spent": 20000000 }
-      ]
-    },
-    {
-      "id": "C3-S2T4-1",
-      "title": "친환경 기술 개발 지원 체계 구축",
-      "budget": 0,
+      "id": "B3-S1T4-4",
+      "title": "지역대학 연계 공동 프로그램 운영",
+      "budget": 40000000,
       "spent": 0,
-      "assignee": "산학협력단",
+      "assignee": "오영경 연구원",
       "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "timeline": ",,P,P,D,D,C,A,,,,",
       "budget_categories": [
-        { "category": "기업 지원∙협력 활동비", "budget": 0, "spent": 0 }
+        { "category": "지역 연계∙협업 지원비", "budget": 40000000, "spent": 0 }
       ]
     },
     {
-      "id": "C3-S2T4-2",
-      "title": "녹색산업 육성 및 실증 사업 지원",
-      "budget": 0,
-      "spent": 0,
-      "assignee": "산학협력단",
+      "id": "B3-S1T5-1",
+      "title": "지역사회문제해결 토론회",
+      "budget": 3400000,
+      "spent": 3400000,
+      "assignee": "오영경 연구원",
       "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "timeline": ",,P,P,D,D,C,A,,,,",
       "budget_categories": [
-        { "category": "기업 지원∙협력 활동비", "budget": 0, "spent": 0 }
+        { "category": "성과 활용∙확산 지원비", "budget": 3400000, "spent": 3400000 }
       ]
     },
     {
-      "id": "C3-S3T5-1",
-      "title": "탄소중립지원센터 연계 교육 인프라 구축 설계",
-      "budget": 150000000,
-      "spent": 0,
-      "assignee": "산학협력단",
+      "id": "B3-S1T5-2",
+      "title": "성과공유회",
+      "budget": 14400000,
+      "spent": 1400000,
+      "assignee": "오영경 연구원",
       "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "timeline": ",,P,P,D,D,C,A,,,,",
       "budget_categories": [
-        { "category": "교육∙연구 환경개선비", "budget": 150000000, "spent": 0 }
+        { "category": "성과 활용∙확산 지원비", "budget": 14400000, "spent": 1400000 }
       ]
     },
     {
-      "id": "C3-S3T5-2",
-      "title": "탄소중립 실습 및 체험 공간 조성 설계",
-      "budget": 25500000,
-      "spent": 25500000,
-      "assignee": "산학협력단",
-      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
-      "timeline": ",,P,P,D,D,C,A,,,,",
-      "budget_categories": [
-        { "category": "실험∙실습장비 및 기자재 구입∙운영비", "budget": 25500000, "spent": 25500000 }
-      ]
-    },
-    {
-      "id": "C3-S3T6-1",
-      "title": "탄소중립지원센터 연계 정책과제 연구 및 벤치마킹",
-      "budget": 14700000,
+      "id": "B3-S1T5-3",
+      "title": "지역문제해결 캡스톤디자인&동아리 경진대회",
+      "budget": 7500000,
       "spent": 6200000,
-      "assignee": "산학협력단",
+      "assignee": "오영경 연구원",
       "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "timeline": ",,P,P,D,D,C,A,,,,",
       "budget_categories": [
-        { "category": "성과 활용∙확산 지원비", "budget": 14700000, "spent": 6200000 }
+        { "category": "성과 활용∙확산 지원비", "budget": 7500000, "spent": 6200000 }
       ]
     },
     {
-      "id": "C3-S3T6-2",
-      "title": "시민 참여형 탄소중립 실천 프로그램 기획 및 시범 운영",
-      "budget": 20000000,
-      "spent": 0,
-      "assignee": "산학협력단",
+      "id": "B3-S1T6-1",
+      "title": "활동비(여비, 출장, 워크숍, 학회 등)",
+      "budget": 1800000,
+      "spent": 1800000,
+      "assignee": "오영경 연구원",
       "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "timeline": ",,P,P,D,D,C,A,,,,",
       "budget_categories": [
-        { "category": "성과 활용∙확산 지원비", "budget": 20000000, "spent": 0 }
+        { "category": "그 밖의 사업운영경비", "budget": 1800000, "spent": 1800000 }
       ]
-    }
-  ,
+    },
     {
-      "id": "C3-S3T7-1",
-      "title": "공통경비",
-      "budget": 66000000,
-      "spent": 59300000,
-      "assignee": "산학협력단",
+      "id": "B3-S1T6-2",
+      "title": "사업관리운영비(자체회계감사, 회의비, 수용비 등)",
+      "budget": 7000000,
+      "spent": 1800000,
+      "assignee": "오영경 연구원",
       "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
       "timeline": ",,P,P,D,D,C,A,,,,",
       "budget_categories": [
-        { "category": "인건비", "budget": 42000000, "spent": 40800000 },
-        { "category": "간접비", "budget": 12000000, "spent": 12000000 },
-        { "category": "그 밖의 사업운영경비", "budget": 12000000, "spent": 6500000 }
+        { "category": "그 밖의 사업운영경비", "budget": 7000000, "spent": 1800000 }
+      ]
+    },
+    {
+      "id": "B3-S1T7-1",
+      "title": "간접비",
+      "budget": 9000000,
+      "spent": 9000000,
+      "assignee": "오영경 연구원",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
+      "timeline": ",,P,P,D,D,C,A,,,,",
+      "budget_categories": [
+        { "category": "간접비", "budget": 9000000, "spent": 9000000 }
       ]
     }],
   "D2": [
@@ -4367,10 +4484,10 @@ export const Y1_UNIT_META = {
     "carry": 300000000
   },
   "B3": {
-    "budget": 400000000,
-    "national": 312000000,
-    "city": 88000000,
-    "carry": 80000000
+    "budget": 300000000,
+    "national": 300000000,
+    "city": 0,
+    "carry": 120800000
   },
   "B4": {
     "budget": 400000000,
