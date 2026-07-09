@@ -749,7 +749,35 @@ function formatDataToMultiYear(data) {
         };
       });
 
-      const newPrograms = [...y1Progs, ...y2Progs];
+      // 💡 [중복 ID 방지 및 병합 가드] 1차년도(y1Progs)와 2~5차년도(y2Progs) 세부 프로그램의 중복 ID를 제거하고 years를 병합합니다.
+      const uniquePrograms = [];
+      const seenIds = new Set();
+      [...y1Progs, ...y2Progs].forEach((prog) => {
+        if (prog && prog.id) {
+          if (!seenIds.has(prog.id)) {
+            seenIds.add(prog.id);
+            uniquePrograms.push(JSON.parse(JSON.stringify(prog)));
+          } else {
+            const existingIdx = uniquePrograms.findIndex(p => p.id === prog.id);
+            if (existingIdx !== -1) {
+              const existing = uniquePrograms[existingIdx];
+              existing.years = {
+                ...(existing.years || {}),
+                ...(prog.years || {})
+              };
+              const hasCurrentData = (p) => p.years && Object.keys(p.years).some(y => p.years[y] && p.years[y].budget_main > 0);
+              if (!hasCurrentData(existing) && hasCurrentData(prog)) {
+                const mergedYears = existing.years;
+                uniquePrograms[existingIdx] = {
+                  ...prog,
+                  years: mergedYears
+                };
+              }
+            }
+          }
+        }
+      });
+      const newPrograms = uniquePrograms;
 
       // 3. 비목별 예산 다년도 맵핑
       const newBudgetDetails = {};
