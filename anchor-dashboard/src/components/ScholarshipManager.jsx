@@ -88,7 +88,14 @@ export default function ScholarshipManager({
 }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingId, setEditingId] = useState(null);
-  const [filterYear, setFilterYear] = useState("all"); // 💡 '전체 연도 누적'을 기본값으로 지정하여 데이터 유실 오해 방지
+  const [filterYear, setFilterYear] = useState(() => selectedYear ? selectedYear.toString() : "all");
+
+  // 💡 [연도 선택 동기화] 상단 탭에서 차년도가 변경되면 해당 차년도의 데이터만 기본 조회되도록 동기화합니다.
+  useEffect(() => {
+    if (selectedYear) {
+      setFilterYear(selectedYear.toString());
+    }
+  }, [selectedYear]);
   // 폼 필드
   const [dept, setDept] = useState("");
   const [major, setMajor] = useState("");
