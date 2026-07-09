@@ -6375,26 +6375,28 @@ export default function App() {
             <span style={{ fontSize: "0.85rem", color: "var(--text-secondary)", marginRight: "0.4rem" }}>
               {getWelcomeMessage()}
             </span>
-            <button
-              className="btn-primary"
-              style={{
-                padding: "0.4rem 0.8rem",
-                fontSize: "0.75rem",
-                background: "var(--input-bg)",
-                border: "1px solid var(--border-color)",
-                borderRadius: "0.375rem",
-                color: "var(--text-primary)",
-                display: "flex",
-                alignItems: "center",
-                gap: "0.3rem",
-                cursor: "pointer",
-                height: "34px"
-              }}
-              onClick={() => setIsPasswordModalOpen(true)}
-            >
-              <LockIcon size={14} />
-              <span>개인정보 관리</span>
-            </button>
+            {currentUser && currentUser.id !== "guest" && currentUser.role?.id !== "GUEST" && (
+              <button
+                className="btn-primary"
+                style={{
+                  padding: "0.4rem 0.8rem",
+                  fontSize: "0.75rem",
+                  background: "var(--input-bg)",
+                  border: "1px solid var(--border-color)",
+                  borderRadius: "0.375rem",
+                  color: "var(--text-primary)",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "0.3rem",
+                  cursor: "pointer",
+                  height: "34px"
+                }}
+                onClick={() => setIsPasswordModalOpen(true)}
+              >
+                <LockIcon size={14} />
+                <span>개인정보 관리</span>
+              </button>
+            )}
             <button
               className="btn-primary"
               style={{
