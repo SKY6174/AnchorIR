@@ -1343,7 +1343,7 @@ export const initialProjectsData = [
         spent_2026: 0,
         budget_2025_carry: 350000000,
         spent_2025_carry: 0,
-        manager: "이연향 연구원",
+        manager: "현용환 RCC센터장", // 💡 [보안/조직도 매핑] C1 단위과제 책임자를 현용환 RCC센터장으로 정정합니다.
         programs: [
           { id: "C1-S1T1-1", title: "아카데미별 거버넌스 운영", budget_2026: 0, spent_2026: 0, budget_2025_carry: 5000000, spent_2025_carry: 0, assignee: "이연향", pdca: { p: "완료", d: "완료", c: "진행", a: "대기" } },
           { id: "C1-S1T1-2", title: "평생학습관 환경개선", budget_2026: 0, spent_2026: 0, budget_2025_carry: 75000000, spent_2025_carry: 0, assignee: "이연향", pdca: { p: "완료", d: "진행", c: "대기", a: "대기" } },
@@ -1653,7 +1653,7 @@ export const initialProjectsData = [
         spent_2026: 0,
         budget_2025_carry: 0,
         spent_2025_carry: 0,
-        manager: "오영경 로컬브릿지팀",
+        manager: "현용환 RCC센터장", // 💡 [보안/조직도 매핑] D1 단위과제 책임자를 현용환 RCC센터장으로 정정합니다.
         programs: [
           { id: "D1-S1T1-1", title: "지역사회문제해결교육과정 Re:Think 울산 운영", budget_2026: 5000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "김소정", pdca: { p: "완료", d: "대기", c: "대기", a: "대기" } },
           { id: "D1-S1T1-2", title: "지역사회문제해결 프로젝트(캡스톤디자인)", budget_2026: 15000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "김소정", pdca: { p: "완료", d: "대기", c: "대기", a: "대기" } },
@@ -1804,7 +1804,7 @@ export const initialProjectsData = [
         spent_2026: 0,
         budget_2025_carry: 0,
         spent_2025_carry: 0,
-        manager: "오영경 RCC센터장",
+        manager: "현용환 RCC센터장", // 💡 [보안/조직도 매핑] D2 단위과제 책임자를 현용환 RCC센터장으로 정정합니다.
         programs: [
           { id: "D2-S1T1-1", title: "지산학 보건 거버넌스 구축 및 운영", budget_2026: 3000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "박인숙 선임연구원", pdca: { p: "완료", d: "대기", c: "대기", a: "대기" } },
           { id: "D2-S1T2-1", title: "맞춤형 보건복지 서비스 역량강화를 위한 기자재 & 장비", budget_2026: 50000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "박인숙 선임연구원", pdca: { p: "완료", d: "진행", c: "대기", a: "대기" } },
@@ -1915,7 +1915,7 @@ export const initialProjectsData = [
         spent_2026: 0,
         budget_2025_carry: 0,
         spent_2025_carry: 0,
-        manager: "오영경 로컬브릿지팀",
+        manager: "현용환 RCC센터장", // 💡 [보안/조직도 매핑] D3 단위과제 책임자를 현용환 RCC센터장으로 정정합니다.
         programs: [
           { id: "D3-S1T1-1", title: "문화 콘텐츠 개발 우수 사례 및 벤치마킹", budget_2026: 5000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "오영경 연구원", pdca: { p: "완료", d: "대기", c: "대기", a: "대기" } },
           { id: "D3-S1T1-2", title: "국중박 벤치마킹", budget_2026: 0, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "", pdca: { p: "완료", d: "대기", c: "대기", a: "대기" } },
