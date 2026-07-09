@@ -91,18 +91,17 @@ export default function AuthManager({ onLoginSuccess, members = [] }) {
               }
             });
 
-            if (!signUpErr) {
-              // 가입 완료 후 로그인 시도
-              const { data: retryData, error: retryErr } = await supabase.auth.signInWithPassword({
-                email: targetEmail,
-                password: userPw
-              });
-              if (!retryErr && retryData) {
-                authUser = retryData.user;
-                authSession = retryData.session;
-              }
-            } else {
-              console.error("Auto sign-up error:", signUpErr);
+            // 💡 [혁신 가드] 가입 시 '이미 등록된 유저(User already registered)' 에러 등이 발생하더라도, 
+            // 실제 Auth 로그인 시도를 강행하여 기존에 생성되어 있던 계정과의 연결을 정상 완수합니다.
+            const { data: retryData, error: retryErr } = await supabase.auth.signInWithPassword({
+              email: targetEmail,
+              password: userPw
+            });
+            if (!retryErr && retryData) {
+              authUser = retryData.user;
+              authSession = retryData.session;
+            } else if (signUpErr) {
+              console.error("Auto sign-up & sign-in both failed:", signUpErr, retryErr);
             }
           }
         }
@@ -115,6 +114,7 @@ export default function AuthManager({ onLoginSuccess, members = [] }) {
 
       // 3. 로그인 성공 시, 기존 rise_users 및 주소록 데이터를 매핑하여 sessionUser 생성
       // UUID 컬럼이 미연동 상태라면 업데이트해 줍니다.
+      const isTestAccount = ["director", "team_leader", "researcher", "admin", "guest", "hq_head", "ecc_head", "special_head", "manager"].includes(targetId);
       if (dbUser) {
         if (!dbUser.uuid) {
           try {
@@ -125,6 +125,23 @@ export default function AuthManager({ onLoginSuccess, members = [] }) {
           } catch (updateErr) {
             console.warn("UUID mapping sync warning:", updateErr);
           }
+        }
+      } else if (isTestAccount) {
+        // 💡 [혁신 가드] DB rise_users 에 로우가 없는 테스트/가상 계정의 경우, 로그인 성공과 동시에 DB에 사용자 정보를 생성해 줍니다.
+        try {
+          await supabase
+            .from("rise_users")
+            .insert({
+              id: targetId,
+              pw: CryptoJS.SHA256(userPw).toString(), // 암호화 규칙 준수 (룰 8)
+              name: targetId === "admin" ? "관리자" : targetId === "guest" ? "게스트" : targetId,
+              role_key: targetId === "admin" ? "ADMIN" : targetId === "guest" ? "GUEST" : "RESEARCHER",
+              approved: true,
+              uuid: authUser.id,
+              email: targetEmail
+            });
+        } catch (insertErr) {
+          console.warn("Failed to create rise_users record for test account:", insertErr);
         }
       }
 
