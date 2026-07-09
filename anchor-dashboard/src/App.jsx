@@ -5545,19 +5545,19 @@ export default function App() {
               }
               const tgt = u.budgetDetails[catName].years[selectedYear];
               const mainVal = categorySums[catName].main;
-              const isD2 = (u.id === "D2");
+              const isNationalOnly = ["D1", "D2", "D3"].includes(u.id);
 
               tgt.budget_main = mainVal;
               tgt.budget_carry = categorySums[catName].carry;
               tgt.spent_main = categorySums[catName].spent_main;
               tgt.spent_carry = categorySums[catName].spent_carry;
 
-              // 💡 [비목 상세 수준 재원 기입] 
-              tgt.budget_national = isD2 ? mainVal : Math.round(mainVal * 0.5);
-              tgt.budget_city = isD2 ? 0 : mainVal - Math.round(mainVal * 0.5);
+              // 💡 [비목 상세 수준 재원 기입] D1, D2, D3 단위과제는 국비 100%, 시비 0원 강제 처리
+              tgt.budget_national = isNationalOnly ? mainVal : Math.round(mainVal * 0.5);
+              tgt.budget_city = isNationalOnly ? 0 : mainVal - Math.round(mainVal * 0.5);
               tgt.budget_external = 0;
-              tgt.spent_national = isD2 ? categorySums[catName].spent_main : Math.round(categorySums[catName].spent_main * 0.5);
-              tgt.spent_city = isD2 ? 0 : categorySums[catName].spent_main - Math.round(categorySums[catName].spent_main * 0.5);
+              tgt.spent_national = isNationalOnly ? categorySums[catName].spent_main : Math.round(categorySums[catName].spent_main * 0.5);
+              tgt.spent_city = isNationalOnly ? 0 : categorySums[catName].spent_main - Math.round(categorySums[catName].spent_main * 0.5);
               tgt.spent_external = 0;
             });
 
