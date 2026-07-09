@@ -2943,225 +2943,115 @@ export const YEAR_1_PROGRAMS = {
     }],
   "D1": [
     {
-      "id": "D1-S1T1-1",
-      "title": "지역사회문제해결교육과정 Re:Think 울산 운영",
-      "budget": 5000000,
-      "spent": 0,
-      "assignee": "김소정 연구원",
-      "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
-      "timeline": ",,P,D,C,A,,,,,,",
+      "id": "B3-S1T1-1",
+      "title": "지역문제해결 공용플랫폼의 협력 체계 구축",
+      "budget": 22000000,
+      "spent": 22000000,
+      "assignee": "오영경 연구원",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
+      "timeline": ",,P,P,D,D,C,A,,,,",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 5000000, "spent": 0 }
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 22000000, "spent": 22000000 }
       ]
     },
     {
-      "id": "D1-S1T1-2",
-      "title": "지역사회문제해결 프로젝트(캡스톤디자인)",
+      "id": "B3-S1T1-2",
+      "title": "공용 플랫폼의 협력 체계 마련",
       "budget": 15000000,
-      "spent": 0,
-      "assignee": "김소정 연구원",
-      "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
-      "timeline": ",,P,D,C,A,,,,,,",
+      "spent": 15000000,
+      "assignee": "오영경 연구원",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
+      "timeline": ",,P,P,D,D,C,A,,,,",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 15000000, "spent": 0 }
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 15000000, "spent": 15000000 }
       ]
     },
     {
-      "id": "D1-S1T1-3",
-      "title": "지역사회문제해결 동아리 운영",
-      "budget": 0,
-      "spent": 0,
-      "assignee": "김소정 연구원",
-      "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
-      "timeline": ",,P,D,C,A,,,,,,",
-      "budget_categories": []
-    },
-    {
-      "id": "D1-S1T1-4",
-      "title": "지역사회문제해결역량강화교육(재학생)",
-      "budget": 0,
-      "spent": 0,
-      "assignee": "김소정 연구원",
-      "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
-      "timeline": ",,P,D,C,A,,,,,,",
-      "budget_categories": []
-    },
-    {
-      "id": "D1-S1T1-5",
-      "title": "실험실습재료비",
-      "budget": 10000000,
-      "spent": 0,
-      "assignee": "김소정 연구원",
-      "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
-      "timeline": ",,P,D,C,A,,,,,,",
+      "id": "B3-S1T2-1",
+      "title": "지역문제해결 캡스톤 디자인 운영",
+      "budget": 38000000,
+      "spent": 38000000,
+      "assignee": "오영경 연구원",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
+      "timeline": ",,P,P,D,D,C,A,,,,",
       "budget_categories": [
-        { "category": "실험∙실습장비 및 기자재 구입∙운영비", "budget": 10000000, "spent": 0 }
+        { "category": "지역 연계∙협업 지원비", "budget": 38000000, "spent": 38000000 }
       ]
     },
     {
-      "id": "D1-S1T2-1",
-      "title": "지역협력협의체운영",
-      "budget": 6000000,
-      "spent": 0,
-      "assignee": "박인숙 선임연구원",
-      "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
-      "timeline": ",,P,D,C,A,,,,,,",
+      "id": "B3-S1T2-2",
+      "title": "자매도시 또는 글로벌 지역문제해결 캡스톤 디자인 모델 개발",
+      "budget": 65400000,
+      "spent": 65400000,
+      "assignee": "오영경 연구원",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
+      "timeline": ",,P,P,D,D,C,A,,,,",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 6000000, "spent": 0 }
+        { "category": "지역 연계∙협업 지원비", "budget": 40000000, "spent": 40000000 },
+        { "category": "성과 활용∙확산 지원비", "budget": 25400000, "spent": 25400000 }
       ]
     },
     {
-      "id": "D1-S1T2-2",
-      "title": "지역기관과의 거버넌스 구축",
-      "budget": 6000000,
-      "spent": 0,
-      "assignee": "최승혜 연구원",
-      "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
-      "timeline": ",,P,D,C,A,,,,,,",
+      "id": "B3-S2T3-1",
+      "title": "지역협력 마일리지 제도 협력 체계 구축",
+      "budget": 11500000,
+      "spent": 11500000,
+      "assignee": "오영경 연구원",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
+      "timeline": ",,P,P,D,D,C,A,,,,",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 6000000, "spent": 0 }
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 11500000, "spent": 11500000 }
       ]
     },
     {
-      "id": "D1-S1T2-3",
-      "title": "지역문제해결 플랫폼 구축",
-      "budget": 2000000,
-      "spent": 0,
-      "assignee": "김소정 연구원",
-      "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
-      "timeline": ",,P,D,C,A,,,,,,",
+      "id": "B3-S2T3-2",
+      "title": "지역협력 마일리지 형태의 지속 가능한 주민참여 운영 모델 및 제도 개발",
+      "budget": 23900000,
+      "spent": 23900000,
+      "assignee": "오영경 연구원",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
+      "timeline": ",,P,P,D,D,C,A,,,,",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 2000000, "spent": 0 }
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 23900000, "spent": 23900000 }
       ]
     },
     {
-      "id": "D1-S1T3-1",
-      "title": "지역사회문제해결 리빙랩 운영",
-      "budget": 5000000,
-      "spent": 0,
-      "assignee": "김소정 연구원",
-      "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
-      "timeline": ",,P,D,C,A,,,,,,",
+      "id": "B3-S2T4-1",
+      "title": "학과기반의 지역사회공헌활동 프로그램 운영",
+      "budget": 33400000,
+      "spent": 33400000,
+      "assignee": "오영경 연구원",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
+      "timeline": ",,P,P,D,D,C,A,,,,",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 5000000, "spent": 0 }
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 33400000, "spent": 33400000 }
       ]
     },
     {
-      "id": "D1-S1T3-2",
-      "title": "Day Out in 울산 프로그램 운영",
-      "budget": 24000000,
-      "spent": 0,
-      "assignee": "김소정 연구원",
-      "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
-      "timeline": ",,P,D,C,A,,,,,,",
+      "id": "B3-S2T4-2",
+      "title": "대학의 역량을 활용한 지역사회협력 연계",
+      "budget": 19000000,
+      "spent": 19000000,
+      "assignee": "오영경 연구원",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
+      "timeline": ",,P,P,D,D,C,A,,,,",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 24000000, "spent": 0 }
+        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 19000000, "spent": 19000000 }
       ]
     },
     {
-      "id": "D1-S1T4-1",
-      "title": "지역사회모델 정책연구",
-      "budget": 5000000,
-      "spent": 0,
-      "assignee": "김소정 연구원",
-      "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
-      "timeline": ",,P,D,C,A,,,,,,",
+      "id": "B3-S2T5-1",
+      "title": "공통경비",
+      "budget": 71800000,
+      "spent": 71800000,
+      "assignee": "오영경 연구원",
+      "pdca": { "p": "완료", "d": "완료", "c": "완료", "a": "완료" },
+      "timeline": ",,P,P,D,D,C,A,,,,",
       "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 5000000, "spent": 0 }
-      ]
-    },
-    {
-      "id": "D1-S1T4-2",
-      "title": "지역사회문제해결역량강화교육(지역주민)",
-      "budget": 5000000,
-      "spent": 0,
-      "assignee": "김소정 연구원",
-      "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
-      "timeline": ",,P,D,C,A,,,,,,",
-      "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 5000000, "spent": 0 }
-      ]
-    },
-    {
-      "id": "D1-S1T5-1",
-      "title": "지역사회연계 워크숍 및 특강",
-      "budget": 5000000,
-      "spent": 0,
-      "assignee": "김소정 연구원",
-      "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
-      "timeline": ",,P,D,C,A,,,,,,",
-      "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 5000000, "spent": 0 }
-      ]
-    },
-    {
-      "id": "D1-S1T5-2",
-      "title": "지역사회문제해결 토론회",
-      "budget": 0,
-      "spent": 0,
-      "assignee": "김소정 연구원",
-      "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
-      "timeline": ",,P,D,C,A,,,,,,",
-      "budget_categories": []
-    },
-    {
-      "id": "D1-S1T6-1",
-      "title": "지역문제해결 공동 프로그램 운영",
-      "budget": 40000000,
-      "spent": 0,
-      "assignee": "김소정 연구원",
-      "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
-      "timeline": ",,P,D,C,A,,,,,,",
-      "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 40000000, "spent": 0 }
-      ]
-    },
-    {
-      "id": "D1-S1T7-1",
-      "title": "지역사회연계봉사프로그램",
-      "budget": 12000000,
-      "spent": 0,
-      "assignee": "김소정 연구원",
-      "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
-      "timeline": ",,P,D,C,A,,,,,,",
-      "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 12000000, "spent": 0 }
-      ]
-    },
-    {
-      "id": "D1-S1T8-1",
-      "title": "울산형 2주기 RISE모델 개발 정책연구",
-      "budget": 50000000,
-      "spent": 0,
-      "assignee": "김소정 연구원",
-      "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
-      "timeline": ",,P,D,C,A,,,,,,",
-      "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 50000000, "spent": 0 }
-      ]
-    },
-    {
-      "id": "D1-S1T8-2",
-      "title": "지역문제해결 프로젝트 성과공유회",
-      "budget": 5000000,
-      "spent": 0,
-      "assignee": "김소정 연구원",
-      "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
-      "timeline": ",,P,D,C,A,,,,,,",
-      "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 5000000, "spent": 0 }
-      ]
-    },
-    {
-      "id": "D1-S1T8-3",
-      "title": "지역협력협의체&거버넌스 성과공유회",
-      "budget": 5000000,
-      "spent": 0,
-      "assignee": "김소정 연구원",
-      "pdca": { "p": "완료", "d": "대기", "c": "대기", "a": "대기" },
-      "timeline": ",,P,D,C,A,,,,,,",
-      "budget_categories": [
-        { "category": "교육∙연구 프로그램 개발∙운영비", "budget": 5000000, "spent": 0 }
+        { "category": "인건비", "budget": 24000000, "spent": 24000000 },
+        { "category": "장학금", "budget": 30000000, "spent": 30000000 },
+        { "category": "간접비", "budget": 9000000, "spent": 9000000 },
+        { "category": "그 밖의 사업운영경비", "budget": 8800000, "spent": 8800000 }
       ]
     }
   ],
@@ -4508,10 +4398,10 @@ export const Y1_UNIT_META = {
     "carry": 302300000
   },
   "D1": {
-    "budget": 400000000,
-    "national": 312000000,
-    "city": 88000000,
-    "carry": 80000000
+    "budget": 300000000,
+    "national": 275000000,
+    "city": 25000000,
+    "carry": 0
   },
   "D2": {
     "budget": 550000000,
