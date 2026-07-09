@@ -29,8 +29,19 @@ export default function AuthManager({ onLoginSuccess, members = [] }) {
 
     try {
       const targetId = userId.trim().toLowerCase();
-      // 입력값이 이메일 형식이 아니면 @anchor.ac.kr 을 자동으로 붙임
-      const targetEmail = targetId.includes("@") ? targetId : `${targetId}@anchor.ac.kr`;
+      
+      // 💡 [이메일 단일화 혁신] 주소록(members)에서 해당 아이디 파트 또는 이메일과 매칭되는 멤버를 선제 탐색합니다.
+      const matchedMember = members.find((m) => {
+        const mEmail = (m.email || "").trim().toLowerCase();
+        if (targetId === "special_head" && mEmail === "cshong@uc.ac.kr") return true;
+        return mEmail === targetId || mEmail.split("@")[0] === targetId;
+      });
+
+      // 매칭되는 진짜 구성원 계정이 있다면 해당 구성원의 실제 이메일(예: name@uc.ac.kr)을 최우선적으로 사용하고,
+      // 그 외 가상/테스트 계정 등인 경우 기존 규칙(@anchor.ac.kr)을 따릅니다.
+      const targetEmail = matchedMember 
+        ? (matchedMember.email || "").trim().toLowerCase() 
+        : (targetId.includes("@") ? targetId : `${targetId}@anchor.ac.kr`);
 
       // 1. Supabase Auth 로그인 시도
       let authUser = null;
@@ -47,12 +58,6 @@ export default function AuthManager({ onLoginSuccess, members = [] }) {
       } else {
         // 2. 만약 비밀번호 불일치 혹은 미가입 등으로 에러가 발생했을 때,
         // 기존의 주소록(members) 뒷자리 4자리 및 자동 회원가입(signUp) 연동 시도
-        const matchedMember = members.find((m) => {
-          const mEmail = (m.email || "").trim().toLowerCase();
-          if (targetId === "special_head" && mEmail === "cshong@uc.ac.kr") return true;
-          return mEmail === targetId || mEmail.split("@")[0] === targetId;
-        });
-
         if (matchedMember && matchedMember.status !== "퇴직") {
           const cleanPhone = (matchedMember.phoneMobile || "").replace(/[^0-9]/g, "");
           const expectedPhonePw = cleanPhone.slice(-4) + "00";

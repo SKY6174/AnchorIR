@@ -3,8 +3,11 @@
 ALTER TABLE rise_users ADD COLUMN IF NOT EXISTS uuid UUID UNIQUE;
 ALTER TABLE rise_users ADD COLUMN IF NOT EXISTS email TEXT UNIQUE;
 
--- 2.기존 사용자 데이터에 이메일 자동 매핑 (아이디@anchor.ac.kr 형식)
-UPDATE rise_users SET email = id || '@anchor.ac.kr' WHERE email IS NULL;
+-- 2.기존 사용자 데이터에 이메일 자동 매핑 (아이디가 이미 이메일 형식인 경우 그대로 사용)
+UPDATE rise_users SET email = CASE 
+  WHEN id LIKE '%@%' THEN id 
+  ELSE id || '@anchor.ac.kr' 
+END WHERE email IS NULL;
 
 -- 3.Supabase auth.users 테이블에 기본 시드 사용자(director, hq_head, ecc_head, special_head, manager, researcher) 적재
 -- 비밀번호는 '1234'로 설정합니다. (Bcrypt 해시: $2a$10$wW5g70c6qS.Fm8H8F19JFe68Q3c3Vv5n2gH3r7o0y0L8G9I2U2q3.)
