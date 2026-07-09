@@ -1541,6 +1541,8 @@ export default function ProcurementManager({
         : (equip.budgetSpent ? parseFloat((equip.budgetSpent / 1000000).toFixed(2)) : ""),
       location: equip.location || "",
       utilization: equip.utilization || "",
+      purpose: equip.purpose || "",
+      plan: equip.plan || "",
       progress: equip.progress || "",
       birdseyeView: equip.birdseyeView || "",
       blueprints: equip.blueprints || "",
@@ -2213,39 +2215,51 @@ export default function ProcurementManager({
                                     {currentStatus}
                                   </div>
                                 )}
-                                {hasMilestone && (
-                                  <div 
-                                    className="milestone-tooltip-container"
-                                    style={{ display: "flex", justifyContent: "center", alignItems: "center" }}
-                                  >
-                                    <div className="milestone-tooltip" style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "2px", textAlign: "center" }}>
-                                      <span style={{ color: phaseColor, fontWeight: "900" }}>{phaseLabel} ({primaryCode})</span>
-                                      <span style={{ fontSize: "0.68rem", opacity: 0.85, fontWeight: "normal" }}>{phaseDate || "날짜 미정"}</span>
-                                    </div>
+                                {hasMilestone && stepList.map((rawCode, sIdx) => {
+                                  const info = envPhaseMap[rawCode] || { code: rawCode, label: rawCode, color: "#38bdf8" };
+                                  const pCode = info.code;
+                                  const pLabel = info.label;
+                                  const pColor = info.color;
+                                  const pDate = rawCode === "P" ? equip.dateP :
+                                                rawCode === "A" ? equip.dateA :
+                                                rawCode === "B" ? equip.dateB :
+                                                rawCode === "Pr" ? equip.datePr :
+                                                equip.dateI;
+                                  return (
+                                    <div 
+                                      key={sIdx}
+                                      className="milestone-tooltip-container"
+                                      style={{ display: "flex", justifyContent: "center", alignItems: "center" }}
+                                    >
+                                      <div className="milestone-tooltip" style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "2px", textAlign: "center" }}>
+                                        <span style={{ color: pColor, fontWeight: "900" }}>{pLabel} ({pCode})</span>
+                                        <span style={{ fontSize: "0.68rem", opacity: 0.85, fontWeight: "normal" }}>{pDate || "날짜 미정"}</span>
+                                      </div>
 
-                                    <svg width="28" height="32" viewBox="0 0 28 32" style={{ overflow: "visible" }}>
-                                      <defs>
-                                        <filter id={`glow-${primaryCode}`} x="-40%" y="-40%" width="180%" height="180%">
-                                          <feGaussianBlur stdDeviation="2.2" result="blur" />
-                                          <feComposite in="SourceGraphic" in2="blur" operator="over" />
-                                        </filter>
-                                      </defs>
-                                      <path 
-                                        d="M 5 7 L 14 11.5 L 23 7" 
-                                        fill="none"
-                                        stroke={phaseColor} 
-                                        strokeWidth="1.5" 
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        opacity="0.9" 
-                                      />
-                                      <text x="14" y="4.5" textAnchor="middle" fontSize="10" fontWeight="950" fill="var(--text-primary)" style={{ fontFamily: "monospace", letterSpacing: "-0.5px" }}>
-                                        {primaryCode}
-                                      </text>
-                                      <circle cx="14" cy="17.5" r="4.5" fill={phaseColor} stroke="#ffffff" strokeWidth="1.5" filter={`url(#glow-${primaryCode})`} style={{ transition: "all 0.2s ease" }} />
-                                    </svg>
-                                  </div>
-                                )}
+                                      <svg width="24" height="32" viewBox="0 0 24 32" style={{ overflow: "visible" }}>
+                                        <defs>
+                                          <filter id={`glow-${pCode}`} x="-40%" y="-40%" width="180%" height="180%">
+                                            <feGaussianBlur stdDeviation="2.2" result="blur" />
+                                            <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                                          </filter>
+                                        </defs>
+                                        <path 
+                                          d="M 4 7 L 12 11.5 L 20 7" 
+                                          fill="none"
+                                          stroke={pColor} 
+                                          strokeWidth="1.5" 
+                                          strokeLinecap="round"
+                                          strokeLinejoin="round"
+                                          opacity="0.9" 
+                                        />
+                                        <text x="12" y="4.5" textAnchor="middle" fontSize="9" fontWeight="950" fill="var(--text-primary)" style={{ fontFamily: "monospace", letterSpacing: "-0.5px" }}>
+                                          {pCode}
+                                        </text>
+                                        <circle cx="12" cy="17.5" r="4.5" fill={pColor} stroke="#ffffff" strokeWidth="1.5" filter={`url(#glow-${pCode})`} style={{ transition: "all 0.2s ease" }} />
+                                      </svg>
+                                    </div>
+                                  );
+                                })}
                               </div>
                             </td>
                           );
@@ -3039,63 +3053,65 @@ export default function ProcurementManager({
                                        currentStatus}
                                     </div>
                                   )}
-                                  {hasMilestone && (
-                                    <div 
-                                      className="milestone-tooltip-container"
-                                      style={{ display: "flex", justifyContent: "center", alignItems: "center" }}
-                                    >
-                                      {/* 커스텀 호버 툴팁 날짜 표기 (요구사항 1: 두 줄로 표현) */}
-                                      <div className="milestone-tooltip" style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "2px", textAlign: "center" }}>
-                                        <span style={{ color: phaseColor, fontWeight: "900" }}>{phaseLabel} ({primaryCode})</span>
-                                        <span style={{ fontSize: "0.68rem", opacity: 0.85, fontWeight: "normal" }}>{phaseDate || "날짜 미정"}</span>
+                                  {hasMilestone && stepList.map((rawCode, sIdx) => {
+                                    const pColor = getPhaseColor(rawCode) || "#38bdf8";
+                                    const pLabel = getPhaseLabel(rawCode) || "";
+                                    const pDate = rawCode === "P" ? equip.dateP :
+                                                  rawCode === "A" ? equip.dateA :
+                                                  rawCode === "B" ? equip.dateB :
+                                                  rawCode === "Pr" ? equip.datePr :
+                                                  equip.dateI;
+                                    return (
+                                      <div 
+                                        key={sIdx}
+                                        className="milestone-tooltip-container"
+                                        style={{ display: "flex", justifyContent: "center", alignItems: "center" }}
+                                      >
+                                        <div className="milestone-tooltip" style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "2px", textAlign: "center" }}>
+                                          <span style={{ color: pColor, fontWeight: "900" }}>{pLabel} ({rawCode})</span>
+                                          <span style={{ fontSize: "0.68rem", opacity: 0.85, fontWeight: "normal" }}>{pDate || "날짜 미정"}</span>
+                                        </div>
+
+                                        <svg width="24" height="32" viewBox="0 0 24 32" style={{ overflow: "visible" }}>
+                                          <defs>
+                                            <filter id={`glow-${rawCode}`} x="-40%" y="-40%" width="180%" height="180%">
+                                              <feGaussianBlur stdDeviation="2.2" result="blur" />
+                                              <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                                            </filter>
+                                          </defs>
+                                          <path 
+                                            d="M 4 7 L 12 11.5 L 20 7" 
+                                            fill="none"
+                                            stroke={pColor} 
+                                            strokeWidth="1.5" 
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            opacity="0.9" 
+                                          />
+                                          <text 
+                                            x="12" 
+                                            y="4.5" 
+                                            textAnchor="middle" 
+                                            fontSize="9" 
+                                            fontWeight="950" 
+                                            fill="var(--text-primary)"
+                                            style={{ fontFamily: "monospace", letterSpacing: "-0.5px" }}
+                                          >
+                                            {rawCode}
+                                          </text>
+                                          <circle 
+                                            cx="12" 
+                                            cy="16" 
+                                            r="4.5" 
+                                            fill={pColor} 
+                                            stroke="rgba(255,255,255,0.7)" 
+                                            strokeWidth="1"
+                                            filter={`url(#glow-${rawCode})`}
+                                          />
+                                        </svg>
                                       </div>
-
-                                      <svg width="28" height="32" viewBox="0 0 28 32" style={{ overflow: "visible" }}>
-                                        <defs>
-                                          {/* 마일스톤별 고유 글로우 필터 */}
-                                          <filter id={`glow-${primaryCode}`} x="-40%" y="-40%" width="180%" height="180%">
-                                            <feGaussianBlur stdDeviation="2.2" result="blur" />
-                                            <feComposite in="SourceGraphic" in2="blur" operator="over" />
-                                          </filter>
-                                        </defs>
-
-                                        {/* 1. 꺾인 V 형태 구분선 (도트 정수리 바로 위 11.5 지점에서 부드럽게 꺾이는 path 설계) */}
-                                        <path 
-                                          d="M 5 7 L 14 11.5 L 23 7" 
-                                          fill="none"
-                                          stroke={phaseColor} 
-                                          strokeWidth="1.5" 
-                                          strokeLinecap="round"
-                                          strokeLinejoin="round"
-                                          opacity="0.9" 
-                                        />
-
-                                        {/* 2. V 꺾임선 위의 텍스트 (P, A, B, Pr, I) */}
-                                        <text 
-                                          x="14" 
-                                          y="4.5" 
-                                          textAnchor="middle" 
-                                          fontSize="10" 
-                                          fontWeight="950" 
-                                          fill="var(--text-primary)"
-                                          style={{ fontFamily: "monospace", letterSpacing: "-0.5px" }}
-                                        >
-                                          {primaryCode}
-                                        </text>
-
-                                        {/* 3. 중앙 고유 단계 컬러 도트 점 (vertically center align을 위해 cy=16으로 정확히 중앙 매칭) */}
-                                        <circle 
-                                          cx="14" 
-                                          cy="16" 
-                                          r="4.5" 
-                                          fill={phaseColor} 
-                                          stroke="rgba(255,255,255,0.7)" 
-                                          strokeWidth="1"
-                                          filter={`url(#glow-${primaryCode})`}
-                                        />
-                                      </svg>
-                                    </div>
-                                  )}
+                                    );
+                                  })}
                                 </div>
                               </td>
                             );
