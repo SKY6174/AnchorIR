@@ -768,7 +768,7 @@ export default function Sidebar({
                   onChangeTab("management");
                   if (onChangeMgmtSubTab) {
                     const isManager = currentRole.id === "ADMIN" || currentRole.id === "DIRECTOR" || currentRole.id === "HQ_HEAD";
-                    const subTabsOrder = ["approvals", "members", "users", "programs", "org_chart", "partners", "portal_config"];
+                    const subTabsOrder = ["approvals", "members", "users", "programs", "org_chart", "center_org_chart", "partners", "portal_config"];
                     
                     const firstActive = subTabsOrder.find(tab => {
                       if (tab === "portal_config") return isSongDirector;
@@ -884,6 +884,26 @@ export default function Sidebar({
                   >
                     - 대학조직도
                     {isHidden("org_chart") && (
+                      <span style={{ fontSize: "0.6rem", color: "#ef4444", textDecoration: "none", marginLeft: "0.2rem" }}>
+                        [숨김]
+                      </span>
+                    )}
+                  </div>
+                )}
+                {(menuVisibility.center_org_chart !== false || isSongDirector) && (
+                  <div
+                    className={`nav-sub-item ${activeTab === "management" && mgmtSubTab === "center_org_chart" ? "active" : ""}`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onChangeTab("management");
+                      if (onChangeMgmtSubTab) {
+                        onChangeMgmtSubTab("center_org_chart");
+                      }
+                    }}
+                    style={getHiddenStyle("center_org_chart")}
+                  >
+                    - 사업단 조직도
+                    {isHidden("center_org_chart") && (
                       <span style={{ fontSize: "0.6rem", color: "#ef4444", textDecoration: "none", marginLeft: "0.2rem" }}>
                         [숨김]
                       </span>

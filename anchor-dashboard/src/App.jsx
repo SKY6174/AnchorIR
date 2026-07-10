@@ -14,6 +14,7 @@ import SatisfactionManager from "./components/SatisfactionManager";
 import SurveyResponder from "./components/SurveyResponder";
 import LLMWiki from "./components/LLMWiki";
 import OrgChartManager from "./components/OrgChartManager";
+import CenterOrgChartManager from "./components/CenterOrgChartManager";
 import PartnerManager from "./components/PartnerManager";
 import PortalConfigManager from "./components/PortalConfigManager";
 import AuthManager from "./components/AuthManager";
@@ -6838,6 +6839,23 @@ export default function App() {
                   </button>
                   <button
                     type="button"
+                    onClick={() => setMgmtSubTab("center_org_chart")}
+                    style={{
+                      border: "none",
+                      background: "transparent",
+                      padding: "0.5rem 1rem",
+                      fontSize: "0.85rem",
+                      fontWeight: "800",
+                      cursor: "pointer",
+                      color: mgmtSubTab === "center_org_chart" ? "var(--accent-color)" : "var(--text-secondary)",
+                      borderBottom: mgmtSubTab === "center_org_chart" ? "2px solid var(--accent-color)" : "none",
+                      transition: "all 0.2s"
+                    }}
+                  >
+                    사업단 조직도
+                  </button>
+                  <button
+                    type="button"
                     onClick={() => setMgmtSubTab("partners")}
                     style={{
                       border: "none",
@@ -7655,6 +7673,10 @@ export default function App() {
 
             {mgmtSubTab === "org_chart" && (
               <OrgChartManager key={`org-${darkMode}`} />
+            )}
+
+            {mgmtSubTab === "center_org_chart" && (
+              <CenterOrgChartManager key={`center-org-${darkMode}`} />
             )}
 
             {mgmtSubTab === "partners" && (
