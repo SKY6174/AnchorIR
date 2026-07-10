@@ -160,10 +160,12 @@ export default function ScholarshipManager({
 
   const maskResidentId = (id) => {
     if (!id) return "";
-    if (id.length >= 8) {
-      return id.substring(0, 7) + "*******";
+    // 하이픈 제거 후 생년월일(앞 6자리)만 남깁니다.
+    const cleanId = id.replace(/-/g, "").trim();
+    if (cleanId.length >= 6) {
+      return cleanId.substring(0, 6);
     }
-    return id.substring(0, 2) + "****";
+    return cleanId;
   };
 
   const maskAccountNum = (acc) => {
@@ -303,7 +305,7 @@ export default function ScholarshipManager({
       const iCourse = getIndex("과정");
       const iStudentId = getIndex("학번");
       const iName = getIndex("이름");
-      const iResidentId = getIndex("주민번호");
+      const iResidentId = getIndex("연락처") !== -1 ? getIndex("연락처") : getIndex("주민번호");
       const iGrade = getIndex("학년");
       const iEnrollStatus = getIndex("학적");
       const iRegStatus = getIndex("등록여부");
@@ -412,7 +414,7 @@ export default function ScholarshipManager({
       "과정": item.course || "",
       "학번": item.studentId || "",
       "이름": item.name || "",
-      "주민번호": item.residentId || "", 
+      "연락처": item.residentId || "", 
       "학년": item.grade || "",
       "학적": item.enrollStatus || "",
       "등록여부": item.regStatus || "",
@@ -430,7 +432,7 @@ export default function ScholarshipManager({
 
   const handleExcelTemplateDownload = () => {
     const headers = [
-      "학과", "전공", "과정", "학번", "이름", "주민번호", 
+      "학과", "전공", "과정", "학번", "이름", "연락처", 
       "학년", "학적", "등록여부", "지급금액", "은행명", "계좌", "예금주", "승인일"
     ];
     const data = [[]]; // 빈 데이터 한 줄
@@ -509,7 +511,7 @@ export default function ScholarshipManager({
               <th onClick={() => requestSort("course")} style={{ width: "110px", cursor: "pointer", textAlign: "center" }}>과정{renderSortIndicator("course")}</th>
               <th onClick={() => requestSort("studentId")} style={{ width: "100px", cursor: "pointer", textAlign: "center" }}>학번{renderSortIndicator("studentId")}</th>
               <th onClick={() => requestSort("name")} style={{ width: "90px", cursor: "pointer", textAlign: "center" }}>이름{renderSortIndicator("name")}</th>
-              <th style={{ width: "140px", textAlign: "center" }}>주민번호</th>
+              <th style={{ width: "140px", textAlign: "center" }}>연락처</th>
               <th style={{ width: "60px", textAlign: "center" }}>학년</th>
               <th style={{ width: "60px", textAlign: "center" }}>학적</th>
               <th style={{ width: "80px", textAlign: "center" }}>등록여부</th>
@@ -649,8 +651,8 @@ export default function ScholarshipManager({
                     <input type="text" value={name} onChange={e => setName(e.target.value)} required style={{ padding: "0.5rem", borderRadius: "0.5rem", background: "var(--bg-tertiary)", border: "1px solid var(--border-color)", color: "var(--text-primary)" }} />
                   </div>
                   <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
-                    <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>주민번호</label>
-                    <input type="text" value={residentId} onChange={e => setResidentId(e.target.value)} placeholder="000000-0000000" style={{ padding: "0.5rem", borderRadius: "0.5rem", background: "var(--bg-tertiary)", border: "1px solid var(--border-color)", color: "var(--text-primary)" }} />
+                    <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>연락처(생년월일)</label>
+                    <input type="text" value={residentId} onChange={e => setResidentId(e.target.value)} placeholder="예: 040916" style={{ padding: "0.5rem", borderRadius: "0.5rem", background: "var(--bg-tertiary)", border: "1px solid var(--border-color)", color: "var(--text-primary)" }} />
                   </div>
                 </div>
 
