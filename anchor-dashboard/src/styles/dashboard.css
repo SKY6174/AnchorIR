@@ -85,7 +85,7 @@ body.light-mode {
 
 /* Sidebar Styling */
 .sidebar {
-  width: 185px;
+  width: 205px;
   background: var(--panel-bg-dark);
   border-right: 1px solid var(--border-color-dark);
   backdrop-filter: blur(16px);
