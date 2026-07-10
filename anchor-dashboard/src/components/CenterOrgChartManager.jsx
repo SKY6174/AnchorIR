@@ -79,10 +79,11 @@ export default function CenterOrgChartManager() {
       {/* 2. 조직도 그래픽 영역 */}
       <div style={{ 
         display: "grid", 
-        gridTemplateColumns: "1.2fr 4fr 1.2fr", 
+        gridTemplateColumns: "170px 1fr 170px", 
         gap: "1.5rem", 
         background: "rgba(0,0,0,0.2)", 
         padding: "2rem", 
+        paddingBottom: "3rem",
         borderRadius: "16px", 
         border: "1px solid var(--border-color)",
         minHeight: "650px",
@@ -91,8 +92,8 @@ export default function CenterOrgChartManager() {
       }}>
         
         {/* ================= 좌측 양익: 사업단 내부 위원회 ================= */}
-        <div style={{ display: "flex", flexDirection: "column", gap: "1rem", justifyContent: "center" }}>
-          <div style={{ fontSize: "0.75rem", fontWeight: "bold", color: "var(--accent-color)", borderBottom: "2px solid var(--accent-color)", paddingBottom: "0.25rem", marginBottom: "0.25rem", textAlign: "center" }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", justifyContent: "center" }}>
+          <div style={{ fontSize: "0.7rem", fontWeight: "bold", color: "var(--accent-color)", borderBottom: "2px solid var(--accent-color)", paddingBottom: "0.2rem", marginBottom: "0.2rem", textAlign: "center" }}>
             사업단 내부 위원회
           </div>
           {[
@@ -106,13 +107,13 @@ export default function CenterOrgChartManager() {
               key={c.id} 
               className="glass-card"
               style={{ 
-                padding: "0.8rem", 
-                borderRadius: "8px", 
-                borderLeft: `4px solid ${c.color}`, 
+                padding: "0.4rem 0.5rem", 
+                borderRadius: "6px", 
+                borderLeft: `3px solid ${c.color}`, 
                 textAlign: "center", 
                 background: "var(--panel-bg)", 
-                boxShadow: "0 4px 6px rgba(0,0,0,0.15)",
-                fontSize: "0.85rem",
+                boxShadow: "0 2px 4px rgba(0,0,0,0.15)",
+                fontSize: "0.78rem",
                 fontWeight: "700",
                 color: "var(--text-primary)",
                 transition: "all 0.2s ease"
@@ -131,8 +132,8 @@ export default function CenterOrgChartManager() {
             onMouseEnter={() => handleMouseEnter("president")}
             onMouseLeave={handleMouseLeave}
             style={{ 
-              width: "360px",
-              padding: "1rem",
+              width: "340px",
+              padding: "0.9rem",
               background: "linear-gradient(135deg, #1e3a8a 0%, #0f172a 100%)",
               border: hoveredNode === "president" ? "1.5px solid var(--accent-color)" : "1px solid rgba(255, 255, 255, 0.15)",
               boxShadow: hoveredNode === "president" ? "0 0 20px rgba(236,72,153,0.3)" : "0 10px 25px rgba(0,0,0,0.3)",
@@ -143,8 +144,8 @@ export default function CenterOrgChartManager() {
               transform: hoveredNode === "president" ? "scale(1.03)" : "scale(1)"
             }}
           >
-            <h4 style={{ margin: 0, fontSize: "1.1rem", fontWeight: "900", color: "#f8fafc", letterSpacing: "1px" }}>울산과학대학교 총장</h4>
-            <div style={{ fontSize: "0.75rem", color: "#94a3b8", marginTop: "0.25rem" }}>RISE 사업 총괄 최고 의사결정 권한</div>
+            <h4 style={{ margin: 0, fontSize: "1.05rem", fontWeight: "900", color: "#f8fafc", letterSpacing: "1px" }}>울산과학대학교 총장</h4>
+            <div style={{ fontSize: "0.72rem", color: "#94a3b8", marginTop: "0.2rem" }}>RISE 사업 총괄 최고 의사결정 권한</div>
           </div>
 
           {/* 연결선 */}
@@ -155,8 +156,8 @@ export default function CenterOrgChartManager() {
             onMouseEnter={() => handleMouseEnter("director")}
             onMouseLeave={handleMouseLeave}
             style={{ 
-              width: "360px",
-              padding: "1.1rem",
+              width: "340px",
+              padding: "1rem",
               background: "linear-gradient(135deg, #1e3a8a 0%, #0d9488 100%)",
               border: hoveredNode === "director" ? "1.5px solid var(--accent-color)" : "1px solid rgba(255, 255, 255, 0.15)",
               boxShadow: hoveredNode === "director" ? "0 0 20px rgba(236,72,153,0.3)" : "0 10px 25px rgba(0,0,0,0.3)",
@@ -167,15 +168,15 @@ export default function CenterOrgChartManager() {
               transform: hoveredNode === "director" ? "scale(1.03)" : "scale(1)"
             }}
           >
-            <h4 style={{ margin: 0, fontSize: "1.05rem", fontWeight: "900", color: "#f8fafc" }}>앵커사업단장</h4>
-            <div style={{ fontSize: "0.8rem", fontWeight: "800", color: "#f59e0b", marginTop: "0.2rem" }}>송경영 단장</div>
+            <h4 style={{ margin: 0, fontSize: "1rem", fontWeight: "900", color: "#f8fafc" }}>앵커사업단장</h4>
+            <div style={{ fontSize: "0.78rem", fontWeight: "800", color: "#f59e0b", marginTop: "0.2rem" }}>송경영 단장</div>
           </div>
 
           {/* 연결선 */}
           <div style={{ width: "2px", height: "20px", background: "rgba(255, 255, 255, 0.2)" }} />
 
-          {/* 3층: 총괄본부장 & 사업운영팀 (가로 레이아웃) */}
-          <div style={{ display: "flex", gap: "2.5rem", alignItems: "center", position: "relative" }}>
+          {/* 3층: 총괄본부장 (중앙 단독 배치) & 사업운영팀 (우측 절대배치로 지원 스태프 표현) */}
+          <div style={{ position: "relative", display: "flex", justifyContent: "center", alignItems: "center", width: "100%" }}>
             
             {/* 총괄본부장 */}
             <div 
@@ -183,47 +184,59 @@ export default function CenterOrgChartManager() {
               onMouseLeave={handleMouseLeave}
               style={{ 
                 width: "280px",
-                padding: "1rem",
+                padding: "0.9rem",
                 background: "linear-gradient(135deg, #1e293b 0%, #0f172a 100%)",
                 border: hoveredNode === "hq_head" ? "1.5px solid var(--accent-color)" : "1px solid rgba(255, 255, 255, 0.12)",
                 boxShadow: hoveredNode === "hq_head" ? "0 0 20px rgba(236,72,153,0.3)" : "0 8px 20px rgba(0,0,0,0.25)",
                 borderRadius: "10px",
                 textAlign: "center",
                 cursor: "pointer",
+                zIndex: 2,
                 transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
                 transform: hoveredNode === "hq_head" ? "scale(1.03)" : "scale(1)"
               }}
             >
-              <h4 style={{ margin: 0, fontSize: "0.95rem", fontWeight: "900", color: "#f1f5f9" }}>총괄본부장</h4>
-              <div style={{ fontSize: "0.78rem", fontWeight: "800", color: "#38bdf8", marginTop: "0.2rem" }}>김현수 본부장</div>
+              <h4 style={{ margin: 0, fontSize: "0.9rem", fontWeight: "900", color: "#f1f5f9" }}>총괄본부장</h4>
+              <div style={{ fontSize: "0.75rem", fontWeight: "800", color: "#38bdf8", marginTop: "0.2rem" }}>김현수 본부장</div>
             </div>
 
-            {/* 수평 가로 연결 가이드라인 */}
-            <div style={{ width: "40px", height: "1px", background: "rgba(255, 255, 255, 0.2)" }} />
+            {/* 지원 부서 연결선 (수평 점선) */}
+            <div style={{ 
+              position: "absolute", 
+              left: "calc(50% + 140px)", 
+              width: "40px", 
+              height: "0px", 
+              borderTop: "2px dashed rgba(255, 255, 255, 0.35)", 
+              zIndex: 1 
+            }} />
 
-            {/* 사업운영팀 */}
+            {/* 사업운영팀 (총괄본부장 우측에 절대 배치하여 계층 대칭 영향 제거) */}
             <div 
               onMouseEnter={() => handleMouseEnter("operation")}
               onMouseLeave={handleMouseLeave}
               style={{ 
-                width: "220px",
-                padding: "0.9rem",
+                position: "absolute",
+                left: "calc(50% + 180px)",
+                width: "200px",
+                padding: "0.75rem",
                 background: "rgba(132, 204, 22, 0.04)",
                 border: hoveredNode === "operation" ? "1.5px solid #84cc16" : "1px solid rgba(132, 204, 22, 0.3)",
                 boxShadow: hoveredNode === "operation" ? "0 0 15px rgba(132, 204, 22, 0.25)" : "0 4px 15px rgba(0,0,0,0.2)",
                 borderRadius: "8px",
                 textAlign: "center",
                 cursor: "pointer",
+                zIndex: 2,
                 transition: "all 0.3s ease",
                 transform: hoveredNode === "operation" ? "scale(1.03)" : "scale(1)"
               }}
             >
-              <h4 style={{ margin: 0, fontSize: "0.9rem", fontWeight: "900", color: "#a3e635" }}>사업운영팀</h4>
-              <div style={{ fontSize: "0.75rem", color: "var(--text-secondary)", marginTop: "0.25rem", lineHeight: "1.4" }}>
+              <h4 style={{ margin: 0, fontSize: "0.85rem", fontWeight: "900", color: "#a3e635" }}>사업운영팀 (지원)</h4>
+              <div style={{ fontSize: "0.72rem", color: "var(--text-secondary)", marginTop: "0.2rem", lineHeight: "1.3" }}>
                 <strong>심현미 팀장</strong>
-                <span style={{ display: "block", fontSize: "0.7rem", color: "var(--text-tertiary)", marginTop: "0.1rem" }}>연구원 4명</span>
+                <span style={{ display: "block", fontSize: "0.68rem", color: "var(--text-tertiary)", marginTop: "0.1rem" }}>연구원 4명</span>
               </div>
             </div>
+
           </div>
 
           {/* 연결선 (하위 센터들로 분기) */}
@@ -449,8 +462,8 @@ export default function CenterOrgChartManager() {
         </div>
 
         {/* ================= 우측 양익: 대학 및 외부 연계 거버넌스 ================= */}
-        <div style={{ display: "flex", flexDirection: "column", gap: "1rem", justifyContent: "center" }}>
-          <div style={{ fontSize: "0.75rem", fontWeight: "bold", color: "var(--accent-color)", borderBottom: "2px solid var(--accent-color)", paddingBottom: "0.25rem", marginBottom: "0.25rem", textAlign: "center" }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", justifyContent: "center" }}>
+          <div style={{ fontSize: "0.7rem", fontWeight: "bold", color: "var(--accent-color)", borderBottom: "2px solid var(--accent-color)", paddingBottom: "0.2rem", marginBottom: "0.2rem", textAlign: "center" }}>
             대학/지자체 거버넌스
           </div>
           {[
@@ -462,13 +475,13 @@ export default function CenterOrgChartManager() {
               key={e.id} 
               className="glass-card"
               style={{ 
-                padding: "0.8rem", 
-                borderRadius: "8px", 
-                borderRight: `4px solid ${e.color}`, 
+                padding: "0.4rem 0.5rem", 
+                borderRadius: "6px", 
+                borderRight: `3px solid ${e.color}`, 
                 textAlign: "center", 
                 background: "var(--panel-bg)", 
-                boxShadow: "0 4px 6px rgba(0,0,0,0.15)",
-                fontSize: "0.85rem",
+                boxShadow: "0 2px 4px rgba(0,0,0,0.15)",
+                fontSize: "0.78rem",
                 fontWeight: "700",
                 color: "var(--text-primary)",
                 transition: "all 0.2s ease"
@@ -477,21 +490,22 @@ export default function CenterOrgChartManager() {
               {e.name}
             </div>
           ))}
-          
-          <div style={{ 
-            marginTop: "1.5rem",
-            padding: "0.8rem",
-            borderRadius: "6px",
-            background: "rgba(255,255,255,0.02)",
-            border: "1px dashed var(--border-color)",
-            textAlign: "center",
-            fontSize: "0.75rem",
-            color: "var(--text-tertiary)"
-          }}>
-            📍 기구 요약: <br />
-            <strong>1단 1본부 5센터 10팀</strong> <br />
-            총수행원: <strong>43명</strong>
-          </div>
+        </div>
+
+        {/* 기구 요약 가로 한줄 표출 */}
+        <div style={{ 
+          position: "absolute", 
+          bottom: "10px", 
+          right: "20px", 
+          fontSize: "0.78rem", 
+          color: "var(--text-secondary)", 
+          background: "var(--panel-bg)", 
+          border: "1px solid var(--border-color)", 
+          padding: "0.3rem 0.8rem", 
+          borderRadius: "30px",
+          boxShadow: "0 2px 8px rgba(0,0,0,0.2)"
+        }}>
+          📍 기구 요약: <strong>1단 1본부 5센터 10팀</strong> | 총수행원: <strong style={{ color: "var(--accent-color)" }}>43명</strong>
         </div>
 
       </div>
