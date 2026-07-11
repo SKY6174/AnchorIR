@@ -272,9 +272,9 @@ export default function Sidebar({
                 onClick={() => {
                   onChangeTab("budget");
                   if (onChangeBudgetSubTab) {
-                    const subTabs = ["budget_categories", "execution_rate"];
-                    const schemaMapping = { "budget_categories": "settlement", "execution_rate": "execution" };
-                    const firstActive = subTabs.find(tab => isSongDirector || menuVisibility[schemaMapping[tab]] !== false) || "budget_categories";
+                    const subTabs = ["total_investment", "budget_categories", "execution_rate"];
+                    const schemaMapping = { "total_investment": "settlement", "budget_categories": "settlement", "execution_rate": "execution" };
+                    const firstActive = subTabs.find(tab => isSongDirector || menuVisibility[schemaMapping[tab]] !== false) || "total_investment";
                     onChangeBudgetSubTab(firstActive);
                   }
                 }}
@@ -291,6 +291,18 @@ export default function Sidebar({
                 </span>
               </div>
               <div className="nav-sub-menu">
+                <div
+                  className={`nav-sub-item ${activeTab === "budget" && budgetSubTab === "total_investment" ? "active" : ""}`}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onChangeTab("budget");
+                    if (onChangeBudgetSubTab) {
+                      onChangeBudgetSubTab("total_investment");
+                    }
+                  }}
+                >
+                  - 총괄 투자 계획
+                </div>
                 {(menuVisibility.settlement !== false || isSongDirector) && (
                   <div
                     className={`nav-sub-item ${activeTab === "budget" && budgetSubTab === "budget_categories" ? "active" : ""}`}
