@@ -294,9 +294,9 @@ export default function CenterOrgChartManager() {
 
         {/* 중간 레이어: 총괄본부장에서 6대 센터로 내려가는 분기 가이드라인 */}
         {/* marginTop을 -2px로 주어 본부장 밑에서 내려온 수직선과 가로선이 틈 없이 정밀 접합되도록 합니다. */}
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%", maxWidth: "1240px", marginTop: "-2px", zIndex: 1 }}>
-          {/* 6개 센터 기둥 정중앙들에 정확히 매칭되도록 가로선 너비를 83.3%로 설정 */}
-          <div style={{ width: "83.3%", height: "2px", background: "rgba(255, 255, 255, 0.45)" }} />
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%", maxWidth: "1180px", marginTop: "-1.5rem", zIndex: 1 }}>
+          {/* 6개 센터 기둥 정중앙들에 정확히 매칭되도록 가로선 너비를 78.5%로 설정 (오버플로우 핏 보정) */}
+          <div style={{ width: "78.5%", height: "2px", background: "rgba(255, 255, 255, 0.45)" }} />
         </div>
 
         {/* 하위 레이어: 4층 6대 센터 */}
