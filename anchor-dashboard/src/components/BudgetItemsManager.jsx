@@ -407,7 +407,7 @@ export default function BudgetItemsManager({ projects, currentRole, onUpdateBudg
     })
     : [];
 
-  const isEditable = (currentRole.id === "G_DIRECTOR" || currentRole.id === "HQ_HEAD" || currentRole.id === "MANAGER") && selectedUnitId !== "Total";
+  const isEditable = (currentRole.id === "ADMIN" || currentRole.id === "G_DIRECTOR" || currentRole.id === "HQ_HEAD" || currentRole.id === "MANAGER") && selectedUnitId !== "Total";
 
   return (
     <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 2fr", gap: "1.5rem" }}>
