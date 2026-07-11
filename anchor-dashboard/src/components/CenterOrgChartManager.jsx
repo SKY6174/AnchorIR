@@ -13,12 +13,12 @@ export default function CenterOrgChartManager() {
       tasks: ["앵커 계획 및 핵심 성과 총괄 승인", "지자체-대학 거버넌스 협력체계 구축 총괄", "대학 예산 배분 및 최종 감사"]
     },
     director: {
-      title: "앵커사업단장 (송경영 단장)",
+      title: "앵커사업단장 (송경영 사업단장)",
       desc: "울산과학대학교 영커 사업 실무 집행 최고 책임자",
       tasks: ["앵커사업단 운영 및 전 과정 의사결정 주도", "연차별 사업 예산 조정 및 핵심 성과지표(KPI) 관리", "지자체 협력 및 외부 거버넌스 회의 대표 참여"]
     },
     hq_head: {
-      title: "총괄본부장 (김현수 본부장)",
+      title: "총괄본부장 (김현수 총괄본부장)",
       desc: "사업단 실무 집행 조정 및 센터 간 융합 과제 조율 책임자",
       tasks: ["6개 센터 간 협업 과제 및 마일스톤 통합 관리", "집행 실적 정기 검토 및 사업계획 변경 1차 심사", "실무 부서 애로사항 해결 및 단장 보좌"]
     },
@@ -215,7 +215,7 @@ export default function CenterOrgChartManager() {
                 }}
               >
                 <h4 style={{ margin: 0, fontSize: "0.9rem", fontWeight: "900", color: "#f1f5f9" }}>총괄본부장</h4>
-                <div style={{ fontSize: "0.75rem", fontWeight: "800", color: "#38bdf8", marginTop: "0.2rem" }}>김현수 본부장</div>
+                <div style={{ fontSize: "0.75rem", fontWeight: "800", color: "#38bdf8", marginTop: "0.2rem" }}>김현수 총괄본부장</div>
               </div>
 
               {/* 지원 부서 연결선 (수평 점선) */}

@@ -67,9 +67,10 @@ export default function AuthManager({ onLoginSuccess, members = [] }) {
       // 💡 [비밀번호 자동 호환 보정 가드]
       // 기존에 1234 패스워드로 Supabase Auth에 이미 가입되어 있는 임시 계정의 경우,
       // uc_anchor를 입력하여 로그인 시도 시 인증서버에는 1234 패스워드로 로그인되도록 자동 매핑해 줍니다.
+      // (단, g_director와 manager는 실제 DB 상의 비밀번호가 'uc_anchor'로 일괄 연동되었으므로 이 보정 로직에서 제외합니다.)
       let authPassword = userPw;
       if (isTestAccount && userPw === expectedTestPw) {
-        if ((targetId === "g_director" || targetId === "manager") && userPw === "uc_anchor") {
+        if (targetId === "admin" && userPw === "uc_anchor") {
           authPassword = "1234";
         }
       }
@@ -139,8 +140,8 @@ export default function AuthManager({ onLoginSuccess, members = [] }) {
       } else if (isTestAccount) {
         // 💡 [혁신 가드] DB rise_users 에 로우가 없는 테스트/가상 계정의 경우, 로그인 성공과 동시에 DB에 사용자 정보를 생성해 줍니다.
         try {
-          const testNames = { admin: "관리자", g_director: "송경영", hq_head: "김현수", manager: "심현미", team_leader: "심현미", guest: "게스트" };
-          const testRoles = { admin: "ADMIN", g_director: "G_DIRECTOR", hq_head: "HQ_HEAD", manager: "MANAGER", team_leader: "TEAM_LEADER", guest: "GUEST" };
+          const testNames = { admin: "관리자", g_director: "사업단장", hq_head: "총괄본부장", manager: "운영팀장", guest: "게스트" };
+          const testRoles = { admin: "ADMIN", g_director: "G_DIRECTOR", hq_head: "HQ_HEAD", manager: "MANAGER", guest: "GUEST" };
           await supabase
             .from("rise_users")
             .insert({
@@ -211,16 +212,13 @@ export default function AuthManager({ onLoginSuccess, members = [] }) {
           matchedName = "관리자";
         } else if (targetId === "g_director") {
           autoRoleKey = "G_DIRECTOR";
-          matchedName = "송경영";
+          matchedName = "사업단장";
         } else if (targetId === "hq_head") {
           autoRoleKey = "HQ_HEAD";
-          matchedName = "김현수";
+          matchedName = "총괄본부장";
         } else if (targetId === "manager") {
           autoRoleKey = "MANAGER";
-          matchedName = "심현미";
-        } else if (targetId === "team_leader") {
-          autoRoleKey = "TEAM_LEADER";
-          matchedName = "심현미";
+          matchedName = "운영팀장";
         } else if (targetId === "guest") {
           autoRoleKey = "GUEST";
           matchedName = "게스트 (방문자)";

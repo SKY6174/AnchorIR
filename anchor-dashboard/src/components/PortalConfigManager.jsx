@@ -173,7 +173,7 @@ export default function PortalConfigManager({ initialVisibility, onSave }) {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem", width: "100%" }}>
-      
+
       {/* 타이틀 및 안내 */}
       <div className="glass-card" style={{ padding: "1.5rem", display: "flex", flexDirection: "column", gap: "0.5rem" }}>
         <h2 style={{ fontSize: "1.25rem", fontWeight: "800", color: "var(--accent-color)", display: "flex", alignItems: "center", gap: "0.5rem" }}>
@@ -182,7 +182,7 @@ export default function PortalConfigManager({ initialVisibility, onSave }) {
         </h2>
         <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)", lineHeight: "1.5" }}>
           대시보드 사이드바 및 하위 정산 탭에 노출되는 메인 메뉴(탭)와 서브메뉴(서브탭)의 노출 여부를 실시간으로 제어합니다.<br />
-          <strong>* 송경영 단장(DIRECTOR) 전용 관리용 특수 제어 모듈입니다.</strong>
+          <strong>* 송경영 사업단장(G_DIRECTOR) 전용 관리용 특수 제어 모듈입니다.</strong>
         </p>
       </div>
 
@@ -210,18 +210,18 @@ export default function PortalConfigManager({ initialVisibility, onSave }) {
 
       {/* 설정 테이블/트리 구조 */}
       <div className="glass-card" style={{ padding: "1.5rem", display: "flex", flexDirection: "column", gap: "1.5rem" }}>
-        
+
         {/* 제어 컨트롤 툴바 */}
         <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.5rem" }}>
-          <button 
-            onClick={handleResetConfig} 
+          <button
+            onClick={handleResetConfig}
             className="btn btn-secondary"
             style={{ display: "flex", alignItems: "center", gap: "0.3rem", padding: "0.45rem 1rem", fontSize: "0.8rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", color: "var(--text-primary)", cursor: "pointer", borderRadius: "0.3rem" }}
           >
             전체 초기화
           </button>
-          <button 
-            onClick={handleSaveConfig} 
+          <button
+            onClick={handleSaveConfig}
             className="btn btn-primary"
             style={{ display: "flex", alignItems: "center", gap: "0.3rem", padding: "0.45rem 1rem", fontSize: "0.8rem", background: "var(--accent-color)", color: "white", border: "none", cursor: "pointer", borderRadius: "0.3rem", fontWeight: "700" }}
           >
@@ -234,41 +234,41 @@ export default function PortalConfigManager({ initialVisibility, onSave }) {
           {MENU_SCHEMA.map((menu) => {
             const isParentChecked = visibility[menu.key] !== false;
             return (
-              <div 
-                key={menu.key} 
-                style={{ 
-                  border: "1px solid var(--border-color)", 
-                  borderRadius: "8px", 
-                  background: isParentChecked ? "transparent" : "rgba(0,0,0,0.02)", 
+              <div
+                key={menu.key}
+                style={{
+                  border: "1px solid var(--border-color)",
+                  borderRadius: "8px",
+                  background: isParentChecked ? "transparent" : "rgba(0,0,0,0.02)",
                   overflow: "hidden",
                   opacity: isParentChecked ? 1 : 0.65,
                   transition: "opacity 0.2s ease"
                 }}
               >
-                
+
                 {/* 메인 메뉴(부모) 헤더 행 */}
-                <div style={{ 
-                  display: "flex", 
-                  alignItems: "center", 
-                  justifyContent: "space-between", 
-                  padding: "0.85rem 1.25rem", 
+                <div style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  padding: "0.85rem 1.25rem",
                   background: "var(--background-card, rgba(0,0,0,0.02))",
                   borderBottom: menu.subMenus.length > 0 ? "1px solid var(--border-color)" : "none"
                 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-                    <input 
+                    <input
                       type="checkbox"
                       id={`parent-${menu.key}`}
                       checked={isParentChecked}
                       onChange={(e) => handleParentToggle(menu.key, e.target.checked)}
-                      style={{ 
-                        width: "16px", 
-                        height: "16px", 
+                      style={{
+                        width: "16px",
+                        height: "16px",
                         cursor: "pointer",
                         accentColor: "var(--accent-color)"
                       }}
                     />
-                    <label 
+                    <label
                       htmlFor={`parent-${menu.key}`}
                       style={{ fontSize: "0.92rem", fontWeight: "800", color: "var(--text-primary)", cursor: "pointer" }}
                     >
@@ -285,44 +285,44 @@ export default function PortalConfigManager({ initialVisibility, onSave }) {
 
                 {/* 서브메뉴(자식) 리스트 영역 */}
                 {menu.subMenus.length > 0 && (
-                  <div style={{ 
-                    padding: "1rem 1.5rem", 
-                    display: "grid", 
-                    gridTemplateColumns: "repeat(3, 1fr)", 
-                    gap: "1rem", 
-                    background: "rgba(0,0,0,0.01)" 
+                  <div style={{
+                    padding: "1rem 1.5rem",
+                    display: "grid",
+                    gridTemplateColumns: "repeat(3, 1fr)",
+                    gap: "1rem",
+                    background: "rgba(0,0,0,0.01)"
                   }}>
                     {menu.subMenus.map((sub) => {
                       const isSubChecked = visibility[sub.key] !== false;
                       return (
-                        <div 
-                          key={sub.key} 
-                          style={{ 
-                            display: "flex", 
-                            alignItems: "center", 
-                            gap: "0.5rem", 
+                        <div
+                          key={sub.key}
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "0.5rem",
                             padding: "0.5rem",
                             borderRadius: "4px",
                             background: isSubChecked ? "rgba(59, 130, 246, 0.03)" : "transparent"
                           }}
                         >
-                          <input 
+                          <input
                             type="checkbox"
                             id={`sub-${sub.key}`}
                             checked={isSubChecked}
                             onChange={(e) => handleSubToggle(menu.key, sub.key, e.target.checked)}
-                            style={{ 
-                              width: "14px", 
-                              height: "14px", 
+                            style={{
+                              width: "14px",
+                              height: "14px",
                               cursor: "pointer",
                               accentColor: "var(--accent-color)"
                             }}
                           />
-                          <label 
+                          <label
                             htmlFor={`sub-${sub.key}`}
-                            style={{ 
-                              fontSize: "0.82rem", 
-                              color: isSubChecked ? "var(--text-primary)" : "var(--text-secondary)", 
+                            style={{
+                              fontSize: "0.82rem",
+                              color: isSubChecked ? "var(--text-primary)" : "var(--text-secondary)",
                               cursor: "pointer",
                               fontWeight: isSubChecked ? "700" : "normal"
                             }}

@@ -5372,7 +5372,7 @@ export default function App() {
   const handleDeleteRequest = async (req) => {
     // 1) 권한 검사
     if (!isSongDirector) {
-      alert("⚠️ 결재 내역 삭제 권한은 송경영 단장 및 관리자에게 있습니다.");
+      alert("⚠️ 결재 내역 삭제 권한은 송경영 사업단장 및 관리자에게 있습니다.");
       return;
     }
 

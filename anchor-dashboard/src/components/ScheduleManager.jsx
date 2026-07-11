@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { 
-  Calendar as CalendarIcon, Clock, MapPin, Users, 
+import {
+  Calendar as CalendarIcon, Clock, MapPin, Users,
   FileText, Award, Layers, Plus, CheckCircle, Info, ChevronLeft, ChevronRight,
   Edit, Trash2
 } from "lucide-react";
@@ -60,8 +60,8 @@ const COMMITTEES_DATA = [
     ],
     members: [
       { id: 1, type: "위원장", name: "김강연", org: "울산과학대학교", dept: "기획처", rank: "처장", location: "교내", note: "" },
-      { id: 2, type: "위원장", name: "송경영", org: "울산과학대학교", dept: "앵커사업단", rank: "단장", location: "교내", note: "" },
-      { id: 3, type: "위원", name: "김현수", org: "울산과학대학교", dept: "앵커사업단", rank: "본부장", location: "교내", note: "" },
+      { id: 2, type: "위원장", name: "송경영", org: "울산과학대학교", dept: "앵커사업단", rank: "사업단장", location: "교내", note: "" },
+      { id: 3, type: "위원", name: "김현수", org: "울산과학대학교", dept: "앵커사업단", rank: "총괄본부장", location: "교내", note: "" },
       { id: 4, type: "위원", name: "최윤아", org: "울산과학대학교", dept: "기획처", rank: "부처장", location: "교내", note: "신규 추가" },
       { id: 5, type: "위원", name: "이동은", org: "울산과학대학교", dept: "지산학교육센터(ECC)", rank: "센터장", location: "교내", note: "" },
       { id: 6, type: "위원", name: "김기범", org: "울산과학대학교", dept: "기업협업센터(ICC)", rank: "센터장", location: "교내", note: "" },
@@ -97,8 +97,8 @@ const COMMITTEES_DATA = [
       { id: 1, type: "위원장", name: "김성철", org: "울산과학대학교", dept: "-", rank: "부총장", location: "교내", note: "" },
       { id: 2, type: "위원", name: "김강연", org: "울산과학대학교", dept: "기획처", rank: "처장", location: "교내", note: "" },
       { id: 3, type: "위원", name: "박일현", org: "울산과학대학교", dept: "총무처", rank: "처장", location: "교내", note: "" },
-      { id: 4, type: "위원", name: "송경영", org: "울산과학대학교", dept: "앵커사업단", rank: "단장", location: "교내", note: "" },
-      { id: 5, type: "위원", name: "김현수", org: "울산과학대학교", dept: "앵커사업단", rank: "본부장", location: "교내", note: "" },
+      { id: 4, type: "위원", name: "송경영", org: "울산과학대학교", dept: "앵커사업단", rank: "사업단장", location: "교내", note: "" },
+      { id: 5, type: "위원", name: "김현수", org: "울산과학대학교", dept: "앵커사업단", rank: "총괄본부장", location: "교내", note: "" },
       { id: 6, type: "위원", name: "고우근", org: "울산과학대학교", dept: "기획팀", rank: "팀장", location: "교내", note: "" },
       { id: 7, type: "위원", name: "강신욱", org: "인택스세무법인", dept: "세무팀", rank: "부대표", location: "교외", note: "" },
       { id: 8, type: "간사", name: "심현미", org: "울산과학대학교", dept: "앵커사업단운영팀", rank: "팀장", location: "교내", note: "" }
@@ -323,15 +323,15 @@ export default function ScheduleManager({
   // 교원의 경우 직급/직위를 '센터장', '팀장교수'로 이원화 표기 및 심현미 운영팀장 표기 헬퍼 함수
   const getFormattedMemberGrade = (m) => {
     if (!m) return "연구원";
-    
+
     // 송경영의 경우 직위를 '단장'으로 강제 표기하여 목록 노출을 보정합니다.
     if (m.name === "송경영") {
       return "단장";
     }
 
-    // 김현수의 경우 직위를 '본부장'으로 강제 표기하여 목록 노출을 보정합니다.
+    // 김현수의 경우 직위를 '총괄본부장'으로 강제 표기하여 목록 노출을 보정합니다.
     if (m.name === "김현수") {
-      return "본부장";
+      return "총괄본부장";
     }
 
     // 심현미의 경우 직위를 '운영팀장'으로 강제 표기
@@ -340,12 +340,12 @@ export default function ScheduleManager({
     }
 
     // 교수의 조건 판별 (grade 혹은 role/rank 가 교수, 조교수, 부교수, 정교수 등 교직원 형태인 경우)
-    const isProfessorType = 
+    const isProfessorType =
       ["정교수", "부교수", "조교수", "교수", "조교", "팀장교수", "교원"].includes(m.grade) ||
       ["팀장교수", "센터장"].includes(m.role) ||
       ["정교수", "부교수", "조교수", "교수", "조교", "팀장교수", "교원"].includes(m.role) ||
       ["정교수", "부교수", "조교수", "교수", "조교", "팀장교수", "교원"].includes(m.rank);
-      
+
     if (isProfessorType) {
       // 5대 센터장 정보 매핑 (김현수 교수는 본부장으로 표시되며 센터장 매핑에서 삭제됨)
       const centerHeads = {
@@ -356,9 +356,9 @@ export default function ScheduleManager({
         "홍진숙": "신산업특화센터"
       };
 
-      const isCenterHead = 
-        m.role === "센터장" || 
-        m.rank === "센터장" || 
+      const isCenterHead =
+        m.role === "센터장" ||
+        m.rank === "센터장" ||
         centerHeads[m.name] !== undefined;
 
       if (isCenterHead) {
@@ -376,7 +376,7 @@ export default function ScheduleManager({
       // 늘봄/신산업이 아닌 4대 센터 소속 일반 교수진은 무조건 '팀장교수' 고정 표기
       return "팀장교수";
     }
-    
+
     // 일반 연구원 등은 기존 값을 반환
     return m.grade || "연구원";
   };
@@ -385,19 +385,19 @@ export default function ScheduleManager({
   const isWriterExcluded = (m) => {
     if (!m) return true;
     const displayRole = getFormattedMemberGrade(m);
-    
+
     // 센터장, 팀장교수, 운영팀장은 작성자에서 완전히 제외
     if (displayRole === "센터장" || displayRole === "팀장교수" || displayRole === "운영팀장") {
       return true;
     }
-    
+
     // 기타 교직원(교수) 여부 검증
-    const isProf = 
+    const isProf =
       ["정교수", "부교수", "조교수", "교수", "조교", "팀장교수", "교원"].includes(m.grade) ||
       ["팀장교수", "센터장"].includes(m.role) ||
       ["정교수", "부교수", "조교수", "교수", "조교", "팀장교수", "교원"].includes(m.role) ||
       ["정교수", "부교수", "조교수", "교수", "조교", "팀장교수", "교원"].includes(m.rank);
-      
+
     return isProf;
   };
 
@@ -406,15 +406,15 @@ export default function ScheduleManager({
     if (!dateStr) return false;
     const date = new Date(dateStr);
     if (isNaN(date.getTime())) return false;
-    
+
     const targetYearNum = yearVal === 1 ? 2025 : yearVal === 2 ? 2026 : yearVal === 3 ? 2027 : yearVal === 4 ? 2028 : 2029;
     const start = new Date(`${targetYearNum}-03-01T00:00:00+09:00`);
-    
+
     const endYear = targetYearNum + 1;
     const isLeap = (endYear % 4 === 0 && endYear % 100 !== 0) || (endYear % 400 === 0);
     const endDay = isLeap ? "29" : "28";
     const end = new Date(`${endYear}-02-${endDay}T23:59:59+09:00`);
-    
+
     return date >= start && date <= end;
   };
 
@@ -423,15 +423,15 @@ export default function ScheduleManager({
     if (!dateStr) return selectedYear;
     const d = new Date(dateStr);
     if (isNaN(d.getTime())) return selectedYear;
-    
+
     const year = d.getFullYear();
     const month = d.getMonth() + 1;
-    
+
     let calcYear = year;
     if (month < 3) {
       calcYear = year - 1;
     }
-    
+
     return calcYear === 2025 ? 1 : calcYear === 2026 ? 2 : calcYear === 2027 ? 3 : calcYear === 2028 ? 4 : calcYear === 2029 ? 5 : selectedYear;
   };
 
@@ -453,7 +453,7 @@ export default function ScheduleManager({
   const [committees, setCommittees] = useState(COMMITTEES_DATA);
   const [isMemberModalOpen, setIsMemberModalOpen] = useState(false);
   const [editingMember, setEditingMember] = useState(null); // 수정할 위원 정보 (null 이면 신규 추가)
-  
+
 
 
   // 위원회 종류 필터 상태
@@ -550,7 +550,7 @@ export default function ScheduleManager({
         .delete()
         .eq("id", memberId);
       if (error) throw error;
-      
+
       // DB 삭제 후 화면 데이터 실시간 갱신
       await loadCommitteesData();
     } catch (e) {
@@ -566,7 +566,7 @@ export default function ScheduleManager({
       alert("성명을 입력해 주세요.");
       return;
     }
-    
+
     try {
       if (editingMember) {
         // 기존 멤버 정보 업데이트 (UPDATE)
@@ -587,7 +587,7 @@ export default function ScheduleManager({
         // 신규 멤버 정보 추가 (INSERT)
         const currentMembers = committees.find(c => c.id === selectedCommitteeId)?.members || [];
         const nextSortOrder = currentMembers.length + 1;
-        
+
         const { error } = await supabase
           .from("committee_members")
           .insert({
@@ -603,11 +603,11 @@ export default function ScheduleManager({
           });
         if (error) throw error;
       }
-      
+
       // 모달 닫기 및 상태 초기화
       setIsMemberModalOpen(false);
       setEditingMember(null);
-      
+
       // DB 반영 후 화면 데이터 실시간 갱신
       await loadCommitteesData();
     } catch (e) {
@@ -644,7 +644,7 @@ export default function ScheduleManager({
   // 월간일정 상세 링킹 기능 (행사, 회의록 연계 이동)
   const handleLinkToDetail = (sched) => {
     if (!sched) return;
-    
+
     // 일정 시작일자에서 월 파싱
     let parsedMonth = currentMonth;
     if (sched.startAt) {
@@ -686,7 +686,7 @@ export default function ScheduleManager({
       } else {
         console.warn("매칭되는 행사를 찾지 못했습니다.");
       }
-    } 
+    }
     else if (sched.type === "회의" || sched.type === "위원회") {
       // 1. 회의록 검색
       const matchedMeeting = meetingSchedules.find(m => {
@@ -702,7 +702,7 @@ export default function ScheduleManager({
           setActiveMeetingCat(matchedMeeting.category);
         }
         setSelectedMeetingId(matchedMeeting.id);
-        
+
         if (onChangeSubTab) {
           onChangeSubTab("meeting");
         }
@@ -810,7 +810,7 @@ export default function ScheduleManager({
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
       setAiFileName(file.name);
-      
+
       // 1. 텍스트 파일인 경우 실시간 파일 내용 추출
       if (file.type.match('text.*') || file.name.endsWith('.txt') || file.name.endsWith('.csv')) {
         const reader = new FileReader();
@@ -818,7 +818,7 @@ export default function ScheduleManager({
           setAiRawText(event.target.result);
         };
         reader.readAsText(file);
-      } 
+      }
       // 2. PDF 파일인 경우 브라우저 단독 라이브러리로 텍스트 파싱
       else if (file.type === "application/pdf" || file.name.endsWith('.pdf')) {
         setAiRawText("📄 PDF 파일 분석 중... (본문 텍스트 추출 진행 중)");
@@ -828,14 +828,14 @@ export default function ScheduleManager({
           const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
           const pdf = await loadingTask.promise;
           let fullText = "";
-          
+
           for (let i = 1; i <= pdf.numPages; i++) {
             const page = await pdf.getPage(i);
             const textContent = await page.getTextContent();
             const pageText = textContent.items.map(item => item.str).join(" ");
             fullText += `[Page ${i}]\n${pageText}\n\n`;
           }
-          
+
           if (fullText.trim()) {
             setAiRawText(fullText.trim());
           } else {
@@ -858,15 +858,15 @@ export default function ScheduleManager({
     setIsAiLoading(true);
     setAiProgress(10);
     setAiStatusText("시뮬레이션 모드로 폼 분석 진행...");
-    
+
     setTimeout(() => {
       setAiProgress(60);
       setAiStatusText("원문 텍스트 내 RISE 핵심 키워드 지능형 매핑 중...");
-      
+
       setTimeout(() => {
         const lowerName = aiFileName.toLowerCase();
         const text = aiRawText || "";
-        
+
         // 기본값: 해커톤 캠프
         let targetData = {
           title: "RISE 지산학 연계 창업 해커톤 캠프",
@@ -935,7 +935,7 @@ export default function ScheduleManager({
           ...prev,
           ...targetData
         }));
-        
+
         setIsAiLoading(false);
         setAiProgress(0);
         setAiStatusText("");
@@ -984,7 +984,7 @@ ${aiRawText}
       if (aiEngine === "gpt") {
         setAiStatusText("OpenAI GPT API 인증 검증 및 키 로드 중...");
         let apiKey = import.meta.env.VITE_OPENAI_API_KEY || "";
-        
+
         if (!apiKey || apiKey.startsWith("sk-") === false) {
           apiKey = localStorage.getItem("user_openai_api_key") || "";
         }
@@ -1054,12 +1054,12 @@ ${aiRawText}
         setAiStatusText("");
         alert("🎉 OpenAI GPT-4o-mini 모델이 기획서를 분석하여 행사 등록 정보 11개 항목을 완벽하게 기입하였습니다!");
 
-      } 
+      }
       // B. 구글 제미나이(Gemini 1.5 Flash) 엔진을 선택했을 경우
       else {
         setAiStatusText("Google Gemini 1.5 Flash API 연결 요청 중...");
         let apiKey = import.meta.env.VITE_GEMINI_API_KEY || "";
-        
+
         // 환경변수 값이 비어있거나 구글 공식 API Key 서명인 "AIzaSy"로 시작하지 않을 시 로컬스토리지 활용
         if (!apiKey || (apiKey.startsWith("AIzaSy") === false && apiKey.startsWith("AQ.") === false)) {
           apiKey = localStorage.getItem("user_gemini_api_key") || "";
@@ -1148,10 +1148,10 @@ ${aiRawText}
     setFormData(prev => {
       const current = prev.attendees || "";
       let list = current.split(",").map(x => x.trim()).filter(Boolean);
-      
+
       // 해당 이름이거나 해당 이름으로 시작하는 기존 항목 찾기
       const existingItem = list.find(x => x === name || x.startsWith(name + " ") || x.startsWith(name + "("));
-      
+
       if (existingItem) {
         // 이미 들어있다면 제거
         list = list.filter(x => x !== existingItem);
@@ -1160,7 +1160,7 @@ ${aiRawText}
         const fullNameWithGrade = gradeSuffix ? `${name} ${gradeSuffix}` : name;
         list.push(fullNameWithGrade);
       }
-      
+
       return {
         ...prev,
         attendees: list.join(", ")
@@ -1194,7 +1194,7 @@ ${aiRawText}
     const ALL_DEPTS = ["사업운영팀", "ECC센터", "ICC센터", "RCC센터", "AID-X지원센터", "울산늘봄누리센터", "신산업특화센터"];
     setFormData(prev => {
       let currentDepts = prev.dept ? prev.dept.split(",").map(x => x.trim()).filter(Boolean) : [];
-      
+
       if (deptName === "전체") {
         const hasAll = currentDepts.includes("전체");
         if (hasAll) {
@@ -1229,7 +1229,7 @@ ${aiRawText}
       alert("게스트(방문자) 계정은 읽기 전용으로만 이용하실 수 있습니다.");
       return;
     }
-    
+
     const targetId = Number(schedId);
     setMonthlySchedules(prev => {
       return prev.map(s => {
@@ -1246,7 +1246,7 @@ ${aiRawText}
         const oldStartVal = new Date(oldStartDate).getTime();
         const oldEndVal = new Date(oldEndDate).getTime();
         const diffTime = oldEndVal - oldStartVal;
-        
+
         let newEndAt = newStartAt;
         if (diffTime > 0) {
           // 기간 일정이면 오프셋만큼 종료일도 이동
@@ -1324,18 +1324,18 @@ ${aiRawText}
         ...prev,
         [isAudio ? "audioUrl" : "pdfUrl"]: publicUrl
       }));
-      
+
       alert(`${typeLabel}이 성공적으로 업로드되었습니다!`);
 
       // 음성 녹음본 및 회의록(PDF) 문서 업로드 시 AI 의제/결과 자동 분석 트리거
       setIsAnalyzingAI(true);
       setTimeout(() => {
         const meetingTitle = formData.title || "정기 회의";
-        
+
         // 새로 업로드된 파일 및 기존 파일 정보 획득
         const hasAudio = isAudio || !!formData.audioUrl;
         const hasPdf = !isAudio || !!formData.pdfUrl;
-        
+
         let sourceInfo = "음성 녹음본(MP3)";
         if (hasAudio && hasPdf) {
           sourceInfo = "음성 녹음본(MP3)과 첨부된 회의록(PDF) 문서";
@@ -1381,7 +1381,7 @@ ${aiRawText}
     setTimeout(() => {
       const deptName = formData.dept || "사업운영팀";
       const meetingTitle = formData.title || "정기 회의";
-      
+
       const aiAgendas = [
         {
           agenda: `[AI Debate] '${meetingTitle}' 관련 RISE 데이터 연동 표준 API 아키텍처 결정 (GPT vs Gemini)`,
@@ -1404,7 +1404,7 @@ ${aiRawText}
     if (!url) return null;
     const trimmed = url.trim();
     let videoId = "";
-    
+
     if (trimmed.includes("v=")) {
       const parts = trimmed.split("v=");
       if (parts[1]) {
@@ -1421,7 +1421,7 @@ ${aiRawText}
         videoId = parts[1].split("?")[0];
       }
     }
-    
+
     if (videoId && videoId.trim().length === 11) {
       return `https://www.youtube.com/embed/${videoId.trim()}`;
     }
@@ -1437,7 +1437,7 @@ ${aiRawText}
     if (subTab === "meetings") {
       const filteredList = meetingSchedules.filter(m => {
         const isCatMatch = m.category === activeMeetingCat;
-        
+
         if (!isCatMatch) return false;
         if (selectedDeptFilters.length === 0) return true;
 
@@ -1529,7 +1529,7 @@ ${aiRawText}
     const { name, value } = e.target;
     setFormData(prev => {
       const updated = { ...prev, [name]: value };
-      
+
       // 시작시간 입력 시 종료시간을 자동으로 1시간 뒤로 자동완성
       if (name === "startTime" && value) {
         updated.endTime = getOneHourLater(value);
@@ -1545,7 +1545,7 @@ ${aiRawText}
       if (modalType === "meeting" && (name === "meetingDate" || name === "dept")) {
         const datePart = updated.meetingDate || "";
         const deptPart = updated.dept || "";
-        
+
         // 기존 제목이 없거나, 이미 이전에 날짜 및 주간회의 패턴으로 자동완성된 적이 있는 경우에만 덮어씀
         const isAutoGenerated = !prev.title || prev.title.match(/^\d{4}-\d{2}-\d{2}\s+.*주간회의$/);
         if (isAutoGenerated && datePart && deptPart) {
@@ -1555,20 +1555,20 @@ ${aiRawText}
 
       // 센터/센터위원회 회의 분류 또는 부서 변경 시 작성자 자동 매핑 보정
       if (modalType === "meeting" && (name === "category" || name === "committeeType" || name === "dept")) {
-        const isCenterMeeting = 
-          updated.category === "center" || 
+        const isCenterMeeting =
+          updated.category === "center" ||
           (updated.category === "committee" && (updated.committeeType || "agency") === "center");
 
         if (isCenterMeeting && updated.dept) {
-          let activeWriters = (members || []).filter(m => 
-            m.status !== "미참여" && 
-            m.email && 
+          let activeWriters = (members || []).filter(m =>
+            m.status !== "미참여" &&
+            m.email &&
             m.dept === updated.dept &&
             !isWriterExcluded(m)
           );
           if (activeWriters.length === 0) {
-            activeWriters = (members || []).filter(m => 
-              m.status !== "미참여" && 
+            activeWriters = (members || []).filter(m =>
+              m.status !== "미참여" &&
               m.dept === updated.dept &&
               !isWriterExcluded(m)
             );
@@ -1582,13 +1582,13 @@ ${aiRawText}
             }
           }
         } else if (!isCenterMeeting) {
-          let baseWriters = (members || []).filter(m => 
-            m.status !== "미참여" && 
-            m.email && 
+          let baseWriters = (members || []).filter(m =>
+            m.status !== "미참여" &&
+            m.email &&
             m.dept === "사업운영팀" &&
             !isWriterExcluded(m)
           );
-          
+
           // 사업단 관련 회의인 경우 심현미 운영팀장을 맨 위에 강제 포함
           const simHyunMi = (members || []).find(m => m.name === "심현미") || {
             id: "sim_hm_temp",
@@ -1683,19 +1683,19 @@ ${aiRawText}
           alert(`선택하신 종료 날짜(${formData.endDate})는 현재 선택된 ${selectedYear}차년도 사업 기간(${targetYearNum}-03-01 ~ ${endYear}-02-${endDay})에 속하지 않습니다.`);
           return;
         }
-        
+
         const hasTime = !formData.noTime;
         const startStr = hasTime ? `${formData.startDate}T${formData.startTime || "00:00"}` : `${formData.startDate}T00:00`;
         const endStr = hasTime ? `${formData.endDate}T${formData.endTime || "00:00"}` : `${formData.endDate}T00:00`;
-        
+
         const startSecs = new Date(startStr).getTime();
         const endSecs = new Date(endStr).getTime();
-        
+
         if (isNaN(startSecs) || isNaN(endSecs)) {
           alert("올바른 시작일시와 종료일시를 입력해 주세요.");
           return;
         }
-        
+
         if (endSecs <= startSecs) {
           alert("종료일시(시간)는 시작일시(시간)보다 뒤여야 합니다.");
           return;
@@ -1707,15 +1707,15 @@ ${aiRawText}
     if (modalType === "event") {
       const startStr = `${formData.eventDate}T${formData.eventStartTime || "00:00"}`;
       const endStr = `${formData.eventDate}T${formData.eventEndTime || "00:00"}`;
-      
+
       const startSecs = new Date(startStr).getTime();
       const endSecs = new Date(endStr).getTime();
-      
+
       if (isNaN(startSecs) || isNaN(endSecs)) {
         alert("올바른 시작시간과 종료시간을 입력해 주세요.");
         return;
       }
-      
+
       if (endSecs <= startSecs) {
         alert("종료시간은 시작시간보다 뒤여야 합니다.");
         return;
@@ -1726,15 +1726,15 @@ ${aiRawText}
     if (modalType === "meeting") {
       const startStr = `${formData.meetingDate}T${formData.meetingStartTime || "00:00"}`;
       const endStr = `${formData.meetingDate}T${formData.meetingEndTime || "00:00"}`;
-      
+
       const startSecs = new Date(startStr).getTime();
       const endSecs = new Date(endStr).getTime();
-      
+
       if (isNaN(startSecs) || isNaN(endSecs)) {
         alert("올바른 시작시간과 종료시간을 입력해 주세요.");
         return;
       }
-      
+
       if (endSecs <= startSecs) {
         alert("종료시간은 시작시간보다 뒤여야 합니다.");
         return;
@@ -1743,7 +1743,7 @@ ${aiRawText}
       // [추가] 회의록 중복 등록 방지 벨리데이션 (같은 시간 & 같은 제목)
       const inputTitle = formData.title || "새 회의록";
       const combinedDatetime = `${formData.meetingDate} ${formData.meetingStartTime} ~ ${formData.meetingEndTime}`;
-      
+
       const isDuplicate = meetingSchedules.some(m => {
         // 수정 모드일 때는 현재 편집 중인 자기 자신(editingItemId)은 중복 검사 대상에서 제외합니다.
         if (isEditMode && m.id === editingItemId) return false;
@@ -1763,20 +1763,20 @@ ${aiRawText}
       const startAtVal = hasTime ? `${formData.startDate} ${formData.startTime}` : formData.startDate;
 
       if (isEditMode) {
-        setMonthlySchedules(monthlySchedules.map(s => 
-          s.id === editingItemId 
+        setMonthlySchedules(monthlySchedules.map(s =>
+          s.id === editingItemId
             ? {
-                ...s,
-                title: formData.title || "새 일정",
-                type: isTaskVal ? "할일" : (isDeadlineVal ? "마감" : (formData.type || "기타")),
-                dept: isDeadlineVal ? "사업운영팀" : (formData.dept || "사업운영팀"),
-                startAt: startAtVal,
-                endAt: (isTaskVal || isDeadlineVal) ? startAtVal : (hasTime ? `${formData.endDate} ${formData.endTime}` : formData.endDate),
-                location: (isTaskVal || isDeadlineVal) ? "" : (formData.location || "-"),
-                isTask: isTaskVal,
-                isDeadline: isDeadlineVal,
-                attendees: formData.attendees || ""
-              }
+              ...s,
+              title: formData.title || "새 일정",
+              type: isTaskVal ? "할일" : (isDeadlineVal ? "마감" : (formData.type || "기타")),
+              dept: isDeadlineVal ? "사업운영팀" : (formData.dept || "사업운영팀"),
+              startAt: startAtVal,
+              endAt: (isTaskVal || isDeadlineVal) ? startAtVal : (hasTime ? `${formData.endDate} ${formData.endTime}` : formData.endDate),
+              location: (isTaskVal || isDeadlineVal) ? "" : (formData.location || "-"),
+              isTask: isTaskVal,
+              isDeadline: isDeadlineVal,
+              attendees: formData.attendees || ""
+            }
             : s
         ));
       } else {
@@ -1799,27 +1799,27 @@ ${aiRawText}
     } else if (modalType === "event") {
       // 3) 일자가 입력되면 자동으로 해당월 추출 (예: 2026-07-25 -> 7)
       const extractedMonth = formData.eventDate ? parseInt(formData.eventDate.split("-")[1], 10) : 7;
-      
+
       // 4) 일자(캘린더 입력 YYYY-MM-DD), 시간(시작, 종료 개별 입력) 조합
       const combinedDatetime = `${formData.eventDate} ${formData.eventStartTime} ~ ${formData.eventEndTime}`;
 
       if (isEditMode) {
-        setEventSchedules(eventSchedules.map(e => 
-          e.id === editingItemId 
+        setEventSchedules(eventSchedules.map(e =>
+          e.id === editingItemId
             ? {
-                ...e,
-                year: getCalculatedYearFromDate(formData.eventDate),
-                month: extractedMonth,
-                title: formData.title || "새 행사",
-                department: formData.department || "-",
-                datetime: combinedDatetime,
-                location: formData.location || "-",
-                attendeesInternal: formData.attendeesInternal || "-",
-                attendeesExternal: formData.attendeesExternal || "-",
-                program: formData.program || "-",
-                purpose: formData.purpose || "-",
-                result: formData.result || "-"
-              }
+              ...e,
+              year: getCalculatedYearFromDate(formData.eventDate),
+              month: extractedMonth,
+              title: formData.title || "새 행사",
+              department: formData.department || "-",
+              datetime: combinedDatetime,
+              location: formData.location || "-",
+              attendeesInternal: formData.attendeesInternal || "-",
+              attendeesExternal: formData.attendeesExternal || "-",
+              program: formData.program || "-",
+              purpose: formData.purpose || "-",
+              result: formData.result || "-"
+            }
             : e
         ));
       } else {
@@ -1842,7 +1842,7 @@ ${aiRawText}
     } else if (modalType === "meeting") {
       // 입력된 회의 일자에서 자동으로 월 추출
       const extractedMonth = formData.meetingDate ? parseInt(formData.meetingDate.split("-")[1], 10) : 7;
-      
+
       // 일자(YYYY-MM-DD)와 시작/종료 시간을 결합하여 datetime 문자열 조합
       const combinedDatetime = `${formData.meetingDate} ${formData.meetingStartTime} ~ ${formData.meetingEndTime}`;
 
@@ -1875,23 +1875,23 @@ ${aiRawText}
         .join("\n");
 
       if (isEditMode) {
-        setMeetingSchedules(meetingSchedules.map(m => 
+        setMeetingSchedules(meetingSchedules.map(m =>
           m.id === editingItemId
             ? {
-                ...m,
-                year: getCalculatedYearFromDate(formData.meetingDate),
-                month: extractedMonth,
-                category: formData.category,
-                title: formData.title || "새 회의록",
-                datetime: combinedDatetime,
-                location: formData.location || "-",
-                attendeesInternal: formData.attendees || "-",
-                attendeesExternal: combinedAttendeesExternal,
-                agenda: combinedAgenda || "-",
-                result: combinedResult || "-",
-                audioUrl: formData.audioUrl || "",
-                pdfUrl: formData.pdfUrl || ""
-              }
+              ...m,
+              year: getCalculatedYearFromDate(formData.meetingDate),
+              month: extractedMonth,
+              category: formData.category,
+              title: formData.title || "새 회의록",
+              datetime: combinedDatetime,
+              location: formData.location || "-",
+              attendeesInternal: formData.attendees || "-",
+              attendeesExternal: combinedAttendeesExternal,
+              agenda: combinedAgenda || "-",
+              result: combinedResult || "-",
+              audioUrl: formData.audioUrl || "",
+              pdfUrl: formData.pdfUrl || ""
+            }
             : m
         ));
       } else {
@@ -1922,7 +1922,7 @@ ${aiRawText}
       } else if (!safeDate || !/^\d{4}-\d{2}-\d{2}$/.test(safeDate)) {
         safeDate = new Date().toISOString().split("T")[0];
       }
-      
+
       let safeTime = formData.pressTime || "10:00";
       if (!/^\d{2}:\d{2}$/.test(safeTime)) {
         if (safeTime.toLowerCase().includes("pm")) {
@@ -1951,18 +1951,18 @@ ${aiRawText}
       const combinedDatetime = `${safeDate}T${safeTime}:00+09:00`;
 
       if (isEditMode) {
-        setPressReleases(prev => prev.map(p => 
+        setPressReleases(prev => prev.map(p =>
           p.id === editingItemId
             ? {
-                ...p,
-                year: getCalculatedYearFromDate(formData.pressDate),
-                type: formData.pressType,
-                media: formData.pressMedia || "미상",
-                title: formData.title || "새 보도자료",
-                broadcastDate: combinedDatetime,
-                contentUrl: formData.pressUrl || "",
-                pressContent: formData.pressContent || ""
-              }
+              ...p,
+              year: getCalculatedYearFromDate(formData.pressDate),
+              type: formData.pressType,
+              media: formData.pressMedia || "미상",
+              title: formData.title || "새 보도자료",
+              broadcastDate: combinedDatetime,
+              contentUrl: formData.pressUrl || "",
+              pressContent: formData.pressContent || ""
+            }
             : p
         ));
       } else {
@@ -2064,7 +2064,7 @@ ${aiRawText}
       alert("게스트(방문자) 계정은 읽기 전용으로만 이용하실 수 있습니다.");
       return;
     }
-    setMonthlySchedules(prev => prev.map(s => 
+    setMonthlySchedules(prev => prev.map(s =>
       s.id === id ? { ...s, completed: !s.completed } : s
     ));
   };
@@ -2161,7 +2161,7 @@ ${aiRawText}
 
     // 본인 인증 비밀번호 입력 프롬프트
     const pw = window.prompt(`⚠️ 회의록 삭제는 되돌릴 수 없습니다!\n\n${userPromptName} 본인의 삭제 승인 비밀번호를 입력해 주세요.\n(비밀번호 힌트: ${hint})`);
-    
+
     if (pw === null) {
       // 사용자가 취소(Cancel)를 누른 경우
       return;
@@ -2412,7 +2412,7 @@ ${aiRawText}
       "[FETCH] 방송/신문/인터넷 뉴스 RSS 미디어 피드 로드 및 파싱 중...",
       `[PARSING] 울산MBC, KBS울산, 경상일보, 울산신문 등 실시간 분석 완료 (총 ${mockPress.length}건 기사 검출)`,
       "[COMPARE] 기존 데이터베이스와 수집 리스트 간의 중복(Deduplication) 검증 가동...",
-      duplicatedTitles.length > 0 
+      duplicatedTitles.length > 0
         ? `[DEDUPLICATE] 중복 검출 발견: 총 ${duplicatedTitles.length}건의 기사가 기존 데이터베이스와 일치함 (수집 배제)`
         : "[DEDUPLICATE] 중복 기사 없음: 10건 모두 신규 데이터로 확인 완료.",
       uniqueNewPress.length > 0
@@ -2747,7 +2747,7 @@ ${aiRawText}
       alert("게스트(방문자) 계정은 테스트 데이터를 생성하실 수 없습니다.");
       return;
     }
-    
+
     // 로딩바 대신 alert로 진행 알림
     const proceed = window.confirm("테스트를 위한 10가지 가상 부서 회의록(7월 일정)을 원격 데이터베이스에 일괄 생성하시겠습니까?");
     if (!proceed) return;
@@ -2931,12 +2931,12 @@ ${aiRawText}
     let committeeType = "agency";
     if (meeting.category === "committee") {
       const isCenterCommittee = [
-        "ECC센터위원회", "ICC센터위원회", "RCC센터위원회", 
+        "ECC센터위원회", "ICC센터위원회", "RCC센터위원회",
         "AID-X지원센터위원회", "울산늘봄누리센터위원회", "신산업특화센터위원회"
       ].some(c => ext.includes(c));
-      
+
       committeeType = isCenterCommittee ? "center" : "agency";
-      
+
       // 만약 '위원회: ' 태그가 포함되어 있다면 dept 정보도 그에 맞게 교정하여 세팅
       if (ext.includes("위원회:")) {
         const parts = ext.split("|");
@@ -3102,13 +3102,13 @@ ${aiRawText}
       meetingStartTime: "10:00",
       meetingEndTime: "11:00",
       writer: (() => {
-        let activeWriters = (members || []).filter(m => 
-          m.status !== "미참여" && 
-          m.email && 
+        let activeWriters = (members || []).filter(m =>
+          m.status !== "미참여" &&
+          m.email &&
           m.dept === "사업운영팀" &&
           !isWriterExcluded(m)
         );
-        
+
         // 사업단 관련 회의인 경우 심현미 운영팀장을 맨 위에 강제 포함
         const simHyunMi = (members || []).find(m => m.name === "심현미") || {
           id: "sim_hm_temp",
@@ -3161,8 +3161,8 @@ ${aiRawText}
   // 각 날짜별 일정을 YYYY-MM-DD 키로 미리 묶어둠으로써, 날짜를 그릴 때는 O(1) 수준으로 빠르게 가져올 수 있습니다.
   const schedulesByDate = useMemo(() => {
     // 부서 필터링을 루프 밖에서 단 한 번만 수행하여 공통 필터링 결과 생성
-    const filtered = selectedDeptFilter === "전체" 
-      ? monthlySchedules 
+    const filtered = selectedDeptFilter === "전체"
+      ? monthlySchedules
       : monthlySchedules.filter(s => s.dept && (s.dept === "전체" || s.dept.split(",").map(x => x.trim()).includes(selectedDeptFilter)));
 
     // 날짜별로 일정을 그룹화하는 해시 맵 빌드
@@ -3197,7 +3197,7 @@ ${aiRawText}
       const isSelected = selectedDay === day;
 
       cells.push(
-        <div 
+        <div
           key={`day-${day}`}
           onClick={() => setSelectedDay(day)}
           onDoubleClick={() => {
@@ -3238,7 +3238,7 @@ ${aiRawText}
               const isTask = sched.isTask || false;
               const isDeadline = sched.isDeadline || false;
               const isCompleted = sched.completed || false;
-              
+
               let bgColor = "#4B5563";
               if (isDeadline) {
                 bgColor = isCompleted ? "rgba(239, 68, 68, 0.4)" : "#EF4444";
@@ -3249,8 +3249,8 @@ ${aiRawText}
               }
 
               return (
-                <div 
-                  key={sched.id} 
+                <div
+                  key={sched.id}
                   draggable={true}
                   onDragStart={(e) => {
                     setDraggingId(sched.id);
@@ -3299,11 +3299,11 @@ ${aiRawText}
 
   return (
     <div className="schedule-manager-container" style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
-      
+
       {/* 1. 월간 일정 */}
       {subTab === "monthly" && (
         <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
-          
+
           <div className="card" style={{ padding: "1.25rem", borderRadius: "10px", background: "var(--panel-bg)", border: "1px solid var(--border-color)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <div>
               <h3 style={{ margin: 0, fontSize: "1.1rem", fontWeight: "800", color: "var(--text-primary)" }}>
@@ -3316,10 +3316,10 @@ ${aiRawText}
                 (안내 : 선택된 연차에 해당되는 월(month)만 표시됩니다. '25.6월 보시려면 1차년도를 클릭하신 후 화살표로 이동하시면 됩니다.)
               </p>
             </div>
-            
+
             {currentRole.id !== "GUEST" && (
               <div style={{ display: "flex", gap: "0.5rem" }}>
-                <button 
+                <button
                   className="btn btn-primary"
                   onClick={() => openAddModal("monthly")}
                   style={{
@@ -3330,7 +3330,7 @@ ${aiRawText}
                   <Plus size={16} />
                   일정 추가
                 </button>
-                <button 
+                <button
                   onClick={() => openAddModal("task")}
                   style={{
                     display: "flex", alignItems: "center", gap: "0.25rem", padding: "0.4rem 1rem", borderRadius: "6px",
@@ -3343,7 +3343,7 @@ ${aiRawText}
                   <Plus size={16} />
                   할일 추가
                 </button>
-                <button 
+                <button
                   onClick={() => openAddModal("deadline")}
                   style={{
                     display: "flex", alignItems: "center", gap: "0.25rem", padding: "0.4rem 1rem", borderRadius: "6px",
@@ -3361,10 +3361,10 @@ ${aiRawText}
           </div>
 
           <div style={{ display: "grid", gridTemplateColumns: "1.3fr 0.7fr", gap: "1.5rem" }}>
-            
+
             {/* 왼쪽: 캘린더 프레임 */}
             <div className="card" style={{ padding: "1.25rem", borderRadius: "10px", background: "var(--panel-bg)", border: "1px solid var(--border-color)" }}>
-              
+
               {/* 캘린더 월 조작용 헤더 */}
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
                 <div style={{ display: "flex", alignItems: "baseline", gap: "0.35rem" }}>
@@ -3376,13 +3376,13 @@ ${aiRawText}
                   </span>
                 </div>
                 <div style={{ display: "flex", gap: "0.25rem" }}>
-                  <button 
+                  <button
                     onClick={() => setCurrentMonth(prev => prev === 1 ? 12 : prev - 1)}
                     style={{ background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "4px", color: "var(--text-primary)", padding: "0.25rem", cursor: "pointer" }}
                   >
                     <ChevronLeft size={16} />
                   </button>
-                  <button 
+                  <button
                     onClick={() => setCurrentMonth(prev => prev === 12 ? 1 : prev + 1)}
                     style={{ background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "4px", color: "var(--text-primary)", padding: "0.25rem", cursor: "pointer" }}
                   >
@@ -3392,13 +3392,13 @@ ${aiRawText}
               </div>
 
               {/* 부서 필터 칩 */}
-              <div style={{ 
-                display: "flex", 
-                gap: "0.35rem", 
-                flexWrap: "wrap", 
-                marginBottom: "1rem", 
-                paddingBottom: "0.5rem", 
-                borderBottom: "1px solid rgba(255, 255, 255, 0.05)" 
+              <div style={{
+                display: "flex",
+                gap: "0.35rem",
+                flexWrap: "wrap",
+                marginBottom: "1rem",
+                paddingBottom: "0.5rem",
+                borderBottom: "1px solid rgba(255, 255, 255, 0.05)"
               }}>
                 {["전체", "사업운영팀", "ECC센터", "ICC센터", "RCC센터", "AID-X지원센터", "울산늘봄누리센터", "신산업특화센터"].map(dept => {
                   const isActive = selectedDeptFilter === dept;
@@ -3461,7 +3461,7 @@ ${aiRawText}
                     const isDeadline = sched.isDeadline || false;
                     const isCompleted = sched.completed || false;
                     const isLinkable = sched.type === "행사" || sched.type === "회의" || sched.type === "위원회";
-                    
+
                     let cardBg = "rgba(255,255,255,0.02)";
                     let cardBorder = "1px solid rgba(255,255,255,0.05)";
                     if (isDeadline) {
@@ -3476,8 +3476,8 @@ ${aiRawText}
                     }
 
                     return (
-                      <div 
-                        key={sched.id} 
+                      <div
+                        key={sched.id}
                         onClick={() => {
                           if (isLinkable) {
                             handleLinkToDetail(sched);
@@ -3508,9 +3508,9 @@ ${aiRawText}
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "0.5rem" }}>
                           <div style={{ display: "flex", alignItems: "flex-start", gap: "0.5rem", flex: 1 }}>
                             {(isTask || isDeadline) && (
-                              <input 
-                                type="checkbox" 
-                                checked={isCompleted} 
+                              <input
+                                type="checkbox"
+                                checked={isCompleted}
                                 onChange={(e) => {
                                   e.stopPropagation();
                                   handleToggleTaskCompleted(sched.id);
@@ -3519,10 +3519,10 @@ ${aiRawText}
                               />
                             )}
                             <div>
-                              <strong style={{ 
-                                fontSize: "0.9rem", 
-                                color: "var(--text-primary)", 
-                                display: "inline-flex", 
+                              <strong style={{
+                                fontSize: "0.9rem",
+                                color: "var(--text-primary)",
+                                display: "inline-flex",
                                 alignItems: "center",
                                 gap: "0.3rem",
                                 marginBottom: "0.25rem",
@@ -3539,7 +3539,7 @@ ${aiRawText}
                           </div>
                           {currentRole.id !== "GUEST" && (
                             <div style={{ display: "flex", gap: "0.25rem" }} onClick={(e) => e.stopPropagation()}>
-                              <button 
+                              <button
                                 onClick={() => handleEditSchedule(sched)}
                                 title="수정"
                                 style={{ background: "transparent", border: "none", color: "var(--text-secondary)", cursor: "pointer", padding: "0.2rem", transition: "color 0.15s" }}
@@ -3548,7 +3548,7 @@ ${aiRawText}
                               >
                                 <Edit size={14} />
                               </button>
-                              <button 
+                              <button
                                 onClick={() => handleDeleteSchedule(sched.id)}
                                 title="삭제"
                                 style={{ background: "transparent", border: "none", color: "var(--text-secondary)", cursor: "pointer", padding: "0.2rem", transition: "color 0.15s" }}
@@ -3561,11 +3561,11 @@ ${aiRawText}
                           )}
                         </div>
                         <div style={{ display: "flex", gap: "0.3rem", flexWrap: "wrap", marginBottom: "0.4rem" }}>
-                          <span style={{ 
-                            fontSize: "0.65rem", padding: "0.1rem 0.4rem", borderRadius: "4px", 
-                            background: isDeadline ? "rgba(239, 68, 68, 0.2)" : (isTask ? "rgba(139, 92, 246, 0.2)" : (sched.type === "행사" ? "rgba(59, 130, 246, 0.2)" : sched.type === "회의" ? "rgba(16, 185, 129, 0.2)" : sched.type === "위원회" ? "rgba(245, 158, 11, 0.2)" : "rgba(128, 128, 128, 0.15)")), 
-                            color: isDeadline ? "#EF4444" : (isTask ? "#A78BFA" : (sched.type === "행사" ? "#60A5FA" : sched.type === "회의" ? "#34D399" : sched.type === "위원회" ? "#FBBF24" : "var(--text-primary)")), 
-                            fontWeight: "700" 
+                          <span style={{
+                            fontSize: "0.65rem", padding: "0.1rem 0.4rem", borderRadius: "4px",
+                            background: isDeadline ? "rgba(239, 68, 68, 0.2)" : (isTask ? "rgba(139, 92, 246, 0.2)" : (sched.type === "행사" ? "rgba(59, 130, 246, 0.2)" : sched.type === "회의" ? "rgba(16, 185, 129, 0.2)" : sched.type === "위원회" ? "rgba(245, 158, 11, 0.2)" : "rgba(128, 128, 128, 0.15)")),
+                            color: isDeadline ? "#EF4444" : (isTask ? "#A78BFA" : (sched.type === "행사" ? "#60A5FA" : sched.type === "회의" ? "#34D399" : sched.type === "위원회" ? "#FBBF24" : "var(--text-primary)")),
+                            fontWeight: "700"
                           }}>
                             {isDeadline ? "마감" : (isTask ? "할일" : (sched.type || "기타"))}
                           </span>
@@ -3616,7 +3616,7 @@ ${aiRawText}
       {/* 2. 행사 일정 */}
       {subTab === "events" && (
         <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
-          
+
           {/* 행사 컨트롤 카드 */}
           <div className="card" style={{ padding: "1.25rem", borderRadius: "10px", background: "var(--panel-bg)", border: "1px solid var(--border-color)", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "1rem" }}>
             <div>
@@ -3629,7 +3629,7 @@ ${aiRawText}
             </div>
 
             {currentRole.id !== "GUEST" && (
-              <button 
+              <button
                 className="btn btn-primary"
                 onClick={() => openAddModal("event")}
                 style={{
@@ -3665,7 +3665,7 @@ ${aiRawText}
           <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
             {eventSchedules.filter(e => e.year === selectedYear && e.month === selectedEventMonth).length > 0 ? (
               eventSchedules.filter(e => e.year === selectedYear && e.month === selectedEventMonth).map(event => (
-                <div 
+                <div
                   key={event.id}
                   id={`event-card-${event.id}`}
                   className="card"
@@ -3679,7 +3679,7 @@ ${aiRawText}
                       <span style={{ fontWeight: "850", color: "#EC4899", fontSize: "0.85rem", whiteSpace: "nowrap" }}>
                         [{event.department || "사업운영팀"}]
                       </span>
-                      
+
                       {/* 소속부서에서 1.5cm (56px) 띄우고 일시 */}
                       <span style={{ fontSize: "0.8rem", color: "var(--text-secondary)", marginLeft: "56px", whiteSpace: "nowrap" }}>
                         일시 : {event.datetime}
@@ -3687,7 +3687,7 @@ ${aiRawText}
 
                       {/* 일시에서 0.5cm (19px) 띄우고 | 구분선 */}
                       <span style={{ color: "rgba(255,255,255,0.15)", marginLeft: "19px" }}>|</span>
-                      
+
                       {/* 구분선에서 0.5cm (19px) 띄우고 장소 */}
                       <span style={{ fontSize: "0.8rem", color: "var(--text-secondary)", marginLeft: "19px", whiteSpace: "nowrap" }}>
                         장소 : <span style={{ color: "var(--text-primary)", fontWeight: "600" }}>{event.location || "미정"}</span>
@@ -3704,7 +3704,7 @@ ${aiRawText}
                       {/* 수정 & 삭제 (우측정렬) */}
                       {currentRole.id !== "GUEST" && (
                         <div style={{ display: "flex", alignItems: "center", gap: "0.4rem", flexShrink: 0 }}>
-                          <button 
+                          <button
                             onClick={() => handleEditEvent(event)}
                             title="수정"
                             style={{ background: "transparent", border: "none", color: "var(--text-secondary)", cursor: "pointer", padding: "0.2rem", transition: "color 0.15s" }}
@@ -3713,7 +3713,7 @@ ${aiRawText}
                           >
                             <Edit size={14} />
                           </button>
-                          <button 
+                          <button
                             onClick={() => handleDeleteEvent(event.id)}
                             title="삭제"
                             style={{ background: "transparent", border: "none", color: "var(--text-secondary)", cursor: "pointer", padding: "0.2rem", transition: "color 0.15s" }}
@@ -3729,7 +3729,7 @@ ${aiRawText}
 
                   {/* 2) 바디 영역: 좌측(참석자 & 목적) / 우측(결과 보고 작성 블록) -> 1:1 비율 */}
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.5rem", alignItems: "stretch", fontSize: "0.82rem", color: "var(--text-primary)" }}>
-                    
+
                     {/* 좌측 정보 컬럼 */}
                     <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem", justifyContent: "center" }}>
                       {/* 참석자(내부) : 참석자(외부) -> 1:1 비율 그리드 정비 */}
@@ -3741,7 +3741,7 @@ ${aiRawText}
                           <strong>참석자(외부) :</strong> {event.attendeesExternal || "없음"}
                         </div>
                       </div>
-                      
+
                       {/* 행사목적 한 줄 */}
                       <div style={{ lineHeight: "1.4" }}>
                         <strong>행사목적 :</strong> <span style={{ color: "var(--text-secondary)" }}>{event.purpose || "내용 없음"}</span>
@@ -3776,7 +3776,7 @@ ${aiRawText}
       {/* 2.5 위원회 관리 */}
       {subTab === "committees" && (
         <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
-          
+
           {/* 상단 안내 배너 카드 */}
           <div className="card" style={{ padding: "1.25rem", borderRadius: "10px", background: "var(--panel-bg)", border: "1px solid var(--border-color)", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "1rem" }}>
             <div>
@@ -3828,65 +3828,65 @@ ${aiRawText}
 
           {/* 메인 레이아웃: 좌측 목록 + 우측 상세 */}
           <div style={{ display: "grid", gridTemplateColumns: "2.5fr 3.5fr", gap: "1.5rem" }}>
-            
+
             {/* 좌측: 위원회 카드 목록 */}
             <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
               {committees
-                .filter(comm => selectedCommitteeGroup === "agency" 
-                  ? ["total", "planning", "budget", "eval", "advisory"].includes(comm.id) 
+                .filter(comm => selectedCommitteeGroup === "agency"
+                  ? ["total", "planning", "budget", "eval", "advisory"].includes(comm.id)
                   : ["ecc_op", "icc_op", "rcc_op", "aidx_op", "neulbom_op", "newind_op"].includes(comm.id)
                 )
                 .map((comm) => {
                   const isSelected = selectedCommitteeId === comm.id;
-                return (
-                  <div
-                    key={comm.id}
-                    onClick={() => setSelectedCommitteeId(comm.id)}
-                    style={{
-                      padding: "1.25rem",
-                      borderRadius: "8px",
-                      background: isSelected ? "rgba(255, 255, 255, 0.04)" : "var(--panel-bg)",
-                      border: isSelected ? "1px solid var(--accent-color)" : "1px solid var(--border-color)",
-                      boxShadow: isSelected ? "0 4px 20px rgba(236, 72, 153, 0.15)" : "none",
-                      cursor: "pointer",
-                      transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
-                      position: "relative",
-                      overflow: "hidden"
-                    }}
-                    className="committee-item-card"
-                  >
-                    {/* 상단 그라데이션 좌측 사이드바 */}
-                    <div style={{
-                      position: "absolute",
-                      left: 0,
-                      top: 0,
-                      bottom: 0,
-                      width: "4px",
-                      background: comm.color
-                    }} />
+                  return (
+                    <div
+                      key={comm.id}
+                      onClick={() => setSelectedCommitteeId(comm.id)}
+                      style={{
+                        padding: "1.25rem",
+                        borderRadius: "8px",
+                        background: isSelected ? "rgba(255, 255, 255, 0.04)" : "var(--panel-bg)",
+                        border: isSelected ? "1px solid var(--accent-color)" : "1px solid var(--border-color)",
+                        boxShadow: isSelected ? "0 4px 20px rgba(236, 72, 153, 0.15)" : "none",
+                        cursor: "pointer",
+                        transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
+                        position: "relative",
+                        overflow: "hidden"
+                      }}
+                      className="committee-item-card"
+                    >
+                      {/* 상단 그라데이션 좌측 사이드바 */}
+                      <div style={{
+                        position: "absolute",
+                        left: 0,
+                        top: 0,
+                        bottom: 0,
+                        width: "4px",
+                        background: comm.color
+                      }} />
 
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "0.5rem", paddingLeft: "0.5rem" }}>
-                      <h4 style={{ margin: 0, fontSize: "0.95rem", fontWeight: "900", color: isSelected ? "var(--text-primary)" : "var(--text-primary)" }}>
-                        {comm.name}
-                      </h4>
-                      <span style={{
-                        fontSize: "0.65rem",
-                        fontWeight: "900",
-                        padding: "0.15rem 0.4rem",
-                        borderRadius: "4px",
-                        background: isSelected ? "var(--accent-color)" : "rgba(255,255,255,0.05)",
-                        color: isSelected ? "white" : "var(--text-secondary)",
-                        border: "1px solid rgba(255,255,255,0.05)"
-                      }}>
-                        {comm.badge}
-                      </span>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "0.5rem", paddingLeft: "0.5rem" }}>
+                        <h4 style={{ margin: 0, fontSize: "0.95rem", fontWeight: "900", color: isSelected ? "var(--text-primary)" : "var(--text-primary)" }}>
+                          {comm.name}
+                        </h4>
+                        <span style={{
+                          fontSize: "0.65rem",
+                          fontWeight: "900",
+                          padding: "0.15rem 0.4rem",
+                          borderRadius: "4px",
+                          background: isSelected ? "var(--accent-color)" : "rgba(255,255,255,0.05)",
+                          color: isSelected ? "white" : "var(--text-secondary)",
+                          border: "1px solid rgba(255,255,255,0.05)"
+                        }}>
+                          {comm.badge}
+                        </span>
+                      </div>
+                      <p style={{ margin: 0, fontSize: "0.78rem", color: "var(--text-secondary)", lineHeight: "1.4", paddingLeft: "0.5rem" }}>
+                        {comm.purpose}
+                      </p>
                     </div>
-                    <p style={{ margin: 0, fontSize: "0.78rem", color: "var(--text-secondary)", lineHeight: "1.4", paddingLeft: "0.5rem" }}>
-                      {comm.purpose}
-                    </p>
-                  </div>
-                );
-              })}
+                  );
+                })}
             </div>
 
             {/* 우측: 5대 위원회 상세 정보 */}
@@ -4030,10 +4030,10 @@ ${aiRawText}
                               </thead>
                               <tbody>
                                 {activeComm.members.map((member) => (
-                                  <tr 
-                                    key={member.id} 
-                                    style={{ 
-                                      borderBottom: "1px solid rgba(255, 255, 255, 0.03)", 
+                                  <tr
+                                    key={member.id}
+                                    style={{
+                                      borderBottom: "1px solid rgba(255, 255, 255, 0.03)",
                                       color: "var(--text-primary)",
                                       background: member.type === "위원장" ? "rgba(236, 72, 153, 0.03)" : "transparent"
                                     }}
@@ -4181,7 +4181,7 @@ ${aiRawText}
       {/* 3. 회의 일정 */}
       {subTab === "meetings" && (
         <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
-          
+
           {/* 회의 컨트롤 카드 */}
           <div className="card" style={{ padding: "1.25rem", borderRadius: "10px", background: "var(--panel-bg)", border: "1px solid var(--border-color)", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "1rem" }}>
             <div>
@@ -4194,7 +4194,7 @@ ${aiRawText}
             </div>
 
             {currentRole.id !== "GUEST" && (
-              <button 
+              <button
                 className="btn btn-primary"
                 onClick={() => openAddModal("meeting")}
                 style={{
@@ -4303,7 +4303,7 @@ ${aiRawText}
                         <button
                           key={deptName}
                           onClick={() => {
-                            setSelectedDeptFilters(prev => 
+                            setSelectedDeptFilters(prev =>
                               prev.includes(deptName) ? prev.filter(d => d !== deptName) : [...prev, deptName]
                             );
                           }}
@@ -4368,7 +4368,7 @@ ${aiRawText}
                         전체
                       </button>
                       {[
-                        "앵커총괄위원회", "앵커기획위원회", "앵커사업비관리위원회", 
+                        "앵커총괄위원회", "앵커기획위원회", "앵커사업비관리위원회",
                         "앵커사업자체평가위원회", "앵커사업자문회의", "앵커사업운영위원회"
                       ].map(cName => {
                         const isSelected = selectedCommitteeFilters.includes(cName);
@@ -4376,7 +4376,7 @@ ${aiRawText}
                           <button
                             key={cName}
                             onClick={() => {
-                              setSelectedCommitteeFilters(prev => 
+                              setSelectedCommitteeFilters(prev =>
                                 prev.includes(cName) ? prev.filter(x => x !== cName) : [...prev, cName]
                               );
                             }}
@@ -4414,7 +4414,7 @@ ${aiRawText}
                         전체
                       </button>
                       {[
-                        "ECC센터위원회", "ICC센터위원회", "RCC센터위원회", 
+                        "ECC센터위원회", "ICC센터위원회", "RCC센터위원회",
                         "AID-X지원센터위원회", "울산늘봄누리센터위원회", "신산업특화센터위원회"
                       ].map(cName => {
                         const isSelected = selectedCommitteeFilters.includes(cName);
@@ -4422,7 +4422,7 @@ ${aiRawText}
                           <button
                             key={cName}
                             onClick={() => {
-                              setSelectedCommitteeFilters(prev => 
+                              setSelectedCommitteeFilters(prev =>
                                 prev.includes(cName) ? prev.filter(x => x !== cName) : [...prev, cName]
                               );
                             }}
@@ -4466,7 +4466,7 @@ ${aiRawText}
                   // 2) 각종 위원회인 경우 위원회 종류 필터 작동
                   if (activeMeetingCat === "committee") {
                     if (selectedCommitteeFilters.length === 0) return true;
-                    
+
                     const ext = m.attendeesExternal || m.attendees_external || "";
                     let committeeName = "";
                     if (ext.includes("위원회:")) {
@@ -4476,17 +4476,17 @@ ${aiRawText}
                         committeeName = committeePart.replace("위원회:", "").trim();
                       }
                     }
-                    
+
                     if (committeeName) {
                       committeeName = committeeName.replace(/RISE/g, '앵커');
                     }
-                    
+
                     if (!committeeName) {
                       // 제목에서 위원회 키워드로 매칭 Fallback
                       const allCommittees = [
-                        "앵커총괄위원회", "앵커기획위원회", "앵커사업비관리위원회", 
+                        "앵커총괄위원회", "앵커기획위원회", "앵커사업비관리위원회",
                         "앵커사업자체평가위원회", "앵커사업자문회의", "앵커사업운영위원회",
-                        "ECC센터위원회", "ICC센터위원회", "RCC센터위원회", 
+                        "ECC센터위원회", "ICC센터위원회", "RCC센터위원회",
                         "AID-X지원센터위원회", "울산늘봄누리센터위원회", "신산업특화센터위원회"
                       ];
                       const matched = allCommittees.find(c => m.title && m.title.replace(/RISE/g, '앵커').includes(c));
@@ -4503,18 +4503,18 @@ ${aiRawText}
                 return (
                   <div style={{ display: "grid", gridTemplateColumns: "320px 1fr", gap: "1rem", minHeight: "500px" }}>
                     {/* 왼쪽: 회의록 리스트 */}
-                    <div style={{ 
-                      background: "rgba(255,255,255,0.01)", 
-                      border: "1px solid var(--border-color)", 
-                      borderRadius: "8px", 
-                      maxHeight: "650px", 
+                    <div style={{
+                      background: "rgba(255,255,255,0.01)",
+                      border: "1px solid var(--border-color)",
+                      borderRadius: "8px",
+                      maxHeight: "650px",
                       overflowY: "auto",
                       padding: "0.5rem"
                     }}>
                       <div style={{ padding: "0.5rem", fontSize: "0.75rem", fontWeight: "700", color: "var(--text-secondary)", borderBottom: "1px solid rgba(255,255,255,0.05)", marginBottom: "0.5rem" }}>
                         📋 회의록 목록 ({filteredList.length}건)
                       </div>
-                      
+
                       {filteredList.length === 0 ? (
                         <div style={{ padding: "2rem 1rem", textAlign: "center", color: "var(--text-secondary)", fontSize: "0.75rem" }}>
                           조회된 회의록이 없습니다.
@@ -4523,7 +4523,7 @@ ${aiRawText}
                         <div style={{ display: "flex", flexDirection: "column", gap: "0.35rem" }}>
                           {filteredList.map(meeting => {
                             const isSelected = selectedMeeting && selectedMeeting.id === meeting.id;
-                            
+
                             // 부서 추출
                             const ext = meeting.attendeesExternal || meeting.attendees_external || "";
                             let dept = "사업운영팀";
@@ -4547,8 +4547,8 @@ ${aiRawText}
                                   flexDirection: "column",
                                   gap: "0.25rem"
                                 }}
-                                onMouseOver={(e) => { if(!isSelected) e.currentTarget.style.background = darkMode ? "rgba(255,255,255,0.02)" : "rgba(0,0,0,0.03)"; }}
-                                onMouseOut={(e) => { if(!isSelected) e.currentTarget.style.background = "transparent"; }}
+                                onMouseOver={(e) => { if (!isSelected) e.currentTarget.style.background = darkMode ? "rgba(255,255,255,0.02)" : "rgba(0,0,0,0.03)"; }}
+                                onMouseOut={(e) => { if (!isSelected) e.currentTarget.style.background = "transparent"; }}
                               >
                                 <span style={{ fontSize: "0.8rem", fontWeight: "700", color: isSelected ? (darkMode ? "#60A5FA" : "var(--accent-color)") : "var(--text-primary)", wordBreak: "break-all" }}>
                                   {meeting.title}
@@ -4569,10 +4569,10 @@ ${aiRawText}
                     </div>
 
                     {/* 오른쪽: 상세 회의록 뷰 */}
-                    <div style={{ 
-                      background: "var(--panel-bg)", 
-                      border: "1px solid var(--border-color)", 
-                      borderRadius: "8px", 
+                    <div style={{
+                      background: "var(--panel-bg)",
+                      border: "1px solid var(--border-color)",
+                      borderRadius: "8px",
                       padding: "1.5rem",
                       display: "flex",
                       flexDirection: "column",
@@ -4583,7 +4583,7 @@ ${aiRawText}
                         <>
                           {(() => {
                             const isOperating = selectedMeeting.category === "operating";
-                            
+
                             // 작성자 및 부서 파싱 (일반 회의용)
                             const ext = selectedMeeting.attendeesExternal || selectedMeeting.attendees_external || "";
                             let writer = "작성자 미정";
@@ -4596,8 +4596,8 @@ ${aiRawText}
 
                             // 삭제 권한: 송경영, 심현미, ADMIN
                             const canDelete = currentRole && (
-                              currentRole.name.includes("송경영") || 
-                              currentRole.name.includes("심현미") || 
+                              currentRole.name.includes("송경영") ||
+                              currentRole.name.includes("심현미") ||
                               currentRole.id === "ADMIN"
                             );
 
@@ -4606,7 +4606,7 @@ ${aiRawText}
                               // 💡 1) 사업단 운영회의 전용 상세 요점 뷰
                               // ==========================================
                               const operatingDepts = ["사업단", "사업운영팀", "ECC", "ICC", "RCC", "AID-X", "늘봄누리센터", "신산업특화센터"];
-                              
+
                               // JSON 파싱 및 폴백 매핑
                               let parsedAgendas = {};
                               let parsedResults = {};
@@ -4657,7 +4657,7 @@ ${aiRawText}
                                     {/* 수정/삭제 단추 우측 맨 위 배치 */}
                                     {currentRole.id !== "GUEST" && (
                                       <div style={{ display: "flex", gap: "0.25rem" }}>
-                                        <button 
+                                        <button
                                           onClick={() => handleEditMeeting(selectedMeeting)}
                                           title="수정"
                                           style={{ background: "transparent", border: "none", color: "var(--text-secondary)", cursor: "pointer", padding: "0.35rem", borderRadius: "4px" }}
@@ -4667,7 +4667,7 @@ ${aiRawText}
                                           <Edit size={16} />
                                         </button>
                                         {canDelete && (
-                                          <button 
+                                          <button
                                             onClick={() => handleDeleteMeeting(selectedMeeting.id)}
                                             title="삭제"
                                             style={{ background: "transparent", border: "none", color: "var(--text-secondary)", cursor: "pointer", padding: "0.35rem", borderRadius: "4px" }}
@@ -4682,10 +4682,10 @@ ${aiRawText}
                                   </div>
 
                                   {/* 회의 성격 배너 설명 문구 */}
-                                  <div style={{ 
-                                    padding: "0.6rem 0.8rem", 
-                                    background: "rgba(59,130,246,0.04)", 
-                                    borderLeft: "3px solid var(--accent-color)", 
+                                  <div style={{
+                                    padding: "0.6rem 0.8rem",
+                                    background: "rgba(59,130,246,0.04)",
+                                    borderLeft: "3px solid var(--accent-color)",
                                     borderRadius: "4px",
                                     fontSize: "0.72rem",
                                     color: "var(--text-secondary)",
@@ -4705,12 +4705,12 @@ ${aiRawText}
                                         const resultVal = getDeptData(dept, parsedResults);
 
                                         return (
-                                          <div 
-                                            key={dept} 
-                                            style={{ 
-                                              background: darkMode ? "rgba(255, 255, 255, 0.01)" : "rgba(0,0,0,0.01)", 
-                                              border: "1px solid var(--border-color)", 
-                                              borderRadius: "8px", 
+                                          <div
+                                            key={dept}
+                                            style={{
+                                              background: darkMode ? "rgba(255, 255, 255, 0.01)" : "rgba(0,0,0,0.01)",
+                                              border: "1px solid var(--border-color)",
+                                              borderRadius: "8px",
                                               padding: "0.7rem 0.85rem",
                                               display: "flex",
                                               flexDirection: "column",
@@ -4737,10 +4737,10 @@ ${aiRawText}
                                   </div>
 
                                   {/* AI 핵심 브리핑 요약 */}
-                                  <div style={{ 
-                                    background: darkMode ? "rgba(139, 92, 246, 0.05)" : "rgba(139, 92, 246, 0.08)", 
-                                    padding: "0.75rem 1rem", 
-                                    borderRadius: "8px", 
+                                  <div style={{
+                                    background: darkMode ? "rgba(139, 92, 246, 0.05)" : "rgba(139, 92, 246, 0.08)",
+                                    padding: "0.75rem 1rem",
+                                    borderRadius: "8px",
                                     border: "1px solid rgba(139, 92, 246, 0.15)",
                                     marginTop: "0.5rem"
                                   }}>
@@ -4750,7 +4750,7 @@ ${aiRawText}
                                     <p style={{ margin: 0, fontSize: "0.72rem", color: "var(--text-primary)", lineHeight: "1.45" }}>
                                       {(() => {
                                         const keywords = Object.values(parsedResults).filter(Boolean).slice(0, 3).join(", ");
-                                        return keywords 
+                                        return keywords
                                           ? `본 회의에서는 각 부서의 전달사항(주요 키워드: ${keywords})에 대한 진척 상황 및 현안들을 공유했습니다. 향후 부서 간 실무 협의를 강화하여 목표 추진 계획을 차질 없이 준수할 것을 권장합니다.`
                                           : "본 회의에서는 8대 부서별 주요 안건 공유 및 지산학 프로그램의 격주 실적 관리가 원활히 이뤄졌습니다. AI 핵심 분석 결과 각 부서의 추진 상황은 계획 대비 순조롭게 진행 중인 것으로 분석되었습니다.";
                                       })()}
@@ -4816,7 +4816,7 @@ ${aiRawText}
 
                                   {currentRole.id !== "GUEST" && (
                                     <div style={{ display: "flex", gap: "0.25rem" }}>
-                                      <button 
+                                      <button
                                         onClick={() => handleEditMeeting(selectedMeeting)}
                                         title="수정"
                                         style={{ background: "transparent", border: "none", color: "var(--text-secondary)", cursor: "pointer", padding: "0.35rem", borderRadius: "4px" }}
@@ -4826,7 +4826,7 @@ ${aiRawText}
                                         <Edit size={16} />
                                       </button>
                                       {canDelete && (
-                                        <button 
+                                        <button
                                           onClick={() => handleDeleteMeeting(selectedMeeting.id)}
                                           title="삭제"
                                           style={{ background: "transparent", border: "none", color: "var(--text-secondary)", cursor: "pointer", padding: "0.35rem", borderRadius: "4px" }}
@@ -4870,14 +4870,14 @@ ${aiRawText}
                                 </div>
 
                                 {/* 결정 사항 결과 박스 */}
-                                <div style={{ 
-                                  background: darkMode ? "rgba(59, 130, 246, 0.05)" : "rgba(59, 130, 246, 0.08)", 
-                                  padding: "0.85rem 1rem", 
-                                  borderRadius: "8px", 
-                                  border: "1px solid rgba(59, 130, 246, 0.15)", 
-                                  display: "flex", 
-                                  flexDirection: "column", 
-                                  gap: "0.35rem" 
+                                <div style={{
+                                  background: darkMode ? "rgba(59, 130, 246, 0.05)" : "rgba(59, 130, 246, 0.08)",
+                                  padding: "0.85rem 1rem",
+                                  borderRadius: "8px",
+                                  border: "1px solid rgba(59, 130, 246, 0.15)",
+                                  display: "flex",
+                                  flexDirection: "column",
+                                  gap: "0.35rem"
                                 }}>
                                   <span style={{ color: darkMode ? "#60A5FA" : "#1E3A8A", fontWeight: "700", fontSize: "0.8rem", display: "flex", alignItems: "center", gap: "0.25rem" }}>
                                     <CheckCircle size={14} style={{ color: darkMode ? "#60A5FA" : "#2563EB" }} />
@@ -4897,13 +4897,13 @@ ${aiRawText}
                                 {(selectedMeeting.audioUrl || selectedMeeting.pdfUrl) && (
                                   <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", marginTop: "0.5rem", marginBottom: "0.5rem" }}>
                                     {selectedMeeting.audioUrl && (
-                                      <div style={{ 
-                                        background: "rgba(255,255,255,0.02)", 
-                                        padding: "0.55rem 0.75rem", 
-                                        borderRadius: "8px", 
-                                        border: "1px solid var(--border-color)", 
-                                        display: "flex", 
-                                        flexDirection: "column", 
+                                      <div style={{
+                                        background: "rgba(255,255,255,0.02)",
+                                        padding: "0.55rem 0.75rem",
+                                        borderRadius: "8px",
+                                        border: "1px solid var(--border-color)",
+                                        display: "flex",
+                                        flexDirection: "column",
                                         gap: "0.2rem"
                                       }}>
                                         <span style={{ fontSize: "0.72rem", fontWeight: "700", color: "var(--text-secondary)", display: "flex", alignItems: "center", gap: "0.25rem" }}>
@@ -4913,13 +4913,13 @@ ${aiRawText}
                                       </div>
                                     )}
                                     {selectedMeeting.pdfUrl && (
-                                      <div style={{ 
-                                        background: "rgba(255,255,255,0.02)", 
-                                        padding: "0.55rem 0.75rem", 
-                                        borderRadius: "8px", 
-                                        border: "1px solid var(--border-color)", 
-                                        display: "flex", 
-                                        alignItems: "center", 
+                                      <div style={{
+                                        background: "rgba(255,255,255,0.02)",
+                                        padding: "0.55rem 0.75rem",
+                                        borderRadius: "8px",
+                                        border: "1px solid var(--border-color)",
+                                        display: "flex",
+                                        alignItems: "center",
                                         justifyContent: "space-between"
                                       }}>
                                         <span style={{ fontSize: "0.72rem", fontWeight: "700", color: "var(--text-secondary)" }}>
@@ -4996,7 +4996,7 @@ ${aiRawText}
             <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
               {meetingSchedules.filter(m => m.year === selectedYear && m.category === activeMeetingCat).length > 0 ? (
                 meetingSchedules.filter(m => m.year === selectedYear && m.category === activeMeetingCat).map(meeting => (
-                  <div 
+                  <div
                     key={meeting.id}
                     className="card"
                     style={{ padding: "1.5rem", borderRadius: "10px", background: "var(--panel-bg)", border: "1px solid var(--border-color)", display: "flex", flexDirection: "column", gap: "1rem" }}
@@ -5023,7 +5023,7 @@ ${aiRawText}
                                 작성자: {isCustomFormatted ? writer : "박지현 팀장"}
                               </span>
                             </div>
-                            
+
                             <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
                               <span style={{ fontSize: "0.8rem", color: "var(--text-secondary)", display: "flex", alignItems: "center", gap: "0.25rem", marginRight: "0.5rem" }}>
                                 <Clock size={14} />
@@ -5036,7 +5036,7 @@ ${aiRawText}
                               </span>
                               {currentRole.id !== "GUEST" && (
                                 <>
-                                  <button 
+                                  <button
                                     onClick={() => handleEditMeeting(meeting)}
                                     title="수정"
                                     style={{ background: "transparent", border: "none", color: "var(--text-secondary)", cursor: "pointer", padding: "0.2rem", transition: "color 0.15s" }}
@@ -5045,7 +5045,7 @@ ${aiRawText}
                                   >
                                     <Edit size={14} />
                                   </button>
-                                  <button 
+                                  <button
                                     onClick={() => handleDeleteMeeting(meeting.id)}
                                     title="삭제"
                                     style={{ background: "transparent", border: "none", color: "var(--text-secondary)", cursor: "pointer", padding: "0.2rem", transition: "color 0.15s" }}
@@ -5064,9 +5064,9 @@ ${aiRawText}
                           </h4>
 
                           <div style={{ display: "grid", gridTemplateColumns: "1.2fr 0.8fr", gap: "1.5rem", borderTop: "1px solid var(--border-color)", paddingTop: "0.75rem", fontSize: "0.8rem", color: "var(--text-primary)" }}>
-                            
+
                             <div style={{ display: "flex", flexDirection: "column", gap: "0.6rem" }}>
-                              
+
                               {isCustomFormatted ? (
                                 <div>
                                   <span style={{ color: "var(--text-secondary)", display: "block", marginBottom: "0.15rem" }}>👥 참석자</span>
@@ -5095,7 +5095,7 @@ ${aiRawText}
                                   ))}
                                 </div>
                               </div>
-                              
+
                               <div>
                                 <span style={{ color: "var(--text-secondary)", display: "block" }}>📍 회의 장소</span>
                                 <strong>{meeting.location}</strong>
@@ -5117,18 +5117,18 @@ ${aiRawText}
                                   {!(meeting.result) && <span>등록된 결정 사항이 없습니다.</span>}
                                 </div>
                               </div>
-                              
+
                               {/* 회의록 첨부파일 개별 분리 렌더링 */}
                               {(meeting.audioUrl || meeting.pdfUrl) && (
                                 <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", marginTop: "0.25rem" }}>
                                   {meeting.audioUrl && (
-                                    <div style={{ 
-                                      background: "rgba(255,255,255,0.02)", 
-                                      padding: "0.5rem 0.75rem", 
-                                      borderRadius: "8px", 
-                                      border: "1px solid var(--border-color)", 
-                                      display: "flex", 
-                                      flexDirection: "column", 
+                                    <div style={{
+                                      background: "rgba(255,255,255,0.02)",
+                                      padding: "0.5rem 0.75rem",
+                                      borderRadius: "8px",
+                                      border: "1px solid var(--border-color)",
+                                      display: "flex",
+                                      flexDirection: "column",
                                       gap: "0.2rem"
                                     }}>
                                       <span style={{ fontSize: "0.72rem", fontWeight: "700", color: "var(--text-secondary)" }}>
@@ -5138,13 +5138,13 @@ ${aiRawText}
                                     </div>
                                   )}
                                   {meeting.pdfUrl && (
-                                    <div style={{ 
-                                      background: "rgba(255,255,255,0.02)", 
-                                      padding: "0.5rem 0.75rem", 
-                                      borderRadius: "8px", 
-                                      border: "1px solid var(--border-color)", 
-                                      display: "flex", 
-                                      alignItems: "center", 
+                                    <div style={{
+                                      background: "rgba(255,255,255,0.02)",
+                                      padding: "0.5rem 0.75rem",
+                                      borderRadius: "8px",
+                                      border: "1px solid var(--border-color)",
+                                      display: "flex",
+                                      alignItems: "center",
                                       justifyContent: "space-between"
                                     }}>
                                       <span style={{ fontSize: "0.72rem", fontWeight: "700", color: "var(--text-secondary)" }}>
@@ -5162,7 +5162,7 @@ ${aiRawText}
                                   )}
                                 </div>
                               )}
-                              
+
                               <button
                                 type="button"
                                 onClick={() => alert("🎙️ PLAUD 음성 녹음 및 AI 회의록 자동 요약 기능 연동 데모\n\n향후 PLAUD 디바이스 및 API와 실시간 동기화하여, 회의 음성 녹음본이 업로드되면 AI가 발화자별 텍스트 변환(STT) 및 핵심 결정을 자동으로 요약하여 이 회의록에 자동으로 채워주는 스마트 기능이 활성화될 예정입니다.")}
@@ -5197,7 +5197,7 @@ ${aiRawText}
       {/* 3_2. 언론보도 대장 */}
       {subTab === "press" && (
         <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
-          
+
           {/* 컨트롤 카드 */}
           <div className="card" style={{ padding: "1.25rem", borderRadius: "10px", background: "var(--panel-bg)", border: "1px solid var(--border-color)", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "1rem" }}>
             <div>
@@ -5208,7 +5208,7 @@ ${aiRawText}
                 방송 보도, 주요 일간지 신문 기사 및 뉴미디어(기타) 홍보 실적 통합 관리
               </p>
             </div>
-            
+
             <div style={{ display: "flex", gap: "0.75rem", alignItems: "center" }}>
               {/* 구분 필터 */}
               <div style={{ display: "flex", gap: "0.25rem", background: "rgba(255,255,255,0.03)", padding: "0.25rem", borderRadius: "6px", border: "1px solid var(--border-color)" }}>
@@ -5236,7 +5236,7 @@ ${aiRawText}
               </div>
 
               {/* 내보내기 및 등록 */}
-              <button 
+              <button
                 type="button"
                 onClick={handleExportPressExcel}
                 className="btn btn-secondary"
@@ -5247,20 +5247,20 @@ ${aiRawText}
 
               {/* 임시 비활성화 처리 (개별 URL 자동 입력 기능 우선 제공을 위해 숨김) */}
               {false && currentRole.id !== "GUEST" && (
-                <button 
+                <button
                   type="button"
                   onClick={handleGenerateAiPressReleases}
-                  style={{ 
-                    fontSize: "0.8rem", 
-                    fontWeight: "800", 
-                    display: "flex", 
-                    alignItems: "center", 
-                    gap: "0.3rem", 
-                    padding: "0.45rem 0.9rem", 
-                    background: "linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%)", 
-                    border: "none", 
-                    color: "white", 
-                    cursor: "pointer", 
+                  style={{
+                    fontSize: "0.8rem",
+                    fontWeight: "800",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "0.3rem",
+                    padding: "0.45rem 0.9rem",
+                    background: "linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%)",
+                    border: "none",
+                    color: "white",
+                    cursor: "pointer",
                     borderRadius: "6px",
                     boxShadow: "0 0 10px rgba(139, 92, 246, 0.3)",
                     transition: "all 0.2s ease"
@@ -5271,7 +5271,7 @@ ${aiRawText}
               )}
 
               {currentRole.id !== "GUEST" && (
-                <button 
+                <button
                   type="button"
                   onClick={() => openAddModal("press")}
                   className="btn btn-primary"
@@ -5286,7 +5286,7 @@ ${aiRawText}
 
           {/* 리스트 & 상세 내용 (Master-Detail) 레이아웃 - 왼쪽 40% : 오른쪽 60% 비율 분할 */}
           <div style={{ display: "grid", gridTemplateColumns: "4fr 6fr", gap: "1.5rem", alignItems: "start" }}>
-            
+
             {/* 좌측: 리스트 영역 */}
             <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem", maxHeight: "70vh", overflowY: "auto", paddingRight: "0.5rem" }}>
               {pressReleases
@@ -5303,7 +5303,7 @@ ${aiRawText}
                   .map((press) => {
                     const isActive = activePressId === press.id;
                     return (
-                      <div 
+                      <div
                         key={press.id}
                         onClick={() => setActivePressId(press.id)}
                         className="glass-card"
@@ -5329,12 +5329,12 @@ ${aiRawText}
                               {press.media}
                             </span>
                           </div>
-                          
+
                           {/* 제어 버튼 */}
                           <div style={{ display: "flex", gap: "0.3rem" }} onClick={(e) => e.stopPropagation()}>
                             {currentRole.id !== "GUEST" && (
                               <>
-                                <button 
+                                <button
                                   type="button"
                                   onClick={() => handleEditPress(press)}
                                   title="수정"
@@ -5344,7 +5344,7 @@ ${aiRawText}
                                 >
                                   <Edit size={13} />
                                 </button>
-                                <button 
+                                <button
                                   type="button"
                                   onClick={() => handleDeletePress(press.id)}
                                   title="삭제"
@@ -5358,11 +5358,11 @@ ${aiRawText}
                             )}
                           </div>
                         </div>
-                        
+
                         <h4 style={{ margin: 0, fontSize: "0.85rem", fontWeight: "800", color: "var(--text-primary)", lineHeight: "1.4", overflow: "hidden", textOverflow: "ellipsis", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>
                           {press.title}
                         </h4>
-                        
+
                         <div style={{ fontSize: "0.7rem", color: "var(--text-secondary)", display: "flex", alignItems: "center", gap: "0.2rem" }}>
                           <Clock size={11} />
                           <span>{press.broadcastDate ? press.broadcastDate.replace("T", " ").substring(0, 16) : "-"}</span>
@@ -5391,11 +5391,11 @@ ${aiRawText}
                     </div>
                   );
                 }
-                
+
                 const embedUrl = getYoutubeEmbedUrl(activePress.contentUrl);
-                
+
                 return (
-                  <div 
+                  <div
                     className="card"
                     style={{
                       padding: "1.75rem",
@@ -5418,7 +5418,7 @@ ${aiRawText}
                           {activePress.media}
                         </span>
                       </div>
-                      
+
                       <div style={{ fontSize: "0.8rem", color: "var(--text-secondary)", display: "flex", alignItems: "center", gap: "0.3rem" }}>
                         <Clock size={14} />
                         <span>보도일시: {activePress.broadcastDate ? activePress.broadcastDate.replace("T", " ").substring(0, 16) : "-"}</span>
@@ -5432,16 +5432,16 @@ ${aiRawText}
 
                     {/* 보도내용 텍스트 추가 */}
                     {activePress.pressContent && (
-                      <div 
-                        style={{ 
-                          background: "rgba(255, 255, 255, 0.02)", 
-                          padding: "1rem", 
-                          borderRadius: "8px", 
-                          border: "1px solid rgba(255, 255, 255, 0.05)", 
-                          fontSize: "0.85rem", 
-                          color: "var(--text-secondary)", 
-                          lineHeight: "1.6", 
-                          whiteSpace: "pre-wrap" 
+                      <div
+                        style={{
+                          background: "rgba(255, 255, 255, 0.02)",
+                          padding: "1rem",
+                          borderRadius: "8px",
+                          border: "1px solid rgba(255, 255, 255, 0.05)",
+                          fontSize: "0.85rem",
+                          color: "var(--text-secondary)",
+                          lineHeight: "1.6",
+                          whiteSpace: "pre-wrap"
                         }}
                       >
                         <strong style={{ display: "block", marginBottom: "0.5rem", color: "var(--text-primary)", fontSize: "0.85rem" }}>📝 보도내용</strong>
@@ -5454,7 +5454,7 @@ ${aiRawText}
                       {embedUrl ? (
                         <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
                           <div style={{ position: "relative", width: "100%", paddingBottom: "56.25%", height: 0, overflow: "hidden", borderRadius: "8px", border: "1px solid rgba(255,255,255,0.08)" }}>
-                            <iframe 
+                            <iframe
                               src={`${embedUrl}?feature=oembed&enablejsapi=1`}
                               title="Youtube video player"
                               frameBorder="0"
@@ -5464,7 +5464,7 @@ ${aiRawText}
                               style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%" }}
                             />
                           </div>
-                          
+
                           {/* 하단 기사 본문 URL 정보 */}
                           <div style={{ background: "rgba(255,255,255,0.01)", padding: "0.85rem", borderRadius: "6px", border: "1px solid rgba(255,255,255,0.04)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                             <div style={{ display: "flex", flexDirection: "column", gap: "0.15rem", width: "70%" }}>
@@ -5473,9 +5473,9 @@ ${aiRawText}
                                 {activePress.contentUrl}
                               </span>
                             </div>
-                            <a 
-                              href={activePress.contentUrl} 
-                              target="_blank" 
+                            <a
+                              href={activePress.contentUrl}
+                              target="_blank"
                               rel="noopener noreferrer"
                               style={{
                                 display: "inline-flex", alignItems: "center", justifyContent: "center", gap: "0.25rem",
@@ -5493,7 +5493,7 @@ ${aiRawText}
                             <span style={{ fontSize: "0.85rem", color: "var(--text-secondary)", fontWeight: "600" }}>📰 기사 내용 바로가기</span>
                             <Award size={18} style={{ color: "var(--accent-color)" }} />
                           </div>
-                          
+
                           <p style={{ margin: 0, fontSize: "0.8rem", color: "var(--text-secondary)", lineHeight: "1.5" }}>
                             본 보도자료는 신문 및 지면 기사 형태로 배포되었습니다. 아래 기사 링크를 클릭하시면 본문 기사 원본 페이지로 바로 이동합니다.
                           </p>
@@ -5503,11 +5503,11 @@ ${aiRawText}
                               {activePress.contentUrl || "(등록된 링크 주소가 없습니다)"}
                             </span>
                           </div>
-                          
+
                           {activePress.contentUrl && (
-                            <a 
-                              href={activePress.contentUrl} 
-                              target="_blank" 
+                            <a
+                              href={activePress.contentUrl}
+                              target="_blank"
                               rel="noopener noreferrer"
                               style={{
                                 display: "inline-flex", alignItems: "center", justifyContent: "center", gap: "0.25rem",
@@ -5534,12 +5534,12 @@ ${aiRawText}
       {isMemberModalOpen && (
         <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(0,0,0,0.8)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1100 }}>
           <div className="card" style={{ width: "500px", padding: "1.5rem", borderRadius: "12px", background: "var(--panel-bg)", border: "1px solid var(--border-color)" }}>
-            
+
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid var(--border-color)", paddingBottom: "0.75rem", marginBottom: "1.2rem" }}>
               <h3 style={{ margin: 0, fontSize: "1.1rem", fontWeight: "800", color: "var(--text-primary)" }}>
                 {editingMember ? "✏️ 위원 정보 수정" : "➕ 새 위원 추가 등록"}
               </h3>
-              <button 
+              <button
                 onClick={() => {
                   setIsMemberModalOpen(false);
                   setEditingMember(null);
@@ -5555,7 +5555,7 @@ ${aiRawText}
               <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
                 <label style={{ fontSize: "0.78rem", fontWeight: "700", color: "var(--text-secondary)" }}>구분 (type)</label>
                 <div style={{ display: "flex", gap: "0.5rem" }}>
-                  <select 
+                  <select
                     value={["위원장", "위원", "위원(자문겸직)", "간사"].includes(memberFormData.type) ? memberFormData.type : "custom"}
                     onChange={(e) => {
                       if (e.target.value !== "custom") {
@@ -5573,8 +5573,8 @@ ${aiRawText}
                     <option value="custom">직접 입력...</option>
                   </select>
                   {!["위원장", "위원", "위원(자문겸직)", "간사"].includes(memberFormData.type) && (
-                    <input 
-                      type="text" 
+                    <input
+                      type="text"
                       required
                       placeholder="구분 직접 입력"
                       value={memberFormData.type}
@@ -5588,8 +5588,8 @@ ${aiRawText}
               {/* 성명 */}
               <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
                 <label style={{ fontSize: "0.78rem", fontWeight: "700", color: "var(--text-secondary)" }}>성명 (name) *</label>
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   required
                   placeholder="예: 홍길동"
                   value={memberFormData.name}
@@ -5601,8 +5601,8 @@ ${aiRawText}
               {/* 소속기관 */}
               <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
                 <label style={{ fontSize: "0.78rem", fontWeight: "700", color: "var(--text-secondary)" }}>소속기관 (org)</label>
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   placeholder="예: 울산과학대학교, HD한국조선해양 등"
                   value={memberFormData.org}
                   onChange={(e) => setMemberFormData(prev => ({ ...prev, org: e.target.value }))}
@@ -5614,8 +5614,8 @@ ${aiRawText}
                 {/* 부서/학과 */}
                 <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
                   <label style={{ fontSize: "0.78rem", fontWeight: "700", color: "var(--text-secondary)" }}>부서/학과 (dept)</label>
-                  <input 
-                    type="text" 
+                  <input
+                    type="text"
                     placeholder="예: 기획처, 화학공학과 등"
                     value={memberFormData.dept}
                     onChange={(e) => setMemberFormData(prev => ({ ...prev, dept: e.target.value }))}
@@ -5626,8 +5626,8 @@ ${aiRawText}
                 {/* 직위 */}
                 <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
                   <label style={{ fontSize: "0.78rem", fontWeight: "700", color: "var(--text-secondary)" }}>직위 (rank)</label>
-                  <input 
-                    type="text" 
+                  <input
+                    type="text"
                     placeholder="예: 교수, 처장, 대표 등"
                     value={memberFormData.rank}
                     onChange={(e) => setMemberFormData(prev => ({ ...prev, rank: e.target.value }))}
@@ -5640,7 +5640,7 @@ ${aiRawText}
               <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: "1rem" }}>
                 <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
                   <label style={{ fontSize: "0.78rem", fontWeight: "700", color: "var(--text-secondary)" }}>교내외 구분</label>
-                  <select 
+                  <select
                     value={memberFormData.location}
                     onChange={(e) => setMemberFormData(prev => ({ ...prev, location: e.target.value }))}
                     style={{ padding: "0.5rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", fontSize: "0.8rem" }}
@@ -5651,8 +5651,8 @@ ${aiRawText}
                 </div>
                 <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
                   <label style={{ fontSize: "0.78rem", fontWeight: "700", color: "var(--text-secondary)" }}>비고 (note)</label>
-                  <input 
-                    type="text" 
+                  <input
+                    type="text"
                     placeholder="예: 신규 추가 등"
                     value={memberFormData.note}
                     onChange={(e) => setMemberFormData(prev => ({ ...prev, note: e.target.value }))}
@@ -5663,8 +5663,8 @@ ${aiRawText}
 
               {/* 버튼 */}
               <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.75rem", borderTop: "1px solid rgba(255,255,255,0.05)", paddingTop: "1rem", marginTop: "0.5rem" }}>
-                <button 
-                  type="button" 
+                <button
+                  type="button"
                   onClick={() => {
                     setIsMemberModalOpen(false);
                     setEditingMember(null);
@@ -5673,8 +5673,8 @@ ${aiRawText}
                 >
                   취소
                 </button>
-                <button 
-                  type="submit" 
+                <button
+                  type="submit"
                   style={{ padding: "0.5rem 1.25rem", borderRadius: "6px", background: "var(--accent-color)", border: "none", color: "var(--text-primary)", fontWeight: "600", cursor: "pointer", fontSize: "0.8rem" }}
                 >
                   저장 완료
@@ -5782,14 +5782,14 @@ ${aiRawText}
       {isAddModalOpen && (
         <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(0,0,0,0.8)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1100 }}>
           <div className="card" style={{ width: "730px", maxHeight: "95vh", overflowY: "auto", padding: "1.25rem", borderRadius: "12px", background: "var(--panel-bg)", border: "1px solid var(--border-color)" }}>
-            
+
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid var(--border-color)", paddingBottom: "0.6rem", marginBottom: "0.85rem" }}>
               <h3 style={{ margin: 0, fontSize: "1.1rem", fontWeight: "800", color: "var(--text-primary)" }}>
-                {isEditMode 
-                  ? (modalType === "deadline" ? "✏️ 마감일 수정" : modalType === "task" ? "✏️ 할일 수정" : modalType === "event" ? "✏️ 행사 기획 및 결과 수정" : modalType === "meeting" ? "✏️ 회의록 수정" : modalType === "press" ? "✏️ 언론보도 수정" : "✏️ 일반 일정 수정") 
+                {isEditMode
+                  ? (modalType === "deadline" ? "✏️ 마감일 수정" : modalType === "task" ? "✏️ 할일 수정" : modalType === "event" ? "✏️ 행사 기획 및 결과 수정" : modalType === "meeting" ? "✏️ 회의록 수정" : modalType === "press" ? "✏️ 언론보도 수정" : "✏️ 일반 일정 수정")
                   : (modalType === "monthly" ? "➕ 새 일반 일정 등록" : modalType === "task" ? "➕ 새 할일 등록" : modalType === "deadline" ? "🚨 새 마감일 등록" : modalType === "event" ? "➕ 새 행사 기획 및 결과 등록" : modalType === "meeting" ? "➕ 새 회의록 등록" : modalType === "press" ? "➕ 새 언론보도 등록" : "➕ 새 회의 일정 회의록 등록")}
               </h3>
-              <button 
+              <button
                 onClick={() => {
                   setIsAddModalOpen(false);
                   setIsEditMode(false);
@@ -5802,7 +5802,7 @@ ${aiRawText}
             </div>
 
             <form onSubmit={handleFormSubmit} style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
-              
+
               {/* 마감일 입력 */}
               {modalType === "deadline" && (
                 <>
@@ -5823,13 +5823,13 @@ ${aiRawText}
                           시간 지정 안 함
                         </label>
                       </div>
-                      <input 
-                        type="time" 
-                        name="startTime" 
-                        value={formData.startTime} 
-                        onChange={handleInputChange} 
+                      <input
+                        type="time"
+                        name="startTime"
+                        value={formData.startTime}
+                        onChange={handleInputChange}
                         disabled={formData.noTime}
-                        style={{ width: "100%", padding: "0.5rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", cursor: formData.noTime ? "not-allowed" : "text", opacity: formData.noTime ? 0.5 : 1 }} 
+                        style={{ width: "100%", padding: "0.5rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", cursor: formData.noTime ? "not-allowed" : "text", opacity: formData.noTime ? 0.5 : 1 }}
                       />
                     </div>
                   </div>
@@ -5864,13 +5864,13 @@ ${aiRawText}
                           시간 지정 안 함
                         </label>
                       </div>
-                      <input 
-                        type="time" 
-                        name="startTime" 
-                        value={formData.startTime} 
-                        onChange={handleInputChange} 
+                      <input
+                        type="time"
+                        name="startTime"
+                        value={formData.startTime}
+                        onChange={handleInputChange}
                         disabled={formData.noTime}
-                        style={{ width: "100%", padding: "0.5rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", cursor: formData.noTime ? "not-allowed" : "text", opacity: formData.noTime ? 0.5 : 1 }} 
+                        style={{ width: "100%", padding: "0.5rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", cursor: formData.noTime ? "not-allowed" : "text", opacity: formData.noTime ? 0.5 : 1 }}
                       />
                     </div>
                   </div>
@@ -5900,11 +5900,11 @@ ${aiRawText}
                           const checked = formData.dept ? formData.dept.split(",").map(x => x.trim()).includes(d) : false;
                           return (
                             <label key={d} style={{ display: "flex", alignItems: "center", gap: "0.35rem", fontSize: "0.78rem", color: "var(--text-primary)", cursor: "pointer", userSelect: "none" }}>
-                              <input 
-                                type="checkbox" 
-                                checked={checked} 
-                                onChange={() => handleDeptCheckboxChange(d)} 
-                                style={{ cursor: "pointer", width: "14px", height: "14px" }} 
+                              <input
+                                type="checkbox"
+                                checked={checked}
+                                onChange={() => handleDeptCheckboxChange(d)}
+                                style={{ cursor: "pointer", width: "14px", height: "14px" }}
                               />
                               {d}
                             </label>
@@ -5943,10 +5943,10 @@ ${aiRawText}
                         👥 전체 사업단 참석자 선택
                       </label>
                       <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)", display: "flex", alignItems: "center", gap: "0.35rem", cursor: "pointer" }}>
-                        <input 
-                          type="checkbox" 
-                          checked={includeProfessors} 
-                          onChange={(e) => setIncludeProfessors(e.target.checked)} 
+                        <input
+                          type="checkbox"
+                          checked={includeProfessors}
+                          onChange={(e) => setIncludeProfessors(e.target.checked)}
                           style={{ cursor: "pointer", width: "14px", height: "14px" }}
                         />
                         팀장교수 포함
@@ -5956,6 +5956,7 @@ ${aiRawText}
                       const ROLE_PRIORITY = {
                         "사업단장": 1,
                         "단장": 1, // 송경영 단장 정렬 최우선순위 보장
+                        "총괄본부장": 2,
                         "본부장": 2, // 김현수 본부장 정렬 2순위 보장
                         "센터장": 3,
                         "운영팀장": 4,
@@ -5978,14 +5979,14 @@ ${aiRawText}
                       };
 
                       const referenceDateObj = new Date(formData.startDate || new Date());
-                      
+
                       const allActiveMembers = (members || [])
                         .filter(m => {
                           const start = new Date(m.startDate || m.hireDate || "2026-03-01");
                           const end = m.endDate ? new Date(m.endDate) : null;
                           if (start > referenceDateObj) return false;
                           if (end && end < referenceDateObj) return false;
-                          
+
                           // 팀장교수 포함 체크 해제 시 팀장교수 리스트에서 완전 숨김
                           const displayRole = getFormattedMemberGrade(m);
                           if (!includeProfessors && displayRole === "팀장교수") return false;
@@ -5995,15 +5996,15 @@ ${aiRawText}
                           const rA = ROLE_PRIORITY[a.role] || 99;
                           const rB = ROLE_PRIORITY[b.role] || 99;
                           if (rA !== rB) return rA - rB;
-                          
+
                           const dA = DEPT_PRIORITY[a.dept] || 99;
                           const dB = DEPT_PRIORITY[b.dept] || 99;
                           if (dA !== dB) return dA - dB;
-                          
+
                           const gA = GRADE_PRIORITY[a.grade] || 99;
                           const gB = GRADE_PRIORITY[b.grade] || 99;
                           if (gA !== gB) return gA - gB;
-                          
+
                           const sA = new Date(a.startDate || a.hireDate || "2026-03-01").getTime();
                           const sB = new Date(b.startDate || b.hireDate || "2026-03-01").getTime();
                           return sA - sB;
@@ -6019,35 +6020,35 @@ ${aiRawText}
                               .some(x => x === m.name || x.startsWith(m.name + " ") || x.startsWith(m.name + "("));
 
                             return (
-                                <button
-                                  key={m.id || m.email}
-                                  type="button"
-                                  onClick={() => handleToggleAttendee(m.name, displayRole)}
-                                  style={{
-                                    padding: "0.25rem 0.5rem",
-                                    fontSize: "0.7rem",
-                                    borderRadius: "4px",
-                                    border: "1px solid " + (isSelected ? "var(--accent-color)" : "var(--border-color)"),
-                                    background: isSelected ? "rgba(59, 130, 246, 0.15)" : "var(--input-bg)",
-                                    color: isSelected ? "#60A5FA" : "var(--text-secondary)",
-                                    cursor: "pointer",
-                                    fontWeight: "700"
-                                  }}
-                                >
-                                  {m.name} {displayRole} {isSelected ? "✓" : "+"}
-                                </button>
+                              <button
+                                key={m.id || m.email}
+                                type="button"
+                                onClick={() => handleToggleAttendee(m.name, displayRole)}
+                                style={{
+                                  padding: "0.25rem 0.5rem",
+                                  fontSize: "0.7rem",
+                                  borderRadius: "4px",
+                                  border: "1px solid " + (isSelected ? "var(--accent-color)" : "var(--border-color)"),
+                                  background: isSelected ? "rgba(59, 130, 246, 0.15)" : "var(--input-bg)",
+                                  color: isSelected ? "#60A5FA" : "var(--text-secondary)",
+                                  cursor: "pointer",
+                                  fontWeight: "700"
+                                }}
+                              >
+                                {m.name} {displayRole} {isSelected ? "✓" : "+"}
+                              </button>
                             );
                           })}
                         </div>
                       );
                     })()}
-                    <input 
-                      type="text" 
-                      name="attendees" 
-                      value={formData.attendees || ""} 
-                      onChange={handleInputChange} 
-                      placeholder="선택되거나 직접 콤마(,)로 구분해 입력" 
-                      style={{ width: "100%", padding: "0.5rem", marginTop: "0.35rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", fontSize: "0.75rem" }} 
+                    <input
+                      type="text"
+                      name="attendees"
+                      value={formData.attendees || ""}
+                      onChange={handleInputChange}
+                      placeholder="선택되거나 직접 콤마(,)로 구분해 입력"
+                      style={{ width: "100%", padding: "0.5rem", marginTop: "0.35rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", fontSize: "0.75rem" }}
                     />
                   </div>
                 </>
@@ -6079,7 +6080,7 @@ ${aiRawText}
                         [기획안 샘플 파일 자동 로드]
                       </button>
                     </div>
-                    
+
                     <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
                       <input
                         type="file"
@@ -6112,7 +6113,7 @@ ${aiRawText}
                           파일 탐색
                         </span>
                       </label>
-                      
+
                       <button
                         type="button"
                         onClick={triggerAiAutoFill}
@@ -6207,7 +6208,7 @@ ${aiRawText}
                       <input type="text" name="location" value={formData.location} onChange={handleInputChange} placeholder="예: 체육관 특설 돔" style={{ width: "100%", padding: "0.5rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} />
                     </div>
                   </div>
-                  
+
                   {/* 일자 및 시작/종료시간 개별 입력 */}
                   <div style={{ display: "grid", gridTemplateColumns: "1.2fr 0.9fr 0.9fr", gap: "1rem" }}>
                     <div>
@@ -6323,7 +6324,7 @@ ${aiRawText}
                             if (formData.category === "committee") {
                               if ((formData.committeeType || "agency") === "agency") {
                                 return [
-                                  "앵커총괄위원회", "앵커기획위원회", "앵커사업비관리위원회", 
+                                  "앵커총괄위원회", "앵커기획위원회", "앵커사업비관리위원회",
                                   "앵커사업자체평가위원회", "앵커사업자문회의", "앵커사업운영위원회"
                                 ].map(d => <option key={d} value={d}>{d}</option>);
                               } else {
@@ -6342,33 +6343,33 @@ ${aiRawText}
                         <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>작성자</label>
                         <select name="writer" value={formData.writer} onChange={handleInputChange} style={{ width: "100%", padding: "0.5rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }}>
                           {(() => {
-                            const isCenterMeeting = 
-                              formData.category === "center" || 
+                            const isCenterMeeting =
+                              formData.category === "center" ||
                               (formData.category === "committee" && (formData.committeeType || "agency") === "center");
 
                             let activeWriters = [];
                             if (isCenterMeeting && formData.dept) {
-                              activeWriters = (members || []).filter(m => 
-                                m.status !== "미참여" && 
-                                m.email && 
+                              activeWriters = (members || []).filter(m =>
+                                m.status !== "미참여" &&
+                                m.email &&
                                 m.dept === formData.dept &&
                                 !isWriterExcluded(m)
                               );
                               if (activeWriters.length === 0) {
-                                activeWriters = (members || []).filter(m => 
-                                  m.status !== "미참여" && 
+                                activeWriters = (members || []).filter(m =>
+                                  m.status !== "미참여" &&
                                   m.dept === formData.dept &&
                                   !isWriterExcluded(m)
                                 );
                               }
                             } else {
-                              activeWriters = (members || []).filter(m => 
-                                m.status !== "미참여" && 
-                                m.email && 
+                              activeWriters = (members || []).filter(m =>
+                                m.status !== "미참여" &&
+                                m.email &&
                                 m.dept === "사업운영팀" && // 사업운영팀 구성원만 노출
                                 !isWriterExcluded(m)
                               );
-                              
+
                               // 사업단 관련 회의인 경우 심현미 운영팀장을 맨 위에 강제 포함
                               const simHyunMi = (members || []).find(m => m.name === "심현미") || {
                                 id: "sim_hm_temp",
@@ -6424,10 +6425,10 @@ ${aiRawText}
                           👥 소속 연구원 선택 (부서별 자동 연동)
                         </label>
                         <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)", display: "flex", alignItems: "center", gap: "0.35rem", cursor: "pointer" }}>
-                          <input 
-                            type="checkbox" 
-                            checked={includeProfessors} 
-                            onChange={(e) => setIncludeProfessors(e.target.checked)} 
+                          <input
+                            type="checkbox"
+                            checked={includeProfessors}
+                            onChange={(e) => setIncludeProfessors(e.target.checked)}
                             style={{ cursor: "pointer", width: "14px", height: "14px" }}
                           />
                           팀장교수 포함
@@ -6502,13 +6503,13 @@ ${aiRawText}
                       <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>
                         참석자 (위의 버튼을 누르면 자동으로 입력되며, 타 부서 인원의 경우 수기입력 가능)
                       </label>
-                      <input 
-                        type="text" 
-                        name="attendees" 
-                        value={formData.attendees || ""} 
-                        onChange={handleInputChange} 
-                        placeholder="위 칩을 선택하거나 직접 입력 (예: 박지현 팀장, 이진우 PD (총 2명))" 
-                        style={{ width: "100%", padding: "0.5rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} 
+                      <input
+                        type="text"
+                        name="attendees"
+                        value={formData.attendees || ""}
+                        onChange={handleInputChange}
+                        placeholder="위 칩을 선택하거나 직접 입력 (예: 박지현 팀장, 이진우 PD (총 2명))"
+                        style={{ width: "100%", padding: "0.5rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }}
                       />
                     </div>
                   )}
@@ -6517,13 +6518,13 @@ ${aiRawText}
                   {formData.category === "committee" && (formData.committeeType || "agency") === "agency" && (
                     <div style={{ marginTop: "0.75rem" }}>
                       <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>참석자 입력</label>
-                      <input 
-                        type="text" 
-                        name="attendees" 
-                        value={formData.attendees || ""} 
-                        onChange={handleInputChange} 
-                        placeholder="회의 참석자명 입력 (예: 김민수 단장, 이진우 교수 등)" 
-                        style={{ width: "100%", padding: "0.5rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} 
+                      <input
+                        type="text"
+                        name="attendees"
+                        value={formData.attendees || ""}
+                        onChange={handleInputChange}
+                        placeholder="회의 참석자명 입력 (예: 김민수 단장, 이진우 교수 등)"
+                        style={{ width: "100%", padding: "0.5rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }}
                       />
                     </div>
                   )}
@@ -6536,20 +6537,20 @@ ${aiRawText}
                         🎙️ 음성 녹음 파일 (MP3 전용, 최대 5MB)
                       </label>
                       {formData.audioUrl ? (
-                        <div style={{ 
-                          display: "flex", 
-                          alignItems: "center", 
-                          gap: "0.4rem", 
-                          background: "rgba(85, 182, 133, 0.08)", 
-                          padding: "0.45rem 0.6rem", 
-                          borderRadius: "6px", 
-                          border: "1px solid rgba(85, 182, 133, 0.15)" 
+                        <div style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "0.4rem",
+                          background: "rgba(85, 182, 133, 0.08)",
+                          padding: "0.45rem 0.6rem",
+                          borderRadius: "6px",
+                          border: "1px solid rgba(85, 182, 133, 0.15)"
                         }}>
                           <span style={{ fontSize: "0.7rem", color: "#55b685", fontWeight: "700" }}>✓ 등록됨</span>
-                          <a 
-                            href={formData.audioUrl} 
-                            target="_blank" 
-                            rel="noreferrer" 
+                          <a
+                            href={formData.audioUrl}
+                            target="_blank"
+                            rel="noreferrer"
                             style={{ fontSize: "0.7rem", color: "#60A5FA", textDecoration: "none", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: "100px" }}
                           >
                             [듣기/다운로드 ➔]
@@ -6557,13 +6558,13 @@ ${aiRawText}
                           <button
                             type="button"
                             onClick={() => setFormData(prev => ({ ...prev, audioUrl: "" }))}
-                            style={{ 
-                              marginLeft: "auto", 
-                              background: "none", 
-                              border: "none", 
-                              color: "#EF4444", 
-                              cursor: "pointer", 
-                              fontSize: "0.68rem", 
+                            style={{
+                              marginLeft: "auto",
+                              background: "none",
+                              border: "none",
+                              color: "#EF4444",
+                              cursor: "pointer",
+                              fontSize: "0.68rem",
                               fontWeight: "700"
                             }}
                           >
@@ -6610,20 +6611,20 @@ ${aiRawText}
                         📄 회의록 첨부 문서 (PDF 전용, 최대 2MB)
                       </label>
                       {formData.pdfUrl ? (
-                        <div style={{ 
-                          display: "flex", 
-                          alignItems: "center", 
-                          gap: "0.4rem", 
-                          background: "rgba(85, 182, 133, 0.08)", 
-                          padding: "0.45rem 0.6rem", 
-                          borderRadius: "6px", 
-                          border: "1px solid rgba(85, 182, 133, 0.15)" 
+                        <div style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "0.4rem",
+                          background: "rgba(85, 182, 133, 0.08)",
+                          padding: "0.45rem 0.6rem",
+                          borderRadius: "6px",
+                          border: "1px solid rgba(85, 182, 133, 0.15)"
                         }}>
                           <span style={{ fontSize: "0.7rem", color: "#55b685", fontWeight: "700" }}>✓ 등록됨</span>
-                          <a 
-                            href={formData.pdfUrl} 
-                            target="_blank" 
-                            rel="noreferrer" 
+                          <a
+                            href={formData.pdfUrl}
+                            target="_blank"
+                            rel="noreferrer"
                             style={{ fontSize: "0.7rem", color: "#60A5FA", textDecoration: "none", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: "100px" }}
                           >
                             [문서 확인 ➔]
@@ -6631,13 +6632,13 @@ ${aiRawText}
                           <button
                             type="button"
                             onClick={() => setFormData(prev => ({ ...prev, pdfUrl: "" }))}
-                            style={{ 
-                              marginLeft: "auto", 
-                              background: "none", 
-                              border: "none", 
-                              color: "#EF4444", 
-                              cursor: "pointer", 
-                              fontSize: "0.68rem", 
+                            style={{
+                              marginLeft: "auto",
+                              background: "none",
+                              border: "none",
+                              color: "#EF4444",
+                              cursor: "pointer",
+                              fontSize: "0.68rem",
                               fontWeight: "700"
                             }}
                           >
@@ -6691,7 +6692,7 @@ ${aiRawText}
                           const deptResultVal = formData.operatingResults?.[deptName] || "";
 
                           return (
-                            <div 
+                            <div
                               key={deptName}
                               style={{
                                 background: "rgba(255, 255, 255, 0.01)",
@@ -6707,7 +6708,7 @@ ${aiRawText}
                                 📌 {deptName}
                               </span>
                               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem" }}>
-                                <input 
+                                <input
                                   type="text"
                                   value={deptAgendaVal}
                                   onChange={(e) => {
@@ -6722,7 +6723,7 @@ ${aiRawText}
                                   placeholder={`${deptName} 의제 / 전달사항`}
                                   style={{ padding: "0.4rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "4px", color: "var(--text-primary)", fontSize: "0.72rem" }}
                                 />
-                                <textarea 
+                                <textarea
                                   value={deptResultVal}
                                   onChange={(e) => {
                                     setFormData(prev => ({
@@ -6774,11 +6775,11 @@ ${aiRawText}
 
                       {/* AI 분석 중 가시적 로딩 바 피드백 */}
                       {isAnalyzingAI && (
-                        <div style={{ 
-                          padding: "1rem", 
-                          background: "rgba(59, 130, 246, 0.08)", 
-                          border: "1px solid rgba(59, 130, 246, 0.15)", 
-                          borderRadius: "6px", 
+                        <div style={{
+                          padding: "1rem",
+                          background: "rgba(59, 130, 246, 0.08)",
+                          border: "1px solid rgba(59, 130, 246, 0.15)",
+                          borderRadius: "6px",
                           marginBottom: "0.75rem",
                           textAlign: "center",
                           display: "flex",
@@ -6807,13 +6808,13 @@ ${aiRawText}
                       )}
 
                       {/* AI 팁 안내 박스 */}
-                      <div style={{ 
-                        padding: "0.5rem 0.75rem", 
-                        background: "rgba(255, 255, 255, 0.015)", 
-                        border: "1px solid rgba(255, 255, 255, 0.03)", 
-                        borderRadius: "6px", 
-                        fontSize: "0.72rem", 
-                        color: "var(--text-secondary)", 
+                      <div style={{
+                        padding: "0.5rem 0.75rem",
+                        background: "rgba(255, 255, 255, 0.015)",
+                        border: "1px solid rgba(255, 255, 255, 0.03)",
+                        borderRadius: "6px",
+                        fontSize: "0.72rem",
+                        color: "var(--text-secondary)",
                         marginBottom: "0.6rem",
                         lineHeight: "1.4"
                       }}>
@@ -6822,12 +6823,12 @@ ${aiRawText}
 
                       <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
                         {agendaResultPairs.map((pair, index) => (
-                          <div 
-                            key={index} 
-                            style={{ 
-                              display: "grid", 
-                              gridTemplateColumns: agendaResultPairs.length > 1 ? "1fr 2.2fr 40px" : "1fr 2.2fr", 
-                              gap: "0.5rem", 
+                          <div
+                            key={index}
+                            style={{
+                              display: "grid",
+                              gridTemplateColumns: agendaResultPairs.length > 1 ? "1fr 2.2fr 40px" : "1fr 2.2fr",
+                              gap: "0.5rem",
                               alignItems: "stretch",
                               background: "rgba(255, 255, 255, 0.01)",
                               padding: "0.5rem",
@@ -6835,9 +6836,9 @@ ${aiRawText}
                               border: "1px solid rgba(255, 255, 255, 0.04)"
                             }}
                           >
-                            <input 
-                              type="text" 
-                              value={pair.agenda} 
+                            <input
+                              type="text"
+                              value={pair.agenda}
                               onChange={(e) => {
                                 const newPairs = [...agendaResultPairs];
                                 newPairs[index].agenda = e.target.value;
@@ -6846,8 +6847,8 @@ ${aiRawText}
                               placeholder={`의제 ${index + 1} (예: 2차년도 예산 검토)`}
                               style={{ padding: "0.45rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", fontSize: "0.75rem", height: "100%" }}
                             />
-                            <textarea 
-                              value={pair.result} 
+                            <textarea
+                              value={pair.result}
                               onChange={(e) => {
                                 const newPairs = [...agendaResultPairs];
                                 newPairs[index].result = e.target.value;
@@ -6874,18 +6875,18 @@ ${aiRawText}
                         <button
                           type="button"
                           onClick={() => setAgendaResultPairs([...agendaResultPairs, { agenda: "", result: "" }])}
-                          style={{ 
-                            marginTop: "0.2rem", 
-                            padding: "0.35rem 0.8rem", 
-                            background: "rgba(59,130,246,0.12)", 
-                            border: "1px solid rgba(59,130,246,0.25)", 
-                            borderRadius: "6px", 
-                            color: "#60A5FA", 
-                            cursor: "pointer", 
-                            fontSize: "0.72rem", 
-                            display: "inline-flex", 
-                            alignSelf: "flex-start", 
-                            fontWeight: "700" 
+                          style={{
+                            marginTop: "0.2rem",
+                            padding: "0.35rem 0.8rem",
+                            background: "rgba(59,130,246,0.12)",
+                            border: "1px solid rgba(59,130,246,0.25)",
+                            borderRadius: "6px",
+                            color: "#60A5FA",
+                            cursor: "pointer",
+                            fontSize: "0.72rem",
+                            display: "inline-flex",
+                            alignSelf: "flex-start",
+                            fontWeight: "700"
                           }}
                         >
                           + 의제/결과 행 추가
@@ -6955,17 +6956,17 @@ ${aiRawText}
                     <textarea name="pressContent" value={formData.pressContent || ""} onChange={handleInputChange} placeholder="기사 본문 또는 세부 보도 내용을 기술해 주세요." style={{ width: "100%", height: "100px", padding: "0.5rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", resize: "none" }} />
                   </div>
 
-                   <div>
+                  <div>
                     <label style={{ display: "block", fontSize: "0.85rem", color: "#8b5cf6", fontWeight: "700", marginBottom: "0.35rem" }}>✨ 보도 내용 URL (유튜브 링크 또는 기사 링크)</label>
                     <div style={{ display: "flex", gap: "0.5rem" }}>
-                      <input 
-                        type="url" 
-                        name="pressUrl" 
-                        value={formData.pressUrl || ""} 
-                        onChange={handleInputChange} 
-                        required 
-                        placeholder="예: https://www.youtube.com/watch?v=... 또는 기사 원문 링크" 
-                        style={{ flex: 1, padding: "0.6rem 0.75rem", background: "rgba(139, 92, 246, 0.08)", border: "2px solid #8b5cf6", borderRadius: "8px", color: "var(--text-primary)", fontWeight: "600", fontSize: "0.9rem", boxShadow: "0 0 10px rgba(139, 92, 246, 0.15)" }} 
+                      <input
+                        type="url"
+                        name="pressUrl"
+                        value={formData.pressUrl || ""}
+                        onChange={handleInputChange}
+                        required
+                        placeholder="예: https://www.youtube.com/watch?v=... 또는 기사 원문 링크"
+                        style={{ flex: 1, padding: "0.6rem 0.75rem", background: "rgba(139, 92, 246, 0.08)", border: "2px solid #8b5cf6", borderRadius: "8px", color: "var(--text-primary)", fontWeight: "600", fontSize: "0.9rem", boxShadow: "0 0 10px rgba(139, 92, 246, 0.15)" }}
                       />
                       <button
                         type="button"
@@ -6974,8 +6975,8 @@ ${aiRawText}
                         style={{
                           padding: "0.5rem 1rem",
                           borderRadius: "6px",
-                          background: isAnalyzingUrl 
-                            ? "rgba(139, 92, 246, 0.3)" 
+                          background: isAnalyzingUrl
+                            ? "rgba(139, 92, 246, 0.3)"
                             : (formData.pressUrl ? "linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%)" : "rgba(255,255,255,0.05)"),
                           border: "none",
                           color: formData.pressUrl ? "white" : "var(--text-secondary)",
@@ -7006,8 +7007,8 @@ ${aiRawText}
 
               {/* 버튼 그룹 */}
               <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.75rem", borderTop: "1px solid rgba(255,255,255,0.05)", paddingTop: "1rem", marginTop: "0.5rem" }}>
-                <button 
-                  type="button" 
+                <button
+                  type="button"
                   onClick={() => {
                     setIsAddModalOpen(false);
                     setIsEditMode(false);
@@ -7017,8 +7018,8 @@ ${aiRawText}
                 >
                   취소
                 </button>
-                <button 
-                  type="submit" 
+                <button
+                  type="submit"
                   style={{ padding: "0.5rem 1.25rem", borderRadius: "6px", background: "var(--accent-color)", border: "none", color: "var(--text-primary)", fontWeight: "600", cursor: "pointer" }}
                 >
                   {isEditMode ? "수정 완료" : "새 등록 완료"}
