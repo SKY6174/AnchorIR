@@ -41,9 +41,6 @@ export default function AuthManager({ onLoginSuccess, members = [] }) {
       } else if (targetId === "hq_head" && userPw === "uc_anchor") {
         targetId = "hskim3";
         authPassword = "796300";
-      } else if (targetId === "g_director" && userPw === "uc_anchor") {
-        targetId = "kysong";
-        authPassword = "uc_anchor";
       }
 
       // 💡 [이메일 단일화 혁신] 주소록(members)에서 해당 아이디 파트 또는 이메일과 매칭되는 멤버를 선제 탐색합니다.
@@ -80,14 +77,7 @@ export default function AuthManager({ onLoginSuccess, members = [] }) {
       const isTestAccount = ["admin", "g_director", "hq_head", "manager", "team_leader", "researcher", "guest"].includes(targetId);
       const expectedTestPw = (targetId === "admin" || targetId === "g_director" || targetId === "hq_head" || targetId === "manager") ? "uc_anchor" : targetId === "guest" ? "guest123" : "1234";
 
-      // 💡 [비밀번호 자동 호환 보정 가드]
-      // 기존에 1234 패스워드로 Supabase Auth에 이미 가입되어 있는 임시 계정의 경우,
-      // uc_anchor를 입력하여 로그인 시도 시 인증서버에는 1234 패스워드로 로그인되도록 자동 매핑해 줍니다.
-      if (isTestAccount && userPw === expectedTestPw) {
-        if (targetId === "admin" && userPw === "uc_anchor") {
-          authPassword = "1234";
-        }
-      }
+
 
       // 💡 [콘솔 에러 완전 박멸 혁신] 일단 로그인(signIn)을 무조건 1차 선제 시도합니다.
       // 가입이 이미 되어 있는 계정은 이 단계에서 성공하므로, 불필요한 signUp 호출에 따른 422 에러를 원천 박멸합니다.
