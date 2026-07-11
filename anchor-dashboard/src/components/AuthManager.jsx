@@ -34,9 +34,6 @@ export default function AuthManager({ onLoginSuccess, members = [] }) {
       const matchedMember = members.find((m) => {
         const mEmail = (m.email || "").trim().toLowerCase();
         if (targetId === "special_head" && mEmail === "cshong@uc.ac.kr") return true;
-        // g_director와 manager ID 입력 시 실제 주소록 계정(kysong, hmsim)으로 즉각 매핑 처리하여 로그인 세션을 확보합니다.
-        if (targetId === "g_director" && mEmail === "kysong@uc.ac.kr") return true;
-        if (targetId === "manager" && mEmail === "hmsim@uc.ac.kr") return true;
         return mEmail === targetId || mEmail.split("@")[0] === targetId;
       });
 
