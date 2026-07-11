@@ -133,8 +133,8 @@ export default function AuthManager({ onLoginSuccess, members = [] }) {
           if (expectedPhonePw && userPw === expectedPhonePw) {
             console.log(">>> [인증 터널링 가동] 주소록과 일치하므로 백그라운드 RLS 세션을 확보합니다. <<<");
             const { data: tunnelData, error: tunnelErr } = await supabase.auth.signInWithPassword({
-              email: "manager@anchor.ac.kr",
-              password: "uc_anchor"
+              email: "hmsim@uc.ac.kr",
+              password: "835900"
             });
             if (!tunnelErr && tunnelData && tunnelData.user) {
               authUser = tunnelData.user;
