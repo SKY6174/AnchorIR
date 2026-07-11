@@ -2053,13 +2053,14 @@ export default function App() {
     return null;
   });
 
+  const roleKey = currentUser?.role_key || currentUser?.role?.id || "";
   const isSongDirector = currentUser && (
     (currentUser.name || "").includes("송경영") ||
-    currentUser.role_key === "TEAM_LEADER" ||
-    currentUser.role_key === "ADMIN" ||
-    currentUser.role_key === "G_DIRECTOR" ||
-    currentUser.role_key === "HQ_HEAD" ||
-    currentUser.role_key === "MANAGER" ||
+    roleKey === "TEAM_LEADER" ||
+    roleKey === "ADMIN" ||
+    roleKey === "G_DIRECTOR" ||
+    roleKey === "HQ_HEAD" ||
+    roleKey === "MANAGER" ||
     currentUser.role === "사업단장" ||
     currentUser.role === "운영팀장" ||
     currentUser.id === "manager"

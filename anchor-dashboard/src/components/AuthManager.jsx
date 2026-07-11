@@ -256,6 +256,7 @@ export default function AuthManager({ onLoginSuccess, members = [] }) {
         loginId: userId.trim().toLowerCase(),
         name: matchedName,
         role: mappedRole,
+        role_key: autoRoleKey,
         password: userPw,
         uuid: authUser.id,
         email: targetEmail
