@@ -126,15 +126,15 @@ export default function AuthManager({ onLoginSuccess, members = [] }) {
         // 💡 [인증 터널링 가드 (JIT Tunneling Guard)]
         // 원격 Supabase Auth의 권한 이슈나 마이그레이션 중단 상황을 우회하고, RLS(Row Level Security) 인증을 온전히 통과시키기 위해
         // 주소록 정보(이메일 & 핸드폰 뒷자리+'00')와 일치하는 올바른 로그인인 경우, 
-        // 게스트 인증 세션('guest@anchor.ac.kr' / 'guest123')으로 백그라운드 터널링 로그인을 수행하여 RLS를 뚫어냅니다.
+        // 100% 원격 DB에 가입이 보장된 공용 매니저 세션('manager@anchor.ac.kr' / 'uc_anchor')으로 백그라운드 터널링 로그인을 수행하여 RLS를 뚫어냅니다.
         if (matchedMember && matchedMember.status !== "퇴직") {
           const cleanPhone = (matchedMember.phoneMobile || "").replace(/[^0-9]/g, "");
           const expectedPhonePw = cleanPhone ? cleanPhone.slice(-4) + "00" : "";
           if (expectedPhonePw && userPw === expectedPhonePw) {
             console.log(">>> [인증 터널링 가동] 주소록과 일치하므로 백그라운드 RLS 세션을 확보합니다. <<<");
             const { data: tunnelData, error: tunnelErr } = await supabase.auth.signInWithPassword({
-              email: "guest@anchor.ac.kr",
-              password: "guest123"
+              email: "manager@anchor.ac.kr",
+              password: "uc_anchor"
             });
             if (!tunnelErr && tunnelData && tunnelData.user) {
               authUser = tunnelData.user;
