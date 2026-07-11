@@ -61,11 +61,24 @@ export default function AuthManager({ onLoginSuccess, members = [] }) {
       let authUser = null;
       let authSession = null;
 
+      const isTestAccount = ["admin", "g_director", "hq_head", "manager", "team_leader", "researcher", "guest"].includes(targetId);
+      const expectedTestPw = (targetId === "admin" || targetId === "g_director" || targetId === "manager") ? "uc_anchor" : targetId === "guest" ? "guest123" : "1234";
+
+      // 💡 [비밀번호 자동 호환 보정 가드]
+      // 기존에 1234 패스워드로 Supabase Auth에 이미 가입되어 있는 임시 계정의 경우,
+      // uc_anchor를 입력하여 로그인 시도 시 인증서버에는 1234 패스워드로 로그인되도록 자동 매핑해 줍니다.
+      let authPassword = userPw;
+      if (isTestAccount && userPw === expectedTestPw) {
+        if ((targetId === "g_director" || targetId === "manager") && userPw === "uc_anchor") {
+          authPassword = "1234";
+        }
+      }
+
       // 💡 [콘솔 에러 완전 박멸 혁신] 일단 로그인(signIn)을 무조건 1차 선제 시도합니다.
       // 가입이 이미 되어 있는 계정은 이 단계에서 성공하므로, 불필요한 signUp 호출에 따른 422 에러를 원천 박멸합니다.
       const { data: firstAuthData, error: firstAuthErr } = await supabase.auth.signInWithPassword({
         email: targetEmail,
-        password: userPw
+        password: authPassword
       });
 
       if (!firstAuthErr && firstAuthData && firstAuthData.user) {
@@ -73,9 +86,6 @@ export default function AuthManager({ onLoginSuccess, members = [] }) {
         authSession = firstAuthData.session;
       } else {
         // 1차 로그인 실패 시, 아직 가입되지 않은 미연동 계정인지 판별하여 선제 자동 회원가입(signUp)을 처리합니다.
-        const isTestAccount = ["admin", "g_director", "hq_head", "manager", "team_leader", "researcher", "guest"].includes(targetId);
-        const expectedTestPw = (targetId === "admin" || targetId === "g_director" || targetId === "manager") ? "uc_anchor" : targetId === "guest" ? "guest123" : "1234";
-
         if ((matchedMember && matchedMember.status !== "퇴직") || isTestAccount) {
           const cleanPhone = matchedMember ? (matchedMember.phoneMobile || "").replace(/[^0-9]/g, "") : "";
           const expectedPhonePw = cleanPhone ? cleanPhone.slice(-4) + "00" : "";
@@ -114,7 +124,7 @@ export default function AuthManager({ onLoginSuccess, members = [] }) {
 
       // 3. 로그인 성공 시, 기존 rise_users 및 주소록 데이터를 매핑하여 sessionUser 생성
       // UUID 컬럼이 미연동 상태라면 업데이트해 줍니다.
-      const isTestAccount = ["admin", "g_director", "hq_head", "manager", "team_leader", "researcher", "guest"].includes(targetId);
+
       if (dbUser) {
         if (!dbUser.uuid) {
           try {
