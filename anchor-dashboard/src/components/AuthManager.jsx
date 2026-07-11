@@ -34,6 +34,9 @@ export default function AuthManager({ onLoginSuccess, members = [] }) {
       const matchedMember = members.find((m) => {
         const mEmail = (m.email || "").trim().toLowerCase();
         if (targetId === "special_head" && mEmail === "cshong@uc.ac.kr") return true;
+        // g_director와 manager ID 입력 시 실제 주소록 계정(kysong, hmsim)으로 즉각 매핑 처리하여 로그인 세션을 확보합니다.
+        if (targetId === "g_director" && mEmail === "kysong@uc.ac.kr") return true;
+        if (targetId === "manager" && mEmail === "hmsim@uc.ac.kr") return true;
         return mEmail === targetId || mEmail.split("@")[0] === targetId;
       });
 
@@ -225,10 +228,15 @@ export default function AuthManager({ onLoginSuccess, members = [] }) {
         }
       }
 
-      // 게스트 특화 처리
-      if (targetId === "guest") {
-        autoRoleKey = "GUEST";
-        matchedName = "게스트 (방문자)";
+      // 💡 [데모 계정 전용 역할 강제 보정]
+      // g_director와 manager ID로 직접 로그인했을 경우, 실제 주소록 계정 매핑에 영향받지 않고
+      // 각각 'G_DIRECTOR'(사업단장), 'MANAGER'(운영팀장) 권한이 완벽하게 부여되도록 역할을 강제 세팅합니다.
+      if (targetId === "g_director") {
+        autoRoleKey = "G_DIRECTOR";
+        matchedName = "송경영";
+      } else if (targetId === "manager") {
+        autoRoleKey = "MANAGER";
+        matchedName = "심현미";
       }
 
       const mappedRole = userRoles[autoRoleKey] || userRoles.RESEARCHER;
