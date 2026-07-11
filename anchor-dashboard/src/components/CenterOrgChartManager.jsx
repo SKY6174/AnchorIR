@@ -106,10 +106,10 @@ export default function CenterOrgChartManager() {
           display: "flex",
           alignItems: "flex-start",
           justifyContent: "center",
-          gap: "2.5rem",
+          gap: "4.5rem", // 중앙 정렬 축 일치를 위해 gap 조율
           width: "100%",
-          maxWidth: "1050px"
-        }}>\n
+          maxWidth: "1240px" // 하단 그리드와 완벽 매칭하여 중심축 일치
+        }}>
           {/* ================= 좌측: 사업단 내부 위원회 ================= */}
           <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", width: "170px", paddingTop: "4.8rem" }}>
             <div style={{ fontSize: "0.7rem", fontWeight: "bold", color: "var(--accent-color)", borderBottom: "2px solid var(--accent-color)", paddingBottom: "0.2rem", marginBottom: "0.2rem", textAlign: "center" }}>
@@ -255,6 +255,8 @@ export default function CenterOrgChartManager() {
                 </div>
               </div>
             </div>
+            {/* 본부장에서 내려가는 수직 연결선 (중앙 트리 내부에 위치하므로 본부장 카드의 정중앙에서 확실하게 출발합니다!) */}
+            <div style={{ width: "2px", height: "35px", background: "rgba(255, 255, 255, 0.45)", zIndex: 1 }} />
           </div>
 
           {/* ================= 우측: 대학 및 외부 연계 거버넌스 ================= */}
@@ -291,9 +293,8 @@ export default function CenterOrgChartManager() {
         </div>
 
         {/* 중간 레이어: 총괄본부장에서 6대 센터로 내려가는 분기 가이드라인 */}
-        {/* marginTop을 -1.1rem으로 당겨 총괄본부장 카드 테두리와 완전히 물리도록 합니다. */}
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%", marginTop: "-1.1rem" }}>
-          <div style={{ width: "2px", height: "15px", background: "rgba(255, 255, 255, 0.45)" }} />
+        {/* marginTop을 -2px로 주어 본부장 밑에서 내려온 수직선과 가로선이 틈 없이 정밀 접합되도록 합니다. */}
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%", maxWidth: "1240px", marginTop: "-2px", zIndex: 1 }}>
           {/* 6개 센터 기둥 정중앙들에 정확히 매칭되도록 가로선 너비를 83.3%로 설정 */}
           <div style={{ width: "83.3%", height: "2px", background: "rgba(255, 255, 255, 0.45)" }} />
         </div>
