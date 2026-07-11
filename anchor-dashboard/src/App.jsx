@@ -6902,7 +6902,7 @@ export default function App() {
                   </button>
                 </>
               )}
-              {isSongDirector && (
+              {(isSongDirector || currentRole?.id === "ADMIN" || currentRole?.id === "G_DIRECTOR") && (
                 <button
                   type="button"
                   onClick={() => setMgmtSubTab("portal_config")}
@@ -7710,7 +7710,7 @@ export default function App() {
               <PartnerManager key={`partner-${darkMode}-${selectedYear}`} selectedYear={selectedYear} />
             )}
 
-            {mgmtSubTab === "portal_config" && isSongDirector && (
+            {mgmtSubTab === "portal_config" && (isSongDirector || currentRole?.id === "ADMIN" || currentRole?.id === "G_DIRECTOR") && (
               <PortalConfigManager
                 key={`config-${darkMode}`}
                 initialVisibility={menuVisibility}

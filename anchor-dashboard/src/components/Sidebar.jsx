@@ -771,7 +771,7 @@ export default function Sidebar({
                     const subTabsOrder = ["approvals", "members", "users", "programs", "org_chart", "center_org_chart", "partners", "portal_config"];
 
                     const firstActive = subTabsOrder.find(tab => {
-                      if (tab === "portal_config") return isSongDirector;
+                      if (tab === "portal_config") return isSongDirector || currentRole.id === "ADMIN" || currentRole.id === "G_DIRECTOR";
                       if (!isManager && ["approvals", "members", "users", "programs"].includes(tab)) return false;
                       return isSongDirector || menuVisibility[tab] !== false;
                     }) || "org_chart";
@@ -930,8 +930,8 @@ export default function Sidebar({
                     )}
                   </div>
                 )}
-                {/* 앵커 포털 관리 서브 탭 (송경영 단장님 전용) */}
-                {isSongDirector && (
+                {/* 앵커 포털 관리 서브 탭 (송경영 단장님, admin, g_director 권한 전용) */}
+                {(isSongDirector || currentRole.id === "ADMIN" || currentRole.id === "G_DIRECTOR") && (
                   <div
                     className={`nav-sub-item ${activeTab === "management" && mgmtSubTab === "portal_config" ? "active" : ""}`}
                     onClick={(e) => {
