@@ -296,7 +296,7 @@ export default function CenterOrgChartManager() {
         {/* marginTop을 -2px로 주어 본부장 밑에서 내려온 수직선과 가로선이 틈 없이 정밀 접합되도록 합니다. */}
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%", maxWidth: "1180px", marginTop: "-1.5rem", zIndex: 1 }}>
           {/* 6개 센터 기둥 정중앙들에 정확히 매칭되도록 가로선 너비를 78.5%로 설정 (오버플로우 핏 보정) */}
-          <div style={{ width: "78.5%", height: "2px", background: "rgba(255, 255, 255, 0.45)" }} />
+          <div style={{ width: "83.5%", height: "2px", background: "rgba(255, 255, 255, 0.45)" }} />
         </div>
 
         {/* 하위 레이어: 4층 6대 센터 */}
@@ -312,7 +312,7 @@ export default function CenterOrgChartManager() {
 
           {/* 1. AID-X 지원센터 */}
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0" }}>
-            <div style={{ width: "2px", height: "15px", background: "rgba(255, 255, 255, 0.45)" }} />
+            <div style={{ width: "2px", height: "30px", background: "rgba(255, 255, 255, 0.45)" }} />
             <div
               onMouseEnter={() => handleMouseEnter("aidx")}
               onMouseLeave={handleMouseLeave}
@@ -349,7 +349,7 @@ export default function CenterOrgChartManager() {
 
           {/* 2. 지산학교육센터(ECC) */}
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0" }}>
-            <div style={{ width: "2px", height: "15px", background: "rgba(255, 255, 255, 0.45)" }} />
+            <div style={{ width: "2px", height: "30px", background: "rgba(255, 255, 255, 0.45)" }} />
             <div
               onMouseEnter={() => handleMouseEnter("ecc")}
               onMouseLeave={handleMouseLeave}
@@ -396,7 +396,7 @@ export default function CenterOrgChartManager() {
 
           {/* 3. 신산업특화센터 */}
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0" }}>
-            <div style={{ width: "2px", height: "15px", background: "rgba(255, 255, 255, 0.45)" }} />
+            <div style={{ width: "2px", height: "30px", background: "rgba(255, 255, 255, 0.45)" }} />
             <div
               onMouseEnter={() => handleMouseEnter("specialty")}
               onMouseLeave={handleMouseLeave}
@@ -428,7 +428,7 @@ export default function CenterOrgChartManager() {
 
           {/* 4. 기업협업센터(ICC) */}
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0" }}>
-            <div style={{ width: "2px", height: "15px", background: "rgba(255, 255, 255, 0.45)" }} />
+            <div style={{ width: "2px", height: "30px", background: "rgba(255, 255, 255, 0.45)" }} />
             <div
               onMouseEnter={() => handleMouseEnter("icc")}
               onMouseLeave={handleMouseLeave}
@@ -475,7 +475,7 @@ export default function CenterOrgChartManager() {
 
           {/* 5. 지역협업센터(RCC) */}
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0" }}>
-            <div style={{ width: "2px", height: "15px", background: "rgba(255, 255, 255, 0.45)" }} />
+            <div style={{ width: "2px", height: "30px", background: "rgba(255, 255, 255, 0.45)" }} />
             <div
               onMouseEnter={() => handleMouseEnter("rcc")}
               onMouseLeave={handleMouseLeave}
@@ -522,7 +522,7 @@ export default function CenterOrgChartManager() {
 
           {/* 6. 울산늘봄누리센터 */}
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0" }}>
-            <div style={{ width: "2px", height: "15px", background: "rgba(255, 255, 255, 0.45)" }} />
+            <div style={{ width: "2px", height: "30px", background: "rgba(255, 255, 255, 0.45)" }} />
             <div
               onMouseEnter={() => handleMouseEnter("neulbom")}
               onMouseLeave={handleMouseLeave}
