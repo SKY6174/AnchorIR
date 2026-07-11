@@ -7388,15 +7388,15 @@ export default function App() {
                               const roleNames = {
                                 ADMIN: "최고 관리자",
                                 DIRECTOR: "사업단장",
+                                G_DIRECTOR: "사업단장",
                                 HQ_HEAD: "본부장",
                                 CENTER_ECC: "ECC센터장",
                                 CENTER_SPECIAL: "신산업특화센터장",
                                 CENTER_NURI: "늘봄누리센터장",
                                 CENTER_ICC: "ICC센터장",
                                 CENTER_RCC: "RCC센터장",
-                                TEAM_LEADER: u.id.toLowerCase() === "team_leader" || u.id.toLowerCase() === "hmsim@uc.ac.kr"
-                                  ? "운영팀장"
-                                  : (members || []).find(m => m.email && m.email.trim().toLowerCase() === u.id.trim().toLowerCase())?.role || "팀장교수",
+                                TEAM_LEADER: "팀장교수",
+                                MANAGER: "운영팀장",
                                 RESEARCHER: "실무 연구원",
                                 RESEARCH: "연구원"
                               };
@@ -7464,15 +7464,15 @@ export default function App() {
                               const roleNames = {
                                 ADMIN: "최고 관리자",
                                 DIRECTOR: "사업단장",
+                                G_DIRECTOR: "사업단장",
                                 HQ_HEAD: "본부장",
                                 CENTER_ECC: "ECC센터장",
                                 CENTER_SPECIAL: "신산업특화센터장",
                                 CENTER_NURI: "늘봄누리센터장",
                                 CENTER_ICC: "ICC센터장",
                                 CENTER_RCC: "RCC센터장",
-                                TEAM_LEADER: u.id.toLowerCase() === "team_leader" || u.id.toLowerCase() === "hmsim@uc.ac.kr"
-                                  ? "운영팀장"
-                                  : (members || []).find(m => m.email && m.email.trim().toLowerCase() === u.id.trim().toLowerCase())?.role || "팀장교수",
+                                TEAM_LEADER: "팀장교수",
+                                MANAGER: "운영팀장",
                                 RESEARCHER: "실무 연구원",
                                 RESEARCH: "연구원"
                               };
