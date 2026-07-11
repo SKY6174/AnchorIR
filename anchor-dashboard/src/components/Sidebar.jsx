@@ -755,8 +755,8 @@ export default function Sidebar({
             <span>앵커Wiki</span>
           </div>
 
-          {/* '사업단 관리' 메뉴는 ADMIN, DIRECTOR, HQ_HEAD, TEAM_LEADER에게만 노출하도록 제한합니다. */}
-          {currentRole && (["ADMIN", "DIRECTOR", "HQ_HEAD", "TEAM_LEADER"].includes(currentRole.id) || isSongDirector) && (
+          {/* '사업단 관리' 메뉴는 로그인한 모든 사용자(연구원 및 게스트 포함)에게 노출합니다. 단, 내역별 권한 제한은 유지됩니다. */}
+          {currentRole && (
             <div 
               className={`mgmt-nav-wrapper ${(activeTab === "management" || hoveredTab === "management") ? "active" : ""}`}
               onMouseEnter={() => setHoveredTab("management")}

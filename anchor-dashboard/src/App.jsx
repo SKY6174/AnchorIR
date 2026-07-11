@@ -6703,7 +6703,7 @@ export default function App() {
           </>
         )}
 
-        {activeTab === "management" && ["ADMIN", "DIRECTOR", "HQ_HEAD", "TEAM_LEADER"].includes(currentRole.id) && (
+        {activeTab === "management" && currentRole && (
           <div className="glass-card" style={{ position: "relative" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.2rem", flexWrap: "wrap", gap: "0.8rem" }}>
               <div>
@@ -6817,8 +6817,8 @@ export default function App() {
                 </>
               )}
 
-              {/* 공용 sub-tab 버튼 (보안 정책에 따라 ADMIN, DIRECTOR, HQ_HEAD, TEAM_LEADER에만 노출) */}
-              {currentRole && ["ADMIN", "DIRECTOR", "HQ_HEAD", "TEAM_LEADER"].includes(currentRole.id) && (
+              {/* 공용 sub-tab 버튼 (대학조직도, 사업단 조직도, 파트너기관은 누구나 접근 가능) */}
+              {currentRole && (
                 <>
                   <button
                     type="button"
