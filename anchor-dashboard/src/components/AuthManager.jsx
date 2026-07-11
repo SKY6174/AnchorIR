@@ -367,7 +367,8 @@ export default function AuthManager({ onLoginSuccess, members = [] }) {
               type="button"
               onClick={() => {
                 localStorage.clear();
-                window.location.reload();
+                sessionStorage.clear();
+                window.location.href = window.location.origin + window.location.pathname + "?cb=" + Date.now();
               }}
               style={{
                 background: "none",
