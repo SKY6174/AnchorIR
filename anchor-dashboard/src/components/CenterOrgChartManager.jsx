@@ -168,7 +168,7 @@ export default function CenterOrgChartManager() {
             </div>
 
             {/* 총장 - 단장 연결선 (네모 테두리에 바로 맞닿도록 높이를 조절) */}
-            <div style={{ width: "2px", height: "30px", background: "rgba(255, 255, 255, 0.45)" }} />
+            <div style={{ width: "2px", height: "60px", background: "rgba(255, 255, 255, 0.45)" }} />
 
             {/* 2층: 앵커사업단장 */}
             <div
@@ -192,7 +192,7 @@ export default function CenterOrgChartManager() {
             </div>
 
             {/* 단장 - 총괄본부장 연결선 (네모 테두리에 바로 맞닿도록 높이를 조절) */}
-            <div style={{ width: "2px", height: "30px", background: "rgba(255, 255, 255, 0.45)" }} />
+            <div style={{ width: "2px", height: "60px", background: "rgba(255, 255, 255, 0.45)" }} />
 
             {/* 3층: 총괄본부장 & 사업운영팀 */}
             <div style={{ position: "relative", display: "flex", justifyContent: "center", alignItems: "center", width: "100%" }}>
