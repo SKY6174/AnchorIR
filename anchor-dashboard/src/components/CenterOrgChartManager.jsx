@@ -371,7 +371,7 @@ export default function CenterOrgChartManager() {
               }}
             >
               <div style={{ fontSize: "0.7rem", fontWeight: "800", color: "#34d399", background: "rgba(16, 185, 129, 0.15)", padding: "0.15rem 0.3rem", borderRadius: "4px", display: "inline-block", marginBottom: "0.4rem" }}>
-                A1가/A2/A3과제
+                A1가/A2/A3
               </div>
               <h5 style={{ margin: 0, fontSize: "0.85rem", fontWeight: "900", color: "var(--text-primary)" }}>지산학교육센터</h5>
               <div style={{ fontSize: "0.75rem", fontWeight: "800", color: "var(--text-secondary)", marginTop: "0.3rem" }}>이동은 센터장</div>
