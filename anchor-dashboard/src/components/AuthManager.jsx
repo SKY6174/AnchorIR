@@ -62,7 +62,7 @@ export default function AuthManager({ onLoginSuccess, members = [] }) {
       let authSession = null;
 
       const isTestAccount = ["admin", "g_director", "hq_head", "manager", "team_leader", "researcher", "guest"].includes(targetId);
-      const expectedTestPw = (targetId === "admin" || targetId === "g_director" || targetId === "manager") ? "uc_anchor" : targetId === "guest" ? "guest123" : "1234";
+      const expectedTestPw = (targetId === "admin" || targetId === "g_director" || targetId === "hq_head" || targetId === "manager") ? "uc_anchor" : targetId === "guest" ? "guest123" : "1234";
 
       // 💡 [비밀번호 자동 호환 보정 가드]
       // 기존에 1234 패스워드로 Supabase Auth에 이미 가입되어 있는 임시 계정의 경우,
@@ -234,6 +234,9 @@ export default function AuthManager({ onLoginSuccess, members = [] }) {
       } else if (targetId === "manager" || targetId === "hmsim" || targetId === "hmsim@uc.ac.kr") {
         autoRoleKey = "MANAGER";
         matchedName = "심현미";
+      } else if (targetId === "hq_head" || targetId === "hskim3" || targetId === "hskim3@uc.ac.kr") {
+        autoRoleKey = "HQ_HEAD";
+        matchedName = "김현수";
       }
 
       const mappedRole = userRoles[autoRoleKey] || userRoles.RESEARCHER;
