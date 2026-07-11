@@ -231,7 +231,7 @@ export default function AuthManager({ onLoginSuccess, members = [] }) {
       if (targetId === "g_director") {
         autoRoleKey = "G_DIRECTOR";
         matchedName = "송경영";
-      } else if (targetId === "manager") {
+      } else if (targetId === "manager" || targetId === "hmsim" || targetId === "hmsim@uc.ac.kr") {
         autoRoleKey = "MANAGER";
         matchedName = "심현미";
       }
