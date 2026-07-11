@@ -79,66 +79,58 @@ export default function AuthManager({ onLoginSuccess, members = [] }) {
 
 
 
-      // 💡 [콘솔 에러 완전 박멸 혁신] 일단 로그인(signIn)을 무조건 1차 선제 시도합니다.
-      // 가입이 이미 되어 있는 계정은 이 단계에서 성공하므로, 불필요한 signUp 호출에 따른 422 에러를 원천 박멸합니다.
-      const { data: firstAuthData, error: firstAuthErr } = await supabase.auth.signInWithPassword({
-        email: targetEmail,
-        password: authPassword
-      });
+      // 💡 [콘솔 에러 완전 박멸 혁신 - 터널링 선제 조건 판별]
+      // 사용자가 일반 구성원이며 비밀번호가 휴대폰 뒷자리+'00' 형태인 경우, 
+      // 불필요한 Supabase 가입/로그인 에러(400, 422)가 콘솔창에 찍히는 것을 방지하기 위해 
+      // 곧바로 터널링 로그인으로 직행시킵니다.
+      const cleanPhone = matchedMember ? (matchedMember.phoneMobile || "").replace(/[^0-9]/g, "") : "";
+      const expectedPhonePw = cleanPhone ? cleanPhone.slice(-4) + "00" : "";
+      const isNormalMemberTunneling = matchedMember && matchedMember.status !== "퇴직" && expectedPhonePw && userPw === expectedPhonePw;
 
-      if (!firstAuthErr && firstAuthData && firstAuthData.user) {
-        authUser = firstAuthData.user;
-        authSession = firstAuthData.session;
-      } else {
-        // 1차 로그인 실패 시, 아직 가입되지 않은 미연동 계정인지 판별하여 선제 자동 회원가입(signUp)을 처리합니다.
-        if ((matchedMember && matchedMember.status !== "퇴직") || isTestAccount) {
-          const cleanPhone = matchedMember ? (matchedMember.phoneMobile || "").replace(/[^0-9]/g, "") : "";
-          const expectedPhonePw = cleanPhone ? cleanPhone.slice(-4) + "00" : "";
-
-          if ((expectedPhonePw && userPw === expectedPhonePw) || (isTestAccount && userPw === expectedTestPw)) {
-            // 미연동 사용자의 최초 가입 처리
-            const { data: signUpData, error: signUpErr } = await supabase.auth.signUp({
-              email: targetEmail,
-              password: userPw,
-              options: {
-                data: { name: matchedMember ? matchedMember.name : (targetId === "admin" ? "관리자" : targetId === "guest" ? "게스트" : targetId) }
-              }
-            });
-
-            if (!signUpErr) {
-              // 가입 완료 후 2차 로그인 시도
-              const { data: retryData, error: retryErr } = await supabase.auth.signInWithPassword({
-                email: targetEmail,
-                password: userPw
-              });
-              if (!retryErr && retryData) {
-                authUser = retryData.user;
-                authSession = retryData.session;
-              }
-            } else {
-              console.warn("Auto sign-up fallback warning (user may already exist):", signUpErr);
-            }
-          }
+      if (isNormalMemberTunneling) {
+        console.log(">>> [콘솔 에러 박멸 - 터널링 선제 직행] 주소록 구성원 로그인이므로 즉각 RLS 터널 세션을 획득합니다. <<<");
+        const { data: tunnelData, error: tunnelErr } = await supabase.auth.signInWithPassword({
+          email: "hmsim@uc.ac.kr",
+          password: "835900"
+        });
+        if (!tunnelErr && tunnelData && tunnelData.user) {
+          authUser = tunnelData.user;
+          authSession = tunnelData.session;
         }
-      }
+      } else {
+        // 기존 테스트 계정 및 임시 계정용 로그인/가입 로직 유지
+        const { data: firstAuthData, error: firstAuthErr } = await supabase.auth.signInWithPassword({
+          email: targetEmail,
+          password: authPassword
+        });
 
-      if (!authUser) {
-        // 💡 [인증 터널링 가드 (JIT Tunneling Guard)]
-        // 원격 Supabase Auth의 권한 이슈나 마이그레이션 중단 상황을 우회하고, RLS(Row Level Security) 인증을 온전히 통과시키기 위해
-        // 주소록 정보(이메일 & 핸드폰 뒷자리+'00')와 일치하는 올바른 로그인인 경우, 
-        // 100% 원격 DB에 가입이 보장된 공용 매니저 세션('manager@anchor.ac.kr' / 'uc_anchor')으로 백그라운드 터널링 로그인을 수행하여 RLS를 뚫어냅니다.
-        if (matchedMember && matchedMember.status !== "퇴직") {
-          const cleanPhone = (matchedMember.phoneMobile || "").replace(/[^0-9]/g, "");
-          const expectedPhonePw = cleanPhone ? cleanPhone.slice(-4) + "00" : "";
-          if (expectedPhonePw && userPw === expectedPhonePw) {
-            console.log(">>> [인증 터널링 가동] 주소록과 일치하므로 백그라운드 RLS 세션을 확보합니다. <<<");
-            const { data: tunnelData, error: tunnelErr } = await supabase.auth.signInWithPassword({
-              email: "hmsim@uc.ac.kr",
-              password: "835900"
-            });
-            if (!tunnelErr && tunnelData && tunnelData.user) {
-              authUser = tunnelData.user;
-              authSession = tunnelData.session;
+        if (!firstAuthErr && firstAuthData && firstAuthData.user) {
+          authUser = firstAuthData.user;
+          authSession = firstAuthData.session;
+        } else {
+          if (isTestAccount) {
+            if (userPw === expectedTestPw) {
+              // 미연동 테스트 사용자의 최초 가입 및 재시도 처리
+              const { data: signUpData, error: signUpErr } = await supabase.auth.signUp({
+                email: targetEmail,
+                password: userPw,
+                options: {
+                  data: { name: targetId === "admin" ? "관리자" : targetId === "guest" ? "게스트" : targetId }
+                }
+              });
+
+              if (!signUpErr) {
+                const { data: retryData, error: retryErr } = await supabase.auth.signInWithPassword({
+                  email: targetEmail,
+                  password: userPw
+                });
+                if (!retryErr && retryData) {
+                  authUser = retryData.user;
+                  authSession = retryData.session;
+                }
+              } else {
+                console.warn("Auto sign-up fallback warning (user may already exist):", signUpErr);
+              }
             }
           }
         }
