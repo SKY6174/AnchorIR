@@ -87,7 +87,7 @@ export default function CenterOrgChartManager() {
         borderRadius: "16px",
         border: "1px solid var(--border-color)",
         minHeight: "680px",
-        minWidth: "1480px",
+        minWidth: "1200px",
         overflowX: "auto",
         position: "relative",
         gap: "1.5rem"
@@ -294,7 +294,7 @@ export default function CenterOrgChartManager() {
           gridTemplateColumns: "repeat(5, 1fr)",
           gap: "1.2rem",
           width: "100%",
-          maxWidth: "1440px",
+          maxWidth: "1150px",
           alignItems: "start",
           marginTop: "-1rem"
         }}>
