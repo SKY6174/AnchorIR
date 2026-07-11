@@ -6259,16 +6259,19 @@ export default function App() {
     } else {
       // 주소록에 매칭되지 않는 예외 및 테스트 계정 처리
       const roleId = currentUser.role_key || currentUser.role?.id || "";
-      if (roleId === "G_DIRECTOR") roleOrPosition = "사업단장";
+      if (roleId === "ADMIN") roleOrPosition = "";
+      else if (roleId === "G_DIRECTOR") roleOrPosition = "사업단장";
       else if (roleId === "HQ_HEAD") roleOrPosition = "총괄본부장";
       else if (roleId === "CENTER_LEADER") roleOrPosition = "센터장";
       else if (roleId === "MANAGER") roleOrPosition = "운영팀장";
       else roleOrPosition = "연구원";
     }
 
+    const displayMessage = [cleanName, roleOrPosition].filter(Boolean).join(" ");
+
     return (
       <strong style={{ fontWeight: "800", color: "var(--text-primary)" }}>
-        [{cleanName} {roleOrPosition}]
+        [{displayMessage}]
       </strong>
     );
   };
