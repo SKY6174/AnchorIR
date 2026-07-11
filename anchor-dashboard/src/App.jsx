@@ -2260,6 +2260,17 @@ export default function App() {
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
+        
+        // 💡 [구버전 캐시 강제 무력화 가드]
+        // 로컬 스토리지에 옛날 더미 전화번호(010-1234-5678 등)가 남아있는 경우,
+        // 새로 동기화된 실데이터 주소록으로 강제 리셋 및 동기화를 수행합니다.
+        const deleeMember = parsed.find(m => m.email === "delee@uc.ac.kr");
+        if (deleeMember && (deleeMember.phoneMobile === "010-1234-5678" || !deleeMember.phoneMobile.includes("5171"))) {
+          console.log(">>> [로컬스토리지 주소록 핫 리셋 가동] 신규 실제 번호 데이터셋으로 동기화합니다. <<<");
+          localStorage.setItem("anchor_members", JSON.stringify(initialList));
+          return initialList;
+        }
+
         // 로컬스토리지에 홍진숙 교수(cshong@uc.ac.kr)가 존재할 경우 위치를 홍광표 교수(gphong@uc.ac.kr) 바로 다음으로 재정렬 이동
         const hongIdx = parsed.findIndex(m => m.email && m.email.trim().toLowerCase() === "cshong@uc.ac.kr");
         if (hongIdx !== -1) {
