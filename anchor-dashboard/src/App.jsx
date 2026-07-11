@@ -2056,11 +2056,14 @@ export default function App() {
   const isSongDirector = currentUser && (
     (currentUser.name || "").includes("송경영") ||
     currentUser.role_key === "DIRECTOR" ||
+    currentUser.role_key === "G_DIRECTOR" ||
     currentUser.role_key === "TEAM_LEADER" ||
+    currentUser.role_key === "MANAGER" ||
     currentUser.role_key === "ADMIN" ||
     currentUser.role === "사업단장" ||
     currentUser.role === "운영팀장" ||
     currentUser.id === "director" ||
+    currentUser.id === "g_director" ||
     currentUser.id === "manager"
   );
 
@@ -2842,10 +2845,11 @@ export default function App() {
         }
       });
 
-      // 직책별 가중치 순서 정의 (0순위 관리자 ~ 5순위 실무 연구원)
+      // 직책별 가중치 순서 정의 (0순위 최고 관리자 ~ 6순위 실무 연구원)
       const roleRanks = {
         ADMIN: 0,
         DIRECTOR: 1,
+        G_DIRECTOR: 1,
         HQ_HEAD: 2,
         CENTER_ECC: 3,
         CENTER_ICC: 3,
@@ -2854,9 +2858,10 @@ export default function App() {
         CENTER_NURI: 3,
         CENTER_NULBOM: 3,
         CENTER_SPECIAL: 3,
-        TEAM_LEADER: 4,
-        RESEARCHER: 5,
-        RESEARCH: 5
+        MANAGER: 4,
+        TEAM_LEADER: 5,
+        RESEARCHER: 6,
+        RESEARCH: 6
       };
 
       const sortedUsers = Array.from(finalUsersMap.values()).sort((a, b) => {
@@ -6254,7 +6259,7 @@ export default function App() {
     } else {
       // 주소록에 매칭되지 않는 예외 및 테스트 계정 처리
       const roleId = currentUser.role?.id || "";
-      if (roleId === "DIRECTOR") roleOrPosition = "단장";
+      if (roleId === "DIRECTOR" || roleId === "G_DIRECTOR") roleOrPosition = "단장";
       else if (roleId === "HQ_HEAD") roleOrPosition = "본부장";
       else if (roleId === "CENTER_LEADER") roleOrPosition = "센터장";
       else if (roleId === "OP_LEADER") roleOrPosition = "팀장";
@@ -6738,7 +6743,7 @@ export default function App() {
             </div>
 
             <div style={{ display: "flex", gap: "0.5rem", borderBottom: "1px solid var(--border-color)", paddingBottom: "0.8rem", marginBottom: "1.2rem" }}>
-              {currentRole && (currentRole.id === "ADMIN" || currentRole.id === "DIRECTOR" || currentRole.id === "HQ_HEAD") && (
+              {currentRole && (currentRole.id === "ADMIN" || currentRole.id === "DIRECTOR" || currentRole.id === "G_DIRECTOR" || currentRole.id === "HQ_HEAD") && (
                 <>
                   <button
                     type="button"
@@ -7407,11 +7412,11 @@ export default function App() {
                                   <td style={{ fontWeight: "700" }}>{cleanName}</td>
                                   <td>
                                     <span
-                                      className={`badge ${u.role_key === "ADMIN" || u.role_key === "DIRECTOR" || u.role_key === "HQ_HEAD"
+                                      className={`badge ${u.role_key === "ADMIN" || u.role_key === "DIRECTOR" || u.role_key === "G_DIRECTOR" || u.role_key === "HQ_HEAD"
                                         ? "badge-red"
                                         : u.role_key.startsWith("CENTER_")
                                           ? "badge-blue"
-                                          : u.role_key === "TEAM_LEADER"
+                                          : u.role_key === "TEAM_LEADER" || u.role_key === "MANAGER"
                                             ? "badge-green"
                                             : "badge-gray"
                                         }`}
@@ -7485,11 +7490,11 @@ export default function App() {
                                   <td style={{ fontWeight: "700" }}>{cleanName}</td>
                                   <td>
                                     <span
-                                      className={`badge ${u.role_key === "ADMIN" || u.role_key === "DIRECTOR" || u.role_key === "HQ_HEAD"
+                                      className={`badge ${u.role_key === "ADMIN" || u.role_key === "DIRECTOR" || u.role_key === "G_DIRECTOR" || u.role_key === "HQ_HEAD"
                                         ? "badge-red"
                                         : u.role_key.startsWith("CENTER_")
                                           ? "badge-blue"
-                                          : u.role_key === "TEAM_LEADER"
+                                          : u.role_key === "TEAM_LEADER" || u.role_key === "MANAGER"
                                             ? "badge-green"
                                             : "badge-gray"
                                         }`}

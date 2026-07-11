@@ -155,14 +155,14 @@ export default function AuthManager({ onLoginSuccess, members = [] }) {
         matchedName = matchedMember.name;
         const mRole = matchedMember.role || "";
         const mDept = matchedMember.dept || "";
-        if (targetId === "leegyu@uc.ac.kr" || targetId === "admin") {
+        if (targetId === "admin") {
           autoRoleKey = "ADMIN";
         } else if (mRole === "사업단장") {
-          autoRoleKey = "DIRECTOR";
+          autoRoleKey = "G_DIRECTOR";
         } else if (mRole === "본부장") {
           autoRoleKey = "HQ_HEAD";
         } else if (mRole === "운영팀장") {
-          autoRoleKey = "TEAM_LEADER";
+          autoRoleKey = "MANAGER";
         } else if (mRole === "팀장교수" || mRole === "팀장") {
           autoRoleKey = "TEAM_LEADER";
         } else if (mRole === "센터장") {
