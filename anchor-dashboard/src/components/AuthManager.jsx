@@ -276,6 +276,17 @@ export default function AuthManager({ onLoginSuccess, members = [] }) {
       };
 
       let welcomeDisplayName = matchedName;
+      
+      // 💡 [송경영, 김현수, 심현미 로그인 성공 문구 직책 자동 결합 가드]
+      const lowerLoginId = (userId || "").trim().toLowerCase();
+      if (lowerLoginId.includes("kysong")) {
+        welcomeDisplayName = "송경영 사업단장";
+      } else if (lowerLoginId.includes("hskim3") || lowerLoginId === "hq_head") {
+        welcomeDisplayName = "김현수 총괄본부장";
+      } else if (lowerLoginId.includes("hmsim") || lowerLoginId === "manager") {
+        welcomeDisplayName = "심현미 운영팀장";
+      }
+
       if (!welcomeDisplayName) {
         if (autoRoleKey === "G_DIRECTOR") welcomeDisplayName = "사업단장";
         else if (autoRoleKey === "ADMIN") welcomeDisplayName = "관리자";
