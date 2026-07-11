@@ -380,15 +380,15 @@ export default function CenterOrgChartManager() {
               <div style={{ borderTop: "1px dashed var(--border-color)", marginTop: "0.5rem", paddingTop: "0.4rem", display: "flex", flexDirection: "column", gap: "0.25rem", textAlign: "left", paddingLeft: "0.25rem" }}>
                 <div>
                   <span style={{ fontSize: "0.65rem", color: "#34d399", fontWeight: "800", marginRight: "0.2rem" }}>[A1가]</span>
-                  <span style={{ fontSize: "0.68rem", color: "var(--text-secondary)" }}>HYPER교육 (장광일)</span>
+                  <span style={{ fontSize: "0.68rem", color: "var(--text-secondary)" }}>HYPER교육팀 (장광일)</span>
                 </div>
                 <div>
                   <span style={{ fontSize: "0.65rem", color: "#34d399", fontWeight: "800", marginRight: "0.2rem" }}>[A2]</span>
-                  <span style={{ fontSize: "0.68rem", color: "var(--text-secondary)" }}>로컬창업 (고형석)</span>
+                  <span style={{ fontSize: "0.68rem", color: "var(--text-secondary)" }}>로컬창업지원팀 (고형석)</span>
                 </div>
                 <div>
                   <span style={{ fontSize: "0.65rem", color: "#34d399", fontWeight: "800", marginRight: "0.2rem" }}>[A3]</span>
-                  <span style={{ fontSize: "0.68rem", color: "var(--text-secondary)" }}>G-VET운영 (양승호)</span>
+                  <span style={{ fontSize: "0.68rem", color: "var(--text-secondary)" }}>G-VET운영팀 (양승호)</span>
                 </div>
               </div>
             </div>
@@ -459,15 +459,15 @@ export default function CenterOrgChartManager() {
               <div style={{ borderTop: "1px dashed var(--border-color)", marginTop: "0.5rem", paddingTop: "0.4rem", display: "flex", flexDirection: "column", gap: "0.25rem", textAlign: "left", paddingLeft: "0.25rem" }}>
                 <div>
                   <span style={{ fontSize: "0.65rem", color: "#60a5fa", fontWeight: "800", marginRight: "0.2rem" }}>[B1]</span>
-                  <span style={{ fontSize: "0.68rem", color: "var(--text-secondary)" }}>R&BD지원 (김기범)</span>
+                  <span style={{ fontSize: "0.68rem", color: "var(--text-secondary)" }}>R&BD지원팀 (김기범)</span>
                 </div>
                 <div>
                   <span style={{ fontSize: "0.65rem", color: "#60a5fa", fontWeight: "800", marginRight: "0.2rem" }}>[B3]</span>
-                  <span style={{ fontSize: "0.68rem", color: "var(--text-secondary)" }}>지속가능실천 (김산)</span>
+                  <span style={{ fontSize: "0.68rem", color: "var(--text-secondary)" }}>지속가능실천팀 (김산)</span>
                 </div>
                 <div>
                   <span style={{ fontSize: "0.65rem", color: "#60a5fa", fontWeight: "800", marginRight: "0.2rem" }}>[B4]</span>
-                  <span style={{ fontSize: "0.68rem", color: "var(--text-secondary)" }}>산업안전지원 (한미라)</span>
+                  <span style={{ fontSize: "0.68rem", color: "var(--text-secondary)" }}>산업안전지원팀 (한미라)</span>
                 </div>
               </div>
             </div>
@@ -505,16 +505,16 @@ export default function CenterOrgChartManager() {
 
               <div style={{ borderTop: "1px dashed var(--border-color)", marginTop: "0.5rem", paddingTop: "0.4rem", display: "flex", flexDirection: "column", gap: "0.25rem", textAlign: "left", paddingLeft: "0.25rem" }}>
                 <div>
-                  <span style={{ fontSize: "0.65rem", color: "#fbbf24", fontWeight: "800", marginRight: "0.2rem" }}>[C1]</span>
-                  <span style={{ fontSize: "0.68rem", color: "var(--text-secondary)" }}>LIFE교육 (김민경, 박성혁)</span>
+                  <span style={{ fontSize: "0.65rem", color: "#fbbf24", fontWeight: "800", marginRight: "0.2rem" }}>[C1,D2]</span>
+                  <span style={{ fontSize: "0.68rem", color: "var(--text-secondary)" }}>LIFE교육팀 (김민경, 박성혁)</span>
                 </div>
                 <div>
                   <span style={{ fontSize: "0.65rem", color: "#fbbf24", fontWeight: "800", marginRight: "0.2rem" }}>[D1]</span>
-                  <span style={{ fontSize: "0.68rem", color: "var(--text-secondary)" }}>LBA대응 (이한도)</span>
+                  <span style={{ fontSize: "0.68rem", color: "var(--text-secondary)" }}>LBA대응팀 (이한도)</span>
                 </div>
                 <div>
                   <span style={{ fontSize: "0.65rem", color: "#fbbf24", fontWeight: "800", marginRight: "0.2rem" }}>[D3]</span>
-                  <span style={{ fontSize: "0.68rem", color: "var(--text-secondary)" }}>로컬브릿지 (이상현)</span>
+                  <span style={{ fontSize: "0.68rem", color: "var(--text-secondary)" }}>로컬브릿지팀 (이상현)</span>
                 </div>
               </div>
             </div>
