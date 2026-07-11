@@ -20,7 +20,7 @@ export default function CenterOrgChartManager() {
     hq_head: {
       title: "총괄본부장 (김현수 본부장)",
       desc: "사업단 실무 집행 조정 및 센터 간 융합 과제 조율 책임자",
-      tasks: ["5개 센터 간 협업 과제 및 마일스톤 통합 관리", "집행 실적 정기 검토 및 사업계획 변경 1차 심사", "실무 부서 애로사항 해결 및 단장 보좌"]
+      tasks: ["6개 센터 간 협업 과제 및 마일스톤 통합 관리", "집행 실적 정기 검토 및 사업계획 변경 1차 심사", "실무 부서 애로사항 해결 및 단장 보좌"]
     },
     operation: {
       title: "사업운영팀 (심현미 팀장 & 연구원 4명)",
@@ -379,7 +379,7 @@ export default function CenterOrgChartManager() {
 
               <div style={{ borderTop: "1px dashed var(--border-color)", marginTop: "0.5rem", paddingTop: "0.4rem", display: "flex", flexDirection: "column", gap: "0.25rem", textAlign: "left", paddingLeft: "0.25rem" }}>
                 <div>
-                  <span style={{ fontSize: "0.65rem", color: "#34d399", fontWeight: "800", marginRight: "0.2rem" }}>[A1]</span>
+                  <span style={{ fontSize: "0.65rem", color: "#34d399", fontWeight: "800", marginRight: "0.2rem" }}>[A1가]</span>
                   <span style={{ fontSize: "0.68rem", color: "var(--text-secondary)" }}>HYPER교육 (장광일)</span>
                 </div>
                 <div>
