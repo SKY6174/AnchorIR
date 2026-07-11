@@ -139,13 +139,15 @@ export default function AuthManager({ onLoginSuccess, members = [] }) {
       } else if (isTestAccount) {
         // 💡 [혁신 가드] DB rise_users 에 로우가 없는 테스트/가상 계정의 경우, 로그인 성공과 동시에 DB에 사용자 정보를 생성해 줍니다.
         try {
+          const testNames = { admin: "관리자", g_director: "송경영", hq_head: "김현수", manager: "심현미", team_leader: "심현미", guest: "게스트" };
+          const testRoles = { admin: "ADMIN", g_director: "G_DIRECTOR", hq_head: "HQ_HEAD", manager: "MANAGER", team_leader: "TEAM_LEADER", guest: "GUEST" };
           await supabase
             .from("rise_users")
             .insert({
               id: targetId,
               pw: CryptoJS.SHA256(userPw).toString(), // 암호화 규칙 준수 (룰 8)
-              name: targetId === "admin" ? "관리자" : targetId === "guest" ? "게스트" : targetId,
-              role_key: targetId === "admin" ? "ADMIN" : targetId === "guest" ? "GUEST" : "RESEARCHER",
+              name: testNames[targetId] || targetId,
+              role_key: testRoles[targetId] || "RESEARCHER",
               approved: true,
               uuid: authUser.id,
               email: targetEmail
@@ -201,6 +203,27 @@ export default function AuthManager({ onLoginSuccess, members = [] }) {
           } catch (insertErr) {
             console.warn("DB user sync insert warning:", insertErr);
           }
+        }
+      } else {
+        // 💡 [혁신 가드] 주소록에도 매칭되지 않는 임시/데모/가상 계정의 롤 및 이름 맵핑
+        if (targetId === "admin") {
+          autoRoleKey = "ADMIN";
+          matchedName = "관리자";
+        } else if (targetId === "g_director") {
+          autoRoleKey = "G_DIRECTOR";
+          matchedName = "송경영";
+        } else if (targetId === "hq_head") {
+          autoRoleKey = "HQ_HEAD";
+          matchedName = "김현수";
+        } else if (targetId === "manager") {
+          autoRoleKey = "MANAGER";
+          matchedName = "심현미";
+        } else if (targetId === "team_leader") {
+          autoRoleKey = "TEAM_LEADER";
+          matchedName = "심현미";
+        } else if (targetId === "guest") {
+          autoRoleKey = "GUEST";
+          matchedName = "게스트 (방문자)";
         }
       }
 

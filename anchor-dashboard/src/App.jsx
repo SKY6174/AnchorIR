@@ -6236,6 +6236,11 @@ export default function App() {
     });
 
     let cleanName = currentUser.name ? currentUser.name.split(" ")[0].split("(")[0].trim() : "";
+    if (cleanName === "g_director") cleanName = "송경영";
+    else if (cleanName === "hq_head") cleanName = "김현수";
+    else if (cleanName === "manager") cleanName = "심현미";
+    else if (cleanName === "admin") cleanName = "관리자";
+
     let roleOrPosition = "";
 
     if (currentMember) {
@@ -6247,13 +6252,15 @@ export default function App() {
         roleOrPosition = mPosition || "연구원";
       } else {
         // 그 외의 경우(사업단장, 본부장, 센터장, 운영팀장 등)는 직책(role)을 표시
-        roleOrPosition = mRole;
+        if (mRole === "본부장") roleOrPosition = "총괄본부장";
+        else if (mRole === "단장") roleOrPosition = "사업단장";
+        else roleOrPosition = mRole;
       }
     } else {
       // 주소록에 매칭되지 않는 예외 및 테스트 계정 처리
-      const roleId = currentUser.role?.id || "";
-      if (roleId === "G_DIRECTOR") roleOrPosition = "단장";
-      else if (roleId === "HQ_HEAD") roleOrPosition = "본부장";
+      const roleId = currentUser.role_key || currentUser.role?.id || "";
+      if (roleId === "G_DIRECTOR") roleOrPosition = "사업단장";
+      else if (roleId === "HQ_HEAD") roleOrPosition = "총괄본부장";
       else if (roleId === "CENTER_LEADER") roleOrPosition = "센터장";
       else if (roleId === "MANAGER") roleOrPosition = "운영팀장";
       else roleOrPosition = "연구원";
