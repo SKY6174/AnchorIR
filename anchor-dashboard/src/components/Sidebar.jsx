@@ -46,9 +46,9 @@ export default function Sidebar({
   return (
     <aside className="sidebar">
       <div>
-        <div 
-          className="logo-section" 
-          onClick={() => onChangeTab("dashboard")} 
+        <div
+          className="logo-section"
+          onClick={() => onChangeTab("dashboard")}
           style={{ cursor: "pointer" }}
         >
           <img src="/logo.png" alt="울산과학대학교 로고" className="logo-img" />
@@ -76,7 +76,7 @@ export default function Sidebar({
 
           {/* 1) 단위과제 관리 탭 복구 (요구사항 1 반영) */}
           {(menuVisibility.projects !== false || isSongDirector) && (
-            <div 
+            <div
               className={`projects-nav-wrapper ${(activeTab === "projects" || hoveredTab === "projects") ? "active" : ""}`}
               onMouseEnter={() => setHoveredTab("projects")}
               onMouseLeave={() => setHoveredTab(null)}
@@ -169,7 +169,7 @@ export default function Sidebar({
           )}
 
           {(menuVisibility.progress !== false || isSongDirector) && (
-            <div 
+            <div
               className={`progress-nav-wrapper ${(activeTab === "progress" || hoveredTab === "progress") ? "active" : ""}`}
               onMouseEnter={() => setHoveredTab("progress")}
               onMouseLeave={() => setHoveredTab(null)}
@@ -262,7 +262,7 @@ export default function Sidebar({
           )}
 
           {(menuVisibility.budget !== false || isSongDirector) && (
-            <div 
+            <div
               className={`budget-nav-wrapper ${(activeTab === "budget" || hoveredTab === "budget") ? "active" : ""}`}
               onMouseEnter={() => setHoveredTab("budget")}
               onMouseLeave={() => setHoveredTab(null)}
@@ -336,7 +336,7 @@ export default function Sidebar({
           )}
 
           {(menuVisibility.kpis !== false || isSongDirector) && (
-            <div 
+            <div
               className={`kpis-nav-wrapper ${(activeTab === "kpis" || hoveredTab === "kpis") ? "active" : ""}`}
               onMouseEnter={() => setHoveredTab("kpis")}
               onMouseLeave={() => setHoveredTab(null)}
@@ -430,7 +430,7 @@ export default function Sidebar({
           )}
 
           {(menuVisibility.agreements !== false || isSongDirector) && (
-            <div 
+            <div
               className={`agreements-nav-wrapper ${(activeTab === "agreements" || hoveredTab === "agreements") ? "active" : ""}`}
               onMouseEnter={() => setHoveredTab("agreements")}
               onMouseLeave={() => setHoveredTab(null)}
@@ -522,7 +522,7 @@ export default function Sidebar({
             </div>
           )}
 
-          <div 
+          <div
             className={`procurement-nav-wrapper ${(activeTab === "procurement" || hoveredTab === "procurement") ? "active" : ""}`}
             onMouseEnter={() => setHoveredTab("procurement")}
             onMouseLeave={() => setHoveredTab(null)}
@@ -614,7 +614,7 @@ export default function Sidebar({
           </div>
 
           {(menuVisibility.schedule !== false || isSongDirector) && (
-            <div 
+            <div
               className={`schedule-nav-wrapper ${(activeTab === "schedule" || hoveredTab === "schedule") ? "active" : ""}`}
               onMouseEnter={() => setHoveredTab("schedule")}
               onMouseLeave={() => setHoveredTab(null)}
@@ -757,7 +757,7 @@ export default function Sidebar({
 
           {/* '사업단 관리' 메뉴는 로그인한 모든 사용자(연구원 및 게스트 포함)에게 노출합니다. 단, 내역별 권한 제한은 유지됩니다. */}
           {currentRole && (
-            <div 
+            <div
               className={`mgmt-nav-wrapper ${(activeTab === "management" || hoveredTab === "management") ? "active" : ""}`}
               onMouseEnter={() => setHoveredTab("management")}
               onMouseLeave={() => setHoveredTab(null)}
@@ -767,15 +767,15 @@ export default function Sidebar({
                 onClick={() => {
                   onChangeTab("management");
                   if (onChangeMgmtSubTab) {
-                    const isManager = currentRole.id === "ADMIN" || currentRole.id === "DIRECTOR" || currentRole.id === "G_DIRECTOR" || currentRole.id === "HQ_HEAD";
+                    const isManager = currentRole.id === "ADMIN" || currentRole.id === "G_DIRECTOR" || currentRole.id === "HQ_HEAD";
                     const subTabsOrder = ["approvals", "members", "users", "programs", "org_chart", "center_org_chart", "partners", "portal_config"];
-                    
+
                     const firstActive = subTabsOrder.find(tab => {
                       if (tab === "portal_config") return isSongDirector;
                       if (!isManager && ["approvals", "members", "users", "programs"].includes(tab)) return false;
                       return isSongDirector || menuVisibility[tab] !== false;
                     }) || "org_chart";
-                    
+
                     onChangeMgmtSubTab(firstActive);
                   }
                 }}
@@ -785,7 +785,7 @@ export default function Sidebar({
               </div>
               <div className="nav-sub-menu">
                 {/* 관리자 권한 전용 서브 탭 가드 */}
-                {(currentRole.id === "ADMIN" || currentRole.id === "DIRECTOR" || currentRole.id === "G_DIRECTOR" || currentRole.id === "HQ_HEAD") && (
+                {(currentRole.id === "ADMIN" || currentRole.id === "G_DIRECTOR" || currentRole.id === "HQ_HEAD") && (
                   <>
                     {(menuVisibility.approvals !== false || isSongDirector) && (
                       <div

@@ -64,7 +64,7 @@ export default function BudgetItemsManager({ projects, currentRole, onUpdateBudg
   const [selectedDeptName, setSelectedDeptName] = useState("all");
   const [editedBudgets, setEditedBudgets] = useState({}); // {budgetName: {budget_main: '', budget_carry: ''}}
   const [feedback, setFeedback] = useState("");
-  
+
   // 서브탭 상태 관리: "main" (본사업비) 또는 "carry" (이월사업비)
   const [subTab, setSubTab] = useState("main");
 
@@ -125,30 +125,30 @@ export default function BudgetItemsManager({ projects, currentRole, onUpdateBudg
   // 담당부서 맵핑 정의 (연차별 유닛 ID 분기 처리 및 사용자 지정 순서)
   const DEPARTMENTS = selectedYear === 1
     ? [
-        { name: "ECC센터", ids: ["A1", "A2", "D4"] },
-        { name: "ICC센터", ids: ["B1", "C1", "C3"] },
-        { name: "RCC센터", ids: ["B2", "B3", "D1", "D3"] },
-        { name: "AID-X지원센터", ids: ["C2"] },
-        { name: "울산늘봄누리센터", ids: ["D2"] },
-        { name: "사업운영팀", ids: [] }
-      ]
+      { name: "ECC센터", ids: ["A1", "A2", "D4"] },
+      { name: "ICC센터", ids: ["B1", "C1", "C3"] },
+      { name: "RCC센터", ids: ["B2", "B3", "D1", "D3"] },
+      { name: "AID-X지원센터", ids: ["C2"] },
+      { name: "울산늘봄누리센터", ids: ["D2"] },
+      { name: "사업운영팀", ids: [] }
+    ]
     : [
-        { name: "ECC센터", ids: ["A1가", "A2", "A3"] },
-        { name: "ICC센터", ids: ["B1", "B3", "B4"] },
-        { name: "RCC센터", ids: ["C1", "D1", "D2", "D3"] },
-        { name: "AID-X지원센터", ids: ["B2"] },
-        { name: "울산늘봄누리센터", ids: ["C2"] },
-        { name: "신산업특화센터", ids: ["A1나"] },
-        { name: "사업운영팀", ids: ["Common"] }
-      ];
+      { name: "ECC센터", ids: ["A1가", "A2", "A3"] },
+      { name: "ICC센터", ids: ["B1", "B3", "B4"] },
+      { name: "RCC센터", ids: ["C1", "D1", "D2", "D3"] },
+      { name: "AID-X지원센터", ids: ["B2"] },
+      { name: "울산늘봄누리센터", ids: ["C2"] },
+      { name: "신산업특화센터", ids: ["A1나"] },
+      { name: "사업운영팀", ids: ["Common"] }
+    ];
 
   // 선택된 단위과제 및 프로젝트 제목 찾기 또는 전체사업 가상 유닛 빌드
   let activeUnit = null;
   let activeProjectTitle = "";
-  
+
   if (selectedUnitId === "Total") {
     activeProjectTitle = "울산과학대학교 라이즈(앵커) 사업단";
-    
+
     // 가상의 budgetDetails 생성하여 모든 단위과제의 비목 데이터를 실시간으로 합산
     const combinedDetails = {};
     BUDGET_ITEM_NAMES.forEach(bName => {
@@ -337,15 +337,15 @@ export default function BudgetItemsManager({ projects, currentRole, onUpdateBudg
     for (const key of Object.keys(activeUnit.budgetDetails)) {
       const rawMain = parseInt(editedBudgets[key]?.budget_main || "0", 10) * 1000000;
       const rawCarry = parseInt(editedBudgets[key]?.budget_carry || "0", 10) * 1000000;
-      
+
       if (isNaN(rawMain) || rawMain < 0 || isNaN(rawCarry) || rawCarry < 0) {
         alert(`'${key}' 비목에 올바른 숫자를 입력해주세요.`);
         return;
       }
-      
+
       const currentSpentMain = activeUnit.budgetDetails[key].years?.[selectedYear]?.spent_main || 0;
       const currentSpentCarry = activeUnit.budgetDetails[key].years?.[selectedYear]?.spent_carry || 0;
-      
+
       // 이미 집행된 실적 이하로 예산을 축소 배정하는 것을 방지하는 정합성 체크
       if (rawMain < currentSpentMain) {
         alert(`'${key}' 비목의 본예산은 현재 누적 집행액보다 크거나 같아야 합니다.`);
@@ -355,7 +355,7 @@ export default function BudgetItemsManager({ projects, currentRole, onUpdateBudg
         alert(`'${key}' 비목의 이월예산은 현재 누적 집행액보다 크거나 같아야 합니다.`);
         return;
       }
-      
+
       newTotalMain += rawMain;
       newTotalCarry += rawCarry;
       parsedDetails[key] = {
@@ -390,42 +390,42 @@ export default function BudgetItemsManager({ projects, currentRole, onUpdateBudg
   // 서브탭 전환에 따른 차트 데이터 가공 (단위: 백만원)
   const chartData = activeUnit
     ? Object.keys(activeUnit.budgetDetails).map(key => {
-        const detYear = activeUnit.budgetDetails[key].years?.[selectedYear] || {};
-        if (subTab === "main") {
-          return {
-            name: key,
-            "본예산": Math.round((detYear.budget_main || 0) / 1000000),
-            "본집행": Math.round((detYear.spent_main || 0) / 1000000)
-          };
-        } else {
-          return {
-            name: key,
-            "이월예산": Math.round((detYear.budget_carry || 0) / 1000000),
-            "이월집행": Math.round((detYear.spent_carry || 0) / 1000000)
-          };
-        }
-      })
+      const detYear = activeUnit.budgetDetails[key].years?.[selectedYear] || {};
+      if (subTab === "main") {
+        return {
+          name: key,
+          "본예산": Math.round((detYear.budget_main || 0) / 1000000),
+          "본집행": Math.round((detYear.spent_main || 0) / 1000000)
+        };
+      } else {
+        return {
+          name: key,
+          "이월예산": Math.round((detYear.budget_carry || 0) / 1000000),
+          "이월집행": Math.round((detYear.spent_carry || 0) / 1000000)
+        };
+      }
+    })
     : [];
 
-  const isEditable = (currentRole.id === "DIRECTOR" || currentRole.id === "G_DIRECTOR" || currentRole.id === "HQ_HEAD") && selectedUnitId !== "Total";
+  const isEditable = (currentRole.id === "G_DIRECTOR" || currentRole.id === "HQ_HEAD" || currentRole.id === "MANAGER") && selectedUnitId !== "Total";
 
   return (
     <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 2fr", gap: "1.5rem" }}>
       {/* 좌측 단위과제 목록 */}
       <div className="glass-card" style={{ maxHeight: isMobile ? "none" : "680px", overflowY: "auto" }}>
         <h3 style={{ fontSize: "1.1rem", fontWeight: "800", marginBottom: "0.8rem", color: "var(--text-primary)" }}>단위과제 목록</h3>
-        
+
         {/* 전체 예산 현황 요약 카드 추가 (클릭 시 전체사업 통계 조회) */}
-        <div 
+        <div
           onClick={() => {
             setSelectedUnitId("Total");
             setFeedback("");
           }}
-          style={{ 
-            padding: "0.8rem", 
-            borderRadius: "0.5rem", 
-            background: selectedUnitId === "Total" ? "rgba(59,130,246,0.15)" : "var(--panel-bg)", 
-            marginBottom: "1.2rem", 
+          style={{
+            padding: "0.8rem",
+            borderRadius: "0.5rem",
+            background: selectedUnitId === "Total" ? "rgba(59,130,246,0.15)" : "var(--panel-bg)",
+            marginBottom: "1.2rem",
             border: `1px solid ${selectedUnitId === "Total" ? "var(--accent-color)" : "var(--border-color)"}`,
             cursor: "pointer",
             transition: "all 0.2s ease",
@@ -441,7 +441,7 @@ export default function BudgetItemsManager({ projects, currentRole, onUpdateBudg
             <span>이월: {formatToMillionWon(totalCarryBudget)}백만원</span>
           </div>
         </div>
-        
+
         {/* 센터 선택 드롭박스 필터 */}
         <div style={{ marginBottom: "1.2rem", padding: "0.8rem", borderRadius: "0.5rem", background: "var(--panel-bg)", border: "1px solid var(--border-color)" }}>
           <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)", display: "block", marginBottom: "0.4rem", fontWeight: "700" }}>담당 센터 선택</span>
@@ -466,75 +466,75 @@ export default function BudgetItemsManager({ projects, currentRole, onUpdateBudg
             .map((dept) => {
               // 해당 부서에 속한 단위과제 필터링
               const deptUnits = allUnits.filter((u) => dept.ids.includes(u.id));
-            if (deptUnits.length === 0) return null;
+              if (deptUnits.length === 0) return null;
 
-            return (
-              <div key={dept.name} style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
-                {/* 부서 헤더 소제목 */}
-                <div style={{ fontSize: "0.75rem", fontWeight: "800", color: "var(--accent-color)", borderLeft: "3px solid var(--accent-color)", paddingLeft: "0.4rem", marginBottom: "0.2rem", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                  <span>{dept.name}</span>
-                  <span style={{ fontSize: "0.65rem", fontWeight: "normal", color: "var(--text-secondary)" }}>{deptUnits.length}개 과제</span>
-                </div>
-                {/* 부서 소속 과제 카드 리스트 */}
-                <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
-                  {deptUnits.map((u) => {
-                    // 선택 연도(selectedYear) 및 서브탭(subTab) 기준 예산 및 집행액 동적 산출
-                    const yr = u.years?.[selectedYear] || { budget_main: 0, budget_carry: 0, spent_main: 0, spent_carry: 0 };
-                    let displayBudget = 0;
-                    let displaySpent = 0;
-                    if (subTab === "main") {
-                      displayBudget = yr.budget_main || 0;
-                      displaySpent = yr.spent_main || 0;
-                    } else {
-                      // carry (이월사업비)
-                      displayBudget = yr.budget_carry || 0;
-                      displaySpent = yr.spent_carry || 0;
-                    }
-                    const spentRate = displayBudget > 0 ? (displaySpent / displayBudget) * 100 : 0;
-                    const isCommon = u.id === "Common";
-                    const isSelected = selectedUnitId === u.id;
-                    // 동일한 u.id가 두 개 부서(AID-X, 늘봄누리)에 복제될 수 있으므로 key는 부서명과 id의 조합으로 유니크하게 보장한다.
-                    const keyStr = `${dept.name}-${u.id}`;
-                    return (
-                      <div
-                        key={keyStr}
-                        onClick={() => handleSelectUnit(u)}
-                        style={{
-                          padding: "0.75rem 0.9rem",
-                          borderRadius: "0.5rem",
-                          border: `1px solid ${isSelected ? "var(--accent-color)" : "var(--border-color)"}`,
-                          background: isSelected ? "rgba(59,130,246,0.08)" : "var(--panel-bg)",
-                          cursor: "pointer",
-                          transition: "all 0.2s ease",
-                          boxShadow: isSelected ? "0 4px 12px rgba(59, 130, 246, 0.12)" : "none"
-                        }}
-                      >
-                        <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.7rem", color: isCommon ? "#ec4899" : (isSelected ? "var(--accent-color)" : "var(--text-secondary)"), fontWeight: "700" }}>
-                          <span>{u.id}</span>
-                          <span style={{ color: "var(--accent-color)" }}>{spentRate.toFixed(1)}% 집행</span>
+              return (
+                <div key={dept.name} style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
+                  {/* 부서 헤더 소제목 */}
+                  <div style={{ fontSize: "0.75rem", fontWeight: "800", color: "var(--accent-color)", borderLeft: "3px solid var(--accent-color)", paddingLeft: "0.4rem", marginBottom: "0.2rem", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <span>{dept.name}</span>
+                    <span style={{ fontSize: "0.65rem", fontWeight: "normal", color: "var(--text-secondary)" }}>{deptUnits.length}개 과제</span>
+                  </div>
+                  {/* 부서 소속 과제 카드 리스트 */}
+                  <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
+                    {deptUnits.map((u) => {
+                      // 선택 연도(selectedYear) 및 서브탭(subTab) 기준 예산 및 집행액 동적 산출
+                      const yr = u.years?.[selectedYear] || { budget_main: 0, budget_carry: 0, spent_main: 0, spent_carry: 0 };
+                      let displayBudget = 0;
+                      let displaySpent = 0;
+                      if (subTab === "main") {
+                        displayBudget = yr.budget_main || 0;
+                        displaySpent = yr.spent_main || 0;
+                      } else {
+                        // carry (이월사업비)
+                        displayBudget = yr.budget_carry || 0;
+                        displaySpent = yr.spent_carry || 0;
+                      }
+                      const spentRate = displayBudget > 0 ? (displaySpent / displayBudget) * 100 : 0;
+                      const isCommon = u.id === "Common";
+                      const isSelected = selectedUnitId === u.id;
+                      // 동일한 u.id가 두 개 부서(AID-X, 늘봄누리)에 복제될 수 있으므로 key는 부서명과 id의 조합으로 유니크하게 보장한다.
+                      const keyStr = `${dept.name}-${u.id}`;
+                      return (
+                        <div
+                          key={keyStr}
+                          onClick={() => handleSelectUnit(u)}
+                          style={{
+                            padding: "0.75rem 0.9rem",
+                            borderRadius: "0.5rem",
+                            border: `1px solid ${isSelected ? "var(--accent-color)" : "var(--border-color)"}`,
+                            background: isSelected ? "rgba(59,130,246,0.08)" : "var(--panel-bg)",
+                            cursor: "pointer",
+                            transition: "all 0.2s ease",
+                            boxShadow: isSelected ? "0 4px 12px rgba(59, 130, 246, 0.12)" : "none"
+                          }}
+                        >
+                          <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.7rem", color: isCommon ? "#ec4899" : (isSelected ? "var(--accent-color)" : "var(--text-secondary)"), fontWeight: "700" }}>
+                            <span>{u.id}</span>
+                            <span style={{ color: "var(--accent-color)" }}>{spentRate.toFixed(1)}% 집행</span>
+                          </div>
+                          <h4 style={{ fontSize: "0.8rem", fontWeight: "700", marginTop: "0.25rem", lineHeight: "1.3", color: isSelected ? "var(--accent-color)" : "var(--text-primary)" }}>{u.title}</h4>
+                          {/* 본사업비/이월사업비 상태에 따른 상세 수치 동적 반영 */}
+                          <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.65rem", color: "var(--text-secondary)", marginTop: "0.4rem" }}>
+                            {subTab === "main" ? (
+                              <>
+                                <span>본예산: {formatToMillionWon(displayBudget)}백만원</span>
+                                <span>집행: {formatToMillionWon(displaySpent)}백만원</span>
+                              </>
+                            ) : (
+                              <>
+                                <span>이월예산: {formatToMillionWon(displayBudget)}백만원</span>
+                                <span>집행: {formatToMillionWon(displaySpent)}백만원</span>
+                              </>
+                            )}
+                          </div>
                         </div>
-                        <h4 style={{ fontSize: "0.8rem", fontWeight: "700", marginTop: "0.25rem", lineHeight: "1.3", color: isSelected ? "var(--accent-color)" : "var(--text-primary)" }}>{u.title}</h4>
-                        {/* 본사업비/이월사업비 상태에 따른 상세 수치 동적 반영 */}
-                        <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.65rem", color: "var(--text-secondary)", marginTop: "0.4rem" }}>
-                          {subTab === "main" ? (
-                            <>
-                              <span>본예산: {formatToMillionWon(displayBudget)}백만원</span>
-                              <span>집행: {formatToMillionWon(displaySpent)}백만원</span>
-                            </>
-                          ) : (
-                            <>
-                              <span>이월예산: {formatToMillionWon(displayBudget)}백만원</span>
-                              <span>집행: {formatToMillionWon(displaySpent)}백만원</span>
-                            </>
-                          )}
-                        </div>
-                      </div>
-                    );
-                  })}
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
         </div>
       </div>
 
@@ -590,7 +590,7 @@ export default function BudgetItemsManager({ projects, currentRole, onUpdateBudg
                   )}
                 </div>
               </div>
-              
+
               <div style={{ display: "flex", gap: "1rem", marginTop: "0.8rem", fontSize: "0.8rem", color: "var(--text-secondary)" }}>
                 {subTab === "main" ? (
                   <span>본예산 한도: <strong style={{ color: "white" }}>{formatToMillionWon(activeUnit.years?.[selectedYear]?.budget_main)} 백만원</strong></span>
@@ -679,7 +679,7 @@ export default function BudgetItemsManager({ projects, currentRole, onUpdateBudg
                     {Object.keys(activeUnit.budgetDetails).map(bName => {
                       const detail = activeUnit.budgetDetails[bName];
                       const yearDet = detail.years?.[selectedYear] || {};
-                      
+
                       // 본사업비 및 이월비 각각의 잔액 계산 (배정액 - 집행액)
                       const balanceMain = (yearDet.budget_main || 0) - (yearDet.spent_main || 0);
                       const balanceCarry = (yearDet.budget_carry || 0) - (yearDet.spent_carry || 0);
