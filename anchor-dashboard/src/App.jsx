@@ -5035,8 +5035,10 @@ export default function App() {
   };
 
   const handleLogout = () => {
-    setCurrentUser(null);
-    localStorage.removeItem("anchor_logged_in_user");
+    console.log(">>> [보안 캐시 완전 소멸 로그아웃 수행] 로컬 스토리지를 비우고 타임스탬프 핫 부트 리로드합니다. <<<");
+    localStorage.clear();
+    sessionStorage.clear();
+    window.location.href = window.location.origin + window.location.pathname + "?cb=" + Date.now();
   };
 
   // 엑셀 업로드로 데이터 실시간 갱신 (본사업비/이월비 구분 갱신 및 다년도 연쇄 이월 반영)
