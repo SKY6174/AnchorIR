@@ -79,15 +79,16 @@ export default function CenterOrgChartManager() {
       {/* 2. 조직도 그래픽 영역 */}
       <div style={{ 
         display: "grid", 
-        gridTemplateColumns: "170px 1fr 170px", 
+        gridTemplateColumns: "170px 920px 170px", 
         gap: "1.5rem", 
+        justifyContent: "center",
         background: "rgba(0,0,0,0.2)", 
         padding: "2rem", 
         paddingBottom: "3rem",
         borderRadius: "16px", 
         border: "1px solid var(--border-color)",
         minHeight: "650px",
-        minWidth: "1550px",
+        minWidth: "1320px",
         overflowX: "auto",
         position: "relative"
       }}>
