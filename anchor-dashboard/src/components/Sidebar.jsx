@@ -767,7 +767,7 @@ export default function Sidebar({
                 onClick={() => {
                   onChangeTab("management");
                   if (onChangeMgmtSubTab) {
-                    const isManager = currentRole.id === "ADMIN" || currentRole.id === "G_DIRECTOR" || currentRole.id === "HQ_HEAD";
+                    const isManager = currentRole.id === "ADMIN" || currentRole.id === "G_DIRECTOR" || currentRole.id === "HQ_HEAD" || currentRole.id === "MANAGER";
                     const subTabsOrder = ["approvals", "members", "users", "programs", "org_chart", "center_org_chart", "partners", "portal_config"];
 
                     const firstActive = subTabsOrder.find(tab => {
