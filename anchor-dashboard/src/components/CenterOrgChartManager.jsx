@@ -2,9 +2,10 @@ import React, { useState } from "react";
 import { Network, Users, ChevronRight, Info, ShieldAlert, Award, ArrowRightLeft } from "lucide-react";
 
 export default function CenterOrgChartManager() {
+  // 사용자가 마우스를 올린 조직 노드의 ID를 저장하는 상태(State)입니다.
   const [hoveredNode, setHoveredNode] = useState(null);
 
-  // 툴팁 상세 매핑 정보
+  // 조직도의 각 노드(부서/기구)에 마우스를 올렸을 때 하단 정보창에 보여줄 상세 설명 데이터입니다.
   const nodeDetails = {
     president: {
       title: "울산과학대학교 총장",
@@ -32,9 +33,14 @@ export default function CenterOrgChartManager() {
       tasks: ["AI 활용 직업교육과정 공동 개발 및 인프라 구축", "AI·DX 특화 융합 교육 모델 실증 연구 지원", "학생 대상 첨단 디지털 장비 실습 교육 가동"]
     },
     ecc: {
-      title: "지산학교육센터(ECC) [A1/A2/A3]",
+      title: "지산학교육센터(ECC) [A1가/A2/A3]",
       desc: "지산학 연계 주문식 교육과정 및 인프라 고도화 센터",
       tasks: ["지산학 융합 전공 및 주문식 교육 트랙 개발", "로컬 창업 프로그램 기획 및 스타트업 연계 육성", "G-VET 글로벌 직업교육 가동 및 해외 정주 연계"]
+    },
+    specialty: {
+      title: "신산업특화센터 [A1나]",
+      desc: "신산업(반도체·이차전지 등) 특화 교육 및 실무 추진 전담 센터",
+      tasks: ["신산업 분야 주문식 교육과정 및 인프라 구축", "A1나 과제 관련 핵심 성과 모니터링", "지역 산업체 연계 직무 교육 가동"]
     },
     icc: {
       title: "기업협업센터(ICC) [B1/B3/B4]",
@@ -47,23 +53,25 @@ export default function CenterOrgChartManager() {
       tasks: ["지자체-지역 복지/문화 리더 연계 공헌 프로그램 기획", "로컬 크리에이터 양성 및 정주 환경 개선 자문", "RCC 마일리지 장학금 지급 기준 심사 및 수혜자 선발"]
     },
     neulbom: {
-      title: "울산늘봄 누리센터 [C2]",
+      title: "울산늘봄누리센터 [C2]",
       desc: "초등 늘봄 연계 교육 표준안 설계 및 강사 매칭 센터",
       tasks: ["울산형 늘봄학교 맞춤형 표준 교과 과정 연구", "우수 늘봄 강사 선발, 양성 및 일선 학교 매칭 관리", "늘봄 교육 만족도 평가 및 피드백 모니터링"]
     }
   };
 
+  // 마우스가 노드 영역에 들어갔을 때 실행되는 이벤트 핸들러입니다.
   const handleMouseEnter = (nodeId) => {
     setHoveredNode(nodeId);
   };
 
+  // 마우스가 노드 영역을 벗어났을 때 실행되는 이벤트 핸들러입니다.
   const handleMouseLeave = () => {
     setHoveredNode(null);
   };
 
   return (
     <div className="org-chart-container" style={{ display: "flex", flexDirection: "column", gap: "1.5rem", width: "100%", userSelect: "none" }}>
-
+      
       {/* 1. 상단 타이틀 배너 */}
       <div className="glass-card" style={{ padding: "1.5rem", display: "flex", flexDirection: "column", gap: "0.5rem", borderRadius: "12px", background: "var(--panel-bg)", border: "1px solid var(--border-color)" }}>
         <h2 style={{ fontSize: "1.25rem", fontWeight: "800", color: "var(--accent-color)", display: "flex", alignItems: "center", gap: "0.5rem", margin: 0 }}>
@@ -71,8 +79,8 @@ export default function CenterOrgChartManager() {
           🏛️ 앵커사업단 조직도
         </h2>
         <p style={{ fontSize: "0.9rem", color: "var(--text-secondary)", lineHeight: "1.5", margin: 0 }}>
-          울산과학대학교 앵커사업의 성공을 위한 <strong>1단 1본부 5센터 10팀 (총원 43명)</strong> 의 최고 의사결정 기구 및 핵심 수행 거버넌스 체계입니다.
-          각 조직 노드에 마우스를 올리면 상세 역할과 미션을 확인하실 수 있습니다.
+          울산과학대학교 앵커사업의 성공을 위한 <strong>1단 1본부 6센터 10팀 (총원 46명)</strong> 의 최고 의사결정 기구 및 핵심 수행 거버넌스 체계입니다. 
+          각 조직 노드에 마우스를 올리면 상세 역할 및 미션을 확인하실 수 있습니다.
         </p>
       </div>
 
@@ -87,22 +95,21 @@ export default function CenterOrgChartManager() {
         borderRadius: "16px",
         border: "1px solid var(--border-color)",
         minHeight: "680px",
-        minWidth: "1200px",
+        minWidth: "1400px", // 6개 센터 확장에 맞춰 1200px에서 1400px로 조정
         overflowX: "auto",
         position: "relative",
         gap: "1.5rem"
       }}>
-
-        {/* 상단 레이어: 좌측 위원회 + 중앙 1~3층 트리 + 우측 거버넌스 (수평 간격을 획기적으로 조여 절반으로 만듦!) */}
-        <div style={{
-          display: "flex",
-          alignItems: "flex-start",
-          justifyContent: "center",
-          gap: "2.5rem",
+        
+        {/* 상단 레이어: 좌측 위원회 + 중앙 1~3층 트리 + 우측 거버넌스 */}
+        <div style={{ 
+          display: "flex", 
+          alignItems: "flex-start", 
+          justifyContent: "center", 
+          gap: "2.5rem", 
           width: "100%",
           maxWidth: "1050px"
-        }}>
-
+        }}>\n          
           {/* ================= 좌측: 사업단 내부 위원회 ================= */}
           <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", width: "170px", paddingTop: "4.8rem" }}>
             <div style={{ fontSize: "0.7rem", fontWeight: "bold", color: "var(--accent-color)", borderBottom: "2px solid var(--accent-color)", paddingBottom: "0.2rem", marginBottom: "0.2rem", textAlign: "center" }}>
@@ -137,7 +144,8 @@ export default function CenterOrgChartManager() {
           </div>
 
           {/* ================= 중앙: 1~3층 수직 트리 ================= */}
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "1.1rem", width: "420px" }}>
+          {/* gap을 0으로 세팅하여 연결 수직선이 카드 상하단 네모 테두리에 빈틈없이 닿도록 합니다. */}
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0", width: "420px" }}>
             {/* 1층: 총장 */}
             <div
               onMouseEnter={() => handleMouseEnter("president")}
@@ -159,8 +167,8 @@ export default function CenterOrgChartManager() {
               <div style={{ fontSize: "0.72rem", color: "#94a3b8", marginTop: "0.2rem" }}>앵커사업 총괄 최고 의사결정 권한</div>
             </div>
 
-            {/* 연결선 */}
-            <div style={{ width: "2px", height: "14px", background: "rgba(255, 255, 255, 0.45)" }} />
+            {/* 총장 - 단장 연결선 (네모 테두리에 바로 맞닿도록 높이를 조절) */}
+            <div style={{ width: "2px", height: "30px", background: "rgba(255, 255, 255, 0.45)" }} />
 
             {/* 2층: 앵커사업단장 */}
             <div
@@ -183,8 +191,8 @@ export default function CenterOrgChartManager() {
               <div style={{ fontSize: "0.78rem", fontWeight: "800", color: "#f59e0b", marginTop: "0.2rem" }}>송경영 단장</div>
             </div>
 
-            {/* 연결선 */}
-            <div style={{ width: "2px", height: "14px", background: "rgba(255, 255, 255, 0.45)" }} />
+            {/* 단장 - 총괄본부장 연결선 (네모 테두리에 바로 맞닿도록 높이를 조절) */}
+            <div style={{ width: "2px", height: "30px", background: "rgba(255, 255, 255, 0.45)" }} />
 
             {/* 3층: 총괄본부장 & 사업운영팀 */}
             <div style={{ position: "relative", display: "flex", justifyContent: "center", alignItems: "center", width: "100%" }}>
@@ -252,7 +260,7 @@ export default function CenterOrgChartManager() {
           {/* ================= 우측: 대학 및 외부 연계 거버넌스 ================= */}
           <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", width: "170px", paddingTop: "4.8rem" }}>
             <div style={{ fontSize: "0.7rem", fontWeight: "bold", color: "var(--accent-color)", borderBottom: "2px solid var(--accent-color)", paddingBottom: "0.2rem", marginBottom: "0.2rem", textAlign: "center" }}>
-              대학/지자체 거버넌스
+              대학 거버넌스
             </div>
             {[
               { id: "e1", name: "대학평의원회 등 제위원회", color: "#6366f1" },
@@ -282,26 +290,28 @@ export default function CenterOrgChartManager() {
 
         </div>
 
-        {/* 중간 레이어: 총괄본부장에서 5대 센터로 내려가는 선명한 분기 가이드라인 */}
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%", marginTop: "-0.5rem" }}>
+        {/* 중간 레이어: 총괄본부장에서 6대 센터로 내려가는 분기 가이드라인 */}
+        {/* marginTop을 -1.1rem으로 당겨 총괄본부장 카드 테두리와 완전히 물리도록 합니다. */}
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%", marginTop: "-1.1rem" }}>
           <div style={{ width: "2px", height: "15px", background: "rgba(255, 255, 255, 0.45)" }} />
-          <div style={{ width: "84%", height: "2px", background: "rgba(255, 255, 255, 0.45)" }} />
+          {/* 6개 센터 기둥 정중앙들에 정확히 매칭되도록 가로선 너비를 83.3%로 설정 */}
+          <div style={{ width: "83.3%", height: "2px", background: "rgba(255, 255, 255, 0.45)" }} />
         </div>
 
-        {/* 하위 레이어: 4층 5대 센터 (가로 1400px 이상으로 아주 넓고 시원하게 독립 배치!) */}
+        {/* 하위 레이어: 4층 6대 센터 */}
         <div style={{
           display: "grid",
-          gridTemplateColumns: "repeat(5, 1fr)",
+          gridTemplateColumns: "repeat(6, 1fr)",
           gap: "1.2rem",
           width: "100%",
-          maxWidth: "1150px",
+          maxWidth: "1380px",
           alignItems: "start",
-          marginTop: "-1rem"
+          marginTop: "0"
         }}>
-
+          
           {/* 1. AID-X 지원센터 */}
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem" }}>
-            <div style={{ width: "2px", height: "12px", background: "rgba(255, 255, 255, 0.45)" }} />
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0" }}>
+            <div style={{ width: "2px", height: "15px", background: "rgba(255, 255, 255, 0.45)" }} />
             <div
               onMouseEnter={() => handleMouseEnter("aidx")}
               onMouseLeave={handleMouseLeave}
@@ -328,7 +338,7 @@ export default function CenterOrgChartManager() {
               <h5 style={{ margin: 0, fontSize: "0.85rem", fontWeight: "900", color: "var(--text-primary)" }}>AID-X 지원센터</h5>
               <div style={{ fontSize: "0.75rem", fontWeight: "800", color: "var(--text-secondary)", marginTop: "0.3rem" }}>김현수 센터장</div>
               <div style={{ fontSize: "0.68rem", color: "var(--text-tertiary)", marginTop: "0.15rem" }}>운영실 (연구원 3명)</div>
-
+              
               <div style={{ borderTop: "1px dashed var(--border-color)", marginTop: "0.5rem", paddingTop: "0.4rem" }}>
                 <div style={{ fontSize: "0.72rem", color: "#a3e635", fontWeight: "700" }}>AI·DX교육팀</div>
                 <div style={{ fontSize: "0.68rem", color: "var(--text-tertiary)", marginTop: "0.1rem" }}>(이정준)</div>
@@ -337,8 +347,8 @@ export default function CenterOrgChartManager() {
           </div>
 
           {/* 2. 지산학교육센터(ECC) */}
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem" }}>
-            <div style={{ width: "2px", height: "12px", background: "rgba(255, 255, 255, 0.45)" }} />
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0" }}>
+            <div style={{ width: "2px", height: "15px", background: "rgba(255, 255, 255, 0.45)" }} />
             <div
               onMouseEnter={() => handleMouseEnter("ecc")}
               onMouseLeave={handleMouseLeave}
@@ -360,12 +370,12 @@ export default function CenterOrgChartManager() {
               }}
             >
               <div style={{ fontSize: "0.7rem", fontWeight: "800", color: "#34d399", background: "rgba(16, 185, 129, 0.15)", padding: "0.15rem 0.3rem", borderRadius: "4px", display: "inline-block", marginBottom: "0.4rem" }}>
-                A1~A3과제
+                A1가/A2/A3과제
               </div>
               <h5 style={{ margin: 0, fontSize: "0.85rem", fontWeight: "900", color: "var(--text-primary)" }}>지산학교육센터</h5>
               <div style={{ fontSize: "0.75rem", fontWeight: "800", color: "var(--text-secondary)", marginTop: "0.3rem" }}>이동은 센터장</div>
               <div style={{ fontSize: "0.68rem", color: "var(--text-tertiary)", marginTop: "0.15rem" }}>연구원 5명</div>
-
+              
               <div style={{ borderTop: "1px dashed var(--border-color)", marginTop: "0.5rem", paddingTop: "0.4rem", display: "flex", flexDirection: "column", gap: "0.25rem", textAlign: "left", paddingLeft: "0.25rem" }}>
                 <div>
                   <span style={{ fontSize: "0.65rem", color: "#34d399", fontWeight: "800", marginRight: "0.2rem" }}>[A1]</span>
@@ -383,9 +393,41 @@ export default function CenterOrgChartManager() {
             </div>
           </div>
 
-          {/* 3. 기업협업센터(ICC) */}
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem" }}>
-            <div style={{ width: "2px", height: "12px", background: "rgba(255, 255, 255, 0.45)" }} />
+          {/* 3. 신산업특화센터 */}
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0" }}>
+            <div style={{ width: "2px", height: "15px", background: "rgba(255, 255, 255, 0.45)" }} />
+            <div
+              onMouseEnter={() => handleMouseEnter("specialty")}
+              onMouseLeave={handleMouseLeave}
+              style={{
+                width: "100%",
+                minHeight: "150px",
+                padding: "0.8rem",
+                background: "var(--panel-bg)",
+                borderTop: "4px solid #8b5cf6",
+                borderLeft: "1px solid var(--border-color)",
+                borderRight: "1px solid var(--border-color)",
+                borderBottom: "1px solid var(--border-color)",
+                boxShadow: hoveredNode === "specialty" ? "0 8px 20px rgba(0,0,0,0.3)" : "0 4px 10px rgba(0,0,0,0.15)",
+                borderRadius: "6px",
+                textAlign: "center",
+                cursor: "pointer",
+                transition: "all 0.25s ease",
+                transform: hoveredNode === "specialty" ? "translateY(-4px)" : "none"
+              }}
+            >
+              <div style={{ fontSize: "0.7rem", fontWeight: "800", color: "#a78bfa", background: "rgba(139, 92, 246, 0.15)", padding: "0.15rem 0.3rem", borderRadius: "4px", display: "inline-block", marginBottom: "0.4rem" }}>
+                A1나과제 특화
+              </div>
+              <h5 style={{ margin: 0, fontSize: "0.85rem", fontWeight: "900", color: "var(--text-primary)" }}>신산업특화센터</h5>
+              <div style={{ fontSize: "0.75rem", fontWeight: "800", color: "var(--text-secondary)", marginTop: "0.3rem" }}>홍진숙 센터장</div>
+              <div style={{ fontSize: "0.68rem", color: "var(--text-tertiary)", marginTop: "0.15rem" }}>연구원 2명</div>
+            </div>
+          </div>
+
+          {/* 4. 기업협업센터(ICC) */}
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0" }}>
+            <div style={{ width: "2px", height: "15px", background: "rgba(255, 255, 255, 0.45)" }} />
             <div
               onMouseEnter={() => handleMouseEnter("icc")}
               onMouseLeave={handleMouseLeave}
@@ -412,7 +454,7 @@ export default function CenterOrgChartManager() {
               <h5 style={{ margin: 0, fontSize: "0.85rem", fontWeight: "900", color: "var(--text-primary)" }}>기업협업센터</h5>
               <div style={{ fontSize: "0.75rem", fontWeight: "800", color: "var(--text-secondary)", marginTop: "0.3rem" }}>김기범 센터장</div>
               <div style={{ fontSize: "0.68rem", color: "var(--text-tertiary)", marginTop: "0.15rem" }}>연구원 4명</div>
-
+              
               <div style={{ borderTop: "1px dashed var(--border-color)", marginTop: "0.5rem", paddingTop: "0.4rem", display: "flex", flexDirection: "column", gap: "0.25rem", textAlign: "left", paddingLeft: "0.25rem" }}>
                 <div>
                   <span style={{ fontSize: "0.65rem", color: "#60a5fa", fontWeight: "800", marginRight: "0.2rem" }}>[B1]</span>
@@ -430,9 +472,9 @@ export default function CenterOrgChartManager() {
             </div>
           </div>
 
-          {/* 4. 지역협업센터(RCC) */}
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem" }}>
-            <div style={{ width: "2px", height: "12px", background: "rgba(255, 255, 255, 0.45)" }} />
+          {/* 5. 지역협업센터(RCC) */}
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0" }}>
+            <div style={{ width: "2px", height: "15px", background: "rgba(255, 255, 255, 0.45)" }} />
             <div
               onMouseEnter={() => handleMouseEnter("rcc")}
               onMouseLeave={handleMouseLeave}
@@ -459,7 +501,7 @@ export default function CenterOrgChartManager() {
               <h5 style={{ margin: 0, fontSize: "0.85rem", fontWeight: "900", color: "var(--text-primary)" }}>지역협업센터</h5>
               <div style={{ fontSize: "0.75rem", fontWeight: "800", color: "var(--text-secondary)", marginTop: "0.3rem" }}>현용환 센터장</div>
               <div style={{ fontSize: "0.68rem", color: "var(--text-tertiary)", marginTop: "0.15rem" }}>연구원 6명</div>
-
+              
               <div style={{ borderTop: "1px dashed var(--border-color)", marginTop: "0.5rem", paddingTop: "0.4rem", display: "flex", flexDirection: "column", gap: "0.25rem", textAlign: "left", paddingLeft: "0.25rem" }}>
                 <div>
                   <span style={{ fontSize: "0.65rem", color: "#fbbf24", fontWeight: "800", marginRight: "0.2rem" }}>[C1]</span>
@@ -477,9 +519,9 @@ export default function CenterOrgChartManager() {
             </div>
           </div>
 
-          {/* 5. 울산늘봄 누리센터 */}
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem" }}>
-            <div style={{ width: "2px", height: "12px", background: "rgba(255, 255, 255, 0.45)" }} />
+          {/* 6. 울산늘봄누리센터 */}
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0" }}>
+            <div style={{ width: "2px", height: "15px", background: "rgba(255, 255, 255, 0.45)" }} />
             <div
               onMouseEnter={() => handleMouseEnter("neulbom")}
               onMouseLeave={handleMouseLeave}
@@ -503,9 +545,9 @@ export default function CenterOrgChartManager() {
               <div style={{ fontSize: "0.7rem", fontWeight: "800", color: "#f472b6", background: "rgba(236, 72, 153, 0.15)", padding: "0.15rem 0.3rem", borderRadius: "4px", display: "inline-block", marginBottom: "0.4rem" }}>
                 C2과제 특화
               </div>
-              <h5 style={{ margin: 0, fontSize: "0.85rem", fontWeight: "900", color: "var(--text-primary)" }}>울산늘봄 누리센터</h5>
+              <h5 style={{ margin: 0, fontSize: "0.85rem", fontWeight: "900", color: "var(--text-primary)" }}>울산늘봄누리센터</h5>
               <div style={{ fontSize: "0.75rem", fontWeight: "800", color: "var(--text-secondary)", marginTop: "0.3rem" }}>홍광표 센터장</div>
-              <div style={{ fontSize: "0.68rem", color: "var(--text-tertiary)", marginTop: "0.15rem" }}>운영실 (연구원 3명)</div>
+              <div style={{ fontSize: "0.68rem", color: "var(--text-tertiary)", marginTop: "0.15rem" }}>연구원 3명</div>
             </div>
           </div>
 
@@ -524,7 +566,7 @@ export default function CenterOrgChartManager() {
           borderRadius: "30px",
           boxShadow: "0 2px 8px rgba(0,0,0,0.2)"
         }}>
-          📍 기구 요약: <strong>1단 1본부 5센터 10팀</strong> | 총수행원: <strong style={{ color: "var(--accent-color)" }}>43명</strong>
+          📍 기구 요약: <strong>1단 1본부 6센터 10팀</strong> | 총수행원: <strong style={{ color: "var(--accent-color)" }}>46명</strong>
         </div>
 
       </div>
