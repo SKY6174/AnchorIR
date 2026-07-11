@@ -334,7 +334,7 @@ export default function CenterOrgChartManager() {
               }}
             >
               <div style={{ fontSize: "0.7rem", fontWeight: "800", color: "#9ca3af", background: "rgba(107, 114, 128, 0.15)", padding: "0.15rem 0.3rem", borderRadius: "4px", display: "inline-block", marginBottom: "0.4rem" }}>
-                B2과제 특화
+                B2
               </div>
               <h5 style={{ margin: 0, fontSize: "0.85rem", fontWeight: "900", color: "var(--text-primary)" }}>AID-X 지원센터</h5>
               <div style={{ fontSize: "0.75rem", fontWeight: "800", color: "var(--text-secondary)", marginTop: "0.3rem" }}>김현수 센터장</div>
@@ -418,7 +418,7 @@ export default function CenterOrgChartManager() {
               }}
             >
               <div style={{ fontSize: "0.7rem", fontWeight: "800", color: "#a78bfa", background: "rgba(139, 92, 246, 0.15)", padding: "0.15rem 0.3rem", borderRadius: "4px", display: "inline-block", marginBottom: "0.4rem" }}>
-                A1나과제 특화
+                A1나
               </div>
               <h5 style={{ margin: 0, fontSize: "0.85rem", fontWeight: "900", color: "var(--text-primary)" }}>신산업특화센터</h5>
               <div style={{ fontSize: "0.75rem", fontWeight: "800", color: "var(--text-secondary)", marginTop: "0.3rem" }}>홍진숙 센터장</div>
@@ -544,7 +544,7 @@ export default function CenterOrgChartManager() {
               }}
             >
               <div style={{ fontSize: "0.7rem", fontWeight: "800", color: "#f472b6", background: "rgba(236, 72, 153, 0.15)", padding: "0.15rem 0.3rem", borderRadius: "4px", display: "inline-block", marginBottom: "0.4rem" }}>
-                C2과제 특화
+                C2
               </div>
               <h5 style={{ margin: 0, fontSize: "0.85rem", fontWeight: "900", color: "var(--text-primary)" }}>울산늘봄누리센터</h5>
               <div style={{ fontSize: "0.75rem", fontWeight: "800", color: "var(--text-secondary)", marginTop: "0.3rem" }}>홍광표 센터장</div>
