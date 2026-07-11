@@ -87,12 +87,13 @@ export default function CenterOrgChartManager() {
         borderRadius: "16px", 
         border: "1px solid var(--border-color)",
         minHeight: "650px",
+        minWidth: "1550px",
         overflowX: "auto",
         position: "relative"
       }}>
         
-        {/* ================= 좌측 양익: 사업단 내부 위원회 ================= */}
-        <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", justifyContent: "center" }}>
+        {/* ================= 좌측 양익: 사업단 내부 위원회 (단장 높이와 맞추어 위로 이동) ================= */}
+        <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", justifyContent: "flex-start", paddingTop: "5.5rem" }}>
           <div style={{ fontSize: "0.7rem", fontWeight: "bold", color: "var(--accent-color)", borderBottom: "2px solid var(--accent-color)", paddingBottom: "0.2rem", marginBottom: "0.2rem", textAlign: "center" }}>
             사업단 내부 위원회
           </div>
@@ -125,7 +126,7 @@ export default function CenterOrgChartManager() {
         </div>
 
         {/* ================= 중앙: 1단 1본부 5센터 트리 구조 ================= */}
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "space-between", gap: "2rem" }}>
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "flex-start", gap: "1.1rem" }}>
           
           {/* 1층: 총장 */}
           <div 
@@ -149,7 +150,7 @@ export default function CenterOrgChartManager() {
           </div>
 
           {/* 연결선 */}
-          <div style={{ width: "2px", height: "20px", background: "rgba(255, 255, 255, 0.2)" }} />
+          <div style={{ width: "2px", height: "14px", background: "rgba(255, 255, 255, 0.45)" }} />
 
           {/* 2층: 앵커사업단장 */}
           <div 
@@ -173,7 +174,7 @@ export default function CenterOrgChartManager() {
           </div>
 
           {/* 연결선 */}
-          <div style={{ width: "2px", height: "20px", background: "rgba(255, 255, 255, 0.2)" }} />
+          <div style={{ width: "2px", height: "14px", background: "rgba(255, 255, 255, 0.45)" }} />
 
           {/* 3층: 총괄본부장 (중앙 단독 배치) & 사업운영팀 (우측 절대배치로 지원 스태프 표현) */}
           <div style={{ position: "relative", display: "flex", justifyContent: "center", alignItems: "center", width: "100%" }}>
@@ -206,7 +207,7 @@ export default function CenterOrgChartManager() {
               left: "calc(50% + 140px)", 
               width: "40px", 
               height: "0px", 
-              borderTop: "2px dashed rgba(255, 255, 255, 0.35)", 
+              borderTop: "2px dashed rgba(255, 255, 255, 0.45)", 
               zIndex: 1 
             }} />
 
@@ -239,10 +240,10 @@ export default function CenterOrgChartManager() {
 
           </div>
 
-          {/* 연결선 (하위 센터들로 분기) */}
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%" }}>
-            <div style={{ width: "2px", height: "20px", background: "rgba(255, 255, 255, 0.2)" }} />
-            <div style={{ width: "80%", height: "1px", background: "rgba(255, 255, 255, 0.2)" }} />
+          {/* 연결선 (하위 센터들로 분기 - 더 또렷하고 가깝게 연결) */}
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%", marginTop: "-0.4rem" }}>
+            <div style={{ width: "2px", height: "12px", background: "rgba(255, 255, 255, 0.45)" }} />
+            <div style={{ width: "84%", height: "2px", background: "rgba(255, 255, 255, 0.45)" }} />
           </div>
 
           {/* 4층: 5개 센터들 (가로 그리드 정렬) */}
@@ -334,7 +335,7 @@ export default function CenterOrgChartManager() {
 
             {/* 3. 기업협업센터(ICC) */}
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem" }}>
-              <div style={{ width: "2px", height: "12px", background: "rgba(255, 255, 255, 0.2)" }} />
+              <div style={{ width: "2px", height: "12px", background: "rgba(255, 255, 255, 0.45)" }} />
               <div 
                 onMouseEnter={() => handleMouseEnter("icc")}
                 onMouseLeave={handleMouseLeave}
@@ -381,7 +382,7 @@ export default function CenterOrgChartManager() {
 
             {/* 4. 지역협업센터(RCC) */}
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem" }}>
-              <div style={{ width: "2px", height: "12px", background: "rgba(255, 255, 255, 0.2)" }} />
+              <div style={{ width: "2px", height: "12px", background: "rgba(255, 255, 255, 0.45)" }} />
               <div 
                 onMouseEnter={() => handleMouseEnter("rcc")}
                 onMouseLeave={handleMouseLeave}
@@ -428,7 +429,7 @@ export default function CenterOrgChartManager() {
 
             {/* 5. 울산늘봄 누리센터 */}
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem" }}>
-              <div style={{ width: "2px", height: "12px", background: "rgba(255, 255, 255, 0.2)" }} />
+              <div style={{ width: "2px", height: "12px", background: "rgba(255, 255, 255, 0.45)" }} />
               <div 
                 onMouseEnter={() => handleMouseEnter("neulbom")}
                 onMouseLeave={handleMouseLeave}
@@ -461,8 +462,8 @@ export default function CenterOrgChartManager() {
           </div>
         </div>
 
-        {/* ================= 우측 양익: 대학 및 외부 연계 거버넌스 ================= */}
-        <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", justifyContent: "center" }}>
+        {/* ================= 우측 양익: 대학 및 외부 연계 거버넌스 (단장 높이와 맞추어 위로 이동) ================= */}
+        <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", justifyContent: "flex-start", paddingTop: "5.5rem" }}>
           <div style={{ fontSize: "0.7rem", fontWeight: "bold", color: "var(--accent-color)", borderBottom: "2px solid var(--accent-color)", paddingBottom: "0.2rem", marginBottom: "0.2rem", textAlign: "center" }}>
             대학/지자체 거버넌스
           </div>
