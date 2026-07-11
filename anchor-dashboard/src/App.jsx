@@ -2763,9 +2763,9 @@ export default function App() {
     // 1. 기본 데모 계정들 정의
     const demoUsers = [
       { id: "admin", name: "시스템 관리자", role_key: "ADMIN", created_at: "2025-01-06T00:00:00.000Z" },
-      { id: "g_director", name: "송경영", role_key: "G_DIRECTOR", created_at: "2025-01-06T00:00:00.000Z" },
-      { id: "hq_head", name: "김현수", role_key: "HQ_HEAD", created_at: "2025-03-01T00:00:00.000Z" },
-      { id: "manager", name: "심현미", role_key: "MANAGER", created_at: "2026-02-01T00:00:00.000Z" },
+      { id: "g_director", name: "", role_key: "G_DIRECTOR", created_at: "2025-01-06T00:00:00.000Z" },
+      { id: "hq_head", name: "", role_key: "HQ_HEAD", created_at: "2025-03-01T00:00:00.000Z" },
+      { id: "manager", name: "", role_key: "MANAGER", created_at: "2026-02-01T00:00:00.000Z" },
     ];
 
     try {
@@ -2826,6 +2826,9 @@ export default function App() {
       // DB 실제 회원 계정 주입 (최종 우선순위 보장)
       dbUsers.forEach(u => {
         const idLower = u.id.trim().toLowerCase();
+        if (["g_director", "hq_head", "manager"].includes(idLower)) {
+          u.name = "";
+        }
         finalUsersMap.set(idLower, u);
       });
 

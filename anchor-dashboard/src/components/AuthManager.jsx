@@ -234,11 +234,17 @@ export default function AuthManager({ onLoginSuccess, members = [] }) {
       // 각각 'G_DIRECTOR'(사업단장), 'MANAGER'(운영팀장) 권한이 완벽하게 부여되도록 역할을 강제 세팅합니다.
       if (targetId === "g_director") {
         autoRoleKey = "G_DIRECTOR";
-        matchedName = "송경영";
-      } else if (targetId === "manager" || targetId === "hmsim" || targetId === "hmsim@uc.ac.kr") {
+        matchedName = "";
+      } else if (targetId === "manager") {
+        autoRoleKey = "MANAGER";
+        matchedName = "";
+      } else if (targetId === "hmsim" || targetId === "hmsim@uc.ac.kr") {
         autoRoleKey = "MANAGER";
         matchedName = "심현미";
-      } else if (targetId === "hq_head" || targetId === "hskim3" || targetId === "hskim3@uc.ac.kr") {
+      } else if (targetId === "hq_head") {
+        autoRoleKey = "HQ_HEAD";
+        matchedName = "";
+      } else if (targetId === "hskim3" || targetId === "hskim3@uc.ac.kr") {
         autoRoleKey = "HQ_HEAD";
         matchedName = "김현수";
       }
