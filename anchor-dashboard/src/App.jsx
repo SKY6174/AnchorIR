@@ -6311,8 +6311,8 @@ export default function App() {
         onChangeAgreementsSubTab={setAgreementsSubTab}
         progressSubTab={progressSubTab}
         onChangeProgressSubTab={setProgressSubTab}
-        menuVisibility={menuVisibility}
-        isSongDirector={isSongDirector}
+        menuVisibility={currentUser && ["ADMIN", "G_DIRECTOR", "HQ_HEAD", "MANAGER"].includes(currentUser.role_key) ? {} : menuVisibility}
+        isSongDirector={isSongDirector || (currentUser && ["ADMIN", "G_DIRECTOR", "HQ_HEAD", "MANAGER"].includes(currentUser.role_key))}
       />
 
       {/* 메인 뷰 */}

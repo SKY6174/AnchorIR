@@ -785,7 +785,7 @@ export default function Sidebar({
               </div>
               <div className="nav-sub-menu">
                 {/* 관리자 권한 전용 서브 탭 가드 */}
-                {(currentRole.id === "ADMIN" || currentRole.id === "G_DIRECTOR" || currentRole.id === "HQ_HEAD") && (
+                {(currentRole.id === "ADMIN" || currentRole.id === "G_DIRECTOR" || currentRole.id === "HQ_HEAD" || currentRole.id === "MANAGER") && (
                   <>
                     {(menuVisibility.approvals !== false || isSongDirector) && (
                       <div
