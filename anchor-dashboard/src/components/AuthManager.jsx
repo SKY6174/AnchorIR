@@ -252,6 +252,7 @@ export default function AuthManager({ onLoginSuccess, members = [] }) {
       const mappedRole = userRoles[autoRoleKey] || userRoles.RESEARCHER;
       const sessionUser = {
         id: targetId,
+        loginId: userId.trim().toLowerCase(),
         name: matchedName,
         role: mappedRole,
         password: userPw,

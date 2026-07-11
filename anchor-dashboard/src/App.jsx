@@ -6227,8 +6227,12 @@ export default function App() {
   const getWelcomeMessage = () => {
     if (!currentUser) return "";
 
-    // currentUser.id 또는 name 기준으로 members 데이터에서 정보 탐색
-    const currentMember = members.find((m) => {
+    // 만약 사용자가 타이핑한 원래 ID가 데모 가상 계정(g_director, hq_head, manager)이라면, 
+    // 주소록 매핑을 타지 않게 강제 우회하여 실명이 표출되지 않고 직함만 출력되도록 처리합니다.
+    const cleanId = currentUser.loginId || currentUser.id;
+    const isDemoAccount = ["g_director", "hq_head", "manager"].includes(cleanId);
+
+    const currentMember = isDemoAccount ? null : (members.find((m) => {
       if (!m.email) return false;
       const mId = m.email.trim().toLowerCase().split("@")[0];
       return mId === currentUser.id;
@@ -6236,7 +6240,7 @@ export default function App() {
       const cleanMName = m.name ? m.name.split(" ")[0].split("(")[0].trim() : "";
       const cleanCurrName = currentUser.name ? currentUser.name.split(" ")[0].split("(")[0].trim() : "";
       return cleanMName === cleanCurrName;
-    });
+    }));
 
     let cleanName = currentUser.name ? currentUser.name.split(" ")[0].split("(")[0].trim() : "";
     if (cleanName === "g_director") cleanName = "송경영";
