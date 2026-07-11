@@ -506,7 +506,7 @@ export default function CenterOrgChartManager() {
               <div style={{ borderTop: "1px dashed var(--border-color)", marginTop: "0.5rem", paddingTop: "0.4rem", display: "flex", flexDirection: "column", gap: "0.25rem", textAlign: "left", paddingLeft: "0.25rem" }}>
                 <div>
                   <span style={{ fontSize: "0.65rem", color: "#fbbf24", fontWeight: "800", marginRight: "0.2rem" }}>[C1]</span>
-                  <span style={{ fontSize: "0.68rem", color: "var(--text-secondary)" }}>LIFE교육 (김민경)</span>
+                  <span style={{ fontSize: "0.68rem", color: "var(--text-secondary)" }}>LIFE교육 (김민경, 박성혁)</span>
                 </div>
                 <div>
                   <span style={{ fontSize: "0.65rem", color: "#fbbf24", fontWeight: "800", marginRight: "0.2rem" }}>[D1]</span>
