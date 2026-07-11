@@ -6347,7 +6347,7 @@ export default function App() {
         progressSubTab={progressSubTab}
         onChangeProgressSubTab={setProgressSubTab}
         menuVisibility={currentUser && ["ADMIN", "G_DIRECTOR", "HQ_HEAD", "MANAGER"].includes(currentUser.role_key) ? {} : menuVisibility}
-        isSongDirector={isSongDirector || (currentUser && ["ADMIN", "G_DIRECTOR", "HQ_HEAD", "MANAGER"].includes(currentUser.role_key))}
+        isSongDirector={isSongDirector}
       />
 
       {/* 메인 뷰 */}
@@ -6902,7 +6902,7 @@ export default function App() {
                   </button>
                 </>
               )}
-              {(isSongDirector || currentRole?.id === "ADMIN" || currentRole?.id === "G_DIRECTOR") && (
+              {(currentRole?.id === "ADMIN" || currentRole?.id === "G_DIRECTOR") && (
                 <button
                   type="button"
                   onClick={() => setMgmtSubTab("portal_config")}
@@ -7710,7 +7710,7 @@ export default function App() {
               <PartnerManager key={`partner-${darkMode}-${selectedYear}`} selectedYear={selectedYear} />
             )}
 
-            {mgmtSubTab === "portal_config" && (isSongDirector || currentRole?.id === "ADMIN" || currentRole?.id === "G_DIRECTOR") && (
+            {mgmtSubTab === "portal_config" && (currentRole?.id === "ADMIN" || currentRole?.id === "G_DIRECTOR") && (
               <PortalConfigManager
                 key={`config-${darkMode}`}
                 initialVisibility={menuVisibility}
