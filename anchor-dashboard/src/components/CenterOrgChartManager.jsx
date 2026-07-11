@@ -95,7 +95,7 @@ export default function CenterOrgChartManager() {
         borderRadius: "16px",
         border: "1px solid var(--border-color)",
         minHeight: "680px",
-        minWidth: "1260px", // 6개 센터 확장에 맞춰 1200px에서 1400px로 조정 후 90% 축소
+        minWidth: "1200px", // 6개 센터 확장에 맞춰 90% 축소 후 다시 95% 축소 (총 1200px)
         overflowX: "auto",
         position: "relative",
         gap: "1.5rem"
@@ -305,9 +305,9 @@ export default function CenterOrgChartManager() {
           gridTemplateColumns: "repeat(6, 1fr)",
           gap: "1.2rem",
           width: "100%",
-          maxWidth: "1240px",
+          maxWidth: "1180px", // 기존 1240px에서 95% 수준인 1180px로 축소
           alignItems: "start",
-          marginTop: "0"
+          marginTop: "-1.5rem" // 부모 컨테이너의 gap: "1.5rem"을 상쇄하여 가로 가이드라인과 수직선을 완벽히 밀착 연결
         }}>
 
           {/* 1. AID-X 지원센터 */}
