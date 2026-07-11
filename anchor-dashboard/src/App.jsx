@@ -243,7 +243,7 @@ const getRealUnitId = (unitId, yr) => {
 const INITIAL_MEMBERS = [
   // 교수 및 리더진
   { id: "m-01", name: "송경영", role: "사업단장", grade: "정교수", dept: "-", phoneOffice: "052-279-3154", phoneMobile: "010-7627-7123", email: "kysong@uc.ac.kr", room: "교수연구실/E1-307", hireDate: "2026-03-01" },
-  { id: "m-02", name: "김현수", role: "본부장", grade: "정교수", dept: "운영본부", phoneOffice: "052-279-3122", phoneMobile: "010-4628-7963", email: "hskim3@uc.ac.kr", room: "교수연구실/E2-414", hireDate: "2026-03-01" },
+  { id: "m-02", name: "김현수", role: "총괄본부장", grade: "정교수", dept: "운영본부", phoneOffice: "052-279-3122", phoneMobile: "010-4628-7963", email: "hskim3@uc.ac.kr", room: "교수연구실/E2-414", hireDate: "2026-03-01" },
   { id: "m-03", name: "심현미", role: "운영팀장", grade: "부장", dept: "사업운영팀", phoneOffice: "052-230-0441", phoneMobile: "010-6554-8359", email: "hmsim@uc.ac.kr", room: "산학협력단/S-203", hireDate: "2026-03-01" },
   { id: "m-04", name: "이동은", role: "센터장", grade: "부교수", dept: "ECC센터", phoneOffice: "052-230-0111", phoneMobile: "010-1234-5678", email: "delee@uc.ac.kr", room: "교수연구실/E2-201", hireDate: "2026-03-01" },
   { id: "m-05", name: "김기범", role: "센터장", grade: "부교수", dept: "ICC센터", phoneOffice: "052-230-0222", phoneMobile: "010-2345-6789", email: "kbkim@uc.ac.kr", room: "교수연구실/E2-301", hireDate: "2026-03-01" },
@@ -7012,7 +7012,7 @@ export default function App() {
                               <span
                                 className={`badge ${isRetired
                                   ? "badge-gray"
-                                  : m.role === "사업단장" || m.role === "본부장"
+                                  : m.role === "사업단장" || m.role === "총괄본부장"
                                     ? "badge-red"
                                     : m.role === "센터장"
                                       ? "badge-blue"
@@ -7393,7 +7393,7 @@ export default function App() {
                               const roleNames = {
                                 ADMIN: "최고 관리자",
                                 G_DIRECTOR: "사업단장",
-                                HQ_HEAD: "본부장",
+                                HQ_HEAD: "총괄본부장",
                                 MANAGER: "운영팀장",
                                 CENTER_ECC: "ECC센터장",
                                 CENTER_SPECIAL: "신산업특화센터장",
@@ -7468,7 +7468,7 @@ export default function App() {
                                 ADMIN: "최고 관리자",
                                 DIRECTOR: "사업단장",
                                 G_DIRECTOR: "사업단장",
-                                HQ_HEAD: "본부장",
+                                HQ_HEAD: "총괄본부장",
                                 MANAGER: "운영팀장",
                                 CENTER_ECC: "ECC센터장",
                                 CENTER_SPECIAL: "신산업특화센터장",
@@ -7538,7 +7538,7 @@ export default function App() {
                       <div className="card" style={{ padding: "3rem", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", background: "var(--panel-bg)", border: "1px solid var(--border-color)", color: "var(--text-secondary)", textAlign: "center" }}>
                         <Info size={40} style={{ marginBottom: "0.75rem", opacity: 0.4, color: "var(--accent-color)" }} />
                         <span style={{ fontSize: "1.1rem", fontWeight: "800", color: "var(--text-primary)", marginBottom: "0.5rem" }}>결재 승인 권한 없음</span>
-                        <span>프로그램 기획 및 예산 변경 결재 권한은 <strong>심현미 운영팀장, 김현수 본부장, 송경영 단장</strong> 3인에게만 부여되어 있습니다.</span>
+                        <span>프로그램 기획 및 예산 변경 결재 권한은 <strong>심현미 운영팀장, 김현수 총괄본부장, 송경영 사업단장</strong> 3인에게만 부여되어 있습니다.</span>
                       </div>
                     );
                   }
@@ -8849,7 +8849,7 @@ export default function App() {
                     onChange={(e) => {
                       const nextRole = e.target.value;
                       let nextGrade = "연구원";
-                      if (["사업단장", "본부장", "센터장", "팀장교수"].includes(nextRole)) {
+                      if (["사업단장", "총괄본부장", "센터장", "운영팀장", "팀장교수"].includes(nextRole)) {
                         nextGrade = "정교수";
                       } else if (nextRole === "운영팀장") {
                         nextGrade = "부장";
@@ -8858,7 +8858,7 @@ export default function App() {
                     }}
                   >
                     <option value="사업단장">사업단장</option>
-                    <option value="본부장">본부장</option>
+                    <option value="총괄본부장">총괄본부장</option>
                     <option value="센터장">센터장</option>
                     <option value="운영팀장">운영팀장</option>
                     <option value="팀장교수">팀장교수</option>
@@ -8873,7 +8873,7 @@ export default function App() {
                     value={editingMember.grade}
                     onChange={(e) => setEditingMember({ ...editingMember, grade: e.target.value })}
                   >
-                    {["사업단장", "본부장", "센터장", "팀장교수"].includes(editingMember.role) ? (
+                    {["사업단장", "총괄본부장", "센터장", "운영팀장", "팀장교수"].includes(editingMember.role) ? (
                       <>
                         <option value="정교수">정교수</option>
                         <option value="부교수">부교수</option>
