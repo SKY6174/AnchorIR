@@ -261,7 +261,16 @@ export default function AuthManager({ onLoginSuccess, members = [] }) {
         email: targetEmail
       };
 
-      setSuccessMsg(`${matchedName}님, 환영합니다!`);
+      let welcomeDisplayName = matchedName;
+      if (!welcomeDisplayName) {
+        if (autoRoleKey === "G_DIRECTOR") welcomeDisplayName = "사업단장";
+        else if (autoRoleKey === "ADMIN") welcomeDisplayName = "관리자";
+        else if (autoRoleKey === "HQ_HEAD") welcomeDisplayName = "총괄본부장";
+        else if (autoRoleKey === "MANAGER") welcomeDisplayName = "운영팀장";
+        else welcomeDisplayName = "사용자";
+      }
+
+      setSuccessMsg(`${welcomeDisplayName}님, 환영합니다!`);
       setTimeout(() => {
         onLoginSuccess(sessionUser);
       }, 600);
