@@ -245,24 +245,24 @@ const INITIAL_MEMBERS = [
   { id: "m-01", name: "송경영", role: "사업단장", grade: "정교수", dept: "-", phoneOffice: "052-279-3154", phoneMobile: "010-7627-7123", email: "kysong@uc.ac.kr", room: "교수연구실/E1-307", hireDate: "2026-03-01" },
   { id: "m-02", name: "김현수", role: "총괄본부장", grade: "정교수", dept: "운영본부", phoneOffice: "052-279-3122", phoneMobile: "010-4628-7963", email: "hskim3@uc.ac.kr", room: "교수연구실/E2-414", hireDate: "2026-03-01" },
   { id: "m-03", name: "심현미", role: "운영팀장", grade: "부장", dept: "사업운영팀", phoneOffice: "052-230-0441", phoneMobile: "010-6554-8359", email: "hmsim@uc.ac.kr", room: "산학협력단/S-203", hireDate: "2026-03-01" },
-  { id: "m-04", name: "이동은", role: "센터장", grade: "부교수", dept: "ECC센터", phoneOffice: "052-230-0111", phoneMobile: "010-1234-5678", email: "delee@uc.ac.kr", room: "교수연구실/E2-201", hireDate: "2026-03-01" },
-  { id: "m-05", name: "김기범", role: "센터장", grade: "부교수", dept: "ICC센터", phoneOffice: "052-230-0222", phoneMobile: "010-2345-6789", email: "kbkim@uc.ac.kr", room: "교수연구실/E2-301", hireDate: "2026-03-01" },
-  { id: "m-06", name: "현용환", role: "센터장", grade: "조교수", dept: "RCC센터", phoneOffice: "052-230-0333", phoneMobile: "010-3456-7890", email: "yhhyun@uc.ac.kr", room: "교수연구실/E2-401", hireDate: "2026-03-01" },
-  { id: "m-07", name: "홍광표", role: "센터장", grade: "조교수", dept: "울산늘봄누리센터", phoneOffice: "052-230-0444", phoneMobile: "010-4567-8901", email: "gphong@uc.ac.kr", room: "교수연구실/E2-501", hireDate: "2026-03-01" },
+  { id: "m-04", name: "이동은", role: "센터장", grade: "부교수", dept: "ECC센터", phoneOffice: "052-230-0798", phoneMobile: "010-5171-7140", email: "delee@uc.ac.kr", room: "교수연구실/E2-201", hireDate: "2026-03-01" },
+  { id: "m-05", name: "김기범", role: "센터장", grade: "부교수", dept: "ICC센터", phoneOffice: "052-279-3094", phoneMobile: "010-2243-9802", email: "kbkim@uc.ac.kr", room: "교수연구실/E2-301", hireDate: "2026-03-01" },
+  { id: "m-06", name: "현용환", role: "센터장", grade: "조교수", dept: "RCC센터", phoneOffice: "052-230-0643", phoneMobile: "010-4299-3119", email: "yhhyun@uc.ac.kr", room: "교수연구실/E2-401", hireDate: "2026-03-01" },
+  { id: "m-07", name: "홍광표", role: "센터장", grade: "조교수", dept: "울산늘봄누리센터", phoneOffice: "052-230-0724", phoneMobile: "010-2512-1233", email: "gphong@uc.ac.kr", room: "교수연구실/E2-501", hireDate: "2026-03-01" },
   { id: "m-07b", name: "홍진숙", role: "센터장", grade: "정교수", dept: "신산업특화센터", phoneOffice: "052-279-3134", phoneMobile: "010-9120-8583", email: "cshong@uc.ac.kr", room: "센터실/N-101", hireDate: "2026-06-01" },
-
+  
   // 팀장교수
-  { id: "m-08", name: "장광일", role: "팀장교수", grade: "조교수", dept: "ECC센터", phoneOffice: "052-230-0112", phoneMobile: "010-5678-9012", email: "kijang@uc.ac.kr", room: "교수연구실/E2-202", hireDate: "2026-03-01" },
-  { id: "m-09", name: "고형석", role: "팀장교수", grade: "조교수", dept: "ECC센터", phoneOffice: "052-230-0113", phoneMobile: "010-6789-0123", email: "hsko@uc.ac.kr", room: "교수연구실/E2-203", hireDate: "2026-03-01" },
-  { id: "m-10", name: "양승호", role: "팀장교수", grade: "정교수", dept: "ECC센터", phoneOffice: "052-230-0114", phoneMobile: "010-7890-1234", email: "shyang@uc.ac.kr", room: "교수연구실/E2-204", hireDate: "2026-03-01" },
-  { id: "m-11", name: "김산", role: "팀장교수", grade: "조교수", dept: "ICC센터", phoneOffice: "052-230-0223", phoneMobile: "010-8901-2345", email: "skim@uc.ac.kr", room: "교수연구실/E2-302", hireDate: "2026-03-01" },
-  { id: "m-12", name: "한미라", role: "팀장교수", grade: "부교수", dept: "ICC센터", phoneOffice: "052-230-0224", phoneMobile: "010-9012-3456", email: "mrhan@uc.ac.kr", room: "교수연구실/E2-303", hireDate: "2026-03-01" },
-  { id: "m-13", name: "김민경", role: "팀장교수", grade: "조교수", dept: "RCC센터", phoneOffice: "052-230-0334", phoneMobile: "010-0123-4567", email: "mkkim@uc.ac.kr", room: "교수연구실/E2-402", hireDate: "2026-03-01" },
-  { id: "m-14", name: "이한도", role: "팀장교수", grade: "부교수", dept: "RCC센터", phoneOffice: "052-230-0335", phoneMobile: "010-1234-8765", email: "hdlee@uc.ac.kr", room: "교수연구실/E2-403", hireDate: "2026-03-01" },
-  { id: "m-15", name: "이상현", role: "팀장교수", grade: "조교수", dept: "RCC센터", phoneOffice: "052-230-0336", phoneMobile: "010-2345-9876", email: "shlee@uc.ac.kr", room: "교수연구실/E2-404", hireDate: "2026-03-01" },
-  { id: "m-15b", name: "박성혁", role: "팀장교수", grade: "조교수", dept: "RCC센터", phoneOffice: "052-230-0337", phoneMobile: "010-8765-4321", email: "shpark@uc.ac.kr", room: "교수연구실/E2-405", hireDate: "2026-03-01" },
-  { id: "m-16", name: "이정준", role: "팀장교수", grade: "조교수", dept: "AID-X지원센터", phoneOffice: "052-230-0445", phoneMobile: "010-3456-0987", email: "jjlee@uc.ac.kr", room: "교수연구실/E2-502", hireDate: "2026-03-01" },
-
+  { id: "m-08", name: "장광일", role: "팀장교수", grade: "조교수", dept: "ECC센터", phoneOffice: "052-230-0798", phoneMobile: "010-5204-4521", email: "kijang@uc.ac.kr", room: "교수연구실/E2-202", hireDate: "2026-03-01" },
+  { id: "m-09", name: "고형석", role: "팀장교수", grade: "조교수", dept: "ECC센터", phoneOffice: "052-230-0798", phoneMobile: "010-4353-7720", email: "hsko@uc.ac.kr", room: "교수연구실/E2-203", hireDate: "2026-03-01" },
+  { id: "m-10", name: "양승호", role: "팀장교수", grade: "정교수", dept: "ECC센터", phoneOffice: "052-279-3138", phoneMobile: "010-8927-8740", email: "shyang@uc.ac.kr", room: "교수연구실/E2-204", hireDate: "2026-03-01" },
+  { id: "m-11", name: "김산", role: "팀장교수", grade: "조교수", dept: "ICC센터", phoneOffice: "052-279-3123", phoneMobile: "010-9408-9672", email: "skim@uc.ac.kr", room: "교수연구실/E2-302", hireDate: "2026-03-01" },
+  { id: "m-12", name: "한미라", role: "팀장교수", grade: "부교수", dept: "ICC센터", phoneOffice: "052-230-0738", phoneMobile: "010-5293-3915", email: "mrhan@uc.ac.kr", room: "교수연구실/E2-303", hireDate: "2026-03-01" },
+  { id: "m-13", name: "김민경", role: "팀장교수", grade: "조교수", dept: "RCC센터", phoneOffice: "052-230-0663", phoneMobile: "010-9449-3310", email: "mkkim@uc.ac.kr", room: "교수연구실/E2-402", hireDate: "2026-03-01" },
+  { id: "m-14", name: "이한도", role: "팀장교수", grade: "부교수", dept: "RCC센터", phoneOffice: "052-230-0786", phoneMobile: "010-3069-6996", email: "hdlee@uc.ac.kr", room: "교수연구실/E2-403", hireDate: "2026-03-01" },
+  { id: "m-15", name: "이상현", role: "팀장교수", grade: "조교수", dept: "RCC센터", phoneOffice: "052-230-0756", phoneMobile: "010-7676-8938", email: "shlee@uc.ac.kr", room: "교수연구실/E2-404", hireDate: "2026-03-01" },
+  { id: "m-15b", name: "박성혁", role: "팀장교수", grade: "조교수", dept: "RCC센터", phoneOffice: "052-230-0763", phoneMobile: "010-4132-0866", email: "shpark@uc.ac.kr", room: "교수연구실/E2-405", hireDate: "2026-03-01" },
+  { id: "m-16", name: "이정준", role: "팀장교수", grade: "정교수", dept: "AID-X지원센터", phoneOffice: "052-279-3102", phoneMobile: "010-7651-7723", email: "jjlee@uc.ac.kr", room: "교수연구실/E2-502", hireDate: "2026-03-01" },
+  
   // 실무 연구원 (등급/직위 3구분 적용)
   { id: "m-17", name: "이현섭", role: "연구원", grade: "책임연구원", dept: "RCC센터", phoneOffice: "052-230-0417", phoneMobile: "010-8252-1151", email: "mogern1@uc.ac.kr", room: "연구원실/R-101", hireDate: "2026-03-01" },
   { id: "m-18", name: "이은주", role: "연구원", grade: "선임연구원", dept: "ECC센터", phoneOffice: "052-230-0414", phoneMobile: "010-4026-3850", email: "ejlee7@uc.ac.kr", room: "연구원실/E-101", hireDate: "2026-03-01" },
@@ -289,7 +289,8 @@ const INITIAL_MEMBERS = [
   { id: "m-39", name: "박언주", role: "연구원", grade: "연구원", dept: "사업운영팀", phoneOffice: "052-230-0443", phoneMobile: "010-2541-5992", email: "ejpark@uc.ac.kr", room: "운영팀실/S-207", hireDate: "2026-03-01" },
   { id: "m-40", name: "이규상", role: "연구원", grade: "연구원", dept: "사업운영팀", phoneOffice: "052-230-0442", phoneMobile: "010-2402-1649", email: "leegyu@uc.ac.kr", room: "운영팀실/S-208", hireDate: "2026-03-01" },
   { id: "m-41", name: "김예지", role: "연구원", grade: "연구원", dept: "울산늘봄누리센터", phoneOffice: "052-230-0454", phoneMobile: "010-9778-1705", email: "limited0517@uc.ac.kr", room: "연구원실/N-104", hireDate: "2026-03-01" },
-  { id: "m-42", name: "최주명", role: "연구원", grade: "연구원", dept: "울산늘봄누리센터", phoneOffice: "052-230-0419", phoneMobile: "010-9385-5959", email: "jmchoi@uc.ac.kr", room: "연구원실/N-105", hireDate: "2026-03-01" }
+  { id: "m-42", name: "최주명", role: "연구원", grade: "연구원", dept: "울산늘봄누리센터", phoneOffice: "052-230-0419", phoneMobile: "010-9385-5959", email: "jmchoi@uc.ac.kr", room: "연구원실/N-105", hireDate: "2026-03-01" },
+  { id: "m-43", name: "김예담", role: "연구원", grade: "연구원", dept: "ICC센터", phoneOffice: "052-279-3308", phoneMobile: "010-5128-0993", email: "kimyd98@uc.ac.kr", room: "연구원실/I-104", hireDate: "2026-07-01" }
 ];
 
 // LaTeX 수식 파서 및 HTML 렌더러 컴포넌트
