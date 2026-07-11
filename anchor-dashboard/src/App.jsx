@@ -6565,8 +6565,8 @@ export default function App() {
                   <table className="custom-table" style={{ fontSize: "0.8rem" }}>
                     <thead>
                       <tr style={{ background: "rgba(255,255,255,0.02)" }}>
-                        <th rowSpan={2} style={{ verticalAlign: "middle", borderBottom: "1px solid var(--border-color)", borderRight: "2px solid var(--border-color)" }}>과제/부서</th>
-                        <th colSpan={selectedYear >= 2 ? 5 : 4} style={{ textAlign: "center", borderBottom: "1px solid var(--border-color)", borderRight: "2px solid var(--border-color)", fontWeight: "800", color: "var(--accent-color)", background: "rgba(59, 130, 246, 0.08)", padding: "0.55rem 0" }}>
+                        <th rowSpan={2} style={{ verticalAlign: "middle", borderBottom: "1px solid var(--border-color)", borderRight: "1px solid var(--border-color)" }}>단위과제</th>
+                        <th colSpan={selectedYear >= 2 ? 5 : 4} style={{ textAlign: "center", borderBottom: "1px solid var(--border-color)", borderRight: "1px solid var(--border-color)", fontWeight: "800", color: "var(--accent-color)", background: "rgba(59, 130, 246, 0.08)", padding: "0.55rem 0" }}>
                           예산 배정 및 집행 (단위: 백만원)
                         </th>
                         <th colSpan={5} style={{ textAlign: "center", borderBottom: "1px solid var(--border-color)", fontWeight: "800", color: "#10b981", background: "rgba(16, 185, 129, 0.08)", padding: "0.55rem 0" }}>
@@ -6578,7 +6578,7 @@ export default function App() {
                         {selectedYear >= 2 && <th style={{ fontSize: "0.75rem", textAlign: "right", paddingRight: "1rem" }}>이월예산</th>}
                         <th style={{ fontSize: "0.75rem", textAlign: "right", paddingRight: "1rem" }}>총 배정액</th>
                         <th style={{ fontSize: "0.75rem", textAlign: "right", paddingRight: "1rem" }}>누적 집행</th>
-                        <th style={{ fontSize: "0.75rem", borderRight: "2px solid var(--border-color)", textAlign: "right", paddingRight: "1rem" }}>집행률</th>
+                        <th style={{ fontSize: "0.75rem", borderRight: "1px solid var(--border-color)", textAlign: "right", paddingRight: "1rem" }}>집행률</th>
                         <th style={{ fontSize: "0.75rem", textAlign: "center" }}>총 개수</th>
                         <th style={{ fontSize: "0.75rem", textAlign: "center" }}>준비</th>
                         <th style={{ fontSize: "0.75rem", textAlign: "center" }}>진행</th>
@@ -6640,7 +6640,7 @@ export default function App() {
                                 transition: "background 0.2s"
                               }}
                             >
-                              <td style={{ fontWeight: "700", borderRight: "1px solid rgba(255,255,255,0.05)" }}>
+                              <td style={{ fontWeight: "700", borderRight: "1px solid var(--border-color)" }}>
                                 {u.id === "Common" ? "" : `${u.id}. `}{u.title}
                               </td>
                               <td style={{ fontFamily: "var(--font-data)", textAlign: "right", paddingRight: "1rem" }}>
@@ -6657,7 +6657,7 @@ export default function App() {
                               <td style={{ fontFamily: "var(--font-data)", textAlign: "right", paddingRight: "1rem" }}>
                                 {formatToMillionWon(totalSpent)}
                               </td>
-                              <td style={{ borderRight: "2px solid var(--border-color)" }}>
+                              <td style={{ borderRight: "1px solid var(--border-color)" }}>
                                 <div style={{ display: "flex", alignItems: "center", gap: "0.25rem" }}>
                                   <span style={{ fontSize: "0.75rem", fontFamily: "var(--font-data)" }}>{rate.toFixed(1)}%</span>
                                 </div>
