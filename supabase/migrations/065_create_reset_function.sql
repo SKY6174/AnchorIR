@@ -23,9 +23,17 @@ BEGIN
       AND email IS NOT NULL AND email != ''
       AND "phoneMobile" IS NOT NULL AND "phoneMobile" != ''
   LOOP
-    -- 1. 휴대폰 번호에서 하이픈을 제거하고 마지막 4자리 추출 후 '00'을 붙여 6자리 초기 비밀번호 생성
-    phone_suffix := right(replace(m."phoneMobile", '-', ''), 4);
-    raw_pw := phone_suffix || '00';
+    -- 1. 휴대폰 번호에서 하이픈을 제거하고 '010'으로 시작하는 경우 010을 제외한 나머지 8자리 추출하여 초기 비밀번호 생성
+    DECLARE
+      phone_clean TEXT;
+    BEGIN
+      phone_clean := replace(replace(m."phoneMobile", '-', ''), ' ', '');
+      IF phone_clean LIKE '010%' THEN
+        raw_pw := substring(phone_clean from 4);
+      ELSE
+        raw_pw := phone_clean;
+      END IF;
+    END;
     
     -- extensions 스키마 하위의 digest 함수를 안전하게 명시적 참조하여 search_path 에러 방어
     BEGIN

@@ -80,11 +80,10 @@ export default function AuthManager({ onLoginSuccess, members = [] }) {
 
 
       // 💡 [콘솔 에러 완전 박멸 혁신 - 터널링 선제 조건 판별]
-      // 사용자가 일반 구성원이며 비밀번호가 휴대폰 뒷자리+'00' 형태인 경우, 
-      // 불필요한 Supabase 가입/로그인 에러(400, 422)가 콘솔창에 찍히는 것을 방지하기 위해 
+      // 사용자가 일반 구성원이며 비밀번호가 휴대폰 번호에서 010을 제외한 8자리 숫자 형태인 경우, 
       // 곧바로 터널링 로그인으로 직행시킵니다.
       const cleanPhone = matchedMember ? (matchedMember.phoneMobile || "").replace(/[^0-9]/g, "") : "";
-      const expectedPhonePw = cleanPhone ? cleanPhone.slice(-4) + "00" : "";
+      const expectedPhonePw = cleanPhone.startsWith("010") ? cleanPhone.slice(3) : cleanPhone;
       const isNormalMemberTunneling = matchedMember && matchedMember.status !== "퇴직" && expectedPhonePw && userPw === expectedPhonePw;
 
       if (isNormalMemberTunneling) {
@@ -345,7 +344,7 @@ export default function AuthManager({ onLoginSuccess, members = [] }) {
 
           <div style={{ fontSize: "0.72rem", color: "var(--text-secondary)", lineHeight: "1.4", padding: "0.5rem", background: "rgba(255,255,255,0.02)", border: "1px dashed var(--border-color-dark)", borderRadius: "0.25rem", display: "flex", flexDirection: "column", gap: "0.25rem" }}>
             <p style={{ margin: 0 }}>※ 별도의 회원가입 없이 주소록에 등록된 이메일로 로그인하세요.</p>
-            <p style={{ margin: 0 }}>※ 초기 비밀번호는 본인의 휴대전화 뒷번호 4자리 뒤에 00을 붙인 6자리입니다. (예: 7123 이면 712300)</p>
+            <p style={{ margin: 0 }}>※ 초기 비밀번호는 본인의 휴대전화 번호에서 010을 제외한 8자리 숫자입니다. (예: 010-5171-7140 ➡️ 51717140)</p>
             <p style={{ margin: 0, color: "#60A5FA", fontWeight: "700" }}>🔑 게스트 로그인 안내: ID: <span style={{ textDecoration: "underline" }}>guest</span> / PW: <span style={{ textDecoration: "underline" }}>guest123</span></p>
           </div>
 
