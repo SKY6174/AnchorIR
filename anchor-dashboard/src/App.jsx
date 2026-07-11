@@ -3167,6 +3167,9 @@ export default function App() {
     }
 
     const fetchAllDashboardData = async () => {
+      // 💡 [보안/에러 원천 방어 가드] 로그인 완료 전(currentUser가 없음)에는 Supabase API를 요청하지 않고 무조건 대기합니다.
+      if (!currentUser) return;
+
       try {
         // 0-0. Supabase schedule_meetings 및 schedule_events 테이블 연차(year) 과거 데이터 자가 보정 (일회성 자가 치료)
         (async () => {
