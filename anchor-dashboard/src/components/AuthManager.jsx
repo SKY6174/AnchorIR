@@ -232,19 +232,20 @@ export default function AuthManager({ onLoginSuccess, members = [] }) {
       // 💡 [데모 계정 전용 역할 강제 보정]
       // g_director와 manager ID로 직접 로그인했을 경우, 실제 주소록 계정 매핑에 영향받지 않고
       // 각각 'G_DIRECTOR'(사업단장), 'MANAGER'(운영팀장) 권한이 완벽하게 부여되도록 역할을 강제 세팅합니다.
-      if (targetId === "g_director") {
+      const origInputId = userId.trim().toLowerCase();
+      if (origInputId === "g_director") {
         autoRoleKey = "G_DIRECTOR";
         matchedName = "";
-      } else if (targetId === "manager") {
+      } else if (origInputId === "manager") {
         autoRoleKey = "MANAGER";
         matchedName = "";
-      } else if (targetId === "hmsim" || targetId === "hmsim@uc.ac.kr") {
+      } else if (origInputId === "hmsim" || origInputId === "hmsim@uc.ac.kr") {
         autoRoleKey = "MANAGER";
         matchedName = "심현미";
-      } else if (targetId === "hq_head") {
+      } else if (origInputId === "hq_head") {
         autoRoleKey = "HQ_HEAD";
         matchedName = "";
-      } else if (targetId === "hskim3" || targetId === "hskim3@uc.ac.kr") {
+      } else if (origInputId === "hskim3" || origInputId === "hskim3@uc.ac.kr") {
         autoRoleKey = "HQ_HEAD";
         matchedName = "김현수";
       }
