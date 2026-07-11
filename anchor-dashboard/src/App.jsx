@@ -2055,15 +2055,10 @@ export default function App() {
 
   const isSongDirector = currentUser && (
     (currentUser.name || "").includes("송경영") ||
-    currentUser.role_key === "DIRECTOR" ||
-    currentUser.role_key === "G_DIRECTOR" ||
     currentUser.role_key === "TEAM_LEADER" ||
-    currentUser.role_key === "MANAGER" ||
     currentUser.role_key === "ADMIN" ||
     currentUser.role === "사업단장" ||
     currentUser.role === "운영팀장" ||
-    currentUser.id === "director" ||
-    currentUser.id === "g_director" ||
     currentUser.id === "manager"
   );
 
@@ -2845,10 +2840,9 @@ export default function App() {
         }
       });
 
-      // 직책별 가중치 순서 정의 (0순위 최고 관리자 ~ 6순위 실무 연구원)
+      // 직책별 가중치 순서 정의 (0순위 관리자 ~ 5순위 실무 연구원)
       const roleRanks = {
         ADMIN: 0,
-        DIRECTOR: 1,
         G_DIRECTOR: 1,
         HQ_HEAD: 2,
         CENTER_ECC: 3,
@@ -2860,8 +2854,7 @@ export default function App() {
         CENTER_SPECIAL: 3,
         MANAGER: 4,
         TEAM_LEADER: 5,
-        RESEARCHER: 6,
-        RESEARCH: 6
+        RESEARCHER: 6
       };
 
       const sortedUsers = Array.from(finalUsersMap.values()).sort((a, b) => {
@@ -2945,7 +2938,7 @@ export default function App() {
 
   // 회원현황에서 사용자 계정 삭제 실행 함수
   const handleDeleteUser = async (userId) => {
-    const demoIds = ["admin", "director", "hq_head", "center_director", "team_leader", "researcher"];
+    const demoIds = ["admin", "g_director", "hq_head", "center_director", "leader", "team_leader", "researcher"];
     if (demoIds.includes(userId.toLowerCase())) {
       alert("시스템 기본 데모 계정은 삭제할 수 없습니다.");
       return;
@@ -6259,10 +6252,10 @@ export default function App() {
     } else {
       // 주소록에 매칭되지 않는 예외 및 테스트 계정 처리
       const roleId = currentUser.role?.id || "";
-      if (roleId === "DIRECTOR" || roleId === "G_DIRECTOR") roleOrPosition = "단장";
+      if (roleId === "G_DIRECTOR") roleOrPosition = "단장";
       else if (roleId === "HQ_HEAD") roleOrPosition = "본부장";
       else if (roleId === "CENTER_LEADER") roleOrPosition = "센터장";
-      else if (roleId === "OP_LEADER") roleOrPosition = "팀장";
+      else if (roleId === "MANAGER") roleOrPosition = "운영팀장";
       else roleOrPosition = "연구원";
     }
 
@@ -6743,7 +6736,7 @@ export default function App() {
             </div>
 
             <div style={{ display: "flex", gap: "0.5rem", borderBottom: "1px solid var(--border-color)", paddingBottom: "0.8rem", marginBottom: "1.2rem" }}>
-              {currentRole && (currentRole.id === "ADMIN" || currentRole.id === "DIRECTOR" || currentRole.id === "G_DIRECTOR" || currentRole.id === "HQ_HEAD") && (
+              {currentRole && (currentRole.id === "ADMIN" || currentRole.id === "G_DIRECTOR" || currentRole.id === "HQ_HEAD") && (
                 <>
                   <button
                     type="button"
@@ -7380,7 +7373,7 @@ export default function App() {
                         </tr>
                       </thead>
                       <tbody>
-                        {registeredUsers.filter(u => ["admin", "director", "hq_head", "center_director", "team_leader", "researcher"].includes(u.id.toLowerCase())).length === 0 ? (
+                        {registeredUsers.filter(u => ["admin", "g_director", "hq_head", "center_director", "manager", "team_leader", "researcher"].includes(u.id.toLowerCase())).length === 0 ? (
                           <tr>
                             <td colSpan="6" style={{ textAlign: "center", color: "var(--text-secondary)", padding: "1.5rem" }}>
                               등록된 고정 계정이 없습니다.
@@ -7388,22 +7381,20 @@ export default function App() {
                           </tr>
                         ) : (
                           registeredUsers
-                            .filter(u => ["admin", "director", "hq_head", "center_director", "team_leader", "researcher"].includes(u.id.toLowerCase()))
+                            .filter(u => ["admin", "g_director", "hq_head", "manager", "center_director", "team_leader", "researcher"].includes(u.id.toLowerCase()))
                             .map((u) => {
                               const roleNames = {
                                 ADMIN: "최고 관리자",
-                                DIRECTOR: "사업단장",
                                 G_DIRECTOR: "사업단장",
                                 HQ_HEAD: "본부장",
+                                MANAGER: "운영팀장",
                                 CENTER_ECC: "ECC센터장",
                                 CENTER_SPECIAL: "신산업특화센터장",
                                 CENTER_NURI: "늘봄누리센터장",
                                 CENTER_ICC: "ICC센터장",
                                 CENTER_RCC: "RCC센터장",
                                 TEAM_LEADER: "팀장교수",
-                                MANAGER: "운영팀장",
-                                RESEARCHER: "실무 연구원",
-                                RESEARCH: "연구원"
+                                RESEARCHER: "실무 연구원"
                               };
                               const cleanName = (u.name || "").split(" ")[0];
                               return (
@@ -7412,11 +7403,11 @@ export default function App() {
                                   <td style={{ fontWeight: "700" }}>{cleanName}</td>
                                   <td>
                                     <span
-                                      className={`badge ${u.role_key === "ADMIN" || u.role_key === "DIRECTOR" || u.role_key === "G_DIRECTOR" || u.role_key === "HQ_HEAD"
+                                      className={`badge ${u.role_key === "ADMIN" || u.role_key === "G_DIRECTOR" || u.role_key === "HQ_HEAD"
                                         ? "badge-red"
                                         : u.role_key.startsWith("CENTER_")
                                           ? "badge-blue"
-                                          : u.role_key === "TEAM_LEADER" || u.role_key === "MANAGER"
+                                          : u.role_key === "TEAM_LEADER"
                                             ? "badge-green"
                                             : "badge-gray"
                                         }`}
@@ -7456,7 +7447,7 @@ export default function App() {
                         </tr>
                       </thead>
                       <tbody>
-                        {registeredUsers.filter(u => !["admin", "director", "hq_head", "center_director", "team_leader", "researcher"].includes(u.id.toLowerCase())).length === 0 ? (
+                        {registeredUsers.filter(u => !["admin", "g_director", "hq_head", "manager", "center_director", "team_leader", "researcher"].includes(u.id.toLowerCase())).length === 0 ? (
                           <tr>
                             <td colSpan="6" style={{ textAlign: "center", color: "var(--text-secondary)", padding: "2rem" }}>
                               연동된 주소록 회원이 없습니다.
@@ -7464,20 +7455,20 @@ export default function App() {
                           </tr>
                         ) : (
                           registeredUsers
-                            .filter(u => !["admin", "director", "hq_head", "center_director", "team_leader", "researcher"].includes(u.id.toLowerCase()))
+                            .filter(u => !["admin", "g_director", "hq_head", "manager", "center_director", "team_leader", "researcher"].includes(u.id.toLowerCase()))
                             .map((u) => {
                               const roleNames = {
                                 ADMIN: "최고 관리자",
                                 DIRECTOR: "사업단장",
                                 G_DIRECTOR: "사업단장",
                                 HQ_HEAD: "본부장",
+                                MANAGER: "운영팀장",
                                 CENTER_ECC: "ECC센터장",
                                 CENTER_SPECIAL: "신산업특화센터장",
                                 CENTER_NURI: "늘봄누리센터장",
                                 CENTER_ICC: "ICC센터장",
                                 CENTER_RCC: "RCC센터장",
                                 TEAM_LEADER: "팀장교수",
-                                MANAGER: "운영팀장",
                                 RESEARCHER: "실무 연구원",
                                 RESEARCH: "연구원"
                               };
