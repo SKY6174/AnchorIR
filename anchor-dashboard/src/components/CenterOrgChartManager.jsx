@@ -39,7 +39,7 @@ export default function CenterOrgChartManager() {
     },
     specialty: {
       title: "신산업특화센터 [A1나]",
-      desc: "신산업(반도체·이차전지 등) 특화 교육 및 실무 추진 전담 센터",
+      desc: "신산업(스마트∙친환경 조선분야) 특화 교육 및 실무 추진 전담 센터",
       tasks: ["신산업 분야 주문식 교육과정 및 인프라 구축", "A1나 과제 관련 핵심 성과 모니터링", "지역 산업체 연계 직무 교육 가동"]
     },
     icc: {
@@ -71,7 +71,7 @@ export default function CenterOrgChartManager() {
 
   return (
     <div className="org-chart-container" style={{ display: "flex", flexDirection: "column", gap: "1.5rem", width: "100%", userSelect: "none" }}>
-      
+
       {/* 1. 상단 타이틀 배너 */}
       <div className="glass-card" style={{ padding: "1.5rem", display: "flex", flexDirection: "column", gap: "0.5rem", borderRadius: "12px", background: "var(--panel-bg)", border: "1px solid var(--border-color)" }}>
         <h2 style={{ fontSize: "1.25rem", fontWeight: "800", color: "var(--accent-color)", display: "flex", alignItems: "center", gap: "0.5rem", margin: 0 }}>
@@ -79,7 +79,7 @@ export default function CenterOrgChartManager() {
           🏛️ 앵커사업단 조직도
         </h2>
         <p style={{ fontSize: "0.9rem", color: "var(--text-secondary)", lineHeight: "1.5", margin: 0 }}>
-          울산과학대학교 앵커사업의 성공을 위한 <strong>1단 1본부 6센터 10팀 (총원 46명)</strong> 의 최고 의사결정 기구 및 핵심 수행 거버넌스 체계입니다. 
+          울산과학대학교 앵커사업의 성공을 위한 <strong>1단 1본부 6센터 10팀 (총원 46명)</strong> 의 최고 의사결정 기구 및 핵심 수행 거버넌스 체계입니다.
           각 조직 노드에 마우스를 올리면 상세 역할 및 미션을 확인하실 수 있습니다.
         </p>
       </div>
@@ -95,21 +95,21 @@ export default function CenterOrgChartManager() {
         borderRadius: "16px",
         border: "1px solid var(--border-color)",
         minHeight: "680px",
-        minWidth: "1400px", // 6개 센터 확장에 맞춰 1200px에서 1400px로 조정
+        minWidth: "1260px", // 6개 센터 확장에 맞춰 1200px에서 1400px로 조정 후 90% 축소
         overflowX: "auto",
         position: "relative",
         gap: "1.5rem"
       }}>
-        
+
         {/* 상단 레이어: 좌측 위원회 + 중앙 1~3층 트리 + 우측 거버넌스 */}
-        <div style={{ 
-          display: "flex", 
-          alignItems: "flex-start", 
-          justifyContent: "center", 
-          gap: "2.5rem", 
+        <div style={{
+          display: "flex",
+          alignItems: "flex-start",
+          justifyContent: "center",
+          gap: "2.5rem",
           width: "100%",
           maxWidth: "1050px"
-        }}>\n          
+        }}>\n
           {/* ================= 좌측: 사업단 내부 위원회 ================= */}
           <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", width: "170px", paddingTop: "4.8rem" }}>
             <div style={{ fontSize: "0.7rem", fontWeight: "bold", color: "var(--accent-color)", borderBottom: "2px solid var(--accent-color)", paddingBottom: "0.2rem", marginBottom: "0.2rem", textAlign: "center" }}>
@@ -304,11 +304,11 @@ export default function CenterOrgChartManager() {
           gridTemplateColumns: "repeat(6, 1fr)",
           gap: "1.2rem",
           width: "100%",
-          maxWidth: "1380px",
+          maxWidth: "1240px",
           alignItems: "start",
           marginTop: "0"
         }}>
-          
+
           {/* 1. AID-X 지원센터 */}
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0" }}>
             <div style={{ width: "2px", height: "15px", background: "rgba(255, 255, 255, 0.45)" }} />
@@ -338,7 +338,7 @@ export default function CenterOrgChartManager() {
               <h5 style={{ margin: 0, fontSize: "0.85rem", fontWeight: "900", color: "var(--text-primary)" }}>AID-X 지원센터</h5>
               <div style={{ fontSize: "0.75rem", fontWeight: "800", color: "var(--text-secondary)", marginTop: "0.3rem" }}>김현수 센터장</div>
               <div style={{ fontSize: "0.68rem", color: "var(--text-tertiary)", marginTop: "0.15rem" }}>운영실 (연구원 3명)</div>
-              
+
               <div style={{ borderTop: "1px dashed var(--border-color)", marginTop: "0.5rem", paddingTop: "0.4rem" }}>
                 <div style={{ fontSize: "0.72rem", color: "#a3e635", fontWeight: "700" }}>AI·DX교육팀</div>
                 <div style={{ fontSize: "0.68rem", color: "var(--text-tertiary)", marginTop: "0.1rem" }}>(이정준)</div>
@@ -375,7 +375,7 @@ export default function CenterOrgChartManager() {
               <h5 style={{ margin: 0, fontSize: "0.85rem", fontWeight: "900", color: "var(--text-primary)" }}>지산학교육센터</h5>
               <div style={{ fontSize: "0.75rem", fontWeight: "800", color: "var(--text-secondary)", marginTop: "0.3rem" }}>이동은 센터장</div>
               <div style={{ fontSize: "0.68rem", color: "var(--text-tertiary)", marginTop: "0.15rem" }}>연구원 5명</div>
-              
+
               <div style={{ borderTop: "1px dashed var(--border-color)", marginTop: "0.5rem", paddingTop: "0.4rem", display: "flex", flexDirection: "column", gap: "0.25rem", textAlign: "left", paddingLeft: "0.25rem" }}>
                 <div>
                   <span style={{ fontSize: "0.65rem", color: "#34d399", fontWeight: "800", marginRight: "0.2rem" }}>[A1]</span>
@@ -454,7 +454,7 @@ export default function CenterOrgChartManager() {
               <h5 style={{ margin: 0, fontSize: "0.85rem", fontWeight: "900", color: "var(--text-primary)" }}>기업협업센터</h5>
               <div style={{ fontSize: "0.75rem", fontWeight: "800", color: "var(--text-secondary)", marginTop: "0.3rem" }}>김기범 센터장</div>
               <div style={{ fontSize: "0.68rem", color: "var(--text-tertiary)", marginTop: "0.15rem" }}>연구원 4명</div>
-              
+
               <div style={{ borderTop: "1px dashed var(--border-color)", marginTop: "0.5rem", paddingTop: "0.4rem", display: "flex", flexDirection: "column", gap: "0.25rem", textAlign: "left", paddingLeft: "0.25rem" }}>
                 <div>
                   <span style={{ fontSize: "0.65rem", color: "#60a5fa", fontWeight: "800", marginRight: "0.2rem" }}>[B1]</span>
@@ -501,7 +501,7 @@ export default function CenterOrgChartManager() {
               <h5 style={{ margin: 0, fontSize: "0.85rem", fontWeight: "900", color: "var(--text-primary)" }}>지역협업센터</h5>
               <div style={{ fontSize: "0.75rem", fontWeight: "800", color: "var(--text-secondary)", marginTop: "0.3rem" }}>현용환 센터장</div>
               <div style={{ fontSize: "0.68rem", color: "var(--text-tertiary)", marginTop: "0.15rem" }}>연구원 6명</div>
-              
+
               <div style={{ borderTop: "1px dashed var(--border-color)", marginTop: "0.5rem", paddingTop: "0.4rem", display: "flex", flexDirection: "column", gap: "0.25rem", textAlign: "left", paddingLeft: "0.25rem" }}>
                 <div>
                   <span style={{ fontSize: "0.65rem", color: "#fbbf24", fontWeight: "800", marginRight: "0.2rem" }}>[C1]</span>
