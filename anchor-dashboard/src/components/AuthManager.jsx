@@ -73,8 +73,8 @@ export default function AuthManager({ onLoginSuccess, members = [] }) {
         authSession = firstAuthData.session;
       } else {
         // 1차 로그인 실패 시, 아직 가입되지 않은 미연동 계정인지 판별하여 선제 자동 회원가입(signUp)을 처리합니다.
-        const isTestAccount = ["director", "team_leader", "researcher", "admin", "guest", "hq_head", "ecc_head", "special_head", "manager"].includes(targetId);
-        const expectedTestPw = targetId === "admin" ? "uc_anchor" : targetId === "guest" ? "guest123" : "1234";
+        const isTestAccount = ["g_director", "leader", "researcher", "admin", "guest", "hq_head", "ecc_head", "special_head", "manager"].includes(targetId);
+        const expectedTestPw = (targetId === "admin" || targetId === "g_director" || targetId === "leader") ? "uc_anchor" : targetId === "guest" ? "guest123" : "1234";
 
         if ((matchedMember && matchedMember.status !== "퇴직") || isTestAccount) {
           const cleanPhone = matchedMember ? (matchedMember.phoneMobile || "").replace(/[^0-9]/g, "") : "";
@@ -114,7 +114,7 @@ export default function AuthManager({ onLoginSuccess, members = [] }) {
 
       // 3. 로그인 성공 시, 기존 rise_users 및 주소록 데이터를 매핑하여 sessionUser 생성
       // UUID 컬럼이 미연동 상태라면 업데이트해 줍니다.
-      const isTestAccount = ["director", "team_leader", "researcher", "admin", "guest", "hq_head", "ecc_head", "special_head", "manager"].includes(targetId);
+      const isTestAccount = ["g_director", "leader", "researcher", "admin", "guest", "hq_head", "ecc_head", "special_head", "manager"].includes(targetId);
       if (dbUser) {
         if (!dbUser.uuid) {
           try {
