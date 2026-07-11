@@ -29,7 +29,7 @@ export default function AuthManager({ onLoginSuccess, members = [] }) {
 
     try {
       const targetId = userId.trim().toLowerCase();
-      
+
       // 💡 [이메일 단일화 혁신] 주소록(members)에서 해당 아이디 파트 또는 이메일과 매칭되는 멤버를 선제 탐색합니다.
       const matchedMember = members.find((m) => {
         const mEmail = (m.email || "").trim().toLowerCase();
@@ -39,8 +39,8 @@ export default function AuthManager({ onLoginSuccess, members = [] }) {
 
       // 매칭되는 진짜 구성원 계정이 있다면 해당 구성원의 실제 이메일(예: name@uc.ac.kr)을 최우선적으로 사용하고,
       // 그 외 가상/테스트 계정 등인 경우 기존 규칙(@anchor.ac.kr)을 따릅니다.
-      const targetEmail = matchedMember 
-        ? (matchedMember.email || "").trim().toLowerCase() 
+      const targetEmail = matchedMember
+        ? (matchedMember.email || "").trim().toLowerCase()
         : (targetId.includes("@") ? targetId : `${targetId}@anchor.ac.kr`);
 
       // 💡 [콘솔 오류 원천 봉쇄 혁신] DB의 rise_users 테이블에 사용자가 등록되어 있고 UUID(Auth 연동)가 있는지 먼저 조회합니다.
@@ -73,8 +73,8 @@ export default function AuthManager({ onLoginSuccess, members = [] }) {
         authSession = firstAuthData.session;
       } else {
         // 1차 로그인 실패 시, 아직 가입되지 않은 미연동 계정인지 판별하여 선제 자동 회원가입(signUp)을 처리합니다.
-        const isTestAccount = ["g_director", "leader", "researcher", "admin", "guest", "hq_head", "ecc_head", "special_head", "manager"].includes(targetId);
-        const expectedTestPw = (targetId === "admin" || targetId === "g_director" || targetId === "leader") ? "uc_anchor" : targetId === "guest" ? "guest123" : "1234";
+        const isTestAccount = ["admin", "g_director", "hq_head", "manager", "team_leader", "researcher", "guest"].includes(targetId);
+        const expectedTestPw = (targetId === "admin" || targetId === "g_director" || targetId === "manager") ? "uc_anchor" : targetId === "guest" ? "guest123" : "1234";
 
         if ((matchedMember && matchedMember.status !== "퇴직") || isTestAccount) {
           const cleanPhone = matchedMember ? (matchedMember.phoneMobile || "").replace(/[^0-9]/g, "") : "";
@@ -114,7 +114,7 @@ export default function AuthManager({ onLoginSuccess, members = [] }) {
 
       // 3. 로그인 성공 시, 기존 rise_users 및 주소록 데이터를 매핑하여 sessionUser 생성
       // UUID 컬럼이 미연동 상태라면 업데이트해 줍니다.
-      const isTestAccount = ["g_director", "leader", "researcher", "admin", "guest", "hq_head", "ecc_head", "special_head", "manager"].includes(targetId);
+      const isTestAccount = ["admin", "g_director", "hq_head", "manager", "team_leader", "researcher", "guest"].includes(targetId);
       if (dbUser) {
         if (!dbUser.uuid) {
           try {

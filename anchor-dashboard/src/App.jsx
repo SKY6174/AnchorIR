@@ -2767,7 +2767,7 @@ export default function App() {
       { id: "admin", name: "시스템 관리자", role_key: "ADMIN", created_at: "2025-01-06T00:00:00.000Z" },
       { id: "g_director", name: "송경영", role_key: "G_DIRECTOR", created_at: "2025-01-06T00:00:00.000Z" },
       { id: "hq_head", name: "김현수", role_key: "HQ_HEAD", created_at: "2025-03-01T00:00:00.000Z" },
-      { id: "leader", name: "심현미", role_key: "LEADER", created_at: "2026-02-01T00:00:00.000Z" },
+      { id: "manager", name: "심현미", role_key: "MANAGER", created_at: "2026-02-01T00:00:00.000Z" },
     ];
 
     try {
@@ -2793,7 +2793,7 @@ export default function App() {
           } else if (mRole === "본부장") {
             autoRoleKey = "HQ_HEAD";
           } else if (mRole === "운영팀장") {
-            autoRoleKey = "LEADER";
+            autoRoleKey = "MANAGER";
           } else if (mRole === "팀장교수" || mRole === "팀장") {
             autoRoleKey = "TEAM_LEADER";
           } else if (mRole === "센터장") {
