@@ -719,7 +719,7 @@ function formatDataToMultiYear(data) {
           const py = progYears[yr];
           const isExternalSub = prog.id.includes("위탁") || prog.title.includes("위탁") || prog.title.includes("협력");
           const isNationalOnly = ["D1-", "D2-", "D3-"].some(prefix => prog.id.startsWith(prefix));
-          
+
           if (isExternalSub) {
             py.budget_carry_external = py.budget_carry || 0;
             py.budget_carry_national = 0;
@@ -2679,7 +2679,7 @@ export default function App() {
 
   const handlePasswordChange = async (e) => {
     e.preventDefault();
-    
+
     // 💡 [삼중 보안 가드] 게스트(GUEST) 사용자는 어떠한 상황에서도 비밀번호 변경이 불가능합니다.
     if (isGuest) {
       alert("게스트(방문자) 계정은 비밀번호 변경이 불가능합니다.");
@@ -2767,9 +2767,7 @@ export default function App() {
       { id: "admin", name: "시스템 관리자", role_key: "ADMIN", created_at: "2026-03-01T00:00:00.000Z" },
       { id: "director", name: "송경영", role_key: "DIRECTOR", created_at: "2026-03-01T00:00:00.000Z" },
       { id: "hq_head", name: "김현수", role_key: "HQ_HEAD", created_at: "2026-03-01T00:00:00.000Z" },
-      { id: "center_director", name: "이동은", role_key: "CENTER_ECC", created_at: "2026-03-01T00:00:00.000Z" },
       { id: "team_leader", name: "심현미", role_key: "TEAM_LEADER", created_at: "2026-03-01T00:00:00.000Z" },
-      { id: "researcher", name: "이은주", role_key: "RESEARCHER", created_at: "2026-03-01T00:00:00.000Z" }
     ];
 
     try {
@@ -3422,7 +3420,7 @@ export default function App() {
           setProjects(mergedProjData);
           // 💡 [안전 가드] 원격 Supabase DB로부터 최신 프로젝트 데이터를 성공적으로 가져왔으므로, 레퍼런스(fetchedProjectsRef.current)에 동기화해 둡니다.
           fetchedProjectsRef.current = JSON.stringify(getCleanProjectsForStorage(mergedProjData));
-          
+
           try {
             localStorage.setItem(`anchor_cache_proj_y${selectedYear}`, JSON.stringify(getCleanProjectsForStorage(mergedProjData)));
           } catch (e) {
@@ -3436,7 +3434,7 @@ export default function App() {
           setProjects(multiYearInitialData);
           // 💡 [안전 가드] 원격 DB에 데이터가 없어 최초 초기 템플릿을 사용하는 경우에도 레퍼런스에 동기화해 둡니다.
           fetchedProjectsRef.current = JSON.stringify(getCleanProjectsForStorage(multiYearInitialData));
-          
+
           try {
             localStorage.setItem(`anchor_cache_proj_y${selectedYear}`, JSON.stringify(getCleanProjectsForStorage(multiYearInitialData)));
           } catch (e) {
@@ -3916,7 +3914,7 @@ export default function App() {
           .from("projects_data")
           .upsert({ year: selectedYear, data: projects, updated_at: new Date().toISOString() }, { onConflict: "year" });
         if (error) throw error;
-        
+
         // 💡 [저장 완료 동기화] DB 업로드가 성공적으로 완료되었으므로 레퍼런스 값을 현재 값으로 갱신하여 중복 업로드를 차단합니다.
         fetchedProjectsRef.current = currentCleanStr;
         setSyncStatus("synced");
@@ -4338,7 +4336,7 @@ export default function App() {
   useEffect(() => {
     if (!isDbLoaded || !isFetchCompleted) return;
     if (!currentUser || currentRole?.id === "GUEST") return;
-    
+
     // 💡 안전 가드: 데이터가 없거나 로딩 중 꼬였을 때 DB 데이터를 지워버리는 대형 사고 방지
     if (!envData || envData.length === 0) return;
 
@@ -4622,7 +4620,7 @@ export default function App() {
   useEffect(() => {
     if (!isDbLoaded || !isFetchCompleted) return;
     if (!currentUser || currentRole?.id === "GUEST") return;
-    
+
     // 💡 안전 가드 1: 데이터 로딩이 완료되지 않았거나 일시적 통신 지연 시 빈 배열([])이 원격 DB를 덮어쓰는 사고 방지
     if (!monthlySchedules || monthlySchedules.length === 0) return;
 
@@ -7010,14 +7008,14 @@ export default function App() {
                             <td>
                               <span
                                 className={`badge ${isRetired
-                                    ? "badge-gray"
-                                    : m.role === "사업단장" || m.role === "본부장"
-                                      ? "badge-red"
-                                      : m.role === "센터장"
-                                        ? "badge-blue"
-                                        : m.role === "팀장교수"
-                                          ? "badge-green"
-                                          : "badge-gray"
+                                  ? "badge-gray"
+                                  : m.role === "사업단장" || m.role === "본부장"
+                                    ? "badge-red"
+                                    : m.role === "센터장"
+                                      ? "badge-blue"
+                                      : m.role === "팀장교수"
+                                        ? "badge-green"
+                                        : "badge-gray"
                                   }`}
                                 style={{
                                   fontSize: "0.65rem",
@@ -7412,12 +7410,12 @@ export default function App() {
                                   <td>
                                     <span
                                       className={`badge ${u.role_key === "ADMIN" || u.role_key === "DIRECTOR" || u.role_key === "HQ_HEAD"
-                                          ? "badge-red"
-                                          : u.role_key.startsWith("CENTER_")
-                                            ? "badge-blue"
-                                            : u.role_key === "TEAM_LEADER"
-                                              ? "badge-green"
-                                              : "badge-gray"
+                                        ? "badge-red"
+                                        : u.role_key.startsWith("CENTER_")
+                                          ? "badge-blue"
+                                          : u.role_key === "TEAM_LEADER"
+                                            ? "badge-green"
+                                            : "badge-gray"
                                         }`}
                                       style={{ fontSize: "0.65rem" }}
                                     >
@@ -7490,12 +7488,12 @@ export default function App() {
                                   <td>
                                     <span
                                       className={`badge ${u.role_key === "ADMIN" || u.role_key === "DIRECTOR" || u.role_key === "HQ_HEAD"
-                                          ? "badge-red"
-                                          : u.role_key.startsWith("CENTER_")
-                                            ? "badge-blue"
-                                            : u.role_key === "TEAM_LEADER"
-                                              ? "badge-green"
-                                              : "badge-gray"
+                                        ? "badge-red"
+                                        : u.role_key.startsWith("CENTER_")
+                                          ? "badge-blue"
+                                          : u.role_key === "TEAM_LEADER"
+                                            ? "badge-green"
+                                            : "badge-gray"
                                         }`}
                                       style={{ fontSize: "0.65rem" }}
                                     >
