@@ -522,7 +522,8 @@ export default function ProcurementManager({
   setEquipData,
   serviceData = [],
   setServiceData,
-  projects = []
+  projects = [],
+  darkMode = true
 }) {
   const monthsOrder = ["3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "1", "2"];
 
