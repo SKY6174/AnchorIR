@@ -8390,22 +8390,22 @@ export default function App() {
                   * 실무 연구원으로 등록된 구성원(직책: 연구원)만 프로그램 담당연구원 목록으로 매핑됩니다.
                 </p>
                 <div className="table-panel">
-                  <table className="custom-table" style={{ fontSize: "0.8rem" }}>
+                  <table className="custom-table" style={{ fontSize: "0.8rem", tableLayout: "fixed", width: "100%" }}>
                     <thead>
                       <tr>
-                        <th rowSpan={2}>단위과제</th>
-                        <th rowSpan={2}>프로그램 ID</th>
-                        <th rowSpan={2}>프로그램명</th>
-                        <th rowSpan={2}>담당부서</th>
-                        <th rowSpan={2}>담당연구원</th>
-                        <th colSpan={4} style={{ textAlign: "center" }}>진행 단계(PDCA)</th>
-                        <th rowSpan={2}>작업</th>
+                        <th rowSpan={2} style={{ width: "18%" }}>단위과제</th>
+                        <th rowSpan={2} style={{ width: "95px" }}>프로그램 ID</th>
+                        <th rowSpan={2} style={{ width: "28%" }}>프로그램명</th>
+                        <th rowSpan={2} style={{ width: "105px" }}>담당부서</th>
+                        <th rowSpan={2} style={{ width: "175px" }}>담당연구원</th>
+                        <th colSpan={4} style={{ textAlign: "center", width: "180px" }}>진행 단계(PDCA)</th>
+                        <th rowSpan={2} style={{ width: "85px" }}>작업</th>
                       </tr>
                       <tr>
-                        <th style={{ textAlign: "center", width: "50px" }}>P</th>
-                        <th style={{ textAlign: "center", width: "50px" }}>D</th>
-                        <th style={{ textAlign: "center", width: "50px" }}>C</th>
-                        <th style={{ textAlign: "center", width: "50px" }}>A</th>
+                        <th style={{ textAlign: "center", width: "45px" }}>P</th>
+                        <th style={{ textAlign: "center", width: "45px" }}>D</th>
+                        <th style={{ textAlign: "center", width: "45px" }}>C</th>
+                        <th style={{ textAlign: "center", width: "45px" }}>A</th>
                       </tr>
                     </thead>
                     <tbody>
