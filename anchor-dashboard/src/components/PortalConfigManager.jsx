@@ -74,7 +74,7 @@ const MENU_SCHEMA = [
     subMenus: [
       { key: "monthly", label: "월간 일정" },
       { key: "events", label: "주요 행사" },
-      { key: "meetings", label: "회의록 등록" },
+      { key: "meetings", label: "회의결과 등록" },
       { key: "committees", label: "위원회 관리" },
       { key: "press", label: "언론보도" }
     ]

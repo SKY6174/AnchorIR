@@ -9548,7 +9548,7 @@ export default function App() {
                   transition: "all 0.2s ease"
                 }}
               >
-                회의록 등록
+                회의결과 등록
               </button>
               <button
                 onClick={() => setScheduleSubTab("committees")}

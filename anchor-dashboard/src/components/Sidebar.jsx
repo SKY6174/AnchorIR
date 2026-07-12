@@ -706,7 +706,7 @@ export default function Sidebar({
                     }}
                     style={getHiddenStyle("meetings")}
                   >
-                    - 회의록 등록
+                    - 회의결과 등록
                     {isHidden("meetings") && (
                       <span style={{ fontSize: "0.6rem", color: "#ef4444", textDecoration: "none", marginLeft: "0.2rem" }}>
                         [숨김]
