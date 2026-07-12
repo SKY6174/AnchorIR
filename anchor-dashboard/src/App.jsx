@@ -7914,7 +7914,7 @@ export default function App() {
                               }}
                             >
                               <td style={{ fontWeight: "700", borderRight: "1px solid var(--border-color)" }}>
-                                {u.id === "Common" || u.id === "X0" ? "" : `${u.id}. `}{u.title}
+                                {u.id === "Common" ? "" : `${u.id}. `}{u.title}
                               </td>
                               <td style={{ fontFamily: "var(--font-data)", textAlign: "right", paddingRight: "1rem" }}>
                                 {formatToMillionWon(yData.budget_main)}
@@ -8405,7 +8405,7 @@ export default function App() {
                           return a.id.localeCompare(b.id, undefined, { numeric: true, sensitivity: 'base' });
                         })
                         .map((u) => (
-                          <option key={u.id} value={u.id} style={{ background: "var(--panel-bg)", color: "var(--text-primary)" }}>{u.id === "Common" || u.id === "X0" ? "" : `${u.id}. `}{u.title}</option>
+                          <option key={u.id} value={u.id} style={{ background: "var(--panel-bg)", color: "var(--text-primary)" }}>{u.id === "Common" ? "" : `${u.id}. `}{u.title}</option>
                         ))}
                     </select>
                   </div>
@@ -8474,7 +8474,7 @@ export default function App() {
 
                             return (
                               <tr key={prog.id}>
-                                <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle", fontWeight: "700", wordBreak: "break-all" }}>{u.id === "Common" || u.id === "X0" ? "공통운영경비" : `${u.id}. ${u.title}`}</td>
+                                <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle", fontWeight: "700", wordBreak: "break-all" }}>{u.id === "Common" ? "공통운영경비" : `${u.id}. ${u.title}`}</td>
                                 <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle", fontFamily: "var(--font-data)", fontWeight: "700" }}>{prog.id}</td>
                                 <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle", wordBreak: "break-all" }}>{prog.title}</td>
                                 <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle", color: "var(--accent-color)", fontWeight: "700" }}>{dept}</td>
@@ -10795,7 +10795,7 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
   // (1) 5개년 총괄 데이터 동적 계산 (단위: 백만원)
   // ----------------------------------------------------
   const TOTAL_INVESTMENT_5YEAR_DATA = allUnits.map((u) => {
-    const unitTitle = u.id === "Common" || u.id === "X0" ? "공통운영경비" : `${u.id}. ${u.title}`;
+    const unitTitle = u.id === "Common" ? "공통운영경비" : `${u.id}. ${u.title}`;
     
     // 연도별 예산 총액 (백만원 단위, {main, carry} 형태의 객체 반환)
     // 1~5차년도
@@ -10914,7 +10914,7 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
   // (3) 연차별 계획 (재원별) 데이터 동적 계산
   // ----------------------------------------------------
   const ANNUAL_INVESTMENT_DATA = allUnits.map((u) => {
-    const unitTitle = u.id === "Common" || u.id === "X0" ? "공통운영경비" : `${u.id}. ${u.title}`;
+    const unitTitle = u.id === "Common" ? "공통운영경비" : `${u.id}. ${u.title}`;
 
     let uNat = 0, uCity = 0, uExt = 0;
     u.programs.forEach((prog) => {
