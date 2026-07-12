@@ -428,29 +428,17 @@ const formatToMillionWon = (value) => {
 function recalculateCarryOver(years) {
   if (!years) return;
 
-  // 1차년도 잔액 -> 2차년도 이월
+  // 1차년도 잔액 -> 2차년도 이월 (현재 차년도이므로 반영)
   if (years[1] && years[2]) {
     const balanceY1 = Math.max(0, ((years[1].budget_main || 0) + (years[1].budget_carry || 0)) - ((years[1].spent_main || 0) + (years[1].spent_carry || 0)));
     years[2].budget_carry = balanceY1;
   }
 
-  // 2차년도 잔액 -> 3차년도 이월
-  if (years[2] && years[3]) {
-    const balanceY2 = Math.max(0, ((years[2].budget_main || 0) + (years[2].budget_carry || 0)) - ((years[2].spent_main || 0) + (years[2].spent_carry || 0)));
-    years[3].budget_carry = balanceY2;
-  }
-
-  // 3차년도 잔액 -> 4차년도 이월
-  if (years[3] && years[4]) {
-    const balanceY3 = Math.max(0, ((years[3].budget_main || 0) + (years[3].budget_carry || 0)) - ((years[3].spent_main || 0) + (years[3].spent_carry || 0)));
-    years[4].budget_carry = balanceY3;
-  }
-
-  // 4차년도 잔액 -> 5차년도 이월
-  if (years[4] && years[5]) {
-    const balanceY4 = Math.max(0, ((years[4].budget_main || 0) + (years[4].budget_carry || 0)) - ((years[4].spent_main || 0) + (years[4].spent_carry || 0)));
-    years[5].budget_carry = balanceY4;
-  }
+  // 3, 4, 5차년도는 미래 계획 차년도이므로 이전 차년도 잔액의 이월을 계획 단계에서 배제(0원 세팅)하여
+  // 3, 4, 5차년도 총 사업비 예산 계획이 2차년도 본예산 수치와 항상 깨끗이 일치되도록 방어합니다.
+  if (years[3]) years[3].budget_carry = 0;
+  if (years[4]) years[4].budget_carry = 0;
+  if (years[5]) years[5].budget_carry = 0;
 }
 
 // 다년도 예산/집행 구조 동적 변환기 (1~5차년도)
@@ -9487,7 +9475,13 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
           const normCat = normalizeCategoryName(cat.category);
           const matchedOrderCat = CATEGORY_ORDER.find(c => normalizeCategoryName(c) === normCat);
           if (matchedOrderCat) {
-            const budgetVal = (cat.budget || 0) + (cat.budget_carry || 0);
+            const cleanBudget = typeof cat.budget === "string" 
+              ? parseFloat(cat.budget.replace(/,/g, "")) 
+              : Number(cat.budget || 0);
+            const cleanCarry = typeof cat.budget_carry === "string" 
+              ? parseFloat(cat.budget_carry.replace(/,/g, "")) 
+              : Number(cat.budget_carry || 0);
+            const budgetVal = cleanBudget + cleanCarry;
             categoriesMap[matchedOrderCat][yr - 1] += budgetVal / 1e8;
           }
         });
