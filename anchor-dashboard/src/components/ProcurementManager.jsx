@@ -3529,9 +3529,9 @@ export default function ProcurementManager({
                   <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "45px" }}>순번</th>
                   <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "140px" }}>프로그램 ID</th>
                   <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "140px" }}>운영부서</th>
-                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "left", fontWeight: "800", width: "200px" }}>용역명</th>
-                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "right", fontWeight: "800", width: "135px" }}>사업예산/집행액(천원)</th>
-                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "left", fontWeight: "800", width: "320px" }}>용역목적 및 수행결과</th>
+                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "200px" }}>용역명</th>
+                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "135px" }}>사업예산/집행액(천원)</th>
+                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "320px" }}>용역목적 및 수행결과</th>
                   <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "490px" }}>
                     용역 절차
                     <span style={{ display: "block", fontSize: "0.7rem", color: "var(--text-secondary)", fontWeight: "500", marginTop: "0.15rem" }}>
@@ -3605,13 +3605,13 @@ export default function ProcurementManager({
                         </td>
 
                         {/* 4. 용역명 */}
-                        <td style={{ padding: "0.8rem 0.5rem", textAlign: "left", fontWeight: "700", color: "var(--text-primary)" }}>
+                        <td style={{ padding: "0.8rem 0.5rem", textAlign: "center", fontWeight: "700", color: "var(--text-primary)" }}>
                           {equip.title || "-"}
                         </td>
 
                         {/* 5. 사업예산 / 집행액(천원) */}
-                        <td style={{ padding: "0.8rem 0.5rem", textAlign: "right" }}>
-                          <div style={{ fontSize: "0.8rem", fontWeight: "700", color: "#60A5FA" }}>
+                        <td style={{ padding: "0.8rem 0.5rem", textAlign: "center" }}>
+                          <div style={{ fontSize: "0.8rem", fontWeight: "700", color: "#3b82f6" }}>
                             예산: {Math.round((equip.budgetPlan || 0) / 1000).toLocaleString()}
                           </div>
                           <div style={{ fontSize: "0.75rem", color: "#10B981", marginTop: "0.15rem", fontWeight: "700" }}>
@@ -3620,8 +3620,8 @@ export default function ProcurementManager({
                         </td>
 
                         {/* 6. 용역목적 및 수행결과 */}
-                        <td style={{ padding: "0.8rem 0.5rem", textAlign: "left", color: "var(--text-secondary)", maxWidth: "320px" }}>
-                          <div style={{ display: "flex", flexDirection: "column", gap: "0.35rem", lineHeight: "1.4", fontSize: "0.78rem" }}>
+                        <td style={{ padding: "0.8rem 0.5rem", textAlign: "center", color: "var(--text-secondary)" }}>
+                          <div style={{ display: "inline-flex", flexDirection: "column", gap: "0.35rem", lineHeight: "1.4", fontSize: "0.78rem", textAlign: "left" }}>
                             <div style={{ wordBreak: "break-all", whiteSpace: "normal", display: "flex", alignItems: "flex-start", gap: "0.25rem" }}>
                               <span style={{ color: "var(--accent-color)", fontWeight: "bold" }}>•</span>
                               <span>
@@ -3643,13 +3643,13 @@ export default function ProcurementManager({
                         <td style={{ padding: "0.8rem 0.5rem", verticalAlign: "middle" }}>
                           <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "0.25rem", width: "100%" }}>
                             {[
-                              { dateKey: "datePp", label: "기획", code: "PP", color: "#f59e0b" },
-                              { dateKey: "dateRfo", label: "의뢰", code: "RFO", color: "#3b82f6" },
-                              { dateKey: "dateB", label: "입찰", code: "B", color: "#06b6d4" },
-                              { dateKey: "dateEs", label: "평가∙선정", code: "ES", color: "#ec4899" },
-                              { dateKey: "dateC", label: "계약", code: "C", color: "#a78bfa" },
-                              { dateKey: "dateE", label: "수행", code: "E", color: "#eab308" },
-                              { dateKey: "dateI", label: "검수", code: "I", color: "#10b981" }
+                              { dateKey: "datePp", label: "기획", code: "PP", colorLight: "#d97706", colorDark: "#f59e0b", bgLight: "#fef3c7", bgDark: "rgba(245, 158, 11, 0.2)" },
+                              { dateKey: "dateRfo", label: "의뢰", code: "RFO", colorLight: "#1d4ed8", colorDark: "#60a5fa", bgLight: "#dbeafe", bgDark: "rgba(59, 130, 246, 0.2)" },
+                              { dateKey: "dateB", label: "입찰", code: "B", colorLight: "#0891b2", colorDark: "#22d3ee", bgLight: "#ecfeff", bgDark: "rgba(6, 182, 212, 0.2)" },
+                              { dateKey: "dateEs", label: "평가∙선정", code: "ES", colorLight: "#db2777", colorDark: "#f472b6", bgLight: "#fce7f3", bgDark: "rgba(236, 72, 153, 0.2)" },
+                              { dateKey: "dateC", label: "계약", code: "C", colorLight: "#7c3aed", colorDark: "#c084fc", bgLight: "#f3e8ff", bgDark: "rgba(167, 139, 250, 0.2)" },
+                              { dateKey: "dateE", label: "수행", code: "E", colorLight: "#b45309", colorDark: "#facc15", bgLight: "#fef9c3", bgDark: "rgba(234, 179, 8, 0.2)" },
+                              { dateKey: "dateI", label: "검수", code: "I", colorLight: "#059669", colorDark: "#34d399", bgLight: "#d1fae5", bgDark: "rgba(16, 185, 129, 0.2)" }
                             ].map((step, sIdx) => {
                               const hasDate = !!equip[step.dateKey];
                               const rawDate = equip[step.dateKey]; // YYYY-MM-DD
@@ -3659,28 +3659,33 @@ export default function ProcurementManager({
                                 formattedDate = `${parts[1]}.${parts[2]}`; // MM.DD 포맷
                               }
 
+                              const activeColor = darkMode ? step.colorDark : step.colorLight;
+                              const activeBg = darkMode ? step.bgDark : step.bgLight;
+
                               return (
                                 <React.Fragment key={step.code}>
                                   <div style={{ display: "flex", flexDirection: "column", alignItems: "center", minWidth: "46px" }}>
                                     <div 
                                       style={{
-                                        padding: "0.2rem 0.4rem",
-                                        borderRadius: "12px",
+                                        padding: "0.22rem 0.45rem",
+                                        borderRadius: "14px",
                                         fontSize: "0.68rem",
                                         fontWeight: "800",
-                                        background: hasDate ? `${step.color}18` : "rgba(113, 113, 122, 0.08)",
-                                        color: hasDate ? step.color : "var(--text-secondary)",
-                                        border: hasDate ? `1px solid ${step.color}44` : "1px solid var(--border-color)",
+                                        background: hasDate ? activeBg : (darkMode ? "rgba(255, 255, 255, 0.05)" : "rgba(113, 113, 122, 0.08)"),
+                                        color: hasDate ? activeColor : "var(--text-secondary)",
+                                        border: hasDate ? `1.5px solid ${activeColor}55` : "1.5px solid var(--border-color)",
                                         whiteSpace: "nowrap",
                                         display: "flex",
                                         flexDirection: "column",
-                                        alignItems: "center"
+                                        alignItems: "center",
+                                        boxShadow: hasDate ? `0 1px 3px ${activeColor}15` : "none",
+                                        transition: "all 0.2s ease"
                                       }}
                                       title={`${step.label}(${step.code}) ${hasDate ? `: ${rawDate}` : "(미지정)"}`}
                                     >
                                       <span>{step.code}</span>
                                     </div>
-                                    <span style={{ fontSize: "0.62rem", color: hasDate ? "var(--text-primary)" : "var(--text-secondary)", marginTop: "0.15rem", fontWeight: hasDate ? "700" : "normal" }}>
+                                    <span style={{ fontSize: "0.62rem", color: hasDate ? "var(--text-primary)" : "var(--text-secondary)", marginTop: "0.2rem", fontWeight: hasDate ? "800" : "normal" }}>
                                       {hasDate ? formattedDate : "-"}
                                     </span>
                                   </div>
@@ -3703,9 +3708,9 @@ export default function ProcurementManager({
                                 padding: "0.25rem 0.45rem",
                                 fontSize: "0.65rem",
                                 borderRadius: "4px",
-                                background: "rgba(59, 130, 246, 0.15)",
-                                color: "#2563EB",
-                                border: "1px solid rgba(59, 130, 246, 0.5)",
+                                background: darkMode ? "rgba(59, 130, 246, 0.18)" : "#eff6ff",
+                                color: darkMode ? "#60a5fa" : "#1d4ed8",
+                                border: darkMode ? "1px solid rgba(59, 130, 246, 0.4)" : "1px solid rgba(37, 99, 235, 0.4)",
                                 cursor: "pointer",
                                 transition: "all 0.2s",
                                 width: "36px",
@@ -3713,14 +3718,12 @@ export default function ProcurementManager({
                                 fontWeight: "700"
                               }}
                               onMouseOver={(e) => {
-                                e.currentTarget.style.background = "rgba(59, 130, 246, 0.25)";
-                                e.currentTarget.style.borderColor = "#1D4ED8";
-                                e.currentTarget.style.color = "#1D4ED8";
+                                e.currentTarget.style.background = darkMode ? "rgba(59, 130, 246, 0.28)" : "#dbeafe";
+                                e.currentTarget.style.borderColor = darkMode ? "#60a5fa" : "#2563eb";
                               }}
                               onMouseOut={(e) => {
-                                e.currentTarget.style.background = "rgba(59, 130, 246, 0.15)";
-                                e.currentTarget.style.borderColor = "rgba(59, 130, 246, 0.5)";
-                                e.currentTarget.style.color = "#2563EB";
+                                e.currentTarget.style.background = darkMode ? "rgba(59, 130, 246, 0.18)" : "#eff6ff";
+                                e.currentTarget.style.borderColor = darkMode ? "rgba(59, 130, 246, 0.4)" : "rgba(37, 99, 235, 0.4)";
                               }}
                               title="기획 문서 요약 보기"
                             >
@@ -3734,9 +3737,9 @@ export default function ProcurementManager({
                                 padding: "0.25rem 0.45rem",
                                 fontSize: "0.65rem",
                                 borderRadius: "4px",
-                                background: "rgba(139, 92, 246, 0.15)",
-                                color: "#7C3AED",
-                                border: "1px solid rgba(139, 92, 246, 0.5)",
+                                background: darkMode ? "rgba(139, 92, 246, 0.18)" : "#f5f3ff",
+                                color: darkMode ? "#a78bfa" : "#6d28d9",
+                                border: darkMode ? "1px solid rgba(139, 92, 246, 0.4)" : "1px solid rgba(109, 40, 217, 0.4)",
                                 cursor: "pointer",
                                 transition: "all 0.2s",
                                 width: "36px",
@@ -3744,14 +3747,12 @@ export default function ProcurementManager({
                                 fontWeight: "700"
                               }}
                               onMouseOver={(e) => {
-                                e.currentTarget.style.background = "rgba(139, 92, 246, 0.25)";
-                                e.currentTarget.style.borderColor = "#6D28D9";
-                                e.currentTarget.style.color = "#6D28D9";
+                                e.currentTarget.style.background = darkMode ? "rgba(139, 92, 246, 0.28)" : "#ede9fe";
+                                e.currentTarget.style.borderColor = darkMode ? "#a78bfa" : "#7c3aed";
                               }}
                               onMouseOut={(e) => {
-                                e.currentTarget.style.background = "rgba(139, 92, 246, 0.15)";
-                                e.currentTarget.style.borderColor = "rgba(139, 92, 246, 0.5)";
-                                e.currentTarget.style.color = "#7C3AED";
+                                e.currentTarget.style.background = darkMode ? "rgba(139, 92, 246, 0.18)" : "#f5f3ff";
+                                e.currentTarget.style.borderColor = darkMode ? "rgba(139, 92, 246, 0.4)" : "rgba(109, 40, 217, 0.4)";
                               }}
                               title="구매 문서 요약 보기"
                             >
@@ -3765,9 +3766,9 @@ export default function ProcurementManager({
                                 padding: "0.25rem 0.45rem",
                                 fontSize: "0.65rem",
                                 borderRadius: "4px",
-                                background: "rgba(16, 185, 129, 0.15)",
-                                color: "#059669",
-                                border: "1px solid rgba(16, 185, 129, 0.5)",
+                                background: darkMode ? "rgba(16, 185, 129, 0.18)" : "#ecfdf5",
+                                color: darkMode ? "#34d399" : "#047857",
+                                border: darkMode ? "1px solid rgba(16, 185, 129, 0.4)" : "1px solid rgba(5, 150, 105, 0.4)",
                                 cursor: "pointer",
                                 transition: "all 0.2s",
                                 width: "36px",
@@ -3775,14 +3776,12 @@ export default function ProcurementManager({
                                 fontWeight: "700"
                               }}
                               onMouseOver={(e) => {
-                                e.currentTarget.style.background = "rgba(16, 185, 129, 0.25)";
-                                e.currentTarget.style.borderColor = "#047857";
-                                e.currentTarget.style.color = "#047857";
+                                e.currentTarget.style.background = darkMode ? "rgba(16, 185, 129, 0.28)" : "#d1fae5";
+                                e.currentTarget.style.borderColor = darkMode ? "#34d399" : "#059669";
                               }}
                               onMouseOut={(e) => {
-                                e.currentTarget.style.background = "rgba(16, 185, 129, 0.15)";
-                                e.currentTarget.style.borderColor = "rgba(16, 185, 129, 0.5)";
-                                e.currentTarget.style.color = "#059669";
+                                e.currentTarget.style.background = darkMode ? "rgba(16, 185, 129, 0.18)" : "#ecfdf5";
+                                e.currentTarget.style.borderColor = darkMode ? "rgba(16, 185, 129, 0.4)" : "rgba(5, 150, 105, 0.4)";
                               }}
                               title="결과 문서 요약 보기"
                             >
@@ -3802,10 +3801,10 @@ export default function ProcurementManager({
                                   style={{
                                     padding: "0.25rem 0.45rem",
                                     fontSize: "0.65rem",
-                                    background: "rgba(107, 114, 128, 0.12)",
-                                    border: "1px solid rgba(107, 114, 128, 0.4)",
+                                    background: darkMode ? "rgba(255, 255, 255, 0.08)" : "#f4f4f5",
+                                    border: darkMode ? "1px solid rgba(255, 255, 255, 0.15)" : "1px solid #d4d4d8",
                                     borderRadius: "4px",
-                                    color: "var(--text-primary)",
+                                    color: darkMode ? "#e4e4e7" : "#27272a",
                                     fontWeight: "700",
                                     cursor: "pointer",
                                     width: "38px",
@@ -3813,14 +3812,14 @@ export default function ProcurementManager({
                                     transition: "all 0.15s ease"
                                   }}
                                   onMouseOver={(e) => {
-                                    e.currentTarget.style.background = "rgba(59, 130, 246, 0.2)";
-                                    e.currentTarget.style.borderColor = "rgba(59, 130, 246, 0.5)";
-                                    e.currentTarget.style.color = "var(--accent-color, #2563EB)";
+                                    e.currentTarget.style.background = "rgba(59, 130, 246, 0.15)";
+                                    e.currentTarget.style.borderColor = "rgba(59, 130, 246, 0.6)";
+                                    e.currentTarget.style.color = darkMode ? "#60a5fa" : "#1d4ed8";
                                   }}
                                   onMouseOut={(e) => {
-                                    e.currentTarget.style.background = "rgba(107, 114, 128, 0.12)";
-                                    e.currentTarget.style.borderColor = "rgba(107, 114, 128, 0.4)";
-                                    e.currentTarget.style.color = "var(--text-primary)";
+                                    e.currentTarget.style.background = darkMode ? "rgba(255, 255, 255, 0.08)" : "#f4f4f5";
+                                    e.currentTarget.style.borderColor = darkMode ? "rgba(255, 255, 255, 0.15)" : "#d4d4d8";
+                                    e.currentTarget.style.color = darkMode ? "#e4e4e7" : "#27272a";
                                   }}
                                 >
                                   수정
@@ -3835,10 +3834,10 @@ export default function ProcurementManager({
                                   style={{
                                     padding: "0.25rem 0.45rem",
                                     fontSize: "0.65rem",
-                                    background: "rgba(239, 68, 68, 0.12)",
-                                    border: "1px solid rgba(239, 68, 68, 0.45)",
+                                    background: darkMode ? "rgba(239, 68, 68, 0.15)" : "#fef2f2",
+                                    border: darkMode ? "1px solid rgba(239, 68, 68, 0.45)" : "1px solid rgba(239, 68, 68, 0.4)",
                                     borderRadius: "4px",
-                                    color: "#DC2626",
+                                    color: darkMode ? "#f87171" : "#b91c1c",
                                     fontWeight: "700",
                                     cursor: "pointer",
                                     width: "38px",
@@ -3847,13 +3846,13 @@ export default function ProcurementManager({
                                   }}
                                   onMouseOver={(e) => {
                                     e.currentTarget.style.background = "rgba(239, 68, 68, 0.25)";
-                                    e.currentTarget.style.borderColor = "#B91C1C";
-                                    e.currentTarget.style.color = "#B91C1C";
+                                    e.currentTarget.style.borderColor = "#ef4444";
+                                    e.currentTarget.style.color = "#ef4444";
                                   }}
                                   onMouseOut={(e) => {
-                                    e.currentTarget.style.background = "rgba(239, 68, 68, 0.12)";
-                                    e.currentTarget.style.borderColor = "rgba(239, 68, 68, 0.45)";
-                                    e.currentTarget.style.color = "#DC2626";
+                                    e.currentTarget.style.background = darkMode ? "rgba(239, 68, 68, 0.15)" : "#fef2f2";
+                                    e.currentTarget.style.borderColor = darkMode ? "rgba(239, 68, 68, 0.45)" : "rgba(239, 68, 68, 0.4)";
+                                    e.currentTarget.style.color = darkMode ? "#f87171" : "#b91c1c";
                                   }}
                                 >
                                   삭제
@@ -4800,14 +4799,14 @@ export default function ProcurementManager({
                     </div>
                   </div>
 
-                  {/* 네번째 줄: 특이 요청사항 (선택 입력) */}
+                  {/* 네번째 줄: 수행결과 (선택 입력) */}
                   <div>
-                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>특이 요청사항 (선택)</label>
+                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>수행결과 (선택)</label>
                     <textarea 
                       name="opResult" 
                       value={formData.opResult} 
                       onChange={handleInputChange} 
-                      placeholder="예: 수행 결과 및 계약 시 특이사항 기술" 
+                      placeholder="예: 최종 용역 수행 결과 및 납품 결과 기술" 
                       style={{ width: "100%", height: "50px", padding: "0.5rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", resize: "none" }} 
                     />
                   </div>

@@ -9744,6 +9744,7 @@ export default function App() {
             {/* 본문 콘텐츠 */}
             <ProcurementManager
               key={`procurement-${darkMode}-${selectedYear}`}
+              darkMode={darkMode}
               currentRole={currentRole}
               currentUser={currentUser}
               selectedYear={selectedYear}
