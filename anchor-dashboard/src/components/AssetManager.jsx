@@ -432,10 +432,12 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
         if (error) throw error;
         alert("✨ 기자재 정보가 성공적으로 수정되었습니다.");
       } else {
-        // 신규 등록
-        const { error } = await supabase.from("equipment_assets").insert([payload]);
+        // 신규 등록 또는 불러오기 (이미 바코드가 존재하면 덮어쓰기 업데이트)
+        const { error } = await supabase
+          .from("equipment_assets")
+          .upsert(payload, { onConflict: "barcode_id" });
         if (error) throw error;
-        alert("✨ 신규 기자재가 성공적으로 등록되었습니다.");
+        alert("✨ 기자재 자산 등록이 성공적으로 완료되었습니다.");
       }
       setIsEquipModalOpen(false);
       setEditingEquipId(null);
