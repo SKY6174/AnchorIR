@@ -3938,7 +3938,9 @@ export default function App() {
               dateA: x.date_a || "",
               dateB: x.date_b || "",
               datePr: x.date_pr || "",
-              dateI: x.date_i || ""
+              dateI: x.date_i || "",
+              barcode: x.barcode || "",
+              asset_number: x.asset_number || ""
             };
           });
           setEquipData(formatted);
@@ -4834,8 +4836,35 @@ export default function App() {
             date_a: e.dateA || null,
             date_b: e.dateB || null,
             date_pr: e.datePr || null,
-            date_i: e.date_i || e.dateI || null
+            date_i: e.date_i || e.dateI || null,
+            barcode: e.barcode || "",
+            asset_number: e.asset_number || ""
           }));
+
+          // 💡 초연결 자산 연동: '기자재 구매' 단계에서 바코드가 입력된 항목들을 equipment_assets 테이블에 자동 Upsert 동기화
+          const assetsPayload = equipData
+            .filter(e => e.barcode) // 바코드가 실재로 스캔 등록된 자산만 연동
+            .map(e => ({
+              barcode_id: e.barcode,
+              asset_number: e.asset_number || `AIDX-EQ-${e.id}`,
+              item_name: e.itemName || e.name || "새 기자재 항목",
+              dept_name: e.deptName || e.divisionName || "",
+              unit_price: Number(e.unitPrice) || 0,
+              quantity: Number(e.quantity) || 1,
+              stock_location: e.location || "",
+              memo: e.description || "",
+              category: (e.itemName || e.name || "").includes("AI") || (e.itemName || e.name || "").includes("DX") ? "AI∙DX 자산" : "기타자산",
+              usage_type: "정규교과"
+            }));
+
+          if (assetsPayload.length > 0) {
+            const { error: assetSyncErr } = await supabase
+              .from("equipment_assets")
+              .upsert(assetsPayload, { onConflict: "barcode_id" });
+            if (assetSyncErr) {
+              console.error("equipment_assets 자산 동기화 실패:", assetSyncErr.message);
+            }
+          }
 
           let error = null;
 

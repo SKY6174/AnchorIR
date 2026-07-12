@@ -322,15 +322,39 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
   // [2] 기자재 관리 (AI∙DX 및 기타 자산 현황) 상태 및 핸들러
   // ==============================================================================
   const [equipments, setEquipments] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState("ai_dx"); // "ai_dx" or "other"
+  const [selectedCategory, setSelectedCategory] = useState("ai_dx"); // "ai_dx", "other", or "scan"
   const [isEquipModalOpen, setIsEquipModalOpen] = useState(false);
   const [editingEquipId, setEditingEquipId] = useState(null);
   const [equipSearchQuery, setEquipSearchQuery] = useState("");
   
+  // 자산 바코드 실시간 스캔을 위한 추가 상태
+  const [scanInput, setScanInput] = useState("");
+  const [scannedAsset, setScannedAsset] = useState(null);
+  const [scanError, setScanError] = useState("");
+  const [scanSuccess, setScanSuccess] = useState(false);
+
+  // Web Audio API를 활용한 바코드 비프(Beep) 효과음 발생기
+  const playBeep = (type = "success") => {
+    try {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(type === "success" ? 880 : 330, ctx.currentTime);
+      gain.gain.setValueAtTime(0.08, ctx.currentTime);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start();
+      osc.stop(ctx.currentTime + (type === "success" ? 0.12 : 0.35));
+    } catch (e) {
+      console.warn("AudioContext 재생 실패:", e);
+    }
+  };
+
   const USAGE_TYPES = ["정규교과", "비정규교과", "평생직업교육", "재직자과정", "기타"];
   const [equipFormData, setEquipFormData] = useState({
     asset_number: "",
-    barcode: "",
+    barcode_id: "",
     stock_location: "",
     category: "ai_dx",
     usage_type: USAGE_TYPES[0],
@@ -343,7 +367,7 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
     setLoading(true);
     try {
       const { data, error } = await supabase
-        .from("asset_equipments")
+        .from("equipment_assets")
         .select("*")
         .order("created_at", { ascending: false });
 
@@ -364,7 +388,7 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
       return;
     }
 
-    if (!equipFormData.item_name.trim() || !equipFormData.asset_number.trim() || !equipFormData.barcode.trim()) {
+    if (!equipFormData.item_name.trim() || !equipFormData.asset_number.trim() || !equipFormData.barcode_id.trim()) {
       alert("⚠️ 품명, 물품(기자재)번호, 바코드는 필수 입력 항목입니다.");
       return;
     }
@@ -374,14 +398,14 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
       if (editingEquipId) {
         // 수정 모드
         const { error } = await supabase
-          .from("asset_equipments")
+          .from("equipment_assets")
           .update(equipFormData)
           .eq("id", editingEquipId);
         if (error) throw error;
         alert("✨ 기자재 정보가 성공적으로 수정되었습니다.");
       } else {
         // 신규 등록
-        const { error } = await supabase.from("asset_equipments").insert([equipFormData]);
+        const { error } = await supabase.from("equipment_assets").insert([equipFormData]);
         if (error) throw error;
         alert("✨ 신규 기자재가 성공적으로 등록되었습니다.");
       }
@@ -389,7 +413,7 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
       setEditingEquipId(null);
       setEquipFormData({
         asset_number: "",
-        barcode: "",
+        barcode_id: "",
         stock_location: "",
         category: "ai_dx",
         usage_type: USAGE_TYPES[0],
@@ -409,7 +433,7 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
     setEditingEquipId(equip.id);
     setEquipFormData({
       asset_number: equip.asset_number,
-      barcode: equip.barcode,
+      barcode_id: equip.barcode_id,
       stock_location: equip.stock_location,
       category: equip.category,
       usage_type: equip.usage_type,
@@ -429,12 +453,63 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
 
     setLoading(true);
     try {
-      const { error } = await supabase.from("asset_equipments").delete().eq("id", id);
+      const { error } = await supabase.from("equipment_assets").delete().eq("id", id);
       if (error) throw error;
       alert("🗑️ 기자재가 삭제되었습니다.");
       fetchEquipments();
     } catch (err) {
       alert("기자재 삭제 실패: " + err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // 바코드 리더기 실시간 스캔 완료 처리
+  const handleBarcodeScan = async (e) => {
+    e.preventDefault();
+    if (!scanInput.trim()) return;
+
+    setLoading(true);
+    setScanError("");
+    setScanSuccess(false);
+
+    try {
+      // 1. Supabase equipment_assets 테이블에서 바코드 매칭 검색
+      const { data, error } = await supabase
+        .from("equipment_assets")
+        .select("*")
+        .eq("barcode_id", scanInput.trim())
+        .maybeSingle();
+
+      if (error) throw error;
+
+      if (!data) {
+        playBeep("error");
+        setScannedAsset(null);
+        setScanError("⚠️ 등록되지 않은 자산 바코드입니다.");
+        return;
+      }
+
+      // 2. 점검 시각 갱신
+      const nowString = new Date().toISOString();
+      const { data: updatedData, error: updateErr } = await supabase
+        .from("equipment_assets")
+        .update({ last_checked_at: nowString })
+        .eq("barcode_id", scanInput.trim())
+        .select()
+        .single();
+
+      if (updateErr) throw updateErr;
+
+      // 3. 성공 피드백 작동
+      playBeep("success");
+      setScannedAsset(updatedData || data);
+      setScanSuccess(true);
+      setScanInput("");
+      fetchEquipments(); // 목록 전체 리로드
+    } catch (err) {
+      console.error("바코드 스캔 오류:", err.message);
+      setScanError("자산 검색 중 장애 발생: " + err.message);
     } finally {
       setLoading(false);
     }
@@ -781,115 +856,256 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
               >
                 🏢 기타 일반 자산
               </button>
-            </div>
-
-            {/* 검색창 */}
-            <div style={{ marginLeft: "auto", position: "relative", display: "flex", alignItems: "center" }}>
-              <Search size={14} style={{ position: "absolute", left: "0.4rem", color: "var(--text-secondary)" }} />
-              <input
-                type="text"
-                placeholder="품명, 번호, 바코드 검색..."
-                value={equipSearchQuery}
-                onChange={(e) => setEquipSearchQuery(e.target.value)}
+              <button
+                onClick={() => setSelectedCategory("scan")}
                 style={{
-                  padding: "0.35rem 0.5rem 0.35rem 1.4rem",
-                  fontSize: "0.7rem",
+                  padding: "0.45rem 1.2rem",
                   borderRadius: "4px",
-                  border: "1px solid var(--border-color)",
-                  background: "var(--input-bg)",
-                  color: "var(--text-primary)",
-                  width: "180px"
+                  border: "none",
+                  background: selectedCategory === "scan" ? "var(--accent-color)" : "transparent",
+                  color: selectedCategory === "scan" ? "white" : "var(--text-secondary)",
+                  fontSize: "0.72rem",
+                  fontWeight: "800",
+                  cursor: "pointer",
+                  transition: "all 0.15s ease",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "0.3rem"
                 }}
-              />
+              >
+                📷 실시간 자산 스캔 점검
+              </button>
             </div>
-          </div>
 
-          {/* 기자재 현황 테이블 */}
-          <div style={{ background: "var(--panel-bg)", border: "1px solid var(--border-color)", borderRadius: "8px", padding: "1rem" }}>
-            {loading ? (
-              <div style={{ textAlign: "center", padding: "2rem", color: "var(--text-secondary)", fontSize: "0.75rem" }}>데이터 로드 중...</div>
-            ) : (
-              (() => {
-                const filtered = equipments
-                  .filter((e) => e.category === selectedCategory)
-                  .filter((e) => {
-                    if (!equipSearchQuery.trim()) return true;
-                    const query = equipSearchQuery.toLowerCase();
-                    return (
-                      e.item_name.toLowerCase().includes(query) ||
-                      e.asset_number.toLowerCase().includes(query) ||
-                      e.barcode.toLowerCase().includes(query)
-                    );
-                  });
-
-                if (filtered.length === 0) {
-                  return (
-                    <div style={{ textAlign: "center", padding: "2.5rem", color: "var(--text-secondary)", fontSize: "0.75rem" }}>
-                      조회된 기자재가 존재하지 않습니다.
-                    </div>
-                  );
-                }
-
-                return (
-                  <div style={{ overflowX: "auto" }}>
-                    <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.75rem", textAlign: "left" }}>
-                      <thead>
-                        <tr style={{ borderBottom: "1px solid var(--border-color)", color: "var(--text-secondary)" }}>
-                          <th style={{ padding: "0.5rem" }}>기자재 품명</th>
-                          <th style={{ padding: "0.5rem" }}>물품(기자재)번호</th>
-                          <th style={{ padding: "0.5rem" }}>바코드</th>
-                          <th style={{ padding: "0.5rem" }}>재고위치</th>
-                          <th style={{ padding: "0.5rem" }}>사용 분야(목적)</th>
-                          <th style={{ padding: "0.5rem" }}>메모(비고)</th>
-                          <th style={{ padding: "0.5rem", textAlign: "center" }}>관리</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {filtered.map((item) => (
-                          <tr key={item.id} style={{ borderBottom: "1px solid rgba(255,255,255,0.03)" }}>
-                            <td style={{ padding: "0.5rem", fontWeight: "700", color: "#34D399" }}>{item.item_name}</td>
-                            <td style={{ padding: "0.5rem", fontFamily: "monospace" }}>{item.asset_number}</td>
-                            <td style={{ padding: "0.5rem", fontFamily: "monospace" }}>{item.barcode}</td>
-                            <td style={{ padding: "0.5rem" }}>{item.stock_location}</td>
-                            <td style={{ padding: "0.5rem" }}>
-                              <span style={{
-                                padding: "0.15rem 0.4rem",
-                                borderRadius: "4px",
-                                background: "rgba(59, 130, 246, 0.15)",
-                                border: "1px solid rgba(59, 130, 246, 0.3)",
-                                color: "#60A5FA",
-                                fontSize: "0.65rem",
-                                fontWeight: "700"
-                              }}>
-                                {item.usage_type}
-                              </span>
-                            </td>
-                            <td style={{ padding: "0.5rem", color: "var(--text-secondary)" }}>{item.memo || "-"}</td>
-                            <td style={{ padding: "0.5rem", textAlign: "center" }}>
-                              <div style={{ display: "flex", gap: "0.35rem", justifyContent: "center" }}>
-                                <button
-                                  onClick={() => handleOpenEditEquip(item)}
-                                  style={{ background: "none", border: "none", color: "#60A5FA", cursor: "pointer" }}
-                                >
-                                  <Edit2 size={13} />
-                                </button>
-                                <button
-                                  onClick={() => handleDeleteEquipment(item.id)}
-                                  style={{ background: "none", border: "none", color: "#F87171", cursor: "pointer" }}
-                                >
-                                  <Trash2 size={13} />
-                                </button>
-                              </div>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                );
-              })()
+            {/* 검색창 (스캔 화면이 아닐 때만 렌더링) */}
+            {selectedCategory !== "scan" && (
+              <div style={{ marginLeft: "auto", position: "relative", display: "flex", alignItems: "center" }}>
+                <Search size={14} style={{ position: "absolute", left: "0.4rem", color: "var(--text-secondary)" }} />
+                <input
+                  type="text"
+                  placeholder="품명, 번호, 바코드 검색..."
+                  value={equipSearchQuery}
+                  onChange={(e) => setEquipSearchQuery(e.target.value)}
+                  style={{
+                    padding: "0.35rem 0.5rem 0.35rem 1.4rem",
+                    fontSize: "0.7rem",
+                    borderRadius: "4px",
+                    border: "1px solid var(--border-color)",
+                    background: "var(--input-bg)",
+                    color: "var(--text-primary)",
+                    width: "180px"
+                  }}
+                />
+              </div>
             )}
           </div>
+
+          {/* 본문 레이아웃 분기 */}
+          {selectedCategory === "scan" ? (
+            /* [자산 실시간 스캔 점검 화면] */
+            <div style={{ background: "var(--panel-bg)", border: "1px solid var(--border-color)", borderRadius: "12px", padding: "2rem" }}>
+              <div style={{ textAlign: "center", marginBottom: "2rem" }}>
+                <h3 style={{ fontSize: "1.05rem", fontWeight: "800", color: "#A78BFA", display: "flex", alignItems: "center", justifyContent: "center", gap: "0.4rem", marginBottom: "0.5rem" }}>
+                  📷 실시간 자산 스캔 점검 시스템
+                </h3>
+                <p style={{ fontSize: "0.75rem", color: "var(--text-secondary)", margin: 0 }}>
+                  바코드 리더기로 자산 바코드를 스캔(또는 수동 입력 후 Enter) 하시면, 자산 정보 검색 및 최종 실사 점검 시각이 자동 갱신됩니다.
+                </p>
+              </div>
+
+              {/* 스캔 입력 폼 */}
+              <form onSubmit={handleBarcodeScan} style={{ maxWidth: "500px", margin: "0 auto 2rem auto" }}>
+                <div style={{ display: "flex", gap: "0.5rem", position: "relative" }}>
+                  <input
+                    type="text"
+                    autoFocus
+                    placeholder="바코드를 스캔해 주세요 (예: 8809123456789)"
+                    value={scanInput}
+                    onChange={(e) => setScanInput(e.target.value)}
+                    style={{
+                      flex: 1,
+                      padding: "0.8rem 1rem",
+                      fontSize: "0.85rem",
+                      fontWeight: "700",
+                      borderRadius: "8px",
+                      border: "2px solid var(--accent-color)",
+                      background: "rgba(0, 0, 0, 0.4)",
+                      color: "white",
+                      textAlign: "center",
+                      letterSpacing: "1px"
+                    }}
+                  />
+                  <button
+                    type="submit"
+                    style={{
+                      padding: "0.8rem 1.5rem",
+                      background: "linear-gradient(135deg, var(--accent-color) 0%, #7C3AED 100%)",
+                      color: "white",
+                      border: "none",
+                      borderRadius: "8px",
+                      fontSize: "0.8rem",
+                      fontWeight: "800",
+                      cursor: "pointer"
+                    }}
+                  >
+                    확인
+                  </button>
+                </div>
+              </form>
+
+              {/* 피드백 상태 박스 */}
+              {scanError && (
+                <div style={{ maxWidth: "600px", margin: "0 auto 1.5rem auto", padding: "1rem", borderRadius: "8px", background: "rgba(239, 68, 68, 0.12)", border: "1px solid rgba(239, 68, 68, 0.4)", color: "#F87171", textAlign: "center", fontSize: "0.78rem", fontWeight: "700" }}>
+                  {scanError}
+                </div>
+              )}
+
+              {scanSuccess && (
+                <div style={{ maxWidth: "600px", margin: "0 auto 1.5rem auto", padding: "0.85rem", borderRadius: "8px", background: "rgba(16, 185, 129, 0.12)", border: "1px solid rgba(16, 185, 129, 0.4)", color: "#34D399", textAlign: "center", fontSize: "0.78rem", fontWeight: "700" }}>
+                  🎉 [성공] 자산 점검 완료! (최종 점검 시각이 방금 전으로 갱신되었습니다)
+                </div>
+              )}
+
+              {/* 자산 상세 보기 카드 */}
+              {scannedAsset && (
+                <div className="glass-card" style={{ maxWidth: "600px", margin: "0 auto", padding: "1.5rem", borderRadius: "10px", border: "1px solid rgba(255,255,255,0.06)", background: "rgba(255,255,255,0.02)" }}>
+                  <h4 style={{ fontSize: "0.85rem", fontWeight: "800", color: "#10B981", borderBottom: "1px solid rgba(255,255,255,0.05)", paddingBottom: "0.5rem", marginBottom: "0.85rem", display: "flex", justifyContent: "space-between" }}>
+                    <span>🔍 점검 대상 자산 상세 정보</span>
+                    <span style={{ fontSize: "0.68rem", background: "rgba(16, 185, 129, 0.2)", padding: "0.1rem 0.35rem", borderRadius: "4px" }}>
+                      {scannedAsset.category === "ai_dx" ? "AI∙DX 자산" : "기타자산"}
+                    </span>
+                  </h4>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem", fontSize: "0.75rem" }}>
+                    <div>
+                      <span style={{ color: "var(--text-secondary)", display: "block" }}>기자재 품명</span>
+                      <strong style={{ fontSize: "0.8rem", color: "var(--text-primary)" }}>{scannedAsset.item_name}</strong>
+                    </div>
+                    <div>
+                      <span style={{ color: "var(--text-secondary)", display: "block" }}>물품(기자재)번호</span>
+                      <strong style={{ fontFamily: "monospace", color: "var(--text-primary)" }}>{scannedAsset.asset_number}</strong>
+                    </div>
+                    <div>
+                      <span style={{ color: "var(--text-secondary)", display: "block" }}>바코드 ID</span>
+                      <strong style={{ fontFamily: "monospace", color: "#60A5FA" }}>{scannedAsset.barcode_id}</strong>
+                    </div>
+                    <div>
+                      <span style={{ color: "var(--text-secondary)", display: "block" }}>재고(보관) 위치</span>
+                      <strong style={{ color: "var(--text-primary)" }}>{scannedAsset.stock_location || "-"}</strong>
+                    </div>
+                    <div>
+                      <span style={{ color: "var(--text-secondary)", display: "block" }}>사용 분야(목적)</span>
+                      <strong style={{ color: "var(--text-primary)" }}>{scannedAsset.usage_type}</strong>
+                    </div>
+                    <div>
+                      <span style={{ color: "var(--text-secondary)", display: "block" }}>수량</span>
+                      <strong style={{ color: "var(--text-primary)" }}>{scannedAsset.quantity}개</strong>
+                    </div>
+                    <div style={{ gridColumn: "span 2" }}>
+                      <span style={{ color: "var(--text-secondary)", display: "block" }}>최근 점검 시각 (last_checked_at)</span>
+                      <strong style={{ color: "#FBBF24" }}>{scannedAsset.last_checked_at ? new Date(scannedAsset.last_checked_at).toLocaleString("ko-KR") : "미점검"}</strong>
+                    </div>
+                    {scannedAsset.memo && (
+                      <div style={{ gridColumn: "span 2" }}>
+                        <span style={{ color: "var(--text-secondary)", display: "block" }}>비고 및 특이사항</span>
+                        <p style={{ margin: "0.15rem 0 0 0", color: "var(--text-secondary)" }}>{scannedAsset.memo}</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+          ) : (
+            /* [기자재 현황 테이블] */
+            <div style={{ background: "var(--panel-bg)", border: "1px solid var(--border-color)", borderRadius: "8px", padding: "1rem" }}>
+              {loading ? (
+                <div style={{ textAlign: "center", padding: "2rem", color: "var(--text-secondary)", fontSize: "0.75rem" }}>데이터 로드 중...</div>
+              ) : (
+                (() => {
+                  const filtered = equipments
+                    .filter((e) => e.category === selectedCategory)
+                    .filter((e) => {
+                      if (!equipSearchQuery.trim()) return true;
+                      const query = equipSearchQuery.toLowerCase();
+                      return (
+                        e.item_name.toLowerCase().includes(query) ||
+                        e.asset_number.toLowerCase().includes(query) ||
+                        (e.barcode_id || "").toLowerCase().includes(query)
+                      );
+                    });
+
+                  if (filtered.length === 0) {
+                    return (
+                      <div style={{ textAlign: "center", padding: "2.5rem", color: "var(--text-secondary)", fontSize: "0.75rem" }}>
+                        조회된 기자재가 존재하지 않습니다.
+                      </div>
+                    );
+                  }
+
+                  return (
+                    <div style={{ overflowX: "auto" }}>
+                      <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.75rem", textAlign: "left" }}>
+                        <thead>
+                          <tr style={{ borderBottom: "1px solid var(--border-color)", color: "var(--text-secondary)" }}>
+                            <th style={{ padding: "0.5rem" }}>기자재 품명</th>
+                            <th style={{ padding: "0.5rem" }}>물품(기자재)번호</th>
+                            <th style={{ padding: "0.5rem" }}>바코드</th>
+                            <th style={{ padding: "0.5rem" }}>재고위치</th>
+                            <th style={{ padding: "0.5rem" }}>사용 분야(목적)</th>
+                            <th style={{ padding: "0.5rem" }}>최근 점검 시각</th>
+                            <th style={{ padding: "0.5rem" }}>메모(비고)</th>
+                            <th style={{ padding: "0.5rem", textAlign: "center" }}>관리</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {filtered.map((item) => (
+                            <tr key={item.id} style={{ borderBottom: "1px solid rgba(255,255,255,0.03)" }}>
+                              <td style={{ padding: "0.5rem", fontWeight: "700", color: "#34D399" }}>{item.item_name}</td>
+                              <td style={{ padding: "0.5rem", fontFamily: "monospace" }}>{item.asset_number}</td>
+                              <td style={{ padding: "0.5rem", fontFamily: "monospace" }}>{item.barcode_id}</td>
+                              <td style={{ padding: "0.5rem" }}>{item.stock_location}</td>
+                              <td style={{ padding: "0.5rem" }}>
+                                <span style={{
+                                  padding: "0.15rem 0.4rem",
+                                  borderRadius: "4px",
+                                  background: "rgba(59, 130, 246, 0.15)",
+                                  border: "1px solid rgba(59, 130, 246, 0.3)",
+                                  color: "#60A5FA",
+                                  fontSize: "0.65rem",
+                                  fontWeight: "700"
+                                }}>
+                                  {item.usage_type}
+                                </span>
+                              </td>
+                              <td style={{ padding: "0.5rem", color: "#FBBF24", fontWeight: "600" }}>
+                                {item.last_checked_at ? new Date(item.last_checked_at).toLocaleString("ko-KR") : "-"}
+                              </td>
+                              <td style={{ padding: "0.5rem", color: "var(--text-secondary)" }}>{item.memo || "-"}</td>
+                              <td style={{ padding: "0.5rem", textAlign: "center" }}>
+                                <div style={{ display: "flex", gap: "0.35rem", justifyContent: "center" }}>
+                                  <button
+                                    onClick={() => handleOpenEditEquip(item)}
+                                    style={{ background: "none", border: "none", color: "#60A5FA", cursor: "pointer" }}
+                                  >
+                                    <Edit2 size={13} />
+                                  </button>
+                                  <button
+                                    onClick={() => handleDeleteEquipment(item.id)}
+                                    style={{ background: "none", border: "none", color: "#F87171", cursor: "pointer" }}
+                                  >
+                                    <Trash2 size={13} />
+                                  </button>
+                                </div>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  );
+                })()
+              )}
+            </div>
+          )}
         </div>
       )}
 
@@ -1194,8 +1410,8 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
                 <input
                   type="text"
                   placeholder="예: 8809123456789"
-                  value={equipFormData.barcode}
-                  onChange={(e) => setEquipFormData(prev => ({ ...prev, barcode: e.target.value }))}
+                  value={equipFormData.barcode_id || ""}
+                  onChange={(e) => setEquipFormData(prev => ({ ...prev, barcode_id: e.target.value }))}
                   required
                   style={{ width: "100%", padding: "0.45rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "4px", color: "var(--text-primary)", fontSize: "0.75rem" }}
                 />

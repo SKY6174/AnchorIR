@@ -596,7 +596,7 @@ export default function Sidebar({
                   }}
                   style={getHiddenStyle("equipment_purchase")}
                 >
-                  - 기자재 구입∙운영
+                  - 기자재 구매
                   {isHidden("equipment_purchase") && (
                     <span style={{ fontSize: "0.6rem", color: "#ef4444", textDecoration: "none", marginLeft: "0.2rem" }}>
                       [숨김]

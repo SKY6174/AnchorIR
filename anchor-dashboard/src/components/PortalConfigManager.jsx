@@ -60,10 +60,10 @@ const MENU_SCHEMA = [
   {
     key: "procurement",
     label: "구매∙용역 관리",
-    description: "교육환경 개선, 기자재 구입/운영 및 주요 용역 추진 과정 관리",
+    description: "교육환경 개선, 기자재 구매 및 주요 용역 추진 과정 관리",
     subMenus: [
       { key: "env_improvement", label: "환경개선" },
-      { key: "equipment_purchase", label: "기자재 구입∙운영" },
+      { key: "equipment_purchase", label: "기자재 구매" },
       { key: "major_services", label: "주요 용역" }
     ]
   },

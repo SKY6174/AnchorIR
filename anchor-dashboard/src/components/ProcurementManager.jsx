@@ -1173,6 +1173,8 @@ export default function ProcurementManager({
               deptName: formData.deptName || "",
               divisionName: formData.divisionName || "",
               itemName: formData.name || "수정 기자재 항목",
+              barcode: formData.barcode || "",
+              asset_number: formData.asset_number || "",
               unitPrice: Math.round(parseFloat(formData.unitPrice || 0) * 1000000),
               quantity: Number(formData.quantity) || 1,
               description: combinedDescription || "-",
@@ -1233,6 +1235,8 @@ export default function ProcurementManager({
           deptName: formData.deptName || "",
           divisionName: formData.divisionName || "",
           itemName: formData.name || "새 기자재 항목",
+          barcode: formData.barcode || "",
+          asset_number: formData.asset_number || "",
           unitPrice: Math.round(parseFloat(formData.unitPrice || 0) * 1000000),
           quantity: Number(formData.quantity) || 1,
           description: combinedDescription || "-",
@@ -1463,6 +1467,8 @@ export default function ProcurementManager({
       budgetPlan: "",
       budgetSpent: "",
       location: "",
+      barcode: "",
+      asset_number: "",
       purpose: "",
       birdseyeView: "",
       blueprints: "",
@@ -1537,6 +1543,8 @@ export default function ProcurementManager({
       title: equip.title || equip.itemName || "",
       deptName: equip.deptName || "",
       divisionName: equip.divisionName || "",
+      barcode: equip.barcode || "",
+      asset_number: equip.asset_number || "",
       unitPrice: equip.unitPrice ? parseFloat((equip.unitPrice / 1000000).toFixed(2)) : (equip.budgetPlan ? parseFloat((equip.budgetPlan / 1000000).toFixed(2)) : ""),
       quantity: equip.quantity || 1,
       description: equip.description || "",
@@ -4196,6 +4204,31 @@ export default function ProcurementManager({
                   <span style={{ fontSize: "0.75rem", color: "#fbbf24", display: "block", marginTop: "-0.5rem" }}>
                     * 학과 또는 부서 중 최소 한 곳은 필수로 지정되어야 합니다.
                   </span>
+                  {/* 기자재 바코드 및 관리번호 입력란 추가 */}
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+                    <div>
+                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>기자재 바코드정보</label>
+                      <input 
+                        type="text" 
+                        name="barcode" 
+                        value={formData.barcode || ""} 
+                        onChange={handleInputChange} 
+                        placeholder="예: 8809123456789" 
+                        style={{ width: "100%", padding: "0.5rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} 
+                      />
+                    </div>
+                    <div>
+                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>기자재 관리번호</label>
+                      <input 
+                        type="text" 
+                        name="asset_number" 
+                        value={formData.asset_number || ""} 
+                        onChange={handleInputChange} 
+                        placeholder="예: AIDX-EQ-2026-004" 
+                        style={{ width: "100%", padding: "0.5rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} 
+                      />
+                    </div>
+                  </div>
                   <div>
                     <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>품명</label>
                     <input type="text" name="name" value={formData.name} onChange={handleInputChange} required placeholder="예: 임상 실습용 스마트 베드" style={{ width: "100%", padding: "0.5rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} />
