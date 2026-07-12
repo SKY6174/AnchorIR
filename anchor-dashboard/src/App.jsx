@@ -2370,6 +2370,60 @@ export default function App() {
     localStorage.setItem("anchor_approvals_tab", approvalsTab);
   }, [approvalsTab]);
 
+  // 💡 [교육용 한글 주석] 직책에 따라 테두리선(line), 배경색, 글자색이 가미된 선명하고 세련된 뱃지를 렌더링하는 공용 헬퍼 함수입니다.
+  const renderRoleBadge = (role, isRetired) => {
+    if (isRetired) {
+      return (
+        <span className="badge badge-gray" style={{ fontSize: "0.65rem", background: "rgba(255, 255, 255, 0.08)", color: "var(--text-secondary)" }}>
+          {role}
+        </span>
+      );
+    }
+
+    // 기본값 (일반 연구원 등)
+    let bg = "rgba(107, 114, 128, 0.08)";
+    let color = "#9ca3af";
+    let border = "1px solid rgba(107, 114, 128, 0.25)";
+
+    if (role === "사업단장") {
+      bg = "rgba(239, 68, 68, 0.12)";
+      color = "#f87171";
+      border = "1px solid rgba(239, 68, 68, 0.4)";
+    } else if (role === "본부장" || role === "총괄본부장") {
+      bg = "rgba(139, 92, 246, 0.12)";
+      color = "#a78bfa";
+      border = "1px solid rgba(139, 92, 246, 0.45)";
+    } else if (role === "센터장" || role.endsWith("센터장")) {
+      bg = "rgba(59, 130, 246, 0.12)";
+      color = "#60a5fa";
+      border = "1px solid rgba(59, 130, 246, 0.4)";
+    } else if (role === "운영팀장" || role === "팀장교수" || role === "팀장") {
+      bg = "rgba(13, 148, 136, 0.12)";
+      color = "#2dd4bf";
+      border = "1px solid rgba(13, 148, 136, 0.45)";
+    } else if (role === "최고 관리자") {
+      bg = "rgba(236, 72, 153, 0.12)";
+      color = "#f472b6";
+      border = "1px solid rgba(236, 72, 153, 0.4)";
+    }
+
+    return (
+      <span style={{
+        display: "inline-block",
+        fontSize: "0.65rem",
+        fontWeight: "800",
+        padding: "0.15rem 0.45rem",
+        borderRadius: "4px",
+        background: bg,
+        color: color,
+        border: border,
+        whiteSpace: "nowrap"
+      }}>
+        {role}
+      </span>
+    );
+  };
+
   // 사업단 구성원 관리 및 서브탭 상태 (첫 기동 시 즉각 화면 출력을 보장하기 위해 로컬 캐시를 초기값으로 지탱)
   const [members, setMembers] = useState(() => {
     const saved = localStorage.getItem("anchor_members");
@@ -8253,36 +8307,18 @@ export default function App() {
                               transition: "all 0.2s"
                             }}
                           >
-                            <td style={{ fontWeight: "700" }}>{m.dept}</td>
-                            <td style={{ fontWeight: "800", color: isRetired ? "var(--text-secondary)" : "var(--text-primary)" }}>{m.name}</td>
-                            <td>
-                              <span
-                                className={`badge ${isRetired
-                                  ? "badge-gray"
-                                  : m.role === "사업단장" || m.role === "총괄본부장"
-                                    ? "badge-red"
-                                    : m.role === "센터장"
-                                      ? "badge-blue"
-                                      : m.role === "팀장교수"
-                                        ? "badge-green"
-                                        : "badge-gray"
-                                  }`}
-                                style={{
-                                  fontSize: "0.65rem",
-                                  background: isRetired ? "rgba(255, 255, 255, 0.08)" : undefined,
-                                  color: isRetired ? "var(--text-secondary)" : undefined
-                                }}
-                              >
-                                {m.role}
-                              </span>
+                            <td style={{ textAlign: "center", verticalAlign: "middle", fontWeight: "700" }}>{m.dept}</td>
+                            <td style={{ textAlign: "center", verticalAlign: "middle", fontWeight: "800", color: isRetired ? "var(--text-secondary)" : "var(--text-primary)" }}>{m.name}</td>
+                            <td style={{ textAlign: "center", verticalAlign: "middle" }}>
+                              {renderRoleBadge(m.role, isRetired)}
                             </td>
-                            <td>{m.grade}</td>
-                            <td style={{ fontFamily: "var(--font-data)" }}>{m.email}</td>
-                            <td style={{ fontFamily: "var(--font-data)" }}>{m.phoneOffice || "-"}</td>
-                            <td style={{ fontFamily: "var(--font-data)" }}>{m.phoneMobile || "-"}</td>
-                            <td style={{ fontFamily: "var(--font-data)" }}>{m.startDate || m.hireDate || "-"}</td>
-                            <td style={{ fontFamily: "var(--font-data)" }}>{m.endDate || "-"}</td>
-                            <td>
+                            <td style={{ textAlign: "center", verticalAlign: "middle" }}>{m.grade}</td>
+                            <td style={{ textAlign: "center", verticalAlign: "middle", fontFamily: "var(--font-data)" }}>{m.email}</td>
+                            <td style={{ textAlign: "center", verticalAlign: "middle", fontFamily: "var(--font-data)" }}>{m.phoneOffice || "-"}</td>
+                            <td style={{ textAlign: "center", verticalAlign: "middle", fontFamily: "var(--font-data)" }}>{m.phoneMobile || "-"}</td>
+                            <td style={{ textAlign: "center", verticalAlign: "middle", fontFamily: "var(--font-data)" }}>{m.startDate || m.hireDate || "-"}</td>
+                            <td style={{ textAlign: "center", verticalAlign: "middle", fontFamily: "var(--font-data)" }}>{m.endDate || "-"}</td>
+                            <td style={{ textAlign: "center", verticalAlign: "middle" }}>
                               <span
                                 className={`badge ${isRetired ? "badge-red" : "badge-green"
                                   }`}
@@ -8296,8 +8332,8 @@ export default function App() {
                               </span>
                             </td>
                             {currentRole.rank <= 2 && (
-                              <td>
-                                <div style={{ display: "flex", gap: "0.3rem" }}>
+                              <td style={{ textAlign: "center", verticalAlign: "middle" }}>
+                                <div style={{ display: "flex", gap: "0.3rem", justifyContent: "center", alignItems: "center" }}>
                                   <button
                                     className="btn-primary"
                                     style={{ padding: "0.2rem 0.4rem", fontSize: "0.65rem", borderRadius: "0.25rem", background: "rgba(59,130,246,0.15)", border: "1px solid var(--accent-color)", color: "#60a5fa" }}
@@ -8617,15 +8653,15 @@ export default function App() {
                     <span style={{ fontSize: "0.65rem", color: "var(--text-secondary)" }}>관리자용 데모 및 시스템 고유 계정</span>
                   </div>
                   <div className="table-panel" style={{ maxHeight: "250px", overflowY: "auto" }}>
-                    <table className="custom-table" style={{ fontSize: "0.75rem" }}>
+                    <table className="custom-table" style={{ fontSize: "0.75rem", width: "100%" }}>
                       <thead>
                         <tr>
-                          <th>아이디</th>
-                          <th>이름</th>
-                          <th>역할</th>
-                          <th>역할키</th>
-                          <th>시작일</th>
-                          <th style={{ width: "100px", textAlign: "center" }}>속성</th>
+                          <th style={{ textAlign: "center", verticalAlign: "middle" }}>아이디</th>
+                          <th style={{ textAlign: "center", verticalAlign: "middle" }}>이름</th>
+                          <th style={{ textAlign: "center", verticalAlign: "middle" }}>역할</th>
+                          <th style={{ textAlign: "center", verticalAlign: "middle" }}>역할키</th>
+                          <th style={{ textAlign: "center", verticalAlign: "middle" }}>시작일</th>
+                          <th style={{ width: "100px", textAlign: "center", verticalAlign: "middle" }}>속성</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -8655,26 +8691,14 @@ export default function App() {
                               const cleanName = (u.name || "").split(" ")[0];
                               return (
                                 <tr key={u.id}>
-                                  <td style={{ fontFamily: "var(--font-data)", fontWeight: "700" }}>{u.id}</td>
-                                  <td style={{ fontWeight: "700" }}>{cleanName}</td>
-                                  <td>
-                                    <span
-                                      className={`badge ${u.role_key === "ADMIN" || u.role_key === "G_DIRECTOR" || u.role_key === "HQ_HEAD"
-                                        ? "badge-red"
-                                        : u.role_key.startsWith("CENTER_")
-                                          ? "badge-blue"
-                                          : u.role_key === "TEAM_LEADER"
-                                            ? "badge-green"
-                                            : "badge-gray"
-                                        }`}
-                                      style={{ fontSize: "0.65rem" }}
-                                    >
-                                      {roleNames[u.role_key] || u.role_key}
-                                    </span>
+                                  <td style={{ textAlign: "center", verticalAlign: "middle", fontFamily: "var(--font-data)", fontWeight: "700" }}>{u.id}</td>
+                                  <td style={{ textAlign: "center", verticalAlign: "middle", fontWeight: "700" }}>{cleanName}</td>
+                                  <td style={{ textAlign: "center", verticalAlign: "middle" }}>
+                                    {renderRoleBadge(roleNames[u.role_key] || u.role_key, false)}
                                   </td>
-                                  <td style={{ fontFamily: "var(--font-data)" }}>{u.role_key}</td>
-                                  <td style={{ fontFamily: "var(--font-data)" }}>{new Date(u.created_at).toLocaleDateString()}</td>
-                                  <td style={{ textAlign: "center", color: "var(--text-secondary)", fontWeight: "700" }}>고정 계정</td>
+                                  <td style={{ textAlign: "center", verticalAlign: "middle", fontFamily: "var(--font-data)" }}>{u.role_key}</td>
+                                  <td style={{ textAlign: "center", verticalAlign: "middle", fontFamily: "var(--font-data)" }}>{new Date(u.created_at).toLocaleDateString()}</td>
+                                  <td style={{ textAlign: "center", verticalAlign: "middle", color: "var(--text-secondary)", fontWeight: "700" }}>고정 계정</td>
                                 </tr>
                               );
                             })
@@ -8691,15 +8715,15 @@ export default function App() {
                     <span style={{ fontSize: "0.65rem", color: "var(--text-secondary)" }}>인사 주소록 기반 가입 계정</span>
                   </div>
                   <div className="table-panel" style={{ maxHeight: "300px", overflowY: "auto" }}>
-                    <table className="custom-table" style={{ fontSize: "0.75rem" }}>
+                    <table className="custom-table" style={{ fontSize: "0.75rem", width: "100%" }}>
                       <thead>
                         <tr>
-                          <th>아이디</th>
-                          <th>이름</th>
-                          <th>역할</th>
-                          <th>역할키</th>
-                          <th>시작일</th>
-                          <th style={{ width: "100px", textAlign: "center" }}>관리</th>
+                          <th style={{ textAlign: "center", verticalAlign: "middle" }}>아이디</th>
+                          <th style={{ textAlign: "center", verticalAlign: "middle" }}>이름</th>
+                          <th style={{ textAlign: "center", verticalAlign: "middle" }}>역할</th>
+                          <th style={{ textAlign: "center", verticalAlign: "middle" }}>역할키</th>
+                          <th style={{ textAlign: "center", verticalAlign: "middle" }}>시작일</th>
+                          <th style={{ width: "100px", textAlign: "center", verticalAlign: "middle" }}>관리</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -8733,26 +8757,14 @@ export default function App() {
 
                               return (
                                 <tr key={u.id}>
-                                  <td style={{ fontFamily: "var(--font-data)", fontWeight: "700" }}>{u.id}</td>
-                                  <td style={{ fontWeight: "700" }}>{cleanName}</td>
-                                  <td>
-                                    <span
-                                      className={`badge ${u.role_key === "ADMIN" || u.role_key === "DIRECTOR" || u.role_key === "G_DIRECTOR" || u.role_key === "HQ_HEAD"
-                                        ? "badge-red"
-                                        : u.role_key.startsWith("CENTER_")
-                                          ? "badge-blue"
-                                          : u.role_key === "TEAM_LEADER" || u.role_key === "MANAGER"
-                                            ? "badge-green"
-                                            : "badge-gray"
-                                        }`}
-                                      style={{ fontSize: "0.65rem" }}
-                                    >
-                                      {roleNames[u.role_key] || u.role_key}
-                                    </span>
+                                  <td style={{ textAlign: "center", verticalAlign: "middle", fontFamily: "var(--font-data)", fontWeight: "700" }}>{u.id}</td>
+                                  <td style={{ textAlign: "center", verticalAlign: "middle", fontWeight: "700" }}>{cleanName}</td>
+                                  <td style={{ textAlign: "center", verticalAlign: "middle" }}>
+                                    {renderRoleBadge(roleNames[u.role_key] || u.role_key, false)}
                                   </td>
-                                  <td style={{ fontFamily: "var(--font-data)" }}>{u.role_key}</td>
-                                  <td style={{ fontFamily: "var(--font-data)" }}>{new Date(u.created_at).toLocaleDateString()}</td>
-                                  <td style={{ textAlign: "center" }}>
+                                  <td style={{ textAlign: "center", verticalAlign: "middle", fontFamily: "var(--font-data)" }}>{u.role_key}</td>
+                                  <td style={{ textAlign: "center", verticalAlign: "middle", fontFamily: "var(--font-data)" }}>{new Date(u.created_at).toLocaleDateString()}</td>
+                                  <td style={{ textAlign: "center", verticalAlign: "middle" }}>
                                     {!isDirectoryUser ? (
                                       <button
                                         onClick={() => handleDeleteUser(u.id)}
