@@ -2091,7 +2091,7 @@ export const initialProjectsData = [
           { id: "X0-S1T3-1", title: "(공통)성과공유회", budget_2026: 50000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "김래림 연구원", pdca: { p: "완료", d: "대기", c: "대기", a: "대기" } },
           { id: "X0-S1T3-2", title: "(공통)성과공유회 (지산학 페스티벌 운영)", budget_2026: 50000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "김래림 연구원", pdca: { p: "완료", d: "대기", c: "대기", a: "대기" } },
           { id: "X0-S1T4-1", title: "(공통)운영경비(활동비)", budget_2026: 275000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "심현미 운영팀장", pdca: { p: "완료", d: "대기", c: "대기", a: "대기" } },
-          { id: "X0-S1T4-2", title: "(공통)간접비", budget_2026: 275000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "심현미 운영팀장", pdca: { p: "완료", d: "대기", c: "대기", a: "대기" } }
+          { id: "X0-S1T5-1", title: "(공통)간접비", budget_2026: 275000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "심현미 운영팀장", pdca: { p: "완료", d: "대기", c: "대기", a: "대기" } }
         ],
         budgetDetails: {
           "인건비": { budget_2026: 1440000000, spent_2026: 90000000, budget_2025_carry: 50000000, spent_2025_carry: 30000000 },
