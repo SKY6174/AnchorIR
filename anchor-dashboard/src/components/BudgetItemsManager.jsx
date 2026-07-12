@@ -269,7 +269,7 @@ export default function BudgetItemsManager({ projects, currentRole, onUpdateBudg
     const valInMillion = parseInt(rawValue || "0", 10);
     if (isNaN(valInMillion) || valInMillion < 0) {
       alert("올바른 숫자를 백만원 단위로 입력해 주세요.");
-      const detailYear = activeUnit.budgetDetails[bName]?.years?.[selectedYear] || {};
+      const detailYear = activeUnit.budgetDetails?.[bName]?.years?.[selectedYear] || {};
       setEditedBudgets(prev => ({
         ...prev,
         [bName]: {
@@ -281,7 +281,7 @@ export default function BudgetItemsManager({ projects, currentRole, onUpdateBudg
     }
 
     const byteValue = valInMillion * 1000000;
-    const detailYear = activeUnit.budgetDetails[bName]?.years?.[selectedYear] || {};
+    const detailYear = activeUnit.budgetDetails?.[bName]?.years?.[selectedYear] || {};
     const currentSpent = detailYear[field === "budget_main" ? "spent_main" : "spent_carry"] || 0;
 
     if (byteValue < currentSpent) {
@@ -297,11 +297,11 @@ export default function BudgetItemsManager({ projects, currentRole, onUpdateBudg
     }
 
     let newTotal = 0;
-    for (const key of Object.keys(activeUnit.budgetDetails)) {
+    for (const key of Object.keys(activeUnit.budgetDetails || {})) {
       if (key === bName) {
         newTotal += byteValue;
       } else {
-        const otherYearDet = activeUnit.budgetDetails[key].years?.[selectedYear] || {};
+        const otherYearDet = activeUnit.budgetDetails[key]?.years?.[selectedYear] || {};
         newTotal += (otherYearDet[field] || 0);
       }
     }
@@ -348,7 +348,7 @@ export default function BudgetItemsManager({ projects, currentRole, onUpdateBudg
     const parsedDetails = {};
 
     // 1. 모든 비목 데이터를 순회하며 정수 변환 및 유효성 검사 수행
-    for (const key of Object.keys(activeUnit.budgetDetails)) {
+    for (const key of Object.keys(activeUnit.budgetDetails || {})) {
       const rawMain = parseInt(editedBudgets[key]?.budget_main || "0", 10) * 1000000;
       const rawCarry = parseInt(editedBudgets[key]?.budget_carry || "0", 10) * 1000000;
 
@@ -357,8 +357,8 @@ export default function BudgetItemsManager({ projects, currentRole, onUpdateBudg
         return;
       }
 
-      const currentSpentMain = activeUnit.budgetDetails[key].years?.[selectedYear]?.spent_main || 0;
-      const currentSpentCarry = activeUnit.budgetDetails[key].years?.[selectedYear]?.spent_carry || 0;
+      const currentSpentMain = activeUnit.budgetDetails[key]?.years?.[selectedYear]?.spent_main || 0;
+      const currentSpentCarry = activeUnit.budgetDetails[key]?.years?.[selectedYear]?.spent_carry || 0;
 
       // 이미 집행된 실적 이하로 예산을 축소 배정하는 것을 방지하는 정합성 체크
       if (rawMain < currentSpentMain) {
@@ -404,7 +404,7 @@ export default function BudgetItemsManager({ projects, currentRole, onUpdateBudg
   // 서브탭 전환에 따른 차트 데이터 가공 (단위: 백만원)
   const chartData = activeUnit
     ? STANDARD_BUDGET_CATEGORIES.map(key => {
-      const detYear = activeUnit.budgetDetails[key]?.years?.[selectedYear] || {};
+      const detYear = activeUnit.budgetDetails?.[key]?.years?.[selectedYear] || {};
       if (subTab === "main") {
         return {
           name: key,
@@ -691,7 +691,7 @@ export default function BudgetItemsManager({ projects, currentRole, onUpdateBudg
                   </thead>
                   <tbody>
                     {STANDARD_BUDGET_CATEGORIES.map(bName => {
-                      const detail = activeUnit.budgetDetails[bName] || { years: {} };
+                      const detail = activeUnit.budgetDetails?.[bName] || { years: {} };
                       const yearDet = detail.years?.[selectedYear] || {};
 
                       // 본사업비 및 이월비 각각의 잔액 계산 (배정액 - 집행액)
