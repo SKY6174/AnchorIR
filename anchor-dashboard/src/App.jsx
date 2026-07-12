@@ -9725,17 +9725,17 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
   ];
 
   // ----------------------------------------------------
-  // (1) 5개년 총괄 데이터 동적 계산
+  // (1) 5개년 총괄 데이터 동적 계산 (단위: 백만원)
   // ----------------------------------------------------
   const TOTAL_INVESTMENT_5YEAR_DATA = allUnits.map((u) => {
     const unitTitle = u.id === "Common" ? "공통운영경비" : `${u.id}. ${u.title}`;
     
-    // 연도별 예산 총액 (억원 단위, {main, carry} 형태의 객체 반환)
+    // 연도별 예산 총액 (백만원 단위, {main, carry} 형태의 객체 반환)
     // 1~5차년도
     const annualTotals = [1, 2, 3, 4, 5].map((yr) => {
       return {
-        main: (u.years?.[yr]?.budget_main || 0) / 1e8,
-        carry: (u.years?.[yr]?.budget_carry || 0) / 1e8
+        main: (u.years?.[yr]?.budget_main || 0) / 1e6,
+        carry: (u.years?.[yr]?.budget_carry || 0) / 1e6
       };
     });
     // 5개년 총합
@@ -9763,8 +9763,8 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
             const cleanCarry = typeof cat.budget_carry === "string" 
               ? parseFloat(cat.budget_carry.replace(/,/g, "")) 
               : Number(cat.budget_carry || 0);
-            categoriesMap[matchedOrderCat][yr - 1].main += cleanBudget / 1e8;
-            categoriesMap[matchedOrderCat][yr - 1].carry += cleanCarry / 1e8;
+            categoriesMap[matchedOrderCat][yr - 1].main += cleanBudget / 1e6;
+            categoriesMap[matchedOrderCat][yr - 1].carry += cleanCarry / 1e6;
           }
         });
       });
@@ -9857,9 +9857,9 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
       uExt += (py.budget_external || 0) + (py.budget_carry_external || 0);
     });
 
-    const natKr = uNat / 1e8;
-    const cityKr = uCity / 1e8;
-    const extKr = uExt / 1e8;
+    const natKr = uNat / 1e6;
+    const cityKr = uCity / 1e6;
+    const extKr = uExt / 1e6;
     const sumKr = natKr + cityKr + extKr;
 
     // 단위과제 대로우의 비율은 100%로 고정
@@ -9899,9 +9899,9 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
           const cCity = catB * cityRatio + catBC * carryCityRatio;
           const cExt = catB * extRatio + catBC * carryExtRatio;
 
-          categoriesMap[matchedOrderCat].national += cNat / 1e8;
-          categoriesMap[matchedOrderCat].city += cCity / 1e8;
-          categoriesMap[matchedOrderCat].external += cExt / 1e8;
+          categoriesMap[matchedOrderCat].national += cNat / 1e6;
+          categoriesMap[matchedOrderCat].city += cCity / 1e6;
+          categoriesMap[matchedOrderCat].external += cExt / 1e6;
         }
       });
     });
@@ -9985,7 +9985,7 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
       <div className="table-panel">
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "0.75rem 1.25rem", background: "rgba(59, 130, 246, 0.05)", borderLeft: "4px solid var(--accent-color)", borderRadius: "4px", marginBottom: "1rem", fontSize: "0.8rem", color: "var(--text-secondary)", lineHeight: "1.4" }}>
           <span>💡 2차년도 사업비는 본사업비와 이월사업비로 구성되며, 타 연차는 본사업비만을 나타냄.</span>
-          <span style={{ fontWeight: "700", color: "var(--accent-color)" }}>(단위: 억원)</span>
+          <span style={{ fontWeight: "700", color: "var(--accent-color)" }}>(단위: 백만원)</span>
         </div>
         <table className="custom-table" style={{ fontSize: "0.8rem", width: "100%", borderCollapse: "collapse" }}>
           <thead>
@@ -10245,23 +10245,26 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
     return (
       <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
         {/* 요약 연차 정보 헤더 */}
-        <div style={{ padding: "0.5rem 0" }}>
-          <h4 style={{ fontSize: "1.1rem", fontWeight: "800", marginBottom: "0.3rem" }}>■ {targetYear}년도 예산</h4>
-          <div style={{ fontSize: "0.85rem", color: "var(--accent-color)", fontWeight: "700" }}>
-            ○ {annualTotalSum.toFixed(2)}억 원 (국비 {annualTotalNat.toFixed(2)}, 시비 {annualTotalCity.toFixed(2)}, 외부사업비 {annualTotalExt.toFixed(2)})
+        <div style={{ padding: "0.5rem 0", display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+          <div>
+            <h4 style={{ fontSize: "1.1rem", fontWeight: "800", marginBottom: "0.3rem" }}>■ {targetYear}년도 예산</h4>
+            <div style={{ fontSize: "0.85rem", color: "var(--accent-color)", fontWeight: "700" }}>
+              ○ {annualTotalSum.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0})}백만 원 (국비 {annualTotalNat.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0})}, 시비 {annualTotalCity.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0})}, 외부사업비 {annualTotalExt.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0})})
+            </div>
           </div>
+          <span style={{ fontSize: "0.8rem", fontWeight: "700", color: "var(--accent-color)" }}>(단위: 백만원)</span>
         </div>
 
         <div className="table-panel">
           <table className="custom-table" style={{ fontSize: "0.8rem", width: "100%", borderCollapse: "collapse" }}>
             <thead>
               <tr style={{ background: "rgba(255,255,255,0.02)" }}>
-                <th style={{ verticalAlign: "middle", textAlign: "left", paddingLeft: "1.5rem", borderBottom: "1px solid var(--border-color)", borderRight: "1px solid var(--border-color)" }}>구분</th>
-                <th style={{ textAlign: "right", paddingRight: "1rem" }}>국비</th>
-                <th style={{ textAlign: "right", paddingRight: "1rem" }}>시비</th>
-                <th style={{ textAlign: "right", paddingRight: "1rem" }}>외부사업비</th>
-                <th style={{ textAlign: "right", paddingRight: "1rem", fontWeight: "800", color: "var(--accent-color)" }}>합계</th>
-                <th style={{ textAlign: "center", paddingRight: "1.5rem" }}>비율 (%)</th>
+                <th style={{ verticalAlign: "middle", textAlign: "center", borderBottom: "1px solid var(--border-color)", borderRight: "1px solid rgba(255, 255, 255, 0.1)" }}>구분</th>
+                <th style={{ textAlign: "center", borderBottom: "1px solid var(--border-color)", borderRight: "1px solid rgba(255, 255, 255, 0.1)" }}>국비</th>
+                <th style={{ textAlign: "center", borderBottom: "1px solid var(--border-color)", borderRight: "1px solid rgba(255, 255, 255, 0.1)" }}>시비</th>
+                <th style={{ textAlign: "center", borderBottom: "1px solid var(--border-color)", borderRight: "1px solid rgba(255, 255, 255, 0.1)" }}>외부사업비</th>
+                <th style={{ textAlign: "center", borderBottom: "1px solid var(--border-color)", borderRight: "1px solid rgba(255, 255, 255, 0.1)", fontWeight: "800", color: "var(--accent-color)" }}>합계</th>
+                <th style={{ textAlign: "center", borderBottom: "1px solid var(--border-color)", borderRight: "none" }}>비율 (%)</th>
               </tr>
             </thead>
             <tbody>
@@ -10279,7 +10282,7 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
                         fontWeight: "700" 
                       }}
                     >
-                      <td style={{ paddingLeft: "1.5rem", color: u.id === "Common" ? "#fbbf24" : "inherit", borderRight: "1px solid var(--border-color)", display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                      <td style={{ paddingLeft: "1.5rem", color: u.id === "Common" ? "#fbbf24" : "inherit", borderRight: "1px solid rgba(255, 255, 255, 0.1)", display: "flex", alignItems: "center", gap: "0.5rem" }}>
                         {hasCategories && (
                           <span style={{ fontSize: "0.6rem", display: "inline-block", transform: isExpanded ? "rotate(90deg)" : "rotate(0deg)", transition: "transform 0.15s ease" }}>▶</span>
                         )}
@@ -10290,19 +10293,20 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
                           key={idx} 
                           style={{ 
                             textAlign: idx === 4 ? "center" : "right", 
-                            paddingRight: idx === 4 ? "1.5rem" : "1rem",
+                            paddingRight: idx === 4 ? "0" : "1rem",
                             fontWeight: (idx === 3 || idx === 4) ? "800" : "700",
-                            color: idx === 3 ? "var(--accent-color)" : "inherit"
+                            color: idx === 3 ? "var(--accent-color)" : "inherit",
+                            borderRight: idx === 4 ? "none" : "1px solid rgba(255, 255, 255, 0.1)"
                           }}
                         >
-                          {idx === 4 ? `${val.toFixed(0)}` : (val > 0 ? val.toFixed(2) : "-")}
+                          {idx === 4 ? `${val.toFixed(0)}` : (val > 0 ? val.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0}) : "-")}
                         </td>
                       ))}
                     </tr>
                     {/* 세부 비목 아코디언 로우 */}
                     {isExpanded && u.categories.map((cat, catIdx) => (
                       <tr key={`${u.id}-${catIdx}`} style={{ background: "rgba(0,0,0,0.25)", fontSize: "0.75rem", color: "var(--text-secondary)" }}>
-                        <td style={{ paddingLeft: "3rem", borderRight: "1px solid var(--border-color)" }}>
+                        <td style={{ paddingLeft: "3rem", borderRight: "1px solid rgba(255, 255, 255, 0.1)" }}>
                           {cat.name}
                         </td>
                         {cat.values.map((v, vIdx) => (
@@ -10310,10 +10314,11 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
                             key={vIdx} 
                             style={{ 
                               textAlign: vIdx === 4 ? "center" : "right", 
-                              paddingRight: vIdx === 4 ? "1.5rem" : "1rem" 
+                              paddingRight: vIdx === 4 ? "0" : "1rem",
+                              borderRight: vIdx === 4 ? "none" : "1px solid rgba(255, 255, 255, 0.1)"
                             }}
                           >
-                            {vIdx === 4 ? `${v.toFixed(1)}%` : (v > 0 ? v.toFixed(2) : "-")}
+                            {vIdx === 4 ? `${v.toFixed(1)}%` : (v > 0 ? v.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0}) : "-")}
                           </td>
                         ))}
                       </tr>
@@ -10324,44 +10329,44 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
 
               {/* 총 합계 요약 영역 */}
               <tr style={{ borderTop: "2px solid var(--accent-color)", background: "rgba(59, 130, 246, 0.05)", fontWeight: "800" }}>
-                <td style={{ paddingLeft: "1.5rem", borderRight: "1px solid var(--border-color)" }}>총 사업비</td>
-                <td style={{ textAlign: "right", paddingRight: "1rem" }}>{annualTotalNat.toFixed(2)}</td>
-                <td style={{ textAlign: "right", paddingRight: "1rem" }}>{annualTotalCity.toFixed(2)}</td>
-                <td style={{ textAlign: "right", paddingRight: "1rem" }}>{annualTotalExt.toFixed(2)}</td>
-                <td style={{ textAlign: "right", paddingRight: "1rem", color: "var(--accent-color)" }}>{annualTotalSum.toFixed(2)}</td>
-                <td style={{ textAlign: "center", paddingRight: "1.5rem" }}>100</td>
+                <td style={{ paddingLeft: "1.5rem", borderRight: "1px solid rgba(255, 255, 255, 0.1)" }}>총 사업비</td>
+                <td style={{ textAlign: "right", paddingRight: "1rem", borderRight: "1px solid rgba(255, 255, 255, 0.1)" }}>{annualTotalNat.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0})}</td>
+                <td style={{ textAlign: "right", paddingRight: "1rem", borderRight: "1px solid rgba(255, 255, 255, 0.1)" }}>{annualTotalCity.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0})}</td>
+                <td style={{ textAlign: "right", paddingRight: "1rem", borderRight: "1px solid rgba(255, 255, 255, 0.1)" }}>{annualTotalExt.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0})}</td>
+                <td style={{ textAlign: "right", paddingRight: "1rem", color: "var(--accent-color)", borderRight: "1px solid rgba(255, 255, 255, 0.1)" }}>{annualTotalSum.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0})}</td>
+                <td style={{ textAlign: "center", borderRight: "none" }}>100</td>
               </tr>
               <tr style={{ background: "rgba(255,255,255,0.02)", fontSize: "0.75rem", color: "var(--text-secondary)" }}>
-                <td style={{ paddingLeft: "3rem", borderRight: "1px solid var(--border-color)" }}>인건비</td>
-                <td style={{ textAlign: "right", paddingRight: "1rem" }}>{annualLaborNat.toFixed(2)}</td>
-                <td style={{ textAlign: "right", paddingRight: "1rem" }}>{annualLaborCity.toFixed(2)}</td>
-                <td style={{ textAlign: "right", paddingRight: "1rem" }}>{annualLaborExt.toFixed(2)}</td>
-                <td style={{ textAlign: "right", paddingRight: "1rem" }}>{annualLaborSum.toFixed(2)}</td>
-                <td style={{ textAlign: "center", paddingRight: "1.5rem" }}>{annualLaborRatio.toFixed(1)}%</td>
+                <td style={{ paddingLeft: "3rem", borderRight: "1px solid rgba(255, 255, 255, 0.1)" }}>인건비</td>
+                <td style={{ textAlign: "right", paddingRight: "1rem", borderRight: "1px solid rgba(255, 255, 255, 0.1)" }}>{annualLaborNat.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0})}</td>
+                <td style={{ textAlign: "right", paddingRight: "1rem", borderRight: "1px solid rgba(255, 255, 255, 0.1)" }}>{annualLaborCity.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0})}</td>
+                <td style={{ textAlign: "right", paddingRight: "1rem", borderRight: "1px solid rgba(255, 255, 255, 0.1)" }}>{annualLaborExt.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0})}</td>
+                <td style={{ textAlign: "right", paddingRight: "1rem", borderRight: "1px solid rgba(255, 255, 255, 0.1)" }}>{annualLaborSum.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0})}</td>
+                <td style={{ textAlign: "center", borderRight: "none" }}>{annualLaborRatio.toFixed(1)}%</td>
               </tr>
               <tr style={{ background: "rgba(255,255,255,0.02)", fontSize: "0.75rem", color: "var(--text-secondary)" }}>
-                <td style={{ paddingLeft: "3rem", borderRight: "1px solid var(--border-color)" }}>그 밖의 사업운영비</td>
-                <td style={{ textAlign: "right", paddingRight: "1rem" }}>{annualOpNat.toFixed(2)}</td>
-                <td style={{ textAlign: "right", paddingRight: "1rem" }}>{annualOpCity.toFixed(2)}</td>
-                <td style={{ textAlign: "right", paddingRight: "1rem" }}>{annualOpExt.toFixed(2)}</td>
-                <td style={{ textAlign: "right", paddingRight: "1rem" }}>{annualOpSum.toFixed(2)}</td>
-                <td style={{ textAlign: "center", paddingRight: "1.5rem" }}>{annualOpRatio.toFixed(1)}%</td>
+                <td style={{ paddingLeft: "3rem", borderRight: "1px solid rgba(255, 255, 255, 0.1)" }}>그 밖의 사업운영비</td>
+                <td style={{ textAlign: "right", paddingRight: "1rem", borderRight: "1px solid rgba(255, 255, 255, 0.1)" }}>{annualOpNat.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0})}</td>
+                <td style={{ textAlign: "right", paddingRight: "1rem", borderRight: "1px solid rgba(255, 255, 255, 0.1)" }}>{annualOpCity.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0})}</td>
+                <td style={{ textAlign: "right", paddingRight: "1rem", borderRight: "1px solid rgba(255, 255, 255, 0.1)" }}>{annualOpExt.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0})}</td>
+                <td style={{ textAlign: "right", paddingRight: "1rem", borderRight: "1px solid rgba(255, 255, 255, 0.1)" }}>{annualOpSum.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0})}</td>
+                <td style={{ textAlign: "center", borderRight: "none" }}>{annualOpRatio.toFixed(1)}%</td>
               </tr>
               <tr style={{ background: "rgba(255,255,255,0.02)", fontSize: "0.75rem", color: "var(--text-secondary)" }}>
-                <td style={{ paddingLeft: "3rem", borderRight: "1px solid var(--border-color)" }}>간접비</td>
-                <td style={{ textAlign: "right", paddingRight: "1rem" }}>{annualIndNat.toFixed(2)}</td>
-                <td style={{ textAlign: "right", paddingRight: "1rem" }}>{annualIndCity.toFixed(2)}</td>
-                <td style={{ textAlign: "right", paddingRight: "1rem" }}>{annualIndExt.toFixed(2)}</td>
-                <td style={{ textAlign: "right", paddingRight: "1rem" }}>{annualIndSum.toFixed(2)}</td>
-                <td style={{ textAlign: "center", paddingRight: "1.5rem" }}>{annualIndRatio.toFixed(1)}%</td>
+                <td style={{ paddingLeft: "3rem", borderRight: "1px solid rgba(255, 255, 255, 0.1)" }}>간접비</td>
+                <td style={{ textAlign: "right", paddingRight: "1rem", borderRight: "1px solid rgba(255, 255, 255, 0.1)" }}>{annualIndNat.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0})}</td>
+                <td style={{ textAlign: "right", paddingRight: "1rem", borderRight: "1px solid rgba(255, 255, 255, 0.1)" }}>{annualIndCity.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0})}</td>
+                <td style={{ textAlign: "right", paddingRight: "1rem", borderRight: "1px solid rgba(255, 255, 255, 0.1)" }}>{annualIndExt.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0})}</td>
+                <td style={{ textAlign: "right", paddingRight: "1rem", borderRight: "1px solid rgba(255, 255, 255, 0.1)" }}>{annualIndSum.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0})}</td>
+                <td style={{ textAlign: "center", borderRight: "none" }}>{annualIndRatio.toFixed(1)}%</td>
               </tr>
               <tr style={{ borderTop: "1px solid rgba(255,255,255,0.1)", background: "rgba(16, 185, 129, 0.05)", fontWeight: "800" }}>
-                <td style={{ paddingLeft: "1.5rem", borderRight: "1px solid var(--border-color)", color: "#10b981" }}>총사업비 중 운영비</td>
-                <td style={{ textAlign: "right", paddingRight: "1rem", color: "#10b981" }}>{annualOnlyOpNat.toFixed(2)}</td>
-                <td style={{ textAlign: "right", paddingRight: "1rem", color: "#10b981" }}>{annualOnlyOpCity.toFixed(2)}</td>
-                <td style={{ textAlign: "right", paddingRight: "1rem", color: "#10b981" }}>{annualOnlyOpExt.toFixed(2)}</td>
-                <td style={{ textAlign: "right", paddingRight: "1rem", color: "#10b981" }}>{annualOnlyOpSum.toFixed(2)}</td>
-                <td style={{ textAlign: "center", paddingRight: "1.5rem", color: "#10b981" }}>{annualOnlyOpRatio.toFixed(1)}%</td>
+                <td style={{ paddingLeft: "1.5rem", borderRight: "1px solid rgba(255, 255, 255, 0.1)", color: "#10b981" }}>총사업비 중 운영비</td>
+                <td style={{ textAlign: "right", paddingRight: "1rem", color: "#10b981", borderRight: "1px solid rgba(255, 255, 255, 0.1)" }}>{annualOnlyOpNat.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0})}</td>
+                <td style={{ textAlign: "right", paddingRight: "1rem", color: "#10b981", borderRight: "1px solid rgba(255, 255, 255, 0.1)" }}>{annualOnlyOpCity.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0})}</td>
+                <td style={{ textAlign: "right", paddingRight: "1rem", color: "#10b981", borderRight: "1px solid rgba(255, 255, 255, 0.1)" }}>{annualOnlyOpExt.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0})}</td>
+                <td style={{ textAlign: "right", paddingRight: "1rem", color: "#10b981", borderRight: "1px solid rgba(255, 255, 255, 0.1)" }}>{annualOnlyOpSum.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0})}</td>
+                <td style={{ textAlign: "center", color: "#10b981", borderRight: "none" }}>{annualOnlyOpRatio.toFixed(1)}%</td>
               </tr>
             </tbody>
           </table>
