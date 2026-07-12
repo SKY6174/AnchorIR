@@ -8343,8 +8343,8 @@ export default function App() {
             {mgmtSubTab === "programs" && (
               <div>
                 <div style={{ marginBottom: "1.2rem", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                    <span style={{ fontSize: "0.8rem", fontWeight: "700", color: "var(--text-secondary)" }}>단위과제 필터:</span>
+                  <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", flexShrink: 0 }}>
+                    <span style={{ fontSize: "0.8rem", fontWeight: "700", color: "var(--text-secondary)", whiteSpace: "nowrap" }}>단위과제 필터:</span>
                     <select
                       className="user-selector"
                       value={assignFilterUnitId}
@@ -8356,7 +8356,9 @@ export default function App() {
                         background: "var(--panel-bg)",
                         border: "1px solid var(--border-color)",
                         color: "var(--text-primary)",
-                        outline: "none"
+                        outline: "none",
+                        width: "280px",
+                        textOverflow: "ellipsis"
                       }}
                     >
                       <option value="all" style={{ background: "var(--panel-bg)", color: "var(--text-primary)" }}>전체 단위과제</option>
@@ -8393,19 +8395,19 @@ export default function App() {
                   <table className="custom-table" style={{ fontSize: "0.8rem", tableLayout: "fixed", width: "100%" }}>
                     <thead>
                       <tr>
-                        <th rowSpan={2} style={{ width: "18%" }}>단위과제</th>
-                        <th rowSpan={2} style={{ width: "95px" }}>프로그램 ID</th>
-                        <th rowSpan={2} style={{ width: "28%" }}>프로그램명</th>
-                        <th rowSpan={2} style={{ width: "105px" }}>담당부서</th>
-                        <th rowSpan={2} style={{ width: "175px" }}>담당연구원</th>
-                        <th colSpan={4} style={{ textAlign: "center", width: "180px" }}>진행 단계(PDCA)</th>
-                        <th rowSpan={2} style={{ width: "85px" }}>작업</th>
+                        <th rowSpan={2} style={{ width: "18%", textAlign: "center", verticalAlign: "middle" }}>단위과제</th>
+                        <th rowSpan={2} style={{ width: "9%", textAlign: "center", verticalAlign: "middle" }}>프로그램 ID</th>
+                        <th rowSpan={2} style={{ width: "22%", textAlign: "center", verticalAlign: "middle" }}>프로그램명</th>
+                        <th rowSpan={2} style={{ width: "10%", textAlign: "center", verticalAlign: "middle" }}>담당부서</th>
+                        <th rowSpan={2} style={{ width: "19%", textAlign: "center", verticalAlign: "middle" }}>담당연구원</th>
+                        <th colSpan={4} style={{ textAlign: "center", width: "15%", verticalAlign: "middle" }}>진행 단계(PDCA)</th>
+                        <th rowSpan={2} style={{ width: "7%", textAlign: "center", verticalAlign: "middle" }}>작업</th>
                       </tr>
                       <tr>
-                        <th style={{ textAlign: "center", width: "45px" }}>P</th>
-                        <th style={{ textAlign: "center", width: "45px" }}>D</th>
-                        <th style={{ textAlign: "center", width: "45px" }}>C</th>
-                        <th style={{ textAlign: "center", width: "45px" }}>A</th>
+                        <th style={{ textAlign: "center", width: "3.75%" }}>P</th>
+                        <th style={{ textAlign: "center", width: "3.75%" }}>D</th>
+                        <th style={{ textAlign: "center", width: "3.75%" }}>C</th>
+                        <th style={{ textAlign: "center", width: "3.75%" }}>A</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -8436,13 +8438,13 @@ export default function App() {
 
                             return (
                               <tr key={prog.id}>
-                                <td style={{ fontWeight: "700" }}>{u.id === "Common" || u.id === "X0" ? "공통경비" : `${u.id}. ${u.title}`}</td>
-                                <td style={{ fontFamily: "var(--font-data)", fontWeight: "700" }}>{prog.id}</td>
-                                <td>{prog.title}</td>
-                                <td style={{ color: "var(--accent-color)", fontWeight: "700" }}>{dept}</td>
-                                <td>
+                                <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle", fontWeight: "700", wordBreak: "break-all" }}>{u.id === "Common" || u.id === "X0" ? "공통경비" : `${u.id}. ${u.title}`}</td>
+                                <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle", fontFamily: "var(--font-data)", fontWeight: "700" }}>{prog.id}</td>
+                                <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle", wordBreak: "break-all" }}>{prog.title}</td>
+                                <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle", color: "var(--accent-color)", fontWeight: "700" }}>{dept}</td>
+                                <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle" }}>
                                   {currentRole.rank <= 2 ? (
-                                    <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
+                                    <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem", alignItems: "center", justifyContent: "center" }}>
                                       {/* 공동배정 체크박스 */}
                                       <label style={{ display: "flex", alignItems: "center", gap: "0.25rem", fontSize: "0.7rem", cursor: "pointer", color: "var(--text-secondary)" }}>
                                         <input
@@ -8570,11 +8572,11 @@ export default function App() {
                                     <span>{formatAssignee(prog.assignees?.[selectedYear] !== undefined ? prog.assignees[selectedYear] : prog.assignee)}</span>
                                   )}
                                 </td>
-                                <td style={{ textAlign: "center", color: prog.pdca.p === "완료" ? "var(--success-color)" : "inherit", fontWeight: "700" }}>{prog.pdca.p}</td>
-                                <td style={{ textAlign: "center", color: prog.pdca.d === "완료" ? "var(--success-color)" : "inherit", fontWeight: "700" }}>{prog.pdca.d}</td>
-                                <td style={{ textAlign: "center", color: prog.pdca.c === "완료" ? "var(--success-color)" : "inherit", fontWeight: "700" }}>{prog.pdca.c}</td>
-                                <td style={{ textAlign: "center", color: prog.pdca.a === "완료" ? "var(--success-color)" : "inherit", fontWeight: "700" }}>{prog.pdca.a}</td>
-                                <td>
+                                <td style={{ textAlign: "center", verticalAlign: "middle", color: prog.pdca.p === "완료" ? "var(--success-color)" : "inherit", fontWeight: "700" }}>{prog.pdca.p}</td>
+                                <td style={{ textAlign: "center", verticalAlign: "middle", color: prog.pdca.d === "완료" ? "var(--success-color)" : "inherit", fontWeight: "700" }}>{prog.pdca.d}</td>
+                                <td style={{ textAlign: "center", verticalAlign: "middle", color: prog.pdca.c === "완료" ? "var(--success-color)" : "inherit", fontWeight: "700" }}>{prog.pdca.c}</td>
+                                <td style={{ textAlign: "center", verticalAlign: "middle", color: prog.pdca.a === "완료" ? "var(--success-color)" : "inherit", fontWeight: "700" }}>{prog.pdca.a}</td>
+                                <td style={{ textAlign: "center", verticalAlign: "middle" }}>
                                   {currentRole.rank <= 2 ? (
                                     <button
                                       className="btn-primary"
