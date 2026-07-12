@@ -8251,48 +8251,48 @@ export default function App() {
                 </div>
 
                 <div className="table-panel">
-                  <table className="custom-table" style={{ fontSize: "0.8rem" }}>
+                  <table className="custom-table" style={{ fontSize: "0.8rem", width: "100%" }}>
                     <thead>
                       <tr>
                         <th
                           onClick={() => requestMemberSort("dept")}
-                          style={{ cursor: "pointer", userSelect: "none" }}
+                          style={{ cursor: "pointer", userSelect: "none", textAlign: "center", verticalAlign: "middle" }}
                           onMouseEnter={(e) => e.target.style.color = "var(--accent-color)"}
                           onMouseLeave={(e) => e.target.style.color = ""}
                         >
                           소속 부서 {memberSortConfig.key === "dept" ? (memberSortConfig.direction === "asc" ? " ▲" : " ▼") : " ⇅"}
                         </th>
-                        <th>성명</th>
+                        <th style={{ textAlign: "center", verticalAlign: "middle" }}>성명</th>
                         <th
                           onClick={() => requestMemberSort("role")}
-                          style={{ cursor: "pointer", userSelect: "none" }}
+                          style={{ cursor: "pointer", userSelect: "none", textAlign: "center", verticalAlign: "middle" }}
                           onMouseEnter={(e) => e.target.style.color = "var(--accent-color)"}
                           onMouseLeave={(e) => e.target.style.color = ""}
                         >
                           직책 {memberSortConfig.key === "role" ? (memberSortConfig.direction === "asc" ? " ▲" : " ▼") : " ⇅"}
                         </th>
-                        <th>직급/직위</th>
-                        <th>이메일</th>
-                        <th>교내 전화</th>
-                        <th>휴대전화</th>
+                        <th style={{ textAlign: "center", verticalAlign: "middle" }}>직급/직위</th>
+                        <th style={{ textAlign: "center", verticalAlign: "middle" }}>이메일</th>
+                        <th style={{ textAlign: "center", verticalAlign: "middle" }}>교내 전화</th>
+                        <th style={{ textAlign: "center", verticalAlign: "middle" }}>휴대전화</th>
                         <th
                           onClick={() => requestMemberSort("startDate")}
-                          style={{ cursor: "pointer", userSelect: "none" }}
+                          style={{ cursor: "pointer", userSelect: "none", textAlign: "center", verticalAlign: "middle" }}
                           onMouseEnter={(e) => e.target.style.color = "var(--accent-color)"}
                           onMouseLeave={(e) => e.target.style.color = ""}
                         >
                           시작일 {memberSortConfig.key === "startDate" ? (memberSortConfig.direction === "asc" ? " ▲" : " ▼") : " ⇅"}
                         </th>
-                        <th>종료일</th>
+                        <th style={{ textAlign: "center", verticalAlign: "middle" }}>종료일</th>
                         <th
                           onClick={() => requestMemberSort("status")}
-                          style={{ cursor: "pointer", userSelect: "none" }}
+                          style={{ cursor: "pointer", userSelect: "none", textAlign: "center", verticalAlign: "middle" }}
                           onMouseEnter={(e) => e.target.style.color = "var(--accent-color)"}
                           onMouseLeave={(e) => e.target.style.color = ""}
                         >
                           참여 여부 {memberSortConfig.key === "status" ? (memberSortConfig.direction === "asc" ? " ▲" : " ▼") : " ⇅"}
                         </th>
-                        {currentRole.rank <= 2 && <th>관리</th>}
+                        {currentRole.rank <= 2 && <th style={{ textAlign: "center", verticalAlign: "middle" }}>관리</th>}
                       </tr>
                     </thead>
                     <tbody>
@@ -8653,15 +8653,15 @@ export default function App() {
                     <span style={{ fontSize: "0.65rem", color: "var(--text-secondary)" }}>관리자용 데모 및 시스템 고유 계정</span>
                   </div>
                   <div className="table-panel" style={{ maxHeight: "250px", overflowY: "auto" }}>
-                    <table className="custom-table" style={{ fontSize: "0.75rem", width: "100%" }}>
+                    <table className="custom-table" style={{ fontSize: "0.75rem", tableLayout: "fixed", width: "100%" }}>
                       <thead>
                         <tr>
-                          <th style={{ textAlign: "center", verticalAlign: "middle" }}>아이디</th>
-                          <th style={{ textAlign: "center", verticalAlign: "middle" }}>이름</th>
-                          <th style={{ textAlign: "center", verticalAlign: "middle" }}>역할</th>
-                          <th style={{ textAlign: "center", verticalAlign: "middle" }}>역할키</th>
-                          <th style={{ textAlign: "center", verticalAlign: "middle" }}>시작일</th>
-                          <th style={{ width: "100px", textAlign: "center", verticalAlign: "middle" }}>속성</th>
+                          <th style={{ width: "25%", textAlign: "center", verticalAlign: "middle" }}>아이디</th>
+                          <th style={{ width: "12%", textAlign: "center", verticalAlign: "middle" }}>이름</th>
+                          <th style={{ width: "15%", textAlign: "center", verticalAlign: "middle" }}>역할</th>
+                          <th style={{ width: "18%", textAlign: "center", verticalAlign: "middle" }}>역할키</th>
+                          <th style={{ width: "15%", textAlign: "center", verticalAlign: "middle" }}>시작일</th>
+                          <th style={{ width: "15%", textAlign: "center", verticalAlign: "middle" }}>속성</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -8715,15 +8715,15 @@ export default function App() {
                     <span style={{ fontSize: "0.65rem", color: "var(--text-secondary)" }}>인사 주소록 기반 가입 계정</span>
                   </div>
                   <div className="table-panel" style={{ maxHeight: "300px", overflowY: "auto" }}>
-                    <table className="custom-table" style={{ fontSize: "0.75rem", width: "100%" }}>
+                    <table className="custom-table" style={{ fontSize: "0.75rem", tableLayout: "fixed", width: "100%" }}>
                       <thead>
                         <tr>
-                          <th style={{ textAlign: "center", verticalAlign: "middle" }}>아이디</th>
-                          <th style={{ textAlign: "center", verticalAlign: "middle" }}>이름</th>
-                          <th style={{ textAlign: "center", verticalAlign: "middle" }}>역할</th>
-                          <th style={{ textAlign: "center", verticalAlign: "middle" }}>역할키</th>
-                          <th style={{ textAlign: "center", verticalAlign: "middle" }}>시작일</th>
-                          <th style={{ width: "100px", textAlign: "center", verticalAlign: "middle" }}>관리</th>
+                          <th style={{ width: "25%", textAlign: "center", verticalAlign: "middle" }}>아이디</th>
+                          <th style={{ width: "12%", textAlign: "center", verticalAlign: "middle" }}>이름</th>
+                          <th style={{ width: "15%", textAlign: "center", verticalAlign: "middle" }}>역할</th>
+                          <th style={{ width: "18%", textAlign: "center", verticalAlign: "middle" }}>역할키</th>
+                          <th style={{ width: "15%", textAlign: "center", verticalAlign: "middle" }}>시작일</th>
+                          <th style={{ width: "15%", textAlign: "center", verticalAlign: "middle" }}>관리</th>
                         </tr>
                       </thead>
                       <tbody>

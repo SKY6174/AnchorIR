@@ -23,7 +23,7 @@ export default function CenterOrgChartManager() {
       tasks: ["6개 센터 간 협업 과제 및 마일스톤 통합 관리", "집행 실적 정기 검토 및 사업계획 변경 1차 심사", "실무 부서 애로사항 해결 및 단장 보좌"]
     },
     operation: {
-      title: "사업운영팀 (심현미 팀장 & 연구원 4명)",
+      title: "사업운영팀 (심현미 운영팀장 & 연구원 4명)",
       desc: "사업단 총괄 지원, 예산 집행, 성과 지표 정기 모니터링 실무팀",
       tasks: ["사업비 정산, 지출 승인 및 예산 관리 총괄", "교육부 공통/자율 지표 실적 수집 및 통계 관리", "회의결과 등록, 상장/이수증 발급 및 대시보드 관리"]
     },
@@ -237,8 +237,10 @@ export default function CenterOrgChartManager() {
                   left: "calc(50% + 180px)",
                   width: "200px",
                   padding: "0.75rem",
-                  background: "rgba(132, 204, 22, 0.24)",
-                  border: hoveredNode === "operation" ? "1.5px solid #84cc16" : "1px solid rgba(132, 204, 22, 0.3)",
+                  background: "var(--operation-bg)",
+                  border: hoveredNode === "operation" 
+                    ? "1.5px solid var(--operation-border-hover)" 
+                    : "1px solid var(--operation-border)",
                   boxShadow: hoveredNode === "operation" ? "0 0 15px rgba(132, 204, 22, 0.25)" : "0 4px 15px rgba(0,0,0,0.2)",
                   borderRadius: "8px",
                   textAlign: "center",
@@ -248,10 +250,10 @@ export default function CenterOrgChartManager() {
                   transform: hoveredNode === "operation" ? "scale(1.03)" : "scale(1)"
                 }}
               >
-                <h4 style={{ margin: 0, fontSize: "0.85rem", fontWeight: "900", color: "#a3e635" }}>사업운영팀 (지원)</h4>
+                <h4 style={{ margin: 0, fontSize: "0.85rem", fontWeight: "900", color: "var(--operation-text)" }}>사업운영팀 (지원)</h4>
                 <div style={{ fontSize: "0.72rem", color: "var(--text-secondary)", marginTop: "0.2rem", lineHeight: "1.3" }}>
-                  <strong>심현미 팀장</strong>
-                  <span style={{ display: "block", fontSize: "0.68rem", color: "var(--text-tertiary)", marginTop: "0.1rem" }}>연구원 4명</span>
+                  <strong style={{ color: "var(--operation-text)" }}>심현미 운영팀장</strong>
+                  <span style={{ display: "block", fontSize: "0.68rem", color: "var(--text-secondary)", opacity: 0.8, marginTop: "0.1rem" }}>연구원 4명</span>
                 </div>
               </div>
             </div>
@@ -450,7 +452,7 @@ export default function CenterOrgChartManager() {
               }}
             >
               <div style={{ fontSize: "0.7rem", fontWeight: "800", color: "#60a5fa", background: "rgba(37, 99, 235, 0.15)", padding: "0.15rem 0.3rem", borderRadius: "4px", display: "inline-block", marginBottom: "0.4rem" }}>
-                B1/B3/B4과제
+                B1/B3/B4
               </div>
               <h5 style={{ margin: 0, fontSize: "0.85rem", fontWeight: "900", color: "var(--text-primary)" }}>기업협업센터</h5>
               <div style={{ fontSize: "0.75rem", fontWeight: "800", color: "var(--text-secondary)", marginTop: "0.3rem" }}>김기범 센터장</div>

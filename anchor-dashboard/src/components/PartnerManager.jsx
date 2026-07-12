@@ -583,37 +583,37 @@ export default function PartnerManager({ selectedYear }) {
 
       {/* 4. 파트너 대장 테이블 */}
       <div className="glass-card" style={{ padding: "0.5rem", overflowX: "auto" }}>
-        <table className="mini-table" style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.85rem", textAlign: "left" }}>
+        <table className="mini-table" style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.85rem", textAlign: "center" }}>
           <thead>
             <tr style={{ borderBottom: "1px solid var(--border-color-dark)", color: "var(--text-secondary)" }}>
               <th 
                 onClick={() => handleSort("name")}
-                style={{ padding: "0.75rem 1rem", cursor: "pointer", userSelect: "none" }}
+                style={{ padding: "0.75rem 1rem", cursor: "pointer", userSelect: "none", textAlign: "center", verticalAlign: "middle" }}
               >
                 기관명{renderSortIcon("name")}
               </th>
               <th 
                 onClick={() => handleSort("category")}
-                style={{ padding: "0.75rem 1rem", cursor: "pointer", userSelect: "none" }}
+                style={{ padding: "0.75rem 1rem", cursor: "pointer", userSelect: "none", textAlign: "center", verticalAlign: "middle" }}
               >
                 분류{renderSortIcon("category")}
               </th>
               <th 
                 onClick={() => handleSort("sub_category")}
-                style={{ padding: "0.75rem 1rem", cursor: "pointer", userSelect: "none" }}
+                style={{ padding: "0.75rem 1rem", cursor: "pointer", userSelect: "none", textAlign: "center", verticalAlign: "middle" }}
               >
                 세부분류{renderSortIcon("sub_category")}
               </th>
               <th 
                 onClick={() => handleSort("location")}
-                style={{ padding: "0.75rem 1rem", cursor: "pointer", userSelect: "none" }}
+                style={{ padding: "0.75rem 1rem", cursor: "pointer", userSelect: "none", textAlign: "center", verticalAlign: "middle" }}
               >
                 지역{renderSortIcon("location")}
               </th>
-              <th style={{ padding: "0.75rem 1rem" }}>협력 분야</th>
-              <th style={{ padding: "0.75rem 1rem" }}>담당자 (연락처)</th>
-              <th style={{ padding: "0.75rem 1rem" }}>주요 성과 / 메모</th>
-              <th style={{ padding: "0.75rem 1rem", textAlign: "center" }}>제어</th>
+              <th style={{ padding: "0.75rem 1rem", textAlign: "center", verticalAlign: "middle" }}>협력 분야</th>
+              <th style={{ padding: "0.75rem 1rem", textAlign: "center", verticalAlign: "middle" }}>담당자 (연락처)</th>
+              <th style={{ padding: "0.75rem 1rem", textAlign: "center", verticalAlign: "middle" }}>주요 성과 / 메모</th>
+              <th style={{ padding: "0.75rem 1rem", textAlign: "center", verticalAlign: "middle" }}>제어</th>
             </tr>
           </thead>
           <tbody>
@@ -628,8 +628,8 @@ export default function PartnerManager({ selectedYear }) {
                   }}
                   className="hover-row"
                 >
-                  <td style={{ padding: "0.85rem 1rem", fontWeight: "800" }}>{p.name}</td>
-                  <td style={{ padding: "0.85rem 1rem" }}>
+                  <td style={{ padding: "0.85rem 1rem", fontWeight: "800", textAlign: "center", verticalAlign: "middle" }}>{p.name}</td>
+                  <td style={{ padding: "0.85rem 1rem", textAlign: "center", verticalAlign: "middle" }}>
                     <span className={`badge ${
                       p.category === "대학" ? "badge-blue" :
                       p.category === "산업체" ? "badge-orange" :
@@ -639,12 +639,12 @@ export default function PartnerManager({ selectedYear }) {
                       {p.category}
                     </span>
                   </td>
-                  <td style={{ padding: "0.85rem 1rem", color: "var(--text-secondary)" }}>
+                  <td style={{ padding: "0.85rem 1rem", color: "var(--text-secondary)", textAlign: "center", verticalAlign: "middle" }}>
                     {p.sub_category || "-"}
                   </td>
-                  <td style={{ padding: "0.85rem 1rem" }}>{p.location}</td>
-                  <td style={{ padding: "0.85rem 1rem" }}>
-                    <div style={{ display: "flex", gap: "0.3rem", flexWrap: "wrap", maxWidth: "240px" }}>
+                  <td style={{ padding: "0.85rem 1rem", textAlign: "center", verticalAlign: "middle" }}>{p.location}</td>
+                  <td style={{ padding: "0.85rem 1rem", textAlign: "center", verticalAlign: "middle" }}>
+                    <div style={{ display: "flex", gap: "0.3rem", flexWrap: "wrap", maxWidth: "240px", justifyContent: "center", margin: "0 auto" }}>
                       {(p.sectors || []).map((sec) => (
                         <span key={sec} className="badge-tag">
                           {sec}
@@ -653,9 +653,9 @@ export default function PartnerManager({ selectedYear }) {
                       {(p.sectors || []).length === 0 && <span style={{ color: "var(--text-secondary)" }}>-</span>}
                     </div>
                   </td>
-                  <td style={{ padding: "0.85rem 1rem" }}>
+                  <td style={{ padding: "0.85rem 1rem", textAlign: "center", verticalAlign: "middle" }}>
                     {p.contact_person ? (
-                      <div>
+                      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
                         <span style={{ fontWeight: "700" }}>{p.contact_person}</span>
                         {p.contact_phone && (
                           <span style={{ display: "block", fontSize: "0.75rem", color: "var(--text-secondary)" }}>
@@ -667,10 +667,10 @@ export default function PartnerManager({ selectedYear }) {
                       "-"
                     )}
                   </td>
-                  <td style={{ padding: "0.85rem 1rem", maxWidth: "250px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", color: "var(--text-secondary)" }} title={p.remarks}>
+                  <td style={{ padding: "0.85rem 1rem", maxWidth: "250px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", color: "var(--text-secondary)", textAlign: "center", verticalAlign: "middle" }} title={p.remarks}>
                     {p.remarks || "-"}
                   </td>
-                  <td style={{ padding: "0.85rem 1rem", textAlign: "center" }}>
+                  <td style={{ padding: "0.85rem 1rem", textAlign: "center", verticalAlign: "middle" }}>
                     <div style={{ display: "flex", gap: "0.5rem", justifyContent: "center" }}>
                       <button
                         onClick={(e) => { e.stopPropagation(); openEditModal(p); }}
