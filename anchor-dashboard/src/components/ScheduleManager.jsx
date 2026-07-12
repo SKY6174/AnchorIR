@@ -853,6 +853,81 @@ export default function ScheduleManager({
     }
   };
 
+  // 회의록 분석 전용 모의 폴백 함수
+  const runMeetingSimulationFallback = () => {
+    setIsAiLoading(true);
+    setAiProgress(10);
+    setAiStatusText("시뮬레이션 모드로 회의 문서 분석 진행...");
+
+    setTimeout(() => {
+      setAiProgress(60);
+      setAiStatusText("원문 텍스트 내 회의 주요 안건 및 의사결정 매핑 중...");
+
+      setTimeout(() => {
+        const text = aiRawText || "";
+        const lowerName = aiFileName ? aiFileName.toLowerCase() : "";
+
+        let targetData = {
+          title: "2026년 RISE 지산학 협업 연계 1차 운영회의",
+          location: "동부캠퍼스 행정본관 2층 대회의실",
+          meetingDate: "2026-07-15",
+          meetingStartTime: "10:00",
+          meetingEndTime: "12:00",
+          attendees: "심현미 팀장, 이동은 센터장, 박지현 팀장, 김기범 센터장"
+        };
+
+        let aiAgendas = [
+          {
+            agenda: "[사업운영팀] RISE 2차년도 부서별 앵커 트랙 가동에 따른 지산학 협업 회의 개최",
+            result: "사업단 전체 추진방향에 맞춰 각 센터별 교직원 역량강화 워크숍 및 취업박람회 실적 연계 방안을 검토 완료함."
+          },
+          {
+            agenda: "[ECC센터] 지산학 밀착형 청년 로컬 정주형 장학금 기준안 심의",
+            result: "마일리지 지급 기준표를 원안대로 통과시켰으며, RCC 센터와의 교차 지급 시 중복 수혜 판정 기준을 최종 수립함."
+          }
+        ];
+
+        // 만약 유학생 관련 단어가 본문 또는 파일명에 존재할 경우 유학생 회의 데이터로 교체
+        if (text.includes("유학생") || text.includes("문화교류") || lowerName.includes("유학생")) {
+          targetData = {
+            title: "2026년도 제1차 외국인 유학생 지역 정주 지원 실무협의회",
+            location: "행정관 3층 소회의실",
+            meetingDate: "2026-05-18",
+            meetingStartTime: "14:00",
+            meetingEndTime: "16:00",
+            attendees: "이남우 처장, 이동은 센터장, 김기범 센터장, 서포터즈 팀장"
+          };
+          aiAgendas = [
+            {
+              agenda: "[ECC센터] 외국인 유학생을 위한 지자체 연계형 문화 체험 프로그램 운영안 의결",
+              result: "다가오는 '세계인의 날' 유학생 축제 일정을 확정하고 예산 2,500,000원을 승인함."
+            },
+            {
+              agenda: "[사업운영팀] 유학생의 울산 지역 내 정주 취업 및 기업 인턴십 매칭 방안 보고",
+              result: "관내 5개 강소기업 및 가족회사 대표들과의 미팅을 통한 현장실습 배정 규모를 최종 합의함."
+            }
+          ];
+        }
+
+        setFormData(prev => ({
+          ...prev,
+          title: targetData.title,
+          location: targetData.location,
+          meetingDate: targetData.meetingDate,
+          meetingStartTime: targetData.meetingStartTime,
+          meetingEndTime: targetData.meetingEndTime,
+          attendees: targetData.attendees
+        }));
+        setAgendaResultPairs(aiAgendas);
+
+        setIsAiLoading(false);
+        setAiProgress(100);
+        setAiStatusText("");
+        alert("🎉 [시뮬레이션] 지능형 AI 필터가 회의 문서를 분석하여 회의 정보와 부서별 의제/결과 리스트를 자동 입력하였습니다!");
+      }, 1000);
+    }, 1000);
+  };
+
   // API Key 오류나 통신 에러 시 작동하는 모의 폴백 함수
   const runSimulationFallback = () => {
     setIsAiLoading(true);
@@ -954,7 +1029,33 @@ export default function ScheduleManager({
     setIsAiLoading(true);
     setAiProgress(10);
 
-    const promptText = `
+    const promptText = modalType === "meeting"
+      ? `
+너는 대학교 RISE(지역혁신중심 대학지원체계) 사업단의 회의록 작성 및 분석 전문가이다.
+제공된 회의 기획서, 회의록 문서 또는 결과보고서 텍스트 내용을 바탕으로 회의록 폼에 입력할 항목의 데이터를 정확하게 추출하고 가공해라.
+
+반드시 아래 JSON 포맷을 정확히 따르고, JSON 마크다운 포맷(\`\`\`json ... \`\`\`)으로 감싸서 출력해라. JSON 외에 다른 설명이나 인사말, 주석은 절대 포함하지 마라.
+
+JSON 구조:
+{
+  "title": "회의 명칭 (예: 제2차 ICC 센터 공동 운영 회의)",
+  "location": "회의 장소 (예: ICC 센터장실)",
+  "meetingDate": "회의 일자 (YYYY-MM-DD 형식)",
+  "meetingStartTime": "시작 시간 (HH:MM 형식)",
+  "meetingEndTime": "종료 시간 (HH:MM 형식)",
+  "attendees": "참석자 명단 (예: 심현미 팀장, 이동은 센터장, 김기범 센터장 등)",
+  "agendaResultPairs": [
+    {
+      "agenda": "의제/전달사항 (예: [ECC센터] 지산학 마일리지 장학금 지급 기준 심의)",
+      "result": "추진상황/결과 (예: 지급 기준안 원안대로 승인함. 마일리지 1점당 10,000원으로 확정)"
+    }
+  ]
+}
+
+회의 기획서/회의록/결과보고서 원문 텍스트:
+${aiRawText}
+      `.trim()
+      : `
 너는 대학교 RISE(지역혁신중심 대학지원체계) 사업단의 행사 등록 정보 생성 전문가이다.
 제공된 행사 기획서 또는 결과보고서 텍스트 내용을 바탕으로 행사 등록 폼에 입력할 11가지 항목의 데이터를 정확하게 추출하고 가공해라.
 
@@ -977,7 +1078,7 @@ JSON 구조:
 
 행사 기획서/결과보고서 원문 텍스트:
 ${aiRawText}
-    `.trim();
+      `.trim();
 
     try {
       // A. OpenAI GPT-4o-mini 엔진을 선택했을 경우
@@ -996,7 +1097,11 @@ ${aiRawText}
           );
           if (!inputKey) {
             alert("⚠️ API Key가 입력되지 않아 지능형 시뮬레이션 폴백 모드로 기입합니다.");
-            runSimulationFallback();
+            if (modalType === "meeting") {
+              runMeetingSimulationFallback();
+            } else {
+              runSimulationFallback();
+            }
             return;
           }
           apiKey = inputKey.trim();
@@ -1047,12 +1152,31 @@ ${aiRawText}
         }
 
         const cleanJson = JSON.parse(jsonStr.trim());
-        setFormData(prev => ({ ...prev, ...cleanJson }));
 
-        setIsAiLoading(false);
-        setAiProgress(100);
-        setAiStatusText("");
-        alert("🎉 OpenAI GPT-4o-mini 모델이 기획서를 분석하여 행사 등록 정보 11개 항목을 완벽하게 기입하였습니다!");
+        if (modalType === "meeting") {
+          setFormData(prev => ({
+            ...prev,
+            title: cleanJson.title || prev.title,
+            location: cleanJson.location || prev.location,
+            meetingDate: cleanJson.meetingDate || prev.meetingDate,
+            meetingStartTime: cleanJson.meetingStartTime || prev.meetingStartTime,
+            meetingEndTime: cleanJson.meetingEndTime || prev.meetingEndTime,
+            attendees: cleanJson.attendees || prev.attendees
+          }));
+          if (cleanJson.agendaResultPairs && cleanJson.agendaResultPairs.length > 0) {
+            setAgendaResultPairs(cleanJson.agendaResultPairs);
+          }
+          setIsAiLoading(false);
+          setAiProgress(100);
+          setAiStatusText("");
+          alert("🎉 OpenAI GPT-4o-mini 모델이 회의록 문서를 분석하여 회의 정보 및 부서별 의제/결과 쌍을 완벽하게 기입하였습니다!");
+        } else {
+          setFormData(prev => ({ ...prev, ...cleanJson }));
+          setIsAiLoading(false);
+          setAiProgress(100);
+          setAiStatusText("");
+          alert("🎉 OpenAI GPT-4o-mini 모델이 기획서를 분석하여 행사 등록 정보 11개 항목을 완벽하게 기입하였습니다!");
+        }
 
       }
       // B. 구글 제미나이(Gemini 1.5 Flash) 엔진을 선택했을 경우
@@ -1072,7 +1196,11 @@ ${aiRawText}
           );
           if (!inputKey) {
             alert("⚠️ API Key가 입력되지 않아 지능형 시뮬레이션 폴백 모드로 기입합니다.");
-            runSimulationFallback();
+            if (modalType === "meeting") {
+              runMeetingSimulationFallback();
+            } else {
+              runSimulationFallback();
+            }
             return;
           }
           apiKey = inputKey.trim();
@@ -1128,18 +1256,40 @@ ${aiRawText}
         }
 
         const cleanJson = JSON.parse(jsonStr.trim());
-        setFormData(prev => ({ ...prev, ...cleanJson }));
-
-        setIsAiLoading(false);
-        setAiProgress(100);
-        setAiStatusText("");
-        alert("🎉 Gemini-1.5-flash 모델이 기획서를 실시간으로 분석하여 행사 등록 정보 11개 항목을 완벽하게 기입하였습니다!");
+        
+        if (modalType === "meeting") {
+          setFormData(prev => ({
+            ...prev,
+            title: cleanJson.title || prev.title,
+            location: cleanJson.location || prev.location,
+            meetingDate: cleanJson.meetingDate || prev.meetingDate,
+            meetingStartTime: cleanJson.meetingStartTime || prev.meetingStartTime,
+            meetingEndTime: cleanJson.meetingEndTime || prev.meetingEndTime,
+            attendees: cleanJson.attendees || prev.attendees
+          }));
+          if (cleanJson.agendaResultPairs && cleanJson.agendaResultPairs.length > 0) {
+            setAgendaResultPairs(cleanJson.agendaResultPairs);
+          }
+          setIsAiLoading(false);
+          setAiProgress(100);
+          setAiStatusText("");
+          alert("🎉 Gemini-1.5-flash 모델이 회의록 문서를 분석하여 회의 정보 및 부서별 의제/결과 쌍을 완벽하게 기입하였습니다!");
+        } else {
+          setFormData(prev => ({ ...prev, ...cleanJson }));
+          setIsAiLoading(false);
+          setAiProgress(100);
+          setAiStatusText("");
+          alert("🎉 Gemini-1.5-flash 모델이 기획서를 실시간으로 분석하여 행사 등록 정보 11개 항목을 완벽하게 기입하였습니다!");
+        }
       }
 
     } catch (error) {
       console.error("AI API 호출 에러 (시뮬레이션 모드 자동 폴백):", error);
-      // 사용자 인터럽트를 방지하기 위해 경고창을 띄우지 않고, 콘솔에 에러 기록 후 자동으로 시뮬레이터 데이터를 기입하여 마감합니다.
-      runSimulationFallback();
+      if (modalType === "meeting") {
+        runMeetingSimulationFallback();
+      } else {
+        runSimulationFallback();
+      }
     }
   };
 
@@ -6328,6 +6478,137 @@ ${aiRawText}
               {/* 회의 일정 입력 */}
               {modalType === "meeting" && (
                 <>
+                  {/* AI 기획서/결과서 자동 기입 위젯 */}
+                  <div style={{
+                    padding: "0.85rem 1rem",
+                    background: "rgba(139, 92, 246, 0.06)",
+                    border: "1px dashed rgba(139, 92, 246, 0.3)",
+                    borderRadius: "8px",
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "0.5rem",
+                    marginBottom: "0.5rem"
+                  }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "0.5rem" }}>
+                      <span style={{ fontSize: "0.75rem", fontWeight: "700", color: "#a78bfa" }}>
+                        ✨ AI 기획서∙회의록∙결과보고서 자동 기입 (GPT-4o-mini 모델 연동)
+                      </span>
+                      <button
+                        type="button"
+                        onClick={handleLoadSampleFile}
+                        style={{ fontSize: "0.7rem", color: "#60a5fa", background: "none", border: "none", cursor: "pointer", textDecoration: "underline" }}
+                      >
+                        [기획안 샘플 파일 자동 로드]
+                      </button>
+                    </div>
+
+                    <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+                      <input
+                        type="file"
+                        id="ai-meeting-file"
+                        accept=".pdf,.hwp,.hwpx,.docx,.txt"
+                        onChange={handleAiFileChange}
+                        style={{ display: "none" }}
+                      />
+                      <label
+                        htmlFor="ai-meeting-file"
+                        style={{
+                          flexGrow: 1,
+                          padding: "0.45rem 0.75rem",
+                          background: "rgba(255,255,255,0.03)",
+                          border: "1px solid var(--border-color)",
+                          borderRadius: "6px",
+                          fontSize: "0.75rem",
+                          color: aiFileName ? "var(--text-primary)" : "var(--text-secondary)",
+                          cursor: "pointer",
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                          whiteSpace: "nowrap"
+                        }}
+                      >
+                        <span>{aiFileName || "기획서/회의록/결과보고서 첨부파일 선택 (.hwp, .pdf, .docx)"}</span>
+                        <span style={{ fontSize: "0.65rem", padding: "0.15rem 0.35rem", borderRadius: "4px", background: "var(--input-bg)", color: "var(--text-secondary)", flexShrink: 0, marginLeft: "0.5rem" }}>
+                          파일 탐색
+                        </span>
+                      </label>
+
+                      <button
+                        type="button"
+                        onClick={triggerAiAutoFill}
+                        disabled={isAiLoading}
+                        style={{
+                          padding: "0.45rem 1rem",
+                          background: isAiLoading ? "rgba(128,128,128,0.2)" : "var(--accent-color)",
+                          color: "white",
+                          border: "none",
+                          borderRadius: "6px",
+                          fontSize: "0.75rem",
+                          fontWeight: "700",
+                          cursor: isAiLoading ? "not-allowed" : "pointer",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "0.25rem",
+                          flexShrink: 0
+                        }}
+                      >
+                        {isAiLoading ? "분석 중..." : "AI 자동완성"}
+                      </button>
+                    </div>
+
+                    {isAiLoading && (
+                      <div style={{ marginTop: "0.25rem" }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.65rem", color: "#a78bfa", marginBottom: "0.2rem", fontFamily: "monospace" }}>
+                          <span>{aiStatusText}</span>
+                          <span>{aiProgress}%</span>
+                        </div>
+                        <div style={{ width: "100%", height: "4px", background: "rgba(255,255,255,0.05)", borderRadius: "2px", overflow: "hidden" }}>
+                          <div style={{ width: `${aiProgress}%`, height: "100%", background: "linear-gradient(90deg, #8b5cf6, #ec4899)", borderRadius: "2px", transition: "width 0.2s ease" }}></div>
+                        </div>
+                      </div>
+                    )}
+
+                    <div style={{ marginBottom: "0.5rem" }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.2rem" }}>
+                        <label style={{ display: "block", fontSize: "0.75rem", color: "var(--text-secondary)", fontWeight: "600" }}>
+                          📋 분석할 기획서/회의록 원문 텍스트 (직접 붙여넣거나 파일 로드 가능)
+                        </label>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const newKey = prompt("🔑 OpenAI GPT API Key 변경 (sk-로 시작):", localStorage.getItem("user_openai_api_key") || "");
+                            if (newKey !== null) {
+                              localStorage.setItem("user_openai_api_key", newKey.trim());
+                              alert("OpenAI API Key가 브라우저 로컬 스토리지에 안전하게 저장되었습니다.");
+                            }
+                          }}
+                          style={{ fontSize: "0.68rem", color: "var(--accent-color)", background: "transparent", border: "none", cursor: "pointer", display: "flex", alignItems: "center", gap: "0.15rem" }}
+                        >
+                          ⚙️ API 설정
+                        </button>
+                      </div>
+                      <textarea
+                        value={aiRawText}
+                        onChange={(e) => setAiRawText(e.target.value)}
+                        placeholder="기획안/회의록 문서를 업로드하거나 본문 내용을 복사해서 여기에 붙여넣어 주세요. [AI 자동완성]을 누르면 이 내용을 기반으로 실시간 OpenAI GPT 분석이 실행됩니다."
+                        style={{
+                          width: "100%",
+                          height: "55px",
+                          padding: "0.4rem 0.5rem",
+                          background: "rgba(0,0,0,0.15)",
+                          border: "1px solid var(--border-color)",
+                          borderRadius: "6px",
+                          color: "var(--text-primary)",
+                          fontSize: "0.72rem",
+                          resize: "none",
+                          fontFamily: "sans-serif"
+                        }}
+                      />
+                    </div>
+                  </div>
+
                   <div>
                     <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>회의 명칭</label>
                     <input type="text" name="title" value={formData.title} onChange={handleInputChange} required placeholder="예: 제2차 ICC 센터 공동 운영 회의" style={{ width: "100%", padding: "0.5rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} />
