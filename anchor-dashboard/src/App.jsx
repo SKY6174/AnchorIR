@@ -10034,9 +10034,29 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
             </tr>
             <tr style={{ borderTop: "1px solid rgba(255,255,255,0.1)", background: "rgba(16, 185, 129, 0.05)", fontWeight: "800" }}>
               <td style={{ paddingLeft: "1.5rem", borderRight: "1px solid var(--border-color)", color: "#10b981" }}>총사업비 중 운영비</td>
-              {TOTAL_INVESTMENT_SUMMARY_DATA.only_operation.map((v, i) => (
-                <td key={i} style={{ textAlign: "right", paddingRight: i === 5 ? "1.5rem" : "1rem", color: "#10b981" }}>{formatCell(v, i)}</td>
-              ))}
+              {TOTAL_INVESTMENT_SUMMARY_DATA.only_operation.map((v, i) => {
+                if (i === 1) {
+                  const mainVal = v.main || 0;
+                  const carryVal = v.carry || 0;
+                  return (
+                    <React.Fragment key={i}>
+                      <td style={{ textAlign: "right", paddingRight: "0.5rem", color: "#60a5fa", borderRight: "1px solid rgba(255,255,255,0.05)" }}>
+                        {mainVal > 0 ? mainVal.toFixed(2) : "-"}
+                      </td>
+                      <td style={{ textAlign: "right", paddingRight: "0.5rem", color: "#34d399", borderRight: "1px solid var(--border-color)" }}>
+                        {carryVal > 0 ? carryVal.toFixed(2) : "-"}
+                      </td>
+                    </React.Fragment>
+                  );
+                }
+                const mainVal = v.main || 0;
+                const carryVal = v.carry || 0;
+                const sumVal = mainVal + carryVal;
+                let displayVal = "-";
+                if (i === 0) displayVal = sumVal > 0 ? sumVal.toFixed(2) : "-";
+                else displayVal = mainVal > 0 ? mainVal.toFixed(2) : "-";
+                return <td key={i} style={{ textAlign: "right", paddingRight: i === 5 ? "1.5rem" : "1rem", color: "#10b981" }}>{displayVal}</td>;
+              })}
             </tr>
           </tbody>
         </table>
