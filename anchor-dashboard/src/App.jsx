@@ -4118,7 +4118,7 @@ export default function App() {
               id: `mevt-init-${Date.now()}-${evt.id}`,
               eventId: evt.id,
               year: evt.year,
-              title: `[주요행사] ${evt.title}`,
+              title: `[행사] ${evt.title}`,
               type: "행사",
               dept: evt.department || "사업운영팀",
               startAt: dateStr,
@@ -5163,7 +5163,7 @@ export default function App() {
         const mappedItem = {
           eventId: evt.id,
           year: evt.year,
-          title: `[주요행사] ${evt.title}`,
+          title: `[행사] ${evt.title}`,
           type: "행사",
           dept: evt.department || "사업운영팀",
           startAt: dateStr,
