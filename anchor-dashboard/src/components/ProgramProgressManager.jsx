@@ -356,10 +356,10 @@ export default function ProgramProgressManager({ projects, selectedYear, onSelec
               <table className="custom-table" style={{ fontSize: "0.8rem", minWidth: "900px" }}>
                 <thead>
                   <tr>
-                    <th style={{ width: "80px" }}>ID</th>
+                    <th style={{ width: "96px" }}>ID</th>
                     <th style={{ width: "230px" }}>프로그램명</th>
-                    <th style={{ width: "140px" }}>담당연구원</th>
-                    <th style={{ width: "130px" }}>운영 예산 (배정/집행)</th>
+                    <th style={{ width: "112px" }}>담당연구원</th>
+                    <th style={{ width: "156px" }}>운영 예산 (배정/집행)</th>
                     <th style={{ width: "340px", textAlign: "center" }}>
                       {selectedYear}차년도 Timeline
                       {/* 연도 구분 줄 (상위 2분할: 시작년도 10개월 / 끝년도 2개월) */}
@@ -422,10 +422,14 @@ export default function ProgramProgressManager({ projects, selectedYear, onSelec
                           >
                             {prog.title}
                           </td>
-                          <td style={{ fontWeight: "700", color: "var(--accent-color)", whiteSpace: "nowrap" }}>
-                            <div style={{ display: "flex", alignItems: "center", gap: "0.25rem" }}>
-                              <User size={12} />
-                              <span>{prog.assignee || "미배정"}</span>
+                          <td style={{ fontWeight: "700", color: "var(--accent-color)", whiteSpace: "normal", wordBreak: "break-all" }}>
+                            <div style={{ display: "flex", alignItems: "flex-start", gap: "0.25rem", padding: "0.2rem 0" }}>
+                              <User size={12} style={{ marginTop: "0.15rem", flexShrink: 0 }} />
+                              <div style={{ display: "flex", flexDirection: "column", gap: "0.15rem", lineHeight: "1.2" }}>
+                                {(prog.assignee || "미배정").split("/").map((name, idx) => (
+                                  <span key={idx}>{name.trim()}</span>
+                                ))}
+                              </div>
                             </div>
                           </td>
                           <td>
