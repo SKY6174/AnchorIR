@@ -8980,15 +8980,15 @@ export default function App() {
                             <table className="custom-table" style={{ fontSize: "0.75rem", tableLayout: "fixed", width: "100%" }}>
                               <thead>
                                 <tr>
-                                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap", width: "110px" }}>예약일자</th>
-                                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap", width: "130px" }}>사용시간</th>
-                                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap", width: "160px" }}>시설명</th>
-                                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap", width: "110px" }}>신청부서</th>
-                                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap", width: "90px" }}>신청자</th>
+                                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap", width: "116px" }}>예약일자</th>
+                                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap", width: "137px" }}>사용시간</th>
+                                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap", width: "169px" }}>시설명</th>
+                                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap", width: "116px" }}>신청부서</th>
+                                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap", width: "95px" }}>신청자</th>
                                   <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap" }}>사용목적</th>
-                                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap", width: "95px" }}>결재 상태</th>
-                                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap", width: "85px" }}>일정 조정</th>
-                                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap", width: "95px" }}>결재 처리</th>
+                                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap", width: "100px" }}>결재 상태</th>
+                                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap", width: "90px" }}>일정 조정</th>
+                                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap", width: "100px" }}>결재 처리</th>
                                 </tr>
                               </thead>
                               <tbody>
