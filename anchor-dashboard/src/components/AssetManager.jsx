@@ -19,7 +19,9 @@ export default function AssetManager({ currentRole, activeSubTab, onChangeSubTab
     start_time: "10:00",
     end_time: "12:00",
     dept: "사업운영팀",
+    custom_dept: "",
     reserver_name: "",
+    actual_user_name: "",
     purpose: ""
   });
 
@@ -66,8 +68,18 @@ export default function AssetManager({ currentRole, activeSubTab, onChangeSubTab
       return;
     }
 
+    if (resFormData.dept === "직접입력" && !resFormData.custom_dept.trim()) {
+      alert("⚠️ 외부 신청부서명을 직접 입력해 주세요.");
+      return;
+    }
+
+    if (resFormData.dept === "직접입력" && !resFormData.actual_user_name.trim()) {
+      alert("⚠️ 실제 이용자명을 입력해 주세요.");
+      return;
+    }
+
     if (!resFormData.reserver_name.trim()) {
-      alert("⚠️ 예약자명을 입력해 주세요.");
+      alert("⚠️ 신청자 (사업단 구성원) 이름을 입력해 주세요.");
       return;
     }
 
@@ -77,14 +89,29 @@ export default function AssetManager({ currentRole, activeSubTab, onChangeSubTab
       return;
     }
 
+    // 데이터베이스용 객체 합성 조립 (하위 호환성 및 무결성 확보)
+    const insertData = {
+      space_name: resFormData.space_name,
+      reserved_date: resFormData.reserved_date,
+      start_time: resFormData.start_time,
+      end_time: resFormData.end_time,
+      dept: resFormData.dept === "직접입력" ? resFormData.custom_dept : resFormData.dept,
+      reserver_name: resFormData.dept === "직접입력"
+        ? `${resFormData.actual_user_name} (대행: ${resFormData.reserver_name})`
+        : resFormData.reserver_name,
+      custom_dept: resFormData.dept === "직접입력" ? resFormData.custom_dept : "",
+      actual_user_name: resFormData.dept === "직접입력" ? resFormData.actual_user_name : "",
+      purpose: resFormData.purpose
+    };
+
     // 중복 충돌 실시간 검증 (프론트 가드)
     const duplicate = reservations.find((r) => {
       return (
-        r.space_name === resFormData.space_name &&
-        r.reserved_date === resFormData.reserved_date &&
+        r.space_name === insertData.space_name &&
+        r.reserved_date === insertData.reserved_date &&
         isTimeOverlapping(
-          resFormData.start_time,
-          resFormData.end_time,
+          insertData.start_time,
+          insertData.end_time,
           r.start_time,
           r.end_time
         )
@@ -100,15 +127,21 @@ export default function AssetManager({ currentRole, activeSubTab, onChangeSubTab
 
     setLoading(true);
     try {
-      const { error } = await supabase.from("asset_reservations").insert([resFormData]);
+      const { error } = await supabase.from("asset_reservations").insert([insertData]);
       if (error) throw error;
       alert("✨ 공간 예약 신청이 완료되었습니다.");
       setIsResModalOpen(false);
-      setResFormData((prev) => ({
-        ...prev,
+      setResFormData({
+        space_name: selectedSpace,
+        reserved_date: new Date().toISOString().split("T")[0],
+        start_time: "10:00",
+        end_time: "12:00",
+        dept: "사업운영팀",
+        custom_dept: "",
         reserver_name: "",
+        actual_user_name: "",
         purpose: ""
-      }));
+      });
       fetchReservations();
     } catch (err) {
       alert("예약 등록 에러: " + err.message);
@@ -720,29 +753,59 @@ export default function AssetManager({ currentRole, activeSubTab, onChangeSubTab
               </div>
 
               <div>
-                <label style={{ display: "block", fontSize: "0.75rem", color: "var(--text-secondary)", marginBottom: "0.2rem" }}>사용 부서(센터)</label>
+                <label style={{ display: "block", fontSize: "0.75rem", color: "var(--text-secondary)", marginBottom: "0.2rem" }}>신청부서</label>
                 <select
                   value={resFormData.dept}
                   onChange={(e) => setResFormData(prev => ({ ...prev, dept: e.target.value }))}
                   style={{ width: "100%", padding: "0.45rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "4px", color: "var(--text-primary)", fontSize: "0.75rem" }}
                 >
-                  {["사업운영팀", "ECC센터", "ICC센터", "RCC센터", "AID-X지원센터", "울산늘봄누리센터", "신산업특화센터"].map(d => (
-                    <option key={d} value={d}>{d}</option>
+                  {["사업운영팀", "ECC센터", "ICC센터", "RCC센터", "AID-X지원센터", "울산늘봄누리센터", "신산업특화센터", "직접입력"].map(d => (
+                    <option key={d} value={d}>{d === "직접입력" ? "직접입력 (사업단 외 조직)" : d}</option>
                   ))}
                 </select>
               </div>
 
+              {resFormData.dept === "직접입력" && (
+                <div>
+                  <label style={{ display: "block", fontSize: "0.75rem", color: "var(--text-secondary)", marginBottom: "0.2rem" }}>신청부서 (사업단 외 조직명 직접 입력)</label>
+                  <input
+                    type="text"
+                    placeholder="예: 울산대학교 행정처, OO협회"
+                    value={resFormData.custom_dept}
+                    onChange={(e) => setResFormData(prev => ({ ...prev, custom_dept: e.target.value }))}
+                    required
+                    style={{ width: "100%", padding: "0.45rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "4px", color: "var(--text-primary)", fontSize: "0.75rem" }}
+                  />
+                </div>
+              )}
+
               <div>
-                <label style={{ display: "block", fontSize: "0.75rem", color: "var(--text-secondary)", marginBottom: "0.2rem" }}>예약자명</label>
+                <label style={{ display: "block", fontSize: "0.75rem", color: "var(--text-secondary)", marginBottom: "0.2rem" }}>
+                  {resFormData.dept === "직접입력" ? "예약대행자 (사업단 구성원)" : "신청자 (사업단 구성원)"}
+                </label>
                 <input
                   type="text"
-                  placeholder="신청자 본인 이름 입력"
+                  placeholder="사업단 소속 구성원 이름 입력"
                   value={resFormData.reserver_name}
                   onChange={(e) => setResFormData(prev => ({ ...prev, reserver_name: e.target.value }))}
                   required
                   style={{ width: "100%", padding: "0.45rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "4px", color: "var(--text-primary)", fontSize: "0.75rem" }}
                 />
               </div>
+
+              {resFormData.dept === "직접입력" && (
+                <div>
+                  <label style={{ display: "block", fontSize: "0.75rem", color: "var(--text-secondary)", marginBottom: "0.2rem" }}>실제 이용자명 (외부 담당자)</label>
+                  <input
+                    type="text"
+                    placeholder="공간을 이용할 실제 외부 담당자명"
+                    value={resFormData.actual_user_name}
+                    onChange={(e) => setResFormData(prev => ({ ...prev, actual_user_name: e.target.value }))}
+                    required
+                    style={{ width: "100%", padding: "0.45rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "4px", color: "var(--text-primary)", fontSize: "0.75rem" }}
+                  />
+                </div>
+              )}
 
               <div>
                 <label style={{ display: "block", fontSize: "0.75rem", color: "var(--text-secondary)", marginBottom: "0.2rem" }}>사용 목적</label>
