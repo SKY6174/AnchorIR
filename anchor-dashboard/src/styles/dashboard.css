@@ -768,6 +768,7 @@ body.light-mode {
 .procurement-nav-wrapper,
 .schedule-nav-wrapper,
 .progress-nav-wrapper,
+.asset-nav-wrapper,
 .mgmt-nav-wrapper {
   position: relative;
   display: flex;
@@ -791,7 +792,9 @@ body.light-mode {
 .budget-nav-wrapper:hover .nav-sub-menu,
 .budget-nav-wrapper.active .nav-sub-menu,
 .procurement-nav-wrapper:hover .nav-sub-menu,
-.procurement-nav-wrapper.active .nav-sub-menu {
+.procurement-nav-wrapper.active .nav-sub-menu,
+.asset-nav-wrapper:hover .nav-sub-menu,
+.asset-nav-wrapper.active .nav-sub-menu {
   max-height: 120px;
   opacity: 1;
   margin-top: 0.25rem;

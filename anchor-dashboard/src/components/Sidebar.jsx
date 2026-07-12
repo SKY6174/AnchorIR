@@ -668,7 +668,7 @@ export default function Sidebar({
                     }}
                     style={getHiddenStyle("education_env")}
                   >
-                    - 교육환경 관리
+                    - 교육환경 사용예약
                     {isHidden("education_env") && (
                       <span style={{ fontSize: "0.6rem", color: "#ef4444", textDecoration: "none", marginLeft: "0.2rem" }}>
                         [숨김]
@@ -688,7 +688,7 @@ export default function Sidebar({
                     }}
                     style={getHiddenStyle("equipment")}
                   >
-                    - 기자재 관리
+                    - 기자재 대장
                     {isHidden("equipment") && (
                       <span style={{ fontSize: "0.6rem", color: "#ef4444", textDecoration: "none", marginLeft: "0.2rem" }}>
                         [숨김]
