@@ -10034,6 +10034,11 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
   const targetYear = 2024 + selectedYear;
 
   const renderFiveYear = () => {
+    const formatValue = (val) => {
+      if (val === undefined || val === null || val === 0) return "-";
+      return val.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+    };
+
     return (
       <div className="table-panel">
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "0.75rem 1.25rem", background: "rgba(59, 130, 246, 0.05)", borderLeft: "4px solid var(--accent-color)", borderRadius: "4px", marginBottom: "1rem", fontSize: "0.8rem", color: "var(--text-secondary)", lineHeight: "1.4" }}>
@@ -10086,10 +10091,10 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
                         return (
                           <React.Fragment key={idx}>
                             <td style={{ textAlign: "right", paddingRight: "0.5rem", color: "#60a5fa", borderRight: "1px dashed rgba(255, 255, 255, 0.15)", fontWeight: "700" }}>
-                              {mainVal > 0 ? mainVal.toFixed(2) : "-"}
+                              {formatValue(mainVal)}
                             </td>
                             <td style={{ textAlign: "right", paddingRight: "0.5rem", color: "#34d399", borderRight: "1.5px solid rgba(255, 255, 255, 0.2)", fontWeight: "700" }}>
-                              {carryVal > 0 ? carryVal.toFixed(2) : "-"}
+                              {formatValue(carryVal)}
                             </td>
                           </React.Fragment>
                         );
@@ -10098,8 +10103,8 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
                       const carryVal = val.carry || 0;
                       const sumVal = mainVal + carryVal;
                       let displayVal = "-";
-                      if (idx === 0) displayVal = sumVal > 0 ? sumVal.toFixed(2) : "-";
-                      else displayVal = mainVal > 0 ? mainVal.toFixed(2) : "-";
+                      if (idx === 0) displayVal = formatValue(sumVal);
+                      else displayVal = formatValue(mainVal);
 
                       return (
                         <td 
@@ -10130,10 +10135,10 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
                           return (
                             <React.Fragment key={vIdx}>
                               <td style={{ textAlign: "right", paddingRight: "0.5rem", color: "#60a5fa", borderRight: "1px dashed rgba(255, 255, 255, 0.15)" }}>
-                                {mainVal > 0 ? mainVal.toFixed(2) : "-"}
+                                {formatValue(mainVal)}
                               </td>
                               <td style={{ textAlign: "right", paddingRight: "0.5rem", color: "#34d399", borderRight: "1.5px solid rgba(255, 255, 255, 0.2)" }}>
-                                {carryVal > 0 ? carryVal.toFixed(2) : "-"}
+                                {formatValue(carryVal)}
                               </td>
                             </React.Fragment>
                           );
@@ -10142,8 +10147,8 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
                         const carryVal = v.carry || 0;
                         const sumVal = mainVal + carryVal;
                         let displayVal = "-";
-                        if (vIdx === 0) displayVal = sumVal > 0 ? sumVal.toFixed(2) : "-";
-                        else displayVal = mainVal > 0 ? mainVal.toFixed(2) : "-";
+                        if (vIdx === 0) displayVal = formatValue(sumVal);
+                        else displayVal = formatValue(mainVal);
 
                         return (
                           <td key={vIdx} style={{ textAlign: "right", paddingRight: vIdx === 5 ? "1.5rem" : "1rem", borderRight: vIdx === 5 ? "none" : "1.5px solid rgba(255, 255, 255, 0.2)" }}>
@@ -10167,10 +10172,10 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
                   return (
                     <React.Fragment key={i}>
                       <td style={{ textAlign: "right", paddingRight: "0.5rem", color: "#60a5fa", borderRight: "1px dashed rgba(255, 255, 255, 0.15)" }}>
-                        {mainVal > 0 ? mainVal.toFixed(2) : "-"}
+                        {formatValue(mainVal)}
                       </td>
                       <td style={{ textAlign: "right", paddingRight: "0.5rem", color: "#34d399", borderRight: "1.5px solid rgba(255, 255, 255, 0.2)" }}>
-                        {carryVal > 0 ? carryVal.toFixed(2) : "-"}
+                        {formatValue(carryVal)}
                       </td>
                     </React.Fragment>
                   );
@@ -10179,8 +10184,8 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
                 const carryVal = v.carry || 0;
                 const sumVal = mainVal + carryVal;
                 let displayVal = "-";
-                if (i === 0) displayVal = sumVal > 0 ? sumVal.toFixed(2) : "-";
-                else displayVal = mainVal > 0 ? mainVal.toFixed(2) : "-";
+                if (i === 0) displayVal = formatValue(sumVal);
+                else displayVal = formatValue(mainVal);
                 return <td key={i} style={{ textAlign: "right", paddingRight: i === 5 ? "1.5rem" : "1rem", borderRight: i === 5 ? "none" : "1.5px solid rgba(255, 255, 255, 0.2)" }}>{displayVal}</td>;
               })}
             </tr>
@@ -10193,10 +10198,10 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
                   return (
                     <React.Fragment key={i}>
                       <td style={{ textAlign: "right", paddingRight: "0.5rem", color: "#60a5fa", borderRight: "1px dashed rgba(255, 255, 255, 0.15)" }}>
-                        {mainVal > 0 ? mainVal.toFixed(2) : "-"}
+                        {formatValue(mainVal)}
                       </td>
                       <td style={{ textAlign: "right", paddingRight: "0.5rem", color: "#34d399", borderRight: "1.5px solid rgba(255, 255, 255, 0.2)" }}>
-                        {carryVal > 0 ? carryVal.toFixed(2) : "-"}
+                        {formatValue(carryVal)}
                       </td>
                     </React.Fragment>
                   );
@@ -10205,8 +10210,8 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
                 const carryVal = v.carry || 0;
                 const sumVal = mainVal + carryVal;
                 let displayVal = "-";
-                if (i === 0) displayVal = sumVal > 0 ? sumVal.toFixed(2) : "-";
-                else displayVal = mainVal > 0 ? mainVal.toFixed(2) : "-";
+                if (i === 0) displayVal = formatValue(sumVal);
+                else displayVal = formatValue(mainVal);
                 return <td key={i} style={{ textAlign: "right", paddingRight: i === 5 ? "1.5rem" : "1rem", borderRight: i === 5 ? "none" : "1.5px solid rgba(255, 255, 255, 0.2)" }}>{displayVal}</td>;
               })}
             </tr>
@@ -10219,10 +10224,10 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
                   return (
                     <React.Fragment key={i}>
                       <td style={{ textAlign: "right", paddingRight: "0.5rem", color: "#60a5fa", borderRight: "1px dashed rgba(255, 255, 255, 0.15)" }}>
-                        {mainVal > 0 ? mainVal.toFixed(2) : "-"}
+                        {formatValue(mainVal)}
                       </td>
                       <td style={{ textAlign: "right", paddingRight: "0.5rem", color: "#34d399", borderRight: "1.5px solid rgba(255, 255, 255, 0.2)" }}>
-                        {carryVal > 0 ? carryVal.toFixed(2) : "-"}
+                        {formatValue(carryVal)}
                       </td>
                     </React.Fragment>
                   );
@@ -10231,8 +10236,8 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
                 const carryVal = v.carry || 0;
                 const sumVal = mainVal + carryVal;
                 let displayVal = "-";
-                if (i === 0) displayVal = sumVal > 0 ? sumVal.toFixed(2) : "-";
-                else displayVal = mainVal > 0 ? mainVal.toFixed(2) : "-";
+                if (i === 0) displayVal = formatValue(sumVal);
+                else displayVal = formatValue(mainVal);
                 return <td key={i} style={{ textAlign: "right", paddingRight: i === 5 ? "1.5rem" : "1rem", borderRight: i === 5 ? "none" : "1.5px solid rgba(255, 255, 255, 0.2)" }}>{displayVal}</td>;
               })}
             </tr>
@@ -10245,10 +10250,10 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
                   return (
                     <React.Fragment key={i}>
                       <td style={{ textAlign: "right", paddingRight: "0.5rem", color: "#60a5fa", borderRight: "1px dashed rgba(255, 255, 255, 0.15)" }}>
-                        {mainVal > 0 ? mainVal.toFixed(2) : "-"}
+                        {formatValue(mainVal)}
                       </td>
                       <td style={{ textAlign: "right", paddingRight: "0.5rem", color: "#34d399", borderRight: "1.5px solid rgba(255, 255, 255, 0.2)" }}>
-                        {carryVal > 0 ? carryVal.toFixed(2) : "-"}
+                        {formatValue(carryVal)}
                       </td>
                     </React.Fragment>
                   );
@@ -10257,8 +10262,8 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
                 const carryVal = v.carry || 0;
                 const sumVal = mainVal + carryVal;
                 let displayVal = "-";
-                if (i === 0) displayVal = sumVal > 0 ? sumVal.toFixed(2) : "-";
-                else displayVal = mainVal > 0 ? mainVal.toFixed(2) : "-";
+                if (i === 0) displayVal = formatValue(sumVal);
+                else displayVal = formatValue(mainVal);
                 return <td key={i} style={{ textAlign: "right", paddingRight: i === 5 ? "1.5rem" : "1rem", borderRight: i === 5 ? "none" : "1.5px solid rgba(255, 255, 255, 0.2)" }}>{displayVal}</td>;
               })}
             </tr>
@@ -10271,10 +10276,10 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
                   return (
                     <React.Fragment key={i}>
                       <td style={{ textAlign: "right", paddingRight: "0.5rem", color: "#60a5fa", borderRight: "1px dashed rgba(255, 255, 255, 0.15)", color: "#10b981" }}>
-                        {mainVal > 0 ? mainVal.toFixed(2) : "-"}
+                        {formatValue(mainVal)}
                       </td>
                       <td style={{ textAlign: "right", paddingRight: "0.5rem", color: "#34d399", borderRight: "1.5px solid rgba(255, 255, 255, 0.2)", color: "#10b981" }}>
-                        {carryVal > 0 ? carryVal.toFixed(2) : "-"}
+                        {formatValue(carryVal)}
                       </td>
                     </React.Fragment>
                   );
@@ -10283,8 +10288,8 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
                 const carryVal = v.carry || 0;
                 const sumVal = mainVal + carryVal;
                 let displayVal = "-";
-                if (i === 0) displayVal = sumVal > 0 ? sumVal.toFixed(2) : "-";
-                else displayVal = mainVal > 0 ? mainVal.toFixed(2) : "-";
+                if (i === 0) displayVal = formatValue(sumVal);
+                else displayVal = formatValue(mainVal);
                 return <td key={i} style={{ textAlign: "right", paddingRight: i === 5 ? "1.5rem" : "1rem", color: "#10b981", borderRight: i === 5 ? "none" : "1.5px solid rgba(255, 255, 255, 0.2)" }}>{displayVal}</td>;
               })}
             </tr>
@@ -10295,6 +10300,11 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
   };
 
   const renderAnnual = () => {
+    const formatValue = (val) => {
+      if (val === undefined || val === null || val === 0) return "-";
+      return val.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+    };
+
     return (
       <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
         {/* 요약 연차 정보 헤더 */}
@@ -10302,7 +10312,7 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
           <div>
             <h4 style={{ fontSize: "1.1rem", fontWeight: "800", marginBottom: "0.3rem" }}>■ {targetYear}년도 예산</h4>
             <div style={{ fontSize: "0.85rem", color: "var(--accent-color)", fontWeight: "700" }}>
-              ○ {annualTotalSum.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0})}백만 원 (국비 {annualTotalNat.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0})}, 시비 {annualTotalCity.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0})}, 외부사업비 {annualTotalExt.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0})})
+              ○ {formatValue(annualTotalSum)}백만 원 (국비 {formatValue(annualTotalNat)}, 시비 {formatValue(annualTotalCity)}, 외부사업비 {formatValue(annualTotalExt)})
             </div>
           </div>
           <span style={{ fontSize: "0.8rem", fontWeight: "700", color: "var(--accent-color)" }}>(단위: 백만원)</span>
@@ -10352,7 +10362,7 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
                             borderRight: idx === 4 ? "none" : "1px solid rgba(255, 255, 255, 0.1)"
                           }}
                         >
-                          {idx === 4 ? `${val.toFixed(0)}` : (val > 0 ? val.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0}) : "-")}
+                          {idx === 4 ? `${val.toFixed(0)}` : formatValue(val)}
                         </td>
                       ))}
                     </tr>
@@ -10371,7 +10381,7 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
                               borderRight: vIdx === 4 ? "none" : "1px solid rgba(255, 255, 255, 0.1)"
                             }}
                           >
-                            {vIdx === 4 ? `${v.toFixed(1)}%` : (v > 0 ? v.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0}) : "-")}
+                            {vIdx === 4 ? `${v.toFixed(1)}%` : formatValue(v)}
                           </td>
                         ))}
                       </tr>
@@ -10383,42 +10393,42 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
               {/* 총 합계 요약 영역 */}
               <tr style={{ borderTop: "2px solid var(--accent-color)", background: "rgba(59, 130, 246, 0.05)", fontWeight: "800" }}>
                 <td style={{ paddingLeft: "1.5rem", borderRight: "1px solid rgba(255, 255, 255, 0.1)" }}>총 사업비</td>
-                <td style={{ textAlign: "right", paddingRight: "1rem", borderRight: "1px solid rgba(255, 255, 255, 0.1)" }}>{annualTotalNat.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0})}</td>
-                <td style={{ textAlign: "right", paddingRight: "1rem", borderRight: "1px solid rgba(255, 255, 255, 0.1)" }}>{annualTotalCity.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0})}</td>
-                <td style={{ textAlign: "right", paddingRight: "1rem", borderRight: "1px solid rgba(255, 255, 255, 0.1)" }}>{annualTotalExt.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0})}</td>
-                <td style={{ textAlign: "right", paddingRight: "1rem", color: "var(--accent-color)", borderRight: "1px solid rgba(255, 255, 255, 0.1)" }}>{annualTotalSum.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0})}</td>
+                <td style={{ textAlign: "right", paddingRight: "1rem", borderRight: "1px solid rgba(255, 255, 255, 0.1)" }}>{formatValue(annualTotalNat)}</td>
+                <td style={{ textAlign: "right", paddingRight: "1rem", borderRight: "1px solid rgba(255, 255, 255, 0.1)" }}>{formatValue(annualTotalCity)}</td>
+                <td style={{ textAlign: "right", paddingRight: "1rem", borderRight: "1px solid rgba(255, 255, 255, 0.1)" }}>{formatValue(annualTotalExt)}</td>
+                <td style={{ textAlign: "right", paddingRight: "1rem", color: "var(--accent-color)", borderRight: "1px solid rgba(255, 255, 255, 0.1)" }}>{formatValue(annualTotalSum)}</td>
                 <td style={{ textAlign: "center", borderRight: "none" }}>100</td>
               </tr>
               <tr style={{ background: "rgba(255,255,255,0.02)", fontSize: "0.75rem", color: "var(--text-secondary)" }}>
                 <td style={{ paddingLeft: "3rem", borderRight: "1px solid rgba(255, 255, 255, 0.1)" }}>인건비</td>
-                <td style={{ textAlign: "right", paddingRight: "1rem", borderRight: "1px solid rgba(255, 255, 255, 0.1)" }}>{annualLaborNat.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0})}</td>
-                <td style={{ textAlign: "right", paddingRight: "1rem", borderRight: "1px solid rgba(255, 255, 255, 0.1)" }}>{annualLaborCity.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0})}</td>
-                <td style={{ textAlign: "right", paddingRight: "1rem", borderRight: "1px solid rgba(255, 255, 255, 0.1)" }}>{annualLaborExt.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0})}</td>
-                <td style={{ textAlign: "right", paddingRight: "1rem", borderRight: "1px solid rgba(255, 255, 255, 0.1)" }}>{annualLaborSum.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0})}</td>
+                <td style={{ textAlign: "right", paddingRight: "1rem", borderRight: "1px solid rgba(255, 255, 255, 0.1)" }}>{formatValue(annualLaborNat)}</td>
+                <td style={{ textAlign: "right", paddingRight: "1rem", borderRight: "1px solid rgba(255, 255, 255, 0.1)" }}>{formatValue(annualLaborCity)}</td>
+                <td style={{ textAlign: "right", paddingRight: "1rem", borderRight: "1px solid rgba(255, 255, 255, 0.1)" }}>{formatValue(annualLaborExt)}</td>
+                <td style={{ textAlign: "right", paddingRight: "1rem", borderRight: "1px solid rgba(255, 255, 255, 0.1)" }}>{formatValue(annualLaborSum)}</td>
                 <td style={{ textAlign: "center", borderRight: "none" }}>{annualLaborRatio.toFixed(1)}%</td>
               </tr>
               <tr style={{ background: "rgba(255,255,255,0.02)", fontSize: "0.75rem", color: "var(--text-secondary)" }}>
                 <td style={{ paddingLeft: "3rem", borderRight: "1px solid rgba(255, 255, 255, 0.1)" }}>그 밖의 사업운영비</td>
-                <td style={{ textAlign: "right", paddingRight: "1rem", borderRight: "1px solid rgba(255, 255, 255, 0.1)" }}>{annualOpNat.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0})}</td>
-                <td style={{ textAlign: "right", paddingRight: "1rem", borderRight: "1px solid rgba(255, 255, 255, 0.1)" }}>{annualOpCity.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0})}</td>
-                <td style={{ textAlign: "right", paddingRight: "1rem", borderRight: "1px solid rgba(255, 255, 255, 0.1)" }}>{annualOpExt.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0})}</td>
-                <td style={{ textAlign: "right", paddingRight: "1rem", borderRight: "1px solid rgba(255, 255, 255, 0.1)" }}>{annualOpSum.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0})}</td>
+                <td style={{ textAlign: "right", paddingRight: "1rem", borderRight: "1px solid rgba(255, 255, 255, 0.1)" }}>{formatValue(annualOpNat)}</td>
+                <td style={{ textAlign: "right", paddingRight: "1rem", borderRight: "1px solid rgba(255, 255, 255, 0.1)" }}>{formatValue(annualOpCity)}</td>
+                <td style={{ textAlign: "right", paddingRight: "1rem", borderRight: "1px solid rgba(255, 255, 255, 0.1)" }}>{formatValue(annualOpExt)}</td>
+                <td style={{ textAlign: "right", paddingRight: "1rem", borderRight: "1px solid rgba(255, 255, 255, 0.1)" }}>{formatValue(annualOpSum)}</td>
                 <td style={{ textAlign: "center", borderRight: "none" }}>{annualOpRatio.toFixed(1)}%</td>
               </tr>
               <tr style={{ background: "rgba(255,255,255,0.02)", fontSize: "0.75rem", color: "var(--text-secondary)" }}>
                 <td style={{ paddingLeft: "3rem", borderRight: "1px solid rgba(255, 255, 255, 0.1)" }}>간접비</td>
-                <td style={{ textAlign: "right", paddingRight: "1rem", borderRight: "1px solid rgba(255, 255, 255, 0.1)" }}>{annualIndNat.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0})}</td>
-                <td style={{ textAlign: "right", paddingRight: "1rem", borderRight: "1px solid rgba(255, 255, 255, 0.1)" }}>{annualIndCity.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0})}</td>
-                <td style={{ textAlign: "right", paddingRight: "1rem", borderRight: "1px solid rgba(255, 255, 255, 0.1)" }}>{annualIndExt.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0})}</td>
-                <td style={{ textAlign: "right", paddingRight: "1rem", borderRight: "1px solid rgba(255, 255, 255, 0.1)" }}>{annualIndSum.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0})}</td>
+                <td style={{ textAlign: "right", paddingRight: "1rem", borderRight: "1px solid rgba(255, 255, 255, 0.1)" }}>{formatValue(annualIndNat)}</td>
+                <td style={{ textAlign: "right", paddingRight: "1rem", borderRight: "1px solid rgba(255, 255, 255, 0.1)" }}>{formatValue(annualIndCity)}</td>
+                <td style={{ textAlign: "right", paddingRight: "1rem", borderRight: "1px solid rgba(255, 255, 255, 0.1)" }}>{formatValue(annualIndExt)}</td>
+                <td style={{ textAlign: "right", paddingRight: "1rem", borderRight: "1px solid rgba(255, 255, 255, 0.1)" }}>{formatValue(annualIndSum)}</td>
                 <td style={{ textAlign: "center", borderRight: "none" }}>{annualIndRatio.toFixed(1)}%</td>
               </tr>
               <tr style={{ borderTop: "1px solid rgba(255,255,255,0.1)", background: "rgba(16, 185, 129, 0.05)", fontWeight: "800" }}>
                 <td style={{ paddingLeft: "1.5rem", borderRight: "1px solid rgba(255, 255, 255, 0.1)", color: "#10b981" }}>총사업비 중 운영비</td>
-                <td style={{ textAlign: "right", paddingRight: "1rem", color: "#10b981", borderRight: "1px solid rgba(255, 255, 255, 0.1)" }}>{annualOnlyOpNat.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0})}</td>
-                <td style={{ textAlign: "right", paddingRight: "1rem", color: "#10b981", borderRight: "1px solid rgba(255, 255, 255, 0.1)" }}>{annualOnlyOpCity.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0})}</td>
-                <td style={{ textAlign: "right", paddingRight: "1rem", color: "#10b981", borderRight: "1px solid rgba(255, 255, 255, 0.1)" }}>{annualOnlyOpExt.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0})}</td>
-                <td style={{ textAlign: "right", paddingRight: "1rem", color: "#10b981", borderRight: "1px solid rgba(255, 255, 255, 0.1)" }}>{annualOnlyOpSum.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0})}</td>
+                <td style={{ textAlign: "right", paddingRight: "1rem", color: "#10b981", borderRight: "1px solid rgba(255, 255, 255, 0.1)" }}>{formatValue(annualOnlyOpNat)}</td>
+                <td style={{ textAlign: "right", paddingRight: "1rem", color: "#10b981", borderRight: "1px solid rgba(255, 255, 255, 0.1)" }}>{formatValue(annualOnlyOpCity)}</td>
+                <td style={{ textAlign: "right", paddingRight: "1rem", color: "#10b981", borderRight: "1px solid rgba(255, 255, 255, 0.1)" }}>{formatValue(annualOnlyOpExt)}</td>
+                <td style={{ textAlign: "right", paddingRight: "1rem", color: "#10b981", borderRight: "1px solid rgba(255, 255, 255, 0.1)" }}>{formatValue(annualOnlyOpSum)}</td>
                 <td style={{ textAlign: "center", color: "#10b981", borderRight: "none" }}>{annualOnlyOpRatio.toFixed(1)}%</td>
               </tr>
             </tbody>
