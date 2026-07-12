@@ -9808,25 +9808,26 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
   const renderFiveYear = () => {
     return (
       <div className="table-panel">
-        <div style={{ padding: "0.75rem 1.25rem", background: "rgba(59, 130, 246, 0.05)", borderLeft: "4px solid var(--accent-color)", borderRadius: "4px", marginBottom: "1rem", fontSize: "0.8rem", color: "var(--text-secondary)", lineHeight: "1.4" }}>
-          💡 2차년도 사업비는 본사업비와 이월사업비로 구성되며, 타 연차는 본사업비만을 나타냄.
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "0.75rem 1.25rem", background: "rgba(59, 130, 246, 0.05)", borderLeft: "4px solid var(--accent-color)", borderRadius: "4px", marginBottom: "1rem", fontSize: "0.8rem", color: "var(--text-secondary)", lineHeight: "1.4" }}>
+          <span>💡 2차년도 사업비는 본사업비와 이월사업비로 구성되며, 타 연차는 본사업비만을 나타냄.</span>
+          <span style={{ fontWeight: "700", color: "var(--accent-color)" }}>(단위: 억원)</span>
         </div>
         <table className="custom-table" style={{ fontSize: "0.8rem", width: "100%", borderCollapse: "collapse" }}>
           <thead>
             <tr style={{ background: "rgba(255,255,255,0.02)" }}>
               <th rowSpan={2} style={{ verticalAlign: "middle", textAlign: "left", paddingLeft: "1.5rem", borderBottom: "1px solid var(--border-color)", borderRight: "1.5px solid rgba(255, 255, 255, 0.2)" }}>구분</th>
-              <th rowSpan={2} style={{ verticalAlign: "middle", textAlign: "right", paddingRight: "1rem", borderBottom: "1px solid var(--border-color)", borderRight: "1.5px solid rgba(255, 255, 255, 0.2)" }}>2025</th>
+              <th rowSpan={2} style={{ verticalAlign: "middle", textAlign: "center", borderBottom: "1px solid var(--border-color)", borderRight: "1.5px solid rgba(255, 255, 255, 0.2)" }}>2025</th>
               <th colSpan={2} style={{ textAlign: "center", borderBottom: "1px solid var(--border-color)", borderRight: "1.5px solid rgba(255, 255, 255, 0.2)", padding: "0.45rem" }}>
                 2026
               </th>
-              <th rowSpan={2} style={{ verticalAlign: "middle", textAlign: "right", paddingRight: "1rem", borderBottom: "1px solid var(--border-color)", borderRight: "1.5px solid rgba(255, 255, 255, 0.2)" }}>2027</th>
-              <th rowSpan={2} style={{ verticalAlign: "middle", textAlign: "right", paddingRight: "1rem", borderBottom: "1px solid var(--border-color)", borderRight: "1.5px solid rgba(255, 255, 255, 0.2)" }}>2028</th>
-              <th rowSpan={2} style={{ verticalAlign: "middle", textAlign: "right", paddingRight: "1rem", borderBottom: "1px solid var(--border-color)", borderRight: "1.5px solid rgba(255, 255, 255, 0.2)" }}>2029</th>
-              <th rowSpan={2} style={{ verticalAlign: "middle", textAlign: "right", paddingRight: "1.5rem", fontWeight: "800", color: "var(--accent-color)", borderBottom: "1px solid var(--border-color)" }}>합계</th>
+              <th rowSpan={2} style={{ verticalAlign: "middle", textAlign: "center", borderBottom: "1px solid var(--border-color)", borderRight: "1.5px solid rgba(255, 255, 255, 0.2)" }}>2027</th>
+              <th rowSpan={2} style={{ verticalAlign: "middle", textAlign: "center", borderBottom: "1px solid var(--border-color)", borderRight: "1.5px solid rgba(255, 255, 255, 0.2)" }}>2028</th>
+              <th rowSpan={2} style={{ verticalAlign: "middle", textAlign: "center", borderBottom: "1px solid var(--border-color)", borderRight: "1.5px solid rgba(255, 255, 255, 0.2)" }}>2029</th>
+              <th rowSpan={2} style={{ verticalAlign: "middle", textAlign: "center", fontWeight: "800", color: "var(--accent-color)", borderBottom: "1px solid var(--border-color)" }}>합계</th>
             </tr>
             <tr style={{ background: "rgba(255,255,255,0.01)" }}>
-              <th style={{ textAlign: "right", paddingRight: "0.5rem", fontSize: "0.7rem", color: "#60a5fa", borderBottom: "1px solid var(--border-color)", borderRight: "1px dashed rgba(255, 255, 255, 0.15)" }}>본사업</th>
-              <th style={{ textAlign: "right", paddingRight: "0.5rem", fontSize: "0.7rem", color: "#34d399", borderBottom: "1px solid var(--border-color)", borderRight: "1.5px solid rgba(255, 255, 255, 0.2)" }}>이월사업</th>
+              <th style={{ textAlign: "center", fontSize: "0.7rem", color: "#60a5fa", borderBottom: "1px solid var(--border-color)", borderRight: "1px dashed rgba(255, 255, 255, 0.15)" }}>본사업</th>
+              <th style={{ textAlign: "center", fontSize: "0.7rem", color: "#34d399", borderBottom: "1px solid var(--border-color)", borderRight: "1.5px solid rgba(255, 255, 255, 0.2)" }}>이월사업</th>
             </tr>
           </thead>
           <tbody>
