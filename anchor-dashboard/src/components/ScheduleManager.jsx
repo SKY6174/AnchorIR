@@ -3473,7 +3473,7 @@ ${aiRawText}
                     handleEditSchedule(sched);
                   }}
                   style={{
-                    fontSize: "0.65rem",
+                    fontSize: (sched.title || "").length >= 22 ? "0.55rem" : "0.65rem",
                     background: bgColor,
                     color: "white",
                     padding: "0.15rem 0.3rem",
