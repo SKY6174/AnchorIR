@@ -6395,103 +6395,14 @@ ${aiRawText}
                 <>
                   {/* AI 기획서/결과서 자동 기입 위젯 */}
                   <div style={{
-                    padding: "0.85rem 1rem",
-                    background: "rgba(139, 92, 246, 0.06)",
-                    border: "1px dashed rgba(139, 92, 246, 0.3)",
+                    background: "rgba(30, 41, 59, 0.4)",
+                    border: "1px solid rgba(139, 92, 246, 0.2)",
                     borderRadius: "8px",
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "0.5rem",
-                    marginBottom: "0.5rem"
+                    padding: "0.75rem",
+                    marginBottom: "1rem"
                   }}>
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "0.5rem" }}>
-                      <span style={{ fontSize: "0.75rem", fontWeight: "700", color: "#a78bfa" }}>
-                        ✨ AI 기획서∙결과보고서 자동 기입 (GPT-4o-mini 모델 연동)
-                      </span>
-                      <button
-                        type="button"
-                        onClick={handleLoadSampleFile}
-                        style={{ fontSize: "0.7rem", color: "#60a5fa", background: "none", border: "none", cursor: "pointer", textDecoration: "underline" }}
-                      >
-                        [기획안 샘플 파일 자동 로드]
-                      </button>
-                    </div>
-
-                    <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
-                      <input
-                        type="file"
-                        id="ai-event-file"
-                        accept=".pdf,.hwp,.hwpx,.docx,.txt"
-                        onChange={handleAiFileChange}
-                        style={{ display: "none" }}
-                      />
-                      <label
-                        htmlFor="ai-event-file"
-                        style={{
-                          flexGrow: 1,
-                          padding: "0.45rem 0.75rem",
-                          background: "rgba(255,255,255,0.03)",
-                          border: "1px solid var(--border-color)",
-                          borderRadius: "6px",
-                          fontSize: "0.75rem",
-                          color: aiFileName ? "var(--text-primary)" : "var(--text-secondary)",
-                          cursor: "pointer",
-                          display: "flex",
-                          justifyContent: "space-between",
-                          alignItems: "center",
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
-                          whiteSpace: "nowrap"
-                        }}
-                      >
-                        <span>{aiFileName || "기획서/결과보고서 첨부파일 선택 (.hwp, .pdf, .docx)"}</span>
-                        <span style={{ fontSize: "0.65rem", padding: "0.15rem 0.35rem", borderRadius: "4px", background: "var(--input-bg)", color: "var(--text-secondary)", flexShrink: 0, marginLeft: "0.5rem" }}>
-                          파일 탐색
-                        </span>
-                      </label>
-
-                      <button
-                        type="button"
-                        onClick={triggerAiAutoFill}
-                        disabled={isAiLoading}
-                        style={{
-                          padding: "0.45rem 1rem",
-                          background: isAiLoading ? "rgba(128,128,128,0.2)" : "var(--accent-color)",
-                          color: "white",
-                          border: "none",
-                          borderRadius: "6px",
-                          fontSize: "0.75rem",
-                          fontWeight: "700",
-                          cursor: isAiLoading ? "not-allowed" : "pointer",
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "0.25rem",
-                          flexShrink: 0
-                        }}
-                      >
-                        {isAiLoading ? "분석 중..." : "AI 자동완성"}
-                      </button>
-                    </div>
-
-                    {isAiLoading && (
-                      <div style={{ marginTop: "0.25rem" }}>
-                        <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.65rem", color: "#a78bfa", marginBottom: "0.2rem", fontFamily: "monospace" }}>
-                          <span>{aiStatusText}</span>
-                          <span>{aiProgress}%</span>
-                        </div>
-                        <div style={{ width: "100%", height: "4px", background: "var(--input-bg)", borderRadius: "2px", overflow: "hidden" }}>
-                          <div style={{ width: `${aiProgress}%`, height: "100%", background: "linear-gradient(90deg, #a78bfa 0%, #818cf8 100%)", borderRadius: "2px", transition: "width 0.15s ease" }} />
-                        </div>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* 기획서/결과서 텍스트 직접 입력창 (Gemini API가 직접 요약하는 소스 텍스트) */}
-                  <div style={{ marginBottom: "0.5rem" }}>
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.2rem" }}>
-                      <label style={{ display: "block", fontSize: "0.75rem", color: "var(--text-secondary)", fontWeight: "600" }}>
-                        📋 분석할 기획서 원문 텍스트 (직접 붙여넣거나 파일 로드 가능)
-                      </label>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.5rem" }}>
+                      <span style={{ fontSize: "0.8rem", fontWeight: "700", color: "#a78bfa" }}>🧠 지능형 AI-분석 연동 (기획 vs 결과 분리)</span>
                       <button
                         type="button"
                         onClick={() => {
@@ -6501,33 +6412,175 @@ ${aiRawText}
                             alert("OpenAI API Key가 브라우저 로컬 스토리지에 안전하게 저장되었습니다.");
                           }
                         }}
-                        style={{ fontSize: "0.68rem", color: "var(--accent-color)", background: "transparent", border: "none", cursor: "pointer", display: "flex", alignItems: "center", gap: "0.15rem" }}
+                        style={{ fontSize: "0.68rem", color: "#a78bfa", background: "transparent", border: "none", cursor: "pointer", display: "flex", alignItems: "center", gap: "0.15rem" }}
                       >
                         ⚙️ API 설정
                       </button>
                     </div>
-                    <textarea
-                      value={aiRawText}
-                      onChange={(e) => setAiRawText(e.target.value)}
-                      placeholder="기획안 문서를 업로드하거나 본문 내용을 복사해서 여기에 붙여넣어 주세요. [AI 자동완성]을 누르면 이 내용을 기반으로 실시간 OpenAI GPT 분석이 실행됩니다."
-                      style={{
-                        width: "100%",
-                        height: "55px",
-                        padding: "0.4rem 0.5rem",
-                        background: "rgba(0,0,0,0.15)",
-                        border: "1px solid var(--border-color)",
-                        borderRadius: "6px",
-                        color: "var(--text-primary)",
-                        fontSize: "0.72rem",
-                        resize: "none",
-                        fontFamily: "sans-serif"
-                      }}
-                    />
-                  </div>
+                    
+                    <p style={{ fontSize: "0.68rem", color: "var(--text-secondary)", lineHeight: "1.3", marginBottom: "0.75rem" }}>
+                      💡 <strong>기획서</strong>를 분석하면 명칭, 담당 부서, 장소, 일자, 시간, 목적, 프로그램 등 일정 정보가 자동 완성됩니다.<br />
+                      💡 <strong>결과보고서</strong>를 분석하면 하단의 행사 결과 요약이 자동으로 입력됩니다.
+                    </p>
 
-                  <div>
-                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>행사 명칭</label>
-                    <input type="text" name="title" value={formData.title} onChange={handleInputChange} required placeholder="예: RISE 지산학 공동 취업 박람회" style={{ width: "100%", padding: "0.5rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} />
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem" }}>
+                      {/* [1] 기획서 분석 영역 */}
+                      <div style={{ background: "rgba(0,0,0,0.2)", padding: "0.5rem", borderRadius: "6px" }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.3rem" }}>
+                          <span style={{ fontSize: "0.72rem", fontWeight: "700", color: "var(--text-primary)" }}>1️⃣ 행사 기획/계획 단계</span>
+                          <button
+                            type="button"
+                            onClick={handleLoadSampleFile}
+                            style={{ fontSize: "0.6rem", color: "#60a5fa", background: "none", border: "none", cursor: "pointer", textDecoration: "underline" }}
+                          >
+                            [샘플로드]
+                          </button>
+                        </div>
+                        <input
+                          type="file"
+                          id="ai-plan-file"
+                          accept=".txt,.pdf"
+                          onChange={(e) => handleAiFileChange(e, "plan")}
+                          style={{ display: "none" }}
+                        />
+                        <label
+                          htmlFor="ai-plan-file"
+                          style={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                            padding: "0.35rem 0.5rem",
+                            background: "var(--input-bg)",
+                            border: "1px dashed rgba(167, 139, 250, 0.4)",
+                            borderRadius: "4px",
+                            cursor: "pointer",
+                            fontSize: "0.68rem",
+                            color: "var(--text-primary)",
+                            marginBottom: "0.4rem"
+                          }}
+                        >
+                          <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: "110px" }}>
+                            {aiFileName || "기획서 파일 첨부"}
+                          </span>
+                          <span style={{ fontSize: "0.65rem", background: "rgba(167, 139, 250, 0.2)", padding: "0.1rem 0.25rem", borderRadius: "3px" }}>탐색</span>
+                        </label>
+                        <textarea
+                          value={aiRawText}
+                          onChange={(e) => setAiRawText(e.target.value)}
+                          placeholder="또는 기획서 본문을 직접 붙여넣으세요..."
+                          style={{
+                            width: "100%",
+                            height: "45px",
+                            padding: "0.3rem",
+                            background: "rgba(0,0,0,0.15)",
+                            border: "1px solid var(--border-color)",
+                            borderRadius: "4px",
+                            color: "var(--text-primary)",
+                            fontSize: "0.68rem",
+                            resize: "none"
+                          }}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => triggerAiAutoFill("plan")}
+                          disabled={isAiLoading}
+                          style={{
+                            width: "100%",
+                            marginTop: "0.4rem",
+                            padding: "0.35rem",
+                            background: "var(--accent-color)",
+                            color: "white",
+                            border: "none",
+                            borderRadius: "4px",
+                            fontSize: "0.7rem",
+                            fontWeight: "700",
+                            cursor: "pointer"
+                          }}
+                        >
+                          기획서 AI 분석
+                        </button>
+                      </div>
+
+                      {/* [2] 결과보고서 분석 영역 */}
+                      <div style={{ background: "rgba(0,0,0,0.2)", padding: "0.5rem", borderRadius: "6px" }}>
+                        <span style={{ display: "block", fontSize: "0.72rem", fontWeight: "700", color: "var(--text-primary)", marginBottom: "0.3rem" }}>2️⃣ 행사 결과/실적 단계</span>
+                        <input
+                          type="file"
+                          id="ai-result-file"
+                          accept=".txt,.pdf"
+                          onChange={(e) => handleAiFileChange(e, "result")}
+                          style={{ display: "none" }}
+                        />
+                        <label
+                          htmlFor="ai-result-file"
+                          style={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                            padding: "0.35rem 0.5rem",
+                            background: "var(--input-bg)",
+                            border: "1px dashed rgba(167, 139, 250, 0.4)",
+                            borderRadius: "4px",
+                            cursor: "pointer",
+                            fontSize: "0.68rem",
+                            color: "var(--text-primary)",
+                            marginBottom: "0.4rem"
+                          }}
+                        >
+                          <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: "110px" }}>
+                            {aiResultFileName || "결과보고서 파일 첨부"}
+                          </span>
+                          <span style={{ fontSize: "0.65rem", background: "rgba(167, 139, 250, 0.2)", padding: "0.1rem 0.25rem", borderRadius: "3px" }}>탐색</span>
+                        </label>
+                        <textarea
+                          value={aiResultRawText}
+                          onChange={(e) => setAiResultRawText(e.target.value)}
+                          placeholder="또는 결과보고서 본문을 직접 붙여넣으세요..."
+                          style={{
+                            width: "100%",
+                            height: "45px",
+                            padding: "0.3rem",
+                            background: "rgba(0,0,0,0.15)",
+                            border: "1px solid var(--border-color)",
+                            borderRadius: "4px",
+                            color: "var(--text-primary)",
+                            fontSize: "0.68rem",
+                            resize: "none"
+                          }}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => triggerAiAutoFill("result")}
+                          disabled={isAiLoading}
+                          style={{
+                            width: "100%",
+                            marginTop: "0.4rem",
+                            padding: "0.35rem",
+                            background: "#10B981",
+                            color: "white",
+                            border: "none",
+                            borderRadius: "4px",
+                            fontSize: "0.7rem",
+                            fontWeight: "700",
+                            cursor: "pointer"
+                          }}
+                        >
+                          결과서 AI 분석
+                        </button>
+                      </div>
+                    </div>
+
+                    {isAiLoading && (
+                      <div style={{ marginTop: "0.5rem" }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.65rem", color: "#a78bfa", marginBottom: "0.2rem", fontFamily: "monospace" }}>
+                          <span>{aiStatusText}</span>
+                          <span>{aiProgress}%</span>
+                        </div>
+                        <div style={{ width: "100%", height: "4px", background: "var(--input-bg)", borderRadius: "2px", overflow: "hidden" }}>
+                          <div style={{ width: `${aiProgress}%`, height: "100%", background: "linear-gradient(90deg, #a78bfa 0%, #818cf8 100%)", borderRadius: "2px", transition: "width 0.15s ease" }} />
+                        </div>
+                      </div>
+                    )}
                   </div>
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
                     <div>
@@ -6614,133 +6667,192 @@ ${aiRawText}
                 <>
                   {/* AI 기획서/결과서 자동 기입 위젯 */}
                   <div style={{
-                    padding: "0.85rem 1rem",
-                    background: "rgba(139, 92, 246, 0.06)",
-                    border: "1px dashed rgba(139, 92, 246, 0.3)",
+                    background: "rgba(30, 41, 59, 0.4)",
+                    border: "1px solid rgba(139, 92, 246, 0.2)",
                     borderRadius: "8px",
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "0.5rem",
-                    marginBottom: "0.5rem"
+                    padding: "0.75rem",
+                    marginBottom: "1rem"
                   }}>
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "0.5rem" }}>
-                      <span style={{ fontSize: "0.75rem", fontWeight: "700", color: "#a78bfa" }}>
-                        ✨ AI 기획서∙회의록∙결과보고서 자동 기입 (GPT-4o-mini 모델 연동)
-                      </span>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.5rem" }}>
+                      <span style={{ fontSize: "0.8rem", fontWeight: "700", color: "#a78bfa" }}>🧠 지능형 AI-분석 연동 (기획 vs 결과 분리)</span>
                       <button
                         type="button"
-                        onClick={handleLoadSampleFile}
-                        style={{ fontSize: "0.7rem", color: "#60a5fa", background: "none", border: "none", cursor: "pointer", textDecoration: "underline" }}
+                        onClick={() => {
+                          const newKey = prompt("🔑 OpenAI GPT API Key 변경 (sk-로 시작):", localStorage.getItem("user_openai_api_key") || "");
+                          if (newKey !== null) {
+                            localStorage.setItem("user_openai_api_key", newKey.trim());
+                            alert("OpenAI API Key가 브라우저 로컬 스토리지에 안전하게 저장되었습니다.");
+                          }
+                        }}
+                        style={{ fontSize: "0.68rem", color: "#a78bfa", background: "transparent", border: "none", cursor: "pointer", display: "flex", alignItems: "center", gap: "0.15rem" }}
                       >
-                        [기획안 샘플 파일 자동 로드]
+                        ⚙️ API 설정
                       </button>
                     </div>
+                    
+                    <p style={{ fontSize: "0.68rem", color: "var(--text-secondary)", lineHeight: "1.3", marginBottom: "0.75rem" }}>
+                      💡 <strong>기획/일정안</strong>을 분석하면 회의 명칭, 장소, 일자, 시작/종료시간, 참석자 등 기본 정보가 자동 완성됩니다.<br />
+                      💡 <strong>결과보고서(회의록)</strong>를 분석하면 하단의 안건별 결과 리스트(의제 및 결과)가 자동으로 채워집니다.
+                    </p>
 
-                    <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
-                      <input
-                        type="file"
-                        id="ai-meeting-file"
-                        accept=".pdf,.hwp,.hwpx,.docx,.txt"
-                        onChange={handleAiFileChange}
-                        style={{ display: "none" }}
-                      />
-                      <label
-                        htmlFor="ai-meeting-file"
-                        style={{
-                          flexGrow: 1,
-                          padding: "0.45rem 0.75rem",
-                          background: "rgba(255,255,255,0.03)",
-                          border: "1px solid var(--border-color)",
-                          borderRadius: "6px",
-                          fontSize: "0.75rem",
-                          color: aiFileName ? "var(--text-primary)" : "var(--text-secondary)",
-                          cursor: "pointer",
-                          display: "flex",
-                          justifyContent: "space-between",
-                          alignItems: "center",
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
-                          whiteSpace: "nowrap"
-                        }}
-                      >
-                        <span>{aiFileName || "기획서/회의록/결과보고서 첨부파일 선택 (.hwp, .pdf, .docx)"}</span>
-                        <span style={{ fontSize: "0.65rem", padding: "0.15rem 0.35rem", borderRadius: "4px", background: "var(--input-bg)", color: "var(--text-secondary)", flexShrink: 0, marginLeft: "0.5rem" }}>
-                          파일 탐색
-                        </span>
-                      </label>
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem" }}>
+                      {/* [1] 회의 기획서 분석 영역 */}
+                      <div style={{ background: "rgba(0,0,0,0.2)", padding: "0.5rem", borderRadius: "6px" }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.3rem" }}>
+                          <span style={{ fontSize: "0.72rem", fontWeight: "700", color: "var(--text-primary)" }}>1️⃣ 회의 기획/일정 단계</span>
+                          <button
+                            type="button"
+                            onClick={handleLoadSampleFile}
+                            style={{ fontSize: "0.6rem", color: "#60a5fa", background: "none", border: "none", cursor: "pointer", textDecoration: "underline" }}
+                          >
+                            [샘플로드]
+                          </button>
+                        </div>
+                        <input
+                          type="file"
+                          id="ai-meeting-plan-file"
+                          accept=".txt,.pdf"
+                          onChange={(e) => handleAiFileChange(e, "plan")}
+                          style={{ display: "none" }}
+                        />
+                        <label
+                          htmlFor="ai-meeting-plan-file"
+                          style={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                            padding: "0.35rem 0.5rem",
+                            background: "var(--input-bg)",
+                            border: "1px dashed rgba(167, 139, 250, 0.4)",
+                            borderRadius: "4px",
+                            cursor: "pointer",
+                            fontSize: "0.68rem",
+                            color: "var(--text-primary)",
+                            marginBottom: "0.4rem"
+                          }}
+                        >
+                          <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: "110px" }}>
+                            {aiFileName || "기획서 파일 첨부"}
+                          </span>
+                          <span style={{ fontSize: "0.65rem", background: "rgba(167, 139, 250, 0.2)", padding: "0.1rem 0.25rem", borderRadius: "3px" }}>탐색</span>
+                        </label>
+                        <textarea
+                          value={aiRawText}
+                          onChange={(e) => setAiRawText(e.target.value)}
+                          placeholder="또는 회의 계획 본문을 직접 붙여넣으세요..."
+                          style={{
+                            width: "100%",
+                            height: "45px",
+                            padding: "0.3rem",
+                            background: "rgba(0,0,0,0.15)",
+                            border: "1px solid var(--border-color)",
+                            borderRadius: "4px",
+                            color: "var(--text-primary)",
+                            fontSize: "0.68rem",
+                            resize: "none"
+                          }}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => triggerAiAutoFill("plan")}
+                          disabled={isAiLoading}
+                          style={{
+                            width: "100%",
+                            marginTop: "0.4rem",
+                            padding: "0.35rem",
+                            background: "var(--accent-color)",
+                            color: "white",
+                            border: "none",
+                            borderRadius: "4px",
+                            fontSize: "0.7rem",
+                            fontWeight: "700",
+                            cursor: "pointer"
+                          }}
+                        >
+                          계획서 AI 분석
+                        </button>
+                      </div>
 
-                      <button
-                        type="button"
-                        onClick={triggerAiAutoFill}
-                        disabled={isAiLoading}
-                        style={{
-                          padding: "0.45rem 1rem",
-                          background: isAiLoading ? "rgba(128,128,128,0.2)" : "var(--accent-color)",
-                          color: "white",
-                          border: "none",
-                          borderRadius: "6px",
-                          fontSize: "0.75rem",
-                          fontWeight: "700",
-                          cursor: isAiLoading ? "not-allowed" : "pointer",
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "0.25rem",
-                          flexShrink: 0
-                        }}
-                      >
-                        {isAiLoading ? "분석 중..." : "AI 자동완성"}
-                      </button>
+                      {/* [2] 회의록/결과보고서 분석 영역 */}
+                      <div style={{ background: "rgba(0,0,0,0.2)", padding: "0.5rem", borderRadius: "6px" }}>
+                        <span style={{ display: "block", fontSize: "0.72rem", fontWeight: "700", color: "var(--text-primary)", marginBottom: "0.3rem" }}>2️⃣ 회의 결과/회의록 단계</span>
+                        <input
+                          type="file"
+                          id="ai-meeting-result-file"
+                          accept=".txt,.pdf"
+                          onChange={(e) => handleAiFileChange(e, "result")}
+                          style={{ display: "none" }}
+                        />
+                        <label
+                          htmlFor="ai-meeting-result-file"
+                          style={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                            padding: "0.35rem 0.5rem",
+                            background: "var(--input-bg)",
+                            border: "1px dashed rgba(167, 139, 250, 0.4)",
+                            borderRadius: "4px",
+                            cursor: "pointer",
+                            fontSize: "0.68rem",
+                            color: "var(--text-primary)",
+                            marginBottom: "0.4rem"
+                          }}
+                        >
+                          <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: "110px" }}>
+                            {aiResultFileName || "결과보고서 파일 첨부"}
+                          </span>
+                          <span style={{ fontSize: "0.65rem", background: "rgba(167, 139, 250, 0.2)", padding: "0.1rem 0.25rem", borderRadius: "3px" }}>탐색</span>
+                        </label>
+                        <textarea
+                          value={aiResultRawText}
+                          onChange={(e) => setAiResultRawText(e.target.value)}
+                          placeholder="또는 결과보고서 본문을 직접 붙여넣으세요..."
+                          style={{
+                            width: "100%",
+                            height: "45px",
+                            padding: "0.3rem",
+                            background: "rgba(0,0,0,0.15)",
+                            border: "1px solid var(--border-color)",
+                            borderRadius: "4px",
+                            color: "var(--text-primary)",
+                            fontSize: "0.68rem",
+                            resize: "none"
+                          }}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => triggerAiAutoFill("result")}
+                          disabled={isAiLoading}
+                          style={{
+                            width: "100%",
+                            marginTop: "0.4rem",
+                            padding: "0.35rem",
+                            background: "#10B981",
+                            color: "white",
+                            border: "none",
+                            borderRadius: "4px",
+                            fontSize: "0.7rem",
+                            fontWeight: "700",
+                            cursor: "pointer"
+                          }}
+                        >
+                          회의록 AI 분석
+                        </button>
+                      </div>
                     </div>
 
                     {isAiLoading && (
-                      <div style={{ marginTop: "0.25rem" }}>
+                      <div style={{ marginTop: "0.5rem" }}>
                         <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.65rem", color: "#a78bfa", marginBottom: "0.2rem", fontFamily: "monospace" }}>
                           <span>{aiStatusText}</span>
                           <span>{aiProgress}%</span>
                         </div>
-                        <div style={{ width: "100%", height: "4px", background: "rgba(255,255,255,0.05)", borderRadius: "2px", overflow: "hidden" }}>
-                          <div style={{ width: `${aiProgress}%`, height: "100%", background: "linear-gradient(90deg, #8b5cf6, #ec4899)", borderRadius: "2px", transition: "width 0.2s ease" }}></div>
+                        <div style={{ width: "100%", height: "4px", background: "var(--input-bg)", borderRadius: "2px", overflow: "hidden" }}>
+                          <div style={{ width: `${aiProgress}%`, height: "100%", background: "linear-gradient(90deg, #a78bfa 0%, #818cf8 100%)", borderRadius: "2px", transition: "width 0.15s ease" }} />
                         </div>
                       </div>
                     )}
-
-                    <div style={{ marginBottom: "0.5rem" }}>
-                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.2rem" }}>
-                        <label style={{ display: "block", fontSize: "0.75rem", color: "var(--text-secondary)", fontWeight: "600" }}>
-                          📋 분석할 기획서/회의록 원문 텍스트 (직접 붙여넣거나 파일 로드 가능)
-                        </label>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            const newKey = prompt("🔑 OpenAI GPT API Key 변경 (sk-로 시작):", localStorage.getItem("user_openai_api_key") || "");
-                            if (newKey !== null) {
-                              localStorage.setItem("user_openai_api_key", newKey.trim());
-                              alert("OpenAI API Key가 브라우저 로컬 스토리지에 안전하게 저장되었습니다.");
-                            }
-                          }}
-                          style={{ fontSize: "0.68rem", color: "var(--accent-color)", background: "transparent", border: "none", cursor: "pointer", display: "flex", alignItems: "center", gap: "0.15rem" }}
-                        >
-                          ⚙️ API 설정
-                        </button>
-                      </div>
-                      <textarea
-                        value={aiRawText}
-                        onChange={(e) => setAiRawText(e.target.value)}
-                        placeholder="기획안/회의록 문서를 업로드하거나 본문 내용을 복사해서 여기에 붙여넣어 주세요. [AI 자동완성]을 누르면 이 내용을 기반으로 실시간 OpenAI GPT 분석이 실행됩니다."
-                        style={{
-                          width: "100%",
-                          height: "55px",
-                          padding: "0.4rem 0.5rem",
-                          background: "rgba(0,0,0,0.15)",
-                          border: "1px solid var(--border-color)",
-                          borderRadius: "6px",
-                          color: "var(--text-primary)",
-                          fontSize: "0.72rem",
-                          resize: "none",
-                          fontFamily: "sans-serif"
-                        }}
-                      />
-                    </div>
                   </div>
 
                   <div>
