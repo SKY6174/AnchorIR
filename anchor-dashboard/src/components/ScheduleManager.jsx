@@ -858,10 +858,48 @@ export default function ScheduleManager({
     const title = aiData.title || prevFormData.title;
     const location = aiData.location || prevFormData.location;
     
-    // 1) 앵커기획위원회나 ~위원회 명칭인 경우 각종분류를 '각종 위원회' (committee) 로 자동 분류
+    // 1) 앵커기획위원회나 ~위원회 명칭인 경우 각종분류를 '각종 위원회' (committee) 로 자동 분류 및 세부 위원회명 추출
     let category = prevFormData.category || "operating";
-    if (title && (title.includes("위원회") || title.includes("자문회의"))) {
+    let committeeType = prevFormData.committeeType || "agency";
+    let dept = prevFormData.dept || "사업운영팀";
+
+    const isCommitteeTitle = title && (title.includes("위원회") || title.includes("자문회의") || title.includes("협의회"));
+    if (isCommitteeTitle) {
       category = "committee";
+
+      // 1-1) 사업단 위원회 매칭 검사 (agency)
+      const agencyList = [
+        "앵커총괄위원회", "앵커기획위원회", "앵커사업비관리위원회",
+        "앵커사업자체평가위원회", "앵커사업자문회의", "앵커사업운영위원회"
+      ];
+      // 띄어쓰기 무관하게 매칭 검사
+      const titleCleaned = title.replace(/\s+/g, "");
+      let foundAgency = agencyList.find(name => {
+        const nameCleaned = name.replace(/\s+/g, "");
+        const shortNameCleaned = nameCleaned.replace("앵커", "");
+        return titleCleaned.includes(nameCleaned) || titleCleaned.includes(shortNameCleaned);
+      });
+      
+      if (foundAgency) {
+        committeeType = "agency";
+        dept = foundAgency;
+      } else {
+        // 1-2) 센터 위원회 매칭 검사 (center)
+        const centerList = [
+          { key: "ECC센터", match: ["ECC", "ecc"] },
+          { key: "ICC센터", match: ["ICC", "icc"] },
+          { key: "RCC센터", match: ["RCC", "rcc"] },
+          { key: "AID-X지원센터", match: ["AID-X", "aidx", "AID"] },
+          { key: "울산늘봄누리센터", match: ["늘봄", "늘봄누리"] },
+          { key: "신산업특화센터", match: ["신산업", "특화센터"] }
+        ];
+        
+        let foundCenter = centerList.find(c => c.match.some(m => title.toLowerCase().includes(m.toLowerCase())));
+        if (foundCenter) {
+          committeeType = "center";
+          dept = foundCenter.key;
+        }
+      }
     }
 
     // 2) 서면부의인 경우(또는 시작/종료 시간이 빈 문자열이거나 명시되지 않은 경우) 전일 체크 및 시간 필드 비우기
@@ -875,6 +913,8 @@ export default function ScheduleManager({
       title: title,
       location: location,
       category: category,
+      committeeType: category === "committee" ? committeeType : prevFormData.committeeType,
+      dept: category === "committee" ? dept : prevFormData.dept,
       meetingDate: aiData.meetingDate || prevFormData.meetingDate,
       noTime: shouldBeAllDay,
       meetingStartTime: shouldBeAllDay ? "" : (aiData.meetingStartTime || prevFormData.meetingStartTime || "10:00"),
