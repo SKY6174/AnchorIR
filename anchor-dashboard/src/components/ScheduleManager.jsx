@@ -3913,7 +3913,7 @@ Gemini 피드백: \n${geminiCritiqueText}
       {subTab === "monthly" && (
         <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
 
-          <div className="card" style={{ padding: "1.25rem", borderRadius: "10px", background: "var(--panel-bg)", border: "1px solid var(--border-color)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <div className="card" style={{ padding: "1.25rem", borderRadius: "12px", background: "var(--panel-bg)", border: "1px solid var(--border-color)", boxShadow: "0 4px 20px -2px rgba(0, 0, 0, 0.05)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <div>
               <h3 style={{ margin: 0, fontSize: "1.1rem", fontWeight: "800", color: "var(--text-primary)" }}>
                 📅 앵커사업단 월간 일정
@@ -3933,8 +3933,11 @@ Gemini 피드백: \n${geminiCritiqueText}
                   onClick={() => openAddModal("monthly")}
                   style={{
                     display: "flex", alignItems: "center", gap: "0.25rem", padding: "0.4rem 1rem", borderRadius: "6px",
-                    background: "var(--accent-color)", border: "none", color: "var(--text-primary)", fontWeight: "600", fontSize: "0.85rem", cursor: "pointer"
+                    background: "var(--accent-color, #3B82F6)", border: "none", color: "#FFFFFF", fontWeight: "600", fontSize: "0.85rem", cursor: "pointer",
+                    transition: "background 0.15s"
                   }}
+                  onMouseOver={(e) => e.currentTarget.style.background = "#2563EB"}
+                  onMouseOut={(e) => e.currentTarget.style.background = "var(--accent-color, #3B82F6)"}
                 >
                   <Plus size={16} />
                   일정 추가
@@ -3943,7 +3946,7 @@ Gemini 피드백: \n${geminiCritiqueText}
                   onClick={() => openAddModal("task")}
                   style={{
                     display: "flex", alignItems: "center", gap: "0.25rem", padding: "0.4rem 1rem", borderRadius: "6px",
-                    background: "#8B5CF6", border: "none", color: "var(--text-primary)", fontWeight: "600", fontSize: "0.85rem", cursor: "pointer",
+                    background: "#8B5CF6", border: "none", color: "#FFFFFF", fontWeight: "600", fontSize: "0.85rem", cursor: "pointer",
                     transition: "background 0.15s"
                   }}
                   onMouseOver={(e) => e.currentTarget.style.background = "#7C3AED"}
@@ -3956,7 +3959,7 @@ Gemini 피드백: \n${geminiCritiqueText}
                   onClick={() => openAddModal("deadline")}
                   style={{
                     display: "flex", alignItems: "center", gap: "0.25rem", padding: "0.4rem 1rem", borderRadius: "6px",
-                    background: "#EF4444", border: "none", color: "var(--text-primary)", fontWeight: "600", fontSize: "0.85rem", cursor: "pointer",
+                    background: "#EF4444", border: "none", color: "#FFFFFF", fontWeight: "600", fontSize: "0.85rem", cursor: "pointer",
                     transition: "background 0.15s"
                   }}
                   onMouseOver={(e) => e.currentTarget.style.background = "#DC2626"}
@@ -4426,9 +4429,9 @@ Gemini 피드백: \n${geminiCritiqueText}
                     </div>
 
                     {/* 우측 결과보고 블록 (좌측 내용물과 높이 자동 맞춤 동기화) */}
-                    <div style={{ background: "rgba(52, 211, 153, 0.04)", padding: "0.75rem 1rem", borderRadius: "8px", border: "1px solid rgba(52, 211, 153, 0.1)", display: "flex", flexDirection: "column", gap: "0.3rem", justifyContent: "center" }}>
-                      <span style={{ color: "#34D399", fontWeight: "700", fontSize: "0.75rem", display: "flex", alignItems: "center", gap: "0.25rem" }}>
-                        <CheckCircle size={13} />
+                    <div style={{ background: "rgba(16, 185, 129, 0.14)", padding: "0.75rem 1rem", borderRadius: "8px", border: "1px solid rgba(16, 185, 129, 0.25)", display: "flex", flexDirection: "column", gap: "0.3rem", justifyContent: "center" }}>
+                      <span style={{ color: "#059669", fontWeight: "800", fontSize: "0.78rem", display: "flex", alignItems: "center", gap: "0.25rem" }}>
+                        <CheckCircle size={14} />
                         행사 결과 보고
                       </span>
                       <p style={{ margin: 0, fontSize: "0.75rem", lineHeight: "1.45", color: "var(--text-secondary)" }}>

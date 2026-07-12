@@ -1153,52 +1153,55 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
 
                   return (
                     <div style={{ overflowX: "auto" }}>
-                      <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.75rem", textAlign: "left" }}>
+                      <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.75rem", textAlign: "center" }}>
                         <thead>
                           <tr style={{ borderBottom: "1px solid var(--border-color)", color: "var(--text-secondary)" }}>
-                            <th style={{ padding: "0.5rem" }}>기자재 품명</th>
-                            <th style={{ padding: "0.5rem" }}>물품(기자재)번호</th>
-                            <th style={{ padding: "0.5rem" }}>바코드</th>
-                            <th style={{ padding: "0.5rem" }}>재고위치</th>
-                            <th style={{ padding: "0.5rem" }}>사용 분야(목적)</th>
-                            <th style={{ padding: "0.5rem" }}>최근 점검 시각</th>
-                            <th style={{ padding: "0.5rem" }}>메모(비고)</th>
+                            <th style={{ padding: "0.5rem", textAlign: "center" }}>기자재 품명</th>
+                            <th style={{ padding: "0.5rem", textAlign: "center" }}>물품(기자재)번호</th>
+                            <th style={{ padding: "0.5rem", textAlign: "center" }}>바코드</th>
+                            <th style={{ padding: "0.5rem", textAlign: "center" }}>재고위치</th>
+                            <th style={{ padding: "0.5rem", textAlign: "center" }}>사용 분야(목적)</th>
+                            <th style={{ padding: "0.5rem", textAlign: "center" }}>최근 점검 시각</th>
+                            <th style={{ padding: "0.5rem", textAlign: "center" }}>사용실적</th>
                             <th style={{ padding: "0.5rem", textAlign: "center" }}>관리</th>
                           </tr>
                         </thead>
                         <tbody>
                           {filtered.map((item) => (
                             <tr key={item.id} style={{ borderBottom: "1px solid rgba(255,255,255,0.03)" }}>
-                              <td style={{ padding: "0.5rem", fontWeight: "700", color: "#34D399" }}>{item.item_name}</td>
-                              <td style={{ padding: "0.5rem", fontFamily: "monospace" }}>{item.asset_number}</td>
-                              <td style={{ padding: "0.5rem", fontFamily: "monospace" }}>{item.barcode_id}</td>
-                              <td style={{ padding: "0.5rem" }}>{item.stock_location}</td>
-                              <td style={{ padding: "0.5rem" }}>
-                                <span style={{
-                                  padding: "0.15rem 0.4rem",
-                                  borderRadius: "4px",
-                                  background: "rgba(59, 130, 246, 0.15)",
-                                  border: "1px solid rgba(59, 130, 246, 0.3)",
-                                  color: "#60A5FA",
-                                  fontSize: "0.65rem",
-                                  fontWeight: "700"
-                                }}>
-                                  {item.usage_type}
-                                </span>
+                              <td style={{ padding: "0.5rem", fontWeight: "700", color: "#34D399", textAlign: "center" }}>{item.item_name}</td>
+                              <td style={{ padding: "0.5rem", fontFamily: "monospace", textAlign: "center" }}>{item.asset_number}</td>
+                              <td style={{ padding: "0.5rem", fontFamily: "monospace", textAlign: "center" }}>{item.barcode_id}</td>
+                              <td style={{ padding: "0.5rem", textAlign: "center" }}>{item.stock_location}</td>
+                              <td style={{ padding: "0.5rem", textAlign: "center" }}>
+                                <div style={{ display: "flex", justifyContent: "center" }}>
+                                  <span style={{
+                                    padding: "0.15rem 0.4rem",
+                                    borderRadius: "4px",
+                                    background: "rgba(59, 130, 246, 0.15)",
+                                    border: "1px solid rgba(59, 130, 246, 0.3)",
+                                    color: "#60A5FA",
+                                    fontSize: "0.65rem",
+                                    fontWeight: "700"
+                                  }}>
+                                    {item.usage_type}
+                                  </span>
+                                </div>
                               </td>
-                              <td style={{ padding: "0.5rem", color: "#FBBF24", fontWeight: "600" }}>
+                              <td style={{ padding: "0.5rem", color: "#FBBF24", fontWeight: "600", textAlign: "center" }}>
                                 {item.last_checked_at ? new Date(item.last_checked_at).toLocaleString("ko-KR") : "-"}
                               </td>
-                              <td style={{ padding: "0.5rem", color: "var(--text-secondary)" }}>{item.memo || "-"}</td>
+                              <td style={{ padding: "0.5rem", textAlign: "center" }}>
+                                <button
+                                  onClick={() => handleOpenUtilizationModal(item)}
+                                  title="학기별 실적 관리"
+                                  style={{ background: "none", border: "none", color: "#10B981", cursor: "pointer", display: "inline-flex", alignItems: "center", justifyContent: "center" }}
+                                >
+                                  <TrendingUp size={13} />
+                                </button>
+                              </td>
                               <td style={{ padding: "0.5rem", textAlign: "center" }}>
                                 <div style={{ display: "flex", gap: "0.5rem", justifyContent: "center" }}>
-                                  <button
-                                    onClick={() => handleOpenUtilizationModal(item)}
-                                    title="학기별 실적 관리"
-                                    style={{ background: "none", border: "none", color: "#10B981", cursor: "pointer" }}
-                                  >
-                                    <TrendingUp size={13} />
-                                  </button>
                                   <button
                                     onClick={() => handleOpenEditEquip(item)}
                                     title="수정"

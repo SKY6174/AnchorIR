@@ -2,6 +2,20 @@ import React, { useState, useEffect } from "react";
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Legend } from "recharts";
 import { Wallet, Info, FileEdit, CheckCircle } from "lucide-react";
 
+// 두번째 그림 기준 정렬된 표준 10대 비목 순서
+const STANDARD_BUDGET_CATEGORIES = [
+  "인건비",
+  "장학금",
+  "교육∙연구 프로그램 개발∙운영비",
+  "교육∙연구 환경개선비",
+  "실험∙실습장비 및 기자재 구입∙운영비",
+  "지역 연계∙협업 지원비",
+  "기업 지원∙협력 활동비",
+  "성과 활용∙확산 지원비",
+  "그 밖의 사업운영경비",
+  "간접비"
+];
+
 // 백만원 단위 포맷팅 헬퍼 함수 (소수점 첫째자리까지 표현)
 const formatToMillionWon = (value) => {
   if (value === undefined || value === null || isNaN(value)) return "0.0";
@@ -389,8 +403,8 @@ export default function BudgetItemsManager({ projects, currentRole, onUpdateBudg
 
   // 서브탭 전환에 따른 차트 데이터 가공 (단위: 백만원)
   const chartData = activeUnit
-    ? Object.keys(activeUnit.budgetDetails).map(key => {
-      const detYear = activeUnit.budgetDetails[key].years?.[selectedYear] || {};
+    ? STANDARD_BUDGET_CATEGORIES.map(key => {
+      const detYear = activeUnit.budgetDetails[key]?.years?.[selectedYear] || {};
       if (subTab === "main") {
         return {
           name: key,
@@ -676,8 +690,8 @@ export default function BudgetItemsManager({ projects, currentRole, onUpdateBudg
                     )}
                   </thead>
                   <tbody>
-                    {Object.keys(activeUnit.budgetDetails).map(bName => {
-                      const detail = activeUnit.budgetDetails[bName];
+                    {STANDARD_BUDGET_CATEGORIES.map(bName => {
+                      const detail = activeUnit.budgetDetails[bName] || { years: {} };
                       const yearDet = detail.years?.[selectedYear] || {};
 
                       // 본사업비 및 이월비 각각의 잔액 계산 (배정액 - 집행액)
