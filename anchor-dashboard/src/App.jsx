@@ -2212,45 +2212,80 @@ export default function App() {
     }));
   };
 
-  // 💡 [안전한 로컬스토리지 저장 헬퍼] QuotaExceededError 발생 시 사용되지 않는 타 연차 캐시를 파괴하여 디바이스 공간을 긴급 확보합니다.
-  const safeSetLocalStorage = (key, valueStr, currentYear) => {
+  // 💡 [HTML5 IndexedDB 대용량 캐시 솔루션] 브라우저의 5MB 용량 한계를 극복하기 위해 IndexedDB 기반 비동기 Key-Value 저장소를 선언합니다.
+  const initIndexedDB = () => {
+    return new Promise((resolve, reject) => {
+      const request = indexedDB.open("anchor_ir_db", 1);
+      request.onupgradeneeded = (e) => {
+        const db = e.target.result;
+        if (!db.objectStoreNames.contains("kv_store")) {
+          db.createObjectStore("kv_store");
+        }
+      };
+      request.onsuccess = (e) => resolve(e.target.result);
+      request.onerror = (e) => reject(e.target.error);
+    });
+  };
+
+  const getIndexedDBCache = async (key) => {
     try {
-      localStorage.setItem(key, valueStr);
-    } catch (e) {
-      if (e.name === 'QuotaExceededError' || e.code === 22 || e.name === 'NS_ERROR_DOM_QUOTA_REACHED') {
-        console.warn("⚠️ localStorage 용량 초과 감지! 타 연차 캐시 정리를 통해 여유 공간을 확보합니다.");
-        const yr = Number(currentYear || 2);
-        
-        // 1. 현재 연차 이외의 타 연차 캐시 전면 정리
-        for (let y = 1; y <= 5; y++) {
-          if (y !== yr) {
-            localStorage.removeItem(`anchor_cache_proj_y${y}`);
-            localStorage.removeItem(`anchor_cache_env_y${y}`);
-            localStorage.removeItem(`anchor_cache_equip_y${y}`);
-            localStorage.removeItem(`anchor_cache_serv_y${y}`);
-            localStorage.removeItem(`anchor_cache_month_y${y}`);
-            localStorage.removeItem(`anchor_cache_event_y${y}`);
-            localStorage.removeItem(`anchor_cache_meet_y${y}`);
-            localStorage.removeItem(`anchor_cache_press_y${y}`);
-          }
-        }
-        
-        // 2. 대형 임시/구버전 캐시 키 삭제
-        localStorage.removeItem("anchor_projects_data_v55");
-        localStorage.removeItem("anchor_agreements_data_v1");
-        localStorage.removeItem("anchor_unified_certificates_data_v1");
-        
-        // 3. 재시도
-        try {
-          localStorage.setItem(key, valueStr);
-          console.log(`✅ 공간 확보 후 캐시 저장에 성공했습니다: ${key}`);
-        } catch (retryError) {
-          console.error("❌ 캐시 자동 정리 후에도 localStorage 저장 공간이 부족합니다:", retryError);
-        }
-      } else {
-        console.error("localStorage 일반 오류 발생:", e);
+      const db = await initIndexedDB();
+      return new Promise((resolve, reject) => {
+        const transaction = db.transaction("kv_store", "readonly");
+        const store = transaction.objectStore("kv_store");
+        const request = store.get(key);
+        request.onsuccess = () => resolve(request.result || null);
+        request.onerror = () => reject(request.error);
+      });
+    } catch (err) {
+      console.warn("IndexedDB 읽기 실패, localStorage 폴백 시도:", err);
+      return localStorage.getItem(key);
+    }
+  };
+
+  const setIndexedDBCache = async (key, valueStr) => {
+    try {
+      const db = await initIndexedDB();
+      return new Promise((resolve, reject) => {
+        const transaction = db.transaction("kv_store", "readwrite");
+        const store = transaction.objectStore("kv_store");
+        const request = store.put(valueStr, key);
+        request.onsuccess = () => {
+          // 용량 정리를 위해 localStorage에 있는 동일한 키는 지워주어 공간을 비웁니다.
+          localStorage.removeItem(key);
+          resolve(true);
+        };
+        request.onerror = () => reject(request.error);
+      });
+    } catch (err) {
+      console.warn("IndexedDB 쓰기 실패, localStorage 폴백 저장 시도:", err);
+      try {
+        localStorage.setItem(key, valueStr);
+      } catch (e) {
+        console.error("localStorage 폴백 저장마저 실패했습니다 (브라우저 용량 한계 초과):", e);
       }
     }
+  };
+
+  const removeIndexedDBCache = async (key) => {
+    try {
+      const db = await initIndexedDB();
+      return new Promise((resolve, reject) => {
+        const transaction = db.transaction("kv_store", "readwrite");
+        const store = transaction.objectStore("kv_store");
+        const request = store.delete(key);
+        request.onsuccess = () => resolve(true);
+        request.onerror = () => reject(request.error);
+      });
+    } catch (err) {
+      console.warn("IndexedDB 삭제 실패, localStorage 폴백 시도:", err);
+      localStorage.removeItem(key);
+    }
+  };
+
+  // 💡 [안전한 로컬스토리지/IndexedDB 저장 헬퍼] QuotaExceededError 차단을 위해 내부적으로 IndexedDB 백엔드를 사용합니다.
+  const safeSetLocalStorage = (key, valueStr, currentYear) => {
+    setIndexedDBCache(key, valueStr);
   };
 
   // 로그인 성공 혹은 세션 로드 시 Supabase DB로부터 마스터 포털 노출 설정 수신
@@ -3410,53 +3445,72 @@ export default function App() {
   useEffect(() => {
     let active = true;
 
-    // 💡 [깜빡임 방지 및 0초 반응 최적화] 비비비동기 원격 쿼리가 시작되기 전에, 로컬 스토리지 캐시를 동기적으로 선제 로드하여 즉각 렌더링합니다.
-    const cachedProj = localStorage.getItem(`anchor_cache_proj_y${selectedYear}`);
-    const cachedAgr = localStorage.getItem("anchor_cache_agreements_all");
-    const cachedUnifiedCert = localStorage.getItem("anchor_cache_unified_certificates_all");
-    const cachedScholarships = localStorage.getItem("anchor_cache_scholarships_all");
-    const cachedEnv = localStorage.getItem(`anchor_cache_env_y${selectedYear}`);
-    const cachedEquip = localStorage.getItem(`anchor_cache_equip_y${selectedYear}`);
-    const cachedServ = localStorage.getItem(`anchor_cache_serv_y${selectedYear}`);
-    const cachedMonth = localStorage.getItem(`anchor_cache_month_y${selectedYear}`);
-    const cachedEvent = localStorage.getItem(`anchor_cache_event_y${selectedYear}`);
-    const cachedMeet = localStorage.getItem(`anchor_cache_meet_y${selectedYear}`);
-    const cachedPress = localStorage.getItem(`anchor_cache_press_y${selectedYear}`);
-
-    if (cachedProj) setProjects(migrateProgramIds(JSON.parse(cachedProj)));
-    else setProjects([]);
-    if (cachedAgr) setAgreements(JSON.parse(cachedAgr));
-    else setAgreements([]);
-    if (cachedUnifiedCert) setUnifiedCertificates(JSON.parse(cachedUnifiedCert));
-    else setUnifiedCertificates([]);
-    if (cachedScholarships) setScholarships(JSON.parse(cachedScholarships));
-    else setScholarships([]);
-    if (cachedEnv) setEnvData(JSON.parse(cachedEnv));
-    else setEnvData([]);
-    if (cachedEquip) setEquipData(JSON.parse(cachedEquip));
-    else setEquipData([]);
-    if (cachedServ) setServiceData(JSON.parse(cachedServ));
-    else setServiceData([]);
-    if (cachedMonth) setMonthlySchedules(JSON.parse(cachedMonth));
-    else setMonthlySchedules([]);
-    if (cachedEvent) setEventSchedules(JSON.parse(cachedEvent));
-    else setEventSchedules([]);
-    if (cachedMeet) setMeetingSchedules(JSON.parse(cachedMeet));
-    else setMeetingSchedules([]);
-    if (cachedPress) setPressReleases(JSON.parse(cachedPress));
-    else setPressReleases([]);
-
-    if (cachedProj || cachedMonth) {
-      setIsDbLoaded(true);
-    } else {
-      setIsDbLoaded(false);
-    }
-
     const fetchAllDashboardData = async () => {
       // 💡 [보안/에러 원천 방어 가드] 로그인 완료 전(currentUser가 없음)에는 Supabase API를 요청하지 않고 무조건 대기합니다.
       if (!currentUser) return;
 
       try {
+        // 💡 [깜빡임 방지 및 0초 반응 최적화] 비비비동기 원격 쿼리가 시작되기 전에, IndexedDB 캐시를 먼저 비동기로 즉시 인출하여 상태에 주입합니다.
+        try {
+          const [
+            cachedProj,
+            cachedAgr,
+            cachedUnifiedCert,
+            cachedScholarships,
+            cachedEnv,
+            cachedEquip,
+            cachedServ,
+            cachedMonth,
+            cachedEvent,
+            cachedMeet,
+            cachedPress
+          ] = await Promise.all([
+            getIndexedDBCache(`anchor_cache_proj_y${selectedYear}`),
+            getIndexedDBCache("anchor_cache_agreements_all"),
+            getIndexedDBCache("anchor_cache_unified_certificates_all"),
+            getIndexedDBCache("anchor_cache_scholarships_all"),
+            getIndexedDBCache(`anchor_cache_env_y${selectedYear}`),
+            getIndexedDBCache(`anchor_cache_equip_y${selectedYear}`),
+            getIndexedDBCache(`anchor_cache_serv_y${selectedYear}`),
+            getIndexedDBCache(`anchor_cache_month_y${selectedYear}`),
+            getIndexedDBCache(`anchor_cache_event_y${selectedYear}`),
+            getIndexedDBCache(`anchor_cache_meet_y${selectedYear}`),
+            getIndexedDBCache(`anchor_cache_press_y${selectedYear}`)
+          ]);
+
+          if (active) {
+            if (cachedProj) setProjects(migrateProgramIds(JSON.parse(cachedProj)));
+            else setProjects([]);
+            if (cachedAgr) setAgreements(JSON.parse(cachedAgr));
+            else setAgreements([]);
+            if (cachedUnifiedCert) setUnifiedCertificates(JSON.parse(cachedUnifiedCert));
+            else setUnifiedCertificates([]);
+            if (cachedScholarships) setScholarships(JSON.parse(cachedScholarships));
+            else setScholarships([]);
+            if (cachedEnv) setEnvData(JSON.parse(cachedEnv));
+            else setEnvData([]);
+            if (cachedEquip) setEquipData(JSON.parse(cachedEquip));
+            else setEquipData([]);
+            if (cachedServ) setServiceData(JSON.parse(cachedServ));
+            else setServiceData([]);
+            if (cachedMonth) setMonthlySchedules(JSON.parse(cachedMonth));
+            else setMonthlySchedules([]);
+            if (cachedEvent) setEventSchedules(JSON.parse(cachedEvent));
+            else setEventSchedules([]);
+            if (cachedMeet) setMeetingSchedules(JSON.parse(cachedMeet));
+            else setMeetingSchedules([]);
+            if (cachedPress) setPressReleases(JSON.parse(cachedPress));
+            else setPressReleases([]);
+
+            if (cachedProj || cachedMonth) {
+              setIsDbLoaded(true);
+            } else {
+              setIsDbLoaded(false);
+            }
+          }
+        } catch (cacheErr) {
+          console.error("IndexedDB 선제 캐시 로드 중 실패:", cacheErr);
+        }
         // 0-0. Supabase schedule_meetings 및 schedule_events 테이블 연차(year) 과거 데이터 자가 보정 (일회성 자가 치료)
         (async () => {
           try {
