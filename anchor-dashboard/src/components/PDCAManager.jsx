@@ -936,6 +936,10 @@ export default function PDCAManager({
               }
             };
 
+            const nowTime = Date.now();
+            const approvedAtIso = new Date(nowTime).toISOString();
+            const requestedAtIso = new Date(nowTime - 2000).toISOString(); // 신청을 처리보다 2초 전으로 보정하여 역전현상 해결
+
             await supabase
               .from("program_version_requests")
               .insert({
@@ -950,8 +954,9 @@ export default function PDCAManager({
                 },
                 status: "승인완료",
                 requested_by: `${currentUser.name} (${getRequesterRoleName(currentUser)})`,
+                requested_at: requestedAtIso,
                 approved_by: currentUser.name,
-                approved_at: new Date().toISOString()
+                approved_at: approvedAtIso
               });
           }
         } catch (err) {

@@ -8632,14 +8632,14 @@ export default function App() {
                         <table className="custom-table" style={{ fontSize: "0.75rem" }}>
                           <thead>
                             <tr>
-                              <th>결재번호</th>
-                              <th>프로그램 ID</th>
-                              <th>프로그램명</th>
-                              <th>변경 차수</th>
-                              <th>상태</th>
-                              <th>신청자</th>
-                              <th>신청 및 처리 일시</th>
-                              <th style={{ textAlign: "center", width: "180px" }}>결재 처리</th>
+                              <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap" }}>결재번호</th>
+                              <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap" }}>프로그램 ID</th>
+                              <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap", width: "280px" }}>프로그램명</th>
+                              <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap" }}>변경 차수</th>
+                              <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap" }}>상태</th>
+                              <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap" }}>신청자</th>
+                              <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap" }}>신청 및 처리 일시</th>
+                              <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap", width: "80px" }}>결재 처리</th>
                             </tr>
                           </thead>
                           <tbody>
@@ -8663,16 +8663,18 @@ export default function App() {
 
                                 return (
                                   <tr key={req.id}>
-                                    <td style={{ fontFamily: "var(--font-data)", fontWeight: "700" }}>{displayNo}</td>
-                                    <td>{req.program_id}</td>
-                                    <td style={{ fontWeight: "700" }}>{req.program_title}</td>
-                                    <td>
-                                      <span className="badge badge-blue" style={{ fontSize: "0.65rem" }}>
-                                        {req.version_name}
+                                    <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle", fontFamily: "var(--font-data)", fontWeight: "700" }}>{displayNo}</td>
+                                    <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle" }}>{req.program_id}</td>
+                                    <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle", fontWeight: "700", width: "280px", maxWidth: "280px", wordBreak: "keep-all", lineHeight: "1.3", whiteSpace: "normal" }}>{req.program_title}</td>
+                                    <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle" }}>
+                                      <span className="badge badge-blue" style={{ fontSize: "0.65rem", whiteSpace: "normal", maxWidth: "85px", lineHeight: "1.3", display: "inline-block", textAlign: "center", padding: "0.15rem 0.25rem" }}>
+                                        {req.version_name === "송경영 단장 직접 수정" ? (
+                                          <>송경영 단장<br />직접 수정</>
+                                        ) : req.version_name}
                                       </span>
                                     </td>
-                                    <td>
-                                      <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                                    <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle" }}>
+                                      <div style={{ display: "inline-flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
                                         <span className={`badge ${req.status === "승인완료" ? "badge-green" : (req.status === "반려" ? "badge-red" : "badge-gray")
                                           }`} style={{ fontSize: "0.65rem" }}>
                                           {req.status}
@@ -8684,26 +8686,28 @@ export default function App() {
                                         )}
                                       </div>
                                     </td>
-                                    <td>{(req.requested_by || "").replace(/\s*\(.*?\)/g, "")}</td>
-                                    <td style={{ fontFamily: "var(--font-data)", lineHeight: "1.4" }}>
-                                      <div>
-                                        <span style={{ color: "var(--text-secondary)", fontSize: "0.65rem" }}>신청: </span>
-                                        {new Date(req.requested_at).toLocaleString("ko-KR")}
-                                      </div>
-                                      <div style={{ marginTop: "0.15rem" }}>
-                                        <span style={{ color: "var(--text-secondary)", fontSize: "0.65rem" }}>처리: </span>
-                                        {req.approved_at
-                                          ? new Date(req.approved_at).toLocaleString("ko-KR")
-                                          : <span style={{ color: "var(--text-secondary)" }}>대기 중</span>
-                                        }
+                                    <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle" }}>{(req.requested_by || "").replace(/\s*\(.*?\)/g, "").replace(/\)/g, "").trim()}</td>
+                                    <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle" }}>
+                                      <div style={{ display: "inline-flex", flexDirection: "column", gap: "0.2rem", lineHeight: "1.4", fontFamily: "var(--font-data)", textAlign: "left" }}>
+                                        <div>
+                                          <span style={{ color: "var(--text-secondary)", fontSize: "0.65rem" }}>신청: </span>
+                                          {new Date(req.requested_at).toLocaleString("ko-KR")}
+                                        </div>
+                                        <div style={{ marginTop: "0.15rem" }}>
+                                          <span style={{ color: "var(--text-secondary)", fontSize: "0.65rem" }}>처리: </span>
+                                          {req.approved_at
+                                            ? new Date(req.approved_at).toLocaleString("ko-KR")
+                                            : <span style={{ color: "var(--text-secondary)" }}>대기 중</span>
+                                          }
+                                        </div>
                                       </div>
                                     </td>
-                                    <td style={{ textAlign: "center" }}>
-                                      <div style={{ display: "flex", gap: "0.25rem", justifyContent: "center" }}>
+                                    <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle" }}>
+                                      <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem", alignItems: "center", justifyContent: "center", width: "100%" }}>
                                         <button
                                           onClick={() => setSelectedRequest(req)}
                                           className="btn-primary"
-                                          style={{ padding: "0.2rem 0.5rem", fontSize: "0.7rem", borderRadius: "0.3rem", background: "var(--accent-color)", cursor: "pointer", border: "none", color: "white" }}
+                                          style={{ padding: "0.2rem 0.4rem", fontSize: "0.65rem", borderRadius: "0.3rem", background: "var(--accent-color)", cursor: "pointer", border: "none", color: "white", width: "100%", minWidth: "56px", maxWidth: "68px", fontWeight: "700" }}
                                         >
                                           상세보기
                                         </button>
@@ -8712,14 +8716,14 @@ export default function App() {
                                             <button
                                               onClick={() => handleApproveRequest(req)}
                                               className="btn-primary"
-                                              style={{ padding: "0.2rem 0.5rem", fontSize: "0.7rem", borderRadius: "0.3rem", background: "#10B981", cursor: "pointer", border: "none", color: "white" }}
+                                              style={{ padding: "0.2rem 0.4rem", fontSize: "0.65rem", borderRadius: "0.3rem", background: "#10B981", cursor: "pointer", border: "none", color: "white", width: "100%", minWidth: "56px", maxWidth: "68px", fontWeight: "700" }}
                                             >
                                               승인
                                             </button>
                                             <button
                                               onClick={() => handleRejectRequest(req)}
                                               className="btn-primary"
-                                              style={{ padding: "0.2rem 0.5rem", fontSize: "0.7rem", borderRadius: "0.3rem", background: "#EF4444", cursor: "pointer", border: "none", color: "white" }}
+                                              style={{ padding: "0.2rem 0.4rem", fontSize: "0.65rem", borderRadius: "0.3rem", background: "#EF4444", cursor: "pointer", border: "none", color: "white", width: "100%", minWidth: "56px", maxWidth: "68px", fontWeight: "700" }}
                                             >
                                               반려
                                             </button>
@@ -8729,7 +8733,7 @@ export default function App() {
                                           <button
                                             onClick={() => handleDeleteRequest(req)}
                                             className="btn-primary"
-                                            style={{ padding: "0.2rem 0.5rem", fontSize: "0.7rem", borderRadius: "0.3rem", background: "#EF4444", cursor: "pointer", border: "none", color: "white" }}
+                                            style={{ padding: "0.2rem 0.4rem", fontSize: "0.65rem", borderRadius: "0.3rem", background: "#EF4444", cursor: "pointer", border: "none", color: "white", width: "100%", minWidth: "56px", maxWidth: "68px", fontWeight: "700" }}
                                           >
                                             삭제
                                           </button>
