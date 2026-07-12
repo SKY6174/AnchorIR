@@ -7097,14 +7097,19 @@ Gemini 피드백: \n${geminiCritiqueText}
                   </div>
                   <div>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.25rem" }}>
-                      <label style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>행사 결과</label>
+                      <div style={{ display: "flex", alignItems: "center", gap: "0.35rem" }}>
+                        <label style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>행사 결과</label>
+                        <span style={{ fontSize: "0.68rem", color: "var(--text-muted)", opacity: 0.75 }}>
+                          (💡 행사 종료 후 결과 등록 시 작성 가능)
+                        </span>
+                      </div>
                       {aiResultApplied && (
                         <span style={{ fontSize: "0.65rem", background: "rgba(16, 185, 129, 0.15)", border: "1px solid rgba(16, 185, 129, 0.35)", color: "#10b981", padding: "0.1rem 0.35rem", borderRadius: "4px", fontWeight: "700" }}>
                           ✨ AI 행사 결과 반영됨 ✓
                         </span>
                       )}
                     </div>
-                    <textarea name="result" value={formData.result} onChange={handleInputChange} placeholder="수료 인원, 산출된 최종 성과 및 보도 내역" style={{ width: "100%", height: "46px", padding: "0.5rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", resize: "none" }} />
+                    <textarea name="result" value={formData.result} onChange={handleInputChange} placeholder="행사 종료 후 수료 인원, 산출된 최종 성과 및 보도 실적 등을 기록합니다 (기획 단계에서는 공란 가능)" style={{ width: "100%", height: "46px", padding: "0.5rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", resize: "none" }} />
                   </div>
                 </>
               )}
