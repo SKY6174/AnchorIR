@@ -4998,8 +4998,11 @@ export default function App() {
           return;
         }
 
-        // 2. 20억 이하의 실제 DB id만 전송에 포함하고 로컬 임시 id는 제외하여 시퀀스 범위초과 에러 방지
-        const itemsToUpsert = schedulesToSync.map(s => {
+        // 2. 신규 생성(id가 없음)과 기존 수정(id가 존재)을 분리하여 Not-Null primary key Violate 방지
+        const newItems = [];
+        const updateItems = [];
+
+        schedulesToSync.forEach(s => {
           const item = {
             year: targetYear,
             title: s.title,
@@ -5017,32 +5020,61 @@ export default function App() {
           };
           if (s.id && typeof s.id === "number" && s.id < 2000000000) {
             item.id = s.id;
+            updateItems.push(item);
+          } else {
+            newItems.push(item);
           }
-          return item;
         });
 
-        // 3. 원자적 Upsert 수행 및 새로 발행된 sequence id 결과 조회
-        let upsertedData = null;
-        const { data: rawUpsertData, error: upsertError } = await supabase
-          .from("schedule_monthly")
-          .upsert(itemsToUpsert, { onConflict: "id" })
-          .select();
-        
-        if (upsertError) {
-          if (upsertError.code === "42703") {
-            console.warn("DB table 'schedule_monthly' lacks 'event_id' or 'meeting_id' column. Retrying sync with fallback...");
-            const fallbackItems = itemsToUpsert.map(({ event_id, meeting_id, ...rest }) => rest);
-            const { data: fbData, error: fbError } = await supabase
-              .from("schedule_monthly")
-              .upsert(fallbackItems, { onConflict: "id" })
-              .select();
-            if (fbError) throw fbError;
-            upsertedData = fbData;
-          } else {
-            throw upsertError;
+        // 3. 분할 전송 수행 및 새로 발행된 sequence id 결과 조회
+        const upsertedData = [];
+
+        // [A] 기존 수정 일정 (upsert)
+        if (updateItems.length > 0) {
+          const { data: upData, error: upError } = await supabase
+            .from("schedule_monthly")
+            .upsert(updateItems, { onConflict: "id" })
+            .select();
+          
+          if (upError) {
+            if (upError.code === "42703") {
+              const fallbackItems = updateItems.map(({ event_id, meeting_id, ...rest }) => rest);
+              const { data: fbData, error: fbError } = await supabase
+                .from("schedule_monthly")
+                .upsert(fallbackItems, { onConflict: "id" })
+                .select();
+              if (fbError) throw fbError;
+              if (fbData) upsertedData.push(...fbData);
+            } else {
+              throw upError;
+            }
+          } else if (upData) {
+            upsertedData.push(...upData);
           }
-        } else {
-          upsertedData = rawUpsertData;
+        }
+
+        // [B] 신규 추가 일정 (insert)
+        if (newItems.length > 0) {
+          const { data: insData, error: insError } = await supabase
+            .from("schedule_monthly")
+            .insert(newItems)
+            .select();
+          
+          if (insError) {
+            if (insError.code === "42703") {
+              const fallbackItems = newItems.map(({ event_id, meeting_id, ...rest }) => rest);
+              const { data: fbData, error: fbError } = await supabase
+                .from("schedule_monthly")
+                .insert(fallbackItems)
+                .select();
+              if (fbError) throw fbError;
+              if (fbData) upsertedData.push(...fbData);
+            } else {
+              throw insError;
+            }
+          } else if (insData) {
+            upsertedData.push(...insData);
+          }
         }
 
         // 4. 로컬 임시 id를 DB sequence id로 매핑 복원하여 중복 인서트 방지 (날짜 substring 10자리 비교 및 camelCase 규격 정형화)
@@ -5294,8 +5326,11 @@ export default function App() {
           return;
         }
 
-        // 2. 20억 이하의 실제 DB id만 전송에 포함하고 로컬 임시 id는 제외하여 시퀀스 범위초과 에러 방지
-        const itemsToUpsert = schedulesToSync.map(s => {
+        // 2. 신규 생성(id가 없음)과 기존 수정(id가 존재)을 분리하여 Not-Null primary key Violate 방지
+        const newItems = [];
+        const updateItems = [];
+
+        schedulesToSync.forEach(s => {
           const item = {
             year: getCalculatedYearFromDate(s.datetime ? s.datetime.substring(0, 10) : null, targetYear),
             month: s.month,
@@ -5311,17 +5346,34 @@ export default function App() {
           };
           if (s.id && typeof s.id === "number" && s.id < 2000000000) {
             item.id = s.id;
+            updateItems.push(item);
+          } else {
+            newItems.push(item);
           }
-          return item;
         });
 
-        // 3. 원자적 Upsert 수행 및 새로 발행된 sequence id 결과 조회
-        const { data: upsertedData, error: upsertError } = await supabase
-          .from("schedule_events")
-          .upsert(itemsToUpsert, { onConflict: "id" })
-          .select();
+        // 3. 분할 전송 수행 및 새로 발행된 sequence id 결과 조회
+        const upsertedData = [];
 
-        if (upsertError) throw upsertError;
+        // [A] 기존 수정 일정 (upsert)
+        if (updateItems.length > 0) {
+          const { data: upData, error: upError } = await supabase
+            .from("schedule_events")
+            .upsert(updateItems, { onConflict: "id" })
+            .select();
+          if (upError) throw upError;
+          if (upData) upsertedData.push(...upData);
+        }
+
+        // [B] 신규 추가 일정 (insert)
+        if (newItems.length > 0) {
+          const { data: insData, error: insError } = await supabase
+            .from("schedule_events")
+            .insert(newItems)
+            .select();
+          if (insError) throw insError;
+          if (insData) upsertedData.push(...insData);
+        }
 
         // 4. 로컬 임시 id를 DB sequence id로 매핑 복원하여 중복 인서트 방지 (날짜 substring 10자리 비교 및 camelCase 규격 정형화)
         let finalLocalEvents = schedulesToSync;
@@ -5445,7 +5497,11 @@ export default function App() {
         }
 
         // 2. 20억 이하의 실제 DB id만 전송에 포함하고 로컬 임시 id는 제외하여 시퀀스 범위초과 에러 방지
-        const itemsToUpsert = schedulesToSync.map(s => {
+        // 2. 신규 생성(id가 없음)과 기존 수정(id가 존재)을 분리하여 Not-Null primary key Violate 방지
+        const newItems = [];
+        const updateItems = [];
+
+        schedulesToSync.forEach(s => {
           const item = {
             year: getCalculatedYearFromDate(s.datetime ? s.datetime.substring(0, 10) : null, targetYear),
             month: s.month,
@@ -5462,17 +5518,34 @@ export default function App() {
           };
           if (s.id && typeof s.id === "number" && s.id < 2000000000) {
             item.id = s.id;
+            updateItems.push(item);
+          } else {
+            newItems.push(item);
           }
-          return item;
         });
 
-        // 3. 원자적 Upsert 수행 및 새로 발행된 sequence id 결과 조회
-        const { data: upsertedData, error: upsertError } = await supabase
-          .from("schedule_meetings")
-          .upsert(itemsToUpsert, { onConflict: "id" })
-          .select();
+        // 3. 분할 전송 수행 및 새로 발행된 sequence id 결과 조회
+        const upsertedData = [];
 
-        if (upsertError) throw upsertError;
+        // [A] 기존 수정 일정 (upsert)
+        if (updateItems.length > 0) {
+          const { data: upData, error: upError } = await supabase
+            .from("schedule_meetings")
+            .upsert(updateItems, { onConflict: "id" })
+            .select();
+          if (upError) throw upError;
+          if (upData) upsertedData.push(...upData);
+        }
+
+        // [B] 신규 추가 일정 (insert)
+        if (newItems.length > 0) {
+          const { data: insData, error: insError } = await supabase
+            .from("schedule_meetings")
+            .insert(newItems)
+            .select();
+          if (insError) throw insError;
+          if (insData) upsertedData.push(...insData);
+        }
 
         // 4. 로컬 임시 id를 DB sequence id로 매핑 복원하여 중복 인서트 방지 (날짜 substring 10자리 비교 및 camelCase 규격 정형화)
         let finalLocalMeetings = schedulesToSync;
