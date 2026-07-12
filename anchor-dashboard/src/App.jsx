@@ -4054,6 +4054,16 @@ export default function App() {
         const { data: sEvent } = await supabase.from("schedule_events").select("*").eq("year", selectedYear);
         const { data: sMeet } = await supabase.from("schedule_meetings").select("*").eq("year", selectedYear);
 
+        // 💡 [클린업 자가치유] 기존 DB에 잘못 저장된 연동 행사/회의 데이터는 깨끗하게 영구 삭제처리하여 DB 중복을 자가치유합니다.
+        if (sMonth && sMonth.length > 0) {
+          const dirtyLinkedItems = sMonth.filter(x => x.event_id !== null || x.meeting_id !== null);
+          if (dirtyLinkedItems.length > 0) {
+            const dirtyIds = dirtyLinkedItems.map(d => d.id);
+            await supabase.from("schedule_monthly").delete().in("id", dirtyIds);
+            console.log(`[Self-Healing] Cleaned up ${dirtyIds.length} duplicate/redundant sync records from schedule_monthly.`);
+          }
+        }
+
         if (!active) return;
 
         const formattedEvents = (sEvent || []).map(x => ({
@@ -4082,22 +4092,24 @@ export default function App() {
           pdfUrl: x.pdf_url || ""
         }));
 
-        let formattedMonthly = (sMonth || []).map(x => ({
-          id: Number(x.id),
-          year: x.year,
-          title: x.title,
-          type: x.type,
-          dept: x.dept,
-          startAt: x.start_at,
-          endAt: x.end_at,
-          location: x.location,
-          isTask: x.is_task || false,
-          isDeadline: x.is_deadline || false,
-          completed: x.completed || false,
-          attendees: x.attendees || "",
-          eventId: x.event_id ? Number(x.event_id) : null,
-          meetingId: x.meeting_id ? Number(x.meeting_id) : null
-        }));
+        let formattedMonthly = (sMonth || [])
+          .filter(x => x.event_id === null && x.meeting_id === null) // 순수 일반 일정만 로드
+          .map(x => ({
+            id: Number(x.id),
+            year: x.year,
+            title: x.title,
+            type: x.type,
+            dept: x.dept,
+            startAt: x.start_at,
+            endAt: x.end_at,
+            location: x.location,
+            isTask: x.is_task || false,
+            isDeadline: x.is_deadline || false,
+            completed: x.completed || false,
+            attendees: x.attendees || "",
+            eventId: null,
+            meetingId: null
+          }));
 
         // 💡 초도 로드 연동 병합 (주요 행사)
         formattedEvents.forEach(evt => {
@@ -4998,11 +5010,15 @@ export default function App() {
           return;
         }
 
+        // 💡 [중복 방지] 주요 행사(eventId) 또는 회의록(meetingId) 연동 일정은 schedule_monthly DB에 저장하지 않고, 
+        // 오직 화면단에서만 실시간 병합/표시합니다. 이를 통해 DB 중복 저장을 원천 차단합니다.
+        const pureSchedulesToSync = schedulesToSync.filter(s => !s.eventId && !s.meetingId);
+
         // 2. 신규 생성(id가 없음)과 기존 수정(id가 존재)을 분리하여 Not-Null primary key Violate 방지
         const newItems = [];
         const updateItems = [];
 
-        schedulesToSync.forEach(s => {
+        pureSchedulesToSync.forEach(s => {
           const item = {
             year: targetYear,
             title: s.title,
@@ -5130,6 +5146,7 @@ export default function App() {
         if (currentDbItems) {
           const dbIds = currentDbItems.map(x => x.id);
           const localRealIds = finalLocalSchedules
+            .filter(s => !s.eventId && !s.meetingId)
             .map(s => s.id)
             .filter(id => typeof id === "number" && id < 2000000000);
           

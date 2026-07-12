@@ -1426,10 +1426,53 @@ ${aiRawText}
       return;
     }
 
-    const targetId = Number(schedId);
+    // 💡 [중복 방지 핵심 연동] 드래그앤드롭 시 만약 행사나 회의 연동 일정이면 부모 상태(eventSchedules/meetingSchedules)도 함께 업데이트
+    const targetSched = monthlySchedules.find(s => String(s.id) === String(schedId));
+    if (!targetSched) return;
+
+    if (targetSched.eventId) {
+      setEventSchedules(prevEvents => {
+        return prevEvents.map(evt => {
+          if (evt.id !== targetSched.eventId) return evt;
+          const dt = evt.datetime || "";
+          const parts = dt.split(" ");
+          let newTimePart = "";
+          if (parts.length >= 4) {
+            newTimePart = ` ${parts[1]} ${parts[2]} ${parts[3]}`;
+          } else if (parts.length >= 2) {
+            newTimePart = ` ${parts[1]}`;
+          }
+          return {
+            ...evt,
+            datetime: `${targetDateStr}${newTimePart}`
+          };
+        });
+      });
+    }
+
+    if (targetSched.meetingId) {
+      setMeetingSchedules(prevMeetings => {
+        return prevMeetings.map(meet => {
+          if (meet.id !== targetSched.meetingId) return meet;
+          const dt = meet.datetime || "";
+          const parts = dt.split(" ");
+          let newTimePart = "";
+          if (parts.length >= 4) {
+            newTimePart = ` ${parts[1]} ${parts[2]} ${parts[3]}`;
+          } else if (parts.length >= 2) {
+            newTimePart = ` ${parts[1]}`;
+          }
+          return {
+            ...meet,
+            datetime: `${targetDateStr}${newTimePart}`
+          };
+        });
+      });
+    }
+
     setMonthlySchedules(prev => {
       return prev.map(s => {
-        if (s.id !== targetId) return s;
+        if (String(s.id) !== String(schedId)) return s;
 
         // 기존 시작/종료 일시 파싱
         const [oldStartDate, oldStartTime] = parseDateTime(s.startAt, [`${targetYearNum}-07-15`, "10:00"]);
