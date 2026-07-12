@@ -3233,7 +3233,7 @@ ${aiRawText}
           <span style={{ fontSize: "0.75rem", fontWeight: "700", color: isSelected ? "var(--accent-color)" : "var(--text-primary)" }}>
             {day}
           </span>
-          <div style={{ display: "flex", flexDirection: "column", gap: "0.15rem", marginTop: "0.25rem", maxHeight: "115px", overflowY: "auto", flex: 1, scrollbarWidth: "none" }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: "0.15rem", marginTop: "0.25rem", maxHeight: "115px", overflowY: "auto", flex: 1, scrollbarWidth: "none", width: "100%", maxWidth: "100%", boxSizing: "border-box" }}>
             {daySchedules.map(sched => {
               const isTask = sched.isTask || false;
               const isDeadline = sched.isDeadline || false;
@@ -3267,15 +3267,23 @@ ${aiRawText}
                     fontSize: "0.65rem",
                     background: bgColor,
                     color: "white",
-                    padding: "0.1rem 0.25rem",
-                    borderRadius: "2px",
-                    whiteSpace: "nowrap",
-                    textOverflow: "ellipsis",
+                    padding: "0.15rem 0.3rem",
+                    borderRadius: "3px",
+                    width: "100%",
+                    maxWidth: "100%",
+                    boxSizing: "border-box",
+                    display: "-webkit-box",
+                    WebkitLineClamp: 2,
+                    WebkitBoxOrient: "vertical",
                     overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    wordBreak: "break-all",
+                    whiteSpace: "normal",
                     textDecoration: isCompleted ? "line-through" : "none",
                     opacity: isCompleted ? 0.6 : 1,
                     cursor: draggingId === sched.id ? "grabbing" : "grab",
-                    userSelect: "none"
+                    userSelect: "none",
+                    lineHeight: "1.2"
                   }}
                   title={`${isDeadline ? "[마감]" : (isTask ? "[할일]" : `[${sched.type}]`)} ${sched.title} (${sched.dept})`}
                 >

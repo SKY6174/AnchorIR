@@ -4056,73 +4056,130 @@ export default function App() {
 
         if (!active) return;
 
-        if (sMonth && sMonth.length > 0) {
-          const formatted = sMonth.map(x => ({
-            id: Number(x.id),
-            year: x.year,
-            title: x.title,
-            type: x.type,
-            dept: x.dept,
-            startAt: x.start_at,
-            endAt: x.end_at,
-            location: x.location,
-            isTask: x.is_task || false,
-            isDeadline: x.is_deadline || false,
-            completed: x.completed || false,
-            attendees: x.attendees || "",
-            eventId: x.event_id ? Number(x.event_id) : null,
-            meetingId: x.meeting_id ? Number(x.meeting_id) : null
-          }));
-          setMonthlySchedules(formatted);
-          fetchedMonthlySchedulesRef.current = JSON.stringify(formatted);
-          safeSetLocalStorage(`anchor_cache_month_y${selectedYear}`, JSON.stringify(formatted), selectedYear);
-        } else {
-          setMonthlySchedules([]);
-          fetchedMonthlySchedulesRef.current = "[]";
-          localStorage.removeItem(`anchor_cache_month_y${selectedYear}`);
-        }
-        if (sEvent && sEvent.length > 0) {
-          const formatted = sEvent.map(x => ({
-            id: Number(x.id),
-            year: Number(x.year),
-            month: Number(x.month),
-            title: x.title,
-            department: x.department || "",
-            location: x.location || "",
-            attendeesInternal: x.attendees_internal || "",
-            attendeesExternal: x.attendees_external || "",
-            program: x.program || "",
-            purpose: x.purpose || "",
-            result: x.result || "",
-            datetime: x.datetime
-          }));
-          setEventSchedules(formatted);
-          fetchedEventSchedulesRef.current = JSON.stringify(formatted);
-          safeSetLocalStorage(`anchor_cache_event_y${selectedYear}`, JSON.stringify(formatted), selectedYear);
-        } else {
-          setEventSchedules([]);
-          fetchedEventSchedulesRef.current = "[]";
-          localStorage.removeItem(`anchor_cache_event_y${selectedYear}`);
-        }
-        if (sMeet && sMeet.length > 0) {
-          const formatted = sMeet.map(x => ({
-            ...x,
-            id: Number(x.id),
-            year: Number(x.year),
-            month: Number(x.month),
-            attendeesInternal: x.attendees_internal,
-            attendeesExternal: x.attendees_external,
-            audioUrl: x.audio_url,
-            pdfUrl: x.pdf_url
-          }));
-          setMeetingSchedules(formatted);
-          fetchedMeetingSchedulesRef.current = JSON.stringify(formatted);
-          safeSetLocalStorage(`anchor_cache_meet_y${selectedYear}`, JSON.stringify(formatted), selectedYear);
-        } else {
-          setMeetingSchedules([]);
-          fetchedMeetingSchedulesRef.current = "[]";
-          localStorage.removeItem(`anchor_cache_meet_y${selectedYear}`);
-        }
+        const formattedEvents = (sEvent || []).map(x => ({
+          id: Number(x.id),
+          year: Number(x.year),
+          month: Number(x.month),
+          title: x.title,
+          department: x.department || "",
+          location: x.location || "",
+          attendeesInternal: x.attendees_internal || "",
+          attendeesExternal: x.attendees_external || "",
+          program: x.program || "",
+          purpose: x.purpose || "",
+          result: x.result || "",
+          datetime: x.datetime
+        }));
+
+        const formattedMeetings = (sMeet || []).map(x => ({
+          ...x,
+          id: Number(x.id),
+          year: Number(x.year),
+          month: Number(x.month),
+          attendeesInternal: x.attendees_internal || "",
+          attendeesExternal: x.attendees_external || "",
+          audioUrl: x.audio_url || "",
+          pdfUrl: x.pdf_url || ""
+        }));
+
+        let formattedMonthly = (sMonth || []).map(x => ({
+          id: Number(x.id),
+          year: x.year,
+          title: x.title,
+          type: x.type,
+          dept: x.dept,
+          startAt: x.start_at,
+          endAt: x.end_at,
+          location: x.location,
+          isTask: x.is_task || false,
+          isDeadline: x.is_deadline || false,
+          completed: x.completed || false,
+          attendees: x.attendees || "",
+          eventId: x.event_id ? Number(x.event_id) : null,
+          meetingId: x.meeting_id ? Number(x.meeting_id) : null
+        }));
+
+        // 💡 초도 로드 연동 병합 (주요 행사)
+        formattedEvents.forEach(evt => {
+          const hasLinked = formattedMonthly.some(m => m.eventId === evt.id);
+          if (!hasLinked) {
+            const startPart = evt.datetime ? evt.datetime.split(" ~ ")[0].trim() : "";
+            let dateStr = startPart.substring(0, 10);
+            if (!dateStr.match(/^\d{4}-\d{2}-\d{2}$/)) {
+              dateStr = `${evt.year}-${String(evt.month).padStart(2, "0")}-01`;
+            }
+            const endPart = evt.datetime && evt.datetime.includes(" ~ ") ? evt.datetime.split(" ~ ")[1].trim() : startPart;
+            let endDateStr = endPart.substring(0, 10);
+            if (!endDateStr.match(/^\d{4}-\d{2}-\d{2}$/)) {
+              endDateStr = dateStr;
+            }
+
+            formattedMonthly.push({
+              id: `mevt-init-${Date.now()}-${evt.id}`,
+              eventId: evt.id,
+              year: evt.year,
+              title: `[주요행사] ${evt.title}`,
+              type: "행사",
+              dept: evt.department || "사업운영팀",
+              startAt: dateStr,
+              endAt: endDateStr,
+              location: evt.location || "",
+              isTask: false,
+              isDeadline: false,
+              completed: false,
+              attendees: evt.attendeesInternal || ""
+            });
+          }
+        });
+
+        // 💡 초도 로드 연동 병합 (회의록)
+        formattedMeetings.forEach(meet => {
+          const hasLinked = formattedMonthly.some(m => m.meetingId === meet.id);
+          if (!hasLinked) {
+            const startPart = meet.datetime ? meet.datetime.split(" ~ ")[0].trim() : "";
+            let dateStr = startPart.substring(0, 10);
+            if (!dateStr.match(/^\d{4}-\d{2}-\d{2}$/)) {
+              dateStr = `${meet.year}-${String(meet.month).padStart(2, "0")}-01`;
+            }
+            const endPart = meet.datetime && meet.datetime.includes(" ~ ") ? meet.datetime.split(" ~ ")[1].trim() : startPart;
+            let endDateStr = endPart.substring(0, 10);
+            if (!endDateStr.match(/^\d{4}-\d{2}-\d{2}$/)) {
+              endDateStr = dateStr;
+            }
+
+            const isCommittee = meet.category === "각종 위원회";
+            const prefix = isCommittee ? "[위원회]" : "[회의]";
+            const typeVal = isCommittee ? "위원회" : "회의";
+
+            formattedMonthly.push({
+              id: `mmeet-init-${Date.now()}-${meet.id}`,
+              meetingId: meet.id,
+              year: meet.year,
+              title: `${prefix} ${meet.title}`,
+              type: typeVal,
+              dept: isCommittee ? "ECC센터" : "사업운영팀",
+              startAt: dateStr,
+              endAt: endDateStr,
+              location: meet.location || "",
+              isTask: false,
+              isDeadline: false,
+              completed: false,
+              attendees: meet.attendeesInternal || ""
+            });
+          }
+        });
+
+        setMonthlySchedules(formattedMonthly);
+        fetchedMonthlySchedulesRef.current = JSON.stringify(formattedMonthly);
+        safeSetLocalStorage(`anchor_cache_month_y${selectedYear}`, JSON.stringify(formattedMonthly), selectedYear);
+
+        setEventSchedules(formattedEvents);
+        fetchedEventSchedulesRef.current = JSON.stringify(formattedEvents);
+        safeSetLocalStorage(`anchor_cache_event_y${selectedYear}`, JSON.stringify(formattedEvents), selectedYear);
+
+        setMeetingSchedules(formattedMeetings);
+        fetchedMeetingSchedulesRef.current = JSON.stringify(formattedMeetings);
+        safeSetLocalStorage(`anchor_cache_meet_y${selectedYear}`, JSON.stringify(formattedMeetings), selectedYear);
 
 
         // press_releases 복구 (year 칼럼 매핑 오류와 무관하게 실제 기사 발행일 범위 기준으로 정밀 분리 패치)
@@ -5030,10 +5087,13 @@ export default function App() {
         }
 
         // 5. 사용자가 삭제한 아이템들 DB 반영 (Diff Delete)
+        // 💡 중요: 주요 행사(event_id) 또는 회의록(meeting_id)에 연동된 자동 입력 일정은 월간일정 훅이 삭제하지 않고 각 소스 탭의 라이프사이클에 맡겨 격리함.
         const { data: currentDbItems } = await supabase
           .from("schedule_monthly")
           .select("id")
-          .eq("year", targetYear);
+          .eq("year", targetYear)
+          .is("event_id", null)
+          .is("meeting_id", null);
         
         if (currentDbItems) {
           const dbIds = currentDbItems.map(x => x.id);
