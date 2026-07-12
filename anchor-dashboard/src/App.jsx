@@ -9811,22 +9811,29 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
     const carryVal = valObj.carry || 0;
     const sumVal = mainVal + carryVal;
 
-    if (sumVal <= 0) return "-";
-
-    // 1차년도(2025)는 합산 단일치로 표현
-    if (idx === 0) {
-      return sumVal.toFixed(2);
+    // 2차년도 (idx === 1)만 '본사업 | 이월' 구분하여 렌더링
+    if (idx === 1) {
+      if (sumVal <= 0) return "-";
+      const mainStr = mainVal > 0 ? mainVal.toFixed(2) : "-";
+      const carryStr = carryVal > 0 ? carryVal.toFixed(2) : "-";
+      return `${mainStr} | ${carryStr}`;
     }
-    
-    // 2~5차년도 및 합계는 '본사업 | 이월' 구분하여 렌더링
-    const mainStr = mainVal > 0 ? mainVal.toFixed(2) : "-";
-    const carryStr = carryVal > 0 ? carryVal.toFixed(2) : "-";
-    return `${mainStr} | ${carryStr}`;
+
+    // 1차년도 (idx === 0)는 합산 단일치로 표현 (2025년도)
+    if (idx === 0) {
+      return sumVal > 0 ? sumVal.toFixed(2) : "-";
+    }
+
+    // 3~5차년도 (idx === 2, 3, 4) 및 합계 (idx === 5)는 본사업비만 단일치로 표현
+    return mainVal > 0 ? mainVal.toFixed(2) : "-";
   };
 
   const renderFiveYear = () => {
     return (
       <div className="table-panel">
+        <div style={{ padding: "0.75rem 1.25rem", background: "rgba(59, 130, 246, 0.05)", borderLeft: "4px solid var(--accent-color)", borderRadius: "4px", marginBottom: "1rem", fontSize: "0.8rem", color: "var(--text-secondary)", lineHeight: "1.4" }}>
+          💡 2차년도 사업비는 본사업비와 이월사업비로 구성되며, 타 연차는 본사업비만을 나타냄.
+        </div>
         <table className="custom-table" style={{ fontSize: "0.8rem", width: "100%", borderCollapse: "collapse" }}>
           <thead>
             <tr style={{ background: "rgba(255,255,255,0.02)" }}>
@@ -9836,22 +9843,10 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
                 2026<br />
                 <span style={{ fontSize: "0.65rem", fontWeight: "normal", color: "var(--text-secondary)" }}>(본사업 | 이월)</span>
               </th>
-              <th style={{ textAlign: "right", paddingRight: "1rem" }}>
-                2027<br />
-                <span style={{ fontSize: "0.65rem", fontWeight: "normal", color: "var(--text-secondary)" }}>(본사업 | 이월)</span>
-              </th>
-              <th style={{ textAlign: "right", paddingRight: "1rem" }}>
-                2028<br />
-                <span style={{ fontSize: "0.65rem", fontWeight: "normal", color: "var(--text-secondary)" }}>(본사업 | 이월)</span>
-              </th>
-              <th style={{ textAlign: "right", paddingRight: "1rem" }}>
-                2029<br />
-                <span style={{ fontSize: "0.65rem", fontWeight: "normal", color: "var(--text-secondary)" }}>(본사업 | 이월)</span>
-              </th>
-              <th style={{ textAlign: "right", paddingRight: "1.5rem", fontWeight: "800", color: "var(--accent-color)" }}>
-                합계<br />
-                <span style={{ fontSize: "0.65rem", fontWeight: "800", color: "var(--accent-color)" }}>(본사업 | 이월)</span>
-              </th>
+              <th style={{ textAlign: "right", paddingRight: "1rem" }}>2027</th>
+              <th style={{ textAlign: "right", paddingRight: "1rem" }}>2028</th>
+              <th style={{ textAlign: "right", paddingRight: "1rem" }}>2029</th>
+              <th style={{ textAlign: "right", paddingRight: "1.5rem", fontWeight: "800", color: "var(--accent-color)" }}>합계</th>
             </tr>
           </thead>
           <tbody>
