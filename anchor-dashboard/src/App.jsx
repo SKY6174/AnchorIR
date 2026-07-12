@@ -459,6 +459,8 @@ function formatDataToMultiYear(data) {
     const newUnits = p.units.map((u) => {
       // 1. 단위과제 예산 다년도 맵핑
       const unitYears = {};
+      const isA1Na = u.id === "A1나";
+
       [1, 2, 3, 4, 5].forEach((yr) => {
         if (yr === 2) {
           unitYears[yr] = {
@@ -468,26 +470,36 @@ function formatDataToMultiYear(data) {
             spent_carry: u.spent_2025_carry || 0
           };
         } else if (yr === 1) {
-          // 1차년도 실제 예산 데이터가 Y1_UNIT_META에 정의되어 있다면 이를 우선 사용하고, 없다면 0.9배 및 역산 공식 적용
-          const meta = Y1_UNIT_META[u.id];
-          let budgetMain, spentMain;
-          if (meta) {
-            budgetMain = meta.budget;
-            spentMain = meta.budget - meta.carry; // 예산에서 이월 잔액(carry)을 차감하여 집행액 역산
+          if (isA1Na) {
+            // A1나 단위과제는 1차년도 예산이 없습니다.
+            unitYears[yr] = {
+              budget_main: 0,
+              spent_main: 0,
+              budget_carry: 0,
+              spent_carry: 0
+            };
           } else {
-            budgetMain = Math.round((u.budget_2026 || 0) * 0.9);
-            spentMain = Math.max(0, budgetMain - (u.budget_2025_carry || 0));
+            // 1차년도 실제 예산 데이터가 Y1_UNIT_META에 정의되어 있다면 이를 우선 사용하고, 없다면 0.9배 및 역산 공식 적용
+            const meta = Y1_UNIT_META[u.id];
+            let budgetMain, spentMain;
+            if (meta) {
+              budgetMain = meta.budget;
+              spentMain = meta.budget - meta.carry; // 예산에서 이월 잔액(carry)을 차감하여 집행액 역산
+            } else {
+              budgetMain = Math.round((u.budget_2026 || 0) * 0.9);
+              spentMain = Math.max(0, budgetMain - (u.budget_2025_carry || 0));
+            }
+            unitYears[yr] = {
+              budget_main: budgetMain,
+              spent_main: spentMain,
+              budget_carry: 0,
+              spent_carry: 0
+            };
           }
-          unitYears[yr] = {
-            budget_main: budgetMain,
-            spent_main: spentMain,
-            budget_carry: 0,
-            spent_carry: 0
-          };
         } else {
-          const factor = yr === 3 ? 1.1 : yr === 4 ? 1.2 : 1.3;
+          // 3차년도 이후 총괄계획은 2차년도와 동일하게 적용 (A1나의 경우 0원)
           unitYears[yr] = {
-            budget_main: Math.round((u.budget_2026 || 0) * factor),
+            budget_main: isA1Na ? 0 : (u.budget_2026 || 0),
             spent_main: 0,
             budget_carry: 0,
             spent_carry: 0
@@ -505,8 +517,9 @@ function formatDataToMultiYear(data) {
         const nationalRatio = meta.national / meta.budget;
         const spentRatio = (meta.budget - meta.carry) / meta.budget;
 
-        const budgetMain = item.budget;
-        const spentMain = item.spent !== undefined ? item.spent : Math.round(item.budget * spentRatio);
+        // A1나 단위과제는 1차년도 프로그램 예산이 존재하지 않습니다.
+        const budgetMain = isA1Na ? 0 : item.budget;
+        const spentMain = isA1Na ? 0 : (item.spent !== undefined ? item.spent : Math.round(item.budget * spentRatio));
 
         const budget_national = Math.round(budgetMain * nationalRatio);
         const budget_city = budgetMain - budget_national;
@@ -566,14 +579,20 @@ function formatDataToMultiYear(data) {
           let budgetCarry = 0;
           let spentCarry = 0;
 
-          if (yr === 2) {
+          if (isA1Na && yr !== 2) {
+            // A1나 단위과제는 2차년도에 한해서만 예산이 반영됩니다.
+            budgetMain = 0;
+            spentMain = 0;
+            budgetCarry = 0;
+            spentCarry = 0;
+          } else if (yr === 2) {
             budgetMain = prog.budget_2026 || 0;
             spentMain = prog.spent_2026 || 0;
             budgetCarry = prog.budget_2025_carry || 0;
             spentCarry = prog.spent_2025_carry || 0;
           } else {
-            const factor = yr === 3 ? 1.1 : yr === 4 ? 1.2 : 1.3;
-            budgetMain = Math.round((prog.budget_2026 || 0) * factor);
+            // 3차년도 이후 총괄계획은 2차년도와 동일하게 적용 (팩터 제거)
+            budgetMain = prog.budget_2026 || 0;
             spentMain = 0;
             budgetCarry = 0;
             spentCarry = 0;
@@ -585,13 +604,18 @@ function formatDataToMultiYear(data) {
           let budget_city = 0;
           let budget_external = 0;
 
-          if (prog.id.startsWith("A1가-")) {
+          if (isA1Na && yr !== 2) {
+            // A1나 2차년도 외 차년도 0원 강제
+            budget_national = 0;
+            budget_city = 0;
+            budget_external = 0;
+          } else if (prog.id.startsWith("A1가-")) {
             if (prog.id === "A1가-S1T2-1") {
-              const ratio = yr === 2 ? 1 : (yr === 3 ? 1.1 : yr === 4 ? 1.2 : 1.3);
+              const ratio = 1; // 3차년도 이후도 2차년도와 동일하므로 비율은 1로 고정
               budget_national = Math.round(112000000 * ratio);
               budget_city = Math.round(80000000 * ratio);
             } else if (prog.id === "A1가-S4T12-2") {
-              const ratio = yr === 2 ? 1 : (yr === 3 ? 1.1 : yr === 4 ? 1.2 : 1.3);
+              const ratio = 1; // 3차년도 이후도 2차년도와 동일하므로 비율은 1로 고정
               budget_city = Math.round(50000000 * ratio);
             } else {
               budget_national = budgetMain;
@@ -613,7 +637,11 @@ function formatDataToMultiYear(data) {
           let spent_city = 0;
           let spent_external = 0;
           if (spentMain > 0) {
-            if (prog.id.startsWith("A1가-")) {
+            if (isA1Na && yr !== 2) {
+              spent_national = 0;
+              spent_city = 0;
+              spent_external = 0;
+            } else if (prog.id.startsWith("A1가-")) {
               if (prog.id === "A1가-S1T2-1") {
                 const total = 192000000;
                 spent_national = Math.round(spentMain * (112000000 / total));
@@ -640,7 +668,11 @@ function formatDataToMultiYear(data) {
           let carry_city = 0;
           let carry_external = 0;
           if (budgetCarry > 0) {
-            if (isExternalSub) {
+            if (isA1Na && yr !== 2) {
+              carry_national = 0;
+              carry_city = 0;
+              carry_external = 0;
+            } else if (isExternalSub) {
               carry_external = budgetCarry;
             } else if (prog.id.startsWith("D1-") || prog.id.startsWith("D2-") || prog.id.startsWith("D3-")) {
               carry_national = budgetCarry;
@@ -655,7 +687,11 @@ function formatDataToMultiYear(data) {
           let carry_spent_city = 0;
           let carry_spent_external = 0;
           if (spentCarry > 0) {
-            if (isExternalSub) {
+            if (isA1Na && yr !== 2) {
+              carry_spent_national = 0;
+              carry_spent_city = 0;
+              carry_spent_external = 0;
+            } else if (isExternalSub) {
               carry_spent_external = spentCarry;
             } else if (prog.id.startsWith("D2-")) {
               carry_spent_national = spentCarry;
@@ -9413,17 +9449,16 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
     const natKr = uNat / 1e8;
     const cityKr = uCity / 1e8;
     const extKr = uExt / 1e8;
-    const localGovKr = 0; // 기초지자체 (0원 고정)
-    const privateKr = 0; // 민자 (0원 고정)
-    const sumKr = natKr + cityKr + localGovKr + extKr + privateKr;
+    const sumKr = natKr + cityKr + extKr;
 
     // 단위과제 대로우의 비율은 100%로 고정
-    const totalRow = [natKr, cityKr, localGovKr, extKr, privateKr, sumKr, 100.0];
+    // [국비, 시비, 외부사업비, 합계, 비율] -> 총 5개 요소
+    const totalRow = [natKr, cityKr, extKr, sumKr, 100.0];
 
     // 비목별 재원 안분 계산
     const categoriesMap = {};
     CATEGORY_ORDER.forEach((catName) => {
-      categoriesMap[catName] = { national: 0, city: 0, localGov: 0, institution: 0, private: 0 };
+      categoriesMap[catName] = { national: 0, city: 0, external: 0 };
     });
 
     u.programs.forEach((prog) => {
@@ -9445,8 +9480,8 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
         const normCat = normalizeCategoryName(cat.category);
         const matchedOrderCat = CATEGORY_ORDER.find(c => normalizeCategoryName(c) === normCat);
         if (matchedOrderCat) {
-          const catB = cat.budget || 0;
-          const catBC = cat.budget_carry || 0;
+          const catB = cat.budget ? parseFloat(String(cat.budget).replace(/,/g, "")) : 0;
+          const catBC = cat.budget_carry ? parseFloat(String(cat.budget_carry).replace(/,/g, "")) : 0;
 
           // 재원 안분 적용
           const cNat = catB * natRatio + catBC * carryNatRatio;
@@ -9455,7 +9490,7 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
 
           categoriesMap[matchedOrderCat].national += cNat / 1e8;
           categoriesMap[matchedOrderCat].city += cCity / 1e8;
-          categoriesMap[matchedOrderCat].institution += cExt / 1e8;
+          categoriesMap[matchedOrderCat].external += cExt / 1e8;
         }
       });
     });
@@ -9463,13 +9498,14 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
     const categories = [];
     CATEGORY_ORDER.forEach((catName) => {
       const cData = categoriesMap[catName];
-      const catSum = cData.national + cData.city + cData.localGov + cData.institution + cData.private;
+      const catSum = cData.national + cData.city + cData.external;
       if (catSum > 0) {
         // 비목의 비율은 해당 단위과제 총합 예산(sumKr) 대비 비율
         const catRatio = sumKr > 0 ? (catSum / sumKr) * 100 : 0;
         categories.push({
           name: catName,
-          values: [cData.national, cData.city, cData.localGov, cData.institution, cData.private, catSum, catRatio]
+          // values 형식: [국비, 시비, 외부사업비, 합계, 비율] -> 총 5개 요소
+          values: [cData.national, cData.city, cData.external, catSum, catRatio]
         });
       }
     });
@@ -9487,9 +9523,7 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
   // ----------------------------------------------------
   let annualTotalNat = 0;
   let annualTotalCity = 0;
-  let annualTotalLocal = 0;
   let annualTotalExt = 0;
-  let annualTotalPriv = 0;
   let annualTotalSum = 0;
 
   let annualLaborNat = 0, annualLaborCity = 0, annualLaborExt = 0, annualLaborSum = 0;
@@ -9499,28 +9533,26 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
   ANNUAL_INVESTMENT_DATA.forEach((uData) => {
     annualTotalNat += uData.total[0];
     annualTotalCity += uData.total[1];
-    annualTotalLocal += uData.total[2];
-    annualTotalExt += uData.total[3];
-    annualTotalPriv += uData.total[4];
-    annualTotalSum += uData.total[5];
+    annualTotalExt += uData.total[2];
+    annualTotalSum += uData.total[3];
 
     uData.categories.forEach((cat) => {
       const normCat = normalizeCategoryName(cat.name);
       if (normCat === "인건비") {
         annualLaborNat += cat.values[0];
         annualLaborCity += cat.values[1];
-        annualLaborExt += cat.values[3];
-        annualLaborSum += cat.values[5];
+        annualLaborExt += cat.values[2];
+        annualLaborSum += cat.values[3];
       } else if (normCat === "그 밖의 사업운영비" || normCat === "그 밖의 사업운영경비") {
         annualOpNat += cat.values[0];
         annualOpCity += cat.values[1];
-        annualOpExt += cat.values[3];
-        annualOpSum += cat.values[5];
+        annualOpExt += cat.values[2];
+        annualOpSum += cat.values[3];
       } else if (normCat === "간접비") {
         annualIndNat += cat.values[0];
         annualIndCity += cat.values[1];
-        annualIndExt += cat.values[3];
-        annualIndSum += cat.values[5];
+        annualIndExt += cat.values[2];
+        annualIndSum += cat.values[3];
       }
     });
   });
@@ -9648,7 +9680,7 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
         <div style={{ padding: "0.5rem 0" }}>
           <h4 style={{ fontSize: "1.1rem", fontWeight: "800", marginBottom: "0.3rem" }}>■ {targetYear}년도 예산</h4>
           <div style={{ fontSize: "0.85rem", color: "var(--accent-color)", fontWeight: "700" }}>
-            ○ {annualTotalSum.toFixed(2)}억 원 (국비 {annualTotalNat.toFixed(2)}, 시비 {annualTotalCity.toFixed(2)}, 기초지자체 0.00, 기관(교육청 등) {annualTotalExt.toFixed(2)}, 민자 0.00)
+            ○ {annualTotalSum.toFixed(2)}억 원 (국비 {annualTotalNat.toFixed(2)}, 시비 {annualTotalCity.toFixed(2)}, 외부사업비 {annualTotalExt.toFixed(2)})
           </div>
         </div>
 
@@ -9659,9 +9691,7 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
                 <th style={{ verticalAlign: "middle", textAlign: "left", paddingLeft: "1.5rem", borderBottom: "1px solid var(--border-color)", borderRight: "1px solid var(--border-color)" }}>구분</th>
                 <th style={{ textAlign: "right", paddingRight: "1rem" }}>국비</th>
                 <th style={{ textAlign: "right", paddingRight: "1rem" }}>시비</th>
-                <th style={{ textAlign: "right", paddingRight: "1rem" }}>기초지자체</th>
-                <th style={{ textAlign: "right", paddingRight: "1rem" }}>기타(기관 등)</th>
-                <th style={{ textAlign: "right", paddingRight: "1rem" }}>민자</th>
+                <th style={{ textAlign: "right", paddingRight: "1rem" }}>외부사업비</th>
                 <th style={{ textAlign: "right", paddingRight: "1rem", fontWeight: "800", color: "var(--accent-color)" }}>합계</th>
                 <th style={{ textAlign: "center", paddingRight: "1.5rem" }}>비율 (%)</th>
               </tr>
@@ -9691,13 +9721,13 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
                         <td 
                           key={idx} 
                           style={{ 
-                            textAlign: idx === 7 ? "center" : "right", 
-                            paddingRight: idx === 7 ? "1.5rem" : "1rem",
-                            fontWeight: (idx === 6 || idx === 7) ? "800" : "700",
-                            color: idx === 6 ? "var(--accent-color)" : "inherit"
+                            textAlign: idx === 4 ? "center" : "right", 
+                            paddingRight: idx === 4 ? "1.5rem" : "1rem",
+                            fontWeight: (idx === 3 || idx === 4) ? "800" : "700",
+                            color: idx === 3 ? "var(--accent-color)" : "inherit"
                           }}
                         >
-                          {idx === 7 ? `${val.toFixed(0)}` : (val > 0 ? val.toFixed(2) : "-")}
+                          {idx === 4 ? `${val.toFixed(0)}` : (val > 0 ? val.toFixed(2) : "-")}
                         </td>
                       ))}
                     </tr>
@@ -9711,11 +9741,11 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
                           <td 
                             key={vIdx} 
                             style={{ 
-                              textAlign: vIdx === 7 ? "center" : "right", 
-                              paddingRight: vIdx === 7 ? "1.5rem" : "1rem" 
+                              textAlign: vIdx === 4 ? "center" : "right", 
+                              paddingRight: vIdx === 4 ? "1.5rem" : "1rem" 
                             }}
                           >
-                            {vIdx === 7 ? `${v.toFixed(1)}%` : (v > 0 ? v.toFixed(2) : "-")}
+                            {vIdx === 4 ? `${v.toFixed(1)}%` : (v > 0 ? v.toFixed(2) : "-")}
                           </td>
                         ))}
                       </tr>
@@ -9729,9 +9759,7 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
                 <td style={{ paddingLeft: "1.5rem", borderRight: "1px solid var(--border-color)" }}>총 사업비</td>
                 <td style={{ textAlign: "right", paddingRight: "1rem" }}>{annualTotalNat.toFixed(2)}</td>
                 <td style={{ textAlign: "right", paddingRight: "1rem" }}>{annualTotalCity.toFixed(2)}</td>
-                <td style={{ textAlign: "right", paddingRight: "1rem" }}>0.00</td>
                 <td style={{ textAlign: "right", paddingRight: "1rem" }}>{annualTotalExt.toFixed(2)}</td>
-                <td style={{ textAlign: "right", paddingRight: "1rem" }}>0.00</td>
                 <td style={{ textAlign: "right", paddingRight: "1rem", color: "var(--accent-color)" }}>{annualTotalSum.toFixed(2)}</td>
                 <td style={{ textAlign: "center", paddingRight: "1.5rem" }}>100</td>
               </tr>
@@ -9739,9 +9767,7 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
                 <td style={{ paddingLeft: "3rem", borderRight: "1px solid var(--border-color)" }}>인건비</td>
                 <td style={{ textAlign: "right", paddingRight: "1rem" }}>{annualLaborNat.toFixed(2)}</td>
                 <td style={{ textAlign: "right", paddingRight: "1rem" }}>{annualLaborCity.toFixed(2)}</td>
-                <td style={{ textAlign: "right", paddingRight: "1rem" }}>0.00</td>
                 <td style={{ textAlign: "right", paddingRight: "1rem" }}>{annualLaborExt.toFixed(2)}</td>
-                <td style={{ textAlign: "right", paddingRight: "1rem" }}>0.00</td>
                 <td style={{ textAlign: "right", paddingRight: "1rem" }}>{annualLaborSum.toFixed(2)}</td>
                 <td style={{ textAlign: "center", paddingRight: "1.5rem" }}>{annualLaborRatio.toFixed(1)}%</td>
               </tr>
@@ -9749,9 +9775,7 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
                 <td style={{ paddingLeft: "3rem", borderRight: "1px solid var(--border-color)" }}>그 밖의 사업운영비</td>
                 <td style={{ textAlign: "right", paddingRight: "1rem" }}>{annualOpNat.toFixed(2)}</td>
                 <td style={{ textAlign: "right", paddingRight: "1rem" }}>{annualOpCity.toFixed(2)}</td>
-                <td style={{ textAlign: "right", paddingRight: "1rem" }}>0.00</td>
                 <td style={{ textAlign: "right", paddingRight: "1rem" }}>{annualOpExt.toFixed(2)}</td>
-                <td style={{ textAlign: "right", paddingRight: "1rem" }}>0.00</td>
                 <td style={{ textAlign: "right", paddingRight: "1rem" }}>{annualOpSum.toFixed(2)}</td>
                 <td style={{ textAlign: "center", paddingRight: "1.5rem" }}>{annualOpRatio.toFixed(1)}%</td>
               </tr>
@@ -9759,9 +9783,7 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
                 <td style={{ paddingLeft: "3rem", borderRight: "1px solid var(--border-color)" }}>간접비</td>
                 <td style={{ textAlign: "right", paddingRight: "1rem" }}>{annualIndNat.toFixed(2)}</td>
                 <td style={{ textAlign: "right", paddingRight: "1rem" }}>{annualIndCity.toFixed(2)}</td>
-                <td style={{ textAlign: "right", paddingRight: "1rem" }}>0.00</td>
                 <td style={{ textAlign: "right", paddingRight: "1rem" }}>{annualIndExt.toFixed(2)}</td>
-                <td style={{ textAlign: "right", paddingRight: "1rem" }}>0.00</td>
                 <td style={{ textAlign: "right", paddingRight: "1rem" }}>{annualIndSum.toFixed(2)}</td>
                 <td style={{ textAlign: "center", paddingRight: "1.5rem" }}>{annualIndRatio.toFixed(1)}%</td>
               </tr>
@@ -9769,9 +9791,7 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
                 <td style={{ paddingLeft: "1.5rem", borderRight: "1px solid var(--border-color)", color: "#10b981" }}>총사업비 중 운영비</td>
                 <td style={{ textAlign: "right", paddingRight: "1rem", color: "#10b981" }}>{annualOnlyOpNat.toFixed(2)}</td>
                 <td style={{ textAlign: "right", paddingRight: "1rem", color: "#10b981" }}>{annualOnlyOpCity.toFixed(2)}</td>
-                <td style={{ textAlign: "right", paddingRight: "1rem", color: "#10b981" }}>0.00</td>
                 <td style={{ textAlign: "right", paddingRight: "1rem", color: "#10b981" }}>{annualOnlyOpExt.toFixed(2)}</td>
-                <td style={{ textAlign: "right", paddingRight: "1rem", color: "#10b981" }}>0.00</td>
                 <td style={{ textAlign: "right", paddingRight: "1rem", color: "#10b981" }}>{annualOnlyOpSum.toFixed(2)}</td>
                 <td style={{ textAlign: "center", paddingRight: "1.5rem", color: "#10b981" }}>{annualOnlyOpRatio.toFixed(1)}%</td>
               </tr>
