@@ -9555,20 +9555,23 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
   const TOTAL_INVESTMENT_5YEAR_DATA = allUnits.map((u) => {
     const unitTitle = u.id === "Common" ? "공통운영경비" : `${u.id}. ${u.title}`;
     
-    // 연도별 예산 총액 (억원 단위)
+    // 연도별 예산 총액 (억원 단위, {main, carry} 형태의 객체 반환)
     // 1~5차년도
     const annualTotals = [1, 2, 3, 4, 5].map((yr) => {
-      const budget = (u.years?.[yr]?.budget_main || 0) + (u.years?.[yr]?.budget_carry || 0);
-      return budget / 1e8;
+      return {
+        main: (u.years?.[yr]?.budget_main || 0) / 1e8,
+        carry: (u.years?.[yr]?.budget_carry || 0) / 1e8
+      };
     });
     // 5개년 총합
-    const fiveYearSum = annualTotals.reduce((sum, val) => sum + val, 0);
-    const totalRow = [...annualTotals, fiveYearSum];
+    const fiveYearMainSum = annualTotals.reduce((sum, val) => sum + val.main, 0);
+    const fiveYearCarrySum = annualTotals.reduce((sum, val) => sum + val.carry, 0);
+    const totalRow = [...annualTotals, { main: fiveYearMainSum, carry: fiveYearCarrySum }];
 
     // 비목별 5개년 예산
     const categoriesMap = {};
     CATEGORY_ORDER.forEach((catName) => {
-      categoriesMap[catName] = [0, 0, 0, 0, 0]; // 1~5차년도
+      categoriesMap[catName] = [1, 2, 3, 4, 5].map(() => ({ main: 0, carry: 0 })); // 1~5차년도
     });
 
     // 프로그램들을 순회하며 각 연도의 비목 데이터 합산
@@ -9585,8 +9588,8 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
             const cleanCarry = typeof cat.budget_carry === "string" 
               ? parseFloat(cat.budget_carry.replace(/,/g, "")) 
               : Number(cat.budget_carry || 0);
-            const budgetVal = cleanBudget + cleanCarry;
-            categoriesMap[matchedOrderCat][yr - 1] += budgetVal / 1e8;
+            categoriesMap[matchedOrderCat][yr - 1].main += cleanBudget / 1e8;
+            categoriesMap[matchedOrderCat][yr - 1].carry += cleanCarry / 1e8;
           }
         });
       });
@@ -9596,11 +9599,13 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
     const categories = [];
     CATEGORY_ORDER.forEach((catName) => {
       const values = categoriesMap[catName];
-      const catSum = values.reduce((sum, val) => sum + val, 0);
+      const mainSum = values.reduce((sum, val) => sum + val.main, 0);
+      const carrySum = values.reduce((sum, val) => sum + val.carry, 0);
+      const catSum = mainSum + carrySum;
       if (catSum > 0) {
         categories.push({
           name: catName,
-          values: [...values, catSum]
+          values: [...values, { main: mainSum, carry: carrySum }]
         });
       }
     });
@@ -9614,34 +9619,45 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
   });
 
   // ----------------------------------------------------
-  // (2) 5개년 총괄 요약 영역 동적 계산
+  // (2) 5개년 총괄 요약 영역 동적 계산 ({main, carry} 형태의 배열로 확장)
   // ----------------------------------------------------
-  const summaryTotal = [0, 0, 0, 0, 0, 0];
-  const summaryLabor = [0, 0, 0, 0, 0, 0];
-  const summaryOperation = [0, 0, 0, 0, 0, 0];
-  const summaryIndirect = [0, 0, 0, 0, 0, 0];
-  const summaryOnlyOperation = [0, 0, 0, 0, 0, 0];
+  const summaryTotal = [1, 2, 3, 4, 5, 6].map(() => ({ main: 0, carry: 0 }));
+  const summaryLabor = [1, 2, 3, 4, 5, 6].map(() => ({ main: 0, carry: 0 }));
+  const summaryOperation = [1, 2, 3, 4, 5, 6].map(() => ({ main: 0, carry: 0 }));
+  const summaryIndirect = [1, 2, 3, 4, 5, 6].map(() => ({ main: 0, carry: 0 }));
+  const summaryOnlyOperation = [1, 2, 3, 4, 5, 6].map(() => ({ main: 0, carry: 0 }));
 
   TOTAL_INVESTMENT_5YEAR_DATA.forEach((uData) => {
     for (let i = 0; i < 6; i++) {
-      summaryTotal[i] += uData.total[i];
+      summaryTotal[i].main += uData.total[i].main;
+      summaryTotal[i].carry += uData.total[i].carry;
     }
     
     uData.categories.forEach((cat) => {
       const normCat = normalizeCategoryName(cat.name);
       if (normCat === "인건비") {
-        for (let i = 0; i < 6; i++) summaryLabor[i] += cat.values[i];
+        for (let i = 0; i < 6; i++) {
+          summaryLabor[i].main += cat.values[i].main;
+          summaryLabor[i].carry += cat.values[i].carry;
+        }
       } else if (normCat === "그 밖의 사업운영비" || normCat === "그 밖의 사업운영경비") {
-        for (let i = 0; i < 6; i++) summaryOperation[i] += cat.values[i];
+        for (let i = 0; i < 6; i++) {
+          summaryOperation[i].main += cat.values[i].main;
+          summaryOperation[i].carry += cat.values[i].carry;
+        }
       } else if (normCat === "간접비") {
-        for (let i = 0; i < 6; i++) summaryIndirect[i] += cat.values[i];
+        for (let i = 0; i < 6; i++) {
+          summaryIndirect[i].main += cat.values[i].main;
+          summaryIndirect[i].carry += cat.values[i].carry;
+        }
       }
     });
   });
 
   // "총사업비 중 운영비" = "인건비" + "그 밖의 사업운영비" + "간접비"
   for (let i = 0; i < 6; i++) {
-    summaryOnlyOperation[i] = summaryLabor[i] + summaryOperation[i] + summaryIndirect[i];
+    summaryOnlyOperation[i].main = summaryLabor[i].main + summaryOperation[i].main + summaryIndirect[i].main;
+    summaryOnlyOperation[i].carry = summaryLabor[i].carry + summaryOperation[i].carry + summaryIndirect[i].carry;
   }
 
   const TOTAL_INVESTMENT_SUMMARY_DATA = {
@@ -9789,6 +9805,25 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
 
   const targetYear = 2024 + selectedYear;
 
+  const formatCell = (valObj, idx) => {
+    if (!valObj) return "-";
+    const mainVal = valObj.main || 0;
+    const carryVal = valObj.carry || 0;
+    const sumVal = mainVal + carryVal;
+
+    if (sumVal <= 0) return "-";
+
+    // 1차년도(2025)는 합산 단일치로 표현
+    if (idx === 0) {
+      return sumVal.toFixed(2);
+    }
+    
+    // 2~5차년도 및 합계는 '본사업 | 이월' 구분하여 렌더링
+    const mainStr = mainVal > 0 ? mainVal.toFixed(2) : "-";
+    const carryStr = carryVal > 0 ? carryVal.toFixed(2) : "-";
+    return `${mainStr} | ${carryStr}`;
+  };
+
   const renderFiveYear = () => {
     return (
       <div className="table-panel">
@@ -9797,11 +9832,26 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
             <tr style={{ background: "rgba(255,255,255,0.02)" }}>
               <th style={{ verticalAlign: "middle", textAlign: "left", paddingLeft: "1.5rem", borderBottom: "1px solid var(--border-color)", borderRight: "1px solid var(--border-color)" }}>구분</th>
               <th style={{ textAlign: "right", paddingRight: "1rem" }}>2025</th>
-              <th style={{ textAlign: "right", paddingRight: "1rem" }}>2026</th>
-              <th style={{ textAlign: "right", paddingRight: "1rem" }}>2027</th>
-              <th style={{ textAlign: "right", paddingRight: "1rem" }}>2028</th>
-              <th style={{ textAlign: "right", paddingRight: "1rem" }}>2029</th>
-              <th style={{ textAlign: "right", paddingRight: "1.5rem", fontWeight: "800", color: "var(--accent-color)" }}>합계</th>
+              <th style={{ textAlign: "right", paddingRight: "1rem" }}>
+                2026<br />
+                <span style={{ fontSize: "0.65rem", fontWeight: "normal", color: "var(--text-secondary)" }}>(본사업 | 이월)</span>
+              </th>
+              <th style={{ textAlign: "right", paddingRight: "1rem" }}>
+                2027<br />
+                <span style={{ fontSize: "0.65rem", fontWeight: "normal", color: "var(--text-secondary)" }}>(본사업 | 이월)</span>
+              </th>
+              <th style={{ textAlign: "right", paddingRight: "1rem" }}>
+                2028<br />
+                <span style={{ fontSize: "0.65rem", fontWeight: "normal", color: "var(--text-secondary)" }}>(본사업 | 이월)</span>
+              </th>
+              <th style={{ textAlign: "right", paddingRight: "1rem" }}>
+                2029<br />
+                <span style={{ fontSize: "0.65rem", fontWeight: "normal", color: "var(--text-secondary)" }}>(본사업 | 이월)</span>
+              </th>
+              <th style={{ textAlign: "right", paddingRight: "1.5rem", fontWeight: "800", color: "var(--accent-color)" }}>
+                합계<br />
+                <span style={{ fontSize: "0.65rem", fontWeight: "800", color: "var(--accent-color)" }}>(본사업 | 이월)</span>
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -9812,12 +9862,12 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
                 <React.Fragment key={u.id}>
                   {/* 대단위과제 로우 */}
                   <tr 
-                    onClick={() => hasCategories && toggleUnit(u.id)}
-                    style={{ 
-                      cursor: hasCategories ? "pointer" : "default", 
-                      background: u.id === "Common" ? "rgba(245, 158, 11, 0.08)" : "rgba(255,255,255,0.01)",
-                      fontWeight: "700" 
-                    }}
+                     onClick={() => hasCategories && toggleUnit(u.id)}
+                     style={{ 
+                       cursor: hasCategories ? "pointer" : "default", 
+                       background: u.id === "Common" ? "rgba(245, 158, 11, 0.08)" : "rgba(255,255,255,0.01)",
+                       fontWeight: "700" 
+                     }}
                   >
                     <td style={{ paddingLeft: "1.5rem", color: u.id === "Common" ? "#fbbf24" : "inherit", borderRight: "1px solid var(--border-color)", display: "flex", alignItems: "center", gap: "0.5rem" }}>
                       {hasCategories && (
@@ -9835,7 +9885,7 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
                           color: idx === 5 ? "var(--accent-color)" : "inherit"
                         }}
                       >
-                        {val > 0 ? val.toFixed(2) : "-"}
+                        {formatCell(val, idx)}
                       </td>
                     ))}
                   </tr>
@@ -9847,7 +9897,7 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
                       </td>
                       {cat.values.map((v, vIdx) => (
                         <td key={vIdx} style={{ textAlign: "right", paddingRight: vIdx === 5 ? "1.5rem" : "1rem" }}>
-                          {v > 0 ? v.toFixed(2) : "-"}
+                          {formatCell(v, vIdx)}
                         </td>
                       ))}
                     </tr>
@@ -9860,31 +9910,31 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
             <tr style={{ borderTop: "2px solid var(--accent-color)", background: "rgba(59, 130, 246, 0.05)", fontWeight: "800" }}>
               <td style={{ paddingLeft: "1.5rem", borderRight: "1px solid var(--border-color)" }}>총 사업비</td>
               {TOTAL_INVESTMENT_SUMMARY_DATA.total.map((v, i) => (
-                <td key={i} style={{ textAlign: "right", paddingRight: i === 5 ? "1.5rem" : "1rem" }}>{v.toFixed(2)}</td>
+                <td key={i} style={{ textAlign: "right", paddingRight: i === 5 ? "1.5rem" : "1rem" }}>{formatCell(v, i)}</td>
               ))}
             </tr>
             <tr style={{ background: "rgba(255,255,255,0.02)", fontSize: "0.75rem", color: "var(--text-secondary)" }}>
               <td style={{ paddingLeft: "3rem", borderRight: "1px solid var(--border-color)" }}>인건비</td>
               {TOTAL_INVESTMENT_SUMMARY_DATA.labor.map((v, i) => (
-                <td key={i} style={{ textAlign: "right", paddingRight: i === 5 ? "1.5rem" : "1rem" }}>{v.toFixed(2)}</td>
+                <td key={i} style={{ textAlign: "right", paddingRight: i === 5 ? "1.5rem" : "1rem" }}>{formatCell(v, i)}</td>
               ))}
             </tr>
             <tr style={{ background: "rgba(255,255,255,0.02)", fontSize: "0.75rem", color: "var(--text-secondary)" }}>
               <td style={{ paddingLeft: "3rem", borderRight: "1px solid var(--border-color)" }}>그 밖의 사업운영비</td>
               {TOTAL_INVESTMENT_SUMMARY_DATA.operation.map((v, i) => (
-                <td key={i} style={{ textAlign: "right", paddingRight: i === 5 ? "1.5rem" : "1rem" }}>{v.toFixed(2)}</td>
+                <td key={i} style={{ textAlign: "right", paddingRight: i === 5 ? "1.5rem" : "1rem" }}>{formatCell(v, i)}</td>
               ))}
             </tr>
             <tr style={{ background: "rgba(255,255,255,0.02)", fontSize: "0.75rem", color: "var(--text-secondary)" }}>
               <td style={{ paddingLeft: "3rem", borderRight: "1px solid var(--border-color)" }}>간접비</td>
               {TOTAL_INVESTMENT_SUMMARY_DATA.indirect.map((v, i) => (
-                <td key={i} style={{ textAlign: "right", paddingRight: i === 5 ? "1.5rem" : "1rem" }}>{v.toFixed(2)}</td>
+                <td key={i} style={{ textAlign: "right", paddingRight: i === 5 ? "1.5rem" : "1rem" }}>{formatCell(v, i)}</td>
               ))}
             </tr>
             <tr style={{ borderTop: "1px solid rgba(255,255,255,0.1)", background: "rgba(16, 185, 129, 0.05)", fontWeight: "800" }}>
               <td style={{ paddingLeft: "1.5rem", borderRight: "1px solid var(--border-color)", color: "#10b981" }}>총사업비 중 운영비</td>
               {TOTAL_INVESTMENT_SUMMARY_DATA.only_operation.map((v, i) => (
-                <td key={i} style={{ textAlign: "right", paddingRight: i === 5 ? "1.5rem" : "1rem", color: "#10b981" }}>{v.toFixed(2)}</td>
+                <td key={i} style={{ textAlign: "right", paddingRight: i === 5 ? "1.5rem" : "1rem", color: "#10b981" }}>{formatCell(v, i)}</td>
               ))}
             </tr>
           </tbody>
