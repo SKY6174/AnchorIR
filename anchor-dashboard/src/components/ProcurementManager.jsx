@@ -2292,21 +2292,24 @@ export default function ProcurementManager({
                                 padding: "0.25rem 0.45rem",
                                 fontSize: "0.65rem",
                                 borderRadius: "4px",
-                                background: "rgba(59, 130, 246, 0.12)",
-                                color: "#60A5FA",
-                                border: "1px solid rgba(59, 130, 246, 0.25)",
+                                background: "rgba(59, 130, 246, 0.15)",
+                                color: "#2563EB",
+                                border: "1px solid rgba(59, 130, 246, 0.5)",
                                 cursor: "pointer",
                                 transition: "all 0.2s",
                                 width: "36px",
-                                textAlign: "center"
+                                textAlign: "center",
+                                fontWeight: "700"
                               }}
                               onMouseOver={(e) => {
                                 e.currentTarget.style.background = "rgba(59, 130, 246, 0.25)";
-                                e.currentTarget.style.borderColor = "#60A5FA";
+                                e.currentTarget.style.borderColor = "#1D4ED8";
+                                e.currentTarget.style.color = "#1D4ED8";
                               }}
                               onMouseOut={(e) => {
-                                e.currentTarget.style.background = "rgba(59, 130, 246, 0.12)";
-                                e.currentTarget.style.borderColor = "rgba(59, 130, 246, 0.25)";
+                                e.currentTarget.style.background = "rgba(59, 130, 246, 0.15)";
+                                e.currentTarget.style.borderColor = "rgba(59, 130, 246, 0.5)";
+                                e.currentTarget.style.color = "#2563EB";
                               }}
                               title="기획(사업단 ➔ 시설안전관리팀) 문서 요약 보기"
                             >
@@ -2320,21 +2323,24 @@ export default function ProcurementManager({
                                 padding: "0.25rem 0.45rem",
                                 fontSize: "0.65rem",
                                 borderRadius: "4px",
-                                background: "rgba(167, 139, 250, 0.12)",
-                                color: "#C084FC",
-                                border: "1px solid rgba(167, 139, 250, 0.25)",
+                                background: "rgba(139, 92, 246, 0.15)",
+                                color: "#7C3AED",
+                                border: "1px solid rgba(139, 92, 246, 0.5)",
                                 cursor: "pointer",
                                 transition: "all 0.2s",
                                 width: "36px",
-                                textAlign: "center"
+                                textAlign: "center",
+                                fontWeight: "700"
                               }}
                               onMouseOver={(e) => {
-                                e.currentTarget.style.background = "rgba(167, 139, 250, 0.25)";
-                                e.currentTarget.style.borderColor = "#C084FC";
+                                e.currentTarget.style.background = "rgba(139, 92, 246, 0.25)";
+                                e.currentTarget.style.borderColor = "#6D28D9";
+                                e.currentTarget.style.color = "#6D28D9";
                               }}
                               onMouseOut={(e) => {
-                                e.currentTarget.style.background = "rgba(167, 139, 250, 0.12)";
-                                e.currentTarget.style.borderColor = "rgba(167, 139, 250, 0.25)";
+                                e.currentTarget.style.background = "rgba(139, 92, 246, 0.15)";
+                                e.currentTarget.style.borderColor = "rgba(139, 92, 246, 0.5)";
+                                e.currentTarget.style.color = "#7C3AED";
                               }}
                               title="구매(시설안전관리팀) 문서 요약 보기"
                             >
@@ -2348,22 +2354,25 @@ export default function ProcurementManager({
                                 padding: "0.25rem 0.45rem",
                                 fontSize: "0.65rem",
                                 borderRadius: "4px",
-                                background: "rgba(16, 185, 129, 0.12)",
-                                color: "#34D399",
-                                border: "1px solid rgba(16, 185, 129, 0.25)",
+                                background: "rgba(16, 185, 129, 0.15)",
+                                color: "#059669",
+                                border: "1px solid rgba(16, 185, 129, 0.5)",
                                 cursor: "pointer",
                                 transition: "all 0.2s",
                                 width: "36px",
-                                textAlign: "center"
+                                textAlign: "center",
+                                fontWeight: "700"
                               }}
                               onMouseOver={(e) => {
                                 e.currentTarget.style.background = "rgba(16, 185, 129, 0.25)";
-                                e.currentTarget.style.borderColor = "#34D399";
+                                e.currentTarget.style.borderColor = "#047857";
+                                e.currentTarget.style.color = "#047857";
                               }}
-                               onMouseOut={(e) => {
-                                 e.currentTarget.style.background = "rgba(16, 185, 129, 0.12)";
-                                 e.currentTarget.style.borderColor = "rgba(16, 185, 129, 0.25)";
-                               }}
+                              onMouseOut={(e) => {
+                                e.currentTarget.style.background = "rgba(16, 185, 129, 0.15)";
+                                e.currentTarget.style.borderColor = "rgba(16, 185, 129, 0.5)";
+                                e.currentTarget.style.color = "#059669";
+                              }}
                               title="결과(시설안전관리팀 시공/준공) 문서 요약 보기"
                             >
                               결과
@@ -2381,15 +2390,26 @@ export default function ProcurementManager({
                                   style={{
                                     padding: "0.25rem 0.45rem",
                                     fontSize: "0.65rem",
-                                    background: "rgba(255,255,255,0.06)",
-                                    border: "1px solid rgba(255,255,255,0.12)",
+                                    background: "rgba(107, 114, 128, 0.12)",
+                                    border: "1px solid rgba(107, 114, 128, 0.4)",
                                     borderRadius: "4px",
-                                    color: "white",
+                                    color: "var(--text-primary)",
                                     fontWeight: "700",
                                     cursor: "pointer",
                                     whiteSpace: "nowrap",
                                     width: "36px",
-                                    textAlign: "center"
+                                    textAlign: "center",
+                                    transition: "all 0.15s ease"
+                                  }}
+                                  onMouseOver={(e) => {
+                                    e.currentTarget.style.background = "rgba(59, 130, 246, 0.2)";
+                                    e.currentTarget.style.borderColor = "rgba(59, 130, 246, 0.5)";
+                                    e.currentTarget.style.color = "var(--accent-color, #2563EB)";
+                                  }}
+                                  onMouseOut={(e) => {
+                                    e.currentTarget.style.background = "rgba(107, 114, 128, 0.12)";
+                                    e.currentTarget.style.borderColor = "rgba(107, 114, 128, 0.4)";
+                                    e.currentTarget.style.color = "var(--text-primary)";
                                   }}
                                 >
                                   수정
@@ -2404,15 +2424,26 @@ export default function ProcurementManager({
                                   style={{
                                     padding: "0.25rem 0.45rem",
                                     fontSize: "0.65rem",
-                                    background: "rgba(239, 68, 68, 0.2)",
-                                    border: "1px solid rgba(239, 68, 68, 0.4)",
+                                    background: "rgba(239, 68, 68, 0.12)",
+                                    border: "1px solid rgba(239, 68, 68, 0.45)",
                                     borderRadius: "4px",
-                                    color: "#f87171",
+                                    color: "#DC2626",
                                     fontWeight: "700",
                                     cursor: "pointer",
                                     whiteSpace: "nowrap",
                                     width: "36px",
-                                    textAlign: "center"
+                                    textAlign: "center",
+                                    transition: "all 0.15s ease"
+                                  }}
+                                  onMouseOver={(e) => {
+                                    e.currentTarget.style.background = "rgba(239, 68, 68, 0.25)";
+                                    e.currentTarget.style.borderColor = "#B91C1C";
+                                    e.currentTarget.style.color = "#B91C1C";
+                                  }}
+                                  onMouseOut={(e) => {
+                                    e.currentTarget.style.background = "rgba(239, 68, 68, 0.12)";
+                                    e.currentTarget.style.borderColor = "rgba(239, 68, 68, 0.45)";
+                                    e.currentTarget.style.color = "#DC2626";
                                   }}
                                 >
                                   삭제
@@ -3668,21 +3699,24 @@ export default function ProcurementManager({
                                 padding: "0.25rem 0.45rem",
                                 fontSize: "0.65rem",
                                 borderRadius: "4px",
-                                background: "rgba(59, 130, 246, 0.12)",
-                                color: "#60A5FA",
-                                border: "1px solid rgba(59, 130, 246, 0.25)",
+                                background: "rgba(59, 130, 246, 0.15)",
+                                color: "#2563EB",
+                                border: "1px solid rgba(59, 130, 246, 0.5)",
                                 cursor: "pointer",
                                 transition: "all 0.2s",
                                 width: "36px",
-                                textAlign: "center"
+                                textAlign: "center",
+                                fontWeight: "700"
                               }}
                               onMouseOver={(e) => {
                                 e.currentTarget.style.background = "rgba(59, 130, 246, 0.25)";
-                                e.currentTarget.style.borderColor = "#60A5FA";
+                                e.currentTarget.style.borderColor = "#1D4ED8";
+                                e.currentTarget.style.color = "#1D4ED8";
                               }}
                               onMouseOut={(e) => {
-                                e.currentTarget.style.background = "rgba(59, 130, 246, 0.12)";
-                                e.currentTarget.style.borderColor = "rgba(59, 130, 246, 0.25)";
+                                e.currentTarget.style.background = "rgba(59, 130, 246, 0.15)";
+                                e.currentTarget.style.borderColor = "rgba(59, 130, 246, 0.5)";
+                                e.currentTarget.style.color = "#2563EB";
                               }}
                               title="기획 문서 요약 보기"
                             >
@@ -3696,21 +3730,24 @@ export default function ProcurementManager({
                                 padding: "0.25rem 0.45rem",
                                 fontSize: "0.65rem",
                                 borderRadius: "4px",
-                                background: "rgba(167, 139, 250, 0.12)",
-                                color: "#C084FC",
-                                border: "1px solid rgba(167, 139, 250, 0.25)",
+                                background: "rgba(139, 92, 246, 0.15)",
+                                color: "#7C3AED",
+                                border: "1px solid rgba(139, 92, 246, 0.5)",
                                 cursor: "pointer",
                                 transition: "all 0.2s",
                                 width: "36px",
-                                textAlign: "center"
+                                textAlign: "center",
+                                fontWeight: "700"
                               }}
                               onMouseOver={(e) => {
-                                e.currentTarget.style.background = "rgba(167, 139, 250, 0.25)";
-                                e.currentTarget.style.borderColor = "#C084FC";
+                                e.currentTarget.style.background = "rgba(139, 92, 246, 0.25)";
+                                e.currentTarget.style.borderColor = "#6D28D9";
+                                e.currentTarget.style.color = "#6D28D9";
                               }}
                               onMouseOut={(e) => {
-                                e.currentTarget.style.background = "rgba(167, 139, 250, 0.12)";
-                                e.currentTarget.style.borderColor = "rgba(167, 139, 250, 0.25)";
+                                e.currentTarget.style.background = "rgba(139, 92, 246, 0.15)";
+                                e.currentTarget.style.borderColor = "rgba(139, 92, 246, 0.5)";
+                                e.currentTarget.style.color = "#7C3AED";
                               }}
                               title="구매 문서 요약 보기"
                             >
@@ -3724,21 +3761,24 @@ export default function ProcurementManager({
                                 padding: "0.25rem 0.45rem",
                                 fontSize: "0.65rem",
                                 borderRadius: "4px",
-                                background: "rgba(16, 185, 129, 0.12)",
-                                color: "#34D399",
-                                border: "1px solid rgba(16, 185, 129, 0.25)",
+                                background: "rgba(16, 185, 129, 0.15)",
+                                color: "#059669",
+                                border: "1px solid rgba(16, 185, 129, 0.5)",
                                 cursor: "pointer",
                                 transition: "all 0.2s",
                                 width: "36px",
-                                textAlign: "center"
+                                textAlign: "center",
+                                fontWeight: "700"
                               }}
                               onMouseOver={(e) => {
                                 e.currentTarget.style.background = "rgba(16, 185, 129, 0.25)";
-                                e.currentTarget.style.borderColor = "#34D399";
+                                e.currentTarget.style.borderColor = "#047857";
+                                e.currentTarget.style.color = "#047857";
                               }}
                               onMouseOut={(e) => {
-                                e.currentTarget.style.background = "rgba(16, 185, 129, 0.12)";
-                                e.currentTarget.style.borderColor = "rgba(16, 185, 129, 0.25)";
+                                e.currentTarget.style.background = "rgba(16, 185, 129, 0.15)";
+                                e.currentTarget.style.borderColor = "rgba(16, 185, 129, 0.5)";
+                                e.currentTarget.style.color = "#059669";
                               }}
                               title="결과 문서 요약 보기"
                             >
@@ -3758,14 +3798,25 @@ export default function ProcurementManager({
                                   style={{
                                     padding: "0.25rem 0.45rem",
                                     fontSize: "0.65rem",
-                                    background: "rgba(96, 165, 250, 0.15)",
-                                    border: "1px solid rgba(96, 165, 250, 0.35)",
+                                    background: "rgba(107, 114, 128, 0.12)",
+                                    border: "1px solid rgba(107, 114, 128, 0.4)",
                                     borderRadius: "4px",
-                                    color: "#93c5fd",
+                                    color: "var(--text-primary)",
                                     fontWeight: "700",
                                     cursor: "pointer",
                                     width: "38px",
-                                    textAlign: "center"
+                                    textAlign: "center",
+                                    transition: "all 0.15s ease"
+                                  }}
+                                  onMouseOver={(e) => {
+                                    e.currentTarget.style.background = "rgba(59, 130, 246, 0.2)";
+                                    e.currentTarget.style.borderColor = "rgba(59, 130, 246, 0.5)";
+                                    e.currentTarget.style.color = "var(--accent-color, #2563EB)";
+                                  }}
+                                  onMouseOut={(e) => {
+                                    e.currentTarget.style.background = "rgba(107, 114, 128, 0.12)";
+                                    e.currentTarget.style.borderColor = "rgba(107, 114, 128, 0.4)";
+                                    e.currentTarget.style.color = "var(--text-primary)";
                                   }}
                                 >
                                   수정
@@ -3780,14 +3831,25 @@ export default function ProcurementManager({
                                   style={{
                                     padding: "0.25rem 0.45rem",
                                     fontSize: "0.65rem",
-                                    background: "rgba(239, 68, 68, 0.2)",
-                                    border: "1px solid rgba(239, 68, 68, 0.4)",
+                                    background: "rgba(239, 68, 68, 0.12)",
+                                    border: "1px solid rgba(239, 68, 68, 0.45)",
                                     borderRadius: "4px",
-                                    color: "#f87171",
+                                    color: "#DC2626",
                                     fontWeight: "700",
                                     cursor: "pointer",
                                     width: "38px",
-                                    textAlign: "center"
+                                    textAlign: "center",
+                                    transition: "all 0.15s ease"
+                                  }}
+                                  onMouseOver={(e) => {
+                                    e.currentTarget.style.background = "rgba(239, 68, 68, 0.25)";
+                                    e.currentTarget.style.borderColor = "#B91C1C";
+                                    e.currentTarget.style.color = "#B91C1C";
+                                  }}
+                                  onMouseOut={(e) => {
+                                    e.currentTarget.style.background = "rgba(239, 68, 68, 0.12)";
+                                    e.currentTarget.style.borderColor = "rgba(239, 68, 68, 0.45)";
+                                    e.currentTarget.style.color = "#DC2626";
                                   }}
                                 >
                                   삭제
