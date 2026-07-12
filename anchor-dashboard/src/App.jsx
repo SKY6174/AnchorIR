@@ -3235,10 +3235,46 @@ export default function App() {
         // 1차년도부터 5차년도까지 이월잔액 연쇄적 재계산
         recalculateCarryOver(newYears);
         
+        // 💡 [데이터 불일치 방지망] C1단위과제 하위 프로그램 목록에 타 과제(B2 등) 찌꺼기가 섞여 로드되는 문제를 방지하기 위해 프로그램 명세를 템플릿으로 강제 치환 및 초기화합니다.
+        let targetPrograms = unit.programs || [];
+        if (isC1) {
+          const c1Template = [
+            { id: "C1-S1T1-1", title: "아카데미별 거버넌스 운영", assignee: "이연향", pdca: { p: "완료", d: "완료", c: "진행", a: "대기" } },
+            { id: "C1-S1T1-2", title: "평생학습관 환경개선", assignee: "이연향", pdca: { p: "완료", d: "진행", c: "대기", a: "대기" } },
+            { id: "C1-S1T1-3", title: "평생직업교육관련 기자재", assignee: "이연향", pdca: { p: "완료", d: "진행", c: "대기", a: "대기" } },
+            { id: "C1-S1T2-1", title: "평생학습 박람회 및 성과공유회", assignee: "이연향", pdca: { p: "완료", d: "완료", c: "진행", a: "대기" } },
+            { id: "C1-S1T3-1", title: "자체홈페이지플랫폼구축으로 변경필요(예산미정)", assignee: "이연향", pdca: { p: "완료", d: "완료", c: "진행", a: "대기" } },
+            { id: "C1-S1T4-1", title: "자체홈페이지플랫폼구축으로 변경필요(예산미정)", assignee: "이연향", pdca: { p: "완료", d: "완료", c: "진행", a: "대기" } },
+            { id: "C1-S2T5-1", title: "자격증 취득지원", assignee: "이연향", pdca: { p: "완료", d: "완료", c: "진행", a: "대기" } },
+            { id: "C1-S2T6-1", title: "성인학습자 학과 환경개선", assignee: "이연향", pdca: { p: "완료", d: "진행", c: "대기", a: "대기" } },
+            { id: "C1-S2T6-2", title: "성인학습자 학과 기자재 구축", assignee: "이연향", pdca: { p: "완료", d: "진행", c: "대기", a: "대기" } },
+            { id: "C1-S2T7-1", title: "평생직업교육활성화 정책연구", assignee: "이연향", pdca: { p: "완료", d: "완료", c: "진행", a: "대기" } },
+            { id: "C1-S3T8-1", title: "평생직업교육활성화 정책연구", assignee: "이연향", pdca: { p: "완료", d: "완료", c: "진행", a: "대기" } },
+            { id: "C1-S3T9-1", title: "평생학습 박람회 및 성과공유회", assignee: "이연향", pdca: { p: "완료", d: "완료", c: "진행", a: "대기" } },
+            { id: "C1-S3T10-1", title: "평생직업교육과정 개발", assignee: "이연향", pdca: { p: "완료", d: "완료", c: "진행", a: "대기" } },
+            { id: "C1-S3T11-1", title: "성인학습자 학습지원 프로그램", assignee: "이연향", pdca: { p: "완료", d: "완료", c: "진행", a: "대기" } },
+            { id: "C1-S3T11-2", title: "평생교육참여학습자장학금", assignee: "이연향", pdca: { p: "완료", d: "완료", c: "진행", a: "대기" } },
+            { id: "C1-S3T11-3", title: "운영보조인력 지원", assignee: "이연향", pdca: { p: "완료", d: "완료", c: "진행", a: "대기" } },
+            { id: "C1-S4T12-1", title: "스마트테크 아카데미 교육프로그램운영", assignee: "이연향", pdca: { p: "완료", d: "완료", c: "진행", a: "대기" } },
+            { id: "C1-S4T12-2", title: "라이프케어아카데미 교육프로그램운영", assignee: "이연향", pdca: { p: "완료", d: "완료", c: "진행", a: "대기" } },
+            { id: "C1-S4T13-1", title: "평생직업교육과정 개발", assignee: "이연향", pdca: { p: "완료", d: "완료", c: "진행", a: "대기" } },
+            { id: "C1-S4T14-1", title: "로컬창업아카데미 교육프로그램운영", assignee: "이연향", pdca: { p: "완료", d: "완료", c: "진행", a: "대기" } },
+            { id: "C1-S4T14-2", title: "팝업아카데미 교육프로그램운영", assignee: "이연향", pdca: { p: "완료", d: "완료", c: "진행", a: "대기" } }
+          ];
+
+          targetPrograms = c1Template.map(tmpl => {
+            const exist = unit.programs?.find(ex => ex.id === tmpl.id) || {};
+            return {
+              ...tmpl,
+              years: exist.years || {}
+            };
+          });
+        }
+
         return {
           ...unit,
           years: newYears,
-          programs: unit.programs?.map(prog => {
+          programs: targetPrograms.map(prog => {
             const newProgYears = { ...prog.years };
             
             // 💡 C1단위과제의 하위 프로그램인 경우, 2차년도 본사업비와 국비/시비 안분, 비목을 강제로 정규화합니다.
