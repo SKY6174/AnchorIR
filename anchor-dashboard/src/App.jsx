@@ -4080,7 +4080,20 @@ export default function App() {
           localStorage.removeItem(`anchor_cache_month_y${selectedYear}`);
         }
         if (sEvent && sEvent.length > 0) {
-          const formatted = sEvent.map(x => ({ ...x, id: Number(x.id), year: Number(x.year), month: Number(x.month) }));
+          const formatted = sEvent.map(x => ({
+            id: Number(x.id),
+            year: Number(x.year),
+            month: Number(x.month),
+            title: x.title,
+            department: x.department || "",
+            location: x.location || "",
+            attendeesInternal: x.attendees_internal || "",
+            attendeesExternal: x.attendees_external || "",
+            program: x.program || "",
+            purpose: x.purpose || "",
+            result: x.result || "",
+            datetime: x.datetime
+          }));
           setEventSchedules(formatted);
           fetchedEventSchedulesRef.current = JSON.stringify(formatted);
           safeSetLocalStorage(`anchor_cache_event_y${selectedYear}`, JSON.stringify(formatted), selectedYear);
@@ -4953,16 +4966,36 @@ export default function App() {
         
         if (upsertError) throw upsertError;
 
-        // 4. 로컬 임시 id를 DB sequence id로 매핑 복원하여 중복 인서트 방지
+        // 4. 로컬 임시 id를 DB sequence id로 매핑 복원하여 중복 인서트 방지 (날짜 substring 10자리 비교 및 camelCase 규격 정형화)
         let finalLocalSchedules = schedulesToSync;
         if (upsertedData && upsertedData.length > 0) {
+          const normalizedUpserted = upsertedData.map(x => ({
+            id: Number(x.id),
+            year: Number(x.year),
+            title: x.title,
+            type: x.type,
+            dept: x.dept,
+            startAt: x.start_at,
+            endAt: x.end_at,
+            location: x.location,
+            isTask: x.is_task || false,
+            isDeadline: x.is_deadline || false,
+            completed: x.completed || false,
+            attendees: x.attendees || ""
+          }));
+
           finalLocalSchedules = schedulesToSync.map(s => {
             if (s.id && typeof s.id === "number" && s.id < 2000000000) {
               return s;
             }
-            const dbMatch = upsertedData.find(x => x.title === s.title && x.start_at === s.startAt);
+            const dbMatch = normalizedUpserted.find(x => {
+              const matchTitle = x.title === s.title;
+              const xDate = x.startAt ? x.startAt.substring(0, 10) : "";
+              const sDate = s.startAt ? s.startAt.substring(0, 10) : "";
+              return matchTitle && xDate === sDate;
+            });
             if (dbMatch) {
-              return { ...s, id: Number(dbMatch.id) };
+              return dbMatch;
             }
             return s;
           });
@@ -5081,16 +5114,36 @@ export default function App() {
 
         if (upsertError) throw upsertError;
 
-        // 4. 로컬 임시 id를 DB sequence id로 매핑 복원하여 중복 인서트 방지
+        // 4. 로컬 임시 id를 DB sequence id로 매핑 복원하여 중복 인서트 방지 (날짜 substring 10자리 비교 및 camelCase 규격 정형화)
         let finalLocalEvents = schedulesToSync;
         if (upsertedData && upsertedData.length > 0) {
+          const normalizedUpserted = upsertedData.map(x => ({
+            id: Number(x.id),
+            year: Number(x.year),
+            month: Number(x.month),
+            title: x.title,
+            department: x.department || "",
+            location: x.location || "",
+            attendeesInternal: x.attendees_internal || "",
+            attendeesExternal: x.attendees_external || "",
+            program: x.program || "",
+            purpose: x.purpose || "",
+            result: x.result || "",
+            datetime: x.datetime
+          }));
+
           finalLocalEvents = schedulesToSync.map(s => {
             if (s.id && typeof s.id === "number" && s.id < 2000000000) {
               return s;
             }
-            const dbMatch = upsertedData.find(x => x.title === s.title && x.datetime === s.datetime);
+            const dbMatch = normalizedUpserted.find(x => {
+              const matchTitle = x.title === s.title;
+              const xDate = x.datetime ? x.datetime.substring(0, 10) : "";
+              const sDate = s.datetime ? s.datetime.substring(0, 10) : "";
+              return matchTitle && xDate === sDate;
+            });
             if (dbMatch) {
-              return { ...s, id: Number(dbMatch.id) };
+              return dbMatch;
             }
             return s;
           });
