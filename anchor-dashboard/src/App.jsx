@@ -2264,6 +2264,103 @@ export default function App() {
     }
   };
 
+  // 💡 [비즈니스 룰 규격화 엔진]
+  // 3, 4, 5차년도 예산 계획을 2차년도(2026년) 예산 계획과 강제로 동기화하고,
+  // 종료과제 A1나의 경우 2차년도를 제외한 모든 차년도를 0원으로 강제 격리 조치합니다.
+  const normalizeProjectsMultiYearData = (projectsList) => {
+    if (!projectsList || !Array.isArray(projectsList)) return projectsList;
+    return projectsList.map(strat => ({
+      ...strat,
+      units: strat.units?.map(unit => {
+        const isA1Na = unit.id === "A1na" || unit.id === "A1나";
+        const u2 = unit.years?.[2] || {};
+        
+        const newYears = { ...unit.years };
+        
+        // 3, 4, 5차년도 강제 복사 (A1나 단위과제는 0원)
+        [3, 4, 5].forEach(yr => {
+          newYears[yr] = {
+            ...newYears[yr],
+            budget_main: isA1Na ? 0 : (u2.budget_main || 0),
+            spent_main: 0,
+            budget_carry: 0,
+            spent_carry: 0
+          };
+        });
+        
+        // 1차년도부터 5차년도까지 이월잔액 연쇄적 재계산
+        recalculateCarryOver(newYears);
+        
+        return {
+          ...unit,
+          years: newYears,
+          programs: unit.programs?.map(prog => {
+            const p2 = prog.years?.[2] || {};
+            const newProgYears = { ...prog.years };
+            
+            [3, 4, 5].forEach(yr => {
+              const pYr = newProgYears[yr] || {};
+              const budgetMain = isA1Na ? 0 : (p2.budget_main || 0);
+              
+              // 2차년도의 재원(국비, 시비, 외부사업비) 비율 복사 적용
+              const budget_national = isA1Na ? 0 : (p2.budget_national || 0);
+              const budget_city = isA1Na ? 0 : (p2.budget_city || 0);
+              const budget_external = isA1Na ? 0 : (p2.budget_external || 0);
+              
+              newProgYears[yr] = {
+                ...pYr,
+                budget_main: budgetMain,
+                spent_main: 0,
+                budget_carry: 0,
+                spent_carry: 0,
+                
+                budget_national,
+                spent_national: 0,
+                budget_city,
+                spent_city: 0,
+                budget_external,
+                spent_external: 0,
+                
+                budget_carry_national: 0,
+                spent_carry_national: 0,
+                budget_carry_city: 0,
+                spent_carry_city: 0,
+                budget_carry_external: 0,
+                spent_carry_external: 0
+              };
+              
+              // 2차년도 비목(budget_categories) 복사 적용 (A1나는 0원)
+              if (p2.budget_categories) {
+                newProgYears[yr].budget_categories = p2.budget_categories.map(cat => ({
+                  ...cat,
+                  budget: isA1Na ? "0" : cat.budget,
+                  budget_carry: "0",
+                  spent: 0,
+                  spent_carry: 0
+                }));
+              }
+            });
+            
+            return {
+              ...prog,
+              years: newProgYears
+            };
+          })
+        };
+      })
+    }));
+  };
+
+  // 💡 [정규화 강제화 훅] projects 상태가 갱신되면 비즈니스 정규화 룰 엔진을 통과시켜 3, 4, 5차년도 및 A1나 계획을 강제 교정합니다.
+  useEffect(() => {
+    if (!projects || !Array.isArray(projects) || projects.length === 0) return;
+    const normalized = normalizeProjectsMultiYearData(projects);
+    if (JSON.stringify(projects) !== JSON.stringify(normalized)) {
+      console.log("♻️ [비즈니스 룰] 프로젝트 예산 다년도 동기화 및 A1나 예외 격리 정규화 규칙을 실행합니다.");
+      setProjects(normalized);
+    }
+  }, [projects]);
+
   // 로그인 성공 혹은 세션 로드 시 Supabase DB로부터 마스터 포털 노출 설정 수신
   useEffect(() => {
     const fetchPortalConfig = async () => {
