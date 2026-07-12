@@ -4484,7 +4484,7 @@ export default function App() {
       } catch (e) {
         setSyncStatus("error");
       }
-    }, 800);
+    }, 150);
     return () => clearTimeout(timer);
   }, [envData, selectedYear, isDbLoaded, isFetchCompleted]);
 
@@ -4565,7 +4565,7 @@ export default function App() {
         console.error("Failed to sync procurement_equipment:", e);
         setSyncStatus("error");
       }
-    }, 800);
+    }, 150);
     return () => clearTimeout(timer);
   }, [equipData, selectedYear, isDbLoaded, isFetchCompleted]);
 
@@ -4664,7 +4664,7 @@ export default function App() {
       } catch (e) {
         setSyncStatus("error");
       }
-    }, 800);
+    }, 150);
     return () => clearTimeout(timer);
   }, [serviceData, selectedYear, isDbLoaded, isFetchCompleted]);
 

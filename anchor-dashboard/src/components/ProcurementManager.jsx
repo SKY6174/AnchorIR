@@ -538,6 +538,15 @@ export default function ProcurementManager({
     return null;
   };
 
+  // 토스트 상태 추가
+  const [toast, setToast] = useState(null);
+  const showToast = (message, type = "success") => {
+    setToast({ message, type });
+    setTimeout(() => {
+      setToast(null);
+    }, 2000);
+  };
+
   // 모달 제어 상태
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [modalType, setModalType] = useState("env"); // "env", "equip", "service"
@@ -1074,7 +1083,7 @@ export default function ProcurementManager({
         setIsAddModalOpen(false);
         setIsEditMode(false);
         setEditingItemId(null);
-        alert("🛠️ 교육환경 개선 사업 정보가 성공적으로 수정되었습니다.");
+        showToast("🛠️ 교육환경 개선 사업 정보가 성공적으로 수정되었습니다.");
       } else {
         // 신규 등록
         const nextSeq = activeEnvList.length + 1;
@@ -1132,7 +1141,7 @@ export default function ProcurementManager({
         };
         setEnvData([newItem, ...activeEnvList]);
         setIsAddModalOpen(false);
-        alert(`🛠️ 새 교육환경 개선 사업이 ${targetYear}차년도 사업계획서에 성공적으로 등록되었습니다.`);
+        showToast(`🛠️ 새 교육환경 개선 사업이 ${targetYear}차년도 사업계획서에 성공적으로 등록되었습니다.`);
       }
     } else if (modalType === "equip") {
       // 1) 단장님 조건: 학과 또는 부서 중 최소 하나는 반드시 선택되어야 함
@@ -1211,7 +1220,7 @@ export default function ProcurementManager({
         if (setSelectedYear) {
           setSelectedYear(targetYear);
         }
-        alert("🔬 기자재 정보가 성공적으로 수정되었습니다.");
+        showToast("🔬 기자재 정보가 성공적으로 수정되었습니다.");
       } else {
         // 신규 등록 모드
         const nextSeq = activeEquipList.length + 1;
@@ -1267,7 +1276,7 @@ export default function ProcurementManager({
         if (setSelectedYear) {
           setSelectedYear(targetYear);
         }
-        alert(`🔬 새 기자재 항목이 ${targetYear}차년도 사업계획서에 성공적으로 등록되었습니다.`);
+        showToast(`🔬 새 기자재 항목이 ${targetYear}차년도 사업계획서에 성공적으로 등록되었습니다.`);
       }
     } else if (modalType === "service") {
       // 1. 관련학과, 관련부서 중 최소 하나는 반드시 지정해야 함
@@ -1354,7 +1363,7 @@ export default function ProcurementManager({
           return item;
         });
         setServiceData(updated);
-        alert("💼 주요 용역 정보가 성공적으로 수정되었습니다.");
+        showToast("💼 주요 용역 정보가 성공적으로 수정되었습니다.");
       } else {
         // 신규 등록 모드
         const newItem = {
@@ -1406,7 +1415,7 @@ export default function ProcurementManager({
           docBidFileUrl: formData.docBidFileUrl || ""
         };
         setServiceData([newItem, ...activeServiceList]);
-        alert("💼 새 주요 용역 항목이 성공적으로 등록되었습니다.");
+        showToast("💼 새 주요 용역 항목이 성공적으로 등록되었습니다.");
       }
     }
 
@@ -5367,6 +5376,53 @@ export default function ProcurementManager({
               </button>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* 모던 토스트 팝업 알림창 */}
+      {toast && (
+        <div 
+          style={{
+            position: "fixed",
+            bottom: "2rem",
+            right: "2rem",
+            background: toast.type === "success" 
+              ? "rgba(16, 185, 129, 0.95)" 
+              : toast.type === "error" 
+                ? "rgba(239, 68, 68, 0.95)" 
+                : "rgba(59, 130, 246, 0.95)",
+            backdropFilter: "blur(12px)",
+            color: "#fff",
+            padding: "0.85rem 1.6rem",
+            borderRadius: "10px",
+            boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
+            fontSize: "0.85rem",
+            fontWeight: "700",
+            zIndex: 99999,
+            display: "flex",
+            alignItems: "center",
+            gap: "0.6rem",
+            border: "1px solid rgba(255, 255, 255, 0.15)",
+            animation: "toastFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards",
+            pointerEvents: "none"
+          }}
+        >
+          <span style={{ fontSize: "1.1rem" }}>
+            {toast.type === "success" ? "✅" : toast.type === "error" ? "❌" : "ℹ️"}
+          </span>
+          <span>{toast.message}</span>
+          <style>{`
+            @keyframes toastFadeIn {
+              from {
+                opacity: 0;
+                transform: translateY(1.5rem) scale(0.95);
+              }
+              to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+              }
+            }
+          `}</style>
         </div>
       )}
 
