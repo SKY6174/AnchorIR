@@ -357,9 +357,9 @@ export default function ProgramProgressManager({ projects, selectedYear, onSelec
                 <thead>
                   <tr>
                     <th style={{ width: "10%", textAlign: "center", verticalAlign: "middle" }}>ID</th>
-                    <th style={{ width: "22%", textAlign: "center", verticalAlign: "middle" }}>프로그램명</th>
-                    <th style={{ width: "15.5%", textAlign: "center", verticalAlign: "middle" }}>담당연구원</th>
-                    <th style={{ width: "15.5%", textAlign: "center", verticalAlign: "middle" }}>운영 예산<br />(배정/집행)</th>
+                    <th style={{ width: "20%", textAlign: "center", verticalAlign: "middle" }}>프로그램명</th>
+                    <th style={{ width: "16%", textAlign: "center", verticalAlign: "middle" }}>담당연구원</th>
+                    <th style={{ width: "17%", textAlign: "center", verticalAlign: "middle" }}>운영 예산<br />(배정/집행)</th>
                     <th style={{ width: "37%", textAlign: "center" }}>
                       {selectedYear}차년도 Timeline
                       {/* 연도 구분 줄 (상위 2분할: 시작년도 10개월 / 끝년도 2개월) */}
