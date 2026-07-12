@@ -2068,35 +2068,35 @@ export const initialProjectsData = [
   {
     id: "E",
     title: "공통경비",
-    budget: 2363000000,
+    budget: 2433000000,
     spent: 120000000,
     units: [
       {
         id: "Common",
         title: "공통경비",
-        budget: 2863000000,
+        budget: 2933000000,
         spent: 120000000,
-        budget_2026: 2363000000,
+        budget_2026: 2433000000,
         spent_2026: 90000000,
         budget_2025_carry: 500000000,
         spent_2025_carry: 3000000,
         manager: "심현미 운영팀장",
         programs: [
-          { id: "Common-1-1", title: "앵커 사업단 공통 일반행정 및 경상운영비 집행", budget_2026: 1563000000, spent_2026: 50000000, budget_2025_carry: 30000000, spent_2025_carry: 20000000, assignee: "한유경 선임", pdca: { p: "완료", d: "완료", c: "진행", a: "대기" } },
+          { id: "Common-1-1", title: "앵커 사업단 공통 일반행정 및 경상운영비 집행", budget_2026: 1633000000, spent_2026: 50000000, budget_2025_carry: 30000000, spent_2025_carry: 20000000, assignee: "한유경 선임", pdca: { p: "완료", d: "완료", c: "진행", a: "대기" } },
           { id: "Common-1-2", title: "지산학연 거버넌스 워크숍 및 최종 성과공유포럼 개최", budget_2026: 400000000, spent_2026: 25000005, budget_2025_carry: 10000000, spent_2025_carry: 5000000, assignee: "김래림 연구원", pdca: { p: "완료", d: "완료", c: "진행", a: "대기" } },
           { id: "Common-1-3", title: "사업단 홍보 영상, 백서 제작 및 브랜드 확산", budget_2026: 400000000, spent_2026: 15000000, budget_2025_carry: 10000000, spent_2025_carry: 5000000, assignee: "박언주 연구원", pdca: { p: "완료", d: "진행", c: "대기", a: "대기" } }
         ],
         budgetDetails: {
-          "인건비": { budget_2026: 400000000, spent_2026: 15000000, budget_2025_carry: 50000000, spent_2025_carry: 3000000 },
+          "인건비": { budget_2026: 1440000000, spent_2026: 15000000, budget_2025_carry: 50000000, spent_2025_carry: 3000000 },
           "장학금": { budget_2026: 0, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0 },
-          "교육∙연구 프로그램 개발∙운영비": { budget_2026: 600000000, spent_2026: 30000000, budget_2025_carry: 150000000, spent_2025_carry: 8000000 },
-          "교육∙연구 환경개선비": { budget_2026: 200000000, spent_2026: 50000005, budget_2025_carry: 50000000, spent_2025_carry: 3000000 },
-          "실험∙실습장비 및 기자재 구입∙운영비": { budget_2026: 200000000, spent_2026: 3000000, budget_2025_carry: 50000000, spent_2025_carry: 4000000 },
-          "지역 연계∙협업 지원비": { budget_2026: 300000000, spent_2026: 12000000, budget_2025_carry: 50000000, spent_2025_carry: 3000000 },
-          "기업 지원∙협력 활동비": { budget_2026: 150000000, spent_2026: 5000000, budget_2025_carry: 30000000, spent_2025_carry: 2000000 },
-          "성과 활용∙확산 지원비": { budget_2026: 213000000, spent_2026: 5000000, budget_2025_carry: 70000000, spent_2025_carry: 4000000 },
-          "그 밖의 사업운영경비": { budget_2026: 200000000, spent_2026: 10000000, budget_2025_carry: 50000000, spent_2025_carry: 3000000 },
-          "간접비": { budget_2026: 100000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0 }
+          "교육∙연구 프로그램 개발∙운영비": { budget_2026: 0, spent_2026: 30000000, budget_2025_carry: 150000000, spent_2025_carry: 8000000 },
+          "교육∙연구 환경개선비": { budget_2026: 343000000, spent_2026: 50000005, budget_2025_carry: 50000000, spent_2025_carry: 3000000 },
+          "실험∙실습장비 및 기자재 구입∙운영비": { budget_2026: 0, spent_2026: 3000000, budget_2025_carry: 50000000, spent_2025_carry: 4000000 },
+          "지역 연계∙협업 지원비": { budget_2026: 0, spent_2026: 12000000, budget_2025_carry: 50000000, spent_2025_carry: 3000000 },
+          "기업 지원∙협력 활동비": { budget_2026: 0, spent_2026: 5000000, budget_2025_carry: 30000000, spent_2025_carry: 2000000 },
+          "성과 활용∙확산 지원비": { budget_2026: 100000000, spent_2026: 5000000, budget_2025_carry: 70000000, spent_2025_carry: 4000000 },
+          "그 밖의 사업운영경비": { budget_2026: 275000000, spent_2026: 10000000, budget_2025_carry: 50000000, spent_2025_carry: 3000000 },
+          "간접비": { budget_2026: 275000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0 }
         },
         kpis: []
       }
