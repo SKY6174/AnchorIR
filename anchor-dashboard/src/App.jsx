@@ -9814,19 +9814,19 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
         <table className="custom-table" style={{ fontSize: "0.8rem", width: "100%", borderCollapse: "collapse" }}>
           <thead>
             <tr style={{ background: "rgba(255,255,255,0.02)" }}>
-              <th rowSpan={2} style={{ verticalAlign: "middle", textAlign: "left", paddingLeft: "1.5rem", borderBottom: "1px solid var(--border-color)", borderRight: "1px solid var(--border-color)" }}>구분</th>
-              <th rowSpan={2} style={{ verticalAlign: "middle", textAlign: "right", paddingRight: "1rem", borderBottom: "1px solid var(--border-color)" }}>2025</th>
-              <th colSpan={2} style={{ textAlign: "center", borderBottom: "1px solid var(--border-color)", borderRight: "1px solid var(--border-color)", padding: "0.45rem" }}>
+              <th rowSpan={2} style={{ verticalAlign: "middle", textAlign: "left", paddingLeft: "1.5rem", borderBottom: "1px solid var(--border-color)", borderRight: "1.5px solid rgba(255, 255, 255, 0.2)" }}>구분</th>
+              <th rowSpan={2} style={{ verticalAlign: "middle", textAlign: "right", paddingRight: "1rem", borderBottom: "1px solid var(--border-color)", borderRight: "1.5px solid rgba(255, 255, 255, 0.2)" }}>2025</th>
+              <th colSpan={2} style={{ textAlign: "center", borderBottom: "1px solid var(--border-color)", borderRight: "1.5px solid rgba(255, 255, 255, 0.2)", padding: "0.45rem" }}>
                 2026
               </th>
-              <th rowSpan={2} style={{ verticalAlign: "middle", textAlign: "right", paddingRight: "1rem", borderBottom: "1px solid var(--border-color)" }}>2027</th>
-              <th rowSpan={2} style={{ verticalAlign: "middle", textAlign: "right", paddingRight: "1rem", borderBottom: "1px solid var(--border-color)" }}>2028</th>
-              <th rowSpan={2} style={{ verticalAlign: "middle", textAlign: "right", paddingRight: "1rem", borderBottom: "1px solid var(--border-color)" }}>2029</th>
+              <th rowSpan={2} style={{ verticalAlign: "middle", textAlign: "right", paddingRight: "1rem", borderBottom: "1px solid var(--border-color)", borderRight: "1.5px solid rgba(255, 255, 255, 0.2)" }}>2027</th>
+              <th rowSpan={2} style={{ verticalAlign: "middle", textAlign: "right", paddingRight: "1rem", borderBottom: "1px solid var(--border-color)", borderRight: "1.5px solid rgba(255, 255, 255, 0.2)" }}>2028</th>
+              <th rowSpan={2} style={{ verticalAlign: "middle", textAlign: "right", paddingRight: "1rem", borderBottom: "1px solid var(--border-color)", borderRight: "1.5px solid rgba(255, 255, 255, 0.2)" }}>2029</th>
               <th rowSpan={2} style={{ verticalAlign: "middle", textAlign: "right", paddingRight: "1.5rem", fontWeight: "800", color: "var(--accent-color)", borderBottom: "1px solid var(--border-color)" }}>합계</th>
             </tr>
             <tr style={{ background: "rgba(255,255,255,0.01)" }}>
-              <th style={{ textAlign: "right", paddingRight: "0.5rem", fontSize: "0.7rem", color: "#60a5fa", borderBottom: "1px solid var(--border-color)", borderRight: "1px solid rgba(255,255,255,0.05)" }}>본사업</th>
-              <th style={{ textAlign: "right", paddingRight: "0.5rem", fontSize: "0.7rem", color: "#34d399", borderBottom: "1px solid var(--border-color)", borderRight: "1px solid var(--border-color)" }}>이월사업</th>
+              <th style={{ textAlign: "right", paddingRight: "0.5rem", fontSize: "0.7rem", color: "#60a5fa", borderBottom: "1px solid var(--border-color)", borderRight: "1px dashed rgba(255, 255, 255, 0.15)" }}>본사업</th>
+              <th style={{ textAlign: "right", paddingRight: "0.5rem", fontSize: "0.7rem", color: "#34d399", borderBottom: "1px solid var(--border-color)", borderRight: "1.5px solid rgba(255, 255, 255, 0.2)" }}>이월사업</th>
             </tr>
           </thead>
           <tbody>
@@ -9844,7 +9844,7 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
                        fontWeight: "700" 
                      }}
                   >
-                    <td style={{ paddingLeft: "1.5rem", color: u.id === "Common" ? "#fbbf24" : "inherit", borderRight: "1px solid var(--border-color)", display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                    <td style={{ paddingLeft: "1.5rem", color: u.id === "Common" ? "#fbbf24" : "inherit", borderRight: "1.5px solid rgba(255, 255, 255, 0.2)", display: "flex", alignItems: "center", gap: "0.5rem" }}>
                       {hasCategories && (
                         <span style={{ fontSize: "0.6rem", display: "inline-block", transform: isExpanded ? "rotate(90deg)" : "rotate(0deg)", transition: "transform 0.15s ease" }}>▶</span>
                       )}
@@ -9856,10 +9856,10 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
                         const carryVal = val.carry || 0;
                         return (
                           <React.Fragment key={idx}>
-                            <td style={{ textAlign: "right", paddingRight: "0.5rem", color: "#60a5fa", borderRight: "1px solid rgba(255,255,255,0.05)", fontWeight: "700" }}>
+                            <td style={{ textAlign: "right", paddingRight: "0.5rem", color: "#60a5fa", borderRight: "1px dashed rgba(255, 255, 255, 0.15)", fontWeight: "700" }}>
                               {mainVal > 0 ? mainVal.toFixed(2) : "-"}
                             </td>
-                            <td style={{ textAlign: "right", paddingRight: "0.5rem", color: "#34d399", borderRight: "1px solid var(--border-color)", fontWeight: "700" }}>
+                            <td style={{ textAlign: "right", paddingRight: "0.5rem", color: "#34d399", borderRight: "1.5px solid rgba(255, 255, 255, 0.2)", fontWeight: "700" }}>
                               {carryVal > 0 ? carryVal.toFixed(2) : "-"}
                             </td>
                           </React.Fragment>
@@ -9879,7 +9879,8 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
                             textAlign: "right", 
                             paddingRight: idx === 5 ? "1.5rem" : "1rem",
                             fontWeight: idx === 5 ? "800" : "700",
-                            color: idx === 5 ? "var(--accent-color)" : "inherit"
+                            color: idx === 5 ? "var(--accent-color)" : "inherit",
+                            borderRight: idx === 5 ? "none" : "1.5px solid rgba(255, 255, 255, 0.2)"
                           }}
                         >
                           {displayVal}
@@ -9890,7 +9891,7 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
                   {/* 세부 비목 아코디언 로우 */}
                   {isExpanded && u.categories.map((cat, catIdx) => (
                     <tr key={`${u.id}-${catIdx}`} style={{ background: "rgba(0,0,0,0.25)", fontSize: "0.75rem", color: "var(--text-secondary)" }}>
-                      <td style={{ paddingLeft: "3rem", borderRight: "1px solid var(--border-color)" }}>
+                      <td style={{ paddingLeft: "3rem", borderRight: "1.5px solid rgba(255, 255, 255, 0.2)" }}>
                         {cat.name}
                       </td>
                       {cat.values.map((v, vIdx) => {
@@ -9899,10 +9900,10 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
                           const carryVal = v.carry || 0;
                           return (
                             <React.Fragment key={vIdx}>
-                              <td style={{ textAlign: "right", paddingRight: "0.5rem", color: "#60a5fa", borderRight: "1px solid rgba(255,255,255,0.05)" }}>
+                              <td style={{ textAlign: "right", paddingRight: "0.5rem", color: "#60a5fa", borderRight: "1px dashed rgba(255, 255, 255, 0.15)" }}>
                                 {mainVal > 0 ? mainVal.toFixed(2) : "-"}
                               </td>
-                              <td style={{ textAlign: "right", paddingRight: "0.5rem", color: "#34d399", borderRight: "1px solid var(--border-color)" }}>
+                              <td style={{ textAlign: "right", paddingRight: "0.5rem", color: "#34d399", borderRight: "1.5px solid rgba(255, 255, 255, 0.2)" }}>
                                 {carryVal > 0 ? carryVal.toFixed(2) : "-"}
                               </td>
                             </React.Fragment>
@@ -9916,7 +9917,7 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
                         else displayVal = mainVal > 0 ? mainVal.toFixed(2) : "-";
 
                         return (
-                          <td key={vIdx} style={{ textAlign: "right", paddingRight: vIdx === 5 ? "1.5rem" : "1rem" }}>
+                          <td key={vIdx} style={{ textAlign: "right", paddingRight: vIdx === 5 ? "1.5rem" : "1rem", borderRight: vIdx === 5 ? "none" : "1.5px solid rgba(255, 255, 255, 0.2)" }}>
                             {displayVal}
                           </td>
                         );
@@ -9929,17 +9930,17 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
 
             {/* 총 합계 요약 영역 */}
             <tr style={{ borderTop: "2px solid var(--accent-color)", background: "rgba(59, 130, 246, 0.05)", fontWeight: "800" }}>
-              <td style={{ paddingLeft: "1.5rem", borderRight: "1px solid var(--border-color)" }}>총 사업비</td>
+              <td style={{ paddingLeft: "1.5rem", borderRight: "1.5px solid rgba(255, 255, 255, 0.2)" }}>총 사업비</td>
               {TOTAL_INVESTMENT_SUMMARY_DATA.total.map((v, i) => {
                 if (i === 1) {
                   const mainVal = v.main || 0;
                   const carryVal = v.carry || 0;
                   return (
                     <React.Fragment key={i}>
-                      <td style={{ textAlign: "right", paddingRight: "0.5rem", color: "#60a5fa", borderRight: "1px solid rgba(255,255,255,0.05)" }}>
+                      <td style={{ textAlign: "right", paddingRight: "0.5rem", color: "#60a5fa", borderRight: "1px dashed rgba(255, 255, 255, 0.15)" }}>
                         {mainVal > 0 ? mainVal.toFixed(2) : "-"}
                       </td>
-                      <td style={{ textAlign: "right", paddingRight: "0.5rem", color: "#34d399", borderRight: "1px solid var(--border-color)" }}>
+                      <td style={{ textAlign: "right", paddingRight: "0.5rem", color: "#34d399", borderRight: "1.5px solid rgba(255, 255, 255, 0.2)" }}>
                         {carryVal > 0 ? carryVal.toFixed(2) : "-"}
                       </td>
                     </React.Fragment>
@@ -9951,21 +9952,21 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
                 let displayVal = "-";
                 if (i === 0) displayVal = sumVal > 0 ? sumVal.toFixed(2) : "-";
                 else displayVal = mainVal > 0 ? mainVal.toFixed(2) : "-";
-                return <td key={i} style={{ textAlign: "right", paddingRight: i === 5 ? "1.5rem" : "1rem" }}>{displayVal}</td>;
+                return <td key={i} style={{ textAlign: "right", paddingRight: i === 5 ? "1.5rem" : "1rem", borderRight: i === 5 ? "none" : "1.5px solid rgba(255, 255, 255, 0.2)" }}>{displayVal}</td>;
               })}
             </tr>
             <tr style={{ background: "rgba(255,255,255,0.02)", fontSize: "0.75rem", color: "var(--text-secondary)" }}>
-              <td style={{ paddingLeft: "3rem", borderRight: "1px solid var(--border-color)" }}>인건비</td>
+              <td style={{ paddingLeft: "3rem", borderRight: "1.5px solid rgba(255, 255, 255, 0.2)" }}>인건비</td>
               {TOTAL_INVESTMENT_SUMMARY_DATA.labor.map((v, i) => {
                 if (i === 1) {
                   const mainVal = v.main || 0;
                   const carryVal = v.carry || 0;
                   return (
                     <React.Fragment key={i}>
-                      <td style={{ textAlign: "right", paddingRight: "0.5rem", color: "#60a5fa", borderRight: "1px solid rgba(255,255,255,0.05)" }}>
+                      <td style={{ textAlign: "right", paddingRight: "0.5rem", color: "#60a5fa", borderRight: "1px dashed rgba(255, 255, 255, 0.15)" }}>
                         {mainVal > 0 ? mainVal.toFixed(2) : "-"}
                       </td>
-                      <td style={{ textAlign: "right", paddingRight: "0.5rem", color: "#34d399", borderRight: "1px solid var(--border-color)" }}>
+                      <td style={{ textAlign: "right", paddingRight: "0.5rem", color: "#34d399", borderRight: "1.5px solid rgba(255, 255, 255, 0.2)" }}>
                         {carryVal > 0 ? carryVal.toFixed(2) : "-"}
                       </td>
                     </React.Fragment>
@@ -9977,21 +9978,21 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
                 let displayVal = "-";
                 if (i === 0) displayVal = sumVal > 0 ? sumVal.toFixed(2) : "-";
                 else displayVal = mainVal > 0 ? mainVal.toFixed(2) : "-";
-                return <td key={i} style={{ textAlign: "right", paddingRight: i === 5 ? "1.5rem" : "1rem" }}>{displayVal}</td>;
+                return <td key={i} style={{ textAlign: "right", paddingRight: i === 5 ? "1.5rem" : "1rem", borderRight: i === 5 ? "none" : "1.5px solid rgba(255, 255, 255, 0.2)" }}>{displayVal}</td>;
               })}
             </tr>
             <tr style={{ background: "rgba(255,255,255,0.02)", fontSize: "0.75rem", color: "var(--text-secondary)" }}>
-              <td style={{ paddingLeft: "3rem", borderRight: "1px solid var(--border-color)" }}>그 밖의 사업운영비</td>
+              <td style={{ paddingLeft: "3rem", borderRight: "1.5px solid rgba(255, 255, 255, 0.2)" }}>그 밖의 사업운영비</td>
               {TOTAL_INVESTMENT_SUMMARY_DATA.operation.map((v, i) => {
                 if (i === 1) {
                   const mainVal = v.main || 0;
                   const carryVal = v.carry || 0;
                   return (
                     <React.Fragment key={i}>
-                      <td style={{ textAlign: "right", paddingRight: "0.5rem", color: "#60a5fa", borderRight: "1px solid rgba(255,255,255,0.05)" }}>
+                      <td style={{ textAlign: "right", paddingRight: "0.5rem", color: "#60a5fa", borderRight: "1px dashed rgba(255, 255, 255, 0.15)" }}>
                         {mainVal > 0 ? mainVal.toFixed(2) : "-"}
                       </td>
-                      <td style={{ textAlign: "right", paddingRight: "0.5rem", color: "#34d399", borderRight: "1px solid var(--border-color)" }}>
+                      <td style={{ textAlign: "right", paddingRight: "0.5rem", color: "#34d399", borderRight: "1.5px solid rgba(255, 255, 255, 0.2)" }}>
                         {carryVal > 0 ? carryVal.toFixed(2) : "-"}
                       </td>
                     </React.Fragment>
@@ -10003,21 +10004,21 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
                 let displayVal = "-";
                 if (i === 0) displayVal = sumVal > 0 ? sumVal.toFixed(2) : "-";
                 else displayVal = mainVal > 0 ? mainVal.toFixed(2) : "-";
-                return <td key={i} style={{ textAlign: "right", paddingRight: i === 5 ? "1.5rem" : "1rem" }}>{displayVal}</td>;
+                return <td key={i} style={{ textAlign: "right", paddingRight: i === 5 ? "1.5rem" : "1rem", borderRight: i === 5 ? "none" : "1.5px solid rgba(255, 255, 255, 0.2)" }}>{displayVal}</td>;
               })}
             </tr>
             <tr style={{ background: "rgba(255,255,255,0.02)", fontSize: "0.75rem", color: "var(--text-secondary)" }}>
-              <td style={{ paddingLeft: "3rem", borderRight: "1px solid var(--border-color)" }}>간접비</td>
+              <td style={{ paddingLeft: "3rem", borderRight: "1.5px solid rgba(255, 255, 255, 0.2)" }}>간접비</td>
               {TOTAL_INVESTMENT_SUMMARY_DATA.indirect.map((v, i) => {
                 if (i === 1) {
                   const mainVal = v.main || 0;
                   const carryVal = v.carry || 0;
                   return (
                     <React.Fragment key={i}>
-                      <td style={{ textAlign: "right", paddingRight: "0.5rem", color: "#60a5fa", borderRight: "1px solid rgba(255,255,255,0.05)" }}>
+                      <td style={{ textAlign: "right", paddingRight: "0.5rem", color: "#60a5fa", borderRight: "1px dashed rgba(255, 255, 255, 0.15)" }}>
                         {mainVal > 0 ? mainVal.toFixed(2) : "-"}
                       </td>
-                      <td style={{ textAlign: "right", paddingRight: "0.5rem", color: "#34d399", borderRight: "1px solid var(--border-color)" }}>
+                      <td style={{ textAlign: "right", paddingRight: "0.5rem", color: "#34d399", borderRight: "1.5px solid rgba(255, 255, 255, 0.2)" }}>
                         {carryVal > 0 ? carryVal.toFixed(2) : "-"}
                       </td>
                     </React.Fragment>
@@ -10029,21 +10030,21 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
                 let displayVal = "-";
                 if (i === 0) displayVal = sumVal > 0 ? sumVal.toFixed(2) : "-";
                 else displayVal = mainVal > 0 ? mainVal.toFixed(2) : "-";
-                return <td key={i} style={{ textAlign: "right", paddingRight: i === 5 ? "1.5rem" : "1rem" }}>{displayVal}</td>;
+                return <td key={i} style={{ textAlign: "right", paddingRight: i === 5 ? "1.5rem" : "1rem", borderRight: i === 5 ? "none" : "1.5px solid rgba(255, 255, 255, 0.2)" }}>{displayVal}</td>;
               })}
             </tr>
             <tr style={{ borderTop: "1px solid rgba(255,255,255,0.1)", background: "rgba(16, 185, 129, 0.05)", fontWeight: "800" }}>
-              <td style={{ paddingLeft: "1.5rem", borderRight: "1px solid var(--border-color)", color: "#10b981" }}>총사업비 중 운영비</td>
+              <td style={{ paddingLeft: "1.5rem", borderRight: "1.5px solid rgba(255, 255, 255, 0.2)", color: "#10b981" }}>총사업비 중 운영비</td>
               {TOTAL_INVESTMENT_SUMMARY_DATA.only_operation.map((v, i) => {
                 if (i === 1) {
                   const mainVal = v.main || 0;
                   const carryVal = v.carry || 0;
                   return (
                     <React.Fragment key={i}>
-                      <td style={{ textAlign: "right", paddingRight: "0.5rem", color: "#60a5fa", borderRight: "1px solid rgba(255,255,255,0.05)" }}>
+                      <td style={{ textAlign: "right", paddingRight: "0.5rem", color: "#60a5fa", borderRight: "1px dashed rgba(255, 255, 255, 0.15)", color: "#10b981" }}>
                         {mainVal > 0 ? mainVal.toFixed(2) : "-"}
                       </td>
-                      <td style={{ textAlign: "right", paddingRight: "0.5rem", color: "#34d399", borderRight: "1px solid var(--border-color)" }}>
+                      <td style={{ textAlign: "right", paddingRight: "0.5rem", color: "#34d399", borderRight: "1.5px solid rgba(255, 255, 255, 0.2)", color: "#10b981" }}>
                         {carryVal > 0 ? carryVal.toFixed(2) : "-"}
                       </td>
                     </React.Fragment>
@@ -10055,7 +10056,7 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
                 let displayVal = "-";
                 if (i === 0) displayVal = sumVal > 0 ? sumVal.toFixed(2) : "-";
                 else displayVal = mainVal > 0 ? mainVal.toFixed(2) : "-";
-                return <td key={i} style={{ textAlign: "right", paddingRight: i === 5 ? "1.5rem" : "1rem", color: "#10b981" }}>{displayVal}</td>;
+                return <td key={i} style={{ textAlign: "right", paddingRight: i === 5 ? "1.5rem" : "1rem", color: "#10b981", borderRight: i === 5 ? "none" : "1.5px solid rgba(255, 255, 255, 0.2)" }}>{displayVal}</td>;
               })}
             </tr>
           </tbody>
