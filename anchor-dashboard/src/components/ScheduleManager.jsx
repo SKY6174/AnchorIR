@@ -2003,23 +2003,26 @@ ${aiRawText}
       // 4) 일자(캘린더 입력 YYYY-MM-DD), 시간(시작, 종료 개별 입력) 조합
       const combinedDatetime = `${formData.eventDate} ${formData.eventStartTime} ~ ${formData.eventEndTime}`;
 
+      // [추가] 외부기관인 경우 주관기관 텍스트 우선 매핑
+      const finalDept = formData.department === "external" ? (formData.externalDept || "외부기관") : (formData.department || "-");
+
       if (isEditMode) {
         setEventSchedules(eventSchedules.map(e =>
           e.id === editingItemId
             ? {
-              ...e,
-              year: getCalculatedYearFromDate(formData.eventDate),
-              month: extractedMonth,
-              title: formData.title || "새 행사",
-              department: formData.department || "-",
-              datetime: combinedDatetime,
-              location: formData.location || "-",
-              attendeesInternal: formData.attendeesInternal || "-",
-              attendeesExternal: formData.attendeesExternal || "-",
-              program: formData.program || "-",
-              purpose: formData.purpose || "-",
-              result: formData.result || "-"
-            }
+                ...e,
+                year: getCalculatedYearFromDate(formData.eventDate),
+                month: extractedMonth,
+                title: formData.title || "새 행사",
+                department: finalDept,
+                datetime: combinedDatetime,
+                location: formData.location || "-",
+                attendeesInternal: formData.attendeesInternal || "-",
+                attendeesExternal: formData.attendeesExternal || "-",
+                program: formData.program || "-",
+                purpose: formData.purpose || "-",
+                result: formData.result || "-"
+              }
             : e
         ));
       } else {
@@ -2028,7 +2031,7 @@ ${aiRawText}
           year: getCalculatedYearFromDate(formData.eventDate),
           month: extractedMonth,
           title: formData.title || "새 행사 일정",
-          department: formData.department || "-",
+          department: finalDept,
           datetime: combinedDatetime,
           location: formData.location || "-",
           attendeesInternal: formData.attendeesInternal || "-",
@@ -2304,6 +2307,10 @@ ${aiRawText}
       eventEndTime = timeParts[1] || "11:00";
     }
 
+    // [추가] 외부 기관 주관 구분용 매핑 검사
+    const defaultDepts = ["ECC센터", "ICC센터", "RCC센터", "AID-X지원센터", "울산늘봄누리센터", "신산업특화센터", "사업운영팀"];
+    const isStandardDept = defaultDepts.includes(event.department);
+
     setFormData({
       title: event.title,
       type: "행사",
@@ -2315,7 +2322,8 @@ ${aiRawText}
       location: event.location || "",
       noTime: false,
       month: event.month || 7,
-      department: event.department || "",
+      department: isStandardDept ? (event.department || "") : (event.department ? "external" : ""),
+      externalDept: isStandardDept ? "" : (event.department || ""),
       datetime: event.datetime || "",
       eventDate: eventDate,
       eventStartTime: eventStartTime,
@@ -6486,7 +6494,31 @@ ${aiRawText}
                         {["ECC센터", "ICC센터", "RCC센터", "AID-X지원센터", "울산늘봄누리센터", "신산업특화센터", "사업운영팀"].map(d => (
                           <option key={d} value={d}>{d}</option>
                         ))}
+                        <option value="external">외부기관 (직접 입력)</option>
                       </select>
+                      {formData.department === "external" && (
+                        <div style={{ marginTop: "0.5rem" }}>
+                          <label style={{ display: "block", fontSize: "0.72rem", color: "var(--accent-color)", marginBottom: "0.25rem", fontWeight: "700" }}>
+                            🏢 외부 주관 기관명 직접 입력
+                          </label>
+                          <input
+                            type="text"
+                            name="externalDept"
+                            value={formData.externalDept || ""}
+                            onChange={handleInputChange}
+                            required
+                            placeholder="예: 교육부, 울산시청 등 주관기관 입력"
+                            style={{
+                              width: "100%",
+                              padding: "0.5rem",
+                              background: "var(--input-bg)",
+                              border: "1px solid var(--accent-color)",
+                              borderRadius: "6px",
+                              color: "var(--text-primary)"
+                            }}
+                          />
+                        </div>
+                      )}
                     </div>
                     <div>
                       <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>장소</label>
