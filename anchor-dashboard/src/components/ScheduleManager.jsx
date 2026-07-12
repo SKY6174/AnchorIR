@@ -658,11 +658,11 @@ export default function ScheduleManager({
       // 1. 행사 월 이동 및 탭 전환
       setSelectedEventMonth(parsedMonth);
       if (onChangeSubTab) {
-        onChangeSubTab("event");
+        onChangeSubTab("events");
       }
 
       // 2. 행사 매칭 및 스크롤
-      const matchedEvent = eventSchedules.find(e => {
+      const matchedEvent = eventSchedules.find(e => e.id === sched.eventId) || eventSchedules.find(e => {
         const dateMatch = e.datetime && e.datetime.includes(sched.startAt.split(" ")[0]);
         const titleMatch = e.title && (e.title.includes(sched.title) || sched.title.includes(e.title));
         return dateMatch || titleMatch;
@@ -689,7 +689,7 @@ export default function ScheduleManager({
     }
     else if (sched.type === "회의" || sched.type === "위원회") {
       // 1. 회의록 검색
-      const matchedMeeting = meetingSchedules.find(m => {
+      const matchedMeeting = meetingSchedules.find(m => m.id === sched.meetingId) || meetingSchedules.find(m => {
         const dateMatch = m.datetime && m.datetime.includes(sched.startAt.split(" ")[0]);
         const titleMatch = m.title && (m.title.includes(sched.title) || sched.title.includes(m.title));
         return dateMatch || titleMatch;
@@ -704,7 +704,7 @@ export default function ScheduleManager({
         setSelectedMeetingId(matchedMeeting.id);
 
         if (onChangeSubTab) {
-          onChangeSubTab("meeting");
+          onChangeSubTab("meetings");
         }
 
         // 3. 목록 엘리먼트로 스크롤
@@ -3594,6 +3594,74 @@ ${aiRawText}
                               <MapPin size={12} />
                               {sched.location}
                             </span>
+                          )}
+                          {(sched.type === "회의" || sched.type === "위원회") && (
+                            <div style={{ marginTop: "0.5rem", borderTop: "1px solid rgba(255,255,255,0.03)", paddingTop: "0.5rem" }}>
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleLinkToDetail(sched);
+                                }}
+                                style={{
+                                  display: "inline-flex",
+                                  alignItems: "center",
+                                  gap: "0.25rem",
+                                  padding: "0.25rem 0.65rem",
+                                  fontSize: "0.72rem",
+                                  fontWeight: "700",
+                                  borderRadius: "4px",
+                                  background: "rgba(16, 185, 129, 0.12)",
+                                  border: "1px solid rgba(16, 185, 129, 0.25)",
+                                  color: "#34D399",
+                                  cursor: "pointer",
+                                  transition: "all 0.15s ease"
+                                }}
+                                onMouseOver={(e) => {
+                                  e.currentTarget.style.background = "rgba(16, 185, 129, 0.2)";
+                                  e.currentTarget.style.borderColor = "#34D399";
+                                }}
+                                onMouseOut={(e) => {
+                                  e.currentTarget.style.background = "rgba(16, 185, 129, 0.12)";
+                                  e.currentTarget.style.borderColor = "rgba(16, 185, 129, 0.25)";
+                                }}
+                              >
+                                📄 관련 회의록 바로가기
+                              </button>
+                            </div>
+                          )}
+                          {sched.type === "행사" && (
+                            <div style={{ marginTop: "0.5rem", borderTop: "1px solid rgba(255,255,255,0.03)", paddingTop: "0.5rem" }}>
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleLinkToDetail(sched);
+                                }}
+                                style={{
+                                  display: "inline-flex",
+                                  alignItems: "center",
+                                  gap: "0.25rem",
+                                  padding: "0.25rem 0.65rem",
+                                  fontSize: "0.72rem",
+                                  fontWeight: "700",
+                                  borderRadius: "4px",
+                                  background: "rgba(59, 130, 246, 0.12)",
+                                  border: "1px solid rgba(59, 130, 246, 0.25)",
+                                  color: "#60A5FA",
+                                  cursor: "pointer",
+                                  transition: "all 0.15s ease"
+                                }}
+                                onMouseOver={(e) => {
+                                  e.currentTarget.style.background = "rgba(59, 130, 246, 0.2)";
+                                  e.currentTarget.style.borderColor = "#60A5FA";
+                                }}
+                                onMouseOut={(e) => {
+                                  e.currentTarget.style.background = "rgba(59, 130, 246, 0.12)";
+                                  e.currentTarget.style.borderColor = "rgba(59, 130, 246, 0.25)";
+                                }}
+                              >
+                                🎯 관련 주요행사 바로가기
+                              </button>
+                            </div>
                           )}
                         </div>
                       </div>

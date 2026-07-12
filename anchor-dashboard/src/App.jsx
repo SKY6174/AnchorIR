@@ -4070,7 +4070,8 @@ export default function App() {
             isDeadline: x.is_deadline || false,
             completed: x.completed || false,
             attendees: x.attendees || "",
-            eventId: x.event_id ? Number(x.event_id) : null
+            eventId: x.event_id ? Number(x.event_id) : null,
+            meetingId: x.meeting_id ? Number(x.meeting_id) : null
           }));
           setMonthlySchedules(formatted);
           fetchedMonthlySchedulesRef.current = JSON.stringify(formatted);
@@ -4115,9 +4116,11 @@ export default function App() {
             pdfUrl: x.pdf_url
           }));
           setMeetingSchedules(formatted);
+          fetchedMeetingSchedulesRef.current = JSON.stringify(formatted);
           safeSetLocalStorage(`anchor_cache_meet_y${selectedYear}`, JSON.stringify(formatted), selectedYear);
         } else {
           setMeetingSchedules([]);
+          fetchedMeetingSchedulesRef.current = "[]";
           localStorage.removeItem(`anchor_cache_meet_y${selectedYear}`);
         }
 
@@ -4952,7 +4955,8 @@ export default function App() {
             is_deadline: s.isDeadline || false,
             completed: s.completed || false,
             attendees: s.attendees || "",
-            event_id: s.eventId || null
+            event_id: s.eventId || null,
+            meeting_id: s.meetingId || null
           };
           if (s.id && typeof s.id === "number" && s.id < 2000000000) {
             item.id = s.id;
@@ -4969,8 +4973,8 @@ export default function App() {
         
         if (upsertError) {
           if (upsertError.code === "42703") {
-            console.warn("DB table 'schedule_monthly' lacks 'event_id' column. Retrying sync without event_id parameter...");
-            const fallbackItems = itemsToUpsert.map(({ event_id, ...rest }) => rest);
+            console.warn("DB table 'schedule_monthly' lacks 'event_id' or 'meeting_id' column. Retrying sync with fallback...");
+            const fallbackItems = itemsToUpsert.map(({ event_id, meeting_id, ...rest }) => rest);
             const { data: fbData, error: fbError } = await supabase
               .from("schedule_monthly")
               .upsert(fallbackItems, { onConflict: "id" })
@@ -5000,7 +5004,8 @@ export default function App() {
             isDeadline: x.is_deadline || false,
             completed: x.completed || false,
             attendees: x.attendees || "",
-            eventId: x.event_id ? Number(x.event_id) : null
+            eventId: x.event_id ? Number(x.event_id) : null,
+            meetingId: x.meeting_id ? Number(x.meeting_id) : null
           }));
 
           finalLocalSchedules = schedulesToSync.map(s => {
@@ -5124,6 +5129,70 @@ export default function App() {
       updated = updated.filter(m => {
         if (m.eventId) {
           return eventIds.includes(m.eventId);
+        }
+        return true;
+      });
+
+      return updated;
+    });
+  };
+
+  // 회의록과 월간 일정을 단방향으로 강제 Reactive 동기화하는 함수
+  const syncMeetingsToMonthly = (latestMeetings) => {
+    if (!latestMeetings) return;
+    setMonthlySchedules(prev => {
+      let updated = [...prev];
+      
+      latestMeetings.forEach(meet => {
+        if (!meet.id || typeof meet.id !== "number" || meet.id >= 2000000000) return;
+
+        const idx = updated.findIndex(m => m.meetingId === meet.id);
+        
+        const startPart = meet.datetime ? meet.datetime.split(" ~ ")[0].trim() : "";
+        let dateStr = startPart.substring(0, 10);
+        if (!dateStr.match(/^\d{4}-\d{2}-\d{2}$/)) {
+          dateStr = `${meet.year}-${String(meet.month).padStart(2, "0")}-01`;
+        }
+
+        const endPart = meet.datetime && meet.datetime.includes(" ~ ") ? meet.datetime.split(" ~ ")[1].trim() : startPart;
+        let endDateStr = endPart.substring(0, 10);
+        if (!endDateStr.match(/^\d{4}-\d{2}-\d{2}$/)) {
+          endDateStr = dateStr;
+        }
+
+        const isCommittee = meet.category === "각종 위원회";
+        const prefix = isCommittee ? "[위원회]" : "[회의]";
+        const typeVal = isCommittee ? "위원회" : "회의";
+
+        const mappedItem = {
+          meetingId: meet.id,
+          year: meet.year,
+          title: `${prefix} ${meet.title}`,
+          type: typeVal,
+          dept: isCommittee ? "ECC센터" : "사업운영팀",
+          startAt: dateStr,
+          endAt: endDateStr,
+          location: meet.location || "",
+          isTask: false,
+          isDeadline: false,
+          completed: false,
+          attendees: meet.attendeesInternal || ""
+        };
+
+        if (idx !== -1) {
+          updated[idx] = { ...updated[idx], ...mappedItem };
+        } else {
+          updated.push({
+            id: `mmeet-${Date.now()}-${meet.id}`,
+            ...mappedItem
+          });
+        }
+      });
+
+      const meetingIds = latestMeetings.map(e => e.id).filter(id => typeof id === "number" && id < 2000000000);
+      updated = updated.filter(m => {
+        if (m.meetingId) {
+          return meetingIds.includes(m.meetingId);
         }
         return true;
       });
@@ -5276,47 +5345,151 @@ export default function App() {
     };
   }, [eventSchedules, selectedYear, isDbLoaded, isFetchCompleted]);
 
-  // 9) Schedule Meetings 자동 저장 디바운스 훅
+  // 최신 meetingSchedules 상태 보존을 위한 Ref (언마운트/탭이동 시 즉시 강제 Flush 동기화 보장)
+  const latestMeetingSchedulesRef = useRef(null);
+  useEffect(() => {
+    latestMeetingSchedulesRef.current = meetingSchedules;
+  }, [meetingSchedules]);
+
+  // 9) Schedule Meetings 자동 저장 디바운스 훅 (원자적 Upsert + Diff Delete 적용 및 월간일정 연동)
   useEffect(() => {
     if (!isDbLoaded || !isFetchCompleted) return;
     if (!currentUser || currentRole?.id === "GUEST") return;
-    // 💡 안전 가드: 데이터 로딩이 완료되지 않았거나 일시적 통신 지연 시 빈 배열([])이 원격 DB를 덮어쓰는 사고 방지
-    if (!meetingSchedules || meetingSchedules.length === 0) return;
+    if (!meetingSchedules) return;
+
+    // 💡 안전 가드 0: 원격 DB에서 가져온 최초 데이터 또는 직전 동기화 데이터와 로컬 상태가 100% 동일하다면 불필요한 쿼리 전송 및 유실 사고 방지를 위해 즉시 리턴함.
+    if (fetchedMeetingSchedulesRef.current === JSON.stringify(meetingSchedules)) return;
+
+    // 💡 안전 가드 1: 필수값(title, datetime)이 비어있다면 동기화 스킵하여 증발 방지
+    const hasInvalidItem = meetingSchedules.some(s => !s.title?.trim() || !s.datetime);
+    if (hasInvalidItem) {
+      console.warn("Meeting schedule sync aborted: detected invalid meeting item with missing title or datetime.", meetingSchedules);
+      return;
+    }
+
     safeSetLocalStorage(`anchor_cache_meet_y${selectedYear}`, JSON.stringify(meetingSchedules), selectedYear);
     setSyncStatus("syncing");
-    const timer = setTimeout(async () => {
+
+    const performSync = async (schedulesToSync, targetYear) => {
       try {
-        await supabase.from("schedule_meetings").delete().eq("year", selectedYear);
-        if (meetingSchedules.length > 0) {
-          const { error } = await supabase.from("schedule_meetings").insert(
-            meetingSchedules.map(s => ({
-              year: getCalculatedYearFromDate(s.datetime ? s.datetime.substring(0, 10) : null, selectedYear),
-              month: s.month,
-              category: s.category,
-              title: s.title,
-              location: s.location,
-              attendees_internal: s.attendeesInternal,
-              attendees_external: s.attendeesExternal,
-              agenda: s.agenda,
-              result: s.result,
-              datetime: s.datetime,
-              audio_url: s.audioUrl,
-              pdf_url: s.pdfUrl
-            }))
-          );
-          if (error) {
-            console.error("Failed to sync meeting schedules with database:", error);
-            setSyncStatus("error");
-            return;
+        if (!schedulesToSync) return;
+
+        // 1. 모든 일정이 삭제된 상태면 원격 DB 해당 연도 전체 삭제
+        if (schedulesToSync.length === 0) {
+          const { error } = await supabase.from("schedule_meetings").delete().eq("year", targetYear);
+          if (error) throw error;
+          fetchedMeetingSchedulesRef.current = JSON.stringify([]);
+          setSyncStatus("synced");
+          syncMeetingsToMonthly([]);
+          return;
+        }
+
+        // 2. 20억 이하의 실제 DB id만 전송에 포함하고 로컬 임시 id는 제외하여 시퀀스 범위초과 에러 방지
+        const itemsToUpsert = schedulesToSync.map(s => {
+          const item = {
+            year: getCalculatedYearFromDate(s.datetime ? s.datetime.substring(0, 10) : null, targetYear),
+            month: s.month,
+            category: s.category,
+            title: s.title,
+            location: s.location || "",
+            attendees_internal: s.attendeesInternal || "",
+            attendees_external: s.attendeesExternal || "",
+            agenda: s.agenda || "",
+            result: s.result || "",
+            datetime: s.datetime,
+            audio_url: s.audioUrl || "",
+            pdf_url: s.pdfUrl || ""
+          };
+          if (s.id && typeof s.id === "number" && s.id < 2000000000) {
+            item.id = s.id;
+          }
+          return item;
+        });
+
+        // 3. 원자적 Upsert 수행 및 새로 발행된 sequence id 결과 조회
+        const { data: upsertedData, error: upsertError } = await supabase
+          .from("schedule_meetings")
+          .upsert(itemsToUpsert, { onConflict: "id" })
+          .select();
+
+        if (upsertError) throw upsertError;
+
+        // 4. 로컬 임시 id를 DB sequence id로 매핑 복원하여 중복 인서트 방지 (날짜 substring 10자리 비교 및 camelCase 규격 정형화)
+        let finalLocalMeetings = schedulesToSync;
+        if (upsertedData && upsertedData.length > 0) {
+          const normalizedUpserted = upsertedData.map(x => ({
+            ...x,
+            id: Number(x.id),
+            year: Number(x.year),
+            month: Number(x.month),
+            attendeesInternal: x.attendees_internal || "",
+            attendeesExternal: x.attendees_external || "",
+            audioUrl: x.audio_url || "",
+            pdfUrl: x.pdf_url || ""
+          }));
+
+          finalLocalMeetings = schedulesToSync.map(s => {
+            if (s.id && typeof s.id === "number" && s.id < 2000000000) {
+              return s;
+            }
+            const dbMatch = normalizedUpserted.find(x => {
+              const matchTitle = x.title === s.title;
+              const xDate = x.datetime ? x.datetime.substring(0, 10) : "";
+              const sDate = s.datetime ? s.datetime.substring(0, 10) : "";
+              return matchTitle && xDate === sDate;
+            });
+            if (dbMatch) {
+              return dbMatch;
+            }
+            return s;
+          });
+
+          fetchedMeetingSchedulesRef.current = JSON.stringify(finalLocalMeetings);
+          setMeetingSchedules(finalLocalMeetings);
+          safeSetLocalStorage(`anchor_cache_meet_y${targetYear}`, JSON.stringify(finalLocalMeetings), targetYear);
+        }
+
+        // 5. 사용자가 삭제한 아이템들 DB 반영 (Diff Delete)
+        const { data: currentDbItems } = await supabase
+          .from("schedule_meetings")
+          .select("id")
+          .eq("year", targetYear);
+
+        if (currentDbItems) {
+          const dbIds = currentDbItems.map(x => x.id);
+          const localRealIds = finalLocalMeetings
+            .map(s => s.id)
+            .filter(id => typeof id === "number" && id < 2000000000);
+
+          const idsToDelete = dbIds.filter(id => !localRealIds.includes(id));
+          if (idsToDelete.length > 0) {
+            const { error: delError } = await supabase
+              .from("schedule_meetings")
+              .delete()
+              .in("id", idsToDelete);
+            if (delError) throw delError;
           }
         }
+
+        fetchedMeetingSchedulesRef.current = JSON.stringify(finalLocalMeetings);
         setSyncStatus("synced");
+        syncMeetingsToMonthly(finalLocalMeetings);
       } catch (e) {
         console.error("Failed to sync meeting schedules:", e);
         setSyncStatus("error");
       }
-    }, 1500);
-    return () => clearTimeout(timer);
+    };
+
+    const timer = setTimeout(() => {
+      performSync(meetingSchedules, selectedYear);
+    }, 300);
+
+    return () => {
+      clearTimeout(timer);
+      if (latestMeetingSchedulesRef.current) {
+        performSync(latestMeetingSchedulesRef.current, selectedYear);
+      }
+    };
   }, [meetingSchedules, selectedYear, isDbLoaded, isFetchCompleted]);
 
 
