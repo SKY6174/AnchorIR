@@ -9063,6 +9063,22 @@ export default function App() {
               >
                 집행률 관리
               </button>
+              <button
+                onClick={() => setBudgetSubTab("excel_download")}
+                style={{
+                  background: "transparent",
+                  border: "none",
+                  fontSize: "1rem",
+                  fontWeight: "800",
+                  cursor: "pointer",
+                  padding: "0.5rem 1rem",
+                  color: budgetSubTab === "excel_download" ? "var(--accent-color)" : "var(--text-secondary)",
+                  borderBottom: budgetSubTab === "excel_download" ? "2px solid var(--accent-color)" : "none",
+                  transition: "all 0.2s ease"
+                }}
+              >
+                엑셀 다운로드
+              </button>
             </div>
 
             {/* 본문 콘텐츠 스위칭 */}
@@ -9081,13 +9097,15 @@ export default function App() {
                 onUpdateBudgetDetails={handleUpdateBudgetDetails}
                 selectedYear={selectedYear}
               />
-            ) : (
+            ) : budgetSubTab === "execution_rate" ? (
               <BudgetExecutionManager
                 key={`budget-exec-${darkMode}-${selectedYear}`}
                 projects={displayProjects}
                 currentRole={currentRole}
                 selectedYear={selectedYear}
               />
+            ) : (
+              renderExcelDownload()
             )}
           </div>
         )}
@@ -10433,6 +10451,207 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
               </tr>
             </tbody>
           </table>
+        </div>
+      </div>
+    );
+  };
+
+  const renderExcelDownload = () => {
+    // 엑셀 다운로드 헬퍼
+    const handleDownloadUnifiedExcel = (type = "all") => {
+      // 1. 5개년 총괄 데이터 포맷팅
+      const fiveYearRows = [];
+      fiveYearRows.push([
+        "구분",
+        "2025",
+        "2026 (본사업)",
+        "2026 (이월사업)",
+        "2027",
+        "2028",
+        "2029",
+        "합계"
+      ]);
+
+      TOTAL_INVESTMENT_5YEAR_DATA.forEach((u) => {
+        fiveYearRows.push([
+          u.title,
+          u.total[0].main + u.total[0].carry,
+          u.total[1].main,
+          u.total[1].carry,
+          u.total[2].main,
+          u.total[3].main,
+          u.total[4].main,
+          u.total[5].main + u.total[5].carry
+        ]);
+        u.categories.forEach((cat) => {
+          fiveYearRows.push([
+            `   └ ${cat.name}`,
+            cat.values[0].main + cat.values[0].carry,
+            cat.values[1].main,
+            cat.values[1].carry,
+            cat.values[2].main,
+            cat.values[3].main,
+            cat.values[4].main,
+            cat.values[5].main + cat.values[5].carry
+          ]);
+        });
+      });
+
+      fiveYearRows.push([]);
+      fiveYearRows.push(["[총괄 요약]"]);
+      
+      const summaryTypes = [
+        { label: "총 사업비", data: TOTAL_INVESTMENT_SUMMARY_DATA.total },
+        { label: "인건비", data: TOTAL_INVESTMENT_SUMMARY_DATA.labor },
+        { label: "그 밖의 사업운영비", data: TOTAL_INVESTMENT_SUMMARY_DATA.operation },
+        { label: "간접비", data: TOTAL_INVESTMENT_SUMMARY_DATA.indirect },
+        { label: "총사업비 중 운영비", data: TOTAL_INVESTMENT_SUMMARY_DATA.only_operation }
+      ];
+
+      summaryTypes.forEach((st) => {
+        fiveYearRows.push([
+          st.label,
+          st.data[0].main + st.data[0].carry,
+          st.data[1].main,
+          st.data[1].carry,
+          st.data[2].main,
+          st.data[3].main,
+          st.data[4].main,
+          st.data[5].main + st.data[5].carry
+        ]);
+      });
+
+      // 2. 연차별 계획 데이터 포맷팅
+      const annualRows = [];
+      annualRows.push([
+        `${targetYear}년도 구분`,
+        "국비",
+        "시비",
+        "외부사업비",
+        "합계",
+        "비율 (%)"
+      ]);
+
+      ANNUAL_INVESTMENT_DATA.forEach((u) => {
+        annualRows.push([
+          u.title,
+          u.total[0],
+          u.total[1],
+          u.total[2],
+          u.total[3],
+          u.total[4]
+        ]);
+        u.categories.forEach((cat) => {
+          annualRows.push([
+            `   └ ${cat.name}`,
+            cat.values[0],
+            cat.values[1],
+            cat.values[2],
+            cat.values[3],
+            cat.values[4]
+          ]);
+        });
+      });
+
+      annualRows.push([]);
+      annualRows.push(["[재원별 요약]"]);
+      annualRows.push(["총 사업비", annualTotalNat, annualTotalCity, annualTotalExt, annualTotalSum, 100]);
+      annualRows.push(["인건비", annualLaborNat, annualLaborCity, annualLaborExt, annualLaborSum, annualLaborRatio]);
+      annualRows.push(["그 밖의 사업운영비", annualOpNat, annualOpCity, annualOpExt, annualOpSum, annualOpRatio]);
+      annualRows.push(["간접비", annualIndNat, annualIndCity, annualIndExt, annualIndSum, annualIndRatio]);
+      annualRows.push(["총사업비 중 운영비", annualOnlyOpNat, annualOnlyOpCity, annualOnlyOpExt, annualOnlyOpSum, annualOnlyOpRatio]);
+
+      const wb = XLSX.utils.book_new();
+
+      if (type === "all" || type === "five_year") {
+        const wsFiveYear = XLSX.utils.aoa_to_sheet(fiveYearRows);
+        XLSX.utils.book_append_sheet(wb, wsFiveYear, "5개년 총괄 투자 계획");
+      }
+      if (type === "all" || type === "annual") {
+        const wsAnnual = XLSX.utils.aoa_to_sheet(annualRows);
+        XLSX.utils.book_append_sheet(wb, wsAnnual, `${targetYear}년도 재원별 계획`);
+      }
+
+      const filename = type === "all"
+        ? `RISE_통합_투자계획_현황_${targetYear}.xlsx`
+        : type === "five_year"
+          ? `RISE_5개년_총괄_투자계획_${targetYear}.xlsx`
+          : `RISE_${targetYear}년도_재원별_계획.xlsx`;
+
+      XLSX.writeFile(wb, filename);
+    };
+
+    return (
+      <div className="glass-card" style={{ padding: "2.5rem", maxWidth: "600px", margin: "2rem auto", textAlign: "center", border: "1px solid var(--border-color)" }}>
+        <div style={{ display: "inline-flex", padding: "1.2rem", borderRadius: "50%", background: "rgba(16, 185, 129, 0.1)", color: "#10b981", marginBottom: "1.5rem" }}>
+          <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-file-spreadsheet">
+            <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/>
+            <path d="M14 2v4a2 2 0 0 0 2 2h4"/>
+            <path d="M8 13h2"/>
+            <path d="M14 13h2"/>
+            <path d="M8 17h2"/>
+            <path d="M14 17h2"/>
+          </svg>
+        </div>
+        <h3 style={{ fontSize: "1.25rem", fontWeight: "800", marginBottom: "0.5rem" }}>투자 계획 엑셀 다운로드</h3>
+        <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)", marginBottom: "2rem", lineHeight: "1.5" }}>
+          울산과학대학교 라이즈(RISE) 사업비 계획의 5개년 총괄 현황 및 {targetYear}년도 연차별 재원별 현황을 단 한 번에 워크북 시트로 묶어 엑셀 파일로 내려받습니다.
+        </p>
+        
+        <button
+          onClick={() => handleDownloadUnifiedExcel("all")}
+          className="btn-primary"
+          style={{
+            width: "100%",
+            padding: "0.85rem 1.5rem",
+            fontSize: "0.95rem",
+            fontWeight: "800",
+            borderRadius: "6px",
+            background: "linear-gradient(135deg, #10b981 0%, #059669 100%)",
+            color: "#fff",
+            border: "none",
+            cursor: "pointer",
+            boxShadow: "0 4px 15px rgba(16, 185, 129, 0.3)",
+            transition: "all 0.2s ease",
+            marginBottom: "1rem"
+          }}
+        >
+          📥 통합 투자 계획서 엑셀 다운로드 (.xlsx)
+        </button>
+        
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginTop: "1rem" }}>
+          <button
+            onClick={() => handleDownloadUnifiedExcel("five_year")}
+            style={{
+              padding: "0.60rem 1rem",
+              fontSize: "0.8rem",
+              fontWeight: "700",
+              borderRadius: "4px",
+              background: "rgba(255, 255, 255, 0.05)",
+              color: "var(--text-primary)",
+              border: "1px solid var(--border-color)",
+              cursor: "pointer",
+              transition: "all 0.2s ease"
+            }}
+          >
+            📄 5개년 총괄만 받기
+          </button>
+          <button
+            onClick={() => handleDownloadUnifiedExcel("annual")}
+            style={{
+              padding: "0.60rem 1rem",
+              fontSize: "0.8rem",
+              fontWeight: "700",
+              borderRadius: "4px",
+              background: "rgba(255, 255, 255, 0.05)",
+              color: "var(--text-primary)",
+              border: "1px solid var(--border-color)",
+              cursor: "pointer",
+              transition: "all 0.2s ease"
+            }}
+          >
+            📅 {targetYear}년도 계획만 받기
+          </button>
         </div>
       </div>
     );
