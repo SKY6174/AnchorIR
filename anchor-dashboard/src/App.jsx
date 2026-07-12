@@ -2551,8 +2551,9 @@ export default function App() {
       // 용량이 큰 fileData(Base64 파일 데이터)는 로컬스토리지 5MB Quota 초과 방지를 위해 캐싱 항목에서 배제합니다.
       // 인메모리 상에서는 새로고침 전까지 fileData가 온전히 유지됩니다.
       const agreementsForStorage = agreements.map((item) => {
-        const { fileData, ...rest } = item;
-        return rest;
+        const isUrl = item.fileData && (item.fileData.startsWith("http://") || item.fileData.startsWith("https://"));
+        const cleanFileData = isUrl ? item.fileData : null;
+        return { ...item, fileData: cleanFileData };
       });
       safeSetLocalStorage("anchor_agreements_data_v1", JSON.stringify(agreementsForStorage), selectedYear);
     } catch (e) {
@@ -2601,8 +2602,9 @@ export default function App() {
   useEffect(() => {
     try {
       const unifiedCertsForStorage = unifiedCertificates.map((item) => {
-        const { fileData, ...rest } = item;
-        return rest;
+        const isUrl = item.fileData && (item.fileData.startsWith("http://") || item.fileData.startsWith("https://"));
+        const cleanFileData = isUrl ? item.fileData : null;
+        return { ...item, fileData: cleanFileData };
       });
       safeSetLocalStorage("anchor_unified_certificates_data_v1", JSON.stringify(unifiedCertsForStorage), selectedYear);
     } catch (e) {
@@ -3841,10 +3843,14 @@ export default function App() {
               agreementType: a.agreement_type || "-"
             }));
             setAgreements(formatted);
-              try {
-                const clean = formatted.map(item => ({ ...item, fileData: null }));
-                safeSetLocalStorage("anchor_cache_agreements_all", JSON.stringify(clean), selectedYear);
-              } catch (e) {
+            try {
+              const clean = formatted.map(item => {
+                const isUrl = item.fileData && (item.fileData.startsWith("http://") || item.fileData.startsWith("https://"));
+                const cleanFileData = isUrl ? item.fileData : null;
+                return { ...item, fileData: cleanFileData };
+              });
+              safeSetLocalStorage("anchor_cache_agreements_all", JSON.stringify(clean), selectedYear);
+            } catch (e) {
               console.error("Failed to save agreements cache:", e);
             }
           } else {
@@ -3884,7 +3890,11 @@ export default function App() {
             }));
             setUnifiedCertificates(formatted);
               try {
-                const clean = formatted.map(item => ({ ...item, fileData: null }));
+                const clean = formatted.map(item => {
+                  const isUrl = item.fileData && (item.fileData.startsWith("http://") || item.fileData.startsWith("https://"));
+                  const cleanFileData = isUrl ? item.fileData : null;
+                  return { ...item, fileData: cleanFileData };
+                });
                 safeSetLocalStorage("anchor_cache_unified_certificates_all", JSON.stringify(clean), selectedYear);
               } catch (e) {
               console.error("Failed to save unified certificates cache:", e);
@@ -4394,8 +4404,12 @@ export default function App() {
     // 💡 안전 가드: 데이터 로딩이 완료되지 않았거나 일시적 통신 지연 시 빈 배열([])이 원격 DB를 덮어쓰는 사고 방지
     if (!agreements || agreements.length === 0) return;
     try {
-      const clean = agreements.map(item => ({ ...item, fileData: null }));
-      localStorage.setItem("anchor_cache_agreements_all", JSON.stringify(clean));
+      const clean = agreements.map(item => {
+        const isUrl = item.fileData && (item.fileData.startsWith("http://") || item.fileData.startsWith("https://"));
+        const cleanFileData = isUrl ? item.fileData : null;
+        return { ...item, fileData: cleanFileData };
+      });
+      safeSetLocalStorage("anchor_cache_agreements_all", JSON.stringify(clean), selectedYear);
     } catch (e) {
       console.warn("Failed to write agreements cache:", e);
     }
@@ -4684,7 +4698,11 @@ export default function App() {
     // 💡 안전 가드: 데이터 로딩이 완료되지 않았거나 일시적 통신 지연 시 빈 배열([])이 원격 DB를 덮어쓰는 사고 방지
     if (!unifiedCertificates || unifiedCertificates.length === 0) return;
     try {
-      const clean = unifiedCertificates.map(item => ({ ...item, fileData: null }));
+      const clean = unifiedCertificates.map(item => {
+        const isUrl = item.fileData && (item.fileData.startsWith("http://") || item.fileData.startsWith("https://"));
+        const cleanFileData = isUrl ? item.fileData : null;
+        return { ...item, fileData: cleanFileData };
+      });
       safeSetLocalStorage("anchor_cache_unified_certificates_all", JSON.stringify(clean), selectedYear);
     } catch (e) {
       console.warn("Failed to write unified certificates cache:", e);
