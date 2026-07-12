@@ -8693,7 +8693,9 @@ export default function App() {
               <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
                 {(() => {
                   const approverNames = ["심현미", "김현수", "송경영"];
-                  const isApprover = currentUser && approverNames.some(name => (currentUser.name || "").includes(name));
+                  const hasNamePermission = currentUser && approverNames.some(name => (currentUser.name || "").includes(name));
+                  const hasRolePermission = currentRole && ["ADMIN", "G_DIRECTOR", "HQ_HEAD", "MANAGER"].includes(currentRole.id || "");
+                  const isApprover = hasNamePermission || hasRolePermission;
 
                   if (!isApprover) {
                     return (
