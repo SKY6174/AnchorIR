@@ -2760,14 +2760,15 @@ export default function ProcurementManager({
                         if (!eq.dateP && !eq.dateA && !eq.dateB && !eq.datePr && !eq.dateI) {
                           return "준비중";
                         }
-                        const todayStr = "2026-07-05";
-                        if (eq.dateI && todayStr >= eq.dateI) return "검수완료";
+                        const todayStr = new Date().toISOString().substring(0, 10);
+                        if (eq.dateI && todayStr >= eq.dateI) return "구매 완료";
                         if (eq.datePr && todayStr >= eq.datePr) return "구매중";
                         if (eq.dateB && todayStr >= eq.dateB) return "구매중";
                         if (eq.dateA && todayStr >= eq.dateA) return "입찰중";
                         if (eq.dateP && todayStr >= eq.dateP) return "결재중";
                         if (eq.dateP && todayStr < eq.dateP) return "준비중";
                         
+                        if (eq.dateI) return "구매 완료";
                         if (eq.datePr) return "구매중";
                         if (eq.dateB) return "구매중";
                         if (eq.dateA) return "입찰중";
