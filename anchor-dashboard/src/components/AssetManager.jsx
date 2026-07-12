@@ -326,6 +326,9 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
   const [isEquipModalOpen, setIsEquipModalOpen] = useState(false);
   const [editingEquipId, setEditingEquipId] = useState(null);
   const [equipSearchQuery, setEquipSearchQuery] = useState("");
+
+  // 구매 완료 기자재 목록을 보관할 상태
+  const [completedProcuredItems, setCompletedProcuredItems] = useState([]);
   
   // 자산 바코드 실시간 스캔을 위한 추가 상태
   const [scanInput, setScanInput] = useState("");
@@ -361,6 +364,21 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
     item_name: "",
     memo: ""
   });
+
+  // 구매 완료 기자재 로드 (검수일자 date_i가 존재하는 항목)
+  const fetchCompletedProcuredItems = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("procurement_equipment")
+        .select("*")
+        .not("date_i", "is", null);
+
+      if (error) throw error;
+      setCompletedProcuredItems(data || []);
+    } catch (err) {
+      console.error("구매 완료 기자재 목록 로드 실패:", err.message);
+    }
+  };
 
   // 기자재 로드
   const fetchEquipments = async () => {
@@ -625,11 +643,12 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
                 asset_number: "",
                 barcode_id: "",
                 stock_location: "",
-                category: selectedCategory,
+                category: selectedCategory === "scan" ? "ai_dx" : selectedCategory,
                 usage_type: USAGE_TYPES[0],
                 item_name: "",
                 memo: ""
               });
+              fetchCompletedProcuredItems();
               setIsEquipModalOpen(true);
             }}
             style={{
@@ -647,7 +666,7 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
               boxShadow: "0 2px 8px rgba(16, 185, 129, 0.3)"
             }}
           >
-            <Plus size={16} /> 기자재 신규 등록
+            <Plus size={16} /> 기자재 불러오기
           </button>
         )}
       </div>
@@ -1386,19 +1405,57 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
             boxShadow: "0 8px 32px rgba(0,0,0,0.5)"
           }}>
             <h3 style={{ fontSize: "0.9rem", fontWeight: "700", marginBottom: "0.85rem", color: "#34D399" }}>
-              {editingEquipId ? "📝 기자재 정보 수정" : "📦 신규 기자재 등록"}
+              {editingEquipId ? "📝 기자재 정보 수정" : "📦 구매 완료 기자재 불러오기"}
             </h3>
 
             <form onSubmit={handleSaveEquipment} style={{ display: "flex", flexDirection: "column", gap: "0.7rem" }}>
+              {!editingEquipId && (
+                <div>
+                  <label style={{ display: "block", fontSize: "0.75rem", color: "#60A5FA", fontWeight: "800", marginBottom: "0.25rem" }}>
+                    📥 구매 완료 기자재 선택 (불러오기)
+                  </label>
+                  <select
+                    onChange={(e) => {
+                      const selectedId = e.target.value;
+                      if (!selectedId) return;
+                      const targetItem = completedProcuredItems.find(item => item.id.toString() === selectedId);
+                      if (targetItem) {
+                        setEquipFormData({
+                          item_name: targetItem.item_name || "",
+                          asset_number: targetItem.asset_number || `AIDX-EQ-${targetItem.id}`,
+                          barcode_id: targetItem.barcode || "", // 조달에서 스캔 등록한 바코드 연동
+                          stock_location: "",
+                          category: (targetItem.item_name || "").includes("AI") || (targetItem.item_name || "").includes("DX") ? "ai_dx" : "other",
+                          usage_type: "정규교과",
+                          memo: targetItem.description || ""
+                        });
+                      }
+                    }}
+                    style={{ width: "100%", padding: "0.45rem", background: "rgba(0,0,0,0.3)", border: "1px solid var(--accent-color)", borderRadius: "4px", color: "white", fontSize: "0.75rem" }}
+                  >
+                    <option value="">-- 구매 완료 내역에서 선택 (불러오기) --</option>
+                    {completedProcuredItems.map(item => (
+                      <option key={item.id} value={item.id}>
+                        {item.item_name} ({item.quantity}개, {item.unit_price ? (item.unit_price / 1000000).toFixed(1) : 0}백만원) - {item.dept_name || item.division_name || "소속 없음"}
+                      </option>
+                    ))}
+                  </select>
+                  <p style={{ margin: "0.2rem 0 0.5rem 0", fontSize: "0.62rem", color: "var(--text-secondary)" }}>
+                    * 기획/구매 단계에서 검수 완료 처리된 품목들만 조회됩니다.
+                  </p>
+                </div>
+              )}
+
               <div>
                 <label style={{ display: "block", fontSize: "0.75rem", color: "var(--text-secondary)", marginBottom: "0.2rem" }}>기자재 품명</label>
                 <input
                   type="text"
-                  placeholder="예: GPU 딥러닝 워크스테이션"
+                  placeholder="위 드롭다운에서 기자재를 선택하세요"
                   value={equipFormData.item_name}
                   onChange={(e) => setEquipFormData(prev => ({ ...prev, item_name: e.target.value }))}
                   required
-                  style={{ width: "100%", padding: "0.45rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "4px", color: "var(--text-primary)", fontSize: "0.75rem" }}
+                  disabled={!editingEquipId}
+                  style={{ width: "100%", padding: "0.45rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "4px", color: "var(--text-primary)", fontSize: "0.75rem", opacity: !editingEquipId ? 0.6 : 1 }}
                 />
               </div>
 
@@ -1406,12 +1463,12 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
                 <label style={{ display: "block", fontSize: "0.75rem", color: "var(--text-secondary)", marginBottom: "0.2rem" }}>물품(기자재)번호</label>
                 <input
                   type="text"
-                  placeholder="예: AIDX-EQ-2026-004"
+                  placeholder="기자재 선택 시 자동 입력됩니다"
                   value={equipFormData.asset_number}
                   onChange={(e) => setEquipFormData(prev => ({ ...prev, asset_number: e.target.value }))}
                   required
-                  disabled={!!editingEquipId}
-                  style={{ width: "100%", padding: "0.45rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "4px", color: "var(--text-primary)", fontSize: "0.75rem", opacity: editingEquipId ? 0.5 : 1 }}
+                  disabled={!editingEquipId}
+                  style={{ width: "100%", padding: "0.45rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "4px", color: "var(--text-primary)", fontSize: "0.75rem", opacity: !editingEquipId ? 0.6 : 1 }}
                 />
               </div>
 
