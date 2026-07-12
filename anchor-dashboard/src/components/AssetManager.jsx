@@ -1,10 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "../supabaseClient";
-import { Plus, Trash2, Edit2, Calendar, Clipboard, CheckCircle, AlertTriangle, Search, Home, Laptop, Layers } from "lucide-react";
+import { Plus, Trash2, Edit2, Calendar, Clipboard, CheckCircle, AlertTriangle, Search, Home, Laptop, Check, Clock } from "lucide-react";
 
 export default function AssetManager({ currentRole, activeSubTab, onChangeSubTab }) {
   // 공통 로딩 상태
   const [loading, setLoading] = useState(false);
+
+  // 승인권자 여부 판별 헬퍼 (심현미/김현수/송경영 등 관리자 롤 포함)
+  const isApprover = (role) => {
+    if (!role) return false;
+    const rid = role.id || "";
+    return ["ADMIN", "G_DIRECTOR", "HQ_HEAD", "MANAGER"].includes(rid);
+  };
 
   // ==============================================================================
   // [1] 교육환경 관리 (공간 예약 시스템) 상태 및 핸들러
@@ -13,6 +20,8 @@ export default function AssetManager({ currentRole, activeSubTab, onChangeSubTab
   const [selectedSpace, setSelectedSpace] = useState(SPACES[0]);
   const [reservations, setReservations] = useState([]);
   const [isResModalOpen, setIsResModalOpen] = useState(false);
+  
+  // 예약 신청 시 사용되는 폼 상태
   const [resFormData, setResFormData] = useState({
     space_name: SPACES[0],
     reserved_date: new Date().toISOString().split("T")[0],
@@ -22,7 +31,17 @@ export default function AssetManager({ currentRole, activeSubTab, onChangeSubTab
     custom_dept: "",
     reserver_name: "",
     actual_user_name: "",
-    purpose: ""
+    purpose: "",
+    status: "승인대기" // 신청 시 기본값은 '승인대기'
+  });
+
+  // 승인권자가 일시를 강제로 조정/수정할 때 쓰는 임시 상태
+  const [isEditTimeModalOpen, setIsEditTimeModalOpen] = useState(false);
+  const [editingRes, setEditingRes] = useState(null);
+  const [editResFormData, setEditResFormData] = useState({
+    reserved_date: "",
+    start_time: "",
+    end_time: ""
   });
 
   // 공간 예약 목록 로드
@@ -60,7 +79,7 @@ export default function AssetManager({ currentRole, activeSubTab, onChangeSubTab
     return ns < ee && ne > es;
   };
 
-  // 공간 예약 신청 등록
+  // 공간 예약 신청 등록 (일반 및 대행 예약)
   const handleAddReservation = async (e) => {
     e.preventDefault();
     if (currentRole.id === "GUEST") {
@@ -101,12 +120,14 @@ export default function AssetManager({ currentRole, activeSubTab, onChangeSubTab
         : resFormData.reserver_name,
       custom_dept: resFormData.dept === "직접입력" ? resFormData.custom_dept : "",
       actual_user_name: resFormData.dept === "직접입력" ? resFormData.actual_user_name : "",
-      purpose: resFormData.purpose
+      purpose: resFormData.purpose,
+      status: "승인대기" // 💡 신청 시에는 항상 승인대기 상태로 제출
     };
 
-    // 중복 충돌 실시간 검증 (프론트 가드)
+    // 중복 충돌 실시간 검증 (기존 '승인완료'된 예약들과 겹치는지 체크)
     const duplicate = reservations.find((r) => {
       return (
+        r.status === "승인완료" &&
         r.space_name === insertData.space_name &&
         r.reserved_date === insertData.reserved_date &&
         isTimeOverlapping(
@@ -120,7 +141,7 @@ export default function AssetManager({ currentRole, activeSubTab, onChangeSubTab
 
     if (duplicate) {
       alert(
-        `⚠️ 예약 실패: 해당 시간대에 이미 다른 예약이 존재합니다.\n(기존 예약: ${duplicate.dept} - ${duplicate.reserver_name} / ${duplicate.start_time.substring(0, 5)}~${duplicate.end_time.substring(0, 5)})`
+        `⚠️ 예약 대기 불가: 입력한 시간대에 이미 '승인완료'된 다른 예약이 선점되어 있습니다.\n(확정 예약: ${duplicate.dept} - ${duplicate.reserver_name} / ${duplicate.start_time.substring(0, 5)}~${duplicate.end_time.substring(0, 5)})`
       );
       return;
     }
@@ -129,7 +150,7 @@ export default function AssetManager({ currentRole, activeSubTab, onChangeSubTab
     try {
       const { error } = await supabase.from("asset_reservations").insert([insertData]);
       if (error) throw error;
-      alert("✨ 공간 예약 신청이 완료되었습니다.");
+      alert("✨ 공간 사용 예약 승인요청이 정상 등록되었습니다.");
       setIsResModalOpen(false);
       setResFormData({
         space_name: selectedSpace,
@@ -140,7 +161,8 @@ export default function AssetManager({ currentRole, activeSubTab, onChangeSubTab
         custom_dept: "",
         reserver_name: "",
         actual_user_name: "",
-        purpose: ""
+        purpose: "",
+        status: "승인대기"
       });
       fetchReservations();
     } catch (err) {
@@ -150,22 +172,129 @@ export default function AssetManager({ currentRole, activeSubTab, onChangeSubTab
     }
   };
 
-  // 예약 취소
-  const handleDeleteReservation = async (id) => {
-    if (currentRole.id === "GUEST") {
-      alert("⚠️ 게스트 계정은 예약을 취소할 수 없습니다.");
+  // 승인권자의 예약 승인 처리
+  const handleApproveReservation = async (res) => {
+    if (!isApprover(currentRole)) {
+      alert("⚠️ 승인 권한이 없습니다. (심현미, 김현수, 송경영 등 지정 결재권자만 승인 가능)");
       return;
     }
-    if (!window.confirm("정말로 이 공간 예약을 취소하시겠습니까?")) return;
+
+    // 승인 대상 시간과 겹치는 기존 '승인완료' 건이 있는지 엄격 검사
+    const duplicate = reservations.find((r) => {
+      return (
+        r.id !== res.id &&
+        r.status === "승인완료" &&
+        r.space_name === res.space_name &&
+        r.reserved_date === res.reserved_date &&
+        isTimeOverlapping(res.start_time, res.end_time, r.start_time, r.end_time)
+      );
+    });
+
+    if (duplicate) {
+      alert(
+        `⚠️ 승인 불가: 해당 시간대에 이미 승인완료된 다른 예약이 선점되어 있습니다.\n(승인 확정된 예약: ${duplicate.dept} - ${duplicate.reserver_name} / ${duplicate.start_time.substring(0, 5)}~${duplicate.end_time.substring(0, 5)})\n\n[일시 변경]을 클릭해 예약 시간을 먼저 조율해 주세요.`
+      );
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const { error } = await supabase
+        .from("asset_reservations")
+        .update({ status: "승인완료" })
+        .eq("id", res.id);
+
+      if (error) throw error;
+      alert("✨ 예약이 최종 승인 완료되었습니다.");
+      fetchReservations();
+    } catch (err) {
+      alert("예약 승인 에러: " + err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // 승인권자의 일시 변경 모달 기동
+  const handleOpenEditTime = (res) => {
+    setEditingRes(res);
+    setEditResFormData({
+      reserved_date: res.reserved_date,
+      start_time: res.start_time.substring(0, 5),
+      end_time: res.end_time.substring(0, 5)
+    });
+    setIsEditTimeModalOpen(true);
+  };
+
+  // 승인권자의 일시 변경 저장
+  const handleSaveEditedTime = async (e) => {
+    e.preventDefault();
+    if (!isApprover(currentRole)) {
+      alert("⚠️ 권한이 없습니다.");
+      return;
+    }
+
+    if (editResFormData.start_time >= editResFormData.end_time) {
+      alert("⚠️ 종료 시간은 시작 시간보다 늦어야 합니다.");
+      return;
+    }
+
+    // 수정한 시간으로 기존 승인완료된 건과 중복되는지 검증
+    const duplicate = reservations.find((r) => {
+      return (
+        r.id !== editingRes.id &&
+        r.status === "승인완료" &&
+        r.space_name === editingRes.space_name &&
+        r.reserved_date === editResFormData.reserved_date &&
+        isTimeOverlapping(editResFormData.start_time, editResFormData.end_time, r.start_time, r.end_time)
+      );
+    });
+
+    if (duplicate) {
+      alert(
+        `⚠️ 변경 불가: 수정하려는 시간대에 이미 승인완료된 다른 예약이 선점되어 있습니다.\n(승인 확정된 예약: ${duplicate.dept} - ${duplicate.reserver_name} / ${duplicate.start_time.substring(0, 5)}~${duplicate.end_time.substring(0, 5)})`
+      );
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const { error } = await supabase
+        .from("asset_reservations")
+        .update({
+          reserved_date: editResFormData.reserved_date,
+          start_time: editResFormData.start_time,
+          end_time: editResFormData.end_time
+        })
+        .eq("id", editingRes.id);
+
+      if (error) throw error;
+      alert("✨ 예약 일시가 성공적으로 조정되었습니다.");
+      setIsEditTimeModalOpen(false);
+      setEditingRes(null);
+      fetchReservations();
+    } catch (err) {
+      alert("일시 조정 실패: " + err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // 예약 취소 / 반려
+  const handleDeleteReservation = async (id) => {
+    if (currentRole.id === "GUEST") {
+      alert("⚠️ 게스트 계정은 예약을 삭제할 수 없습니다.");
+      return;
+    }
+    if (!window.confirm("정말로 이 공간 예약 신청을 취소/반려하시겠습니까?")) return;
 
     setLoading(true);
     try {
       const { error } = await supabase.from("asset_reservations").delete().eq("id", id);
       if (error) throw error;
-      alert("🗑️ 예약이 성공적으로 취소되었습니다.");
+      alert("🗑️ 예약이 성공적으로 취소/반려되었습니다.");
       fetchReservations();
     } catch (err) {
-      alert("예약 취소 실패: " + err.message);
+      alert("예약 삭제 실패: " + err.message);
     } finally {
       setLoading(false);
     }
@@ -428,7 +557,7 @@ export default function AssetManager({ currentRole, activeSubTab, onChangeSubTab
           {/* 공간 선택 카드 리스트 */}
           <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: "0.75rem", marginBottom: "1.25rem" }}>
             {SPACES.map((space) => {
-              const count = reservations.filter(r => r.space_name === space && r.reserved_date >= new Date().toISOString().split("T")[0]).length;
+              const count = reservations.filter(r => r.space_name === space && r.status === "승인대기").length;
               const isSelected = selectedSpace === space;
               return (
                 <div
@@ -447,7 +576,7 @@ export default function AssetManager({ currentRole, activeSubTab, onChangeSubTab
                 >
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                     <Calendar size={18} style={{ color: isSelected ? "var(--accent-color)" : "var(--text-secondary)" }} />
-                    <span style={{ fontSize: "0.6rem", background: "rgba(255,255,255,0.06)", padding: "0.1rem 0.35rem", borderRadius: "4px", color: "var(--text-secondary)", fontWeight: "700" }}>
+                    <span style={{ fontSize: "0.6rem", background: "rgba(255,255,255,0.06)", padding: "0.1rem 0.35rem", borderRadius: "4px", color: "#FBBF24", fontWeight: "700" }}>
                       대기 {count}건
                     </span>
                   </div>
@@ -469,7 +598,7 @@ export default function AssetManager({ currentRole, activeSubTab, onChangeSubTab
               <div style={{ textAlign: "center", padding: "2rem", color: "var(--text-secondary)", fontSize: "0.75rem" }}>데이터 로드 중...</div>
             ) : reservations.filter(r => r.space_name === selectedSpace).length === 0 ? (
               <div style={{ textAlign: "center", padding: "2.5rem", color: "var(--text-secondary)", fontSize: "0.75rem" }}>
-                등록된 미래 예약 내역이 없습니다. 새로운 예약을 추가해 보세요.
+                등록된 예약 신청 내역이 없습니다. 새로운 예약을 추가해 보세요.
               </div>
             ) : (
               <div style={{ overflowX: "auto" }}>
@@ -479,33 +608,95 @@ export default function AssetManager({ currentRole, activeSubTab, onChangeSubTab
                       <th style={{ padding: "0.5rem" }}>예약일자</th>
                       <th style={{ padding: "0.5rem" }}>사용시간</th>
                       <th style={{ padding: "0.5rem" }}>신청부서</th>
-                      <th style={{ padding: "0.5rem" }}>예약자명</th>
+                      <th style={{ padding: "0.5rem" }}>신청자 (대행)</th>
                       <th style={{ padding: "0.5rem" }}>사용 목적</th>
-                      <th style={{ padding: "0.5rem", textAlign: "center" }}>예약 취소</th>
+                      <th style={{ padding: "0.5rem", textAlign: "center" }}>결재 상태</th>
+                      <th style={{ padding: "0.5rem", textAlign: "center" }}>일정 조정</th>
+                      <th style={{ padding: "0.5rem", textAlign: "center" }}>취소/반려</th>
                     </tr>
                   </thead>
                   <tbody>
                     {reservations
                       .filter((r) => r.space_name === selectedSpace)
-                      .map((res) => (
-                        <tr key={res.id} style={{ borderBottom: "1px solid rgba(255,255,255,0.03)", transition: "background 0.1s ease" }}>
-                          <td style={{ padding: "0.5rem", fontWeight: "700" }}>{res.reserved_date}</td>
-                          <td style={{ padding: "0.5rem", color: "#60A5FA", fontWeight: "700" }}>
-                            ⏱️ {res.start_time.substring(0, 5)} ~ {res.end_time.substring(0, 5)}
-                          </td>
-                          <td style={{ padding: "0.5rem" }}>{res.dept}</td>
-                          <td style={{ padding: "0.5rem" }}>{res.reserver_name}</td>
-                          <td style={{ padding: "0.5rem", color: "var(--text-secondary)" }}>{res.purpose || "-"}</td>
-                          <td style={{ padding: "0.5rem", textAlign: "center" }}>
-                            <button
-                              onClick={() => handleDeleteReservation(res.id)}
-                              style={{ background: "none", border: "none", color: "#F87171", cursor: "pointer" }}
-                            >
-                              <Trash2 size={14} />
-                            </button>
-                          </td>
-                        </tr>
-                      ))}
+                      .map((res) => {
+                        const isPending = res.status === "승인대기" || !res.status;
+                        return (
+                          <tr key={res.id} style={{ borderBottom: "1px solid rgba(255,255,255,0.03)", transition: "background 0.1s ease" }}>
+                            <td style={{ padding: "0.5rem", fontWeight: "700" }}>{res.reserved_date}</td>
+                            <td style={{ padding: "0.5rem", color: "#60A5FA", fontWeight: "700" }}>
+                              ⏱️ {res.start_time.substring(0, 5)} ~ {res.end_time.substring(0, 5)}
+                            </td>
+                            <td style={{ padding: "0.5rem" }}>{res.dept}</td>
+                            <td style={{ padding: "0.5rem" }}>{res.reserver_name}</td>
+                            <td style={{ padding: "0.5rem", color: "var(--text-secondary)" }}>{res.purpose || "-"}</td>
+                            <td style={{ padding: "0.5rem", textAlign: "center" }}>
+                              {isPending ? (
+                                <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem", alignItems: "center" }}>
+                                  <span style={{ padding: "0.15rem 0.4rem", borderRadius: "4px", background: "rgba(251, 191, 36, 0.15)", border: "1px solid rgba(251, 191, 36, 0.3)", color: "#FBBF24", fontSize: "0.62rem", fontWeight: "800" }}>
+                                    승인대기
+                                  </span>
+                                  {isApprover(currentRole) && (
+                                    <button
+                                      onClick={() => handleApproveReservation(res)}
+                                      style={{
+                                        marginTop: "0.2rem",
+                                        padding: "0.2rem 0.5rem",
+                                        background: "linear-gradient(135deg, #10B981 0%, #059669 100%)",
+                                        color: "white",
+                                        border: "none",
+                                        borderRadius: "4px",
+                                        fontSize: "0.6rem",
+                                        fontWeight: "800",
+                                        cursor: "pointer",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: "0.1rem"
+                                      }}
+                                    >
+                                      <Check size={10} /> 승인
+                                    </button>
+                                  )}
+                                </div>
+                              ) : (
+                                <span style={{ padding: "0.15rem 0.4rem", borderRadius: "4px", background: "rgba(16, 185, 129, 0.15)", border: "1px solid rgba(16, 185, 129, 0.3)", color: "#34D399", fontSize: "0.62rem", fontWeight: "800" }}>
+                                  승인완료
+                                </span>
+                              )}
+                            </td>
+                            <td style={{ padding: "0.5rem", textAlign: "center" }}>
+                              {isApprover(currentRole) ? (
+                                <button
+                                  onClick={() => handleOpenEditTime(res)}
+                                  style={{
+                                    background: "none",
+                                    border: "none",
+                                    color: "#60A5FA",
+                                    cursor: "pointer",
+                                    display: "inline-flex",
+                                    alignItems: "center",
+                                    gap: "0.1rem"
+                                  }}
+                                  title="예약 일시 수정 권한"
+                                >
+                                  <Edit2 size={13} />
+                                  <span style={{ fontSize: "0.6rem" }}>조정</span>
+                                </button>
+                              ) : (
+                                <span style={{ color: "var(--text-secondary)", fontSize: "0.65rem" }}>권한없음</span>
+                              )}
+                            </td>
+                            <td style={{ padding: "0.5rem", textAlign: "center" }}>
+                              <button
+                                onClick={() => handleDeleteReservation(res.id)}
+                                style={{ background: "none", border: "none", color: "#F87171", cursor: "pointer" }}
+                                title="예약 취소 / 반려"
+                              >
+                                <Trash2 size={14} />
+                              </button>
+                            </td>
+                          </tr>
+                        );
+                      })}
                   </tbody>
                 </table>
               </div>
@@ -519,8 +710,7 @@ export default function AssetManager({ currentRole, activeSubTab, onChangeSubTab
       {/* ============================================================================ */}
       {activeSubTab === "equipment" && (
         <div>
-          
-          {/* [B] AI∙DX vs 기타자산 서브서브 메뉴 알약형(Pill Tab) 구현 */}
+          {/* AI∙DX vs 기타자산 서브서브 메뉴 알약형(Pill Tab) 구현 */}
           <div style={{ display: "flex", gap: "0.5rem", borderBottom: "1px solid var(--border-color)", paddingBottom: "0.6rem", marginBottom: "1rem", alignItems: "center" }}>
             <div style={{
               display: "flex",
@@ -831,7 +1021,7 @@ export default function AssetManager({ currentRole, activeSubTab, onChangeSubTab
                   disabled={loading}
                   style={{ flex: 1, padding: "0.45rem", background: "var(--accent-color)", border: "none", color: "white", borderRadius: "4px", fontSize: "0.75rem", fontWeight: "700", cursor: "pointer" }}
                 >
-                  {loading ? "등록 중..." : "예약 승인"}
+                  {loading ? "등록 중..." : "승인요청"}
                 </button>
               </div>
             </form>
@@ -840,7 +1030,94 @@ export default function AssetManager({ currentRole, activeSubTab, onChangeSubTab
       )}
 
       {/* ============================================================================ */}
-      {/* 모달 2: 기자재 추가/수정 대화상자 */}
+      {/* 모달 3: 승인권자의 일시 조정/변경 모달 */}
+      {/* ============================================================================ */}
+      {isEditTimeModalOpen && (
+        <div style={{
+          position: "fixed",
+          top: 0, left: 0, right: 0, bottom: 0,
+          background: "rgba(0, 0, 0, 0.75)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          zIndex: 999
+        }}>
+          <div style={{
+            background: "var(--modal-bg, #1e293b)",
+            border: "1px solid var(--border-color)",
+            borderRadius: "10px",
+            width: "350px",
+            padding: "1.25rem",
+            boxShadow: "0 8px 32px rgba(0,0,0,0.5)"
+          }}>
+            <h3 style={{ fontSize: "0.9rem", fontWeight: "700", marginBottom: "0.85rem", color: "#60A5FA", display: "flex", alignItems: "center", gap: "0.3rem" }}>
+              <Clock size={18} /> ⏱️ 예약 일시 변경 (조율 권한)
+            </h3>
+            <p style={{ fontSize: "0.68rem", color: "var(--text-secondary)", marginBottom: "0.85rem" }}>
+              승인권자 권한으로 예약 신청 건의 사용 시간과 날짜를 조정합니다.
+            </p>
+
+            <form onSubmit={handleSaveEditedTime} style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+              <div>
+                <label style={{ display: "block", fontSize: "0.72rem", color: "var(--text-secondary)", marginBottom: "0.2rem" }}>예약일자</label>
+                <input
+                  type="date"
+                  value={editResFormData.reserved_date}
+                  onChange={(e) => setEditResFormData(prev => ({ ...prev, reserved_date: e.target.value }))}
+                  required
+                  style={{ width: "100%", padding: "0.45rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "4px", color: "var(--text-primary)", fontSize: "0.75rem" }}
+                />
+              </div>
+
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem" }}>
+                <div>
+                  <label style={{ display: "block", fontSize: "0.72rem", color: "var(--text-secondary)", marginBottom: "0.2rem" }}>시작 시간</label>
+                  <input
+                    type="time"
+                    value={editResFormData.start_time}
+                    onChange={(e) => setEditResFormData(prev => ({ ...prev, start_time: e.target.value }))}
+                    required
+                    style={{ width: "100%", padding: "0.45rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "4px", color: "var(--text-primary)", fontSize: "0.75rem" }}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: "block", fontSize: "0.72rem", color: "var(--text-secondary)", marginBottom: "0.2rem" }}>종료 시간</label>
+                  <input
+                    type="time"
+                    value={editResFormData.end_time}
+                    onChange={(e) => setEditResFormData(prev => ({ ...prev, end_time: e.target.value }))}
+                    required
+                    style={{ width: "100%", padding: "0.45rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "4px", color: "var(--text-primary)", fontSize: "0.75rem" }}
+                  />
+                </div>
+              </div>
+
+              <div style={{ display: "flex", gap: "0.5rem", marginTop: "0.5rem" }}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsEditTimeModalOpen(false);
+                    setEditingRes(null);
+                  }}
+                  style={{ flex: 1, padding: "0.45rem", background: "rgba(255,255,255,0.06)", border: "none", color: "var(--text-secondary)", borderRadius: "4px", fontSize: "0.75rem", cursor: "pointer" }}
+                >
+                  닫기
+                </button>
+                <button
+                  type="submit"
+                  disabled={loading}
+                  style={{ flex: 1, padding: "0.45rem", background: "#3b82f6", border: "none", color: "white", borderRadius: "4px", fontSize: "0.75rem", fontWeight: "700", cursor: "pointer" }}
+                >
+                  {loading ? "저장 중..." : "일시 조정 적용"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ============================================================================ */}
+      {/* 모달 4: 기자재 추가/수정 대화상자 */}
       {/* ============================================================================ */}
       {isEquipModalOpen && (
         <div style={{
