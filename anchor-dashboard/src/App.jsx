@@ -4069,7 +4069,8 @@ export default function App() {
             isTask: x.is_task || false,
             isDeadline: x.is_deadline || false,
             completed: x.completed || false,
-            attendees: x.attendees || ""
+            attendees: x.attendees || "",
+            eventId: x.event_id ? Number(x.event_id) : null
           }));
           setMonthlySchedules(formatted);
           fetchedMonthlySchedulesRef.current = JSON.stringify(formatted);
@@ -4950,7 +4951,8 @@ export default function App() {
             is_task: s.isTask || false,
             is_deadline: s.isDeadline || false,
             completed: s.completed || false,
-            attendees: s.attendees || ""
+            attendees: s.attendees || "",
+            event_id: s.eventId || null
           };
           if (s.id && typeof s.id === "number" && s.id < 2000000000) {
             item.id = s.id;
@@ -4959,12 +4961,28 @@ export default function App() {
         });
 
         // 3. 원자적 Upsert 수행 및 새로 발행된 sequence id 결과 조회
-        const { data: upsertedData, error: upsertError } = await supabase
+        let upsertedData = null;
+        const { data: rawUpsertData, error: upsertError } = await supabase
           .from("schedule_monthly")
           .upsert(itemsToUpsert, { onConflict: "id" })
           .select();
         
-        if (upsertError) throw upsertError;
+        if (upsertError) {
+          if (upsertError.code === "42703") {
+            console.warn("DB table 'schedule_monthly' lacks 'event_id' column. Retrying sync without event_id parameter...");
+            const fallbackItems = itemsToUpsert.map(({ event_id, ...rest }) => rest);
+            const { data: fbData, error: fbError } = await supabase
+              .from("schedule_monthly")
+              .upsert(fallbackItems, { onConflict: "id" })
+              .select();
+            if (fbError) throw fbError;
+            upsertedData = fbData;
+          } else {
+            throw upsertError;
+          }
+        } else {
+          upsertedData = rawUpsertData;
+        }
 
         // 4. 로컬 임시 id를 DB sequence id로 매핑 복원하여 중복 인서트 방지 (날짜 substring 10자리 비교 및 camelCase 규격 정형화)
         let finalLocalSchedules = schedulesToSync;
@@ -4981,7 +4999,8 @@ export default function App() {
             isTask: x.is_task || false,
             isDeadline: x.is_deadline || false,
             completed: x.completed || false,
-            attendees: x.attendees || ""
+            attendees: x.attendees || "",
+            eventId: x.event_id ? Number(x.event_id) : null
           }));
 
           finalLocalSchedules = schedulesToSync.map(s => {
@@ -5053,6 +5072,66 @@ export default function App() {
     latestEventSchedulesRef.current = eventSchedules;
   }, [eventSchedules]);
 
+  // 주요 행사와 월간 일정을 단방향으로 강제 Reactive 동기화하는 함수
+  const syncEventsToMonthly = (latestEvents) => {
+    if (!latestEvents) return;
+    setMonthlySchedules(prev => {
+      let updated = [...prev];
+      
+      latestEvents.forEach(evt => {
+        if (!evt.id || typeof evt.id !== "number" || evt.id >= 2000000000) return;
+
+        const idx = updated.findIndex(m => m.eventId === evt.id);
+        
+        const startPart = evt.datetime ? evt.datetime.split(" ~ ")[0].trim() : "";
+        let dateStr = startPart.substring(0, 10);
+        if (!dateStr.match(/^\d{4}-\d{2}-\d{2}$/)) {
+          dateStr = `${evt.year}-${String(evt.month).padStart(2, "0")}-01`;
+        }
+
+        const endPart = evt.datetime && evt.datetime.includes(" ~ ") ? evt.datetime.split(" ~ ")[1].trim() : startPart;
+        let endDateStr = endPart.substring(0, 10);
+        if (!endDateStr.match(/^\d{4}-\d{2}-\d{2}$/)) {
+          endDateStr = dateStr;
+        }
+
+        const mappedItem = {
+          eventId: evt.id,
+          year: evt.year,
+          title: `[주요행사] ${evt.title}`,
+          type: "행사",
+          dept: evt.department || "사업운영팀",
+          startAt: dateStr,
+          endAt: endDateStr,
+          location: evt.location || "",
+          isTask: false,
+          isDeadline: false,
+          completed: false,
+          attendees: evt.attendeesInternal || ""
+        };
+
+        if (idx !== -1) {
+          updated[idx] = { ...updated[idx], ...mappedItem };
+        } else {
+          updated.push({
+            id: `mevt-${Date.now()}-${evt.id}`,
+            ...mappedItem
+          });
+        }
+      });
+
+      const eventIds = latestEvents.map(e => e.id).filter(id => typeof id === "number" && id < 2000000000);
+      updated = updated.filter(m => {
+        if (m.eventId) {
+          return eventIds.includes(m.eventId);
+        }
+        return true;
+      });
+
+      return updated;
+    });
+  };
+
   // 8) Schedule Events 자동 저장 디바운스 훅 (원자적 Upsert + Diff Delete 적용)
   useEffect(() => {
     if (!isDbLoaded || !isFetchCompleted) return;
@@ -5082,6 +5161,7 @@ export default function App() {
           if (error) throw error;
           fetchedEventSchedulesRef.current = JSON.stringify([]);
           setSyncStatus("synced");
+          syncEventsToMonthly([]);
           return;
         }
 
@@ -5177,6 +5257,7 @@ export default function App() {
 
         fetchedEventSchedulesRef.current = JSON.stringify(finalLocalEvents);
         setSyncStatus("synced");
+        syncEventsToMonthly(finalLocalEvents);
       } catch (e) {
         console.error("Failed to sync event schedules:", e);
         setSyncStatus("error");
