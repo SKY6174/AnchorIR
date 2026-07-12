@@ -9528,6 +9528,7 @@ export default function App() {
           <AssetManager
             currentRole={currentRole}
             activeSubTab={assetSubTab}
+            onChangeSubTab={setAssetSubTab}
           />
         )}
 

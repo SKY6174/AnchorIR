@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "../supabaseClient";
-import { Plus, Trash2, Edit2, Calendar, Clipboard, CheckCircle, AlertTriangle, Search } from "lucide-react";
+import { Plus, Trash2, Edit2, Calendar, Clipboard, CheckCircle, AlertTriangle, Search, Home, Laptop, Layers } from "lucide-react";
 
-export default function AssetManager({ currentRole, activeSubTab }) {
+export default function AssetManager({ currentRole, activeSubTab, onChangeSubTab }) {
   // 공통 로딩 상태
   const [loading, setLoading] = useState(false);
 
@@ -44,7 +44,6 @@ export default function AssetManager({ currentRole, activeSubTab }) {
 
   // 시간대 겹침 충돌 확인 헬퍼 함수
   const isTimeOverlapping = (newStart, newEnd, existStart, existEnd) => {
-    // start_time / end_time 형식: "HH:MM:SS" 또는 "HH:MM"
     const parseTimeToMinutes = (t) => {
       const parts = t.split(":");
       return parseInt(parts[0], 10) * 60 + parseInt(parts[1] || 0, 10);
@@ -105,7 +104,6 @@ export default function AssetManager({ currentRole, activeSubTab }) {
       if (error) throw error;
       alert("✨ 공간 예약 신청이 완료되었습니다.");
       setIsResModalOpen(false);
-      // 예약자명 외 필드 유지 리셋
       setResFormData((prev) => ({
         ...prev,
         reserver_name: "",
@@ -187,7 +185,7 @@ export default function AssetManager({ currentRole, activeSubTab }) {
     }
 
     if (!equipFormData.item_name.trim() || !equipFormData.asset_number.trim() || !equipFormData.barcode.trim()) {
-      alert("⚠️ 품명, 물품번호, 바코드는 필수 입력 항목입니다.");
+      alert("⚠️ 품명, 물품(기자재)번호, 바코드는 필수 입력 항목입니다.");
       return;
     }
 
@@ -262,7 +260,6 @@ export default function AssetManager({ currentRole, activeSubTab }) {
     }
   };
 
-  // 탭 변경 시 데이터 로드 및 초기 설정
   useEffect(() => {
     fetchReservations();
     fetchEquipments();
@@ -270,16 +267,65 @@ export default function AssetManager({ currentRole, activeSubTab }) {
 
   return (
     <div style={{ padding: "1.25rem", color: "var(--text-primary)" }}>
-      {/* 상단 탭 인디케이터 헤더 */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
+      
+      {/* [A] 자산 관리 대분류 서브메뉴 가로 탭바 */}
+      <div style={{
+        display: "flex",
+        gap: "1.5rem",
+        borderBottom: "1px solid rgba(255, 255, 255, 0.08)",
+        paddingBottom: "0.1rem",
+        marginBottom: "1.5rem"
+      }}>
+        <button
+          onClick={() => onChangeSubTab && onChangeSubTab("education_env")}
+          style={{
+            background: "transparent",
+            border: "none",
+            fontSize: "0.95rem",
+            fontWeight: "800",
+            cursor: "pointer",
+            padding: "0.5rem 1rem",
+            color: activeSubTab === "education_env" ? "var(--accent-color)" : "var(--text-secondary)",
+            borderBottom: activeSubTab === "education_env" ? "2.5px solid var(--accent-color)" : "none",
+            transition: "all 0.15s ease",
+            display: "flex",
+            alignItems: "center",
+            gap: "0.4rem"
+          }}
+        >
+          <Home size={16} /> 🏫 교육환경 사용예약 관리
+        </button>
+        <button
+          onClick={() => onChangeSubTab && onChangeSubTab("equipment")}
+          style={{
+            background: "transparent",
+            border: "none",
+            fontSize: "0.95rem",
+            fontWeight: "800",
+            cursor: "pointer",
+            padding: "0.5rem 1rem",
+            color: activeSubTab === "equipment" ? "var(--accent-color)" : "var(--text-secondary)",
+            borderBottom: activeSubTab === "equipment" ? "2.5px solid var(--accent-color)" : "none",
+            transition: "all 0.15s ease",
+            display: "flex",
+            alignItems: "center",
+            gap: "0.4rem"
+          }}
+        >
+          <Laptop size={16} /> 📦 기자재 대장 관리
+        </button>
+      </div>
+
+      {/* 대시보드 타이틀 설명 영역 */}
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.25rem" }}>
         <div>
-          <h2 style={{ fontSize: "1.2rem", fontWeight: "700", display: "flex", alignItems: "center", gap: "0.4rem" }}>
-            🏢 {activeSubTab === "education_env" ? "교육환경 사용예약 관리" : "앵커사업 기자재 현황 관리"}
+          <h2 style={{ fontSize: "1.1rem", fontWeight: "700", display: "flex", alignItems: "center", gap: "0.4rem" }}>
+            📌 {activeSubTab === "education_env" ? "교육환경 사용예약 현황판" : "앵커사업 기자재 현황 관리"}
           </h2>
-          <p style={{ fontSize: "0.75rem", color: "var(--text-secondary)", marginTop: "0.25rem" }}>
+          <p style={{ fontSize: "0.72rem", color: "var(--text-secondary)", marginTop: "0.25rem" }}>
             {activeSubTab === "education_env" 
-              ? "AIDX 교육공간의 일정을 관리하고 중복 예약을 실시간 검증합니다." 
-              : "사업 재원으로 취득한 AI∙DX 및 기타 기자재 자산 대장 관리 대시보드입니다."}
+              ? "앵커사업단 관리 교육공간의 대여 상태를 실시간 모니터링하고 중복 일정을 차단합니다." 
+              : "사업 재원으로 취득한 기자재 목록을 AI∙DX 자산과 기타 일반 자산으로 분류해 대장을 운용합니다."}
           </p>
         </div>
 
@@ -304,7 +350,7 @@ export default function AssetManager({ currentRole, activeSubTab }) {
               boxShadow: "0 2px 8px rgba(139, 92, 246, 0.3)"
             }}
           >
-            <Plus size={16} /> 예약 신청
+            <Plus size={16} /> 예약 신청 등록
           </button>
         ) : (
           <button
@@ -368,11 +414,11 @@ export default function AssetManager({ currentRole, activeSubTab }) {
                 >
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                     <Calendar size={18} style={{ color: isSelected ? "var(--accent-color)" : "var(--text-secondary)" }} />
-                    <span style={{ fontSize: "0.6rem", background: "rgba(255,255,255,0.06)", padding: "0.1rem 0.3rem", borderRadius: "4px", color: "var(--text-secondary)" }}>
+                    <span style={{ fontSize: "0.6rem", background: "rgba(255,255,255,0.06)", padding: "0.1rem 0.35rem", borderRadius: "4px", color: "var(--text-secondary)", fontWeight: "700" }}>
                       대기 {count}건
                     </span>
                   </div>
-                  <h4 style={{ fontSize: "0.75rem", fontWeight: "700", marginTop: "0.5rem", color: isSelected ? "var(--text-primary)" : "var(--text-secondary)" }}>
+                  <h4 style={{ fontSize: "0.75rem", fontWeight: "800", marginTop: "0.5rem", color: isSelected ? "var(--text-primary)" : "var(--text-secondary)" }}>
                     {space}
                   </h4>
                 </div>
@@ -382,8 +428,8 @@ export default function AssetManager({ currentRole, activeSubTab }) {
 
           {/* 해당 공간 예약 일정 현황판 */}
           <div style={{ background: "var(--panel-bg)", border: "1px solid var(--border-color)", borderRadius: "8px", padding: "1rem" }}>
-            <h3 style={{ fontSize: "0.85rem", fontWeight: "700", color: "#a78bfa", borderBottom: "1px solid var(--border-color)", paddingBottom: "0.5rem", marginBottom: "0.75rem" }}>
-              📌 {selectedSpace} 예약 신청 목록
+            <h3 style={{ fontSize: "0.82rem", fontWeight: "700", color: "#a78bfa", borderBottom: "1px solid var(--border-color)", paddingBottom: "0.5rem", marginBottom: "0.75rem", display: "flex", alignItems: "center", gap: "0.25rem" }}>
+              ⚡ {selectedSpace} 예약 신청 현황
             </h3>
 
             {loading ? (
@@ -402,7 +448,7 @@ export default function AssetManager({ currentRole, activeSubTab }) {
                       <th style={{ padding: "0.5rem" }}>신청부서</th>
                       <th style={{ padding: "0.5rem" }}>예약자명</th>
                       <th style={{ padding: "0.5rem" }}>사용 목적</th>
-                      <th style={{ padding: "0.5rem", textAlign: "center" }}>취소</th>
+                      <th style={{ padding: "0.5rem", textAlign: "center" }}>예약 취소</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -411,7 +457,7 @@ export default function AssetManager({ currentRole, activeSubTab }) {
                       .map((res) => (
                         <tr key={res.id} style={{ borderBottom: "1px solid rgba(255,255,255,0.03)", transition: "background 0.1s ease" }}>
                           <td style={{ padding: "0.5rem", fontWeight: "700" }}>{res.reserved_date}</td>
-                          <td style={{ padding: "0.5rem", color: "#60A5FA" }}>
+                          <td style={{ padding: "0.5rem", color: "#60A5FA", fontWeight: "700" }}>
                             ⏱️ {res.start_time.substring(0, 5)} ~ {res.end_time.substring(0, 5)}
                           </td>
                           <td style={{ padding: "0.5rem" }}>{res.dept}</td>
@@ -440,55 +486,74 @@ export default function AssetManager({ currentRole, activeSubTab }) {
       {/* ============================================================================ */}
       {activeSubTab === "equipment" && (
         <div>
-          {/* 가로 탭바 분기 */}
-          <div style={{ display: "flex", gap: "0.5rem", borderBottom: "1px solid var(--border-color)", paddingBottom: "0.5rem", marginBottom: "1rem" }}>
-            <button
-              onClick={() => setSelectedCategory("ai_dx")}
-              style={{
-                padding: "0.35rem 0.85rem",
-                borderRadius: "4px",
-                border: "none",
-                background: selectedCategory === "ai_dx" ? "var(--accent-color)" : "rgba(255,255,255,0.04)",
-                color: selectedCategory === "ai_dx" ? "white" : "var(--text-secondary)",
-                fontSize: "0.72rem",
-                fontWeight: "700",
-                cursor: "pointer"
-              }}
-            >
-              💻 AI∙DX 기자재
-            </button>
-            <button
-              onClick={() => setSelectedCategory("other")}
-              style={{
-                padding: "0.35rem 0.85rem",
-                borderRadius: "4px",
-                border: "none",
-                background: selectedCategory === "other" ? "var(--accent-color)" : "rgba(255,255,255,0.04)",
-                color: selectedCategory === "other" ? "white" : "var(--text-secondary)",
-                fontSize: "0.72rem",
-                fontWeight: "700",
-                cursor: "pointer"
-              }}
-            >
-              📦 기타 자산 기자재
-            </button>
+          
+          {/* [B] AI∙DX vs 기타자산 서브서브 메뉴 알약형(Pill Tab) 구현 */}
+          <div style={{ display: "flex", gap: "0.5rem", borderBottom: "1px solid var(--border-color)", paddingBottom: "0.6rem", marginBottom: "1rem", alignItems: "center" }}>
+            <div style={{
+              display: "flex",
+              gap: "0.35rem",
+              background: "rgba(0, 0, 0, 0.25)",
+              padding: "0.25rem",
+              borderRadius: "6px",
+              border: "1px solid var(--border-color)",
+              width: "fit-content"
+            }}>
+              <button
+                onClick={() => setSelectedCategory("ai_dx")}
+                style={{
+                  padding: "0.45rem 1.2rem",
+                  borderRadius: "4px",
+                  border: "none",
+                  background: selectedCategory === "ai_dx" ? "var(--accent-color)" : "transparent",
+                  color: selectedCategory === "ai_dx" ? "white" : "var(--text-secondary)",
+                  fontSize: "0.72rem",
+                  fontWeight: "800",
+                  cursor: "pointer",
+                  transition: "all 0.15s ease",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "0.3rem"
+                }}
+              >
+                ⚡ AI∙DX 특화 기자재
+              </button>
+              <button
+                onClick={() => setSelectedCategory("other")}
+                style={{
+                  padding: "0.45rem 1.2rem",
+                  borderRadius: "4px",
+                  border: "none",
+                  background: selectedCategory === "other" ? "var(--accent-color)" : "transparent",
+                  color: selectedCategory === "other" ? "white" : "var(--text-secondary)",
+                  fontSize: "0.72rem",
+                  fontWeight: "800",
+                  cursor: "pointer",
+                  transition: "all 0.15s ease",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "0.3rem"
+                }}
+              >
+                🏢 기타 일반 자산
+              </button>
+            </div>
 
             {/* 검색창 */}
             <div style={{ marginLeft: "auto", position: "relative", display: "flex", alignItems: "center" }}>
               <Search size={14} style={{ position: "absolute", left: "0.4rem", color: "var(--text-secondary)" }} />
               <input
                 type="text"
-                placeholder="품명, 물품번호 검색..."
+                placeholder="품명, 번호, 바코드 검색..."
                 value={equipSearchQuery}
                 onChange={(e) => setEquipSearchQuery(e.target.value)}
                 style={{
-                  padding: "0.3rem 0.5rem 0.3rem 1.4rem",
+                  padding: "0.35rem 0.5rem 0.35rem 1.4rem",
                   fontSize: "0.7rem",
                   borderRadius: "4px",
                   border: "1px solid var(--border-color)",
                   background: "var(--input-bg)",
                   color: "var(--text-primary)",
-                  width: "160px"
+                  width: "180px"
                 }}
               />
             </div>
@@ -526,10 +591,10 @@ export default function AssetManager({ currentRole, activeSubTab }) {
                       <thead>
                         <tr style={{ borderBottom: "1px solid var(--border-color)", color: "var(--text-secondary)" }}>
                           <th style={{ padding: "0.5rem" }}>기자재 품명</th>
-                          <th style={{ padding: "0.5rem" }}>물품번호</th>
+                          <th style={{ padding: "0.5rem" }}>물품(기자재)번호</th>
                           <th style={{ padding: "0.5rem" }}>바코드</th>
                           <th style={{ padding: "0.5rem" }}>재고위치</th>
-                          <th style={{ padding: "0.5rem" }}>사용 목적</th>
+                          <th style={{ padding: "0.5rem" }}>사용 분야(목적)</th>
                           <th style={{ padding: "0.5rem" }}>메모(비고)</th>
                           <th style={{ padding: "0.5rem", textAlign: "center" }}>관리</th>
                         </tr>
@@ -543,7 +608,7 @@ export default function AssetManager({ currentRole, activeSubTab }) {
                             <td style={{ padding: "0.5rem" }}>{item.stock_location}</td>
                             <td style={{ padding: "0.5rem" }}>
                               <span style={{
-                                padding: "0.1rem 0.35rem",
+                                padding: "0.15rem 0.4rem",
                                 borderRadius: "4px",
                                 background: "rgba(59, 130, 246, 0.15)",
                                 border: "1px solid rgba(59, 130, 246, 0.3)",
@@ -655,7 +720,7 @@ export default function AssetManager({ currentRole, activeSubTab }) {
               </div>
 
               <div>
-                <label style={{ display: "block", fontSize: "0.75rem", color: "var(--text-secondary)", marginBottom: "0.2" }}>사용 부서(센터)</label>
+                <label style={{ display: "block", fontSize: "0.75rem", color: "var(--text-secondary)", marginBottom: "0.2rem" }}>사용 부서(센터)</label>
                 <select
                   value={resFormData.dept}
                   onChange={(e) => setResFormData(prev => ({ ...prev, dept: e.target.value }))}
@@ -750,14 +815,14 @@ export default function AssetManager({ currentRole, activeSubTab }) {
               </div>
 
               <div>
-                <label style={{ display: "block", fontSize: "0.75rem", color: "var(--text-secondary)", marginBottom: "0.2rem" }}>물품번호</label>
+                <label style={{ display: "block", fontSize: "0.75rem", color: "var(--text-secondary)", marginBottom: "0.2rem" }}>물품(기자재)번호</label>
                 <input
                   type="text"
                   placeholder="예: AIDX-EQ-2026-004"
                   value={equipFormData.asset_number}
                   onChange={(e) => setEquipFormData(prev => ({ ...prev, asset_number: e.target.value }))}
                   required
-                  disabled={!!editingEquipId} // 물품번호는 수정 불가능하게 보호
+                  disabled={!!editingEquipId}
                   style={{ width: "100%", padding: "0.45rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "4px", color: "var(--text-primary)", fontSize: "0.75rem", opacity: editingEquipId ? 0.5 : 1 }}
                 />
               </div>
@@ -799,7 +864,7 @@ export default function AssetManager({ currentRole, activeSubTab }) {
               </div>
 
               <div>
-                <label style={{ display: "block", fontSize: "0.75rem", color: "var(--text-secondary)", marginBottom: "0.2rem" }}>사용 목적 (사용 분야)</label>
+                <label style={{ display: "block", fontSize: "0.75rem", color: "var(--text-secondary)", marginBottom: "0.2rem" }}>사용 분야(목적)</label>
                 <select
                   value={equipFormData.usage_type}
                   onChange={(e) => setEquipFormData(prev => ({ ...prev, usage_type: e.target.value }))}
