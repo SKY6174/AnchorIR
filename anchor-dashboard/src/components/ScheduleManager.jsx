@@ -775,6 +775,8 @@ export default function ScheduleManager({
   const [aiResultRawText, setAiResultRawText] = useState(""); // [추가] 결과보고서 원본 텍스트 직접 입력/저장용
   const [aiDebateLogs, setAiDebateLogs] = useState([]); // [추가] 실시간 AI 토론 로그
   const [isDebating, setIsDebating] = useState(false); // [추가] AI 토론 진행 상태 플래그
+  const [aiPlanApplied, setAiPlanApplied] = useState(false); // [추가] AI 기획 데이터 반영 여부
+  const [aiResultApplied, setAiResultApplied] = useState(false); // [추가] AI 결과 데이터 반영 여부
   const [aiProgress, setAiProgress] = useState(0);
   const [aiStatusText, setAiStatusText] = useState("");
   const [aiEngine, setAiEngine] = useState("gpt"); // "gemini" or "gpt"
@@ -995,6 +997,7 @@ export default function ScheduleManager({
         }
 
         setFormData(prev => applyMeetingAiDataRules(targetData, prev));
+        setAiPlanApplied(true);
         setAgendaResultPairs(aiAgendas);
 
         setIsAiLoading(false);
@@ -1232,8 +1235,10 @@ ${aiRawText}
 
         if (modalType === "meeting") {
           setFormData(prev => applyMeetingAiDataRules(cleanJson, prev));
+            setAiPlanApplied(true);
           if (cleanJson.agendaResultPairs && cleanJson.agendaResultPairs.length > 0) {
             setAgendaResultPairs(cleanJson.agendaResultPairs);
+              setAiResultApplied(true);
           }
           setIsAiLoading(false);
           setAiProgress(100);
@@ -1241,6 +1246,11 @@ ${aiRawText}
           alert("🎉 OpenAI GPT-4o-mini 모델이 회의록 문서를 분석하여 회의 정보 및 부서별 의제/결과 쌍을 완벽하게 기입하였습니다!");
         } else {
           setFormData(prev => ({ ...prev, ...cleanJson }));
+          if (analysisType === "plan") {
+            setAiPlanApplied(true);
+          } else {
+            setAiResultApplied(true);
+          }
           setIsAiLoading(false);
           setAiProgress(100);
           setAiStatusText("");
@@ -1328,8 +1338,10 @@ ${aiRawText}
         
         if (modalType === "meeting") {
           setFormData(prev => applyMeetingAiDataRules(cleanJson, prev));
+            setAiPlanApplied(true);
           if (cleanJson.agendaResultPairs && cleanJson.agendaResultPairs.length > 0) {
             setAgendaResultPairs(cleanJson.agendaResultPairs);
+              setAiResultApplied(true);
           }
           setIsAiLoading(false);
           setAiProgress(100);
@@ -1337,6 +1349,11 @@ ${aiRawText}
           alert("🎉 Gemini-1.5-flash 모델이 회의록 문서를 분석하여 회의 정보 및 부서별 의제/결과 쌍을 완벽하게 기입하였습니다!");
         } else {
           setFormData(prev => ({ ...prev, ...cleanJson }));
+          if (analysisType === "plan") {
+            setAiPlanApplied(true);
+          } else {
+            setAiResultApplied(true);
+          }
           setIsAiLoading(false);
           setAiProgress(100);
           setAiStatusText("");
@@ -1510,13 +1527,20 @@ Gemini 피드백: \n${geminiCritiqueText}
         if (modalType === "meeting") {
           if (analysisType === "plan") {
             setFormData(prev => applyMeetingAiDataRules(cleanJson, prev));
+            setAiPlanApplied(true);
           } else {
             if (cleanJson.agendaResultPairs && cleanJson.agendaResultPairs.length > 0) {
               setAgendaResultPairs(cleanJson.agendaResultPairs);
+              setAiResultApplied(true);
             }
           }
         } else {
           setFormData(prev => ({ ...prev, ...cleanJson }));
+          if (analysisType === "plan") {
+            setAiPlanApplied(true);
+          } else {
+            setAiResultApplied(true);
+          }
         }
 
         setAiDebateLogs(prev => [
@@ -1602,6 +1626,7 @@ Gemini 피드백: \n${geminiCritiqueText}
                     attendees: "심현미 팀장, 이동은 센터장, 박지현 팀장, 김기범 센터장"
                   };
                   setFormData(prev => applyMeetingAiDataRules(consensusData, prev));
+                  setAiPlanApplied(true);
                 } else {
                   let consensusAgendas = [
                     {
@@ -1614,6 +1639,7 @@ Gemini 피드백: \n${geminiCritiqueText}
                     }
                   ];
                   setAgendaResultPairs(consensusAgendas);
+                  setAiResultApplied(true);
                 }
               } else {
                 if (analysisType === "plan") {
@@ -1630,11 +1656,13 @@ Gemini 피드백: \n${geminiCritiqueText}
                     purpose: "지역 정주형 기술 창업 아이템 발굴 및 지산학 연계를 통한 청년 로컬 창업 성공 모델 발굴과 멘토링 매칭"
                   };
                   setFormData(prev => ({ ...prev, ...consensusEvent }));
+                  setAiPlanApplied(true);
                 } else {
                   setFormData(prev => ({
                     ...prev,
                     result: "학생 창업동아리 8개 팀 참여, 최종 최우수상 1개 팀(팀명: 울산로컬히어로) 선정 및 특허 출원 멘토링 연계 확정. 울산 매일 보도자료 2건 송출 완료 (ChatGPT-Gemini 최종 합의안)"
                   }));
+                  setAiResultApplied(true);
                 }
               }
 
@@ -2540,6 +2568,8 @@ Gemini 피드백: \n${geminiCritiqueText}
     setIsAddModalOpen(false);
     setIsEditMode(false);
     setEditingItemId(null);
+    setAiPlanApplied(false);
+    setAiResultApplied(false);
     setFormData({
       title: "",
       type: "행사",
@@ -3644,6 +3674,8 @@ Gemini 피드백: \n${geminiCritiqueText}
     const formattedMonth = selectedEventMonth < 10 ? `0${selectedEventMonth}` : selectedEventMonth;
     const defaultDate = defaultDateStr || `${targetYearNum}-${formattedMonth}-15`;
 
+    setAiPlanApplied(false);
+    setAiResultApplied(false);
     setFormData({
       title: "",
       type: "행사",
@@ -6526,7 +6558,14 @@ Gemini 피드백: \n${geminiCritiqueText}
               {modalType === "monthly" && (
                 <>
                   <div>
-                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>일정 명칭</label>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.25rem" }}>
+                      <label style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>일정 명칭</label>
+                      {aiPlanApplied && (
+                        <span style={{ fontSize: "0.65rem", background: "rgba(167, 139, 250, 0.15)", border: "1px solid rgba(167, 139, 250, 0.35)", color: "#a78bfa", padding: "0.1rem 0.35rem", borderRadius: "4px", fontWeight: "700" }}>
+                          ✨ AI 기획 정보 반영됨 ✓
+                        </span>
+                      )}
+                    </div>
                     <input type="text" name="title" value={formData.title} onChange={handleInputChange} required placeholder="예: 2차년도 1차 보고서 제출 마감" style={{ width: "100%", padding: "0.5rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} />
                   </div>
                   <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "1rem" }}>
@@ -7057,7 +7096,14 @@ Gemini 피드백: \n${geminiCritiqueText}
                     <textarea name="purpose" value={formData.purpose} onChange={handleInputChange} placeholder="행사를 통해 도달하고자 하는 목표 기술" style={{ width: "100%", height: "46px", padding: "0.5rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", resize: "none" }} />
                   </div>
                   <div>
-                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>행사 결과</label>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.25rem" }}>
+                      <label style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>행사 결과</label>
+                      {aiResultApplied && (
+                        <span style={{ fontSize: "0.65rem", background: "rgba(16, 185, 129, 0.15)", border: "1px solid rgba(16, 185, 129, 0.35)", color: "#10b981", padding: "0.1rem 0.35rem", borderRadius: "4px", fontWeight: "700" }}>
+                          ✨ AI 행사 결과 반영됨 ✓
+                        </span>
+                      )}
+                    </div>
                     <textarea name="result" value={formData.result} onChange={handleInputChange} placeholder="수료 인원, 산출된 최종 성과 및 보도 내역" style={{ width: "100%", height: "46px", padding: "0.5rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", resize: "none" }} />
                   </div>
                 </>
@@ -7349,7 +7395,14 @@ Gemini 피드백: \n${geminiCritiqueText}
                   </div>
 
                   <div>
-                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>회의 명칭</label>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.25rem" }}>
+                    <label style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>회의 명칭</label>
+                    {aiPlanApplied && (
+                      <span style={{ fontSize: "0.65rem", background: "rgba(167, 139, 250, 0.15)", border: "1px solid rgba(167, 139, 250, 0.35)", color: "#a78bfa", padding: "0.1rem 0.35rem", borderRadius: "4px", fontWeight: "700" }}>
+                        ✨ AI 계획 정보 반영됨 ✓
+                      </span>
+                    )}
+                  </div>
                     <input type="text" name="title" value={formData.title} onChange={handleInputChange} required placeholder="예: 제2차 ICC 센터 공동 운영 회의" style={{ width: "100%", padding: "0.5rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} />
                   </div>
                   <div style={{ display: "grid", gridTemplateColumns: "1.2fr 0.8fr", gap: "1rem" }}>
@@ -7897,9 +7950,16 @@ Gemini 피드백: \n${geminiCritiqueText}
                   ) : (
                     <div style={{ marginTop: "1rem" }}>
                       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.4rem" }}>
-                        <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", fontWeight: "700" }}>
-                          📝 회의 의제 및 결과 관리 (AI 자동 추출 및 1:1 편집)
-                        </label>
+                        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                          <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", fontWeight: "700" }}>
+                            📝 회의 의제 및 결과 관리 (AI 자동 추출 및 1:1 편집)
+                          </label>
+                          {aiResultApplied && (
+                            <span style={{ fontSize: "0.65rem", background: "rgba(16, 185, 129, 0.15)", border: "1px solid rgba(16, 185, 129, 0.35)", color: "#10b981", padding: "0.1rem 0.35rem", borderRadius: "4px", fontWeight: "700" }}>
+                              ✨ AI 안건 결과 반영됨 ✓
+                            </span>
+                          )}
+                        </div>
                         <button
                           type="button"
                           onClick={handleGenerateAIKeywords}
