@@ -2344,7 +2344,9 @@ export default function App() {
   // 결재 변경 승인요청 상태 및 상세 보기 모달 제어용
   const [versionRequests, setVersionRequests] = useState([]);
   const [selectedRequest, setSelectedRequest] = useState(null);
-  const [approvalsTab, setApprovalsTab] = useState("budget");
+  const [approvalsTab, setApprovalsTab] = useState(() => {
+    return localStorage.getItem("anchor_approvals_tab") || "budget";
+  });
   const [reservations, setReservations] = useState([]);
   
   // 💡 [교육용 한글 주석] 승인자 전용의 공간 예약 일시 조율용 상태변수들입니다.
@@ -2363,6 +2365,10 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem("anchor_active_tab", activeTab);
   }, [activeTab]);
+
+  useEffect(() => {
+    localStorage.setItem("anchor_approvals_tab", approvalsTab);
+  }, [approvalsTab]);
 
   // 사업단 구성원 관리 및 서브탭 상태 (첫 기동 시 즉각 화면 출력을 보장하기 위해 로컬 캐시를 초기값으로 지탱)
   const [members, setMembers] = useState(() => {
@@ -8960,15 +8966,15 @@ export default function App() {
                             <table className="custom-table" style={{ fontSize: "0.75rem", tableLayout: "fixed", width: "100%" }}>
                               <thead>
                                 <tr>
-                                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap", width: "95px" }}>예약일자</th>
-                                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap", width: "105px" }}>사용시간</th>
-                                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap", width: "130px" }}>시설명</th>
-                                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap", width: "90px" }}>신청부서</th>
-                                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap", width: "75px" }}>신청자</th>
+                                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap", width: "110px" }}>예약일자</th>
+                                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap", width: "130px" }}>사용시간</th>
+                                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap", width: "160px" }}>시설명</th>
+                                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap", width: "110px" }}>신청부서</th>
+                                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap", width: "90px" }}>신청자</th>
                                   <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap" }}>사용목적</th>
-                                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap", width: "80px" }}>결재 상태</th>
-                                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap", width: "80px" }}>일정 조정</th>
-                                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap", width: "80px" }}>결재 처리</th>
+                                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap", width: "95px" }}>결재 상태</th>
+                                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap", width: "85px" }}>일정 조정</th>
+                                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap", width: "95px" }}>결재 처리</th>
                                 </tr>
                               </thead>
                               <tbody>
