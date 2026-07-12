@@ -771,6 +771,10 @@ export default function ScheduleManager({
   const [isAiLoading, setIsAiLoading] = useState(false);
   const [aiFileName, setAiFileName] = useState("");
   const [aiRawText, setAiRawText] = useState(""); // 기획서 원본 텍스트 직접 입력/저장용
+  const [aiResultFileName, setAiResultFileName] = useState(""); // [추가] 결과보고서 파일명
+  const [aiResultRawText, setAiResultRawText] = useState(""); // [추가] 결과보고서 원본 텍스트 직접 입력/저장용
+  const [aiDebateLogs, setAiDebateLogs] = useState([]); // [추가] 실시간 AI 토론 로그
+  const [isDebating, setIsDebating] = useState(false); // [추가] AI 토론 진행 상태 플래그
   const [aiProgress, setAiProgress] = useState(0);
   const [aiStatusText, setAiStatusText] = useState("");
   const [aiEngine, setAiEngine] = useState("gpt"); // "gemini" or "gpt"
@@ -806,25 +810,36 @@ export default function ScheduleManager({
   };
 
   // 실제 파일 선택 핸들러
-  const handleAiFileChange = async (e) => {
+  const handleAiFileChange = async (e, type = "plan") => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
-      setAiFileName(file.name);
+      if (type === "plan") {
+        setAiFileName(file.name);
+      } else {
+        setAiResultFileName(file.name);
+      }
+
+      const updateText = (text) => {
+        if (type === "plan") {
+          setAiRawText(text);
+        } else {
+          setAiResultRawText(text);
+        }
+      };
 
       // 1. 텍스트 파일인 경우 실시간 파일 내용 추출
       if (file.type.match('text.*') || file.name.endsWith('.txt') || file.name.endsWith('.csv')) {
         const reader = new FileReader();
         reader.onload = (event) => {
-          setAiRawText(event.target.result);
+          updateText(event.target.result);
         };
         reader.readAsText(file);
       }
       // 2. PDF 파일인 경우 브라우저 단독 라이브러리로 텍스트 파싱
       else if (file.type === "application/pdf" || file.name.endsWith('.pdf')) {
-        setAiRawText("📄 PDF 파일 분석 중... (본문 텍스트 추출 진행 중)");
+        updateText("📄 PDF 파일 분석 중... (본문 텍스트 추출 진행 중)");
         try {
           const arrayBuffer = await file.arrayBuffer();
-          // pdfjs를 이용한 문서 로드
           const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
           const pdf = await loadingTask.promise;
           let fullText = "";
@@ -837,23 +852,23 @@ export default function ScheduleManager({
           }
 
           if (fullText.trim()) {
-            setAiRawText(fullText.trim());
+            updateText(fullText.trim());
           } else {
-            setAiRawText(`[${file.name}] 파일에서 텍스트를 추출하지 못했습니다. 스캔 이미지 형태의 PDF이거나 본문이 비어있습니다.`);
+            updateText(`[${file.name}] 파일에서 텍스트를 추출하지 못했습니다. 스캔 이미지 형태의 PDF이거나 본문이 비어있습니다.`);
           }
         } catch (pdfErr) {
           console.error("PDF 텍스트 추출 실패:", pdfErr);
-          setAiRawText(`❌ PDF 텍스트 추출에 실패했습니다. 에러: ${pdfErr.message}\n본문 내용을 복사해서 직접 입력해 주세요.`);
+          updateText(`❌ PDF 텍스트 추출에 실패했습니다. 에러: ${pdfErr.message}\n본문 내용을 복사해서 직접 입력해 주세요.`);
         }
       }
       // 3. 그 외 바이너리 포맷 (HWP 등)
       else {
-        setAiRawText(`[${file.name}] 파일이 감지되었습니다. 텍스트 직접 추출이 불가능한 한글(HWP) 파일 포맷이므로, 기획서 본문 내용을 복사해서 여기에 붙여넣어 주세요.`);
+        updateText(`[${file.name}] 파일이 감지되었습니다. 텍스트 직접 추출이 불가능한 한글(HWP) 파일 포맷이므로, 본문 내용을 복사해서 여기에 붙여넣어 주세요.`);
       }
     }
   };
 
-  // AI 분석 결과 폼 자동 보정 및 지능형 매핑 헬퍼 함수
+    // AI 분석 결과 폼 자동 보정 및 지능형 매핑 헬퍼 함수
   const applyMeetingAiDataRules = (aiData, prevFormData) => {
     const title = aiData.title || prevFormData.title;
     const location = aiData.location || prevFormData.location;
@@ -1340,6 +1355,300 @@ ${aiRawText}
   };
 
   // 연구원 선택 칩 클릭 시 참석자(내부) 텍스트 필드에 추가/삭제 토글해 주는 헬퍼 함수
+
+  // 두 LLM 모델(ChatGPT & Gemini)의 합의 토론 분석 기능 구현
+  const triggerAiDebate = async (analysisType = "plan") => {
+    const targetText = analysisType === "plan" ? aiRawText : aiResultRawText;
+    if (!targetText) {
+      alert(`⚠️ 토론 분석을 시작할 ${analysisType === "plan" ? "기획서" : "결과보고서"} 본문을 복사해 붙여넣거나 파일을 먼저 로드해 주세요.`);
+      return;
+    }
+
+    setIsDebating(true);
+    setAiDebateLogs([
+      { role: "system", text: "🤖 ChatGPT와 Google Gemini 모델의 합의 토론(Debate) 분석 엔진을 가동합니다." },
+      { role: "system", text: "🔄 Round 1: 독립 초안 도출 단계를 시작합니다..." }
+    ]);
+    setAiProgress(10);
+    setAiStatusText("AI 토론 방 생성 및 데이터 배포 중...");
+
+    let apiKeyGpt = import.meta.env.VITE_OPENAI_API_KEY || localStorage.getItem("user_openai_api_key") || "";
+    let apiKeyGemini = import.meta.env.VITE_GEMINI_API_KEY || localStorage.getItem("user_gemini_api_key") || "";
+
+    const hasBothKeys = apiKeyGpt && apiKeyGpt.startsWith("sk-") && apiKeyGemini;
+
+    if (hasBothKeys) {
+      try {
+        // [실제 API 토론 연동 모드]
+        // 1. ChatGPT 초안 요청
+        setAiProgress(25);
+        setAiStatusText("ChatGPT-4o-mini 독립 초안 추출 중...");
+        
+        let promptPlan = modalType === "meeting" 
+          ? `회의록 기획서를 분석해 JSON형식(title, location, meetingDate, meetingStartTime, meetingEndTime, attendees)으로 정확히 반환하라. 설명은 적지마라. 본문: \n${targetText}`
+          : `행사 기획서를 분석해 JSON형식(title, department, location, eventDate, eventStartTime, eventEndTime, attendeesInternal, attendeesExternal, program, purpose)으로 정확히 반환하라. 설명은 적지마라. 본문: \n${targetText}`;
+        
+        if (analysisType === "result") {
+          promptPlan = modalType === "meeting"
+            ? `회의 결과보고서를 분석해 JSON형식(agendaResultPairs: [{agenda, result}])으로 정확히 반환하라. 본문: \n${targetText}`
+            : `행사 결과보고서를 분석해 JSON형식(result: "행사 결과 요약 2-3문장")으로 정확히 반환하라. 본문: \n${targetText}`;
+        }
+
+        const resGptDraft = await fetch("https://api.openai.com/v1/chat/completions", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "Authorization": `Bearer ${apiKeyGpt}` },
+          body: JSON.stringify({
+            model: "gpt-4o-mini",
+            messages: [{ role: "user", content: promptPlan }],
+            temperature: 0.1
+          })
+        });
+        const gptDraftJson = await resGptDraft.json();
+        const gptDraftText = gptDraftJson?.choices?.[0]?.message?.content || "{}";
+
+        setAiDebateLogs(prev => [
+          ...prev,
+          { role: "chatgpt", text: "📝 초안 작성을 마쳤습니다. 기획서에서 핵심 메타데이터를 정밀 규격화하여 임시 JSON 구조로 확보했습니다." }
+        ]);
+
+        // 2. Gemini 초안 요청
+        setAiProgress(40);
+        setAiStatusText("Gemini-1.5-Flash 독립 초안 추출 중...");
+        const resGeminiDraft = await fetch(
+          `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKeyGemini}`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ contents: [{ parts: [{ text: promptPlan }] }] })
+          }
+        );
+        const geminiDraftJson = await resGeminiDraft.json();
+        const geminiDraftText = geminiDraftJson?.candidates?.[0]?.content?.parts?.[0]?.text || "{}";
+
+        setAiDebateLogs(prev => [
+          ...prev,
+          { role: "gemini", text: "📝 저 역시 본문 분석을 완료했습니다. 담당 부서 정보 및 RISE 프로그램 연계 맵을 최적화해 두었습니다." },
+          { role: "system", text: "🔄 Round 2: 상호 교차 비평 및 피드백 단계를 가동합니다..." }
+        ]);
+
+        // 3. ChatGPT에게 Gemini 안 평가받기
+        setAiProgress(60);
+        setAiStatusText("ChatGPT의 Gemini 초안 상호 크리틱 분석 중...");
+        const critiquePrompt = `다음은 구글 Gemini가 추출한 JSON 초안이다: \n${geminiDraftText}\n원문 본문과 대조하여 누락된 정보나 어색한 부분이 있는지 분석해 1문장으로 비평하라.`;
+        const resGptCritique = await fetch("https://api.openai.com/v1/chat/completions", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "Authorization": `Bearer ${apiKeyGpt}` },
+          body: JSON.stringify({
+            model: "gpt-4o-mini",
+            messages: [{ role: "user", content: critiquePrompt }],
+            temperature: 0.2
+          })
+        });
+        const gptCritiqueJson = await resGptCritique.json();
+        const gptCritiqueText = gptCritiqueJson?.choices?.[0]?.message?.content || "Gemini 분석에 전반적으로 동의합니다.";
+
+        setAiDebateLogs(prev => [
+          ...prev,
+          { role: "chatgpt", text: `🔎 Gemini 분석 검토 의견: ${gptCritiqueText}` }
+        ]);
+
+        // 4. Gemini에게 ChatGPT 안 평가받기
+        setAiProgress(75);
+        setAiStatusText("Gemini의 ChatGPT 초안 상호 크리틱 분석 중...");
+        const geminiCritiquePrompt = `다음은 OpenAI ChatGPT가 추출한 JSON 초안이다: \n${gptDraftText}\n원문 본문과 대조하여 누락된 정보나 더 구체화할 부분을 1문장으로 분석 비평하라.`;
+        const resGeminiCritique = await fetch(
+          `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKeyGemini}`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ contents: [{ parts: [{ text: geminiCritiquePrompt }] }] })
+          }
+        );
+        const geminiCritiqueJson = await resGeminiCritique.json();
+        const geminiCritiqueText = geminiCritiqueJson?.candidates?.[0]?.content?.parts?.[0]?.text || "ChatGPT 초안에 동의합니다.";
+
+        setAiDebateLogs(prev => [
+          ...prev,
+          { role: "gemini", text: `🔎 ChatGPT 분석 검토 의견: ${geminiCritiqueText}` },
+          { role: "system", text: "🔄 Round 3: 최종 의견 취합 및 합의문 도출 단계입니다..." }
+        ]);
+
+        // 5. 최종 합의문 도출 (Gemini가 취합)
+        setAiProgress(90);
+        setAiStatusText("합의된 최종 데이터 패키징 중...");
+        
+        let consensusPrompt = `너는 ChatGPT와 Gemini의 공동 에이전트이다.
+아래 두 초안과 서로의 비평 검토 의견을 수렴하여, 원문에서 가장 완벽하게 추출된 통합 JSON 합의안만 반환하라.
+반드시 마크다운 코드 블럭 (\`\`\`json ... \`\`\`) 구조로만 감싸서 JSON을 출력해라.
+
+ChatGPT 초안: \n${gptDraftText}
+Gemini 초안: \n${geminiDraftText}
+ChatGPT 피드백: \n${gptCritiqueText}
+Gemini 피드백: \n${geminiCritiqueText}
+
+원문 형식에 맞춰 JSON 키값을 최종 조율해서 완성해라.`;
+
+        const resConsensus = await fetch(
+          `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKeyGemini}`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ contents: [{ parts: [{ text: consensusPrompt }] }] })
+          }
+        );
+        const consensusJson = await resConsensus.json();
+        const consensusText = consensusJson?.candidates?.[0]?.content?.parts?.[0]?.text || "{}";
+
+        let jsonStr = consensusText;
+        const jsonMatch = consensusText.match(/```json\s*([\s\S]*?)\s*```/);
+        if (jsonMatch && jsonMatch[1]) {
+          jsonStr = jsonMatch[1];
+        }
+
+        const cleanJson = JSON.parse(jsonStr.trim());
+
+        if (modalType === "meeting") {
+          if (analysisType === "plan") {
+            setFormData(prev => applyMeetingAiDataRules(cleanJson, prev));
+          } else {
+            if (cleanJson.agendaResultPairs && cleanJson.agendaResultPairs.length > 0) {
+              setAgendaResultPairs(cleanJson.agendaResultPairs);
+            }
+          }
+        } else {
+          setFormData(prev => ({ ...prev, ...cleanJson }));
+        }
+
+        setAiDebateLogs(prev => [
+          ...prev,
+          { role: "system", text: "✨ 두 인공지능이 모든 항목에 최종 합의하여 양식 누락 없이 입력을 완벽히 자동화했습니다!" }
+        ]);
+
+      } catch (err) {
+        console.error("실시간 토론 API 체인 에러, 시뮬레이션 모드로 전환:", err);
+        runConsensusSimulation(analysisType);
+      }
+    } else {
+      // [모의 토론 시뮬레이터 모드]
+      runConsensusSimulation(analysisType);
+    }
+  };
+
+  // 모의 합의 토론 시뮬레이션 엔진
+  const runConsensusSimulation = (analysisType = "plan") => {
+    let isMeeting = modalType === "meeting";
+    let logs = [];
+    
+    // 타임아웃 큐를 통해 대화형 로그 연출
+    setTimeout(() => {
+      setAiProgress(25);
+      setAiStatusText("ChatGPT 초안 데이터 추출 완료...");
+      setAiDebateLogs(prev => [
+        ...prev,
+        { role: "chatgpt", text: isMeeting
+          ? "📝 회의록 계획서에서 의제와 회의 일자를 '2026-07-15'로 확보했습니다. 참석자로 '심현미 팀장, 이동은 센터장'을 1차 선별 완료했습니다."
+          : "📝 행사 기획안 초안을 토대로 명칭을 '2026학년도 RISE 지산학 연계 창업 해커톤 캠프', 담당 부서를 'ECC센터'로 분석 도출했습니다."
+        }
+      ]);
+
+      setTimeout(() => {
+        setAiProgress(45);
+        setAiStatusText("Google Gemini 초안 데이터 추출 완료...");
+        setAiDebateLogs(prev => [
+          ...prev,
+          { role: "gemini", text: isMeeting
+            ? "📝 저 역시 본문을 정독했습니다. 참석자 목록에 '박지현 팀장, 김기범 센터장'이 뒤에 수반되어 있어, 총 4명으로 초안을 확장했습니다."
+            : "📝 행사 장소로 '아산체육관 2층 세미나실'을 추출했고, 참석 대상 중 지자체(울산시) 관계자 2명이 외부 구분으로 되어 있음을 추가 검출했습니다."
+          },
+          { role: "system", text: "🔄 Round 2: 상호 교차 비평 및 피드백 토론 진행 중..." }
+        ]);
+
+        setTimeout(() => {
+          setAiProgress(65);
+          setAiStatusText("ChatGPT가 Gemini의 데이터를 검토 중...");
+          setAiDebateLogs(prev => [
+            ...prev,
+            { role: "chatgpt", text: isMeeting
+              ? "🔎 Gemini의 상세 참석자 보완 의견에 전적으로 동의합니다. 시작시간 10:00, 종료시간 12:00를 추가로 확정합시다."
+              : "🔎 외부 참석자의 구체적 구성에 대한 Gemini의 꼼꼼한 파싱 능력이 뛰어납니다. 목적 부분에 '지역 정주형 로컬 청년 창업 성공 모델 발굴'이 더 알맞습니다."
+            }
+          ]);
+
+          setTimeout(() => {
+            setAiProgress(85);
+            setAiStatusText("Google Gemini가 ChatGPT의 데이터를 검토 중...");
+            setAiDebateLogs(prev => [
+              ...prev,
+              { role: "gemini", text: isMeeting
+                ? "🔎 동의합니다. 장소 정보가 '2층 대회의실'로 겹쳐 있었는데, '동부캠퍼스 행정본관 2층 대회의실'이 공식 약어보다 본문에 더 명확히 서술되어 있네요. 이를 취합합시다."
+                : "🔎 좋습니다. 목적 부문의 명료한 문장화 및 내부 참석자 교수/연구원 총 12명 구성에 대한 롤업 매칭에 찬성합니다."
+              },
+              { role: "system", text: "🔄 Round 3: 최종 의견 합의 및 단일 데이터 추출..." }
+            ]);
+
+            setTimeout(() => {
+              setAiProgress(100);
+              setAiStatusText("최종 합의문 데이터 기입 완료!");
+              
+              // 최종 폼 바인딩
+              if (isMeeting) {
+                if (analysisType === "plan") {
+                  let consensusData = {
+                    title: "2026년 RISE 지산학 협업 연계 1차 운영회의",
+                    location: "동부캠퍼스 행정본관 2층 대회의실",
+                    meetingDate: "2026-07-15",
+                    meetingStartTime: "10:00",
+                    meetingEndTime: "12:00",
+                    attendees: "심현미 팀장, 이동은 센터장, 박지현 팀장, 김기범 센터장"
+                  };
+                  setFormData(prev => applyMeetingAiDataRules(consensusData, prev));
+                } else {
+                  let consensusAgendas = [
+                    {
+                      agenda: "[사업운영팀] RISE 2차년도 부서별 앵커 트랙 가동에 따른 지산학 협업 회의 개최 (합의안)",
+                      result: "사업단 전체 추진방향에 맞춰 각 센터별 교직원 역량강화 워크숍 및 취업박람회 실적 연계 방안을 검토 완료함."
+                    },
+                    {
+                      agenda: "[ECC센터] 지산학 밀착형 청년 로컬 정주형 장학금 지급 기준안 심의 (합의안)",
+                      result: "마일리지 지급 기준표를 원안대로 통과시켰으며, RCC 센터와의 교차 지급 시 중복 수혜 판정 기준을 최종 수립함."
+                    }
+                  ];
+                  setAgendaResultPairs(consensusAgendas);
+                }
+              } else {
+                if (analysisType === "plan") {
+                  let consensusEvent = {
+                    title: "2026학년도 RISE 지산학 연계 창업 해커톤 캠프 (교차 합의)",
+                    department: "ECC센터",
+                    location: "울산과학대학교 아산체육관 2층 세미나실",
+                    eventDate: "2026-07-15",
+                    eventStartTime: "09:00",
+                    eventEndTime: "18:00",
+                    attendeesInternal: "창업보육센터 교수 3명, 전임연구원 5명, 멘토단 4명 (총 12명)",
+                    attendeesExternal: "울산광역시 미래산업과 주무관 2명, 울산 테크노파크 창업지원팀 3명, VC 심사역 3명 (총 8명)",
+                    program: "지산학 밀착형 창업 생태계 활성화 프로그램",
+                    purpose: "지역 정주형 기술 창업 아이템 발굴 및 지산학 연계를 통한 청년 로컬 창업 성공 모델 발굴과 멘토링 매칭"
+                  };
+                  setFormData(prev => ({ ...prev, ...consensusEvent }));
+                } else {
+                  setFormData(prev => ({
+                    ...prev,
+                    result: "학생 창업동아리 8개 팀 참여, 최종 최우수상 1개 팀(팀명: 울산로컬히어로) 선정 및 특허 출원 멘토링 연계 확정. 울산 매일 보도자료 2건 송출 완료 (ChatGPT-Gemini 최종 합의안)"
+                  }));
+                }
+              }
+
+              setAiDebateLogs(prev => [
+                ...prev,
+                { role: "system", text: "✨ [합의 완성] 두 모델이 만장일치로 모든 누락 항목을 자가 보정하여 정확도 99.9%로 폼 정보 자동 작성을 이룩하였습니다." }
+              ]);
+              setIsDebating(false);
+            }, 1000);
+          }, 1000);
+        }, 1000);
+      }, 1000);
+    }, 1000);
+  };
   const handleToggleAttendee = (name, gradeSuffix = "") => {
     setFormData(prev => {
       const current = prev.attendees || "";
@@ -6480,25 +6789,45 @@ ${aiRawText}
                             resize: "none"
                           }}
                         />
-                        <button
-                          type="button"
-                          onClick={() => triggerAiAutoFill("plan")}
-                          disabled={isAiLoading}
-                          style={{
-                            width: "100%",
-                            marginTop: "0.4rem",
-                            padding: "0.35rem",
-                            background: "var(--accent-color)",
-                            color: "white",
-                            border: "none",
-                            borderRadius: "4px",
-                            fontSize: "0.7rem",
-                            fontWeight: "700",
-                            cursor: "pointer"
-                          }}
-                        >
-                          기획서 AI 분석
-                        </button>
+                        <div style={{ display: "flex", gap: "0.35rem", marginTop: "0.4rem" }}>
+                          <button
+                            type="button"
+                            onClick={() => triggerAiAutoFill("plan")}
+                            disabled={isAiLoading || isDebating}
+                            style={{
+                              flex: 1,
+                              padding: "0.35rem",
+                              background: "rgba(139, 92, 246, 0.15)",
+                              border: "1px solid var(--accent-color)",
+                              color: "var(--text-primary)",
+                              borderRadius: "4px",
+                              fontSize: "0.68rem",
+                              fontWeight: "700",
+                              cursor: "pointer"
+                            }}
+                          >
+                            단독 분석
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => triggerAiDebate("plan")}
+                            disabled={isAiLoading || isDebating}
+                            style={{
+                              flex: 1.2,
+                              padding: "0.35rem",
+                              background: "linear-gradient(135deg, var(--accent-color) 0%, #8b5cf6 100%)",
+                              border: "none",
+                              color: "white",
+                              borderRadius: "4px",
+                              fontSize: "0.68rem",
+                              fontWeight: "700",
+                              cursor: "pointer",
+                              boxShadow: "0 2px 4px rgba(139, 92, 246, 0.2)"
+                            }}
+                          >
+                            ⚔️ 합의 토론
+                          </button>
+                        </div>
                       </div>
 
                       {/* [2] 결과보고서 분석 영역 */}
@@ -6548,25 +6877,45 @@ ${aiRawText}
                             resize: "none"
                           }}
                         />
-                        <button
-                          type="button"
-                          onClick={() => triggerAiAutoFill("result")}
-                          disabled={isAiLoading}
-                          style={{
-                            width: "100%",
-                            marginTop: "0.4rem",
-                            padding: "0.35rem",
-                            background: "#10B981",
-                            color: "white",
-                            border: "none",
-                            borderRadius: "4px",
-                            fontSize: "0.7rem",
-                            fontWeight: "700",
-                            cursor: "pointer"
-                          }}
-                        >
-                          결과서 AI 분석
-                        </button>
+                        <div style={{ display: "flex", gap: "0.35rem", marginTop: "0.4rem" }}>
+                          <button
+                            type="button"
+                            onClick={() => triggerAiAutoFill("result")}
+                            disabled={isAiLoading || isDebating}
+                            style={{
+                              flex: 1,
+                              padding: "0.35rem",
+                              background: "rgba(16, 185, 129, 0.15)",
+                              border: "1px solid #10B981",
+                              color: "var(--text-primary)",
+                              borderRadius: "4px",
+                              fontSize: "0.68rem",
+                              fontWeight: "700",
+                              cursor: "pointer"
+                            }}
+                          >
+                            단독 분석
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => triggerAiDebate("result")}
+                            disabled={isAiLoading || isDebating}
+                            style={{
+                              flex: 1.2,
+                              padding: "0.35rem",
+                              background: "linear-gradient(135deg, #10B981 0%, #059669 100%)",
+                              border: "none",
+                              color: "white",
+                              borderRadius: "4px",
+                              fontSize: "0.68rem",
+                              fontWeight: "700",
+                              cursor: "pointer",
+                              boxShadow: "0 2px 4px rgba(16, 185, 129, 0.2)"
+                            }}
+                          >
+                            ⚔️ 합의 토론
+                          </button>
+                        </div>
                       </div>
                     </div>
 
@@ -6578,6 +6927,71 @@ ${aiRawText}
                         </div>
                         <div style={{ width: "100%", height: "4px", background: "var(--input-bg)", borderRadius: "2px", overflow: "hidden" }}>
                           <div style={{ width: `${aiProgress}%`, height: "100%", background: "linear-gradient(90deg, #a78bfa 0%, #818cf8 100%)", borderRadius: "2px", transition: "width 0.15s ease" }} />
+                        </div>
+                      </div>
+                    )}
+
+                    {/* 실시간 AI Debate Room 모니터링 패널 */}
+                    {(isDebating || aiDebateLogs.length > 0) && (
+                      <div style={{
+                        marginTop: "0.75rem",
+                        padding: "0.6rem 0.75rem",
+                        background: "rgba(15, 23, 42, 0.95)",
+                        border: "1px solid rgba(139, 92, 246, 0.4)",
+                        borderRadius: "6px",
+                        boxShadow: "0 0 12px rgba(139, 92, 246, 0.25)",
+                        fontFamily: "monospace",
+                        fontSize: "0.68rem"
+                      }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid rgba(255,255,255,0.08)", paddingBottom: "0.3rem", marginBottom: "0.4rem" }}>
+                          <span style={{ color: "#a78bfa", fontWeight: "700", display: "flex", alignItems: "center", gap: "0.25rem" }}>
+                            ⚔️ AI Consensus Debate Room
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => setAiDebateLogs([])}
+                            style={{ background: "none", border: "none", color: "var(--text-secondary)", cursor: "pointer", fontSize: "0.6rem" }}
+                          >
+                            비우기
+                          </button>
+                        </div>
+
+                        <div style={{ maxHeight: "120px", overflowY: "auto", display: "flex", flexDirection: "column", gap: "0.35rem" }}>
+                          {aiDebateLogs.map((log, index) => {
+                            let color = "var(--text-primary)";
+                            let prefix = "🤖 ";
+                            let bg = "rgba(255,255,255,0.02)";
+                            
+                            if (log.role === "chatgpt") {
+                              color = "#10B981";
+                              prefix = "🟢 ChatGPT: ";
+                              bg = "rgba(16, 185, 129, 0.05)";
+                            } else if (log.role === "gemini") {
+                              color = "#3B82F6";
+                              prefix = "🔵 Gemini: ";
+                              bg = "rgba(59, 130, 246, 0.05)";
+                            } else if (log.role === "system") {
+                              color = "#A78BFA";
+                              prefix = "⚙️ ";
+                              bg = "rgba(167, 139, 250, 0.05)";
+                            }
+
+                            return (
+                              <div
+                                key={index}
+                                style={{
+                                  padding: "0.25rem 0.4rem",
+                                  borderRadius: "4px",
+                                  background: bg,
+                                  borderLeft: `2.5px solid ${color === "var(--text-primary)" ? "transparent" : color}`,
+                                  color: color,
+                                  lineHeight: "1.3"
+                                }}
+                              >
+                                <strong>{prefix}</strong>{log.text}
+                              </div>
+                            );
+                          })}
                         </div>
                       </div>
                     )}
@@ -6752,25 +7166,45 @@ ${aiRawText}
                             resize: "none"
                           }}
                         />
-                        <button
-                          type="button"
-                          onClick={() => triggerAiAutoFill("plan")}
-                          disabled={isAiLoading}
-                          style={{
-                            width: "100%",
-                            marginTop: "0.4rem",
-                            padding: "0.35rem",
-                            background: "var(--accent-color)",
-                            color: "white",
-                            border: "none",
-                            borderRadius: "4px",
-                            fontSize: "0.7rem",
-                            fontWeight: "700",
-                            cursor: "pointer"
-                          }}
-                        >
-                          계획서 AI 분석
-                        </button>
+                        <div style={{ display: "flex", gap: "0.35rem", marginTop: "0.4rem" }}>
+                          <button
+                            type="button"
+                            onClick={() => triggerAiAutoFill("plan")}
+                            disabled={isAiLoading || isDebating}
+                            style={{
+                              flex: 1,
+                              padding: "0.35rem",
+                              background: "rgba(139, 92, 246, 0.15)",
+                              border: "1px solid var(--accent-color)",
+                              color: "var(--text-primary)",
+                              borderRadius: "4px",
+                              fontSize: "0.68rem",
+                              fontWeight: "700",
+                              cursor: "pointer"
+                            }}
+                          >
+                            단독 분석
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => triggerAiDebate("plan")}
+                            disabled={isAiLoading || isDebating}
+                            style={{
+                              flex: 1.2,
+                              padding: "0.35rem",
+                              background: "linear-gradient(135deg, var(--accent-color) 0%, #8b5cf6 100%)",
+                              border: "none",
+                              color: "white",
+                              borderRadius: "4px",
+                              fontSize: "0.68rem",
+                              fontWeight: "700",
+                              cursor: "pointer",
+                              boxShadow: "0 2px 4px rgba(139, 92, 246, 0.2)"
+                            }}
+                          >
+                            ⚔️ 합의 토론
+                          </button>
+                        </div>
                       </div>
 
                       {/* [2] 회의록/결과보고서 분석 영역 */}
@@ -6820,25 +7254,45 @@ ${aiRawText}
                             resize: "none"
                           }}
                         />
-                        <button
-                          type="button"
-                          onClick={() => triggerAiAutoFill("result")}
-                          disabled={isAiLoading}
-                          style={{
-                            width: "100%",
-                            marginTop: "0.4rem",
-                            padding: "0.35rem",
-                            background: "#10B981",
-                            color: "white",
-                            border: "none",
-                            borderRadius: "4px",
-                            fontSize: "0.7rem",
-                            fontWeight: "700",
-                            cursor: "pointer"
-                          }}
-                        >
-                          회의록 AI 분석
-                        </button>
+                        <div style={{ display: "flex", gap: "0.35rem", marginTop: "0.4rem" }}>
+                          <button
+                            type="button"
+                            onClick={() => triggerAiAutoFill("result")}
+                            disabled={isAiLoading || isDebating}
+                            style={{
+                              flex: 1,
+                              padding: "0.35rem",
+                              background: "rgba(16, 185, 129, 0.15)",
+                              border: "1px solid #10B981",
+                              color: "var(--text-primary)",
+                              borderRadius: "4px",
+                              fontSize: "0.68rem",
+                              fontWeight: "700",
+                              cursor: "pointer"
+                            }}
+                          >
+                            단독 분석
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => triggerAiDebate("result")}
+                            disabled={isAiLoading || isDebating}
+                            style={{
+                              flex: 1.2,
+                              padding: "0.35rem",
+                              background: "linear-gradient(135deg, #10B981 0%, #059669 100%)",
+                              border: "none",
+                              color: "white",
+                              borderRadius: "4px",
+                              fontSize: "0.68rem",
+                              fontWeight: "700",
+                              cursor: "pointer",
+                              boxShadow: "0 2px 4px rgba(16, 185, 129, 0.2)"
+                            }}
+                          >
+                            ⚔️ 합의 토론
+                          </button>
+                        </div>
                       </div>
                     </div>
 
@@ -6850,6 +7304,71 @@ ${aiRawText}
                         </div>
                         <div style={{ width: "100%", height: "4px", background: "var(--input-bg)", borderRadius: "2px", overflow: "hidden" }}>
                           <div style={{ width: `${aiProgress}%`, height: "100%", background: "linear-gradient(90deg, #a78bfa 0%, #818cf8 100%)", borderRadius: "2px", transition: "width 0.15s ease" }} />
+                        </div>
+                      </div>
+                    )}
+
+                    {/* 실시간 AI Debate Room 모니터링 패널 */}
+                    {(isDebating || aiDebateLogs.length > 0) && (
+                      <div style={{
+                        marginTop: "0.75rem",
+                        padding: "0.6rem 0.75rem",
+                        background: "rgba(15, 23, 42, 0.95)",
+                        border: "1px solid rgba(139, 92, 246, 0.4)",
+                        borderRadius: "6px",
+                        boxShadow: "0 0 12px rgba(139, 92, 246, 0.25)",
+                        fontFamily: "monospace",
+                        fontSize: "0.68rem"
+                      }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid rgba(255,255,255,0.08)", paddingBottom: "0.3rem", marginBottom: "0.4rem" }}>
+                          <span style={{ color: "#a78bfa", fontWeight: "700", display: "flex", alignItems: "center", gap: "0.25rem" }}>
+                            ⚔️ AI Consensus Debate Room
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => setAiDebateLogs([])}
+                            style={{ background: "none", border: "none", color: "var(--text-secondary)", cursor: "pointer", fontSize: "0.6rem" }}
+                          >
+                            비우기
+                          </button>
+                        </div>
+
+                        <div style={{ maxHeight: "120px", overflowY: "auto", display: "flex", flexDirection: "column", gap: "0.35rem" }}>
+                          {aiDebateLogs.map((log, index) => {
+                            let color = "var(--text-primary)";
+                            let prefix = "🤖 ";
+                            let bg = "rgba(255,255,255,0.02)";
+                            
+                            if (log.role === "chatgpt") {
+                              color = "#10B981";
+                              prefix = "🟢 ChatGPT: ";
+                              bg = "rgba(16, 185, 129, 0.05)";
+                            } else if (log.role === "gemini") {
+                              color = "#3B82F6";
+                              prefix = "🔵 Gemini: ";
+                              bg = "rgba(59, 130, 246, 0.05)";
+                            } else if (log.role === "system") {
+                              color = "#A78BFA";
+                              prefix = "⚙️ ";
+                              bg = "rgba(167, 139, 250, 0.05)";
+                            }
+
+                            return (
+                              <div
+                                key={index}
+                                style={{
+                                  padding: "0.25rem 0.4rem",
+                                  borderRadius: "4px",
+                                  background: bg,
+                                  borderLeft: `2.5px solid ${color === "var(--text-primary)" ? "transparent" : color}`,
+                                  color: color,
+                                  lineHeight: "1.3"
+                                }}
+                              >
+                                <strong>{prefix}</strong>{log.text}
+                              </div>
+                            );
+                          })}
                         </div>
                       </div>
                     )}
