@@ -2223,6 +2223,47 @@ export default function App() {
     }));
   };
 
+  // 💡 [안전한 로컬스토리지 저장 헬퍼] QuotaExceededError 발생 시 사용되지 않는 타 연차 캐시를 파괴하여 디바이스 공간을 긴급 확보합니다.
+  const safeSetLocalStorage = (key, valueStr, currentYear) => {
+    try {
+      localStorage.setItem(key, valueStr);
+    } catch (e) {
+      if (e.name === 'QuotaExceededError' || e.code === 22 || e.name === 'NS_ERROR_DOM_QUOTA_REACHED') {
+        console.warn("⚠️ localStorage 용량 초과 감지! 타 연차 캐시 정리를 통해 여유 공간을 확보합니다.");
+        const yr = Number(currentYear || 2);
+        
+        // 1. 현재 연차 이외의 타 연차 캐시 전면 정리
+        for (let y = 1; y <= 5; y++) {
+          if (y !== yr) {
+            localStorage.removeItem(`anchor_cache_proj_y${y}`);
+            localStorage.removeItem(`anchor_cache_env_y${y}`);
+            localStorage.removeItem(`anchor_cache_equip_y${y}`);
+            localStorage.removeItem(`anchor_cache_serv_y${y}`);
+            localStorage.removeItem(`anchor_cache_month_y${y}`);
+            localStorage.removeItem(`anchor_cache_event_y${y}`);
+            localStorage.removeItem(`anchor_cache_meet_y${y}`);
+            localStorage.removeItem(`anchor_cache_press_y${y}`);
+          }
+        }
+        
+        // 2. 대형 임시/구버전 캐시 키 삭제
+        localStorage.removeItem("anchor_projects_data_v55");
+        localStorage.removeItem("anchor_agreements_data_v1");
+        localStorage.removeItem("anchor_unified_certificates_data_v1");
+        
+        // 3. 재시도
+        try {
+          localStorage.setItem(key, valueStr);
+          console.log(`✅ 공간 확보 후 캐시 저장에 성공했습니다: ${key}`);
+        } catch (retryError) {
+          console.error("❌ 캐시 자동 정리 후에도 localStorage 저장 공간이 부족합니다:", retryError);
+        }
+      } else {
+        console.error("localStorage 일반 오류 발생:", e);
+      }
+    }
+  };
+
   // 로그인 성공 혹은 세션 로드 시 Supabase DB로부터 마스터 포털 노출 설정 수신
   useEffect(() => {
     const fetchPortalConfig = async () => {
@@ -2489,7 +2530,7 @@ export default function App() {
         const { fileData, ...rest } = item;
         return rest;
       });
-      localStorage.setItem("anchor_agreements_data_v1", JSON.stringify(agreementsForStorage));
+      safeSetLocalStorage("anchor_agreements_data_v1", JSON.stringify(agreementsForStorage), selectedYear);
     } catch (e) {
       console.error("Failed to save agreements to localStorage:", e);
     }
@@ -2539,7 +2580,7 @@ export default function App() {
         const { fileData, ...rest } = item;
         return rest;
       });
-      localStorage.setItem("anchor_unified_certificates_data_v1", JSON.stringify(unifiedCertsForStorage));
+      safeSetLocalStorage("anchor_unified_certificates_data_v1", JSON.stringify(unifiedCertsForStorage), selectedYear);
     } catch (e) {
       console.error("Failed to save unified certificates to localStorage:", e);
     }
@@ -2548,7 +2589,7 @@ export default function App() {
   useEffect(() => {
     try {
       const clean = scholarships.map((item) => ({ ...item }));
-      localStorage.setItem("anchor_cache_scholarships_all", JSON.stringify(clean));
+      safeSetLocalStorage("anchor_cache_scholarships_all", JSON.stringify(clean), selectedYear);
     } catch (e) {
       console.error("Failed to save scholarships to localStorage:", e);
     }
@@ -3473,11 +3514,7 @@ export default function App() {
           // 💡 [안전 가드] 원격 Supabase DB로부터 최신 프로젝트 데이터를 성공적으로 가져왔으므로, 레퍼런스(fetchedProjectsRef.current)에 동기화해 둡니다.
           fetchedProjectsRef.current = JSON.stringify(getCleanProjectsForStorage(mergedProjData));
 
-          try {
-            localStorage.setItem(`anchor_cache_proj_y${selectedYear}`, JSON.stringify(getCleanProjectsForStorage(mergedProjData)));
-          } catch (e) {
-            console.warn("Storage Quota exceeded for cached project data, bypassing...", e);
-          }
+          safeSetLocalStorage(`anchor_cache_proj_y${selectedYear}`, JSON.stringify(getCleanProjectsForStorage(mergedProjData)), selectedYear);
           if (currentUser && currentRole?.id !== "GUEST") {
             await supabase.from("projects_data").upsert({ year: selectedYear, data: mergedProjData }, { onConflict: "year" });
           }
@@ -3487,11 +3524,7 @@ export default function App() {
           // 💡 [안전 가드] 원격 DB에 데이터가 없어 최초 초기 템플릿을 사용하는 경우에도 레퍼런스에 동기화해 둡니다.
           fetchedProjectsRef.current = JSON.stringify(getCleanProjectsForStorage(multiYearInitialData));
 
-          try {
-            localStorage.setItem(`anchor_cache_proj_y${selectedYear}`, JSON.stringify(getCleanProjectsForStorage(multiYearInitialData)));
-          } catch (e) {
-            console.warn("Storage Quota exceeded for cached initial project data, bypassing...", e);
-          }
+          safeSetLocalStorage(`anchor_cache_proj_y${selectedYear}`, JSON.stringify(getCleanProjectsForStorage(multiYearInitialData)), selectedYear);
           if (currentUser && currentRole?.id !== "GUEST") {
             await supabase.from("projects_data").upsert({ year: selectedYear, data: multiYearInitialData }, { onConflict: "year" });
           }
@@ -3523,10 +3556,10 @@ export default function App() {
               agreementType: a.agreement_type || "-"
             }));
             setAgreements(formatted);
-            try {
-              const clean = formatted.map(item => ({ ...item, fileData: null }));
-              localStorage.setItem("anchor_cache_agreements_all", JSON.stringify(clean));
-            } catch (e) {
+              try {
+                const clean = formatted.map(item => ({ ...item, fileData: null }));
+                safeSetLocalStorage("anchor_cache_agreements_all", JSON.stringify(clean), selectedYear);
+              } catch (e) {
               console.error("Failed to save agreements cache:", e);
             }
           } else {
@@ -3567,10 +3600,10 @@ export default function App() {
               fileData: c.file_data
             }));
             setUnifiedCertificates(formatted);
-            try {
-              const clean = formatted.map(item => ({ ...item, fileData: null }));
-              localStorage.setItem("anchor_cache_unified_certificates_all", JSON.stringify(clean));
-            } catch (e) {
+              try {
+                const clean = formatted.map(item => ({ ...item, fileData: null }));
+                safeSetLocalStorage("anchor_cache_unified_certificates_all", JSON.stringify(clean), selectedYear);
+              } catch (e) {
               console.error("Failed to save unified certificates cache:", e);
             }
           } else {
@@ -3608,10 +3641,10 @@ export default function App() {
               approvalDate: c.approval_date
             }));
             setScholarships(formatted);
-            try {
-              const clean = formatted.map(item => ({ ...item }));
-              localStorage.setItem("anchor_cache_scholarships_all", JSON.stringify(clean));
-            } catch (e) {
+              try {
+                const clean = formatted.map(item => ({ ...item }));
+                safeSetLocalStorage("anchor_cache_scholarships_all", JSON.stringify(clean), selectedYear);
+              } catch (e) {
               console.error("Failed to save scholarships cache:", e);
             }
           } else {
@@ -3667,7 +3700,7 @@ export default function App() {
             relatedDocs: x.related_docs || ""
           }));
           setEnvData(formatted);
-          localStorage.setItem(`anchor_cache_env_y${selectedYear}`, JSON.stringify(formatted));
+          safeSetLocalStorage(`anchor_cache_env_y${selectedYear}`, JSON.stringify(formatted), selectedYear);
         } else {
           // 💡 [버그 예방] 원격 DB에서 데이터를 삭제하여 0건이 반환되었을 때는 상태와 캐시도 안전하게 완전히 지워줍니다.
           setEnvData([]);
@@ -3712,7 +3745,7 @@ export default function App() {
             };
           });
           setEquipData(formatted);
-          localStorage.setItem(`anchor_cache_equip_y${selectedYear}`, JSON.stringify(formatted));
+          safeSetLocalStorage(`anchor_cache_equip_y${selectedYear}`, JSON.stringify(formatted), selectedYear);
         } else {
           // 💡 [시딩 버그 해결] 사용자가 직접 DB에서 데이터를 삭제하여 0건이 되었을 때는,
           // 자동으로 모의 데이터를 재시딩하여 DB를 오염시키는 현상을 방지하고 완전한 빈 배열로 동기화합니다.
@@ -3820,7 +3853,7 @@ export default function App() {
             };
           });
           setServiceData(formatted);
-          localStorage.setItem(`anchor_cache_serv_y${selectedYear}`, JSON.stringify(formatted));
+          safeSetLocalStorage(`anchor_cache_serv_y${selectedYear}`, JSON.stringify(formatted), selectedYear);
         } else {
           // 💡 [버그 예방] 원격 DB에서 데이터를 삭제하여 0건이 반환되었을 때는 상태와 캐시도 안전하게 완전히 지워줍니다.
           setServiceData([]);
@@ -3850,7 +3883,7 @@ export default function App() {
             attendees: x.attendees || ""
           }));
           setMonthlySchedules(formatted);
-          localStorage.setItem(`anchor_cache_month_y${selectedYear}`, JSON.stringify(formatted));
+          safeSetLocalStorage(`anchor_cache_month_y${selectedYear}`, JSON.stringify(formatted), selectedYear);
         } else {
           setMonthlySchedules([]);
           localStorage.removeItem(`anchor_cache_month_y${selectedYear}`);
@@ -3858,7 +3891,7 @@ export default function App() {
         if (sEvent && sEvent.length > 0) {
           const formatted = sEvent.map(x => ({ ...x, id: Number(x.id), year: Number(x.year), month: Number(x.month) }));
           setEventSchedules(formatted);
-          localStorage.setItem(`anchor_cache_event_y${selectedYear}`, JSON.stringify(formatted));
+          safeSetLocalStorage(`anchor_cache_event_y${selectedYear}`, JSON.stringify(formatted), selectedYear);
         } else {
           setEventSchedules([]);
           localStorage.removeItem(`anchor_cache_event_y${selectedYear}`);
@@ -3875,7 +3908,7 @@ export default function App() {
             pdfUrl: x.pdf_url
           }));
           setMeetingSchedules(formatted);
-          localStorage.setItem(`anchor_cache_meet_y${selectedYear}`, JSON.stringify(formatted));
+          safeSetLocalStorage(`anchor_cache_meet_y${selectedYear}`, JSON.stringify(formatted), selectedYear);
         } else {
           setMeetingSchedules([]);
           localStorage.removeItem(`anchor_cache_meet_y${selectedYear}`);
@@ -3910,7 +3943,7 @@ export default function App() {
           }));
           setPressReleases(formatted);
           fetchedPressReleasesRef.current = JSON.stringify(formatted);
-          localStorage.setItem(`anchor_cache_press_y${selectedYear}`, JSON.stringify(formatted));
+          safeSetLocalStorage(`anchor_cache_press_y${selectedYear}`, JSON.stringify(formatted), selectedYear);
         } else {
           setPressReleases([]);
           fetchedPressReleasesRef.current = "[]";
@@ -3946,19 +3979,11 @@ export default function App() {
     // 위 두 경우(최초 페이지 마운트, 연도 전환 직후, 혹은 단순한 화면 기동)에는 Supabase DB로의 불필요한 역-업로드(덮어쓰기 오염)를 스킵합니다.
     const currentCleanStr = JSON.stringify(getCleanProjectsForStorage(projects));
     if (!fetchedProjectsRef.current || fetchedProjectsRef.current === currentCleanStr) {
-      try {
-        localStorage.setItem(`anchor_cache_proj_y${selectedYear}`, currentCleanStr);
-      } catch (e) {
-        console.warn("Storage Quota exceeded for cached project data, bypassing...", e);
-      }
+      safeSetLocalStorage(`anchor_cache_proj_y${selectedYear}`, currentCleanStr, selectedYear);
       return;
     }
 
-    try {
-      localStorage.setItem(`anchor_cache_proj_y${selectedYear}`, currentCleanStr);
-    } catch (e) {
-      console.warn("Storage Quota exceeded for cached project data, bypassing...", e);
-    }
+    safeSetLocalStorage(`anchor_cache_proj_y${selectedYear}`, currentCleanStr, selectedYear);
     setSyncStatus("syncing");
     const timer = setTimeout(async () => {
       try {
@@ -4116,7 +4141,7 @@ export default function App() {
     const currentYearPress = pressReleases.filter(s => getCalculatedYearFromDate(s.broadcastDate) === selectedYear);
 
     // 로컬스토리지에는 현재 연차 보도자료 저장
-    localStorage.setItem(`anchor_cache_press_y${selectedYear}`, JSON.stringify(currentYearPress));
+    safeSetLocalStorage(`anchor_cache_press_y${selectedYear}`, JSON.stringify(currentYearPress), selectedYear);
     setSyncStatus("syncing");
 
     const formatToPostgresTimestamp = (dateStr) => {
@@ -4181,7 +4206,7 @@ export default function App() {
                 const cachedPressList = cachedPressStr ? JSON.parse(cachedPressStr) : [];
                 if (!cachedPressList.some(p => p.title === item.title && p.broadcastDate === item.broadcastDate)) {
                   const updatedCache = [item, ...cachedPressList];
-                  localStorage.setItem(`anchor_cache_press_y${targetYear}`, JSON.stringify(updatedCache));
+                  safeSetLocalStorage(`anchor_cache_press_y${targetYear}`, JSON.stringify(updatedCache), targetYear);
                 }
               } catch (cacheErr) {
                 console.warn("Failed to update target year cache:", cacheErr);
@@ -4290,7 +4315,7 @@ export default function App() {
     if (!unifiedCertificates || unifiedCertificates.length === 0) return;
     try {
       const clean = unifiedCertificates.map(item => ({ ...item, fileData: null }));
-      localStorage.setItem("anchor_cache_unified_certificates_all", JSON.stringify(clean));
+      safeSetLocalStorage("anchor_cache_unified_certificates_all", JSON.stringify(clean), selectedYear);
     } catch (e) {
       console.warn("Failed to write unified certificates cache:", e);
     }
@@ -4342,7 +4367,7 @@ export default function App() {
     if (!scholarships || scholarships.length === 0) return;
     try {
       const clean = scholarships.map(item => ({ ...item }));
-      localStorage.setItem("anchor_cache_scholarships_all", JSON.stringify(clean));
+      safeSetLocalStorage("anchor_cache_scholarships_all", JSON.stringify(clean), selectedYear);
     } catch (e) {
       console.warn("Failed to write scholarships cache:", e);
     }
@@ -4392,7 +4417,7 @@ export default function App() {
     // 💡 안전 가드: 데이터가 없거나 로딩 중 꼬였을 때 DB 데이터를 지워버리는 대형 사고 방지
     if (!envData || envData.length === 0) return;
 
-    localStorage.setItem(`anchor_cache_env_y${selectedYear}`, JSON.stringify(envData));
+    safeSetLocalStorage(`anchor_cache_env_y${selectedYear}`, JSON.stringify(envData), selectedYear);
     setSyncStatus("syncing");
     const timer = setTimeout(async () => {
       try {
@@ -4496,7 +4521,7 @@ export default function App() {
     // 💡 안전 가드: 데이터가 없거나 로딩 중 꼬였을 때 DB 데이터를 지워버리는 대형 사고 방지
     if (!equipData || equipData.length === 0) return;
 
-    localStorage.setItem(`anchor_cache_equip_y${selectedYear}`, JSON.stringify(equipData));
+    safeSetLocalStorage(`anchor_cache_equip_y${selectedYear}`, JSON.stringify(equipData), selectedYear);
     setSyncStatus("syncing");
     const timer = setTimeout(async () => {
       try {
@@ -4577,7 +4602,7 @@ export default function App() {
     // 💡 안전 가드: 데이터가 없거나 로딩 중 꼬였을 때 DB 데이터를 지워버리는 대형 사고 방지
     if (!serviceData || serviceData.length === 0) return;
 
-    localStorage.setItem(`anchor_cache_serv_y${selectedYear}`, JSON.stringify(serviceData));
+    safeSetLocalStorage(`anchor_cache_serv_y${selectedYear}`, JSON.stringify(serviceData), selectedYear);
     setSyncStatus("syncing");
     const timer = setTimeout(async () => {
       try {
@@ -4684,7 +4709,7 @@ export default function App() {
       return;
     }
 
-    localStorage.setItem(`anchor_cache_month_y${selectedYear}`, JSON.stringify(monthlySchedules));
+    safeSetLocalStorage(`anchor_cache_month_y${selectedYear}`, JSON.stringify(monthlySchedules), selectedYear);
     setSyncStatus("syncing");
     const timer = setTimeout(async () => {
       try {
@@ -4722,7 +4747,7 @@ export default function App() {
     if (!currentUser || currentRole?.id === "GUEST") return;
     // 💡 안전 가드: 데이터 로딩이 완료되지 않았거나 일시적 통신 지연 시 빈 배열([])이 원격 DB를 덮어쓰는 사고 방지
     if (!eventSchedules || eventSchedules.length === 0) return;
-    localStorage.setItem(`anchor_cache_event_y${selectedYear}`, JSON.stringify(eventSchedules));
+    safeSetLocalStorage(`anchor_cache_event_y${selectedYear}`, JSON.stringify(eventSchedules), selectedYear);
     setSyncStatus("syncing");
     const timer = setTimeout(async () => {
       try {
@@ -4759,7 +4784,7 @@ export default function App() {
     if (!currentUser || currentRole?.id === "GUEST") return;
     // 💡 안전 가드: 데이터 로딩이 완료되지 않았거나 일시적 통신 지연 시 빈 배열([])이 원격 DB를 덮어쓰는 사고 방지
     if (!meetingSchedules || meetingSchedules.length === 0) return;
-    localStorage.setItem(`anchor_cache_meet_y${selectedYear}`, JSON.stringify(meetingSchedules));
+    safeSetLocalStorage(`anchor_cache_meet_y${selectedYear}`, JSON.stringify(meetingSchedules), selectedYear);
     setSyncStatus("syncing");
     const timer = setTimeout(async () => {
       try {
