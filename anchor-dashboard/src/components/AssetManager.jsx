@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { supabase } from "../supabaseClient";
 import { Plus, Trash2, Edit2, Calendar, Clipboard, CheckCircle, AlertTriangle, Search, Home, Laptop, Check, Clock, TrendingUp } from "lucide-react";
 
-export default function AssetManager({ currentRole, currentUser, activeSubTab, onChangeSubTab }) {
+export default function AssetManager({ currentRole, currentUser, activeSubTab, onChangeSubTab, darkMode }) {
   // 공통 로딩 상태
   const [loading, setLoading] = useState(false);
 
@@ -52,6 +52,11 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
     start_time: "",
     end_time: ""
   });
+
+  // 💡 [교육용 한글 주석] 캘린더 렌더링에 사용되는 년, 월, 선택된 날짜 상태변수를 주입합니다.
+  const [currentYear, setCurrentYear] = useState(() => new Date().getFullYear());
+  const [currentMonth, setCurrentMonth] = useState(() => new Date().getMonth());
+  const [selectedCalendarDate, setSelectedCalendarDate] = useState(() => new Date().toISOString().split("T")[0]);
 
   // 공간 예약 목록 로드
   const fetchReservations = async () => {
@@ -756,158 +761,315 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
       {/* 탭 1: 교육환경 관리 */}
       {/* ============================================================================ */}
       {activeSubTab === "education_env" && (
-        <div>
-          {/* 공간 선택 카드 리스트 */}
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: "0.75rem", marginBottom: "1.25rem" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "220px 1fr", gap: "1.25rem", alignItems: "start" }}>
+          
+          {/* 🏫 좌측: 시설 리스트 (세로 배열) */}
+          <div style={{ display: "flex", flexDirection: "column", gap: "0.6rem", background: "var(--panel-bg)", border: "1px solid var(--border-color)", borderRadius: "8px", padding: "0.75rem" }}>
+            <h3 style={{ fontSize: "0.8rem", fontWeight: "800", color: "var(--text-primary)", marginBottom: "0.25rem", borderBottom: "1px solid var(--border-color)", paddingBottom: "0.5rem" }}>
+              🏫 교육 시설 목록
+            </h3>
             {SPACES.map((space) => {
               const count = reservations.filter(r => r.space_name === space && r.status === "승인대기").length;
               const isSelected = selectedSpace === space;
+              
+              // 💡 [교육용 한글 주석] 라이트 모드와 다크 모드에 맞는 대기 뱃지의 오렌지색 선명도 및 배경색을 설정합니다.
+              const badgeBg = count > 0 
+                ? (darkMode ? "rgba(249, 115, 22, 0.2)" : "rgba(234, 88, 12, 0.15)") 
+                : (darkMode ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.05)");
+              
+              const badgeColor = count > 0 
+                ? (darkMode ? "#FB923C" : "#C2410C") 
+                : (darkMode ? "#94A3B8" : "#64748B");
+
               return (
                 <div
                   key={space}
-                  onClick={() => setSelectedSpace(space)}
+                  onClick={() => {
+                    setSelectedSpace(space);
+                  }}
                   style={{
-                    padding: "0.85rem",
-                    background: isSelected ? "rgba(139, 92, 246, 0.12)" : "var(--panel-bg)",
-                    border: `1px solid ${isSelected ? "var(--accent-color)" : "var(--border-color)"}`,
-                    borderRadius: "8px",
+                    padding: "0.75rem",
+                    background: isSelected ? "rgba(139, 92, 246, 0.12)" : "transparent",
+                    border: `1px solid ${isSelected ? "var(--accent-color)" : "transparent"}`,
+                    borderRadius: "6px",
                     cursor: "pointer",
                     transition: "all 0.15s ease",
-                    position: "relative",
-                    boxShadow: isSelected ? "0 4px 12px rgba(139, 92, 246, 0.15)" : "none"
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "0.35rem"
                   }}
                 >
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                    <Calendar size={18} style={{ color: isSelected ? "var(--accent-color)" : "var(--text-secondary)" }} />
-                    <span style={{ fontSize: "0.6rem", background: "rgba(255,255,255,0.06)", padding: "0.1rem 0.35rem", borderRadius: "4px", color: "#FBBF24", fontWeight: "700" }}>
+                    <span style={{ fontSize: "0.75rem", fontWeight: isSelected ? "800" : "500", color: isSelected ? "var(--text-primary)" : "var(--text-secondary)" }}>
+                      {space}
+                    </span>
+                    <span style={{ fontSize: "0.58rem", background: badgeBg, padding: "0.1rem 0.3rem", borderRadius: "3px", color: badgeColor, fontWeight: "700" }}>
                       대기 {count}건
                     </span>
                   </div>
-                  <h4 style={{ fontSize: "0.75rem", fontWeight: "800", marginTop: "0.5rem", color: isSelected ? "var(--text-primary)" : "var(--text-secondary)" }}>
-                    {space}
-                  </h4>
                 </div>
               );
             })}
           </div>
 
-          {/* 해당 공간 예약 일정 현황판 */}
-          <div style={{ background: "var(--panel-bg)", border: "1px solid var(--border-color)", borderRadius: "8px", padding: "1rem" }}>
-            <h3 style={{ fontSize: "0.82rem", fontWeight: "700", color: "#a78bfa", borderBottom: "1px solid var(--border-color)", paddingBottom: "0.5rem", marginBottom: "0.75rem", display: "flex", alignItems: "center", gap: "0.25rem" }}>
-              ⚡ {selectedSpace} 예약 신청 현황
-            </h3>
+          {/* 📅 우측: 달력(Calendar) 및 예약 세부 현황 */}
+          <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+            
+            {/* 1. 월간 캘린더 판넬 */}
+            <div style={{ background: "var(--panel-bg)", border: "1px solid var(--border-color)", borderRadius: "8px", padding: "1rem" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.85rem" }}>
+                <h3 style={{ fontSize: "0.85rem", fontWeight: "800", color: "var(--accent-color)", display: "flex", alignItems: "center", gap: "0.3rem" }}>
+                  <Calendar size={18} /> 📅 {selectedSpace} 예약 월간 현황
+                </h3>
+                
+                {/* 년/월 제어 바 */}
+                <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                  <button
+                    onClick={() => {
+                      if (currentMonth === 0) {
+                        setCurrentMonth(11);
+                        setCurrentYear(prev => prev - 1);
+                      } else {
+                        setCurrentMonth(prev => prev - 1);
+                      }
+                    }}
+                    style={{ padding: "0.2rem 0.4rem", fontSize: "0.7rem", border: "1px solid var(--border-color)", borderRadius: "4px", background: "transparent", color: "var(--text-primary)", cursor: "pointer" }}
+                  >
+                    이전달
+                  </button>
+                  <span style={{ fontSize: "0.78rem", fontWeight: "800", fontFamily: "var(--font-data)", minWidth: "75px", textAlign: "center" }}>
+                    {currentYear}년 {currentMonth + 1}월
+                  </span>
+                  <button
+                    onClick={() => {
+                      if (currentMonth === 11) {
+                        setCurrentMonth(0);
+                        setCurrentYear(prev => prev + 1);
+                      } else {
+                        setCurrentMonth(prev => prev + 1);
+                      }
+                    }}
+                    style={{ padding: "0.2rem 0.4rem", fontSize: "0.7rem", border: "1px solid var(--border-color)", borderRadius: "4px", background: "transparent", color: "var(--text-primary)", cursor: "pointer" }}
+                  >
+                    다음달
+                  </button>
+                </div>
+              </div>
 
-            {loading ? (
-              <div style={{ textAlign: "center", padding: "2rem", color: "var(--text-secondary)", fontSize: "0.75rem" }}>데이터 로드 중...</div>
-            ) : reservations.filter(r => r.space_name === selectedSpace).length === 0 ? (
-              <div style={{ textAlign: "center", padding: "2.5rem", color: "var(--text-secondary)", fontSize: "0.75rem" }}>
-                등록된 예약 신청 내역이 없습니다. 새로운 예약을 추가해 보세요.
+              {/* 달력 그리드 헤더 (요일) */}
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", textAlign: "center", fontSize: "0.68rem", fontWeight: "800", borderBottom: "1px solid var(--border-color)", paddingBottom: "0.4rem", marginBottom: "0.4rem", color: "var(--text-secondary)" }}>
+                <div style={{ color: "#EF4444" }}>일</div>
+                <div>월</div>
+                <div>화</div>
+                <div>수</div>
+                <div>목</div>
+                <div>금</div>
+                <div style={{ color: "#60A5FA" }}>토</div>
               </div>
-            ) : (
-              <div style={{ overflowX: "auto" }}>
-                <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.75rem", textAlign: "left" }}>
-                  <thead>
-                    <tr style={{ borderBottom: "1px solid var(--border-color)", color: "var(--text-secondary)" }}>
-                      <th style={{ padding: "0.5rem" }}>예약일자</th>
-                      <th style={{ padding: "0.5rem" }}>사용시간</th>
-                      <th style={{ padding: "0.5rem" }}>신청부서</th>
-                      <th style={{ padding: "0.5rem" }}>신청자 (대행)</th>
-                      <th style={{ padding: "0.5rem" }}>사용 목적</th>
-                      <th style={{ padding: "0.5rem", textAlign: "center" }}>결재 상태</th>
-                      <th style={{ padding: "0.5rem", textAlign: "center" }}>일정 조정</th>
-                      <th style={{ padding: "0.5rem", textAlign: "center" }}>취소/반려</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {reservations
-                      .filter((r) => r.space_name === selectedSpace)
-                      .map((res) => {
-                        const isPending = res.status === "승인대기" || !res.status;
-                        return (
-                          <tr key={res.id} style={{ borderBottom: "1px solid rgba(255,255,255,0.03)", transition: "background 0.1s ease" }}>
-                            <td style={{ padding: "0.5rem", fontWeight: "700" }}>{res.reserved_date}</td>
-                            <td style={{ padding: "0.5rem", color: "#60A5FA", fontWeight: "700" }}>
-                              ⏱️ {res.start_time.substring(0, 5)} ~ {res.end_time.substring(0, 5)}
-                            </td>
-                            <td style={{ padding: "0.5rem" }}>{res.dept}</td>
-                            <td style={{ padding: "0.5rem" }}>{res.reserver_name}</td>
-                            <td style={{ padding: "0.5rem", color: "var(--text-secondary)" }}>{res.purpose || "-"}</td>
-                            <td style={{ padding: "0.5rem", textAlign: "center" }}>
-                              {isPending ? (
-                                <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem", alignItems: "center" }}>
-                                  <span style={{ padding: "0.15rem 0.4rem", borderRadius: "4px", background: "rgba(251, 191, 36, 0.15)", border: "1px solid rgba(251, 191, 36, 0.3)", color: "#FBBF24", fontSize: "0.62rem", fontWeight: "800" }}>
-                                    승인대기
+
+              {/* 달력 날짜 타일 */}
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: "2px" }}>
+                {(() => {
+                  const firstDayIndex = new Date(currentYear, currentMonth, 1).getDay();
+                  const numDays = new Date(currentYear, currentMonth + 1, 0).getDate();
+                  const totalSlots = [];
+                  
+                  // 이전달 빈칸
+                  for (let i = 0; i < firstDayIndex; i++) {
+                    totalSlots.push(null);
+                  }
+                  // 이번달 날짜
+                  for (let d = 1; d <= numDays; d++) {
+                    totalSlots.push(d);
+                  }
+
+                  return totalSlots.map((day, idx) => {
+                    if (day === null) {
+                      return <div key={`empty-${idx}`} style={{ minHeight: "52px", background: "rgba(255,255,255,0.01)" }}></div>;
+                    }
+
+                    const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+                    const dayReservations = reservations.filter(r => r.space_name === selectedSpace && r.reserved_date === dateStr);
+                    const pendingCount = dayReservations.filter(r => r.status === "승인대기").length;
+                    const approvedCount = dayReservations.filter(r => r.status === "승인완료").length;
+                    const isSelected = selectedCalendarDate === dateStr;
+
+                    const isSunday = idx % 7 === 0;
+                    const isSaturday = idx % 7 === 6;
+
+                    // 💡 [교육용 한글 주석] 라이트/다크 모드별 대기 뱃지의 오렌지색 선명도 및 배경색 설정
+                    const pendingBadgeBg = pendingCount > 0 
+                      ? (darkMode ? "rgba(249, 115, 22, 0.2)" : "rgba(234, 88, 12, 0.15)") 
+                      : "transparent";
+                    const pendingBadgeColor = pendingCount > 0 
+                      ? (darkMode ? "#FB923C" : "#C2410C") 
+                      : "transparent";
+
+                    return (
+                      <div
+                        key={`day-${day}`}
+                        onClick={() => setSelectedCalendarDate(dateStr)}
+                        style={{
+                          minHeight: "52px",
+                          padding: "0.3rem",
+                          background: isSelected 
+                            ? "rgba(139, 92, 246, 0.1)" 
+                            : (dayReservations.length > 0 ? "rgba(255,255,255,0.03)" : "transparent"),
+                          border: `1px solid ${isSelected ? "var(--accent-color)" : "rgba(255,255,255,0.05)"}`,
+                          borderRadius: "4px",
+                          cursor: "pointer",
+                          transition: "all 0.12s ease",
+                          display: "flex",
+                          flexDirection: "column",
+                          justifyContent: "space-between"
+                        }}
+                      >
+                        {/* 날짜 숫자 */}
+                        <span style={{
+                          fontSize: "0.68rem",
+                          fontWeight: "800",
+                          fontFamily: "var(--font-data)",
+                          color: isSunday ? "#F87171" : (isSaturday ? "#60A5FA" : "var(--text-primary)")
+                        }}>
+                          {day}
+                        </span>
+
+                        {/* 예약 상태 미니 시각화 */}
+                        <div style={{ display: "flex", flexDirection: "column", gap: "0.15rem", marginTop: "0.25rem" }}>
+                          {approvedCount > 0 && (
+                            <span style={{
+                              fontSize: "0.58rem",
+                              background: "rgba(16, 185, 129, 0.15)",
+                              color: "#34D399",
+                              padding: "0.05rem 0.2rem",
+                              borderRadius: "2px",
+                              fontWeight: "700",
+                              textAlign: "center",
+                              whiteSpace: "nowrap",
+                              overflow: "hidden",
+                              textOverflow: "ellipsis"
+                            }}>
+                              확정 {approvedCount}
+                            </span>
+                          )}
+                          {pendingCount > 0 && (
+                            <span style={{
+                              fontSize: "0.58rem",
+                              background: pendingBadgeBg,
+                              color: pendingBadgeColor,
+                              padding: "0.05rem 0.2rem",
+                              borderRadius: "2px",
+                              fontWeight: "700",
+                              textAlign: "center",
+                              whiteSpace: "nowrap",
+                              overflow: "hidden",
+                              textOverflow: "ellipsis"
+                            }}>
+                              대기 {pendingCount}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  });
+                })()}
+              </div>
+            </div>
+
+            {/* 2. 하단: 선택된 날짜의 세부 예약 테이블 */}
+            <div style={{ background: "var(--panel-bg)", border: "1px solid var(--border-color)", borderRadius: "8px", padding: "1rem" }}>
+              <h3 style={{ fontSize: "0.82rem", fontWeight: "700", color: "#a78bfa", borderBottom: "1px solid var(--border-color)", paddingBottom: "0.5rem", marginBottom: "0.75rem", display: "flex", alignItems: "center", gap: "0.25rem" }}>
+                ⚡ [{selectedCalendarDate}] 예약 현황 목록 ({selectedSpace})
+              </h3>
+
+              {loading ? (
+                <div style={{ textAlign: "center", padding: "2rem", color: "var(--text-secondary)", fontSize: "0.75rem" }}>데이터 로드 중...</div>
+              ) : reservations.filter(r => r.space_name === selectedSpace && r.reserved_date === selectedCalendarDate).length === 0 ? (
+                <div style={{ textAlign: "center", padding: "2.5rem", color: "var(--text-secondary)", fontSize: "0.75rem" }}>
+                  선택하신 일자({selectedCalendarDate})에 등록된 대여/예약 내역이 없습니다.
+                </div>
+              ) : (
+                <div style={{ overflowX: "auto" }}>
+                  <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.75rem", textAlign: "left" }}>
+                    <thead>
+                      <tr style={{ borderBottom: "1px solid var(--border-color)", color: "var(--text-secondary)" }}>
+                        <th style={{ padding: "0.5rem" }}>사용시간</th>
+                        <th style={{ padding: "0.5rem" }}>신청부서</th>
+                        <th style={{ padding: "0.5rem" }}>신청자 (대행)</th>
+                        <th style={{ padding: "0.5rem" }}>사용 목적</th>
+                        <th style={{ padding: "0.5rem", textAlign: "center" }}>결재 상태</th>
+                        <th style={{ padding: "0.5rem", textAlign: "center" }}>취소/반려</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {reservations
+                        .filter((r) => r.space_name === selectedSpace && r.reserved_date === selectedCalendarDate)
+                        .map((res) => {
+                          const isPending = res.status === "승인대기" || !res.status;
+                          return (
+                            <tr key={res.id} style={{ borderBottom: "1px solid rgba(255,255,255,0.03)", transition: "background 0.1s ease" }}>
+                              <td style={{ padding: "0.5rem", color: "#60A5FA", fontWeight: "700" }}>
+                                ⏱️ {res.start_time.substring(0, 5)} ~ {res.end_time.substring(0, 5)}
+                              </td>
+                              <td style={{ padding: "0.5rem" }}>{res.dept}</td>
+                              <td style={{ padding: "0.5rem" }}>{res.reserver_name}</td>
+                              <td style={{ padding: "0.5rem", color: "var(--text-secondary)" }}>{res.purpose || "-"}</td>
+                              <td style={{ padding: "0.5rem", textAlign: "center" }}>
+                                {isPending ? (
+                                  <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem", alignItems: "center" }}>
+                                    <span style={{ padding: "0.15rem 0.4rem", borderRadius: "4px", background: "rgba(251, 191, 36, 0.15)", border: "1px solid rgba(251, 191, 36, 0.3)", color: "#FBBF24", fontSize: "0.62rem", fontWeight: "800" }}>
+                                      승인대기
+                                    </span>
+                                    {isApprover(currentRole) && (
+                                      <button
+                                        onClick={() => handleApproveReservation(res)}
+                                        style={{
+                                          marginTop: "0.2rem",
+                                          padding: "0.2rem 0.5rem",
+                                          background: "linear-gradient(135deg, #10B981 0%, #059669 100%)",
+                                          color: "white",
+                                          border: "none",
+                                          borderRadius: "4px",
+                                          fontSize: "0.6rem",
+                                          fontWeight: "800",
+                                          cursor: "pointer",
+                                          display: "flex",
+                                          alignItems: "center",
+                                          gap: "0.1rem"
+                                        }}
+                                      >
+                                        <Check size={10} /> 승인
+                                      </button>
+                                    )}
+                                  </div>
+                                ) : (
+                                  <span style={{ padding: "0.15rem 0.4rem", borderRadius: "4px", background: "rgba(16, 185, 129, 0.15)", border: "1px solid rgba(16, 185, 129, 0.3)", color: "#34D399", fontSize: "0.62rem", fontWeight: "800" }}>
+                                    승인완료
                                   </span>
-                                  {isApprover(currentRole) && (
-                                    <button
-                                      onClick={() => handleApproveReservation(res)}
-                                      style={{
-                                        marginTop: "0.2rem",
-                                        padding: "0.2rem 0.5rem",
-                                        background: "linear-gradient(135deg, #10B981 0%, #059669 100%)",
-                                        color: "white",
-                                        border: "none",
-                                        borderRadius: "4px",
-                                        fontSize: "0.6rem",
-                                        fontWeight: "800",
-                                        cursor: "pointer",
-                                        display: "flex",
-                                        alignItems: "center",
-                                        gap: "0.1rem"
-                                      }}
-                                    >
-                                      <Check size={10} /> 승인
-                                    </button>
-                                  )}
-                                </div>
-                              ) : (
-                                <span style={{ padding: "0.15rem 0.4rem", borderRadius: "4px", background: "rgba(16, 185, 129, 0.15)", border: "1px solid rgba(16, 185, 129, 0.3)", color: "#34D399", fontSize: "0.62rem", fontWeight: "800" }}>
-                                  승인완료
-                                </span>
-                              )}
-                            </td>
-                            <td style={{ padding: "0.5rem", textAlign: "center" }}>
-                              {isApprover(currentRole) ? (
-                                <button
-                                  onClick={() => handleOpenEditTime(res)}
-                                  style={{
-                                    background: "none",
-                                    border: "none",
-                                    color: "#60A5FA",
-                                    cursor: "pointer",
-                                    display: "inline-flex",
-                                    alignItems: "center",
-                                    gap: "0.1rem"
-                                  }}
-                                  title="예약 일시 수정 권한"
-                                >
-                                  <Edit2 size={13} />
-                                  <span style={{ fontSize: "0.6rem" }}>조정</span>
-                                </button>
-                              ) : (
-                                <span style={{ color: "var(--text-secondary)", fontSize: "0.65rem" }}>권한없음</span>
-                              )}
-                            </td>
-                            <td style={{ padding: "0.5rem", textAlign: "center" }}>
-                              {canCancelOrReject(res) ? (
-                                <button
-                                  onClick={() => handleDeleteReservation(res.id)}
-                                  style={{ background: "none", border: "none", color: "#F87171", cursor: "pointer" }}
-                                  title="예약 취소 / 반려"
-                                >
-                                  <Trash2 size={14} />
-                                </button>
-                              ) : (
-                                <span style={{ color: "var(--text-secondary)", fontSize: "0.65rem" }}>권한없음</span>
-                              )}
-                            </td>
-                          </tr>
-                        );
-                      })}
-                  </tbody>
-                </table>
-              </div>
-            )}
+                                )}
+                              </td>
+                              <td style={{ padding: "0.5rem", textAlign: "center" }}>
+                                {canCancelOrReject(res) ? (
+                                  <button
+                                    onClick={() => handleDeleteReservation(res.id)}
+                                    style={{ background: "none", border: "none", color: "#F87171", cursor: "pointer" }}
+                                    title="예약 취소 / 반려"
+                                  >
+                                    <Trash2 size={14} />
+                                  </button>
+                                ) : (
+                                  <span style={{ color: "var(--text-secondary)", fontSize: "0.65rem" }}>권한없음</span>
+                                )}
+                              </td>
+                            </tr>
+                          );
+                        })}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+
           </div>
         </div>
       )}

@@ -23,7 +23,7 @@ import ScheduleManager from "./components/ScheduleManager";
 import AssetManager from "./components/AssetManager";
 import UnitSystemView from "./components/UnitSystemView";
 import { initialProjectsData, userRoles, YEAR_1_PROGRAMS, Y1_UNIT_META } from "./data/mockData";
-import { Sun, Moon, LogOut, HelpCircle, ArrowUpRight, Lock as LockIcon, Info } from "lucide-react";
+import { Sun, Moon, LogOut, HelpCircle, ArrowUpRight, Lock as LockIcon, Info, Clock, Edit2 } from "lucide-react";
 import { supabase } from "./supabaseClient";
 import CryptoJS from "crypto-js";
 import * as XLSX from "xlsx";
@@ -2346,6 +2346,15 @@ export default function App() {
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [approvalsTab, setApprovalsTab] = useState("budget");
   const [reservations, setReservations] = useState([]);
+  
+  // 💡 [교육용 한글 주석] 승인자 전용의 공간 예약 일시 조율용 상태변수들입니다.
+  const [isEditTimeModalOpen, setIsEditTimeModalOpen] = useState(false);
+  const [editingRes, setEditingRes] = useState(null);
+  const [editResFormData, setEditResFormData] = useState({
+    reserved_date: "",
+    start_time: "",
+    end_time: ""
+  });
   const [darkMode, setDarkMode] = useState(() => {
     const saved = localStorage.getItem("anchor_dark_mode");
     return saved !== null ? JSON.parse(saved) : true;
@@ -6423,6 +6432,76 @@ export default function App() {
     }
   };
 
+  // 💡 [교육용 한글 주석] 승인자 전용의 예약 일시 수정/조정 모달을 기동하는 함수입니다.
+  const handleOpenEditTime = (res) => {
+    setEditingRes(res);
+    setEditResFormData({
+      reserved_date: res.reserved_date,
+      start_time: res.start_time.substring(0, 5),
+      end_time: res.end_time.substring(0, 5)
+    });
+    setIsEditTimeModalOpen(true);
+  };
+
+  // 💡 [교육용 한글 주석] 승인자가 조정한 예약을 충돌검증 후 DB에 영구 저장하는 함수입니다.
+  const handleSaveEditedTime = async (e) => {
+    if (e) e.preventDefault();
+
+    const isTimeOverlapping = (newStart, newEnd, existStart, existEnd) => {
+      const parseTimeToMinutes = (t) => {
+        const parts = t.split(":");
+        return parseInt(parts[0], 10) * 60 + parseInt(parts[1] || 0, 10);
+      };
+      const ns = parseTimeToMinutes(newStart);
+      const ne = parseTimeToMinutes(newEnd);
+      const es = parseTimeToMinutes(existStart);
+      const ee = parseTimeToMinutes(existEnd);
+      return ns < ee && ne > es;
+    };
+
+    if (editResFormData.start_time >= editResFormData.end_time) {
+      alert("⚠️ 종료 시간은 시작 시간보다 늦어야 합니다.");
+      return;
+    }
+
+    // 중복 시간 겹침 엄격 검증
+    const duplicate = reservations.find((r) => {
+      return (
+        r.id !== editingRes.id &&
+        r.status === "승인완료" &&
+        r.space_name === editingRes.space_name &&
+        r.reserved_date === editResFormData.reserved_date &&
+        isTimeOverlapping(editResFormData.start_time, editResFormData.end_time, r.start_time, r.end_time)
+      );
+    });
+
+    if (duplicate) {
+      alert(
+        `⚠️ 변경 불가: 수정하려는 시간대에 이미 승인완료된 다른 예약이 선점되어 있습니다.\n(승인 확정된 예약: ${duplicate.dept} - ${duplicate.reserver_name} / ${duplicate.start_time.substring(0, 5)}~${duplicate.end_time.substring(0, 5)})`
+      );
+      return;
+    }
+
+    try {
+      const { error } = await supabase
+        .from("asset_reservations")
+        .update({
+          reserved_date: editResFormData.reserved_date,
+          start_time: editResFormData.start_time,
+          end_time: editResFormData.end_time
+        })
+        .eq("id", editingRes.id);
+
+      if (error) throw error;
+      alert("✨ 예약 일시가 성공적으로 조정되었습니다.");
+      setIsEditTimeModalOpen(false);
+      setEditingRes(null);
+      fetchReservations();
+    } catch (err) {
+      alert("일시 조정 실패: " + err.message);
+    }
+  };
+
   const handleApproveRequest = async (req) => {
     try {
       const approverName = currentUser ? currentUser.name : "승인자";
@@ -8888,13 +8967,14 @@ export default function App() {
                                   <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap" }}>신청자</th>
                                   <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap" }}>사용목적</th>
                                   <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap" }}>결재 상태</th>
+                                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap" }}>일정 조정</th>
                                   <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap", width: "80px" }}>결재 처리</th>
                                 </tr>
                               </thead>
                               <tbody>
                                 {reservations.length === 0 ? (
                                   <tr>
-                                    <td colSpan="8" style={{ textAlign: "center", color: "var(--text-secondary)", padding: "2.5rem" }}>
+                                    <td colSpan="9" style={{ textAlign: "center", color: "var(--text-secondary)", padding: "2.5rem" }}>
                                       접수된 교육환경 공간 예약 승인 신청 문서가 없습니다.
                                     </td>
                                   </tr>
@@ -8911,6 +8991,26 @@ export default function App() {
                                         <span className={`badge ${res.status === "승인완료" ? "badge-green" : "badge-orange"}`} style={{ fontSize: "0.65rem" }}>
                                           {res.status || "승인대기"}
                                         </span>
+                                      </td>
+                                      <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle" }}>
+                                        <button
+                                          onClick={() => handleOpenEditTime(res)}
+                                          style={{
+                                            background: "none",
+                                            border: "none",
+                                            color: "#60A5FA",
+                                            cursor: "pointer",
+                                            display: "inline-flex",
+                                            alignItems: "center",
+                                            gap: "0.15rem",
+                                            fontSize: "0.65rem",
+                                            fontWeight: "800"
+                                          }}
+                                          title="예약 일시 수정 조율 권한"
+                                        >
+                                          <Edit2 size={12} />
+                                          <span>조정</span>
+                                        </button>
                                       </td>
                                       <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle" }}>
                                         <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem", alignItems: "center", justifyContent: "center", width: "100%" }}>
@@ -9180,6 +9280,92 @@ export default function App() {
             </div>
           );
         })()}
+
+        {/* ============================================================================ */}
+        {/* 💡 [교육용 한글 주석] 승인자 전용의 공간 예약 일시 조정/변경 모달 */}
+        {/* ============================================================================ */}
+        {isEditTimeModalOpen && editingRes && (
+          <div style={{
+            position: "fixed",
+            top: 0, left: 0, right: 0, bottom: 0,
+            background: "rgba(0, 0, 0, 0.75)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 9999
+          }}>
+            <div style={{
+              background: "var(--panel-bg, #1e293b)",
+              border: "1px solid var(--border-color)",
+              borderRadius: "10px",
+              width: "350px",
+              padding: "1.25rem",
+              boxShadow: "0 8px 32px rgba(0,0,0,0.5)"
+            }}>
+              <h3 style={{ fontSize: "0.9rem", fontWeight: "800", marginBottom: "0.85rem", color: "var(--accent-color)", display: "flex", alignItems: "center", gap: "0.3rem" }}>
+                <Clock size={18} /> ⏱️ 예약 일시 변경 (조율 권한)
+              </h3>
+              <p style={{ fontSize: "0.68rem", color: "var(--text-secondary)", marginBottom: "0.85rem" }}>
+                승인권자 권한으로 예약 신청 건의 사용 시간과 날짜를 조정합니다.
+              </p>
+
+              <form onSubmit={handleSaveEditedTime} style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+                <div>
+                  <label style={{ display: "block", fontSize: "0.72rem", color: "var(--text-secondary)", marginBottom: "0.2rem" }}>예약일자</label>
+                  <input
+                    type="date"
+                    value={editResFormData.reserved_date}
+                    onChange={(e) => setEditResFormData(prev => ({ ...prev, reserved_date: e.target.value }))}
+                    required
+                    style={{ width: "100%", padding: "0.45rem", background: "var(--panel-bg)", border: "1px solid var(--border-color)", borderRadius: "4px", color: "var(--text-primary)", fontSize: "0.75rem" }}
+                  />
+                </div>
+
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem" }}>
+                  <div>
+                    <label style={{ display: "block", fontSize: "0.72rem", color: "var(--text-secondary)", marginBottom: "0.2rem" }}>시작 시간</label>
+                    <input
+                      type="time"
+                      value={editResFormData.start_time}
+                      onChange={(e) => setEditResFormData(prev => ({ ...prev, start_time: e.target.value }))}
+                      required
+                      style={{ width: "100%", padding: "0.45rem", background: "var(--panel-bg)", border: "1px solid var(--border-color)", borderRadius: "4px", color: "var(--text-primary)", fontSize: "0.75rem" }}
+                    />
+                  </div>
+                  <div>
+                    <label style={{ display: "block", fontSize: "0.72rem", color: "var(--text-secondary)", marginBottom: "0.2rem" }}>종료 시간</label>
+                    <input
+                      type="time"
+                      value={editResFormData.end_time}
+                      onChange={(e) => setEditResFormData(prev => ({ ...prev, end_time: e.target.value }))}
+                      required
+                      style={{ width: "100%", padding: "0.45rem", background: "var(--panel-bg)", border: "1px solid var(--border-color)", borderRadius: "4px", color: "var(--text-primary)", fontSize: "0.75rem" }}
+                    />
+                  </div>
+                </div>
+
+                <div style={{ display: "flex", gap: "0.5rem", marginTop: "0.5rem" }}>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsEditTimeModalOpen(false);
+                      setEditingRes(null);
+                    }}
+                    style={{ flex: 1, padding: "0.45rem", background: "rgba(255,255,255,0.06)", border: "1px solid var(--border-color)", color: "var(--text-secondary)", borderRadius: "4px", fontSize: "0.75rem", cursor: "pointer", fontWeight: "700" }}
+                  >
+                    닫기
+                  </button>
+                  <button
+                    type="submit"
+                    style={{ flex: 1, padding: "0.45rem", background: "var(--accent-color)", border: "none", color: "white", borderRadius: "4px", fontSize: "0.75rem", cursor: "pointer", fontWeight: "700" }}
+                  >
+                    저장하기
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
 
         {/* 탭 개편: 반응형 사이드 2분할 레이아웃 및 목표치/실적 미니 표 */}
         {activeTab === "kpis" && (
@@ -9895,6 +10081,7 @@ export default function App() {
             currentUser={currentUser}
             activeSubTab={assetSubTab}
             onChangeSubTab={setAssetSubTab}
+            darkMode={darkMode}
           />
         )}
 
