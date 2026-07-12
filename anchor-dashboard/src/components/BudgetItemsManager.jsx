@@ -101,8 +101,8 @@ export default function BudgetItemsManager({ projects, currentRole, onUpdateBudg
     });
   });
   allUnits.sort((a, b) => {
-    if (a.id === "Common") return 1;
-    if (b.id === "Common") return -1;
+    if (a.id === "Common" || a.id === "X0") return 1;
+    if (b.id === "Common" || b.id === "X0") return -1;
     return a.id.localeCompare(b.id, undefined, { numeric: true, sensitivity: 'base' });
   });
 
@@ -153,7 +153,7 @@ export default function BudgetItemsManager({ projects, currentRole, onUpdateBudg
       { name: "AID-X지원센터", ids: ["B2"] },
       { name: "울산늘봄누리센터", ids: ["C2"] },
       { name: "신산업특화센터", ids: ["A1나"] },
-      { name: "사업운영팀", ids: ["Common"] }
+      { name: "사업운영팀", ids: ["X0", "Common"] }
     ];
 
   // 선택된 단위과제 및 프로젝트 제목 찾기 또는 전체사업 가상 유닛 빌드
@@ -227,7 +227,7 @@ export default function BudgetItemsManager({ projects, currentRole, onUpdateBudg
         setSelectedUnitId("A1");
       }
     } else {
-      if (selectedUnitId === "A1" || !["A1가", "A1나", "A2", "A3", "B1", "B3", "B4", "B2", "C2", "C1", "D1", "D2", "D3", "Common", "Total"].includes(selectedUnitId)) {
+      if (selectedUnitId === "A1" || !["A1가", "A1나", "A2", "A3", "B1", "B3", "B4", "B2", "C2", "C1", "D1", "D2", "D3", "X0", "Common", "Total"].includes(selectedUnitId)) {
         setSelectedUnitId("A1가");
       }
     }
@@ -505,7 +505,7 @@ export default function BudgetItemsManager({ projects, currentRole, onUpdateBudg
                         displaySpent = yr.spent_carry || 0;
                       }
                       const spentRate = displayBudget > 0 ? (displaySpent / displayBudget) * 100 : 0;
-                      const isCommon = u.id === "Common";
+                      const isCommon = u.id === "Common" || u.id === "X0";
                       const isSelected = selectedUnitId === u.id;
                       // 동일한 u.id가 두 개 부서(AID-X, 늘봄누리)에 복제될 수 있으므로 key는 부서명과 id의 조합으로 유니크하게 보장한다.
                       const keyStr = `${dept.name}-${u.id}`;

@@ -136,8 +136,8 @@ export default function ProgramProgressManager({ projects, selectedYear, onSelec
   ];
 
   const allUnits = projects.flatMap(p => p.units).sort((a, b) => {
-    if (a.id === "Common") return 1;
-    if (b.id === "Common") return -1;
+    if (a.id === "Common" || a.id === "X0") return 1;
+    if (b.id === "Common" || b.id === "X0") return -1;
     return a.id.localeCompare(b.id, undefined, { numeric: true, sensitivity: 'base' });
   });
   const [selectedUnitId, setSelectedUnitId] = useState(allUnits[0]?.id || "A1가");

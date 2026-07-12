@@ -293,8 +293,8 @@ export default function PDCAManager({
     });
   });
   allUnits.sort((a, b) => {
-    if (a.id === "Common") return 1;
-    if (b.id === "Common") return -1;
+    if (a.id === "Common" || a.id === "X0") return 1;
+    if (b.id === "Common" || b.id === "X0") return -1;
     return a.id.localeCompare(b.id, undefined, { numeric: true, sensitivity: 'base' });
   });
 
@@ -1258,7 +1258,7 @@ export default function PDCAManager({
               >
                 {allUnits.map((u) => (
                   <option key={u.id} value={u.id}>
-                    {u.id === "Common" ? "" : `${u.id}. `}{u.title}
+                    {u.id === "Common" || u.id === "X0" ? "" : `${u.id}. `}{u.title}
                   </option>
                 ))}
               </select>

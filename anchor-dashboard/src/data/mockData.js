@@ -2072,7 +2072,7 @@ export const initialProjectsData = [
     spent: 120000000,
     units: [
       {
-        id: "Common",
+        id: "X0",
         title: "공통경비",
         budget: 2933000000,
         spent: 120000000,

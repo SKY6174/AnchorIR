@@ -68,6 +68,10 @@ const PROGRAMS_BY_UNIT = {
   "Common": [
     { id: "COM-1", name: "앵커 사업단 공통 프로그램 기획 및 성과 관리" },
     { id: "COM-2", name: "전체 참여 과제 공유 워크숍 및 혁신 포럼" }
+  ],
+  "X0": [
+    { id: "COM-1", name: "앵커 사업단 공통 프로그램 기획 및 성과 관리" },
+    { id: "COM-2", name: "전체 참여 과제 공유 워크숍 및 혁신 포럼" }
   ]
 };
 
@@ -3907,7 +3911,7 @@ export default function ProcurementManager({
                           ? ["A1", "A2", "B1", "B2", "B3", "B4", "C1", "C2", "D1", "D2", "D3", "D4"].map(u => (
                               <option key={u} value={u}>{u} 과제</option>
                             ))
-                          : ["A1가", "A1나", "A2", "A3", "B1", "B2", "B3", "B4", "C1", "C2", "D1", "D2", "D3", "Common"].map(u => (
+                          : ["A1가", "A1나", "A2", "A3", "B1", "B2", "B3", "B4", "C1", "C2", "D1", "D2", "D3", "X0", "Common"].map(u => (
                               <option key={u} value={u}>{u} 과제</option>
                             ))
                         }
@@ -4131,7 +4135,7 @@ export default function ProcurementManager({
                           ? ["A1", "A2", "B1", "B2", "B3", "B4", "C1", "C2", "D1", "D2", "D3", "D4"].map(u => (
                               <option key={u} value={u}>{u} 과제</option>
                             ))
-                          : ["A1가", "A1나", "A2", "A3", "B1", "B2", "B3", "B4", "C1", "C2", "D1", "D2", "D3", "Common"].map(u => (
+                          : ["A1가", "A1나", "A2", "A3", "B1", "B2", "B3", "B4", "C1", "C2", "D1", "D2", "D3", "X0", "Common"].map(u => (
                               <option key={u} value={u}>{u} 과제</option>
                             ))
                         }
@@ -4627,7 +4631,7 @@ export default function ProcurementManager({
                           ? ["A1", "A2", "B1", "B2", "B3", "B4", "C1", "C2", "D1", "D2", "D3", "D4"].map(u => (
                               <option key={u} value={u}>{u} 과제</option>
                             ))
-                          : ["A1가", "A1나", "A2", "A3", "B1", "B2", "B3", "B4", "C1", "C2", "D1", "D2", "D3", "Common"].map(u => (
+                          : ["A1가", "A1나", "A2", "A3", "B1", "B2", "B3", "B4", "C1", "C2", "D1", "D2", "D3", "X0", "Common"].map(u => (
                               <option key={u} value={u}>{u} 과제</option>
                             ))
                         }

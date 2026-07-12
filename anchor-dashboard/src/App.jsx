@@ -7631,8 +7631,8 @@ export default function App() {
                     <tbody>
                       {displayProjects.flatMap((p) => p.units)
                         .sort((a, b) => {
-                          if (a.id === "Common") return 1;
-                          if (b.id === "Common") return -1;
+                          if (a.id === "Common" || a.id === "X0") return 1;
+                          if (b.id === "Common" || b.id === "X0") return -1;
                           return a.id.localeCompare(b.id, undefined, { numeric: true, sensitivity: 'base' });
                         })
                         .map((u) => {
@@ -7683,7 +7683,7 @@ export default function App() {
                               }}
                             >
                               <td style={{ fontWeight: "700", borderRight: "1px solid var(--border-color)" }}>
-                                {u.id === "Common" ? "" : `${u.id}. `}{u.title}
+                                {u.id === "Common" || u.id === "X0" ? "" : `${u.id}. `}{u.title}
                               </td>
                               <td style={{ fontFamily: "var(--font-data)", textAlign: "right", paddingRight: "1rem" }}>
                                 {formatToMillionWon(yData.budget_main)}
@@ -7704,7 +7704,7 @@ export default function App() {
                                   <span style={{ fontSize: "0.75rem", fontFamily: "var(--font-data)" }}>{rate.toFixed(1)}%</span>
                                 </div>
                               </td>
-                              {u.id === "Common" ? (
+                              {u.id === "Common" || u.id === "X0" ? (
                                 <>
                                   <td style={{ textAlign: "center" }}>-</td>
                                   <td style={{ textAlign: "center" }}>-</td>
@@ -8185,12 +8185,12 @@ export default function App() {
                       <option value="all" style={{ background: "var(--panel-bg)", color: "var(--text-primary)" }}>전체 단위과제</option>
                       {displayProjects.flatMap((p) => p.units)
                         .sort((a, b) => {
-                          if (a.id === "Common") return 1;
-                          if (b.id === "Common") return -1;
+                          if (a.id === "Common" || a.id === "X0") return 1;
+                          if (b.id === "Common" || b.id === "X0") return -1;
                           return a.id.localeCompare(b.id, undefined, { numeric: true, sensitivity: 'base' });
                         })
                         .map((u) => (
-                          <option key={u.id} value={u.id} style={{ background: "var(--panel-bg)", color: "var(--text-primary)" }}>{u.id === "Common" ? "" : `${u.id}. `}{u.title}</option>
+                          <option key={u.id} value={u.id} style={{ background: "var(--panel-bg)", color: "var(--text-primary)" }}>{u.id === "Common" || u.id === "X0" ? "" : `${u.id}. `}{u.title}</option>
                         ))}
                     </select>
                   </div>
@@ -8235,8 +8235,8 @@ export default function App() {
                       {displayProjects.flatMap((p) => p.units)
                         .filter((u) => assignFilterUnitId === "all" || u.id === assignFilterUnitId)
                         .sort((a, b) => {
-                          if (a.id === "Common") return 1;
-                          if (b.id === "Common") return -1;
+                          if (a.id === "Common" || a.id === "X0") return 1;
+                          if (b.id === "Common" || b.id === "X0") return -1;
                           return a.id.localeCompare(b.id, undefined, { numeric: true, sensitivity: 'base' });
                         })
                         .flatMap((u) => {
@@ -8259,7 +8259,7 @@ export default function App() {
 
                             return (
                               <tr key={prog.id}>
-                                <td style={{ fontWeight: "700" }}>{u.id === "Common" ? "공통경비" : `${u.id}. ${u.title}`}</td>
+                                <td style={{ fontWeight: "700" }}>{u.id === "Common" || u.id === "X0" ? "공통경비" : `${u.id}. ${u.title}`}</td>
                                 <td style={{ fontFamily: "var(--font-data)", fontWeight: "700" }}>{prog.id}</td>
                                 <td>{prog.title}</td>
                                 <td style={{ color: "var(--accent-color)", fontWeight: "700" }}>{dept}</td>
@@ -10348,8 +10348,8 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
 
   // ID 기준으로 정렬 (Common은 맨 마지막에 위치하도록 함)
   allUnits.sort((a, b) => {
-    if (a.id === "Common") return 1;
-    if (b.id === "Common") return -1;
+    if (a.id === "Common" || a.id === "X0") return 1;
+    if (b.id === "Common" || b.id === "X0") return -1;
     return a.id.localeCompare(b.id, undefined, { numeric: true, sensitivity: 'base' });
   });
 
@@ -10371,7 +10371,7 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
   // (1) 5개년 총괄 데이터 동적 계산 (단위: 백만원)
   // ----------------------------------------------------
   const TOTAL_INVESTMENT_5YEAR_DATA = allUnits.map((u) => {
-    const unitTitle = u.id === "Common" ? "공통운영경비" : `${u.id}. ${u.title}`;
+    const unitTitle = u.id === "Common" || u.id === "X0" ? "공통운영경비" : `${u.id}. ${u.title}`;
     
     // 연도별 예산 총액 (백만원 단위, {main, carry} 형태의 객체 반환)
     // 1~5차년도
@@ -10490,7 +10490,7 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
   // (3) 연차별 계획 (재원별) 데이터 동적 계산
   // ----------------------------------------------------
   const ANNUAL_INVESTMENT_DATA = allUnits.map((u) => {
-    const unitTitle = u.id === "Common" ? "공통운영경비" : `${u.id}. ${u.title}`;
+    const unitTitle = u.id === "Common" || u.id === "X0" ? "공통운영경비" : `${u.id}. ${u.title}`;
 
     let uNat = 0, uCity = 0, uExt = 0;
     u.programs.forEach((prog) => {
@@ -10664,11 +10664,11 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
                      onClick={() => hasCategories && toggleUnit(u.id)}
                      style={{ 
                        cursor: hasCategories ? "pointer" : "default", 
-                       background: u.id === "Common" ? "rgba(245, 158, 11, 0.08)" : "rgba(255,255,255,0.01)",
+                       background: u.id === "Common" || u.id === "X0" ? "rgba(245, 158, 11, 0.08)" : "rgba(255,255,255,0.01)",
                        fontWeight: "700" 
                      }}
                   >
-                    <td style={{ paddingLeft: "1.5rem", color: u.id === "Common" ? "#fbbf24" : "inherit", borderRight: "1.5px solid rgba(255, 255, 255, 0.2)", display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                    <td style={{ paddingLeft: "1.5rem", color: u.id === "Common" || u.id === "X0" ? "#fbbf24" : "inherit", borderRight: "1.5px solid rgba(255, 255, 255, 0.2)", display: "flex", alignItems: "center", gap: "0.5rem" }}>
                       {hasCategories && (
                         <span style={{ fontSize: "0.6rem", display: "inline-block", transform: isExpanded ? "rotate(90deg)" : "rotate(0deg)", transition: "transform 0.15s ease" }}>▶</span>
                       )}
@@ -10931,11 +10931,11 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
                       onClick={() => hasCategories && toggleUnit(u.id)}
                       style={{ 
                         cursor: hasCategories ? "pointer" : "default", 
-                        background: u.id === "Common" ? "rgba(245, 158, 11, 0.08)" : "rgba(255,255,255,0.01)",
+                        background: u.id === "Common" || u.id === "X0" ? "rgba(245, 158, 11, 0.08)" : "rgba(255,255,255,0.01)",
                         fontWeight: "700" 
                       }}
                     >
-                      <td style={{ paddingLeft: "1.5rem", color: u.id === "Common" ? "#fbbf24" : "inherit", borderRight: "1px solid rgba(255, 255, 255, 0.1)", display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                      <td style={{ paddingLeft: "1.5rem", color: u.id === "Common" || u.id === "X0" ? "#fbbf24" : "inherit", borderRight: "1px solid rgba(255, 255, 255, 0.1)", display: "flex", alignItems: "center", gap: "0.5rem" }}>
                         {hasCategories && (
                           <span style={{ fontSize: "0.6rem", display: "inline-block", transform: isExpanded ? "rotate(90deg)" : "rotate(0deg)", transition: "transform 0.15s ease" }}>▶</span>
                         )}
