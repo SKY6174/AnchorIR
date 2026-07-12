@@ -3424,16 +3424,27 @@ export default function App() {
     const cachedPress = localStorage.getItem(`anchor_cache_press_y${selectedYear}`);
 
     if (cachedProj) setProjects(migrateProgramIds(JSON.parse(cachedProj)));
+    else setProjects([]);
     if (cachedAgr) setAgreements(JSON.parse(cachedAgr));
+    else setAgreements([]);
     if (cachedUnifiedCert) setUnifiedCertificates(JSON.parse(cachedUnifiedCert));
+    else setUnifiedCertificates([]);
     if (cachedScholarships) setScholarships(JSON.parse(cachedScholarships));
+    else setScholarships([]);
     if (cachedEnv) setEnvData(JSON.parse(cachedEnv));
+    else setEnvData([]);
     if (cachedEquip) setEquipData(JSON.parse(cachedEquip));
+    else setEquipData([]);
     if (cachedServ) setServiceData(JSON.parse(cachedServ));
+    else setServiceData([]);
     if (cachedMonth) setMonthlySchedules(JSON.parse(cachedMonth));
+    else setMonthlySchedules([]);
     if (cachedEvent) setEventSchedules(JSON.parse(cachedEvent));
+    else setEventSchedules([]);
     if (cachedMeet) setMeetingSchedules(JSON.parse(cachedMeet));
+    else setMeetingSchedules([]);
     if (cachedPress) setPressReleases(JSON.parse(cachedPress));
+    else setPressReleases([]);
 
     if (cachedProj || cachedMonth) {
       setIsDbLoaded(true);
@@ -3897,10 +3908,12 @@ export default function App() {
             relatedDocs: x.related_docs || ""
           }));
           setEnvData(formatted);
+          fetchedEnvDataRef.current = JSON.stringify(formatted);
           safeSetLocalStorage(`anchor_cache_env_y${selectedYear}`, JSON.stringify(formatted), selectedYear);
         } else {
           // 💡 [버그 예방] 원격 DB에서 데이터를 삭제하여 0건이 반환되었을 때는 상태와 캐시도 안전하게 완전히 지워줍니다.
           setEnvData([]);
+          fetchedEnvDataRef.current = "[]";
           localStorage.removeItem(`anchor_cache_env_y${selectedYear}`);
         }
 
@@ -3944,11 +3957,13 @@ export default function App() {
             };
           });
           setEquipData(formatted);
+          fetchedEquipDataRef.current = JSON.stringify(formatted);
           safeSetLocalStorage(`anchor_cache_equip_y${selectedYear}`, JSON.stringify(formatted), selectedYear);
         } else {
           // 💡 [시딩 버그 해결] 사용자가 직접 DB에서 데이터를 삭제하여 0건이 되었을 때는,
           // 자동으로 모의 데이터를 재시딩하여 DB를 오염시키는 현상을 방지하고 완전한 빈 배열로 동기화합니다.
           setEquipData([]);
+          fetchedEquipDataRef.current = "[]";
           localStorage.removeItem(`anchor_cache_equip_y${selectedYear}`);
         }
         if (pServError) {
@@ -4052,10 +4067,12 @@ export default function App() {
             };
           });
           setServiceData(formatted);
+          fetchedServiceDataRef.current = JSON.stringify(formatted);
           safeSetLocalStorage(`anchor_cache_serv_y${selectedYear}`, JSON.stringify(formatted), selectedYear);
         } else {
           // 💡 [버그 예방] 원격 DB에서 데이터를 삭제하여 0건이 반환되었을 때는 상태와 캐시도 안전하게 완전히 지워줍니다.
           setServiceData([]);
+          fetchedServiceDataRef.current = "[]";
           localStorage.removeItem(`anchor_cache_serv_y${selectedYear}`);
         }
 
@@ -4706,7 +4723,14 @@ export default function App() {
     // 💡 안전 가드: 데이터가 없거나 로딩 중 꼬였을 때 DB 데이터를 지워버리는 대형 사고 방지
     if (!envData || envData.length === 0) return;
 
-    safeSetLocalStorage(`anchor_cache_env_y${selectedYear}`, JSON.stringify(envData), selectedYear);
+    // 💡 [정합성 안전 가드] 원격 DB fetch 결과와 일치하면 불필요한 자동 저장(덮어쓰기 오염)을 스킵합니다.
+    const currentCleanStr = JSON.stringify(envData);
+    if (!fetchedEnvDataRef.current || fetchedEnvDataRef.current === currentCleanStr) {
+      safeSetLocalStorage(`anchor_cache_env_y${selectedYear}`, currentCleanStr, selectedYear);
+      return;
+    }
+
+    safeSetLocalStorage(`anchor_cache_env_y${selectedYear}`, currentCleanStr, selectedYear);
     setSyncStatus("syncing");
     const timer = setTimeout(async () => {
       try {
@@ -4810,7 +4834,14 @@ export default function App() {
     // 💡 안전 가드: 데이터가 없거나 로딩 중 꼬였을 때 DB 데이터를 지워버리는 대형 사고 방지
     if (!equipData || equipData.length === 0) return;
 
-    safeSetLocalStorage(`anchor_cache_equip_y${selectedYear}`, JSON.stringify(equipData), selectedYear);
+    // 💡 [정합성 안전 가드] 원격 DB fetch 결과와 일치하면 불필요한 자동 저장(덮어쓰기 오염)을 스킵합니다.
+    const currentCleanStr = JSON.stringify(equipData);
+    if (!fetchedEquipDataRef.current || fetchedEquipDataRef.current === currentCleanStr) {
+      safeSetLocalStorage(`anchor_cache_equip_y${selectedYear}`, currentCleanStr, selectedYear);
+      return;
+    }
+
+    safeSetLocalStorage(`anchor_cache_equip_y${selectedYear}`, currentCleanStr, selectedYear);
     setSyncStatus("syncing");
     const timer = setTimeout(async () => {
       try {
@@ -4918,7 +4949,14 @@ export default function App() {
     // 💡 안전 가드: 데이터가 없거나 로딩 중 꼬였을 때 DB 데이터를 지워버리는 대형 사고 방지
     if (!serviceData || serviceData.length === 0) return;
 
-    safeSetLocalStorage(`anchor_cache_serv_y${selectedYear}`, JSON.stringify(serviceData), selectedYear);
+    // 💡 [정합성 안전 가드] 원격 DB fetch 결과와 일치하면 불필요한 자동 저장(덮어쓰기 오염)을 스킵합니다.
+    const currentCleanStr = JSON.stringify(serviceData);
+    if (!fetchedServiceDataRef.current || fetchedServiceDataRef.current === currentCleanStr) {
+      safeSetLocalStorage(`anchor_cache_serv_y${selectedYear}`, currentCleanStr, selectedYear);
+      return;
+    }
+
+    safeSetLocalStorage(`anchor_cache_serv_y${selectedYear}`, currentCleanStr, selectedYear);
     setSyncStatus("syncing");
     const timer = setTimeout(async () => {
       try {
