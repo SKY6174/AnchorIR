@@ -2344,6 +2344,8 @@ export default function App() {
   // 결재 변경 승인요청 상태 및 상세 보기 모달 제어용
   const [versionRequests, setVersionRequests] = useState([]);
   const [selectedRequest, setSelectedRequest] = useState(null);
+  const [approvalsTab, setApprovalsTab] = useState("budget");
+  const [reservations, setReservations] = useState([]);
   const [darkMode, setDarkMode] = useState(() => {
     const saved = localStorage.getItem("anchor_dark_mode");
     return saved !== null ? JSON.parse(saved) : true;
@@ -6334,11 +6336,92 @@ export default function App() {
     }
   };
 
+  // 💡 [교육용 한글 주석] 시설 사용 예약 데이터 로드 함수를 신설합니다.
+  const fetchReservations = async () => {
+    try {
+      if (!supabase) return;
+      const { data, error } = await supabase
+        .from("asset_reservations")
+        .select("*")
+        .order("reserved_date", { ascending: false })
+        .order("start_time", { ascending: false });
+      if (data) setReservations(data);
+    } catch (e) {
+      console.error("Failed to fetch reservations:", e);
+    }
+  };
+
   useEffect(() => {
     if (activeTab === "management" && mgmtSubTab === "approvals") {
       fetchVersionRequests();
+      fetchReservations();
     }
   }, [activeTab, mgmtSubTab]);
+
+  // 💡 [교육용 한글 주석] 통합 승인처리 화면에서 시설 사용 승인 요청을 확정하는 함수입니다.
+  const handleApproveReservation = async (res) => {
+    const isTimeOverlapping = (newStart, newEnd, existStart, existEnd) => {
+      const parseTimeToMinutes = (t) => {
+        const parts = t.split(":");
+        return parseInt(parts[0], 10) * 60 + parseInt(parts[1] || 0, 10);
+      };
+      const ns = parseTimeToMinutes(newStart);
+      const ne = parseTimeToMinutes(newEnd);
+      const es = parseTimeToMinutes(existStart);
+      const ee = parseTimeToMinutes(existEnd);
+      return ns < ee && ne > es;
+    };
+
+    // 중복 시간 겹침 엄격 검증
+    const duplicate = reservations.find((r) => {
+      return (
+        r.id !== res.id &&
+        r.status === "승인완료" &&
+        r.space_name === res.space_name &&
+        r.reserved_date === res.reserved_date &&
+        isTimeOverlapping(res.start_time, res.end_time, r.start_time, r.end_time)
+      );
+    });
+
+    if (duplicate) {
+      alert(
+        `⚠️ 승인 불가: 해당 시간대에 이미 승인완료된 다른 예약이 선점되어 있습니다.\n(승인 확정된 예약: ${duplicate.dept} - ${duplicate.reserver_name} / ${duplicate.start_time.substring(0, 5)}~${duplicate.end_time.substring(0, 5)})`
+      );
+      return;
+    }
+
+    try {
+      const { error } = await supabase
+        .from("asset_reservations")
+        .update({ status: "승인완료" })
+        .eq("id", res.id);
+
+      if (error) throw error;
+      alert("✨ 해당 공간 사용 예약이 최종 승인 처리되었습니다.");
+      fetchReservations();
+    } catch (err) {
+      alert("예약 승인 도중 데이터베이스 오류가 발생했습니다: " + err.message);
+    }
+  };
+
+  // 💡 [교육용 한글 주석] 시설 사용 예약을 반려(삭제)하는 함수입니다.
+  const handleRejectReservation = async (res) => {
+    if (!window.confirm("정말 이 예약을 반려(삭제) 처리하시겠습니까?")) {
+      return;
+    }
+    try {
+      const { error } = await supabase
+        .from("asset_reservations")
+        .delete()
+        .eq("id", res.id);
+
+      if (error) throw error;
+      alert("🗑️ 예약이 성공적으로 반려 및 삭제 처리되었습니다.");
+      fetchReservations();
+    } catch (err) {
+      alert("예약 반려 도중 데이터베이스 오류가 발생했습니다: " + err.message);
+    }
+  };
 
   const handleApproveRequest = async (req) => {
     try {
@@ -8624,129 +8707,247 @@ export default function App() {
 
                   return (
                     <div>
-                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.5rem" }}>
-                        <h3 style={{ fontSize: "0.9rem", fontWeight: "800", color: "var(--accent-color)", borderLeft: "3px solid var(--accent-color)", paddingLeft: "0.4rem" }}>프로그램 기획 및 예산 변경 결재함</h3>
-                        <span style={{ fontSize: "0.65rem", color: "var(--text-secondary)" }}>연구원들의 기획 리비전 신청 관리</span>
+                      {/* 💡 [교육용 한글 주석] 예산변경과 시설사용 결재를 전환 선택할 수 있는 탭 세그먼트바를 렌더링합니다. */}
+                      <div style={{ display: "flex", gap: "0.5rem", marginBottom: "1rem", borderBottom: "1px solid var(--border-color)", paddingBottom: "0.5rem" }}>
+                        <button
+                          onClick={() => setApprovalsTab("budget")}
+                          style={{
+                            padding: "0.4rem 1rem",
+                            fontSize: "0.75rem",
+                            fontWeight: "800",
+                            borderRadius: "0.3rem",
+                            border: "none",
+                            background: approvalsTab === "budget" ? "var(--accent-color)" : "transparent",
+                            color: approvalsTab === "budget" ? "white" : "var(--text-secondary)",
+                            cursor: "pointer",
+                            transition: "all 0.2s"
+                          }}
+                        >
+                          💰 예산 및 기획변경 승인
+                        </button>
+                        <button
+                          onClick={() => setApprovalsTab("facility")}
+                          style={{
+                            padding: "0.4rem 1rem",
+                            fontSize: "0.75rem",
+                            fontWeight: "800",
+                            borderRadius: "0.3rem",
+                            border: "none",
+                            background: approvalsTab === "facility" ? "var(--accent-color)" : "transparent",
+                            color: approvalsTab === "facility" ? "white" : "var(--text-secondary)",
+                            cursor: "pointer",
+                            transition: "all 0.2s"
+                          }}
+                        >
+                          🏫 교육환경 시설사용 승인
+                        </button>
                       </div>
-                      <div className="table-panel">
-                        <table className="custom-table" style={{ fontSize: "0.75rem" }}>
-                          <thead>
-                            <tr>
-                              <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap" }}>결재번호</th>
-                              <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap" }}>프로그램 ID</th>
-                              <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap", width: "280px" }}>프로그램명</th>
-                              <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap" }}>변경 차수</th>
-                              <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap" }}>상태</th>
-                              <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap" }}>신청자</th>
-                              <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap" }}>신청 및 처리 일시</th>
-                              <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap", width: "80px" }}>결재 처리</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {versionRequests.length === 0 ? (
-                              <tr>
-                                <td colSpan="8" style={{ textAlign: "center", color: "var(--text-secondary)", padding: "2.5rem" }}>
-                                  결재 대기 중이거나 처리된 변경 요청 문서가 없습니다.
-                                </td>
-                              </tr>
-                            ) : (
-                              versionRequests.map((req, idx) => {
-                                // 💡 [교육용 한글 주석] 송경영 단장님의 직접 수정 이력은 공식 수정 횟차(seq) 집계에 들어가지 않도록 배제 처리합니다.
-                                const approvedRequests = versionRequests.filter(r => r.status === "승인완료" && r.version_name !== "송경영 단장 직접 수정");
-                                const isApproved = req.status === "승인완료";
-                                let displayNo = "-";
-                                if (isApproved) {
-                                  const approvedIdx = approvedRequests.findIndex(r => r.id === req.id);
-                                  const seq = approvedIdx !== -1 ? (approvedRequests.length - approvedIdx) : 1;
-                                  displayNo = `${2024 + req.year}-${req.unit_id}-${seq}`;
-                                }
 
-                                return (
-                                  <tr key={req.id}>
-                                    <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle", fontFamily: "var(--font-data)", fontWeight: "700" }}>{displayNo}</td>
-                                    <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle" }}>{req.program_id}</td>
-                                    <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle", fontWeight: "700", width: "280px", maxWidth: "280px", wordBreak: "keep-all", lineHeight: "1.3", whiteSpace: "normal" }}>{req.program_title}</td>
-                                    <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle" }}>
-                                      <span className="badge badge-blue" style={{ fontSize: "0.65rem", whiteSpace: "normal", maxWidth: "85px", lineHeight: "1.3", display: "inline-block", textAlign: "center", padding: "0.15rem 0.25rem" }}>
-                                        {req.version_name === "송경영 단장 직접 수정" ? (
-                                          <>송경영 단장<br />직접 수정</>
-                                        ) : req.version_name}
-                                      </span>
+                      {approvalsTab === "budget" ? (
+                        <div>
+                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.5rem" }}>
+                            <h3 style={{ fontSize: "0.9rem", fontWeight: "800", color: "var(--accent-color)", borderLeft: "3px solid var(--accent-color)", paddingLeft: "0.4rem" }}>프로그램 기획 및 예산 변경 결재함</h3>
+                            <span style={{ fontSize: "0.65rem", color: "var(--text-secondary)" }}>연구원들의 기획 리비전 신청 관리</span>
+                          </div>
+                          <div className="table-panel">
+                            <table className="custom-table" style={{ fontSize: "0.75rem" }}>
+                              <thead>
+                                <tr>
+                                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap" }}>결재번호</th>
+                                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap" }}>프로그램 ID</th>
+                                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap", width: "280px" }}>프로그램명</th>
+                                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap" }}>변경 차수</th>
+                                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap" }}>상태</th>
+                                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap" }}>신청자</th>
+                                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap" }}>신청 및 처리 일시</th>
+                                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap", width: "80px" }}>결재 처리</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {versionRequests.length === 0 ? (
+                                  <tr>
+                                    <td colSpan="8" style={{ textAlign: "center", color: "var(--text-secondary)", padding: "2.5rem" }}>
+                                      결재 대기 중이거나 처리된 변경 요청 문서가 없습니다.
                                     </td>
-                                    <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle" }}>
-                                      <div style={{ display: "inline-flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
-                                        <span className={`badge ${req.status === "승인완료" ? "badge-green" : (req.status === "반려" ? "badge-red" : "badge-gray")
-                                          }`} style={{ fontSize: "0.65rem" }}>
-                                          {req.status}
-                                        </span>
-                                        {(req.status === "승인완료" || req.status === "반려") && req.approved_by && (
-                                          <span style={{ fontSize: "0.62rem", color: "var(--text-secondary)", marginTop: "0.15rem" }}>
-                                            ({req.approved_by})
+                                  </tr>
+                                ) : (
+                                  versionRequests.map((req, idx) => {
+                                    // 💡 [교육용 한글 주석] 송경영 단장님의 직접 수정 이력은 공식 수정 횟차(seq) 집계에 들어가지 않도록 배제 처리합니다.
+                                    const approvedRequests = versionRequests.filter(r => r.status === "승인완료" && r.version_name !== "송경영 단장 직접 수정");
+                                    const isApproved = req.status === "승인완료";
+                                    let displayNo = "-";
+                                    if (isApproved) {
+                                      const approvedIdx = approvedRequests.findIndex(r => r.id === req.id);
+                                      const seq = approvedIdx !== -1 ? (approvedRequests.length - approvedIdx) : 1;
+                                      displayNo = `${2024 + req.year}-${req.unit_id}-${seq}`;
+                                    }
+
+                                    return (
+                                      <tr key={req.id}>
+                                        <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle", fontFamily: "var(--font-data)", fontWeight: "700" }}>{displayNo}</td>
+                                        <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle" }}>{req.program_id}</td>
+                                        <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle", fontWeight: "700", width: "280px", maxWidth: "280px", wordBreak: "keep-all", lineHeight: "1.3", whiteSpace: "normal" }}>{req.program_title}</td>
+                                        <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle" }}>
+                                          <span className="badge badge-blue" style={{ fontSize: "0.65rem", whiteSpace: "normal", maxWidth: "85px", lineHeight: "1.3", display: "inline-block", textAlign: "center", padding: "0.15rem 0.25rem" }}>
+                                            {req.version_name === "송경영 단장 직접 수정" ? (
+                                              <>송경영 단장<br />직접 수정</>
+                                            ) : req.version_name}
                                           </span>
-                                        )}
-                                      </div>
-                                    </td>
-                                    <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle" }}>{(req.requested_by || "").replace(/\s*\(.*?\)/g, "").replace(/\)/g, "").trim()}</td>
-                                    <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle" }}>
-                                      <div style={{ display: "inline-flex", flexDirection: "column", gap: "0.2rem", lineHeight: "1.4", fontFamily: "var(--font-data)", textAlign: "left" }}>
-                                        <div>
-                                          <span style={{ color: "var(--text-secondary)", fontSize: "0.65rem" }}>신청: </span>
-                                          {new Date(req.requested_at).toLocaleString("ko-KR")}
-                                        </div>
-                                        <div style={{ marginTop: "0.15rem" }}>
-                                          <span style={{ color: "var(--text-secondary)", fontSize: "0.65rem" }}>처리: </span>
-                                          {req.approved_at
-                                            ? new Date(req.approved_at).toLocaleString("ko-KR")
-                                            : <span style={{ color: "var(--text-secondary)" }}>대기 중</span>
-                                          }
-                                        </div>
-                                      </div>
-                                    </td>
-                                    <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle" }}>
-                                      <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem", alignItems: "center", justifyContent: "center", width: "100%" }}>
-                                        <button
-                                          onClick={() => setSelectedRequest(req)}
-                                          className="btn-primary"
-                                          style={{ padding: "0.2rem 0.4rem", fontSize: "0.65rem", borderRadius: "0.3rem", background: "var(--accent-color)", cursor: "pointer", border: "none", color: "white", width: "100%", minWidth: "56px", maxWidth: "68px", fontWeight: "700" }}
-                                        >
-                                          상세보기
-                                        </button>
-                                        {req.status === "승인대기" && (
-                                          <>
+                                        </td>
+                                        <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle" }}>
+                                          <div style={{ display: "inline-flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
+                                            <span className={`badge ${req.status === "승인완료" ? "badge-green" : (req.status === "반려" ? "badge-red" : "badge-gray")
+                                              }`} style={{ fontSize: "0.65rem" }}>
+                                              {req.status}
+                                            </span>
+                                            {(req.status === "승인완료" || req.status === "반려") && req.approved_by && (
+                                              <span style={{ fontSize: "0.62rem", color: "var(--text-secondary)", marginTop: "0.15rem" }}>
+                                                ({req.approved_by})
+                                              </span>
+                                            )}
+                                          </div>
+                                        </td>
+                                        <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle" }}>{(req.requested_by || "").replace(/\s*\(.*?\)/g, "").replace(/\)/g, "").trim()}</td>
+                                        <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle" }}>
+                                          <div style={{ display: "inline-flex", flexDirection: "column", gap: "0.2rem", lineHeight: "1.4", fontFamily: "var(--font-data)", textAlign: "left" }}>
+                                            <div>
+                                              <span style={{ color: "var(--text-secondary)", fontSize: "0.65rem" }}>신청: </span>
+                                              {new Date(req.requested_at).toLocaleString("ko-KR")}
+                                            </div>
+                                            <div style={{ marginTop: "0.15rem" }}>
+                                              <span style={{ color: "var(--text-secondary)", fontSize: "0.65rem" }}>처리: </span>
+                                              {req.approved_at
+                                                ? new Date(req.approved_at).toLocaleString("ko-KR")
+                                                : <span style={{ color: "var(--text-secondary)" }}>대기 중</span>
+                                              }
+                                            </div>
+                                          </div>
+                                        </td>
+                                        <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle" }}>
+                                          <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem", alignItems: "center", justifyContent: "center", width: "100%" }}>
                                             <button
-                                              onClick={() => handleApproveRequest(req)}
+                                              onClick={() => setSelectedRequest(req)}
                                               className="btn-primary"
-                                              style={{ padding: "0.2rem 0.4rem", fontSize: "0.65rem", borderRadius: "0.3rem", background: "#10B981", cursor: "pointer", border: "none", color: "white", width: "100%", minWidth: "56px", maxWidth: "68px", fontWeight: "700" }}
+                                              style={{ padding: "0.2rem 0.4rem", fontSize: "0.65rem", borderRadius: "0.3rem", background: "var(--accent-color)", cursor: "pointer", border: "none", color: "white", width: "100%", minWidth: "56px", maxWidth: "68px", fontWeight: "700" }}
                                             >
-                                              승인
+                                              상세보기
                                             </button>
+                                            {req.status === "승인대기" && (
+                                              <>
+                                                <button
+                                                  onClick={() => handleApproveRequest(req)}
+                                                  className="btn-primary"
+                                                  style={{ padding: "0.2rem 0.4rem", fontSize: "0.65rem", borderRadius: "0.3rem", background: "#10B981", cursor: "pointer", border: "none", color: "white", width: "100%", minWidth: "56px", maxWidth: "68px", fontWeight: "700" }}
+                                                >
+                                                  승인
+                                                </button>
+                                                <button
+                                                  onClick={() => handleRejectRequest(req)}
+                                                  className="btn-primary"
+                                                  style={{ padding: "0.2rem 0.4rem", fontSize: "0.65rem", borderRadius: "0.3rem", background: "#EF4444", cursor: "pointer", border: "none", color: "white", width: "100%", minWidth: "56px", maxWidth: "68px", fontWeight: "700" }}
+                                                >
+                                                  반려
+                                                </button>
+                                              </>
+                                            )}
+                                            {isSongDirector && (
+                                              <button
+                                                onClick={() => handleDeleteRequest(req)}
+                                                className="btn-primary"
+                                                style={{ padding: "0.2rem 0.4rem", fontSize: "0.65rem", borderRadius: "0.3rem", background: "#EF4444", cursor: "pointer", border: "none", color: "white", width: "100%", minWidth: "56px", maxWidth: "68px", fontWeight: "700" }}
+                                              >
+                                                삭제
+                                              </button>
+                                            )}
+                                          </div>
+                                        </td>
+                                      </tr>
+                                    );
+                                  })
+                                )}
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                      ) : (
+                        <div>
+                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.5rem" }}>
+                            <h3 style={{ fontSize: "0.9rem", fontWeight: "800", color: "var(--accent-color)", borderLeft: "3px solid var(--accent-color)", paddingLeft: "0.4rem" }}>교육환경 시설사용 예약 승인함</h3>
+                            <span style={{ fontSize: "0.65rem", color: "var(--text-secondary)" }}>공간 사용 신청 및 충돌 승인 관리</span>
+                          </div>
+                          <div className="table-panel">
+                            <table className="custom-table" style={{ fontSize: "0.75rem" }}>
+                              <thead>
+                                <tr>
+                                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap" }}>예약일자</th>
+                                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap" }}>사용시간</th>
+                                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap" }}>공간명</th>
+                                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap" }}>신청부서</th>
+                                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap" }}>신청자</th>
+                                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap" }}>사용목적</th>
+                                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap" }}>결재 상태</th>
+                                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap", width: "80px" }}>결재 처리</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {reservations.length === 0 ? (
+                                  <tr>
+                                    <td colSpan="8" style={{ textAlign: "center", color: "var(--text-secondary)", padding: "2.5rem" }}>
+                                      접수된 교육환경 공간 예약 승인 신청 문서가 없습니다.
+                                    </td>
+                                  </tr>
+                                ) : (
+                                  reservations.map((res) => (
+                                    <tr key={res.id}>
+                                      <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle", fontFamily: "var(--font-data)", fontWeight: "700" }}>{res.reserved_date}</td>
+                                      <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle", fontFamily: "var(--font-data)", whiteSpace: "nowrap" }}>{res.start_time.substring(0, 5)} ~ {res.end_time.substring(0, 5)}</td>
+                                      <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle", fontWeight: "700" }}>{res.space_name}</td>
+                                      <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle" }}>{res.dept}</td>
+                                      <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle" }}>{res.reserver_name}</td>
+                                      <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle" }}>{res.purpose}</td>
+                                      <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle" }}>
+                                        <span className={`badge ${res.status === "승인완료" ? "badge-green" : "badge-orange"}`} style={{ fontSize: "0.65rem" }}>
+                                          {res.status || "승인대기"}
+                                        </span>
+                                      </td>
+                                      <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle" }}>
+                                        <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem", alignItems: "center", justifyContent: "center", width: "100%" }}>
+                                          {res.status !== "승인완료" ? (
+                                            <>
+                                              <button
+                                                onClick={() => handleApproveReservation(res)}
+                                                className="btn-primary"
+                                                style={{ padding: "0.2rem 0.4rem", fontSize: "0.65rem", borderRadius: "0.3rem", background: "#10B981", cursor: "pointer", border: "none", color: "white", width: "100%", minWidth: "56px", maxWidth: "68px", fontWeight: "700" }}
+                                              >
+                                                승인
+                                              </button>
+                                              <button
+                                                onClick={() => handleRejectReservation(res)}
+                                                className="btn-primary"
+                                                style={{ padding: "0.2rem 0.4rem", fontSize: "0.65rem", borderRadius: "0.3rem", background: "#EF4444", cursor: "pointer", border: "none", color: "white", width: "100%", minWidth: "56px", maxWidth: "68px", fontWeight: "700" }}
+                                              >
+                                                반려
+                                              </button>
+                                            </>
+                                          ) : (
                                             <button
-                                              onClick={() => handleRejectRequest(req)}
+                                              onClick={() => handleRejectReservation(res)}
                                               className="btn-primary"
                                               style={{ padding: "0.2rem 0.4rem", fontSize: "0.65rem", borderRadius: "0.3rem", background: "#EF4444", cursor: "pointer", border: "none", color: "white", width: "100%", minWidth: "56px", maxWidth: "68px", fontWeight: "700" }}
                                             >
-                                              반려
+                                              취소/삭제
                                             </button>
-                                          </>
-                                        )}
-                                        {isSongDirector && (
-                                          <button
-                                            onClick={() => handleDeleteRequest(req)}
-                                            className="btn-primary"
-                                            style={{ padding: "0.2rem 0.4rem", fontSize: "0.65rem", borderRadius: "0.3rem", background: "#EF4444", cursor: "pointer", border: "none", color: "white", width: "100%", minWidth: "56px", maxWidth: "68px", fontWeight: "700" }}
-                                          >
-                                            삭제
-                                          </button>
-                                        )}
-                                      </div>
-                                    </td>
-                                  </tr>
-                                );
-                              })
-                            )}
-                          </tbody>
-                        </table>
-                      </div>
+                                          )}
+                                        </div>
+                                      </td>
+                                    </tr>
+                                  ))
+                                )}
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   );
                 })()}
