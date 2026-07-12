@@ -2067,13 +2067,13 @@ export const initialProjectsData = [
   },
   {
     id: "E",
-    title: "공통경비",
+    title: "공통운영경비",
     budget: 2433000000,
     spent: 120000000,
     units: [
       {
         id: "X0",
-        title: "공통경비",
+        title: "공통운영경비",
         budget: 2933000000,
         spent: 120000000,
         budget_2026: 2433000000,
@@ -2350,7 +2350,7 @@ export const YEAR_1_PROGRAMS = {
     },
     {
       "id": "A1-S5T11-1",
-      "title": "공통경비",
+      "title": "공통운영경비",
       "budget": 829800000,
       "spent": 557400000,
       "assignee": "지산학교육센터(ECC)",
@@ -2577,7 +2577,7 @@ export const YEAR_1_PROGRAMS = {
     },
     {
       "id": "A2-S3T7-1",
-      "title": "공통경비",
+      "title": "공통운영경비",
       "budget": 130000000,
       "spent": 114500000,
       "assignee": "글로컬창업지원팀",
@@ -2738,7 +2738,7 @@ export const YEAR_1_PROGRAMS = {
     ,
     {
       "id": "B1-S3T7-1",
-      "title": "공통경비",
+      "title": "공통운영경비",
       "budget": 55100000,
       "spent": 50700000,
       "assignee": "R&BD지원팀",
@@ -2935,7 +2935,7 @@ export const YEAR_1_PROGRAMS = {
     ,
     {
       "id": "B2-S4T9-1",
-      "title": "공통경비",
+      "title": "공통운영경비",
       "budget": 173100000,
       "spent": 166900000,
       "assignee": "평생교육원",
@@ -3037,7 +3037,7 @@ export const YEAR_1_PROGRAMS = {
     },
     {
       "id": "D3-S2T6-1",
-      "title": "공통경비",
+      "title": "공통운영경비",
       "budget": 73050000,
       "spent": 58950000,
       "assignee": "R&BD지원센터",
@@ -3150,7 +3150,7 @@ export const YEAR_1_PROGRAMS = {
     },
     {
       "id": "B3-S2T5-1",
-      "title": "공통경비",
+      "title": "공통운영경비",
       "budget": 71800000,
       "spent": 71800000,
       "assignee": "오영경 연구원",
@@ -3312,7 +3312,7 @@ export const YEAR_1_PROGRAMS = {
     ,
     {
       "id": "C1-S3T7-1",
-      "title": "공통경비",
+      "title": "공통운영경비",
       "budget": 75000000,
       "spent": 65500000,
       "assignee": "산학협력단",
@@ -3450,7 +3450,7 @@ export const YEAR_1_PROGRAMS = {
     ,
     {
       "id": "C2-S3T7-1",
-      "title": "공통경비",
+      "title": "공통운영경비",
       "budget": 189600000,
       "spent": 175100000,
       "assignee": "산학협력단",
@@ -3609,7 +3609,7 @@ export const YEAR_1_PROGRAMS = {
     },
     {
       "id": "C3-S3T7-1",
-      "title": "공통경비",
+      "title": "공통운영경비",
       "budget": 66000000,
       "spent": 66000000,
       "assignee": "산학협력단",
@@ -3744,7 +3744,7 @@ export const YEAR_1_PROGRAMS = {
     },
     {
       "id": "D1-S2T5-1",
-      "title": "공통경비",
+      "title": "공통운영경비",
       "budget": 66500000,
       "spent": 66500000,
       "assignee": "산학협력단",
@@ -3914,7 +3914,7 @@ export const YEAR_1_PROGRAMS = {
     },
     {
       "id": "D2-S4T11-1",
-      "title": "공통경비",
+      "title": "공통운영경비",
       "budget": 171000000,
       "spent": 147700000,
       "assignee": "늘봄학교지원센터",
@@ -4015,7 +4015,7 @@ export const YEAR_1_PROGRAMS = {
     },
     {
       "id": "D3-S2T6-1",
-      "title": "공통경비",
+      "title": "공통운영경비",
       "budget": 73050000,
       "spent": 58950000,
       "assignee": "R&BD지원센터",
@@ -4127,7 +4127,7 @@ export const YEAR_1_PROGRAMS = {
     },
     {
       "id": "D4-S3T7-1",
-      "title": "공통경비",
+      "title": "공통운영경비",
       "budget": 106000000,
       "spent": 68000000,
       "assignee": "국제교류원",

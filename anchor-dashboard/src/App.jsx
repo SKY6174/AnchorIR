@@ -8474,7 +8474,7 @@ export default function App() {
 
                             return (
                               <tr key={prog.id}>
-                                <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle", fontWeight: "700", wordBreak: "break-all" }}>{u.id === "Common" || u.id === "X0" ? "공통경비" : `${u.id}. ${u.title}`}</td>
+                                <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle", fontWeight: "700", wordBreak: "break-all" }}>{u.id === "Common" || u.id === "X0" ? "공통운영경비" : `${u.id}. ${u.title}`}</td>
                                 <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle", fontFamily: "var(--font-data)", fontWeight: "700" }}>{prog.id}</td>
                                 <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle", wordBreak: "break-all" }}>{prog.title}</td>
                                 <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle", color: "var(--accent-color)", fontWeight: "700" }}>{dept}</td>
