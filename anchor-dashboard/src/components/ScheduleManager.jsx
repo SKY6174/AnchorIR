@@ -853,6 +853,36 @@ export default function ScheduleManager({
     }
   };
 
+  // AI 분석 결과 폼 자동 보정 및 지능형 매핑 헬퍼 함수
+  const applyMeetingAiDataRules = (aiData, prevFormData) => {
+    const title = aiData.title || prevFormData.title;
+    const location = aiData.location || prevFormData.location;
+    
+    // 1) 앵커기획위원회나 ~위원회 명칭인 경우 각종분류를 '각종 위원회' (committee) 로 자동 분류
+    let category = prevFormData.category || "operating";
+    if (title && (title.includes("위원회") || title.includes("자문회의"))) {
+      category = "committee";
+    }
+
+    // 2) 서면부의인 경우(또는 시작/종료 시간이 빈 문자열이거나 명시되지 않은 경우) 전일 체크 및 시간 필드 비우기
+    const isWrittenQuery = location && (location.includes("서면부의") || location.includes("서면 회의") || location.includes("이메일"));
+    const isTimeOmitted = !aiData.meetingStartTime || !aiData.meetingEndTime || aiData.meetingStartTime === "00:00" || aiData.meetingStartTime === "";
+    
+    const shouldBeAllDay = isWrittenQuery || isTimeOmitted;
+    
+    return {
+      ...prevFormData,
+      title: title,
+      location: location,
+      category: category,
+      meetingDate: aiData.meetingDate || prevFormData.meetingDate,
+      noTime: shouldBeAllDay,
+      meetingStartTime: shouldBeAllDay ? "" : (aiData.meetingStartTime || prevFormData.meetingStartTime || "10:00"),
+      meetingEndTime: shouldBeAllDay ? "" : (aiData.meetingEndTime || prevFormData.meetingEndTime || "11:00"),
+      attendees: aiData.attendees || prevFormData.attendees
+    };
+  };
+
   // 회의록 분석 전용 모의 폴백 함수
   const runMeetingSimulationFallback = () => {
     setIsAiLoading(true);
@@ -891,10 +921,10 @@ export default function ScheduleManager({
         if (text.includes("유학생") || text.includes("문화교류") || lowerName.includes("유학생")) {
           targetData = {
             title: "2026년도 제1차 외국인 유학생 지역 정주 지원 실무협의회",
-            location: "행정관 3층 소회의실",
+            location: "서면부의 (이메일 제출)",
             meetingDate: "2026-05-18",
-            meetingStartTime: "14:00",
-            meetingEndTime: "16:00",
+            meetingStartTime: "",
+            meetingEndTime: "",
             attendees: "이남우 처장, 이동은 센터장, 김기범 센터장, 서포터즈 팀장"
           };
           aiAgendas = [
@@ -909,15 +939,7 @@ export default function ScheduleManager({
           ];
         }
 
-        setFormData(prev => ({
-          ...prev,
-          title: targetData.title,
-          location: targetData.location,
-          meetingDate: targetData.meetingDate,
-          meetingStartTime: targetData.meetingStartTime,
-          meetingEndTime: targetData.meetingEndTime,
-          attendees: targetData.attendees
-        }));
+        setFormData(prev => applyMeetingAiDataRules(targetData, prev));
         setAgendaResultPairs(aiAgendas);
 
         setIsAiLoading(false);
@@ -1154,15 +1176,7 @@ ${aiRawText}
         const cleanJson = JSON.parse(jsonStr.trim());
 
         if (modalType === "meeting") {
-          setFormData(prev => ({
-            ...prev,
-            title: cleanJson.title || prev.title,
-            location: cleanJson.location || prev.location,
-            meetingDate: cleanJson.meetingDate || prev.meetingDate,
-            meetingStartTime: cleanJson.meetingStartTime || prev.meetingStartTime,
-            meetingEndTime: cleanJson.meetingEndTime || prev.meetingEndTime,
-            attendees: cleanJson.attendees || prev.attendees
-          }));
+          setFormData(prev => applyMeetingAiDataRules(cleanJson, prev));
           if (cleanJson.agendaResultPairs && cleanJson.agendaResultPairs.length > 0) {
             setAgendaResultPairs(cleanJson.agendaResultPairs);
           }
@@ -1258,15 +1272,7 @@ ${aiRawText}
         const cleanJson = JSON.parse(jsonStr.trim());
         
         if (modalType === "meeting") {
-          setFormData(prev => ({
-            ...prev,
-            title: cleanJson.title || prev.title,
-            location: cleanJson.location || prev.location,
-            meetingDate: cleanJson.meetingDate || prev.meetingDate,
-            meetingStartTime: cleanJson.meetingStartTime || prev.meetingStartTime,
-            meetingEndTime: cleanJson.meetingEndTime || prev.meetingEndTime,
-            attendees: cleanJson.attendees || prev.attendees
-          }));
+          setFormData(prev => applyMeetingAiDataRules(cleanJson, prev));
           if (cleanJson.agendaResultPairs && cleanJson.agendaResultPairs.length > 0) {
             setAgendaResultPairs(cleanJson.agendaResultPairs);
           }
