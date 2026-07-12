@@ -868,7 +868,15 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
               </div>
 
               {/* 달력 날짜 타일 */}
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: "2px" }}>
+              <div style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(7, 1fr)",
+                gap: "1px",
+                background: darkMode ? "rgba(255, 255, 255, 0.12)" : "rgba(0, 0, 0, 0.08)",
+                border: `1px solid ${darkMode ? "rgba(255, 255, 255, 0.12)" : "rgba(0, 0, 0, 0.08)"}`,
+                borderRadius: "4px",
+                overflow: "hidden"
+              }}>
                 {(() => {
                   const firstDayIndex = new Date(currentYear, currentMonth, 1).getDay();
                   const numDays = new Date(currentYear, currentMonth + 1, 0).getDate();
@@ -885,7 +893,15 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
 
                   return totalSlots.map((day, idx) => {
                     if (day === null) {
-                      return <div key={`empty-${idx}`} style={{ minHeight: "52px", background: "rgba(255,255,255,0.01)" }}></div>;
+                      return (
+                        <div
+                          key={`empty-${idx}`}
+                          style={{
+                            minHeight: "52px",
+                            background: darkMode ? "rgba(255,255,255,0.01)" : "rgba(0,0,0,0.01)"
+                          }}
+                        ></div>
+                      );
                     }
 
                     const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
@@ -913,10 +929,9 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
                           minHeight: "52px",
                           padding: "0.3rem",
                           background: isSelected 
-                            ? "rgba(139, 92, 246, 0.1)" 
-                            : (dayReservations.length > 0 ? "rgba(255,255,255,0.03)" : "transparent"),
-                          border: `1px solid ${isSelected ? "var(--accent-color)" : "rgba(255,255,255,0.05)"}`,
-                          borderRadius: "4px",
+                            ? (darkMode ? "rgba(139, 92, 246, 0.2)" : "rgba(139, 92, 246, 0.08)") 
+                            : (darkMode ? "var(--panel-bg)" : "#ffffff"),
+                          border: isSelected ? "1.5px solid var(--accent-color)" : "none",
                           cursor: "pointer",
                           transition: "all 0.12s ease",
                           display: "flex",

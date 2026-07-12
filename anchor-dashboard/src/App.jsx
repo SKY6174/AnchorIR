@@ -8957,17 +8957,17 @@ export default function App() {
                             <span style={{ fontSize: "0.65rem", color: "var(--text-secondary)" }}>공간 사용 신청 및 충돌 승인 관리</span>
                           </div>
                           <div className="table-panel">
-                            <table className="custom-table" style={{ fontSize: "0.75rem" }}>
+                            <table className="custom-table" style={{ fontSize: "0.75rem", tableLayout: "fixed", width: "100%" }}>
                               <thead>
                                 <tr>
-                                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap" }}>예약일자</th>
-                                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap" }}>사용시간</th>
-                                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap" }}>공간명</th>
-                                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap" }}>신청부서</th>
-                                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap" }}>신청자</th>
+                                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap", width: "95px" }}>예약일자</th>
+                                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap", width: "105px" }}>사용시간</th>
+                                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap", width: "130px" }}>시설명</th>
+                                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap", width: "90px" }}>신청부서</th>
+                                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap", width: "75px" }}>신청자</th>
                                   <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap" }}>사용목적</th>
-                                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap" }}>결재 상태</th>
-                                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap" }}>일정 조정</th>
+                                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap", width: "80px" }}>결재 상태</th>
+                                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap", width: "80px" }}>일정 조정</th>
                                   <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap", width: "80px" }}>결재 처리</th>
                                 </tr>
                               </thead>
@@ -8983,10 +8983,10 @@ export default function App() {
                                     <tr key={res.id}>
                                       <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle", fontFamily: "var(--font-data)", fontWeight: "700" }}>{res.reserved_date}</td>
                                       <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle", fontFamily: "var(--font-data)", whiteSpace: "nowrap" }}>{res.start_time.substring(0, 5)} ~ {res.end_time.substring(0, 5)}</td>
-                                      <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle", fontWeight: "700" }}>{res.space_name}</td>
-                                      <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle" }}>{res.dept}</td>
-                                      <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle" }}>{res.reserver_name}</td>
-                                      <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle" }}>{res.purpose}</td>
+                                      <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle", fontWeight: "700", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{res.space_name}</td>
+                                      <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{res.dept}</td>
+                                      <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{res.reserver_name}</td>
+                                      <td style={{ padding: "0.6rem 0.5rem", textAlign: "left", verticalAlign: "middle", wordBreak: "break-all" }}>{res.purpose}</td>
                                       <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle" }}>
                                         <span className={`badge ${res.status === "승인완료" ? "badge-green" : "badge-orange"}`} style={{ fontSize: "0.65rem" }}>
                                           {res.status || "승인대기"}
