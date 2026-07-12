@@ -59,12 +59,21 @@ const MENU_SCHEMA = [
   },
   {
     key: "procurement",
-    label: "구매용역 관리",
+    label: "구매∙용역 관리",
     description: "교육환경 개선, 기자재 구입/운영 및 주요 용역 추진 과정 관리",
     subMenus: [
       { key: "env_improvement", label: "환경개선" },
       { key: "equipment_purchase", label: "기자재 구입∙운영" },
       { key: "major_services", label: "주요 용역" }
+    ]
+  },
+  {
+    key: "asset",
+    label: "자산 관리",
+    description: "교육 환경 예약 신청 및 사업 기자재(AI∙DX/기타) 현황 모니터링",
+    subMenus: [
+      { key: "education_env", label: "교육환경 관리" },
+      { key: "equipment", label: "기자재 관리" }
     ]
   },
   {

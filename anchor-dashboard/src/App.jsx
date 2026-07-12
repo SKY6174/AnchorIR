@@ -20,6 +20,7 @@ import PortalConfigManager from "./components/PortalConfigManager";
 import AuthManager from "./components/AuthManager";
 import ProcurementManager from "./components/ProcurementManager";
 import ScheduleManager from "./components/ScheduleManager";
+import AssetManager from "./components/AssetManager";
 import UnitSystemView from "./components/UnitSystemView";
 import { initialProjectsData, userRoles, YEAR_1_PROGRAMS, Y1_UNIT_META } from "./data/mockData";
 import { Sun, Moon, LogOut, HelpCircle, ArrowUpRight, Lock as LockIcon, Info } from "lucide-react";
@@ -3100,6 +3101,9 @@ export default function App() {
   const [scheduleSubTab, setScheduleSubTab] = useState(() => {
     return localStorage.getItem("anchor_schedule_sub_tab") || "monthly";
   });
+  const [assetSubTab, setAssetSubTab] = useState(() => {
+    return localStorage.getItem("anchor_asset_sub_tab") || "education_env";
+  });
   const [progressSubTab, setProgressSubTab] = useState(() => {
     return localStorage.getItem("anchor_progress_sub_tab") || "progress_status";
   });
@@ -3148,6 +3152,10 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem("anchor_schedule_sub_tab", scheduleSubTab);
   }, [scheduleSubTab]);
+
+  useEffect(() => {
+    localStorage.setItem("anchor_asset_sub_tab", assetSubTab);
+  }, [assetSubTab]);
 
   useEffect(() => {
     localStorage.setItem("anchor_selected_unit_id", selectedUnitId);
@@ -7225,6 +7233,8 @@ export default function App() {
         onChangeProcurementSubTab={setProcurementSubTab}
         scheduleSubTab={scheduleSubTab}
         onChangeScheduleSubTab={setScheduleSubTab}
+        assetSubTab={assetSubTab}
+        onChangeAssetSubTab={setAssetSubTab}
         agreementsSubTab={agreementsSubTab}
         onChangeAgreementsSubTab={setAgreementsSubTab}
         progressSubTab={progressSubTab}
@@ -9512,6 +9522,13 @@ export default function App() {
               renderExcelDownload()
             )}
           </div>
+        )}
+
+        {activeTab === "asset" && (
+          <AssetManager
+            currentRole={currentRole}
+            activeSubTab={assetSubTab}
+          />
         )}
 
         {activeTab === "procurement" && (

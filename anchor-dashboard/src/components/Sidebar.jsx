@@ -1,6 +1,6 @@
 import React from "react";
 import { userRoles } from "../data/mockData";
-import { LayoutDashboard, Users, FileBarChart2, FolderKanban, Award, Landmark, ClipboardList, BookOpen, Briefcase, Calendar } from "lucide-react";
+import { LayoutDashboard, Users, FileBarChart2, FolderKanban, Award, Landmark, ClipboardList, BookOpen, Briefcase, Calendar, Package } from "lucide-react";
 
 export default function Sidebar({
   currentRole,
@@ -19,6 +19,8 @@ export default function Sidebar({
   onChangeProcurementSubTab,
   scheduleSubTab,
   onChangeScheduleSubTab,
+  assetSubTab,
+  onChangeAssetSubTab,
   agreementsSubTab,
   onChangeAgreementsSubTab,
   progressSubTab,
@@ -553,7 +555,7 @@ export default function Sidebar({
             >
               <Briefcase size={24} />
               <span>
-                구매용역 관리
+                구매∙용역 관리
                 {isHidden("procurement") && (
                   <span style={{ fontSize: "0.65rem", color: "#ef4444", fontWeight: "bold", textDecoration: "none", display: "inline-block", marginLeft: "0.25rem" }}>
                     [숨김]
@@ -624,6 +626,79 @@ export default function Sidebar({
               )}
             </div>
           </div>
+
+          {(menuVisibility.asset !== false || isSongDirector) && (
+            <div
+              className={`asset-nav-wrapper ${(activeTab === "asset" || hoveredTab === "asset") ? "active" : ""}`}
+              onMouseEnter={() => setHoveredTab("asset")}
+              onMouseLeave={() => setHoveredTab(null)}
+            >
+              <div
+                className={`nav-item ${activeTab === "asset" ? "active" : ""}`}
+                onClick={() => {
+                  onChangeTab("asset");
+                  if (onChangeAssetSubTab) {
+                    const subTabs = ["education_env", "equipment"];
+                    const firstActive = subTabs.find(tab => isSongDirector || menuVisibility[tab] !== false) || "education_env";
+                    onChangeAssetSubTab(firstActive);
+                  }
+                }}
+                style={getHiddenStyle("asset")}
+              >
+                <Package size={24} />
+                <span>
+                  자산 관리
+                  {isHidden("asset") && (
+                    <span style={{ fontSize: "0.65rem", color: "#ef4444", fontWeight: "bold", textDecoration: "none", display: "inline-block", marginLeft: "0.25rem" }}>
+                      [숨김]
+                    </span>
+                  )}
+                </span>
+              </div>
+              <div className="nav-sub-menu">
+                {(menuVisibility.education_env !== false || isSongDirector) && (
+                  <div
+                    className={`nav-sub-item ${activeTab === "asset" && assetSubTab === "education_env" ? "active" : ""}`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onChangeTab("asset");
+                      if (onChangeAssetSubTab) {
+                        onChangeAssetSubTab("education_env");
+                      }
+                    }}
+                    style={getHiddenStyle("education_env")}
+                  >
+                    - 교육환경 관리
+                    {isHidden("education_env") && (
+                      <span style={{ fontSize: "0.6rem", color: "#ef4444", textDecoration: "none", marginLeft: "0.2rem" }}>
+                        [숨김]
+                      </span>
+                    )}
+                  </div>
+                )}
+                {(menuVisibility.equipment !== false || isSongDirector) && (
+                  <div
+                    className={`nav-sub-item ${activeTab === "asset" && assetSubTab === "equipment" ? "active" : ""}`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onChangeTab("asset");
+                      if (onChangeAssetSubTab) {
+                        onChangeAssetSubTab("equipment");
+                      }
+                    }}
+                    style={getHiddenStyle("equipment")}
+                  >
+                    - 기자재 관리
+                    {isHidden("equipment") && (
+                      <span style={{ fontSize: "0.6rem", color: "#ef4444", textDecoration: "none", marginLeft: "0.2rem" }}>
+                        [숨김]
+                      </span>
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
 
           {(menuVisibility.schedule !== false || isSongDirector) && (
             <div
