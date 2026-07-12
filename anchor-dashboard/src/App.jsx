@@ -4147,7 +4147,7 @@ export default function App() {
               endDateStr = dateStr;
             }
 
-            const isCommittee = meet.category === "각종 위원회";
+            const isCommittee = meet.category === "각종 위원회" || meet.category === "committee";
             const prefix = isCommittee ? "[위원회]" : "[회의]";
             const typeVal = isCommittee ? "위원회" : "회의";
 
@@ -5220,7 +5220,7 @@ export default function App() {
           endDateStr = dateStr;
         }
 
-        const isCommittee = meet.category === "각종 위원회";
+        const isCommittee = meet.category === "각종 위원회" || meet.category === "committee";
         const prefix = isCommittee ? "[위원회]" : "[회의]";
         const typeVal = isCommittee ? "위원회" : "회의";
 

@@ -1874,25 +1874,29 @@ ${aiRawText}
 
     // 3) 회의 일정 (meeting) 시간 선후 벨리데이션
     if (modalType === "meeting") {
-      const startStr = `${formData.meetingDate}T${formData.meetingStartTime || "00:00"}`;
-      const endStr = `${formData.meetingDate}T${formData.meetingEndTime || "00:00"}`;
+      if (!formData.noTime) {
+        const startStr = `${formData.meetingDate}T${formData.meetingStartTime || "00:00"}`;
+        const endStr = `${formData.meetingDate}T${formData.meetingEndTime || "00:00"}`;
 
-      const startSecs = new Date(startStr).getTime();
-      const endSecs = new Date(endStr).getTime();
+        const startSecs = new Date(startStr).getTime();
+        const endSecs = new Date(endStr).getTime();
 
-      if (isNaN(startSecs) || isNaN(endSecs)) {
-        alert("올바른 시작시간과 종료시간을 입력해 주세요.");
-        return;
-      }
+        if (isNaN(startSecs) || isNaN(endSecs)) {
+          alert("올바른 시작시간과 종료시간을 입력해 주세요.");
+          return;
+        }
 
-      if (endSecs <= startSecs) {
-        alert("종료시간은 시작시간보다 뒤여야 합니다.");
-        return;
+        if (endSecs <= startSecs) {
+          alert("종료시간은 시작시간보다 뒤여야 합니다.");
+          return;
+        }
       }
 
       // [추가] 회의록 중복 등록 방지 벨리데이션 (같은 시간 & 같은 제목)
       const inputTitle = formData.title || "새 회의록";
-      const combinedDatetime = `${formData.meetingDate} ${formData.meetingStartTime} ~ ${formData.meetingEndTime}`;
+      const combinedDatetime = formData.noTime
+        ? formData.meetingDate
+        : `${formData.meetingDate} ${formData.meetingStartTime} ~ ${formData.meetingEndTime}`;
 
       const isDuplicate = meetingSchedules.some(m => {
         // 수정 모드일 때는 현재 편집 중인 자기 자신(editingItemId)은 중복 검사 대상에서 제외합니다.
@@ -1993,8 +1997,10 @@ ${aiRawText}
       // 입력된 회의 일자에서 자동으로 월 추출
       const extractedMonth = formData.meetingDate ? parseInt(formData.meetingDate.split("-")[1], 10) : 7;
 
-      // 일자(YYYY-MM-DD)와 시작/종료 시간을 결합하여 datetime 문자열 조합
-      const combinedDatetime = `${formData.meetingDate} ${formData.meetingStartTime} ~ ${formData.meetingEndTime}`;
+      // 일자(YYYY-MM-DD)와 시작/종료 시간을 결합하여 datetime 문자열 조합 (전일 일정 대응)
+      const combinedDatetime = formData.noTime
+        ? formData.meetingDate
+        : `${formData.meetingDate} ${formData.meetingStartTime} ~ ${formData.meetingEndTime}`;
 
       // 작성자 및 부서 정보를 attendeesExternal에 조합하여 저장 (하위호환성 유지)
       let combinedAttendeesExternal = `작성자: ${formData.writer || "작성자 미정"} | 부서: ${formData.dept || "부서 미정"}`;
@@ -3051,20 +3057,27 @@ ${aiRawText}
     setEditingItemId(meeting.id);
     setModalType("meeting");
 
-    // datetime 파싱 ("2026-07-25 13:00 ~ 15:00" 형식)
+    // datetime 파싱 ("2026-07-25 13:00 ~ 15:00" 형식 또는 "2026-07-25" 형식)
     const dt = meeting.datetime || "";
     const parts = dt.split(" ");
     let meetingDate = parts[0] || "2026-07-15";
     let meetingStartTime = "10:00";
     let meetingEndTime = "11:00";
+    let noTimeVal = false;
 
-    if (parts.length >= 4) {
-      meetingStartTime = parts[1] || "10:00";
-      meetingEndTime = parts[3] || "11:00";
-    } else if (parts.length >= 2) {
-      const timeParts = parts[1].split("~");
-      meetingStartTime = timeParts[0] || "10:00";
-      meetingEndTime = timeParts[1] || "11:00";
+    if (dt && !dt.includes("~") && !dt.includes(":")) {
+      noTimeVal = true;
+      meetingStartTime = "";
+      meetingEndTime = "";
+    } else {
+      if (parts.length >= 4) {
+        meetingStartTime = parts[1] || "10:00";
+        meetingEndTime = parts[3] || "11:00";
+      } else if (parts.length >= 2) {
+        const timeParts = parts[1].split("~");
+        meetingStartTime = timeParts[0] || "10:00";
+        meetingEndTime = timeParts[1] || "11:00";
+      }
     }
 
     // 작성자 및 부서 파싱
@@ -6761,16 +6774,70 @@ ${aiRawText}
                   {/* 3) 회의 일자 및 시간 입력 필드 (맞바꿈에 의해 아래로 이동됨) */}
                   <div style={{ display: "grid", gridTemplateColumns: "1.2fr 0.9fr 0.9fr", gap: "1rem", marginTop: "0.5rem" }}>
                     <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>회의 일자</label>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.25rem" }}>
+                        <label style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>회의 일자</label>
+                        <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)", display: "flex", alignItems: "center", gap: "0.25rem", cursor: "pointer" }}>
+                          <input
+                            type="checkbox"
+                            name="noTime"
+                            checked={formData.noTime || false}
+                            onChange={(e) => {
+                              const checked = e.target.checked;
+                              setFormData(prev => ({
+                                ...prev,
+                                noTime: checked,
+                                meetingStartTime: checked ? "" : (prev.meetingStartTime || "10:00"),
+                                meetingEndTime: checked ? "" : (prev.meetingEndTime || "11:00")
+                              }));
+                            }}
+                            style={{ cursor: "pointer", width: "13px", height: "13px" }}
+                          />
+                          전일 (시간 없음)
+                        </label>
+                      </div>
                       <input type="date" name="meetingDate" value={formData.meetingDate} onChange={handleInputChange} required style={{ width: "100%", padding: "0.5rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} />
                     </div>
                     <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>시작 시간</label>
-                      <input type="time" name="meetingStartTime" value={formData.meetingStartTime} onChange={handleInputChange} required style={{ width: "100%", padding: "0.5rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} />
+                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem", opacity: formData.noTime ? 0.4 : 1 }}>시작 시간</label>
+                      <input
+                        type="time"
+                        name="meetingStartTime"
+                        value={formData.meetingStartTime}
+                        onChange={handleInputChange}
+                        required={!formData.noTime}
+                        disabled={formData.noTime}
+                        style={{
+                          width: "100%",
+                          padding: "0.5rem",
+                          background: "var(--input-bg)",
+                          border: "1px solid var(--border-color)",
+                          borderRadius: "6px",
+                          color: "var(--text-primary)",
+                          opacity: formData.noTime ? 0.4 : 1,
+                          cursor: formData.noTime ? "not-allowed" : "text"
+                        }}
+                      />
                     </div>
                     <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>종료 시간</label>
-                      <input type="time" name="meetingEndTime" value={formData.meetingEndTime} onChange={handleInputChange} required style={{ width: "100%", padding: "0.5rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} />
+                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem", opacity: formData.noTime ? 0.4 : 1 }}>종료 시간</label>
+                      <input
+                        type="time"
+                        name="meetingEndTime"
+                        value={formData.meetingEndTime}
+                        onChange={handleInputChange}
+                        required={!formData.noTime}
+                        disabled={formData.noTime}
+                        style={{
+                          width: "100%",
+                          padding: "0.5rem",
+                          background: "var(--input-bg)",
+                          border: "1px solid var(--border-color)",
+                          borderRadius: "6px",
+                          color: "var(--text-primary)",
+                          opacity: formData.noTime ? 0.4 : 1,
+                          cursor: formData.noTime ? "not-allowed" : "text"
+                        }}
+                      />
                     </div>
                   </div>
 
