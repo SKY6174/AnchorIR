@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "../supabaseClient";
-import { Plus, Trash2, Edit2, Calendar, Clipboard, CheckCircle, AlertTriangle, Search, Home, Laptop, Check, Clock } from "lucide-react";
+import { Plus, Trash2, Edit2, Calendar, Clipboard, CheckCircle, AlertTriangle, Search, Home, Laptop, Check, Clock, TrendingUp } from "lucide-react";
 
 export default function AssetManager({ currentRole, currentUser, activeSubTab, onChangeSubTab }) {
   // 공통 로딩 상태
@@ -329,6 +329,15 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
 
   // 구매 완료 기자재 목록을 보관할 상태
   const [completedProcuredItems, setCompletedProcuredItems] = useState([]);
+
+  // 활용 실적 모달 관련 상태
+  const [isUtilModalOpen, setIsUtilModalOpen] = useState(false);
+  const [selectedUtilEquip, setSelectedUtilEquip] = useState(null);
+  const [utilRecords, setUtilRecords] = useState([]);
+  const [utilFormData, setUtilFormData] = useState({
+    semester: "2026학년도 1학기",
+    usage_details: ""
+  });
   
   // 자산 바코드 실시간 스캔을 위한 추가 상태
   const [scanInput, setScanInput] = useState("");
@@ -377,6 +386,76 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
       setCompletedProcuredItems(data || []);
     } catch (err) {
       console.error("구매 완료 기자재 목록 로드 실패:", err.message);
+    }
+  };
+
+  // 학기별 활용 실적 로드
+  const fetchUtilizationRecords = async (equipId) => {
+    try {
+      const { data, error } = await supabase
+        .from("equipment_utilization_records")
+        .select("*")
+        .eq("equipment_id", equipId)
+        .order("created_at", { ascending: true });
+
+      if (error) throw error;
+      setUtilRecords(data || []);
+    } catch (err) {
+      console.error("실적 로드 실패:", err.message);
+    }
+  };
+
+  // 실적 관리 모달 팝업 기동
+  const handleOpenUtilizationModal = (item) => {
+    setSelectedUtilEquip(item);
+    setUtilFormData({
+      semester: "2026학년도 1학기",
+      usage_details: ""
+    });
+    fetchUtilizationRecords(item.id);
+    setIsUtilModalOpen(true);
+  };
+
+  // 실적 저장 (추가)
+  const handleSaveUtilization = async (e) => {
+    e.preventDefault();
+    if (!selectedUtilEquip) return;
+    if (!utilFormData.usage_details.trim()) {
+      alert("⚠️ 실적 세부사항을 입력해 주세요.");
+      return;
+    }
+
+    try {
+      const { error } = await supabase
+        .from("equipment_utilization_records")
+        .insert([{
+          equipment_id: selectedUtilEquip.id,
+          semester: utilFormData.semester,
+          usage_details: utilFormData.usage_details
+        }]);
+
+      if (error) throw error;
+      
+      setUtilFormData(prev => ({ ...prev, usage_details: "" }));
+      fetchUtilizationRecords(selectedUtilEquip.id);
+    } catch (err) {
+      alert("실적 저장 실패: " + err.message);
+    }
+  };
+
+  // 실적 삭제
+  const handleDeleteUtilization = async (recordId) => {
+    if (!window.confirm("정말로 이 학기 실적을 삭제하시겠습니까?")) return;
+    try {
+      const { error } = await supabase
+        .from("equipment_utilization_records")
+        .delete()
+        .eq("id", recordId);
+
+      if (error) throw error;
+      fetchUtilizationRecords(selectedUtilEquip.id);
+    } catch (err) {
+      alert("실적 삭제 실패: " + err.message);
     }
   };
 
@@ -1112,15 +1191,24 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
                               </td>
                               <td style={{ padding: "0.5rem", color: "var(--text-secondary)" }}>{item.memo || "-"}</td>
                               <td style={{ padding: "0.5rem", textAlign: "center" }}>
-                                <div style={{ display: "flex", gap: "0.35rem", justifyContent: "center" }}>
+                                <div style={{ display: "flex", gap: "0.5rem", justifyContent: "center" }}>
+                                  <button
+                                    onClick={() => handleOpenUtilizationModal(item)}
+                                    title="학기별 실적 관리"
+                                    style={{ background: "none", border: "none", color: "#10B981", cursor: "pointer" }}
+                                  >
+                                    <TrendingUp size={13} />
+                                  </button>
                                   <button
                                     onClick={() => handleOpenEditEquip(item)}
+                                    title="수정"
                                     style={{ background: "none", border: "none", color: "#60A5FA", cursor: "pointer" }}
                                   >
                                     <Edit2 size={13} />
                                   </button>
                                   <button
                                     onClick={() => handleDeleteEquipment(item.id)}
+                                    title="삭제"
                                     style={{ background: "none", border: "none", color: "#F87171", cursor: "pointer" }}
                                   >
                                     <Trash2 size={13} />
@@ -1549,6 +1637,155 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* ============================================================================ */}
+      {/* 탭 3: 학기별 활용 실적 관리 모달 */}
+      {/* ============================================================================ */}
+      {isUtilModalOpen && selectedUtilEquip && (
+        <div style={{
+          position: "fixed",
+          top: 0, left: 0, right: 0, bottom: 0,
+          background: "rgba(0, 0, 0, 0.75)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          zIndex: 999
+        }}>
+          <div style={{
+            background: "var(--modal-bg, #1e293b)",
+            border: "1px solid var(--border-color)",
+            borderRadius: "12px",
+            width: "550px",
+            maxHeight: "85vh",
+            display: "flex",
+            flexDirection: "column",
+            boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.4)",
+            overflow: "hidden"
+          }}>
+            {/* 헤더 */}
+            <div style={{ padding: "1rem", borderBottom: "1px solid var(--border-color)", display: "flex", justifyContent: "space-between", alignItems: "center", background: "rgba(255,255,255,0.02)" }}>
+              <div>
+                <h3 style={{ fontSize: "0.95rem", fontWeight: "700", color: "#34D399", display: "flex", alignItems: "center", gap: "0.4rem" }}>
+                  <TrendingUp size={16} /> 학기별 활용 실적 관리
+                </h3>
+                <p style={{ margin: "0.2rem 0 0 0", fontSize: "0.7rem", color: "var(--text-secondary)" }}>
+                  {selectedUtilEquip.item_name} ({selectedUtilEquip.asset_number})
+                </p>
+              </div>
+              <button
+                onClick={() => setIsUtilModalOpen(false)}
+                style={{ background: "none", border: "none", color: "var(--text-secondary)", fontSize: "1.2rem", cursor: "pointer" }}
+              >
+                &times;
+              </button>
+            </div>
+
+            {/* 몸체 */}
+            <div style={{ padding: "1rem", flex: 1, overflowY: "auto", display: "flex", flexDirection: "column", gap: "1rem" }}>
+              {/* 기자재 정보 바 */}
+              <div style={{ display: "flex", gap: "1rem", padding: "0.6rem 0.8rem", background: "rgba(0,0,0,0.2)", borderRadius: "6px", fontSize: "0.7rem" }}>
+                <div><span style={{ color: "var(--text-secondary)" }}>바코드:</span> <span style={{ fontFamily: "monospace", color: "var(--text-primary)" }}>{selectedUtilEquip.barcode_id}</span></div>
+                <div><span style={{ color: "var(--text-secondary)" }}>재고위치:</span> <span style={{ color: "var(--text-primary)" }}>{selectedUtilEquip.stock_location || "-"}</span></div>
+              </div>
+
+              {/* 실적 리스트 */}
+              <div>
+                <h4 style={{ fontSize: "0.75rem", fontWeight: "700", marginBottom: "0.5rem", color: "var(--text-primary)" }}>📋 등록된 실적 리스트</h4>
+                <div style={{ background: "rgba(0,0,0,0.15)", border: "1px solid var(--border-color)", borderRadius: "6px", maxHeight: "250px", overflowY: "auto" }}>
+                  {utilRecords.length === 0 ? (
+                    <div style={{ textAlign: "center", padding: "2rem", color: "var(--text-secondary)", fontSize: "0.7rem" }}>
+                      등록된 학기별 활용 실적이 없습니다. 아래 폼에서 추가해 주세요.
+                    </div>
+                  ) : (
+                    <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.7rem", textAlign: "left" }}>
+                      <thead>
+                        <tr style={{ borderBottom: "1px solid var(--border-color)", color: "var(--text-secondary)", background: "rgba(255,255,255,0.02)" }}>
+                          <th style={{ padding: "0.5rem", width: "130px" }}>학기</th>
+                          <th style={{ padding: "0.5rem" }}>실적 세부내역</th>
+                          <th style={{ padding: "0.5rem", width: "50px", textAlign: "center" }}>삭제</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {utilRecords.map((rec) => (
+                          <tr key={rec.id} style={{ borderBottom: "1px solid rgba(255,255,255,0.02)" }}>
+                            <td style={{ padding: "0.5rem", fontWeight: "700", color: "#60A5FA" }}>{rec.semester}</td>
+                            <td style={{ padding: "0.5rem", color: "var(--text-primary)", whiteSpace: "pre-line" }}>{rec.usage_details}</td>
+                            <td style={{ padding: "0.5rem", textAlign: "center" }}>
+                              <button
+                                onClick={() => handleDeleteUtilization(rec.id)}
+                                style={{ background: "none", border: "none", color: "#F87171", cursor: "pointer" }}
+                                title="실적 삭제"
+                              >
+                                <Trash2 size={12} />
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  )}
+                </div>
+              </div>
+
+              {/* 실적 등록 폼 */}
+              <form onSubmit={handleSaveUtilization} style={{ padding: "0.8rem", border: "1px solid rgba(16, 185, 129, 0.2)", background: "rgba(16, 185, 129, 0.02)", borderRadius: "8px", display: "flex", flexDirection: "column", gap: "0.6rem" }}>
+                <h4 style={{ fontSize: "0.75rem", fontWeight: "700", color: "#34D399", margin: 0 }}>➕ 신규 실적 추가</h4>
+                
+                <div style={{ display: "flex", gap: "0.5rem" }}>
+                  <div style={{ width: "160px" }}>
+                    <label style={{ display: "block", fontSize: "0.65rem", color: "var(--text-secondary)", marginBottom: "0.2rem" }}>학기 선택</label>
+                    <select
+                      value={utilFormData.semester}
+                      onChange={(e) => setUtilFormData(prev => ({ ...prev, semester: e.target.value }))}
+                      style={{ width: "100%", padding: "0.4rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "4px", color: "var(--text-primary)", fontSize: "0.7rem" }}
+                    >
+                      <option value="2024학년도 1학기">2024학년도 1학기</option>
+                      <option value="2024학년도 2학기">2024학년도 2학기</option>
+                      <option value="2025학년도 1학기">2025학년도 1학기</option>
+                      <option value="2025학년도 2학기">2025학년도 2학기</option>
+                      <option value="2026학년도 1학기">2026학년도 1학기</option>
+                      <option value="2026학년도 2학기">2026학년도 2학기</option>
+                      <option value="2027학년도 1학기">2027학년도 1학기</option>
+                      <option value="2027학년도 2학기">2027학년도 2학기</option>
+                    </select>
+                  </div>
+                  
+                  <div style={{ flex: 1 }}>
+                    <label style={{ display: "block", fontSize: "0.65rem", color: "var(--text-secondary)", marginBottom: "0.2rem" }}>실적 세부사항</label>
+                    <input
+                      type="text"
+                      placeholder="예: 정규교과 AI 기초실습 45명 이수 및 기자재 100% 활용"
+                      value={utilFormData.usage_details}
+                      onChange={(e) => setUtilFormData(prev => ({ ...prev, usage_details: e.target.value }))}
+                      required
+                      style={{ width: "100%", padding: "0.4rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "4px", color: "var(--text-primary)", fontSize: "0.7rem" }}
+                    />
+                  </div>
+                </div>
+
+                <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "0.2rem" }}>
+                  <button
+                    type="submit"
+                    style={{ padding: "0.4rem 1rem", background: "#10B981", border: "none", color: "white", borderRadius: "4px", fontSize: "0.7rem", fontWeight: "700", cursor: "pointer" }}
+                  >
+                    추가하기
+                  </button>
+                </div>
+              </form>
+            </div>
+
+            {/* 푸터 */}
+            <div style={{ padding: "0.75rem 1rem", borderTop: "1px solid var(--border-color)", display: "flex", justifyContent: "flex-end", background: "rgba(255,255,255,0.01)" }}>
+              <button
+                onClick={() => setIsUtilModalOpen(false)}
+                style={{ padding: "0.4rem 1.2rem", background: "rgba(255,255,255,0.06)", border: "none", color: "var(--text-secondary)", borderRadius: "4px", fontSize: "0.7rem", cursor: "pointer" }}
+              >
+                닫기
+              </button>
+            </div>
           </div>
         </div>
       )}
