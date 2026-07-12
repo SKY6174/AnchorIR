@@ -792,9 +792,7 @@ body.light-mode {
 .budget-nav-wrapper:hover .nav-sub-menu,
 .budget-nav-wrapper.active .nav-sub-menu,
 .procurement-nav-wrapper:hover .nav-sub-menu,
-.procurement-nav-wrapper.active .nav-sub-menu,
-.asset-nav-wrapper:hover .nav-sub-menu,
-.asset-nav-wrapper.active .nav-sub-menu {
+.procurement-nav-wrapper.active .nav-sub-menu {
   max-height: 120px;
   opacity: 1;
   margin-top: 0.25rem;
@@ -835,6 +833,14 @@ body.light-mode {
 
 .kpis-nav-wrapper:hover .nav-sub-menu,
 .kpis-nav-wrapper.active .nav-sub-menu {
+  max-height: 80px !important;
+  opacity: 1 !important;
+  margin-top: 0.25rem !important;
+  margin-bottom: 0.25rem !important;
+}
+
+.asset-nav-wrapper:hover .nav-sub-menu,
+.asset-nav-wrapper.active .nav-sub-menu {
   max-height: 80px !important;
   opacity: 1 !important;
   margin-top: 0.25rem !important;
