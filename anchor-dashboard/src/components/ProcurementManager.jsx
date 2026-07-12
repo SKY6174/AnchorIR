@@ -2901,13 +2901,13 @@ export default function ProcurementManager({
                           key={equip.id || idx} 
                           style={{ borderBottom: "1px solid var(--border-color)", transition: "background 0.15s ease" }}
                         >
-                          <td style={{ padding: "0.8rem 0.5rem", textAlign: "center", color: "var(--text-secondary)" }}>
+                          <td style={{ padding: "0.8rem 0.5rem", textAlign: "center", verticalAlign: "middle", color: "var(--text-secondary)" }}>
                             {idx + 1}
                           </td>
-                          <td style={{ padding: "0.8rem 0.5rem", textAlign: "center", fontWeight: "750", color: "var(--accent-color)" }}>
+                          <td style={{ padding: "0.8rem 0.5rem", textAlign: "center", verticalAlign: "middle", fontWeight: "750", color: "var(--accent-color)" }}>
                             {equip.unit}
                           </td>
-                          <td style={{ padding: "0.8rem 0.5rem", textAlign: "center", fontWeight: "600" }}>
+                          <td style={{ padding: "0.8rem 0.5rem", textAlign: "center", verticalAlign: "middle", fontWeight: "600" }}>
                             {(() => {
                               const dName = equip.deptName || "";
                               const divName = equip.divisionName || "";
@@ -2917,19 +2917,19 @@ export default function ProcurementManager({
                               return dName || divName || "-";
                             })()}
                           </td>
-                          <td style={{ padding: "0.8rem 0.5rem", textAlign: "center", fontWeight: "700", color: "var(--text-primary)" }}>
+                          <td style={{ padding: "0.8rem 0.5rem", textAlign: "center", verticalAlign: "middle", fontWeight: "700", color: "var(--text-primary)" }}>
                             {equip.itemName || equip.name || "-"}
                           </td>
-                          <td style={{ padding: "0.8rem 0.5rem", textAlign: "right", color: "var(--text-secondary)", fontWeight: "600" }}>
+                          <td style={{ padding: "0.8rem 0.5rem", textAlign: "center", verticalAlign: "middle", color: "var(--text-primary)", fontWeight: "600" }}>
                             {formatToMillionWon(price)}
                           </td>
-                          <td style={{ padding: "0.8rem 0.5rem", textAlign: "right", fontWeight: "600" }}>
+                          <td style={{ padding: "0.8rem 0.5rem", textAlign: "center", verticalAlign: "middle", color: "var(--text-primary)", fontWeight: "600" }}>
                             {qty}
                           </td>
-                          <td style={{ padding: "0.8rem 0.5rem", textAlign: "right", fontWeight: "700", color: "#10B981" }}>
+                          <td style={{ padding: "0.8rem 0.5rem", textAlign: "center", verticalAlign: "middle", fontWeight: "700", color: darkMode ? "#34d399" : "#059669" }}>
                             {formatToMillionWon(total)}
                           </td>
-                          <td style={{ padding: "0.8rem 0.75rem", textAlign: "left", color: "var(--text-secondary)", maxWidth: "384px" }} title={equip.description || equip.opPlan}>
+                          <td style={{ padding: "0.8rem 0.75rem", textAlign: "center", verticalAlign: "middle", color: "var(--text-secondary)" }} title={equip.description || equip.opPlan}>
                             {(() => {
                               // 개행으로 구분된 데이터를 구입목적과 활용계획으로 쪼갭니다 (요구사항 3)
                               const text = equip.description || equip.opPlan || "";
@@ -2938,11 +2938,12 @@ export default function ProcurementManager({
                               const plan = lines[1] || "-";
                               return (
                                 <div style={{
-                                  display: "flex",
+                                  display: "inline-flex",
                                   flexDirection: "column",
                                   gap: "0.35rem",
                                   lineHeight: "1.4",
-                                  fontSize: "0.78rem"
+                                  fontSize: "0.78rem",
+                                  textAlign: "left"
                                 }}>
                                   <div style={{ wordBreak: "break-all", whiteSpace: "normal", display: "flex", alignItems: "flex-start", gap: "0.25rem" }}>
                                     <span style={{ color: "var(--accent-color)", fontWeight: "bold" }}>•</span>
@@ -3170,7 +3171,7 @@ export default function ProcurementManager({
                             );
                           })}
 
-                          <td style={{ padding: "0.8rem 0.2rem", textAlign: "center", color: "var(--text-secondary)" }}>
+                          <td style={{ padding: "0.8rem 0.2rem", textAlign: "center", verticalAlign: "middle", color: "var(--text-secondary)" }}>
                             <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem", alignItems: "center", width: "100%" }}>
                               {/* 1. 기획문서 버튼 (파란색 테마) */}
                               <button
@@ -3179,19 +3180,21 @@ export default function ProcurementManager({
                                   padding: "0.25rem 0.45rem",
                                   fontSize: "0.65rem",
                                   borderRadius: "4px",
-                                  background: "rgba(59, 130, 246, 0.12)",
-                                  color: "#60A5FA",
-                                  border: "1px solid rgba(59, 130, 246, 0.25)",
+                                  background: darkMode ? "rgba(59, 130, 246, 0.18)" : "#eff6ff",
+                                  color: darkMode ? "#60a5fa" : "#1d4ed8",
+                                  border: darkMode ? "1px solid rgba(59, 130, 246, 0.4)" : "1px solid rgba(37, 99, 235, 0.4)",
                                   cursor: "pointer",
-                                  transition: "all 0.2s"
+                                  transition: "all 0.2s",
+                                  width: "38px",
+                                  fontWeight: "700"
                                 }}
                                 onMouseOver={(e) => {
-                                  e.currentTarget.style.background = "rgba(59, 130, 246, 0.25)";
-                                  e.currentTarget.style.borderColor = "#60A5FA";
+                                  e.currentTarget.style.background = darkMode ? "rgba(59, 130, 246, 0.28)" : "#dbeafe";
+                                  e.currentTarget.style.borderColor = darkMode ? "#60a5fa" : "#2563eb";
                                 }}
                                 onMouseOut={(e) => {
-                                  e.currentTarget.style.background = "rgba(59, 130, 246, 0.12)";
-                                  e.currentTarget.style.borderColor = "rgba(59, 130, 246, 0.25)";
+                                  e.currentTarget.style.background = darkMode ? "rgba(59, 130, 246, 0.18)" : "#eff6ff";
+                                  e.currentTarget.style.borderColor = darkMode ? "rgba(59, 130, 246, 0.4)" : "rgba(37, 99, 235, 0.4)";
                                 }}
                                 title="기획 제안서 요약 보기"
                               >
@@ -3205,19 +3208,21 @@ export default function ProcurementManager({
                                   padding: "0.25rem 0.45rem",
                                   fontSize: "0.65rem",
                                   borderRadius: "4px",
-                                  background: "rgba(167, 139, 250, 0.12)",
-                                  color: "#C084FC",
-                                  border: "1px solid rgba(167, 139, 250, 0.25)",
+                                  background: darkMode ? "rgba(167, 139, 250, 0.18)" : "#f5f3ff",
+                                  color: darkMode ? "#c084fc" : "#6d28d9",
+                                  border: darkMode ? "1px solid rgba(167, 139, 250, 0.4)" : "1px solid rgba(109, 40, 217, 0.4)",
                                   cursor: "pointer",
-                                  transition: "all 0.2s"
+                                  transition: "all 0.2s",
+                                  width: "38px",
+                                  fontWeight: "700"
                                 }}
                                 onMouseOver={(e) => {
-                                  e.currentTarget.style.background = "rgba(167, 139, 250, 0.25)";
-                                  e.currentTarget.style.borderColor = "#C084FC";
+                                  e.currentTarget.style.background = darkMode ? "rgba(167, 139, 250, 0.28)" : "#ede9fe";
+                                  e.currentTarget.style.borderColor = darkMode ? "#c084fc" : "#7c3aed";
                                 }}
                                 onMouseOut={(e) => {
-                                  e.currentTarget.style.background = "rgba(167, 139, 250, 0.12)";
-                                  e.currentTarget.style.borderColor = "rgba(167, 139, 250, 0.25)";
+                                  e.currentTarget.style.background = darkMode ? "rgba(167, 139, 250, 0.18)" : "#f5f3ff";
+                                  e.currentTarget.style.borderColor = darkMode ? "rgba(167, 139, 250, 0.4)" : "rgba(109, 40, 217, 0.4)";
                                 }}
                                 title="구매 발송문서 요약 보기"
                               >
@@ -3231,19 +3236,21 @@ export default function ProcurementManager({
                                   padding: "0.25rem 0.45rem",
                                   fontSize: "0.65rem",
                                   borderRadius: "4px",
-                                  background: "rgba(16, 185, 129, 0.12)",
-                                  color: "#34D399",
-                                  border: "1px solid rgba(16, 185, 129, 0.25)",
+                                  background: darkMode ? "rgba(16, 185, 129, 0.18)" : "#ecfdf5",
+                                  color: darkMode ? "#34d399" : "#047857",
+                                  border: darkMode ? "1px solid rgba(16, 185, 129, 0.4)" : "1px solid rgba(5, 150, 105, 0.4)",
                                   cursor: "pointer",
-                                  transition: "all 0.2s"
+                                  transition: "all 0.2s",
+                                  width: "38px",
+                                  fontWeight: "700"
                                 }}
                                 onMouseOver={(e) => {
-                                  e.currentTarget.style.background = "rgba(16, 185, 129, 0.25)";
-                                  e.currentTarget.style.borderColor = "#34D399";
+                                  e.currentTarget.style.background = darkMode ? "rgba(16, 185, 129, 0.28)" : "#d1fae5";
+                                  e.currentTarget.style.borderColor = darkMode ? "#34d399" : "#059669";
                                 }}
                                 onMouseOut={(e) => {
-                                  e.currentTarget.style.background = "rgba(16, 185, 129, 0.12)";
-                                  e.currentTarget.style.borderColor = "rgba(16, 185, 129, 0.25)";
+                                  e.currentTarget.style.background = darkMode ? "rgba(16, 185, 129, 0.18)" : "#ecfdf5";
+                                  e.currentTarget.style.borderColor = darkMode ? "rgba(16, 185, 129, 0.4)" : "rgba(5, 150, 105, 0.4)";
                                 }}
                                 title="입찰 규격 공고 보기"
                               >
@@ -3258,26 +3265,28 @@ export default function ProcurementManager({
                                   <button
                                     onClick={() => openEditModal(equip)}
                                     style={{
-                                      background: "var(--input-bg)",
-                                      border: "1px solid var(--border-color)",
+                                      background: darkMode ? "rgba(255, 255, 255, 0.08)" : "#f4f4f5",
+                                      border: darkMode ? "1px solid rgba(255, 255, 255, 0.15)" : "1px solid #d4d4d8",
                                       borderRadius: "4px",
-                                      color: "var(--text-primary)",
+                                      color: darkMode ? "#e4e4e7" : "#27272a",
                                       padding: "0.25rem 0.45rem",
                                       fontSize: "0.65rem",
+                                      fontWeight: "700",
                                       cursor: "pointer",
                                       transition: "all 0.15s ease",
                                       textAlign: "center",
-                                      whiteSpace: "nowrap"
+                                      whiteSpace: "nowrap",
+                                      width: "38px"
                                     }}
                                     onMouseOver={(e) => {
-                                      e.currentTarget.style.background = "rgba(59, 130, 246, 0.2)";
-                                      e.currentTarget.style.borderColor = "rgba(59, 130, 246, 0.4)";
-                                      e.currentTarget.style.color = "#60A5FA";
+                                      e.currentTarget.style.background = "rgba(59, 130, 246, 0.15)";
+                                      e.currentTarget.style.borderColor = "rgba(59, 130, 246, 0.6)";
+                                      e.currentTarget.style.color = darkMode ? "#60a5fa" : "#1d4ed8";
                                     }}
                                     onMouseOut={(e) => {
-                                      e.currentTarget.style.background = "rgba(255,255,255,0.06)";
-                                      e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)";
-                                      e.currentTarget.style.color = "rgba(255,255,255,0.8)";
+                                      e.currentTarget.style.background = darkMode ? "rgba(255, 255, 255, 0.08)" : "#f4f4f5";
+                                      e.currentTarget.style.borderColor = darkMode ? "rgba(255, 255, 255, 0.15)" : "#d4d4d8";
+                                      e.currentTarget.style.color = darkMode ? "#e4e4e7" : "#27272a";
                                     }}
                                     title="기자재 수정"
                                   >
@@ -3301,26 +3310,28 @@ export default function ProcurementManager({
                                       }
                                     }}
                                     style={{
-                                      background: "rgba(239, 68, 68, 0.1)",
-                                      border: "1px solid rgba(239, 68, 68, 0.2)",
+                                      background: darkMode ? "rgba(239, 68, 68, 0.15)" : "#fef2f2",
+                                      border: darkMode ? "1px solid rgba(239, 68, 68, 0.45)" : "1px solid rgba(239, 68, 68, 0.4)",
                                       borderRadius: "4px",
-                                      color: "#FCA5A5",
+                                      color: darkMode ? "#f87171" : "#b91c1c",
                                       padding: "0.25rem 0.45rem",
                                       fontSize: "0.65rem",
+                                      fontWeight: "700",
                                       cursor: "pointer",
                                       transition: "all 0.15s ease",
                                       textAlign: "center",
-                                      whiteSpace: "nowrap"
+                                      whiteSpace: "nowrap",
+                                      width: "38px"
                                     }}
                                     onMouseOver={(e) => {
                                       e.currentTarget.style.background = "rgba(239, 68, 68, 0.25)";
-                                      e.currentTarget.style.borderColor = "rgba(239, 68, 68, 0.5)";
-                                      e.currentTarget.style.color = "#F87171";
+                                      e.currentTarget.style.borderColor = "#ef4444";
+                                      e.currentTarget.style.color = "#ef4444";
                                     }}
                                     onMouseOut={(e) => {
-                                      e.currentTarget.style.background = "rgba(239, 68, 68, 0.1)";
-                                      e.currentTarget.style.borderColor = "rgba(239, 68, 68, 0.2)";
-                                      e.currentTarget.style.color = "#FCA5A5";
+                                      e.currentTarget.style.background = darkMode ? "rgba(239, 68, 68, 0.15)" : "#fef2f2";
+                                      e.currentTarget.style.borderColor = darkMode ? "rgba(239, 68, 68, 0.45)" : "rgba(239, 68, 68, 0.4)";
+                                      e.currentTarget.style.color = darkMode ? "#f87171" : "#b91c1c";
                                     }}
                                     title="기자재 삭제"
                                   >
