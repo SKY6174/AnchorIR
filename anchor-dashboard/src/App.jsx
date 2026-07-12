@@ -4072,17 +4072,21 @@ export default function App() {
             attendees: x.attendees || ""
           }));
           setMonthlySchedules(formatted);
+          fetchedMonthlySchedulesRef.current = JSON.stringify(formatted);
           safeSetLocalStorage(`anchor_cache_month_y${selectedYear}`, JSON.stringify(formatted), selectedYear);
         } else {
           setMonthlySchedules([]);
+          fetchedMonthlySchedulesRef.current = "[]";
           localStorage.removeItem(`anchor_cache_month_y${selectedYear}`);
         }
         if (sEvent && sEvent.length > 0) {
           const formatted = sEvent.map(x => ({ ...x, id: Number(x.id), year: Number(x.year), month: Number(x.month) }));
           setEventSchedules(formatted);
+          fetchedEventSchedulesRef.current = JSON.stringify(formatted);
           safeSetLocalStorage(`anchor_cache_event_y${selectedYear}`, JSON.stringify(formatted), selectedYear);
         } else {
           setEventSchedules([]);
+          fetchedEventSchedulesRef.current = "[]";
           localStorage.removeItem(`anchor_cache_event_y${selectedYear}`);
         }
         if (sMeet && sMeet.length > 0) {
@@ -4894,7 +4898,10 @@ export default function App() {
     if (!currentUser || currentRole?.id === "GUEST") return;
     if (!monthlySchedules) return;
 
-    // 💡 안전 가드: 데이터 형식이 비정상적이거나 날짜/제목 누락 시 동기화 스킵하여 증발 방지
+    // 💡 안전 가드 0: 원격 DB에서 가져온 최초 데이터 또는 직전 동기화 데이터와 로컬 상태가 100% 동일하다면 불필요한 쿼리 전송 및 유실 사고 방지를 위해 즉시 리턴함.
+    if (fetchedMonthlySchedulesRef.current === JSON.stringify(monthlySchedules)) return;
+
+    // 💡 안전 가드 1: 데이터 형식이 비정상적이거나 날짜/제목 누락 시 동기화 스킵하여 증발 방지
     const hasInvalidItem = monthlySchedules.some(s => !s.title?.trim() || !s.startAt || !s.endAt);
     if (hasInvalidItem) {
       console.warn("Schedule sync aborted: detected invalid schedule item with missing title or dates.", monthlySchedules);
@@ -4912,6 +4919,7 @@ export default function App() {
         if (schedulesToSync.length === 0) {
           const { error } = await supabase.from("schedule_monthly").delete().eq("year", targetYear);
           if (error) throw error;
+          fetchedMonthlySchedulesRef.current = JSON.stringify([]);
           setSyncStatus("synced");
           return;
         }
@@ -4946,8 +4954,9 @@ export default function App() {
         if (upsertError) throw upsertError;
 
         // 4. 로컬 임시 id를 DB sequence id로 매핑 복원하여 중복 인서트 방지
+        let finalLocalSchedules = schedulesToSync;
         if (upsertedData && upsertedData.length > 0) {
-          const updatedLocal = schedulesToSync.map(s => {
+          finalLocalSchedules = schedulesToSync.map(s => {
             if (s.id && typeof s.id === "number" && s.id < 2000000000) {
               return s;
             }
@@ -4958,8 +4967,9 @@ export default function App() {
             return s;
           });
           
-          setMonthlySchedules(updatedLocal);
-          safeSetLocalStorage(`anchor_cache_month_y${targetYear}`, JSON.stringify(updatedLocal), targetYear);
+          fetchedMonthlySchedulesRef.current = JSON.stringify(finalLocalSchedules);
+          setMonthlySchedules(finalLocalSchedules);
+          safeSetLocalStorage(`anchor_cache_month_y${targetYear}`, JSON.stringify(finalLocalSchedules), targetYear);
         }
 
         // 5. 사용자가 삭제한 아이템들 DB 반영 (Diff Delete)
@@ -4970,7 +4980,7 @@ export default function App() {
         
         if (currentDbItems) {
           const dbIds = currentDbItems.map(x => x.id);
-          const localRealIds = schedulesToSync
+          const localRealIds = finalLocalSchedules
             .map(s => s.id)
             .filter(id => typeof id === "number" && id < 2000000000);
           
@@ -4984,6 +4994,7 @@ export default function App() {
           }
         }
 
+        fetchedMonthlySchedulesRef.current = JSON.stringify(finalLocalSchedules);
         setSyncStatus("synced");
       } catch (e) {
         console.error("Failed to sync monthly schedules:", e);
@@ -5003,41 +5014,132 @@ export default function App() {
     };
   }, [monthlySchedules, selectedYear, isDbLoaded, isFetchCompleted]);
 
-  // 8) Schedule Events 자동 저장 디바운스 훅
+  // 최신 eventSchedules 상태 보존을 위한 Ref (언마운트/탭이동 시 즉시 강제 Flush 동기화 보장)
+  const latestEventSchedulesRef = useRef(null);
+  useEffect(() => {
+    latestEventSchedulesRef.current = eventSchedules;
+  }, [eventSchedules]);
+
+  // 8) Schedule Events 자동 저장 디바운스 훅 (원자적 Upsert + Diff Delete 적용)
   useEffect(() => {
     if (!isDbLoaded || !isFetchCompleted) return;
     if (!currentUser || currentRole?.id === "GUEST") return;
-    // 💡 안전 가드: 데이터 로딩이 완료되지 않았거나 일시적 통신 지연 시 빈 배열([])이 원격 DB를 덮어쓰는 사고 방지
-    if (!eventSchedules || eventSchedules.length === 0) return;
+    if (!eventSchedules) return;
+
+    // 💡 안전 가드 0: 원격 DB에서 가져온 최초 데이터 또는 직전 동기화 데이터와 로컬 상태가 100% 동일하다면 불필요한 쿼리 전송 및 유실 사고 방지를 위해 즉시 리턴함.
+    if (fetchedEventSchedulesRef.current === JSON.stringify(eventSchedules)) return;
+
+    // 💡 안전 가드 1: 필수값(title, datetime)이 비어있다면 동기화 스킵하여 증발 방지
+    const hasInvalidItem = eventSchedules.some(s => !s.title?.trim() || !s.datetime);
+    if (hasInvalidItem) {
+      console.warn("Event schedule sync aborted: detected invalid event item with missing title or datetime.", eventSchedules);
+      return;
+    }
+
     safeSetLocalStorage(`anchor_cache_event_y${selectedYear}`, JSON.stringify(eventSchedules), selectedYear);
     setSyncStatus("syncing");
-    const timer = setTimeout(async () => {
+
+    const performSync = async (schedulesToSync, targetYear) => {
       try {
-        await supabase.from("schedule_events").delete().eq("year", selectedYear);
-        if (eventSchedules.length > 0) {
-          const { error } = await supabase.from("schedule_events").insert(
-            eventSchedules.map(s => ({
-              year: getCalculatedYearFromDate(s.datetime ? s.datetime.substring(0, 10) : null, selectedYear),
-              month: s.month,
-              title: s.title,
-              department: s.department,
-              location: s.location,
-              attendees_internal: s.attendeesInternal,
-              attendees_external: s.attendeesExternal,
-              program: s.program,
-              purpose: s.purpose,
-              result: s.result,
-              datetime: s.datetime
-            }))
-          );
+        if (!schedulesToSync) return;
+
+        // 1. 모든 일정이 삭제된 상태면 원격 DB 해당 연도 전체 삭제
+        if (schedulesToSync.length === 0) {
+          const { error } = await supabase.from("schedule_events").delete().eq("year", targetYear);
           if (error) throw error;
+          fetchedEventSchedulesRef.current = JSON.stringify([]);
+          setSyncStatus("synced");
+          return;
         }
+
+        // 2. 20억 이하의 실제 DB id만 전송에 포함하고 로컬 임시 id는 제외하여 시퀀스 범위초과 에러 방지
+        const itemsToUpsert = schedulesToSync.map(s => {
+          const item = {
+            year: getCalculatedYearFromDate(s.datetime ? s.datetime.substring(0, 10) : null, targetYear),
+            month: s.month,
+            title: s.title,
+            department: s.department || "",
+            location: s.location || "",
+            attendees_internal: s.attendeesInternal || "",
+            attendees_external: s.attendeesExternal || "",
+            program: s.program || "",
+            purpose: s.purpose || "",
+            result: s.result || "",
+            datetime: s.datetime
+          };
+          if (s.id && typeof s.id === "number" && s.id < 2000000000) {
+            item.id = s.id;
+          }
+          return item;
+        });
+
+        // 3. 원자적 Upsert 수행 및 새로 발행된 sequence id 결과 조회
+        const { data: upsertedData, error: upsertError } = await supabase
+          .from("schedule_events")
+          .upsert(itemsToUpsert, { onConflict: "id" })
+          .select();
+
+        if (upsertError) throw upsertError;
+
+        // 4. 로컬 임시 id를 DB sequence id로 매핑 복원하여 중복 인서트 방지
+        let finalLocalEvents = schedulesToSync;
+        if (upsertedData && upsertedData.length > 0) {
+          finalLocalEvents = schedulesToSync.map(s => {
+            if (s.id && typeof s.id === "number" && s.id < 2000000000) {
+              return s;
+            }
+            const dbMatch = upsertedData.find(x => x.title === s.title && x.datetime === s.datetime);
+            if (dbMatch) {
+              return { ...s, id: Number(dbMatch.id) };
+            }
+            return s;
+          });
+
+          fetchedEventSchedulesRef.current = JSON.stringify(finalLocalEvents);
+          setEventSchedules(finalLocalEvents);
+          safeSetLocalStorage(`anchor_cache_event_y${targetYear}`, JSON.stringify(finalLocalEvents), targetYear);
+        }
+
+        // 5. 사용자가 삭제한 아이템들 DB 반영 (Diff Delete)
+        const { data: currentDbItems } = await supabase
+          .from("schedule_events")
+          .select("id")
+          .eq("year", targetYear);
+
+        if (currentDbItems) {
+          const dbIds = currentDbItems.map(x => x.id);
+          const localRealIds = finalLocalEvents
+            .map(s => s.id)
+            .filter(id => typeof id === "number" && id < 2000000000);
+
+          const idsToDelete = dbIds.filter(id => !localRealIds.includes(id));
+          if (idsToDelete.length > 0) {
+            const { error: delError } = await supabase
+              .from("schedule_events")
+              .delete()
+              .in("id", idsToDelete);
+            if (delError) throw delError;
+          }
+        }
+
+        fetchedEventSchedulesRef.current = JSON.stringify(finalLocalEvents);
         setSyncStatus("synced");
       } catch (e) {
+        console.error("Failed to sync event schedules:", e);
         setSyncStatus("error");
       }
-    }, 1500);
-    return () => clearTimeout(timer);
+    };
+
+    const timer = setTimeout(() => {
+      performSync(eventSchedules, selectedYear);
+    }, 300);
+
+    return () => {
+      clearTimeout(timer);
+      if (latestEventSchedulesRef.current) {
+        performSync(latestEventSchedulesRef.current, selectedYear);
+      }
+    };
   }, [eventSchedules, selectedYear, isDbLoaded, isFetchCompleted]);
 
   // 9) Schedule Meetings 자동 저장 디바운스 훅
