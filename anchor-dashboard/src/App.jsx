@@ -3206,9 +3206,20 @@ export default function App() {
       ...strat,
       units: strat.units?.map(unit => {
         const isA1Na = unit.id === "A1na" || unit.id === "A1나";
-        const u2 = unit.years?.[2] || {};
+        const isC1 = unit.id === "C1";
         
         const newYears = { ...unit.years };
+        if (isC1) {
+          // 💡 C1단위과제 2차년도 본사업비 예산 350,000,000원으로 강제 주입 (이월 찌꺼기 3.5억 제거)
+          newYears[2] = {
+            budget_main: 350000000,
+            spent_main: 0,
+            budget_carry: 0,
+            spent_carry: 0
+          };
+        }
+        
+        const u2 = newYears[2] || {};
         
         // 3, 4, 5차년도 강제 복사 (A1나 단위과제는 0원)
         [3, 4, 5].forEach(yr => {
@@ -3228,8 +3239,65 @@ export default function App() {
           ...unit,
           years: newYears,
           programs: unit.programs?.map(prog => {
-            const p2 = prog.years?.[2] || {};
             const newProgYears = { ...prog.years };
+            
+            // 💡 C1단위과제의 하위 프로그램인 경우, 2차년도 본사업비와 국비/시비 안분, 비목을 강제로 정규화합니다.
+            if (isC1) {
+              const c1ProgBudgets = {
+                "C1-S1T1-1": { total: 5000000, national: 5000000, city: 0, category: "성과 활용∙확산 지원비" },
+                "C1-S1T1-2": { total: 75000000, national: 75000000, city: 0, category: "교육∙연구 환경개선비" },
+                "C1-S1T1-3": { total: 30000000, national: 30000000, city: 0, category: "실험∙실습장비 및 기자재 구입∙운영비" },
+                "C1-S1T2-1": { total: 10000000, national: 10000000, city: 0, category: "성과 활용∙확산 지원비" },
+                "C1-S1T3-1": { total: 0, national: 0, city: 0, category: "교육∙연구 프로그램 개발∙운영비" },
+                "C1-S1T4-1": { total: 0, national: 0, city: 0, category: "교육∙연구 프로그램 개발∙운영비" },
+                "C1-S2T5-1": { total: 4000000, national: 4000000, city: 0, category: "교육∙연구 프로그램 개발∙운영비" },
+                "C1-S2T6-1": { total: 95000000, national: 95000000, city: 0, category: "교육∙연구 환경개선비" },
+                "C1-S2T6-2": { total: 20000000, national: 20000000, city: 0, category: "실험∙실습장비 및 기자재 구입∙운영비" },
+                "C1-S2T7-1": { total: 5000000, national: 5000000, city: 0, category: "교육∙연구 프로그램 개발∙운영비" },
+                "C1-S3T8-1": { total: 5000000, national: 5000000, city: 0, category: "교육∙연구 프로그램 개발∙운영비" },
+                "C1-S3T9-1": { total: 10000000, national: 10000000, city: 0, category: "성과 활용∙확산 지원비" },
+                "C1-S3T10-1": { total: 6000000, national: 6000000, city: 0, category: "교육∙연구 프로그램 개발∙운영비" },
+                "C1-S3T11-1": { total: 12000000, national: 12000000, city: 0, category: "교육∙연구 프로그램 개발∙운영비" },
+                "C1-S3T11-2": { total: 10000000, national: 10000000, city: 0, category: "장학금" },
+                "C1-S3T11-3": { total: 2000000, national: 2000000, city: 0, category: "교육∙연구 프로그램 개발∙운영비" },
+                "C1-S4T12-1": { total: 10000000, national: 0, city: 10000000, category: "교육∙연구 프로그램 개발∙운영비" },
+                "C1-S4T12-2": { total: 25000000, national: 25000000, city: 0, category: "교육∙연구 프로그램 개발∙운영비" },
+                "C1-S4T13-1": { total: 6000000, national: 6000000, city: 0, category: "교육∙연구 프로그램 개발∙운영비" },
+                "C1-S4T14-1": { total: 10000000, national: 0, city: 10000000, category: "교육∙연구 프로그램 개발∙운영비" },
+                "C1-S4T14-2": { total: 10000000, national: 10000000, city: 0, category: "교육∙연구 프로그램 개발∙운영비" }
+              };
+              
+              const cfg = c1ProgBudgets[prog.id] || { total: 0, national: 0, city: 0, category: "교육∙연구 프로그램 개발∙운영비" };
+              newProgYears[2] = {
+                budget_main: cfg.total,
+                spent_main: 0,
+                budget_carry: 0,
+                spent_carry: 0,
+                budget_national: cfg.national,
+                spent_national: 0,
+                budget_city: cfg.city,
+                spent_city: 0,
+                budget_external: 0,
+                spent_external: 0,
+                budget_carry_national: 0,
+                spent_carry_national: 0,
+                budget_carry_city: 0,
+                spent_carry_city: 0,
+                budget_carry_external: 0,
+                spent_carry_external: 0,
+                budget_categories: [
+                  {
+                    category: cfg.category,
+                    budget: String(cfg.total).replace(/\B(?=(\d{3})+(?!\d))/g, ","),
+                    budget_carry: "0",
+                    spent: 0,
+                    spent_carry: 0
+                  }
+                ]
+              };
+            }
+            
+            const p2 = newProgYears[2] || {};
             
             [3, 4, 5].forEach(yr => {
               const pYr = newProgYears[yr] || {};
