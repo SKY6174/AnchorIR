@@ -8137,7 +8137,7 @@ export default function App() {
                       transition: "all 0.2s"
                     }}
                   >
-                    대학조직도
+                    대학 조직도
                   </button>
                   <button
                     type="button"

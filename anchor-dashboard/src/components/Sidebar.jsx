@@ -969,7 +969,7 @@ export default function Sidebar({
                     }}
                     style={getHiddenStyle("org_chart")}
                   >
-                    - 대학조직도
+                    - 대학 조직도
                     {isHidden("org_chart") && (
                       <span style={{ fontSize: "0.6rem", color: "#ef4444", textDecoration: "none", marginLeft: "0.2rem" }}>
                         [숨김]

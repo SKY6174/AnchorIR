@@ -103,7 +103,7 @@ const MENU_SCHEMA = [
       { key: "members", label: "구성원 관리" },
       { key: "users", label: "회원현황" },
       { key: "programs", label: "프로그램 배정" },
-      { key: "org_chart", label: "대학조직도" },
+      { key: "org_chart", label: "대학 조직도" },
       { key: "center_org_chart", label: "사업단 조직도" },
       { key: "partners", label: "파트너기관" }
     ]

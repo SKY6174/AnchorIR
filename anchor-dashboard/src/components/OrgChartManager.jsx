@@ -535,7 +535,7 @@ export default function OrgChartManager() {
       <div className="glass-card" style={{ padding: "1.5rem", display: "flex", flexDirection: "column", gap: "0.5rem" }}>
         <h2 style={{ fontSize: "1.25rem", fontWeight: "800", color: "var(--accent-color)", display: "flex", alignItems: "center", gap: "0.5rem" }}>
           <Network size={22} />
-          울산과학대학교 대학조직도
+          울산과학대학교 대학 조직도
         </h2>
         <p style={{ fontSize: "0.9rem", color: "var(--text-secondary)", lineHeight: "1.5" }}>
           울산과학대학교의 학부(과), 대학본부, 평생교육원, 산학협력단, 부속기관 등 핵심 행정 및 교육 조직 계통을 한눈에 조회합니다.
