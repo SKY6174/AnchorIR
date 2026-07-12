@@ -4882,16 +4882,19 @@ export default function App() {
     return () => clearTimeout(timer);
   }, [serviceData, selectedYear, isDbLoaded, isFetchCompleted]);
 
-  // 7) Schedule Monthly 자동 저장 디바운스 훅
+  // 최신 monthlySchedules 상태 보존을 위한 Ref (언마운트/탭이동 시 즉시 강제 Flush 동기화 보장)
+  const latestMonthlySchedulesRef = useRef(null);
+  useEffect(() => {
+    latestMonthlySchedulesRef.current = monthlySchedules;
+  }, [monthlySchedules]);
+
+  // 7) Schedule Monthly 자동 저장 디바운스 훅 (원자적 Upsert + Diff Delete 적용)
   useEffect(() => {
     if (!isDbLoaded || !isFetchCompleted) return;
     if (!currentUser || currentRole?.id === "GUEST") return;
+    if (!monthlySchedules) return;
 
-    // 💡 안전 가드 1: 데이터 로딩이 완료되지 않았거나 일시적 통신 지연 시 빈 배열([])이 원격 DB를 덮어쓰는 사고 방지
-    if (!monthlySchedules || monthlySchedules.length === 0) return;
-
-    // 💡 안전 가드 2: 배열 내 단 하나라도 필수값(startAt, endAt, title)이 빈 값인 데이터가 있다면, 
-    // DB의 NOT NULL 제약조건 위반으로 인해 기존 데이터가 delete 된 후 insert 가 실패하여 전체가 증발하는 참사 방지
+    // 💡 안전 가드: 데이터 형식이 비정상적이거나 날짜/제목 누락 시 동기화 스킵하여 증발 방지
     const hasInvalidItem = monthlySchedules.some(s => !s.title?.trim() || !s.startAt || !s.endAt);
     if (hasInvalidItem) {
       console.warn("Schedule sync aborted: detected invalid schedule item with missing title or dates.", monthlySchedules);
@@ -4900,34 +4903,104 @@ export default function App() {
 
     safeSetLocalStorage(`anchor_cache_month_y${selectedYear}`, JSON.stringify(monthlySchedules), selectedYear);
     setSyncStatus("syncing");
-    const timer = setTimeout(async () => {
+
+    const performSync = async (schedulesToSync, targetYear) => {
       try {
-        await supabase.from("schedule_monthly").delete().eq("year", selectedYear);
-        if (monthlySchedules.length > 0) {
-          const { error } = await supabase.from("schedule_monthly").insert(
-            monthlySchedules.map(s => ({
-              year: selectedYear,
-              title: s.title,
-              type: s.type || "기타",
-              dept: s.dept || "사업운영팀",
-              start_at: s.startAt,
-              end_at: s.endAt,
-              location: s.location || "",
-              is_task: s.isTask || false,
-              is_deadline: s.isDeadline || false,
-              completed: s.completed || false,
-              attendees: s.attendees || ""
-            }))
-          );
+        if (!schedulesToSync) return;
+        
+        // 1. 모든 일정이 삭제된 상태면 원격 DB 해당 연도 전체 삭제
+        if (schedulesToSync.length === 0) {
+          const { error } = await supabase.from("schedule_monthly").delete().eq("year", targetYear);
           if (error) throw error;
+          setSyncStatus("synced");
+          return;
         }
+
+        // 2. 20억 이하의 실제 DB id만 전송에 포함하고 로컬 임시 id는 제외하여 시퀀스 범위초과 에러 방지
+        const itemsToUpsert = schedulesToSync.map(s => {
+          const item = {
+            year: targetYear,
+            title: s.title,
+            type: s.type || "기타",
+            dept: s.dept || "사업운영팀",
+            start_at: s.startAt,
+            end_at: s.endAt,
+            location: s.location || "",
+            is_task: s.isTask || false,
+            is_deadline: s.isDeadline || false,
+            completed: s.completed || false,
+            attendees: s.attendees || ""
+          };
+          if (s.id && typeof s.id === "number" && s.id < 2000000000) {
+            item.id = s.id;
+          }
+          return item;
+        });
+
+        // 3. 원자적 Upsert 수행 및 새로 발행된 sequence id 결과 조회
+        const { data: upsertedData, error: upsertError } = await supabase
+          .from("schedule_monthly")
+          .upsert(itemsToUpsert, { onConflict: "id" })
+          .select();
+        
+        if (upsertError) throw upsertError;
+
+        // 4. 로컬 임시 id를 DB sequence id로 매핑 복원하여 중복 인서트 방지
+        if (upsertedData && upsertedData.length > 0) {
+          const updatedLocal = schedulesToSync.map(s => {
+            if (s.id && typeof s.id === "number" && s.id < 2000000000) {
+              return s;
+            }
+            const dbMatch = upsertedData.find(x => x.title === s.title && x.start_at === s.startAt);
+            if (dbMatch) {
+              return { ...s, id: Number(dbMatch.id) };
+            }
+            return s;
+          });
+          
+          setMonthlySchedules(updatedLocal);
+          safeSetLocalStorage(`anchor_cache_month_y${targetYear}`, JSON.stringify(updatedLocal), targetYear);
+        }
+
+        // 5. 사용자가 삭제한 아이템들 DB 반영 (Diff Delete)
+        const { data: currentDbItems } = await supabase
+          .from("schedule_monthly")
+          .select("id")
+          .eq("year", targetYear);
+        
+        if (currentDbItems) {
+          const dbIds = currentDbItems.map(x => x.id);
+          const localRealIds = schedulesToSync
+            .map(s => s.id)
+            .filter(id => typeof id === "number" && id < 2000000000);
+          
+          const idsToDelete = dbIds.filter(id => !localRealIds.includes(id));
+          if (idsToDelete.length > 0) {
+            const { error: delError } = await supabase
+              .from("schedule_monthly")
+              .delete()
+              .in("id", idsToDelete);
+            if (delError) throw delError;
+          }
+        }
+
         setSyncStatus("synced");
       } catch (e) {
         console.error("Failed to sync monthly schedules:", e);
         setSyncStatus("error");
       }
-    }, 1500);
-    return () => clearTimeout(timer);
+    };
+
+    const timer = setTimeout(() => {
+      performSync(monthlySchedules, selectedYear);
+    }, 300);
+
+    return () => {
+      clearTimeout(timer);
+      if (latestMonthlySchedulesRef.current) {
+        performSync(latestMonthlySchedulesRef.current, selectedYear);
+      }
+    };
   }, [monthlySchedules, selectedYear, isDbLoaded, isFetchCompleted]);
 
   // 8) Schedule Events 자동 저장 디바운스 훅
@@ -9815,7 +9888,7 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
         <table className="custom-table" style={{ fontSize: "0.8rem", width: "100%", borderCollapse: "collapse" }}>
           <thead>
             <tr style={{ background: "rgba(255,255,255,0.02)" }}>
-              <th rowSpan={2} style={{ verticalAlign: "middle", textAlign: "left", paddingLeft: "1.5rem", borderBottom: "1px solid var(--border-color)", borderRight: "1.5px solid rgba(255, 255, 255, 0.2)" }}>구분</th>
+              <th rowSpan={2} style={{ verticalAlign: "middle", textAlign: "center", borderBottom: "1px solid var(--border-color)", borderRight: "1.5px solid rgba(255, 255, 255, 0.2)" }}>구분</th>
               <th rowSpan={2} style={{ verticalAlign: "middle", textAlign: "center", borderBottom: "1px solid var(--border-color)", borderRight: "1.5px solid rgba(255, 255, 255, 0.2)" }}>2025</th>
               <th colSpan={2} style={{ textAlign: "center", borderBottom: "1px solid var(--border-color)", borderRight: "1.5px solid rgba(255, 255, 255, 0.2)", padding: "0.45rem" }}>
                 2026
