@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { supabase } from "../supabaseClient";
 import { Plus, Trash2, Edit2, Calendar, Clipboard, CheckCircle, AlertTriangle, Search, Home, Laptop, Check, Clock } from "lucide-react";
 
-export default function AssetManager({ currentRole, activeSubTab, onChangeSubTab }) {
+export default function AssetManager({ currentRole, currentUser, activeSubTab, onChangeSubTab }) {
   // 공통 로딩 상태
   const [loading, setLoading] = useState(false);
 
@@ -11,6 +11,15 @@ export default function AssetManager({ currentRole, activeSubTab, onChangeSubTab
     if (!role) return false;
     const rid = role.id || "";
     return ["ADMIN", "G_DIRECTOR", "HQ_HEAD", "MANAGER"].includes(rid);
+  };
+
+  // 취소/반려 가능 조건 판별 (신청자 본인 또는 심현미/김현수/송경영)
+  const canCancelOrReject = (res) => {
+    if (!currentUser) return false;
+    if (isApprover(currentRole)) return true;
+    const userName = currentUser.name || "";
+    if (userName && res.reserver_name.includes(userName)) return true;
+    return false;
   };
 
   // ==============================================================================
@@ -285,6 +294,15 @@ export default function AssetManager({ currentRole, activeSubTab, onChangeSubTab
       alert("⚠️ 게스트 계정은 예약을 삭제할 수 없습니다.");
       return;
     }
+
+    const targetRes = reservations.find(r => r.id === id);
+    if (!targetRes) return;
+
+    if (!canCancelOrReject(targetRes)) {
+      alert("⚠️ 취소/반려 권한이 없습니다. (신청자 본인 또는 심현미, 김현수, 송경영 등 지정 결재권자만 취소 가능)");
+      return;
+    }
+
     if (!window.confirm("정말로 이 공간 예약 신청을 취소/반려하시겠습니까?")) return;
 
     setLoading(true);
@@ -686,13 +704,17 @@ export default function AssetManager({ currentRole, activeSubTab, onChangeSubTab
                               )}
                             </td>
                             <td style={{ padding: "0.5rem", textAlign: "center" }}>
-                              <button
-                                onClick={() => handleDeleteReservation(res.id)}
-                                style={{ background: "none", border: "none", color: "#F87171", cursor: "pointer" }}
-                                title="예약 취소 / 반려"
-                              >
-                                <Trash2 size={14} />
-                              </button>
+                              {canCancelOrReject(res) ? (
+                                <button
+                                  onClick={() => handleDeleteReservation(res.id)}
+                                  style={{ background: "none", border: "none", color: "#F87171", cursor: "pointer" }}
+                                  title="예약 취소 / 반려"
+                                >
+                                  <Trash2 size={14} />
+                                </button>
+                              ) : (
+                                <span style={{ color: "var(--text-secondary)", fontSize: "0.65rem" }}>권한없음</span>
+                              )}
                             </td>
                           </tr>
                         );
