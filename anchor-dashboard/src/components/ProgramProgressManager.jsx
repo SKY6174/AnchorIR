@@ -401,7 +401,9 @@ export default function ProgramProgressManager({ projects, selectedYear, onSelec
                               fontFamily: "var(--font-data)", 
                               fontWeight: "700", 
                               cursor: "pointer", 
-                              transition: "color 0.2s" 
+                              transition: "color 0.2s",
+                              textAlign: "center",
+                              verticalAlign: "middle"
                             }}
                             onMouseEnter={(e) => { e.currentTarget.style.color = "var(--accent-color)"; e.currentTarget.style.textDecoration = "underline"; }}
                             onMouseLeave={(e) => { e.currentTarget.style.color = ""; e.currentTarget.style.textDecoration = "none"; }}
@@ -415,32 +417,34 @@ export default function ProgramProgressManager({ projects, selectedYear, onSelec
                               whiteSpace: "normal", 
                               wordBreak: "keep-all", 
                               cursor: "pointer", 
-                              transition: "color 0.2s" 
+                              transition: "color 0.2s",
+                              textAlign: "center",
+                              verticalAlign: "middle"
                             }}
                             onMouseEnter={(e) => { e.currentTarget.style.color = "var(--accent-color)"; e.currentTarget.style.textDecoration = "underline"; }}
                             onMouseLeave={(e) => { e.currentTarget.style.color = ""; e.currentTarget.style.textDecoration = "none"; }}
                           >
                             {prog.title}
                           </td>
-                          <td style={{ fontSize: "0.73rem", fontWeight: "700", color: "var(--accent-color)", whiteSpace: "normal", wordBreak: "break-all" }}>
-                            <div style={{ display: "flex", alignItems: "flex-start", gap: "0.25rem", padding: "0.2rem 0" }}>
+                          <td style={{ fontSize: "0.73rem", fontWeight: "700", color: "var(--accent-color)", whiteSpace: "normal", wordBreak: "break-all", textAlign: "center", verticalAlign: "middle" }}>
+                            <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "center", gap: "0.25rem", padding: "0.2rem 0", width: "100%" }}>
                               <User size={12} style={{ marginTop: "0.15rem", flexShrink: 0 }} />
-                              <div style={{ display: "flex", flexDirection: "column", gap: "0.15rem", lineHeight: "1.2" }}>
+                              <div style={{ display: "flex", flexDirection: "column", gap: "0.15rem", lineHeight: "1.2", textAlign: "left" }}>
                                 {(prog.assignee || "미배정").split("/").map((name, idx) => (
                                   <span key={idx}>{name.trim()}</span>
                                 ))}
                               </div>
                             </div>
                           </td>
-                          <td>
-                            <div style={{ display: "flex", flexDirection: "column", gap: "0.15rem", fontFamily: "var(--font-data)" }}>
-                              <div style={{ display: "flex", justifyContent: "space-between" }}>
+                          <td style={{ verticalAlign: "middle" }}>
+                            <div style={{ display: "flex", flexDirection: "column", gap: "0.15rem", fontFamily: "var(--font-data)", padding: "0 0.75rem" }}>
+                              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                                 <span style={{ color: "var(--text-secondary)", fontSize: "0.7rem" }}>배정:</span>
-                                <span style={{ fontWeight: "700" }}>{formatToMillionWon(totalProgBudget)} 백만원</span>
+                                <span style={{ fontWeight: "700", fontSize: "0.73rem" }}>{formatToMillionWon(totalProgBudget)} 백만원</span>
                               </div>
-                              <div style={{ display: "flex", justifyContent: "space-between" }}>
+                              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                                 <span style={{ color: "var(--text-secondary)", fontSize: "0.7rem" }}>집행:</span>
-                                <span style={{ color: "var(--success-color)", fontWeight: "700" }}>{formatToMillionWon(totalProgSpent)} 백만원</span>
+                                <span style={{ color: "var(--success-color)", fontWeight: "700", fontSize: "0.73rem" }}>{formatToMillionWon(totalProgSpent)} 백만원</span>
                               </div>
                             </div>
                           </td>
