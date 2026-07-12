@@ -85,9 +85,9 @@ body.light-mode {
 
 /* Sidebar Styling */
 .sidebar {
-  width: 15vw;
-  min-width: 180px;
-  max-width: 245px;
+  width: 12vw;
+  min-width: 160px;
+  max-width: 196px;
   flex-shrink: 0;
   background: var(--panel-bg-dark);
   border-right: 1px solid var(--border-color-dark);
