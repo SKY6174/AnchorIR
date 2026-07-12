@@ -395,17 +395,27 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
 
     setLoading(true);
     try {
+      const payload = {
+        item_name: equipFormData.item_name,
+        asset_number: equipFormData.asset_number,
+        barcode_id: equipFormData.barcode_id,
+        stock_location: equipFormData.stock_location,
+        category: equipFormData.category,
+        usage_type: equipFormData.usage_type,
+        memo: equipFormData.memo
+      };
+
       if (editingEquipId) {
         // 수정 모드
         const { error } = await supabase
           .from("equipment_assets")
-          .update(equipFormData)
+          .update(payload)
           .eq("id", editingEquipId);
         if (error) throw error;
         alert("✨ 기자재 정보가 성공적으로 수정되었습니다.");
       } else {
         // 신규 등록
-        const { error } = await supabase.from("equipment_assets").insert([equipFormData]);
+        const { error } = await supabase.from("equipment_assets").insert([payload]);
         if (error) throw error;
         alert("✨ 신규 기자재가 성공적으로 등록되었습니다.");
       }
@@ -613,7 +623,7 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
               setEditingEquipId(null);
               setEquipFormData({
                 asset_number: "",
-                barcode: "",
+                barcode_id: "",
                 stock_location: "",
                 category: selectedCategory,
                 usage_type: USAGE_TYPES[0],
