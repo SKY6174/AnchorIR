@@ -724,10 +724,10 @@ export default function AgreementManager({
   };
 
   // 사본 뷰어 팝업 연동 (원격 URL 및 Base64 하이브리드 지원)
-  const handleViewFile = (fileData) => {
+  const handleViewFile = (fileData, fileName) => {
     try {
       if (!fileData) {
-        window.open("https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf", "_blank");
+        alert("⚠️ 등록된 사본 파일 데이터(URL)가 존재하지 않습니다. 사본 일괄 매핑 등을 통해 파일을 먼저 등록해 주세요.");
         return;
       }
       
@@ -756,7 +756,7 @@ export default function AgreementManager({
       const blobUrl = URL.createObjectURL(blob);
       window.open(blobUrl, "_blank");
     } catch (e) {
-      window.open("https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf", "_blank");
+      alert("⚠️ 사본 파일을 여는 중에 오류가 발생했습니다. 파일이 손상되었거나 브라우저 권한을 확인해 주세요.");
     }
   };
 
@@ -1225,7 +1225,7 @@ export default function AgreementManager({
                       </td>
                       <td style={{ padding: "0.6rem 0.8rem", textAlign: "center" }}>
                         {agr.fileName ? (
-                          <FileText size={16} style={{ color: "#60a5fa", cursor: "pointer" }} onClick={() => handleViewFile(agr.fileData)} />
+                          <FileText size={16} style={{ color: "#60a5fa", cursor: "pointer" }} onClick={() => handleViewFile(agr.fileData, agr.fileName)} />
                         ) : "-"}
                       </td>
                       {(currentRole.rank <= 2) && (

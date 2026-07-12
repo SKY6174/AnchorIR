@@ -3231,6 +3231,7 @@ export default function App() {
   // 💡 Race Condition 방지: 원격에서 막 가져온 순수 데이터를 기억하여, 사용자가 직접 수정한 경우에만 Auto-save 동작하도록 보장
   const fetchedProjectsRef = useRef("");
   const fetchedAgreementsRef = useRef("");
+  const isAgreementsFetchedRef = useRef(false); // DB Fetch 완료 감지 잠금
   const fetchedUnifiedCertificatesRef = useRef("");
   const fetchedScholarshipsRef = useRef("");
   const fetchedEnvDataRef = useRef("");
@@ -3848,6 +3849,7 @@ export default function App() {
               agreementType: a.agreement_type || "-"
             }));
             setAgreements(formatted);
+            isAgreementsFetchedRef.current = true; // DB 복구 성공 락 해제
             try {
               const clean = formatted.map(item => {
                 const isUrl = item.fileData && (item.fileData.startsWith("http://") || item.fileData.startsWith("https://"));
@@ -3860,6 +3862,7 @@ export default function App() {
             }
           } else {
             setAgreements([]);
+            isAgreementsFetchedRef.current = true; // DB 복구 성공 락 해제 (빈 데이터)
           }
         }
 
@@ -4405,6 +4408,7 @@ export default function App() {
   // 3) Agreements 자동 저장 디바운스 훅 (통합 캐시 사용 및 selectedYear 의존성 배제)
   useEffect(() => {
     if (!isDbLoaded || !isFetchCompleted || !isAgreementsLoaded) return;
+    if (!isAgreementsFetchedRef.current) return; // 💡 DB 복구가 완전히 끝나기 전까지는 원격 DB 덮어쓰기 절대 방지!
     if (!currentUser || currentRole?.id === "GUEST") return;
     // 💡 안전 가드: 데이터 로딩이 완료되지 않았거나 일시적 통신 지연 시 빈 배열([])이 원격 DB를 덮어쓰는 사고 방지
     if (!agreements || agreements.length === 0) return;
