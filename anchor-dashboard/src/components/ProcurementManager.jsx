@@ -3526,20 +3526,20 @@ export default function ProcurementManager({
             <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.82rem", color: "var(--text-primary)" }}>
               <thead>
                 <tr style={{ borderBottom: "1px solid var(--border-color)", background: "transparent" }}>
-                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "45px" }}>순번</th>
-                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "140px" }}>프로그램 ID</th>
-                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "140px" }}>운영부서</th>
-                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "200px" }}>용역명</th>
-                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "135px" }}>사업예산/집행액(천원)</th>
-                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "320px" }}>용역목적 및 수행결과</th>
-                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "490px" }}>
+                  <th style={{ padding: "0.85rem 0.5rem", textAlign: "center", verticalAlign: "middle", fontWeight: "800", width: "55px", whiteSpace: "nowrap" }}>순번</th>
+                  <th style={{ padding: "0.85rem 0.5rem", textAlign: "center", verticalAlign: "middle", fontWeight: "800", width: "150px", whiteSpace: "nowrap" }}>프로그램 ID</th>
+                  <th style={{ padding: "0.85rem 0.5rem", textAlign: "center", verticalAlign: "middle", fontWeight: "800", width: "150px", whiteSpace: "nowrap" }}>운영부서</th>
+                  <th style={{ padding: "0.85rem 0.5rem", textAlign: "center", verticalAlign: "middle", fontWeight: "800", width: "220px", whiteSpace: "nowrap" }}>용역명</th>
+                  <th style={{ padding: "0.85rem 0.5rem", textAlign: "center", verticalAlign: "middle", fontWeight: "800", width: "160px", whiteSpace: "nowrap" }}>사업예산/집행액(천원)</th>
+                  <th style={{ padding: "0.85rem 0.5rem", textAlign: "center", verticalAlign: "middle", fontWeight: "800", width: "340px", whiteSpace: "nowrap" }}>용역목적 및 수행결과</th>
+                  <th style={{ padding: "0.85rem 0.5rem", textAlign: "center", verticalAlign: "middle", fontWeight: "800", width: "500px", whiteSpace: "nowrap" }}>
                     용역 절차
                     <span style={{ display: "block", fontSize: "0.7rem", color: "var(--text-secondary)", fontWeight: "500", marginTop: "0.15rem" }}>
                       [기획(PP) ➔ 의뢰(RFO) ➔ 입찰(B) ➔ 평가∙선정(ES) ➔ 계약(C) ➔ 수행(E) ➔ 검수(I)]
                     </span>
                   </th>
-                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "130px" }}>관련문서</th>
-                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "70px" }}>제어</th>
+                  <th style={{ padding: "0.85rem 0.5rem", textAlign: "center", verticalAlign: "middle", fontWeight: "800", width: "140px", whiteSpace: "nowrap" }}>관련문서</th>
+                  <th style={{ padding: "0.85rem 0.5rem", textAlign: "center", verticalAlign: "middle", fontWeight: "800", width: "80px", whiteSpace: "nowrap" }}>제어</th>
                 </tr>
               </thead>
               <tbody>
@@ -3576,12 +3576,12 @@ export default function ProcurementManager({
                         style={{ borderBottom: "1px solid var(--border-color)", transition: "background 0.15s ease" }}
                       >
                         {/* 1. 순번 */}
-                        <td style={{ padding: "0.8rem 0.5rem", textAlign: "center", color: "var(--text-secondary)" }}>
+                        <td style={{ padding: "0.8rem 0.5rem", textAlign: "center", verticalAlign: "middle", color: "var(--text-secondary)" }}>
                           {idx + 1}
                         </td>
 
                         {/* 2. 프로그램 ID // (프로그램명) */}
-                        <td style={{ padding: "0.8rem 0.5rem", textAlign: "center", fontWeight: "700" }}>
+                        <td style={{ padding: "0.8rem 0.5rem", textAlign: "center", verticalAlign: "middle", fontWeight: "700" }}>
                           <div style={{ color: "var(--accent-color)", fontSize: "0.82rem" }}>
                             {equip.programId || `[${equip.unit}]`}
                           </div>
@@ -3593,7 +3593,7 @@ export default function ProcurementManager({
                         </td>
 
                         {/* 3. 운영부서 */}
-                        <td style={{ padding: "0.8rem 0.5rem", textAlign: "center", fontWeight: "600", fontSize: "0.8rem" }}>
+                        <td style={{ padding: "0.8rem 0.5rem", textAlign: "center", verticalAlign: "middle", fontWeight: "600", fontSize: "0.8rem" }}>
                           {(() => {
                             const dName = equip.deptName || "";
                             const divName = equip.divisionName || "";
@@ -3605,12 +3605,12 @@ export default function ProcurementManager({
                         </td>
 
                         {/* 4. 용역명 */}
-                        <td style={{ padding: "0.8rem 0.5rem", textAlign: "center", fontWeight: "700", color: "var(--text-primary)" }}>
+                        <td style={{ padding: "0.8rem 0.5rem", textAlign: "center", verticalAlign: "middle", fontWeight: "700", color: "var(--text-primary)" }}>
                           {equip.title || "-"}
                         </td>
 
                         {/* 5. 사업예산 / 집행액(천원) */}
-                        <td style={{ padding: "0.8rem 0.5rem", textAlign: "center" }}>
+                        <td style={{ padding: "0.8rem 0.5rem", textAlign: "center", verticalAlign: "middle" }}>
                           <div style={{ fontSize: "0.8rem", fontWeight: "700", color: "#3b82f6" }}>
                             예산: {Math.round((equip.budgetPlan || 0) / 1000).toLocaleString()}
                           </div>
@@ -3620,7 +3620,7 @@ export default function ProcurementManager({
                         </td>
 
                         {/* 6. 용역목적 및 수행결과 */}
-                        <td style={{ padding: "0.8rem 0.5rem", textAlign: "center", color: "var(--text-secondary)" }}>
+                        <td style={{ padding: "0.8rem 0.5rem", textAlign: "center", verticalAlign: "middle", color: "var(--text-secondary)" }}>
                           <div style={{ display: "inline-flex", flexDirection: "column", gap: "0.35rem", lineHeight: "1.4", fontSize: "0.78rem", textAlign: "left" }}>
                             <div style={{ wordBreak: "break-all", whiteSpace: "normal", display: "flex", alignItems: "flex-start", gap: "0.25rem" }}>
                               <span style={{ color: "var(--accent-color)", fontWeight: "bold" }}>•</span>
