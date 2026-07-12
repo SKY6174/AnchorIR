@@ -8592,6 +8592,8 @@ export default function App() {
               <TotalInvestmentManager
                 investmentSubTab={investmentSubTab}
                 onChangeInvestmentSubTab={setInvestmentSubTab}
+                projects={projects}
+                selectedYear={selectedYear}
               />
             ) : budgetSubTab === "budget_categories" ? (
               <BudgetItemsManager
@@ -9246,290 +9248,294 @@ export default function App() {
 }
 
 // ==========================================
-// 💡 [총괄 투자 계획 매니저 컴포넌트 & 정적 데이터셋]
+// 💡 [총괄 투자 계획 매니저 컴포넌트 & 동적 데이터셋]
 // ==========================================
 
-const TOTAL_INVESTMENT_5YEAR_DATA = [
-  {
-    id: "A1가",
-    title: "A1가. 지역과 미래를 만드는 UG-HYPER 전문기술인재 양성",
-    total: [29.78, 21.00, 20.00, 20.00, 20.00, 110.78],
-    categories: [
-      { name: "인건비", values: [1.64, 0, 0, 0, 0, 1.64] },
-      { name: "장학금", values: [0.88, 2.40, 0, 0, 0, 3.28] },
-      { name: "교육·연구 프로그램 개발·운영비", values: [3.65, 7.84, 0, 0, 0, 11.49] },
-      { name: "교육·연구 환경개선비", values: [13.20, 3.85, 0, 0, 0, 17.05] },
-      { name: "실험·실습장비 및 기자재 구입·운영비", values: [5.47, 5.46, 0, 0, 0, 10.93] },
-      { name: "지역 연계·협업 지원비", values: [0, 0.05, 0, 0, 0, 0.05] },
-      { name: "기업 지원·협력 활동비", values: [2.70, 1.14, 0, 0, 0, 3.84] },
-      { name: "성과 활용·확산 지원비", values: [0.49, 0.26, 0, 0, 0, 0.75] },
-      { name: "그 밖의 사업운영비", values: [0.89, 0, 0, 0, 0, 0.89] },
-      { name: "간접비", values: [0.86, 0, 0, 0, 0, 0.86] }
-    ]
-  },
-  {
-    id: "A2",
-    title: "A2. 지역 창업 생태계 혁신을 위한 글로컬 창업 문화 조성",
-    total: [9.00, 4.70, 8.00, 8.00, 8.00, 37.70],
-    categories: [
-      { name: "인건비", values: [0.76, 0, 0, 0, 0, 0.76] },
-      { name: "장학금", values: [0, 0, 0, 0, 0, 0] },
-      { name: "교육·연구 프로그램 개발·운영비", values: [1.55, 0.63, 0, 0, 0, 2.18] },
-      { name: "교육·연구 환경개선비", values: [0.79, 1.50, 0, 0, 0, 2.29] },
-      { name: "실험·실습장비 및 기자재 구입·운영비", values: [3.10, 0.60, 0, 0, 0, 3.70] },
-      { name: "지역 연계·협업 지원비", values: [2.26, 1.67, 0, 0, 0, 3.93] },
-      { name: "기업 지원·협력 활동비", values: [0, 0, 0, 0, 0, 0] },
-      { name: "성과 활용·확산 지원비", values: [0, 0.30, 0, 0, 0, 0.30] },
-      { name: "그 밖의 사업운영비", values: [0.27, 0, 0, 0, 0, 0.27] },
-      { name: "간접비", values: [0.27, 0, 0, 0, 0, 0.27] }
-    ]
-  },
-  {
-    id: "A3",
-    title: "A3. 지역산업 연계 글로벌 협력 거점 대학 육성",
-    total: [4.83, 2.40, 6.33, 6.33, 6.33, 26.22],
-    categories: [
-      { name: "인건비", values: [0.38, 0, 0, 0, 0, 0.38] },
-      { name: "장학금", values: [0.40, 0.45, 0, 0, 0, 0.85] },
-      { name: "교육·연구 프로그램 개발·운영비", values: [1.21, 1.20, 0, 0, 0, 2.41] },
-      { name: "교육·연구 환경개선비", values: [0.66, 0.00, 0, 0, 0, 0.66] },
-      { name: "실험·실습장비 및 기자재 구입·운영비", values: [1.57, 0.30, 0, 0, 0, 1.87] },
-      { name: "지역 연계·협업 지원비", values: [0.25, 0.41, 0, 0, 0, 0.66] },
-      { name: "기업 지원·협력 활동비", values: [0, 0.04, 0, 0, 0, 0.04] },
-      { name: "성과 활용·확산 지원비", values: [0.08, 0, 0, 0, 0, 0.08] },
-      { name: "그 밖의 사업운영비", values: [0.15, 0, 0, 0, 0, 0.15] },
-      { name: "간접비", values: [0.13, 0, 0, 0, 0, 0.13] }
-    ]
-  },
-  {
-    id: "B1",
-    title: "B1. 울산지역 주력·신산업 분야 산학협력 체계 구축",
-    total: [3.00, 3.50, 3.00, 3.00, 3.00, 15.50],
-    categories: [
-      { name: "인건비", values: [0.35, 0, 0, 0, 0, 0.35] },
-      { name: "장학금", values: [0, 0, 0, 0, 0, 0] },
-      { name: "교육·연구 프로그램 개발·운영비", values: [0.02, 0.10, 0, 0, 0, 0.12] },
-      { name: "교육·연구 환경개선비", values: [0.70, 0, 0, 0, 0, 0.70] },
-      { name: "실험·실습장비 및 기자재 구입·운영비", values: [0, 0, 0, 0, 0, 0] },
-      { name: "지역 연계·협업 지원비", values: [0, 0, 0, 0, 0, 0] },
-      { name: "기업 지원·협력 활동비", values: [1.68, 3.30, 0, 0, 0, 4.98] },
-      { name: "성과 활용·확산 지원비", values: [0.07, 0.10, 0, 0, 0, 0.17] },
-      { name: "그 밖의 사업운영비", values: [0, 0, 0, 0, 0, 0] },
-      { name: "간접비", values: [0, 0, 0, 0, 0, 0] }
-    ]
-  },
-  {
-    id: "B2",
-    title: "B2. AID 역량강화 기반 지역산업 전환 지원",
-    total: [10.20, 10.20, 10.00, 10.00, 10.00, 50.40],
-    categories: [
-      { name: "인건비", values: [0, 0, 0, 0, 0, 0] },
-      { name: "장학금", values: [0, 0, 0, 0, 0, 0] },
-      { name: "교육·연구 프로그램 개발·운영비", values: [1.10, 1.20, 1.20, 1.20, 1.20, 5.90] },
-      { name: "교육·연구 환경개선비", values: [2.10, 1.50, 1.50, 1.50, 1.50, 8.10] },
-      { name: "실험·실습장비 및 기자재 구입·운영비", values: [5.00, 5.50, 5.50, 5.50, 5.50, 27.00] },
-      { name: "지역 연계·협업 지원비", values: [1.00, 1.00, 0.80, 0.80, 0.80, 4.40] },
-      { name: "기업 지원·협력 활동비", values: [0.50, 0.50, 0.50, 0.50, 0.50, 2.50] },
-      { name: "성과 활용·확산 지원비", values: [0.50, 0.50, 0.50, 0.50, 0.50, 2.50] }
-    ]
-  },
-  {
-    id: "B3",
-    title: "B3. 지·산·학 협력 탄소중립 실천 플랫폼 구축",
-    total: [3.00, 3.00, 3.00, 3.00, 3.00, 15.00],
-    categories: [
-      { name: "교육·연구 프로그램 개발·운영비", values: [1.00, 1.00, 1.00, 1.00, 1.00, 5.00] },
-      { name: "지역 연계·협업 지원비", values: [1.00, 1.00, 1.00, 1.00, 1.00, 5.00] },
-      { name: "기업 지원·협력 활동비", values: [1.00, 1.00, 1.00, 1.00, 1.00, 5.00] }
-    ]
-  },
-  {
-    id: "B4",
-    title: "B4. 복합재난 대응 산업안전·보건 통합 운영체계 구축",
-    total: [2.96, 2.96, 3.00, 3.00, 3.00, 14.92],
-    categories: [
-      { name: "교육·연구 프로그램 개발·운영비", values: [0.96, 0.96, 1.00, 1.00, 1.00, 4.92] },
-      { name: "지역 연계·협업 지원비", values: [1.00, 1.00, 1.00, 1.00, 1.00, 5.00] },
-      { name: "기업 지원·협력 활동비", values: [1.00, 1.00, 1.00, 1.00, 1.00, 5.00] }
-    ]
-  },
-  {
-    id: "C1",
-    title: "C1. 지역 정주 여건 개선을 위한 평생 직업 교육 고도화",
-    total: [15.00, 15.00, 15.00, 15.00, 15.00, 75.00],
-    categories: [
-      { name: "교육·연구 프로그램 개발·운영비", values: [5.00, 5.00, 5.00, 5.00, 5.00, 25.00] },
-      { name: "실험·실습장비 및 기자재 구입·운영비", values: [5.00, 5.00, 5.00, 5.00, 5.00, 25.00] },
-      { name: "지역 연계·협업 지원비", values: [5.00, 5.00, 5.00, 5.00, 5.00, 25.00] }
-    ]
-  },
-  {
-    id: "C2",
-    title: "C2. 온동네 늘봄 생태계 기반 울산형 늘봄 모델 구현 및 확산",
-    total: [10.00, 10.00, 10.00, 10.00, 10.00, 50.00],
-    categories: [
-      { name: "교육·연구 프로그램 개발·운영비", values: [3.00, 3.00, 3.00, 3.00, 3.00, 15.00] },
-      { name: "교육·연구 환경개선비", values: [3.00, 3.00, 3.00, 3.00, 3.00, 15.00] },
-      { name: "지역 연계·협업 지원비", values: [4.00, 4.00, 4.00, 4.00, 4.00, 20.00] }
-    ]
-  },
-  {
-    id: "D1",
-    title: "D1. 지역 정주형 웰니스 케어 서비스 전문인력 양성",
-    total: [5.00, 5.00, 5.00, 5.00, 5.00, 25.00],
-    categories: [
-      { name: "교육·연구 프로그램 개발·운영비", values: [2.00, 2.00, 2.00, 2.00, 2.00, 10.00] },
-      { name: "지역 연계·협업 지원비", values: [3.00, 3.00, 3.00, 3.00, 3.00, 15.00] }
-    ]
-  },
-  {
-    id: "D2",
-    title: "D2. 울산 맞춤형 고령 친화 보건의료 서비스 인력 양성",
-    total: [4.41, 4.41, 5.00, 5.00, 5.00, 23.82],
-    categories: [
-      { name: "교육·연구 프로그램 개발·운영비", values: [2.00, 2.00, 2.00, 2.00, 2.00, 10.00] },
-      { name: "지역 연계·협업 지원비", values: [2.41, 2.41, 3.00, 3.00, 3.00, 13.82] }
-    ]
-  },
-  {
-    id: "D3",
-    title: "D3. 에코컬처 도시재생 및 문화혁신 모델 구축",
-    total: [6.25, 3.90, 8.00, 8.00, 8.00, 34.15],
-    categories: [
-      { name: "인건비", values: [0.36, 0, 0, 0, 0, 0.36] },
-      { name: "장학금", values: [0, 0, 0, 0, 0, 0] },
-      { name: "교육·연구 프로그램 개발·운영비", values: [0.78, 0.80, 0, 0, 0, 1.58] },
-      { name: "교육·연구 환경개선비", values: [1.18, 2.00, 0, 0, 0, 3.18] },
-      { name: "실험·실습장비 및 기자재 구입·운영비", values: [1.36, 0.11, 0, 0, 0, 1.47] },
-      { name: "지역 연계·협업 지원비", values: [1.85, 0.83, 0, 0, 0, 2.68] },
-      { name: "기업 지원·협력 활동비", values: [0, 0, 0, 0, 0, 0] },
-      { name: "성과 활용·확산 지원비", values: [0.34, 0.16, 0, 0, 0, 0.50] },
-      { name: "그 밖의 사업운영비", values: [0.19, 0, 0, 0, 0, 0.19] },
-      { name: "간접비", values: [0.19, 0, 0, 0, 0, 0.19] }
-    ]
-  },
-  {
-    id: "공통운영경비",
-    title: "공통운영경비",
-    total: [0, 23.63, 0, 0, 0, 23.63],
-    categories: [
-      { name: "인건비", values: [0, 13.50, 0, 0, 0, 13.50] },
-      { name: "교육·연구 환경개선비", values: [0, 3.43, 0, 0, 0, 3.43] },
-      { name: "성과 활용·확산 지원비", values: [0, 1.20, 0, 0, 0, 1.20] },
-      { name: "그 밖의 사업운영비", values: [0, 2.75, 0, 0, 0, 2.75] },
-      { name: "간접비", values: [0, 2.75, 0, 0, 0, 2.75] }
-    ]
-  }
-];
 
-const TOTAL_INVESTMENT_SUMMARY_DATA = {
-  total: [104.23, 91.83, 91.83, 91.83, 91.83, 471.55],
-  labor: [8.16, 13.50, 13.50, 13.50, 13.50, 62.16],
-  operation: [3.08, 2.75, 2.75, 2.75, 2.75, 14.08],
-  indirect: [3.00, 2.75, 2.75, 2.75, 2.75, 14.00],
-  only_operation: [14.24, 19.00, 19.00, 19.00, 19.00, 90.24]
+
+
+// 문자열 내의 특수 점을 표준 가운데점(·)으로 통일하는 헬퍼
+const normalizeCategoryName = (name) => {
+  if (!name) return "";
+  return name.replace(/[∙•]/g, "·").trim();
 };
 
-const ANNUAL_INVESTMENT_DATA = [
-  {
-    id: "A1가",
-    title: "A1가. 지역과 미래를 만드는 UG-HYPER 전문기술인재 양성",
-    total: [16.56, 4.44, 0, 0, 0, 21.00, 100.0],
-    categories: [
-      { name: "장학금", values: [2.40, 0, 0, 0, 0, 2.40, 11.4] },
-      { name: "교육·연구 프로그램 개발·운영비", values: [3.40, 4.44, 0, 0, 0, 7.84, 37.3] },
-      { name: "교육·연구 환경개선비", values: [3.85, 0, 0, 0, 0, 3.85, 18.3] },
-      { name: "실험·실습장비 및 기자재 구입·운영비", values: [5.46, 0, 0, 0, 0, 5.46, 26.0] },
-      { name: "지역 연계·협업 지원비", values: [0.05, 0, 0, 0, 0, 0.05, 0.2] },
-      { name: "기업 지원·협력 활동비", values: [1.14, 0, 0, 0, 0, 1.14, 5.4] },
-      { name: "성과 활용·확산 지원비", values: [0.26, 0, 0, 0, 0, 0.26, 1.2] }
-    ]
-  },
-  {
-    id: "A2",
-    title: "A2. 지역 창업 생태계 혁신을 위한 글로컬 창업 문화 조성",
-    total: [4.07, 0.63, 0, 0, 0, 4.70, 100.0],
-    categories: [
-      { name: "교육·연구 프로그램 개발·운영비", values: [0, 0.63, 0, 0, 0, 0.63, 13.4] },
-      { name: "교육·연구 환경개선비", values: [1.50, 0, 0, 0, 0, 1.50, 31.9] },
-      { name: "실험·실습장비 및 기자재 구입·운영비", values: [0.60, 0, 0, 0, 0, 0.60, 12.8] },
-      { name: "지역 연계·협업 지원비", values: [1.67, 0, 0, 0, 0, 1.67, 35.5] },
-      { name: "성과 활용·확산 지원비", values: [0.30, 0, 0, 0, 0, 0.30, 6.4] }
-    ]
-  },
-  {
-    id: "A3",
-    title: "A3. 지역산업 연계 글로벌 협력 거점 대학 육성",
-    total: [2.40, 0, 0, 0, 0, 2.40, 100.0],
-    categories: [
-      { name: "장학금", values: [0.45, 0, 0, 0, 0, 0.45, 18.8] },
-      { name: "교육·연구 프로그램 개발·운영비", values: [1.20, 0, 0, 0, 0, 1.20, 50.0] },
-      { name: "실험·실습장비 및 기자재 구입·운영비", values: [0.30, 0, 0, 0, 0, 0.30, 12.5] },
-      { name: "지역 연계·협업 지원비", values: [0.41, 0, 0, 0, 0, 0.41, 17.1] },
-      { name: "기업 지원·협력 활동비", values: [0.04, 0, 0, 0, 0, 0.04, 1.7] }
-    ]
-  },
-  {
-    id: "B1",
-    title: "B1. 울산지역 주력·신산업 분야 산학협력 체계 구축",
-    total: [3.50, 0, 0, 0, 0, 3.00, 100.0],
-    categories: [
-      { name: "교육·연구 프로그램 개발·운영비", values: [0.10, 0, 0, 0, 0, 0.10, 2.9] },
-      { name: "기업 지원·협력 활동비", values: [3.30, 0, 0, 0, 0, 3.30, 94.3] },
-      { name: "성과 활용·확산 지원비", values: [0.10, 0, 0, 0, 0, 0.10, 2.9] }
-    ]
-  },
-  {
-    id: "B2",
-    title: "B2. AID 역량강화 기반 지역산업 전환 지원",
-    total: [9.26, 0.94, 0, 0, 0, 10.20, 100.0],
-    categories: [
-      { name: "교육·연구 프로그램 개발·운영비", values: [1.20, 0, 0, 0, 0, 1.20, 11.8] },
-      { name: "교육·연구 환경개선비", values: [1.50, 0, 0, 0, 0, 1.50, 14.7] },
-      { name: "실험·실습장비 및 기자재 구입·운영비", values: [5.50, 0, 0, 0, 0, 5.50, 53.9] },
-      { name: "지역 연계·협업 지원비", values: [1.00, 0.94, 0, 0, 0, 1.94, 19.0] }
-    ]
-  },
-  {
-    id: "B3",
-    title: "B3. 지·산·학 협력 탄소중립 실천 플랫폼 구축",
-    total: [3.00, 0, 0, 0, 0, 3.00, 100.0],
-    categories: [
-      { name: "교육·연구 프로그램 개발·운영비", values: [1.00, 0, 0, 0, 0, 1.00, 33.3] },
-      { name: "지역 연계·협업 지원비", values: [1.00, 0, 0, 0, 0, 1.00, 33.3] },
-      { name: "기업 지원·협력 활동비", values: [1.00, 0, 0, 0, 0, 1.00, 33.3] }
-    ]
-  },
-  {
-    id: "B4",
-    title: "B4. 복합재난 대응 산업안전·보건 통합 운영체계 구축",
-    total: [2.96, 0, 0, 0, 0, 2.96, 100.0],
-    categories: [
-      { name: "교육·연구 프로그램 개발·운영비", values: [0.96, 0, 0, 0, 0, 0.96, 32.4] },
-      { name: "지역 연계·협업 지원비", values: [1.00, 0, 0, 0, 0, 1.00, 33.8] },
-      { name: "기업 지원·협력 활동비", values: [1.00, 0, 0, 0, 0, 1.00, 33.8] }
-    ]
-  },
-  {
-    id: "공통운영경비",
-    title: "공통운영경비",
-    total: [23.63, 0, 0, 0, 0, 23.63, 100.0],
-    categories: [
-      { name: "인건비", values: [13.50, 0, 0, 0, 0, 13.50, 57.1] },
-      { name: "교육·연구 환경개선비", values: [3.43, 0, 0, 0, 0, 3.43, 14.5] },
-      { name: "성과 활용·확산 지원비", values: [1.20, 0, 0, 0, 0, 1.20, 5.1] },
-      { name: "그 밖의 사업운영비", values: [2.75, 0, 0, 0, 0, 2.75, 11.6] },
-      { name: "간접비", values: [2.75, 0, 0, 0, 0, 2.75, 11.6] }
-    ]
-  }
-];
-
-function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab }) {
+function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, projects, selectedYear }) {
   const [expandedUnits, setExpandedUnits] = React.useState({});
 
   const toggleUnit = (id) => {
     setExpandedUnits(prev => ({ ...prev, [id]: !prev[id] }));
   };
+
+  // 1. 모든 단위과제 수집 (정렬 포함)
+  const allUnits = [];
+  projects.forEach((p) => {
+    p.units.forEach((u) => {
+      allUnits.push({
+        ...u,
+        projectTitle: p.title
+      });
+    });
+  });
+
+  // ID 기준으로 정렬 (Common은 맨 마지막에 위치하도록 함)
+  allUnits.sort((a, b) => {
+    if (a.id === "Common") return 1;
+    if (b.id === "Common") return -1;
+    return a.id.localeCompare(b.id, undefined, { numeric: true, sensitivity: 'base' });
+  });
+
+  // 비목 기본 정렬 기준 목록
+  const CATEGORY_ORDER = [
+    "인건비",
+    "장학금",
+    "교육·연구 프로그램 개발·운영비",
+    "교육·연구 환경개선비",
+    "실험·실습장비 및 기자재 구입·운영비",
+    "지역 연계·협업 지원비",
+    "기업 지원·협력 활동비",
+    "성과 활용·확산 지원비",
+    "그 밖의 사업운영비",
+    "간접비"
+  ];
+
+  // ----------------------------------------------------
+  // (1) 5개년 총괄 데이터 동적 계산
+  // ----------------------------------------------------
+  const TOTAL_INVESTMENT_5YEAR_DATA = allUnits.map((u) => {
+    const unitTitle = u.id === "Common" ? "공통운영경비" : `${u.id}. ${u.title}`;
+    
+    // 연도별 예산 총액 (억원 단위)
+    // 1~5차년도
+    const annualTotals = [1, 2, 3, 4, 5].map((yr) => {
+      const budget = (u.years?.[yr]?.budget_main || 0) + (u.years?.[yr]?.budget_carry || 0);
+      return budget / 1e8;
+    });
+    // 5개년 총합
+    const fiveYearSum = annualTotals.reduce((sum, val) => sum + val, 0);
+    const totalRow = [...annualTotals, fiveYearSum];
+
+    // 비목별 5개년 예산
+    const categoriesMap = {};
+    CATEGORY_ORDER.forEach((catName) => {
+      categoriesMap[catName] = [0, 0, 0, 0, 0]; // 1~5차년도
+    });
+
+    // 프로그램들을 순회하며 각 연도의 비목 데이터 합산
+    u.programs.forEach((prog) => {
+      [1, 2, 3, 4, 5].forEach((yr) => {
+        const bgCats = prog.years?.[yr]?.budget_categories || [];
+        bgCats.forEach((cat) => {
+          const normCat = normalizeCategoryName(cat.category);
+          const matchedOrderCat = CATEGORY_ORDER.find(c => normalizeCategoryName(c) === normCat);
+          if (matchedOrderCat) {
+            const budgetVal = (cat.budget || 0) + (cat.budget_carry || 0);
+            categoriesMap[matchedOrderCat][yr - 1] += budgetVal / 1e8;
+          }
+        });
+      });
+    });
+
+    // 값이 0보다 큰 비목만 필터링하여 categories 구성
+    const categories = [];
+    CATEGORY_ORDER.forEach((catName) => {
+      const values = categoriesMap[catName];
+      const catSum = values.reduce((sum, val) => sum + val, 0);
+      if (catSum > 0) {
+        categories.push({
+          name: catName,
+          values: [...values, catSum]
+        });
+      }
+    });
+
+    return {
+      id: u.id,
+      title: unitTitle,
+      total: totalRow,
+      categories: categories
+    };
+  });
+
+  // ----------------------------------------------------
+  // (2) 5개년 총괄 요약 영역 동적 계산
+  // ----------------------------------------------------
+  const summaryTotal = [0, 0, 0, 0, 0, 0];
+  const summaryLabor = [0, 0, 0, 0, 0, 0];
+  const summaryOperation = [0, 0, 0, 0, 0, 0];
+  const summaryIndirect = [0, 0, 0, 0, 0, 0];
+  const summaryOnlyOperation = [0, 0, 0, 0, 0, 0];
+
+  TOTAL_INVESTMENT_5YEAR_DATA.forEach((uData) => {
+    for (let i = 0; i < 6; i++) {
+      summaryTotal[i] += uData.total[i];
+    }
+    
+    uData.categories.forEach((cat) => {
+      const normCat = normalizeCategoryName(cat.name);
+      if (normCat === "인건비") {
+        for (let i = 0; i < 6; i++) summaryLabor[i] += cat.values[i];
+      } else if (normCat === "그 밖의 사업운영비" || normCat === "그 밖의 사업운영경비") {
+        for (let i = 0; i < 6; i++) summaryOperation[i] += cat.values[i];
+      } else if (normCat === "간접비") {
+        for (let i = 0; i < 6; i++) summaryIndirect[i] += cat.values[i];
+      }
+    });
+  });
+
+  // "총사업비 중 운영비" = "인건비" + "그 밖의 사업운영비" + "간접비"
+  for (let i = 0; i < 6; i++) {
+    summaryOnlyOperation[i] = summaryLabor[i] + summaryOperation[i] + summaryIndirect[i];
+  }
+
+  const TOTAL_INVESTMENT_SUMMARY_DATA = {
+    total: summaryTotal,
+    labor: summaryLabor,
+    operation: summaryOperation,
+    indirect: summaryIndirect,
+    only_operation: summaryOnlyOperation
+  };
+
+  // ----------------------------------------------------
+  // (3) 연차별 계획 (재원별) 데이터 동적 계산
+  // ----------------------------------------------------
+  const ANNUAL_INVESTMENT_DATA = allUnits.map((u) => {
+    const unitTitle = u.id === "Common" ? "공통운영경비" : `${u.id}. ${u.title}`;
+
+    let uNat = 0, uCity = 0, uExt = 0;
+    u.programs.forEach((prog) => {
+      const py = prog.years?.[selectedYear] || {};
+      uNat += (py.budget_national || 0) + (py.budget_carry_national || 0);
+      uCity += (py.budget_city || 0) + (py.budget_carry_city || 0);
+      uExt += (py.budget_external || 0) + (py.budget_carry_external || 0);
+    });
+
+    const natKr = uNat / 1e8;
+    const cityKr = uCity / 1e8;
+    const extKr = uExt / 1e8;
+    const localGovKr = 0; // 기초지자체 (0원 고정)
+    const privateKr = 0; // 민자 (0원 고정)
+    const sumKr = natKr + cityKr + localGovKr + extKr + privateKr;
+
+    // 단위과제 대로우의 비율은 100%로 고정
+    const totalRow = [natKr, cityKr, localGovKr, extKr, privateKr, sumKr, 100.0];
+
+    // 비목별 재원 안분 계산
+    const categoriesMap = {};
+    CATEGORY_ORDER.forEach((catName) => {
+      categoriesMap[catName] = { national: 0, city: 0, localGov: 0, institution: 0, private: 0 };
+    });
+
+    u.programs.forEach((prog) => {
+      const py = prog.years?.[selectedYear] || {};
+      const progBudgetMain = py.budget_main || 0;
+      const progBudgetCarry = py.budget_carry || 0;
+
+      // 안분 비율
+      const natRatio = progBudgetMain > 0 ? (py.budget_national || 0) / progBudgetMain : 0;
+      const cityRatio = progBudgetMain > 0 ? (py.budget_city || 0) / progBudgetMain : 0;
+      const extRatio = progBudgetMain > 0 ? (py.budget_external || 0) / progBudgetMain : 0;
+
+      const carryNatRatio = progBudgetCarry > 0 ? (py.budget_carry_national || 0) / progBudgetCarry : 0;
+      const carryCityRatio = progBudgetCarry > 0 ? (py.budget_carry_city || 0) / progBudgetCarry : 0;
+      const carryExtRatio = progBudgetCarry > 0 ? (py.budget_carry_external || 0) / progBudgetCarry : 0;
+
+      const bgCats = py.budget_categories || [];
+      bgCats.forEach((cat) => {
+        const normCat = normalizeCategoryName(cat.category);
+        const matchedOrderCat = CATEGORY_ORDER.find(c => normalizeCategoryName(c) === normCat);
+        if (matchedOrderCat) {
+          const catB = cat.budget || 0;
+          const catBC = cat.budget_carry || 0;
+
+          // 재원 안분 적용
+          const cNat = catB * natRatio + catBC * carryNatRatio;
+          const cCity = catB * cityRatio + catBC * carryCityRatio;
+          const cExt = catB * extRatio + catBC * carryExtRatio;
+
+          categoriesMap[matchedOrderCat].national += cNat / 1e8;
+          categoriesMap[matchedOrderCat].city += cCity / 1e8;
+          categoriesMap[matchedOrderCat].institution += cExt / 1e8;
+        }
+      });
+    });
+
+    const categories = [];
+    CATEGORY_ORDER.forEach((catName) => {
+      const cData = categoriesMap[catName];
+      const catSum = cData.national + cData.city + cData.localGov + cData.institution + cData.private;
+      if (catSum > 0) {
+        // 비목의 비율은 해당 단위과제 총합 예산(sumKr) 대비 비율
+        const catRatio = sumKr > 0 ? (catSum / sumKr) * 100 : 0;
+        categories.push({
+          name: catName,
+          values: [cData.national, cData.city, cData.localGov, cData.institution, cData.private, catSum, catRatio]
+        });
+      }
+    });
+
+    return {
+      id: u.id,
+      title: unitTitle,
+      total: totalRow,
+      categories: categories
+    };
+  });
+
+  // ----------------------------------------------------
+  // (4) 연차별 계획 요약 요율 및 합계 동적 계산
+  // ----------------------------------------------------
+  let annualTotalNat = 0;
+  let annualTotalCity = 0;
+  let annualTotalLocal = 0;
+  let annualTotalExt = 0;
+  let annualTotalPriv = 0;
+  let annualTotalSum = 0;
+
+  let annualLaborNat = 0, annualLaborCity = 0, annualLaborExt = 0, annualLaborSum = 0;
+  let annualOpNat = 0, annualOpCity = 0, annualOpExt = 0, annualOpSum = 0;
+  let annualIndNat = 0, annualIndCity = 0, annualIndExt = 0, annualIndSum = 0;
+
+  ANNUAL_INVESTMENT_DATA.forEach((uData) => {
+    annualTotalNat += uData.total[0];
+    annualTotalCity += uData.total[1];
+    annualTotalLocal += uData.total[2];
+    annualTotalExt += uData.total[3];
+    annualTotalPriv += uData.total[4];
+    annualTotalSum += uData.total[5];
+
+    uData.categories.forEach((cat) => {
+      const normCat = normalizeCategoryName(cat.name);
+      if (normCat === "인건비") {
+        annualLaborNat += cat.values[0];
+        annualLaborCity += cat.values[1];
+        annualLaborExt += cat.values[3];
+        annualLaborSum += cat.values[5];
+      } else if (normCat === "그 밖의 사업운영비" || normCat === "그 밖의 사업운영경비") {
+        annualOpNat += cat.values[0];
+        annualOpCity += cat.values[1];
+        annualOpExt += cat.values[3];
+        annualOpSum += cat.values[5];
+      } else if (normCat === "간접비") {
+        annualIndNat += cat.values[0];
+        annualIndCity += cat.values[1];
+        annualIndExt += cat.values[3];
+        annualIndSum += cat.values[5];
+      }
+    });
+  });
+
+  const annualLaborRatio = annualTotalSum > 0 ? (annualLaborSum / annualTotalSum) * 100 : 0;
+  const annualOpRatio = annualTotalSum > 0 ? (annualOpSum / annualTotalSum) * 100 : 0;
+  const annualIndRatio = annualTotalSum > 0 ? (annualIndSum / annualTotalSum) * 100 : 0;
+
+  const annualOnlyOpNat = annualLaborNat + annualOpNat + annualIndNat;
+  const annualOnlyOpCity = annualLaborCity + annualOpCity + annualIndCity;
+  const annualOnlyOpExt = annualLaborExt + annualOpExt + annualIndExt;
+  const annualOnlyOpSum = annualLaborSum + annualOpSum + annualIndSum;
+  const annualOnlyOpRatio = annualTotalSum > 0 ? (annualOnlyOpSum / annualTotalSum) * 100 : 0;
+
+  const targetYear = 2024 + selectedYear;
 
   const renderFiveYear = () => {
     return (
@@ -9557,11 +9563,11 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab }) 
                     onClick={() => hasCategories && toggleUnit(u.id)}
                     style={{ 
                       cursor: hasCategories ? "pointer" : "default", 
-                      background: u.id === "공통운영경비" ? "rgba(245, 158, 11, 0.08)" : "rgba(255,255,255,0.01)",
+                      background: u.id === "Common" ? "rgba(245, 158, 11, 0.08)" : "rgba(255,255,255,0.01)",
                       fontWeight: "700" 
                     }}
                   >
-                    <td style={{ paddingLeft: "1.5rem", color: u.id === "공통운영경비" ? "#fbbf24" : "inherit", borderRight: "1px solid var(--border-color)", display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                    <td style={{ paddingLeft: "1.5rem", color: u.id === "Common" ? "#fbbf24" : "inherit", borderRight: "1px solid var(--border-color)", display: "flex", alignItems: "center", gap: "0.5rem" }}>
                       {hasCategories && (
                         <span style={{ fontSize: "0.6rem", display: "inline-block", transform: isExpanded ? "rotate(90deg)" : "rotate(0deg)", transition: "transform 0.15s ease" }}>▶</span>
                       )}
@@ -9637,79 +9643,141 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab }) 
 
   const renderAnnual = () => {
     return (
-      <div className="table-panel">
-        <table className="custom-table" style={{ fontSize: "0.8rem", width: "100%", borderCollapse: "collapse" }}>
-          <thead>
-            <tr style={{ background: "rgba(255,255,255,0.02)" }}>
-              <th style={{ verticalAlign: "middle", textAlign: "left", paddingLeft: "1.5rem", borderBottom: "1px solid var(--border-color)", borderRight: "1px solid var(--border-color)" }}>구분</th>
-              <th style={{ textAlign: "right", paddingRight: "1rem" }}>국비</th>
-              <th style={{ textAlign: "right", paddingRight: "1rem" }}>시비</th>
-              <th style={{ textAlign: "right", paddingRight: "1rem" }}>기타(지자체)</th>
-              <th style={{ textAlign: "right", paddingRight: "1rem" }}>기타(기관)</th>
-              <th style={{ textAlign: "right", paddingRight: "1rem" }}>민자</th>
-              <th style={{ textAlign: "right", paddingRight: "1rem", fontWeight: "800", color: "var(--accent-color)" }}>합계</th>
-              <th style={{ textAlign: "center", paddingRight: "1.5rem" }}>비율 (%)</th>
-            </tr>
-          </thead>
-          <tbody>
-            {ANNUAL_INVESTMENT_DATA.map((u) => {
-              const isExpanded = !!expandedUnits[u.id];
-              const hasCategories = u.categories && u.categories.length > 0;
-              return (
-                <React.Fragment key={u.id}>
-                  {/* 대단위과제 로우 */}
-                  <tr 
-                    onClick={() => hasCategories && toggleUnit(u.id)}
-                    style={{ 
-                      cursor: hasCategories ? "pointer" : "default", 
-                      background: u.id === "공통운영경비" ? "rgba(245, 158, 11, 0.08)" : "rgba(255,255,255,0.01)",
-                      fontWeight: "700" 
-                    }}
-                  >
-                    <td style={{ paddingLeft: "1.5rem", color: u.id === "공통운영경비" ? "#fbbf24" : "inherit", borderRight: "1px solid var(--border-color)", display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                      {hasCategories && (
-                        <span style={{ fontSize: "0.6rem", display: "inline-block", transform: isExpanded ? "rotate(90deg)" : "rotate(0deg)", transition: "transform 0.15s ease" }}>▶</span>
-                      )}
-                      {u.title}
-                    </td>
-                    {u.total.map((val, idx) => (
-                      <td 
-                        key={idx} 
-                        style={{ 
-                          textAlign: idx === 6 ? "center" : "right", 
-                          paddingRight: idx === 6 ? "1.5rem" : "1rem",
-                          fontWeight: (idx === 5 || idx === 6) ? "800" : "700",
-                          color: idx === 5 ? "var(--accent-color)" : "inherit"
-                        }}
-                      >
-                        {idx === 6 ? `${val.toFixed(0)}%` : (val > 0 ? val.toFixed(2) : "-")}
+      <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+        {/* 요약 연차 정보 헤더 */}
+        <div style={{ padding: "0.5rem 0" }}>
+          <h4 style={{ fontSize: "1.1rem", fontWeight: "800", marginBottom: "0.3rem" }}>■ {targetYear}년도 예산</h4>
+          <div style={{ fontSize: "0.85rem", color: "var(--accent-color)", fontWeight: "700" }}>
+            ○ {annualTotalSum.toFixed(2)}억 원 (국비 {annualTotalNat.toFixed(2)}, 시비 {annualTotalCity.toFixed(2)}, 기초지자체 0.00, 기관(교육청 등) {annualTotalExt.toFixed(2)}, 민자 0.00)
+          </div>
+        </div>
+
+        <div className="table-panel">
+          <table className="custom-table" style={{ fontSize: "0.8rem", width: "100%", borderCollapse: "collapse" }}>
+            <thead>
+              <tr style={{ background: "rgba(255,255,255,0.02)" }}>
+                <th style={{ verticalAlign: "middle", textAlign: "left", paddingLeft: "1.5rem", borderBottom: "1px solid var(--border-color)", borderRight: "1px solid var(--border-color)" }}>구분</th>
+                <th style={{ textAlign: "right", paddingRight: "1rem" }}>국비</th>
+                <th style={{ textAlign: "right", paddingRight: "1rem" }}>시비</th>
+                <th style={{ textAlign: "right", paddingRight: "1rem" }}>기초지자체</th>
+                <th style={{ textAlign: "right", paddingRight: "1rem" }}>기타(기관 등)</th>
+                <th style={{ textAlign: "right", paddingRight: "1rem" }}>민자</th>
+                <th style={{ textAlign: "right", paddingRight: "1rem", fontWeight: "800", color: "var(--accent-color)" }}>합계</th>
+                <th style={{ textAlign: "center", paddingRight: "1.5rem" }}>비율 (%)</th>
+              </tr>
+            </thead>
+            <tbody>
+              {ANNUAL_INVESTMENT_DATA.map((u) => {
+                const isExpanded = !!expandedUnits[u.id];
+                const hasCategories = u.categories && u.categories.length > 0;
+                return (
+                  <React.Fragment key={u.id}>
+                    {/* 대단위과제 로우 */}
+                    <tr 
+                      onClick={() => hasCategories && toggleUnit(u.id)}
+                      style={{ 
+                        cursor: hasCategories ? "pointer" : "default", 
+                        background: u.id === "Common" ? "rgba(245, 158, 11, 0.08)" : "rgba(255,255,255,0.01)",
+                        fontWeight: "700" 
+                      }}
+                    >
+                      <td style={{ paddingLeft: "1.5rem", color: u.id === "Common" ? "#fbbf24" : "inherit", borderRight: "1px solid var(--border-color)", display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                        {hasCategories && (
+                          <span style={{ fontSize: "0.6rem", display: "inline-block", transform: isExpanded ? "rotate(90deg)" : "rotate(0deg)", transition: "transform 0.15s ease" }}>▶</span>
+                        )}
+                        {u.title}
                       </td>
-                    ))}
-                  </tr>
-                  {/* 세부 비목 아코디언 로우 */}
-                  {isExpanded && u.categories.map((cat, catIdx) => (
-                    <tr key={`${u.id}-${catIdx}`} style={{ background: "rgba(0,0,0,0.25)", fontSize: "0.75rem", color: "var(--text-secondary)" }}>
-                      <td style={{ paddingLeft: "3rem", borderRight: "1px solid var(--border-color)" }}>
-                        {cat.name}
-                      </td>
-                      {cat.values.map((v, vIdx) => (
+                      {u.total.map((val, idx) => (
                         <td 
-                          key={vIdx} 
+                          key={idx} 
                           style={{ 
-                            textAlign: vIdx === 6 ? "center" : "right", 
-                            paddingRight: vIdx === 6 ? "1.5rem" : "1rem" 
+                            textAlign: idx === 7 ? "center" : "right", 
+                            paddingRight: idx === 7 ? "1.5rem" : "1rem",
+                            fontWeight: (idx === 6 || idx === 7) ? "800" : "700",
+                            color: idx === 6 ? "var(--accent-color)" : "inherit"
                           }}
                         >
-                          {vIdx === 6 ? `${v.toFixed(1)}%` : (v > 0 ? v.toFixed(2) : "-")}
+                          {idx === 7 ? `${val.toFixed(0)}` : (val > 0 ? val.toFixed(2) : "-")}
                         </td>
                       ))}
                     </tr>
-                  ))}
-                </React.Fragment>
-              );
-            })}
-          </tbody>
-        </table>
+                    {/* 세부 비목 아코디언 로우 */}
+                    {isExpanded && u.categories.map((cat, catIdx) => (
+                      <tr key={`${u.id}-${catIdx}`} style={{ background: "rgba(0,0,0,0.25)", fontSize: "0.75rem", color: "var(--text-secondary)" }}>
+                        <td style={{ paddingLeft: "3rem", borderRight: "1px solid var(--border-color)" }}>
+                          {cat.name}
+                        </td>
+                        {cat.values.map((v, vIdx) => (
+                          <td 
+                            key={vIdx} 
+                            style={{ 
+                              textAlign: vIdx === 7 ? "center" : "right", 
+                              paddingRight: vIdx === 7 ? "1.5rem" : "1rem" 
+                            }}
+                          >
+                            {vIdx === 7 ? `${v.toFixed(1)}%` : (v > 0 ? v.toFixed(2) : "-")}
+                          </td>
+                        ))}
+                      </tr>
+                    ))}
+                  </React.Fragment>
+                );
+              })}
+
+              {/* 총 합계 요약 영역 */}
+              <tr style={{ borderTop: "2px solid var(--accent-color)", background: "rgba(59, 130, 246, 0.05)", fontWeight: "800" }}>
+                <td style={{ paddingLeft: "1.5rem", borderRight: "1px solid var(--border-color)" }}>총 사업비</td>
+                <td style={{ textAlign: "right", paddingRight: "1rem" }}>{annualTotalNat.toFixed(2)}</td>
+                <td style={{ textAlign: "right", paddingRight: "1rem" }}>{annualTotalCity.toFixed(2)}</td>
+                <td style={{ textAlign: "right", paddingRight: "1rem" }}>0.00</td>
+                <td style={{ textAlign: "right", paddingRight: "1rem" }}>{annualTotalExt.toFixed(2)}</td>
+                <td style={{ textAlign: "right", paddingRight: "1rem" }}>0.00</td>
+                <td style={{ textAlign: "right", paddingRight: "1rem", color: "var(--accent-color)" }}>{annualTotalSum.toFixed(2)}</td>
+                <td style={{ textAlign: "center", paddingRight: "1.5rem" }}>100</td>
+              </tr>
+              <tr style={{ background: "rgba(255,255,255,0.02)", fontSize: "0.75rem", color: "var(--text-secondary)" }}>
+                <td style={{ paddingLeft: "3rem", borderRight: "1px solid var(--border-color)" }}>인건비</td>
+                <td style={{ textAlign: "right", paddingRight: "1rem" }}>{annualLaborNat.toFixed(2)}</td>
+                <td style={{ textAlign: "right", paddingRight: "1rem" }}>{annualLaborCity.toFixed(2)}</td>
+                <td style={{ textAlign: "right", paddingRight: "1rem" }}>0.00</td>
+                <td style={{ textAlign: "right", paddingRight: "1rem" }}>{annualLaborExt.toFixed(2)}</td>
+                <td style={{ textAlign: "right", paddingRight: "1rem" }}>0.00</td>
+                <td style={{ textAlign: "right", paddingRight: "1rem" }}>{annualLaborSum.toFixed(2)}</td>
+                <td style={{ textAlign: "center", paddingRight: "1.5rem" }}>{annualLaborRatio.toFixed(1)}%</td>
+              </tr>
+              <tr style={{ background: "rgba(255,255,255,0.02)", fontSize: "0.75rem", color: "var(--text-secondary)" }}>
+                <td style={{ paddingLeft: "3rem", borderRight: "1px solid var(--border-color)" }}>그 밖의 사업운영비</td>
+                <td style={{ textAlign: "right", paddingRight: "1rem" }}>{annualOpNat.toFixed(2)}</td>
+                <td style={{ textAlign: "right", paddingRight: "1rem" }}>{annualOpCity.toFixed(2)}</td>
+                <td style={{ textAlign: "right", paddingRight: "1rem" }}>0.00</td>
+                <td style={{ textAlign: "right", paddingRight: "1rem" }}>{annualOpExt.toFixed(2)}</td>
+                <td style={{ textAlign: "right", paddingRight: "1rem" }}>0.00</td>
+                <td style={{ textAlign: "right", paddingRight: "1rem" }}>{annualOpSum.toFixed(2)}</td>
+                <td style={{ textAlign: "center", paddingRight: "1.5rem" }}>{annualOpRatio.toFixed(1)}%</td>
+              </tr>
+              <tr style={{ background: "rgba(255,255,255,0.02)", fontSize: "0.75rem", color: "var(--text-secondary)" }}>
+                <td style={{ paddingLeft: "3rem", borderRight: "1px solid var(--border-color)" }}>간접비</td>
+                <td style={{ textAlign: "right", paddingRight: "1rem" }}>{annualIndNat.toFixed(2)}</td>
+                <td style={{ textAlign: "right", paddingRight: "1rem" }}>{annualIndCity.toFixed(2)}</td>
+                <td style={{ textAlign: "right", paddingRight: "1rem" }}>0.00</td>
+                <td style={{ textAlign: "right", paddingRight: "1rem" }}>{annualIndExt.toFixed(2)}</td>
+                <td style={{ textAlign: "right", paddingRight: "1rem" }}>0.00</td>
+                <td style={{ textAlign: "right", paddingRight: "1rem" }}>{annualIndSum.toFixed(2)}</td>
+                <td style={{ textAlign: "center", paddingRight: "1.5rem" }}>{annualIndRatio.toFixed(1)}%</td>
+              </tr>
+              <tr style={{ borderTop: "1px solid rgba(255,255,255,0.1)", background: "rgba(16, 185, 129, 0.05)", fontWeight: "800" }}>
+                <td style={{ paddingLeft: "1.5rem", borderRight: "1px solid var(--border-color)", color: "#10b981" }}>총사업비 중 운영비</td>
+                <td style={{ textAlign: "right", paddingRight: "1rem", color: "#10b981" }}>{annualOnlyOpNat.toFixed(2)}</td>
+                <td style={{ textAlign: "right", paddingRight: "1rem", color: "#10b981" }}>{annualOnlyOpCity.toFixed(2)}</td>
+                <td style={{ textAlign: "right", paddingRight: "1rem", color: "#10b981" }}>0.00</td>
+                <td style={{ textAlign: "right", paddingRight: "1rem", color: "#10b981" }}>{annualOnlyOpExt.toFixed(2)}</td>
+                <td style={{ textAlign: "right", paddingRight: "1rem", color: "#10b981" }}>0.00</td>
+                <td style={{ textAlign: "right", paddingRight: "1rem", color: "#10b981" }}>{annualOnlyOpSum.toFixed(2)}</td>
+                <td style={{ textAlign: "center", paddingRight: "1.5rem", color: "#10b981" }}>{annualOnlyOpRatio.toFixed(1)}%</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     );
   };
