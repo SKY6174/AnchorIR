@@ -422,7 +422,7 @@ export default function ProgramProgressManager({ projects, selectedYear, onSelec
                           >
                             {prog.title}
                           </td>
-                          <td style={{ fontWeight: "700", color: "var(--accent-color)", whiteSpace: "normal", wordBreak: "break-all" }}>
+                          <td style={{ fontSize: "0.73rem", fontWeight: "700", color: "var(--accent-color)", whiteSpace: "normal", wordBreak: "break-all" }}>
                             <div style={{ display: "flex", alignItems: "flex-start", gap: "0.25rem", padding: "0.2rem 0" }}>
                               <User size={12} style={{ marginTop: "0.15rem", flexShrink: 0 }} />
                               <div style={{ display: "flex", flexDirection: "column", gap: "0.15rem", lineHeight: "1.2" }}>
