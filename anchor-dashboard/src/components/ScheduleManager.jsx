@@ -6710,21 +6710,8 @@ Gemini 피드백: \n${geminiCritiqueText}
                     padding: "0.75rem",
                     marginBottom: "1rem"
                   }}>
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.5rem" }}>
+                    <div style={{ marginBottom: "0.5rem" }}>
                       <span style={{ fontSize: "0.8rem", fontWeight: "700", color: "#a78bfa" }}>🧠 지능형 AI-분석 연동 (기획 vs 결과 분리)</span>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          const newKey = prompt("🔑 OpenAI GPT API Key 변경 (sk-로 시작):", localStorage.getItem("user_openai_api_key") || "");
-                          if (newKey !== null) {
-                            localStorage.setItem("user_openai_api_key", newKey.trim());
-                            alert("OpenAI API Key가 브라우저 로컬 스토리지에 안전하게 저장되었습니다.");
-                          }
-                        }}
-                        style={{ fontSize: "0.68rem", color: "#a78bfa", background: "transparent", border: "none", cursor: "pointer", display: "flex", alignItems: "center", gap: "0.15rem" }}
-                      >
-                        ⚙️ API 설정
-                      </button>
                     </div>
                     
                     <p style={{ fontSize: "0.68rem", color: "var(--text-secondary)", lineHeight: "1.3", marginBottom: "0.75rem" }}>
@@ -7087,21 +7074,8 @@ Gemini 피드백: \n${geminiCritiqueText}
                     padding: "0.75rem",
                     marginBottom: "1rem"
                   }}>
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.5rem" }}>
+                    <div style={{ marginBottom: "0.5rem" }}>
                       <span style={{ fontSize: "0.8rem", fontWeight: "700", color: "#a78bfa" }}>🧠 지능형 AI-분석 연동 (기획 vs 결과 분리)</span>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          const newKey = prompt("🔑 OpenAI GPT API Key 변경 (sk-로 시작):", localStorage.getItem("user_openai_api_key") || "");
-                          if (newKey !== null) {
-                            localStorage.setItem("user_openai_api_key", newKey.trim());
-                            alert("OpenAI API Key가 브라우저 로컬 스토리지에 안전하게 저장되었습니다.");
-                          }
-                        }}
-                        style={{ fontSize: "0.68rem", color: "#a78bfa", background: "transparent", border: "none", cursor: "pointer", display: "flex", alignItems: "center", gap: "0.15rem" }}
-                      >
-                        ⚙️ API 설정
-                      </button>
                     </div>
                     
                     <p style={{ fontSize: "0.68rem", color: "var(--text-secondary)", lineHeight: "1.3", marginBottom: "0.75rem" }}>
