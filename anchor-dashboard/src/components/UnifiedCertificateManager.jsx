@@ -71,7 +71,10 @@ const getAcademicYear = (dateStr) => {
 };
 
 const getDynamicTeamName = (dateStr) => {
-  return "앵커사업단";
+  if (!dateStr) return "RISE사업단";
+  const date = new Date(dateStr);
+  const splitDate = new Date("2026-07-01");
+  return date >= splitDate ? "앵커사업단" : "RISE사업단";
 };
 
 export default function UnifiedCertificateManager({
@@ -162,9 +165,11 @@ export default function UnifiedCertificateManager({
     if (!issueDate) return;
     const date = new Date(issueDate);
     const riseStart = new Date("2025-03-01");
+    const anchorStart = new Date("2026-07-01");
     
     let dynamicName = "";
-    if (date >= riseStart) dynamicName = "앵커사업단장";
+    if (date >= anchorStart) dynamicName = "앵커사업단장";
+    else if (date >= riseStart) dynamicName = "RISE사업단장";
 
     if (certType === "수료증") {
       setIssuer(dynamicName ? `울산과학대학교총장, ${dynamicName}` : "울산과학대학교총장");
