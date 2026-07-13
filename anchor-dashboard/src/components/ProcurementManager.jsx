@@ -3146,7 +3146,8 @@ export default function ProcurementManager({
                           
                           {monthsOrder.map((m, currIdx) => {
                             const dynamicMilestones = getMilestonesFromDates(equip, selectedYear);
-                            const stepList = dynamicMilestones[m] || [];
+                            // 💡 [교육용 한글 주석] 기자재 탭 타임라인 그래프 상에서는 Pr(구매) 단계 동그라미가 그려지지 않도록 명시적으로 제외합니다.
+                            const stepList = (dynamicMilestones[m] || []).filter(code => code !== "Pr");
 
                             const getSegmentColorForPos = (pos) => {
                                if (idxP !== null && idxA !== null && idxP < idxA) {
