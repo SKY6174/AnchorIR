@@ -1389,7 +1389,7 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
                   gap: "0.3rem"
                 }}
               >
-                📋 전체 기자재대장
+                📋 앵커 기자재 대장
               </button>
               <button
                 onClick={() => setSelectedCategory("ai_dx")}
@@ -1874,7 +1874,7 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
                   }
 
                   if (selectedCategory === "all") {
-                    // 📋 전체 기자재대장 (13개 컬럼 전용 테이블 렌더링)
+                    // 📋 앵커 기자재 대장 (13개 컬럼 전용 테이블 렌더링)
                     return (
                       <div style={{ overflowX: "auto" }}>
                         <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.68rem", textAlign: "center" }}>
