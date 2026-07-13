@@ -1,13 +1,39 @@
 import React, { useState, useEffect } from "react";
-import { Upload, AlertTriangle, CheckCircle2, TrendingUp, DollarSign, Calendar, FileText } from "lucide-react";
+import { Upload, AlertTriangle, CheckCircle2, TrendingUp, DollarSign, Calendar, FileText, Download, Trash2, ShieldCheck } from "lucide-react";
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ReferenceLine } from "recharts";
+import * as XLSX from "xlsx";
 
-export default function BudgetExecutionManager({ projects, currentRole, selectedYear: rawYear }) {
-  const selectedYear = Number(rawYear); // 💡 타입 불일치로 인한 분기문 미동작 버그를 해결하기 위해 정수로 안전하게 변환
-  const [dragActive, setDragActive] = useState(false);
-  const [uploadedFile, setUploadedFile] = useState(null);
-  const [showToast, setShowToast] = useState(false);
+// 💡 [교육용 한글 주석] 월별 집행현황 엑셀 파일을 월별로 올릴 수 있는 '26.3월 ~ '27.2월까지의 기간 정의
+const MONTHS_CONFIG = [
+  { label: "26.3월", value: "2026-03" },
+  { label: "26.4월", value: "2026-04" },
+  { label: "26.5월", value: "2026-05" },
+  { label: "26.6월", value: "2026-06" },
+  { label: "26.7월", value: "2026-07" },
+  { label: "26.8월", value: "2026-08" },
+  { label: "26.9월", value: "2026-09" },
+  { label: "26.10월", value: "2026-10" },
+  { label: "26.11월", value: "2026-11" },
+  { label: "26.12월", value: "2026-12" },
+  { label: "27.1월", value: "2027-01" },
+  { label: "27.2월", value: "2027-02" }
+];
 
+export default function BudgetExecutionManager({ projects = [], currentRole, selectedYear: rawYear, supabase }) {
+  const selectedYear = Number(rawYear);
+  const [activeUploadTab, setActiveUploadTab] = useState("main"); // "main" (본예산 집행 등록) vs "carryover" (이월예산 집행 등록)
+  
+  // 수집 및 저장된 실 정산 레코드 상태
+  const [executionRecords, setExecutionRecords] = useState([]);
+  
+  // 각 월별 업로드된 파일 정보 메타 데이터 (어떤 월에 어떤 파일이 몇건 올라갔는지 매핑 보관)
+  // key 형태: `${year}_${budgetType}_${monthValue}`
+  const [uploadedFilesMeta, setUploadedFilesMeta] = useState({});
+
+  const [dragActive, setDragActive] = useState(null); // drag중인 month value 저장
+  const [toastMsg, setToastMsg] = useState("");
+  const [toastType, setToastType] = useState("success"); // "success" or "warning"
+  
   // 1) 조회 구분 및 단위과제 선택 상태 변수 정의
   const [viewType, setViewType] = useState("total"); // "total" (사업전체) vs "unit" (단위과제별)
   const [selectedUnit, setSelectedUnit] = useState("");
@@ -22,198 +48,442 @@ export default function BudgetExecutionManager({ projects, currentRole, selected
     setSelectedUnit(unitList[0]);
   }, [selectedYear]);
 
-  // 3) 사업전체 및 일부 단위과제용 하드코딩 지표 정의
-  const executionDataMap = {
-    total: {
-      mainRate: "68.5%", carryoverRate: "92.0%",
-      mainSpent: "58.40억 원", mainTotal: "85.20억 원",
-      carryoverSpent: "8.95억 원", carryoverTotal: "9.73억 원",
-      carryoverBalance: "0.78억 원",
-      chartData: [
-        { month: "3월", mainBudget: 5, carryoverBudget: 15 },
-        { month: "4월", mainBudget: 12, carryoverBudget: 28 },
-        { month: "5월", mainBudget: 22, carryoverBudget: 42 },
-        { month: "6월", mainBudget: 35, carryoverBudget: 60 },
-        { month: "7월", mainBudget: 48, carryoverBudget: 78 },
-        { month: "8월", mainBudget: 58, carryoverBudget: 92 },
-        { month: "9월", mainBudget: 68, carryoverBudget: 92 },
-        { month: "10월", mainBudget: 74, carryoverBudget: 92 },
-        { month: "11월", mainBudget: 80, carryoverBudget: 92 },
-        { month: "12월", mainBudget: 85, carryoverBudget: 92 },
-        { month: "1월", mainBudget: 89, carryoverBudget: 92 },
-        { month: "2월", mainBudget: 95, carryoverBudget: 92 }
-      ]
-    },
-    A1: {
-      mainRate: "71.6%", carryoverRate: "0.0%",
-      mainSpent: "21.32억 원", mainTotal: "29.78억 원",
-      carryoverSpent: "0.00억 원", carryoverTotal: "0.00억 원",
-      carryoverBalance: "0.00억 원",
-      chartData: [
-        { month: "3월", mainBudget: 8, carryoverBudget: 0 },
-        { month: "4월", mainBudget: 15, carryoverBudget: 0 },
-        { month: "5월", mainBudget: 25, carryoverBudget: 0 },
-        { month: "6월", mainBudget: 38, carryoverBudget: 0 },
-        { month: "7월", mainBudget: 52, carryoverBudget: 0 },
-        { month: "8월", mainBudget: 62, carryoverBudget: 0 },
-        { month: "9월", mainBudget: 71.6, carryoverBudget: 0 },
-        { month: "10월", mainBudget: 71.6, carryoverBudget: 0 },
-        { month: "11월", mainBudget: 71.6, carryoverBudget: 0 },
-        { month: "12월", mainBudget: 71.6, carryoverBudget: 0 },
-        { month: "1월", mainBudget: 71.6, carryoverBudget: 0 },
-        { month: "2월", mainBudget: 71.6, carryoverBudget: 0 }
-      ]
-    },
-    A1가: {
-      mainRate: "73.2%", carryoverRate: "94.5%",
-      mainSpent: "18.59억 원", mainTotal: "25.40억 원",
-      carryoverSpent: "1.89억 원", carryoverTotal: "2.00억 원",
-      carryoverBalance: "0.11억 원",
-      chartData: [
-        { month: "3월", mainBudget: 7, carryoverBudget: 20 },
-        { month: "4월", mainBudget: 14, carryoverBudget: 35 },
-        { month: "5월", mainBudget: 24, carryoverBudget: 50 },
-        { month: "6월", mainBudget: 39, carryoverBudget: 70 },
-        { month: "7월", mainBudget: 54, carryoverBudget: 88 },
-        { month: "8월", mainBudget: 64, carryoverBudget: 94.5 },
-        { month: "9월", mainBudget: 73.2, carryoverBudget: 94.5 },
-        { month: "10월", mainBudget: 73.2, carryoverBudget: 94.5 },
-        { month: "11월", mainBudget: 73.2, carryoverBudget: 94.5 },
-        { month: "12월", mainBudget: 73.2, carryoverBudget: 94.5 },
-        { month: "1월", mainBudget: 73.2, carryoverBudget: 94.5 },
-        { month: "2월", mainBudget: 73.2, carryoverBudget: 94.5 }
-      ]
+  // 💡 [교육용 한글 주석] 초기 진입 시 Supabase 혹은 LocalStorage 캐시 저장소로부터 이전 업로드 데이터를 불러옵니다.
+  useEffect(() => {
+    loadSavedData();
+  }, [selectedYear]);
+
+  const loadSavedData = async () => {
+    try {
+      // 1. Supabase 원격 저장소 노크 시도
+      if (supabase) {
+        const { data, error } = await supabase
+          .from("budget_executions")
+          .select("*")
+          .eq("year", selectedYear);
+        if (!error && data) {
+          setExecutionRecords(data);
+          rebuildFileMeta(data);
+          return;
+        }
+      }
+    } catch (e) {
+      console.warn("Supabase 데이터 로드 에러 (LocalStorage 백업 모드로 전환합니다):", e.message);
+    }
+
+    // 2. 실패 시 LocalStorage 폴백 데이터 로드
+    const localDataStr = localStorage.getItem(`budget_exec_records_${selectedYear}`);
+    if (localDataStr) {
+      try {
+        const parsed = JSON.parse(localDataStr);
+        setExecutionRecords(parsed);
+        rebuildFileMeta(parsed);
+      } catch (err) {
+        console.error("LocalStorage 파싱 실패:", err);
+      }
+    } else {
+      setExecutionRecords([]);
+      setUploadedFilesMeta({});
     }
   };
 
-  // 4) 동적 가상 데이터 생성기 (사용자가 임의의 단위과제를 선택 시, 고유 시드 기반 그래프 곡선 및 지표 연출)
-  // 4) 동적 가상 데이터 생성기 (사용자가 임의의 단위과제를 선택 시, 고유 시드 기반 그래프 곡선 및 지표 연출)
-  const getExecutionData = () => {
-    let data;
-    if (viewType === "total") {
-      data = { ...executionDataMap.total };
-    } else {
-      const targetUnit = selectedUnit || unitList[0];
-      
-      // 이미 사전에 정의된 데이터 맵이 있으면 바로 반환
-      if (executionDataMap[targetUnit]) {
-        data = { ...executionDataMap[targetUnit] };
-      } else {
-        // 시드 연산 실행
-        let seed = 0;
-        for (let i = 0; i < targetUnit.length; i++) {
-          seed += targetUnit.charCodeAt(i);
+  // 기존 내역으로부터 파일 메타 정보 재생성
+  const rebuildFileMeta = (records) => {
+    const meta = {};
+    records.forEach(r => {
+      const key = `${r.year}_${r.budget_type}_${r.month_label}`;
+      if (!meta[key]) {
+        meta[key] = {
+          count: 0,
+          fileName: "정산엑셀_자동집계.xlsx",
+          totalAmount: 0
+        };
+      }
+      meta[key].count += 1;
+      meta[key].totalAmount += Number(r.amount);
+    });
+    setUploadedFilesMeta(meta);
+  };
+
+  // 로컬 및 데이터베이스 데이터 영속 저장
+  const saveRecords = async (newRecords) => {
+    setExecutionRecords(newRecords);
+    rebuildFileMeta(newRecords);
+    
+    // LocalStorage 백업
+    localStorage.setItem(`budget_exec_records_${selectedYear}`, JSON.stringify(newRecords));
+
+    // Supabase 원격 백업
+    try {
+      if (supabase) {
+        // RLS 통과를 위해 임시 딜리트 후 인서트 처리하거나 upsert
+        const { error: delError } = await supabase
+          .from("budget_executions")
+          .delete()
+          .eq("year", selectedYear);
+
+        if (!delError && newRecords.length > 0) {
+          const bulkInsert = newRecords.map(({ id, created_at, ...rest }) => rest);
+          await supabase.from("budget_executions").insert(bulkInsert);
+        }
+      }
+    } catch (e) {
+      console.error("Supabase 실시간 백업 동기화 실패:", e.message);
+    }
+  };
+
+  // 💡 [교육용 한글 주석] 첫 번째 그림에 표기된 14개 핵심 헤더를 준수하는 엑셀 양식을 다운로드합니다.
+  const handleDownloadTemplate = () => {
+    const headers = [
+      "프로그램ID", "프로그램명", "국비/시비", "비목항목명(사업비 비목)", "세부내역(사용용도)",
+      "e나라 비목", "계정과목", "계정과목 세목", "집행일자", "적요", "거래처", "집행액", "결의번호", "담당자"
+    ];
+
+    // 가이드용 고품질 예제 행 추가 (첫 번째 그림 기준)
+    const samples = [
+      [
+        "X0-S1T1-1", "(공통)전담연구원 인건비", "국비", "인건비", "인건비",
+        "210-01", "인건비", "지원금사업 인건비", "2026-04-20", "[인건비]김래림", "김래림", 77574, "20260001656", "윤유경"
+      ],
+      [
+        "X0-S1T1-1", "(공통)전담연구원 인건비", "국비", "인건비", "인건비",
+        "210-01", "인건비", "지원금사업 인건비", "2026-04-20", "[인건비]박연주", "박연주", 76140, "20260001656", "윤유경"
+      ],
+      [
+        "A1가-S3T5-1", "개방형설계센터 전문가활용교육 개발 및 운영", "시비", "교육·연구 프로그램 개발·운영비", "비정규교육과정 개발/운영",
+        "210-01", "기타교육운영비", "지원금사업 기타교육운영비", "2026-06-15", "[카드][RISE사업][A1]2026년 제4차 지산학 이음 세미나 행사 운영 물품", "서란", 1800000, "20260062222", "이은주서관"
+      ]
+    ];
+
+    const data = [headers, ...samples];
+    const ws = XLSX.utils.aoa_to_sheet(data);
+
+    // 컬럼 너비 조정 (가독성 향상)
+    ws["!cols"] = [
+      { wch: 12 }, { wch: 35 }, { wch: 10 }, { wch: 25 }, { wch: 25 },
+      { wch: 12 }, { wch: 15 }, { wch: 20 }, { wch: 12 }, { wch: 50 },
+      { wch: 12 }, { wch: 12 }, { wch: 15 }, { wch: 12 }
+    ];
+
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "집행내역_업로드양식");
+    
+    // 파일 쓰기 및 다운로드 트리거
+    XLSX.writeFile(wb, `${selectedYear}차년도_예산_집행현황_업로드양식.xlsx`);
+    triggerToast("✨ 엑셀 업로드 양식을 다운로드 하였습니다.", "success");
+  };
+
+  // 💡 [교육용 한글 주석] 파싱된 엑셀 데이터를 무결성 규칙에 맞춰 정제하고 중복을 걸러 저장합니다.
+  const processExcelData = (file, monthLabel, budgetType) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const data = new Uint8Array(e.target.result);
+        const workbook = XLSX.read(data, { type: "array" });
+        const sheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[sheetName];
+        
+        // 2차원 배열 형태로 데이터를 정밀 로드
+        const rows = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+        if (rows.length <= 1) {
+          triggerToast("⚠️ 엑셀 파일 내에 유효한 집행 데이터가 존재하지 않습니다.", "warning");
+          return;
         }
 
-        const baseMainRate = 50 + (seed % 35); // 50% ~ 85%
-        const baseCarryRate = selectedYear === 1 ? 0 : 75 + (seed % 21); // 1차년도는 이월 없음, 2차년도는 75% ~ 96%
-        
-        const mainTotal = 3.5 + (seed % 12); // 3.5억 ~ 15.5억
-        const mainSpent = (mainTotal * (baseMainRate / 100)).toFixed(2);
-        
-        const carryoverTotal = selectedYear === 1 ? 0 : 0.4 + (seed % 3) * 0.4; // 1차년도는 0, 2차년도는 0.4억 ~ 1.2억
-        const carryoverSpent = (carryoverTotal * (baseCarryRate / 100)).toFixed(2);
-        const carryoverBalance = (carryoverTotal - parseFloat(carryoverSpent)).toFixed(2);
+        // 헤더 매칭 및 열 인덱스 판별
+        const headers = rows[0].map(h => (h || "").toString().trim().replace(/\s/g, ""));
+        const getIdx = (name) => headers.findIndex(h => h.includes(name));
 
-        const chartData = [];
-        for (let m = 3; m <= 14; m++) {
-          const monthNum = m > 12 ? m - 12 : m;
-          const monthLabel = `${monthNum}월`;
+        const pIdIdx = getIdx("프로그램ID");
+        const pNameIdx = getIdx("프로그램명");
+        const fundIdx = getIdx("국비/시비");
+        const categoryIdx = getIdx("비목항목명");
+        const usageIdx = getIdx("세부내역");
+        const enaraIdx = getIdx("e나라비목");
+        const subjectIdx = getIdx("계정과목");
+        const detailSubjectIdx = getIdx("계정과목세목");
+        const dateIdx = getIdx("집행일자");
+        const summaryIdx = getIdx("적요");
+        const clientIdx = getIdx("거래처");
+        const amountIdx = getIdx("집행액");
+        const resolutionIdx = getIdx("결의번호");
+        const managerIdx = getIdx("담당자");
 
-          const progressRatio = Math.min(1, (m - 2) / 10); // 3월 ~ 익년 2월 누적 비중
+        if (pIdIdx === -1 || amountIdx === -1 || resolutionIdx === -1) {
+          triggerToast("⚠️ 올바른 양식의 엑셀 파일이 아닙니다. 양식을 다시 다운로드받아 확인해주세요.", "warning");
+          return;
+        }
 
-          const currentMain = Math.min(baseMainRate, Math.round(baseMainRate * progressRatio * (0.85 + (seed % 3) * 0.05)));
-          const isPostAugust = m > 8; // 8월(8월=8, 9월=9...)
-          const currentCarry = selectedYear === 1 
-            ? 0 
-            : (isPostAugust ? baseCarryRate : Math.round(baseCarryRate * Math.min(1, (m - 2) / 6)));
+        let newParsedRows = [];
+        let duplicateCount = 0;
 
-          chartData.push({
-            month: monthLabel,
-            mainBudget: currentMain,
-            carryoverBudget: currentCarry
+        for (let i = 1; i < rows.length; i++) {
+          const row = rows[i];
+          if (!row || row.length === 0 || !row[pIdIdx]) continue; // 빈 행 건너뜀
+
+          const resolutionNo = (row[resolutionIdx] || "").toString().trim();
+          const programId = (row[pIdIdx] || "").toString().trim();
+          const rawDate = row[dateIdx];
+          
+          // 날짜 포맷팅 변환 (DATE형)
+          let execDate = "2026-03-01";
+          if (rawDate) {
+            if (typeof rawDate === "number") {
+              const excelEpoch = new Date(1900, 0, rawDate - 1);
+              execDate = excelEpoch.toISOString().split("T")[0];
+            } else {
+              execDate = rawDate.toString().trim();
+            }
+          }
+
+          const amount = parseFloat((row[amountIdx] || "0").toString().replace(/,/g, ""));
+          if (isNaN(amount) || amount <= 0) continue;
+
+          // 💡 중복 판단 핵심 키: 결의번호 + 프로그램ID + 집행일자 + 집행액 + 예산구분
+          const isDuplicate = executionRecords.some(r => 
+            r.resolution_no === resolutionNo &&
+            r.program_id === programId &&
+            r.execution_date === execDate &&
+            Number(r.amount) === amount &&
+            r.budget_type === budgetType &&
+            r.year === selectedYear
+          ) || newParsedRows.some(r =>
+            r.resolution_no === resolutionNo &&
+            r.program_id === programId &&
+            r.execution_date === execDate &&
+            r.amount === amount
+          );
+
+          if (isDuplicate) {
+            duplicateCount++;
+            continue; // 중복 행은 건너뛰고 반영하지 않음
+          }
+
+          newParsedRows.push({
+            year: selectedYear,
+            month_label: monthLabel,
+            program_id: programId,
+            program_name: (row[pNameIdx] || "").toString().trim(),
+            funding_source: (row[fundIdx] || "국비").toString().trim(),
+            expense_category: (row[categoryIdx] || "").toString().trim(),
+            detail_usage: (row[usageIdx] || "").toString().trim(),
+            enara_category: (row[enaraIdx] || "").toString().trim(),
+            account_subject: (row[subjectIdx] || "").toString().trim(),
+            account_detail: (row[detailSubjectIdx] || "").toString().trim(),
+            execution_date: execDate,
+            summary: (row[summaryIdx] || "").toString().trim(),
+            client: (row[clientIdx] || "").toString().trim(),
+            amount: amount,
+            resolution_no: resolutionNo,
+            manager: (row[managerIdx] || "").toString().trim(),
+            budget_type: budgetType
           });
         }
 
-        data = {
-          mainRate: `${baseMainRate.toFixed(1)}%`,
-          carryoverRate: `${baseCarryRate.toFixed(1)}%`,
-          mainSpent: `${mainSpent}억 원`,
-          mainTotal: `${mainTotal.toFixed(2)}억 원`,
-          carryoverSpent: `${carryoverSpent}억 원`,
-          carryoverTotal: `${carryoverTotal.toFixed(2)}억 원`,
-          carryoverBalance: `${carryoverBalance}억 원`,
-          chartData
-        };
+        if (newParsedRows.length === 0) {
+          triggerToast(`중복 내역 필터링 완료: 새로 추가된 건이 없습니다. (중복 ${duplicateCount}건 제외)`, "warning");
+          return;
+        }
+
+        // 기존 데이터에 새 파싱 행 병합 저장
+        const merged = [...executionRecords, ...newParsedRows];
+        saveRecords(merged);
+
+        // 월별 파일 정보 메타데이터 업데이트
+        const key = `${selectedYear}_${budgetType}_${monthLabel}`;
+        setUploadedFilesMeta(prev => ({
+          ...prev,
+          [key]: {
+            fileName: file.name,
+            count: (prev[key]?.count || 0) + newParsedRows.length,
+            totalAmount: (prev[key]?.totalAmount || 0) + newParsedRows.reduce((sum, r) => sum + r.amount, 0)
+          }
+        }));
+
+        triggerToast(`✨ [${monthLabel} ${budgetType === "main" ? "본예산" : "이월예산"}] 총 ${newParsedRows.length}건이 성공적으로 등록되었습니다. (중복 ${duplicateCount}건 자동 제외)`, "success");
+
+      } catch (err) {
+        console.error(err);
+        triggerToast("⚠️ 엑셀 파일 해석 중 예상치 못한 오류가 발생했습니다.", "warning");
       }
-    }
-
-    // 💡 1차년도인 경우, 전체/단위과제 무관하게 이월예산 지표와 차트 값을 완벽히 소거하여 렌더링 오류 및 차트 라인 표출 방지
-    if (selectedYear === 1) {
-      data = {
-        ...data,
-        carryoverRate: "N/A",
-        carryoverSpent: "0원",
-        carryoverTotal: "0원",
-        carryoverBalance: "0원",
-        chartData: data.chartData.map(item => {
-          const cleanItem = { ...item };
-          delete cleanItem.carryoverBudget; // 1차년도 차트에서 이월 데이터 전면 제거 (recharts 꺾은선 실종)
-          return cleanItem;
-        })
-      };
-    }
-
-    return data;
+    };
+    reader.readAsArrayBuffer(file);
   };
 
-  const activeData = getExecutionData();
+  // 💡 특정 월의 업로드 내역 삭제(초기화) 처리
+  const handleClearMonth = (monthLabel, budgetType) => {
+    if (!window.confirm(`⚠️ [${monthLabel} ${budgetType === "main" ? "본예산" : "이월예산"}] 집행 내역을 모두 삭제하시겠습니까?`)) {
+      return;
+    }
+    const filtered = executionRecords.filter(r => 
+      !(r.month_label === monthLabel && r.budget_type === budgetType && r.year === selectedYear)
+    );
+    saveRecords(filtered);
 
-  const handleDrag = (e) => {
+    const key = `${selectedYear}_${budgetType}_${monthLabel}`;
+    setUploadedFilesMeta(prev => {
+      const copy = { ...prev };
+      delete copy[key];
+      return copy;
+    });
+
+    triggerToast(`🗑️ ${monthLabel} 집행 데이터가 성공적으로 초기화되었습니다.`, "success");
+  };
+
+  const triggerToast = (msg, type = "success") => {
+    setToastMsg(msg);
+    setToastType(type);
+    setTimeout(() => setToastMsg(""), 4000);
+  };
+
+  // 드래그앤드롭 이벤트 핸들러
+  const handleDrag = (e, monthValue) => {
     e.preventDefault();
     e.stopPropagation();
     if (e.type === "dragenter" || e.type === "dragover") {
-      setDragActive(true);
+      setDragActive(monthValue);
     } else if (e.type === "dragleave") {
-      setDragActive(false);
+      setDragActive(null);
     }
   };
 
-  const handleDrop = (e) => {
+  const handleDrop = (e, monthLabel, budgetType) => {
     e.preventDefault();
     e.stopPropagation();
-    setDragActive(false);
+    setDragActive(null);
 
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      setUploadedFile(e.dataTransfer.files[0]);
-      triggerSuccessToast();
+      const file = e.dataTransfer.files[0];
+      if (!file.name.endsWith(".xlsx") && !file.name.endsWith(".xls")) {
+        triggerToast("⚠️ 올바른 엑셀 파일(.xlsx, .xls)을 선택해 주세요.", "warning");
+        return;
+      }
+      processExcelData(file, monthLabel, budgetType);
     }
   };
 
-  const handleFileInput = (e) => {
+  const handleFileChange = (e, monthLabel, budgetType) => {
     if (e.target.files && e.target.files[0]) {
-      setUploadedFile(e.target.files[0]);
-      triggerSuccessToast();
+      processExcelData(e.target.files[0], monthLabel, budgetType);
     }
   };
 
-  const triggerSuccessToast = () => {
-    setShowToast(true);
-    setTimeout(() => {
-      setShowToast(false);
-    }, 3000);
+  // ==============================================================================
+  // [3] 집행률 실시간 연동 연산
+  // ==============================================================================
+  const calculateMetrics = () => {
+    // 1. 분모 구하기 (projects 전체 예산 정보로부터 합산)
+    let totalMainBudget = 0;
+    let totalCarryoverBudget = 0;
+
+    const targetUnitPrefix = viewType === "unit" ? selectedUnit : "";
+
+    const yearBudgetField = `budget_${2024 + selectedYear}`;
+    const carryoverField = `budget_${2023 + selectedYear}_carry`;
+
+    projects.forEach(p => {
+      if (p && Array.isArray(p.units)) {
+        p.units.forEach(u => {
+          const isMatchUnit = viewType === "total" || (targetUnitPrefix && (u.id || "").startsWith(targetUnitPrefix));
+          if (isMatchUnit) {
+            let mainB = 0;
+            if (selectedYear === 1) {
+              mainB = Number(u.budget || 0);
+            } else {
+              mainB = Number(u[yearBudgetField] || u.budget || 0);
+            }
+            let carryB = 0;
+            if (selectedYear > 1) {
+              carryB = Number(u[carryoverField] || 0);
+            }
+            totalMainBudget += mainB;
+            totalCarryoverBudget += carryB;
+          }
+        });
+      }
+    });
+
+    // 2. 분자 구하기 (실제 업로드된 집행액 합산)
+    let spentMain = 0;
+    let spentCarryover = 0;
+
+    executionRecords.forEach(r => {
+      const amt = Number(r.amount || 0);
+      const isMatchUnit = viewType === "total" || (targetUnitPrefix && r.program_id.startsWith(targetUnitPrefix));
+
+      if (isMatchUnit) {
+        if (r.budget_type === "main") {
+          spentMain += amt;
+        } else if (r.budget_type === "carryover") {
+          spentCarryover += amt;
+        }
+      }
+    });
+
+    // 백분율 계산
+    const mainRate = totalMainBudget > 0 ? ((spentMain / totalMainBudget) * 100).toFixed(1) : "0.0";
+    const carryoverRate = totalCarryoverBudget > 0 ? ((spentCarryover / totalCarryoverBudget) * 100).toFixed(1) : "0.0";
+    const carryoverBalance = totalCarryoverBudget - spentCarryover;
+
+    // 월별 누적 추이 차트 데이터 조립
+    const chartData = [];
+    let cumulativeMain = 0;
+    let cumulativeCarry = 0;
+
+    MONTHS_CONFIG.forEach(m => {
+      // 해당 월의 집행액 구하기
+      let monthMain = 0;
+      let monthCarry = 0;
+
+      executionRecords.forEach(r => {
+        if (r.month_label === m.label && (viewType === "total" || (targetUnitPrefix && r.program_id.startsWith(targetUnitPrefix)))) {
+          if (r.budget_type === "main") monthMain += Number(r.amount || 0);
+          else if (r.budget_type === "carryover") monthCarry += Number(r.amount || 0);
+        }
+      });
+
+      cumulativeMain += monthMain;
+      cumulativeCarry += monthCarry;
+
+      const mainPct = totalMainBudget > 0 ? Math.min(100, (cumulativeMain / totalMainBudget) * 100) : 0;
+      const carryPct = totalCarryoverBudget > 0 ? Math.min(100, (cumulativeCarry / totalCarryoverBudget) * 100) : 0;
+
+      const dataPoint = {
+        month: m.label,
+        mainBudget: parseFloat(mainPct.toFixed(1))
+      };
+      
+      if (selectedYear !== 1) {
+        dataPoint.carryoverBudget = parseFloat(carryPct.toFixed(1));
+      }
+
+      chartData.push(dataPoint);
+    });
+
+    return {
+      mainRate: `${mainRate}%`,
+      carryoverRate: selectedYear === 1 ? "N/A" : `${carryoverRate}%`,
+      mainSpent: `${(spentMain / 100000000).toFixed(2)}억 원`,
+      mainTotal: `${(totalMainBudget / 100000000).toFixed(2)}억 원`,
+      carryoverSpent: selectedYear === 1 ? "0원" : `${(spentCarryover / 100000000).toFixed(2)}억 원`,
+      carryoverTotal: selectedYear === 1 ? "0원" : `${(totalCarryoverBudget / 100000000).toFixed(2)}억 원`,
+      carryoverBalance: `${(carryoverBalance / 100000000).toFixed(2)}억 원`,
+      chartData
+    };
   };
+
+  const activeData = calculateMetrics();
 
   return (
     <div className="budget-execution-container" style={{ padding: "1.5rem", display: "flex", flexDirection: "column", gap: "1.5rem" }}>
       
-      {/* 토스트 완료 알림 */}
-      {showToast && (
+      {/* 토스트 알림 컴포넌트 */}
+      {toastMsg && (
         <div style={{
           position: "fixed",
           top: "20px",
           right: "20px",
-          backgroundColor: "#10B981",
+          backgroundColor: toastType === "success" ? "#10B981" : "#F59E0B",
           color: "white",
           padding: "1rem 1.5rem",
           borderRadius: "8px",
@@ -224,8 +494,8 @@ export default function BudgetExecutionManager({ projects, currentRole, selected
           zIndex: 1000,
           animation: "fadeIn 0.3s ease"
         }}>
-          <CheckCircle2 size={20} />
-          <span>집행률 엑셀 파일이 임시 가반영되었습니다! (세부 정산 연동 대기 중)</span>
+          {toastType === "success" ? <CheckCircle2 size={20} /> : <AlertTriangle size={20} />}
+          <span style={{ fontWeight: "700", fontSize: "0.85rem" }}>{toastMsg}</span>
         </div>
       )}
 
@@ -239,11 +509,29 @@ export default function BudgetExecutionManager({ projects, currentRole, selected
             월별 집행현황 관리 및 본예산·이월예산 통합 정산 프레임워크
           </p>
         </div>
-        <div style={{ display: "flex", gap: "0.5rem" }}>
-          <span style={{ fontSize: "0.8rem", padding: "0.25rem 0.5rem", borderRadius: "4px", background: "rgba(59, 130, 246, 0.2)", color: "#60A5FA" }}>
-            {selectedYear}차년도 운영 기준
-          </span>
-        </div>
+        
+        {/* 💡 양식 다운로드 단추 */}
+        <button
+          onClick={handleDownloadTemplate}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "0.35rem",
+            padding: "0.5rem 1rem",
+            fontSize: "0.8rem",
+            fontWeight: "800",
+            borderRadius: "0.4rem",
+            background: "var(--accent-color)",
+            color: "white",
+            border: "none",
+            cursor: "pointer",
+            boxShadow: "0 2px 6px rgba(59, 130, 246, 0.3)",
+            transition: "all 0.2s"
+          }}
+        >
+          <Download size={14} />
+          <span>엑셀 양식 다운로드</span>
+        </button>
       </div>
 
       {/* 2차년도 기준 1차년도 이월예산 8월 31일 한계점 경고 배너 */}
@@ -256,7 +544,7 @@ export default function BudgetExecutionManager({ projects, currentRole, selected
           display: "flex",
           alignItems: "flex-start",
           gap: "0.75rem",
-          marginBottom: "1rem"
+          marginBottom: "0.5rem"
         }}>
           <AlertTriangle size={24} style={{ color: "#EF4444", flexShrink: 0, marginTop: "2px" }} />
           <div>
@@ -270,7 +558,7 @@ export default function BudgetExecutionManager({ projects, currentRole, selected
         </div>
       )}
 
-      {/* 본예산 vs 이월예산 핵심 지표 현황판 (activeData 연동) */}
+      {/* 본예산 vs 이월예산 핵심 지표 현황판 (실 데이터 집계 연동) */}
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
         
         {/* 본예산 요약 */}
@@ -285,11 +573,10 @@ export default function BudgetExecutionManager({ projects, currentRole, selected
             <span style={{ fontSize: "2rem", fontWeight: "800", color: "var(--text-primary)" }}>{activeData.mainRate}</span>
             <span style={{ fontSize: "0.85rem", color: "var(--text-secondary)" }}>(누적 {activeData.mainSpent} / 총 {activeData.mainTotal})</span>
           </div>
-          {/* 가상 프로그레스 바 */}
           <div style={{ width: "100%", height: "8px", background: "var(--border-color)", borderRadius: "4px", overflow: "hidden" }}>
             <div style={{ width: activeData.mainRate, height: "100%", background: "#3B82F6", borderRadius: "4px" }}></div>
           </div>
-          <span style={{ fontSize: "0.75rem", color: "#60A5FA" }}>ℹ️ 전체 12개월 중 현재 6개월(8월 말 기준) 누적 통계</span>
+          <span style={{ fontSize: "0.75rem", color: "#60A5FA" }}>ℹ️ 전체 12개월 중 현재 등록된 엑셀 집행 데이터 합계 누적 통계</span>
         </div>
 
         {/* 이월예산 요약 */}
@@ -299,7 +586,7 @@ export default function BudgetExecutionManager({ projects, currentRole, selected
           display: "flex", 
           flexDirection: "column", 
           gap: "0.75rem",
-          opacity: selectedYear === 1 ? 0.55 : 1, // 1차년도 비활성화 흐림 효과
+          opacity: selectedYear === 1 ? 0.55 : 1,
           position: "relative"
         }}>
           {selectedYear === 1 && (
@@ -329,7 +616,6 @@ export default function BudgetExecutionManager({ projects, currentRole, selected
               {selectedYear === 1 ? "(이월배정금 없음)" : `(누적 ${activeData.carryoverSpent} / 총 ${activeData.carryoverTotal})`}
             </span>
           </div>
-          {/* 가상 프로그레스 바 */}
           <div style={{ width: "100%", height: "8px", background: "var(--border-color)", borderRadius: "4px", overflow: "hidden" }}>
             <div style={{ width: selectedYear === 1 ? "0%" : activeData.carryoverRate, height: "100%", background: "#EF4444", borderRadius: "4px" }}></div>
           </div>
@@ -337,211 +623,299 @@ export default function BudgetExecutionManager({ projects, currentRole, selected
             <span style={{ color: selectedYear === 1 ? "#ef4444" : "#FCA5A5", fontWeight: selectedYear === 1 ? "800" : "normal" }}>
               {selectedYear === 1 ? "💡 1차년도는 최초 협약 연도로서 이월예산이 존재하지 않습니다." : "⚠️ 8월 31일 기한 마감 완료"}
             </span>
-            {selectedYear === 2 && <span style={{ color: "var(--text-secondary)" }}>잔액 반납 예정액: **{activeData.carryoverBalance}**</span>}
+            {selectedYear === 2 && <span style={{ color: "var(--text-secondary)" }}>잔액 반납 예정액: <strong>{activeData.carryoverBalance}</strong></span>}
           </div>
         </div>
 
       </div>
 
-      {/* 꺾은선 차트 카드 및 엑셀 수집 업로더 */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.5rem" }}>
-        
-        {/* 1. 월별 집행현황 꺾은선 차트 카드 (조회 필터 추가) */}
-        <div className="glass-card" style={{ padding: "1.25rem", borderRadius: "10px", display: "flex", flexDirection: "column", gap: "1rem" }}>
-          
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "0.75rem" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-              <TrendingUp size={18} style={{ color: "var(--accent-color)" }} />
-              <h3 style={{ margin: 0, fontSize: "1rem", fontWeight: "700", color: "var(--text-primary)" }}>월별 누적 집행률 추이</h3>
-            </div>
-            
-            {/* 💡 [조회 구분 변경 컨트롤러 장착] */}
-            <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-              
-              {/* 사업전체 / 단위과제별 라디오 버튼 */}
-              <div style={{ display: "flex", gap: "0.75rem", fontSize: "0.85rem", color: "var(--text-secondary)", fontWeight: "600" }}>
-                <label style={{ display: "flex", alignItems: "center", gap: "0.25rem", cursor: "pointer" }}>
-                  <input 
-                    type="radio" 
-                    name="executionViewType" 
-                    value="total" 
-                    checked={viewType === "total"}
-                    onChange={() => setViewType("total")}
-                    style={{ accentColor: "var(--accent-color)" }}
-                  />
-                  사업 전체
-                </label>
-                <label style={{ display: "flex", alignItems: "center", gap: "0.25rem", cursor: "pointer" }}>
-                  <input 
-                    type="radio" 
-                    name="executionViewType" 
-                    value="unit" 
-                    checked={viewType === "unit"}
-                    onChange={() => setViewType("unit")}
-                    style={{ accentColor: "var(--accent-color)" }}
-                  />
-                  단위과제별
-                </label>
-              </div>
-
-              {/* 단위과제 선택용 드롭다운 */}
-              {viewType === "unit" && (
-                <select
-                  value={selectedUnit}
-                  onChange={(e) => setSelectedUnit(e.target.value)}
-                  style={{
-                    background: "var(--input-bg)",
-                    color: "var(--text-primary)",
-                    border: "1px solid var(--border-color)",
-                    borderRadius: "6px",
-                    padding: "0.25rem 0.5rem",
-                    fontSize: "0.8rem",
-                    fontWeight: "600",
-                    cursor: "pointer",
-                    outline: "none"
-                  }}
-                >
-                  {unitList.map((unit) => (
-                    <option key={unit} value={unit} style={{ background: "var(--background-card, #1e1e1e)", color: "var(--text-primary)" }}>
-                      {unit} 과제
-                    </option>
-                  ))}
-                </select>
-              )}
-
-            </div>
+      {/* 꺾은선 차트 카드 */}
+      <div className="glass-card" style={{ padding: "1.25rem", borderRadius: "10px", display: "flex", flexDirection: "column", gap: "1rem" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "0.75rem" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+            <TrendingUp size={18} style={{ color: "var(--accent-color)" }} />
+            <h3 style={{ margin: 0, fontSize: "1rem", fontWeight: "700", color: "var(--text-primary)" }}>월별 누적 집행률 추이</h3>
           </div>
           
-          <div style={{ width: "100%", height: 320, padding: "0.5rem 0" }}>
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart
-                data={activeData.chartData}
-                margin={{ top: 20, right: 30, left: -10, bottom: 0 }}
+          <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+            <div style={{ display: "flex", gap: "0.75rem", fontSize: "0.85rem", color: "var(--text-secondary)", fontWeight: "600" }}>
+              <label style={{ display: "flex", alignItems: "center", gap: "0.25rem", cursor: "pointer" }}>
+                <input 
+                  type="radio" 
+                  name="executionViewType" 
+                  value="total" 
+                  checked={viewType === "total"}
+                  onChange={() => setViewType("total")}
+                  style={{ accentColor: "var(--accent-color)" }}
+                />
+                사업 전체
+              </label>
+              <label style={{ display: "flex", alignItems: "center", gap: "0.25rem", cursor: "pointer" }}>
+                <input 
+                  type="radio" 
+                  name="executionViewType" 
+                  value="unit" 
+                  checked={viewType === "unit"}
+                  onChange={() => setViewType("unit")}
+                  style={{ accentColor: "var(--accent-color)" }}
+                />
+                단위과제별
+              </label>
+            </div>
+
+            {viewType === "unit" && (
+              <select
+                value={selectedUnit}
+                onChange={(e) => setSelectedUnit(e.target.value)}
+                style={{
+                  background: "var(--input-bg)",
+                  color: "var(--text-primary)",
+                  border: "1px solid var(--border-color)",
+                  borderRadius: "6px",
+                  padding: "0.25rem 0.5rem",
+                  fontSize: "0.8rem",
+                  fontWeight: "600",
+                  cursor: "pointer",
+                  outline: "none"
+                }}
               >
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-                <XAxis 
-                  dataKey="month" 
-                  stroke="var(--text-secondary)" 
-                  tick={{ fontSize: 11, fill: "var(--text-secondary)" }}
+                {unitList.map((unit) => (
+                  <option key={unit} value={unit} style={{ background: "var(--background-card, #1e1e1e)", color: "var(--text-primary)" }}>
+                    {unit} 과제
+                  </option>
+                ))}
+              </select>
+            )}
+          </div>
+        </div>
+        
+        <div style={{ width: "100%", height: 260, padding: "0.5rem 0" }}>
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart
+              data={activeData.chartData}
+              margin={{ top: 20, right: 30, left: -10, bottom: 0 }}
+            >
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
+              <XAxis 
+                dataKey="month" 
+                stroke="var(--text-secondary)" 
+                tick={{ fontSize: 11, fill: "var(--text-secondary)" }}
+              />
+              <YAxis 
+                stroke="var(--text-secondary)" 
+                tick={{ fontSize: 11, fill: "var(--text-secondary)" }}
+                domain={[0, 100]}
+                unit="%"
+              />
+              <Tooltip 
+                formatter={(value) => `${value}%`}
+                contentStyle={{
+                  background: "rgba(224, 235, 246, 0.95)",
+                  border: "1px solid var(--border-color)",
+                  borderRadius: "0.5rem",
+                  fontSize: "11px",
+                  boxShadow: "0 4px 12px rgba(0,0,0,0.15)"
+                }}
+                labelStyle={{ color: "#111827", fontWeight: "700", marginBottom: "0.2rem" }}
+                itemStyle={{ color: "#1f2937", padding: "0.1rem 0" }}
+              />
+              <Legend wrapperStyle={{ fontSize: 11, paddingTop: 10 }} />
+              {selectedYear !== 1 && (
+                <ReferenceLine 
+                  x="8월" 
+                  stroke="#EF4444" 
+                  strokeDasharray="4 4" 
+                  label={{ value: "이월마감 (8/31)", fill: "#F87171", position: "insideTopLeft", fontSize: 11, fontWeight: "bold" }}
                 />
-                <YAxis 
-                  stroke="var(--text-secondary)" 
-                  tick={{ fontSize: 11, fill: "var(--text-secondary)" }}
-                  domain={[0, 100]}
-                  unit="%"
-                />
-                <Tooltip 
-                  formatter={(value) => `${value}%`}
-                  contentStyle={{
-                    background: "rgba(224, 235, 246, 0.95)",
-                    border: "1px solid var(--border-color)",
-                    borderRadius: "0.5rem",
-                    fontSize: "11px",
-                    boxShadow: "0 4px 12px rgba(0,0,0,0.15)"
-                  }}
-                  labelStyle={{ color: "#111827", fontWeight: "700", marginBottom: "0.2rem" }}
-                  itemStyle={{ color: "#1f2937", padding: "0.1rem 0" }}
-                />
-                <Legend 
-                  wrapperStyle={{ fontSize: 11, paddingTop: 10 }}
-                />
-                {selectedYear !== 1 && (
-                  <ReferenceLine 
-                    x="8월" 
-                    stroke="#EF4444" 
-                    strokeDasharray="4 4" 
-                    label={{ value: "이월마감 (8/31)", fill: "#F87171", position: "insideTopLeft", fontSize: 11, fontWeight: "bold" }}
-                  />
-                )}
+              )}
+              <Line 
+                name="본예산 누적 집행률" 
+                type="monotone" 
+                dataKey="mainBudget" 
+                stroke="#3B82F6" 
+                strokeWidth={3}
+                activeDot={{ r: 6 }} 
+              />
+              {selectedYear !== 1 && (
                 <Line 
-                  name="본예산 누적 집행률" 
+                  name="이월예산 누적 집행률" 
                   type="monotone" 
-                  dataKey="mainBudget" 
-                  stroke="#3B82F6" 
+                  dataKey="carryoverBudget" 
+                  stroke="#EF4444" 
                   strokeWidth={3}
                   activeDot={{ r: 6 }} 
                 />
-                {selectedYear !== 1 && (
-                  <Line 
-                    name="이월예산 누적 집행률" 
-                    type="monotone" 
-                    dataKey="carryoverBudget" 
-                    stroke="#EF4444" 
-                    strokeWidth={3}
-                    activeDot={{ r: 6 }} 
-                  />
-                )}
-              </LineChart>
-            </ResponsiveContainer>
+              )}
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+
+      {/* ==============================================================================
+          💡 [본예산 vs 이월예산 업로드 영역 탭 분리 적용]
+          ============================================================================== */}
+      <div className="glass-card" style={{ padding: "1.25rem", borderRadius: "10px", display: "flex", flexDirection: "column", gap: "1.25rem" }}>
+        
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid var(--border-color)", paddingBottom: "0.5rem" }}>
+          <div style={{ display: "flex", gap: "0.5rem" }}>
+            <button
+              onClick={() => setActiveUploadTab("main")}
+              style={{
+                padding: "0.4rem 1.25rem",
+                fontSize: "0.85rem",
+                fontWeight: "800",
+                borderRadius: "0.3rem",
+                border: "none",
+                background: activeUploadTab === "main" ? "#3B82F6" : "transparent",
+                color: activeUploadTab === "main" ? "white" : "var(--text-secondary)",
+                cursor: "pointer",
+                transition: "all 0.2s"
+              }}
+            >
+              💰 본예산 집행 등록
+            </button>
+            <button
+              onClick={() => setActiveUploadTab("carryover")}
+              disabled={selectedYear === 1}
+              style={{
+                padding: "0.4rem 1.25rem",
+                fontSize: "0.85rem",
+                fontWeight: "800",
+                borderRadius: "0.3rem",
+                border: "none",
+                background: activeUploadTab === "carryover" ? "#EF4444" : "transparent",
+                color: activeUploadTab === "carryover" ? "white" : "var(--text-secondary)",
+                cursor: selectedYear === 1 ? "not-allowed" : "pointer",
+                opacity: selectedYear === 1 ? 0.4 : 1,
+                transition: "all 0.2s"
+              }}
+            >
+              📅 이월예산 집행 등록
+            </button>
           </div>
+          <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)", display: "flex", alignItems: "center", gap: "0.25rem" }}>
+            <ShieldCheck size={14} style={{ color: "#10B981" }} />
+            <span>실시간 중복 필터 및 무결성 보장 필터 탑재 완료</span>
+          </span>
         </div>
 
-        {/* 2. 엑셀 파일 수집 업로더 카드 (프레임) */}
-        <div 
-          className="glass-card" 
-          style={{ 
-            padding: "1.5rem", 
-            borderRadius: "10px", 
-            border: dragActive ? "2px dashed var(--accent-color)" : "1px solid var(--border-color-dark)",
-            display: "flex", 
-            flexDirection: "column", 
-            justifyContent: "center",
-            alignItems: "center",
-            gap: "1.25rem",
-            textAlign: "center",
-            minHeight: "320px",
-            transition: "all 0.2s ease"
-          }}
-          onDragEnter={handleDrag}
-          onDragOver={handleDrag}
-          onDragLeave={handleDrag}
-          onDrop={handleDrop}
-        >
-          <div style={{ padding: "1.25rem", borderRadius: "50%", background: "rgba(59, 130, 246, 0.1)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <Upload size={32} style={{ color: "var(--accent-color)" }} />
-          </div>
-          <div>
-            <h3 style={{ margin: 0, fontSize: "1.1rem", fontWeight: "700", color: "var(--text-primary)" }}>
-              월별 집행현황 엑셀 파일 수집
-            </h3>
-            <p style={{ margin: "0.5rem 0 0 0", fontSize: "0.85rem", color: "var(--text-secondary)", maxWidth: "280px", lineHeight: "1.4" }}>
-              정산 엑셀 파일을 드래그 앤 드롭하거나 아래의 찾아보기 버튼을 눌러 선택해 주세요.
-            </p>
-          </div>
+        {/* 12개월 업로드 공간 그리드 영역 ('26.3월 ~ '27.2월) */}
+        <div style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(4, 1fr)",
+          gap: "1rem"
+        }}>
+          {MONTHS_CONFIG.map((m) => {
+            const metaKey = `${selectedYear}_${activeUploadTab}_${m.label}`;
+            const fileMeta = uploadedFilesMeta[metaKey];
+            const isDrag = dragActive === m.value;
 
-          <input 
-            type="file" 
-            id="budget-excel-file" 
-            accept=".xlsx, .xls" 
-            onChange={handleFileInput} 
-            style={{ display: "none" }} 
-          />
-          <label 
-            htmlFor="budget-excel-file" 
-            className="btn btn-primary" 
-            style={{ 
-              padding: "0.5rem 1.25rem", 
-              borderRadius: "5px", 
-              cursor: "pointer",
-              fontWeight: "600",
-              fontSize: "0.875rem",
-              background: "var(--accent-color)",
-              color: "white"
-            }}
-          >
-            엑셀 파일 찾아보기
-          </label>
+            return (
+              <div
+                key={m.value}
+                onDragEnter={(e) => handleDrag(e, m.value)}
+                onDragOver={(e) => handleDrag(e, m.value)}
+                onDragLeave={(e) => handleDrag(e, null)}
+                onDrop={(e) => handleDrop(e, m.label, activeUploadTab)}
+                style={{
+                  background: isDrag ? "rgba(59, 130, 246, 0.15)" : "var(--background-card, #1c1c1e)",
+                  border: isDrag ? "2px dashed #3B82F6" : "1px solid var(--border-color)",
+                  borderRadius: "8px",
+                  padding: "1rem",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "0.75rem",
+                  minHeight: "150px",
+                  transition: "all 0.2s ease",
+                  justifyContent: "space-between"
+                }}
+              >
+                {/* 월 레이블 */}
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <span style={{ fontSize: "0.9rem", fontWeight: "800", color: "var(--text-primary)" }}>{m.label}</span>
+                  <span style={{ 
+                    fontSize: "0.65rem", 
+                    padding: "0.15rem 0.35rem", 
+                    borderRadius: "4px",
+                    background: fileMeta ? "rgba(16, 185, 129, 0.2)" : "rgba(255,255,255,0.05)",
+                    color: fileMeta ? "#10B981" : "var(--text-secondary)",
+                    fontWeight: "700"
+                  }}>
+                    {fileMeta ? "업로드 완료" : "미업로드"}
+                  </span>
+                </div>
 
-          {uploadedFile && (
-            <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", background: "var(--input-bg)", padding: "0.5rem 1rem", borderRadius: "6px", fontSize: "0.8rem", color: "var(--text-primary)" }}>
-              <FileText size={16} style={{ color: "#10B981" }} />
-              <span>{uploadedFile.name} ({(uploadedFile.size / 1024).toFixed(1)} KB)</span>
-            </div>
-          )}
+                {/* 업로드 상태 및 메타 정보 */}
+                {fileMeta ? (
+                  <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem", background: "rgba(0,0,0,0.2)", padding: "0.4rem 0.6rem", borderRadius: "5px" }}>
+                    <span style={{ fontSize: "0.7rem", color: "var(--text-primary)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={fileMeta.fileName}>
+                      📄 {fileMeta.fileName}
+                    </span>
+                    <span style={{ fontSize: "0.65rem", color: "var(--text-secondary)" }}>
+                      집행 건수: <strong>{fileMeta.count}건</strong>
+                    </span>
+                    <span style={{ fontSize: "0.65rem", color: "var(--text-secondary)" }}>
+                      집행 금액: <strong style={{ color: "#3B82F6" }}>{(fileMeta.totalAmount / 10000).toFixed(0)}만 원</strong>
+                    </span>
+                  </div>
+                ) : (
+                  <div style={{ fontSize: "0.7rem", color: "var(--text-secondary)", textAlign: "center", padding: "0.8rem 0" }}>
+                    엑셀 파일을 이곳에 끌어다 놓거나 아래 업로드 단추를 눌러주세요.
+                  </div>
+                )}
 
-          <div style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>
-            * 업로드 형식: 대학 회계 월별 집행 현황 양식 (.xlsx)
-          </div>
+                {/* 개별 업로드 / 초기화 컨트롤러 */}
+                <div style={{ display: "flex", gap: "0.4rem", width: "100%" }}>
+                  <input
+                    type="file"
+                    id={`file-input-${activeUploadTab}-${m.value}`}
+                    accept=".xlsx, .xls"
+                    onChange={(e) => handleFileChange(e, m.label, activeUploadTab)}
+                    style={{ display: "none" }}
+                  />
+                  <label
+                    htmlFor={`file-input-${activeUploadTab}-${m.value}`}
+                    style={{
+                      flex: 1,
+                      textAlign: "center",
+                      padding: "0.3rem 0",
+                      fontSize: "0.7rem",
+                      fontWeight: "700",
+                      background: "rgba(255,255,255,0.08)",
+                      color: "var(--text-primary)",
+                      borderRadius: "4px",
+                      cursor: "pointer",
+                      border: "1px solid rgba(255,255,255,0.15)",
+                      transition: "all 0.2s"
+                    }}
+                  >
+                    {fileMeta ? "다시 업로드" : "엑셀 업로드"}
+                  </label>
+                  {fileMeta && (
+                    <button
+                      onClick={() => handleClearMonth(m.label, activeUploadTab)}
+                      style={{
+                        padding: "0.3rem 0.5rem",
+                        background: "rgba(239, 68, 68, 0.15)",
+                        border: "none",
+                        color: "#F87171",
+                        borderRadius: "4px",
+                        cursor: "pointer",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        transition: "all 0.2s"
+                      }}
+                      title="해당 월 데이터 초기화"
+                    >
+                      <Trash2 size={13} />
+                    </button>
+                  )}
+                </div>
+
+              </div>
+            );
+          })}
         </div>
 
       </div>

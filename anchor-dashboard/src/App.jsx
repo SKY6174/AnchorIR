@@ -10178,6 +10178,7 @@ export default function App() {
                 projects={displayProjects}
                 currentRole={currentRole}
                 selectedYear={selectedYear}
+                supabase={supabase}
               />
             ) : (
               renderExcelDownload()
