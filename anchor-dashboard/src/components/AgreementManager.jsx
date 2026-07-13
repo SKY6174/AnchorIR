@@ -116,7 +116,7 @@ export default function AgreementManager({
     setSelectedUnits([]);
   };
 
-  // 날짜 기준 RISE 사업 연차(1~5) 자동 계산기
+  // 날짜 기준 앵커 사업 연차(1~5) 자동 계산기
   const getYearFromDate = (dateStr) => {
     if (!dateStr) return null;
     const d = new Date(`${dateStr}T00:00:00`);
@@ -808,7 +808,7 @@ export default function AgreementManager({
 
     const calculatedYear = getYearFromDate(inputDate);
     if (!calculatedYear || calculatedYear < 1 || calculatedYear > 5) {
-      alert("유효한 RISE 사업 기간 내의 날짜를 선택해 주세요. (2025년 3월 이후)");
+      alert("유효한 앵커 사업 기간 내의 날짜를 선택해 주세요. (2025년 3월 이후)");
       return;
     }
 
@@ -881,7 +881,7 @@ export default function AgreementManager({
 
     const calculatedYear = getYearFromDate(certDate);
     if (!calculatedYear || calculatedYear < 1 || calculatedYear > 5) {
-      alert("유효한 RISE 사업 기간 내의 날짜를 선택해 주세요. (2025년 3월 이후)");
+      alert("유효한 앵커 사업 기간 내의 날짜를 선택해 주세요. (2025년 3월 이후)");
       return;
     }
 
@@ -915,7 +915,7 @@ export default function AgreementManager({
 
     const calculatedYear = getYearFromDate(awardDate);
     if (!calculatedYear || calculatedYear < 1 || calculatedYear > 5) {
-      alert("유효한 RISE 사업 기간 내의 날짜를 선택해 주세요. (2025년 3월 이후)");
+      alert("유효한 앵커 사업 기간 내의 날짜를 선택해 주세요. (2025년 3월 이후)");
       return;
     }
 

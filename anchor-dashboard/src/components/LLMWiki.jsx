@@ -81,7 +81,7 @@ export default function LLMWiki({ selectedYear = 2, darkMode = true }) {
         })
         .join("\n\n");
 
-      const systemPrompt = `당신은 울산과학대학교 RISE 및 앵커(ANCHOR)사업단 전담 AI RAG 어시스턴트입니다. 
+      const systemPrompt = `당신은 울산과학대학교 앵커(ANCHOR)사업단 전담 AI RAG 어시스턴트입니다. 
 제공되는 [지식베이스 콘텍스트] 소스의 팩트에 기반하여 사용자의 질문에 정확하고 친절하게 한국어로 대답해야 합니다.
 
 [지식베이스 콘텍스트]:

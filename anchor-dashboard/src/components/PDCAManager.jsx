@@ -2169,7 +2169,7 @@ export default function PDCAManager({
                             const coopDeptOptions = (
                               <>
                                 <option value="" style={{ background: "var(--modal-bg)", color: "var(--text-secondary)" }}>-- 선택 안 함 --</option>
-                                <optgroup label="RISE(앵커)사업단 센터" style={{ background: "var(--modal-bg)", color: "#60a5fa" }}>
+                                <optgroup label="앵커사업단 센터" style={{ background: "var(--modal-bg)", color: "#60a5fa" }}>
                                   <option value="ECC센터" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>ECC센터</option>
                                   <option value="ICC센터" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>ICC센터</option>
                                   <option value="RCC센터" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>RCC센터</option>

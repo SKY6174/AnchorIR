@@ -13,7 +13,7 @@ const majorProgramsData = {
     A2: {
       label: "A2. 지역 창업 생태계 혁신을 위한 글로컬 창업 문화 조성",
       programs: [
-        { id: "A2_urise_star", name: "U-RISE 스타", desc: "RISE 체계 기반 스타트업 육성 및 글로컬 창업동아리 활성화" }
+        { id: "A2_urise_star", name: "U-Anchor 스타", desc: "앵커 체계 기반 스타트업 육성 및 글로컬 창업동아리 활성화" }
       ]
     },
     A3: {

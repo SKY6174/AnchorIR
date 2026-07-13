@@ -133,7 +133,7 @@ export default function SurveyResponder() {
       <header style={{ width: "100%", maxWidth: "480px", textAlign: "center", paddingBottom: "1.2rem", borderBottom: "1px solid rgba(255,255,255,0.08)", marginBottom: "1.5rem" }}>
         <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: "0.4rem", color: "var(--accent-color)", marginBottom: "0.3rem" }}>
           <Compass size={20} className="animate-spin-slow" />
-          <span style={{ fontSize: "0.75rem", fontWeight: "900", letterSpacing: "1px" }}>ULSAN COLLEGE RISE</span>
+          <span style={{ fontSize: "0.75rem", fontWeight: "900", letterSpacing: "1px" }}>ULSAN COLLEGE ANCHOR</span>
         </div>
         <h2 style={{ fontSize: "1.05rem", fontWeight: "800", color: "white" }}>만족도 설문지 응답 제출</h2>
       </header>

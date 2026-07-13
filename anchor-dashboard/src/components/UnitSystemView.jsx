@@ -313,17 +313,17 @@ const STRATEGY_TASK_MAPPING = {
   "D1": {
     strategies: [
       { id: "S1", title: "지역기반 문제해결형 프로젝트 추진" },
-      { id: "S2", title: "울산형 2주기 RISE 모델 설계 및 지역연계 실행체계 구축" }
+      { id: "S2", title: "울산형 2주기 앵커 모델 설계 및 지역연계 실행체계 구축" }
     ],
     tasks: [
       { strat: "S1", id: "1", title: "지역전문가 연계 공동 설계 및 대학 연계 문제해결 프로젝트" },
       { strat: "S2", id: "2", title: "주민 참여형 생활밀착 에코-리빙랩 운영 및 현장 코디네이터" },
-      { strat: "S2", id: "3", title: "울산형 2주기 RISE 모델 연구 및 지역연계 정책 연구" }
+      { strat: "S2", id: "3", title: "울산형 2주기 앵커 모델 연구 및 지역연계 정책 연구" }
     ],
     programs: [
       { strat: "S1", id: "D1-S1T1-1", title: "대학 교수 및 연구원 참여 리빙랩 과제 3개년 설계" },
       { strat: "S2", id: "D1-S2T2-1", title: "주민 참여형 에코 리빙랩 활성화 캠프" },
-      { strat: "S2", id: "D1-S2T3-1", title: "2차년도 지자체 요구 RISE 정책 연구 포럼 개최" }
+      { strat: "S2", id: "D1-S2T3-1", title: "2차년도 지자체 요구 앵커 정책 연구 포럼 개최" }
     ]
   },
   "D2": {
@@ -528,7 +528,7 @@ export default function UnitSystemView({ selectedYear = 2 }) {
         </h3>
         
         <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)", lineHeight: "1.6", marginBottom: "1.2rem" }}>
-          RISE 사업의 효율적인 기획 및 성과관리를 위해 본 대시보드는 <strong>프로젝트 - 단위과제 - 추진전략 - 전략과제 - 프로그램</strong>의 5단계 고유 연계 체계를 도입하여 관리하고 있습니다.
+          앵커 사업의 효율적인 기획 및 성과관리를 위해 본 대시보드는 <strong>프로젝트 - 단위과제 - 추진전략 - 전략과제 - 프로그램</strong>의 5단계 고유 연계 체계를 도입하여 관리하고 있습니다.
         </p>
 
         {/* 5단계 체계 카드 리스트 */}
