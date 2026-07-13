@@ -19,7 +19,7 @@ const MONTHS_CONFIG = [
   { label: "27.2월", value: "2027-02" }
 ];
 
-export default function BudgetExecutionManager({ projects = [], currentRole, selectedYear: rawYear, supabase }) {
+export default function BudgetExecutionManager({ projects = [], currentRole, selectedYear: rawYear, supabase, darkMode = true }) {
   const selectedYear = Number(rawYear);
   const [activeUploadTab, setActiveUploadTab] = useState("main"); // "main" (본예산 집행 등록) vs "carryover" (이월예산 집행 등록)
   
@@ -877,8 +877,8 @@ export default function BudgetExecutionManager({ projects = [], currentRole, sel
               <div
                 key={m.value}
                 style={{
-                  background: "var(--background-card, #1c1c1e)",
-                  border: "1px solid var(--border-color)",
+                  background: darkMode ? "rgba(255, 255, 255, 0.02)" : "#ffffff",
+                  border: darkMode ? "1px solid var(--border-color)" : "1px solid rgba(0, 0, 0, 0.08)",
                   borderRadius: "8px",
                   padding: "0.75rem",
                   display: "flex",
@@ -890,14 +890,14 @@ export default function BudgetExecutionManager({ projects = [], currentRole, sel
                 }}
               >
                 {/* 월 레이블 및 해당 월 특화 양식 다운로드 단추 */}
-                <div style={{ borderBottom: "1px solid rgba(255,255,255,0.05)", paddingBottom: "0.4rem", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <div style={{ borderBottom: darkMode ? "1px solid rgba(255,255,255,0.05)" : "1px solid rgba(0,0,0,0.08)", paddingBottom: "0.4rem", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                   <span style={{ fontSize: "0.9rem", fontWeight: "900", color: "#3B82F6" }}>{m.label}</span>
                   <button
                     onClick={() => handleDownloadTemplate(m.label)}
                     style={{
                       background: "none",
                       border: "none",
-                      color: "#60A5FA",
+                      color: darkMode ? "#60A5FA" : "#1D4ED8",
                       fontSize: "0.65rem",
                       fontWeight: "700",
                       cursor: "pointer",
@@ -923,8 +923,8 @@ export default function BudgetExecutionManager({ projects = [], currentRole, sel
                   onDrop={(e) => handleDrop(e, m.label, "main")}
                   style={{
                     flex: 1,
-                    background: isMainDrag ? "rgba(59, 130, 246, 0.15)" : "rgba(255,255,255,0.02)",
-                    border: isMainDrag ? "1px dashed #3B82F6" : "1px solid rgba(255,255,255,0.05)",
+                    background: isMainDrag ? "rgba(59, 130, 246, 0.15)" : (darkMode ? "rgba(255,255,255,0.02)" : "rgba(0,0,0,0.015)"),
+                    border: isMainDrag ? "1px dashed #3B82F6" : (darkMode ? "1px solid rgba(255,255,255,0.05)" : "1px solid rgba(0,0,0,0.08)"),
                     borderRadius: "6px",
                     padding: "0.5rem",
                     display: "flex",
@@ -935,12 +935,12 @@ export default function BudgetExecutionManager({ projects = [], currentRole, sel
                   }}
                 >
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                    <span style={{ fontSize: "0.7rem", fontWeight: "700", color: "#60A5FA" }}>💰 본예산</span>
+                    <span style={{ fontSize: "0.7rem", fontWeight: "700", color: darkMode ? "#60A5FA" : "#1E40AF" }}>💰 본예산</span>
                     <span style={{ 
                       fontSize: "0.55rem", 
                       padding: "0.1rem 0.25rem", 
                       borderRadius: "3px",
-                      background: mainMeta ? "rgba(16, 185, 129, 0.2)" : "rgba(255,255,255,0.05)",
+                      background: mainMeta ? "rgba(16, 185, 129, 0.2)" : (darkMode ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.05)"),
                       color: mainMeta ? "#10B981" : "var(--text-secondary)",
                       fontWeight: "700"
                     }}>
@@ -962,11 +962,11 @@ export default function BudgetExecutionManager({ projects = [], currentRole, sel
                         display: "flex", 
                         flexDirection: "column", 
                         gap: "0.15rem", 
-                        background: "rgba(59, 130, 246, 0.12)", 
+                        background: darkMode ? "rgba(59, 130, 246, 0.12)" : "rgba(59, 130, 246, 0.08)", 
                         padding: "0.3rem 0.4rem", 
                         borderRadius: "4px",
                         cursor: "pointer",
-                        border: "1px solid rgba(59, 130, 246, 0.2)",
+                        border: darkMode ? "1px solid rgba(59, 130, 246, 0.2)" : "1px solid rgba(59, 130, 246, 0.15)",
                         transition: "all 0.2s"
                       }}
                       title="클릭하여 업로드 상세 내역 보기"
@@ -975,8 +975,8 @@ export default function BudgetExecutionManager({ projects = [], currentRole, sel
                         📄 {mainMeta.fileName}
                       </span>
                       <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.55rem", color: "var(--text-secondary)" }}>
-                        <span>건수: <strong style={{ color: "#60A5FA" }}>{mainMeta.count}건</strong></span>
-                        <span>금액: <strong style={{ color: "#60A5FA" }}>{(mainMeta.totalAmount / 10000).toFixed(0)}만</strong></span>
+                        <span>건수: <strong style={{ color: darkMode ? "#60A5FA" : "#1D4ED8" }}>{mainMeta.count}건</strong></span>
+                        <span>금액: <strong style={{ color: darkMode ? "#60A5FA" : "#1D4ED8" }}>{(mainMeta.totalAmount / 10000).toFixed(0)}만</strong></span>
                       </div>
                     </div>
                   ) : (
@@ -1001,11 +1001,11 @@ export default function BudgetExecutionManager({ projects = [], currentRole, sel
                         padding: "0.2rem 0",
                         fontSize: "0.6rem",
                         fontWeight: "700",
-                        background: "rgba(255,255,255,0.06)",
+                        background: darkMode ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.04)",
                         color: "var(--text-primary)",
                         borderRadius: "3px",
                         cursor: "pointer",
-                        border: "1px solid rgba(255,255,255,0.1)",
+                        border: darkMode ? "1px solid rgba(255,255,255,0.1)" : "1px solid rgba(0,0,0,0.08)",
                         transition: "all 0.2s"
                       }}
                     >
@@ -1043,8 +1043,8 @@ export default function BudgetExecutionManager({ projects = [], currentRole, sel
                     onDrop={(e) => handleDrop(e, m.label, "carryover")}
                     style={{
                       flex: 1,
-                      background: isCarryDrag ? "rgba(239, 68, 68, 0.12)" : "rgba(255,255,255,0.02)",
-                      border: isCarryDrag ? "1px dashed #EF4444" : "1px solid rgba(255,255,255,0.05)",
+                      background: isCarryDrag ? "rgba(239, 68, 68, 0.12)" : (darkMode ? "rgba(255,255,255,0.02)" : "rgba(0,0,0,0.015)"),
+                      border: isCarryDrag ? "1px dashed #EF4444" : (darkMode ? "1px solid rgba(255,255,255,0.05)" : "1px solid rgba(0,0,0,0.08)"),
                       borderRadius: "6px",
                       padding: "0.5rem",
                       display: "flex",
@@ -1054,12 +1054,12 @@ export default function BudgetExecutionManager({ projects = [], currentRole, sel
                     }}
                   >
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                      <span style={{ fontSize: "0.7rem", fontWeight: "700", color: "#F87171" }}>📅 이월예산</span>
+                      <span style={{ fontSize: "0.7rem", fontWeight: "700", color: darkMode ? "#F87171" : "#DC2626" }}>📅 이월예산</span>
                       <span style={{ 
                         fontSize: "0.55rem", 
                         padding: "0.1rem 0.25rem", 
                         borderRadius: "3px",
-                        background: carryMeta ? "rgba(239, 68, 68, 0.2)" : "rgba(255,255,255,0.05)",
+                        background: carryMeta ? "rgba(239, 68, 68, 0.2)" : (darkMode ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.05)"),
                         color: carryMeta ? "#F87171" : "var(--text-secondary)",
                         fontWeight: "700"
                       }}>
@@ -1081,11 +1081,11 @@ export default function BudgetExecutionManager({ projects = [], currentRole, sel
                           display: "flex", 
                           flexDirection: "column", 
                           gap: "0.15rem", 
-                          background: "rgba(239, 68, 68, 0.12)", 
+                          background: darkMode ? "rgba(239, 68, 68, 0.12)" : "rgba(239, 68, 68, 0.08)", 
                           padding: "0.3rem 0.4rem", 
                           borderRadius: "4px",
                           cursor: "pointer",
-                          border: "1px solid rgba(239, 68, 68, 0.2)",
+                          border: darkMode ? "1px solid rgba(239, 68, 68, 0.2)" : "1px solid rgba(239, 68, 68, 0.15)",
                           transition: "all 0.2s"
                         }}
                         title="클릭하여 업로드 상세 내역 보기"
@@ -1094,8 +1094,8 @@ export default function BudgetExecutionManager({ projects = [], currentRole, sel
                           📄 {carryMeta.fileName}
                         </span>
                         <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.55rem", color: "var(--text-secondary)" }}>
-                          <span>건수: <strong style={{ color: "#F87171" }}>{carryMeta.count}건</strong></span>
-                          <span>금액: <strong style={{ color: "#F87171" }}>{(carryMeta.totalAmount / 10000).toFixed(0)}만</strong></span>
+                          <span>건수: <strong style={{ color: darkMode ? "#F87171" : "#DC2626" }}>{carryMeta.count}건</strong></span>
+                          <span>금액: <strong style={{ color: darkMode ? "#F87171" : "#DC2626" }}>{(carryMeta.totalAmount / 10000).toFixed(0)}만</strong></span>
                         </div>
                       </div>
                     ) : (
@@ -1120,11 +1120,11 @@ export default function BudgetExecutionManager({ projects = [], currentRole, sel
                           padding: "0.2rem 0",
                           fontSize: "0.6rem",
                           fontWeight: "700",
-                          background: "rgba(255,255,255,0.06)",
+                          background: darkMode ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.04)",
                           color: "var(--text-primary)",
                           borderRadius: "3px",
                           cursor: "pointer",
-                          border: "1px solid rgba(255,255,255,0.1)",
+                          border: darkMode ? "1px solid rgba(255,255,255,0.1)" : "1px solid rgba(0,0,0,0.08)",
                           transition: "all 0.2s"
                         }}
                       >
@@ -1155,12 +1155,12 @@ export default function BudgetExecutionManager({ projects = [], currentRole, sel
                 ) : (
                   <div style={{
                     flex: 1,
-                    border: "1px dashed rgba(255,255,255,0.02)",
+                    border: darkMode ? "1px dashed rgba(255,255,255,0.02)" : "1px dashed rgba(0,0,0,0.05)",
                     borderRadius: "6px",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    background: "rgba(0,0,0,0.1)",
+                    background: darkMode ? "rgba(0,0,0,0.1)" : "rgba(0,0,0,0.025)",
                     minHeight: "80px"
                   }}>
                     <span style={{ fontSize: "0.6rem", color: "var(--text-secondary)", fontStyle: "italic" }}>

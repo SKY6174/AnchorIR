@@ -10472,6 +10472,7 @@ export default function App() {
                 currentRole={currentRole}
                 selectedYear={selectedYear}
                 supabase={supabase}
+                darkMode={darkMode}
               />
             ) : (
               renderExcelDownload()

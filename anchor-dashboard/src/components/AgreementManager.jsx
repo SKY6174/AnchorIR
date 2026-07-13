@@ -1150,7 +1150,7 @@ export default function AgreementManager({
         <div className="table-container" style={{ border: "1px solid var(--border-color)", borderRadius: "0.5rem", overflow: "hidden" }}>
           <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.75rem", color: "var(--text-primary)" }}>
             <thead>
-              <tr style={{ background: "var(--border-color, rgba(255,255,255,0.03))", borderBottom: "1px solid var(--border-color-dark)" }}>
+              <tr style={{ background: isLight ? "rgba(0, 0, 0, 0.02)" : "rgba(255, 255, 255, 0.02)", borderBottom: "1px solid var(--border-color-dark)" }}>
                 <th onClick={() => requestSort("date")} style={{ padding: "0.6rem 0.8rem", textAlign: "center", width: "10%", cursor: "pointer" }}>
                   날짜 {sortConfig.key === "date" ? (sortConfig.direction === "asc" ? "▲" : "▼") : "⇅"}
                 </th>

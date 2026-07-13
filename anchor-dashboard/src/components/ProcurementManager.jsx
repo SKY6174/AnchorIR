@@ -1877,15 +1877,7 @@ export default function ProcurementManager({
           </div>
 
           {/* 💡 [교육용 한글 주석] 환경개선 절차(총 9단계)를 직관적인 가로 한 줄 스텝 프로세스 바 형태로 시각화하여 렌더링합니다. */}
-          <div className="glass-card" style={{ 
-            padding: "0.85rem 1rem", 
-            borderRadius: "10px", 
-            background: "var(--card-bg)", // 테마 적응형 카드 배경
-            border: "1px solid var(--border-color)", // 테마 적응형 보더
-            display: "flex",
-            flexDirection: "column",
-            gap: "0.5rem"
-          }}>
+          <div className="glass-card" style={{ padding: "1rem", borderRadius: "10px", display: "flex", flexDirection: "column", gap: "0.75rem" }}>
             <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
               <span style={{ fontSize: "0.75rem", color: "var(--accent-color)", fontWeight: "800" }}>🛠️</span>
               <h4 style={{ margin: 0, fontSize: "0.8rem", fontWeight: "800", color: "var(--text-primary)" }}>교육환경 개선 추진 절차 안내</h4>

@@ -1418,10 +1418,10 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
             <div style={{
               display: "flex",
               gap: "0.35rem",
-              background: "rgba(0, 0, 0, 0.25)",
+              background: darkMode ? "rgba(0, 0, 0, 0.25)" : "rgba(0, 0, 0, 0.05)",
               padding: "0.25rem",
               borderRadius: "6px",
-              border: "1px solid var(--border-color)",
+              border: darkMode ? "1px solid var(--border-color)" : "1px solid rgba(0, 0, 0, 0.08)",
               width: "fit-content"
             }}>
               <button

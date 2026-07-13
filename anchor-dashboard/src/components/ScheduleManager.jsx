@@ -5993,8 +5993,12 @@ Gemini 피드백: \n${geminiCritiqueText}
                           display: "flex",
                           flexDirection: "column",
                           gap: "0.5rem",
-                          background: isActive ? "rgba(59, 130, 246, 0.08)" : "rgba(255,255,255,0.02)",
-                          border: isActive ? "1px solid var(--accent-color)" : "1px solid var(--border-color)",
+                          background: isActive 
+                            ? (darkMode ? "rgba(59, 130, 246, 0.15)" : "rgba(59, 130, 246, 0.08)") 
+                            : (darkMode ? "rgba(255, 255, 255, 0.03)" : "#ffffff"),
+                          border: isActive 
+                            ? "1px solid var(--accent-color)" 
+                            : (darkMode ? "1px solid var(--border-color)" : "1px solid rgba(0, 0, 0, 0.08)"),
                           boxShadow: isActive ? "0 0 10px rgba(59, 130, 246, 0.2)" : "none",
                           cursor: "pointer",
                           transition: "all 0.2s"
@@ -6178,8 +6182,18 @@ Gemini 피드백: \n${geminiCritiqueText}
                             본 보도자료는 신문 및 지면 기사 형태로 배포되었습니다. 아래 기사 링크를 클릭하시면 본문 기사 원본 페이지로 바로 이동합니다.
                           </p>
 
-                          <div style={{ background: "rgba(0,0,0,0.2)", padding: "0.75rem", borderRadius: "6px", border: "1px solid rgba(255,255,255,0.04)" }}>
-                            <span style={{ fontSize: "0.75rem", color: "#60A5FA", wordBreak: "break-all" }}>
+                          <div style={{ 
+                            background: darkMode ? "rgba(59, 130, 246, 0.1)" : "rgba(59, 130, 246, 0.06)", 
+                            padding: "0.75rem", 
+                            borderRadius: "6px", 
+                            border: darkMode ? "1px dashed rgba(96, 165, 250, 0.4)" : "1px dashed rgba(59, 130, 246, 0.3)" 
+                          }}>
+                            <span style={{ 
+                              fontSize: "0.75rem", 
+                              color: darkMode ? "#93C5FD" : "#1E40AF", 
+                              fontWeight: "700",
+                              wordBreak: "break-all" 
+                            }}>
                               {activePress.contentUrl || "(등록된 링크 주소가 없습니다)"}
                             </span>
                           </div>
@@ -6191,8 +6205,11 @@ Gemini 피드백: \n${geminiCritiqueText}
                               rel="noopener noreferrer"
                               style={{
                                 display: "inline-flex", alignItems: "center", justifyContent: "center", gap: "0.25rem",
-                                padding: "0.6rem", borderRadius: "6px", background: "rgba(59, 130, 246, 0.15)",
-                                border: "1px solid rgba(59, 130, 246, 0.3)", color: "#93C5FD", fontSize: "0.8rem", fontWeight: "700", textDecoration: "none", textAlign: "center", transition: "all 0.2s"
+                                padding: "0.6rem", borderRadius: "6px", 
+                                background: darkMode ? "rgba(59, 130, 246, 0.25)" : "rgba(59, 130, 246, 0.15)",
+                                border: darkMode ? "1px solid rgba(59, 130, 246, 0.5)" : "1px solid rgba(59, 130, 246, 0.3)", 
+                                color: darkMode ? "#E0F2FE" : "#1D4ED8", 
+                                fontSize: "0.8rem", fontWeight: "700", textDecoration: "none", textAlign: "center", transition: "all 0.2s"
                               }}
                             >
                               🔗 새 창에서 보도 기사 읽기
