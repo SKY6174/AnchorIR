@@ -171,6 +171,35 @@ export default function PDCAManager({
 
   const [feedbackMsg, setFeedbackMsg] = useState("");
 
+  // 💡 [실시간 엑셀 집행 데이터 동적 연동]
+  // localStorage에 적재된 집행 내역을 읽어와 프로그램 ID 및 비목별로 실시간 자동 분류/합계 연산합니다.
+  const cachedExecs = (() => {
+    try {
+      const data = localStorage.getItem(`budget_exec_records_${selectedYear}`);
+      return data ? JSON.parse(data) : [];
+    } catch (e) {
+      console.error("PDCA 실시간 집행 데이터 로드 오류:", e);
+      return [];
+    }
+  })();
+
+  const getExcelSpentAmount = (progId, categoryName, budgetType) => {
+    if (!progId || !categoryName) return 0;
+    
+    // 점 문자 및 공백 제거로 데이터 인코딩 충돌을 완벽 차단
+    const normCategory = categoryName.replace(/\s/g, "").replace(/[·∙•ㆍ]/g, "");
+    
+    return cachedExecs
+      .filter(r => {
+        const matchesProg = (r.program_id || "").trim() === progId.trim();
+        const normRecordCategory = (r.expense_category || "").replace(/\s/g, "").replace(/[·∙•ㆍ]/g, "");
+        const matchesCategory = normRecordCategory === normCategory;
+        const matchesType = r.budget_type === budgetType;
+        return matchesProg && matchesCategory && matchesType;
+      })
+      .reduce((sum, r) => sum + (Number(r.amount) || 0), 0);
+  };
+
 
   // P 단계 기획 및 재원 배정용 상태 (본예산 및 이월예산 구분)
   const [inputTimeline, setInputTimeline] = useState("");
@@ -321,37 +350,38 @@ export default function PDCAManager({
   // 💡 [연도별 인스턴스 정밀 매칭] 1차년도/2차년도 이후 프로그램 간 ID 중복 시 현재 선택된 연도(selectedYear) 정보가 있는 인스턴스를 우선 매칭합니다.
   const activeProg = allPrograms.find((p) => p.id === selectedProgId && p.years && p.years[selectedYear]) || allPrograms.find((p) => p.id === selectedProgId);
 
-  // D단계 실적 입력값 변경 시 계획대비 달성률 자동계산
+  // 💡 [실시간 예산 집행률 달성률 자동 연산 가드]
+  // P단계 기획 예산 총합(분모) 대비 D단계 실제 엑셀 집행 실적 총합(분자)의 백분율을 자동 연산합니다.
   React.useEffect(() => {
     if (!activeProg) return;
 
-    const goal1 = parseFloat(activeProg.target_participants) || 0;
-    const goal2 = parseFloat(activeProg.target_developments) || 0;
-    const goal3 = parseFloat(activeProg.target_etc) || 0;
+    const py = activeProg.years?.[selectedYear] || {};
+    
+    // 1. P단계 전체 배정 예산 (국고 + 시비 + 외부사업비 + 이월예산들)
+    const bNational = Number(py.national_national || py.budget_national || 0);
+    const bCity = Number(py.national_city || py.budget_city || 0);
+    const bExternal = Number(py.national_external || py.budget_external || 0);
+    const bCarryNational = Number(py.budget_carry_national || 0);
+    const bCarryCity = Number(py.budget_carry_city || 0);
+    const bCarryExternal = Number(py.budget_carry_external || 0);
+    
+    const totalPlannedBudget = bNational + bCity + bExternal + bCarryNational + bCarryCity + bCarryExternal;
 
-    const act1 = parseFloat(inputParticipants) || 0;
-    const act2 = parseFloat(inputActualDevelopments) || 0;
-    const act3 = parseFloat(inputActualEtc) || 0;
+    // 2. D단계 실제 엑셀 누적 집행 총합 (비목별 spent + spent_carry)
+    let totalSpent = 0;
+    const rawCategories = py.budget_categories || [];
+    rawCategories.forEach(c => {
+      if (c.category) {
+        const spentMain = getExcelSpentAmount(activeProg.id, c.category, "main");
+        const spentCarry = selectedYear === 1 ? 0 : getExcelSpentAmount(activeProg.id, c.category, "carryover");
+        totalSpent += (spentMain + spentCarry);
+      }
+    });
 
-    let totalRate = 0;
-    let count = 0;
-
-    if (goal1 > 0) {
-      totalRate += (act1 / goal1) * 100;
-      count++;
-    }
-    if (goal2 > 0) {
-      totalRate += (act2 / goal2) * 100;
-      count++;
-    }
-    if (goal3 > 0) {
-      totalRate += (act3 / goal3) * 100;
-      count++;
-    }
-
-    const rate = count > 0 ? Math.round(totalRate / count) : 0;
+    // 3. 달성률 계산 (소수점 없이 반올림 정수, 100% 한도 적용)
+    const rate = totalPlannedBudget > 0 ? Math.min(100, Math.round((totalSpent / totalPlannedBudget) * 100)) : 0;
     setInputAchieveRate(String(rate));
-  }, [inputParticipants, inputActualDevelopments, inputActualEtc, activeProg]);
+  }, [activeProg, selectedYear, cachedExecs]);
 
   // selectedProgId, selectedYear, selectedVersionId가 바뀔 때 모든 기획/환류/재원 상태 로드
   React.useEffect(() => {
@@ -404,21 +434,29 @@ export default function PDCAManager({
           const bc = parseDecimalFromCommas(c.budget_carry);
           const s = parseDecimalFromCommas(c.spent);
           const sc = parseDecimalFromCommas(c.spent_carry);
-          return b > 0 || bc > 0 || s > 0 || sc > 0;
+          
+          // 엑셀 집행 실적도 유효성 판단에 포함
+          const realSpentMain = getExcelSpentAmount(prog.id, c.category, "main");
+          const realSpentCarry = selectedYear === 1 ? 0 : getExcelSpentAmount(prog.id, c.category, "carryover");
+
+          return b > 0 || bc > 0 || s > 0 || sc > 0 || realSpentMain > 0 || realSpentCarry > 0;
         });
 
         const loadedCategories = validCategories.map((c) => {
           const b = parseDecimalFromCommas(c.budget);
           const bc = parseDecimalFromCommas(c.budget_carry);
-          const s = parseDecimalFromCommas(c.spent);
-          const sc = parseDecimalFromCommas(c.spent_carry);
+          
+          // 💡 [수동 입력 배제 및 실시간 엑셀 집행 연동]
+          // c.spent / c.spent_carry의 수동 기재값 대신, 엑셀 정산 파일의 누적 실적을 가져와 꽂아줍니다.
+          const realSpentMain = getExcelSpentAmount(prog.id, c.category, "main");
+          const realSpentCarry = selectedYear === 1 ? 0 : getExcelSpentAmount(prog.id, c.category, "carryover");
 
           return {
             category: c.category || "",
             budget: b > 0 ? (b / 1000000).toFixed(1) : "",
             budget_carry: selectedYear === 1 ? "0.0" : (bc > 0 ? (bc / 1000000).toFixed(1) : ""),
-            spent: s.toLocaleString(),
-            spent_carry: selectedYear === 1 ? "0" : sc.toLocaleString()
+            spent: realSpentMain.toLocaleString(),
+            spent_carry: realSpentCarry.toLocaleString()
           };
         });
 
@@ -2133,30 +2171,36 @@ export default function PDCAManager({
                                   <input
                                     type="text"
                                     className="user-selector"
-                                    placeholder="본집행액"
+                                    placeholder="자동계산"
                                     value={item.spent || "0"}
-                                    onChange={(e) => {
-                                      const newCats = [...inputBudgetCategories];
-                                      const raw = e.target.value.replace(/[^0-9]/g, "");
-                                      newCats[originalIdx].spent = raw ? Number(raw).toLocaleString() : "0";
-                                      setInputBudgetCategories(newCats);
+                                    readOnly={true}
+                                    style={{
+                                      padding: "0.2rem 0.4rem",
+                                      fontSize: "0.7rem",
+                                      background: "rgba(120, 120, 120, 0.02)",
+                                      cursor: "not-allowed",
+                                      border: "1px dashed rgba(16, 185, 129, 0.2)",
+                                      color: "#10b981",
+                                      fontWeight: "700",
+                                      textAlign: "center"
                                     }}
-                                    style={{ padding: "0.2rem 0.4rem", fontSize: "0.7rem" }}
                                   />
                                   <input
                                     type="text"
                                     className="user-selector"
-                                    placeholder="이월집행"
+                                    placeholder="자동계산"
                                     value={selectedYear === 1 ? "0" : item.spent_carry || "0"}
-                                    disabled={selectedYear === 1}
-                                    onChange={(e) => {
-                                      if (selectedYear === 1) return;
-                                      const newCats = [...inputBudgetCategories];
-                                      const raw = e.target.value.replace(/[^0-9]/g, "");
-                                      newCats[originalIdx].spent_carry = raw ? Number(raw).toLocaleString() : "0";
-                                      setInputBudgetCategories(newCats);
+                                    readOnly={true}
+                                    style={{
+                                      padding: "0.2rem 0.4rem",
+                                      fontSize: "0.7rem",
+                                      background: "rgba(120, 120, 120, 0.02)",
+                                      cursor: "not-allowed",
+                                      border: "1px dashed rgba(167, 139, 250, 0.2)",
+                                      color: selectedYear === 1 ? "var(--text-secondary)" : "#a78bfa",
+                                      fontWeight: "700",
+                                      textAlign: "center"
                                     }}
-                                    style={{ padding: "0.2rem 0.4rem", fontSize: "0.7rem" }}
                                   />
                                 </div>
                               );
