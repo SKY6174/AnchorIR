@@ -8275,8 +8275,8 @@ export default function App() {
                                       <td style={{ fontFamily: "var(--font-data)", textAlign: "center", color: "var(--success-color)", fontWeight: "700" }}>
                                         {completedCount}
                                       </td>
-                                      <td>
-                                        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "0.4rem" }}>
+                                      <td style={{ fontFamily: "var(--font-data)", textAlign: "right", paddingRight: "1rem" }}>
+                                        <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: "0.4rem" }}>
                                           <div style={{ width: "40px", height: "6px", background: "rgba(255,255,255,0.1)", borderRadius: "3px", overflow: "hidden" }}>
                                             <div style={{ width: `${Math.min(progressRate, 100)}%`, height: "100%", background: "#10b981" }} />
                                           </div>
@@ -8322,8 +8322,8 @@ export default function App() {
                               <td style={{ fontFamily: "var(--font-data)", textAlign: "center", color: "var(--success-color)", fontWeight: "800" }}>
                                 {sumCompletedCount}
                               </td>
-                              <td>
-                                        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "0.4rem" }}>
+                              <td style={{ fontFamily: "var(--font-data)", textAlign: "right", paddingRight: "1rem" }}>
+                                        <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: "0.4rem" }}>
                                           <div style={{ width: "40px", height: "6px", background: "rgba(255,255,255,0.1)", borderRadius: "3px", overflow: "hidden" }}>
                                             <div style={{ width: `${Math.min(sumProgressRate, 100)}%`, height: "100%", background: "#10b981" }} />
                                           </div>
