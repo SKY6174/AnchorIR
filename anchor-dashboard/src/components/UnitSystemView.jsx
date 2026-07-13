@@ -656,7 +656,7 @@ export default function UnitSystemView({ selectedYear = 2 }) {
           {/* 3. 추진전략 드롭다운 */}
           <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
             <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)", fontWeight: "700" }}>
-              3단계: 추진전략 선택(S)
+              3단계: 추진전략 선택 (S)
             </label>
             <select
               value={selectedStratId}
@@ -683,7 +683,7 @@ export default function UnitSystemView({ selectedYear = 2 }) {
           {/* 4. 전략과제 드롭다운 */}
           <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
             <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)", fontWeight: "700" }}>
-              4단계: 전략과제 선택(T)
+              4단계: 전략과제 선택 (T)
             </label>
             <select
               value={selectedTaskId}
