@@ -2476,7 +2476,7 @@ export default function ProcurementManager({
                             </button>
                           </div>
                         </td>
-                        {/* 제어 열 버튼 */}
+                        {/* 💡 [교육용 한글 주석] 환경개선 목록의 개별 행 제어 버튼(수정, 삭제)을 렌더링하는 영역입니다. */}
                         <td style={{ padding: "0.8rem 0.5rem", textAlign: "center", whiteSpace: "nowrap" }}>
                           <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem", alignItems: "center", justifyContent: "center" }}>
                             {currentRole.id !== "GUEST" && (["ADMIN", "G_DIRECTOR", "HQ_HEAD", "TEAM_LEADER", "MANAGER"].includes(currentRole.id) || !equip.created_by || equip.created_by === currentUser?.uuid) && (
@@ -2732,7 +2732,7 @@ export default function ProcurementManager({
             </div>
           </div>
 
-          {/* 💡 [교육용 한글 주석] 기자재 구입 및 운영 절차를 시각적으로 보여주는 가로 흐름 스텝바를 배치합니다. */}
+          {/* 💡 [교육용 한글 주석] 기자재 구입 및 운영 절차를 시각적으로 보여주는 요약형 가로 흐름 스텝바(4단계)를 배치합니다. */}
           <div className="glass-card" style={{ padding: "1rem", borderRadius: "10px", display: "flex", flexDirection: "column", gap: "0.75rem" }}>
             <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
               <span style={{ fontSize: "1.1rem" }}>🔬</span>
@@ -2749,16 +2749,10 @@ export default function ProcurementManager({
               msOverflowStyle: "none"
             }}>
               {[
-                { no: "01", name: "수요조사", dept: "앵커사업단 · 학부(과)", desc: "행정용 / 학부(과)용", tooltip: "수요조사\n- 행정용\n- 학부(과)용" },
-                { no: "02", name: "계획수립", dept: "앵커사업단", desc: "사업계획서 반영", tooltip: "사업계획 및 부서 필요 기자재 반영 수립" },
-                { no: "03", name: "앵커기획위원회", dept: "앵커사업단", desc: "자체 심의", tooltip: "앵커기획위원회 자체 심의" },
-                { no: "04", name: "금액별 심의/승인", dept: "앵커 ➔ 울산/중앙", desc: "금액별 분기 심의", tooltip: "💡 금액별 심의/승인 상세 절차:\n• 3천만원 미만: 자체심의\n• 3천만원 이상: 울산앵커센터 사전승인\n• 1억원 이상: 울산앵커센터 사전보고 & 중앙앵커센터 승인신청 및 사전승인" },
-                { no: "05", name: "선정위원회 승인", dept: "앵커 ➔ 교무팀", desc: "기자재선정위 승인", tooltip: "학부(과) 기자재 대상: 앵커사업단 요청 ➔ 교무팀 개최" },
-                { no: "06", name: "결재 및 구매신청", dept: "앵커사업단", desc: "시설팀 / 교무팀 경유", tooltip: "내부결재 및 구매신청\n- 행정용 : 시설팀 경유\n- 학부(과)용 : 교무팀 경유" },
-                { no: "07", name: "입찰 / 수의계약", dept: "총무팀", desc: "계약 및 조달", tooltip: "총무팀을 경유한 입찰 또는 수의계약 체결" },
-                { no: "08", name: "검수 및 입고", dept: "시설/교무/앵커/총무", desc: "현물 대조 검수", tooltip: "납품 기자재에 대한 실물 검수 및 입고 처리" },
-                { no: "09", name: "집행완료", dept: "재무회계팀", desc: "최종 예산 지출", tooltip: "재무회계팀 최종 집행 및 지출 결의 완료" },
-                { no: "10", name: "기자재 운영/관리", dept: "자산부서 · 앵커사업단", desc: "대장 등재 및 관리", tooltip: "각 자산관리부서 및 앵커사업단 자산 대장 등재 및 모니터링" }
+                { no: "01", name: "기획 (1∙2∙3)", dept: "앵커사업단 · 학부(과)", desc: "수요조사 ➔ 계획수립 ➔ 심의", tooltip: "기획 단계 (1∙2∙3)\n• 01. 수요조사 (행정용 / 학부(과)용)\n• 02. 계획수립 (사업계획서 반영)\n• 03. 앵커기획위원회 (자체 심의)" },
+                { no: "02", name: "승인 (4∙5)", dept: "앵커 ➔ 울산/중앙/교무", desc: "금액별 심의 ➔ 선정위 승인", tooltip: "💡 금액별 심의/승인 상세 절차:\n• 04. 금액별 심의/승인\n  - 3천만원 미만: 자체심의\n  - 3천만원 이상: 울산앵커 사전승인\n  - 1억원 이상: 울산앵커 사전보고 & 중앙앵커 승인신청 및 사전승인\n• 05. 기자재선정위원회 승인 (학부(과) 기자재 대상)" },
+                { no: "03", name: "입찰 (6∙7)", dept: "앵커사업단 ➔ 총무팀", desc: "구매신청 ➔ 입찰/계약", tooltip: "입찰 단계 (6∙7)\n• 06. 내부결재 및 구매신청 (시설팀/교무팀 경유)\n• 07. 입찰 / 수의계약 체결 (총무팀 경유)" },
+                { no: "04", name: "검수 (8)", dept: "자산부서 · 회계팀", desc: "검수 ➔ 집행 ➔ 운영관리", tooltip: "검수 단계 (8∙9∙10)\n• 08. 검수 및 입고 (현물 대조 검수)\n• 09. 집행완료 (최종 예산 지출 정산)\n• 10. 기자재 운영/관리 (자산대장 등재)" }
               ].map((step, idx, arr) => (
                 <React.Fragment key={step.no}>
                   <div 
@@ -2767,7 +2761,7 @@ export default function ProcurementManager({
                       display: "flex", 
                       flexDirection: "column", 
                       alignItems: "center", 
-                      minWidth: "120px", 
+                      minWidth: "150px", 
                       textAlign: "center",
                       flex: 1,
                       cursor: "pointer"
@@ -2777,8 +2771,8 @@ export default function ProcurementManager({
                       display: "flex", 
                       alignItems: "center", 
                       gap: "0.25rem",
-                      background: step.no === "04" ? "rgba(16, 185, 129, 0.08)" : "rgba(255, 255, 255, 0.04)",
-                      border: step.no === "04" ? "1px solid var(--accent-color)" : "1px solid var(--border-color)",
+                      background: step.no === "02" ? "rgba(96, 165, 250, 0.08)" : "rgba(255, 255, 255, 0.04)",
+                      border: step.no === "02" ? "1px solid var(--accent-color)" : "1px solid var(--border-color)",
                       borderRadius: "6px",
                       padding: "0.35rem 0.5rem",
                       width: "100%",
@@ -2788,8 +2782,8 @@ export default function ProcurementManager({
                       <span style={{ 
                         fontSize: "0.65rem", 
                         fontWeight: "800", 
-                        color: step.no === "04" ? "white" : "var(--accent-color)", 
-                        background: step.no === "04" ? "var(--accent-color)" : "rgba(16, 185, 129, 0.15)",
+                        color: step.no === "02" ? "white" : "var(--accent-color)", 
+                        background: step.no === "02" ? "var(--accent-color)" : "rgba(96, 165, 250, 0.15)",
                         borderRadius: "50%",
                         width: "16px",
                         height: "16px",
@@ -2800,7 +2794,7 @@ export default function ProcurementManager({
                       <span style={{ fontSize: "0.72rem", fontWeight: "700", color: "var(--text-primary)", whiteSpace: "nowrap" }}>{step.name}</span>
                     </div>
                     <span style={{ 
-                      fontSize: "0.6rem", 
+                      fontSize: "0.65rem", 
                       color: "var(--text-secondary)", 
                       marginTop: "0.25rem", 
                       whiteSpace: "nowrap" 
@@ -2888,7 +2882,7 @@ export default function ProcurementManager({
                   <th rowSpan={3} style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "384px", verticalAlign: "middle" }}>구입목적 및 활용계획</th>
                   <th colSpan={12} style={{ padding: "0.5rem", textAlign: "center", fontWeight: "800", borderBottom: "1px solid var(--border-color)", background: "rgba(255, 255, 255, 0.01)", lineHeight: "1.3" }}>
                     구매단계<br />
-                    <span style={{ fontSize: "0.75rem", fontWeight: "normal", color: "var(--text-secondary)" }}>(기획:P ➔ 승인:A ➔ 입찰:B ➔ 구매:Pr ➔ 검수:I)</span>
+                    <span style={{ fontSize: "0.75rem", fontWeight: "normal", color: "var(--text-secondary)" }}>(기획:P ➔ 승인:A ➔ 입찰:B ➔ 검수:I)</span>
                   </th>
                   <th rowSpan={3} style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "80px", verticalAlign: "middle" }}>관련문서</th>
                   {currentRole.id !== "GUEST" && (
@@ -2979,19 +2973,17 @@ export default function ProcurementManager({
                       const total = price * qty;
 
                       const getEquipStatus = (eq) => {
-                        if (!eq.dateP && !eq.dateA && !eq.dateB && !eq.datePr && !eq.dateI) {
+                        if (!eq.dateP && !eq.dateA && !eq.dateB && !eq.dateI) {
                           return "준비중";
                         }
                         const todayStr = new Date().toISOString().substring(0, 10);
                         if (eq.dateI && todayStr >= eq.dateI) return "구매 완료";
-                        if (eq.datePr && todayStr >= eq.datePr) return "구매중";
                         if (eq.dateB && todayStr >= eq.dateB) return "구매중";
                         if (eq.dateA && todayStr >= eq.dateA) return "입찰중";
                         if (eq.dateP && todayStr >= eq.dateP) return "결재중";
                         if (eq.dateP && todayStr < eq.dateP) return "준비중";
                         
                         if (eq.dateI) return "구매 완료";
-                        if (eq.datePr) return "구매중";
                         if (eq.dateB) return "구매중";
                         if (eq.dateA) return "입찰중";
                         if (eq.dateP) return "결재중";
@@ -3019,7 +3011,6 @@ export default function ProcurementManager({
                       const idxP = getMonthIndexLocal(equip.dateP);
                       const idxA = getMonthIndexLocal(equip.dateA);
                       const idxB = getMonthIndexLocal(equip.dateB);
-                      const idxPr = getMonthIndexLocal(equip.datePr);
                       const idxI = getMonthIndexLocal(equip.dateI);
 
                       const getPhaseColor = (code) => {
@@ -3027,7 +3018,6 @@ export default function ProcurementManager({
                           "P": "#f59e0b",
                           "A": "#3b82f6",
                           "B": "#06b6d4",
-                          "Pr": "#a78bfa",
                           "I": "#10b981"
                         };
                         return colors[code] || "#38bdf8";
@@ -3038,18 +3028,16 @@ export default function ProcurementManager({
                           "P": "기획",
                           "A": "승인",
                           "B": "입찰",
-                          "Pr": "구매",
                           "I": "검수"
                         };
                         return labels[code] || "미정";
                       };
 
                       const activePhases = [];
-                      const phaseWeight = { "P": 1, "A": 2, "B": 3, "Pr": 4, "I": 5 };
+                      const phaseWeight = { "P": 1, "A": 2, "B": 3, "I": 4 };
                       if (idxP !== null) activePhases.push({ phase: "P", idx: idxP, weight: phaseWeight["P"], date: equip.dateP, label: "기획", color: "#f59e0b" });
                       if (idxA !== null) activePhases.push({ phase: "A", idx: idxA, weight: phaseWeight["A"], date: equip.dateA, label: "승인", color: "#3b82f6" });
                       if (idxB !== null) activePhases.push({ phase: "B", idx: idxB, weight: phaseWeight["B"], date: equip.dateB, label: "입찰", color: "#06b6d4" });
-                      if (idxPr !== null) activePhases.push({ phase: "Pr", idx: idxPr, weight: phaseWeight["Pr"], date: equip.datePr, label: "구매", color: "#a78bfa" });
                       if (idxI !== null) activePhases.push({ phase: "I", idx: idxI, weight: phaseWeight["I"], date: equip.dateI, label: "검수", color: "#10b981" });
 
                       let lastActivePhase = null;
@@ -3065,8 +3053,7 @@ export default function ProcurementManager({
                       const segments = [
                         { start: idxP, end: idxA, color: "#f59e0b" },
                         { start: idxA, end: idxB, color: "#3b82f6" },
-                        { start: idxB, end: idxPr, color: "#06b6d4" },
-                        { start: idxPr, end: idxI, color: "#a78bfa" }
+                        { start: idxB, end: idxI, color: "#06b6d4" }
                       ];
 
                       segments.forEach(seg => {
@@ -3162,11 +3149,8 @@ export default function ProcurementManager({
                                if (idxA !== null && idxB !== null && idxA < idxB) {
                                  if (pos >= idxA && pos < idxB) return "#3b82f6";
                                }
-                               if (idxB !== null && idxPr !== null && idxB < idxPr) {
-                                 if (pos >= idxB && pos < idxPr) return "#06b6d4";
-                               }
-                               if (idxPr !== null && idxI !== null && idxPr < idxI) {
-                                 if (pos >= idxPr && pos < idxI) return "#a78bfa";
+                               if (idxB !== null && idxI !== null && idxB < idxI) {
+                                 if (pos >= idxB && pos < idxI) return "#06b6d4";
                                }
                                return "var(--border-color)";
                              };
@@ -3182,7 +3166,6 @@ export default function ProcurementManager({
                               primaryCode === "P" ? equip.dateP :
                               primaryCode === "A" ? equip.dateA :
                               primaryCode === "B" ? equip.dateB :
-                              primaryCode === "Pr" ? equip.datePr :
                               equip.dateI
                             ) : "";
 
@@ -4640,7 +4623,7 @@ export default function ProcurementManager({
                     <span style={{ display: "block", fontSize: "0.82rem", fontWeight: "800", color: "var(--text-primary)", marginBottom: "0.75rem" }}>
                       📅 단계별 이벤트 일자 입력 (선택 입력)
                     </span>
-                    <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: "0.5rem" }}>
+                    <div style={{ display: "grid", gridTemplateColumns: modalType === "env" ? "repeat(5, 1fr)" : "repeat(4, 1fr)", gap: "0.5rem" }}>
                       <div>
                         <label style={{ display: "block", fontSize: "0.7rem", color: "var(--text-secondary)", marginBottom: "0.2rem" }}>
                           {modalType === "env" ? "요청(Rq) 일자" : "기획(P) 일자"}
@@ -4659,12 +4642,14 @@ export default function ProcurementManager({
                         </label>
                         <input type="date" name="dateB" value={formData.dateB || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.3rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", fontSize: "0.72rem" }} />
                       </div>
-                      <div>
-                        <label style={{ display: "block", fontSize: "0.7rem", color: "var(--text-secondary)", marginBottom: "0.2rem" }}>
-                          {modalType === "env" ? "선정(BC) 일자" : "구매(Pr) 일자"}
-                        </label>
-                        <input type="date" name="datePr" value={formData.datePr || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.3rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", fontSize: "0.72rem" }} />
-                      </div>
+                      {modalType === "env" && (
+                        <div>
+                          <label style={{ display: "block", fontSize: "0.7rem", color: "var(--text-secondary)", marginBottom: "0.2rem" }}>
+                            선정(BC) 일자
+                          </label>
+                          <input type="date" name="datePr" value={formData.datePr || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.3rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", fontSize: "0.72rem" }} />
+                        </div>
+                      )}
                       <div>
                         <label style={{ display: "block", fontSize: "0.7rem", color: "var(--text-secondary)", marginBottom: "0.2rem" }}>
                           {modalType === "env" ? "시공(CS) 일자" : "검수(I) 일자"}
