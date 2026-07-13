@@ -500,9 +500,40 @@ export default function PDCAManager({
         setInputMonthlyPDCA(parseTimelineToMonths(dataSrc.timeline || ""));
         setInputMonthlyPDCAActual(parseTimelineToMonths(dataSrc.actual_timeline || ""));
 
-        setInputSpentNational(py.spent_national !== undefined ? (py.spent_national / 1000000).toFixed(1) : "0.0");
-        setInputSpentCity(py.spent_city !== undefined ? (py.spent_city / 1000000).toFixed(1) : "0.0");
-        setInputSpentExternal(py.spent_external !== undefined ? (py.spent_external / 1000000).toFixed(1) : "0.0");
+        // 💡 [비목별 집행등록 값의 합산으로 재원별 본집행 실적 자동 연산 표시]
+        const totalCategorySpentMain = loadedCategories.reduce((sum, c) => {
+          return sum + (parseDecimalFromCommas(c.spent) || 0);
+        }, 0);
+
+        let sNational = 0;
+        let sCity = 0;
+        let sExternal = 0;
+
+        let remainingSpent = totalCategorySpentMain;
+        const limitNational = Math.round((py.budget_national || 0) + (py.budget_carry_national || 0));
+        const limitCity = Math.round((py.budget_city || 0) + (py.budget_carry_city || 0));
+        const limitExternal = Math.round((py.budget_external || 0) + (py.budget_carry_external || 0));
+
+        sNational = Math.min(remainingSpent, limitNational);
+        remainingSpent -= sNational;
+
+        if (remainingSpent > 0) {
+          sCity = Math.min(remainingSpent, limitCity);
+          remainingSpent -= sCity;
+        }
+
+        if (remainingSpent > 0) {
+          sExternal = Math.min(remainingSpent, limitExternal);
+          remainingSpent -= sExternal;
+        }
+
+        if (remainingSpent > 0) {
+          sNational += remainingSpent;
+        }
+
+        setInputSpentNational((sNational / 1000000).toFixed(1));
+        setInputSpentCity((sCity / 1000000).toFixed(1));
+        setInputSpentExternal((sExternal / 1000000).toFixed(1));
 
         setInputParticipants(String(dataSrc.participants ?? 0));
         const audiencePartMap = dataSrc.actual_audience_participants || {};
@@ -1142,9 +1173,6 @@ export default function PDCAManager({
     }
     if (!activeProg) return;
 
-    const sNational = Math.round(parseDecimalFromCommas(inputSpentNational) * 1000000);
-    const sCity = Math.round(parseDecimalFromCommas(inputSpentCity) * 1000000);
-    const sExternal = Math.round(parseDecimalFromCommas(inputSpentExternal) * 1000000);
     const parsedParticipants = parseInt(inputParticipants, 10) || 0;
     const parsedActualDevelopments = parseInt(inputActualDevelopments, 10) || 0;
     const parsedActualEtc = parseInt(inputActualEtc, 10) || 0;
@@ -1153,19 +1181,6 @@ export default function PDCAManager({
     const limitNational = Math.round((py.budget_national || 0) + (py.budget_carry_national || 0));
     const limitCity = Math.round((py.budget_city || 0) + (py.budget_carry_city || 0));
     const limitExternal = Math.round((py.budget_external || 0) + (py.budget_carry_external || 0));
-
-    if (sNational > limitNational) {
-      alert(`[한도 초과] 국고 집행액(${(sNational / 1000000).toFixed(1)} 백만원)은 배정 예산(${(limitNational / 1000000).toFixed(1)} 백만원)을 초과할 수 없습니다.`);
-      return;
-    }
-    if (sCity > limitCity) {
-      alert(`[한도 초과] 시비 집행액(${(sCity / 1000000).toFixed(1)} 백만원)은 배정 예산(${(limitCity / 1000000).toFixed(1)} 백만원)을 초과할 수 없습니다.`);
-      return;
-    }
-    if (sExternal > limitExternal) {
-      alert(`[한도 초과] 외부사업비 집행액(${(sExternal / 1000000).toFixed(1)} 백만원)은 배정 예산(${(limitExternal / 1000000).toFixed(1)} 백만원)을 초과할 수 없습니다.`);
-      return;
-    }
 
     // D단계 비목별 집행액 데이터 취합 (본예산 및 이월예산은 유지)
     const categoriesToSave = inputBudgetCategories
@@ -1177,6 +1192,35 @@ export default function PDCAManager({
         spent: Math.round(parseDecimalFromCommas(c.spent || "0")),
         spent_carry: selectedYear === 1 ? 0 : Math.round(parseDecimalFromCommas(c.spent_carry || "0"))
       }));
+
+    // 비목별 본집행 및 이월집행 합산 총액
+    const totalSpentMain = categoriesToSave.reduce((sum, c) => sum + (c.spent || 0), 0);
+    const totalSpentCarry = categoriesToSave.reduce((sum, c) => sum + (c.spent_carry || 0), 0);
+
+    // 본집행 실적을 국고/시비/외부사업비 한도에 비례하여 자동 안분 배분
+    let sNational = 0;
+    let sCity = 0;
+    let sExternal = 0;
+
+    let remainingSpent = totalSpentMain;
+
+    sNational = Math.min(remainingSpent, limitNational);
+    remainingSpent -= sNational;
+
+    if (remainingSpent > 0) {
+      sCity = Math.min(remainingSpent, limitCity);
+      remainingSpent -= sCity;
+    }
+
+    if (remainingSpent > 0) {
+      sExternal = Math.min(remainingSpent, limitExternal);
+      remainingSpent -= sExternal;
+    }
+
+    // 예산 한도 총합을 초과하는 집행액이 있으면, 초과분은 국고 집행액에 병합 처리
+    if (remainingSpent > 0) {
+      sNational += remainingSpent;
+    }
 
     // D단계 자동 완료/진행 판정
     const compD = checkDStageCompletion(activeProg, py, {
