@@ -2732,6 +2732,100 @@ export default function ProcurementManager({
             </div>
           </div>
 
+          {/* 💡 [교육용 한글 주석] 기자재 구입 및 운영 절차를 시각적으로 보여주는 가로 흐름 스텝바를 배치합니다. */}
+          <div className="glass-card" style={{ padding: "1rem", borderRadius: "10px", display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
+              <span style={{ fontSize: "1.1rem" }}>🔬</span>
+              <h4 style={{ margin: 0, fontSize: "0.88rem", fontWeight: "800", color: "var(--text-primary)" }}>기자재 구입 및 운영 절차 안내</h4>
+            </div>
+            
+            <div style={{ 
+              display: "flex", 
+              alignItems: "center", 
+              gap: "0.35rem", 
+              overflowX: "auto", 
+              paddingBottom: "0.25rem",
+              scrollbarWidth: "thin",
+              msOverflowStyle: "none"
+            }}>
+              {[
+                { no: "01", name: "수요조사", dept: "앵커사업단 · 학부(과)", desc: "행정용 / 학부(과)용", tooltip: "수요조사\n- 행정용\n- 학부(과)용" },
+                { no: "02", name: "계획수립", dept: "앵커사업단", desc: "사업계획서 반영", tooltip: "사업계획 및 부서 필요 기자재 반영 수립" },
+                { no: "03", name: "앵커기획위원회", dept: "앵커사업단", desc: "자체 심의", tooltip: "앵커기획위원회 자체 심의" },
+                { no: "04", name: "금액별 심의/승인", dept: "앵커 ➔ 울산/중앙", desc: "금액별 분기 심의", tooltip: "💡 금액별 심의/승인 상세 절차:\n• 3천만원 미만: 자체심의\n• 3천만원 이상: 울산앵커센터 사전승인\n• 1억원 이상: 울산앵커센터 사전보고 & 중앙앵커센터 승인신청 및 사전승인" },
+                { no: "05", name: "선정위원회 승인", dept: "앵커 ➔ 교무팀", desc: "기자재선정위 승인", tooltip: "학부(과) 기자재 대상: 앵커사업단 요청 ➔ 교무팀 개최" },
+                { no: "06", name: "결재 및 구매신청", dept: "앵커사업단", desc: "시설팀 / 교무팀 경유", tooltip: "내부결재 및 구매신청\n- 행정용 : 시설팀 경유\n- 학부(과)용 : 교무팀 경유" },
+                { no: "07", name: "입찰 / 수의계약", dept: "총무팀", desc: "계약 및 조달", tooltip: "총무팀을 경유한 입찰 또는 수의계약 체결" },
+                { no: "08", name: "검수 및 입고", dept: "시설/교무/앵커/총무", desc: "현물 대조 검수", tooltip: "납품 기자재에 대한 실물 검수 및 입고 처리" },
+                { no: "09", name: "집행완료", dept: "재무회계팀", desc: "최종 예산 지출", tooltip: "재무회계팀 최종 집행 및 지출 결의 완료" },
+                { no: "10", name: "기자재 운영/관리", dept: "자산부서 · 앵커사업단", desc: "대장 등재 및 관리", tooltip: "각 자산관리부서 및 앵커사업단 자산 대장 등재 및 모니터링" }
+              ].map((step, idx, arr) => (
+                <React.Fragment key={step.no}>
+                  <div 
+                    title={step.tooltip}
+                    style={{ 
+                      display: "flex", 
+                      flexDirection: "column", 
+                      alignItems: "center", 
+                      minWidth: "120px", 
+                      textAlign: "center",
+                      flex: 1,
+                      cursor: "pointer"
+                    }}
+                  >
+                    <div style={{ 
+                      display: "flex", 
+                      alignItems: "center", 
+                      gap: "0.25rem",
+                      background: step.no === "04" ? "rgba(16, 185, 129, 0.08)" : "rgba(255, 255, 255, 0.04)",
+                      border: step.no === "04" ? "1px solid var(--accent-color)" : "1px solid var(--border-color)",
+                      borderRadius: "6px",
+                      padding: "0.35rem 0.5rem",
+                      width: "100%",
+                      justifyContent: "center",
+                      transition: "all 0.2s ease"
+                    }}>
+                      <span style={{ 
+                        fontSize: "0.65rem", 
+                        fontWeight: "800", 
+                        color: step.no === "04" ? "white" : "var(--accent-color)", 
+                        background: step.no === "04" ? "var(--accent-color)" : "rgba(16, 185, 129, 0.15)",
+                        borderRadius: "50%",
+                        width: "16px",
+                        height: "16px",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center"
+                      }}>{step.no}</span>
+                      <span style={{ fontSize: "0.72rem", fontWeight: "700", color: "var(--text-primary)", whiteSpace: "nowrap" }}>{step.name}</span>
+                    </div>
+                    <span style={{ 
+                      fontSize: "0.6rem", 
+                      color: "var(--text-secondary)", 
+                      marginTop: "0.25rem", 
+                      whiteSpace: "nowrap" 
+                    }}>{step.dept}</span>
+                    <span style={{ 
+                      fontSize: "0.55rem", 
+                      color: "rgba(255, 255, 255, 0.4)", 
+                      marginTop: "0.05rem", 
+                      whiteSpace: "nowrap" 
+                    }}>{step.desc}</span>
+                  </div>
+                  {idx < arr.length - 1 && (
+                    <span style={{ 
+                      fontSize: "0.85rem", 
+                      color: "rgba(255, 255, 255, 0.2)", 
+                      fontWeight: "800",
+                      userSelect: "none",
+                      padding: "0 0.1rem"
+                    }}>➔</span>
+                  )}
+                </React.Fragment>
+              ))}
+            </div>
+          </div>
+
           {/* 기자재 리스트 (스프레드시트 스타일 표 뷰) */}
           <div className="glass-card" style={{ padding: "0.5rem", borderRadius: "10px", overflowX: "auto" }}>
             <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.82rem", color: "var(--text-primary)", minWidth: "1200px" }}>
