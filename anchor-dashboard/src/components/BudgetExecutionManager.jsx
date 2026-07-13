@@ -216,6 +216,7 @@ export default function BudgetExecutionManager({ projects = [], currentRole, sel
 
         let newParsedRows = [];
         let duplicateCount = 0;
+        let invalidCarryoverCount = 0;
 
         for (let i = 1; i < rows.length; i++) {
           const row = rows[i];
@@ -234,6 +235,12 @@ export default function BudgetExecutionManager({ projects = [], currentRole, sel
             } else {
               execDate = rawDate.toString().trim();
             }
+          }
+
+          // 💡 [이월예산 집행 기한 통제 가드] 1차년도 이월예산은 8월 31일 기한 마감되므로 9월 이후 집행분은 등록을 원천 차단합니다.
+          if (budgetType === "carryover" && execDate > "2026-08-31") {
+            invalidCarryoverCount++;
+            continue;
           }
 
           const amount = parseFloat((row[amountIdx] || "0").toString().replace(/,/g, ""));
@@ -281,7 +288,10 @@ export default function BudgetExecutionManager({ projects = [], currentRole, sel
         }
 
         if (newParsedRows.length === 0) {
-          triggerToast(`중복 내역 필터링 완료: 새로 추가된 건이 없습니다. (중복 ${duplicateCount}건 제외)`, "warning");
+          const skipMsg = invalidCarryoverCount > 0
+            ? `이월예산 기한 초과(8/31): 새로 추가된 건이 없습니다. (기한 초과 ${invalidCarryoverCount}건 제외, 중복 ${duplicateCount}건 제외)`
+            : `중복 내역 필터링 완료: 새로 추가된 건이 없습니다. (중복 ${duplicateCount}건 제외)`;
+          triggerToast(skipMsg, "warning");
           return;
         }
 
@@ -300,7 +310,11 @@ export default function BudgetExecutionManager({ projects = [], currentRole, sel
           }
         }));
 
-        triggerToast(`✨ [${monthLabel} ${budgetType === "main" ? "본예산" : "이월예산"}] 총 ${newParsedRows.length}건이 성공적으로 등록되었습니다. (중복 ${duplicateCount}건 자동 제외)`, "success");
+        let successMsg = `✨ [${monthLabel} ${budgetType === "main" ? "본예산" : "이월예산"}] 총 ${newParsedRows.length}건이 성공적으로 등록되었습니다. (중복 ${duplicateCount}건 자동 제외)`;
+        if (invalidCarryoverCount > 0) {
+          successMsg += ` (⚠️ 기한 초과 ${invalidCarryoverCount}건 제외)`;
+        }
+        triggerToast(successMsg, "success");
 
       } catch (err) {
         console.error(err);
@@ -799,13 +813,13 @@ export default function BudgetExecutionManager({ projects = [], currentRole, sel
           </span>
         </div>
 
-        {/* 12개월 업로드 공간 그리드 영역 ('26.3월 ~ '27.2월) */}
+        {/* 업로드 공간 그리드 영역 (본예산: 12개월 2줄, 이월예산: 6개월 1줄) */}
         <div style={{
           display: "grid",
-          gridTemplateColumns: "repeat(4, 1fr)",
+          gridTemplateColumns: "repeat(6, 1fr)",
           gap: "1rem"
         }}>
-          {MONTHS_CONFIG.map((m) => {
+          {(activeUploadTab === "carryover" ? MONTHS_CONFIG.slice(0, 6) : MONTHS_CONFIG).map((m) => {
             const metaKey = `${selectedYear}_${activeUploadTab}_${m.label}`;
             const fileMeta = uploadedFilesMeta[metaKey];
             const isDrag = dragActive === m.value;
