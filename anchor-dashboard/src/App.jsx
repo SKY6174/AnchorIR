@@ -8276,7 +8276,7 @@ export default function App() {
                                         {completedCount}
                                       </td>
                                       <td>
-                                        <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
+                                        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "0.4rem" }}>
                                           <div style={{ width: "40px", height: "6px", background: "rgba(255,255,255,0.1)", borderRadius: "3px", overflow: "hidden" }}>
                                             <div style={{ width: `${Math.min(progressRate, 100)}%`, height: "100%", background: "#10b981" }} />
                                           </div>
@@ -8323,13 +8323,13 @@ export default function App() {
                                 {sumCompletedCount}
                               </td>
                               <td>
-                                <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
-                                  <div style={{ width: "40px", height: "6px", background: "rgba(255,255,255,0.1)", borderRadius: "3px", overflow: "hidden" }}>
-                                    <div style={{ width: `${Math.min(sumProgressRate, 100)}%`, height: "100%", background: "#10b981" }} />
-                                  </div>
-                                  <span style={{ fontSize: "0.75rem", fontFamily: "var(--font-data)", fontWeight: "800", color: "#10b981" }}>{sumProgressRate.toFixed(1)}%</span>
-                                </div>
-                              </td>
+                                        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "0.4rem" }}>
+                                          <div style={{ width: "40px", height: "6px", background: "rgba(255,255,255,0.1)", borderRadius: "3px", overflow: "hidden" }}>
+                                            <div style={{ width: `${Math.min(sumProgressRate, 100)}%`, height: "100%", background: "#10b981" }} />
+                                          </div>
+                                          <span style={{ fontSize: "0.75rem", fontFamily: "var(--font-data)", fontWeight: "800", color: "#10b981" }}>{sumProgressRate.toFixed(1)}%</span>
+                                        </div>
+                                      </td>
                             </tr>
                           </>
                         );
