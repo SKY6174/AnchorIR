@@ -31,3 +31,8 @@ ON budget_executions(resolution_no, program_id, execution_date, amount, budget_t
 -- 💡 [Supabase RLS 보안 비활성화]
 -- 개발 및 배포 환경에서 anon REST 클라이언트의 원격 삽입/삭제 접근 차단을 해제하기 위해 RLS를 해제합니다.
 ALTER TABLE budget_executions DISABLE ROW LEVEL SECURITY;
+
+-- 💡 [Supabase API 테이블 접근 권한 부여]
+-- 익명(anon) 및 로그인된 사용자(authenticated) 역할이 API를 통해 자유롭게 CRUD를 수행할 수 있도록 전체 권한을 그랜트합니다.
+GRANT ALL ON TABLE budget_executions TO anon, authenticated, service_role;
+GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO anon, authenticated, service_role;
