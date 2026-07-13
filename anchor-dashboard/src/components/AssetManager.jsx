@@ -702,9 +702,19 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
           const installDept = (row["설치부서"] || "").toString().trim();
           const stockLocation = roomNo ? (installDept ? `${installDept} (${roomNo})` : roomNo) : installDept;
 
-          const category = (categoryName.toUpperCase().includes("AI") || categoryName.toUpperCase().includes("DX"))
-            ? "ai_dx" 
-            : "other";
+          // 엑셀 14번째 열 'AI∙DX 자산여부' 파싱
+          const excelAiDx = (row["AI∙DX 자산여부"] || "").toString().trim();
+          let category = "other";
+          if (excelAiDx === "예" || excelAiDx === "yes" || excelAiDx === "1" || excelAiDx.toUpperCase() === "Y") {
+            category = "ai_dx";
+          } else if (excelAiDx === "아니오" || excelAiDx === "no" || excelAiDx === "0" || excelAiDx.toUpperCase() === "N") {
+            category = "other";
+          } else {
+            // 값이 없는 경우 기존처럼 분류명 규칙 적용 (분류명에 AI 또는 DX가 포함되면 특화자산으로 지정)
+            category = (categoryName.toUpperCase().includes("AI") || categoryName.toUpperCase().includes("DX"))
+              ? "ai_dx" 
+              : "other";
+          }
 
           const originalMeta = {
             asset_number: assetNumber,
@@ -719,7 +729,8 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
             item_type: (row["항목"] || "").toString().trim(),
             pay_date: (row["지출일자"] || "").toString().trim(),
             is_sw: (row["SW여부"] || "").toString().trim(),
-            vendor: (row["구입업체"] || "").toString().trim()
+            vendor: (row["구입업체"] || "").toString().trim(),
+            ai_dx_yn: excelAiDx
           };
 
           return {
@@ -763,7 +774,7 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
     reader.readAsBinaryString(file);
   };
 
-  // 13개 컬럼 양식 서식 다운로드 헬퍼
+  // 14개 컬럼 양식 서식 다운로드 헬퍼
   const handleDownloadEquipTemplate = () => {
     const headers = [
       "자산번호",
@@ -778,7 +789,8 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
       "항목",
       "지출일자",
       "SW여부",
-      "구입업체"
+      "구입업체",
+      "AI∙DX 자산여부"
     ];
     const sampleData = [
       {
@@ -794,7 +806,8 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
         "항목": "기계 교육용",
         "지출일자": "2025-12-17",
         "SW여부": "아니오",
-        "구입업체": "한독앵글산업사"
+        "구입업체": "한독앵글산업사",
+        "AI∙DX 자산여부": "아니오"
       }
     ];
 
