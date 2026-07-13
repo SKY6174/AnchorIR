@@ -3719,6 +3719,98 @@ export default function ProcurementManager({
             </div>
           </div>
 
+          {/* 💡 [교육용 한글 주석] 주요 용역 처리 절차를 시각적으로 보여주는 가로 흐름 스텝바를 배치합니다. */}
+          <div className="glass-card" style={{ padding: "1rem", borderRadius: "10px", display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
+              <span style={{ fontSize: "1.1rem" }}>💼</span>
+              <h4 style={{ margin: 0, fontSize: "0.88rem", fontWeight: "800", color: "var(--text-primary)" }}>주요 용역 처리 절차 안내</h4>
+            </div>
+            
+            <div style={{ 
+              display: "flex", 
+              alignItems: "center", 
+              gap: "0.35rem", 
+              overflowX: "auto", 
+              paddingBottom: "0.25rem",
+              scrollbarWidth: "thin",
+              msOverflowStyle: "none"
+            }}>
+              {[
+                { no: "01", name: "기획", dept: "앵커사업단", desc: "사업계획서 반영분 구체화", tooltip: "사업계획서 상의 주요 용역 사업 구체화 및 상세 계획 수립" },
+                { no: "02", name: "내부결재 승인", dept: "앵커사업단", desc: "과업지시서 작성", tooltip: "용역 제안서 요구사항이 명시된 과업지시서 작성 및 결재 승인" },
+                { no: "03", name: "구매신청", dept: "앵커사업단 ➔ 총무팀", desc: "구매의뢰 요청", tooltip: "총무팀을 향한 공식 용역 조달/구매 의뢰 및 접수" },
+                { no: "04", name: "업체선정 평가", dept: "총무팀 외", desc: "입찰 시 제안서 심사", tooltip: "💡 입찰 진행 시:\n제안서 심사 및 업체 선정을 위한 서류/프레젠테이션 평가위원회 구성 및 평가" },
+                { no: "05", name: "업체 선정 및 계약", dept: "총무팀", desc: "낙찰 및 계약 체결", tooltip: "우수업체 최종 협상, 낙찰자 결정 및 정식 용역 계약 체결" },
+                { no: "06", name: "용역 수행", dept: "선정 업체", desc: "과업수행 계획 이행", tooltip: "계약업체의 과업 이행 및 진행 진척도 관리" },
+                { no: "07", name: "검수", dept: "총무팀 / 앵커사업단", desc: "산출물 최종 검수", tooltip: "완료 보고서 및 과업 결과물의 적합성 판정 및 검수" },
+                { no: "08", name: "집행완료", dept: "재무회계팀", desc: "대금 지급 및 정산 완료", tooltip: "재무회계팀을 통한 용역 대금 최종 송금 및 예산 정산 완료" }
+              ].map((step, idx, arr) => (
+                <React.Fragment key={step.no}>
+                  <div 
+                    title={step.tooltip}
+                    style={{ 
+                      display: "flex", 
+                      flexDirection: "column", 
+                      alignItems: "center", 
+                      minWidth: "120px", 
+                      textAlign: "center",
+                      flex: 1,
+                      cursor: "pointer"
+                    }}
+                  >
+                    <div style={{ 
+                      display: "flex", 
+                      alignItems: "center", 
+                      gap: "0.25rem",
+                      background: step.no === "04" ? "rgba(16, 185, 129, 0.08)" : "rgba(255, 255, 255, 0.04)",
+                      border: step.no === "04" ? "1px solid var(--accent-color)" : "1px solid var(--border-color)",
+                      borderRadius: "6px",
+                      padding: "0.35rem 0.5rem",
+                      width: "100%",
+                      justifyContent: "center",
+                      transition: "all 0.2s ease"
+                    }}>
+                      <span style={{ 
+                        fontSize: "0.65rem", 
+                        fontWeight: "800", 
+                        color: step.no === "04" ? "white" : "var(--accent-color)", 
+                        background: step.no === "04" ? "var(--accent-color)" : "rgba(16, 185, 129, 0.15)",
+                        borderRadius: "50%",
+                        width: "16px",
+                        height: "16px",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center"
+                      }}>{step.no}</span>
+                      <span style={{ fontSize: "0.72rem", fontWeight: "700", color: "var(--text-primary)", whiteSpace: "nowrap" }}>{step.name}</span>
+                    </div>
+                    <span style={{ 
+                      fontSize: "0.6rem", 
+                      color: "var(--text-secondary)", 
+                      marginTop: "0.25rem", 
+                      whiteSpace: "nowrap" 
+                    }}>{step.dept}</span>
+                    <span style={{ 
+                      fontSize: "0.55rem", 
+                      color: "rgba(255, 255, 255, 0.4)", 
+                      marginTop: "0.05rem", 
+                      whiteSpace: "nowrap" 
+                    }}>{step.desc}</span>
+                  </div>
+                  {idx < arr.length - 1 && (
+                    <span style={{ 
+                      fontSize: "0.85rem", 
+                      color: "rgba(255, 255, 255, 0.2)", 
+                      fontWeight: "800",
+                      userSelect: "none",
+                      padding: "0 0.1rem"
+                    }}>➔</span>
+                  )}
+                </React.Fragment>
+              ))}
+            </div>
+          </div>
+
           {/* 주요 용역 테이블 */}
           <div className="glass-card" style={{ padding: "0.25rem", borderRadius: "12px", overflowX: "auto", border: "1px solid var(--border-color)", background: "var(--panel-bg)" }}>
             <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.82rem", color: "var(--text-primary)" }}>
