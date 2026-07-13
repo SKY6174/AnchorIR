@@ -5956,6 +5956,143 @@ export default function App() {
 
     const cloned = JSON.parse(JSON.stringify(rawProjects));
 
+    // 💡 [실시간 엑셀 업로드 집행 기록 전역 동적 합산 가드]
+    // '예산 관리 > 집행률 관리'에서 업로드하여 localStorage에 저장된 실제 집행 로우 데이터를
+    // 대시보드 전체에 누적 합산하여 실시간 환산 반영합니다.
+    const BUDGET_ITEM_NAMES = [
+      "인건비",
+      "장학금",
+      "교육∙연구 프로그램 개발∙운영비",
+      "교육∙연구 환경개선비",
+      "실험∙실습장비 및 기자재 구입∙운영비",
+      "지역 연계∙협업 지원비",
+      "기업 지원∙협력 활동비",
+      "성과 활용∙확산 지원비",
+      "그 밖의 사업운영경비",
+      "간접비"
+    ];
+
+    const cachedExecs = (() => {
+      try {
+        const data = localStorage.getItem(`budget_exec_records_${yr}`);
+        return data ? JSON.parse(data) : [];
+      } catch (e) {
+        console.error("대시보드 실시간 집행 연동 오류:", e);
+        return [];
+      }
+    })();
+
+    const matchedRecordsForUnit = (unitId, records) => {
+      return records.filter(r => {
+        if (unitId === "X0") {
+          return (r.program_id || "").startsWith("X0");
+        }
+        return (r.program_id || "").startsWith(unitId);
+      });
+    };
+
+    // 복사본 cloned 전체를 돌며 엑셀 집행 데이터를 각 단위과제에 실시간 환산 누적 적용
+    cloned.forEach(p => {
+      p.units.forEach(u => {
+        // years가 없는 유닛(예: 공통 X0)에 대해 동적으로 년차별 매핑 생성
+        if (!u.years) {
+          u.years = {
+            1: {
+              budget_main: u.budget_2025 || 0,
+              spent_main: 0,
+              budget_carry: 0,
+              spent_carry: 0
+            },
+            2: {
+              budget_main: u.budget_2026 || 0,
+              spent_main: 0,
+              budget_carry: u.budget_2025_carry || 0,
+              spent_carry: 0
+            }
+          };
+        }
+
+        // 해당 년차의 기존 mock spent 값을 0으로 리셋하여 엑셀 업로드 기반으로 환산
+        if (u.years[yr]) {
+          u.years[yr].spent_main = 0;
+          u.years[yr].spent_carry = 0;
+        }
+
+        // budgetDetails 구조가 없으면 생성
+        if (!u.budgetDetails) {
+          u.budgetDetails = {};
+          BUDGET_ITEM_NAMES.forEach(bName => {
+            u.budgetDetails[bName] = {
+              years: {
+                [yr]: {
+                  budget_main: 0,
+                  spent_main: 0,
+                  budget_carry: 0,
+                  spent_carry: 0
+                }
+              }
+            };
+          });
+        }
+
+        // budgetDetails 내의 각 비목별 spent_main / spent_carry도 0으로 리셋
+        Object.keys(u.budgetDetails).forEach(bName => {
+          const bItem = u.budgetDetails[bName];
+          if (bItem) {
+            if (!bItem.years) {
+              bItem.years = {
+                1: { budget_main: bItem.budget_2025 || 0, spent_main: 0, budget_carry: 0, spent_carry: 0 },
+                2: { budget_main: bItem.budget_2026 || 0, spent_main: 0, budget_carry: bItem.budget_2025_carry || 0, spent_carry: 0 }
+              };
+            }
+            if (bItem.years[yr]) {
+              bItem.years[yr].spent_main = 0;
+              bItem.years[yr].spent_carry = 0;
+            }
+          }
+        });
+
+        // 해당 단위과제에 매칭되는 집행 로우 필터링
+        const matchedRecords = matchedRecordsForUnit(u.id, cachedExecs);
+
+        // 필터링된 집행건들을 비목별 및 예산유형별로 합산
+        matchedRecords.forEach(r => {
+          const bName = BUDGET_ITEM_NAMES.find(name => name.replace(/\s/g, "") === (r.expense_category || "").replace(/\s/g, "")) || r.expense_category;
+          if (bName) {
+            if (!u.budgetDetails[bName]) {
+              u.budgetDetails[bName] = {
+                years: {
+                  [yr]: {
+                    budget_main: 0,
+                    spent_main: 0,
+                    budget_carry: 0,
+                    spent_carry: 0
+                  }
+                }
+              };
+            }
+            if (!u.budgetDetails[bName].years[yr]) {
+              u.budgetDetails[bName].years[yr] = {
+                budget_main: 0,
+                spent_main: 0,
+                budget_carry: 0,
+                spent_carry: 0
+              };
+            }
+
+            const amountVal = Number(r.amount) || 0;
+            if (r.budget_type === "carryover") {
+              u.budgetDetails[bName].years[yr].spent_carry += amountVal;
+              if (u.years[yr]) u.years[yr].spent_carry += amountVal;
+            } else {
+              u.budgetDetails[bName].years[yr].spent_main += amountVal;
+              if (u.years[yr]) u.years[yr].spent_main += amountVal;
+            }
+          }
+        });
+      });
+    });
+
     if (yr !== 1) {
       // 2~5차년도에는 해당 연도의 프로그램만 필터링 및 X0 등 년도 매핑이 누락된 유닛 정규화
       return cloned.map(p => {
