@@ -8115,25 +8115,32 @@ export default function App() {
             </div>
 
             <div style={{ display: "flex", gap: "0.5rem", borderBottom: "1px solid var(--border-color)", paddingBottom: "0.8rem", marginBottom: "1.2rem" }}>
-              {currentRole && (currentRole.id === "ADMIN" || currentRole.id === "G_DIRECTOR" || currentRole.id === "HQ_HEAD") && (
+              {/* 1. 승인처리 탭 노출 가드 (최고 관리자군 또는 특화 승인권자) */}
+              {((currentRole && ["ADMIN", "G_DIRECTOR", "HQ_HEAD", "MANAGER"].includes(currentRole.id || "")) ||
+                (currentUser && ["이규상", "임은애", "황수진", "최주명"].some(name => (currentUser.name || "").includes(name)))) && (
+                <button
+                  type="button"
+                  onClick={() => setMgmtSubTab("approvals")}
+                  style={{
+                    border: "none",
+                    background: "transparent",
+                    padding: "0.5rem 1rem",
+                    fontSize: "0.85rem",
+                    fontWeight: "800",
+                    cursor: "pointer",
+                    color: mgmtSubTab === "approvals" ? "var(--accent-color)" : "var(--text-secondary)",
+                    borderBottom: mgmtSubTab === "approvals" ? "2px solid var(--accent-color)" : "none",
+                    transition: "all 0.2s"
+                  }}
+                >
+                  승인처리
+                </button>
+              )}
+
+              {/* 2. 구성원 관리, 회원현황, 프로그램 배정 등 기타 관리자 탭 노출 가드 (특화 승인권자는 제외) */}
+              {currentRole && (currentRole.id === "ADMIN" || currentRole.id === "G_DIRECTOR" || currentRole.id === "HQ_HEAD" || currentRole.id === "MANAGER") && 
+               !(currentUser && ["이규상", "임은애", "황수진", "최주명"].some(name => (currentUser.name || "").includes(name))) && (
                 <>
-                  <button
-                    type="button"
-                    onClick={() => setMgmtSubTab("approvals")}
-                    style={{
-                      border: "none",
-                      background: "transparent",
-                      padding: "0.5rem 1rem",
-                      fontSize: "0.85rem",
-                      fontWeight: "800",
-                      cursor: "pointer",
-                      color: mgmtSubTab === "approvals" ? "var(--accent-color)" : "var(--text-secondary)",
-                      borderBottom: mgmtSubTab === "approvals" ? "2px solid var(--accent-color)" : "none",
-                      transition: "all 0.2s"
-                    }}
-                  >
-                    승인처리
-                  </button>
                   <button
                     type="button"
                     onClick={() => setMgmtSubTab("members")}
