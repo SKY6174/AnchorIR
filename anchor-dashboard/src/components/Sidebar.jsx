@@ -26,7 +26,8 @@ export default function Sidebar({
   progressSubTab,
   onChangeProgressSubTab,
   menuVisibility = {},
-  isSongDirector = false
+  isSongDirector = false,
+  currentUser = null
 }) {
   const [hoveredTab, setHoveredTab] = React.useState(null);
 
@@ -855,10 +856,12 @@ export default function Sidebar({
                   onChangeTab("management");
                   if (onChangeMgmtSubTab) {
                     const isManager = currentRole.id === "ADMIN" || currentRole.id === "G_DIRECTOR" || currentRole.id === "HQ_HEAD" || currentRole.id === "MANAGER";
+                    const isSpecialApprover = currentUser && ["이규상", "임은애", "황수진", "최주명"].some(name => (currentUser.name || "").includes(name));
                     const subTabsOrder = ["approvals", "members", "users", "programs", "org_chart", "center_org_chart", "partners", "portal_config"];
 
                     const firstActive = subTabsOrder.find(tab => {
                       if (tab === "portal_config") return currentRole.id === "ADMIN" || currentRole.id === "G_DIRECTOR";
+                      if (tab === "approvals" && isSpecialApprover) return true;
                       if (!isManager && ["approvals", "members", "users", "programs"].includes(tab)) return false;
                       return isSongDirector || menuVisibility[tab] !== false;
                     }) || "org_chart";
@@ -871,8 +874,9 @@ export default function Sidebar({
                 <span>사업단 관리</span>
               </div>
               <div className="nav-sub-menu">
-                {/* 관리자 권한 전용 서브 탭 가드 */}
-                {(currentRole.id === "ADMIN" || currentRole.id === "G_DIRECTOR" || currentRole.id === "HQ_HEAD" || currentRole.id === "MANAGER") && (
+                {/* 관리자 권한 전용 서브 탭 가드 또는 특정 특화 승인권자 전용 예외 활성화 */}
+                {((currentRole.id === "ADMIN" || currentRole.id === "G_DIRECTOR" || currentRole.id === "HQ_HEAD" || currentRole.id === "MANAGER") ||
+                  (currentUser && ["이규상", "임은애", "황수진", "최주명"].some(name => (currentUser.name || "").includes(name)))) && (
                   <>
                     {(menuVisibility.approvals !== false || isSongDirector) && (
                       <div
@@ -894,65 +898,71 @@ export default function Sidebar({
                         )}
                       </div>
                     )}
-                    {(menuVisibility.members !== false || isSongDirector) && (
-                      <div
-                        className={`nav-sub-item ${activeTab === "management" && mgmtSubTab === "members" ? "active" : ""}`}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onChangeTab("management");
-                          if (onChangeMgmtSubTab) {
-                            onChangeMgmtSubTab("members");
-                          }
-                        }}
-                        style={getHiddenStyle("members")}
-                      >
-                        - 구성원 관리
-                        {isHidden("members") && (
-                          <span style={{ fontSize: "0.6rem", color: "#ef4444", textDecoration: "none", marginLeft: "0.2rem" }}>
-                            [숨김]
-                          </span>
+                    
+                    {/* 구성원, 회원현황, 프로그램 배정은 특화 승인권자(일반 실무 유저)인 이규상 등에게는 숨김 */}
+                    {!(currentUser && ["이규상", "임은애", "황수진", "최주명"].some(name => (currentUser.name || "").includes(name))) && (
+                      <>
+                        {(menuVisibility.members !== false || isSongDirector) && (
+                          <div
+                            className={`nav-sub-item ${activeTab === "management" && mgmtSubTab === "members" ? "active" : ""}`}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onChangeTab("management");
+                              if (onChangeMgmtSubTab) {
+                                onChangeMgmtSubTab("members");
+                              }
+                            }}
+                            style={getHiddenStyle("members")}
+                          >
+                            - 구성원 관리
+                            {isHidden("members") && (
+                              <span style={{ fontSize: "0.6rem", color: "#ef4444", textDecoration: "none", marginLeft: "0.2rem" }}>
+                                [숨김]
+                              </span>
+                            )}
+                          </div>
                         )}
-                      </div>
-                    )}
-                    {(menuVisibility.users !== false || isSongDirector) && (
-                      <div
-                        className={`nav-sub-item ${activeTab === "management" && mgmtSubTab === "users" ? "active" : ""}`}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onChangeTab("management");
-                          if (onChangeMgmtSubTab) {
-                            onChangeMgmtSubTab("users");
-                          }
-                        }}
-                        style={getHiddenStyle("users")}
-                      >
-                        - 회원현황
-                        {isHidden("users") && (
-                          <span style={{ fontSize: "0.6rem", color: "#ef4444", textDecoration: "none", marginLeft: "0.2rem" }}>
-                            [숨김]
-                          </span>
+                        {(menuVisibility.users !== false || isSongDirector) && (
+                          <div
+                            className={`nav-sub-item ${activeTab === "management" && mgmtSubTab === "users" ? "active" : ""}`}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onChangeTab("management");
+                              if (onChangeMgmtSubTab) {
+                                onChangeMgmtSubTab("users");
+                              }
+                            }}
+                            style={getHiddenStyle("users")}
+                          >
+                            - 회원현황
+                            {isHidden("users") && (
+                              <span style={{ fontSize: "0.6rem", color: "#ef4444", textDecoration: "none", marginLeft: "0.2rem" }}>
+                                [숨김]
+                              </span>
+                            )}
+                          </div>
                         )}
-                      </div>
-                    )}
-                    {(menuVisibility.programs !== false || isSongDirector) && (
-                      <div
-                        className={`nav-sub-item ${activeTab === "management" && mgmtSubTab === "programs" ? "active" : ""}`}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onChangeTab("management");
-                          if (onChangeMgmtSubTab) {
-                            onChangeMgmtSubTab("programs");
-                          }
-                        }}
-                        style={getHiddenStyle("programs")}
-                      >
-                        - 프로그램 배정
-                        {isHidden("programs") && (
-                          <span style={{ fontSize: "0.6rem", color: "#ef4444", textDecoration: "none", marginLeft: "0.2rem" }}>
-                            [숨김]
-                          </span>
+                        {(menuVisibility.programs !== false || isSongDirector) && (
+                          <div
+                            className={`nav-sub-item ${activeTab === "management" && mgmtSubTab === "programs" ? "active" : ""}`}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onChangeTab("management");
+                              if (onChangeMgmtSubTab) {
+                                onChangeMgmtSubTab("programs");
+                              }
+                            }}
+                            style={getHiddenStyle("programs")}
+                          >
+                            - 프로그램 배정
+                            {isHidden("programs") && (
+                              <span style={{ fontSize: "0.6rem", color: "#ef4444", textDecoration: "none", marginLeft: "0.2rem" }}>
+                                [숨김]
+                              </span>
+                            )}
+                          </div>
                         )}
-                      </div>
+                      </>
                     )}
                   </>
                 )}

@@ -7681,6 +7681,7 @@ export default function App() {
         onChangeProgressSubTab={setProgressSubTab}
         menuVisibility={currentUser && ["ADMIN", "G_DIRECTOR", "HQ_HEAD", "MANAGER"].includes(currentUser.role_key) ? {} : menuVisibility}
         isSongDirector={isSongDirector}
+        currentUser={currentUser}
       />
 
       {/* 메인 뷰 */}
@@ -8851,7 +8852,7 @@ export default function App() {
             {mgmtSubTab === "approvals" && (
               <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
                 {(() => {
-                  const approverNames = ["심현미", "김현수", "송경영"];
+                  const approverNames = ["심현미", "김현수", "송경영", "이규상", "임은애", "황수진", "최주명"];
                   const hasNamePermission = currentUser && approverNames.some(name => (currentUser.name || "").includes(name));
                   const hasRolePermission = currentRole && ["ADMIN", "G_DIRECTOR", "HQ_HEAD", "MANAGER"].includes(currentRole.id || "");
                   const isApprover = hasNamePermission || hasRolePermission;
