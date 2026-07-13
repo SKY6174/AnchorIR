@@ -9062,7 +9062,7 @@ export default function App() {
                                 <tr>
                                   <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap", width: "116px" }}>예약일자</th>
                                   <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap", width: "137px" }}>사용시간</th>
-                                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap", width: "169px" }}>시설명</th>
+                                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap", width: "169px" }}>시설명(호실번호)</th>
                                   <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap", width: "116px" }}>신청부서</th>
                                   <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap", width: "95px" }}>신청자</th>
                                   <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap" }}>사용목적</th>
@@ -9079,12 +9079,21 @@ export default function App() {
                                     </td>
                                   </tr>
                                 ) : (
-                                  reservations.map((res) => (
-                                    <tr key={res.id}>
-                                      <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle", fontFamily: "var(--font-data)", fontWeight: "700" }}>{res.reserved_date}</td>
-                                      <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle", fontFamily: "var(--font-data)", whiteSpace: "nowrap" }}>{res.start_time.substring(0, 5)} ~ {res.end_time.substring(0, 5)}</td>
-                                      <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle", fontWeight: "700", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{res.space_name}</td>
-                                      <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{res.dept}</td>
+                                  reservations.map((res) => {
+                                    const SPACE_ROOMS = {
+                                      "AI∙DX다목적강의실": "M-404",
+                                      "AI∙DX강의실1": "M-402",
+                                      "AI∙DX강의실2": "M-405",
+                                      "울산늘봄누리센터": "1-108",
+                                      "앵커사업단회의실": "앵커사업단"
+                                    };
+                                    const roomSuffix = SPACE_ROOMS[res.space_name] ? `(${SPACE_ROOMS[res.space_name]})` : "";
+                                    return (
+                                      <tr key={res.id}>
+                                        <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle", fontFamily: "var(--font-data)", fontWeight: "700" }}>{res.reserved_date}</td>
+                                        <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle", fontFamily: "var(--font-data)", whiteSpace: "nowrap" }}>{res.start_time.substring(0, 5)} ~ {res.end_time.substring(0, 5)}</td>
+                                        <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle", fontWeight: "700", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{res.space_name}{roomSuffix}</td>
+                                        <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{res.dept}</td>
                                       <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{res.reserver_name}</td>
                                       <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle", wordBreak: "break-all" }}>{res.purpose}</td>
                                       <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle" }}>
@@ -9143,8 +9152,9 @@ export default function App() {
                                         </div>
                                       </td>
                                     </tr>
-                                  ))
-                                )}
+                                  );
+                                })
+                              )}
                               </tbody>
                             </table>
                           </div>
