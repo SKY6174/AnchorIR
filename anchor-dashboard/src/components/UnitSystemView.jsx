@@ -524,7 +524,7 @@ export default function UnitSystemView({ selectedYear = 2 }) {
       <div className="glass-card" style={{ padding: "1.8rem" }}>
         <h3 style={{ fontSize: "1.1rem", fontWeight: "900", color: "var(--accent-color)", display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "1rem" }}>
           <Info size={20} />
-          울산과학대학교 RISE(앵커) 사업 기획 위계 체계
+          울산과학대학교 앵커사업 체계
         </h3>
         
         <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)", lineHeight: "1.6", marginBottom: "1.2rem" }}>
@@ -566,10 +566,18 @@ export default function UnitSystemView({ selectedYear = 2 }) {
         <div style={{ background: "rgba(59,130,246,0.06)", border: "1px solid rgba(59,130,246,0.25)", padding: "1rem 1.2rem", borderRadius: "0.4rem" }}>
           <div style={{ display: "flex", gap: "0.5rem", alignItems: "center", marginBottom: "0.3rem" }}>
             <GitFork size={15} style={{ color: "var(--accent-color)" }} />
-            <strong style={{ fontSize: "0.82rem", color: "var(--text-primary)" }}>프로그램 고유 ID 작명 룰 (ID Rule)</strong>
+            <strong style={{ fontSize: "0.82rem", color: "var(--text-primary)" }}>프로그램 ID 규칙 (Rule)</strong>
           </div>
           <p style={{ fontSize: "0.78rem", color: "var(--text-secondary)", lineHeight: "1.4", margin: 0 }}>
-            <code style={{ background: "var(--border-color)", padding: "0.1rem 0.3rem", borderRadius: "0.2rem", color: "var(--accent-color)", fontFamily: "monospace" }}>
+            <code style={{ 
+              background: "rgba(59, 130, 246, 0.1)", 
+              border: "1px solid rgba(59, 130, 246, 0.2)",
+              padding: "0.15rem 0.4rem", 
+              borderRadius: "0.3rem", 
+              color: "var(--accent-color)", 
+              fontFamily: "monospace",
+              fontWeight: "700"
+            }}>
               단위과제번호-(추진전략번호+전략과제번호)-프로그램번호
             </code>
             <span style={{ margin: "0 0.5rem", color: "var(--border-color)" }}>|</span>
