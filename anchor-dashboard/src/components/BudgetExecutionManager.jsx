@@ -493,11 +493,13 @@ export default function BudgetExecutionManager({ projects = [], currentRole, sel
 
       const dataPoint = {
         month: m.label,
-        mainBudget: parseFloat(mainPct.toFixed(1))
+        mainBudget: parseFloat(mainPct.toFixed(1)),
+        mainSpentAmt: Math.round(cumulativeMain / 1000000) // 백만원 단위 누적 집행액 추가
       };
       
       if (selectedYear !== 1) {
         dataPoint.carryoverBudget = parseFloat(carryPct.toFixed(1));
+        dataPoint.carryoverSpentAmt = Math.round(cumulativeCarry / 1000000); // 백만원 단위 누적 이월집행액 추가
       }
 
       chartData.push(dataPoint);
@@ -736,7 +738,7 @@ export default function BudgetExecutionManager({ projects = [], currentRole, sel
           <ResponsiveContainer width="100%" height="100%">
             <LineChart
               data={activeData.chartData}
-              margin={{ top: 20, right: 30, left: -10, bottom: 0 }}
+              margin={{ top: 20, right: 10, left: -10, bottom: 0 }}
             >
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
               <XAxis 
@@ -744,14 +746,30 @@ export default function BudgetExecutionManager({ projects = [], currentRole, sel
                 stroke="var(--text-secondary)" 
                 tick={{ fontSize: 11, fill: "var(--text-secondary)" }}
               />
+              {/* 좌측 Y축: 누적 집행률 (%) */}
               <YAxis 
+                yAxisId="left"
                 stroke="var(--text-secondary)" 
                 tick={{ fontSize: 11, fill: "var(--text-secondary)" }}
                 domain={[0, 100]}
                 unit="%"
               />
+              {/* 우측 Y축: 누적 집행액 (백만원) */}
+              <YAxis 
+                yAxisId="right"
+                orientation="right"
+                stroke="#60A5FA" 
+                tick={{ fontSize: 11, fill: "#60A5FA" }}
+                domain={[0, 'auto']}
+                unit="M"
+              />
               <Tooltip 
-                formatter={(value) => `${value}%`}
+                formatter={(value, name) => {
+                  if (name.includes("집행액")) {
+                    return [`${value.toLocaleString()} 백만 원`, name];
+                  }
+                  return [`${value}%`, name];
+                }}
                 contentStyle={{
                   background: "rgba(224, 235, 246, 0.95)",
                   border: "1px solid var(--border-color)",
@@ -765,13 +783,16 @@ export default function BudgetExecutionManager({ projects = [], currentRole, sel
               <Legend wrapperStyle={{ fontSize: 11, paddingTop: 10 }} />
               {selectedYear !== 1 && (
                 <ReferenceLine 
+                  yAxisId="left"
                   x="8월" 
                   stroke="#EF4444" 
                   strokeDasharray="4 4" 
                   label={{ value: "이월마감 (8/31)", fill: "#F87171", position: "insideTopLeft", fontSize: 11, fontWeight: "bold" }}
                 />
               )}
+              {/* 본예산 누적 집행률 (좌측) */}
               <Line 
+                yAxisId="left"
                 name="본예산 누적 집행률" 
                 type="monotone" 
                 dataKey="mainBudget" 
@@ -779,15 +800,41 @@ export default function BudgetExecutionManager({ projects = [], currentRole, sel
                 strokeWidth={3}
                 activeDot={{ r: 6 }} 
               />
+              {/* 본예산 누적 집행액 (우측, 점선) */}
+              <Line 
+                yAxisId="right"
+                name="본예산 누적 집행액" 
+                type="monotone" 
+                dataKey="mainSpentAmt" 
+                stroke="#60A5FA" 
+                strokeWidth={2}
+                strokeDasharray="5 5"
+                activeDot={{ r: 4 }} 
+              />
               {selectedYear !== 1 && (
-                <Line 
-                  name="이월예산 누적 집행률" 
-                  type="monotone" 
-                  dataKey="carryoverBudget" 
-                  stroke="#EF4444" 
-                  strokeWidth={3}
-                  activeDot={{ r: 6 }} 
-                />
+                <>
+                  {/* 이월예산 누적 집행률 (좌측) */}
+                  <Line 
+                    yAxisId="left"
+                    name="이월예산 누적 집행률" 
+                    type="monotone" 
+                    dataKey="carryoverBudget" 
+                    stroke="#EF4444" 
+                    strokeWidth={3}
+                    activeDot={{ r: 6 }} 
+                  />
+                  {/* 이월예산 누적 집행액 (우측, 점선) */}
+                  <Line 
+                    yAxisId="right"
+                    name="이월예산 누적 집행액" 
+                    type="monotone" 
+                    dataKey="carryoverSpentAmt" 
+                    stroke="#FCA5A5" 
+                    strokeWidth={2}
+                    strokeDasharray="5 5"
+                    activeDot={{ r: 4 }} 
+                  />
+                </>
               )}
             </LineChart>
           </ResponsiveContainer>
