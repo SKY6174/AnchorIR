@@ -1765,14 +1765,8 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
                   const filtered = equipments
                     .filter((e) => {
                       const assetNum = e.asset_number || "";
-                      let memoObj = {};
-                      try {
-                        if (e.memo && e.memo.trim().startsWith("{")) {
-                          memoObj = JSON.parse(e.memo);
-                        }
-                      } catch (err) {}
-                      const inspectDate = memoObj.inspect_date || "";
-                      return assetNum.startsWith(targetYearStr) || inspectDate.includes(targetYearStr);
+                      // 💡 [교육용 한글 주석] 연차 구분은 오직 자산번호 앞 4자리(예: 2025)만 기준으로 필터링합니다.
+                      return assetNum.startsWith(targetYearStr);
                     })
                     .filter((e) => selectedCategory === "all" ? true : e.category === selectedCategory)
                     .filter((e) => {
