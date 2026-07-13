@@ -289,8 +289,10 @@ export default function PDCAManager({
   const [inputTargetParticipantsName, setInputTargetParticipantsName] = useState("");
   const [inputTargetDevelopmentsName, setInputTargetDevelopmentsName] = useState("");
   const [inputTargetEtcName, setInputTargetEtcName] = useState("");
-  const [inputKpiType, setInputKpiType] = useState("자율");
-  const [inputKpiLink, setInputKpiLink] = useState("");
+  const [inputKpiTypes, setInputKpiTypes] = useState(["자율"]);
+  const [inputKpiLinks, setInputKpiLinks] = useState([""]);
+  const [inputKpiTargets, setInputKpiTargets] = useState({});
+  const [inputKpiActuals, setInputKpiActuals] = useState({});
   const [inputActualFrequency, setInputActualFrequency] = useState("");
   const [inputAchieveRate, setInputAchieveRate] = useState("");
 
@@ -563,15 +565,30 @@ export default function PDCAManager({
         setInputTargetEtcUnit(dataSrc.target_etc_unit || "");
         setInputTargetParticipantsName(dataSrc.target_participants_name || "");
         setInputTargetDevelopmentsName(dataSrc.target_developments_name || "");
-        setInputTargetEtcName(dataSrc.target_etc_name || "");
-        setInputKpiType(dataSrc.kpi_type || "자율");
-        setInputKpiLink(dataSrc.kpi_link || "");
+        // 다중 KPI 링크 바인딩 (하위 호환성 가드 탑재)
+        let loadedKpiLinks = [""];
+        let loadedKpiTypes = ["자율"];
+
+        if (Array.isArray(dataSrc.kpi_links) && dataSrc.kpi_links.length > 0) {
+          loadedKpiLinks = [...dataSrc.kpi_links];
+          loadedKpiTypes = Array.isArray(dataSrc.kpi_types) ? [...dataSrc.kpi_types] : dataSrc.kpi_links.map(() => dataSrc.kpi_type || "자율");
+        } else if (dataSrc.kpi_link) {
+          loadedKpiLinks = [dataSrc.kpi_link];
+          loadedKpiTypes = [dataSrc.kpi_type || "자율"];
+        }
+
+        setInputKpiLinks(loadedKpiLinks);
+        setInputKpiTypes(loadedKpiTypes);
+        setInputKpiTargets(dataSrc.kpi_targets || {});
+        setInputKpiActuals(dataSrc.kpi_actuals || {});
         setInputActualFrequency(dataSrc.actualFrequency !== undefined ? String(dataSrc.actualFrequency) : "");
         setInputAchieveRate(dataSrc.achieveRate !== undefined ? String(dataSrc.achieveRate) : "");
       }
     } else {
-      setInputKpiType("자율");
-      setInputKpiLink("");
+      setInputKpiLinks([""]);
+      setInputKpiTypes(["자율"]);
+      setInputKpiTargets({});
+      setInputKpiActuals({});
       setInputTargetParticipantsUnit("");
       setInputTargetDevelopmentsUnit("");
       setInputTargetEtcUnit("");
@@ -620,7 +637,7 @@ export default function PDCAManager({
       setInputActualFrequency("");
       setInputAchieveRate("");
     }
-  }, [selectedProgId, selectedYear, projects, selectedVersionId, programVersions]);
+  }, [selectedProgId, selectedYear, selectedVersionId, programVersions]);
 
   // 추진일정 변경 이벤트 핸들러 (기존 호환 유지)
   const handleTimelineChange = (start, end) => {
@@ -952,8 +969,11 @@ export default function PDCAManager({
       budget_carry_external: bCarryExternal,
       budget_categories: categoriesToSave,
       timeline: inputMonthlyPDCA.join(","),
-      kpi_type: inputKpiType,
-      kpi_link: inputKpiLink,
+      kpi_type: inputKpiTypes[0] || "자율",
+      kpi_link: inputKpiLinks[0] || "",
+      kpi_types: inputKpiTypes,
+      kpi_links: inputKpiLinks,
+      kpi_targets: inputKpiTargets,
       frequency: freqVal,
       target_participants: tPartVal,
       target_developments: tDevVal,
@@ -981,8 +1001,11 @@ export default function PDCAManager({
       target_participants_name: inputTargetParticipantsName,
       target_developments_name: inputTargetDevelopmentsName,
       target_etc_name: inputTargetEtcName,
-      kpi_type: inputKpiType,
-      kpi_link: inputKpiLink,
+      kpi_type: inputKpiTypes[0] || "자율",
+      kpi_link: inputKpiLinks[0] || "",
+      kpi_types: inputKpiTypes,
+      kpi_links: inputKpiLinks,
+      kpi_targets: inputKpiTargets,
       years: {
         [selectedYear]: {
           budget_national: bNational,
@@ -1033,6 +1056,9 @@ export default function PDCAManager({
               target_etc_name: activeProg.target_etc_name || "기타",
               kpi_type: activeProg.kpi_type || "자율",
               kpi_link: activeProg.kpi_link || "",
+              kpi_types: activeProg.kpi_types || [],
+              kpi_links: activeProg.kpi_links || [],
+              kpi_targets: activeProg.kpi_targets || {},
               years: {
                 [selectedYear]: {
                   budget_national: activeProg.years?.[selectedYear]?.budget_national || 0,
@@ -1122,6 +1148,9 @@ export default function PDCAManager({
           target_etc_name: activeProg.target_etc_name || "기타",
           kpi_type: activeProg.kpi_type || "자율",
           kpi_link: activeProg.kpi_link || "",
+          kpi_types: activeProg.kpi_types || [],
+          kpi_links: activeProg.kpi_links || [],
+          kpi_targets: activeProg.kpi_targets || {},
           years: {
             [selectedYear]: {
               budget_national: activeProg.years?.[selectedYear]?.budget_national || 0,
@@ -1249,6 +1278,7 @@ export default function PDCAManager({
       achieveRate: inputAchieveRate !== "" ? parseFloat(inputAchieveRate) : 0,
       budget_categories: categoriesToSave,
       actual_timeline: inputMonthlyPDCAActual.join(","), // 실제 일정을 쉼표로 연결해서 전송
+      kpi_actuals: inputKpiActuals,
       pdca: { ...activeProg.pdca, d: autoDState }
     });
 
@@ -1797,147 +1827,246 @@ export default function PDCAManager({
                             </div>
                           </div>
 
-                          {/* 성과지표 연계 설정 영역 */}
+                          {/* 성과지표 연계 설정 영역 (최대 2개 다중 연계 지원) */}
                           <div style={{ borderTop: "1px solid var(--border-color)", paddingTop: "0.45rem", marginTop: "0.2rem", marginBottom: "0.4rem" }}>
-                            <span style={{ fontSize: "0.65rem", color: "var(--text-secondary)", display: "block", marginBottom: "0.3rem" }}>
-                              성과지표 연계
-                            </span>
-                            <div style={{ display: "grid", gridTemplateColumns: "1.2fr 1.8fr", gap: "0.5rem" }}>
-                              {/* 지표 유형 선택 라디오 그룹 */}
-                              <div style={{ display: "flex", gap: "0.5rem", alignItems: "center", background: "var(--panel-bg)", padding: "0.2rem 0.4rem", borderRadius: "0.25rem", border: "1px solid var(--border-color)" }}>
-                                <span style={{ fontSize: "0.62rem", color: "var(--text-secondary)", marginRight: "0.1rem" }}>유형:</span>
-                                <label style={{ fontSize: "0.65rem", color: "var(--text-primary)", cursor: "pointer", display: "flex", alignItems: "center", gap: "0.15rem" }}>
-                                  <input
-                                    type="radio"
-                                    name="kpiTypeSelect"
-                                    value="자율"
-                                    checked={inputKpiType === "자율"}
-                                    onChange={() => {
-                                      setInputKpiType("자율");
-                                      setInputKpiLink(""); // 유형 변경 시 초기화
-                                    }}
-                                  />
-                                  자율
-                                </label>
-                                <label style={{ fontSize: "0.65rem", color: "var(--text-primary)", cursor: "pointer", display: "flex", alignItems: "center", gap: "0.15rem" }}>
-                                  <input
-                                    type="radio"
-                                    name="kpiTypeSelect"
-                                    value="중점"
-                                    checked={inputKpiType === "중점"}
-                                    onChange={() => {
-                                      setInputKpiType("중점");
-                                      setInputKpiLink(""); // 유형 변경 시 초기화
-                                    }}
-                                  />
-                                  중점
-                                </label>
-                                <label style={{ fontSize: "0.65rem", color: "var(--text-primary)", cursor: "pointer", display: "flex", alignItems: "center", gap: "0.15rem" }}>
-                                  <input
-                                    type="radio"
-                                    name="kpiTypeSelect"
-                                    value="없음"
-                                    checked={inputKpiType === "없음" || !inputKpiType}
-                                    onChange={() => {
-                                      setInputKpiType("없음");
-                                      setInputKpiLink(""); // 없음 선택 시 링크 초기화
-                                    }}
-                                  />
-                                  없음
-                                </label>
-                              </div>
-
-                              {/* 지표 목록 드롭다운 */}
-                              <div>
-                                <select
-                                  className="user-selector"
-                                  value={inputKpiLink}
-                                  disabled={inputKpiType === "없음"}
-                                  onChange={(e) => setInputKpiLink(e.target.value)}
+                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.3rem" }}>
+                              <span style={{ fontSize: "0.65rem", color: "var(--text-secondary)" }}>
+                                성과지표 연계 (최대 2개)
+                              </span>
+                              {inputKpiLinks.length < 2 && inputKpiLinks[0] && (
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setInputKpiLinks([...inputKpiLinks, ""]);
+                                    setInputKpiTypes([...inputKpiTypes, "자율"]);
+                                  }}
                                   style={{
-                                    width: "100%",
-                                    padding: "0.25rem 0.4rem",
-                                    fontSize: "0.7rem",
-                                    background: inputKpiType === "없음" ? "var(--border-color)" : "var(--panel-bg)",
-                                    color: inputKpiType === "없음" ? "var(--text-secondary)" : "var(--text-primary)",
-                                    border: "1px solid var(--border-color)",
-                                    cursor: inputKpiType === "없음" ? "not-allowed" : "pointer"
+                                    fontSize: "0.55rem",
+                                    padding: "0.15rem 0.35rem",
+                                    color: "#60a5fa",
+                                    background: "rgba(59, 130, 246, 0.1)",
+                                    border: "1px dashed rgba(59, 130, 246, 0.3)",
+                                    borderRadius: "0.2rem",
+                                    cursor: "pointer"
                                   }}
                                 >
-                                  {inputKpiType === "없음" ? (
-                                    <option value="" style={{ background: "var(--panel-bg)", color: "var(--text-secondary)" }}>-- 성과지표 연계 없음 --</option>
-                                  ) : (
-                                    <option value="" style={{ background: "var(--panel-bg)", color: "var(--text-primary)" }}>-- 성과지표를 선택해 주세요 --</option>
-                                  )}
-                                  {(() => {
-                                    // 소속 단위과제 KPI를 우선으로 하고 없으면 전체 폴백
-                                    const activeUnit = allUnits.find(u => u.programs?.some(p => p.id === activeProg?.id));
-                                    let filteredKpis = activeUnit?.kpis || [];
-                                    if (!Array.isArray(filteredKpis) || filteredKpis.length === 0) {
-                                      const kpiMap = new Map();
-                                      allUnits.forEach(u => {
-                                        if (Array.isArray(u.kpis)) {
-                                          u.kpis.forEach(k => {
-                                            if (k && k.id) kpiMap.set(k.id, k);
-                                          });
-                                        }
-                                      });
-                                      filteredKpis = Array.from(kpiMap.values());
-                                    }
-                                    return filteredKpis
-                                      .filter(k => k && k.type === inputKpiType)
-                                      .map(k => (
-                                        <option key={k.id} value={k.id} style={{ background: "var(--panel-bg)", color: "var(--text-primary)" }}>
-                                          [{k.id}] {k.name}
-                                        </option>
-                                      ));
-                                  })()}
-                                </select>
-                              </div>
+                                  ➕ 성과지표 추가
+                                </button>
+                              )}
                             </div>
 
-                            {/* 성과지표 선택 시 세부지표 목록을 바로 아래 줄에 디스플레이 */}
-                            {inputKpiLink && (() => {
-                              const activeUnit = allUnits.find(u => u.programs?.some(p => p.id === activeProg?.id));
-                              let filteredKpis = activeUnit?.kpis || [];
-                              if (!Array.isArray(filteredKpis) || filteredKpis.length === 0) {
-                                const kpiMap = new Map();
-                                allUnits.forEach(u => {
-                                  if (Array.isArray(u.kpis)) {
-                                    u.kpis.forEach(k => {
-                                      if (k && k.id) kpiMap.set(k.id, k);
-                                    });
-                                  }
-                                });
-                                filteredKpis = Array.from(kpiMap.values());
-                              }
-                              const selectedKpi = filteredKpis.find(k => k && k.id === inputKpiLink);
-                              if (!selectedKpi) return null;
-                              return (
-                                <div style={{ marginTop: "0.4rem", background: "rgba(59, 130, 246, 0.04)", border: "1px solid rgba(59, 130, 246, 0.15)", borderRadius: "0.3rem", padding: "0.4rem 0.6rem" }}>
-                                  <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.25rem", borderBottom: "1px solid var(--border-color)", paddingBottom: "0.15rem" }}>
-                                    <span style={{ fontSize: "0.62rem", color: "#60a5fa", fontWeight: "700" }}>📌 연계 성과지표 상세: {selectedKpi.name}</span>
-                                    <span style={{ fontSize: "0.55rem", color: "var(--text-secondary)" }}>공식: {selectedKpi.formula || "N/A"}</span>
-                                  </div>
-                                  <div style={{ display: "flex", flexDirection: "column", gap: "0.2rem" }}>
-                                    <span style={{ fontSize: "0.58rem", color: "var(--text-secondary)", display: "block" }}>세부지표 목록:</span>
-                                    {selectedKpi.subItems && selectedKpi.subItems.length > 0 ? (
-                                      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "0.3rem" }}>
-                                        {selectedKpi.subItems.map(sub => (
-                                          <div key={sub.id} style={{ display: "flex", justifyContent: "space-between", background: "rgba(120, 120, 120, 0.02)", padding: "0.15rem 0.35rem", borderRadius: "0.2rem", border: "1px solid var(--border-color)" }}>
-                                            <span style={{ fontSize: "0.6rem", color: "var(--text-primary)" }}>• {sub.name}</span>
-                                            <span style={{ fontSize: "0.6rem", color: "#34d399", fontWeight: "700" }}>({sub.unit})</span>
-                                          </div>
-                                        ))}
-                                      </div>
-                                    ) : (
-                                      <span style={{ fontSize: "0.6rem", color: "var(--text-secondary)" }}>등록된 세부지표가 없습니다.</span>
+                            <div style={{ display: "flex", flexDirection: "column", gap: "0.35rem" }}>
+                              {inputKpiLinks.map((linkVal, idx) => {
+                                const typeVal = inputKpiTypes[idx] || "자율";
+
+                                return (
+                                  <div key={idx} style={{ display: "grid", gridTemplateColumns: idx === 1 ? "1.2fr 1.6fr 0.3fr" : "1.2fr 1.8fr", gap: "0.5rem", alignItems: "center" }}>
+                                    {/* 지표 유형 선택 라디오 그룹 */}
+                                    <div style={{ display: "flex", gap: "0.4rem", alignItems: "center", background: "var(--panel-bg)", padding: "0.2rem 0.35rem", borderRadius: "0.25rem", border: "1px solid var(--border-color)" }}>
+                                      <span style={{ fontSize: "0.6rem", color: "var(--text-secondary)" }}>유형:</span>
+                                      <label style={{ fontSize: "0.62rem", color: "var(--text-primary)", cursor: "pointer", display: "flex", alignItems: "center", gap: "0.1rem" }}>
+                                        <input
+                                          type="radio"
+                                          name={`kpiTypeSelect_${idx}`}
+                                          value="자율"
+                                          checked={typeVal === "자율"}
+                                          onChange={() => {
+                                            const newTypes = [...inputKpiTypes];
+                                            newTypes[idx] = "자율";
+                                            setInputKpiTypes(newTypes);
+                                            const newLinks = [...inputKpiLinks];
+                                            newLinks[idx] = ""; // 유형 변경 시 초기화
+                                            setInputKpiLinks(newLinks);
+                                          }}
+                                        />
+                                        자율
+                                      </label>
+                                      <label style={{ fontSize: "0.62rem", color: "var(--text-primary)", cursor: "pointer", display: "flex", alignItems: "center", gap: "0.1rem" }}>
+                                        <input
+                                          type="radio"
+                                          name={`kpiTypeSelect_${idx}`}
+                                          value="중점"
+                                          checked={typeVal === "중점"}
+                                          onChange={() => {
+                                            const newTypes = [...inputKpiTypes];
+                                            newTypes[idx] = "중점";
+                                            setInputKpiTypes(newTypes);
+                                            const newLinks = [...inputKpiLinks];
+                                            newLinks[idx] = ""; // 유형 변경 시 초기화
+                                            setInputKpiLinks(newLinks);
+                                          }}
+                                        />
+                                        중점
+                                      </label>
+                                      {idx === 0 && (
+                                        <label style={{ fontSize: "0.62rem", color: "var(--text-primary)", cursor: "pointer", display: "flex", alignItems: "center", gap: "0.1rem" }}>
+                                          <input
+                                            type="radio"
+                                            name={`kpiTypeSelect_${idx}`}
+                                            value="없음"
+                                            checked={typeVal === "없음"}
+                                            onChange={() => {
+                                              setInputKpiTypes(["없음"]);
+                                              setInputKpiLinks([""]);
+                                              setInputKpiTargets({}); // 지표 해제 시 세부지표 목표 초기화
+                                            }}
+                                          />
+                                          없음
+                                        </label>
+                                      )}
+                                    </div>
+
+                                    {/* 지표 목록 드롭다운 */}
+                                    <div style={{ display: "flex", width: "100%" }}>
+                                      <select
+                                        className="user-selector"
+                                        value={linkVal}
+                                        disabled={typeVal === "없음"}
+                                        onChange={(e) => {
+                                          const newLinks = [...inputKpiLinks];
+                                          newLinks[idx] = e.target.value;
+                                          setInputKpiLinks(newLinks);
+                                        }}
+                                        style={{
+                                          width: "100%",
+                                          padding: "0.25rem 0.4rem",
+                                          fontSize: "0.7rem",
+                                          background: typeVal === "없음" ? "var(--border-color)" : "var(--panel-bg)",
+                                          color: typeVal === "없음" ? "var(--text-secondary)" : "var(--text-primary)",
+                                          border: "1px solid var(--border-color)",
+                                          cursor: typeVal === "없음" ? "not-allowed" : "pointer"
+                                        }}
+                                      >
+                                        {typeVal === "없음" ? (
+                                          <option value="" style={{ background: "var(--panel-bg)", color: "var(--text-secondary)" }}>-- 성과지표 연계 없음 --</option>
+                                        ) : (
+                                          <option value="" style={{ background: "var(--panel-bg)", color: "var(--text-primary)" }}>-- 성과지표를 선택해 주세요 --</option>
+                                        )}
+                                        {(() => {
+                                          const activeUnit = allUnits.find(u => u.programs?.some(p => p.id === activeProg?.id));
+                                          let filteredKpis = activeUnit?.kpis || [];
+                                          if (!Array.isArray(filteredKpis) || filteredKpis.length === 0) {
+                                            const kpiMap = new Map();
+                                            allUnits.forEach(u => {
+                                              if (Array.isArray(u.kpis)) {
+                                                u.kpis.forEach(k => {
+                                                  if (k && k.id) kpiMap.set(k.id, k);
+                                                });
+                                              }
+                                            });
+                                            filteredKpis = Array.from(kpiMap.values());
+                                          }
+                                          return filteredKpis
+                                            .filter(k => k && k.type === typeVal)
+                                            .map(k => (
+                                              <option key={k.id} value={k.id} style={{ background: "var(--panel-bg)", color: "var(--text-primary)" }}>
+                                                [{k.id}] {k.name}
+                                              </option>
+                                            ));
+                                        })()}
+                                      </select>
+                                    </div>
+
+                                    {idx === 1 && (
+                                      <button
+                                        type="button"
+                                        onClick={() => {
+                                          setInputKpiLinks([inputKpiLinks[0]]);
+                                          setInputKpiTypes([inputKpiTypes[0]]);
+                                          // 제거된 지표의 세부목표 삭제
+                                          const firstKpi = allUnits.flatMap(u => u.kpis || []).find(k => k && k.id === inputKpiLinks[0]);
+                                          const allowedSubIds = firstKpi?.subItems?.map(s => s.id) || [];
+                                          const cleanTargets = {};
+                                          allowedSubIds.forEach(id => {
+                                            if (inputKpiTargets[id] !== undefined) {
+                                              cleanTargets[id] = inputKpiTargets[id];
+                                            }
+                                          });
+                                          setInputKpiTargets(cleanTargets);
+                                        }}
+                                        style={{
+                                          fontSize: "0.62rem",
+                                          padding: "0.22rem",
+                                          background: "rgba(239, 68, 68, 0.1)",
+                                          color: "#ef4444",
+                                          border: "1px solid rgba(239, 68, 68, 0.2)",
+                                          borderRadius: "0.25rem",
+                                          cursor: "pointer",
+                                          textAlign: "center"
+                                        }}
+                                      >
+                                        ❌
+                                      </button>
                                     )}
                                   </div>
-                                </div>
-                              );
-                            })()}
+                                );
+                              })}
+                            </div>
                           </div>
+
+                          {/* 성과지표 선택 시 세부지표 목록 및 목표치 입력란을 아래 줄에 디스플레이 */}
+                          {inputKpiLinks.some(Boolean) && (() => {
+                            const kpiList = allUnits.flatMap(u => u.kpis || []);
+                            const selectedKpis = inputKpiLinks
+                              .map(link => kpiList.find(k => k && k.id === link))
+                              .filter(Boolean);
+
+                            if (selectedKpis.length === 0) return null;
+
+                            return (
+                              <div style={{ marginTop: "0.4rem", background: "rgba(59, 130, 246, 0.04)", border: "1px solid rgba(59, 130, 246, 0.15)", borderRadius: "0.3rem", padding: "0.4rem 0.6rem" }}>
+                                <div style={{ fontSize: "0.62rem", color: "#60a5fa", fontWeight: "700", borderBottom: "1px solid var(--border-color)", paddingBottom: "0.15rem", marginBottom: "0.3rem" }}>
+                                  📌 연계 성과지표 세부 목표치 입력 (P단계)
+                                </div>
+                                <div style={{ display: "flex", flexDirection: "column", gap: "0.45rem" }}>
+                                  {selectedKpis.map(kpi => (
+                                    <div key={kpi.id} style={{ borderBottom: "1px dashed var(--border-color)", paddingBottom: "0.30rem", marginBottom: "0.15rem" }}>
+                                      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.2rem" }}>
+                                        <span style={{ fontSize: "0.6rem", color: "var(--text-primary)", fontWeight: "700" }}>[{kpi.id}] {kpi.name}</span>
+                                        <span style={{ fontSize: "0.52rem", color: "var(--text-secondary)" }}>공식: {kpi.formula || "N/A"}</span>
+                                      </div>
+                                      {kpi.subItems && kpi.subItems.length > 0 ? (
+                                        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "0.3rem" }}>
+                                          {kpi.subItems.map(sub => (
+                                            <div key={sub.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", background: "rgba(120, 120, 120, 0.02)", padding: "0.2rem 0.4rem", borderRadius: "0.2rem", border: "1px solid var(--border-color)" }}>
+                                              <span style={{ fontSize: "0.58rem", color: "var(--text-secondary)", flex: 1, marginRight: "0.2rem" }}>• {sub.name}</span>
+                                              <div style={{ display: "flex", alignItems: "center", gap: "0.15rem" }}>
+                                                <input
+                                                  type="number"
+                                                  placeholder="목표"
+                                                  value={inputKpiTargets[sub.id] !== undefined ? inputKpiTargets[sub.id] : ""}
+                                                  onChange={(e) => {
+                                                    const val = e.target.value;
+                                                    setInputKpiTargets({
+                                                      ...inputKpiTargets,
+                                                      [sub.id]: val !== "" ? parseInt(val, 10) : ""
+                                                    });
+                                                  }}
+                                                  style={{
+                                                    width: "3.2rem",
+                                                    textAlign: "right",
+                                                    fontSize: "0.6rem",
+                                                    padding: "0.1rem 0.2rem",
+                                                    background: "var(--input-bg)",
+                                                    color: "var(--text-primary)",
+                                                    border: "1px solid var(--border-color)",
+                                                    borderRadius: "0.15rem"
+                                                  }}
+                                                />
+                                                <span style={{ fontSize: "0.58rem", color: "#34d399", fontWeight: "700" }}>{sub.unit}</span>
+                                              </div>
+                                            </div>
+                                          ))}
+                                        </div>
+                                      ) : (
+                                        <span style={{ fontSize: "0.55rem", color: "var(--text-secondary)" }}>하위 세부지표 없음</span>
+                                      )}
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            );
+                          })()}
 
                           {/* 실적목표 3종 구분 입력 (제목 입력창 신설 및 수치/단위 분리) */}
                           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "0.4rem" }}>
@@ -2323,6 +2452,76 @@ export default function PDCAManager({
                                   />
                                 </div>
                               ))}
+                            </div>
+                          </div>
+                        );
+                      })()}
+
+                      {/* 성과지표 세부 실적 입력란 (D단계) */}
+                      {(() => {
+                        const activeKpiLinks = activeProg.kpi_links || (activeProg.kpi_link ? [activeProg.kpi_link] : []);
+                        if (!Array.isArray(activeKpiLinks) || activeKpiLinks.filter(Boolean).length === 0) return null;
+
+                        const kpiList = allUnits.flatMap(u => u.kpis || []);
+                        const selectedKpis = activeKpiLinks
+                          .map(link => kpiList.find(k => k && k.id === link))
+                          .filter(Boolean);
+
+                        if (selectedKpis.length === 0) return null;
+
+                        return (
+                          <div style={{ marginTop: "0.4rem", marginBottom: "0.4rem", padding: "0.45rem", background: "rgba(16, 185, 129, 0.03)", border: "1px solid rgba(16, 185, 129, 0.15)", borderRadius: "0.25rem" }}>
+                            <span style={{ fontSize: "0.65rem", color: "#10b981", fontWeight: "800", display: "inline-block", marginBottom: "0.3rem" }}>
+                              ● 연계 성과지표 세부 실적 입력 (D단계)
+                            </span>
+                            <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
+                              {selectedKpis.map(kpi => {
+                                if (!kpi.subItems || kpi.subItems.length === 0) return null;
+                                return (
+                                  <div key={kpi.id} style={{ borderBottom: "1px dashed var(--border-color)", paddingBottom: "0.25rem", marginBottom: "0.15rem" }}>
+                                    <div style={{ fontSize: "0.58rem", color: "var(--text-secondary)", marginBottom: "0.2rem" }}>
+                                      지표: [{kpi.id}] {kpi.name}
+                                    </div>
+                                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "0.3rem" }}>
+                                      {kpi.subItems.map(sub => {
+                                        const targetVal = activeProg.kpi_targets?.[sub.id] || "";
+                                        return (
+                                          <div key={sub.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", background: "rgba(120, 120, 120, 0.02)", padding: "0.2rem 0.4rem", borderRadius: "0.2rem", border: "1px solid var(--border-color)" }}>
+                                            <span style={{ fontSize: "0.58rem", color: "var(--text-secondary)", flex: 1, marginRight: "0.2rem" }}>
+                                              • {sub.name} {targetVal !== "" ? `(목표: ${targetVal}${sub.unit})` : ""}
+                                            </span>
+                                            <div style={{ display: "flex", alignItems: "center", gap: "0.15rem" }}>
+                                              <input
+                                                type="number"
+                                                placeholder="실적"
+                                                value={inputKpiActuals[sub.id] !== undefined ? inputKpiActuals[sub.id] : ""}
+                                                onChange={(e) => {
+                                                  const val = e.target.value;
+                                                  setInputKpiActuals({
+                                                    ...inputKpiActuals,
+                                                    [sub.id]: val !== "" ? parseInt(val, 10) : ""
+                                                  });
+                                                }}
+                                                style={{
+                                                  width: "3.2rem",
+                                                  textAlign: "right",
+                                                  fontSize: "0.6rem",
+                                                  padding: "0.1rem 0.2rem",
+                                                  background: "var(--input-bg)",
+                                                  color: "var(--text-primary)",
+                                                  border: "1px solid var(--border-color)",
+                                                  borderRadius: "0.15rem"
+                                                }}
+                                              />
+                                              <span style={{ fontSize: "0.58rem", color: "#10b981", fontWeight: "700" }}>{sub.unit}</span>
+                                            </div>
+                                          </div>
+                                        );
+                                      })}
+                                    </div>
+                                  </div>
+                                );
+                              })}
                             </div>
                           </div>
                         );

@@ -7042,6 +7042,10 @@ export default function App() {
                 if (updatedFields.target_etc_name !== undefined) prog.target_etc_name = updatedFields.target_etc_name;
                 if (updatedFields.kpi_type !== undefined) prog.kpi_type = updatedFields.kpi_type;
                 if (updatedFields.kpi_link !== undefined) prog.kpi_link = updatedFields.kpi_link;
+                if (updatedFields.kpi_types !== undefined) prog.kpi_types = updatedFields.kpi_types;
+                if (updatedFields.kpi_links !== undefined) prog.kpi_links = updatedFields.kpi_links;
+                if (updatedFields.kpi_targets !== undefined) prog.kpi_targets = updatedFields.kpi_targets;
+                if (updatedFields.kpi_actuals !== undefined) prog.kpi_actuals = updatedFields.kpi_actuals;
 
                 // 신규 A단계 2분할 환류 필드 갱신
                 if (updatedFields.evalType !== undefined) prog.evalType = updatedFields.evalType;
