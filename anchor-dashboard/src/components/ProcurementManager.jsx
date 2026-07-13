@@ -2888,7 +2888,7 @@ export default function ProcurementManager({
                   <th rowSpan={3} style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "384px", verticalAlign: "middle" }}>구입목적 및 활용계획</th>
                   <th colSpan={12} style={{ padding: "0.5rem", textAlign: "center", fontWeight: "800", borderBottom: "1px solid var(--border-color)", background: "rgba(255, 255, 255, 0.01)", lineHeight: "1.3" }}>
                     구매단계<br />
-                    <span style={{ fontSize: "0.75rem", fontWeight: "normal", color: "var(--text-secondary)" }}>(기획:P ➔ 승인:A ➔ 입찰:B ➔ 구매:Pr ➔ 검수:I)</span>
+                    <span style={{ fontSize: "0.75rem", fontWeight: "normal", color: "var(--text-secondary)" }}>[기획(P : 1∙2∙3) ⇨ 승인(A : 4∙5) ⇨ 입찰(B : 6∙7) ⇨ 검수(I : 8)]</span>
                   </th>
                   <th rowSpan={3} style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "80px", verticalAlign: "middle" }}>관련문서</th>
                   {currentRole.id !== "GUEST" && (
@@ -2979,19 +2979,17 @@ export default function ProcurementManager({
                       const total = price * qty;
 
                       const getEquipStatus = (eq) => {
-                        if (!eq.dateP && !eq.dateA && !eq.dateB && !eq.datePr && !eq.dateI) {
+                        if (!eq.dateP && !eq.dateA && !eq.dateB && !eq.dateI) {
                           return "준비중";
                         }
                         const todayStr = new Date().toISOString().substring(0, 10);
                         if (eq.dateI && todayStr >= eq.dateI) return "구매 완료";
-                        if (eq.datePr && todayStr >= eq.datePr) return "구매중";
                         if (eq.dateB && todayStr >= eq.dateB) return "구매중";
                         if (eq.dateA && todayStr >= eq.dateA) return "입찰중";
                         if (eq.dateP && todayStr >= eq.dateP) return "결재중";
                         if (eq.dateP && todayStr < eq.dateP) return "준비중";
                         
                         if (eq.dateI) return "구매 완료";
-                        if (eq.datePr) return "구매중";
                         if (eq.dateB) return "구매중";
                         if (eq.dateA) return "입찰중";
                         if (eq.dateP) return "결재중";
@@ -3019,7 +3017,6 @@ export default function ProcurementManager({
                       const idxP = getMonthIndexLocal(equip.dateP);
                       const idxA = getMonthIndexLocal(equip.dateA);
                       const idxB = getMonthIndexLocal(equip.dateB);
-                      const idxPr = getMonthIndexLocal(equip.datePr);
                       const idxI = getMonthIndexLocal(equip.dateI);
 
                       const getPhaseColor = (code) => {
@@ -3027,7 +3024,6 @@ export default function ProcurementManager({
                           "P": "#f59e0b",
                           "A": "#3b82f6",
                           "B": "#06b6d4",
-                          "Pr": "#a78bfa",
                           "I": "#10b981"
                         };
                         return colors[code] || "#38bdf8";
@@ -3038,18 +3034,16 @@ export default function ProcurementManager({
                           "P": "기획",
                           "A": "승인",
                           "B": "입찰",
-                          "Pr": "구매",
                           "I": "검수"
                         };
                         return labels[code] || "미정";
                       };
 
                       const activePhases = [];
-                      const phaseWeight = { "P": 1, "A": 2, "B": 3, "Pr": 4, "I": 5 };
+                      const phaseWeight = { "P": 1, "A": 2, "B": 3, "I": 4 };
                       if (idxP !== null) activePhases.push({ phase: "P", idx: idxP, weight: phaseWeight["P"], date: equip.dateP, label: "기획", color: "#f59e0b" });
                       if (idxA !== null) activePhases.push({ phase: "A", idx: idxA, weight: phaseWeight["A"], date: equip.dateA, label: "승인", color: "#3b82f6" });
                       if (idxB !== null) activePhases.push({ phase: "B", idx: idxB, weight: phaseWeight["B"], date: equip.dateB, label: "입찰", color: "#06b6d4" });
-                      if (idxPr !== null) activePhases.push({ phase: "Pr", idx: idxPr, weight: phaseWeight["Pr"], date: equip.datePr, label: "구매", color: "#a78bfa" });
                       if (idxI !== null) activePhases.push({ phase: "I", idx: idxI, weight: phaseWeight["I"], date: equip.dateI, label: "검수", color: "#10b981" });
 
                       let lastActivePhase = null;
@@ -3065,8 +3059,7 @@ export default function ProcurementManager({
                       const segments = [
                         { start: idxP, end: idxA, color: "#f59e0b" },
                         { start: idxA, end: idxB, color: "#3b82f6" },
-                        { start: idxB, end: idxPr, color: "#06b6d4" },
-                        { start: idxPr, end: idxI, color: "#a78bfa" }
+                        { start: idxB, end: idxI, color: "#06b6d4" }
                       ];
 
                       segments.forEach(seg => {
@@ -3162,11 +3155,8 @@ export default function ProcurementManager({
                                if (idxA !== null && idxB !== null && idxA < idxB) {
                                  if (pos >= idxA && pos < idxB) return "#3b82f6";
                                }
-                               if (idxB !== null && idxPr !== null && idxB < idxPr) {
-                                 if (pos >= idxB && pos < idxPr) return "#06b6d4";
-                               }
-                               if (idxPr !== null && idxI !== null && idxPr < idxI) {
-                                 if (pos >= idxPr && pos < idxI) return "#a78bfa";
+                               if (idxB !== null && idxI !== null && idxB < idxI) {
+                                 if (pos >= idxB && pos < idxI) return "#06b6d4";
                                }
                                return "var(--border-color)";
                              };
@@ -3182,7 +3172,6 @@ export default function ProcurementManager({
                               primaryCode === "P" ? equip.dateP :
                               primaryCode === "A" ? equip.dateA :
                               primaryCode === "B" ? equip.dateB :
-                              primaryCode === "Pr" ? equip.datePr :
                               equip.dateI
                             ) : "";
 
@@ -4640,7 +4629,7 @@ export default function ProcurementManager({
                     <span style={{ display: "block", fontSize: "0.82rem", fontWeight: "800", color: "var(--text-primary)", marginBottom: "0.75rem" }}>
                       📅 단계별 이벤트 일자 입력 (선택 입력)
                     </span>
-                    <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: "0.5rem" }}>
+                    <div style={{ display: "grid", gridTemplateColumns: modalType === "env" ? "repeat(5, 1fr)" : "repeat(4, 1fr)", gap: "0.5rem" }}>
                       <div>
                         <label style={{ display: "block", fontSize: "0.7rem", color: "var(--text-secondary)", marginBottom: "0.2rem" }}>
                           {modalType === "env" ? "요청(Rq) 일자" : "기획(P) 일자"}
@@ -4659,12 +4648,14 @@ export default function ProcurementManager({
                         </label>
                         <input type="date" name="dateB" value={formData.dateB || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.3rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", fontSize: "0.72rem" }} />
                       </div>
-                      <div>
-                        <label style={{ display: "block", fontSize: "0.7rem", color: "var(--text-secondary)", marginBottom: "0.2rem" }}>
-                          {modalType === "env" ? "선정(BC) 일자" : "구매(Pr) 일자"}
-                        </label>
-                        <input type="date" name="datePr" value={formData.datePr || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.3rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", fontSize: "0.72rem" }} />
-                      </div>
+                      {modalType === "env" && (
+                        <div>
+                          <label style={{ display: "block", fontSize: "0.7rem", color: "var(--text-secondary)", marginBottom: "0.2rem" }}>
+                            선정(BC) 일자
+                          </label>
+                          <input type="date" name="datePr" value={formData.datePr || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.3rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", fontSize: "0.72rem" }} />
+                        </div>
+                      )}
                       <div>
                         <label style={{ display: "block", fontSize: "0.7rem", color: "var(--text-secondary)", marginBottom: "0.2rem" }}>
                           {modalType === "env" ? "시공(CS) 일자" : "검수(I) 일자"}
