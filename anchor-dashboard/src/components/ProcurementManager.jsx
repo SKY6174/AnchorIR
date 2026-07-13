@@ -2013,8 +2013,8 @@ export default function ProcurementManager({
                   </th>
                   <th rowSpan={3} style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "384px", verticalAlign: "middle" }}>구축목적 및 활용계획</th>
                   <th colSpan={12} style={{ padding: "0.5rem", textAlign: "center", fontWeight: "800", borderBottom: "1px solid var(--border-color)", background: "rgba(255, 255, 255, 0.01)", lineHeight: "1.3" }}>
-                    구축단계<br />
-                    <span style={{ fontSize: "0.63rem", fontWeight: "normal", color: "var(--text-secondary)", whiteSpace: "nowrap" }}>[요청(Rq) ➔ 검토∙심의∙결정(PDR) ➔ 설계∙인허가(DL) ➔ 입찰∙계약(BC) ➔ 시공∙감리(CS)]</span>
+                    개선단계<br />
+                    <span style={{ fontSize: "0.63rem", fontWeight: "normal", color: "var(--text-secondary)", whiteSpace: "nowrap" }}>[기획(P : 1∙2) ⇨ 요청∙설계(RD : 3∙4) ⇨ 구매∙입찰∙계약(PBC : 5∙6) ⇨ 시공(C : 7) ⇨ 검수(I : 8)]</span>
                   </th>
                   <th rowSpan={3} style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "80px", verticalAlign: "middle" }}>관련문서</th>
                   {currentRole.id !== "GUEST" && (
@@ -2109,11 +2109,11 @@ export default function ProcurementManager({
                     const idxI = getMonthIndex(equip.dateI);
 
                     const activePhases = [];
-                    if (idxP !== null) activePhases.push({ phase: "Rq", idx: idxP, weight: phaseWeight["P"], date: equip.dateP, label: "요청", color: "#f59e0b" });
-                    if (idxA !== null) activePhases.push({ phase: "PDR", idx: idxA, weight: phaseWeight["A"], date: equip.dateA, label: "검토∙심의∙결정", color: "#3b82f6" });
-                    if (idxB !== null) activePhases.push({ phase: "DL", idx: idxB, weight: phaseWeight["B"], date: equip.dateB, label: "설계∙인허가", color: "#06b6d4" });
-                    if (idxPr !== null) activePhases.push({ phase: "BC", idx: idxPr, weight: phaseWeight["Pr"], date: equip.datePr, label: "입찰∙계약", color: "#a78bfa" });
-                    if (idxI !== null) activePhases.push({ phase: "CS", idx: idxI, weight: phaseWeight["I"], date: equip.dateI, label: "시공∙감리", color: "#10b981" });
+                    if (idxP !== null) activePhases.push({ phase: "P", idx: idxP, weight: phaseWeight["P"], date: equip.dateP, label: "기획", color: "#f59e0b" });
+                    if (idxA !== null) activePhases.push({ phase: "RD", idx: idxA, weight: phaseWeight["A"], date: equip.dateA, label: "요청∙설계", color: "#3b82f6" });
+                    if (idxB !== null) activePhases.push({ phase: "PBC", idx: idxB, weight: phaseWeight["B"], date: equip.dateB, label: "구매∙입찰∙계약", color: "#06b6d4" });
+                    if (idxPr !== null) activePhases.push({ phase: "C", idx: idxPr, weight: phaseWeight["Pr"], date: equip.datePr, label: "시공", color: "#a78bfa" });
+                    if (idxI !== null) activePhases.push({ phase: "I", idx: idxI, weight: phaseWeight["I"], date: equip.dateI, label: "검수", color: "#10b981" });
 
                     let lastActivePhase = null;
                     if (activePhases.length > 0) {
@@ -2220,22 +2220,22 @@ export default function ProcurementManager({
                           const rightColor = getSegmentColorForPos(currIdx + 0.5);
 
                           const envPhaseMap = {
-                            "P": { code: "Rq", label: "요청", color: "#f59e0b" },
-                            "A": { code: "PDR", label: "검토∙심의∙결정", color: "#3b82f6" },
-                            "B": { code: "DL", label: "설계∙인허가", color: "#06b6d4" },
-                            "Pr": { code: "BC", label: "입찰∙계약", color: "#a78bfa" },
-                            "I": { code: "CS", label: "시공∙감리", color: "#10b981" }
+                            "P": { code: "P", label: "기획", color: "#f59e0b" },
+                            "A": { code: "RD", label: "요청∙설계", color: "#3b82f6" },
+                            "B": { code: "PBC", label: "구매∙입찰∙계약", color: "#06b6d4" },
+                            "Pr": { code: "C", label: "시공", color: "#a78bfa" },
+                            "I": { code: "I", label: "검수", color: "#10b981" }
                           };
 
                           const hasMilestone = stepList.length > 0;
                           
                           const getEnvStatusText = (item) => {
-                            if (item.dateI) return "시공∙감리 완료";
-                            if (item.datePr) return "시공∙감리 중";
-                            if (item.dateB) return "입찰∙계약 중";
-                            if (item.dateA) return "설계∙인허가 중";
-                            if (item.dateP) return "검토∙심의∙결정 중";
-                            return "요청 중";
+                            if (item.dateI) return "검수 완료";
+                            if (item.datePr) return "시공 중";
+                            if (item.dateB) return "구매∙입찰∙계약 중";
+                            if (item.dateA) return "요청∙설계 중";
+                            if (item.dateP) return "기획 중";
+                            return "준비 중";
                           };
                           const currentStatus = getEnvStatusText(equip);
 
@@ -4349,30 +4349,30 @@ export default function ProcurementManager({
                     </div>
                   </div>
 
-                  {/* 다섯번째 줄: 구축단계 일정 지정 (선택 입력) */}
+                  {/* 다섯번째 줄: 개선단계 일정 지정 (선택 입력) */}
                   <div style={{ background: "rgba(255,255,255,0.01)", padding: "0.95rem", borderRadius: "8px", border: "1px solid var(--border-color)", marginBottom: "1rem" }}>
                     <span style={{ display: "block", fontSize: "0.78rem", fontWeight: "800", color: "var(--text-primary)", marginBottom: "0.5rem" }}>
-                      📅 구축단계 일정 지정 (선택 입력)
+                      📅 개선단계 일정 지정 (선택 입력)
                     </span>
                     <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: "0.75rem" }}>
                       <div>
-                        <label style={{ display: "block", fontSize: "0.68rem", color: "var(--text-secondary)", marginBottom: "0.2rem", whiteSpace: "nowrap" }}>요청(Rq) 일</label>
+                        <label style={{ display: "block", fontSize: "0.68rem", color: "var(--text-secondary)", marginBottom: "0.2rem", whiteSpace: "nowrap" }}>기획(P) 일</label>
                         <input type="date" name="dateP" value={formData.dateP || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.4rem 0.35rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", fontSize: "0.72rem" }} />
                       </div>
                       <div>
-                        <label style={{ display: "block", fontSize: "0.68rem", color: "var(--text-secondary)", marginBottom: "0.2rem", whiteSpace: "nowrap" }}>검토∙심의∙결정(PDR) 일</label>
+                        <label style={{ display: "block", fontSize: "0.68rem", color: "var(--text-secondary)", marginBottom: "0.2rem", whiteSpace: "nowrap" }}>요청∙설계(RD) 일</label>
                         <input type="date" name="dateA" min={formData.dateP || ""} value={formData.dateA || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.4rem 0.35rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", fontSize: "0.72rem" }} />
                       </div>
                       <div>
-                        <label style={{ display: "block", fontSize: "0.68rem", color: "var(--text-secondary)", marginBottom: "0.2rem", whiteSpace: "nowrap" }}>설계∙인허가(DL) 일</label>
+                        <label style={{ display: "block", fontSize: "0.68rem", color: "var(--text-secondary)", marginBottom: "0.2rem", whiteSpace: "nowrap" }}>구매∙입찰∙계약(PBC) 일</label>
                         <input type="date" name="dateB" min={formData.dateA || formData.dateP || ""} value={formData.dateB || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.4rem 0.35rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", fontSize: "0.72rem" }} />
                       </div>
                       <div>
-                        <label style={{ display: "block", fontSize: "0.68rem", color: "var(--text-secondary)", marginBottom: "0.2rem", whiteSpace: "nowrap" }}>입찰∙계약(BC) 일</label>
+                        <label style={{ display: "block", fontSize: "0.68rem", color: "var(--text-secondary)", marginBottom: "0.2rem", whiteSpace: "nowrap" }}>시공(C) 일</label>
                         <input type="date" name="datePr" min={formData.dateB || formData.dateA || formData.dateP || ""} value={formData.datePr || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.4rem 0.35rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", fontSize: "0.72rem" }} />
                       </div>
                       <div>
-                        <label style={{ display: "block", fontSize: "0.68rem", color: "var(--text-secondary)", marginBottom: "0.2rem", whiteSpace: "nowrap" }}>시공∙감리(CS) 일</label>
+                        <label style={{ display: "block", fontSize: "0.68rem", color: "var(--text-secondary)", marginBottom: "0.2rem", whiteSpace: "nowrap" }}>검수(I) 일</label>
                         <input type="date" name="dateI" min={formData.datePr || formData.dateB || formData.dateA || formData.dateP || ""} value={formData.dateI || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.4rem 0.35rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", fontSize: "0.72rem" }} />
                       </div>
                     </div>
@@ -4633,33 +4633,33 @@ export default function ProcurementManager({
                     <div style={{ display: "grid", gridTemplateColumns: modalType === "env" ? "repeat(5, 1fr)" : "repeat(4, 1fr)", gap: "0.5rem" }}>
                       <div>
                         <label style={{ display: "block", fontSize: "0.7rem", color: "var(--text-secondary)", marginBottom: "0.2rem" }}>
-                          {modalType === "env" ? "요청(Rq) 일자" : "기획(P) 일자"}
+                          {modalType === "env" ? "기획(P) 일자" : "기획(P) 일자"}
                         </label>
                         <input type="date" name="dateP" value={formData.dateP || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.3rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", fontSize: "0.72rem" }} />
                       </div>
                       <div>
                         <label style={{ display: "block", fontSize: "0.7rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>
-                          {modalType === "env" ? "심의(DR) 일자" : "승인(A) 일자"}
+                          {modalType === "env" ? "요청∙설계(RD) 일자" : "승인(A) 일자"}
                         </label>
                         <input type="date" name="dateA" value={formData.dateA || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.3rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", fontSize: "0.72rem" }} />
                       </div>
                       <div>
                         <label style={{ display: "block", fontSize: "0.7rem", color: "var(--text-secondary)", marginBottom: "0.2rem" }}>
-                          {modalType === "env" ? "용역(DL) 일자" : "입찰(B) 일자"}
+                          {modalType === "env" ? "구매∙입찰∙계약(PBC) 일자" : "입찰(B) 일자"}
                         </label>
                         <input type="date" name="dateB" value={formData.dateB || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.3rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", fontSize: "0.72rem" }} />
                       </div>
                       {modalType === "env" && (
                         <div>
                           <label style={{ display: "block", fontSize: "0.7rem", color: "var(--text-secondary)", marginBottom: "0.2rem" }}>
-                            선정(BC) 일자
+                            시공(C) 일자
                           </label>
                           <input type="date" name="datePr" value={formData.datePr || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.3rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", fontSize: "0.72rem" }} />
                         </div>
                       )}
                       <div>
                         <label style={{ display: "block", fontSize: "0.7rem", color: "var(--text-secondary)", marginBottom: "0.2rem" }}>
-                          {modalType === "env" ? "시공(CS) 일자" : "검수(I) 일자"}
+                          {modalType === "env" ? "검수(I) 일자" : "검수(I) 일자"}
                         </label>
                         <input type="date" name="dateI" value={formData.dateI || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.3rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", fontSize: "0.72rem" }} />
                       </div>
