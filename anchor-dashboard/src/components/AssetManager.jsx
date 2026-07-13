@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "../supabaseClient";
-import { Plus, Trash2, Edit2, Calendar, Clipboard, CheckCircle, AlertTriangle, Search, Home, Laptop, Check, Clock, TrendingUp } from "lucide-react";
+import { Plus, Trash2, Edit2, Calendar, Clipboard, CheckCircle, AlertTriangle, Search, Home, Laptop, Check, Clock, TrendingUp, Upload, Download } from "lucide-react";
+import * as XLSX from "xlsx";
 
 export default function AssetManager({ currentRole, currentUser, activeSubTab, onChangeSubTab, darkMode }) {
   // 공통 로딩 상태
@@ -361,7 +362,7 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
   // [2] 기자재 관리 (AI∙DX 및 기타 자산 현황) 상태 및 핸들러
   // ==============================================================================
   const [equipments, setEquipments] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState("ai_dx"); // "ai_dx", "other", or "scan"
+  const [selectedCategory, setSelectedCategory] = useState("all"); // "all", "ai_dx", "other", or "scan"
   const [isEquipModalOpen, setIsEquipModalOpen] = useState(false);
   const [editingEquipId, setEditingEquipId] = useState(null);
   const [equipSearchQuery, setEquipSearchQuery] = useState("");
@@ -661,6 +662,146 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
     } finally {
       setLoading(false);
     }
+  };
+
+  // 전체 기자재대장 엑셀 일괄 업로드 핸들러
+  const handleExcelImportEquipment = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (currentRole.id === "GUEST") {
+      alert("⚠️ 게스트 계정은 기자재 일괄 등록 권한이 없습니다.");
+      return;
+    }
+
+    setLoading(true);
+    const reader = new FileReader();
+    reader.onload = async (evt) => {
+      try {
+        const bstr = evt.target.result;
+        const wb = XLSX.read(bstr, { type: "binary" });
+        const wsname = wb.SheetNames[0];
+        const ws = wb.Sheets[wsname];
+        const rawRows = XLSX.utils.sheet_to_json(ws, { defval: "" });
+
+        if (rawRows.length === 0) {
+          alert("⚠️ 업로드된 엑셀 파일 내에 데이터가 존재하지 않습니다.");
+          setLoading(false);
+          return;
+        }
+
+        const upsertData = rawRows.map((row) => {
+          const assetNumber = (row["자산번호"] || "").toString().trim();
+          const itemName = (row["품목명"] || "").toString().trim();
+          const categoryName = (row["분류명"] || "").toString().trim();
+          const rawPrice = (row["금액"] || "0").toString().replace(/[^0-9]/g, "");
+          const unitPrice = parseInt(rawPrice, 10) || 0;
+          const deptName = (row["관리부서"] || "").toString().trim();
+          const roomNo = (row["호실"] || "").toString().trim();
+
+          const installDept = (row["설치부서"] || "").toString().trim();
+          const stockLocation = roomNo ? (installDept ? `${installDept} (${roomNo})` : roomNo) : installDept;
+
+          const category = (categoryName.toUpperCase().includes("AI") || categoryName.toUpperCase().includes("DX"))
+            ? "ai_dx" 
+            : "other";
+
+          const originalMeta = {
+            asset_number: assetNumber,
+            category_name: categoryName,
+            item_name: itemName,
+            spec: (row["규격"] || "").toString().trim(),
+            inspect_date: (row["검수일자"] || "").toString().trim(),
+            price: unitPrice,
+            dept_name: deptName,
+            install_dept: installDept,
+            room_no: roomNo,
+            item_type: (row["항목"] || "").toString().trim(),
+            pay_date: (row["지출일자"] || "").toString().trim(),
+            is_sw: (row["SW여부"] || "").toString().trim(),
+            vendor: (row["구입업체"] || "").toString().trim()
+          };
+
+          return {
+            barcode_id: assetNumber,
+            asset_number: assetNumber,
+            item_name: itemName,
+            dept_name: deptName,
+            unit_price: unitPrice,
+            quantity: 1,
+            stock_location: stockLocation,
+            category: category,
+            usage_type: originalMeta.item_type || "교육용",
+            memo: JSON.stringify(originalMeta),
+            last_checked_at: new Date().toISOString()
+          };
+        }).filter(item => item.asset_number !== "");
+
+        if (upsertData.length === 0) {
+          alert("⚠️ 유효한 자산번호를 가진 행이 존재하지 않습니다.");
+          setLoading(false);
+          return;
+        }
+
+        const { error } = await supabase
+          .from("equipment_assets")
+          .upsert(upsertData, { onConflict: "barcode_id" });
+
+        if (error) throw error;
+        alert(`✨ 총 ${upsertData.length}건의 기자재 대장이 성공적으로 일괄 등록/갱신되었습니다.`);
+        fetchEquipments();
+      } catch (err) {
+        alert("Excel 파일 파싱 및 DB 업로드 실패: " + err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+    reader.onerror = () => {
+      alert("파일 읽기 오류가 발생했습니다.");
+      setLoading(false);
+    };
+    reader.readAsBinaryString(file);
+  };
+
+  // 13개 컬럼 양식 서식 다운로드 헬퍼
+  const handleDownloadEquipTemplate = () => {
+    const headers = [
+      "자산번호",
+      "분류명",
+      "품목명",
+      "규격",
+      "검수일자",
+      "금액",
+      "관리부서",
+      "설치부서",
+      "호실",
+      "항목",
+      "지출일자",
+      "SW여부",
+      "구입업체"
+    ];
+    const sampleData = [
+      {
+        "자산번호": "2025-30-00076-00",
+        "분류명": "사다리",
+        "품목명": "도배 우마사다리",
+        "규격": "세굴 방지용 일체형 우마사다리",
+        "검수일자": "2025-12-05",
+        "금액": "130000",
+        "관리부서": "교무팀",
+        "설치부서": "실내건축디자인과",
+        "호실": "2-211:강의실",
+        "항목": "기계 교육용",
+        "지출일자": "2025-12-17",
+        "SW여부": "아니오",
+        "구입업체": "한독앵글산업사"
+      }
+    ];
+
+    const worksheet = XLSX.utils.json_to_sheet(sampleData, { header: headers });
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "기자재 양식");
+    XLSX.writeFile(workbook, "UC_ANCHOR_기자재대장_업로드_서식.xlsx");
   };
 
   useEffect(() => {
@@ -1147,6 +1288,25 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
               width: "fit-content"
             }}>
               <button
+                onClick={() => setSelectedCategory("all")}
+                style={{
+                  padding: "0.45rem 1.2rem",
+                  borderRadius: "4px",
+                  border: "none",
+                  background: selectedCategory === "all" ? "var(--accent-color)" : "transparent",
+                  color: selectedCategory === "all" ? "white" : "var(--text-secondary)",
+                  fontSize: "0.72rem",
+                  fontWeight: "800",
+                  cursor: "pointer",
+                  transition: "all 0.15s ease",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "0.3rem"
+                }}
+              >
+                📋 전체 기자재대장
+              </button>
+              <button
                 onClick={() => setSelectedCategory("ai_dx")}
                 style={{
                   padding: "0.45rem 1.2rem",
@@ -1205,25 +1365,78 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
               </button>
             </div>
 
-            {/* 검색창 (스캔 화면이 아닐 때만 렌더링) */}
+            {/* 검색창 & 업로드/다운로드 제어 도구 */}
             {selectedCategory !== "scan" && (
-              <div style={{ marginLeft: "auto", position: "relative", display: "flex", alignItems: "center" }}>
-                <Search size={14} style={{ position: "absolute", left: "0.4rem", color: "var(--text-secondary)" }} />
-                <input
-                  type="text"
-                  placeholder="품명, 번호, 바코드 검색..."
-                  value={equipSearchQuery}
-                  onChange={(e) => setEquipSearchQuery(e.target.value)}
-                  style={{
-                    padding: "0.35rem 0.5rem 0.35rem 1.4rem",
-                    fontSize: "0.7rem",
-                    borderRadius: "4px",
-                    border: "1px solid var(--border-color)",
-                    background: "var(--input-bg)",
-                    color: "var(--text-primary)",
-                    width: "180px"
-                  }}
-                />
+              <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
+                  <Search size={14} style={{ position: "absolute", left: "0.4rem", color: "var(--text-secondary)" }} />
+                  <input
+                    type="text"
+                    placeholder="품명, 번호, 바코드 검색..."
+                    value={equipSearchQuery}
+                    onChange={(e) => setEquipSearchQuery(e.target.value)}
+                    style={{
+                      padding: "0.35rem 0.5rem 0.35rem 1.4rem",
+                      fontSize: "0.7rem",
+                      borderRadius: "4px",
+                      border: "1px solid var(--border-color)",
+                      background: "var(--panel-bg)",
+                      color: "var(--text-primary)",
+                      width: "160px",
+                      outline: "none"
+                    }}
+                  />
+                </div>
+                
+                {/* 📋 전체 기자재대장용 엑셀 업로드/다운로드 추가 */}
+                {selectedCategory === "all" && (
+                  <div style={{ display: "flex", gap: "0.35rem" }}>
+                    <button
+                      onClick={handleDownloadEquipTemplate}
+                      style={{
+                        padding: "0.35rem 0.65rem",
+                        background: "rgba(59, 130, 246, 0.15)",
+                        border: "1px solid rgba(59, 130, 246, 0.3)",
+                        borderRadius: "4px",
+                        color: "#60A5FA",
+                        fontSize: "0.68rem",
+                        fontWeight: "800",
+                        cursor: "pointer",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "0.25rem",
+                        transition: "all 0.15s ease"
+                      }}
+                      title="업로드 양식 서식(.xlsx) 다운로드"
+                    >
+                      <Download size={12} /> 양식 다운
+                    </button>
+                    <label
+                      style={{
+                        padding: "0.35rem 0.65rem",
+                        background: "linear-gradient(135deg, #10B981 0%, #059669 100%)",
+                        borderRadius: "4px",
+                        color: "white",
+                        fontSize: "0.68rem",
+                        fontWeight: "800",
+                        cursor: "pointer",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "0.25rem",
+                        transition: "all 0.15s ease"
+                      }}
+                      title="엑셀 파일을 통한 자산 대량 업로드 등록"
+                    >
+                      <Upload size={12} /> 엑셀 업로드
+                      <input
+                        type="file"
+                        accept=".xlsx, .xls"
+                        onChange={handleExcelImportEquipment}
+                        style={{ display: "none" }}
+                      />
+                    </label>
+                  </div>
+                )}
               </div>
             )}
           </div>
@@ -1350,7 +1563,7 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
               ) : (
                 (() => {
                   const filtered = equipments
-                    .filter((e) => e.category === selectedCategory)
+                    .filter((e) => selectedCategory === "all" ? true : e.category === selectedCategory)
                     .filter((e) => {
                       if (!equipSearchQuery.trim()) return true;
                       const query = equipSearchQuery.toLowerCase();
@@ -1365,6 +1578,77 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
                     return (
                       <div style={{ textAlign: "center", padding: "2.5rem", color: "var(--text-secondary)", fontSize: "0.75rem" }}>
                         조회된 기자재가 존재하지 않습니다.
+                      </div>
+                    );
+                  }
+
+                  if (selectedCategory === "all") {
+                    // 📋 전체 기자재대장 (13개 컬럼 전용 테이블 렌더링)
+                    return (
+                      <div style={{ overflowX: "auto" }}>
+                        <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.68rem", textAlign: "center" }}>
+                          <thead>
+                            <tr style={{ borderBottom: "1px solid var(--border-color)", color: "var(--text-secondary)", background: "rgba(255, 255, 255, 0.02)" }}>
+                              <th style={{ padding: "0.5rem 0.35rem", textAlign: "center" }}>자산번호</th>
+                              <th style={{ padding: "0.5rem 0.35rem", textAlign: "center" }}>분류명</th>
+                              <th style={{ padding: "0.5rem 0.35rem", textAlign: "center" }}>품목명</th>
+                              <th style={{ padding: "0.5rem 0.35rem", textAlign: "center" }}>규격</th>
+                              <th style={{ padding: "0.5rem 0.35rem", textAlign: "center" }}>검수일자</th>
+                              <th style={{ padding: "0.5rem 0.35rem", textAlign: "center" }}>금액</th>
+                              <th style={{ padding: "0.5rem 0.35rem", textAlign: "center" }}>관리부서</th>
+                              <th style={{ padding: "0.5rem 0.35rem", textAlign: "center" }}>설치부서</th>
+                              <th style={{ padding: "0.5rem 0.35rem", textAlign: "center" }}>호실</th>
+                              <th style={{ padding: "0.5rem 0.35rem", textAlign: "center" }}>항목</th>
+                              <th style={{ padding: "0.5rem 0.35rem", textAlign: "center" }}>지출일자</th>
+                              <th style={{ padding: "0.5rem 0.35rem", textAlign: "center" }}>SW여부</th>
+                              <th style={{ padding: "0.5rem 0.35rem", textAlign: "center" }}>구입업체</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {filtered.map((item) => {
+                              let originalMeta = {};
+                              try {
+                                if (item.memo && item.memo.trim().startsWith("{")) {
+                                  originalMeta = JSON.parse(item.memo);
+                                }
+                              } catch (e) {
+                                console.warn("Failed to parse original meta from memo:", e);
+                              }
+
+                              const assetNumber = item.asset_number || "-";
+                              const categoryName = originalMeta.category_name || (item.category === "ai_dx" ? "AI∙DX 특화" : "기타자산");
+                              const itemName = item.item_name || "-";
+                              const spec = originalMeta.spec || "-";
+                              const inspectDate = originalMeta.inspect_date || "-";
+                              const price = item.unit_price ? item.unit_price.toLocaleString() : "0";
+                              const deptName = item.dept_name || "-";
+                              const installDept = originalMeta.install_dept || "-";
+                              const roomNo = originalMeta.room_no || item.stock_location || "-";
+                              const itemType = originalMeta.item_type || item.usage_type || "-";
+                              const payDate = originalMeta.pay_date || "-";
+                              const isSw = originalMeta.is_sw || "아니오";
+                              const vendor = originalMeta.vendor || "-";
+
+                              return (
+                                <tr key={item.id} style={{ borderBottom: "1px solid rgba(255,255,255,0.03)" }}>
+                                  <td style={{ padding: "0.4rem 0.3rem", fontFamily: "monospace", textAlign: "center", whiteSpace: "nowrap" }}>{assetNumber}</td>
+                                  <td style={{ padding: "0.4rem 0.3rem", textAlign: "center", whiteSpace: "nowrap" }}>{categoryName}</td>
+                                  <td style={{ padding: "0.4rem 0.3rem", fontWeight: "700", color: "#34D399", textAlign: "center", whiteSpace: "nowrap" }}>{itemName}</td>
+                                  <td style={{ padding: "0.4rem 0.3rem", textAlign: "center", maxWidth: "120px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={spec}>{spec}</td>
+                                  <td style={{ padding: "0.4rem 0.3rem", textAlign: "center", whiteSpace: "nowrap" }}>{inspectDate}</td>
+                                  <td style={{ padding: "0.4rem 0.3rem", textAlign: "right", fontWeight: "700", color: "#FBBF24", whiteSpace: "nowrap" }}>{price} 원</td>
+                                  <td style={{ padding: "0.4rem 0.3rem", textAlign: "center", whiteSpace: "nowrap" }}>{deptName}</td>
+                                  <td style={{ padding: "0.4rem 0.3rem", textAlign: "center", whiteSpace: "nowrap" }}>{installDept}</td>
+                                  <td style={{ padding: "0.4rem 0.3rem", textAlign: "center", whiteSpace: "nowrap" }}>{roomNo}</td>
+                                  <td style={{ padding: "0.4rem 0.3rem", textAlign: "center", whiteSpace: "nowrap" }}>{itemType}</td>
+                                  <td style={{ padding: "0.4rem 0.3rem", textAlign: "center", whiteSpace: "nowrap" }}>{payDate}</td>
+                                  <td style={{ padding: "0.4rem 0.3rem", textAlign: "center", whiteSpace: "nowrap" }}>{isSw}</td>
+                                  <td style={{ padding: "0.4rem 0.3rem", textAlign: "center", whiteSpace: "nowrap" }}>{vendor}</td>
+                                </tr>
+                              );
+                            })}
+                          </tbody>
+                        </table>
                       </div>
                     );
                   }

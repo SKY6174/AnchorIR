@@ -205,7 +205,7 @@ export default function KPIOverview({ projects, currentRole, selectedYear = 2 })
     const pSpentCarry = p.units.reduce((s, u) => s + (u.years?.[selectedYear]?.spent_carry || 0), 0);
 
     return {
-      name: p.id === "E" ? "공통경비" : p.title.split(":")[0],
+      name: p.id === "E" ? "공통운영경비" : p.title.split(":")[0],
       "본예산": Math.round(pBudgetMain / 1000000),
       "본집행": Math.round(pSpentMain / 1000000),
       "이월예산": Math.round(pBudgetCarry / 1000000),
@@ -217,7 +217,7 @@ export default function KPIOverview({ projects, currentRole, selectedYear = 2 })
     const pBudgetMain = p.units.reduce((s, u) => s + (u.years?.[selectedYear]?.budget_main || 0), 0);
     const pBudgetCarry = p.units.reduce((s, u) => s + (u.years?.[selectedYear]?.budget_carry || 0), 0);
     return {
-      name: p.id === "E" ? "공통경비" : p.title.split(":")[0],
+      name: p.id === "E" ? "공통운영경비" : p.title.split(":")[0],
       value: Math.round((pBudgetMain + pBudgetCarry) / 1000000)
     };
   });
@@ -544,7 +544,7 @@ export default function KPIOverview({ projects, currentRole, selectedYear = 2 })
         {/* 예산 분배 비율 */}
         <div className="glass-card" style={{ minHeight: "380px" }}>
           <h3 style={{ marginBottom: "1.2rem", fontSize: "1.1rem", fontWeight: "800", color: "var(--text-primary)" }}>
-            재원 배분 구조 {selectedYear === 1 ? "(공통경비 제외)" : "(공통경비 포함)"}
+            재원 배분 구조 {selectedYear === 1 ? "(공통운영경비 제외)" : "(공통운영경비 포함)"}
           </h3>
           <div style={{ width: "100%", height: "300px", display: "flex", justifyContent: "center", alignItems: "center" }}>
             <ResponsiveContainer>
