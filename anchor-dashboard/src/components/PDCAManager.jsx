@@ -243,6 +243,34 @@ export default function PDCAManager({
   const [inputSatisfaction, setInputSatisfaction] = useState("");
   const [inputAchievements, setInputAchievements] = useState(""); // 신규 성과사항 필드 추가
 
+  // D 단계 참여대상별 실제 참석 인원 실적용 상태 (재학생, 성인학습자, 재직자, 기타)
+  const [inputAudienceParticipants, setInputAudienceParticipants] = useState({
+    "재학생": "",
+    "성인학습자": "",
+    "재직자": "",
+    "기타": ""
+  });
+
+  // 참여대상별 인원 기입 시 참석인원 실적 상태에 자동 합산 연동하는 핸들러
+  const handleAudienceParticipantChange = (audienceType, value, activeAudienceList) => {
+    const cleanVal = value.replace(/[^0-9]/g, "");
+    const updated = {
+      ...inputAudienceParticipants,
+      [audienceType]: cleanVal
+    };
+    setInputAudienceParticipants(updated);
+
+    let total = 0;
+    if (activeAudienceList && activeAudienceList.length > 0) {
+      activeAudienceList.forEach(aud => {
+        const val = parseInt(updated[aud], 10) || 0;
+        total += val;
+      });
+    }
+
+    setInputParticipants(String(total));
+  };
+
   // A 단계 2분할 환류 방안용 상태
   const [inputEvalType, setInputEvalType] = useState("우수"); // "우수" 또는 "미흡"
   const [inputExcellent, setInputExcellent] = useState("");
@@ -477,6 +505,13 @@ export default function PDCAManager({
         setInputSpentExternal(py.spent_external !== undefined ? (py.spent_external / 1000000).toFixed(1) : "0.0");
 
         setInputParticipants(String(dataSrc.participants ?? 0));
+        const audiencePartMap = dataSrc.actual_audience_participants || {};
+        setInputAudienceParticipants({
+          "재학생": audiencePartMap["재학생"] !== undefined ? String(audiencePartMap["재학생"]) : "",
+          "성인학습자": audiencePartMap["성인학습자"] !== undefined ? String(audiencePartMap["성인학습자"]) : "",
+          "재직자": audiencePartMap["재직자"] !== undefined ? String(audiencePartMap["재직자"]) : "",
+          "기타": audiencePartMap["기타"] !== undefined ? String(audiencePartMap["기타"]) : ""
+        });
         setInputActualDevelopments(dataSrc.actual_developments !== undefined ? String(dataSrc.actual_developments) : "");
         setInputActualEtc(dataSrc.actual_etc !== undefined ? String(dataSrc.actual_etc) : "");
         setInputSatisfaction(String(dataSrc.satisfaction ?? 0));
@@ -536,6 +571,12 @@ export default function PDCAManager({
       setInputSpentCity("");
       setInputSpentExternal("");
       setInputParticipants("");
+      setInputAudienceParticipants({
+        "재학생": "",
+        "성인학습자": "",
+        "재직자": "",
+        "기타": ""
+      });
       setInputActualDevelopments("");
       setInputActualEtc("");
       setInputSatisfaction("");
@@ -1152,6 +1193,12 @@ export default function PDCAManager({
       spent_city: sCity,
       spent_external: sExternal,
       participants: parsedParticipants,
+      actual_audience_participants: {
+        "재학생": parseInt(inputAudienceParticipants["재학생"], 10) || 0,
+        "성인학습자": parseInt(inputAudienceParticipants["성인학습자"], 10) || 0,
+        "재직자": parseInt(inputAudienceParticipants["재직자"], 10) || 0,
+        "기타": parseInt(inputAudienceParticipants["기타"], 10) || 0
+      },
       actual_developments: parsedActualDevelopments,
       actual_etc: parsedActualEtc,
       actualFrequency: parsedParticipants, // 실제 참여인원과 동기화
@@ -2207,6 +2254,35 @@ export default function PDCAManager({
                             })}
                         </div>
                       </div>
+
+                      {/* 참여대상별 실적 입력 (신설) */}
+                      {(() => {
+                        const activeAudienceList = activeProg?.targetAudience
+                          ? activeProg.targetAudience.split(",").map(s => s.trim()).filter(Boolean)
+                          : [];
+                        if (activeAudienceList.length === 0) return null;
+
+                        return (
+                          <div style={{ background: "rgba(37,99,235,0.02)", padding: "0.5rem", borderRadius: "0.4rem", border: "1px dashed rgba(37,99,235,0.15)", marginTop: "0.2rem", marginBottom: "0.2rem" }}>
+                            <span style={{ fontSize: "0.6rem", color: "#3b82f6", fontWeight: "800", display: "inline-block", marginBottom: "0.3rem" }}>● 참여대상별 인원 실적 입력 (참석인원 실적에 자동 합계 연동)</span>
+                            <div style={{ display: "grid", gridTemplateColumns: `repeat(${Math.min(activeAudienceList.length, 4)}, 1fr)`, gap: "0.4rem" }}>
+                              {activeAudienceList.map(aud => (
+                                <div key={aud}>
+                                  <span style={{ fontSize: "0.6rem", color: "var(--text-secondary)", display: "block", marginBottom: "0.15rem" }}>{aud} (명)</span>
+                                  <input
+                                    type="text"
+                                    className="user-selector"
+                                    placeholder="인원 기입"
+                                    value={inputAudienceParticipants[aud] || ""}
+                                    onChange={(e) => handleAudienceParticipantChange(aud, e.target.value, activeAudienceList)}
+                                    style={{ padding: "0.2rem 0.4rem", fontSize: "0.7rem", width: "100%" }}
+                                  />
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        );
+                      })()}
 
                       {/* 실적수 입력 */}
                       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(120px, 1fr))", gap: "0.4rem", marginTop: "0.3rem", borderTop: "1px solid var(--border-color)", paddingTop: "0.5rem" }}>

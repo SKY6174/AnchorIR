@@ -576,29 +576,6 @@ export default function BudgetExecutionManager({ projects = [], currentRole, sel
             월별 집행현황 관리 및 본예산·이월예산 통합 정산 프레임워크
           </p>
         </div>
-        
-        {/* 💡 양식 다운로드 단추 */}
-        <button
-          onClick={handleDownloadTemplate}
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "0.35rem",
-            padding: "0.5rem 1rem",
-            fontSize: "0.8rem",
-            fontWeight: "800",
-            borderRadius: "0.4rem",
-            background: "var(--accent-color)",
-            color: "white",
-            border: "none",
-            cursor: "pointer",
-            boxShadow: "0 2px 6px rgba(59, 130, 246, 0.3)",
-            transition: "all 0.2s"
-          }}
-        >
-          <Download size={14} />
-          <span>엑셀 양식 다운로드</span>
-        </button>
       </div>
 
       {/* 2차년도 기준 1차년도 이월예산 8월 31일 한계점 경고 배너 */}

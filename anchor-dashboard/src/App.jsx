@@ -7020,6 +7020,7 @@ export default function App() {
                 // PDCA 상태 갱신
                 if (updatedFields.pdca !== undefined) prog.pdca = updatedFields.pdca;
                 if (updatedFields.participants !== undefined) prog.participants = updatedFields.participants;
+                if (updatedFields.actual_audience_participants !== undefined) prog.actual_audience_participants = updatedFields.actual_audience_participants;
                 if (updatedFields.satisfaction !== undefined) prog.satisfaction = updatedFields.satisfaction;
                 if (updatedFields.selfEval !== undefined) prog.selfEval = updatedFields.selfEval;
 
