@@ -8250,10 +8250,8 @@ export default function App() {
                                   <td style={{ fontFamily: "var(--font-data)", textAlign: "right", paddingRight: "1rem" }}>
                                     {formatToMillionWon(totalSpent)}
                                   </td>
-                                  <td style={{ borderRight: "1px solid var(--border-color)" }}>
-                                    <div style={{ display: "flex", alignItems: "center", gap: "0.25rem" }}>
-                                      <span style={{ fontSize: "0.75rem", fontFamily: "var(--font-data)" }}>{rate.toFixed(1)}%</span>
-                                    </div>
+                                  <td style={{ borderRight: "1px solid var(--border-color)", fontFamily: "var(--font-data)", textAlign: "right", paddingRight: "1rem" }}>
+                                    {rate.toFixed(1)}%
                                   </td>
                                   {u.id === "Common" || u.id === "X0" ? (
                                     <>
@@ -8309,10 +8307,8 @@ export default function App() {
                               <td style={{ fontFamily: "var(--font-data)", textAlign: "right", paddingRight: "1rem" }}>
                                 {formatToMillionWon(sumTotalSpent)}
                               </td>
-                              <td style={{ borderRight: "1px solid var(--border-color)" }}>
-                                <div style={{ display: "flex", alignItems: "center", gap: "0.25rem" }}>
-                                  <span style={{ fontSize: "0.75rem", fontFamily: "var(--font-data)", fontWeight: "800" }}>{sumRate.toFixed(1)}%</span>
-                                </div>
+                              <td style={{ borderRight: "1px solid var(--border-color)", fontFamily: "var(--font-data)", fontWeight: "800", textAlign: "right", paddingRight: "1rem" }}>
+                                {sumRate.toFixed(1)}%
                               </td>
                               <td style={{ fontFamily: "var(--font-data)", textAlign: "center" }}>
                                 {sumTotalPrograms}개
