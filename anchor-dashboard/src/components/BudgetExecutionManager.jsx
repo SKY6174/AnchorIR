@@ -26,6 +26,10 @@ export default function BudgetExecutionManager({ projects = [], currentRole, sel
   // 수집 및 저장된 실 정산 레코드 상태
   const [executionRecords, setExecutionRecords] = useState([]);
   
+  // 상세조회 모달 상태 관리 정의
+  const [detailModalOpen, setDetailModalOpen] = useState(false);
+  const [detailModalConfig, setDetailModalConfig] = useState({ monthLabel: "", budgetType: "", title: "" });
+  
   // 각 월별 업로드된 파일 정보 메타 데이터 (어떤 월에 어떤 파일이 몇건 올라갔는지 매핑 보관)
   // key 형태: `${year}_${budgetType}_${monthValue}`
   const [uploadedFilesMeta, setUploadedFilesMeta] = useState({});
@@ -61,7 +65,7 @@ export default function BudgetExecutionManager({ projects = [], currentRole, sel
           .from("budget_executions")
           .select("*")
           .eq("year", selectedYear);
-        if (!error && data) {
+        if (!error && data && data.length > 0) {
           setExecutionRecords(data);
           rebuildFileMeta(data);
           return;
@@ -878,12 +882,33 @@ export default function BudgetExecutionManager({ projects = [], currentRole, sel
                   </div>
 
                   {mainMeta ? (
-                    <div style={{ display: "flex", flexDirection: "column", gap: "0.15rem", background: "rgba(0,0,0,0.3)", padding: "0.3rem 0.4rem", borderRadius: "4px" }}>
+                    <div 
+                      onClick={() => {
+                        setDetailModalConfig({
+                          monthLabel: m.label,
+                          budgetType: "main",
+                          title: `💰 [${m.label} 본예산] 업로드 상세 내역`
+                        });
+                        setDetailModalOpen(true);
+                      }}
+                      style={{ 
+                        display: "flex", 
+                        flexDirection: "column", 
+                        gap: "0.15rem", 
+                        background: "rgba(59, 130, 246, 0.12)", 
+                        padding: "0.3rem 0.4rem", 
+                        borderRadius: "4px",
+                        cursor: "pointer",
+                        border: "1px solid rgba(59, 130, 246, 0.2)",
+                        transition: "all 0.2s"
+                      }}
+                      title="클릭하여 업로드 상세 내역 보기"
+                    >
                       <span style={{ fontSize: "0.6rem", color: "var(--text-primary)", textOverflow: "ellipsis", overflow: "hidden", whiteSpace: "nowrap" }} title={mainMeta.fileName}>
                         📄 {mainMeta.fileName}
                       </span>
                       <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.55rem", color: "var(--text-secondary)" }}>
-                        <span>건수: <strong>{mainMeta.count}건</strong></span>
+                        <span>건수: <strong style={{ color: "#60A5FA" }}>{mainMeta.count}건</strong></span>
                         <span>금액: <strong style={{ color: "#60A5FA" }}>{(mainMeta.totalAmount / 10000).toFixed(0)}만</strong></span>
                       </div>
                     </div>
@@ -976,12 +1001,33 @@ export default function BudgetExecutionManager({ projects = [], currentRole, sel
                     </div>
 
                     {carryMeta ? (
-                      <div style={{ display: "flex", flexDirection: "column", gap: "0.15rem", background: "rgba(0,0,0,0.3)", padding: "0.3rem 0.4rem", borderRadius: "4px" }}>
+                      <div 
+                        onClick={() => {
+                          setDetailModalConfig({
+                            monthLabel: m.label,
+                            budgetType: "carryover",
+                            title: `📅 [${m.label} 이월예산] 업로드 상세 내역`
+                          });
+                          setDetailModalOpen(true);
+                        }}
+                        style={{ 
+                          display: "flex", 
+                          flexDirection: "column", 
+                          gap: "0.15rem", 
+                          background: "rgba(239, 68, 68, 0.12)", 
+                          padding: "0.3rem 0.4rem", 
+                          borderRadius: "4px",
+                          cursor: "pointer",
+                          border: "1px solid rgba(239, 68, 68, 0.2)",
+                          transition: "all 0.2s"
+                        }}
+                        title="클릭하여 업로드 상세 내역 보기"
+                      >
                         <span style={{ fontSize: "0.6rem", color: "var(--text-primary)", textOverflow: "ellipsis", overflow: "hidden", whiteSpace: "nowrap" }} title={carryMeta.fileName}>
                           📄 {carryMeta.fileName}
                         </span>
                         <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.55rem", color: "var(--text-secondary)" }}>
-                          <span>건수: <strong>{carryMeta.count}건</strong></span>
+                          <span>건수: <strong style={{ color: "#F87171" }}>{carryMeta.count}건</strong></span>
                           <span>금액: <strong style={{ color: "#F87171" }}>{(carryMeta.totalAmount / 10000).toFixed(0)}만</strong></span>
                         </div>
                       </div>
@@ -1061,6 +1107,156 @@ export default function BudgetExecutionManager({ projects = [], currentRole, sel
         </div>
 
       </div>
+
+      {/* ==============================================================================
+          💡 [실시간 업로드 집행 내역 상세 모달]
+          ============================================================================== */}
+      {detailModalOpen && (
+        <div style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          width: "100vw",
+          height: "100vh",
+          background: "rgba(0,0,0,0.75)",
+          backdropFilter: "blur(5px)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          zIndex: 9999
+        }}>
+          <div className="glass-card" style={{
+            width: "90%",
+            maxWidth: "960px",
+            maxHeight: "80vh",
+            overflow: "hidden",
+            display: "flex",
+            flexDirection: "column",
+            borderRadius: "12px",
+            border: "1px solid var(--border-color)",
+            boxShadow: "0 20px 50px rgba(0,0,0,0.6)"
+          }}>
+            {/* 모달 헤더 */}
+            <div style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              padding: "1rem 1.5rem",
+              borderBottom: "1px solid var(--border-color)",
+              background: "rgba(255,255,255,0.02)"
+            }}>
+              <span style={{ fontSize: "0.95rem", fontWeight: "900", color: "var(--text-primary)" }}>
+                {detailModalConfig.title}
+              </span>
+              <button 
+                onClick={() => setDetailModalOpen(false)}
+                style={{
+                  background: "transparent",
+                  border: "none",
+                  color: "var(--text-secondary)",
+                  cursor: "pointer",
+                  fontSize: "1.2rem",
+                  fontWeight: "bold",
+                  outline: "none"
+                }}
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* 모달 본문 (테이블 리스트) */}
+            <div style={{
+              padding: "1.25rem",
+              overflowY: "auto",
+              flex: 1
+            }}>
+              {(() => {
+                const filtered = executionRecords.filter(r => 
+                  r.month_label === detailModalConfig.monthLabel && 
+                  r.budget_type === detailModalConfig.budgetType
+                );
+
+                if (filtered.length === 0) {
+                  return (
+                    <div style={{ textAlign: "center", padding: "3rem", color: "var(--text-secondary)", fontSize: "0.85rem" }}>
+                      상세 집행 내역 정보가 존재하지 않습니다.
+                    </div>
+                  );
+                }
+
+                return (
+                  <div style={{ overflowX: "auto" }}>
+                    <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.75rem", minWidth: "850px" }}>
+                      <thead>
+                        <tr style={{ background: "rgba(255,255,255,0.03)", borderBottom: "1px solid var(--border-color)", textAlign: "left" }}>
+                          <th style={{ padding: "0.6rem 0.5rem", color: "var(--text-secondary)" }}>집행일자</th>
+                          <th style={{ padding: "0.6rem 0.5rem", color: "var(--text-secondary)" }}>프로그램 ID</th>
+                          <th style={{ padding: "0.6rem 0.5rem", color: "var(--text-secondary)" }}>비목명</th>
+                          <th style={{ padding: "0.6rem 0.5rem", color: "var(--text-secondary)" }}>적요</th>
+                          <th style={{ padding: "0.6rem 0.5rem", color: "var(--text-secondary)" }}>거래처</th>
+                          <th style={{ padding: "0.6rem 0.5rem", color: "var(--text-secondary)", textAlign: "right" }}>집행액</th>
+                          <th style={{ padding: "0.6rem 0.5rem", color: "var(--text-secondary)" }}>결의번호</th>
+                          <th style={{ padding: "0.6rem 0.5rem", color: "var(--text-secondary)" }}>담당자</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {filtered.map((item, idx) => (
+                          <tr 
+                            key={idx} 
+                            style={{ 
+                              borderBottom: "1px solid rgba(255,255,255,0.04)", 
+                              background: idx % 2 === 1 ? "rgba(255,255,255,0.01)" : "transparent"
+                            }}
+                          >
+                            <td style={{ padding: "0.6rem 0.5rem" }}>{item.execution_date}</td>
+                            <td style={{ padding: "0.6rem 0.5rem", color: "#60A5FA", fontWeight: "700" }}>{item.program_id}</td>
+                            <td style={{ padding: "0.6rem 0.5rem" }}>{item.expense_category}</td>
+                            <td style={{ padding: "0.6rem 0.5rem", maxWidth: "220px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={item.summary}>
+                              {item.summary}
+                            </td>
+                            <td style={{ padding: "0.6rem 0.5rem" }}>{item.client}</td>
+                            <td style={{ padding: "0.6rem 0.5rem", textAlign: "right", fontWeight: "700", color: "#10B981" }}>
+                              {Number(item.amount).toLocaleString()}원
+                            </td>
+                            <td style={{ padding: "0.6rem 0.5rem" }}>{item.resolution_no}</td>
+                            <td style={{ padding: "0.6rem 0.5rem" }}>{item.manager}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                );
+              })()}
+            </div>
+
+            {/* 모달 푸터 */}
+            <div style={{
+              display: "flex",
+              justifyContent: "flex-end",
+              padding: "0.8rem 1.5rem",
+              borderTop: "1px solid var(--border-color)",
+              background: "rgba(255,255,255,0.02)"
+            }}>
+              <button
+                onClick={() => setDetailModalOpen(false)}
+                style={{
+                  padding: "0.45rem 1.25rem",
+                  background: "var(--accent-color, #3B82F6)",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "4px",
+                  cursor: "pointer",
+                  fontSize: "0.75rem",
+                  fontWeight: "bold",
+                  outline: "none"
+                }}
+              >
+                닫기
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
     </div>
   );
