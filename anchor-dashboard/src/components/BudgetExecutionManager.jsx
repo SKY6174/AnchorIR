@@ -301,7 +301,7 @@ export default function BudgetExecutionManager({ projects = [], currentRole, sel
             program_id: programId,
             program_name: (row[pNameIdx] || "").toString().trim(),
             funding_source: (row[fundIdx] || "국비").toString().trim(),
-            expense_category: (row[categoryIdx] || "").toString().trim(),
+            expense_category: (row[categoryIdx] || "").toString().trim().replace(/[·•ㆍ]/g, "∙"),
             detail_usage: (row[usageIdx] || "").toString().trim(),
             enara_category: (row[enaraIdx] || "").toString().trim(),
             account_subject: (row[subjectIdx] || "").toString().trim(),
