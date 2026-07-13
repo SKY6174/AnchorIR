@@ -3728,7 +3728,7 @@ export default function ProcurementManager({
               {[
                 { no: "01", name: "기획", dept: "앵커사업단", desc: "사업계획서 반영분 구체화", tooltip: "사업계획서 상의 주요 용역 사업 구체화 및 상세 계획 수립" },
                 { no: "02", name: "내부결재 승인", dept: "앵커사업단", desc: "과업지시서 작성", tooltip: "용역 제안서 요구사항이 명시된 과업지시서 작성 및 결재 승인" },
-                { no: "03", name: "구매신청", dept: "앵커사업단 ➔ 총무팀", desc: "구매의뢰 요청", tooltip: "총무팀을 향한 공식 용역 조달/구매 의뢰 및 접수" },
+                { no: "03", name: "구매의뢰", dept: "앵커사업단 ➔ 총무팀", desc: "구매의뢰 요청", tooltip: "총무팀을 향한 공식 용역 조달/구매 의뢰 및 접수" },
                 { no: "04", name: "업체선정 평가", dept: "총무팀 외", desc: "입찰 시 제안서 심사", tooltip: "💡 입찰 진행 시:\n제안서 심사 및 업체 선정을 위한 서류/프레젠테이션 평가위원회 구성 및 평가" },
                 { no: "05", name: "업체 선정 및 계약", dept: "총무팀", desc: "낙찰 및 계약 체결", tooltip: "우수업체 최종 협상, 낙찰자 결정 및 정식 용역 계약 체결" },
                 { no: "06", name: "용역 수행", dept: "선정 업체", desc: "과업수행 계획 이행", tooltip: "계약업체의 과업 이행 및 진행 진척도 관리" },
@@ -3815,7 +3815,7 @@ export default function ProcurementManager({
                   <th style={{ padding: "0.85rem 0.5rem", textAlign: "center", verticalAlign: "middle", fontWeight: "800", width: "500px", whiteSpace: "nowrap" }}>
                     용역 절차
                     <span style={{ display: "block", fontSize: "0.7rem", color: "var(--text-secondary)", fontWeight: "500", marginTop: "0.15rem" }}>
-                      [기획∙승인(PA : 1∙2) ⇨ 구매신청(Pr : 3) ⇨ 평가∙선정∙계약(ESC : 4∙5) ⇨ 수행(E : 6) ⇨ 검수(I : 7)]
+                      [기획∙승인(PA : 1∙2) ⇨ 구매의뢰(RP : 3) ⇨ 평가∙선정∙계약(ESC : 4∙5) ⇨ 수행(E : 6) ⇨ 검수(I : 7)]
                     </span>
                   </th>
                   <th style={{ padding: "0.85rem 0.5rem", textAlign: "center", verticalAlign: "middle", fontWeight: "800", width: "140px", whiteSpace: "nowrap" }}>관련문서</th>
@@ -3924,7 +3924,7 @@ export default function ProcurementManager({
                           <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "0.25rem", width: "100%" }}>
                             {[
                               { dateKey: "datePp", label: "기획∙승인", code: "PA", colorLight: "#d97706", colorDark: "#f59e0b", bgLight: "#fef3c7", bgDark: "rgba(245, 158, 11, 0.2)" },
-                              { dateKey: "dateRfo", label: "구매신청", code: "Pr", colorLight: "#1d4ed8", colorDark: "#60a5fa", bgLight: "#dbeafe", bgDark: "rgba(59, 130, 246, 0.2)" },
+                              { dateKey: "dateRfo", label: "구매의뢰", code: "RP", colorLight: "#1d4ed8", colorDark: "#60a5fa", bgLight: "#dbeafe", bgDark: "rgba(59, 130, 246, 0.2)" },
                               { dateKey: "dateB", label: "평가∙선정∙계약", code: "ESC", colorLight: "#7c3aed", colorDark: "#c084fc", bgLight: "#f3e8ff", bgDark: "rgba(167, 139, 250, 0.2)" },
                               { dateKey: "dateE", label: "수행", code: "E", colorLight: "#b45309", colorDark: "#facc15", bgLight: "#fef9c3", bgDark: "rgba(234, 179, 8, 0.2)" },
                               { dateKey: "dateI", label: "검수", code: "I", colorLight: "#059669", colorDark: "#34d399", bgLight: "#d1fae5", bgDark: "rgba(16, 185, 129, 0.2)" }
@@ -3967,7 +3967,7 @@ export default function ProcurementManager({
                                       {hasDate ? formattedDate : "-"}
                                     </span>
                                   </div>
-                                  {sIdx < 6 && (
+                                  {sIdx < 4 && (
                                     <span style={{ color: "var(--text-secondary)", fontSize: "0.75rem", fontWeight: "900", opacity: 0.35 }}>➔</span>
                                   )}
                                 </React.Fragment>
@@ -5126,7 +5126,7 @@ export default function ProcurementManager({
                         <input type="date" name="datePp" value={formData.datePp || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.35rem", fontSize: "0.75rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} />
                       </div>
                       <div>
-                        <label style={{ display: "block", fontSize: "0.68rem", color: "#3b82f6", marginBottom: "0.15rem", whiteSpace: "nowrap" }}>구매신청(Pr)</label>
+                        <label style={{ display: "block", fontSize: "0.68rem", color: "#3b82f6", marginBottom: "0.15rem", whiteSpace: "nowrap" }}>구매의뢰(RP)</label>
                         <input type="date" name="dateRfo" min={formData.datePp || ""} value={formData.dateRfo || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.35rem", fontSize: "0.75rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} />
                       </div>
                       <div>
