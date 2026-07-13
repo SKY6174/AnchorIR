@@ -5957,12 +5957,64 @@ export default function App() {
     const cloned = JSON.parse(JSON.stringify(rawProjects));
 
     if (yr !== 1) {
-      // 2~5차년도에는 해당 연도의 프로그램만 필터링
+      // 2~5차년도에는 해당 연도의 프로그램만 필터링 및 X0 등 년도 매핑이 누락된 유닛 정규화
       return cloned.map(p => {
         const newUnits = p.units.map(u => {
+          // years가 없는 유닛(예: 공통 X0)에 대해 동적으로 년차별 매핑 생성
+          if (!u.years) {
+            u.years = {
+              1: {
+                budget_main: u.budget_2025 || 0,
+                spent_main: u.spent_2025 || 0,
+                budget_carry: 0,
+                spent_carry: 0
+              },
+              2: {
+                budget_main: u.budget_2026 || 0,
+                spent_main: u.spent_2026 || 0,
+                budget_carry: u.budget_2025_carry || 0,
+                spent_carry: u.spent_2025_carry || 0
+              }
+            };
+          }
+
+          // budgetDetails 내부 년도 매핑 정규화
+          if (u.budgetDetails) {
+            Object.keys(u.budgetDetails).forEach(bName => {
+              const bItem = u.budgetDetails[bName];
+              if (bItem && !bItem.years) {
+                bItem.years = {
+                  1: {
+                    budget_main: bItem.budget_2025 || 0,
+                    spent_main: bItem.spent_2025 || 0,
+                    budget_carry: 0,
+                    spent_carry: 0
+                  },
+                  2: {
+                    budget_main: bItem.budget_2026 || 0,
+                    spent_main: bItem.spent_2026 || 0,
+                    budget_carry: bItem.budget_2025_carry || 0,
+                    spent_carry: bItem.spent_2025_carry || 0
+                  }
+                };
+              }
+            });
+          }
+
+          // 프로그램 목록 필터링 및 정규화
+          const filteredPrograms = u.programs ? u.programs.map(prog => {
+            if (!prog.years) {
+              prog.years = {
+                1: (prog.budget_2025 || 0) > 0,
+                2: (prog.budget_2026 || 0) > 0 || (prog.budget_2025_carry || 0) > 0
+              };
+            }
+            return prog;
+          }).filter(prog => prog.years && prog.years[yr]) : [];
+
           return {
             ...u,
-            programs: u.programs.filter(prog => prog.years && prog.years[yr])
+            programs: filteredPrograms
           };
         });
         return { ...p, units: newUnits };

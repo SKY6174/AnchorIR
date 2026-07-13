@@ -93,19 +93,6 @@ export default function BudgetItemsManager({ projects, currentRole, onUpdateBudg
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // 모든 단위과제 수집
-  const allUnits = [];
-  projects.forEach(p => {
-    p.units.forEach(u => {
-      allUnits.push({ ...u, projectTitle: p.title });
-    });
-  });
-  allUnits.sort((a, b) => {
-    if (a.id === "Common" || a.id === "X0") return 1;
-    if (b.id === "Common" || b.id === "X0") return -1;
-    return a.id.localeCompare(b.id, undefined, { numeric: true, sensitivity: 'base' });
-  });
-
   // 10개 표준 비목 목록 정의
   const BUDGET_ITEM_NAMES = [
     "인건비",
@@ -120,12 +107,133 @@ export default function BudgetItemsManager({ projects, currentRole, onUpdateBudg
     "간접비"
   ];
 
+  // 💡 [실시간 업로드 데이터 동적 합산 가드]
+  // localStorage에 임시/원격 저장된 집행 내역을 각 단위과제 비목별 spent 실적에 누적 병합합니다.
+  const cachedExecs = (() => {
+    try {
+      const data = localStorage.getItem(`budget_exec_records_${selectedYear}`);
+      return data ? JSON.parse(data) : [];
+    } catch (e) {
+      console.error("실시간 집행 기록 로딩 오류:", e);
+      return [];
+    }
+  })();
+
+  const normalizedProjects = JSON.parse(JSON.stringify(projects));
+  normalizedProjects.forEach(p => {
+    p.units.forEach(u => {
+      // 해당 유닛에 대한 집행 기록 필터링
+      const matchedRecords = cachedExecs.filter(r => {
+        if (u.id === "X0") {
+          return (r.program_id || "").startsWith("X0");
+        }
+        return (r.program_id || "").startsWith(u.id);
+      });
+
+      // budgetDetails 가 없으면 생성
+      if (!u.budgetDetails) {
+        u.budgetDetails = {};
+        BUDGET_ITEM_NAMES.forEach(bName => {
+          u.budgetDetails[bName] = {
+            years: {
+              [selectedYear]: {
+                budget_main: 0,
+                spent_main: 0,
+                budget_carry: 0,
+                spent_carry: 0
+              }
+            }
+          };
+        });
+      }
+
+      // filtered records를 비목별로 돌며 budgetDetails spent 누적
+      matchedRecords.forEach(r => {
+        const bName = BUDGET_ITEM_NAMES.find(name => name.replace(/\s/g, "") === (r.expense_category || "").replace(/\s/g, "")) || r.expense_category;
+        
+        if (bName) {
+          if (!u.budgetDetails[bName]) {
+            u.budgetDetails[bName] = {
+              years: {
+                [selectedYear]: {
+                  budget_main: 0,
+                  spent_main: 0,
+                  budget_carry: 0,
+                  spent_carry: 0
+                }
+              }
+            };
+          }
+          if (!u.budgetDetails[bName].years[selectedYear]) {
+            u.budgetDetails[bName].years[selectedYear] = {
+              budget_main: 0,
+              spent_main: 0,
+              budget_carry: 0,
+              spent_carry: 0
+            };
+          }
+          
+          const amountVal = Number(r.amount) || 0;
+          if (r.budget_type === "carryover") {
+            u.budgetDetails[bName].years[selectedYear].spent_carry += amountVal;
+          } else {
+            u.budgetDetails[bName].years[selectedYear].spent_main += amountVal;
+          }
+        }
+      });
+
+      // u.years[selectedYear]의 spent_main / spent_carry 총 집행 실적도 업데이트
+      if (!u.years) {
+        u.years = {
+          [selectedYear]: {
+            budget_main: 0,
+            spent_main: 0,
+            budget_carry: 0,
+            spent_carry: 0
+          }
+        };
+      }
+      if (!u.years[selectedYear]) {
+        u.years[selectedYear] = {
+          budget_main: 0,
+          spent_main: 0,
+          budget_carry: 0,
+          spent_carry: 0
+        };
+      }
+
+      // 초기화 후 다시 budgetDetails 로부터 합산 산출하여 무결성 유지
+      u.years[selectedYear].spent_main = 0;
+      u.years[selectedYear].spent_carry = 0;
+      Object.keys(u.budgetDetails).forEach(bName => {
+        const det = u.budgetDetails[bName]?.years?.[selectedYear];
+        if (det) {
+          u.years[selectedYear].spent_main += (det.spent_main || 0);
+          u.years[selectedYear].spent_carry += (det.spent_carry || 0);
+        }
+      });
+    });
+  });
+
+  // 모든 단위과제 수집 (정규화된 프로젝트 기반)
+  const allUnits = [];
+  normalizedProjects.forEach(p => {
+    p.units.forEach(u => {
+      allUnits.push({ ...u, projectTitle: p.title });
+    });
+  });
+  allUnits.sort((a, b) => {
+    if (a.id === "Common" || a.id === "X0") return 1;
+    if (b.id === "Common" || b.id === "X0") return -1;
+    return a.id.localeCompare(b.id, undefined, { numeric: true, sensitivity: 'base' });
+  });
+
   // 선택 연차별 전체 예산 및 누적 집행액 구하기
   let totalMainBudget = 0;
   let totalCarryBudget = 0;
   let totalMainSpent = 0;
   let totalCarrySpent = 0;
-  projects.forEach((p) => {
+  normalizedProjects.forEach((p) => {
     p.units.forEach((u) => {
       const yr = u.years?.[selectedYear] || { budget_main: 0, budget_carry: 0, spent_main: 0, spent_carry: 0 };
       totalMainBudget += (yr.budget_main || 0);
@@ -178,7 +286,7 @@ export default function BudgetItemsManager({ projects, currentRole, onUpdateBudg
       };
     });
 
-    projects.forEach(p => {
+    normalizedProjects.forEach(p => {
       p.units.forEach(u => {
         if (!u.budgetDetails) return;
         Object.keys(u.budgetDetails).forEach(bName => {
@@ -208,7 +316,7 @@ export default function BudgetItemsManager({ projects, currentRole, onUpdateBudg
       budgetDetails: combinedDetails
     };
   } else {
-    for (const p of projects) {
+    for (const p of normalizedProjects) {
       const found = p.units.find(u => u.id === selectedUnitId);
       if (found) {
         activeUnit = found;

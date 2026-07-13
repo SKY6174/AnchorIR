@@ -41,7 +41,7 @@ export default function BudgetExecutionManager({ projects = [], currentRole, sel
   // 2) 현재 선택된 연도에 따른 단위과제 리스트 정의
   const unitList = selectedYear === 1
     ? ["A1", "A2", "B1", "B2", "B3", "B4", "C1", "C2", "D1", "D2", "D3", "D4"]
-    : ["A1가", "A1나", "A2", "A3", "B1", "B2", "B3", "B4", "C1", "C2", "D1", "D2", "D3"];
+    : ["A1가", "A1나", "A2", "A3", "B1", "B2", "B3", "B4", "C1", "C2", "D1", "D2", "D3", "X0"];
 
   // 연차 변경 시 선택된 단위과제 초기값 자동 동기화
   useEffect(() => {
@@ -194,25 +194,50 @@ export default function BudgetExecutionManager({ projects = [], currentRole, sel
         const headers = rows[0].map(h => (h || "").toString().trim().replace(/\s/g, ""));
         const getIdx = (name) => headers.findIndex(h => h.includes(name));
 
-        const pIdIdx = getIdx("프로그램ID");
-        const pNameIdx = getIdx("프로그램명");
-        const fundIdx = getIdx("국비/시비");
-        const categoryIdx = getIdx("비목항목명");
-        const usageIdx = getIdx("세부내역");
-        const enaraIdx = getIdx("e나라비목");
-        const subjectIdx = getIdx("계정과목");
-        const detailSubjectIdx = getIdx("계정과목세목");
-        const dateIdx = getIdx("집행일자");
-        const summaryIdx = getIdx("적요");
-        const clientIdx = getIdx("거래처");
-        const amountIdx = getIdx("집행액");
-        const resolutionIdx = getIdx("결의번호");
-        const managerIdx = getIdx("담당자");
+        // 💡 [사용자 지산학 특화 4대 핵심 매핑 가드]
+        // 사용자가 명시한 A열(0: 프로그램ID), C열(2: 비목항목명), H열(7: 집행일자), L열(11: 집행액)을 기본 매핑으로 삼고,
+        // 동적 헤더 파싱 결과가 유효하면 이를 사용하고, 없으면 고정 열 인덱스를 폴백(Fallback)으로 적용합니다.
+        let pIdIdx = getIdx("프로그램ID");
+        if (pIdIdx === -1) pIdIdx = 0;
 
-        if (pIdIdx === -1 || amountIdx === -1 || resolutionIdx === -1) {
-          triggerToast("⚠️ 올바른 양식의 엑셀 파일이 아닙니다. 양식을 다시 다운로드받아 확인해주세요.", "warning");
-          return;
-        }
+        let pNameIdx = getIdx("프로그램명");
+        if (pNameIdx === -1) pNameIdx = 1;
+
+        let fundIdx = getIdx("국비/시비");
+        if (fundIdx === -1) fundIdx = 3;
+
+        let categoryIdx = getIdx("비목항목명");
+        if (categoryIdx === -1) categoryIdx = 2;
+
+        let usageIdx = getIdx("세부내역");
+        if (usageIdx === -1) usageIdx = 4;
+
+        let enaraIdx = getIdx("e나라비목");
+        if (enaraIdx === -1) enaraIdx = 5;
+
+        let subjectIdx = getIdx("계정과목");
+        if (subjectIdx === -1) subjectIdx = 6;
+
+        let detailSubjectIdx = getIdx("계정과목세목");
+        if (detailSubjectIdx === -1) detailSubjectIdx = 8;
+
+        let dateIdx = getIdx("집행일자");
+        if (dateIdx === -1) dateIdx = 7;
+
+        let summaryIdx = getIdx("적요");
+        if (summaryIdx === -1) summaryIdx = 9;
+
+        let clientIdx = getIdx("거래처");
+        if (clientIdx === -1) clientIdx = 10;
+
+        let amountIdx = getIdx("집행액");
+        if (amountIdx === -1) amountIdx = 11;
+
+        let resolutionIdx = getIdx("결의번호");
+        if (resolutionIdx === -1) resolutionIdx = 12;
+
+        let managerIdx = getIdx("담당자");
+        if (managerIdx === -1) managerIdx = 13;
 
         let newParsedRows = [];
         let duplicateCount = 0;
@@ -771,162 +796,265 @@ export default function BudgetExecutionManager({ projects = [], currentRole, sel
       <div className="glass-card" style={{ padding: "1.25rem", borderRadius: "10px", display: "flex", flexDirection: "column", gap: "1.25rem" }}>
         
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid var(--border-color)", paddingBottom: "0.5rem" }}>
-          <div style={{ display: "flex", gap: "0.5rem" }}>
-            <button
-              onClick={() => setActiveUploadTab("main")}
-              style={{
-                padding: "0.4rem 1.25rem",
-                fontSize: "0.85rem",
-                fontWeight: "800",
-                borderRadius: "0.3rem",
-                border: "none",
-                background: activeUploadTab === "main" ? "#3B82F6" : "transparent",
-                color: activeUploadTab === "main" ? "white" : "var(--text-secondary)",
-                cursor: "pointer",
-                transition: "all 0.2s"
-              }}
-            >
-              💰 본예산 집행 등록
-            </button>
-            <button
-              onClick={() => setActiveUploadTab("carryover")}
-              disabled={selectedYear === 1}
-              style={{
-                padding: "0.4rem 1.25rem",
-                fontSize: "0.85rem",
-                fontWeight: "800",
-                borderRadius: "0.3rem",
-                border: "none",
-                background: activeUploadTab === "carryover" ? "#EF4444" : "transparent",
-                color: activeUploadTab === "carryover" ? "white" : "var(--text-secondary)",
-                cursor: selectedYear === 1 ? "not-allowed" : "pointer",
-                opacity: selectedYear === 1 ? 0.4 : 1,
-                transition: "all 0.2s"
-              }}
-            >
-              📅 이월예산 집행 등록
-            </button>
-          </div>
+          <span style={{ fontSize: "0.9rem", fontWeight: "800", color: "var(--text-primary)", display: "flex", alignItems: "center", gap: "0.4rem" }}>
+            📊 월별 집행 내역 업로드 및 관리
+          </span>
           <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)", display: "flex", alignItems: "center", gap: "0.25rem" }}>
             <ShieldCheck size={14} style={{ color: "#10B981" }} />
             <span>실시간 중복 필터 및 무결성 보장 필터 탑재 완료</span>
           </span>
         </div>
 
-        {/* 업로드 공간 그리드 영역 (본예산: 12개월 2줄, 이월예산: 6개월 1줄) */}
+        {/* 12개월 업로드 공간 그리드 영역 ('26.3월 ~ '27.2월, 1줄에 6개씩 2줄 배치) */}
         <div style={{
           display: "grid",
           gridTemplateColumns: "repeat(6, 1fr)",
           gap: "1rem"
         }}>
-          {(activeUploadTab === "carryover" ? MONTHS_CONFIG.slice(0, 6) : MONTHS_CONFIG).map((m) => {
-            const metaKey = `${selectedYear}_${activeUploadTab}_${m.label}`;
-            const fileMeta = uploadedFilesMeta[metaKey];
-            const isDrag = dragActive === m.value;
+          {MONTHS_CONFIG.map((m, index) => {
+            const hasCarryover = index < 6; // '26.3월 ~ '26.8월에만 이월예산 표시
+
+            const mainMetaKey = `${selectedYear}_main_${m.label}`;
+            const carryMetaKey = `${selectedYear}_carryover_${m.label}`;
+
+            const mainMeta = uploadedFilesMeta[mainMetaKey];
+            const carryMeta = uploadedFilesMeta[carryMetaKey];
+
+            const isMainDrag = dragActive === `main-${m.value}`;
+            const isCarryDrag = dragActive === `carryover-${m.value}`;
 
             return (
               <div
                 key={m.value}
-                onDragEnter={(e) => handleDrag(e, m.value)}
-                onDragOver={(e) => handleDrag(e, m.value)}
-                onDragLeave={(e) => handleDrag(e, null)}
-                onDrop={(e) => handleDrop(e, m.label, activeUploadTab)}
                 style={{
-                  background: isDrag ? "rgba(59, 130, 246, 0.15)" : "var(--background-card, #1c1c1e)",
-                  border: isDrag ? "2px dashed #3B82F6" : "1px solid var(--border-color)",
+                  background: "var(--background-card, #1c1c1e)",
+                  border: "1px solid var(--border-color)",
                   borderRadius: "8px",
-                  padding: "1rem",
+                  padding: "0.75rem",
                   display: "flex",
                   flexDirection: "column",
                   gap: "0.75rem",
-                  minHeight: "150px",
+                  minHeight: "260px",
                   transition: "all 0.2s ease",
                   justifyContent: "space-between"
                 }}
               >
                 {/* 월 레이블 */}
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                  <span style={{ fontSize: "0.9rem", fontWeight: "800", color: "var(--text-primary)" }}>{m.label}</span>
-                  <span style={{ 
-                    fontSize: "0.65rem", 
-                    padding: "0.15rem 0.35rem", 
-                    borderRadius: "4px",
-                    background: fileMeta ? "rgba(16, 185, 129, 0.2)" : "rgba(255,255,255,0.05)",
-                    color: fileMeta ? "#10B981" : "var(--text-secondary)",
-                    fontWeight: "700"
-                  }}>
-                    {fileMeta ? "업로드 완료" : "미업로드"}
-                  </span>
+                <div style={{ borderBottom: "1px solid rgba(255,255,255,0.05)", paddingBottom: "0.4rem", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <span style={{ fontSize: "0.9rem", fontWeight: "900", color: "#3B82F6" }}>{m.label}</span>
                 </div>
 
-                {/* 업로드 상태 및 메타 정보 */}
-                {fileMeta ? (
-                  <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem", background: "rgba(0,0,0,0.2)", padding: "0.4rem 0.6rem", borderRadius: "5px" }}>
-                    <span style={{ fontSize: "0.7rem", color: "var(--text-primary)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={fileMeta.fileName}>
-                      📄 {fileMeta.fileName}
-                    </span>
-                    <span style={{ fontSize: "0.65rem", color: "var(--text-secondary)" }}>
-                      집행 건수: <strong>{fileMeta.count}건</strong>
-                    </span>
-                    <span style={{ fontSize: "0.65rem", color: "var(--text-secondary)" }}>
-                      집행 금액: <strong style={{ color: "#3B82F6" }}>{(fileMeta.totalAmount / 10000).toFixed(0)}만 원</strong>
+                {/* 1. 본예산 업로드 세부 영역 */}
+                <div
+                  onDragEnter={(e) => handleDrag(e, `main-${m.value}`)}
+                  onDragOver={(e) => handleDrag(e, `main-${m.value}`)}
+                  onDragLeave={(e) => handleDrag(e, null)}
+                  onDrop={(e) => handleDrop(e, m.label, "main")}
+                  style={{
+                    flex: 1,
+                    background: isMainDrag ? "rgba(59, 130, 246, 0.15)" : "rgba(255,255,255,0.02)",
+                    border: isMainDrag ? "1px dashed #3B82F6" : "1px solid rgba(255,255,255,0.05)",
+                    borderRadius: "6px",
+                    padding: "0.5rem",
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "space-between",
+                    gap: "0.4rem",
+                    marginBottom: "0.25rem"
+                  }}
+                >
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <span style={{ fontSize: "0.7rem", fontWeight: "700", color: "#60A5FA" }}>💰 본예산</span>
+                    <span style={{ 
+                      fontSize: "0.55rem", 
+                      padding: "0.1rem 0.25rem", 
+                      borderRadius: "3px",
+                      background: mainMeta ? "rgba(16, 185, 129, 0.2)" : "rgba(255,255,255,0.05)",
+                      color: mainMeta ? "#10B981" : "var(--text-secondary)",
+                      fontWeight: "700"
+                    }}>
+                      {mainMeta ? "완료" : "미등록"}
                     </span>
                   </div>
-                ) : (
-                  <div style={{ fontSize: "0.7rem", color: "var(--text-secondary)", textAlign: "center", padding: "0.8rem 0" }}>
-                    엑셀 파일을 이곳에 끌어다 놓거나 아래 업로드 단추를 눌러주세요.
-                  </div>
-                )}
 
-                {/* 개별 업로드 / 초기화 컨트롤러 */}
-                <div style={{ display: "flex", gap: "0.4rem", width: "100%" }}>
-                  <input
-                    type="file"
-                    id={`file-input-${activeUploadTab}-${m.value}`}
-                    accept=".xlsx, .xls"
-                    onChange={(e) => handleFileChange(e, m.label, activeUploadTab)}
-                    style={{ display: "none" }}
-                  />
-                  <label
-                    htmlFor={`file-input-${activeUploadTab}-${m.value}`}
-                    style={{
-                      flex: 1,
-                      textAlign: "center",
-                      padding: "0.3rem 0",
-                      fontSize: "0.7rem",
-                      fontWeight: "700",
-                      background: "rgba(255,255,255,0.08)",
-                      color: "var(--text-primary)",
-                      borderRadius: "4px",
-                      cursor: "pointer",
-                      border: "1px solid rgba(255,255,255,0.15)",
-                      transition: "all 0.2s"
-                    }}
-                  >
-                    {fileMeta ? "다시 업로드" : "엑셀 업로드"}
-                  </label>
-                  {fileMeta && (
-                    <button
-                      onClick={() => handleClearMonth(m.label, activeUploadTab)}
+                  {mainMeta ? (
+                    <div style={{ display: "flex", flexDirection: "column", gap: "0.15rem", background: "rgba(0,0,0,0.3)", padding: "0.3rem 0.4rem", borderRadius: "4px" }}>
+                      <span style={{ fontSize: "0.6rem", color: "var(--text-primary)", textOverflow: "ellipsis", overflow: "hidden", whiteSpace: "nowrap" }} title={mainMeta.fileName}>
+                        📄 {mainMeta.fileName}
+                      </span>
+                      <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.55rem", color: "var(--text-secondary)" }}>
+                        <span>건수: <strong>{mainMeta.count}건</strong></span>
+                        <span>금액: <strong style={{ color: "#60A5FA" }}>{(mainMeta.totalAmount / 10000).toFixed(0)}만</strong></span>
+                      </div>
+                    </div>
+                  ) : (
+                    <div style={{ fontSize: "0.6rem", color: "var(--text-secondary)", textAlign: "center", padding: "0.4rem 0" }}>
+                      드롭 또는 업로드
+                    </div>
+                  )}
+
+                  <div style={{ display: "flex", gap: "0.25rem", width: "100%" }}>
+                    <input
+                      type="file"
+                      id={`file-input-main-${m.value}`}
+                      accept=".xlsx, .xls"
+                      onChange={(e) => handleFileChange(e, m.label, "main")}
+                      style={{ display: "none" }}
+                    />
+                    <label
+                      htmlFor={`file-input-main-${m.value}`}
                       style={{
-                        padding: "0.3rem 0.5rem",
-                        background: "rgba(239, 68, 68, 0.15)",
-                        border: "none",
-                        color: "#F87171",
-                        borderRadius: "4px",
+                        flex: 1,
+                        textAlign: "center",
+                        padding: "0.2rem 0",
+                        fontSize: "0.6rem",
+                        fontWeight: "700",
+                        background: "rgba(255,255,255,0.06)",
+                        color: "var(--text-primary)",
+                        borderRadius: "3px",
                         cursor: "pointer",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
+                        border: "1px solid rgba(255,255,255,0.1)",
                         transition: "all 0.2s"
                       }}
-                      title="해당 월 데이터 초기화"
                     >
-                      <Trash2 size={13} />
-                    </button>
-                  )}
+                      {mainMeta ? "다시 업로드" : "업로드"}
+                    </label>
+                    {mainMeta && (
+                      <button
+                        onClick={() => handleClearMonth(m.label, "main")}
+                        style={{
+                          padding: "0.2rem 0.35rem",
+                          background: "rgba(239, 68, 68, 0.12)",
+                          border: "none",
+                          color: "#F87171",
+                          borderRadius: "3px",
+                          cursor: "pointer",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          transition: "all 0.2s"
+                        }}
+                        title="본예산 초기화"
+                      >
+                        <Trash2 size={10} />
+                      </button>
+                    )}
+                  </div>
                 </div>
 
+                {/* 2. 이월예산 업로드 세부 영역 ('26.3월 ~ '26.8월 기간에만 표시) */}
+                {hasCarryover ? (
+                  <div
+                    onDragEnter={(e) => handleDrag(e, `carryover-${m.value}`)}
+                    onDragOver={(e) => handleDrag(e, `carryover-${m.value}`)}
+                    onDragLeave={(e) => handleDrag(e, null)}
+                    onDrop={(e) => handleDrop(e, m.label, "carryover")}
+                    style={{
+                      flex: 1,
+                      background: isCarryDrag ? "rgba(239, 68, 68, 0.12)" : "rgba(255,255,255,0.02)",
+                      border: isCarryDrag ? "1px dashed #EF4444" : "1px solid rgba(255,255,255,0.05)",
+                      borderRadius: "6px",
+                      padding: "0.5rem",
+                      display: "flex",
+                      flexDirection: "column",
+                      justifyContent: "space-between",
+                      gap: "0.4rem"
+                    }}
+                  >
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                      <span style={{ fontSize: "0.7rem", fontWeight: "700", color: "#F87171" }}>📅 이월예산</span>
+                      <span style={{ 
+                        fontSize: "0.55rem", 
+                        padding: "0.1rem 0.25rem", 
+                        borderRadius: "3px",
+                        background: carryMeta ? "rgba(239, 68, 68, 0.2)" : "rgba(255,255,255,0.05)",
+                        color: carryMeta ? "#F87171" : "var(--text-secondary)",
+                        fontWeight: "700"
+                      }}>
+                        {carryMeta ? "완료" : "미등록"}
+                      </span>
+                    </div>
+
+                    {carryMeta ? (
+                      <div style={{ display: "flex", flexDirection: "column", gap: "0.15rem", background: "rgba(0,0,0,0.3)", padding: "0.3rem 0.4rem", borderRadius: "4px" }}>
+                        <span style={{ fontSize: "0.6rem", color: "var(--text-primary)", textOverflow: "ellipsis", overflow: "hidden", whiteSpace: "nowrap" }} title={carryMeta.fileName}>
+                          📄 {carryMeta.fileName}
+                        </span>
+                        <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.55rem", color: "var(--text-secondary)" }}>
+                          <span>건수: <strong>{carryMeta.count}건</strong></span>
+                          <span>금액: <strong style={{ color: "#F87171" }}>{(carryMeta.totalAmount / 10000).toFixed(0)}만</strong></span>
+                        </div>
+                      </div>
+                    ) : (
+                      <div style={{ fontSize: "0.6rem", color: "var(--text-secondary)", textAlign: "center", padding: "0.4rem 0" }}>
+                        드롭 또는 업로드
+                      </div>
+                    )}
+
+                    <div style={{ display: "flex", gap: "0.25rem", width: "100%" }}>
+                      <input
+                        type="file"
+                        id={`file-input-carryover-${m.value}`}
+                        accept=".xlsx, .xls"
+                        onChange={(e) => handleFileChange(e, m.label, "carryover")}
+                        style={{ display: "none" }}
+                      />
+                      <label
+                        htmlFor={`file-input-carryover-${m.value}`}
+                        style={{
+                          flex: 1,
+                          textAlign: "center",
+                          padding: "0.2rem 0",
+                          fontSize: "0.6rem",
+                          fontWeight: "700",
+                          background: "rgba(255,255,255,0.06)",
+                          color: "var(--text-primary)",
+                          borderRadius: "3px",
+                          cursor: "pointer",
+                          border: "1px solid rgba(255,255,255,0.1)",
+                          transition: "all 0.2s"
+                        }}
+                      >
+                        {carryMeta ? "다시 업로드" : "업로드"}
+                      </label>
+                      {carryMeta && (
+                        <button
+                          onClick={() => handleClearMonth(m.label, "carryover")}
+                          style={{
+                            padding: "0.2rem 0.35rem",
+                            background: "rgba(239, 68, 68, 0.12)",
+                            border: "none",
+                            color: "#F87171",
+                            borderRadius: "3px",
+                            cursor: "pointer",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            transition: "all 0.2s"
+                          }}
+                          title="이월예산 초기화"
+                        >
+                          <Trash2 size={10} />
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                ) : (
+                  <div style={{
+                    flex: 1,
+                    border: "1px dashed rgba(255,255,255,0.02)",
+                    borderRadius: "6px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    background: "rgba(0,0,0,0.1)",
+                    minHeight: "80px"
+                  }}>
+                    <span style={{ fontSize: "0.6rem", color: "var(--text-secondary)", fontStyle: "italic" }}>
+                      📅 이월 사용 불가
+                    </span>
+                  </div>
+                )}
               </div>
             );
           })}
