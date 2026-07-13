@@ -364,22 +364,39 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
   const [equipments, setEquipments] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("all"); // "all", "ai_dx", "other", or "scan"
   const [isEquipModalOpen, setIsEquipModalOpen] = useState(false);
-  const [visibleColumns, setVisibleColumns] = useState({
-    asset_number: true,
-    category_name: true,
-    item_name: true,
-    spec: true,
-    inspect_date: true,
-    price: true,
-    dept_name: true,
-    install_dept: true,
-    room_no: true,
-    item_type: true,
-    pay_date: true,
-    is_sw: true,
-    vendor: true,
-    ai_dx: true
+  const [visibleColumns, setVisibleColumns] = useState(() => {
+    const DEFAULT_VISIBLE_COLUMNS = {
+      asset_number: true,
+      category_name: true,
+      item_name: true,
+      spec: true,
+      inspect_date: true,
+      price: true,
+      dept_name: true,
+      install_dept: true,
+      room_no: true,
+      item_type: true,
+      pay_date: true,
+      is_sw: true,
+      vendor: true,
+      ai_dx: true
+    };
+    try {
+      const saved = localStorage.getItem("equip_visible_columns");
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        return { ...DEFAULT_VISIBLE_COLUMNS, ...parsed };
+      }
+    } catch (e) {
+      console.warn("Failed to load saved column visibility options:", e);
+    }
+    return DEFAULT_VISIBLE_COLUMNS;
   });
+
+  useEffect(() => {
+    localStorage.setItem("equip_visible_columns", JSON.stringify(visibleColumns));
+  }, [visibleColumns]);
+
   const [isColMenuOpen, setIsColMenuOpen] = useState(false);
   const [editingEquipId, setEditingEquipId] = useState(null);
   const [equipSearchQuery, setEquipSearchQuery] = useState("");
