@@ -13,10 +13,37 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
     return ["ADMIN", "G_DIRECTOR", "HQ_HEAD", "MANAGER"].includes(rid);
   };
 
-  // 취소/반려 가능 조건 판별 (신청자 본인 또는 심현미/김현수/송경영)
+  // 공간별 승인 권한 판별 헬퍼 (송경영, 김현수, 심현미 기본 포함 + 공간별 담당자)
+  const hasReservationApprovalPower = (spaceName) => {
+    if (!currentUser) return false;
+    const userName = currentUser.name || "";
+    
+    // 1. 디폴트 결재선 (송경영, 김현수, 심현미)
+    const DEFAULT_APPROVERS = ["송경영", "김현수", "심현미"];
+    if (DEFAULT_APPROVERS.some(appr => userName.includes(appr))) return true;
+    
+    // 2. 공간별 특화 승인선
+    const SPACE_SPECIFIC_APPROVERS = {
+      "AI∙DX다목적강의실": ["이규상", "임은애"],
+      "AI∙DX강의실1": ["이규상", "임은애"],
+      "AI∙DX강의실2": ["이규상", "임은애"],
+      "울산늘봄누리센터": ["황수진", "최주명"],
+      "앵커사업단회의실": ["이규상"]
+    };
+    
+    const allowedList = SPACE_SPECIFIC_APPROVERS[spaceName];
+    if (allowedList && allowedList.some(appr => userName.includes(appr))) return true;
+    
+    // 3. 최상위 시스템 관리자(ADMIN) 허용 가드
+    if (currentRole && currentRole.id === "ADMIN") return true;
+    
+    return false;
+  };
+
+  // 취소/반려 가능 조건 판별 (신청자 본인 또는 해당 공간의 승인권자)
   const canCancelOrReject = (res) => {
     if (!currentUser) return false;
-    if (isApprover(currentRole)) return true;
+    if (hasReservationApprovalPower(res.space_name)) return true;
     const userName = currentUser.name || "";
     if (userName && res.reserver_name.includes(userName)) return true;
     return false;
@@ -188,8 +215,8 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
 
   // 승인권자의 예약 승인 처리
   const handleApproveReservation = async (res) => {
-    if (!isApprover(currentRole)) {
-      alert("⚠️ 승인 권한이 없습니다. (심현미, 김현수, 송경영 등 지정 결재권자만 승인 가능)");
+    if (!hasReservationApprovalPower(res.space_name)) {
+      alert(`⚠️ 승인 권한이 없습니다. (${res.space_name}의 지정 승인권자 또는 송경영, 김현수, 심현미만 승인 가능)`);
       return;
     }
 
@@ -242,7 +269,7 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
   // 승인권자의 일시 변경 저장
   const handleSaveEditedTime = async (e) => {
     e.preventDefault();
-    if (!isApprover(currentRole)) {
+    if (!hasReservationApprovalPower(editingRes?.space_name)) {
       alert("⚠️ 권한이 없습니다.");
       return;
     }
@@ -1035,7 +1062,7 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
                                     <span style={{ padding: "0.15rem 0.4rem", borderRadius: "4px", background: "rgba(251, 191, 36, 0.15)", border: "1px solid rgba(251, 191, 36, 0.3)", color: "#FBBF24", fontSize: "0.62rem", fontWeight: "800" }}>
                                       승인대기
                                     </span>
-                                    {isApprover(currentRole) && (
+                                    {hasReservationApprovalPower(res.space_name) && (
                                       <button
                                         onClick={() => handleApproveReservation(res)}
                                         style={{
