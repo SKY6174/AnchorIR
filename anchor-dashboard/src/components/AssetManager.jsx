@@ -25,7 +25,7 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
   // ==============================================================================
   // [1] 교육환경 관리 (공간 예약 시스템) 상태 및 핸들러
   // ==============================================================================
-  const SPACES = ["AI∙DX대강의실", "AI∙DX1강의실", "AI∙DX2강의실", "늘봄누리센터강의실", "앵커사업단회의실"];
+  const SPACES = ["AI∙DX다목적강의실", "AI∙DX강의실1", "AI∙DX강의실2", "울산늘봄누리센터", "앵커사업단회의실"];
   const [selectedSpace, setSelectedSpace] = useState(SPACES[0]);
   const [reservations, setReservations] = useState([]);
   const [isResModalOpen, setIsResModalOpen] = useState(false);
