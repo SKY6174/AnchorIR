@@ -3815,7 +3815,7 @@ export default function ProcurementManager({
                   <th style={{ padding: "0.85rem 0.5rem", textAlign: "center", verticalAlign: "middle", fontWeight: "800", width: "500px", whiteSpace: "nowrap" }}>
                     용역 절차
                     <span style={{ display: "block", fontSize: "0.7rem", color: "var(--text-secondary)", fontWeight: "500", marginTop: "0.15rem" }}>
-                      [기획(PP) ➔ 의뢰(RFO) ➔ 입찰(B) ➔ 평가∙선정(ES) ➔ 계약(C) ➔ 수행(E) ➔ 검수(I)]
+                      [기획∙승인(PA : 1∙2) ⇨ 구매신청(Pr : 3) ⇨ 평가∙선정∙계약(ESC : 4∙5) ⇨ 수행(E : 6) ⇨ 검수(I : 7)]
                     </span>
                   </th>
                   <th style={{ padding: "0.85rem 0.5rem", textAlign: "center", verticalAlign: "middle", fontWeight: "800", width: "140px", whiteSpace: "nowrap" }}>관련문서</th>
@@ -3923,11 +3923,9 @@ export default function ProcurementManager({
                         <td style={{ padding: "0.8rem 0.5rem", verticalAlign: "middle" }}>
                           <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "0.25rem", width: "100%" }}>
                             {[
-                              { dateKey: "datePp", label: "기획", code: "PP", colorLight: "#d97706", colorDark: "#f59e0b", bgLight: "#fef3c7", bgDark: "rgba(245, 158, 11, 0.2)" },
-                              { dateKey: "dateRfo", label: "의뢰", code: "RFO", colorLight: "#1d4ed8", colorDark: "#60a5fa", bgLight: "#dbeafe", bgDark: "rgba(59, 130, 246, 0.2)" },
-                              { dateKey: "dateB", label: "입찰", code: "B", colorLight: "#0891b2", colorDark: "#22d3ee", bgLight: "#ecfeff", bgDark: "rgba(6, 182, 212, 0.2)" },
-                              { dateKey: "dateEs", label: "평가∙선정", code: "ES", colorLight: "#db2777", colorDark: "#f472b6", bgLight: "#fce7f3", bgDark: "rgba(236, 72, 153, 0.2)" },
-                              { dateKey: "dateC", label: "계약", code: "C", colorLight: "#7c3aed", colorDark: "#c084fc", bgLight: "#f3e8ff", bgDark: "rgba(167, 139, 250, 0.2)" },
+                              { dateKey: "datePp", label: "기획∙승인", code: "PA", colorLight: "#d97706", colorDark: "#f59e0b", bgLight: "#fef3c7", bgDark: "rgba(245, 158, 11, 0.2)" },
+                              { dateKey: "dateRfo", label: "구매신청", code: "Pr", colorLight: "#1d4ed8", colorDark: "#60a5fa", bgLight: "#dbeafe", bgDark: "rgba(59, 130, 246, 0.2)" },
+                              { dateKey: "dateB", label: "평가∙선정∙계약", code: "ESC", colorLight: "#7c3aed", colorDark: "#c084fc", bgLight: "#f3e8ff", bgDark: "rgba(167, 139, 250, 0.2)" },
                               { dateKey: "dateE", label: "수행", code: "E", colorLight: "#b45309", colorDark: "#facc15", bgLight: "#fef9c3", bgDark: "rgba(234, 179, 8, 0.2)" },
                               { dateKey: "dateI", label: "검수", code: "I", colorLight: "#059669", colorDark: "#34d399", bgLight: "#d1fae5", bgDark: "rgba(16, 185, 129, 0.2)" }
                             ].map((step, sIdx) => {
@@ -5119,37 +5117,29 @@ export default function ProcurementManager({
                     </div>
                   </div>
 
-                  {/* 7대 행정 절차 날짜 입력 필드 */}
+                  {/* 5대 행정 절차 날짜 입력 필드 */}
                   <div style={{ borderTop: "1px solid rgba(255,255,255,0.05)", paddingTop: "0.75rem", marginTop: "0.5rem" }}>
-                    <span style={{ fontSize: "0.82rem", fontWeight: "800", color: "#60A5FA", display: "block", marginBottom: "0.5rem" }}>📅 7대 행정 절차 완료 일자 설정</span>
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: "0.75rem" }}>
+                    <span style={{ fontSize: "0.82rem", fontWeight: "800", color: "#60A5FA", display: "block", marginBottom: "0.5rem" }}>📅 5대 행정 절차 완료 일자 설정</span>
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: "0.5rem" }}>
                       <div>
-                        <label style={{ display: "block", fontSize: "0.72rem", color: "#f59e0b", marginBottom: "0.15rem" }}>기획(PP)</label>
+                        <label style={{ display: "block", fontSize: "0.68rem", color: "#f59e0b", marginBottom: "0.15rem", whiteSpace: "nowrap" }}>기획∙승인(PA)</label>
                         <input type="date" name="datePp" value={formData.datePp || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.35rem", fontSize: "0.75rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} />
                       </div>
                       <div>
-                        <label style={{ display: "block", fontSize: "0.72rem", color: "#3b82f6", marginBottom: "0.15rem" }}>의뢰(RFO)</label>
+                        <label style={{ display: "block", fontSize: "0.68rem", color: "#3b82f6", marginBottom: "0.15rem", whiteSpace: "nowrap" }}>구매신청(Pr)</label>
                         <input type="date" name="dateRfo" min={formData.datePp || ""} value={formData.dateRfo || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.35rem", fontSize: "0.75rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} />
                       </div>
                       <div>
-                        <label style={{ display: "block", fontSize: "0.72rem", color: "#06b6d4", marginBottom: "0.15rem" }}>입찰(B)</label>
+                        <label style={{ display: "block", fontSize: "0.68rem", color: "#06b6d4", marginBottom: "0.15rem", whiteSpace: "nowrap" }}>평가∙선정∙계약(ESC)</label>
                         <input type="date" name="dateB" min={formData.dateRfo || formData.datePp || ""} value={formData.dateB || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.35rem", fontSize: "0.75rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} />
                       </div>
                       <div>
-                        <label style={{ display: "block", fontSize: "0.72rem", color: "#ec4899", marginBottom: "0.15rem" }}>평가∙선정(ES)</label>
-                        <input type="date" name="dateEs" min={formData.dateB || formData.dateRfo || formData.datePp || ""} value={formData.dateEs || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.35rem", fontSize: "0.75rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} />
+                        <label style={{ display: "block", fontSize: "0.68rem", color: "#eab308", marginBottom: "0.15rem", whiteSpace: "nowrap" }}>수행(E)</label>
+                        <input type="date" name="dateE" min={formData.dateB || formData.dateRfo || formData.datePp || ""} value={formData.dateE || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.35rem", fontSize: "0.75rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} />
                       </div>
                       <div>
-                        <label style={{ display: "block", fontSize: "0.72rem", color: "#a78bfa", marginBottom: "0.15rem" }}>계약(C)</label>
-                        <input type="date" name="dateC" min={formData.dateEs || formData.dateB || formData.dateRfo || formData.datePp || ""} value={formData.dateC || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.35rem", fontSize: "0.75rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} />
-                      </div>
-                      <div>
-                        <label style={{ display: "block", fontSize: "0.72rem", color: "#eab308", marginBottom: "0.15rem" }}>수행(E)</label>
-                        <input type="date" name="dateE" min={formData.dateC || formData.dateEs || formData.dateB || formData.dateRfo || formData.datePp || ""} value={formData.dateE || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.35rem", fontSize: "0.75rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} />
-                      </div>
-                      <div>
-                        <label style={{ display: "block", fontSize: "0.72rem", color: "#10b981", marginBottom: "0.15rem" }}>검수(I)</label>
-                        <input type="date" name="dateI" min={formData.dateE || formData.dateC || formData.dateEs || formData.dateB || formData.dateRfo || formData.datePp || ""} value={formData.dateI || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.35rem", fontSize: "0.75rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} />
+                        <label style={{ display: "block", fontSize: "0.68rem", color: "#10b981", marginBottom: "0.15rem", whiteSpace: "nowrap" }}>검수(I)</label>
+                        <input type="date" name="dateI" min={formData.dateE || formData.dateB || formData.dateRfo || formData.datePp || ""} value={formData.dateI || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.35rem", fontSize: "0.75rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} />
                       </div>
                     </div>
                   </div>
