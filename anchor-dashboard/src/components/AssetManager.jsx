@@ -804,6 +804,28 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
     XLSX.writeFile(workbook, "UC_ANCHOR_기자재대장_업로드_서식.xlsx");
   };
 
+  // AI∙DX 자산여부 체크박스 토글 핸들러
+  const toggleEquipCategory = async (itemId, currentCategory) => {
+    if (currentRole.id === "GUEST") {
+      alert("⚠️ 게스트 계정은 자산 분류를 변경할 권한이 없습니다.");
+      return;
+    }
+
+    try {
+      const nextCategory = currentCategory === "ai_dx" ? "other" : "ai_dx";
+      const { error } = await supabase
+        .from("equipment_assets")
+        .update({ category: nextCategory })
+        .eq("id", itemId);
+
+      if (error) throw error;
+      fetchEquipments();
+    } catch (err) {
+      console.error("자산 분류 토글 오류:", err.message);
+      alert("자산 분류 변경 중 오류가 발생했습니다: " + err.message);
+    }
+  };
+
   useEffect(() => {
     fetchReservations();
     fetchEquipments();
@@ -1602,6 +1624,7 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
                               <th style={{ padding: "0.5rem 0.35rem", textAlign: "center" }}>지출일자</th>
                               <th style={{ padding: "0.5rem 0.35rem", textAlign: "center" }}>SW여부</th>
                               <th style={{ padding: "0.5rem 0.35rem", textAlign: "center" }}>구입업체</th>
+                              <th style={{ padding: "0.5rem 0.35rem", textAlign: "center" }}>AI∙DX 자산여부</th>
                             </tr>
                           </thead>
                           <tbody>
@@ -1644,6 +1667,19 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
                                   <td style={{ padding: "0.4rem 0.3rem", textAlign: "center", whiteSpace: "nowrap" }}>{payDate}</td>
                                   <td style={{ padding: "0.4rem 0.3rem", textAlign: "center", whiteSpace: "nowrap" }}>{isSw}</td>
                                   <td style={{ padding: "0.4rem 0.3rem", textAlign: "center", whiteSpace: "nowrap" }}>{vendor}</td>
+                                  <td style={{ padding: "0.4rem 0.3rem", textAlign: "center" }}>
+                                    <input
+                                      type="checkbox"
+                                      checked={item.category === "ai_dx"}
+                                      disabled={currentRole.id === "GUEST"}
+                                      onChange={() => toggleEquipCategory(item.id, item.category)}
+                                      style={{
+                                        cursor: currentRole.id === "GUEST" ? "not-allowed" : "pointer",
+                                        transform: "scale(1.15)",
+                                        accentColor: "#3B82F6"
+                                      }}
+                                    />
+                                  </td>
                                 </tr>
                               );
                             })}
