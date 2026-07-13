@@ -398,8 +398,24 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
   }, [visibleColumns]);
 
   const [isColMenuOpen, setIsColMenuOpen] = useState(false);
+  const [sortKey, setSortKey] = useState(null);
+  const [sortDirection, setSortDirection] = useState("asc");
   const [editingEquipId, setEditingEquipId] = useState(null);
   const [equipSearchQuery, setEquipSearchQuery] = useState("");
+
+  const handleSort = (key) => {
+    if (sortKey === key) {
+      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+    } else {
+      setSortKey(key);
+      setSortDirection("asc");
+    }
+  };
+
+  const renderSortArrow = (key) => {
+    if (sortKey !== key) return " ↕";
+    return sortDirection === "asc" ? " ▲" : " ▼";
+  };
 
   // 구매 완료 기자재 목록을 보관할 상태
   const [completedProcuredItems, setCompletedProcuredItems] = useState([]);
@@ -1716,14 +1732,140 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
                     .filter((e) => {
                       if (!equipSearchQuery.trim()) return true;
                       const query = equipSearchQuery.toLowerCase();
+                      
+                      let memoObj = {};
+                      try {
+                        if (e.memo && e.memo.trim().startsWith("{")) {
+                          memoObj = JSON.parse(e.memo);
+                        }
+                      } catch (err) {}
+
+                      const specText = (memoObj.spec || "").toLowerCase();
+                      const catText = (memoObj.category_name || (e.category === "ai_dx" ? "AI∙DX 특화" : "기타자산")).toLowerCase();
+                      const installText = (memoObj.install_dept || "").toLowerCase();
+                      const roomText = (memoObj.room_no || e.stock_location || "").toLowerCase();
+                      const vendorText = (memoObj.vendor || "").toLowerCase();
+                      const deptText = (e.dept_name || "").toLowerCase();
+                      const isSwText = (memoObj.is_sw || "아니오").toLowerCase();
+                      const itemTypeText = (memoObj.item_type || e.usage_type || "").toLowerCase();
+
                       return (
                         e.item_name.toLowerCase().includes(query) ||
                         e.asset_number.toLowerCase().includes(query) ||
-                        (e.barcode_id || "").toLowerCase().includes(query)
+                        (e.barcode_id || "").toLowerCase().includes(query) ||
+                        specText.includes(query) ||
+                        catText.includes(query) ||
+                        installText.includes(query) ||
+                        roomText.includes(query) ||
+                        vendorText.includes(query) ||
+                        deptText.includes(query) ||
+                        isSwText.includes(query) ||
+                        itemTypeText.includes(query)
                       );
                     });
 
-                  if (filtered.length === 0) {
+                  const sortedData = [...filtered].sort((a, b) => {
+                    if (!sortKey) return 0;
+                    
+                    let valA = "";
+                    let valB = "";
+                    
+                    let metaA = {};
+                    let metaB = {};
+                    try {
+                      if (a.memo && a.memo.trim().startsWith("{")) metaA = JSON.parse(a.memo);
+                    } catch(e){}
+                    try {
+                      if (b.memo && b.memo.trim().startsWith("{")) metaB = JSON.parse(b.memo);
+                    } catch(e){}
+
+                    switch(sortKey) {
+                      case "item_name":
+                        valA = a.item_name || "";
+                        valB = b.item_name || "";
+                        break;
+                      case "asset_number":
+                        valA = a.asset_number || "";
+                        valB = b.asset_number || "";
+                        break;
+                      case "barcode_id":
+                        valA = a.barcode_id || "";
+                        valB = b.barcode_id || "";
+                        break;
+                      case "stock_location":
+                        valA = a.stock_location || "";
+                        valB = b.stock_location || "";
+                        break;
+                      case "usage_type":
+                        valA = a.usage_type || "";
+                        valB = b.usage_type || "";
+                        break;
+                      case "last_checked_at":
+                        valA = a.last_checked_at || "";
+                        valB = b.last_checked_at || "";
+                        break;
+                      case "category_name":
+                        valA = metaA.category_name || (a.category === "ai_dx" ? "AI∙DX 특화" : "기타자산");
+                        valB = metaB.category_name || (b.category === "ai_dx" ? "AI∙DX 특화" : "기타자산");
+                        break;
+                      case "spec":
+                        valA = metaA.spec || "";
+                        valB = metaB.spec || "";
+                        break;
+                      case "inspect_date":
+                        valA = metaA.inspect_date || "";
+                        valB = metaB.inspect_date || "";
+                        break;
+                      case "price":
+                        valA = a.unit_price || 0;
+                        valB = b.unit_price || 0;
+                        break;
+                      case "dept_name":
+                        valA = a.dept_name || "";
+                        valB = b.dept_name || "";
+                        break;
+                      case "install_dept":
+                        valA = metaA.install_dept || "";
+                        valB = metaB.install_dept || "";
+                        break;
+                      case "room_no":
+                        valA = metaA.room_no || a.stock_location || "";
+                        valB = metaB.room_no || b.stock_location || "";
+                        break;
+                      case "item_type":
+                        valA = metaA.item_type || a.usage_type || "";
+                        valB = metaB.item_type || b.usage_type || "";
+                        break;
+                      case "pay_date":
+                        valA = metaA.pay_date || "";
+                        valB = metaB.pay_date || "";
+                        break;
+                      case "is_sw":
+                        valA = metaA.is_sw || "아니오";
+                        valB = metaB.is_sw || "아니오";
+                        break;
+                      case "vendor":
+                        valA = metaA.vendor || "";
+                        valB = metaB.vendor || "";
+                        break;
+                      case "ai_dx":
+                        valA = a.category || "";
+                        valB = b.category || "";
+                        break;
+                      default:
+                        break;
+                    }
+
+                    if (typeof valA === "number" && typeof valB === "number") {
+                      return sortDirection === "asc" ? valA - valB : valB - valA;
+                    }
+                    
+                    valA = String(valA);
+                    valB = String(valB);
+                    return sortDirection === "asc" ? valA.localeCompare(valB) : valB.localeCompare(valA);
+                  });
+
+                  if (sortedData.length === 0) {
                     return (
                       <div style={{ textAlign: "center", padding: "2.5rem", color: "var(--text-secondary)", fontSize: "0.75rem" }}>
                         조회된 기자재가 존재하지 않습니다.
@@ -1738,24 +1880,24 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
                         <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.68rem", textAlign: "center" }}>
                           <thead>
                             <tr style={{ borderBottom: "1px solid var(--border-color)", color: "var(--text-secondary)", background: "rgba(255, 255, 255, 0.02)" }}>
-                              {visibleColumns.asset_number && <th style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "9%" }}>자산번호</th>}
-                              {visibleColumns.category_name && <th style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "3%" }}>분류명</th>}
-                              {visibleColumns.item_name && <th style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "5%" }}>품목명</th>}
-                              {visibleColumns.spec && <th style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "20%" }}>규격</th>}
-                              {visibleColumns.inspect_date && <th style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "6%" }}>검수일자</th>}
-                              {visibleColumns.price && <th style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "8%" }}>금액</th>}
-                              {visibleColumns.dept_name && <th style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "6%" }}>관리부서</th>}
-                              {visibleColumns.install_dept && <th style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "8%" }}>설치부서</th>}
-                              {visibleColumns.room_no && <th style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "8%" }}>호실</th>}
-                              {visibleColumns.item_type && <th style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "6%" }}>항목</th>}
-                              {visibleColumns.pay_date && <th style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "6%" }}>지출일자</th>}
-                              {visibleColumns.is_sw && <th style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "4%" }}>SW여부</th>}
-                              {visibleColumns.vendor && <th style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "7%" }}>구입업체</th>}
-                              {visibleColumns.ai_dx && <th style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "4%" }}>AI∙DX 자산여부</th>}
+                              {visibleColumns.asset_number && <th onClick={() => handleSort("asset_number")} style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "9%", cursor: "pointer", userSelect: "none" }}>자산번호{renderSortArrow("asset_number")}</th>}
+                              {visibleColumns.category_name && <th onClick={() => handleSort("category_name")} style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "3%", cursor: "pointer", userSelect: "none" }}>분류명{renderSortArrow("category_name")}</th>}
+                              {visibleColumns.item_name && <th onClick={() => handleSort("item_name")} style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "5%", cursor: "pointer", userSelect: "none" }}>품목명{renderSortArrow("item_name")}</th>}
+                              {visibleColumns.spec && <th onClick={() => handleSort("spec")} style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "20%", cursor: "pointer", userSelect: "none" }}>규격{renderSortArrow("spec")}</th>}
+                              {visibleColumns.inspect_date && <th onClick={() => handleSort("inspect_date")} style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "6%", cursor: "pointer", userSelect: "none" }}>검수일자{renderSortArrow("inspect_date")}</th>}
+                              {visibleColumns.price && <th onClick={() => handleSort("price")} style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "8%", cursor: "pointer", userSelect: "none" }}>금액{renderSortArrow("price")}</th>}
+                              {visibleColumns.dept_name && <th onClick={() => handleSort("dept_name")} style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "6%", cursor: "pointer", userSelect: "none" }}>관리부서{renderSortArrow("dept_name")}</th>}
+                              {visibleColumns.install_dept && <th onClick={() => handleSort("install_dept")} style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "8%", cursor: "pointer", userSelect: "none" }}>설치부서{renderSortArrow("install_dept")}</th>}
+                              {visibleColumns.room_no && <th onClick={() => handleSort("room_no")} style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "8%", cursor: "pointer", userSelect: "none" }}>호실{renderSortArrow("room_no")}</th>}
+                              {visibleColumns.item_type && <th onClick={() => handleSort("item_type")} style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "6%", cursor: "pointer", userSelect: "none" }}>항목{renderSortArrow("item_type")}</th>}
+                              {visibleColumns.pay_date && <th onClick={() => handleSort("pay_date")} style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "6%", cursor: "pointer", userSelect: "none" }}>지출일자{renderSortArrow("pay_date")}</th>}
+                              {visibleColumns.is_sw && <th onClick={() => handleSort("is_sw")} style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "4%", cursor: "pointer", userSelect: "none" }}>SW여부{renderSortArrow("is_sw")}</th>}
+                              {visibleColumns.vendor && <th onClick={() => handleSort("vendor")} style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "7%", cursor: "pointer", userSelect: "none" }}>구입업체{renderSortArrow("vendor")}</th>}
+                              {visibleColumns.ai_dx && <th onClick={() => handleSort("ai_dx")} style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "4%", cursor: "pointer", userSelect: "none" }}>AI∙DX 자산여부{renderSortArrow("ai_dx")}</th>}
                             </tr>
                           </thead>
                           <tbody>
-                            {filtered.map((item) => {
+                            {sortedData.map((item) => {
                               let originalMeta = {};
                               try {
                                 if (item.memo && item.memo.trim().startsWith("{")) {
@@ -1823,18 +1965,18 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
                       <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.75rem", textAlign: "center" }}>
                         <thead>
                           <tr style={{ borderBottom: "1px solid var(--border-color)", color: "var(--text-secondary)" }}>
-                            <th style={{ padding: "0.5rem", textAlign: "center" }}>기자재 품명</th>
-                            <th style={{ padding: "0.5rem", textAlign: "center" }}>물품(기자재)번호</th>
-                            <th style={{ padding: "0.5rem", textAlign: "center" }}>바코드</th>
-                            <th style={{ padding: "0.5rem", textAlign: "center" }}>재고위치</th>
-                            <th style={{ padding: "0.5rem", textAlign: "center" }}>사용 분야(목적)</th>
-                            <th style={{ padding: "0.5rem", textAlign: "center" }}>최근 점검 시각</th>
+                            <th onClick={() => handleSort("item_name")} style={{ padding: "0.5rem", textAlign: "center", cursor: "pointer", userSelect: "none" }}>기자재 품명{renderSortArrow("item_name")}</th>
+                            <th onClick={() => handleSort("asset_number")} style={{ padding: "0.5rem", textAlign: "center", cursor: "pointer", userSelect: "none" }}>물품(기자재)번호{renderSortArrow("asset_number")}</th>
+                            <th onClick={() => handleSort("barcode_id")} style={{ padding: "0.5rem", textAlign: "center", cursor: "pointer", userSelect: "none" }}>바코드{renderSortArrow("barcode_id")}</th>
+                            <th onClick={() => handleSort("stock_location")} style={{ padding: "0.5rem", textAlign: "center", cursor: "pointer", userSelect: "none" }}>재고위치{renderSortArrow("stock_location")}</th>
+                            <th onClick={() => handleSort("usage_type")} style={{ padding: "0.5rem", textAlign: "center", cursor: "pointer", userSelect: "none" }}>사용 분야(목적){renderSortArrow("usage_type")}</th>
+                            <th onClick={() => handleSort("last_checked_at")} style={{ padding: "0.5rem", textAlign: "center", cursor: "pointer", userSelect: "none" }}>최근 점검 시각{renderSortArrow("last_checked_at")}</th>
                             <th style={{ padding: "0.5rem", textAlign: "center" }}>사용실적</th>
                             <th style={{ padding: "0.5rem", textAlign: "center" }}>관리</th>
                           </tr>
                         </thead>
                         <tbody>
-                          {filtered.map((item) => (
+                          {sortedData.map((item) => (
                             <tr key={item.id} style={{ borderBottom: "1px solid rgba(255,255,255,0.03)" }}>
                               <td style={{ padding: "0.5rem", fontWeight: "700", color: "#34D399", textAlign: "center" }}>{item.item_name}</td>
                               <td style={{ padding: "0.5rem", fontFamily: "monospace", textAlign: "center" }}>{item.asset_number}</td>
