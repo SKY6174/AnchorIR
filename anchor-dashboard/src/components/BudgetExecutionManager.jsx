@@ -126,13 +126,26 @@ export default function BudgetExecutionManager({ projects = [], currentRole, sel
           .delete()
           .eq("year", selectedYear);
 
-        if (!delError && newRecords.length > 0) {
+        if (delError) {
+          console.error("Supabase 기존 데이터 삭제 실패 (RLS 또는 DB 에러):", delError);
+          triggerToast(`⚠️ DB 동기화(삭제) 실패: ${delError.message}`, "warning");
+        } else if (newRecords.length > 0) {
           const bulkInsert = newRecords.map(({ id, created_at, ...rest }) => rest);
-          await supabase.from("budget_executions").insert(bulkInsert);
+          const { error: insError } = await supabase
+            .from("budget_executions")
+            .insert(bulkInsert);
+
+          if (insError) {
+            console.error("Supabase 데이터 삽입 실패 (RLS 또는 DB 에러):", insError);
+            triggerToast(`⚠️ DB 동기화(삽입) 실패: ${insError.message}`, "warning");
+          } else {
+            console.log("Supabase 원격 데이터베이스 실시간 동기화 완료!");
+          }
         }
       }
     } catch (e) {
-      console.error("Supabase 실시간 백업 동기화 실패:", e.message);
+      console.error("Supabase 실시간 백업 동기화 예외 발생:", e.message);
+      triggerToast(`⚠️ DB 백업 예외: ${e.message}`, "warning");
     }
   };
 

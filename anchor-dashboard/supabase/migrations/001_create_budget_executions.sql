@@ -27,3 +27,7 @@ CREATE TABLE IF NOT EXISTS budget_executions (
 -- 동일 결의번호, 프로그램 ID, 집행일자, 집행액, 예산 구분이 같으면 중복으로 판단하여 덮어쓰거나 생략합니다.
 CREATE UNIQUE INDEX IF NOT EXISTS uq_budget_execution_key 
 ON budget_executions(resolution_no, program_id, execution_date, amount, budget_type);
+
+-- 💡 [Supabase RLS 보안 비활성화]
+-- 개발 및 배포 환경에서 anon REST 클라이언트의 원격 삽입/삭제 접근 차단을 해제하기 위해 RLS를 해제합니다.
+ALTER TABLE budget_executions DISABLE ROW LEVEL SECURITY;
