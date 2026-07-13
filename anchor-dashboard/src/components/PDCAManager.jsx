@@ -1429,7 +1429,7 @@ export default function PDCAManager({
             </div>
 
             <h4 style={{ fontSize: "0.9rem", fontWeight: "800", borderTop: "1px solid var(--border-color)", paddingTop: "1rem" }}>프로그램 리스트</h4>
-            <div style={{ maxHeight: "calc(100vh - 250px)", minHeight: "400px", overflowY: "auto", display: "flex", flexDirection: "column", gap: "0.5rem", paddingBottom: "1rem", borderBottom: "1px solid var(--border-color)" }}>
+            <div style={{ maxHeight: "1200px", minHeight: "400px", overflowY: "auto", display: "flex", flexDirection: "column", gap: "0.5rem", paddingBottom: "1rem", borderBottom: "1px solid var(--border-color)" }}>
               {unitFilteredPrograms.length === 0 ? (
                 <p style={{ color: "var(--text-secondary)", fontSize: "0.75rem", textAlign: "center", padding: "2rem" }}>
                   해당 과제에 배정된 본인 담당 프로그램이 없습니다.
