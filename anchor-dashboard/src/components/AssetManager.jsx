@@ -3,7 +3,7 @@ import { supabase } from "../supabaseClient";
 import { Plus, Trash2, Edit2, Calendar, Clipboard, CheckCircle, AlertTriangle, Search, Home, Laptop, Check, Clock, TrendingUp, Upload, Download } from "lucide-react";
 import * as XLSX from "xlsx";
 
-export default function AssetManager({ currentRole, currentUser, activeSubTab, onChangeSubTab, darkMode }) {
+export default function AssetManager({ currentRole, currentUser, activeSubTab, onChangeSubTab, darkMode, selectedYear }) {
   // 공통 로딩 상태
   const [loading, setLoading] = useState(false);
 
@@ -582,14 +582,45 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
 
     setLoading(true);
     try {
+      // 💡 [교육용 한글 주석] 수동 입력 시 입력된 자산번호가 현재 선택된 연차의 기준 연도(예: 2차년도면 2026)로 시작하지 않으면 자동으로 보정하여 접두사를 맞춰줍니다.
+      const targetYearStr = String(2024 + (Number(selectedYear) || 1));
+      const currentYearPrefix = `${targetYearStr}-`;
+      let finalAssetNumber = equipFormData.asset_number.trim();
+      let finalBarcodeId = equipFormData.barcode_id.trim();
+
+      if (!finalAssetNumber.startsWith(currentYearPrefix)) {
+        const cleanNum = finalAssetNumber.replace(/^[0-9]{4}-/, "");
+        finalAssetNumber = `${currentYearPrefix}${cleanNum}`;
+      }
+      if (!finalBarcodeId.startsWith(currentYearPrefix)) {
+        const cleanNum = finalBarcodeId.replace(/^[0-9]{4}-/, "");
+        finalBarcodeId = `${currentYearPrefix}${cleanNum}`;
+      }
+
+      // memo JSON 내부의 inspect_date 또는 pay_date 에도 현재 연도 정보가 매핑되도록 보강합니다.
+      let memoObj = {};
+      try {
+        if (equipFormData.memo && equipFormData.memo.trim().startsWith("{")) {
+          memoObj = JSON.parse(equipFormData.memo);
+        }
+      } catch (err) {}
+
+      // 만약 memo에 기존 검수일자가 없거나 다른 연도로 기입되어 있다면 보정
+      if (!memoObj.inspect_date || !memoObj.inspect_date.includes(targetYearStr)) {
+        const todayStr = new Date().toISOString().split("T")[0];
+        memoObj.inspect_date = todayStr.startsWith(targetYearStr) ? todayStr : `${targetYearStr}-03-01`; // 학기 개시월 디폴트
+      }
+      memoObj.asset_number = finalAssetNumber;
+      memoObj.price = memoObj.price || 0;
+
       const payload = {
         item_name: equipFormData.item_name,
-        asset_number: equipFormData.asset_number,
-        barcode_id: equipFormData.barcode_id,
+        asset_number: finalAssetNumber,
+        barcode_id: finalBarcodeId,
         stock_location: equipFormData.stock_location,
         category: equipFormData.category,
         usage_type: equipFormData.usage_type,
-        memo: equipFormData.memo
+        memo: JSON.stringify(memoObj)
       };
 
       if (editingEquipId) {
@@ -740,8 +771,17 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
           return;
         }
 
+        // 💡 [교육용 한글 주석] 현재 활성화된 연차(selectedYear)의 기준 연도 정보(예: 2차년도면 2026)를 바탕으로 엑셀 내 자산번호와 검수일자의 연도를 자동 보정하여 일치화시킵니다.
+        const targetYearStr = String(2024 + (Number(selectedYear) || 1));
+        const currentYearPrefix = `${targetYearStr}-`;
+
         const upsertData = rawRows.map((row) => {
-          const assetNumber = (row["자산번호"] || "").toString().trim();
+          let assetNumber = (row["자산번호"] || "").toString().trim();
+          if (assetNumber && !assetNumber.startsWith(currentYearPrefix)) {
+            const cleanNum = assetNumber.replace(/^[0-9]{4}-/, "");
+            assetNumber = `${currentYearPrefix}${cleanNum}`;
+          }
+
           const itemName = (row["품목명"] || "").toString().trim();
           const categoryName = (row["분류명"] || "").toString().trim();
           const rawPrice = (row["금액"] || "0").toString().replace(/[^0-9]/g, "");
@@ -766,18 +806,30 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
               : "other";
           }
 
+          let rawInspectDate = (row["검수일자"] || "").toString().trim();
+          if (rawInspectDate && !rawInspectDate.includes(targetYearStr)) {
+            rawInspectDate = rawInspectDate.replace(/^[0-9]{4}/, targetYearStr);
+          } else if (!rawInspectDate) {
+            rawInspectDate = `${targetYearStr}-03-01`;
+          }
+
+          let rawPayDate = (row["지출일자"] || "").toString().trim();
+          if (rawPayDate && !rawPayDate.includes(targetYearStr)) {
+            rawPayDate = rawPayDate.replace(/^[0-9]{4}/, targetYearStr);
+          }
+
           const originalMeta = {
             asset_number: assetNumber,
             category_name: categoryName,
             item_name: itemName,
             spec: (row["규격"] || "").toString().trim(),
-            inspect_date: (row["검수일자"] || "").toString().trim(),
+            inspect_date: rawInspectDate,
             price: unitPrice,
             dept_name: deptName,
             install_dept: installDept,
             room_no: roomNo,
             item_type: (row["항목"] || "").toString().trim(),
-            pay_date: (row["지출일자"] || "").toString().trim(),
+            pay_date: rawPayDate,
             is_sw: (row["SW여부"] || "").toString().trim(),
             vendor: (row["구입업체"] || "").toString().trim(),
             ai_dx_yn: excelAiDx
@@ -892,7 +944,7 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
   useEffect(() => {
     fetchReservations();
     fetchEquipments();
-  }, [activeSubTab]);
+  }, [activeSubTab, selectedYear]);
 
   return (
     <div style={{ padding: "1.25rem", color: "var(--text-primary)" }}>
@@ -1708,7 +1760,20 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
                 <div style={{ textAlign: "center", padding: "2rem", color: "var(--text-secondary)", fontSize: "0.75rem" }}>데이터 로드 중...</div>
               ) : (
                 (() => {
+                  // 💡 [교육용 한글 주석] 현재 선택된 연차(selectedYear)에 맞는 기자재 자산만 필터링하여 노출합니다. (자산번호의 접두사가 현재 기준 연도(예: 2025-, 2026-)로 시작하거나 검수일자가 기준 연도에 포함되는 경우에 해당)
+                  const targetYearStr = String(2024 + (Number(selectedYear) || 1));
                   const filtered = equipments
+                    .filter((e) => {
+                      const assetNum = e.asset_number || "";
+                      let memoObj = {};
+                      try {
+                        if (e.memo && e.memo.trim().startsWith("{")) {
+                          memoObj = JSON.parse(e.memo);
+                        }
+                      } catch (err) {}
+                      const inspectDate = memoObj.inspect_date || "";
+                      return assetNum.startsWith(targetYearStr) || inspectDate.includes(targetYearStr);
+                    })
                     .filter((e) => selectedCategory === "all" ? true : e.category === selectedCategory)
                     .filter((e) => {
                       if (!equipSearchQuery.trim()) return true;

@@ -10391,6 +10391,7 @@ export default function App() {
             activeSubTab={assetSubTab}
             onChangeSubTab={setAssetSubTab}
             darkMode={darkMode}
+            selectedYear={selectedYear}
           />
         )}
 

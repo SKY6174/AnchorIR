@@ -1876,6 +1876,98 @@ export default function ProcurementManager({
             </div>
           </div>
 
+          {/* 💡 [교육용 한글 주석] 환경개선 절차(총 9단계)를 직관적인 가로 한 줄 스텝 프로세스 바 형태로 시각화하여 렌더링합니다. */}
+          <div className="glass-card" style={{ 
+            padding: "0.85rem 1rem", 
+            borderRadius: "10px", 
+            background: "rgba(30, 41, 59, 0.4)", // 차분한 다크 네이비 글래스모피즘
+            border: "1px solid rgba(255, 255, 255, 0.08)",
+            display: "flex",
+            flexDirection: "column",
+            gap: "0.5rem"
+          }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
+              <span style={{ fontSize: "0.75rem", color: "var(--accent-color)", fontWeight: "800" }}>🛠️</span>
+              <h4 style={{ margin: 0, fontSize: "0.8rem", fontWeight: "800", color: "var(--text-primary)" }}>교육환경 개선 추진 절차 안내</h4>
+            </div>
+            
+            <div style={{ 
+              display: "flex", 
+              alignItems: "center", 
+              justifyContent: "space-between", 
+              overflowX: "auto", 
+              gap: "0.5rem",
+              paddingBottom: "0.25rem",
+              // 스크롤바 스타일링
+              scrollbarWidth: "thin",
+              msOverflowStyle: "none"
+            }}>
+              {[
+                { no: "01", name: "회의 및 예산협의", dept: "시설안전 · 앵커사업단" },
+                { no: "02", name: "계획서 반영 및 승인", dept: "앵커사업단 · 울산앵커" },
+                { no: "03", name: "환경개선 요청", dept: "앵커사업단 ➔ 시설안전" },
+                { no: "04", name: "설계협의 및 확정", dept: "시설안전 · 앵커사업단" },
+                { no: "05", name: "구매신청", dept: "시설안전 ➔ 총무팀" },
+                { no: "06", name: "입찰 및 계약", dept: "총무팀 (평가절차)" },
+                { no: "07", name: "시공 (공사)", dept: "계약업체 · 시설안전" },
+                { no: "08", name: "검수", dept: "시설 / 총무 / 앵커" },
+                { no: "09", name: "집행완료", dept: "재무회계팀" }
+              ].map((step, idx, arr) => (
+                <React.Fragment key={step.no}>
+                  <div style={{ 
+                    display: "flex", 
+                    flexDirection: "column", 
+                    alignItems: "center", 
+                    minWidth: "105px", 
+                    textAlign: "center",
+                    flex: 1
+                  }}>
+                    <div style={{ 
+                      display: "flex", 
+                      alignItems: "center", 
+                      gap: "0.25rem",
+                      background: "rgba(255, 255, 255, 0.04)",
+                      border: "1px solid var(--border-color)",
+                      borderRadius: "6px",
+                      padding: "0.35rem 0.5rem",
+                      width: "100%",
+                      justifyContent: "center"
+                    }}>
+                      <span style={{ 
+                        fontSize: "0.65rem", 
+                        fontWeight: "800", 
+                        color: "var(--accent-color)", 
+                        background: "rgba(16, 185, 129, 0.15)",
+                        borderRadius: "50%",
+                        width: "16px",
+                        height: "16px",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center"
+                      }}>{step.no}</span>
+                      <span style={{ fontSize: "0.72rem", fontWeight: "700", color: "var(--text-primary)", whiteSpace: "nowrap" }}>{step.name}</span>
+                    </div>
+                    <span style={{ 
+                      fontSize: "0.6rem", 
+                      color: "var(--text-secondary)", 
+                      marginTop: "0.25rem", 
+                      whiteSpace: "nowrap" 
+                    }}>{step.dept}</span>
+                  </div>
+                  {idx < arr.length - 1 && (
+                    <span style={{ 
+                      fontSize: "0.85rem", 
+                      color: "rgba(255, 255, 255, 0.2)", 
+                      fontWeight: "800",
+                      userSelect: "none",
+                      padding: "0 0.1rem"
+                    }}>➔</span>
+                  )}
+                </React.Fragment>
+              ))}
+            </div>
+          </div>
+
           {/* 환경개선 테이블 */}
           <div className="glass-card" style={{ padding: "0.25rem", borderRadius: "12px", overflowX: "auto", border: "1px solid var(--border-color)", background: "var(--panel-bg)" }}>
             <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.82rem", color: "var(--text-primary)" }}>
