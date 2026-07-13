@@ -150,7 +150,16 @@ export default function BudgetExecutionManager({ projects = [], currentRole, sel
   };
 
   // 💡 [교육용 한글 주석] 첫 번째 그림에 표기된 14개 핵심 헤더를 준수하는 엑셀 양식을 다운로드합니다.
-  const handleDownloadTemplate = () => {
+  // monthLabel 인자(예: "26.3월")를 받아 파일명을 "26년3월_예산집행현황_업로드양식.xlsx" 과 같이 동적 지정합니다.
+  const handleDownloadTemplate = (monthLabel) => {
+    // 만약 월 레이블이 없으면 현재 선택한 차년도의 시작월을 기본값으로 사용
+    // 1차년도 시작월: "25.3월", 2차년도 시작월: "26.3월"
+    const defaultLabel = selectedYear === 1 ? "25.3월" : "26.3월";
+    const targetLabel = monthLabel || defaultLabel;
+    
+    // "26.3월" -> "26년3월" 형태로 정제
+    const formattedLabel = targetLabel.replace(".", "년");
+
     const headers = [
       "프로그램ID", "프로그램명", "국비/시비", "비목항목명(사업비 비목)", "세부내역(사용용도)",
       "e나라 비목", "계정과목", "계정과목 세목", "집행일자", "적요", "거래처", "집행액", "결의번호", "담당자"
@@ -186,8 +195,8 @@ export default function BudgetExecutionManager({ projects = [], currentRole, sel
     XLSX.utils.book_append_sheet(wb, ws, "집행내역_업로드양식");
     
     // 파일 쓰기 및 다운로드 트리거
-    XLSX.writeFile(wb, `${selectedYear}차년도_예산_집행현황_업로드양식.xlsx`);
-    triggerToast("✨ 엑셀 업로드 양식을 다운로드 하였습니다.", "success");
+    XLSX.writeFile(wb, `${formattedLabel}_예산집행현황_업로드양식.xlsx`);
+    triggerToast(`✨ [${formattedLabel}] 예산집행현황 업로드양식을 다운로드 하였습니다.`, "success");
   };
 
   // 💡 [교육용 한글 주석] 파싱된 엑셀 데이터를 무결성 규칙에 맞춰 정제하고 중복을 걸러 저장합니다.
@@ -903,9 +912,30 @@ export default function BudgetExecutionManager({ projects = [], currentRole, sel
                   justifyContent: "space-between"
                 }}
               >
-                {/* 월 레이블 */}
+                {/* 월 레이블 및 해당 월 특화 양식 다운로드 단추 */}
                 <div style={{ borderBottom: "1px solid rgba(255,255,255,0.05)", paddingBottom: "0.4rem", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                   <span style={{ fontSize: "0.9rem", fontWeight: "900", color: "#3B82F6" }}>{m.label}</span>
+                  <button
+                    onClick={() => handleDownloadTemplate(m.label)}
+                    style={{
+                      background: "none",
+                      border: "none",
+                      color: "#60A5FA",
+                      fontSize: "0.65rem",
+                      fontWeight: "700",
+                      cursor: "pointer",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "0.2rem",
+                      padding: "0.1rem 0.25rem",
+                      borderRadius: "4px",
+                      transition: "background 0.2s"
+                    }}
+                    title={`${m.label.replace(".", "년")} 양식 다운로드`}
+                  >
+                    <Download size={10} />
+                    <span>양식</span>
+                  </button>
                 </div>
 
                 {/* 1. 본예산 업로드 세부 영역 */}
