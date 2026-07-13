@@ -8129,117 +8129,215 @@ export default function App() {
                       </tr>
                     </thead>
                     <tbody>
-                      {displayProjects.flatMap((p) => p.units)
-                        .sort((a, b) => {
-                          if (a.id === "Common" || a.id === "X0") return 1;
-                          if (b.id === "Common" || b.id === "X0") return -1;
-                          return a.id.localeCompare(b.id, undefined, { numeric: true, sensitivity: 'base' });
-                        })
-                        .map((u) => {
+                      {(() => {
+                        const sortedUnits = displayProjects.flatMap((p) => p.units)
+                          .sort((a, b) => {
+                            if (a.id === "Common" || a.id === "X0") return 1;
+                            if (b.id === "Common" || b.id === "X0") return -1;
+                            return a.id.localeCompare(b.id, undefined, { numeric: true, sensitivity: 'base' });
+                          });
+
+                        // 합계 집계용 변수들
+                        let sumBudgetMain = 0;
+                        let sumBudgetCarry = 0;
+                        let sumTotalBudget = 0;
+                        let sumTotalSpent = 0;
+                        let sumTotalPrograms = 0;
+                        let sumReadyCount = 0;
+                        let sumInProgressCount = 0;
+                        let sumCompletedCount = 0;
+                        let sumTotalProgressSum = 0;
+
+                        sortedUnits.forEach((u) => {
                           const yData = u.years?.[selectedYear] || { budget_main: 0, spent_main: 0, budget_carry: 0, spent_carry: 0 };
                           const budgetCarryVal = selectedYear === 1 ? 0 : (yData.budget_carry || 0);
                           const spentCarryVal = selectedYear === 1 ? 0 : (yData.spent_carry || 0);
-                          const totalBudget = (yData.budget_main || 0) + budgetCarryVal;
-                          const totalSpent = (yData.spent_main || 0) + spentCarryVal;
-                          const rate = totalBudget > 0 ? (totalSpent / totalBudget) * 100 : 0;
 
-                          // 프로그램 현황 집계 변수들
-                          const totalPrograms = u.programs?.length || 0;
-                          let readyCount = 0;
-                          let inProgressCount = 0;
-                          let completedCount = 0;
-                          let totalProgressSum = 0;
+                          sumBudgetMain += (yData.budget_main || 0);
+                          sumBudgetCarry += budgetCarryVal;
+                          sumTotalBudget += ((yData.budget_main || 0) + budgetCarryVal);
+                          sumTotalSpent += ((yData.spent_main || 0) + spentCarryVal);
 
-                          if (totalPrograms > 0) {
-                            u.programs.forEach((prog) => {
-                              const pdca = prog.pdca || { p: "대기", d: "대기", c: "대기", a: "대기" };
-                              const completedSteps = [pdca.p, pdca.d, pdca.c, pdca.a].filter(step => step === "완료").length;
-                              const progProgress = (completedSteps / 4) * 100;
-                              totalProgressSum += progProgress;
+                          if (u.id !== "Common" && u.id !== "X0") {
+                            const totalProgs = u.programs?.length || 0;
+                            sumTotalPrograms += totalProgs;
 
-                              if (completedSteps === 0) {
-                                readyCount++;
-                              } else if (completedSteps === 4) {
-                                completedCount++;
-                              } else {
-                                inProgressCount++;
-                              }
-                            });
+                            if (totalProgs > 0) {
+                              u.programs.forEach((prog) => {
+                                const pdca = prog.pdca || { p: "대기", d: "대기", c: "대기", a: "대기" };
+                                const completedSteps = [pdca.p, pdca.d, pdca.c, pdca.a].filter(step => step === "완료").length;
+                                const progProgress = (completedSteps / 4) * 100;
+                                sumTotalProgressSum += progProgress;
+
+                                if (completedSteps === 0) {
+                                  sumReadyCount++;
+                                } else if (completedSteps === 4) {
+                                  sumCompletedCount++;
+                                } else {
+                                  sumInProgressCount++;
+                                }
+                              });
+                            }
                           }
-                          const progressRate = totalPrograms > 0 ? (totalProgressSum / totalPrograms) : 0;
+                        });
 
-                          return (
-                            <tr
-                              key={u.id}
-                              onClick={() => {
-                                setSelectedUnitId(u.id);
-                                setSelectedProgId(null);
-                                setProjectsSubTab("program_mgmt"); // 단위과제 클릭 시 프로그램 관리 탭으로 연계 이동
-                              }}
-                              style={{
-                                cursor: "pointer",
-                                background: selectedUnitId === u.id ? "rgba(59, 130, 246, 0.15)" : "transparent",
-                                transition: "background 0.2s"
-                              }}
-                            >
-                              <td style={{ fontWeight: "700", borderRight: "1px solid var(--border-color)" }}>
-                                {u.id === "Common" ? "" : `${u.id}. `}{u.title}
+                        const sumRate = sumTotalBudget > 0 ? (sumTotalSpent / sumTotalBudget) * 100 : 0;
+                        const sumProgressRate = sumTotalPrograms > 0 ? (sumTotalProgressSum / sumTotalPrograms) : 0;
+
+                        return (
+                          <>
+                            {sortedUnits.map((u) => {
+                              const yData = u.years?.[selectedYear] || { budget_main: 0, spent_main: 0, budget_carry: 0, spent_carry: 0 };
+                              const budgetCarryVal = selectedYear === 1 ? 0 : (yData.budget_carry || 0);
+                              const spentCarryVal = selectedYear === 1 ? 0 : (yData.spent_carry || 0);
+                              const totalBudget = (yData.budget_main || 0) + budgetCarryVal;
+                              const totalSpent = (yData.spent_main || 0) + spentCarryVal;
+                              const rate = totalBudget > 0 ? (totalSpent / totalBudget) * 100 : 0;
+
+                              // 프로그램 현황 집계 변수들
+                              const totalPrograms = u.programs?.length || 0;
+                              let readyCount = 0;
+                              let inProgressCount = 0;
+                              let completedCount = 0;
+                              let totalProgressSum = 0;
+
+                              if (totalPrograms > 0) {
+                                u.programs.forEach((prog) => {
+                                  const pdca = prog.pdca || { p: "대기", d: "대기", c: "대기", a: "대기" };
+                                  const completedSteps = [pdca.p, pdca.d, pdca.c, pdca.a].filter(step => step === "완료").length;
+                                  const progProgress = (completedSteps / 4) * 100;
+                                  totalProgressSum += progProgress;
+
+                                  if (completedSteps === 0) {
+                                    readyCount++;
+                                  } else if (completedSteps === 4) {
+                                    completedCount++;
+                                  } else {
+                                    inProgressCount++;
+                                  }
+                                });
+                              }
+                              const progressRate = totalPrograms > 0 ? (totalProgressSum / totalPrograms) : 0;
+
+                              return (
+                                <tr
+                                  key={u.id}
+                                  onClick={() => {
+                                    setSelectedUnitId(u.id);
+                                    setSelectedProgId(null);
+                                    setProjectsSubTab("program_mgmt"); // 단위과제 클릭 시 프로그램 관리 탭으로 연계 이동
+                                  }}
+                                  style={{
+                                    cursor: "pointer",
+                                    background: selectedUnitId === u.id ? "rgba(59, 130, 246, 0.15)" : "transparent",
+                                    transition: "background 0.2s"
+                                  }}
+                                >
+                                  <td style={{ fontWeight: "700", borderRight: "1px solid var(--border-color)" }}>
+                                    {u.id === "Common" ? "" : `${u.id}. `}{u.title}
+                                  </td>
+                                  <td style={{ fontFamily: "var(--font-data)", textAlign: "right", paddingRight: "1rem" }}>
+                                    {formatToMillionWon(yData.budget_main)}
+                                  </td>
+                                  {selectedYear >= 2 && (
+                                    <td style={{ fontFamily: "var(--font-data)", textAlign: "right", paddingRight: "1rem" }}>
+                                      {formatToMillionWon(budgetCarryVal)}
+                                    </td>
+                                  )}
+                                  <td style={{ fontFamily: "var(--font-data)", fontWeight: "700", textAlign: "right", paddingRight: "1rem" }}>
+                                    {formatToMillionWon(totalBudget)}
+                                  </td>
+                                  <td style={{ fontFamily: "var(--font-data)", textAlign: "right", paddingRight: "1rem" }}>
+                                    {formatToMillionWon(totalSpent)}
+                                  </td>
+                                  <td style={{ borderRight: "1px solid var(--border-color)" }}>
+                                    <div style={{ display: "flex", alignItems: "center", gap: "0.25rem" }}>
+                                      <span style={{ fontSize: "0.75rem", fontFamily: "var(--font-data)" }}>{rate.toFixed(1)}%</span>
+                                    </div>
+                                  </td>
+                                  {u.id === "Common" || u.id === "X0" ? (
+                                    <>
+                                      <td style={{ textAlign: "center" }}>-</td>
+                                      <td style={{ textAlign: "center" }}>-</td>
+                                      <td style={{ textAlign: "center" }}>-</td>
+                                      <td style={{ textAlign: "center" }}>-</td>
+                                      <td>-</td>
+                                    </>
+                                  ) : (
+                                    <>
+                                      <td style={{ fontFamily: "var(--font-data)", textAlign: "center" }}>
+                                        {totalPrograms}개
+                                      </td>
+                                      <td style={{ fontFamily: "var(--font-data)", textAlign: "center", color: "var(--text-secondary)" }}>
+                                        {readyCount}
+                                      </td>
+                                      <td style={{ fontFamily: "var(--font-data)", textAlign: "center", color: "#f59e0b" }}>
+                                        {inProgressCount}
+                                      </td>
+                                      <td style={{ fontFamily: "var(--font-data)", textAlign: "center", color: "var(--success-color)", fontWeight: "700" }}>
+                                        {completedCount}
+                                      </td>
+                                      <td>
+                                        <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
+                                          <div style={{ width: "40px", height: "6px", background: "rgba(255,255,255,0.1)", borderRadius: "3px", overflow: "hidden" }}>
+                                            <div style={{ width: `${Math.min(progressRate, 100)}%`, height: "100%", background: "#10b981" }} />
+                                          </div>
+                                          <span style={{ fontSize: "0.75rem", fontFamily: "var(--font-data)", fontWeight: "700", color: "#10b981" }}>{progressRate.toFixed(1)}%</span>
+                                        </div>
+                                      </td>
+                                    </>
+                                  )}
+                                </tr>
+                              );
+                            })}
+                            {/* 합계 행 추가 */}
+                            <tr style={{ background: "rgba(59, 130, 246, 0.08)", fontWeight: "800", borderTop: "2px solid var(--border-color)" }}>
+                              <td style={{ fontWeight: "800", borderRight: "1px solid var(--border-color)", textAlign: "center" }}>
+                                합계
                               </td>
                               <td style={{ fontFamily: "var(--font-data)", textAlign: "right", paddingRight: "1rem" }}>
-                                {formatToMillionWon(yData.budget_main)}
+                                {formatToMillionWon(sumBudgetMain)}
                               </td>
                               {selectedYear >= 2 && (
                                 <td style={{ fontFamily: "var(--font-data)", textAlign: "right", paddingRight: "1rem" }}>
-                                  {formatToMillionWon(budgetCarryVal)}
+                                  {formatToMillionWon(sumBudgetCarry)}
                                 </td>
                               )}
-                              <td style={{ fontFamily: "var(--font-data)", fontWeight: "700", textAlign: "right", paddingRight: "1rem" }}>
-                                {formatToMillionWon(totalBudget)}
+                              <td style={{ fontFamily: "var(--font-data)", fontWeight: "800", textAlign: "right", paddingRight: "1rem", color: "var(--accent-color)" }}>
+                                {formatToMillionWon(sumTotalBudget)}
                               </td>
                               <td style={{ fontFamily: "var(--font-data)", textAlign: "right", paddingRight: "1rem" }}>
-                                {formatToMillionWon(totalSpent)}
+                                {formatToMillionWon(sumTotalSpent)}
                               </td>
                               <td style={{ borderRight: "1px solid var(--border-color)" }}>
                                 <div style={{ display: "flex", alignItems: "center", gap: "0.25rem" }}>
-                                  <span style={{ fontSize: "0.75rem", fontFamily: "var(--font-data)" }}>{rate.toFixed(1)}%</span>
+                                  <span style={{ fontSize: "0.75rem", fontFamily: "var(--font-data)", fontWeight: "800" }}>{sumRate.toFixed(1)}%</span>
                                 </div>
                               </td>
-                              {u.id === "Common" || u.id === "X0" ? (
-                                <>
-                                  <td style={{ textAlign: "center" }}>-</td>
-                                  <td style={{ textAlign: "center" }}>-</td>
-                                  <td style={{ textAlign: "center" }}>-</td>
-                                  <td style={{ textAlign: "center" }}>-</td>
-                                  <td>-</td>
-                                </>
-                              ) : (
-                                <>
-                                  <td style={{ fontFamily: "var(--font-data)", textAlign: "center" }}>
-                                    {totalPrograms}개
-                                  </td>
-                                  <td style={{ fontFamily: "var(--font-data)", textAlign: "center", color: "var(--text-secondary)" }}>
-                                    {readyCount}
-                                  </td>
-                                  <td style={{ fontFamily: "var(--font-data)", textAlign: "center", color: "#f59e0b" }}>
-                                    {inProgressCount}
-                                  </td>
-                                  <td style={{ fontFamily: "var(--font-data)", textAlign: "center", color: "var(--success-color)", fontWeight: "700" }}>
-                                    {completedCount}
-                                  </td>
-                                  <td>
-                                    <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
-                                      <div style={{ width: "40px", height: "6px", background: "rgba(255,255,255,0.1)", borderRadius: "3px", overflow: "hidden" }}>
-                                        <div style={{ width: `${Math.min(progressRate, 100)}%`, height: "100%", background: "#10b981" }} />
-                                      </div>
-                                      <span style={{ fontSize: "0.75rem", fontFamily: "var(--font-data)", fontWeight: "700", color: "#10b981" }}>{progressRate.toFixed(1)}%</span>
-                                    </div>
-                                  </td>
-                                </>
-                              )}
+                              <td style={{ fontFamily: "var(--font-data)", textAlign: "center" }}>
+                                {sumTotalPrograms}개
+                              </td>
+                              <td style={{ fontFamily: "var(--font-data)", textAlign: "center", color: "var(--text-secondary)" }}>
+                                {sumReadyCount}
+                              </td>
+                              <td style={{ fontFamily: "var(--font-data)", textAlign: "center", color: "#f59e0b" }}>
+                                {sumInProgressCount}
+                              </td>
+                              <td style={{ fontFamily: "var(--font-data)", textAlign: "center", color: "var(--success-color)", fontWeight: "800" }}>
+                                {sumCompletedCount}
+                              </td>
+                              <td>
+                                <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
+                                  <div style={{ width: "40px", height: "6px", background: "rgba(255,255,255,0.1)", borderRadius: "3px", overflow: "hidden" }}>
+                                    <div style={{ width: `${Math.min(sumProgressRate, 100)}%`, height: "100%", background: "#10b981" }} />
+                                  </div>
+                                  <span style={{ fontSize: "0.75rem", fontFamily: "var(--font-data)", fontWeight: "800", color: "#10b981" }}>{sumProgressRate.toFixed(1)}%</span>
+                                </div>
+                              </td>
                             </tr>
-                          );
-                        })
-                      }
+                          </>
+                        );
+                      })()}
                     </tbody>
                   </table>
                 </div>
