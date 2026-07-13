@@ -1624,20 +1624,20 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
                         <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.68rem", textAlign: "center" }}>
                           <thead>
                             <tr style={{ borderBottom: "1px solid var(--border-color)", color: "var(--text-secondary)", background: "rgba(255, 255, 255, 0.02)" }}>
-                              <th style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "120px", minWidth: "120px" }}>자산번호</th>
-                              <th style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "70px", minWidth: "70px" }}>분류명</th>
-                              <th style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "130px", minWidth: "130px" }}>품목명</th>
-                              <th style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "180px", minWidth: "180px" }}>규격</th>
-                              <th style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "85px", minWidth: "85px" }}>검수일자</th>
-                              <th style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "95px", minWidth: "95px" }}>금액</th>
-                              <th style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "80px", minWidth: "80px" }}>관리부서</th>
-                              <th style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "110px", minWidth: "110px" }}>설치부서</th>
-                              <th style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "100px", minWidth: "100px" }}>호실</th>
-                              <th style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "80px", minWidth: "80px" }}>항목</th>
-                              <th style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "85px", minWidth: "85px" }}>지출일자</th>
-                              <th style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "65px", minWidth: "65px" }}>SW여부</th>
-                              <th style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "110px", minWidth: "110px" }}>구입업체</th>
-                              <th style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "90px", minWidth: "90px" }}>AI∙DX 자산여부</th>
+                              <th style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "9%" }}>자산번호</th>
+                              <th style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "3%" }}>분류명</th>
+                              <th style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "5%" }}>품목명</th>
+                              <th style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "20%" }}>규격</th>
+                              <th style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "6%" }}>검수일자</th>
+                              <th style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "8%" }}>금액</th>
+                              <th style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "6%" }}>관리부서</th>
+                              <th style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "8%" }}>설치부서</th>
+                              <th style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "8%" }}>호실</th>
+                              <th style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "6%" }}>항목</th>
+                              <th style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "6%" }}>지출일자</th>
+                              <th style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "4%" }}>SW여부</th>
+                              <th style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "7%" }}>구입업체</th>
+                              <th style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "4%" }}>AI∙DX 자산여부</th>
                             </tr>
                           </thead>
                           <tbody>
@@ -1667,20 +1667,20 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
 
                               return (
                                 <tr key={item.id} style={{ borderBottom: "1px solid rgba(255,255,255,0.03)" }}>
-                                  <td style={{ padding: "0.4rem 0.3rem", fontFamily: "monospace", textAlign: "center", width: "120px", minWidth: "120px", whiteSpace: "nowrap" }}>{assetNumber}</td>
-                                  <td style={{ padding: "0.4rem 0.3rem", textAlign: "center", width: "70px", minWidth: "70px", whiteSpace: "nowrap" }}>{categoryName}</td>
-                                  <td style={{ padding: "0.4rem 0.3rem", fontWeight: "700", color: "#34D399", textAlign: "center", width: "130px", minWidth: "130px", whiteSpace: "nowrap" }}>{itemName}</td>
-                                  <td style={{ padding: "0.4rem 0.3rem", textAlign: "left", width: "180px", minWidth: "180px", maxWidth: "180px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={spec}>{spec}</td>
-                                  <td style={{ padding: "0.4rem 0.3rem", textAlign: "center", width: "85px", minWidth: "85px", whiteSpace: "nowrap" }}>{inspectDate}</td>
-                                  <td style={{ padding: "0.4rem 0.3rem", textAlign: "right", fontWeight: "700", color: "#FBBF24", width: "95px", minWidth: "95px", whiteSpace: "nowrap" }}>{price} 원</td>
-                                  <td style={{ padding: "0.4rem 0.3rem", textAlign: "center", width: "80px", minWidth: "80px", whiteSpace: "nowrap" }}>{deptName}</td>
-                                  <td style={{ padding: "0.4rem 0.3rem", textAlign: "center", width: "110px", minWidth: "110px", whiteSpace: "nowrap" }}>{installDept}</td>
-                                  <td style={{ padding: "0.4rem 0.3rem", textAlign: "center", width: "100px", minWidth: "100px", whiteSpace: "nowrap" }}>{roomNo}</td>
-                                  <td style={{ padding: "0.4rem 0.3rem", textAlign: "center", width: "80px", minWidth: "80px", whiteSpace: "nowrap" }}>{itemType}</td>
-                                  <td style={{ padding: "0.4rem 0.3rem", textAlign: "center", width: "85px", minWidth: "85px", whiteSpace: "nowrap" }}>{payDate}</td>
-                                  <td style={{ padding: "0.4rem 0.3rem", textAlign: "center", width: "65px", minWidth: "65px", whiteSpace: "nowrap" }}>{isSw}</td>
-                                  <td style={{ padding: "0.4rem 0.3rem", textAlign: "center", width: "110px", minWidth: "110px", whiteSpace: "nowrap" }}>{vendor}</td>
-                                  <td style={{ padding: "0.4rem 0.3rem", textAlign: "center", width: "90px", minWidth: "90px" }}>
+                                  <td style={{ padding: "0.4rem 0.3rem", fontFamily: "monospace", textAlign: "center", width: "9%", whiteSpace: "nowrap" }}>{assetNumber}</td>
+                                  <td style={{ padding: "0.4rem 0.3rem", textAlign: "center", width: "3%", whiteSpace: "nowrap" }}>{categoryName}</td>
+                                  <td style={{ padding: "0.4rem 0.3rem", fontWeight: "700", color: "#34D399", textAlign: "center", width: "5%", whiteSpace: "nowrap" }}>{itemName}</td>
+                                  <td style={{ padding: "0.4rem 0.3rem", textAlign: "left", width: "20%", maxWidth: "20vw", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={spec}>{spec}</td>
+                                  <td style={{ padding: "0.4rem 0.3rem", textAlign: "center", width: "6%", whiteSpace: "nowrap" }}>{inspectDate}</td>
+                                  <td style={{ padding: "0.4rem 0.3rem", textAlign: "right", fontWeight: "700", color: "#FBBF24", width: "8%", whiteSpace: "nowrap" }}>{price} 원</td>
+                                  <td style={{ padding: "0.4rem 0.3rem", textAlign: "center", width: "6%", whiteSpace: "nowrap" }}>{deptName}</td>
+                                  <td style={{ padding: "0.4rem 0.3rem", textAlign: "center", width: "8%", whiteSpace: "nowrap" }}>{installDept}</td>
+                                  <td style={{ padding: "0.4rem 0.3rem", textAlign: "center", width: "8%", whiteSpace: "nowrap" }}>{roomNo}</td>
+                                  <td style={{ padding: "0.4rem 0.3rem", textAlign: "center", width: "6%", whiteSpace: "nowrap" }}>{itemType}</td>
+                                  <td style={{ padding: "0.4rem 0.3rem", textAlign: "center", width: "6%", whiteSpace: "nowrap" }}>{payDate}</td>
+                                  <td style={{ padding: "0.4rem 0.3rem", textAlign: "center", width: "4%", whiteSpace: "nowrap" }}>{isSw}</td>
+                                  <td style={{ padding: "0.4rem 0.3rem", textAlign: "center", width: "7%", whiteSpace: "nowrap" }}>{vendor}</td>
+                                  <td style={{ padding: "0.4rem 0.3rem", textAlign: "center", width: "4%" }}>
                                     <input
                                       type="checkbox"
                                       checked={item.category === "ai_dx"}
