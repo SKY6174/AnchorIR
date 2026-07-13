@@ -6057,7 +6057,11 @@ export default function App() {
 
         // 필터링된 집행건들을 비목별 및 예산유형별로 합산
         matchedRecords.forEach(r => {
-          const bName = BUDGET_ITEM_NAMES.find(name => name.replace(/\s/g, "") === (r.expense_category || "").replace(/\s/g, "")) || r.expense_category;
+          const bName = BUDGET_ITEM_NAMES.find(name => {
+            const norm1 = (name || "").replace(/\s/g, "").replace(/[·∙•ㆍ]/g, "");
+            const norm2 = (r.expense_category || "").replace(/\s/g, "").replace(/[·∙•ㆍ]/g, "");
+            return norm1 === norm2;
+          }) || r.expense_category;
           if (bName) {
             if (!u.budgetDetails[bName]) {
               u.budgetDetails[bName] = {
