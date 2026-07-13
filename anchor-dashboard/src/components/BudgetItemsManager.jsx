@@ -431,7 +431,7 @@ export default function BudgetItemsManager({ projects, currentRole, onUpdateBudg
   return (
     <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 2fr", gap: "1.5rem" }}>
       {/* 좌측 단위과제 목록 */}
-      <div className="glass-card" style={{ maxHeight: isMobile ? "none" : "680px", overflowY: "auto" }}>
+      <div className="glass-card" style={{ maxHeight: isMobile ? "none" : "1200px", overflowY: "auto" }}>
         <h3 style={{ fontSize: "1.1rem", fontWeight: "800", marginBottom: "0.8rem", color: "var(--text-primary)" }}>단위과제 목록</h3>
 
         {/* 전체 예산 현황 요약 카드 추가 (클릭 시 전체사업 통계 조회) */}

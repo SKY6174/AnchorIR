@@ -11457,8 +11457,8 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
               <th rowSpan={2} style={{ verticalAlign: "middle", textAlign: "center", fontWeight: "800", color: "var(--accent-color)", borderBottom: "1px solid var(--border-color)" }}>합계</th>
             </tr>
             <tr style={{ background: "rgba(255,255,255,0.01)" }}>
-              <th style={{ textAlign: "center", fontSize: "0.7rem", color: "#60a5fa", borderBottom: "1px solid var(--border-color)", borderRight: "1px dashed rgba(255, 255, 255, 0.15)" }}>본사업</th>
-              <th style={{ textAlign: "center", fontSize: "0.7rem", color: "#34d399", borderBottom: "1px solid var(--border-color)", borderRight: "1.5px solid rgba(255, 255, 255, 0.2)" }}>이월사업</th>
+              <th style={{ textAlign: "center", fontSize: "0.7rem", color: darkMode ? "#60a5fa" : "#1d4ed8", borderBottom: "1px solid var(--border-color)", borderRight: "1px dashed rgba(255, 255, 255, 0.15)" }}>본사업</th>
+              <th style={{ textAlign: "center", fontSize: "0.7rem", color: darkMode ? "#34d399" : "#047857", borderBottom: "1px solid var(--border-color)", borderRight: "1.5px solid rgba(255, 255, 255, 0.2)" }}>이월사업</th>
             </tr>
           </thead>
           <tbody>
@@ -11488,10 +11488,10 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
                         const carryVal = val.carry || 0;
                         return (
                           <React.Fragment key={idx}>
-                            <td style={{ textAlign: "right", paddingRight: "0.5rem", color: "#60a5fa", borderRight: "1px dashed rgba(255, 255, 255, 0.15)", fontWeight: "700" }}>
+                            <td style={{ textAlign: "right", paddingRight: "0.5rem", color: darkMode ? "#60a5fa" : "#1d4ed8", borderRight: "1px dashed rgba(255, 255, 255, 0.15)", fontWeight: "700" }}>
                               {formatValue(mainVal)}
                             </td>
-                            <td style={{ textAlign: "right", paddingRight: "0.5rem", color: "#34d399", borderRight: "1.5px solid rgba(255, 255, 255, 0.2)", fontWeight: "700" }}>
+                            <td style={{ textAlign: "right", paddingRight: "0.5rem", color: darkMode ? "#34d399" : "#047857", borderRight: "1.5px solid rgba(255, 255, 255, 0.2)", fontWeight: "700" }}>
                               {formatValue(carryVal)}
                             </td>
                           </React.Fragment>
@@ -11532,10 +11532,10 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
                           const carryVal = v.carry || 0;
                           return (
                             <React.Fragment key={vIdx}>
-                              <td style={{ textAlign: "right", paddingRight: "0.5rem", color: "#60a5fa", borderRight: "1px dashed rgba(255, 255, 255, 0.15)" }}>
+                              <td style={{ textAlign: "right", paddingRight: "0.5rem", color: darkMode ? "#60a5fa" : "#1d4ed8", borderRight: "1px dashed rgba(255, 255, 255, 0.15)" }}>
                                 {formatValue(mainVal)}
                               </td>
-                              <td style={{ textAlign: "right", paddingRight: "0.5rem", color: "#34d399", borderRight: "1.5px solid rgba(255, 255, 255, 0.2)" }}>
+                              <td style={{ textAlign: "right", paddingRight: "0.5rem", color: darkMode ? "#34d399" : "#047857", borderRight: "1.5px solid rgba(255, 255, 255, 0.2)" }}>
                                 {formatValue(carryVal)}
                               </td>
                             </React.Fragment>
@@ -11569,10 +11569,10 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
                   const carryVal = v.carry || 0;
                   return (
                     <React.Fragment key={i}>
-                      <td style={{ textAlign: "right", paddingRight: "0.5rem", color: "#60a5fa", borderRight: "1px dashed rgba(255, 255, 255, 0.15)" }}>
+                      <td style={{ textAlign: "right", paddingRight: "0.5rem", color: darkMode ? "#60a5fa" : "#1d4ed8", borderRight: "1px dashed rgba(255, 255, 255, 0.15)" }}>
                         {formatValue(mainVal)}
                       </td>
-                      <td style={{ textAlign: "right", paddingRight: "0.5rem", color: "#34d399", borderRight: "1.5px solid rgba(255, 255, 255, 0.2)" }}>
+                      <td style={{ textAlign: "right", paddingRight: "0.5rem", color: darkMode ? "#34d399" : "#047857", borderRight: "1.5px solid rgba(255, 255, 255, 0.2)" }}>
                         {formatValue(carryVal)}
                       </td>
                     </React.Fragment>
