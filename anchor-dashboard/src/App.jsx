@@ -2405,6 +2405,16 @@ export default function App() {
   const [versionRequests, setVersionRequests] = useState([]);
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [approvalsTab, setApprovalsTab] = useState(() => {
+    const savedLogged = localStorage.getItem("anchor_logged_in_user");
+    if (savedLogged) {
+      try {
+        const u = JSON.parse(savedLogged);
+        const name = u.name || "";
+        if (["이규상", "임은애", "황수진", "최주명"].some(n => name.includes(n))) {
+          return "facility";
+        }
+      } catch (err) {}
+    }
     return localStorage.getItem("anchor_approvals_tab") || "budget";
   });
   const [reservations, setReservations] = useState([]);
@@ -8871,22 +8881,24 @@ export default function App() {
                     <div>
                       {/* 💡 [교육용 한글 주석] 예산변경과 시설사용 결재를 전환 선택할 수 있는 탭 세그먼트바를 렌더링합니다. */}
                       <div style={{ display: "flex", gap: "0.5rem", marginBottom: "1rem", borderBottom: "1px solid var(--border-color)", paddingBottom: "0.5rem" }}>
-                        <button
-                          onClick={() => setApprovalsTab("budget")}
-                          style={{
-                            padding: "0.4rem 1rem",
-                            fontSize: "0.75rem",
-                            fontWeight: "800",
-                            borderRadius: "0.3rem",
-                            border: "none",
-                            background: approvalsTab === "budget" ? "var(--accent-color)" : "transparent",
-                            color: approvalsTab === "budget" ? "white" : "var(--text-secondary)",
-                            cursor: "pointer",
-                            transition: "all 0.2s"
-                          }}
-                        >
-                          💰 예산 및 기획변경 승인
-                        </button>
+                        {!(currentUser && ["이규상", "임은애", "황수진", "최주명"].some(n => (currentUser.name || "").includes(n))) && (
+                          <button
+                            onClick={() => setApprovalsTab("budget")}
+                            style={{
+                              padding: "0.4rem 1rem",
+                              fontSize: "0.75rem",
+                              fontWeight: "800",
+                              borderRadius: "0.3rem",
+                              border: "none",
+                              background: approvalsTab === "budget" ? "var(--accent-color)" : "transparent",
+                              color: approvalsTab === "budget" ? "white" : "var(--text-secondary)",
+                              cursor: "pointer",
+                              transition: "all 0.2s"
+                            }}
+                          >
+                            💰 예산 및 기획변경 승인
+                          </button>
+                        )}
                         <button
                           onClick={() => setApprovalsTab("facility")}
                           style={{
@@ -8905,7 +8917,7 @@ export default function App() {
                         </button>
                       </div>
 
-                      {approvalsTab === "budget" ? (
+                      {approvalsTab === "budget" && !(currentUser && ["이규상", "임은애", "황수진", "최주명"].some(n => (currentUser.name || "").includes(n))) ? (
                         <div>
                           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.5rem" }}>
                             <h3 style={{ fontSize: "0.9rem", fontWeight: "800", color: "var(--accent-color)", borderLeft: "3px solid var(--accent-color)", paddingLeft: "0.4rem" }}>프로그램 기획 및 예산 변경 결재함</h3>
