@@ -53,6 +53,13 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
   // [1] 교육환경 관리 (공간 예약 시스템) 상태 및 핸들러
   // ==============================================================================
   const SPACES = ["AI∙DX다목적강의실", "AI∙DX강의실1", "AI∙DX강의실2", "울산늘봄누리센터", "앵커사업단회의실"];
+  const SPACE_ROOMS = {
+    "AI∙DX다목적강의실": "M-404",
+    "AI∙DX강의실1": "M-402",
+    "AI∙DX강의실2": "M-405",
+    "울산늘봄누리센터": "1-108",
+    "앵커사업단회의실": "앵커사업단"
+  };
   const [selectedSpace, setSelectedSpace] = useState(SPACES[0]);
   const [reservations, setReservations] = useState([]);
   const [isResModalOpen, setIsResModalOpen] = useState(false);
@@ -827,9 +834,16 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
                   }}
                 >
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                    <span style={{ fontSize: "0.75rem", fontWeight: isSelected ? "800" : "500", color: isSelected ? "var(--text-primary)" : "var(--text-secondary)" }}>
-                      {space}
-                    </span>
+                    <div style={{ display: "flex", flexDirection: "column", gap: "0.15rem" }}>
+                      {SPACE_ROOMS[space] && (
+                        <span style={{ fontSize: "0.58rem", color: isSelected ? "var(--accent-color)" : "#94A3B8", fontWeight: "700" }}>
+                          🚪 {SPACE_ROOMS[space]}
+                        </span>
+                      )}
+                      <span style={{ fontSize: "0.75rem", fontWeight: isSelected ? "800" : "500", color: isSelected ? "var(--text-primary)" : "var(--text-secondary)" }}>
+                        {space}
+                      </span>
+                    </div>
                     <span style={{ fontSize: "0.58rem", background: badgeBg, padding: "0.1rem 0.3rem", borderRadius: "3px", color: badgeColor, fontWeight: "700" }}>
                       대기 {count}건
                     </span>
@@ -846,7 +860,7 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
             <div style={{ background: "var(--panel-bg)", border: "1px solid var(--border-color)", borderRadius: "8px", padding: "1rem" }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.85rem" }}>
                 <h3 style={{ fontSize: "0.85rem", fontWeight: "800", color: "var(--accent-color)", display: "flex", alignItems: "center", gap: "0.3rem" }}>
-                  <Calendar size={18} /> 📅 {selectedSpace} 예약 월간 현황
+                  <Calendar size={18} /> 📅 {selectedSpace}{SPACE_ROOMS[selectedSpace] ? ` (${SPACE_ROOMS[selectedSpace]})` : ""} 예약 월간 현황
                 </h3>
                 
                 {/* 년/월 제어 바 */}
@@ -1021,7 +1035,7 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
             {/* 2. 하단: 선택된 날짜의 세부 예약 테이블 */}
             <div style={{ background: "var(--panel-bg)", border: "1px solid var(--border-color)", borderRadius: "8px", padding: "1rem" }}>
               <h3 style={{ fontSize: "0.82rem", fontWeight: "700", color: "#a78bfa", borderBottom: "1px solid var(--border-color)", paddingBottom: "0.5rem", marginBottom: "0.75rem", display: "flex", alignItems: "center", gap: "0.25rem" }}>
-                ⚡ [{selectedCalendarDate}] 예약 현황 목록 ({selectedSpace})
+                ⚡ [{selectedCalendarDate}] 예약 현황 목록 ({selectedSpace}{SPACE_ROOMS[selectedSpace] ? ` - ${SPACE_ROOMS[selectedSpace]}` : ""})
               </h3>
 
               {loading ? (
