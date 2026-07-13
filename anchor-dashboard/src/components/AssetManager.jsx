@@ -954,7 +954,7 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
           <p style={{ fontSize: "0.72rem", color: "var(--text-secondary)", marginTop: "0.25rem" }}>
             {activeSubTab === "education_env" 
               ? "앵커사업단 관리 교육공간의 대여 상태를 실시간 모니터링하고 중복 일정을 차단합니다." 
-              : "사업 재원으로 취득한 기자재 목록을 AI∙DX 자산과 기타 일반 자산으로 분류해 대장을 운용합니다."}
+              : "사업 재원으로 취득한 기자재 목록을 AI∙DX 자산으로 분류해 대장을 운용합니다."}
           </p>
         </div>
 
@@ -1409,25 +1409,6 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
                 }}
               >
                 ⚡ AI∙DX 특화 기자재
-              </button>
-              <button
-                onClick={() => setSelectedCategory("other")}
-                style={{
-                  padding: "0.45rem 1.2rem",
-                  borderRadius: "4px",
-                  border: "none",
-                  background: selectedCategory === "other" ? "var(--accent-color)" : "transparent",
-                  color: selectedCategory === "other" ? "white" : "var(--text-secondary)",
-                  fontSize: "0.72rem",
-                  fontWeight: "800",
-                  cursor: "pointer",
-                  transition: "all 0.15s ease",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "0.3rem"
-                }}
-              >
-                🏢 기타 일반 자산
               </button>
               <button
                 onClick={() => setSelectedCategory("scan")}
