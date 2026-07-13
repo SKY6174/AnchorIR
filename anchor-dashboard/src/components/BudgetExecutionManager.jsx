@@ -217,8 +217,8 @@ export default function BudgetExecutionManager({ projects = [], currentRole, sel
         }
 
         // 헤더 매칭 및 열 인덱스 판별
-        const headers = rows[0].map(h => (h || "").toString().trim().replace(/\s/g, ""));
-        const getIdx = (name) => headers.findIndex(h => h.includes(name));
+        const headers = Array.from(rows[0] || []).map(h => (h || "").toString().trim().replace(/\s/g, ""));
+        const getIdx = (name) => headers.findIndex(h => h && typeof h === "string" && h.includes(name));
 
         // 💡 [사용자 지산학 특화 4대 핵심 매핑 가드]
         // 사용자가 명시한 A열(0: 프로그램ID), C열(2: 비목항목명), H열(7: 집행일자), L열(11: 집행액)을 기본 매핑으로 삼고,
