@@ -364,6 +364,23 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
   const [equipments, setEquipments] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("all"); // "all", "ai_dx", "other", or "scan"
   const [isEquipModalOpen, setIsEquipModalOpen] = useState(false);
+  const [visibleColumns, setVisibleColumns] = useState({
+    asset_number: true,
+    category_name: true,
+    item_name: true,
+    spec: true,
+    inspect_date: true,
+    price: true,
+    dept_name: true,
+    install_dept: true,
+    room_no: true,
+    item_type: true,
+    pay_date: true,
+    is_sw: true,
+    vendor: true,
+    ai_dx: true
+  });
+  const [isColMenuOpen, setIsColMenuOpen] = useState(false);
   const [editingEquipId, setEditingEquipId] = useState(null);
   const [equipSearchQuery, setEquipSearchQuery] = useState("");
 
@@ -1425,7 +1442,87 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
                 
                 {/* 📋 전체 기자재대장용 엑셀 업로드/다운로드 추가 */}
                 {selectedCategory === "all" && (
-                  <div style={{ display: "flex", gap: "0.35rem" }}>
+                  <div style={{ display: "flex", gap: "0.35rem", alignItems: "center" }}>
+                    
+                    {/* 필드 가시성 설정 드롭다운 */}
+                    <div style={{ position: "relative" }}>
+                      <button
+                        onClick={() => setIsColMenuOpen(!isColMenuOpen)}
+                        style={{
+                          padding: "0.35rem 0.65rem",
+                          background: "rgba(255, 255, 255, 0.05)",
+                          border: "1px solid var(--border-color)",
+                          borderRadius: "4px",
+                          color: "var(--text-secondary)",
+                          fontSize: "0.68rem",
+                          fontWeight: "800",
+                          cursor: "pointer",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "0.25rem",
+                          transition: "all 0.15s ease"
+                        }}
+                      >
+                        ⚙️ 필드 선택
+                      </button>
+                      
+                      {isColMenuOpen && (
+                        <div style={{
+                          position: "absolute",
+                          top: "100%",
+                          right: 0,
+                          marginTop: "0.4rem",
+                          background: "var(--panel-bg)",
+                          border: "1px solid var(--border-color)",
+                          borderRadius: "8px",
+                          boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.5)",
+                          padding: "0.6rem",
+                          zIndex: 99,
+                          width: "160px",
+                          display: "flex",
+                          flexDirection: "column",
+                          gap: "0.35rem"
+                        }}>
+                          <div style={{ fontSize: "0.65rem", color: "var(--accent-color)", fontWeight: "800", borderBottom: "1px solid rgba(255,255,255,0.08)", paddingBottom: "0.3rem", marginBottom: "0.2rem" }}>
+                            표시할 필드 선택
+                          </div>
+                          {Object.keys(visibleColumns).map((colKey) => {
+                            const label = {
+                              asset_number: "자산번호",
+                              category_name: "분류명",
+                              item_name: "품목명",
+                              spec: "규격",
+                              inspect_date: "검수일자",
+                              price: "금액",
+                              dept_name: "관리부서",
+                              install_dept: "설치부서",
+                              room_no: "호실",
+                              item_type: "항목",
+                              pay_date: "지출일자",
+                              is_sw: "SW여부",
+                              vendor: "구입업체",
+                              ai_dx: "AI∙DX 자산여부"
+                            }[colKey];
+
+                            return (
+                              <label key={colKey} style={{ display: "flex", alignItems: "center", gap: "0.4rem", fontSize: "0.65rem", color: "var(--text-primary)", cursor: "pointer" }}>
+                                <input
+                                  type="checkbox"
+                                  checked={visibleColumns[colKey]}
+                                  onChange={() => setVisibleColumns({
+                                    ...visibleColumns,
+                                    [colKey]: !visibleColumns[colKey]
+                                  })}
+                                  style={{ accentColor: "var(--accent-color)" }}
+                                />
+                                {label}
+                              </label>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+
                     <button
                       onClick={handleDownloadEquipTemplate}
                       style={{
@@ -1624,20 +1721,20 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
                         <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.68rem", textAlign: "center" }}>
                           <thead>
                             <tr style={{ borderBottom: "1px solid var(--border-color)", color: "var(--text-secondary)", background: "rgba(255, 255, 255, 0.02)" }}>
-                              <th style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "9%" }}>자산번호</th>
-                              <th style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "3%" }}>분류명</th>
-                              <th style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "5%" }}>품목명</th>
-                              <th style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "20%" }}>규격</th>
-                              <th style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "6%" }}>검수일자</th>
-                              <th style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "8%" }}>금액</th>
-                              <th style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "6%" }}>관리부서</th>
-                              <th style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "8%" }}>설치부서</th>
-                              <th style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "8%" }}>호실</th>
-                              <th style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "6%" }}>항목</th>
-                              <th style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "6%" }}>지출일자</th>
-                              <th style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "4%" }}>SW여부</th>
-                              <th style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "7%" }}>구입업체</th>
-                              <th style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "4%" }}>AI∙DX 자산여부</th>
+                              {visibleColumns.asset_number && <th style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "9%" }}>자산번호</th>}
+                              {visibleColumns.category_name && <th style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "3%" }}>분류명</th>}
+                              {visibleColumns.item_name && <th style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "5%" }}>품목명</th>}
+                              {visibleColumns.spec && <th style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "20%" }}>규격</th>}
+                              {visibleColumns.inspect_date && <th style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "6%" }}>검수일자</th>}
+                              {visibleColumns.price && <th style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "8%" }}>금액</th>}
+                              {visibleColumns.dept_name && <th style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "6%" }}>관리부서</th>}
+                              {visibleColumns.install_dept && <th style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "8%" }}>설치부서</th>}
+                              {visibleColumns.room_no && <th style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "8%" }}>호실</th>}
+                              {visibleColumns.item_type && <th style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "6%" }}>항목</th>}
+                              {visibleColumns.pay_date && <th style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "6%" }}>지출일자</th>}
+                              {visibleColumns.is_sw && <th style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "4%" }}>SW여부</th>}
+                              {visibleColumns.vendor && <th style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "7%" }}>구입업체</th>}
+                              {visibleColumns.ai_dx && <th style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "4%" }}>AI∙DX 자산여부</th>}
                             </tr>
                           </thead>
                           <tbody>
@@ -1667,32 +1764,34 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
 
                               return (
                                 <tr key={item.id} style={{ borderBottom: "1px solid rgba(255,255,255,0.03)" }}>
-                                  <td style={{ padding: "0.4rem 0.3rem", fontFamily: "monospace", textAlign: "center", width: "9%", whiteSpace: "nowrap" }}>{assetNumber}</td>
-                                  <td style={{ padding: "0.4rem 0.3rem", textAlign: "center", width: "3%", whiteSpace: "nowrap" }}>{categoryName}</td>
-                                  <td style={{ padding: "0.4rem 0.3rem", fontWeight: "700", color: "#34D399", textAlign: "center", width: "5%", whiteSpace: "nowrap" }}>{itemName}</td>
-                                  <td style={{ padding: "0.4rem 0.3rem", textAlign: "left", width: "20%", maxWidth: "20vw", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={spec}>{spec}</td>
-                                  <td style={{ padding: "0.4rem 0.3rem", textAlign: "center", width: "6%", whiteSpace: "nowrap" }}>{inspectDate}</td>
-                                  <td style={{ padding: "0.4rem 0.3rem", textAlign: "right", fontWeight: "700", color: "#FBBF24", width: "8%", whiteSpace: "nowrap" }}>{price} 원</td>
-                                  <td style={{ padding: "0.4rem 0.3rem", textAlign: "center", width: "6%", whiteSpace: "nowrap" }}>{deptName}</td>
-                                  <td style={{ padding: "0.4rem 0.3rem", textAlign: "center", width: "8%", whiteSpace: "nowrap" }}>{installDept}</td>
-                                  <td style={{ padding: "0.4rem 0.3rem", textAlign: "center", width: "8%", whiteSpace: "nowrap" }}>{roomNo}</td>
-                                  <td style={{ padding: "0.4rem 0.3rem", textAlign: "center", width: "6%", whiteSpace: "nowrap" }}>{itemType}</td>
-                                  <td style={{ padding: "0.4rem 0.3rem", textAlign: "center", width: "6%", whiteSpace: "nowrap" }}>{payDate}</td>
-                                  <td style={{ padding: "0.4rem 0.3rem", textAlign: "center", width: "4%", whiteSpace: "nowrap" }}>{isSw}</td>
-                                  <td style={{ padding: "0.4rem 0.3rem", textAlign: "center", width: "7%", whiteSpace: "nowrap" }}>{vendor}</td>
-                                  <td style={{ padding: "0.4rem 0.3rem", textAlign: "center", width: "4%" }}>
-                                    <input
-                                      type="checkbox"
-                                      checked={item.category === "ai_dx"}
-                                      disabled={currentRole.id === "GUEST"}
-                                      onChange={() => toggleEquipCategory(item.id, item.category)}
-                                      style={{
-                                        cursor: currentRole.id === "GUEST" ? "not-allowed" : "pointer",
-                                        transform: "scale(1.15)",
-                                        accentColor: "#3B82F6"
-                                      }}
-                                    />
-                                  </td>
+                                  {visibleColumns.asset_number && <td style={{ padding: "0.4rem 0.3rem", fontFamily: "monospace", textAlign: "center", width: "9%", whiteSpace: "nowrap" }}>{assetNumber}</td>}
+                                  {visibleColumns.category_name && <td style={{ padding: "0.4rem 0.3rem", textAlign: "center", width: "3%", whiteSpace: "nowrap" }}>{categoryName}</td>}
+                                  {visibleColumns.item_name && <td style={{ padding: "0.4rem 0.3rem", fontWeight: "700", color: "#34D399", textAlign: "center", width: "5%", whiteSpace: "nowrap" }}>{itemName}</td>}
+                                  {visibleColumns.spec && <td style={{ padding: "0.4rem 0.3rem", textAlign: "left", width: "20%", maxWidth: "20vw", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={spec}>{spec}</td>}
+                                  {visibleColumns.inspect_date && <td style={{ padding: "0.4rem 0.3rem", textAlign: "center", width: "6%", whiteSpace: "nowrap" }}>{inspectDate}</td>}
+                                  {visibleColumns.price && <td style={{ padding: "0.4rem 0.3rem", textAlign: "right", fontWeight: "700", color: "#FBBF24", width: "8%", whiteSpace: "nowrap" }}>{price} 원</td>}
+                                  {visibleColumns.dept_name && <td style={{ padding: "0.4rem 0.3rem", textAlign: "center", width: "6%", whiteSpace: "nowrap" }}>{deptName}</td>}
+                                  {visibleColumns.install_dept && <td style={{ padding: "0.4rem 0.3rem", textAlign: "center", width: "8%", whiteSpace: "nowrap" }}>{installDept}</td>}
+                                  {visibleColumns.room_no && <td style={{ padding: "0.4rem 0.3rem", textAlign: "center", width: "8%", whiteSpace: "nowrap" }}>{roomNo}</td>}
+                                  {visibleColumns.item_type && <td style={{ padding: "0.4rem 0.3rem", textAlign: "center", width: "6%", whiteSpace: "nowrap" }}>{itemType}</td>}
+                                  {visibleColumns.pay_date && <td style={{ padding: "0.4rem 0.3rem", textAlign: "center", width: "6%", whiteSpace: "nowrap" }}>{payDate}</td>}
+                                  {visibleColumns.is_sw && <td style={{ padding: "0.4rem 0.3rem", textAlign: "center", width: "4%", whiteSpace: "nowrap" }}>{isSw}</td>}
+                                  {visibleColumns.vendor && <td style={{ padding: "0.4rem 0.3rem", textAlign: "center", width: "7%", whiteSpace: "nowrap" }}>{vendor}</td>}
+                                  {visibleColumns.ai_dx && (
+                                    <td style={{ padding: "0.4rem 0.3rem", textAlign: "center", width: "4%" }}>
+                                      <input
+                                        type="checkbox"
+                                        checked={item.category === "ai_dx"}
+                                        disabled={currentRole.id === "GUEST"}
+                                        onChange={() => toggleEquipCategory(item.id, item.category)}
+                                        style={{
+                                          cursor: currentRole.id === "GUEST" ? "not-allowed" : "pointer",
+                                          transform: "scale(1.15)",
+                                          accentColor: "#3B82F6"
+                                        }}
+                                      />
+                                    </td>
+                                  )}
                                 </tr>
                               );
                             })}
