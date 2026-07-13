@@ -1880,8 +1880,8 @@ export default function ProcurementManager({
           <div className="glass-card" style={{ 
             padding: "0.85rem 1rem", 
             borderRadius: "10px", 
-            background: "rgba(30, 41, 59, 0.4)", // 차분한 다크 네이비 글래스모피즘
-            border: "1px solid rgba(255, 255, 255, 0.08)",
+            background: "var(--card-bg)", // 테마 적응형 카드 배경
+            border: "1px solid var(--border-color)", // 테마 적응형 보더
             display: "flex",
             flexDirection: "column",
             gap: "0.5rem"
@@ -1926,8 +1926,8 @@ export default function ProcurementManager({
                       display: "flex", 
                       alignItems: "center", 
                       gap: "0.25rem",
-                      background: "rgba(255, 255, 255, 0.04)",
-                      border: "1px solid var(--border-color)",
+                      background: "var(--body-bg)", // 카드의 배경색과 확실한 구분을 주기 위해 body-bg 적용
+                      border: "1.5px solid var(--border-color)", // 외각 테두리를 선명하게 1.5px 보더 지정
                       borderRadius: "6px",
                       padding: "0.35rem 0.5rem",
                       width: "100%",
@@ -1956,9 +1956,9 @@ export default function ProcurementManager({
                   </div>
                   {idx < arr.length - 1 && (
                     <span style={{ 
-                      fontSize: "0.85rem", 
-                      color: "rgba(255, 255, 255, 0.2)", 
-                      fontWeight: "800",
+                      fontSize: "1rem", 
+                      color: "var(--text-secondary)", // 라이트/다크 모드 전체 가시성 연동
+                      fontWeight: "900",
                       userSelect: "none",
                       padding: "0 0.1rem"
                     }}>➔</span>
@@ -2777,8 +2777,8 @@ export default function ProcurementManager({
                       display: "flex", 
                       alignItems: "center", 
                       gap: "0.25rem",
-                      background: step.no === "04" ? "rgba(16, 185, 129, 0.08)" : "rgba(255, 255, 255, 0.04)",
-                      border: step.no === "04" ? "1px solid var(--accent-color)" : "1px solid var(--border-color)",
+                      background: step.no === "04" ? "rgba(16, 185, 129, 0.12)" : "var(--body-bg)", // 확실한 대비를 위해 body-bg 적용
+                      border: step.no === "04" ? "1.5px solid var(--accent-color)" : "1.5px solid var(--border-color)", // 1.5px로 외곽선 보강
                       borderRadius: "6px",
                       padding: "0.35rem 0.5rem",
                       width: "100%",
@@ -2807,16 +2807,16 @@ export default function ProcurementManager({
                     }}>{step.dept}</span>
                     <span style={{ 
                       fontSize: "0.55rem", 
-                      color: "rgba(255, 255, 255, 0.4)", 
+                      color: "var(--text-secondary)", // 라이트/다크 모드 전체 가시성 연동
                       marginTop: "0.05rem", 
                       whiteSpace: "nowrap" 
                     }}>{step.desc}</span>
                   </div>
                   {idx < arr.length - 1 && (
                     <span style={{ 
-                      fontSize: "0.85rem", 
-                      color: "rgba(255, 255, 255, 0.2)", 
-                      fontWeight: "800",
+                      fontSize: "1rem", 
+                      color: "var(--text-secondary)", // 라이트/다크 모드 전체 가시성 연동
+                      fontWeight: "900",
                       userSelect: "none",
                       padding: "0 0.1rem"
                     }}>➔</span>
@@ -3752,8 +3752,8 @@ export default function ProcurementManager({
                       display: "flex", 
                       alignItems: "center", 
                       gap: "0.25rem",
-                      background: step.no === "04" ? "rgba(16, 185, 129, 0.08)" : "rgba(255, 255, 255, 0.04)",
-                      border: step.no === "04" ? "1px solid var(--accent-color)" : "1px solid var(--border-color)",
+                      background: step.no === "04" ? "rgba(16, 185, 129, 0.12)" : "var(--body-bg)", // 확실한 대비를 위해 body-bg 적용
+                      border: step.no === "04" ? "1.5px solid var(--accent-color)" : "1.5px solid var(--border-color)", // 1.5px로 외곽선 보강
                       borderRadius: "6px",
                       padding: "0.35rem 0.5rem",
                       width: "100%",
@@ -3782,16 +3782,16 @@ export default function ProcurementManager({
                     }}>{step.dept}</span>
                     <span style={{ 
                       fontSize: "0.55rem", 
-                      color: "rgba(255, 255, 255, 0.4)", 
+                      color: "var(--text-secondary)", // 라이트/다크 모드 전체 가시성 연동
                       marginTop: "0.05rem", 
                       whiteSpace: "nowrap" 
                     }}>{step.desc}</span>
                   </div>
                   {idx < arr.length - 1 && (
                     <span style={{ 
-                      fontSize: "0.85rem", 
-                      color: "rgba(255, 255, 255, 0.2)", 
-                      fontWeight: "800",
+                      fontSize: "1rem", 
+                      color: "var(--text-secondary)", // 라이트/다크 모드 전체 가시성 연동
+                      fontWeight: "900",
                       userSelect: "none",
                       padding: "0 0.1rem"
                     }}>➔</span>
