@@ -10455,6 +10455,7 @@ export default function App() {
                 onChangeInvestmentSubTab={setInvestmentSubTab}
                 projects={projects}
                 selectedYear={selectedYear}
+                darkMode={darkMode}
               />
             ) : budgetSubTab === "budget_categories" ? (
               <BudgetItemsManager
@@ -11136,7 +11137,7 @@ const normalizeCategoryName = (name) => {
   return name.replace(/[∙•]/g, "·").trim();
 };
 
-function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, projects, selectedYear }) {
+function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, projects, selectedYear, darkMode }) {
   const [expandedUnits, setExpandedUnits] = React.useState({});
 
   const toggleUnit = (id) => {
