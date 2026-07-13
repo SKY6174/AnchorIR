@@ -8104,7 +8104,7 @@ export default function App() {
 
               {projectsSubTab === "unit_status" && (
                 <div className="table-panel">
-                  <table className="custom-table" style={{ fontSize: "0.8rem" }}>
+                  <table className="custom-table" style={{ fontSize: "0.85rem" }}>
                     <thead>
                       <tr style={{ background: "rgba(255,255,255,0.02)" }}>
                         <th rowSpan={2} style={{ verticalAlign: "middle", borderBottom: "1px solid var(--border-color)", borderRight: "1px solid var(--border-color)" }}>단위과제</th>
@@ -8116,16 +8116,16 @@ export default function App() {
                         </th>
                       </tr>
                       <tr>
-                        <th style={{ fontSize: "0.75rem", textAlign: "right", paddingRight: "1rem" }}>본예산</th>
-                        {selectedYear >= 2 && <th style={{ fontSize: "0.75rem", textAlign: "right", paddingRight: "1rem" }}>이월예산</th>}
-                        <th style={{ fontSize: "0.75rem", textAlign: "right", paddingRight: "1rem" }}>총 배정액</th>
-                        <th style={{ fontSize: "0.75rem", textAlign: "right", paddingRight: "1rem" }}>누적 집행</th>
-                        <th style={{ fontSize: "0.75rem", borderRight: "1px solid var(--border-color)", textAlign: "right", paddingRight: "1rem" }}>집행률</th>
-                        <th style={{ fontSize: "0.75rem", textAlign: "center" }}>총 개수</th>
-                        <th style={{ fontSize: "0.75rem", textAlign: "center" }}>준비</th>
-                        <th style={{ fontSize: "0.75rem", textAlign: "center" }}>진행</th>
-                        <th style={{ fontSize: "0.75rem", textAlign: "center" }}>완료</th>
-                        <th style={{ fontSize: "0.75rem" }}>진행률</th>
+                        <th style={{ fontSize: "0.8rem", textAlign: "right", paddingRight: "1rem" }}>본예산</th>
+                        {selectedYear >= 2 && <th style={{ fontSize: "0.8rem", textAlign: "right", paddingRight: "1rem" }}>이월예산</th>}
+                        <th style={{ fontSize: "0.8rem", textAlign: "right", paddingRight: "1rem" }}>총 배정액</th>
+                        <th style={{ fontSize: "0.8rem", textAlign: "right", paddingRight: "1rem" }}>누적 집행</th>
+                        <th style={{ fontSize: "0.8rem", borderRight: "1px solid var(--border-color)", textAlign: "right", paddingRight: "1rem" }}>집행률</th>
+                        <th style={{ fontSize: "0.8rem", textAlign: "center" }}>총 개수</th>
+                        <th style={{ fontSize: "0.8rem", textAlign: "center" }}>준비</th>
+                        <th style={{ fontSize: "0.8rem", textAlign: "center" }}>진행</th>
+                        <th style={{ fontSize: "0.8rem", textAlign: "center" }}>완료</th>
+                        <th style={{ fontSize: "0.8rem" }}>진행률</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -8280,7 +8280,7 @@ export default function App() {
                                           <div style={{ width: "40px", height: "6px", background: "rgba(255,255,255,0.1)", borderRadius: "3px", overflow: "hidden" }}>
                                             <div style={{ width: `${Math.min(progressRate, 100)}%`, height: "100%", background: "#10b981" }} />
                                           </div>
-                                          <span style={{ fontSize: "0.75rem", fontFamily: "var(--font-data)", fontWeight: "700", color: "#10b981" }}>{progressRate.toFixed(1)}%</span>
+                                          <span style={{ fontSize: "0.8rem", fontFamily: "var(--font-data)", fontWeight: "700", color: "#10b981" }}>{progressRate.toFixed(1)}%</span>
                                         </div>
                                       </td>
                                     </>
@@ -8327,7 +8327,7 @@ export default function App() {
                                           <div style={{ width: "40px", height: "6px", background: "rgba(255,255,255,0.1)", borderRadius: "3px", overflow: "hidden" }}>
                                             <div style={{ width: `${Math.min(sumProgressRate, 100)}%`, height: "100%", background: "#10b981" }} />
                                           </div>
-                                          <span style={{ fontSize: "0.75rem", fontFamily: "var(--font-data)", fontWeight: "800", color: "#10b981" }}>{sumProgressRate.toFixed(1)}%</span>
+                                          <span style={{ fontSize: "0.8rem", fontFamily: "var(--font-data)", fontWeight: "800", color: "#10b981" }}>{sumProgressRate.toFixed(1)}%</span>
                                         </div>
                                       </td>
                             </tr>
