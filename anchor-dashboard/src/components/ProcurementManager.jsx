@@ -1,6 +1,10 @@
 import React, { useState } from "react";
 import { Plus, Trash2, Info, ListFilter, ArrowUpDown, Edit } from "lucide-react";
 import { supabase } from "../supabaseClient"; // Supabase 클라이언트 연동 (요건 3 반영)
+import * as pdfjsLib from "pdfjs-dist";
+
+// PDF 텍스트 추출을 위한 글로벌 워커 스크립트 연결
+pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdn.jsdelivr.net/npm/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.mjs`;
 
 // 1차년도 및 2차년도 단위과제별 연계 프로그램 데이터셋
 const PROGRAMS_BY_UNIT = {
@@ -79,12 +83,15 @@ const PROGRAMS_BY_UNIT = {
 const runAiMockAnalysis = (docType, textContent, itemName, deptName, totalPrice, fileName = "") => {
   const randomNo = Math.floor(Math.random() * 900) + 100;
   const priceThousand = totalPrice ? Math.round(totalPrice / 1000) : 120000;
-  const fName = (fileName || textContent || "").toLowerCase();
+  const fName = (fileName || "").toLowerCase();
+  const bodyText = (textContent || "").toLowerCase();
   const iName = (itemName || "").toLowerCase();
 
   // [AI 실물 문서 요약 추출 자동 연동 분기]
   // 1) 20DoF 로봇 핸드 문서 감지
-  if (fName.includes("로봇") || fName.includes("robot") || fName.includes("hand") || iName.includes("로봇") || iName.includes("robot") || iName.includes("hand")) {
+  if (fName.includes("로봇") || fName.includes("robot") || fName.includes("hand") || 
+      bodyText.includes("로봇") || bodyText.includes("robot") || bodyText.includes("hand") || 
+      iName.includes("로봇") || iName.includes("robot") || iName.includes("hand")) {
     if (docType === "proposal") {
       return {
         docNo: "앵커사업단운영팀-1883",
@@ -147,7 +154,9 @@ const runAiMockAnalysis = (docType, textContent, itemName, deptName, totalPrice,
   }
 
   // 2) A6000 워크스테이션 문서 감지
-  if (fName.includes("a6000") || fName.includes("워크스테이션") || fName.includes("workstation") || iName.includes("a6000") || iName.includes("워크스테이션") || iName.includes("workstation")) {
+  if (fName.includes("a6000") || fName.includes("워크스테이션") || fName.includes("workstation") || 
+      bodyText.includes("a6000") || bodyText.includes("워크스테이션") || bodyText.includes("workstation") || 
+      iName.includes("a6000") || iName.includes("워크스테이션") || iName.includes("workstation")) {
     if (docType === "proposal") {
       return {
         docNo: "UC-EQ-P-110",
@@ -193,7 +202,9 @@ const runAiMockAnalysis = (docType, textContent, itemName, deptName, totalPrice,
   }
 
   // 3) Physical AIoT 교육기자재 문서 감지
-  if (fName.includes("aiot") || fName.includes("교육기자재") || iName.includes("aiot") || iName.includes("교육기자재")) {
+  if (fName.includes("aiot") || fName.includes("교육기자재") || 
+      bodyText.includes("aiot") || bodyText.includes("교육기자재") || 
+      iName.includes("aiot") || iName.includes("교육기자재")) {
     if (docType === "proposal") {
       return {
         docNo: "UC-EQ-P-120",
@@ -239,7 +250,9 @@ const runAiMockAnalysis = (docType, textContent, itemName, deptName, totalPrice,
   }
 
   // 4) Physical AI 실습장비 문서 감지
-  if (fName.includes("mfec") || fName.includes("실습장비") || iName.includes("mfec") || iName.includes("실습장비")) {
+  if (fName.includes("mfec") || fName.includes("실습장비") || 
+      bodyText.includes("mfec") || bodyText.includes("실습장비") || 
+      iName.includes("mfec") || iName.includes("실습장비")) {
     if (docType === "proposal") {
       return {
         docNo: "UC-EQ-P-130",
@@ -1450,8 +1463,30 @@ export default function ProcurementManager({
           url: fileItem.url
         };
 
-        // 로컬 임시 바이너리가 첨부되어 있을 때만 Supabase Storage 업로드 실행
+        // 1. 업로드 전 본문 텍스트 추출용 변수 초기화
+        let textContent = "";
+
+        // 로컬 임시 바이너리가 첨부되어 있을 때만 Supabase Storage 업로드 및 본문 텍스트 파싱 실행
         if (fileItem.fileObj) {
+          // PDF 파일의 경우 브라우저 내 라이브러리로 텍스트 파싱 진행 (내용 기반 분석 요건 충족)
+          if (fileItem.fileObj.type === "application/pdf" || fileItem.fileObj.name.toLowerCase().endsWith(".pdf")) {
+            try {
+              const arrayBuffer = await fileItem.fileObj.arrayBuffer();
+              const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
+              const pdf = await loadingTask.promise;
+              let fullText = "";
+              for (let i = 1; i <= pdf.numPages; i++) {
+                const page = await pdf.getPage(i);
+                const text = await page.getTextContent();
+                const pageText = text.items.map(item => item.str).join(" ");
+                fullText += pageText + "\n";
+              }
+              textContent = fullText.trim();
+            } catch (pdfErr) {
+              console.error("PDF 본문 텍스트 추출 실패:", pdfErr);
+            }
+          }
+
           const uploadResult = await uploadFileToSupabase(docType, fileItem.fileObj, (progress) => {
             // 개별 파일의 프로그레스 업데이트
             setFormData(prev => {
@@ -1476,7 +1511,7 @@ export default function ProcurementManager({
           aiResult = await callGeminiSingleAnalysis(
             docType,
             uploadedFileMeta.name,
-            "",
+            textContent, // 파일명에 의존하지 않고 추출된 텍스트 본문 전달
             formData.name,
             formData.deptName,
             totalPrice
@@ -1485,7 +1520,7 @@ export default function ProcurementManager({
           aiResult = await callOpenAiGpt(
             docType,
             uploadedFileMeta.name,
-            "",
+            textContent, // 파일명에 의존하지 않고 추출된 텍스트 본문 전달
             formData.name,
             formData.deptName,
             totalPrice
@@ -1494,7 +1529,7 @@ export default function ProcurementManager({
           aiResult = await callDebateAiAnalysis(
             docType,
             uploadedFileMeta.name,
-            "",
+            textContent, // 파일명에 의존하지 않고 추출된 텍스트 본문 전달
             formData.name,
             formData.deptName,
             totalPrice
