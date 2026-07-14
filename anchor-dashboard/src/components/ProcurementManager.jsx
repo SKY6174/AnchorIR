@@ -131,7 +131,7 @@ const runAiMockAnalysis = (docType, textContent, itemName, deptName, totalPrice,
           "실시간 피드백 센서 및 멀티 모달 파지 알고리즘 호환 보장",
           "2년간 무상 온사이트 하자보증 및 설치 기술지원 제공 조건"
         ],
-        draftDate: "2026-07-06",
+        draftDate: "2026-07-08",
         approveDate: "2026-07-08",
         descriptionPurpose: "[AI 자동완성] 로봇 핸드 핵심 기자재를 도입하여 지능형 로봇 및 정밀 제어를 위한 IT-OT 통합 하드웨어 실습 인프라를 확보하고 전략 과제를 완성함.",
         descriptionPlan: "도입 완료 후 AID-X지원센터 내 정밀 로봇 실습 교육 및 기자재 안정적 운용을 통해 산학 협력 경쟁력을 강화하고 연간 120명 이상의 전문 인력 실습 활용 기대."
@@ -447,7 +447,7 @@ const callOpenAiGpt = async (docType, fileName, textContent, itemName, deptName,
       "unit": "해당 단위과제 코드 (예: B2, C2 등 정확한 코드 추출)",
       "budget": "도입 소요예산 (예: 17,600천원 형식)",
       "specs": ["조달 위탁 요청 기술 사양 핵심 3가지"],
-      "draftDate": "기안일자 (예: YYYY-MM-DD 형식)",
+      "draftDate": "기안일자 (예: YYYY-MM-DD 형식. 특히 문서 내의 '작성일' 또는 '기안일' 항목(예: '작성일 2026년 07월 08일')에서 날짜를 우선적으로 파싱하여 YYYY-MM-DD 형식으로 표기)",
       "approveDate": "최종 결재 승인일자 (예: YYYY-MM-DD 형식, 없으면 2026-07-08 형식 생성)",
       "descriptionPurpose": "기자재 도입 목적 및 타당성 2문장 요약",
       "descriptionPlan": "향후 활용 및 인력 양성 기대효과 계획 2문장 요약"
@@ -588,7 +588,7 @@ const callGeminiSingleAnalysis = async (docType, fileName, textContent, itemName
       "unit": "해당 단위과제 코드 (예: B2, C2 등 정확한 코드 추출)",
       "budget": "도입 소요예산 (예: 17,600천원 형식)",
       "specs": ["조달 위탁 요청 기술 사양 핵심 3가지"],
-      "draftDate": "기안일자 (예: YYYY-MM-DD 형식)",
+      "draftDate": "기안일자 (예: YYYY-MM-DD 형식. 특히 문서 내의 '작성일' 또는 '기안일' 항목(예: '작성일 2026년 07월 08일')에서 날짜를 우선적으로 파싱하여 YYYY-MM-DD 형식으로 표기)",
       "approveDate": "최종 결재 승인일자 (예: YYYY-MM-DD 형식, 없으면 2026-07-08 형식 생성)",
       "descriptionPurpose": "기자재 도입 목적 및 타당성 2문장 요약",
       "descriptionPlan": "향후 활용 및 인력 양성 기대효과 계획 2문장 요약"
