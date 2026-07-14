@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Check, ClipboardList, PenTool, Layers, LayoutList, Info, HelpCircle } from "lucide-react";
+import { Download, Check, ClipboardList, PenTool, Layers, LayoutList, Info, HelpCircle } from "lucide-react";
+import * as XLSX from "xlsx";
 
 // 담당연구원이 2명일 때 정/부 표기 헬퍼 함수
 const formatAssignee = (assigneeText) => {
@@ -334,6 +335,101 @@ export default function PDCAManager({
       setSelectedVersionId("current");
     }
   }, [selectedProgId, selectedYear, supabase]);
+
+  // 프로그램별 P-D-C-A 양식 엑셀 다운로드 (Excel Export)
+  const handleExportToExcel = () => {
+    if (!activeProg) return;
+
+    // 1. 기본 정보 행 정의
+    const headerRows = [
+      ["[UC ANCHOR] 프로그램 PDCA 종합 보고서"],
+      [],
+      ["1. 기본 정보"],
+      ["단위과제명", activeProg.unitTitle || ""],
+      ["프로그램 ID", activeProg.id],
+      ["프로그램명", activeProg.title],
+      ["담당 연구원", formatAssignee(activeProg.assignees?.[selectedYear] !== undefined ? activeProg.assignees[selectedYear] : activeProg.assignee)],
+      [],
+      ["2. P단계 (예산 기획 및 세부 추진계획)"],
+      ["구분", "본예산 (원)", "이월예산 (원)", "합계 (원)"],
+      ["국비(국고)", Number(inputBudgetNational || 0), Number(inputBudgetCarryNational || 0), Number(inputBudgetNational || 0) + Number(inputBudgetCarryNational || 0)],
+      ["지자체 시비", Number(inputBudgetCity || 0), Number(inputBudgetCarryCity || 0), Number(inputBudgetCity || 0) + Number(inputBudgetCarryCity || 0)],
+      ["외부사업비", Number(inputBudgetExternal || 0), Number(inputBudgetCarryExternal || 0), Number(inputBudgetExternal || 0) + Number(inputBudgetCarryExternal || 0)],
+      ["합계", 
+        Number(inputBudgetNational || 0) + Number(inputBudgetCity || 0) + Number(inputBudgetExternal || 0),
+        Number(inputBudgetCarryNational || 0) + Number(inputBudgetCarryCity || 0) + Number(inputBudgetCarryExternal || 0),
+        Number(inputBudgetNational || 0) + Number(inputBudgetCity || 0) + Number(inputBudgetExternal || 0) + Number(inputBudgetCarryNational || 0) + Number(inputBudgetCarryCity || 0) + Number(inputBudgetCarryExternal || 0)
+      ],
+      [],
+      ["2-1. 비목별 예산 계획"],
+      ["비목명", "본예산액 (원)", "이월예산액 (원)"]
+    ];
+
+    // 비목별 데이터 추가
+    inputBudgetCategories.forEach(cat => {
+      if (cat.category) {
+        headerRows.push([cat.category, Number(cat.budget || 0), Number(cat.budget_carry || 0)]);
+      }
+    });
+
+    headerRows.push(
+      [],
+      ["2-2. 성과지표 연동 및 목표"],
+      ["지표구분", "연동 성과지표", "목표치"]
+    );
+
+    // 성과지표 추가
+    inputKpiLinks.forEach((link, idx) => {
+      if (link) {
+        const targetVal = inputKpiTargets[link] || "";
+        const type = inputKpiTypes[idx] || "자율";
+        headerRows.push([`${type}성과지표`, link, targetVal]);
+      }
+    });
+
+    headerRows.push(
+      [],
+      ["2-3. 수혜 대상자 설정"],
+      ["참여 대상군", "목표 인원 (명)"],
+      ["전체 수혜대상", Number(inputTargetParticipants || 0)],
+      ["기타 상세대상", inputTargetAudience || ""]
+    );
+
+    headerRows.push(
+      [],
+      ["3. P-D-C-A 월별 추진 일정 및 실적 (3월 ~ 익년 2월)"],
+      ["월 구분", "계획 단계 (P/D/C/A)", "실제 실적 단계 (P/D/C/A)"]
+    );
+
+    // 월별 추진 일정
+    monthsList.forEach((m, idx) => {
+      headerRows.push([m, inputMonthlyPDCA[idx] || "-", inputMonthlyPDCAActual[idx] || "-"]);
+    });
+
+    headerRows.push(
+      [],
+      ["4. D/C/A단계 실적 및 점검/환류"],
+      ["항목", "내용"],
+      ["실제 집행액 (국고)", Number(inputSpentNational || 0)],
+      ["실제 집행액 (시비)", Number(inputSpentCity || 0)],
+      ["실제 집행액 (외부)", Number(inputSpentExternal || 0)],
+      ["실제 참석인원 (전체)", Number(inputParticipants || 0)],
+      ["재학생 참석인원", Number(inputAudienceParticipants["재학생"] || 0)],
+      ["성인학습자 참석인원", Number(inputAudienceParticipants["성인학습자"] || 0)],
+      ["재직자 참석인원", Number(inputAudienceParticipants["재직자"] || 0)],
+      ["기타 참석인원", Number(inputAudienceParticipants["기타"] || 0)],
+      ["프로그램 만족도", Number(inputSatisfaction || 0)],
+      ["우수 사례(Good)", inputExcellent || ""],
+      ["개선 조치 방안(Improve)", inputImprovePlan || ""],
+      ["Deficiency(미흡점)", inputDeficiency || ""],
+      ["Action Item(개선조치)", inputActionItem || ""]
+    );
+
+    const ws = XLSX.utils.aoa_to_sheet(headerRows);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "PDCA 보고서");
+    XLSX.writeFile(wb, `ANCHOR_PDCA보고서_${activeProg.id}_${selectedYear}차년도.xlsx`);
+  };
 
   // 모든 프로그램 수집
   const allPrograms = [];
@@ -1467,7 +1563,33 @@ export default function PDCAManager({
               <div style={{ display: "flex", flexDirection: "column", gap: "1.2rem" }}>
                 <div style={{ borderBottom: "1px solid var(--border-color)", paddingBottom: "0.75rem" }}>
                   <span style={{ fontSize: "0.72rem", color: "var(--text-secondary)" }}>{activeProg.unitTitle}</span>
-                  <h3 style={{ fontSize: "1.1rem", fontWeight: "800", marginTop: "0.2rem" }}>[{activeProg.id}] {activeProg.title}</h3>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "0.5rem" }}>
+                    <h3 style={{ fontSize: "1.1rem", fontWeight: "800", marginTop: "0.2rem", flex: 1, minWidth: "200px" }}>[{activeProg.id}] {activeProg.title}</h3>
+                    <button
+                      type="button"
+                      onClick={handleExportToExcel}
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "0.3rem",
+                        padding: "0.35rem 0.7rem",
+                        fontSize: "0.72rem",
+                        fontWeight: "700",
+                        color: "#ffffff",
+                        background: "#10b981",
+                        border: "none",
+                        borderRadius: "0.3rem",
+                        cursor: "pointer",
+                        boxShadow: "0 2px 4px rgba(0,0,0,0.15)",
+                        transition: "background 0.2s"
+                      }}
+                      onMouseEnter={(e) => e.currentTarget.style.background = "#059669"}
+                      onMouseLeave={(e) => e.currentTarget.style.background = "#10b981"}
+                    >
+                      <Download size={13} />
+                      엑셀 다운로드
+                    </button>
+                  </div>
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem", marginTop: "0.5rem", fontSize: "0.75rem", color: "var(--text-secondary)" }}>
                     <div>배정 본예산: <strong style={{ color: "var(--text-primary)" }}>{formatToMillionWon(activeProg.years?.[selectedYear]?.budget_main)}백만원</strong></div>
                     <div>이월 예산액: <strong style={{ color: "var(--text-primary)" }}>{formatToMillionWon(activeProg.years?.[selectedYear]?.budget_carry)}백만원</strong></div>
