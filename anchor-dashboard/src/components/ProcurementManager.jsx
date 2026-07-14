@@ -565,6 +565,10 @@ export default function ProcurementManager({
   const [purchaseModalData, setPurchaseModalData] = useState(null);
   const [bidModalData, setBidModalData] = useState(null);
 
+  // 다중 파일 업로드 지원에 따른 팝업 내 현재 뷰어 대상 인덱스 상태
+  const [selectedProposalIdx, setSelectedProposalIdx] = useState(0);
+  const [selectedPurchaseIdx, setSelectedPurchaseIdx] = useState(0);
+
   // 학과 및 부서 필터 이원화 및 정렬 상태 (3번 요건 대응)
   const [deptFilter, setDeptFilter] = useState("");
   const [divisionFilter, setDivisionFilter] = useState("");
@@ -650,35 +654,184 @@ export default function ProcurementManager({
     opResult: ""
   });
 
-  // 파일 업로드 관련 핸들러들 (요건 1, 3 반영)
+  // [교육용 주석] 1대N 관계 구축을 위한 기존 기획문서 자동 파싱 라이브러리 추출
+  const getUniqueProposalDocs = () => {
+    const list = [];
+    const seenDocNos = new Set();
+
+    // 1. equipData (기자재 데이터) 순회하며 고유 기획문서 추출
+    (equipData || []).forEach(item => {
+      if (item.docPlanFileList && Array.isArray(item.docPlanFileList)) {
+        item.docPlanFileList.forEach(file => {
+          if (file.aiData && file.aiData.docNo && !seenDocNos.has(file.aiData.docNo)) {
+            seenDocNos.add(file.aiData.docNo);
+            list.push({ docNo: file.aiData.docNo, name: file.name, size: file.size, url: file.url, aiData: file.aiData });
+          }
+        });
+      } else if (item.aiProposalData && item.aiProposalData.docNo && !seenDocNos.has(item.aiProposalData.docNo)) {
+        seenDocNos.add(item.aiProposalData.docNo);
+        list.push({ docNo: item.aiProposalData.docNo, name: item.docPlanFileName || `기획결재 (${item.aiProposalData.docNo})`, size: item.docPlanFileSize || 0, url: item.docPlanFileUrl || "", aiData: item.aiProposalData });
+      } else if (item.docPlan && !seenDocNos.has(item.docPlan)) {
+        seenDocNos.add(item.docPlan);
+        list.push({ docNo: item.docPlan, name: item.docPlanFileName || `기획결재 (${item.docPlan})`, size: item.docPlanFileSize || 0, url: item.docPlanFileUrl || "", aiData: item.aiProposalData || null });
+      }
+    });
+
+    // 2. serviceData (용역 데이터) 순회하며 고유 기획문서 추출
+    (serviceData || []).forEach(item => {
+      if (item.docPlanFileList && Array.isArray(item.docPlanFileList)) {
+        item.docPlanFileList.forEach(file => {
+          if (file.aiData && file.aiData.docNo && !seenDocNos.has(file.aiData.docNo)) {
+            seenDocNos.add(file.aiData.docNo);
+            list.push({ docNo: file.aiData.docNo, name: file.name, size: file.size, url: file.url, aiData: file.aiData });
+          }
+        });
+      } else if (item.aiProposalData && item.aiProposalData.docNo && !seenDocNos.has(item.aiProposalData.docNo)) {
+        seenDocNos.add(item.aiProposalData.docNo);
+        list.push({ docNo: item.aiProposalData.docNo, name: item.docPlanFileName || `기획결재 (${item.aiProposalData.docNo})`, size: item.docPlanFileSize || 0, url: item.docPlanFileUrl || "", aiData: item.aiProposalData });
+      } else if (item.docPlan && !seenDocNos.has(item.docPlan)) {
+        seenDocNos.add(item.docPlan);
+        list.push({ docNo: item.docPlan, name: item.docPlanFileName || `기획결재 (${item.docPlan})`, size: item.docPlanFileSize || 0, url: item.docPlanFileUrl || "", aiData: item.aiProposalData || null });
+      }
+    });
+
+    // 3. envData (환경개선 데이터) 순회
+    (envData || []).forEach(item => {
+      if (item.docPlanFileList && Array.isArray(item.docPlanFileList)) {
+        item.docPlanFileList.forEach(file => {
+          if (file.aiData && file.aiData.docNo && !seenDocNos.has(file.aiData.docNo)) {
+            seenDocNos.add(file.aiData.docNo);
+            list.push({ docNo: file.aiData.docNo, name: file.name, size: file.size, url: file.url, aiData: file.aiData });
+          }
+        });
+      } else if (item.aiProposalData && item.aiProposalData.docNo && !seenDocNos.has(item.aiProposalData.docNo)) {
+        seenDocNos.add(item.aiProposalData.docNo);
+        list.push({ docNo: item.aiProposalData.docNo, name: item.docPlanFileName || `기획결재 (${item.aiProposalData.docNo})`, size: item.docPlanFileSize || 0, url: item.docPlanFileUrl || "", aiData: item.aiProposalData });
+      } else if (item.docPlan && !seenDocNos.has(item.docPlan)) {
+        seenDocNos.add(item.docPlan);
+        list.push({ docNo: item.docPlan, name: item.docPlanFileName || `기획결재 (${item.docPlan})`, size: item.docPlanFileSize || 0, url: item.docPlanFileUrl || "", aiData: item.aiProposalData || null });
+      }
+    });
+
+    return list;
+  };
+
+  // [교육용 주석] 1대N 관계 구축을 위한 기존 기획 결재 연계 적용 함수
+  const handleSelectLegacyProposal = (docNo) => {
+    if (!docNo) return;
+    const uniqueDocs = getUniqueProposalDocs();
+    const matched = uniqueDocs.find(d => d.docNo === docNo);
+    
+    if (matched) {
+      setFormData(prev => {
+        const legacyItem = {
+          id: "shared-" + matched.docNo + "-" + Math.random().toString(36).substr(2, 5),
+          name: matched.name,
+          size: matched.size,
+          url: matched.url,
+          aiData: matched.aiData,
+          fileObj: null, // 실제 파일 업로드 우회
+          uploadProgress: 100,
+          isAnalyzing: false
+        };
+
+        const currentList = prev.docPlanFileList ? [...prev.docPlanFileList] : [];
+        // 기획 결재 문서 중복 삽입 방지 검사
+        if (!currentList.some(item => (item.aiData?.docNo === matched.docNo) || (item.name === matched.name))) {
+          currentList.push(legacyItem);
+        }
+
+        // 호환성을 위해 첫 번째 인덱스의 기획결재 정보를 동기화
+        return {
+          ...prev,
+          docPlanFileList: currentList,
+          docPlanFileName: currentList[0]?.name || "",
+          docPlanFileSize: currentList[0]?.size || 0,
+          docPlanFileUrl: currentList[0]?.url || "",
+          aiProposalData: currentList[0]?.aiData || null,
+          docPlan: currentList[0]?.aiData?.docNo || ""
+        };
+      });
+      showToast(`🔗 기획결재 [${docNo}] 문서가 현재 구매 항목과 정상 연계되었습니다.`);
+    }
+  };
+
+  // 파일 업로드 관련 핸들러들 (다중 파일 업로드 요건 전격 반영)
   const handleFileChange = (docType, e) => {
     const file = e.target.files[0];
     if (!file) return;
 
-    // 파일 메타데이터를 우선 로컬 폼 상태에 저장 (보안 고려 포함)
-    const fieldPrefix = docType === "proposal" ? "docPlan" : docType === "purchase" ? "docPurchase" : "docBid";
-    setFormData(prev => ({
-      ...prev,
-      [`${fieldPrefix}File`]: file,
-      [`${fieldPrefix}FileName`]: file.name,
-      [`${fieldPrefix}FileSize`]: file.size
-    }));
+    if (docType === "proposal" || docType === "purchase") {
+      const listKey = docType === "proposal" ? "docPlanFileList" : "docPurchaseFileList";
+      const newFileItem = {
+        id: Date.now() + Math.random().toString(36).substr(2, 5),
+        name: file.name,
+        size: file.size,
+        fileObj: file, // 실제 업로드할 바이너리 파일 객체
+        url: "",
+        aiData: null,
+        uploadProgress: 0,
+        isAnalyzing: false
+      };
+
+      setFormData(prev => {
+        const currentList = prev[listKey] ? [...prev[listKey], newFileItem] : [newFileItem];
+        return {
+          ...prev,
+          [listKey]: currentList,
+          // 하위 호환성 유지: 첫 번째 등록 파일의 메타데이터를 기본 단일 필드에 자동 바인딩
+          [`${docType === "proposal" ? "docPlan" : "docPurchase"}FileName`]: currentList[0]?.name || "",
+          [`${docType === "proposal" ? "docPlan" : "docPurchase"}FileSize`]: currentList[0]?.size || 0
+        };
+      });
+
+      // 동일 파일을 지웠다가 다시 선택하는 경우에 대응하기 위해 인풋값 초기화
+      e.target.value = "";
+    } else {
+      // 결과(입찰) 문서는 종전의 단일 업로드 방식 유지
+      const fieldPrefix = "docBid";
+      setFormData(prev => ({
+        ...prev,
+        [`${fieldPrefix}File`]: file,
+        [`${fieldPrefix}FileName`]: file.name,
+        [`${fieldPrefix}FileSize`]: file.size
+      }));
+    }
   };
 
-  const handleFileRemove = (docType) => {
-    const fieldPrefix = docType === "proposal" ? "docPlan" : docType === "purchase" ? "docPurchase" : "docBid";
-    const progressSetter = docType === "proposal" ? setUploadProgressPlan : docType === "purchase" ? setUploadProgressPurchase : setUploadProgressBid;
-    
-    setFormData(prev => ({
-      ...prev,
-      [`${fieldPrefix}File`]: null,
-      [`${fieldPrefix}FileName`]: "",
-      [`${fieldPrefix}FileSize`]: 0,
-      [`${fieldPrefix}FileUrl`]: "",
-      [`ai${docType === "proposal" ? "Proposal" : docType === "purchase" ? "Purchase" : "Bid"}Data`]: null,
-      [fieldPrefix === "docPlan" ? "docPlan" : fieldPrefix === "docPurchase" ? "docPurchase" : "docBid"]: ""
-    }));
-    progressSetter(0);
+  const handleFileRemove = (docType, fileId) => {
+    if ((docType === "proposal" || docType === "purchase") && fileId) {
+      const listKey = docType === "proposal" ? "docPlanFileList" : "docPurchaseFileList";
+      setFormData(prev => {
+        const currentList = (prev[listKey] || []).filter(item => item.id !== fileId);
+        return {
+          ...prev,
+          [listKey]: currentList,
+          // 하위 호환성: 제거 후 남은 첫 번째 파일 정보로 상위 메타 덮어쓰기
+          [`${docType === "proposal" ? "docPlan" : "docPurchase"}FileName`]: currentList[0]?.name || "",
+          [`${docType === "proposal" ? "docPlan" : "docPurchase"}FileSize`]: currentList[0]?.size || 0,
+          [`${docType === "proposal" ? "docPlan" : "docPurchase"}FileUrl`]: currentList[0]?.url || "",
+          [`ai${docType === "proposal" ? "Proposal" : "Purchase"}Data`]: currentList[0]?.aiData || null,
+          [docType === "proposal" ? "docPlan" : "docPurchase"]: currentList[0]?.aiData?.docNo || ""
+        };
+      });
+    } else {
+      // 기존 단일 파일(결과/입찰 등) 제거 및 폴백 초기화
+      const fieldPrefix = docType === "proposal" ? "docPlan" : docType === "purchase" ? "docPurchase" : "docBid";
+      const progressSetter = docType === "proposal" ? setUploadProgressPlan : docType === "purchase" ? setUploadProgressPurchase : setUploadProgressBid;
+      
+      setFormData(prev => ({
+        ...prev,
+        [`${fieldPrefix}File`]: null,
+        [`${fieldPrefix}FileName`]: "",
+        [`${fieldPrefix}FileSize`]: 0,
+        [`${fieldPrefix}FileUrl`]: "",
+        [`ai${docType === "proposal" ? "Proposal" : docType === "purchase" ? "Purchase" : "Bid"}Data`]: null,
+        [fieldPrefix === "docPlan" ? "docPlan" : fieldPrefix === "docPurchase" ? "docPurchase" : "docBid"]: "",
+        [`${fieldPrefix}FileList`]: [] // 다중 리스트 초기화
+      }));
+      progressSetter(0);
+    }
   };
 
   // AI 분석용 예산 문자열 파서 (예: "120,000천원" 또는 "1.2억원" => 백만원 단위 변환)
@@ -705,119 +858,182 @@ export default function ProcurementManager({
     return "";
   };
 
-  const handleAnalyzeAndUpload = async (docType) => {
-    const fieldPrefix = docType === "proposal" ? "docPlan" : docType === "purchase" ? "docPurchase" : "docBid";
-    const file = formData[`${fieldPrefix}File`];
-    
-    // 파일이 로컬에도 없고 원격 업로드 URL도 없는 경우 체크
-    if (!file && !formData[`${fieldPrefix}FileUrl`]) {
-      alert("⚠️ 먼저 분석할 문서를 업로드해 주세요!");
-      return;
-    }
-
-    const stateSetter = docType === "proposal" ? setIsAnalyzingPlan : docType === "purchase" ? setIsAnalyzingPurchase : setIsAnalyzingBid;
-    const progressSetter = docType === "proposal" ? setUploadProgressPlan : docType === "purchase" ? setUploadProgressPurchase : setUploadProgressBid;
-
-    stateSetter(true);
-    progressSetter(10); // 업로드 개시
-
-    try {
-      let uploadedFileMeta = {
-        name: formData[`${fieldPrefix}FileName`],
-        size: formData[`${fieldPrefix}FileSize`],
-        url: formData[`${fieldPrefix}FileUrl`]
-      };
-
-      // 1. 첨부된 실제 파일 객체가 로컬 임시 상태에 존재할 경우 Supabase Storage 업로드 실행
-      if (file) {
-        const uploadResult = await uploadFileToSupabase(docType, file, (progress) => {
-          progressSetter(progress);
-        });
-        if (uploadResult) {
-          uploadedFileMeta = uploadResult;
-        }
-      } else {
-        progressSetter(100);
+  const handleAnalyzeAndUpload = async (docType, fileId) => {
+    if ((docType === "proposal" || docType === "purchase") && fileId) {
+      const listKey = docType === "proposal" ? "docPlanFileList" : "docPurchaseFileList";
+      const fileItem = (formData[listKey] || []).find(item => item.id === fileId);
+      
+      if (!fileItem) {
+        alert("⚠️ 분석할 대상 파일을 찾을 수 없습니다.");
+        return;
+      }
+      
+      if (fileItem.aiData) {
+        alert("💡 이미 AI 분석이 완료된 파일입니다.");
+        return;
       }
 
-      // 2. OpenAI GPT API 분석 요약 실행 (요건 2 반영)
-      const totalPrice = (Number(formData.unitPrice) * Number(formData.quantity) * 1000);
-      const aiResult = await callOpenAiGpt(
-        docType,
-        uploadedFileMeta.name,
-        "", // 파일에서 텍스트 추출이 복잡하므로 메타와 더불어 mock 텍스트 병합 처리
-        formData.name,
-        formData.deptName,
-        totalPrice
-      );
-
-      // 3. 분석 요약 정보 및 업로드된 파일 URL을 formData에 최종 갱신 및 자동 완성
+      // 개별 파일 항목의 분석 대기 상태 활성화
       setFormData(prev => {
-        const nextData = {
-          ...prev,
-          [`${fieldPrefix}FileName`]: uploadedFileMeta.name,
-          [`${fieldPrefix}FileSize`]: uploadedFileMeta.size,
-          [`${fieldPrefix}FileUrl`]: uploadedFileMeta.url,
-          [`ai${docType === "proposal" ? "Proposal" : docType === "purchase" ? "Purchase" : "Bid"}Data`]: aiResult,
-          [fieldPrefix === "docPlan" ? "docPlan" : fieldPrefix === "docPurchase" ? "docPurchase" : "docBid"]: aiResult.docNo
+        const list = (prev[listKey] || []).map(item => {
+          if (item.id === fileId) return { ...item, isAnalyzing: true };
+          return item;
+        });
+        return { ...prev, [listKey]: list };
+      });
+
+      try {
+        let uploadedFileMeta = {
+          name: fileItem.name,
+          size: fileItem.size,
+          url: fileItem.url
         };
 
-        // --- AI 분석 결과를 기반으로 폼 필드 자동 완성 및 정리 ---
-        
-        // 1. 기획/구매 문서 예산 파싱 => 사업비(unitPrice) 자동 완성
-        if (docType === "proposal" || docType === "purchase") {
+        // 로컬 임시 바이너리가 첨부되어 있을 때만 Supabase Storage 업로드 실행
+        if (fileItem.fileObj) {
+          const uploadResult = await uploadFileToSupabase(docType, fileItem.fileObj, (progress) => {
+            // 개별 파일의 프로그레스 업데이트
+            setFormData(prev => {
+              const list = (prev[listKey] || []).map(item => {
+                if (item.id === fileId) return { ...item, uploadProgress: progress };
+                return item;
+              });
+              return { ...prev, [listKey]: list };
+            });
+          });
+          if (uploadResult) {
+            uploadedFileMeta = uploadResult;
+          }
+        }
+
+        // GPT API 분석 실행
+        const totalPrice = (Number(formData.unitPrice) * Number(formData.quantity) * 1000);
+        const aiResult = await callOpenAiGpt(
+          docType,
+          uploadedFileMeta.name,
+          "",
+          formData.name,
+          formData.deptName,
+          totalPrice
+        );
+
+        setFormData(prev => {
+          const list = (prev[listKey] || []).map(item => {
+            if (item.id === fileId) {
+              return { 
+                ...item, 
+                aiData: aiResult, 
+                url: uploadedFileMeta.url,
+                isAnalyzing: false 
+              };
+            }
+            return item;
+          });
+
+          const nextData = {
+            ...prev,
+            [listKey]: list,
+            // 하위 호환성 유지: 첫 번째 파일 데이터를 롤업 동기화
+            [`ai${docType === "proposal" ? "Proposal" : "Purchase"}Data`]: list[0]?.aiData || null,
+            [`${docType === "proposal" ? "docPlan" : "docPurchase"}FileUrl`]: list[0]?.url || "",
+            [docType === "proposal" ? "docPlan" : "docPurchase"]: list[0]?.aiData?.docNo || ""
+          };
+
+          // AI 파싱 예산액 기반 폼 필드 자동 매핑
           const parsedBudget = parseBudgetStringToMillions(aiResult.budget);
           if (parsedBudget) {
             nextData.unitPrice = parsedBudget;
           }
+
+          if (docType === "proposal") {
+            if (aiResult.dept) nextData.deptName = aiResult.dept;
+            nextData.purpose = "특화 인력 양성을 위한 핵심 시너지 공간 용도 상세 기술";
+            if (aiResult.goals && Array.isArray(aiResult.goals) && aiResult.goals.length > 0) {
+              nextData.plan = aiResult.goals.join("\n") || "";
+            }
+          }
+          if (docType === "purchase" && aiResult.fromDept) {
+            nextData.deptName = aiResult.fromDept;
+          }
+
+          return nextData;
+        });
+
+        alert(`🤖 GPT AI 분석 및 문서 업로드가 완료되었습니다!`);
+      } catch (error) {
+        console.error("문서 분석 에러:", error);
+        alert("❌ 문서 분석 중 예상치 못한 에러가 발생했습니다.");
+        setFormData(prev => {
+          const list = (prev[listKey] || []).map(item => {
+            if (item.id === fileId) return { ...item, isAnalyzing: false };
+            return item;
+          });
+          return { ...prev, [listKey]: list };
+        });
+      }
+    } else {
+      // 기존 단일 결과(입찰) 분석 프로세스 유지
+      const fieldPrefix = "docBid";
+      const file = formData[`${fieldPrefix}File`];
+      if (!file && !formData[`${fieldPrefix}FileUrl`]) {
+        alert("⚠️ 먼저 분석할 문서를 업로드해 주세요!");
+        return;
+      }
+
+      setIsAnalyzingBid(true);
+      setUploadProgressBid(10);
+
+      try {
+        let uploadedFileMeta = {
+          name: formData[`${fieldPrefix}FileName`],
+          size: formData[`${fieldPrefix}FileSize`],
+          url: formData[`${fieldPrefix}FileUrl`]
+        };
+
+        if (file) {
+          const uploadResult = await uploadFileToSupabase(docType, file, (progress) => {
+            setUploadProgressBid(progress);
+          });
+          if (uploadResult) {
+            uploadedFileMeta = uploadResult;
+          }
+        } else {
+          setUploadProgressBid(100);
         }
-        
-        // 2. 결과(입찰) 문서 예산 파싱 => 실제 집행액(budgetSpent) 자동 완성
-        if (docType === "bid") {
+
+        const totalPrice = (Number(formData.unitPrice) * Number(formData.quantity) * 1000);
+        const aiResult = await callOpenAiGpt(
+          docType,
+          uploadedFileMeta.name,
+          "",
+          formData.name,
+          formData.deptName,
+          totalPrice
+        );
+
+        setFormData(prev => {
+          const nextData = {
+            ...prev,
+            [`${fieldPrefix}FileName`]: uploadedFileMeta.name,
+            [`${fieldPrefix}FileSize`]: uploadedFileMeta.size,
+            [`${fieldPrefix}FileUrl`]: uploadedFileMeta.url,
+            aiBidData: aiResult,
+            docBid: aiResult.docNo
+          };
           const parsedSpent = parseBudgetStringToMillions(aiResult.budget);
           if (parsedSpent) {
             nextData.budgetSpent = parsedSpent;
           }
-        }
+          return nextData;
+        });
 
-        // 3. 기획 문서 분석 결과 기반 자동 채우기
-        if (docType === "proposal") {
-          // 단위과제 자동 선택 (A1, A2, B1, B2, C1, C2 등 매칭)
-          if (aiResult.unit) {
-            const matchedUnit = ["A1", "A2", "B1", "B2", "C1", "C2"].find(u => 
-              aiResult.unit.toUpperCase().includes(u)
-            );
-            if (matchedUnit) {
-              nextData.unit = matchedUnit;
-            }
-          }
-          // 주관 부서 자동 선택
-          if (aiResult.dept) {
-            nextData.deptName = aiResult.dept;
-          }
-          // 기획 목표를 바탕으로 구축 목적(purpose)과 계획(plan) 자동완성
-          nextData.purpose = "특화 인력 양성을 위한 핵심 시너지 공간 용도 상세 기술";
-          if (aiResult.goals && Array.isArray(aiResult.goals) && aiResult.goals.length > 0) {
-            nextData.plan = aiResult.goals.join("\n") || "";
-          }
-        }
-
-        // 4. 구매 문서 분석 결과 기반 자동 채우기
-        if (docType === "purchase") {
-          if (aiResult.fromDept) {
-            nextData.deptName = aiResult.fromDept;
-          }
-        }
-
-        return nextData;
-      });
-
-      alert(`🤖 GPT AI 분석 및 ${docType === "proposal" ? "기획" : docType === "purchase" ? "구매" : "결과"}문서 업로드가 완료되었습니다!`);
-    } catch (error) {
-      console.error("문서 분석 에러:", error);
-      alert("❌ 문서 분석 중 예상치 못한 에러가 발생했습니다.");
-    } finally {
-      stateSetter(false);
+        alert(`🤖 GPT AI 분석 및 결과문서 업로드가 완료되었습니다!`);
+      } catch (error) {
+        console.error("문서 분석 에러:", error);
+        alert("❌ 문서 분석 중 예상치 못한 에러가 발생했습니다.");
+      } finally {
+        setIsAnalyzingBid(false);
+      }
     }
   };
 
@@ -1064,6 +1280,8 @@ export default function ProcurementManager({
               aiProposalData: formData.aiProposalData || null,
               aiPurchaseData: formData.aiPurchaseData || null,
               aiBidData: null,
+              docPlanFileList: formData.docPlanFileList || [],
+              docPurchaseFileList: formData.docPurchaseFileList || [],
               
               docPlanFileName: formData.docPlanFileName || "",
               docPurchaseFileName: formData.docPurchaseFileName || "",
@@ -1127,6 +1345,8 @@ export default function ProcurementManager({
           aiProposalData: formData.aiProposalData || null,
           aiPurchaseData: formData.aiPurchaseData || null,
           aiBidData: null,
+          docPlanFileList: formData.docPlanFileList || [],
+          docPurchaseFileList: formData.docPurchaseFileList || [],
           
           docPlanFileName: formData.docPlanFileName || "",
           docPurchaseFileName: formData.docPurchaseFileName || "",
@@ -1199,6 +1419,8 @@ export default function ProcurementManager({
               aiProposalData: formData.aiProposalData || null,
               aiPurchaseData: formData.aiPurchaseData || null,
               aiBidData: formData.aiBidData || null,
+              docPlanFileList: formData.docPlanFileList || [],
+              docPurchaseFileList: formData.docPurchaseFileList || [],
               // 파일 업로드 관련 메타데이터 저장 (요건 3 반영)
               docPlanFileName: formData.docPlanFileName || "",
               docPurchaseFileName: formData.docPurchaseFileName || "",
@@ -1262,6 +1484,8 @@ export default function ProcurementManager({
           aiProposalData: formData.aiProposalData || null,
           aiPurchaseData: formData.aiPurchaseData || null,
           aiBidData: formData.aiBidData || null,
+          docPlanFileList: formData.docPlanFileList || [],
+          docPurchaseFileList: formData.docPurchaseFileList || [],
           // 파일 업로드 관련 메타데이터 저장 (요건 3 반영)
           docPlanFileName: formData.docPlanFileName || "",
           docPurchaseFileName: formData.docPurchaseFileName || "",
@@ -1356,6 +1580,8 @@ export default function ProcurementManager({
               aiProposalData: formData.aiProposalData || null,
               aiPurchaseData: formData.aiPurchaseData || null,
               aiBidData: formData.aiBidData || null,
+              docPlanFileList: formData.docPlanFileList || [],
+              docPurchaseFileList: formData.docPurchaseFileList || [],
               
               // 파일 업로드 관련 메타데이터
               docPlanFileName: formData.docPlanFileName || "",
@@ -1411,6 +1637,8 @@ export default function ProcurementManager({
           aiProposalData: formData.aiProposalData || null,
           aiPurchaseData: formData.aiPurchaseData || null,
           aiBidData: formData.aiBidData || null,
+          docPlanFileList: formData.docPlanFileList || [],
+          docPurchaseFileList: formData.docPurchaseFileList || [],
           
           // 파일 업로드 관련 메타데이터
           docPlanFileName: formData.docPlanFileName || "",
@@ -1500,6 +1728,8 @@ export default function ProcurementManager({
       aiProposalData: null,
       aiPurchaseData: null,
       aiBidData: null,
+      docPlanFileList: [],
+      docPurchaseFileList: [],
       docPlanFile: null,
       docPurchaseFile: null,
       docBidFile: null,
@@ -1580,6 +1810,20 @@ export default function ProcurementManager({
       aiProposalData: equip.aiProposalData || null,
       aiPurchaseData: equip.aiPurchaseData || null,
       aiBidData: equip.aiBidData || null,
+      docPlanFileList: equip.docPlanFileList || (equip.docPlanFileName ? [{
+        id: "legacy-plan",
+        name: equip.docPlanFileName,
+        size: equip.docPlanFileSize || 0,
+        url: equip.docPlanFileUrl || "",
+        aiData: equip.aiProposalData || null
+      }] : []),
+      docPurchaseFileList: equip.docPurchaseFileList || (equip.docPurchaseFileName ? [{
+        id: "legacy-purchase",
+        name: equip.docPurchaseFileName,
+        size: equip.docPurchaseFileSize || 0,
+        url: equip.docPurchaseFileUrl || "",
+        aiData: equip.aiPurchaseData || null
+      }] : []),
       docPlanFile: null,
       docPurchaseFile: null,
       docBidFile: null,
@@ -4667,138 +4911,166 @@ export default function ProcurementManager({
 
 
                       
-                      {/* 1. 기획문서 업로드 및 AI 분석 */}
+                      {/* 1. 기획문서 업로드 및 AI 분석 (다중 파일 및 1대N 공유 연계 지원) */}
                       <div style={{ background: "rgba(255,255,255,0.01)", padding: "0.85rem", borderRadius: "8px", border: "1px solid rgba(255,255,255,0.04)" }}>
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.5rem" }}>
                           <span style={{ fontSize: "0.8rem", fontWeight: "800", color: "#93C5FD" }}>
                             {modalType === "env" ? "1. 기획문서 (사업단 ➔ 시설안전관리팀)" : "1. 기획문서 (사업단 작성/결재)"}
                           </span>
-                          {formData.aiProposalData && (
-                            <span style={{ fontSize: "0.72rem", color: "#10B981", fontWeight: "800" }}>
-                              ✅ AI 분석완료 ({formData.aiProposalData.docNo})
-                            </span>
-                          )}
+                        </div>
+
+                        {/* [교육용 주석] 하나의 기획문서가 여러 개의 구매(1대N)를 반영할 수 있도록 기존 결재 연계 드롭다운 신설 */}
+                        <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem", marginBottom: "0.75rem", background: "rgba(255,255,255,0.02)", padding: "0.5rem", borderRadius: "6px" }}>
+                          <label style={{ fontSize: "0.72rem", color: "var(--text-secondary)", fontWeight: "700" }}>
+                            🔗 기존 등록된 기획 결재문서 가져오기 (1대N 공유 매칭)
+                          </label>
+                          <select
+                            onChange={(e) => {
+                              handleSelectLegacyProposal(e.target.value);
+                              e.target.value = "";
+                            }}
+                            style={{
+                              width: "100%",
+                              background: "var(--input-bg)",
+                              color: "var(--text-primary)",
+                              border: "1px solid var(--border-color)",
+                              borderRadius: "4px",
+                              padding: "0.25rem",
+                              fontSize: "0.72rem",
+                              cursor: "pointer"
+                            }}
+                          >
+                            <option value="">-- 연계할 기존 기획결재번호 선택 --</option>
+                            {getUniqueProposalDocs().map(doc => (
+                              <option key={doc.docNo} value={doc.docNo}>
+                                [{doc.docNo}] {doc.name.slice(0, 35)}
+                              </option>
+                            ))}
+                          </select>
                         </div>
                         
-                        <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-                          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                            {/* 파일 인풋 */}
-                            <input 
-                              type="file" 
-                              id="file-plan-upload" 
-                              accept=".pdf,.doc,.docx,.hwp,.txt" 
-                              onChange={(e) => handleFileChange("proposal", e)} 
-                              style={{ display: "none" }} 
-                            />
-                            
-                            {formData.docPlanFileName ? (
-                              <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", flex: 1, background: "rgba(0,0,0,0.3)", padding: "0.4rem 0.6rem", borderRadius: "6px", border: "1px solid rgba(255,255,255,0.1)" }}>
-                                <span style={{ fontSize: "0.78rem", color: "white", textOverflow: "ellipsis", overflow: "hidden", whiteSpace: "nowrap", flex: 1 }}>
-                                  📄 {formData.docPlanFileName} ({formatToThousandWon(formData.docPlanFileSize)} KB)
+                        <div style={{ display: "flex", flexDirection: "column", gap: "0.6rem" }}>
+                          {/* 파일 추가 인풋 */}
+                          <input 
+                            type="file" 
+                            id="file-plan-upload" 
+                            accept=".pdf,.doc,.docx,.hwp,.txt" 
+                            onChange={(e) => handleFileChange("proposal", e)} 
+                            style={{ display: "none" }} 
+                          />
+
+                          {/* 업로드된 다중 기획문서 목록 루프 */}
+                          {(formData.docPlanFileList || []).map((fileItem) => (
+                            <div key={fileItem.id} style={{ display: "flex", flexDirection: "column", gap: "0.25rem", background: "rgba(0,0,0,0.3)", padding: "0.45rem 0.6rem", borderRadius: "6px", border: "1px solid rgba(255,255,255,0.05)" }}>
+                              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "0.5rem" }}>
+                                <span style={{ fontSize: "0.75rem", color: "white", textOverflow: "ellipsis", overflow: "hidden", whiteSpace: "nowrap", flex: 1 }} title={fileItem.name}>
+                                  📄 {fileItem.name} ({formatToThousandWon(fileItem.size)} KB)
                                 </span>
-                                <button 
-                                  type="button" 
-                                  onClick={() => handleFileRemove("proposal")} 
-                                  style={{ background: "transparent", border: "none", color: "#EF4444", cursor: "pointer", padding: "0.2rem" }}
-                                  title="파일 제거"
-                                >
-                                  <Trash2 size={14} />
-                                </button>
+                                <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
+                                  {fileItem.aiData ? (
+                                    <span style={{ fontSize: "0.7rem", color: "#10B981", fontWeight: "800" }}>
+                                      ✅ AI 분석완료 ({fileItem.aiData.docNo})
+                                    </span>
+                                  ) : (
+                                    <button
+                                      type="button"
+                                      onClick={() => handleAnalyzeAndUpload("proposal", fileItem.id)}
+                                      disabled={fileItem.isAnalyzing}
+                                      style={{ padding: "0.25rem 0.6rem", fontSize: "0.68rem", background: "#3b82f6", border: "none", color: "white", borderRadius: "4px", fontWeight: "700", cursor: "pointer" }}
+                                    >
+                                      {fileItem.isAnalyzing ? "분석중..." : "AI 분석"}
+                                    </button>
+                                  )}
+                                  <button 
+                                    type="button" 
+                                    onClick={() => handleFileRemove("proposal", fileItem.id)} 
+                                    style={{ background: "transparent", border: "none", color: "#EF4444", cursor: "pointer", padding: "0.15rem" }}
+                                    title="파일 제거"
+                                  >
+                                    <Trash2 size={13} />
+                                  </button>
+                                </div>
                               </div>
-                            ) : (
-                              <label 
-                                htmlFor="file-plan-upload" 
-                                style={{ display: "block", flex: 1, textAlign: "center", padding: "0.6rem", border: "1px dashed rgba(255,255,255,0.2)", borderRadius: "6px", cursor: "pointer", background: "rgba(255,255,255,0.02)", fontSize: "0.75rem", color: "var(--text-secondary)", transition: "background 0.2s" }}
-                                onMouseOver={(e) => e.target.style.background = "rgba(255,255,255,0.05)"}
-                                onMouseOut={(e) => e.target.style.background = "rgba(255,255,255,0.02)"}
-                              >
-                                {modalType === "env" ? "📎 기획(사업단➔시설안전관리팀) 관련 문서 선택 (.pdf, .docx, .hwp)" : "📎 기획문서 파일 선택 (.pdf, .docx, .hwp)"}
-                              </label>
-                            )}
-
-                            <button
-                              type="button"
-                              onClick={() => handleAnalyzeAndUpload("proposal")}
-                              disabled={isAnalyzingPlan}
-                              style={{ padding: "0.5rem 1.1rem", fontSize: "0.75rem", background: "#3b82f6", border: "none", color: "white", borderRadius: "6px", fontWeight: "700", cursor: "pointer", opacity: isAnalyzingPlan ? 0.6 : 1, transition: "background 0.2s" }}
-                            >
-                              {isAnalyzingPlan ? "분석 중..." : "AI 분석"}
-                            </button>
-                          </div>
-
-                          {/* 업로드 프로그레스 바 */}
-                          {uploadProgressPlan > 0 && (
-                            <div style={{ width: "100%", height: "4px", background: "rgba(255,255,255,0.1)", borderRadius: "2px", overflow: "hidden" }}>
-                              <div style={{ width: `${uploadProgressPlan}%`, height: "100%", background: "#3b82f6", transition: "width 0.15s ease-out" }} />
+                              {fileItem.uploadProgress > 0 && fileItem.uploadProgress < 100 && (
+                                <div style={{ width: "100%", height: "3px", background: "rgba(255,255,255,0.05)", borderRadius: "1.5px", overflow: "hidden" }}>
+                                  <div style={{ width: `${fileItem.uploadProgress}%`, height: "100%", background: "#3b82f6" }} />
+                                </div>
+                              )}
                             </div>
-                          )}
+                          ))}
+                          
+                          <label 
+                            htmlFor="file-plan-upload" 
+                            style={{ display: "block", textAlign: "center", padding: "0.45rem", border: "1px dashed rgba(255,255,255,0.2)", borderRadius: "6px", cursor: "pointer", background: "rgba(255,255,255,0.01)", fontSize: "0.72rem", color: "var(--text-secondary)" }}
+                          >
+                            ➕ 신규 기획문서 추가 업로드 (.pdf, .docx, .hwp)
+                          </label>
                         </div>
                       </div>
-
-                      {/* 2. 구매문서 업로드 및 AI 분석 */}
+ 
+                      {/* 2. 구매문서 업로드 및 AI 분석 (다중 파일 업로드 지원) */}
                       <div style={{ background: "rgba(255,255,255,0.01)", padding: "0.85rem", borderRadius: "8px", border: "1px solid rgba(255,255,255,0.04)" }}>
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.5rem" }}>
                           <span style={{ fontSize: "0.8rem", fontWeight: "800", color: "#C084FC" }}>
                             {modalType === "env" ? "2. 구매문서 (시설안전관리팀)" : "2. 구매문서 (총무팀 발송)"}
                           </span>
-                          {formData.aiPurchaseData && (
-                            <span style={{ fontSize: "0.72rem", color: "#10B981", fontWeight: "800" }}>
-                              ✅ AI 분석완료 ({formData.aiPurchaseData.docNo})
-                            </span>
-                          )}
                         </div>
                         
-                        <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-                          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                            <input 
-                              type="file" 
-                              id="file-purchase-upload" 
-                              accept=".pdf,.doc,.docx,.hwp,.txt" 
-                              onChange={(e) => handleFileChange("purchase", e)} 
-                              style={{ display: "none" }} 
-                            />
-                            
-                            {formData.docPurchaseFileName ? (
-                              <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", flex: 1, background: "rgba(0,0,0,0.3)", padding: "0.4rem 0.6rem", borderRadius: "6px", border: "1px solid rgba(255,255,255,0.1)" }}>
-                                <span style={{ fontSize: "0.78rem", color: "white", textOverflow: "ellipsis", overflow: "hidden", whiteSpace: "nowrap", flex: 1 }}>
-                                  📄 {formData.docPurchaseFileName} ({formatToThousandWon(formData.docPurchaseFileSize)} KB)
+                        <div style={{ display: "flex", flexDirection: "column", gap: "0.6rem" }}>
+                          <input 
+                            type="file" 
+                            id="file-purchase-upload" 
+                            accept=".pdf,.doc,.docx,.hwp,.txt" 
+                            onChange={(e) => handleFileChange("purchase", e)} 
+                            style={{ display: "none" }} 
+                          />
+
+                          {/* 업로드된 다중 구매문서 목록 루프 */}
+                          {(formData.docPurchaseFileList || []).map((fileItem) => (
+                            <div key={fileItem.id} style={{ display: "flex", flexDirection: "column", gap: "0.25rem", background: "rgba(0,0,0,0.3)", padding: "0.45rem 0.6rem", borderRadius: "6px", border: "1px solid rgba(255,255,255,0.05)" }}>
+                              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "0.5rem" }}>
+                                <span style={{ fontSize: "0.75rem", color: "white", textOverflow: "ellipsis", overflow: "hidden", whiteSpace: "nowrap", flex: 1 }} title={fileItem.name}>
+                                  📄 {fileItem.name} ({formatToThousandWon(fileItem.size)} KB)
                                 </span>
-                                <button 
-                                  type="button" 
-                                  onClick={() => handleFileRemove("purchase")} 
-                                  style={{ background: "transparent", border: "none", color: "#EF4444", cursor: "pointer", padding: "0.2rem" }}
-                                  title="파일 제거"
-                                >
-                                  <Trash2 size={14} />
-                                </button>
+                                <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
+                                  {fileItem.aiData ? (
+                                    <span style={{ fontSize: "0.7rem", color: "#10B981", fontWeight: "800" }}>
+                                      ✅ AI 분석완료 ({fileItem.aiData.docNo})
+                                    </span>
+                                  ) : (
+                                    <button
+                                      type="button"
+                                      onClick={() => handleAnalyzeAndUpload("purchase", fileItem.id)}
+                                      disabled={fileItem.isAnalyzing}
+                                      style={{ padding: "0.25rem 0.6rem", fontSize: "0.68rem", background: "#a78bfa", border: "none", color: "white", borderRadius: "4px", fontWeight: "700", cursor: "pointer" }}
+                                    >
+                                      {fileItem.isAnalyzing ? "분석중..." : "AI 분석"}
+                                    </button>
+                                  )}
+                                  <button 
+                                    type="button" 
+                                    onClick={() => handleFileRemove("purchase", fileItem.id)} 
+                                    style={{ background: "transparent", border: "none", color: "#EF4444", cursor: "pointer", padding: "0.15rem" }}
+                                    title="파일 제거"
+                                  >
+                                    <Trash2 size={13} />
+                                  </button>
+                                </div>
                               </div>
-                            ) : (
-                              <label 
-                                htmlFor="file-purchase-upload" 
-                                style={{ display: "block", flex: 1, textAlign: "center", padding: "0.6rem", border: "1px dashed rgba(255,255,255,0.2)", borderRadius: "6px", cursor: "pointer", background: "rgba(255,255,255,0.02)", fontSize: "0.75rem", color: "var(--text-secondary)", transition: "background 0.2s" }}
-                                onMouseOver={(e) => e.target.style.background = "rgba(255,255,255,0.05)"}
-                                onMouseOut={(e) => e.target.style.background = "rgba(255,255,255,0.02)"}
-                              >
-                                {modalType === "env" ? "📎 구매(시설안전관리팀) 관련 문서 선택 (.pdf, .docx, .hwp)" : "📎 구매조달 발송파일 선택 (.pdf, .docx, .hwp)"}
-                              </label>
-                            )}
-
-                            <button
-                              type="button"
-                              onClick={() => handleAnalyzeAndUpload("purchase")}
-                              disabled={isAnalyzingPurchase}
-                              style={{ padding: "0.5rem 1.1rem", fontSize: "0.75rem", background: "#a78bfa", border: "none", color: "white", borderRadius: "6px", fontWeight: "700", cursor: "pointer", opacity: isAnalyzingPurchase ? 0.6 : 1, transition: "background 0.2s" }}
-                            >
-                              {isAnalyzingPurchase ? "분석 중..." : "AI 분석"}
-                            </button>
-                          </div>
-
-                          {/* 업로드 프로그레스 바 */}
-                          {uploadProgressPurchase > 0 && (
-                            <div style={{ width: "100%", height: "4px", background: "rgba(255,255,255,0.1)", borderRadius: "2px", overflow: "hidden" }}>
-                              <div style={{ width: `${uploadProgressPurchase}%`, height: "100%", background: "#a78bfa", transition: "width 0.15s ease-out" }} />
+                              {fileItem.uploadProgress > 0 && fileItem.uploadProgress < 100 && (
+                                <div style={{ width: "100%", height: "3px", background: "rgba(255,255,255,0.05)", borderRadius: "1.5px", overflow: "hidden" }}>
+                                  <div style={{ width: `${fileItem.uploadProgress}%`, height: "100%", background: "#a78bfa" }} />
+                                </div>
+                              )}
                             </div>
-                          )}
+                          ))}
+                          
+                          <label 
+                            htmlFor="file-purchase-upload" 
+                            style={{ display: "block", textAlign: "center", padding: "0.45rem", border: "1px dashed rgba(255,255,255,0.2)", borderRadius: "6px", cursor: "pointer", background: "rgba(255,255,255,0.01)", fontSize: "0.72rem", color: "var(--text-secondary)" }}
+                          >
+                            ➕ 신규 구매문서 추가 업로드 (.pdf, .docx, .hwp)
+                          </label>
                         </div>
                       </div>
 
@@ -5140,31 +5412,107 @@ export default function ProcurementManager({
                   <div style={{ borderTop: "1px solid rgba(255,255,255,0.05)", paddingTop: "0.75rem", marginTop: "0.5rem" }}>
                     <span style={{ fontSize: "0.82rem", fontWeight: "800", color: "#a78bfa", display: "block", marginBottom: "0.5rem" }}>📎 행정 서류 첨부 및 AI 분석 연계</span>
                     
-                    {/* 1. 기획문서 첨부 */}
-                    <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem", marginBottom: "0.75rem" }}>
-                      <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>기획서 관련 문서 (사업단 작성 기안문)</label>
-                      <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
-                        <input type="file" id="file-plan-upload-serv" onChange={(e) => handleFileChange("proposal", e)} style={{ display: "none" }} />
-                        <label htmlFor="file-plan-upload-serv" style={{ display: "block", flex: 1, textAlign: "center", padding: "0.45rem", border: "1px dashed var(--border-color)", borderRadius: "6px", cursor: "pointer", background: "rgba(255,255,255,0.02)", fontSize: "0.72rem", color: "var(--text-secondary)" }}>
-                          {formData.docPlanFileName ? `📎 ${formData.docPlanFileName}` : "📎 기획문서 파일 선택 (.pdf, .docx, .hwp)"}
+                    {/* 1. 기획문서 첨부 (다중 파일 및 1대N 연계 지원) */}
+                    <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem", marginBottom: "0.75rem", background: "rgba(255,255,255,0.01)", padding: "0.6rem", borderRadius: "6px", border: "1px solid rgba(255,255,255,0.03)" }}>
+                      <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)", fontWeight: "700" }}>기획서 관련 문서 (사업단 작성 기안문)</label>
+                      
+                      {/* 1대N 공유 연계용 드롭다운 */}
+                      <select
+                        onChange={(e) => {
+                          handleSelectLegacyProposal(e.target.value);
+                          e.target.value = "";
+                        }}
+                        style={{
+                          background: "var(--input-bg)",
+                          color: "var(--text-primary)",
+                          border: "1px solid var(--border-color)",
+                          borderRadius: "4px",
+                          padding: "0.2rem",
+                          fontSize: "0.7rem",
+                          cursor: "pointer",
+                          marginBottom: "0.4rem"
+                        }}
+                      >
+                        <option value="">-- 연계할 기존 기획결재번호 선택 (1대N) --</option>
+                        {getUniqueProposalDocs().map(doc => (
+                          <option key={doc.docNo} value={doc.docNo}>
+                            [{doc.docNo}] {doc.name.slice(0, 30)}
+                          </option>
+                        ))}
+                      </select>
+
+                      <input type="file" id="file-plan-upload-serv" onChange={(e) => handleFileChange("proposal", e)} style={{ display: "none" }} />
+                      
+                      <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
+                        {(formData.docPlanFileList || []).map(fileItem => (
+                          <div key={fileItem.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "0.5rem", background: "rgba(0,0,0,0.2)", padding: "0.35rem 0.5rem", borderRadius: "4px" }}>
+                            <span style={{ fontSize: "0.72rem", color: "white", textOverflow: "ellipsis", overflow: "hidden", whiteSpace: "nowrap", flex: 1 }}>
+                              📄 {fileItem.name} ({formatToThousandWon(fileItem.size)} KB)
+                            </span>
+                            <div style={{ display: "flex", alignItems: "center", gap: "0.3rem" }}>
+                              {fileItem.aiData ? (
+                                <span style={{ fontSize: "0.68rem", color: "#10B981", fontWeight: "800" }}>
+                                  ✅ 완료 ({fileItem.aiData.docNo})
+                                </span>
+                              ) : (
+                                <button
+                                  type="button"
+                                  onClick={() => handleAnalyzeAndUpload("proposal", fileItem.id)}
+                                  disabled={fileItem.isAnalyzing}
+                                  style={{ padding: "0.15rem 0.4rem", fontSize: "0.65rem", background: "#3b82f6", border: "none", color: "white", borderRadius: "3px", fontWeight: "700" }}
+                                >
+                                  {fileItem.isAnalyzing ? "분석중..." : "분석"}
+                                </button>
+                              )}
+                              <button type="button" onClick={() => handleFileRemove("proposal", fileItem.id)} style={{ background: "transparent", border: "none", color: "#EF4444", cursor: "pointer", padding: "0.1rem" }}>
+                                <Trash2 size={12} />
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                        
+                        <label htmlFor="file-plan-upload-serv" style={{ display: "block", textAlign: "center", padding: "0.35rem", border: "1px dashed var(--border-color)", borderRadius: "6px", cursor: "pointer", background: "rgba(255,255,255,0.01)", fontSize: "0.7rem", color: "var(--text-secondary)" }}>
+                          ➕ 기획문서 추가 선택 (.pdf, .docx, .hwp)
                         </label>
-                        <button type="button" onClick={() => handleAnalyzeAndUpload("proposal")} disabled={isAnalyzingPlan} style={{ padding: "0.45rem 1rem", fontSize: "0.72rem", background: "#3b82f6", border: "none", color: "white", borderRadius: "6px", fontWeight: "700", cursor: "pointer" }}>
-                          {isAnalyzingPlan ? "분석중..." : "AI 분석"}
-                        </button>
                       </div>
                     </div>
 
-                    {/* 2. 구매문서 첨부 */}
-                    <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem", marginBottom: "0.75rem" }}>
-                      <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>구매의뢰 관련 문서 (위탁 의뢰 이송 공문)</label>
-                      <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
-                        <input type="file" id="file-purchase-upload-serv" onChange={(e) => handleFileChange("purchase", e)} style={{ display: "none" }} />
-                        <label htmlFor="file-purchase-upload-serv" style={{ display: "block", flex: 1, textAlign: "center", padding: "0.45rem", border: "1px dashed var(--border-color)", borderRadius: "6px", cursor: "pointer", background: "rgba(255,255,255,0.02)", fontSize: "0.72rem", color: "var(--text-secondary)" }}>
-                          {formData.docPurchaseFileName ? `📎 ${formData.docPurchaseFileName}` : "📎 구매의뢰 문서 파일 선택 (.pdf, .docx, .hwp)"}
+                    {/* 2. 구매문서 첨부 (다중 파일 지원) */}
+                    <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem", marginBottom: "0.75rem", background: "rgba(255,255,255,0.01)", padding: "0.6rem", borderRadius: "6px", border: "1px solid rgba(255,255,255,0.03)" }}>
+                      <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)", fontWeight: "700" }}>구매의뢰 관련 문서 (위탁 의뢰 이송 공문)</label>
+                      <input type="file" id="file-purchase-upload-serv" onChange={(e) => handleFileChange("purchase", e)} style={{ display: "none" }} />
+                      
+                      <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
+                        {(formData.docPurchaseFileList || []).map(fileItem => (
+                          <div key={fileItem.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "0.5rem", background: "rgba(0,0,0,0.2)", padding: "0.35rem 0.5rem", borderRadius: "4px" }}>
+                            <span style={{ fontSize: "0.72rem", color: "white", textOverflow: "ellipsis", overflow: "hidden", whiteSpace: "nowrap", flex: 1 }}>
+                              📄 {fileItem.name} ({formatToThousandWon(fileItem.size)} KB)
+                            </span>
+                            <div style={{ display: "flex", alignItems: "center", gap: "0.3rem" }}>
+                              {fileItem.aiData ? (
+                                <span style={{ fontSize: "0.68rem", color: "#10B981", fontWeight: "800" }}>
+                                  ✅ 완료 ({fileItem.aiData.docNo})
+                                </span>
+                              ) : (
+                                <button
+                                  type="button"
+                                  onClick={() => handleAnalyzeAndUpload("purchase", fileItem.id)}
+                                  disabled={fileItem.isAnalyzing}
+                                  style={{ padding: "0.15rem 0.4rem", fontSize: "0.65rem", background: "#a78bfa", border: "none", color: "white", borderRadius: "3px", fontWeight: "700" }}
+                                >
+                                  {fileItem.isAnalyzing ? "분석중..." : "분석"}
+                                </button>
+                              )}
+                              <button type="button" onClick={() => handleFileRemove("purchase", fileItem.id)} style={{ background: "transparent", border: "none", color: "#EF4444", cursor: "pointer", padding: "0.1rem" }}>
+                                <Trash2 size={12} />
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                        
+                        <label htmlFor="file-purchase-upload-serv" style={{ display: "block", textAlign: "center", padding: "0.35rem", border: "1px dashed var(--border-color)", borderRadius: "6px", cursor: "pointer", background: "rgba(255,255,255,0.01)", fontSize: "0.7rem", color: "var(--text-secondary)" }}>
+                          ➕ 구매문서 추가 선택 (.pdf, .docx, .hwp)
                         </label>
-                        <button type="button" onClick={() => handleAnalyzeAndUpload("purchase")} disabled={isAnalyzingPurchase} style={{ padding: "0.45rem 1rem", fontSize: "0.72rem", background: "#a78bfa", border: "none", color: "white", borderRadius: "6px", fontWeight: "700", cursor: "pointer" }}>
-                          {isAnalyzingPurchase ? "분석중..." : "AI 분석"}
-                        </button>
                       </div>
                     </div>
 
@@ -5286,183 +5634,269 @@ export default function ProcurementManager({
       )}
 
       {/* 기획문서 팝업 모달 */}
-      {proposalModalData && (
-        <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(0,0,0,0.75)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1300 }}>
-          <div className="glass-card" style={{ width: "500px", padding: "1.5rem", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.1)", background: "#1e293b", color: "white" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid rgba(255,255,255,0.1)", paddingBottom: "0.75rem", marginBottom: "1rem" }}>
-              <h4 style={{ margin: 0, fontSize: "1.1rem", fontWeight: "800", color: "#60A5FA", display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                📄 기획문서 <span style={{ fontSize: "0.75rem", fontWeight: "400", color: "rgba(255,255,255,0.6)" }}>(사업단 작성 및 결재 문서)</span>
-              </h4>
-              <button 
-                onClick={() => setProposalModalData(null)}
-                style={{ background: "transparent", border: "none", color: "rgba(255,255,255,0.5)", cursor: "pointer", fontSize: "1.2rem" }}
-              >
-                ✕
-              </button>
-            </div>
-            
-            {(() => {
-              // AI 요약 데이터가 존재할 경우 최우선 반영 (요건 5 반영)
-              if (proposalModalData.aiProposalData) {
-                const ai = proposalModalData.aiProposalData;
+      {proposalModalData && (() => {
+        // 다중 기획 파일 리스트 빌드
+        const planList = proposalModalData.docPlanFileList && Array.isArray(proposalModalData.docPlanFileList) && proposalModalData.docPlanFileList.length > 0
+          ? proposalModalData.docPlanFileList
+          : (proposalModalData.docPlanFileName ? [{
+              id: "legacy-plan",
+              name: proposalModalData.docPlanFileName,
+              size: proposalModalData.docPlanFileSize || 0,
+              url: proposalModalData.docPlanFileUrl || "",
+              aiData: proposalModalData.aiProposalData || null
+            }] : []);
+
+        const activeFile = planList[selectedProposalIdx] || planList[0];
+        const activeAi = activeFile?.aiData || null;
+
+        return (
+          <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(0,0,0,0.75)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1300 }}>
+            <div className="glass-card" style={{ width: "500px", padding: "1.5rem", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.1)", background: "#1e293b", color: "white" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid rgba(255,255,255,0.1)", paddingBottom: "0.75rem", marginBottom: "1rem" }}>
+                <h4 style={{ margin: 0, fontSize: "1.1rem", fontWeight: "800", color: "#60A5FA", display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                  📄 기획문서 상세 조회 <span style={{ fontSize: "0.75rem", fontWeight: "400", color: "rgba(255,255,255,0.6)" }}>(사업단 작성)</span>
+                </h4>
+                <button 
+                  onClick={() => {
+                    setProposalModalData(null);
+                    setSelectedProposalIdx(0);
+                  }}
+                  style={{ background: "transparent", border: "none", color: "rgba(255,255,255,0.5)", cursor: "pointer", fontSize: "1.2rem" }}
+                >
+                  ✕
+                </button>
+              </div>
+
+              {/* 다중 파일이 존재할 경우 문서 선택기 콤보박스 노출 */}
+              {planList.length > 1 && (
+                <div style={{ marginBottom: "1rem" }}>
+                  <label style={{ display: "block", fontSize: "0.72rem", color: "#93C5FD", fontWeight: "700", marginBottom: "0.25rem" }}>
+                    📚 첨부된 기획 결재문서 선택 ({planList.length}건)
+                  </label>
+                  <select
+                    value={selectedProposalIdx}
+                    onChange={(e) => setSelectedProposalIdx(Number(e.target.value))}
+                    style={{
+                      width: "100%",
+                      background: "rgba(0,0,0,0.3)",
+                      color: "white",
+                      border: "1px solid rgba(255,255,255,0.2)",
+                      borderRadius: "6px",
+                      padding: "0.35rem",
+                      fontSize: "0.78rem",
+                      fontWeight: "600",
+                      cursor: "pointer"
+                    }}
+                  >
+                    {planList.map((f, idx) => (
+                      <option key={f.id || idx} value={idx}>
+                        {idx + 1}. {f.name.slice(0, 45)} {f.aiData ? `(${f.aiData.docNo})` : ""}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+              
+              {activeAi ? (
+                <div style={{ display: "flex", flexDirection: "column", gap: "1.2rem", fontSize: "0.85rem" }}>
+                  <div style={{ background: "rgba(96, 165, 250, 0.08)", padding: "0.85rem", borderRadius: "8px", border: "1px solid rgba(96, 165, 250, 0.25)" }}>
+                    <span style={{ fontSize: "0.72rem", color: "#93C5FD", display: "block", marginBottom: "0.2rem", fontWeight: "700" }}>📝 기획문서 결재번호 (AI 분석 완료)</span>
+                    <strong style={{ fontFamily: "monospace", color: "#FBBF24", fontSize: "1.2rem", letterSpacing: "0.5px" }}>
+                      {activeAi.docNo}
+                    </strong>
+                  </div>
+                  <div>
+                    <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)", display: "block" }}>단위과제</span>
+                    <strong style={{ fontSize: "0.9rem" }}>{activeAi.unit}</strong>
+                  </div>
+                  <div>
+                    <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)", display: "block" }}>주관 부서</span>
+                    <span>{activeAi.dept}</span>
+                  </div>
+                  <div>
+                    <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)", display: "block" }}>과제 배정 예산 (단위: 천원)</span>
+                    <strong style={{ color: "#3b82f6" }}>{activeAi.budget}</strong>
+                  </div>
+                  <div style={{ borderTop: "1px solid rgba(255,255,255,0.05)", paddingTop: "0.75rem" }}>
+                    <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)", display: "block", marginBottom: "0.4rem" }}>주요 추진 전략 목표</span>
+                    <ul style={{ margin: 0, paddingLeft: "1.2rem", lineHeight: "1.5", display: "flex", flexDirection: "column", gap: "0.25rem" }}>
+                      {(activeAi.goals || []).map((goal, idx) => (
+                        <li key={idx} style={{ color: "rgba(255,255,255,0.85)" }}>{goal}</li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              ) : (() => {
+                const summary = PROPOSAL_SUMMARIES[proposalModalData.unit] || {
+                  title: "알 수 없는 단위과제",
+                  dept: "미지정 센터",
+                  goals: ["상세 계획 확인 중"],
+                  budget: "0.0백만원"
+                };
+                
                 return (
                   <div style={{ display: "flex", flexDirection: "column", gap: "1.2rem", fontSize: "0.85rem" }}>
                     <div style={{ background: "rgba(96, 165, 250, 0.08)", padding: "0.85rem", borderRadius: "8px", border: "1px solid rgba(96, 165, 250, 0.25)" }}>
-                      <span style={{ fontSize: "0.72rem", color: "#93C5FD", display: "block", marginBottom: "0.2rem", fontWeight: "700" }}>📝 기획문서 결재번호 (AI 분석 완료)</span>
+                      <span style={{ fontSize: "0.72rem", color: "#93C5FD", display: "block", marginBottom: "0.2rem", fontWeight: "700" }}>📝 기획문서 결재번호</span>
                       <strong style={{ fontFamily: "monospace", color: "#FBBF24", fontSize: "1.2rem", letterSpacing: "0.5px" }}>
-                        {ai.docNo}
+                        {activeFile?.name ? activeFile.name.replace(/\.[^/.]+$/, "") : (proposalModalData.docPlan || `UC-EQ-${proposalModalData.unit}-${String(proposalModalData.seq || proposalModalData.id).slice(-3).padStart(3, "0")}`)}
                       </strong>
                     </div>
                     <div>
                       <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)", display: "block" }}>단위과제</span>
-                      <strong style={{ fontSize: "0.9rem" }}>{ai.unit}</strong>
+                      <strong style={{ fontSize: "0.9rem" }}>{proposalModalData.unit} : {summary.title}</strong>
                     </div>
                     <div>
                       <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)", display: "block" }}>주관 부서</span>
-                      <span>{ai.dept}</span>
+                      <span>{summary.dept}</span>
                     </div>
                     <div>
-                      <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)", display: "block" }}>과제 배정 예산 (단위: 천원)</span>
-                      <strong style={{ color: "#3b82f6" }}>{ai.budget}</strong>
+                      <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)", display: "block" }}>과제 배정 예산</span>
+                      <strong style={{ color: "#3b82f6" }}>{convertMillionWonToThousandWon(summary.budget)}</strong>
                     </div>
                     <div style={{ borderTop: "1px solid rgba(255,255,255,0.05)", paddingTop: "0.75rem" }}>
                       <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)", display: "block", marginBottom: "0.4rem" }}>주요 추진 전략 목표</span>
                       <ul style={{ margin: 0, paddingLeft: "1.2rem", lineHeight: "1.5", display: "flex", flexDirection: "column", gap: "0.25rem" }}>
-                        {(ai.goals || []).map((goal, idx) => (
+                        {summary.goals.map((goal, idx) => (
                           <li key={idx} style={{ color: "rgba(255,255,255,0.85)" }}>{goal}</li>
                         ))}
                       </ul>
                     </div>
                   </div>
                 );
-              }
-
-              // 기존 폴백(Fallback) 기획 모의 데이터
-              const summary = PROPOSAL_SUMMARIES[proposalModalData.unit] || {
-                title: "알 수 없는 단위과제",
-                dept: "미지정 센터",
-                goals: ["상세 계획 확인 중"],
-                budget: "0.0백만원"
-              };
+              })()}
               
-              return (
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "1.5rem", borderTop: "1px solid rgba(255,255,255,0.1)", paddingTop: "1rem" }}>
+                {activeFile?.url ? (
+                  <a 
+                    href={activeFile.url} 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    style={{ display: "inline-flex", alignItems: "center", gap: "0.4rem", fontSize: "0.78rem", color: "#60A5FA", textDecoration: "none", fontWeight: "700" }}
+                  >
+                    📎 첨부문서 다운로드
+                  </a>
+                ) : (
+                  <span style={{ fontSize: "0.72rem", color: "rgba(255,255,255,0.3)" }}>첨부파일 없음</span>
+                )}
+                <button 
+                  onClick={() => {
+                    setProposalModalData(null);
+                    setSelectedProposalIdx(0);
+                  }}
+                  style={{ padding: "0.4rem 1.25rem", borderRadius: "6px", background: "var(--accent-color)", border: "none", color: "white", fontWeight: "600", cursor: "pointer" }}
+                >
+                  확인
+                </button>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
+
+      {/* 구매문서 팝업 모달 */}
+      {purchaseModalData && (() => {
+        // 다중 구매 파일 리스트 빌드
+        const purchaseList = purchaseModalData.docPurchaseFileList && Array.isArray(purchaseModalData.docPurchaseFileList) && purchaseModalData.docPurchaseFileList.length > 0
+          ? purchaseModalData.docPurchaseFileList
+          : (purchaseModalData.docPurchaseFileName ? [{
+              id: "legacy-purchase",
+              name: purchaseModalData.docPurchaseFileName,
+              size: purchaseModalData.docPurchaseFileSize || 0,
+              url: purchaseModalData.docPurchaseFileUrl || "",
+              aiData: purchaseModalData.aiPurchaseData || null
+            }] : []);
+
+        const activeFile = purchaseList[selectedPurchaseIdx] || purchaseList[0];
+        const activeAi = activeFile?.aiData || null;
+
+        const price = Number(purchaseModalData.unitPrice) || 0;
+        const qty = Number(purchaseModalData.quantity) || 0;
+        const total = price * qty;
+
+        return (
+          <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(0,0,0,0.75)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1300 }}>
+            <div className="glass-card" style={{ width: "500px", padding: "1.5rem", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.1)", background: "#1e293b", color: "white" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid rgba(255,255,255,0.1)", paddingBottom: "0.75rem", marginBottom: "1rem" }}>
+                <h4 style={{ margin: 0, fontSize: "1.1rem", fontWeight: "800", color: "#C084FC", display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                  📦 구매문서 상세 조회 <span style={{ fontSize: "0.75rem", fontWeight: "400", color: "rgba(255,255,255,0.6)" }}>(총무팀 발송)</span>
+                </h4>
+                <button 
+                  onClick={() => {
+                    setPurchaseModalData(null);
+                    setSelectedPurchaseIdx(0);
+                  }}
+                  style={{ background: "transparent", border: "none", color: "rgba(255,255,255,0.5)", cursor: "pointer", fontSize: "1.2rem" }}
+                >
+                  ✕
+                </button>
+              </div>
+
+              {/* 다중 파일이 존재할 경우 문서 선택기 콤보박스 노출 */}
+              {purchaseList.length > 1 && (
+                <div style={{ marginBottom: "1rem" }}>
+                  <label style={{ display: "block", fontSize: "0.72rem", color: "#D8B4FE", fontWeight: "700", marginBottom: "0.25rem" }}>
+                    📚 첨부된 구매의뢰문서 선택 ({purchaseList.length}건)
+                  </label>
+                  <select
+                    value={selectedPurchaseIdx}
+                    onChange={(e) => setSelectedPurchaseIdx(Number(e.target.value))}
+                    style={{
+                      width: "100%",
+                      background: "rgba(0,0,0,0.3)",
+                      color: "white",
+                      border: "1px solid rgba(255,255,255,0.2)",
+                      borderRadius: "6px",
+                      padding: "0.35rem",
+                      fontSize: "0.78rem",
+                      fontWeight: "600",
+                      cursor: "pointer"
+                    }}
+                  >
+                    {purchaseList.map((f, idx) => (
+                      <option key={f.id || idx} value={idx}>
+                        {idx + 1}. {f.name.slice(0, 45)} {f.aiData ? `(${f.aiData.docNo})` : ""}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+              
+              {activeAi ? (
                 <div style={{ display: "flex", flexDirection: "column", gap: "1.2rem", fontSize: "0.85rem" }}>
-                  <div style={{ background: "rgba(96, 165, 250, 0.08)", padding: "0.85rem", borderRadius: "8px", border: "1px solid rgba(96, 165, 250, 0.25)" }}>
-                    <span style={{ fontSize: "0.72rem", color: "#93C5FD", display: "block", marginBottom: "0.2rem", fontWeight: "700" }}>📝 기획문서 결재번호</span>
+                  <div style={{ background: "rgba(167, 139, 250, 0.08)", padding: "0.85rem", borderRadius: "8px", border: "1px solid rgba(167, 139, 250, 0.25)" }}>
+                    <span style={{ fontSize: "0.72rem", color: "#D8B4FE", display: "block", marginBottom: "0.2rem", fontWeight: "700" }}>📦 구매문서 결재번호 (AI 분석 완료)</span>
                     <strong style={{ fontFamily: "monospace", color: "#FBBF24", fontSize: "1.2rem", letterSpacing: "0.5px" }}>
-                      {proposalModalData.docPlan || `UC-EQ-${proposalModalData.unit}-${String(proposalModalData.seq || proposalModalData.id).slice(-3).padStart(3, "0")}`}
+                      {activeAi.docNo}
                     </strong>
                   </div>
                   <div>
-                    <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)", display: "block" }}>단위과제</span>
-                    <strong style={{ fontSize: "0.9rem" }}>{proposalModalData.unit} : {summary.title}</strong>
+                    <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)", display: "block" }}>품명 및 수량</span>
+                    <strong style={{ fontSize: "0.9rem" }}>{purchaseModalData.itemName || purchaseModalData.name || "-"} / {qty}대 (세트)</strong>
                   </div>
                   <div>
-                    <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)", display: "block" }}>주관 부서</span>
-                    <span>{summary.dept}</span>
+                    <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)", display: "block" }}>발신 부서 / 발송처</span>
+                    <span>{activeAi.fromDept} / <strong>{activeAi.toDept}</strong></span>
                   </div>
                   <div>
-                    <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)", display: "block" }}>과제 배정 예산</span>
-                    <strong style={{ color: "#3b82f6" }}>{convertMillionWonToThousandWon(summary.budget)}</strong>
+                    <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)", display: "block" }}>도입 소요예산 (단위: 천원)</span>
+                    <strong style={{ color: "#a78bfa" }}>{activeAi.budget}</strong>
                   </div>
                   <div style={{ borderTop: "1px solid rgba(255,255,255,0.05)", paddingTop: "0.75rem" }}>
-                    <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)", display: "block", marginBottom: "0.4rem" }}>주요 추진 전략 목표</span>
+                    <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)", display: "block", marginBottom: "0.4rem" }}>조달 위탁 요청 기술 사양</span>
                     <ul style={{ margin: 0, paddingLeft: "1.2rem", lineHeight: "1.5", display: "flex", flexDirection: "column", gap: "0.25rem" }}>
-                      {summary.goals.map((goal, idx) => (
-                        <li key={idx} style={{ color: "rgba(255,255,255,0.85)" }}>{goal}</li>
+                      {(activeAi.specs || []).map((spec, idx) => (
+                        <li key={idx} style={{ color: "rgba(255,255,255,0.85)" }}>{spec}</li>
                       ))}
                     </ul>
                   </div>
                 </div>
-              );
-            })()}
-            
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "1.5rem", borderTop: "1px solid rgba(255,255,255,0.1)", paddingTop: "1rem" }}>
-              {proposalModalData.docPlanFileUrl ? (
-                <a 
-                  href={proposalModalData.docPlanFileUrl} 
-                  target="_blank" 
-                  rel="noopener noreferrer" 
-                  style={{ display: "inline-flex", alignItems: "center", gap: "0.4rem", fontSize: "0.78rem", color: "#60A5FA", textDecoration: "none", fontWeight: "700" }}
-                >
-                  📎 첨부문서 다운로드
-                </a>
               ) : (
-                <span style={{ fontSize: "0.72rem", color: "rgba(255,255,255,0.3)" }}>첨부파일 없음</span>
-              )}
-              <button 
-                onClick={() => setProposalModalData(null)}
-                style={{ padding: "0.4rem 1.25rem", borderRadius: "6px", background: "var(--accent-color)", border: "none", color: "white", fontWeight: "600", cursor: "pointer" }}
-              >
-                확인
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* 구매문서 팝업 모달 */}
-      {purchaseModalData && (
-        <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(0,0,0,0.75)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1300 }}>
-          <div className="glass-card" style={{ width: "500px", padding: "1.5rem", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.1)", background: "#1e293b", color: "white" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid rgba(255,255,255,0.1)", paddingBottom: "0.75rem", marginBottom: "1rem" }}>
-              <h4 style={{ margin: 0, fontSize: "1.1rem", fontWeight: "800", color: "#C084FC", display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                📦 구매문서 <span style={{ fontSize: "0.75rem", fontWeight: "400", color: "rgba(255,255,255,0.6)" }}>(사업단 ➡️ 총무팀 발송문서)</span>
-              </h4>
-              <button 
-                onClick={() => setPurchaseModalData(null)}
-                style={{ background: "transparent", border: "none", color: "rgba(255,255,255,0.5)", cursor: "pointer", fontSize: "1.2rem" }}
-              >
-                ✕
-              </button>
-            </div>
-            
-            {(() => {
-              const price = Number(purchaseModalData.unitPrice) || 0;
-              const qty = Number(purchaseModalData.quantity) || 0;
-              const total = price * qty;
-
-              // AI 요약 데이터가 존재할 경우 반영
-              if (purchaseModalData.aiPurchaseData) {
-                const ai = purchaseModalData.aiPurchaseData;
-                return (
-                  <div style={{ display: "flex", flexDirection: "column", gap: "1.2rem", fontSize: "0.85rem" }}>
-                    <div style={{ background: "rgba(167, 139, 250, 0.08)", padding: "0.85rem", borderRadius: "8px", border: "1px solid rgba(167, 139, 250, 0.25)" }}>
-                      <span style={{ fontSize: "0.72rem", color: "#D8B4FE", display: "block", marginBottom: "0.2rem", fontWeight: "700" }}>📦 구매문서 결재번호 (AI 분석 완료)</span>
-                      <strong style={{ fontFamily: "monospace", color: "#FBBF24", fontSize: "1.2rem", letterSpacing: "0.5px" }}>
-                        {ai.docNo}
-                      </strong>
-                    </div>
-                    <div>
-                      <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)", display: "block" }}>품명 및 수량</span>
-                      <strong style={{ fontSize: "0.9rem" }}>{purchaseModalData.itemName || purchaseModalData.name || "-"} / {qty}대 (세트)</strong>
-                    </div>
-                    <div>
-                      <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)", display: "block" }}>발신 부서 / 발송처</span>
-                      <span>{ai.fromDept} / <strong>{ai.toDept}</strong></span>
-                    </div>
-                    <div>
-                      <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)", display: "block" }}>도입 소요예산 (단위: 천원)</span>
-                      <strong style={{ color: "#a78bfa" }}>{ai.budget}</strong>
-                    </div>
-                    <div style={{ borderTop: "1px solid rgba(255,255,255,0.05)", paddingTop: "0.75rem" }}>
-                      <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)", display: "block", marginBottom: "0.4rem" }}>조달 위탁 요청 기술 사양</span>
-                      <ul style={{ margin: 0, paddingLeft: "1.2rem", lineHeight: "1.5", display: "flex", flexDirection: "column", gap: "0.25rem" }}>
-                        {(ai.specs || []).map((spec, idx) => (
-                          <li key={idx} style={{ color: "rgba(255,255,255,0.85)" }}>{spec}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  </div>
-                );
-              }
-              
-              return (
                 <div style={{ display: "flex", flexDirection: "column", gap: "1.2rem", fontSize: "0.85rem" }}>
                   <div style={{ background: "rgba(167, 139, 250, 0.08)", padding: "0.85rem", borderRadius: "8px", border: "1px solid rgba(167, 139, 250, 0.25)" }}>
                     <span style={{ fontSize: "0.72rem", color: "#D8B4FE", display: "block", marginBottom: "0.2rem", fontWeight: "700" }}>📦 구매문서 결재번호 (총무팀 수신부서 이송공문)</span>
                     <strong style={{ fontFamily: "monospace", color: "#FBBF24", fontSize: "1.2rem", letterSpacing: "0.5px" }}>
-                      {purchaseModalData.docPurchase || `UC-PR-${purchaseModalData.unit}-${String(purchaseModalData.seq || purchaseModalData.id).slice(-3).padStart(3, "0")}`}
+                      {activeFile?.name ? activeFile.name.replace(/\.[^/.]+$/, "") : (purchaseModalData.docPurchase || `UC-PR-${purchaseModalData.unit}-${String(purchaseModalData.seq || purchaseModalData.id).slice(-3).padStart(3, "0")}`)}
                     </strong>
                   </div>
                   <div>
@@ -5484,32 +5918,35 @@ export default function ProcurementManager({
                     </span>
                   </div>
                 </div>
-              );
-            })()}
-            
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "1.5rem", borderTop: "1px solid rgba(255,255,255,0.1)", paddingTop: "1rem" }}>
-              {purchaseModalData.docPurchaseFileUrl ? (
-                <a 
-                  href={purchaseModalData.docPurchaseFileUrl} 
-                  target="_blank" 
-                  rel="noopener noreferrer" 
-                  style={{ display: "inline-flex", alignItems: "center", gap: "0.4rem", fontSize: "0.78rem", color: "#C084FC", textDecoration: "none", fontWeight: "700" }}
-                >
-                  📎 첨부문서 다운로드
-                </a>
-              ) : (
-                <span style={{ fontSize: "0.72rem", color: "rgba(255,255,255,0.3)" }}>첨부파일 없음</span>
               )}
-              <button 
-                onClick={() => setPurchaseModalData(null)}
-                style={{ padding: "0.4rem 1.25rem", borderRadius: "6px", background: "var(--accent-color)", border: "none", color: "white", fontWeight: "600", cursor: "pointer" }}
-              >
-                확인
-              </button>
+              
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "1.5rem", borderTop: "1px solid rgba(255,255,255,0.1)", paddingTop: "1rem" }}>
+                {activeFile?.url ? (
+                  <a 
+                    href={activeFile.url} 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    style={{ display: "inline-flex", alignItems: "center", gap: "0.4rem", fontSize: "0.78rem", color: "#C084FC", textDecoration: "none", fontWeight: "700" }}
+                  >
+                    📎 첨부문서 다운로드
+                  </a>
+                ) : (
+                  <span style={{ fontSize: "0.72rem", color: "rgba(255,255,255,0.3)" }}>첨부파일 없음</span>
+                )}
+                <button 
+                  onClick={() => {
+                    setPurchaseModalData(null);
+                    setSelectedPurchaseIdx(0);
+                  }}
+                  style={{ padding: "0.4rem 1.25rem", borderRadius: "6px", background: "var(--accent-color)", border: "none", color: "white", fontWeight: "600", cursor: "pointer" }}
+                >
+                  확인
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
 
       {/* 입찰/결과문서 팝업 모달 */}
       {bidModalData && (
