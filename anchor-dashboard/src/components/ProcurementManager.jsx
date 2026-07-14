@@ -80,10 +80,11 @@ const runAiMockAnalysis = (docType, textContent, itemName, deptName, totalPrice,
   const randomNo = Math.floor(Math.random() * 900) + 100;
   const priceThousand = totalPrice ? Math.round(totalPrice / 1000) : 120000;
   const fName = (fileName || textContent || "").toLowerCase();
+  const iName = (itemName || "").toLowerCase();
 
   // [AI 실물 문서 요약 추출 자동 연동 분기]
   // 1) 20DoF 로봇 핸드 문서 감지
-  if (fName.includes("로봇") || fName.includes("robot") || fName.includes("hand")) {
+  if (fName.includes("로봇") || fName.includes("robot") || fName.includes("hand") || iName.includes("로봇") || iName.includes("robot") || iName.includes("hand")) {
     if (docType === "proposal") {
       return {
         docNo: "앵커사업단운영팀-1883",
@@ -146,7 +147,7 @@ const runAiMockAnalysis = (docType, textContent, itemName, deptName, totalPrice,
   }
 
   // 2) A6000 워크스테이션 문서 감지
-  if (fName.includes("a6000") || fName.includes("워크스테이션") || fName.includes("workstation")) {
+  if (fName.includes("a6000") || fName.includes("워크스테이션") || fName.includes("workstation") || iName.includes("a6000") || iName.includes("워크스테이션") || iName.includes("workstation")) {
     if (docType === "proposal") {
       return {
         docNo: "UC-EQ-P-110",
@@ -192,7 +193,7 @@ const runAiMockAnalysis = (docType, textContent, itemName, deptName, totalPrice,
   }
 
   // 3) Physical AIoT 교육기자재 문서 감지
-  if (fName.includes("aiot") || fName.includes("교육기자재")) {
+  if (fName.includes("aiot") || fName.includes("교육기자재") || iName.includes("aiot") || iName.includes("교육기자재")) {
     if (docType === "proposal") {
       return {
         docNo: "UC-EQ-P-120",
@@ -238,7 +239,7 @@ const runAiMockAnalysis = (docType, textContent, itemName, deptName, totalPrice,
   }
 
   // 4) Physical AI 실습장비 문서 감지
-  if (fName.includes("mfec") || fName.includes("실습장비")) {
+  if (fName.includes("mfec") || fName.includes("실습장비") || iName.includes("mfec") || iName.includes("실습장비")) {
     if (docType === "proposal") {
       return {
         docNo: "UC-EQ-P-130",
@@ -290,9 +291,9 @@ const runAiMockAnalysis = (docType, textContent, itemName, deptName, totalPrice,
       unit: "B2 : AID 역량강화 기반 지역산업 전환 지원",
       dept: deptName || "AID-X지원센터",
       itemName: itemName || "정밀 의료 실습용 고해상도 초음파 진단기",
-      unitPrice: totalPrice ? (totalPrice / 1000000).toString() : "120",
+      unitPrice: totalPrice ? (totalPrice / 1000).toString() : "120",
       quantity: 1,
-      totalPrice: totalPrice ? (totalPrice / 1000000).toString() : "120",
+      totalPrice: totalPrice ? (totalPrice / 1000).toString() : "120",
       budget: `${priceThousand.toLocaleString()}천원`,
       goals: [
         `${itemName || "도입 핵심 기재"} 기반 전문 실무 교육과정 수립`,
@@ -310,9 +311,9 @@ const runAiMockAnalysis = (docType, textContent, itemName, deptName, totalPrice,
       fromDept: deptName || "AID-X지원센터",
       toDept: "대학본부 총무팀",
       itemName: itemName || "정밀 의료 실습용 고해상도 초음파 진단기",
-      unitPrice: totalPrice ? (totalPrice / 1000000).toString() : "120",
+      unitPrice: totalPrice ? (totalPrice / 1000).toString() : "120",
       quantity: 1,
-      totalPrice: totalPrice ? (totalPrice / 1000000).toString() : "120",
+      totalPrice: totalPrice ? (totalPrice / 1000).toString() : "120",
       budget: `${priceThousand.toLocaleString()}천원`,
       specs: [
         `${itemName || "도입 요청 기재"} 핵심 조달 기술 사양 충족 검토`,
@@ -329,9 +330,9 @@ const runAiMockAnalysis = (docType, textContent, itemName, deptName, totalPrice,
       docNo: `UC-EQ-B-${randomNo}`,
       method: "제한경쟁입찰 (협상에 의한 계약)",
       itemName: itemName || "정밀 의료 실습용 고해상도 초음파 진단기",
-      unitPrice: totalPrice ? (totalPrice / 1000000).toString() : "120",
+      unitPrice: totalPrice ? (totalPrice / 1000).toString() : "120",
       quantity: 1,
-      totalPrice: totalPrice ? (totalPrice / 1000000).toString() : "120",
+      totalPrice: totalPrice ? (totalPrice / 1000).toString() : "120",
       budget: `${priceThousand.toLocaleString()}천원`,
       qualifications: [
         "국가종합전자조달시스템에 조달용 기자재 공급업으로 등록을 필한 업체",
