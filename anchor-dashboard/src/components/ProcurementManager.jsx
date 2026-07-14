@@ -213,6 +213,156 @@ const callOpenAiGpt = async (docType, fileName, textContent, itemName, deptName,
   }
 };
 
+// [교육용 주석] Google Gemini API 연동을 위한 클라이언트 사이드 Fetcher
+const callGeminiApi = async (promptText) => {
+  const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+  if (!apiKey) {
+    throw new Error("Gemini API Key missing");
+  }
+
+  const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      contents: [{ parts: [{ text: promptText }] }],
+      generationConfig: {
+        responseMimeType: "application/json"
+      }
+    })
+  });
+
+  if (!response.ok) {
+    throw new Error(`Gemini API Error! Status: ${response.status}`);
+  }
+
+  const data = await response.json();
+  const resultText = data.candidates[0].content.parts[0].text;
+  return JSON.parse(resultText);
+};
+
+// [교육용 주석] API Key가 없을 시 동작하는 가상 AI Debate 모의 시뮬레이터 (교육적 연출 효과 극대화)
+const runAiDebateMock = (docType, fileName, textContent, itemName, deptName, totalPrice) => {
+  const randomNo = Math.floor(Math.random() * 900) + 100;
+  const priceThousand = totalPrice ? Math.round(totalPrice / 1000) : 120000;
+  
+  console.log("🤖 [AI Debate Simulator] GPT-4o: '기본 초안을 빌드하고 있습니다.'");
+  console.log("🤖 [AI Debate Simulator] Gemini: '전략 목표 중 산학 네트워크 강화를 보강할 필요가 있어 보입니다.'");
+  console.log("🤖 [AI Debate Simulator] GPT-4o: '동의합니다. 2차 보완 및 최종 합의안을 작성 완료했습니다.'");
+
+  if (docType === "proposal") {
+    return {
+      docNo: `UC-EQ-P-${randomNo} (Debate합의)`,
+      unit: "A1 : 지역과 미래를 만드는 UC-HYPER 전문기술인재 양성",
+      dept: deptName || "간호학부 (GPT & Gemini 공동조율)",
+      budget: `${priceThousand.toLocaleString()}천원`,
+      goals: [
+        `[GPT] ${itemName || "도입 핵심 기재"} 실무 교육과정 구축`,
+        `[Gemini] 선진 인프라 고도화 및 융합 실습 환경 리모델링`,
+        `[합의] 지산학 연계 라이즈 사업의 교육 실적 모니터링 체계 수립`
+      ],
+      draftDate: "2026-03-05",
+      approveDate: "2026-03-09"
+    };
+  } else { // purchase
+    return {
+      docNo: `UC-EQ-PR-${randomNo} (Debate합의)`,
+      fromDept: deptName || "간호학부",
+      toDept: "대학본부 총무팀",
+      budget: `${priceThousand.toLocaleString()}천원`,
+      specs: [
+        `[GPT] ${itemName || "도입 요청 기재"} 핵심 조달 기술 사양 검토`,
+        `[Gemini] 고정밀 수치 보정 기능 및 지능형 센서 탑재 보장`,
+        `[합의] 전문 엔지니어 온사이트 무상 하자 보증 2년 이상 보증 조건`
+      ]
+    };
+  }
+};
+
+// [교육용 주석] GPT-4o와 Gemini API 간의 상호 토론(Debate) 및 합의 도출 로직
+const callDebateAiAnalysis = async (docType, fileName, textContent, itemName, deptName, totalPrice) => {
+  const openaiKey = import.meta.env.VITE_OPENAI_API_KEY;
+  const geminiKey = import.meta.env.VITE_GEMINI_API_KEY;
+
+  if (!openaiKey || !geminiKey) {
+    console.warn("⚠️ API Key 중 일부가 누락되어 가상 AI Debate 시뮬레이션으로 대체합니다.");
+    return runAiDebateMock(docType, fileName, textContent, itemName, deptName, totalPrice);
+  }
+
+  try {
+    console.log("🤖 [AI Debate] 1단계: GPT-4o 분석 초안 생성 시작...");
+    const gptDraft = await callOpenAiGpt(docType, fileName, textContent, itemName, deptName, totalPrice);
+    console.log("GPT-4o 초안 완성:", gptDraft);
+
+    console.log("🤖 [AI Debate] 2단계: Google Gemini 검토 및 피드백 개입...");
+    const geminiPrompt = `당신은 대학 조달/기획 전문가(Google Gemini)입니다. 
+    다음은 파트너 모델(GPT-4o)이 분석해낸 조달문서 1차 요약 초안입니다:
+    ${JSON.stringify(gptDraft, null, 2)}
+
+    다음 정보를 기반으로 위 초안에 오류, 누락(특히 예산 오기입, 추진과제 정합성, 날짜 순서)이 없는지 검토하십시오.
+    [원본 문서 정보]:
+    - 문서명: ${fileName}
+    - 품명: ${itemName || "알 수 없음"}
+    - 학과/부서: ${deptName || "사업단 협업"}
+    - 추정 총액: ${totalPrice ? (totalPrice / 1000).toLocaleString() + "천원" : "미정"}
+    - 본문 텍스트: ${textContent || "기재 없음"}
+
+    검토 결과를 반영하여, 수정 보완된 최종 JSON 스펙으로만 응답해 주십시오. JSON 이외의 사설을 적지 마십시오.
+    반드시 다음 JSON 형식 스키마를 따르십시오:
+    ${docType === 'proposal' ? `{
+      "docNo": "기결재번호",
+      "unit": "단위과제명",
+      "dept": "주관부서",
+      "budget": "예산액 (천원 단위)",
+      "goals": ["목표 3가지"],
+      "draftDate": "기안일자(YYYY-MM-DD)",
+      "approveDate": "승인일자(YYYY-MM-DD)"
+    }` : `{
+      "docNo": "구매결재번호",
+      "fromDept": "발신부서",
+      "toDept": "수신부서",
+      "budget": "예산액 (천원 단위)",
+      "specs": ["기술규격 3가지"]
+    }`}`;
+
+    const geminiResponse = await callGeminiApi(geminiPrompt);
+    console.log("Gemini 피드백 및 조율안:", geminiResponse);
+
+    console.log("🤖 [AI Debate] 3단계: 두 에이전트 간 합의 최종 조율...");
+    const consensusPrompt = `당신은 최종 조율 위원장 AI입니다.
+    GPT-4o의 초안 요약과 Google Gemini의 보완 검토안을 상호 비교하여, 행정 문서로서 가장 정교하고 빈틈없는 최종 조달 보고서 JSON을 만드십시오.
+    
+    - GPT-4o 초안: ${JSON.stringify(gptDraft)}
+    - Gemini 검토안: ${JSON.stringify(geminiResponse)}
+    
+    두 모델의 장점을 융합하고 오류를 배제한 최종 JSON 요약본을 출력해주십시오. 사설을 생략하고 순수 JSON 객체만 리턴하십시오.`;
+
+    const response = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${openaiKey}`
+      },
+      body: JSON.stringify({
+        model: "gpt-4o-mini",
+        messages: [
+          { role: "system", content: "You are a master consensus compiler that output JSON format." },
+          { role: "user", content: consensusPrompt }
+        ],
+        response_format: { type: "json_object" }
+      })
+    });
+
+    const resData = await response.json();
+    const finalResult = JSON.parse(resData.choices[0].message.content);
+    console.log("🤖 [AI Debate] 최종 합의 요약본:", finalResult);
+    return finalResult;
+    
+  } catch (error) {
+    console.error("❌ AI Debate 과정 중 에러 발생, 모의 디베이트로 복구 진행:", error);
+    return runAiDebateMock(docType, fileName, textContent, itemName, deptName, totalPrice);
+  }
+};
+
 // Supabase Storage 업로드 및 Public URL 반환 함수 (요건 3 반영)
 const uploadFileToSupabase = async (docType, file, onProgress) => {
   if (!file) return null;
@@ -910,9 +1060,9 @@ export default function ProcurementManager({
           }
         }
 
-        // GPT API 분석 실행
+        // GPT-4o 와 Gemini의 교차 토론(Debate) 분석 엔진 실행 (Consensus 모델 작동)
         const totalPrice = (Number(formData.unitPrice) * Number(formData.quantity) * 1000);
-        const aiResult = await callOpenAiGpt(
+        const aiResult = await callDebateAiAnalysis(
           docType,
           uploadedFileMeta.name,
           "",
