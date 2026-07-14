@@ -930,6 +930,7 @@ export default function ProcurementManager({
             return item;
           });
 
+          // 기본 폼 상태 복제
           const nextData = {
             ...prev,
             [listKey]: list,
@@ -939,21 +940,117 @@ export default function ProcurementManager({
             [docType === "proposal" ? "docPlan" : "docPurchase"]: list[0]?.aiData?.docNo || ""
           };
 
-          // AI 파싱 예산액 기반 폼 필드 자동 매핑
+          // [AI 자동채우기 핵심 로직 - AI 문서 기반 원클릭 행정 자동화]
+          
+          // 1. 단가 및 예산 매핑 (백만원 / 천원 단위 정합성 고려)
           const parsedBudget = parseBudgetStringToMillions(aiResult.budget);
           if (parsedBudget) {
-            nextData.unitPrice = parsedBudget;
-          }
-
-          if (docType === "proposal") {
-            if (aiResult.dept) nextData.deptName = aiResult.dept;
-            nextData.purpose = "특화 인력 양성을 위한 핵심 시너지 공간 용도 상세 기술";
-            if (aiResult.goals && Array.isArray(aiResult.goals) && aiResult.goals.length > 0) {
-              nextData.plan = aiResult.goals.join("\n") || "";
+            if (modalType === "service") {
+              // 주요 용역 모달은 천 원 단위
+              nextData.budgetPlan = Math.round(parsedBudget * 1000); 
+            } else if (modalType === "env") {
+              nextData.unitPrice = parsedBudget;
+              nextData.budgetPlan = parsedBudget;
+            } else {
+              // 기자재 모달은 백만 원 단위
+              nextData.unitPrice = parsedBudget; 
             }
           }
-          if (docType === "purchase" && aiResult.fromDept) {
-            nextData.deptName = aiResult.fromDept;
+
+          // 2. 단위과제 (unit) & 연계 프로그램 (operation) 자동 매핑
+          if (aiResult.unit) {
+            const unitMatch = aiResult.unit.match(/[A-D][1-4][가-힣]?/);
+            if (unitMatch) {
+              const matchedUnitName = unitMatch[0] + " 과제";
+              nextData.unit = matchedUnitName;
+              
+              // 연계 프로그램 세팅
+              const progs = getDynamicPrograms(matchedUnitName);
+              if (progs.length > 0) {
+                nextData.operation = progs[0].name;
+              }
+            } else {
+              // 매칭 추출 실패 시 기본 첫 번째 단위과제 세팅
+              nextData.unit = "A1가 과제";
+              const progs = getDynamicPrograms("A1가 과제");
+              if (progs.length > 0) {
+                nextData.operation = progs[0].name;
+              }
+            }
+          }
+
+          // 3. 주관 학과 (deptName) 및 행정 부서 (divisionName) 정교한 매핑
+          const rawDept = aiResult.dept || aiResult.fromDept;
+          if (rawDept) {
+            // 괄호 및 사업단 협업 명칭 트리밍
+            const cleanDept = rawDept.replace(/\s*\(.*?\)\s*/g, "").trim();
+            
+            const validDepts = [
+              "기계공학부", "기계시스템전공", "기계설비전공", "전기전자공학부", "전기전공", "스마트전자전공",
+              "조선해양시스템공학과", "컴퓨터공학과", "화학공학과", "게임영상학과", "실내건축디자인과",
+              "융합안전공학과", "인테리어시공학과", "간호학부", "물리치료학과", "치위생학과", "식품영양학과",
+              "호텔조리제빵과", "스포츠재활학부", "스포츠건강재활학과", "푸드케어학과", "골프산업과",
+              "반려동물보건과", "사회복지학과", "유아교육과", "세무회계학과", "사회복지상담학과", "국제학부",
+              "미래모빌리티제조학과", "바이오화학생산기술학과", "인공지능기반텔레헬스학과"
+            ];
+            
+            const matchedDept = validDepts.find(d => cleanDept.includes(d) || d.includes(cleanDept));
+            if (matchedDept) {
+              nextData.deptName = matchedDept;
+              nextData.divisionName = ""; // 학과가 지정되면 행정부서 초기화
+            } else {
+              const validDivisions = [
+                "RCC", "ECC", "글로컬대학30추진단", "교육혁신처", "학생조치처", "입학홍보처",
+                "산학협력처", "총무처", "기획처", "교무팀", "학사지원팀", "총무팀", "재무회계팀",
+                "IR센터", "산학기획팀", "산학지원팀", "창업창직교육센터", "현장실습지원센터"
+              ];
+              const matchedDiv = validDivisions.find(d => cleanDept.toUpperCase().includes(d.toUpperCase()) || d.toUpperCase().includes(cleanDept.toUpperCase()));
+              if (matchedDiv) {
+                nextData.divisionName = matchedDiv;
+                nextData.deptName = ""; // 행정부서가 지정되면 학과 초기화
+              } else {
+                nextData.divisionName = "ECC"; // 최종 폴백
+                nextData.deptName = "";
+              }
+            }
+          }
+
+          // 4. 품명 (name, title) 자동 완성 (파일명에서 확장자 제거 및 가공)
+          const baseFileName = uploadedFileMeta.name.replace(/\.[^/.]+$/, "");
+          // 숫자나 단순 해시명칭이 아닌 한글/영문 형태의 파일명이면 그것을 품명으로 차용
+          if (baseFileName && !/^\d+$/.test(baseFileName) && baseFileName.length > 2) {
+            nextData.name = baseFileName;
+            nextData.title = baseFileName;
+          } else {
+            nextData.name = docType === "proposal" ? "스마트 팩토리 IoT 통합 분석 시스템" : "정밀 의료 실습용 고해상도 초음파 진단기";
+            nextData.title = docType === "proposal" ? "스마트 팩토리 IoT 통합 분석 시스템" : "정밀 의료 실습용 고해상도 초음파 진단기";
+          }
+
+          // 5. 수량 기본값 1개 세팅
+          nextData.quantity = 1;
+
+          // 6. 기자재 바코드 및 관리번호 난수 발급 (행정 편의성 제공)
+          if (!prev.barcode) {
+            nextData.barcode = "8809" + Math.floor(10000000 + Math.random() * 90000000);
+          }
+          if (!prev.asset_number) {
+            nextData.asset_number = `AIDX-EQ-2026-${Math.floor(100 + Math.random() * 900)}`;
+          }
+
+          // 7. 기획 목적 및 활용계획 자동 추출 바인딩 (구입목적, 활용계획)
+          const strategicGoals = aiResult.goals ? aiResult.goals.join(", ") : "RISE 사업 전략 과제 추진";
+          
+          if (modalType === "service") {
+            nextData.purpose = `[AI 자동완성] ${nextData.title} 용역을 통해 RISE 사업의 전략 목표인 '${strategicGoals}'를 달성하고 고도화된 연구 성과를 창출하고자 함.`;
+            nextData.providerQual = "관련 부문 인가 인증 보유 법인 및 대학용역 유사 실적 우수 사업자";
+            nextData.opResult = "용역 일정 내 성과품 납품 완료 및 만족도 평가 결과 우수 등급 달성";
+          } else if (modalType === "env") {
+            nextData.purpose = `[AI 자동완성] 교육환경 개선 사업을 시행하여 시설 안정성을 확보하고 학생 친화적 학습 환경을 혁신하고자 함.`;
+            nextData.plan = `전략 목표: ${strategicGoals}`;
+            nextData.utilization = "학부생 공통 개방형 메이커 스페이스 및 교육 실습 공간으로 상시 개방 운영 예정";
+          } else {
+            nextData.descriptionPurpose = `[AI 자동완성] ${nextData.name} 핵심 기자재를 도입하여 교육 실습 타당성을 확보하고 전략 목표인 '${strategicGoals}' 과제를 완성함.`;
+            nextData.descriptionPlan = "도입 완료 후 시뮬레이션 고도화 전공 교과목 실습 기자재로 100% 매칭 활용하며, 연간 120명 이상의 전문 인력 실습 활용 기대.";
           }
 
           return nextData;
