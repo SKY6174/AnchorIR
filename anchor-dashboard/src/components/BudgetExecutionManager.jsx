@@ -742,8 +742,8 @@ export default function BudgetExecutionManager({ projects = [], currentRole, sel
         </div>
       </div>
 
-      {/* [교육용 주석] 누적 집행률과 누적 집행액을 구분한 개별 차트 영역 */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "1rem" }}>
+      {/* [교육용 주석] 누적 집행률과 누적 집행액을 구분한 개별 차트 영역 (좌/우 2열 컬럼 가로 배치) */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(500px, 1fr))", gap: "1rem" }}>
         
         {/* 1. 월별 누적 집행률 추이 카드 (%) */}
         <div className="glass-card" style={{ padding: "1.25rem", borderRadius: "10px", display: "flex", flexDirection: "column", gap: "1rem" }}>
