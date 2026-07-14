@@ -36,7 +36,7 @@
   --input-bg: #27272a;
   
   /* 💡 [교육용 한글 주석] 사업운영팀 카드에 쓰일 다크 모드 전용 텍스트, 배경, 테두리선 색상 변수입니다. */
-  --operation-text: #bef264;
+  --operation-text: #ffffff;
   --operation-bg: rgba(132, 204, 22, 0.24);
   --operation-border: rgba(132, 204, 22, 0.4);
   --operation-border-hover: #bef264;
