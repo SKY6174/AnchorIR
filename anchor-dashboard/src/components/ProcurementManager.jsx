@@ -534,6 +534,38 @@ const getMilestonesFromDates = (item, activeYear) => {
   return milestones;
 };
 
+// [교육용 한글 주석] 기자재 전용 날짜 마일스톤 매핑 헬퍼 함수 (PA, Pr, BC, I 매핑)
+const getMilestonesFromDatesEquip = (item, activeYear) => {
+  const milestones = { "3": [], "4": [], "5": [], "6": [], "7": [], "8": [], "9": [], "10": [], "11": [], "12": [], "1": [], "2": [] };
+  const baseYear = 2024 + Number(activeYear || 1); // 1차년도: 2025, 2차년도: 2026
+  
+  const checkAndAdd = (dateStr, phaseCode) => {
+    if (!dateStr) return;
+    const date = new Date(dateStr);
+    if (isNaN(date.getTime())) return;
+    
+    const year = date.getFullYear();
+    const month = date.getMonth() + 1;
+    
+    const isCurrentYearPart = (month >= 3 && month <= 12 && year === baseYear);
+    const isNextYearPart = ((month === 1 || month === 2) && year === baseYear + 1);
+    
+    if (isCurrentYearPart || isNextYearPart) {
+      const monthKey = String(month);
+      if (milestones[monthKey] && !milestones[monthKey].includes(phaseCode)) {
+        milestones[monthKey].push(phaseCode);
+      }
+    }
+  };
+  
+  checkAndAdd(item.dateP, "PA");  // 기획∙승인(PA) 시작
+  checkAndAdd(item.datePr, "Pr"); // 구매신청(Pr)
+  checkAndAdd(item.dateB, "BC");  // 입찰∙계약(BC)
+  checkAndAdd(item.dateI, "I");   // 검수(I)
+  
+  return milestones;
+};
+
 // 단계별 입력 일정 순차 및 사업연차 적합성 검증 헬퍼 함수 (연차-단계별 일자 연계)
 const validateDatesChronological = (yearVal, dateP, dateA, dateB, datePr, dateI) => {
   const targetYear = Number(yearVal) || 1; // 1차년도 또는 2차년도
@@ -550,6 +582,47 @@ const validateDatesChronological = (yearVal, dateP, dateA, dateB, datePr, dateI)
     { name: "승인(A)", val: dateA },
     { name: "입찰(B)", val: dateB },
     { name: "구매(Pr)", val: datePr },
+    { name: "검수(I)", val: dateI }
+  ].filter(d => d.val); // 값이 채워진 것만 필터링
+
+  // 2) 선택한 사업 연차 범위 내에 일자가 속하는지 검증
+  for (let i = 0; i < dates.length; i++) {
+    const dVal = new Date(dates[i].val);
+    if (dVal < baseStart || dVal > baseEnd) {
+      return {
+        isValid: false,
+        msg: `⚠️ 연차 일치 위배: ${targetYear}차년도 기자재의 ${dates[i].name} 단계 일자(${dates[i].val})는 ${targetYear}차년도 사업 기간(${periodStr}) 범위를 벗어납니다. 날짜를 확인해 주세요.`
+      };
+    }
+  }
+
+  // 3) 각 단계가 시간 순서상 순차적인지 검증
+  for (let i = 0; i < dates.length - 1; i++) {
+    const current = new Date(dates[i].val);
+    const next = new Date(dates[i + 1].val);
+    if (current > next) {
+      return {
+        isValid: false,
+        msg: `⚠️ 일정 순서 위배: ${dates[i].name} 단계 일자(${dates[i].val})가 ${dates[i+1].name} 단계 일자(${dates[i+1].val})보다 늦을 수 없습니다. 일정을 순차적으로 기입해 주세요.`
+      };
+    }
+  }
+  return { isValid: true };
+};
+
+// [교육용 한글 주석] 기자재 전용 단계별 입력 일정 순차 및 사업연차 적합성 검증 헬퍼 함수
+const validateDatesChronologicalEquip = (yearVal, dateP, datePr, dateB, dateI) => {
+  const targetYear = Number(yearVal) || 1; // 1차년도 또는 2차년도
+  
+  // 1) 사업연차별 유효기간 논리 범위 정의
+  const baseStart = targetYear === 1 ? new Date("2025-03-01") : new Date("2026-03-01");
+  const baseEnd = targetYear === 1 ? new Date("2026-02-29") : new Date("2027-02-28");
+  const periodStr = targetYear === 1 ? "'25.3월 ~ '26.2월" : "'26.3월 ~ '27.2월";
+
+  const dates = [
+    { name: "기획∙승인(PA)", val: dateP },
+    { name: "구매신청(Pr)", val: datePr },
+    { name: "입찰∙계약(BC)", val: dateB },
     { name: "검수(I)", val: dateI }
   ].filter(d => d.val); // 값이 채워진 것만 필터링
 
@@ -1676,8 +1749,8 @@ export default function ProcurementManager({
 
       const targetYear = Number(formData.year) || Number(selectedYear);
 
-      // 2) 요건 4: 단계별 입력 일정 순차 및 연차 범위 정합성 검증
-      const dateCheck = validateDatesChronological(targetYear, formData.dateP, formData.dateA, formData.dateB, formData.datePr, formData.dateI);
+      // 2) 요건 4: 단계별 입력 일정 순차 및 연차 범위 정합성 검증 (기자재 전용 검증으로 수정)
+      const dateCheck = validateDatesChronologicalEquip(targetYear, formData.dateP, formData.datePr, formData.dateB, formData.dateI);
       if (!dateCheck.isValid) {
         alert(dateCheck.msg);
         return;
@@ -3423,7 +3496,7 @@ export default function ProcurementManager({
                   <th rowSpan={3} style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "384px", verticalAlign: "middle" }}>구입목적 및 활용계획</th>
                   <th colSpan={12} style={{ padding: "0.5rem", textAlign: "center", fontWeight: "800", borderBottom: "1px solid var(--border-color)", background: "rgba(255, 255, 255, 0.01)", lineHeight: "1.3" }}>
                     구매단계<br />
-                    <span style={{ fontSize: "0.75rem", fontWeight: "normal", color: "var(--text-secondary)" }}>[기획(P : 1∙2∙3) ⇨ 승인(A : 4∙5) ⇨ 입찰(B : 6∙7) ⇨ 검수(I : 8)]</span>
+                    <span style={{ fontSize: "0.75rem", fontWeight: "normal", color: "var(--text-secondary)" }}>[기획∙승인(PA : 1~5) ⇨ 구매신청(Pr : 6) ⇨ 입찰∙계약(BC : 7) ⇨ 검수(I : 8)]</span>
                   </th>
                   <th rowSpan={3} style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "80px", verticalAlign: "middle" }}>관련문서</th>
                   {currentRole.id !== "GUEST" && (
@@ -3514,19 +3587,19 @@ export default function ProcurementManager({
                       const total = price * qty;
 
                       const getEquipStatus = (eq) => {
-                        if (!eq.dateP && !eq.dateA && !eq.dateB && !eq.dateI) {
+                        if (!eq.dateP && !eq.datePr && !eq.dateB && !eq.dateI) {
                           return "준비중";
                         }
                         const todayStr = new Date().toISOString().substring(0, 10);
                         if (eq.dateI && todayStr >= eq.dateI) return "구매 완료";
-                        if (eq.dateB && todayStr >= eq.dateB) return "구매중";
-                        if (eq.dateA && todayStr >= eq.dateA) return "입찰중";
+                        if (eq.dateB && todayStr >= eq.dateB) return "입찰중";
+                        if (eq.datePr && todayStr >= eq.datePr) return "구매중";
                         if (eq.dateP && todayStr >= eq.dateP) return "결재중";
                         if (eq.dateP && todayStr < eq.dateP) return "준비중";
                         
                         if (eq.dateI) return "구매 완료";
-                        if (eq.dateB) return "구매중";
-                        if (eq.dateA) return "입찰중";
+                        if (eq.dateB) return "입찰중";
+                        if (eq.datePr) return "구매중";
                         if (eq.dateP) return "결재중";
                         return "준비중";
                       };
@@ -3550,15 +3623,15 @@ export default function ProcurementManager({
                       };
 
                       const idxP = getMonthIndexLocal(equip.dateP);
-                      const idxA = getMonthIndexLocal(equip.dateA);
+                      const idxPr = getMonthIndexLocal(equip.datePr);
                       const idxB = getMonthIndexLocal(equip.dateB);
                       const idxI = getMonthIndexLocal(equip.dateI);
 
                       const getPhaseColor = (code) => {
                         const colors = {
-                          "P": "#f59e0b",
-                          "A": "#3b82f6",
-                          "B": "#06b6d4",
+                          "PA": "#f59e0b",
+                          "Pr": "#a78bfa",
+                          "BC": "#06b6d4",
                           "I": "#10b981"
                         };
                         return colors[code] || "#38bdf8";
@@ -3566,20 +3639,20 @@ export default function ProcurementManager({
 
                       const getPhaseLabel = (code) => {
                         const labels = {
-                          "P": "기획",
-                          "A": "승인",
-                          "B": "입찰",
+                          "PA": "기획∙승인",
+                          "Pr": "구매신청",
+                          "BC": "입찰∙계약",
                           "I": "검수"
                         };
                         return labels[code] || "미정";
                       };
 
                       const activePhases = [];
-                      const phaseWeight = { "P": 1, "A": 2, "B": 3, "I": 4 };
-                      if (idxP !== null) activePhases.push({ phase: "P", idx: idxP, weight: phaseWeight["P"], date: equip.dateP, label: "기획", color: "#f59e0b" });
-                      if (idxA !== null) activePhases.push({ phase: "A", idx: idxA, weight: phaseWeight["A"], date: equip.dateA, label: "승인", color: "#3b82f6" });
-                      if (idxB !== null) activePhases.push({ phase: "B", idx: idxB, weight: phaseWeight["B"], date: equip.dateB, label: "입찰", color: "#06b6d4" });
-                      if (idxI !== null) activePhases.push({ phase: "I", idx: idxI, weight: phaseWeight["I"], date: equip.dateI, label: "검수", color: "#10b981" });
+                      const phaseWeightLocal = { "PA": 1, "Pr": 2, "BC": 3, "I": 4 };
+                      if (idxP !== null) activePhases.push({ phase: "PA", idx: idxP, weight: phaseWeightLocal["PA"], date: equip.dateP, label: "기획∙승인", color: "#f59e0b" });
+                      if (idxPr !== null) activePhases.push({ phase: "Pr", idx: idxPr, weight: phaseWeightLocal["Pr"], date: equip.datePr, label: "구매신청", color: "#a78bfa" });
+                      if (idxB !== null) activePhases.push({ phase: "BC", idx: idxB, weight: phaseWeightLocal["BC"], date: equip.dateB, label: "입찰∙계약", color: "#06b6d4" });
+                      if (idxI !== null) activePhases.push({ phase: "I", idx: idxI, weight: phaseWeightLocal["I"], date: equip.dateI, label: "검수", color: "#10b981" });
 
                       let lastActivePhase = null;
                       if (activePhases.length > 0) {
@@ -3592,8 +3665,8 @@ export default function ProcurementManager({
 
                       const arrowsToRender = [];
                       const segments = [
-                        { start: idxP, end: idxA, color: "#f59e0b" },
-                        { start: idxA, end: idxB, color: "#3b82f6" },
+                        { start: idxP, end: idxPr, color: "#f59e0b" },
+                        { start: idxPr, end: idxB, color: "#a78bfa" },
                         { start: idxB, end: idxI, color: "#06b6d4" }
                       ];
 
@@ -3680,16 +3753,15 @@ export default function ProcurementManager({
                           </td>
                           
                           {monthsOrder.map((m, currIdx) => {
-                            const dynamicMilestones = getMilestonesFromDates(equip, selectedYear);
-                            // 💡 [교육용 한글 주석] 기자재 탭 타임라인 그래프 상에서는 Pr(구매) 단계 동그라미가 그려지지 않도록 명시적으로 제외합니다.
-                            const stepList = (dynamicMilestones[m] || []).filter(code => code !== "Pr");
+                            const dynamicMilestones = getMilestonesFromDatesEquip(equip, selectedYear);
+                            const stepList = dynamicMilestones[m] || [];
 
                             const getSegmentColorForPos = (pos) => {
-                               if (idxP !== null && idxA !== null && idxP < idxA) {
-                                 if (pos >= idxP && pos < idxA) return "#f59e0b";
+                               if (idxP !== null && idxPr !== null && idxP < idxPr) {
+                                 if (pos >= idxP && pos < idxPr) return "#f59e0b";
                                }
-                               if (idxA !== null && idxB !== null && idxA < idxB) {
-                                 if (pos >= idxA && pos < idxB) return "#3b82f6";
+                               if (idxPr !== null && idxB !== null && idxPr < idxB) {
+                                 if (pos >= idxPr && pos < idxB) return "#a78bfa";
                                }
                                if (idxB !== null && idxI !== null && idxB < idxI) {
                                  if (pos >= idxB && pos < idxI) return "#06b6d4";
@@ -3705,9 +3777,9 @@ export default function ProcurementManager({
                             const phaseColor = primaryCode ? getPhaseColor(primaryCode) : "#38bdf8";
                             const phaseLabel = primaryCode ? getPhaseLabel(primaryCode) : "";
                             const phaseDate = primaryCode ? (
-                              primaryCode === "P" ? equip.dateP :
-                              primaryCode === "A" ? equip.dateA :
-                              primaryCode === "B" ? equip.dateB :
+                              primaryCode === "PA" ? equip.dateP :
+                              primaryCode === "Pr" ? equip.datePr :
+                              primaryCode === "BC" ? equip.dateB :
                               equip.dateI
                             ) : "";
 
@@ -5152,10 +5224,10 @@ export default function ProcurementManager({
                     <span style={{ display: "block", fontSize: "0.82rem", fontWeight: "800", color: "var(--text-primary)", marginBottom: "0.75rem" }}>
                       📅 단계별 이벤트 일자 입력 (선택 입력)
                     </span>
-                    <div style={{ display: "grid", gridTemplateColumns: modalType === "env" ? "repeat(5, 1fr)" : "repeat(3, 1fr)", gap: "0.5rem" }}>
+                    <div style={{ display: "grid", gridTemplateColumns: modalType === "env" ? "repeat(5, 1fr)" : "repeat(4, 1fr)", gap: "0.5rem" }}>
                       <div>
                         <label style={{ display: "block", fontSize: "0.7rem", color: "var(--text-secondary)", marginBottom: "0.2rem" }}>
-                          {modalType === "env" ? "기획∙승인(PA) 일자" : "기획∙승인(PA) 일자"}
+                          기획∙승인(PA) 일자
                         </label>
                         <input type="date" name="dateP" value={formData.dateP || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.3rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", fontSize: "0.72rem" }} />
                       </div>
@@ -5182,12 +5254,20 @@ export default function ProcurementManager({
                         </>
                       )}
                       {modalType !== "env" && (
-                        <div>
-                          <label style={{ display: "block", fontSize: "0.7rem", color: "var(--text-secondary)", marginBottom: "0.2rem" }}>
-                            입찰(B) 일자
-                          </label>
-                          <input type="date" name="dateB" value={formData.dateB || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.3rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", fontSize: "0.72rem" }} />
-                        </div>
+                        <>
+                          <div>
+                            <label style={{ display: "block", fontSize: "0.7rem", color: "var(--text-secondary)", marginBottom: "0.2rem" }}>
+                              구매신청(Pr) 일자
+                            </label>
+                            <input type="date" name="datePr" value={formData.datePr || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.3rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", fontSize: "0.72rem" }} />
+                          </div>
+                          <div>
+                            <label style={{ display: "block", fontSize: "0.7rem", color: "var(--text-secondary)", marginBottom: "0.2rem" }}>
+                              입찰∙계약(BC) 일자
+                            </label>
+                            <input type="date" name="dateB" value={formData.dateB || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.3rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", fontSize: "0.72rem" }} />
+                          </div>
+                        </>
                       )}
                       <div>
                         <label style={{ display: "block", fontSize: "0.7rem", color: "var(--text-secondary)", marginBottom: "0.2rem" }}>
