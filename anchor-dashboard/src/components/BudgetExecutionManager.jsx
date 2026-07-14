@@ -490,21 +490,21 @@ export default function BudgetExecutionManager({ projects = [], currentRole, sel
     const carryoverRate = totalCarryoverBudget > 0 ? ((spentCarryover / totalCarryoverBudget) * 100).toFixed(1) : "0.0";
     const carryoverBalance = totalCarryoverBudget - spentCarryover;
 
-    // [교육용 주석] 회계 월별 실제 세부 날짜로 X축 라벨을 치환하는 맵 헬퍼 정의
+    // [교육용 주석] 회계 월별 마감 시점을 직관적으로 나타내도록 X축 라벨을 치환하는 맵 헬퍼 정의
     const getSpecificDateLabel = (rawLabel) => {
       const map = {
-        "26.3월": "26.3.31.",
-        "26.4월": "26.4.30.",
-        "26.5월": "26.5.31.",
-        "26.6월": "26.6.30.",
-        "26.7월": "26.7.31.",
-        "26.8월": "26.8.31.",
-        "26.9월": "26.9.30.",
-        "26.10월": "26.10.31.",
-        "26.11월": "26.11.30.",
-        "26.12월": "26.12.31.",
-        "27.1월": "27.1.31.",
-        "27.2월": "27.2.28."
+        "26.3월": "26.3월말",
+        "26.4월": "26.4월말",
+        "26.5월": "26.5월말",
+        "26.6월": "26.6월말",
+        "26.7월": "26.7월말",
+        "26.8월": "26.8월말",
+        "26.9월": "26.9월말",
+        "26.10월": "26.10월말",
+        "26.11월": "26.11월말",
+        "26.12월": "26.12월말",
+        "27.1월": "27.1월말",
+        "27.2월": "27.2월말"
       };
       return map[rawLabel] || rawLabel;
     };
@@ -514,9 +514,9 @@ export default function BudgetExecutionManager({ projects = [], currentRole, sel
     let cumulativeMain = 0;
     let cumulativeCarry = 0;
 
-    // [교육용 주석] 26.2.28. 기초 데이터 0% 및 0원 선제 추가 (집행 시작 3/1 전날)
+    // [교육용 주석] 26.2월말 기초 데이터 0% 및 0원 선제 추가 (집행 시작 3/1 전날 기점)
     const startPoint = {
-      month: "26.2.28.",
+      month: "26.2월말",
       mainBudget: 0,
       mainSpentAmt: 0
     };
@@ -783,7 +783,7 @@ export default function BudgetExecutionManager({ projects = [], currentRole, sel
           <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
             <TrendingUp size={18} style={{ color: "#3B82F6" }} />
             <h3 style={{ margin: 0, fontSize: "0.95rem", fontWeight: "800", color: "var(--text-primary)" }}>
-              월별 누적 집행률 추이 (%)
+              누적 집행률 추이 (%)
             </h3>
           </div>
           
@@ -820,7 +820,7 @@ export default function BudgetExecutionManager({ projects = [], currentRole, sel
                 <Legend wrapperStyle={{ fontSize: 11, paddingTop: 10 }} />
                 {selectedYear !== 1 && (
                   <ReferenceLine 
-                    x="26.8.31." 
+                    x="26.8월말" 
                     stroke="#EF4444" 
                     strokeDasharray="4 4" 
                     label={{ value: "이월마감일", fill: "#EF4444", position: "insideTopLeft", fontSize: 11, fontWeight: "bold" }}
@@ -856,7 +856,7 @@ export default function BudgetExecutionManager({ projects = [], currentRole, sel
           <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
             <TrendingUp size={18} style={{ color: "#10B981" }} />
             <h3 style={{ margin: 0, fontSize: "0.95rem", fontWeight: "800", color: "var(--text-primary)" }}>
-              월별 누적 집행액 추이 (백만 원)
+              누적 집행액 추이 (백만 원)
             </h3>
           </div>
           
@@ -893,7 +893,7 @@ export default function BudgetExecutionManager({ projects = [], currentRole, sel
                 <Legend wrapperStyle={{ fontSize: 11, paddingTop: 10 }} />
                 {selectedYear !== 1 && (
                   <ReferenceLine 
-                    x="26.8.31." 
+                    x="26.8월말" 
                     stroke="#EF4444" 
                     strokeDasharray="4 4" 
                     label={{ value: "이월마감일", fill: "#EF4444", position: "insideTopLeft", fontSize: 11, fontWeight: "bold" }}
