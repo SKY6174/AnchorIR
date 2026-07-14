@@ -294,10 +294,10 @@ export default function SatisfactionManager({ selectedYear }) {
     });
   };
 
-  // 부서별 새 조사 ID 자동 추천 생성기 (연차 및 부서 접두사 연동)
-  const getNextSurveyId = (depts) => {
-    const currentYear = 2024 + selectedYear;
-    // [교육용 주석] depts가 배열일 경우 첫 항목을, 문자열일 경우 그대로 사용하도록 방어
+  // 부서별 새 조사 ID 자동 추천 생성기 (연차, 일정 시작일 연도 및 부서 접두사 실시간 연동)
+  const getNextSurveyId = (depts, customYear = null) => {
+    // [교육용 주석] customYear(일정 시작일 연도)가 명시되면 우선 사용하고, 없을 시 글로벌 selectedYear 기준으로 매핑
+    const currentYear = customYear ? parseInt(customYear, 10) : (2024 + selectedYear);
     const mainDept = Array.isArray(depts) ? (depts.length > 0 ? depts[0] : "ECC") : (depts || "ECC");
     const sameDeptSurveys = surveys.filter(s => s.id.startsWith(`${currentYear}-${mainDept}-`));
     
@@ -320,7 +320,8 @@ export default function SatisfactionManager({ selectedYear }) {
       return;
     }
 
-    const generatedId = getNextSurveyId(newDept);
+    const yearFromDate = newStartDate ? newStartDate.split("-")[0] : null;
+    const generatedId = getNextSurveyId(newDept, yearFromDate);
     const newSurvey = {
       id: generatedId,
       title: newTitle.trim(),
@@ -707,7 +708,8 @@ export default function SatisfactionManager({ selectedYear }) {
     setIsGeneratingAiInput(true);
     try {
       // 1. 신규 ID 발급
-      const generatedId = getNextSurveyId([extractedData.department]);
+      const yearFromDate = extractedData.startDate ? extractedData.startDate.split("-")[0] : null;
+      const generatedId = getNextSurveyId([extractedData.department], yearFromDate);
       
       const newSurvey = {
         id: generatedId,
@@ -1685,8 +1687,8 @@ ${commentList || "(없음)"}
                           </p>
 
                           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem", fontSize: "0.75rem", background: "rgba(255,255,255,0.01)", padding: "0.5rem", borderRadius: "0.25rem", marginBottom: "1rem" }}>
-                            <div>일정: <span style={{ color: "var(--text-secondary)" }}>{survey.startDate} ~ {survey.endDate}</span></div>
-                            <div>대상: <span style={{ color: "var(--text-secondary)" }}>{survey.target}</span></div>
+                            <div style={{ gridColumn: "span 2", whiteSpace: "nowrap" }}>일정: <span style={{ color: "var(--text-secondary)" }}>{survey.startDate} ~ {survey.endDate}</span></div>
+                            <div style={{ gridColumn: "span 2", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>대상: <span style={{ color: "var(--text-secondary)" }} title={survey.target}>{survey.target}</span></div>
                             <div>질문수: <span style={{ color: "var(--text-secondary)", fontWeight: "700" }}>{survey.questions.length}문항</span></div>
                             <div>수집응답: <span style={{ color: "var(--text-secondary)", fontWeight: "700" }}>{survey.responses.length}건</span></div>
                           </div>
@@ -1771,7 +1773,7 @@ ${commentList || "(없음)"}
               <label style={{ fontSize: "0.78rem", color: "var(--text-secondary)", display: "block", marginBottom: "0.4rem" }}>추천 자동발급 ID</label>
               <input
                 type="text"
-                value={getNextSurveyId(newDept)}
+                value={getNextSurveyId(newDept, newStartDate ? newStartDate.split("-")[0] : null)}
                 disabled
                 className="user-selector"
                 style={{ width: "100%", background: "rgba(255,255,255,0.03)", color: "var(--text-secondary)" }}
@@ -2782,7 +2784,7 @@ ${commentList || "(없음)"}
                         <input
                           type="text"
                           readOnly
-                          value={getNextSurveyId([extractedData.department])}
+                          value={getNextSurveyId([extractedData.department], extractedData.startDate ? extractedData.startDate.split("-")[0] : null)}
                           style={{ width: "100%", padding: "0.45rem", fontSize: "0.75rem", background: "var(--input-bg)", opacity: 0.6, color: "var(--text-secondary)", border: "1px solid var(--border-color)", borderRadius: "0.3rem", cursor: "not-allowed" }}
                         />
                       </div>
