@@ -90,7 +90,9 @@ const runAiMockAnalysis = (docType, textContent, itemName, deptName, totalPrice)
         `${itemName || "도입 핵심 기재"} 기반 전문 실무 교육과정 수립`,
         "선진 시뮬레이션 인프라 구축 및 융합 실습 환경 리모델링",
         "지산학 연계 라이즈 사업의 교육 실적 성과 관리 및 모니터링"
-      ]
+      ],
+      draftDate: "2026-03-05",
+      approveDate: "2026-03-09"
     };
   } else if (docType === "purchase") {
     return {
@@ -136,7 +138,9 @@ const callOpenAiGpt = async (docType, fileName, textContent, itemName, deptName,
       "unit": "단위과제 명칭",
       "dept": "주관 부서",
       "budget": "과제 배정 예산 (예: 120,000천원 형식)",
-      "goals": ["주요 추진 전략 목표 리스트 3가지"]
+      "goals": ["주요 추진 전략 목표 리스트 3가지"],
+      "draftDate": "기안일자 (예: YYYY-MM-DD 형식, 문서 내에서 기안일이나 작성일을 찾아 매핑하고 없으면 2026-03-05 형식으로 가상 생성)",
+      "approveDate": "승인일자 (예: YYYY-MM-DD 형식, 문서 내의 최종 승인/결재일이며 없으면 기안일로부터 3~4일 뒤인 YYYY-MM-DD 형식 생성)"
     }
     [정보]:
     - 품명: ${itemName || "알 수 없음"}
@@ -1038,13 +1042,26 @@ export default function ProcurementManager({
             nextData.purpose = `[AI 자동완성] ${nextData.title} 용역을 통해 RISE 사업의 전략 목표인 '${strategicGoals}'를 달성하고 고도화된 연구 성과를 창출하고자 함.`;
             nextData.providerQual = "관련 부문 인가 인증 보유 법인 및 대학용역 유사 실적 우수 사업자";
             nextData.opResult = "용역 일정 내 성과품 납품 완료 및 만족도 평가 결과 우수 등급 달성";
+            
+            // 용역인 경우 기획∙승인(PA) 일자 자동 매핑
+            if (aiResult.draftDate) {
+              nextData.datePp = aiResult.draftDate;
+            }
           } else if (modalType === "env") {
             nextData.purpose = `[AI 자동완성] 교육환경 개선 사업을 시행하여 시설 안정성을 확보하고 학생 친화적 학습 환경을 혁신하고자 함.`;
             nextData.plan = `전략 목표: ${strategicGoals}`;
             nextData.utilization = "학부생 공통 개방형 메이커 스페이스 및 교육 실습 공간으로 상시 개방 운영 예정";
+            
+            // 환경개선인 경우 기획(P), 승인(A) 일자 자동 매핑
+            if (aiResult.draftDate) nextData.dateP = aiResult.draftDate;
+            if (aiResult.approveDate) nextData.dateA = aiResult.approveDate;
           } else {
             nextData.descriptionPurpose = `[AI 자동완성] ${nextData.name} 핵심 기자재를 도입하여 교육 실습 타당성을 확보하고 전략 목표인 '${strategicGoals}' 과제를 완성함.`;
             nextData.descriptionPlan = "도입 완료 후 시뮬레이션 고도화 전공 교과목 실습 기자재로 100% 매칭 활용하며, 연간 120명 이상의 전문 인력 실습 활용 기대.";
+            
+            // 기자재인 경우 기획(P), 승인(A) 일자 자동 매핑
+            if (aiResult.draftDate) nextData.dateP = aiResult.draftDate;
+            if (aiResult.approveDate) nextData.dateA = aiResult.approveDate;
           }
 
           return nextData;
