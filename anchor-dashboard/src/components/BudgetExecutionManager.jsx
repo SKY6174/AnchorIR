@@ -706,87 +706,89 @@ export default function BudgetExecutionManager({ projects = [], currentRole, sel
 
       </div>
 
-      {/* [교육용 주석] 두 그래프에 동시에 반영되는 공통 필터 컨트롤 영역 */}
-      <div className="glass-card" style={{ 
-        padding: "1rem 1.25rem", 
-        borderRadius: "10px", 
-        display: "flex", 
-        justifyContent: "space-between", 
-        alignItems: "center", 
-        flexWrap: "wrap", 
-        gap: "0.75rem"
-      }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-          <TrendingUp size={18} style={{ color: "var(--accent-color)" }} />
-          <span style={{ fontSize: "0.9rem", fontWeight: "800", color: "var(--text-primary)" }}>
-            누적 집행 데이터 연동 필터 (사업 전체 vs. 단위과제별 공통 적용)
-          </span>
-        </div>
+      {/* [교육용 주석] 필터 영역과 차트 영역을 하나의 대형 glass-card 블록으로 묶어 여백 공백을 없애고 단정함을 극대화 */}
+      <div className="glass-card" style={{ padding: "1.5rem", borderRadius: "10px", display: "flex", flexDirection: "column", gap: "1.5rem" }}>
         
-        <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-          <div style={{ display: "flex", gap: "0.75rem", fontSize: "0.85rem", color: "var(--text-secondary)", fontWeight: "600" }}>
-            <label style={{ display: "flex", alignItems: "center", gap: "0.25rem", cursor: "pointer" }}>
-              <input 
-                type="radio" 
-                name="executionViewType" 
-                value="total" 
-                checked={viewType === "total"}
-                onChange={() => setViewType("total")}
-                style={{ accentColor: "var(--accent-color)" }}
-              />
-              사업 전체
-            </label>
-            <label style={{ display: "flex", alignItems: "center", gap: "0.25rem", cursor: "pointer" }}>
-              <input 
-                type="radio" 
-                name="executionViewType" 
-                value="unit" 
-                checked={viewType === "unit"}
-                onChange={() => setViewType("unit")}
-                style={{ accentColor: "var(--accent-color)" }}
-              />
-              단위과제별
-            </label>
+        {/* 상단 공통 필터 영역 (큰 카드 내부에서 보더선으로 구획 구분) */}
+        <div style={{ 
+          display: "flex", 
+          justifyContent: "space-between", 
+          alignItems: "center", 
+          flexWrap: "wrap", 
+          gap: "0.75rem",
+          borderBottom: "1px solid var(--border-color)",
+          paddingBottom: "1.25rem"
+        }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+            <TrendingUp size={18} style={{ color: "var(--accent-color)" }} />
+            <span style={{ fontSize: "0.9rem", fontWeight: "800", color: "var(--text-primary)" }}>
+              누적 집행 데이터 연동 필터 (사업 전체 vs. 단위과제별 공통 적용)
+            </span>
           </div>
+          
+          <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+            <div style={{ display: "flex", gap: "0.75rem", fontSize: "0.85rem", color: "var(--text-secondary)", fontWeight: "600" }}>
+              <label style={{ display: "flex", alignItems: "center", gap: "0.25rem", cursor: "pointer" }}>
+                <input 
+                  type="radio" 
+                  name="executionViewType" 
+                  value="total" 
+                  checked={viewType === "total"}
+                  onChange={() => setViewType("total")}
+                  style={{ accentColor: "var(--accent-color)" }}
+                />
+                사업 전체
+              </label>
+              <label style={{ display: "flex", alignItems: "center", gap: "0.25rem", cursor: "pointer" }}>
+                <input 
+                  type="radio" 
+                  name="executionViewType" 
+                  value="unit" 
+                  checked={viewType === "unit"}
+                  onChange={() => setViewType("unit")}
+                  style={{ accentColor: "var(--accent-color)" }}
+                />
+                단위과제별
+              </label>
+            </div>
 
-          {viewType === "unit" && (
-            <select
-              value={selectedUnit}
-              onChange={(e) => setSelectedUnit(e.target.value)}
-              style={{
-                background: "var(--input-bg)",
-                color: "var(--text-primary)",
-                border: "1px solid var(--border-color)",
-                borderRadius: "6px",
-                padding: "0.25rem 0.5rem",
-                fontSize: "0.8rem",
-                fontWeight: "600",
-                cursor: "pointer",
-                outline: "none"
-              }}
-            >
-              {unitList.map((unit) => (
-                <option key={unit} value={unit} style={{ background: "var(--background-card, #1e1e1e)", color: "var(--text-primary)" }}>
-                  {unit} 과제
-                </option>
-              ))}
-            </select>
-          )}
+            {viewType === "unit" && (
+              <select
+                value={selectedUnit}
+                onChange={(e) => setSelectedUnit(e.target.value)}
+                style={{
+                  background: "var(--input-bg)",
+                  color: "var(--text-primary)",
+                  border: "1px solid var(--border-color)",
+                  borderRadius: "6px",
+                  padding: "0.25rem 0.5rem",
+                  fontSize: "0.8rem",
+                  fontWeight: "600",
+                  cursor: "pointer",
+                  outline: "none"
+                }}
+              >
+                {unitList.map((unit) => (
+                  <option key={unit} value={unit} style={{ background: "var(--background-card, #1e1e1e)", color: "var(--text-primary)" }}>
+                    {unit} 과제
+                  </option>
+                ))}
+              </select>
+            )}
+          </div>
         </div>
-      </div>
 
-      {/* [교육용 주석] 누적 집행률과 누적 집행액을 구분한 개별 차트 영역을 하나의 대형 통합 블록(glass-card)으로 묶어 단정함을 연출 */}
-      <div className="glass-card" style={{ padding: "1.5rem", borderRadius: "10px", display: "flex", flexDirection: "column", gap: "1rem" }}>
+        {/* 2열 병렬 서브 차트 그리드 배치 구역 */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(450px, 1fr))", gap: "2rem" }}>
           
           {/* 1. 누적 집행률 추이 (%) */}
-          <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-            <TrendingUp size={18} style={{ color: "#3B82F6" }} />
-            <h3 style={{ margin: 0, fontSize: "0.95rem", fontWeight: "800", color: "var(--text-primary)" }}>
-              누적 집행률 추이 (%)
-            </h3>
-          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
+              <TrendingUp size={15} style={{ color: "#3B82F6" }} />
+              <h4 style={{ margin: 0, fontSize: "0.8rem", fontWeight: "700", color: "var(--text-secondary)" }}>
+                누적 집행률 추이 (%)
+              </h4>
+            </div>
           
           <div style={{ width: "100%", height: 250, padding: "0.5rem 0" }}>
             <ResponsiveContainer width="100%" height="100%">
@@ -853,12 +855,12 @@ export default function BudgetExecutionManager({ projects = [], currentRole, sel
         </div>
 
         {/* 2. 누적 집행액 추이 (백만 원) */}
-        <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-            <TrendingUp size={18} style={{ color: "#10B981" }} />
-            <h3 style={{ margin: 0, fontSize: "0.95rem", fontWeight: "800", color: "var(--text-primary)" }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
+            <TrendingUp size={15} style={{ color: "#10B981" }} />
+            <h4 style={{ margin: 0, fontSize: "0.8rem", fontWeight: "700", color: "var(--text-secondary)" }}>
               누적 집행액 추이 (백만 원)
-            </h3>
+            </h4>
           </div>
           
           <div style={{ width: "100%", height: 250, padding: "0.5rem 0" }}>
