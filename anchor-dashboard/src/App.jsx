@@ -17,6 +17,7 @@ import OrgChartManager from "./components/OrgChartManager";
 import CenterOrgChartManager from "./components/CenterOrgChartManager";
 import PartnerManager from "./components/PartnerManager";
 import PortalConfigManager from "./components/PortalConfigManager";
+import InstructorPoolManager from "./components/InstructorPoolManager";
 import AuthManager from "./components/AuthManager";
 import ProcurementManager from "./components/ProcurementManager";
 import ScheduleManager from "./components/ScheduleManager";
@@ -8561,6 +8562,25 @@ export default function App() {
               {(currentRole?.id === "ADMIN" || currentRole?.id === "G_DIRECTOR") && (
                 <button
                   type="button"
+                  onClick={() => setMgmtSubTab("instructor_pool")}
+                  style={{
+                    border: "none",
+                    background: "transparent",
+                    padding: "0.5rem 1rem",
+                    fontSize: "0.85rem",
+                    fontWeight: "800",
+                    cursor: "pointer",
+                    color: mgmtSubTab === "instructor_pool" ? "var(--accent-color)" : "var(--text-secondary)",
+                    borderBottom: mgmtSubTab === "instructor_pool" ? "2px solid var(--accent-color)" : "none",
+                    transition: "all 0.2s"
+                  }}
+                >
+                  교∙강사 Pool 관리
+                </button>
+              )}
+              {(currentRole?.id === "ADMIN" || currentRole?.id === "G_DIRECTOR") && (
+                <button
+                  type="button"
                   onClick={() => setMgmtSubTab("portal_config")}
                   style={{
                     border: "none",
@@ -9481,6 +9501,10 @@ export default function App() {
 
             {mgmtSubTab === "partners" && (
               <PartnerManager key={`partner-${darkMode}-${selectedYear}`} selectedYear={selectedYear} />
+            )}
+
+            {mgmtSubTab === "instructor_pool" && (currentRole?.id === "ADMIN" || currentRole?.id === "G_DIRECTOR") && (
+              <InstructorPoolManager key={`instructors-${darkMode}`} />
             )}
 
             {mgmtSubTab === "portal_config" && (currentRole?.id === "ADMIN" || currentRole?.id === "G_DIRECTOR") && (

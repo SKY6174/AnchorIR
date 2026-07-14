@@ -857,10 +857,10 @@ export default function Sidebar({
                   if (onChangeMgmtSubTab) {
                     const isManager = currentRole.id === "ADMIN" || currentRole.id === "G_DIRECTOR" || currentRole.id === "HQ_HEAD" || currentRole.id === "MANAGER";
                     const isSpecialApprover = currentUser && ["이규상", "임은애", "황수진", "최주명"].some(name => (currentUser.name || "").includes(name));
-                    const subTabsOrder = ["approvals", "members", "users", "programs", "org_chart", "center_org_chart", "partners", "portal_config"];
+                    const subTabsOrder = ["approvals", "members", "users", "programs", "org_chart", "center_org_chart", "partners", "instructor_pool", "portal_config"];
 
                     const firstActive = subTabsOrder.find(tab => {
-                      if (tab === "portal_config") return currentRole.id === "ADMIN" || currentRole.id === "G_DIRECTOR";
+                      if (tab === "portal_config" || tab === "instructor_pool") return currentRole.id === "ADMIN" || currentRole.id === "G_DIRECTOR";
                       if (tab === "approvals" && isSpecialApprover) return true;
                       if (!isManager && ["approvals", "members", "users", "programs"].includes(tab)) return false;
                       return isSongDirector || menuVisibility[tab] !== false;
@@ -1025,6 +1025,21 @@ export default function Sidebar({
                         [숨김]
                       </span>
                     )}
+                  </div>
+                )}
+                {/* 교∙강사 Pool 관리 서브 탭 (admin, g_director 권한 전용) */}
+                {(currentRole.id === "ADMIN" || currentRole.id === "G_DIRECTOR") && (
+                  <div
+                    className={`nav-sub-item ${activeTab === "management" && mgmtSubTab === "instructor_pool" ? "active" : ""}`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onChangeTab("management");
+                      if (onChangeMgmtSubTab) {
+                        onChangeMgmtSubTab("instructor_pool");
+                      }
+                    }}
+                  >
+                    - 교∙강사 Pool 관리
                   </div>
                 )}
                 {/* 앵커 포털 관리 서브 탭 (admin, g_director 권한 전용) */}
