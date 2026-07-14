@@ -98,6 +98,7 @@ const runAiMockAnalysis = (docType, textContent, itemName, deptName, totalPrice,
         unit: "B2 : AID 역량강화 기반 지역산업 전환 지원",
         dept: "AID-X지원센터",
         itemName: "20DoF 로봇 핸드",
+        itemUnit: "대",
         unitPrice: "8.8", // 단가 (백만 원 단위)
         quantity: 2,
         totalPrice: "17.6",
@@ -119,6 +120,7 @@ const runAiMockAnalysis = (docType, textContent, itemName, deptName, totalPrice,
         fromDept: "앵커사업단운영팀",
         toDept: "대학본부 총무팀",
         itemName: "로봇 핸드",
+        itemUnit: "대",
         unitPrice: "8.8",
         quantity: 2,
         totalPrice: "17.6",
@@ -139,6 +141,7 @@ const runAiMockAnalysis = (docType, textContent, itemName, deptName, totalPrice,
         docNo: "UC-EQ-B-500",
         method: "제한경쟁입찰 (협상에 의한 계약)",
         itemName: "20DoF 로봇 핸드",
+        itemUnit: "대",
         unitPrice: "8.8",
         quantity: 2,
         totalPrice: "17.6",
@@ -157,6 +160,7 @@ const runAiMockAnalysis = (docType, textContent, itemName, deptName, totalPrice,
         fromDept: "AID-X지원센터",
         toDept: "대학본부 총무팀",
         itemName: "20DoF 로봇 핸드",
+        itemUnit: "대",
         unitPrice: "8.8",
         quantity: 2,
         totalPrice: "17.6",
@@ -812,34 +816,34 @@ const uploadFileToSupabase = async (docType, file, onProgress) => {
 };
 
 const defaultEquipments = [
-  { id: 1, unit: "A1", seq: 1, deptName: "간호학부", divisionName: "", itemName: "스마트 환자 시뮬레이터 (중환자 케어 실습 장비)", unitPrice: 120000000, quantity: 1, description: "글로벌 앵커 혁신 교육과정 임상 실습 고도화 핵심 기기", operation: "글로컬 앵커 교육과정 고도화", password: "1234",
+  { id: 1, unit: "A1", seq: 1, deptName: "간호학부", divisionName: "", itemName: "스마트 환자 시뮬레이터 (중환자 케어 실습 장비)", spec: "임상 실무 교육용 다기능 스마트 시뮬레이터 시스템", itemUnit: "대", unitPrice: 120000000, quantity: 1, description: "글로벌 앵커 혁신 교육과정 임상 실습 고도화 핵심 기기", operation: "글로컬 앵커 교육과정 고도화", password: "1234",
     dateP: "2025-03-10", dateA: "2025-04-15", dateB: "2025-06-12", datePr: "2025-07-20", dateI: "2025-09-05"
   },
-  { id: 2, unit: "A2", seq: 2, deptName: "화학공학과", divisionName: "", itemName: "정밀 화학 분석 크로마토그래피 시스템", unitPrice: 245000000, quantity: 1, description: "신산업 저탄소 에너지 트랙 화학 정밀 분석 실습 장비", operation: "지역 특화 산업 맞춤형 실무 인재 양성", password: "1234",
+  { id: 2, unit: "A2", seq: 2, deptName: "화학공학과", divisionName: "", itemName: "정밀 화학 분석 크로마토그래피 시스템", spec: "고해상도 다기능 컬럼 크로마토그래피 일체형 세트", itemUnit: "세트", unitPrice: 245000000, quantity: 1, description: "신산업 저탄소 에너지 트랙 화학 정밀 분석 실습 장비", operation: "지역 특화 산업 맞춤형 실무 인재 양성", password: "1234",
     dateP: "2025-03-15", dateA: "2025-04-20", dateB: "2025-06-18", datePr: "2025-07-25", dateI: "2025-09-10"
   },
-  { id: 3, unit: "B1", seq: 3, deptName: "컴퓨터공학과", divisionName: "", itemName: "AI 알고리즘 모델링 연산용 고성능 GPU 워크스테이션", unitPrice: 15000000, quantity: 3, description: "RCC 특화산업 AI 융합 실감형 교육 센터 실무 교육 지원", operation: "지역 정주형 취창업 지원 프로그램", password: "1234",
+  { id: 3, unit: "B1", seq: 3, deptName: "컴퓨터공학과", divisionName: "", itemName: "AI 알고리즘 모델링 연산용 고성능 GPU 워크스테이션", spec: "NVIDIA RTX 6000 Ada 48GB 탑재 고성능 하이엔드 서버급", itemUnit: "대", unitPrice: 15000000, quantity: 3, description: "RCC 특화산업 AI 융합 실감형 교육 센터 실무 교육 지원", operation: "지역 정주형 취창업 지원 프로그램", password: "1234",
     dateP: "2025-03-12", dateA: "2025-04-18", dateB: "", datePr: "2025-06-25", dateI: "2025-08-14"
   },
-  { id: 4, unit: "B2", seq: 4, deptName: "기계공학부", divisionName: "", itemName: "스마트 팩토리 모듈 제어 및 3D 정밀 프린팅 모듈", unitPrice: 38000000, quantity: 1, description: "지산학 연계 제조 혁신 엔지니어 교육 기자재", operation: "신산업 선도형 글로벌 직업 교육 브랜드 구축", password: "1234",
+  { id: 4, unit: "B2", seq: 4, deptName: "기계공학부", divisionName: "", itemName: "스마트 팩토리 모듈 제어 및 3D 정밀 프린팅 모듈", spec: "스마트 팩토리 연동 고정밀 3D 적층 제조 실습 패키지", itemUnit: "세트", unitPrice: 38000000, quantity: 1, description: "지산학 연계 제조 혁신 엔지니어 교육 기자재", operation: "신산업 선도형 글로벌 직업 교육 브랜드 구축", password: "1234",
     dateP: "2025-03-20", dateA: "2025-05-15", dateB: "2025-06-08", datePr: "2025-06-20", dateI: "2025-08-18"
   },
-  { id: 5, unit: "B3", seq: 5, deptName: "전기전자공학부", divisionName: "", itemName: "반도체 임베디드 코딩 및 고정밀 계측 오실로스코프", unitPrice: 8500000, quantity: 4, description: "반도체 전공 대학 연계 실무 미러형 교육 설계용 장비", operation: "지역 사회 문제 해결 및 나눔 실천", password: "1234",
+  { id: 5, unit: "B3", seq: 5, deptName: "전기전자공학부", divisionName: "", itemName: "반도체 임베디드 코딩 및 고정밀 계측 오실로스코프", spec: "4채널 500MHz 주파수 대역 고정밀 계측 장비", itemUnit: "대", unitPrice: 8500000, quantity: 4, description: "반도체 전공 대학 연계 실무 미러형 교육 설계용 장비", operation: "지역 사회 문제 해결 및 나눔 실천", password: "1234",
     dateP: "2025-03-25", dateA: "2025-04-28", dateB: "2025-06-05", datePr: "2025-06-18", dateI: "2025-08-20"
   },
-  { id: 6, unit: "B4", seq: 6, deptName: "유아교육과", divisionName: "", itemName: "늘봄 연계 창의 놀이 실증용 스마트 인터랙티브 디스플레이", unitPrice: 8500000, quantity: 2, description: "에듀테크 기반 창의적 교육 콘텐츠 제작 교육 과정 운영", operation: "소외 계층 맞춤형 교육 서비스 및 장학", password: "1234",
+  { id: 6, unit: "B4", seq: 6, deptName: "유아교육과", divisionName: "", itemName: "늘봄 연계 창의 놀이 실증용 스마트 인터랙티브 디스플레이", spec: "86인치 UHD 해상도 정밀 멀티 터치 스마트 전자칠판", itemUnit: "대", unitPrice: 8500000, quantity: 2, description: "에듀테크 기반 창의적 교육 콘텐츠 제작 교육 과정 운영", operation: "소외 계층 맞춤형 교육 서비스 및 장학", password: "1234",
     dateP: "2025-03-18", dateA: "2025-05-10", dateB: "", datePr: "2025-06-24", dateI: "2025-08-25"
   },
-  { id: 7, unit: "C1", seq: 7, deptName: "컴퓨터공학과", divisionName: "", itemName: "다목적 6축 소형 스마트 교육용 협동 로봇 머니퓰레이터", unitPrice: 28000000, quantity: 1, description: "미래 지능형 로봇 운용/제어 교과목 현장 중심 실습", operation: "대학 연구 역량 강화 및 원천 기술 개발", password: "1234",
+  { id: 7, unit: "C1", seq: 7, deptName: "컴퓨터공학과", divisionName: "", itemName: "다목적 6축 소형 스마트 교육용 협동 로봇 머니퓰레이터", spec: "페이로드 3kg급 정밀 실무 실습용 6축 관절 제어 시스템", itemUnit: "대", unitPrice: 28000000, quantity: 1, description: "미래 지능형 로봇 운용/제어 교과목 현장 중심 실습", operation: "대학 연구 역량 강화 및 원천 기술 개발", password: "1234",
     dateP: "2025-03-22", dateA: "2025-05-12", dateB: "2025-06-15", datePr: "2025-06-28", dateI: "2025-08-28"
   },
-  { id: 8, unit: "C2", seq: 8, deptName: "반려동물보건과", divisionName: "", itemName: "동물 전용 디지털 초음파 진단 장치", unitPrice: 19000000, quantity: 1, description: "신설학과 실무 미러형 임상 실습실 조달 품목", operation: "산학 공동 기술 개발 및 연구 센터 운영", password: "1234",
+  { id: 8, unit: "C2", seq: 8, deptName: "반려동물보건과", divisionName: "", itemName: "동물 전용 디지털 초음파 진단 장치", spec: "수의 임상 실습 특화 15인치 컬러 도플러 초음파 진단기", itemUnit: "대", unitPrice: 19000000, quantity: 1, description: "신설학과 실무 미러형 임상 실습실 조달 품목", operation: "산학 공동 기술 개발 및 연구 센터 운영", password: "1234",
     dateP: "2025-04-10", dateA: "2025-05-20", dateB: "2025-06-18", datePr: "2025-07-15", dateI: "2025-09-12"
   },
-  { id: 9, unit: "D1", seq: 9, deptName: "조선해양시스템공학과", divisionName: "", itemName: "미래 친환경선박 가상 운항 교육 시뮬레이터", unitPrice: 45000000, quantity: 1, description: "5극3특 가상 운항 실습 교육 과정 지원용 장비", operation: "지역 평생 교육 포털 구축 및 운영", password: "1234",
+  { id: 9, unit: "D1", seq: 9, deptName: "조선해양시스템공학과", divisionName: "", itemName: "미래 친환경선박 가상 운항 교육 시뮬레이터", spec: "VR 연동 친환경 추진선박 조타 시뮬레이터 엔진 포함 패키지", itemUnit: "세트", unitPrice: 45000000, quantity: 1, description: "5극3특 가상 운항 실습 교육 과정 지원용 장비", operation: "지역 평생 교육 포털 구축 및 운영", password: "1234",
     dateP: "2025-03-08", dateA: "2025-05-08", dateB: "2025-07-10", datePr: "2025-08-20", dateI: "2025-11-15"
   },
-  { id: 10, unit: "D2", seq: 10, deptName: "물리치료학과", divisionName: "", itemName: "메디컬 스킨케어 다기능 뷰티 디바이스", unitPrice: 6500000, quantity: 5, description: "웰니스 뷰티 케어 실습 및 지역 상생 뷰티 아카데미 활용", operation: "성인 학습자 대상 취창업 역량 강화 패키지", password: "1234",
+  { id: 10, unit: "D2", seq: 10, deptName: "물리치료학과", divisionName: "", itemName: "메디컬 스킨케어 다기능 뷰티 디바이스", spec: "초음파∙고주파∙이온토포레시스 멀티 일체형 실습 기기", itemUnit: "대", unitPrice: 6500000, quantity: 5, description: "웰니스 뷰티 케어 실습 및 지역 상생 뷰티 아카데미 활용", operation: "성인 학습자 대상 취창업 역량 강화 패키지", password: "1234",
     dateP: "2025-03-14", dateA: "2025-04-24", dateB: "", datePr: "2025-06-22", dateI: "2025-08-29"
   }
 ];
@@ -1738,6 +1742,16 @@ export default function ProcurementManager({
             }
           }
 
+          // 5-2. 규격 및 단위 자동 완성 (요청 1, 2 반영)
+          if (aiResult.specs && Array.isArray(aiResult.specs) && aiResult.specs.length > 0) {
+            nextData.spec = aiResult.specs[0]; // 첫번째 핵심 스펙 기입
+          }
+          if (aiResult.itemUnit) {
+            nextData.itemUnit = aiResult.itemUnit;
+          } else {
+            nextData.itemUnit = "대"; // 기본값 폴백
+          }
+
           // 6. 기자재 바코드는 현재 운영계획이 없고 관리번호는 검수 마친 후 수동 기재하므로 자동완성 영역에서 생략
 
           // 7. 기획 목적 및 활용계획 자동 추출 바인딩 (구입목적, 활용계획)
@@ -2309,6 +2323,8 @@ export default function ProcurementManager({
               asset_number: formData.asset_number || "",
               unitPrice: Math.round(parseFloat(formData.unitPrice || 0) * 1000000),
               quantity: Number(formData.quantity) || 1,
+              spec: formData.spec || "",
+              itemUnit: formData.itemUnit || "",
               description: combinedDescription || "-",
               operation: formData.operation || "미래 핵심 신산업 주문식 교육 운영",
               password: currentUser?.password || formData.password || item.password || "1234", // 현재 로그인 유저 비밀번호 연동
@@ -2373,6 +2389,8 @@ export default function ProcurementManager({
           asset_number: formData.asset_number || "",
           unitPrice: Math.round(parseFloat(formData.unitPrice || 0) * 1000000),
           quantity: Number(formData.quantity) || 1,
+          spec: formData.spec || "",
+          itemUnit: formData.itemUnit || "",
           description: combinedDescription || "-",
           operation: formData.operation || "미래 핵심 신산업 주문식 교육 운영",
           mgrDept: formData.mgrDept || "ECC",
@@ -2583,6 +2601,8 @@ export default function ProcurementManager({
       divisionName: "",
       unitPrice: "",
       quantity: "",
+      spec: "",
+      itemUnit: "",
       description: "",
       step: "기획",
       operation: "교과목(정규)",
@@ -2618,6 +2638,8 @@ export default function ProcurementManager({
       divisionName: "",
       unitPrice: "",
       quantity: "",
+      spec: "",
+      itemUnit: "",
       description: "",
       descriptionPurpose: "",
       descriptionPlan: "",
@@ -2698,6 +2720,8 @@ export default function ProcurementManager({
       asset_number: equip.asset_number || "",
       unitPrice: equip.unitPrice ? parseFloat((equip.unitPrice / 1000000).toFixed(2)) : (equip.budgetPlan ? parseFloat((equip.budgetPlan / 1000000).toFixed(2)) : ""),
       quantity: equip.quantity || 1,
+      spec: equip.spec || "",
+      itemUnit: equip.itemUnit || "",
       description: equip.description || "",
       descriptionPurpose: equip.purpose || descParts[0] || "",
       descriptionPlan: equip.plan || descParts[1] || "",
@@ -4028,7 +4052,8 @@ export default function ProcurementManager({
                     </div>
                   </th>
                   <th rowSpan={3} style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "130px", verticalAlign: "middle" }}>학과 / 부서</th>
-                  <th rowSpan={3} style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "270px", verticalAlign: "middle" }}>품명</th>
+                  <th rowSpan={3} style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "200px", verticalAlign: "middle" }}>품명</th>
+                  <th rowSpan={3} style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "160px", verticalAlign: "middle" }}>규격</th>
                   <th 
                     rowSpan={3} 
                     onClick={() => handleSort("unitPrice")} 
@@ -4043,6 +4068,7 @@ export default function ProcurementManager({
                       <span style={{ fontSize: "0.68rem", fontWeight: "400", color: "var(--text-secondary)", marginTop: "0.1rem" }}>(백만원)</span>
                     </div>
                   </th>
+                  <th rowSpan={3} style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "45px", verticalAlign: "middle" }}>단위</th>
                   <th rowSpan={3} style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "50px", verticalAlign: "middle" }}>수량</th>
                   <th 
                     rowSpan={3} 
@@ -4270,11 +4296,17 @@ export default function ProcurementManager({
                               return dName || divName || "-";
                             })()}
                           </td>
-                          <td style={{ padding: "0.8rem 0.5rem", textAlign: "center", verticalAlign: "middle", fontWeight: "700", color: "var(--text-primary)" }}>
+                          <td style={{ padding: "0.8rem 0.5rem", textAlign: "center", verticalAlign: "middle", fontWeight: "700", color: "var(--text-primary)", fontSize: "0.82rem" }}>
                             {equip.itemName || equip.name || "-"}
+                          </td>
+                          <td style={{ padding: "0.8rem 0.5rem", textAlign: "center", verticalAlign: "middle", color: "var(--text-secondary)", fontSize: "0.78rem" }} title={equip.spec}>
+                            {equip.spec || "-"}
                           </td>
                           <td style={{ padding: "0.8rem 0.5rem", textAlign: "center", verticalAlign: "middle", color: "var(--text-primary)", fontWeight: "600" }}>
                             {formatToMillionWon(price)}
+                          </td>
+                          <td style={{ padding: "0.8rem 0.5rem", textAlign: "center", verticalAlign: "middle", color: "var(--text-secondary)", fontSize: "0.78rem" }}>
+                            {equip.itemUnit || "-"}
                           </td>
                           <td style={{ padding: "0.8rem 0.5rem", textAlign: "center", verticalAlign: "middle", color: "var(--text-primary)", fontWeight: "600" }}>
                             {qty}
@@ -5738,16 +5770,26 @@ export default function ProcurementManager({
                     <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>품명</label>
                     <input type="text" name="name" value={formData.name} onChange={handleInputChange} required placeholder="예: 임상 실습용 스마트 베드" style={{ width: "100%", padding: "0.5rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} />
                   </div>
+                  {modalType !== "env" && (
+                    <div>
+                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>규격</label>
+                      <input type="text" name="spec" value={formData.spec || ""} onChange={handleInputChange} placeholder="예: 20자유도(DoF) 초정밀 관절 제어 메커니즘 탑재" style={{ width: "100%", padding: "0.5rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} />
+                    </div>
+                  )}
                   {modalType !== "env" && (() => {
                     const priceVal = parseFloat(formData.unitPrice || 0);
                     const qtyVal = parseFloat(formData.quantity || 0);
                     const totalInMillion = (priceVal * qtyVal).toFixed(2);
                     return (
                       <>
-                        <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr 2fr", gap: "1rem" }}>
+                        <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr 2fr", gap: "1rem" }}>
                           <div>
                             <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>단가 (백만원)</label>
                             <input type="number" name="unitPrice" step="0.01" value={formData.unitPrice} onChange={handleInputChange} required placeholder="예: 120.00" style={{ width: "100%", padding: "0.5rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} />
+                          </div>
+                          <div>
+                            <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>단위</label>
+                            <input type="text" name="itemUnit" value={formData.itemUnit || ""} onChange={handleInputChange} placeholder="예: 대, 개, 세트" style={{ width: "100%", padding: "0.5rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} />
                           </div>
                           <div>
                             <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>수량</label>
