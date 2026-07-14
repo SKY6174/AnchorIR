@@ -478,6 +478,96 @@ const callGeminiApi = async (promptText) => {
   return JSON.parse(resultText);
 };
 
+// [교육용 주석] Google Gemini API 단독 호출을 위한 비동기 분석 함수
+// docType: 문서 분류 (proposal/purchase/bid), fileName: 업로드 파일명, textContent: 본문 텍스트
+// itemName: 기자재 품명, deptName: 주관 부서/학과명, totalPrice: 총액 규모
+const callGeminiSingleAnalysis = async (docType, fileName, textContent, itemName, deptName, totalPrice) => {
+  const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+  if (!apiKey) {
+    console.warn("⚠️ VITE_GEMINI_API_KEY 환경 변수가 없으므로, 로컬 AI 요약 시뮬레이터로 자동 대체합니다.");
+    return runAiMockAnalysis(docType, textContent || fileName, itemName, deptName, totalPrice, fileName);
+  }
+
+  // GPT-4o 분석 프롬프트와 동일한 스키마 및 가이드를 Gemini 모델에 맞춰 전달
+  const promptMap = {
+    proposal: `당신은 대학 RISE(앵커) 사업 기획 분석가입니다. 아래 문서정보와 텍스트를 분석하여, 다음 JSON 스키마를 만족하는 요약본을 JSON 모드로 응답하십시오.
+    [스키마]:
+    {
+      "docNo": "기획문서 결재번호 (예: UC-EQ-P-로 시작하는 고유번호 생성)",
+      "unit": "단위과제 코드 (예: B2, C2 등 매칭되는 정확한 코드를 추출)",
+      "dept": "주관 부서 또는 학과 명칭",
+      "itemName": "핵심 도입 대상 대표 품명 추출",
+      "unitPrice": "단가 (백만 원 단위 소수점으로 추출, 예: 8.8)",
+      "quantity": "수량 (정수형, 예: 2)",
+      "totalPrice": "총액 (백만 원 단위 소수점으로 추출, 예: 17.6)",
+      "budget": "과제 배정 예산 총량 (예: 17,600천원 형식)",
+      "goals": ["주요 추진 전략 목표 리스트 3가지"],
+      "draftDate": "기안일자 (예: YYYY-MM-DD 형식, 문서 내에서 기안일이나 작성일을 찾아 매핑하고 없으면 2026-07-06 형식으로 가상 생성)",
+      "approveDate": "승인일자 (예: YYYY-MM-DD 형식, 문서 내의 최종 승인/결재일이며 없으면 2026-07-08 형식 생성)",
+      "descriptionPurpose": "기자재의 구체적인 도입 목적 및 타당성 2문장 요약",
+      "descriptionPlan": "도입 완료 후 활용 및 인력 양성 기대효과 계획 2문장 요약"
+    }
+    [정보]:
+    - 품명: ${itemName || "알 수 없음"}
+    - 학과/부서: ${deptName || "사업단"}
+    - 예산: ${totalPrice ? (totalPrice / 1000).toLocaleString() + "천원" : "120,000천원"}
+    - 원본명: ${fileName}
+    - 문서 텍스트: ${textContent || "기재 없음"}`,
+
+    purchase: `당신은 대학 조달 담당자입니다. 아래 구매요청 문서정보를 분석하여, 다음 JSON 스키마를 만족하는 요약본을 JSON 모드로 응답하십시오.
+    [스키마]:
+    {
+      "docNo": "구매문서 결재번호 (예: UC-EQ-PR로 시작하는 고유번호 생성)",
+      "fromDept": "발신 부서 또는 학과 명칭",
+      "toDept": "수신 부서 (보통 대학본부 총무팀)",
+      "itemName": "구매 요청하는 대표 기자재 품명",
+      "unitPrice": "단가 (백만 원 단위 소수점 추출, 예: 8.8)",
+      "quantity": "수량 (정수형, 예: 2)",
+      "totalPrice": "총액 (백만 원 단위 소수점 추출, 예: 17.6)",
+      "unit": "해당 단위과제 코드 (예: B2, C2 등 정확한 코드 추출)",
+      "budget": "도입 소요예산 (예: 17,600천원 형식)",
+      "specs": ["조달 위탁 요청 기술 사양 핵심 3가지"],
+      "draftDate": "기안일자 (예: YYYY-MM-DD 형식)",
+      "approveDate": "최종 결재 승인일자 (예: YYYY-MM-DD 형식, 없으면 2026-07-08 형식 생성)",
+      "descriptionPurpose": "기자재 도입 목적 및 타당성 2문장 요약",
+      "descriptionPlan": "향후 활용 및 인력 양성 기대효과 계획 2문장 요약"
+    }
+    [정보]:
+    - 품명: ${itemName || "알 수 없음"}
+    - 학과/부서: ${deptName || "사업단"}
+    - 예산: ${totalPrice ? (totalPrice / 1000).toLocaleString() + "천원" : "120,000천원"}
+    - 원본명: ${fileName}
+    - 문서 텍스트: ${textContent || "기재 없음"}`,
+
+    bid: `당신은 공인 입찰 공고 담당자입니다. 아래 입찰 문서정보를 분석하여, 다음 JSON 스키마를 만족하는 요약본을 JSON 모드로 응답하십시오.
+    [스키마]:
+    {
+      "docNo": "입찰문서 결재번호 (예: UC-EQ-B로 시작하는 고유번호 생성)",
+      "method": "입찰 계약 방식 (예: 제한경쟁입찰 등)",
+      "itemName": "입찰 대상 대표 기자재 품명",
+      "unitPrice": "단가 (백만 원 단위)",
+      "quantity": "수량",
+      "totalPrice": "총 금액 (백만 원 단위)",
+      "budget": "배정 예산 규모 (예: 17,600천원 형식)",
+      "qualifications": ["참가 자격 요건 및 규격 제한사항 3가지"],
+      "deadline": "입찰 등록 마감 일자 및 시각 (예: 2026-07-25 18:00)"
+    }
+    [정보]:
+    - 품명: ${itemName || "알 수 없음"}
+    - 학과/부서: ${deptName || "사업단"}
+    - 예산: ${totalPrice ? (totalPrice / 1000).toLocaleString() + "천원" : "120,000천원"}
+    - 원본명: ${fileName}
+    - 문서 텍스트: ${textContent || "기재 없음"}`
+  };
+
+  try {
+    return await callGeminiApi(promptMap[docType]);
+  } catch (error) {
+    console.error("❌ Gemini API 단독 분석 실패, 로컬 시뮬레이터로 대체합니다:", error);
+    return runAiMockAnalysis(docType, textContent || fileName, itemName, deptName, totalPrice, fileName);
+  }
+};
+
 // [교육용 주석] API Key가 없을 시 동작하는 가상 AI Debate 모의 시뮬레이터 (교육적 연출 효과 극대화)
 const runAiDebateMock = (docType, fileName, textContent, itemName, deptName, totalPrice) => {
   console.log("🤖 [AI Debate Simulator] GPT-4o: '기본 초안을 빌드하고 있습니다.'");
@@ -1065,6 +1155,9 @@ export default function ProcurementManager({
   const [uploadProgressPurchase, setUploadProgressPurchase] = useState(0);
   const [uploadProgressBid, setUploadProgressBid] = useState(0);
 
+  // AI 분석 모델 엔진 선택 상태 (gemini, gpt, debate)
+  const [aiEngine, setAiEngine] = useState("debate");
+
   // 4. 입력 폼 임시 State
   const [formData, setFormData] = useState({
     title: "",
@@ -1368,16 +1461,39 @@ export default function ProcurementManager({
           }
         }
 
-        // GPT-4o 와 Gemini의 교차 토론(Debate) 분석 엔진 실행 (Consensus 모델 작동)
+        // 선택한 AI 엔진별로 분석 진행 (Gemini 단독 / GPT-4o 단독 / 2개 모델 교차 토론)
+        let aiResult;
+        const currentEngine = aiEngine || "debate";
         const totalPrice = (Number(formData.unitPrice) * Number(formData.quantity) * 1000);
-        const aiResult = await callDebateAiAnalysis(
-          docType,
-          uploadedFileMeta.name,
-          "",
-          formData.name,
-          formData.deptName,
-          totalPrice
-        );
+        
+        if (currentEngine === "gemini") {
+          aiResult = await callGeminiSingleAnalysis(
+            docType,
+            uploadedFileMeta.name,
+            "",
+            formData.name,
+            formData.deptName,
+            totalPrice
+          );
+        } else if (currentEngine === "gpt") {
+          aiResult = await callOpenAiGpt(
+            docType,
+            uploadedFileMeta.name,
+            "",
+            formData.name,
+            formData.deptName,
+            totalPrice
+          );
+        } else {
+          aiResult = await callDebateAiAnalysis(
+            docType,
+            uploadedFileMeta.name,
+            "",
+            formData.name,
+            formData.deptName,
+            totalPrice
+          );
+        }
 
         setFormData(prev => {
           const list = (prev[listKey] || []).map(item => {
@@ -1403,6 +1519,7 @@ export default function ProcurementManager({
           };
 
           // [AI 자동채우기 핵심 로직 - AI 문서 기반 원클릭 행정 자동화 고도화]
+          // 이전 입력 정보가 있더라도 AI가 분석한 업데이트된 핵심 명세 정보를 우선적으로 덮어씁니다.
           
           // 1. 단가 및 예산 매핑 (백만원 / 천원 단위 정합성 고려)
           if (aiResult.unitPrice) {
@@ -1425,7 +1542,9 @@ export default function ProcurementManager({
           if (aiResult.quantity) {
             nextData.quantity = Number(aiResult.quantity);
           } else {
-            nextData.quantity = 1;
+            if (!nextData.quantity) {
+              nextData.quantity = 1;
+            }
           }
 
           // 3. 단위과제 (unit) & 연계 프로그램 (operation) 자동 매핑
@@ -1441,11 +1560,12 @@ export default function ProcurementManager({
                 nextData.operation = progs[0].name;
               }
             } else {
-              // 매칭 추출 실패 시 기본 첫 번째 단위과제 세팅
-              nextData.unit = "A1";
-              const progs = getDynamicPrograms("A1");
-              if (progs.length > 0) {
-                nextData.operation = progs[0].name;
+              if (!nextData.unit) {
+                nextData.unit = "A1";
+                const progs = getDynamicPrograms("A1");
+                if (progs.length > 0) {
+                  nextData.operation = progs[0].name;
+                }
               }
             }
           }
@@ -1453,7 +1573,6 @@ export default function ProcurementManager({
           // 4. 주관 학과 (deptName) 및 행정 부서 (divisionName) 정교한 매핑
           const rawDept = aiResult.dept || aiResult.fromDept;
           if (rawDept) {
-            // 괄호 및 사업단 협업 명칭 트리밍
             const cleanDept = rawDept.replace(/\s*\(.*?\)\s*/g, "").trim();
             
             const validDepts = [
@@ -1480,8 +1599,10 @@ export default function ProcurementManager({
                 nextData.divisionName = matchedDiv;
                 nextData.deptName = ""; // 행정부서가 지정되면 학과 초기화
               } else {
-                nextData.divisionName = "ECC"; // 최종 폴백
-                nextData.deptName = "";
+                if (!nextData.deptName && !nextData.divisionName) {
+                  nextData.divisionName = "ECC"; // 최종 폴백
+                  nextData.deptName = "";
+                }
               }
             }
           }
@@ -1491,13 +1612,15 @@ export default function ProcurementManager({
             nextData.name = aiResult.itemName;
             nextData.title = aiResult.itemName;
           } else {
-            const baseFileName = uploadedFileMeta.name.replace(/\.[^/.]+$/, "");
-            if (baseFileName && !/^\d+$/.test(baseFileName) && baseFileName.length > 2) {
-              nextData.name = baseFileName;
-              nextData.title = baseFileName;
-            } else {
-              nextData.name = docType === "proposal" ? "스마트 팩토리 IoT 통합 분석 시스템" : "정밀 의료 실습용 고해상도 초음파 진단기";
-              nextData.title = docType === "proposal" ? "스마트 팩토리 IoT 통합 분석 시스템" : "정밀 의료 실습용 고해상도 초음파 진단기";
+            if (!nextData.name) {
+              const baseFileName = uploadedFileMeta.name.replace(/\.[^/.]+$/, "");
+              if (baseFileName && !/^\d+$/.test(baseFileName) && baseFileName.length > 2) {
+                nextData.name = baseFileName;
+                nextData.title = baseFileName;
+              } else {
+                nextData.name = docType === "proposal" ? "스마트 팩토리 IoT 통합 분석 시스템" : "정밀 의료 실습용 고해상도 초음파 진단기";
+                nextData.title = docType === "proposal" ? "스마트 팩토리 IoT 통합 분석 시스템" : "정밀 의료 실습용 고해상도 초음파 진단기";
+              }
             }
           }
 
@@ -1507,23 +1630,23 @@ export default function ProcurementManager({
           const strategicGoals = aiResult.goals ? aiResult.goals.join(", ") : "RISE 사업 전략 과제 추진";
           
           if (modalType === "service") {
-            nextData.purpose = aiResult.descriptionPurpose || `[AI 자동완성] ${nextData.title} 용역을 통해 RISE 사업의 전략 목표인 '${strategicGoals}'를 달성하고 고도화된 연구 성과를 창출하고자 함.`;
-            nextData.providerQual = "관련 부문 인가 인증 보유 법인 및 대학용역 유사 실적 우수 사업자";
-            nextData.opResult = "용역 일정 내 성과품 납품 완료 및 만족도 평가 결과 우수 등급 달성";
+            nextData.purpose = aiResult.descriptionPurpose || nextData.purpose || `[AI 자동완성] ${nextData.title} 용역을 통해 RISE 사업의 전략 목표인 '${strategicGoals}'를 달성하고 고도화된 연구 성과를 창출하고자 함.`;
+            nextData.providerQual = nextData.providerQual || "관련 부문 인가 인증 보유 법인 및 대학용역 유사 실적 우수 사업자";
+            nextData.opResult = nextData.opResult || "용역 일정 내 성과품 납품 완료 및 만족도 평가 결과 우수 등급 달성";
             
             if (aiResult.draftDate) {
               nextData.datePp = aiResult.draftDate;
             }
           } else if (modalType === "env") {
-            nextData.purpose = aiResult.descriptionPurpose || `[AI 자동완성] 교육환경 개선 사업을 시행하여 시설 안정성을 확보하고 학생 친화적 학습 환경을 혁신하고자 함.`;
-            nextData.plan = `전략 목표: ${strategicGoals}`;
-            nextData.utilization = aiResult.descriptionPlan || "학부생 공통 개방형 메이커 스페이스 및 교육 실습 공간으로 상시 개방 운영 예정";
+            nextData.purpose = aiResult.descriptionPurpose || nextData.purpose || `[AI 자동완성] 교육환경 개선 사업을 시행하여 시설 안정성을 확보하고 학생 친화적 학습 환경을 혁신하고자 함.`;
+            nextData.plan = nextData.plan || `전략 목표: ${strategicGoals}`;
+            nextData.utilization = aiResult.descriptionPlan || nextData.utilization || "학부생 공통 개방형 메이커 스페이스 및 교육 실습 공간으로 상시 개방 운영 예정";
             
             if (aiResult.draftDate) nextData.dateP = aiResult.draftDate;
             if (aiResult.approveDate) nextData.dateA = aiResult.approveDate;
           } else {
-            nextData.descriptionPurpose = aiResult.descriptionPurpose || `[AI 자동완성] ${nextData.name} 핵심 기자재를 도입하여 교육 실습 타당성을 확보하고 전략 목표인 '${strategicGoals}' 과제를 완성함.`;
-            nextData.descriptionPlan = aiResult.descriptionPlan || "도입 완료 후 시뮬레이션 고도화 전공 교과목 실습 기자재로 100% 매칭 활용하며, 연간 120명 이상의 전문 인력 실습 활용 기대.";
+            nextData.descriptionPurpose = aiResult.descriptionPurpose || nextData.descriptionPurpose || `[AI 자동완성] ${nextData.name} 핵심 기자재를 도입하여 교육 실습 타당성을 확보하고 전략 목표인 '${strategicGoals}' 과제를 완성함.`;
+            nextData.descriptionPlan = aiResult.descriptionPlan || nextData.descriptionPlan || "도입 완료 후 시뮬레이션 고도화 전공 교과목 실습 기자재로 100% 매칭 활용하며, 연간 120명 이상의 전문 인력 실습 활용 기대.";
             
             // 기자재의 경우 최종 결재 승인일을 기획∙승인(PA) 일자로 자동 세팅
             if (aiResult.approveDate) {
@@ -1536,7 +1659,12 @@ export default function ProcurementManager({
           return nextData;
         });
 
-        alert(`🤖 [GPT-4o ✖️ Gemini] 교차 토론(Debate) 분석 및 문서 업로드가 완료되었습니다!`);
+        const engineNameMap = {
+          gemini: "Google Gemini API",
+          gpt: "OpenAI GPT-4o API",
+          debate: "AI 교차 토론 조합 (Gemini ✖️ GPT)"
+        };
+        alert(`🤖 [${engineNameMap[currentEngine]}] 분석 및 문서 업로드가 완료되었습니다!`);
       } catch (error) {
         console.error("문서 분석 에러:", error);
         alert("❌ 문서 분석 중 예상치 못한 에러가 발생했습니다.");
@@ -1579,14 +1707,38 @@ export default function ProcurementManager({
         }
 
         const totalPrice = (Number(formData.unitPrice) * Number(formData.quantity) * 1000);
-        const aiResult = await callDebateAiAnalysis(
-          docType,
-          uploadedFileMeta.name,
-          "",
-          formData.name,
-          formData.deptName,
-          totalPrice
-        );
+        // 선택한 AI 엔진별로 분석 진행 (Gemini 단독 / GPT-4o 단독 / 2개 모델 교차 토론)
+        let aiResult;
+        const currentEngine = aiEngine || "debate";
+        
+        if (currentEngine === "gemini") {
+          aiResult = await callGeminiSingleAnalysis(
+            docType,
+            uploadedFileMeta.name,
+            "",
+            formData.name,
+            formData.deptName,
+            totalPrice
+          );
+        } else if (currentEngine === "gpt") {
+          aiResult = await callOpenAiGpt(
+            docType,
+            uploadedFileMeta.name,
+            "",
+            formData.name,
+            formData.deptName,
+            totalPrice
+          );
+        } else {
+          aiResult = await callDebateAiAnalysis(
+            docType,
+            uploadedFileMeta.name,
+            "",
+            formData.name,
+            formData.deptName,
+            totalPrice
+          );
+        }
 
         setFormData(prev => {
           const nextData = {
@@ -1615,7 +1767,12 @@ export default function ProcurementManager({
           return nextData;
         });
 
-        alert(`🤖 [GPT-4o ✖️ Gemini] 교차 토론(Debate) 분석 및 문서 업로드가 완료되었습니다!`);
+        const engineNameMap = {
+          gemini: "Google Gemini API",
+          gpt: "OpenAI GPT-4o API",
+          debate: "AI 교차 토론 조합 (Gemini ✖️ GPT)"
+        };
+        alert(`🤖 [${engineNameMap[currentEngine]}] 분석 및 문서 업로드가 완료되었습니다!`);
       } catch (error) {
         console.error("문서 분석 에러:", error);
         alert("❌ 문서 분석 중 예상치 못한 에러가 발생했습니다.");
@@ -5505,9 +5662,32 @@ export default function ProcurementManager({
 
               {(modalType === "env" || modalType === "equip") && (
                 <div style={{ background: "rgba(255,255,255,0.02)", padding: "1rem", borderRadius: "8px", border: "1px solid var(--border-color)", marginTop: "1rem" }}>
-                  <span style={{ display: "block", fontSize: "0.85rem", fontWeight: "800", color: "#60A5FA", marginBottom: "0.75rem" }}>
-                    {modalType === "env" ? "🤖 AI 문서 분석 및 요약 등록 (기획, 구매, 결과)" : "🤖 AI 문서 분석 및 요약 등록 (기획, 구매, 입찰)"}
-                  </span>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.75rem", flexWrap: "wrap", gap: "0.5rem" }}>
+                    <span style={{ fontSize: "0.85rem", fontWeight: "800", color: "#60A5FA" }}>
+                      {modalType === "env" ? "🤖 AI 문서 분석 및 요약 등록 (기획, 구매, 결과)" : "🤖 AI 문서 분석 및 요약 등록 (기획, 구매, 입찰)"}
+                    </span>
+                    <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
+                      <span style={{ fontSize: "0.72rem", color: "var(--text-secondary)", fontWeight: "700" }}>AI 엔진:</span>
+                      <select
+                        value={aiEngine}
+                        onChange={(e) => setAiEngine(e.target.value)}
+                        style={{
+                          background: "var(--input-bg)",
+                          color: "var(--text-primary)",
+                          border: "1px solid var(--border-color)",
+                          borderRadius: "6px",
+                          padding: "0.25rem 0.5rem",
+                          fontSize: "0.72rem",
+                          fontWeight: "600",
+                          cursor: "pointer"
+                        }}
+                      >
+                        <option value="gemini">Google Gemini API</option>
+                        <option value="gpt">OpenAI GPT-4o API</option>
+                        <option value="debate">AI 교차 토론 조합 (Gemini & GPT)</option>
+                      </select>
+                    </div>
+                  </div>
                   <div style={{ display: "flex", flexDirection: "column", gap: "1.2rem" }}>
 
 
