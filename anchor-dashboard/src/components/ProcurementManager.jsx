@@ -263,6 +263,18 @@ const runAiDebateMock = (docType, fileName, textContent, itemName, deptName, tot
       draftDate: "2026-03-05",
       approveDate: "2026-03-09"
     };
+  } else if (docType === "bid") {
+    return {
+      docNo: `UC-EQ-B-${randomNo} (Debate합의)`,
+      method: "제한경쟁입찰",
+      budget: `${priceThousand.toLocaleString()}천원`,
+      qualifications: [
+        `[GPT] 대학 및 관공서 납품 실적 보유 업체`,
+        `[Gemini] 조달청 우수 제품 등록 모델 또는 정규 규격 보장`,
+        `[합의] 무상 A/S 2년 제공 및 납품 기한 계약 후 30일 이내`
+      ],
+      deadline: "2026-07-25 18:00"
+    };
   } else { // purchase
     return {
       docNo: `UC-EQ-PR-${randomNo} (Debate합의)`,
@@ -316,6 +328,12 @@ const callDebateAiAnalysis = async (docType, fileName, textContent, itemName, de
       "goals": ["목표 3가지"],
       "draftDate": "기안일자(YYYY-MM-DD)",
       "approveDate": "승인일자(YYYY-MM-DD)"
+    }` : docType === 'bid' ? `{
+      "docNo": "입찰결재번호",
+      "method": "입찰계약방식",
+      "budget": "예산액 (천원 단위)",
+      "qualifications": ["참가 자격 및 제한사항 3가지"],
+      "deadline": "입찰마감일시(YYYY-MM-DD HH:MM)"
     }` : `{
       "docNo": "구매결재번호",
       "fromDept": "발신부서",
@@ -1217,7 +1235,7 @@ export default function ProcurementManager({
           return nextData;
         });
 
-        alert(`🤖 GPT AI 분석 및 문서 업로드가 완료되었습니다!`);
+        alert(`🤖 [GPT-4o ✖️ Gemini] 교차 토론(Debate) 분석 및 문서 업로드가 완료되었습니다!`);
       } catch (error) {
         console.error("문서 분석 에러:", error);
         alert("❌ 문서 분석 중 예상치 못한 에러가 발생했습니다.");
@@ -1230,7 +1248,7 @@ export default function ProcurementManager({
         });
       }
     } else {
-      // 기존 단일 결과(입찰) 분석 프로세스 유지
+      // [교육용 주석] 입찰문서(docBid)에 대해서도 GPT-4o와 Google Gemini 간의 교차 토론(Debate) 및 합의(Consensus) 분석 엔진을 가동합니다.
       const fieldPrefix = "docBid";
       const file = formData[`${fieldPrefix}File`];
       if (!file && !formData[`${fieldPrefix}FileUrl`]) {
@@ -1260,7 +1278,7 @@ export default function ProcurementManager({
         }
 
         const totalPrice = (Number(formData.unitPrice) * Number(formData.quantity) * 1000);
-        const aiResult = await callOpenAiGpt(
+        const aiResult = await callDebateAiAnalysis(
           docType,
           uploadedFileMeta.name,
           "",
@@ -1278,14 +1296,25 @@ export default function ProcurementManager({
             aiBidData: aiResult,
             docBid: aiResult.docNo
           };
+          
+          // 예산액 파싱 및 반영
           const parsedSpent = parseBudgetStringToMillions(aiResult.budget);
           if (parsedSpent) {
             nextData.budgetSpent = parsedSpent;
           }
+          
+          // 입찰 마감일 또는 입찰 공고일 분석 결과를 "입찰(B) 일자" 필드에 매핑
+          if (aiResult.deadline) {
+            const dateMatch = aiResult.deadline.match(/\d{4}-\d{2}-\d{2}/);
+            if (dateMatch) {
+              nextData.dateB = dateMatch[0];
+            }
+          }
+          
           return nextData;
         });
 
-        alert(`🤖 GPT AI 분석 및 결과문서 업로드가 완료되었습니다!`);
+        alert(`🤖 [GPT-4o ✖️ Gemini] 교차 토론(Debate) 분석 및 문서 업로드가 완료되었습니다!`);
       } catch (error) {
         console.error("문서 분석 에러:", error);
         alert("❌ 문서 분석 중 예상치 못한 에러가 발생했습니다.");
@@ -5657,7 +5686,7 @@ export default function ProcurementManager({
 
                   {/* 3종 관련 문서 파일 첨부 및 AI 자동분석 패널 */}
                   <div style={{ borderTop: "1px solid rgba(255,255,255,0.05)", paddingTop: "0.75rem", marginTop: "0.5rem" }}>
-                    <span style={{ fontSize: "0.82rem", fontWeight: "800", color: "#a78bfa", display: "block", marginBottom: "0.5rem" }}>📎 행정 서류 첨부 및 AI 분석 연계</span>
+                    <span style={{ fontSize: "0.82rem", fontWeight: "800", color: "#a78bfa", display: "block", marginBottom: "0.5rem" }}>📎 행정 서류 첨부 및 AI Debate 분석 연계</span>
                     
                     {/* 1. 기획문서 첨부 (다중 파일 및 1대N 연계 지원) */}
                     <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem", marginBottom: "0.75rem", background: "rgba(255,255,255,0.01)", padding: "0.6rem", borderRadius: "6px", border: "1px solid rgba(255,255,255,0.03)" }}>
@@ -5699,7 +5728,7 @@ export default function ProcurementManager({
                             <div style={{ display: "flex", alignItems: "center", gap: "0.3rem" }}>
                               {fileItem.aiData ? (
                                 <span style={{ fontSize: "0.68rem", color: "#10B981", fontWeight: "800" }}>
-                                  ✅ 완료 ({fileItem.aiData.docNo})
+                                  ✅ Debate 완료 ({fileItem.aiData.docNo})
                                 </span>
                               ) : (
                                 <button
@@ -5708,7 +5737,7 @@ export default function ProcurementManager({
                                   disabled={fileItem.isAnalyzing}
                                   style={{ padding: "0.15rem 0.4rem", fontSize: "0.65rem", background: "#3b82f6", border: "none", color: "white", borderRadius: "3px", fontWeight: "700" }}
                                 >
-                                  {fileItem.isAnalyzing ? "분석중..." : "분석"}
+                                  {fileItem.isAnalyzing ? "토론중..." : "Debate 분석"}
                                 </button>
                               )}
                               <button type="button" onClick={() => handleFileRemove("proposal", fileItem.id)} style={{ background: "transparent", border: "none", color: "#EF4444", cursor: "pointer", padding: "0.1rem" }}>
@@ -5738,7 +5767,7 @@ export default function ProcurementManager({
                             <div style={{ display: "flex", alignItems: "center", gap: "0.3rem" }}>
                               {fileItem.aiData ? (
                                 <span style={{ fontSize: "0.68rem", color: "#10B981", fontWeight: "800" }}>
-                                  ✅ 완료 ({fileItem.aiData.docNo})
+                                  ✅ Debate 완료 ({fileItem.aiData.docNo})
                                 </span>
                               ) : (
                                 <button
@@ -5747,7 +5776,7 @@ export default function ProcurementManager({
                                   disabled={fileItem.isAnalyzing}
                                   style={{ padding: "0.15rem 0.4rem", fontSize: "0.65rem", background: "#a78bfa", border: "none", color: "white", borderRadius: "3px", fontWeight: "700" }}
                                 >
-                                  {fileItem.isAnalyzing ? "분석중..." : "분석"}
+                                  {fileItem.isAnalyzing ? "토론중..." : "Debate 분석"}
                                 </button>
                               )}
                               <button type="button" onClick={() => handleFileRemove("purchase", fileItem.id)} style={{ background: "transparent", border: "none", color: "#EF4444", cursor: "pointer", padding: "0.1rem" }}>
