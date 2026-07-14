@@ -4027,10 +4027,8 @@ export default function ProcurementManager({
           <div className="glass-card" style={{ padding: "0.5rem", borderRadius: "10px", overflowX: "auto" }}>
             <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.82rem", color: "var(--text-primary)", minWidth: "1200px" }}>
               <thead>
-                {/* 1행: 대분류 헤더 */}
                 <tr style={{ background: "rgba(255, 255, 255, 0.03)", borderBottom: "1px solid var(--border-color)" }}>
                   <th 
-                    rowSpan={3} 
                     onClick={() => handleSort("seq")} 
                     style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "55px", verticalAlign: "middle", cursor: "pointer", userSelect: "none" }}
                     title="순번 기준 정렬"
@@ -4041,7 +4039,6 @@ export default function ProcurementManager({
                     </div>
                   </th>
                   <th 
-                    rowSpan={3} 
                     onClick={() => handleSort("unit")} 
                     style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "65px", verticalAlign: "middle", cursor: "pointer", userSelect: "none" }}
                     title="과제 기준 정렬"
@@ -4051,11 +4048,10 @@ export default function ProcurementManager({
                       <ArrowUpDown size={12} style={{ opacity: sortField === "unit" ? 1 : 0.4 }} />
                     </div>
                   </th>
-                  <th rowSpan={3} style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "130px", verticalAlign: "middle" }}>학과 / 부서</th>
-                  <th rowSpan={3} style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "200px", verticalAlign: "middle" }}>품명</th>
-                  <th rowSpan={3} style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "160px", verticalAlign: "middle" }}>규격</th>
+                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "130px", verticalAlign: "middle" }}>학과 / 부서</th>
+                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "200px", verticalAlign: "middle" }}>품명</th>
+                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "160px", verticalAlign: "middle" }}>규격</th>
                   <th 
-                    rowSpan={3} 
                     onClick={() => handleSort("unitPrice")} 
                     style={{ padding: "0.5rem 0.3rem", textAlign: "center", fontWeight: "800", width: "95px", verticalAlign: "middle", cursor: "pointer", userSelect: "none" }}
                     title="단가 기준 정렬"
@@ -4068,10 +4064,9 @@ export default function ProcurementManager({
                       <span style={{ fontSize: "0.68rem", fontWeight: "400", color: "var(--text-secondary)", marginTop: "0.1rem" }}>(백만원)</span>
                     </div>
                   </th>
-                  <th rowSpan={3} style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "45px", verticalAlign: "middle" }}>단위</th>
-                  <th rowSpan={3} style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "50px", verticalAlign: "middle" }}>수량</th>
+                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "45px", verticalAlign: "middle" }}>단위</th>
+                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "50px", verticalAlign: "middle" }}>수량</th>
                   <th 
-                    rowSpan={3} 
                     onClick={() => handleSort("total")} 
                     style={{ padding: "0.5rem 0.3rem", textAlign: "center", fontWeight: "800", width: "105px", verticalAlign: "middle", cursor: "pointer", userSelect: "none" }}
                     title="금액 기준 정렬"
@@ -4084,44 +4079,17 @@ export default function ProcurementManager({
                       <span style={{ fontSize: "0.68rem", fontWeight: "400", color: "var(--text-secondary)", marginTop: "0.1rem" }}>(백만원)</span>
                     </div>
                   </th>
-                  <th rowSpan={3} style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "384px", verticalAlign: "middle" }}>구입목적 및 활용계획</th>
-                  <th colSpan={12} style={{ padding: "0.5rem", textAlign: "center", fontWeight: "800", borderBottom: "1px solid var(--border-color)", background: "rgba(255, 255, 255, 0.01)", lineHeight: "1.3" }}>
-                    구매단계<br />
-                    <span style={{ fontSize: "0.75rem", fontWeight: "normal", color: "var(--text-secondary)" }}>[기획∙승인(PA : 1~5) ⇨ 구매신청(Pr : 6) ⇨ 입찰∙계약(BC : 7) ⇨ 검수(I : 8)]</span>
+                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "384px", verticalAlign: "middle" }}>구입목적 및 활용계획</th>
+                  <th style={{ padding: "0.85rem 0.5rem", textAlign: "center", verticalAlign: "middle", fontWeight: "800", width: "500px", whiteSpace: "nowrap" }}>
+                    구매 절차
+                    <span style={{ display: "block", fontSize: "0.7rem", color: "var(--text-secondary)", fontWeight: "500", marginTop: "0.15rem" }}>
+                      [기획∙승인(PA : 1~5) ⇨ 구매신청(Pr : 6) ⇨ 입찰∙계약(BC : 7) ⇨ 검수(I : 8)]
+                    </span>
                   </th>
-                  <th rowSpan={3} style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "80px", verticalAlign: "middle" }}>관련문서</th>
+                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "80px", verticalAlign: "middle" }}>관련문서</th>
                   {currentRole.id !== "GUEST" && (
-                    <th rowSpan={3} style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "65px", verticalAlign: "middle" }}>제어</th>
+                    <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "65px", verticalAlign: "middle" }}>제어</th>
                   )}
-                </tr>
-                {/* 2행: 연도 분할 */}
-                <tr style={{ background: "rgba(255, 255, 255, 0.02)", borderBottom: "1px solid var(--border-color)" }}>
-                  <th colSpan={10} style={{ padding: "0.25rem 0.5rem", textAlign: "center", fontWeight: "750", fontSize: "0.75rem", color: "var(--accent-color)", borderRight: "1px solid var(--border-color)" }}>
-                    '{String(2024 + (Number(selectedYear) || 1)).slice(-2)}년
-                  </th>
-                  <th colSpan={2} style={{ padding: "0.25rem 0.5rem", textAlign: "center", fontWeight: "750", fontSize: "0.75rem", color: "var(--accent-color)" }}>
-                    '{String(2024 + (Number(selectedYear) || 1) + 1).slice(-2)}년
-                  </th>
-                </tr>
-                {/* 3행: 월 리스트 */}
-                <tr style={{ background: "rgba(255, 255, 255, 0.01)", borderBottom: "2px solid var(--border-color)" }}>
-                  {["3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월", "1월", "2월"].map((m, idx) => (
-                    <th 
-                      key={m} 
-                      style={{ 
-                        padding: "0.3rem 0.2rem", 
-                        textAlign: "center", 
-                        fontWeight: "800", 
-                        fontSize: "0.72rem", 
-                        color: "var(--text-secondary)",
-                        width: "36px",
-                        whiteSpace: "nowrap",
-                        borderRight: idx < 11 ? "1px solid var(--border-color)" : "none"
-                      }}
-                    >
-                      {m}
-                    </th>
-                  ))}
                 </tr>
               </thead>
               <tbody>
@@ -4349,208 +4317,61 @@ export default function ProcurementManager({
                             })()}
                           </td>
                           
-                          {monthsOrder.map((m, currIdx) => {
-                            const dynamicMilestones = getMilestonesFromDatesEquip(equip, selectedYear);
-                            const stepList = dynamicMilestones[m] || [];
-
-                            const getSegmentColorForPos = (pos) => {
-                               if (idxP !== null && idxPr !== null && idxP < idxPr) {
-                                 if (pos >= idxP && pos < idxPr) return "#f59e0b";
-                               }
-                               if (idxPr !== null && idxB !== null && idxPr < idxB) {
-                                 if (pos >= idxPr && pos < idxB) return "#a78bfa";
-                               }
-                               if (idxB !== null && idxI !== null && idxB < idxI) {
-                                 if (pos >= idxB && pos < idxI) return "#06b6d4";
-                               }
-                               return "var(--border-color)";
-                             };
-
-                            const leftColor = getSegmentColorForPos(currIdx - 0.5);
-                            const rightColor = getSegmentColorForPos(currIdx + 0.5);
-
-                            const hasMilestone = stepList.length > 0;
-                            const primaryCode = hasMilestone ? stepList[0] : null;
-                            const phaseColor = primaryCode ? getPhaseColor(primaryCode) : "#38bdf8";
-                            const phaseLabel = primaryCode ? getPhaseLabel(primaryCode) : "";
-                            const phaseDate = primaryCode ? (
-                              primaryCode === "PA" ? equip.dateP :
-                              primaryCode === "Pr" ? equip.datePr :
-                              primaryCode === "BC" ? equip.dateB :
-                              equip.dateI
-                            ) : "";
-
-                            // 현재 마일스톤이 이 장비의 마지막 활성 마일스톤인지 판단
-                            const isLastActive = lastActivePhase && 
-                                                 primaryCode && 
-                                                 lastActivePhase.phase === primaryCode && 
-                                                 lastActivePhase.idx === currIdx;
-
-                            const hasAnyMilestoneInActiveYear = (activePhases.length > 0);
-                            const hasTodayInTimeline = (Number(selectedYear) === 2);
-                            const isTodayMonth = (m === "7");
-                            let shouldShowBalloon = false;
-                            if (hasAnyMilestoneInActiveYear) {
-                              if (hasTodayInTimeline) {
-                                shouldShowBalloon = isTodayMonth;
-                              } else {
-                                shouldShowBalloon = isLastActive;
-                              }
-                            } else {
-                              shouldShowBalloon = false;
-                            }
-
-                            const statusColors = {
-                              "준비중": { bg: "#64748b", border: "#94a3b8", shadow: "rgba(100, 116, 139, 0.3)" },
-                              "결재중": { bg: "#3b82f6", border: "#60a5fa", shadow: "rgba(59, 130, 246, 0.3)" },
-                              "입찰중": { bg: "#f59e0b", border: "#fbbf24", shadow: "rgba(245, 158, 11, 0.3)" },
-                              "구매중": { bg: "#a78bfa", border: "#c084fc", shadow: "rgba(167, 139, 250, 0.3)" },
-                              "검수완료": { bg: "#10b981", border: "#34d399", shadow: "rgba(16, 185, 129, 0.3)" }
-                            };
-                            const colorSet = statusColors[currentStatus] || statusColors["준비중"];
-
-                            return (
-                              <td 
-                                key={m} 
-                                style={{ 
-                                  padding: "0.8rem 0", 
-                                  textAlign: "center", 
-                                  width: "36px",
-                                  position: "relative",
-                                  verticalAlign: "middle"
-                                }}
-                              >
-                                {/* 가로 타임라인 왼쪽 연결 반선 */}
-                                <div style={{
-                                  position: "absolute",
-                                  left: 0,
-                                  right: "50%",
-                                  top: "50%",
-                                  transform: "translateY(-50%)",
-                                  height: "1.5px",
-                                  background: leftColor === "var(--border-color)" ? "var(--border-color)" : leftColor,
-                                  display: m === "3" ? "none" : "block", // 3월은 왼쪽 선 생략
-                                  zIndex: 0
-                                }} />
-
-                                {/* 가로 타임라인 오른쪽 연결 반선 */}
-                                <div style={{
-                                  position: "absolute",
-                                  left: "50%",
-                                  right: 0,
-                                  top: "50%",
-                                  transform: "translateY(-50%)",
-                                  height: "1.5px",
-                                  background: rightColor === "var(--border-color)" ? "var(--border-color)" : rightColor,
-                                  display: m === "2" ? "none" : "block", // 2월은 오른쪽 선 생략
-                                  zIndex: 0
-                                }} />
-                                
-                                {/* 화살표 선 흐름 기호 (구간 한가운데에 단 1개의 진행 화살표 렌더링) */}
-                                {arrowsToRender
-                                  .filter(arr => arr.cellIdx === currIdx)
-                                  .map((arr, arrIdx) => (
-                                    <div 
-                                      key={arrIdx}
-                                      style={{
-                                        position: "absolute",
-                                        left: arr.leftPercent,
-                                        top: "50%",
-                                        transform: "translate(-50%, -50%)",
-                                        width: 0,
-                                        height: 0,
-                                        borderTop: "2px solid transparent",
-                                        borderBottom: "2px solid transparent",
-                                        borderLeft: `4.5px solid ${arr.color}`,
-                                        zIndex: 3,
-                                        pointerEvents: "none"
-                                      }} 
-                                    />
-                                  ))
+                          {/* 7. 구매 절차 가로 마일스톤 노드 (요청: 주요 용역과 같은 모양의 그림으로 변경) */}
+                          <td style={{ padding: "0.8rem 0.5rem", verticalAlign: "middle" }}>
+                            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "0.25rem", width: "100%" }}>
+                              {[
+                                { dateKey: "dateP", label: "기획∙승인", code: "PA", colorLight: "#d97706", colorDark: "#f59e0b", bgLight: "#fef3c7", bgDark: "rgba(245, 158, 11, 0.2)" },
+                                { dateKey: "datePr", label: "구매신청", code: "Pr", colorLight: "#1d4ed8", colorDark: "#60a5fa", bgLight: "#dbeafe", bgDark: "rgba(59, 130, 246, 0.2)" },
+                                { dateKey: "dateB", label: "입찰∙계약", code: "BC", colorLight: "#7c3aed", colorDark: "#c084fc", bgLight: "#f3e8ff", bgDark: "rgba(167, 139, 250, 0.2)" },
+                                { dateKey: "dateI", label: "검수", code: "I", colorLight: "#059669", colorDark: "#34d399", bgLight: "#d1fae5", bgDark: "rgba(16, 185, 129, 0.2)" }
+                              ].map((step, sIdx) => {
+                                const hasDate = !!equip[step.dateKey];
+                                const rawDate = equip[step.dateKey]; // YYYY-MM-DD
+                                let formattedDate = "";
+                                if (hasDate && rawDate.includes("-")) {
+                                  const parts = rawDate.split("-");
+                                  formattedDate = `${parts[1]}.${parts[2]}`; // MM.DD 포맷
                                 }
 
-                                {/* 두 번째 그림 스타일의 마일스톤 노드 (중앙 도트점 + 상단 텍스트 및 양쪽 사선 깃대 날개) */}
-                                <div style={{ position: "relative", zIndex: 2, display: "flex", justifyContent: "center", alignItems: "center", height: "32px" }}>
-                                  {shouldShowBalloon && (
-                                    <div 
-                                      className="status-flag-balloon"
-                                      style={{
-                                        "--bg-color": colorSet.bg,
-                                        "--shadow-color": colorSet.shadow,
-                                        "--border-color": colorSet.border,
-                                        bottom: "100%",
-                                        marginBottom: "4px"
-                                      }}
-                                    >
-                                      {currentStatus === "구매중" ? "구매 중" :
-                                       currentStatus === "결재중" ? "결재 중" :
-                                       currentStatus === "입찰중" ? "입찰 중" :
-                                       currentStatus}
-                                    </div>
-                                  )}
-                                  {hasMilestone && stepList.map((rawCode, sIdx) => {
-                                    const pColor = getPhaseColor(rawCode) || "#38bdf8";
-                                    const pLabel = getPhaseLabel(rawCode) || "";
-                                    const pDate = rawCode === "P" ? equip.dateP :
-                                                  rawCode === "A" ? equip.dateA :
-                                                  rawCode === "B" ? equip.dateB :
-                                                  rawCode === "Pr" ? equip.datePr :
-                                                  equip.dateI;
-                                    return (
-                                      <div 
-                                        key={sIdx}
-                                        className="milestone-tooltip-container"
-                                        style={{ display: "flex", justifyContent: "center", alignItems: "center" }}
-                                      >
-                                        <div className="milestone-tooltip" style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "2px", textAlign: "center" }}>
-                                          <span style={{ color: pColor, fontWeight: "900" }}>{pLabel} ({rawCode})</span>
-                                          <span style={{ fontSize: "0.68rem", opacity: 0.85, fontWeight: "normal" }}>{pDate || "날짜 미정"}</span>
-                                        </div>
+                                const activeColor = darkMode ? step.colorDark : step.colorLight;
+                                const activeBg = darkMode ? step.bgDark : step.bgLight;
 
-                                        <svg width="24" height="32" viewBox="0 0 24 32" style={{ overflow: "visible" }}>
-                                          <defs>
-                                            <filter id={`glow-${rawCode}`} x="-40%" y="-40%" width="180%" height="180%">
-                                              <feGaussianBlur stdDeviation="2.2" result="blur" />
-                                              <feComposite in="SourceGraphic" in2="blur" operator="over" />
-                                            </filter>
-                                          </defs>
-                                          <path 
-                                            d="M 4 7 L 12 11.5 L 20 7" 
-                                            fill="none"
-                                            stroke={pColor} 
-                                            strokeWidth="1.5" 
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            opacity="0.9" 
-                                          />
-                                          <text 
-                                            x="12" 
-                                            y="4.5" 
-                                            textAnchor="middle" 
-                                            fontSize="9" 
-                                            fontWeight="950" 
-                                            fill="var(--text-primary)"
-                                            style={{ fontFamily: "monospace", letterSpacing: "-0.5px" }}
-                                          >
-                                            {rawCode}
-                                          </text>
-                                          <circle 
-                                            cx="12" 
-                                            cy="16" 
-                                            r="4.5" 
-                                            fill={pColor} 
-                                            stroke="rgba(255,255,255,0.7)" 
-                                            strokeWidth="1"
-                                            filter={`url(#glow-${rawCode})`}
-                                          />
-                                        </svg>
+                                return (
+                                  <React.Fragment key={step.code}>
+                                    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", minWidth: "46px" }}>
+                                      <div 
+                                        style={{
+                                          padding: "0.22rem 0.45rem",
+                                          borderRadius: "14px",
+                                          fontSize: "0.68rem",
+                                          fontWeight: "800",
+                                          background: hasDate ? activeBg : (darkMode ? "rgba(255, 255, 255, 0.05)" : "rgba(113, 113, 122, 0.08)"),
+                                          color: hasDate ? activeColor : "var(--text-secondary)",
+                                          border: hasDate ? `1.5px solid ${activeColor}55` : "1.5px solid var(--border-color)",
+                                          whiteSpace: "nowrap",
+                                          display: "flex",
+                                          flexDirection: "column",
+                                          alignItems: "center",
+                                          boxShadow: hasDate ? `0 1px 3px ${activeColor}15` : "none",
+                                          transition: "all 0.2s ease"
+                                        }}
+                                        title={`${step.label}(${step.code}) ${hasDate ? `: ${rawDate}` : "(미지정)"}`}
+                                      >
+                                        <span>{step.code}</span>
                                       </div>
-                                    );
-                                  })}
-                                </div>
-                              </td>
-                            );
-                          })}
+                                      <span style={{ fontSize: "0.62rem", color: hasDate ? "var(--text-primary)" : "var(--text-secondary)", marginTop: "0.2rem", fontWeight: hasDate ? "800" : "normal" }}>
+                                        {hasDate ? formattedDate : "-"}
+                                      </span>
+                                    </div>
+                                    {sIdx < 3 && (
+                                      <span style={{ color: "var(--text-secondary)", fontSize: "0.75rem", fontWeight: "900", opacity: 0.35 }}>➔</span>
+                                    )}
+                                  </React.Fragment>
+                                );
+                              })}
+                            </div>
+                          </td>
 
                           <td style={{ padding: "0.8rem 0.2rem", textAlign: "center", verticalAlign: "middle", color: "var(--text-secondary)" }}>
                             <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem", alignItems: "center", width: "100%" }}>
@@ -4728,7 +4549,7 @@ export default function ProcurementManager({
                   } else {
                     return (
                       <tr>
-                        <td colSpan={24} style={{ padding: "2rem", textAlign: "center", color: "var(--text-secondary)" }}>
+                        <td colSpan={13} style={{ padding: "2rem", textAlign: "center", color: "var(--text-secondary)" }}>
                           필터링된 기자재 내역이 존재하지 않습니다.
                         </td>
                       </tr>
