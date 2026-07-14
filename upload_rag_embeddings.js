@@ -60,16 +60,19 @@ function splitMarkdownIntoChunks(markdownText, filename) {
   const chunks = [];
   let currentChunk = "";
   let currentHeader = "일반 지식";
-  let articleTitle = filename;
   
   // 파일명 분석하여 연차(year) 및 대과제 번호(unit) 도출
   let yearVal = 2; // 기본 2차년도
-  if (filename.includes("1차년도") || filename.includes("2025")) {
+  if (filename.includes("1차년도") || filename.includes("1st_year") || filename.includes("2025")) {
     yearVal = 1;
   }
   
+  // 정규식 매칭을 통해 unit 번호 추출 (예: rise_1st_year_unit_b2_proposal.md -> B2)
   let unitVal = "Common";
-  if (filename.includes("A1가")) unitVal = "A1가";
+  const unitMatch = filename.match(/unit_([a-zA-Z0-9가-힣]+)_proposal/);
+  if (unitMatch) {
+    unitVal = unitMatch[1].toUpperCase();
+  } else if (filename.includes("A1가")) unitVal = "A1가";
   else if (filename.includes("A1나")) unitVal = "A1나";
   else if (filename.includes("A2")) unitVal = "A2";
   else if (filename.includes("B1")) unitVal = "B1";
@@ -85,7 +88,7 @@ function splitMarkdownIntoChunks(markdownText, filename) {
           metadata: {
             title: currentHeader,
             unit: unitVal,
-            category: "지식",
+            category: filename.includes("proposal") ? "개요" : "지식",
             year: yearVal,
             source: filename
           }
@@ -169,36 +172,46 @@ async function run() {
     }
   });
 
+  // 4. 스캔 대상 파일 수집 자동화
+  const scanFiles = [];
+  
+  // A. data/documents 내부 파일
   const docsDir = "./data/documents";
-  const files = [
-    "00_Ulsan_RISE_Guideline_20260701.md",
-    "00_Ulsan_RISE_Guideline_20260415.md",
-    "00_Ulsan_RISE_Guideline_20260401_draft.md",
-    "2025_Consortium_Agreement_Namgu_Modified.md",
-    "2025_Consortium_Agreement_Namgu.md",
-    "University_Status.md",
-    "해외_벤치마킹_일정표.md",
-    "RISE_지원전략.md",
-    "붙임_울산과학대학교_RISE사업_사업비_관리_지침.md",
-    "단위과제별_특이지침_및_개요.md",
-    "산학연협력협약_목록.md"
-  ];
+  if (fs.existsSync(docsDir)) {
+    const list = fs.readdirSync(docsDir).filter(f => f.endsWith(".md"));
+    list.forEach(f => {
+      scanFiles.push({
+        dir: docsDir,
+        name: f
+      });
+    });
+  }
+  
+  // B. 프로젝트 루트의 단위과제 제안서 마크다운 파일 동적 스캔
+  const rootFiles = fs.readdirSync(".").filter(f => {
+    return f.endsWith(".md") && (f.startsWith("anchor_2nd_year_unit_") || f.startsWith("rise_1st_year_unit_"));
+  });
+  
+  rootFiles.forEach(f => {
+    scanFiles.push({
+      dir: ".",
+      name: f
+    });
+  });
 
+  console.log(`\n총 스캔 대상 마크다운 파일 수: ${scanFiles.length}개`);
   console.log("=== 지식 문서 데이터 Chunking 및 임베딩 처리 시작 ===");
   
   let totalChunks = [];
   
-  for (const filename of files) {
-    const filePath = path.join(docsDir, filename);
+  for (const fileObj of scanFiles) {
+    const filePath = path.join(fileObj.dir, fileObj.name);
     if (!fs.existsSync(filePath)) {
-      console.log(`[경고] 파일이 존재하지 않아 건너뜁니다: ${filename}`);
       continue;
     }
     
-    console.log(`\n파일 파싱 중: ${filename}`);
     const mdText = fs.readFileSync(filePath, "utf8");
-    const docChunks = splitMarkdownIntoChunks(mdText, filename);
-    console.log(`분할 완료: ${docChunks.length}개 청크 추출됨`);
+    const docChunks = splitMarkdownIntoChunks(mdText, fileObj.name);
     totalChunks = totalChunks.concat(docChunks);
   }
 
@@ -214,7 +227,7 @@ async function run() {
   // 루프를 돌며 OpenAI 임베딩 변환 및 Supabase 업서트 실행
   for (let i = 0; i < totalChunks.length; i++) {
     const chunk = totalChunks[i];
-    process.stdout.write(`\r진행률: [${i + 1}/${totalChunks.length}] 임베딩 변환 중...`);
+    process.stdout.write(`\r진행률: [${i + 1}/${totalChunks.length}] 임베딩 변환 및 DB 적재 중...`);
     
     try {
       const embedding = await getEmbedding(chunk.content);
@@ -232,7 +245,7 @@ async function run() {
       console.error(`\n[에러] 청크 ${i + 1} 임베딩 생성 오류:`, e.message);
     }
     
-    // OpenAI API 속도 제어를 위해 약간의 텀(delay)을 둡니다.
+    // OpenAI API 레이트 리밋 우회를 위해 지연 텀을 부여합니다.
     await new Promise(res => setTimeout(res, 80));
   }
 
