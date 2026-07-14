@@ -93,6 +93,26 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
   const [currentMonth, setCurrentMonth] = useState(() => new Date().getMonth());
   const [selectedCalendarDate, setSelectedCalendarDate] = useState(() => new Date().toISOString().split("T")[0]);
 
+  // 💡 [교육용 한글 주석] 선택된 연차(selectedYear)가 바뀌면 캘린더의 대상 년월을 최적화 동기화합니다.
+  useEffect(() => {
+    const today = new Date();
+    const todayYear = today.getFullYear();
+    const todayMonth = today.getMonth();
+    const todayFiscalYear = todayMonth < 2 ? todayYear - 1 : todayYear;
+    const todaySelectedYear = todayFiscalYear - 2025 + 1;
+
+    if (selectedYear === todaySelectedYear) {
+      setCurrentYear(todayYear);
+      setCurrentMonth(todayMonth);
+      setSelectedCalendarDate(today.toISOString().split("T")[0]);
+    } else {
+      const targetFiscalYear = 2025 + (selectedYear - 1);
+      setCurrentYear(targetFiscalYear);
+      setCurrentMonth(2); // 3월 (0-indexed ➔ 2)
+      setSelectedCalendarDate(`${targetFiscalYear}-03-01`);
+    }
+  }, [selectedYear]);
+
   // 공간 예약 목록 로드
   const fetchReservations = async () => {
     setLoading(true);

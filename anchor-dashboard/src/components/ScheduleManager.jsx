@@ -620,6 +620,23 @@ export default function ScheduleManager({
   const [currentMonth, setCurrentMonth] = useState(7); // 7월
   const [selectedDay, setSelectedDay] = useState(15); // 디폴트 선택 일자
 
+  // 💡 [교육용 한글 주석] 선택된 연차(selectedYear)가 변경되면 캘린더 월을 해당 차년도에 맞춰 최적화 동기화합니다.
+  useEffect(() => {
+    const today = new Date();
+    const todayYear = today.getFullYear();
+    const todayMonth = today.getMonth() + 1; // 1-indexed (1~12)
+    const todayFiscalYear = todayMonth < 3 ? todayYear - 1 : todayYear;
+    const todaySelectedYear = todayFiscalYear - 2025 + 1;
+
+    if (selectedYear === todaySelectedYear) {
+      setCurrentMonth(todayMonth);
+      setSelectedDay(today.getDate());
+    } else {
+      setCurrentMonth(3); // 3월
+      setSelectedDay(1); // 1일
+    }
+  }, [selectedYear]);
+
   // 월간 일정 캘린더 표시용 연도 구하기 (회계연도 기준 1~2월은 targetYearNum + 1년)
   const displayYear = currentMonth >= 3 ? targetYearNum : targetYearNum + 1;
 

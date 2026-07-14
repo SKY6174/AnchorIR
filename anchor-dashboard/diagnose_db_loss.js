@@ -39,7 +39,7 @@ async function run() {
   console.log(`[Schedule Events] 데이터 개수: ${sEvent ? sEvent.length : 0}, 에러:`, seErr);
 
   // 4. scholarships 테이블 진단
-  const { data: schol, error: scErr } = await supabase.from('scholarships').select('*');
+  const { data: schol, error: scErr } = await supabase.from('scholarships_view').select('*');
   console.log(`[Scholarships] 데이터 개수: ${schol ? schol.length : 0}, 에러:`, scErr);
 
   // 5. unified_certificates 테이블 진단
