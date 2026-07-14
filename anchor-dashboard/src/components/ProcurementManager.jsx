@@ -4079,16 +4079,16 @@ export default function ProcurementManager({
                       <span style={{ fontSize: "0.68rem", fontWeight: "400", color: "var(--text-secondary)", marginTop: "0.1rem" }}>(백만원)</span>
                     </div>
                   </th>
-                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "384px", verticalAlign: "middle" }}>구입목적 및 활용계획</th>
+                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "460px", verticalAlign: "middle" }}>구입목적 및 활용계획</th>
                   <th style={{ padding: "0.85rem 0.5rem", textAlign: "center", verticalAlign: "middle", fontWeight: "800", width: "500px", whiteSpace: "nowrap" }}>
                     구매 절차
                     <span style={{ display: "block", fontSize: "0.7rem", color: "var(--text-secondary)", fontWeight: "500", marginTop: "0.15rem" }}>
                       [기획∙승인(PA : 1~5) ⇨ 구매신청(Pr : 6) ⇨ 입찰∙계약(BC : 7) ⇨ 검수(I : 8)]
                     </span>
                   </th>
-                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "80px", verticalAlign: "middle" }}>관련문서</th>
+                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "82px", verticalAlign: "middle" }}>관련문서</th>
                   {currentRole.id !== "GUEST" && (
-                    <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "65px", verticalAlign: "middle" }}>제어</th>
+                    <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "82px", verticalAlign: "middle" }}>제어</th>
                   )}
                 </tr>
               </thead>
@@ -4282,7 +4282,7 @@ export default function ProcurementManager({
                           <td style={{ padding: "0.8rem 0.5rem", textAlign: "center", verticalAlign: "middle", fontWeight: "700", color: darkMode ? "#34d399" : "#059669" }}>
                             {formatToMillionWon(total)}
                           </td>
-                          <td style={{ padding: "0.8rem 0.75rem", textAlign: "center", verticalAlign: "middle", color: "var(--text-secondary)" }} title={equip.description || equip.opPlan}>
+                          <td style={{ padding: "0.8rem 0.75rem", textAlign: "center", verticalAlign: "middle", color: "var(--text-secondary)", width: "460px" }} title={equip.description || equip.opPlan}>
                             {(() => {
                               // 개행으로 구분된 데이터를 구입목적과 활용계획으로 쪼갭니다 (요구사항 3)
                               const text = equip.description || equip.opPlan || "";
@@ -4373,13 +4373,13 @@ export default function ProcurementManager({
                             </div>
                           </td>
 
-                          <td style={{ padding: "0.8rem 0.2rem", textAlign: "center", verticalAlign: "middle", color: "var(--text-secondary)" }}>
-                            <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem", alignItems: "center", width: "100%" }}>
+                          <td style={{ padding: "0.8rem 0.2rem", textAlign: "center", verticalAlign: "middle", color: "var(--text-secondary)", width: "82px" }}>
+                            <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 34px)", gap: "0.25rem", justifyContent: "center" }}>
                               {/* 1. 기획문서 버튼 (파란색 테마) */}
                               <button
                                 onClick={() => setProposalModalData(equip)}
                                 style={{
-                                  padding: "0.25rem 0.45rem",
+                                  padding: "0.2rem 0",
                                   fontSize: "0.65rem",
                                   borderRadius: "4px",
                                   background: darkMode ? "rgba(59, 130, 246, 0.18)" : "#eff6ff",
@@ -4387,7 +4387,7 @@ export default function ProcurementManager({
                                   border: darkMode ? "1px solid rgba(59, 130, 246, 0.4)" : "1px solid rgba(37, 99, 235, 0.4)",
                                   cursor: "pointer",
                                   transition: "all 0.2s",
-                                  width: "38px",
+                                  width: "34px",
                                   fontWeight: "700"
                                 }}
                                 onMouseOver={(e) => {
@@ -4407,7 +4407,7 @@ export default function ProcurementManager({
                               <button
                                 onClick={() => setPurchaseModalData(equip)}
                                 style={{
-                                  padding: "0.25rem 0.45rem",
+                                  padding: "0.2rem 0",
                                   fontSize: "0.65rem",
                                   borderRadius: "4px",
                                   background: darkMode ? "rgba(167, 139, 250, 0.18)" : "#f5f3ff",
@@ -4415,7 +4415,7 @@ export default function ProcurementManager({
                                   border: darkMode ? "1px solid rgba(167, 139, 250, 0.4)" : "1px solid rgba(109, 40, 217, 0.4)",
                                   cursor: "pointer",
                                   transition: "all 0.2s",
-                                  width: "38px",
+                                  width: "34px",
                                   fontWeight: "700"
                                 }}
                                 onMouseOver={(e) => {
@@ -4435,7 +4435,7 @@ export default function ProcurementManager({
                               <button
                                 onClick={() => setBidModalData(equip)}
                                 style={{
-                                  padding: "0.25rem 0.45rem",
+                                  padding: "0.2rem 0",
                                   fontSize: "0.65rem",
                                   borderRadius: "4px",
                                   background: darkMode ? "rgba(16, 185, 129, 0.18)" : "#ecfdf5",
@@ -4443,7 +4443,7 @@ export default function ProcurementManager({
                                   border: darkMode ? "1px solid rgba(16, 185, 129, 0.4)" : "1px solid rgba(5, 150, 105, 0.4)",
                                   cursor: "pointer",
                                   transition: "all 0.2s",
-                                  width: "38px",
+                                  width: "34px",
                                   fontWeight: "700"
                                 }}
                                 onMouseOver={(e) => {
@@ -4461,8 +4461,8 @@ export default function ProcurementManager({
                             </div>
                           </td>
                           {currentRole.id !== "GUEST" && (
-                            <td style={{ padding: "0.8rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap" }}>
-                              <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem", alignItems: "center", width: "100%" }}>
+                            <td style={{ padding: "0.8rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap", width: "82px" }}>
+                              <div style={{ display: "flex", flexDirection: "row", gap: "0.25rem", justifyContent: "center", width: "100%" }}>
                                 {(["ADMIN", "G_DIRECTOR", "HQ_HEAD", "TEAM_LEADER", "MANAGER"].includes(currentRole.id) || !equip.created_by || equip.created_by === currentUser?.uuid) && (
                                   <button
                                     onClick={() => openEditModal(equip)}
@@ -4471,14 +4471,14 @@ export default function ProcurementManager({
                                       border: darkMode ? "1px solid rgba(255, 255, 255, 0.15)" : "1px solid #d4d4d8",
                                       borderRadius: "4px",
                                       color: darkMode ? "#e4e4e7" : "#27272a",
-                                      padding: "0.25rem 0.45rem",
+                                      padding: "0.2rem 0",
                                       fontSize: "0.65rem",
                                       fontWeight: "700",
                                       cursor: "pointer",
                                       transition: "all 0.15s ease",
                                       textAlign: "center",
                                       whiteSpace: "nowrap",
-                                      width: "38px"
+                                      width: "34px"
                                     }}
                                     onMouseOver={(e) => {
                                       e.currentTarget.style.background = "rgba(59, 130, 246, 0.15)";
@@ -4516,14 +4516,14 @@ export default function ProcurementManager({
                                       border: darkMode ? "1px solid rgba(239, 68, 68, 0.45)" : "1px solid rgba(239, 68, 68, 0.4)",
                                       borderRadius: "4px",
                                       color: darkMode ? "#f87171" : "#b91c1c",
-                                      padding: "0.25rem 0.45rem",
+                                      padding: "0.2rem 0",
                                       fontSize: "0.65rem",
                                       fontWeight: "700",
                                       cursor: "pointer",
                                       transition: "all 0.15s ease",
                                       textAlign: "center",
                                       whiteSpace: "nowrap",
-                                      width: "38px"
+                                      width: "34px"
                                     }}
                                     onMouseOver={(e) => {
                                       e.currentTarget.style.background = "rgba(239, 68, 68, 0.25)";
