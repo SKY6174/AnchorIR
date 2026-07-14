@@ -2720,7 +2720,7 @@ export default function PDCAManager({
                   <th rowSpan={2} style={{ width: "110px", textAlign: "center" }}>ID</th>
                   <th rowSpan={2}>프로그램명</th>
                   <th rowSpan={2} style={{ width: "140px", textAlign: "center" }}>담당자</th>
-                  <th colSpan={2} style={{ textAlign: "center" }}>예산 및 집행</th>
+                  <th colSpan={2} style={{ textAlign: "center" }}>{selectedYear}차년도 예산 및 집행</th>
                   <th colSpan={4} style={{ textAlign: "center" }}>진행 단계(PDCA)</th>
                   <th rowSpan={2} style={{ width: "65px", textAlign: "center" }}>정보<br/>등록</th>
                 </tr>
@@ -2758,15 +2758,19 @@ export default function PDCAManager({
                       </td>
                       <td style={{ fontFamily: "var(--font-data)", textAlign: "right" }}>
                         <div>{formatToMillionWon(py.budget_main)}백만원</div>
-                        <div style={{ color: "var(--text-secondary)", fontSize: "0.68rem", borderTop: "1px dashed var(--border-color)", marginTop: "2px", paddingTop: "2px" }}>
-                          {formatToMillionWon(py.budget_carry)}백만원 <span style={{ fontSize: "0.6rem" }}>(이월)</span>
-                        </div>
+                        {selectedYear !== 1 && (
+                          <div style={{ color: "var(--text-secondary)", fontSize: "0.68rem", borderTop: "1px dashed var(--border-color)", marginTop: "2px", paddingTop: "2px" }}>
+                            {formatToMillionWon(py.budget_carry)}백만원 <span style={{ fontSize: "0.6rem" }}>(이월)</span>
+                          </div>
+                        )}
                       </td>
                       <td style={{ fontFamily: "var(--font-data)", textAlign: "right" }}>
                         <div>{formatToMillionWon(py.spent_main)}백만원</div>
-                        <div style={{ color: "var(--text-secondary)", fontSize: "0.68rem", borderTop: "1px dashed var(--border-color)", marginTop: "2px", paddingTop: "2px" }}>
-                          {formatToMillionWon(py.spent_carry)}백만원 <span style={{ fontSize: "0.6rem" }}>(이월)</span>
-                        </div>
+                        {selectedYear !== 1 && (
+                          <div style={{ color: "var(--text-secondary)", fontSize: "0.68rem", borderTop: "1px dashed var(--border-color)", marginTop: "2px", paddingTop: "2px" }}>
+                            {formatToMillionWon(py.spent_carry)}백만원 <span style={{ fontSize: "0.6rem" }}>(이월)</span>
+                          </div>
+                        )}
                       </td>
                       <td style={{ textAlign: "center", color: (prog.pdca?.p || "대기") === "완료" ? "var(--success-color)" : "inherit", fontWeight: "700" }}>{prog.pdca?.p || "대기"}</td>
                       <td style={{ textAlign: "center", color: (prog.pdca?.d || "대기") === "완료" ? "var(--success-color)" : "inherit", fontWeight: "700" }}>{prog.pdca?.d || "대기"}</td>
