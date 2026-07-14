@@ -1634,25 +1634,45 @@ export default function ProcurementManager({
             nextData.providerQual = nextData.providerQual || "관련 부문 인가 인증 보유 법인 및 대학용역 유사 실적 우수 사업자";
             nextData.opResult = nextData.opResult || "용역 일정 내 성과품 납품 완료 및 만족도 평가 결과 우수 등급 달성";
             
-            if (aiResult.draftDate) {
+            // 용역(service) 날짜 기입 분기
+            if (docType === "proposal" && aiResult.draftDate) {
               nextData.datePp = aiResult.draftDate;
+            } else if (docType === "purchase" && aiResult.draftDate) {
+              nextData.dateRfo = aiResult.draftDate;
             }
           } else if (modalType === "env") {
             nextData.purpose = aiResult.descriptionPurpose || nextData.purpose || `[AI 자동완성] 교육환경 개선 사업을 시행하여 시설 안정성을 확보하고 학생 친화적 학습 환경을 혁신하고자 함.`;
             nextData.plan = nextData.plan || `전략 목표: ${strategicGoals}`;
             nextData.utilization = aiResult.descriptionPlan || nextData.utilization || "학부생 공통 개방형 메이커 스페이스 및 교육 실습 공간으로 상시 개방 운영 예정";
             
-            if (aiResult.draftDate) nextData.dateP = aiResult.draftDate;
-            if (aiResult.approveDate) nextData.dateA = aiResult.approveDate;
+            // 환경개선(env) 날짜 기입 분기
+            if (docType === "proposal") {
+              if (aiResult.draftDate) nextData.dateP = aiResult.draftDate;
+              if (aiResult.approveDate) nextData.dateA = aiResult.approveDate;
+            } else if (docType === "purchase") {
+              if (aiResult.draftDate) {
+                nextData.datePr = aiResult.draftDate;
+              } else if (aiResult.approveDate) {
+                nextData.datePr = aiResult.approveDate;
+              }
+            }
           } else {
             nextData.descriptionPurpose = aiResult.descriptionPurpose || nextData.descriptionPurpose || `[AI 자동완성] ${nextData.name} 핵심 기자재를 도입하여 교육 실습 타당성을 확보하고 전략 목표인 '${strategicGoals}' 과제를 완성함.`;
             nextData.descriptionPlan = aiResult.descriptionPlan || nextData.descriptionPlan || "도입 완료 후 시뮬레이션 고도화 전공 교과목 실습 기자재로 100% 매칭 활용하며, 연간 120명 이상의 전문 인력 실습 활용 기대.";
             
-            // 기자재의 경우 최종 결재 승인일을 기획∙승인(PA) 일자로 자동 세팅
-            if (aiResult.approveDate) {
-              nextData.dateP = aiResult.approveDate;
-            } else if (aiResult.draftDate) {
-              nextData.dateP = aiResult.draftDate;
+            // 기자재(equip) 날짜 기입 분기 (기획문서는 PA에, 구매문서는 Pr에 각각 매핑)
+            if (docType === "proposal") {
+              if (aiResult.approveDate) {
+                nextData.dateP = aiResult.approveDate;
+              } else if (aiResult.draftDate) {
+                nextData.dateP = aiResult.draftDate;
+              }
+            } else if (docType === "purchase") {
+              if (aiResult.draftDate) {
+                nextData.datePr = aiResult.draftDate;
+              } else if (aiResult.approveDate) {
+                nextData.datePr = aiResult.approveDate;
+              }
             }
           }
 
