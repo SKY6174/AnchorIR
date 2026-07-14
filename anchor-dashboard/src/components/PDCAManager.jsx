@@ -2722,7 +2722,7 @@ export default function PDCAManager({
                   <th rowSpan={2} style={{ width: "140px", textAlign: "center" }}>담당자</th>
                   <th colSpan={2} style={{ textAlign: "center" }}>예산 및 집행</th>
                   <th colSpan={4} style={{ textAlign: "center" }}>진행 단계(PDCA)</th>
-                  <th rowSpan={2} style={{ width: "90px", textAlign: "center" }}>실적 등록</th>
+                  <th rowSpan={2} style={{ width: "65px", textAlign: "center" }}>정보<br/>등록</th>
                 </tr>
                 <tr>
                   <th style={{ textAlign: "center", width: "110px" }}>예산</th>
@@ -2772,13 +2772,13 @@ export default function PDCAManager({
                       <td style={{ textAlign: "center", color: (prog.pdca?.d || "대기") === "완료" ? "var(--success-color)" : "inherit", fontWeight: "700" }}>{prog.pdca?.d || "대기"}</td>
                       <td style={{ textAlign: "center", color: (prog.pdca?.c || "대기") === "완료" ? "var(--success-color)" : "inherit", fontWeight: "700" }}>{prog.pdca?.c || "대기"}</td>
                       <td style={{ textAlign: "center", color: (prog.pdca?.a || "대기") === "완료" ? "var(--success-color)" : "inherit", fontWeight: "700" }}>{prog.pdca?.a || "대기"}</td>
-                      <td>
+                      <td style={{ textAlign: "center" }}>
                         <button
                           className="btn-primary"
-                          style={{ padding: "0.2rem 0.5rem", fontSize: "0.7rem", borderRadius: "0.3rem" }}
+                          style={{ padding: "0.2rem 0.4rem", fontSize: "0.7rem", borderRadius: "0.3rem", lineHeight: "1.1" }}
                           onClick={(e) => { e.stopPropagation(); handleSelectProgram(prog); }}
                         >
-                          정보 등록
+                          정보<br/>등록
                         </button>
                       </td>
                     </tr>
