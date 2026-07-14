@@ -140,6 +140,14 @@ export default function AuthManager({ onLoginSuccess, members = [] }) {
         return;
       }
 
+      if (authSession) {
+        // 💡 [RLS 권한 완전 동기화] 로그인에 성공해 획득한 세션을 전역 Supabase 클라이언트에 주입하여 권한 불일치(401)를 방지합니다.
+        await supabase.auth.setSession({
+          access_token: authSession.access_token,
+          refresh_token: authSession.refresh_token
+        });
+      }
+
       // 3. 로그인 성공 시, 기존 rise_users 및 주소록 데이터를 매핑하여 sessionUser 생성
       // UUID 컬럼이 미연동 상태라면 업데이트해 줍니다.
 
@@ -272,7 +280,9 @@ export default function AuthManager({ onLoginSuccess, members = [] }) {
         role_key: autoRoleKey,
         password: userPw,
         uuid: authUser.id,
-        email: targetEmail
+        email: targetEmail,
+        access_token: authSession ? authSession.access_token : null,
+        refresh_token: authSession ? authSession.refresh_token : null
       };
 
       let welcomeDisplayName = matchedName;

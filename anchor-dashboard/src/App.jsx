@@ -6332,6 +6332,13 @@ export default function App() {
         const parsed = JSON.parse(sessionUser);
         if (parsed && parsed.role && typeof parsed.role === "object" && parsed.role.id) {
           setCurrentUser(parsed);
+          // 💡 [RLS 권한 완전 동기화] 새로고침 시에도 세션 토큰을 전역 Supabase 클라이언트에 주입하여 API 401 권한거부를 예방합니다.
+          if (parsed.access_token && parsed.refresh_token) {
+            supabase.auth.setSession({
+              access_token: parsed.access_token,
+              refresh_token: parsed.refresh_token
+            });
+          }
         } else {
           console.warn("Invalid session role structure detected. Clearing session to prevent crash.");
           localStorage.removeItem("anchor_logged_in_user");
@@ -6412,9 +6419,15 @@ export default function App() {
     }
   }, [activeTab, kpiSubTab, projects]);
 
-  const handleLoginSuccess = (user) => {
+  const handleLoginSuccess = async (user) => {
     setCurrentUser(user);
     localStorage.setItem("anchor_logged_in_user", JSON.stringify(user));
+    if (user.access_token && user.refresh_token) {
+      await supabase.auth.setSession({
+        access_token: user.access_token,
+        refresh_token: user.refresh_token
+      });
+    }
   };
 
   const handleLogout = () => {
