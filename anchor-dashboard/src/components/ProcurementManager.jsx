@@ -4079,7 +4079,7 @@ export default function ProcurementManager({
                       <span style={{ fontSize: "0.68rem", fontWeight: "400", color: "var(--text-secondary)", marginTop: "0.1rem" }}>(백만원)</span>
                     </div>
                   </th>
-                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "600px", verticalAlign: "middle" }}>구입목적 및 활용계획</th>
+                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "720px", verticalAlign: "middle" }}>구입목적 및 활용계획</th>
                   <th style={{ padding: "0.85rem 0.5rem", textAlign: "center", verticalAlign: "middle", fontWeight: "800", width: "500px", whiteSpace: "nowrap" }}>
                     구매 절차
                     <span style={{ display: "block", fontSize: "0.7rem", color: "var(--text-secondary)", fontWeight: "500", marginTop: "0.15rem" }}>
@@ -4282,7 +4282,7 @@ export default function ProcurementManager({
                           <td style={{ padding: "0.8rem 0.5rem", textAlign: "center", verticalAlign: "middle", fontWeight: "700", color: darkMode ? "#34d399" : "#059669" }}>
                             {formatToMillionWon(total)}
                           </td>
-                          <td style={{ padding: "0.8rem 0.75rem", textAlign: "center", verticalAlign: "middle", color: "var(--text-secondary)", width: "600px" }} title={equip.description || equip.opPlan}>
+                          <td style={{ padding: "0.8rem 0.75rem", textAlign: "center", verticalAlign: "middle", color: "var(--text-secondary)", width: "720px" }} title={equip.description || equip.opPlan}>
                             {(() => {
                               // 개행으로 구분된 데이터를 구입목적과 활용계획으로 쪼갭니다 (요구사항 3)
                               const text = equip.description || equip.opPlan || "";
