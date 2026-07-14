@@ -1444,6 +1444,7 @@ ${commentList || "(없음)"}
                   <th style={{ width: "110px", textAlign: "center" }}>평균 (100점 만점)</th>
                   <th style={{ width: "80px", textAlign: "center" }}>상태</th>
                   <th style={{ width: "90px", textAlign: "center" }}>상세 통계</th>
+                  <th style={{ width: "120px", textAlign: "center" }}>관리</th>
                 </tr>
               </thead>
               <tbody>
@@ -1491,6 +1492,48 @@ ${commentList || "(없음)"}
                         >
                           상세보기
                         </button>
+                      </td>
+                      <td style={{ textAlign: "center" }}>
+                        <div style={{ display: "flex", gap: "0.3rem", justifyContent: "center" }}>
+                          <button
+                            className="btn-primary"
+                            style={{ 
+                              padding: "0.2rem 0.55rem", 
+                              fontSize: "0.7rem", 
+                              borderRadius: "0.3rem", 
+                              background: "rgba(59, 130, 246, 0.1)", 
+                              border: "1px solid rgba(59, 130, 246, 0.2)",
+                              color: "#3b82f6",
+                              fontWeight: "800",
+                              cursor: "pointer"
+                            }}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSelectedSurveyId(survey.id);
+                              setActiveSurveyTab("detail");
+                            }}
+                          >
+                            수정
+                          </button>
+                          <button
+                            style={{ 
+                              padding: "0.2rem 0.55rem", 
+                              fontSize: "0.7rem", 
+                              borderRadius: "0.3rem", 
+                              background: "rgba(239, 68, 68, 0.1)", 
+                              border: "1px solid rgba(239, 68, 68, 0.2)",
+                              color: "#ef4444",
+                              fontWeight: "800",
+                              cursor: "pointer"
+                            }}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDeleteSurvey(survey.id);
+                            }}
+                          >
+                            삭제
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   );
