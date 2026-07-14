@@ -5,18 +5,19 @@ import * as XLSX from "xlsx";
 
 // 💡 [교육용 한글 주석] 월별 집행현황 엑셀 파일을 월별로 올릴 수 있는 '26.3월 ~ '27.2월까지의 기간 정의
 const MONTHS_CONFIG = [
-  { label: "26.3월", value: "2026-03" },
-  { label: "26.4월", value: "2026-04" },
-  { label: "26.5월", value: "2026-05" },
-  { label: "26.6월", value: "2026-06" },
-  { label: "26.7월", value: "2026-07" },
-  { label: "26.8월", value: "2026-08" },
-  { label: "26.9월", value: "2026-09" },
-  { label: "26.10월", value: "2026-10" },
-  { label: "26.11월", value: "2026-11" },
-  { label: "26.12월", value: "2026-12" },
-  { label: "27.1월", value: "2027-01" },
-  { label: "27.2월", value: "2027-02" }
+  { label: "26.3월초", value: "2026-03-start" },
+  { label: "26.3월말", value: "2026-03" },
+  { label: "26.4월말", value: "2026-04" },
+  { label: "26.5월말", value: "2026-05" },
+  { label: "26.6월말", value: "2026-06" },
+  { label: "26.7월말", value: "2026-07" },
+  { label: "26.8월말", value: "2026-08" },
+  { label: "26.9월말", value: "2026-09" },
+  { label: "26.10월말", value: "2026-10" },
+  { label: "26.11월말", value: "2026-11" },
+  { label: "26.12월말", value: "2026-12" },
+  { label: "27.1월말", value: "2027-01" },
+  { label: "27.2월말", value: "2027-02" }
 ];
 
 export default function BudgetExecutionManager({ projects = [], currentRole, selectedYear: rawYear, supabase, darkMode = true }) {
@@ -500,15 +501,22 @@ export default function BudgetExecutionManager({ projects = [], currentRole, sel
       let monthMain = 0;
       let monthCarry = 0;
 
-      executionRecords.forEach(r => {
-        if (r.month_label === m.label && (viewType === "total" || (targetUnitPrefix && r.program_id.startsWith(targetUnitPrefix)))) {
-          if (r.budget_type === "main") monthMain += Number(r.amount || 0);
-          else if (r.budget_type === "carryover") monthCarry += Number(r.amount || 0);
-        }
-      });
-
-      cumulativeMain += monthMain;
-      cumulativeCarry += monthCarry;
+      if (m.value === "2026-03-start") {
+        // [교육용 주석] 3월 초 기점은 누적 시작점이므로 집행액을 0으로 세팅하여 데일리 차트가 (0,0)에서 출발하도록 조율
+        cumulativeMain = 0;
+        cumulativeCarry = 0;
+      } else {
+        // [교육용 주석] 일반 '말' 시점인 경우 기존 DB/엑셀의 '26.3월' 형태 데이터와 정확하게 팩트매칭 정화
+        const cleanLabel = m.label.endsWith("말") ? m.label.slice(0, -1) : m.label;
+        executionRecords.forEach(r => {
+          if (r.month_label === cleanLabel && (viewType === "total" || (targetUnitPrefix && r.program_id.startsWith(targetUnitPrefix)))) {
+            if (r.budget_type === "main") monthMain += Number(r.amount || 0);
+            else if (r.budget_type === "carryover") monthCarry += Number(r.amount || 0);
+          }
+        });
+        cumulativeMain += monthMain;
+        cumulativeCarry += monthCarry;
+      }
 
       const mainPct = totalMainBudget > 0 ? Math.min(100, (cumulativeMain / totalMainBudget) * 100) : 0;
       const carryPct = totalCarryoverBudget > 0 ? Math.min(100, (cumulativeCarry / totalCarryoverBudget) * 100) : 0;
@@ -765,11 +773,6 @@ export default function BudgetExecutionManager({ projects = [], currentRole, sel
                   dataKey="month" 
                   stroke="var(--text-secondary)" 
                   tick={{ fontSize: 11, fill: "var(--text-secondary)" }}
-                  tickFormatter={(tick) => {
-                    if (tick === "26.3월") return "26.3.1.";
-                    if (tick === "27.2월") return "27.2.28.";
-                    return tick;
-                  }}
                 />
                 <YAxis 
                   stroke="var(--text-secondary)" 
@@ -779,11 +782,6 @@ export default function BudgetExecutionManager({ projects = [], currentRole, sel
                 />
                 <Tooltip 
                   formatter={(value, name) => [`${value}%`, name]}
-                  labelFormatter={(label) => {
-                    if (label === "26.3월") return "26.3.1.";
-                    if (label === "27.2월") return "27.2.28.";
-                    return label;
-                  }}
                   contentStyle={{
                     background: "rgba(224, 235, 246, 0.95)",
                     border: "1px solid var(--border-color)",
@@ -797,7 +795,7 @@ export default function BudgetExecutionManager({ projects = [], currentRole, sel
                 <Legend wrapperStyle={{ fontSize: 11, paddingTop: 10 }} />
                 {selectedYear !== 1 && (
                   <ReferenceLine 
-                    x="26.8월" 
+                    x="26.8월말" 
                     stroke="#EF4444" 
                     strokeDasharray="4 4" 
                     label={{ value: "이월마감일", fill: "#EF4444", position: "insideTopLeft", fontSize: 11, fontWeight: "bold" }}
@@ -848,11 +846,6 @@ export default function BudgetExecutionManager({ projects = [], currentRole, sel
                   dataKey="month" 
                   stroke="var(--text-secondary)" 
                   tick={{ fontSize: 11, fill: "var(--text-secondary)" }}
-                  tickFormatter={(tick) => {
-                    if (tick === "26.3월") return "26.3.1.";
-                    if (tick === "27.2월") return "27.2.28.";
-                    return tick;
-                  }}
                 />
                 <YAxis 
                   stroke="var(--text-secondary)" 
@@ -862,11 +855,6 @@ export default function BudgetExecutionManager({ projects = [], currentRole, sel
                 />
                 <Tooltip 
                   formatter={(value, name) => [`${value.toLocaleString()} 백만 원`, name]}
-                  labelFormatter={(label) => {
-                    if (label === "26.3월") return "26.3.1.";
-                    if (label === "27.2월") return "27.2.28.";
-                    return label;
-                  }}
                   contentStyle={{
                     background: "rgba(224, 235, 246, 0.95)",
                     border: "1px solid var(--border-color)",
@@ -880,7 +868,7 @@ export default function BudgetExecutionManager({ projects = [], currentRole, sel
                 <Legend wrapperStyle={{ fontSize: 11, paddingTop: 10 }} />
                 {selectedYear !== 1 && (
                   <ReferenceLine 
-                    x="26.8월" 
+                    x="26.8월말" 
                     stroke="#EF4444" 
                     strokeDasharray="4 4" 
                     label={{ value: "이월마감일", fill: "#EF4444", position: "insideTopLeft", fontSize: 11, fontWeight: "bold" }}
