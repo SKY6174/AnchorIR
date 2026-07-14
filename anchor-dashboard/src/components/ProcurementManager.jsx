@@ -76,15 +76,222 @@ const PROGRAMS_BY_UNIT = {
 };
 
 // AI 가상 문서요약 분석 시뮬레이터 함수 (사용자 요구사항 2 반영)
-const runAiMockAnalysis = (docType, textContent, itemName, deptName, totalPrice) => {
+const runAiMockAnalysis = (docType, textContent, itemName, deptName, totalPrice, fileName = "") => {
   const randomNo = Math.floor(Math.random() * 900) + 100;
   const priceThousand = totalPrice ? Math.round(totalPrice / 1000) : 120000;
-  
+  const fName = (fileName || textContent || "").toLowerCase();
+
+  // [AI 실물 문서 요약 추출 자동 연동 분기]
+  // 1) 20DoF 로봇 핸드 문서 감지
+  if (fName.includes("로봇") || fName.includes("robot") || fName.includes("hand")) {
+    if (docType === "proposal") {
+      return {
+        docNo: "UC-EQ-P-186",
+        unit: "B2 : AID 역량강화 기반 지역산업 전환 지원",
+        dept: "AID-X지원센터",
+        itemName: "20DoF 로봇 핸드",
+        unitPrice: "8.8", // 단가 (백만 원 단위)
+        quantity: 2,
+        totalPrice: "17.6",
+        budget: "17,600천원",
+        goals: [
+          "지능형 로봇 및 정밀 제어를 위한 하드웨어 실습 인프라 확보",
+          "전 학부(과) 참여형 AI·DX 교육과정 개편 및 실습 연계",
+          "중소기업 현장 실증형 AI 알고리즘 적용 프로젝트 지원"
+        ],
+        draftDate: "2026-07-06",
+        approveDate: "2026-07-08",
+        descriptionPurpose: "[AI 자동완성] 20DoF 로봇 핸드 핵심 기자재를 도입하여 지능형 로봇 및 정밀 제어를 위한 IT-OT 통합 하드웨어 실습 인프라를 확보하고 전략 과제를 완성함.",
+        descriptionPlan: "도입 완료 후 AID-X지원센터 내 정밀 로봇 실습 교육 및 기자재 안정적 운용을 통해 산학 협력 경쟁력을 강화하고 연간 120명 이상의 전문 인력 실습 활용 기대."
+      };
+    } else if (docType === "purchase") {
+      return {
+        docNo: "UC-EQ-PR-456",
+        fromDept: "앵커사업단운영팀",
+        toDept: "대학본부 총무팀",
+        itemName: "20DoF 로봇 핸드",
+        unitPrice: "8.8",
+        quantity: 2,
+        totalPrice: "17.6",
+        unit: "B2",
+        budget: "17,600천원",
+        specs: [
+          "20자유도(DoF) 초정밀 관절 제어 메커니즘 탑재 로봇 핸드",
+          "실시간 피드백 센서 및 멀티 모달 파지 알고리즘 호환 보장",
+          "2년간 무상 온사이트 하자보증 및 설치 기술지원 제공 조건"
+        ],
+        draftDate: "2026-07-06",
+        approveDate: "2026-07-08",
+        descriptionPurpose: "[AI 자동완성] 20DoF 로봇 핸드 핵심 기자재를 도입하여 지능형 로봇 및 정밀 제어를 위한 IT-OT 통합 하드웨어 실습 인프라를 확보하고 전략 과제를 완성함.",
+        descriptionPlan: "도입 완료 후 AID-X지원센터 내 정밀 로봇 실습 교육 및 기자재 안정적 운용을 통해 산학 협력 경쟁력을 강화하고 연간 120명 이상의 전문 인력 실습 활용 기대."
+      };
+    } else { // bid
+      return {
+        docNo: "UC-EQ-B-500",
+        method: "제한경쟁입찰 (협상에 의한 계약)",
+        itemName: "20DoF 로봇 핸드",
+        unitPrice: "8.8",
+        quantity: 2,
+        totalPrice: "17.6",
+        budget: "17,600천원",
+        qualifications: [
+          "국가종합전자조달시스템에 조달용 기자재 공급업으로 등록을 필한 업체",
+          "로봇 공학 및 자동화 시스템 전문 정품 공급 실적 보유 업체",
+          "제조사 정품 공급 증명 및 기술 지원 확약서 제출 가능 업체"
+        ],
+        deadline: "2026-07-25 18:00"
+      };
+    }
+  }
+
+  // 2) A6000 워크스테이션 문서 감지
+  if (fName.includes("a6000") || fName.includes("워크스테이션") || fName.includes("workstation")) {
+    if (docType === "proposal") {
+      return {
+        docNo: "UC-EQ-P-110",
+        unit: "C2 : 동남권과 함께 성장하는 돌봄생태계, 울산애 구현",
+        dept: "AID-X지원센터",
+        itemName: "A6000 워크스테이션",
+        unitPrice: "29.8",
+        quantity: 2,
+        totalPrice: "59.6",
+        budget: "59,600천원",
+        goals: [
+          "지역 산업 수요에 부응하는 DX 특화 연구 인력 양성 인프라 구축",
+          "초고해상도 딥러닝 연산 환경을 위한 고성능 GPU 노드 탑재",
+          "이월사업비 활용 연구 효율 극대화 및 공동 실습 운용"
+        ],
+        draftDate: "2026-07-06",
+        approveDate: "2026-07-08",
+        descriptionPurpose: "[AI 자동완성] A6000 워크스테이션 핵심 기자재를 도입하여 초고해상도 딥러닝 연산 환경을 구축하고 DX 특화 연구 역량을 극대화함.",
+        descriptionPlan: "AID-X센터 내 DX 특화 연구 및 장기간 안정적인 연산 모델링 환경 운용 및 공동 실습 공간으로 상시 개방 예정."
+      };
+    } else if (docType === "purchase") {
+      return {
+        docNo: "UC-EQ-PR-220",
+        fromDept: "AID-X지원센터",
+        toDept: "대학본부 총무팀",
+        itemName: "A6000 워크스테이션",
+        unitPrice: "29.8",
+        quantity: 2,
+        totalPrice: "59.6",
+        unit: "C2",
+        budget: "59,600천원",
+        specs: [
+          "NVIDIA RTX A6000 48GB GPU 탑재 고성능 워크스테이션",
+          "대용량 연산 처리를 위한 128GB ECC 메모리 및 2TB NVMe SSD",
+          "무상 2년 부품 교체 보증 및 운영체제 최적화 기술 지원"
+        ],
+        draftDate: "2026-07-06",
+        approveDate: "2026-07-08",
+        descriptionPurpose: "[AI 자동완성] A6000 워크스테이션 핵심 기자재를 도입하여 초고해상도 딥러닝 연산 환경을 구축하고 DX 특화 연구 역량을 극대화함.",
+        descriptionPlan: "AID-X센터 내 DX 특화 연구 및 장기간 안정적인 연산 모델링 환경 운용 및 공동 실습 공간으로 상시 개방 예정."
+      };
+    }
+  }
+
+  // 3) Physical AIoT 교육기자재 문서 감지
+  if (fName.includes("aiot") || fName.includes("교육기자재")) {
+    if (docType === "proposal") {
+      return {
+        docNo: "UC-EQ-P-120",
+        unit: "B2 : AID 역량강화 기반 지역산업 전환 지원",
+        dept: "AID-X지원센터",
+        itemName: "Physical AIoT(제조AI) 교육기자재",
+        unitPrice: "9.0",
+        quantity: 5,
+        totalPrice: "45.0",
+        budget: "45,000천원",
+        goals: [
+          "IT-OT 통합 역량을 갖춘 특화 인력 양성을 위한 실습 환경 개편",
+          "실감형 데이터 수집 및 엣지 연산 실습 기반 확보",
+          "산학 협력 공동 실증 프로젝트 수행 인프라 연동"
+        ],
+        draftDate: "2026-07-06",
+        approveDate: "2026-07-08",
+        descriptionPurpose: "[AI 자동완성] Physical AIoT(제조AI) 교육기자재 핵심 장비를 도입하여 실감형 데이터 수집 및 엣지 연산 실습 기반을 확보함.",
+        descriptionPlan: "제조AI 연계 실습 교육 및 산학 협력 공동 실증 프로젝트 수행을 위한 실습 및 연구 자원으로 100% 매칭 운용."
+      };
+    } else if (docType === "purchase") {
+      return {
+        docNo: "UC-EQ-PR-330",
+        fromDept: "AID-X지원센터",
+        toDept: "대학본부 총무팀",
+        itemName: "Physical AIoT(제조AI) 교육기자재",
+        unitPrice: "9.0",
+        quantity: 5,
+        totalPrice: "45.0",
+        unit: "B2",
+        budget: "45,000천원",
+        specs: [
+          "센서 통합 엣지 게이트웨이 및 임베디드 AIoT 실습 모듈 세트",
+          "다양한 실시간 데이터 분석 플랫폼 연계 미들웨어 번들 제공",
+          "무상 온사이트 유지보수 기한 2년 이상 보증 조건"
+        ],
+        draftDate: "2026-07-06",
+        approveDate: "2026-07-08",
+        descriptionPurpose: "[AI 자동완성] Physical AIoT(제조AI) 교육기자재 핵심 장비를 도입하여 실감형 데이터 수집 및 엣지 연산 실습 기반을 확보함.",
+        descriptionPlan: "제조AI 연계 실습 교육 및 산학 협력 공동 실증 프로젝트 수행을 위한 실습 및 연구 자원으로 100% 매칭 운용."
+      };
+    }
+  }
+
+  // 4) Physical AI 실습장비 문서 감지
+  if (fName.includes("mfec") || fName.includes("실습장비")) {
+    if (docType === "proposal") {
+      return {
+        docNo: "UC-EQ-P-130",
+        unit: "B2 : AID 역량강화 기반 지역산업 전환 지원",
+        dept: "AID-X지원센터",
+        itemName: "Physical AI(MFEC) 실습장비",
+        unitPrice: "25.0",
+        quantity: 8,
+        totalPrice: "200.0",
+        budget: "200,000천원",
+        goals: [
+          "지역 산업 연계 DX 혁신 특화 실무 인재 양성 실습실 구축",
+          "현장 미러형 AI 융합 제어 인프라 개편 및 성능 극대화",
+          "다학제 융합 캡스톤 디자인 교과 연계 장비 활용 활성화"
+        ],
+        draftDate: "2026-07-06",
+        approveDate: "2026-07-08",
+        descriptionPurpose: "[AI 자동완성] Physical AI(MFEC) 실습장비 도입을 통해 현장 미러형 AI 융합 제어 인프라를 개편하여 전공 교육 실습 타당성을 확보함.",
+        descriptionPlan: "도입 완료 후 AI 융합 실감형 교육 센터 실무 교육 자원으로 100% 매칭하며, 연간 120명 이상의 인력 실습 활용 기대."
+      };
+    } else if (docType === "purchase") {
+      return {
+        docNo: "UC-EQ-PR-340",
+        fromDept: "AID-X지원센터",
+        toDept: "대학본부 총무팀",
+        itemName: "Physical AI(MFEC) 실습장비",
+        unitPrice: "25.0",
+        quantity: 8,
+        totalPrice: "200.0",
+        unit: "B2",
+        budget: "200,000천원",
+        specs: [
+          "산업용 정밀 머신러닝 연동 다기능 제어 장치 세트",
+          "센서 어레이 결합 및 자동 보정 컨트롤 소프트웨어 포함",
+          "무상 엔지니어 온사이트 2년 기술 지원 보증"
+        ],
+        draftDate: "2026-07-06",
+        approveDate: "2026-07-08",
+        descriptionPurpose: "[AI 자동완성] Physical AI(MFEC) 실습장비 도입을 통해 현장 미러형 AI 융합 제어 인프라를 개편하여 전공 교육 실습 타당성을 확보함.",
+        descriptionPlan: "도입 완료 후 AI 융합 실감형 교육 센터 실무 교육 자원으로 100% 매칭하며, 연간 120명 이상의 인력 실습 활용 기대."
+      };
+    }
+  }
+
+  // 5) 기본/폴백 요약 응답
   if (docType === "proposal") {
     return {
       docNo: `UC-EQ-P-${randomNo}`,
-      unit: "A1 : 지역과 미래를 만드는 UC-HYPER 전문기술인재 양성",
-      dept: deptName || "간호학부 (사업단 협업)",
+      unit: "B2 : AID 역량강화 기반 지역산업 전환 지원",
+      dept: deptName || "AID-X지원센터",
+      itemName: itemName || "정밀 의료 실습용 고해상도 초음파 진단기",
+      unitPrice: totalPrice ? (totalPrice / 1000000).toString() : "120",
+      quantity: 1,
+      totalPrice: totalPrice ? (totalPrice / 1000000).toString() : "120",
       budget: `${priceThousand.toLocaleString()}천원`,
       goals: [
         `${itemName || "도입 핵심 기재"} 기반 전문 실무 교육과정 수립`,
@@ -92,24 +299,38 @@ const runAiMockAnalysis = (docType, textContent, itemName, deptName, totalPrice)
         "지산학 연계 라이즈 사업의 교육 실적 성과 관리 및 모니터링"
       ],
       draftDate: "2026-03-05",
-      approveDate: "2026-03-09"
+      approveDate: "2026-07-08",
+      descriptionPurpose: `[AI 자동완성] ${itemName || "도입 기자재"} 핵심 장비를 도입하여 전략 과제를 완수하고 실무 실습 교육 타당성을 강화함.`,
+      descriptionPlan: "도입 완료 후 관련 전공 실무 과정의 주력 실습 장비로 지정하고 매년 100명 이상의 인력 양성에 상시 매칭 활용 예정."
     };
   } else if (docType === "purchase") {
     return {
       docNo: `UC-EQ-PR-${randomNo}`,
-      fromDept: deptName || "간호학부",
+      fromDept: deptName || "AID-X지원센터",
       toDept: "대학본부 총무팀",
+      itemName: itemName || "정밀 의료 실습용 고해상도 초음파 진단기",
+      unitPrice: totalPrice ? (totalPrice / 1000000).toString() : "120",
+      quantity: 1,
+      totalPrice: totalPrice ? (totalPrice / 1000000).toString() : "120",
       budget: `${priceThousand.toLocaleString()}천원`,
       specs: [
         `${itemName || "도입 요청 기재"} 핵심 조달 기술 사양 충족 검토`,
         "정밀 제어 칩셋 탑재 및 고정밀 수치 보정 기능 보장",
         "전문 엔지니어 1:1 무상 온사이트 유지보수 기한 2년 이상 보증 조건"
-      ]
+      ],
+      draftDate: "2026-03-05",
+      approveDate: "2026-07-08",
+      descriptionPurpose: `[AI 자동완성] ${itemName || "도입 기자재"} 핵심 장비를 도입하여 전략 과제를 완수하고 실무 실습 교육 타당성을 강화함.`,
+      descriptionPlan: "도입 완료 후 관련 전공 실무 과정의 주력 실습 장비로 지정하고 매년 100명 이상의 인력 양성에 상시 매칭 활용 예정."
     };
   } else { // bid
     return {
       docNo: `UC-EQ-B-${randomNo}`,
       method: "제한경쟁입찰 (협상에 의한 계약)",
+      itemName: itemName || "정밀 의료 실습용 고해상도 초음파 진단기",
+      unitPrice: totalPrice ? (totalPrice / 1000000).toString() : "120",
+      quantity: 1,
+      totalPrice: totalPrice ? (totalPrice / 1000000).toString() : "120",
       budget: `${priceThousand.toLocaleString()}천원`,
       qualifications: [
         "국가종합전자조달시스템에 조달용 기자재 공급업으로 등록을 필한 업체",
@@ -121,13 +342,12 @@ const runAiMockAnalysis = (docType, textContent, itemName, deptName, totalPrice)
   }
 };
 
-// OpenAI GPT API를 직접 호출하는 비동기 함수 (요건 2 반영)
-// 클라이언트 사이드에서 직접 호출하며, API Key는 환경 변수 VITE_OPENAI_API_KEY에서 읽어옵니다.
+// OpenAI GPT API를 직접 호출하는 비동기 함수 (요건 2 반영 및 자동완성 스펙 확장)
 const callOpenAiGpt = async (docType, fileName, textContent, itemName, deptName, totalPrice) => {
   const apiKey = import.meta.env.VITE_OPENAI_API_KEY;
   if (!apiKey) {
     console.warn("⚠️ VITE_OPENAI_API_KEY 환경 변수가 없으므로, 로컬 AI 요약 시뮬레이터로 자동 대체합니다.");
-    return runAiMockAnalysis(docType, textContent || fileName, itemName, deptName, totalPrice);
+    return runAiMockAnalysis(docType, textContent || fileName, itemName, deptName, totalPrice, fileName);
   }
 
   const promptMap = {
@@ -135,12 +355,18 @@ const callOpenAiGpt = async (docType, fileName, textContent, itemName, deptName,
     [스키마]:
     {
       "docNo": "기획문서 결재번호 (예: UC-EQ-P-로 시작하는 고유번호 생성)",
-      "unit": "단위과제 명칭",
-      "dept": "주관 부서",
-      "budget": "과제 배정 예산 (예: 120,000천원 형식)",
+      "unit": "단위과제 코드 (예: B2, C2 등 매칭되는 정확한 코드를 추출)",
+      "dept": "주관 부서 또는 학과 명칭",
+      "itemName": "핵심 도입 대상 대표 품명 추출",
+      "unitPrice": "단가 (백만 원 단위 소수점으로 추출, 예: 8.8)",
+      "quantity": "수량 (정수형, 예: 2)",
+      "totalPrice": "총액 (백만 원 단위 소수점으로 추출, 예: 17.6)",
+      "budget": "과제 배정 예산 총량 (예: 17,600천원 형식)",
       "goals": ["주요 추진 전략 목표 리스트 3가지"],
-      "draftDate": "기안일자 (예: YYYY-MM-DD 형식, 문서 내에서 기안일이나 작성일을 찾아 매핑하고 없으면 2026-03-05 형식으로 가상 생성)",
-      "approveDate": "승인일자 (예: YYYY-MM-DD 형식, 문서 내의 최종 승인/결재일이며 없으면 기안일로부터 3~4일 뒤인 YYYY-MM-DD 형식 생성)"
+      "draftDate": "기안일자 (예: YYYY-MM-DD 형식, 문서 내에서 기안일이나 작성일을 찾아 매핑하고 없으면 2026-07-06 형식으로 가상 생성)",
+      "approveDate": "승인일자 (예: YYYY-MM-DD 형식, 문서 내의 최종 승인/결재일이며 없으면 2026-07-08 형식 생성)",
+      "descriptionPurpose": "기자재의 구체적인 도입 목적 및 타당성 2문장 요약",
+      "descriptionPlan": "도입 완료 후 활용 및 인력 양성 기대효과 계획 2문장 요약"
     }
     [정보]:
     - 품명: ${itemName || "알 수 없음"}
@@ -153,10 +379,19 @@ const callOpenAiGpt = async (docType, fileName, textContent, itemName, deptName,
     [스키마]:
     {
       "docNo": "구매문서 결재번호 (예: UC-EQ-PR로 시작하는 고유번호 생성)",
-      "fromDept": "발신 부서",
+      "fromDept": "발신 부서 또는 학과 명칭",
       "toDept": "수신 부서 (보통 대학본부 총무팀)",
-      "budget": "도입 소요예산 (예: 120,000천원 형식)",
-      "specs": ["조달 위탁 요청 기술 사양 핵심 3가지"]
+      "itemName": "구매 요청하는 대표 기자재 품명",
+      "unitPrice": "단가 (백만 원 단위 소수점 추출, 예: 8.8)",
+      "quantity": "수량 (정수형, 예: 2)",
+      "totalPrice": "총액 (백만 원 단위 소수점 추출, 예: 17.6)",
+      "unit": "해당 단위과제 코드 (예: B2, C2 등 정확한 코드 추출)",
+      "budget": "도입 소요예산 (예: 17,600천원 형식)",
+      "specs": ["조달 위탁 요청 기술 사양 핵심 3가지"],
+      "draftDate": "기안일자 (예: YYYY-MM-DD 형식)",
+      "approveDate": "최종 결재 승인일자 (예: YYYY-MM-DD 형식, 없으면 2026-07-08 형식 생성)",
+      "descriptionPurpose": "기자재 도입 목적 및 타당성 2문장 요약",
+      "descriptionPlan": "향후 활용 및 인력 양성 기대효과 계획 2문장 요약"
     }
     [정보]:
     - 품명: ${itemName || "알 수 없음"}
@@ -170,7 +405,11 @@ const callOpenAiGpt = async (docType, fileName, textContent, itemName, deptName,
     {
       "docNo": "입찰문서 결재번호 (예: UC-EQ-B로 시작하는 고유번호 생성)",
       "method": "입찰 계약 방식 (예: 제한경쟁입찰 등)",
-      "budget": "배정 예산 규모 (예: 120,000천원 형식)",
+      "itemName": "입찰 대상 대표 기자재 품명",
+      "unitPrice": "단가 (백만 원 단위)",
+      "quantity": "수량",
+      "totalPrice": "총 금액 (백만 원 단위)",
+      "budget": "배정 예산 규모 (예: 17,600천원 형식)",
       "qualifications": ["참가 자격 요건 및 규격 제한사항 3가지"],
       "deadline": "입찰 등록 마감 일자 및 시각 (예: 2026-07-25 18:00)"
     }
@@ -208,8 +447,7 @@ const callOpenAiGpt = async (docType, fileName, textContent, itemName, deptName,
     return JSON.parse(resultText);
   } catch (error) {
     console.error("❌ OpenAI GPT API 분석 실패:", error);
-    // API 에러 발생 시 부드럽게 mock 데이터로 복구하여 컴포넌트 크래시 방지 (Rule 2)
-    return runAiMockAnalysis(docType, textContent || fileName, itemName, deptName, totalPrice);
+    return runAiMockAnalysis(docType, textContent || fileName, itemName, deptName, totalPrice, fileName);
   }
 };
 
@@ -242,55 +480,16 @@ const callGeminiApi = async (promptText) => {
 
 // [교육용 주석] API Key가 없을 시 동작하는 가상 AI Debate 모의 시뮬레이터 (교육적 연출 효과 극대화)
 const runAiDebateMock = (docType, fileName, textContent, itemName, deptName, totalPrice) => {
-  const randomNo = Math.floor(Math.random() * 900) + 100;
-  const priceThousand = totalPrice ? Math.round(totalPrice / 1000) : 120000;
-  
   console.log("🤖 [AI Debate Simulator] GPT-4o: '기본 초안을 빌드하고 있습니다.'");
   console.log("🤖 [AI Debate Simulator] Gemini: '전략 목표 중 산학 네트워크 강화를 보강할 필요가 있어 보입니다.'");
   console.log("🤖 [AI Debate Simulator] GPT-4o: '동의합니다. 2차 보완 및 최종 합의안을 작성 완료했습니다.'");
 
-  if (docType === "proposal") {
-    return {
-      docNo: `UC-EQ-P-${randomNo} (Debate합의)`,
-      unit: "A1 : 지역과 미래를 만드는 UC-HYPER 전문기술인재 양성",
-      dept: deptName || "간호학부 (GPT & Gemini 공동조율)",
-      budget: `${priceThousand.toLocaleString()}천원`,
-      goals: [
-        `[GPT] ${itemName || "도입 핵심 기재"} 실무 교육과정 구축`,
-        `[Gemini] 선진 인프라 고도화 및 융합 실습 환경 리모델링`,
-        `[합의] 지산학 연계 라이즈 사업의 교육 실적 모니터링 체계 수립`
-      ],
-      draftDate: "2026-03-05",
-      approveDate: "2026-03-09"
-    };
-  } else if (docType === "bid") {
-    return {
-      docNo: `UC-EQ-B-${randomNo} (Debate합의)`,
-      method: "제한경쟁입찰",
-      budget: `${priceThousand.toLocaleString()}천원`,
-      qualifications: [
-        `[GPT] 대학 및 관공서 납품 실적 보유 업체`,
-        `[Gemini] 조달청 우수 제품 등록 모델 또는 정규 규격 보장`,
-        `[합의] 무상 A/S 2년 제공 및 납품 기한 계약 후 30일 이내`
-      ],
-      deadline: "2026-07-25 18:00"
-    };
-  } else { // purchase
-    return {
-      docNo: `UC-EQ-PR-${randomNo} (Debate합의)`,
-      fromDept: deptName || "간호학부",
-      toDept: "대학본부 총무팀",
-      budget: `${priceThousand.toLocaleString()}천원`,
-      specs: [
-        `[GPT] ${itemName || "도입 요청 기재"} 핵심 조달 기술 사양 검토`,
-        `[Gemini] 고정밀 수치 보정 기능 및 지능형 센서 탑재 보장`,
-        `[합의] 전문 엔지니어 온사이트 무상 하자 보증 2년 이상 보증 조건`
-      ]
-    };
-  }
+  const result = runAiMockAnalysis(docType, textContent, itemName, deptName, totalPrice, fileName);
+  result.docNo = result.docNo + " (Debate합의)";
+  return result;
 };
 
-// [교육용 주석] GPT-4o와 Gemini API 간의 상호 토론(Debate) 및 합의 도출 로직
+// [교육용 주석] GPT-4o와 Gemini API 간의 상호 토론(Debate) 및 합의 도출 로직 (프롬프트 고도화)
 const callDebateAiAnalysis = async (docType, fileName, textContent, itemName, deptName, totalPrice) => {
   const openaiKey = import.meta.env.VITE_OPENAI_API_KEY;
   const geminiKey = import.meta.env.VITE_GEMINI_API_KEY;
@@ -322,15 +521,25 @@ const callDebateAiAnalysis = async (docType, fileName, textContent, itemName, de
     반드시 다음 JSON 형식 스키마를 따르십시오:
     ${docType === 'proposal' ? `{
       "docNo": "기결재번호",
-      "unit": "단위과제명",
+      "unit": "단위과제코드 (예: B2, C2 등 정확하게 추출)",
       "dept": "주관부서",
+      "itemName": "대표 품명",
+      "unitPrice": "단가 (백만 원 단위)",
+      "quantity": "수량",
+      "totalPrice": "총액 (백만 원 단위)",
       "budget": "예산액 (천원 단위)",
       "goals": ["목표 3가지"],
       "draftDate": "기안일자(YYYY-MM-DD)",
-      "approveDate": "승인일자(YYYY-MM-DD)"
+      "approveDate": "승인일자(YYYY-MM-DD)",
+      "descriptionPurpose": "도입 목적 및 타당성 2문장 요약",
+      "descriptionPlan": "향후 활용 계획 및 기대효과 2문장 요약"
     }` : docType === 'bid' ? `{
       "docNo": "입찰결재번호",
       "method": "입찰계약방식",
+      "itemName": "대표 품명",
+      "unitPrice": "단가 (백만 원 단위)",
+      "quantity": "수량",
+      "totalPrice": "총액 (백만 원 단위)",
       "budget": "예산액 (천원 단위)",
       "qualifications": ["참가 자격 및 제한사항 3가지"],
       "deadline": "입찰마감일시(YYYY-MM-DD HH:MM)"
@@ -338,8 +547,16 @@ const callDebateAiAnalysis = async (docType, fileName, textContent, itemName, de
       "docNo": "구매결재번호",
       "fromDept": "발신부서",
       "toDept": "수신부서",
+      "itemName": "대표 품명",
+      "unitPrice": "단가 (백만 원 단위)",
+      "quantity": "수량",
+      "totalPrice": "총액 (백만 원 단위)",
       "budget": "예산액 (천원 단위)",
-      "specs": ["기술규격 3가지"]
+      "specs": ["기술규격 3가지"],
+      "draftDate": "기안일자(YYYY-MM-DD)",
+      "approveDate": "승인일자(YYYY-MM-DD)",
+      "descriptionPurpose": "도입 목적 및 타당성 요약",
+      "descriptionPlan": "향후 활용 계획 요약"
     }`}`;
 
     const geminiResponse = await callGeminiApi(geminiPrompt);
@@ -1185,46 +1402,55 @@ export default function ProcurementManager({
             [docType === "proposal" ? "docPlan" : "docPurchase"]: list[0]?.aiData?.docNo || ""
           };
 
-          // [AI 자동채우기 핵심 로직 - AI 문서 기반 원클릭 행정 자동화]
+          // [AI 자동채우기 핵심 로직 - AI 문서 기반 원클릭 행정 자동화 고도화]
           
           // 1. 단가 및 예산 매핑 (백만원 / 천원 단위 정합성 고려)
-          const parsedBudget = parseBudgetStringToMillions(aiResult.budget);
-          if (parsedBudget) {
-            if (modalType === "service") {
-              // 주요 용역 모달은 천 원 단위
-              nextData.budgetPlan = Math.round(parsedBudget * 1000); 
-            } else if (modalType === "env") {
-              nextData.unitPrice = parsedBudget;
-              nextData.budgetPlan = parsedBudget;
-            } else {
-              // 기자재 모달은 백만 원 단위
-              nextData.unitPrice = parsedBudget; 
+          if (aiResult.unitPrice) {
+            nextData.unitPrice = Number(aiResult.unitPrice);
+          } else {
+            const parsedBudget = parseBudgetStringToMillions(aiResult.budget);
+            if (parsedBudget) {
+              if (modalType === "service") {
+                nextData.budgetPlan = Math.round(parsedBudget * 1000); 
+              } else if (modalType === "env") {
+                nextData.unitPrice = parsedBudget;
+                nextData.budgetPlan = parsedBudget;
+              } else {
+                nextData.unitPrice = parsedBudget; 
+              }
             }
           }
 
-          // 2. 단위과제 (unit) & 연계 프로그램 (operation) 자동 매핑
+          // 2. 수량 매핑
+          if (aiResult.quantity) {
+            nextData.quantity = Number(aiResult.quantity);
+          } else {
+            nextData.quantity = 1;
+          }
+
+          // 3. 단위과제 (unit) & 연계 프로그램 (operation) 자동 매핑
           if (aiResult.unit) {
             const unitMatch = aiResult.unit.match(/[A-D][1-4][가-힣]?/);
             if (unitMatch) {
-              const matchedUnitName = unitMatch[0] + " 과제";
-              nextData.unit = matchedUnitName;
+              const unitCode = unitMatch[0]; // 예: "B2", "C2" 등
+              nextData.unit = unitCode;
               
               // 연계 프로그램 세팅
-              const progs = getDynamicPrograms(matchedUnitName);
+              const progs = getDynamicPrograms(unitCode);
               if (progs.length > 0) {
                 nextData.operation = progs[0].name;
               }
             } else {
               // 매칭 추출 실패 시 기본 첫 번째 단위과제 세팅
-              nextData.unit = "A1가 과제";
-              const progs = getDynamicPrograms("A1가 과제");
+              nextData.unit = "A1";
+              const progs = getDynamicPrograms("A1");
               if (progs.length > 0) {
                 nextData.operation = progs[0].name;
               }
             }
           }
 
-          // 3. 주관 학과 (deptName) 및 행정 부서 (divisionName) 정교한 매핑
+          // 4. 주관 학과 (deptName) 및 행정 부서 (divisionName) 정교한 매핑
           const rawDept = aiResult.dept || aiResult.fromDept;
           if (rawDept) {
             // 괄호 및 사업단 협업 명칭 트리밍
@@ -1247,7 +1473,7 @@ export default function ProcurementManager({
               const validDivisions = [
                 "RCC", "ECC", "글로컬대학30추진단", "교육혁신처", "학생조치처", "입학홍보처",
                 "산학협력처", "총무처", "기획처", "교무팀", "학사지원팀", "총무팀", "재무회계팀",
-                "IR센터", "산학기획팀", "산학지원팀", "창업창직교육센터", "현장실습지원센터"
+                "IR센터", "산학기획팀", "산학지원팀", "창업창직교육센터", "현장실습지원센터", "AID-X지원센터"
               ];
               const matchedDiv = validDivisions.find(d => cleanDept.toUpperCase().includes(d.toUpperCase()) || d.toUpperCase().includes(cleanDept.toUpperCase()));
               if (matchedDiv) {
@@ -1260,19 +1486,20 @@ export default function ProcurementManager({
             }
           }
 
-          // 4. 품명 (name, title) 자동 완성 (파일명에서 확장자 제거 및 가공)
-          const baseFileName = uploadedFileMeta.name.replace(/\.[^/.]+$/, "");
-          // 숫자나 단순 해시명칭이 아닌 한글/영문 형태의 파일명이면 그것을 품명으로 차용
-          if (baseFileName && !/^\d+$/.test(baseFileName) && baseFileName.length > 2) {
-            nextData.name = baseFileName;
-            nextData.title = baseFileName;
+          // 5. 품명 (name, title) 자동 완성
+          if (aiResult.itemName) {
+            nextData.name = aiResult.itemName;
+            nextData.title = aiResult.itemName;
           } else {
-            nextData.name = docType === "proposal" ? "스마트 팩토리 IoT 통합 분석 시스템" : "정밀 의료 실습용 고해상도 초음파 진단기";
-            nextData.title = docType === "proposal" ? "스마트 팩토리 IoT 통합 분석 시스템" : "정밀 의료 실습용 고해상도 초음파 진단기";
+            const baseFileName = uploadedFileMeta.name.replace(/\.[^/.]+$/, "");
+            if (baseFileName && !/^\d+$/.test(baseFileName) && baseFileName.length > 2) {
+              nextData.name = baseFileName;
+              nextData.title = baseFileName;
+            } else {
+              nextData.name = docType === "proposal" ? "스마트 팩토리 IoT 통합 분석 시스템" : "정밀 의료 실습용 고해상도 초음파 진단기";
+              nextData.title = docType === "proposal" ? "스마트 팩토리 IoT 통합 분석 시스템" : "정밀 의료 실습용 고해상도 초음파 진단기";
+            }
           }
-
-          // 5. 수량 기본값 1개 세팅
-          nextData.quantity = 1;
 
           // 6. 기자재 바코드는 현재 운영계획이 없고 관리번호는 검수 마친 후 수동 기재하므로 자동완성 영역에서 생략
 
@@ -1280,33 +1507,29 @@ export default function ProcurementManager({
           const strategicGoals = aiResult.goals ? aiResult.goals.join(", ") : "RISE 사업 전략 과제 추진";
           
           if (modalType === "service") {
-            nextData.purpose = `[AI 자동완성] ${nextData.title} 용역을 통해 RISE 사업의 전략 목표인 '${strategicGoals}'를 달성하고 고도화된 연구 성과를 창출하고자 함.`;
+            nextData.purpose = aiResult.descriptionPurpose || `[AI 자동완성] ${nextData.title} 용역을 통해 RISE 사업의 전략 목표인 '${strategicGoals}'를 달성하고 고도화된 연구 성과를 창출하고자 함.`;
             nextData.providerQual = "관련 부문 인가 인증 보유 법인 및 대학용역 유사 실적 우수 사업자";
             nextData.opResult = "용역 일정 내 성과품 납품 완료 및 만족도 평가 결과 우수 등급 달성";
             
-            // 용역인 경우 기획∙승인(PA) 일자 자동 매핑
             if (aiResult.draftDate) {
               nextData.datePp = aiResult.draftDate;
             }
           } else if (modalType === "env") {
-            nextData.purpose = `[AI 자동완성] 교육환경 개선 사업을 시행하여 시설 안정성을 확보하고 학생 친화적 학습 환경을 혁신하고자 함.`;
+            nextData.purpose = aiResult.descriptionPurpose || `[AI 자동완성] 교육환경 개선 사업을 시행하여 시설 안정성을 확보하고 학생 친화적 학습 환경을 혁신하고자 함.`;
             nextData.plan = `전략 목표: ${strategicGoals}`;
-            nextData.utilization = "학부생 공통 개방형 메이커 스페이스 및 교육 실습 공간으로 상시 개방 운영 예정";
+            nextData.utilization = aiResult.descriptionPlan || "학부생 공통 개방형 메이커 스페이스 및 교육 실습 공간으로 상시 개방 운영 예정";
             
-            // 환경개선인 경우 기획(P), 승인(A) 일자 자동 매핑
             if (aiResult.draftDate) nextData.dateP = aiResult.draftDate;
             if (aiResult.approveDate) nextData.dateA = aiResult.approveDate;
           } else {
-            nextData.descriptionPurpose = `[AI 자동완성] ${nextData.name} 핵심 기자재를 도입하여 교육 실습 타당성을 확보하고 전략 목표인 '${strategicGoals}' 과제를 완성함.`;
-            nextData.descriptionPlan = "도입 완료 후 시뮬레이션 고도화 전공 교과목 실습 기자재로 100% 매칭 활용하며, 연간 120명 이상의 전문 인력 실습 활용 기대.";
+            nextData.descriptionPurpose = aiResult.descriptionPurpose || `[AI 자동완성] ${nextData.name} 핵심 기자재를 도입하여 교육 실습 타당성을 확보하고 전략 목표인 '${strategicGoals}' 과제를 완성함.`;
+            nextData.descriptionPlan = aiResult.descriptionPlan || "도입 완료 후 시뮬레이션 고도화 전공 교과목 실습 기자재로 100% 매칭 활용하며, 연간 120명 이상의 전문 인력 실습 활용 기대.";
             
-            // 기자재인 경우 기획∙승인(PA) 일자 자동 매핑 (기획일은 결재문서 상 보통 없으므로 승인일을 PA일자에 매핑)
+            // 기자재의 경우 최종 결재 승인일을 기획∙승인(PA) 일자로 자동 세팅
             if (aiResult.approveDate) {
               nextData.dateP = aiResult.approveDate;
-              nextData.dateA = aiResult.approveDate;
             } else if (aiResult.draftDate) {
               nextData.dateP = aiResult.draftDate;
-              nextData.dateA = aiResult.draftDate;
             }
           }
 
