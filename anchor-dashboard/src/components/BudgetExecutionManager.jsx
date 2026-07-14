@@ -787,10 +787,10 @@ export default function BudgetExecutionManager({ projects = [], currentRole, sel
                 <Legend wrapperStyle={{ fontSize: 11, paddingTop: 10 }} />
                 {selectedYear !== 1 && (
                   <ReferenceLine 
-                    x="8월" 
+                    x="26.8월" 
                     stroke="#EF4444" 
                     strokeDasharray="4 4" 
-                    label={{ value: "이월마감 (8/31)", fill: "#F87171", position: "insideTopLeft", fontSize: 11, fontWeight: "bold" }}
+                    label={{ value: "이월마감일", fill: "#EF4444", position: "insideTopLeft", fontSize: 11, fontWeight: "bold" }}
                   />
                 )}
                 {/* 본예산 누적 집행률 (실선) */}
@@ -860,10 +860,10 @@ export default function BudgetExecutionManager({ projects = [], currentRole, sel
                 <Legend wrapperStyle={{ fontSize: 11, paddingTop: 10 }} />
                 {selectedYear !== 1 && (
                   <ReferenceLine 
-                    x="8월" 
+                    x="26.8월" 
                     stroke="#EF4444" 
                     strokeDasharray="4 4" 
-                    label={{ value: "이월마감 (8/31)", fill: "#F87171", position: "insideTopLeft", fontSize: 11, fontWeight: "bold" }}
+                    label={{ value: "이월마감일", fill: "#EF4444", position: "insideTopLeft", fontSize: 11, fontWeight: "bold" }}
                   />
                 )}
                 {/* 본예산 누적 집행액 (실선) */}
