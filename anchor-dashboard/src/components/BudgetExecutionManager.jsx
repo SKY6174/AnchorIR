@@ -673,148 +673,138 @@ export default function BudgetExecutionManager({ projects = [], currentRole, sel
 
       </div>
 
-      {/* 꺾은선 차트 카드 */}
-      <div className="glass-card" style={{ padding: "1.25rem", borderRadius: "10px", display: "flex", flexDirection: "column", gap: "1rem" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "0.75rem" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-            <TrendingUp size={18} style={{ color: "var(--accent-color)" }} />
-            <h3 style={{ margin: 0, fontSize: "1rem", fontWeight: "700", color: "var(--text-primary)" }}>월별 누적 집행률 추이</h3>
-          </div>
-          
-          <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-            <div style={{ display: "flex", gap: "0.75rem", fontSize: "0.85rem", color: "var(--text-secondary)", fontWeight: "600" }}>
-              <label style={{ display: "flex", alignItems: "center", gap: "0.25rem", cursor: "pointer" }}>
-                <input 
-                  type="radio" 
-                  name="executionViewType" 
-                  value="total" 
-                  checked={viewType === "total"}
-                  onChange={() => setViewType("total")}
-                  style={{ accentColor: "var(--accent-color)" }}
-                />
-                사업 전체
-              </label>
-              <label style={{ display: "flex", alignItems: "center", gap: "0.25rem", cursor: "pointer" }}>
-                <input 
-                  type="radio" 
-                  name="executionViewType" 
-                  value="unit" 
-                  checked={viewType === "unit"}
-                  onChange={() => setViewType("unit")}
-                  style={{ accentColor: "var(--accent-color)" }}
-                />
-                단위과제별
-              </label>
-            </div>
-
-            {viewType === "unit" && (
-              <select
-                value={selectedUnit}
-                onChange={(e) => setSelectedUnit(e.target.value)}
-                style={{
-                  background: "var(--input-bg)",
-                  color: "var(--text-primary)",
-                  border: "1px solid var(--border-color)",
-                  borderRadius: "6px",
-                  padding: "0.25rem 0.5rem",
-                  fontSize: "0.8rem",
-                  fontWeight: "600",
-                  cursor: "pointer",
-                  outline: "none"
-                }}
-              >
-                {unitList.map((unit) => (
-                  <option key={unit} value={unit} style={{ background: "var(--background-card, #1e1e1e)", color: "var(--text-primary)" }}>
-                    {unit} 과제
-                  </option>
-                ))}
-              </select>
-            )}
-          </div>
+      {/* [교육용 주석] 두 그래프에 동시에 반영되는 공통 필터 컨트롤 영역 */}
+      <div className="glass-card" style={{ 
+        padding: "1rem 1.25rem", 
+        borderRadius: "10px", 
+        display: "flex", 
+        justifyContent: "space-between", 
+        alignItems: "center", 
+        flexWrap: "wrap", 
+        gap: "0.75rem"
+      }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+          <TrendingUp size={18} style={{ color: "var(--accent-color)" }} />
+          <span style={{ fontSize: "0.9rem", fontWeight: "800", color: "var(--text-primary)" }}>
+            누적 집행 데이터 연동 필터 (사업 전체 vs. 단위과제별 공통 적용)
+          </span>
         </div>
         
-        <div style={{ width: "100%", height: 260, padding: "0.5rem 0" }}>
-          <ResponsiveContainer width="100%" height="100%">
-            <LineChart
-              data={activeData.chartData}
-              margin={{ top: 20, right: 10, left: -10, bottom: 0 }}
+        <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+          <div style={{ display: "flex", gap: "0.75rem", fontSize: "0.85rem", color: "var(--text-secondary)", fontWeight: "600" }}>
+            <label style={{ display: "flex", alignItems: "center", gap: "0.25rem", cursor: "pointer" }}>
+              <input 
+                type="radio" 
+                name="executionViewType" 
+                value="total" 
+                checked={viewType === "total"}
+                onChange={() => setViewType("total")}
+                style={{ accentColor: "var(--accent-color)" }}
+              />
+              사업 전체
+            </label>
+            <label style={{ display: "flex", alignItems: "center", gap: "0.25rem", cursor: "pointer" }}>
+              <input 
+                type="radio" 
+                name="executionViewType" 
+                value="unit" 
+                checked={viewType === "unit"}
+                onChange={() => setViewType("unit")}
+                style={{ accentColor: "var(--accent-color)" }}
+              />
+              단위과제별
+            </label>
+          </div>
+
+          {viewType === "unit" && (
+            <select
+              value={selectedUnit}
+              onChange={(e) => setSelectedUnit(e.target.value)}
+              style={{
+                background: "var(--input-bg)",
+                color: "var(--text-primary)",
+                border: "1px solid var(--border-color)",
+                borderRadius: "6px",
+                padding: "0.25rem 0.5rem",
+                fontSize: "0.8rem",
+                fontWeight: "600",
+                cursor: "pointer",
+                outline: "none"
+              }}
             >
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-              <XAxis 
-                dataKey="month" 
-                stroke="var(--text-secondary)" 
-                tick={{ fontSize: 11, fill: "var(--text-secondary)" }}
-              />
-              {/* 좌측 Y축: 누적 집행률 (%) */}
-              <YAxis 
-                yAxisId="left"
-                stroke="var(--text-secondary)" 
-                tick={{ fontSize: 11, fill: "var(--text-secondary)" }}
-                domain={[0, 100]}
-                unit="%"
-              />
-              {/* 우측 Y축: 누적 집행액 (백만원) */}
-              <YAxis 
-                yAxisId="right"
-                orientation="right"
-                stroke="#60A5FA" 
-                tick={{ fontSize: 11, fill: "#60A5FA" }}
-                domain={[0, 'auto']}
-                unit="M"
-              />
-              <Tooltip 
-                formatter={(value, name) => {
-                  if (name.includes("집행액")) {
-                    return [`${value.toLocaleString()} 백만 원`, name];
-                  }
-                  return [`${value}%`, name];
-                }}
-                contentStyle={{
-                  background: "rgba(224, 235, 246, 0.95)",
-                  border: "1px solid var(--border-color)",
-                  borderRadius: "0.5rem",
-                  fontSize: "11px",
-                  boxShadow: "0 4px 12px rgba(0,0,0,0.15)"
-                }}
-                labelStyle={{ color: "#111827", fontWeight: "700", marginBottom: "0.2rem" }}
-                itemStyle={{ color: "#1f2937", padding: "0.1rem 0" }}
-              />
-              <Legend wrapperStyle={{ fontSize: 11, paddingTop: 10 }} />
-              {selectedYear !== 1 && (
-                <ReferenceLine 
-                  yAxisId="left"
-                  x="8월" 
-                  stroke="#EF4444" 
-                  strokeDasharray="4 4" 
-                  label={{ value: "이월마감 (8/31)", fill: "#F87171", position: "insideTopLeft", fontSize: 11, fontWeight: "bold" }}
+              {unitList.map((unit) => (
+                <option key={unit} value={unit} style={{ background: "var(--background-card, #1e1e1e)", color: "var(--text-primary)" }}>
+                  {unit} 과제
+                </option>
+              ))}
+            </select>
+          )}
+        </div>
+      </div>
+
+      {/* [교육용 주석] 누적 집행률과 누적 집행액을 구분한 개별 차트 영역 */}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "1rem" }}>
+        
+        {/* 1. 월별 누적 집행률 추이 카드 (%) */}
+        <div className="glass-card" style={{ padding: "1.25rem", borderRadius: "10px", display: "flex", flexDirection: "column", gap: "1rem" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+            <TrendingUp size={18} style={{ color: "#3B82F6" }} />
+            <h3 style={{ margin: 0, fontSize: "0.95rem", fontWeight: "800", color: "var(--text-primary)" }}>
+              월별 누적 집행률 추이 (%)
+            </h3>
+          </div>
+          
+          <div style={{ width: "100%", height: 250, padding: "0.5rem 0" }}>
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart
+                data={activeData.chartData}
+                margin={{ top: 20, right: 10, left: -10, bottom: 0 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
+                <XAxis 
+                  dataKey="month" 
+                  stroke="var(--text-secondary)" 
+                  tick={{ fontSize: 11, fill: "var(--text-secondary)" }}
                 />
-              )}
-              {/* 본예산 누적 집행률 (좌측) */}
-              <Line 
-                yAxisId="left"
-                name="본예산 누적 집행률" 
-                type="monotone" 
-                dataKey="mainBudget" 
-                stroke="#3B82F6" 
-                strokeWidth={3}
-                activeDot={{ r: 6 }} 
-              />
-              {/* 본예산 누적 집행액 (우측, 점선) */}
-              <Line 
-                yAxisId="right"
-                name="본예산 누적 집행액" 
-                type="monotone" 
-                dataKey="mainSpentAmt" 
-                stroke="#60A5FA" 
-                strokeWidth={2}
-                strokeDasharray="5 5"
-                activeDot={{ r: 4 }} 
-              />
-              {selectedYear !== 1 && (
-                <>
-                  {/* 이월예산 누적 집행률 (좌측) */}
+                <YAxis 
+                  stroke="var(--text-secondary)" 
+                  tick={{ fontSize: 11, fill: "var(--text-secondary)" }}
+                  domain={[0, 100]}
+                  unit="%"
+                />
+                <Tooltip 
+                  formatter={(value, name) => [`${value}%`, name]}
+                  contentStyle={{
+                    background: "rgba(224, 235, 246, 0.95)",
+                    border: "1px solid var(--border-color)",
+                    borderRadius: "0.5rem",
+                    fontSize: "11px",
+                    boxShadow: "0 4px 12px rgba(0,0,0,0.15)"
+                  }}
+                  labelStyle={{ color: "#111827", fontWeight: "700", marginBottom: "0.2rem" }}
+                  itemStyle={{ color: "#1f2937", padding: "0.1rem 0" }}
+                />
+                <Legend wrapperStyle={{ fontSize: 11, paddingTop: 10 }} />
+                {selectedYear !== 1 && (
+                  <ReferenceLine 
+                    x="8월" 
+                    stroke="#EF4444" 
+                    strokeDasharray="4 4" 
+                    label={{ value: "이월마감 (8/31)", fill: "#F87171", position: "insideTopLeft", fontSize: 11, fontWeight: "bold" }}
+                  />
+                )}
+                {/* 본예산 누적 집행률 (실선) */}
+                <Line 
+                  name="본예산 누적 집행률" 
+                  type="monotone" 
+                  dataKey="mainBudget" 
+                  stroke="#3B82F6" 
+                  strokeWidth={3}
+                  activeDot={{ r: 6 }} 
+                />
+                {selectedYear !== 1 && (
+                  /* 이월예산 누적 집행률 (실선) */
                   <Line 
-                    yAxisId="left"
                     name="이월예산 누적 집행률" 
                     type="monotone" 
                     dataKey="carryoverBudget" 
@@ -822,22 +812,85 @@ export default function BudgetExecutionManager({ projects = [], currentRole, sel
                     strokeWidth={3}
                     activeDot={{ r: 6 }} 
                   />
-                  {/* 이월예산 누적 집행액 (우측, 점선) */}
+                )}
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        {/* 2. 월별 누적 집행액 추이 카드 (백만 원) */}
+        <div className="glass-card" style={{ padding: "1.25rem", borderRadius: "10px", display: "flex", flexDirection: "column", gap: "1rem" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+            <TrendingUp size={18} style={{ color: "#10B981" }} />
+            <h3 style={{ margin: 0, fontSize: "0.95rem", fontWeight: "800", color: "var(--text-primary)" }}>
+              월별 누적 집행액 추이 (백만 원)
+            </h3>
+          </div>
+          
+          <div style={{ width: "100%", height: 250, padding: "0.5rem 0" }}>
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart
+                data={activeData.chartData}
+                margin={{ top: 20, right: 10, left: -10, bottom: 0 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
+                <XAxis 
+                  dataKey="month" 
+                  stroke="var(--text-secondary)" 
+                  tick={{ fontSize: 11, fill: "var(--text-secondary)" }}
+                />
+                <YAxis 
+                  stroke="var(--text-secondary)" 
+                  tick={{ fontSize: 11, fill: "var(--text-secondary)" }}
+                  domain={[0, 'auto']}
+                  unit="M"
+                />
+                <Tooltip 
+                  formatter={(value, name) => [`${value.toLocaleString()} 백만 원`, name]}
+                  contentStyle={{
+                    background: "rgba(224, 235, 246, 0.95)",
+                    border: "1px solid var(--border-color)",
+                    borderRadius: "0.5rem",
+                    fontSize: "11px",
+                    boxShadow: "0 4px 12px rgba(0,0,0,0.15)"
+                  }}
+                  labelStyle={{ color: "#111827", fontWeight: "700", marginBottom: "0.2rem" }}
+                  itemStyle={{ color: "#1f2937", padding: "0.1rem 0" }}
+                />
+                <Legend wrapperStyle={{ fontSize: 11, paddingTop: 10 }} />
+                {selectedYear !== 1 && (
+                  <ReferenceLine 
+                    x="8월" 
+                    stroke="#EF4444" 
+                    strokeDasharray="4 4" 
+                    label={{ value: "이월마감 (8/31)", fill: "#F87171", position: "insideTopLeft", fontSize: 11, fontWeight: "bold" }}
+                  />
+                )}
+                {/* 본예산 누적 집행액 (실선) */}
+                <Line 
+                  name="본예산 누적 집행액" 
+                  type="monotone" 
+                  dataKey="mainSpentAmt" 
+                  stroke="#3B82F6" 
+                  strokeWidth={3}
+                  activeDot={{ r: 6 }} 
+                />
+                {selectedYear !== 1 && (
+                  /* 이월예산 누적 집행액 (실선) */
                   <Line 
-                    yAxisId="right"
                     name="이월예산 누적 집행액" 
                     type="monotone" 
                     dataKey="carryoverSpentAmt" 
-                    stroke="#FCA5A5" 
-                    strokeWidth={2}
-                    strokeDasharray="5 5"
-                    activeDot={{ r: 4 }} 
+                    stroke="#EF4444" 
+                    strokeWidth={3}
+                    activeDot={{ r: 6 }} 
                   />
-                </>
-              )}
-            </LineChart>
-          </ResponsiveContainer>
+                )}
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
         </div>
+
       </div>
 
       {/* ==============================================================================
