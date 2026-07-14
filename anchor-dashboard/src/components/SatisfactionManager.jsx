@@ -294,10 +294,11 @@ export default function SatisfactionManager({ selectedYear }) {
     });
   };
 
-  // 부서별 새 조사 ID 자동 추천 생성기 (다중 선택 대응)
+  // 부서별 새 조사 ID 자동 추천 생성기 (연차 및 부서 접두사 연동)
   const getNextSurveyId = (depts) => {
     const currentYear = 2024 + selectedYear;
-    const mainDept = depts && depts.length > 0 ? depts[0] : "ECC";
+    // [교육용 주석] depts가 배열일 경우 첫 항목을, 문자열일 경우 그대로 사용하도록 방어
+    const mainDept = Array.isArray(depts) ? (depts.length > 0 ? depts[0] : "ECC") : (depts || "ECC");
     const sameDeptSurveys = surveys.filter(s => s.id.startsWith(`${currentYear}-${mainDept}-`));
     
     // 번호 산출 (예: 2026-ECC-1)
@@ -1439,8 +1440,15 @@ ${commentList || "(없음)"}
                 </tr>
               </thead>
               <tbody>
-                {surveys.map((survey) => {
-                  const convertedAvg = getLikertConvertedScore(survey.responses, survey.questions.length);
+                {surveys
+                  .filter(s => {
+                    const targetYearStr = String(2024 + selectedYear);
+                    const idMatch = s.id && s.id.startsWith(targetYearStr);
+                    const dateMatch = s.startDate && s.startDate.startsWith(targetYearStr);
+                    return idMatch || dateMatch;
+                  })
+                  .map((survey) => {
+                    const convertedAvg = getLikertConvertedScore(survey.responses, survey.questions.length);
                   return (
                     <tr key={survey.id} style={{ cursor: "pointer" }} onClick={() => { setSelectedSurveyId(survey.id); setActiveSurveyTab("detail"); }}>
                       <td style={{ fontFamily: "var(--font-data)", fontWeight: "700", textAlign: "center" }}>{survey.id}</td>
@@ -1572,11 +1580,19 @@ ${commentList || "(없음)"}
             </div>
           ) : (
             (() => {
-              // 선택된 부서 키들에 매핑되는 설문 조사 필터링 (다중 부서일 경우에도 안정되게 쉼표 파싱)
+              // 선택된 부서 키들에 매핑되는 설문 조사 필터링 및 글로벌 연차 연동 필터링 적용
               const filteredSurveys = surveys.filter(s => {
+                // 1. 부서 매칭 검사
                 if (!s.department) return false;
                 const depts = s.department.split(",").map(d => d.trim().toUpperCase());
-                return depts.some(d => filterDepts.includes(d));
+                const deptMatch = depts.some(d => filterDepts.includes(d));
+                if (!deptMatch) return false;
+
+                // 2. 글로벌 연차 매칭 검사 (ID 연도 또는 시작일 연도가 해당 연차에 부합하는 조사만 필터링)
+                const targetYearStr = String(2024 + selectedYear);
+                const idMatch = s.id && s.id.startsWith(targetYearStr);
+                const dateMatch = s.startDate && s.startDate.startsWith(targetYearStr);
+                return idMatch || dateMatch;
               });
 
               if (filteredSurveys.length === 0) {
