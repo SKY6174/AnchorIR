@@ -86,22 +86,22 @@ const runAiMockAnalysis = (docType, textContent, itemName, deptName, totalPrice,
   if (fName.includes("로봇") || fName.includes("robot") || fName.includes("hand")) {
     if (docType === "proposal") {
       return {
-        docNo: "UC-EQ-P-186",
+        docNo: "앵커사업단운영팀-1883",
         unit: "B2 : AID 역량강화 기반 지역산업 전환 지원",
         dept: "AID-X지원센터",
         itemName: "20DoF 로봇 핸드",
         unitPrice: "8.8", // 단가 (백만 원 단위)
         quantity: 2,
         totalPrice: "17.6",
-        budget: "17,600천원",
+        budget: "518,700천원",
         goals: [
           "지능형 로봇 및 정밀 제어를 위한 하드웨어 실습 인프라 확보",
           "전 학부(과) 참여형 AI·DX 교육과정 개편 및 실습 연계",
           "중소기업 현장 실증형 AI 알고리즘 적용 프로젝트 지원"
         ],
-        draftDate: "2026-07-06",
+        draftDate: "2026-07-08",
         approveDate: "2026-07-08",
-        descriptionPurpose: "[AI 자동완성] 20DoF 로봇 핸드 핵심 기자재를 도입하여 지능형 로봇 및 정밀 제어를 위한 IT-OT 통합 하드웨어 실습 인프라를 확보하고 전략 과제를 완성함.",
+        descriptionPurpose: "IT-OT의 통합 역량을 갖춘 특화 인력을 양성할 수 있으며, 데이터 보안, 장기간 안정적 운용, 유지보수체계의 확립이 중요하며, 이를 통해 연구비 효율성 및 산학 협력의 경쟁력을 확보할 수 있음",
         descriptionPlan: "도입 완료 후 AID-X지원센터 내 정밀 로봇 실습 교육 및 기자재 안정적 운용을 통해 산학 협력 경쟁력을 강화하고 연간 120명 이상의 전문 인력 실습 활용 기대."
       };
     } else if (docType === "purchase") {
@@ -355,7 +355,7 @@ const callOpenAiGpt = async (docType, fileName, textContent, itemName, deptName,
     proposal: `당신은 대학 RISE(앵커) 사업 기획 분석가입니다. 아래 문서정보와 텍스트를 분석하여, 다음 JSON 스키마를 만족하는 요약본을 JSON 모드로 응답하십시오.
     [스키마]:
     {
-      "docNo": "기획문서 결재번호 (예: UC-EQ-P-로 시작하는 고유번호 생성)",
+      "docNo": "기획문서 결재선/시행란 등에서 추출한 시행 문서번호 (예: '앵커사업단운영팀-1883', 문서 상에 시행 번호가 보이지 않으면 UC-EQ-P로 시작하는 고유번호 생성)",
       "unit": "단위과제 코드 (예: B2, C2 등 매칭되는 정확한 코드를 추출)",
       "dept": "주관 부서 또는 학과 명칭",
       "itemName": "핵심 도입 대상 대표 품명 추출",
@@ -364,9 +364,9 @@ const callOpenAiGpt = async (docType, fileName, textContent, itemName, deptName,
       "totalPrice": "총액 (백만 원 단위 소수점으로 추출, 예: 17.6)",
       "budget": "과제 배정 예산 총량 (예: 17,600천원 형식)",
       "goals": ["주요 추진 전략 목표 리스트 3가지"],
-      "draftDate": "기안일자 (예: YYYY-MM-DD 형식, 문서 내에서 기안일이나 작성일을 찾아 매핑하고 없으면 2026-07-06 형식으로 가상 생성)",
-      "approveDate": "승인일자 (예: YYYY-MM-DD 형식, 문서 내의 최종 승인/결재일이며 없으면 2026-07-08 형식 생성)",
-      "descriptionPurpose": "기자재의 구체적인 도입 목적 및 타당성 2문장 요약",
+      "draftDate": "기안일자 및 시행 일자 (예: YYYY-MM-DD 형식, 문서 내의 시행 일자 '2026. 7. 8.' 등에서 추출하여 '2026-07-08'로 표기)",
+      "approveDate": "승인일자 및 시행 일자 (예: YYYY-MM-DD 형식, 문서 내의 시행 일자 '2026. 7. 8.' 등에서 추출하여 '2026-07-08'로 표기)",
+      "descriptionPurpose": "문서 내의 '가. 구매필요성' 또는 이에 상응하는 도입 목적/필요성 텍스트를 가능한 요약하지 않고 그대로 상세히 추출 (예: 'IT-OT의 통합 역량을 갖춘 특화 인력을 양성할 수 있으며...')",
       "descriptionPlan": "도입 완료 후 활용 및 인력 양성 기대효과 계획 2문장 요약"
     }
     [정보]:
@@ -496,7 +496,7 @@ const callGeminiSingleAnalysis = async (docType, fileName, textContent, itemName
     proposal: `당신은 대학 RISE(앵커) 사업 기획 분석가입니다. 아래 문서정보와 텍스트를 분석하여, 다음 JSON 스키마를 만족하는 요약본을 JSON 모드로 응답하십시오.
     [스키마]:
     {
-      "docNo": "기획문서 결재번호 (예: UC-EQ-P-로 시작하는 고유번호 생성)",
+      "docNo": "기획문서 결재선/시행란 등에서 추출한 시행 문서번호 (예: '앵커사업단운영팀-1883', 문서 상에 시행 번호가 보이지 않으면 UC-EQ-P로 시작하는 고유번호 생성)",
       "unit": "단위과제 코드 (예: B2, C2 등 매칭되는 정확한 코드를 추출)",
       "dept": "주관 부서 또는 학과 명칭",
       "itemName": "핵심 도입 대상 대표 품명 추출",
@@ -505,9 +505,9 @@ const callGeminiSingleAnalysis = async (docType, fileName, textContent, itemName
       "totalPrice": "총액 (백만 원 단위 소수점으로 추출, 예: 17.6)",
       "budget": "과제 배정 예산 총량 (예: 17,600천원 형식)",
       "goals": ["주요 추진 전략 목표 리스트 3가지"],
-      "draftDate": "기안일자 (예: YYYY-MM-DD 형식, 문서 내에서 기안일이나 작성일을 찾아 매핑하고 없으면 2026-07-06 형식으로 가상 생성)",
-      "approveDate": "승인일자 (예: YYYY-MM-DD 형식, 문서 내의 최종 승인/결재일이며 없으면 2026-07-08 형식 생성)",
-      "descriptionPurpose": "기자재의 구체적인 도입 목적 및 타당성 2문장 요약",
+      "draftDate": "기안일자 및 시행 일자 (예: YYYY-MM-DD 형식, 문서 내의 시행 일자 '2026. 7. 8.' 등에서 추출하여 '2026-07-08'로 표기)",
+      "approveDate": "승인일자 및 시행 일자 (예: YYYY-MM-DD 형식, 문서 내의 시행 일자 '2026. 7. 8.' 등에서 추출하여 '2026-07-08'로 표기)",
+      "descriptionPurpose": "문서 내의 '가. 구매필요성' 또는 이에 상응하는 도입 목적/필요성 텍스트를 가능한 요약하지 않고 그대로 상세히 추출 (예: 'IT-OT의 통합 역량을 갖춘 특화 인력을 양성할 수 있으며...')",
       "descriptionPlan": "도입 완료 후 활용 및 인력 양성 기대효과 계획 2문장 요약"
     }
     [정보]:
@@ -1640,7 +1640,11 @@ export default function ProcurementManager({
           const strategicGoals = aiResult.goals ? aiResult.goals.join(", ") : "RISE 사업 전략 과제 추진";
           
           if (modalType === "service") {
-            nextData.purpose = aiResult.descriptionPurpose || nextData.purpose || `[AI 자동완성] ${nextData.title} 용역을 통해 RISE 사업의 전략 목표인 '${strategicGoals}'를 달성하고 고도화된 연구 성과를 창출하고자 함.`;
+            if (aiResult.descriptionPurpose) {
+              nextData.purpose = aiResult.descriptionPurpose;
+            } else if (!nextData.purpose) {
+              nextData.purpose = `[AI 자동완성] ${nextData.title} 용역을 통해 RISE 사업의 전략 목표인 '${strategicGoals}'를 달성하고 고도화된 연구 성과를 창출하고자 함.`;
+            }
             nextData.providerQual = nextData.providerQual || "관련 부문 인가 인증 보유 법인 및 대학용역 유사 실적 우수 사업자";
             nextData.opResult = nextData.opResult || "용역 일정 내 성과품 납품 완료 및 만족도 평가 결과 우수 등급 달성";
             
@@ -1651,9 +1655,17 @@ export default function ProcurementManager({
               nextData.dateRfo = aiResult.draftDate;
             }
           } else if (modalType === "env") {
-            nextData.purpose = aiResult.descriptionPurpose || nextData.purpose || `[AI 자동완성] 교육환경 개선 사업을 시행하여 시설 안정성을 확보하고 학생 친화적 학습 환경을 혁신하고자 함.`;
+            if (aiResult.descriptionPurpose) {
+              nextData.purpose = aiResult.descriptionPurpose;
+            } else if (!nextData.purpose) {
+              nextData.purpose = `[AI 자동완성] 교육환경 개선 사업을 시행하여 시설 안정성을 확보하고 학생 친화적 학습 환경을 혁신하고자 함.`;
+            }
             nextData.plan = nextData.plan || `전략 목표: ${strategicGoals}`;
-            nextData.utilization = aiResult.descriptionPlan || nextData.utilization || "학부생 공통 개방형 메이커 스페이스 및 교육 실습 공간으로 상시 개방 운영 예정";
+            if (aiResult.descriptionPlan) {
+              nextData.utilization = aiResult.descriptionPlan;
+            } else if (!nextData.utilization) {
+              nextData.utilization = "학부생 공통 개방형 메이커 스페이스 및 교육 실습 공간으로 상시 개방 운영 예정";
+            }
             
             // 환경개선(env) 날짜 기입 분기
             if (docType === "proposal") {
@@ -1667,8 +1679,17 @@ export default function ProcurementManager({
               }
             }
           } else {
-            nextData.descriptionPurpose = aiResult.descriptionPurpose || nextData.descriptionPurpose || `[AI 자동완성] ${nextData.name} 핵심 기자재를 도입하여 교육 실습 타당성을 확보하고 전략 목표인 '${strategicGoals}' 과제를 완성함.`;
-            nextData.descriptionPlan = aiResult.descriptionPlan || nextData.descriptionPlan || "도입 완료 후 시뮬레이션 고도화 전공 교과목 실습 기자재로 100% 매칭 활용하며, 연간 120명 이상의 전문 인력 실습 활용 기대.";
+            if (aiResult.descriptionPurpose) {
+              nextData.descriptionPurpose = aiResult.descriptionPurpose;
+            } else if (!nextData.descriptionPurpose) {
+              nextData.descriptionPurpose = `[AI 자동완성] ${nextData.name} 핵심 기자재를 도입하여 교육 실습 타당성을 확보하고 전략 목표인 '${strategicGoals}' 과제를 완성함.`;
+            }
+
+            if (aiResult.descriptionPlan) {
+              nextData.descriptionPlan = aiResult.descriptionPlan;
+            } else if (!nextData.descriptionPlan) {
+              nextData.descriptionPlan = "도입 완료 후 시뮬레이션 고도화 전공 교과목 실습 기자재로 100% 매칭 활용하며, 연간 120명 이상의 전문 인력 실습 활용 기대.";
+            }
             
             // 기자재(equip) 날짜 기입 분기 (기획문서는 PA에, 구매문서는 Pr에 각각 매핑)
             if (docType === "proposal") {
