@@ -100,15 +100,23 @@ body.light-mode {
   width: 12.6vw;
   min-width: 170px;
   max-width: 210px;
+  height: 100vh;
+  overflow-y: auto;
+  scrollbar-width: none; /* Firefox 스크롤바 숨김 */
+  -ms-overflow-style: none; /* IE/Edge 스크롤바 숨김 */
   flex-shrink: 0;
   background: var(--panel-bg-dark);
   border-right: 1px solid var(--border-color-dark);
   backdrop-filter: blur(16px);
-  padding: 1.5rem 0.5rem;
+  padding: 1.5rem 0.5rem 5rem 0.5rem; /* 하단 여유를 5rem으로 확대 */
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   transition: all 0.3s ease;
+}
+
+.sidebar::-webkit-scrollbar {
+  display: none; /* Chrome/Safari/Webkit 스크롤바 숨김 */
 }
 
 .light-mode .sidebar {
