@@ -134,7 +134,7 @@ const runAiMockAnalysis = (docType, textContent, itemName, deptName, totalPrice,
         descriptionPurpose: "[AI 자동완성] 로봇 핸드 핵심 기자재를 도입하여 지능형 로봇 및 정밀 제어를 위한 IT-OT 통합 하드웨어 실습 인프라를 확보하고 전략 과제를 완성함.",
         descriptionPlan: "도입 완료 후 AID-X지원센터 내 정밀 로봇 실습 교육 및 기자재 안정적 운용을 통해 산학 협력 경쟁력을 강화하고 연간 120명 이상의 전문 인력 실습 활용 기대."
       };
-    } else { // bid
+    } else if (docType === "bid") {
       return {
         docNo: "UC-EQ-B-500",
         method: "제한경쟁입찰 (협상에 의한 계약)",
@@ -149,6 +149,26 @@ const runAiMockAnalysis = (docType, textContent, itemName, deptName, totalPrice,
           "제조사 정품 공급 증명 및 기술 지원 확약서 제출 가능 업체"
         ],
         deadline: "2026-07-25 18:00"
+      };
+    } else { // check
+      return {
+        docNo: "앵커사업단운영팀-2144",
+        mgmtNo: "2026-10-00949",
+        fromDept: "AID-X지원센터",
+        toDept: "대학본부 총무팀",
+        itemName: "20DoF 로봇 핸드",
+        unitPrice: "8.8",
+        quantity: 2,
+        totalPrice: "17.6",
+        budget: "17,600천원",
+        specs: [
+          "20DoF 관절 파지 제어 정상 작동 및 외관 결함 없음 검수 필",
+          "현장 설치 및 실습 매뉴얼 납품 정합성 검증 완료"
+        ],
+        draftDate: "2026-07-18",
+        approveDate: "2026-07-20",
+        descriptionPurpose: "[AI 자동완성] 20DoF 로봇 핸드 검수조서에 근거하여 최종 물리 규격 및 정밀 실습 제어 인터페이스 정합성을 검수함.",
+        descriptionPlan: "검수 완료 후 AID-X지원센터 내 정밀 로봇 실습 교육 자원으로 즉각 관리 전환 및 운용 개시."
       };
     }
   }
@@ -338,7 +358,7 @@ const runAiMockAnalysis = (docType, textContent, itemName, deptName, totalPrice,
       descriptionPurpose: `[AI 자동완성] ${itemName || "도입 기자재"} 핵심 장비를 도입하여 전략 과제를 완수하고 실무 실습 교육 타당성을 강화함.`,
       descriptionPlan: "도입 완료 후 관련 전공 실무 과정의 주력 실습 장비로 지정하고 매년 100명 이상의 인력 양성에 상시 매칭 활용 예정."
     };
-  } else { // bid
+  } else if (docType === "bid") {
     return {
       docNo: `UC-EQ-B-${randomNo}`,
       method: "제한경쟁입찰 (협상에 의한 계약)",
@@ -353,6 +373,24 @@ const runAiMockAnalysis = (docType, textContent, itemName, deptName, totalPrice,
         "신속 사후 관리 A/S 기술 확약서 및 원제조업체 물품공급확약서 제출 가능 업체"
       ],
       deadline: "2026-07-25 18:00"
+    };
+  } else { // check
+    return {
+      docNo: `UC-EQ-C-${randomNo}`,
+      mgmtNo: `2026-10-00${randomNo}`, // 검수 시 가상 관리번호 생성
+      itemName: itemName || "정밀 의료 실습용 고해상도 초음파 진단기",
+      unitPrice: totalPrice ? (totalPrice / 1000).toString() : "120",
+      quantity: 1,
+      totalPrice: totalPrice ? (totalPrice / 1000).toString() : "120",
+      budget: `${priceThousand.toLocaleString()}천원`,
+      specs: [
+        "물품 사양 일치 검수 통과 및 성능 시험 검사 합격",
+        "기자재 입고 및 관리 라벨 부착 정상 확인"
+      ],
+      draftDate: "2026-07-18",
+      approveDate: "2026-07-20",
+      descriptionPurpose: `[AI 자동완성] ${itemName || "도입 기자재"} 검수조서에 기반하여 성능 규격을 최종 검수함.`,
+      descriptionPlan: "검수 완료에 따라 사업단 자산으로 정식 등록 및 실무 활용 개시."
     };
   }
 };
@@ -1335,8 +1373,23 @@ export default function ProcurementManager({
     const file = e.target.files[0];
     if (!file) return;
 
-    if (docType === "proposal" || docType === "purchase") {
-      const listKey = docType === "proposal" ? "docPlanFileList" : "docPurchaseFileList";
+    let listKey = "";
+    let fieldPrefix = "";
+    if (docType === "proposal") {
+      listKey = "docPlanFileList";
+      fieldPrefix = "docPlan";
+    } else if (docType === "purchase") {
+      listKey = "docPurchaseFileList";
+      fieldPrefix = "docPurchase";
+    } else if (docType === "bid") {
+      listKey = "docBidFileList";
+      fieldPrefix = "docBid";
+    } else if (docType === "check") {
+      listKey = "docCheckFileList";
+      fieldPrefix = "docCheck";
+    }
+
+    if (listKey) {
       const newFileItem = {
         id: Date.now() + Math.random().toString(36).substr(2, 5),
         name: file.name,
@@ -1354,57 +1407,52 @@ export default function ProcurementManager({
           ...prev,
           [listKey]: currentList,
           // 하위 호환성 유지: 첫 번째 등록 파일의 메타데이터를 기본 단일 필드에 자동 바인딩
-          [`${docType === "proposal" ? "docPlan" : "docPurchase"}FileName`]: currentList[0]?.name || "",
-          [`${docType === "proposal" ? "docPlan" : "docPurchase"}FileSize`]: currentList[0]?.size || 0
+          [`${fieldPrefix}FileName`]: currentList[0]?.name || "",
+          [`${fieldPrefix}FileSize`]: currentList[0]?.size || 0
         };
       });
 
       // 동일 파일을 지웠다가 다시 선택하는 경우에 대응하기 위해 인풋값 초기화
       e.target.value = "";
-    } else {
-      // 결과(입찰) 문서는 종전의 단일 업로드 방식 유지
-      const fieldPrefix = "docBid";
-      setFormData(prev => ({
-        ...prev,
-        [`${fieldPrefix}File`]: file,
-        [`${fieldPrefix}FileName`]: file.name,
-        [`${fieldPrefix}FileSize`]: file.size
-      }));
     }
   };
 
   const handleFileRemove = (docType, fileId) => {
-    if ((docType === "proposal" || docType === "purchase") && fileId) {
-      const listKey = docType === "proposal" ? "docPlanFileList" : "docPurchaseFileList";
+    let listKey = "";
+    let fieldPrefix = "";
+    let aiKey = "";
+    if (docType === "proposal") {
+      listKey = "docPlanFileList";
+      fieldPrefix = "docPlan";
+      aiKey = "Proposal";
+    } else if (docType === "purchase") {
+      listKey = "docPurchaseFileList";
+      fieldPrefix = "docPurchase";
+      aiKey = "Purchase";
+    } else if (docType === "bid") {
+      listKey = "docBidFileList";
+      fieldPrefix = "docBid";
+      aiKey = "Bid";
+    } else if (docType === "check") {
+      listKey = "docCheckFileList";
+      fieldPrefix = "docCheck";
+      aiKey = "Check";
+    }
+
+    if (listKey && fileId) {
       setFormData(prev => {
         const currentList = (prev[listKey] || []).filter(item => item.id !== fileId);
         return {
           ...prev,
           [listKey]: currentList,
           // 하위 호환성: 제거 후 남은 첫 번째 파일 정보로 상위 메타 덮어쓰기
-          [`${docType === "proposal" ? "docPlan" : "docPurchase"}FileName`]: currentList[0]?.name || "",
-          [`${docType === "proposal" ? "docPlan" : "docPurchase"}FileSize`]: currentList[0]?.size || 0,
-          [`${docType === "proposal" ? "docPlan" : "docPurchase"}FileUrl`]: currentList[0]?.url || "",
-          [`ai${docType === "proposal" ? "Proposal" : "Purchase"}Data`]: currentList[0]?.aiData || null,
-          [docType === "proposal" ? "docPlan" : "docPurchase"]: currentList[0]?.aiData?.docNo || ""
+          [`${fieldPrefix}FileName`]: currentList[0]?.name || "",
+          [`${fieldPrefix}FileSize`]: currentList[0]?.size || 0,
+          [`${fieldPrefix}FileUrl`]: currentList[0]?.url || "",
+          [`ai${aiKey}Data`]: currentList[0]?.aiData || null,
+          [fieldPrefix]: currentList[0]?.aiData?.docNo || ""
         };
       });
-    } else {
-      // 기존 단일 파일(결과/입찰 등) 제거 및 폴백 초기화
-      const fieldPrefix = docType === "proposal" ? "docPlan" : docType === "purchase" ? "docPurchase" : "docBid";
-      const progressSetter = docType === "proposal" ? setUploadProgressPlan : docType === "purchase" ? setUploadProgressPurchase : setUploadProgressBid;
-      
-      setFormData(prev => ({
-        ...prev,
-        [`${fieldPrefix}File`]: null,
-        [`${fieldPrefix}FileName`]: "",
-        [`${fieldPrefix}FileSize`]: 0,
-        [`${fieldPrefix}FileUrl`]: "",
-        [`ai${docType === "proposal" ? "Proposal" : docType === "purchase" ? "Purchase" : "Bid"}Data`]: null,
-        [fieldPrefix === "docPlan" ? "docPlan" : fieldPrefix === "docPurchase" ? "docPurchase" : "docBid"]: "",
-        [`${fieldPrefix}FileList`]: [] // 다중 리스트 초기화
-      }));
-      progressSetter(0);
     }
   };
 
@@ -1433,8 +1481,28 @@ export default function ProcurementManager({
   };
 
   const handleAnalyzeAndUpload = async (docType, fileId) => {
-    if ((docType === "proposal" || docType === "purchase") && fileId) {
-      const listKey = docType === "proposal" ? "docPlanFileList" : "docPurchaseFileList";
+    let listKey = "";
+    let fieldPrefix = "";
+    let aiKey = "";
+    if (docType === "proposal") {
+      listKey = "docPlanFileList";
+      fieldPrefix = "docPlan";
+      aiKey = "Proposal";
+    } else if (docType === "purchase") {
+      listKey = "docPurchaseFileList";
+      fieldPrefix = "docPurchase";
+      aiKey = "Purchase";
+    } else if (docType === "bid") {
+      listKey = "docBidFileList";
+      fieldPrefix = "docBid";
+      aiKey = "Bid";
+    } else if (docType === "check") {
+      listKey = "docCheckFileList";
+      fieldPrefix = "docCheck";
+      aiKey = "Check";
+    }
+
+    if (listKey && fileId) {
       const fileItem = (formData[listKey] || []).find(item => item.id === fileId);
       
       if (!fileItem) {
@@ -1554,16 +1622,16 @@ export default function ProcurementManager({
             ...prev,
             [listKey]: list,
             // 하위 호환성 유지: 첫 번째 파일 데이터를 롤업 동기화
-            [`ai${docType === "proposal" ? "Proposal" : "Purchase"}Data`]: list[0]?.aiData || null,
-            [`${docType === "proposal" ? "docPlan" : "docPurchase"}FileUrl`]: list[0]?.url || "",
-            [docType === "proposal" ? "docPlan" : "docPurchase"]: list[0]?.aiData?.docNo || ""
+            [`ai${aiKey}Data`]: list[0]?.aiData || null,
+            [`${fieldPrefix}FileUrl`]: list[0]?.url || "",
+            [fieldPrefix]: list[0]?.aiData?.docNo || ""
           };
 
           // [AI 자동채우기 핵심 로직 - AI 문서 기반 원클릭 행정 자동화 고도화]
           // 이전 입력 정보가 있더라도 AI가 분석한 업데이트된 핵심 명세 정보를 우선적으로 덮어씁니다.
           
-          // 0. 관리번호(asset_number) 매핑 (구매문서 분석 시 mgmtNo 추출한 경우)
-          if (docType === "purchase" && aiResult.mgmtNo) {
+          // 0. 관리번호(asset_number) 매핑 (1번 요건: 기획/구매가 아닌 검수문서 check 분석 시에만 mgmtNo 연동)
+          if (docType === "check" && aiResult.mgmtNo) {
             nextData.asset_number = aiResult.mgmtNo;
           }
 
@@ -2561,26 +2629,35 @@ export default function ProcurementManager({
       docPlan: "",
       docPurchase: "",
       docBid: "",
+      docCheck: "",
       docPlanContent: "",
       docPurchaseContent: "",
       docBidContent: "",
+      docCheckContent: "",
       aiProposalData: null,
       aiPurchaseData: null,
       aiBidData: null,
+      aiCheckData: null,
       docPlanFileList: [],
       docPurchaseFileList: [],
+      docBidFileList: [],
+      docCheckFileList: [],
       docPlanFile: null,
       docPurchaseFile: null,
       docBidFile: null,
+      docCheckFile: null,
       docPlanFileName: "",
       docPurchaseFileName: "",
       docBidFileName: "",
+      docCheckFileName: "",
       docPlanFileSize: 0,
       docPurchaseFileSize: 0,
       docBidFileSize: 0,
+      docCheckFileSize: 0,
       docPlanFileUrl: "",
       docPurchaseFileUrl: "",
       docBidFileUrl: "",
+      docCheckFileUrl: "",
       providerQual: "",
       opResult: "",
       
@@ -2643,12 +2720,15 @@ export default function ProcurementManager({
       docPlan: equip.docPlan || docParts[0] || "",
       docPurchase: equip.docPurchase || docParts[1] || "",
       docBid: equip.docBid || docParts[2] || "",
+      docCheck: equip.docCheck || docParts[3] || "",
       docPlanContent: equip.docPlanContent || "",
       docPurchaseContent: equip.docPurchaseContent || "",
       docBidContent: equip.docBidContent || "",
+      docCheckContent: equip.docCheckContent || "",
       aiProposalData: equip.aiProposalData || null,
       aiPurchaseData: equip.aiPurchaseData || null,
       aiBidData: equip.aiBidData || null,
+      aiCheckData: equip.aiCheckData || null,
       docPlanFileList: equip.docPlanFileList || (equip.docPlanFileName ? [{
         id: "legacy-plan",
         name: equip.docPlanFileName,
@@ -2663,18 +2743,36 @@ export default function ProcurementManager({
         url: equip.docPurchaseFileUrl || "",
         aiData: equip.aiPurchaseData || null
       }] : []),
+      docBidFileList: equip.docBidFileList || (equip.docBidFileName ? [{
+        id: "legacy-bid",
+        name: equip.docBidFileName,
+        size: equip.docBidFileSize || 0,
+        url: equip.docBidFileUrl || "",
+        aiData: equip.aiBidData || null
+      }] : []),
+      docCheckFileList: equip.docCheckFileList || (equip.docCheckFileName ? [{
+        id: "legacy-check",
+        name: equip.docCheckFileName,
+        size: equip.docCheckFileSize || 0,
+        url: equip.docCheckFileUrl || "",
+        aiData: equip.aiCheckData || null
+      }] : []),
       docPlanFile: null,
       docPurchaseFile: null,
       docBidFile: null,
+      docCheckFile: null,
       docPlanFileName: equip.docPlanFileName || "",
       docPurchaseFileName: equip.docPurchaseFileName || "",
       docBidFileName: equip.docBidFileName || "",
+      docCheckFileName: equip.docCheckFileName || "",
       docPlanFileSize: equip.docPlanFileSize || 0,
       docPurchaseFileSize: equip.docPurchaseFileSize || 0,
       docBidFileSize: equip.docBidFileSize || 0,
+      docCheckFileSize: equip.docCheckFileSize || 0,
       docPlanFileUrl: equip.docPlanFileUrl || "",
       docPurchaseFileUrl: equip.docPurchaseFileUrl || "",
       docBidFileUrl: equip.docBidFileUrl || "",
+      docCheckFileUrl: equip.docCheckFileUrl || "",
       
       // 기존 기자재 5대 날짜
       dateP: equip.dateP || "",
@@ -5942,70 +6040,135 @@ export default function ProcurementManager({
                         </div>
                       </div>
 
-                      {/* 3. 입찰/결과문서 업로드 및 AI 분석 */}
+                      {/* 3. 입찰/결과문서 업로드 및 AI 분석 (다중 파일 업로드 지원) */}
                       <div style={{ background: "rgba(255,255,255,0.01)", padding: "0.85rem", borderRadius: "8px", border: "1px solid rgba(255,255,255,0.04)" }}>
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.5rem" }}>
                           <span style={{ fontSize: "0.8rem", fontWeight: "800", color: "#34D399" }}>
                             {modalType === "env" ? "3. 결과문서 (시설안전관리팀)" : "3. 입찰문서 (총무팀 작성)"}
                           </span>
-                          {formData.aiBidData && (
-                            <span style={{ fontSize: "0.72rem", color: "#10B981", fontWeight: "800" }}>
-                              ✅ AI 분석완료 ({formData.aiBidData.docNo})
-                            </span>
-                          )}
                         </div>
                         
-                        <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-                          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                            <input 
-                              type="file" 
-                              id="file-bid-upload" 
-                              accept=".pdf,.doc,.docx,.hwp,.txt" 
-                              onChange={(e) => handleFileChange("bid", e)} 
-                              style={{ display: "none" }} 
-                            />
-                            
-                            {formData.docBidFileName ? (
-                              <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", flex: 1, background: "rgba(0,0,0,0.3)", padding: "0.4rem 0.6rem", borderRadius: "6px", border: "1px solid rgba(255,255,255,0.1)" }}>
-                                <span style={{ fontSize: "0.78rem", color: "white", textOverflow: "ellipsis", overflow: "hidden", whiteSpace: "nowrap", flex: 1 }}>
-                                  📄 {formData.docBidFileName} ({formatToThousandWon(formData.docBidFileSize)} KB)
+                        <div style={{ display: "flex", flexDirection: "column", gap: "0.6rem" }}>
+                          <input 
+                            type="file" 
+                            id="file-bid-upload" 
+                            accept=".pdf,.doc,.docx,.hwp,.txt" 
+                            onChange={(e) => handleFileChange("bid", e)} 
+                            style={{ display: "none" }} 
+                          />
+
+                          {/* 업로드된 다중 입찰문서 목록 루프 */}
+                          {(formData.docBidFileList || []).map((fileItem) => (
+                            <div key={fileItem.id} style={{ display: "flex", flexDirection: "column", gap: "0.25rem", background: "rgba(0,0,0,0.3)", padding: "0.45rem 0.6rem", borderRadius: "6px", border: "1px solid rgba(255,255,255,0.05)" }}>
+                              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "0.5rem" }}>
+                                <span style={{ fontSize: "0.75rem", color: "white", textOverflow: "ellipsis", overflow: "hidden", whiteSpace: "nowrap", flex: 1 }} title={fileItem.name}>
+                                  📄 {fileItem.name} ({formatToThousandWon(fileItem.size)} KB)
                                 </span>
-                                <button 
-                                  type="button" 
-                                  onClick={() => handleFileRemove("bid")} 
-                                  style={{ background: "transparent", border: "none", color: "#EF4444", cursor: "pointer", padding: "0.2rem" }}
-                                  title="파일 제거"
-                                >
-                                  <Trash2 size={14} />
-                                </button>
+                                <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
+                                  {fileItem.aiData ? (
+                                    <span style={{ fontSize: "0.7rem", color: "#10B981", fontWeight: "800" }}>
+                                      ✅ AI 분석완료 ({fileItem.aiData.docNo})
+                                    </span>
+                                  ) : (
+                                    <button
+                                      type="button"
+                                      onClick={() => handleAnalyzeAndUpload("bid", fileItem.id)}
+                                      disabled={fileItem.isAnalyzing}
+                                      style={{ padding: "0.25rem 0.6rem", fontSize: "0.68rem", background: "#34D399", border: "none", color: "white", borderRadius: "4px", fontWeight: "700", cursor: "pointer" }}
+                                    >
+                                      {fileItem.isAnalyzing ? "분석중..." : "AI 분석"}
+                                    </button>
+                                  )}
+                                  <button 
+                                    type="button" 
+                                    onClick={() => handleFileRemove("bid", fileItem.id)} 
+                                    style={{ background: "transparent", border: "none", color: "#EF4444", cursor: "pointer", padding: "0.15rem" }}
+                                    title="파일 제거"
+                                  >
+                                    <Trash2 size={13} />
+                                  </button>
+                                </div>
                               </div>
-                            ) : (
-                              <label 
-                                htmlFor="file-bid-upload" 
-                                style={{ display: "block", flex: 1, textAlign: "center", padding: "0.6rem", border: "1px dashed rgba(255,255,255,0.2)", borderRadius: "6px", cursor: "pointer", background: "rgba(255,255,255,0.02)", fontSize: "0.75rem", color: "var(--text-secondary)", transition: "background 0.2s" }}
-                                onMouseOver={(e) => e.target.style.background = "rgba(255,255,255,0.05)"}
-                                onMouseOut={(e) => e.target.style.background = "rgba(255,255,255,0.02)"}
-                              >
-                                {modalType === "env" ? "📎 결과보고서 관련 문서 선택 (.pdf, .docx, .hwp)" : "📎 입찰공고/규격서 파일 선택 (.pdf, .docx, .hwp)"}
-                              </label>
-                            )}
-
-                            <button
-                              type="button"
-                              onClick={() => handleAnalyzeAndUpload("bid")}
-                              disabled={isAnalyzingBid}
-                              style={{ padding: "0.5rem 1.1rem", fontSize: "0.75rem", background: "#10b981", border: "none", color: "white", borderRadius: "6px", fontWeight: "700", cursor: "pointer", opacity: isAnalyzingBid ? 0.6 : 1, transition: "background 0.2s" }}
-                            >
-                              {isAnalyzingBid ? "분석 중..." : "AI 분석"}
-                            </button>
-                          </div>
-
-                          {/* 업로드 프로그레스 바 */}
-                          {uploadProgressBid > 0 && (
-                            <div style={{ width: "100%", height: "4px", background: "rgba(255,255,255,0.1)", borderRadius: "2px", overflow: "hidden" }}>
-                              <div style={{ width: `${uploadProgressBid}%`, height: "100%", background: "#10b981", transition: "width 0.15s ease-out" }} />
+                              {fileItem.uploadProgress > 0 && fileItem.uploadProgress < 100 && (
+                                <div style={{ width: "100%", height: "3px", background: "rgba(255,255,255,0.05)", borderRadius: "1.5px", overflow: "hidden" }}>
+                                  <div style={{ width: `${fileItem.uploadProgress}%`, height: "100%", background: "#34D399" }} />
+                                </div>
+                              )}
                             </div>
-                          )}
+                          ))}
+                          
+                          <label 
+                            htmlFor="file-bid-upload" 
+                            style={{ display: "block", textAlign: "center", padding: "0.45rem", border: "1px dashed rgba(255,255,255,0.2)", borderRadius: "6px", cursor: "pointer", background: "rgba(255,255,255,0.01)", fontSize: "0.72rem", color: "var(--text-secondary)" }}
+                          >
+                            {modalType === "env" ? "➕ 신규 결과문서 추가 업로드 (.pdf, .docx, .hwp)" : "➕ 신규 입찰문서 추가 업로드 (.pdf, .docx, .hwp)"}
+                          </label>
+                        </div>
+                      </div>
+
+                      {/* 4. 검수문서 업로드 및 AI 분석 (다중 파일 업로드 지원 - 요건 2 반영) */}
+                      <div style={{ background: "rgba(255,255,255,0.01)", padding: "0.85rem", borderRadius: "8px", border: "1px solid rgba(255,255,255,0.04)" }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.5rem" }}>
+                          <span style={{ fontSize: "0.8rem", fontWeight: "800", color: "#FB7185" }}>
+                            4. 검수문서 (사업단/총무팀 공동)
+                          </span>
+                        </div>
+                        
+                        <div style={{ display: "flex", flexDirection: "column", gap: "0.6rem" }}>
+                          <input 
+                            type="file" 
+                            id="file-check-upload" 
+                            accept=".pdf,.doc,.docx,.hwp,.txt" 
+                            onChange={(e) => handleFileChange("check", e)} 
+                            style={{ display: "none" }} 
+                          />
+
+                          {/* 업로드된 다중 검수문서 목록 루프 */}
+                          {(formData.docCheckFileList || []).map((fileItem) => (
+                            <div key={fileItem.id} style={{ display: "flex", flexDirection: "column", gap: "0.25rem", background: "rgba(0,0,0,0.3)", padding: "0.45rem 0.6rem", borderRadius: "6px", border: "1px solid rgba(255,255,255,0.05)" }}>
+                              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "0.5rem" }}>
+                                <span style={{ fontSize: "0.75rem", color: "white", textOverflow: "ellipsis", overflow: "hidden", whiteSpace: "nowrap", flex: 1 }} title={fileItem.name}>
+                                  📄 {fileItem.name} ({formatToThousandWon(fileItem.size)} KB)
+                                </span>
+                                <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
+                                  {fileItem.aiData ? (
+                                    <span style={{ fontSize: "0.7rem", color: "#10B981", fontWeight: "800" }}>
+                                      ✅ AI 분석완료 ({fileItem.aiData.docNo})
+                                    </span>
+                                  ) : (
+                                    <button
+                                      type="button"
+                                      onClick={() => handleAnalyzeAndUpload("check", fileItem.id)}
+                                      disabled={fileItem.isAnalyzing}
+                                      style={{ padding: "0.25rem 0.6rem", fontSize: "0.68rem", background: "#FB7185", border: "none", color: "white", borderRadius: "4px", fontWeight: "700", cursor: "pointer" }}
+                                    >
+                                      {fileItem.isAnalyzing ? "분석중..." : "AI 분석"}
+                                    </button>
+                                  )}
+                                  <button 
+                                    type="button" 
+                                    onClick={() => handleFileRemove("check", fileItem.id)} 
+                                    style={{ background: "transparent", border: "none", color: "#EF4444", cursor: "pointer", padding: "0.15rem" }}
+                                    title="파일 제거"
+                                  >
+                                    <Trash2 size={13} />
+                                  </button>
+                                </div>
+                              </div>
+                              {fileItem.uploadProgress > 0 && fileItem.uploadProgress < 100 && (
+                                <div style={{ width: "100%", height: "3px", background: "rgba(255,255,255,0.05)", borderRadius: "1.5px", overflow: "hidden" }}>
+                                  <div style={{ width: `${fileItem.uploadProgress}%`, height: "100%", background: "#FB7185" }} />
+                                </div>
+                              )}
+                            </div>
+                          ))}
+                          
+                          <label 
+                            htmlFor="file-check-upload" 
+                            style={{ display: "block", textAlign: "center", padding: "0.45rem", border: "1px dashed rgba(255,255,255,0.2)", borderRadius: "6px", cursor: "pointer", background: "rgba(255,255,255,0.01)", fontSize: "0.72rem", color: "var(--text-secondary)" }}
+                          >
+                            ➕ 신규 검수문서 추가 업로드 (.pdf, .docx, .hwp)
+                          </label>
                         </div>
                       </div>
 
@@ -6733,10 +6896,22 @@ export default function ProcurementManager({
               {activeAi ? (
                 <div style={{ display: "flex", flexDirection: "column", gap: "1.2rem", fontSize: "0.85rem" }}>
                   <div style={{ background: "rgba(167, 139, 250, 0.08)", padding: "0.85rem", borderRadius: "8px", border: "1px solid rgba(167, 139, 250, 0.25)" }}>
-                    <span style={{ fontSize: "0.72rem", color: "#D8B4FE", display: "block", marginBottom: "0.2rem", fontWeight: "700" }}>📦 구매문서 결재번호 (AI 분석 완료)</span>
-                    <strong style={{ fontFamily: "monospace", color: "#FBBF24", fontSize: "1.2rem", letterSpacing: "0.5px" }}>
-                      {activeAi.docNo}
-                    </strong>
+                    <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                      <div>
+                        <span style={{ fontSize: "0.72rem", color: "#D8B4FE", display: "block", marginBottom: "0.2rem", fontWeight: "700" }}>📦 구매문서 결재번호 (AI 분석 완료)</span>
+                        <strong style={{ fontFamily: "monospace", color: "#FBBF24", fontSize: "1.2rem", letterSpacing: "0.5px" }}>
+                          {activeAi.docNo}
+                        </strong>
+                      </div>
+                      {activeAi.mgmtNo && (
+                        <div style={{ borderTop: "1px dashed rgba(255,255,255,0.15)", paddingTop: "0.4rem" }}>
+                          <span style={{ fontSize: "0.72rem", color: "#D8B4FE", display: "block", marginBottom: "0.2rem", fontWeight: "700" }}>⚙️ 기자재 관리번호</span>
+                          <strong style={{ fontFamily: "monospace", color: "#34D399", fontSize: "1.15rem", letterSpacing: "0.5px" }}>
+                            {activeAi.mgmtNo}
+                          </strong>
+                        </div>
+                      )}
+                    </div>
                   </div>
                   <div>
                     <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)", display: "block" }}>품명 및 수량</span>
