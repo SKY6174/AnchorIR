@@ -5797,9 +5797,51 @@ export default function ProcurementManager({
                                 </span>
                                 <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
                                   {fileItem.aiData ? (
-                                    <span style={{ fontSize: "0.7rem", color: "#10B981", fontWeight: "800" }}>
-                                      ✅ AI 분석완료 ({fileItem.aiData.docNo})
-                                    </span>
+                                    <div style={{ display: "flex", alignItems: "center", gap: "0.35rem" }}>
+                                      <span style={{ 
+                                        fontSize: "0.7rem", 
+                                        color: darkMode ? "#4ade80" : "#059669", 
+                                        background: darkMode ? "rgba(74, 222, 128, 0.15)" : "rgba(5, 150, 105, 0.08)", 
+                                        border: darkMode ? "1px solid rgba(74, 222, 128, 0.3)" : "1px solid rgba(5, 150, 105, 0.2)",
+                                        borderRadius: "12px",
+                                        padding: "0.15rem 0.5rem",
+                                        fontWeight: "800",
+                                        display: "inline-flex",
+                                        alignItems: "center",
+                                        gap: "0.2rem"
+                                      }}>
+                                        ✅ AI 분석완료 ({fileItem.aiData.docNo})
+                                      </span>
+                                      <button
+                                        type="button"
+                                        onClick={() => handleAnalyzeAndUpload("proposal", fileItem.id)}
+                                        disabled={fileItem.isAnalyzing}
+                                        style={{
+                                          padding: "0.15rem 0.45rem",
+                                          fontSize: "0.65rem",
+                                          background: "rgba(255,255,255,0.06)",
+                                          border: "1px solid var(--border-color)",
+                                          color: "var(--text-secondary)",
+                                          borderRadius: "4px",
+                                          cursor: "pointer",
+                                          transition: "all 0.15s",
+                                          fontWeight: "700"
+                                        }}
+                                        onMouseOver={(e) => {
+                                          e.currentTarget.style.background = "rgba(59, 130, 246, 0.12)";
+                                          e.currentTarget.style.borderColor = "#3b82f6";
+                                          e.currentTarget.style.color = "#3b82f6";
+                                        }}
+                                        onMouseOut={(e) => {
+                                          e.currentTarget.style.background = "rgba(255,255,255,0.06)";
+                                          e.currentTarget.style.borderColor = "var(--border-color)";
+                                          e.currentTarget.style.color = "var(--text-secondary)";
+                                        }}
+                                        title="현재 설정된 AI 모델로 문서 재분석 수행"
+                                      >
+                                        {fileItem.isAnalyzing ? "분석중..." : "재분석"}
+                                      </button>
+                                    </div>
                                   ) : (
                                     <button
                                       type="button"
@@ -5863,9 +5905,51 @@ export default function ProcurementManager({
                                 </span>
                                 <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
                                   {fileItem.aiData ? (
-                                    <span style={{ fontSize: "0.7rem", color: "#10B981", fontWeight: "800" }}>
-                                      ✅ AI 분석완료 ({fileItem.aiData.docNo})
-                                    </span>
+                                    <div style={{ display: "flex", alignItems: "center", gap: "0.35rem" }}>
+                                      <span style={{ 
+                                        fontSize: "0.7rem", 
+                                        color: darkMode ? "#4ade80" : "#059669", 
+                                        background: darkMode ? "rgba(74, 222, 128, 0.15)" : "rgba(5, 150, 105, 0.08)", 
+                                        border: darkMode ? "1px solid rgba(74, 222, 128, 0.3)" : "1px solid rgba(5, 150, 105, 0.2)",
+                                        borderRadius: "12px",
+                                        padding: "0.15rem 0.5rem",
+                                        fontWeight: "800",
+                                        display: "inline-flex",
+                                        alignItems: "center",
+                                        gap: "0.2rem"
+                                      }}>
+                                        ✅ AI 분석완료 ({fileItem.aiData.docNo})
+                                      </span>
+                                      <button
+                                        type="button"
+                                        onClick={() => handleAnalyzeAndUpload("purchase", fileItem.id)}
+                                        disabled={fileItem.isAnalyzing}
+                                        style={{
+                                          padding: "0.15rem 0.45rem",
+                                          fontSize: "0.65rem",
+                                          background: "rgba(255,255,255,0.06)",
+                                          border: "1px solid var(--border-color)",
+                                          color: "var(--text-secondary)",
+                                          borderRadius: "4px",
+                                          cursor: "pointer",
+                                          transition: "all 0.15s",
+                                          fontWeight: "700"
+                                        }}
+                                        onMouseOver={(e) => {
+                                          e.currentTarget.style.background = "rgba(167, 139, 250, 0.12)";
+                                          e.currentTarget.style.borderColor = "#a78bfa";
+                                          e.currentTarget.style.color = "#a78bfa";
+                                        }}
+                                        onMouseOut={(e) => {
+                                          e.currentTarget.style.background = "rgba(255,255,255,0.06)";
+                                          e.currentTarget.style.borderColor = "var(--border-color)";
+                                          e.currentTarget.style.color = "var(--text-secondary)";
+                                        }}
+                                        title="현재 설정된 AI 모델로 문서 재분석 수행"
+                                      >
+                                        {fileItem.isAnalyzing ? "분석중..." : "재분석"}
+                                      </button>
+                                    </div>
                                   ) : (
                                     <button
                                       type="button"
@@ -5929,9 +6013,51 @@ export default function ProcurementManager({
                                 </span>
                                 <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
                                   {fileItem.aiData ? (
-                                    <span style={{ fontSize: "0.7rem", color: "#10B981", fontWeight: "800" }}>
-                                      ✅ AI 분석완료 ({fileItem.aiData.docNo})
-                                    </span>
+                                    <div style={{ display: "flex", alignItems: "center", gap: "0.35rem" }}>
+                                      <span style={{ 
+                                        fontSize: "0.7rem", 
+                                        color: darkMode ? "#4ade80" : "#059669", 
+                                        background: darkMode ? "rgba(74, 222, 128, 0.15)" : "rgba(5, 150, 105, 0.08)", 
+                                        border: darkMode ? "1px solid rgba(74, 222, 128, 0.3)" : "1px solid rgba(5, 150, 105, 0.2)",
+                                        borderRadius: "12px",
+                                        padding: "0.15rem 0.5rem",
+                                        fontWeight: "800",
+                                        display: "inline-flex",
+                                        alignItems: "center",
+                                        gap: "0.2rem"
+                                      }}>
+                                        ✅ AI 분석완료 ({fileItem.aiData.docNo})
+                                      </span>
+                                      <button
+                                        type="button"
+                                        onClick={() => handleAnalyzeAndUpload("bid", fileItem.id)}
+                                        disabled={fileItem.isAnalyzing}
+                                        style={{
+                                          padding: "0.15rem 0.45rem",
+                                          fontSize: "0.65rem",
+                                          background: "rgba(255,255,255,0.06)",
+                                          border: "1px solid var(--border-color)",
+                                          color: "var(--text-secondary)",
+                                          borderRadius: "4px",
+                                          cursor: "pointer",
+                                          transition: "all 0.15s",
+                                          fontWeight: "700"
+                                        }}
+                                        onMouseOver={(e) => {
+                                          e.currentTarget.style.background = "rgba(52, 211, 153, 0.12)";
+                                          e.currentTarget.style.borderColor = "#34d399";
+                                          e.currentTarget.style.color = "#34d399";
+                                        }}
+                                        onMouseOut={(e) => {
+                                          e.currentTarget.style.background = "rgba(255,255,255,0.06)";
+                                          e.currentTarget.style.borderColor = "var(--border-color)";
+                                          e.currentTarget.style.color = "var(--text-secondary)";
+                                        }}
+                                        title="현재 설정된 AI 모델로 문서 재분석 수행"
+                                      >
+                                        {fileItem.isAnalyzing ? "분석중..." : "재분석"}
+                                      </button>
+                                    </div>
                                   ) : (
                                     <button
                                       type="button"
@@ -5995,9 +6121,51 @@ export default function ProcurementManager({
                                 </span>
                                 <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
                                   {fileItem.aiData ? (
-                                    <span style={{ fontSize: "0.7rem", color: "#10B981", fontWeight: "800" }}>
-                                      ✅ AI 분석완료 ({fileItem.aiData.docNo})
-                                    </span>
+                                    <div style={{ display: "flex", alignItems: "center", gap: "0.35rem" }}>
+                                      <span style={{ 
+                                        fontSize: "0.7rem", 
+                                        color: darkMode ? "#4ade80" : "#059669", 
+                                        background: darkMode ? "rgba(74, 222, 128, 0.15)" : "rgba(5, 150, 105, 0.08)", 
+                                        border: darkMode ? "1px solid rgba(74, 222, 128, 0.3)" : "1px solid rgba(5, 150, 105, 0.2)",
+                                        borderRadius: "12px",
+                                        padding: "0.15rem 0.5rem",
+                                        fontWeight: "800",
+                                        display: "inline-flex",
+                                        alignItems: "center",
+                                        gap: "0.2rem"
+                                      }}>
+                                        ✅ AI 분석완료 ({fileItem.aiData.docNo})
+                                      </span>
+                                      <button
+                                        type="button"
+                                        onClick={() => handleAnalyzeAndUpload("check", fileItem.id)}
+                                        disabled={fileItem.isAnalyzing}
+                                        style={{
+                                          padding: "0.15rem 0.45rem",
+                                          fontSize: "0.65rem",
+                                          background: "rgba(255,255,255,0.06)",
+                                          border: "1px solid var(--border-color)",
+                                          color: "var(--text-secondary)",
+                                          borderRadius: "4px",
+                                          cursor: "pointer",
+                                          transition: "all 0.15s",
+                                          fontWeight: "700"
+                                        }}
+                                        onMouseOver={(e) => {
+                                          e.currentTarget.style.background = "rgba(251, 113, 133, 0.12)";
+                                          e.currentTarget.style.borderColor = "#FB7185";
+                                          e.currentTarget.style.color = "#FB7185";
+                                        }}
+                                        onMouseOut={(e) => {
+                                          e.currentTarget.style.background = "rgba(255,255,255,0.06)";
+                                          e.currentTarget.style.borderColor = "var(--border-color)";
+                                          e.currentTarget.style.color = "var(--text-secondary)";
+                                        }}
+                                        title="현재 설정된 AI 모델로 문서 재분석 수행"
+                                      >
+                                        {fileItem.isAnalyzing ? "분석중..." : "재분석"}
+                                      </button>
+                                    </div>
                                   ) : (
                                     <button
                                       type="button"
