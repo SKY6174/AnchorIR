@@ -106,10 +106,11 @@ const runAiMockAnalysis = (docType, textContent, itemName, deptName, totalPrice,
       };
     } else if (docType === "purchase") {
       return {
-        docNo: "UC-EQ-PR-456",
+        docNo: "앵커사업단운영팀-1950",
+        mgmtNo: "2026-10-00949",
         fromDept: "앵커사업단운영팀",
         toDept: "대학본부 총무팀",
-        itemName: "20DoF 로봇 핸드",
+        itemName: "로봇 핸드",
         unitPrice: "8.8",
         quantity: 2,
         totalPrice: "17.6",
@@ -122,7 +123,7 @@ const runAiMockAnalysis = (docType, textContent, itemName, deptName, totalPrice,
         ],
         draftDate: "2026-07-06",
         approveDate: "2026-07-08",
-        descriptionPurpose: "[AI 자동완성] 20DoF 로봇 핸드 핵심 기자재를 도입하여 지능형 로봇 및 정밀 제어를 위한 IT-OT 통합 하드웨어 실습 인프라를 확보하고 전략 과제를 완성함.",
+        descriptionPurpose: "[AI 자동완성] 로봇 핸드 핵심 기자재를 도입하여 지능형 로봇 및 정밀 제어를 위한 IT-OT 통합 하드웨어 실습 인프라를 확보하고 전략 과제를 완성함.",
         descriptionPlan: "도입 완료 후 AID-X지원센터 내 정밀 로봇 실습 교육 및 기자재 안정적 운용을 통해 산학 협력 경쟁력을 강화하고 연간 120명 이상의 전문 인력 실습 활용 기대."
       };
     } else { // bid
@@ -376,15 +377,17 @@ const callOpenAiGpt = async (docType, fileName, textContent, itemName, deptName,
     - 문서 텍스트: ${textContent || "기재 없음"}`,
 
     purchase: `당신은 대학 조달 담당자입니다. 아래 구매요청 문서정보를 분석하여, 다음 JSON 스키마를 만족하는 요약본을 JSON 모드로 응답하십시오.
+    특히, 문서 상단의 결재란 부근 등에서 '문서번호'와 '관리번호'를 검색하여 반드시 정확하게 추출하십시오.
     [스키마]:
     {
-      "docNo": "구매문서 결재번호 (예: UC-EQ-PR로 시작하는 고유번호 생성)",
+      "docNo": "구매문서 결재란 부근 등에서 추출한 문서번호 (예: '앵커사업단운영팀-1950', 문서 상에 문서번호가 보이지 않으면 UC-EQ-PR로 시작하는 고유번호 생성)",
+      "mgmtNo": "구매문서 결재란 부근 등에서 추출한 관리번호 (예: '2026-10-00949', 문서 상에 관리번호가 보이지 않으면 공백 생성)",
       "fromDept": "발신 부서 또는 학과 명칭",
       "toDept": "수신 부서 (보통 대학본부 총무팀)",
-      "itemName": "구매 요청하는 대표 기자재 품명",
-      "unitPrice": "단가 (백만 원 단위 소수점 추출, 예: 8.8)",
+      "itemName": "구매 요청하는 대표 기자재 품명 (예: 로봇 핸드)",
+      "unitPrice": "단가 (원화 금액을 백만 원 단위 소수점으로 정확하게 추출, 예: 8,800,000원은 8.8)",
       "quantity": "수량 (정수형, 예: 2)",
-      "totalPrice": "총액 (백만 원 단위 소수점 추출, 예: 17.6)",
+      "totalPrice": "총액 (원화 금액을 백만 원 단위 소수점으로 정확하게 추출, 예: 17,600,000원은 17.6)",
       "unit": "해당 단위과제 코드 (예: B2, C2 등 정확한 코드 추출)",
       "budget": "도입 소요예산 (예: 17,600천원 형식)",
       "specs": ["조달 위탁 요청 기술 사양 핵심 3가지"],
@@ -515,15 +518,17 @@ const callGeminiSingleAnalysis = async (docType, fileName, textContent, itemName
     - 문서 텍스트: ${textContent || "기재 없음"}`,
 
     purchase: `당신은 대학 조달 담당자입니다. 아래 구매요청 문서정보를 분석하여, 다음 JSON 스키마를 만족하는 요약본을 JSON 모드로 응답하십시오.
+    특히, 문서 상단의 결재란 부근 등에서 '문서번호'와 '관리번호'를 검색하여 반드시 정확하게 추출하십시오.
     [스키마]:
     {
-      "docNo": "구매문서 결재번호 (예: UC-EQ-PR로 시작하는 고유번호 생성)",
+      "docNo": "구매문서 결재란 부근 등에서 추출한 문서번호 (예: '앵커사업단운영팀-1950', 문서 상에 문서번호가 보이지 않으면 UC-EQ-PR로 시작하는 고유번호 생성)",
+      "mgmtNo": "구매문서 결재란 부근 등에서 추출한 관리번호 (예: '2026-10-00949', 문서 상에 관리번호가 보이지 않으면 공백 생성)",
       "fromDept": "발신 부서 또는 학과 명칭",
       "toDept": "수신 부서 (보통 대학본부 총무팀)",
-      "itemName": "구매 요청하는 대표 기자재 품명",
-      "unitPrice": "단가 (백만 원 단위 소수점 추출, 예: 8.8)",
+      "itemName": "구매 요청하는 대표 기자재 품명 (예: 로봇 핸드)",
+      "unitPrice": "단가 (원화 금액을 백만 원 단위 소수점으로 정확하게 추출, 예: 8,800,000원은 8.8)",
       "quantity": "수량 (정수형, 예: 2)",
-      "totalPrice": "총액 (백만 원 단위 소수점 추출, 예: 17.6)",
+      "totalPrice": "총액 (원화 금액을 백만 원 단위 소수점으로 정확하게 추출, 예: 17,600,000원은 17.6)",
       "unit": "해당 단위과제 코드 (예: B2, C2 등 정확한 코드 추출)",
       "budget": "도입 소요예산 (예: 17,600천원 형식)",
       "specs": ["조달 위탁 요청 기술 사양 핵심 3가지"],
@@ -1521,6 +1526,11 @@ export default function ProcurementManager({
           // [AI 자동채우기 핵심 로직 - AI 문서 기반 원클릭 행정 자동화 고도화]
           // 이전 입력 정보가 있더라도 AI가 분석한 업데이트된 핵심 명세 정보를 우선적으로 덮어씁니다.
           
+          // 0. 관리번호(asset_number) 매핑 (구매문서 분석 시 mgmtNo 추출한 경우)
+          if (docType === "purchase" && aiResult.mgmtNo) {
+            nextData.asset_number = aiResult.mgmtNo;
+          }
+
           // 1. 단가 및 예산 매핑 (백만원 / 천원 단위 정합성 고려)
           if (aiResult.unitPrice) {
             nextData.unitPrice = Number(aiResult.unitPrice);
