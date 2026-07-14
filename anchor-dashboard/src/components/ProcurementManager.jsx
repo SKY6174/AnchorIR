@@ -1029,13 +1029,7 @@ export default function ProcurementManager({
           // 5. 수량 기본값 1개 세팅
           nextData.quantity = 1;
 
-          // 6. 기자재 바코드 및 관리번호 난수 발급 (행정 편의성 제공)
-          if (!prev.barcode) {
-            nextData.barcode = "8809" + Math.floor(10000000 + Math.random() * 90000000);
-          }
-          if (!prev.asset_number) {
-            nextData.asset_number = `AIDX-EQ-2026-${Math.floor(100 + Math.random() * 900)}`;
-          }
+          // 6. 기자재 바코드는 현재 운영계획이 없고 관리번호는 검수 마친 후 수동 기재하므로 자동완성 영역에서 생략
 
           // 7. 기획 목적 및 활용계획 자동 추출 바인딩 (구입목적, 활용계획)
           const strategicGoals = aiResult.goals ? aiResult.goals.join(", ") : "RISE 사업 전략 과제 추진";
@@ -4881,30 +4875,19 @@ export default function ProcurementManager({
                   <span style={{ fontSize: "0.75rem", color: "#fbbf24", display: "block", marginTop: "-0.5rem" }}>
                     * 학과 또는 부서 중 최소 한 곳은 필수로 지정되어야 합니다.
                   </span>
-                  {/* 기자재 바코드 및 관리번호 입력란 추가 */}
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
-                    <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>기자재 바코드정보</label>
-                      <input 
-                        type="text" 
-                        name="barcode" 
-                        value={formData.barcode || ""} 
-                        onChange={handleInputChange} 
-                        placeholder="예: 8809123456789" 
-                        style={{ width: "100%", padding: "0.5rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} 
-                      />
-                    </div>
-                    <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>기자재 관리번호</label>
-                      <input 
-                        type="text" 
-                        name="asset_number" 
-                        value={formData.asset_number || ""} 
-                        onChange={handleInputChange} 
-                        placeholder="예: AIDX-EQ-2026-004" 
-                        style={{ width: "100%", padding: "0.5rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} 
-                      />
-                    </div>
+                  {/* 기자재 관리번호 입력란 (선택 항목으로 변경, 바코드 삭제) */}
+                  <div>
+                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>
+                      기자재 관리번호 <span style={{ fontSize: "0.72rem", color: "var(--text-secondary)", fontWeight: "normal" }}>(선택 - 검수 완료 후 기재)</span>
+                    </label>
+                    <input 
+                      type="text" 
+                      name="asset_number" 
+                      value={formData.asset_number || ""} 
+                      onChange={handleInputChange} 
+                      placeholder="예: AIDX-EQ-2026-004 (검수 완료 시점에 수동 입력)" 
+                      style={{ width: "100%", padding: "0.5rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} 
+                    />
                   </div>
                   <div>
                     <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>품명</label>
