@@ -775,11 +775,12 @@ export default function BudgetExecutionManager({ projects = [], currentRole, sel
         </div>
       </div>
 
-      {/* [교육용 주석] 누적 집행률과 누적 집행액을 구분한 개별 차트 영역 (좌/우 2열 컬럼 가로 배치) */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(500px, 1fr))", gap: "1rem" }}>
-        
-        {/* 1. 월별 누적 집행률 추이 카드 (%) */}
-        <div className="glass-card" style={{ padding: "1.25rem", borderRadius: "10px", display: "flex", flexDirection: "column", gap: "1rem" }}>
+      {/* [교육용 주석] 누적 집행률과 누적 집행액을 구분한 개별 차트 영역을 하나의 대형 통합 블록(glass-card)으로 묶어 단정함을 연출 */}
+      <div className="glass-card" style={{ padding: "1.5rem", borderRadius: "10px", display: "flex", flexDirection: "column", gap: "1rem" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(450px, 1fr))", gap: "2rem" }}>
+          
+          {/* 1. 누적 집행률 추이 (%) */}
+          <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
             <TrendingUp size={18} style={{ color: "#3B82F6" }} />
             <h3 style={{ margin: 0, fontSize: "0.95rem", fontWeight: "800", color: "var(--text-primary)" }}>
@@ -851,8 +852,8 @@ export default function BudgetExecutionManager({ projects = [], currentRole, sel
           </div>
         </div>
 
-        {/* 2. 월별 누적 집행액 추이 카드 (백만 원) */}
-        <div className="glass-card" style={{ padding: "1.25rem", borderRadius: "10px", display: "flex", flexDirection: "column", gap: "1rem" }}>
+        {/* 2. 누적 집행액 추이 (백만 원) */}
+        <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
             <TrendingUp size={18} style={{ color: "#10B981" }} />
             <h3 style={{ margin: 0, fontSize: "0.95rem", fontWeight: "800", color: "var(--text-primary)" }}>
@@ -923,8 +924,8 @@ export default function BudgetExecutionManager({ projects = [], currentRole, sel
             </ResponsiveContainer>
           </div>
         </div>
-
       </div>
+    </div>
 
       {/* ==============================================================================
           💡 [본예산 vs 이월예산 업로드 영역 탭 분리 적용]
