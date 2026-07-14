@@ -101,6 +101,9 @@ body.light-mode {
   min-width: 170px;
   max-width: 210px;
   height: 100vh;
+  max-height: 100vh; /* 화면 높이 초과 강제 방지 */
+  position: sticky;
+  top: 0;
   overflow-y: auto;
   scrollbar-width: none; /* Firefox 스크롤바 숨김 */
   -ms-overflow-style: none; /* IE/Edge 스크롤바 숨김 */

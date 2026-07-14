@@ -48,7 +48,6 @@ export default function Sidebar({
 
   return (
     <aside className="sidebar">
-      <div>
         <div
           className="logo-section"
           onClick={() => onChangeTab("dashboard")}
@@ -860,7 +859,8 @@ export default function Sidebar({
                     const subTabsOrder = ["approvals", "members", "users", "programs", "org_chart", "center_org_chart", "partners", "instructor_pool", "portal_config"];
 
                     const firstActive = subTabsOrder.find(tab => {
-                      if (tab === "portal_config" || tab === "instructor_pool") return currentRole.id === "ADMIN" || currentRole.id === "G_DIRECTOR";
+                      if (tab === "portal_config") return currentRole.id === "ADMIN" || currentRole.id === "G_DIRECTOR";
+                      if (tab === "instructor_pool") return (currentRole.id === "ADMIN" || currentRole.id === "G_DIRECTOR") && (isSongDirector || menuVisibility[tab] !== false);
                       if (tab === "approvals" && isSpecialApprover) return true;
                       if (!isManager && ["approvals", "members", "users", "programs"].includes(tab)) return false;
                       return isSongDirector || menuVisibility[tab] !== false;
@@ -1028,7 +1028,7 @@ export default function Sidebar({
                   </div>
                 )}
                 {/* 교∙강사 Pool 관리 서브 탭 (admin, g_director 권한 전용) */}
-                {(currentRole.id === "ADMIN" || currentRole.id === "G_DIRECTOR") && (
+                {(currentRole.id === "ADMIN" || currentRole.id === "G_DIRECTOR") && (menuVisibility.instructor_pool !== false || isSongDirector) && (
                   <div
                     className={`nav-sub-item ${activeTab === "management" && mgmtSubTab === "instructor_pool" ? "active" : ""}`}
                     onClick={(e) => {
@@ -1038,8 +1038,14 @@ export default function Sidebar({
                         onChangeMgmtSubTab("instructor_pool");
                       }
                     }}
+                    style={getHiddenStyle("instructor_pool")}
                   >
                     - 교∙강사 Pool 관리
+                    {isHidden("instructor_pool") && (
+                      <span style={{ fontSize: "0.6rem", color: "#ef4444", textDecoration: "none", marginLeft: "0.2rem" }}>
+                        [숨김]
+                      </span>
+                    )}
                   </div>
                 )}
                 {/* 앵커 포털 관리 서브 탭 (admin, g_director 권한 전용) */}
@@ -1061,7 +1067,6 @@ export default function Sidebar({
             </div>
           )}
         </nav>
-      </div>
 
 
     </aside>

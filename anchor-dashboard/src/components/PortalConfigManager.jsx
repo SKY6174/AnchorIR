@@ -105,7 +105,8 @@ const MENU_SCHEMA = [
       { key: "programs", label: "프로그램 배정" },
       { key: "org_chart", label: "대학 조직도" },
       { key: "center_org_chart", label: "사업단 조직도" },
-      { key: "partners", label: "파트너기관" }
+      { key: "partners", label: "파트너기관" },
+      { key: "instructor_pool", label: "교∙강사 Pool 관리" }
     ]
   }
 ];
