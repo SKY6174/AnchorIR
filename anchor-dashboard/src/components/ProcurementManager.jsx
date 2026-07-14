@@ -5471,7 +5471,7 @@ export default function ProcurementManager({
                   </div>
                   <div>
                     <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)", display: "block" }}>발신 부서 / 발송처</span>
-                    <span>{purchaseModalData.divisionName || purchaseModalData.deptName || "라이즈(앵커)사업단"} / <strong>총무팀 (구매 위탁 요청)</strong></span>
+                    <span>{purchaseModalData.divisionName || purchaseModalData.deptName || "앵커사업단"} / <strong>총무팀 (구매 위탁 요청)</strong></span>
                   </div>
                   <div>
                     <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)", display: "block" }}>도입 소요예산</span>

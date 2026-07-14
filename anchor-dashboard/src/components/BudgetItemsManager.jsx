@@ -166,7 +166,7 @@ export default function BudgetItemsManager({ projects, currentRole, onUpdateBudg
   let activeProjectTitle = "";
 
   if (selectedUnitId === "Total") {
-    activeProjectTitle = "울산과학대학교 라이즈(앵커) 사업단";
+    activeProjectTitle = "울산과학대학교 앵커 사업단";
 
     // 가상의 budgetDetails 생성하여 모든 단위과제의 비목 데이터를 실시간으로 합산
     const combinedDetails = {};

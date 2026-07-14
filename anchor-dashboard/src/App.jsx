@@ -8387,7 +8387,7 @@ export default function App() {
               <div>
                 <h2 style={{ fontSize: "1.25rem", fontWeight: "800" }}>앵커사업단 관리</h2>
                 <p style={{ fontSize: "0.8rem", color: "var(--text-secondary)", marginTop: "0.2rem" }}>
-                  울산과학대학교 라이즈(앵커) 사업단 구성원을 관리하고, 각 세부 프로그램의 실무 연구원을 매핑하는 통합 업무 공간입니다.
+                  울산과학대학교 앵커 사업단 구성원을 관리하고, 각 세부 프로그램의 실무 연구원을 매핑하는 통합 업무 공간입니다.
                 </p>
               </div>
 
