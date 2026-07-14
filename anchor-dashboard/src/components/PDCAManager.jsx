@@ -1515,7 +1515,7 @@ export default function PDCAManager({
                               onChange={(e) => handleUpdatePDCA(stage, e.target.value)}
                             >
                               <option value="대기">대기</option>
-                              {stage !== "c" && stage !== "a" && <option value="진행">진행</option>}
+                              <option value="진행">진행</option>
                               <option value="완료">완료</option>
                             </select>
                           )}
