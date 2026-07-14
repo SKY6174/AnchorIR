@@ -5,19 +5,18 @@ import * as XLSX from "xlsx";
 
 // 💡 [교육용 한글 주석] 월별 집행현황 엑셀 파일을 월별로 올릴 수 있는 '26.3월 ~ '27.2월까지의 기간 정의
 const MONTHS_CONFIG = [
-  { label: "26.3월초", value: "2026-03-start" },
-  { label: "26.3월말", value: "2026-03" },
-  { label: "26.4월말", value: "2026-04" },
-  { label: "26.5월말", value: "2026-05" },
-  { label: "26.6월말", value: "2026-06" },
-  { label: "26.7월말", value: "2026-07" },
-  { label: "26.8월말", value: "2026-08" },
-  { label: "26.9월말", value: "2026-09" },
-  { label: "26.10월말", value: "2026-10" },
-  { label: "26.11월말", value: "2026-11" },
-  { label: "26.12월말", value: "2026-12" },
-  { label: "27.1월말", value: "2027-01" },
-  { label: "27.2월말", value: "2027-02" }
+  { label: "26.3월", value: "2026-03" },
+  { label: "26.4월", value: "2026-04" },
+  { label: "26.5월", value: "2026-05" },
+  { label: "26.6월", value: "2026-06" },
+  { label: "26.7월", value: "2026-07" },
+  { label: "26.8월", value: "2026-08" },
+  { label: "26.9월", value: "2026-09" },
+  { label: "26.10월", value: "2026-10" },
+  { label: "26.11월", value: "2026-11" },
+  { label: "26.12월", value: "2026-12" },
+  { label: "27.1월", value: "2027-01" },
+  { label: "27.2월", value: "2027-02" }
 ];
 
 export default function BudgetExecutionManager({ projects = [], currentRole, selectedYear: rawYear, supabase, darkMode = true }) {
@@ -491,38 +490,64 @@ export default function BudgetExecutionManager({ projects = [], currentRole, sel
     const carryoverRate = totalCarryoverBudget > 0 ? ((spentCarryover / totalCarryoverBudget) * 100).toFixed(1) : "0.0";
     const carryoverBalance = totalCarryoverBudget - spentCarryover;
 
+    // [교육용 주석] 회계 월별 실제 세부 날짜로 X축 라벨을 치환하는 맵 헬퍼 정의
+    const getSpecificDateLabel = (rawLabel) => {
+      const map = {
+        "26.3월": "26.3.31.",
+        "26.4월": "26.4.30.",
+        "26.5월": "26.5.31.",
+        "26.6월": "26.6.30.",
+        "26.7월": "26.7.31.",
+        "26.8월": "26.8.31.",
+        "26.9월": "26.9.30.",
+        "26.10월": "26.10.31.",
+        "26.11월": "26.11.30.",
+        "26.12월": "26.12.31.",
+        "27.1월": "27.1.31.",
+        "27.2월": "27.2.28."
+      };
+      return map[rawLabel] || rawLabel;
+    };
+
     // 월별 누적 추이 차트 데이터 조립
     const chartData = [];
     let cumulativeMain = 0;
     let cumulativeCarry = 0;
 
+    // [교육용 주석] 26.2.28. 기초 데이터 0% 및 0원 선제 추가 (집행 시작 3/1 전날)
+    const startPoint = {
+      month: "26.2.28.",
+      mainBudget: 0,
+      mainSpentAmt: 0
+    };
+    if (selectedYear !== 1) {
+      startPoint.carryoverBudget = 0;
+      startPoint.carryoverSpentAmt = 0;
+    }
+    chartData.push(startPoint);
+
+    // 이후 12개월 루프 집계 진행
     MONTHS_CONFIG.forEach(m => {
-      // 해당 월의 집행액 구하기
       let monthMain = 0;
       let monthCarry = 0;
 
-      if (m.value === "2026-03-start") {
-        // [교육용 주석] 3월 초 기점은 누적 시작점이므로 집행액을 0으로 세팅하여 데일리 차트가 (0,0)에서 출발하도록 조율
-        cumulativeMain = 0;
-        cumulativeCarry = 0;
-      } else {
-        // [교육용 주석] 일반 '말' 시점인 경우 기존 DB/엑셀의 '26.3월' 형태 데이터와 정확하게 팩트매칭 정화
-        const cleanLabel = m.label.endsWith("말") ? m.label.slice(0, -1) : m.label;
-        executionRecords.forEach(r => {
-          if (r.month_label === cleanLabel && (viewType === "total" || (targetUnitPrefix && r.program_id.startsWith(targetUnitPrefix)))) {
-            if (r.budget_type === "main") monthMain += Number(r.amount || 0);
-            else if (r.budget_type === "carryover") monthCarry += Number(r.amount || 0);
-          }
-        });
-        cumulativeMain += monthMain;
-        cumulativeCarry += monthCarry;
-      }
+      // 일반 월인 경우 기존 DB/엑셀 데이터 매칭 집계
+      executionRecords.forEach(r => {
+        if (r.month_label === m.label && (viewType === "total" || (targetUnitPrefix && r.program_id.startsWith(targetUnitPrefix)))) {
+          if (r.budget_type === "main") monthMain += Number(r.amount || 0);
+          else if (r.budget_type === "carryover") monthCarry += Number(r.amount || 0);
+        }
+      });
+      cumulativeMain += monthMain;
+      cumulativeCarry += monthCarry;
 
       const mainPct = totalMainBudget > 0 ? Math.min(100, (cumulativeMain / totalMainBudget) * 100) : 0;
       const carryPct = totalCarryoverBudget > 0 ? Math.min(100, (cumulativeCarry / totalCarryoverBudget) * 100) : 0;
 
+      const dateLabel = getSpecificDateLabel(m.label);
+
       const dataPoint = {
-        month: m.label,
+        month: dateLabel,
         mainBudget: parseFloat(mainPct.toFixed(1)),
         mainSpentAmt: Math.round(cumulativeMain / 1000000) // 백만원 단위 누적 집행액 추가
       };
@@ -795,7 +820,7 @@ export default function BudgetExecutionManager({ projects = [], currentRole, sel
                 <Legend wrapperStyle={{ fontSize: 11, paddingTop: 10 }} />
                 {selectedYear !== 1 && (
                   <ReferenceLine 
-                    x="26.8월말" 
+                    x="26.8.31." 
                     stroke="#EF4444" 
                     strokeDasharray="4 4" 
                     label={{ value: "이월마감일", fill: "#EF4444", position: "insideTopLeft", fontSize: 11, fontWeight: "bold" }}
@@ -868,7 +893,7 @@ export default function BudgetExecutionManager({ projects = [], currentRole, sel
                 <Legend wrapperStyle={{ fontSize: 11, paddingTop: 10 }} />
                 {selectedYear !== 1 && (
                   <ReferenceLine 
-                    x="26.8월말" 
+                    x="26.8.31." 
                     stroke="#EF4444" 
                     strokeDasharray="4 4" 
                     label={{ value: "이월마감일", fill: "#EF4444", position: "insideTopLeft", fontSize: 11, fontWeight: "bold" }}
