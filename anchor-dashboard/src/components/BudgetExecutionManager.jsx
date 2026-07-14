@@ -765,6 +765,11 @@ export default function BudgetExecutionManager({ projects = [], currentRole, sel
                   dataKey="month" 
                   stroke="var(--text-secondary)" 
                   tick={{ fontSize: 11, fill: "var(--text-secondary)" }}
+                  tickFormatter={(tick) => {
+                    if (tick === "26.3월") return "26.3.1.";
+                    if (tick === "27.2월") return "27.2.28.";
+                    return tick;
+                  }}
                 />
                 <YAxis 
                   stroke="var(--text-secondary)" 
@@ -774,6 +779,11 @@ export default function BudgetExecutionManager({ projects = [], currentRole, sel
                 />
                 <Tooltip 
                   formatter={(value, name) => [`${value}%`, name]}
+                  labelFormatter={(label) => {
+                    if (label === "26.3월") return "26.3.1.";
+                    if (label === "27.2월") return "27.2.28.";
+                    return label;
+                  }}
                   contentStyle={{
                     background: "rgba(224, 235, 246, 0.95)",
                     border: "1px solid var(--border-color)",
@@ -838,6 +848,11 @@ export default function BudgetExecutionManager({ projects = [], currentRole, sel
                   dataKey="month" 
                   stroke="var(--text-secondary)" 
                   tick={{ fontSize: 11, fill: "var(--text-secondary)" }}
+                  tickFormatter={(tick) => {
+                    if (tick === "26.3월") return "26.3.1.";
+                    if (tick === "27.2월") return "27.2.28.";
+                    return tick;
+                  }}
                 />
                 <YAxis 
                   stroke="var(--text-secondary)" 
@@ -847,6 +862,11 @@ export default function BudgetExecutionManager({ projects = [], currentRole, sel
                 />
                 <Tooltip 
                   formatter={(value, name) => [`${value.toLocaleString()} 백만 원`, name]}
+                  labelFormatter={(label) => {
+                    if (label === "26.3월") return "26.3.1.";
+                    if (label === "27.2월") return "27.2.28.";
+                    return label;
+                  }}
                   contentStyle={{
                     background: "rgba(224, 235, 246, 0.95)",
                     border: "1px solid var(--border-color)",
