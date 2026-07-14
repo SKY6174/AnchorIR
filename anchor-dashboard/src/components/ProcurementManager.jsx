@@ -1227,9 +1227,14 @@ export default function ProcurementManager({
             nextData.descriptionPurpose = `[AI 자동완성] ${nextData.name} 핵심 기자재를 도입하여 교육 실습 타당성을 확보하고 전략 목표인 '${strategicGoals}' 과제를 완성함.`;
             nextData.descriptionPlan = "도입 완료 후 시뮬레이션 고도화 전공 교과목 실습 기자재로 100% 매칭 활용하며, 연간 120명 이상의 전문 인력 실습 활용 기대.";
             
-            // 기자재인 경우 기획(P), 승인(A) 일자 자동 매핑
-            if (aiResult.draftDate) nextData.dateP = aiResult.draftDate;
-            if (aiResult.approveDate) nextData.dateA = aiResult.approveDate;
+            // 기자재인 경우 기획∙승인(PA) 일자 자동 매핑 (기획일은 결재문서 상 보통 없으므로 승인일을 PA일자에 매핑)
+            if (aiResult.approveDate) {
+              nextData.dateP = aiResult.approveDate;
+              nextData.dateA = aiResult.approveDate;
+            } else if (aiResult.draftDate) {
+              nextData.dateP = aiResult.draftDate;
+              nextData.dateA = aiResult.draftDate;
+            }
           }
 
           return nextData;
@@ -1497,7 +1502,14 @@ export default function ProcurementManager({
         operation: defaultProg
       }));
     } else {
-      setFormData(prev => ({ ...prev, [name]: value }));
+      setFormData(prev => {
+        const next = { ...prev, [name]: value };
+        // [교육용 주석] 기자재 모달이고 dateP(기획∙승인 일자)가 변경될 때 dateA(승인 일자)도 동일하게 설정하여 DB 호환성 유지
+        if (name === "dateP" && modalType === "equip") {
+          next.dateA = value;
+        }
+        return next;
+      });
     }
   };
 
@@ -5140,36 +5152,46 @@ export default function ProcurementManager({
                     <span style={{ display: "block", fontSize: "0.82rem", fontWeight: "800", color: "var(--text-primary)", marginBottom: "0.75rem" }}>
                       📅 단계별 이벤트 일자 입력 (선택 입력)
                     </span>
-                    <div style={{ display: "grid", gridTemplateColumns: modalType === "env" ? "repeat(5, 1fr)" : "repeat(4, 1fr)", gap: "0.5rem" }}>
+                    <div style={{ display: "grid", gridTemplateColumns: modalType === "env" ? "repeat(5, 1fr)" : "repeat(3, 1fr)", gap: "0.5rem" }}>
                       <div>
                         <label style={{ display: "block", fontSize: "0.7rem", color: "var(--text-secondary)", marginBottom: "0.2rem" }}>
-                          {modalType === "env" ? "기획∙승인(PA) 일자" : "기획(P) 일자"}
+                          {modalType === "env" ? "기획∙승인(PA) 일자" : "기획∙승인(PA) 일자"}
                         </label>
                         <input type="date" name="dateP" value={formData.dateP || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.3rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", fontSize: "0.72rem" }} />
                       </div>
-                      <div>
-                        <label style={{ display: "block", fontSize: "0.7rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>
-                          {modalType === "env" ? "요청∙설계(RD) 일자" : "승인(A) 일자"}
-                        </label>
-                        <input type="date" name="dateA" value={formData.dateA || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.3rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", fontSize: "0.72rem" }} />
-                      </div>
-                      <div>
-                        <label style={{ display: "block", fontSize: "0.7rem", color: "var(--text-secondary)", marginBottom: "0.2rem" }}>
-                          {modalType === "env" ? "구매∙입찰∙계약(PBC) 일자" : "입찰(B) 일자"}
-                        </label>
-                        <input type="date" name="dateB" value={formData.dateB || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.3rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", fontSize: "0.72rem" }} />
-                      </div>
                       {modalType === "env" && (
+                        <>
+                          <div>
+                            <label style={{ display: "block", fontSize: "0.7rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>
+                              요청∙설계(RD) 일자
+                            </label>
+                            <input type="date" name="dateA" value={formData.dateA || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.3rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", fontSize: "0.72rem" }} />
+                          </div>
+                          <div>
+                            <label style={{ display: "block", fontSize: "0.7rem", color: "var(--text-secondary)", marginBottom: "0.2rem" }}>
+                              구매∙입찰∙계약(PBC) 일자
+                            </label>
+                            <input type="date" name="dateB" value={formData.dateB || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.3rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", fontSize: "0.72rem" }} />
+                          </div>
+                          <div>
+                            <label style={{ display: "block", fontSize: "0.7rem", color: "var(--text-secondary)", marginBottom: "0.2rem" }}>
+                              시공(C) 일자
+                            </label>
+                            <input type="date" name="datePr" value={formData.datePr || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.3rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", fontSize: "0.72rem" }} />
+                          </div>
+                        </>
+                      )}
+                      {modalType !== "env" && (
                         <div>
                           <label style={{ display: "block", fontSize: "0.7rem", color: "var(--text-secondary)", marginBottom: "0.2rem" }}>
-                            시공(C) 일자
+                            입찰(B) 일자
                           </label>
-                          <input type="date" name="datePr" value={formData.datePr || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.3rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", fontSize: "0.72rem" }} />
+                          <input type="date" name="dateB" value={formData.dateB || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.3rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", fontSize: "0.72rem" }} />
                         </div>
                       )}
                       <div>
                         <label style={{ display: "block", fontSize: "0.7rem", color: "var(--text-secondary)", marginBottom: "0.2rem" }}>
-                          {modalType === "env" ? "검수(I) 일자" : "검수(I) 일자"}
+                          검수(I) 일자
                         </label>
                         <input type="date" name="dateI" value={formData.dateI || ""} onChange={handleInputChange} style={{ width: "100%", padding: "0.3rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", fontSize: "0.72rem" }} />
                       </div>
