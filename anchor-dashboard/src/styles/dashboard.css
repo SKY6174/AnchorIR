@@ -653,12 +653,82 @@ body.light-mode {
   gap: 0.5rem;
 }
 
+/* PDCA 상태 선택기 드롭다운 기본 스타일 */
+.pdca-status-select {
+  font-size: 0.65rem;
+  font-weight: 800;
+  border-radius: 0.25rem;
+  margin-top: 0.25rem;
+  padding: 0.15rem 0.35rem;
+  outline: none;
+  border: none;
+  transition: all 0.2s ease;
+  text-align: center;
+  cursor: not-allowed !important;
+}
+
+/* 🟢 완료 상태 (Done) - 초록색 */
+.pdca-step-item.done .pdca-circle {
+  background: #10b981;
+  border-color: #10b981;
+  color: #ffffff;
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
+}
+.pdca-step-item.done .pdca-status-select {
+  background: rgba(16, 185, 129, 0.2);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+.light-mode .pdca-step-item.done .pdca-status-select {
+  background: rgba(16, 185, 129, 0.1);
+  color: #059669;
+  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+/* 🔵 진행 상태 (In Progress) - 파란색 */
+.pdca-step-item.in-progress .pdca-circle {
+  background: #3b82f6;
+  border-color: #3b82f6;
+  color: #ffffff;
+  box-shadow: 0 0 10px rgba(59, 130, 246, 0.4);
+}
+.pdca-step-item.in-progress .pdca-status-select {
+  background: rgba(59, 130, 246, 0.2);
+  color: #60a5fa;
+  border: 1px solid rgba(59, 130, 246, 0.3);
+}
+.light-mode .pdca-step-item.in-progress .pdca-status-select {
+  background: rgba(59, 130, 246, 0.1);
+  color: #2563eb;
+  border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+/* 🟠 대기 상태 (Pending/Wait) - 주황색 */
+.pdca-step-item.pending .pdca-circle {
+  background: #f59e0b;
+  border-color: #f59e0b;
+  color: #ffffff;
+  box-shadow: 0 0 10px rgba(245, 158, 11, 0.4);
+}
+.pdca-step-item.pending .pdca-status-select {
+  background: rgba(245, 158, 11, 0.2);
+  color: #fbbf24;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+.light-mode .pdca-step-item.pending .pdca-status-select {
+  background: rgba(245, 158, 11, 0.1);
+  color: #d97706;
+  border: 1px solid rgba(245, 158, 11, 0.2);
+}
+
+/* 기본 원형 (Fallback) */
 .pdca-circle {
   width: 32px;
   height: 32px;
   border-radius: 50%;
   background: #27272a;
   border: 2px solid var(--border-color-dark);
+  color: var(--text-secondary);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -671,24 +741,7 @@ body.light-mode {
 .light-mode .pdca-circle {
   background: #f4f4f5;
   border: 2px solid var(--border-color-light);
-}
-
-.pdca-step-item.active .pdca-circle {
-  background: var(--accent-color);
-  border-color: var(--accent-color);
-  color: white;
-}
-
-.pdca-step-item.done .pdca-circle {
-  background: var(--success-color);
-  border-color: var(--success-color);
-  color: white;
-}
-
-.pdca-step-item.in-progress .pdca-circle {
-  background: var(--warning-color);
-  border-color: var(--warning-color);
-  color: white;
+  color: #71717a;
 }
 
 /* Loading Overlay */

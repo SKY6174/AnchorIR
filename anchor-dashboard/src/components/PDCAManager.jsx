@@ -1488,7 +1488,7 @@ export default function PDCAManager({
                       return (
                         <div
                           key={stage}
-                          className={`pdca-step-item ${isDone ? "done" : isProgress ? "in-progress" : ""}`}
+                          className={`pdca-step-item ${status === "완료" ? "done" : status === "진행" ? "in-progress" : "pending"}`}
                           style={{ cursor: "pointer", transition: "transform 0.2s" }}
                           onClick={() => setActivePdcaStage(stage.toUpperCase())}
                           title={`${stage.toUpperCase()} 단계 실무 폼 열기`}
@@ -1499,15 +1499,7 @@ export default function PDCAManager({
                           </span>
                           {(isResearcher || currentRole.rank <= 2) && (
                             <select
-                              style={{
-                                fontSize: "0.65rem",
-                                background: "var(--border-color)",
-                                color: "var(--text-secondary)",
-                                border: "1px solid var(--border-color)",
-                                borderRadius: "0.25rem",
-                                marginTop: "0.2rem",
-                                cursor: "not-allowed"
-                              }}
+                              className="pdca-status-select"
                               value={status}
                               disabled={true}
                               title={
