@@ -10408,7 +10408,7 @@ export default function App() {
               />
             ) : (
               <SatisfactionManager
-                key={`satisfaction-${darkMode}-${selectedYear}`}
+                key={`satisfaction-${darkMode}`}
                 selectedYear={selectedYear}
               />
             )}

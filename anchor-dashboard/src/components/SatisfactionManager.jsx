@@ -269,6 +269,11 @@ export default function SatisfactionManager({ selectedYear }) {
   // 연차 변경 또는 로드 시 호출
   useEffect(() => {
     fetchSurveysFromDb();
+    // [교육용 주석] 연차 전환 시 특정 설문 상세화면을 보던 중이었다면 리스트 목록으로 환원
+    if (activeSurveyTab === "detail") {
+      setActiveSurveyTab("list");
+      setSelectedSurveyId(null);
+    }
   }, [selectedYear]);
 
   // 6대 수행부서 그룹 정의 및 필터기
