@@ -1160,12 +1160,6 @@ ${commentList || "(없음)"}
         <div style={{ display: "flex", gap: "0.5rem" }}>
           <button
             onClick={() => {
-              const emptySurveys = surveys.filter(s => s.responses.length === 0);
-              if (emptySurveys.length > 0) {
-                setAiInputSelectedSurveyId(emptySurveys[0].id);
-              } else if (surveys.length > 0) {
-                setAiInputSelectedSurveyId(surveys[0].id);
-              }
               setShowAiInputModal(true);
             }}
             className="btn-primary"
