@@ -1017,7 +1017,7 @@ export default function BudgetExecutionManager({ projects = [], currentRole, sel
                     flexDirection: "column",
                     justifyContent: "space-between",
                     gap: "0.4rem",
-                    marginBottom: "0.25rem"
+                    marginBottom: hasCarryover ? "0.25rem" : "0"
                   }}
                 >
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -1240,17 +1240,16 @@ export default function BudgetExecutionManager({ projects = [], currentRole, sel
                   </div>
                 ) : (
                   <div style={{
-                    flex: 1,
-                    border: darkMode ? "1px dashed rgba(255,255,255,0.02)" : "1px dashed rgba(0,0,0,0.05)",
+                    padding: "0.45rem",
+                    border: darkMode ? "1px solid rgba(255,255,255,0.04)" : "1px solid rgba(0,0,0,0.04)",
                     borderRadius: "6px",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    background: darkMode ? "rgba(0,0,0,0.1)" : "rgba(0,0,0,0.025)",
-                    minHeight: "80px"
+                    background: darkMode ? "rgba(255,255,255,0.02)" : "rgba(0,0,0,0.015)"
                   }}>
-                    <span style={{ fontSize: "0.6rem", color: "var(--text-secondary)", fontStyle: "italic" }}>
-                      📅 이월 사용 불가
+                    <span style={{ fontSize: "0.6rem", color: "var(--text-secondary)", fontWeight: "500", display: "flex", alignItems: "center", gap: "0.25rem" }}>
+                      💸 이월 사용 불가
                     </span>
                   </div>
                 )}
