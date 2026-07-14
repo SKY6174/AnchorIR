@@ -2719,7 +2719,7 @@ export default function PDCAManager({
                   <th rowSpan={2} style={{ width: "80px", textAlign: "center" }}>단위과제</th>
                   <th rowSpan={2} style={{ width: "110px", textAlign: "center" }}>ID</th>
                   <th rowSpan={2}>프로그램명</th>
-                  <th rowSpan={2} style={{ width: "100px", textAlign: "center" }}>담당자</th>
+                  <th rowSpan={2} style={{ width: "220px", textAlign: "center" }}>담당자</th>
                   <th colSpan={2} style={{ textAlign: "center" }}>예산 및 집행</th>
                   <th colSpan={4} style={{ textAlign: "center" }}>진행 단계(PDCA)</th>
                   <th rowSpan={2} style={{ width: "90px", textAlign: "center" }}>실적 등록</th>
@@ -2748,7 +2748,7 @@ export default function PDCAManager({
                       <td style={{ textAlign: "center" }}>{prog.unitId}</td>
                       <td style={{ fontFamily: "var(--font-data)", fontWeight: "700" }}>{prog.id}</td>
                       <td style={{ fontWeight: selectedProgId === prog.id ? "700" : "normal" }}>{prog.title}</td>
-                      <td style={{ fontWeight: "700", color: "var(--accent-color)" }}>
+                      <td style={{ fontWeight: "700", color: "var(--accent-color)", whiteSpace: "nowrap", textAlign: "center" }}>
                         {formatAssignee(prog.assignees?.[selectedYear] !== undefined ? prog.assignees[selectedYear] : prog.assignee)}
                       </td>
                       <td style={{ fontFamily: "var(--font-data)", textAlign: "right" }}>
