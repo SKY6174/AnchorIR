@@ -2716,20 +2716,21 @@ export default function PDCAManager({
             <table className="custom-table" style={{ fontSize: "0.75rem" }}>
               <thead>
                 <tr>
-                  <th rowSpan={2}>ID</th>
+                  <th rowSpan={2} style={{ width: "80px", textAlign: "center" }}>단위과제</th>
+                  <th rowSpan={2} style={{ width: "110px", textAlign: "center" }}>ID</th>
                   <th rowSpan={2}>프로그램명</th>
-                  <th rowSpan={2}>소속 과제</th>
-                  <th rowSpan={2}>담당자</th>
-                  <th rowSpan={2}>{selectedYear}차년도 본예산 (백만원)</th>
-                  <th rowSpan={2}>{selectedYear}차년도 본집행 (백만원)</th>
+                  <th rowSpan={2} style={{ width: "100px", textAlign: "center" }}>담당자</th>
+                  <th colSpan={2} style={{ textAlign: "center" }}>예산 및 집행</th>
                   <th colSpan={4} style={{ textAlign: "center" }}>진행 단계(PDCA)</th>
-                  <th rowSpan={2} style={{ width: "90px" }}>실적 등록</th>
+                  <th rowSpan={2} style={{ width: "90px", textAlign: "center" }}>실적 등록</th>
                 </tr>
                 <tr>
-                  <th style={{ textAlign: "center", width: "50px" }}>P</th>
-                  <th style={{ textAlign: "center", width: "50px" }}>D</th>
-                  <th style={{ textAlign: "center", width: "50px" }}>C</th>
-                  <th style={{ textAlign: "center", width: "50px" }}>A</th>
+                  <th style={{ textAlign: "center", width: "110px" }}>예산</th>
+                  <th style={{ textAlign: "center", width: "110px" }}>집행</th>
+                  <th style={{ textAlign: "center", width: "40px" }}>P</th>
+                  <th style={{ textAlign: "center", width: "40px" }}>D</th>
+                  <th style={{ textAlign: "center", width: "40px" }}>C</th>
+                  <th style={{ textAlign: "center", width: "40px" }}>A</th>
                 </tr>
               </thead>
               <tbody>
@@ -2744,14 +2745,24 @@ export default function PDCAManager({
                         cursor: "pointer"
                       }}
                     >
+                      <td style={{ textAlign: "center" }}>{prog.unitId}</td>
                       <td style={{ fontFamily: "var(--font-data)", fontWeight: "700" }}>{prog.id}</td>
                       <td style={{ fontWeight: selectedProgId === prog.id ? "700" : "normal" }}>{prog.title}</td>
-                      <td>{prog.unitId}</td>
                       <td style={{ fontWeight: "700", color: "var(--accent-color)" }}>
                         {formatAssignee(prog.assignees?.[selectedYear] !== undefined ? prog.assignees[selectedYear] : prog.assignee)}
                       </td>
-                      <td style={{ fontFamily: "var(--font-data)" }}>{formatToMillionWon(py.budget_main)}백만원</td>
-                      <td style={{ fontFamily: "var(--font-data)" }}>{formatToMillionWon(py.spent_main)}백만원</td>
+                      <td style={{ fontFamily: "var(--font-data)", textAlign: "right" }}>
+                        <div>{formatToMillionWon(py.budget_main)}백만원</div>
+                        <div style={{ color: "var(--text-secondary)", fontSize: "0.68rem", borderTop: "1px dashed var(--border-color)", marginTop: "2px", paddingTop: "2px" }}>
+                          {formatToMillionWon(py.budget_carry)}백만원 <span style={{ fontSize: "0.6rem" }}>(이월)</span>
+                        </div>
+                      </td>
+                      <td style={{ fontFamily: "var(--font-data)", textAlign: "right" }}>
+                        <div>{formatToMillionWon(py.spent_main)}백만원</div>
+                        <div style={{ color: "var(--text-secondary)", fontSize: "0.68rem", borderTop: "1px dashed var(--border-color)", marginTop: "2px", paddingTop: "2px" }}>
+                          {formatToMillionWon(py.spent_carry)}백만원 <span style={{ fontSize: "0.6rem" }}>(이월)</span>
+                        </div>
+                      </td>
                       <td style={{ textAlign: "center", color: (prog.pdca?.p || "대기") === "완료" ? "var(--success-color)" : "inherit", fontWeight: "700" }}>{prog.pdca?.p || "대기"}</td>
                       <td style={{ textAlign: "center", color: (prog.pdca?.d || "대기") === "완료" ? "var(--success-color)" : "inherit", fontWeight: "700" }}>{prog.pdca?.d || "대기"}</td>
                       <td style={{ textAlign: "center", color: (prog.pdca?.c || "대기") === "완료" ? "var(--success-color)" : "inherit", fontWeight: "700" }}>{prog.pdca?.c || "대기"}</td>
