@@ -2661,6 +2661,28 @@ export default function App() {
         }
       } catch (err) {
         console.error("Supabase rise_members table sync failed, fallback to localStorage cache:", err);
+        
+        // 💡 [인증/세션 만료 예방 안전장치] rise_members 테이블 조회 및 업서트 중 401/403/42501(RLS) 에러 감지 시 자동 로그아웃 유도
+        const status = err?.status;
+        const code = String(err?.code || "");
+        const msg = String(err?.message || "");
+        if (
+          status === 401 || 
+          status === 403 || 
+          code === "PGRST301" || 
+          code === "42501" || 
+          msg.includes("JWT") || 
+          msg.includes("claims") || 
+          msg.includes("expired") || 
+          msg.includes("permission denied") || 
+          msg.includes("security policy")
+        ) {
+          console.warn(">>> [Supabase Members 동기화 중 세션 만료 감지] 자동으로 로그아웃 처리를 유도합니다. <<<", err);
+          alert("보안 세션이 만료되었거나 데이터베이스 인증 오류가 발생했습니다. 안전한 데이터 저장을 위해 확인을 누르시면 자동 로그아웃 후 다시 로그인 화면으로 이동합니다.");
+          handleLogout();
+          return;
+        }
+
         const saved = localStorage.getItem("anchor_members");
         if (saved) {
           try {
@@ -3753,7 +3775,23 @@ export default function App() {
           projRes?.error, agrRes?.error, certRes?.error, schRes?.error,
           envRes?.error, equipRes?.error, servRes?.error, monthRes?.error,
           eventRes?.error, meetRes?.error, pressRes?.error
-        ].filter(err => err && (err.status === 401 || err.code === "PGRST301" || String(err.message || "").includes("JWT") || String(err.message || "").includes("claims") || String(err.message || "").includes("expired")));
+        ].filter(err => {
+          if (!err) return false;
+          const status = err.status;
+          const code = String(err.code || "");
+          const msg = String(err.message || "");
+          return (
+            status === 401 || 
+            status === 403 || 
+            code === "PGRST301" || 
+            code === "42501" || 
+            msg.includes("JWT") || 
+            msg.includes("claims") || 
+            msg.includes("expired") || 
+            msg.includes("permission denied") || 
+            msg.includes("security policy")
+          );
+        });
 
         if (authErrors.length > 0) {
           console.warn(">>> [Supabase 인증 세션 만료 감지] 자동으로 로그아웃 처리를 유도합니다. <<<", authErrors);
