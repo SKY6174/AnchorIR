@@ -11474,11 +11474,145 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
 
   const targetYear = 2024 + selectedYear;
 
+  const getNormalizedUnitId = (id) => {
+    if (id === "Common" || id === "X0") return id;
+    const match = id.match(/^[A-D][1-4]/);
+    return match ? match[0] : id;
+  };
+
+  const getUnitColor = (id) => {
+    const colors = {
+      A1: "#3b82f6",
+      A2: "#60a5fa",
+      B1: "#6366f1",
+      B2: "#8b5cf6",
+      C1: "#14b8a6",
+      C2: "#10b981",
+      D1: "#f59e0b",
+      D2: "#ec4899",
+      Common: "#94a3b8",
+      X0: "#cbd5e1"
+    };
+    return colors[id] || "#64748b";
+  };
+
+  const HorizontalProgressBar = ({ title, items, unitText = "백만원" }) => {
+    const validItems = items.filter(item => item.value > 0);
+    const totalVal = validItems.reduce((acc, curr) => acc + curr.value, 0);
+
+    return (
+      <div style={{
+        background: "rgba(255, 255, 255, 0.02)",
+        border: "1px solid var(--border-color)",
+        borderRadius: "8px",
+        padding: "1rem",
+        marginBottom: "1rem",
+        display: "flex",
+        flexDirection: "column",
+        gap: "0.75rem"
+      }}>
+        {title && (
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <span style={{ fontSize: "0.85rem", fontWeight: "800", color: "var(--text-primary)" }}>{title}</span>
+            <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)", fontWeight: "500" }}>총 {totalVal.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })}{unitText}</span>
+          </div>
+        )}
+        
+        <div style={{
+          width: "100%",
+          height: "20px",
+          display: "flex",
+          borderRadius: "10px",
+          overflow: "hidden",
+          background: "rgba(255, 255, 255, 0.05)",
+          border: "1px solid rgba(255, 255, 255, 0.03)"
+        }}>
+          {validItems.length === 0 ? (
+            <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.75rem", color: "var(--text-secondary)" }}>
+              예산 데이터가 없습니다.
+            </div>
+          ) : (
+            validItems.map((item, idx) => {
+              const itemRatio = totalVal > 0 ? (item.value / totalVal) * 100 : 0;
+              return (
+                <div
+                  key={idx}
+                  style={{
+                    width: `${itemRatio}%`,
+                    background: item.color,
+                    height: "100%",
+                    transition: "width 0.3s ease",
+                    cursor: "pointer"
+                  }}
+                  title={`${item.name}: ${item.value.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })}${unitText} (${itemRatio.toFixed(1)}%)`}
+                />
+              );
+            })
+          )}
+        </div>
+
+        {validItems.length > 0 && (
+          <div style={{
+            display: "flex",
+            flexWrap: "wrap",
+            gap: "0.5rem 1rem",
+            fontSize: "0.72rem",
+            color: "var(--text-secondary)",
+            marginTop: "0.2rem"
+          }}>
+            {validItems.map((item, idx) => {
+              const itemRatio = totalVal > 0 ? (item.value / totalVal) * 100 : 0;
+              return (
+                <div key={idx} style={{ display: "flex", alignItems: "center", gap: "0.35rem" }}>
+                  <span style={{
+                    width: "8px",
+                    height: "8px",
+                    borderRadius: "50%",
+                    background: item.color,
+                    display: "inline-block"
+                  }} />
+                  <span style={{ fontWeight: "700", color: "var(--text-primary)" }}>{item.name}</span>
+                  <span>{itemRatio.toFixed(1)}%</span>
+                  <span style={{ fontSize: "0.68rem", opacity: 0.75 }}>({item.value.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })})</span>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+    );
+  };
+
   const renderFiveYear = () => {
     const formatValue = (val) => {
       if (val === undefined || val === null || val === 0) return "-";
       return val.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
     };
+
+    const fiveYearUnitTotals = {};
+    let totalSumVal = 0;
+    TOTAL_INVESTMENT_5YEAR_DATA.forEach(u => {
+      const normId = getNormalizedUnitId(u.id);
+      const totalObj = u.total[5] || { main: 0, carry: 0 };
+      const val = (totalObj.main || 0) + (totalObj.carry || 0);
+      if (val > 0) {
+        fiveYearUnitTotals[normId] = (fiveYearUnitTotals[normId] || 0) + val;
+        totalSumVal += val;
+      }
+    });
+
+    const fiveYearChartItems = Object.entries(fiveYearUnitTotals).map(([id, val]) => {
+      let displayName = id;
+      if (id === "Common") displayName = "공통경비";
+      else if (id === "X0") displayName = "기타";
+      return {
+        id,
+        name: displayName,
+        value: val,
+        ratio: totalSumVal > 0 ? (val / totalSumVal) * 100 : 0,
+        color: getUnitColor(id)
+      };
+    }).sort((a, b) => b.value - a.value);
 
     return (
       <div className="table-panel">
@@ -11486,6 +11620,10 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
           <span>💡 2차년도 사업비는 본사업비와 이월사업비로 구성되며, 타 연차는 본사업비만을 나타냄.</span>
           <span style={{ fontWeight: "700", color: "var(--accent-color)" }}>(단위: 백만원)</span>
         </div>
+        
+        {/* 5개년 단위과제별 합산비율 차트 (가로형 2D-Bar) */}
+        <HorizontalProgressBar title="📊 5개년 단위과제별 예산 합산 비율" items={fiveYearChartItems} />
+
         <table className="custom-table" style={{ fontSize: "0.8rem", width: "100%", borderCollapse: "collapse" }}>
           <thead>
             <tr style={{ background: "rgba(255,255,255,0.02)" }}>
@@ -11746,6 +11884,38 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
       return val.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
     };
 
+    // (1) 당해년도 단위과제별 예산(국비+시비) 비율 가공
+    const annualUnitTotals = {};
+    let annualTotalGovSum = 0;
+    ANNUAL_INVESTMENT_DATA.forEach(u => {
+      const normId = getNormalizedUnitId(u.id);
+      const val = (u.total[0] || 0) + (u.total[1] || 0); // 국비 + 시비
+      if (val > 0) {
+        annualUnitTotals[normId] = (annualUnitTotals[normId] || 0) + val;
+        annualTotalGovSum += val;
+      }
+    });
+
+    const annualUnitChartItems = Object.entries(annualUnitTotals).map(([id, val]) => {
+      let displayName = id;
+      if (id === "Common") displayName = "공통경비";
+      else if (id === "X0") displayName = "기타";
+      return {
+        id,
+        name: displayName,
+        value: val,
+        ratio: annualTotalGovSum > 0 ? (val / annualTotalGovSum) * 100 : 0,
+        color: getUnitColor(id)
+      };
+    }).sort((a, b) => b.value - a.value);
+
+    // (2) 전체사업비 중 국비 vs. 시비 vs. 외부사업비 비율 가공
+    const sourceChartItems = [
+      { name: "국비", value: annualTotalNat, color: "#3b82f6" },
+      { name: "시비", value: annualTotalCity, color: "#10b981" },
+      { name: "외부사업비", value: annualTotalExt, color: "#f59e0b" }
+    ];
+
     return (
       <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
         {/* 요약 연차 정보 헤더 */}
@@ -11758,6 +11928,12 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
           </div>
           <span style={{ fontSize: "0.8rem", fontWeight: "700", color: "var(--accent-color)" }}>(단위: 백만원)</span>
         </div>
+
+        {/* 당해년도 단위과제별 예산(국비+시비) 비율 차트 */}
+        <HorizontalProgressBar title={`📊 ${targetYear}년도 단위과제별 예산(국비+시비) 비율`} items={annualUnitChartItems} />
+
+        {/* 당해년도 재원별(국비/시비/외부) 안분 비율 차트 */}
+        <HorizontalProgressBar title={`📊 ${targetYear}년도 전체사업비 재원 구성 비율`} items={sourceChartItems} />
 
         <div className="table-panel">
           <table className="custom-table" style={{ fontSize: "0.8rem", width: "100%", borderCollapse: "collapse" }}>
