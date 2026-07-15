@@ -872,14 +872,15 @@ body.light-mode {
 .budget-nav-wrapper.active .nav-sub-menu,
 .procurement-nav-wrapper:hover .nav-sub-menu,
 .procurement-nav-wrapper.active .nav-sub-menu {
-  max-height: 120px;
+  max-height: 350px;
   opacity: 1;
   margin-top: 0.25rem;
   margin-bottom: 0.25rem;
 }
 
-.schedule-nav-wrapper:hover .nav-sub-menu {
-  max-height: 180px;
+.schedule-nav-wrapper:hover .nav-sub-menu,
+.schedule-nav-wrapper.active .nav-sub-menu {
+  max-height: 350px;
   opacity: 1;
   margin-top: 0.25rem;
   margin-bottom: 0.25rem;
@@ -912,7 +913,7 @@ body.light-mode {
 
 .kpis-nav-wrapper:hover .nav-sub-menu,
 .kpis-nav-wrapper.active .nav-sub-menu {
-  max-height: 80px !important;
+  max-height: 350px !important;
   opacity: 1 !important;
   margin-top: 0.25rem !important;
   margin-bottom: 0.25rem !important;
@@ -920,7 +921,7 @@ body.light-mode {
 
 .asset-nav-wrapper:hover .nav-sub-menu,
 .asset-nav-wrapper.active .nav-sub-menu {
-  max-height: 80px !important;
+  max-height: 350px !important;
   opacity: 1 !important;
   margin-top: 0.25rem !important;
   margin-bottom: 0.25rem !important;
@@ -928,7 +929,7 @@ body.light-mode {
 
 .progress-nav-wrapper:hover .nav-sub-menu,
 .progress-nav-wrapper.active .nav-sub-menu {
-  max-height: 120px !important; /* 3개 메뉴 항목 렌더링에 적합하도록 높이 확장 */
+  max-height: 350px !important;
   opacity: 1 !important;
   margin-top: 0.25rem !important;
   margin-bottom: 0.25rem !important;
@@ -936,7 +937,7 @@ body.light-mode {
 
 .agreements-nav-wrapper:hover .nav-sub-menu,
 .agreements-nav-wrapper.active .nav-sub-menu {
-  max-height: 120px !important;
+  max-height: 350px !important;
   opacity: 1 !important;
   margin-top: 0.25rem !important;
   margin-bottom: 0.25rem !important;
@@ -944,7 +945,7 @@ body.light-mode {
 
 .mgmt-nav-wrapper:hover .nav-sub-menu,
 .mgmt-nav-wrapper.active .nav-sub-menu {
-  max-height: 210px !important;
+  max-height: 350px !important;
   opacity: 1 !important;
   margin-top: 0.25rem !important;
   margin-bottom: 0.25rem !important;
