@@ -3997,6 +3997,7 @@ export default function App() {
               agreementType: a.agreement_type || "-"
             }));
             setAgreements(formatted);
+            fetchedAgreementsRef.current = JSON.stringify(formatted); // 🛡️ 원본 저장
             isAgreementsFetchedRef.current = true; // DB 복구 성공 락 해제
             try {
               const clean = formatted.map(item => {
@@ -4010,6 +4011,7 @@ export default function App() {
             }
           } else {
             setAgreements([]);
+            fetchedAgreementsRef.current = JSON.stringify([]); // 🛡️ 원본 저장
             isAgreementsFetchedRef.current = true; // DB 복구 성공 락 해제 (빈 데이터)
           }
         }
@@ -4045,6 +4047,7 @@ export default function App() {
               fileData: c.file_data
             }));
             setUnifiedCertificates(formatted);
+            fetchedUnifiedCertificatesRef.current = JSON.stringify(formatted); // 🛡️ 원본 저장
               try {
                 const clean = formatted.map(item => {
                   const isUrl = item.fileData && (item.fileData.startsWith("http://") || item.fileData.startsWith("https://"));
@@ -4057,6 +4060,7 @@ export default function App() {
             }
           } else {
             setUnifiedCertificates([]);
+            fetchedUnifiedCertificatesRef.current = JSON.stringify([]); // 🛡️ 원본 저장
           }
         }
 
@@ -4088,6 +4092,7 @@ export default function App() {
               approvalDate: c.approval_date
             }));
             setScholarships(formatted);
+            fetchedScholarshipsRef.current = JSON.stringify(formatted); // 🛡️ 원본 저장
               try {
                 const clean = formatted.map(item => ({ ...item }));
                 safeSetLocalStorage("anchor_cache_scholarships_all", JSON.stringify(clean), selectedYear);
@@ -4096,6 +4101,7 @@ export default function App() {
             }
           } else {
             setScholarships([]);
+            fetchedScholarshipsRef.current = JSON.stringify([]); // 🛡️ 원본 저장
           }
         }
 
@@ -4560,18 +4566,26 @@ export default function App() {
     if (!isDbLoaded || !isFetchCompleted || !isAgreementsLoaded) return;
     if (!isAgreementsFetchedRef.current) return; // 💡 DB 복구가 완전히 끝나기 전까지는 원격 DB 덮어쓰기 절대 방지!
     if (!currentUser || currentRole?.id === "GUEST") return;
+
+    // 💡 [정합성 안전 가드] 원격 DB fetch 결과와 일치하면 불필요한 자동 저장(덮어쓰기 오염)을 스킵합니다.
+    const currentCleanStr = JSON.stringify(agreements);
+    if (!fetchedAgreementsRef.current || fetchedAgreementsRef.current === currentCleanStr) {
+      try {
+        const clean = agreements.map(item => {
+          const isUrl = item.fileData && (item.fileData.startsWith("http://") || item.fileData.startsWith("https://"));
+          const cleanFileData = isUrl ? item.fileData : null;
+          return { ...item, fileData: cleanFileData };
+        });
+        safeSetLocalStorage("anchor_cache_agreements_all", JSON.stringify(clean), selectedYear);
+      } catch (e) {
+        console.warn("Failed to write agreements cache:", e);
+      }
+      return;
+    }
+
     // 💡 안전 가드: 데이터 로딩이 완료되지 않았거나 일시적 통신 지연 시 빈 배열([])이 원격 DB를 덮어쓰는 사고 방지
     if (!agreements || agreements.length === 0) return;
-    try {
-      const clean = agreements.map(item => {
-        const isUrl = item.fileData && (item.fileData.startsWith("http://") || item.fileData.startsWith("https://"));
-        const cleanFileData = isUrl ? item.fileData : null;
-        return { ...item, fileData: cleanFileData };
-      });
-      safeSetLocalStorage("anchor_cache_agreements_all", JSON.stringify(clean), selectedYear);
-    } catch (e) {
-      console.warn("Failed to write agreements cache:", e);
-    }
+
     setSyncStatus("syncing");
     const syncImmediate = async () => {
       try {
@@ -4630,6 +4644,7 @@ export default function App() {
             if (error) throw error;
           }
         }
+        fetchedAgreementsRef.current = currentCleanStr; // 🛡️ 성공 시 원본 상태 동기화
         setSyncStatus("synced");
       } catch (e) {
         console.error("Failed to sync agreements to Supabase:", e);
@@ -4637,7 +4652,7 @@ export default function App() {
       }
     };
     syncImmediate();
-  }, [agreements, isDbLoaded, isFetchCompleted]);
+  }, [agreements, isDbLoaded, isFetchCompleted, isAgreementsLoaded]);
 
   // 10) Press Releases (언론보도) 자동 저장 디바운스 훅 (타 연차 기사 지능형 즉시 분배 저장 탑재)
   useEffect(() => {
@@ -4854,6 +4869,23 @@ export default function App() {
   useEffect(() => {
     if (!isDbLoaded || !isFetchCompleted || !isUnifiedCertificatesLoaded) return;
     if (!currentUser || currentRole?.id === "GUEST") return;
+
+    // 💡 [정합성 안전 가드] 원격 DB fetch 결과와 일치하면 불필요한 자동 저장(덮어쓰기 오염)을 스킵합니다.
+    const currentCleanStr = JSON.stringify(unifiedCertificates);
+    if (!fetchedUnifiedCertificatesRef.current || fetchedUnifiedCertificatesRef.current === currentCleanStr) {
+      try {
+        const clean = unifiedCertificates.map(item => {
+          const isUrl = item.fileData && (item.fileData.startsWith("http://") || item.fileData.startsWith("https://"));
+          const cleanFileData = isUrl ? item.fileData : null;
+          return { ...item, fileData: cleanFileData };
+        });
+        safeSetLocalStorage("anchor_cache_unified_certificates_all", JSON.stringify(clean), selectedYear);
+      } catch (e) {
+        console.warn("Failed to write unified certificates cache:", e);
+      }
+      return;
+    }
+
     // 💡 안전 가드: 데이터 로딩이 완료되지 않았거나 일시적 통신 지연 시 빈 배열([])이 원격 DB를 덮어쓰는 사고 방지
     if (!unifiedCertificates || unifiedCertificates.length === 0) return;
     try {
@@ -4897,6 +4929,7 @@ export default function App() {
             if (error) throw error;
           }
         }
+        fetchedUnifiedCertificatesRef.current = currentCleanStr; // 🛡️ 성공 시 원본 상태 동기화
         setSyncStatus("synced");
       } catch (e) {
         console.error("Failed to sync unified certificates to Supabase:", e);
@@ -4904,12 +4937,25 @@ export default function App() {
       }
     }, 150);
     return () => clearTimeout(timer);
-  }, [unifiedCertificates, isDbLoaded, isFetchCompleted]);
+  }, [unifiedCertificates, isDbLoaded, isFetchCompleted, isUnifiedCertificatesLoaded]);
 
   // 3-3) Scholarships 자동 저장 디바운스 훅
   useEffect(() => {
     if (!isDbLoaded || !isFetchCompleted || !isScholarshipsLoaded) return;
     if (!currentUser || currentRole?.id === "GUEST") return;
+
+    // 💡 [정합성 안전 가드] 원격 DB fetch 결과와 일치하면 불필요한 자동 저장(덮어쓰기 오염)을 스킵합니다.
+    const currentCleanStr = JSON.stringify(scholarships);
+    if (!fetchedScholarshipsRef.current || fetchedScholarshipsRef.current === currentCleanStr) {
+      try {
+        const clean = scholarships.map(item => ({ ...item }));
+        safeSetLocalStorage("anchor_cache_scholarships_all", JSON.stringify(clean), selectedYear);
+      } catch (e) {
+        console.warn("Failed to write scholarships cache:", e);
+      }
+      return;
+    }
+
     // 💡 안전 가드: 데이터 로딩이 완료되지 않았거나 일시적 통신 지연 시 빈 배열([])이 원격 DB를 덮어쓰는 사고 방지
     if (!scholarships || scholarships.length === 0) return;
     try {
@@ -4947,6 +4993,7 @@ export default function App() {
             if (error) throw error;
           }
         }
+        fetchedScholarshipsRef.current = currentCleanStr; // 🛡️ 성공 시 원본 상태 동기화
         setSyncStatus("synced");
       } catch (e) {
         console.error("Failed to sync scholarships to Supabase:", e);
@@ -4954,7 +5001,7 @@ export default function App() {
       }
     }, 150);
     return () => clearTimeout(timer);
-  }, [scholarships, isDbLoaded, isFetchCompleted]);
+  }, [scholarships, isDbLoaded, isFetchCompleted, isScholarshipsLoaded]);
 
   // 4) Procurement Env 자동 저장 디바운스 훅
   useEffect(() => {
