@@ -789,26 +789,6 @@ export default function Sidebar({
                     )}
                   </div>
                 )}
-                {(menuVisibility.committees !== false || isSongDirector) && (
-                  <div
-                    className={`nav-sub-item ${activeTab === "schedule" && scheduleSubTab === "committees" ? "active" : ""}`}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onChangeTab("schedule");
-                      if (onChangeScheduleSubTab) {
-                        onChangeScheduleSubTab("committees");
-                      }
-                    }}
-                    style={getHiddenStyle("committees")}
-                  >
-                    - 위원회 관리
-                    {isHidden("committees") && (
-                      <span style={{ fontSize: "0.6rem", color: "#ef4444", textDecoration: "none", marginLeft: "0.2rem" }}>
-                        [숨김]
-                      </span>
-                    )}
-                  </div>
-                )}
                 {(menuVisibility.press !== false || isSongDirector) && (
                   <div
                     className={`nav-sub-item ${activeTab === "schedule" && scheduleSubTab === "press" ? "active" : ""}`}
@@ -856,7 +836,7 @@ export default function Sidebar({
                   if (onChangeMgmtSubTab) {
                     const isManager = currentRole.id === "ADMIN" || currentRole.id === "G_DIRECTOR" || currentRole.id === "HQ_HEAD" || currentRole.id === "MANAGER";
                     const isSpecialApprover = currentUser && ["이규상", "임은애", "황수진", "최주명"].some(name => (currentUser.name || "").includes(name));
-                    const subTabsOrder = ["approvals", "members", "users", "programs", "org_chart", "center_org_chart", "partners", "instructor_pool", "portal_config"];
+                    const subTabsOrder = ["approvals", "members", "users", "programs", "org_chart", "center_org_chart", "committees", "partners", "instructor_pool", "portal_config"];
 
                     const firstActive = subTabsOrder.find(tab => {
                       if (tab === "portal_config") return currentRole.id === "ADMIN" || currentRole.id === "G_DIRECTOR";
@@ -1007,6 +987,26 @@ export default function Sidebar({
                     )}
                   </div>
                 )}
+                {(menuVisibility.committees !== false || isSongDirector) && (
+                  <div
+                    className={`nav-sub-item ${activeTab === "management" && mgmtSubTab === "committees" ? "active" : ""}`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onChangeTab("management");
+                      if (onChangeMgmtSubTab) {
+                        onChangeMgmtSubTab("committees");
+                      }
+                    }}
+                    style={getHiddenStyle("committees")}
+                  >
+                    - 위원회 관리
+                    {isHidden("committees") && (
+                      <span style={{ fontSize: "0.6rem", color: "#ef4444", textDecoration: "none", marginLeft: "0.2rem" }}>
+                        [숨김]
+                      </span>
+                    )}
+                  </div>
+                )}
                 {(menuVisibility.partners !== false || isSongDirector) && (
                   <div
                     className={`nav-sub-item ${activeTab === "management" && mgmtSubTab === "partners" ? "active" : ""}`}
@@ -1019,7 +1019,7 @@ export default function Sidebar({
                     }}
                     style={getHiddenStyle("partners")}
                   >
-                    - 파트너기관
+                    - 협력기관 관리
                     {isHidden("partners") && (
                       <span style={{ fontSize: "0.6rem", color: "#ef4444", textDecoration: "none", marginLeft: "0.2rem" }}>
                         [숨김]

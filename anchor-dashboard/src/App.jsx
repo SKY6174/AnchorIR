@@ -8658,6 +8658,23 @@ export default function App() {
                   </button>
                   <button
                     type="button"
+                    onClick={() => setMgmtSubTab("committees")}
+                    style={{
+                      border: "none",
+                      background: "transparent",
+                      padding: "0.5rem 1rem",
+                      fontSize: "0.85rem",
+                      fontWeight: "800",
+                      cursor: "pointer",
+                      color: mgmtSubTab === "committees" ? "var(--accent-color)" : "var(--text-secondary)",
+                      borderBottom: mgmtSubTab === "committees" ? "2px solid var(--accent-color)" : "none",
+                      transition: "all 0.2s"
+                    }}
+                  >
+                    위원회 관리
+                  </button>
+                  <button
+                    type="button"
                     onClick={() => setMgmtSubTab("partners")}
                     style={{
                       border: "none",
@@ -8671,7 +8688,7 @@ export default function App() {
                       transition: "all 0.2s"
                     }}
                   >
-                    파트너기관
+                    협력기관 관리
                   </button>
                 </>
               )}
@@ -9613,6 +9630,29 @@ export default function App() {
 
             {mgmtSubTab === "center_org_chart" && (
               <CenterOrgChartManager key={`center-org-${darkMode}`} />
+            )}
+
+            {mgmtSubTab === "committees" && (
+              <div style={{ marginTop: "1rem" }}>
+                <ScheduleManager
+                  key={`schedule-committee-${darkMode}-${selectedYear}`}
+                  currentUser={currentUser}
+                  currentRole={currentRole}
+                  selectedYear={selectedYear}
+                  darkMode={darkMode}
+                  subTab="committees"
+                  onChangeSubTab={setMgmtSubTab}
+                  monthlySchedules={monthlySchedules}
+                  setMonthlySchedules={setMonthlySchedules}
+                  eventSchedules={eventSchedules}
+                  setEventSchedules={setEventSchedules}
+                  meetingSchedules={meetingSchedules}
+                  setMeetingSchedules={setMeetingSchedules}
+                  pressReleases={pressReleases}
+                  setPressReleases={setPressReleases}
+                  members={members}
+                />
+              </div>
             )}
 
             {mgmtSubTab === "partners" && (
@@ -10771,22 +10811,7 @@ export default function App() {
               >
                 회의결과 등록
               </button>
-              <button
-                onClick={() => setScheduleSubTab("committees")}
-                style={{
-                  background: "transparent",
-                  border: "none",
-                  fontSize: "1rem",
-                  fontWeight: "800",
-                  cursor: "pointer",
-                  padding: "0.5rem 1rem",
-                  color: scheduleSubTab === "committees" ? "var(--accent-color)" : "var(--text-secondary)",
-                  borderBottom: scheduleSubTab === "committees" ? "2px solid var(--accent-color)" : "none",
-                  transition: "all 0.2s ease"
-                }}
-              >
-                위원회 관리
-              </button>
+
               <button
                 onClick={() => setScheduleSubTab("press")}
                 style={{
