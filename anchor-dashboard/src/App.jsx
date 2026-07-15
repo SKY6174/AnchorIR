@@ -11604,7 +11604,7 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
     const fiveYearChartItems = Object.entries(fiveYearUnitTotals).map(([id, val]) => {
       let displayName = id;
       if (id === "Common") displayName = "공통경비";
-      else if (id === "X0") displayName = "기타";
+      else if (id === "X0") displayName = "X0(공통)";
       return {
         id,
         name: displayName,
@@ -11612,7 +11612,14 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
         ratio: totalSumVal > 0 ? (val / totalSumVal) * 100 : 0,
         color: getUnitColor(id)
       };
-    }).sort((a, b) => b.value - a.value);
+    }).sort((a, b) => {
+      const order = ["A1", "A2", "A3", "B1", "B2", "B3", "B4", "C1", "C2", "C3", "D1", "D2", "D3", "D4", "Common", "X0"];
+      const idxA = order.indexOf(a.id);
+      const idxB = order.indexOf(b.id);
+      const posA = idxA === -1 ? 999 : idxA;
+      const posB = idxB === -1 ? 999 : idxB;
+      return posA - posB;
+    });
 
     return (
       <div className="table-panel">
@@ -11899,7 +11906,7 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
     const annualUnitChartItems = Object.entries(annualUnitTotals).map(([id, val]) => {
       let displayName = id;
       if (id === "Common") displayName = "공통경비";
-      else if (id === "X0") displayName = "기타";
+      else if (id === "X0") displayName = "X0(공통)";
       return {
         id,
         name: displayName,
@@ -11907,7 +11914,14 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
         ratio: annualTotalGovSum > 0 ? (val / annualTotalGovSum) * 100 : 0,
         color: getUnitColor(id)
       };
-    }).sort((a, b) => b.value - a.value);
+    }).sort((a, b) => {
+      const order = ["A1", "A2", "A3", "B1", "B2", "B3", "B4", "C1", "C2", "C3", "D1", "D2", "D3", "D4", "Common", "X0"];
+      const idxA = order.indexOf(a.id);
+      const idxB = order.indexOf(b.id);
+      const posA = idxA === -1 ? 999 : idxA;
+      const posB = idxB === -1 ? 999 : idxB;
+      return posA - posB;
+    });
 
     // (2) 전체사업비 중 국비 vs. 시비 vs. 외부사업비 비율 가공
     const sourceChartItems = [
