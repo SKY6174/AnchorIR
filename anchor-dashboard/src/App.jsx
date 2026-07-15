@@ -3278,7 +3278,9 @@ export default function App() {
   const [budgetSubTab, setBudgetSubTab] = useState(() => {
     return localStorage.getItem("anchor_budget_sub_tab") || "total_investment";
   });
-  const [investmentSubTab, setInvestmentSubTab] = useState("five_year");
+  const [investmentSubTab, setInvestmentSubTab] = useState(() => {
+    return localStorage.getItem("anchor_investment_sub_tab") || "five_year";
+  });
   const [procurementSubTab, setProcurementSubTab] = useState(() => {
     return localStorage.getItem("anchor_procurement_sub_tab") || "env_improvement";
   });
@@ -3328,6 +3330,10 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem("anchor_budget_sub_tab", budgetSubTab);
   }, [budgetSubTab]);
+
+  useEffect(() => {
+    localStorage.setItem("anchor_investment_sub_tab", investmentSubTab);
+  }, [investmentSubTab]);
 
   useEffect(() => {
     localStorage.setItem("anchor_procurement_sub_tab", procurementSubTab);
