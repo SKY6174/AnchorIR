@@ -79,12 +79,11 @@ const MENU_SCHEMA = [
   {
     key: "schedule",
     label: "일정∙행사∙회의 관리",
-    description: "월간 사업 일정, 주요 행사 관리 및 위원회 회의록, 언론보도 대장",
+    description: "월간 사업 일정, 주요 행사 관리 및 회의결과 회의록, 언론보도 대장",
     subMenus: [
       { key: "monthly", label: "월간 일정" },
       { key: "events", label: "주요 행사" },
       { key: "meetings", label: "회의결과 등록" },
-      { key: "committees", label: "위원회 관리" },
       { key: "press", label: "언론보도" }
     ]
   },
@@ -97,7 +96,7 @@ const MENU_SCHEMA = [
   {
     key: "management",
     label: "사업단 관리",
-    description: "구성원 관리, 회원가입 승인 및 대학 조직도, 파트너기관 정보 제어",
+    description: "구성원 관리, 회원가입 승인, 대학 조직도, 위원회 및 협력기관 정보 제어",
     subMenus: [
       { key: "approvals", label: "승인처리" },
       { key: "members", label: "구성원 관리" },
@@ -105,7 +104,8 @@ const MENU_SCHEMA = [
       { key: "programs", label: "프로그램 배정" },
       { key: "org_chart", label: "대학 조직도" },
       { key: "center_org_chart", label: "사업단 조직도" },
-      { key: "partners", label: "파트너기관" },
+      { key: "committees", label: "위원회 관리" },
+      { key: "partners", label: "협력기관 관리" },
       { key: "instructor_pool", label: "교∙강사 Pool 관리" }
     ]
   }

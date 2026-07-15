@@ -420,10 +420,10 @@ export default function PartnerManager({ selectedYear }) {
       <div className="glass-card" style={{ padding: "1.5rem", display: "flex", flexDirection: "column", gap: "0.5rem" }}>
         <h2 style={{ fontSize: "1.25rem", fontWeight: "800", color: "var(--accent-color)", display: "flex", alignItems: "center", gap: "0.5rem" }}>
           <Globe size={22} />
-          파트너기관 정보 관리 (지·산·학 파트너십 CRM)
+          협력기관 정보 관리 (지·산·학 파트너십 CRM)
         </h2>
         <p style={{ fontSize: "0.9rem", color: "var(--text-secondary)", lineHeight: "1.5" }}>
-          울산과학대학교 앵커 사업의 핵심 동반자인 지자체, 공공기관, 유관 협회, 주요 산업체 및 교류 대학들의 파트너십 정보를 집중 보존하고 관리합니다.
+          울산과학대학교 앵커 사업의 핵심 동반자인 지자체, 공공기관, 유관 협회, 주요 산업체 및 교류 대학들의 협력기관 정보를 집중 보존하고 관리합니다.
           협약 관리 대장과도 유기적으로 연동하여 분야별 협력 역량을 통합 조회합니다.
         </p>
       </div>
