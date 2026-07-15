@@ -7308,7 +7308,7 @@ Gemini 피드백: \n${geminiCritiqueText}
                             width: "100%",
                             height: "45px",
                             padding: "0.3rem",
-                            background: "rgba(0,0,0,0.15)",
+                            background: darkMode ? "rgba(0,0,0,0.15)" : "#fafafa",
                             border: "1px solid var(--border-color)",
                             borderRadius: "4px",
                             color: "var(--text-primary)",
@@ -7324,9 +7324,9 @@ Gemini 피드백: \n${geminiCritiqueText}
                             style={{
                               flex: 1,
                               padding: "0.35rem",
-                              background: "rgba(16, 185, 129, 0.15)",
-                              border: "1px solid #10B981",
-                              color: "var(--text-primary)",
+                              background: darkMode ? "rgba(16, 185, 129, 0.15)" : "#ecfdf5",
+                              border: darkMode ? "1px solid #10b981" : "1px solid #34d399",
+                              color: darkMode ? "#34d399" : "#059669",
                               borderRadius: "4px",
                               fontSize: "0.68rem",
                               fontWeight: "700",
@@ -7349,7 +7349,7 @@ Gemini 피드백: \n${geminiCritiqueText}
                               fontSize: "0.68rem",
                               fontWeight: "700",
                               cursor: "pointer",
-                              boxShadow: "0 2px 4px rgba(16, 185, 129, 0.2)"
+                              boxShadow: darkMode ? "0 2px 4px rgba(16, 185, 129, 0.2)" : "0 2px 4px rgba(16, 185, 129, 0.1)"
                             }}
                           >
                             ⚔️ 합의 토론
