@@ -3748,6 +3748,20 @@ export default function App() {
 
         if (!active) return;
 
+        // 💡 [인증/세션 만료 예방 안전장치] API 요청 결과 401(Unauthorized)이나 토큰 만료 에러가 감지되면 사용자에게 알리고 자동으로 재로그인을 진행시킵니다.
+        const authErrors = [
+          projRes?.error, agrRes?.error, certRes?.error, schRes?.error,
+          envRes?.error, equipRes?.error, servRes?.error, monthRes?.error,
+          eventRes?.error, meetRes?.error, pressRes?.error
+        ].filter(err => err && (err.status === 401 || err.code === "PGRST301" || String(err.message || "").includes("JWT") || String(err.message || "").includes("claims") || String(err.message || "").includes("expired")));
+
+        if (authErrors.length > 0) {
+          console.warn(">>> [Supabase 인증 세션 만료 감지] 자동으로 로그아웃 처리를 유도합니다. <<<", authErrors);
+          alert("보안 세션이 만료되었거나 데이터베이스 인증 오류가 발생했습니다. 안전한 데이터 저장을 위해 확인을 누르시면 자동 로그아웃 후 다시 로그인 화면으로 이동합니다.");
+          handleLogout();
+          return;
+        }
+
         // 1. Projects 복구
         const projData = projRes.data;
 
@@ -8012,7 +8026,14 @@ export default function App() {
             <span
               onClick={() => {
                 if (syncStatus === "error") {
-                  if (confirm("로컬 캐시 데이터 간 충돌이 감지되었습니다. 로컬 캐시를 초기화하고 안전하게 새로고침하시겠습니까? (이수증/상장 등의 임시 캐시가 초기화됩니다)")) {
+                  const msg = "동기화 실패 상태입니다.\n\n" +
+                    "[안내 1] 장시간 화면을 켜두셨을 경우 로그인 세션 만료가 원인일 수 있습니다. 안전한 동기화를 위해 로그아웃 및 다시 로그인을 진행하시겠습니까? (권장)\n\n" +
+                    "[안내 2] 단순 캐시 충돌이 의심되는 경우, '취소'를 누르시면 로컬 캐시를 초기화하고 화면을 새로고침합니다.";
+                  if (confirm(msg)) {
+                    // 로그아웃 수행
+                    handleLogout();
+                  } else {
+                    // 캐시 초기화 및 새로고침
                     localStorage.removeItem(`anchor_cache_cert_y${selectedYear}`);
                     localStorage.removeItem(`anchor_cache_award_y${selectedYear}`);
                     localStorage.removeItem(`anchor_cache_agr_y${selectedYear}`);
