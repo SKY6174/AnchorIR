@@ -13,6 +13,10 @@ pdfs = [
     {
         "input": "./data/documents/붙임. ★ 울산과학대학교 RISE사업 사업비 관리 지침.pdf",
         "output": "./data/documents/붙임_울산과학대학교_RISE사업_사업비_관리_지침.md"
+    },
+    {
+        "input": "./data/documents/지산학이음세미나/1. [RISE사업_A1] 2026년 제4차 지산학 이음 세미나 개최 결과보고.pdf",
+        "output": "./data/documents/지산학이음세미나/1. [RISE사업_A1] 2026년 제4차 지산학 이음 세미나 개최 결과보고.md"
     }
 ]
 
