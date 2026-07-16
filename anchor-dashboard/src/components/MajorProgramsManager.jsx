@@ -620,20 +620,31 @@ export default function MajorProgramsManager({ selectedYear }) {
               {selectedProg ? (
                 selectedProg.id === "A1_orderly" || selectedProg.id === "A1_orderly_y2" ? (
                   // 🌟 주문식 교육과정 3단 상세 대시보드 뷰
-                  <div className="glass-card" style={{ padding: "1.5rem", display: "flex", flexDirection: "column", gap: "1.5rem", width: "100%", border: "1px solid rgba(16, 185, 129, 0.2)" }}>
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid rgba(255,255,255,0.08)", paddingBottom: "1rem", flexWrap: "wrap", gap: "1rem" }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-                        <div style={{ width: "40px", height: "40px", borderRadius: "50%", background: "rgba(16, 185, 129, 0.15)", display: "flex", alignItems: "center", justifyCentering: "center", color: "#10b981", justifyContent: "center" }}>
-                          <BookOpen size={20} />
+                  <div className="glass-card" style={{ padding: "1.8rem", display: "flex", flexDirection: "column", gap: "1.5rem", width: "100%", border: "1px solid rgba(16, 185, 129, 0.25)", boxShadow: "0 8px 32px rgba(16, 185, 129, 0.04)" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid rgba(255,255,255,0.08)", paddingBottom: "1.2rem", flexWrap: "wrap", gap: "1rem" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: "0.9rem" }}>
+                        <div style={{ 
+                          width: "46px", 
+                          height: "46px", 
+                          borderRadius: "12px", 
+                          background: "linear-gradient(135deg, rgba(16, 185, 129, 0.25), rgba(16, 185, 129, 0.05))", 
+                          display: "flex", 
+                          alignItems: "center", 
+                          justifyContent: "center", 
+                          color: "#10b981",
+                          border: "1px solid rgba(16, 185, 129, 0.35)",
+                          boxShadow: "0 4px 10px rgba(16, 185, 129, 0.15)"
+                        }}>
+                          <BookOpen size={22} />
                         </div>
                         <div>
-                          <h4 style={{ fontSize: "1.1rem", fontWeight: "800", color: "#10b981" }}>{selectedProg.name}</h4>
-                          <p style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>{selectedProg.desc}</p>
+                          <h4 style={{ fontSize: "1.25rem", fontWeight: "900", color: "#10b981", letterSpacing: "-0.5px" }}>{selectedProg.name}</h4>
+                          <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)", marginTop: "0.2rem" }}>{selectedProg.desc}</p>
                         </div>
                       </div>
                       
                       {/* 계획 / 과정 / 결과 3단 서브탭 컨트롤바 */}
-                      <div style={{ display: "flex", gap: "0.2rem", background: "rgba(255,255,255,0.03)", padding: "0.2rem", borderRadius: "2rem", border: "1px solid var(--border-color)" }}>
+                      <div style={{ display: "flex", gap: "0.25rem", background: "rgba(255,255,255,0.02)", padding: "0.25rem", borderRadius: "30px", border: "1px solid rgba(255, 255, 255, 0.06)" }}>
                         {[
                           { key: "plan", label: "운영 계획", icon: <Calendar size={13} /> },
                           { key: "process", label: "운영 과정", icon: <Activity size={13} /> },
@@ -644,17 +655,19 @@ export default function MajorProgramsManager({ selectedYear }) {
                             onClick={() => setOrderlyTab(subTab.key)}
                             style={{
                               border: "none",
-                              padding: "0.4rem 0.9rem",
-                              borderRadius: "1.5rem",
+                              padding: "0.5rem 1.1rem",
+                              borderRadius: "20px",
                               cursor: "pointer",
                               fontSize: "0.8rem",
-                              fontWeight: "700",
+                              fontWeight: "800",
                               display: "flex",
                               alignItems: "center",
-                              gap: "0.3rem",
-                              transition: "all 0.25s",
-                              background: orderlyTab === subTab.key ? "#10b981" : "transparent",
-                              color: orderlyTab === subTab.key ? "#fff" : "var(--text-secondary)"
+                              gap: "0.4rem",
+                              transition: "all 0.25s cubic-bezier(0.4, 0, 0.2, 1)",
+                              background: orderlyTab === subTab.key ? "linear-gradient(135deg, #10b981, #059669)" : "transparent",
+                              color: orderlyTab === subTab.key ? "#fff" : "var(--text-secondary)",
+                              boxShadow: orderlyTab === subTab.key ? "0 4px 12px rgba(16, 185, 129, 0.35)" : "none",
+                              transform: orderlyTab === subTab.key ? "translateY(-1px)" : "none"
                             }}
                           >
                             {subTab.icon}
