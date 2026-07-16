@@ -15,7 +15,7 @@ const MENU_SCHEMA = [
     description: "단위과제별 세부 사업 예산 집행률 및 위계 체계 관리",
     subMenus: [
       { key: "unit_system", label: "단위과제 체계" },
-      { key: "unit_status", label: "단위과제 집행현황" },
+      { key: "unit_status", label: "단위과제 진행상황" },
       { key: "program_mgmt", label: "프로그램 관리" }
     ]
   },

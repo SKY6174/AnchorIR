@@ -8217,7 +8217,7 @@ export default function App() {
                     transition: "all 0.2s"
                   }}
                 >
-                  단위과제 집행현황
+                  단위과제 진행상황
                 </button>
                 <button
                   type="button"
@@ -8248,7 +8248,7 @@ export default function App() {
                           예산 배정 및 집행 (단위: 백만원)
                         </th>
                         <th colSpan={5} style={{ textAlign: "center", borderBottom: "1px solid var(--border-color)", fontWeight: "800", color: "#10b981", background: "rgba(16, 185, 129, 0.08)", padding: "0.55rem 0" }}>
-                          프로그램 현황 및 진행
+                          프로그램 진행
                         </th>
                       </tr>
                       <tr>

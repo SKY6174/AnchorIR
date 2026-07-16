@@ -138,7 +138,7 @@ export default function Sidebar({
                     }}
                     style={getHiddenStyle("unit_status")}
                   >
-                    - 단위과제 집행현황
+                    - 단위과제 진행상황
                     {isHidden("unit_status") && (
                       <span style={{ fontSize: "0.6rem", color: "#ef4444", textDecoration: "none", marginLeft: "0.2rem" }}>
                         [숨김]
