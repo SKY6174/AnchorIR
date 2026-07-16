@@ -757,15 +757,7 @@ export default function MajorProgramsManager({ selectedYear }) {
       }]);
     }, 3600);
 
-    // 4800ms: Gemini의 최종 합의 도출
-    setTimeout(() => {
-      setDebateLogs(prev => [...prev, {
-        role: "gemini",
-        text: `[Gemini 1.5 Pro] 합의되었습니다. 도출 데이터(차수: ${parsedNum}, 일시: '${targetData.date}', 강사: '${targetData.speaker}', 주제: '${targetData.title}', 참석자: '${targetData.attendees}명', 만족도: '★ ${targetData.satisfaction}', 사업비: '₩${targetData.cost.toLocaleString()}')를 합의안으로 확정하고 폼에 바인딩합니다.`
-      }]);
-    }, 4800);
-
-    // 5600ms: System 종료 및 폼 값 바인딩
+    // 4800ms: System 종료 및 폼 값 바인딩
     setTimeout(() => {
       setDebateLogs(prev => [...prev, {
         role: "system",
@@ -782,7 +774,7 @@ export default function MajorProgramsManager({ selectedYear }) {
       setFormSeminarEtc(targetData.etc);
 
       setIsAiAnalyzing(false);
-    }, 5600);
+    }, 4800);
   };
 
   // 💡 세미나 결과보고 등록 액션 (수동 및 PDF-AI 공통 등록)
