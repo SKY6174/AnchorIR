@@ -259,10 +259,37 @@ export default function MajorProgramsManager({ selectedYear }) {
   const yearData = majorProgramsData[selectedYear] || {};
   const unitKeys = Object.keys(yearData);
 
-  // 현재 선택된 단위과제 상태 (첫 번째 항목을 디폴트로 설정)
-  const [selectedUnit, setSelectedUnit] = useState("");
-  // 현재 선택된 프로그램 상태
-  const [selectedProg, setSelectedProg] = useState(null);
+  // 현재 선택된 단위과제 상태 (로컬스토리지 복원 지원)
+  const [selectedUnit, setSelectedUnit] = useState(() => {
+    return localStorage.getItem("anchor_selected_unit") || "";
+  });
+  // 현재 선택된 프로그램 상태 (로컬스토리지 복원 지원)
+  const [selectedProg, setSelectedProg] = useState(() => {
+    const saved = localStorage.getItem("anchor_selected_prog");
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        console.error("선택된 프로그램 파싱 에러:", e);
+      }
+    }
+    return null;
+  });
+
+  // 💡 선택된 단위과제 및 프로그램 상태가 변경되면 로컬스토리지에 자동 저장
+  useEffect(() => {
+    if (selectedUnit) {
+      localStorage.setItem("anchor_selected_unit", selectedUnit);
+    }
+  }, [selectedUnit]);
+
+  useEffect(() => {
+    if (selectedProg) {
+      localStorage.setItem("anchor_selected_prog", JSON.stringify(selectedProg));
+    } else {
+      localStorage.removeItem("anchor_selected_prog");
+    }
+  }, [selectedProg]);
 
   // 💡 주문식 교육과정 전용 하위 탭 관리 ("plan" | "process" | "result")
   const [orderlyTab, setOrderlyTab] = useState(() => {
@@ -456,16 +483,37 @@ export default function MajorProgramsManager({ selectedYear }) {
   const [isHovered, setIsHovered] = useState(false); // 마우스 호버 추적용 상태 추가
   const activeIndex = unitKeys.indexOf(selectedUnit);
 
-  // 연도가 변경되면 단위과제 선택 초기화
+  // 연도가 변경되면 단위과제 선택 초기화 (단, 새로고침 등으로 로컬스토리지에 현재 연도 데이터가 이미 복원된 경우 리셋 스킵)
   useEffect(() => {
+    const savedYear = localStorage.getItem("anchor_selected_year");
+    const savedUnit = localStorage.getItem("anchor_selected_unit");
+    const savedProg = localStorage.getItem("anchor_selected_prog");
+
+    if (savedYear === String(selectedYear) && savedUnit && savedProg) {
+      // 이미 로컬스토리지에 해당 연도로 저장된 값들이 유효하다면 복원하고 초기화 중복 실행을 건너뜁니다.
+      setSelectedUnit(savedUnit);
+      try {
+        setSelectedProg(JSON.parse(savedProg));
+      } catch(e) {}
+      return;
+    }
+
+    // 그렇지 않고 실제로 연도가 바뀌었거나 초기 실행이라면 첫 번째 항목으로 설정
+    localStorage.setItem("anchor_selected_year", String(selectedYear));
     if (unitKeys.length > 0) {
       setSelectedUnit(unitKeys[0]);
-      // 디폴트 프로그램 설정
+      localStorage.setItem("anchor_selected_unit", unitKeys[0]);
+      
       const defaultProg = yearData[unitKeys[0]]?.programs[0] || null;
       setSelectedProg(defaultProg);
+      if (defaultProg) {
+        localStorage.setItem("anchor_selected_prog", JSON.stringify(defaultProg));
+      }
     } else {
       setSelectedUnit("");
       setSelectedProg(null);
+      localStorage.removeItem("anchor_selected_unit");
+      localStorage.removeItem("anchor_selected_prog");
     }
   }, [selectedYear]);
 
