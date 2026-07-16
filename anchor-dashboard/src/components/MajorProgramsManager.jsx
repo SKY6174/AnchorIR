@@ -1,5 +1,95 @@
 import React, { useState, useEffect } from "react";
-import { Award, BookOpen, Layers, Settings, Compass, Share2, ShieldAlert } from "lucide-react";
+import { 
+  Award, BookOpen, Layers, Settings, Compass, Share2, ShieldAlert, 
+  Calendar, Activity, CheckCircle, Search, User, Users, Plus, Trash2, ArrowRight 
+} from "lucide-react";
+
+// 💡 주문식 교육과정 전체 54개 교과목 실 정산 데이터 정의
+const ORDERLY_COURSES = [
+  { id: "cap_1", type: "캡스톤디자인", dept: "기계공학부", name: "전공종합설계", professor: "이진우", students: 109, budget: 1440000, year: 2 },
+  { id: "cap_2", type: "캡스톤디자인", dept: "기계공학부", name: "챌린지프로젝트 (종합설계및창업)(2)", professor: "김민갑", students: 40, budget: 4700000, year: 2 },
+  { id: "cap_3", type: "캡스톤디자인", dept: "실내건축디자인과", name: "실내건축캡스톤디자인", professor: "김동욱", students: 15, budget: 3200000, year: 2 },
+  { id: "cap_4", type: "캡스톤디자인", dept: "전기전자공학부", name: "캡스톤디자인(1)", professor: "조영", students: 9, budget: 2200000, year: 2 },
+  { id: "cap_5", type: "캡스톤디자인", dept: "컴퓨터공학과", name: "종합설계", professor: "김금석", students: 16, budget: 3200000, year: 2 },
+  { id: "cap_6", type: "캡스톤디자인", dept: "컴퓨터공학과", name: "종합설계", professor: "김성열", students: 18, budget: 2300000, year: 2 },
+  { id: "cap_7", type: "캡스톤디자인", dept: "화학공학과", name: "챌린지프로젝트 (종합설계및창업)", professor: "유승민", students: 21, budget: 2900000, year: 2 },
+  
+  { id: "pbl_1", type: "기업형 PBL", dept: "간호학부", name: "통합간호학", professor: "김민경", students: 173, budget: 3600000, year: 2 },
+  { id: "pbl_2", type: "기업형 PBL", dept: "물리치료학과", name: "신경계물리치료중재", professor: "김원호", students: 28, budget: 2200000, year: 2 },
+  { id: "pbl_3", type: "기업형 PBL", dept: "물리치료학과", name: "소아물리치료", professor: "송주영", students: 28, budget: 2200000, year: 2 },
+  { id: "pbl_4", type: "기업형 PBL", dept: "사회복지학과", name: "청소년복지론", professor: "이수경", students: 34, budget: 2480000, year: 2 },
+  { id: "pbl_5", type: "기업형 PBL", dept: "스포츠건강재활학과", name: "근골격계재활운동", professor: "김원문", students: 10, budget: 1560000, year: 2 },
+  { id: "pbl_6", type: "기업형 PBL", dept: "스포츠재활학부", name: "교정운동및실습(1)", professor: "김원문", students: 13, budget: 1500000, year: 2 },
+  { id: "pbl_7", type: "기업형 PBL", dept: "치위생학과", name: "구강미생물학", professor: "이동은", students: 102, budget: 6060000, year: 2 },
+  { id: "pbl_8", type: "기업형 PBL", dept: "치위생학과", name: "임상전단계실습 1", professor: "이가연", students: 82, budget: 5980000, year: 2 },
+  { id: "pbl_9", type: "기업형 PBL", dept: "컴퓨터공학과", name: "컴퓨터구조", professor: "김성열", students: 60, budget: 4500000, year: 2 },
+  { id: "pbl_10", type: "기업형 PBL", dept: "글로벌비즈니스학과", name: "관광마케팅조사 실무", professor: "서용한", students: 13, budget: 1200000, year: 2, isForeign: true },
+
+  { id: "omn_1", type: "옴니버스", dept: "스포츠건강재활학과", name: "근육재활심화테크닉", professor: "김원문", students: 9, budget: 1200000, year: 2 },
+  { id: "omn_2", type: "옴니버스", dept: "스포츠재활학부", name: "근육재활심화테크닉(1)", professor: "김원문", students: 13, budget: 900000, year: 2 },
+  { id: "omn_3", type: "옴니버스", dept: "스포츠재활학부", name: "보디빌딩지도법", professor: "서봉한", students: 18, budget: 900000, year: 2 },
+  { id: "omn_4", type: "옴니버스", dept: "융합안전공학과", name: "통합안전진로탐색", professor: "한영진", students: 66, budget: 2100000, year: 2 },
+  { id: "omn_5", type: "옴니버스", dept: "치위생학과", name: "구강보건교육학및실습", professor: "유진실", students: 82, budget: 1200000, year: 2 },
+  { id: "omn_6", type: "옴니버스", dept: "호텔조리제빵과", name: "궁중요리실습", professor: "서경화", students: 69, budget: 3000000, year: 2 },
+  { id: "omn_7", type: "옴니버스", dept: "호텔조리제빵과", name: "에스프레소커피실습", professor: "전유명", students: 71, budget: 3000000, year: 2 },
+  { id: "omn_8", type: "옴니버스", dept: "호텔조리제빵과", name: "Italian Cooking", professor: "전유명", students: 69, budget: 3000000, year: 2 },
+  { id: "omn_9", type: "옴니버스", dept: "화학공학과", name: "화학장치운전실무", professor: "송성국", students: 20, budget: 1200000, year: 2 },
+  { id: "omn_10", type: "옴니버스", dept: "국제학부", name: "관광마케팅조사실무", professor: "서용한", students: 6, budget: 1200000, year: 2, isForeign: true },
+  { id: "omn_11", type: "옴니버스", dept: "국제학부", name: "호텔경영실무", professor: "이현찬", students: 16, budget: 600000, year: 2, isForeign: true },
+  { id: "omn_12", type: "옴니버스", dept: "글로벌비즈니스학과", name: "호텔경영론", professor: "이연주", students: 6, budget: 1200000, year: 2, isForeign: true },
+
+  { id: "ojt_1", type: "OJT 병행", dept: "게임영상학과", name: "커뮤니케이션디자인 1", professor: "이재현", students: 20, budget: 3500000, year: 2 },
+  { id: "ojt_2", type: "OJT 병행", dept: "기계공학부", name: "설비진단", professor: "고형석", students: 35, budget: 3050000, year: 2 },
+  { id: "ojt_3", type: "OJT 병행", dept: "화학공학과", name: "현장사례연구", professor: "송민석, 장광일", students: 2, budget: 1100000, year: 2 },
+
+  { id: "ai_1", type: "AI 리터러시", dept: "간호학부", name: "기본간호학 1", professor: "공경란", students: 161, budget: 500000, year: 2 },
+  { id: "ai_2", type: "AI 리터러시", dept: "게임영상학과", name: "3D애니메이션 1", professor: "김지수", students: 40, budget: 500000, year: 2 },
+  { id: "ai_3", type: "AI 리터러시", dept: "기계공학부", name: "기계품질데이터분석", professor: "김기범", students: 37, budget: 500000, year: 2 },
+  { id: "ai_4", type: "AI 리터러시", dept: "기계공학부", name: "스마트제조실무", professor: "고형석", students: 15, budget: 500000, year: 2 },
+  { id: "ai_5", type: "AI 리터러시", dept: "사회복지학과", name: "노인상담", professor: "이수경", students: 31, budget: 500000, year: 2 },
+  { id: "ai_6", type: "AI 리터러시", dept: "세무회계학과", name: "재무제표론", professor: "한정희", students: 37, budget: 500000, year: 2 },
+  { id: "ai_7", type: "AI 리터러시", dept: "스포츠건강재활학과", name: "근골격계재활운동", professor: "김원문", students: 10, budget: 200000, year: 2 },
+  { id: "ai_8", type: "AI 리터러시", dept: "스포츠재활학부", name: "스포츠의학개론", professor: "김원문", students: 38, budget: 500000, year: 2 },
+  { id: "ai_9", type: "AI 리터러시", dept: "스포츠재활학부", name: "스포츠심리학", professor: "김기훈", students: 26, budget: 500000, year: 2 },
+  { id: "ai_10", type: "AI 리터러시", dept: "스포츠재활학부", name: "스포츠윤리", professor: "서봉한", students: 31, budget: 500000, year: 2 },
+  { id: "ai_11", type: "AI 리터러시", dept: "실내건축디자인과", name: "실내건축설계(1)", professor: "김동욱", students: 19, budget: 500000, year: 2 },
+  { id: "ai_12", type: "AI 리터러시", dept: "융합안전공학과", name: "프로그래밍언어", professor: "정일한", students: 19, budget: 500000, year: 2 },
+  { id: "ai_13", type: "AI 리터러시", dept: "전기전자공학부", name: "파이썬프로그래밍", professor: "장민호", students: 26, budget: 500000, year: 2 },
+  { id: "ai_14", type: "AI 리터러시", dept: "조선해양시스템공학과", name: "배관시스템설계", professor: "양승호", students: 13, budget: 1200000, year: 2 },
+  { id: "ai_15", type: "AI 리터러시", dept: "조선해양시스템공학과", name: "부유체안정성", professor: "양승호", students: 12, budget: 1200000, year: 2 },
+  { id: "ai_16", type: "AI 리터러시", dept: "치위생학과", name: "구강조직학", professor: "이가연", students: 108, budget: 500000, year: 2 },
+  { id: "ai_17", type: "AI 리터러시", dept: "치위생학과", name: "구강생리학", professor: "이동은", students: 82, budget: 500000, year: 2 },
+  { id: "ai_18", type: "AI 리터러시", dept: "컴퓨터공학과", name: "객체지향프로그래밍(1)", professor: "김금석", students: 44, budget: 500000, year: 2 },
+  { id: "ai_19", type: "AI 리터러시", dept: "호텔조리제빵과", name: "AI-DX 초콜릿및케이크실습", professor: "신언환", students: 69, budget: 7000000, year: 2 },
+  { id: "ai_20", type: "AI 리터러시", dept: "화학공학과", name: "GMP실무", professor: "장광일", students: 44, budget: 500000, year: 2 },
+  { id: "ai_21", type: "AI 리터러시", dept: "국제학부", name: "Smartwork 실무", professor: "서용한", students: 4, budget: 500000, year: 2, isForeign: true },
+  { id: "ai_22", type: "AI 리터러시", dept: "글로벌비즈니스학과", name: "Smartwork 실무", professor: "서용한", students: 31, budget: 500000, year: 2, isForeign: true }
+];
+
+// 💡 학과별 PM교수 데이터 정의
+const PM_PROFESSORS = [
+  { dept: "간호학부", name: "공경란" },
+  { dept: "게임영상학과", name: "이재현" },
+  { dept: "국제학부", name: "이연주" },
+  { dept: "글로벌비즈니스학과", name: "서용한" },
+  { dept: "기계공학부 기계시스템전공", name: "이정준" },
+  { dept: "기계공학부 기계설비전공", name: "고형석" },
+  { dept: "물리치료학과", name: "김원호" },
+  { dept: "사회복지학과", name: "이수경" },
+  { dept: "세무회계학과", name: "천정애" },
+  { dept: "스포츠건강재활학과", name: "김원문" },
+  { dept: "스포츠재활학부 스포츠재활전공", name: "김원문" },
+  { dept: "스포츠재활학부 스포츠지도전공", name: "서봉한" },
+  { dept: "식품영양학과", name: "김일낭" },
+  { dept: "실내건축디자인과", name: "김동욱" },
+  { dept: "융합안전공학과", name: "한영진" },
+  { dept: "전기전자공학부 (스마트전자)", name: "조영" },
+  { dept: "조선해양시스템공학과", name: "양승호" },
+  { dept: "치위생학과", name: "이동은" },
+  { dept: "컴퓨터공학과", name: "김금석" },
+  { dept: "호텔조리제빵과", name: "채영철" },
+  { dept: "화학공학과", name: "송민석" }
+];
 
 // 연차별 단위과제 및 주요 프로그램 데이터 명세
 const majorProgramsData = {
@@ -171,6 +261,37 @@ export default function MajorProgramsManager({ selectedYear }) {
   const [selectedUnit, setSelectedUnit] = useState("");
   // 현재 선택된 프로그램 상태
   const [selectedProg, setSelectedProg] = useState(null);
+
+  // 💡 주문식 교육과정 전용 하위 탭 관리 ("plan" | "process" | "result")
+  const [orderlyTab, setOrderlyTab] = useState("plan");
+  const [selectedDeptFilter, setSelectedDeptFilter] = useState("all");
+  const [selectedTypeFilter, setSelectedTypeFilter] = useState("all");
+  const [pmSearchQuery, setPmSearchQuery] = useState("");
+  const [activeCourseId, setActiveCourseId] = useState("cap_1");
+
+  // 💡 가상 이수학생 데이터 및 상태 관리 (교과목 ID별 학생 리스트)
+  const [studentList, setStudentList] = useState({
+    "cap_1": [
+      { id: "202611001", name: "김민재", dept: "기계공학부", status: "이수완료" },
+      { id: "202611002", name: "이지은", dept: "기계공학부", status: "진행중" },
+      { id: "202611003", name: "박준서", dept: "기계공학부", status: "이수완료" },
+      { id: "202611004", name: "윤도훈", dept: "기계공학부", status: "이수완료" },
+      { id: "202611005", name: "한소희", dept: "기계공학부", status: "진행중" }
+    ],
+    "pbl_1": [
+      { id: "202612041", name: "최주연", dept: "간호학부", status: "이수완료" },
+      { id: "202612042", name: "황도현", dept: "간호학부", status: "진행중" },
+      { id: "202612043", name: "안서연", dept: "간호학부", status: "이수완료" }
+    ],
+    "omn_1": [
+      { id: "202613091", name: "민지선", dept: "스포츠건강재활학과", status: "이수완료" },
+      { id: "202613092", name: "송지훈", dept: "스포츠건강재활학과", status: "진행중" }
+    ]
+  });
+
+  const [newStudentId, setNewStudentId] = useState("");
+  const [newStudentName, setNewStudentName] = useState("");
+  const [newStudentDept, setNewStudentDept] = useState("");
 
   // 휠 스크롤 회전 제어를 위한 틱 제어 상태 및 Ref
   const containerRef = React.useRef(null);
@@ -495,36 +616,433 @@ export default function MajorProgramsManager({ selectedYear }) {
                 ))}
               </div>
 
-              {/* 주요 프로그램별 프레임 (상세 화면 준비 중 카드) */}
+              {/* 주요 프로그램별 프레임 (주문식 교육과정 3단 연동 탭 및 일반 준비 중 화면) */}
               {selectedProg ? (
-                <div className="glass-card" style={{ padding: "2.5rem", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: "420px", textAlign: "center", gap: "1rem" }}>
-                  <div style={{ width: "64px", height: "64px", borderRadius: "50%", background: "rgba(59, 130, 246, 0.08)", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--accent-color)" }}>
-                    <BookOpen size={32} />
+                selectedProg.id === "A1_orderly" || selectedProg.id === "A1_orderly_y2" ? (
+                  // 🌟 주문식 교육과정 3단 상세 대시보드 뷰
+                  <div className="glass-card" style={{ padding: "1.5rem", display: "flex", flexDirection: "column", gap: "1.5rem", width: "100%", border: "1px solid rgba(16, 185, 129, 0.2)" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid rgba(255,255,255,0.08)", paddingBottom: "1rem", flexWrap: "wrap", gap: "1rem" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+                        <div style={{ width: "40px", height: "40px", borderRadius: "50%", background: "rgba(16, 185, 129, 0.15)", display: "flex", alignItems: "center", justifyCentering: "center", color: "#10b981", justifyContent: "center" }}>
+                          <BookOpen size={20} />
+                        </div>
+                        <div>
+                          <h4 style={{ fontSize: "1.1rem", fontWeight: "800", color: "#10b981" }}>{selectedProg.name}</h4>
+                          <p style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>{selectedProg.desc}</p>
+                        </div>
+                      </div>
+                      
+                      {/* 계획 / 과정 / 결과 3단 서브탭 컨트롤바 */}
+                      <div style={{ display: "flex", gap: "0.2rem", background: "rgba(255,255,255,0.03)", padding: "0.2rem", borderRadius: "2rem", border: "1px solid var(--border-color)" }}>
+                        {[
+                          { key: "plan", label: "운영 계획", icon: <Calendar size={13} /> },
+                          { key: "process", label: "운영 과정", icon: <Activity size={13} /> },
+                          { key: "result", label: "운영 결과 & 이수", icon: <CheckCircle size={13} /> }
+                        ].map((subTab) => (
+                          <button
+                            key={subTab.key}
+                            onClick={() => setOrderlyTab(subTab.key)}
+                            style={{
+                              border: "none",
+                              padding: "0.4rem 0.9rem",
+                              borderRadius: "1.5rem",
+                              cursor: "pointer",
+                              fontSize: "0.8rem",
+                              fontWeight: "700",
+                              display: "flex",
+                              alignItems: "center",
+                              gap: "0.3rem",
+                              transition: "all 0.25s",
+                              background: orderlyTab === subTab.key ? "#10b981" : "transparent",
+                              color: orderlyTab === subTab.key ? "#fff" : "var(--text-secondary)"
+                            }}
+                          >
+                            {subTab.icon}
+                            {subTab.label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* 1. 운영 계획 탭 */}
+                    {orderlyTab === "plan" && (
+                      <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+                        {/* 총괄 카드 세트 */}
+                        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: "1rem" }}>
+                          <div style={{ background: "rgba(255,255,255,0.01)", border: "1px solid var(--border-color)", borderRadius: "10px", padding: "1rem" }}>
+                            <div style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>총 소요 예산</div>
+                            <div style={{ fontSize: "1.2rem", fontWeight: "900", color: "#10b981", marginTop: "0.25rem" }}>117.9 백만원</div>
+                            <div style={{ fontSize: "0.7rem", color: "var(--text-secondary)", marginTop: "0.2rem" }}>국고 지원금 100%</div>
+                          </div>
+                          <div style={{ background: "rgba(255,255,255,0.01)", border: "1px solid var(--border-color)", borderRadius: "10px", padding: "1rem" }}>
+                            <div style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>대상 교과목</div>
+                            <div style={{ fontSize: "1.2rem", fontWeight: "900", color: "var(--accent-color)", marginTop: "0.25rem" }}>54 개 과목</div>
+                            <div style={{ fontSize: "0.7rem", color: "var(--text-secondary)", marginTop: "0.2rem" }}>A1 정규 교육과정</div>
+                          </div>
+                          <div style={{ background: "rgba(255,255,255,0.01)", border: "1px solid var(--border-color)", borderRadius: "10px", padding: "1rem" }}>
+                            <div style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>참여 학생수</div>
+                            <div style={{ fontSize: "1.2rem", fontWeight: "900", color: "#eab308", marginTop: "0.25rem" }}>2,170 명</div>
+                            <div style={{ fontSize: "0.7rem", color: "var(--text-secondary)", marginTop: "0.2rem" }}>유학생 76명 포함</div>
+                          </div>
+                        </div>
+
+                        {/* 학과별 PM교수 현황 테이블 */}
+                        <div style={{ border: "1px solid var(--border-color)", borderRadius: "10px", padding: "1rem", background: "rgba(255,255,255,0.01)" }}>
+                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem", flexWrap: "wrap", gap: "0.5rem" }}>
+                            <h5 style={{ fontSize: "0.9rem", fontWeight: "800", color: "var(--text-primary)" }}>학과별 PM교수 구성 현황</h5>
+                            <div style={{ display: "flex", alignItems: "center", background: "rgba(255,255,255,0.03)", border: "1px solid var(--border-color)", borderRadius: "5px", padding: "0.25rem 0.5rem", width: "180px" }}>
+                              <Search size={12} style={{ color: "var(--text-secondary)", marginRight: "0.25rem" }} />
+                              <input 
+                                type="text"
+                                placeholder="학과명 검색..."
+                                value={pmSearchQuery}
+                                onChange={(e) => setPmSearchQuery(e.target.value)}
+                                style={{ background: "transparent", border: "none", outline: "none", color: "#fff", fontSize: "0.75rem", width: "100%" }}
+                              />
+                            </div>
+                          </div>
+
+                          <div style={{ maxHeight: "200px", overflowY: "auto", fontSize: "0.8rem" }}>
+                            <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left" }}>
+                              <thead>
+                                <tr style={{ borderBottom: "1px solid var(--border-color)", color: "var(--text-secondary)", fontSize: "0.75rem" }}>
+                                  <th style={{ padding: "0.4rem" }}>순번</th>
+                                  <th style={{ padding: "0.4rem" }}>학과(전공)명</th>
+                                  <th style={{ padding: "0.4rem" }}>PM교수</th>
+                                  <th style={{ padding: "0.4rem" }}>역할</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {PM_PROFESSORS.filter(pm => pm.dept.includes(pmSearchQuery))
+                                  .map((pm, idx) => (
+                                    <tr key={idx} style={{ borderBottom: "1px solid rgba(255,255,255,0.03)" }}>
+                                      <td style={{ padding: "0.4rem" }}>{idx + 1}</td>
+                                      <td style={{ padding: "0.4rem", fontWeight: "700" }}>{pm.dept}</td>
+                                      <td style={{ padding: "0.4rem", color: "#10b981", fontWeight: "800" }}>{pm.name} 교수</td>
+                                      <td style={{ padding: "0.4rem", color: "var(--text-secondary)", fontSize: "0.7rem" }}>교수학습 모델 시범 적용 및 과제 KPI 달성 관리</td>
+                                    </tr>
+                                  ))}
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* 2. 운영 과정 탭 */}
+                    {orderlyTab === "process" && (
+                      <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+                        {/* 필터 헤더 */}
+                        <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap", background: "rgba(255,255,255,0.02)", padding: "0.75rem", borderRadius: "8px", border: "1px solid var(--border-color)" }}>
+                          <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
+                            <label style={{ fontSize: "0.7rem", color: "var(--text-secondary)" }}>학과 필터</label>
+                            <select
+                              value={selectedDeptFilter}
+                              onChange={(e) => setSelectedDeptFilter(e.target.value)}
+                              style={{ background: "var(--modal-bg)", border: "1px solid var(--border-color)", color: "#fff", padding: "0.3rem", borderRadius: "5px", fontSize: "0.75rem", outline: "none" }}
+                            >
+                              <option value="all">전체 학과</option>
+                              {Array.from(new Set(ORDERLY_COURSES.map(c => c.dept))).map(dept => (
+                                <option key={dept} value={dept}>{dept}</option>
+                              ))}
+                            </select>
+                          </div>
+
+                          <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
+                            <label style={{ fontSize: "0.7rem", color: "var(--text-secondary)" }}>교육과정 유형</label>
+                            <select
+                              value={selectedTypeFilter}
+                              onChange={(e) => setSelectedTypeFilter(e.target.value)}
+                              style={{ background: "var(--modal-bg)", border: "1px solid var(--border-color)", color: "#fff", padding: "0.3rem", borderRadius: "5px", fontSize: "0.75rem", outline: "none" }}
+                            >
+                              <option value="all">전체 유형</option>
+                              <option value="AI 리터러시">AI 리터러시</option>
+                              <option value="옴니버스">옴니버스</option>
+                              <option value="OJT 병행">OJT 병행</option>
+                              <option value="캡스톤디자인">캡스톤디자인</option>
+                              <option value="기업형 PBL">기업형 PBL</option>
+                            </select>
+                          </div>
+                        </div>
+
+                        {/* 교과목 테이블 */}
+                        <div style={{ maxHeight: "250px", overflowY: "auto", border: "1px solid var(--border-color)", borderRadius: "10px" }}>
+                          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.8rem", textAlign: "left" }}>
+                            <thead style={{ position: "sticky", top: 0, background: "rgba(30, 41, 59, 0.95)", backdropFilter: "blur(4px)", zIndex: 5 }}>
+                              <tr style={{ borderBottom: "2px solid var(--border-color)", color: "var(--text-secondary)" }}>
+                                <th style={{ padding: "0.5rem" }}>유형</th>
+                                <th style={{ padding: "0.5rem" }}>학과</th>
+                                <th style={{ padding: "0.5rem" }}>교과목명</th>
+                                <th style={{ padding: "0.5rem" }}>담당교수</th>
+                                <th style={{ padding: "0.5rem", textAlign: "right" }}>학생수</th>
+                                <th style={{ padding: "0.5rem", textAlign: "right" }}>배정예산</th>
+                                <th style={{ padding: "0.5rem", textAlign: "center" }}>액션</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {ORDERLY_COURSES.filter(c => {
+                                const matchDept = selectedDeptFilter === "all" || c.dept === selectedDeptFilter;
+                                const matchType = selectedTypeFilter === "all" || c.type === selectedTypeFilter;
+                                return matchDept && matchType;
+                              }).map((c) => (
+                                <tr 
+                                  key={c.id} 
+                                  onClick={() => {
+                                    setActiveCourseId(c.id);
+                                    setOrderlyTab("result");
+                                  }}
+                                  style={{ 
+                                    borderBottom: "1px solid rgba(255,255,255,0.03)", 
+                                    cursor: "pointer", 
+                                    background: activeCourseId === c.id ? "rgba(16, 185, 129, 0.06)" : "transparent"
+                                  }}
+                                  className="course-tr-hover"
+                                >
+                                  <td style={{ padding: "0.5rem" }}>
+                                    <span style={{ 
+                                      fontSize: "0.65rem", 
+                                      padding: "0.15rem 0.4rem", 
+                                      borderRadius: "3px", 
+                                      fontWeight: "800",
+                                      background: c.type === "캡스톤디자인" ? "rgba(59,130,246,0.15)" : c.type === "기업형 PBL" ? "rgba(16,185,129,0.15)" : "rgba(234,179,8,0.15)",
+                                      color: c.type === "캡스톤디자인" ? "#3b82f6" : c.type === "기업형 PBL" ? "#10b981" : "#eab308"
+                                    }}>
+                                      {c.type}
+                                    </span>
+                                  </td>
+                                  <td style={{ padding: "0.5rem" }}>{c.dept}</td>
+                                  <td style={{ padding: "0.5rem", fontWeight: "700" }}>{c.name}</td>
+                                  <td style={{ padding: "0.5rem" }}>{c.professor}</td>
+                                  <td style={{ padding: "0.5rem", textAlign: "right" }}>{c.students}명</td>
+                                  <td style={{ padding: "0.5rem", textAlign: "right", color: "var(--accent-color)" }}>{(c.budget / 1000).toLocaleString()}천원</td>
+                                  <td style={{ padding: "0.5rem", textAlign: "center" }}>
+                                    <button style={{ border: "none", background: "rgba(16, 185, 129, 0.1)", color: "#10b981", fontSize: "0.68rem", padding: "0.2rem 0.5rem", borderRadius: "3px", cursor: "pointer", fontWeight: "800" }}>
+                                      이수 관리 <ArrowRight size={10} style={{ display: "inline", marginLeft: "1px" }} />
+                                    </button>
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* 3. 운영 결과 & 이수현황 탭 */}
+                    {orderlyTab === "result" && (
+                      <div style={{ display: "flex", flexDirection: "column", gap: "1.2rem" }}>
+                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.2rem", flexWrap: "wrap" }}>
+                          
+                          {/* 좌측: 타겟 교과 정보 */}
+                          <div style={{ background: "rgba(255,255,255,0.01)", border: "1px solid var(--border-color)", borderRadius: "10px", padding: "1rem", display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+                            <div>
+                              <span style={{ fontSize: "0.7rem", color: "var(--text-secondary)" }}>선택된 이수관리 교과목</span>
+                              <h5 style={{ fontSize: "0.95rem", fontWeight: "900", color: "#10b981", marginTop: "0.2rem" }}>
+                                {ORDERLY_COURSES.find(c => c.id === activeCourseId)?.name || "선택된 교과목 없음"}
+                              </h5>
+                              <p style={{ fontSize: "0.75rem", color: "var(--text-secondary)", marginTop: "0.15rem" }}>
+                                {ORDERLY_COURSES.find(c => c.id === activeCourseId)?.dept} | {ORDERLY_COURSES.find(c => c.id === activeCourseId)?.professor} 교수
+                              </p>
+                            </div>
+
+                            <div style={{ display: "flex", gap: "1.5rem", borderTop: "1px solid rgba(255,255,255,0.05)", paddingTop: "0.75rem" }}>
+                              <div>
+                                <span style={{ fontSize: "0.68rem", color: "var(--text-secondary)" }}>계획 총 참여생</span>
+                                <div style={{ fontSize: "1.1rem", fontWeight: "800" }}>
+                                  {ORDERLY_COURSES.find(c => c.id === activeCourseId)?.students || 0}명
+                                </div>
+                              </div>
+                              <div>
+                                <span style={{ fontSize: "0.68rem", color: "var(--text-secondary)" }}>이수 완료</span>
+                                <div style={{ fontSize: "1.1rem", fontWeight: "800", color: "#10b981" }}>
+                                  {studentList[activeCourseId]?.filter(s => s.status === "이수완료").length || 0}명
+                                </div>
+                              </div>
+                              <div>
+                                <span style={{ fontSize: "0.68rem", color: "var(--text-secondary)" }}>진행중</span>
+                                <div style={{ fontSize: "1.1rem", fontWeight: "800", color: "#eab308" }}>
+                                  {studentList[activeCourseId]?.filter(s => s.status === "진행중").length || 0}명
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* 우측: 이수학생 추가 등록 폼 */}
+                          <div style={{ background: "rgba(255,255,255,0.01)", border: "1px solid var(--border-color)", borderRadius: "10px", padding: "1rem", display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                            <h6 style={{ fontSize: "0.8rem", fontWeight: "800" }}>이수학생 개별 등록</h6>
+                            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "0.4rem" }}>
+                              <input 
+                                type="text"
+                                placeholder="학번(9자리)"
+                                value={newStudentId}
+                                onChange={(e) => setNewStudentId(e.target.value)}
+                                style={{ background: "var(--modal-bg)", border: "1px solid var(--border-color)", color: "#fff", padding: "0.3rem", borderRadius: "5px", fontSize: "0.75rem", outline: "none" }}
+                              />
+                              <input 
+                                type="text"
+                                placeholder="학생명"
+                                value={newStudentName}
+                                onChange={(e) => setNewStudentName(e.target.value)}
+                                style={{ background: "var(--modal-bg)", border: "1px solid var(--border-color)", color: "#fff", padding: "0.3rem", borderRadius: "5px", fontSize: "0.75rem", outline: "none" }}
+                              />
+                              <input 
+                                type="text"
+                                placeholder="학과명"
+                                value={newStudentDept}
+                                onChange={(e) => setNewStudentDept(e.target.value)}
+                                style={{ background: "var(--modal-bg)", border: "1px solid var(--border-color)", color: "#fff", padding: "0.3rem", borderRadius: "5px", fontSize: "0.75rem", outline: "none" }}
+                              />
+                            </div>
+                            <button
+                              onClick={() => {
+                                if (!newStudentId || !newStudentName) return;
+                                const currentList = studentList[activeCourseId] || [];
+                                const updated = [
+                                  ...currentList,
+                                  { id: newStudentId, name: newStudentName, dept: newStudentDept || "해당학과", status: "진행중" }
+                                ];
+                                setStudentList({
+                                  ...studentList,
+                                  [activeCourseId]: updated
+                                });
+                                setNewStudentId("");
+                                setNewStudentName("");
+                                setNewStudentDept("");
+                              }}
+                              style={{ 
+                                background: "#10b981", 
+                                color: "#fff", 
+                                border: "none", 
+                                padding: "0.35rem", 
+                                borderRadius: "5px", 
+                                fontSize: "0.75rem", 
+                                cursor: "pointer", 
+                                fontWeight: "800",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                gap: "0.2rem"
+                              }}
+                            >
+                              <Plus size={12} />
+                              학생 정보 신규 추가
+                            </button>
+                          </div>
+
+                        </div>
+
+                        {/* 상세 이수학생 리스트 테이블 */}
+                        <div style={{ border: "1px solid var(--border-color)", borderRadius: "10px", overflow: "hidden" }}>
+                          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.78rem", textAlign: "left" }}>
+                            <thead>
+                              <tr style={{ background: "rgba(255,255,255,0.03)", borderBottom: "1px solid var(--border-color)", color: "var(--text-secondary)" }}>
+                                <th style={{ padding: "0.4rem 0.75rem" }}>학번</th>
+                                <th style={{ padding: "0.4rem 0.75rem" }}>이름</th>
+                                <th style={{ padding: "0.4rem 0.75rem" }}>소속 학과</th>
+                                <th style={{ padding: "0.4rem 0.75rem" }}>이수 상태</th>
+                                <th style={{ padding: "0.4rem 0.75rem", textAlign: "center" }}>상태 변경</th>
+                                <th style={{ padding: "0.4rem 0.75rem", textAlign: "center" }}>제거</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {(studentList[activeCourseId] || []).length > 0 ? (
+                                (studentList[activeCourseId] || []).map((student, idx) => (
+                                  <tr key={student.id} style={{ borderBottom: "1px solid rgba(255,255,255,0.02)" }}>
+                                    <td style={{ padding: "0.4rem 0.75rem" }}>{student.id}</td>
+                                    <td style={{ padding: "0.4rem 0.75rem", fontWeight: "700" }}>{student.name}</td>
+                                    <td style={{ padding: "0.4rem 0.75rem", color: "var(--text-secondary)" }}>{student.dept}</td>
+                                    <td style={{ padding: "0.4rem 0.75rem" }}>
+                                      <span style={{ 
+                                        fontSize: "0.65rem", 
+                                        padding: "0.15rem 0.4rem", 
+                                        borderRadius: "3px", 
+                                        fontWeight: "800",
+                                        background: student.status === "이수완료" ? "rgba(16,185,129,0.15)" : "rgba(234,179,8,0.15)",
+                                        color: student.status === "이수완료" ? "#10b981" : "#eab308"
+                                      }}>
+                                        {student.status}
+                                      </span>
+                                    </td>
+                                    <td style={{ padding: "0.4rem 0.75rem", textAlign: "center" }}>
+                                      <button 
+                                        onClick={() => {
+                                          const updatedList = studentList[activeCourseId].map(s => {
+                                            if (s.id === student.id) {
+                                              return { ...s, status: s.status === "이수완료" ? "진행중" : "이수완료" };
+                                            }
+                                            return s;
+                                          });
+                                          setStudentList({
+                                            ...studentList,
+                                            [activeCourseId]: updatedList
+                                          });
+                                        }}
+                                        style={{ border: "none", background: "rgba(255,255,255,0.05)", color: "var(--text-primary)", fontSize: "0.68rem", padding: "0.15rem 0.4rem", borderRadius: "3px", cursor: "pointer" }}
+                                      >
+                                        상태 토글
+                                      </button>
+                                    </td>
+                                    <td style={{ padding: "0.4rem 0.75rem", textAlign: "center" }}>
+                                      <button 
+                                        onClick={() => {
+                                          const updatedList = studentList[activeCourseId].filter(s => s.id !== student.id);
+                                          setStudentList({
+                                            ...studentList,
+                                            [activeCourseId]: updatedList
+                                          });
+                                        }}
+                                        style={{ border: "none", background: "rgba(239, 68, 68, 0.1)", color: "#ef4444", fontSize: "0.68rem", padding: "0.15rem 0.4rem", borderRadius: "3px", cursor: "pointer" }}
+                                      >
+                                        <Trash2 size={11} />
+                                      </button>
+                                    </td>
+                                  </tr>
+                                ))
+                              ) : (
+                                <tr>
+                                  <td colSpan={6} style={{ padding: "1.5rem", textAlign: "center", color: "var(--text-secondary)" }}>
+                                    해당 교과목의 이수학생 대장이 비어있습니다. 우측 폼을 이용해 학생을 수동 등록하거나 [운영 과정] 탭에서 타 교과를 로드해 주세요.
+                                  </td>
+                                </tr>
+                              )}
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    )}
+
                   </div>
-                  <div>
-                    <h4 style={{ fontSize: "1.2rem", fontWeight: "800", marginBottom: "0.5rem" }}>
-                      {selectedProg.name}
-                    </h4>
-                    <p style={{ fontSize: "0.9rem", color: "var(--text-secondary)", maxWidth: "500px", margin: "0 auto 1.5rem" }}>
-                      {selectedProg.desc}
-                    </p>
+                ) : (
+                  // 🌟 일반 다른 주요 프로그램의 경우 (기존 템플릿 렌더링 유지)
+                  <div className="glass-card" style={{ padding: "2.5rem", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: "420px", textAlign: "center", gap: "1rem" }}>
+                    <div style={{ width: "64px", height: "64px", borderRadius: "50%", background: "rgba(59, 130, 246, 0.08)", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--accent-color)" }}>
+                      <BookOpen size={32} />
+                    </div>
+                    <div>
+                      <h4 style={{ fontSize: "1.2rem", fontWeight: "800", marginBottom: "0.5rem" }}>
+                        {selectedProg.name}
+                      </h4>
+                      <p style={{ fontSize: "0.9rem", color: "var(--text-secondary)", maxWidth: "500px", margin: "0 auto 1.5rem" }}>
+                        {selectedProg.desc}
+                      </p>
+                    </div>
+                    
+                    <div style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: "0.5rem",
+                      padding: "0.5rem 1.2rem",
+                      borderRadius: "30px",
+                      background: "rgba(255, 255, 255, 0.04)",
+                      border: "1px solid rgba(255,255,255,0.06)",
+                      fontSize: "0.85rem",
+                      color: "var(--text-secondary)"
+                    }}>
+                      <Settings size={14} className="animate-spin-slow" />
+                      <span>프로그램별 상세 성과/관리 화면 구성 준비 중</span>
+                    </div>
                   </div>
-                  
-                  <div style={{
-                    display: "inline-flex",
-                    alignItems: "center",
-                    gap: "0.5rem",
-                    padding: "0.5rem 1.2rem",
-                    borderRadius: "30px",
-                    background: "rgba(255, 255, 255, 0.04)",
-                    border: "1px solid rgba(255,255,255,0.06)",
-                    fontSize: "0.85rem",
-                    color: "var(--text-secondary)"
-                  }}>
-                    <Settings size={14} className="animate-spin-slow" />
-                    <span>프로그램별 상세 성과/관리 화면 구성 준비 중</span>
-                  </div>
-                </div>
+                )
               ) : (
                 <div className="glass-card" style={{ padding: "3rem", textAlign: "center", color: "var(--text-secondary)" }}>
                   주요 프로그램을 선택해 주세요.
