@@ -634,10 +634,19 @@ export default function MajorProgramsManager({ selectedYear }) {
     setIsAiAnalyzing(true);
     let parsedNum = seminarList.length + 1; // 기본 차수 추천
 
-    // 파일명에서 숫자 및 차수 패턴 검색 (예: "제4차", "제 4차", "4차", "4")
-    const numMatch = fileName.match(/(?:제\s*(\d+)\s*차)|(\d+)/);
-    if (numMatch) {
-      parsedNum = parseInt(numMatch[1] || numMatch[2], 10);
+    // 1단계: "제N차" 또는 "N차"를 우선 매칭하여 파일명 맨 앞의 순번(예: "1. ")으로 인한 오작동 방지
+    const strictMatch = fileName.match(/(?:제\s*(\d+)\s*차)|((\d+)\s*차)/);
+    if (strictMatch) {
+      parsedNum = parseInt(strictMatch[1] || strictMatch[3], 10);
+    } else {
+      // 2단계: "차"가 붙지 않은 단순 숫자 매칭 시, 맨 앞의 순번("1. ")이나 연도("2026년")를 필터링하여 순수한 차수 추출
+      const filteredName = fileName
+        .replace(/^[0-9]+[\.\-\_\s]+/, "") // 맨 앞의 순번 제거
+        .replace(/202[0-9]년?/g, "");     // 연도 제거
+      const simpleMatch = filteredName.match(/\d+/);
+      if (simpleMatch) {
+        parsedNum = parseInt(simpleMatch[0], 10);
+      }
     }
 
     // 차수별 추천 데이터 프리셋
