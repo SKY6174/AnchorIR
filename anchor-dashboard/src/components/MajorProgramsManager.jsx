@@ -634,6 +634,33 @@ export default function MajorProgramsManager({ selectedYear }) {
 
     // 차수별 추천 데이터 프리셋
     const aiPresetData = {
+      1: {
+        date: "2026. 04. 10. (금) 11:00~13:00",
+        speaker: "강동경 (울산지산학연구원 원장)",
+        title: "지자체-대학-산업체 연계 지산학 협력 활성화 방안",
+        attendees: 101,
+        cost: 1680000,
+        satisfaction: 4.6,
+        etc: "제1차 지산학 정례 세미나 개최 결과. 지자체 및 연계 부서 담당자 교류 활성화."
+      },
+      2: {
+        date: "2026. 04. 24. (금) 11:00~13:00",
+        speaker: "김선우 (STEPI 중소·벤처기술혁신연구단장)",
+        title: "지산학 혁신과 지역 격차 해소를 위한 균형발전전략",
+        attendees: 64,
+        cost: 1100000,
+        satisfaction: 4.5,
+        etc: "산업 혁신을 위한 대학 리서치 인프라 융합 방안 정책 세미나. 보도자료 배부 완료."
+      },
+      3: {
+        date: "2026. 05. 08. (금) 11:00~13:00",
+        speaker: "백승욱 (루닛(Lunit) 의장)",
+        title: "인공지능 시대의 지산학 상생과 융합 교육 모델",
+        attendees: 92,
+        cost: 1400000,
+        satisfaction: 4.7,
+        etc: "생성형 AI 및 첨단 헬스케어 동향 공유를 통한 산학 시너지 강화 자문 워크숍 병행."
+      },
       4: {
         date: "2026. 05. 22. (금) 11:00~13:00",
         speaker: "장동선 (궁금한뇌연구소 대표 / 뇌과학자)",
@@ -684,7 +711,10 @@ export default function MajorProgramsManager({ selectedYear }) {
         "지산학 상생을 위한 협업 마인드셋과 창의적 동기부여",
         "빅데이터로 읽는 시대의 흐름과 지역 균형 발전의 미래"
       ];
-      const speakerIndex = (parsedNum - 7) % speakers.length;
+      let speakerIndex = (parsedNum - 7) % speakers.length;
+      if (speakerIndex < 0) {
+        speakerIndex += speakers.length;
+      }
 
       targetData = {
         date: formattedDate,
