@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { 
-  Award, BookOpen, Layers, Settings, Compass, Share2, ShieldAlert, 
+import {
+  Award, BookOpen, Layers, Settings, Compass, Share2, ShieldAlert,
   Calendar, Activity, CheckCircle, Search, User, Users, Plus, Trash2, ArrowRight,
   FileSpreadsheet, Download, Check
 } from "lucide-react";
@@ -15,7 +15,7 @@ const ORDERLY_COURSES = [
   { id: "cap_5", type: "캡스톤디자인", dept: "컴퓨터공학과", name: "종합설계", professor: "김금석", students: 16, budget: 3200000, year: 2 },
   { id: "cap_6", type: "캡스톤디자인", dept: "컴퓨터공학과", name: "종합설계", professor: "김성열", students: 18, budget: 2300000, year: 2 },
   { id: "cap_7", type: "캡스톤디자인", dept: "화학공학과", name: "챌린지프로젝트 (종합설계및창업)", professor: "유승민", students: 21, budget: 2900000, year: 2 },
-  
+
   { id: "pbl_1", type: "기업형 PBL", dept: "간호학부", name: "통합간호학", professor: "김민경", students: 173, budget: 3600000, year: 2 },
   { id: "pbl_2", type: "기업형 PBL", dept: "물리치료학과", name: "신경계물리치료중재", professor: "김원호", students: 28, budget: 2200000, year: 2 },
   { id: "pbl_3", type: "기업형 PBL", dept: "물리치료학과", name: "소아물리치료", professor: "송주영", students: 28, budget: 2200000, year: 2 },
@@ -85,7 +85,7 @@ const PM_PROFESSORS = [
   { dept: "식품영양학과", name: "김일낭" },
   { dept: "실내건축디자인과", name: "김동욱" },
   { dept: "융합안전공학과", name: "한영진" },
-  { dept: "전기전자공학부 (스마트전자)", name: "조영" },
+  { dept: "전기전자공학부 스마트전자전공", name: "조영" },
   { dept: "조선해양시스템공학과", name: "양승호" },
   { dept: "치위생학과", name: "이동은" },
   { dept: "컴퓨터공학과", name: "김금석" },
@@ -331,10 +331,10 @@ export default function MajorProgramsManager({ selectedYear }) {
       "옴니버스": s.omnibus,
       "AI리터러시": s.ai
     }));
-    
+
     const ws = XLSX.utils.json_to_sheet(sampleData);
     XLSX.utils.book_append_sheet(wb, ws, "이수결과대장");
-    
+
     const wbout = XLSX.write(wb, { bookType: "xlsx", type: "base64" });
     const a = document.createElement("a");
     a.href = `data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,${wbout}`;
@@ -380,18 +380,18 @@ export default function MajorProgramsManager({ selectedYear }) {
 
           const name = String(row["이름"] || "").trim();
           const dept = String(row["소속학과"] || "").trim();
-          
-          const capstone = validStatuses.includes(String(row["캡스톤디자인"] || "").trim()) 
-            ? String(row["캡스톤디자인"]).trim() 
+
+          const capstone = validStatuses.includes(String(row["캡스톤디자인"] || "").trim())
+            ? String(row["캡스톤디자인"]).trim()
             : "미참여";
-          const pbl = validStatuses.includes(String(row["기업형PBL"] || "").trim()) 
-            ? String(row["기업형PBL"]).trim() 
+          const pbl = validStatuses.includes(String(row["기업형PBL"] || "").trim())
+            ? String(row["기업형PBL"]).trim()
             : "미참여";
-          const omnibus = validStatuses.includes(String(row["옴니버스"] || "").trim()) 
-            ? String(row["옴니버스"]).trim() 
+          const omnibus = validStatuses.includes(String(row["옴니버스"] || "").trim())
+            ? String(row["옴니버스"]).trim()
             : "미참여";
-          const ai = validStatuses.includes(String(row["AI리터러시"] || "").trim()) 
-            ? String(row["AI리터러시"]).trim() 
+          const ai = validStatuses.includes(String(row["AI리터러시"] || "").trim())
+            ? String(row["AI리터러시"]).trim()
             : "미참여";
 
           const existingIndex = updatedList.findIndex(s => s.id === studentId);
@@ -486,7 +486,7 @@ export default function MajorProgramsManager({ selectedYear }) {
       if (e.key === "ArrowUp" || e.key === "ArrowDown") {
         // 브라우저 기본 스크롤(페이지 전체 이동) 차단
         e.preventDefault();
-        
+
         const now = Date.now();
         if (now - lastWheelTime < 160) return; // 동일 스로틀 데드타임 적용
 
@@ -518,7 +518,7 @@ export default function MajorProgramsManager({ selectedYear }) {
     const handleWheel = (e) => {
       // 대시보드 전체 페이지 스크롤과 충돌 방지
       e.preventDefault();
-      
+
       const now = Date.now();
       if (now - lastWheelTime < 160) return; // 스로틀링 데드타임 적용
 
@@ -561,14 +561,14 @@ export default function MajorProgramsManager({ selectedYear }) {
           {selectedYear}차년도 주요 프로그램 관리
         </h2>
         <p style={{ fontSize: "0.9rem", color: "var(--text-secondary)", lineHeight: "1.5" }}>
-          울산과학대학교 앵커사업단에서 추진하는 핵심 과제별 주요 프로그램을 조회하고 관리할 수 있습니다. 
+          울산과학대학교 앵커사업단에서 추진하는 핵심 과제별 주요 프로그램을 조회하고 관리할 수 있습니다.
           좌측 3D 롤링 다이얼에서 마우스 휠 스크롤 또는 클릭으로 <strong>단위과제</strong>를 선택하여 현황을 확인하세요.
         </p>
       </div>
 
       {/* 2. 메인 워크스페이스 레이아웃 (좌측 단위과제 원형 리스트 / 우측 프로그램 정보) */}
       <div style={{ display: "grid", gridTemplateColumns: "100px 1fr", gap: "2rem", position: "relative" }}>
-        
+
         {/* 키보드 및 휠 조작 안내 말풍선 툴팁 */}
         <div style={{
           position: "absolute",
@@ -613,15 +613,15 @@ export default function MajorProgramsManager({ selectedYear }) {
         </div>
 
         {/* 좌측 단위과제 원형 버튼 세트 - 3D 회전 실린더 휠 다이얼 */}
-        <div 
+        <div
           ref={containerRef}
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
-          style={{ 
-            display: "flex", 
-            flexDirection: "column", 
-            alignItems: "center", 
-            borderRight: "1px solid var(--border-color)", 
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            borderRight: "1px solid var(--border-color)",
             paddingRight: "1.5rem",
             height: "400px", // 휠 회전 컨테이너의 최적 세로 높이
             overflow: "hidden",
@@ -630,12 +630,12 @@ export default function MajorProgramsManager({ selectedYear }) {
             userSelect: "none"
           }}
         >
-          <span style={{ 
-            fontSize: "0.75rem", 
-            fontWeight: "800", 
-            color: "var(--text-secondary)", 
-            textTransform: "uppercase", 
-            letterSpacing: "1px", 
+          <span style={{
+            fontSize: "0.75rem",
+            fontWeight: "800",
+            color: "var(--text-secondary)",
+            textTransform: "uppercase",
+            letterSpacing: "1px",
             marginBottom: "1rem",
             zIndex: 10,
             background: "var(--modal-bg)", // 배경 테마 가변 처리하여 융합
@@ -670,11 +670,11 @@ export default function MajorProgramsManager({ selectedYear }) {
           }} />
 
           {/* 3D 실린더 트랙 */}
-          <div 
-            style={{ 
-              display: "flex", 
-              flexDirection: "column", 
-              gap: "12px", 
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: "12px",
               alignItems: "center",
               transformStyle: "preserve-3d",
               transition: "transform 0.65s cubic-bezier(0.25, 1, 0.5, 1)", // 스크롤 전환 모션 0.65s로 속도감 튜닝
@@ -691,11 +691,11 @@ export default function MajorProgramsManager({ selectedYear }) {
               unitKeys.map((unit, index) => {
                 const diff = index - activeIndex;
                 // 중앙 활성화 항목 기준으로 상하 입체 궤도 곡률 적용
-                const rotateX = diff * 22; 
-                const translateZ = Math.abs(diff) * -12; 
-                const translateY = diff * -2; 
-                const scale = Math.max(0.68, 1 - Math.abs(diff) * 0.08); 
-                const opacity = Math.max(0.22, 1 - Math.abs(diff) * 0.26); 
+                const rotateX = diff * 22;
+                const translateZ = Math.abs(diff) * -12;
+                const translateY = diff * -2;
+                const scale = Math.max(0.68, 1 - Math.abs(diff) * 0.08);
+                const opacity = Math.max(0.22, 1 - Math.abs(diff) * 0.26);
 
                 return (
                   <button
@@ -714,17 +714,17 @@ export default function MajorProgramsManager({ selectedYear }) {
                       justifyContent: "center",
                       flexShrink: 0, // flex 수축 방지하여 완벽한 원형 유지
                       transition: "transform 0.65s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.65s, background 0.3s, border-color 0.3s", // 스크롤 전환 모션 0.65s로 속도감 튜닝
-                      
+
                       // 3D Cylinder transform 공식 적용!
                       transform: `rotateX(${rotateX}deg) translateZ(${translateZ}px) translateY(${translateY}px) scale(${scale})`,
                       opacity: opacity,
 
-                      background: selectedUnit === unit 
-                        ? "linear-gradient(135deg, var(--accent-color), #3b82f6)" 
+                      background: selectedUnit === unit
+                        ? "linear-gradient(135deg, var(--accent-color), #3b82f6)"
                         : "rgba(255, 255, 255, 0.04)",
                       color: selectedUnit === unit ? "#fff" : "var(--text-secondary)",
-                      boxShadow: selectedUnit === unit 
-                        ? "0 4px 15px rgba(59, 130, 246, 0.35)" 
+                      boxShadow: selectedUnit === unit
+                        ? "0 4px 15px rgba(59, 130, 246, 0.35)"
                         : "none",
                       border: selectedUnit === unit ? "2px solid rgba(255,255,255,0.25)" : "1px solid rgba(255,255,255,0.06)",
                       backfaceVisibility: "hidden"
@@ -766,14 +766,14 @@ export default function MajorProgramsManager({ selectedYear }) {
                       fontSize: "0.9rem",
                       fontWeight: "700",
                       transition: "all 0.2s ease",
-                      background: selectedProg?.id === prog.id 
-                        ? "rgba(59, 130, 246, 0.15)" 
+                      background: selectedProg?.id === prog.id
+                        ? "rgba(59, 130, 246, 0.15)"
                         : "rgba(255, 255, 255, 0.03)",
-                      color: selectedProg?.id === prog.id 
-                        ? "var(--accent-color)" 
+                      color: selectedProg?.id === prog.id
+                        ? "var(--accent-color)"
                         : "var(--text-secondary)",
-                      border: selectedProg?.id === prog.id 
-                        ? "1px solid var(--accent-color)" 
+                      border: selectedProg?.id === prog.id
+                        ? "1px solid var(--accent-color)"
                         : "1px solid rgba(255, 255, 255, 0.08)"
                     }}
                   >
@@ -789,14 +789,14 @@ export default function MajorProgramsManager({ selectedYear }) {
                   <div className="glass-card" style={{ padding: "1.8rem", display: "flex", flexDirection: "column", gap: "1.5rem", width: "100%", border: "1px solid rgba(16, 185, 129, 0.25)", boxShadow: "0 8px 32px rgba(16, 185, 129, 0.04)" }}>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid rgba(255,255,255,0.08)", paddingBottom: "1.2rem", flexWrap: "wrap", gap: "1rem" }}>
                       <div style={{ display: "flex", alignItems: "center", gap: "0.9rem" }}>
-                        <div style={{ 
-                          width: "46px", 
-                          height: "46px", 
-                          borderRadius: "12px", 
-                          background: "linear-gradient(135deg, rgba(16, 185, 129, 0.25), rgba(16, 185, 129, 0.05))", 
-                          display: "flex", 
-                          alignItems: "center", 
-                          justifyContent: "center", 
+                        <div style={{
+                          width: "46px",
+                          height: "46px",
+                          borderRadius: "12px",
+                          background: "linear-gradient(135deg, rgba(16, 185, 129, 0.25), rgba(16, 185, 129, 0.05))",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
                           color: "#10b981",
                           border: "1px solid rgba(16, 185, 129, 0.35)",
                           boxShadow: "0 4px 10px rgba(16, 185, 129, 0.15)"
@@ -808,7 +808,7 @@ export default function MajorProgramsManager({ selectedYear }) {
                           <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)", marginTop: "0.2rem" }}>{selectedProg.desc}</p>
                         </div>
                       </div>
-                      
+
                       {/* 계획 / 과정 / 결과 3단 서브탭 컨트롤바 */}
                       <div style={{ display: "flex", gap: "0.25rem", background: "rgba(255,255,255,0.02)", padding: "0.25rem", borderRadius: "30px", border: "1px solid rgba(255, 255, 255, 0.06)" }}>
                         {[
@@ -871,7 +871,7 @@ export default function MajorProgramsManager({ selectedYear }) {
                             <h5 style={{ fontSize: "0.9rem", fontWeight: "800", color: "var(--text-primary)" }}>학과별 PM교수 구성 현황</h5>
                             <div style={{ display: "flex", alignItems: "center", background: "rgba(255,255,255,0.03)", border: "1px solid var(--border-color)", borderRadius: "5px", padding: "0.25rem 0.5rem", width: "180px" }}>
                               <Search size={12} style={{ color: "var(--text-secondary)", marginRight: "0.25rem" }} />
-                              <input 
+                              <input
                                 type="text"
                                 placeholder="학과명 검색..."
                                 value={pmSearchQuery}
@@ -964,24 +964,24 @@ export default function MajorProgramsManager({ selectedYear }) {
                                 const matchType = selectedTypeFilter === "all" || c.type === selectedTypeFilter;
                                 return matchDept && matchType;
                               }).map((c) => (
-                                <tr 
-                                  key={c.id} 
+                                <tr
+                                  key={c.id}
                                   onClick={() => {
                                     setActiveCourseId(c.id);
                                     setOrderlyTab("result");
                                   }}
-                                  style={{ 
-                                    borderBottom: "1px solid rgba(255,255,255,0.03)", 
-                                    cursor: "pointer", 
+                                  style={{
+                                    borderBottom: "1px solid rgba(255,255,255,0.03)",
+                                    cursor: "pointer",
                                     background: activeCourseId === c.id ? "rgba(16, 185, 129, 0.06)" : "transparent"
                                   }}
                                   className="course-tr-hover"
                                 >
                                   <td style={{ padding: "0.5rem" }}>
-                                    <span style={{ 
-                                      fontSize: "0.65rem", 
-                                      padding: "0.15rem 0.4rem", 
-                                      borderRadius: "3px", 
+                                    <span style={{
+                                      fontSize: "0.65rem",
+                                      padding: "0.15rem 0.4rem",
+                                      borderRadius: "3px",
                                       fontWeight: "800",
                                       background: c.type === "캡스톤디자인" ? "rgba(59,130,246,0.15)" : c.type === "기업형 PBL" ? "rgba(16,185,129,0.15)" : "rgba(234,179,8,0.15)",
                                       color: c.type === "캡스톤디자인" ? "#3b82f6" : c.type === "기업형 PBL" ? "#10b981" : "#eab308"
@@ -1021,10 +1021,10 @@ export default function MajorProgramsManager({ selectedYear }) {
 
                       return (
                         <div style={{ display: "flex", flexDirection: "column", gap: "1.2rem" }}>
-                          
+
                           {/* 상단 통계 카드 & 학과 필터 */}
                           <div style={{ display: "grid", gridTemplateColumns: "1.2fr 1.8fr", gap: "1.2rem", flexWrap: "wrap" }}>
-                            
+
                             {/* 좌측: 학과 필터 및 통계 요약 */}
                             <div style={{ background: "rgba(255,255,255,0.01)", border: "1px solid var(--border-color)", borderRadius: "10px", padding: "1.2rem", display: "flex", flexDirection: "column", gap: "1rem" }}>
                               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -1069,7 +1069,7 @@ export default function MajorProgramsManager({ selectedYear }) {
                             <div style={{ background: "rgba(255,255,255,0.01)", border: "1px solid var(--border-color)", borderRadius: "10px", padding: "1rem", display: "flex", flexDirection: "column", gap: "0.75rem" }}>
                               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                                 <h6 style={{ fontSize: "0.82rem", fontWeight: "800" }}>이수 대장 관리 및 업로드</h6>
-                                <button 
+                                <button
                                   onClick={downloadResultSample}
                                   style={{ background: "rgba(59,130,246,0.1)", color: "#3b82f6", border: "1px solid rgba(59,130,246,0.25)", fontSize: "0.7rem", padding: "0.25rem 0.5rem", borderRadius: "4px", cursor: "pointer", fontWeight: "800", display: "flex", alignItems: "center", gap: "0.2rem" }}
                                 >
@@ -1083,21 +1083,21 @@ export default function MajorProgramsManager({ selectedYear }) {
                                 <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem", borderRight: "1px solid rgba(255,255,255,0.06)", paddingRight: "0.75rem" }}>
                                   <span style={{ fontSize: "0.68rem", color: "var(--text-secondary)" }}>개별 학생 등록</span>
                                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1.2fr", gap: "0.3rem" }}>
-                                    <input 
+                                    <input
                                       type="text"
                                       placeholder="학번(9자리)"
                                       value={newStudentId}
                                       onChange={(e) => setNewStudentId(e.target.value)}
                                       style={{ background: "var(--modal-bg)", border: "1px solid var(--border-color)", color: "var(--text-primary)", padding: "0.25rem", borderRadius: "4px", fontSize: "0.7rem", outline: "none" }}
                                     />
-                                    <input 
+                                    <input
                                       type="text"
                                       placeholder="학생명"
                                       value={newStudentName}
                                       onChange={(e) => setNewStudentName(e.target.value)}
                                       style={{ background: "var(--modal-bg)", border: "1px solid var(--border-color)", color: "var(--text-primary)", padding: "0.25rem", borderRadius: "4px", fontSize: "0.7rem", outline: "none" }}
                                     />
-                                    <input 
+                                    <input
                                       type="text"
                                       placeholder="학과명"
                                       value={newStudentDept}
@@ -1118,28 +1118,28 @@ export default function MajorProgramsManager({ selectedYear }) {
                                       }
                                       setStudentMasterList([
                                         ...studentMasterList,
-                                        { 
-                                          id: newStudentId, 
-                                          name: newStudentName, 
-                                          dept: newStudentDept || "기계공학부", 
-                                          capstone: "미참여", 
-                                          pbl: "미참여", 
-                                          omnibus: "미참여", 
-                                          ai: "미참여" 
+                                        {
+                                          id: newStudentId,
+                                          name: newStudentName,
+                                          dept: newStudentDept || "기계공학부",
+                                          capstone: "미참여",
+                                          pbl: "미참여",
+                                          omnibus: "미참여",
+                                          ai: "미참여"
                                         }
                                       ]);
                                       setNewStudentId("");
                                       setNewStudentName("");
                                       setNewStudentDept("");
                                     }}
-                                    style={{ 
-                                      background: "#10b981", 
-                                      color: "#fff", 
-                                      border: "none", 
-                                      padding: "0.3rem", 
-                                      borderRadius: "4px", 
-                                      fontSize: "0.72rem", 
-                                      cursor: "pointer", 
+                                    style={{
+                                      background: "#10b981",
+                                      color: "#fff",
+                                      border: "none",
+                                      padding: "0.3rem",
+                                      borderRadius: "4px",
+                                      fontSize: "0.72rem",
+                                      cursor: "pointer",
                                       fontWeight: "800",
                                       display: "flex",
                                       alignItems: "center",
@@ -1156,7 +1156,7 @@ export default function MajorProgramsManager({ selectedYear }) {
                                 {/* 엑셀 업로드 드롭존 */}
                                 <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
                                   <span style={{ fontSize: "0.68rem", color: "var(--text-secondary)" }}>엑셀 일괄 업로드</span>
-                                  <label 
+                                  <label
                                     htmlFor="excel-result-uploader"
                                     style={{
                                       border: "1px dashed var(--border-color)",
@@ -1175,7 +1175,7 @@ export default function MajorProgramsManager({ selectedYear }) {
                                   >
                                     <FileSpreadsheet size={20} style={{ color: "#10b981" }} />
                                     <span style={{ fontSize: "0.62rem", color: "var(--text-secondary)" }}>파일 선택 (.xlsx)</span>
-                                    <input 
+                                    <input
                                       type="file"
                                       id="excel-result-uploader"
                                       accept=".xlsx, .xls"
@@ -1213,7 +1213,7 @@ export default function MajorProgramsManager({ selectedYear }) {
                                   {filteredStudents.length > 0 ? (
                                     filteredStudents.map((student) => {
                                       const overall = getOverallStatus(student);
-                                      
+
                                       const getBadgeStyle = (status) => {
                                         if (status === "이수완료") return { background: "rgba(16,185,129,0.12)", color: "#10b981" };
                                         if (status === "진행중") return { background: "rgba(234,179,8,0.12)", color: "#eab308" };
@@ -1225,26 +1225,26 @@ export default function MajorProgramsManager({ selectedYear }) {
                                           <td style={{ padding: "0.5rem 0.75rem" }}>{student.id}</td>
                                           <td style={{ padding: "0.5rem 0.75rem", fontWeight: "700", color: "var(--text-primary)" }}>{student.name}</td>
                                           <td style={{ padding: "0.5rem 0.75rem", color: "var(--text-secondary)" }}>{student.dept}</td>
-                                          
+
                                           {/* 유형별 이수 상태 토글 배지 */}
                                           {["capstone", "pbl", "omnibus", "ai"].map((type) => {
                                             const status = student[type] || "미참여";
                                             const badgeStyle = getBadgeStyle(status);
                                             return (
                                               <td key={type} style={{ padding: "0.5rem 0.75rem", textAlign: "center" }}>
-                                                <span 
+                                                <span
                                                   onClick={() => toggleCourseStatus(student.id, type)}
-                                                  style={{ 
-                                                    fontSize: "0.62rem", 
-                                                    padding: "0.15rem 0.4rem", 
-                                                    borderRadius: "3px", 
+                                                  style={{
+                                                    fontSize: "0.62rem",
+                                                    padding: "0.15rem 0.4rem",
+                                                    borderRadius: "3px",
                                                     fontWeight: "800",
                                                     cursor: "pointer",
                                                     userSelect: "none",
                                                     display: "inline-block",
                                                     width: "65px",
                                                     transition: "all 0.15s ease",
-                                                    ...badgeStyle 
+                                                    ...badgeStyle
                                                   }}
                                                   title="클릭하여 상태 변경"
                                                 >
@@ -1256,10 +1256,10 @@ export default function MajorProgramsManager({ selectedYear }) {
 
                                           {/* 종합 이수 상태 */}
                                           <td style={{ padding: "0.5rem 0.75rem", textAlign: "center" }}>
-                                            <span style={{ 
-                                              fontSize: "0.62rem", 
-                                              padding: "0.15rem 0.4rem", 
-                                              borderRadius: "3px", 
+                                            <span style={{
+                                              fontSize: "0.62rem",
+                                              padding: "0.15rem 0.4rem",
+                                              borderRadius: "3px",
                                               fontWeight: "800",
                                               background: overall === "이수완료" ? "#10b981" : overall === "진행중" ? "#eab308" : "rgba(255,255,255,0.05)",
                                               color: overall === "미참여" ? "var(--text-secondary)" : "#fff",
@@ -1272,7 +1272,7 @@ export default function MajorProgramsManager({ selectedYear }) {
 
                                           {/* 제거 버튼 */}
                                           <td style={{ padding: "0.5rem 0.75rem", textAlign: "center" }}>
-                                            <button 
+                                            <button
                                               onClick={() => {
                                                 if (confirm(`${student.name} 학생을 명단에서 제거하시겠습니까?`)) {
                                                   setStudentMasterList(studentMasterList.filter(s => s.id !== student.id));
@@ -1316,7 +1316,7 @@ export default function MajorProgramsManager({ selectedYear }) {
                         {selectedProg.desc}
                       </p>
                     </div>
-                    
+
                     <div style={{
                       display: "inline-flex",
                       alignItems: "center",
