@@ -399,6 +399,7 @@ export default function MajorProgramsManager({ selectedYear }) {
   const [formSeminarSatisfaction, setFormSeminarSatisfaction] = useState("");
   const [formSeminarEtc, setFormSeminarEtc] = useState("");
   const [debateLogs, setDebateLogs] = useState([]);
+  const [aiStatusText, setAiStatusText] = useState("");
 
   // 종합 이수 상태 판정 알고리즘
   const getOverallStatus = (student) => {
@@ -617,13 +618,20 @@ export default function MajorProgramsManager({ selectedYear }) {
     setSeminarList([...seminarList, newReport]);
   };
 
-  // 💡 PDF 업로드 감지 및 AI 분석 시뮬레이션 핸들러 (GPT-4o vs Gemini API 교차 검증 토론)
-  const handlePdfUpload = (file) => {
+  // 💡 PDF/MD 파일 업로드 감지 및 GPT-4o 분석 시뮬레이션 핸들러
+  const handleFileUpload = (file) => {
     if (!file) return;
-    setIsAiAnalyzing(true);
-    setDebateLogs([]);
-
+    
     const fileName = file.name || "";
+    const isPdf = fileName.toLowerCase().endsWith(".pdf");
+    const isMd = fileName.toLowerCase().endsWith(".md");
+
+    if (!isPdf && !isMd) {
+      alert("지원하지 않는 파일 형식입니다. pdf 또는 md 파일만 업로드해 주세요.");
+      return;
+    }
+
+    setIsAiAnalyzing(true);
     let parsedNum = seminarList.length + 1; // 기본 차수 추천
 
     // 파일명에서 숫자 및 차수 패턴 검색 (예: "제4차", "제 4차", "4차", "4")
@@ -663,12 +671,12 @@ export default function MajorProgramsManager({ selectedYear }) {
       },
       4: {
         date: "2026. 05. 22. (금) 11:00~13:00",
-        speaker: "장동선 (궁금한뇌연구소 대표 / 뇌과학자)",
-        title: "인공지능 시대, 뇌과학으로 푸는 지산학 협업과 혁신적 소통",
-        attendees: 88,
-        cost: 1800000,
+        speaker: "김영곤 ㈜한창제지 기업부설연구소 연구소장",
+        title: "종이, 그 이상의 이야기",
+        attendees: 77,
+        cost: 2170000,
         satisfaction: 4.8,
-        etc: "뇌과학적 관점에서 본 지산학 협업 리더십 특강. 지산학 실무 협의회 워크숍 병행. 보도자료 배포."
+        etc: "한창제지 연구소장 특강을 통한 제지 산업 기술 공유 및 HD현대이엔티 등 입주기업 지산학 교류 워크숍."
       },
       5: {
         date: "2026. 06. 05. (금) 11:00~13:00",
@@ -727,20 +735,48 @@ export default function MajorProgramsManager({ selectedYear }) {
       };
     }
 
-    // 1.8초 동안 Gemini API 단독 분석 시뮬레이션
-    setTimeout(() => {
-      setFormSeminarId(String(parsedNum));
-      setFormSeminarDate(targetData.date);
-      setFormSeminarSpeaker(targetData.speaker);
-      setFormSeminarTitle(targetData.title);
-      setFormSeminarAttendees(String(targetData.attendees));
-      setFormSeminarCost(String(targetData.cost));
-      setFormSeminarSatisfaction(String(targetData.satisfaction));
-      setFormSeminarEtc(targetData.etc);
+    if (isPdf) {
+      // 1단계: PDF ➔ MD 변환 (1.0초)
+      setAiStatusText("📄 업로드된 PDF 보고서를 마크다운(.md) 파일로 내부 변환 중입니다...");
+      
+      setTimeout(() => {
+        // 2단계: 변환 완료 후 GPT-4o 분석 (1.2초)
+        setAiStatusText("🤖 변환 완료! 마크다운 본문 텍스트에서 GPT-4o API를 통해 결과 데이터를 추출 중입니다...");
+        
+        setTimeout(() => {
+          setFormSeminarId(String(parsedNum));
+          setFormSeminarDate(targetData.date);
+          setFormSeminarSpeaker(targetData.speaker);
+          setFormSeminarTitle(targetData.title);
+          setFormSeminarAttendees(String(targetData.attendees));
+          setFormSeminarCost(String(targetData.cost));
+          setFormSeminarSatisfaction(String(targetData.satisfaction));
+          setFormSeminarEtc(targetData.etc);
 
-      setIsAiAnalyzing(false);
-      alert("🤖 Gemini API 분석 완료: PDF 결과보고서에서 차수/강사/주제/예산 등의 데이터를 파싱하여 폼에 입력했습니다!");
-    }, 1800);
+          setIsAiAnalyzing(false);
+          setAiStatusText("");
+          alert("🤖 GPT-4o 분석 완료 (PDF ➔ MD ➔ GPT-4o): 성공적으로 데이터를 추출하여 입력창에 바인딩했습니다!");
+        }, 1200);
+      }, 1000);
+    } else if (isMd) {
+      // MD 파일은 즉시 GPT-4o 분석 (1.2초)
+      setAiStatusText("🤖 업로드된 MD 파일 본문에서 GPT-4o API를 통해 즉시 데이터를 추출 중입니다...");
+      
+      setTimeout(() => {
+        setFormSeminarId(String(parsedNum));
+        setFormSeminarDate(targetData.date);
+        setFormSeminarSpeaker(targetData.speaker);
+        setFormSeminarTitle(targetData.title);
+        setFormSeminarAttendees(String(targetData.attendees));
+        setFormSeminarCost(String(targetData.cost));
+        setFormSeminarSatisfaction(String(targetData.satisfaction));
+        setFormSeminarEtc(targetData.etc);
+
+        setIsAiAnalyzing(false);
+        setAiStatusText("");
+        alert("🤖 GPT-4o 분석 완료 (MD ➔ GPT-4o): 성공적으로 데이터를 추출하여 입력창에 바인딩했습니다!");
+      }, 1200);
+    }
   };
 
   // 💡 세미나 결과보고 등록 액션 (수동 및 PDF-AI 공통 등록)
@@ -1873,12 +1909,12 @@ export default function MajorProgramsManager({ selectedYear }) {
                           {/* 모달 바디 */}
                           <div style={{ padding: "1.5rem", display: "flex", flexDirection: "column", gap: "1.2rem" }}>
                             
-                            {/* PDF AI 분석 드롭존 섹션 */}
+                            {/* PDF/MD AI 분석 드롭존 섹션 */}
                             <div style={{ background: "rgba(255,255,255,0.01)", border: "1px dashed var(--border-color, rgba(255,255,255,0.15))", borderRadius: "10px", padding: "1.2rem", textAlign: "center" }}>
                               {isAiAnalyzing ? (
                                 <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.8rem", padding: "1rem 0" }}>
                                   <div style={{ width: "36px", height: "36px", borderRadius: "50%", border: "3px solid rgba(59,130,246,0.15)", borderTopColor: "#3b82f6", animation: "spin 1s linear infinite" }} />
-                                  <span style={{ fontSize: "0.8rem", fontWeight: "700", color: "#3b82f6" }}>🤖 Gemini API가 PDF 결과보고서를 실시간 분석 및 데이터 추출 중입니다...</span>
+                                  <span style={{ fontSize: "0.8rem", fontWeight: "700", color: "#3b82f6", minHeight: "20px" }}>{aiStatusText}</span>
                                   {/* 프로그레스바 */}
                                   <div style={{ width: "200px", height: "4px", background: "rgba(255,255,255,0.05)", borderRadius: "2px", overflow: "hidden", marginTop: "0.2rem" }}>
                                     <div style={{ height: "100%", width: "70%", background: "#3b82f6", borderRadius: "2px", animation: "loadingBar 1.5s ease-in-out infinite" }} />
@@ -1887,16 +1923,16 @@ export default function MajorProgramsManager({ selectedYear }) {
                               ) : (
                                 <label htmlFor="modal-pdf-uploader" style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem", cursor: "pointer" }}>
                                   <FileSpreadsheet size={28} style={{ color: "#3b82f6" }} />
-                                  <span style={{ fontSize: "0.82rem", fontWeight: "800", color: "var(--text-primary)" }}>📄 지산학 세미나 결과보고 PDF 파일 업로드 (AI 자동분석)</span>
-                                  <span style={{ fontSize: "0.7rem", color: "var(--text-secondary)" }}>결과보고 PDF 파일을 여기에 업로드하시면, AI가 차수/강사/주제/예산 등을 자동 인식하여 입력창을 채워줍니다.</span>
+                                  <span style={{ fontSize: "0.82rem", fontWeight: "800", color: "var(--text-primary)" }}>📄 지산학 세미나 결과보고 PDF 또는 MD 파일 업로드 (GPT-4o 분석)</span>
+                                  <span style={{ fontSize: "0.7rem", color: "var(--text-secondary)" }}>결과보고 PDF 또는 MD 파일을 여기에 업로드하시면, GPT-4o가 차수/강사/주제/예산 등을 자동 인식하여 입력창을 채워줍니다.</span>
                                   <span style={{ fontSize: "0.65rem", color: "var(--accent-color)", padding: "0.2rem 0.6rem", background: "rgba(59,130,246,0.08)", borderRadius: "4px", marginTop: "0.2rem" }}>파일 선택하기</span>
                                   <input
                                     type="file"
                                     id="modal-pdf-uploader"
-                                    accept=".pdf"
+                                    accept=".pdf,.md"
                                     onChange={(e) => {
                                       const file = e.target.files?.[0];
-                                      if (file) handlePdfUpload(file);
+                                      if (file) handleFileUpload(file);
                                     }}
                                     style={{ display: "none" }}
                                   />
