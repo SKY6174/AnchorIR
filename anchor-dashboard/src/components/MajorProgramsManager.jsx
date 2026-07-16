@@ -263,11 +263,15 @@ export default function MajorProgramsManager({ selectedYear }) {
   const [selectedProg, setSelectedProg] = useState(null);
 
   // 💡 주문식 교육과정 전용 하위 탭 관리 ("plan" | "process" | "result")
-  const [orderlyTab, setOrderlyTab] = useState("plan");
+  const [orderlyTab, setOrderlyTab] = useState(() => {
+    return localStorage.getItem("anchor_orderly_tab") || "plan";
+  });
   const [selectedDeptFilter, setSelectedDeptFilter] = useState("all");
   const [selectedTypeFilter, setSelectedTypeFilter] = useState("all");
   const [pmSearchQuery, setPmSearchQuery] = useState("");
-  const [activeCourseId, setActiveCourseId] = useState("cap_1");
+  const [activeCourseId, setActiveCourseId] = useState(() => {
+    return localStorage.getItem("anchor_active_course_id") || "cap_1";
+  });
 
   // 💡 가상 이수학생 데이터 및 상태 관리 (교과목 ID별 학생 리스트)
   const [studentList, setStudentList] = useState({
@@ -311,6 +315,15 @@ export default function MajorProgramsManager({ selectedYear }) {
       setSelectedProg(null);
     }
   }, [selectedYear]);
+
+  // 💡 주문식 교육과정 탭 및 코스 선택 영구 복원 동기화 (새로고침 대응)
+  useEffect(() => {
+    localStorage.setItem("anchor_orderly_tab", orderlyTab);
+  }, [orderlyTab]);
+
+  useEffect(() => {
+    localStorage.setItem("anchor_active_course_id", activeCourseId);
+  }, [activeCourseId]);
 
   // 마우스 호버 상태에서 키보드 up/down 방향키 입력 시 단위과제 선택 회전 동기화
   useEffect(() => {
@@ -781,8 +794,8 @@ export default function MajorProgramsManager({ selectedYear }) {
                         {/* 교과목 테이블 */}
                         <div style={{ maxHeight: "250px", overflowY: "auto", border: "1px solid var(--border-color)", borderRadius: "10px" }}>
                           <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.8rem", textAlign: "left" }}>
-                            <thead style={{ position: "sticky", top: 0, background: "rgba(30, 41, 59, 0.95)", backdropFilter: "blur(4px)", zIndex: 5 }}>
-                              <tr style={{ borderBottom: "2px solid var(--border-color)", color: "var(--text-secondary)" }}>
+                            <thead style={{ position: "sticky", top: 0, background: "#1e293b", backdropFilter: "blur(4px)", zIndex: 5 }}>
+                              <tr style={{ borderBottom: "2px solid rgba(255,255,255,0.15)", color: "rgba(255, 255, 255, 0.95)" }}>
                                 <th style={{ padding: "0.5rem" }}>유형</th>
                                 <th style={{ padding: "0.5rem" }}>학과</th>
                                 <th style={{ padding: "0.5rem" }}>교과목명</th>
