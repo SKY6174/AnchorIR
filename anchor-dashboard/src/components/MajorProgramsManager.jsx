@@ -727,43 +727,8 @@ export default function MajorProgramsManager({ selectedYear }) {
       };
     }
 
-    // 시간차 Debate 시뮬레이터 체인 기동
-    // 0ms: System 진입 로그
-    setDebateLogs([
-      { role: "system", text: "PDF 업로드 감지: 교차 검증 분석 토론 모드가 활성화되었습니다. (GPT-4o ⚔️ Gemini 1.5 Pro)" }
-    ]);
-
-    // 1200ms: GPT-4o 분석 제안
+    // 1.8초 동안 GPT-4o 단독 분석 시뮬레이션
     setTimeout(() => {
-      setDebateLogs(prev => [...prev, {
-        role: "gpt",
-        text: `[GPT-4o] 파일명 '${fileName}' 분석 결과, 패턴 상 '제${parsedNum}차' 결과보고서로 판명됩니다. 예산 대장의 A1 세부 집행 실적과 크로스 밸리데이션하여 소요 사업비를 ₩${targetData.cost.toLocaleString()}원으로 가산출하겠습니다.`
-      }]);
-    }, 1200);
-
-    // 2400ms: Gemini의 본문 분석 및 대안 제시
-    setTimeout(() => {
-      setDebateLogs(prev => [...prev, {
-        role: "gemini",
-        text: `[Gemini 1.5 Pro] 동의합니다. 추가적으로 제${parsedNum}차 본문 텍스트를 파싱하여 초청 연사가 '${targetData.speaker}'인 것을 감지하였습니다. 만족도 수치가 직접 기입되지는 않았으나, 참석 인원 ${targetData.attendees}명의 피드백 키워드 긍정 감성 분석(Sentiment Analysis) 결과에 따라 평균 만족도는 '${targetData.satisfaction}'점이 합당한 결론으로 사료됩니다.`
-      }]);
-    }, 2400);
-
-    // 3600ms: GPT-4o의 검토 및 합의 타진
-    setTimeout(() => {
-      setDebateLogs(prev => [...prev, {
-        role: "gpt",
-        text: `[GPT-4o] 합당한 제안입니다. 해당 만족도 수치를 승인 및 동기화합니다. 세미나 주제는 '${targetData.title}'로 최종 합치하며, 기타 비고란에 성과 요약 기록을 삽입하겠습니다. 이 데이터를 최종 보고 데이터로 채택하시겠습니까?`
-      }]);
-    }, 3600);
-
-    // 4800ms: System 종료 및 폼 값 바인딩
-    setTimeout(() => {
-      setDebateLogs(prev => [...prev, {
-        role: "system",
-        text: "🤖 AI 교차 검증 토론 완료: 합의된 지산학 결과보고서 데이터가 수동 입력창에 최종 적용되었습니다."
-      }]);
-
       setFormSeminarId(String(parsedNum));
       setFormSeminarDate(targetData.date);
       setFormSeminarSpeaker(targetData.speaker);
@@ -774,7 +739,8 @@ export default function MajorProgramsManager({ selectedYear }) {
       setFormSeminarEtc(targetData.etc);
 
       setIsAiAnalyzing(false);
-    }, 4800);
+      alert("🤖 GPT-4o 분석 완료: PDF 결과보고서에서 차수/강사/주제/예산 등의 데이터를 파싱하여 폼에 입력했습니다!");
+    }, 1800);
   };
 
   // 💡 세미나 결과보고 등록 액션 (수동 및 PDF-AI 공통 등록)
@@ -1907,56 +1873,15 @@ export default function MajorProgramsManager({ selectedYear }) {
                           {/* 모달 바디 */}
                           <div style={{ padding: "1.5rem", display: "flex", flexDirection: "column", gap: "1.2rem" }}>
                             
-                            {/* PDF AI 분석 드롭존 및 교차 검증 토론 세션 */}
-                            <div style={{ background: "rgba(0,0,0,0.2)", border: "1px dashed var(--border-color, rgba(255,255,255,0.15))", borderRadius: "10px", padding: "1.2rem" }}>
+                            {/* PDF AI 분석 드롭존 섹션 */}
+                            <div style={{ background: "rgba(255,255,255,0.01)", border: "1px dashed var(--border-color, rgba(255,255,255,0.15))", borderRadius: "10px", padding: "1.2rem", textAlign: "center" }}>
                               {isAiAnalyzing ? (
-                                <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-                                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid rgba(255,255,255,0.08)", paddingBottom: "0.5rem" }}>
-                                    <span style={{ fontSize: "0.8rem", fontWeight: "800", color: "#3b82f6", display: "flex", alignItems: "center", gap: "0.4rem" }}>
-                                      <span style={{ display: "inline-block", width: "8px", height: "8px", borderRadius: "50%", background: "#ef4444", animation: "pulse 1.5s infinite" }} />
-                                      🤖 AI 실시간 교차 검증 디베이트 (GPT-4o vs Gemini 1.5 Pro)
-                                    </span>
-                                    <div style={{ width: "20px", height: "20px", borderRadius: "50%", border: "2px solid rgba(59,130,246,0.15)", borderTopColor: "#3b82f6", animation: "spin 1s linear infinite" }} />
-                                  </div>
-                                  
-                                  {/* 디베이트 로그 메신저 스타일 뷰 */}
-                                  <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem", maxHeight: "250px", overflowY: "auto", padding: "0.5rem", background: "rgba(0,0,0,0.3)", borderRadius: "8px", minHeight: "150px", textAlign: "left" }}>
-                                    {debateLogs.map((log, idx) => {
-                                      const isSystem = log.role === "system";
-                                      const isGpt = log.role === "gpt";
-                                      const isGemini = log.role === "gemini";
-                                      
-                                      const bg = isSystem 
-                                        ? "rgba(255,255,255,0.03)" 
-                                        : isGpt 
-                                          ? "rgba(59, 130, 246, 0.08)" 
-                                          : "rgba(16, 185, 129, 0.08)";
-                                      const borderColor = isSystem 
-                                        ? "rgba(255,255,255,0.06)" 
-                                        : isGpt 
-                                          ? "rgba(59, 130, 246, 0.2)" 
-                                          : "rgba(16, 185, 129, 0.2)";
-                                      const nameColor = isGpt ? "#3b82f6" : isGemini ? "#10b981" : "var(--text-secondary)";
-                                      
-                                      return (
-                                        <div key={idx} style={{ 
-                                          padding: "0.6rem 0.8rem", 
-                                          background: bg, 
-                                          border: `1px solid ${borderColor}`, 
-                                          borderRadius: "8px",
-                                          animation: "fadeIn 0.3s ease-out"
-                                        }}>
-                                          {!isSystem && (
-                                            <div style={{ fontWeight: "800", fontSize: "0.68rem", color: nameColor, marginBottom: "0.2rem" }}>
-                                              {isGpt ? "🤖 GPT-4o" : "✨ Gemini 1.5 Pro"}
-                                            </div>
-                                          )}
-                                          <div style={{ fontSize: "0.72rem", color: isSystem ? "var(--text-secondary)" : "var(--text-primary)", lineHeight: "1.4", fontStyle: isSystem ? "italic" : "normal" }}>
-                                            {log.text}
-                                          </div>
-                                        </div>
-                                      );
-                                    })}
+                                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.8rem", padding: "1rem 0" }}>
+                                  <div style={{ width: "36px", height: "36px", borderRadius: "50%", border: "3px solid rgba(59,130,246,0.15)", borderTopColor: "#3b82f6", animation: "spin 1s linear infinite" }} />
+                                  <span style={{ fontSize: "0.8rem", fontWeight: "700", color: "#3b82f6" }}>🤖 GPT-4o가 PDF 결과보고서를 실시간 분석 및 데이터 추출 중입니다...</span>
+                                  {/* 프로그레스바 */}
+                                  <div style={{ width: "200px", height: "4px", background: "rgba(255,255,255,0.05)", borderRadius: "2px", overflow: "hidden", marginTop: "0.2rem" }}>
+                                    <div style={{ height: "100%", width: "70%", background: "#3b82f6", borderRadius: "2px", animation: "loadingBar 1.5s ease-in-out infinite" }} />
                                   </div>
                                 </div>
                               ) : (
