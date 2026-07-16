@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import {
   Award, BookOpen, Layers, Settings, Compass, Share2, ShieldAlert,
   Calendar, Activity, CheckCircle, Search, User, Users, Plus, Trash2, ArrowRight,
-  FileSpreadsheet, Download, Check
+  FileSpreadsheet, Download, Check, Pencil
 } from "lucide-react";
 import * as XLSX from "xlsx";
 
@@ -404,6 +404,7 @@ export default function MajorProgramsManager({ selectedYear }) {
   const [formSeminarEtc, setFormSeminarEtc] = useState("");
   const [debateLogs, setDebateLogs] = useState([]);
   const [aiStatusText, setAiStatusText] = useState("");
+  const [isEditMode, setIsEditMode] = useState(false);
 
   // 종합 이수 상태 판정 알고리즘
   const getOverallStatus = (student) => {
@@ -1769,7 +1770,19 @@ export default function MajorProgramsManager({ selectedYear }) {
 
                       {/* 추가 결과보고 등록 모달 열기 버튼 */}
                       <button
-                        onClick={() => setIsSeminarModalOpen(true)}
+                        onClick={() => {
+                          setIsEditMode(false);
+                          setFormSeminarId("");
+                          setFormSeminarDate("");
+                          setFormSeminarSpeaker("");
+                          setFormSeminarTitle("");
+                          setFormSeminarAttendees("");
+                          setFormSeminarMainCost("");
+                          setFormSeminarCarryCost("");
+                          setFormSeminarSatisfaction("");
+                          setFormSeminarEtc("");
+                          setIsSeminarModalOpen(true);
+                        }}
                         style={{
                           background: "linear-gradient(135deg, var(--accent-color), #2563eb)",
                           color: "#fff",
@@ -1875,16 +1888,38 @@ export default function MajorProgramsManager({ selectedYear }) {
                                   </td>
                                   <td style={{ padding: "0.6rem 0.5rem", color: "var(--text-secondary)", lineHeight: "1.4" }}>{seminar.etc}</td>
                                   <td style={{ padding: "0.6rem 0.5rem", textAlign: "center" }}>
-                                    <button
-                                      onClick={() => {
-                                        if (confirm(`제${seminar.id}차 세미나 결과보고를 목록에서 삭제하시겠습니까?`)) {
-                                          setSeminarList(seminarList.filter(s => s.id !== seminar.id));
-                                        }
-                                      }}
-                                      style={{ border: "none", background: "rgba(239, 68, 68, 0.1)", color: "#ef4444", fontSize: "0.65rem", padding: "0.15rem 0.35rem", borderRadius: "3px", cursor: "pointer" }}
-                                    >
-                                      <Trash2 size={11} />
-                                    </button>
+                                    <div style={{ display: "flex", gap: "0.35rem", justifyContent: "center" }}>
+                                      <button
+                                        onClick={() => {
+                                          setIsEditMode(true);
+                                          setFormSeminarId(String(seminar.id));
+                                          setFormSeminarDate(seminar.date);
+                                          setFormSeminarSpeaker(seminar.speaker);
+                                          setFormSeminarTitle(seminar.title);
+                                          setFormSeminarAttendees(String(seminar.attendees));
+                                          setFormSeminarMainCost(String(seminar.mainCost || 0));
+                                          setFormSeminarCarryCost(String(seminar.carryCost || 0));
+                                          setFormSeminarSatisfaction(String(seminar.satisfaction));
+                                          setFormSeminarEtc(seminar.etc || "");
+                                          setIsSeminarModalOpen(true);
+                                        }}
+                                        title="수정"
+                                        style={{ border: "none", background: "rgba(59, 130, 246, 0.1)", color: "#3b82f6", fontSize: "0.65rem", padding: "0.25rem 0.45rem", borderRadius: "4px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
+                                      >
+                                        <Pencil size={11} />
+                                      </button>
+                                      <button
+                                        onClick={() => {
+                                          if (confirm(`제${seminar.id}차 세미나 결과보고를 목록에서 삭제하시겠습니까?`)) {
+                                            setSeminarList(seminarList.filter(s => s.id !== seminar.id));
+                                          }
+                                        }}
+                                        title="삭제"
+                                        style={{ border: "none", background: "rgba(239, 68, 68, 0.1)", color: "#ef4444", fontSize: "0.65rem", padding: "0.25rem 0.45rem", borderRadius: "4px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
+                                      >
+                                        <Trash2 size={11} />
+                                      </button>
+                                    </div>
                                   </td>
                                 </tr>
                               ))
@@ -1931,7 +1966,9 @@ export default function MajorProgramsManager({ selectedYear }) {
                         }}>
                           {/* 모달 헤더 */}
                           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "1.2rem 1.5rem", borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
-                            <h4 style={{ fontSize: "1.15rem", fontWeight: "800", color: "var(--text-primary)" }}>지산학 이음 세미나 결과보고 등록</h4>
+                            <h4 style={{ fontSize: "1.15rem", fontWeight: "800", color: "var(--text-primary)" }}>
+                              {isEditMode ? "지산학 이음 세미나 결과보고 수정" : "지산학 이음 세미나 결과보고 등록"}
+                            </h4>
                             <button
                               onClick={() => setIsSeminarModalOpen(false)}
                               style={{ border: "none", background: "none", color: "var(--text-secondary)", fontSize: "1.2rem", cursor: "pointer", fontWeight: "bold" }}
@@ -2125,7 +2162,7 @@ export default function MajorProgramsManager({ selectedYear }) {
                                   type="submit"
                                   style={{ background: "linear-gradient(135deg, var(--accent-color), #2563eb)", border: "none", color: "#fff", padding: "0.45rem 1.2rem", borderRadius: "6px", fontSize: "0.75rem", cursor: "pointer", fontWeight: "800", boxShadow: "0 2px 8px rgba(59,130,246,0.3)" }}
                                 >
-                                  등록 완료
+                                  {isEditMode ? "수정 완료" : "등록 완료"}
                                 </button>
                               </div>
                             </form>
