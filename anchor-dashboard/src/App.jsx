@@ -3741,7 +3741,7 @@ export default function App() {
         const startDateStr = `${targetYearNum}-03-01T00:00:00+09:00`;
         const endDateStr = `${targetYearNum + 1}-03-01T00:00:00+09:00`;
 
-        // 💡 [속도 극대화] 11개 테이블을 Promise.all을 통해 단 1회의 병렬 쿼리로 동시에 로딩합니다.
+        // 💡 [속도 극대화] 12개 테이블을 Promise.all을 통해 단 1회의 병렬 쿼리로 동시에 로딩합니다.
         const [
           projRes,
           agrRes,
@@ -3753,7 +3753,8 @@ export default function App() {
           monthRes,
           eventRes,
           meetRes,
-          pressRes
+          pressRes,
+          execRes
         ] = await Promise.all([
           supabase.from("projects_data").select("*").eq("year", selectedYear).single(),
           supabase.from("agreements").select("*"),
@@ -3765,22 +3766,27 @@ export default function App() {
           supabase.from("schedule_monthly").select("*").eq("year", selectedYear),
           supabase.from("schedule_events").select("*").eq("year", selectedYear),
           supabase.from("schedule_meetings").select("*").eq("year", selectedYear),
-          supabase.from("press_releases").select("*").gte("broadcast_date", startDateStr).lt("broadcast_date", endDateStr)
+          supabase.from("press_releases").select("*").gte("broadcast_date", startDateStr).lt("broadcast_date", endDateStr),
+          supabase.from("budget_executions").select("*").eq("year", selectedYear)
         ]);
 
         if (!active) return;
+
+        // 💡 [동기화] Supabase DB의 정산 집행 실적 테이블을 로컬 스토리지에 동기화하여 대시보드 메인 화면에 즉시 롤업되도록 처리
+        if (execRes && execRes.data) {
+          localStorage.setItem(`budget_exec_records_${selectedYear}`, JSON.stringify(execRes.data));
+        }
 
         // 💡 [인증/세션 만료 예방 안전장치] API 요청 결과 401(Unauthorized)이나 토큰 만료 에러가 감지되면 사용자에게 알리고 자동으로 재로그인을 진행시킵니다.
         const authErrors = [
           projRes?.error, agrRes?.error, certRes?.error, schRes?.error,
           envRes?.error, equipRes?.error, servRes?.error, monthRes?.error,
-          eventRes?.error, meetRes?.error, pressRes?.error
+          eventRes?.error, meetRes?.error, pressRes?.error, execRes?.error
         ].filter(err => {
-          if (!err) return false;
-          const status = err.status;
-          const code = String(err.code || "");
-          const msg = String(err.message || "");
-          return (
+          const status = err ? err.status : null;
+          const code = err ? String(err.code || "") : "";
+          const msg = err ? String(err.message || "") : "";
+          return err && (
             status === 401 || 
             status === 403 || 
             code === "PGRST301" || 
