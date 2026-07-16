@@ -8026,7 +8026,7 @@ export default function App() {
         <header className="top-nav" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "1rem" }}>
           <div className="page-title">
             <h1>앵커사업 통합 IR 대시보드</h1>
-            <p>울산과학대학교 앵커사업 {selectedYear}차년도 사업예산 및 성과관리 시스템</p>
+            <p>울산과학대학교 앵커사업 예산 및 성과관리 시스템</p>
           </div>
 
           {/* 전역 연도 선택 컨트롤러 */}
