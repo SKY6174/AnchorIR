@@ -727,7 +727,7 @@ export default function MajorProgramsManager({ selectedYear }) {
       };
     }
 
-    // 1.8초 동안 GPT-4o 단독 분석 시뮬레이션
+    // 1.8초 동안 Gemini API 단독 분석 시뮬레이션
     setTimeout(() => {
       setFormSeminarId(String(parsedNum));
       setFormSeminarDate(targetData.date);
@@ -739,7 +739,7 @@ export default function MajorProgramsManager({ selectedYear }) {
       setFormSeminarEtc(targetData.etc);
 
       setIsAiAnalyzing(false);
-      alert("🤖 GPT-4o 분석 완료: PDF 결과보고서에서 차수/강사/주제/예산 등의 데이터를 파싱하여 폼에 입력했습니다!");
+      alert("🤖 Gemini API 분석 완료: PDF 결과보고서에서 차수/강사/주제/예산 등의 데이터를 파싱하여 폼에 입력했습니다!");
     }, 1800);
   };
 
@@ -1878,7 +1878,7 @@ export default function MajorProgramsManager({ selectedYear }) {
                               {isAiAnalyzing ? (
                                 <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.8rem", padding: "1rem 0" }}>
                                   <div style={{ width: "36px", height: "36px", borderRadius: "50%", border: "3px solid rgba(59,130,246,0.15)", borderTopColor: "#3b82f6", animation: "spin 1s linear infinite" }} />
-                                  <span style={{ fontSize: "0.8rem", fontWeight: "700", color: "#3b82f6" }}>🤖 GPT-4o가 PDF 결과보고서를 실시간 분석 및 데이터 추출 중입니다...</span>
+                                  <span style={{ fontSize: "0.8rem", fontWeight: "700", color: "#3b82f6" }}>🤖 Gemini API가 PDF 결과보고서를 실시간 분석 및 데이터 추출 중입니다...</span>
                                   {/* 프로그레스바 */}
                                   <div style={{ width: "200px", height: "4px", background: "rgba(255,255,255,0.05)", borderRadius: "2px", overflow: "hidden", marginTop: "0.2rem" }}>
                                     <div style={{ height: "100%", width: "70%", background: "#3b82f6", borderRadius: "2px", animation: "loadingBar 1.5s ease-in-out infinite" }} />
