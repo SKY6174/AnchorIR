@@ -350,7 +350,8 @@ export default function MajorProgramsManager({ selectedYear }) {
         speaker: "박철우 (한국공학대학교 부총장)",
         title: "호모사피엔스의 혁신과 산학협력 기반 대학 혁신 / AI",
         attendees: 70,
-        cost: 2576000,
+        mainCost: 2576000,
+        carryCost: 0,
         satisfaction: 4.8,
         etc: "대학 보직자 대상 AI 기반 대학 혁신 컨설팅 병행. 강사비 1,000,000원 포함. 보도자료 배포 완료"
       },
@@ -360,7 +361,8 @@ export default function MajorProgramsManager({ selectedYear }) {
         speaker: "강신욱 (인택스세무법인 대표 세무사)",
         title: "알면 쓸데있는 세금 잡학사전",
         attendees: 93,
-        cost: 1540000,
+        mainCost: 0,
+        carryCost: 1540000,
         satisfaction: 4.7,
         etc: "입주기업 및 대학 관계자 대상 실무 세무 특강. 강사비 500,000원 포함. 2025년 RISE 이월금 활용. 보도자료 배포 완료"
       },
@@ -370,7 +372,8 @@ export default function MajorProgramsManager({ selectedYear }) {
         speaker: "임종석 (골프산업과 특임교수)",
         title: "건강을 지키는 골프, 오래 즐기는 골프",
         attendees: 81,
-        cost: 1412640,
+        mainCost: 1000000,
+        carryCost: 412640,
         satisfaction: 4.9,
         etc: "신체 자세 교정 및 부상 예방 스트레칭 실습 진행. 강사비 300,000원 포함. 2025년 이월 본사업비 및 2026년 간접비 활용"
       }
@@ -395,7 +398,8 @@ export default function MajorProgramsManager({ selectedYear }) {
   const [formSeminarSpeaker, setFormSeminarSpeaker] = useState("");
   const [formSeminarTitle, setFormSeminarTitle] = useState("");
   const [formSeminarAttendees, setFormSeminarAttendees] = useState("");
-  const [formSeminarCost, setFormSeminarCost] = useState("");
+  const [formSeminarMainCost, setFormSeminarMainCost] = useState("");
+  const [formSeminarCarryCost, setFormSeminarCarryCost] = useState("");
   const [formSeminarSatisfaction, setFormSeminarSatisfaction] = useState("");
   const [formSeminarEtc, setFormSeminarEtc] = useState("");
   const [debateLogs, setDebateLogs] = useState([]);
@@ -656,7 +660,8 @@ export default function MajorProgramsManager({ selectedYear }) {
         speaker: "강동경 (울산지산학연구원 원장)",
         title: "지자체-대학-산업체 연계 지산학 협력 활성화 방안",
         attendees: 101,
-        cost: 1680000,
+        mainCost: 1680000,
+        carryCost: 0,
         satisfaction: 4.6,
         etc: "제1차 지산학 정례 세미나 개최 결과. 지자체 및 연계 부서 담당자 교류 활성화."
       },
@@ -665,7 +670,8 @@ export default function MajorProgramsManager({ selectedYear }) {
         speaker: "김선우 (STEPI 중소·벤처기술혁신연구단장)",
         title: "지산학 혁신과 지역 격차 해소를 위한 균형발전전략",
         attendees: 64,
-        cost: 1100000,
+        mainCost: 1100000,
+        carryCost: 0,
         satisfaction: 4.5,
         etc: "산업 혁신을 위한 대학 리서치 인프라 융합 방안 정책 세미나. 보도자료 배부 완료."
       },
@@ -674,7 +680,8 @@ export default function MajorProgramsManager({ selectedYear }) {
         speaker: "백승욱 (루닛(Lunit) 의장)",
         title: "인공지능 시대의 지산학 상생과 융합 교육 모델",
         attendees: 92,
-        cost: 1400000,
+        mainCost: 1400000,
+        carryCost: 0,
         satisfaction: 4.7,
         etc: "생성형 AI 및 첨단 헬스케어 동향 공유를 통한 산학 시너지 강화 자문 워크숍 병행."
       },
@@ -683,7 +690,8 @@ export default function MajorProgramsManager({ selectedYear }) {
         speaker: "김영곤 ㈜한창제지 기업부설연구소 연구소장",
         title: "종이, 그 이상의 이야기",
         attendees: 77,
-        cost: 2170000,
+        mainCost: 1800000,
+        carryCost: 370000,
         satisfaction: 4.8,
         etc: "한창제지 연구소장 특강을 통한 제지 산업 기술 공유 및 HD현대이엔티 등 입주기업 지산학 교류 워크숍."
       },
@@ -692,7 +700,8 @@ export default function MajorProgramsManager({ selectedYear }) {
         speaker: "이민화 (카이스트 석좌교수)",
         title: "디지털 트랜스포메이션과 지역 대학의 지산학 상생 혁신 모델",
         attendees: 76,
-        cost: 1250000,
+        mainCost: 1250000,
+        carryCost: 0,
         satisfaction: 4.6,
         etc: "디지털 신산업 연계 지역 강소기업 지원 방안 및 R&D 혁신 생태계 인프라 자문 진행."
       },
@@ -701,7 +710,8 @@ export default function MajorProgramsManager({ selectedYear }) {
         speaker: "최재붕 (성균관대학교 교수 / '포노 사피엔스' 저자)",
         title: "챗GPT가 바꾸는 일의 미래와 대학 교육의 새로운 패러다임",
         attendees: 112,
-        cost: 2200000,
+        mainCost: 2200000,
+        carryCost: 0,
         satisfaction: 4.9,
         etc: "생성형 AI 시대 실무 융합형 하이브리드 리터러시 인재 양성 및 개방형 설계 방향 논의."
       }
@@ -738,7 +748,8 @@ export default function MajorProgramsManager({ selectedYear }) {
         speaker: speakers[speakerIndex],
         title: titles[speakerIndex],
         attendees: Math.floor(Math.random() * 40) + 70,
-        cost: (Math.floor(Math.random() * 100) + 120) * 10000,
+        mainCost: (Math.floor(Math.random() * 100) + 120) * 10000,
+        carryCost: 0,
         satisfaction: parseFloat((Math.random() * 0.4 + 4.5).toFixed(1)),
         etc: `제${parsedNum}차 지산학 이음 정례 세미나 개최 결과. 교류 네트워킹 및 피드백 조사 완료.`
       };
@@ -758,7 +769,8 @@ export default function MajorProgramsManager({ selectedYear }) {
           setFormSeminarSpeaker(targetData.speaker);
           setFormSeminarTitle(targetData.title);
           setFormSeminarAttendees(String(targetData.attendees));
-          setFormSeminarCost(String(targetData.cost));
+          setFormSeminarMainCost(String(targetData.mainCost));
+          setFormSeminarCarryCost(String(targetData.carryCost));
           setFormSeminarSatisfaction(String(targetData.satisfaction));
           setFormSeminarEtc(targetData.etc);
 
@@ -777,7 +789,8 @@ export default function MajorProgramsManager({ selectedYear }) {
         setFormSeminarSpeaker(targetData.speaker);
         setFormSeminarTitle(targetData.title);
         setFormSeminarAttendees(String(targetData.attendees));
-        setFormSeminarCost(String(targetData.cost));
+        setFormSeminarMainCost(String(targetData.mainCost));
+        setFormSeminarCarryCost(String(targetData.carryCost));
         setFormSeminarSatisfaction(String(targetData.satisfaction));
         setFormSeminarEtc(targetData.etc);
 
@@ -799,7 +812,8 @@ export default function MajorProgramsManager({ selectedYear }) {
     
     const parsedId = parseInt(formSeminarId, 10);
     const parsedAttendees = parseInt(formSeminarAttendees, 10) || 0;
-    const parsedCost = parseInt(formSeminarCost, 10) || 0;
+    const parsedMainCost = parseInt(formSeminarMainCost, 10) || 0;
+    const parsedCarryCost = parseInt(formSeminarCarryCost, 10) || 0;
     const parsedSatisfaction = parseFloat(formSeminarSatisfaction) || 0.0;
 
     if (isNaN(parsedId) || parsedId <= 0) return alert("차수는 양의 정수로 입력해 주세요.");
@@ -811,7 +825,8 @@ export default function MajorProgramsManager({ selectedYear }) {
       speaker: formSeminarSpeaker,
       title: formSeminarTitle,
       attendees: parsedAttendees,
-      cost: parsedCost,
+      mainCost: parsedMainCost,
+      carryCost: parsedCarryCost,
       satisfaction: parsedSatisfaction,
       etc: formSeminarEtc
     };
@@ -841,7 +856,8 @@ export default function MajorProgramsManager({ selectedYear }) {
     setFormSeminarSpeaker("");
     setFormSeminarTitle("");
     setFormSeminarAttendees("");
-    setFormSeminarCost("");
+    setFormSeminarMainCost("");
+    setFormSeminarCarryCost("");
     setFormSeminarSatisfaction("");
     setFormSeminarEtc("");
 
@@ -1796,10 +1812,15 @@ export default function MajorProgramsManager({ selectedYear }) {
                         </span>
                       </div>
                       <div className="stat-card" style={{ background: "rgba(255, 255, 255, 0.02)", border: "1px solid var(--border-color)", borderRadius: "8px", padding: "1rem", display: "flex", flexDirection: "column", gap: "0.3rem" }}>
-                        <span style={{ fontSize: "0.72rem", color: "var(--text-secondary)", fontWeight: "700" }}>누적 소요 예산</span>
-                        <span style={{ fontSize: "1.4rem", fontWeight: "800", color: "#10b981" }}>
-                          ₩{seminarList.reduce((sum, s) => sum + s.cost, 0).toLocaleString()}
-                        </span>
+                        <span style={{ fontSize: "0.72rem", color: "var(--text-secondary)", fontWeight: "700" }}>누적 소요 예산 (본 / 이월)</span>
+                        <div style={{ display: "flex", flexDirection: "column" }}>
+                          <span style={{ fontSize: "1.25rem", fontWeight: "800", color: "#10b981" }}>
+                            ₩{seminarList.reduce((sum, s) => sum + ((s.mainCost || 0) + (s.carryCost || 0)), 0).toLocaleString()}
+                          </span>
+                          <span style={{ fontSize: "0.65rem", color: "var(--text-secondary)", marginTop: "0.1rem" }}>
+                            본: ₩{seminarList.reduce((sum, s) => sum + (s.mainCost || 0), 0).toLocaleString()} / 이월: ₩{seminarList.reduce((sum, s) => sum + (s.carryCost || 0), 0).toLocaleString()}
+                          </span>
+                        </div>
                       </div>
                       <div className="stat-card" style={{ background: "rgba(255, 255, 255, 0.02)", border: "1px solid var(--border-color)", borderRadius: "8px", padding: "1rem", display: "flex", flexDirection: "column", gap: "0.3rem" }}>
                         <span style={{ fontSize: "0.72rem", color: "var(--text-secondary)", fontWeight: "700" }}>평균 만족도</span>
@@ -1808,7 +1829,7 @@ export default function MajorProgramsManager({ selectedYear }) {
                         </span>
                       </div>
                     </div>
-
+ 
                     {/* 3. 결과 테이블 대장 */}
                     <div style={{ background: "rgba(255,255,255,0.01)", border: "1px solid var(--border-color)", borderRadius: "10px", padding: "1rem", display: "flex", flexDirection: "column", gap: "0.8rem" }}>
                       <h6 style={{ fontSize: "0.82rem", fontWeight: "800", color: "var(--text-primary)" }}>지산학 이음 세미나 개최 결과 요약 대장</h6>
@@ -1817,11 +1838,12 @@ export default function MajorProgramsManager({ selectedYear }) {
                           <thead>
                             <tr style={{ borderBottom: "1px solid var(--border-color)", color: "var(--text-secondary)", fontWeight: "800" }}>
                               <th style={{ padding: "0.6rem 0.5rem", width: "40px", textAlign: "center" }}>순번</th>
-                              <th style={{ padding: "0.6rem 0.5rem", width: "150px" }}>일시</th>
-                              <th style={{ padding: "0.6rem 0.5rem", width: "130px" }}>강사</th>
-                              <th style={{ padding: "0.6rem 0.5rem", width: "230px" }}>주제(제목)</th>
-                              <th style={{ padding: "0.6rem 0.5rem", width: "80px", textAlign: "center" }}>참석자 수</th>
-                              <th style={{ padding: "0.6rem 0.5rem", width: "110px", textAlign: "right" }}>사업비</th>
+                              <th style={{ padding: "0.6rem 0.5rem", width: "140px" }}>일시</th>
+                              <th style={{ padding: "0.6rem 0.5rem", width: "120px" }}>강사</th>
+                              <th style={{ padding: "0.6rem 0.5rem", width: "220px" }}>주제(제목)</th>
+                              <th style={{ padding: "0.6rem 0.5rem", width: "70px", textAlign: "center" }}>참석자 수</th>
+                              <th style={{ padding: "0.6rem 0.5rem", width: "95px", textAlign: "right" }}>본예산</th>
+                              <th style={{ padding: "0.6rem 0.5rem", width: "95px", textAlign: "right" }}>이월예산</th>
                               <th style={{ padding: "0.6rem 0.5rem", width: "80px", textAlign: "center" }}>만족도</th>
                               <th style={{ padding: "0.6rem 0.5rem" }}>기타 및 특이사항</th>
                               <th style={{ padding: "0.6rem 0.5rem", width: "50px", textAlign: "center" }}>관리</th>
@@ -1841,7 +1863,10 @@ export default function MajorProgramsManager({ selectedYear }) {
                                   <td style={{ padding: "0.6rem 0.5rem", color: "var(--text-primary)", fontWeight: "600" }}>{seminar.title}</td>
                                   <td style={{ padding: "0.6rem 0.5rem", textAlign: "center" }}>{seminar.attendees}명</td>
                                   <td style={{ padding: "0.6rem 0.5rem", textAlign: "right", fontWeight: "700", color: "#10b981" }}>
-                                    ₩{seminar.cost.toLocaleString()}
+                                    ₩{(seminar.mainCost || 0).toLocaleString()}
+                                  </td>
+                                  <td style={{ padding: "0.6rem 0.5rem", textAlign: "right", fontWeight: "700", color: "#6366f1" }}>
+                                    ₩{(seminar.carryCost || 0).toLocaleString()}
                                   </td>
                                   <td style={{ padding: "0.6rem 0.5rem", textAlign: "center" }}>
                                     <span style={{ background: "rgba(234,179,8,0.1)", color: "#eab308", padding: "0.15rem 0.35rem", borderRadius: "3px", fontWeight: "800" }}>
@@ -1865,7 +1890,7 @@ export default function MajorProgramsManager({ selectedYear }) {
                               ))
                             ) : (
                               <tr>
-                                <td colSpan={9} style={{ padding: "2rem", textAlign: "center", color: "var(--text-secondary)" }}>
+                                <td colSpan={10} style={{ padding: "2rem", textAlign: "center", color: "var(--text-secondary)" }}>
                                   등록된 세미나 결과보고서가 없습니다. [+ 결과보고 등록] 버튼을 통해 추가해 보세요.
                                 </td>
                               </tr>
@@ -2039,12 +2064,23 @@ export default function MajorProgramsManager({ selectedYear }) {
                                 </div>
 
                                 <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
-                                  <label style={{ fontSize: "0.72rem", color: "var(--text-secondary)", fontWeight: "800" }}>집행 사업비 (원)</label>
+                                  <label style={{ fontSize: "0.72rem", color: "var(--text-secondary)", fontWeight: "800" }}>본예산 집행액 (원)</label>
                                   <input
                                     type="number"
                                     placeholder="예: 1800000"
-                                    value={formSeminarCost}
-                                    onChange={(e) => setFormSeminarCost(e.target.value)}
+                                    value={formSeminarMainCost}
+                                    onChange={(e) => setFormSeminarMainCost(e.target.value)}
+                                    style={{ background: "var(--modal-bg)", border: "1px solid var(--border-color)", color: "var(--text-primary)", padding: "0.45rem", borderRadius: "6px", fontSize: "0.78rem", outline: "none" }}
+                                  />
+                                </div>
+
+                                <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
+                                  <label style={{ fontSize: "0.72rem", color: "var(--text-secondary)", fontWeight: "800" }}>이월예산 집행액 (원)</label>
+                                  <input
+                                    type="number"
+                                    placeholder="예: 370000"
+                                    value={formSeminarCarryCost}
+                                    onChange={(e) => setFormSeminarCarryCost(e.target.value)}
                                     style={{ background: "var(--modal-bg)", border: "1px solid var(--border-color)", color: "var(--text-primary)", padding: "0.45rem", borderRadius: "6px", fontSize: "0.78rem", outline: "none" }}
                                   />
                                 </div>
