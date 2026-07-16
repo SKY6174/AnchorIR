@@ -398,6 +398,7 @@ export default function MajorProgramsManager({ selectedYear }) {
   const [formSeminarCost, setFormSeminarCost] = useState("");
   const [formSeminarSatisfaction, setFormSeminarSatisfaction] = useState("");
   const [formSeminarEtc, setFormSeminarEtc] = useState("");
+  const [debateLogs, setDebateLogs] = useState([]);
 
   // 종합 이수 상태 판정 알고리즘
   const getOverallStatus = (student) => {
@@ -616,97 +617,142 @@ export default function MajorProgramsManager({ selectedYear }) {
     setSeminarList([...seminarList, newReport]);
   };
 
-  // 💡 PDF 업로드 감지 및 AI 분석 시뮬레이션 핸들러
+  // 💡 PDF 업로드 감지 및 AI 분석 시뮬레이션 핸들러 (GPT-4o vs Gemini API 교차 검증 토론)
   const handlePdfUpload = (file) => {
     if (!file) return;
     setIsAiAnalyzing(true);
+    setDebateLogs([]);
 
-    // 1.5초간 AI가 문서를 정밀 분석하는 로딩 타임 연출
-    setTimeout(() => {
-      const fileName = file.name || "";
-      let parsedNum = seminarList.length + 1; // 기본 차수 추천
+    const fileName = file.name || "";
+    let parsedNum = seminarList.length + 1; // 기본 차수 추천
 
-      // 파일명에서 숫자 및 차수 패턴 검색 (예: "제4차", "제 4차", "4차", "4")
-      const numMatch = fileName.match(/(?:제\s*(\d+)\s*차)|(\d+)/);
-      if (numMatch) {
-        parsedNum = parseInt(numMatch[1] || numMatch[2], 10);
+    // 파일명에서 숫자 및 차수 패턴 검색 (예: "제4차", "제 4차", "4차", "4")
+    const numMatch = fileName.match(/(?:제\s*(\d+)\s*차)|(\d+)/);
+    if (numMatch) {
+      parsedNum = parseInt(numMatch[1] || numMatch[2], 10);
+    }
+
+    // 차수별 추천 데이터 프리셋
+    const aiPresetData = {
+      4: {
+        date: "2026. 05. 22. (금) 11:00~13:00",
+        speaker: "장동선 (궁금한뇌연구소 대표 / 뇌과학자)",
+        title: "인공지능 시대, 뇌과학으로 푸는 지산학 협업과 혁신적 소통",
+        attendees: 88,
+        cost: 1800000,
+        satisfaction: 4.8,
+        etc: "뇌과학적 관점에서 본 지산학 협업 리더십 특강. 지산학 실무 협의회 워크숍 병행. 보도자료 배포."
+      },
+      5: {
+        date: "2026. 06. 05. (금) 11:00~13:00",
+        speaker: "이민화 (카이스트 석좌교수)",
+        title: "디지털 트랜스포메이션과 지역 대학의 지산학 상생 혁신 모델",
+        attendees: 76,
+        cost: 1250000,
+        satisfaction: 4.6,
+        etc: "디지털 신산업 연계 지역 강소기업 지원 방안 및 R&D 혁신 생태계 인프라 자문 진행."
+      },
+      6: {
+        date: "2026. 06. 19. (금) 11:00~13:00",
+        speaker: "최재붕 (성균관대학교 교수 / '포노 사피엔스' 저자)",
+        title: "챗GPT가 바꾸는 일의 미래와 대학 교육의 새로운 패러다임",
+        attendees: 112,
+        cost: 2200000,
+        satisfaction: 4.9,
+        etc: "생성형 AI 시대 실무 융합형 하이브리드 리터러시 인재 양성 및 개방형 설계 방향 논의."
       }
+    };
 
-      // 차수별 추천 데이터 프리셋 (앞선 누적 데이터 및 예산 연계)
-      const aiPresetData = {
-        4: {
-          date: "2026. 05. 22. (금) 11:00~13:00",
-          speaker: "장동선 (궁금한뇌연구소 대표 / 뇌과학자)",
-          title: "인공지능 시대, 뇌과학으로 푸는 지산학 협업과 혁신적 소통",
-          attendees: 88,
-          cost: 1800000, // 4차 예산 집행 대장 일치
-          satisfaction: 4.8,
-          etc: "뇌과학적 관점에서 본 지산학 협업 리더십 특강. 지산학 실무 협의회 워크숍 병행. 보도자료 배포."
-        },
-        5: {
-          date: "2026. 06. 05. (금) 11:00~13:00",
-          speaker: "이민화 (카이스트 석좌교수)",
-          title: "디지털 트랜스포메이션과 지역 대학의 지산학 상생 혁신 모델",
-          attendees: 76,
-          cost: 1250000,
-          satisfaction: 4.6,
-          etc: "디지털 신산업 연계 지역 강소기업 지원 방안 및 R&D 혁신 생태계 인프라 자문 진행."
-        },
-        6: {
-          date: "2026. 06. 19. (금) 11:00~13:00",
-          speaker: "최재붕 (성균관대학교 교수 / '포노 사피엔스' 저자)",
-          title: "챗GPT가 바꾸는 일의 미래와 대학 교육의 새로운 패러다임",
-          attendees: 112,
-          cost: 2200000,
-          satisfaction: 4.9,
-          etc: "생성형 AI 시대 실무 융합형 하이브리드 리터러시 인재 양성 및 개방형 설계 방향 논의."
-        }
+    let targetData;
+    if (aiPresetData[parsedNum]) {
+      targetData = aiPresetData[parsedNum];
+    } else {
+      const baseDate = new Date("2026-06-19");
+      const offsetWeeks = parsedNum - 6;
+      baseDate.setDate(baseDate.getDate() + (offsetWeeks * 14));
+      const formattedDate = `${baseDate.getFullYear()}. ${String(baseDate.getMonth() + 1).padStart(2, '0')}.${String(baseDate.getDate()).padStart(2, '0')}. (금) 11:00~13:00`;
+      
+      const speakers = [
+        "김상균 (경희대학교 교수 / 인지과학자)",
+        "유현준 (홍익대학교 교수 / 건축가)",
+        "김경일 (아주대학교 교수 / 인지심리학자)",
+        "송길영 (마인드마이너 / 빅데이터 전문가)"
+      ];
+      const titles = [
+        "메타버스 시대, 지산학 교육 생태계의 공간 혁명",
+        "공간의 미래와 지역 커뮤니티 활성화를 위한 지산학 플랫폼",
+        "지산학 상생을 위한 협업 마인드셋과 창의적 동기부여",
+        "빅데이터로 읽는 시대의 흐름과 지역 균형 발전의 미래"
+      ];
+      const speakerIndex = (parsedNum - 7) % speakers.length;
+
+      targetData = {
+        date: formattedDate,
+        speaker: speakers[speakerIndex],
+        title: titles[speakerIndex],
+        attendees: Math.floor(Math.random() * 40) + 70,
+        cost: (Math.floor(Math.random() * 100) + 120) * 10000,
+        satisfaction: parseFloat((Math.random() * 0.4 + 4.5).toFixed(1)),
+        etc: `제${parsedNum}차 지산학 이음 정례 세미나 개최 결과. 교류 네트워킹 및 피드백 조사 완료.`
       };
+    }
 
-      // 프리셋에 없는 높은 차수일 경우 동적 모킹
-      if (aiPresetData[parsedNum]) {
-        const data = aiPresetData[parsedNum];
-        setFormSeminarId(String(parsedNum));
-        setFormSeminarDate(data.date);
-        setFormSeminarSpeaker(data.speaker);
-        setFormSeminarTitle(data.title);
-        setFormSeminarAttendees(String(data.attendees));
-        setFormSeminarCost(String(data.cost));
-        setFormSeminarSatisfaction(String(data.satisfaction));
-        setFormSeminarEtc(data.etc);
-      } else {
-        const baseDate = new Date("2026-06-19");
-        const offsetWeeks = parsedNum - 6;
-        baseDate.setDate(baseDate.getDate() + (offsetWeeks * 14));
-        const formattedDate = `${baseDate.getFullYear()}. ${String(baseDate.getMonth() + 1).padStart(2, '0')}.${String(baseDate.getDate()).padStart(2, '0')}. (금) 11:00~13:00`;
-        
-        const speakers = [
-          "김상균 (경희대학교 교수 / 인지과학자)",
-          "유현준 (홍익대학교 교수 / 건축가)",
-          "김경일 (아주대학교 교수 / 인지심리학자)",
-          "송길영 (마인드마이너 / 빅데이터 전문가)"
-        ];
-        const titles = [
-          "메타버스 시대, 지산학 교육 생태계의 공간 혁명",
-          "공간의 미래와 지역 커뮤니티 활성화를 위한 지산학 플랫폼",
-          "지산학 상생을 위한 협업 마인드셋과 창의적 동기부여",
-          "빅데이터로 읽는 시대의 흐름과 지역 균형 발전의 미래"
-        ];
-        const speakerIndex = (parsedNum - 7) % speakers.length;
+    // 시간차 Debate 시뮬레이터 체인 기동
+    // 0ms: System 진입 로그
+    setDebateLogs([
+      { role: "system", text: "PDF 업로드 감지: 교차 검증 분석 토론 모드가 활성화되었습니다. (GPT-4o ⚔️ Gemini 1.5 Pro)" }
+    ]);
 
-        setFormSeminarId(String(parsedNum));
-        setFormSeminarDate(formattedDate);
-        setFormSeminarSpeaker(speakers[speakerIndex]);
-        setFormSeminarTitle(titles[speakerIndex]);
-        setFormSeminarAttendees(String(Math.floor(Math.random() * 40) + 70));
-        setFormSeminarCost(String((Math.floor(Math.random() * 100) + 120) * 10000));
-        setFormSeminarSatisfaction(String((Math.random() * 0.4 + 4.5).toFixed(1)));
-        setFormSeminarEtc(`제${parsedNum}차 지산학 이음 정례 세미나 개최 결과. 교류 네트워킹 및 피드백 조사 완료.`);
-      }
+    // 1200ms: GPT-4o 분석 제안
+    setTimeout(() => {
+      setDebateLogs(prev => [...prev, {
+        role: "gpt",
+        text: `[GPT-4o] 파일명 '${fileName}' 분석 결과, 패턴 상 '제${parsedNum}차' 결과보고서로 판명됩니다. 예산 대장의 A1 세부 집행 실적과 크로스 밸리데이션하여 소요 사업비를 ₩${targetData.cost.toLocaleString()}원으로 가산출하겠습니다.`
+      }]);
+    }, 1200);
+
+    // 2400ms: Gemini의 본문 분석 및 대안 제시
+    setTimeout(() => {
+      setDebateLogs(prev => [...prev, {
+        role: "gemini",
+        text: `[Gemini 1.5 Pro] 동의합니다. 추가적으로 제${parsedNum}차 본문 텍스트를 파싱하여 초청 연사가 '${targetData.speaker}'인 것을 감지하였습니다. 만족도 수치가 직접 기입되지는 않았으나, 참석 인원 ${targetData.attendees}명의 피드백 키워드 긍정 감성 분석(Sentiment Analysis) 결과에 따라 평균 만족도는 '${targetData.satisfaction}'점이 합당한 결론으로 사료됩니다.`
+      }]);
+    }, 2400);
+
+    // 3600ms: GPT-4o의 검토 및 합의 타진
+    setTimeout(() => {
+      setDebateLogs(prev => [...prev, {
+        role: "gpt",
+        text: `[GPT-4o] 합당한 제안입니다. 해당 만족도 수치를 승인 및 동기화합니다. 세미나 주제는 '${targetData.title}'로 최종 합치하며, 기타 비고란에 성과 요약 기록을 삽입하겠습니다. 이 데이터를 최종 보고 데이터로 채택하시겠습니까?`
+      }]);
+    }, 3600);
+
+    // 4800ms: Gemini의 최종 합의 도출
+    setTimeout(() => {
+      setDebateLogs(prev => [...prev, {
+        role: "gemini",
+        text: `[Gemini 1.5 Pro] 합의되었습니다. 도출 데이터(차수: ${parsedNum}, 일시: '${targetData.date}', 강사: '${targetData.speaker}', 주제: '${targetData.title}', 참석자: '${targetData.attendees}명', 만족도: '★ ${targetData.satisfaction}', 사업비: '₩${targetData.cost.toLocaleString()}')를 합의안으로 확정하고 폼에 바인딩합니다.`
+      }]);
+    }, 4800);
+
+    // 5600ms: System 종료 및 폼 값 바인딩
+    setTimeout(() => {
+      setDebateLogs(prev => [...prev, {
+        role: "system",
+        text: "🤖 AI 교차 검증 토론 완료: 합의된 지산학 결과보고서 데이터가 수동 입력창에 최종 적용되었습니다."
+      }]);
+
+      setFormSeminarId(String(parsedNum));
+      setFormSeminarDate(targetData.date);
+      setFormSeminarSpeaker(targetData.speaker);
+      setFormSeminarTitle(targetData.title);
+      setFormSeminarAttendees(String(targetData.attendees));
+      setFormSeminarCost(String(targetData.cost));
+      setFormSeminarSatisfaction(String(targetData.satisfaction));
+      setFormSeminarEtc(targetData.etc);
 
       setIsAiAnalyzing(false);
-      alert("🤖 AI 분석 완료: 업로드된 PDF 보고서로부터 세미나 필수 항목을 추출하여 폼에 자동 입력했습니다!");
-    }, 1500);
+    }, 5600);
   };
 
   // 💡 세미나 결과보고 등록 액션 (수동 및 PDF-AI 공통 등록)
@@ -1839,15 +1885,56 @@ export default function MajorProgramsManager({ selectedYear }) {
                           {/* 모달 바디 */}
                           <div style={{ padding: "1.5rem", display: "flex", flexDirection: "column", gap: "1.2rem" }}>
                             
-                            {/* PDF AI 분석 드롭존 섹션 */}
-                            <div style={{ background: "rgba(255,255,255,0.01)", border: "1px dashed var(--border-color, rgba(255,255,255,0.15))", borderRadius: "10px", padding: "1.2rem", textAlign: "center" }}>
+                            {/* PDF AI 분석 드롭존 및 교차 검증 토론 세션 */}
+                            <div style={{ background: "rgba(0,0,0,0.2)", border: "1px dashed var(--border-color, rgba(255,255,255,0.15))", borderRadius: "10px", padding: "1.2rem" }}>
                               {isAiAnalyzing ? (
-                                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.8rem", padding: "1rem 0" }}>
-                                  <div style={{ width: "36px", height: "36px", borderRadius: "50%", border: "3px solid rgba(59,130,246,0.15)", borderTopColor: "#3b82f6", animation: "spin 1s linear infinite" }} />
-                                  <span style={{ fontSize: "0.8rem", fontWeight: "700", color: "#3b82f6" }}>🤖 AI가 PDF 결과보고서를 분석 및 데이터 추출 중입니다...</span>
-                                  {/* 프로그레스바 */}
-                                  <div style={{ width: "200px", height: "4px", background: "rgba(255,255,255,0.05)", borderRadius: "2px", overflow: "hidden", marginTop: "0.2rem" }}>
-                                    <div style={{ height: "100%", width: "70%", background: "#3b82f6", borderRadius: "2px", animation: "loadingBar 1.5s ease-in-out infinite" }} />
+                                <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+                                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid rgba(255,255,255,0.08)", paddingBottom: "0.5rem" }}>
+                                    <span style={{ fontSize: "0.8rem", fontWeight: "800", color: "#3b82f6", display: "flex", alignItems: "center", gap: "0.4rem" }}>
+                                      <span style={{ display: "inline-block", width: "8px", height: "8px", borderRadius: "50%", background: "#ef4444", animation: "pulse 1.5s infinite" }} />
+                                      🤖 AI 실시간 교차 검증 디베이트 (GPT-4o vs Gemini 1.5 Pro)
+                                    </span>
+                                    <div style={{ width: "20px", height: "20px", borderRadius: "50%", border: "2px solid rgba(59,130,246,0.15)", borderTopColor: "#3b82f6", animation: "spin 1s linear infinite" }} />
+                                  </div>
+                                  
+                                  {/* 디베이트 로그 메신저 스타일 뷰 */}
+                                  <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem", maxHeight: "250px", overflowY: "auto", padding: "0.5rem", background: "rgba(0,0,0,0.3)", borderRadius: "8px", minHeight: "150px", textAlign: "left" }}>
+                                    {debateLogs.map((log, idx) => {
+                                      const isSystem = log.role === "system";
+                                      const isGpt = log.role === "gpt";
+                                      const isGemini = log.role === "gemini";
+                                      
+                                      const bg = isSystem 
+                                        ? "rgba(255,255,255,0.03)" 
+                                        : isGpt 
+                                          ? "rgba(59, 130, 246, 0.08)" 
+                                          : "rgba(16, 185, 129, 0.08)";
+                                      const borderColor = isSystem 
+                                        ? "rgba(255,255,255,0.06)" 
+                                        : isGpt 
+                                          ? "rgba(59, 130, 246, 0.2)" 
+                                          : "rgba(16, 185, 129, 0.2)";
+                                      const nameColor = isGpt ? "#3b82f6" : isGemini ? "#10b981" : "var(--text-secondary)";
+                                      
+                                      return (
+                                        <div key={idx} style={{ 
+                                          padding: "0.6rem 0.8rem", 
+                                          background: bg, 
+                                          border: `1px solid ${borderColor}`, 
+                                          borderRadius: "8px",
+                                          animation: "fadeIn 0.3s ease-out"
+                                        }}>
+                                          {!isSystem && (
+                                            <div style={{ fontWeight: "800", fontSize: "0.68rem", color: nameColor, marginBottom: "0.2rem" }}>
+                                              {isGpt ? "🤖 GPT-4o" : "✨ Gemini 1.5 Pro"}
+                                            </div>
+                                          )}
+                                          <div style={{ fontSize: "0.72rem", color: isSystem ? "var(--text-secondary)" : "var(--text-primary)", lineHeight: "1.4", fontStyle: isSystem ? "italic" : "normal" }}>
+                                            {log.text}
+                                          </div>
+                                        </div>
+                                      );
+                                    })}
                                   </div>
                                 </div>
                               ) : (
