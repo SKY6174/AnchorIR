@@ -697,14 +697,14 @@ export default function MajorProgramsManager({ selectedYear }) {
         etc: "한창제지 연구소장 특강을 통한 제지 산업 기술 공유 및 HD현대이엔티 등 입주기업 지산학 교류 워크숍."
       },
       5: {
-        date: "2026. 06. 05. (금) 11:00~13:00",
-        speaker: "이민화 (카이스트 석좌교수)",
-        title: "디지털 트랜스포메이션과 지역 대학의 지산학 상생 혁신 모델",
-        attendees: 76,
-        mainCost: 1250000,
-        carryCost: 0,
-        satisfaction: 4.6,
-        etc: "디지털 신산업 연계 지역 강소기업 지원 방안 및 R&D 혁신 생태계 인프라 자문 진행."
+        date: "2026. 06. 12. (금) 11:00~13:00",
+        speaker: "박승남 (울산대학교 산업대학원 겸임교수)",
+        title: "조선산업 산업융합 전략",
+        attendees: 74,
+        mainCost: 840000,
+        carryCost: 258910,
+        satisfaction: 4.7,
+        etc: "스마트 제조 및 ICT 스마트 조선소 혁신 전략 특강. 이월금 물품비 258,910원 및 본사업비 다과비 840,000원 집행. 보도자료 배포 완료."
       },
       6: {
         date: "2026. 06. 19. (금) 11:00~13:00",
