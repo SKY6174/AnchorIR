@@ -106,26 +106,6 @@ export default function Sidebar({
                 </span>
               </div>
               <div className="nav-sub-menu">
-                {(menuVisibility.unit_status !== false || isSongDirector) && (
-                  <div
-                    className={`nav-sub-item ${activeTab === "projects" && projectsSubTab === "unit_status" ? "active" : ""}`}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onChangeTab("projects");
-                      if (onChangeProjectsSubTab) {
-                        onChangeProjectsSubTab("unit_status");
-                      }
-                    }}
-                    style={getHiddenStyle("unit_status")}
-                  >
-                    - 단위과제 집행현황
-                    {isHidden("unit_status") && (
-                      <span style={{ fontSize: "0.6rem", color: "#ef4444", textDecoration: "none", marginLeft: "0.2rem" }}>
-                        [숨김]
-                      </span>
-                    )}
-                  </div>
-                )}
                 {(menuVisibility.unit_system !== false || isSongDirector) && (
                   <div
                     className={`nav-sub-item ${activeTab === "projects" && projectsSubTab === "unit_system" ? "active" : ""}`}
@@ -140,6 +120,26 @@ export default function Sidebar({
                   >
                     - 단위과제 체계
                     {isHidden("unit_system") && (
+                      <span style={{ fontSize: "0.6rem", color: "#ef4444", textDecoration: "none", marginLeft: "0.2rem" }}>
+                        [숨김]
+                      </span>
+                    )}
+                  </div>
+                )}
+                {(menuVisibility.unit_status !== false || isSongDirector) && (
+                  <div
+                    className={`nav-sub-item ${activeTab === "projects" && projectsSubTab === "unit_status" ? "active" : ""}`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onChangeTab("projects");
+                      if (onChangeProjectsSubTab) {
+                        onChangeProjectsSubTab("unit_status");
+                      }
+                    }}
+                    style={getHiddenStyle("unit_status")}
+                  >
+                    - 단위과제 집행현황
+                    {isHidden("unit_status") && (
                       <span style={{ fontSize: "0.6rem", color: "#ef4444", textDecoration: "none", marginLeft: "0.2rem" }}>
                         [숨김]
                       </span>

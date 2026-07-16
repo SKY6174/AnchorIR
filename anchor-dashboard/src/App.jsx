@@ -8187,23 +8187,6 @@ export default function App() {
               <div style={{ display: "flex", gap: "0.5rem", borderBottom: "1px solid var(--border-color)", paddingBottom: "0.8rem", marginBottom: "1.2rem" }}>
                 <button
                   type="button"
-                  onClick={() => setProjectsSubTab("unit_status")}
-                  style={{
-                    border: "none",
-                    background: "transparent",
-                    padding: "0.5rem 1rem",
-                    fontSize: "0.85rem",
-                    fontWeight: "800",
-                    cursor: "pointer",
-                    color: projectsSubTab === "unit_status" ? "var(--accent-color)" : "var(--text-secondary)",
-                    borderBottom: projectsSubTab === "unit_status" ? "2px solid var(--accent-color)" : "none",
-                    transition: "all 0.2s"
-                  }}
-                >
-                  단위과제 집행현황
-                </button>
-                <button
-                  type="button"
                   onClick={() => setProjectsSubTab("unit_system")}
                   style={{
                     border: "none",
@@ -8218,6 +8201,23 @@ export default function App() {
                   }}
                 >
                   단위과제 체계
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setProjectsSubTab("unit_status")}
+                  style={{
+                    border: "none",
+                    background: "transparent",
+                    padding: "0.5rem 1rem",
+                    fontSize: "0.85rem",
+                    fontWeight: "800",
+                    cursor: "pointer",
+                    color: projectsSubTab === "unit_status" ? "var(--accent-color)" : "var(--text-secondary)",
+                    borderBottom: projectsSubTab === "unit_status" ? "2px solid var(--accent-color)" : "none",
+                    transition: "all 0.2s"
+                  }}
+                >
+                  단위과제 집행현황
                 </button>
                 <button
                   type="button"
