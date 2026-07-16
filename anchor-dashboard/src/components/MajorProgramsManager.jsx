@@ -622,7 +622,7 @@ export default function MajorProgramsManager({ selectedYear }) {
   const handleFileUpload = (file) => {
     if (!file) return;
     
-    const fileName = file.name || "";
+    const fileName = (file.name || "").normalize("NFC");
     const isPdf = fileName.toLowerCase().endsWith(".pdf");
     const isMd = fileName.toLowerCase().endsWith(".md");
 
@@ -1919,7 +1919,33 @@ export default function MajorProgramsManager({ selectedYear }) {
                           <div style={{ padding: "1.5rem", display: "flex", flexDirection: "column", gap: "1.2rem" }}>
                             
                             {/* PDF/MD AI 분석 드롭존 섹션 */}
-                            <div style={{ background: "rgba(255,255,255,0.01)", border: "1px dashed var(--border-color, rgba(255,255,255,0.15))", borderRadius: "10px", padding: "1.2rem", textAlign: "center" }}>
+                            <div 
+                              onDragOver={(e) => {
+                                e.preventDefault();
+                                e.currentTarget.style.borderColor = "#3b82f6";
+                                e.currentTarget.style.background = "rgba(59, 130, 246, 0.04)";
+                              }}
+                              onDragLeave={(e) => {
+                                e.preventDefault();
+                                e.currentTarget.style.borderColor = "var(--border-color, rgba(255,255,255,0.15))";
+                                e.currentTarget.style.background = "rgba(255,255,255,0.01)";
+                              }}
+                              onDrop={(e) => {
+                                e.preventDefault();
+                                e.currentTarget.style.borderColor = "var(--border-color, rgba(255,255,255,0.15))";
+                                e.currentTarget.style.background = "rgba(255,255,255,0.01)";
+                                const file = e.dataTransfer.files?.[0];
+                                if (file) handleFileUpload(file);
+                              }}
+                              style={{ 
+                                background: "rgba(255,255,255,0.01)", 
+                                border: "1px dashed var(--border-color, rgba(255,255,255,0.15))", 
+                                borderRadius: "10px", 
+                                padding: "1.2rem", 
+                                textAlign: "center",
+                                transition: "all 0.25s ease"
+                              }}
+                            >
                               {isAiAnalyzing ? (
                                 <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.8rem", padding: "1rem 0" }}>
                                   <div style={{ width: "36px", height: "36px", borderRadius: "50%", border: "3px solid rgba(59,130,246,0.15)", borderTopColor: "#3b82f6", animation: "spin 1s linear infinite" }} />
