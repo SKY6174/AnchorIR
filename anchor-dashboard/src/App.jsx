@@ -9009,7 +9009,7 @@ export default function App() {
                       cursor: "pointer"
                     }}
                   >
-                    <FileText size={16} /> 엑셀 서식
+                    <Download size={16} /> 엑셀 서식
                   </button>
 
                   {/* 엑셀 업로드 */}
@@ -9072,7 +9072,7 @@ export default function App() {
                       setIsMemberModalOpen(true);
                     }}
                   >
-                    <Plus size={16} /> 구성원 추가
+                    <Plus size={16} /> 신규 등록
                   </button>
                 </div>
               )}
