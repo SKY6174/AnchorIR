@@ -291,7 +291,7 @@ export default function InstructorPoolManager() {
   const totalPayment = payments.reduce((sum, item) => sum + parseFloat(item.amount || 0), 0);
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem", width: "100%", padding: "1.5rem", color: "var(--text-color)" }}>
+    <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem", width: "100%", color: "var(--text-color)" }}>
       {/* 1. 상단 안내 (두번째 그림의 협력기관 안내 카드와 100% 동기화) */}
       <div className="glass-card" style={{ padding: "1.5rem", display: "flex", flexDirection: "column", gap: "0.5rem" }}>
         <h2 style={{ fontSize: "1.25rem", fontWeight: "800", color: "var(--accent-color)", display: "flex", alignItems: "center", gap: "0.5rem" }}>
