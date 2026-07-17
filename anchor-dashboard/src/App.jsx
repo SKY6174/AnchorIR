@@ -750,13 +750,35 @@ function formatDataToMultiYear(data) {
             prog.budget_categories.some(c => c.category);
 
           if (hasExplicitCategories) {
+            // 💡 [다중 비목 연도별 예산 자동 스케일링 규칙]
+            // mockData.js의 budget_categories는 2차년도(2026) 기준이므로,
+            // 2차년도가 아닌 타 연도(1, 3, 4, 5차년도)에 대해서는 프로그램 총예산(budgetMain)에 맞게 비율 배분합니다.
+            const totalRef = prog.budget_2026 || 0;
+            const explicitSum = prog.budget_categories.reduce((s, c) => s + (c.budget || 0), 0);
+
             progYears[yr].budget_categories = standardCategories.map((catName) => {
               const srcCat = prog.budget_categories.find(c => c.category === catName);
               const isMatch = srcCat !== undefined;
-              const bVal = isMatch ? (srcCat.budget || 0) : 0;
-              const bcVal = isMatch ? (srcCat.budget_carry || 0) : 0;
-              const sVal = isMatch ? (srcCat.spent || 0) : 0;
-              const scVal = isMatch ? (srcCat.spent_carry || 0) : 0;
+              
+              let bVal = isMatch ? (srcCat.budget || 0) : 0;
+              let bcVal = isMatch ? (srcCat.budget_carry || 0) : 0;
+              let sVal = isMatch ? (srcCat.spent || 0) : 0;
+              let scVal = isMatch ? (srcCat.spent_carry || 0) : 0;
+
+              // 💡 2차년도가 아닐 때만 비율 기반 배정 스케일링 수행
+              if (yr !== 2 && isMatch && totalRef > 0) {
+                const ratio = bVal / totalRef;
+                bVal = Math.round(budgetMain * ratio);
+                bcVal = 0;
+                sVal = 0;
+                scVal = 0;
+              } else if (yr !== 2 && isMatch && totalRef === 0 && explicitSum > 0) {
+                const ratio = bVal / explicitSum;
+                bVal = Math.round(budgetMain * ratio);
+                bcVal = 0;
+                sVal = 0;
+                scVal = 0;
+              }
 
               return {
                 category: catName,
