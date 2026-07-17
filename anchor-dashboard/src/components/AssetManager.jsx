@@ -967,7 +967,7 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
   }, [activeSubTab, selectedYear]);
 
   return (
-    <div style={{ padding: "1.25rem", color: "var(--text-primary)" }}>
+    <div style={{ display: "flex", flexDirection: "column", gap: "1rem", color: "var(--text-primary)" }}>
       
       {/* [A] 자산 관리 대분류 서브메뉴 가로 탭바 (첫번째 예산 탭바와 디자인 100% 동기화) */}
       <div style={{
