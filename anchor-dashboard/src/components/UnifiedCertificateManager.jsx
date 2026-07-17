@@ -503,7 +503,18 @@ export default function UnifiedCertificateManager({
           </button>
           <input type="file" ref={fileInputRef} onChange={handleExcelUpload} accept=".xlsx, .xls" style={{ display: "none" }} />
           {currentRole?.id !== "GUEST" && (
-            <button className="action-btn add-btn" onClick={openModalForNew}>
+            <button 
+              onClick={openModalForNew}
+              className="action-btn"
+              style={{
+                borderRadius: "9999px",
+                background: "var(--accent-color)",
+                border: "none",
+                color: "white",
+                fontWeight: "700",
+                padding: "0.5rem 1.2rem"
+              }}
+            >
               <Plus size={16} /> 신규 등록
             </button>
           )}

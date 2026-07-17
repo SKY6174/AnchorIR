@@ -953,40 +953,22 @@ export default function AgreementManager({
             {/* 엑셀 서식 다운로드 */}
             <button
               onClick={handleDownloadTemplate}
+              className="action-btn download-btn"
               style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "0.25rem",
-                padding: "0.35rem 0.7rem",
-                fontSize: "0.7rem",
-                background: "var(--input-bg)",
-                border: "1px solid var(--border-color)", // 💡 가변 테두리로 대응
-                color: "var(--text-secondary)", // 💡 가변 폰트칼라로 대응
-                borderRadius: "0.25rem",
-                cursor: "pointer",
-                fontWeight: "700"
+                background: "var(--bg-tertiary)"
               }}
             >
-              <FileText size={12} /> 엑셀 서식
+              <FileText size={16} /> 엑셀 서식
             </button>
 
             {/* 엑셀 업로드 */}
             <label
+              className="action-btn upload-btn"
               style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "0.25rem",
-                padding: "0.35rem 0.7rem",
-                fontSize: "0.7rem",
-                background: "rgba(99, 102, 241, 0.1)",
-                border: "1px solid rgba(99, 102, 241, 0.2)",
-                color: "#818CF8",
-                borderRadius: "0.25rem",
-                cursor: "pointer",
-                fontWeight: "700"
+                cursor: "pointer"
               }}
             >
-              <Upload size={12} /> 엑셀 업로드
+              <Upload size={16} /> 엑셀 업로드
               <input
                 type="file"
                 accept=".xlsx, .xls"
@@ -997,21 +979,15 @@ export default function AgreementManager({
 
             {/* 사본 일괄 매핑 */}
             <label
+              className="action-btn"
               style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "0.25rem",
-                padding: "0.35rem 0.7rem",
-                fontSize: "0.7rem",
-                background: "rgba(16, 185, 129, 0.1)",
-                border: "1px solid rgba(16, 185, 129, 0.2)",
-                color: "#34D399",
-                borderRadius: "0.25rem",
-                cursor: "pointer",
-                fontWeight: "700"
+                background: darkMode ? "rgba(16, 185, 129, 0.15)" : "#ecfdf5",
+                color: darkMode ? "#34d399" : "#059669",
+                border: darkMode ? "1px solid rgba(16, 185, 129, 0.3)" : "1px solid #10b981",
+                cursor: "pointer"
               }}
             >
-              <FileCheck size={12} /> 사본 일괄 매핑
+              <FileCheck size={16} /> 사본 일괄 매핑
               <input
                 type="file"
                 multiple
@@ -1031,28 +1007,30 @@ export default function AgreementManager({
                   alert("다운로드할 데이터가 없습니다.");
                 }
               }}
+              className="action-btn download-btn"
               style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "0.25rem",
-                padding: "0.35rem 0.7rem",
-                fontSize: "0.7rem",
-                background: "#16a34a",
-                border: "none",
-                color: "white",
-                borderRadius: "0.25rem",
                 cursor: excelDownloadUrl ? "pointer" : "not-allowed",
-                fontWeight: "700",
                 textDecoration: "none"
               }}
             >
-              <Download size={12} /> 엑셀 다운로드
+              <Download size={16} /> 엑셀 다운로드
             </a>
 
-            {/* 신규 추가 */}
+            {/* 신규 추가 (모양은 캡슐 형태를 유지하고 크기는 엑셀 버튼과 통일) */}
             {currentRole.id !== "GUEST" && (
-              <button className="btn-primary" onClick={() => { resetForm(); setIsModalOpen(true); }} style={{ display: "flex", alignItems: "center", gap: "0.25rem", padding: "0.35rem 0.7rem", fontSize: "0.7rem" }}>
-                <Plus size={14} /> 신규 협약서 등록
+              <button 
+                onClick={() => { resetForm(); setIsModalOpen(true); }} 
+                className="action-btn"
+                style={{ 
+                  borderRadius: "9999px", 
+                  background: "var(--accent-color)", 
+                  border: "none", 
+                  color: "white", 
+                  fontWeight: "700", 
+                  padding: "0.5rem 1.2rem" 
+                }}
+              >
+                <Plus size={16} /> 신규 협약서 등록
               </button>
             )}
           </div>
