@@ -10080,17 +10080,40 @@ export default function App() {
           }
 
           return (
-            <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(0,0,0,0.85)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1200 }}>
-              <div className="card" style={{ width: "950px", maxHeight: "90vh", overflowY: "auto", padding: "1.5rem", borderRadius: "12px", background: "var(--panel-bg)", border: "1px solid var(--border-color)" }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid var(--border-color)", paddingBottom: "0.75rem", marginBottom: "1rem" }}>
+            <div style={{
+              position: "fixed",
+              top: 0, left: 0, width: "100vw", height: "100vh",
+              background: "rgba(0,0,0,0.6)",
+              zIndex: 1200,
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              overflowY: "auto",
+              padding: "2rem 1rem"
+            }}>
+              <div style={{
+                background: "var(--modal-bg)",
+                border: "1px solid var(--border-color)",
+                borderRadius: "0.75rem",
+                width: "100%",
+                maxWidth: "950px",
+                maxHeight: "90vh",
+                display: "flex",
+                flexDirection: "column",
+                color: "var(--text-primary)",
+                boxShadow: "0 20px 25px -5px rgba(0,0,0,0.3)",
+                margin: "auto",
+                padding: "1.5rem"
+              }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid var(--border-color)", paddingBottom: "0.75rem", marginBottom: "1rem", flexShrink: 0 }}>
                   <h3 style={{ margin: 0, fontSize: "1.05rem", fontWeight: "800", color: "var(--text-primary)" }}>
                     📄 [{selectedRequest.program_title}] 기획 변경 상세 대조표 ({selectedRequest.version_name})
                   </h3>
                   <button
                     onClick={() => setSelectedRequest(null)}
-                    style={{ background: "transparent", border: "none", color: "var(--text-secondary)", cursor: "pointer", fontSize: "1.2rem" }}
+                    style={{ background: "none", border: "none", color: "#a1a1aa", cursor: "pointer" }}
                   >
-                    ✕
+                    <X size={18} />
                   </button>
                 </div>
 
@@ -10222,24 +10245,30 @@ export default function App() {
                 </div>
 
                 {/* 하단 결재 버튼 */}
-                <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.75rem", borderTop: "1px solid var(--border-color)", paddingTop: "1rem", marginTop: "1rem" }}>
+                <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.5rem", borderTop: "1px solid var(--border-color)", paddingTop: "0.85rem", marginTop: "1rem", flexShrink: 0 }}>
                   <button
+                    type="button"
+                    className="btn-secondary"
                     onClick={() => setSelectedRequest(null)}
-                    style={{ padding: "0.45rem 1rem", borderRadius: "6px", background: "transparent", border: "1px solid var(--border-color)", color: "var(--text-primary)", cursor: "pointer", fontSize: "0.75rem" }}
+                    style={{ padding: "0.5rem 1rem", fontSize: "0.75rem" }}
                   >
                     닫기
                   </button>
                   {selectedRequest.status === "승인대기" && (
                     <>
                       <button
+                        type="button"
+                        className="btn-primary"
                         onClick={() => handleApproveRequest(selectedRequest)}
-                        style={{ padding: "0.45rem 1.5rem", borderRadius: "6px", background: "#10B981", border: "none", color: "white", fontWeight: "700", cursor: "pointer", fontSize: "0.75rem" }}
+                        style={{ padding: "0.5rem 1.25rem", fontSize: "0.75rem", background: "#10B981" }}
                       >
                         승인 처리
                       </button>
                       <button
+                        type="button"
+                        className="btn-primary"
                         onClick={() => handleRejectRequest(selectedRequest)}
-                        style={{ padding: "0.45rem 1.5rem", borderRadius: "6px", background: "#EF4444", border: "none", color: "white", fontWeight: "700", cursor: "pointer", fontSize: "0.75rem" }}
+                        style={{ padding: "0.5rem 1.25rem", fontSize: "0.75rem", background: "#EF4444" }}
                       >
                         반려 처리
                       </button>
@@ -10265,12 +10294,15 @@ export default function App() {
             zIndex: 9999
           }}>
             <div style={{
-              background: "var(--panel-bg, #1e293b)",
+              background: "var(--modal-bg)",
               border: "1px solid var(--border-color)",
-              borderRadius: "10px",
+              borderRadius: "0.75rem",
               width: "350px",
               padding: "1.25rem",
-              boxShadow: "0 8px 32px rgba(0,0,0,0.5)"
+              boxShadow: "0 20px 25px -5px rgba(0,0,0,0.3)",
+              margin: "auto",
+              display: "flex",
+              flexDirection: "column"
             }}>
               <h3 style={{ fontSize: "0.9rem", fontWeight: "800", marginBottom: "0.85rem", color: "var(--accent-color)", display: "flex", alignItems: "center", gap: "0.3rem" }}>
                 <Clock size={18} /> ⏱️ 예약 일시 변경 (조율 권한)
@@ -10314,20 +10346,22 @@ export default function App() {
                   </div>
                 </div>
 
-                <div style={{ display: "flex", gap: "0.5rem", marginTop: "0.5rem" }}>
+                <div style={{ display: "flex", gap: "0.5rem", marginTop: "0.85rem", borderTop: "1px solid var(--border-color)", paddingTop: "0.85rem" }}>
                   <button
                     type="button"
+                    className="btn-secondary"
                     onClick={() => {
                       setIsEditTimeModalOpen(false);
                       setEditingRes(null);
                     }}
-                    style={{ flex: 1, padding: "0.45rem", background: "rgba(255,255,255,0.06)", border: "1px solid var(--border-color)", color: "var(--text-secondary)", borderRadius: "4px", fontSize: "0.75rem", cursor: "pointer", fontWeight: "700" }}
+                    style={{ flex: 1, padding: "0.5rem", fontSize: "0.75rem" }}
                   >
                     닫기
                   </button>
                   <button
                     type="submit"
-                    style={{ flex: 1, padding: "0.45rem", background: "var(--accent-color)", border: "none", color: "white", borderRadius: "4px", fontSize: "0.75rem", cursor: "pointer", fontWeight: "700" }}
+                    className="btn-primary"
+                    style={{ flex: 1, padding: "0.5rem", fontSize: "0.75rem" }}
                   >
                     저장하기
                   </button>

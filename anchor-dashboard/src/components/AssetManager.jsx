@@ -2304,20 +2304,25 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
       {isEditTimeModalOpen && (
         <div style={{
           position: "fixed",
-          top: 0, left: 0, right: 0, bottom: 0,
-          background: "rgba(0, 0, 0, 0.75)",
+          top: 0, left: 0, width: "100vw", height: "100vh",
+          background: "rgba(0,0,0,0.6)",
+          zIndex: 999,
           display: "flex",
-          alignItems: "center",
           justifyContent: "center",
-          zIndex: 999
+          alignItems: "center",
+          overflowY: "auto",
+          padding: "2rem 1rem"
         }}>
           <div style={{
-            background: "var(--modal-bg, #1e293b)",
+            background: "var(--modal-bg)",
             border: "1px solid var(--border-color)",
-            borderRadius: "10px",
+            borderRadius: "0.75rem",
             width: "350px",
             padding: "1.25rem",
-            boxShadow: "0 8px 32px rgba(0,0,0,0.5)"
+            boxShadow: "0 20px 25px -5px rgba(0,0,0,0.3)",
+            margin: "auto",
+            display: "flex",
+            flexDirection: "column"
           }}>
             <h3 style={{ fontSize: "0.9rem", fontWeight: "700", marginBottom: "0.85rem", color: "#60A5FA", display: "flex", alignItems: "center", gap: "0.3rem" }}>
               <Clock size={18} /> ⏱️ 예약 일시 변경 (조율 권한)
@@ -2361,21 +2366,23 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
                 </div>
               </div>
 
-              <div style={{ display: "flex", gap: "0.5rem", marginTop: "0.5rem" }}>
+              <div style={{ display: "flex", gap: "0.5rem", marginTop: "0.85rem", borderTop: "1px solid var(--border-color)", paddingTop: "0.85rem" }}>
                 <button
                   type="button"
+                  className="btn-secondary"
                   onClick={() => {
                     setIsEditTimeModalOpen(false);
                     setEditingRes(null);
                   }}
-                  style={{ flex: 1, padding: "0.45rem", background: "rgba(255,255,255,0.06)", border: "none", color: "var(--text-secondary)", borderRadius: "4px", fontSize: "0.75rem", cursor: "pointer" }}
+                  style={{ flex: 1, padding: "0.5rem", fontSize: "0.75rem" }}
                 >
                   닫기
                 </button>
                 <button
                   type="submit"
+                  className="btn-primary"
                   disabled={loading}
-                  style={{ flex: 1, padding: "0.45rem", background: "#3b82f6", border: "none", color: "white", borderRadius: "4px", fontSize: "0.75rem", fontWeight: "700", cursor: "pointer" }}
+                  style={{ flex: 1, padding: "0.5rem", fontSize: "0.75rem" }}
                 >
                   {loading ? "저장 중..." : "일시 조정 적용"}
                 </button>
@@ -2575,22 +2582,27 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
       {isUtilModalOpen && selectedUtilEquip && (
         <div style={{
           position: "fixed",
-          top: 0, left: 0, right: 0, bottom: 0,
-          background: "rgba(0, 0, 0, 0.75)",
+          top: 0, left: 0, width: "100vw", height: "100vh",
+          background: "rgba(0,0,0,0.6)",
+          zIndex: 999,
           display: "flex",
-          alignItems: "center",
           justifyContent: "center",
-          zIndex: 999
+          alignItems: "center",
+          overflowY: "auto",
+          padding: "2rem 1rem"
         }}>
           <div style={{
-            background: "var(--modal-bg, #1e293b)",
+            background: "var(--modal-bg)",
             border: "1px solid var(--border-color)",
-            borderRadius: "12px",
-            width: "550px",
+            borderRadius: "0.75rem",
+            width: "100%",
+            maxWidth: "550px",
             maxHeight: "85vh",
             display: "flex",
             flexDirection: "column",
-            boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.4)",
+            color: "var(--text-primary)",
+            boxShadow: "0 20px 25px -5px rgba(0,0,0,0.3)",
+            margin: "auto",
             overflow: "hidden"
           }}>
             {/* 헤더 */}
@@ -2706,10 +2718,12 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
             </div>
 
             {/* 푸터 */}
-            <div style={{ padding: "0.75rem 1rem", borderTop: "1px solid var(--border-color)", display: "flex", justifyContent: "flex-end", background: "rgba(255,255,255,0.01)" }}>
+            <div style={{ padding: "0.75rem 1rem", borderTop: "1px solid var(--border-color)", display: "flex", justifyContent: "flex-end", flexShrink: 0 }}>
               <button
+                type="button"
+                className="btn-secondary"
                 onClick={() => setIsUtilModalOpen(false)}
-                style={{ padding: "0.4rem 1.2rem", background: "rgba(255,255,255,0.06)", border: "none", color: "var(--text-secondary)", borderRadius: "4px", fontSize: "0.7rem", cursor: "pointer" }}
+                style={{ padding: "0.5rem 1.25rem", fontSize: "0.75rem" }}
               >
                 닫기
               </button>

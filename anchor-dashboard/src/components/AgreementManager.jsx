@@ -1621,14 +1621,15 @@ export default function AgreementManager({
           fontFamily: "sans-serif"
         }}>
           <div style={{
-            backgroundColor: "#1e293b",
+            background: "var(--modal-bg)",
             padding: "30px 40px",
-            borderRadius: "12px",
+            borderRadius: "0.75rem",
             textAlign: "center",
-            boxShadow: "0 20px 25px -5px rgba(0,0,0,0.35)",
-            border: "1px solid #334155",
+            boxShadow: "0 20px 25px -5px rgba(0,0,0,0.3)",
+            border: "1px solid var(--border-color)",
             maxWidth: "400px",
-            width: "90%"
+            width: "90%",
+            margin: "auto"
           }}>
             {/* 빙글빙글 도는 스피너 애니메이션 */}
             <div style={{

@@ -6246,10 +6246,32 @@ Gemini 피드백: \n${geminiCritiqueText}
 
       {/* 위원 명단 편집/추가 모달 */}
       {isMemberModalOpen && (
-        <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(0,0,0,0.8)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1100 }}>
-          <div className="card" style={{ width: "500px", padding: "1.5rem", borderRadius: "12px", background: "var(--panel-bg)", border: "1px solid var(--border-color)" }}>
-
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid var(--border-color)", paddingBottom: "0.75rem", marginBottom: "1.2rem" }}>
+        <div style={{
+          position: "fixed",
+          top: 0, left: 0, width: "100vw", height: "100vh",
+          background: "rgba(0,0,0,0.6)",
+          zIndex: 1100,
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          overflowY: "auto",
+          padding: "2rem 1rem"
+        }}>
+          <div style={{
+            background: "var(--modal-bg)",
+            border: "1px solid var(--border-color)",
+            borderRadius: "0.75rem",
+            width: "100%",
+            maxWidth: "500px",
+            maxHeight: "85vh",
+            display: "flex",
+            flexDirection: "column",
+            color: "var(--text-primary)",
+            boxShadow: "0 20px 25px -5px rgba(0,0,0,0.3)",
+            margin: "auto",
+            padding: "1.5rem"
+          }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid var(--border-color)", paddingBottom: "0.75rem", marginBottom: "1.2rem", flexShrink: 0 }}>
               <h3 style={{ margin: 0, fontSize: "1.1rem", fontWeight: "800", color: "var(--text-primary)" }}>
                 {editingMember ? "✏️ 위원 정보 수정" : "➕ 새 위원 추가 등록"}
               </h3>
@@ -6258,9 +6280,9 @@ Gemini 피드백: \n${geminiCritiqueText}
                   setIsMemberModalOpen(false);
                   setEditingMember(null);
                 }}
-                style={{ background: "transparent", border: "none", color: "var(--text-secondary)", fontSize: "1.2rem", cursor: "pointer" }}
+                style={{ background: "none", border: "none", color: "#a1a1aa", cursor: "pointer" }}
               >
-                &times;
+                <X size={18} />
               </button>
             </div>
 
@@ -6376,20 +6398,22 @@ Gemini 피드백: \n${geminiCritiqueText}
               </div>
 
               {/* 버튼 */}
-              <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.75rem", borderTop: "1px solid rgba(255,255,255,0.05)", paddingTop: "1rem", marginTop: "0.5rem" }}>
+              <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.5rem", borderTop: "1px solid var(--border-color)", paddingTop: "1rem", marginTop: "0.5rem", flexShrink: 0 }}>
                 <button
                   type="button"
+                  className="btn-secondary"
                   onClick={() => {
                     setIsMemberModalOpen(false);
                     setEditingMember(null);
                   }}
-                  style={{ padding: "0.5rem 1rem", borderRadius: "6px", background: "transparent", border: "1px solid var(--border-color)", color: "var(--text-primary)", cursor: "pointer", fontSize: "0.8rem" }}
+                  style={{ padding: "0.5rem 1.25rem", fontSize: "0.75rem" }}
                 >
                   취소
                 </button>
                 <button
                   type="submit"
-                  style={{ padding: "0.5rem 1.25rem", borderRadius: "6px", background: "var(--accent-color)", border: "none", color: "var(--text-primary)", fontWeight: "600", cursor: "pointer", fontSize: "0.8rem" }}
+                  className="btn-primary"
+                  style={{ padding: "0.5rem 1.25rem", fontSize: "0.75rem" }}
                 >
                   저장 완료
                 </button>
@@ -6401,16 +6425,28 @@ Gemini 피드백: \n${geminiCritiqueText}
 
       {/* 3.5. AI 크롤러 터미널 시뮬레이션 모달 */}
       {isCrawlerModalOpen && (
-        <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(0,0,0,0.85)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1200 }}>
+        <div style={{
+          position: "fixed",
+          top: 0, left: 0, width: "100vw", height: "100vh",
+          background: "rgba(0,0,0,0.6)",
+          zIndex: 1200,
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          overflowY: "auto",
+          padding: "2rem 1rem"
+        }}>
           <div style={{
             width: "550px",
+            maxHeight: "85vh",
             background: "#090d16",
             border: "1px solid #1e293b",
-            borderRadius: "10px",
+            borderRadius: "0.75rem",
             boxShadow: "0 20px 50px rgba(139, 92, 246, 0.25)",
             overflow: "hidden",
             display: "flex",
-            flexDirection: "column"
+            flexDirection: "column",
+            margin: "auto"
           }}>
             {/* 맥북 스타일 윈도우 타이틀 바 */}
             <div style={{

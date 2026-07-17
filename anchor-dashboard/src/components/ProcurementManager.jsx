@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Plus, Trash2, Info, ListFilter, ArrowUpDown, Edit } from "lucide-react";
+import { Plus, Trash2, Info, ListFilter, ArrowUpDown, Edit, X } from "lucide-react";
 import { supabase } from "../supabaseClient"; // Supabase 클라이언트 연동 (요건 3 반영)
 import * as pdfjsLib from "pdfjs-dist";
 
@@ -5176,9 +5176,31 @@ export default function ProcurementManager({
 
       {/* 추가 모달창 팝업 */}
       {isAddModalOpen && (
-        <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(0,0,0,0.7)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1100 }}>
-          <div className="glass-card" style={{ width: "780px", maxHeight: "85vh", overflowY: "auto", padding: "1.5rem", borderRadius: "12px", border: "1px solid var(--border-color, rgba(255,255,255,0.1))" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid var(--border-color, rgba(255,255,255,0.05))", paddingBottom: "0.5rem", marginBottom: "1rem" }}>
+        <div style={{
+          position: "fixed",
+          top: 0, left: 0, width: "100vw", height: "100vh",
+          background: "rgba(0,0,0,0.6)",
+          zIndex: 1100,
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          overflowY: "auto",
+          padding: "2rem 1rem"
+        }}>
+          <div style={{
+            background: "var(--modal-bg)",
+            border: "1px solid var(--border-color)",
+            borderRadius: "0.75rem",
+            width: "100%",
+            maxWidth: "780px",
+            maxHeight: "85vh",
+            display: "flex",
+            flexDirection: "column",
+            color: "var(--text-primary)",
+            boxShadow: "0 20px 25px -5px rgba(0,0,0,0.3)",
+            margin: "auto"
+          }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "0.85rem 1.25rem", borderBottom: "1px solid var(--border-color)", flexShrink: 0 }}>
               <h3 style={{ margin: 0, color: "var(--text-primary)", fontWeight: "800", fontSize: "1.1rem" }}>
                 {modalType === "env" && "🛠️ 신규 교육환경 개선 사업 등록"}
                 {modalType === "equip" && (isEditMode ? "🔬 핵심 기자재 도입 정보 수정" : "🔬 신규 핵심 기자재 도입 등록")}
@@ -5187,13 +5209,13 @@ export default function ProcurementManager({
               <button 
                 type="button" 
                 onClick={() => setIsAddModalOpen(false)}
-                style={{ background: "transparent", border: "none", color: "var(--text-secondary)", cursor: "pointer", fontSize: "1.2rem", fontWeight: "bold", padding: "0.2rem" }}
+                style={{ background: "none", border: "none", color: "#a1a1aa", cursor: "pointer" }}
               >
-                ✕
+                <X size={18} />
               </button>
             </div>
             
-            <form onSubmit={handleFormSubmit} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+            <form onSubmit={handleFormSubmit} style={{ padding: "1.25rem", display: "flex", flexDirection: "column", gap: "1rem", flex: 1, overflowY: "auto" }}>
               
               {/* 환경개선용 입력 필드들 */}
               {modalType === "env" && (
@@ -6588,19 +6610,21 @@ export default function ProcurementManager({
               )}
 
               {/* 버튼 그룹 */}
-              <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.75rem", borderTop: "1px solid rgba(255,255,255,0.05)", paddingTop: "1rem", marginTop: "0.5rem" }}>
+              <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.5rem", borderTop: "1px solid var(--border-color)", paddingTop: "0.85rem", marginTop: "0.5rem", flexShrink: 0 }}>
                 <button 
                   type="button" 
+                  className="btn-secondary"
                   onClick={() => setIsAddModalOpen(false)}
-                  style={{ padding: "0.5rem 1rem", borderRadius: "6px", background: "transparent", border: "1px solid var(--border-color)", color: "var(--text-primary)", cursor: "pointer" }}
+                  style={{ padding: "0.5rem 1rem", fontSize: "0.75rem" }}
                 >
                   취소
                 </button>
                 <button 
                   type="submit" 
-                  style={{ padding: "0.5rem 1.25rem", borderRadius: "6px", background: "var(--accent-color)", border: "none", color: "white", fontWeight: "600", cursor: "pointer" }}
+                  className="btn-primary"
+                  style={{ padding: "0.5rem 1.25rem", fontSize: "0.75rem" }}
                 >
-                  새 항목 등록하기
+                  {isEditMode ? "수정하기" : "새 항목 등록하기"}
                 </button>
               </div>
 
@@ -6704,20 +6728,43 @@ export default function ProcurementManager({
         const activeAi = activeFile?.aiData || null;
 
         return (
-          <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(0,0,0,0.75)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1300 }}>
-            <div className="glass-card" style={{ width: "500px", padding: "1.5rem", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.1)", background: "#1e293b", color: "white" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid rgba(255,255,255,0.1)", paddingBottom: "0.75rem", marginBottom: "1rem" }}>
+          <div style={{
+            position: "fixed",
+            top: 0, left: 0, width: "100vw", height: "100vh",
+            background: "rgba(0,0,0,0.6)",
+            zIndex: 1300,
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            overflowY: "auto",
+            padding: "2rem 1rem"
+          }}>
+            <div style={{
+              background: "var(--modal-bg)",
+              border: "1px solid var(--border-color)",
+              borderRadius: "0.75rem",
+              width: "100%",
+              maxWidth: "500px",
+              maxHeight: "85vh",
+              display: "flex",
+              flexDirection: "column",
+              color: "var(--text-primary)",
+              boxShadow: "0 20px 25px -5px rgba(0,0,0,0.3)",
+              margin: "auto",
+              padding: "1.5rem"
+            }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid var(--border-color)", paddingBottom: "0.75rem", marginBottom: "1rem", flexShrink: 0 }}>
                 <h4 style={{ margin: 0, fontSize: "1.1rem", fontWeight: "800", color: "#60A5FA", display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                  📄 기획문서 상세 조회 <span style={{ fontSize: "0.75rem", fontWeight: "400", color: "rgba(255,255,255,0.6)" }}>(사업단 작성)</span>
+                  📄 기획문서 상세 조회 <span style={{ fontSize: "0.75rem", fontWeight: "400", color: "var(--text-secondary)" }}>(사업단 작성)</span>
                 </h4>
                 <button 
                   onClick={() => {
                     setProposalModalData(null);
                     setSelectedProposalIdx(0);
                   }}
-                  style={{ background: "transparent", border: "none", color: "rgba(255,255,255,0.5)", cursor: "pointer", fontSize: "1.2rem" }}
+                  style={{ background: "none", border: "none", color: "#a1a1aa", cursor: "pointer" }}
                 >
-                  ✕
+                  <X size={18} />
                 </button>
               </div>
 
@@ -6820,7 +6867,7 @@ export default function ProcurementManager({
                 );
               })()}
               
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "1.5rem", borderTop: "1px solid rgba(255,255,255,0.1)", paddingTop: "1rem" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "1.5rem", borderTop: "1px solid var(--border-color)", paddingTop: "1rem", flexShrink: 0 }}>
                 {activeFile?.url ? (
                   <a 
                     href={activeFile.url} 
@@ -6831,14 +6878,16 @@ export default function ProcurementManager({
                     📎 첨부문서 다운로드
                   </a>
                 ) : (
-                  <span style={{ fontSize: "0.72rem", color: "rgba(255,255,255,0.3)" }}>첨부파일 없음</span>
+                  <span style={{ fontSize: "0.72rem", color: "var(--text-secondary)" }}>첨부파일 없음</span>
                 )}
                 <button 
+                  type="button"
+                  className="btn-primary"
                   onClick={() => {
                     setProposalModalData(null);
                     setSelectedProposalIdx(0);
                   }}
-                  style={{ padding: "0.4rem 1.25rem", borderRadius: "6px", background: "var(--accent-color)", border: "none", color: "white", fontWeight: "600", cursor: "pointer" }}
+                  style={{ padding: "0.4rem 1.25rem", fontSize: "0.75rem" }}
                 >
                   확인
                 </button>
@@ -6869,20 +6918,43 @@ export default function ProcurementManager({
         const total = price * qty;
 
         return (
-          <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(0,0,0,0.75)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1300 }}>
-            <div className="glass-card" style={{ width: "500px", padding: "1.5rem", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.1)", background: "#1e293b", color: "white" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid rgba(255,255,255,0.1)", paddingBottom: "0.75rem", marginBottom: "1rem" }}>
+          <div style={{
+            position: "fixed",
+            top: 0, left: 0, width: "100vw", height: "100vh",
+            background: "rgba(0,0,0,0.6)",
+            zIndex: 1300,
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            overflowY: "auto",
+            padding: "2rem 1rem"
+          }}>
+            <div style={{
+              background: "var(--modal-bg)",
+              border: "1px solid var(--border-color)",
+              borderRadius: "0.75rem",
+              width: "100%",
+              maxWidth: "500px",
+              maxHeight: "85vh",
+              display: "flex",
+              flexDirection: "column",
+              color: "var(--text-primary)",
+              boxShadow: "0 20px 25px -5px rgba(0,0,0,0.3)",
+              margin: "auto",
+              padding: "1.5rem"
+            }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid var(--border-color)", paddingBottom: "0.75rem", marginBottom: "1rem", flexShrink: 0 }}>
                 <h4 style={{ margin: 0, fontSize: "1.1rem", fontWeight: "800", color: "#C084FC", display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                  📦 구매문서 상세 조회 <span style={{ fontSize: "0.75rem", fontWeight: "400", color: "rgba(255,255,255,0.6)" }}>(총무팀 발송)</span>
+                  📦 구매문서 상세 조회 <span style={{ fontSize: "0.75rem", fontWeight: "400", color: "var(--text-secondary)" }}>(총무팀 발송)</span>
                 </h4>
                 <button 
                   onClick={() => {
                     setPurchaseModalData(null);
                     setSelectedPurchaseIdx(0);
                   }}
-                  style={{ background: "transparent", border: "none", color: "rgba(255,255,255,0.5)", cursor: "pointer", fontSize: "1.2rem" }}
+                  style={{ background: "none", border: "none", color: "#a1a1aa", cursor: "pointer" }}
                 >
-                  ✕
+                  <X size={18} />
                 </button>
               </div>
 
@@ -6986,7 +7058,7 @@ export default function ProcurementManager({
                 </div>
               )}
               
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "1.5rem", borderTop: "1px solid rgba(255,255,255,0.1)", paddingTop: "1rem" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "1.5rem", borderTop: "1px solid var(--border-color)", paddingTop: "1rem", flexShrink: 0 }}>
                 {activeFile?.url ? (
                   <a 
                     href={activeFile.url} 
@@ -6997,14 +7069,16 @@ export default function ProcurementManager({
                     📎 첨부문서 다운로드
                   </a>
                 ) : (
-                  <span style={{ fontSize: "0.72rem", color: "rgba(255,255,255,0.3)" }}>첨부파일 없음</span>
+                  <span style={{ fontSize: "0.72rem", color: "var(--text-secondary)" }}>첨부파일 없음</span>
                 )}
                 <button 
+                  type="button"
+                  className="btn-primary"
                   onClick={() => {
                     setPurchaseModalData(null);
                     setSelectedPurchaseIdx(0);
                   }}
-                  style={{ padding: "0.4rem 1.25rem", borderRadius: "6px", background: "var(--accent-color)", border: "none", color: "white", fontWeight: "600", cursor: "pointer" }}
+                  style={{ padding: "0.4rem 1.25rem", fontSize: "0.75rem" }}
                 >
                   확인
                 </button>
@@ -7016,21 +7090,44 @@ export default function ProcurementManager({
 
       {/* 입찰/결과문서 팝업 모달 */}
       {bidModalData && (
-        <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(0,0,0,0.75)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1300 }}>
-          <div className="glass-card" style={{ width: "550px", padding: "1.5rem", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.1)", background: "#1e293b", color: "white" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid rgba(255,255,255,0.1)", paddingBottom: "0.75rem", marginBottom: "1rem" }}>
+        <div style={{
+          position: "fixed",
+          top: 0, left: 0, width: "100vw", height: "100vh",
+          background: "rgba(0,0,0,0.6)",
+          zIndex: 1300,
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          overflowY: "auto",
+          padding: "2rem 1rem"
+        }}>
+          <div style={{
+            background: "var(--modal-bg)",
+            border: "1px solid var(--border-color)",
+            borderRadius: "0.75rem",
+            width: "100%",
+            maxWidth: "550px",
+            maxHeight: "85vh",
+            display: "flex",
+            flexDirection: "column",
+            color: "var(--text-primary)",
+            boxShadow: "0 20px 25px -5px rgba(0,0,0,0.3)",
+            margin: "auto",
+            padding: "1.5rem"
+          }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid var(--border-color)", paddingBottom: "0.75rem", marginBottom: "1rem", flexShrink: 0 }}>
               <h4 style={{ margin: 0, fontSize: "1.1rem", fontWeight: "800", color: "#10B981", display: "flex", alignItems: "center", gap: "0.5rem" }}>
                 {subTab === "env_improvement" ? (
-                  <>📜 결과문서 <span style={{ fontSize: "0.75rem", fontWeight: "400", color: "rgba(255,255,255,0.6)" }}>(시설안전관리팀 시공/준공 결과)</span></>
+                  <>📜 결과문서 <span style={{ fontSize: "0.75rem", fontWeight: "400", color: "var(--text-secondary)" }}>(시설안전관리팀 시공/준공 결과)</span></>
                 ) : (
-                  <>📜 입찰문서 <span style={{ fontSize: "0.75rem", fontWeight: "400", color: "rgba(255,255,255,0.6)" }}>(총무팀 작성 문서)</span></>
+                  <>📜 입찰문서 <span style={{ fontSize: "0.75rem", fontWeight: "400", color: "var(--text-secondary)" }}>(총무팀 작성 문서)</span></>
                 )}
               </h4>
               <button 
                 onClick={() => setBidModalData(null)}
-                style={{ background: "transparent", border: "none", color: "rgba(255,255,255,0.5)", cursor: "pointer", fontSize: "1.2rem" }}
+                style={{ background: "none", border: "none", color: "#a1a1aa", cursor: "pointer" }}
               >
-                ✕
+                <X size={18} />
               </button>
             </div>
             
@@ -7221,7 +7318,7 @@ export default function ProcurementManager({
               );
             })()}
             
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "1.5rem", borderTop: "1px solid rgba(255,255,255,0.1)", paddingTop: "1rem" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "1.5rem", borderTop: "1px solid var(--border-color)", paddingTop: "1rem", flexShrink: 0 }}>
               {bidModalData.docBidFileUrl ? (
                 <a 
                   href={bidModalData.docBidFileUrl} 
@@ -7232,11 +7329,13 @@ export default function ProcurementManager({
                   📎 첨부문서 다운로드
                 </a>
               ) : (
-                <span style={{ fontSize: "0.72rem", color: "rgba(255,255,255,0.3)" }}>첨부파일 없음</span>
+                <span style={{ fontSize: "0.72rem", color: "var(--text-secondary)" }}>첨부파일 없음</span>
               )}
               <button 
+                type="button"
+                className="btn-primary"
                 onClick={() => setBidModalData(null)}
-                style={{ padding: "0.4rem 1.25rem", borderRadius: "6px", background: "var(--accent-color)", border: "none", color: "white", fontWeight: "600", cursor: "pointer" }}
+                style={{ padding: "0.4rem 1.25rem", fontSize: "0.75rem" }}
               >
                 확인
               </button>
