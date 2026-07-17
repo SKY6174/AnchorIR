@@ -975,7 +975,7 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
         gap: "1.5rem",
         borderBottom: "1px solid rgba(255, 255, 255, 0.1)",
         paddingBottom: "0.2rem",
-        marginBottom: "1.5rem"
+        marginBottom: "0.5rem"
       }}>
         <button
           onClick={() => onChangeSubTab && onChangeSubTab("education_env")}
