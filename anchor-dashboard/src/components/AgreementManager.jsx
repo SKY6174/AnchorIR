@@ -1030,7 +1030,7 @@ export default function AgreementManager({
                   padding: "0.5rem 1.2rem" 
                 }}
               >
-                <Plus size={16} /> 신규 협약서 등록
+                <Plus size={16} /> 신규 등록
               </button>
             )}
           </div>
@@ -1299,7 +1299,7 @@ export default function AgreementManager({
         <div style={{ position: "fixed", top: 0, left: 0, width: "100vw", height: "100vh", background: "rgba(0,0,0,0.6)", zIndex: 9999, display: "flex", justifyContent: "center", alignItems: "center", overflowY: "auto", padding: "2rem 1rem" }}>
           <div style={{ background: "var(--modal-bg)", border: "1px solid var(--border-color)", borderRadius: "0.75rem", width: "100%", maxWidth: "550px", maxHeight: "85vh", display: "flex", flexDirection: "column", color: "var(--text-primary)", boxShadow: "0 20px 25px -5px rgba(0,0,0,0.3)", margin: "auto" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "0.85rem 1.25rem", borderBottom: "1px solid var(--border-color)", flexShrink: 0 }}>
-              <h3 style={{ fontSize: "1.1rem", fontWeight: "800" }}>⚓ {editingId ? "협약서 정보 수정" : "신규 협약서 등록"}</h3>
+              <h3 style={{ fontSize: "1.1rem", fontWeight: "800" }}>⚓ {editingId ? "협약서 정보 수정" : "신규 등록"}</h3>
               <button onClick={() => setIsModalOpen(false)} style={{ background: "none", border: "none", color: "#a1a1aa", cursor: "pointer" }}>
                 <X size={18} />
               </button>
