@@ -1075,9 +1075,10 @@ function mergeProjectsWithInitial(loadedData, multiYearInitialData) {
                     const sy = sourceProg.years[yr];
                     const y = updatedYears[yr];
 
-                    // 💡 [재원 비율 자가 복구 가드] DB에 저장된 국비 비율이 sourceProg의 2차년도 공식 기획 재원 비율과 오차가 생기면 강제 교정 대상입니다.
+                    // 💡 [재원 비율 및 비목 자가 복구 가드] DB에 저장된 국비 비율이 sourceProg의 2차년도 공식 기획 재원 비율과 오차가 생기거나 비목 상세가 비어 있으면 강제 복원 대상입니다.
                     const targetRatio = sourceProg.budget_2026 > 0 ? (sourceProg.budget_national || 0) / sourceProg.budget_2026 : 0.5;
                     const isDirtyRatio = y && y.budget_main > 0 && Math.abs((y.budget_national || 0) / y.budget_main - targetRatio) > 0.05;
+                    const isCategoriesEmpty = !y || !y.budget_categories || y.budget_categories.length === 0 || y.budget_categories.every(c => (c.budget || 0) === 0);
 
                     const hasUserSavedData = y && (
                       (y.budget_main > 0 && y.budget_national !== undefined && y.budget_city !== undefined) ||
@@ -1086,7 +1087,7 @@ function mergeProjectsWithInitial(loadedData, multiYearInitialData) {
                       y.budget_external > 0
                     );
 
-                    if (!hasUserSavedData || isDirtyRatio) {
+                    if (!hasUserSavedData || isDirtyRatio || isCategoriesEmpty) {
                       const rawBudgetMain = yr === 2 ? (sourceProg.budget_2026 || 0) : yr === 1 ? Math.round((sourceProg.budget_2026 || 0) * 0.9) : Math.round((sourceProg.budget_2026 || 0) * (yr === 3 ? 1.1 : yr === 4 ? 1.2 : 1.3));
 
                       y.budget_main = rawBudgetMain;
