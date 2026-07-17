@@ -8828,16 +8828,9 @@ export default function App() {
 
             {/* 본문 콘텐츠만 카드 블록 내부로 래핑 */}
             <div className="glass-card" style={{ padding: "1.25rem", position: "relative" }}>
-              {/* 타이틀 및 구성원 추가 버튼 영역 */}
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.2rem", flexWrap: "wrap", gap: "0.8rem" }}>
-                <div>
-                  <h2 style={{ fontSize: "1.25rem", fontWeight: "800" }}>앵커사업단 관리</h2>
-                  <p style={{ fontSize: "0.8rem", color: "var(--text-secondary)", marginTop: "0.2rem" }}>
-                    울산과학대학교 앵커 사업단 구성원을 관리하고, 각 세부 프로그램의 실무 연구원을 매핑하는 통합 업무 공간입니다.
-                  </p>
-                </div>
-
-                {mgmtSubTab === "members" && currentRole.rank <= 2 && (
+              {/* 구성원 추가 버튼 영역 (타이틀/설명 삭제) */}
+              {mgmtSubTab === "members" && currentRole.rank <= 2 && (
+                <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "1.2rem" }}>
                   <button
                     className="btn-primary"
                     style={{ display: "flex", alignItems: "center", gap: "0.3rem", borderRadius: "0.4rem", padding: "0.5rem 1rem", fontSize: "0.8rem", fontWeight: "700" }}
@@ -8862,8 +8855,8 @@ export default function App() {
                   >
                     구성원 추가
                   </button>
-                )}
-              </div>
+                </div>
+              )}
 
             {mgmtSubTab === "members" && (
               <div>
