@@ -1299,7 +1299,7 @@ export default function AgreementManager({
         <div style={{ position: "fixed", top: 0, left: 0, width: "100vw", height: "100vh", background: "rgba(0,0,0,0.6)", zIndex: 9999, display: "flex", justifyContent: "center", alignItems: "center", overflowY: "auto", padding: "2rem 1rem" }}>
           <div style={{ background: "var(--modal-bg)", border: "1px solid var(--border-color)", borderRadius: "0.75rem", width: "100%", maxWidth: "550px", maxHeight: "85vh", display: "flex", flexDirection: "column", color: "var(--text-primary)", boxShadow: "0 20px 25px -5px rgba(0,0,0,0.3)", margin: "auto" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "0.85rem 1.25rem", borderBottom: "1px solid var(--border-color)", flexShrink: 0 }}>
-              <h3 style={{ fontSize: "0.9rem", fontWeight: "800" }}>⚓ {editingId ? "협약서 정보 수정" : "신규 협약서 등록"}</h3>
+              <h3 style={{ fontSize: "1.1rem", fontWeight: "800" }}>⚓ {editingId ? "협약서 정보 수정" : "신규 협약서 등록"}</h3>
               <button onClick={() => setIsModalOpen(false)} style={{ background: "none", border: "none", color: "#a1a1aa", cursor: "pointer" }}>
                 <X size={18} />
               </button>
@@ -1307,12 +1307,12 @@ export default function AgreementManager({
             <form onSubmit={handleSubmit} style={{ padding: "1.25rem", display: "flex", flexDirection: "column", gap: "0.8rem", flex: 1, overflowY: "auto" }}>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem" }}>
                 <div>
-                  <label style={{ display: "block", fontSize: "0.65rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>협약 체결일자</label>
-                  <input type="date" value={inputDate} onChange={(e) => setInputDate(e.target.value)} className="form-input" />
+                  <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem", fontWeight: "600" }}>협약 체결일자</label>
+                  <input type="date" value={inputDate} onChange={(e) => setInputDate(e.target.value)} className="form-input" style={{ fontSize: "0.78rem" }} />
                 </div>
                 <div>
-                  <label style={{ display: "block", fontSize: "0.65rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>관련 센터</label>
-                  <select value={inputCenter} onChange={(e) => setInputCenter(e.target.value)} className="form-select">
+                  <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem", fontWeight: "600" }}>관련 센터</label>
+                  <select value={inputCenter} onChange={(e) => setInputCenter(e.target.value)} className="form-select" style={{ fontSize: "0.78rem" }}>
                     {CENTERS_LIST.map((c) => (
                       <option key={c} value={c} style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>{c}</option>
                     ))}
@@ -1321,16 +1321,16 @@ export default function AgreementManager({
               </div>
               <div>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.4rem" }}>
-                  <label style={{ fontSize: "0.65rem", color: "var(--text-secondary)" }}>협약 대상기관 및 기관 측 협약주체 목록</label>
-                  <button type="button" onClick={handleAddOrgField} style={{ background: "none", border: "none", color: "#60a5fa", cursor: "pointer", fontSize: "0.65rem", display: "flex", alignItems: "center", gap: "0.1rem" }}>
+                  <label style={{ fontSize: "0.8rem", color: "var(--text-secondary)", fontWeight: "600" }}>협약 대상기관 및 기관 측 협약주체 목록</label>
+                  <button type="button" onClick={handleAddOrgField} style={{ background: "none", border: "none", color: "#60a5fa", cursor: "pointer", fontSize: "0.8rem", display: "flex", alignItems: "center", gap: "0.1rem", fontWeight: "600" }}>
                     <Plus size={12} /> 기관 추가
                   </button>
                 </div>
                 <div style={{ display: "flex", flexDirection: "column", gap: "0.40rem" }}>
                   {inputOrganizations.map((org, index) => (
                     <div key={index} style={{ display: "flex", gap: "0.35rem", alignItems: "center" }}>
-                      <input type="text" placeholder={`협약 대상기관 ${index + 1}`} value={org.name || ""} onChange={(e) => handleOrgChange(index, "name", e.target.value)} className="form-input" style={{ flex: 1.3 }} />
-                      <input type="text" placeholder="직위/성명 (예: 총장 오연천)" value={org.subject || ""} onChange={(e) => handleOrgChange(index, "subject", e.target.value)} className="form-input" style={{ flex: 1 }} />
+                      <input type="text" placeholder={`협약 대상기관 ${index + 1}`} value={org.name || ""} onChange={(e) => handleOrgChange(index, "name", e.target.value)} className="form-input" style={{ flex: 1.3, fontSize: "0.78rem" }} />
+                      <input type="text" placeholder="직위/성명 (예: 총장 오연천)" value={org.subject || ""} onChange={(e) => handleOrgChange(index, "subject", e.target.value)} className="form-input" style={{ flex: 1, fontSize: "0.78rem" }} />
                       {inputOrganizations.length > 1 && (
                         <button type="button" onClick={() => handleRemoveOrgField(index)} style={{ background: "#3f3f46", border: "none", color: "#ef4444", borderRadius: "0.25rem", padding: "0.25rem", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", minHeight: "30px", minWidth: "30px" }}>
                           <Trash2 size={14} />
@@ -1341,7 +1341,7 @@ export default function AgreementManager({
                 </div>
               </div>
               <div>
-                <label style={{ display: "block", fontSize: "0.65rem", color: "var(--text-secondary)", marginBottom: "0.4rem" }}>대학 측 협약주체 (UC)</label>
+                <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.4rem", fontWeight: "600" }}>대학 측 협약주체 (UC)</label>
                 <div style={{ display: "flex", gap: "0.4rem", marginBottom: univSubjectType === "기타" ? "0.4rem" : "0" }}>
                   {["총장", "단장", "센터장", "기타"].map((t) => {
                     const isSelected = univSubjectType === t;
@@ -1360,7 +1360,7 @@ export default function AgreementManager({
                         style={{
                           flex: 1,
                           padding: "0.45rem 0.5rem",
-                          fontSize: "0.75rem",
+                          fontSize: "0.65rem",
                           fontWeight: "700",
                           borderRadius: "0.25rem",
                           border: isSelected ? "1.5px solid var(--accent-color)" : "1.5px solid var(--border-color)",
@@ -1384,7 +1384,7 @@ export default function AgreementManager({
                       value={inputSubjectUnivDept}
                       onChange={(e) => setInputSubjectUnivDept(e.target.value)}
                       className="form-input"
-                      style={{ flex: 1.3 }}
+                      style={{ flex: 1.3, fontSize: "0.78rem" }}
                     />
                     <input
                       type="text"
@@ -1392,14 +1392,14 @@ export default function AgreementManager({
                       value={inputSubjectUnivName}
                       onChange={(e) => setInputSubjectUnivName(e.target.value)}
                       className="form-input"
-                      style={{ flex: 1 }}
+                      style={{ flex: 1, fontSize: "0.78rem" }}
                     />
                   </div>
                 )}
               </div>
               <div>
-                <label style={{ display: "block", fontSize: "0.65rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>관련 단위과제</label>
-                <select value={inputUnitId} onChange={(e) => setInputUnitId(e.target.value)} className="form-select">
+                <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem", fontWeight: "600" }}>관련 단위과제</label>
+                <select value={inputUnitId} onChange={(e) => setInputUnitId(e.target.value)} className="form-select" style={{ fontSize: "0.78rem" }}>
                   <option value="" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>-- 관련 단위과제 선택 --</option>
                   {availableUnits.map((u) => (
                     <option key={u.id} value={u.id} style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>{u.id}. {u.title}</option>
@@ -1407,7 +1407,7 @@ export default function AgreementManager({
                 </select>
               </div>
               <div>
-                <label style={{ display: "block", fontSize: "0.65rem", color: "var(--text-secondary)", marginBottom: "0.4rem" }}>협약유형</label>
+                <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.4rem", fontWeight: "600" }}>협약유형</label>
                 <div style={{ display: "flex", gap: "0.4rem" }}>
                   {["프리미엄", "무료", "-"].map((t) => {
                     const isSelected = inputAgreementType === t;
@@ -1419,7 +1419,7 @@ export default function AgreementManager({
                         style={{
                           flex: 1,
                           padding: "0.45rem 0.5rem",
-                          fontSize: "0.75rem",
+                          fontSize: "0.65rem",
                           fontWeight: "700",
                           borderRadius: "0.25rem",
                           border: isSelected ? "1.5px solid #ec4899" : "1.5px solid var(--border-color)",
@@ -1437,7 +1437,7 @@ export default function AgreementManager({
                 </div>
               </div>
               <div>
-                <label style={{ display: "block", fontSize: "0.65rem", color: "var(--text-secondary)", marginBottom: "0.4rem" }}>협약 내용 범주 (다중 선택)</label>
+                <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.4rem", fontWeight: "600" }}>협약 내용 범주 (다중 선택)</label>
                 <div style={{ display: "flex", flexWrap: "wrap", gap: "0.35rem" }}>
                   {AGREEMENT_CONTENTS_OPTIONS.map((c) => {
                     const isSelected = inputContents.includes(c);
@@ -1448,7 +1448,7 @@ export default function AgreementManager({
                         onClick={() => handleToggleContent(c)} 
                         style={{ 
                           padding: "0.3rem 0.65rem", 
-                          fontSize: "0.7rem", 
+                          fontSize: "0.6rem", 
                           borderRadius: "2rem", 
                           border: isSelected ? "1.5px solid #34d399" : "1.5px solid var(--border-color)", 
                           background: isSelected ? "rgba(52,211,153,0.15)" : "var(--input-bg)", 
@@ -1464,13 +1464,13 @@ export default function AgreementManager({
                 </div>
               </div>
               <div>
-                <label style={{ display: "block", fontSize: "0.65rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>협약서 사본 업로드</label>
+                <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem", fontWeight: "600" }}>협약서 사본 업로드</label>
                 <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                  <label style={{ display: "inline-flex", alignItems: "center", gap: "0.25rem", padding: "0.4rem 0.75rem", fontSize: "0.75rem", background: "var(--input-bg)", color: "var(--text-primary)", borderRadius: "6px", cursor: "pointer", border: "1.5px solid var(--border-color)", transition: "all 0.2s ease" }}>
+                  <label style={{ display: "inline-flex", alignItems: "center", gap: "0.25rem", padding: "0.4rem 0.75rem", fontSize: "0.65rem", background: "var(--input-bg)", color: "var(--text-primary)", borderRadius: "6px", cursor: "pointer", border: "1.5px solid var(--border-color)", transition: "all 0.2s ease", fontWeight: "700" }}>
                     <Upload size={14} /> 파일 선택
                     <input type="file" onChange={(e) => handleFileChange(e, "agreement")} style={{ display: "none" }} accept=".pdf,.doc,.docx,.png,.jpg,.jpeg" />
                   </label>
-                  <span style={{ fontSize: "0.7rem", color: "var(--text-secondary)" }}>{inputFileName ? `📁 ${inputFileName}` : "선택된 파일 없음"}</span>
+                  <span style={{ fontSize: "0.6rem", color: "var(--text-secondary)" }}>{inputFileName ? `📁 ${inputFileName}` : "선택된 파일 없음"}</span>
                 </div>
               </div>
               <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.5rem", borderTop: "1px solid var(--border-color)", paddingTop: "0.85rem", marginTop: "0.5rem" }}>
