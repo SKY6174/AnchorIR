@@ -4237,19 +4237,21 @@ export const Y1_UNIT_META = {
   }
 };
 
-// 💡 [교육용 한글 주석] 각 단위과제의 기획서(Proposal.md) 기준 재원 배분 비율 스펙에 맞추어 
+// 💡 [교육용 한글 주석] 각 단위과제의 2차년도사업계획서 PDF 공식 예산 기준 초안에 맞추어 
 // 2차년도 예산(budget_2026)의 국비(budget_national)와 시비(budget_city) 배정액을 정밀 주입합니다.
 initialProjectsData.forEach((strategy) => {
   strategy.units.forEach((unit) => {
     unit.programs.forEach((prog) => {
-      // 이미 수동으로 국비/시비가 세밀하게 잡혀있는 A1가, A1나 단위과제의 특수 프로그램들은 수동 기입값을 보존합니다.
-      const hasManualRatio = ["A1가", "A1나"].includes(unit.id);
-      
       if (prog.budget_2026 !== undefined) {
         const total = prog.budget_2026;
         
-        if (unit.id === "C1") {
-          // C1 단위과제의 특수 기획서 쪼개기 반영
+        // 1. A1나: 100% 국비
+        if (unit.id === "A1나") {
+          prog.budget_national = total;
+          prog.budget_city = 0;
+        }
+        // 2. C1: 기획서 특수 쪼개기 반영 (스마트테크 C1-S4T12-1, 로컬창업 C1-S4T14-1 시비 100%, 나머지 국비 100%)
+        else if (unit.id === "C1") {
           if (["C1-S4T12-1", "C1-S4T14-1"].includes(prog.id)) {
             prog.budget_national = 0;
             prog.budget_city = total;
@@ -4257,12 +4259,35 @@ initialProjectsData.forEach((strategy) => {
             prog.budget_national = total;
             prog.budget_city = 0;
           }
-        } else if (!hasManualRatio) {
-          let ratio = 0.5; // 기본 1:1 비율 (B2~D3 기획서 명세 기준)
+        } 
+        // 3. 그 외 단위과제: PDF 공식 재원 배분 비율 적용
+        else {
+          let ratio = 1.0; // 기본값 100% 국비
           
-          // A2, A3, B1 단위과제는 사용자의 요구에 따라 9:1 비율
-          if (["A2", "A3", "B1"].includes(unit.id)) {
-            ratio = 0.9;
+          if (unit.id === "A1가") {
+            ratio = 16.56 / 21.00;
+          } else if (unit.id === "A2") {
+            ratio = 4.07 / 4.70;
+          } else if (unit.id === "A3") {
+            ratio = 2.40 / 2.40;
+          } else if (unit.id === "B1") {
+            ratio = 3.50 / 3.50;
+          } else if (unit.id === "B2") {
+            ratio = 9.26 / 10.20;
+          } else if (unit.id === "B3") {
+            ratio = 3.12 / 3.12;
+          } else if (unit.id === "B4") {
+            ratio = 2.75 / 3.00;
+          } else if (unit.id === "C2") {
+            ratio = 7.00 / 7.00;
+          } else if (unit.id === "D1") {
+            ratio = 1.09 / 2.00;
+          } else if (unit.id === "D2") {
+            ratio = 3.49 / 4.00;
+          } else if (unit.id === "D3") {
+            ratio = 3.10 / 3.90;
+          } else if (unit.id === "X0") {
+            ratio = 24.33 / 24.33;
           }
           
           prog.budget_national = Math.round(total * ratio);
