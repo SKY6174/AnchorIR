@@ -109,8 +109,8 @@ export const initialProjectsData = [
             id: "A1가-S1T2-3",
             title: "주문식 교육과정 자체평가 보고서",
             budget_2026: 20000000,
-            budget_national: 20000000,
-            budget_city: 0,
+            budget_national: 0,
+            budget_city: 20000000,
             spent_2026: 0,
             budget_2025_carry: 0,
             spent_2025_carry: 0,
@@ -122,8 +122,8 @@ export const initialProjectsData = [
             years: {
               "2": {
                 "budget_main": 20000000,
-                "budget_national": 20000000,
-                "budget_city": 0,
+                "budget_national": 0,
+                "budget_city": 20000000,
                 "budget_external": 0,
                 "spent_main": 0,
                 "budget_carry": 0,
@@ -426,7 +426,7 @@ export const initialProjectsData = [
           },
           {
             id: "A1가-S3T8-2",
-            title: "전문기술석사과정 워크숍",
+            title: "전문기술석사 과정 워크숍",
             budget_2026: 4000000,
             budget_national: 4000000,
             budget_city: 0,
@@ -436,7 +436,7 @@ export const initialProjectsData = [
             assignee: "박기범 연구원",
             pdca: { p: "완료", d: "완료", c: "진행", a: "대기" },
             budget_categories: [
-              { category: "지역 연계∙협업 지원비", budget: 4000000, spent: 0 }
+              { category: "기업 지원∙협력 활동비", budget: 4000000, spent: 0 }
             ],
             years: {
               "2": {
@@ -448,7 +448,7 @@ export const initialProjectsData = [
                 "budget_carry": 0,
                 "spent_carry": 0,
                 "budget_categories": [
-                  { "category": "지역 연계∙협업 지원비", "budget": 4000000, "budget_carry": 0, "spent": 0, "spent_carry": 0 }
+                  { "category": "기업 지원∙협력 활동비", "budget": 4000000, "budget_carry": 0, "spent": 0, "spent_carry": 0 }
                 ]
               }
             }
@@ -921,8 +921,8 @@ export const initialProjectsData = [
             id: "A1가-S4T11-2",
             title: "AI리터러시 교과목 운영",
             budget_2026: 50000000,
-            budget_national: 0,
-            budget_city: 50000000,
+            budget_national: 30000000,
+            budget_city: 20000000,
             spent_2026: 0,
             budget_2025_carry: 0,
             spent_2025_carry: 0,
@@ -934,8 +934,8 @@ export const initialProjectsData = [
             years: {
               "2": {
                 "budget_main": 50000000,
-                "budget_national": 0,
-                "budget_city": 50000000,
+                "budget_national": 30000000,
+                "budget_city": 20000000,
                 "budget_external": 0,
                 "spent_main": 0,
                 "budget_carry": 0,
