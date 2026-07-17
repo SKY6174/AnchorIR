@@ -23,7 +23,7 @@ import ProcurementManager from "./components/ProcurementManager";
 import ScheduleManager from "./components/ScheduleManager";
 import AssetManager from "./components/AssetManager";
 import UnitSystemView from "./components/UnitSystemView";
-import { initialProjectsData, userRoles, YEAR_1_PROGRAMS, Y1_UNIT_META } from "./data/mockData";
+import { initialProjectsData, userRoles, YEAR_1_PROGRAMS, Y1_UNIT_META, getNationalRatio } from "./data/mockData";
 import { Sun, Moon, LogOut, HelpCircle, ArrowUpRight, Lock as LockIcon, Info, Clock, Edit2 } from "lucide-react";
 import { supabase } from "./supabaseClient";
 import CryptoJS from "crypto-js";
@@ -678,7 +678,8 @@ function formatDataToMultiYear(data) {
               budget_national = budgetMain;
               budget_city = 0;
             } else {
-              budget_national = Math.round(budgetMain * 0.5);
+              const ratio = getNationalRatio(prog.id);
+              budget_national = Math.round(budgetMain * ratio);
               budget_city = budgetMain - budget_national;
             }
           }
@@ -708,7 +709,8 @@ function formatDataToMultiYear(data) {
                 spent_national = spentMain;
                 spent_city = 0;
               } else {
-                spent_national = Math.round(spentMain * 0.5);
+                const ratio = getNationalRatio(prog.id);
+                spent_national = Math.round(spentMain * ratio);
                 spent_city = spentMain - spent_national;
               }
             }
@@ -728,7 +730,8 @@ function formatDataToMultiYear(data) {
               carry_national = budgetCarry;
               carry_city = 0;
             } else {
-              carry_national = Math.round(budgetCarry * 0.5);
+              const ratio = getNationalRatio(prog.id);
+              carry_national = Math.round(budgetCarry * ratio);
               carry_city = budgetCarry - carry_national;
             }
           }
@@ -747,7 +750,8 @@ function formatDataToMultiYear(data) {
               carry_spent_national = spentCarry;
               carry_spent_city = 0;
             } else {
-              carry_spent_national = Math.round(spentCarry * 0.5);
+              const ratio = getNationalRatio(prog.id);
+              carry_spent_national = Math.round(spentCarry * ratio);
               carry_spent_city = spentCarry - carry_spent_national;
             }
           }
@@ -822,7 +826,8 @@ function formatDataToMultiYear(data) {
             py.budget_carry_city = 0;
             py.budget_carry_external = 0;
           } else {
-            py.budget_carry_national = Math.round((py.budget_carry || 0) * 0.5);
+            const ratio = getNationalRatio(prog.id);
+            py.budget_carry_national = Math.round((py.budget_carry || 0) * ratio);
             py.budget_carry_city = (py.budget_carry || 0) - py.budget_carry_national;
             py.budget_carry_external = 0;
           }
@@ -1105,18 +1110,14 @@ function mergeProjectsWithInitial(loadedData, multiYearInitialData) {
                 // 💡 [D1, D2, D3 예산 강제 동기화 및 자가 치유 가드] D1, D2, D3 관련 프로그램들은 
                 // DB에 잘못된 옛날 캐시(외부사업비 오염 등)가 남아있고 아직 수동 기획 저장을 거치지 않은 경우에 한해, 
                 // 마스터 기획(sourceProg)의 본사업비 공식 분배율(D2는 100% 국비, 나머지는 국고 50%/시비 50%)을 정밀 강제 계산하여 실시간 보정합니다.
-                if (sourceProg.id && (sourceProg.id.startsWith("A1나-") || sourceProg.id.startsWith("D1-") || sourceProg.id.startsWith("D2-") || sourceProg.id.startsWith("D3-"))) {
+                if (sourceProg.id) {
                   if (sourceProg.years && sourceProg.years[yr]) {
                     const sy = sourceProg.years[yr];
                     const y = updatedYears[yr];
 
-                     // 💡 [수동 기획 보존 필터]
-                    // 만약 DB에서 이미 사용자가 기획 예산액(budget_main)이나 세원(국비/시비/외부)을 수동 기입하고
-                    // 저장(upsert)을 완료한 기저장 데이터가 실재한다면, 사용자의 수정 의도를 존중하여 덮어쓰기 복원을 건너뛰고 보존합니다.
-                    const isNationalOnly = ["A1나-", "D1-", "D2-", "D3-"].some(prefix => sourceProg.id.startsWith(prefix));
-                    
-                    // 💡 [국비 100% 자가 복구 가드] A1나 및 D 단위과제임에도 DB에 시비(budget_city > 0)가 오염되어 남아있다면 강제 교정 대상입니다.
-                    const isDirtyNational = isNationalOnly && y && (y.budget_city > 0 || y.budget_national !== y.budget_main);
+                    // 💡 [재원 비율 자가 복구 가드] DB에 저장된 국비 비율이 목표 비율(targetRatio)과 오차가 생기면 강제 교정 대상입니다.
+                    const targetRatio = getNationalRatio(sourceProg.id);
+                    const isDirtyRatio = y && y.budget_main > 0 && Math.abs((y.budget_national || 0) / y.budget_main - targetRatio) > 0.05;
 
                     const hasUserSavedData = y && (
                       (y.budget_main > 0 && y.budget_national !== undefined && y.budget_city !== undefined) ||
@@ -1125,17 +1126,15 @@ function mergeProjectsWithInitial(loadedData, multiYearInitialData) {
                       y.budget_external > 0
                     );
 
-                    if (!hasUserSavedData || isDirtyNational) {
+                    if (!hasUserSavedData || isDirtyRatio) {
                       const rawBudgetMain = yr === 2 ? (sourceProg.budget_2026 || 0) : yr === 1 ? Math.round((sourceProg.budget_2026 || 0) * 0.9) : Math.round((sourceProg.budget_2026 || 0) * (yr === 3 ? 1.1 : yr === 4 ? 1.2 : 1.3));
 
                       y.budget_main = rawBudgetMain;
-                      if (isNationalOnly) {
-                        // 💡 [교육용 한글 주석] A1나 및 D1, D2, D3 단위과제 세부 프로그램은 100% 국비(국고) 본예산으로 할당합니다.
+                      if (targetRatio === 1.0) {
                         y.budget_national = rawBudgetMain;
                         y.budget_city = 0;
                       } else {
-                        // 다른 단위과제는 국고 50%, 시비 50% 분배 적용
-                        y.budget_national = Math.round(rawBudgetMain * 0.5);
+                        y.budget_national = Math.round(rawBudgetMain * targetRatio);
                         y.budget_city = rawBudgetMain - y.budget_national;
                       }
                       y.budget_external = 0; // 특별한 언급이 없으므로 외부사업비는 0원 처리

@@ -4236,3 +4236,20 @@ export const Y1_UNIT_META = {
     "carry": 93800000
   }
 };
+
+// 💡 [교육용 한글 주석] 단위과제 또는 세부 프로그램 ID에 따른 국비(국고) 분배 비율을 계산합니다.
+// - A1나, D1, D2, D3: 100% 국비 (비율 1.0)
+// - A2, A3, B1, B2, B3, B4, C1, C2: 90% 국비, 10% 시비 (비율 0.9)
+// - A1가 및 기타: 50% 국비, 50% 시비 (비율 0.5)
+export function getNationalRatio(id) {
+  if (!id) return 0.5;
+  
+  const isNational100 = ["A1나", "D1", "D2", "D3"].some(prefix => id.startsWith(prefix));
+  if (isNational100) return 1.0;
+  
+  const isNational90 = ["A2", "A3", "B1", "B2", "B3", "B4", "C1", "C2"].some(prefix => id.startsWith(prefix));
+  if (isNational90) return 0.9;
+  
+  return 0.5;
+}
+
