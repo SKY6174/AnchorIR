@@ -1180,13 +1180,14 @@ input[type="time"]::-webkit-calendar-picker-indicator:hover {
 
 /* 💡 [글로벌 인라인 스타일 제압 가드] 
    기존 파일 내에 인라인 스타일로 박혀 있는 input, select, textarea 태그들의 디자인을 
-   일괄 오버라이딩하여 라이트/다크 테마에 맞는 프리미엄 비주얼(Glow 포커스, 둥근 8px)로 일괄 자동 전환합니다. */
-input[type="text"]:not(.form-input),
-input[type="date"]:not(.form-input),
-input[type="time"]:not(.form-input),
-input[type="email"]:not(.form-input),
-select:not(.form-select),
-textarea:not(.form-textarea) {
+   일괄 오버라이딩하여 라이트/다크 테마에 맞는 프리미엄 비주얼(Glow 포커스, 둥근 8px)로 일괄 자동 전환합니다.
+   단, .user-selector 클래스를 가진 정밀 미니 폼 요소들은 제외합니다. */
+input[type="text"]:not(.form-input):not(.user-selector),
+input[type="date"]:not(.form-input):not(.user-selector),
+input[type="time"]:not(.form-input):not(.user-selector),
+input[type="email"]:not(.form-input):not(.user-selector),
+select:not(.form-select):not(.user-selector),
+textarea:not(.form-textarea):not(.user-selector) {
   padding: 0.55rem 0.75rem !important;
   font-size: 0.82rem !important;
   border-radius: 8px !important;
@@ -1198,33 +1199,33 @@ textarea:not(.form-textarea) {
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04) !important;
 }
 
-.light-mode input[type="text"]:not(.form-input),
-.light-mode input[type="date"]:not(.form-input),
-.light-mode input[type="time"]:not(.form-input),
-.light-mode input[type="email"]:not(.form-input),
-.light-mode select:not(.form-select),
-.light-mode textarea:not(.form-textarea) {
+.light-mode input[type="text"]:not(.form-input):not(.user-selector),
+.light-mode input[type="date"]:not(.form-input):not(.user-selector),
+.light-mode input[type="time"]:not(.form-input):not(.user-selector),
+.light-mode input[type="email"]:not(.form-input):not(.user-selector),
+.light-mode select:not(.form-select):not(.user-selector),
+.light-mode textarea:not(.form-textarea):not(.user-selector) {
   border-color: #cbd5e1 !important;
   background: #ffffff !important;
   color: #0f172a !important;
 }
 
-input[type="text"]:not(.form-input):focus,
-input[type="date"]:not(.form-input):focus,
-input[type="time"]:not(.form-input):focus,
-input[type="email"]:not(.form-input):focus,
-select:not(.form-select):focus,
-textarea:not(.form-textarea):focus {
+input[type="text"]:not(.form-input):not(.user-selector):focus,
+input[type="date"]:not(.form-input):not(.user-selector):focus,
+input[type="time"]:not(.form-input):not(.user-selector):focus,
+input[type="email"]:not(.form-input):not(.user-selector):focus,
+select:not(.form-select):not(.user-selector):focus,
+textarea:not(.form-textarea):not(.user-selector):focus {
   border-color: var(--accent-color) !important;
   box-shadow: 0 0 0 3.5px rgba(59, 130, 246, 0.18) !important;
 }
 
-.light-mode input[type="text"]:not(.form-input):focus,
-.light-mode input[type="date"]:not(.form-input):focus,
-.light-mode input[type="time"]:not(.form-input):focus,
-.light-mode input[type="email"]:not(.form-input):focus,
-.light-mode select:not(.form-select):focus,
-.light-mode textarea:not(.form-textarea):focus {
+.light-mode input[type="text"]:not(.form-input):not(.user-selector):focus,
+.light-mode input[type="date"]:not(.form-input):not(.user-selector):focus,
+.light-mode input[type="time"]:not(.form-input):not(.user-selector):focus,
+.light-mode input[type="email"]:not(.form-input):not(.user-selector):focus,
+.light-mode select:not(.form-select):not(.user-selector):focus,
+.light-mode textarea:not(.form-textarea):not(.user-selector):focus {
   border-color: var(--accent-color) !important;
   box-shadow: 0 0 0 3.5px rgba(59, 130, 246, 0.25) !important;
 }

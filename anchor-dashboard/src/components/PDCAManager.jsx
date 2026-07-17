@@ -1576,7 +1576,7 @@ export default function PDCAManager({
                 {activePdcaStage === "P" && (isResearcher || currentRole.rank <= 2) && (
                   <form onSubmit={handleUpdatePDetails} style={{ padding: "0.75rem", background: "rgba(59,130,246,0.02)", border: "1px solid var(--border-color)", borderRadius: "0.5rem" }}>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.6rem", flexWrap: "wrap", gap: "0.5rem" }}>
-                      <h4 style={{ fontSize: "0.8rem", fontWeight: "800", color: "var(--accent-color)", margin: 0 }}>P 단계: 예산 기획 및 세부 추진계획</h4>
+                      <h4 style={{ fontSize: "1.0rem", fontWeight: "800", color: "var(--accent-color)", margin: 0 }}>P 단계: 예산 기획 및 세부 추진계획</h4>
 
                       {/* 버전 선택 드롭다운 */}
                       {(() => {
@@ -1655,7 +1655,7 @@ export default function PDCAManager({
 
                         {/* 1영역: 재원별 예산 */}
                         <div>
-                          <span style={{ fontSize: "0.65rem", color: "var(--text-secondary)", display: "block", marginBottom: "0.15rem" }}>재원별 예산 배정 (백만원 단위)</span>
+                          <span style={{ fontSize: "0.82rem", color: "var(--text-secondary)", fontWeight: "700", display: "block", marginBottom: "0.15rem" }}>재원별 예산 배정 (백만원 단위)</span>
                           <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
                             {/* 재원별 3개 분할 영역 (국고, 지자체시비, 외부사업비) */}
                             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "0.5rem" }}>
@@ -1703,7 +1703,7 @@ export default function PDCAManager({
 
                         {/* 2영역: 비목별 예산 */}
                         <div style={{ borderTop: "1px solid var(--border-color)", paddingTop: "0.4rem" }}>
-                          <span style={{ fontSize: "0.65rem", color: "var(--text-secondary)", display: "block", marginBottom: "0.2rem" }}>비목별 예산 배정 (백만원 단위, 최대 4개)</span>
+                          <span style={{ fontSize: "0.82rem", color: "var(--text-secondary)", fontWeight: "700", display: "block", marginBottom: "0.2rem" }}>비목별 예산 배정 (백만원 단위, 최대 4개)</span>
                           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.4rem" }}>
                             {inputBudgetCategories.map((item, idx) => (
                               <div key={idx} style={{ display: "grid", gridTemplateColumns: "1.2fr 1fr 1fr", gap: "0.2rem", alignItems: "center" }}>
@@ -1762,7 +1762,7 @@ export default function PDCAManager({
 
                         {/* 3영역: 추진일정 */}
                         <div style={{ borderTop: "1px solid var(--border-color)", paddingTop: "0.4rem" }}>
-                          <span style={{ fontSize: "0.65rem", color: "var(--text-secondary)", display: "block", marginBottom: "0.25rem" }}>월별 추진 일정 (PDCA)</span>
+                          <span style={{ fontSize: "0.82rem", color: "var(--text-secondary)", fontWeight: "700", display: "block", marginBottom: "0.25rem" }}>월별 추진 일정 (PDCA)</span>
 
                           <div style={{ background: "rgba(255,255,255,0.01)", padding: "0.5rem", borderRadius: "0.4rem", border: "1px solid rgba(255,255,255,0.03)", marginBottom: "0.3rem" }}>
                             <span style={{ fontSize: "0.58rem", color: "var(--accent-color)", fontWeight: "800", display: "inline-block", marginBottom: "0.25rem" }}>● 계획 일정</span>
@@ -1826,7 +1826,7 @@ export default function PDCAManager({
                           {/* 성과지표 연계 설정 영역 (최대 2개 다중 연계 지원) */}
                           <div style={{ borderTop: "1px solid var(--border-color)", paddingTop: "0.45rem", marginTop: "0.2rem", marginBottom: "0.4rem" }}>
                             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.3rem" }}>
-                              <span style={{ fontSize: "0.65rem", color: "var(--text-secondary)" }}>
+                              <span style={{ fontSize: "0.82rem", color: "var(--text-secondary)", fontWeight: "700" }}>
                                 성과지표 연계 (최대 2개)
                               </span>
                               {inputKpiLinks.length < 2 && inputKpiLinks[0] && (
@@ -2011,7 +2011,7 @@ export default function PDCAManager({
 
                             return (
                               <div style={{ marginTop: "0.4rem", background: "rgba(59, 130, 246, 0.04)", border: "1px solid rgba(59, 130, 246, 0.15)", borderRadius: "0.3rem", padding: "0.4rem 0.6rem" }}>
-                                <div style={{ fontSize: "0.62rem", color: "#60a5fa", fontWeight: "700", borderBottom: "1px solid var(--border-color)", paddingBottom: "0.15rem", marginBottom: "0.3rem" }}>
+                                <div style={{ fontSize: "0.78rem", color: "#60a5fa", fontWeight: "800", borderBottom: "1px solid var(--border-color)", paddingBottom: "0.15rem", marginBottom: "0.3rem" }}>
                                   📌 연계 성과지표 세부 목표치 입력 (P단계)
                                 </div>
                                 <div style={{ display: "flex", flexDirection: "column", gap: "0.45rem" }}>
@@ -2068,14 +2068,14 @@ export default function PDCAManager({
                           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "0.4rem" }}>
                             {/* 실적목표 1 */}
                             <div style={{ display: "flex", flexDirection: "column", gap: "0.2rem" }}>
-                              <span style={{ fontSize: "0.65rem", color: "var(--text-secondary)" }}>실적목표 1 제목</span>
+                              <span style={{ fontSize: "0.82rem", color: "var(--text-secondary)", fontWeight: "700" }}>실적목표 1 제목</span>
                               <input
                                 type="text"
                                 className="user-selector"
                                 placeholder="예시) 참여인원"
                                 value={inputTargetParticipantsName}
                                 onChange={(e) => setInputTargetParticipantsName(e.target.value)}
-                                style={{ padding: "0.25rem 0.4rem", fontSize: "0.75rem", width: "100%", background: "var(--panel-bg)", color: "var(--text-primary)", border: "1px solid var(--border-color)" }}
+                                style={{ padding: "0.25rem 0.4rem", fontSize: "0.7rem", width: "100%", background: "var(--panel-bg)", color: "var(--text-primary)", border: "1px solid var(--border-color)" }}
                               />
                               <div style={{ display: "flex", gap: "0.2rem" }}>
                                 <input
@@ -2084,7 +2084,7 @@ export default function PDCAManager({
                                   placeholder="예시) 0"
                                   value={inputTargetParticipants}
                                   onChange={(e) => setInputTargetParticipants(e.target.value)}
-                                  style={{ padding: "0.25rem 0.4rem", fontSize: "0.75rem", flex: 2, minWidth: 0, background: "rgba(255,255,255,0.02)", color: "var(--text-primary)", border: "1px solid var(--border-color)", borderRadius: "0.25rem" }}
+                                  style={{ padding: "0.25rem 0.4rem", fontSize: "0.7rem", flex: 2, minWidth: 0, background: "rgba(255,255,255,0.02)", color: "var(--text-primary)", border: "1px solid var(--border-color)", borderRadius: "0.25rem" }}
                                 />
                                 <input
                                   type="text"
@@ -2092,21 +2092,21 @@ export default function PDCAManager({
                                   placeholder="예시) 명"
                                   value={inputTargetParticipantsUnit}
                                   onChange={(e) => setInputTargetParticipantsUnit(e.target.value)}
-                                  style={{ padding: "0.25rem 0.4rem", fontSize: "0.75rem", flex: 1, minWidth: 0, textAlign: "center", background: "rgba(255,255,255,0.02)", color: "var(--text-primary)", border: "1px solid var(--border-color)", borderRadius: "0.25rem" }}
+                                  style={{ padding: "0.25rem 0.4rem", fontSize: "0.7rem", flex: 1, minWidth: 0, textAlign: "center", background: "rgba(255,255,255,0.02)", color: "var(--text-primary)", border: "1px solid var(--border-color)", borderRadius: "0.25rem" }}
                                 />
                               </div>
                             </div>
 
                             {/* 실적목표 2 */}
                             <div style={{ display: "flex", flexDirection: "column", gap: "0.2rem" }}>
-                              <span style={{ fontSize: "0.65rem", color: "var(--text-secondary)" }}>실적목표 2 제목</span>
+                              <span style={{ fontSize: "0.82rem", color: "var(--text-secondary)", fontWeight: "700" }}>실적목표 2 제목</span>
                               <input
                                 type="text"
                                 className="user-selector"
                                 placeholder="예시) 개발수"
                                 value={inputTargetDevelopmentsName}
                                 onChange={(e) => setInputTargetDevelopmentsName(e.target.value)}
-                                style={{ padding: "0.25rem 0.4rem", fontSize: "0.75rem", width: "100%", background: "var(--panel-bg)", color: "var(--text-primary)", border: "1px solid var(--border-color)" }}
+                                style={{ padding: "0.25rem 0.4rem", fontSize: "0.7rem", width: "100%", background: "var(--panel-bg)", color: "var(--text-primary)", border: "1px solid var(--border-color)" }}
                               />
                               <div style={{ display: "flex", gap: "0.2rem" }}>
                                 <input
@@ -2115,7 +2115,7 @@ export default function PDCAManager({
                                   placeholder="예시) 0"
                                   value={inputTargetDevelopments}
                                   onChange={(e) => setInputTargetDevelopments(e.target.value)}
-                                  style={{ padding: "0.25rem 0.4rem", fontSize: "0.75rem", flex: 2, minWidth: 0, background: "rgba(255,255,255,0.02)", color: "var(--text-primary)", border: "1px solid var(--border-color)", borderRadius: "0.25rem" }}
+                                  style={{ padding: "0.25rem 0.4rem", fontSize: "0.7rem", flex: 2, minWidth: 0, background: "rgba(255,255,255,0.02)", color: "var(--text-primary)", border: "1px solid var(--border-color)", borderRadius: "0.25rem" }}
                                 />
                                 <input
                                   type="text"
@@ -2123,21 +2123,21 @@ export default function PDCAManager({
                                   placeholder="예시) 건"
                                   value={inputTargetDevelopmentsUnit}
                                   onChange={(e) => setInputTargetDevelopmentsUnit(e.target.value)}
-                                  style={{ padding: "0.25rem 0.4rem", fontSize: "0.75rem", flex: 1, minWidth: 0, textAlign: "center", background: "rgba(255,255,255,0.02)", color: "var(--text-primary)", border: "1px solid var(--border-color)", borderRadius: "0.25rem" }}
+                                  style={{ padding: "0.25rem 0.4rem", fontSize: "0.7rem", flex: 1, minWidth: 0, textAlign: "center", background: "rgba(255,255,255,0.02)", color: "var(--text-primary)", border: "1px solid var(--border-color)", borderRadius: "0.25rem" }}
                                 />
                               </div>
                             </div>
 
                             {/* 실적목표 3 */}
                             <div style={{ display: "flex", flexDirection: "column", gap: "0.2rem" }}>
-                              <span style={{ fontSize: "0.65rem", color: "var(--text-secondary)" }}>실적목표 3 제목</span>
+                              <span style={{ fontSize: "0.82rem", color: "var(--text-secondary)", fontWeight: "700" }}>실적목표 3 제목</span>
                               <input
                                 type="text"
                                 className="user-selector"
                                 placeholder="예시) 기타"
                                 value={inputTargetEtcName}
                                 onChange={(e) => setInputTargetEtcName(e.target.value)}
-                                style={{ padding: "0.25rem 0.4rem", fontSize: "0.75rem", width: "100%", background: "var(--panel-bg)", color: "var(--text-primary)", border: "1px solid var(--border-color)" }}
+                                style={{ padding: "0.25rem 0.4rem", fontSize: "0.7rem", width: "100%", background: "var(--panel-bg)", color: "var(--text-primary)", border: "1px solid var(--border-color)" }}
                               />
                               <div style={{ display: "flex", gap: "0.2rem" }}>
                                 <input
@@ -2146,7 +2146,7 @@ export default function PDCAManager({
                                   placeholder="예시) 0"
                                   value={inputTargetEtc}
                                   onChange={(e) => setInputTargetEtc(e.target.value)}
-                                  style={{ padding: "0.25rem 0.4rem", fontSize: "0.75rem", flex: 2, minWidth: 0, background: "rgba(255,255,255,0.02)", color: "var(--text-primary)", border: "1px solid var(--border-color)", borderRadius: "0.25rem" }}
+                                  style={{ padding: "0.25rem 0.4rem", fontSize: "0.7rem", flex: 2, minWidth: 0, background: "rgba(255,255,255,0.02)", color: "var(--text-primary)", border: "1px solid var(--border-color)", borderRadius: "0.25rem" }}
                                 />
                                 <input
                                   type="text"
@@ -2154,7 +2154,7 @@ export default function PDCAManager({
                                   placeholder="예시) 개"
                                   value={inputTargetEtcUnit}
                                   onChange={(e) => setInputTargetEtcUnit(e.target.value)}
-                                  style={{ padding: "0.25rem 0.4rem", fontSize: "0.75rem", flex: 1, minWidth: 0, textAlign: "center", background: "rgba(255,255,255,0.02)", color: "var(--text-primary)", border: "1px solid var(--border-color)", borderRadius: "0.25rem" }}
+                                  style={{ padding: "0.25rem 0.4rem", fontSize: "0.7rem", flex: 1, minWidth: 0, textAlign: "center", background: "rgba(255,255,255,0.02)", color: "var(--text-primary)", border: "1px solid var(--border-color)", borderRadius: "0.25rem" }}
                                 />
                               </div>
                             </div>
@@ -2199,7 +2199,7 @@ export default function PDCAManager({
                             return (
                               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.4rem", borderTop: "1px solid var(--border-color-dark)", paddingTop: "0.4rem" }}>
                                 <div>
-                                  <span style={{ fontSize: "0.65rem", color: "var(--text-secondary)", display: "block", marginBottom: "0.2rem" }}>참여대상 (복수선택 가능)</span>
+                                  <span style={{ fontSize: "0.82rem", color: "var(--text-secondary)", fontWeight: "700", display: "block", marginBottom: "0.2rem" }}>참여대상 (복수선택 가능)</span>
                                   <div style={{ display: "flex", gap: "0.3rem", flexWrap: "wrap" }}>
                                     {["재학생", "성인학습자", "재직자", "기타"].map((option) => {
                                       const selectedList = inputTargetAudience ? inputTargetAudience.split(",").map(s => s.trim()) : [];
@@ -2244,13 +2244,13 @@ export default function PDCAManager({
                                   </div>
                                 </div>
                                 <div>
-                                  <span style={{ fontSize: "0.65rem", color: "var(--text-secondary)" }}>연계부서 (최대 2개 선택)</span>
+                                  <span style={{ fontSize: "0.82rem", color: "var(--text-secondary)", fontWeight: "700", display: "block", marginBottom: "0.2rem" }}>연계부서 (최대 2개 선택)</span>
                                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.2rem" }}>
                                     <select
                                       className="user-selector"
                                       value={inputCoopDept1}
                                       onChange={(e) => setInputCoopDept1(e.target.value)}
-                                      style={{ width: "100%", padding: "0.25rem 0.4rem", fontSize: "0.75rem", background: "var(--panel-bg)", color: "var(--text-primary)", border: "1px solid var(--border-color)", borderRadius: "0.25rem" }}
+                                      style={{ width: "100%", padding: "0.25rem 0.4rem", fontSize: "0.7rem", background: "var(--panel-bg)", color: "var(--text-primary)", border: "1px solid var(--border-color)", borderRadius: "0.25rem" }}
                                     >
                                       {coopDeptOptions}
                                     </select>
@@ -2258,7 +2258,7 @@ export default function PDCAManager({
                                       className="user-selector"
                                       value={inputCoopDept2}
                                       onChange={(e) => setInputCoopDept2(e.target.value)}
-                                      style={{ width: "100%", padding: "0.25rem 0.4rem", fontSize: "0.75rem", background: "var(--panel-bg)", color: "var(--text-primary)", border: "1px solid var(--border-color)", borderRadius: "0.25rem" }}
+                                      style={{ width: "100%", padding: "0.25rem 0.4rem", fontSize: "0.7rem", background: "var(--panel-bg)", color: "var(--text-primary)", border: "1px solid var(--border-color)", borderRadius: "0.25rem" }}
                                     >
                                       {coopDeptOptions}
                                     </select>
