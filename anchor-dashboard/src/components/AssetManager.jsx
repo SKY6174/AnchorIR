@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "../supabaseClient";
-import { Plus, Trash2, Edit2, Calendar, Clipboard, CheckCircle, AlertTriangle, Search, Home, Laptop, Check, Clock, TrendingUp, Upload, Download } from "lucide-react";
+import { Plus, Trash2, Edit2, Calendar, Clipboard, CheckCircle, AlertTriangle, Search, Home, Laptop, Check, Clock, TrendingUp, Upload, Download, X } from "lucide-react";
 import * as XLSX from "xlsx";
 
 export default function AssetManager({ currentRole, currentUser, activeSubTab, onChangeSubTab, darkMode, selectedYear }) {
@@ -2132,77 +2132,89 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
       {isResModalOpen && (
         <div style={{
           position: "fixed",
-          top: 0, left: 0, right: 0, bottom: 0,
-          background: "rgba(0, 0, 0, 0.75)",
+          top: 0, left: 0, width: "100vw", height: "100vh",
+          background: "rgba(0,0,0,0.6)",
+          zIndex: 9999,
           display: "flex",
-          alignItems: "center",
           justifyContent: "center",
-          zIndex: 999
+          alignItems: "center",
+          overflowY: "auto",
+          padding: "2rem 1rem"
         }}>
           <div style={{
-            background: "var(--modal-bg, #1e293b)",
+            background: "var(--modal-bg)",
             border: "1px solid var(--border-color)",
-            borderRadius: "10px",
-            width: "380px",
-            padding: "1.25rem",
-            boxShadow: "0 8px 32px rgba(0,0,0,0.5)"
+            borderRadius: "0.75rem",
+            width: "100%",
+            maxWidth: "450px",
+            maxHeight: "85vh",
+            display: "flex",
+            flexDirection: "column",
+            color: "var(--text-primary)",
+            boxShadow: "0 20px 25px -5px rgba(0,0,0,0.3)",
+            margin: "auto"
           }}>
-            <h3 style={{ fontSize: "0.9rem", fontWeight: "700", marginBottom: "0.85rem", color: "#a78bfa" }}>
-              📅 공간 사용 예약 신청
-            </h3>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "0.85rem 1.25rem", borderBottom: "1px solid var(--border-color)", flexShrink: 0 }}>
+              <h3 style={{ fontSize: "1.1rem", fontWeight: "800", display: "flex", alignItems: "center", gap: "0.4rem" }}>
+                📅 공간 사용 예약 신청
+              </h3>
+              <button type="button" onClick={() => setIsResModalOpen(false)} style={{ background: "none", border: "none", color: "#a1a1aa", cursor: "pointer" }}>
+                <X size={18} />
+              </button>
+            </div>
 
-            <form onSubmit={handleAddReservation} style={{ display: "flex", flexDirection: "column", gap: "0.7rem" }}>
+            <form onSubmit={handleAddReservation} style={{ padding: "1.25rem", display: "flex", flexDirection: "column", gap: "0.8rem", flex: 1, overflowY: "auto" }}>
               <div>
-                <label style={{ display: "block", fontSize: "0.75rem", color: "var(--text-secondary)", marginBottom: "0.2rem" }}>예약 대상 공간</label>
+                <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem", fontWeight: "600" }}>예약 대상 공간</label>
                 <select
                   value={resFormData.space_name}
                   onChange={(e) => setResFormData(prev => ({ ...prev, space_name: e.target.value }))}
-                  style={{ width: "100%", padding: "0.45rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "4px", color: "var(--text-primary)", fontSize: "0.75rem" }}
+                  className="form-select"
                 >
                   {SPACES.map(s => <option key={s} value={s}>{s}</option>)}
                 </select>
               </div>
 
               <div>
-                <label style={{ display: "block", fontSize: "0.75rem", color: "var(--text-secondary)", marginBottom: "0.2rem" }}>예약일자</label>
+                <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem", fontWeight: "600" }}>예약일자</label>
                 <input
                   type="date"
                   value={resFormData.reserved_date}
                   onChange={(e) => setResFormData(prev => ({ ...prev, reserved_date: e.target.value }))}
                   required
-                  style={{ width: "100%", padding: "0.45rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "4px", color: "var(--text-primary)", fontSize: "0.75rem" }}
+                  className="form-input"
                 />
               </div>
 
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem" }}>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem" }}>
                 <div>
-                  <label style={{ display: "block", fontSize: "0.75rem", color: "var(--text-secondary)", marginBottom: "0.2rem" }}>시작 시간</label>
+                  <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem", fontWeight: "600" }}>시작 시간</label>
                   <input
                     type="time"
                     value={resFormData.start_time}
                     onChange={(e) => setResFormData(prev => ({ ...prev, start_time: e.target.value }))}
                     required
-                    style={{ width: "100%", padding: "0.45rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "4px", color: "var(--text-primary)", fontSize: "0.75rem" }}
+                    className="form-input"
                   />
                 </div>
                 <div>
-                  <label style={{ display: "block", fontSize: "0.75rem", color: "var(--text-secondary)", marginBottom: "0.2rem" }}>종료 시간</label>
+                  <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem", fontWeight: "600" }}>종료 시간</label>
                   <input
                     type="time"
                     value={resFormData.end_time}
                     onChange={(e) => setResFormData(prev => ({ ...prev, end_time: e.target.value }))}
                     required
-                    style={{ width: "100%", padding: "0.45rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "4px", color: "var(--text-primary)", fontSize: "0.75rem" }}
+                    className="form-input"
                   />
                 </div>
               </div>
 
               <div>
-                <label style={{ display: "block", fontSize: "0.75rem", color: "var(--text-secondary)", marginBottom: "0.2rem" }}>신청부서</label>
+                <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem", fontWeight: "600" }}>신청부서</label>
                 <select
                   value={resFormData.dept}
                   onChange={(e) => setResFormData(prev => ({ ...prev, dept: e.target.value }))}
-                  style={{ width: "100%", padding: "0.45rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "4px", color: "var(--text-primary)", fontSize: "0.75rem" }}
+                  className="form-select"
                 >
                   {["사업운영팀", "ECC센터", "ICC센터", "RCC센터", "AID-X지원센터", "울산늘봄누리센터", "신산업특화센터", "직접입력"].map(d => (
                     <option key={d} value={d}>{d === "직접입력" ? "직접입력 (사업단 외 조직)" : d}</option>
@@ -2212,20 +2224,20 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
 
               {resFormData.dept === "직접입력" && (
                 <div>
-                  <label style={{ display: "block", fontSize: "0.75rem", color: "var(--text-secondary)", marginBottom: "0.2rem" }}>신청부서 (사업단 외 조직명 직접 입력)</label>
+                  <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem", fontWeight: "600" }}>신청부서 (직접 입력)</label>
                   <input
                     type="text"
                     placeholder="예: 울산대학교 행정처, OO협회"
                     value={resFormData.custom_dept}
                     onChange={(e) => setResFormData(prev => ({ ...prev, custom_dept: e.target.value }))}
                     required
-                    style={{ width: "100%", padding: "0.45rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "4px", color: "var(--text-primary)", fontSize: "0.75rem" }}
+                    className="form-input"
                   />
                 </div>
               )}
 
               <div>
-                <label style={{ display: "block", fontSize: "0.75rem", color: "var(--text-secondary)", marginBottom: "0.2rem" }}>
+                <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem", fontWeight: "600" }}>
                   {resFormData.dept === "직접입력" ? "예약대행자 (사업단 구성원)" : "신청자 (사업단 구성원)"}
                 </label>
                 <input
@@ -2234,47 +2246,49 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
                   value={resFormData.reserver_name}
                   onChange={(e) => setResFormData(prev => ({ ...prev, reserver_name: e.target.value }))}
                   required
-                  style={{ width: "100%", padding: "0.45rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "4px", color: "var(--text-primary)", fontSize: "0.75rem" }}
+                  className="form-input"
                 />
               </div>
 
               {resFormData.dept === "직접입력" && (
                 <div>
-                  <label style={{ display: "block", fontSize: "0.75rem", color: "var(--text-secondary)", marginBottom: "0.2rem" }}>실제 이용자명 (외부 담당자)</label>
+                  <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem", fontWeight: "600" }}>실제 이용자명 (외부 담당자)</label>
                   <input
                     type="text"
                     placeholder="공간을 이용할 실제 외부 담당자명"
                     value={resFormData.actual_user_name}
                     onChange={(e) => setResFormData(prev => ({ ...prev, actual_user_name: e.target.value }))}
                     required
-                    style={{ width: "100%", padding: "0.45rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "4px", color: "var(--text-primary)", fontSize: "0.75rem" }}
+                    className="form-input"
                   />
                 </div>
               )}
 
               <div>
-                <label style={{ display: "block", fontSize: "0.75rem", color: "var(--text-secondary)", marginBottom: "0.2rem" }}>사용 목적</label>
+                <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem", fontWeight: "600" }}>사용 목적</label>
                 <input
                   type="text"
                   placeholder="예: 지산학 워크숍 개최 등"
                   value={resFormData.purpose}
                   onChange={(e) => setResFormData(prev => ({ ...prev, purpose: e.target.value }))}
-                  style={{ width: "100%", padding: "0.45rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "4px", color: "var(--text-primary)", fontSize: "0.75rem" }}
+                  className="form-input"
                 />
               </div>
 
-              <div style={{ display: "flex", gap: "0.5rem", marginTop: "0.5rem" }}>
+              <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.5rem", borderTop: "1px solid var(--border-color)", paddingTop: "0.85rem", marginTop: "0.5rem" }}>
                 <button
                   type="button"
+                  className="btn-secondary"
                   onClick={() => setIsResModalOpen(false)}
-                  style={{ flex: 1, padding: "0.45rem", background: "rgba(255,255,255,0.06)", border: "none", color: "var(--text-secondary)", borderRadius: "4px", fontSize: "0.75rem", cursor: "pointer" }}
+                  style={{ padding: "0.5rem 1rem", fontSize: "0.75rem" }}
                 >
                   취소
                 </button>
                 <button
                   type="submit"
+                  className="btn-primary"
                   disabled={loading}
-                  style={{ flex: 1, padding: "0.45rem", background: "var(--accent-color)", border: "none", color: "white", borderRadius: "4px", fontSize: "0.75rem", fontWeight: "700", cursor: "pointer" }}
+                  style={{ padding: "0.5rem 1rem", fontSize: "0.75rem" }}
                 >
                   {loading ? "등록 중..." : "승인요청"}
                 </button>
@@ -2377,29 +2391,41 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
       {isEquipModalOpen && (
         <div style={{
           position: "fixed",
-          top: 0, left: 0, right: 0, bottom: 0,
-          background: "rgba(0, 0, 0, 0.75)",
+          top: 0, left: 0, width: "100vw", height: "100vh",
+          background: "rgba(0,0,0,0.6)",
+          zIndex: 9999,
           display: "flex",
-          alignItems: "center",
           justifyContent: "center",
-          zIndex: 999
+          alignItems: "center",
+          overflowY: "auto",
+          padding: "2rem 1rem"
         }}>
           <div style={{
-            background: "var(--modal-bg, #1e293b)",
+            background: "var(--modal-bg)",
             border: "1px solid var(--border-color)",
-            borderRadius: "10px",
-            width: "380px",
-            padding: "1.25rem",
-            boxShadow: "0 8px 32px rgba(0,0,0,0.5)"
+            borderRadius: "0.75rem",
+            width: "100%",
+            maxWidth: "450px",
+            maxHeight: "85vh",
+            display: "flex",
+            flexDirection: "column",
+            color: "var(--text-primary)",
+            boxShadow: "0 20px 25px -5px rgba(0,0,0,0.3)",
+            margin: "auto"
           }}>
-            <h3 style={{ fontSize: "0.9rem", fontWeight: "700", marginBottom: "0.85rem", color: "#34D399" }}>
-              {editingEquipId ? "📝 기자재 정보 수정" : "📦 구매 완료 기자재 불러오기"}
-            </h3>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "0.85rem 1.25rem", borderBottom: "1px solid var(--border-color)", flexShrink: 0 }}>
+              <h3 style={{ fontSize: "1.1rem", fontWeight: "800", display: "flex", alignItems: "center", gap: "0.4rem" }}>
+                📦 {editingEquipId ? "기자재 정보 수정" : "구매 완료 기자재 불러오기"}
+              </h3>
+              <button type="button" onClick={() => setIsEquipModalOpen(false)} style={{ background: "none", border: "none", color: "#a1a1aa", cursor: "pointer" }}>
+                <X size={18} />
+              </button>
+            </div>
 
-            <form onSubmit={handleSaveEquipment} style={{ display: "flex", flexDirection: "column", gap: "0.7rem" }}>
+            <form onSubmit={handleSaveEquipment} style={{ padding: "1.25rem", display: "flex", flexDirection: "column", gap: "0.8rem", flex: 1, overflowY: "auto" }}>
               {!editingEquipId && (
                 <div>
-                  <label style={{ display: "block", fontSize: "0.75rem", color: "#60A5FA", fontWeight: "800", marginBottom: "0.25rem" }}>
+                  <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem", fontWeight: "600" }}>
                     📥 구매 완료 기자재 선택 (불러오기)
                   </label>
                   <select
@@ -2419,7 +2445,7 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
                         });
                       }
                     }}
-                    style={{ width: "100%", padding: "0.45rem", background: "rgba(0,0,0,0.3)", border: "1px solid var(--accent-color)", borderRadius: "4px", color: "white", fontSize: "0.75rem" }}
+                    className="form-select"
                   >
                     <option value="">-- 구매 완료 내역에서 선택 (불러오기) --</option>
                     {completedProcuredItems.map(item => (
@@ -2428,14 +2454,14 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
                       </option>
                     ))}
                   </select>
-                  <p style={{ margin: "0.2rem 0 0.5rem 0", fontSize: "0.62rem", color: "var(--text-secondary)" }}>
+                  <p style={{ margin: "0.2rem 0 0.5rem 0", fontSize: "0.65rem", color: "var(--text-secondary)" }}>
                     * 기획/구매 단계에서 검수 완료 처리된 품목들만 조회됩니다.
                   </p>
                 </div>
               )}
 
               <div>
-                <label style={{ display: "block", fontSize: "0.75rem", color: "var(--text-secondary)", marginBottom: "0.2rem" }}>기자재 품명</label>
+                <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem", fontWeight: "600" }}>기자재 품명</label>
                 <input
                   type="text"
                   placeholder="위 드롭다운에서 기자재를 선택하세요"
@@ -2443,12 +2469,13 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
                   onChange={(e) => setEquipFormData(prev => ({ ...prev, item_name: e.target.value }))}
                   required
                   disabled={!editingEquipId}
-                  style={{ width: "100%", padding: "0.45rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "4px", color: "var(--text-primary)", fontSize: "0.75rem", opacity: !editingEquipId ? 0.6 : 1 }}
+                  className="form-input"
+                  style={{ opacity: !editingEquipId ? 0.6 : 1 }}
                 />
               </div>
 
               <div>
-                <label style={{ display: "block", fontSize: "0.75rem", color: "var(--text-secondary)", marginBottom: "0.2rem" }}>물품(기자재)번호</label>
+                <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem", fontWeight: "600" }}>물품(기자재)번호</label>
                 <input
                   type="text"
                   placeholder="기자재 선택 시 자동 입력됩니다"
@@ -2456,40 +2483,41 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
                   onChange={(e) => setEquipFormData(prev => ({ ...prev, asset_number: e.target.value }))}
                   required
                   disabled={!editingEquipId}
-                  style={{ width: "100%", padding: "0.45rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "4px", color: "var(--text-primary)", fontSize: "0.75rem", opacity: !editingEquipId ? 0.6 : 1 }}
+                  className="form-input"
+                  style={{ opacity: !editingEquipId ? 0.6 : 1 }}
                 />
               </div>
 
               <div>
-                <label style={{ display: "block", fontSize: "0.75rem", color: "var(--text-secondary)", marginBottom: "0.2rem" }}>바코드</label>
+                <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem", fontWeight: "600" }}>바코드</label>
                 <input
                   type="text"
                   placeholder="예: 8809123456789"
                   value={equipFormData.barcode_id || ""}
                   onChange={(e) => setEquipFormData(prev => ({ ...prev, barcode_id: e.target.value }))}
                   required
-                  style={{ width: "100%", padding: "0.45rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "4px", color: "var(--text-primary)", fontSize: "0.75rem" }}
+                  className="form-input"
                 />
               </div>
 
               <div>
-                <label style={{ display: "block", fontSize: "0.75rem", color: "var(--text-secondary)", marginBottom: "0.2rem" }}>재고(보관) 위치</label>
+                <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem", fontWeight: "600" }}>재고(보관) 위치</label>
                 <input
                   type="text"
                   placeholder="예: 동부캠퍼스 1공학관 204호 AIDX 교육실"
                   value={equipFormData.stock_location}
                   onChange={(e) => setEquipFormData(prev => ({ ...prev, stock_location: e.target.value }))}
                   required
-                  style={{ width: "100%", padding: "0.45rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "4px", color: "var(--text-primary)", fontSize: "0.75rem" }}
+                  className="form-input"
                 />
               </div>
 
               <div>
-                <label style={{ display: "block", fontSize: "0.75rem", color: "var(--text-secondary)", marginBottom: "0.2rem" }}>자산 구분</label>
+                <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem", fontWeight: "600" }}>자산 구분</label>
                 <select
                   value={equipFormData.category}
                   onChange={(e) => setEquipFormData(prev => ({ ...prev, category: e.target.value }))}
-                  style={{ width: "100%", padding: "0.45rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "4px", color: "var(--text-primary)", fontSize: "0.75rem" }}
+                  className="form-select"
                 >
                   <option value="ai_dx">AI∙DX 자산</option>
                   <option value="other">기타 자산</option>
@@ -2497,39 +2525,41 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
               </div>
 
               <div>
-                <label style={{ display: "block", fontSize: "0.75rem", color: "var(--text-secondary)", marginBottom: "0.2rem" }}>사용 분야(목적)</label>
+                <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem", fontWeight: "600" }}>사용 분야(목적)</label>
                 <select
                   value={equipFormData.usage_type}
                   onChange={(e) => setEquipFormData(prev => ({ ...prev, usage_type: e.target.value }))}
-                  style={{ width: "100%", padding: "0.45rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "4px", color: "var(--text-primary)", fontSize: "0.75rem" }}
+                  className="form-select"
                 >
                   {USAGE_TYPES.map(u => <option key={u} value={u}>{u}</option>)}
                 </select>
               </div>
 
               <div>
-                <label style={{ display: "block", fontSize: "0.75rem", color: "var(--text-secondary)", marginBottom: "0.2rem" }}>비고 및 특이사항</label>
+                <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem", fontWeight: "600" }}>비고 및 특이사항</label>
                 <input
                   type="text"
                   placeholder="예: 2026 라이즈 특화 1차 도입분"
                   value={equipFormData.memo}
                   onChange={(e) => setEquipFormData(prev => ({ ...prev, memo: e.target.value }))}
-                  style={{ width: "100%", padding: "0.45rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "4px", color: "var(--text-primary)", fontSize: "0.75rem" }}
+                  className="form-input"
                 />
               </div>
 
-              <div style={{ display: "flex", gap: "0.5rem", marginTop: "0.5rem" }}>
+              <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.5rem", borderTop: "1px solid var(--border-color)", paddingTop: "0.85rem", marginTop: "0.5rem" }}>
                 <button
                   type="button"
+                  className="btn-secondary"
                   onClick={() => setIsEquipModalOpen(false)}
-                  style={{ flex: 1, padding: "0.45rem", background: "rgba(255,255,255,0.06)", border: "none", color: "var(--text-secondary)", borderRadius: "4px", fontSize: "0.75rem", cursor: "pointer" }}
+                  style={{ padding: "0.5rem 1rem", fontSize: "0.75rem" }}
                 >
                   취소
                 </button>
                 <button
                   type="submit"
+                  className="btn-primary"
                   disabled={loading}
-                  style={{ flex: 1, padding: "0.45rem", background: "#10B981", border: "none", color: "white", borderRadius: "4px", fontSize: "0.75rem", fontWeight: "700", cursor: "pointer" }}
+                  style={{ padding: "0.5rem 1rem", fontSize: "0.75rem" }}
                 >
                   {loading ? "저장 중..." : "정보 저장"}
                 </button>
