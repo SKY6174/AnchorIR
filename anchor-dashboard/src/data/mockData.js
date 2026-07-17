@@ -4236,8 +4236,10 @@ export const Y1_UNIT_META = {
 // 💡 [교육용 한글 주석] 각 단위과제의 2차년도사업계획서 PDF 공식 예산 기준 초안에 맞추어 
 // 2차년도 예산(budget_2026)의 국비(budget_national)와 시비(budget_city) 배정액을 정밀 주입합니다.
 initialProjectsData.forEach((strategy) => {
-  strategy.units.forEach((unit) => {
-    unit.programs.forEach((prog) => {
+  if (strategy.units && Array.isArray(strategy.units)) {
+    strategy.units.forEach((unit) => {
+      if (unit.programs && Array.isArray(unit.programs)) {
+        unit.programs.forEach((prog) => {
       if (prog.budget_2026 !== undefined) {
         const total = prog.budget_2026;
 
@@ -4531,7 +4533,9 @@ initialProjectsData.forEach((strategy) => {
         };
       }
     });
+  }
   });
+}
 });
 
 
