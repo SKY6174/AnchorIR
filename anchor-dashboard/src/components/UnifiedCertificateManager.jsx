@@ -561,7 +561,11 @@ export default function UnifiedCertificateManager({
                   </td>
                   <td style={{ textAlign: "center", whiteSpace: "nowrap" }}>{formatDateString(c.issueDate)}</td>
                   <td style={{ whiteSpace: "nowrap", textAlign: "center" }}>{c.projectGroup}</td>
-                  <td style={{ whiteSpace: "nowrap", textAlign: "center" }}>{c.issuer}</td>
+                  <td style={{ whiteSpace: "nowrap", textAlign: "center", lineHeight: "1.3" }}>
+                    {c.issuer ? String(c.issuer).split(/[\s,]+/).filter(Boolean).map((part, i) => (
+                      <div key={i}>{part}</div>
+                    )) : ""}
+                  </td>
                   <td style={{ wordBreak: "keep-all", lineHeight: "1.4", textAlign: "center" }}>{c.content}</td>
                   <td style={{ whiteSpace: "nowrap", fontSize: "0.8rem", color: "var(--text-secondary)", textAlign: "center" }}>{c.managerDept}</td>
                   <td style={{ whiteSpace: "nowrap", fontWeight: "600", textAlign: "center" }}>{c.managerName}</td>
