@@ -24,7 +24,7 @@ import ScheduleManager from "./components/ScheduleManager";
 import AssetManager from "./components/AssetManager";
 import UnitSystemView from "./components/UnitSystemView";
 import { initialProjectsData, userRoles, YEAR_1_PROGRAMS, Y1_UNIT_META } from "./data/mockData";
-import { Sun, Moon, LogOut, HelpCircle, ArrowUpRight, Lock as LockIcon, Info, Clock, Edit2 } from "lucide-react";
+import { Sun, Moon, LogOut, HelpCircle, ArrowUpRight, Lock as LockIcon, Info, Clock, Edit2, FileText, Upload, Plus, Download } from "lucide-react";
 import { supabase } from "./supabaseClient";
 import CryptoJS from "crypto-js";
 import * as XLSX from "xlsx";
@@ -2691,6 +2691,175 @@ export default function App() {
       endDate: m.endDate || null,
       status: m.status === "재직중" ? "참여중" : (m.status === "퇴직" ? "미참여" : (m.status || "참여중"))
     };
+  };
+
+  // 💡 [교육용 한글 주석] 구성원 업로드용 엑셀 서식 템플릿 다운로드 핸들러
+  const handleDownloadMemberTemplate = () => {
+    const templateData = [
+      {
+        "소속 부서": "ECC센터",
+        "성명": "홍길동",
+        "직책": "연구원",
+        "직급/직위": "연구원",
+        "이메일": "hong@ulsan.ac.kr",
+        "교내 전화": "052-230-0114",
+        "휴대전화": "010-1234-5678",
+        "시작일": "2026-03-01",
+        "종료일": "",
+        "참여 여부": "참여중"
+      }
+    ];
+    const fileName = `UC_RISE_구성원_업로드_서식.xlsx`;
+
+    try {
+      const ws = XLSX.utils.json_to_sheet(templateData);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "구성원템플릿");
+      ws["!cols"] = Array(10).fill({ wch: 20 });
+
+      const wbout = XLSX.write(wb, { bookType: "xlsx", type: "base64" });
+      const a = document.createElement("a");
+      a.href = `data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,${wbout}`;
+      a.download = fileName;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    } catch (err) {
+      console.error("Member template export error:", err);
+      alert("템플릿 생성 중 오류가 발생했습니다: " + err.message);
+    }
+  };
+
+  // 💡 [교육용 한글 주석] 구성원 주소록 엑셀 데이터 파일 다운로드 (내보내기) 핸들러
+  const handleExportMembersExcel = () => {
+    const excelData = members.map((m) => ({
+      "소속 부서": m.dept || "-",
+      "성명": m.name || "",
+      "직책": m.role || "연구원",
+      "직급/직위": m.grade || "연구원",
+      "이메일": m.email || "",
+      "교내 전화": m.phoneOffice || "",
+      "휴대전화": m.phoneMobile || "",
+      "시작일": m.startDate || m.hireDate || "2026-03-01",
+      "종료일": m.endDate || "",
+      "참여 여부": m.status || "참여중"
+    }));
+    const sheetName = "RISE사업단 구성원 주소록";
+    const fileName = `Anchor_RISE_사업단_구성원_목록.xlsx`;
+
+    try {
+      const worksheet = XLSX.utils.json_to_sheet(excelData);
+      worksheet["!cols"] = Array(10).fill({ wch: 20 });
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, sheetName);
+      const wbout = XLSX.write(workbook, { bookType: "xlsx", type: "base64" });
+
+      const a = document.createElement("a");
+      a.href = `data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,${wbout}`;
+      a.download = fileName;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    } catch (err) {
+      console.error("Members Excel export error:", err);
+      alert("엑셀 내보내기 중 오류가 발생했습니다: " + err.message);
+    }
+  };
+
+  // 💡 [교육용 한글 주석] 엑셀 파일로부터 구성원 데이터들을 파싱하여 Supabase DB에 일괄 저장(가져오기)하는 핸들러
+  const handleMemberExcelImport = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = async (evt) => {
+      try {
+        const binaryStr = evt.target.result;
+        const workbook = XLSX.read(binaryStr, { type: "binary" });
+        const sheetName = workbook.SheetNames[0];
+        const ws = workbook.Sheets[sheetName];
+        const rawRows = XLSX.utils.sheet_to_json(ws);
+
+        if (rawRows.length === 0) {
+          alert("엑셀 파일에 데이터가 존재하지 않습니다.");
+          return;
+        }
+
+        let importedCount = 0;
+        const uploadPayloads = [];
+
+        rawRows.forEach((row, index) => {
+          const deptVal = row["소속 부서"];
+          const nameVal = row["성명"];
+          const roleVal = row["직책"];
+          const gradeVal = row["직급/직위"];
+          const emailVal = row["이메일"];
+          const phoneOfficeVal = row["교내 전화"];
+          const phoneMobileVal = row["휴대전화"];
+          const startDateVal = row["시작일"];
+          const endDateVal = row["종료일"];
+          const statusVal = row["참여 여부"];
+
+          if (!nameVal || !emailVal) {
+            console.warn(`[Row ${index + 2}] 성명과 이메일 누락으로 제외됨.`);
+            return;
+          }
+
+          // DB 규격에 맞춰 정제 매핑
+          const payload = {
+            id: `m-${Date.now()}-${index}`,
+            name: String(nameVal).trim(),
+            dept: deptVal ? String(deptVal).trim() : "ECC센터",
+            role: roleVal ? String(roleVal).trim() : "연구원",
+            grade: gradeVal ? String(gradeVal).trim() : "연구원",
+            email: String(emailVal).trim(),
+            phoneOffice: phoneOfficeVal ? String(phoneOfficeVal).trim() : null,
+            phoneMobile: phoneMobileVal ? String(phoneMobileVal).trim() : null,
+            startDate: startDateVal ? String(startDateVal).trim() : "2026-03-01",
+            endDate: endDateVal ? String(endDateVal).trim() : null,
+            status: statusVal ? String(statusVal).trim() : "참여중"
+          };
+
+          uploadPayloads.push(payload);
+          importedCount++;
+        });
+
+        if (uploadPayloads.length === 0) {
+          alert("업로드할 유효한 구성원 데이터가 없습니다. (성명, 이메일 필수)");
+          return;
+        }
+
+        // Supabase DB에 일괄 Upsert 처리
+        const sanitizedList = uploadPayloads.map(p => sanitizeMemberForDb(p));
+        const { error } = await supabase
+          .from("rise_members")
+          .upsert(sanitizedList);
+
+        if (error) throw error;
+
+        // 프론트엔드 상태값 갱신
+        setMembers(prev => {
+          const updated = [...prev];
+          sanitizedList.forEach(newP => {
+            const idx = updated.findIndex(m => m.email === newP.email);
+            if (idx !== -1) {
+              updated[idx] = { ...updated[idx], ...newP };
+            } else {
+              updated.push(newP);
+            }
+          });
+          return updated;
+        });
+
+        alert(`총 ${importedCount}명의 구성원 데이터를 성공적으로 업로드 및 동기화했습니다!`);
+      } catch (err) {
+        console.error("Excel import error:", err);
+        alert(`엑셀 파일 처리 및 DB 업로드 중 오류가 발생했습니다: ${err.message || err}`);
+      }
+    };
+    reader.readAsBinaryString(file);
+    // 동일한 파일 재업로드 이벤트를 타도록 초기화
+    e.target.value = "";
   };
 
   // Supabase 원격 rise_members 테이블에서 구성원 주소록 실시간 동기화 및 자가 치유 시딩 로드
@@ -8828,12 +8997,62 @@ export default function App() {
 
             {/* 본문 콘텐츠만 카드 블록 내부로 래핑 */}
             <div className="glass-card" style={{ padding: "1.25rem", position: "relative" }}>
-              {/* 구성원 추가 버튼 영역 (타이틀/설명 삭제) */}
+              {/* 구성원 추가 및 엑셀 업로드/다운로드 툴바 영역 (협약서와 100% 동일한 버튼 디자인 및 둥글기 적용) */}
               {mgmtSubTab === "members" && currentRole.rank <= 2 && (
-                <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "1.2rem" }}>
+                <div style={{ display: "flex", justifyContent: "flex-end", alignItems: "center", gap: "0.4rem", marginBottom: "1.2rem" }}>
+                  {/* 엑셀 서식 다운로드 */}
+                  <button
+                    onClick={handleDownloadMemberTemplate}
+                    className="action-btn download-btn"
+                    style={{
+                      background: "var(--bg-tertiary)",
+                      cursor: "pointer"
+                    }}
+                  >
+                    <FileText size={16} /> 엑셀 서식
+                  </button>
+
+                  {/* 엑셀 업로드 */}
+                  <label
+                    className="action-btn upload-btn"
+                    style={{
+                      cursor: "pointer"
+                    }}
+                  >
+                    <Upload size={16} /> 엑셀 업로드
+                    <input
+                      type="file"
+                      accept=".xlsx, .xls"
+                      onChange={handleMemberExcelImport}
+                      style={{ display: "none" }}
+                    />
+                  </label>
+
+                  {/* 엑셀 다운로드 */}
+                  <button
+                    onClick={handleExportMembersExcel}
+                    className="action-btn download-btn"
+                    style={{
+                      background: "var(--bg-tertiary)",
+                      cursor: "pointer"
+                    }}
+                  >
+                    <Download size={16} /> 엑셀 다운로드
+                  </button>
+
+                  {/* 구성원 추가 (신규 등록 버튼 스타일과 100% 동기화) */}
                   <button
                     className="btn-primary"
-                    style={{ display: "flex", alignItems: "center", gap: "0.3rem", borderRadius: "0.4rem", padding: "0.5rem 1rem", fontSize: "0.8rem", fontWeight: "700" }}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "0.3rem",
+                      borderRadius: "0.4rem",
+                      padding: "0.5rem 1rem",
+                      fontSize: "0.8rem",
+                      fontWeight: "700",
+                      cursor: "pointer"
+                    }}
                     onClick={() => {
                       setEditingMember({
                         id: "",
@@ -8853,7 +9072,7 @@ export default function App() {
                       setIsMemberModalOpen(true);
                     }}
                   >
-                    구성원 추가
+                    <Plus size={16} /> 구성원 추가
                   </button>
                 </div>
               )}
