@@ -981,9 +981,9 @@ export default function AgreementManager({
             <label
               className="action-btn"
               style={{
-                background: darkMode ? "rgba(16, 185, 129, 0.15)" : "#ecfdf5",
-                color: darkMode ? "#34d399" : "#059669",
-                border: darkMode ? "1px solid rgba(16, 185, 129, 0.3)" : "1px solid #10b981",
+                background: !isLight ? "rgba(16, 185, 129, 0.15)" : "#ecfdf5",
+                color: !isLight ? "#34d399" : "#059669",
+                border: !isLight ? "1px solid rgba(16, 185, 129, 0.3)" : "1px solid #10b981",
                 cursor: "pointer"
               }}
             >
