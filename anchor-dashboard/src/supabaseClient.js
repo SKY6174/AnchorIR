@@ -44,7 +44,13 @@ const createDummyClient = (initError) => {
 let supabaseInstance;
 try {
   if (supabaseUrl && supabaseAnonKey) {
-    supabaseInstance = createClient(supabaseUrl, supabaseAnonKey);
+    supabaseInstance = createClient(supabaseUrl, supabaseAnonKey, {
+      auth: {
+        persistSession: false,     // 💡 브라우저 로컬스토리지에 로그인 세션을 보관하지 않음
+        autoRefreshToken: false,   // 💡 만료된 토큰의 백그라운드 자동 리프레시를 차단하여 콘솔 400 에러 원천 방어
+        detectSessionInUrl: false  // 💡 URL 내 세션 해시 감지 방지
+      }
+    });
   } else {
     const errorMsg = new Error('Supabase 환경 변수가 누락되었습니다.');
     supabaseInstance = createDummyClient(errorMsg);
