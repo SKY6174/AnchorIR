@@ -768,14 +768,6 @@ function formatDataToMultiYear(data) {
             });
           } else {
             let targetCategory = "교육∙연구 프로그램 개발∙운영비"; // 디폴트
-            if (prog.id.startsWith("X0-S1T1-")) targetCategory = "인건비";
-            else if (prog.id.startsWith("X0-S1T2-")) targetCategory = "교육∙연구 환경개선비";
-            else if (prog.id.startsWith("X0-S1T3-")) targetCategory = "성과 활용∙확산 지원비";
-            else if (prog.id.startsWith("X0-S1T4-")) targetCategory = "그 밖의 사업운영경비";
-            else if (prog.id.startsWith("X0-S1T5-")) targetCategory = "간접비";
-            else if (prog.id === "D2-S1T2-1" || prog.id === "D2-S1T2-2") targetCategory = "실험∙실습장비 및 기자재 구입∙운영비";
-            else if (prog.id === "D2-S1T1-1") targetCategory = "성과 활용∙확산 지원비";
-            else if (prog.id === "D2-S2T10-1") targetCategory = "교육∙연구 환경개선비";
 
             progYears[yr].budget_categories = standardCategories.map((catName) => {
               const isMatch = catName === targetCategory;
