@@ -2387,7 +2387,7 @@ export default function App() {
   const [projects, setProjects] = useState(() => {
     // 💡 [깜빡임 방지 최우선 처리] 현재 로컬 선택 연도별 캐시 데이터를 최우선적으로 선제 로드하여 0초 반응을 제공합니다.
     const savedYear = localStorage.getItem("anchor_selected_year") || "2";
-    const cached = localStorage.getItem(`anchor_cache_proj_y${savedYear}`) || localStorage.getItem("anchor_projects_data_v55");
+    const cached = localStorage.getItem(`anchor_cache_proj_y${savedYear}_v56`) || localStorage.getItem("anchor_projects_data_v56");
     const multiYearInitialData = migrateProgramIds(formatDataToMultiYear(initialProjectsData));
     if (cached) {
       try {
@@ -3649,7 +3649,7 @@ export default function App() {
             cachedMeet,
             cachedPress
           ] = await Promise.all([
-            getIndexedDBCache(`anchor_cache_proj_y${selectedYear}`),
+            getIndexedDBCache(`anchor_cache_proj_y${selectedYear}_v56`),
             getIndexedDBCache("anchor_cache_agreements_all"),
             getIndexedDBCache("anchor_cache_unified_certificates_all"),
             getIndexedDBCache("anchor_cache_scholarships_all"),
@@ -4039,7 +4039,7 @@ export default function App() {
           // 💡 [안전 가드] 원격 Supabase DB로부터 최신 프로젝트 데이터를 성공적으로 가져왔으므로, 레퍼런스(fetchedProjectsRef.current)에 동기화해 둡니다.
           fetchedProjectsRef.current = JSON.stringify(getCleanProjectsForStorage(mergedProjData));
 
-          safeSetLocalStorage(`anchor_cache_proj_y${selectedYear}`, JSON.stringify(getCleanProjectsForStorage(mergedProjData)), selectedYear);
+          safeSetLocalStorage(`anchor_cache_proj_y${selectedYear}_v56`, JSON.stringify(getCleanProjectsForStorage(mergedProjData)), selectedYear);
           if (currentUser && currentRole?.id !== "GUEST") {
             await supabase.from("projects_data").upsert({ year: selectedYear, data: mergedProjData }, { onConflict: "year" });
           }
@@ -4049,7 +4049,7 @@ export default function App() {
           // 💡 [안전 가드] 원격 DB에 데이터가 없어 최초 초기 템플릿을 사용하는 경우에도 레퍼런스에 동기화해 둡니다.
           fetchedProjectsRef.current = JSON.stringify(getCleanProjectsForStorage(multiYearInitialData));
 
-          safeSetLocalStorage(`anchor_cache_proj_y${selectedYear}`, JSON.stringify(getCleanProjectsForStorage(multiYearInitialData)), selectedYear);
+          safeSetLocalStorage(`anchor_cache_proj_y${selectedYear}_v56`, JSON.stringify(getCleanProjectsForStorage(multiYearInitialData)), selectedYear);
           if (currentUser && currentRole?.id !== "GUEST") {
             await supabase.from("projects_data").upsert({ year: selectedYear, data: multiYearInitialData }, { onConflict: "year" });
           }
@@ -4605,11 +4605,11 @@ export default function App() {
     // 위 두 경우(최초 페이지 마운트, 연도 전환 직후, 혹은 단순한 화면 기동)에는 Supabase DB로의 불필요한 역-업로드(덮어쓰기 오염)를 스킵합니다.
     const currentCleanStr = JSON.stringify(getCleanProjectsForStorage(projects));
     if (!fetchedProjectsRef.current || fetchedProjectsRef.current === currentCleanStr) {
-      safeSetLocalStorage(`anchor_cache_proj_y${selectedYear}`, currentCleanStr, selectedYear);
+      safeSetLocalStorage(`anchor_cache_proj_y${selectedYear}_v56`, currentCleanStr, selectedYear);
       return;
     }
 
-    safeSetLocalStorage(`anchor_cache_proj_y${selectedYear}`, currentCleanStr, selectedYear);
+    safeSetLocalStorage(`anchor_cache_proj_y${selectedYear}_v56`, currentCleanStr, selectedYear);
     setSyncStatus("syncing");
     const timer = setTimeout(async () => {
       try {
@@ -6516,21 +6516,21 @@ export default function App() {
   // projects 상태 변경 시 localStorage 자동 기입 (새로고침 휘발 방지 우회책)
   useEffect(() => {
     try {
-      localStorage.setItem("anchor_projects_data_v55", JSON.stringify(getCleanProjectsForStorage(projects)));
+      localStorage.setItem("anchor_projects_data_v56", JSON.stringify(getCleanProjectsForStorage(projects)));
     } catch (e) {
       const isQuotaError = e.name === "QuotaExceededError" || e.code === 22 || e.number === -2147024882;
       if (isQuotaError) {
         console.warn("로컬 스토리지 공간이 부족합니다. 이전 구버전 캐시를 청소하고 재시도합니다...");
         try {
           Object.keys(localStorage).forEach((key) => {
-            if (key.startsWith("anchor_projects_data_") && key !== "anchor_projects_data_v55") {
+            if (key.startsWith("anchor_projects_data_") && key !== "anchor_projects_data_v56") {
               localStorage.removeItem(key);
             }
             if (key.startsWith("anchor_cache_proj_")) {
               localStorage.removeItem(key);
             }
           });
-          localStorage.setItem("anchor_projects_data_v55", JSON.stringify(getCleanProjectsForStorage(projects)));
+          localStorage.setItem("anchor_projects_data_v56", JSON.stringify(getCleanProjectsForStorage(projects)));
           console.log("이전 캐시 청소 및 데이터 재저장 성공");
         } catch (retryError) {
           console.error("이전 캐시 QR 청소 후에도 로컬 스토리지 기입 실패:", retryError);
