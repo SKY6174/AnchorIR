@@ -1188,30 +1188,55 @@ export default function AgreementManager({
                     <tr key={agr.id} style={{ borderBottom: "1px solid var(--border-color-dark)", background: hasInvalidDate ? "rgba(239, 68, 68, 0.05)" : "transparent" }}>
                       <td style={{ padding: "0.6rem 0.8rem", textAlign: "center" }}>{agr.date}</td>
                       <td style={{ padding: "0.6rem 0.8rem", textAlign: "center" }}>
-                        <span style={{ background: "rgba(96,165,250,0.1)", color: "#60a5fa", padding: "0.15rem 0.35rem", borderRadius: "0.25rem", fontSize: "0.65rem", fontWeight: "700" }}>{agr.center}</span>
+                        <span style={{ 
+                          background: isLight ? "#eff6ff" : "rgba(96,165,250,0.1)", 
+                          color: isLight ? "#1e40af" : "#60a5fa", 
+                          border: isLight ? "1px solid #bfdbfe" : "1px solid rgba(96,165,250,0.2)",
+                          padding: "0.15rem 0.4rem", 
+                          borderRadius: "0.25rem", 
+                          fontSize: "0.65rem", 
+                          fontWeight: "700" 
+                        }}>{agr.center}</span>
                       </td>
                       <td style={{ padding: "0.6rem 0.8rem", textAlign: "center" }}>
                         {Array.isArray(agr.organizations) ? (
                           agr.organizations.map((org, i) => (
-                            <span key={i} style={{ background: "var(--border-color)", padding: "0.15rem 0.35rem", borderRadius: "0.25rem", color: "var(--text-primary)", marginRight: "0.2rem" }}>
+                            <span key={i} style={{ 
+                              background: isLight ? "#f1f5f9" : "rgba(255, 255, 255, 0.06)", 
+                              border: isLight ? "1px solid #cbd5e1" : "1px solid rgba(255, 255, 255, 0.15)",
+                              padding: "0.15rem 0.4rem", 
+                              borderRadius: "0.25rem", 
+                              color: isLight ? "#334155" : "#e2e8f0", 
+                              fontWeight: "700",
+                              marginRight: "0.2rem",
+                              display: "inline-block"
+                            }}>
                               {typeof org === "object" ? org.name : org}
                             </span>
                           ))
                         ) : (
-                          <span style={{ background: "var(--border-color)", padding: "0.15rem 0.35rem", borderRadius: "0.25rem", color: "var(--text-primary)" }}>{agr.organizations}</span>
+                          <span style={{ 
+                            background: isLight ? "#f1f5f9" : "rgba(255, 255, 255, 0.06)", 
+                            border: isLight ? "1px solid #cbd5e1" : "1px solid rgba(255, 255, 255, 0.15)",
+                            padding: "0.15rem 0.4rem", 
+                            borderRadius: "0.25rem", 
+                            color: isLight ? "#334155" : "#e2e8f0",
+                            fontWeight: "700"
+                          }}>{agr.organizations}</span>
                         )}
                       </td>
                       <td style={{ padding: "0.6rem 0.8rem", textAlign: "left" }}>
                         <div style={{ display: "flex", flexDirection: "column", gap: "0.15rem" }}>
-                          <span style={{ color: "var(--text-secondary)" }}>🏫 UC: {agr.subjectUniversity}</span>
-                          <span style={{ color: "var(--accent-color)" }}>🤝 타기관: {agr.subjectOrganization}</span>
+                          <span style={{ color: "var(--text-secondary)", fontWeight: "500" }}>🏫 UC: {agr.subjectUniversity}</span>
+                          <span style={{ color: isLight ? "#2563eb" : "var(--accent-color)", fontWeight: "700" }}>🤝 타기관: {agr.subjectOrganization}</span>
                         </div>
                       </td>
                       <td style={{ padding: "0.6rem 0.8rem", fontWeight: "700", textAlign: "center" }}>{agr.unitId}</td>
                       <td style={{ padding: "0.6rem 0.8rem", textAlign: "center" }}>
                         <span style={{
-                          background: agr.agreementType === "프리미엄" ? "rgba(236,72,153,0.15)" : agr.agreementType === "무료" ? "rgba(59,130,246,0.15)" : "transparent",
-                          color: agr.agreementType === "프리미엄" ? "#ec4899" : agr.agreementType === "무료" ? "#3b82f6" : "var(--text-secondary)",
+                          background: agr.agreementType === "프리미엄" ? (isLight ? "#fdf2f8" : "rgba(236,72,153,0.15)") : agr.agreementType === "무료" ? (isLight ? "#eff6ff" : "rgba(59,130,246,0.15)") : "transparent",
+                          color: agr.agreementType === "프리미엄" ? "#db2777" : agr.agreementType === "무료" ? "#2563eb" : "var(--text-secondary)",
+                          border: agr.agreementType === "프리미엄" ? (isLight ? "1px solid #fbcfe8" : "none") : agr.agreementType === "무료" ? (isLight ? "1px solid #bfdbfe" : "none") : "none",
                           padding: agr.agreementType !== "-" ? "0.15rem 0.35rem" : "0",
                           borderRadius: "0.25rem",
                           fontSize: "0.65rem",
@@ -1222,7 +1247,16 @@ export default function AgreementManager({
                       </td>
                       <td style={{ padding: "0.6rem 0.8rem", textAlign: "center" }}>
                         {Array.isArray(agr.contents) && agr.contents.map((c, i) => (
-                          <span key={i} style={{ background: "rgba(52,211,153,0.1)", color: "#34d399", padding: "0.1rem 0.3rem", borderRadius: "0.2rem", fontSize: "0.65rem", marginRight: "0.2rem" }}>{c}</span>
+                          <span key={i} style={{ 
+                            background: isLight ? "#ecfdf5" : "rgba(52,211,153,0.1)", 
+                            color: isLight ? "#059669" : "#34d399", 
+                            border: isLight ? "1px solid #a7f3d0" : "1px solid rgba(52,211,153,0.2)",
+                            padding: "0.1rem 0.3rem", 
+                            borderRadius: "0.2rem", 
+                            fontSize: "0.65rem", 
+                            fontWeight: "700",
+                            marginRight: "0.2rem" 
+                          }}>{c}</span>
                         ))}
                       </td>
                       <td style={{ padding: "0.6rem 0.8rem", textAlign: "center" }}>
