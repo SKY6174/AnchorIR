@@ -7087,7 +7087,7 @@ Gemini 피드백: \n${geminiCritiqueText}
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
                     <div>
                       <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>담당 부서(센터)</label>
-                      <select name="department" value={formData.department} onChange={handleInputChange} style={{ width: "100%", padding: "0.5rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }}>
+                      <select name="department" value={formData.department} onChange={handleInputChange} className="form-select">
                         <option value="">-- 부서 선택 --</option>
                         {["ECC센터", "ICC센터", "RCC센터", "AID-X지원센터", "울산늘봄누리센터", "신산업특화센터", "사업운영팀"].map(d => (
                           <option key={d} value={d}>{d}</option>
@@ -7106,21 +7106,15 @@ Gemini 피드백: \n${geminiCritiqueText}
                             onChange={handleInputChange}
                             required
                             placeholder="예: 교육부, 울산시청 등 주관기관 입력"
-                            style={{
-                              width: "100%",
-                              padding: "0.5rem",
-                              background: "var(--input-bg)",
-                              border: "1px solid var(--accent-color)",
-                              borderRadius: "6px",
-                              color: "var(--text-primary)"
-                            }}
+                            className="form-input"
+                            style={{ border: "1px solid var(--accent-color)" }}
                           />
                         </div>
                       )}
                     </div>
                     <div>
                       <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>장소</label>
-                      <input type="text" name="location" value={formData.location} onChange={handleInputChange} placeholder="예: 체육관 특설 돔" style={{ width: "100%", padding: "0.5rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} />
+                      <input type="text" name="location" value={formData.location} onChange={handleInputChange} placeholder="예: 체육관 특설 돔" className="form-input" />
                     </div>
                   </div>
 
@@ -7128,34 +7122,34 @@ Gemini 피드백: \n${geminiCritiqueText}
                   <div style={{ display: "grid", gridTemplateColumns: "1.2fr 0.9fr 0.9fr", gap: "1rem" }}>
                     <div>
                       <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>행사 일자</label>
-                      <input type="date" name="eventDate" value={formData.eventDate} onChange={handleInputChange} required style={{ width: "100%", padding: "0.5rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} />
+                      <input type="date" name="eventDate" value={formData.eventDate} onChange={handleInputChange} required className="form-input" />
                     </div>
                     <div>
                       <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>시작 시간</label>
-                      <input type="time" name="eventStartTime" value={formData.eventStartTime} onChange={handleInputChange} required style={{ width: "100%", padding: "0.5rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} />
+                      <input type="time" name="eventStartTime" value={formData.eventStartTime} onChange={handleInputChange} required className="form-input" />
                     </div>
                     <div>
                       <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>종료 시간</label>
-                      <input type="time" name="eventEndTime" value={formData.eventEndTime} onChange={handleInputChange} required style={{ width: "100%", padding: "0.5rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} />
+                      <input type="time" name="eventEndTime" value={formData.eventEndTime} onChange={handleInputChange} required className="form-input" />
                     </div>
                   </div>
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
                     <div>
                       <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>참석자 (내부 구분)</label>
-                      <input type="text" name="attendeesInternal" value={formData.attendeesInternal} onChange={handleInputChange} placeholder="예: 내부 교수 및 연구원 15명" style={{ width: "100%", padding: "0.5rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} />
+                      <input type="text" name="attendeesInternal" value={formData.attendeesInternal} onChange={handleInputChange} placeholder="예: 내부 교수 및 연구원 15명" className="form-input" />
                     </div>
                     <div>
                       <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>참석자 (외부 구분)</label>
-                      <input type="text" name="attendeesExternal" value={formData.attendeesExternal} onChange={handleInputChange} placeholder="예: 지자체 관계자 5명" style={{ width: "100%", padding: "0.5rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} />
+                      <input type="text" name="attendeesExternal" value={formData.attendeesExternal} onChange={handleInputChange} placeholder="예: 지자체 관계자 5명" className="form-input" />
                     </div>
                   </div>
                   <div>
                     <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>관련 프로그램</label>
-                    <input type="text" name="program" value={formData.program} onChange={handleInputChange} placeholder="예: 지역 정착 지원 프로그램" style={{ width: "100%", padding: "0.5rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} />
+                    <input type="text" name="program" value={formData.program} onChange={handleInputChange} placeholder="예: 지역 정착 지원 프로그램" className="form-input" />
                   </div>
                   <div>
                     <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>행사 목적</label>
-                    <textarea name="purpose" value={formData.purpose} onChange={handleInputChange} placeholder="행사를 통해 도달하고자 하는 목표 기술" style={{ width: "100%", height: "46px", padding: "0.5rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", resize: "none" }} />
+                    <textarea name="purpose" value={formData.purpose} onChange={handleInputChange} placeholder="행사를 통해 도달하고자 하는 목표 기술" className="form-textarea" style={{ height: "46px", resize: "none" }} />
                   </div>
                   <div>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.25rem" }}>
@@ -7171,7 +7165,7 @@ Gemini 피드백: \n${geminiCritiqueText}
                         </span>
                       )}
                     </div>
-                    <textarea name="result" value={formData.result} onChange={handleInputChange} placeholder="행사 종료 후 수료 인원, 산출된 최종 성과 및 보도 실적 등을 기록합니다 (기획 단계에서는 공란 가능)" style={{ width: "100%", height: "46px", padding: "0.5rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", resize: "none" }} />
+                    <textarea name="result" value={formData.result} onChange={handleInputChange} placeholder="행사 종료 후 수료 인원, 산출된 최종 성과 및 보도 실적 등을 기록합니다 (기획 단계에서는 공란 가능)" className="form-textarea" style={{ height: "46px", resize: "none" }} />
                   </div>
                 </>
               )}
@@ -7470,12 +7464,12 @@ Gemini 피드백: \n${geminiCritiqueText}
                       </span>
                     )}
                   </div>
-                    <input type="text" name="title" value={formData.title} onChange={handleInputChange} required placeholder="예: 제2차 ICC 센터 공동 운영 회의" style={{ width: "100%", padding: "0.5rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} />
+                    <input type="text" name="title" value={formData.title} onChange={handleInputChange} required placeholder="예: 제2차 ICC 센터 공동 운영 회의" className="form-input" />
                   </div>
                   <div style={{ display: "grid", gridTemplateColumns: "1.2fr 0.8fr", gap: "1rem" }}>
                     <div>
                       <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>회의 대분류</label>
-                      <select name="category" value={formData.category} onChange={handleInputChange} style={{ width: "100%", padding: "0.5rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }}>
+                      <select name="category" value={formData.category} onChange={handleInputChange} className="form-select">
                         <option value="operating">사업단 운영회의</option>
                         <option value="center">부서별 회의</option>
                         <option value="committee">각종 위원회</option>
@@ -7483,7 +7477,7 @@ Gemini 피드백: \n${geminiCritiqueText}
                     </div>
                     <div>
                       <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>장소</label>
-                      <input type="text" name="location" value={formData.location} onChange={handleInputChange} required placeholder="예: ICC 센터장실" style={{ width: "100%", padding: "0.5rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} />
+                      <input type="text" name="location" value={formData.location} onChange={handleInputChange} required placeholder="예: ICC 센터장실" className="form-input" />
                     </div>
                   </div>
 
@@ -7535,7 +7529,7 @@ Gemini 피드백: \n${geminiCritiqueText}
                         <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>
                           {formData.category === "committee" && (formData.committeeType || "agency") === "agency" ? "위원회명" : "부서(센터)명"}
                         </label>
-                        <select name="dept" value={formData.dept} onChange={handleInputChange} style={{ width: "100%", padding: "0.5rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }}>
+                        <select name="dept" value={formData.dept} onChange={handleInputChange} className="form-select">
                           {(() => {
                             if (formData.category === "committee") {
                               if ((formData.committeeType || "agency") === "agency") {
@@ -7557,7 +7551,7 @@ Gemini 피드백: \n${geminiCritiqueText}
                       </div>
                       <div>
                         <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>작성자</label>
-                        <select name="writer" value={formData.writer} onChange={handleInputChange} style={{ width: "100%", padding: "0.5rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }}>
+                        <select name="writer" value={formData.writer} onChange={handleInputChange} className="form-select">
                           {(() => {
                             const isCenterMeeting =
                               formData.category === "center" ||
@@ -7641,7 +7635,7 @@ Gemini 피드백: \n${geminiCritiqueText}
                           전일 (시간 없음)
                         </label>
                       </div>
-                      <input type="date" name="meetingDate" value={formData.meetingDate} onChange={handleInputChange} required style={{ width: "100%", padding: "0.5rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} />
+                      <input type="date" name="meetingDate" value={formData.meetingDate} onChange={handleInputChange} required className="form-input" />
                     </div>
                     <div>
                       <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem", opacity: formData.noTime ? 0.4 : 1 }}>시작 시간</label>
@@ -7652,13 +7646,8 @@ Gemini 피드백: \n${geminiCritiqueText}
                         onChange={handleInputChange}
                         required={!formData.noTime}
                         disabled={formData.noTime}
+                        className="form-input"
                         style={{
-                          width: "100%",
-                          padding: "0.5rem",
-                          background: "var(--input-bg)",
-                          border: "1px solid var(--border-color)",
-                          borderRadius: "6px",
-                          color: "var(--text-primary)",
                           opacity: formData.noTime ? 0.4 : 1,
                           cursor: formData.noTime ? "not-allowed" : "text"
                         }}
@@ -7673,13 +7662,8 @@ Gemini 피드백: \n${geminiCritiqueText}
                         onChange={handleInputChange}
                         required={!formData.noTime}
                         disabled={formData.noTime}
+                        className="form-input"
                         style={{
-                          width: "100%",
-                          padding: "0.5rem",
-                          background: "var(--input-bg)",
-                          border: "1px solid var(--border-color)",
-                          borderRadius: "6px",
-                          color: "var(--text-primary)",
                           opacity: formData.noTime ? 0.4 : 1,
                           cursor: formData.noTime ? "not-allowed" : "text"
                         }}

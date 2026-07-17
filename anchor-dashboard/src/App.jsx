@@ -24,7 +24,7 @@ import ScheduleManager from "./components/ScheduleManager";
 import AssetManager from "./components/AssetManager";
 import UnitSystemView from "./components/UnitSystemView";
 import { initialProjectsData, userRoles, YEAR_1_PROGRAMS, Y1_UNIT_META } from "./data/mockData";
-import { Sun, Moon, LogOut, HelpCircle, ArrowUpRight, Lock as LockIcon, Info, Clock, Edit2, FileText, Upload, Plus, Download } from "lucide-react";
+import { Sun, Moon, LogOut, HelpCircle, ArrowUpRight, Lock as LockIcon, Info, Clock, Edit2, FileText, Upload, Plus, Download, X } from "lucide-react";
 import { supabase } from "./supabaseClient";
 import CryptoJS from "crypto-js";
 import * as XLSX from "xlsx";
@@ -11272,62 +11272,96 @@ export default function App() {
       </main>
 
       {isMemberModalOpen && editingMember && (
-        <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(0,0,0,0.7)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000 }}>
-          <form
-            onSubmit={async (e) => {
-              e.preventDefault();
-              if (!editingMember.name || !editingMember.email) {
-                alert("성명과 이메일은 필수 입력 사항입니다.");
-                return;
-              }
-              const oldMembers = [...members];
-              if (editingMember.id) {
-                // 수정 처리
-                const updatedList = members.map((m) => (m.id === editingMember.id ? editingMember : m));
-                setMembers(updatedList);
-                try {
-                  const sanitized = sanitizeMemberForDb(editingMember);
-                  const { error } = await supabase
-                    .from("rise_members")
-                    .upsert(sanitized);
-                  if (error) throw error;
-                } catch (err) {
-                  console.error("Failed to update member in DB:", err);
-                  alert(`DB 저장 중 오류가 발생했습니다. (테이블 생성 여부 확인 필요): ${err.message || err}`);
-                  setMembers(oldMembers); // 롤백
-                }
-              } else {
-                // 추가 처리
-                const newMember = {
-                  ...editingMember,
-                  id: `m-${Date.now()}`,
-                  startDate: editingMember.startDate || "2026-03-01",
-                  status: editingMember.status || "참여중"
-                };
-                setMembers([...members, newMember]);
-                try {
-                  const sanitized = sanitizeMemberForDb(newMember);
-                  const { error } = await supabase
-                    .from("rise_members")
-                    .insert(sanitized);
-                  if (error) throw error;
-                } catch (err) {
-                  console.error("Failed to insert member into DB:", err);
-                  alert(`DB 추가 중 오류가 발생했습니다. (테이블 생성 여부 확인 필요): ${err.message || err}`);
-                  setMembers(oldMembers); // 롤백
-                }
-              }
-              setIsMemberModalOpen(false);
-              setEditingMember(null);
-            }}
-            className="glass-card"
-            style={{ width: "480px", maxHeight: "85vh", overflowY: "auto", padding: "2rem", border: "1px solid var(--border-color)", background: "var(--bg-dark)", boxShadow: "0 10px 25px rgba(0,0,0,0.5)" }}
-          >
-            <h3 style={{ fontSize: "1.1rem", fontWeight: "800", marginBottom: "1.5rem" }}>
-              {editingMember.id ? "구성원 정보 수정" : "신규 구성원 등록"}
-            </h3>
+        <div style={{
+          position: "fixed",
+          top: 0, left: 0, width: "100vw", height: "100vh",
+          background: "rgba(0,0,0,0.6)",
+          zIndex: 9999,
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          overflowY: "auto",
+          padding: "2rem 1rem"
+        }}>
+          <div style={{
+            background: "var(--modal-bg)",
+            border: "1px solid var(--border-color)",
+            borderRadius: "0.75rem",
+            width: "100%",
+            maxWidth: "500px",
+            maxHeight: "85vh",
+            display: "flex",
+            flexDirection: "column",
+            color: "var(--text-primary)",
+            boxShadow: "0 20px 25px -5px rgba(0,0,0,0.3)",
+            margin: "auto"
+          }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "0.85rem 1.25rem", borderBottom: "1px solid var(--border-color)", flexShrink: 0 }}>
+              <h3 style={{ fontSize: "1.1rem", fontWeight: "800", display: "flex", alignItems: "center", gap: "0.4rem" }}>
+                👥 {editingMember.id ? "구성원 정보 수정" : "신규 구성원 등록"}
+              </h3>
+              <button
+                type="button"
+                onClick={() => {
+                  setIsMemberModalOpen(false);
+                  setEditingMember(null);
+                }}
+                style={{ background: "none", border: "none", color: "#a1a1aa", cursor: "pointer" }}
+              >
+                <X size={18} />
+              </button>
+            </div>
 
-            <div style={{ display: "flex", flexDirection: "column", gap: "1rem", fontSize: "0.8rem" }}>
+            <form
+              onSubmit={async (e) => {
+                e.preventDefault();
+                if (!editingMember.name || !editingMember.email) {
+                  alert("성명과 이메일은 필수 입력 사항입니다.");
+                  return;
+                }
+                const oldMembers = [...members];
+                if (editingMember.id) {
+                  // 수정 처리
+                  const updatedList = members.map((m) => (m.id === editingMember.id ? editingMember : m));
+                  setMembers(updatedList);
+                  try {
+                    const sanitized = sanitizeMemberForDb(editingMember);
+                    const { error } = await supabase
+                      .from("rise_members")
+                      .upsert(sanitized);
+                    if (error) throw error;
+                  } catch (err) {
+                    console.error("Failed to update member in DB:", err);
+                    alert(`DB 저장 중 오류가 발생했습니다. (테이블 생성 여부 확인 필요): ${err.message || err}`);
+                    setMembers(oldMembers); // 롤백
+                  }
+                } else {
+                  // 추가 처리
+                  const newMember = {
+                    ...editingMember,
+                    id: `m-${Date.now()}`,
+                    startDate: editingMember.startDate || "2026-03-01",
+                    status: editingMember.status || "참여중"
+                  };
+                  setMembers([...members, newMember]);
+                  try {
+                    const sanitized = sanitizeMemberForDb(newMember);
+                    const { error } = await supabase
+                      .from("rise_members")
+                      .insert(sanitized);
+                    if (error) throw error;
+                  } catch (err) {
+                    console.error("Failed to insert member into DB:", err);
+                    alert(`DB 추가 중 오류가 발생했습니다. (테이블 생성 여부 확인 필요): ${err.message || err}`);
+                    setMembers(oldMembers); // 롤백
+                  }
+                }
+                setIsMemberModalOpen(false);
+                setEditingMember(null);
+              }}
+              style={{ display: "flex", flexDirection: "column", flex: 1, overflow: "hidden" }}
+            >
+              <div style={{ padding: "1.25rem", display: "flex", flexDirection: "column", gap: "1rem", flex: 1, overflowY: "auto" }}>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
                 <div>
                   <label style={{ display: "block", marginBottom: "0.3rem", fontWeight: "700" }}>성명 *</label>
@@ -11487,11 +11521,11 @@ export default function App() {
               </div>
             </div>
 
-            <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.5rem", marginTop: "1.5rem" }}>
+            <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.5rem", borderTop: "1px solid var(--border-color)", padding: "0.85rem 1.25rem", flexShrink: 0 }}>
               <button
                 type="button"
-                className="btn-primary"
-                style={{ background: "var(--input-bg)", border: "1px solid var(--border-color)", padding: "0.4rem 1rem", borderRadius: "0.35rem", fontSize: "0.75rem" }}
+                className="btn-secondary"
+                style={{ padding: "0.5rem 1rem", fontSize: "0.75rem" }}
                 onClick={() => {
                   setIsMemberModalOpen(false);
                   setEditingMember(null);
@@ -11502,28 +11536,55 @@ export default function App() {
               <button
                 type="submit"
                 className="btn-primary"
-                style={{ padding: "0.4rem 1rem", borderRadius: "0.35rem", fontSize: "0.75rem" }}
+                style={{ padding: "0.5rem 1rem", fontSize: "0.75rem" }}
               >
                 저장
               </button>
             </div>
           </form>
         </div>
+      </div>
       )}
 
       {showProgramEditor && (
         <div style={{
-          position: "fixed", top: 0, left: 0, width: "100%", height: "100%",
-          background: "rgba(0,0,0,0.5)", zIndex: 1000,
-          display: "flex", justifyContent: "center", alignItems: "center"
+          position: "fixed",
+          top: 0, left: 0, width: "100vw", height: "100vh",
+          background: "rgba(0,0,0,0.6)",
+          zIndex: 9999,
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          overflowY: "auto",
+          padding: "2rem 1rem"
         }}>
           <div style={{
-            background: "var(--bg-color)", padding: "1.5rem", borderRadius: "0.5rem",
-            width: "400px", border: "1px solid var(--border-color)"
+            background: "var(--modal-bg)",
+            border: "1px solid var(--border-color)",
+            borderRadius: "0.75rem",
+            width: "100%",
+            maxWidth: "450px",
+            maxHeight: "85vh",
+            display: "flex",
+            flexDirection: "column",
+            color: "var(--text-primary)",
+            boxShadow: "0 20px 25px -5px rgba(0,0,0,0.3)",
+            margin: "auto"
           }}>
-            <h3 style={{ marginBottom: "1rem", fontSize: "1rem", fontWeight: "700", color: "var(--text-primary)" }}>
-              {editingProgram ? "프로그램 수정" : "신규 프로그램 추가"}
-            </h3>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "0.85rem 1.25rem", borderBottom: "1px solid var(--border-color)", flexShrink: 0 }}>
+              <h3 style={{ fontSize: "1.1rem", fontWeight: "800", display: "flex", alignItems: "center", gap: "0.4rem" }}>
+                🎯 {editingProgram ? "프로그램 수정" : "신규 프로그램 추가"}
+              </h3>
+              <button
+                type="button"
+                onClick={() => setShowProgramEditor(false)}
+                style={{ background: "none", border: "none", color: "#a1a1aa", cursor: "pointer" }}
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <div style={{ padding: "1.25rem", display: "flex", flexDirection: "column", gap: "1rem", flex: 1, overflowY: "auto" }}>
 
             <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
               <div>
@@ -11582,17 +11643,19 @@ export default function App() {
               </div>
             </div>
 
-            <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.5rem", marginTop: "1.5rem" }}>
+            <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.5rem", borderTop: "1px solid var(--border-color)", padding: "0.85rem 1.25rem", flexShrink: 0 }}>
               <button
-                className="btn-green-outline"
-                style={{ padding: "0.4rem 0.8rem", fontSize: "0.8rem" }}
+                type="button"
+                className="btn-secondary"
+                style={{ padding: "0.5rem 1rem", fontSize: "0.75rem" }}
                 onClick={() => setShowProgramEditor(false)}
               >
                 취소
               </button>
               <button
-                className="btn-green"
-                style={{ padding: "0.4rem 0.8rem", fontSize: "0.8rem" }}
+                type="button"
+                className="btn-primary"
+                style={{ padding: "0.5rem 1rem", fontSize: "0.75rem" }}
                 onClick={handleSaveProgram}
               >
                 저장
@@ -11600,6 +11663,7 @@ export default function App() {
             </div>
           </div>
         </div>
+      </div>
       )}
 
       {isPasswordModalOpen && currentUser && !isGuest && (
