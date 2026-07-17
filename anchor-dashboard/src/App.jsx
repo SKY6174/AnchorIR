@@ -10763,22 +10763,6 @@ export default function App() {
               >
                 집행률 관리
               </button>
-              <button
-                onClick={() => setBudgetSubTab("excel_download")}
-                style={{
-                  background: "transparent",
-                  border: "none",
-                  fontSize: "1rem",
-                  fontWeight: "800",
-                  cursor: "pointer",
-                  padding: "0.5rem 1rem",
-                  color: budgetSubTab === "excel_download" ? "var(--accent-color)" : "var(--text-secondary)",
-                  borderBottom: budgetSubTab === "excel_download" ? "2px solid var(--accent-color)" : "none",
-                  transition: "all 0.2s ease"
-                }}
-              >
-                엑셀 다운로드
-              </button>
             </div>
 
             {/* 본문 콘텐츠 스위칭 */}
@@ -10807,9 +10791,7 @@ export default function App() {
                 supabase={supabase}
                 darkMode={darkMode}
               />
-            ) : (
-              renderExcelDownload()
-            )}
+            ) : null}
           </div>
         )}
 
