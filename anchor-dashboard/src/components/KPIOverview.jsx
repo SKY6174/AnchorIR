@@ -51,17 +51,21 @@ export default function KPIOverview({ projects, currentRole, selectedYear = 2 })
 
   // 예산 합계 및 재원 구분 계산
   const totalBudgetMain = activeProjects.reduce((sum, p) => {
+    if (!p.units || !Array.isArray(p.units)) return sum;
     return sum + p.units.reduce((s, u) => s + (u.years?.[selectedYear]?.budget_main || 0), 0);
   }, 0);
   const totalSpentMain = activeProjects.reduce((sum, p) => {
+    if (!p.units || !Array.isArray(p.units)) return sum;
     return sum + p.units.reduce((s, u) => s + (u.years?.[selectedYear]?.spent_main || 0), 0);
   }, 0);
   const rateMain = totalBudgetMain > 0 ? (totalSpentMain / totalBudgetMain) * 100 : 0;
 
   const totalBudgetCarry = selectedYear === 1 ? 0 : activeProjects.reduce((sum, p) => {
+    if (!p.units || !Array.isArray(p.units)) return sum;
     return sum + p.units.reduce((s, u) => s + (u.years?.[selectedYear]?.budget_carry || 0), 0);
   }, 0);
   const totalSpentCarry = selectedYear === 1 ? 0 : activeProjects.reduce((sum, p) => {
+    if (!p.units || !Array.isArray(p.units)) return sum;
     return sum + p.units.reduce((s, u) => s + (u.years?.[selectedYear]?.spent_carry || 0), 0);
   }, 0);
   const rateCarry = totalBudgetCarry > 0 ? (totalSpentCarry / totalBudgetCarry) * 100 : 0;
@@ -71,8 +75,10 @@ export default function KPIOverview({ projects, currentRole, selectedYear = 2 })
 
   // 외부사업비 합산 추출 (P단계 기획 폼에서 입력된 budget_external 합산)
   const totalExternalBudget = activeProjects.reduce((sum, p) => {
+    if (!p.units || !Array.isArray(p.units)) return sum;
     return sum + p.units.reduce((s, u) => {
-      const progExternalSum = u.programs?.reduce((progSum, prog) => {
+      if (!u.programs || !Array.isArray(u.programs)) return s;
+      const progExternalSum = u.programs.reduce((progSum, prog) => {
         return progSum + (prog.years?.[selectedYear]?.budget_external || 0);
       }, 0) || 0;
       return s + progExternalSum;
@@ -84,12 +90,14 @@ export default function KPIOverview({ projects, currentRole, selectedYear = 2 })
   let shinSanUpBudgetCarry = 0; // 신산업(이월사업)
   if (selectedYear >= 2) {
     activeProjects.forEach((p) => {
-      p.units.forEach((u) => {
-        if (u.id === "A1나") {
-          shinSanUpBudgetMain = u.years?.[selectedYear]?.budget_main || 0;
-          shinSanUpBudgetCarry = u.years?.[selectedYear]?.budget_carry || 0;
-        }
-      });
+      if (p.units && Array.isArray(p.units)) {
+        p.units.forEach((u) => {
+          if (u.id === "A1나") {
+            shinSanUpBudgetMain = u.years?.[selectedYear]?.budget_main || 0;
+            shinSanUpBudgetCarry = u.years?.[selectedYear]?.budget_carry || 0;
+          }
+        });
+      }
     });
   }
   const anchorBudgetMain = Math.max(0, totalBudgetMain - shinSanUpBudgetMain);
@@ -104,9 +112,10 @@ export default function KPIOverview({ projects, currentRole, selectedYear = 2 })
   let focusKpiTotal = 0;
 
   activeProjects.forEach((p) => {
-    p.units.forEach((u) => {
-      (u.kpis || []).forEach((k) => {
-        let ach = 0;
+    if (p.units && Array.isArray(p.units)) {
+      p.units.forEach((u) => {
+        (u.kpis || []).forEach((k) => {
+          let ach = 0;
         if (selectedYear === 1 && k.id === "L-1") {
           ach = 111.9;
         } else if (selectedYear === 1 && k.id === "L-2") {
@@ -191,6 +200,7 @@ export default function KPIOverview({ projects, currentRole, selectedYear = 2 })
         }
       });
     });
+  }
   });
 
   const avgCommonKpi = commonKpiCount > 0 ? commonKpiTotal / commonKpiCount : 0;
@@ -199,10 +209,11 @@ export default function KPIOverview({ projects, currentRole, selectedYear = 2 })
 
   // 차트 데이터 (프로젝트 및 공통영역 분할)
   const chartData = activeProjects.map((p) => {
-    const pBudgetMain = p.units.reduce((s, u) => s + (u.years?.[selectedYear]?.budget_main || 0), 0);
-    const pSpentMain = p.units.reduce((s, u) => s + (u.years?.[selectedYear]?.spent_main || 0), 0);
-    const pBudgetCarry = p.units.reduce((s, u) => s + (u.years?.[selectedYear]?.budget_carry || 0), 0);
-    const pSpentCarry = p.units.reduce((s, u) => s + (u.years?.[selectedYear]?.spent_carry || 0), 0);
+    const hasUnits = p.units && Array.isArray(p.units);
+    const pBudgetMain = hasUnits ? p.units.reduce((s, u) => s + (u.years?.[selectedYear]?.budget_main || 0), 0) : 0;
+    const pSpentMain = hasUnits ? p.units.reduce((s, u) => s + (u.years?.[selectedYear]?.spent_main || 0), 0) : 0;
+    const pBudgetCarry = hasUnits ? p.units.reduce((s, u) => s + (u.years?.[selectedYear]?.budget_carry || 0), 0) : 0;
+    const pSpentCarry = hasUnits ? p.units.reduce((s, u) => s + (u.years?.[selectedYear]?.spent_carry || 0), 0) : 0;
 
     return {
       name: p.id === "E" ? "공통운영경비" : p.title.split(":")[0],
@@ -214,8 +225,9 @@ export default function KPIOverview({ projects, currentRole, selectedYear = 2 })
   });
 
   const pieData = activeProjects.map((p) => {
-    const pBudgetMain = p.units.reduce((s, u) => s + (u.years?.[selectedYear]?.budget_main || 0), 0);
-    const pBudgetCarry = p.units.reduce((s, u) => s + (u.years?.[selectedYear]?.budget_carry || 0), 0);
+    const hasUnits = p.units && Array.isArray(p.units);
+    const pBudgetMain = hasUnits ? p.units.reduce((s, u) => s + (u.years?.[selectedYear]?.budget_main || 0), 0) : 0;
+    const pBudgetCarry = hasUnits ? p.units.reduce((s, u) => s + (u.years?.[selectedYear]?.budget_carry || 0), 0) : 0;
     return {
       name: p.id === "E" ? "공통운영경비" : p.title.split(":")[0],
       value: Math.round((pBudgetMain + pBudgetCarry) / 1000000)

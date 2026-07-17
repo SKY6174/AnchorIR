@@ -78,8 +78,9 @@ export default function AgreementManager({
     };
 
     projects.forEach((p) => {
-      p.units.forEach((u) => {
-        const hasYearPlan = u.programs?.some(prog => prog.years && prog.years[selectedYear]);
+      if (p.units && Array.isArray(p.units)) {
+        p.units.forEach((u) => {
+          const hasYearPlan = u.programs?.some(prog => prog.years && prog.years[selectedYear]);
         if (hasYearPlan || selectedYear === 2) {
           if (selectedYear === 1) {
             const mapInfo = y1Mapping[u.id];
@@ -93,7 +94,8 @@ export default function AgreementManager({
           }
         }
       });
-    });
+    }
+  });
 
     return Array.from(unitsMap.values()).sort((a, b) => a.id.localeCompare(b.id, undefined, { numeric: true }));
   };
