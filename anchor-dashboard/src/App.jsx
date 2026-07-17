@@ -1115,13 +1115,31 @@ function mergeProjectsWithInitial(loadedData, multiYearInitialData) {
                       const isDirtyRatio = y && y.budget_main > 0 && Math.abs((y.budget_national || 0) / y.budget_main - targetRatio) > 0.05;
                       const isCategoriesEmpty = !y || !y.budget_categories || y.budget_categories.length === 0 || y.budget_categories.every(c => (c.budget || 0) === 0);
 
-                      // 💡 [비목 종류 정합성 검사] 캐시된 비목 정보의 종류가 마스터 mockData.js의 비목 명세 구조와 어긋나는 경우 자동 복구합니다.
+                      // 💡 [유효 비목 정합성 검사] 
+                      // 10대 비목이 기본으로 전부 포함되므로, 단순 종류 비교가 아닌 예산이 배정된 '실제 유효 비목'의 종류가 서로 일치하는지 정밀 대조합니다.
                       const hasBimokMismatch = () => {
                         if (!y || !y.budget_categories || !sy || !sy.budget_categories) return true;
-                        if (y.budget_categories.length !== sy.budget_categories.length) return true;
-                        const yCats = y.budget_categories.map(c => c.category).sort();
-                        const syCats = sy.budget_categories.map(c => c.category).sort();
-                        return yCats.some((val, idx) => val !== syCats[idx]);
+                        
+                        const yActiveCats = y.budget_categories
+                          .filter(c => {
+                            const b = parseInt(String(c.budget || "0").replace(/,/g, ""), 10) || 0;
+                            const bc = parseInt(String(c.budget_carry || "0").replace(/,/g, ""), 10) || 0;
+                            return b > 0 || bc > 0;
+                          })
+                          .map(c => c.category)
+                          .sort();
+
+                        const syActiveCats = sy.budget_categories
+                          .filter(c => {
+                            const b = parseInt(String(c.budget || "0").replace(/,/g, ""), 10) || 0;
+                            const bc = parseInt(String(c.budget_carry || "0").replace(/,/g, ""), 10) || 0;
+                            return b > 0 || bc > 0;
+                          })
+                          .map(c => c.category)
+                          .sort();
+
+                        if (yActiveCats.length !== syActiveCats.length) return true;
+                        return yActiveCats.some((val, idx) => val !== syActiveCats[idx]);
                       };
                       const isDirtyBimok = hasBimokMismatch();
 
