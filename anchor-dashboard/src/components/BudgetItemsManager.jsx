@@ -114,11 +114,15 @@ export default function BudgetItemsManager({ projects, currentRole, onUpdateBudg
 
   // 모든 단위과제 수집 (정규화된 프로젝트 기반)
   const allUnits = [];
-  normalizedProjects.forEach(p => {
-    p.units.forEach(u => {
-      allUnits.push({ ...u, projectTitle: p.title });
+  if (normalizedProjects && Array.isArray(normalizedProjects)) {
+    normalizedProjects.forEach(p => {
+      if (p.units && Array.isArray(p.units)) {
+        p.units.forEach(u => {
+          allUnits.push({ ...u, projectTitle: p.title });
+        });
+      }
     });
-  });
+  }
   allUnits.sort((a, b) => {
     if (a.id === "Common" || a.id === "X0") return 1;
     if (b.id === "Common" || b.id === "X0") return -1;
@@ -130,15 +134,19 @@ export default function BudgetItemsManager({ projects, currentRole, onUpdateBudg
   let totalCarryBudget = 0;
   let totalMainSpent = 0;
   let totalCarrySpent = 0;
-  normalizedProjects.forEach((p) => {
-    p.units.forEach((u) => {
-      const yr = u.years?.[selectedYear] || { budget_main: 0, budget_carry: 0, spent_main: 0, spent_carry: 0 };
-      totalMainBudget += (yr.budget_main || 0);
-      totalCarryBudget += (yr.budget_carry || 0);
-      totalMainSpent += (yr.spent_main || 0);
-      totalCarrySpent += (yr.spent_carry || 0);
+  if (normalizedProjects && Array.isArray(normalizedProjects)) {
+    normalizedProjects.forEach((p) => {
+      if (p.units && Array.isArray(p.units)) {
+        p.units.forEach((u) => {
+          const yr = u.years?.[selectedYear] || { budget_main: 0, budget_carry: 0, spent_main: 0, spent_carry: 0 };
+          totalMainBudget += (yr.budget_main || 0);
+          totalCarryBudget += (yr.budget_carry || 0);
+          totalMainSpent += (yr.spent_main || 0);
+          totalCarrySpent += (yr.spent_carry || 0);
+        });
+      }
     });
-  });
+  }
   const totalCombinedBudget = totalMainBudget + totalCarryBudget;
 
   // 담당부서 맵핑 정의 (연차별 유닛 ID 분기 처리 및 사용자 지정 순서)
@@ -183,21 +191,25 @@ export default function BudgetItemsManager({ projects, currentRole, onUpdateBudg
       };
     });
 
-    normalizedProjects.forEach(p => {
-      p.units.forEach(u => {
-        if (!u.budgetDetails) return;
-        Object.keys(u.budgetDetails).forEach(bName => {
-          const detailYear = u.budgetDetails[bName]?.years?.[selectedYear] || {};
-          if (combinedDetails[bName]) {
-            const tgt = combinedDetails[bName].years[selectedYear];
-            tgt.budget_main += (detailYear.budget_main || 0);
-            tgt.spent_main += (detailYear.spent_main || 0);
-            tgt.budget_carry += (detailYear.budget_carry || 0);
-            tgt.spent_carry += (detailYear.spent_carry || 0);
-          }
-        });
+    if (normalizedProjects && Array.isArray(normalizedProjects)) {
+      normalizedProjects.forEach(p => {
+        if (p.units && Array.isArray(p.units)) {
+          p.units.forEach(u => {
+            if (!u.budgetDetails) return;
+            Object.keys(u.budgetDetails).forEach(bName => {
+              const detailYear = u.budgetDetails[bName]?.years?.[selectedYear] || {};
+              if (combinedDetails[bName]) {
+                const tgt = combinedDetails[bName].years[selectedYear];
+                tgt.budget_main += (detailYear.budget_main || 0);
+                tgt.spent_main += (detailYear.spent_main || 0);
+                tgt.budget_carry += (detailYear.budget_carry || 0);
+                tgt.spent_carry += (detailYear.spent_carry || 0);
+              }
+            });
+          });
+        }
       });
-    });
+    }
 
     activeUnit = {
       id: "Total",
