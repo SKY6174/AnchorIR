@@ -4330,8 +4330,8 @@ Gemini 피드백: \n${geminiCritiqueText}
                 className="btn btn-primary"
                 onClick={() => openAddModal("event")}
                 style={{
-                  display: "flex", alignItems: "center", gap: "0.25rem", padding: "0.4rem 1rem", borderRadius: "6px",
-                  background: "var(--accent-color)", border: "none", color: "white", fontWeight: "600", fontSize: "0.85rem", cursor: "pointer"
+                  display: "flex", alignItems: "center", gap: "0.25rem", padding: "0.5rem 1.2rem", borderRadius: "9999px",
+                  background: "var(--accent-color)", border: "none", color: "white", fontWeight: "700", fontSize: "0.85rem", cursor: "pointer"
                 }}
               >
                 <Plus size={16} />
@@ -4895,8 +4895,8 @@ Gemini 피드백: \n${geminiCritiqueText}
                 className="btn btn-primary"
                 onClick={() => openAddModal("meeting")}
                 style={{
-                  display: "flex", alignItems: "center", gap: "0.25rem", padding: "0.4rem 1rem", borderRadius: "6px",
-                  background: "var(--accent-color)", border: "none", color: "white", fontWeight: "600", fontSize: "0.85rem", cursor: "pointer"
+                  display: "flex", alignItems: "center", gap: "0.25rem", padding: "0.5rem 1.2rem", borderRadius: "9999px",
+                  background: "var(--accent-color)", border: "none", color: "white", fontWeight: "700", fontSize: "0.85rem", cursor: "pointer"
                 }}
               >
                 <Plus size={16} />
@@ -5972,9 +5972,9 @@ Gemini 피드백: \n${geminiCritiqueText}
                   type="button"
                   onClick={() => openAddModal("press")}
                   className="btn btn-primary"
-                  style={{ fontSize: "0.8rem", fontWeight: "700", display: "flex", alignItems: "center", gap: "0.3rem", padding: "0.45rem 0.9rem", background: "var(--accent-color)", border: "none", color: "white", cursor: "pointer", borderRadius: "6px" }}
+                  style={{ fontSize: "0.85rem", fontWeight: "700", display: "flex", alignItems: "center", gap: "0.3rem", padding: "0.5rem 1.2rem", background: "var(--accent-color)", border: "none", color: "white", cursor: "pointer", borderRadius: "9999px" }}
                 >
-                  <Plus size={14} />
+                  <Plus size={16} />
                   신규 언론보도 등록
                 </button>
               )}
