@@ -291,50 +291,48 @@ export default function InstructorPoolManager() {
   const totalPayment = payments.reduce((sum, item) => sum + parseFloat(item.amount || 0), 0);
 
   return (
-    <div style={{ padding: "1.5rem", color: "var(--text-color)" }}>
-      {/* 타이틀 및 헤더 영역 */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
-        <div>
-          <h2 style={{ fontSize: "1.3rem", fontWeight: "800", color: "var(--accent-color)" }}>
-            ⚓ 교∙강사 Pool 관리 시스템
-          </h2>
-          <p style={{ fontSize: "0.8rem", color: "var(--text-secondary)", marginTop: "0.25rem" }}>
-            사업단 참여 교강사 인적사항 암호화 관리, 프로그램 참여 이력 매핑 및 강사비 지급을 연동합니다.
-          </p>
-        </div>
-        <button
-          onClick={() => setIsAddModalOpen(true)}
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "0.25rem",
-            padding: "0.5rem 1rem",
-            background: "var(--accent-color)",
-            color: "#ffffff",
-            border: "none",
-            borderRadius: "0.25rem",
-            fontSize: "0.8rem",
-            fontWeight: "700",
-            cursor: "pointer",
-            boxShadow: "0 2px 4px rgba(0,0,0,0.1)"
-          }}
-        >
-          <Plus size={16} /> 신규 교∙강사 등록
-        </button>
+    <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem", width: "100%", padding: "1.5rem", color: "var(--text-color)" }}>
+      {/* 1. 상단 안내 (두번째 그림의 협력기관 안내 카드와 100% 동기화) */}
+      <div className="glass-card" style={{ padding: "1.5rem", display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+        <h2 style={{ fontSize: "1.25rem", fontWeight: "800", color: "var(--accent-color)", display: "flex", alignItems: "center", gap: "0.5rem" }}>
+          <User size={22} />
+          교∙강사 Pool 관리 시스템
+        </h2>
+        <p style={{ fontSize: "0.9rem", color: "var(--text-secondary)", lineHeight: "1.5" }}>
+          사업단 참여 교강사 인적사항 암호화 관리, 프로그램 참여 이력 매핑 및 강사비 지급을 연동합니다.
+        </p>
       </div>
 
       <div style={{ display: "flex", gap: "1.5rem", alignItems: "flex-start" }}>
         {/* 교∙강사 리스트 테이블 (좌측) */}
-        <div style={{
+        <div className="glass-card" style={{
           flex: 1.2,
-          background: "var(--card-bg)",
-          borderRadius: "0.5rem",
-          padding: "1.25rem",
-          boxShadow: "0 4px 6px rgba(0,0,0,0.05)"
+          padding: "1.25rem"
         }}>
-          <h3 style={{ fontSize: "0.95rem", fontWeight: "800", marginBottom: "1rem" }}>
-            교∙강사 마스터 대장
-          </h3>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.25rem" }}>
+            <h3 style={{ fontSize: "0.95rem", fontWeight: "800" }}>
+              교∙강사 마스터 대장
+            </h3>
+            <button
+              onClick={() => setIsAddModalOpen(true)}
+              className="action-btn"
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "0.25rem",
+                padding: "0.5rem 1.2rem",
+                background: "var(--accent-color)",
+                color: "#ffffff",
+                border: "none",
+                borderRadius: "9999px",
+                fontSize: "0.85rem",
+                fontWeight: "700",
+                cursor: "pointer"
+              }}
+            >
+              <Plus size={16} /> 신규 교∙강사 등록
+            </button>
+          </div>
           {loading ? (
             <div style={{ textAlign: "center", padding: "2rem", color: "var(--text-secondary)" }}>로딩 중...</div>
           ) : instructors.length === 0 ? (
@@ -416,13 +414,9 @@ export default function InstructorPoolManager() {
 
         {/* 상세 참여 및 지출 이력 뷰 (우측) */}
         {isDetailOpen && selectedInstructor && (
-          <div style={{
+          <div className="glass-card" style={{
             flex: 1,
-            background: "var(--card-bg)",
-            borderRadius: "0.5rem",
-            padding: "1.25rem",
-            boxShadow: "0 4px 6px rgba(0,0,0,0.05)",
-            border: "1px solid var(--border-color)"
+            padding: "1.25rem"
           }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.25rem" }}>
               <h3 style={{ fontSize: "0.95rem", fontWeight: "800", display: "flex", alignItems: "center", gap: "0.25rem" }}>
