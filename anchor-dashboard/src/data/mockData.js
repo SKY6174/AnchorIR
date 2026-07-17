@@ -60,9 +60,9 @@ export const initialProjectsData = [
           { id: "A1가-S5T13-5", title: "학과 전공 맞춤형 모듈식 취업캠프", budget_2026: 24000000, budget_national: 24000000, budget_city: 0, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "정자윤 연구원", pdca: { p: "완료", d: "완료", c: "진행", a: "대기" } },
           { id: "A1가-S5T13-6", title: "시그니처 클래스 운영", budget_2026: 40000000, budget_national: 40000000, budget_city: 0, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "정자윤 연구원", pdca: { p: "완료", d: "완료", c: "진행", a: "대기" } },
           { id: "A1가-S5T14-1", title: "벤치마킹", budget_2026: 14000000, budget_national: 14000000, budget_city: 0, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "서란 연구원", pdca: { p: "대기", d: "대기", c: "대기", a: "대기" } },
-          { id: "A1가-S5T15-1", title: "교직원 역량강화 프로그램 운영", budget_2026: 40000000, budget_national: 0, budget_city: 40000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "서란 연구원", pdca: { p: "대기", d: "대기", c: "대기", a: "대기" } },
-          // 💡 [교육용 한글 주석] 장학금 총예산을 엑셀 시트 캡처 이미지에 따라 2억 4,000만 원(국비 100%)으로 조정 반영합니다.
-          { id: "A1가-S5T16-2", title: "장학금 지급", budget_2026: 240000000, budget_national: 240000000, budget_city: 0, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "이은주 선임연구원/서란 연구원", pdca: { p: "대기", d: "대기", c: "대기", a: "대기" } }
+          { id: "A1가-S5T15-1", title: "교직원 역량강화 프로그램 운영", budget_2026: 40000000, budget_national: 0, budget_city: 40000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "서란 연구원", pdca: { p: "대기", d: "대기", c: "대기", a: "대기" }, budget_categories: [{ category: "성과 활용∙확산 지원비", budget: 40000000, spent: 0 }] },
+          // 💡 [교육용 한글 주석] 장학금 총예산을 엑셀 시트 캡처 이미지에 따라 2억 4,000만 원(국비 100%)으로 조정 반영하며, 명시적 장학금 비목을 선언합니다.
+          { id: "A1가-S5T16-2", title: "장학금 지급", budget_2026: 240000000, budget_national: 240000000, budget_city: 0, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "이은주 선임연구원/서란 연구원", pdca: { p: "대기", d: "대기", c: "대기", a: "대기" }, budget_categories: [{ category: "장학금", budget: 240000000, spent: 0 }] }
         ],
         budgetDetails: {
           "인건비": { budget_2026: 0, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0 },
@@ -4244,60 +4244,12 @@ initialProjectsData.forEach((strategy) => {
       if (prog.budget_2026 !== undefined) {
         const total = prog.budget_2026;
 
-        // 💡 [최우선 규칙] 만약 프로그램 자체에 budget_national과 budget_city가 이미 명시적으로 기입되어 있다면 이를 그대로 사용하고 안분 비율 계산을 건너뜁니다.
-        const hasExplicitBudgets = prog.budget_national !== undefined && 
-                                   prog.budget_city !== undefined && 
-                                   (prog.budget_national + prog.budget_city === total);
-
-        if (hasExplicitBudgets) {
-          // 명시적 예산안 존중 및 안분 패스
+        // 💡 [기획서 명세 100% 존중 원칙]
+        // mockData.js 상단 프로그램 객체에 기 적혀있는 국비/시비 배정액을 덮어쓰지 않고 그대로 100% 신뢰하여 바인딩합니다.
+        if (prog.budget_national === undefined) {
+          prog.budget_national = total; // 기본값 100% 국비 폴백
         }
-        // 1. A1나: 100% 국비
-        else if (unit.id === "A1나") {
-          prog.budget_national = total;
-          prog.budget_city = 0;
-        }
-        // 2. C1: 기획서 특수 쪼개기 반영 (스마트테크 C1-S4T12-1, 로컬창업 C1-S4T14-1 시비 100%, 나머지 국비 100%)
-        else if (unit.id === "C1") {
-          if (["C1-S4T12-1", "C1-S4T14-1"].includes(prog.id)) {
-            prog.budget_national = 0;
-            prog.budget_city = total;
-          } else {
-            prog.budget_national = total;
-            prog.budget_city = 0;
-          }
-        }
-        // 3. 그 외 단위과제: PDF 공식 재원 배분 비율 적용
-        else {
-          let ratio = 1.0; // 기본값 100% 국비
-
-          if (unit.id === "A1가") {
-            ratio = 16.56 / 21.00;
-          } else if (unit.id === "A2") {
-            ratio = 4.07 / 4.70;
-          } else if (unit.id === "A3") {
-            ratio = 2.40 / 2.40;
-          } else if (unit.id === "B1") {
-            ratio = 3.50 / 3.50;
-          } else if (unit.id === "B2") {
-            ratio = 9.26 / 10.20;
-          } else if (unit.id === "B3") {
-            ratio = 3.12 / 3.12;
-          } else if (unit.id === "B4") {
-            ratio = 2.75 / 3.00;
-          } else if (unit.id === "C2") {
-            ratio = 7.00 / 7.00;
-          } else if (unit.id === "D1") {
-            ratio = 1.09 / 2.00;
-          } else if (unit.id === "D2") {
-            ratio = 3.49 / 4.00;
-          } else if (unit.id === "D3") {
-            ratio = 3.10 / 3.90;
-          } else if (unit.id === "X0") {
-            ratio = 24.33 / 24.33;
-          }
-
-          prog.budget_national = Math.round(total * ratio);
+        if (prog.budget_city === undefined) {
           prog.budget_city = total - prog.budget_national;
         }
 
@@ -4546,6 +4498,29 @@ initialProjectsData.forEach((strategy) => {
           category = "교육∙연구 프로그램 개발∙운영비";
         }
 
+        let bgCategories = [];
+        if (prog.budget_categories && Array.isArray(prog.budget_categories)) {
+          // 💡 [다중 비목 정합성 규칙] 프로그램 객체 자체에 명시적으로 비목 배정(budget_categories)이 기술되어 있다면 이를 100% 신뢰하여 그대로 사용합니다.
+          bgCategories = prog.budget_categories.map((c) => ({
+            category: c.category,
+            budget: c.budget || 0,
+            budget_carry: c.budget_carry || 0,
+            spent: c.spent || 0,
+            spent_carry: c.spent_carry || 0
+          }));
+        } else {
+          // 기존 단일 비목 폴백 매핑
+          bgCategories = [
+            {
+              category: category,
+              budget: total,
+              budget_carry: prog.budget_2025_carry || 0,
+              spent: prog.spent_2026 || 0,
+              spent_carry: prog.spent_2025_carry || 0
+            }
+          ];
+        }
+
         prog.years[2] = {
           ...prog.years[2],
           budget_main: total,
@@ -4555,15 +4530,7 @@ initialProjectsData.forEach((strategy) => {
           spent_main: prog.spent_2026 || 0,
           budget_carry: prog.budget_2025_carry || 0,
           spent_carry: prog.spent_2025_carry || 0,
-          budget_categories: [
-            {
-              category: category,
-              budget: total,
-              budget_carry: prog.budget_2025_carry || 0,
-              spent: prog.spent_2026 || 0,
-              spent_carry: prog.spent_2025_carry || 0
-            }
-          ]
+          budget_categories: bgCategories
         };
       }
     });

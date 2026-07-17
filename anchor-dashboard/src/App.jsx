@@ -2059,7 +2059,7 @@ export default function App() {
       localStorage.removeItem("anchor_members");
 
       Object.keys(localStorage).forEach((key) => {
-        if (key.startsWith("anchor_projects_data_") && key !== "anchor_projects_data_v55") {
+        if (key.startsWith("anchor_projects_data_") && key !== "anchor_projects_data_v56") {
           localStorage.removeItem(key);
         }
         // 💡 [연도별 복구 캐시 청소 가드] 캐시 버전 상향 시 연도별 가공 복구 캐시와 구버전 구매용역 캐시(기자재, 환경개선, 주요용역)도 깨끗하게 동시 청소하여 구버전 예산 꼬임을 방지합니다.
@@ -2125,7 +2125,7 @@ export default function App() {
       }
       localStorage.setItem("anchor_last_self_healing_reset", String(now));
       // 로그인 세션(anchor_logged_in_user)은 리셋하지 않고 보존하여 튕김(로그아웃) 방지!
-      localStorage.removeItem("anchor_projects_data_v55");
+      localStorage.removeItem("anchor_projects_data_v56");
       localStorage.removeItem("anchor_selected_kpi");
       Object.keys(localStorage).forEach((key) => {
         if (key.startsWith("anchor_cache_proj_")) {
