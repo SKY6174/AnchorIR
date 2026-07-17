@@ -9291,16 +9291,45 @@ export default function App() {
                     </select>
                   </div>
                   {currentRole.rank <= 2 && (
-                    <div style={{ display: "flex", gap: "0.5rem" }}>
-                      <label className="btn-green-outline" style={{ padding: "0.4rem 0.8rem", fontSize: "0.75rem", cursor: "pointer", margin: 0 }}>
-                        엑셀 업로드
+                    <div style={{ display: "flex", gap: "0.35rem", alignItems: "center" }}>
+                      <label
+                        className="action-btn upload-btn"
+                        style={{
+                          cursor: "pointer",
+                          margin: 0
+                        }}
+                      >
+                        <Upload size={16} /> 엑셀 업로드
                         <input type="file" accept=".xlsx, .xls" style={{ display: "none" }} ref={fileInputRef} onChange={handleUploadExcel} />
                       </label>
-                      <button onClick={handleDownloadExcel} className="btn-green-outline" style={{ padding: "0.4rem 0.8rem", fontSize: "0.75rem" }}>
-                        엑셀 다운로드
+                      <button
+                        onClick={handleDownloadExcel}
+                        className="action-btn download-btn"
+                        style={{
+                          background: "var(--bg-tertiary)",
+                          cursor: "pointer"
+                        }}
+                      >
+                        <Download size={16} /> 엑셀 다운로드
                       </button>
-                      <button onClick={handleOpenAddProgram} className="btn-green" style={{ padding: "0.4rem 0.8rem", fontSize: "0.75rem" }}>
-                        + 신규 프로그램
+                      <button
+                        onClick={handleOpenAddProgram}
+                        className="action-btn"
+                        style={{
+                          padding: "0.5rem 1.2rem",
+                          background: "var(--accent-color)",
+                          color: "white",
+                          border: "none",
+                          borderRadius: "9999px",
+                          fontSize: "0.85rem",
+                          fontWeight: "700",
+                          cursor: "pointer",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "0.3rem"
+                        }}
+                      >
+                        <Plus size={16} /> 신규 프로그램
                       </button>
                     </div>
                   )}
