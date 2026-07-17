@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "../supabaseClient";
 import CryptoJS from "crypto-js";
-import { Plus, User, Award, DollarSign, Calendar, Trash2, Edit2, ShieldAlert, Check, X } from "lucide-react";
+import { Plus, User, Award, Trash2, ShieldAlert, X } from "lucide-react";
 
 // 💡 [보안 수칙 - Rule 8] 개인정보 암복호화를 위한 AES 대칭키 정의
 const SECRET_KEY = "anchor_instructor_secure_encryption_key_2026";
@@ -68,41 +68,34 @@ const DEPARTMENTS = [
 export default function InstructorPoolManager() {
   const [instructors, setInstructors] = useState([]);
   const [selectedInstructor, setSelectedInstructor] = useState(null);
-  const [programs, setPrograms] = useState([]);
-  const [payments, setPayments] = useState([]);
+  const [histories, setHistories] = useState([]); // 💡 변동 정보 이력 상태값으로 통합 관리
   
   // 모달 제어 상태
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  // 신규 교강사 등록 폼 상태
+  // 신규 교강사 등록 폼 상태 (고정 정보)
   const [newForm, setNewForm] = useState({
     name: "",
-    is_internal: true,
+    gender: "남성", // 💡 성별 필드 추가
     birth_date: "",
     bank_name: "",
-    account_number: "",
-    rating_grade: "일반"
+    account_number: ""
   });
 
-  // 프로그램 참여 이력 폼 상태
-  const [newProgForm, setNewProgForm] = useState({
-    year: 2,
+  // 변동 정보 이력 등록 폼 상태 (하나로 통합)
+  const [newHistoryForm, setNewHistoryForm] = useState({
+    year: 2026,
+    department: "컴퓨터정보과",
+    position: "교수",
+    is_internal: true,
     unit_id: "B2",
     program_id: "B2-S1T1-1",
-    department: "컴퓨터정보과"
+    amount: ""
   });
 
-  // 강사비 지출 이력 폼 상태
-  const [newPayForm, setNewPayForm] = useState({
-    payment_date: new Date().toISOString().split("T")[0],
-    amount: "",
-    program_id: "B2-S1T1-1",
-    notes: ""
-  });
-
-  // 1. 교∙강사 마스터 리스트 로드
+  // 1. 교∙강사 마스터 리스트 로드 (고정 정보)
   const fetchInstructors = async () => {
     setLoading(true);
     try {
@@ -132,29 +125,21 @@ export default function InstructorPoolManager() {
     fetchInstructors();
   }, []);
 
-  // 2. 특정 교∙강사 상세 이력 조회 (참여이력, 지출내역)
+  // 2. 특정 교∙강사 상세 이력 조회 (변동 정보 테이블 `instructor_histories` 조회)
   const handleSelectInstructor = async (ins) => {
     setSelectedInstructor(ins);
     setIsDetailOpen(true);
     
     try {
-      // 참여 이력
-      const { data: progData, error: progErr } = await supabase
-        .from("instructor_programs")
+      const { data: historyData, error: historyErr } = await supabase
+        .from("instructor_histories")
         .select("*")
         .eq("instructor_id", ins.id)
+        .order("year", { ascending: false })
         .order("created_at", { ascending: false });
-      if (progErr) throw progErr;
-      setPrograms(progData || []);
 
-      // 지출 이력
-      const { data: payData, error: payErr } = await supabase
-        .from("instructor_payments")
-        .select("*")
-        .eq("instructor_id", ins.id)
-        .order("payment_date", { ascending: false });
-      if (payErr) throw payErr;
-      setPayments(payData || []);
+      if (historyErr) throw historyErr;
+      setHistories(historyData || []);
     } catch (err) {
       console.error("상세 이력 조회 실패:", err.message);
     }
@@ -175,11 +160,10 @@ export default function InstructorPoolManager() {
 
       const { error } = await supabase.from("instructors").insert({
         name: newForm.name,
-        is_internal: newForm.is_internal,
+        gender: newForm.gender,
         birth_date: encryptedBirth,
         bank_name: newForm.bank_name,
-        account_number: encryptedAccount,
-        rating_grade: newForm.rating_grade
+        account_number: encryptedAccount
       });
 
       if (error) throw error;
@@ -188,11 +172,10 @@ export default function InstructorPoolManager() {
       setIsAddModalOpen(false);
       setNewForm({
         name: "",
-        is_internal: true,
+        gender: "남성",
         birth_date: "",
         bank_name: "",
-        account_number: "",
-        rating_grade: "일반"
+        account_number: ""
       });
       fetchInstructors();
     } catch (err) {
@@ -202,7 +185,7 @@ export default function InstructorPoolManager() {
 
   // 4. 교∙강사 삭제
   const handleDeleteInstructor = async (id) => {
-    if (!window.confirm("정말로 이 교∙강사를 삭제하시겠습니까? 관련 모든 참여 이력 및 강사비 지출 이력이 삭제됩니다.")) return;
+    if (!window.confirm("정말로 이 교∙강사를 삭제하시겠습니까? 관련 모든 변동 정보 이력이 함께 삭제됩니다.")) return;
     try {
       const { error } = await supabase.from("instructors").delete().eq("id", id);
       if (error) throw error;
@@ -217,23 +200,26 @@ export default function InstructorPoolManager() {
     }
   };
 
-  // 5. 프로그램 참여 이력 추가
-  const handleAddProgram = async (e) => {
+  // 5. 변동 정보 이력 추가
+  const handleAddHistory = async (e) => {
     e.preventDefault();
-    if (!selectedInstructor) return;
+    if (!selectedInstructor || !newHistoryForm.amount) return;
     
     try {
-      const { error } = await supabase.from("instructor_programs").insert({
+      const { error } = await supabase.from("instructor_histories").insert({
         instructor_id: selectedInstructor.id,
-        year: newProgForm.year,
-        unit_id: newProgForm.unit_id,
-        program_id: newProgForm.program_id,
-        department: newProgForm.department
+        year: parseInt(newHistoryForm.year),
+        department: newHistoryForm.department,
+        position: newHistoryForm.position,
+        is_internal: newHistoryForm.is_internal,
+        program_id: newHistoryForm.program_id,
+        amount: parseFloat(newHistoryForm.amount)
       });
 
       if (error) throw error;
 
-      alert("참여 이력이 추가되었습니다.");
+      alert("변동 정보 이력이 추가되었습니다.");
+      setNewHistoryForm(prev => ({ ...prev, amount: "" }));
       // 재조회
       handleSelectInstructor(selectedInstructor);
     } catch (err) {
@@ -241,10 +227,10 @@ export default function InstructorPoolManager() {
     }
   };
 
-  // 6. 프로그램 참여 이력 삭제
-  const handleDeleteProgram = async (id) => {
+  // 6. 변동 정보 이력 삭제
+  const handleDeleteHistory = async (id) => {
     try {
-      const { error } = await supabase.from("instructor_programs").delete().eq("id", id);
+      const { error } = await supabase.from("instructor_histories").delete().eq("id", id);
       if (error) throw error;
       handleSelectInstructor(selectedInstructor);
     } catch (err) {
@@ -252,66 +238,28 @@ export default function InstructorPoolManager() {
     }
   };
 
-  // 7. 강사비 지출 내역 추가
-  const handleAddPayment = async (e) => {
-    e.preventDefault();
-    if (!selectedInstructor || !newPayForm.amount) return;
-
-    try {
-      const { error } = await supabase.from("instructor_payments").insert({
-        instructor_id: selectedInstructor.id,
-        payment_date: newPayForm.payment_date,
-        amount: parseFloat(newPayForm.amount),
-        program_id: newPayForm.program_id,
-        notes: newPayForm.notes
-      });
-
-      if (error) throw error;
-
-      alert("강사비 지급 이력이 등록되었습니다.");
-      setNewPayForm(prev => ({ ...prev, amount: "", notes: "" }));
-      handleSelectInstructor(selectedInstructor);
-    } catch (err) {
-      alert("지급 등록 실패: " + err.message);
-    }
-  };
-
-  // 8. 강사비 지출 이력 삭제
-  const handleDeletePayment = async (id) => {
-    try {
-      const { error } = await supabase.from("instructor_payments").delete().eq("id", id);
-      if (error) throw error;
-      handleSelectInstructor(selectedInstructor);
-    } catch (err) {
-      alert("지급 삭제 실패: " + err.message);
-    }
-  };
-
-  // 총 지출 강사비 연산
-  const totalPayment = payments.reduce((sum, item) => sum + parseFloat(item.amount || 0), 0);
+  // 총 지급비용 연산
+  const totalPayment = histories.reduce((sum, item) => sum + parseFloat(item.amount || 0), 0);
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem", width: "100%", color: "var(--text-color)" }}>
-      {/* 1. 상단 안내 (두번째 그림의 협력기관 안내 카드와 100% 동기화) */}
+      {/* 1. 상단 안내 카드 */}
       <div className="glass-card" style={{ padding: "1.5rem", display: "flex", flexDirection: "column", gap: "0.5rem" }}>
         <h2 style={{ fontSize: "1.25rem", fontWeight: "800", color: "var(--accent-color)", display: "flex", alignItems: "center", gap: "0.5rem" }}>
           <User size={22} />
           교∙강사 Pool 관리 시스템
         </h2>
         <p style={{ fontSize: "0.9rem", color: "var(--text-secondary)", lineHeight: "1.5" }}>
-          사업단 참여 교강사 인적사항 암호화 관리, 프로그램 참여 이력 매핑 및 강사비 지급을 연동합니다.
+          교∙강사의 고정 인적사항(성명, 성별, 생년월일, 계좌정보)을 안전하게 암호화 관리하고, 매년 변동되는 소속, 직급, 교내외 여부 및 프로그램별 지급 비용을 이력으로 연동합니다.
         </p>
       </div>
 
       <div style={{ display: "flex", gap: "1.5rem", alignItems: "flex-start" }}>
         {/* 교∙강사 리스트 테이블 (좌측) */}
-        <div className="glass-card" style={{
-          flex: 1.2,
-          padding: "1.25rem"
-        }}>
+        <div className="glass-card" style={{ flex: 1.2, padding: "1.25rem" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.25rem" }}>
             <h3 style={{ fontSize: "0.95rem", fontWeight: "800" }}>
-              교∙강사 마스터 대장
+              교∙강사 마스터 대장 (고정 정보)
             </h3>
             <button
               onClick={() => setIsAddModalOpen(true)}
@@ -343,11 +291,10 @@ export default function InstructorPoolManager() {
                 <thead>
                   <tr style={{ borderBottom: "2px solid var(--border-color)", textAlign: "left" }}>
                     <th style={{ padding: "0.75rem 0.5rem" }}>성명</th>
-                    <th style={{ padding: "0.75rem 0.5rem" }}>구분</th>
+                    <th style={{ padding: "0.75rem 0.5rem" }}>성별</th>
                     <th style={{ padding: "0.75rem 0.5rem" }}>생년월일 (마스킹)</th>
                     <th style={{ padding: "0.75rem 0.5rem" }}>은행명</th>
                     <th style={{ padding: "0.75rem 0.5rem" }}>계좌번호 (마스킹)</th>
-                    <th style={{ padding: "0.75rem 0.5rem" }}>인정 등급</th>
                     <th style={{ padding: "0.75rem 0.5rem", textAlign: "center" }}>관리</th>
                   </tr>
                 </thead>
@@ -369,27 +316,15 @@ export default function InstructorPoolManager() {
                           borderRadius: "0.2rem",
                           fontSize: "0.7rem",
                           fontWeight: "700",
-                          background: ins.is_internal ? "rgba(16,185,129,0.15)" : "rgba(245,158,11,0.15)",
-                          color: ins.is_internal ? "var(--success-color)" : "var(--warning-color)"
+                          background: ins.gender === "남성" ? "rgba(59,130,246,0.15)" : "rgba(236,72,153,0.15)",
+                          color: ins.gender === "남성" ? "#3b82f6" : "#ec4899"
                         }}>
-                          {ins.is_internal ? "교내" : "교외"}
+                          {ins.gender || "미정"}
                         </span>
                       </td>
                       <td style={{ padding: "0.75rem 0.5rem" }}>{maskBirthDate(ins.decrypted_birth)}</td>
                       <td style={{ padding: "0.75rem 0.5rem" }}>{ins.bank_name}</td>
                       <td style={{ padding: "0.75rem 0.5rem", color: "var(--text-secondary)" }}>{maskAccountNumber(ins.decrypted_account)}</td>
-                      <td style={{ padding: "0.75rem 0.5rem" }}>
-                        <span style={{
-                          padding: "0.15rem 0.4rem",
-                          borderRadius: "0.2rem",
-                          fontSize: "0.7rem",
-                          fontWeight: "700",
-                          background: "rgba(59,130,246,0.15)",
-                          color: "var(--accent-color)"
-                        }}>
-                          {ins.rating_grade || "일반"}
-                        </span>
-                      </td>
                       <td style={{ padding: "0.75rem 0.5rem", textAlign: "center" }} onClick={(e) => e.stopPropagation()}>
                         <button
                           onClick={() => handleDeleteInstructor(ins.id)}
@@ -412,156 +347,191 @@ export default function InstructorPoolManager() {
           )}
         </div>
 
-        {/* 상세 참여 및 지출 이력 뷰 (우측) */}
+        {/* 상세 참여 및 지급 이력 뷰 (우측 - 변동 정보) */}
         {isDetailOpen && selectedInstructor && (
-          <div className="glass-card" style={{
-            flex: 1,
-            padding: "1.25rem"
-          }}>
+          <div className="glass-card" style={{ flex: 1, padding: "1.25rem" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.25rem" }}>
               <h3 style={{ fontSize: "0.95rem", fontWeight: "800", display: "flex", alignItems: "center", gap: "0.25rem" }}>
-                <User size={16} color="var(--accent-color)" /> {selectedInstructor.name} 교수 상세 대장
+                <User size={16} color="var(--accent-color)" /> {selectedInstructor.name} 교수 상세 이력 (변동 정보)
               </h3>
               <button onClick={() => setIsDetailOpen(false)} style={{ border: "none", background: "transparent", cursor: "pointer", color: "var(--text-secondary)" }}>
                 <X size={16} />
               </button>
             </div>
 
-            {/* 1. 프로그램 참여 이력 섹션 */}
+            {/* 1. 변동 정보 이력 등록 폼 */}
             <div style={{ marginBottom: "1.5rem" }}>
-              <h4 style={{ fontSize: "0.8rem", fontWeight: "700", display: "flex", alignItems: "center", gap: "0.25rem", marginBottom: "0.5rem" }}>
-                <Award size={14} /> 프로그램 참여 이력
-              </h4>
-              <div style={{ background: "rgba(0,0,0,0.03)", padding: "0.75rem", borderRadius: "0.25rem", marginBottom: "0.5rem" }}>
-                <form onSubmit={handleAddProgram} style={{ display: "flex", flexWrap: "wrap", gap: "0.4rem", alignItems: "center" }}>
-                  <select
-                    value={newProgForm.year}
-                    onChange={(e) => setNewProgForm(prev => ({ ...prev, year: parseInt(e.target.value) }))}
-                    style={{ padding: "0.25rem", fontSize: "0.75rem", borderRadius: "0.2rem", background: "var(--card-bg)", color: "var(--text-color)" }}
-                  >
-                    <option value={1}>1차년도</option>
-                    <option value={2}>2차년도</option>
-                  </select>
-                  <select
-                    value={newProgForm.unit_id}
-                    onChange={(e) => {
-                      const uId = e.target.value;
-                      setNewProgForm(prev => ({
-                        ...prev,
-                        unit_id: uId,
-                        program_id: PROJECTS_MAP[uId]?.[0] || ""
-                      }));
-                    }}
-                    style={{ padding: "0.25rem", fontSize: "0.75rem", borderRadius: "0.2rem", background: "var(--card-bg)", color: "var(--text-color)" }}
-                  >
-                    {Object.keys(PROJECTS_MAP).map(key => <option key={key} value={key}>{key}</option>)}
-                  </select>
-                  <select
-                    value={newProgForm.program_id}
-                    onChange={(e) => setNewProgForm(prev => ({ ...prev, program_id: e.target.value }))}
-                    style={{ padding: "0.25rem", fontSize: "0.75rem", borderRadius: "0.2rem", background: "var(--card-bg)", color: "var(--text-color)" }}
-                  >
-                    {(PROJECTS_MAP[newProgForm.unit_id] || []).map(pId => <option key={pId} value={pId}>{pId}</option>)}
-                  </select>
-                  <select
-                    value={newProgForm.department}
-                    onChange={(e) => setNewProgForm(prev => ({ ...prev, department: e.target.value }))}
-                    style={{ padding: "0.25rem", fontSize: "0.75rem", borderRadius: "0.2rem", background: "var(--card-bg)", color: "var(--text-color)" }}
-                  >
-                    {DEPARTMENTS.map(dept => <option key={dept} value={dept}>{dept}</option>)}
-                  </select>
-                  <button type="submit" style={{ padding: "0.25rem 0.5rem", fontSize: "0.7rem", fontWeight: "700", background: "var(--accent-color)", color: "#fff", border: "none", borderRadius: "0.2rem", cursor: "pointer" }}>
-                    추가
-                  </button>
-                </form>
-              </div>
-              {programs.length === 0 ? (
-                <div style={{ fontSize: "0.75rem", color: "var(--text-secondary)", padding: "0.5rem" }}>참여 이력이 없습니다.</div>
-              ) : (
-                <ul style={{ padding: 0, margin: 0, listStyle: "none" }}>
-                  {programs.map(prog => (
-                    <li key={prog.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "0.75rem", padding: "0.35rem 0.5rem", borderBottom: "1px dashed var(--border-color)" }}>
-                      <span>
-                        [{prog.year}차년도] <strong>{prog.unit_id}</strong> / {prog.program_id} ({prog.department})
-                      </span>
-                      <button onClick={() => handleDeleteProgram(prog.id)} style={{ border: "none", background: "transparent", color: "#ef4444", cursor: "pointer" }}>
-                        <Trash2 size={12} />
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
-
-            {/* 2. 강사비 지출 이력 섹션 */}
-            <div>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.5rem" }}>
                 <h4 style={{ fontSize: "0.8rem", fontWeight: "700", display: "flex", alignItems: "center", gap: "0.25rem" }}>
-                  <DollarSign size={14} /> 강사비 지출 이력
+                  <Award size={14} /> 참여 이력 및 지급비용 등록
                 </h4>
                 <span style={{ fontSize: "0.75rem", fontWeight: "800", color: "var(--success-color)", background: "rgba(16,185,129,0.15)", padding: "0.1rem 0.4rem", borderRadius: "0.2rem" }}>
-                  총합: {totalPayment.toLocaleString()}원
+                  누적 지급액: {totalPayment.toLocaleString()}원
                 </span>
               </div>
-              <div style={{ background: "rgba(0,0,0,0.03)", padding: "0.75rem", borderRadius: "0.25rem", marginBottom: "0.5rem" }}>
-                <form onSubmit={handleAddPayment} style={{ display: "flex", flexWrap: "wrap", gap: "0.4rem", alignItems: "center" }}>
-                  <input
-                    type="date"
-                    value={newPayForm.payment_date}
-                    onChange={(e) => setNewPayForm(prev => ({ ...prev, payment_date: e.target.value }))}
-                    style={{ padding: "0.25rem", fontSize: "0.75rem", borderRadius: "0.2rem", background: "var(--card-bg)", color: "var(--text-color)", border: "1px solid var(--border-color)", width: "110px" }}
-                  />
-                  <input
-                    type="number"
-                    placeholder="지급 금액 (원)"
-                    value={newPayForm.amount}
-                    onChange={(e) => setNewPayForm(prev => ({ ...prev, amount: e.target.value }))}
-                    style={{ padding: "0.25rem", fontSize: "0.75rem", borderRadius: "0.2rem", background: "var(--card-bg)", color: "var(--text-color)", border: "1px solid var(--border-color)", width: "100px" }}
-                  />
-                  <select
-                    value={newPayForm.program_id}
-                    onChange={(e) => setNewPayForm(prev => ({ ...prev, program_id: e.target.value }))}
-                    style={{ padding: "0.25rem", fontSize: "0.75rem", borderRadius: "0.2rem", background: "var(--card-bg)", color: "var(--text-color)", border: "1px solid var(--border-color)" }}
-                  >
-                    {/* 교강사의 참여 프로그램 목록을 옵션으로 바인딩하여 2중 검증 */}
-                    {programs.map(p => <option key={p.program_id} value={p.program_id}>{p.program_id}</option>)}
-                    {programs.length === 0 && <option value="Common">공통 예산</option>}
-                  </select>
-                  <input
-                    type="text"
-                    placeholder="비고"
-                    value={newPayForm.notes}
-                    onChange={(e) => setNewPayForm(prev => ({ ...prev, notes: e.target.value }))}
-                    style={{ padding: "0.25rem", fontSize: "0.75rem", borderRadius: "0.2rem", background: "var(--card-bg)", color: "var(--text-color)", border: "1px solid var(--border-color)", flex: 1, minWidth: "120px" }}
-                  />
-                  <button type="submit" style={{ padding: "0.25rem 0.5rem", fontSize: "0.7rem", fontWeight: "700", background: "var(--success-color)", color: "#fff", border: "none", borderRadius: "0.2rem", cursor: "pointer" }}>
-                    지급
-                  </button>
+              <div style={{ background: "rgba(0,0,0,0.03)", padding: "0.75rem", borderRadius: "0.25rem", marginBottom: "0.8rem" }}>
+                <form onSubmit={handleAddHistory} style={{ display: "flex", flexDirection: "column", gap: "0.6rem" }}>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem" }}>
+                    <div>
+                      <label style={{ fontSize: "0.7rem", color: "var(--text-secondary)" }}>사업연도</label>
+                      <select
+                        value={newHistoryForm.year}
+                        onChange={(e) => setNewHistoryForm(prev => ({ ...prev, year: parseInt(e.target.value) }))}
+                        style={{ width: "100%", padding: "0.25rem", fontSize: "0.75rem", borderRadius: "0.2rem", background: "var(--card-bg)", color: "var(--text-color)", border: "1px solid var(--border-color)" }}
+                      >
+                        <option value={2024}>2024학년도</option>
+                        <option value={2025}>2025학년도</option>
+                        <option value={2026}>2026학년도</option>
+                        <option value={2027}>2027학년도</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label style={{ fontSize: "0.7rem", color: "var(--text-secondary)" }}>소속</label>
+                      <select
+                        value={newHistoryForm.department}
+                        onChange={(e) => setNewHistoryForm(prev => ({ ...prev, department: e.target.value }))}
+                        style={{ width: "100%", padding: "0.25rem", fontSize: "0.75rem", borderRadius: "0.2rem", background: "var(--card-bg)", color: "var(--text-color)", border: "1px solid var(--border-color)" }}
+                      >
+                        {DEPARTMENTS.map(dept => <option key={dept} value={dept}>{dept}</option>)}
+                      </select>
+                    </div>
+                  </div>
+
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem" }}>
+                    <div>
+                      <label style={{ fontSize: "0.7rem", color: "var(--text-secondary)" }}>직급</label>
+                      <input
+                        type="text"
+                        placeholder="예: 교수, 처장 등"
+                        required
+                        value={newHistoryForm.position}
+                        onChange={(e) => setNewHistoryForm(prev => ({ ...prev, position: e.target.value }))}
+                        style={{ width: "100%", padding: "0.25rem", fontSize: "0.75rem", borderRadius: "0.2rem", background: "var(--card-bg)", color: "var(--text-color)", border: "1px solid var(--border-color)" }}
+                      />
+                    </div>
+                    <div>
+                      <label style={{ fontSize: "0.7rem", color: "var(--text-secondary)", display: "block" }}>교내/교외 구분</label>
+                      <div style={{ display: "flex", gap: "0.8rem", marginTop: "0.3rem" }}>
+                        <label style={{ fontSize: "0.75rem", display: "flex", alignItems: "center", gap: "0.2rem", cursor: "pointer", color: "var(--text-primary)" }}>
+                          <input
+                            type="radio"
+                            checked={newHistoryForm.is_internal === true}
+                            onChange={() => setNewHistoryForm(prev => ({ ...prev, is_internal: true }))}
+                          /> 교내
+                        </label>
+                        <label style={{ fontSize: "0.75rem", display: "flex", alignItems: "center", gap: "0.2" + "rem", cursor: "pointer", color: "var(--text-primary)" }}>
+                          <input
+                            type="radio"
+                            checked={newHistoryForm.is_internal === false}
+                            onChange={() => setNewHistoryForm(prev => ({ ...prev, is_internal: false }))}
+                          /> 교외
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem" }}>
+                    <div>
+                      <label style={{ fontSize: "0.7rem", color: "var(--text-secondary)" }}>단위과제</label>
+                      <select
+                        value={newHistoryForm.unit_id}
+                        onChange={(e) => {
+                          const uId = e.target.value;
+                          setNewHistoryForm(prev => ({
+                            ...prev,
+                            unit_id: uId,
+                            program_id: PROJECTS_MAP[uId]?.[0] || ""
+                          }));
+                        }}
+                        style={{ width: "100%", padding: "0.25rem", fontSize: "0.75rem", borderRadius: "0.2rem", background: "var(--card-bg)", color: "var(--text-color)", border: "1px solid var(--border-color)" }}
+                      >
+                        {Object.keys(PROJECTS_MAP).map(key => <option key={key} value={key}>{key}</option>)}
+                      </select>
+                    </div>
+                    <div>
+                      <label style={{ fontSize: "0.7rem", color: "var(--text-secondary)" }}>참여 프로그램</label>
+                      <select
+                        value={newHistoryForm.program_id}
+                        onChange={(e) => setNewHistoryForm(prev => ({ ...prev, program_id: e.target.value }))}
+                        style={{ width: "100%", padding: "0.25rem", fontSize: "0.75rem", borderRadius: "0.2rem", background: "var(--card-bg)", color: "var(--text-color)", border: "1px solid var(--border-color)" }}
+                      >
+                        {(PROJECTS_MAP[newHistoryForm.unit_id] || []).map(pId => <option key={pId} value={pId}>{pId}</option>)}
+                      </select>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label style={{ fontSize: "0.7rem", color: "var(--text-secondary)" }}>지급비용 (원)</label>
+                    <div style={{ display: "flex", gap: "0.4rem" }}>
+                      <input
+                        type="number"
+                        placeholder="예: 500000"
+                        required
+                        value={newHistoryForm.amount}
+                        onChange={(e) => setNewHistoryForm(prev => ({ ...prev, amount: e.target.value }))}
+                        style={{ flex: 1, padding: "0.25rem", fontSize: "0.75rem", borderRadius: "0.2rem", background: "var(--card-bg)", color: "var(--text-color)", border: "1px solid var(--border-color)" }}
+                      />
+                      <button type="submit" style={{ padding: "0.25rem 1rem", fontSize: "0.75rem", fontWeight: "700", background: "var(--accent-color)", color: "#fff", border: "none", borderRadius: "0.2rem", cursor: "pointer" }}>
+                        추가
+                      </button>
+                    </div>
+                  </div>
                 </form>
               </div>
-              {payments.length === 0 ? (
-                <div style={{ fontSize: "0.75rem", color: "var(--text-secondary)", padding: "0.5rem" }}>지출 이력이 없습니다.</div>
+
+              {/* 2. 변동 정보 이력 테이블 */}
+              {histories.length === 0 ? (
+                <div style={{ fontSize: "0.75rem", color: "var(--text-secondary)", padding: "1rem", textAlign: "center" }}>등록된 변동 이력이 없습니다.</div>
               ) : (
-                <ul style={{ padding: 0, margin: 0, listStyle: "none" }}>
-                  {payments.map(pay => (
-                    <li key={pay.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "0.75rem", padding: "0.35rem 0.5rem", borderBottom: "1px dashed var(--border-color)" }}>
-                      <span>
-                        <span style={{ color: "var(--text-secondary)", marginRight: "0.4rem" }}>{pay.payment_date}</span>
-                        <strong>{parseInt(pay.amount).toLocaleString()}원</strong> ({pay.program_id}) {pay.notes && `- ${pay.notes}`}
-                      </span>
-                      <button onClick={() => handleDeletePayment(pay.id)} style={{ border: "none", background: "transparent", color: "#ef4444", cursor: "pointer" }}>
-                        <Trash2 size={12} />
-                      </button>
-                    </li>
-                  ))}
-                </ul>
+                <div style={{ overflowX: "auto" }}>
+                  <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.75rem" }}>
+                    <thead>
+                      <tr style={{ borderBottom: "1px solid var(--border-color)", textAlign: "left", color: "var(--text-secondary)" }}>
+                        <th style={{ padding: "0.4rem 0.25rem" }}>연도</th>
+                        <th style={{ padding: "0.4rem 0.25rem" }}>소속</th>
+                        <th style={{ padding: "0.4rem 0.25rem" }}>직급</th>
+                        <th style={{ padding: "0.4rem 0.25rem" }}>구분</th>
+                        <th style={{ padding: "0.4rem 0.25rem" }}>프로그램</th>
+                        <th style={{ padding: "0.4rem 0.25rem", textAlign: "right" }}>지급비용</th>
+                        <th style={{ padding: "0.4rem 0.25rem", textAlign: "center" }}>관리</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {histories.map(item => (
+                        <tr key={item.id} style={{ borderBottom: "1px dashed var(--border-color)" }}>
+                          <td style={{ padding: "0.4rem 0.25rem" }}>{item.year}년도</td>
+                          <td style={{ padding: "0.4rem 0.25rem" }}>{item.department}</td>
+                          <td style={{ padding: "0.4rem 0.25rem" }}>{item.position}</td>
+                          <td style={{ padding: "0.4rem 0.25rem" }}>
+                            <span style={{
+                              fontSize: "0.65rem",
+                              padding: "0.1rem 0.3rem",
+                              borderRadius: "0.15rem",
+                              background: item.is_internal ? "rgba(16,185,129,0.15)" : "rgba(245,158,11,0.15)",
+                              color: item.is_internal ? "var(--success-color)" : "var(--warning-color)"
+                            }}>
+                              {item.is_internal ? "교내" : "교외"}
+                            </span>
+                          </td>
+                          <td style={{ padding: "0.4rem 0.25rem" }}>{item.program_id}</td>
+                          <td style={{ padding: "0.4rem 0.25rem", textAlign: "right", fontWeight: "700" }}>{parseInt(item.amount).toLocaleString()}원</td>
+                          <td style={{ padding: "0.4rem 0.25rem", textAlign: "center" }}>
+                            <button onClick={() => handleDeleteHistory(item.id)} style={{ border: "none", background: "transparent", color: "#ef4444", cursor: "pointer" }}>
+                              <Trash2 size={12} />
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               )}
             </div>
           </div>
         )}
       </div>
 
-      {/* 신규 교∙강사 등록 모달 */}
+      {/* 신규 교∙강사 등록 모달 (고정 정보) */}
       {isAddModalOpen && (
         <div style={{
           position: "fixed",
@@ -589,7 +559,7 @@ export default function InstructorPoolManager() {
           }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "0.85rem 1.25rem", borderBottom: "1px solid var(--border-color)", flexShrink: 0 }}>
               <h3 style={{ fontSize: "1.1rem", fontWeight: "800", display: "flex", alignItems: "center", gap: "0.4rem", color: "var(--text-primary)" }}>
-                👤 신규 교∙강사 인적사항 등록
+                👤 신규 교∙강사 인적사항 등록 (고정 정보)
               </h3>
               <button type="button" onClick={() => setIsAddModalOpen(false)} style={{ background: "none", border: "none", color: "#a1a1aa", cursor: "pointer" }}>
                 <X size={18} />
@@ -623,21 +593,23 @@ export default function InstructorPoolManager() {
               </div>
 
               <div>
-                <label style={{ fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem", fontWeight: "600", display: "block" }}>교내/교외 여부</label>
+                <label style={{ fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem", fontWeight: "600", display: "block" }}>성별</label>
                 <div style={{ display: "flex", gap: "1rem", marginTop: "0.25rem" }}>
                   <label style={{ fontSize: "0.8rem", display: "flex", alignItems: "center", gap: "0.25rem", cursor: "pointer", color: "var(--text-primary)" }}>
                     <input
                       type="radio"
-                      checked={newForm.is_internal === true}
-                      onChange={() => setNewForm(prev => ({ ...prev, is_internal: true }))}
-                    /> 교내 교강사
+                      name="gender"
+                      checked={newForm.gender === "남성"}
+                      onChange={() => setNewForm(prev => ({ ...prev, gender: "남성" }))}
+                    /> 남성
                   </label>
                   <label style={{ fontSize: "0.8rem", display: "flex", alignItems: "center", gap: "0.25rem", cursor: "pointer", color: "var(--text-primary)" }}>
                     <input
                       type="radio"
-                      checked={newForm.is_internal === false}
-                      onChange={() => setNewForm(prev => ({ ...prev, is_internal: false }))}
-                    /> 교외 전문가
+                      name="gender"
+                      checked={newForm.gender === "여성"}
+                      onChange={() => setNewForm(prev => ({ ...prev, gender: "여성" }))}
+                    /> 여성
                   </label>
                 </div>
               </div>
@@ -676,19 +648,6 @@ export default function InstructorPoolManager() {
                     className="form-input"
                   />
                 </div>
-              </div>
-
-              <div>
-                <label style={{ fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem", fontWeight: "600", display: "block" }}>인정 등급</label>
-                <select
-                  value={newForm.rating_grade}
-                  onChange={(e) => setNewForm(prev => ({ ...prev, rating_grade: e.target.value }))}
-                  className="form-select"
-                >
-                  <option value="전문">전문 등급</option>
-                  <option value="우수">우수 등급</option>
-                  <option value="일반">일반 등급</option>
-                </select>
               </div>
 
               <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.5rem", borderTop: "1px solid var(--border-color)", paddingTop: "0.85rem", marginTop: "0.5rem" }}>
