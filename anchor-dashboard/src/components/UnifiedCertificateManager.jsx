@@ -464,11 +464,7 @@ export default function UnifiedCertificateManager({
 
   return (
     <div style={{ padding: "1rem" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
-        <h2 style={{ fontSize: "1.25rem", fontWeight: "bold", display: "flex", alignItems: "center", gap: "0.5rem" }}>
-          <Award size={24} color="var(--accent-color)" />
-          {titleText}
-        </h2>
+      <div style={{ display: "flex", justifyContent: "flex-end", alignItems: "center", marginBottom: "1rem" }}>
         <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
           {/* 💡 [연도 누적 선택 필터] */}
           <select 

@@ -945,11 +945,7 @@ export default function AgreementManager({
     <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
 
       {/* 툴바 제어부 (협약서 전용으로 축소) */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid var(--border-color-dark)", paddingBottom: "0.5rem" }}>
-        <div>
-          <h2 style={{ fontSize: "1.0rem", fontWeight: "800", color: "var(--text-primary)" }}>⚓ {selectedYear}차년도 기관 간 협약(MOU) 목록</h2>
-          <p style={{ fontSize: "0.72rem", color: "var(--text-secondary)" }}>지자체, 대학, 산업체 등 외부 유관 기관과의 협약서 대장을 보존합니다.</p>
-        </div>
+      <div style={{ display: "flex", justifyContent: "flex-end", alignItems: "center", borderBottom: "1px solid var(--border-color-dark)", paddingBottom: "0.5rem" }}>
 
         {/* 신규 등록 & 엑셀 다운로드 제어부 */}
         {(currentRole.rank <= 2) && (
