@@ -8311,20 +8311,20 @@ export default function App() {
               </div>
 
               {/* 서브탭 내비게이션 바 */}
-              <div style={{ display: "flex", gap: "0.5rem", borderBottom: "1px solid var(--border-color)", paddingBottom: "0.8rem", marginBottom: "1.2rem" }}>
+              <div style={{ display: "flex", gap: "1.5rem", borderBottom: "1px solid rgba(255,255,255,0.1)", paddingBottom: "0.2rem", marginBottom: "0.5rem" }}>
                 <button
                   type="button"
                   onClick={() => setProjectsSubTab("unit_system")}
                   style={{
-                    border: "none",
                     background: "transparent",
-                    padding: "0.5rem 1rem",
-                    fontSize: "0.85rem",
+                    border: "none",
+                    fontSize: "1rem",
                     fontWeight: "800",
                     cursor: "pointer",
+                    padding: "0.5rem 1rem",
                     color: projectsSubTab === "unit_system" ? "var(--accent-color)" : "var(--text-secondary)",
                     borderBottom: projectsSubTab === "unit_system" ? "2px solid var(--accent-color)" : "none",
-                    transition: "all 0.2s"
+                    transition: "all 0.2s ease"
                   }}
                 >
                   단위과제 체계
@@ -8333,15 +8333,15 @@ export default function App() {
                   type="button"
                   onClick={() => setProjectsSubTab("unit_status")}
                   style={{
-                    border: "none",
                     background: "transparent",
-                    padding: "0.5rem 1rem",
-                    fontSize: "0.85rem",
+                    border: "none",
+                    fontSize: "1rem",
                     fontWeight: "800",
                     cursor: "pointer",
+                    padding: "0.5rem 1rem",
                     color: projectsSubTab === "unit_status" ? "var(--accent-color)" : "var(--text-secondary)",
                     borderBottom: projectsSubTab === "unit_status" ? "2px solid var(--accent-color)" : "none",
-                    transition: "all 0.2s"
+                    transition: "all 0.2s ease"
                   }}
                 >
                   단위과제 진행상황
@@ -8350,15 +8350,15 @@ export default function App() {
                   type="button"
                   onClick={() => setProjectsSubTab("program_mgmt")}
                   style={{
-                    border: "none",
                     background: "transparent",
-                    padding: "0.5rem 1rem",
-                    fontSize: "0.85rem",
+                    border: "none",
+                    fontSize: "1rem",
                     fontWeight: "800",
                     cursor: "pointer",
+                    padding: "0.5rem 1rem",
                     color: projectsSubTab === "program_mgmt" ? "var(--accent-color)" : "var(--text-secondary)",
                     borderBottom: projectsSubTab === "program_mgmt" ? "2px solid var(--accent-color)" : "none",
-                    transition: "all 0.2s"
+                    transition: "all 0.2s ease"
                   }}
                 >
                   프로그램 관리
