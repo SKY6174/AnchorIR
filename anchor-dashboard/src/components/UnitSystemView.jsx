@@ -120,7 +120,8 @@ const STRATEGY_TASK_MAPPING = {
       { strat: "S4", id: "11", title: "ECC플랫폼 공유협업 인프라 구축" },
       { strat: "S4", id: "12", title: "온라인 콘텐츠 및 실시간 수업을 위한 플랫폼 구축" },
       { strat: "S5", id: "13", title: "지산학 거버넌스 협의체 운영 및 학술 정보 공유" },
-      { strat: "S5", id: "14", title: "벤치마킹 분석 보고서 작성 및 거버넌스 환류" }
+      { strat: "S5", id: "14", title: "벤치마킹 분석 보고서 작성 및 거버넌스 환류" },
+      { strat: "S5", id: "15", title: "대학 교육혁신 역량 강화 및 마일리지 장학금 지급" }
     ],
     programs: [
       { strat: "S1", id: "A1가-S1T1-1", title: "UC-HYPER 교수학습 모델 및 혁신 교수법 개발 운영" },
