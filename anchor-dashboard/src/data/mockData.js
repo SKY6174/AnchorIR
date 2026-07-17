@@ -60,9 +60,9 @@ export const initialProjectsData = [
           { id: "A1가-S5T13-5", title: "학과 전공 맞춤형 모듈식 취업캠프", budget_2026: 24000000, budget_national: 24000000, budget_city: 0, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "정자윤 연구원", pdca: { p: "완료", d: "완료", c: "진행", a: "대기" } },
           { id: "A1가-S5T13-6", title: "시그니처 클래스 운영", budget_2026: 40000000, budget_national: 40000000, budget_city: 0, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "정자윤 연구원", pdca: { p: "완료", d: "완료", c: "진행", a: "대기" } },
           { id: "A1가-S5T14-1", title: "벤치마킹", budget_2026: 14000000, budget_national: 14000000, budget_city: 0, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "서란 연구원", pdca: { p: "대기", d: "대기", c: "대기", a: "대기" } },
-          { id: "A1가-S5-S5T15-1", title: "교직원 역량강화 프로그램 운영", budget_2026: 40000000, budget_national: 0, budget_city: 40000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "서란 연구원", pdca: { p: "대기", d: "대기", c: "대기", a: "대기" } },
+          { id: "A1가-S5T15-1", title: "교직원 역량강화 프로그램 운영", budget_2026: 40000000, budget_national: 0, budget_city: 40000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "서란 연구원", pdca: { p: "대기", d: "대기", c: "대기", a: "대기" } },
           // 💡 [교육용 한글 주석] 장학금 총예산을 엑셀 시트 캡처 이미지에 따라 2억 4,000만 원(국비 100%)으로 조정 반영합니다.
-          { id: "A1가-S5-S5T16-2", title: "장학금 지급", budget_2026: 240000000, budget_national: 240000000, budget_city: 0, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "이은주 선임연구원/서란 연구원", pdca: { p: "대기", d: "대기", c: "대기", a: "대기" } }
+          { id: "A1가-S5T16-2", title: "장학금 지급", budget_2026: 240000000, budget_national: 240000000, budget_city: 0, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "이은주 선임연구원/서란 연구원", pdca: { p: "대기", d: "대기", c: "대기", a: "대기" } }
         ],
         budgetDetails: {
           "인건비": { budget_2026: 0, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0 },
@@ -4243,7 +4243,7 @@ initialProjectsData.forEach((strategy) => {
     unit.programs.forEach((prog) => {
       if (prog.budget_2026 !== undefined) {
         const total = prog.budget_2026;
-        
+
         // 1. A1나: 100% 국비
         if (unit.id === "A1나") {
           prog.budget_national = total;
@@ -4258,11 +4258,11 @@ initialProjectsData.forEach((strategy) => {
             prog.budget_national = total;
             prog.budget_city = 0;
           }
-        } 
+        }
         // 3. 그 외 단위과제: PDF 공식 재원 배분 비율 적용
         else {
           let ratio = 1.0; // 기본값 100% 국비
-          
+
           if (unit.id === "A1가") {
             ratio = 16.56 / 21.00;
           } else if (unit.id === "A2") {
@@ -4288,7 +4288,7 @@ initialProjectsData.forEach((strategy) => {
           } else if (unit.id === "X0") {
             ratio = 24.33 / 24.33;
           }
-          
+
           prog.budget_national = Math.round(total * ratio);
           prog.budget_city = total - prog.budget_national;
         }
@@ -4297,7 +4297,7 @@ initialProjectsData.forEach((strategy) => {
         // anchor_2nd_year_unit_XX_proposal.md 파일들에서 추출한 공식 2차년도 프로그램별 비목 매핑 데이터를 적용합니다.
         if (prog.years === undefined) prog.years = {};
         if (prog.years[2] === undefined) prog.years[2] = {};
-        
+
         const officialBimokMap = {
           "A1가-S1T1-1": "교육∙연구 프로그램 개발∙운영비",
           "A1가-S1T2-1": "교육∙연구 프로그램 개발∙운영비",
@@ -4339,8 +4339,8 @@ initialProjectsData.forEach((strategy) => {
           "A1가-S5T13-5": "교육∙연구 프로그램 개발∙운영비",
           "A1가-S5T13-6": "교육∙연구 프로그램 개발∙운영비",
           "A1가-S5T14-1": "성과 활용∙확산 지원비",
-          "A1가-S5-S5T15-1": "성과 활용∙확산 지원비",
-          "A1가-S5-S5T16-2": "장학금",
+          "A1가-S5T15-1": "성과 활용∙확산 지원비",
+          "A1가-S5T16-2": "장학금",
           "A3-S1T1-1": "교육∙연구 프로그램 개발∙운영비",
           "A3-S1T1-2": "장학금",
           "A3-S1T2-1": "교육∙연구 프로그램 개발∙운영비",
@@ -4537,7 +4537,7 @@ initialProjectsData.forEach((strategy) => {
         if (unit.id === "C1" && ["C1-S4T12-1", "C1-S4T14-1"].includes(prog.id)) {
           category = "교육∙연구 프로그램 개발∙운영비";
         }
-        
+
         prog.years[2] = {
           ...prog.years[2],
           budget_main: total,
