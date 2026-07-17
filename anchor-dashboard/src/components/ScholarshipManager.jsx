@@ -706,9 +706,9 @@ export default function ScholarshipManager({
                   </div>
                 </div>
 
-                <div style={{ marginTop: "1rem", display: "flex", justifyContent: "flex-end", gap: "0.5rem" }}>
-                  <button type="button" className="action-btn" style={{ background: "var(--bg-tertiary)", color: "var(--text-primary)" }} onClick={() => setIsModalOpen(false)}>취소</button>
-                  <button type="submit" className="action-btn submit-btn">저장</button>
+                <div style={{ marginTop: "1.5rem", display: "flex", justifyContent: "flex-end", gap: "0.5rem", borderTop: "1px solid var(--border-color)", paddingTop: "0.85rem" }}>
+                  <button type="button" className="btn-secondary" onClick={() => setIsModalOpen(false)} style={{ padding: "0.5rem 1rem", fontSize: "0.75rem" }}>취소</button>
+                  <button type="submit" className="btn-primary" style={{ padding: "0.5rem 1rem", fontSize: "0.75rem" }}>저장하기</button>
                 </div>
               </form>
             </div>
