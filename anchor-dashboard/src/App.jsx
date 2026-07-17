@@ -9696,7 +9696,7 @@ export default function App() {
                             onClick={() => setApprovalsTab("budget")}
                             style={{
                               padding: "0.4rem 1rem",
-                              fontSize: "0.75rem",
+                              fontSize: "0.85rem",
                               fontWeight: "800",
                               borderRadius: "0.3rem",
                               border: "none",
@@ -9713,7 +9713,7 @@ export default function App() {
                           onClick={() => setApprovalsTab("facility")}
                           style={{
                             padding: "0.4rem 1rem",
-                            fontSize: "0.75rem",
+                            fontSize: "0.85rem",
                             fontWeight: "800",
                             borderRadius: "0.3rem",
                             border: "none",
