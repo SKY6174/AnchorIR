@@ -3953,8 +3953,9 @@ export default function App() {
                   };
 
                   [1, 2, 3, 4, 5].forEach((yr) => {
-                    unit.programs.forEach((prog) => {
-                      const py = prog.years?.[yr] || {};
+                    if (unit.programs && Array.isArray(unit.programs)) {
+                      unit.programs.forEach((prog) => {
+                        const py = prog.years?.[yr] || {};
                       const progTotalMain = py.budget_main || 0;
                       const progTotalCarry = py.budget_carry || 0;
                       const progTotalSpent = py.spent_main || 0;
@@ -3997,6 +3998,7 @@ export default function App() {
                       categorySums["교육∙연구 프로그램 개발∙운영비"][yr].spent_main += remainSpent;
                       categorySums["교육∙연구 프로그램 개발∙운영비"][yr].spent_carry += remainSpentCarry;
                     });
+                  }
                   });
 
                   if (!unit.budgetDetails) unit.budgetDetails = {};
@@ -4017,13 +4019,15 @@ export default function App() {
                       let totalProgSpent = 0;
                       let totalProgSpentNational = 0;
 
-                      unit.programs.forEach((prog) => {
-                        const py = prog.years?.[yr] || {};
-                        totalProgMain += py.budget_main || 0;
-                        totalProgNational += py.budget_national || 0;
-                        totalProgSpent += py.spent_main || 0;
-                        totalProgSpentNational += py.spent_national || 0;
-                      });
+                      if (unit.programs && Array.isArray(unit.programs)) {
+                        unit.programs.forEach((prog) => {
+                          const py = prog.years?.[yr] || {};
+                          totalProgMain += py.budget_main || 0;
+                          totalProgNational += py.budget_national || 0;
+                          totalProgSpent += py.spent_main || 0;
+                          totalProgSpentNational += py.spent_national || 0;
+                        });
+                      }
 
                       const ratio = totalProgMain > 0 ? totalProgNational / totalProgMain : 0.5;
                       const spentRatio = totalProgSpent > 0 ? totalProgSpentNational / totalProgSpent : ratio;
