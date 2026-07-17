@@ -969,12 +969,12 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
   return (
     <div style={{ padding: "1.25rem", color: "var(--text-primary)" }}>
       
-      {/* [A] 자산 관리 대분류 서브메뉴 가로 탭바 */}
+      {/* [A] 자산 관리 대분류 서브메뉴 가로 탭바 (첫번째 예산 탭바와 디자인 100% 동기화) */}
       <div style={{
         display: "flex",
         gap: "1.5rem",
-        borderBottom: "1px solid rgba(255, 255, 255, 0.08)",
-        paddingBottom: "0.1rem",
+        borderBottom: "1px solid rgba(255, 255, 255, 0.1)",
+        paddingBottom: "0.2rem",
         marginBottom: "1.5rem"
       }}>
         <button
@@ -982,38 +982,32 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
           style={{
             background: "transparent",
             border: "none",
-            fontSize: "0.95rem",
+            fontSize: "1rem",
             fontWeight: "800",
             cursor: "pointer",
             padding: "0.5rem 1rem",
             color: activeSubTab === "education_env" ? "var(--accent-color)" : "var(--text-secondary)",
-            borderBottom: activeSubTab === "education_env" ? "2.5px solid var(--accent-color)" : "none",
-            transition: "all 0.15s ease",
-            display: "flex",
-            alignItems: "center",
-            gap: "0.4rem"
+            borderBottom: activeSubTab === "education_env" ? "2px solid var(--accent-color)" : "none",
+            transition: "all 0.15s ease"
           }}
         >
-          <Home size={16} /> 🏫 교육환경 사용예약 관리
+          교육환경 사용예약 관리
         </button>
         <button
           onClick={() => onChangeSubTab && onChangeSubTab("equipment")}
           style={{
             background: "transparent",
             border: "none",
-            fontSize: "0.95rem",
+            fontSize: "1rem",
             fontWeight: "800",
             cursor: "pointer",
             padding: "0.5rem 1rem",
             color: activeSubTab === "equipment" ? "var(--accent-color)" : "var(--text-secondary)",
-            borderBottom: activeSubTab === "equipment" ? "2.5px solid var(--accent-color)" : "none",
-            transition: "all 0.15s ease",
-            display: "flex",
-            alignItems: "center",
-            gap: "0.4rem"
+            borderBottom: activeSubTab === "equipment" ? "2px solid var(--accent-color)" : "none",
+            transition: "all 0.15s ease"
           }}
         >
-          <Laptop size={16} /> 📦 기자재 대장 관리
+          기자재 대장 관리
         </button>
       </div>
 
