@@ -1356,12 +1356,41 @@ function mergeProjectsWithInitial(loadedData, multiYearInitialData) {
             const cachedCat = unit.budgetDetails[catName];
 
             if (!cachedCat) {
-              unit.budgetDetails[catName] = JSON.parse(JSON.stringify(sourceCat));
+              unit.budgetDetails[catName] = { years: {} };
+              [1, 2, 3, 4, 5].forEach((yr) => {
+                if (yr === 2 && sourceCat.budget_2026 !== undefined) {
+                  unit.budgetDetails[catName].years[2] = {
+                    budget_main: sourceCat.budget_2026 || 0,
+                    budget_national: sourceCat.budget_national !== undefined ? sourceCat.budget_national : Math.round((sourceCat.budget_2026 || 0) * 0.5),
+                    budget_city: (sourceCat.budget_2026 || 0) - (sourceCat.budget_national || 0),
+                    budget_external: 0,
+                    spent_main: sourceCat.spent_2026 || 0,
+                    budget_carry: sourceCat.budget_2025_carry || 0,
+                    spent_carry: sourceCat.spent_2025_carry || 0
+                  };
+                } else {
+                  unit.budgetDetails[catName].years[yr] = { budget_main: 0, spent_main: 0, budget_carry: 0, spent_carry: 0 };
+                }
+              });
             } else {
               if (!cachedCat.years) cachedCat.years = {};
               [1, 2, 3, 4, 5].forEach((yr) => {
-                if (!cachedCat.years[yr] && sourceCat.years?.[yr]) {
-                  cachedCat.years[yr] = JSON.parse(JSON.stringify(sourceCat.years[yr]));
+                if (!cachedCat.years[yr]) {
+                  if (sourceCat.years?.[yr]) {
+                    cachedCat.years[yr] = JSON.parse(JSON.stringify(sourceCat.years[yr]));
+                  } else if (yr === 2 && sourceCat.budget_2026 !== undefined) {
+                    cachedCat.years[2] = {
+                      budget_main: sourceCat.budget_2026 || 0,
+                      budget_national: sourceCat.budget_national !== undefined ? sourceCat.budget_national : Math.round((sourceCat.budget_2026 || 0) * 0.5),
+                      budget_city: (sourceCat.budget_2026 || 0) - (sourceCat.budget_national || 0),
+                      budget_external: 0,
+                      spent_main: sourceCat.spent_2026 || 0,
+                      budget_carry: sourceCat.budget_2025_carry || 0,
+                      spent_carry: sourceCat.spent_2025_carry || 0
+                    };
+                  } else {
+                    cachedCat.years[yr] = { budget_main: 0, spent_main: 0, budget_carry: 0, spent_carry: 0 };
+                  }
                 }
               });
             }

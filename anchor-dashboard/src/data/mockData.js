@@ -4293,6 +4293,56 @@ initialProjectsData.forEach((strategy) => {
           prog.budget_national = Math.round(total * ratio);
           prog.budget_city = total - prog.budget_national;
         }
+
+        // 💡 [프로그램 비목 상세(budget_categories) 자동 매핑 및 주입]
+        // 프로그램 수준에서 비목 상세 기획이 정의되어 있지 않은 경우, 제목(title)의 키워드를 기반으로 표준 비목을 유추하여 동적으로 주입합니다.
+        if (prog.years === undefined) prog.years = {};
+        if (prog.years[2] === undefined) prog.years[2] = {};
+        
+        const t = prog.title || "";
+        let category = "교육∙연구 프로그램 개발∙운영비"; // 기본 비목
+        
+        if (t.includes("인건비") || t.includes("일용임금") || t.includes("보조원") || t.includes("보조인력") || t.includes("PM교수")) {
+          category = "인건비";
+        } else if (t.includes("장학금") || t.includes("학위보조금") || t.includes("장학생")) {
+          category = "장학금";
+        } else if (t.includes("환경개선") || t.includes("인프라 구축") || t.includes("리모델링") || t.includes("인테리어") || t.includes("공간 구축") || t.includes("북카페조성") || t.includes("플랫폼 구축") || t.includes("교육환경개선") || t.includes("플랫폼구축")) {
+          category = "교육∙연구 환경개선비";
+        } else if (t.includes("기자재") || t.includes("장비") || t.includes("기계장치") || t.includes("전산기기") || t.includes("소프트웨어") || t.includes("SW") || t.includes("카메라") || t.includes("시뮬레이터") || t.includes("태블릿") || t.includes("PC") || t.includes("비품")) {
+          category = "실험∙실습장비 및 기자재 구입∙운영비";
+        } else if (t.includes("늘봄") || t.includes("방과후") || t.includes("돌봄") || t.includes("리빙랩") || t.includes("도시재생") || t.includes("로컬") || t.includes("지역 연계") || t.includes("지역사회") || t.includes("서포터즈") || t.includes("활동비") || t.includes("지역문제") || t.includes("현장견학") || t.includes("취업캠프") || t.includes("정주")) {
+          category = "지역 연계∙협업 지원비";
+        } else if (t.includes("정책연구") || t.includes("PBL") || t.includes("산학") || t.includes("간담회") || t.includes("워크숍") || t.includes("재직자") || t.includes("컨소시엄") || t.includes("세미나") || t.includes("동아리") || t.includes("프론티어") || t.includes("기업")) {
+          category = "기업 지원∙협력 활동비";
+        } else if (t.includes("페스티벌") || t.includes("박람회") || t.includes("성과공유") || t.includes("성과발표") || t.includes("벤치마킹") || t.includes("홍보") || t.includes("경진대회") || t.includes("수강생 및 산업체 환류")) {
+          category = "성과 활용∙확산 지원비";
+        }
+
+        // C1의 스마트테크 및 로컬창업 아카데미의 세부 카테고리는 교육연구 프로그램비이고, 재원은 시비 100%이므로 
+        // 롤업 정합성을 위해 그대로 유지되도록 처리합니다.
+        if (unit.id === "C1" && ["C1-S4T12-1", "C1-S4T14-1"].includes(prog.id)) {
+          category = "교육∙연구 프로그램 개발∙운영비";
+        }
+        
+        prog.years[2] = {
+          ...prog.years[2],
+          budget_main: total,
+          budget_national: prog.budget_national || 0,
+          budget_city: prog.budget_city || 0,
+          budget_external: 0,
+          spent_main: prog.spent_2026 || 0,
+          budget_carry: prog.budget_2025_carry || 0,
+          spent_carry: prog.spent_2025_carry || 0,
+          budget_categories: [
+            {
+              category: category,
+              budget: total,
+              budget_carry: prog.budget_2025_carry || 0,
+              spent: prog.spent_2026 || 0,
+              spent_carry: prog.spent_2025_carry || 0
+            }
+          ]
+        };
       }
     });
   });
