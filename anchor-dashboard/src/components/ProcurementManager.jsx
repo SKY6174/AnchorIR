@@ -3058,18 +3058,18 @@ export default function ProcurementManager({
 
               {currentRole.id !== "GUEST" && (
                 <button 
-                  className="btn btn-primary"
+                  className="action-btn"
                   onClick={() => openAddModal("env")}
                   style={{
                     display: "flex",
                     alignItems: "center",
-                    gap: "0.25rem",
-                    padding: "0.4rem 1rem",
-                    borderRadius: "6px",
+                    gap: "0.3rem",
+                    padding: "0.5rem 1.2rem",
+                    borderRadius: "9999px",
                     background: "var(--accent-color)",
                     border: "none",
                     color: "white",
-                    fontWeight: "600",
+                    fontWeight: "700",
                     fontSize: "0.85rem",
                     cursor: "pointer"
                   }}
@@ -3906,18 +3906,18 @@ export default function ProcurementManager({
 
               {currentRole.id !== "GUEST" && (
                 <button 
-                  className="btn btn-primary"
+                  className="action-btn"
                   onClick={() => openAddModal("equip")}
                   style={{
                     display: "flex",
                     alignItems: "center",
-                    gap: "0.25rem",
-                    padding: "0.4rem 1rem",
-                    borderRadius: "6px",
+                    gap: "0.3rem",
+                    padding: "0.5rem 1.2rem",
+                    borderRadius: "9999px",
                     background: "var(--accent-color)",
                     border: "none",
                     color: "white",
-                    fontWeight: "600",
+                    fontWeight: "700",
                     fontSize: "0.85rem",
                     cursor: "pointer"
                   }}
@@ -4711,18 +4711,18 @@ export default function ProcurementManager({
 
               {currentRole.id !== "GUEST" && (
                 <button 
-                  className="btn btn-primary"
+                  className="action-btn"
                   onClick={() => openAddModal("service")}
                   style={{
                     display: "flex",
                     alignItems: "center",
-                    gap: "0.25rem",
-                    padding: "0.4rem 1rem",
-                    borderRadius: "6px",
+                    gap: "0.3rem",
+                    padding: "0.5rem 1.2rem",
+                    borderRadius: "9999px",
                     background: "var(--accent-color)",
                     border: "none",
                     color: "white",
-                    fontWeight: "600",
+                    fontWeight: "700",
                     fontSize: "0.85rem",
                     cursor: "pointer"
                   }}

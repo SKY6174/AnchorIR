@@ -9047,8 +9047,8 @@ export default function App() {
                       display: "flex",
                       alignItems: "center",
                       gap: "0.3rem",
-                      borderRadius: "0.4rem",
-                      padding: "0.5rem 1rem",
+                      borderRadius: "9999px",
+                      padding: "0.5rem 1.2rem",
                       fontSize: "0.8rem",
                       fontWeight: "700",
                       cursor: "pointer"
