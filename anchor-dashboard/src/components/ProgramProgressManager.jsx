@@ -352,25 +352,25 @@ export default function ProgramProgressManager({ projects, selectedYear, onSelec
             </div>
 
             {/* 프로그램 리스트 & 간트 차트 결합형 테이블 */}
-            <div className="table-panel" style={{ overflowX: "auto" }}>
-              <table className="custom-table" style={{ fontSize: "0.8rem", minWidth: "900px", tableLayout: "fixed", width: "100%" }}>
+            <div className="table-panel" style={{ overflowX: "auto", background: "var(--panel-bg, transparent)", borderRadius: "8px" }}>
+              <table className="custom-table" style={{ fontSize: "0.8rem", minWidth: "900px", tableLayout: "fixed", width: "100%", borderCollapse: "separate", borderSpacing: "0" }}>
                 <thead>
-                  <tr>
-                    <th style={{ width: "10%", textAlign: "center", verticalAlign: "middle" }}>ID</th>
-                    <th style={{ width: "20%", textAlign: "center", verticalAlign: "middle" }}>프로그램명</th>
-                    <th style={{ width: "16%", textAlign: "center", verticalAlign: "middle" }}>담당연구원</th>
-                    <th style={{ width: "17%", textAlign: "center", verticalAlign: "middle" }}>운영 예산<br />(배정/집행)</th>
-                    <th style={{ width: "37%", textAlign: "center" }}>
-                      {selectedYear}차년도 Timeline
+                  <tr style={{ background: "var(--table-header-bg, rgba(120, 120, 120, 0.04))" }}>
+                    <th style={{ width: "10%", textAlign: "center", verticalAlign: "middle", borderBottom: "2px solid var(--border-color)", padding: "0.6rem 0.4rem", color: "var(--text-primary)" }}>ID</th>
+                    <th style={{ width: "20%", textAlign: "center", verticalAlign: "middle", borderBottom: "2px solid var(--border-color)", padding: "0.6rem 0.4rem", color: "var(--text-primary)" }}>프로그램명</th>
+                    <th style={{ width: "16%", textAlign: "center", verticalAlign: "middle", borderBottom: "2px solid var(--border-color)", padding: "0.6rem 0.4rem", color: "var(--text-primary)" }}>담당연구원</th>
+                    <th style={{ width: "17%", textAlign: "center", verticalAlign: "middle", borderBottom: "2px solid var(--border-color)", padding: "0.6rem 0.4rem", color: "var(--text-primary)" }}>운영 예산<br />(배정/집행)</th>
+                    <th style={{ width: "37%", textAlign: "center", borderBottom: "2px solid var(--border-color)", padding: "0.6rem 0.4rem" }}>
+                      <span style={{ fontSize: "0.8rem", fontWeight: "800", color: "var(--text-primary)" }}>{selectedYear}차년도 Timeline</span>
                       {/* 연도 구분 줄 (상위 2분할: 시작년도 10개월 / 끝년도 2개월) */}
-                      <div style={{ display: "grid", gridTemplateColumns: "repeat(12, 1fr)", gap: "1px", marginTop: "0.4rem", fontSize: "0.6rem", borderBottom: "1px solid rgba(255,255,255,0.08)", paddingBottom: "0.2rem", color: "var(--accent-color)" }}>
-                        <div style={{ gridColumn: "span 10", textAlign: "center", borderRight: "1px solid rgba(255,255,255,0.05)", fontWeight: "800" }}>{startYr}년</div>
+                      <div style={{ display: "grid", gridTemplateColumns: "repeat(12, 1fr)", gap: "1px", marginTop: "0.4rem", fontSize: "0.65rem", borderBottom: "1px solid var(--border-color)", paddingBottom: "0.2rem", color: "var(--accent-color)" }}>
+                        <div style={{ gridColumn: "span 10", textAlign: "center", borderRight: "1px solid var(--border-color)", fontWeight: "800" }}>{startYr}년</div>
                         <div style={{ gridColumn: "span 2", textAlign: "center", fontWeight: "800" }}>{endYr}년</div>
                       </div>
                       {/* 월 구분 줄 */}
-                      <div style={{ display: "grid", gridTemplateColumns: "repeat(12, 1fr)", gap: "1px", marginTop: "0.25rem", fontSize: "0.65rem", fontWeight: "normal" }}>
+                      <div style={{ display: "grid", gridTemplateColumns: "repeat(12, 1fr)", gap: "1px", marginTop: "0.25rem", fontSize: "0.65rem", fontWeight: "700", color: "var(--text-secondary)" }}>
                         {monthsGuide.map((m) => (
-                          <div key={m.name} title={`${m.label}월`}>{m.name}</div>
+                          <div key={m.name} title={`${m.label}월`} style={{ borderRight: "1px solid var(--border-color-dark, rgba(120, 120, 120, 0.06))" }}>{m.name}</div>
                         ))}
                       </div>
                     </th>
@@ -394,69 +394,106 @@ export default function ProgramProgressManager({ projects, selectedYear, onSelec
                       };
 
                       return (
-                        <tr key={prog.id} style={{ height: "80px" }}>
-                          <td 
+                        <tr
+                          key={prog.id}
+                          style={{
+                            height: "78px",
+                            background: "var(--background-card-flat, transparent)",
+                            transition: "background-color 0.2s"
+                          }}
+                          onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = "rgba(59, 130, 246, 0.04)"; }}
+                          onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "var(--background-card-flat, transparent)"; }}
+                        >
+                          <td
                             onClick={() => onSelectProgram && onSelectProgram(activeUnit.id, prog.id)}
-                            style={{ 
-                              fontFamily: "var(--font-data)", 
-                              fontWeight: "700", 
-                              cursor: "pointer", 
-                              transition: "color 0.2s",
+                            style={{
+                              padding: "0.5rem 0.3rem",
                               textAlign: "center",
-                              verticalAlign: "middle"
+                              verticalAlign: "middle",
+                              borderBottom: "1px solid var(--border-color)"
                             }}
-                            onMouseEnter={(e) => { e.currentTarget.style.color = "var(--accent-color)"; e.currentTarget.style.textDecoration = "underline"; }}
-                            onMouseLeave={(e) => { e.currentTarget.style.color = ""; e.currentTarget.style.textDecoration = "none"; }}
                           >
-                            {prog.id}
+                            <div
+                              style={{
+                                fontFamily: "var(--font-data, monospace)",
+                                fontWeight: "700",
+                                fontSize: "0.72rem",
+                                color: "var(--text-secondary)",
+                                background: "var(--panel-bg-dark, rgba(120, 120, 120, 0.04))",
+                                padding: "0.22rem 0.45rem",
+                                borderRadius: "4px",
+                                border: "1px solid var(--border-color)",
+                                display: "inline-block",
+                                cursor: "pointer",
+                                transition: "all 0.15s"
+                              }}
+                              onMouseEnter={(e) => { e.currentTarget.style.borderColor = "var(--accent-color)"; e.currentTarget.style.color = "var(--accent-color)"; }}
+                              onMouseLeave={(e) => { e.currentTarget.style.borderColor = "var(--border-color)"; e.currentTarget.style.color = "var(--text-secondary)"; }}
+                            >
+                              {prog.id}
+                            </div>
                           </td>
-                          <td 
+                          <td
                             onClick={() => onSelectProgram && onSelectProgram(activeUnit.id, prog.id)}
-                            style={{ 
-                              fontWeight: "700", 
-                              whiteSpace: "normal", 
-                              wordBreak: "keep-all", 
-                              cursor: "pointer", 
+                            style={{
+                              fontWeight: "800",
+                              fontSize: "0.85rem",
+                              color: "var(--text-primary)",
+                              whiteSpace: "normal",
+                              wordBreak: "keep-all",
+                              cursor: "pointer",
                               transition: "color 0.2s",
                               textAlign: "center",
-                              verticalAlign: "middle"
+                              verticalAlign: "middle",
+                              borderBottom: "1px solid var(--border-color)",
+                              padding: "0.5rem"
                             }}
                             onMouseEnter={(e) => { e.currentTarget.style.color = "var(--accent-color)"; e.currentTarget.style.textDecoration = "underline"; }}
                             onMouseLeave={(e) => { e.currentTarget.style.color = ""; e.currentTarget.style.textDecoration = "none"; }}
                           >
                             {prog.title}
                           </td>
-                          <td style={{ fontSize: "0.73rem", fontWeight: "700", color: "var(--accent-color)", whiteSpace: "normal", wordBreak: "break-all", textAlign: "center", verticalAlign: "middle" }}>
-                            <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "center", gap: "0.25rem", padding: "0.2rem 0", width: "100%" }}>
-                              <User size={12} style={{ marginTop: "0.15rem", flexShrink: 0 }} />
-                              <div style={{ display: "flex", flexDirection: "column", gap: "0.15rem", lineHeight: "1.2", textAlign: "left" }}>
-                                {(prog.assignee || "미배정").split("/").map((name, idx) => (
-                                  <span key={idx}>{name.trim()}</span>
-                                ))}
+                          <td style={{ textAlign: "center", verticalAlign: "middle", borderBottom: "1px solid var(--border-color)", padding: "0.5rem 0.3rem" }}>
+                            <div style={{ display: "inline-flex", alignItems: "center", gap: "0.25rem", background: "rgba(59, 130, 246, 0.06)", border: "1px solid rgba(59, 130, 246, 0.15)", borderRadius: "6px", padding: "0.25rem 0.5rem", color: "var(--accent-color)" }}>
+                              <User size={12} style={{ flexShrink: 0 }} />
+                              <span style={{ fontWeight: "700", fontSize: "0.72rem", whiteSpace: "nowrap" }}>
+                                {prog.assignee || "미배정"}
+                              </span>
+                            </div>
+                          </td>
+                          <td style={{ verticalAlign: "middle", borderBottom: "1px solid var(--border-color)", padding: "0.5rem" }}>
+                            <div style={{
+                              background: "var(--panel-bg-dark, rgba(120, 120, 120, 0.02))",
+                              border: "1px solid var(--border-color)",
+                              borderRadius: "8px",
+                              padding: "0.4rem 0.6rem",
+                              display: "flex",
+                              flexDirection: "column",
+                              gap: "0.25rem"
+                            }}>
+                              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "0.68rem" }}>
+                                <span style={{ color: "var(--text-secondary)", fontWeight: "500" }}>배정:</span>
+                                <span style={{ color: "var(--text-primary)", fontWeight: "800", fontFamily: "var(--font-data, monospace)" }}>
+                                  {formatToMillionWon(totalProgBudget)} 백만
+                                </span>
+                              </div>
+                              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "0.68rem" }}>
+                                <span style={{ color: "var(--text-secondary)", fontWeight: "500" }}>집행:</span>
+                                <span style={{ color: "var(--success-color)", fontWeight: "800", fontFamily: "var(--font-data, monospace)" }}>
+                                  {formatToMillionWon(totalProgSpent)} 백만
+                                </span>
                               </div>
                             </div>
                           </td>
-                          <td style={{ verticalAlign: "middle" }}>
-                            <div style={{ display: "flex", flexDirection: "column", gap: "0.15rem", fontFamily: "var(--font-data)", padding: "0 0.75rem" }}>
-                              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                                <span style={{ color: "var(--text-secondary)", fontSize: "0.7rem" }}>배정:</span>
-                                <span style={{ fontWeight: "700", fontSize: "0.73rem" }}>{formatToMillionWon(totalProgBudget)} 백만원</span>
-                              </div>
-                              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                                <span style={{ color: "var(--text-secondary)", fontSize: "0.7rem" }}>집행:</span>
-                                <span style={{ color: "var(--success-color)", fontWeight: "700", fontSize: "0.73rem" }}>{formatToMillionWon(totalProgSpent)} 백만원</span>
-                              </div>
-                            </div>
-                          </td>
-                          <td style={{ verticalAlign: "middle", padding: "0.3rem 0.2rem" }}>
+                          <td style={{ verticalAlign: "middle", padding: "0.4rem 0.3rem", borderBottom: "1px solid var(--border-color)" }}>
                             <div style={{
                               display: "grid",
                               gridTemplateColumns: "repeat(12, 1fr)",
                               gap: "2px",
-                              background: "rgba(255, 255, 255, 0.015)",
-                              borderRadius: "0.4rem",
-                              padding: "2px",
-                              border: "1px solid rgba(255,255,255,0.03)"
+                              background: "var(--panel-bg-dark, rgba(0, 0, 0, 0.02))",
+                              borderRadius: "8px",
+                              padding: "4px",
+                              border: "1px solid var(--border-color)"
                             }}>
                               {monthlyPDCA.map((val, idx) => {
                                 const steps = val ? val.split(/[\/+&,]/).map(s => s.trim().toUpperCase()).filter(s => ["P", "D", "C", "A"].includes(s)) : [];
@@ -473,7 +510,6 @@ export default function ProgramProgressManager({ projects, selectedYear, onSelec
                                       if (char === "C") return "rgba(245, 158, 11, 0.45)";
                                       if (char === "A") return "rgba(217, 70, 239, 0.45)";
                                     }
-                                    // 완료인 경우 선명한 색상
                                   }
                                   if (char === "P") return "#3b82f6";
                                   if (char === "D") return "#10b981";
@@ -482,7 +518,7 @@ export default function ProgramProgressManager({ projects, selectedYear, onSelec
                                   return "transparent";
                                 };
 
-                                // 1. 상단 Plan 바 배경 및 연속 둥글기 계산 (Gantt 연결 바 연출)
+                                // 1. 상단 Plan 바 배경 및 연속 둥글기 계산
                                 let planBg = "transparent";
                                 if (steps.length === 1) {
                                   planBg = getSingleColor(steps[0]);
@@ -494,9 +530,8 @@ export default function ProgramProgressManager({ projects, selectedYear, onSelec
                                 const hasRightPlan = idx < 11 && monthlyPDCA[idx + 1] !== "";
                                 const planRadius = `${!hasLeftPlan ? "4px" : "0"} ${!hasRightPlan ? "4px" : "0"} ${!hasRightPlan ? "4px" : "0"} ${!hasLeftPlan ? "4px" : "0"}`;
 
-                                // 2. 하단 Actual 바 배경 및 연속 둥글기 계산 (Gantt 연결 바 연출)
+                                // 2. 하단 Actual 바 배경 및 연속 둥글기 계산
                                 const getActualBg = () => {
-                                  // 수동 기입된 실제 타임라인이 존재하면 그것을 최우선으로 사용하여 그립니다.
                                   if (prog.actual_timeline) {
                                     const actualMonths = parseTimelineToMonths(prog.actual_timeline);
                                     const targetActualVal = actualMonths[idx] || "";
@@ -517,7 +552,6 @@ export default function ProgramProgressManager({ projects, selectedYear, onSelec
                                     }
                                   }
 
-                                  // actual_timeline이 비어있으면 기존의 계획 기반 매핑 자동 폴백
                                   if (steps.length === 0) return "transparent";
                                   if (steps.length === 1) {
                                     return getSingleColor(steps[0], true, prog);
@@ -535,7 +569,6 @@ export default function ProgramProgressManager({ projects, selectedYear, onSelec
                                 const actualBg = getActualBg();
 
                                 const isActualActive = (i) => {
-                                  // 수동 기입된 실제 타임라인이 존재하면 그것을 판정 기준으로 삼습니다.
                                   if (prog.actual_timeline) {
                                     const actualMonths = parseTimelineToMonths(prog.actual_timeline) || [];
                                     const actVal = actualMonths[i];
@@ -572,8 +605,8 @@ export default function ProgramProgressManager({ projects, selectedYear, onSelec
                                       justifyContent: "space-between",
                                       position: "relative",
                                       padding: "1px 0",
-                                      background: "rgba(255, 255, 255, 0.01)",
-                                      borderRight: "1px dashed rgba(255,255,255,0.03)"
+                                      background: "transparent",
+                                      borderRight: idx < 11 ? "1px dashed var(--border-color, rgba(120, 120, 120, 0.15))" : "none"
                                     }}
                                     onMouseUp={() => handleGanttMouseUp(prog)}
                                   >
@@ -612,18 +645,20 @@ export default function ProgramProgressManager({ projects, selectedYear, onSelec
                                             left: 0,
                                             right: 0,
                                             top: 0,
-                                            height: "10px",
+                                            height: "11px",
                                             background: planBg,
                                             borderRadius: planRadius,
                                             fontSize: "0.52rem",
                                             fontWeight: "900",
-                                            color: "white",
+                                            color: "#ffffff",
+                                            textShadow: "0 1px 2px rgba(0,0,0,0.5)",
                                             display: "flex",
                                             alignItems: "center",
                                             justifyContent: "center",
                                             lineHeight: 1,
                                             pointerEvents: "none",
-                                            zIndex: 2
+                                            zIndex: 2,
+                                            boxShadow: "0 1px 3px rgba(0,0,0,0.15)"
                                           }}
                                         >
                                           <span style={{ transform: "scale(0.85)" }}>{val}</span>
@@ -643,7 +678,8 @@ export default function ProgramProgressManager({ projects, selectedYear, onSelec
                                           top: "50%",
                                           transform: "translate(-50%, -50%)",
                                           fontSize: "0.55rem",
-                                          color: "rgba(255, 255, 255, 0.35)",
+                                          color: "var(--text-secondary)",
+                                          opacity: 0.6,
                                           fontWeight: "bold",
                                           zIndex: 1,
                                           pointerEvents: "none"
@@ -687,19 +723,21 @@ export default function ProgramProgressManager({ projects, selectedYear, onSelec
                                           left: 0,
                                           right: 0,
                                           top: 0,
-                                          height: "10px",
-                                          background: actualBg !== "transparent" ? actualBg : "rgba(255,255,255,0.02)",
+                                          height: "11px",
+                                          background: actualBg !== "transparent" ? actualBg : "rgba(120,120,120,0.05)",
                                           borderRadius: actualRadius,
-                                          border: actualBg === "transparent" ? "1px dashed rgba(255,255,255,0.02)" : "none",
+                                          border: actualBg === "transparent" ? "1px dashed var(--border-color)" : "none",
                                           fontSize: "0.5rem",
                                           fontWeight: "900",
-                                          color: "white",
+                                          color: "#ffffff",
+                                          textShadow: actualBg !== "transparent" ? "0 1px 2px rgba(0,0,0,0.5)" : "none",
                                           display: "flex",
                                           alignItems: "center",
                                           justifyContent: "center",
                                           lineHeight: 1,
                                           pointerEvents: "none",
-                                          zIndex: 2
+                                          zIndex: 2,
+                                          boxShadow: actualBg !== "transparent" ? "0 1px 2px rgba(0,0,0,0.1)" : "none"
                                         }}
                                       >
                                         {actualBg !== "transparent" && val && (
