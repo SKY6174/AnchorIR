@@ -11486,25 +11486,27 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
     });
 
     // 프로그램들을 순회하며 각 연도의 비목 데이터 합산
-    u.programs.forEach((prog) => {
-      [1, 2, 3, 4, 5].forEach((yr) => {
-        const bgCats = prog.years?.[yr]?.budget_categories || [];
-        bgCats.forEach((cat) => {
-          const normCat = normalizeCategoryName(cat.category);
-          const matchedOrderCat = CATEGORY_ORDER.find(c => normalizeCategoryName(c) === normCat);
-          if (matchedOrderCat) {
-            const cleanBudget = typeof cat.budget === "string"
-              ? parseFloat(cat.budget.replace(/,/g, ""))
-              : Number(cat.budget || 0);
-            const cleanCarry = typeof cat.budget_carry === "string"
-              ? parseFloat(cat.budget_carry.replace(/,/g, ""))
-              : Number(cat.budget_carry || 0);
-            categoriesMap[matchedOrderCat][yr - 1].main += cleanBudget / 1e6;
-            categoriesMap[matchedOrderCat][yr - 1].carry += cleanCarry / 1e6;
-          }
+    if (u.programs && Array.isArray(u.programs)) {
+      u.programs.forEach((prog) => {
+        [1, 2, 3, 4, 5].forEach((yr) => {
+          const bgCats = prog.years?.[yr]?.budget_categories || [];
+          bgCats.forEach((cat) => {
+            const normCat = normalizeCategoryName(cat.category);
+            const matchedOrderCat = CATEGORY_ORDER.find(c => normalizeCategoryName(c) === normCat);
+            if (matchedOrderCat) {
+              const cleanBudget = typeof cat.budget === "string"
+                ? parseFloat(cat.budget.replace(/,/g, ""))
+                : Number(cat.budget || 0);
+              const cleanCarry = typeof cat.budget_carry === "string"
+                ? parseFloat(cat.budget_carry.replace(/,/g, ""))
+                : Number(cat.budget_carry || 0);
+              categoriesMap[matchedOrderCat][yr - 1].main += cleanBudget / 1e6;
+              categoriesMap[matchedOrderCat][yr - 1].carry += cleanCarry / 1e6;
+            }
+          });
         });
       });
-    });
+    }
 
     // 값이 0보다 큰 비목만 필터링하여 categories 구성
     const categories = [];
@@ -11586,12 +11588,14 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
     const unitTitle = u.id === "Common" ? "공통운영경비" : `${u.id}. ${u.title}`;
 
     let uNat = 0, uCity = 0, uExt = 0;
-    u.programs.forEach((prog) => {
-      const py = prog.years?.[selectedYear] || {};
-      uNat += (py.budget_national || 0) + (py.budget_carry_national || 0);
-      uCity += (py.budget_city || 0) + (py.budget_carry_city || 0);
-      uExt += (py.budget_external || 0) + (py.budget_carry_external || 0);
-    });
+    if (u.programs && Array.isArray(u.programs)) {
+      u.programs.forEach((prog) => {
+        const py = prog.years?.[selectedYear] || {};
+        uNat += (py.budget_national || 0) + (py.budget_carry_national || 0);
+        uCity += (py.budget_city || 0) + (py.budget_carry_city || 0);
+        uExt += (py.budget_external || 0) + (py.budget_carry_external || 0);
+      });
+    }
 
     const natKr = uNat / 1e6;
     const cityKr = uCity / 1e6;
@@ -11608,39 +11612,41 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
       categoriesMap[catName] = { national: 0, city: 0, external: 0 };
     });
 
-    u.programs.forEach((prog) => {
-      const py = prog.years?.[selectedYear] || {};
-      const progBudgetMain = py.budget_main || 0;
-      const progBudgetCarry = py.budget_carry || 0;
+    if (u.programs && Array.isArray(u.programs)) {
+      u.programs.forEach((prog) => {
+        const py = prog.years?.[selectedYear] || {};
+        const progBudgetMain = py.budget_main || 0;
+        const progBudgetCarry = py.budget_carry || 0;
 
-      // 안분 비율
-      const natRatio = progBudgetMain > 0 ? (py.budget_national || 0) / progBudgetMain : 0;
-      const cityRatio = progBudgetMain > 0 ? (py.budget_city || 0) / progBudgetMain : 0;
-      const extRatio = progBudgetMain > 0 ? (py.budget_external || 0) / progBudgetMain : 0;
+        // 안분 비율
+        const natRatio = progBudgetMain > 0 ? (py.budget_national || 0) / progBudgetMain : 0;
+        const cityRatio = progBudgetMain > 0 ? (py.budget_city || 0) / progBudgetMain : 0;
+        const extRatio = progBudgetMain > 0 ? (py.budget_external || 0) / progBudgetMain : 0;
 
-      const carryNatRatio = progBudgetCarry > 0 ? (py.budget_carry_national || 0) / progBudgetCarry : 0;
-      const carryCityRatio = progBudgetCarry > 0 ? (py.budget_carry_city || 0) / progBudgetCarry : 0;
-      const carryExtRatio = progBudgetCarry > 0 ? (py.budget_carry_external || 0) / progBudgetCarry : 0;
+        const carryNatRatio = progBudgetCarry > 0 ? (py.budget_carry_national || 0) / progBudgetCarry : 0;
+        const carryCityRatio = progBudgetCarry > 0 ? (py.budget_carry_city || 0) / progBudgetCarry : 0;
+        const carryExtRatio = progBudgetCarry > 0 ? (py.budget_carry_external || 0) / progBudgetCarry : 0;
 
-      const bgCats = py.budget_categories || [];
-      bgCats.forEach((cat) => {
-        const normCat = normalizeCategoryName(cat.category);
-        const matchedOrderCat = CATEGORY_ORDER.find(c => normalizeCategoryName(c) === normCat);
-        if (matchedOrderCat) {
-          const catB = cat.budget ? parseFloat(String(cat.budget).replace(/,/g, "")) : 0;
-          const catBC = cat.budget_carry ? parseFloat(String(cat.budget_carry).replace(/,/g, "")) : 0;
+        const bgCats = py.budget_categories || [];
+        bgCats.forEach((cat) => {
+          const normCat = normalizeCategoryName(cat.category);
+          const matchedOrderCat = CATEGORY_ORDER.find(c => normalizeCategoryName(c) === normCat);
+          if (matchedOrderCat) {
+            const catB = cat.budget ? parseFloat(String(cat.budget).replace(/,/g, "")) : 0;
+            const catBC = cat.budget_carry ? parseFloat(String(cat.budget_carry).replace(/,/g, "")) : 0;
 
-          // 재원 안분 적용
-          const cNat = catB * natRatio + catBC * carryNatRatio;
-          const cCity = catB * cityRatio + catBC * carryCityRatio;
-          const cExt = catB * extRatio + catBC * carryExtRatio;
+            // 재원 안분 적용
+            const cNat = catB * natRatio + catBC * carryNatRatio;
+            const cCity = catB * cityRatio + catBC * carryCityRatio;
+            const cExt = catB * extRatio + catBC * carryExtRatio;
 
-          categoriesMap[matchedOrderCat].national += cNat / 1e6;
-          categoriesMap[matchedOrderCat].city += cCity / 1e6;
-          categoriesMap[matchedOrderCat].external += cExt / 1e6;
-        }
+            categoriesMap[matchedOrderCat].national += cNat / 1e6;
+            categoriesMap[matchedOrderCat].city += cCity / 1e6;
+            categoriesMap[matchedOrderCat].external += cExt / 1e6;
+          }
+        });
       });
-    });
+    }
 
     const categories = [];
     CATEGORY_ORDER.forEach((catName) => {
