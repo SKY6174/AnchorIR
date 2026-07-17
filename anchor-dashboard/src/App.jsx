@@ -3330,14 +3330,18 @@ export default function App() {
     if (!projects) return;
     const initialJoint = {};
     projects.forEach((p) => {
-      p.units.forEach((u) => {
-        u.programs.forEach((prog) => {
-          const currentVal = prog.assignees?.[selectedYear] !== undefined ? prog.assignees[selectedYear] : (prog.assignee || "");
-          if (currentVal.includes(",") || currentVal.includes("/")) {
-            initialJoint[prog.id] = true;
+      if (p.units && Array.isArray(p.units)) {
+        p.units.forEach((u) => {
+          if (u.programs && Array.isArray(u.programs)) {
+            u.programs.forEach((prog) => {
+              const currentVal = prog.assignees?.[selectedYear] !== undefined ? prog.assignees[selectedYear] : (prog.assignee || "");
+              if (currentVal && (currentVal.includes(",") || currentVal.includes("/"))) {
+                initialJoint[prog.id] = true;
+              }
+            });
           }
         });
-      });
+      }
     });
     setJointPrograms((prev) => ({ ...initialJoint, ...prev }));
   }, [projects, selectedYear]);
@@ -3878,9 +3882,11 @@ export default function App() {
 
             if (pendReqs && pendReqs.length > 0) {
               mergedProjData.forEach((strat) => {
-                strat.units.forEach((unit) => {
-                  unit.programs.forEach((prog) => {
-                    const req = pendReqs.find(r => r.program_id === prog.id);
+                if (strat.units && Array.isArray(strat.units)) {
+                  strat.units.forEach((unit) => {
+                    if (unit.programs && Array.isArray(unit.programs)) {
+                      unit.programs.forEach((prog) => {
+                        const req = pendReqs.find(r => r.program_id === prog.id);
                     if (req && req.changes && req.changes.after) {
                       const after = req.changes.after;
 
@@ -3924,13 +3930,16 @@ export default function App() {
                       }
                     }
                   });
-                });
+                }
               });
+            }
+          });
 
               // 💡 승인대기 정보 적용 후 비목과 총합 재롤업 집계
               mergedProjData.forEach((strategy) => {
-                strategy.units.forEach((unit) => {
-                  const categorySums = {
+                if (strategy.units && Array.isArray(strategy.units)) {
+                  strategy.units.forEach((unit) => {
+                    const categorySums = {
                     "인건비": { 1: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 }, 2: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 }, 3: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 }, 4: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 }, 5: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 } },
                     "장학금": { 1: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 }, 2: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 }, 3: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 }, 4: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 }, 5: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 } },
                     "교육∙연구 프로그램 개발∙운영비": { 1: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 }, 2: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 }, 3: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 }, 4: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 }, 5: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 } },
@@ -4061,6 +4070,7 @@ export default function App() {
                     }
                   });
                 });
+              }
               });
             }
           } catch (e) {
@@ -4068,14 +4078,16 @@ export default function App() {
           }
 
           mergedProjData.forEach((strategy) => {
-            strategy.units.forEach((unit) => {
-              const sourceUnit = multiYearInitialData
-                ?.flatMap(s => s.units)
-                ?.find(u => u.id === unit.id);
-              if (sourceUnit) {
-                unit.kpis = sourceUnit.kpis || [];
-              }
-            });
+            if (strategy.units && Array.isArray(strategy.units)) {
+              strategy.units.forEach((unit) => {
+                const sourceUnit = multiYearInitialData
+                  ?.flatMap(s => s.units)
+                  ?.find(u => u.id === unit.id);
+                if (sourceUnit) {
+                  unit.kpis = sourceUnit.kpis || [];
+                }
+              });
+            }
           });
           setProjects(mergedProjData);
           // 💡 [안전 가드] 원격 Supabase DB로부터 최신 프로젝트 데이터를 성공적으로 가져왔으므로, 레퍼런스(fetchedProjectsRef.current)에 동기화해 둡니다.
