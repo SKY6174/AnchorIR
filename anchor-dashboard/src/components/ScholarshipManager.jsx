@@ -450,7 +450,7 @@ export default function ScholarshipManager({
   const sortedData = getSortedItems();
 
   return (
-    <div style={{ padding: "1rem" }}>
+    <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
       <div style={{ display: "flex", justifyContent: "flex-end", alignItems: "center", marginBottom: "1rem" }}>
         <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
           {/* 💡 [연도 누적 선택 필터] (버튼들과 패딩 및 둥글기 통일) */}
