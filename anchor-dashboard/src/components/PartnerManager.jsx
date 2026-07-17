@@ -496,41 +496,25 @@ export default function PartnerManager({ selectedYear }) {
           {/* 엑셀 서식 다운로드 (Template) */}
           <button
             onClick={handleDownloadTemplate}
-            className="btn-secondary"
+            className="action-btn download-btn"
             style={{
-              padding: "0.5rem 0.8rem",
-              fontSize: "0.8rem",
-              borderRadius: "6px",
-              cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-              gap: "0.4rem",
-              background: "var(--input-bg)",
-              border: "1px solid var(--border-color)", // 💡 가변 테두리로 대응
-              color: "var(--text-secondary)" // 💡 가변 폰트칼라로 대응
+              background: "var(--bg-tertiary)",
+              cursor: "pointer"
             }}
           >
-            <FileText size={14} />
+            <Download size={16} />
             엑셀 서식
           </button>
 
           {/* 엑셀 업로드 (Upload) */}
           <label
-            className="btn-secondary"
+            className="action-btn upload-btn"
             style={{
-              padding: "0.5rem 0.8rem",
-              fontSize: "0.8rem",
-              borderRadius: "6px",
               cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-              gap: "0.4rem",
-              background: "rgba(99, 102, 241, 0.1)",
-              border: "1px solid rgba(99, 102, 241, 0.2)",
-              color: "#818CF8"
+              margin: 0
             }}
           >
-            <Upload size={14} />
+            <Upload size={16} />
             엑셀 업로드
             <input
               type="file"
@@ -543,39 +527,35 @@ export default function PartnerManager({ selectedYear }) {
           {/* 엑셀 다운로드 (Export) */}
           <button
             onClick={handleExcelExport}
-            className="btn-secondary"
+            className="action-btn download-btn"
             style={{
-              padding: "0.5rem 0.8rem",
-              fontSize: "0.8rem",
-              borderRadius: "6px",
-              cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-              gap: "0.4rem",
-              background: "rgba(16, 185, 129, 0.1)",
-              border: "1px solid rgba(16, 185, 129, 0.2)",
-              color: "#10B981"
+              background: "var(--bg-tertiary)",
+              cursor: "pointer"
             }}
           >
-            <Download size={14} />
+            <Download size={16} />
             엑셀 다운로드
           </button>
 
           {/* 신규 등록 */}
           <button
             onClick={openAddModal}
-            className="btn-primary"
+            className="action-btn"
             style={{
-              padding: "0.5rem 1rem",
-              fontSize: "0.8rem",
-              borderRadius: "6px",
+              padding: "0.5rem 1.2rem",
+              background: "var(--accent-color)",
+              color: "white",
+              border: "none",
+              borderRadius: "9999px",
+              fontSize: "0.85rem",
+              fontWeight: "700",
               cursor: "pointer",
               display: "flex",
               alignItems: "center",
-              gap: "0.4rem"
+              gap: "0.3rem"
             }}
           >
-            <Plus size={14} />
+            <Plus size={16} />
             신규 파트너 등록
           </button>
         </div>
