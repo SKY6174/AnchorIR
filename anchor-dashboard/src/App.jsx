@@ -10173,16 +10173,22 @@ export default function App() {
                     <tbody>
                       {(() => {
                         const kpiMap = new Map();
-                        displayProjects.forEach((p) => {
-                          p.units.forEach((u) => {
-                            u.kpis.forEach((k) => {
-                              if (k.type === kpiSubTab) {
-                                const nk = getNormalizedKpi(k, selectedYear);
-                                kpiMap.set(nk.id, { k, nk });
-                              }
-                            });
+                        if (displayProjects && Array.isArray(displayProjects)) {
+                          displayProjects.forEach((p) => {
+                            if (p.units && Array.isArray(p.units)) {
+                              p.units.forEach((u) => {
+                                if (u.kpis && Array.isArray(u.kpis)) {
+                                  u.kpis.forEach((k) => {
+                                    if (k.type === kpiSubTab) {
+                                      const nk = getNormalizedKpi(k, selectedYear);
+                                      kpiMap.set(nk.id, { k, nk });
+                                    }
+                                  });
+                                }
+                              });
+                            }
                           });
-                        });
+                        }
 
                         const sortedKpis = Array.from(kpiMap.values()).sort((a, b) => {
                           const prefixA = a.nk.id.startsWith("C-") ? "C" : "L";
