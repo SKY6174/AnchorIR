@@ -939,6 +939,46 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
     XLSX.writeFile(workbook, "UC_ANCHOR_기자재대장_업로드_서식.xlsx");
   };
 
+  // 💡 [교육용 한글 주석] 전체 기자재대장 목록을 엑셀 파일로 추출(내보내기)하는 핸들러
+  const handleExportEquipExcel = () => {
+    const excelData = equipments.map((eq) => ({
+      "자산번호": eq.asset_number || "",
+      "분류명": eq.category_name || "",
+      "품목명": eq.item_name || "",
+      "규격": eq.spec || "",
+      "검수일자": eq.inspect_date || "",
+      "금액": eq.price || 0,
+      "관리부서": eq.dept_name || "",
+      "설치부서": eq.install_dept || "",
+      "호실": eq.room_no || "",
+      "항목": eq.item_type || "",
+      "지출일자": eq.pay_date || "",
+      "SW여부": eq.is_sw || "N",
+      "구입업체": eq.vendor || "",
+      "AI∙DX 자산여부": eq.ai_dx || "N"
+    }));
+    const sheetName = "기자재 대장 목록";
+    const fileName = `Anchor_기자재_대장_목록_Year_${selectedYear}.xlsx`;
+
+    try {
+      const worksheet = XLSX.utils.json_to_sheet(excelData);
+      worksheet["!cols"] = Array(14).fill({ wch: 18 });
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, sheetName);
+      const b64out = XLSX.write(workbook, { bookType: "xlsx", type: "base64" });
+
+      const a = document.createElement("a");
+      a.href = `data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,${b64out}`;
+      a.download = fileName;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    } catch (err) {
+      console.error("Equipment Excel export error:", err);
+      alert("엑셀 내보내기 중 오류가 발생했습니다: " + err.message);
+    }
+  };
+
   // AI∙DX 자산여부 체크박스 토글 핸들러
   const toggleEquipCategory = async (itemId, currentCategory) => {
     if (currentRole.id === "GUEST") {
@@ -1606,43 +1646,28 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
                       )}
                     </div>
 
+                    {/* 엑셀 서식 다운로드 (첫번째 그림의 스타일과 동기화) */}
                     <button
                       onClick={handleDownloadEquipTemplate}
+                      className="action-btn download-btn"
                       style={{
-                        padding: "0.35rem 0.65rem",
-                        background: "rgba(59, 130, 246, 0.15)",
-                        border: "1px solid rgba(59, 130, 246, 0.3)",
-                        borderRadius: "4px",
-                        color: "#60A5FA",
-                        fontSize: "0.68rem",
-                        fontWeight: "800",
-                        cursor: "pointer",
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "0.25rem",
-                        transition: "all 0.15s ease"
+                        background: "var(--bg-tertiary)",
+                        cursor: "pointer"
                       }}
                       title="업로드 양식 서식(.xlsx) 다운로드"
                     >
-                      <Download size={12} /> 양식 다운
+                      <Download size={16} /> 엑셀 서식
                     </button>
+
+                    {/* 엑셀 업로드 (첫번째 그림의 스타일과 동기화) */}
                     <label
+                      className="action-btn upload-btn"
                       style={{
-                        padding: "0.35rem 0.65rem",
-                        background: "linear-gradient(135deg, #10B981 0%, #059669 100%)",
-                        borderRadius: "4px",
-                        color: "white",
-                        fontSize: "0.68rem",
-                        fontWeight: "800",
-                        cursor: "pointer",
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "0.25rem",
-                        transition: "all 0.15s ease"
+                        cursor: "pointer"
                       }}
                       title="엑셀 파일을 통한 자산 대량 업로드 등록"
                     >
-                      <Upload size={12} /> 엑셀 업로드
+                      <Upload size={16} /> 엑셀 업로드
                       <input
                         type="file"
                         accept=".xlsx, .xls"
@@ -1650,6 +1675,19 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
                         style={{ display: "none" }}
                       />
                     </label>
+
+                    {/* 엑셀 다운로드 (첫번째 그림의 스타일과 동기화) */}
+                    <button
+                      onClick={handleExportEquipExcel}
+                      className="action-btn download-btn"
+                      style={{
+                        background: "var(--bg-tertiary)",
+                        cursor: "pointer"
+                      }}
+                      title="전체 기자재 목록을 엑셀 파일로 다운로드"
+                    >
+                      <Download size={16} /> 엑셀 다운로드
+                    </button>
                   </div>
                 )}
               </div>
