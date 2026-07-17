@@ -8371,7 +8371,7 @@ export default function App() {
                     <thead>
                       <tr style={{ background: "rgba(255,255,255,0.02)" }}>
                         <th rowSpan={2} style={{ textAlign: "center", verticalAlign: "middle", borderBottom: "1px solid var(--border-color)", borderRight: "1px solid var(--border-color)", fontWeight: "800", color: "#10b981", background: "rgba(16, 185, 129, 0.08)", padding: "0.55rem 0.5rem", fontSize: "0.95rem" }}>단위과제</th>
-                        <th colSpan={selectedYear >= 2 ? 5 : 4} style={{ textAlign: "center", borderBottom: "1px solid var(--border-color)", borderRight: "1px solid var(--border-color)", fontWeight: "800", color: "#10b981", background: "rgba(59, 130, 246, 0.08)", padding: "0.55rem 0", fontSize: "0.95rem" }}>
+                        <th colSpan={selectedYear >= 2 ? 5 : 4} style={{ textAlign: "center", borderBottom: "1px solid var(--border-color)", borderRight: "1px solid var(--border-color)", fontWeight: "800", color: "#10b981", background: "rgba(16, 185, 129, 0.08)", padding: "0.55rem 0", fontSize: "0.95rem" }}>
                           예산 배정 및 집행 (단위: 백만원)
                         </th>
                         <th colSpan={5} style={{ textAlign: "center", borderBottom: "1px solid var(--border-color)", fontWeight: "800", color: "#10b981", background: "rgba(16, 185, 129, 0.08)", padding: "0.55rem 0", fontSize: "0.95rem" }}>
