@@ -3327,7 +3327,7 @@ export default function App() {
 
   // projects 데이터 로딩 시 2명 이상으로 배정된 과제를 자동 스캔하여 체크 상태 설정
   useEffect(() => {
-    if (!projects) return;
+    if (!projects || !Array.isArray(projects)) return;
     const initialJoint = {};
     projects.forEach((p) => {
       if (p.units && Array.isArray(p.units)) {
@@ -11430,14 +11430,18 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
 
   // 1. 모든 단위과제 수집 (정렬 포함)
   const allUnits = [];
-  projects.forEach((p) => {
-    p.units.forEach((u) => {
-      allUnits.push({
-        ...u,
-        projectTitle: p.title
-      });
+  if (projects && Array.isArray(projects)) {
+    projects.forEach((p) => {
+      if (p.units && Array.isArray(p.units)) {
+        p.units.forEach((u) => {
+          allUnits.push({
+            ...u,
+            projectTitle: p.title
+          });
+        });
+      }
     });
-  });
+  }
 
   // ID 기준으로 정렬 (Common은 맨 마지막에 위치하도록 함)
   allUnits.sort((a, b) => {
