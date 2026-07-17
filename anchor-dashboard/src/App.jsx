@@ -8627,44 +8627,10 @@ export default function App() {
         )}
 
         {activeTab === "management" && currentRole && (
-          <div className="glass-card" style={{ position: "relative" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.2rem", flexWrap: "wrap", gap: "0.8rem" }}>
-              <div>
-                <h2 style={{ fontSize: "1.25rem", fontWeight: "800" }}>앵커사업단 관리</h2>
-                <p style={{ fontSize: "0.8rem", color: "var(--text-secondary)", marginTop: "0.2rem" }}>
-                  울산과학대학교 앵커 사업단 구성원을 관리하고, 각 세부 프로그램의 실무 연구원을 매핑하는 통합 업무 공간입니다.
-                </p>
-              </div>
-
-              {mgmtSubTab === "members" && currentRole.rank <= 2 && (
-                <button
-                  className="btn-primary"
-                  style={{ display: "flex", alignItems: "center", gap: "0.3rem", borderRadius: "0.4rem", padding: "0.5rem 1rem", fontSize: "0.8rem", fontWeight: "700" }}
-                  onClick={() => {
-                    setEditingMember({
-                      id: "",
-                      name: "",
-                      role: "연구원",
-                      grade: "연구원",
-                      dept: "ECC센터",
-                      phoneOffice: "",
-                      phoneMobile: "",
-                      email: "",
-                      room: "",
-                      hireDate: "2026-03-01",
-                      startDate: "2026-03-01",
-                      endDate: "",
-                      status: "참여중"
-                    });
-                    setIsMemberModalOpen(true);
-                  }}
-                >
-                  구성원 추가
-                </button>
-              )}
-            </div>
-
-            <div style={{ display: "flex", gap: "0.5rem", borderBottom: "1px solid var(--border-color)", paddingBottom: "0.8rem", marginBottom: "1.2rem" }}>
+          <div className="management-wrapper" style={{ display: "flex", flexDirection: "column", gap: "1rem", width: "100%" }}>
+            
+            {/* 서브탭 내비게이션 바 (프레임 밖/위에 배치, 0.5rem 마진 및 1rem 폰트) */}
+            <div style={{ display: "flex", gap: "0.5rem", borderBottom: "1px solid rgba(255,255,255,0.1)", paddingBottom: "0.8rem", marginBottom: "0.5rem", flexWrap: "wrap", alignItems: "center" }}>
               {/* 1. 승인처리 탭 노출 가드 (최고 관리자군 또는 특화 승인권자) */}
               {((currentRole && ["ADMIN", "G_DIRECTOR", "HQ_HEAD", "MANAGER"].includes(currentRole.id || "")) ||
                 (currentUser && ["이규상", "임은애", "황수진", "최주명"].some(name => (currentUser.name || "").includes(name)))) && (
@@ -8675,7 +8641,7 @@ export default function App() {
                       border: "none",
                       background: "transparent",
                       padding: "0.5rem 1rem",
-                      fontSize: "0.85rem",
+                      fontSize: "1rem",
                       fontWeight: "800",
                       cursor: "pointer",
                       color: mgmtSubTab === "approvals" ? "var(--accent-color)" : "var(--text-secondary)",
@@ -8698,7 +8664,7 @@ export default function App() {
                         border: "none",
                         background: "transparent",
                         padding: "0.5rem 1rem",
-                        fontSize: "0.85rem",
+                        fontSize: "1rem",
                         fontWeight: "800",
                         cursor: "pointer",
                         color: mgmtSubTab === "members" ? "var(--accent-color)" : "var(--text-secondary)",
@@ -8716,7 +8682,7 @@ export default function App() {
                           border: "none",
                           background: "transparent",
                           padding: "0.5rem 1rem",
-                          fontSize: "0.85rem",
+                          fontSize: "1rem",
                           fontWeight: "800",
                           cursor: "pointer",
                           color: mgmtSubTab === "users" ? "var(--accent-color)" : "var(--text-secondary)",
@@ -8734,7 +8700,7 @@ export default function App() {
                         border: "none",
                         background: "transparent",
                         padding: "0.5rem 1rem",
-                        fontSize: "0.85rem",
+                        fontSize: "1rem",
                         fontWeight: "800",
                         cursor: "pointer",
                         color: mgmtSubTab === "programs" ? "var(--accent-color)" : "var(--text-secondary)",
@@ -8757,7 +8723,7 @@ export default function App() {
                       border: "none",
                       background: "transparent",
                       padding: "0.5rem 1rem",
-                      fontSize: "0.85rem",
+                      fontSize: "1rem",
                       fontWeight: "800",
                       cursor: "pointer",
                       color: mgmtSubTab === "org_chart" ? "var(--accent-color)" : "var(--text-secondary)",
@@ -8774,7 +8740,7 @@ export default function App() {
                       border: "none",
                       background: "transparent",
                       padding: "0.5rem 1rem",
-                      fontSize: "0.85rem",
+                      fontSize: "1rem",
                       fontWeight: "800",
                       cursor: "pointer",
                       color: mgmtSubTab === "center_org_chart" ? "var(--accent-color)" : "var(--text-secondary)",
@@ -8791,7 +8757,7 @@ export default function App() {
                       border: "none",
                       background: "transparent",
                       padding: "0.5rem 1rem",
-                      fontSize: "0.85rem",
+                      fontSize: "1rem",
                       fontWeight: "800",
                       cursor: "pointer",
                       color: mgmtSubTab === "committees" ? "var(--accent-color)" : "var(--text-secondary)",
@@ -8808,7 +8774,7 @@ export default function App() {
                       border: "none",
                       background: "transparent",
                       padding: "0.5rem 1rem",
-                      fontSize: "0.85rem",
+                      fontSize: "1rem",
                       fontWeight: "800",
                       cursor: "pointer",
                       color: mgmtSubTab === "partners" ? "var(--accent-color)" : "var(--text-secondary)",
@@ -8828,7 +8794,7 @@ export default function App() {
                     border: "none",
                     background: "transparent",
                     padding: "0.5rem 1rem",
-                    fontSize: "0.85rem",
+                    fontSize: "1rem",
                     fontWeight: "800",
                     cursor: "pointer",
                     color: mgmtSubTab === "instructor_pool" ? "var(--accent-color)" : "var(--text-secondary)",
@@ -8847,7 +8813,7 @@ export default function App() {
                     border: "none",
                     background: "transparent",
                     padding: "0.5rem 1rem",
-                    fontSize: "0.85rem",
+                    fontSize: "1rem",
                     fontWeight: "800",
                     cursor: "pointer",
                     color: mgmtSubTab === "portal_config" ? "var(--accent-color)" : "var(--text-secondary)",
@@ -8859,6 +8825,45 @@ export default function App() {
                 </button>
               )}
             </div>
+
+            {/* 본문 콘텐츠만 카드 블록 내부로 래핑 */}
+            <div className="glass-card" style={{ padding: "1.25rem", position: "relative" }}>
+              {/* 타이틀 및 구성원 추가 버튼 영역 */}
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.2rem", flexWrap: "wrap", gap: "0.8rem" }}>
+                <div>
+                  <h2 style={{ fontSize: "1.25rem", fontWeight: "800" }}>앵커사업단 관리</h2>
+                  <p style={{ fontSize: "0.8rem", color: "var(--text-secondary)", marginTop: "0.2rem" }}>
+                    울산과학대학교 앵커 사업단 구성원을 관리하고, 각 세부 프로그램의 실무 연구원을 매핑하는 통합 업무 공간입니다.
+                  </p>
+                </div>
+
+                {mgmtSubTab === "members" && currentRole.rank <= 2 && (
+                  <button
+                    className="btn-primary"
+                    style={{ display: "flex", alignItems: "center", gap: "0.3rem", borderRadius: "0.4rem", padding: "0.5rem 1rem", fontSize: "0.8rem", fontWeight: "700" }}
+                    onClick={() => {
+                      setEditingMember({
+                        id: "",
+                        name: "",
+                        role: "연구원",
+                        grade: "연구원",
+                        dept: "ECC센터",
+                        phoneOffice: "",
+                        phoneMobile: "",
+                        email: "",
+                        room: "",
+                        hireDate: "2026-03-01",
+                        startDate: "2026-03-01",
+                        endDate: "",
+                        status: "참여중"
+                      });
+                      setIsMemberModalOpen(true);
+                    }}
+                  >
+                    구성원 추가
+                  </button>
+                )}
+              </div>
 
             {mgmtSubTab === "members" && (
               <div>
@@ -9798,6 +9803,7 @@ export default function App() {
                 onSave={handleSaveMenuVisibility}
               />
             )}
+          </div>
           </div>
         )}
 
