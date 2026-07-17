@@ -1036,17 +1036,16 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
             className="action-btn"
             style={{
               padding: "0.5rem 1.2rem",
-              background: "linear-gradient(135deg, var(--accent-color) 0%, #8b5cf6 100%)",
+              background: "var(--accent-color)",
               color: "white",
               border: "none",
               borderRadius: "9999px",
-              fontSize: "0.75rem",
+              fontSize: "0.85rem",
               fontWeight: "700",
               cursor: "pointer",
               display: "flex",
               alignItems: "center",
-              gap: "0.3rem",
-              boxShadow: "0 2px 8px rgba(139, 92, 246, 0.3)"
+              gap: "0.3rem"
             }}
           >
             <Plus size={16} /> 예약 신청 등록
