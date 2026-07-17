@@ -10840,16 +10840,14 @@ export default function App() {
 
         {activeTab === "asset" && (
           <div className="asset-management-wrapper" style={{ display: "flex", flexDirection: "column", gap: "1rem", width: "100%" }}>
-            <div className="glass-card" style={{ padding: "1.25rem" }}>
-              <AssetManager
-                currentRole={currentRole}
-                currentUser={currentUser}
-                activeSubTab={assetSubTab}
-                onChangeSubTab={setAssetSubTab}
-                darkMode={darkMode}
-                selectedYear={selectedYear}
-              />
-            </div>
+            <AssetManager
+              currentRole={currentRole}
+              currentUser={currentUser}
+              activeSubTab={assetSubTab}
+              onChangeSubTab={setAssetSubTab}
+              darkMode={darkMode}
+              selectedYear={selectedYear}
+            />
           </div>
         )}
 

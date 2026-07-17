@@ -1011,7 +1011,10 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
         </button>
       </div>
 
-      {/* 대시보드 타이틀 설명 영역 */}
+      {/* 본문 콘텐츠만 glass-card 로 감싸주어 가로형 탭바가 프레임 밖(위)에 오도록 적용 */}
+      <div className="glass-card" style={{ padding: "1.25rem", display: "flex", flexDirection: "column", gap: "1rem" }}>
+
+        {/* 대시보드 타이틀 설명 영역 */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.25rem" }}>
         <div>
           <h2 style={{ fontSize: "1.1rem", fontWeight: "700", display: "flex", alignItems: "center", gap: "0.4rem" }}>
@@ -2093,6 +2096,8 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
           )}
         </div>
       )}
+
+      </div>
 
       {/* ============================================================================ */}
       {/* 모달 1: 공간 예약 신청 대화상자 */}
