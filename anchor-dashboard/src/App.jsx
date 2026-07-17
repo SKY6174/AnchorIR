@@ -247,9 +247,7 @@ const NEW_A1GA_SPEC_TITLES = {
   "A1가-S5T13-5": "학과 전공 맞춤형 모듈식 취업캠프",
   "A1가-S5T13-6": "시그니처 클래스 운영",
   "A1가-S5T14-1": "벤치마킹",
-  "A1-S5T15-1": "교직원 역량강화 프로그램 운영",
   "A1가-S5T15-1": "교직원 역량강화 프로그램 운영",
-  "A1-S5T16-2": "장학금 지급",
   "A1가-S5T16-2": "장학금 지급"
 };
 
@@ -312,7 +310,7 @@ const INITIAL_MEMBERS = [
   { id: "m-06", name: "현용환", role: "센터장", grade: "조교수", dept: "RCC센터", phoneOffice: "052-230-0643", phoneMobile: "010-4299-3119", email: "yhhyun@uc.ac.kr", room: "교수연구실/E2-401", hireDate: "2026-03-01" },
   { id: "m-07", name: "홍광표", role: "센터장", grade: "조교수", dept: "울산늘봄누리센터", phoneOffice: "052-230-0724", phoneMobile: "010-2512-1233", email: "gphong@uc.ac.kr", room: "교수연구실/E2-501", hireDate: "2026-03-01" },
   { id: "m-07b", name: "홍진숙", role: "센터장", grade: "정교수", dept: "신산업특화센터", phoneOffice: "052-279-3134", phoneMobile: "010-9120-8583", email: "cshong@uc.ac.kr", room: "센터실/N-101", hireDate: "2026-06-01" },
-  
+
   // 팀장교수
   { id: "m-08", name: "장광일", role: "팀장교수", grade: "조교수", dept: "ECC센터", phoneOffice: "052-230-0798", phoneMobile: "010-5204-4521", email: "kijang@uc.ac.kr", room: "교수연구실/E2-202", hireDate: "2026-03-01" },
   { id: "m-09", name: "고형석", role: "팀장교수", grade: "조교수", dept: "ECC센터", phoneOffice: "052-230-0798", phoneMobile: "010-4353-7720", email: "hsko@uc.ac.kr", room: "교수연구실/E2-203", hireDate: "2026-03-01" },
@@ -324,7 +322,7 @@ const INITIAL_MEMBERS = [
   { id: "m-15", name: "이상현", role: "팀장교수", grade: "조교수", dept: "RCC센터", phoneOffice: "052-230-0756", phoneMobile: "010-7676-8938", email: "shlee@uc.ac.kr", room: "교수연구실/E2-404", hireDate: "2026-03-01" },
   { id: "m-15b", name: "박성혁", role: "팀장교수", grade: "조교수", dept: "RCC센터", phoneOffice: "052-230-0763", phoneMobile: "010-4132-0866", email: "shpark@uc.ac.kr", room: "교수연구실/E2-405", hireDate: "2026-03-01" },
   { id: "m-16", name: "이정준", role: "팀장교수", grade: "정교수", dept: "AID-X지원센터", phoneOffice: "052-279-3102", phoneMobile: "010-7651-7723", email: "jjlee@uc.ac.kr", room: "교수연구실/E2-502", hireDate: "2026-03-01" },
-  
+
   // 실무 연구원 (등급/직위 3구분 적용)
   { id: "m-17", name: "이현섭", role: "연구원", grade: "책임연구원", dept: "RCC센터", phoneOffice: "052-230-0417", phoneMobile: "010-8252-1151", email: "mogern1@uc.ac.kr", room: "연구원실/R-101", hireDate: "2026-03-01" },
   { id: "m-18", name: "이은주", role: "연구원", grade: "선임연구원", dept: "ECC센터", phoneOffice: "052-230-0414", phoneMobile: "010-4026-3850", email: "ejlee7@uc.ac.kr", room: "연구원실/E-101", hireDate: "2026-03-01" },
@@ -748,9 +746,9 @@ function formatDataToMultiYear(data) {
           // 💡 [기획서 다중 비목 명세 100% 최우선 존중 규칙]
           // 만약 mockData.js의 원천 프로그램 객체에 budget_categories 배열이 존재한다면, 
           // 아래의 하드코딩 매핑 및 덮어쓰기를 스킵하고 원래 적혀있는 비목을 그대로 이식합니다.
-          const hasExplicitCategories = prog.budget_categories && 
-                                        Array.isArray(prog.budget_categories) && 
-                                        prog.budget_categories.some(c => c.category);
+          const hasExplicitCategories = prog.budget_categories &&
+            Array.isArray(prog.budget_categories) &&
+            prog.budget_categories.some(c => c.category);
 
           if (hasExplicitCategories) {
             progYears[yr].budget_categories = standardCategories.map((catName) => {
@@ -776,9 +774,12 @@ function formatDataToMultiYear(data) {
             else if (prog.id.startsWith("X0-S1T3-")) targetCategory = "성과 활용∙확산 지원비";
             else if (prog.id.startsWith("X0-S1T4-")) targetCategory = "그 밖의 사업운영경비";
             else if (prog.id.startsWith("X0-S1T5-")) targetCategory = "간접비";
-            else if (prog.id === "D2-S1T2-1" || prog.id === "D2-S1T2-2") targetCategory = "실험∙실습장비 및 기자재 구입∙운영비";
-            else if (prog.id === "D2-S1T1-1") targetCategory = "성과 활용∙확산 지원비";
-            else if (prog.id === "D2-S2T10-1") targetCategory = "교육∙연구 환경개선비";
+            else if (prog.id === "A1가-S5T13-8") targetCategory = "장학금";
+            else if (prog.id === "A1가-S4T10-4" || prog.id === "D2-S1T2-1" || prog.id === "D2-S1T2-2") targetCategory = "실험∙실습장비 및 기자재 구입∙운영비";
+            else if (prog.id === "A1가-S2T5-1" || prog.id === "A1가-S5T13-2" || prog.id === "A1가-S5T13-7" || prog.id === "A1가-S5T14-1" || prog.id === "D2-S1T1-1") targetCategory = "성과 활용∙확산 지원비";
+            else if (prog.id === "A1가-S3T9-1" || prog.id === "A1가-S3T9-2" || prog.id === "A1가-S3T9-3" || prog.id === "A1가-S5T13-3") targetCategory = "기업 지원∙협력 활동비";
+            else if (prog.id === "A1가-S5T13-1") targetCategory = "지역 연계∙협업 지원비";
+            else if (prog.id.startsWith("A1가-S4T10-") || prog.id === "A1가-S4T11-1" || prog.id === "D2-S2T10-1") targetCategory = "교육∙연구 환경개선비";
 
             progYears[yr].budget_categories = standardCategories.map((catName) => {
               const isMatch = catName === targetCategory;
@@ -1291,50 +1292,52 @@ function mergeProjectsWithInitial(loadedData, multiYearInitialData) {
         };
 
         [1, 2, 3, 4, 5].forEach((yr) => {
-          unit.programs.forEach((prog) => {
-            const py = prog.years?.[yr] || {};
-            const progTotalMain = py.budget_main || 0;
-            const progTotalCarry = py.budget_carry || 0;
-            const progTotalSpent = py.spent_main || 0;
-            const progTotalSpentCarry = py.spent_carry || 0;
+          if (unit.programs && Array.isArray(unit.programs)) {
+            unit.programs.forEach((prog) => {
+              const py = prog.years?.[yr] || {};
+              const progTotalMain = py.budget_main || 0;
+              const progTotalCarry = py.budget_carry || 0;
+              const progTotalSpent = py.spent_main || 0;
+              const progTotalSpentCarry = py.spent_carry || 0;
 
-            let allocatedMain = 0;
-            let allocatedCarry = 0;
-            let allocatedSpent = 0;
-            let allocatedSpentCarry = 0;
+              let allocatedMain = 0;
+              let allocatedCarry = 0;
+              let allocatedSpent = 0;
+              let allocatedSpentCarry = 0;
 
-            if (py.budget_categories && Array.isArray(py.budget_categories)) {
-              py.budget_categories.forEach((catItem) => {
-                const catName = catItem.category;
-                if (catName && categorySums[catName] && catName !== "교육∙연구 프로그램 개발∙운영비") {
-                  const mainVal = parseInt(String(catItem.budget || "0").replace(/,/g, ""), 10) || 0;
-                  const carryVal = parseInt(String(catItem.budget_carry || "0").replace(/,/g, ""), 10) || 0;
-                  const spentVal = Math.round(catItem.spent || 0);
-                  const spentCarryVal = Math.round(catItem.spent_carry || 0);
+              if (py.budget_categories && Array.isArray(py.budget_categories)) {
+                py.budget_categories.forEach((catItem) => {
+                  const catName = catItem.category;
+                  if (catName && categorySums[catName] && catName !== "교육∙연구 프로그램 개발∙운영비") {
+                    const mainVal = parseInt(String(catItem.budget || "0").replace(/,/g, ""), 10) || 0;
+                    const carryVal = parseInt(String(catItem.budget_carry || "0").replace(/,/g, ""), 10) || 0;
+                    const spentVal = Math.round(catItem.spent || 0);
+                    const spentCarryVal = Math.round(catItem.spent_carry || 0);
 
-                  categorySums[catName][yr].main += mainVal;
-                  categorySums[catName][yr].carry += carryVal;
-                  categorySums[catName][yr].spent_main += spentVal;
-                  categorySums[catName][yr].spent_carry += spentCarryVal;
+                    categorySums[catName][yr].main += mainVal;
+                    categorySums[catName][yr].carry += carryVal;
+                    categorySums[catName][yr].spent_main += spentVal;
+                    categorySums[catName][yr].spent_carry += spentCarryVal;
 
-                  allocatedMain += mainVal;
-                  allocatedCarry += carryVal;
-                  allocatedSpent += spentVal;
-                  allocatedSpentCarry += spentCarryVal;
-                }
-              });
-            }
+                    allocatedMain += mainVal;
+                    allocatedCarry += carryVal;
+                    allocatedSpent += spentVal;
+                    allocatedSpentCarry += spentCarryVal;
+                  }
+                });
+              }
 
-            const remainMain = Math.max(0, progTotalMain - allocatedMain);
-            const remainCarry = Math.max(0, progTotalCarry - allocatedCarry);
-            const remainSpent = Math.max(0, progTotalSpent - allocatedSpent);
-            const remainSpentCarry = Math.max(0, progTotalSpentCarry - allocatedSpentCarry);
+              const remainMain = Math.max(0, progTotalMain - allocatedMain);
+              const remainCarry = Math.max(0, progTotalCarry - allocatedCarry);
+              const remainSpent = Math.max(0, progTotalSpent - allocatedSpent);
+              const remainSpentCarry = Math.max(0, progTotalSpentCarry - allocatedSpentCarry);
 
-            categorySums["교육∙연구 프로그램 개발∙운영비"][yr].main += remainMain;
-            categorySums["교육∙연구 프로그램 개발∙운영비"][yr].carry += remainCarry;
-            categorySums["교육∙연구 프로그램 개발∙운영비"][yr].spent_main += remainSpent;
-            categorySums["교육∙연구 프로그램 개발∙운영비"][yr].spent_carry += remainSpentCarry;
-          });
+              categorySums["교육∙연구 프로그램 개발∙운영비"][yr].main += remainMain;
+              categorySums["교육∙연구 프로그램 개발∙운영비"][yr].carry += remainCarry;
+              categorySums["교육∙연구 프로그램 개발∙운영비"][yr].spent_main += remainSpent;
+              categorySums["교육∙연구 프로그램 개발∙운영비"][yr].spent_carry += remainSpentCarry;
+            });
+          }
         });
 
         // 집계한 categorySums를 unit.budgetDetails 에 반영
@@ -1352,13 +1355,15 @@ function mergeProjectsWithInitial(loadedData, multiYearInitialData) {
             let totalProgSpent = 0;
             let totalProgSpentNational = 0;
 
-            unit.programs.forEach((prog) => {
-              const py = prog.years?.[yr] || {};
-              totalProgMain += py.budget_main || 0;
-              totalProgNational += py.budget_national || 0;
-              totalProgSpent += py.spent_main || 0;
-              totalProgSpentNational += py.spent_national || 0;
-            });
+            if (unit.programs && Array.isArray(unit.programs)) {
+              unit.programs.forEach((prog) => {
+                const py = prog.years?.[yr] || {};
+                totalProgMain += py.budget_main || 0;
+                totalProgNational += py.budget_national || 0;
+                totalProgSpent += py.spent_main || 0;
+                totalProgSpentNational += py.spent_national || 0;
+              });
+            }
 
             const ratio = totalProgMain > 0 ? totalProgNational / totalProgMain : 0.5;
             const spentRatio = totalProgSpent > 0 ? totalProgSpentNational / totalProgSpent : ratio;
@@ -2453,12 +2458,12 @@ export default function App() {
         if (["이규상", "임은애", "황수진", "최주명"].some(n => name.includes(n))) {
           return "facility";
         }
-      } catch (err) {}
+      } catch (err) { }
     }
     return localStorage.getItem("anchor_approvals_tab") || "budget";
   });
   const [reservations, setReservations] = useState([]);
-  
+
   // 💡 [교육용 한글 주석] 승인자 전용의 공간 예약 일시 조율용 상태변수들입니다.
   const [isEditTimeModalOpen, setIsEditTimeModalOpen] = useState(false);
   const [editingRes, setEditingRes] = useState(null);
@@ -2547,7 +2552,7 @@ export default function App() {
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        
+
         // 💡 [구버전 캐시 강제 무력화 가드]
         // 로컬 스토리지에 옛날 더미 전화번호(010-1234-5678 등)가 남아있는 경우,
         // 새로 동기화된 실데이터 주소록으로 강제 리셋 및 동기화를 수행합니다.
@@ -2700,20 +2705,20 @@ export default function App() {
         }
       } catch (err) {
         console.error("Supabase rise_members table sync failed, fallback to localStorage cache:", err);
-        
+
         // 💡 [인증/세션 만료 예방 안전장치] rise_members 테이블 조회 및 업서트 중 401/403/42501(RLS) 에러 감지 시 자동 로그아웃 유도
         const status = err?.status;
         const code = String(err?.code || "");
         const msg = String(err?.message || "");
         if (
-          status === 401 || 
-          status === 403 || 
-          code === "PGRST301" || 
-          code === "42501" || 
-          msg.includes("JWT") || 
-          msg.includes("claims") || 
-          msg.includes("expired") || 
-          msg.includes("permission denied") || 
+          status === 401 ||
+          status === 403 ||
+          code === "PGRST301" ||
+          code === "42501" ||
+          msg.includes("JWT") ||
+          msg.includes("claims") ||
+          msg.includes("expired") ||
+          msg.includes("permission denied") ||
           msg.includes("security policy")
         ) {
           console.warn(">>> [Supabase Members 동기화 중 세션 만료 감지] 자동으로 로그아웃 처리를 유도합니다. <<<", err);
@@ -3467,7 +3472,7 @@ export default function App() {
       units: strat.units?.map(unit => {
         const isA1Na = unit.id === "A1na" || unit.id === "A1나";
         const isC1 = unit.id === "C1";
-        
+
         const newYears = { ...unit.years };
         if (isC1) {
           // 💡 C1단위과제 2차년도 본사업비 예산 350,000,000원으로 강제 주입 (이월 찌꺼기 3.5억 제거)
@@ -3478,9 +3483,9 @@ export default function App() {
             spent_carry: 0
           };
         }
-        
+
         const u2 = newYears[2] || {};
-        
+
         // 3, 4, 5차년도 강제 복사 (A1나 단위과제는 0원)
         [3, 4, 5].forEach(yr => {
           newYears[yr] = {
@@ -3491,10 +3496,10 @@ export default function App() {
             spent_carry: 0
           };
         });
-        
+
         // 1차년도부터 5차년도까지 이월잔액 연쇄적 재계산
         recalculateCarryOver(newYears);
-        
+
         // 💡 [데이터 불일치 방지망] C1단위과제 하위 프로그램 목록에 타 과제(B2 등) 찌꺼기가 섞여 로드되는 문제를 방지하기 위해 프로그램 명세를 템플릿으로 강제 치환 및 초기화합니다.
         let targetPrograms = unit.programs || [];
         if (isC1) {
@@ -3536,7 +3541,7 @@ export default function App() {
           years: newYears,
           programs: targetPrograms.map(prog => {
             const newProgYears = { ...prog.years };
-            
+
             // 💡 C1단위과제의 하위 프로그램인 경우, 2차년도 본사업비와 국비/시비 안분, 비목을 강제로 정규화합니다.
             if (isC1) {
               const c1ProgBudgets = {
@@ -3562,7 +3567,7 @@ export default function App() {
                 "C1-S4T14-1": { total: 10000000, national: 0, city: 10000000, category: "교육∙연구 프로그램 개발∙운영비" },
                 "C1-S4T14-2": { total: 10000000, national: 10000000, city: 0, category: "교육∙연구 프로그램 개발∙운영비" }
               };
-              
+
               const cfg = c1ProgBudgets[prog.id] || { total: 0, national: 0, city: 0, category: "교육∙연구 프로그램 개발∙운영비" };
               newProgYears[2] = {
                 budget_main: cfg.total,
@@ -3592,32 +3597,32 @@ export default function App() {
                 ]
               };
             }
-            
+
             const p2 = newProgYears[2] || {};
-            
+
             [3, 4, 5].forEach(yr => {
               const pYr = newProgYears[yr] || {};
               const budgetMain = isA1Na ? 0 : (p2.budget_main || 0);
-              
+
               // 2차년도의 재원(국비, 시비, 외부사업비) 비율 복사 적용
               const budget_national = isA1Na ? 0 : (p2.budget_national || 0);
               const budget_city = isA1Na ? 0 : (p2.budget_city || 0);
               const budget_external = isA1Na ? 0 : (p2.budget_external || 0);
-              
+
               newProgYears[yr] = {
                 ...pYr,
                 budget_main: budgetMain,
                 spent_main: 0,
                 budget_carry: 0,
                 spent_carry: 0,
-                
+
                 budget_national,
                 spent_national: 0,
                 budget_city,
                 spent_city: 0,
                 budget_external,
                 spent_external: 0,
-                
+
                 budget_carry_national: 0,
                 spent_carry_national: 0,
                 budget_carry_city: 0,
@@ -3625,7 +3630,7 @@ export default function App() {
                 budget_carry_external: 0,
                 spent_carry_external: 0
               };
-              
+
               // 2차년도 비목(budget_categories) 복사 적용 (A1나는 0원)
               if (p2.budget_categories) {
                 newProgYears[yr].budget_categories = p2.budget_categories.map(cat => ({
@@ -3637,7 +3642,7 @@ export default function App() {
                 }));
               }
             });
-            
+
             return {
               ...prog,
               years: newProgYears
@@ -3826,14 +3831,14 @@ export default function App() {
           const code = err ? String(err.code || "") : "";
           const msg = err ? String(err.message || "") : "";
           return err && (
-            status === 401 || 
-            status === 403 || 
-            code === "PGRST301" || 
-            code === "42501" || 
-            msg.includes("JWT") || 
-            msg.includes("claims") || 
-            msg.includes("expired") || 
-            msg.includes("permission denied") || 
+            status === 401 ||
+            status === 403 ||
+            code === "PGRST301" ||
+            code === "42501" ||
+            msg.includes("JWT") ||
+            msg.includes("claims") ||
+            msg.includes("expired") ||
+            msg.includes("permission denied") ||
             msg.includes("security policy")
           );
         });
@@ -4163,14 +4168,14 @@ export default function App() {
             }));
             setUnifiedCertificates(formatted);
             fetchedUnifiedCertificatesRef.current = JSON.stringify(formatted); // 🛡️ 원본 저장
-              try {
-                const clean = formatted.map(item => {
-                  const isUrl = item.fileData && (item.fileData.startsWith("http://") || item.fileData.startsWith("https://"));
-                  const cleanFileData = isUrl ? item.fileData : null;
-                  return { ...item, fileData: cleanFileData };
-                });
-                safeSetLocalStorage("anchor_cache_unified_certificates_all", JSON.stringify(clean), selectedYear);
-              } catch (e) {
+            try {
+              const clean = formatted.map(item => {
+                const isUrl = item.fileData && (item.fileData.startsWith("http://") || item.fileData.startsWith("https://"));
+                const cleanFileData = isUrl ? item.fileData : null;
+                return { ...item, fileData: cleanFileData };
+              });
+              safeSetLocalStorage("anchor_cache_unified_certificates_all", JSON.stringify(clean), selectedYear);
+            } catch (e) {
               console.error("Failed to save unified certificates cache:", e);
             }
           } else {
@@ -4208,10 +4213,10 @@ export default function App() {
             }));
             setScholarships(formatted);
             fetchedScholarshipsRef.current = JSON.stringify(formatted); // 🛡️ 원본 저장
-              try {
-                const clean = formatted.map(item => ({ ...item }));
-                safeSetLocalStorage("anchor_cache_scholarships_all", JSON.stringify(clean), selectedYear);
-              } catch (e) {
+            try {
+              const clean = formatted.map(item => ({ ...item }));
+              safeSetLocalStorage("anchor_cache_scholarships_all", JSON.stringify(clean), selectedYear);
+            } catch (e) {
               console.error("Failed to save scholarships cache:", e);
             }
           } else {
@@ -5480,7 +5485,7 @@ export default function App() {
     const performSync = async (schedulesToSync, targetYear) => {
       try {
         if (!schedulesToSync) return;
-        
+
         // 1. 모든 일정이 삭제된 상태면 원격 DB 해당 연도 전체 삭제
         if (schedulesToSync.length === 0) {
           const { error } = await supabase.from("schedule_monthly").delete().eq("year", targetYear);
@@ -5531,7 +5536,7 @@ export default function App() {
             .from("schedule_monthly")
             .upsert(updateItems, { onConflict: "id" })
             .select();
-          
+
           if (upError) {
             if (upError.code === "42703") {
               const fallbackItems = updateItems.map(({ event_id, meeting_id, ...rest }) => rest);
@@ -5555,7 +5560,7 @@ export default function App() {
             .from("schedule_monthly")
             .insert(newItems)
             .select();
-          
+
           if (insError) {
             if (insError.code === "42703") {
               const fallbackItems = newItems.map(({ event_id, meeting_id, ...rest }) => rest);
@@ -5608,7 +5613,7 @@ export default function App() {
             }
             return s;
           });
-          
+
           fetchedMonthlySchedulesRef.current = JSON.stringify(finalLocalSchedules);
           setMonthlySchedules(finalLocalSchedules);
           safeSetLocalStorage(`anchor_cache_month_y${targetYear}`, JSON.stringify(finalLocalSchedules), targetYear);
@@ -5622,14 +5627,14 @@ export default function App() {
           .eq("year", targetYear)
           .is("event_id", null)
           .is("meeting_id", null);
-        
+
         if (currentDbItems) {
           const dbIds = currentDbItems.map(x => x.id);
           const localRealIds = finalLocalSchedules
             .filter(s => !s.eventId && !s.meetingId)
             .map(s => s.id)
             .filter(id => typeof id === "number" && id < 2000000000);
-          
+
           const idsToDelete = dbIds.filter(id => !localRealIds.includes(id));
           if (idsToDelete.length > 0) {
             const { error: delError } = await supabase
@@ -5671,12 +5676,12 @@ export default function App() {
     if (!latestEvents) return;
     setMonthlySchedules(prev => {
       let updated = [...prev];
-      
+
       latestEvents.forEach(evt => {
         if (!evt.id || typeof evt.id !== "number" || evt.id >= 2000000000) return;
 
         const idx = updated.findIndex(m => m.eventId === evt.id);
-        
+
         const startPart = evt.datetime ? evt.datetime.split(" ~ ")[0].trim() : "";
         let dateStr = startPart.substring(0, 10);
         if (!dateStr.match(/^\d{4}-\d{2}-\d{2}$/)) {
@@ -5731,12 +5736,12 @@ export default function App() {
     if (!latestMeetings) return;
     setMonthlySchedules(prev => {
       let updated = [...prev];
-      
+
       latestMeetings.forEach(meet => {
         if (!meet.id || typeof meet.id !== "number" || meet.id >= 2000000000) return;
 
         const idx = updated.findIndex(m => m.meetingId === meet.id);
-        
+
         const startPart = meet.datetime ? meet.datetime.split(" ~ ")[0].trim() : "";
         let dateStr = startPart.substring(0, 10);
         if (!dateStr.match(/^\d{4}-\d{2}-\d{2}$/)) {
@@ -8533,13 +8538,13 @@ export default function App() {
                                 {sumCompletedCount}
                               </td>
                               <td style={{ fontFamily: "var(--font-data)", textAlign: "right", paddingRight: "1rem" }}>
-                                        <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: "0.4rem" }}>
-                                          <div style={{ width: "40px", height: "6px", background: "rgba(255,255,255,0.1)", borderRadius: "3px", overflow: "hidden" }}>
-                                            <div style={{ width: `${Math.min(sumProgressRate, 100)}%`, height: "100%", background: "#10b981" }} />
-                                          </div>
-                                          <span style={{ fontSize: "0.8rem", fontFamily: "var(--font-data)", fontWeight: "800", color: "#10b981" }}>{sumProgressRate.toFixed(1)}%</span>
-                                        </div>
-                                      </td>
+                                <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: "0.4rem" }}>
+                                  <div style={{ width: "40px", height: "6px", background: "rgba(255,255,255,0.1)", borderRadius: "3px", overflow: "hidden" }}>
+                                    <div style={{ width: `${Math.min(sumProgressRate, 100)}%`, height: "100%", background: "#10b981" }} />
+                                  </div>
+                                  <span style={{ fontSize: "0.8rem", fontFamily: "var(--font-data)", fontWeight: "800", color: "#10b981" }}>{sumProgressRate.toFixed(1)}%</span>
+                                </div>
+                              </td>
                             </tr>
                           </>
                         );
@@ -8620,32 +8625,9 @@ export default function App() {
               {/* 1. 승인처리 탭 노출 가드 (최고 관리자군 또는 특화 승인권자) */}
               {((currentRole && ["ADMIN", "G_DIRECTOR", "HQ_HEAD", "MANAGER"].includes(currentRole.id || "")) ||
                 (currentUser && ["이규상", "임은애", "황수진", "최주명"].some(name => (currentUser.name || "").includes(name)))) && (
-                <button
-                  type="button"
-                  onClick={() => setMgmtSubTab("approvals")}
-                  style={{
-                    border: "none",
-                    background: "transparent",
-                    padding: "0.5rem 1rem",
-                    fontSize: "0.85rem",
-                    fontWeight: "800",
-                    cursor: "pointer",
-                    color: mgmtSubTab === "approvals" ? "var(--accent-color)" : "var(--text-secondary)",
-                    borderBottom: mgmtSubTab === "approvals" ? "2px solid var(--accent-color)" : "none",
-                    transition: "all 0.2s"
-                  }}
-                >
-                  승인처리
-                </button>
-              )}
-
-              {/* 2. 구성원 관리, 회원현황, 프로그램 배정 등 기타 관리자 탭 노출 가드 (특화 승인권자는 제외) */}
-              {currentRole && (currentRole.id === "ADMIN" || currentRole.id === "G_DIRECTOR" || currentRole.id === "HQ_HEAD" || currentRole.id === "MANAGER") && 
-               !(currentUser && ["이규상", "임은애", "황수진", "최주명"].some(name => (currentUser.name || "").includes(name))) && (
-                <>
                   <button
                     type="button"
-                    onClick={() => setMgmtSubTab("members")}
+                    onClick={() => setMgmtSubTab("approvals")}
                     style={{
                       border: "none",
                       background: "transparent",
@@ -8653,17 +8635,22 @@ export default function App() {
                       fontSize: "0.85rem",
                       fontWeight: "800",
                       cursor: "pointer",
-                      color: mgmtSubTab === "members" ? "var(--accent-color)" : "var(--text-secondary)",
-                      borderBottom: mgmtSubTab === "members" ? "2px solid var(--accent-color)" : "none",
+                      color: mgmtSubTab === "approvals" ? "var(--accent-color)" : "var(--text-secondary)",
+                      borderBottom: mgmtSubTab === "approvals" ? "2px solid var(--accent-color)" : "none",
                       transition: "all 0.2s"
                     }}
                   >
-                    구성원 관리
+                    승인처리
                   </button>
-                  {currentRole.rank <= 2 && (
+                )}
+
+              {/* 2. 구성원 관리, 회원현황, 프로그램 배정 등 기타 관리자 탭 노출 가드 (특화 승인권자는 제외) */}
+              {currentRole && (currentRole.id === "ADMIN" || currentRole.id === "G_DIRECTOR" || currentRole.id === "HQ_HEAD" || currentRole.id === "MANAGER") &&
+                !(currentUser && ["이규상", "임은애", "황수진", "최주명"].some(name => (currentUser.name || "").includes(name))) && (
+                  <>
                     <button
                       type="button"
-                      onClick={() => setMgmtSubTab("users")}
+                      onClick={() => setMgmtSubTab("members")}
                       style={{
                         border: "none",
                         background: "transparent",
@@ -8671,33 +8658,51 @@ export default function App() {
                         fontSize: "0.85rem",
                         fontWeight: "800",
                         cursor: "pointer",
-                        color: mgmtSubTab === "users" ? "var(--accent-color)" : "var(--text-secondary)",
-                        borderBottom: mgmtSubTab === "users" ? "2px solid var(--accent-color)" : "none",
+                        color: mgmtSubTab === "members" ? "var(--accent-color)" : "var(--text-secondary)",
+                        borderBottom: mgmtSubTab === "members" ? "2px solid var(--accent-color)" : "none",
                         transition: "all 0.2s"
                       }}
                     >
-                      회원현황
+                      구성원 관리
                     </button>
-                  )}
-                  <button
-                    type="button"
-                    onClick={() => setMgmtSubTab("programs")}
-                    style={{
-                      border: "none",
-                      background: "transparent",
-                      padding: "0.5rem 1rem",
-                      fontSize: "0.85rem",
-                      fontWeight: "800",
-                      cursor: "pointer",
-                      color: mgmtSubTab === "programs" ? "var(--accent-color)" : "var(--text-secondary)",
-                      borderBottom: mgmtSubTab === "programs" ? "2px solid var(--accent-color)" : "none",
-                      transition: "all 0.2s"
-                    }}
-                  >
-                    프로그램 배정
-                  </button>
-                </>
-              )}
+                    {currentRole.rank <= 2 && (
+                      <button
+                        type="button"
+                        onClick={() => setMgmtSubTab("users")}
+                        style={{
+                          border: "none",
+                          background: "transparent",
+                          padding: "0.5rem 1rem",
+                          fontSize: "0.85rem",
+                          fontWeight: "800",
+                          cursor: "pointer",
+                          color: mgmtSubTab === "users" ? "var(--accent-color)" : "var(--text-secondary)",
+                          borderBottom: mgmtSubTab === "users" ? "2px solid var(--accent-color)" : "none",
+                          transition: "all 0.2s"
+                        }}
+                      >
+                        회원현황
+                      </button>
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => setMgmtSubTab("programs")}
+                      style={{
+                        border: "none",
+                        background: "transparent",
+                        padding: "0.5rem 1rem",
+                        fontSize: "0.85rem",
+                        fontWeight: "800",
+                        cursor: "pointer",
+                        color: mgmtSubTab === "programs" ? "var(--accent-color)" : "var(--text-secondary)",
+                        borderBottom: mgmtSubTab === "programs" ? "2px solid var(--accent-color)" : "none",
+                        transition: "all 0.2s"
+                      }}
+                    >
+                      프로그램 배정
+                    </button>
+                  </>
+                )}
 
               {/* 공용 sub-tab 버튼 (대학조직도, 사업단 조직도, 파트너기관은 누구나 접근 가능) */}
               {currentRole && (
@@ -9632,67 +9637,67 @@ export default function App() {
                                         <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle", fontFamily: "var(--font-data)", whiteSpace: "nowrap" }}>{res.start_time.substring(0, 5)} ~ {res.end_time.substring(0, 5)}</td>
                                         <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle", fontWeight: "700", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{res.space_name}{roomSuffix}</td>
                                         <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{res.dept}</td>
-                                      <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{res.reserver_name}</td>
-                                      <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle", wordBreak: "break-all" }}>{res.purpose}</td>
-                                      <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle" }}>
-                                        <span className={`badge ${res.status === "승인완료" ? "badge-green" : "badge-orange"}`} style={{ fontSize: "0.65rem" }}>
-                                          {res.status || "승인대기"}
-                                        </span>
-                                      </td>
-                                      <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle" }}>
-                                        <button
-                                          onClick={() => handleOpenEditTime(res)}
-                                          style={{
-                                            background: "none",
-                                            border: "none",
-                                            color: "#60A5FA",
-                                            cursor: "pointer",
-                                            display: "inline-flex",
-                                            alignItems: "center",
-                                            gap: "0.15rem",
-                                            fontSize: "0.65rem",
-                                            fontWeight: "800"
-                                          }}
-                                          title="예약 일시 수정 조율 권한"
-                                        >
-                                          <Edit2 size={12} />
-                                          <span>조정</span>
-                                        </button>
-                                      </td>
-                                      <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle" }}>
-                                        <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem", alignItems: "center", justifyContent: "center", width: "100%" }}>
-                                          {res.status !== "승인완료" ? (
-                                            <>
-                                              <button
-                                                onClick={() => handleApproveReservation(res)}
-                                                className="btn-primary"
-                                                style={{ padding: "0.2rem 0.4rem", fontSize: "0.65rem", borderRadius: "0.3rem", background: "#10B981", cursor: "pointer", border: "none", color: "white", width: "100%", minWidth: "56px", maxWidth: "68px", fontWeight: "700" }}
-                                              >
-                                                승인
-                                              </button>
+                                        <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{res.reserver_name}</td>
+                                        <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle", wordBreak: "break-all" }}>{res.purpose}</td>
+                                        <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle" }}>
+                                          <span className={`badge ${res.status === "승인완료" ? "badge-green" : "badge-orange"}`} style={{ fontSize: "0.65rem" }}>
+                                            {res.status || "승인대기"}
+                                          </span>
+                                        </td>
+                                        <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle" }}>
+                                          <button
+                                            onClick={() => handleOpenEditTime(res)}
+                                            style={{
+                                              background: "none",
+                                              border: "none",
+                                              color: "#60A5FA",
+                                              cursor: "pointer",
+                                              display: "inline-flex",
+                                              alignItems: "center",
+                                              gap: "0.15rem",
+                                              fontSize: "0.65rem",
+                                              fontWeight: "800"
+                                            }}
+                                            title="예약 일시 수정 조율 권한"
+                                          >
+                                            <Edit2 size={12} />
+                                            <span>조정</span>
+                                          </button>
+                                        </td>
+                                        <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle" }}>
+                                          <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem", alignItems: "center", justifyContent: "center", width: "100%" }}>
+                                            {res.status !== "승인완료" ? (
+                                              <>
+                                                <button
+                                                  onClick={() => handleApproveReservation(res)}
+                                                  className="btn-primary"
+                                                  style={{ padding: "0.2rem 0.4rem", fontSize: "0.65rem", borderRadius: "0.3rem", background: "#10B981", cursor: "pointer", border: "none", color: "white", width: "100%", minWidth: "56px", maxWidth: "68px", fontWeight: "700" }}
+                                                >
+                                                  승인
+                                                </button>
+                                                <button
+                                                  onClick={() => handleRejectReservation(res)}
+                                                  className="btn-primary"
+                                                  style={{ padding: "0.2rem 0.4rem", fontSize: "0.65rem", borderRadius: "0.3rem", background: "#EF4444", cursor: "pointer", border: "none", color: "white", width: "100%", minWidth: "56px", maxWidth: "68px", fontWeight: "700" }}
+                                                >
+                                                  반려
+                                                </button>
+                                              </>
+                                            ) : (
                                               <button
                                                 onClick={() => handleRejectReservation(res)}
                                                 className="btn-primary"
                                                 style={{ padding: "0.2rem 0.4rem", fontSize: "0.65rem", borderRadius: "0.3rem", background: "#EF4444", cursor: "pointer", border: "none", color: "white", width: "100%", minWidth: "56px", maxWidth: "68px", fontWeight: "700" }}
                                               >
-                                                반려
+                                                취소/삭제
                                               </button>
-                                            </>
-                                          ) : (
-                                            <button
-                                              onClick={() => handleRejectReservation(res)}
-                                              className="btn-primary"
-                                              style={{ padding: "0.2rem 0.4rem", fontSize: "0.65rem", borderRadius: "0.3rem", background: "#EF4444", cursor: "pointer", border: "none", color: "white", width: "100%", minWidth: "56px", maxWidth: "68px", fontWeight: "700" }}
-                                            >
-                                              취소/삭제
-                                            </button>
-                                          )}
-                                        </div>
-                                      </td>
-                                    </tr>
-                                  );
-                                })
-                              )}
+                                            )}
+                                          </div>
+                                        </td>
+                                      </tr>
+                                    );
+                                  })
+                                )}
                               </tbody>
                             </table>
                           </div>
@@ -11440,7 +11445,7 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
   // ----------------------------------------------------
   const TOTAL_INVESTMENT_5YEAR_DATA = allUnits.map((u) => {
     const unitTitle = u.id === "Common" ? "공통운영경비" : `${u.id}. ${u.title}`;
-    
+
     // 연도별 예산 총액 (백만원 단위, {main, carry} 형태의 객체 반환)
     // 1~5차년도
     const annualTotals = [1, 2, 3, 4, 5].map((yr) => {
@@ -11468,11 +11473,11 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
           const normCat = normalizeCategoryName(cat.category);
           const matchedOrderCat = CATEGORY_ORDER.find(c => normalizeCategoryName(c) === normCat);
           if (matchedOrderCat) {
-            const cleanBudget = typeof cat.budget === "string" 
-              ? parseFloat(cat.budget.replace(/,/g, "")) 
+            const cleanBudget = typeof cat.budget === "string"
+              ? parseFloat(cat.budget.replace(/,/g, ""))
               : Number(cat.budget || 0);
-            const cleanCarry = typeof cat.budget_carry === "string" 
-              ? parseFloat(cat.budget_carry.replace(/,/g, "")) 
+            const cleanCarry = typeof cat.budget_carry === "string"
+              ? parseFloat(cat.budget_carry.replace(/,/g, ""))
               : Number(cat.budget_carry || 0);
             categoriesMap[matchedOrderCat][yr - 1].main += cleanBudget / 1e6;
             categoriesMap[matchedOrderCat][yr - 1].carry += cleanCarry / 1e6;
@@ -11518,7 +11523,7 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
       summaryTotal[i].main += uData.total[i].main;
       summaryTotal[i].carry += uData.total[i].carry;
     }
-    
+
     uData.categories.forEach((cat) => {
       const normCat = normalizeCategoryName(cat.name);
       if (normCat === "인건비") {
@@ -11734,7 +11739,7 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
             <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)", fontWeight: "500" }}>총 {totalVal.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })}{unitText}</span>
           </div>
         )}
-        
+
         <div style={{
           width: "100%",
           height: "20px",
@@ -11844,7 +11849,7 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
           <span>💡 2차년도 사업비는 본사업비와 이월사업비로 구성되며, 타 연차는 본사업비만을 나타냄.</span>
           <span style={{ fontWeight: "700", color: "var(--accent-color)" }}>(단위: 백만원)</span>
         </div>
-        
+
         {/* 5개년 단위과제별 합산비율 차트 (가로형 2D-Bar) */}
         <HorizontalProgressBar title="📊 5개년 단위과제별 예산 합산 비율" items={fiveYearChartItems} />
 
@@ -11873,13 +11878,13 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
               return (
                 <React.Fragment key={u.id}>
                   {/* 대단위과제 로우 */}
-                  <tr 
-                     onClick={() => hasCategories && toggleUnit(u.id)}
-                     style={{ 
-                       cursor: hasCategories ? "pointer" : "default", 
-                       background: u.id === "Common" || u.id === "X0" ? "rgba(245, 158, 11, 0.08)" : "rgba(255,255,255,0.01)",
-                       fontWeight: "700" 
-                     }}
+                  <tr
+                    onClick={() => hasCategories && toggleUnit(u.id)}
+                    style={{
+                      cursor: hasCategories ? "pointer" : "default",
+                      background: u.id === "Common" || u.id === "X0" ? "rgba(245, 158, 11, 0.08)" : "rgba(255,255,255,0.01)",
+                      fontWeight: "700"
+                    }}
                   >
                     <td style={{ paddingLeft: "1.5rem", color: u.id === "Common" || u.id === "X0" ? "#fbbf24" : "inherit", borderRight: "1.5px solid rgba(255, 255, 255, 0.2)", display: "flex", alignItems: "center", gap: "0.5rem" }}>
                       {hasCategories && (
@@ -11910,10 +11915,10 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
                       else displayVal = formatValue(mainVal);
 
                       return (
-                        <td 
-                          key={idx} 
-                          style={{ 
-                            textAlign: "right", 
+                        <td
+                          key={idx}
+                          style={{
+                            textAlign: "right",
                             paddingRight: idx === 5 ? "1.5rem" : "1rem",
                             fontWeight: idx === 5 ? "800" : "700",
                             color: idx === 5 ? "var(--accent-color)" : "inherit",
@@ -12185,12 +12190,12 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
                 return (
                   <React.Fragment key={u.id}>
                     {/* 대단위과제 로우 */}
-                    <tr 
+                    <tr
                       onClick={() => hasCategories && toggleUnit(u.id)}
-                      style={{ 
-                        cursor: hasCategories ? "pointer" : "default", 
+                      style={{
+                        cursor: hasCategories ? "pointer" : "default",
                         background: u.id === "Common" || u.id === "X0" ? "rgba(245, 158, 11, 0.08)" : "rgba(255,255,255,0.01)",
-                        fontWeight: "700" 
+                        fontWeight: "700"
                       }}
                     >
                       <td style={{ paddingLeft: "1.5rem", color: u.id === "Common" || u.id === "X0" ? "#fbbf24" : "inherit", borderRight: "1px solid rgba(255, 255, 255, 0.1)", display: "flex", alignItems: "center", gap: "0.5rem" }}>
@@ -12200,10 +12205,10 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
                         {u.title}
                       </td>
                       {u.total.map((val, idx) => (
-                        <td 
-                          key={idx} 
-                          style={{ 
-                            textAlign: idx === 4 ? "center" : "right", 
+                        <td
+                          key={idx}
+                          style={{
+                            textAlign: idx === 4 ? "center" : "right",
                             paddingRight: idx === 4 ? "0" : "1rem",
                             fontWeight: (idx === 3 || idx === 4) ? "800" : "700",
                             color: idx === 3 ? "var(--accent-color)" : "inherit",
@@ -12221,10 +12226,10 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
                           {cat.name}
                         </td>
                         {cat.values.map((v, vIdx) => (
-                          <td 
-                            key={vIdx} 
-                            style={{ 
-                              textAlign: vIdx === 4 ? "center" : "right", 
+                          <td
+                            key={vIdx}
+                            style={{
+                              textAlign: vIdx === 4 ? "center" : "right",
                               paddingRight: vIdx === 4 ? "0" : "1rem",
                               borderRight: vIdx === 4 ? "none" : "1px solid rgba(255, 255, 255, 0.1)"
                             }}
@@ -12329,7 +12334,7 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
 
       fiveYearRows.push([]);
       fiveYearRows.push(["[총괄 요약]"]);
-      
+
       const summaryTypes = [
         { label: "총 사업비", data: TOTAL_INVESTMENT_SUMMARY_DATA.total },
         { label: "인건비", data: TOTAL_INVESTMENT_SUMMARY_DATA.labor },
@@ -12415,19 +12420,19 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
       <div className="glass-card" style={{ padding: "2.5rem", maxWidth: "600px", margin: "2rem auto", textAlign: "center", border: "1px solid var(--border-color)" }}>
         <div style={{ display: "inline-flex", padding: "1.2rem", borderRadius: "50%", background: "rgba(16, 185, 129, 0.1)", color: "#10b981", marginBottom: "1.5rem" }}>
           <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-file-spreadsheet">
-            <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/>
-            <path d="M14 2v4a2 2 0 0 0 2 2h4"/>
-            <path d="M8 13h2"/>
-            <path d="M14 13h2"/>
-            <path d="M8 17h2"/>
-            <path d="M14 17h2"/>
+            <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z" />
+            <path d="M14 2v4a2 2 0 0 0 2 2h4" />
+            <path d="M8 13h2" />
+            <path d="M14 13h2" />
+            <path d="M8 17h2" />
+            <path d="M14 17h2" />
           </svg>
         </div>
         <h3 style={{ fontSize: "1.25rem", fontWeight: "800", marginBottom: "0.5rem" }}>투자 계획 엑셀 다운로드</h3>
         <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)", marginBottom: "2rem", lineHeight: "1.5" }}>
           울산과학대학교 라이즈(RISE) 사업비 계획의 5개년 총괄 현황 및 {targetYear}년도 연차별 재원별 현황을 단 한 번에 워크북 시트로 묶어 엑셀 파일로 내려받습니다.
         </p>
-        
+
         <button
           onClick={() => handleDownloadUnifiedExcel("all")}
           className="btn-primary"
@@ -12448,7 +12453,7 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
         >
           📥 통합 투자 계획서 엑셀 다운로드 (.xlsx)
         </button>
-        
+
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginTop: "1rem" }}>
           <button
             onClick={() => handleDownloadUnifiedExcel("five_year")}
