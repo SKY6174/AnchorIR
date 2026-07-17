@@ -8362,11 +8362,7 @@ export default function App() {
               </div>
 
               {projectsSubTab === "unit_status" && (
-                <>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "1rem", marginBottom: "1.2rem" }}>
-                    <h2 style={{ fontSize: "1.25rem", fontWeight: "800", color: "var(--text-primary)" }}>{selectedYear}차년도 단위과제 진행상황</h2>
-                  </div>
-                  <div className="table-panel">
+                <div className="table-panel">
                     <table className="custom-table" style={{ fontSize: "0.85rem" }}>
                       <thead>
                         <tr style={{ background: "rgba(255,255,255,0.02)" }}>
@@ -8600,23 +8596,14 @@ export default function App() {
                     </tbody>
                   </table>
                 </div>
-                </>
               )}
 
               {projectsSubTab === "unit_system" && (
-                <>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "1rem", marginBottom: "1.2rem" }}>
-                    <h2 style={{ fontSize: "1.25rem", fontWeight: "800", color: "var(--text-primary)" }}>{selectedYear}차년도 단위과제 체계</h2>
-                  </div>
-                  <UnitSystemView key={`unit-system-${darkMode}-${selectedYear}`} selectedYear={selectedYear} />
-                </>
+                <UnitSystemView key={`unit-system-${darkMode}-${selectedYear}`} selectedYear={selectedYear} />
               )}
 
               {projectsSubTab === "program_mgmt" && (
                 <div id="pdca-manager-section">
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "1rem", marginBottom: "1.2rem" }}>
-                    <h2 style={{ fontSize: "1.25rem", fontWeight: "800", color: "var(--text-primary)" }}>{selectedYear}차년도 프로그램 세부 관리</h2>
-                  </div>
                   <PDCAManager
                     key={`pdca-${darkMode}-${selectedYear}`}
                     projects={displayProjects}
