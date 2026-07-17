@@ -565,48 +565,54 @@ export default function InstructorPoolManager() {
       {isAddModalOpen && (
         <div style={{
           position: "fixed",
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
+          top: 0, left: 0, width: "100vw", height: "100vh",
           background: "rgba(0,0,0,0.6)",
+          zIndex: 9999,
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
-          zIndex: 999
+          overflowY: "auto",
+          padding: "2rem 1rem"
         }}>
           <div style={{
-            background: "var(--card-bg)",
-            borderRadius: "0.5rem",
-            padding: "1.5rem",
-            width: "400px",
-            boxShadow: "0 10px 25px rgba(0,0,0,0.2)",
-            border: "1px solid var(--border-color)"
+            background: "var(--modal-bg)",
+            border: "1px solid var(--border-color)",
+            borderRadius: "0.75rem",
+            width: "100%",
+            maxWidth: "450px",
+            maxHeight: "85vh",
+            display: "flex",
+            flexDirection: "column",
+            color: "var(--text-primary)",
+            boxShadow: "0 20px 25px -5px rgba(0,0,0,0.3)",
+            margin: "auto"
           }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.25rem" }}>
-              <h3 style={{ fontSize: "1rem", fontWeight: "800" }}>신규 교∙강사 인적사항 등록</h3>
-              <button onClick={() => setIsAddModalOpen(false)} style={{ border: "none", background: "transparent", cursor: "pointer", color: "var(--text-secondary)" }}>
-                <X size={16} />
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "0.85rem 1.25rem", borderBottom: "1px solid var(--border-color)", flexShrink: 0 }}>
+              <h3 style={{ fontSize: "1.1rem", fontWeight: "800", display: "flex", alignItems: "center", gap: "0.4rem", color: "var(--text-primary)" }}>
+                👤 신규 교∙강사 인적사항 등록
+              </h3>
+              <button type="button" onClick={() => setIsAddModalOpen(false)} style={{ background: "none", border: "none", color: "#a1a1aa", cursor: "pointer" }}>
+                <X size={18} />
               </button>
             </div>
-            
-            <div style={{
-              background: "rgba(239,68,68,0.1)",
-              padding: "0.5rem 0.75rem",
-              borderRadius: "0.25rem",
-              fontSize: "0.7rem",
-              color: "#ef4444",
-              display: "flex",
-              alignItems: "center",
-              gap: "0.25rem",
-              marginBottom: "1rem"
-            }}>
-              <ShieldAlert size={14} /> 개인정보 암호화가 백엔드 저장 전에 자동 활성화됩니다.
-            </div>
 
-            <form onSubmit={handleAddInstructor} style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+            <form onSubmit={handleAddInstructor} style={{ padding: "1.25rem", display: "flex", flexDirection: "column", gap: "0.8rem", flex: 1, overflowY: "auto" }}>
+              <div style={{
+                background: "rgba(239,68,68,0.1)",
+                padding: "0.5rem 0.75rem",
+                borderRadius: "0.25rem",
+                fontSize: "0.7rem",
+                color: "#ef4444",
+                display: "flex",
+                alignItems: "center",
+                gap: "0.25rem",
+                marginBottom: "0.25rem"
+              }}>
+                <ShieldAlert size={14} /> 개인정보 암호화가 백엔드 저장 전에 자동 활성화됩니다.
+              </div>
+
               <div>
-                <label style={{ fontSize: "0.75rem", fontWeight: "700", display: "block", marginBottom: "0.25rem" }}>성명</label>
+                <label style={{ fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem", fontWeight: "600", display: "block" }}>성명</label>
                 <input
                   type="text"
                   required
@@ -617,16 +623,16 @@ export default function InstructorPoolManager() {
               </div>
 
               <div>
-                <label style={{ fontSize: "0.75rem", fontWeight: "700", display: "block", marginBottom: "0.25rem" }}>교내/교외 여부</label>
+                <label style={{ fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem", fontWeight: "600", display: "block" }}>교내/교외 여부</label>
                 <div style={{ display: "flex", gap: "1rem", marginTop: "0.25rem" }}>
-                  <label style={{ fontSize: "0.8rem", display: "flex", alignItems: "center", gap: "0.25rem", cursor: "pointer" }}>
+                  <label style={{ fontSize: "0.8rem", display: "flex", alignItems: "center", gap: "0.25rem", cursor: "pointer", color: "var(--text-primary)" }}>
                     <input
                       type="radio"
                       checked={newForm.is_internal === true}
                       onChange={() => setNewForm(prev => ({ ...prev, is_internal: true }))}
                     /> 교내 교강사
                   </label>
-                  <label style={{ fontSize: "0.8rem", display: "flex", alignItems: "center", gap: "0.25rem", cursor: "pointer" }}>
+                  <label style={{ fontSize: "0.8rem", display: "flex", alignItems: "center", gap: "0.25rem", cursor: "pointer", color: "var(--text-primary)" }}>
                     <input
                       type="radio"
                       checked={newForm.is_internal === false}
@@ -637,7 +643,7 @@ export default function InstructorPoolManager() {
               </div>
 
               <div>
-                <label style={{ fontSize: "0.75rem", fontWeight: "700", display: "block", marginBottom: "0.25rem" }}>생년월일 (YYYY-MM-DD)</label>
+                <label style={{ fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem", fontWeight: "600", display: "block" }}>생년월일 (YYYY-MM-DD)</label>
                 <input
                   type="date"
                   required
@@ -649,7 +655,7 @@ export default function InstructorPoolManager() {
 
               <div style={{ display: "flex", gap: "0.5rem" }}>
                 <div style={{ flex: 1 }}>
-                  <label style={{ fontSize: "0.75rem", fontWeight: "700", display: "block", marginBottom: "0.25rem" }}>은행명</label>
+                  <label style={{ fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem", fontWeight: "600", display: "block" }}>은행명</label>
                   <input
                     type="text"
                     required
@@ -660,24 +666,24 @@ export default function InstructorPoolManager() {
                   />
                 </div>
                 <div style={{ flex: 1.8 }}>
-                  <label style={{ fontSize: "0.75rem", fontWeight: "700", display: "block", marginBottom: "0.25rem" }}>계좌번호</label>
+                  <label style={{ fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem", fontWeight: "600", display: "block" }}>계좌번호</label>
                   <input
                     type="text"
                     required
                     placeholder="예: 110-123-45678"
                     value={newForm.account_number}
                     onChange={(e) => setNewForm(prev => ({ ...prev, account_number: e.target.value }))}
-                    style={{ width: "100%", padding: "0.4rem", fontSize: "0.8rem", borderRadius: "0.25rem", background: "var(--input-bg)", color: "var(--text-color)", border: "1px solid var(--border-color)" }}
+                    className="form-input"
                   />
                 </div>
               </div>
 
               <div>
-                <label style={{ fontSize: "0.75rem", fontWeight: "700", display: "block", marginBottom: "0.25rem" }}>인정 등급</label>
+                <label style={{ fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem", fontWeight: "600", display: "block" }}>인정 등급</label>
                 <select
                   value={newForm.rating_grade}
                   onChange={(e) => setNewForm(prev => ({ ...prev, rating_grade: e.target.value }))}
-                  style={{ width: "100%", padding: "0.4rem", fontSize: "0.8rem", borderRadius: "0.25rem", background: "var(--input-bg)", color: "var(--text-color)", border: "1px solid var(--border-color)" }}
+                  className="form-select"
                 >
                   <option value="전문">전문 등급</option>
                   <option value="우수">우수 등급</option>
@@ -685,17 +691,19 @@ export default function InstructorPoolManager() {
                 </select>
               </div>
 
-              <div style={{ display: "flex", gap: "0.5rem", marginTop: "1rem" }}>
+              <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.5rem", borderTop: "1px solid var(--border-color)", paddingTop: "0.85rem", marginTop: "0.5rem" }}>
                 <button
                   type="button"
+                  className="btn-secondary"
                   onClick={() => setIsAddModalOpen(false)}
-                  style={{ flex: 1, padding: "0.5rem", fontSize: "0.8rem", border: "1px solid var(--border-color)", background: "transparent", color: "var(--text-color)", borderRadius: "0.25rem", cursor: "pointer" }}
+                  style={{ padding: "0.5rem 1rem", fontSize: "0.75rem" }}
                 >
                   취소
                 </button>
                 <button
                   type="submit"
-                  style={{ flex: 1, padding: "0.5rem", fontSize: "0.8rem", background: "var(--accent-color)", color: "#ffffff", border: "none", borderRadius: "0.25rem", cursor: "pointer", fontWeight: "700" }}
+                  className="btn-primary"
+                  style={{ padding: "0.5rem 1rem", fontSize: "0.75rem" }}
                 >
                   등록 완료
                 </button>

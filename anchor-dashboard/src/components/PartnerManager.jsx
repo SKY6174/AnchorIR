@@ -685,38 +685,38 @@ export default function PartnerManager({ selectedYear }) {
       {isModalOpen && (
         <div style={{
           position: "fixed",
-          left: 0,
-          top: 0,
-          width: "100vw",
-          height: "100vh",
-          background: "rgba(0, 0, 0, 0.75)",
-          backdropFilter: "blur(5px)",
-          zIndex: 9999
+          top: 0, left: 0, width: "100vw", height: "100vh",
+          background: "rgba(0,0,0,0.6)",
+          zIndex: 9999,
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          overflowY: "auto",
+          padding: "2rem 1rem"
         }}>
-          <div className="glass-card" style={{ 
-            width: "600px", 
-            padding: "2.2rem 2rem", 
-            display: "flex", 
-            flexDirection: "column", 
-            gap: "1.5rem",
-            position: "fixed",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            maxHeight: "88vh",
-            overflowY: "auto",
-            boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.7)"
+          <div style={{
+            background: "var(--modal-bg)",
+            border: "1px solid var(--border-color)",
+            borderRadius: "0.75rem",
+            width: "100%",
+            maxWidth: "600px",
+            maxHeight: "85vh",
+            display: "flex",
+            flexDirection: "column",
+            color: "var(--text-primary)",
+            boxShadow: "0 20px 25px -5px rgba(0,0,0,0.3)",
+            margin: "auto"
           }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <h3 style={{ fontSize: "1.25rem", fontWeight: "800", color: "var(--accent-color)" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "0.85rem 1.25rem", borderBottom: "1px solid var(--border-color)", flexShrink: 0 }}>
+              <h3 style={{ fontSize: "1.1rem", fontWeight: "800", display: "flex", alignItems: "center", gap: "0.4rem", color: "var(--text-primary)" }}>
                 {editingPartner ? "🛠️ 파트너기관 정보 수정" : "➕ 신규 파트너기관 등록"}
               </h3>
-              <button onClick={closeModal} style={{ border: "none", background: "transparent", cursor: "pointer", color: "white" }}>
-                <X size={20} />
+              <button type="button" onClick={closeModal} style={{ background: "none", border: "none", color: "#a1a1aa", cursor: "pointer" }}>
+                <X size={18} />
               </button>
             </div>
 
-            <form onSubmit={handleSave} style={{ display: "flex", flexDirection: "column", gap: "1.2rem" }}>
+            <form onSubmit={handleSave} style={{ padding: "1.25rem", display: "flex", flexDirection: "column", gap: "1.2rem", flex: 1, overflowY: "auto" }}>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
                 {/* 기관명 */}
                 <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
@@ -840,31 +840,19 @@ export default function PartnerManager({ selectedYear }) {
                 />
               </div>
 
-              <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.8rem", marginTop: "0.5rem" }}>
+              <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.5rem", borderTop: "1px solid var(--border-color)", paddingTop: "0.85rem", marginTop: "0.5rem" }}>
                 <button
                   type="button"
+                  className="btn-secondary"
                   onClick={closeModal}
-                  style={{
-                    padding: "0.5rem 1.25rem",
-                    borderRadius: "6px",
-                    border: "none",
-                    background: "rgba(255,255,255,0.1)",
-                    color: "white",
-                    cursor: "pointer"
-                  }}
+                  style={{ padding: "0.5rem 1rem", fontSize: "0.75rem" }}
                 >
                   취소
                 </button>
                 <button
                   type="submit"
                   className="btn-primary"
-                  style={{
-                    padding: "0.5rem 1.5rem",
-                    borderRadius: "6px",
-                    border: "none",
-                    cursor: "pointer",
-                    fontWeight: "800"
-                  }}
+                  style={{ padding: "0.5rem 1.25rem", fontSize: "0.75rem" }}
                 >
                   저장하기
                 </button>
