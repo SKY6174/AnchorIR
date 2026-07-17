@@ -58,7 +58,7 @@ export const initialProjectsData = [
           { id: "A1가-S5T13-6", title: "시그니처 클래스 운영", budget_2026: 40000000, budget_national: 40000000, budget_city: 0, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "정자윤 연구원", pdca: { p: "완료", d: "완료", c: "진행", a: "대기" }, budget_categories: [{ category: "교육∙연구 프로그램 개발∙운영비", budget: 40000000, spent: 0 }] },
           { id: "A1가-S5T14-1", title: "벤치마킹", budget_2026: 14000000, budget_national: 14000000, budget_city: 0, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "서란 연구원", pdca: { p: "대기", d: "대기", c: "대기", a: "대기" }, budget_categories: [{ category: "성과 활용∙확산 지원비", budget: 14000000, spent: 0 }] },
           { id: "A1가-S5T15-1", title: "교직원 역량강화 프로그램 운영", budget_2026: 40000000, budget_national: 0, budget_city: 40000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "서란 연구원", pdca: { p: "대기", d: "대기", c: "대기", a: "대기" }, budget_categories: [{ category: "성과 활용∙확산 지원비", budget: 40000000, spent: 0 }] },
-          { id: "A1가-S5T16-2", title: "장학금 지급", budget_2026: 240000000, budget_national: 240000000, budget_city: 0, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "이은주 선임연구원/서란 연구원", pdca: { p: "대기", d: "대기", c: "대기", a: "대기" }, budget_categories: [{ category: "장학금", budget: 240000000, spent: 0 }] }
+          { id: "A1가-S5T15-2", title: "장학금 지급", budget_2026: 240000000, budget_national: 240000000, budget_city: 0, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "이은주 선임연구원/서란 연구원", pdca: { p: "대기", d: "대기", c: "대기", a: "대기" }, budget_categories: [{ category: "장학금", budget: 240000000, spent: 0 }] }
         ],
         budgetDetails: {
           "인건비": { budget_2026: 0, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0 },
@@ -4490,7 +4490,7 @@ initialProjectsData.forEach((strategy) => {
           "A1가-S5T13-6": "교육∙연구 프로그램 개발∙운영비",
           "A1가-S5T14-1": "성과 활용∙확산 지원비",
           "A1가-S5T15-1": "성과 활용∙확산 지원비",
-          "A1가-S5T16-2": "장학금",
+          "A1가-S5T15-2": "장학금",
           "A3-S1T1-1": "교육∙연구 프로그램 개발∙운영비",
           "A3-S1T1-2": "장학금",
           "A3-S1T2-1": "교육∙연구 프로그램 개발∙운영비",
