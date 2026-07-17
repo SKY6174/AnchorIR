@@ -1080,6 +1080,16 @@ function mergeProjectsWithInitial(loadedData, multiYearInitialData) {
                     const isDirtyRatio = y && y.budget_main > 0 && Math.abs((y.budget_national || 0) / y.budget_main - targetRatio) > 0.05;
                     const isCategoriesEmpty = !y || !y.budget_categories || y.budget_categories.length === 0 || y.budget_categories.every(c => (c.budget || 0) === 0);
 
+                    // 💡 [비목 종류 정합성 검사] 캐시된 비목 정보의 종류가 마스터 mockData.js의 비목 명세 구조와 어긋나는 경우 자동 복구합니다.
+                    const hasBimokMismatch = () => {
+                      if (!y || !y.budget_categories || !sy || !sy.budget_categories) return true;
+                      if (y.budget_categories.length !== sy.budget_categories.length) return true;
+                      const yCats = y.budget_categories.map(c => c.category).sort();
+                      const syCats = sy.budget_categories.map(c => c.category).sort();
+                      return yCats.some((val, idx) => val !== syCats[idx]);
+                    };
+                    const isDirtyBimok = hasBimokMismatch();
+
                     const hasUserSavedData = y && (
                       (y.budget_main > 0 && y.budget_national !== undefined && y.budget_city !== undefined) ||
                       y.budget_national > 0 ||
@@ -1087,7 +1097,7 @@ function mergeProjectsWithInitial(loadedData, multiYearInitialData) {
                       y.budget_external > 0
                     );
 
-                    if (!hasUserSavedData || isDirtyRatio || isCategoriesEmpty) {
+                    if (!hasUserSavedData || isDirtyRatio || isCategoriesEmpty || isDirtyBimok) {
                       const rawBudgetMain = yr === 2 ? (sourceProg.budget_2026 || 0) : yr === 1 ? Math.round((sourceProg.budget_2026 || 0) * 0.9) : Math.round((sourceProg.budget_2026 || 0) * (yr === 3 ? 1.1 : yr === 4 ? 1.2 : 1.3));
 
                       y.budget_main = rawBudgetMain;
