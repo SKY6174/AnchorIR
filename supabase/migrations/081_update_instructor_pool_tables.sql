@@ -1,17 +1,25 @@
--- 1. 기존 종속 테이블 삭제 (새로운 변동 정보 이력 테이블로 통합 예정)
+-- 1. 기존 구형 이력 테이블 삭제 (새로운 변동 정보 이력 테이블로 통합)
 DROP TABLE IF EXISTS public.instructor_payments CASCADE;
 DROP TABLE IF EXISTS public.instructor_programs CASCADE;
-DROP TABLE IF EXISTS public.instructor_histories CASCADE;
 
--- 2. public.instructors 테이블 (고정 정보) 스키마 변경
--- 성별(gender) 컬럼 추가
+-- 2. public.instructors (고정 정보) 테이블 생성 및 구조 조정
+CREATE TABLE IF NOT EXISTS public.instructors (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    name TEXT NOT NULL,
+    birth_date TEXT NOT NULL,
+    bank_name TEXT NOT NULL,
+    account_number TEXT NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT now()
+);
+
+-- 성별(gender) 컬럼 추가 (존재하지 않는 경우에만 생성)
 ALTER TABLE public.instructors ADD COLUMN IF NOT EXISTS gender TEXT DEFAULT '미정';
 
--- 고정 정보에서 빠진 교내외여부, 인정등급 컬럼 정리
+-- 고정 정보에서 빠진 교내외여부, 인정등급 컬럼 정리 (존재할 경우에만 삭제)
 ALTER TABLE public.instructors DROP COLUMN IF EXISTS is_internal;
 ALTER TABLE public.instructors DROP COLUMN IF EXISTS rating_grade;
 
--- 3. 변동 정보 테이블 (public.instructor_histories) 생성
+-- 3. 변동 정보 통합 테이블 (public.instructor_histories) 생성
 CREATE TABLE IF NOT EXISTS public.instructor_histories (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     instructor_id UUID NOT NULL REFERENCES public.instructors(id) ON DELETE CASCADE,
@@ -25,9 +33,19 @@ CREATE TABLE IF NOT EXISTS public.instructor_histories (
 );
 
 -- 4. RLS 보안 설정 활성화
+ALTER TABLE public.instructors ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.instructor_histories ENABLE ROW LEVEL SECURITY;
 
--- 5. 인증된 사용자(authenticated)에 한해 CRUD 모든 권한 부여하는 RLS 정책 수립
+-- 5. RLS 정책 수립 (중복 생성 에러를 방지하기 위해 DROP 후 CREATE)
+DROP POLICY IF EXISTS "Allow authenticated full access to public.instructors" ON public.instructors;
+CREATE POLICY "Allow authenticated full access to public.instructors"
+    ON public.instructors
+    FOR ALL
+    TO authenticated
+    USING (true)
+    WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Allow authenticated full access to public.instructor_histories" ON public.instructor_histories;
 CREATE POLICY "Allow authenticated full access to public.instructor_histories"
     ON public.instructor_histories
     FOR ALL
@@ -36,7 +54,8 @@ CREATE POLICY "Allow authenticated full access to public.instructor_histories"
     WITH CHECK (true);
 
 -- 6. 테스트용 시드(Seed) 데이터 주입
--- 기존 데이터 초기화 후 재주입
+-- 관계 무결성을 위해 histories를 먼저 비우고 instructors를 초기화
+DELETE FROM public.instructor_histories;
 DELETE FROM public.instructors;
 
 INSERT INTO public.instructors (name, gender, birth_date, bank_name, account_number) VALUES

@@ -17,7 +17,7 @@ async function testRegion(region) {
     host: host,
     port: 6543,
     user: 'postgres.qpojcgpdgvzlivjrhrhn',
-    password: 'Snake1201@',
+    password: 'uc_anchor',
     database: 'postgres',
     ssl: { rejectUnauthorized: false },
     connectionTimeoutMillis: 3000
