@@ -1110,9 +1110,14 @@ function mergeProjectsWithInitial(loadedData, multiYearInitialData) {
                     const sy = sourceProg.years[yr];
                     const y = updatedYears[yr];
 
-                    // 💡 [수동 기획 보존 필터]
+                     // 💡 [수동 기획 보존 필터]
                     // 만약 DB에서 이미 사용자가 기획 예산액(budget_main)이나 세원(국비/시비/외부)을 수동 기입하고
                     // 저장(upsert)을 완료한 기저장 데이터가 실재한다면, 사용자의 수정 의도를 존중하여 덮어쓰기 복원을 건너뛰고 보존합니다.
+                    const isNationalOnly = ["A1나-", "D1-", "D2-", "D3-"].some(prefix => sourceProg.id.startsWith(prefix));
+                    
+                    // 💡 [국비 100% 자가 복구 가드] A1나 및 D 단위과제임에도 DB에 시비(budget_city > 0)가 오염되어 남아있다면 강제 교정 대상입니다.
+                    const isDirtyNational = isNationalOnly && y && (y.budget_city > 0 || y.budget_national !== y.budget_main);
+
                     const hasUserSavedData = y && (
                       (y.budget_main > 0 && y.budget_national !== undefined && y.budget_city !== undefined) ||
                       y.budget_national > 0 ||
@@ -1120,13 +1125,12 @@ function mergeProjectsWithInitial(loadedData, multiYearInitialData) {
                       y.budget_external > 0
                     );
 
-                    if (!hasUserSavedData) {
+                    if (!hasUserSavedData || isDirtyNational) {
                       const rawBudgetMain = yr === 2 ? (sourceProg.budget_2026 || 0) : yr === 1 ? Math.round((sourceProg.budget_2026 || 0) * 0.9) : Math.round((sourceProg.budget_2026 || 0) * (yr === 3 ? 1.1 : yr === 4 ? 1.2 : 1.3));
 
                       y.budget_main = rawBudgetMain;
-                      const isNationalOnly = ["A1나-", "D1-", "D2-", "D3-"].some(prefix => sourceProg.id.startsWith(prefix));
                       if (isNationalOnly) {
-                        // 💡 [교육용 한글 주석] D1, D2, D3 단위과제 세부 프로그램은 100% 국비(국고) 본예산으로 할당합니다.
+                        // 💡 [교육용 한글 주석] A1나 및 D1, D2, D3 단위과제 세부 프로그램은 100% 국비(국고) 본예산으로 할당합니다.
                         y.budget_national = rawBudgetMain;
                         y.budget_city = 0;
                       } else {
