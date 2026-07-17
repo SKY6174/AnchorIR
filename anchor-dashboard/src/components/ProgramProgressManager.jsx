@@ -269,9 +269,23 @@ export default function ProgramProgressManager({ projects, selectedYear, darkMod
   };
 
   return (
-    <div className="budget-items-layout" style={{ display: "grid", gridTemplateColumns: "280px 1fr", gap: "1.5rem" }}>
-      {/* 1. 좌측 패널 (단위과제 목록 카드 리스트) */}
-      <div className="glass-card" style={{ padding: "1.2rem", height: "fit-content" }}>
+    <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem", width: "100%" }}>
+      {/* 1. 상단 안내 영역 (주요 프로그램 탭 배너 카드와 대칭화) */}
+      <div className="glass-card" style={{ padding: "1.5rem", display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+        <h2 style={{ fontSize: "1.25rem", fontWeight: "800", color: "var(--accent-color)", display: "flex", alignItems: "center", gap: "0.5rem" }}>
+          <ClipboardList size={22} />
+          {selectedYear}차년도 프로그램 진행 상황
+        </h2>
+        <p style={{ fontSize: "0.9rem", color: "var(--text-secondary)", lineHeight: "1.5" }}>
+          울산과학대학교 앵커사업단에서 수행 중인 프로그램의 월별 계획 대비 실적 현황을 간트 차트 형식으로 모니터링합니다.
+          각 프로그램의 담당연구원, 운영 예산 및 월별 추진 일정(PDCA)을 종합적으로 확인하고 관리할 수 있습니다.
+        </p>
+      </div>
+
+      {/* 2. 메인 워크스페이스 레이아웃 */}
+      <div className="budget-items-layout" style={{ display: "grid", gridTemplateColumns: "280px 1fr", gap: "1.5rem" }}>
+        {/* 1. 좌측 패널 (단위과제 목록 카드 리스트) */}
+        <div className="glass-card" style={{ padding: "1.2rem", height: "fit-content" }}>
         <h3 style={{ fontSize: "1rem", fontWeight: "800", marginBottom: "1rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
           <ClipboardList size={18} style={{ color: "var(--accent-color)" }} />
           <span>단위과제 목록</span>
@@ -784,6 +798,7 @@ export default function ProgramProgressManager({ projects, selectedYear, darkMod
           </div>
         )}
       </div>
+    </div>
     </div>
   );
 }
