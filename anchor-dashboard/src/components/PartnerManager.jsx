@@ -746,13 +746,7 @@ export default function PartnerManager({ selectedYear }) {
                     required
                     value={formName}
                     onChange={(e) => setFormName(e.target.value)}
-                    style={{
-                      padding: "0.5rem",
-                      borderRadius: "4px",
-                      border: "1px solid rgba(255,255,255,0.1)",
-                      background: "rgba(0,0,0,0.3)",
-                      color: "white"
-                    }}
+                    className="form-input"
                   />
                 </div>
 
@@ -764,13 +758,7 @@ export default function PartnerManager({ selectedYear }) {
                     required
                     value={formLocation}
                     onChange={(e) => setFormLocation(e.target.value)}
-                    style={{
-                      padding: "0.5rem",
-                      borderRadius: "4px",
-                      border: "1px solid rgba(255,255,255,0.1)",
-                      background: "rgba(0,0,0,0.3)",
-                      color: "white"
-                    }}
+                    className="form-input"
                   />
                 </div>
               </div>
@@ -782,16 +770,10 @@ export default function PartnerManager({ selectedYear }) {
                   <select
                     value={formCategory}
                     onChange={(e) => setFormCategory(e.target.value)}
-                    style={{
-                      padding: "0.5rem",
-                      borderRadius: "4px",
-                      border: "1px solid rgba(255,255,255,0.1)",
-                      background: "rgba(0,0,0,0.3)",
-                      color: "white"
-                    }}
+                    className="form-select"
                   >
                     {CATEGORY_OPTIONS.map(opt => (
-                      <option key={opt} value={opt} style={{ background: "#222" }}>{opt}</option>
+                      <option key={opt} value={opt} style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>{opt}</option>
                     ))}
                   </select>
                 </div>
@@ -802,16 +784,10 @@ export default function PartnerManager({ selectedYear }) {
                   <select
                     value={formSubCategory}
                     onChange={(e) => setFormSubCategory(e.target.value)}
-                    style={{
-                      padding: "0.5rem",
-                      borderRadius: "4px",
-                      border: "1px solid rgba(255,255,255,0.1)",
-                      background: "rgba(0,0,0,0.3)",
-                      color: "white"
-                    }}
+                    className="form-select"
                   >
                     {(SUB_CATEGORY_OPTIONS[formCategory] || []).map(opt => (
-                      <option key={opt} value={opt} style={{ background: "#222" }}>{opt}</option>
+                      <option key={opt} value={opt} style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>{opt}</option>
                     ))}
                   </select>
                 </div>
@@ -825,13 +801,7 @@ export default function PartnerManager({ selectedYear }) {
                     type="text"
                     value={formContactPerson}
                     onChange={(e) => setFormContactPerson(e.target.value)}
-                    style={{
-                      padding: "0.5rem",
-                      borderRadius: "4px",
-                      border: "1px solid rgba(255,255,255,0.1)",
-                      background: "rgba(0,0,0,0.3)",
-                      color: "white"
-                    }}
+                    className="form-input"
                   />
                 </div>
 
@@ -843,13 +813,7 @@ export default function PartnerManager({ selectedYear }) {
                     value={formContactPhone}
                     onChange={(e) => setFormContactPhone(e.target.value)}
                     placeholder="052-000-0000"
-                    style={{
-                      padding: "0.5rem",
-                      borderRadius: "4px",
-                      border: "1px solid rgba(255,255,255,0.1)",
-                      background: "rgba(0,0,0,0.3)",
-                      color: "white"
-                    }}
+                    className="form-input"
                   />
                 </div>
               </div>
@@ -857,7 +821,7 @@ export default function PartnerManager({ selectedYear }) {
               {/* 협력 분야 다중 선택 */}
               <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
                 <label style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>협력분야 (다중선택)</label>
-                <div style={{ display: "flex", gap: "0.4rem", flexWrap: "wrap", maxHeight: "120px", overflowY: "auto", padding: "0.5rem", background: "rgba(0,0,0,0.2)", borderRadius: "6px" }}>
+                <div className="form-chips-container" style={{ maxHeight: "120px", overflowY: "auto" }}>
                   {SECTOR_OPTIONS.map((sec) => {
                     const isSelected = formSectors.includes(sec);
                     return (
@@ -866,16 +830,15 @@ export default function PartnerManager({ selectedYear }) {
                         key={sec}
                         onClick={() => toggleSector(sec)}
                         style={{
-                          padding: "0.3rem 0.6rem",
+                          padding: "0.35rem 0.75rem",
                           borderRadius: "20px",
-                          border: "none",
                           fontSize: "0.75rem",
                           fontWeight: "700",
                           cursor: "pointer",
                           transition: "all 0.15s ease",
-                          background: isSelected ? "rgba(59, 130, 246, 0.2)" : "rgba(255, 255, 255, 0.03)",
+                          background: isSelected ? "rgba(59, 130, 246, 0.15)" : "var(--input-bg)",
                           color: isSelected ? "var(--accent-color)" : "var(--text-secondary)",
-                          border: isSelected ? "1px solid var(--accent-color)" : "1px solid rgba(255, 255, 255, 0.08)"
+                          border: isSelected ? "1.5px solid var(--accent-color)" : "1.5px solid var(--border-color)"
                         }}
                       >
                         {sec}
@@ -892,14 +855,8 @@ export default function PartnerManager({ selectedYear }) {
                   value={formRemarks}
                   onChange={(e) => setFormRemarks(e.target.value)}
                   rows={3}
-                  style={{
-                    padding: "0.5rem",
-                    borderRadius: "4px",
-                    border: "1px solid rgba(255,255,255,0.1)",
-                    background: "rgba(0,0,0,0.3)",
-                    color: "white",
-                    resize: "none"
-                  }}
+                  className="form-textarea"
+                  style={{ resize: "none" }}
                 />
               </div>
 

@@ -6,26 +6,27 @@
   color-scheme: dark;
   --bg-gradient-dark: linear-gradient(135deg, #09090b 0%, #18181b 100%);
   --bg-gradient-light: linear-gradient(135deg, #f4f4f5 0%, #e4e4e7 100%);
-  
+
   --panel-bg-dark: rgba(24, 24, 27, 0.65);
   --panel-bg-light: rgba(255, 255, 255, 0.75);
-  
+
   --border-color-dark: rgba(255, 255, 255, 0.24);
   --border-color-light: #a1a1aa;
-  
+
   --text-primary-dark: #fafafa;
   --text-primary-light: #18181b;
-  
+
   --text-secondary-dark: #a1a1aa;
   --text-secondary-light: #52525b;
-  
-  --accent-color: #3b82f6; /* Ulsan Blue */
+
+  --accent-color: #3b82f6;
+  /* Ulsan Blue */
   --accent-hover: #2563eb;
-  
+
   --success-color: #55b685;
   --warning-color: #e9a23b;
   --danger-color: #ef4444;
-  
+
   /* 다크 테마 가변 변수 매핑 (기본값) */
   --text-primary: var(--text-primary-dark);
   --text-secondary: var(--text-secondary-dark);
@@ -34,13 +35,13 @@
   --tooltip-bg: rgba(24, 24, 27, 0.95);
   --modal-bg: #18181b;
   --input-bg: #27272a;
-  
+
   /* 💡 [교육용 한글 주석] 사업운영팀 카드에 쓰일 다크 모드 전용 텍스트, 배경, 테두리선 색상 변수입니다. */
   --operation-text: #ffffff;
   --operation-bg: rgba(132, 204, 22, 0.24);
   --operation-border: rgba(132, 204, 22, 0.4);
   --operation-border-hover: #bef264;
-  
+
   /* Font Families */
   --font-content: 'DM Sans', sans-serif;
   --font-data: 'JetBrains Mono', monospace;
@@ -72,7 +73,12 @@
 }
 
 /* 💡 전역 헤딩 및 텍스트 렌더링 보장 규칙 */
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   color: var(--text-primary);
 }
 
@@ -81,7 +87,8 @@ body {
   color: var(--text-primary-dark);
   min-height: 100vh;
   overflow-x: hidden;
-  transition: background 0.3s ease; /* color 트랜지션을 제거하여 브라우저의 보간 연산 락 방지 */
+  transition: background 0.3s ease;
+  /* color 트랜지션을 제거하여 브라우저의 보간 연산 락 방지 */
 }
 
 body.light-mode {
@@ -101,17 +108,21 @@ body.light-mode {
   min-width: 170px;
   max-width: 210px;
   height: 100vh;
-  max-height: 100vh; /* 화면 높이 초과 강제 방지 */
+  max-height: 100vh;
+  /* 화면 높이 초과 강제 방지 */
   position: sticky;
   top: 0;
   overflow-y: auto;
-  scrollbar-width: none; /* Firefox 스크롤바 숨김 */
-  -ms-overflow-style: none; /* IE/Edge 스크롤바 숨김 */
+  scrollbar-width: none;
+  /* Firefox 스크롤바 숨김 */
+  -ms-overflow-style: none;
+  /* IE/Edge 스크롤바 숨김 */
   flex-shrink: 0;
   background: var(--panel-bg-dark);
   border-right: 1px solid var(--border-color-dark);
   backdrop-filter: blur(16px);
-  padding: 1.5rem 0.5rem 5rem 0.5rem; /* 하단 여유를 5rem으로 확대 */
+  padding: 1.5rem 0.5rem 5rem 0.5rem;
+  /* 하단 여유를 5rem으로 확대 */
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -119,7 +130,8 @@ body.light-mode {
 }
 
 .sidebar::-webkit-scrollbar {
-  display: none; /* Chrome/Safari/Webkit 스크롤바 숨김 */
+  display: none;
+  /* Chrome/Safari/Webkit 스크롤바 숨김 */
 }
 
 .light-mode .sidebar {
@@ -175,12 +187,14 @@ body.light-mode {
   font-weight: 700;
 }
 
-.nav-item:hover, .nav-item.active {
+.nav-item:hover,
+.nav-item.active {
   background: rgba(59, 130, 246, 0.15);
   color: var(--text-primary);
 }
 
-.light-mode .nav-item:hover, .light-mode .nav-item.active {
+.light-mode .nav-item:hover,
+.light-mode .nav-item.active {
   background: rgba(59, 130, 246, 0.1);
 }
 
@@ -229,23 +243,28 @@ body.light-mode {
 
 /* 플레이스홀더 다크/라이트 모드 가독성 패치 */
 .user-selector::placeholder {
-  color: #71717a !important; /* 다크모드 기본 플레이스홀더 색상 (가독성 보장) */
+  color: #71717a !important;
+  /* 다크모드 기본 플레이스홀더 색상 (가독성 보장) */
   opacity: 1 !important;
 }
 
 .light-mode .user-selector::placeholder {
-  color: #a1a1aa !important; /* 라이트모드 기본 플레이스홀더 색상 */
+  color: #a1a1aa !important;
+  /* 라이트모드 기본 플레이스홀더 색상 */
   opacity: 1 !important;
 }
 
 /* 본예산 / 이월예산 인풋 상자 시각적 구분자 강화 */
 .budget-main-input {
-  border-left: 3px solid #3b82f6 !important; /* 본예산: 신뢰의 블루 보더 */
+  border-left: 3px solid #3b82f6 !important;
+  /* 본예산: 신뢰의 블루 보더 */
 }
 
 .budget-carry-input {
-  border-left: 3px solid #e9a23b !important; /* 이월예산: 주의/지속의 골드 보더 */
-  background: rgba(233, 162, 59, 0.04) !important; /* 은은한 골드빛 틴트 배경 */
+  border-left: 3px solid #e9a23b !important;
+  /* 이월예산: 주의/지속의 골드 보더 */
+  background: rgba(233, 162, 59, 0.04) !important;
+  /* 은은한 골드빛 틴트 배경 */
 }
 
 .light-mode .budget-carry-input {
@@ -520,6 +539,7 @@ body.light-mode {
   color: #60a5fa;
   border: 1px solid rgba(59, 130, 246, 0.3);
 }
+
 .light-mode .badge-blue {
   background: #eff6ff;
   color: #2563eb;
@@ -531,6 +551,7 @@ body.light-mode {
   color: #fb923c;
   border: 1px solid rgba(249, 115, 22, 0.3);
 }
+
 .light-mode .badge-orange {
   background: #fff7ed;
   color: #ea580c;
@@ -542,6 +563,7 @@ body.light-mode {
   color: #34d399;
   border: 1px solid rgba(16, 185, 129, 0.3);
 }
+
 .light-mode .badge-green {
   background: #ecfdf5;
   color: #059669;
@@ -553,6 +575,7 @@ body.light-mode {
   color: #c084fc;
   border: 1px solid rgba(168, 85, 247, 0.3);
 }
+
 .light-mode .badge-purple {
   background: #faf5ff;
   color: #9333ea;
@@ -568,6 +591,7 @@ body.light-mode {
   border-radius: 0.3rem;
   font-weight: 600;
 }
+
 .light-mode .badge-tag {
   background: #f4f4f5;
   color: #52525b;
@@ -590,7 +614,8 @@ body.light-mode {
   background: rgba(0, 0, 0, 0.02);
 }
 
-.dropzone:hover, .dropzone.active {
+.dropzone:hover,
+.dropzone.active {
   border-color: var(--accent-color);
   background: rgba(59, 130, 246, 0.05);
 }
@@ -674,11 +699,13 @@ body.light-mode {
   color: #ffffff;
   box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
 }
+
 .pdca-step-item.done .pdca-status-select {
   background: rgba(16, 185, 129, 0.2);
   color: #34d399;
   border: 1px solid rgba(16, 185, 129, 0.3);
 }
+
 .light-mode .pdca-step-item.done .pdca-status-select {
   background: rgba(16, 185, 129, 0.1);
   color: #059669;
@@ -692,11 +719,13 @@ body.light-mode {
   color: #ffffff;
   box-shadow: 0 0 10px rgba(59, 130, 246, 0.4);
 }
+
 .pdca-step-item.in-progress .pdca-status-select {
   background: rgba(59, 130, 246, 0.2);
   color: #60a5fa;
   border: 1px solid rgba(59, 130, 246, 0.3);
 }
+
 .light-mode .pdca-step-item.in-progress .pdca-status-select {
   background: rgba(59, 130, 246, 0.1);
   color: #2563eb;
@@ -710,11 +739,13 @@ body.light-mode {
   color: #ffffff;
   box-shadow: 0 0 10px rgba(245, 158, 11, 0.4);
 }
+
 .pdca-step-item.pending .pdca-status-select {
   background: rgba(245, 158, 11, 0.2);
   color: #fbbf24;
   border: 1px solid rgba(245, 158, 11, 0.3);
 }
+
 .light-mode .pdca-step-item.pending .pdca-status-select {
   background: rgba(245, 158, 11, 0.1);
   color: #d97706;
@@ -762,8 +793,15 @@ body.light-mode {
 
 /* 로그인 화면 전용 float 애니메이션 및 라이트모드 보정 */
 @keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-8px); }
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-8px);
+  }
 }
 
 .light-mode .light-mode-logout-bg {
@@ -795,6 +833,7 @@ body.light-mode {
   .kpi-split-layout {
     grid-template-columns: 1fr;
   }
+
   .sticky-panel {
     position: static;
   }
@@ -815,7 +854,8 @@ body.light-mode {
   border: 1px solid var(--border-color-light);
 }
 
-.mini-table th, .mini-table td {
+.mini-table th,
+.mini-table td {
   padding: 0.6rem 0.8rem;
   text-align: left;
 }
@@ -955,16 +995,20 @@ body.light-mode {
 input[type="date"]::-webkit-calendar-picker-indicator,
 input[type="time"]::-webkit-calendar-picker-indicator {
   cursor: pointer;
-  background-color: transparent !important; /* 버튼식 흰색 배경 영역 소거 */
+  background-color: transparent !important;
+  /* 버튼식 흰색 배경 영역 소거 */
   padding: 0 !important;
-  opacity: 0.65 !important; /* 폰트 색상과 조화되는 은은한 흰색/밝은회색 투명도 */
+  opacity: 0.65 !important;
+  /* 폰트 색상과 조화되는 은은한 흰색/밝은회색 투명도 */
   transition: opacity 0.15s ease;
-  filter: none !important; /* 반전 필터를 소거하여 본연의 흰색 캘린더 아이콘 노출 */
+  filter: none !important;
+  /* 반전 필터를 소거하여 본연의 흰색 캘린더 아이콘 노출 */
 }
 
 input[type="date"]::-webkit-calendar-picker-indicator:hover,
 input[type="time"]::-webkit-calendar-picker-indicator:hover {
-  opacity: 1 !important; /* 마우스 호버 시 완전히 밝은 백색으로 노출 */
+  opacity: 1 !important;
+  /* 마우스 호버 시 완전히 밝은 백색으로 노출 */
 }
 
 /* 캘린더 날짜 셀 내의 불필요한 스크롤바 레이아웃 숨김 처리 */
@@ -988,55 +1032,199 @@ input[type="time"]::-webkit-calendar-picker-indicator:hover {
 }
 
 /* Add Button (신규 등록) */
-.action-btn.add-btn, .action-btn.submit-btn {
-  background: rgba(59, 130, 246, 0.15); /* Primary Blue tint */
+.action-btn.add-btn,
+.action-btn.submit-btn {
+  background: rgba(59, 130, 246, 0.15);
+  /* Primary Blue tint */
   color: #60a5fa;
   border: 1px solid rgba(59, 130, 246, 0.3);
 }
-.action-btn.add-btn:hover, .action-btn.submit-btn:hover {
+
+.action-btn.add-btn:hover,
+.action-btn.submit-btn:hover {
   background: rgba(59, 130, 246, 0.25);
 }
-.light-mode .action-btn.add-btn, .light-mode .action-btn.submit-btn {
+
+.light-mode .action-btn.add-btn,
+.light-mode .action-btn.submit-btn {
   background: #eff6ff;
   color: #2563eb;
   border: 1px solid #3b82f6;
 }
-.light-mode .action-btn.add-btn:hover, .light-mode .action-btn.submit-btn:hover {
+
+.light-mode .action-btn.add-btn:hover,
+.light-mode .action-btn.submit-btn:hover {
   background: #dbeafe;
 }
 
 /* Upload Button (엑셀 업로드) */
 .action-btn.upload-btn {
-  background: rgba(16, 185, 129, 0.15); /* Emerald tint */
+  background: rgba(16, 185, 129, 0.15);
+  /* Emerald tint */
   color: #10b981;
   border: 1px solid rgba(16, 185, 129, 0.3);
 }
+
 .action-btn.upload-btn:hover {
   background: rgba(16, 185, 129, 0.25);
 }
+
 .light-mode .action-btn.upload-btn {
   background: #ecfdf5;
   color: #059669;
   border: 1px solid #10b981;
 }
+
 .light-mode .action-btn.upload-btn:hover {
   background: #d1fae5;
 }
 
 /* Download Button (엑셀 다운로드) */
 .action-btn.download-btn {
-  background: rgba(139, 92, 246, 0.15); /* Violet/Purple tint */
+  background: rgba(139, 92, 246, 0.15);
+  /* Violet/Purple tint */
   color: #a78bfa;
   border: 1px solid rgba(139, 92, 246, 0.3);
 }
+
 .action-btn.download-btn:hover {
   background: rgba(139, 92, 246, 0.25);
 }
+
 .light-mode .action-btn.download-btn {
   background: #f5f3ff;
   color: #7c3aed;
   border: 1px solid #8b5cf6;
 }
+
 .light-mode .action-btn.download-btn:hover {
   background: #ede9fe;
+}
+
+/* 폼 입력 필드 프리미엄 스타일링 (라이트/다크 하이브리드) */
+.form-input,
+.form-select,
+.form-textarea {
+  width: 100%;
+  padding: 0.65rem 0.9rem;
+  font-size: 0.88rem;
+  border-radius: 8px;
+  border: 1.5px solid var(--border-color);
+  background: var(--input-bg);
+  color: var(--text-primary);
+  outline: none;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+/* 라이트 모드에서의 가독성을 보완하기 위한 오버라이딩 */
+.light-mode .form-input,
+.light-mode .form-select,
+.light-mode .form-textarea {
+  border-color: #cbd5e1;
+  /* Slate 300 - 조금 더 선명한 테두리 */
+  background: #ffffff;
+  color: #0f172a;
+  /* Slate 900 - 라이트모드 텍스트 고가독성 */
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.02);
+}
+
+/* 호버 시 효과 */
+.form-input:hover,
+.form-select:hover,
+.form-textarea:hover {
+  border-color: var(--accent-color);
+  opacity: 0.95;
+}
+
+.light-mode .form-input:hover,
+.light-mode .form-select:hover,
+.light-mode .form-textarea:hover {
+  border-color: #94a3b8;
+  /* Slate 400 */
+}
+
+/* 포커스 활성화 시 Glow 효과 (울산 블루 기반 프리미엄 쉐도우) */
+.form-input:focus,
+.form-select:focus,
+.form-textarea:focus {
+  border-color: var(--accent-color);
+  background: var(--input-bg);
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.18), 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.light-mode .form-input:focus,
+.light-mode .form-select:focus,
+.light-mode .form-textarea:focus {
+  background: #ffffff;
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.25), 0 2px 4px rgba(59, 130, 246, 0.05);
+}
+
+/* 다중선택 칩 컨테이너 및 칩 스타일 보완 */
+.form-chips-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  border-radius: 8px;
+  border: 1.5px solid var(--border-color);
+  background: var(--input-bg);
+  min-height: 80px;
+}
+
+.light-mode .form-chips-container {
+  border-color: #cbd5e1;
+  background: #f8fafc;
+}
+
+/* 💡 [글로벌 인라인 스타일 제압 가드] 
+   기존 파일 내에 인라인 스타일로 박혀 있는 input, select, textarea 태그들의 디자인을 
+   일괄 오버라이딩하여 라이트/다크 테마에 맞는 프리미엄 비주얼(Glow 포커스, 둥근 8px)로 일괄 자동 전환합니다. */
+input[type="text"]:not(.form-input),
+input[type="date"]:not(.form-input),
+input[type="time"]:not(.form-input),
+input[type="email"]:not(.form-input),
+select:not(.form-select),
+textarea:not(.form-textarea) {
+  padding: 0.55rem 0.75rem !important;
+  font-size: 0.82rem !important;
+  border-radius: 8px !important;
+  border: 1.5px solid var(--border-color) !important;
+  background: var(--input-bg) !important;
+  color: var(--text-primary) !important;
+  outline: none !important;
+  transition: all 0.2s ease !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04) !important;
+}
+
+.light-mode input[type="text"]:not(.form-input),
+.light-mode input[type="date"]:not(.form-input),
+.light-mode input[type="time"]:not(.form-input),
+.light-mode input[type="email"]:not(.form-input),
+.light-mode select:not(.form-select),
+.light-mode textarea:not(.form-textarea) {
+  border-color: #cbd5e1 !important;
+  background: #ffffff !important;
+  color: #0f172a !important;
+}
+
+input[type="text"]:not(.form-input):focus,
+input[type="date"]:not(.form-input):focus,
+input[type="time"]:not(.form-input):focus,
+input[type="email"]:not(.form-input):focus,
+select:not(.form-select):focus,
+textarea:not(.form-textarea):focus {
+  border-color: var(--accent-color) !important;
+  box-shadow: 0 0 0 3.5px rgba(59, 130, 246, 0.18) !important;
+}
+
+.light-mode input[type="text"]:not(.form-input):focus,
+.light-mode input[type="date"]:not(.form-input):focus,
+.light-mode input[type="time"]:not(.form-input):focus,
+.light-mode input[type="email"]:not(.form-input):focus,
+.light-mode select:not(.form-select):focus,
+.light-mode textarea:not(.form-textarea):focus {
+  border-color: var(--accent-color) !important;
+  box-shadow: 0 0 0 3.5px rgba(59, 130, 246, 0.25) !important;
 }

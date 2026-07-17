@@ -618,7 +618,7 @@ export default function InstructorPoolManager() {
                   required
                   value={newForm.name}
                   onChange={(e) => setNewForm(prev => ({ ...prev, name: e.target.value }))}
-                  style={{ width: "100%", padding: "0.4rem", fontSize: "0.8rem", borderRadius: "0.25rem", background: "var(--input-bg)", color: "var(--text-color)", border: "1px solid var(--border-color)" }}
+                  className="form-input"
                 />
               </div>
 
@@ -649,7 +649,7 @@ export default function InstructorPoolManager() {
                   required
                   value={newForm.birth_date}
                   onChange={(e) => setNewForm(prev => ({ ...prev, birth_date: e.target.value }))}
-                  style={{ width: "100%", padding: "0.4rem", fontSize: "0.8rem", borderRadius: "0.25rem", background: "var(--input-bg)", color: "var(--text-color)", border: "1px solid var(--border-color)" }}
+                  className="form-input"
                 />
               </div>
 
@@ -662,7 +662,7 @@ export default function InstructorPoolManager() {
                     placeholder="예: 국민은행"
                     value={newForm.bank_name}
                     onChange={(e) => setNewForm(prev => ({ ...prev, bank_name: e.target.value }))}
-                    style={{ width: "100%", padding: "0.4rem", fontSize: "0.8rem", borderRadius: "0.25rem", background: "var(--input-bg)", color: "var(--text-color)", border: "1px solid var(--border-color)" }}
+                    className="form-input"
                   />
                 </div>
                 <div style={{ flex: 1.8 }}>

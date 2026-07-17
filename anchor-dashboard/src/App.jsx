@@ -11059,8 +11059,7 @@ export default function App() {
                   <input
                     type="text"
                     required
-                    className="user-selector"
-                    style={{ width: "100%", padding: "0.4rem", color: "var(--text-primary)" }}
+                    className="form-input"
                     value={editingMember.name}
                     onChange={(e) => setEditingMember({ ...editingMember, name: e.target.value })}
                   />
@@ -11068,20 +11067,19 @@ export default function App() {
                 <div>
                   <label style={{ display: "block", marginBottom: "0.3rem", fontWeight: "700" }}>소속 부서</label>
                   <select
-                    className="user-selector"
-                    style={{ width: "100%", padding: "0.4rem" }}
+                    className="form-select"
                     value={editingMember.dept}
                     onChange={(e) => setEditingMember({ ...editingMember, dept: e.target.value })}
                   >
-                    <option value="-">-</option>
-                    <option value="운영본부">운영본부</option>
-                    <option value="사업운영팀">사업운영팀</option>
-                    <option value="ECC센터">ECC센터</option>
-                    <option value="ICC센터">ICC센터</option>
-                    <option value="RCC센터">RCC센터</option>
-                    <option value="AID-X지원센터">AID-X지원센터</option>
-                    <option value="울산늘봄누리센터">울산늘봄누리센터</option>
-                    <option value="신산업특화센터">신산업특화센터</option>
+                    <option value="-" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>-</option>
+                    <option value="운영본부" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>운영본부</option>
+                    <option value="사업운영팀" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>사업운영팀</option>
+                    <option value="ECC센터" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>ECC센터</option>
+                    <option value="ICC센터" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>ICC센터</option>
+                    <option value="RCC센터" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>RCC센터</option>
+                    <option value="AID-X지원센터" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>AID-X지원센터</option>
+                    <option value="울산늘봄누리센터" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>울산늘봄누리센터</option>
+                    <option value="신산업특화센터" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>신산업특화센터</option>
                   </select>
                 </div>
               </div>
@@ -11090,8 +11088,7 @@ export default function App() {
                 <div>
                   <label style={{ display: "block", marginBottom: "0.3rem", fontWeight: "700" }}>직책(역할)</label>
                   <select
-                    className="user-selector"
-                    style={{ width: "100%", padding: "0.4rem" }}
+                    className="form-select"
                     value={editingMember.role}
                     onChange={(e) => {
                       const nextRole = e.target.value;
@@ -11104,38 +11101,37 @@ export default function App() {
                       setEditingMember({ ...editingMember, role: nextRole, grade: nextGrade });
                     }}
                   >
-                    <option value="사업단장">사업단장</option>
-                    <option value="총괄본부장">총괄본부장</option>
-                    <option value="센터장">센터장</option>
-                    <option value="운영팀장">운영팀장</option>
-                    <option value="팀장교수">팀장교수</option>
-                    <option value="연구원">연구원</option>
+                    <option value="사업단장" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>사업단장</option>
+                    <option value="총괄본부장" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>총괄본부장</option>
+                    <option value="센터장" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>센터장</option>
+                    <option value="운영팀장" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>운영팀장</option>
+                    <option value="팀장교수" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>팀장교수</option>
+                    <option value="연구원" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>연구원</option>
                   </select>
                 </div>
                 <div>
                   <label style={{ display: "block", marginBottom: "0.3rem", fontWeight: "700" }}>직급/직위</label>
                   <select
-                    className="user-selector"
-                    style={{ width: "100%", padding: "0.4rem" }}
+                    className="form-select"
                     value={editingMember.grade}
                     onChange={(e) => setEditingMember({ ...editingMember, grade: e.target.value })}
                   >
                     {["사업단장", "총괄본부장", "센터장", "운영팀장", "팀장교수"].includes(editingMember.role) ? (
                       <>
-                        <option value="정교수">정교수</option>
-                        <option value="부교수">부교수</option>
-                        <option value="조교수">조교수</option>
+                        <option value="정교수" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>정교수</option>
+                        <option value="부교수" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>부교수</option>
+                        <option value="조교수" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>조교수</option>
                       </>
                     ) : (
                       <>
-                        <option value="부장">부장</option>
-                        <option value="차장">차장</option>
-                        <option value="과장">과장</option>
-                        <option value="대리">대리</option>
-                        <option value="사원">사원</option>
-                        <option value="책임연구원">책임연구원</option>
-                        <option value="선임연구원">선임연구원</option>
-                        <option value="연구원">연구원</option>
+                        <option value="부장" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>부장</option>
+                        <option value="차장" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>차장</option>
+                        <option value="과장" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>과장</option>
+                        <option value="대리" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>대리</option>
+                        <option value="사원" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>사원</option>
+                        <option value="책임연구원" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>책임연구원</option>
+                        <option value="선임연구원" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>선임연구원</option>
+                        <option value="연구원" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>연구원</option>
                       </>
                     )}
                   </select>
@@ -11147,8 +11143,7 @@ export default function App() {
                 <input
                   type="email"
                   required
-                  className="user-selector"
-                  style={{ width: "100%", padding: "0.4rem", color: "var(--text-primary)" }}
+                  className="form-input"
                   value={editingMember.email}
                   onChange={(e) => setEditingMember({ ...editingMember, email: e.target.value })}
                 />
@@ -11159,8 +11154,7 @@ export default function App() {
                   <label style={{ display: "block", marginBottom: "0.3rem", fontWeight: "700" }}>교내 전화번호</label>
                   <input
                     type="text"
-                    className="user-selector"
-                    style={{ width: "100%", padding: "0.4rem", color: "var(--text-primary)" }}
+                    className="form-input"
                     placeholder="052-230-XXXX"
                     value={editingMember.phoneOffice}
                     onChange={(e) => setEditingMember({ ...editingMember, phoneOffice: e.target.value })}
@@ -11170,8 +11164,7 @@ export default function App() {
                   <label style={{ display: "block", marginBottom: "0.3rem", fontWeight: "700" }}>휴대전화번호</label>
                   <input
                     type="text"
-                    className="user-selector"
-                    style={{ width: "100%", padding: "0.4rem", color: "var(--text-primary)" }}
+                    className="form-input"
                     placeholder="010-XXXX-XXXX"
                     value={editingMember.phoneMobile}
                     onChange={(e) => setEditingMember({ ...editingMember, phoneMobile: e.target.value })}
@@ -11201,8 +11194,7 @@ export default function App() {
                   <label style={{ display: "block", marginBottom: "0.3rem", fontWeight: "700" }}>시작일</label>
                   <input
                     type="date"
-                    className="user-selector"
-                    style={{ width: "100%", padding: "0.4rem", color: "var(--text-primary)" }}
+                    className="form-input"
                     value={editingMember.startDate || editingMember.hireDate || ""}
                     onChange={(e) => setEditingMember({ ...editingMember, startDate: e.target.value, hireDate: e.target.value })}
                   />
@@ -11211,8 +11203,7 @@ export default function App() {
                   <label style={{ display: "block", marginBottom: "0.3rem", fontWeight: "700" }}>종료일</label>
                   <input
                     type="date"
-                    className="user-selector"
-                    style={{ width: "100%", padding: "0.4rem", color: "var(--text-primary)" }}
+                    className="form-input"
                     disabled={editingMember.status !== "미참여"}
                     value={editingMember.endDate || ""}
                     onChange={(e) => setEditingMember({ ...editingMember, endDate: e.target.value })}
@@ -11265,13 +11256,12 @@ export default function App() {
                 <select
                   value={programForm.unitId}
                   onChange={(e) => setProgramForm({ ...programForm, unitId: e.target.value })}
-                  className="user-selector"
-                  style={{ width: "100%", padding: "0.4rem", fontSize: "0.8rem", borderRadius: "0.25rem", background: "var(--panel-bg)", border: "1px solid var(--border-color)", color: "var(--text-primary)" }}
+                  className="form-select"
                   disabled={!!editingProgram}
                 >
-                  <option value="">단위과제를 선택하세요</option>
+                  <option value="" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>단위과제를 선택하세요</option>
                   {displayProjects.flatMap(p => p.units).map(u => (
-                    <option key={u.id} value={u.id}>{u.id === "Common" ? "" : `${u.id}. `}{u.title}</option>
+                    <option key={u.id} value={u.id} style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>{u.id === "Common" ? "" : `${u.id}. `}{u.title}</option>
                   ))}
                 </select>
               </div>
@@ -11283,7 +11273,7 @@ export default function App() {
                   value={programForm.id}
                   onChange={(e) => setProgramForm({ ...programForm, id: e.target.value })}
                   placeholder="예: 1-1, Common-1 등"
-                  style={{ width: "100%", padding: "0.4rem", fontSize: "0.8rem", borderRadius: "0.25rem", background: "var(--panel-bg)", border: "1px solid var(--border-color)", color: "var(--text-primary)", outline: "none" }}
+                  className="form-input"
                   disabled={!!editingProgram}
                 />
               </div>
@@ -11295,7 +11285,7 @@ export default function App() {
                   value={programForm.title}
                   onChange={(e) => setProgramForm({ ...programForm, title: e.target.value })}
                   placeholder="프로그램명을 입력하세요"
-                  style={{ width: "100%", padding: "0.4rem", fontSize: "0.8rem", borderRadius: "0.25rem", background: "var(--panel-bg)", border: "1px solid var(--border-color)", color: "var(--text-primary)", outline: "none" }}
+                  className="form-input"
                 />
               </div>
 
@@ -11304,16 +11294,15 @@ export default function App() {
                 <select
                   value={programForm.dept}
                   onChange={(e) => setProgramForm({ ...programForm, dept: e.target.value })}
-                  className="user-selector"
-                  style={{ width: "100%", padding: "0.4rem", fontSize: "0.8rem", borderRadius: "0.25rem", background: "var(--panel-bg)", border: "1px solid var(--border-color)", color: "var(--text-primary)" }}
+                  className="form-select"
                 >
-                  <option value="사업운영팀">사업운영팀</option>
-                  <option value="늘봄누리센터">늘봄누리센터</option>
-                  <option value="신산업특화센터">신산업특화센터</option>
-                  <option value="ECC">ECC</option>
-                  <option value="ICC">ICC</option>
-                  <option value="RCC">RCC</option>
-                  <option value="AID-X">AID-X</option>
+                  <option value="사업운영팀" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>사업운영팀</option>
+                  <option value="늘봄누리센터" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>늘봄누리센터</option>
+                  <option value="신산업특화센터" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>신산업특화센터</option>
+                  <option value="ECC" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>ECC</option>
+                  <option value="ICC" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>ICC</option>
+                  <option value="RCC" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>RCC</option>
+                  <option value="AID-X" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>AID-X</option>
                 </select>
               </div>
             </div>
