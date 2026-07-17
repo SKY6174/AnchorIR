@@ -1033,18 +1033,19 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
               setResFormData(prev => ({ ...prev, space_name: selectedSpace }));
               setIsResModalOpen(true);
             }}
+            className="action-btn"
             style={{
-              padding: "0.45rem 0.85rem",
+              padding: "0.5rem 1.2rem",
               background: "linear-gradient(135deg, var(--accent-color) 0%, #8b5cf6 100%)",
               color: "white",
               border: "none",
-              borderRadius: "6px",
+              borderRadius: "9999px",
               fontSize: "0.75rem",
               fontWeight: "700",
               cursor: "pointer",
               display: "flex",
               alignItems: "center",
-              gap: "0.25rem",
+              gap: "0.3rem",
               boxShadow: "0 2px 8px rgba(139, 92, 246, 0.3)"
             }}
           >
@@ -1094,7 +1095,7 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
           
           {/* 🏫 좌측: 시설 리스트 (세로 배열) */}
           <div style={{ display: "flex", flexDirection: "column", gap: "0.6rem", background: "var(--panel-bg)", border: "1px solid var(--border-color)", borderRadius: "8px", padding: "0.75rem" }}>
-            <h3 style={{ fontSize: "0.8rem", fontWeight: "800", color: "var(--text-primary)", marginBottom: "0.25rem", borderBottom: "1px solid var(--border-color)", paddingBottom: "0.5rem" }}>
+            <h3 style={{ fontSize: "0.95rem", fontWeight: "800", color: "var(--text-primary)", marginBottom: "0.25rem", borderBottom: "1px solid var(--border-color)", paddingBottom: "0.5rem" }}>
               🏫 교육 시설 목록
             </h3>
             {SPACES.map((space) => {
@@ -1154,7 +1155,7 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
             {/* 1. 월간 캘린더 판넬 */}
             <div style={{ background: "var(--panel-bg)", border: "1px solid var(--border-color)", borderRadius: "8px", padding: "1rem" }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.85rem" }}>
-                <h3 style={{ fontSize: "0.85rem", fontWeight: "800", color: "var(--accent-color)", display: "flex", alignItems: "center", gap: "0.3rem" }}>
+                <h3 style={{ fontSize: "1.0rem", fontWeight: "800", color: "var(--accent-color)", display: "flex", alignItems: "center", gap: "0.3rem" }}>
                   <Calendar size={18} /> 📅 {selectedSpace}{SPACE_ROOMS[selectedSpace] ? ` (${SPACE_ROOMS[selectedSpace]})` : ""} 예약 월간 현황
                 </h3>
                 
