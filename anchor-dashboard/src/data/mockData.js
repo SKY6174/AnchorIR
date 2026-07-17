@@ -231,32 +231,56 @@ export const initialProjectsData = [
             name: "지역 맞춤형 교과과정 혁신지수",
             type: "자율",
             description: "주류 및 신산업 연계 주문식 교육과정 개발 건수 및 강의 만족도 조사 지표",
-            formula: "(주문식 교육개발 달성률 * 0.6) + (강의만족도 달성률 * 0.4)",
+            formula: "개편건수(40%) + 이수학생(30%) + 지역취업(20%) + 외지취업(10%)",
             cycle: "연 1회",
             owner: "ECC센터",
             subItems: [
               {
                 id: "L-1-1",
-                name: "신규 주문식 교육과정 개발 건수",
+                name: "교과∙비교과 개편 건수",
                 unit: "건",
                 years: {
                   1: { target: 28, current: 35 },
-                  2: { target: 5.0, current: 4.0 },
-                  3: { target: 6.0, current: 0 },
-                  4: { target: 7.0, current: 0 },
-                  5: { target: 8.0, current: 0 }
+                  2: { target: 30, current: 27 },
+                  3: { target: 32, current: 0 },
+                  4: { target: 34, current: 0 },
+                  5: { target: 36, current: 0 }
                 }
               },
               {
                 id: "L-1-2",
-                name: "주문식 교육 교재 개발 성과 건수",
-                unit: "건",
+                name: "교과∙비교과 이수 학생수",
+                unit: "명",
                 years: {
-                  1: { target: 100, current: 98.8 },
-                  2: { target: 10.0, current: 9.0 },
-                  3: { target: 12.0, current: 0 },
-                  4: { target: 14.0, current: 0 },
-                  5: { target: 16.0, current: 0 }
+                  1: { target: 3800, current: 3950 },
+                  2: { target: 4050, current: 3850 },
+                  3: { target: 4200, current: 0 },
+                  4: { target: 4400, current: 0 },
+                  5: { target: 4600, current: 0 }
+                }
+              },
+              {
+                id: "L-1-3",
+                name: "지역 내 취업자 수",
+                unit: "명",
+                years: {
+                  1: { target: 600, current: 615 },
+                  2: { target: 629, current: 580 },
+                  3: { target: 650, current: 0 },
+                  4: { target: 680, current: 0 },
+                  5: { target: 700, current: 0 }
+                }
+              },
+              {
+                id: "L-1-4",
+                name: "지역 외 취업자 수",
+                unit: "명",
+                years: {
+                  1: { target: 500, current: 505 },
+                  2: { target: 522, current: 480 },
+                  3: { target: 550, current: 0 },
+                  4: { target: 580, current: 0 },
+                  5: { target: 600, current: 0 }
                 }
               }
             ]
@@ -266,32 +290,68 @@ export const initialProjectsData = [
             name: "현장실습 참여성과지수",
             type: "자율",
             description: "이차전지/조선 등 울산 핵심 분야 산업체 현장실습 이수 학생 수 및 만족도",
-            formula: "(이수학생 달성률 * 0.7) + (실습 만족도 달성률 * 0.3)",
+            formula: "12주이상 실습(30%) + 8주이상 실습(20%) 등 기간별 가중합",
             cycle: "반기별 1회",
             owner: "ECC센터",
             subItems: [
               {
                 id: "L-2-1",
-                name: "핵심 분야 현장실습 참여 이수 인원",
+                name: "12주 이상 표준 실습 이수 학생 수",
                 unit: "명",
                 years: {
-                  1: { target: 100, current: 1266 },
-                  2: { target: 200.0, current: 160.0 },
-                  3: { target: 220.0, current: 0 },
-                  4: { target: 240.0, current: 0 },
-                  5: { target: 260.0, current: 0 }
+                  1: { target: 70, current: 72 },
+                  2: { target: 74, current: 65 },
+                  3: { target: 80, current: 0 },
+                  4: { target: 85, current: 0 },
+                  5: { target: 90, current: 0 }
                 }
               },
               {
                 id: "L-2-2",
-                name: "참여 학생 현장실습 만족 평점",
-                unit: "점",
+                name: "8주~12주 표준 실습 이수 학생 수",
+                unit: "명",
                 years: {
-                  1: { target: 90, current: 98.64 },
-                  2: { target: 95.0, current: 85.0 },
-                  3: { target: 96.0, current: 0 },
-                  4: { target: 97.0, current: 0 },
-                  5: { target: 98.0, current: 0 }
+                  1: { target: 25, current: 26 },
+                  2: { target: 27, current: 24 },
+                  3: { target: 30, current: 0 },
+                  4: { target: 32, current: 0 },
+                  5: { target: 35, current: 0 }
+                }
+              },
+              {
+                id: "L-2-3",
+                name: "4주~8주 표준 실습 이수 학생 수",
+                unit: "명",
+                years: {
+                  1: { target: 100, current: 102 },
+                  2: { target: 103, current: 95 },
+                  3: { target: 110, current: 0 },
+                  4: { target: 115, current: 0 },
+                  5: { target: 120, current: 0 }
+                }
+              },
+              {
+                id: "L-2-4",
+                name: "4주 이상 일반 실습 이수 학생 수",
+                unit: "명",
+                years: {
+                  1: { target: 22, current: 24 },
+                  2: { target: 25, current: 22 },
+                  3: { target: 28, current: 0 },
+                  4: { target: 30, current: 0 },
+                  5: { target: 32, current: 0 }
+                }
+              },
+              {
+                id: "L-2-5",
+                name: "4주 이상 글로벌 표준 실습 이수 학생 수",
+                unit: "명",
+                years: {
+                  1: { target: 3, current: 3 },
+                  2: { target: 4, current: 3 },
+                  3: { target: 5, current: 0 },
+                  4: { target: 6, current: 0 },
+                  5: { target: 7, current: 0 }
                 }
               }
             ]
@@ -301,32 +361,32 @@ export const initialProjectsData = [
             name: "지역 정주 교육 지수",
             type: "중점",
             description: "앵커 취업연계 교육 후 울산 관내 기업 취업 및 1년 이상 정착 유지 비율",
-            formula: "(울산 취업 정주율 달성률 * 0.8) + (취업 연계 만족도 * 0.2)",
+            formula: "정주 프로그램 운영건수(50%) + 정주 프로그램 참여자수(50%)",
             cycle: "연 1회",
             owner: "ECC센터",
             subItems: [
               {
                 id: "U-1-1",
-                name: "울산 관내 기업 취업생 수",
-                unit: "명",
+                name: "정주 프로그램 운영 건수",
+                unit: "건",
                 years: {
-                  1: { target: 0, current: 0 },
-                  2: { target: 80.0, current: 72.0 },
-                  3: { target: 90.0, current: 0 },
-                  4: { target: 100.0, current: 0 },
-                  5: { target: 110.0, current: 0 }
+                  1: { target: 5, current: 5 },
+                  2: { target: 7, current: 6 },
+                  3: { target: 8, current: 0 },
+                  4: { target: 9, current: 0 },
+                  5: { target: 10, current: 0 }
                 }
               },
               {
                 id: "U-1-2",
-                name: "취업 후 1년 이상 관내 거주 유지율",
-                unit: "%",
+                name: "정주 프로그램 참여자 수",
+                unit: "명",
                 years: {
-                  1: { target: 0, current: 0 },
-                  2: { target: 85.0, current: 76.5 },
-                  3: { target: 87.0, current: 0 },
-                  4: { target: 89.0, current: 0 },
-                  5: { target: 90.0, current: 0 }
+                  1: { target: 6, current: 6 },
+                  2: { target: 8, current: 7 },
+                  3: { target: 10, current: 0 },
+                  4: { target: 12, current: 0 },
+                  5: { target: 15, current: 0 }
                 }
               }
             ]
@@ -486,32 +546,32 @@ export const initialProjectsData = [
             name: "창업교육 운영성과지수",
             type: "자율",
             description: "글로컬 창업특강 및 인큐베이팅 참여 성인학습자 및 재학생 지수",
-            formula: "(특강 수료인원 달성률 * 0.5) + (신규 창업동아리 달성률 * 0.5)",
+            formula: "창업과정 운영건수(50%) + 창업과정 이수학생수(50%)",
             cycle: "연 1회",
             owner: "ECC센터",
             subItems: [
               {
                 id: "L-3-1",
-                name: "창업 특화 아카데미 교육 수료 인원",
-                unit: "명",
+                name: "창업교육과정 운영 건수",
+                unit: "건",
                 years: {
-                  1: { target: 5, current: 5 },
-                  2: { target: 100.0, current: 85.0 },
-                  3: { target: 110.0, current: 0 },
-                  4: { target: 120.0, current: 0 },
-                  5: { target: 130.0, current: 0 }
+                  1: { target: 10, current: 10 },
+                  2: { target: 12, current: 10 },
+                  3: { target: 14, current: 0 },
+                  4: { target: 16, current: 0 },
+                  5: { target: 18, current: 0 }
                 }
               },
               {
                 id: "L-3-2",
-                name: "육성 지원하는 학생 창업동아리 수",
-                unit: "개",
+                name: "창업교육과정 이수 학생 수",
+                unit: "명",
                 years: {
-                  1: { target: 120, current: 110 },
-                  2: { target: 10.0, current: 8.5 },
-                  3: { target: 12.0, current: 0 },
-                  4: { target: 14.0, current: 0 },
-                  5: { target: 15.0, current: 0 }
+                  1: { target: 2000, current: 2150 },
+                  2: { target: 2400, current: 2150 },
+                  3: { target: 2600, current: 0 },
+                  4: { target: 2800, current: 0 },
+                  5: { target: 3000, current: 0 }
                 }
               }
             ]
@@ -521,32 +581,44 @@ export const initialProjectsData = [
             name: "창업 활성화지수",
             type: "자율",
             description: "신규 발굴 학생/교원 창업 벤처기업 수 및 투자유치 실적",
-            formula: "(신규 창업기업수 달성률 * 0.6) + (유치 투자액 달성률 * 0.4)",
+            formula: "창업지원 프로그램수(50%) + 창업기업수(40%) + 매출액(10%)",
             cycle: "반기별 1회",
             owner: "ECC센터",
             subItems: [
               {
                 id: "L-4-1",
-                name: "학생 및 교원 신규 기술창업 기업 수",
-                unit: "개",
+                name: "창업 프로그램 운영 건수",
+                unit: "건",
                 years: {
-                  1: { target: 8, current: 8 },
-                  2: { target: 5.0, current: 4.0 },
-                  3: { target: 6.0, current: 0 },
-                  4: { target: 7.0, current: 0 },
-                  5: { target: 8.0, current: 0 }
+                  1: { target: 8, current: 9 },
+                  2: { target: 10, current: 9 },
+                  3: { target: 12, current: 0 },
+                  4: { target: 14, current: 0 },
+                  5: { target: 16, current: 0 }
                 }
               },
               {
                 id: "L-4-2",
-                name: "창업기업 외부 매칭 투자유치 유치액",
-                unit: "만원",
+                name: "학생/교원 신규 창업 기업 설립 수",
+                unit: "개",
                 years: {
-                  1: { target: 3, current: 3 },
-                  2: { target: 20000.0, current: 15000.0 },
-                  3: { target: 22000.0, current: 0 },
-                  4: { target: 25000.0, current: 0 },
-                  5: { target: 30000.0, current: 0 }
+                  1: { target: 12, current: 13 },
+                  2: { target: 15, current: 13 },
+                  3: { target: 18, current: 0 },
+                  4: { target: 20, current: 0 },
+                  5: { target: 22, current: 0 }
+                }
+              },
+              {
+                id: "L-4-3",
+                name: "창업 연계 기업 총 매출 규모",
+                unit: "백만원",
+                years: {
+                  1: { target: 800, current: 850 },
+                  2: { target: 1000, current: 850 },
+                  3: { target: 1200, current: 0 },
+                  4: { target: 1400, current: 0 },
+                  5: { target: 1600, current: 0 }
                 }
               }
             ]
@@ -556,32 +628,32 @@ export const initialProjectsData = [
             name: "창업 문화 확산 지수",
             type: "중점",
             description: "캠퍼스 내 메이커스페이스 장비 가동률 및 학생 참여도 지표",
-            formula: "(가동률 달성률 * 0.5) + (참여 이용학생수 달성률 * 0.5)",
+            formula: "창업동아리 운영건수(50%) + 동아리 지원 프로그램 만족도(50%)",
             cycle: "분기별 1회",
             owner: "ECC센터",
             subItems: [
               {
                 id: "U-2-1",
-                name: "메이커스페이스 전용 장비 가동률",
-                unit: "%",
+                name: "창업동아리 발굴 육성 수",
+                unit: "개",
                 years: {
-                  1: { target: 0, current: 0 },
-                  2: { target: 70.0, current: 65.0 },
-                  3: { target: 75.0, current: 0 },
-                  4: { target: 78.0, current: 0 },
-                  5: { target: 80.0, current: 0 }
+                  1: { target: 10, current: 12 },
+                  2: { target: 14, current: 12 },
+                  3: { target: 16, current: 0 },
+                  4: { target: 18, current: 0 },
+                  5: { target: 20, current: 0 }
                 }
               },
               {
                 id: "U-2-2",
-                name: "체험 및 교육 참여 재학생 누적 인원",
-                unit: "명",
+                name: "동아리 기술자문 멘토링 만족도",
+                unit: "점",
                 years: {
-                  1: { target: 0, current: 0 },
-                  2: { target: 500.0, current: 450.0 },
-                  3: { target: 550.0, current: 0 },
-                  4: { target: 600.0, current: 0 },
-                  5: { target: 650.0, current: 0 }
+                  1: { target: 80, current: 83 },
+                  2: { target: 87, current: 83 },
+                  3: { target: 90, current: 0 },
+                  4: { target: 92, current: 0 },
+                  5: { target: 95, current: 0 }
                 }
               }
             ]
@@ -631,102 +703,126 @@ export const initialProjectsData = [
             name: "글로벌 역량 강화지수",
             type: "자율",
             description: "외국인 우수교원 확보율 및 글로벌 교류 학기 이수생 비율",
-            formula: "(우수교원 달성률 * 0.5) + (이수학생 달성률 * 0.5)",
+            formula: "공동 연구(20%) + 공동 협력(30%) + 해외 교류 프로그램 참여자(50%)",
             cycle: "연 1회",
             owner: "ECC센터",
             subItems: [
               {
                 id: "L-23-1",
-                name: "외국인 전임교원 신규 유치 확보율",
-                unit: "%",
+                name: "공동 연구 건수",
+                unit: "건",
                 years: {
                   1: { target: 2, current: 2 },
-                  2: { target: 12.0, current: 9.6 },
-                  3: { target: 13.0, current: 0 },
-                  4: { target: 14.0, current: 0 },
-                  5: { target: 15.0, current: 0 }
+                  2: { target: 3, current: 2 },
+                  3: { target: 4, current: 0 },
+                  4: { target: 5, current: 0 },
+                  5: { target: 6, current: 0 }
                 }
               },
               {
                 id: "L-23-2",
-                name: "해외 파견 및 글로벌 학기 참여 재학생 수",
+                name: "공동 협력 건수",
+                unit: "건",
+                years: {
+                  1: { target: 2, current: 2 },
+                  2: { target: 3, current: 3 },
+                  3: { target: 4, current: 0 },
+                  4: { target: 5, current: 0 },
+                  5: { target: 6, current: 0 }
+                }
+              },
+              {
+                id: "L-23-3",
+                name: "해외 교류 인원",
                 unit: "명",
                 years: {
-                  1: { target: 25, current: 24 },
-                  2: { target: 40.0, current: 32.0 },
-                  3: { target: 45.0, current: 0 },
-                  4: { target: 50.0, current: 0 },
-                  5: { target: 55.0, current: 0 }
+                  1: { target: 50, current: 48 },
+                  2: { target: 55, current: 48 },
+                  3: { target: 60, current: 0 },
+                  4: { target: 65, current: 0 },
+                  5: { target: 70, current: 0 }
                 }
               }
             ]
           },
           {
             id: "L-24",
-            name: "외국인 학생 유치 정착 지원지수",
+            name: "외국인 학생 유치 및 정착 지원 성과 지수",
             type: "자율",
             description: "해외 유학생 유치 수 및 울산 역내 기업 취업 정주율",
-            formula: "(유학생수 달성률 * 0.6) + (유학생정주율 달성률 * 0.4)",
+            formula: "국제유학생 유치 수(60%) + 유학생 정착(20%) + 근로자 정착(20%)",
             cycle: "연 1회",
             owner: "ECC센터",
             subItems: [
               {
                 id: "L-24-1",
-                name: "정규과정 입학 외국인 유학생 수",
+                name: "유학생 유치 인원",
                 unit: "명",
                 years: {
-                  1: { target: 15, current: 15 },
-                  2: { target: 150.0, current: 120.0 },
-                  3: { target: 160.0, current: 0 },
-                  4: { target: 170.0, current: 0 },
-                  5: { target: 180.0, current: 0 }
+                  1: { target: 150, current: 162 },
+                  2: { target: 195, current: 180 },
+                  3: { target: 210, current: 0 },
+                  4: { target: 230, current: 0 },
+                  5: { target: 250, current: 0 }
                 }
               },
               {
                 id: "L-24-2",
-                name: "졸업 외국인 유학생 울산 정주 취업률",
-                unit: "%",
+                name: "유학생 정착 지원 프로그램 운영",
+                unit: "건",
                 years: {
-                  1: { target: 90, current: 85 },
-                  2: { target: 30.0, current: 22.0 },
-                  3: { target: 32.0, current: 0 },
-                  4: { target: 34.0, current: 0 },
-                  5: { target: 35.0, current: 0 }
+                  1: { target: 1, current: 1 },
+                  2: { target: 1, current: 1 },
+                  3: { target: 2, current: 0 },
+                  4: { target: 2, current: 0 },
+                  5: { target: 3, current: 0 }
+                }
+              },
+              {
+                id: "L-24-3",
+                name: "근로자 정착 지원 프로그램 운영",
+                unit: "건",
+                years: {
+                  1: { target: 1, current: 1 },
+                  2: { target: 1, current: 1 },
+                  3: { target: 2, current: 0 },
+                  4: { target: 2, current: 0 },
+                  5: { target: 3, current: 0 }
                 }
               }
             ]
           },
           {
             id: "U-12",
-            name: "지역정착형 글로벌 교육지수",
+            name: "지역정착형 글로벌 인재 교육성과 지수",
             type: "중점",
             description: "유학생 대상 한국어(TOPIK) 4급 이상 합격 및 연계 생활 적응도",
-            formula: "(TOPIK 달성률 * 0.8) + (적응도 달성률 * 0.2)",
+            formula: "현장실습 참여 외국인 유학생 수(50%) + 유학생 정착 지원 프로그램 참여자 수(50%)",
             cycle: "반기별 1회",
             owner: "ECC센터",
             subItems: [
               {
                 id: "U-12-1",
-                name: "TOPIK 4급 취득 외국인 유학생 수",
+                name: "실습 참여 외국인",
                 unit: "명",
                 years: {
-                  1: { target: 0, current: 0 },
-                  2: { target: 80.0, current: 60.0 },
-                  3: { target: 85.0, current: 0 },
-                  4: { target: 90.0, current: 0 },
-                  5: { target: 95.0, current: 0 }
+                  1: { target: 3, current: 3 },
+                  2: { target: 5, current: 4 },
+                  3: { target: 6, current: 0 },
+                  4: { target: 7, current: 0 },
+                  5: { target: 8, current: 0 }
                 }
               },
               {
                 id: "U-12-2",
-                name: "다문화 공동체 멘토링 만족도",
-                unit: "점",
+                name: "정착 지원 참여자",
+                unit: "명",
                 years: {
-                  1: { target: 0, current: 0 },
-                  2: { target: 95.0, current: 75.0 },
-                  3: { target: 96.0, current: 0 },
-                  4: { target: 97.0, current: 0 },
-                  5: { target: 98.0, current: 0 }
+                  1: { target: 5, current: 5 },
+                  2: { target: 6, current: 5 },
+                  3: { target: 7, current: 0 },
+                  4: { target: 8, current: 0 },
+                  5: { target: 10, current: 0 }
                 }
               }
             ]
@@ -786,32 +882,68 @@ export const initialProjectsData = [
             name: "산학기술 이전 및 기술사업화 성과지수",
             type: "자율",
             description: "산학 공동 특허 출원 등록 및 기술료 수입 실적 지표",
-            formula: "(특허출원 달성률 * 0.5) + (기술료 수입 달성률 * 0.5)",
+            formula: "기술이전건수(25%) + 기술료수익(25%) + 특허출원(30%) + 논문수(10%) 등",
             cycle: "반기별 1회",
             owner: "ICC센터",
             subItems: [
               {
                 id: "L-5-1",
-                name: "지산학 연계 공동 특허 등록 건수",
+                name: "기술이전 계약 건수",
                 unit: "건",
                 years: {
-                  1: { target: 10, current: 9 },
-                  2: { target: 8.0, current: 6.0 },
-                  3: { target: 10.0, current: 0 },
-                  4: { target: 11.0, current: 0 },
-                  5: { target: 12.0, current: 0 }
+                  1: { target: 8, current: 8 },
+                  2: { target: 10, current: 8 },
+                  3: { target: 12, current: 0 },
+                  4: { target: 14, current: 0 },
+                  5: { target: 15, current: 0 }
                 }
               },
               {
                 id: "L-5-2",
-                name: "체결한 특허기술 기술료 징수액",
-                unit: "만원",
+                name: "기술이전료 수입 규모",
+                unit: "백만원",
                 years: {
-                  1: { target: 50, current: 48 },
-                  2: { target: 3000.0, current: 2000.0 },
-                  3: { target: 3500.0, current: 0 },
-                  4: { target: 4000.0, current: 0 },
-                  5: { target: 5000.0, current: 0 }
+                  1: { target: 40, current: 42 },
+                  2: { target: 50, current: 42 },
+                  3: { target: 60, current: 0 },
+                  4: { target: 70, current: 0 },
+                  5: { target: 80, current: 0 }
+                }
+              },
+              {
+                id: "L-5-3",
+                name: "시제품 사업화 제작 지원 건수",
+                unit: "건",
+                years: {
+                  1: { target: 5, current: 5 },
+                  2: { target: 6, current: 5 },
+                  3: { target: 7, current: 0 },
+                  4: { target: 8, current: 0 },
+                  5: { target: 10, current: 0 }
+                }
+              },
+              {
+                id: "L-5-4",
+                name: "특허 출원 건수",
+                unit: "건",
+                years: {
+                  1: { target: 8, current: 8 },
+                  2: { target: 10, current: 9 },
+                  3: { target: 12, current: 0 },
+                  4: { target: 14, current: 0 },
+                  5: { target: 16, current: 0 }
+                }
+              },
+              {
+                id: "L-5-5",
+                name: "논문 게재 수",
+                unit: "건",
+                years: {
+                  1: { target: 30, current: 32 },
+                  2: { target: 33, current: 28 },
+                  3: { target: 36, current: 0 },
+                  4: { target: 40, current: 0 },
+                  5: { target: 45, current: 0 }
                 }
               }
             ]
@@ -821,32 +953,32 @@ export const initialProjectsData = [
             name: "기업애로 해결 지원 지수",
             type: "자율",
             description: "가족회사 애로기술 자문 해결 및 경영 기술지도 참여 횟수",
-            formula: "(자문해결 달성률 * 0.7) + (만족도 달성률 * 0.3)",
+            formula: "기업애로 기술지원 건수(70%) + 기업컨설팅 지원 건수(30%)",
             cycle: "분기별 1회",
             owner: "ICC센터",
             subItems: [
               {
                 id: "L-6-1",
-                name: "중소기업 애로기술 지도 자문 건수",
+                name: "기업애로 기술지도/자문 건수",
                 unit: "건",
                 years: {
-                  1: { target: 15, current: 15 },
-                  2: { target: 50.0, current: 44.0 },
-                  3: { target: 55.0, current: 0 },
-                  4: { target: 60.0, current: 0 },
-                  5: { target: 65.0, current: 0 }
+                  1: { target: 20, current: 22 },
+                  2: { target: 22, current: 19 },
+                  3: { target: 25, current: 0 },
+                  4: { target: 28, current: 0 },
+                  5: { target: 30, current: 0 }
                 }
               },
               {
                 id: "L-6-2",
-                name: "지도 자문 수혜업체 종합 만족도",
-                unit: "점",
+                name: "산업체 경영 컨설팅 건수",
+                unit: "건",
                 years: {
-                  1: { target: 20, current: 20 },
-                  2: { target: 95.0, current: 83.6 },
-                  3: { target: 96.0, current: 0 },
-                  4: { target: 97.0, current: 0 },
-                  5: { target: 98.0, current: 0 }
+                  1: { target: 8, current: 8 },
+                  2: { target: 10, current: 9 },
+                  3: { target: 12, current: 0 },
+                  4: { target: 14, current: 0 },
+                  5: { target: 15, current: 0 }
                 }
               }
             ]
@@ -856,32 +988,56 @@ export const initialProjectsData = [
             name: "산학협력 기반 연구과제 수행 지수",
             type: "중점",
             description: "지방자치단체 및 민간기업 매칭형 공동 연구과제 수주 실적",
-            formula: "(매칭수주 달성률 * 0.6) + (참여교원 달성률 * 0.4)",
+            formula: "공동과제 건수(30%) + 연구비 규모(30%) + 학생연구원 수(20%) + 계획서 건수(20%)",
             cycle: "반기별 1회",
             owner: "ICC센터",
             subItems: [
               {
                 id: "U-3-1",
-                name: "민간/지자체 공동 연구과제 수주 건수",
+                name: "대기업/신산업 공동 R&D 수행 건수",
                 unit: "건",
                 years: {
-                  1: { target: 0, current: 0 },
-                  2: { target: 10.0, current: 8.0 },
-                  3: { target: 12.0, current: 0 },
-                  4: { target: 14.0, current: 0 },
-                  5: { target: 15.0, current: 0 }
+                  1: { target: 5, current: 5 },
+                  2: { target: 6, current: 5 },
+                  3: { target: 8, current: 0 },
+                  4: { target: 10, current: 0 },
+                  5: { target: 12, current: 0 }
                 }
               },
               {
                 id: "U-3-2",
-                name: "산학협력 연구에 참여한 교원 인원",
+                name: "공동 연구과제 연구비 집행 규모",
+                unit: "백만원",
+                years: {
+                  1: { target: 100, current: 110 },
+                  2: { target: 110, current: 95 },
+                  3: { target: 120, current: 0 },
+                  4: { target: 130, current: 0 },
+                  5: { target: 150, current: 0 }
+                }
+              },
+              {
+                id: "U-3-3",
+                name: "연구과제 참여 학생 연구원 인원",
                 unit: "명",
                 years: {
-                  1: { target: 0, current: 0 },
-                  2: { target: 30.0, current: 24.0 },
-                  3: { target: 35.0, current: 0 },
-                  4: { target: 40.0, current: 0 },
-                  5: { target: 45.0, current: 0 }
+                  1: { target: 10, current: 12 },
+                  2: { target: 13, current: 11 },
+                  3: { target: 15, current: 0 },
+                  4: { target: 18, current: 0 },
+                  5: { target: 20, current: 0 }
+                }
+              },
+              {
+                id: "U-3-4",
+                name: "지산학 연계 정부지원계획 수립 건수",
+                unit: "건",
+                years: {
+                  1: { target: 2, current: 2 },
+                  2: { target: 3, current: 3 },
+                  3: { target: 4, current: 0 },
+                  4: { target: 5, current: 0 },
+                  5: { target: 6, current: 0 }
                 }
               }
             ]
@@ -940,32 +1096,32 @@ export const initialProjectsData = [
             name: "AI·DX 관련 교육프로그램 운영성과지수",
             type: "자율",
             description: "신규 개발 개설한 AI 융합 리터러시 교육 교과목 이수율 및 수혜학생 만족도",
-            formula: "(이수인원 달성률 * 0.6) + (만족도 달성률 * 0.4)",
+            formula: "AI·DX 교육프로그램 개발 건수(30%) + 교육 이수자 수(70%)",
             cycle: "반기별 1회",
             owner: "AID-X지원센터",
             subItems: [
               {
                 id: "L-13-1",
-                name: "AI 융합 전공 교과정 신규 이수 학생",
-                unit: "명",
+                name: "AI·DX 교육프로그램 개발 건수",
+                unit: "건",
                 years: {
-                  1: { target: 0, current: 0 },
-                  2: { target: 300.0, current: 240.0 },
-                  3: { target: 330.0, current: 0 },
-                  4: { target: 350.0, current: 0 },
-                  5: { target: 380.0, current: 0 }
+                  1: { target: 5, current: 5 },
+                  2: { target: 6, current: 5 },
+                  3: { target: 7, current: 0 },
+                  4: { target: 8, current: 0 },
+                  5: { target: 10, current: 0 }
                 }
               },
               {
                 id: "L-13-2",
-                name: "교육과정 체험 및 전공 만족 평점",
-                unit: "점",
+                name: "AI·DX 교육 이수자 수",
+                unit: "명",
                 years: {
-                  1: { target: 0, current: 0 },
-                  2: { target: 95.0, current: 80.0 },
-                  3: { target: 96.0, current: 0 },
-                  4: { target: 97.0, current: 0 },
-                  5: { target: 98.0, current: 0 }
+                  1: { target: 300, current: 295 },
+                  2: { target: 330, current: 295 },
+                  3: { target: 360, current: 0 },
+                  4: { target: 400, current: 0 },
+                  5: { target: 450, current: 0 }
                 }
               }
             ]
@@ -975,32 +1131,20 @@ export const initialProjectsData = [
             name: "AI·DX 역량강화 달성지수",
             type: "자율",
             description: "산업체 재직자 및 유관 교원의 AWS C3 자격증 취득 비율",
-            formula: "(자격취득 달성률 * 0.8) + (워크숍 개최 달성률 * 0.2)",
+            formula: "교직원/재직자 공동교육 참여 건수 (100%)",
             cycle: "반기별 1회",
             owner: "AID-X지원센터",
             subItems: [
               {
                 id: "L-14-1",
-                name: "AWS 클라우드 교육 자격 취득 인원",
-                unit: "명",
+                name: "교직원/재직자 공동교육 참여 건수",
+                unit: "건",
                 years: {
-                  1: { target: 0, current: 0 },
-                  2: { target: 50.0, current: 32.0 },
-                  3: { target: 55.0, current: 0 },
-                  4: { target: 60.0, current: 0 },
-                  5: { target: 65.0, current: 0 }
-                }
-              },
-              {
-                id: "L-14-2",
-                name: "교원 대상 AI/DX 기술실습 연수 개최",
-                unit: "회",
-                years: {
-                  1: { target: 0, current: 0 },
-                  2: { target: 5.0, current: 4.0 },
-                  3: { target: 6.0, current: 0 },
-                  4: { target: 7.0, current: 0 },
-                  5: { target: 8.0, current: 0 }
+                  1: { target: 1, current: 1 },
+                  2: { target: 1, current: 1 },
+                  3: { target: 2, current: 0 },
+                  4: { target: 2, current: 0 },
+                  5: { target: 3, current: 0 }
                 }
               }
             ]
@@ -1010,32 +1154,32 @@ export const initialProjectsData = [
             name: "AI·DX 분야 기술교육 지수",
             type: "중점",
             description: "MANI 협업 로봇 실습 교육 프로그램 이수율 및 만족도",
-            formula: "(이수율 달성률 * 0.7) + (기기활용률 달성률 * 0.3)",
+            formula: "AI·DX 기술교육 운영건수(50%) + 기술교육 수강자 만족도(50%)",
             cycle: "연 1회",
             owner: "AID-X지원센터",
             subItems: [
               {
                 id: "U-7-1",
-                name: "로봇 실습 교육과정 이수 재학생",
-                unit: "명",
+                name: "AI·DX 기술교육 운영건수",
+                unit: "건",
                 years: {
-                  1: { target: 0, current: 0 },
-                  2: { target: 120.0, current: 100.0 },
-                  3: { target: 130.0, current: 0 },
-                  4: { target: 140.0, current: 0 },
-                  5: { target: 150.0, current: 0 }
+                  1: { target: 8, current: 8 },
+                  2: { target: 10, current: 8 },
+                  3: { target: 12, current: 0 },
+                  4: { target: 14, current: 0 },
+                  5: { target: 15, current: 0 }
                 }
               },
               {
                 id: "U-7-2",
-                name: "협업 실습용 로봇 장비 가동률",
-                unit: "%",
+                name: "기술교육 수강자 만족도",
+                unit: "점",
                 years: {
-                  1: { target: 0, current: 0 },
-                  2: { target: 80.0, current: 65.0 },
-                  3: { target: 82.0, current: 0 },
-                  4: { target: 84.0, current: 0 },
-                  5: { target: 85.0, current: 0 }
+                  1: { target: 80, current: 81 },
+                  2: { target: 87, current: 81 },
+                  3: { target: 90, current: 0 },
+                  4: { target: 92, current: 0 },
+                  5: { target: 95, current: 0 }
                 }
               }
             ]
@@ -1088,35 +1232,35 @@ export const initialProjectsData = [
         kpis: [
           {
             id: "L-15",
-            name: "ESG 전문인력 양성 경영실현 지수",
+            name: "ESG 전문인력 양성·경영실현 지수",
             type: "자율",
             description: "탄소중립 아카데미 및 ESG 컨설팅 교육 수료생 가중 지표",
-            formula: "(아카데미이수 달성률 * 0.5) + (ESG컨설팅 달성률 * 0.5)",
+            formula: "ESG 양성 교육 이수자 수(70%) + ESG 경영개선 지원 건수(30%)",
             cycle: "연 1회",
             owner: "ICC센터",
             subItems: [
               {
                 id: "L-15-1",
-                name: "ESG 탄소중립 수료 아카데미 학생 수",
+                name: "ESG 아카데미 수료 인원",
                 unit: "명",
                 years: {
                   1: { target: 40, current: 38 },
-                  2: { target: 100.0, current: 82.0 },
-                  3: { target: 110.0, current: 0 },
-                  4: { target: 120.0, current: 0 },
-                  5: { target: 130.0, current: 0 }
+                  2: { target: 105, current: 95 },
+                  3: { target: 110, current: 0 },
+                  4: { target: 120, current: 0 },
+                  5: { target: 130, current: 0 }
                 }
               },
               {
                 id: "L-15-2",
-                name: "학생 연계 ESG 기업 컨설팅 수행 건수",
+                name: "ESG 경영개선 자문/지원 건수",
                 unit: "건",
                 years: {
                   1: { target: 2, current: 2 },
-                  2: { target: 5.0, current: 4.1 },
-                  3: { target: 6.0, current: 0 },
-                  4: { target: 7.0, current: 0 },
-                  5: { target: 8.0, current: 0 }
+                  2: { target: 3, current: 2 },
+                  3: { target: 4, current: 0 },
+                  4: { target: 5, current: 0 },
+                  5: { target: 6, current: 0 }
                 }
               }
             ]
@@ -1126,32 +1270,32 @@ export const initialProjectsData = [
             name: "탄소중립 지원 실천 지수",
             type: "자율",
             description: "울산 관내 파트너 중소기업 대상 탄소 모니터링 솔루션 구축률",
-            formula: "(솔루션구축 달성률 * 0.7) + (탄소감축량 달성률 * 0.3)",
+            formula: "탄소중립 프로그램 운영 건수(70%) + 탄소배출 경영개선 지원 건수(30%)",
             cycle: "반기별 1회",
             owner: "ICC센터",
             subItems: [
               {
                 id: "L-16-1",
-                name: "모니터링 솔루션 적용 지원 기업 수",
-                unit: "개",
+                name: "탄소중립 교육 실천 프로그램 운영",
+                unit: "건",
                 years: {
                   1: { target: 3, current: 3 },
-                  2: { target: 5.0, current: 4.0 },
-                  3: { target: 6.0, current: 0 },
-                  4: { target: 7.0, current: 0 },
-                  5: { target: 8.0, current: 0 }
+                  2: { target: 4, current: 4 },
+                  3: { target: 5, current: 0 },
+                  4: { target: 6, current: 0 },
+                  5: { target: 7, current: 0 }
                 }
               },
               {
                 id: "L-16-2",
-                name: "수혜기업 평균 이산화탄소 절감 비율",
-                unit: "%",
+                name: "탄소배출 경영개선 컨설팅 지원",
+                unit: "건",
                 years: {
                   1: { target: 2, current: 2 },
-                  2: { target: 12.0, current: 9.0 },
-                  3: { target: 13.0, current: 0 },
-                  4: { target: 14.0, current: 0 },
-                  5: { target: 15.0, current: 0 }
+                  2: { target: 3, current: 3 },
+                  3: { target: 4, current: 0 },
+                  4: { target: 5, current: 0 },
+                  5: { target: 6, current: 0 }
                 }
               }
             ]
@@ -1161,32 +1305,32 @@ export const initialProjectsData = [
             name: "탄소중립 분야 교육운영 지수",
             type: "중점",
             description: "전동화 배터리 스왑 관련 신설 교과목 이수율 및 친환경 만족도",
-            formula: "(교과목이수 달성률 * 0.6) + (배터리 실증 장비 가동률 * 0.4)",
+            formula: "탄소중립 비정규 과정 운영수(50%) + 이수자 만족도 평균(50%)",
             cycle: "연 1회",
             owner: "ICC센터",
             subItems: [
               {
                 id: "U-8-1",
-                name: "배터리 스왑 특화 신규 과목 이수생 수",
-                unit: "명",
+                name: "탄소중립 비정규 과정 운영 건수",
+                unit: "건",
                 years: {
-                  1: { target: 0, current: 0 },
-                  2: { target: 50.0, current: 45.0 },
-                  3: { target: 55.0, current: 0 },
-                  4: { target: 60.0, current: 0 },
-                  5: { target: 65.0, current: 0 }
+                  1: { target: 3, current: 3 },
+                  2: { target: 4, current: 3 },
+                  3: { target: 5, current: 0 },
+                  4: { target: 6, current: 0 },
+                  5: { target: 7, current: 0 }
                 }
               },
               {
                 id: "U-8-2",
-                name: "캠퍼스 내 배터리 스테이션 가동 비율",
-                unit: "%",
+                name: "참여 이수자 만족도 평균",
+                unit: "점",
                 years: {
-                  1: { target: 0, current: 0 },
-                  2: { target: 90.0, current: 75.0 },
-                  3: { target: 92.0, current: 0 },
-                  4: { target: 94.0, current: 0 },
-                  5: { target: 95.0, current: 0 }
+                  1: { target: 80, current: 84 },
+                  2: { target: 89, current: 84 },
+                  3: { target: 91, current: 0 },
+                  4: { target: 93, current: 0 },
+                  5: { target: 95, current: 0 }
                 }
               }
             ]
@@ -1239,67 +1383,103 @@ export const initialProjectsData = [
             name: "재난 및 산업안전 확산지수",
             type: "자율",
             description: "산업안전 보건교육 K-MOOC 플랫폼 콘텐츠 개발 및 수료 실적",
-            formula: "(K-MOOC 개발 달성률 * 0.5) + (교육생 이수 달성률 * 0.5)",
+            formula: "안전기술지원 건수(40%) + 시스템개발 건수(30%) + 확산활동 건수(30%)",
             cycle: "반기별 1회",
             owner: "ICC센터",
             subItems: [
               {
                 id: "L-11-1",
-                name: "K-MOOC 안전 보건 신규 강좌 개발",
+                name: "안전기술 지원",
                 unit: "건",
                 years: {
-                  1: { target: 12, current: 12 },
-                  2: { target: 4.0, current: 3.0 },
-                  3: { target: 5.0, current: 0 },
-                  4: { target: 6.0, current: 0 },
-                  5: { target: 7.0, current: 0 }
+                  1: { target: 2, current: 2 },
+                  2: { target: 3, current: 2 },
+                  3: { target: 4, current: 0 },
+                  4: { target: 5, current: 0 },
+                  5: { target: 6, current: 0 }
                 }
               },
               {
                 id: "L-11-2",
-                name: "개설 강좌 안전 이수 완료 재직자 수",
-                unit: "명",
+                name: "시스템 개발",
+                unit: "건",
                 years: {
-                  1: { target: 3, current: 3 },
-                  2: { target: 500.0, current: 375.0 },
-                  3: { target: 550.0, current: 0 },
-                  4: { target: 600.0, current: 0 },
-                  5: { target: 650.0, current: 0 }
+                  1: { target: 1, current: 1 },
+                  2: { target: 1, current: 1 },
+                  3: { target: 2, current: 0 },
+                  4: { target: 2, current: 0 },
+                  5: { target: 3, current: 0 }
+                }
+              },
+              {
+                id: "L-11-3",
+                name: "확산 활동 건수",
+                unit: "건",
+                years: {
+                  1: { target: 1, current: 1 },
+                  2: { target: 1, current: 1 },
+                  3: { target: 2, current: 0 },
+                  4: { target: 2, current: 0 },
+                  5: { target: 3, current: 0 }
                 }
               }
             ]
           },
           {
             id: "L-12",
-            name: "재난 및 산업안전 교육성과지수",
+            name: "재난 및 산업안전 교육성과 종합지수",
             type: "자율",
             description: "시뮬레이터 안전 VR 콘텐츠 체험 교육을 이수한 재직자 수",
-            formula: "(체험 이수인원 달성률 * 0.7) + (콘텐츠 신작 달성률 * 0.3)",
+            formula: "교육개편(20%) + 이수자수(40%) + 자격취득(20%) + 적용기업수(20%)",
             cycle: "분기별 1회",
             owner: "ICC센터",
             subItems: [
               {
                 id: "L-12-1",
-                name: "안전 VR 시뮬레이터 교육 이수생 수",
-                unit: "명",
+                name: "교육개편",
+                unit: "건",
                 years: {
-                  1: { target: 80, current: 75 },
-                  2: { target: 200.0, current: 150.0 },
-                  3: { target: 220.0, current: 0 },
-                  4: { target: 240.0, current: 0 },
-                  5: { target: 250.0, current: 0 }
+                  1: { target: 1, current: 1 },
+                  2: { target: 1, current: 1 },
+                  3: { target: 2, current: 0 },
+                  4: { target: 2, current: 0 },
+                  5: { target: 3, current: 0 }
                 }
               },
               {
                 id: "L-12-2",
-                name: "신규 개발 도입한 안전 VR 교육 콘텐츠",
-                unit: "개",
+                name: "교육 이수자 수",
+                unit: "명",
                 years: {
-                  1: { target: 15, current: 15 },
-                  2: { target: 5.0, current: 3.5 },
-                  3: { target: 6.0, current: 0 },
-                  4: { target: 7.0, current: 0 },
-                  5: { target: 8.0, current: 0 }
+                  1: { target: 120, current: 125 },
+                  2: { target: 155, current: 135 },
+                  3: { target: 160, current: 0 },
+                  4: { target: 170, current: 0 },
+                  5: { target: 180, current: 0 }
+                }
+              },
+              {
+                id: "L-12-3",
+                name: "자격 취득 건수",
+                unit: "건",
+                years: {
+                  1: { target: 20, current: 22 },
+                  2: { target: 25, current: 21 },
+                  3: { target: 28, current: 0 },
+                  4: { target: 30, current: 0 },
+                  5: { target: 32, current: 0 }
+                }
+              },
+              {
+                id: "L-12-4",
+                name: "적용 기업 수",
+                unit: "개사",
+                years: {
+                  1: { target: 5, current: 5 },
+                  2: { target: 6, current: 5 },
+                  3: { target: 7, current: 0 },
+                  4: { target: 8, current: 0 },
+                  5: { target: 10, current: 0 }
                 }
               }
             ]
@@ -1309,32 +1489,32 @@ export const initialProjectsData = [
             name: "재난대응 분야 교육운영 지수",
             type: "중점",
             description: "중소기업 현장 실증 공정 안전진단 가이드 배포 개수",
-            formula: "(매뉴얼 배포 달성률 * 0.6) + (기술지도 만족도 달성률 * 0.4)",
+            formula: "재난안전 비정규 프로그램 수(50%) + 교육 이수자 만족도(50%)",
             cycle: "반기별 1회",
             owner: "ICC센터",
             subItems: [
               {
                 id: "U-6-1",
-                name: "현장 공정 진단 가이드북 배포 개소",
-                unit: "개소",
+                name: "운영 건수",
+                unit: "건",
                 years: {
-                  1: { target: 0, current: 0 },
-                  2: { target: 30.0, current: 24.0 },
-                  3: { target: 35.0, current: 0 },
-                  4: { target: 40.0, current: 0 },
-                  5: { target: 45.0, current: 0 }
+                  1: { target: 5, current: 5 },
+                  2: { target: 7, current: 6 },
+                  3: { target: 8, current: 0 },
+                  4: { target: 9, current: 0 },
+                  5: { target: 10, current: 0 }
                 }
               },
               {
                 id: "U-6-2",
-                name: "산업안전 기술지도 수혜업체 만족도",
+                name: "교육 이수자 만족도",
                 unit: "점",
                 years: {
-                  1: { target: 0, current: 0 },
-                  2: { target: 95.0, current: 79.8 },
-                  3: { target: 96.0, current: 0 },
-                  4: { target: 97.0, current: 0 },
-                  5: { target: 98.0, current: 0 }
+                  1: { target: 80, current: 84 },
+                  2: { target: 89, current: 84 },
+                  3: { target: 91, current: 0 },
+                  4: { target: 93, current: 0 },
+                  5: { target: 95, current: 0 }
                 }
               }
             ]
@@ -1400,32 +1580,32 @@ export const initialProjectsData = [
             name: "평생·직업교육 활성화지수",
             type: "자율",
             description: "신중년·재직자 맞춤형 직무도약 아카데미 교육 수료 실적",
-            formula: "(아카데미 수료 달성률 * 0.7) + (자격증반 만족도 달성률 * 0.3)",
+            formula: "평생교육과정 개발 건수(30%) + 교육 이수자 수(70%)",
             cycle: "연 1회",
             owner: "RCC센터",
             subItems: [
               {
                 id: "L-7-1",
-                name: "직무도약 평생아카데미 이수 학습자",
-                unit: "명",
+                name: "평생교육과정 개발 건수",
+                unit: "건",
                 years: {
-                  1: { target: 90, current: 85 },
-                  2: { target: 150.0, current: 120.0 },
-                  3: { target: 160.0, current: 0 },
-                  4: { target: 170.0, current: 0 },
-                  5: { target: 180.0, current: 0 }
+                  1: { target: 6, current: 6 },
+                  2: { target: 8, current: 8 },
+                  3: { target: 9, current: 0 },
+                  4: { target: 10, current: 0 },
+                  5: { target: 12, current: 0 }
                 }
               },
               {
                 id: "L-7-2",
-                name: "자격증 취득 지원반 참여 만족도",
-                unit: "점",
+                name: "평생교육과정 이수자 수",
+                unit: "명",
                 years: {
-                  1: { target: 90, current: 70 },
-                  2: { target: 95.0, current: 65.0 },
-                  3: { target: 96.0, current: 0 },
-                  4: { target: 97.0, current: 0 },
-                  5: { target: 98.0, current: 0 }
+                  1: { target: 150, current: 185 },
+                  2: { target: 200, current: 185 },
+                  3: { target: 220, current: 0 },
+                  4: { target: 240, current: 0 },
+                  5: { target: 250, current: 0 }
                 }
               }
             ]
@@ -1435,32 +1615,32 @@ export const initialProjectsData = [
             name: "평생·직업교육 프로그램 품질향상지수",
             type: "자율",
             description: "직무 교육 교재 개발 성과 및 현장 교육 피드백 강의 만족도",
-            formula: "(교재개발 달성률 * 0.5) + (강의만족도 달성률 * 0.5)",
+            formula: "자격증 취득 지원 프로그램 수(50%) + 지원 프로그램 수료율(50%)",
             cycle: "반기별 1회",
             owner: "RCC센터",
             subItems: [
               {
                 id: "L-8-1",
-                name: "직무 평생교육 전용 교재 신개발 수",
+                name: "자격증 지원 프로그램 수",
                 unit: "건",
                 years: {
-                  1: { target: 6, current: 5 },
-                  2: { target: 10.0, current: 8.0 },
-                  3: { target: 12.0, current: 0 },
-                  4: { target: 14.0, current: 0 },
-                  5: { target: 15.0, current: 0 }
+                  1: { target: 2, current: 2 },
+                  2: { target: 3, current: 2 },
+                  3: { target: 4, current: 0 },
+                  4: { target: 5, current: 0 },
+                  5: { target: 6, current: 0 }
                 }
               },
               {
                 id: "L-8-2",
-                name: "평생교육 학습 참여자 강의 종합 평점",
-                unit: "점",
+                name: "프로그램 수료율",
+                unit: "%",
                 years: {
-                  1: { target: 90, current: 75 },
-                  2: { target: 95.0, current: 70.0 },
-                  3: { target: 96.0, current: 0 },
-                  4: { target: 97.0, current: 0 },
-                  5: { target: 98.0, current: 0 }
+                  1: { target: 85, current: 88 },
+                  2: { target: 93, current: 88 },
+                  3: { target: 94, current: 0 },
+                  4: { target: 95, current: 0 },
+                  5: { target: 96, current: 0 }
                 }
               }
             ]
@@ -1470,32 +1650,32 @@ export const initialProjectsData = [
             name: "성인학습자 지원 지수",
             type: "중점",
             description: "만 25세 이상 성인 신편입학 등록 학생 수 및 학점 인정 실적",
-            formula: "(신입학생수 달성률 * 0.6) + (학점부여 달성률 * 0.4)",
+            formula: "성인학습자 학습지원 프로그램 운영 수(50%) + 학습지원 장학생 인원 수(50%)",
             cycle: "연 1회",
             owner: "RCC센터",
             subItems: [
               {
                 id: "U-4-1",
-                name: "만 25세 이상 성인 신편입 등록생 수",
-                unit: "명",
+                name: "성인학습자 지원 프로그램 수",
+                unit: "건",
                 years: {
-                  1: { target: 0, current: 0 },
-                  2: { target: 50.0, current: 35.0 },
-                  3: { target: 55.0, current: 0 },
-                  4: { target: 60.0, current: 0 },
-                  5: { target: 65.0, current: 0 }
+                  1: { target: 4, current: 4 },
+                  2: { target: 5, current: 4 },
+                  3: { target: 6, current: 0 },
+                  4: { target: 7, current: 0 },
+                  5: { target: 8, current: 0 }
                 }
               },
               {
                 id: "U-4-2",
-                name: "평생학습 연계 학점 특별인정 이수율",
-                unit: "%",
+                name: "지원 장학생 인원",
+                unit: "명",
                 years: {
-                  1: { target: 0, current: 0 },
-                  2: { target: 80.0, current: 62.0 },
-                  3: { target: 82.0, current: 0 },
-                  4: { target: 84.0, current: 0 },
-                  5: { target: 85.0, current: 0 }
+                  1: { target: 20, current: 22 },
+                  2: { target: 25, current: 22 },
+                  3: { target: 28, current: 0 },
+                  4: { target: 30, current: 0 },
+                  5: { target: 35, current: 0 }
                 }
               }
             ]
@@ -1546,70 +1726,82 @@ export const initialProjectsData = [
         kpis: [
           {
             id: "L-19",
-            name: "늘봄학교 교사 양성 프로그램 운영성과지수",
+            name: "늘봄학교 강사 양성 프로그램 운영 성과 지수",
             type: "자율",
             description: "신규 발굴 늘봄학교 전담교사 양성 연수 과정 누적 수료생 수",
-            formula: "(수료교사 달성률 * 0.7) + (연수 교재개발 달성률 * 0.3)",
+            formula: "강사양성 교육과정 개발 건수(30%) + 교육 이수 강사 수(70%)",
             cycle: "반기별 1회",
-            owner: "울산늘봄누리센터",
+            owner: "늘봄늘학센터",
             subItems: [
               {
                 id: "L-19-1",
-                name: "양성 연수 이수 늘봄 전담 교사 수",
-                unit: "명",
+                name: "강사양성 교육 개발 건수",
+                unit: "건",
                 years: {
-                  1: { target: 2, current: 2 },
-                  2: { target: 5.0, current: 3.5 },
-                  3: { target: 6.0, current: 0 },
-                  4: { target: 7.0, current: 0 },
-                  5: { target: 8.0, current: 0 }
+                  1: { target: 1, current: 1 },
+                  2: { target: 2, current: 2 },
+                  3: { target: 3, current: 0 },
+                  4: { target: 4, current: 0 },
+                  5: { target: 5, current: 0 }
                 }
               },
               {
                 id: "L-19-2",
-                name: "늘봄 연수 전용 실습 교재 개발 수",
-                unit: "건",
+                name: "강사양성 교육 이수 인원",
+                unit: "명",
                 years: {
-                  1: { target: 1, current: 1 },
-                  2: { target: 3.0, current: 2.1 },
-                  3: { target: 4.0, current: 0 },
-                  4: { target: 5.0, current: 0 },
-                  5: { target: 6.0, current: 0 }
+                  1: { target: 100, current: 110 },
+                  2: { target: 125, current: 110 },
+                  3: { target: 130, current: 0 },
+                  4: { target: 140, current: 0 },
+                  5: { target: 150, current: 0 }
                 }
               }
             ]
           },
           {
             id: "L-20",
-            name: "돌봄 체험프로그램 운영 활성화지수",
+            name: "늘봄 프로그램 적용 및 지원 성과 지수",
             type: "자율",
             description: "위탁 늘봄학교 학생 참여수 및 돌봄 품질 지수",
-            formula: "(체험 학생수 달성률 * 0.6) + (강의 품질만족 달성률 * 0.4)",
+            formula: "늘봄 프로그램 개발 건수(35%) + 적용 늘봄학교 수(35%) + 프로그램 만족도 평균(30%)",
             cycle: "분기별 1회",
-            owner: "울산늘봄누리센터",
+            owner: "늘봄늘학센터",
             subItems: [
               {
                 id: "L-20-1",
-                name: "돌봄 패키지 위탁 교육 참여 학생 수",
-                unit: "명",
+                name: "늘봄 프로그램 개발 건수",
+                unit: "건",
                 years: {
-                  1: { target: 100, current: 95 },
-                  2: { target: 200.0, current: 160.0 },
-                  3: { target: 220.0, current: 0 },
-                  4: { target: 240.0, current: 0 },
-                  5: { target: 250.0, current: 0 }
+                  1: { target: 10, current: 10 },
+                  2: { target: 12, current: 10 },
+                  3: { target: 14, current: 0 },
+                  4: { target: 15, current: 0 },
+                  5: { target: 16, current: 0 }
                 }
               },
               {
                 id: "L-20-2",
-                name: "참여 학부모 대상 만족도 종합 평정",
+                name: "개발 프로그램 적용 학교 수",
+                unit: "개교",
+                years: {
+                  1: { target: 35, current: 35 },
+                  2: { target: 40, current: 35 },
+                  3: { target: 45, current: 0 },
+                  4: { target: 48, current: 0 },
+                  5: { target: 50, current: 0 }
+                }
+              },
+              {
+                id: "L-20-3",
+                name: "늘봄 프로그램 만족도 평균",
                 unit: "점",
                 years: {
-                  1: { target: 90, current: 75 },
-                  2: { target: 95.0, current: 72.0 },
-                  3: { target: 96.0, current: 0 },
-                  4: { target: 97.0, current: 0 },
-                  5: { target: 98.0, current: 0 }
+                  1: { target: 80, current: 84 },
+                  2: { target: 89, current: 84 },
+                  3: { target: 91, current: 0 },
+                  4: { target: 93, current: 0 },
+                  5: { target: 95, current: 0 }
                 }
               }
             ]
@@ -1619,32 +1811,32 @@ export const initialProjectsData = [
             name: "늘봄/방과후 지산학연 협업실적 증가율",
             type: "중점",
             description: "늘봄학교 교안 검증 협의체 및 지산학 네트워크 연계 건수",
-            formula: "(협의체 달성률 * 0.5) + (네트워크연계 달성률 * 0.5)",
+            formula: "늘봄 협력체계 구축 건수(50%) + 늘봄학교 강사보급 수(50%)",
             cycle: "연 1회",
-            owner: "울산늘봄누리센터",
+            owner: "늘봄늘학센터",
             subItems: [
               {
                 id: "U-10-1",
-                name: "교안 검증을 위한 지산학 협의체 구축",
-                unit: "개",
+                name: "늘봄 협력체계 구축 건수",
+                unit: "건",
                 years: {
-                  1: { target: 0, current: 0 },
-                  2: { target: 5.0, current: 3.0 },
-                  3: { target: 6.0, current: 0 },
-                  4: { target: 7.0, current: 0 },
-                  5: { target: 8.0, current: 0 }
+                  1: { target: 3, current: 4 },
+                  2: { target: 5, current: 4 },
+                  3: { target: 6, current: 0 },
+                  4: { target: 7, current: 0 },
+                  5: { target: 8, current: 0 }
                 }
               },
               {
                 id: "U-10-2",
-                name: "네트워크 연계 돌봄 교안 공동 개발",
+                name: "현장 강사 보급(기초/심화) 건수",
                 unit: "건",
                 years: {
-                  1: { target: 0, current: 0 },
-                  2: { target: 10.0, current: 6.5 },
-                  3: { target: 12.0, current: 0 },
-                  4: { target: 14.0, current: 0 },
-                  5: { target: 15.0, current: 0 }
+                  1: { target: 8, current: 9 },
+                  2: { target: 11, current: 9 },
+                  3: { target: 12, current: 0 },
+                  4: { target: 14, current: 0 },
+                  5: { target: 15, current: 0 }
                 }
               }
             ]
@@ -1708,32 +1900,32 @@ export const initialProjectsData = [
             name: "지역 현안 해결 지수",
             type: "자율",
             description: "지산학 연계 리빙랩 과제 해결 성공 개수 및 주민 수혜도",
-            formula: "(과제해결 달성률 * 0.6) + (주민수혜 달성률 * 0.4)",
+            formula: "리빙랩 프로그램 운영 건수(30%) + 리빙랩 연계 공헌 과제 해결 건수(70%)",
             cycle: "반기별 1회",
             owner: "RCC센터",
             subItems: [
               {
                 id: "L-9-1",
-                name: "리빙랩 해결 프로젝트 성공 건수",
+                name: "리빙랩 프로그램 운영 건수",
                 unit: "건",
                 years: {
-                  1: { target: 2, current: 2 },
-                  2: { target: 4.0, current: 3.0 },
-                  3: { target: 5.0, current: 0 },
-                  4: { target: 6.0, current: 0 },
-                  5: { target: 7.0, current: 0 }
+                  1: { target: 1, current: 1 },
+                  2: { target: 2, current: 2 },
+                  3: { target: 3, current: 0 },
+                  4: { target: 4, current: 0 },
+                  5: { target: 5, current: 0 }
                 }
               },
               {
                 id: "L-9-2",
-                name: "프로젝트 참여 수혜 주민 인원",
-                unit: "명",
+                name: "리빙랩 연계 공헌 과제 해결 건수",
+                unit: "건",
                 years: {
-                  1: { target: 80, current: 80 },
-                  2: { target: 150.0, current: 130.0 },
-                  3: { target: 160.0, current: 0 },
-                  4: { target: 170.0, current: 0 },
-                  5: { target: 180.0, current: 0 }
+                  1: { target: 2, current: 2 },
+                  2: { target: 4, current: 3 },
+                  3: { target: 5, current: 0 },
+                  4: { target: 6, current: 0 },
+                  5: { target: 7, current: 0 }
                 }
               }
             ]
@@ -1743,32 +1935,32 @@ export const initialProjectsData = [
             name: "지역사회 공헌활동 활성화지수",
             type: "자율",
             description: "학생/교직원의 지역 소외계층 봉사활동 참여 시간 및 실적",
-            formula: "(봉사시간 달성률 * 0.6) + (수혜기관 달성률 * 0.4)",
+            formula: "지역사회 연계 봉사 프로그램 운영 건수(50%) + 봉사 수혜 대상자 수(50%)",
             cycle: "분기별 1회",
             owner: "RCC센터",
             subItems: [
               {
                 id: "L-10-1",
-                name: "봉사활동 연계 프로그램 참여 누적 시간",
-                unit: "시간",
+                name: "봉사 프로그램 운영 건수",
+                unit: "건",
                 years: {
-                  1: { target: 600, current: 580 },
-                  2: { target: 1000.0, current: 800.0 },
-                  3: { target: 1100.0, current: 0 },
-                  4: { target: 1200.0, current: 0 },
-                  5: { target: 1300.0, current: 0 }
+                  1: { target: 2, current: 2 },
+                  2: { target: 3, current: 3 },
+                  3: { target: 4, current: 0 },
+                  4: { target: 5, current: 0 },
+                  5: { target: 6, current: 0 }
                 }
               },
               {
                 id: "L-10-2",
-                name: "봉사 지원을 받은 관내 사회복지기관",
-                unit: "개소",
+                name: "봉사 수혜 대상자 수",
+                unit: "명",
                 years: {
-                  1: { target: 6, current: 6 },
-                  2: { target: 10.0, current: 7.8 },
-                  3: { target: 12.0, current: 0 },
-                  4: { target: 14.0, current: 0 },
-                  5: { target: 15.0, current: 0 }
+                  1: { target: 60, current: 62 },
+                  2: { target: 80, current: 80 },
+                  3: { target: 85, current: 0 },
+                  4: { target: 90, current: 0 },
+                  5: { target: 100, current: 0 }
                 }
               }
             ]
@@ -1778,32 +1970,32 @@ export const initialProjectsData = [
             name: "지역문제해결 연계 지수",
             type: "중점",
             description: "지자체 정책 제안 건수 및 공공 현안 해결을 위한 기여도 지수",
-            formula: "(정책제안 달성률 * 0.7) + (참여교직원 달성률 * 0.3)",
+            formula: "지역사회 문제해결형 교과 개설 수(50%) + 문제해결 캡스톤디자인 이수 학생 수(50%)",
             cycle: "반기별 1회",
             owner: "RCC센터",
             subItems: [
               {
                 id: "U-5-1",
-                name: "울산광역시 제출 채택 정책 제안 건수",
+                name: "지역문제해결 교과 개설 건수",
                 unit: "건",
                 years: {
-                  1: { target: 0, current: 0 },
-                  2: { target: 5.0, current: 3.5 },
-                  3: { target: 6.0, current: 0 },
-                  4: { target: 7.0, current: 0 },
-                  5: { target: 8.0, current: 0 }
+                  1: { target: 2, current: 2 },
+                  2: { target: 3, current: 2 },
+                  3: { target: 4, current: 0 },
+                  4: { target: 5, current: 0 },
+                  5: { target: 6, current: 0 }
                 }
               },
               {
                 id: "U-5-2",
-                name: "공공 현안 대응 자문단 교직원 인원",
+                name: "캡스톤디자인 이수 학생 수",
                 unit: "명",
                 years: {
-                  1: { target: 0, current: 0 },
-                  2: { target: 15.0, current: 12.0 },
-                  3: { target: 18.0, current: 0 },
-                  4: { target: 20.0, current: 0 },
-                  5: { target: 22.0, current: 0 }
+                  1: { target: 40, current: 42 },
+                  2: { target: 50, current: 42 },
+                  3: { target: 55, current: 0 },
+                  4: { target: 60, current: 0 },
+                  5: { target: 65, current: 0 }
                 }
               }
             ]
@@ -1854,32 +2046,32 @@ export const initialProjectsData = [
             name: "사회적 약자 의료케어 종합 달성지수",
             type: "자율",
             description: "의료 소외 계층(독거노인 등) 대상 보건의료 서비스 혜택 인원수",
-            formula: "(의료수혜 달성률 * 0.7) + (봉사단수 달성률 * 0.3)",
+            formula: "의료케어 참여 학생 수(50%) + 주민 수혜 인원(50%)",
             cycle: "반기별 1회",
             owner: "RCC센터",
             subItems: [
               {
                 id: "L-18-1",
-                name: "의료 혜택 서비스 지원 수혜 인원",
+                name: "의료케어 참여 학생 수",
                 unit: "명",
                 years: {
-                  1: { target: 180, current: 175 },
-                  2: { target: 300.0, current: 250.0 },
-                  3: { target: 320.0, current: 0 },
-                  4: { target: 340.0, current: 0 },
-                  5: { target: 350.0, current: 0 }
+                  1: { target: 50, current: 62 },
+                  2: { target: 70, current: 62 },
+                  3: { target: 75, current: 0 },
+                  4: { target: 80, current: 0 },
+                  5: { target: 85, current: 0 }
                 }
               },
               {
                 id: "L-18-2",
-                name: "지역 보건 봉사 활동 참여 동아리 수",
-                unit: "개",
+                name: "의료케어 수혜 주민 인원",
+                unit: "명",
                 years: {
-                  1: { target: 3, current: 3 },
-                  2: { target: 5.0, current: 4.0 },
-                  3: { target: 6.0, current: 0 },
-                  4: { target: 7.0, current: 0 },
-                  5: { target: 8.0, current: 0 }
+                  1: { target: 150, current: 185 },
+                  2: { target: 200, current: 185 },
+                  3: { target: 220, current: 0 },
+                  4: { target: 240, current: 0 },
+                  5: { target: 250, current: 0 }
                 }
               }
             ]
@@ -1889,32 +2081,32 @@ export const initialProjectsData = [
             name: "보건복지서비스 역량강화 프로그램 지수",
             type: "중점",
             description: "스마트 임상실습 기기 도입률 및 복지 실무 교육 이수 인원",
-            formula: "(이수 달성률 * 0.6) + (스마트기기도입 달성률 * 0.4)",
+            formula: "임상실무/융합 프로그램 운영 건수(50%) + 프로그램 만족도 평균(50%)",
             cycle: "연 1회",
             owner: "RCC센터",
             subItems: [
               {
                 id: "U-9-1",
-                name: "임상 실무 교육과정 이수 학생 수",
-                unit: "명",
+                name: "역량강화 프로그램 운영 건수",
+                unit: "건",
                 years: {
-                  1: { target: 0, current: 0 },
-                  2: { target: 150.0, current: 130.0 },
-                  3: { target: 160.0, current: 0 },
-                  4: { target: 170.0, current: 0 },
-                  5: { target: 180.0, current: 0 }
+                  1: { target: 5, current: 5 },
+                  2: { target: 7, current: 6 },
+                  3: { target: 8, current: 0 },
+                  4: { target: 9, current: 0 },
+                  5: { target: 10, current: 0 }
                 }
               },
               {
                 id: "U-9-2",
-                name: "신규 임상실습 스마트 기자재 매칭 도입",
-                unit: "종",
+                name: "수강생 만족도 평균",
+                unit: "점",
                 years: {
-                  1: { target: 0, current: 0 },
-                  2: { target: 10.0, current: 8.0 },
-                  3: { target: 11.0, current: 0 },
-                  4: { target: 12.0, current: 0 },
-                  5: { target: 13.0, current: 0 }
+                  1: { target: 80, current: 84 },
+                  2: { target: 89, current: 84 },
+                  3: { target: 91, current: 0 },
+                  4: { target: 93, current: 0 },
+                  5: { target: 95, current: 0 }
                 }
               }
             ]
@@ -1976,7 +2168,7 @@ export const initialProjectsData = [
             name: "도시공간 재생프로젝트 운영성과지수",
             type: "자율",
             description: "구도심 유휴공간 활성화 리모델링 및 청년 창작 거점 공간 시공 및 참여 실증",
-            formula: "(도시 재생프로젝트 운영 건수 / 기준값) x 50% + (프로젝트 참여자 수 / 기준값) x 50%",
+            formula: "도시 재생프로젝트 운영 건수(50%) + 프로젝트 참여자 수(50%)",
             cycle: "연 1회",
             owner: "RCC센터",
             subItems: [
@@ -1986,10 +2178,10 @@ export const initialProjectsData = [
                 unit: "건",
                 years: {
                   1: { target: 1, current: 1 },
-                  2: { target: 2.0, current: 2.0 }, // 2차년도 목표 2건, 실적 2건으로 100% 달성 반영
-                  3: { target: 4.0, current: 0 },
-                  4: { target: 5.0, current: 0 },
-                  5: { target: 6.0, current: 0 }
+                  2: { target: 2, current: 2 },
+                  3: { target: 4, current: 0 },
+                  4: { target: 5, current: 0 },
+                  5: { target: 6, current: 0 }
                 }
               },
               {
@@ -1998,10 +2190,10 @@ export const initialProjectsData = [
                 unit: "명",
                 years: {
                   1: { target: 5, current: 5 },
-                  2: { target: 30.0, current: 30.0 }, // 2차년도 목표 30명, 실적 30명 반영
-                  3: { target: 11.0, current: 0 },
-                  4: { target: 12.0, current: 0 },
-                  5: { target: 13.0, current: 0 }
+                  2: { target: 30, current: 30 },
+                  3: { target: 33, current: 0 },
+                  4: { target: 36, current: 0 },
+                  5: { target: 40, current: 0 }
                 }
               }
             ]
@@ -2011,7 +2203,7 @@ export const initialProjectsData = [
             name: "문화 콘텐츠 개발프로젝트 운영성과지수",
             type: "자율",
             description: "지역 호계역 중심 에코컬처 굿즈 및 공공디자인 콘텐츠 개발 및 품평 참여",
-            formula: "(콘텐츠 개발프로젝트 운영 건수 / 기준값) x 50% + (프로젝트 참여자 수 / 기준값) x 50%",
+            formula: "콘텐츠 개발프로젝트 운영 건수(50%) + 프로젝트 참여자 수(50%)",
             cycle: "반기별 1회",
             owner: "RCC센터",
             subItems: [
@@ -2020,11 +2212,11 @@ export const initialProjectsData = [
                 name: "콘텐츠 개발프로젝트 운영 건수",
                 unit: "건",
                 years: {
-                  1: { target: 4, current: 4 },
-                  2: { target: 2.0, current: 2.0 }, // 2차년도 목표 2건, 실적 2건 반영
-                  3: { target: 9.0, current: 0 },
-                  4: { target: 10.0, current: 0 },
-                  5: { target: 11.0, current: 0 }
+                  1: { target: 1, current: 1 },
+                  2: { target: 2, current: 2 },
+                  3: { target: 3, current: 0 },
+                  4: { target: 4, current: 0 },
+                  5: { target: 5, current: 0 }
                 }
               },
               {
@@ -2032,11 +2224,11 @@ export const initialProjectsData = [
                 name: "프로젝트 참여자 수",
                 unit: "명",
                 years: {
-                  1: { target: 250, current: 240 },
-                  2: { target: 12.0, current: 12.0 }, // 2차년도 목표 12명, 실적 12명 반영
-                  3: { target: 550.0, current: 0 },
-                  4: { target: 600.0, current: 0 },
-                  5: { target: 650.0, current: 0 }
+                  1: { target: 10, current: 10 },
+                  2: { target: 12, current: 12 },
+                  3: { target: 14, current: 0 },
+                  4: { target: 16, current: 0 },
+                  5: { target: 18, current: 0 }
                 }
               }
             ]
@@ -2046,7 +2238,7 @@ export const initialProjectsData = [
             name: "꿀잼도시 프로젝트 만족 지수",
             type: "중점",
             description: "울산 청년 축제 연계 업사이클링 환경 체험 부스 운영 및 만족도 설문 조사",
-            formula: "(체험 프로그램 수 / 기준값 x 50) + (체험자 만족도 설문 평균 / 기준값 x 50)",
+            formula: "체험 프로그램 수(50%) + 체험자 만족도 설문 평균(50%)",
             cycle: "연 1회",
             owner: "RCC센터",
             subItems: [
@@ -2055,11 +2247,11 @@ export const initialProjectsData = [
                 name: "체험 프로그램 수",
                 unit: "회",
                 years: {
-                  1: { target: 0, current: 0 },
-                  2: { target: 2.0, current: 2.0 }, // 2차년도 목표 2회, 실적 2회 반영
-                  3: { target: 91.0, current: 0 },
-                  4: { target: 92.0, current: 0 },
-                  5: { target: 93.0, current: 0 }
+                  1: { target: 1, current: 1 },
+                  2: { target: 2, current: 2 },
+                  3: { target: 3, current: 0 },
+                  4: { target: 4, current: 0 },
+                  5: { target: 5, current: 0 }
                 }
               },
               {
@@ -2067,11 +2259,11 @@ export const initialProjectsData = [
                 name: "체험자 만족도 설문 평균",
                 unit: "점",
                 years: {
-                  1: { target: 0, current: 0 },
-                  2: { target: 88.0, current: 88.0 }, // 2차년도 목표 만족도 88점, 실적 88점 반영
-                  3: { target: 320.0, current: 0 },
-                  4: { target: 340.0, current: 0 },
-                  5: { target: 350.0, current: 0 }
+                  1: { target: 80, current: 88 },
+                  2: { target: 88, current: 88 },
+                  3: { target: 90, current: 0 },
+                  4: { target: 92, current: 0 },
+                  5: { target: 95, current: 0 }
                 }
               }
             ]
