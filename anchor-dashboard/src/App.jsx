@@ -776,12 +776,9 @@ function formatDataToMultiYear(data) {
             else if (prog.id.startsWith("X0-S1T3-")) targetCategory = "성과 활용∙확산 지원비";
             else if (prog.id.startsWith("X0-S1T4-")) targetCategory = "그 밖의 사업운영경비";
             else if (prog.id.startsWith("X0-S1T5-")) targetCategory = "간접비";
-            else if (prog.id === "A1가-S5T13-8") targetCategory = "장학금";
-            else if (prog.id === "A1가-S4T10-4" || prog.id === "D2-S1T2-1" || prog.id === "D2-S1T2-2") targetCategory = "실험∙실습장비 및 기자재 구입∙운영비";
-            else if (prog.id === "A1가-S2T5-1" || prog.id === "A1가-S5T13-2" || prog.id === "A1가-S5T13-7" || prog.id === "A1가-S5T14-1" || prog.id === "D2-S1T1-1") targetCategory = "성과 활용∙확산 지원비";
-            else if (prog.id === "A1가-S3T9-1" || prog.id === "A1가-S3T9-2" || prog.id === "A1가-S3T9-3" || prog.id === "A1가-S5T13-3") targetCategory = "기업 지원∙협력 활동비";
-            else if (prog.id === "A1가-S5T13-1") targetCategory = "지역 연계∙협업 지원비";
-            else if (prog.id.startsWith("A1가-S4T10-") || prog.id === "A1가-S4T11-1" || prog.id === "D2-S2T10-1") targetCategory = "교육∙연구 환경개선비";
+            else if (prog.id === "D2-S1T2-1" || prog.id === "D2-S1T2-2") targetCategory = "실험∙실습장비 및 기자재 구입∙운영비";
+            else if (prog.id === "D2-S1T1-1") targetCategory = "성과 활용∙확산 지원비";
+            else if (prog.id === "D2-S2T10-1") targetCategory = "교육∙연구 환경개선비";
 
             progYears[yr].budget_categories = standardCategories.map((catName) => {
               const isMatch = catName === targetCategory;
