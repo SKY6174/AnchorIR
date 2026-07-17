@@ -10365,1916 +10365,8442 @@ export const userRoles = {
 export const YEAR_1_PROGRAMS = {
   "A1가": [
     {
-      id: "A1-S1T1-1",
-      title: "UC-HYPER 교수학습모델 개발/운영/성과확산",
-      assignee: "지산학교육센터(ECC)",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "교육∙연구 프로그램 개발∙운영비", budget: 17300000, spent: 17300000 }
+      "id": "A1-S1T1-1",
+      "title": "UC-HYPER 교수학습모델 개발/운영/성과확산",
+      "budget_2025": 17300000,
+      "budget_national": 17300000,
+      "budget_city": 0,
+      "spent_2025": 17300000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "지산학교육센터(ECC)",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "교육∙연구 프로그램 개발∙운영비",
+          "budget": 17300000,
+          "spent": 17300000
+        }
       ],
-      budget: 17300000,
-      spent: 17300000,
-      timeline: ",,P,D,D,,C,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 17300000,
+          "budget_national": 17300000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 17300000,
+          "spent_national": 17300000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "교육∙연구 프로그램 개발∙운영비",
+              "budget": 17300000,
+              "spent": 17300000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "A1-S1T2-1",
-      title: "채용연계(우대) 맞춤형 주문식 교육과정 개발/운영",
-      assignee: "기획처 & 참여학과 교수진",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "교육∙연구 프로그램 개발∙운영비", budget: 74000000, spent: 68000000 }
+      "id": "A1-S1T2-1",
+      "title": "채용연계(우대) 맞춤형 주문식 교육과정 개발/운영",
+      "budget_2025": 74000000,
+      "budget_national": 74000000,
+      "budget_city": 0,
+      "spent_2025": 68000000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "기획처 & 참여학과 교수진",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "교육∙연구 프로그램 개발∙운영비",
+          "budget": 74000000,
+          "spent": 68000000
+        }
       ],
-      budget: 74000000,
-      spent: 68000000,
-      timeline: ",,P,P,D,D,D,C,A,A,,"
+      "years": {
+        "1": {
+          "budget_main": 74000000,
+          "budget_national": 74000000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 68000000,
+          "spent_national": 68000000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "교육∙연구 프로그램 개발∙운영비",
+              "budget": 74000000,
+              "spent": 68000000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "A1-S1T2-2",
-      title: "캡스톤 디자인 운영",
-      assignee: "지산학교육센터(ECC)",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "교육∙연구 프로그램 개발∙운영비", budget: 6500000, spent: 6100000 }
+      "id": "A1-S1T2-2",
+      "title": "캡스톤 디자인 운영",
+      "budget_2025": 6500000,
+      "budget_national": 6500000,
+      "budget_city": 0,
+      "spent_2025": 6100000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "지산학교육센터(ECC)",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "교육∙연구 프로그램 개발∙운영비",
+          "budget": 6500000,
+          "spent": 6100000
+        }
       ],
-      budget: 6500000,
-      spent: 6100000,
-      timeline: ",,,P,D,D,D,D,C,A,,"
+      "years": {
+        "1": {
+          "budget_main": 6500000,
+          "budget_national": 6500000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 6100000,
+          "spent_national": 6100000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "교육∙연구 프로그램 개발∙운영비",
+              "budget": 6500000,
+              "spent": 6100000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "A1-S1T2-3",
-      title: "현장기반 학습공간 연계 정규교과목 운영",
-      assignee: "참여학과",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "교육∙연구 프로그램 개발∙운영비", budget: 50000000, spent: 49400000 }
+      "id": "A1-S1T2-3",
+      "title": "현장기반 학습공간 연계 정규교과목 운영",
+      "budget_2025": 50000000,
+      "budget_national": 50000000,
+      "budget_city": 0,
+      "spent_2025": 49400000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "참여학과",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "교육∙연구 프로그램 개발∙운영비",
+          "budget": 50000000,
+          "spent": 49400000
+        }
       ],
-      budget: 50000000,
-      spent: 49400000,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 50000000,
+          "budget_national": 50000000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 49400000,
+          "spent_national": 49400000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "교육∙연구 프로그램 개발∙운영비",
+              "budget": 50000000,
+              "spent": 49400000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "A1-S1T2-4",
-      title: "UC-HYPER 융복합 트랙 교육과정 개발/운영",
-      assignee: "기획처",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "교육∙연구 프로그램 개발∙운영비", budget: 11200000, spent: 9800000 }
+      "id": "A1-S1T2-4",
+      "title": "UC-HYPER 융복합 트랙 교육과정 개발/운영",
+      "budget_2025": 11200000,
+      "budget_national": 11200000,
+      "budget_city": 0,
+      "spent_2025": 9800000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "기획처",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "교육∙연구 프로그램 개발∙운영비",
+          "budget": 11200000,
+          "spent": 9800000
+        }
       ],
-      budget: 11200000,
-      spent: 9800000,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 11200000,
+          "budget_national": 11200000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 9800000,
+          "spent_national": 9800000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "교육∙연구 프로그램 개발∙운영비",
+              "budget": 11200000,
+              "spent": 9800000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "A1-S2T3-1",
-      title: "진로개발 통합지원 시스템 개발/운영",
-      assignee: "학생취업처",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "교육∙연구 프로그램 개발∙운영비", budget: 0, spent: 0 }
+      "id": "A1-S2T3-1",
+      "title": "진로개발 통합지원 시스템 개발/운영",
+      "budget_2025": 0,
+      "budget_national": 0,
+      "budget_city": 0,
+      "spent_2025": 0,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "학생취업처",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "교육∙연구 프로그램 개발∙운영비",
+          "budget": 0,
+          "spent": 0
+        }
       ],
-      budget: 0,
-      spent: 0,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 0,
+          "budget_national": 0,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 0,
+          "spent_national": 0,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "교육∙연구 프로그램 개발∙운영비",
+              "budget": 0,
+              "spent": 0
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "A1-S2T4-1",
-      title: "ECC 성과확산 프로그램 운영",
-      assignee: "지산학교육센터(ECC)",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "교육∙연구 프로그램 개발∙운영비", budget: 18000000, spent: 15500000 }
+      "id": "A1-S2T4-1",
+      "title": "ECC 성과확산 프로그램 운영",
+      "budget_2025": 18000000,
+      "budget_national": 18000000,
+      "budget_city": 0,
+      "spent_2025": 15500000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "지산학교육센터(ECC)",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "교육∙연구 프로그램 개발∙운영비",
+          "budget": 18000000,
+          "spent": 15500000
+        }
       ],
-      budget: 18000000,
-      spent: 15500000,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 18000000,
+          "budget_national": 18000000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 15500000,
+          "spent_national": 15500000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "교육∙연구 프로그램 개발∙운영비",
+              "budget": 18000000,
+              "spent": 15500000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "A1-S3T5-1",
-      title: "UC-HYPER 교직원 역량 강화 프로그램 운영",
-      assignee: "교무처",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "교육∙연구 프로그램 개발∙운영비", budget: 500000, spent: 500000 }
+      "id": "A1-S3T5-1",
+      "title": "UC-HYPER 교직원 역량 강화 프로그램 운영",
+      "budget_2025": 500000,
+      "budget_national": 500000,
+      "budget_city": 0,
+      "spent_2025": 500000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "교무처",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "교육∙연구 프로그램 개발∙운영비",
+          "budget": 500000,
+          "spent": 500000
+        }
       ],
-      budget: 500000,
-      spent: 500000,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 500000,
+          "budget_national": 500000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 500000,
+          "spent_national": 500000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "교육∙연구 프로그램 개발∙운영비",
+              "budget": 500000,
+              "spent": 500000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "A1-S3T5-2",
-      title: "UC-HYPER 운영 규정 제·개정",
-      assignee: "지산학교육센터(ECC)",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "교육∙연구 프로그램 개발∙운영비", budget: 0, spent: 0 }
+      "id": "A1-S3T5-2",
+      "title": "UC-HYPER 운영 규정 제·개정",
+      "budget_2025": 0,
+      "budget_national": 0,
+      "budget_city": 0,
+      "spent_2025": 0,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "지산학교육센터(ECC)",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "교육∙연구 프로그램 개발∙운영비",
+          "budget": 0,
+          "spent": 0
+        }
       ],
-      budget: 0,
-      spent: 0,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 0,
+          "budget_national": 0,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 0,
+          "spent_national": 0,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "교육∙연구 프로그램 개발∙운영비",
+              "budget": 0,
+              "spent": 0
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "A1-S3T6-1",
-      title: "표준형 현장실습 운영",
-      assignee: "산학협력단",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "교육∙연구 프로그램 개발∙운영비", budget: 40000000, spent: 32600000 }
+      "id": "A1-S3T6-1",
+      "title": "표준형 현장실습 운영",
+      "budget_2025": 40000000,
+      "budget_national": 40000000,
+      "budget_city": 0,
+      "spent_2025": 32600000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "산학협력단",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "교육∙연구 프로그램 개발∙운영비",
+          "budget": 40000000,
+          "spent": 32600000
+        }
       ],
-      budget: 40000000,
-      spent: 32600000,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 40000000,
+          "budget_national": 40000000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 32600000,
+          "spent_national": 32600000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "교육∙연구 프로그램 개발∙운영비",
+              "budget": 40000000,
+              "spent": 32600000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "A1-S3T6-2",
-      title: "전문기술석사 교육과정 운영",
-      assignee: "대학원",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "교육∙연구 프로그램 개발∙운영비", budget: 5500000, spent: 5500000 }
+      "id": "A1-S3T6-2",
+      "title": "전문기술석사 교육과정 운영",
+      "budget_2025": 5500000,
+      "budget_national": 5500000,
+      "budget_city": 0,
+      "spent_2025": 5500000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "대학원",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "교육∙연구 프로그램 개발∙운영비",
+          "budget": 5500000,
+          "spent": 5500000
+        }
       ],
-      budget: 5500000,
-      spent: 5500000,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 5500000,
+          "budget_national": 5500000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 5500000,
+          "spent_national": 5500000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "교육∙연구 프로그램 개발∙운영비",
+              "budget": 5500000,
+              "spent": 5500000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "A1-S3T6-3",
-      title: "글로벌 교육 프로그램 개발/운영",
-      assignee: "국제교류원",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "교육∙연구 프로그램 개발∙운영비", budget: 0, spent: 0 }
+      "id": "A1-S3T6-3",
+      "title": "글로벌 교육 프로그램 개발/운영",
+      "budget_2025": 0,
+      "budget_national": 0,
+      "budget_city": 0,
+      "spent_2025": 0,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "국제교류원",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "교육∙연구 프로그램 개발∙운영비",
+          "budget": 0,
+          "spent": 0
+        }
       ],
-      budget: 0,
-      spent: 0,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 0,
+          "budget_national": 0,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 0,
+          "spent_national": 0,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "교육∙연구 프로그램 개발∙운영비",
+              "budget": 0,
+              "spent": 0
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "A1-S4T7-1",
-      title: "UC-HYPER 교육환경 구축",
-      assignee: "시설관리처",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "교육∙연구 환경개선비", budget: 1228900000, spent: 1120900000 }
+      "id": "A1-S4T7-1",
+      "title": "UC-HYPER 교육환경 구축",
+      "budget_2025": 1228900000,
+      "budget_national": 1228900000,
+      "budget_city": 0,
+      "spent_2025": 1120900000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "시설관리처",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "교육∙연구 환경개선비",
+          "budget": 1228900000,
+          "spent": 1120900000
+        }
       ],
-      budget: 1228900000,
-      spent: 1120900000,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 1228900000,
+          "budget_national": 1228900000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 1120900000,
+          "spent_national": 1120900000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "교육∙연구 환경개선비",
+              "budget": 1228900000,
+              "spent": 1120900000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "A1-S4T7-2",
-      title: "ECC 공유·협업 체계를 위한 인프라 구축",
-      assignee: "지산학교육센터(ECC)",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "교육∙연구 프로그램 개발∙운영비", budget: 29300000, spent: 26000000 }
+      "id": "A1-S4T7-2",
+      "title": "ECC 공유·협업 체계를 위한 인프라 구축",
+      "budget_2025": 29300000,
+      "budget_national": 29300000,
+      "budget_city": 0,
+      "spent_2025": 26000000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "지산학교육센터(ECC)",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "교육∙연구 프로그램 개발∙운영비",
+          "budget": 29300000,
+          "spent": 26000000
+        }
       ],
-      budget: 29300000,
-      spent: 26000000,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 29300000,
+          "budget_national": 29300000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 26000000,
+          "spent_national": 26000000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "교육∙연구 프로그램 개발∙운영비",
+              "budget": 29300000,
+              "spent": 26000000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "A1-S4T8-1",
-      title: "AI 리터러시 정규/비정규 교육과정 개발/운영",
-      assignee: "교무처",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "교육∙연구 프로그램 개발∙운영비", budget: 7700000, spent: 7700000 }
+      "id": "A1-S4T8-1",
+      "title": "AI 리터러시 정규/비정규 교육과정 개발/운영",
+      "budget_2025": 7700000,
+      "budget_national": 7700000,
+      "budget_city": 0,
+      "spent_2025": 7700000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "교무처",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "교육∙연구 프로그램 개발∙운영비",
+          "budget": 7700000,
+          "spent": 7700000
+        }
       ],
-      budget: 7700000,
-      spent: 7700000,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 7700000,
+          "budget_national": 7700000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 7700000,
+          "spent_national": 7700000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "교육∙연구 프로그램 개발∙운영비",
+              "budget": 7700000,
+              "spent": 7700000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "A1-S4T8-2",
-      title: "UC-HYPER 핵심분야 요소기술 정규/비정규 교육과정 개발/운영",
-      assignee: "기획처",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "교육∙연구 프로그램 개발∙운영비", budget: 35000000, spent: 34800000 }
+      "id": "A1-S4T8-2",
+      "title": "UC-HYPER 핵심분야 요소기술 정규/비정규 교육과정 개발/운영",
+      "budget_2025": 35000000,
+      "budget_national": 35000000,
+      "budget_city": 0,
+      "spent_2025": 34800000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "기획처",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "교육∙연구 프로그램 개발∙운영비",
+          "budget": 35000000,
+          "spent": 34800000
+        }
       ],
-      budget: 35000000,
-      spent: 34800000,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 35000000,
+          "budget_national": 35000000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 34800000,
+          "spent_national": 34800000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "교육∙연구 프로그램 개발∙운영비",
+              "budget": 35000000,
+              "spent": 34800000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "A1-S5T9-1",
-      title: "울산 맞춤형 인재양성 거버넌스 구축",
-      assignee: "지산학교육센터(ECC)",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "교육∙연구 프로그램 개발∙운영비", budget: 0, spent: 0 }
+      "id": "A1-S5T9-1",
+      "title": "울산 맞춤형 인재양성 거버넌스 구축",
+      "budget_2025": 0,
+      "budget_national": 0,
+      "budget_city": 0,
+      "spent_2025": 0,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "지산학교육센터(ECC)",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "교육∙연구 프로그램 개발∙운영비",
+          "budget": 0,
+          "spent": 0
+        }
       ],
-      budget: 0,
-      spent: 0,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 0,
+          "budget_national": 0,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 0,
+          "spent_national": 0,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "교육∙연구 프로그램 개발∙운영비",
+              "budget": 0,
+              "spent": 0
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "A1-S5T10-1",
-      title: "글로벌 지산학 혁신 거버넌스 구축",
-      assignee: "국제교류원",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "교육∙연구 프로그램 개발∙운영비", budget: 0, spent: 0 }
+      "id": "A1-S5T10-1",
+      "title": "글로벌 지산학 혁신 거버넌스 구축",
+      "budget_2025": 0,
+      "budget_national": 0,
+      "budget_city": 0,
+      "spent_2025": 0,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "국제교류원",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "교육∙연구 프로그램 개발∙운영비",
+          "budget": 0,
+          "spent": 0
+        }
       ],
-      budget: 0,
-      spent: 0,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 0,
+          "budget_national": 0,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 0,
+          "spent_national": 0,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "교육∙연구 프로그램 개발∙운영비",
+              "budget": 0,
+              "spent": 0
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "A1-S5T11-1",
-      title: "공통운영경비",
-      assignee: "지산학교육센터(ECC)",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "인건비", budget: 156000000, spent: 155200000 },
-        { category: "장학금", budget: 88000000, spent: 72100000 },
-        { category: "실험∙실습장비 및 기자재 구입∙운영비", budget: 187800000, spent: 105900000 },
-        { category: "기업 지원∙협력 활동비", budget: 208300000, spent: 76700000 },
-        { category: "성과 활용∙확산 지원비", budget: 48700000, spent: 22800000 },
-        { category: "그 밖의 사업운영경비", budget: 72300000, spent: 55700000 },
-        { category: "간접비", budget: 69000000, spent: 69000000 }
+      "id": "A1-S5T11-1",
+      "title": "공통운영경비",
+      "budget_2025": 829800000,
+      "budget_national": 829800000,
+      "budget_city": 0,
+      "spent_2025": 557400000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "지산학교육센터(ECC)",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "인건비",
+          "budget": 156000000,
+          "spent": 155200000
+        },
+        {
+          "category": "장학금",
+          "budget": 88000000,
+          "spent": 72100000
+        },
+        {
+          "category": "실험∙실습장비 및 기자재 구입∙운영비",
+          "budget": 187800000,
+          "spent": 105900000
+        },
+        {
+          "category": "기업 지원∙협력 활동비",
+          "budget": 208300000,
+          "spent": 76700000
+        },
+        {
+          "category": "성과 활용∙확산 지원비",
+          "budget": 48700000,
+          "spent": 22800000
+        },
+        {
+          "category": "그 밖의 사업운영경비",
+          "budget": 72300000,
+          "spent": 55700000
+        },
+        {
+          "category": "간접비",
+          "budget": 69000000,
+          "spent": 69000000
+        }
       ],
-      budget: 829800000,
-      spent: 557400000,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 829800000,
+          "budget_national": 829800000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 557400000,
+          "spent_national": 557400000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "인건비",
+              "budget": 156000000,
+              "spent": 155200000
+            },
+            {
+              "category": "장학금",
+              "budget": 88000000,
+              "spent": 72100000
+            },
+            {
+              "category": "실험∙실습장비 및 기자재 구입∙운영비",
+              "budget": 187800000,
+              "spent": 105900000
+            },
+            {
+              "category": "기업 지원∙협력 활동비",
+              "budget": 208300000,
+              "spent": 76700000
+            },
+            {
+              "category": "성과 활용∙확산 지원비",
+              "budget": 48700000,
+              "spent": 22800000
+            },
+            {
+              "category": "그 밖의 사업운영경비",
+              "budget": 72300000,
+              "spent": 55700000
+            },
+            {
+              "category": "간접비",
+              "budget": 69000000,
+              "spent": 69000000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "A1-S4T8-3",
-      title: "UDx 미래인재양성 교육과정 개발 및 Lab 구축 [인센티브]",
-      assignee: "지산학교육센터(ECC)",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "교육∙연구 프로그램 개발∙운영비", budget: 70000000, spent: 0 },
-        { category: "교육∙연구 환경개선비", budget: 91000000, spent: 0 }
+      "id": "A1-S4T8-3",
+      "title": "UDx 미래인재양성 교육과정 개발 및 Lab 구축 [인센티브]",
+      "budget_2025": 161000000,
+      "budget_national": 161000000,
+      "budget_city": 0,
+      "spent_2025": 0,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "지산학교육센터(ECC)",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "교육∙연구 프로그램 개발∙운영비",
+          "budget": 70000000,
+          "spent": 0
+        },
+        {
+          "category": "교육∙연구 환경개선비",
+          "budget": 91000000,
+          "spent": 0
+        }
       ],
-      budget: 161000000,
-      spent: 0,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 161000000,
+          "budget_national": 161000000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 0,
+          "spent_national": 0,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "교육∙연구 프로그램 개발∙운영비",
+              "budget": 70000000,
+              "spent": 0
+            },
+            {
+              "category": "교육∙연구 환경개선비",
+              "budget": 91000000,
+              "spent": 0
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "A1-S4T7-3",
-      title: "AI·디지털트윈 첨단 실습 및 실증 장비 인프라 구축 [인센티브]",
-      assignee: "지산학교육센터(ECC)",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "실험∙실습장비 및 기자재 구입∙운영비", budget: 359500000, spent: 151500000 }
+      "id": "A1-S4T7-3",
+      "title": "AI·디지털트윈 첨단 실습 및 실증 장비 인프라 구축 [인센티브]",
+      "budget_2025": 359500000,
+      "budget_national": 359500000,
+      "budget_city": 0,
+      "spent_2025": 151500000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "지산학교육센터(ECC)",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "실험∙실습장비 및 기자재 구입∙운영비",
+          "budget": 359500000,
+          "spent": 151500000
+        }
       ],
-      budget: 359500000,
-      spent: 151500000,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 359500000,
+          "budget_national": 359500000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 151500000,
+          "spent_national": 151500000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "실험∙실습장비 및 기자재 구입∙운영비",
+              "budget": 359500000,
+              "spent": 151500000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "A1-S5T10-2",
-      title: "UDx 지산학 협력 거버넌스 및 첫걸음 R&D 예비과제 운영 [인센티브]",
-      assignee: "지산학교육센터(ECC)",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "기업 지원∙협력 활동비", budget: 62000000, spent: 0 }
+      "id": "A1-S5T10-2",
+      "title": "UDx 지산학 협력 거버넌스 및 첫걸음 R&D 예비과제 운영 [인센티브]",
+      "budget_2025": 62000000,
+      "budget_national": 62000000,
+      "budget_city": 0,
+      "spent_2025": 0,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "지산학교육센터(ECC)",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "기업 지원∙협력 활동비",
+          "budget": 62000000,
+          "spent": 0
+        }
       ],
-      budget: 62000000,
-      spent: 0,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 62000000,
+          "budget_national": 62000000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 0,
+          "spent_national": 0,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "기업 지원∙협력 활동비",
+              "budget": 62000000,
+              "spent": 0
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "A1-S5T11-2",
-      title: "인센티브 공통 운영 경비 및 간접비",
-      assignee: "지산학교육센터(ECC)",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "인건비", budget: 7500000, spent: 7000000 },
-        { category: "그 밖의 사업운영경비", budget: 17000000, spent: 5900000 },
-        { category: "간접비", budget: 17000000, spent: 17000000 }
+      "id": "A1-S5T11-2",
+      "title": "인센티브 공통 운영 경비 및 간접비",
+      "budget_2025": 41500000,
+      "budget_national": 41500000,
+      "budget_city": 0,
+      "spent_2025": 29900000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "지산학교육센터(ECC)",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "인건비",
+          "budget": 7500000,
+          "spent": 7000000
+        },
+        {
+          "category": "그 밖의 사업운영경비",
+          "budget": 17000000,
+          "spent": 5900000
+        },
+        {
+          "category": "간접비",
+          "budget": 17000000,
+          "spent": 17000000
+        }
       ],
-      budget: 41500000,
-      spent: 29900000,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 41500000,
+          "budget_national": 41500000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 29900000,
+          "spent_national": 29900000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "인건비",
+              "budget": 7500000,
+              "spent": 7000000
+            },
+            {
+              "category": "그 밖의 사업운영경비",
+              "budget": 17000000,
+              "spent": 5900000
+            },
+            {
+              "category": "간접비",
+              "budget": 17000000,
+              "spent": 17000000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     }
   ],
   "A2": [
     {
-      id: "A2-S1T1-1",
-      title: "창업 정규 교육과정 개발·운영",
-      assignee: "글로컬창업지원팀",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "교육∙연구 프로그램 개발∙운영비", budget: 9600000, spent: 9600000 }
+      "id": "A2-S1T1-1",
+      "title": "창업 정규 교육과정 개발·운영",
+      "budget_2025": 9600000,
+      "budget_national": 9600000,
+      "budget_city": 0,
+      "spent_2025": 9600000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "글로컬창업지원팀",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "교육∙연구 프로그램 개발∙운영비",
+          "budget": 9600000,
+          "spent": 9600000
+        }
       ],
-      budget: 9600000,
-      spent: 9600000,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 9600000,
+          "budget_national": 9600000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 9600000,
+          "spent_national": 9600000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "교육∙연구 프로그램 개발∙운영비",
+              "budget": 9600000,
+              "spent": 9600000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "A2-S1T1-2",
-      title: "창업 비정규 프로그램 개발·운영",
-      assignee: "글로컬창업지원팀",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "교육∙연구 프로그램 개발∙운영비", budget: 95900000, spent: 95900000 }
+      "id": "A2-S1T1-2",
+      "title": "창업 비정규 프로그램 개발·운영",
+      "budget_2025": 95900000,
+      "budget_national": 95900000,
+      "budget_city": 0,
+      "spent_2025": 95900000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "글로컬창업지원팀",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "교육∙연구 프로그램 개발∙운영비",
+          "budget": 95900000,
+          "spent": 95900000
+        }
       ],
-      budget: 95900000,
-      spent: 95900000,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 95900000,
+          "budget_national": 95900000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 95900000,
+          "spent_national": 95900000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "교육∙연구 프로그램 개발∙운영비",
+              "budget": 95900000,
+              "spent": 95900000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "A2-S1T2-1",
-      title: "창업문화 확산을 위한 규정·제도 개선",
-      assignee: "글로컬창업지원팀",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "교육∙연구 프로그램 개발∙운영비", budget: 0, spent: 0 }
+      "id": "A2-S1T2-1",
+      "title": "창업문화 확산을 위한 규정·제도 개선",
+      "budget_2025": 0,
+      "budget_national": 0,
+      "budget_city": 0,
+      "spent_2025": 0,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "글로컬창업지원팀",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "교육∙연구 프로그램 개발∙운영비",
+          "budget": 0,
+          "spent": 0
+        }
       ],
-      budget: 0,
-      spent: 0,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 0,
+          "budget_national": 0,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 0,
+          "spent_national": 0,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "교육∙연구 프로그램 개발∙운영비",
+              "budget": 0,
+              "spent": 0
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "A2-S1T2-2",
-      title: "교직원 창업역량 강화",
-      assignee: "글로컬창업지원팀",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "교육∙연구 프로그램 개발∙운영비", budget: 9800000, spent: 9800000 }
+      "id": "A2-S1T2-2",
+      "title": "교직원 창업역량 강화",
+      "budget_2025": 9800000,
+      "budget_national": 9800000,
+      "budget_city": 0,
+      "spent_2025": 9800000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "글로컬창업지원팀",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "교육∙연구 프로그램 개발∙운영비",
+          "budget": 9800000,
+          "spent": 9800000
+        }
       ],
-      budget: 9800000,
-      spent: 9800000,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 9800000,
+          "budget_national": 9800000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 9800000,
+          "spent_national": 9800000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "교육∙연구 프로그램 개발∙운영비",
+              "budget": 9800000,
+              "spent": 9800000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "A2-S1T2-3",
-      title: "실전 창업 환경 개선 및 하이퍼캠퍼스(창업) 구축",
-      assignee: "시설관리처",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "교육∙연구 환경개선비", budget: 79000000, spent: 79000000 },
-        { category: "실험∙실습장비 및 기자재 구입∙운영비", budget: 310000000, spent: 310000000 }
+      "id": "A2-S1T2-3",
+      "title": "실전 창업 환경 개선 및 하이퍼캠퍼스(창업) 구축",
+      "budget_2025": 389000000,
+      "budget_national": 389000000,
+      "budget_city": 0,
+      "spent_2025": 389000000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "시설관리처",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "교육∙연구 환경개선비",
+          "budget": 79000000,
+          "spent": 79000000
+        },
+        {
+          "category": "실험∙실습장비 및 기자재 구입∙운영비",
+          "budget": 310000000,
+          "spent": 310000000
+        }
       ],
-      budget: 389000000,
-      spent: 389000000,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 389000000,
+          "budget_national": 389000000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 389000000,
+          "spent_national": 389000000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "교육∙연구 환경개선비",
+              "budget": 79000000,
+              "spent": 79000000
+            },
+            {
+              "category": "실험∙실습장비 및 기자재 구입∙운영비",
+              "budget": 310000000,
+              "spent": 310000000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "A2-S2T3-1",
-      title: "재학생·교직원 예비창업자 지원 프로그램 운영",
-      assignee: "글로컬창업지원팀",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "교육∙연구 프로그램 개발∙운영비", budget: 20000000, spent: 20000000 }
+      "id": "A2-S2T3-1",
+      "title": "재학생·교직원 예비창업자 지원 프로그램 운영",
+      "budget_2025": 20000000,
+      "budget_national": 20000000,
+      "budget_city": 0,
+      "spent_2025": 20000000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "글로컬창업지원팀",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "교육∙연구 프로그램 개발∙운영비",
+          "budget": 20000000,
+          "spent": 20000000
+        }
       ],
-      budget: 20000000,
-      spent: 20000000,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 20000000,
+          "budget_national": 20000000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 20000000,
+          "spent_national": 20000000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "교육∙연구 프로그램 개발∙운영비",
+              "budget": 20000000,
+              "spent": 20000000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "A2-S2T3-2",
-      title: "초·중·고 및 지역민 예비창업자 지원 프로그램 운영",
-      assignee: "글로컬창업지원팀",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "지역 연계∙협업 지원비", budget: 12700000, spent: 12700000 }
+      "id": "A2-S2T3-2",
+      "title": "초·중·고 및 지역민 예비창업자 지원 프로그램 운영",
+      "budget_2025": 12700000,
+      "budget_national": 12700000,
+      "budget_city": 0,
+      "spent_2025": 12700000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "글로컬창업지원팀",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "지역 연계∙협업 지원비",
+          "budget": 12700000,
+          "spent": 12700000
+        }
       ],
-      budget: 12700000,
-      spent: 12700000,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 12700000,
+          "budget_national": 12700000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 12700000,
+          "spent_national": 12700000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "지역 연계∙협업 지원비",
+              "budget": 12700000,
+              "spent": 12700000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "A2-S2T4-1",
-      title: "초기 창업자 대상 사업화 후속 지원",
-      assignee: "글로컬창업지원팀",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "교육∙연구 프로그램 개발∙운영비", budget: 0, spent: 0 }
+      "id": "A2-S2T4-1",
+      "title": "초기 창업자 대상 사업화 후속 지원",
+      "budget_2025": 0,
+      "budget_national": 0,
+      "budget_city": 0,
+      "spent_2025": 0,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "글로컬창업지원팀",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "교육∙연구 프로그램 개발∙운영비",
+          "budget": 0,
+          "spent": 0
+        }
       ],
-      budget: 0,
-      spent: 0,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 0,
+          "budget_national": 0,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 0,
+          "spent_national": 0,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "교육∙연구 프로그램 개발∙운영비",
+              "budget": 0,
+              "spent": 0
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "A2-S2T4-2",
-      title: "아이디어 특허 지원",
-      assignee: "산학협력단",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "지역 연계∙협업 지원비", budget: 38000000, spent: 38000000 }
+      "id": "A2-S2T4-2",
+      "title": "아이디어 특허 지원",
+      "budget_2025": 38000000,
+      "budget_national": 38000000,
+      "budget_city": 0,
+      "spent_2025": 38000000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "산학협력단",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "지역 연계∙협업 지원비",
+          "budget": 38000000,
+          "spent": 38000000
+        }
       ],
-      budget: 38000000,
-      spent: 38000000,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 38000000,
+          "budget_national": 38000000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 38000000,
+          "spent_national": 38000000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "지역 연계∙협업 지원비",
+              "budget": 38000000,
+              "spent": 38000000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "A2-S3T5-1",
-      title: "초·중·고 창업 교육 통합 지원 프로그램",
-      assignee: "글로컬창업지원팀",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "교육∙연구 프로그램 개발∙운영비", budget: 0, spent: 0 }
+      "id": "A2-S3T5-1",
+      "title": "초·중·고 창업 교육 통합 지원 프로그램",
+      "budget_2025": 0,
+      "budget_national": 0,
+      "budget_city": 0,
+      "spent_2025": 0,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "글로컬창업지원팀",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "교육∙연구 프로그램 개발∙운영비",
+          "budget": 0,
+          "spent": 0
+        }
       ],
-      budget: 0,
-      spent: 0,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 0,
+          "budget_national": 0,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 0,
+          "spent_national": 0,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "교육∙연구 프로그램 개발∙운영비",
+              "budget": 0,
+              "spent": 0
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "A2-S3T5-2",
-      title: "타 기관 연계 창업 협력 네트워크 구축 및 공동 교육 프로그램 운영",
-      assignee: "글로컬창업지원팀",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "지역 연계∙협업 지원비", budget: 150000000, spent: 150000000 }
+      "id": "A2-S3T5-2",
+      "title": "타 기관 연계 창업 협력 네트워크 구축 및 공동 교육 프로그램 운영",
+      "budget_2025": 150000000,
+      "budget_national": 150000000,
+      "budget_city": 0,
+      "spent_2025": 150000000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "글로컬창업지원팀",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "지역 연계∙협업 지원비",
+          "budget": 150000000,
+          "spent": 150000000
+        }
       ],
-      budget: 150000000,
-      spent: 150000000,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 150000000,
+          "budget_national": 150000000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 150000000,
+          "spent_national": 150000000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "지역 연계∙협업 지원비",
+              "budget": 150000000,
+              "spent": 150000000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "A2-S3T6-1",
-      title: "해외 창업 인큐베이터 연계 프로그램 기획",
-      assignee: "글로컬창업지원팀",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "교육∙연구 프로그램 개발∙운영비", budget: 20000000, spent: 20000000 }
+      "id": "A2-S3T6-1",
+      "title": "해외 창업 인큐베이터 연계 프로그램 기획",
+      "budget_2025": 20000000,
+      "budget_national": 20000000,
+      "budget_city": 0,
+      "spent_2025": 20000000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "글로컬창업지원팀",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "교육∙연구 프로그램 개발∙운영비",
+          "budget": 20000000,
+          "spent": 20000000
+        }
       ],
-      budget: 20000000,
-      spent: 20000000,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 20000000,
+          "budget_national": 20000000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 20000000,
+          "spent_national": 20000000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "교육∙연구 프로그램 개발∙운영비",
+              "budget": 20000000,
+              "spent": 20000000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "A2-S3T6-2",
-      title: "창업선도모델 공동연구 및 벤치마크",
-      assignee: "글로컬창업지원팀",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "지역 연계∙협업 지원비", budget: 25000000, spent: 25000000 }
+      "id": "A2-S3T6-2",
+      "title": "창업선도모델 공동연구 및 벤치마크",
+      "budget_2025": 25000000,
+      "budget_national": 25000000,
+      "budget_city": 0,
+      "spent_2025": 25000000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "글로컬창업지원팀",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "지역 연계∙협업 지원비",
+          "budget": 25000000,
+          "spent": 25000000
+        }
       ],
-      budget: 25000000,
-      spent: 25000000,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 25000000,
+          "budget_national": 25000000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 25000000,
+          "spent_national": 25000000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "지역 연계∙협업 지원비",
+              "budget": 25000000,
+              "spent": 25000000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "A2-S3T7-1",
-      title: "공통운영경비",
-      assignee: "글로컬창업지원팀",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "인건비", budget: 76000000, spent: 75200000 },
-        { category: "간접비", budget: 27000000, spent: 27000000 },
-        { category: "그 밖의 사업운영경비", budget: 27000000, spent: 12300000 }
+      "id": "A2-S3T7-1",
+      "title": "공통운영경비",
+      "budget_2025": 130000000,
+      "budget_national": 130000000,
+      "budget_city": 0,
+      "spent_2025": 114500000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "글로컬창업지원팀",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "인건비",
+          "budget": 76000000,
+          "spent": 75200000
+        },
+        {
+          "category": "간접비",
+          "budget": 27000000,
+          "spent": 27000000
+        },
+        {
+          "category": "그 밖의 사업운영경비",
+          "budget": 27000000,
+          "spent": 12300000
+        }
       ],
-      budget: 130000000,
-      spent: 114500000,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 130000000,
+          "budget_national": 130000000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 114500000,
+          "spent_national": 114500000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "인건비",
+              "budget": 76000000,
+              "spent": 75200000
+            },
+            {
+              "category": "간접비",
+              "budget": 27000000,
+              "spent": 27000000
+            },
+            {
+              "category": "그 밖의 사업운영경비",
+              "budget": 27000000,
+              "spent": 12300000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     }
   ],
   "B1": [
     {
-      id: "B1-S1T1-1",
-      title: "ICC 기반 미래가치창출 지원 체계 구축",
-      assignee: "R&BD지원팀",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "교육∙연구 프로그램 개발∙운영비", budget: 0, spent: 0 }
+      "id": "B1-S1T1-1",
+      "title": "ICC 기반 미래가치창출 지원 체계 구축",
+      "budget_2025": 0,
+      "budget_national": 0,
+      "budget_city": 0,
+      "spent_2025": 0,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "R&BD지원팀",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "교육∙연구 프로그램 개발∙운영비",
+          "budget": 0,
+          "spent": 0
+        }
       ],
-      budget: 0,
-      spent: 0,
-      timeline: ",,P,P,D,D,D,D,C,A,,"
+      "years": {
+        "1": {
+          "budget_main": 0,
+          "budget_national": 0,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 0,
+          "spent_national": 0,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "교육∙연구 프로그램 개발∙운영비",
+              "budget": 0,
+              "spent": 0
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "B1-S1T1-2",
-      title: "ICC 구축을 위한 행·제도적 기반 마련",
-      assignee: "R&BD지원팀",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "교육∙연구 프로그램 개발∙운영비", budget: 0, spent: 0 }
+      "id": "B1-S1T1-2",
+      "title": "ICC 구축을 위한 행·제도적 기반 마련",
+      "budget_2025": 0,
+      "budget_national": 0,
+      "budget_city": 0,
+      "spent_2025": 0,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "R&BD지원팀",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "교육∙연구 프로그램 개발∙운영비",
+          "budget": 0,
+          "spent": 0
+        }
       ],
-      budget: 0,
-      spent: 0,
-      timeline: ",,P,D,D,D,C,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 0,
+          "budget_national": 0,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 0,
+          "spent_national": 0,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "교육∙연구 프로그램 개발∙운영비",
+              "budget": 0,
+              "spent": 0
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "B1-S1T2-1",
-      title: "지역별 산학연 협의체 구성 및 운영 계획 수립",
-      assignee: "R&BD지원팀",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "교육∙연구 프로그램 개발∙운영비", budget: 0, spent: 0 }
+      "id": "B1-S1T2-1",
+      "title": "지역별 산학연 협의체 구성 및 운영 계획 수립",
+      "budget_2025": 0,
+      "budget_national": 0,
+      "budget_city": 0,
+      "spent_2025": 0,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "R&BD지원팀",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "교육∙연구 프로그램 개발∙운영비",
+          "budget": 0,
+          "spent": 0
+        }
       ],
-      budget: 0,
-      spent: 0,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 0,
+          "budget_national": 0,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 0,
+          "spent_national": 0,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "교육∙연구 프로그램 개발∙운영비",
+              "budget": 0,
+              "spent": 0
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "B1-S1T2-2",
-      title: "분야별 협력기관 발굴 및 협약체결",
-      assignee: "R&BD지원팀",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "교육∙연구 프로그램 개발∙운영비", budget: 0, spent: 0 }
+      "id": "B1-S1T2-2",
+      "title": "분야별 협력기관 발굴 및 협약체결",
+      "budget_2025": 0,
+      "budget_national": 0,
+      "budget_city": 0,
+      "spent_2025": 0,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "R&BD지원팀",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "교육∙연구 프로그램 개발∙운영비",
+          "budget": 0,
+          "spent": 0
+        }
       ],
-      budget: 0,
-      spent: 0,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 0,
+          "budget_national": 0,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 0,
+          "spent_national": 0,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "교육∙연구 프로그램 개발∙운영비",
+              "budget": 0,
+              "spent": 0
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "B1-S2T3-1",
-      title: "기업 맞춤형 과제 공모 및 지원 체계 구축",
-      assignee: "R&BD지원팀",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "교육∙연구 환경개선비", budget: 70000000, spent: 0 }
+      "id": "B1-S2T3-1",
+      "title": "기업 맞춤형 과제 공모 및 지원 체계 구축",
+      "budget_2025": 70000000,
+      "budget_national": 70000000,
+      "budget_city": 0,
+      "spent_2025": 0,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "R&BD지원팀",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "교육∙연구 환경개선비",
+          "budget": 70000000,
+          "spent": 0
+        }
       ],
-      budget: 70000000,
-      spent: 0,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 70000000,
+          "budget_national": 70000000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 0,
+          "spent_national": 0,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "교육∙연구 환경개선비",
+              "budget": 70000000,
+              "spent": 0
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "B1-S2T3-2",
-      title: "컨소시엄 형태의 다기관 협력형 연구개발 과제 운영",
-      assignee: "R&BD지원팀",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "기업 지원∙협력 활동비", budget: 60000000, spent: 58100000 }
+      "id": "B1-S2T3-2",
+      "title": "컨소시엄 형태의 다기관 협력형 연구개발 과제 운영",
+      "budget_2025": 60000000,
+      "budget_national": 60000000,
+      "budget_city": 0,
+      "spent_2025": 58100000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "R&BD지원팀",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "기업 지원∙협력 활동비",
+          "budget": 60000000,
+          "spent": 58100000
+        }
       ],
-      budget: 60000000,
-      spent: 58100000,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 60000000,
+          "budget_national": 60000000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 58100000,
+          "spent_national": 58100000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "기업 지원∙협력 활동비",
+              "budget": 60000000,
+              "spent": 58100000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "B1-S2T4-1",
-      title: "지역 산업체 및 혁신기관 협력을 통한 수요 발굴",
-      assignee: "R&BD지원팀",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "교육∙연구 프로그램 개발∙운영비", budget: 0, spent: 0 }
+      "id": "B1-S2T4-1",
+      "title": "지역 산업체 및 혁신기관 협력을 통한 수요 발굴",
+      "budget_2025": 0,
+      "budget_national": 0,
+      "budget_city": 0,
+      "spent_2025": 0,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "R&BD지원팀",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "교육∙연구 프로그램 개발∙운영비",
+          "budget": 0,
+          "spent": 0
+        }
       ],
-      budget: 0,
-      spent: 0,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 0,
+          "budget_national": 0,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 0,
+          "spent_national": 0,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "교육∙연구 프로그램 개발∙운영비",
+              "budget": 0,
+              "spent": 0
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "B1-S2T4-2",
-      title: "전문기술석사 학생의 현장문제 발굴 및 과제 수행",
-      assignee: "대학원",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "기업 지원∙협력 활동비", budget: 35000000, spent: 34900000 }
+      "id": "B1-S2T4-2",
+      "title": "전문기술석사 학생의 현장문제 발굴 및 과제 수행",
+      "budget_2025": 35000000,
+      "budget_national": 35000000,
+      "budget_city": 0,
+      "spent_2025": 34900000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "대학원",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "기업 지원∙협력 활동비",
+          "budget": 35000000,
+          "spent": 34900000
+        }
       ],
-      budget: 35000000,
-      spent: 34900000,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 35000000,
+          "budget_national": 35000000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 34900000,
+          "spent_national": 34900000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "기업 지원∙협력 활동비",
+              "budget": 35000000,
+              "spent": 34900000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "B1-S3T5-1",
-      title: "높은 접근성의 산업체를 위한 공용 플랫폼 구축",
-      assignee: "R&BD지원팀",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "교육∙연구 프로그램 개발∙운영비", budget: 0, spent: 0 }
+      "id": "B1-S3T5-1",
+      "title": "높은 접근성의 산업체를 위한 공용 플랫폼 구축",
+      "budget_2025": 0,
+      "budget_national": 0,
+      "budget_city": 0,
+      "spent_2025": 0,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "R&BD지원팀",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "교육∙연구 프로그램 개발∙운영비",
+          "budget": 0,
+          "spent": 0
+        }
       ],
-      budget: 0,
-      spent: 0,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 0,
+          "budget_national": 0,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 0,
+          "spent_national": 0,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "교육∙연구 프로그램 개발∙운영비",
+              "budget": 0,
+              "spent": 0
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "B1-S3T5-2",
-      title: "전문가 풀을 활용한 중소기업 기술 지원 체계 운영",
-      assignee: "R&BD지원팀",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "기업 지원∙협력 활동비", budget: 23100000, spent: 20600000 },
-        { category: "성과 활용∙확산 지원비", budget: 6800000, spent: 4700000 }
+      "id": "B1-S3T5-2",
+      "title": "전문가 풀을 활용한 중소기업 기술 지원 체계 운영",
+      "budget_2025": 29900000,
+      "budget_national": 29900000,
+      "budget_city": 0,
+      "spent_2025": 25300000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "R&BD지원팀",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "기업 지원∙협력 활동비",
+          "budget": 23100000,
+          "spent": 20600000
+        },
+        {
+          "category": "성과 활용∙확산 지원비",
+          "budget": 6800000,
+          "spent": 4700000
+        }
       ],
-      budget: 29900000,
-      spent: 25300000,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 29900000,
+          "budget_national": 29900000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 25300000,
+          "spent_national": 25300000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "기업 지원∙협력 활동비",
+              "budget": 23100000,
+              "spent": 20600000
+            },
+            {
+              "category": "성과 활용∙확산 지원비",
+              "budget": 6800000,
+              "spent": 4700000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "B1-S3T6-1",
-      title: "공용장비 지원 플랫폼 구축 (U-NEXUS 연계)",
-      assignee: "정보통신처",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "기업 지원∙협력 활동비", budget: 15000000, spent: 13770000 }
+      "id": "B1-S3T6-1",
+      "title": "공용장비 지원 플랫폼 구축 (U-NEXUS 연계)",
+      "budget_2025": 15000000,
+      "budget_national": 15000000,
+      "budget_city": 0,
+      "spent_2025": 13770000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "정보통신처",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "기업 지원∙협력 활동비",
+          "budget": 15000000,
+          "spent": 13770000
+        }
       ],
-      budget: 15000000,
-      spent: 13770000,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 15000000,
+          "budget_national": 15000000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 13770000,
+          "spent_national": 13770000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "기업 지원∙협력 활동비",
+              "budget": 15000000,
+              "spent": 13770000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "B1-S3T6-2",
-      title: "공용장비 활용 프로그램 개발 및 운영 체계 마련",
-      assignee: "R&BD지원팀",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "기업 지원∙협력 활동비", budget: 35000000, spent: 32130000 }
+      "id": "B1-S3T6-2",
+      "title": "공용장비 활용 프로그램 개발 및 운영 체계 마련",
+      "budget_2025": 35000000,
+      "budget_national": 35000000,
+      "budget_city": 0,
+      "spent_2025": 32130000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "R&BD지원팀",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "기업 지원∙협력 활동비",
+          "budget": 35000000,
+          "spent": 32130000
+        }
       ],
-      budget: 35000000,
-      spent: 32130000,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 35000000,
+          "budget_national": 35000000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 32130000,
+          "spent_national": 32130000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "기업 지원∙협력 활동비",
+              "budget": 35000000,
+              "spent": 32130000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "B1-S3T7-1",
-      title: "공통운영경비",
-      assignee: "R&BD지원팀",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "인건비", budget: 35500000, spent: 34200000 },
-        { category: "간접비", budget: 9000000, spent: 9000000 },
-        { category: "그 밖의 사업운영경비", budget: 8900000, spent: 5800000 },
-        { category: "교육∙연구 프로그램 개발∙운영비", budget: 1700000, spent: 1700000 }
+      "id": "B1-S3T7-1",
+      "title": "공통운영경비",
+      "budget_2025": 55100000,
+      "budget_national": 55100000,
+      "budget_city": 0,
+      "spent_2025": 50700000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "R&BD지원팀",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "인건비",
+          "budget": 35500000,
+          "spent": 34200000
+        },
+        {
+          "category": "간접비",
+          "budget": 9000000,
+          "spent": 9000000
+        },
+        {
+          "category": "그 밖의 사업운영경비",
+          "budget": 8900000,
+          "spent": 5800000
+        },
+        {
+          "category": "교육∙연구 프로그램 개발∙운영비",
+          "budget": 1700000,
+          "spent": 1700000
+        }
       ],
-      budget: 55100000,
-      spent: 50700000,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 55100000,
+          "budget_national": 55100000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 50700000,
+          "spent_national": 50700000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "인건비",
+              "budget": 35500000,
+              "spent": 34200000
+            },
+            {
+              "category": "간접비",
+              "budget": 9000000,
+              "spent": 9000000
+            },
+            {
+              "category": "그 밖의 사업운영경비",
+              "budget": 8900000,
+              "spent": 5800000
+            },
+            {
+              "category": "교육∙연구 프로그램 개발∙운영비",
+              "budget": 1700000,
+              "spent": 1700000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     }
   ],
   "C1": [
     {
-      id: "B2-S1T1-1",
-      title: "지역 내 평생직업교육 거점센터 운영",
-      assignee: "평생교육원",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "교육∙연구 프로그램 개발∙운영비", budget: 25500000, spent: 25500000 }
+      "id": "B2-S1T1-1",
+      "title": "지역 내 평생직업교육 거점센터 운영",
+      "budget_2025": 25500000,
+      "budget_national": 25500000,
+      "budget_city": 0,
+      "spent_2025": 25500000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "평생교육원",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "교육∙연구 프로그램 개발∙운영비",
+          "budget": 25500000,
+          "spent": 25500000
+        }
       ],
-      budget: 25500000,
-      spent: 25500000,
-      timeline: ",,P,P,D,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 25500000,
+          "budget_national": 25500000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 25500000,
+          "spent_national": 25500000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "교육∙연구 프로그램 개발∙운영비",
+              "budget": 25500000,
+              "spent": 25500000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "B2-S1T1-2",
-      title: "지역 기관과의 평생직업교육 연계 방안 마련",
-      assignee: "평생교육원",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "교육∙연구 프로그램 개발∙운영비", budget: 22300000, spent: 22300000 }
+      "id": "B2-S1T1-2",
+      "title": "지역 기관과의 평생직업교육 연계 방안 마련",
+      "budget_2025": 22300000,
+      "budget_national": 22300000,
+      "budget_city": 0,
+      "spent_2025": 22300000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "평생교육원",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "교육∙연구 프로그램 개발∙운영비",
+          "budget": 22300000,
+          "spent": 22300000
+        }
       ],
-      budget: 22300000,
-      spent: 22300000,
-      timeline: ",,,P,D,D,D,D,C,A,,"
+      "years": {
+        "1": {
+          "budget_main": 22300000,
+          "budget_national": 22300000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 22300000,
+          "spent_national": 22300000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "교육∙연구 프로그램 개발∙운영비",
+              "budget": 22300000,
+              "spent": 22300000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "B2-S1T2-1",
-      title: "UC-HYPER 내 평생직업교육관련 데이터 구축",
-      assignee: "정보통신처",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "지역 연계∙협업 지원비", budget: 2800000, spent: 2800000 }
+      "id": "B2-S1T2-1",
+      "title": "UC-HYPER 내 평생직업교육관련 데이터 구축",
+      "budget_2025": 2800000,
+      "budget_national": 2800000,
+      "budget_city": 0,
+      "spent_2025": 2800000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "정보통신처",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "지역 연계∙협업 지원비",
+          "budget": 2800000,
+          "spent": 2800000
+        }
       ],
-      budget: 2800000,
-      spent: 2800000,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 2800000,
+          "budget_national": 2800000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 2800000,
+          "spent_national": 2800000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "지역 연계∙협업 지원비",
+              "budget": 2800000,
+              "spent": 2800000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "B2-S1T2-2",
-      title: "교육통합 플랫폼의 대학내 기반 구축",
-      assignee: "정보통신처",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "교육∙연구 환경개선비", budget: 119900000, spent: 59300000 }
+      "id": "B2-S1T2-2",
+      "title": "교육통합 플랫폼의 대학내 기반 구축",
+      "budget_2025": 119900000,
+      "budget_national": 119900000,
+      "budget_city": 0,
+      "spent_2025": 59300000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "정보통신처",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "교육∙연구 환경개선비",
+          "budget": 119900000,
+          "spent": 59300000
+        }
       ],
-      budget: 119900000,
-      spent: 59300000,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 119900000,
+          "budget_national": 119900000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 59300000,
+          "spent_national": 59300000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "교육∙연구 환경개선비",
+              "budget": 119900000,
+              "spent": 59300000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "B2-S1T2-3",
-      title: "울산의 교육통합 플랫폼을 위한 참여",
-      assignee: "평생교육원",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "지역 연계∙협업 지원비", budget: 62200000, spent: 100000 }
+      "id": "B2-S1T2-3",
+      "title": "울산의 교육통합 플랫폼을 위한 참여",
+      "budget_2025": 62200000,
+      "budget_national": 62200000,
+      "budget_city": 0,
+      "spent_2025": 100000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "평생교육원",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "지역 연계∙협업 지원비",
+          "budget": 62200000,
+          "spent": 100000
+        }
       ],
-      budget: 62200000,
-      spent: 100000,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 62200000,
+          "budget_national": 62200000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 100000,
+          "spent_national": 100000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "지역 연계∙협업 지원비",
+              "budget": 62200000,
+              "spent": 100000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "B2-S2T3-1",
-      title: "교육접근성 확대를 위한 다양한 학습 프로그램 개발",
-      assignee: "평생교육원",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "교육∙연구 프로그램 개발∙운영비", budget: 15600000, spent: 15600000 }
+      "id": "B2-S2T3-1",
+      "title": "교육접근성 확대를 위한 다양한 학습 프로그램 개발",
+      "budget_2025": 15600000,
+      "budget_national": 15600000,
+      "budget_city": 0,
+      "spent_2025": 15600000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "평생교육원",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "교육∙연구 프로그램 개발∙운영비",
+          "budget": 15600000,
+          "spent": 15600000
+        }
       ],
-      budget: 15600000,
-      spent: 15600000,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 15600000,
+          "budget_national": 15600000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 15600000,
+          "spent_national": 15600000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "교육∙연구 프로그램 개발∙운영비",
+              "budget": 15600000,
+              "spent": 15600000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "B2-S2T4-1",
-      title: "성인학습자를 위한 맞춤형 학과 개설 지원",
-      assignee: "기획처",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "교육∙연구 프로그램 개발∙운영비", budget: 42700000, spent: 42700000 }
+      "id": "B2-S2T4-1",
+      "title": "성인학습자를 위한 맞춤형 학과 개설 지원",
+      "budget_2025": 42700000,
+      "budget_national": 42700000,
+      "budget_city": 0,
+      "spent_2025": 42700000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "기획처",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "교육∙연구 프로그램 개발∙운영비",
+          "budget": 42700000,
+          "spent": 42700000
+        }
       ],
-      budget: 42700000,
-      spent: 42700000,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 42700000,
+          "budget_national": 42700000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 42700000,
+          "spent_national": 42700000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "교육∙연구 프로그램 개발∙운영비",
+              "budget": 42700000,
+              "spent": 42700000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "B2-S2T4-2",
-      title: "성인학습자 학과 입학을 위한 맞춤형 지원 확대",
-      assignee: "학생취업처",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "교육∙연구 프로그램 개발∙운영비", budget: 9000000, spent: 3000000 }
+      "id": "B2-S2T4-2",
+      "title": "성인학습자 학과 입학을 위한 맞춤형 지원 확대",
+      "budget_2025": 9000000,
+      "budget_national": 9000000,
+      "budget_city": 0,
+      "spent_2025": 3000000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "학생취업처",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "교육∙연구 프로그램 개발∙운영비",
+          "budget": 9000000,
+          "spent": 3000000
+        }
       ],
-      budget: 9000000,
-      spent: 3000000,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 9000000,
+          "budget_national": 9000000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 3000000,
+          "spent_national": 3000000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "교육∙연구 프로그램 개발∙운영비",
+              "budget": 9000000,
+              "spent": 3000000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "B2-S3T5-1",
-      title: "생애주기별 평생학습 지원 체계 구축",
-      assignee: "평생교육원",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "교육∙연구 프로그램 개발∙운영비", budget: 91800000, spent: 52000000 }
+      "id": "B2-S3T5-1",
+      "title": "생애주기별 평생학습 지원 체계 구축",
+      "budget_2025": 91800000,
+      "budget_national": 91800000,
+      "budget_city": 0,
+      "spent_2025": 52000000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "평생교육원",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "교육∙연구 프로그램 개발∙운영비",
+          "budget": 91800000,
+          "spent": 52000000
+        }
       ],
-      budget: 91800000,
-      spent: 52000000,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 91800000,
+          "budget_national": 91800000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 52000000,
+          "spent_national": 52000000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "교육∙연구 프로그램 개발∙운영비",
+              "budget": 91800000,
+              "spent": 52000000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "B2-S3T5-2",
-      title: "생애주기별 교육 지원 시스템 구축",
-      assignee: "평생교육원",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "교육∙연구 프로그램 개발∙운영비", budget: 0, spent: 0 }
+      "id": "B2-S3T5-2",
+      "title": "생애주기별 교육 지원 시스템 구축",
+      "budget_2025": 0,
+      "budget_national": 0,
+      "budget_city": 0,
+      "spent_2025": 0,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "평생교육원",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "교육∙연구 프로그램 개발∙운영비",
+          "budget": 0,
+          "spent": 0
+        }
       ],
-      budget: 0,
-      spent: 0,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 0,
+          "budget_national": 0,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 0,
+          "spent_national": 0,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "교육∙연구 프로그램 개발∙운영비",
+              "budget": 0,
+              "spent": 0
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "B2-S3T6-1",
-      title: "산업체와의 실무중심의 교육 프로그램 개발",
-      assignee: "평생교육원",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "실험∙실습장비 및 기자재 구입∙운영비", budget: 85100000, spent: 85100000 }
+      "id": "B2-S3T6-1",
+      "title": "산업체와의 실무중심의 교육 프로그램 개발",
+      "budget_2025": 85100000,
+      "budget_national": 85100000,
+      "budget_city": 0,
+      "spent_2025": 85100000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "평생교육원",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "실험∙실습장비 및 기자재 구입∙운영비",
+          "budget": 85100000,
+          "spent": 85100000
+        }
       ],
-      budget: 85100000,
-      spent: 85100000,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 85100000,
+          "budget_national": 85100000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 85100000,
+          "spent_national": 85100000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "실험∙실습장비 및 기자재 구입∙운영비",
+              "budget": 85100000,
+              "spent": 85100000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "B2-S3T6-2",
-      title: "성인학습자 대상 학점 인정 프로그램 운영",
-      assignee: "기획처",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "교육∙연구 프로그램 개발∙운영비", budget: 0, spent: 0 }
+      "id": "B2-S3T6-2",
+      "title": "성인학습자 대상 학점 인정 프로그램 운영",
+      "budget_2025": 0,
+      "budget_national": 0,
+      "budget_city": 0,
+      "spent_2025": 0,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "기획처",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "교육∙연구 프로그램 개발∙운영비",
+          "budget": 0,
+          "spent": 0
+        }
       ],
-      budget: 0,
-      spent: 0,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 0,
+          "budget_national": 0,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 0,
+          "spent_national": 0,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "교육∙연구 프로그램 개발∙운영비",
+              "budget": 0,
+              "spent": 0
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "B2-S4T7-1",
-      title: "지역산업 연계 맞춤형 직업교육 과정 운영",
-      assignee: "평생교육원",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "교육∙연구 프로그램 개발∙운영비", budget: 0, spent: 0 }
+      "id": "B2-S4T7-1",
+      "title": "지역산업 연계 맞춤형 직업교육 과정 운영",
+      "budget_2025": 0,
+      "budget_national": 0,
+      "budget_city": 0,
+      "spent_2025": 0,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "평생교육원",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "교육∙연구 프로그램 개발∙운영비",
+          "budget": 0,
+          "spent": 0
+        }
       ],
-      budget: 0,
-      spent: 0,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 0,
+          "budget_national": 0,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 0,
+          "spent_national": 0,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "교육∙연구 프로그램 개발∙운영비",
+              "budget": 0,
+              "spent": 0
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "B2-S4T7-2",
-      title: "지역 산업 맞춤형 교육 콘텐츠 개발",
-      assignee: "평생교육원",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "교육∙연구 프로그램 개발∙운영비", budget: 0, spent: 0 }
+      "id": "B2-S4T7-2",
+      "title": "지역 산업 맞춤형 교육 콘텐츠 개발",
+      "budget_2025": 0,
+      "budget_national": 0,
+      "budget_city": 0,
+      "spent_2025": 0,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "평생교육원",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "교육∙연구 프로그램 개발∙운영비",
+          "budget": 0,
+          "spent": 0
+        }
       ],
-      budget: 0,
-      spent: 0,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 0,
+          "budget_national": 0,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 0,
+          "spent_national": 0,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "교육∙연구 프로그램 개발∙운영비",
+              "budget": 0,
+              "spent": 0
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "B2-S4T8-1",
-      title: "기업과 협력한 교육 콘텐츠 개발",
-      assignee: "평생교육원",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "교육∙연구 프로그램 개발∙운영비", budget: 0, spent: 0 }
+      "id": "B2-S4T8-1",
+      "title": "기업과 협력한 교육 콘텐츠 개발",
+      "budget_2025": 0,
+      "budget_national": 0,
+      "budget_city": 0,
+      "spent_2025": 0,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "평생교육원",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "교육∙연구 프로그램 개발∙운영비",
+          "budget": 0,
+          "spent": 0
+        }
       ],
-      budget: 0,
-      spent: 0,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 0,
+          "budget_national": 0,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 0,
+          "spent_national": 0,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "교육∙연구 프로그램 개발∙운영비",
+              "budget": 0,
+              "spent": 0
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "B2-S4T9-1",
-      title: "공통운영경비",
-      assignee: "평생교육원",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "인건비", budget: 114000000, spent: 113100000 },
-        { category: "간접비", budget: 20000000, spent: 20000000 },
-        { category: "그 밖의 사업운영경비", budget: 19100000, spent: 13800000 },
-        { category: "성과 활용∙확산 지원비", budget: 20000000, spent: 20000000 }
+      "id": "B2-S4T9-1",
+      "title": "공통운영경비",
+      "budget_2025": 173100000,
+      "budget_national": 173100000,
+      "budget_city": 0,
+      "spent_2025": 166900000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "평생교육원",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "인건비",
+          "budget": 114000000,
+          "spent": 113100000
+        },
+        {
+          "category": "간접비",
+          "budget": 20000000,
+          "spent": 20000000
+        },
+        {
+          "category": "그 밖의 사업운영경비",
+          "budget": 19100000,
+          "spent": 13800000
+        },
+        {
+          "category": "성과 활용∙확산 지원비",
+          "budget": 20000000,
+          "spent": 20000000
+        }
       ],
-      budget: 173100000,
-      spent: 166900000,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 173100000,
+          "budget_national": 173100000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 166900000,
+          "spent_national": 166900000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "인건비",
+              "budget": 114000000,
+              "spent": 113100000
+            },
+            {
+              "category": "간접비",
+              "budget": 20000000,
+              "spent": 20000000
+            },
+            {
+              "category": "그 밖의 사업운영경비",
+              "budget": 19100000,
+              "spent": 13800000
+            },
+            {
+              "category": "성과 활용∙확산 지원비",
+              "budget": 20000000,
+              "spent": 20000000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     }
   ],
   "D3": [
     {
-      id: "D3-S1T1-1",
-      title: "울산 에코 컬처 관광·문화 콘텐츠 개발",
-      assignee: "R&BD지원센터",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "교육∙연구 프로그램 개발∙운영비", budget: 27900000, spent: 17800000 }
+      "id": "D3-S1T1-1",
+      "title": "울산 에코 컬처 관광·문화 콘텐츠 개발",
+      "budget_2025": 27900000,
+      "budget_national": 27900000,
+      "budget_city": 0,
+      "spent_2025": 17800000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "R&BD지원센터",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "교육∙연구 프로그램 개발∙운영비",
+          "budget": 27900000,
+          "spent": 17800000
+        }
       ],
-      budget: 27900000,
-      spent: 17800000,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 27900000,
+          "budget_national": 27900000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 17800000,
+          "spent_national": 17800000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "교육∙연구 프로그램 개발∙운영비",
+              "budget": 27900000,
+              "spent": 17800000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "D3-S1T1-2",
-      title: "기후·문화 융합 시범 강좌 개설",
-      assignee: "R&BD지원센터",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "교육∙연구 프로그램 개발∙운영비", budget: 12000000, spent: 0 }
+      "id": "D3-S1T1-2",
+      "title": "기후·문화 융합 시범 강좌 개설",
+      "budget_2025": 12000000,
+      "budget_national": 12000000,
+      "budget_city": 0,
+      "spent_2025": 0,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "R&BD지원센터",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "교육∙연구 프로그램 개발∙운영비",
+          "budget": 12000000,
+          "spent": 0
+        }
       ],
-      budget: 12000000,
-      spent: 0,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 12000000,
+          "budget_national": 12000000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 0,
+          "spent_national": 0,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "교육∙연구 프로그램 개발∙운영비",
+              "budget": 12000000,
+              "spent": 0
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "D3-S1T2-1",
-      title: "지역 문화 기획자 및 에코 도슨트 양성 과정",
-      assignee: "R&BD지원센터",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "교육∙연구 프로그램 개발∙운영비", budget: 9200000, spent: 0 }
+      "id": "D3-S1T2-1",
+      "title": "지역 문화 기획자 및 에코 도슨트 양성 과정",
+      "budget_2025": 9200000,
+      "budget_national": 9200000,
+      "budget_city": 0,
+      "spent_2025": 0,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "R&BD지원센터",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "교육∙연구 프로그램 개발∙운영비",
+          "budget": 9200000,
+          "spent": 0
+        }
       ],
-      budget: 9200000,
-      spent: 0,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 9200000,
+          "budget_national": 9200000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 0,
+          "spent_national": 0,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "교육∙연구 프로그램 개발∙운영비",
+              "budget": 9200000,
+              "spent": 0
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "D3-S1T2-2",
-      title: "대학생 문화 서포터즈 발굴 및 육성",
-      assignee: "R&BD지원센터",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "교육∙연구 프로그램 개발∙운영비", budget: 6000000, spent: 0 },
-        { category: "교육∙연구 환경개선비", budget: 118400000, spent: 118400000 }
+      "id": "D3-S1T2-2",
+      "title": "대학생 문화 서포터즈 발굴 및 육성",
+      "budget_2025": 124400000,
+      "budget_national": 124400000,
+      "budget_city": 0,
+      "spent_2025": 118400000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "R&BD지원센터",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "교육∙연구 프로그램 개발∙운영비",
+          "budget": 6000000,
+          "spent": 0
+        },
+        {
+          "category": "교육∙연구 환경개선비",
+          "budget": 118400000,
+          "spent": 118400000
+        }
       ],
-      budget: 124400000,
-      spent: 118400000,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 124400000,
+          "budget_national": 124400000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 118400000,
+          "spent_national": 118400000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "교육∙연구 프로그램 개발∙운영비",
+              "budget": 6000000,
+              "spent": 0
+            },
+            {
+              "category": "교육∙연구 환경개선비",
+              "budget": 118400000,
+              "spent": 118400000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "D3-S2T3-1",
-      title: "에코 컬처 축제 기획 및 시민 체험 행사 운영",
-      assignee: "R&BD지원센터",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "실험∙실습장비 및 기자재 구입∙운영비", budget: 136100000, spent: 132300000 }
+      "id": "D3-S2T3-1",
+      "title": "에코 컬처 축제 기획 및 시민 체험 행사 운영",
+      "budget_2025": 136100000,
+      "budget_national": 136100000,
+      "budget_city": 0,
+      "spent_2025": 132300000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "R&BD지원센터",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "실험∙실습장비 및 기자재 구입∙운영비",
+          "budget": 136100000,
+          "spent": 132300000
+        }
       ],
-      budget: 136100000,
-      spent: 132300000,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 136100000,
+          "budget_national": 136100000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 132300000,
+          "spent_national": 132300000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "실험∙실습장비 및 기자재 구입∙운영비",
+              "budget": 136100000,
+              "spent": 132300000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "D3-S2T4-1",
-      title: "에코 컬처 네트워크 구축을 위한 다자간 MOU 체결",
-      assignee: "R&BD지원센터",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "지역 연계∙협업 지원비", budget: 185300000, spent: 169600000 }
+      "id": "D3-S2T4-1",
+      "title": "에코 컬처 네트워크 구축을 위한 다자간 MOU 체결",
+      "budget_2025": 185300000,
+      "budget_national": 185300000,
+      "budget_city": 0,
+      "spent_2025": 169600000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "R&BD지원센터",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "지역 연계∙협업 지원비",
+          "budget": 185300000,
+          "spent": 169600000
+        }
       ],
-      budget: 185300000,
-      spent: 169600000,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 185300000,
+          "budget_national": 185300000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 169600000,
+          "spent_national": 169600000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "지역 연계∙협업 지원비",
+              "budget": 185300000,
+              "spent": 169600000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "D3-S2T5-1",
-      title: "'꿀잼도시 울산' 콘텐츠 브랜딩 BI 개발 및 대외 홍보",
-      assignee: "R&BD지원센터",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "교육∙연구 프로그램 개발∙운영비", budget: 23000000, spent: 13200000 },
-        { category: "성과 활용∙확산 지원비", budget: 34200000, spent: 21100000 }
+      "id": "D3-S2T5-1",
+      "title": "'꿀잼도시 울산' 콘텐츠 브랜딩 BI 개발 및 대외 홍보",
+      "budget_2025": 57200000,
+      "budget_national": 57200000,
+      "budget_city": 0,
+      "spent_2025": 34300000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "R&BD지원센터",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "교육∙연구 프로그램 개발∙운영비",
+          "budget": 23000000,
+          "spent": 13200000
+        },
+        {
+          "category": "성과 활용∙확산 지원비",
+          "budget": 34200000,
+          "spent": 21100000
+        }
       ],
-      budget: 57200000,
-      spent: 34300000,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 57200000,
+          "budget_national": 57200000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 34300000,
+          "spent_national": 34300000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "교육∙연구 프로그램 개발∙운영비",
+              "budget": 23000000,
+              "spent": 13200000
+            },
+            {
+              "category": "성과 활용∙확산 지원비",
+              "budget": 34200000,
+              "spent": 21100000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "D3-S2T6-1",
-      title: "공통운영경비",
-      assignee: "R&BD지원센터",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "인건비", budget: 35500000, spent: 27600000 },
-        { category: "간접비", budget: 18750000, spent: 18750000 },
-        { category: "그 밖의 사업운영경비", budget: 18800000, spent: 12600000 }
+      "id": "D3-S2T6-1",
+      "title": "공통운영경비",
+      "budget_2025": 73050000,
+      "budget_national": 73050000,
+      "budget_city": 0,
+      "spent_2025": 58950000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "R&BD지원센터",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "인건비",
+          "budget": 35500000,
+          "spent": 27600000
+        },
+        {
+          "category": "간접비",
+          "budget": 18750000,
+          "spent": 18750000
+        },
+        {
+          "category": "그 밖의 사업운영경비",
+          "budget": 18800000,
+          "spent": 12600000
+        }
       ],
-      budget: 73050000,
-      spent: 58950000,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 73050000,
+          "budget_national": 73050000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 58950000,
+          "spent_national": 58950000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "인건비",
+              "budget": 35500000,
+              "spent": 27600000
+            },
+            {
+              "category": "간접비",
+              "budget": 18750000,
+              "spent": 18750000
+            },
+            {
+              "category": "그 밖의 사업운영경비",
+              "budget": 18800000,
+              "spent": 12600000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     }
   ],
   "D1": [
     {
-      id: "B3-S1T1-1",
-      title: "지역문제해결 공용플랫폼의 협력 체계 구축",
-      assignee: "오영경 연구원",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "교육∙연구 프로그램 개발∙운영비", budget: 22000000, spent: 22000000 }
+      "id": "B3-S1T1-1",
+      "title": "지역문제해결 공용플랫폼의 협력 체계 구축",
+      "budget_2025": 22000000,
+      "budget_national": 22000000,
+      "budget_city": 0,
+      "spent_2025": 22000000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "오영경 연구원",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "교육∙연구 프로그램 개발∙운영비",
+          "budget": 22000000,
+          "spent": 22000000
+        }
       ],
-      budget: 22000000,
-      spent: 22000000,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 22000000,
+          "budget_national": 22000000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 22000000,
+          "spent_national": 22000000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "교육∙연구 프로그램 개발∙운영비",
+              "budget": 22000000,
+              "spent": 22000000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "B3-S1T1-2",
-      title: "공용 플랫폼의 협력 체계 마련",
-      assignee: "오영경 연구원",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "교육∙연구 프로그램 개발∙운영비", budget: 15000000, spent: 15000000 }
+      "id": "B3-S1T1-2",
+      "title": "공용 플랫폼의 협력 체계 마련",
+      "budget_2025": 15000000,
+      "budget_national": 15000000,
+      "budget_city": 0,
+      "spent_2025": 15000000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "오영경 연구원",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "교육∙연구 프로그램 개발∙운영비",
+          "budget": 15000000,
+          "spent": 15000000
+        }
       ],
-      budget: 15000000,
-      spent: 15000000,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 15000000,
+          "budget_national": 15000000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 15000000,
+          "spent_national": 15000000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "교육∙연구 프로그램 개발∙운영비",
+              "budget": 15000000,
+              "spent": 15000000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "B3-S1T2-1",
-      title: "지역문제해결 캡스톤 디자인 운영",
-      assignee: "오영경 연구원",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "지역 연계∙협업 지원비", budget: 38000000, spent: 38000000 }
+      "id": "B3-S1T2-1",
+      "title": "지역문제해결 캡스톤 디자인 운영",
+      "budget_2025": 38000000,
+      "budget_national": 38000000,
+      "budget_city": 0,
+      "spent_2025": 38000000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "오영경 연구원",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "지역 연계∙협업 지원비",
+          "budget": 38000000,
+          "spent": 38000000
+        }
       ],
-      budget: 38000000,
-      spent: 38000000,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 38000000,
+          "budget_national": 38000000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 38000000,
+          "spent_national": 38000000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "지역 연계∙협업 지원비",
+              "budget": 38000000,
+              "spent": 38000000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "B3-S1T2-2",
-      title: "자매도시 또는 글로벌 지역문제해결 캡스톤 디자인 모델 개발",
-      assignee: "오영경 연구원",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "지역 연계∙협업 지원비", budget: 40000000, spent: 40000000 },
-        { category: "성과 활용∙확산 지원비", budget: 25400000, spent: 25400000 }
+      "id": "B3-S1T2-2",
+      "title": "자매도시 또는 글로벌 지역문제해결 캡스톤 디자인 모델 개발",
+      "budget_2025": 65400000,
+      "budget_national": 65400000,
+      "budget_city": 0,
+      "spent_2025": 65400000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "오영경 연구원",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "지역 연계∙협업 지원비",
+          "budget": 40000000,
+          "spent": 40000000
+        },
+        {
+          "category": "성과 활용∙확산 지원비",
+          "budget": 25400000,
+          "spent": 25400000
+        }
       ],
-      budget: 65400000,
-      spent: 65400000,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 65400000,
+          "budget_national": 65400000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 65400000,
+          "spent_national": 65400000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "지역 연계∙협업 지원비",
+              "budget": 40000000,
+              "spent": 40000000
+            },
+            {
+              "category": "성과 활용∙확산 지원비",
+              "budget": 25400000,
+              "spent": 25400000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "B3-S2T3-1",
-      title: "지역협력 마일리지 제도 협력 체계 구축",
-      assignee: "오영경 연구원",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "교육∙연구 프로그램 개발∙운영비", budget: 11500000, spent: 11500000 }
+      "id": "B3-S2T3-1",
+      "title": "지역협력 마일리지 제도 협력 체계 구축",
+      "budget_2025": 11500000,
+      "budget_national": 11500000,
+      "budget_city": 0,
+      "spent_2025": 11500000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "오영경 연구원",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "교육∙연구 프로그램 개발∙운영비",
+          "budget": 11500000,
+          "spent": 11500000
+        }
       ],
-      budget: 11500000,
-      spent: 11500000,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 11500000,
+          "budget_national": 11500000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 11500000,
+          "spent_national": 11500000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "교육∙연구 프로그램 개발∙운영비",
+              "budget": 11500000,
+              "spent": 11500000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "B3-S2T3-2",
-      title: "지역협력 마일리지 형태의 지속 가능한 주민참여 운영 모델 및 제도 개발",
-      assignee: "오영경 연구원",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "교육∙연구 프로그램 개발∙운영비", budget: 23900000, spent: 23900000 }
+      "id": "B3-S2T3-2",
+      "title": "지역협력 마일리지 형태의 지속 가능한 주민참여 운영 모델 및 제도 개발",
+      "budget_2025": 23900000,
+      "budget_national": 23900000,
+      "budget_city": 0,
+      "spent_2025": 23900000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "오영경 연구원",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "교육∙연구 프로그램 개발∙운영비",
+          "budget": 23900000,
+          "spent": 23900000
+        }
       ],
-      budget: 23900000,
-      spent: 23900000,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 23900000,
+          "budget_national": 23900000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 23900000,
+          "spent_national": 23900000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "교육∙연구 프로그램 개발∙운영비",
+              "budget": 23900000,
+              "spent": 23900000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "B3-S2T4-1",
-      title: "학과기반의 지역사회공헌활동 프로그램 운영",
-      assignee: "오영경 연구원",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "교육∙연구 프로그램 개발∙운영비", budget: 33400000, spent: 33400000 }
+      "id": "B3-S2T4-1",
+      "title": "학과기반의 지역사회공헌활동 프로그램 운영",
+      "budget_2025": 33400000,
+      "budget_national": 33400000,
+      "budget_city": 0,
+      "spent_2025": 33400000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "오영경 연구원",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "교육∙연구 프로그램 개발∙운영비",
+          "budget": 33400000,
+          "spent": 33400000
+        }
       ],
-      budget: 33400000,
-      spent: 33400000,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 33400000,
+          "budget_national": 33400000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 33400000,
+          "spent_national": 33400000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "교육∙연구 프로그램 개발∙운영비",
+              "budget": 33400000,
+              "spent": 33400000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "B3-S2T4-2",
-      title: "대학의 역량을 활용한 지역사회협력 연계",
-      assignee: "오영경 연구원",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "교육∙연구 프로그램 개발∙운영비", budget: 19000000, spent: 19000000 }
+      "id": "B3-S2T4-2",
+      "title": "대학의 역량을 활용한 지역사회협력 연계",
+      "budget_2025": 19000000,
+      "budget_national": 19000000,
+      "budget_city": 0,
+      "spent_2025": 19000000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "오영경 연구원",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "교육∙연구 프로그램 개발∙운영비",
+          "budget": 19000000,
+          "spent": 19000000
+        }
       ],
-      budget: 19000000,
-      spent: 19000000,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 19000000,
+          "budget_national": 19000000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 19000000,
+          "spent_national": 19000000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "교육∙연구 프로그램 개발∙운영비",
+              "budget": 19000000,
+              "spent": 19000000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "B3-S2T5-1",
-      title: "공통운영경비",
-      assignee: "오영경 연구원",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "인건비", budget: 24000000, spent: 24000000 },
-        { category: "장학금", budget: 30000000, spent: 30000000 },
-        { category: "간접비", budget: 9000000, spent: 9000000 },
-        { category: "그 밖의 사업운영경비", budget: 8800000, spent: 8800000 }
+      "id": "B3-S2T5-1",
+      "title": "공통운영경비",
+      "budget_2025": 71800000,
+      "budget_national": 71800000,
+      "budget_city": 0,
+      "spent_2025": 71800000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "오영경 연구원",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "인건비",
+          "budget": 24000000,
+          "spent": 24000000
+        },
+        {
+          "category": "장학금",
+          "budget": 30000000,
+          "spent": 30000000
+        },
+        {
+          "category": "간접비",
+          "budget": 9000000,
+          "spent": 9000000
+        },
+        {
+          "category": "그 밖의 사업운영경비",
+          "budget": 8800000,
+          "spent": 8800000
+        }
       ],
-      budget: 71800000,
-      spent: 71800000,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 71800000,
+          "budget_national": 71800000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 71800000,
+          "spent_national": 71800000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "인건비",
+              "budget": 24000000,
+              "spent": 24000000
+            },
+            {
+              "category": "장학금",
+              "budget": 30000000,
+              "spent": 30000000
+            },
+            {
+              "category": "간접비",
+              "budget": 9000000,
+              "spent": 9000000
+            },
+            {
+              "category": "그 밖의 사업운영경비",
+              "budget": 8800000,
+              "spent": 8800000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     }
   ],
   "B4": [
     {
-      id: "C1-S1T1-1",
-      title: "산업별 재난 유형 및 사례 분석 기반 교육 콘텐츠 개발",
-      assignee: "산학협력단",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "교육∙연구 프로그램 개발∙운영비", budget: 6000000, spent: 4800000 }
+      "id": "C1-S1T1-1",
+      "title": "산업별 재난 유형 및 사례 분석 기반 교육 콘텐츠 개발",
+      "budget_2025": 6000000,
+      "budget_national": 6000000,
+      "budget_city": 0,
+      "spent_2025": 4800000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "산학협력단",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "교육∙연구 프로그램 개발∙운영비",
+          "budget": 6000000,
+          "spent": 4800000
+        }
       ],
-      budget: 6000000,
-      spent: 4800000,
-      timeline: ",,P,P,D,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 6000000,
+          "budget_national": 6000000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 4800000,
+          "spent_national": 4800000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "교육∙연구 프로그램 개발∙운영비",
+              "budget": 6000000,
+              "spent": 4800000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "C1-S1T1-2",
-      title: "산업 맞춤형 재난 대응 표준프로세스 개발 및 적용",
-      assignee: "산학협력단",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "교육∙연구 프로그램 개발∙운영비", budget: 15000000, spent: 13500000 }
+      "id": "C1-S1T1-2",
+      "title": "산업 맞춤형 재난 대응 표준프로세스 개발 및 적용",
+      "budget_2025": 15000000,
+      "budget_national": 15000000,
+      "budget_city": 0,
+      "spent_2025": 13500000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "산학협력단",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "교육∙연구 프로그램 개발∙운영비",
+          "budget": 15000000,
+          "spent": 13500000
+        }
       ],
-      budget: 15000000,
-      spent: 13500000,
-      timeline: ",,P,D,D,D,C,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 15000000,
+          "budget_national": 15000000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 13500000,
+          "spent_national": 13500000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "교육∙연구 프로그램 개발∙운영비",
+              "budget": 15000000,
+              "spent": 13500000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "C1-S1T2-1",
-      title: "산업 현장 중심 응급 대응 매뉴얼 개발 및 운영",
-      assignee: "산학협력단",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "교육∙연구 프로그램 개발∙운영비", budget: 3000000, spent: 2100000 }
+      "id": "C1-S1T2-1",
+      "title": "산업 현장 중심 응급 대응 매뉴얼 개발 및 운영",
+      "budget_2025": 3000000,
+      "budget_national": 3000000,
+      "budget_city": 0,
+      "spent_2025": 2100000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "산학협력단",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "교육∙연구 프로그램 개발∙운영비",
+          "budget": 3000000,
+          "spent": 2100000
+        }
       ],
-      budget: 3000000,
-      spent: 2100000,
-      timeline: ",,,P,D,D,D,D,C,A,,"
+      "years": {
+        "1": {
+          "budget_main": 3000000,
+          "budget_national": 3000000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 2100000,
+          "spent_national": 2100000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "교육∙연구 프로그램 개발∙운영비",
+              "budget": 3000000,
+              "spent": 2100000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "C1-S1T2-2",
-      title: "응급처치 교육 모듈 개발 및 시범 운영",
-      assignee: "산학협력단",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "교육∙연구 프로그램 개발∙운영비", budget: 6000000, spent: 6000000 }
+      "id": "C1-S1T2-2",
+      "title": "응급처치 교육 모듈 개발 및 시범 운영",
+      "budget_2025": 6000000,
+      "budget_national": 6000000,
+      "budget_city": 0,
+      "spent_2025": 6000000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "산학협력단",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "교육∙연구 프로그램 개발∙운영비",
+          "budget": 6000000,
+          "spent": 6000000
+        }
       ],
-      budget: 6000000,
-      spent: 6000000,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 6000000,
+          "budget_national": 6000000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 6000000,
+          "spent_national": 6000000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "교육∙연구 프로그램 개발∙운영비",
+              "budget": 6000000,
+              "spent": 6000000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "C1-S1T2-3",
-      title: "기업·지자체 협력 기반 재난 대응 전문 교육 프로그램 개발",
-      assignee: "산학협력단",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "교육∙연구 프로그램 개발∙운영비", budget: 0, spent: 0 }
+      "id": "C1-S1T2-3",
+      "title": "기업·지자체 협력 기반 재난 대응 전문 교육 프로그램 개발",
+      "budget_2025": 0,
+      "budget_national": 0,
+      "budget_city": 0,
+      "spent_2025": 0,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "산학협력단",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "교육∙연구 프로그램 개발∙운영비",
+          "budget": 0,
+          "spent": 0
+        }
       ],
-      budget: 0,
-      spent: 0,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 0,
+          "budget_national": 0,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 0,
+          "spent_national": 0,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "교육∙연구 프로그램 개발∙운영비",
+              "budget": 0,
+              "spent": 0
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "C1-S2T3-1",
-      title: "산업안전·보건 교육 교재 및 온라인 학습 콘텐츠 개발",
-      assignee: "산학협력단",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "교육∙연구 환경개선비", budget: 50000000, spent: 46400000 }
+      "id": "C1-S2T3-1",
+      "title": "산업안전·보건 교육 교재 및 온라인 학습 콘텐츠 개발",
+      "budget_2025": 50000000,
+      "budget_national": 50000000,
+      "budget_city": 0,
+      "spent_2025": 46400000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "산학협력단",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "교육∙연구 환경개선비",
+          "budget": 50000000,
+          "spent": 46400000
+        }
       ],
-      budget: 50000000,
-      spent: 46400000,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 50000000,
+          "budget_national": 50000000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 46400000,
+          "spent_national": 46400000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "교육∙연구 환경개선비",
+              "budget": 50000000,
+              "spent": 46400000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "C1-S2T3-2",
-      title: "산업 맞춤형 안전·보건 자격 인증 과정 개설 및 운영",
-      assignee: "산학협력단",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "기업 지원∙협력 활동비", budget: 30400000, spent: 30410000 }
+      "id": "C1-S2T3-2",
+      "title": "산업 맞춤형 안전·보건 자격 인증 과정 개설 및 운영",
+      "budget_2025": 30400000,
+      "budget_national": 30400000,
+      "budget_city": 0,
+      "spent_2025": 30410000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "산학협력단",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "기업 지원∙협력 활동비",
+          "budget": 30400000,
+          "spent": 30410000
+        }
       ],
-      budget: 30400000,
-      spent: 30410000,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 30400000,
+          "budget_national": 30400000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 30410000,
+          "spent_national": 30410000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "기업 지원∙협력 활동비",
+              "budget": 30400000,
+              "spent": 30410000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "C1-S2T4-1",
-      title: "실습 중심의 VR·AR 기반 재난 대응 교육 콘텐츠 개발",
-      assignee: "산학협력단",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "실험∙실습장비 및 기자재 구입∙운영비", budget: 54000000, spent: 53900000 }
+      "id": "C1-S2T4-1",
+      "title": "실습 중심의 VR·AR 기반 재난 대응 교육 콘텐츠 개발",
+      "budget_2025": 54000000,
+      "budget_national": 54000000,
+      "budget_city": 0,
+      "spent_2025": 53900000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "산학협력단",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "실험∙실습장비 및 기자재 구입∙운영비",
+          "budget": 54000000,
+          "spent": 53900000
+        }
       ],
-      budget: 54000000,
-      spent: 53900000,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 54000000,
+          "budget_national": 54000000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 53900000,
+          "spent_national": 53900000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "실험∙실습장비 및 기자재 구입∙운영비",
+              "budget": 54000000,
+              "spent": 53900000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "C1-S3T5-1",
-      title: "기업 및 연구기관 협력을 통한 산업안전 컨설팅 모델 기획",
-      assignee: "산학협력단",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "지역 연계∙협업 지원비", budget: 4000000, spent: 3700000 }
+      "id": "C1-S3T5-1",
+      "title": "기업 및 연구기관 협력을 통한 산업안전 컨설팅 모델 기획",
+      "budget_2025": 4000000,
+      "budget_national": 4000000,
+      "budget_city": 0,
+      "spent_2025": 3700000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "산학협력단",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "지역 연계∙협업 지원비",
+          "budget": 4000000,
+          "spent": 3700000
+        }
       ],
-      budget: 4000000,
-      spent: 3700000,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 4000000,
+          "budget_national": 4000000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 3700000,
+          "spent_national": 3700000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "지역 연계∙협업 지원비",
+              "budget": 4000000,
+              "spent": 3700000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "C1-S3T5-2",
-      title: "센터 운영을 위한 전문 인력 양성 및 교육 과정 개설",
-      assignee: "산학협력단",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "성과 활용∙확산 지원비", budget: 38400000, spent: 31800000 }
+      "id": "C1-S3T5-2",
+      "title": "센터 운영을 위한 전문 인력 양성 및 교육 과정 개설",
+      "budget_2025": 38400000,
+      "budget_national": 38400000,
+      "budget_city": 0,
+      "spent_2025": 31800000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "산학협력단",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "성과 활용∙확산 지원비",
+          "budget": 38400000,
+          "spent": 31800000
+        }
       ],
-      budget: 38400000,
-      spent: 31800000,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 38400000,
+          "budget_national": 38400000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 31800000,
+          "spent_national": 31800000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "성과 활용∙확산 지원비",
+              "budget": 38400000,
+              "spent": 31800000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "C1-S3T6-1",
-      title: "재난 대응 협력 네트워크 구축을 위한 MOU 체결",
-      assignee: "산학협력단",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "지역 연계∙협업 지원비", budget: 100000000, spent: 49000000 }
+      "id": "C1-S3T6-1",
+      "title": "재난 대응 협력 네트워크 구축을 위한 MOU 체결",
+      "budget_2025": 100000000,
+      "budget_national": 100000000,
+      "budget_city": 0,
+      "spent_2025": 49000000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "산학협력단",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "지역 연계∙협업 지원비",
+          "budget": 100000000,
+          "spent": 49000000
+        }
       ],
-      budget: 100000000,
-      spent: 49000000,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 100000000,
+          "budget_national": 100000000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 49000000,
+          "spent_national": 49000000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "지역 연계∙협업 지원비",
+              "budget": 100000000,
+              "spent": 49000000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "C1-S3T6-2",
-      title: "정기 협의체 운영 및 기업 맞춤형 재난 대응 전략 논의",
-      assignee: "산학협력단",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "기업 지원∙협력 활동비", budget: 18200000, spent: 17990000 }
+      "id": "C1-S3T6-2",
+      "title": "정기 협의체 운영 및 기업 맞춤형 재난 대응 전략 논의",
+      "budget_2025": 18200000,
+      "budget_national": 18200000,
+      "budget_city": 0,
+      "spent_2025": 17990000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "산학협력단",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "기업 지원∙협력 활동비",
+          "budget": 18200000,
+          "spent": 17990000
+        }
       ],
-      budget: 18200000,
-      spent: 17990000,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 18200000,
+          "budget_national": 18200000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 17990000,
+          "spent_national": 17990000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "기업 지원∙협력 활동비",
+              "budget": 18200000,
+              "spent": 17990000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "C1-S3T7-1",
-      title: "공통운영경비",
-      assignee: "산학협력단",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "인건비", budget: 54000000, spent: 51400000 },
-        { category: "간접비", budget: 9000000, spent: 9000000 },
-        { category: "그 밖의 사업운영경비", budget: 12000000, spent: 5100000 }
+      "id": "C1-S3T7-1",
+      "title": "공통운영경비",
+      "budget_2025": 75000000,
+      "budget_national": 75000000,
+      "budget_city": 0,
+      "spent_2025": 65500000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "산학협력단",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "인건비",
+          "budget": 54000000,
+          "spent": 51400000
+        },
+        {
+          "category": "간접비",
+          "budget": 9000000,
+          "spent": 9000000
+        },
+        {
+          "category": "그 밖의 사업운영경비",
+          "budget": 12000000,
+          "spent": 5100000
+        }
       ],
-      budget: 75000000,
-      spent: 65500000,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 75000000,
+          "budget_national": 75000000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 65500000,
+          "spent_national": 65500000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "인건비",
+              "budget": 54000000,
+              "spent": 51400000
+            },
+            {
+              "category": "간접비",
+              "budget": 9000000,
+              "spent": 9000000
+            },
+            {
+              "category": "그 밖의 사업운영경비",
+              "budget": 12000000,
+              "spent": 5100000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     }
   ],
   "B2": [
     {
-      id: "C2-S1T1-1",
-      title: "AID-X지원센터 공간 설계 및 구축",
-      assignee: "시설관리처",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "교육∙연구 환경개선비", budget: 327300000, spent: 160400000 }
+      "id": "C2-S1T1-1",
+      "title": "AID-X지원센터 공간 설계 및 구축",
+      "budget_2025": 327300000,
+      "budget_national": 327300000,
+      "budget_city": 0,
+      "spent_2025": 160400000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "시설관리처",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "교육∙연구 환경개선비",
+          "budget": 327300000,
+          "spent": 160400000
+        }
       ],
-      budget: 327300000,
-      spent: 160400000,
-      timeline: ",,P,P,D,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 327300000,
+          "budget_national": 327300000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 160400000,
+          "spent_national": 160400000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "교육∙연구 환경개선비",
+              "budget": 327300000,
+              "spent": 160400000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "C2-S1T1-2",
-      title: "센터 운영 규정 및 마스터플랜 수립",
-      assignee: "산학협력단",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "교육∙연구 환경개선비", budget: 73900000, spent: 0 }
+      "id": "C2-S1T1-2",
+      "title": "센터 운영 규정 및 마스터플랜 수립",
+      "budget_2025": 73900000,
+      "budget_national": 73900000,
+      "budget_city": 0,
+      "spent_2025": 0,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "산학협력단",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "교육∙연구 환경개선비",
+          "budget": 73900000,
+          "spent": 0
+        }
       ],
-      budget: 73900000,
-      spent: 0,
-      timeline: ",,,P,D,D,D,D,C,A,,"
+      "years": {
+        "1": {
+          "budget_main": 73900000,
+          "budget_national": 73900000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 0,
+          "spent_national": 0,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "교육∙연구 환경개선비",
+              "budget": 73900000,
+              "spent": 0
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "C2-S1T2-1",
-      title: "교원 AI·DX 활용 교수역량 강화 연수",
-      assignee: "교무처",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "교육∙연구 프로그램 개발∙운영비", budget: 43600000, spent: 35100000 }
+      "id": "C2-S1T2-1",
+      "title": "교원 AI·DX 활용 교수역량 강화 연수",
+      "budget_2025": 43600000,
+      "budget_national": 43600000,
+      "budget_city": 0,
+      "spent_2025": 35100000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "교무처",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "교육∙연구 프로그램 개발∙운영비",
+          "budget": 43600000,
+          "spent": 35100000
+        }
       ],
-      budget: 43600000,
-      spent: 35100000,
-      timeline: ",,P,P,P,D,D,D,C,A,,"
+      "years": {
+        "1": {
+          "budget_main": 43600000,
+          "budget_national": 43600000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 35100000,
+          "spent_national": 35100000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "교육∙연구 프로그램 개발∙운영비",
+              "budget": 43600000,
+              "spent": 35100000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "C2-S1T2-2",
-      title: "AI 리터러시 튜터 교원 선발 및 아카데미 운영",
-      assignee: "학생취업처",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "교육∙연구 프로그램 개발∙운영비", budget: 47300000, spent: 47300000 }
+      "id": "C2-S1T2-2",
+      "title": "AI 리터러시 튜터 교원 선발 및 아카데미 운영",
+      "budget_2025": 47300000,
+      "budget_national": 47300000,
+      "budget_city": 0,
+      "spent_2025": 47300000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "학생취업처",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "교육∙연구 프로그램 개발∙운영비",
+          "budget": 47300000,
+          "spent": 47300000
+        }
       ],
-      budget: 47300000,
-      spent: 47300000,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 47300000,
+          "budget_national": 47300000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 47300000,
+          "spent_national": 47300000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "교육∙연구 프로그램 개발∙운영비",
+              "budget": 47300000,
+              "spent": 47300000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "C2-S2T3-1",
-      title: "AI·DX 융합 마이크로디그리 교과 개발",
-      assignee: "기획처",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "교육∙연구 프로그램 개발∙운영비", budget: 41800000, spent: 41700000 }
+      "id": "C2-S2T3-1",
+      "title": "AI·DX 융합 마이크로디그리 교과 개발",
+      "budget_2025": 41800000,
+      "budget_national": 41800000,
+      "budget_city": 0,
+      "spent_2025": 41700000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "기획처",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "교육∙연구 프로그램 개발∙운영비",
+          "budget": 41800000,
+          "spent": 41700000
+        }
       ],
-      budget: 41800000,
-      spent: 41700000,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 41800000,
+          "budget_national": 41800000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 41700000,
+          "spent_national": 41700000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "교육∙연구 프로그램 개발∙운영비",
+              "budget": 41800000,
+              "spent": 41700000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "C2-S2T3-2",
-      title: "학과별 AI 융합 요소기술 교재 집필",
-      assignee: "교무처",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "교육∙연구 프로그램 개발∙운영비", budget: 38500000, spent: 38500000 }
+      "id": "C2-S2T3-2",
+      "title": "학과별 AI 융합 요소기술 교재 집필",
+      "budget_2025": 38500000,
+      "budget_national": 38500000,
+      "budget_city": 0,
+      "spent_2025": 38500000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "교무처",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "교육∙연구 프로그램 개발∙운영비",
+          "budget": 38500000,
+          "spent": 38500000
+        }
       ],
-      budget: 38500000,
-      spent: 38500000,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 38500000,
+          "budget_national": 38500000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 38500000,
+          "spent_national": 38500000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "교육∙연구 프로그램 개발∙운영비",
+              "budget": 38500000,
+              "spent": 38500000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "C2-S2T4-1",
-      title: "산업체 재직자 맞춤형 AI·DX 직무 비교과 개설",
-      assignee: "산학협력단",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "교육∙연구 프로그램 개발∙운영비", budget: 100000000, spent: 0 }
+      "id": "C2-S2T4-1",
+      "title": "산업체 재직자 맞춤형 AI·DX 직무 비교과 개설",
+      "budget_2025": 100000000,
+      "budget_national": 100000000,
+      "budget_city": 0,
+      "spent_2025": 0,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "산학협력단",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "교육∙연구 프로그램 개발∙운영비",
+          "budget": 100000000,
+          "spent": 0
+        }
       ],
-      budget: 100000000,
-      spent: 0,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 100000000,
+          "budget_national": 100000000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 0,
+          "spent_national": 0,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "교육∙연구 프로그램 개발∙운영비",
+              "budget": 100000000,
+              "spent": 0
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "C2-S2T4-2",
-      title: "채용 우대형 AI 코딩 단기 실무반 운영",
-      assignee: "학생취업처",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "교육∙연구 프로그램 개발∙운영비", budget: 48000000, spent: 0 }
+      "id": "C2-S2T4-2",
+      "title": "채용 우대형 AI 코딩 단기 실무반 운영",
+      "budget_2025": 48000000,
+      "budget_national": 48000000,
+      "budget_city": 0,
+      "spent_2025": 0,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "학생취업처",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "교육∙연구 프로그램 개발∙운영비",
+          "budget": 48000000,
+          "spent": 0
+        }
       ],
-      budget: 48000000,
-      spent: 0,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 48000000,
+          "budget_national": 48000000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 0,
+          "spent_national": 0,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "교육∙연구 프로그램 개발∙운영비",
+              "budget": 48000000,
+              "spent": 0
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "C2-S3T5-1",
-      title: "기업 애로 AI 기술 연계 산학 공동 R&D 수행",
-      assignee: "산학협력단",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "기업 지원∙협력 활동비", budget: 79100000, spent: 23000000 },
-        { category: "지역 연계∙협업 지원비", budget: 35000000, spent: 79100000 },
-        { category: "성과 활용∙확산 지원비", budget: 55200000, spent: 49800000 }
+      "id": "C2-S3T5-1",
+      "title": "기업 애로 AI 기술 연계 산학 공동 R&D 수행",
+      "budget_2025": 169300000,
+      "budget_national": 169300000,
+      "budget_city": 0,
+      "spent_2025": 151900000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "산학협력단",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "기업 지원∙협력 활동비",
+          "budget": 79100000,
+          "spent": 23000000
+        },
+        {
+          "category": "지역 연계∙협업 지원비",
+          "budget": 35000000,
+          "spent": 79100000
+        },
+        {
+          "category": "성과 활용∙확산 지원비",
+          "budget": 55200000,
+          "spent": 49800000
+        }
       ],
-      budget: 169300000,
-      spent: 151900000,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 169300000,
+          "budget_national": 169300000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 151900000,
+          "spent_national": 151900000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "기업 지원∙협력 활동비",
+              "budget": 79100000,
+              "spent": 23000000
+            },
+            {
+              "category": "지역 연계∙협업 지원비",
+              "budget": 35000000,
+              "spent": 79100000
+            },
+            {
+              "category": "성과 활용∙확산 지원비",
+              "budget": 55200000,
+              "spent": 49800000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "C2-S3T6-1",
-      title: "중소기업 맞춤형 디지털 트윈 실증 기술지도",
-      assignee: "산학협력단",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "실험∙실습장비 및 기자재 구입∙운영비", budget: 557700000, spent: 285700000 }
+      "id": "C2-S3T6-1",
+      "title": "중소기업 맞춤형 디지털 트윈 실증 기술지도",
+      "budget_2025": 557700000,
+      "budget_national": 557700000,
+      "budget_city": 0,
+      "spent_2025": 285700000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "산학협력단",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "실험∙실습장비 및 기자재 구입∙운영비",
+          "budget": 557700000,
+          "spent": 285700000
+        }
       ],
-      budget: 557700000,
-      spent: 285700000,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 557700000,
+          "budget_national": 557700000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 285700000,
+          "spent_national": 285700000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "실험∙실습장비 및 기자재 구입∙운영비",
+              "budget": 557700000,
+              "spent": 285700000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "C2-S3T7-1",
-      title: "공통운영경비",
-      assignee: "산학협력단",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "인건비", budget: 99500000, spent: 97700000 },
-        { category: "간접비", budget: 46000000, spent: 46000000 },
-        { category: "그 밖의 사업운영경비", budget: 44100000, spent: 31400000 }
+      "id": "C2-S3T7-1",
+      "title": "공통운영경비",
+      "budget_2025": 189600000,
+      "budget_national": 189600000,
+      "budget_city": 0,
+      "spent_2025": 175100000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "산학협력단",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "인건비",
+          "budget": 99500000,
+          "spent": 97700000
+        },
+        {
+          "category": "간접비",
+          "budget": 46000000,
+          "spent": 46000000
+        },
+        {
+          "category": "그 밖의 사업운영경비",
+          "budget": 44100000,
+          "spent": 31400000
+        }
       ],
-      budget: 189600000,
-      spent: 175100000,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 189600000,
+          "budget_national": 189600000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 175100000,
+          "spent_national": 175100000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "인건비",
+              "budget": 99500000,
+              "spent": 97700000
+            },
+            {
+              "category": "간접비",
+              "budget": 46000000,
+              "spent": 46000000
+            },
+            {
+              "category": "그 밖의 사업운영경비",
+              "budget": 44100000,
+              "spent": 31400000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     }
   ],
   "B3": [
     {
-      id: "C3-S1T1-1",
-      title: "탄소중립 교육 기본과정 개발",
-      assignee: "산학협력단",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "교육∙연구 프로그램 개발∙운영비", budget: 38000000, spent: 38000000 }
+      "id": "C3-S1T1-1",
+      "title": "탄소중립 교육 기본과정 개발",
+      "budget_2025": 38000000,
+      "budget_national": 38000000,
+      "budget_city": 0,
+      "spent_2025": 38000000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "산학협력단",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "교육∙연구 프로그램 개발∙운영비",
+          "budget": 38000000,
+          "spent": 38000000
+        }
       ],
-      budget: 38000000,
-      spent: 38000000,
-      timeline: ",,P,P,D,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 38000000,
+          "budget_national": 38000000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 38000000,
+          "spent_national": 38000000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "교육∙연구 프로그램 개발∙운영비",
+              "budget": 38000000,
+              "spent": 38000000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "C3-S1T1-2",
-      title: "탄소중립 시범 교육 운영",
-      assignee: "산학협력단",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "교육∙연구 프로그램 개발∙운영비", budget: 50000000, spent: 50000000 }
+      "id": "C3-S1T1-2",
+      "title": "탄소중립 시범 교육 운영",
+      "budget_2025": 50000000,
+      "budget_national": 50000000,
+      "budget_city": 0,
+      "spent_2025": 50000000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "산학협력단",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "교육∙연구 프로그램 개발∙운영비",
+          "budget": 50000000,
+          "spent": 50000000
+        }
       ],
-      budget: 50000000,
-      spent: 50000000,
-      timeline: ",,,P,D,D,D,D,C,A,,"
+      "years": {
+        "1": {
+          "budget_main": 50000000,
+          "budget_national": 50000000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 50000000,
+          "spent_national": 50000000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "교육∙연구 프로그램 개발∙운영비",
+              "budget": 50000000,
+              "spent": 50000000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "C3-S1T2-1",
-      title: "시험 평가 기준 연구 및 시험 설계",
-      assignee: "산학협력단",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "교육∙연구 프로그램 개발∙운영비", budget: 0, spent: 0 }
+      "id": "C3-S1T2-1",
+      "title": "시험 평가 기준 연구 및 시험 설계",
+      "budget_2025": 0,
+      "budget_national": 0,
+      "budget_city": 0,
+      "spent_2025": 0,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "산학협력단",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "교육∙연구 프로그램 개발∙운영비",
+          "budget": 0,
+          "spent": 0
+        }
       ],
-      budget: 0,
-      spent: 0,
-      timeline: ",,P,D,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 0,
+          "budget_national": 0,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 0,
+          "spent_national": 0,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "교육∙연구 프로그램 개발∙운영비",
+              "budget": 0,
+              "spent": 0
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "C3-S1T2-2",
-      title: "인증체계 구축 및 시험 운영 시범사업",
-      assignee: "산학협력단",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "교육∙연구 프로그램 개발∙운영비", budget: 0, spent: 0 }
+      "id": "C3-S1T2-2",
+      "title": "인증체계 구축 및 시험 운영 시범사업",
+      "budget_2025": 0,
+      "budget_national": 0,
+      "budget_city": 0,
+      "spent_2025": 0,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "산학협력단",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "교육∙연구 프로그램 개발∙운영비",
+          "budget": 0,
+          "spent": 0
+        }
       ],
-      budget: 0,
-      spent: 0,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 0,
+          "budget_national": 0,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 0,
+          "spent_national": 0,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "교육∙연구 프로그램 개발∙운영비",
+              "budget": 0,
+              "spent": 0
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "C3-S2T3-1",
-      title: "ESG 경영진단 시스템 개발",
-      assignee: "산학협력단",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "기업 지원∙협력 활동비", budget: 15800000, spent: 15800000 }
+      "id": "C3-S2T3-1",
+      "title": "ESG 경영진단 시스템 개발",
+      "budget_2025": 15800000,
+      "budget_national": 15800000,
+      "budget_city": 0,
+      "spent_2025": 15800000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "산학협력단",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "기업 지원∙협력 활동비",
+          "budget": 15800000,
+          "spent": 15800000
+        }
       ],
-      budget: 15800000,
-      spent: 15800000,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 15800000,
+          "budget_national": 15800000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 15800000,
+          "spent_national": 15800000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "기업 지원∙협력 활동비",
+              "budget": 15800000,
+              "spent": 15800000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "C3-S2T3-2",
-      title: "ESG 경영 컨설팅 시범 운영",
-      assignee: "산학협력단",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "기업 지원∙협력 활동비", budget: 20000000, spent: 20000000 }
+      "id": "C3-S2T3-2",
+      "title": "ESG 경영 컨설팅 시범 운영",
+      "budget_2025": 20000000,
+      "budget_national": 20000000,
+      "budget_city": 0,
+      "spent_2025": 20000000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "산학협력단",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "기업 지원∙협력 활동비",
+          "budget": 20000000,
+          "spent": 20000000
+        }
       ],
-      budget: 20000000,
-      spent: 20000000,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 20000000,
+          "budget_national": 20000000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 20000000,
+          "spent_national": 20000000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "기업 지원∙협력 활동비",
+              "budget": 20000000,
+              "spent": 20000000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "C3-S2T4-1",
-      title: "친환경 기술 개발 지원 체계 구축",
-      assignee: "산학협력단",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "기업 지원∙협력 활동비", budget: 0, spent: 0 }
+      "id": "C3-S2T4-1",
+      "title": "친환경 기술 개발 지원 체계 구축",
+      "budget_2025": 0,
+      "budget_national": 0,
+      "budget_city": 0,
+      "spent_2025": 0,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "산학협력단",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "기업 지원∙협력 활동비",
+          "budget": 0,
+          "spent": 0
+        }
       ],
-      budget: 0,
-      spent: 0,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 0,
+          "budget_national": 0,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 0,
+          "spent_national": 0,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "기업 지원∙협력 활동비",
+              "budget": 0,
+              "spent": 0
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "C3-S2T4-2",
-      title: "녹색산업 육성 및 실증 사업 지원",
-      assignee: "산학협력단",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "기업 지원∙협력 활동비", budget: 0, spent: 0 }
+      "id": "C3-S2T4-2",
+      "title": "녹색산업 육성 및 실증 사업 지원",
+      "budget_2025": 0,
+      "budget_national": 0,
+      "budget_city": 0,
+      "spent_2025": 0,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "산학협력단",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "기업 지원∙협력 활동비",
+          "budget": 0,
+          "spent": 0
+        }
       ],
-      budget: 0,
-      spent: 0,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 0,
+          "budget_national": 0,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 0,
+          "spent_national": 0,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "기업 지원∙협력 활동비",
+              "budget": 0,
+              "spent": 0
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "C3-S3T5-1",
-      title: "탄소중립지원센터 연계 교육 인프라 구축 설계",
-      assignee: "산학협력단",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "교육∙연구 환경개선비", budget: 150000000, spent: 150000000 }
+      "id": "C3-S3T5-1",
+      "title": "탄소중립지원센터 연계 교육 인프라 구축 설계",
+      "budget_2025": 150000000,
+      "budget_national": 150000000,
+      "budget_city": 0,
+      "spent_2025": 150000000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "산학협력단",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "교육∙연구 환경개선비",
+          "budget": 150000000,
+          "spent": 150000000
+        }
       ],
-      budget: 150000000,
-      spent: 150000000,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 150000000,
+          "budget_national": 150000000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 150000000,
+          "spent_national": 150000000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "교육∙연구 환경개선비",
+              "budget": 150000000,
+              "spent": 150000000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "C3-S3T5-2",
-      title: "탄소중립 실습 및 체험 공간 조성 설계",
-      assignee: "산학협력단",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "실험∙실습장비 및 기자재 구입∙운영비", budget: 25500000, spent: 25500000 }
+      "id": "C3-S3T5-2",
+      "title": "탄소중립 실습 및 체험 공간 조성 설계",
+      "budget_2025": 25500000,
+      "budget_national": 25500000,
+      "budget_city": 0,
+      "spent_2025": 25500000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "산학협력단",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "실험∙실습장비 및 기자재 구입∙운영비",
+          "budget": 25500000,
+          "spent": 25500000
+        }
       ],
-      budget: 25500000,
-      spent: 25500000,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 25500000,
+          "budget_national": 25500000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 25500000,
+          "spent_national": 25500000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "실험∙실습장비 및 기자재 구입∙운영비",
+              "budget": 25500000,
+              "spent": 25500000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "C3-S3T6-1",
-      title: "탄소중립지원센터 연계 정책과제 연구 및 벤치마킹",
-      assignee: "산학협력단",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "성과 활용∙확산 지원비", budget: 14700000, spent: 14700000 }
+      "id": "C3-S3T6-1",
+      "title": "탄소중립지원센터 연계 정책과제 연구 및 벤치마킹",
+      "budget_2025": 14700000,
+      "budget_national": 14700000,
+      "budget_city": 0,
+      "spent_2025": 14700000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "산학협력단",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "성과 활용∙확산 지원비",
+          "budget": 14700000,
+          "spent": 14700000
+        }
       ],
-      budget: 14700000,
-      spent: 14700000,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 14700000,
+          "budget_national": 14700000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 14700000,
+          "spent_national": 14700000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "성과 활용∙확산 지원비",
+              "budget": 14700000,
+              "spent": 14700000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "C3-S3T6-2",
-      title: "시민 참여형 탄소중립 실천 프로그램 기획 및 시범 운영",
-      assignee: "산학협력단",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "성과 활용∙확산 지원비", budget: 20000000, spent: 20000000 }
+      "id": "C3-S3T6-2",
+      "title": "시민 참여형 탄소중립 실천 프로그램 기획 및 시범 운영",
+      "budget_2025": 20000000,
+      "budget_national": 20000000,
+      "budget_city": 0,
+      "spent_2025": 20000000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "산학협력단",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "성과 활용∙확산 지원비",
+          "budget": 20000000,
+          "spent": 20000000
+        }
       ],
-      budget: 20000000,
-      spent: 20000000,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 20000000,
+          "budget_national": 20000000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 20000000,
+          "spent_national": 20000000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "성과 활용∙확산 지원비",
+              "budget": 20000000,
+              "spent": 20000000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "C3-S3T7-1",
-      title: "공통운영경비",
-      assignee: "산학협력단",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "인건비", budget: 42000000, spent: 42000000 },
-        { category: "간접비", budget: 12000000, spent: 12000000 },
-        { category: "그 밖의 사업운영경비", budget: 12000000, spent: 12000000 }
+      "id": "C3-S3T7-1",
+      "title": "공통운영경비",
+      "budget_2025": 66000000,
+      "budget_national": 66000000,
+      "budget_city": 0,
+      "spent_2025": 66000000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "산학협력단",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "인건비",
+          "budget": 42000000,
+          "spent": 42000000
+        },
+        {
+          "category": "간접비",
+          "budget": 12000000,
+          "spent": 12000000
+        },
+        {
+          "category": "그 밖의 사업운영경비",
+          "budget": 12000000,
+          "spent": 12000000
+        }
       ],
-      budget: 66000000,
-      spent: 66000000,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 66000000,
+          "budget_national": 66000000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 66000000,
+          "spent_national": 66000000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "인건비",
+              "budget": 42000000,
+              "spent": 42000000
+            },
+            {
+              "category": "간접비",
+              "budget": 12000000,
+              "spent": 12000000
+            },
+            {
+              "category": "그 밖의 사업운영경비",
+              "budget": 12000000,
+              "spent": 12000000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     }
   ],
   "D2": [
     {
-      id: "D1-S1T1-1",
-      title: "지역사회 기반 보건복지 협의체 구축 및 운영",
-      assignee: "산학협력단",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "지역 연계∙협업 지원비", budget: 3200000, spent: 3200000 }
+      "id": "D1-S1T1-1",
+      "title": "지역사회 기반 보건복지 협의체 구축 및 운영",
+      "budget_2025": 3200000,
+      "budget_national": 3200000,
+      "budget_city": 0,
+      "spent_2025": 3200000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "산학협력단",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "지역 연계∙협업 지원비",
+          "budget": 3200000,
+          "spent": 3200000
+        }
       ],
-      budget: 3200000,
-      spent: 3200000,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 3200000,
+          "budget_national": 3200000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 3200000,
+          "spent_national": 3200000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "지역 연계∙협업 지원비",
+              "budget": 3200000,
+              "spent": 3200000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "D1-S1T1-2",
-      title: "보건의료 전문기관 연계 협력체계 마련",
-      assignee: "산학협력단",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "지역 연계∙협업 지원비", budget: 0, spent: 0 }
+      "id": "D1-S1T1-2",
+      "title": "보건의료 전문기관 연계 협력체계 마련",
+      "budget_2025": 0,
+      "budget_national": 0,
+      "budget_city": 0,
+      "spent_2025": 0,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "산학협력단",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "지역 연계∙협업 지원비",
+          "budget": 0,
+          "spent": 0
+        }
       ],
-      budget: 0,
-      spent: 0,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 0,
+          "budget_national": 0,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 0,
+          "spent_national": 0,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "지역 연계∙협업 지원비",
+              "budget": 0,
+              "spent": 0
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "D1-S1T2-1",
-      title: "보건분야 전문기술인력 연수 프로그램 기획 및 운영",
-      assignee: "산학협력단",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "교육∙연구 프로그램 개발∙운영비", budget: 20000000, spent: 20000000 }
+      "id": "D1-S1T2-1",
+      "title": "보건분야 전문기술인력 연수 프로그램 기획 및 운영",
+      "budget_2025": 20000000,
+      "budget_national": 20000000,
+      "budget_city": 0,
+      "spent_2025": 20000000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "산학협력단",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "교육∙연구 프로그램 개발∙운영비",
+          "budget": 20000000,
+          "spent": 20000000
+        }
       ],
-      budget: 20000000,
-      spent: 20000000,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 20000000,
+          "budget_national": 20000000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 20000000,
+          "spent_national": 20000000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "교육∙연구 프로그램 개발∙운영비",
+              "budget": 20000000,
+              "spent": 20000000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "D1-S1T2-2",
-      title: "요양보호사 등 재직자 대상 직무 역량 강화 교육과정 개발 및 운영",
-      assignee: "산학협력단",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "교육∙연구 프로그램 개발∙운영비", budget: 33500000, spent: 33500000 }
+      "id": "D1-S1T2-2",
+      "title": "요양보호사 등 재직자 대상 직무 역량 강화 교육과정 개발 및 운영",
+      "budget_2025": 33500000,
+      "budget_national": 33500000,
+      "budget_city": 0,
+      "spent_2025": 33500000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "산학협력단",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "교육∙연구 프로그램 개발∙운영비",
+          "budget": 33500000,
+          "spent": 33500000
+        }
       ],
-      budget: 33500000,
-      spent: 33500000,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 33500000,
+          "budget_national": 33500000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 33500000,
+          "spent_national": 33500000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "교육∙연구 프로그램 개발∙운영비",
+              "budget": 33500000,
+              "spent": 33500000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "D1-S1T2-3",
-      title: "대학생-재직자 매칭 보건복지 연수 과정 운영",
-      assignee: "산학협력단",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "교육∙연구 프로그램 개발∙운영비", budget: 26500000, spent: 26500000 }
+      "id": "D1-S1T2-3",
+      "title": "대학생-재직자 매칭 보건복지 연수 과정 운영",
+      "budget_2025": 26500000,
+      "budget_national": 26500000,
+      "budget_city": 0,
+      "spent_2025": 26500000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "산학협력단",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "교육∙연구 프로그램 개발∙운영비",
+          "budget": 26500000,
+          "spent": 26500000
+        }
       ],
-      budget: 26500000,
-      spent: 26500000,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 26500000,
+          "budget_national": 26500000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 26500000,
+          "spent_national": 26500000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "교육∙연구 프로그램 개발∙운영비",
+              "budget": 26500000,
+              "spent": 26500000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "D1-S2T3-1",
-      title: "취약계층 건강모니터링 프로그램 운영",
-      assignee: "산학협력단",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "지역 연계∙협업 지원비", budget: 0, spent: 0 }
+      "id": "D1-S2T3-1",
+      "title": "취약계층 건강모니터링 프로그램 운영",
+      "budget_2025": 0,
+      "budget_national": 0,
+      "budget_city": 0,
+      "spent_2025": 0,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "산학협력단",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "지역 연계∙협업 지원비",
+          "budget": 0,
+          "spent": 0
+        }
       ],
-      budget: 0,
-      spent: 0,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 0,
+          "budget_national": 0,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 0,
+          "spent_national": 0,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "지역 연계∙협업 지원비",
+              "budget": 0,
+              "spent": 0
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "D1-S2T3-2",
-      title: "사회적 약자 의료케어 서포터즈 조직 및 운영",
-      assignee: "산학협력단",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "지역 연계∙협업 지원비", budget: 0, spent: 0 }
+      "id": "D1-S2T3-2",
+      "title": "사회적 약자 의료케어 서포터즈 조직 및 운영",
+      "budget_2025": 0,
+      "budget_national": 0,
+      "budget_city": 0,
+      "spent_2025": 0,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "산학협력단",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "지역 연계∙협업 지원비",
+          "budget": 0,
+          "spent": 0
+        }
       ],
-      budget: 0,
-      spent: 0,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 0,
+          "budget_national": 0,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 0,
+          "spent_national": 0,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "지역 연계∙협업 지원비",
+              "budget": 0,
+              "spent": 0
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "D1-S2T3-3",
-      title: "디지털헬스케어 기반 시범사업 적용 및 평가",
-      assignee: "산학협력단",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "지역 연계∙협업 지원비", budget: 0, spent: 0 }
+      "id": "D1-S2T3-3",
+      "title": "디지털헬스케어 기반 시범사업 적용 및 평가",
+      "budget_2025": 0,
+      "budget_national": 0,
+      "budget_city": 0,
+      "spent_2025": 0,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "산학협력단",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "지역 연계∙협업 지원비",
+          "budget": 0,
+          "spent": 0
+        }
       ],
-      budget: 0,
-      spent: 0,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 0,
+          "budget_national": 0,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 0,
+          "spent_national": 0,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "지역 연계∙협업 지원비",
+              "budget": 0,
+              "spent": 0
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "D1-S2T4-1",
-      title: "반려동물보건과 신설을 위한 학과 기반 구축",
-      assignee: "산학협력단",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "교육∙연구 환경개선비", budget: 341400000, spent: 341400000 }
+      "id": "D1-S2T4-1",
+      "title": "반려동물보건과 신설을 위한 학과 기반 구축",
+      "budget_2025": 341400000,
+      "budget_national": 341400000,
+      "budget_city": 0,
+      "spent_2025": 341400000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "산학협력단",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "교육∙연구 환경개선비",
+          "budget": 341400000,
+          "spent": 341400000
+        }
       ],
-      budget: 341400000,
-      spent: 341400000,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 341400000,
+          "budget_national": 341400000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 341400000,
+          "spent_national": 341400000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "교육∙연구 환경개선비",
+              "budget": 341400000,
+              "spent": 341400000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "D1-S2T4-2",
-      title: "반려동물 매개치료 교육 프로그램 개발 및 적용",
-      assignee: "산학협력단",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "실험∙실습장비 및 기자재 구입∙운영비", budget: 58900000, spent: 58900000 }
+      "id": "D1-S2T4-2",
+      "title": "반려동물 매개치료 교육 프로그램 개발 및 적용",
+      "budget_2025": 58900000,
+      "budget_national": 58900000,
+      "budget_city": 0,
+      "spent_2025": 58900000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "산학협력단",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "실험∙실습장비 및 기자재 구입∙운영비",
+          "budget": 58900000,
+          "spent": 58900000
+        }
       ],
-      budget: 58900000,
-      spent: 58900000,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 58900000,
+          "budget_national": 58900000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 58900000,
+          "spent_national": 58900000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "실험∙실습장비 및 기자재 구입∙운영비",
+              "budget": 58900000,
+              "spent": 58900000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "D1-S2T5-1",
-      title: "공통운영경비",
-      assignee: "산학협력단",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "인건비", budget: 35000000, spent: 35000000 },
-        { category: "간접비", budget: 15000000, spent: 15000000 },
-        { category: "그 밖의 사업운영경비", budget: 16500000, spent: 16500000 }
+      "id": "D1-S2T5-1",
+      "title": "공통운영경비",
+      "budget_2025": 66500000,
+      "budget_national": 66500000,
+      "budget_city": 0,
+      "spent_2025": 66500000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "산학협력단",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "인건비",
+          "budget": 35000000,
+          "spent": 35000000
+        },
+        {
+          "category": "간접비",
+          "budget": 15000000,
+          "spent": 15000000
+        },
+        {
+          "category": "그 밖의 사업운영경비",
+          "budget": 16500000,
+          "spent": 16500000
+        }
       ],
-      budget: 66500000,
-      spent: 66500000,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 66500000,
+          "budget_national": 66500000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 66500000,
+          "spent_national": 66500000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "인건비",
+              "budget": 35000000,
+              "spent": 35000000
+            },
+            {
+              "category": "간접비",
+              "budget": 15000000,
+              "spent": 15000000
+            },
+            {
+              "category": "그 밖의 사업운영경비",
+              "budget": 16500000,
+              "spent": 16500000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     }
   ],
   "C2": [
     {
-      id: "D2-S1T1-1",
-      title: "방과후 늘봄 프로그램 시범 적용",
-      assignee: "늘봄학교지원센터",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "교육∙연구 프로그램 개발∙운영비", budget: 55400000, spent: 49100000 }
+      "id": "D2-S1T1-1",
+      "title": "방과후 늘봄 프로그램 시범 적용",
+      "budget_2025": 55400000,
+      "budget_national": 55400000,
+      "budget_city": 0,
+      "spent_2025": 49100000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "늘봄학교지원센터",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "교육∙연구 프로그램 개발∙운영비",
+          "budget": 55400000,
+          "spent": 49100000
+        }
       ],
-      budget: 55400000,
-      spent: 49100000,
-      timeline: ",,P,P,D,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 55400000,
+          "budget_national": 55400000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 49100000,
+          "spent_national": 49100000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "교육∙연구 프로그램 개발∙운영비",
+              "budget": 55400000,
+              "spent": 49100000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "D2-S1T1-2",
-      title: "전문 강사 양성 과정 설계",
-      assignee: "늘봄학교지원센터",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "교육∙연구 프로그램 개발∙운영비", budget: 113200000, spent: 111800000 }
+      "id": "D2-S1T1-2",
+      "title": "전문 강사 양성 과정 설계",
+      "budget_2025": 113200000,
+      "budget_national": 113200000,
+      "budget_city": 0,
+      "spent_2025": 111800000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "늘봄학교지원센터",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "교육∙연구 프로그램 개발∙운영비",
+          "budget": 113200000,
+          "spent": 111800000
+        }
       ],
-      budget: 113200000,
-      spent: 111800000,
-      timeline: ",,P,D,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 113200000,
+          "budget_national": 113200000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 111800000,
+          "spent_national": 111800000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "교육∙연구 프로그램 개발∙운영비",
+              "budget": 113200000,
+              "spent": 111800000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "D2-S1T2-1",
-      title: "방학 중 특별 돌봄 캠프 운영",
-      assignee: "늘봄학교지원센터",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "교육∙연구 프로그램 개발∙운영비", budget: 21000000, spent: 21000000 }
+      "id": "D2-S1T2-1",
+      "title": "방학 중 특별 돌봄 캠프 운영",
+      "budget_2025": 21000000,
+      "budget_national": 21000000,
+      "budget_city": 0,
+      "spent_2025": 21000000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "늘봄학교지원센터",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "교육∙연구 프로그램 개발∙운영비",
+          "budget": 21000000,
+          "spent": 21000000
+        }
       ],
-      budget: 21000000,
-      spent: 21000000,
-      timeline: ",,,P,D,D,D,D,C,A,,"
+      "years": {
+        "1": {
+          "budget_main": 21000000,
+          "budget_national": 21000000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 21000000,
+          "spent_national": 21000000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "교육∙연구 프로그램 개발∙운영비",
+              "budget": 21000000,
+              "spent": 21000000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "D2-S2T3-1",
-      title: "대학 컨소시엄 구축 및 MOU 체결",
-      assignee: "늘봄학교지원센터",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "지역 연계∙협업 지원비", budget: 34000000, spent: 19600000 }
+      "id": "D2-S2T3-1",
+      "title": "대학 컨소시엄 구축 및 MOU 체결",
+      "budget_2025": 34000000,
+      "budget_national": 34000000,
+      "budget_city": 0,
+      "spent_2025": 19600000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "늘봄학교지원센터",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "지역 연계∙협업 지원비",
+          "budget": 34000000,
+          "spent": 19600000
+        }
       ],
-      budget: 34000000,
-      spent: 19600000,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 34000000,
+          "budget_national": 34000000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 19600000,
+          "spent_national": 19600000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "지역 연계∙협업 지원비",
+              "budget": 34000000,
+              "spent": 19600000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "D2-S2T3-2",
-      title: "공동 성과 공유회 개최",
-      assignee: "늘봄학교지원센터",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-
-      ],
-      budget: 0,
-      spent: 0,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "id": "D2-S2T3-2",
+      "title": "공동 성과 공유회 개최",
+      "budget_2025": 0,
+      "budget_national": 0,
+      "budget_city": 0,
+      "spent_2025": 0,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "늘봄학교지원센터",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [],
+      "years": {
+        "1": {
+          "budget_main": 0,
+          "budget_national": 0,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 0,
+          "spent_national": 0,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "D2-S2T4-1",
-      title: "교육청-지자체 연합 늘봄 거버넌스 회의 개최",
-      assignee: "늘봄학교지원센터",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "기업 지원∙협력 활동비", budget: 20000000, spent: 19900000 }
+      "id": "D2-S2T4-1",
+      "title": "교육청-지자체 연합 늘봄 거버넌스 회의 개최",
+      "budget_2025": 20000000,
+      "budget_national": 20000000,
+      "budget_city": 0,
+      "spent_2025": 19900000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "늘봄학교지원센터",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "기업 지원∙협력 활동비",
+          "budget": 20000000,
+          "spent": 19900000
+        }
       ],
-      budget: 20000000,
-      spent: 19900000,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 20000000,
+          "budget_national": 20000000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 19900000,
+          "spent_national": 19900000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "기업 지원∙협력 활동비",
+              "budget": 20000000,
+              "spent": 19900000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "D2-S3T5-1",
-      title: "늘봄 프로그램 효과 분석 및 고도화 연구",
-      assignee: "늘봄학교지원센터",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "교육∙연구 프로그램 개발∙운영비", budget: 13800000, spent: 13000000 }
+      "id": "D2-S3T5-1",
+      "title": "늘봄 프로그램 효과 분석 및 고도화 연구",
+      "budget_2025": 13800000,
+      "budget_national": 13800000,
+      "budget_city": 0,
+      "spent_2025": 13000000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "늘봄학교지원센터",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "교육∙연구 프로그램 개발∙운영비",
+          "budget": 13800000,
+          "spent": 13000000
+        }
       ],
-      budget: 13800000,
-      spent: 13000000,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 13800000,
+          "budget_national": 13800000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 13000000,
+          "spent_national": 13000000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "교육∙연구 프로그램 개발∙운영비",
+              "budget": 13800000,
+              "spent": 13000000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "D2-S3T6-1",
-      title: "늘봄 온라인 플랫폼 내 모니터링 모듈 구축",
-      assignee: "늘봄학교지원센터",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "교육∙연구 프로그램 개발∙운영비", budget: 30000000, spent: 30000000 }
+      "id": "D2-S3T6-1",
+      "title": "늘봄 온라인 플랫폼 내 모니터링 모듈 구축",
+      "budget_2025": 30000000,
+      "budget_national": 30000000,
+      "budget_city": 0,
+      "spent_2025": 30000000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "늘봄학교지원센터",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "교육∙연구 프로그램 개발∙운영비",
+          "budget": 30000000,
+          "spent": 30000000
+        }
       ],
-      budget: 30000000,
-      spent: 30000000,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 30000000,
+          "budget_national": 30000000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 30000000,
+          "spent_national": 30000000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "교육∙연구 프로그램 개발∙운영비",
+              "budget": 30000000,
+              "spent": 30000000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "D2-S3T7-1",
-      title: "울산 늘봄누리 브랜드 BI 개발 및 홍보",
-      assignee: "늘봄학교지원센터",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "성과 활용∙확산 지원비", budget: 33500000, spent: 23200000 }
+      "id": "D2-S3T7-1",
+      "title": "울산 늘봄누리 브랜드 BI 개발 및 홍보",
+      "budget_2025": 33500000,
+      "budget_national": 33500000,
+      "budget_city": 0,
+      "spent_2025": 23200000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "늘봄학교지원센터",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "성과 활용∙확산 지원비",
+          "budget": 33500000,
+          "spent": 23200000
+        }
       ],
-      budget: 33500000,
-      spent: 23200000,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 33500000,
+          "budget_national": 33500000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 23200000,
+          "spent_national": 23200000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "성과 활용∙확산 지원비",
+              "budget": 33500000,
+              "spent": 23200000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "D2-S4T8-1",
-      title: "동구, 중구, 북구 특화 늘봄 프로그램 개발",
-      assignee: "늘봄학교지원센터",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "교육∙연구 프로그램 개발∙운영비", budget: 22500000, spent: 22100000 }
+      "id": "D2-S4T8-1",
+      "title": "동구, 중구, 북구 특화 늘봄 프로그램 개발",
+      "budget_2025": 22500000,
+      "budget_national": 22500000,
+      "budget_city": 0,
+      "spent_2025": 22100000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "늘봄학교지원센터",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "교육∙연구 프로그램 개발∙운영비",
+          "budget": 22500000,
+          "spent": 22100000
+        }
       ],
-      budget: 22500000,
-      spent: 22100000,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 22500000,
+          "budget_national": 22500000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 22100000,
+          "spent_national": 22100000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "교육∙연구 프로그램 개발∙운영비",
+              "budget": 22500000,
+              "spent": 22100000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "D2-S4T9-1",
-      title: "울산 정주형 예비교사 멘토단 선발 및 파견",
-      assignee: "늘봄학교지원센터",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "교육∙연구 프로그램 개발∙운영비", budget: 25700000, spent: 25000000 }
+      "id": "D2-S4T9-1",
+      "title": "울산 정주형 예비교사 멘토단 선발 및 파견",
+      "budget_2025": 25700000,
+      "budget_national": 25700000,
+      "budget_city": 0,
+      "spent_2025": 25000000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "늘봄학교지원센터",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "교육∙연구 프로그램 개발∙운영비",
+          "budget": 25700000,
+          "spent": 25000000
+        }
       ],
-      budget: 25700000,
-      spent: 25000000,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 25700000,
+          "budget_national": 25700000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 25000000,
+          "spent_national": 25000000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "교육∙연구 프로그램 개발∙운영비",
+              "budget": 25700000,
+              "spent": 25000000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "D2-S4T10-1",
-      title: "IT·보건 강점을 살린 특화 교육 개설",
-      assignee: "늘봄학교지원센터",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "교육∙연구 환경개선비", budget: 415900000, spent: 358100000 }
+      "id": "D2-S4T10-1",
+      "title": "IT·보건 강점을 살린 특화 교육 개설",
+      "budget_2025": 415900000,
+      "budget_national": 415900000,
+      "budget_city": 0,
+      "spent_2025": 358100000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "늘봄학교지원센터",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "교육∙연구 환경개선비",
+          "budget": 415900000,
+          "spent": 358100000
+        }
       ],
-      budget: 415900000,
-      spent: 358100000,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 415900000,
+          "budget_national": 415900000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 358100000,
+          "spent_national": 358100000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "교육∙연구 환경개선비",
+              "budget": 415900000,
+              "spent": 358100000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "D2-S4T10-2",
-      title: "대학 기자재 활용형 늘봄 교육 운영",
-      assignee: "늘봄학교지원센터",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "실험∙실습장비 및 기자재 구입∙운영비", budget: 244000000, spent: 57300000 }
+      "id": "D2-S4T10-2",
+      "title": "대학 기자재 활용형 늘봄 교육 운영",
+      "budget_2025": 244000000,
+      "budget_national": 244000000,
+      "budget_city": 0,
+      "spent_2025": 57300000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "늘봄학교지원센터",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "실험∙실습장비 및 기자재 구입∙운영비",
+          "budget": 244000000,
+          "spent": 57300000
+        }
       ],
-      budget: 244000000,
-      spent: 57300000,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 244000000,
+          "budget_national": 244000000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 57300000,
+          "spent_national": 57300000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "실험∙실습장비 및 기자재 구입∙운영비",
+              "budget": 244000000,
+              "spent": 57300000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "D2-S4T11-1",
-      title: "공통운영경비",
-      assignee: "늘봄학교지원센터",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "인건비", budget: 99000000, spent: 83800000 },
-        { category: "간접비", budget: 36000000, spent: 36000000 },
-        { category: "그 밖의 사업운영경비", budget: 36000000, spent: 27900000 }
+      "id": "D2-S4T11-1",
+      "title": "공통운영경비",
+      "budget_2025": 171000000,
+      "budget_national": 171000000,
+      "budget_city": 0,
+      "spent_2025": 147700000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "늘봄학교지원센터",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "인건비",
+          "budget": 99000000,
+          "spent": 83800000
+        },
+        {
+          "category": "간접비",
+          "budget": 36000000,
+          "spent": 36000000
+        },
+        {
+          "category": "그 밖의 사업운영경비",
+          "budget": 36000000,
+          "spent": 27900000
+        }
       ],
-      budget: 171000000,
-      spent: 147700000,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 171000000,
+          "budget_national": 171000000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 147700000,
+          "spent_national": 147700000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "인건비",
+              "budget": 99000000,
+              "spent": 83800000
+            },
+            {
+              "category": "간접비",
+              "budget": 36000000,
+              "spent": 36000000
+            },
+            {
+              "category": "그 밖의 사업운영경비",
+              "budget": 36000000,
+              "spent": 27900000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     }
   ],
   "A3": [
     {
-      id: "D4-S1T1-1",
-      title: "글로벌 거점 센터 물리적/제도적 공간 구축",
-      assignee: "시설관리처",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "교육∙연구 환경개선비", budget: 66000000, spent: 62000000 }
+      "id": "D4-S1T1-1",
+      "title": "글로벌 거점 센터 물리적/제도적 공간 구축",
+      "budget_2025": 66000000,
+      "budget_national": 66000000,
+      "budget_city": 0,
+      "spent_2025": 62000000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "시설관리처",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "교육∙연구 환경개선비",
+          "budget": 66000000,
+          "spent": 62000000
+        }
       ],
-      budget: 66000000,
-      spent: 62000000,
-      timeline: ",,P,P,D,D,C,C,A,A,,"
+      "years": {
+        "1": {
+          "budget_main": 66000000,
+          "budget_national": 66000000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 62000000,
+          "spent_national": 62000000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "교육∙연구 환경개선비",
+              "budget": 66000000,
+              "spent": 62000000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "D4-S1T1-2",
-      title: "센터 운영 규칙 및 마스터플랜 수립",
-      assignee: "R&BD지원센터",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "실험∙실습장비 및 기자재 구입∙운영비", budget: 157000000, spent: 57000000 }
+      "id": "D4-S1T1-2",
+      "title": "센터 운영 규칙 및 마스터플랜 수립",
+      "budget_2025": 157000000,
+      "budget_national": 157000000,
+      "budget_city": 0,
+      "spent_2025": 57000000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "R&BD지원센터",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "실험∙실습장비 및 기자재 구입∙운영비",
+          "budget": 157000000,
+          "spent": 57000000
+        }
       ],
-      budget: 157000000,
-      spent: 57000000,
-      timeline: ",,,P,P,D,D,D,C,A,,"
+      "years": {
+        "1": {
+          "budget_main": 157000000,
+          "budget_national": 157000000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 57000000,
+          "spent_national": 57000000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "실험∙실습장비 및 기자재 구입∙운영비",
+              "budget": 157000000,
+              "spent": 57000000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "D4-S1T2-1",
-      title: "무역/글로벌 비즈니스 비교과 트랙 운영",
-      assignee: "R&BD지원센터",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "교육∙연구 프로그램 개발∙운영비", budget: 21000000, spent: 18000000 }
+      "id": "D4-S1T2-1",
+      "title": "무역/글로벌 비즈니스 비교과 트랙 운영",
+      "budget_2025": 21000000,
+      "budget_national": 21000000,
+      "budget_city": 0,
+      "spent_2025": 18000000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "R&BD지원센터",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "교육∙연구 프로그램 개발∙운영비",
+          "budget": 21000000,
+          "spent": 18000000
+        }
       ],
-      budget: 21000000,
-      spent: 18000000,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 21000000,
+          "budget_national": 21000000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 18000000,
+          "spent_national": 18000000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "교육∙연구 프로그램 개발∙운영비",
+              "budget": 21000000,
+              "spent": 18000000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "D4-S1T2-2",
-      title: "해외 인턴십 파견 전 직무 훈련 코스 개설",
-      assignee: "R&BD지원센터",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "교육∙연구 프로그램 개발∙운영비", budget: 30000000, spent: 30000000 }
+      "id": "D4-S1T2-2",
+      "title": "해외 인턴십 파견 전 직무 훈련 코스 개설",
+      "budget_2025": 30000000,
+      "budget_national": 30000000,
+      "budget_city": 0,
+      "spent_2025": 30000000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "R&BD지원센터",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "교육∙연구 프로그램 개발∙운영비",
+          "budget": 30000000,
+          "spent": 30000000
+        }
       ],
-      budget: 30000000,
-      spent: 30000000,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 30000000,
+          "budget_national": 30000000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 30000000,
+          "spent_national": 30000000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "교육∙연구 프로그램 개발∙운영비",
+              "budget": 30000000,
+              "spent": 30000000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "D4-S2T3-1",
-      title: "자매대학 교환교류 및 공동 연구 세션 설계",
-      assignee: "R&BD지원센터",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "지역 연계∙협업 지원비", budget: 25000000, spent: 2000000 }
+      "id": "D4-S2T3-1",
+      "title": "자매대학 교환교류 및 공동 연구 세션 설계",
+      "budget_2025": 25000000,
+      "budget_national": 25000000,
+      "budget_city": 0,
+      "spent_2025": 2000000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "R&BD지원센터",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "지역 연계∙협업 지원비",
+          "budget": 25000000,
+          "spent": 2000000
+        }
       ],
-      budget: 25000000,
-      spent: 2000000,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 25000000,
+          "budget_national": 25000000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 2000000,
+          "spent_national": 2000000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "지역 연계∙협업 지원비",
+              "budget": 25000000,
+              "spent": 2000000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "D4-S2T4-1",
-      title: "글로벌 지산학 거버넌스 위원회 회의 개최",
-      assignee: "R&BD지원센터",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "성과 활용∙확산 지원비", budget: 8000000, spent: 0 }
+      "id": "D4-S2T4-1",
+      "title": "글로벌 지산학 거버넌스 위원회 회의 개최",
+      "budget_2025": 8000000,
+      "budget_national": 8000000,
+      "budget_city": 0,
+      "spent_2025": 0,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "R&BD지원센터",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "성과 활용∙확산 지원비",
+          "budget": 8000000,
+          "spent": 0
+        }
       ],
-      budget: 8000000,
-      spent: 0,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 8000000,
+          "budget_national": 8000000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 0,
+          "spent_national": 0,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "성과 활용∙확산 지원비",
+              "budget": 8000000,
+              "spent": 0
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "D4-S2T4-2",
-      title: "해외 우수 바이어 초청 수출상담회 연계",
-      assignee: "R&BD지원센터",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "교육∙연구 프로그램 개발∙운영비", budget: 62000000, spent: 55000000 }
+      "id": "D4-S2T4-2",
+      "title": "해외 우수 바이어 초청 수출상담회 연계",
+      "budget_2025": 62000000,
+      "budget_national": 62000000,
+      "budget_city": 0,
+      "spent_2025": 55000000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "R&BD지원센터",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "교육∙연구 프로그램 개발∙운영비",
+          "budget": 62000000,
+          "spent": 55000000
+        }
       ],
-      budget: 62000000,
-      spent: 55000000,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 62000000,
+          "budget_national": 62000000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 55000000,
+          "spent_national": 55000000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "교육∙연구 프로그램 개발∙운영비",
+              "budget": 62000000,
+              "spent": 55000000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "D4-S2T4-3",
-      title: "글로벌 공동 연구 성과공유 세미나 개최",
-      assignee: "R&BD지원센터",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "교육∙연구 프로그램 개발∙운영비", budget: 8000000, spent: 8000000 }
+      "id": "D4-S2T4-3",
+      "title": "글로벌 공동 연구 성과공유 세미나 개최",
+      "budget_2025": 8000000,
+      "budget_national": 8000000,
+      "budget_city": 0,
+      "spent_2025": 8000000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "R&BD지원센터",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "교육∙연구 프로그램 개발∙운영비",
+          "budget": 8000000,
+          "spent": 8000000
+        }
       ],
-      budget: 8000000,
-      spent: 8000000,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 8000000,
+          "budget_national": 8000000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 8000000,
+          "spent_national": 8000000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "교육∙연구 프로그램 개발∙운영비",
+              "budget": 8000000,
+              "spent": 8000000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     },
     {
-      id: "D4-S3T7-1",
-      title: "공통운영경비",
-      assignee: "국제교류원",
-      pdca: { p: "완료", d: "완료", c: "완료", a: "완료" },
-      budget_categories: [
-        { category: "인건비", budget: 38000000, spent: 30000000 },
-        { category: "장학금", budget: 40000000, spent: 15000000 },
-        { category: "간접비", budget: 13000000, spent: 13000000 },
-        { category: "그 밖의 사업운영경비", budget: 15000000, spent: 10000000 }
+      "id": "D4-S3T7-1",
+      "title": "공통운영경비",
+      "budget_2025": 106000000,
+      "budget_national": 106000000,
+      "budget_city": 0,
+      "spent_2025": 68000000,
+      "budget_2025_carry": 0,
+      "spent_2025_carry": 0,
+      "assignee": "국제교류원",
+      "pdca": {
+        "p": "완료",
+        "d": "완료",
+        "c": "완료",
+        "a": "완료"
+      },
+      "budget_categories": [
+        {
+          "category": "인건비",
+          "budget": 38000000,
+          "spent": 30000000
+        },
+        {
+          "category": "장학금",
+          "budget": 40000000,
+          "spent": 15000000
+        },
+        {
+          "category": "간접비",
+          "budget": 13000000,
+          "spent": 13000000
+        },
+        {
+          "category": "그 밖의 사업운영경비",
+          "budget": 15000000,
+          "spent": 10000000
+        }
       ],
-      budget: 106000000,
-      spent: 68000000,
-      timeline: ",,P,P,D,D,C,A,,,,"
+      "years": {
+        "1": {
+          "budget_main": 106000000,
+          "budget_national": 106000000,
+          "budget_city": 0,
+          "budget_carry": 0,
+          "spent_main": 68000000,
+          "spent_national": 68000000,
+          "spent_city": 0,
+          "spent_carry": 0,
+          "pdca": {
+            "p": "완료",
+            "d": "완료",
+            "c": "완료",
+            "a": "완료"
+          },
+          "budget_categories": [
+            {
+              "category": "인건비",
+              "budget": 38000000,
+              "spent": 30000000
+            },
+            {
+              "category": "장학금",
+              "budget": 40000000,
+              "spent": 15000000
+            },
+            {
+              "category": "간접비",
+              "budget": 13000000,
+              "spent": 13000000
+            },
+            {
+              "category": "그 밖의 사업운영경비",
+              "budget": 15000000,
+              "spent": 10000000
+            }
+          ],
+          "coop_dept_1": "",
+          "coop_dept_2": "",
+          "target_audience": ""
+        }
+      }
     }
   ]
 };
