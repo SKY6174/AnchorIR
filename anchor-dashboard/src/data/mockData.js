@@ -4244,8 +4244,16 @@ initialProjectsData.forEach((strategy) => {
       if (prog.budget_2026 !== undefined) {
         const total = prog.budget_2026;
 
+        // 💡 [최우선 규칙] 만약 프로그램 자체에 budget_national과 budget_city가 이미 명시적으로 기입되어 있다면 이를 그대로 사용하고 안분 비율 계산을 건너뜁니다.
+        const hasExplicitBudgets = prog.budget_national !== undefined && 
+                                   prog.budget_city !== undefined && 
+                                   (prog.budget_national + prog.budget_city === total);
+
+        if (hasExplicitBudgets) {
+          // 명시적 예산안 존중 및 안분 패스
+        }
         // 1. A1나: 100% 국비
-        if (unit.id === "A1나") {
+        else if (unit.id === "A1나") {
           prog.budget_national = total;
           prog.budget_city = 0;
         }
