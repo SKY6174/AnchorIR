@@ -114,7 +114,7 @@ const getProgramTimeline = (progId) => {
   }
 };
 
-export default function ProgramProgressManager({ projects, selectedYear, onSelectProgram, onUpdateProgramDetails }) {
+export default function ProgramProgressManager({ projects, selectedYear, darkMode, onSelectProgram, onUpdateProgramDetails }) {
   const startYr = 2024 + selectedYear;
   const endYr = 2025 + selectedYear;
   const startYrShort = String(startYr).slice(-2);
@@ -418,17 +418,23 @@ export default function ProgramProgressManager({ projects, selectedYear, onSelec
                                 fontFamily: "var(--font-data, monospace)",
                                 fontWeight: "700",
                                 fontSize: "0.72rem",
-                                color: "var(--text-secondary)",
-                                background: "var(--panel-bg-dark, rgba(120, 120, 120, 0.04))",
+                                background: darkMode ? "rgba(59, 130, 246, 0.12)" : "#eff6ff",
+                                color: darkMode ? "#93c5fd" : "#1e40af",
                                 padding: "0.22rem 0.45rem",
                                 borderRadius: "4px",
-                                border: "1px solid var(--border-color)",
+                                border: darkMode ? "1px solid rgba(59, 130, 246, 0.3)" : "1px solid #bfdbfe",
                                 display: "inline-block",
                                 cursor: "pointer",
                                 transition: "all 0.15s"
                               }}
-                              onMouseEnter={(e) => { e.currentTarget.style.borderColor = "var(--accent-color)"; e.currentTarget.style.color = "var(--accent-color)"; }}
-                              onMouseLeave={(e) => { e.currentTarget.style.borderColor = "var(--border-color)"; e.currentTarget.style.color = "var(--text-secondary)"; }}
+                              onMouseEnter={(e) => { 
+                                e.currentTarget.style.borderColor = "var(--accent-color)"; 
+                                e.currentTarget.style.color = "var(--accent-color)"; 
+                              }}
+                              onMouseLeave={(e) => { 
+                                e.currentTarget.style.borderColor = darkMode ? "rgba(59, 130, 246, 0.3)" : "#bfdbfe"; 
+                                e.currentTarget.style.color = darkMode ? "#93c5fd" : "#1e40af"; 
+                              }}
                             >
                               {prog.id}
                             </div>
@@ -454,7 +460,16 @@ export default function ProgramProgressManager({ projects, selectedYear, onSelec
                             {prog.title}
                           </td>
                           <td style={{ textAlign: "center", verticalAlign: "middle", borderBottom: "1px solid var(--border-color)", padding: "0.5rem 0.3rem" }}>
-                            <div style={{ display: "inline-flex", alignItems: "center", gap: "0.25rem", background: "rgba(59, 130, 246, 0.06)", border: "1px solid rgba(59, 130, 246, 0.15)", borderRadius: "6px", padding: "0.25rem 0.5rem", color: "var(--accent-color)" }}>
+                            <div style={{ 
+                              display: "inline-flex", 
+                              alignItems: "center", 
+                              gap: "0.25rem", 
+                              background: darkMode ? "rgba(59, 130, 246, 0.08)" : "#f0f7ff", 
+                              border: darkMode ? "1px solid rgba(59, 130, 246, 0.2)" : "1px solid #dbeafe", 
+                              borderRadius: "6px", 
+                              padding: "0.25rem 0.5rem", 
+                              color: darkMode ? "#60a5fa" : "#2563eb" 
+                            }}>
                               <User size={12} style={{ flexShrink: 0 }} />
                               <span style={{ fontWeight: "700", fontSize: "0.72rem", whiteSpace: "nowrap" }}>
                                 {prog.assignee || "미배정"}
@@ -463,8 +478,8 @@ export default function ProgramProgressManager({ projects, selectedYear, onSelec
                           </td>
                           <td style={{ verticalAlign: "middle", borderBottom: "1px solid var(--border-color)", padding: "0.5rem" }}>
                             <div style={{
-                              background: "var(--panel-bg-dark, rgba(120, 120, 120, 0.02))",
-                              border: "1px solid var(--border-color)",
+                              background: darkMode ? "rgba(255, 255, 255, 0.02)" : "#f8fafc",
+                              border: darkMode ? "1px solid rgba(255, 255, 255, 0.07)" : "1px solid #e2e8f0",
                               borderRadius: "8px",
                               padding: "0.4rem 0.6rem",
                               display: "flex",
@@ -473,13 +488,13 @@ export default function ProgramProgressManager({ projects, selectedYear, onSelec
                             }}>
                               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "0.68rem" }}>
                                 <span style={{ color: "var(--text-secondary)", fontWeight: "500" }}>배정:</span>
-                                <span style={{ color: "var(--text-primary)", fontWeight: "800", fontFamily: "var(--font-data, monospace)" }}>
+                                <span style={{ color: darkMode ? "var(--text-primary)" : "#1e293b", fontWeight: "800", fontFamily: "var(--font-data, monospace)" }}>
                                   {formatToMillionWon(totalProgBudget)} 백만
                                 </span>
                               </div>
                               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "0.68rem" }}>
                                 <span style={{ color: "var(--text-secondary)", fontWeight: "500" }}>집행:</span>
-                                <span style={{ color: "var(--success-color)", fontWeight: "800", fontFamily: "var(--font-data, monospace)" }}>
+                                <span style={{ color: darkMode ? "var(--success-color)" : "#16a34a", fontWeight: "800", fontFamily: "var(--font-data, monospace)" }}>
                                   {formatToMillionWon(totalProgSpent)} 백만
                                 </span>
                               </div>
@@ -490,10 +505,10 @@ export default function ProgramProgressManager({ projects, selectedYear, onSelec
                               display: "grid",
                               gridTemplateColumns: "repeat(12, 1fr)",
                               gap: "2px",
-                              background: "var(--panel-bg-dark, rgba(0, 0, 0, 0.02))",
+                              background: darkMode ? "rgba(0, 0, 0, 0.15)" : "#ffffff",
                               borderRadius: "8px",
                               padding: "4px",
-                              border: "1px solid var(--border-color)"
+                              border: darkMode ? "1px solid rgba(255, 255, 255, 0.08)" : "1px solid #cbd5e1"
                             }}>
                               {monthlyPDCA.map((val, idx) => {
                                 const steps = val ? val.split(/[\/+&,]/).map(s => s.trim().toUpperCase()).filter(s => ["P", "D", "C", "A"].includes(s)) : [];
@@ -544,8 +559,8 @@ export default function ProgramProgressManager({ projects, selectedYear, onSelec
                                       const col1 = getSingleColor(actualSteps[0], true, prog);
                                       const col2 = getSingleColor(actualSteps[1], true, prog);
                                       if (col1 !== "transparent" || col2 !== "transparent") {
-                                        const fb1 = col1 !== "transparent" ? col1 : "rgba(255,255,255,0.02)";
-                                        const fb2 = col2 !== "transparent" ? col2 : "rgba(255,255,255,0.02)";
+                                        const fb1 = col1 !== "transparent" ? col1 : (darkMode ? "rgba(255,255,255,0.02)" : "#f8fafc");
+                                        const fb2 = col2 !== "transparent" ? col2 : (darkMode ? "rgba(255,255,255,0.02)" : "#f8fafc");
                                         return `linear-gradient(135deg, ${fb1} 50%, ${fb2} 50%)`;
                                       }
                                       return "transparent";
@@ -559,8 +574,8 @@ export default function ProgramProgressManager({ projects, selectedYear, onSelec
                                     const col1 = getSingleColor(steps[0], true, prog);
                                     const col2 = getSingleColor(steps[1], true, prog);
                                     if (col1 !== "transparent" || col2 !== "transparent") {
-                                      const fb1 = col1 !== "transparent" ? col1 : "rgba(255,255,255,0.02)";
-                                      const fb2 = col2 !== "transparent" ? col2 : "rgba(255,255,255,0.02)";
+                                      const fb1 = col1 !== "transparent" ? col1 : (darkMode ? "rgba(255,255,255,0.02)" : "#f8fafc");
+                                      const fb2 = col2 !== "transparent" ? col2 : (darkMode ? "rgba(255,255,255,0.02)" : "#f8fafc");
                                       return `linear-gradient(135deg, ${fb1} 50%, ${fb2} 50%)`;
                                     }
                                     return "transparent";
@@ -606,7 +621,7 @@ export default function ProgramProgressManager({ projects, selectedYear, onSelec
                                       position: "relative",
                                       padding: "1px 0",
                                       background: "transparent",
-                                      borderRight: idx < 11 ? "1px dashed var(--border-color, rgba(120, 120, 120, 0.15))" : "none"
+                                      borderRight: idx < 11 ? (darkMode ? "1px dashed rgba(255, 255, 255, 0.08)" : "1px dashed #cbd5e1") : "none"
                                     }}
                                     onMouseUp={() => handleGanttMouseUp(prog)}
                                   >
@@ -678,8 +693,7 @@ export default function ProgramProgressManager({ projects, selectedYear, onSelec
                                           top: "50%",
                                           transform: "translate(-50%, -50%)",
                                           fontSize: "0.55rem",
-                                          color: "var(--text-secondary)",
-                                          opacity: 0.6,
+                                          color: darkMode ? "rgba(255, 255, 255, 0.4)" : "rgba(0, 0, 0, 0.25)",
                                           fontWeight: "bold",
                                           zIndex: 1,
                                           pointerEvents: "none"
@@ -724,9 +738,9 @@ export default function ProgramProgressManager({ projects, selectedYear, onSelec
                                           right: 0,
                                           top: 0,
                                           height: "11px",
-                                          background: actualBg !== "transparent" ? actualBg : "rgba(120,120,120,0.05)",
+                                          background: actualBg !== "transparent" ? actualBg : (darkMode ? "rgba(255, 255, 255, 0.05)" : "#f8fafc"),
                                           borderRadius: actualRadius,
-                                          border: actualBg === "transparent" ? "1px dashed var(--border-color)" : "none",
+                                          border: actualBg === "transparent" ? (darkMode ? "1px dashed rgba(255, 255, 255, 0.15)" : "1px dashed #cbd5e1") : "none",
                                           fontSize: "0.5rem",
                                           fontWeight: "900",
                                           color: "#ffffff",

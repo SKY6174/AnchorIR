@@ -10688,6 +10688,7 @@ export default function App() {
               <ProgramProgressManager
                 projects={displayProjects}
                 selectedYear={selectedYear}
+                darkMode={darkMode}
                 onUpdateProgramDetails={handleUpdateProgramDetails}
                 onSelectProgram={(unitId, progId) => {
                   setActiveTab("projects");
