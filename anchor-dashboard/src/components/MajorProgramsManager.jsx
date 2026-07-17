@@ -69,29 +69,180 @@ const ORDERLY_COURSES = [
   { id: "ai_22", type: "AI 리터러시", dept: "글로벌비즈니스학과", name: "Smartwork 실무", professor: "서용한", students: 31, budget: 500000, year: 2, isForeign: true }
 ];
 
-// 💡 학과별 PM교수 데이터 정의
+// 💡 학과별 PM교수 데이터 정의 (각 학과/전공별 주문식 교육과정 운영 상세 정보 포함)
+// 초보 개발자(교육자)용 설명: 
+// 이 데이터셋은 학과별 PM교수 매핑 정보와 함께 각 학과가 실제로 운영 중인 주문식 교육과정명(courses), 
+// 교육에 참여하는 총학생수(totalStudents), 중복 수강생을 제외한 순수 참여학생수(uniqueStudents), 
+// 그리고 해당 학과의 교육과정 특징을 기술한 비고(note) 정보까지 통합하여 담고 있습니다.
 const PM_PROFESSORS = [
-  { dept: "간호학부", name: "공경란" },
-  { dept: "게임영상학과", name: "이재현" },
-  { dept: "국제학부", name: "이연주" },
-  { dept: "글로벌비즈니스학과", name: "서용한" },
-  { dept: "기계공학부 기계시스템전공", name: "이정준" },
-  { dept: "기계공학부 기계설비전공", name: "고형석" },
-  { dept: "물리치료학과", name: "김원호" },
-  { dept: "사회복지학과", name: "이수경" },
-  { dept: "세무회계학과", name: "천정애" },
-  { dept: "스포츠건강재활학과", name: "김원문" },
-  { dept: "스포츠재활학부 스포츠재활전공", name: "김원문" },
-  { dept: "스포츠재활학부 스포츠지도전공", name: "서봉한" },
-  { dept: "식품영양학과", name: "김일낭" },
-  { dept: "실내건축디자인과", name: "김동욱" },
-  { dept: "융합안전공학과", name: "한영진" },
-  { dept: "전기전자공학부 스마트전자전공", name: "조영" },
-  { dept: "조선해양시스템공학과", name: "양승호" },
-  { dept: "치위생학과", name: "이동은" },
-  { dept: "컴퓨터공학과", name: "김금석" },
-  { dept: "호텔조리제빵과", name: "채영철" },
-  { dept: "화학공학과", name: "송민석" }
+  { 
+    dept: "간호학부", 
+    name: "공경란", 
+    courses: "기본간호학 1, 통합간호학", 
+    totalStudents: 334, 
+    uniqueStudents: 310, 
+    note: "통합간호학(PBL) 및 기본간호학(AI) 연계" 
+  },
+  { 
+    dept: "게임영상학과", 
+    name: "이재현", 
+    courses: "3D애니메이션 1, 커뮤니케이션디자인 1", 
+    totalStudents: 60, 
+    uniqueStudents: 55, 
+    note: "3D애니메이션 및 OJT 병행 운영" 
+  },
+  { 
+    dept: "국제학부", 
+    name: "이연주", 
+    courses: "Smartwork 실무, 관광마케팅조실무, 호텔경영실무", 
+    totalStudents: 26, 
+    uniqueStudents: 22, 
+    note: "외국인 유학생 전용 주문식 과정 운영" 
+  },
+  { 
+    dept: "글로벌비즈니스학과", 
+    name: "서용한", 
+    courses: "Smartwork 실무, 관광마케팅조사 실무, 호텔경영론", 
+    totalStudents: 50, 
+    uniqueStudents: 45, 
+    note: "유학생 관광마케팅 및 Smartwork 실무 연계" 
+  },
+  { 
+    dept: "기계공학부 기계시스템전공", 
+    name: "이정준", 
+    courses: "전공종합설계, 챌린지프로젝트(종합설계및창업)(2), 기계품질데이터분석", 
+    totalStudents: 186, 
+    uniqueStudents: 165, 
+    note: "캡스톤디자인 중심 종합설계 교육" 
+  },
+  { 
+    dept: "기계공학부 기계설비전공", 
+    name: "고형석", 
+    courses: "설비진단, 스마트제조실무", 
+    totalStudents: 50, 
+    uniqueStudents: 45, 
+    note: "설비진단 및 스마트제조 중심" 
+  },
+  { 
+    dept: "물리치료학과", 
+    name: "김원호", 
+    courses: "신경계물리치료중재, 소아물리치료", 
+    totalStudents: 56, 
+    uniqueStudents: 50, 
+    note: "신경계 및 소아 물리치료 특화 PBL" 
+  },
+  { 
+    dept: "사회복지학과", 
+    name: "이수경", 
+    courses: "청소년복지론, 노인상담", 
+    totalStudents: 65, 
+    uniqueStudents: 60, 
+    note: "청소년 및 노인복지 융합형 과정" 
+  },
+  { 
+    dept: "세무회계학과", 
+    name: "천정애", 
+    courses: "재무제표론", 
+    totalStudents: 37, 
+    uniqueStudents: 37, 
+    note: "재무제표론 중심 세무 실무 교육" 
+  },
+  { 
+    dept: "스포츠건강재활학과", 
+    name: "김원문", 
+    courses: "근골격계재활운동, 근육재활심화테크닉", 
+    totalStudents: 29, 
+    uniqueStudents: 25, 
+    note: "근골격계 재활 및 심화 테크닉 과정" 
+  },
+  { 
+    dept: "스포츠재활학부 스포츠재활전공", 
+    name: "김원문", 
+    courses: "교정운동및실습(1), 근육재활심화테크닉(1), 스포츠의학개론, 스포츠심리학", 
+    totalStudents: 90, 
+    uniqueStudents: 80, 
+    note: "교정운동 및 스포츠의학 융합 과정" 
+  },
+  { 
+    dept: "스포츠재활학부 스포츠지도전공", 
+    name: "서봉한", 
+    courses: "보디빌딩지도법, 스포츠윤리", 
+    totalStudents: 49, 
+    uniqueStudents: 45, 
+    note: "보디빌딩 및 스포츠윤리 지도 특화" 
+  },
+  { 
+    dept: "식품영양학과", 
+    name: "김일낭", 
+    courses: "-", 
+    totalStudents: 0, 
+    uniqueStudents: 0, 
+    note: "3차년도 주문식 과정 개설 예정" 
+  },
+  { 
+    dept: "실내건축디자인과", 
+    name: "김동욱", 
+    courses: "실내건축캡스톤디자인, 실내건축설계(1)", 
+    totalStudents: 34, 
+    uniqueStudents: 30, 
+    note: "실내건축 캡스톤디자인 연계" 
+  },
+  { 
+    dept: "융합안전공학과", 
+    name: "한영진", 
+    courses: "통합안전진로탐색, 프로그래밍언어", 
+    totalStudents: 85, 
+    uniqueStudents: 78, 
+    note: "통합안전진로 및 프로그래밍 연계" 
+  },
+  { 
+    dept: "전기전자공학부 스마트전자전공", 
+    name: "조영", 
+    courses: "캡스톤디자인(1), 파이썬프로그래밍", 
+    totalStudents: 35, 
+    uniqueStudents: 32, 
+    note: "스마트전자 캡스톤 및 파이썬 연계" 
+  },
+  { 
+    dept: "조선해양시스템공학과", 
+    name: "양승호", 
+    courses: "배관시스템설계, 부유체안정성", 
+    totalStudents: 25, 
+    uniqueStudents: 22, 
+    note: "배관설계 및 부유체 안정성 실무" 
+  },
+  { 
+    dept: "치위생학과", 
+    name: "이동은", 
+    courses: "구강미생물학, 임상전단계실습 1, 구강보건교육학및실습, 구강조직학, 구강생리학", 
+    totalStudents: 456, 
+    uniqueStudents: 410, 
+    note: "구강미생물학(PBL) 및 임상실습 융합" 
+  },
+  { 
+    dept: "컴퓨터공학과", 
+    name: "김금석", 
+    courses: "종합설계, 컴퓨터구조, 객체지향프로그래밍(1)", 
+    totalStudents: 138, 
+    uniqueStudents: 125, 
+    note: "종합설계 및 컴퓨터구조 PBL 연계" 
+  },
+  { 
+    dept: "호텔조리제빵과", 
+    name: "채영철", 
+    courses: "궁중요리실습, 에스프레소커피실습, Italian Cooking, AI-DX 초콜릿및케이크실습", 
+    totalStudents: 278, 
+    uniqueStudents: 250, 
+    note: "AI-DX 제빵 및 이탈리안 요리 융합" 
+  },
+  { 
+    dept: "화학공학과", 
+    name: "송민석", 
+    courses: "챌린지프로젝트(종합설계및창업), 화학장치운전실무, 현장사례연구, GMP실무", 
+    totalStudents: 87, 
+    uniqueStudents: 80, 
+    note: "현장사례연구 및 GMP실무 특화" 
+  }
 ];
 
 // 연차별 단위과제 및 주요 프로그램 데이터 명세
@@ -302,6 +453,77 @@ export default function MajorProgramsManager({ selectedYear }) {
   const [activeCourseId, setActiveCourseId] = useState(() => {
     return localStorage.getItem("anchor_active_course_id") || "cap_1";
   });
+
+  // 💡 Supabase 연동 상태 및 예외처리(Fallback)용 상태 정의
+  // 초보 개발자용 설명:
+  // pmProfessors와 orderlyCourses는 Supabase DB로부터 수신된 실시간 정보를 관리합니다.
+  // 네트워크 장애 등으로 DB 쿼리가 불가능할 경우를 대비해, 
+  // 파일 최상단에 선언해 둔 로컬 백업 상수(PM_PROFESSORS, ORDERLY_COURSES)를 초기값으로 갖게 하여 
+  // 시스템 안전성을 확보합니다.
+  const [pmProfessors, setPmProfessors] = useState(PM_PROFESSORS);
+  const [orderlyCourses, setOrderlyCourses] = useState(ORDERLY_COURSES);
+  const [dbLoading, setDbLoading] = useState(true);
+
+  // 💡 Supabase 데이터 페치 로직
+  // 초보 개발자용 설명:
+  // 컴포넌트가 로드(마운트)될 때 Supabase 서버에서 주문식 교육과정 정보를 실시간으로 읽어옵니다.
+  // SQL의 SnakeCase 필드를 리액트용 CamelCase 필드로 유연하게 매핑하여 컴포넌트 상태를 업데이트합니다.
+  useEffect(() => {
+    async function fetchOrderlyData() {
+      try {
+        setDbLoading(true);
+        
+        // 1. 학과/전공별 주문식 교육과정 운영 정보 조회
+        const { data: deptData, error: deptError } = await supabase
+          .from("orderly_courses_depts")
+          .select("*")
+          .order("id", { ascending: true });
+        
+        if (deptError) throw deptError;
+
+        // 2. 개별 주문식 교육과정 교과목 조회
+        const { data: courseData, error: courseError } = await supabase
+          .from("orderly_courses")
+          .select("*");
+        
+        if (courseError) throw courseError;
+
+        // DB에 데이터가 존재하는 경우, CamelCase 변환 후 상태를 업데이트합니다.
+        if (deptData && deptData.length > 0) {
+          const mappedDepts = deptData.map(d => ({
+            dept: d.dept,
+            name: d.pm_name,
+            courses: d.courses,
+            totalStudents: d.total_students,
+            uniqueStudents: d.unique_students,
+            note: d.note
+          }));
+          setPmProfessors(mappedDepts);
+        }
+
+        if (courseData && courseData.length > 0) {
+          const mappedCourses = courseData.map(c => ({
+            id: c.id,
+            type: c.type,
+            dept: c.dept,
+            name: c.name,
+            professor: c.professor,
+            students: c.students,
+            budget: Number(c.budget),
+            year: c.year,
+            isForeign: c.is_foreign
+          }));
+          setOrderlyCourses(mappedCourses);
+        }
+      } catch (err) {
+        console.error("주문식 교육과정 Supabase 데이터 연동 에러 (기본 로컬 데이터가 안전하게 활성화됩니다):", err);
+      } finally {
+        setDbLoading(false);
+      }
+    }
+
+    fetchOrderlyData();
+  }, []);
 
   // 💡 학과별 이수결과 조회를 위한 결과 탭 전용 학과 필터 상태
   const [selectedResultDeptFilter, setSelectedResultDeptFilter] = useState("all");
@@ -1544,15 +1766,17 @@ export default function MajorProgramsManager({ selectedYear }) {
                           </div>
                         </div>
 
-                        {/* 학과별 PM교수 현황 테이블 */}
+                        {/* 💡 학과/전공별 주문식 교육과정 운영 정보 테이블 (기존 학과별 PM교수 구성 현황에서 개편됨) */}
                         <div style={{ border: "1px solid var(--border-color)", borderRadius: "10px", padding: "1rem", background: "rgba(255,255,255,0.01)" }}>
                           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem", flexWrap: "wrap", gap: "0.5rem" }}>
-                            <h5 style={{ fontSize: "0.9rem", fontWeight: "800", color: "var(--text-primary)" }}>학과별 PM교수 구성 현황</h5>
+                            {/* 초보 개발자용 설명: 테이블 상단 타이틀 명칭 변경 */}
+                            <h5 style={{ fontSize: "0.9rem", fontWeight: "800", color: "var(--text-primary)" }}>학과/전공별 주문식 교육과정 운영 정보</h5>
                             <div style={{ display: "flex", alignItems: "center", background: "rgba(255,255,255,0.03)", border: "1px solid var(--border-color)", borderRadius: "5px", padding: "0.25rem 0.5rem", width: "180px" }}>
                               <Search size={12} style={{ color: "var(--text-secondary)", marginRight: "0.25rem" }} />
+                              {/* 초보 개발자용 설명: 검색 필터 힌트 플레이스홀더를 변경함 */}
                               <input
                                 type="text"
-                                placeholder="학과명 검색..."
+                                placeholder="학과/전공명 검색..."
                                 value={pmSearchQuery}
                                 onChange={(e) => setPmSearchQuery(e.target.value)}
                                 style={{ background: "transparent", border: "none", outline: "none", color: "#fff", fontSize: "0.75rem", width: "100%" }}
@@ -1560,24 +1784,39 @@ export default function MajorProgramsManager({ selectedYear }) {
                             </div>
                           </div>
 
-                          <div style={{ maxHeight: "200px", overflowY: "auto", fontSize: "0.8rem" }}>
+                          {/* 초보 개발자용 설명: 스크롤이 생기는 테이블 컨테이너 영역. 리스트가 길어져서 최대 높이를 350px로 늘렸습니다. */}
+                          <div style={{ maxHeight: "350px", overflowY: "auto", fontSize: "0.8rem" }}>
                             <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left" }}>
                               <thead>
+                                {/* 초보 개발자용 설명: 요청 사양에 따른 테이블 헤더 컬럼 변경 (순번 | 학과/전공명 | PM교수 | 운영중인 주문식교육과정 | 참여학생 수 | 비고) */}
                                 <tr style={{ borderBottom: "1px solid var(--border-color)", color: "var(--text-secondary)", fontSize: "0.75rem" }}>
-                                  <th style={{ padding: "0.4rem" }}>순번</th>
-                                  <th style={{ padding: "0.4rem" }}>학과(전공)명</th>
-                                  <th style={{ padding: "0.4rem" }}>PM교수</th>
-                                  <th style={{ padding: "0.4rem" }}>역할</th>
+                                  <th style={{ padding: "0.5rem 0.4rem" }}>순번</th>
+                                  <th style={{ padding: "0.5rem 0.4rem" }}>학과/전공명</th>
+                                  <th style={{ padding: "0.5rem 0.4rem" }}>PM교수</th>
+                                  <th style={{ padding: "0.5rem 0.4rem" }}>운영중인 주문식교육과정</th>
+                                  <th style={{ padding: "0.5rem 0.4rem" }}>참여학생 수<br/>(총학생수 / 중복제외)</th>
+                                  <th style={{ padding: "0.5rem 0.4rem" }}>비고</th>
                                 </tr>
                               </thead>
                               <tbody>
-                                {PM_PROFESSORS.filter(pm => pm.dept.includes(pmSearchQuery))
+                                {/* 초보 개발자용 설명: Supabase에서 조회하거나 로컬 Fallback 데이터를 담고 있는 pmProfessors 상태값을 이용해 렌더링합니다. */}
+                                {pmProfessors.filter(pm => pm.dept.includes(pmSearchQuery))
                                   .map((pm, idx) => (
-                                    <tr key={idx} style={{ borderBottom: "1px solid rgba(255,255,255,0.03)" }}>
-                                      <td style={{ padding: "0.4rem" }}>{idx + 1}</td>
-                                      <td style={{ padding: "0.4rem", fontWeight: "700" }}>{pm.dept}</td>
-                                      <td style={{ padding: "0.4rem", color: "#10b981", fontWeight: "800" }}>{pm.name} 교수</td>
-                                      <td style={{ padding: "0.4rem", color: "var(--text-secondary)", fontSize: "0.7rem" }}>교수학습 모델 시범 적용 및 과제 KPI 달성 관리</td>
+                                    <tr key={idx} style={{ borderBottom: "1px solid rgba(255,255,255,0.03)", transition: "background 0.2s" }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "rgba(255,255,255,0.02)"} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}>
+                                      {/* 1. 순번 */}
+                                      <td style={{ padding: "0.5rem 0.4rem", color: "var(--text-secondary)" }}>{idx + 1}</td>
+                                      {/* 2. 학과/전공명 */}
+                                      <td style={{ padding: "0.5rem 0.4rem", fontWeight: "700", color: "var(--text-primary)" }}>{pm.dept}</td>
+                                      {/* 3. PM교수 */}
+                                      <td style={{ padding: "0.5rem 0.4rem", color: "#10b981", fontWeight: "800" }}>{pm.name} 교수</td>
+                                      {/* 4. 운영중인 주문식교육과정 */}
+                                      <td style={{ padding: "0.5rem 0.4rem", color: "var(--text-secondary)", fontSize: "0.75rem", maxWidth: "250px", wordBreak: "keep-all" }}>{pm.courses}</td>
+                                      {/* 5. 참여학생 수 (총학생수, 중복제외 각각 표시) */}
+                                      <td style={{ padding: "0.5rem 0.4rem", color: "#eab308", fontWeight: "800" }}>
+                                        {pm.totalStudents}명 <span style={{ color: "var(--text-secondary)", fontSize: "0.7rem", fontWeight: "normal" }}>({pm.uniqueStudents}명)</span>
+                                      </td>
+                                      {/* 6. 비고 (교과목 연계 및 학과 특이사항) */}
+                                      <td style={{ padding: "0.5rem 0.4rem", color: "var(--text-secondary)", fontSize: "0.7rem", maxWidth: "200px", wordBreak: "keep-all" }}>{pm.note}</td>
                                     </tr>
                                   ))}
                               </tbody>
@@ -1600,7 +1839,7 @@ export default function MajorProgramsManager({ selectedYear }) {
                               style={{ background: "var(--modal-bg)", border: "1px solid var(--border-color)", color: "var(--text-primary)", padding: "0.3rem", borderRadius: "5px", fontSize: "0.75rem", outline: "none" }}
                             >
                               <option value="all" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>전체 학과</option>
-                              {Array.from(new Set(ORDERLY_COURSES.map(c => c.dept))).map(dept => (
+                              {Array.from(new Set(orderlyCourses.map(c => c.dept))).map(dept => (
                                 <option key={dept} value={dept} style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>{dept}</option>
                               ))}
                             </select>
@@ -1638,7 +1877,7 @@ export default function MajorProgramsManager({ selectedYear }) {
                               </tr>
                             </thead>
                             <tbody>
-                              {ORDERLY_COURSES.filter(c => {
+                              {orderlyCourses.filter(c => {
                                 const matchDept = selectedDeptFilter === "all" || c.dept === selectedDeptFilter;
                                 const matchType = selectedTypeFilter === "all" || c.type === selectedTypeFilter;
                                 return matchDept && matchType;
@@ -1721,7 +1960,7 @@ export default function MajorProgramsManager({ selectedYear }) {
                                     style={{ background: "var(--modal-bg)", border: "1px solid var(--border-color)", color: "var(--text-primary)", padding: "0.25rem 0.5rem", borderRadius: "5px", fontSize: "0.72rem", outline: "none" }}
                                   >
                                     <option value="all" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>전체 학과</option>
-                                    {Array.from(new Set(ORDERLY_COURSES.map(c => c.dept))).map(dept => (
+                                    {Array.from(new Set(orderlyCourses.map(c => c.dept))).map(dept => (
                                       <option key={dept} value={dept} style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>{dept}</option>
                                     ))}
                                   </select>
