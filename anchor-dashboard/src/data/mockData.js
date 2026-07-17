@@ -49,7 +49,9 @@ export const initialProjectsData = [
           { id: "A1가-S4T9-13", title: "기자재 및 실습장비 구축 (드론 시뮬레이터)", budget_2026: 10000000, budget_national: 10000000, budget_city: 0, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "이은주 선임연구원", pdca: { p: "완료", d: "완료", c: "진행", a: "대기" } },
           { id: "A1가-S4T10-1", title: "ECC 플랫폼 구축(2단계)", budget_2026: 15000000, budget_national: 15000000, budget_city: 0, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "이은주 선임연구원", pdca: { p: "완료", d: "대기", c: "대기", a: "대기" } },
           { id: "A1가-S4T11-1", title: "특화분야 온라인 교육 콘텐츠 개발", budget_2026: 60000000, budget_national: 60000000, budget_city: 0, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "서란 연구원/이은주 선임연구원", pdca: { p: "완료", d: "완료", c: "대기", a: "대기" } },
-          { id: "A1가-S4T11-2", title: "AI리터러시 교과목 운영", budget_2026: 50000000, budget_national: 0, budget_city: 50000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "정자윤 연구원", pdca: { p: "완료", d: "완료", c: "대기", a: "대기" } },
+          // 💡 [교육용 한글 주석] AI리터러시 교과목 운영 예산을 엑셀 시트 캡처 이미지에 따라 
+          // 5,000만 원(시비)에서 7,000만 원(국비 2,000만 원 + 시비 5,000만 원)으로 증액 조정 반영합니다.
+          { id: "A1가-S4T11-2", title: "AI리터러시 교과목 운영", budget_2026: 70000000, budget_national: 20000000, budget_city: 50000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "정자윤 연구원", pdca: { p: "완료", d: "완료", c: "대기", a: "대기" } },
           { id: "A1가-S4T11-3", title: "전자연구노트 이용료", budget_2026: 0, budget_national: 0, budget_city: 0, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "박기범 연구원", pdca: { p: "완료", d: "완료", c: "대기", a: "대기" } },
           { id: "A1가-S5T13-1", title: "이전 공공기관 합동 채용설명회 및 취업 아카데미 운영", budget_2026: 5000000, budget_national: 5000000, budget_city: 0, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "김소연 연구원", pdca: { p: "완료", d: "대기", c: "대기", a: "대기" } },
           { id: "A1가-S5T13-2", title: "산학협력 간담회", budget_2026: 6000000, budget_national: 6000000, budget_city: 0, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "정자윤 연구원", pdca: { p: "완료", d: "완료", c: "대기", a: "대기" } },
@@ -59,12 +61,16 @@ export const initialProjectsData = [
           { id: "A1가-S5T13-6", title: "시그니처 클래스 운영", budget_2026: 40000000, budget_national: 40000000, budget_city: 0, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "정자윤 연구원", pdca: { p: "완료", d: "완료", c: "진행", a: "대기" } },
           { id: "A1가-S5T14-1", title: "벤치마킹", budget_2026: 14000000, budget_national: 14000000, budget_city: 0, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "서란 연구원", pdca: { p: "대기", d: "대기", c: "대기", a: "대기" } },
           { id: "A1가-S5-S5T15-1", title: "교직원 역량강화 프로그램 운영", budget_2026: 40000000, budget_national: 0, budget_city: 40000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "서란 연구원", pdca: { p: "대기", d: "대기", c: "대기", a: "대기" } },
-          { id: "A1가-S5-S5T16-2", title: "장학금 지급", budget_2026: 240000000, budget_national: 240000000, budget_city: 0, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "이은주 선임연구원/서란 연구원", pdca: { p: "대기", d: "대기", c: "대기", a: "대기" } }
+          // 💡 [교육용 한글 주석] AI리터러시 예산 증액(2,000만 원)에 따른 총액 21억 원 보존을 위해 
+          // 장학금 총예산을 기존 2억 4,000만 원에서 2억 2,000만 원(국비 100%)으로 조정 반영합니다.
+          { id: "A1가-S5-S5T16-2", title: "장학금 지급", budget_2026: 220000000, budget_national: 220000000, budget_city: 0, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0, assignee: "이은주 선임연구원/서란 연구원", pdca: { p: "대기", d: "대기", c: "대기", a: "대기" } }
         ],
         budgetDetails: {
           "인건비": { budget_2026: 0, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0 },
-          "장학금": { budget_2026: 240000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0 },
-          "교육∙연구 프로그램 개발∙운영비": { budget_2026: 744000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0 },
+          // 💡 [교육용 한글 주석] 장학금 비목 합계를 2억 2,000만 원으로 업데이트합니다.
+          "장학금": { budget_2026: 220000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0 },
+          // 💡 [교육용 한글 주석] AI리터러시 2,000만 원 증액분을 프로그램 운영비 비목에 합산 반영합니다 (744M -> 764M).
+          "교육∙연구 프로그램 개발∙운영비": { budget_2026: 764000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0 },
           "교육∙연구 환경개선비": { budget_2026: 385000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0 },
           "실험∙실습장비 및 기자재 구입∙운영비": { budget_2026: 546000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0 },
           "지역 연계∙협업 지원비": { budget_2026: 5000000, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0 },
