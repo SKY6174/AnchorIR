@@ -8303,10 +8303,8 @@ export default function App() {
         )}
 
         {activeTab === "projects" && (
-          <>
-            {/* 단위과제 및 프로그램 관리 탭: 전체 카드를 Fragment로 감싼 뒤 하단에 예산 전용 엑셀 업로더를 배치합니다. */}
-            <div className="glass-card">
-              {/* 서브탭 내비게이션 바 */}
+          <div className="projects-management-wrapper" style={{ display: "flex", flexDirection: "column", gap: "1rem", width: "100%" }}>
+            {/* 서브탭 내비게이션 바 (프레임 밖/위에 배치) */}
               <div style={{ display: "flex", gap: "1.5rem", borderBottom: "1px solid rgba(255,255,255,0.1)", paddingBottom: "0.2rem", marginBottom: "0.5rem" }}>
                 <button
                   type="button"
@@ -8361,7 +8359,9 @@ export default function App() {
                 </button>
               </div>
 
-              {projectsSubTab === "unit_status" && (
+              {/* 본문 콘텐츠 블록만 glass-card 로 감싸주어 서브메뉴와 분리 */}
+              <div className="glass-card" style={{ padding: "1.25rem" }}>
+                {projectsSubTab === "unit_status" && (
                 <div className="table-panel">
                     <table className="custom-table" style={{ fontSize: "0.85rem" }}>
                       <thead>
@@ -8622,8 +8622,8 @@ export default function App() {
                   />
                 </div>
               )}
+              </div>
             </div>
-          </>
         )}
 
         {activeTab === "management" && currentRole && (
