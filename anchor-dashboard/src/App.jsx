@@ -1059,10 +1059,11 @@ function mergeProjectsWithInitial(loadedData, multiYearInitialData) {
   });
 
   updated.forEach((strategy) => {
-    strategy.units.forEach((unit) => {
-      const sourceUnit = multiYearInitialData
-        ?.flatMap(s => s.units)
-        ?.find(u => u.id === unit.id);
+    if (strategy.units && Array.isArray(strategy.units)) {
+      strategy.units.forEach((unit) => {
+        const sourceUnit = multiYearInitialData
+          ?.flatMap(s => s.units)
+          ?.find(u => u.id === unit.id);
 
       if (sourceUnit && sourceUnit.programs) {
         const mergedPrograms = sourceUnit.programs.map((sourceProg) => {
@@ -1437,11 +1438,13 @@ function mergeProjectsWithInitial(loadedData, multiYearInitialData) {
         }
       }
     });
+  }
   });
 
   // 💡 [단위과제 예산 총합 재집계] 머지가 완료된 후, 단위과제별로 10대 비목의 예산/집행 정보를 연도별(1~5)로 누적 합산하여 최종 budget_main을 갱신합니다.
   updated.forEach((strategy) => {
-    strategy.units.forEach((unit) => {
+    if (strategy.units && Array.isArray(strategy.units)) {
+      strategy.units.forEach((unit) => {
       if (unit.budgetDetails) {
         [1, 2, 3, 4, 5].forEach((yr) => {
           if (!unit.years) unit.years = {};
@@ -1499,6 +1502,7 @@ function mergeProjectsWithInitial(loadedData, multiYearInitialData) {
         unit.spent = (unit.years[yr]?.spent_main || 0) + (unit.years[yr]?.spent_carry || 0);
       }
     });
+  }
   });
 
   return updated;
