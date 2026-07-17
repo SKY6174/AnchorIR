@@ -1054,77 +1054,66 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
       {/* 본문 콘텐츠만 glass-card 로 감싸주어 가로형 탭바가 프레임 밖(위)에 오도록 적용 */}
       <div className="glass-card" style={{ padding: "1.25rem", display: "flex", flexDirection: "column", gap: "1rem" }}>
 
-        {/* 대시보드 타이틀 설명 영역 */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.25rem" }}>
-        <div>
-          <h2 style={{ fontSize: "1.1rem", fontWeight: "700", display: "flex", alignItems: "center", gap: "0.4rem" }}>
-            📌 {activeSubTab === "education_env" ? "교육환경 사용예약 현황판" : "앵커사업 기자재 현황 관리"}
-          </h2>
-          <p style={{ fontSize: "0.72rem", color: "var(--text-secondary)", marginTop: "0.25rem" }}>
-            {activeSubTab === "education_env" 
-              ? "앵커사업단 관리 교육공간의 대여 상태를 실시간 모니터링하고 중복 일정을 차단합니다." 
-              : "사업 재원으로 취득한 기자재 목록을 AI∙DX 자산으로 분류해 대장을 운용합니다."}
-          </p>
+        {/* 버튼 영역 (대시보드 타이틀 및 설명 텍스트 제거) */}
+        <div style={{ display: "flex", justifyContent: "flex-end", alignItems: "center", marginBottom: "1.25rem" }}>
+          {activeSubTab === "education_env" ? (
+            <button
+              onClick={() => {
+                setResFormData(prev => ({ ...prev, space_name: selectedSpace }));
+                setIsResModalOpen(true);
+              }}
+              className="action-btn"
+              style={{
+                padding: "0.5rem 1.2rem",
+                background: "var(--accent-color)",
+                color: "white",
+                border: "none",
+                borderRadius: "9999px",
+                fontSize: "0.85rem",
+                fontWeight: "700",
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                gap: "0.3rem"
+              }}
+            >
+              <Plus size={16} /> 예약 신청 등록
+            </button>
+          ) : (
+            <button
+              onClick={() => {
+                setEditingEquipId(null);
+                setEquipFormData({
+                  asset_number: "",
+                  barcode_id: "",
+                  stock_location: "",
+                  category: selectedCategory === "scan" ? "ai_dx" : selectedCategory,
+                  usage_type: USAGE_TYPES[0],
+                  item_name: "",
+                  memo: ""
+                });
+                fetchCompletedProcuredItems();
+                setIsEquipModalOpen(true);
+              }}
+              style={{
+                padding: "0.45rem 0.85rem",
+                background: "linear-gradient(135deg, #10B981 0%, #059669 100%)",
+                color: "white",
+                border: "none",
+                borderRadius: "6px",
+                fontSize: "0.75rem",
+                fontWeight: "700",
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                gap: "0.25rem",
+                boxShadow: "0 2px 8px rgba(16, 185, 129, 0.3)"
+              }}
+            >
+              <Plus size={16} /> 기자재 불러오기
+            </button>
+          )}
         </div>
-
-        {activeSubTab === "education_env" ? (
-          <button
-            onClick={() => {
-              setResFormData(prev => ({ ...prev, space_name: selectedSpace }));
-              setIsResModalOpen(true);
-            }}
-            className="action-btn"
-            style={{
-              padding: "0.5rem 1.2rem",
-              background: "var(--accent-color)",
-              color: "white",
-              border: "none",
-              borderRadius: "9999px",
-              fontSize: "0.85rem",
-              fontWeight: "700",
-              cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-              gap: "0.3rem"
-            }}
-          >
-            <Plus size={16} /> 예약 신청 등록
-          </button>
-        ) : (
-          <button
-            onClick={() => {
-              setEditingEquipId(null);
-              setEquipFormData({
-                asset_number: "",
-                barcode_id: "",
-                stock_location: "",
-                category: selectedCategory === "scan" ? "ai_dx" : selectedCategory,
-                usage_type: USAGE_TYPES[0],
-                item_name: "",
-                memo: ""
-              });
-              fetchCompletedProcuredItems();
-              setIsEquipModalOpen(true);
-            }}
-            style={{
-              padding: "0.45rem 0.85rem",
-              background: "linear-gradient(135deg, #10B981 0%, #059669 100%)",
-              color: "white",
-              border: "none",
-              borderRadius: "6px",
-              fontSize: "0.75rem",
-              fontWeight: "700",
-              cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-              gap: "0.25rem",
-              boxShadow: "0 2px 8px rgba(16, 185, 129, 0.3)"
-            }}
-          >
-            <Plus size={16} /> 기자재 불러오기
-          </button>
-        )}
-      </div>
 
       {/* ============================================================================ */}
       {/* 탭 1: 교육환경 관리 */}
