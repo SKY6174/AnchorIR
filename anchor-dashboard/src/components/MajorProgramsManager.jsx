@@ -5,6 +5,7 @@ import {
   FileSpreadsheet, Download, Check, Pencil
 } from "lucide-react";
 import * as XLSX from "xlsx";
+import { supabase } from "../supabaseClient";
 
 // 💡 주문식 교육과정 전체 54개 교과목 실 정산 데이터 정의
 const ORDERLY_COURSES = [
@@ -390,6 +391,120 @@ export default function MajorProgramsManager({ selectedYear }) {
     localStorage.setItem("anchor_seminar_list", JSON.stringify(seminarList));
   }, [seminarList]);
 
+  // 💡 Supabase DB에서 세미나 결과 대장 가져오기 및 초기 데이터 시딩
+  useEffect(() => {
+    const fetchSeminarReports = async () => {
+      try {
+        const { data, error } = await supabase
+          .from("seminar_reports")
+          .select("*")
+          .order("seminar_id", { ascending: true });
+
+        if (error) {
+          console.error("Supabase 세미나 데이터 조회 실패:", error);
+          return;
+        }
+
+        if (data && data.length > 0) {
+          const mappedList = data.map(item => ({
+            id: item.seminar_id,
+            date: item.date,
+            speaker: item.speaker,
+            title: item.title,
+            attendees: item.attendees,
+            mainCost: Number(item.main_cost),
+            carryCost: Number(item.carry_cost),
+            satisfaction: Number(item.satisfaction),
+            etc: item.etc
+          }));
+          setSeminarList(mappedList);
+        } else {
+          console.log("DB가 비어 있습니다. 초기 세미나 데이터를 등록합니다.");
+          const seedSeminars = [
+            {
+              seminar_id: 1,
+              date: "2026. 03. 11. (수) 12:00~13:00 / 13:30~15:30",
+              speaker: "박철우 (한국공학대학교 부총장)",
+              title: "호모사피엔스의 혁신과 산학협력 기반 대학 혁신 / AI",
+              attendees: 70,
+              main_cost: 2576000,
+              carry_cost: 0,
+              satisfaction: 4.8,
+              etc: "대학 보직자 대상 AI 기반 대학 혁신 컨설팅 병행. 강사비 1,000,000원 포함. 보도자료 배포 완료"
+            },
+            {
+              seminar_id: 2,
+              date: "2026. 04. 24. (금) 11:00~13:00",
+              speaker: "강신욱 (인택스세무법인 대표 세무사)",
+              title: "알면 쓸데있는 세금 잡학사전",
+              attendees: 93,
+              main_cost: 0,
+              carry_cost: 1540000,
+              satisfaction: 4.7,
+              etc: "입주기업 및 대학 관계자 대상 실무 세무 특강. 강사비 500,000원 포함. 2025년 RISE 이월금 활용. 보도자료 배포 완료"
+            },
+            {
+              seminar_id: 3,
+              date: "2026. 05. 08. (금) 11:00~13:00",
+              speaker: "임종석 (골프산업과 특임교수)",
+              title: "건강을 지키는 골프, 오래 즐기는 골프",
+              attendees: 81,
+              main_cost: 1000000,
+              carry_cost: 628910,
+              satisfaction: 4.9,
+              etc: "골프 대중화에 따른 지역 주민 열린 평생 교육 실습 및 대학 교직원 건강 복지 연계 스포츠 세미나."
+            },
+            {
+              seminar_id: 4,
+              date: "2026. 05. 22. (금) 11:00~13:00",
+              speaker: "김영곤 ㈜한창제지 기업부설연구소 연구소장",
+              title: "종이, 그 이상의 이야기",
+              attendees: 77,
+              main_cost: 1800000,
+              carry_cost: 370000,
+              satisfaction: 4.8,
+              etc: "한창제지 연구소장 특강을 통한 제지 산업 기술 공유 및 HD현대이엔티 등 입주기업 지산학 교류 워크숍."
+            },
+            {
+              seminar_id: 5,
+              date: "2026. 06. 12. (금) 11:00~13:00",
+              speaker: "박승남 (울산대학교 산업대학원 겸임교수)",
+              title: "조선산업 산업융합 전략",
+              attendees: 74,
+              main_cost: 840000,
+              carry_cost: 258910,
+              satisfaction: 4.7,
+              etc: "스마트 제조 및 ICT 스마트 조선소 혁신 전략 특강. 이월금 물품비 258,910원 및 본사업비 다과비 840,000원 집행. 보도자료 배포 완료."
+            }
+          ];
+
+          const { error: seedError } = await supabase
+            .from("seminar_reports")
+            .insert(seedSeminars);
+
+          if (seedError) {
+            console.error("초기 데이터 시딩 실패:", seedError);
+          } else {
+            setSeminarList(seedSeminars.map(item => ({
+              id: item.seminar_id,
+              date: item.date,
+              speaker: item.speaker,
+              title: item.title,
+              attendees: item.attendees,
+              mainCost: item.main_cost,
+              carryCost: item.carry_cost,
+              satisfaction: item.satisfaction,
+              etc: item.etc
+            })));
+          }
+        }
+      } catch (err) {
+        console.error("Supabase 연동 예외 발생:", err);
+      }
+    };
+    fetchSeminarReports();
+  }, []);
+
   // 💡 지산학 세미나 추가 결과보고 모달 및 입력 필드 상태
   const [isSeminarModalOpen, setIsSeminarModalOpen] = useState(false);
   const [isAiAnalyzing, setIsAiAnalyzing] = useState(false);
@@ -749,107 +864,29 @@ export default function MajorProgramsManager({ selectedYear }) {
       }
     }
 
-    // 차수별 추천 데이터 프리셋
-    const aiPresetData = {
-      1: {
-        date: "2026. 04. 10. (금) 11:00~13:00",
-        speaker: "강동경 (울산지산학연구원 원장)",
-        title: "지자체-대학-산업체 연계 지산학 협력 활성화 방안",
-        attendees: 101,
-        mainCost: 1680000,
-        carryCost: 0,
-        satisfaction: 4.6,
-        etc: "제1차 지산학 정례 세미나 개최 결과. 지자체 및 연계 부서 담당자 교류 활성화."
-      },
-      2: {
-        date: "2026. 04. 24. (금) 11:00~13:00",
-        speaker: "김선우 (STEPI 중소·벤처기술혁신연구단장)",
-        title: "지산학 혁신과 지역 격차 해소를 위한 균형발전전략",
-        attendees: 64,
-        mainCost: 1100000,
-        carryCost: 0,
-        satisfaction: 4.5,
-        etc: "산업 혁신을 위한 대학 리서치 인프라 융합 방안 정책 세미나. 보도자료 배부 완료."
-      },
-      3: {
-        date: "2026. 05. 08. (금) 11:00~13:00",
-        speaker: "백승욱 (루닛(Lunit) 의장)",
-        title: "인공지능 시대의 지산학 상생과 융합 교육 모델",
-        attendees: 92,
-        mainCost: 1400000,
-        carryCost: 0,
-        satisfaction: 4.7,
-        etc: "생성형 AI 및 첨단 헬스케어 동향 공유를 통한 산학 시너지 강화 자문 워크숍 병행."
-      },
-      4: {
-        date: "2026. 05. 22. (금) 11:00~13:00",
-        speaker: "김영곤 ㈜한창제지 기업부설연구소 연구소장",
-        title: "종이, 그 이상의 이야기",
-        attendees: 77,
-        mainCost: 1800000,
-        carryCost: 370000,
-        satisfaction: 4.8,
-        etc: "한창제지 연구소장 특강을 통한 제지 산업 기술 공유 및 HD현대이엔티 등 입주기업 지산학 교류 워크숍."
-      },
-      5: {
-        date: "2026. 06. 12. (금) 11:00~13:00",
-        speaker: "박승남 (울산대학교 산업대학원 겸임교수)",
-        title: "조선산업 산업융합 전략",
-        attendees: 74,
-        mainCost: 840000,
-        carryCost: 258910,
-        satisfaction: 4.7,
-        etc: "스마트 제조 및 ICT 스마트 조선소 혁신 전략 특강. 이월금 물품비 258,910원 및 본사업비 다과비 840,000원 집행. 보도자료 배포 완료."
-      },
-      6: {
-        date: "2026. 06. 19. (금) 11:00~13:00",
-        speaker: "최재붕 (성균관대학교 교수 / '포노 사피엔스' 저자)",
-        title: "챗GPT가 바꾸는 일의 미래와 대학 교육의 새로운 패러다임",
-        attendees: 112,
-        mainCost: 2200000,
-        carryCost: 0,
-        satisfaction: 4.9,
-        etc: "생성형 AI 시대 실무 융합형 하이브리드 리터러시 인재 양성 및 개방형 설계 방향 논의."
-      }
-    };
-
-    let targetData;
-    if (aiPresetData[parsedNum]) {
-      targetData = aiPresetData[parsedNum];
-    } else {
-      const baseDate = new Date("2026-06-19");
-      const offsetWeeks = parsedNum - 6;
-      baseDate.setDate(baseDate.getDate() + (offsetWeeks * 14));
-      const formattedDate = `${baseDate.getFullYear()}. ${String(baseDate.getMonth() + 1).padStart(2, '0')}.${String(baseDate.getDate()).padStart(2, '0')}. (금) 11:00~13:00`;
-      
-      const speakers = [
-        "김상균 (경희대학교 교수 / 인지과학자)",
-        "유현준 (홍익대학교 교수 / 건축가)",
-        "김경일 (아주대학교 교수 / 인지심리학자)",
-        "송길영 (마인드마이너 / 빅데이터 전문가)"
-      ];
-      const titles = [
-        "메타버스 시대, 지산학 교육 생태계의 공간 혁명",
-        "공간의 미래와 지역 커뮤니티 활성화를 위한 지산학 플랫폼",
-        "지산학 상생을 위한 협업 마인드셋과 창의적 동기부여",
-        "빅데이터로 읽는 시대의 흐름과 지역 균형 발전의 미래"
-      ];
-      let speakerIndex = (parsedNum - 7) % speakers.length;
-      if (speakerIndex < 0) {
-        speakerIndex += speakers.length;
-      }
-
-      targetData = {
-        date: formattedDate,
-        speaker: speakers[speakerIndex],
-        title: titles[speakerIndex],
-        attendees: Math.floor(Math.random() * 40) + 70,
-        mainCost: (Math.floor(Math.random() * 100) + 120) * 10000,
-        carryCost: 0,
-        satisfaction: parseFloat((Math.random() * 0.4 + 4.5).toFixed(1)),
-        etc: `제${parsedNum}차 지산학 이음 정례 세미나 개최 결과. 교류 네트워킹 및 피드백 조사 완료.`
-      };
+    // 파일명 기반 지능적 기본정보 유추 (하드코딩 프리셋 배제)
+    let inferredTitle = "지산학 이음 세미나";
+    const titleCleaned = fileName
+      .replace(/\.[a-zA-Z0-9]+$/, "") // 확장자 제거
+      .replace(/^[0-9]+[\.\-\_\s]+/, "") // 맨 앞의 순번 제거
+      .replace(/\[[^\]]+\]/g, "") // 대괄호 내용 제거
+      .replace(/개최\s*결과보고/g, "")
+      .replace(/결과보고/g, "")
+      .trim();
+    if (titleCleaned) {
+      inferredTitle = titleCleaned;
     }
+
+    const fallbackData = {
+      date: "",
+      speaker: "",
+      title: inferredTitle,
+      attendees: "",
+      mainCost: "",
+      carryCost: "",
+      satisfaction: "",
+      etc: ""
+    };
 
     if (isPdf) {
       // 1단계: PDF ➔ MD 변환 (1.0초)
@@ -861,14 +898,14 @@ export default function MajorProgramsManager({ selectedYear }) {
         
         setTimeout(() => {
           setFormSeminarId(String(parsedNum));
-          setFormSeminarDate(targetData.date);
-          setFormSeminarSpeaker(targetData.speaker);
-          setFormSeminarTitle(targetData.title);
-          setFormSeminarAttendees(String(targetData.attendees));
-          setFormSeminarMainCost(String(targetData.mainCost));
-          setFormSeminarCarryCost(String(targetData.carryCost));
-          setFormSeminarSatisfaction(String(targetData.satisfaction));
-          setFormSeminarEtc(targetData.etc);
+          setFormSeminarDate(fallbackData.date);
+          setFormSeminarSpeaker(fallbackData.speaker);
+          setFormSeminarTitle(fallbackData.title);
+          setFormSeminarAttendees(String(fallbackData.attendees));
+          setFormSeminarMainCost(String(fallbackData.mainCost));
+          setFormSeminarCarryCost(String(fallbackData.carryCost));
+          setFormSeminarSatisfaction(String(fallbackData.satisfaction));
+          setFormSeminarEtc(fallbackData.etc);
 
           setIsAiAnalyzing(false);
           setAiStatusText("");
@@ -912,7 +949,7 @@ export default function MajorProgramsManager({ selectedYear }) {
   };
 
   // 💡 세미나 결과보고 등록 액션 (수동 및 PDF-AI 공통 등록)
-  const handleSeminarSubmit = (e) => {
+  const handleSeminarSubmit = async (e) => {
     e.preventDefault();
 
     if (!formSeminarId.trim()) return alert("차수를 입력해 주세요.");
@@ -941,6 +978,30 @@ export default function MajorProgramsManager({ selectedYear }) {
       etc: formSeminarEtc
     };
 
+    // 💡 Supabase DB Upsert 동기화
+    const syncDbUpsert = async () => {
+      const dbPayload = {
+        seminar_id: parsedId,
+        date: formSeminarDate,
+        speaker: formSeminarSpeaker,
+        title: formSeminarTitle,
+        attendees: parsedAttendees,
+        main_cost: parsedMainCost,
+        carry_cost: parsedCarryCost,
+        satisfaction: parsedSatisfaction,
+        etc: formSeminarEtc
+      };
+
+      const { error: dbError } = await supabase
+        .from("seminar_reports")
+        .upsert(dbPayload, { onConflict: "seminar_id" });
+
+      if (dbError) {
+        console.error("Supabase 데이터 동기화 에러:", dbError);
+        alert(`경고: 로컬에는 반영되었으나 DB 저장에 실패했습니다.\n${dbError.message}`);
+      }
+    };
+
     // Upsert (기존 동일 차수 있으면 덮어쓰고, 없으면 추가)
     const existingIndex = seminarList.findIndex(s => s.id === parsedId);
     let updatedList = [...seminarList];
@@ -948,11 +1009,13 @@ export default function MajorProgramsManager({ selectedYear }) {
     if (existingIndex !== -1) {
       if (confirm(`이미 제${parsedId}차 세미나 결과가 등록되어 있습니다. 기존 데이터를 업데이트하시겠습니까?`)) {
         updatedList[existingIndex] = newReport;
+        await syncDbUpsert();
       } else {
         return;
       }
     } else {
       updatedList.push(newReport);
+      await syncDbUpsert();
     }
 
     // 차수 오름차순으로 정렬
@@ -2020,7 +2083,19 @@ export default function MajorProgramsManager({ selectedYear }) {
                                       <button
                                         onClick={() => {
                                           if (confirm(`제${seminar.id}차 세미나 결과보고를 목록에서 삭제하시겠습니까?`)) {
-                                            setSeminarList(seminarList.filter(s => s.id !== seminar.id));
+                                            const deleteFromDb = async () => {
+                                              const { error } = await supabase
+                                                .from("seminar_reports")
+                                                .delete()
+                                                .eq("seminar_id", seminar.id);
+                                              if (error) {
+                                                console.error("Supabase 삭제 에러:", error);
+                                                alert("DB 삭제에 실패했습니다: " + error.message);
+                                              } else {
+                                                setSeminarList(seminarList.filter(s => s.id !== seminar.id));
+                                              }
+                                            };
+                                            deleteFromDb();
                                           }
                                         }}
                                         title="삭제"
