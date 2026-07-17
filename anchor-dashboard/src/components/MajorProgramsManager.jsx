@@ -1330,11 +1330,11 @@ export default function MajorProgramsManager({ selectedYear }) {
     alert(`제${parsedId}차 지산학 이음 세미나 결과보고 등록이 정상 완료되었습니다.`);
   };
 
-  // 휠 스크롤 회전 제어를 위한 틱 제어 상태 및 Ref
-  const containerRef = React.useRef(null);
-  const [lastWheelTime, setLastWheelTime] = useState(0);
-  const [isHovered, setIsHovered] = useState(false); // 마우스 호버 추적용 상태 추가
-  const activeIndex = unitKeys.indexOf(selectedUnit);
+  // 💡 가로형 단위과제 배지 마우스 호버 상태 관리 (하이라이팅 연동용)
+  // 초보 개발자용 설명: 
+  // 사용자가 단위과제 배지 위에 마우스를 올렸을 때 어떤 과제인지 식별하고 
+  // 은은한 배경색과 테두리 효과를 즉각적으로 보여주기 위해 마우스 호버 상태를 추적합니다.
+  const [hoveredUnit, setHoveredUnit] = useState(null);
 
   // 연도가 변경되면 단위과제 선택 초기화 (단, 새로고침 등으로 로컬스토리지에 현재 연도 데이터가 이미 복원된 경우 리셋 스킵)
   useEffect(() => {
@@ -1379,69 +1379,9 @@ export default function MajorProgramsManager({ selectedYear }) {
     localStorage.setItem("anchor_active_course_id", activeCourseId);
   }, [activeCourseId]);
 
-  // 마우스 호버 상태에서 키보드 up/down 방향키 입력 시 단위과제 선택 회전 동기화
-  useEffect(() => {
-    if (!isHovered) return;
-
-    const handleKeyDown = (e) => {
-      if (e.key === "ArrowUp" || e.key === "ArrowDown") {
-        // 브라우저 기본 스크롤(페이지 전체 이동) 차단
-        e.preventDefault();
-
-        const now = Date.now();
-        if (now - lastWheelTime < 160) return; // 동일 스로틀 데드타임 적용
-
-        if (e.key === "ArrowDown") {
-          // 아래 방향키: 다음 단위과제
-          const nextIndex = (activeIndex + 1) % unitKeys.length;
-          handleUnitChange(unitKeys[nextIndex]);
-          setLastWheelTime(now);
-        } else if (e.key === "ArrowUp") {
-          // 위 방향키: 이전 단위과제
-          const prevIndex = (activeIndex - 1 + unitKeys.length) % unitKeys.length;
-          handleUnitChange(unitKeys[prevIndex]);
-          setLastWheelTime(now);
-        }
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [isHovered, activeIndex, unitKeys, lastWheelTime]);
-
-  // 마우스 휠 스크롤과 단위과제 선택 회전 동기화
-  useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
-
-    const handleWheel = (e) => {
-      // 대시보드 전체 페이지 스크롤과 충돌 방지
-      e.preventDefault();
-
-      const now = Date.now();
-      if (now - lastWheelTime < 160) return; // 스로틀링 데드타임 적용
-
-      if (e.deltaY > 0) {
-        // 아래로 스크롤: 다음 단위과제로 순환
-        const nextIndex = (activeIndex + 1) % unitKeys.length;
-        handleUnitChange(unitKeys[nextIndex]);
-        setLastWheelTime(now);
-      } else if (e.deltaY < 0) {
-        // 위로 스크롤: 이전 단위과제로 순환
-        const prevIndex = (activeIndex - 1 + unitKeys.length) % unitKeys.length;
-        handleUnitChange(unitKeys[prevIndex]);
-        setLastWheelTime(now);
-      }
-    };
-
-    // passive: false를 명시하여 e.preventDefault()가 브라우저 단에서 즉시 적용되도록 설정
-    container.addEventListener("wheel", handleWheel, { passive: false });
-    return () => {
-      container.removeEventListener("wheel", handleWheel);
-    };
-  }, [activeIndex, unitKeys, lastWheelTime]);
+  // 초보 개발자용 설명: 
+  // 가로형 UI 개편으로 인해 3D 휠 회전 및 휠/방향키 관련 스크롤 감지 훅(useEffect)이 
+  // 더 이상 필요하지 않아 깔끔하게 제거되었습니다.
 
   // 단위과제를 변경했을 때 프로그램 선택
   const handleUnitChange = (unit) => {
@@ -1463,172 +1403,83 @@ export default function MajorProgramsManager({ selectedYear }) {
         </h2>
         <p style={{ fontSize: "0.9rem", color: "var(--text-secondary)", lineHeight: "1.5" }}>
           울산과학대학교 앵커사업단에서 추진하는 핵심 과제별 주요 프로그램을 조회하고 관리할 수 있습니다.
-          좌측 3D 롤링 다이얼에서 마우스 휠 스크롤 또는 클릭으로 <strong>단위과제</strong>를 선택하여 현황을 확인하세요.
+          상단 과제 선택 바에서 원하는 <strong>단위과제(A1가 ~ D3)</strong>를 클릭하여 현황을 확인하세요.
         </p>
       </div>
 
-      {/* 2. 메인 워크스페이스 레이아웃 (좌측 단위과제 원형 리스트 / 우측 프로그램 정보) */}
-      <div style={{ display: "grid", gridTemplateColumns: "100px 1fr", gap: "2rem", position: "relative" }}>
+      {/* 2. 메인 워크스페이스 레이아웃 (상하 정렬 구조: 상단 가로형 과제 선택 바 / 하단 프로그램 정보 콘텐츠) */}
+      {/* 초보 개발자용 설명: 기존의 좌측 고정 그리드에서 위아래로 자연스럽게 정렬되는 flex 레이아웃으로 변환했습니다. */}
+      <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem", width: "100%" }}>
 
-        {/* 키보드 및 휠 조작 안내 말풍선 툴팁 */}
-        <div style={{
-          position: "absolute",
-          top: "60px",
-          left: "90px",
-          width: "210px",
-          background: "rgba(15, 23, 42, 0.95)",
-          backdropFilter: "blur(8px)",
-          border: "1px solid rgba(59, 130, 246, 0.3)",
-          padding: "0.5rem 0.75rem",
-          borderRadius: "0.5rem",
-          fontSize: "0.72rem",
-          color: "var(--text-primary)",
-          boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 0 15px rgba(59, 130, 246, 0.15)",
-          zIndex: 100,
-          pointerEvents: "none",
-          opacity: isHovered ? 1 : 0,
-          transform: `translateX(${isHovered ? 8 : -10}px)`,
-          transition: "opacity 0.25s ease, transform 0.25s ease",
-          display: "flex",
-          flexDirection: "column",
-          gap: "0.2rem",
-          lineHeight: "1.35"
+        {/* 💡 상단 가로형 단위과제 선택 배지 목록 (기존 세로형 3D 휠 실린더 다이얼에서 전면 개편) */}
+        {/* 초보 개발자용 설명: 세로 롤링 휠 대신 가로로 일렬 정렬하여 한눈에 들어오고 호버링 시 하이라이트가 되는 직관적인 UI입니다. */}
+        <div style={{ 
+          display: "flex", 
+          flexDirection: "column", 
+          gap: "0.75rem", 
+          background: "rgba(255, 255, 255, 0.01)", 
+          border: "1px solid var(--border-color)", 
+          borderRadius: "12px", 
+          padding: "1rem" 
         }}>
-          {/* 말풍선 꼬리 */}
-          <div style={{
-            position: "absolute",
-            left: "-6px",
-            top: "18px",
-            width: "0",
-            height: "0",
-            borderTop: "6px solid transparent",
-            borderBottom: "6px solid transparent",
-            borderRight: "6px solid rgba(15, 23, 42, 0.95)"
-          }} />
-          <div style={{ display: "flex", alignItems: "center", gap: "0.25rem", fontWeight: "800", color: "var(--accent-color)" }}>
-            <span>💡 조작 가이드</span>
-          </div>
-          <div style={{ color: "var(--text-secondary)" }}>
-            마우스를 이 영역에 올려놓고 <strong>휠 스크롤</strong> 또는 키보드 <strong>↑/↓ 방향키</strong>로 회전할 수 있습니다!
-          </div>
-        </div>
-
-        {/* 좌측 단위과제 원형 버튼 세트 - 3D 회전 실린더 휠 다이얼 */}
-        <div
-          ref={containerRef}
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            borderRight: "1px solid var(--border-color)",
-            paddingRight: "1.5rem",
-            height: "400px", // 휠 회전 컨테이너의 최적 세로 높이
-            overflow: "hidden",
-            position: "relative",
-            perspective: "800px",
-            userSelect: "none"
-          }}
-        >
-          <span style={{
-            fontSize: "0.75rem",
-            fontWeight: "800",
-            color: "var(--text-secondary)",
-            textTransform: "uppercase",
-            letterSpacing: "1px",
-            marginBottom: "1rem",
-            zIndex: 10,
-            background: "var(--modal-bg)", // 배경 테마 가변 처리하여 융합
-            padding: "0.2rem 0.5rem",
-            borderRadius: "0.25rem",
-            position: "absolute",
-            top: "0"
+          <div style={{ 
+            fontSize: "0.8rem", 
+            fontWeight: "800", 
+            color: "var(--text-secondary)", 
+            textTransform: "uppercase", 
+            letterSpacing: "1px" 
           }}>
-            과제 선택
-          </span>
-
-          {/* 상하단 입체 휠 페이드 마스킹 오버레이 */}
-          <div style={{
-            position: "absolute",
-            top: 25,
-            left: 0,
-            right: 0,
-            height: "55px",
-            background: "linear-gradient(to bottom, var(--modal-bg) 15%, transparent 100%)",
-            pointerEvents: "none",
-            zIndex: 5
-          }} />
-          <div style={{
-            position: "absolute",
-            bottom: 0,
-            left: 0,
-            right: 0,
-            height: "55px",
-            background: "linear-gradient(to top, var(--modal-bg) 15%, transparent 100%)",
-            pointerEvents: "none",
-            zIndex: 5
-          }} />
-
-          {/* 3D 실린더 트랙 */}
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              gap: "12px",
-              alignItems: "center",
-              transformStyle: "preserve-3d",
-              transition: "transform 0.65s cubic-bezier(0.25, 1, 0.5, 1)", // 스크롤 전환 모션 0.65s로 속도감 튜닝
-              // 활성화 버튼을 정확히 수직 중앙으로 정렬하는 트랜슬레이션 수식 적용
-              // 높이 400px 중앙은 Y=200px. 버튼지름 56px, gap 12px -> 1개 높이 68px.
-              // 오프셋 기점: 200 - 28 = 172px.
-              transform: `translateY(${172 - activeIndex * 68}px)`,
-              width: "100%",
-              height: "100%",
-              paddingTop: "24px"
-            }}
-          >
+            과제 선택 (단위과제 목록)
+          </div>
+          <div style={{ 
+            display: "flex", 
+            flexDirection: "row", 
+            gap: "0.5rem", 
+            flexWrap: "wrap", 
+            alignItems: "center" 
+          }}>
             {unitKeys.length > 0 ? (
-              unitKeys.map((unit, index) => {
-                const diff = index - activeIndex;
-                // 중앙 활성화 항목 기준으로 상하 입체 궤도 곡률 적용
-                const rotateX = diff * 22;
-                const translateZ = Math.abs(diff) * -12;
-                const translateY = diff * -2;
-                const scale = Math.max(0.68, 1 - Math.abs(diff) * 0.08);
-                const opacity = Math.max(0.22, 1 - Math.abs(diff) * 0.26);
-
+              unitKeys.map((unit) => {
+                const isSelected = selectedUnit === unit;
+                const isHovered = hoveredUnit === unit;
+                
                 return (
                   <button
                     key={unit}
                     onClick={() => handleUnitChange(unit)}
-                    className={`unit-circle-btn ${selectedUnit === unit ? "active" : ""}`}
+                    onMouseEnter={() => setHoveredUnit(unit)}
+                    onMouseLeave={() => setHoveredUnit(null)}
                     style={{
-                      width: "56px",
-                      height: "56px",
-                      borderRadius: "50%",
-                      fontSize: "1.1rem",
-                      fontWeight: "900",
+                      padding: "0.4rem 1rem",
+                      borderRadius: "20px",
+                      fontSize: "0.85rem",
+                      fontWeight: "800",
                       cursor: "pointer",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      flexShrink: 0, // flex 수축 방지하여 완벽한 원형 유지
-                      transition: "transform 0.65s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.65s, background 0.3s, border-color 0.3s", // 스크롤 전환 모션 0.65s로 속도감 튜닝
-
-                      // 3D Cylinder transform 공식 적용!
-                      transform: `rotateX(${rotateX}deg) translateZ(${translateZ}px) translateY(${translateY}px) scale(${scale})`,
-                      opacity: opacity,
-
-                      background: selectedUnit === unit
+                      border: isSelected 
+                        ? "1.5px solid rgba(255,255,255,0.4)" 
+                        : isHovered 
+                          ? "1.5px solid rgba(59, 130, 246, 0.5)" 
+                          : "1.5px solid rgba(255,255,255,0.08)",
+                      background: isSelected
                         ? "linear-gradient(135deg, var(--accent-color), #3b82f6)"
-                        : "rgba(255, 255, 255, 0.04)",
-                      color: selectedUnit === unit ? "#fff" : "var(--text-secondary)",
-                      boxShadow: selectedUnit === unit
-                        ? "0 4px 15px rgba(59, 130, 246, 0.35)"
+                        : isHovered
+                          ? "rgba(59, 130, 246, 0.15)"
+                          : "rgba(255, 255, 255, 0.04)",
+                      color: isSelected 
+                        ? "#fff" 
+                        : isHovered 
+                          ? "var(--accent-color)" 
+                          : "var(--text-secondary)",
+                      boxShadow: isSelected
+                        ? "0 4px 12px rgba(59, 130, 246, 0.3)"
                         : "none",
-                      border: selectedUnit === unit ? "2px solid rgba(255,255,255,0.25)" : "1px solid rgba(255,255,255,0.06)",
-                      backfaceVisibility: "hidden"
+                      transform: isSelected 
+                        ? "translateY(-1px) scale(1.03)" 
+                        : isHovered 
+                          ? "translateY(-1px)" 
+                          : "none",
+                      transition: "all 0.2s ease",
+                      outline: "none"
                     }}
                   >
                     {unit}
@@ -1636,12 +1487,12 @@ export default function MajorProgramsManager({ selectedYear }) {
                 );
               })
             ) : (
-              <div style={{ fontSize: "0.85rem", color: "var(--text-secondary)", textAlign: "center" }}>과제 없음</div>
+              <div style={{ fontSize: "0.85rem", color: "var(--text-secondary)" }}>과제 없음</div>
             )}
           </div>
         </div>
 
-        {/* 우측 프로그램 선택 및 개별 화면 */}
+        {/* 하단 프로그램 선택 및 세부 화면 */}
         <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
           {selectedUnit ? (
             <>
