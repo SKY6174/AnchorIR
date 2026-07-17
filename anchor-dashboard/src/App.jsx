@@ -673,8 +673,8 @@ function formatDataToMultiYear(data) {
           } else {
             if (isExternalSub) {
               budget_external = budgetMain;
-            } else if (prog.id.startsWith("D1-") || prog.id.startsWith("D2-") || prog.id.startsWith("D3-")) {
-              // 💡 [D1, D2, D3 단위과제 재원 표준] D 단위과제의 예산은 100% 국비(국고) 본예산으로 지정합니다.
+            } else if (prog.id.startsWith("A1나-") || prog.id.startsWith("D1-") || prog.id.startsWith("D2-") || prog.id.startsWith("D3-")) {
+              // 💡 [A1나 및 D1, D2, D3 단위과제 재원 표준] A1나 및 D 단위과제의 예산은 100% 국비(국고) 본예산으로 지정합니다.
               budget_national = budgetMain;
               budget_city = 0;
             } else {
@@ -704,7 +704,7 @@ function formatDataToMultiYear(data) {
             } else {
               if (isExternalSub) {
                 spent_external = spentMain;
-              } else if (prog.id.startsWith("D1-") || prog.id.startsWith("D2-") || prog.id.startsWith("D3-")) {
+              } else if (prog.id.startsWith("A1나-") || prog.id.startsWith("D1-") || prog.id.startsWith("D2-") || prog.id.startsWith("D3-")) {
                 spent_national = spentMain;
                 spent_city = 0;
               } else {
@@ -724,7 +724,7 @@ function formatDataToMultiYear(data) {
               carry_external = 0;
             } else if (isExternalSub) {
               carry_external = budgetCarry;
-            } else if (prog.id.startsWith("D1-") || prog.id.startsWith("D2-") || prog.id.startsWith("D3-")) {
+            } else if (prog.id.startsWith("A1나-") || prog.id.startsWith("D1-") || prog.id.startsWith("D2-") || prog.id.startsWith("D3-")) {
               carry_national = budgetCarry;
               carry_city = 0;
             } else {
@@ -743,7 +743,7 @@ function formatDataToMultiYear(data) {
               carry_spent_external = 0;
             } else if (isExternalSub) {
               carry_spent_external = spentCarry;
-            } else if (prog.id.startsWith("D2-")) {
+            } else if (prog.id.startsWith("A1나-") || prog.id.startsWith("D1-") || prog.id.startsWith("D2-") || prog.id.startsWith("D3-")) {
               carry_spent_national = spentCarry;
               carry_spent_city = 0;
             } else {
@@ -810,7 +810,7 @@ function formatDataToMultiYear(data) {
         [2, 3, 4, 5].forEach((yr) => {
           const py = progYears[yr];
           const isExternalSub = prog.id.includes("위탁") || prog.title.includes("위탁") || prog.title.includes("협력");
-          const isNationalOnly = ["D1-", "D2-", "D3-"].some(prefix => prog.id.startsWith(prefix));
+          const isNationalOnly = ["A1나-", "D1-", "D2-", "D3-"].some(prefix => prog.id.startsWith(prefix));
 
           if (isExternalSub) {
             py.budget_carry_external = py.budget_carry || 0;
@@ -1105,7 +1105,7 @@ function mergeProjectsWithInitial(loadedData, multiYearInitialData) {
                 // 💡 [D1, D2, D3 예산 강제 동기화 및 자가 치유 가드] D1, D2, D3 관련 프로그램들은 
                 // DB에 잘못된 옛날 캐시(외부사업비 오염 등)가 남아있고 아직 수동 기획 저장을 거치지 않은 경우에 한해, 
                 // 마스터 기획(sourceProg)의 본사업비 공식 분배율(D2는 100% 국비, 나머지는 국고 50%/시비 50%)을 정밀 강제 계산하여 실시간 보정합니다.
-                if (sourceProg.id && (sourceProg.id.startsWith("D1-") || sourceProg.id.startsWith("D2-") || sourceProg.id.startsWith("D3-"))) {
+                if (sourceProg.id && (sourceProg.id.startsWith("A1나-") || sourceProg.id.startsWith("D1-") || sourceProg.id.startsWith("D2-") || sourceProg.id.startsWith("D3-"))) {
                   if (sourceProg.years && sourceProg.years[yr]) {
                     const sy = sourceProg.years[yr];
                     const y = updatedYears[yr];
@@ -1124,7 +1124,7 @@ function mergeProjectsWithInitial(loadedData, multiYearInitialData) {
                       const rawBudgetMain = yr === 2 ? (sourceProg.budget_2026 || 0) : yr === 1 ? Math.round((sourceProg.budget_2026 || 0) * 0.9) : Math.round((sourceProg.budget_2026 || 0) * (yr === 3 ? 1.1 : yr === 4 ? 1.2 : 1.3));
 
                       y.budget_main = rawBudgetMain;
-                      const isNationalOnly = ["D1-", "D2-", "D3-"].some(prefix => sourceProg.id.startsWith(prefix));
+                      const isNationalOnly = ["A1나-", "D1-", "D2-", "D3-"].some(prefix => sourceProg.id.startsWith(prefix));
                       if (isNationalOnly) {
                         // 💡 [교육용 한글 주석] D1, D2, D3 단위과제 세부 프로그램은 100% 국비(국고) 본예산으로 할당합니다.
                         y.budget_national = rawBudgetMain;
@@ -7256,7 +7256,7 @@ export default function App() {
                       const y = prog.years?.[yr];
                       if (y) {
                         const isExternalSub = prog.id.includes("위탁") || prog.title.includes("위탁") || prog.title.includes("협력");
-                        const isNationalOnly = ["D1-", "D2-", "D3-"].some(prefix => prog.id.startsWith(prefix));
+                        const isNationalOnly = ["A1나-", "D1-", "D2-", "D3-"].some(prefix => prog.id.startsWith(prefix));
                         if (isExternalSub) {
                           y.budget_carry_external = y.budget_carry || 0;
                           y.budget_carry_national = 0;
