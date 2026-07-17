@@ -453,19 +453,18 @@ export default function ScholarshipManager({
     <div style={{ padding: "1rem" }}>
       <div style={{ display: "flex", justifyContent: "flex-end", alignItems: "center", marginBottom: "1rem" }}>
         <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
-          {/* 💡 [연도 누적 선택 필터] */}
+          {/* 💡 [연도 누적 선택 필터] (버튼들과 패딩 및 둥글기 통일) */}
           <select 
             value={filterYear} 
             onChange={(e) => setFilterYear(e.target.value)}
             style={{
-              padding: "0.4rem 0.8rem",
-              borderRadius: "6px",
+              padding: "0.5rem 0.85rem",
+              borderRadius: "0.5rem",
               backgroundColor: "var(--bg-tertiary)",
               color: "var(--text-primary)",
-              border: "1px solid rgba(255,255,255,0.15)",
+              border: "1px solid var(--border-color)",
               fontSize: "0.85rem",
-              cursor: "pointer",
-              marginRight: "0.5rem"
+              cursor: "pointer"
             }}
           >
             <option value="all">전체 연도 누적 조회</option>
@@ -491,7 +490,18 @@ export default function ScholarshipManager({
           <button className="action-btn download-btn" onClick={handleExcelDownload}>
             <Download size={16} /> 엑셀 다운로드
           </button>
-          <button className="action-btn add-btn" onClick={openModalForNew}>
+          <button 
+            onClick={openModalForNew}
+            className="action-btn"
+            style={{
+              borderRadius: "9999px",
+              background: "var(--accent-color)",
+              border: "none",
+              color: "white",
+              fontWeight: "700",
+              padding: "0.5rem 1.2rem"
+            }}
+          >
             <Plus size={16} /> 신규 등록
           </button>
         </div>
