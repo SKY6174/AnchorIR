@@ -3949,8 +3949,8 @@ Gemini 피드백: \n${geminiCritiqueText}
                   className="btn btn-primary"
                   onClick={() => openAddModal("monthly")}
                   style={{
-                    display: "flex", alignItems: "center", gap: "0.25rem", padding: "0.4rem 1rem", borderRadius: "6px",
-                    background: "var(--accent-color, #3B82F6)", border: "none", color: "#FFFFFF", fontWeight: "600", fontSize: "0.85rem", cursor: "pointer",
+                    display: "flex", alignItems: "center", gap: "0.25rem", padding: "0.5rem 1.2rem", borderRadius: "9999px",
+                    background: "var(--accent-color, #3B82F6)", border: "none", color: "#FFFFFF", fontWeight: "700", fontSize: "0.85rem", cursor: "pointer",
                     transition: "background 0.15s"
                   }}
                   onMouseOver={(e) => e.currentTarget.style.background = "#2563EB"}
@@ -3962,8 +3962,8 @@ Gemini 피드백: \n${geminiCritiqueText}
                 <button
                   onClick={() => openAddModal("task")}
                   style={{
-                    display: "flex", alignItems: "center", gap: "0.25rem", padding: "0.4rem 1rem", borderRadius: "6px",
-                    background: "#8B5CF6", border: "none", color: "#FFFFFF", fontWeight: "600", fontSize: "0.85rem", cursor: "pointer",
+                    display: "flex", alignItems: "center", gap: "0.25rem", padding: "0.5rem 1.2rem", borderRadius: "9999px",
+                    background: "#8B5CF6", border: "none", color: "#FFFFFF", fontWeight: "700", fontSize: "0.85rem", cursor: "pointer",
                     transition: "background 0.15s"
                   }}
                   onMouseOver={(e) => e.currentTarget.style.background = "#7C3AED"}
@@ -3975,8 +3975,8 @@ Gemini 피드백: \n${geminiCritiqueText}
                 <button
                   onClick={() => openAddModal("deadline")}
                   style={{
-                    display: "flex", alignItems: "center", gap: "0.25rem", padding: "0.4rem 1rem", borderRadius: "6px",
-                    background: "#EF4444", border: "none", color: "#FFFFFF", fontWeight: "600", fontSize: "0.85rem", cursor: "pointer",
+                    display: "flex", alignItems: "center", gap: "0.25rem", padding: "0.5rem 1.2rem", borderRadius: "9999px",
+                    background: "#EF4444", border: "none", color: "#FFFFFF", fontWeight: "700", fontSize: "0.85rem", cursor: "pointer",
                     transition: "background 0.15s"
                   }}
                   onMouseOver={(e) => e.currentTarget.style.background = "#DC2626"}
