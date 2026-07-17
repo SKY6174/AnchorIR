@@ -8306,10 +8306,6 @@ export default function App() {
           <>
             {/* 단위과제 및 프로그램 관리 탭: 전체 카드를 Fragment로 감싼 뒤 하단에 예산 전용 엑셀 업로더를 배치합니다. */}
             <div className="glass-card">
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.2rem" }}>
-                <h2 style={{ fontSize: "1.25rem", fontWeight: "800" }}>{selectedYear}차년도 단위과제 및 프로그램 관리</h2>
-              </div>
-
               {/* 서브탭 내비게이션 바 */}
               <div style={{ display: "flex", gap: "1.5rem", borderBottom: "1px solid rgba(255,255,255,0.1)", paddingBottom: "0.2rem", marginBottom: "0.5rem" }}>
                 <button
@@ -8366,10 +8362,14 @@ export default function App() {
               </div>
 
               {projectsSubTab === "unit_status" && (
-                <div className="table-panel">
-                  <table className="custom-table" style={{ fontSize: "0.85rem" }}>
-                    <thead>
-                      <tr style={{ background: "rgba(255,255,255,0.02)" }}>
+                <>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "1rem", marginBottom: "1.2rem" }}>
+                    <h2 style={{ fontSize: "1.25rem", fontWeight: "800", color: "var(--text-primary)" }}>{selectedYear}차년도 단위과제 진행상황</h2>
+                  </div>
+                  <div className="table-panel">
+                    <table className="custom-table" style={{ fontSize: "0.85rem" }}>
+                      <thead>
+                        <tr style={{ background: "rgba(255,255,255,0.02)" }}>
                         <th rowSpan={2} style={{ textAlign: "center", verticalAlign: "middle", borderBottom: "1px solid var(--border-color)", borderRight: "1px solid var(--border-color)", fontWeight: "800", color: "#10b981", background: "rgba(16, 185, 129, 0.08)", padding: "0.55rem 0.5rem", fontSize: "0.95rem" }}>단위과제</th>
                         <th colSpan={selectedYear >= 2 ? 5 : 4} style={{ textAlign: "center", borderBottom: "1px solid var(--border-color)", borderRight: "1px solid var(--border-color)", fontWeight: "800", color: "#10b981", background: "rgba(16, 185, 129, 0.08)", padding: "0.55rem 0", fontSize: "0.95rem" }}>
                           예산 배정 및 집행 (단위: 백만원)
@@ -8600,15 +8600,23 @@ export default function App() {
                     </tbody>
                   </table>
                 </div>
+                </>
               )}
 
               {projectsSubTab === "unit_system" && (
-                <UnitSystemView key={`unit-system-${darkMode}-${selectedYear}`} selectedYear={selectedYear} />
+                <>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "1rem", marginBottom: "1.2rem" }}>
+                    <h2 style={{ fontSize: "1.25rem", fontWeight: "800", color: "var(--text-primary)" }}>{selectedYear}차년도 단위과제 체계</h2>
+                  </div>
+                  <UnitSystemView key={`unit-system-${darkMode}-${selectedYear}`} selectedYear={selectedYear} />
+                </>
               )}
 
               {projectsSubTab === "program_mgmt" && (
                 <div id="pdca-manager-section">
-                  <h3 style={{ fontSize: "1.1rem", fontWeight: "800", marginBottom: "1rem" }}>프로그램 관리</h3>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "1rem", marginBottom: "1.2rem" }}>
+                    <h2 style={{ fontSize: "1.25rem", fontWeight: "800", color: "var(--text-primary)" }}>{selectedYear}차년도 프로그램 세부 관리</h2>
+                  </div>
                   <PDCAManager
                     key={`pdca-${darkMode}-${selectedYear}`}
                     projects={displayProjects}
