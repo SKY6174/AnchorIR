@@ -161,12 +161,14 @@ export default function ExcelUploader({
         filename = `ANCHOR_재원구분_예산양식_2026_${selectedUnitId}.xlsx`;
       }
       projects.forEach((p) => {
-        p.units.forEach((u) => {
-          // 단위과제별 보기 모드일 때는 선택된 단위과제 자료만 포함
-          if (viewMode === "unit" && selectedUnitId && u.id !== selectedUnitId) {
-            return;
-          }
-          u.programs.forEach((prog) => {
+        if (p.units && Array.isArray(p.units)) {
+          p.units.forEach((u) => {
+            // 단위과제별 보기 모드일 때는 선택된 단위과제 자료만 포함
+            if (viewMode === "unit" && selectedUnitId && u.id !== selectedUnitId) {
+              return;
+            }
+            if (u.programs && Array.isArray(u.programs)) {
+              u.programs.forEach((prog) => {
             const py = prog.years?.[selectedYear] || {};
             
             // 10대 표준 비목 리스트 정의
@@ -232,14 +234,18 @@ export default function ExcelUploader({
               "외부사업비": selectedYear === 1 ? 0 : (py.budget_carry_external !== undefined ? py.budget_carry_external / 1000000 : 0),
               ...carryCatMap
             });
+            });
+          }
           });
-        });
+        }
       });
     } else {
       filename = `ANCHOR_성과지표_관리양식_${selectedYear}차년도.xlsx`;
       projects.forEach((p) => {
-        p.units.forEach((u) => {
-          u.kpis.forEach((k) => {
+        if (p.units && Array.isArray(p.units)) {
+          p.units.forEach((u) => {
+            if (u.kpis && Array.isArray(u.kpis)) {
+              u.kpis.forEach((k) => {
             if (k.subItems && Array.isArray(k.subItems)) {
               k.subItems.forEach((sub) => {
                 const yData = sub.years?.[selectedYear] || { target: 0, current: 0 };
@@ -269,7 +275,9 @@ export default function ExcelUploader({
               });
             }
           });
+        }
         });
+      }
       });
     }
 

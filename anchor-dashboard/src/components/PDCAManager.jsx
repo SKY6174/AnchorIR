@@ -339,17 +339,21 @@ export default function PDCAManager({
   const allPrograms = [];
   const allUnits = [];
   projects.forEach((p) => {
-    p.units.forEach((u) => {
-      allUnits.push(u);
-      u.programs.forEach((prog) => {
-        allPrograms.push({
-          ...prog,
-          unitId: u.id,
-          unitTitle: u.title,
-          projectTitle: p.title,
-        });
+    if (p.units && Array.isArray(p.units)) {
+      p.units.forEach((u) => {
+        allUnits.push(u);
+        if (u.programs && Array.isArray(u.programs)) {
+          u.programs.forEach((prog) => {
+            allPrograms.push({
+              ...prog,
+              unitId: u.id,
+              unitTitle: u.title,
+              projectTitle: p.title,
+            });
+          });
+        }
       });
-    });
+    }
   });
   allUnits.sort((a, b) => {
     if (a.id === "Common" || a.id === "X0") return 1;
