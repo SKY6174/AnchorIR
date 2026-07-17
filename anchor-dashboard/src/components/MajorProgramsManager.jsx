@@ -401,7 +401,78 @@ export default function MajorProgramsManager({ selectedYear }) {
           .order("seminar_id", { ascending: true });
 
         if (error) {
-          console.error("Supabase 세미나 데이터 조회 실패:", error);
+          console.warn("Supabase 세미나 테이블 조회 실패 (로컬 스토리지 폴백 가동):", error);
+          const saved = localStorage.getItem("anchor_seminar_list");
+          if (saved) {
+            try {
+              const parsed = JSON.parse(saved);
+              if (parsed && parsed.length > 0) {
+                setSeminarList(parsed);
+                return;
+              }
+            } catch (e) {
+              console.error("로컬 세미나 리스트 파싱 실패:", e);
+            }
+          }
+          // 로컬스토리지도 비어있을 시 1~5차 하드코딩 기본 시드 구성
+          const fallbackSeed = [
+            {
+              id: 1,
+              date: "2026. 03. 11. (수) 12:00~13:00 / 13:30~15:30",
+              speaker: "박철우 (한국공학대학교 부총장)",
+              title: "호모사피엔스의 혁신과 산학협력 기반 대학 혁신 / AI",
+              attendees: 70,
+              mainCost: 2576000,
+              carryCost: 0,
+              satisfaction: 4.8,
+              etc: "대학 보직자 대상 AI 기반 대학 혁신 컨설팅 병행. 강사비 1,000,000원 포함. 보도자료 배포 완료"
+            },
+            {
+              id: 2,
+              date: "2026. 04. 24. (금) 11:00~13:00",
+              speaker: "강신욱 (인택스세무법인 대표 세무사)",
+              title: "알면 쓸데있는 세금 잡학사전",
+              attendees: 93,
+              mainCost: 0,
+              carryCost: 1540000,
+              satisfaction: 4.7,
+              etc: "입주기업 및 대학 관계자 대상 실무 세무 특강. 강사비 500,000원 포함. 2025년 RISE 이월금 활용. 보도자료 배포 완료"
+            },
+            {
+              id: 3,
+              date: "2026. 05. 08. (금) 11:00~13:00",
+              speaker: "임종석 (골프산업과 특임교수)",
+              title: "건강을 지키는 골프, 오래 즐기는 골프",
+              attendees: 81,
+              mainCost: 1000000,
+              carryCost: 628910,
+              satisfaction: 4.9,
+              etc: "골프 대중화에 따른 지역 주민 열린 평생 교육 실습 및 대학 교직원 건강 복지 연계 스포츠 세미나."
+            },
+            {
+              id: 4,
+              date: "2026. 05. 22. (금) 11:00~13:00",
+              speaker: "김영곤 ㈜한창제지 기업부설연구소 연구소장",
+              title: "종이, 그 이상의 이야기",
+              attendees: 77,
+              mainCost: 1800000,
+              carryCost: 370000,
+              satisfaction: 4.8,
+              etc: "한창제지 연구소장 특강을 통한 제지 산업 기술 공유 및 HD현대이엔티 등 입주기업 지산학 교류 워크숍."
+            },
+            {
+              id: 5,
+              date: "2026. 06. 12. (금) 11:00~13:00",
+              speaker: "박승남 (울산대학교 산업대학원 겸임교수)",
+              title: "조선산업 산업융합 전략",
+              attendees: 74,
+              mainCost: 840000,
+              carryCost: 258910,
+              satisfaction: 4.7,
+              etc: "스마트 제조 및 ICT 스마트 조선소 혁신 전략 특강. 이월금 물품비 258,910원 및 본사업비 다과비 840,000원 집행. 보도자료 배포 완료."
+            }
+          ];
+          setSeminarList(fallbackSeed);
           return;
         }
 
