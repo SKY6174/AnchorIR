@@ -4237,19 +4237,40 @@ export const Y1_UNIT_META = {
   }
 };
 
-// 💡 [교육용 한글 주석] 단위과제 또는 세부 프로그램 ID에 따른 국비(국고) 분배 비율을 계산합니다.
-// - A1나, D1, D2, D3: 100% 국비 (비율 1.0)
-// - A2, A3, B1, B2, B3, B4, C1, C2: 90% 국비, 10% 시비 (비율 0.9)
-// - A1가 및 기타: 50% 국비, 50% 시비 (비율 0.5)
-export function getNationalRatio(id) {
-  if (!id) return 0.5;
-  
-  const isNational100 = ["A1나", "D1", "D2", "D3"].some(prefix => id.startsWith(prefix));
-  if (isNational100) return 1.0;
-  
-  const isNational90 = ["A2", "A3", "B1", "B2", "B3", "B4", "C1", "C2"].some(prefix => id.startsWith(prefix));
-  if (isNational90) return 0.9;
-  
-  return 0.5;
-}
+// 💡 [교육용 한글 주석] 각 단위과제의 기획서(Proposal.md) 기준 재원 배분 비율 스펙에 맞추어 
+// 2차년도 예산(budget_2026)의 국비(budget_national)와 시비(budget_city) 배정액을 정밀 주입합니다.
+initialProjectsData.forEach((strategy) => {
+  strategy.units.forEach((unit) => {
+    unit.programs.forEach((prog) => {
+      // 이미 수동으로 국비/시비가 세밀하게 잡혀있는 A1가, A1나 단위과제의 특수 프로그램들은 수동 기입값을 보존합니다.
+      const hasManualRatio = ["A1가", "A1나"].includes(unit.id);
+      
+      if (prog.budget_2026 !== undefined) {
+        const total = prog.budget_2026;
+        
+        if (unit.id === "C1") {
+          // C1 단위과제의 특수 기획서 쪼개기 반영
+          if (["C1-S4T12-1", "C1-S4T14-1"].includes(prog.id)) {
+            prog.budget_national = 0;
+            prog.budget_city = total;
+          } else {
+            prog.budget_national = total;
+            prog.budget_city = 0;
+          }
+        } else if (!hasManualRatio) {
+          let ratio = 0.5; // 기본 1:1 비율 (B2~D3 기획서 명세 기준)
+          
+          // A2, A3, B1 단위과제는 사용자의 요구에 따라 9:1 비율
+          if (["A2", "A3", "B1"].includes(unit.id)) {
+            ratio = 0.9;
+          }
+          
+          prog.budget_national = Math.round(total * ratio);
+          prog.budget_city = total - prog.budget_national;
+        }
+      }
+    });
+  });
+});
+
 

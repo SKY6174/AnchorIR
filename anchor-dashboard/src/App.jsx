@@ -23,7 +23,7 @@ import ProcurementManager from "./components/ProcurementManager";
 import ScheduleManager from "./components/ScheduleManager";
 import AssetManager from "./components/AssetManager";
 import UnitSystemView from "./components/UnitSystemView";
-import { initialProjectsData, userRoles, YEAR_1_PROGRAMS, Y1_UNIT_META, getNationalRatio } from "./data/mockData";
+import { initialProjectsData, userRoles, YEAR_1_PROGRAMS, Y1_UNIT_META } from "./data/mockData";
 import { Sun, Moon, LogOut, HelpCircle, ArrowUpRight, Lock as LockIcon, Info, Clock, Edit2 } from "lucide-react";
 import { supabase } from "./supabaseClient";
 import CryptoJS from "crypto-js";
@@ -649,6 +649,7 @@ function formatDataToMultiYear(data) {
           }
 
           const isExternalSub = prog.id.includes("위탁") || prog.title.includes("위탁") || prog.title.includes("협력");
+          const nationalRatio = prog.budget_2026 > 0 ? (prog.budget_national || 0) / prog.budget_2026 : 0.5;
 
           let budget_national = 0;
           let budget_city = 0;
@@ -659,27 +660,11 @@ function formatDataToMultiYear(data) {
             budget_national = 0;
             budget_city = 0;
             budget_external = 0;
-          } else if (prog.id.startsWith("A1가-")) {
-            if (prog.id === "A1가-S1T2-1") {
-              const ratio = 1; // 3차년도 이후도 2차년도와 동일하므로 비율은 1로 고정
-              budget_national = Math.round(112000000 * ratio);
-              budget_city = Math.round(80000000 * ratio);
-            } else if (prog.id === "A1가-S4T12-2") {
-              const ratio = 1; // 3차년도 이후도 2차년도와 동일하므로 비율은 1로 고정
-              budget_city = Math.round(50000000 * ratio);
-            } else {
-              budget_national = budgetMain;
-            }
           } else {
             if (isExternalSub) {
               budget_external = budgetMain;
-            } else if (prog.id.startsWith("A1나-") || prog.id.startsWith("D1-") || prog.id.startsWith("D2-") || prog.id.startsWith("D3-")) {
-              // 💡 [A1나 및 D1, D2, D3 단위과제 재원 표준] A1나 및 D 단위과제의 예산은 100% 국비(국고) 본예산으로 지정합니다.
-              budget_national = budgetMain;
-              budget_city = 0;
             } else {
-              const ratio = getNationalRatio(prog.id);
-              budget_national = Math.round(budgetMain * ratio);
+              budget_national = Math.round(budgetMain * nationalRatio);
               budget_city = budgetMain - budget_national;
             }
           }
@@ -692,27 +677,11 @@ function formatDataToMultiYear(data) {
               spent_national = 0;
               spent_city = 0;
               spent_external = 0;
-            } else if (prog.id.startsWith("A1가-")) {
-              if (prog.id === "A1가-S1T2-1") {
-                const total = 192000000;
-                spent_national = Math.round(spentMain * (112000000 / total));
-                spent_city = spentMain - spent_national;
-              } else if (prog.id === "A1가-S4T12-2") {
-                spent_city = spentMain;
-              } else {
-                spent_national = spentMain;
-              }
+            } else if (isExternalSub) {
+              spent_external = spentMain;
             } else {
-              if (isExternalSub) {
-                spent_external = spentMain;
-              } else if (prog.id.startsWith("A1나-") || prog.id.startsWith("D1-") || prog.id.startsWith("D2-") || prog.id.startsWith("D3-")) {
-                spent_national = spentMain;
-                spent_city = 0;
-              } else {
-                const ratio = getNationalRatio(prog.id);
-                spent_national = Math.round(spentMain * ratio);
-                spent_city = spentMain - spent_national;
-              }
+              spent_national = Math.round(spentMain * nationalRatio);
+              spent_city = spentMain - spent_national;
             }
           }
 
@@ -726,12 +695,8 @@ function formatDataToMultiYear(data) {
               carry_external = 0;
             } else if (isExternalSub) {
               carry_external = budgetCarry;
-            } else if (prog.id.startsWith("A1나-") || prog.id.startsWith("D1-") || prog.id.startsWith("D2-") || prog.id.startsWith("D3-")) {
-              carry_national = budgetCarry;
-              carry_city = 0;
             } else {
-              const ratio = getNationalRatio(prog.id);
-              carry_national = Math.round(budgetCarry * ratio);
+              carry_national = Math.round(budgetCarry * nationalRatio);
               carry_city = budgetCarry - carry_national;
             }
           }
@@ -746,12 +711,8 @@ function formatDataToMultiYear(data) {
               carry_spent_external = 0;
             } else if (isExternalSub) {
               carry_spent_external = spentCarry;
-            } else if (prog.id.startsWith("A1나-") || prog.id.startsWith("D1-") || prog.id.startsWith("D2-") || prog.id.startsWith("D3-")) {
-              carry_spent_national = spentCarry;
-              carry_spent_city = 0;
             } else {
-              const ratio = getNationalRatio(prog.id);
-              carry_spent_national = Math.round(spentCarry * ratio);
+              carry_spent_national = Math.round(spentCarry * nationalRatio);
               carry_spent_city = spentCarry - carry_spent_national;
             }
           }
@@ -1115,8 +1076,8 @@ function mergeProjectsWithInitial(loadedData, multiYearInitialData) {
                     const sy = sourceProg.years[yr];
                     const y = updatedYears[yr];
 
-                    // 💡 [재원 비율 자가 복구 가드] DB에 저장된 국비 비율이 목표 비율(targetRatio)과 오차가 생기면 강제 교정 대상입니다.
-                    const targetRatio = getNationalRatio(sourceProg.id);
+                    // 💡 [재원 비율 자가 복구 가드] DB에 저장된 국비 비율이 sourceProg의 2차년도 공식 기획 재원 비율과 오차가 생기면 강제 교정 대상입니다.
+                    const targetRatio = sourceProg.budget_2026 > 0 ? (sourceProg.budget_national || 0) / sourceProg.budget_2026 : 0.5;
                     const isDirtyRatio = y && y.budget_main > 0 && Math.abs((y.budget_national || 0) / y.budget_main - targetRatio) > 0.05;
 
                     const hasUserSavedData = y && (
@@ -1130,13 +1091,8 @@ function mergeProjectsWithInitial(loadedData, multiYearInitialData) {
                       const rawBudgetMain = yr === 2 ? (sourceProg.budget_2026 || 0) : yr === 1 ? Math.round((sourceProg.budget_2026 || 0) * 0.9) : Math.round((sourceProg.budget_2026 || 0) * (yr === 3 ? 1.1 : yr === 4 ? 1.2 : 1.3));
 
                       y.budget_main = rawBudgetMain;
-                      if (targetRatio === 1.0) {
-                        y.budget_national = rawBudgetMain;
-                        y.budget_city = 0;
-                      } else {
-                        y.budget_national = Math.round(rawBudgetMain * targetRatio);
-                        y.budget_city = rawBudgetMain - y.budget_national;
-                      }
+                      y.budget_national = Math.round(rawBudgetMain * targetRatio);
+                      y.budget_city = rawBudgetMain - y.budget_national;
                       y.budget_external = 0; // 특별한 언급이 없으므로 외부사업비는 0원 처리
 
                       // 특별한 언급이 없으므로 이월사업비도 0원 처리
@@ -1356,6 +1312,24 @@ function mergeProjectsWithInitial(loadedData, multiYearInitialData) {
           }
           [1, 2, 3, 4, 5].forEach((yr) => {
             const mainVal = categorySums[catName][yr].main;
+
+            // 💡 [단위과제 하위 프로그램들의 총합 비율 계산]
+            let totalProgMain = 0;
+            let totalProgNational = 0;
+            let totalProgSpent = 0;
+            let totalProgSpentNational = 0;
+
+            unit.programs.forEach((prog) => {
+              const py = prog.years?.[yr] || {};
+              totalProgMain += py.budget_main || 0;
+              totalProgNational += py.budget_national || 0;
+              totalProgSpent += py.spent_main || 0;
+              totalProgSpentNational += py.spent_national || 0;
+            });
+
+            const ratio = totalProgMain > 0 ? totalProgNational / totalProgMain : 0.5;
+            const spentRatio = totalProgSpent > 0 ? totalProgSpentNational / totalProgSpent : ratio;
+
             // 💡 [교육용 한글 주석] A1나(신산업특화) 및 D1, D2, D3 단위과제는 시비 예산 없이 
             // 국비(국고)로만 100% 편성하도록 예외 대상을 적용합니다. (시비 0원)
             const isNationalOnly = ["A1나", "D1", "D2", "D3"].includes(unit.id);
@@ -1365,11 +1339,11 @@ function mergeProjectsWithInitial(loadedData, multiYearInitialData) {
               spent_main: categorySums[catName][yr].spent_main,
               spent_carry: categorySums[catName][yr].spent_carry,
               // 💡 [재원 정밀 집계] A1나 및 D1, D2, D3 단위과제는 100% 국비(국고) 본예산으로 분류하고 시비는 0원 처리합니다.
-              budget_national: isNationalOnly ? mainVal : Math.round(mainVal * 0.5),
-              budget_city: isNationalOnly ? 0 : mainVal - Math.round(mainVal * 0.5),
+              budget_national: isNationalOnly ? mainVal : Math.round(mainVal * ratio),
+              budget_city: isNationalOnly ? 0 : mainVal - Math.round(mainVal * ratio),
               budget_external: 0,
-              spent_national: isNationalOnly ? categorySums[catName][yr].spent_main : Math.round(categorySums[catName][yr].spent_main * 0.5),
-              spent_city: isNationalOnly ? 0 : categorySums[catName][yr].spent_main - Math.round(categorySums[catName][yr].spent_main * 0.5),
+              spent_national: isNationalOnly ? categorySums[catName][yr].spent_main : Math.round(categorySums[catName][yr].spent_main * spentRatio),
+              spent_city: isNationalOnly ? 0 : categorySums[catName][yr].spent_main - Math.round(categorySums[catName][yr].spent_main * spentRatio),
               spent_external: 0
             };
           });
@@ -3956,6 +3930,24 @@ export default function App() {
                     }
                     [1, 2, 3, 4, 5].forEach((yr) => {
                       const mainVal = categorySums[catName][yr].main;
+
+                      // 💡 [단위과제 하위 프로그램들의 총합 비율 계산]
+                      let totalProgMain = 0;
+                      let totalProgNational = 0;
+                      let totalProgSpent = 0;
+                      let totalProgSpentNational = 0;
+
+                      unit.programs.forEach((prog) => {
+                        const py = prog.years?.[yr] || {};
+                        totalProgMain += py.budget_main || 0;
+                        totalProgNational += py.budget_national || 0;
+                        totalProgSpent += py.spent_main || 0;
+                        totalProgSpentNational += py.spent_national || 0;
+                      });
+
+                      const ratio = totalProgMain > 0 ? totalProgNational / totalProgMain : 0.5;
+                      const spentRatio = totalProgSpent > 0 ? totalProgSpentNational / totalProgSpent : ratio;
+
                       // 💡 [교육용 한글 주석] 로컬 캐시 동화 시 A1나 및 D1, D2, D3 단위과제 국비 100%, 시비 0원 강제 연산 처리
                       const isNationalOnly = ["A1나", "D1", "D2", "D3"].includes(unit.id);
                       unit.budgetDetails[catName].years[yr] = {
@@ -3963,11 +3955,11 @@ export default function App() {
                         budget_carry: categorySums[catName][yr].carry,
                         spent_main: categorySums[catName][yr].spent_main,
                         spent_carry: categorySums[catName][yr].spent_carry,
-                        budget_national: isNationalOnly ? mainVal : Math.round(mainVal * 0.5),
-                        budget_city: isNationalOnly ? 0 : mainVal - Math.round(mainVal * 0.5),
+                        budget_national: isNationalOnly ? mainVal : Math.round(mainVal * ratio),
+                        budget_city: isNationalOnly ? 0 : mainVal - Math.round(mainVal * ratio),
                         budget_external: 0,
-                        spent_national: isNationalOnly ? categorySums[catName][yr].spent_main : Math.round(categorySums[catName][yr].spent_main * 0.5),
-                        spent_city: isNationalOnly ? 0 : categorySums[catName][yr].spent_main - Math.round(categorySums[catName][yr].spent_main * 0.5),
+                        spent_national: isNationalOnly ? categorySums[catName][yr].spent_main : Math.round(categorySums[catName][yr].spent_main * spentRatio),
+                        spent_city: isNationalOnly ? 0 : categorySums[catName][yr].spent_main - Math.round(categorySums[catName][yr].spent_main * spentRatio),
                         spent_external: 0
                       };
                     });
@@ -7270,7 +7262,8 @@ export default function App() {
                           y.budget_carry_city = 0;
                           y.budget_carry_external = 0;
                         } else {
-                          y.budget_carry_national = Math.round((y.budget_carry || 0) * 0.5);
+                          const nationalRatio = prog.budget_2026 > 0 ? (prog.budget_national || 0) / prog.budget_2026 : 0.5;
+                          y.budget_carry_national = Math.round((y.budget_carry || 0) * nationalRatio);
                           y.budget_carry_city = (y.budget_carry || 0) - y.budget_carry_national;
                           y.budget_carry_external = 0;
                         }
@@ -7354,17 +7347,34 @@ export default function App() {
               const mainVal = categorySums[catName].main;
               const isNationalOnly = ["A1나", "D1", "D2", "D3"].includes(u.id);
 
+              // 💡 [단위과제 하위 프로그램들의 총합 비율 계산]
+              let totalProgMain = 0;
+              let totalProgNational = 0;
+              let totalProgSpent = 0;
+              let totalProgSpentNational = 0;
+
+              u.programs.forEach((prog) => {
+                const py = prog.years?.[selectedYear] || {};
+                totalProgMain += py.budget_main || 0;
+                totalProgNational += py.budget_national || 0;
+                totalProgSpent += py.spent_main || 0;
+                totalProgSpentNational += py.spent_national || 0;
+              });
+
+              const ratio = totalProgMain > 0 ? totalProgNational / totalProgMain : 0.5;
+              const spentRatio = totalProgSpent > 0 ? totalProgSpentNational / totalProgSpent : ratio;
+
               tgt.budget_main = mainVal;
               tgt.budget_carry = categorySums[catName].carry;
               tgt.spent_main = categorySums[catName].spent_main;
               tgt.spent_carry = categorySums[catName].spent_carry;
 
               // 💡 [비목 상세 수준 재원 기입] A1나 및 D1, D2, D3 단위과제는 국비 100%, 시비 0원 강제 처리
-              tgt.budget_national = isNationalOnly ? mainVal : Math.round(mainVal * 0.5);
-              tgt.budget_city = isNationalOnly ? 0 : mainVal - Math.round(mainVal * 0.5);
+              tgt.budget_national = isNationalOnly ? mainVal : Math.round(mainVal * ratio);
+              tgt.budget_city = isNationalOnly ? 0 : mainVal - Math.round(mainVal * ratio);
               tgt.budget_external = 0;
-              tgt.spent_national = isNationalOnly ? categorySums[catName].spent_main : Math.round(categorySums[catName].spent_main * 0.5);
-              tgt.spent_city = isNationalOnly ? 0 : categorySums[catName].spent_main - Math.round(categorySums[catName].spent_main * 0.5);
+              tgt.spent_national = isNationalOnly ? categorySums[catName].spent_main : Math.round(categorySums[catName].spent_main * spentRatio);
+              tgt.spent_city = isNationalOnly ? 0 : categorySums[catName].spent_main - Math.round(categorySums[catName].spent_main * spentRatio);
               tgt.spent_external = 0;
             });
 
