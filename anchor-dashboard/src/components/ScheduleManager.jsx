@@ -9,6 +9,18 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import * as pdfjsLib from "pdfjs-dist";
 pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdn.jsdelivr.net/npm/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.mjs`;
 
+// 💡 [디자인 가드] 위원회 ID별 고유 Lucide 아이콘 리턴 (특색있는 디스플레이 구현)
+const getCommitteeIcon = (id) => {
+  switch (id) {
+    case "total": return <Award size={15} />;
+    case "planning": return <Layers size={15} />;
+    case "budget": return <FileText size={15} />;
+    case "evaluation": return <CheckCircle size={15} />;
+    case "advisory": return <Users size={15} />;
+    default: return <Info size={15} />;
+  }
+};
+
 // RISE 사업을 이끌어가는 5대 거버넌스 위원회 상세 정의 상수
 const COMMITTEES_DATA = [
   {
@@ -516,23 +528,27 @@ export default function ScheduleManager({
           .order("id", { ascending: true });
         if (memsErr) throw memsErr;
 
-        const combined = sortedComms.map(c => ({
-          ...c,
-          desc: c.description, // desc 필드를 description 컬럼으로 상호 치환 대응
-          members: (mems || [])
-            .filter(m => m.committee_id === c.id)
-            .map(m => ({
-              id: m.id,
-              type: m.type,
-              name: m.name,
-              org: m.org,
-              dept: m.dept,
-              rank: m.rank,
-              location: m.location,
-              term: m.term,
-              note: m.note
-            }))
-        }));
+        const combined = sortedComms.map(c => {
+          const localMaster = COMMITTEES_DATA.find(lc => lc.id === c.id) || {};
+          return {
+            ...localMaster, // 로컬 마스터 데이터의 예쁜 디스플레이 디자인 속성(color, badge, purpose, cycle 등) 선주입
+            ...c,           // Supabase 실시간 DB 값(name, total_quorum 등) 최종 병합
+            desc: c.description || localMaster.desc,
+            members: (mems || [])
+              .filter(m => m.committee_id === c.id)
+              .map(m => ({
+                id: m.id,
+                type: m.type,
+                name: m.name,
+                org: m.org,
+                dept: m.dept,
+                rank: m.rank,
+                location: m.location,
+                term: m.term,
+                note: m.note
+              }))
+          };
+        });
         setCommittees(combined);
       }
     } catch (e) {
@@ -4493,6 +4509,8 @@ Gemini 피드백: \n${geminiCritiqueText}
             </div>
           </div>
 
+
+
           {/* subsub 탭 버튼 그룹 */}
           <div style={{ display: "flex", gap: "1rem", borderBottom: "1px solid var(--border-color)", paddingBottom: "0.5rem" }}>
             <button
@@ -4569,7 +4587,10 @@ Gemini 피드백: \n${geminiCritiqueText}
                       }} />
 
                       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "0.5rem", paddingLeft: "0.5rem" }}>
-                        <h4 style={{ margin: 0, fontSize: "0.95rem", fontWeight: "900", color: isSelected ? "var(--text-primary)" : "var(--text-primary)" }}>
+                        <h4 style={{ margin: 0, fontSize: "0.95rem", fontWeight: "900", color: "var(--text-primary)", display: "flex", alignItems: "center", gap: "0.4rem" }}>
+                          <span style={{ color: isSelected ? "var(--accent-color)" : "var(--text-secondary)", display: "flex", alignItems: "center" }}>
+                            {getCommitteeIcon(comm.id)}
+                          </span>
                           {comm.name}
                         </h4>
                         <span style={{
