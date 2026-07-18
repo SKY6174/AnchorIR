@@ -2260,6 +2260,9 @@ export default function App() {
       major_services: true,
       agreements: true,
       unified_certificates: true,
+      committee: true,
+      committee_meeting: true,
+      committee_report: true,
       schedule: true,
       monthly: true,
       events: true,
@@ -2284,6 +2287,11 @@ export default function App() {
           parsed.unit_status = true;
           parsed.unit_system = true;
           parsed.program_mgmt = true;
+        }
+        if (parsed.committee === undefined) {
+          parsed.committee = true;
+          parsed.committee_meeting = true;
+          parsed.committee_report = true;
         }
         return { ...defaultVisibility, ...parsed };
       } catch (e) {
@@ -2442,8 +2450,14 @@ export default function App() {
           .maybeSingle();
 
         if (!error && data && data.value) {
-          setMenuVisibility(data.value);
-          localStorage.setItem("anchor_menu_visibility", JSON.stringify(data.value));
+          const merged = {
+            committee: true,
+            committee_meeting: true,
+            committee_report: true,
+            ...data.value
+          };
+          setMenuVisibility(merged);
+          localStorage.setItem("anchor_menu_visibility", JSON.stringify(merged));
         }
       } catch (err) {
         console.error("Failed to fetch portal config from DB:", err);
