@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import Sidebar from "./components/Sidebar";
 import KPIOverview from "./components/KPIOverview";
 import ExcelUploader from "./components/ExcelUploader";
-import CommitteeExternalVote from "./components/CommitteeExternalVote";
+const CommitteeExternalVote = React.lazy(() => import("./components/CommitteeExternalVote"));
 import PDCAManager from "./components/PDCAManager";
 import AgreementManager from "./components/AgreementManager";
 import UnifiedCertificateManager from "./components/UnifiedCertificateManager";
@@ -8303,7 +8303,11 @@ export default function App() {
   const voteMeetingId = params.get("meetingId");
 
   if (isVoteMode && voteMeetingId) {
-    return <CommitteeExternalVote meetingId={voteMeetingId} />;
+    return (
+      <React.Suspense fallback={<div style={{ color: "var(--text-secondary)", padding: "2rem", textAlign: "center" }}>심의 의결 채널 로드 중...</div>}>
+        <CommitteeExternalVote meetingId={voteMeetingId} />
+      </React.Suspense>
+    );
   }
 
   if (activeTab === "survey_respond") {
