@@ -4712,7 +4712,7 @@ Gemini 피드백: \n${geminiCritiqueText}
                         {/* 위원 테이블 (가로/세로 오버플로우 가드 장착) */}
                         {activeComm.members && activeComm.members.length > 0 ? (
                           <div style={{ flex: 1, overflowY: "auto", overflowX: "auto", maxHeight: "350px" }} className="custom-scrollbar">
-                            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.78rem", textAlign: "left" }}>
+                            <table style={{ width: "100%", tableLayout: "fixed", borderCollapse: "collapse", fontSize: "0.78rem", textAlign: "left" }}>
                               <thead>
                                 <tr style={{ borderBottom: "1px solid var(--border-color)", color: "var(--text-secondary)" }}>
                                   <th style={{ padding: "0.5rem 0.75rem", fontWeight: "700", width: "60px", whiteSpace: "nowrap" }}>구분</th>
@@ -4721,7 +4721,7 @@ Gemini 피드백: \n${geminiCritiqueText}
                                   <th style={{ padding: "0.5rem 0.75rem", fontWeight: "700", width: "160px", whiteSpace: "nowrap" }}>부서/학과</th>
                                   <th style={{ padding: "0.5rem 0.75rem", fontWeight: "700", width: "80px", whiteSpace: "nowrap" }}>직위</th>
                                   <th style={{ padding: "0.5rem 0.75rem", fontWeight: "700", width: "70px", textAlign: "center", whiteSpace: "nowrap" }}>교내외</th>
-                                  <th style={{ padding: "0.5rem 0.75rem", fontWeight: "700", minWidth: "150px" }}>비고</th>
+                                  <th style={{ padding: "0.5rem 0.75rem", fontWeight: "700" }}>비고</th>
                                   {hasCommitteeEditPermission && <th style={{ padding: "0.5rem 0.75rem", fontWeight: "700", width: "60px", textAlign: "right", whiteSpace: "nowrap" }}>제어</th>}
                                 </tr>
                               </thead>
