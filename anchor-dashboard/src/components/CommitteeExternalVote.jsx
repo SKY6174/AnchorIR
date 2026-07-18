@@ -49,6 +49,22 @@ export default function CommitteeExternalVote({ meetingId }) {
 
   // 이미 제출했는지 확인하는 함수
   const checkAlreadySubmitted = async (mId, memberId) => {
+    // 💡 [Zero Error Console Guard] 로컬 모드 회의 ID인 경우 Supabase REST DB 조회를 완전히 스킵하여 404 에러 방지
+    if (String(mId).startsWith("local-")) {
+      const localData = localStorage.getItem(`local_meeting_responses_${mId}`);
+      if (localData) {
+        const parsed = JSON.parse(localData);
+        const myResp = parsed.find(r => r.member_id === memberId);
+        if (myResp) {
+          setAttended(myResp.attended);
+          setVote(myResp.vote || "APPROVE");
+          setOpinion(myResp.opinion || "");
+          setHasSubmitted(true);
+        }
+      }
+      return;
+    }
+
     try {
       const { data, error } = await supabase
         .from("meeting_responses")
@@ -86,6 +102,11 @@ export default function CommitteeExternalVote({ meetingId }) {
     if (!meetingId) return;
 
     async function fetchMeetingInfo() {
+      // 💡 [Zero Error Console Guard] 로컬 모드 회의 ID인 경우 Supabase REST DB 조회를 완전히 스킵하여 404 에러 방지
+      if (String(meetingId).startsWith("local-")) {
+        throw new Error("Local mode skip db query");
+      }
+
       try {
         const { data, error } = await supabase
           .from("committee_meetings")
@@ -164,7 +185,7 @@ export default function CommitteeExternalVote({ meetingId }) {
             title: "제2차 앵커(RISE)사업단 기획위원회 의결 심의회의",
             agenda: "2026년도 RISE사업 연도별 세부 예산계획안 및 자체평가 환류 대장 승인 의결의 건",
             meeting_date: new Date().toISOString().split("T")[0],
-            access_pin: "1234", // 디폴트 보안 PIN
+            access_pin: "123456", // 6자리 디폴트 보안 PIN코드로 일관성 보정
             status: "진행중",
             committees: {
               name: "앵커기획위원회",
@@ -310,6 +331,44 @@ export default function CommitteeExternalVote({ meetingId }) {
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+  };
+
+  // 💡 [PNG 서명 이미지 업로드 핸들러] (서명 드로잉 보드와 호환 연동)
+  const handleImageUpload = (e) => {
+    if (hasSubmitted) return;
+    const file = e.target.files[0];
+    if (!file) return;
+    
+    if (file.type !== "image/png") {
+      alert("서명 이미지는 반드시 투명배경 또는 PNG 형식이어야 합니다.");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = canvasRef.current;
+        if (canvas) {
+          const ctx = canvas.getContext("2d");
+          // 1) 캔버스를 먼저 완전히 지움
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          
+          // 2) 이미지 비율 유지하면서 캔버스 중앙 정렬 렌더링
+          const ratio = Math.min(canvas.width / img.width, canvas.height / img.height);
+          const newWidth = img.width * ratio * 0.85; // 여백 0.85 적용
+          const newHeight = img.height * ratio * 0.85;
+          const x = (canvas.width - newWidth) / 2;
+          const y = (canvas.height - newHeight) / 2;
+
+          // 3) 캔버스에 서명 렌더링
+          ctx.drawImage(img, x, y, newWidth, newHeight);
+          alert("서명 파일(PNG)이 성공적으로 드로잉 보드에 로드되었습니다.");
+        }
+      };
+      img.src = event.target.result;
+    };
+    reader.readAsDataURL(file);
   };
 
   // 5. 의결서 최종 제출
@@ -705,6 +764,23 @@ export default function CommitteeExternalVote({ meetingId }) {
                 <small style={{ color: "var(--text-secondary)", fontSize: "0.7rem", marginTop: "0.25rem", display: "block" }}>
                   * 모바일 환경의 경우 손가락 터치 드로잉 서명을 지원합니다.
                 </small>
+
+                {/* 💡 [PNG 서명 이미지 파일 업로드 확장부] */}
+                <div style={{ marginTop: "0.5rem", padding: "0.5rem", border: "1px dashed var(--border-color)", borderRadius: "6px", display: "flex", alignItems: "center", justifyContent: "space-between", background: "rgba(255,255,255,0.01)" }}>
+                  <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>
+                    또는 기 제작된 서명 이미지(PNG) 직접 업로드
+                  </span>
+                  <label className="btn" style={{ padding: "0.3rem 0.6rem", fontSize: "0.75rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color)", borderRadius: "4px", cursor: "pointer", display: "inline-block", margin: 0 }}>
+                    파일 선택
+                    <input
+                      type="file"
+                      accept="image/png"
+                      onChange={handleImageUpload}
+                      disabled={hasSubmitted}
+                      style={{ display: "none" }}
+                    />
+                  </label>
+                </div>
               </div>
 
               {/* 제출 버튼 */}
