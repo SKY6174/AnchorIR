@@ -3,6 +3,7 @@ import { supabase } from "../supabaseClient";
 import CryptoJS from "crypto-js";
 import { Plus, User, Award, Trash2, ShieldAlert, X, Upload, Download } from "lucide-react";
 import * as XLSX from "xlsx";
+import { academicYears } from "./OrgChartManager";
 
 // 💡 [보안 수칙 - Rule 8] 개인정보 암복호화를 위한 AES 대칭키 정의
 const SECRET_KEY = "anchor_instructor_secure_encryption_key_2026";
@@ -77,18 +78,25 @@ const PROJECTS_MAP = {
   D3: ["D3-S1T1-1"]
 };
 
-const DEPARTMENTS = [
-  "컴퓨터정보과",
-  "간호학과",
-  "기계공학과",
-  "전기전자공학과",
-  "화학공학과",
-  "세무회계학과",
-  "평생교육원",
-  "치위생학과",
-  "물리치료학과",
-  "사회복지학과"
-];
+// 💡 선택 연도에 속하는 학부/학과/전공 리스트를 유니크하게 추출하는 헬퍼 함수
+const getDeptsByYear = (yearStr) => {
+  const numericYear = parseInt(yearStr) || 2026;
+  const yearData = academicYears[numericYear];
+  if (!yearData || !yearData.departments) return [];
+  
+  const names = [];
+  yearData.departments.forEach(group => {
+    if (group.subTeams) {
+      group.subTeams.forEach(team => {
+        names.push(team.name);
+        if (team.majors) {
+          team.majors.forEach(major => names.push(major.name));
+        }
+      });
+    }
+  });
+  return Array.from(new Set(names)).sort();
+};
 
 export default function InstructorPoolManager() {
   const [instructors, setInstructors] = useState([]);
@@ -112,13 +120,32 @@ export default function InstructorPoolManager() {
   // 변동 정보 이력 등록 폼 상태 (하나로 통합)
   const [newHistoryForm, setNewHistoryForm] = useState({
     year: 2026,
-    department: "컴퓨터정보과",
+    department: "",
     position: "교수",
     is_internal: true,
     unit_id: "B2",
     program_id: "B2-S1T1-1",
     amount: ""
   });
+
+  // 💡 교내 여부 및 연도 변경 시 학부(과) 자동 디폴트 셋팅
+  useEffect(() => {
+    if (newHistoryForm.is_internal) {
+      const depts = getDeptsByYear(newHistoryForm.year);
+      if (depts.length > 0) {
+        if (!depts.includes(newHistoryForm.department)) {
+          setNewHistoryForm(prev => ({ ...prev, department: depts[0] }));
+        }
+      } else {
+        setNewHistoryForm(prev => ({ ...prev, department: "" }));
+      }
+    } else {
+      const depts = getDeptsByYear(newHistoryForm.year);
+      if (depts.includes(newHistoryForm.department)) {
+        setNewHistoryForm(prev => ({ ...prev, department: "" }));
+      }
+    }
+  }, [newHistoryForm.year, newHistoryForm.is_internal]);
 
   // 1. 교∙강사 마스터 리스트 로드 (고정 정보)
   const fetchInstructors = async () => {
@@ -597,6 +624,7 @@ export default function InstructorPoolManager() {
               </div>
               <div style={{ background: "rgba(0,0,0,0.03)", padding: "0.75rem", borderRadius: "0.25rem", marginBottom: "0.8rem" }}>
                 <form onSubmit={handleAddHistory} style={{ display: "flex", flexDirection: "column", gap: "0.6rem" }}>
+                  {/* 1행: 사업연도 및 교내/교외 구분 */}
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem" }}>
                     <div>
                       <label style={{ fontSize: "0.7rem", color: "var(--text-secondary)" }}>사업연도</label>
@@ -612,18 +640,51 @@ export default function InstructorPoolManager() {
                       </select>
                     </div>
                     <div>
-                      <label style={{ fontSize: "0.7rem", color: "var(--text-secondary)" }}>소속</label>
-                      <select
-                        value={newHistoryForm.department}
-                        onChange={(e) => setNewHistoryForm(prev => ({ ...prev, department: e.target.value }))}
-                        style={{ width: "100%", padding: "0.25rem", fontSize: "0.75rem", borderRadius: "0.2rem", background: "var(--card-bg)", color: "var(--text-color)", border: "1px solid var(--border-color)" }}
-                      >
-                        {DEPARTMENTS.map(dept => <option key={dept} value={dept}>{dept}</option>)}
-                      </select>
+                      <label style={{ fontSize: "0.7rem", color: "var(--text-secondary)", display: "block" }}>교내/교외 구분</label>
+                      <div style={{ display: "flex", gap: "0.8rem", marginTop: "0.3rem" }}>
+                        <label style={{ fontSize: "0.75rem", display: "flex", alignItems: "center", gap: "0.2rem", cursor: "pointer", color: "var(--text-primary)" }}>
+                          <input
+                            type="radio"
+                            checked={newHistoryForm.is_internal === true}
+                            onChange={() => setNewHistoryForm(prev => ({ ...prev, is_internal: true }))}
+                          /> 교내
+                        </label>
+                        <label style={{ fontSize: "0.75rem", display: "flex", alignItems: "center", gap: "0.2rem", cursor: "pointer", color: "var(--text-primary)" }}>
+                          <input
+                            type="radio"
+                            checked={newHistoryForm.is_internal === false}
+                            onChange={() => setNewHistoryForm(prev => ({ ...prev, is_internal: false }))}
+                          /> 교외
+                        </label>
+                      </div>
                     </div>
                   </div>
 
+                  {/* 2행: 소속 및 직급 */}
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem" }}>
+                    <div>
+                      <label style={{ fontSize: "0.7rem", color: "var(--text-secondary)" }}>소속</label>
+                      {newHistoryForm.is_internal ? (
+                        <select
+                          value={newHistoryForm.department}
+                          onChange={(e) => setNewHistoryForm(prev => ({ ...prev, department: e.target.value }))}
+                          style={{ width: "100%", padding: "0.25rem", fontSize: "0.75rem", borderRadius: "0.2rem", background: "var(--card-bg)", color: "var(--text-color)", border: "1px solid var(--border-color)" }}
+                        >
+                          {getDeptsByYear(newHistoryForm.year).map(dept => (
+                            <option key={dept} value={dept}>{dept}</option>
+                          ))}
+                        </select>
+                      ) : (
+                        <input
+                          type="text"
+                          placeholder="소속 기관명 직접 입력"
+                          required
+                          value={newHistoryForm.department}
+                          onChange={(e) => setNewHistoryForm(prev => ({ ...prev, department: e.target.value }))}
+                          style={{ width: "100%", padding: "0.25rem", fontSize: "0.75rem", borderRadius: "0.2rem", background: "var(--card-bg)", color: "var(--text-color)", border: "1px solid var(--border-color)" }}
+                        />
+                      )}
+                    </div>
                     <div>
                       <label style={{ fontSize: "0.7rem", color: "var(--text-secondary)" }}>직급</label>
                       <input
@@ -634,25 +695,6 @@ export default function InstructorPoolManager() {
                         onChange={(e) => setNewHistoryForm(prev => ({ ...prev, position: e.target.value }))}
                         style={{ width: "100%", padding: "0.25rem", fontSize: "0.75rem", borderRadius: "0.2rem", background: "var(--card-bg)", color: "var(--text-color)", border: "1px solid var(--border-color)" }}
                       />
-                    </div>
-                    <div>
-                      <label style={{ fontSize: "0.7rem", color: "var(--text-secondary)", display: "block" }}>교내/교외 구분</label>
-                      <div style={{ display: "flex", gap: "0.8rem", marginTop: "0.3rem" }}>
-                        <label style={{ fontSize: "0.75rem", display: "flex", alignItems: "center", gap: "0.2rem", cursor: "pointer", color: "var(--text-primary)" }}>
-                          <input
-                            type="radio"
-                            checked={newHistoryForm.is_internal === true}
-                            onChange={() => setNewHistoryForm(prev => ({ ...prev, is_internal: true }))}
-                          /> 교내
-                        </label>
-                        <label style={{ fontSize: "0.75rem", display: "flex", alignItems: "center", gap: "0.2" + "rem", cursor: "pointer", color: "var(--text-primary)" }}>
-                          <input
-                            type="radio"
-                            checked={newHistoryForm.is_internal === false}
-                            onChange={() => setNewHistoryForm(prev => ({ ...prev, is_internal: false }))}
-                          /> 교외
-                        </label>
-                      </div>
                     </div>
                   </div>
 
