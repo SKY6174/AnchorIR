@@ -6651,7 +6651,7 @@ export default function App() {
   }, [activeTab, menuVisibility, kpiSubTab, displayProjects]);
 
 
-  // 새로고침 시 스크롤 위치 영속성 복원 훅 (.main-content 컨테이너 대상)
+  // 새로고침 시 스크롤 위치 영속성 복원 훅 (.main-content 컨테이너 대상) - 마운트 시 1회 작동
   useEffect(() => {
     const mainEl = document.querySelector(".main-content");
     if (!mainEl) {
@@ -6717,7 +6717,15 @@ export default function App() {
       }
       if (scrollTimeout) clearTimeout(scrollTimeout);
     };
-  }, [currentUser, activeTab, projectsSubTab, selectedProgId]);
+  }, []); // 빈 의존성 배열로 마운트 시 1회만 스크롤 복원 수행
+
+  // 💡 [탭/서브탭/관리 서브탭 전환 시 메인 영역 스크롤 최상단 리셋 훅]
+  useEffect(() => {
+    const mainEl = document.querySelector(".main-content");
+    if (mainEl) {
+      mainEl.scrollTop = 0;
+    }
+  }, [activeTab, projectsSubTab, mgmtSubTab, kpiSubTab, selectedProgId]);
 
   // 로컬스토리지에서 세션 확인 및 테마 설정
   useEffect(() => {
