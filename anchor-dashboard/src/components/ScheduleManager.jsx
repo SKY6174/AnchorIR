@@ -4715,14 +4715,14 @@ Gemini 피드백: \n${geminiCritiqueText}
                             <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.78rem", textAlign: "left" }}>
                               <thead>
                                 <tr style={{ borderBottom: "1px solid var(--border-color)", color: "var(--text-secondary)" }}>
-                                  <th style={{ padding: "0.5rem 0.75rem", fontWeight: "700" }}>구분</th>
-                                  <th style={{ padding: "0.5rem 0.75rem", fontWeight: "700" }}>성명</th>
-                                  <th style={{ padding: "0.5rem 0.75rem", fontWeight: "700" }}>소속기관</th>
-                                  <th style={{ padding: "0.5rem 0.75rem", fontWeight: "700" }}>부서/학과</th>
-                                  <th style={{ padding: "0.5rem 0.75rem", fontWeight: "700" }}>직위</th>
-                                  <th style={{ padding: "0.5rem 0.75rem", fontWeight: "700", textAlign: "center" }}>교내외</th>
-                                  <th style={{ padding: "0.5rem 0.75rem", fontWeight: "700" }}>비고</th>
-                                  {hasCommitteeEditPermission && <th style={{ padding: "0.5rem 0.75rem", fontWeight: "700", textAlign: "right" }}>제어</th>}
+                                  <th style={{ padding: "0.5rem 0.75rem", fontWeight: "700", width: "60px", whiteSpace: "nowrap" }}>구분</th>
+                                  <th style={{ padding: "0.5rem 0.75rem", fontWeight: "700", width: "85px", whiteSpace: "nowrap" }}>성명</th>
+                                  <th style={{ padding: "0.5rem 0.75rem", fontWeight: "700", width: "140px", whiteSpace: "nowrap" }}>소속기관</th>
+                                  <th style={{ padding: "0.5rem 0.75rem", fontWeight: "700", width: "160px", whiteSpace: "nowrap" }}>부서/학과</th>
+                                  <th style={{ padding: "0.5rem 0.75rem", fontWeight: "700", width: "80px", whiteSpace: "nowrap" }}>직위</th>
+                                  <th style={{ padding: "0.5rem 0.75rem", fontWeight: "700", width: "70px", textAlign: "center", whiteSpace: "nowrap" }}>교내외</th>
+                                  <th style={{ padding: "0.5rem 0.75rem", fontWeight: "700", minWidth: "150px" }}>비고</th>
+                                  {hasCommitteeEditPermission && <th style={{ padding: "0.5rem 0.75rem", fontWeight: "700", width: "60px", textAlign: "right", whiteSpace: "nowrap" }}>제어</th>}
                                 </tr>
                               </thead>
                               <tbody>
@@ -4736,7 +4736,7 @@ Gemini 피드백: \n${geminiCritiqueText}
                                     }}
                                     className="table-row-hover"
                                   >
-                                    <td style={{ padding: "0.6rem 0.75rem" }}>
+                                    <td style={{ padding: "0.6rem 0.75rem", whiteSpace: "nowrap" }}>
                                       <span style={{
                                         padding: "0.15rem 0.4rem",
                                         borderRadius: "4px",
@@ -4748,11 +4748,11 @@ Gemini 피드백: \n${geminiCritiqueText}
                                         {member.type}
                                       </span>
                                     </td>
-                                    <td style={{ padding: "0.6rem 0.75rem", fontWeight: "700" }}>{member.name}</td>
-                                    <td style={{ padding: "0.6rem 0.75rem", color: "var(--text-secondary)" }}>{member.org}</td>
-                                    <td style={{ padding: "0.6rem 0.75rem", color: "var(--text-secondary)" }}>{member.dept || "-"}</td>
-                                    <td style={{ padding: "0.6rem 0.75rem", color: "var(--text-secondary)" }}>{member.rank || "-"}</td>
-                                    <td style={{ padding: "0.6rem 0.75rem", textAlign: "center" }}>
+                                    <td style={{ padding: "0.6rem 0.75rem", fontWeight: "700", whiteSpace: "nowrap" }}>{member.name}</td>
+                                    <td style={{ padding: "0.6rem 0.75rem", color: "var(--text-secondary)", whiteSpace: "nowrap" }}>{member.org}</td>
+                                    <td style={{ padding: "0.6rem 0.75rem", color: "var(--text-secondary)", whiteSpace: "nowrap" }}>{member.dept || "-"}</td>
+                                    <td style={{ padding: "0.6rem 0.75rem", color: "var(--text-secondary)", whiteSpace: "nowrap" }}>{member.rank || "-"}</td>
+                                    <td style={{ padding: "0.6rem 0.75rem", textAlign: "center", whiteSpace: "nowrap" }}>
                                       <span style={{
                                         padding: "0.1rem 0.3rem",
                                         borderRadius: "3px",
@@ -4767,7 +4767,7 @@ Gemini 피드백: \n${geminiCritiqueText}
                                       {member.note}
                                     </td>
                                     {hasCommitteeEditPermission && (
-                                      <td style={{ padding: "0.6rem 0.75rem", textAlign: "right" }}>
+                                      <td style={{ padding: "0.6rem 0.75rem", textAlign: "right", whiteSpace: "nowrap" }}>
                                         <div style={{ display: "flex", gap: "0.4rem", justifyContent: "flex-end" }}>
                                           <button
                                             onClick={() => {
