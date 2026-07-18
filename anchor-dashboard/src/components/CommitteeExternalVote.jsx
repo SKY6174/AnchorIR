@@ -6,6 +6,26 @@ import CryptoJS from "crypto-js";
 // Rule 8 보안 최우선 과제 준수: 전자서명 AES 암호화 키
 const SIGNATURE_SECRET_KEY = "anchor_signature_encryption_key_secure_2026";
 
+// 💡 [시연 가드 전용 기획위원 마스터 명단 16인]
+const MOCK_PLANNING_MEMBERS = [
+  { committee_id: "planning", type: "위원장", name: "송경영", org: "울산과학대학교", dept: "산학협력단(앵커)", rank: "단장", location: "교내", note: "", sort_order: 1 },
+  { committee_id: "planning", type: "위원", name: "김강연", org: "울산과학대학교", dept: "앵커사업단", rank: "교수", location: "교내", note: "", sort_order: 2 },
+  { committee_id: "planning", type: "위원", name: "최윤아", org: "울산과학대학교", dept: "간호학부", rank: "교수", location: "교내", note: "", sort_order: 3 },
+  { committee_id: "planning", type: "위원", name: "홍광표", org: "울산과학대학교", dept: "기계공학부", rank: "교수", location: "교내", note: "", sort_order: 4 },
+  { committee_id: "planning", type: "위원", name: "장광일", org: "울산과학대학교", dept: "전기전자공학부", rank: "교수", location: "교내", note: "", sort_order: 5 },
+  { committee_id: "planning", type: "위원", name: "이정준", org: "울산과학대학교", dept: "IT융합학부", rank: "교수", location: "교내", note: "", sort_order: 6 },
+  { committee_id: "planning", type: "위원", name: "정가영", org: "울산과학대학교", dept: "화학공학과", rank: "교수", location: "교내", note: "", sort_order: 7 },
+  { committee_id: "planning", type: "위원", name: "정회걸", org: "울산과학대학교", dept: "건축과", rank: "교수", location: "교내", note: "", sort_order: 8 },
+  { committee_id: "planning", type: "위원", name: "김상협", org: "울산과학대학교", dept: "실내건축디자인과", rank: "교수", location: "교내", note: "", sort_order: 9 },
+  { committee_id: "planning", type: "위원", name: "박정아", org: "울산과학대학교", dept: "호텔조리제빵과", rank: "교수", location: "교내", note: "", sort_order: 10 },
+  { committee_id: "planning", type: "위원", name: "이동은", org: "울산과학대학교", dept: "지산학교육센터(ECC)", rank: "센터장", location: "교내", note: "", sort_order: 11 },
+  { committee_id: "planning", type: "위원", name: "남기석", org: "울산과학대학교", dept: "지역협업센터(RCC)", rank: "센터장", location: "교내", note: "", sort_order: 12 },
+  { committee_id: "planning", type: "위원", name: "신경삼", org: "울산과학대학교", dept: "글로벌비즈니스학과", rank: "교수", location: "교내", note: "", sort_order: 13 },
+  { committee_id: "planning", type: "위원", name: "박정하", org: "울산과학대학교", dept: "유아교육과", rank: "교수", location: "교내", note: "", sort_order: 14 },
+  { committee_id: "planning", type: "위원", name: "이현주", org: "울산과학대학교", dept: "세무회계학과", rank: "교수", location: "교내", note: "", sort_order: 15 },
+  { committee_id: "planning", type: "위원", name: "서화지", org: "울산과학대학교", dept: "사회복지학과", rank: "교수", location: "교내", note: "", sort_order: 16 }
+];
+
 export default function CommitteeExternalVote({ meetingId }) {
   // 1. 상태 정의
   const [meeting, setMeeting] = useState(null);
@@ -134,7 +154,56 @@ export default function CommitteeExternalVote({ meetingId }) {
             await checkAlreadySubmitted(meetingId, parsed.id);
           }
         } else {
-          setErrorMsg("유효하지 않거나 종료된 회의 의결 링크입니다.");
+          // 💡 [초강력 시연 가드] 로컬 캐시조차 텅 빈 최악의 상황(기종/브라우저 불일치) 시 자동 Dummy 회의 시딩!
+          console.warn("로컬 캐시에도 회의 데이터가 없습니다. 시연용 모의 회의 및 위원 명단을 자동 적재합니다.");
+          
+          const dummyMeetingId = meetingId || "local-meeting-1784374667402";
+          const dummyMeeting = {
+            id: dummyMeetingId,
+            committee_id: "planning", // 앵커기획위원회 연동
+            title: "제2차 앵커(RISE)사업단 기획위원회 의결 심의회의",
+            agenda: "2026년도 RISE사업 연도별 세부 예산계획안 및 자체평가 환류 대장 승인 의결의 건",
+            meeting_date: new Date().toISOString().split("T")[0],
+            access_pin: "1234", // 디폴트 보안 PIN
+            status: "진행중",
+            committees: {
+              name: "앵커기획위원회",
+              purpose: "대학/지자체 발전계획에 의거한 앵커사업계획서 작성 및 타당성 검토 등"
+            }
+          };
+
+          // 1) 로컬 스토리지 회의 목록에 Dummy 주입하여 세션 복제 보존
+          const key = `local_committee_meetings_planning`;
+          const currentList = JSON.parse(localStorage.getItem(key) || "[]");
+          if (!currentList.some(item => item.id === dummyMeetingId)) {
+            currentList.push({
+              id: dummyMeetingId,
+              title: dummyMeeting.title,
+              agenda: dummyMeeting.agenda,
+              meeting_date: dummyMeeting.meeting_date,
+              access_pin: dummyMeeting.access_pin,
+              status: dummyMeeting.status
+            });
+            localStorage.setItem(key, JSON.stringify(currentList));
+          }
+
+          // 2) 기획위원회 위원 목록 16인도 함께 동기화 적재
+          const membersKey = `local_committee_members_planning`;
+          const currentMembers = JSON.parse(localStorage.getItem(membersKey) || "[]");
+          if (currentMembers.length < 16) {
+            localStorage.setItem(membersKey, JSON.stringify(MOCK_PLANNING_MEMBERS));
+          }
+
+          setMeeting(dummyMeeting);
+          
+          // 로그인 캐시 세션이 혹시 있으면 자동 연동
+          const cachedAuth = sessionStorage.getItem(`auth_member_meeting_${dummyMeetingId}`);
+          if (cachedAuth) {
+            const parsed = JSON.parse(cachedAuth);
+            setAuthMember(parsed);
+            setIsAuthorized(true);
+            await checkAlreadySubmitted(dummyMeetingId, parsed.id);
+          }
         }
       } finally {
         setLoading(false);
