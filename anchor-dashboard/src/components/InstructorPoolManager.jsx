@@ -41,12 +41,29 @@ const encryptData = (text) => {
 // 💡 [복호화 헬퍼] 암호문을 복호화하여 평문 반환
 const decryptData = (ciphertext) => {
   if (!ciphertext) return "";
+  const trimmed = ciphertext.trim();
+  
+  // 💡 [초강력 복호화 예외 차단]
+  // 평문 데이터(예: 생년월일 YYYY-MM-DD, 대시 포함 계좌번호 등)인 경우
+  // 복호화 시도 시 CryptoJS 에러로 인해 데이터 로드가 중단되는 현상을 방지하기 위해 조기 반환 처리합니다.
+  if (
+    trimmed.includes("-") || 
+    /^\d+$/.test(trimmed) || 
+    trimmed.length < 20
+  ) {
+    return trimmed;
+  }
+
   try {
-    const bytes = CryptoJS.AES.decrypt(ciphertext, SECRET_KEY);
-    return bytes.toString(CryptoJS.enc.Utf8);
+    const bytes = CryptoJS.AES.decrypt(trimmed, SECRET_KEY);
+    const decrypted = bytes.toString(CryptoJS.enc.Utf8);
+    if (!decrypted || decrypted.trim() === "") {
+      return trimmed;
+    }
+    return decrypted;
   } catch (e) {
-    // 만약 마이그레이션 시드 데이터처럼 평문이 들어있을 경우 예외 처리
-    return ciphertext;
+    // 예외 발생 시 안전하게 평문 원본 반환
+    return trimmed;
   }
 };
 
