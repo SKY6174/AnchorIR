@@ -25,7 +25,7 @@ import AssetManager from "./components/AssetManager";
 import CommitteeManager from "./components/CommitteeManager";
 import UnitSystemView from "./components/UnitSystemView";
 import { initialProjectsData, userRoles, YEAR_1_PROGRAMS, Y1_UNIT_META } from "./data/mockData";
-import { Sun, Moon, LogOut, HelpCircle, ArrowUpRight, Lock as LockIcon, Info, Clock, Edit2, FileText, Upload, Plus, Download, X } from "lucide-react";
+import { Sun, Moon, LogOut, HelpCircle, ArrowUpRight, Lock as LockIcon, Info, Clock, Edit2, FileText, Upload, Plus, Download, X, BookOpen } from "lucide-react";
 import { supabase } from "./supabaseClient";
 import CryptoJS from "crypto-js";
 import * as XLSX from "xlsx";
@@ -8393,106 +8393,136 @@ export default function App() {
             ))}
           </div>
 
-          <div className="controls-section" style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
-            {/* Supabase 실시간 동기화 상태 배지 */}
-            <span
-              onClick={() => {
-                if (syncStatus === "error") {
-                  const msg = "동기화 실패 상태입니다.\n\n" +
-                    "[안내 1] 장시간 화면을 켜두셨을 경우 로그인 세션 만료가 원인일 수 있습니다. 안전한 동기화를 위해 로그아웃 및 다시 로그인을 진행하시겠습니까? (권장)\n\n" +
-                    "[안내 2] 단순 캐시 충돌이 의심되는 경우, '취소'를 누르시면 로컬 캐시를 초기화하고 화면을 새로고침합니다.";
-                  if (confirm(msg)) {
-                    // 로그아웃 수행
-                    handleLogout();
-                  } else {
-                    // 캐시 초기화 및 새로고침
-                    localStorage.removeItem(`anchor_cache_cert_y${selectedYear}`);
-                    localStorage.removeItem(`anchor_cache_award_y${selectedYear}`);
-                    localStorage.removeItem(`anchor_cache_agr_y${selectedYear}`);
-                    window.location.reload();
-                  }
-                }
-              }}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "0.25rem",
-                fontSize: "0.75rem",
-                padding: "0.25rem 0.6rem",
-                borderRadius: "4px",
-                cursor: syncStatus === "error" ? "pointer" : "default",
-                background: syncStatus === "synced"
-                  ? "rgba(16, 185, 129, 0.1)"
-                  : syncStatus === "syncing"
-                    ? "rgba(245, 158, 11, 0.1)"
-                    : "rgba(239, 68, 68, 0.1)",
-                color: syncStatus === "synced"
-                  ? "#10B981"
-                  : syncStatus === "syncing"
-                    ? "#F59E0B"
-                    : "#EF4444",
-                border: syncStatus === "synced"
-                  ? "1px solid rgba(16, 185, 129, 0.2)"
-                  : syncStatus === "syncing"
-                    ? "1px solid rgba(245, 158, 11, 0.2)"
-                    : "1px solid rgba(239, 68, 68, 0.2)",
-                marginRight: "0.5rem",
-                fontWeight: "700",
-                textDecoration: syncStatus === "error" ? "underline" : "none"
-              }}
-              title={syncStatus === "error" ? "클릭하여 로컬 캐시 초기화" : ""}
-            >
-              {syncStatus === "synced" ? "☁️ DB 동기화 완료" : syncStatus === "syncing" ? "🔄 DB 저장 중..." : "⚠️ 동기화 실패 (클릭 시 복구)"}
-            </span>
-
-            <span style={{ fontSize: "0.85rem", color: "var(--text-secondary)", marginRight: "0.4rem" }}>
-              {getWelcomeMessage()}
-            </span>
-            {currentUser && !isGuest && (
+          <div className="controls-section" style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "0.5rem" }}>
+            {/* 첫 번째 줄: 로그인 정보, 개인정보 관리, 로그아웃 */}
+            <div style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
+              <span style={{ fontSize: "0.85rem", color: "var(--text-secondary)", marginRight: "0.4rem" }}>
+                {getWelcomeMessage()}
+              </span>
+              {currentUser && !isGuest && (
+                <button
+                  className="btn-primary"
+                  style={{
+                    padding: "0.4rem 0.8rem",
+                    fontSize: "0.75rem",
+                    background: "var(--input-bg)",
+                    border: "1px solid var(--border-color)",
+                    borderRadius: "0.375rem",
+                    color: "var(--text-primary)",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "0.3rem",
+                    cursor: "pointer",
+                    height: "34px"
+                  }}
+                  onClick={() => setIsPasswordModalOpen(true)}
+                >
+                  <LockIcon size={14} />
+                  <span>개인정보 관리</span>
+                </button>
+              )}
               <button
                 className="btn-primary"
                 style={{
                   padding: "0.4rem 0.8rem",
                   fontSize: "0.75rem",
-                  background: "var(--input-bg)",
-                  border: "1px solid var(--border-color)",
+                  background: "rgba(239,68,68,0.15)",
+                  border: "1px solid var(--danger-color)",
                   borderRadius: "0.375rem",
-                  color: "var(--text-primary)",
+                  color: "#f87171",
                   display: "flex",
                   alignItems: "center",
                   gap: "0.3rem",
                   cursor: "pointer",
                   height: "34px"
                 }}
-                onClick={() => setIsPasswordModalOpen(true)}
+                onClick={handleLogout}
               >
-                <LockIcon size={14} />
-                <span>개인정보 관리</span>
+                <LogOut size={14} />
+                <span>로그아웃</span>
               </button>
-            )}
-            <button
-              className="btn-primary"
-              style={{
-                padding: "0.4rem 0.8rem",
-                fontSize: "0.75rem",
-                background: "rgba(239,68,68,0.15)",
-                border: "1px solid var(--danger-color)",
-                borderRadius: "0.375rem",
-                color: "#f87171",
-                display: "flex",
-                alignItems: "center",
-                gap: "0.3rem",
-                cursor: "pointer",
-                height: "34px"
-              }}
-              onClick={handleLogout}
-            >
-              <LogOut size={14} />
-              <span>로그아웃</span>
-            </button>
-            <button className="theme-toggle-btn" style={{ padding: "0.4rem", borderRadius: "0.375rem", height: "34px", width: "34px", display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => setDarkMode(!darkMode)}>
-              {darkMode ? <Sun size={18} /> : <Moon size={18} />}
-            </button>
+            </div>
+
+            {/* 두 번째 줄: DB 동기화 배지, 앵커 Wiki 링크 버튼, 라이트/다크모드 토글 */}
+            <div style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
+              {/* Supabase 실시간 동기화 상태 배지 */}
+              <span
+                onClick={() => {
+                  if (syncStatus === "error") {
+                    const msg = "동기화 실패 상태입니다.\n\n" +
+                      "[안내 1] 장시간 화면을 켜두셨을 경우 로그인 세션 만료가 원인일 수 있습니다. 안전한 동기화를 위해 로그아웃 및 다시 로그인을 진행하시겠습니까? (권장)\n\n" +
+                      "[안내 2] 단순 캐시 충돌이 의심되는 경우, '취소'를 누르시면 로컬 캐시를 초기화하고 화면을 새로고침합니다.";
+                    if (confirm(msg)) {
+                      handleLogout();
+                    } else {
+                      localStorage.removeItem(`anchor_cache_cert_y${selectedYear}`);
+                      localStorage.removeItem(`anchor_cache_award_y${selectedYear}`);
+                      localStorage.removeItem(`anchor_cache_agr_y${selectedYear}`);
+                      window.location.reload();
+                    }
+                  }
+                }}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "0.25rem",
+                  fontSize: "0.75rem",
+                  padding: "0.25rem 0.6rem",
+                  borderRadius: "4px",
+                  cursor: syncStatus === "error" ? "pointer" : "default",
+                  background: syncStatus === "synced"
+                    ? "rgba(16, 185, 129, 0.1)"
+                    : syncStatus === "syncing"
+                      ? "rgba(245, 158, 11, 0.1)"
+                      : "rgba(239, 68, 68, 0.1)",
+                  color: syncStatus === "synced"
+                    ? "#10B981"
+                    : syncStatus === "syncing"
+                      ? "#F59E0B"
+                      : "#EF4444",
+                  border: syncStatus === "synced"
+                    ? "1px solid rgba(16, 185, 129, 0.2)"
+                    : syncStatus === "syncing"
+                      ? "1px solid rgba(245, 158, 11, 0.2)"
+                      : "1px solid rgba(239, 68, 68, 0.2)",
+                  fontWeight: "700",
+                  textDecoration: syncStatus === "error" ? "underline" : "none",
+                  display: "flex",
+                  alignItems: "center",
+                  height: "34px"
+                }}
+                title={syncStatus === "error" ? "클릭하여 로컬 캐시 초기화" : ""}
+              >
+                {syncStatus === "synced" ? "☁️ DB 동기화 완료" : syncStatus === "syncing" ? "🔄 DB 저장 중..." : "⚠️ 동기화 실패 (클릭 시 복구)"}
+              </span>
+
+              {/* 💡 [앵커 Wiki] 이동식 링크 버튼 */}
+              <button
+                className="btn-primary"
+                style={{
+                  padding: "0.4rem 0.8rem",
+                  fontSize: "0.75rem",
+                  background: activeTab === "llm_wiki" ? "rgba(99, 102, 241, 0.15)" : "var(--input-bg)",
+                  border: activeTab === "llm_wiki" ? "1px solid var(--accent-color)" : "1px solid var(--border-color)",
+                  borderRadius: "0.375rem",
+                  color: activeTab === "llm_wiki" ? "var(--accent-color)" : "var(--text-primary)",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "0.3rem",
+                  cursor: "pointer",
+                  height: "34px",
+                  fontWeight: activeTab === "llm_wiki" ? "bold" : "normal"
+                }}
+                onClick={() => setActiveTab("llm_wiki")}
+              >
+                <BookOpen size={14} />
+                <span>앵커 Wiki</span>
+              </button>
+
+              <button className="theme-toggle-btn" style={{ padding: "0.4rem", borderRadius: "0.375rem", height: "34px", width: "34px", display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => setDarkMode(!darkMode)}>
+                {darkMode ? <Sun size={18} /> : <Moon size={18} />}
+              </button>
+            </div>
           </div>
         </header>
 

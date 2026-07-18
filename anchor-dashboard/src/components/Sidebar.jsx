@@ -817,14 +817,7 @@ export default function Sidebar({
             </div>
           )}
 
-          <div
-            className={`nav-item ${activeTab === "llm_wiki" ? "active" : ""}`}
-            onClick={() => onChangeTab("llm_wiki")}
-            style={{ marginTop: "0.2rem" }}
-          >
-            <BookOpen size={24} />
-            <span>앵커Wiki</span>
-          </div>
+
 
           {/* 💡 [위원회 관리] 신규 탭 연동 */}
           {(menuVisibility.committee !== false || isSongDirector) && (
