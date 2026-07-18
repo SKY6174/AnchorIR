@@ -21,6 +21,7 @@ CREATE TABLE committees (
 CREATE TABLE committee_members (
     id BIGSERIAL PRIMARY KEY, -- 자동 증가 PK (BIGINT)
     committee_id VARCHAR(50) REFERENCES committees(id) ON DELETE CASCADE,
+    type VARCHAR(50) DEFAULT '위원', -- 위원 구분 (위원장, 간사, 위원)
     name VARCHAR(100) NOT NULL, -- 위원 성명
     org VARCHAR(100), -- 소속기관 (예: 울산과학대학교)
     dept VARCHAR(100), -- 부서
