@@ -88,12 +88,6 @@ const MENU_SCHEMA = [
     ]
   },
   {
-    key: "llm_wiki",
-    label: "앵커Wiki",
-    description: "앵커사업 지식 공유 및 인공지능 위키백과 정보 제공",
-    subMenus: []
-  },
-  {
     key: "committee",
     label: "위원회 관리",
     description: "각종 사업단위원회 회의 소집, 의결서 취합 및 AI 분석 결과보고 대장 관리",
@@ -117,6 +111,12 @@ const MENU_SCHEMA = [
       { key: "partners", label: "협력기관 관리" },
       { key: "instructor_pool", label: "교∙강사 Pool 관리" }
     ]
+  },
+  {
+    key: "llm_wiki",
+    label: "앵커Wiki",
+    description: "앵커사업 지식 공유 및 인공지능 위키백과 정보 제공",
+    subMenus: []
   }
 ];
 

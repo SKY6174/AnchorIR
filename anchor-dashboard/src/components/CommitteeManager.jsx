@@ -49,54 +49,97 @@ const MOCK_COMMITTEE_MEMBERS_FALLBACK = {
     { id: 105, committee_id: "total", type: "위원", name: "이주영", org: "울산과학대학교", dept: "학생취업처", rank: "처장", location: "교내", note: "", sort_order: 5 },
     { id: 106, committee_id: "total", type: "위원", name: "박일현", org: "울산과학대학교", dept: "총무처", rank: "처장", location: "교내", note: "", sort_order: 6 },
     { id: 107, committee_id: "total", type: "위원", name: "송경영", org: "울산과학대학교", dept: "산학협력단(앵커)", rank: "단장", location: "교내", note: "", sort_order: 7 },
-    { id: 108, committee_id: "total", type: "위원", name: "정문호", org: "정테크", dept: "-", rank: "대표", location: "교외", note: "신규 추가", sort_order: 8 },
-    { id: 109, committee_id: "total", type: "위원", name: "이경우", org: "울산발전연구원", dept: "경제산업연구실", rank: "실장", location: "교외", note: "신규 추가", sort_order: 9 },
-    { id: 110, committee_id: "total", type: "간사", name: "고우근", org: "울산과학대학교", dept: "기획처", rank: "팀장", location: "교내", note: "", sort_order: 10 }
+    { id: 108, committee_id: "total", type: "위원", name: "미지정(직원)", org: "울산과학대학교", dept: "직원노동조합", rank: "위원장", location: "교내", note: "", sort_order: 8 },
+    { id: 109, committee_id: "total", type: "위원", name: "미지정(학생)", org: "울산과학대학교", dept: "총학생회", rank: "회장", location: "교내", note: "", sort_order: 9 },
+    { id: 110, committee_id: "total", type: "위원", name: "정문호", org: "정테크", dept: "-", rank: "대표", location: "교외", note: "신규 추가", sort_order: 10 },
+    { id: 111, committee_id: "total", type: "위원", name: "이경우", org: "울산발전연구원", dept: "경제산업연구실", rank: "실장", location: "교외", note: "신규 추가", sort_order: 11 },
+    { id: 112, committee_id: "total", type: "간사", name: "고우근", org: "울산과학대학교", dept: "기획처", rank: "팀장", location: "교내", note: "", sort_order: 12 }
   ],
   planning: [
     { id: 201, committee_id: "planning", type: "위원장", name: "김강연", org: "울산과학대학교", dept: "기획처", rank: "처장", location: "교내", note: "", sort_order: 1 },
-    { id: 202, committee_id: "planning", type: "위원장", name: "송경영", org: "울산과학대학교", dept: "앵커사업단", rank: "단장", location: "교내", note: "", sort_order: 2 },
-    { id: 203, committee_id: "planning", type: "위원", name: "김현수", org: "울산과학대학교", dept: "앵커사업단", rank: "본부장", location: "교내", note: "", sort_order: 3 },
+    { id: 202, committee_id: "planning", type: "위원장", name: "송경영", org: "울산과학대학교", dept: "앵커사업단", rank: "사업단장", location: "교내", note: "", sort_order: 2 },
+    { id: 203, committee_id: "planning", type: "위원", name: "김현수", org: "울산과학대학교", dept: "앵커사업단", rank: "총괄본부장", location: "교내", note: "", sort_order: 3 },
     { id: 204, committee_id: "planning", type: "위원", name: "최윤아", org: "울산과학대학교", dept: "기획처", rank: "부처장", location: "교내", note: "신규 추가", sort_order: 4 },
-    { id: 205, committee_id: "planning", type: "위원", name: "이동은", org: "울산과학대학교", dept: "지산학교육센터(ECC)", rank: "센터장", location: "교내", note: "", sort_order: 5 }
+    { id: 205, committee_id: "planning", type: "위원", name: "이동은", org: "울산과학대학교", dept: "지산학교육센터(ECC)", rank: "센터장", location: "교내", note: "", sort_order: 5 },
+    { id: 206, committee_id: "planning", type: "위원", name: "김기범", org: "울산과학대학교", dept: "기업협업센터(ICC)", rank: "센터장", location: "교내", note: "", sort_order: 6 },
+    { id: 207, committee_id: "planning", type: "위원", name: "현용환", org: "울산과학대학교", dept: "지역협업센터(RCC)", rank: "센터장", location: "교내", note: "기존 센터장 교육파견으로 인한 신규 추가", sort_order: 7 },
+    { id: 208, committee_id: "planning", type: "위원", name: "홍광표", org: "울산과학대학교", dept: "울산늘봄누리센터", rank: "센터장", location: "교내", note: "", sort_order: 8 },
+    { id: 209, committee_id: "planning", type: "위원", name: "장광일", org: "울산과학대학교", dept: "화학공학과", rank: "교수", location: "교내", note: "신규 추가", sort_order: 9 },
+    { id: 210, committee_id: "planning", type: "위원", name: "이정준", org: "울산과학대학교", dept: "기계공학부", rank: "교수", location: "교내", note: "신규 추가", sort_order: 10 },
+    { id: 211, committee_id: "planning", type: "위원", name: "정가영", org: "울산과학대학교", dept: "총대의원회", rank: "의장", location: "교내", note: "26/11월 임기 기준 (간호학과 정가영/2319149)", sort_order: 11 },
+    { id: 212, committee_id: "planning", type: "위원", name: "정회걸", org: "울산정보산업진흥원", dept: "인재교육센터", rank: "센터장", location: "교외", note: "신규 추가", sort_order: 12 },
+    { id: 213, committee_id: "planning", type: "위원", name: "남기석", org: "영남이공대학교", dept: "물리치료학과", rank: "교수", location: "교외", note: "", sort_order: 13 },
+    { id: 214, committee_id: "planning", type: "위원", name: "이상희", org: "청강문화산업대학교", dept: "전략지원처", rank: "처장", location: "교외", note: "", sort_order: 14 },
+    { id: 215, committee_id: "planning", type: "위원", name: "황영국", org: "조선이공대학교", dept: "산학협력단", rank: "단장", location: "교외", note: "", sort_order: 15 },
+    { id: 216, committee_id: "planning", type: "간사", name: "심현미", org: "울산과학대학교", dept: "앵커사업단운영팀", rank: "팀장", location: "교내", note: "", sort_order: 16 }
   ],
   budget: [
-    { id: 301, committee_id: "budget", type: "위원장", name: "송경영", org: "울산과학대학교", dept: "앵커사업단", rank: "단장", location: "교내", note: "", sort_order: 1 },
-    { id: 302, committee_id: "budget", type: "위원", name: "변홍석", org: "울산과학대학교", dept: "교무처", rank: "처장", location: "교내", note: "", sort_order: 2 },
-    { id: 303, committee_id: "budget", type: "간사", name: "고우근", org: "울산과학대학교", dept: "기획처", rank: "팀장", location: "교내", note: "", sort_order: 3 }
+    { id: 301, committee_id: "budget", type: "위원장", name: "김성철", org: "울산과학대학교", dept: "-", rank: "부총장", location: "교내", note: "", sort_order: 1 },
+    { id: 302, committee_id: "budget", type: "위원", name: "김강연", org: "울산과학대학교", dept: "기획처", rank: "처장", location: "교내", note: "", sort_order: 2 },
+    { id: 303, committee_id: "budget", type: "위원", name: "박일현", org: "울산과학대학교", dept: "총무처", rank: "처장", location: "교내", note: "", sort_order: 3 },
+    { id: 304, committee_id: "budget", type: "위원", name: "송경영", org: "울산과학대학교", dept: "앵커사업단", rank: "사업단장", location: "교내", note: "", sort_order: 4 },
+    { id: 305, committee_id: "budget", type: "위원", name: "김현수", org: "울산과학대학교", dept: "앵커사업단", rank: "총괄본부장", location: "교내", note: "", sort_order: 5 },
+    { id: 306, committee_id: "budget", type: "위원", name: "고우근", org: "울산과학대학교", dept: "기획팀", rank: "팀장", location: "교내", note: "", sort_order: 6 },
+    { id: 307, committee_id: "budget", type: "위원", name: "강신욱", org: "인택스세무법인", dept: "세무팀", rank: "부대표", location: "교외", note: "", sort_order: 7 },
+    { id: 308, committee_id: "budget", type: "간사", name: "심현미", org: "울산과학대학교", dept: "앵커사업단운영팀", rank: "팀장", location: "교내", note: "", sort_order: 8 }
   ],
   eval: [
-    { id: 401, committee_id: "eval", type: "위원장", name: "외부평가위원A", org: "한국대학교", dept: "교육학", rank: "교수", location: "교외", note: "자체평가 공정성 제고", sort_order: 1 },
-    { id: 402, committee_id: "eval", type: "위원", name: "송경영", org: "울산과학대학교", dept: "앵커사업단", rank: "단장", location: "교내", note: "", sort_order: 2 },
-    { id: 403, committee_id: "eval", type: "위원", name: "김현수", org: "울산과학대학교", dept: "앵커사업단", rank: "본부장", location: "교내", note: "", sort_order: 3 }
+    { id: 401, committee_id: "eval", type: "위원장", name: "김영근", org: "대구보건대학교", dept: "경영부총장", rank: "부총장", location: "교외", note: "", sort_order: 1 },
+    { id: 402, committee_id: "eval", type: "위원", name: "변홍석", org: "울산과학대학교", dept: "교무처", rank: "처장", location: "교내", note: "", sort_order: 2 },
+    { id: 403, committee_id: "eval", type: "위원", name: "이주영", org: "울산과학대학교", dept: "학생취업처", rank: "처장", location: "교내", note: "", sort_order: 3 },
+    { id: 404, committee_id: "eval", type: "위원", name: "서현영", org: "울산과학대학교", dept: "간호학부", rank: "학부장", location: "교내", note: "신규 추가", sort_order: 4 },
+    { id: 405, committee_id: "eval", type: "위원", name: "미지정", org: "울산과학대학교", dept: "총대의원회", rank: "의장", location: "교내", note: "", sort_order: 5 },
+    { id: 406, committee_id: "eval", type: "위원", name: "김봉재", org: "HD한국조선해양", dept: "-", rank: "부장", location: "교외", note: "", sort_order: 6 },
+    { id: 407, committee_id: "eval", type: "위원", name: "한동호", org: "석원기공", dept: "-", rank: "대표이사", location: "교외", note: "", sort_order: 7 },
+    { id: 408, committee_id: "eval", type: "위원(자문겸직)", name: "류지호", org: "아주자동차대학교", dept: "교학처", rank: "처장", location: "교외", note: "", sort_order: 8 },
+    { id: 409, committee_id: "eval", type: "위원(자문겸직)", name: "박준", org: "광주보건대학교", dept: "글로벌혁신처", rank: "처장", location: "교외", note: "", sort_order: 9 },
+    { id: 410, committee_id: "eval", type: "간사", name: "심현미", org: "울산과학대학교", dept: "앵커사업단운영팀", rank: "팀장", location: "교내", note: "", sort_order: 10 }
   ],
   advisory: [
-    { id: 501, committee_id: "advisory", type: "위원", name: "외부자문위원A", org: "울산연구원", dept: "경제연구실", rank: "실장", location: "교외", note: "", sort_order: 1 },
-    { id: 502, committee_id: "advisory", type: "위원", name: "외부자문위원B", org: "울산테크노파크", dept: "정책기획단", rank: "단장", location: "교외", note: "", sort_order: 2 }
+    { id: 501, committee_id: "advisory", type: "위원", name: "남기석", org: "영남이공대학교", dept: "물리치료학과", rank: "교수", location: "교외", note: "", sort_order: 1 },
+    { id: 502, committee_id: "advisory", type: "위원", name: "이상희", org: "청강문화산업대학교", dept: "혁신지원사업단", rank: "단장", location: "교외", note: "", sort_order: 2 },
+    { id: 503, committee_id: "advisory", type: "위원", name: "황영국", org: "조선이공대학교", dept: "산학협력단", rank: "단장", location: "교외", note: "", sort_order: 3 },
+    { id: 504, committee_id: "advisory", type: "위원", name: "이수경", org: "거제대학교", dept: "-", rank: "교수", location: "교외", note: "", sort_order: 4 },
+    { id: 505, committee_id: "advisory", type: "위원", name: "최영오", org: "영남이공대학교", dept: "-", rank: "교수", location: "교외", note: "", sort_order: 5 },
+    { id: 506, committee_id: "advisory", type: "위원", name: "남현욱", org: "춘해보건대학교", dept: "기획처", rank: "처장", location: "교외", note: "", sort_order: 6 },
+    { id: 507, committee_id: "advisory", type: "위원", name: "이종향", org: "거제대학교", dept: "-", rank: "교수", location: "교외", note: "", sort_order: 7 },
+    { id: 508, committee_id: "advisory", type: "간사", name: "심현미", org: "울산과학대학교", dept: "앵커사업단운영팀", rank: "팀장", location: "교내", note: "", sort_order: 8 }
   ],
   ecc_op: [
     { id: 601, committee_id: "ecc_op", type: "위원장", name: "이동은", org: "울산과학대학교", dept: "지산학교육센터(ECC)", rank: "센터장", location: "교내", note: "", sort_order: 1 },
-    { id: 602, committee_id: "ecc_op", type: "위원", name: "최윤아", org: "울산과학대학교", dept: "기획처", rank: "부처장", location: "교내", note: "", sort_order: 2 }
+    { id: 602, committee_id: "ecc_op", type: "위원", name: "최윤아", org: "울산과학대학교", dept: "기획처", rank: "부처장", location: "교내", note: "신규 추가", sort_order: 2 },
+    { id: 603, committee_id: "ecc_op", type: "위원", name: "정문호", org: "정테크", dept: "-", rank: "대표", location: "교외", note: "", sort_order: 3 },
+    { id: 604, committee_id: "ecc_op", type: "간사", name: "오영경", org: "울산과학대학교", dept: "지산학교육센터(ECC)", rank: "연구원", location: "교내", note: "", sort_order: 4 }
   ],
   icc_op: [
-    { id: 701, committee_id: "icc_op", type: "위원장", name: "김현수", org: "울산과학대학교", dept: "기업협업센터(ICC)", rank: "센터장", location: "교내", note: "", sort_order: 1 },
-    { id: 702, committee_id: "icc_op", type: "위원", name: "송경영", org: "울산과학대학교", dept: "앵커사업단", rank: "단장", location: "교내", note: "", sort_order: 2 }
+    { id: 701, committee_id: "icc_op", type: "위원장", name: "김기범", org: "울산과학대학교", dept: "기업협업센터(ICC)", rank: "센터장", location: "교내", note: "", sort_order: 1 },
+    { id: 702, committee_id: "icc_op", type: "위원", name: "정회걸", org: "울산정보산업진흥원", dept: "인재교육센터", rank: "센터장", location: "교외", note: "", sort_order: 2 },
+    { id: 703, committee_id: "icc_op", type: "위원", name: "한동호", org: "석원기공", dept: "-", rank: "대표이사", location: "교외", note: "", sort_order: 3 },
+    { id: 704, committee_id: "icc_op", type: "간사", name: "김인숙", org: "울산과학대학교", dept: "기업협업센터(ICC)", rank: "연구원", location: "교내", note: "", sort_order: 4 }
   ],
   rcc_op: [
-    { id: 801, committee_id: "rcc_op", type: "위원장", name: "이동은", org: "울산과학대학교", dept: "지역협업센터(RCC)", rank: "센터장", location: "교내", note: "", sort_order: 1 },
-    { id: 802, committee_id: "rcc_op", type: "간사", name: "고우근", org: "울산과학대학교", dept: "기획처", rank: "팀장", location: "교내", note: "", sort_order: 2 }
+    { id: 801, committee_id: "rcc_op", type: "위원장", name: "현용환", org: "울산과학대학교", dept: "지역협업센터(RCC)", rank: "센터장", location: "교내", note: "", sort_order: 1 },
+    { id: 802, committee_id: "rcc_op", type: "위원", name: "이경우", org: "울산발전연구원", dept: "경제산업연구실", rank: "실장", location: "교외", note: "", sort_order: 2 },
+    { id: 803, committee_id: "rcc_op", type: "위원", name: "남기석", org: "영남이공대학교", dept: "물리치료학과", rank: "교수", location: "교외", note: "", sort_order: 3 },
+    { id: 804, committee_id: "rcc_op", type: "간사", name: "강수지", org: "울산과학대학교", dept: "지역협업센터(RCC)", rank: "연구원", location: "교내", note: "", sort_order: 4 }
   ],
   aidx_op: [
-    { id: 901, committee_id: "aidx_op", type: "위원장", name: "변홍석", org: "울산과학대학교", dept: "AID-X센터", rank: "센터장", location: "교내", note: "", sort_order: 1 },
-    { id: 902, committee_id: "aidx_op", type: "위원", name: "최윤아", org: "울산과학대학교", dept: "기획처", rank: "부처장", location: "교내", note: "", sort_order: 2 }
+    { id: 901, committee_id: "aidx_op", type: "위원장", name: "김현수", org: "울산과학대학교", dept: "AID-X지원센터", rank: "센터장", location: "교내", note: "", sort_order: 1 },
+    { id: 902, committee_id: "aidx_op", type: "위원", name: "이정준", org: "울산과학대학교", dept: "기계공학부", rank: "교수", location: "교내", note: "", sort_order: 2 },
+    { id: 903, committee_id: "aidx_op", type: "위원", name: "이상희", org: "청강문화산업대학교", dept: "혁신지원사업단", rank: "단장", location: "교외", note: "", sort_order: 3 },
+    { id: 904, committee_id: "aidx_op", type: "간사", name: "민혜란", org: "울산과학대학교", dept: "AID-X지원센터", rank: "연구원", location: "교내", note: "", sort_order: 4 }
   ],
   neulbom_op: [
-    { id: 1001, committee_id: "neulbom_op", type: "위원장", name: "이주영", org: "울산과학대학교", dept: "학생취업처", rank: "처장", location: "교내", note: "", sort_order: 1 },
-    { id: 1002, committee_id: "neulbom_op", type: "위원", name: "이동은", org: "울산과학대학교", dept: "지산학교육센터(ECC)", rank: "센터장", location: "교내", note: "", sort_order: 2 }
+    { id: 1001, committee_id: "neulbom_op", type: "위원장", name: "홍광표", org: "울산과학대학교", dept: "울산늘봄누리센터", rank: "센터장", location: "교내", note: "", sort_order: 1 },
+    { id: 1002, committee_id: "neulbom_op", type: "위원", name: "서현영", org: "울산과학대학교", dept: "간호학부", rank: "학부장", location: "교내", note: "", sort_order: 2 },
+    { id: 1003, committee_id: "neulbom_op", type: "위원", name: "이수경", org: "거제대학교", dept: "-", rank: "교수", location: "교외", note: "", sort_order: 3 },
+    { id: 1004, committee_id: "neulbom_op", type: "간사", name: "임서현", org: "울산과학대학교", dept: "울산늘봄누리센터", rank: "연구원", location: "교내", note: "", sort_order: 4 }
   ],
   newind_op: [
-    { id: 1101, committee_id: "newind_op", type: "위원장", name: "송경영", org: "울산과학대학교", dept: "신산업특화센터", rank: "센터장", location: "교내", note: "", sort_order: 1 },
-    { id: 1102, committee_id: "newind_op", type: "위원", name: "김현수", org: "울산과학대학교", dept: "앵커사업단", rank: "본부장", location: "교내", note: "", sort_order: 2 }
+    { id: 1101, committee_id: "newind_op", type: "위원장", name: "홍진숙", org: "울산과학대학교", dept: "신산업특화센터", rank: "센터장", location: "교내", note: "", sort_order: 1 },
+    { id: 1102, committee_id: "newind_op", type: "위원", name: "장광일", org: "울산과학대학교", dept: "화학공학과", rank: "교수", location: "교내", note: "", sort_order: 2 },
+    { id: 1103, committee_id: "newind_op", type: "위원", name: "황영국", org: "조선이공대학교", dept: "산학협력단", rank: "단장", location: "교외", note: "", sort_order: 3 },
+    { id: 1104, committee_id: "newind_op", type: "간사", name: "박지윤", org: "울산과학대학교", dept: "신산업특화센터", rank: "연구원", location: "교내", note: "", sort_order: 4 }
   ]
 };
 
@@ -317,21 +360,25 @@ export default function CommitteeManager({
         .order("id", { ascending: true });
       if (error) throw error;
       
-      if (data && data.length > 0) {
+      const fallback = MOCK_COMMITTEE_MEMBERS_FALLBACK[committeeId] || [
+        { committee_id: committeeId, type: "위원장", name: "송경영", org: "울산과학대학교", dept: "산학협력단(앵커)", rank: "단장", location: "교내", note: "", sort_order: 1 },
+        { committee_id: committeeId, type: "위원", name: "이동은", org: "울산과학대학교", dept: "지산학교육센터(ECC)", rank: "센터장", location: "교내", note: "", sort_order: 2 }
+      ];
+
+      // 💡 [동기화 버전업 가드] 기존 데이터가 존재하지만 최신 마스터 백업 인원 수보다 적은 경우 구버전으로 판정하여 자동 배정(Upsert)
+      if (data && data.length >= fallback.length) {
         setMembers(data);
         localStorage.setItem(`local_committee_members_${committeeId}`, JSON.stringify(data));
       } else {
-        // 💡 [자동 배정 트리거] DB에 데이터가 없으므로 마스터 명단을 실제로 배정(Insert) 처리합니다. (Rule 4 준수 설명 주석)
-        console.log(`위원회 [${committeeId}]에 기본 소속 위원이 배정되어 있지 않습니다. 자동 적재를 시작합니다.`);
-        const fallback = MOCK_COMMITTEE_MEMBERS_FALLBACK[committeeId] || [
-          { committee_id: committeeId, type: "위원장", name: "송경영", org: "울산과학대학교", dept: "산학협력단(앵커)", rank: "단장", location: "교내", note: "", sort_order: 1 },
-          { committee_id: committeeId, type: "위원", name: "이동은", org: "울산과학대학교", dept: "지산학교육센터(ECC)", rank: "센터장", location: "교내", note: "", sort_order: 2 }
-        ];
+        console.log(`위원회 [${committeeId}]에 소속된 위원 수(${data ? data.length : 0}명)가 최신 마스터 위원 수(${fallback.length}명)보다 적으므로 자동 업그레이드를 시작합니다.`);
         
         // insert 시 id 필드는 DB auto-increment를 위해 제외
         const insertPayloads = fallback.map(({ id, ...rest }) => rest);
         
         try {
+          if (data && data.length > 0) {
+            await supabase.from("committee_members").delete().eq("committee_id", committeeId);
+          }
           const { error: insErr } = await supabase
             .from("committee_members")
             .insert(insertPayloads);
@@ -355,17 +402,17 @@ export default function CommitteeManager({
         }
       }
     } catch (err) {
-      console.error("위원 조회 에러 (로컬 캐시 스위칭):", err.message);
+      console.error("위원 조회 에러 (로컬 캐시 스위칭 및 강제 마이그레이션):", err.message);
       const localData = localStorage.getItem(`local_committee_members_${committeeId}`);
       const parsed = localData ? JSON.parse(localData) : [];
-      if (parsed.length > 0) {
+      const fallback = MOCK_COMMITTEE_MEMBERS_FALLBACK[committeeId] || [
+        { committee_id: committeeId, type: "위원장", name: "송경영", org: "울산과학대학교", dept: "산학협력단(앵커)", rank: "단장", location: "교내", note: "", sort_order: 1 },
+        { committee_id: committeeId, type: "위원", name: "이동은", org: "울산과학대학교", dept: "지산학교육센터(ECC)", rank: "센터장", location: "교내", note: "", sort_order: 2 }
+      ];
+      
+      if (parsed.length >= fallback.length) {
         setMembers(parsed);
       } else {
-        // 캐시도 비어있다면 자동 적재 진행
-        const fallback = MOCK_COMMITTEE_MEMBERS_FALLBACK[committeeId] || [
-          { committee_id: committeeId, type: "위원장", name: "송경영", org: "울산과학대학교", dept: "산학협력단(앵커)", rank: "단장", location: "교내", note: "", sort_order: 1 },
-          { committee_id: committeeId, type: "위원", name: "이동은", org: "울산과학대학교", dept: "지산학교육센터(ECC)", rank: "센터장", location: "교내", note: "", sort_order: 2 }
-        ];
         setMembers(fallback);
         localStorage.setItem(`local_committee_members_${committeeId}`, JSON.stringify(fallback));
       }
