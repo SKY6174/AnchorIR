@@ -463,7 +463,7 @@ export default function PartnerManager({ selectedYear }) {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               style={{
-                padding: "0.5rem 1rem 0.5rem 2rem",
+                padding: "0.5rem 1rem 0.5rem 2.5rem",
                 borderRadius: "6px",
                 border: "1px solid var(--border-color)",
                 background: "var(--background-card, rgba(0, 0, 0, 0.05))",
