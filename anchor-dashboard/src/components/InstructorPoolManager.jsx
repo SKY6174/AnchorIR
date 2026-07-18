@@ -976,7 +976,7 @@ export default function InstructorPoolManager({ currentUser, currentRole }) {
       {activeSubTab === "history" && (
         <div style={{ display: "flex", gap: "1.25rem", alignItems: "flex-start", width: "100%" }}>
           {/* 탭 2 좌측: 교강사 목록 패널 */}
-          <div className="glass-card" style={{ flex: 0.22, minWidth: "180px", padding: "1rem", display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+          <div className="glass-card" style={{ flex: 0.13, minWidth: "120px", padding: "0.75rem", display: "flex", flexDirection: "column", gap: "0.75rem" }}>
             <h3 style={{ fontSize: "0.85rem", fontWeight: "800" }}>교∙강사 선택</h3>
             <input
               type="text"
@@ -1023,7 +1023,7 @@ export default function InstructorPoolManager({ currentUser, currentRole }) {
           </div>
 
           {/* 탭 2: 교.강사 활동이력 대장 */}
-          <div className="glass-card" style={{ flex: 0.78, padding: "1.25rem" }}>
+          <div className="glass-card" style={{ flex: 0.87, padding: "1.25rem" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.25rem", flexWrap: "wrap", gap: "0.75rem" }}>
               <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
                 <h3 style={{ fontSize: "0.95rem", fontWeight: "800", color: "var(--text-primary)" }}>
