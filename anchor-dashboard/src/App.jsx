@@ -8336,6 +8336,7 @@ export default function App() {
         activeTab={activeTab}
         onChangeTab={(tab) => {
           setActiveTab(tab);
+          localStorage.setItem("anchor_active_tab", tab);
           setSelectedKpi(null);
         }}
         projectsSubTab={projectsSubTab}
@@ -8357,7 +8358,10 @@ export default function App() {
         progressSubTab={progressSubTab}
         onChangeProgressSubTab={setProgressSubTab}
         committeeSubTab={committeeSubTab}
-        onChangeCommitteeSubTab={setCommitteeSubTab}
+        onChangeCommitteeSubTab={(subTab) => {
+          setCommitteeSubTab(subTab);
+          localStorage.setItem("anchor_committee_sub_tab", subTab);
+        }}
         menuVisibility={currentUser && ["ADMIN", "G_DIRECTOR", "HQ_HEAD", "MANAGER"].includes(currentUser.role_key) ? {} : menuVisibility}
         isSongDirector={isSongDirector}
         currentUser={currentUser}

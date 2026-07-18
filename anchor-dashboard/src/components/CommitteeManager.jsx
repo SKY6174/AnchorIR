@@ -163,7 +163,9 @@ export default function CommitteeManager({
   // 1. 상태(State) 정의
   const [committees, setCommittees] = useState([]);
   const [selectedCommittee, setSelectedCommittee] = useState(null);
-  const [selectedGroup, setSelectedGroup] = useState("agency"); // "agency"(사업단) 또는 "center"(센터별)
+  const [selectedGroup, setSelectedGroup] = useState(() => {
+    return localStorage.getItem("anchor_selected_committee_group") || "agency";
+  }); // "agency"(사업단) 또는 "center"(센터별)
   
   // 💡 [전자서명 CryptoJS 복호화 헬퍼 함수] (요구사항 4 반영)
   const decryptSignature = (encSig) => {
@@ -295,17 +297,43 @@ export default function CommitteeManager({
     }
   });
 
-  // 라디오 분류 전환 시 선택된 위원회 동적 갱신
+  // 💡 [새로고침 캐시 동기화 가드] 선택된 위원회 상태가 변경될 때마다 로컬 스토리지에 백업
   useEffect(() => {
-    if (filteredCommittees.length > 0) {
-      const stillInFilter = filteredCommittees.find(c => c.id === selectedCommittee?.id);
-      if (!stillInFilter) {
-        setSelectedCommittee(filteredCommittees[0]);
-      }
-    } else {
-      setSelectedCommittee(null);
+    if (selectedCommittee) {
+      localStorage.setItem("anchor_selected_committee_id", selectedCommittee.id);
+      localStorage.setItem("anchor_selected_committee_group", selectedGroup);
     }
-  }, [selectedGroup, committees, selectedCommittee]);
+  }, [selectedCommittee, selectedGroup]);
+
+  // 라디오 분류 전환 및 초기 마스터 캐시 복원
+  useEffect(() => {
+    if (committees.length > 0) {
+      const cachedId = localStorage.getItem("anchor_selected_committee_id");
+      const cachedGroup = localStorage.getItem("anchor_selected_committee_group");
+
+      if (cachedGroup && cachedGroup !== selectedGroup) {
+        setSelectedGroup(cachedGroup);
+        return;
+      }
+
+      if (cachedId) {
+        const found = committees.find(c => c.id === cachedId);
+        if (found) {
+          setSelectedCommittee(found);
+          return;
+        }
+      }
+
+      if (filteredCommittees.length > 0) {
+        const stillInFilter = filteredCommittees.find(c => c.id === selectedCommittee?.id);
+        if (!stillInFilter) {
+          setSelectedCommittee(filteredCommittees[0]);
+        }
+      } else {
+        setSelectedCommittee(null);
+      }
+    }
+  }, [selectedGroup, committees]);
 
   const fetchAllUsers = async () => {
     try {
@@ -1231,7 +1259,7 @@ ${opinionsContext}
                 ) : (
                   members.map(m => (
                     <div key={m.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", background: "rgba(255,255,255,0.01)", padding: "0.3rem 0.5rem", borderRadius: "4px" }}>
-                      <span style={{ fontSize: "0.8rem", color: "#fff" }}>
+                      <span style={{ fontSize: "0.8rem", color: "var(--text-primary)" }}>
                         {m.name} <small style={{ color: "var(--accent-color)", fontWeight: "bold" }}>({m.type || "위원"})</small>
                         <span style={{ fontSize: "0.7rem", color: "var(--text-secondary)", marginLeft: "0.3rem", display: "inline-block" }}>
                           {m.org} {m.dept}
@@ -1250,7 +1278,7 @@ ${opinionsContext}
                 )}
               </div>
             </div>
-
+ 
             {/* 회의 안건 리스트 */}
             <div className="card" style={{ padding: "1rem", background: "rgba(255,255,255,0.02)", border: "1px solid var(--border-color)", flex: 1 }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.5rem" }}>
@@ -1263,7 +1291,7 @@ ${opinionsContext}
                   </button>
                 )}
               </div>
-
+ 
               <div style={{ maxHeight: "250px", overflowY: "auto", display: "flex", flexDirection: "column", gap: "0.4rem" }}>
                 {meetings.length === 0 ? (
                   <span style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>개설된 회의가 없습니다.</span>
@@ -1282,7 +1310,7 @@ ${opinionsContext}
                       }}
                     >
                       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                        <span style={{ fontSize: "0.8rem", fontWeight: "bold", color: "#fff" }}>{m.title}</span>
+                        <span style={{ fontSize: "0.8rem", fontWeight: "bold", color: "var(--text-primary)" }}>{m.title}</span>
                         <span style={{
                           fontSize: "0.65rem",
                           padding: "0.15rem 0.3rem",
@@ -1303,7 +1331,7 @@ ${opinionsContext}
               </div>
             </div>
           </div>
-
+ 
           {/* 우측 메인: 회의 상세 현황 및 위원 투표 입력판 */}
           <div style={{ flex: "1 1 70%", minWidth: "400px", display: "flex", flexDirection: "column", gap: "1rem" }}>
             {selectedMeeting ? (
@@ -1312,7 +1340,7 @@ ${opinionsContext}
                 <div className="card" style={{ padding: "1.25rem", background: "rgba(255,255,255,0.02)", border: "1px solid var(--border-color)" }}>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: "0.5rem" }}>
                     <div>
-                      <h2 style={{ fontSize: "1.2rem", fontWeight: "800", color: "#fff", marginBottom: "0.25rem" }}>
+                      <h2 style={{ fontSize: "1.2rem", fontWeight: "800", color: "var(--text-primary)", marginBottom: "0.25rem" }}>
                         {selectedMeeting.title}
                       </h2>
                       <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)" }}>
