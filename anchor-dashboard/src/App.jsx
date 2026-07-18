@@ -8388,7 +8388,7 @@ export default function App() {
                 }}
                 style={{
                   padding: "0.4rem 0.8rem",
-                  fontSize: "0.78rem",
+                  fontSize: "0.88rem", // 💡 [가운데 연차 폰트 크기 1.5pt 상향 조정]
                   borderRadius: "2rem",
                   border: "none",
                   background: selectedYear === yr ? "var(--accent-color)" : "transparent",
@@ -8403,58 +8403,59 @@ export default function App() {
             ))}
           </div>
 
-          <div className="controls-section" style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "0.5rem" }}>
+          {/* 💡 [우측 영역 높이/너비 85% 수준 축소 튜닝] */}
+          <div className="controls-section" style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "0.4rem" }}>
             {/* 첫 번째 줄: 로그인 정보, 개인정보 관리, 로그아웃 */}
-            <div style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
-              <span style={{ fontSize: "0.85rem", color: "var(--text-secondary)", marginRight: "0.4rem" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
+              <span style={{ fontSize: "0.78rem", color: "var(--text-secondary)", marginRight: "0.3rem" }}>
                 {getWelcomeMessage()}
               </span>
               {currentUser && !isGuest && (
                 <button
                   className="btn-primary"
                   style={{
-                    padding: "0.4rem 0.8rem",
-                    fontSize: "0.75rem",
+                    padding: "0.3rem 0.6rem",
+                    fontSize: "0.68rem",
                     background: "var(--input-bg)",
                     border: "1px solid var(--border-color)",
                     borderRadius: "0.375rem",
                     color: "var(--text-primary)",
                     display: "flex",
                     alignItems: "center",
-                    gap: "0.3rem",
+                    gap: "0.2rem",
                     cursor: "pointer",
-                    height: "34px"
+                    height: "28px"
                   }}
                   onClick={() => setIsPasswordModalOpen(true)}
                 >
-                  <LockIcon size={14} />
+                  <LockIcon size={12} />
                   <span>개인정보 관리</span>
                 </button>
               )}
               <button
                 className="btn-primary"
                 style={{
-                  padding: "0.4rem 0.8rem",
-                  fontSize: "0.75rem",
+                  padding: "0.3rem 0.6rem",
+                  fontSize: "0.68rem",
                   background: "rgba(239,68,68,0.15)",
                   border: "1px solid var(--danger-color)",
                   borderRadius: "0.375rem",
                   color: "#f87171",
                   display: "flex",
                   alignItems: "center",
-                  gap: "0.3rem",
+                  gap: "0.2rem",
                   cursor: "pointer",
-                  height: "34px"
+                  height: "28px"
                 }}
                 onClick={handleLogout}
               >
-                <LogOut size={14} />
+                <LogOut size={12} />
                 <span>로그아웃</span>
               </button>
             </div>
 
             {/* 두 번째 줄: DB 동기화 배지, 앵커 Wiki 링크 버튼, 라이트/다크모드 토글 */}
-            <div style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
               {/* Supabase 실시간 동기화 상태 배지 */}
               <span
                 onClick={() => {
@@ -8475,9 +8476,9 @@ export default function App() {
                 style={{
                   display: "flex",
                   alignItems: "center",
-                  gap: "0.25rem",
-                  fontSize: "0.75rem",
-                  padding: "0.25rem 0.6rem",
+                  gap: "0.2rem",
+                  fontSize: "0.68rem",
+                  padding: "0.2rem 0.45rem",
                   borderRadius: "4px",
                   cursor: syncStatus === "error" ? "pointer" : "default",
                   background: syncStatus === "synced"
@@ -8499,7 +8500,7 @@ export default function App() {
                   textDecoration: syncStatus === "error" ? "underline" : "none",
                   display: "flex",
                   alignItems: "center",
-                  height: "34px"
+                  height: "28px"
                 }}
                 title={syncStatus === "error" ? "클릭하여 로컬 캐시 초기화" : ""}
               >
@@ -8510,27 +8511,27 @@ export default function App() {
               <button
                 className="btn-primary"
                 style={{
-                  padding: "0.4rem 0.8rem",
-                  fontSize: "0.75rem",
+                  padding: "0.3rem 0.6rem",
+                  fontSize: "0.68rem",
                   background: activeTab === "llm_wiki" ? "rgba(99, 102, 241, 0.15)" : "var(--input-bg)",
                   border: activeTab === "llm_wiki" ? "1px solid var(--accent-color)" : "1px solid var(--border-color)",
                   borderRadius: "0.375rem",
                   color: activeTab === "llm_wiki" ? "var(--accent-color)" : "var(--text-primary)",
                   display: "flex",
                   alignItems: "center",
-                  gap: "0.3rem",
+                  gap: "0.2rem",
                   cursor: "pointer",
-                  height: "34px",
+                  height: "28px",
                   fontWeight: activeTab === "llm_wiki" ? "bold" : "normal"
                 }}
                 onClick={() => setActiveTab("llm_wiki")}
               >
-                <BookOpen size={14} />
+                <BookOpen size={12} />
                 <span>앵커 Wiki</span>
               </button>
 
-              <button className="theme-toggle-btn" style={{ padding: "0.4rem", borderRadius: "0.375rem", height: "34px", width: "34px", display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => setDarkMode(!darkMode)}>
-                {darkMode ? <Sun size={18} /> : <Moon size={18} />}
+              <button className="theme-toggle-btn" style={{ padding: "0.3rem", borderRadius: "0.375rem", height: "28px", width: "28px", display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => setDarkMode(!darkMode)}>
+                {darkMode ? <Sun size={14} /> : <Moon size={14} />}
               </button>
             </div>
           </div>
