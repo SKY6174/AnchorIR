@@ -1,10 +1,35 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "../supabaseClient";
 import CryptoJS from "crypto-js";
-import { Plus, User, Award, Trash2, ShieldAlert, X } from "lucide-react";
+import { Plus, User, Award, Trash2, ShieldAlert, X, Upload, Download } from "lucide-react";
+import * as XLSX from "xlsx";
 
 // 💡 [보안 수칙 - Rule 8] 개인정보 암복호화를 위한 AES 대칭키 정의
 const SECRET_KEY = "anchor_instructor_secure_encryption_key_2026";
+
+// 💡 은행별 계좌번호 형식 포맷 맵
+const BANK_FORMATS = {
+  "KB국민은행": "000000-00-000000",
+  "신한은행": "000-000-000000",
+  "우리은행": "0000-000-000000",
+  "하나은행": "000-000000-00000",
+  "NH농협은행": "000-0000-0000-00",
+  "IBK기업은행": "000-000000-00-000",
+  "카카오뱅크": "3333-00-0000000",
+  "토스뱅크": "1000-0000-0000",
+  "케이뱅크": "100-000-000000",
+  "새마을금고": "9000-0000-0000-0",
+  "부산은행": "000-00-000000-0",
+  "대구은행": "000-00-000000-0",
+  "경남은행": "000-00-0000000",
+  "광주은행": "000-000-000000",
+  "전북은행": "000-00-0000000",
+  "SC제일은행": "000-00-000000",
+  "수협은행": "000-00-000000",
+  "신협": "00000-00-000000",
+  "우체국": "000000-00-000000",
+  "기타은행": ""
+};
 
 // 💡 [암호화 헬퍼] 평문을 안전하게 AES 암호화
 const encryptData = (text) => {
@@ -80,7 +105,7 @@ export default function InstructorPoolManager() {
     name: "",
     gender: "남성", // 💡 성별 필드 추가
     birth_date: "",
-    bank_name: "",
+    bank_name: "", // 💡 드롭다운 선택 초기화
     account_number: ""
   });
 
@@ -168,7 +193,7 @@ export default function InstructorPoolManager() {
 
       if (error) throw error;
 
-      alert("교∙강사가 성공적으로 등록되었습니다.");
+      alert("교∙강사자가 성공적으로 등록되었습니다.");
       setIsAddModalOpen(false);
       setNewForm({
         name: "",
@@ -181,6 +206,131 @@ export default function InstructorPoolManager() {
     } catch (err) {
       alert("교∙강사 등록 실패: " + err.message);
     }
+  };
+
+  // 💡 [엑셀 서식 다운로드]
+  const handleDownloadTemplate = () => {
+    const headers = [["성명", "성별", "생년월일(YYYY-MM-DD)", "은행명", "계좌번호"]];
+    const sampleData = [
+      ["홍길동", "남성", "1980-05-15", "신한은행", "110-123-456789"],
+      ["신사임당", "여성", "1985-10-23", "KB국민은행", "123-45-678901"]
+    ];
+    
+    const ws = XLSX.utils.aoa_to_sheet([...headers, ...sampleData]);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "교강사_업로드서식");
+    
+    // 열 너비 조절
+    ws["!cols"] = [{ wch: 15 }, { wch: 10 }, { wch: 22 }, { wch: 18 }, { wch: 22 }];
+    
+    XLSX.writeFile(wb, "UC_ANCHOR_교강사_업로드_서식.xlsx");
+  };
+
+  // 💡 [엑셀 다운로드 (Export)]
+  const handleExcelExport = () => {
+    if (instructors.length === 0) {
+      alert("다운로드할 교∙강사 데이터가 없습니다.");
+      return;
+    }
+
+    const dataToExport = instructors.map(ins => ({
+      "성명": ins.name,
+      "성별": ins.gender || "미정",
+      "생년월일": ins.decrypted_birth,
+      "은행명": ins.bank_name,
+      "계좌번호": ins.decrypted_account
+    }));
+
+    const ws = XLSX.utils.json_to_sheet(dataToExport);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "교강사_Pool_대장");
+
+    // 열 너비 조절
+    ws["!cols"] = [{ wch: 15 }, { wch: 10 }, { wch: 20 }, { wch: 18 }, { wch: 22 }];
+
+    XLSX.writeFile(wb, `UC_ANCHOR_교강사_Pool_대장.xlsx`);
+  };
+
+  // 💡 [엑셀 업로드 (Import)]
+  const handleExcelImport = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = async (evt) => {
+      try {
+        const data = evt.target.result;
+        const workbook = XLSX.read(data, { type: "binary" });
+        const sheetName = workbook.SheetNames[0];
+        const ws = workbook.Sheets[sheetName];
+        const excelRows = XLSX.utils.sheet_to_json(ws);
+
+        if (excelRows.length === 0) {
+          alert("엑셀 파일에 데이터가 존재하지 않습니다.");
+          return;
+        }
+
+        // 중복 필터링을 위해 기존 교강사 대장의 복호화된 이름+생년월일 매핑 셋 생성
+        const existingSet = new Set(
+          instructors.map(ins => `${ins.name.trim()}_${ins.decrypted_birth.trim()}`)
+        );
+
+        const newDataList = [];
+        let skippedCount = 0;
+
+        for (const row of excelRows) {
+          const rawName = row["성명"] || "";
+          const rawGender = row["성별"] || "남성";
+          const rawBirth = row["생년월일(YYYY-MM-DD)"] || row["생년월일"] || "";
+          const rawBank = row["은행명"] || "";
+          const rawAccount = row["계좌번호"] || row["계좌"] || "";
+
+          // 필수 정보 검증
+          if (!rawName || !rawBirth || !rawBank || !rawAccount) {
+            skippedCount++;
+            continue;
+          }
+
+          const name = String(rawName).trim();
+          const birth = String(rawBirth).trim();
+          const key = `${name}_${birth}`;
+
+          // 중복 자동 필터링 (이름 + 생년월일 기준)
+          if (existingSet.has(key)) {
+            skippedCount++;
+            continue;
+          }
+
+          // 민감 정보 규정에 따른 저장 전 AES 암호화 적용 (Rule 8)
+          const encryptedBirth = encryptData(birth);
+          const encryptedAccount = encryptData(String(rawAccount).trim());
+
+          newDataList.push({
+            name: name,
+            gender: String(rawGender).trim(),
+            birth_date: encryptedBirth,
+            bank_name: String(rawBank).trim(),
+            account_number: encryptedAccount
+          });
+        }
+
+        if (newDataList.length === 0) {
+          alert(`가져올 수 있는 신규 데이터가 없습니다. (걸러진 중복/누락 건수: ${skippedCount}건)`);
+          return;
+        }
+
+        // Supabase DB에 일괄 주입
+        const { error } = await supabase.from("instructors").insert(newDataList);
+        if (error) throw error;
+
+        alert(`일괄 업로드가 성공적으로 완료되었습니다.\n- 등록 성공: ${newDataList.length}건\n- 중복/누락 스킵: ${skippedCount}건`);
+        fetchInstructors();
+      } catch (err) {
+        alert("엑셀 가져오기 실패: " + err.message);
+      }
+    };
+    reader.readAsBinaryString(file);
+    e.target.value = "";
   };
 
   // 4. 교∙강사 삭제
@@ -257,29 +407,104 @@ export default function InstructorPoolManager() {
       <div style={{ display: "flex", gap: "1.5rem", alignItems: "flex-start" }}>
         {/* 교∙강사 리스트 테이블 (좌측) */}
         <div className="glass-card" style={{ flex: 1.2, padding: "1.25rem" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.25rem" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.25rem", flexWrap: "wrap", gap: "0.75rem" }}>
             <h3 style={{ fontSize: "0.95rem", fontWeight: "800" }}>
               교∙강사 마스터 대장 (고정 정보)
             </h3>
-            <button
-              onClick={() => setIsAddModalOpen(true)}
-              className="action-btn"
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "0.25rem",
-                padding: "0.5rem 1.2rem",
-                background: "var(--accent-color)",
-                color: "#ffffff",
-                border: "none",
-                borderRadius: "9999px",
-                fontSize: "0.85rem",
-                fontWeight: "700",
-                cursor: "pointer"
-              }}
-            >
-              <Plus size={16} /> 신규 교∙강사 등록
-            </button>
+            <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+              {/* 엑셀 서식 다운로드 */}
+              <button
+                onClick={handleDownloadTemplate}
+                className="action-btn"
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "0.25rem",
+                  padding: "0.5rem 1rem",
+                  background: "rgba(139, 92, 246, 0.15)",
+                  color: "#8b5cf6",
+                  border: "1px solid rgba(139, 92, 246, 0.3)",
+                  borderRadius: "9999px",
+                  fontSize: "0.8rem",
+                  fontWeight: "700",
+                  cursor: "pointer",
+                  transition: "all 0.2s ease"
+                }}
+              >
+                <Download size={14} /> 엑셀 서식
+              </button>
+
+              {/* 엑셀 일괄 업로드 */}
+              <label
+                className="action-btn"
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "0.25rem",
+                  padding: "0.5rem 1rem",
+                  background: "rgba(16, 185, 129, 0.15)",
+                  color: "#10b981",
+                  border: "1px solid rgba(16, 185, 129, 0.3)",
+                  borderRadius: "9999px",
+                  fontSize: "0.8rem",
+                  fontWeight: "700",
+                  cursor: "pointer",
+                  margin: 0,
+                  transition: "all 0.2s ease"
+                }}
+              >
+                <Upload size={14} /> 엑셀 업로드
+                <input
+                  type="file"
+                  accept=".xlsx, .xls"
+                  onChange={handleExcelImport}
+                  style={{ display: "none" }}
+                />
+              </label>
+
+              {/* 엑셀 대장 다운로드 */}
+              <button
+                onClick={handleExcelExport}
+                className="action-btn"
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "0.25rem",
+                  padding: "0.5rem 1rem",
+                  background: "rgba(107, 114, 128, 0.15)",
+                  color: "var(--text-secondary)",
+                  border: "1px solid rgba(107, 114, 128, 0.3)",
+                  borderRadius: "9999px",
+                  fontSize: "0.8rem",
+                  fontWeight: "700",
+                  cursor: "pointer",
+                  transition: "all 0.2s ease"
+                }}
+              >
+                <Download size={14} /> 엑셀 다운로드
+              </button>
+
+              {/* 신규 등록 버튼 */}
+              <button
+                onClick={() => setIsAddModalOpen(true)}
+                className="action-btn"
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "0.25rem",
+                  padding: "0.5rem 1.2rem",
+                  background: "var(--accent-color)",
+                  color: "#ffffff",
+                  border: "none",
+                  borderRadius: "9999px",
+                  fontSize: "0.85rem",
+                  fontWeight: "700",
+                  cursor: "pointer"
+                }}
+              >
+                <Plus size={16} /> 신규 등록
+              </button>
+            </div>
           </div>
           {loading ? (
             <div style={{ textAlign: "center", padding: "2rem", color: "var(--text-secondary)" }}>로딩 중...</div>
@@ -628,14 +853,27 @@ export default function InstructorPoolManager() {
               <div style={{ display: "flex", gap: "0.5rem" }}>
                 <div style={{ flex: 1 }}>
                   <label style={{ fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem", fontWeight: "600", display: "block" }}>은행명</label>
-                  <input
-                    type="text"
+                  <select
                     required
-                    placeholder="예: 국민은행"
                     value={newForm.bank_name}
                     onChange={(e) => setNewForm(prev => ({ ...prev, bank_name: e.target.value }))}
                     className="form-input"
-                  />
+                    style={{
+                      background: "var(--card-bg)",
+                      color: "var(--text-color)",
+                      border: "1px solid var(--border-color)",
+                      borderRadius: "0.375rem",
+                      padding: "0.5rem",
+                      fontSize: "0.8rem",
+                      width: "100%",
+                      outline: "none"
+                    }}
+                  >
+                    <option value="">은행 선택</option>
+                    {Object.keys(BANK_FORMATS).map(bank => (
+                      <option key={bank} value={bank}>{bank}</option>
+                    ))}
+                  </select>
                 </div>
                 <div style={{ flex: 1.8 }}>
                   <label style={{ fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem", fontWeight: "600", display: "block" }}>계좌번호</label>
