@@ -21,6 +21,21 @@ const getCommitteeIcon = (id) => {
   }
 };
 
+// 💡 [임기 날짜 가드] YYYY.MM.DD 포맷을 YYYY-MM-DD 로 변환 (캘린더 input 용)
+const dotToDashDate = (dotDate) => {
+  if (!dotDate) return "";
+  const cleaned = dotDate.trim().replace(/\./g, "-");
+  return cleaned.endsWith("-") ? cleaned.slice(0, -1) : cleaned;
+};
+
+// 💡 [임기 날짜 가드] YYYY-MM-DD 포맷을 YYYY.MM.DD. 로 변환 (DB 저장/화면 표출용)
+const dashToDotDate = (dashDate) => {
+  if (!dashDate) return "";
+  const parts = dashDate.split("-");
+  if (parts.length !== 3) return dashDate;
+  return `${parts[0]}.${parts[1]}.${parts[2]}.`;
+};
+
 // RISE 사업을 이끌어가는 5대 거버넌스 위원회 상세 정의 상수
 const COMMITTEES_DATA = [
   {
@@ -487,6 +502,8 @@ export default function ScheduleManager({
     rank: "",
     location: "교내",
     term: "",
+    termStart: "",
+    termEnd: "",
     note: ""
   });
 
@@ -586,6 +603,14 @@ export default function ScheduleManager({
       return;
     }
 
+    // 💡 [임기 조립] 시작일과 종료일 날짜 인풋(YYYY-MM-DD)을 합쳐서 YYYY.MM.DD. ~ YYYY.MM.DD. 포맷 문자열로 DB term 컬럼에 병합 저장
+    let combinedTerm = "";
+    if (memberFormData.termStart) {
+      const sDot = dashToDotDate(memberFormData.termStart);
+      const eDot = memberFormData.termEnd ? dashToDotDate(memberFormData.termEnd) : "";
+      combinedTerm = eDot ? `${sDot} ~ ${eDot}` : `${sDot} ~`;
+    }
+
     try {
       if (editingMember) {
         // 기존 멤버 정보 업데이트 (UPDATE)
@@ -598,7 +623,7 @@ export default function ScheduleManager({
             dept: memberFormData.dept,
             rank: memberFormData.rank,
             location: memberFormData.location,
-            term: memberFormData.term,
+            term: combinedTerm,
             note: memberFormData.note
           })
           .eq("id", editingMember.id);
@@ -619,7 +644,7 @@ export default function ScheduleManager({
             rank: memberFormData.rank,
             location: memberFormData.location,
             year: selectedYear,
-            term: memberFormData.term,
+            term: combinedTerm,
             note: memberFormData.note,
             sort_order: nextSortOrder
           });
@@ -4712,6 +4737,8 @@ Gemini 피드백: \n${geminiCritiqueText}
                                   rank: "",
                                   location: "교내",
                                   term: "",
+                                  termStart: "",
+                                  termEnd: "",
                                   note: ""
                                 });
                                 setIsMemberModalOpen(true);
@@ -4799,6 +4826,14 @@ Gemini 피드백: \n${geminiCritiqueText}
                                         <div style={{ display: "flex", gap: "0.4rem", justifyContent: "flex-end" }}>
                                           <button
                                             onClick={() => {
+                                              let tStart = "";
+                                              let tEnd = "";
+                                              if (member.term) {
+                                                const splitTerm = member.term.split("~");
+                                                if (splitTerm[0]) tStart = dotToDashDate(splitTerm[0]);
+                                                if (splitTerm[1]) tEnd = dotToDashDate(splitTerm[1]);
+                                              }
+
                                               setEditingMember(member);
                                               setMemberFormData({
                                                 type: member.type,
@@ -4808,6 +4843,8 @@ Gemini 피드백: \n${geminiCritiqueText}
                                                 rank: member.rank || "",
                                                 location: member.location,
                                                 term: member.term || "",
+                                                termStart: tStart,
+                                                termEnd: tEnd,
                                                 note: member.note || ""
                                               });
                                               setIsMemberModalOpen(true);
@@ -6426,16 +6463,26 @@ Gemini 피드백: \n${geminiCritiqueText}
                 </div>
               </div>
 
-              {/* 임기 (term) */}
-              <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
-                <label style={{ fontSize: "0.78rem", fontWeight: "700", color: "var(--text-secondary)" }}>임기 (term)</label>
-                <input
-                  type="text"
-                  placeholder="예: 2025.03.01 ~ 2026.02.28 또는 1년"
-                  value={memberFormData.term || ""}
-                  onChange={(e) => setMemberFormData(prev => ({ ...prev, term: e.target.value }))}
-                  style={{ padding: "0.5rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", fontSize: "0.8rem" }}
-                />
+              {/* 💡 [임기 가드 개조] 단일 텍스트 창 대신 캘린더 2개(시작일/종료일)로 직관적 날짜 입력 받기 */}
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+                <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
+                  <label style={{ fontSize: "0.78rem", fontWeight: "700", color: "var(--text-secondary)" }}>임기 시작일</label>
+                  <input
+                    type="date"
+                    value={memberFormData.termStart || ""}
+                    onChange={(e) => setMemberFormData(prev => ({ ...prev, termStart: e.target.value }))}
+                    style={{ padding: "0.5rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", fontSize: "0.8rem" }}
+                  />
+                </div>
+                <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
+                  <label style={{ fontSize: "0.78rem", fontWeight: "700", color: "var(--text-secondary)" }}>임기 종료일</label>
+                  <input
+                    type="date"
+                    value={memberFormData.termEnd || ""}
+                    onChange={(e) => setMemberFormData(prev => ({ ...prev, termEnd: e.target.value }))}
+                    style={{ padding: "0.5rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", fontSize: "0.8rem" }}
+                  />
+                </div>
               </div>
 
               {/* 버튼 */}
