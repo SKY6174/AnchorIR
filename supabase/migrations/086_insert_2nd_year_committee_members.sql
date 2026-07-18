@@ -8,12 +8,12 @@ INSERT INTO committees (id, name, total_quorum, voting_rule) VALUES
 ('budget', '앵커사업비관리위원회', 8, 'majority_of_attendees'),
 ('evaluation', '앵커사업자체평가위원회', 10, 'majority_of_attendees'),
 ('advisory', '앵커사업자문회의', 8, 'majority_of_attendees'),
-('ecc_op', '지산학교육센터 운영위원회', 4, 'majority_of_attendees'),
-('icc_op', '기업협업센터 운영위원회', 4, 'majority_of_attendees'),
-('rcc_op', '지역협업센터 운영위원회', 4, 'majority_of_attendees'),
-('aidx_op', 'AID-X지원센터 운영위원회', 4, 'majority_of_attendees'),
-('neulbom_op', '울산늘봄운영위원회', 4, 'majority_of_attendees'),
-('newind_op', '신산업특화운영위원회', 4, 'majority_of_attendees')
+('ecc_op', 'ECC센터운영위원회', 4, 'majority_of_attendees'),
+('icc_op', 'ICC센터운영위원회', 4, 'majority_of_attendees'),
+('rcc_op', 'RCC센터운영위원회', 4, 'majority_of_attendees'),
+('aidx_op', 'AID-X지원센터운영위원회', 4, 'majority_of_attendees'),
+('neulbom_op', '울산늘봄누리센터운영위원회', 4, 'majority_of_attendees'),
+('newind_op', '신산업특화센터운영위원회', 4, 'majority_of_attendees')
 ON CONFLICT (id) DO UPDATE SET 
   name = EXCLUDED.name,
   total_quorum = EXCLUDED.total_quorum;
