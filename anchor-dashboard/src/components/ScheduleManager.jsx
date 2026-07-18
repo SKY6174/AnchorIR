@@ -117,7 +117,7 @@ const COMMITTEES_DATA = [
     ]
   },
   {
-    id: "eval",
+    id: "evaluation",
     name: "앵커사업자체평가위원회",
     fullName: "앵커사업자체평가위원회 (상임)",
     badge: "성과평가",
@@ -509,7 +509,7 @@ export default function ScheduleManager({
           "total": 1,      // RISE총괄위원회
           "planning": 2,   // RISE기획위원회
           "budget": 3,     // RISE사업비관리위원회
-          "eval": 4,       // RISE사업자체평가위원회
+          "evaluation": 4, // RISE사업자체평가위원회
           "advisory": 5,   // RISE사업자문회의
           "ecc_op": 11,    // ECC운영위원회
           "icc_op": 12,    // ICC운영위원회
