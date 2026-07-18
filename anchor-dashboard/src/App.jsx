@@ -10034,7 +10034,7 @@ export default function App() {
             )}
 
             {mgmtSubTab === "instructor_pool" && (currentRole?.id === "ADMIN" || currentRole?.id === "G_DIRECTOR") && (
-              <InstructorPoolManager key={`instructors-${darkMode}`} />
+              <InstructorPoolManager key={`instructors-${darkMode}`} currentUser={currentUser} currentRole={currentRole} />
             )}
 
             {mgmtSubTab === "portal_config" && (currentRole?.id === "ADMIN" || currentRole?.id === "G_DIRECTOR") && (

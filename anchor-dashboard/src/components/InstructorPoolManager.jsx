@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "../supabaseClient";
 import CryptoJS from "crypto-js";
-import { Plus, User, Award, Trash2, ShieldAlert, X, Upload, Download } from "lucide-react";
+import { Plus, User, Award, Trash2, ShieldAlert, X, Upload, Download, Edit } from "lucide-react";
 import * as XLSX from "xlsx";
 import { academicYears } from "./OrgChartManager";
 
@@ -115,18 +115,22 @@ const getDeptsByYear = (yearStr) => {
   return Array.from(new Set(names)).sort();
 };
 
-export default function InstructorPoolManager() {
+export default function InstructorPoolManager({ currentUser, currentRole }) {
   const [instructors, setInstructors] = useState([]);
   const [selectedInstructor, setSelectedInstructor] = useState(null);
   const [histories, setHistories] = useState([]); // 💡 변동 정보 이력 상태값으로 통합 관리
   
-  // 💡 서브서브탭 제어 상태 ('master': 교.강사 마스터 대장, 'history': 교.강사 활동이력)
+  // 💡 서브서브탭 제어 상태 ('master': 교∙강사 마스터 대장, 'history': 교∙강사 활동이력)
   const [activeSubTab, setActiveSubTab] = useState("master");
   // 💡 활동이력 등록 전용 모달 제어 상태
   const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
   // 💡 좌측 교강사 검색용 텍스트 필터 상태
   const [searchTerm, setSearchTerm] = useState("");
   
+  // 💡 수정 대상 상태 제어 변수 추가
+  const [editingInstructor, setEditingInstructor] = useState(null);
+  const [editingHistory, setEditingHistory] = useState(null);
+
   // 모달 제어 상태
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
@@ -221,7 +225,31 @@ export default function InstructorPoolManager() {
     }
   };
 
-  // 3. 신규 교∙강사 등록 (암호화 수행)
+  // 3. 교∙강사 등록 및 수정 (암호화 수행)
+  const handleCloseAddModal = () => {
+    setIsAddModalOpen(false);
+    setEditingInstructor(null);
+    setNewForm({
+      name: "",
+      gender: "남성",
+      birth_date: "",
+      bank_name: "",
+      account_number: ""
+    });
+  };
+
+  const handleEditInstructorClick = (ins) => {
+    setEditingInstructor(ins);
+    setNewForm({
+      name: ins.name,
+      gender: ins.gender || "남성",
+      birth_date: ins.decrypted_birth,
+      bank_name: ins.bank_name,
+      account_number: ins.decrypted_account
+    });
+    setIsAddModalOpen(true);
+  };
+
   const handleAddInstructor = async (e) => {
     e.preventDefault();
     if (!newForm.name || !newForm.birth_date || !newForm.bank_name || !newForm.account_number) {
@@ -234,28 +262,47 @@ export default function InstructorPoolManager() {
       const encryptedBirth = encryptData(newForm.birth_date);
       const encryptedAccount = encryptData(newForm.account_number);
 
-      const { error } = await supabase.from("instructors").insert({
-        name: newForm.name,
-        gender: newForm.gender,
-        birth_date: encryptedBirth,
-        bank_name: newForm.bank_name,
-        account_number: encryptedAccount
-      });
+      if (editingInstructor) {
+        // 수정 모드
+        const { error } = await supabase
+          .from("instructors")
+          .update({
+            name: newForm.name,
+            gender: newForm.gender,
+            birth_date: encryptedBirth,
+            bank_name: newForm.bank_name,
+            account_number: encryptedAccount
+          })
+          .eq("id", editingInstructor.id);
 
-      if (error) throw error;
+        if (error) throw error;
+        alert("교∙강사 인적사항이 수정되었습니다.");
+      } else {
+        // 등록 모드
+        const isDup = instructors.some(
+          (ins) => ins.name === newForm.name && ins.decrypted_birth === newForm.birth_date
+        );
+        if (isDup) {
+          alert("이미 동일한 이름과 생년월일로 등록된 교∙강사가 존재합니다.");
+          return;
+        }
 
-      alert("교∙강사자가 성공적으로 등록되었습니다.");
-      setIsAddModalOpen(false);
-      setNewForm({
-        name: "",
-        gender: "남성",
-        birth_date: "",
-        bank_name: "",
-        account_number: ""
-      });
+        const { error } = await supabase.from("instructors").insert({
+          name: newForm.name,
+          gender: newForm.gender,
+          birth_date: encryptedBirth,
+          bank_name: newForm.bank_name,
+          account_number: encryptedAccount
+        });
+
+        if (error) throw error;
+        alert("신규 교∙강사가 등록되었습니다.");
+      }
+
+      handleCloseAddModal();
       fetchInstructors();
     } catch (err) {
-      alert("교∙강사 등록 실패: " + err.message);
+      alert("저장 실패: " + err.message);
     }
   };
 
@@ -385,14 +432,49 @@ export default function InstructorPoolManager() {
   };
 
   // 4. 교∙강사 삭제
-  const handleDeleteInstructor = async (id) => {
-    if (!window.confirm("정말로 이 교∙강사를 삭제하시겠습니까? 관련 모든 변동 정보 이력이 함께 삭제됩니다.")) return;
+  // 💡 [사용자 비밀번호 검증 헬퍼]
+  const verifyCurrentUserPassword = async (inputPw) => {
+    if (currentUser && currentUser.password) {
+      return currentUser.password === inputPw;
+    }
+    
+    if (currentUser && currentUser.id) {
+      try {
+        const hashed = CryptoJS.SHA256(inputPw).toString();
+        const { data, error } = await supabase
+          .from("rise_users")
+          .select("id")
+          .eq("id", currentUser.id)
+          .eq("pw", hashed)
+          .maybeSingle();
+          
+        if (!error && data) return true;
+      } catch (err) {
+        console.error("비밀번호 DB 검증 오류:", err);
+      }
+    }
+    return false;
+  };
+
+  // 4. 교∙강사 삭제 (비밀번호 확인 필요)
+  const handleDeleteInstructor = async (ins) => {
+    const inputPw = prompt("교∙강사 마스터 대장 데이터를 삭제하려면 본인의 비밀번호를 입력해 주세요:");
+    if (inputPw === null) return; // 취소
+
+    const isVerified = await verifyCurrentUserPassword(inputPw);
+    if (!isVerified) {
+      alert("비밀번호가 일치하지 않습니다. 삭제가 취소되었습니다.");
+      return;
+    }
+
+    if (!window.confirm(`정말로 ${ins.name} 교∙강사를 삭제하시겠습니까?\n관련 모든 활동이력도 함께 삭제됩니다.`)) return;
+
     try {
-      const { error } = await supabase.from("instructors").delete().eq("id", id);
+      const { error } = await supabase.from("instructors").delete().eq("id", ins.id);
       if (error) throw error;
       alert("삭제되었습니다.");
       fetchInstructors();
-      if (selectedInstructor?.id === id) {
+      if (selectedInstructor?.id === ins.id) {
         setIsDetailOpen(false);
         setSelectedInstructor(null);
       }
@@ -401,30 +483,76 @@ export default function InstructorPoolManager() {
     }
   };
 
-  // 5. 변동 정보 이력 추가
+  // 5. 변동 정보 이력 추가 및 수정
+  const handleCloseHistoryModal = () => {
+    setIsHistoryModalOpen(false);
+    setEditingHistory(null);
+    setNewHistoryForm({
+      year: 2026,
+      department: "",
+      position: "",
+      is_internal: true,
+      unit_id: "B2",
+      program_id: "B2-S1T1-1",
+      amount: ""
+    });
+  };
+
+  const handleEditHistoryClick = (item) => {
+    setEditingHistory(item);
+    setNewHistoryForm({
+      year: item.year,
+      department: item.department,
+      position: item.position,
+      is_internal: item.is_internal,
+      unit_id: item.program_id ? item.program_id.split("-")[0] : "B2",
+      program_id: item.program_id,
+      amount: item.amount
+    });
+    setIsHistoryModalOpen(true);
+  };
+
   const handleAddHistory = async (e) => {
     e.preventDefault();
     if (!selectedInstructor || !newHistoryForm.amount) return;
     
     try {
-      const { error } = await supabase.from("instructor_histories").insert({
-        instructor_id: selectedInstructor.id,
-        year: parseInt(newHistoryForm.year),
-        department: newHistoryForm.department,
-        position: newHistoryForm.position,
-        is_internal: newHistoryForm.is_internal,
-        program_id: newHistoryForm.program_id,
-        amount: parseFloat(newHistoryForm.amount)
-      });
+      if (editingHistory) {
+        // 수정 모드
+        const { error } = await supabase
+          .from("instructor_histories")
+          .update({
+            year: parseInt(newHistoryForm.year),
+            department: newHistoryForm.department,
+            position: newHistoryForm.position,
+            is_internal: newHistoryForm.is_internal,
+            program_id: newHistoryForm.program_id,
+            amount: parseFloat(newHistoryForm.amount)
+          })
+          .eq("id", editingHistory.id);
 
-      if (error) throw error;
+        if (error) throw error;
+        alert("교∙강사 활동이력이 수정되었습니다.");
+      } else {
+        // 등록 모드
+        const { error } = await supabase.from("instructor_histories").insert({
+          instructor_id: selectedInstructor.id,
+          year: parseInt(newHistoryForm.year),
+          department: newHistoryForm.department,
+          position: newHistoryForm.position,
+          is_internal: newHistoryForm.is_internal,
+          program_id: newHistoryForm.program_id,
+          amount: parseFloat(newHistoryForm.amount)
+        });
 
-      alert("변동 정보 이력이 추가되었습니다.");
-      setNewHistoryForm(prev => ({ ...prev, amount: "" }));
-      // 재조회
+        if (error) throw error;
+        alert("변동 정보 이력이 추가되었습니다.");
+      }
+
+      handleCloseHistoryModal();
       handleSelectInstructor(selectedInstructor);
     } catch (err) {
-      alert("이력 추가 실패: " + err.message);
+      alert("이력 저장 실패: " + err.message);
     }
   };
 
@@ -631,7 +759,7 @@ export default function InstructorPoolManager() {
             transition: "all 0.2s"
           }}
         >
-          🗂️ 교.강사 마스터 대장
+          🗂️ 교∙강사 마스터 대장
         </button>
         <button
           onClick={() => {
@@ -653,7 +781,7 @@ export default function InstructorPoolManager() {
             transition: "all 0.2s"
           }}
         >
-          📈 교.강사 활동이력
+          📈 교∙강사 활동이력
         </button>
       </div>
 
@@ -806,18 +934,34 @@ export default function InstructorPoolManager() {
                       <td style={{ padding: "0.75rem 0.5rem" }}>{ins.bank_name}</td>
                       <td style={{ padding: "0.75rem 0.5rem", color: "var(--text-secondary)" }}>{maskAccountNumber(ins.decrypted_account)}</td>
                       <td style={{ padding: "0.75rem 0.5rem", textAlign: "center" }} onClick={(e) => e.stopPropagation()}>
-                        <button
-                          onClick={() => handleDeleteInstructor(ins.id)}
-                          style={{
-                            border: "none",
-                            background: "transparent",
-                            color: "#ef4444",
-                            cursor: "pointer",
-                            padding: "0.25rem"
-                          }}
-                        >
-                          <Trash2 size={14} />
-                        </button>
+                        <div style={{ display: "flex", gap: "0.4rem", justifyContent: "center", alignItems: "center" }}>
+                          <button
+                            onClick={() => handleEditInstructorClick(ins)}
+                            title="수정"
+                            style={{
+                              border: "none",
+                              background: "transparent",
+                              color: "var(--accent-color)",
+                              cursor: "pointer",
+                              padding: "0.25rem"
+                            }}
+                          >
+                            <Edit size={14} />
+                          </button>
+                          <button
+                            onClick={() => handleDeleteInstructor(ins)}
+                            title="삭제"
+                            style={{
+                              border: "none",
+                              background: "transparent",
+                              color: "#ef4444",
+                              cursor: "pointer",
+                              padding: "0.25rem"
+                            }}
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))}
@@ -1028,9 +1172,34 @@ export default function InstructorPoolManager() {
                             <td style={{ padding: "0.75rem 0.5rem" }}>{item.program_id}</td>
                             <td style={{ padding: "0.75rem 0.5rem", textAlign: "right", fontWeight: "700", color: "var(--accent-color)" }}>{parseInt(item.amount).toLocaleString()}원</td>
                             <td style={{ padding: "0.75rem 0.5rem", textAlign: "center" }}>
-                              <button onClick={() => handleDeleteHistory(item.id)} style={{ border: "none", background: "transparent", color: "#ef4444", cursor: "pointer", padding: "0.25rem" }}>
-                                <Trash2 size={14} />
-                              </button>
+                              <div style={{ display: "flex", gap: "0.4rem", justifyContent: "center", alignItems: "center" }}>
+                                <button
+                                  onClick={() => handleEditHistoryClick(item)}
+                                  title="수정"
+                                  style={{
+                                    border: "none",
+                                    background: "transparent",
+                                    color: "var(--accent-color)",
+                                    cursor: "pointer",
+                                    padding: "0.25rem"
+                                  }}
+                                >
+                                  <Edit size={14} />
+                                </button>
+                                <button
+                                  onClick={() => handleDeleteHistory(item.id)}
+                                  title="삭제"
+                                  style={{
+                                    border: "none",
+                                    background: "transparent",
+                                    color: "#ef4444",
+                                    cursor: "pointer",
+                                    padding: "0.25rem"
+                                  }}
+                                >
+                                  <Trash2 size={14} />
+                                </button>
+                              </div>
                             </td>
                           </tr>
                         ))}
@@ -1075,9 +1244,9 @@ export default function InstructorPoolManager() {
           }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "0.85rem 1.25rem", borderBottom: "1px solid var(--border-color)", flexShrink: 0 }}>
               <h3 style={{ fontSize: "1.1rem", fontWeight: "800", display: "flex", alignItems: "center", gap: "0.4rem", color: "var(--text-primary)" }}>
-                📈 {selectedInstructor.name} 교수 활동이력 추가
+                📈 {selectedInstructor.name} 교수 {editingHistory ? "활동이력 수정" : "활동이력 추가"}
               </h3>
-              <button type="button" onClick={() => setIsHistoryModalOpen(false)} style={{ background: "none", border: "none", color: "#a1a1aa", cursor: "pointer" }}>
+              <button type="button" onClick={handleCloseHistoryModal} style={{ background: "none", border: "none", color: "#a1a1aa", cursor: "pointer" }}>
                 <X size={18} />
               </button>
             </div>
@@ -1208,7 +1377,7 @@ export default function InstructorPoolManager() {
                 <button
                   type="button"
                   className="btn-secondary"
-                  onClick={() => setIsHistoryModalOpen(false)}
+                  onClick={handleCloseHistoryModal}
                   style={{ padding: "0.5rem 1rem", fontSize: "0.75rem" }}
                 >
                   취소
@@ -1218,7 +1387,7 @@ export default function InstructorPoolManager() {
                   className="btn-primary"
                   style={{ padding: "0.5rem 1rem", fontSize: "0.75rem" }}
                 >
-                  이력 추가 완료
+                  {editingHistory ? "이력 수정 완료" : "이력 추가 완료"}
                 </button>
               </div>
             </form>
@@ -1254,9 +1423,9 @@ export default function InstructorPoolManager() {
           }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "0.85rem 1.25rem", borderBottom: "1px solid var(--border-color)", flexShrink: 0 }}>
               <h3 style={{ fontSize: "1.1rem", fontWeight: "800", display: "flex", alignItems: "center", gap: "0.4rem", color: "var(--text-primary)" }}>
-                👤 신규 교∙강사 인적사항 등록 (고정 정보)
+                👤 {editingInstructor ? "교∙강사 인적사항 수정 (고정 정보)" : "신규 교∙강사 인적사항 등록 (고정 정보)"}
               </h3>
-              <button type="button" onClick={() => setIsAddModalOpen(false)} style={{ background: "none", border: "none", color: "#a1a1aa", cursor: "pointer" }}>
+              <button type="button" onClick={handleCloseAddModal} style={{ background: "none", border: "none", color: "#a1a1aa", cursor: "pointer" }}>
                 <X size={18} />
               </button>
             </div>
@@ -1362,7 +1531,7 @@ export default function InstructorPoolManager() {
                 <button
                   type="button"
                   className="btn-secondary"
-                  onClick={() => setIsAddModalOpen(false)}
+                  onClick={handleCloseAddModal}
                   style={{ padding: "0.5rem 1rem", fontSize: "0.75rem" }}
                 >
                   취소
@@ -1372,7 +1541,7 @@ export default function InstructorPoolManager() {
                   className="btn-primary"
                   style={{ padding: "0.5rem 1rem", fontSize: "0.75rem" }}
                 >
-                  등록 완료
+                  {editingInstructor ? "수정 완료" : "등록 완료"}
                 </button>
               </div>
             </form>
