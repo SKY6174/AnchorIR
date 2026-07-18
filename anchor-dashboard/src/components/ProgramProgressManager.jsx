@@ -474,20 +474,28 @@ export default function ProgramProgressManager({ projects, selectedYear, darkMod
                             {prog.title}
                           </td>
                           <td style={{ textAlign: "center", verticalAlign: "middle", borderBottom: "1px solid var(--border-color)", padding: "0.5rem 0.3rem" }}>
-                            <div style={{ 
-                              display: "inline-flex", 
-                              alignItems: "center", 
-                              gap: "0.25rem", 
-                              background: darkMode ? "rgba(59, 130, 246, 0.08)" : "#f0f7ff", 
-                              border: darkMode ? "1px solid rgba(59, 130, 246, 0.2)" : "1px solid #dbeafe", 
-                              borderRadius: "6px", 
-                              padding: "0.25rem 0.5rem", 
-                              color: darkMode ? "#60a5fa" : "#2563eb" 
-                            }}>
-                              <User size={12} style={{ flexShrink: 0 }} />
-                              <span style={{ fontWeight: "700", fontSize: "0.72rem", whiteSpace: "nowrap" }}>
-                                {prog.assignee || "미배정"}
-                              </span>
+                            <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem", alignItems: "center", justifyContent: "center" }}>
+                              {(() => {
+                                const assigneeText = prog.assignee || "미배정";
+                                const assignees = assigneeText.includes("/") ? assigneeText.split("/") : [assigneeText];
+                                return assignees.map((name, idx) => (
+                                  <div key={idx} style={{ 
+                                    display: "inline-flex", 
+                                    alignItems: "center", 
+                                    gap: "0.25rem", 
+                                    background: darkMode ? "rgba(59, 130, 246, 0.08)" : "#f0f7ff", 
+                                    border: darkMode ? "1px solid rgba(59, 130, 246, 0.2)" : "1px solid #dbeafe", 
+                                    borderRadius: "6px", 
+                                    padding: "0.25rem 0.5rem", 
+                                    color: darkMode ? "#60a5fa" : "#2563eb" 
+                                  }}>
+                                    <User size={12} style={{ flexShrink: 0 }} />
+                                    <span style={{ fontWeight: "700", fontSize: "0.72rem", whiteSpace: "nowrap" }}>
+                                      {name.trim()}
+                                    </span>
+                                  </div>
+                                ));
+                              })()}
                             </div>
                           </td>
                           <td style={{ verticalAlign: "middle", borderBottom: "1px solid var(--border-color)", padding: "0.5rem" }}>
@@ -503,13 +511,13 @@ export default function ProgramProgressManager({ projects, selectedYear, darkMod
                               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "0.68rem" }}>
                                 <span style={{ color: "var(--text-secondary)", fontWeight: "500" }}>배정:</span>
                                 <span style={{ color: darkMode ? "var(--text-primary)" : "#1e293b", fontWeight: "800", fontFamily: "var(--font-data, monospace)" }}>
-                                  {formatToMillionWon(totalProgBudget)} 백만
+                                  {formatToMillionWon(totalProgBudget)} 백만원
                                 </span>
                               </div>
                               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "0.68rem" }}>
                                 <span style={{ color: "var(--text-secondary)", fontWeight: "500" }}>집행:</span>
                                 <span style={{ color: darkMode ? "var(--success-color)" : "#16a34a", fontWeight: "800", fontFamily: "var(--font-data, monospace)" }}>
-                                  {formatToMillionWon(totalProgSpent)} 백만
+                                  {formatToMillionWon(totalProgSpent)} 백만원
                                 </span>
                               </div>
                             </div>
