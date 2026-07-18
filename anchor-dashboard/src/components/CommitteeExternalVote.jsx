@@ -396,8 +396,9 @@ export default function CommitteeExternalVote({ meetingId }) {
 
     if (!confirm("작성하신 의결 의견과 전자서명을 최종 제출하시겠습니까?")) return;
 
+    let responsePayload = null;
     try {
-      const responsePayload = {
+      responsePayload = {
         meeting_id: meetingId,
         member_id: authMember.id,
         attended: attended,
@@ -406,6 +407,11 @@ export default function CommitteeExternalVote({ meetingId }) {
         encrypted_signature: encryptedSig,
         submitted_at: new Date().toISOString()
       };
+
+      // 💡 [Zero Error Console Guard] 로컬 모드 회의 ID인 경우 Supabase REST DB 적재를 완전히 스킵하여 404 에러 방지
+      if (String(meetingId).startsWith("local-")) {
+        throw new Error("Local mode skip db upsert");
+      }
 
       // Upsert 적용
       const { error } = await supabase
