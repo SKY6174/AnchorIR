@@ -88,8 +88,8 @@ export default function Sidebar({
                 onClick={() => {
                   onChangeTab("projects");
                   if (onChangeProjectsSubTab) {
-                    const subTabs = ["unit_status", "unit_system", "program_mgmt"];
-                    const firstActive = subTabs.find(tab => isSongDirector || menuVisibility[tab] !== false) || "unit_status";
+                    const subTabs = ["unit_system", "unit_status", "program_mgmt"];
+                    const firstActive = subTabs.find(tab => isSongDirector || menuVisibility[tab] !== false) || "unit_system";
                     onChangeProjectsSubTab(firstActive);
                   }
                 }}

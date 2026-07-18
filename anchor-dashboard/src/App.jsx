@@ -3197,8 +3197,8 @@ export default function App() {
   });
 
   const [projectsSubTab, setProjectsSubTab] = useState(() => {
-    return localStorage.getItem("anchor_projects_sub_tab") || "unit_status";
-  }); // "unit_status" (단위과제 집행현황) 또는 "program_mgmt" (프로그램 관리)
+    return localStorage.getItem("anchor_projects_sub_tab") || "unit_system";
+  }); // "unit_system" (단위과제 체계), "unit_status" (단위과제 집행현황) 또는 "program_mgmt" (프로그램 관리)
   const [isMemberModalOpen, setIsMemberModalOpen] = useState(false);
   const [editingMember, setEditingMember] = useState(null); // 추가/수정용 임시 객체
 
