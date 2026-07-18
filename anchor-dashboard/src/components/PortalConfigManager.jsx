@@ -58,15 +58,6 @@ const MENU_SCHEMA = [
     ]
   },
   {
-    key: "committee",
-    label: "위원회 관리",
-    description: "각종 사업단위원회 회의 소집, 의결서 취합 및 AI 분석 결과보고 대장 관리",
-    subMenus: [
-      { key: "committee_meeting", label: "회의 운영 및 의결" },
-      { key: "committee_report", label: "위원회 결과보고 대장" }
-    ]
-  },
-  {
     key: "procurement",
     label: "구매∙용역 관리",
     description: "교육환경 개선, 기자재 구매 및 주요 용역 추진 과정 관리",
@@ -101,6 +92,15 @@ const MENU_SCHEMA = [
     label: "앵커Wiki",
     description: "앵커사업 지식 공유 및 인공지능 위키백과 정보 제공",
     subMenus: []
+  },
+  {
+    key: "committee",
+    label: "위원회 관리",
+    description: "각종 사업단위원회 회의 소집, 의결서 취합 및 AI 분석 결과보고 대장 관리",
+    subMenus: [
+      { key: "committee_meeting", label: "회의 운영 및 의결" },
+      { key: "committee_report", label: "위원회 결과보고 대장" }
+    ]
   },
   {
     key: "management",

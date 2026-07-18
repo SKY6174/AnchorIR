@@ -59,6 +59,44 @@ const MOCK_COMMITTEE_MEMBERS_FALLBACK = {
     { id: 203, committee_id: "planning", type: "위원", name: "김현수", org: "울산과학대학교", dept: "앵커사업단", rank: "본부장", location: "교내", note: "", sort_order: 3 },
     { id: 204, committee_id: "planning", type: "위원", name: "최윤아", org: "울산과학대학교", dept: "기획처", rank: "부처장", location: "교내", note: "신규 추가", sort_order: 4 },
     { id: 205, committee_id: "planning", type: "위원", name: "이동은", org: "울산과학대학교", dept: "지산학교육센터(ECC)", rank: "센터장", location: "교내", note: "", sort_order: 5 }
+  ],
+  budget: [
+    { id: 301, committee_id: "budget", type: "위원장", name: "송경영", org: "울산과학대학교", dept: "앵커사업단", rank: "단장", location: "교내", note: "", sort_order: 1 },
+    { id: 302, committee_id: "budget", type: "위원", name: "변홍석", org: "울산과학대학교", dept: "교무처", rank: "처장", location: "교내", note: "", sort_order: 2 },
+    { id: 303, committee_id: "budget", type: "간사", name: "고우근", org: "울산과학대학교", dept: "기획처", rank: "팀장", location: "교내", note: "", sort_order: 3 }
+  ],
+  eval: [
+    { id: 401, committee_id: "eval", type: "위원장", name: "외부평가위원A", org: "한국대학교", dept: "교육학", rank: "교수", location: "교외", note: "자체평가 공정성 제고", sort_order: 1 },
+    { id: 402, committee_id: "eval", type: "위원", name: "송경영", org: "울산과학대학교", dept: "앵커사업단", rank: "단장", location: "교내", note: "", sort_order: 2 },
+    { id: 403, committee_id: "eval", type: "위원", name: "김현수", org: "울산과학대학교", dept: "앵커사업단", rank: "본부장", location: "교내", note: "", sort_order: 3 }
+  ],
+  advisory: [
+    { id: 501, committee_id: "advisory", type: "위원", name: "외부자문위원A", org: "울산연구원", dept: "경제연구실", rank: "실장", location: "교외", note: "", sort_order: 1 },
+    { id: 502, committee_id: "advisory", type: "위원", name: "외부자문위원B", org: "울산테크노파크", dept: "정책기획단", rank: "단장", location: "교외", note: "", sort_order: 2 }
+  ],
+  ecc_op: [
+    { id: 601, committee_id: "ecc_op", type: "위원장", name: "이동은", org: "울산과학대학교", dept: "지산학교육센터(ECC)", rank: "센터장", location: "교내", note: "", sort_order: 1 },
+    { id: 602, committee_id: "ecc_op", type: "위원", name: "최윤아", org: "울산과학대학교", dept: "기획처", rank: "부처장", location: "교내", note: "", sort_order: 2 }
+  ],
+  icc_op: [
+    { id: 701, committee_id: "icc_op", type: "위원장", name: "김현수", org: "울산과학대학교", dept: "기업협업센터(ICC)", rank: "센터장", location: "교내", note: "", sort_order: 1 },
+    { id: 702, committee_id: "icc_op", type: "위원", name: "송경영", org: "울산과학대학교", dept: "앵커사업단", rank: "단장", location: "교내", note: "", sort_order: 2 }
+  ],
+  rcc_op: [
+    { id: 801, committee_id: "rcc_op", type: "위원장", name: "이동은", org: "울산과학대학교", dept: "지역협업센터(RCC)", rank: "센터장", location: "교내", note: "", sort_order: 1 },
+    { id: 802, committee_id: "rcc_op", type: "간사", name: "고우근", org: "울산과학대학교", dept: "기획처", rank: "팀장", location: "교내", note: "", sort_order: 2 }
+  ],
+  aidx_op: [
+    { id: 901, committee_id: "aidx_op", type: "위원장", name: "변홍석", org: "울산과학대학교", dept: "AID-X센터", rank: "센터장", location: "교내", note: "", sort_order: 1 },
+    { id: 902, committee_id: "aidx_op", type: "위원", name: "최윤아", org: "울산과학대학교", dept: "기획처", rank: "부처장", location: "교내", note: "", sort_order: 2 }
+  ],
+  neulbom_op: [
+    { id: 1001, committee_id: "neulbom_op", type: "위원장", name: "이주영", org: "울산과학대학교", dept: "학생취업처", rank: "처장", location: "교내", note: "", sort_order: 1 },
+    { id: 1002, committee_id: "neulbom_op", type: "위원", name: "이동은", org: "울산과학대학교", dept: "지산학교육센터(ECC)", rank: "센터장", location: "교내", note: "", sort_order: 2 }
+  ],
+  newind_op: [
+    { id: 1101, committee_id: "newind_op", type: "위원장", name: "송경영", org: "울산과학대학교", dept: "신산업특화센터", rank: "센터장", location: "교내", note: "", sort_order: 1 },
+    { id: 1102, committee_id: "newind_op", type: "위원", name: "김현수", org: "울산과학대학교", dept: "앵커사업단", rank: "본부장", location: "교내", note: "", sort_order: 2 }
   ]
 };
 
@@ -283,24 +321,53 @@ export default function CommitteeManager({
         setMembers(data);
         localStorage.setItem(`local_committee_members_${committeeId}`, JSON.stringify(data));
       } else {
+        // 💡 [자동 배정 트리거] DB에 데이터가 없으므로 마스터 명단을 실제로 배정(Insert) 처리합니다. (Rule 4 준수 설명 주석)
+        console.log(`위원회 [${committeeId}]에 기본 소속 위원이 배정되어 있지 않습니다. 자동 적재를 시작합니다.`);
         const fallback = MOCK_COMMITTEE_MEMBERS_FALLBACK[committeeId] || [
-          { id: 901, committee_id: committeeId, type: "위원장", name: "송경영", org: "울산과학대학교", dept: "산학협력단(앵커)", rank: "단장", location: "교내", note: "", sort_order: 1 },
-          { id: 902, committee_id: committeeId, type: "위원", name: "이동은", org: "울산과학대학교", dept: "지산학교육센터(ECC)", rank: "센터장", location: "교내", note: "", sort_order: 2 }
+          { committee_id: committeeId, type: "위원장", name: "송경영", org: "울산과학대학교", dept: "산학협력단(앵커)", rank: "단장", location: "교내", note: "", sort_order: 1 },
+          { committee_id: committeeId, type: "위원", name: "이동은", org: "울산과학대학교", dept: "지산학교육센터(ECC)", rank: "센터장", location: "교내", note: "", sort_order: 2 }
         ];
-        setMembers(fallback);
-        localStorage.setItem(`local_committee_members_${committeeId}`, JSON.stringify(fallback));
+        
+        // insert 시 id 필드는 DB auto-increment를 위해 제외
+        const insertPayloads = fallback.map(({ id, ...rest }) => rest);
+        
+        try {
+          const { error: insErr } = await supabase
+            .from("committee_members")
+            .insert(insertPayloads);
+          if (insErr) throw insErr;
+          
+          // 성공 시 최신 정보 다시 조회
+          const { data: refreshedData } = await supabase
+            .from("committee_members")
+            .select(`id, committee_id, type, name, org, dept, rank, location, note, sort_order`)
+            .eq("committee_id", committeeId)
+            .order("sort_order", { ascending: true });
+          
+          const finalData = refreshedData && refreshedData.length > 0 ? refreshedData : fallback;
+          setMembers(finalData);
+          localStorage.setItem(`local_committee_members_${committeeId}`, JSON.stringify(finalData));
+        } catch (dbInsErr) {
+          // DB 실패 시 로컬 스토리지에 모의 배정 저장
+          console.warn("위원 자동 배정 DB 적재 실패 (오프라인 로컬 저장소 캐싱):", dbInsErr.message);
+          setMembers(fallback);
+          localStorage.setItem(`local_committee_members_${committeeId}`, JSON.stringify(fallback));
+        }
       }
     } catch (err) {
       console.error("위원 조회 에러 (로컬 캐시 스위칭):", err.message);
       const localData = localStorage.getItem(`local_committee_members_${committeeId}`);
-      if (localData) {
-        setMembers(JSON.parse(localData));
+      const parsed = localData ? JSON.parse(localData) : [];
+      if (parsed.length > 0) {
+        setMembers(parsed);
       } else {
+        // 캐시도 비어있다면 자동 적재 진행
         const fallback = MOCK_COMMITTEE_MEMBERS_FALLBACK[committeeId] || [
-          { id: 901, committee_id: committeeId, type: "위원장", name: "송경영", org: "울산과학대학교", dept: "산학협력단(앵커)", rank: "단장", location: "교내", note: "", sort_order: 1 },
-          { id: 902, committee_id: committeeId, type: "위원", name: "이동은", org: "울산과학대학교", dept: "지산학교육센터(ECC)", rank: "센터장", location: "교내", note: "", sort_order: 2 }
+          { committee_id: committeeId, type: "위원장", name: "송경영", org: "울산과학대학교", dept: "산학협력단(앵커)", rank: "단장", location: "교내", note: "", sort_order: 1 },
+          { committee_id: committeeId, type: "위원", name: "이동은", org: "울산과학대학교", dept: "지산학교육센터(ECC)", rank: "센터장", location: "교내", note: "", sort_order: 2 }
         ];
         setMembers(fallback);
+        localStorage.setItem(`local_committee_members_${committeeId}`, JSON.stringify(fallback));
       }
     }
   };
