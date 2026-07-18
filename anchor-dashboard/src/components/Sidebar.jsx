@@ -25,6 +25,8 @@ export default function Sidebar({
   onChangeAgreementsSubTab,
   progressSubTab,
   onChangeProgressSubTab,
+  committeeSubTab,
+  onChangeCommitteeSubTab,
   menuVisibility = {},
   isSongDirector = false,
   currentUser = null
@@ -526,6 +528,80 @@ export default function Sidebar({
                   >
                     - 장학금 관리
                     {isHidden("scholarships") && (
+                      <span style={{ fontSize: "0.6rem", color: "#ef4444", textDecoration: "none", marginLeft: "0.2rem" }}>
+                        [숨김]
+                      </span>
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* 💡 [위원회 관리] 신규 탭 연동 */}
+          {(menuVisibility.committee !== false || isSongDirector) && (
+            <div
+              className={`committee-nav-wrapper ${(activeTab === "committee" || hoveredTab === "committee") ? "active" : ""}`}
+              onMouseEnter={() => setHoveredTab("committee")}
+              onMouseLeave={() => setHoveredTab(null)}
+            >
+              <div
+                className={`nav-item ${activeTab === "committee" ? "active" : ""}`}
+                onClick={() => {
+                  onChangeTab("committee");
+                  if (onChangeCommitteeSubTab) {
+                    const subTabs = ["committee_meeting", "committee_report"];
+                    const firstActive = subTabs.find(tab => isSongDirector || menuVisibility[tab] !== false) || "committee_meeting";
+                    onChangeCommitteeSubTab(firstActive);
+                  }
+                }}
+                style={getHiddenStyle("committee")}
+              >
+                <ClipboardList size={24} />
+                <span>
+                  위원회 관리
+                  {isHidden("committee") && (
+                    <span style={{ fontSize: "0.65rem", color: "#ef4444", fontWeight: "bold", textDecoration: "none", display: "inline-block", marginLeft: "0.25rem" }}>
+                      [숨김]
+                    </span>
+                  )}
+                </span>
+              </div>
+              <div className="nav-sub-menu">
+                {(menuVisibility.committee_meeting !== false || isSongDirector) && (
+                  <div
+                    className={`nav-sub-item ${activeTab === "committee" && committeeSubTab === "committee_meeting" ? "active" : ""}`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onChangeTab("committee");
+                      if (onChangeCommitteeSubTab) {
+                        onChangeCommitteeSubTab("committee_meeting");
+                      }
+                    }}
+                    style={getHiddenStyle("committee_meeting")}
+                  >
+                    - 회의 운영 및 의결
+                    {isHidden("committee_meeting") && (
+                      <span style={{ fontSize: "0.6rem", color: "#ef4444", textDecoration: "none", marginLeft: "0.2rem" }}>
+                        [숨김]
+                      </span>
+                    )}
+                  </div>
+                )}
+                {(menuVisibility.committee_report !== false || isSongDirector) && (
+                  <div
+                    className={`nav-sub-item ${activeTab === "committee" && committeeSubTab === "committee_report" ? "active" : ""}`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onChangeTab("committee");
+                      if (onChangeCommitteeSubTab) {
+                        onChangeCommitteeSubTab("committee_report");
+                      }
+                    }}
+                    style={getHiddenStyle("committee_report")}
+                  >
+                    - 위원회 결과보고 대장
+                    {isHidden("committee_report") && (
                       <span style={{ fontSize: "0.6rem", color: "#ef4444", textDecoration: "none", marginLeft: "0.2rem" }}>
                         [숨김]
                       </span>

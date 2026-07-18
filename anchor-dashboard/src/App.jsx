@@ -22,6 +22,7 @@ import AuthManager from "./components/AuthManager";
 import ProcurementManager from "./components/ProcurementManager";
 import ScheduleManager from "./components/ScheduleManager";
 import AssetManager from "./components/AssetManager";
+import CommitteeManager from "./components/CommitteeManager";
 import UnitSystemView from "./components/UnitSystemView";
 import { initialProjectsData, userRoles, YEAR_1_PROGRAMS, Y1_UNIT_META } from "./data/mockData";
 import { Sun, Moon, LogOut, HelpCircle, ArrowUpRight, Lock as LockIcon, Info, Clock, Edit2, FileText, Upload, Plus, Download, X } from "lucide-react";
@@ -3199,6 +3200,9 @@ export default function App() {
   const [projectsSubTab, setProjectsSubTab] = useState(() => {
     return localStorage.getItem("anchor_projects_sub_tab") || "unit_system";
   }); // "unit_system" (단위과제 체계), "unit_status" (단위과제 집행현황) 또는 "program_mgmt" (프로그램 관리)
+  const [committeeSubTab, setCommitteeSubTab] = useState(() => {
+    return localStorage.getItem("anchor_committee_sub_tab") || "committee_meeting";
+  }); // "committee_meeting" (회의 운영 및 의결) 또는 "committee_report" (위원회 결과보고 대장)
   const [isMemberModalOpen, setIsMemberModalOpen] = useState(false);
   const [editingMember, setEditingMember] = useState(null); // 추가/수정용 임시 객체
 
@@ -3593,6 +3597,10 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem("anchor_projects_sub_tab", projectsSubTab);
   }, [projectsSubTab]);
+
+  useEffect(() => {
+    localStorage.setItem("anchor_committee_sub_tab", committeeSubTab);
+  }, [committeeSubTab]);
 
   useEffect(() => {
     localStorage.setItem("anchor_progress_sub_tab", progressSubTab);
@@ -6725,7 +6733,7 @@ export default function App() {
     if (mainEl) {
       mainEl.scrollTop = 0;
     }
-  }, [activeTab, projectsSubTab, mgmtSubTab, kpiSubTab, selectedProgId]);
+  }, [activeTab, projectsSubTab, mgmtSubTab, kpiSubTab, selectedProgId, committeeSubTab]);
 
   // 로컬스토리지에서 세션 확인 및 테마 설정
   useEffect(() => {
@@ -8320,6 +8328,8 @@ export default function App() {
         onChangeAgreementsSubTab={setAgreementsSubTab}
         progressSubTab={progressSubTab}
         onChangeProgressSubTab={setProgressSubTab}
+        committeeSubTab={committeeSubTab}
+        onChangeCommitteeSubTab={setCommitteeSubTab}
         menuVisibility={currentUser && ["ADMIN", "G_DIRECTOR", "HQ_HEAD", "MANAGER"].includes(currentUser.role_key) ? {} : menuVisibility}
         isSongDirector={isSongDirector}
         currentUser={currentUser}
@@ -11134,6 +11144,19 @@ export default function App() {
               currentUser={currentUser}
               activeSubTab={assetSubTab}
               onChangeSubTab={setAssetSubTab}
+              darkMode={darkMode}
+              selectedYear={selectedYear}
+            />
+          </div>
+        )}
+
+        {activeTab === "committee" && (
+          <div className="committee-management-wrapper" style={{ display: "flex", flexDirection: "column", gap: "1rem", width: "100%" }}>
+            <CommitteeManager
+              currentRole={currentRole}
+              currentUser={currentUser}
+              activeSubTab={committeeSubTab}
+              onChangeSubTab={setCommitteeSubTab}
               darkMode={darkMode}
               selectedYear={selectedYear}
             />
