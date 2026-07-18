@@ -976,7 +976,7 @@ export default function InstructorPoolManager({ currentUser, currentRole }) {
       {activeSubTab === "history" && (
         <div style={{ display: "flex", gap: "1.25rem", alignItems: "flex-start", width: "100%" }}>
           {/* 탭 2 좌측: 교강사 목록 패널 */}
-          <div className="glass-card" style={{ flex: 0.35, padding: "1rem", display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+          <div className="glass-card" style={{ flex: 0.22, minWidth: "180px", padding: "1rem", display: "flex", flexDirection: "column", gap: "0.75rem" }}>
             <h3 style={{ fontSize: "0.85rem", fontWeight: "800" }}>교∙강사 선택</h3>
             <input
               type="text"
@@ -1011,9 +1011,8 @@ export default function InstructorPoolManager({ currentUser, currentRole }) {
                       transition: "all 0.15s ease"
                     }}
                   >
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <div>
                       <span style={{ fontWeight: "700", fontSize: "0.8rem" }}>{ins.name}</span>
-                      <span style={{ fontSize: "0.65rem", color: "var(--text-secondary)" }}>{ins.bank_name}</span>
                     </div>
                     <div style={{ fontSize: "0.65rem", color: "var(--text-secondary)", marginTop: "0.15rem" }}>
                       생년월일: {maskBirthDate(ins.decrypted_birth)}
@@ -1023,8 +1022,8 @@ export default function InstructorPoolManager({ currentUser, currentRole }) {
             </div>
           </div>
 
-          {/* 탭 2 우측: 선택된 교강사 활동이력 대장 */}
-          <div className="glass-card" style={{ flex: 1, padding: "1.25rem" }}>
+          {/* 탭 2: 교.강사 활동이력 대장 */}
+          <div className="glass-card" style={{ flex: 0.78, padding: "1.25rem" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.25rem", flexWrap: "wrap", gap: "0.75rem" }}>
               <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
                 <h3 style={{ fontSize: "0.95rem", fontWeight: "800", color: "var(--text-primary)" }}>
