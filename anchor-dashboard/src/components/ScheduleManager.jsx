@@ -474,6 +474,7 @@ export default function ScheduleManager({
     dept: "",
     rank: "",
     location: "교내",
+    term: "",
     note: ""
   });
 
@@ -510,6 +511,7 @@ export default function ScheduleManager({
         const { data: mems, error: memsErr } = await supabase
           .from("committee_members")
           .select("*")
+          .eq("year", selectedYear)
           .order("sort_order", { ascending: true })
           .order("id", { ascending: true });
         if (memsErr) throw memsErr;
@@ -527,6 +529,7 @@ export default function ScheduleManager({
               dept: m.dept,
               rank: m.rank,
               location: m.location,
+              term: m.term,
               note: m.note
             }))
         }));
@@ -539,7 +542,7 @@ export default function ScheduleManager({
 
   useEffect(() => {
     loadCommitteesData();
-  }, []);
+  }, [selectedYear]);
 
   // 위원 삭제 처리 함수
   const handleDeleteMember = async (memberId) => {
@@ -579,6 +582,7 @@ export default function ScheduleManager({
             dept: memberFormData.dept,
             rank: memberFormData.rank,
             location: memberFormData.location,
+            term: memberFormData.term,
             note: memberFormData.note
           })
           .eq("id", editingMember.id);
@@ -598,6 +602,8 @@ export default function ScheduleManager({
             dept: memberFormData.dept,
             rank: memberFormData.rank,
             location: memberFormData.location,
+            year: selectedYear,
+            term: memberFormData.term,
             note: memberFormData.note,
             sort_order: nextSortOrder
           });
@@ -4684,6 +4690,7 @@ Gemini 피드백: \n${geminiCritiqueText}
                                   dept: "",
                                   rank: "",
                                   location: "교내",
+                                  term: "",
                                   note: ""
                                 });
                                 setIsMemberModalOpen(true);
@@ -4779,6 +4786,7 @@ Gemini 피드백: \n${geminiCritiqueText}
                                                 dept: member.dept || "",
                                                 rank: member.rank || "",
                                                 location: member.location,
+                                                term: member.term || "",
                                                 note: member.note || ""
                                               });
                                               setIsMemberModalOpen(true);
@@ -6395,6 +6403,18 @@ Gemini 피드백: \n${geminiCritiqueText}
                     style={{ padding: "0.5rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", fontSize: "0.8rem" }}
                   />
                 </div>
+              </div>
+
+              {/* 임기 (term) */}
+              <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
+                <label style={{ fontSize: "0.78rem", fontWeight: "700", color: "var(--text-secondary)" }}>임기 (term)</label>
+                <input
+                  type="text"
+                  placeholder="예: 2025.03.01 ~ 2026.02.28 또는 1년"
+                  value={memberFormData.term || ""}
+                  onChange={(e) => setMemberFormData(prev => ({ ...prev, term: e.target.value }))}
+                  style={{ padding: "0.5rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", fontSize: "0.8rem" }}
+                />
               </div>
 
               {/* 버튼 */}

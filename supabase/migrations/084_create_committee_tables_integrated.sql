@@ -28,6 +28,8 @@ CREATE TABLE committee_members (
     rank VARCHAR(100), -- 직위/직급
     location VARCHAR(50), -- '교내'/'교외'
     note TEXT, -- 비고
+    year VARCHAR(10) DEFAULT '2', -- 사업 연차 (1, 2, 3 등)
+    term VARCHAR(100), -- 임기
     sort_order INT DEFAULT 99, -- 정렬 순서
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
