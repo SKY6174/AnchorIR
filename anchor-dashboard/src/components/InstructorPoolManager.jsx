@@ -419,19 +419,19 @@ export default function InstructorPoolManager() {
                 style={{
                   display: "flex",
                   alignItems: "center",
-                  gap: "0.25rem",
-                  padding: "0.5rem 1rem",
-                  background: "rgba(139, 92, 246, 0.15)",
+                  gap: "0.35rem",
+                  padding: "0.6rem 1.2rem",
+                  background: "#ffffff",
                   color: "#8b5cf6",
-                  border: "1px solid rgba(139, 92, 246, 0.3)",
-                  borderRadius: "9999px",
-                  fontSize: "0.8rem",
+                  border: "1px solid #8b5cf6",
+                  borderRadius: "12px",
+                  fontSize: "0.9rem",
                   fontWeight: "700",
                   cursor: "pointer",
                   transition: "all 0.2s ease"
                 }}
               >
-                <Download size={14} /> 엑셀 서식
+                <Download size={16} /> 엑셀 서식
               </button>
 
               {/* 엑셀 일괄 업로드 */}
@@ -440,20 +440,20 @@ export default function InstructorPoolManager() {
                 style={{
                   display: "flex",
                   alignItems: "center",
-                  gap: "0.25rem",
-                  padding: "0.5rem 1rem",
-                  background: "rgba(16, 185, 129, 0.15)",
+                  gap: "0.35rem",
+                  padding: "0.6rem 1.2rem",
+                  background: "#ecfdf5",
                   color: "#10b981",
-                  border: "1px solid rgba(16, 185, 129, 0.3)",
-                  borderRadius: "9999px",
-                  fontSize: "0.8rem",
+                  border: "1px solid #10b981",
+                  borderRadius: "12px",
+                  fontSize: "0.9rem",
                   fontWeight: "700",
                   cursor: "pointer",
                   margin: 0,
                   transition: "all 0.2s ease"
                 }}
               >
-                <Upload size={14} /> 엑셀 업로드
+                <Upload size={16} /> 엑셀 업로드
                 <input
                   type="file"
                   accept=".xlsx, .xls"
@@ -469,19 +469,19 @@ export default function InstructorPoolManager() {
                 style={{
                   display: "flex",
                   alignItems: "center",
-                  gap: "0.25rem",
-                  padding: "0.5rem 1rem",
-                  background: "rgba(107, 114, 128, 0.15)",
-                  color: "var(--text-secondary)",
-                  border: "1px solid rgba(107, 114, 128, 0.3)",
-                  borderRadius: "9999px",
-                  fontSize: "0.8rem",
+                  gap: "0.35rem",
+                  padding: "0.6rem 1.2rem",
+                  background: "#f5f3ff",
+                  color: "#8b5cf6",
+                  border: "1px solid #8b5cf6",
+                  borderRadius: "12px",
+                  fontSize: "0.9rem",
                   fontWeight: "700",
                   cursor: "pointer",
                   transition: "all 0.2s ease"
                 }}
               >
-                <Download size={14} /> 엑셀 다운로드
+                <Download size={16} /> 엑셀 다운로드
               </button>
 
               {/* 신규 등록 버튼 */}
@@ -491,18 +491,19 @@ export default function InstructorPoolManager() {
                 style={{
                   display: "flex",
                   alignItems: "center",
-                  gap: "0.25rem",
-                  padding: "0.5rem 1.2rem",
-                  background: "var(--accent-color)",
+                  gap: "0.35rem",
+                  padding: "0.6rem 1.4rem",
+                  background: "#3b82f6",
                   color: "#ffffff",
                   border: "none",
-                  borderRadius: "9999px",
-                  fontSize: "0.85rem",
+                  borderRadius: "12px",
+                  fontSize: "0.9rem",
                   fontWeight: "700",
-                  cursor: "pointer"
+                  cursor: "pointer",
+                  transition: "all 0.2s ease"
                 }}
               >
-                <Plus size={16} /> 신규 등록
+                <Plus size={18} /> 신규 등록
               </button>
             </div>
           </div>
