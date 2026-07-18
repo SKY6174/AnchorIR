@@ -8951,23 +8951,7 @@ export default function App() {
                   >
                     사업단 조직도
                   </button>
-                  <button
-                    type="button"
-                    onClick={() => setMgmtSubTab("committees")}
-                    style={{
-                      border: "none",
-                      background: "transparent",
-                      padding: "0.5rem 1rem",
-                      fontSize: "1rem",
-                      fontWeight: "800",
-                      cursor: "pointer",
-                      color: mgmtSubTab === "committees" ? "var(--accent-color)" : "var(--text-secondary)",
-                      borderBottom: mgmtSubTab === "committees" ? "2px solid var(--accent-color)" : "none",
-                      transition: "all 0.2s"
-                    }}
-                  >
-                    위원회 관리
-                  </button>
+
                   <button
                     type="button"
                     onClick={() => setMgmtSubTab("partners")}
@@ -10038,28 +10022,7 @@ export default function App() {
               <CenterOrgChartManager key={`center-org-${darkMode}`} />
             )}
 
-            {mgmtSubTab === "committees" && (
-              <div style={{ marginTop: "1rem" }}>
-                <ScheduleManager
-                  key={`schedule-committee-${darkMode}-${selectedYear}`}
-                  currentUser={currentUser}
-                  currentRole={currentRole}
-                  selectedYear={selectedYear}
-                  darkMode={darkMode}
-                  subTab="committees"
-                  onChangeSubTab={setMgmtSubTab}
-                  monthlySchedules={monthlySchedules}
-                  setMonthlySchedules={setMonthlySchedules}
-                  eventSchedules={eventSchedules}
-                  setEventSchedules={setEventSchedules}
-                  meetingSchedules={meetingSchedules}
-                  setMeetingSchedules={setMeetingSchedules}
-                  pressReleases={pressReleases}
-                  setPressReleases={setPressReleases}
-                  members={members}
-                />
-              </div>
-            )}
+
 
             {mgmtSubTab === "partners" && (
               <PartnerManager key={`partner-${darkMode}-${selectedYear}`} selectedYear={selectedYear} />
@@ -11173,6 +11136,15 @@ export default function App() {
               onChangeSubTab={setCommitteeSubTab}
               darkMode={darkMode}
               selectedYear={selectedYear}
+              monthlySchedules={monthlySchedules}
+              setMonthlySchedules={setMonthlySchedules}
+              eventSchedules={eventSchedules}
+              setEventSchedules={setEventSchedules}
+              meetingSchedules={meetingSchedules}
+              setMeetingSchedules={setMeetingSchedules}
+              pressReleases={pressReleases}
+              setPressReleases={setPressReleases}
+              members={members}
             />
           </div>
         )}

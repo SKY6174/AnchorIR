@@ -538,79 +538,7 @@ export default function Sidebar({
             </div>
           )}
 
-          {/* 💡 [위원회 관리] 신규 탭 연동 */}
-          {(menuVisibility.committee !== false || isSongDirector) && (
-            <div
-              className={`committee-nav-wrapper ${(activeTab === "committee" || hoveredTab === "committee") ? "active" : ""}`}
-              onMouseEnter={() => setHoveredTab("committee")}
-              onMouseLeave={() => setHoveredTab(null)}
-            >
-              <div
-                className={`nav-item ${activeTab === "committee" ? "active" : ""}`}
-                onClick={() => {
-                  onChangeTab("committee");
-                  if (onChangeCommitteeSubTab) {
-                    const subTabs = ["committee_meeting", "committee_report"];
-                    const firstActive = subTabs.find(tab => isSongDirector || menuVisibility[tab] !== false) || "committee_meeting";
-                    onChangeCommitteeSubTab(firstActive);
-                  }
-                }}
-                style={getHiddenStyle("committee")}
-              >
-                <ClipboardList size={24} />
-                <span>
-                  위원회 관리
-                  {isHidden("committee") && (
-                    <span style={{ fontSize: "0.65rem", color: "#ef4444", fontWeight: "bold", textDecoration: "none", display: "inline-block", marginLeft: "0.25rem" }}>
-                      [숨김]
-                    </span>
-                  )}
-                </span>
-              </div>
-              <div className="nav-sub-menu">
-                {(menuVisibility.committee_meeting !== false || isSongDirector) && (
-                  <div
-                    className={`nav-sub-item ${activeTab === "committee" && committeeSubTab === "committee_meeting" ? "active" : ""}`}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onChangeTab("committee");
-                      if (onChangeCommitteeSubTab) {
-                        onChangeCommitteeSubTab("committee_meeting");
-                      }
-                    }}
-                    style={getHiddenStyle("committee_meeting")}
-                  >
-                    - 회의 운영 및 의결
-                    {isHidden("committee_meeting") && (
-                      <span style={{ fontSize: "0.6rem", color: "#ef4444", textDecoration: "none", marginLeft: "0.2rem" }}>
-                        [숨김]
-                      </span>
-                    )}
-                  </div>
-                )}
-                {(menuVisibility.committee_report !== false || isSongDirector) && (
-                  <div
-                    className={`nav-sub-item ${activeTab === "committee" && committeeSubTab === "committee_report" ? "active" : ""}`}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onChangeTab("committee");
-                      if (onChangeCommitteeSubTab) {
-                        onChangeCommitteeSubTab("committee_report");
-                      }
-                    }}
-                    style={getHiddenStyle("committee_report")}
-                  >
-                    - 위원회 결과보고 대장
-                    {isHidden("committee_report") && (
-                      <span style={{ fontSize: "0.6rem", color: "#ef4444", textDecoration: "none", marginLeft: "0.2rem" }}>
-                        [숨김]
-                      </span>
-                    )}
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
+
 
           <div
             className={`procurement-nav-wrapper ${(activeTab === "procurement" || hoveredTab === "procurement") ? "active" : ""}`}
@@ -898,6 +826,100 @@ export default function Sidebar({
             <span>앵커Wiki</span>
           </div>
 
+          {/* 💡 [위원회 관리] 신규 탭 연동 */}
+          {(menuVisibility.committee !== false || isSongDirector) && (
+            <div
+              className={`committee-nav-wrapper ${(activeTab === "committee" || hoveredTab === "committee") ? "active" : ""}`}
+              onMouseEnter={() => setHoveredTab("committee")}
+              onMouseLeave={() => setHoveredTab(null)}
+            >
+              <div
+                className={`nav-item ${activeTab === "committee" ? "active" : ""}`}
+                onClick={() => {
+                  onChangeTab("committee");
+                  if (onChangeCommitteeSubTab) {
+                    const subTabs = ["committee_meeting", "committee_report", "committees"];
+                    const firstActive = subTabs.find(tab => isSongDirector || menuVisibility[tab] !== false) || "committee_meeting";
+                    onChangeCommitteeSubTab(firstActive);
+                  }
+                }}
+                style={getHiddenStyle("committee")}
+              >
+                <ClipboardList size={24} />
+                <span>
+                  위원회 관리
+                  {isHidden("committee") && (
+                    <span style={{ fontSize: "0.65rem", color: "#ef4444", fontWeight: "bold", textDecoration: "none", display: "inline-block", marginLeft: "0.25rem" }}>
+                      [숨김]
+                    </span>
+                  )}
+                </span>
+              </div>
+              <div className="nav-sub-menu">
+                {(menuVisibility.committee_meeting !== false || isSongDirector) && (
+                  <div
+                    className={`nav-sub-item ${activeTab === "committee" && committeeSubTab === "committee_meeting" ? "active" : ""}`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onChangeTab("committee");
+                      if (onChangeCommitteeSubTab) {
+                        onChangeCommitteeSubTab("committee_meeting");
+                      }
+                    }}
+                    style={getHiddenStyle("committee_meeting")}
+                  >
+                    - 회의 운영 및 의결
+                    {isHidden("committee_meeting") && (
+                      <span style={{ fontSize: "0.6rem", color: "#ef4444", textDecoration: "none", marginLeft: "0.2rem" }}>
+                        [숨김]
+                      </span>
+                    )}
+                  </div>
+                )}
+                {(menuVisibility.committee_report !== false || isSongDirector) && (
+                  <div
+                    className={`nav-sub-item ${activeTab === "committee" && committeeSubTab === "committee_report" ? "active" : ""}`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onChangeTab("committee");
+                      if (onChangeCommitteeSubTab) {
+                        onChangeCommitteeSubTab("committee_report");
+                      }
+                    }}
+                    style={getHiddenStyle("committee_report")}
+                  >
+                    - 위원회 결과보고 대장
+                    {isHidden("committee_report") && (
+                      <span style={{ fontSize: "0.6rem", color: "#ef4444", textDecoration: "none", marginLeft: "0.2rem" }}>
+                        [숨김]
+                      </span>
+                    )}
+                  </div>
+                )}
+                {(menuVisibility.committees !== false || isSongDirector) && (
+                  <div
+                    className={`nav-sub-item ${activeTab === "committee" && committeeSubTab === "committees" ? "active" : ""}`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onChangeTab("committee");
+                      if (onChangeCommitteeSubTab) {
+                        onChangeCommitteeSubTab("committees");
+                      }
+                    }}
+                    style={getHiddenStyle("committees")}
+                  >
+                    - 위원회 명단 관리
+                    {isHidden("committees") && (
+                      <span style={{ fontSize: "0.6rem", color: "#ef4444", textDecoration: "none", marginLeft: "0.2rem" }}>
+                        [숨김]
+                      </span>
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
           {/* '사업단 관리' 메뉴는 로그인한 모든 사용자(연구원 및 게스트 포함)에게 노출합니다. 단, 내역별 권한 제한은 유지됩니다. */}
           {currentRole && (
             <div
@@ -912,7 +934,7 @@ export default function Sidebar({
                   if (onChangeMgmtSubTab) {
                     const isManager = currentRole.id === "ADMIN" || currentRole.id === "G_DIRECTOR" || currentRole.id === "HQ_HEAD" || currentRole.id === "MANAGER";
                     const isSpecialApprover = currentUser && ["이규상", "임은애", "황수진", "최주명"].some(name => (currentUser.name || "").includes(name));
-                    const subTabsOrder = ["approvals", "members", "users", "programs", "org_chart", "center_org_chart", "committees", "partners", "instructor_pool", "portal_config"];
+                    const subTabsOrder = ["approvals", "members", "users", "programs", "org_chart", "center_org_chart", "partners", "instructor_pool", "portal_config"];
 
                     const firstActive = subTabsOrder.find(tab => {
                       if (tab === "portal_config") return currentRole.id === "ADMIN" || currentRole.id === "G_DIRECTOR";
@@ -1063,26 +1085,7 @@ export default function Sidebar({
                     )}
                   </div>
                 )}
-                {(menuVisibility.committees !== false || isSongDirector) && (
-                  <div
-                    className={`nav-sub-item ${activeTab === "management" && mgmtSubTab === "committees" ? "active" : ""}`}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onChangeTab("management");
-                      if (onChangeMgmtSubTab) {
-                        onChangeMgmtSubTab("committees");
-                      }
-                    }}
-                    style={getHiddenStyle("committees")}
-                  >
-                    - 위원회 관리
-                    {isHidden("committees") && (
-                      <span style={{ fontSize: "0.6rem", color: "#ef4444", textDecoration: "none", marginLeft: "0.2rem" }}>
-                        [숨김]
-                      </span>
-                    )}
-                  </div>
-                )}
+
                 {(menuVisibility.partners !== false || isSongDirector) && (
                   <div
                     className={`nav-sub-item ${activeTab === "management" && mgmtSubTab === "partners" ? "active" : ""}`}

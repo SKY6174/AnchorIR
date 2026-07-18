@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { supabase } from "../supabaseClient";
 import CryptoJS from "crypto-js";
+import ScheduleManager from "./ScheduleManager";
 import { 
   Users, 
   ClipboardList, 
@@ -22,7 +23,23 @@ import {
 // 💡 [Rule 8] 개인정보 및 서명 데이터 암복호화용 대칭키 정의
 const SECRET_KEY = "anchor_instructor_secure_encryption_key_2026";
 
-export default function CommitteeManager({ currentRole, currentUser, activeSubTab, onChangeSubTab, darkMode, selectedYear }) {
+export default function CommitteeManager({ 
+  currentRole, 
+  currentUser, 
+  activeSubTab, 
+  onChangeSubTab, 
+  darkMode, 
+  selectedYear,
+  monthlySchedules,
+  setMonthlySchedules,
+  eventSchedules,
+  setEventSchedules,
+  meetingSchedules,
+  setMeetingSchedules,
+  pressReleases,
+  setPressReleases,
+  members: allMembers
+}) {
   // 1. 상태(State) 정의
   const [committees, setCommittees] = useState([]);
   const [selectedCommittee, setSelectedCommittee] = useState(null);
@@ -711,6 +728,22 @@ ${opinionsContext}
           >
             위원회 결과보고 대장
           </button>
+          <button
+            onClick={() => onChangeSubTab("committees")}
+            style={{
+              background: "transparent",
+              border: "none",
+              fontSize: "1.05rem",
+              fontWeight: "800",
+              cursor: "pointer",
+              padding: "0.5rem 1rem",
+              color: activeSubTab === "committees" ? "var(--accent-color)" : "var(--text-secondary)",
+              borderBottom: activeSubTab === "committees" ? "2.5px solid var(--accent-color)" : "none",
+              transition: "all 0.2s ease"
+            }}
+          >
+            위원회 명단 관리
+          </button>
         </div>
 
         {/* Gemini 키 제어기 */}
@@ -1213,6 +1246,32 @@ ${opinionsContext}
               ))
             )}
           </div>
+        </div>
+      )}
+
+      {/* ======================================================== */}
+      {/* 탭 C: 위원회 명단 관리 (예전 사업단 관리의 위원회 관리) */}
+      {/* ======================================================== */}
+      {activeSubTab === "committees" && (
+        <div style={{ display: "flex", flexDirection: "column", gap: "1rem", marginTop: "0.5rem" }}>
+          <ScheduleManager
+            key={`schedule-committee-integrated-${darkMode}-${selectedYear}`}
+            currentUser={currentUser}
+            currentRole={currentRole}
+            selectedYear={selectedYear}
+            darkMode={darkMode}
+            subTab="committees"
+            onChangeSubTab={onChangeSubTab}
+            monthlySchedules={monthlySchedules}
+            setMonthlySchedules={setMonthlySchedules}
+            eventSchedules={eventSchedules}
+            setEventSchedules={setEventSchedules}
+            meetingSchedules={meetingSchedules}
+            setMeetingSchedules={setMeetingSchedules}
+            pressReleases={pressReleases}
+            setPressReleases={setPressReleases}
+            members={allMembers}
+          />
         </div>
       )}
 
