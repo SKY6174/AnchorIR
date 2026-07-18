@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import Sidebar from "./components/Sidebar";
 import KPIOverview from "./components/KPIOverview";
 import ExcelUploader from "./components/ExcelUploader";
+import CommitteeExternalVote from "./components/CommitteeExternalVote";
 import PDCAManager from "./components/PDCAManager";
 import AgreementManager from "./components/AgreementManager";
 import UnifiedCertificateManager from "./components/UnifiedCertificateManager";
@@ -8296,6 +8297,15 @@ export default function App() {
   };
 
   // 💡 참여자 전용 설문조사 모바일 입력 폼 (로그인 우회)
+  // 💡 [외부 위원 전용 심의 의결 채널 라우팅 인터셉터] (요구사항 4 반영)
+  const params = new URLSearchParams(window.location.search);
+  const isVoteMode = params.get("mode") === "vote";
+  const voteMeetingId = params.get("meetingId");
+
+  if (isVoteMode && voteMeetingId) {
+    return <CommitteeExternalVote meetingId={voteMeetingId} />;
+  }
+
   if (activeTab === "survey_respond") {
     return <SurveyResponder />;
   }

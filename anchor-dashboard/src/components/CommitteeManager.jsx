@@ -43,6 +43,7 @@ export default function CommitteeManager({
   // 1. 상태(State) 정의
   const [committees, setCommittees] = useState([]);
   const [selectedCommittee, setSelectedCommittee] = useState(null);
+  const [selectedGroup, setSelectedGroup] = useState("agency"); // "agency"(사업단) 또는 "center"(센터별)
   const [meetings, setMeetings] = useState([]);
   const [selectedMeeting, setSelectedMeeting] = useState(null);
   const [responses, setResponses] = useState([]);
@@ -58,11 +59,27 @@ export default function CommitteeManager({
   const [committeeForm, setCommitteeForm] = useState({ name: "", total_quorum: 5, voting_rule: "majority_of_attendees" });
   
   const [isMeetingModalOpen, setIsMeetingModalOpen] = useState(false);
-  const [meetingForm, setMeetingForm] = useState({ title: "", meeting_date: "", meeting_type: "ONLINE_WRITTEN", agenda: "" });
+  const [meetingForm, setMeetingForm] = useState({ 
+    title: "", 
+    meeting_date: "", 
+    meeting_type: "ONLINE_WRITTEN", 
+    agenda: "",
+    attachment_name: "",
+    attachment_data: "",
+    access_pin: ""
+  });
 
   const [isMemberModalOpen, setIsMemberModalOpen] = useState(false);
-  const [selectedUserId, setSelectedUserId] = useState("");
-  const [memberRole, setMemberRole] = useState("MEMBER");
+  const [memberForm, setMemberForm] = useState({
+    name: "",
+    type: "위원",
+    org: "울산과학대학교",
+    dept: "",
+    rank: "",
+    location: "교내",
+    note: "",
+    sort_order: 10
+  });
 
   // 위원 의사결정 제출 폼 상태
   const [userVote, setUserVote] = useState("");
@@ -121,13 +138,34 @@ export default function CommitteeManager({
         .order("name", { ascending: true });
       if (error) throw error;
       setCommittees(data || []);
-      if (data && data.length > 0 && !selectedCommittee) {
-        setSelectedCommittee(data[0]);
-      }
     } catch (err) {
       console.error("위원회 조회 에러:", err.message);
     }
   };
+
+  // 💡 [위원회 풀 분류 필터링] (요구사항 1 반영)
+  const agencyIds = ["total", "planning", "budget", "eval", "advisory"];
+  const centerIds = ["ecc_op", "icc_op", "rcc_op", "aidx_op", "neulbom_op", "newind_op"];
+
+  const filteredCommittees = committees.filter(c => {
+    if (selectedGroup === "agency") {
+      return agencyIds.includes(c.id) || (!c.id.includes("-") && !centerIds.includes(c.id));
+    } else {
+      return centerIds.includes(c.id);
+    }
+  });
+
+  // 라디오 분류 전환 시 선택된 위원회 동적 갱신
+  useEffect(() => {
+    if (filteredCommittees.length > 0) {
+      const stillInFilter = filteredCommittees.find(c => c.id === selectedCommittee?.id);
+      if (!stillInFilter) {
+        setSelectedCommittee(filteredCommittees[0]);
+      }
+    } else {
+      setSelectedCommittee(null);
+    }
+  }, [selectedGroup, committees, selectedCommittee]);
 
   const fetchAllUsers = async () => {
     try {
@@ -168,13 +206,18 @@ export default function CommitteeManager({
         .select(`
           id,
           committee_id,
-          user_id,
-          role,
-          term_start,
-          term_end,
-          rise_users ( name, dept_name, role_name )
+          type,
+          name,
+          org,
+          dept,
+          rank,
+          location,
+          note,
+          sort_order
         `)
-        .eq("committee_id", committeeId);
+        .eq("committee_id", committeeId)
+        .order("sort_order", { ascending: true })
+        .order("id", { ascending: true });
       if (error) throw error;
       setMembers(data || []);
     } catch (err) {
@@ -196,9 +239,10 @@ export default function CommitteeManager({
           encrypted_signature,
           submitted_at,
           committee_members (
-            user_id,
-            role,
-            rise_users ( name, dept_name )
+            name,
+            type,
+            org,
+            dept
           )
         `)
         .eq("meeting_id", meetingId);
@@ -207,7 +251,8 @@ export default function CommitteeManager({
 
       // 내가 이미 제출했는지 검증
       if (currentUser && members.length > 0) {
-        const myMemberObj = members.find(m => m.user_id === currentUser.id);
+        const myName = currentUser.name ? currentUser.name.split(" ")[0].split("(")[0].trim() : "";
+        const myMemberObj = members.find(m => m.name === myName);
         if (myMemberObj) {
           const myResp = data?.find(r => r.member_id === myMemberObj.id);
           if (myResp && myResp.submitted_at) {
@@ -228,12 +273,19 @@ export default function CommitteeManager({
 
   const fetchMyMemberships = async () => {
     try {
+      if (!currentUser?.name) return;
+      const myName = currentUser.name.split(" ")[0].split("(")[0].trim();
       const { data, error } = await supabase
         .from("committee_members")
-        .select("committee_id, role")
-        .eq("user_id", currentUser.id);
+        .select("committee_id, type, name")
+        .eq("name", myName);
       if (error) throw error;
-      setMyMemberships(data || []);
+      
+      const mapped = (data || []).map(m => ({
+        committee_id: m.committee_id,
+        role: m.type === "위원장" ? "CHAIRMAN" : m.type === "간사" ? "SECRETARY" : "MEMBER"
+      }));
+      setMyMemberships(mapped);
     } catch (err) {
       console.error("내 소속 정보 조회 에러:", err.message);
     }
@@ -287,12 +339,12 @@ export default function CommitteeManager({
 
   const handleAddMember = async (e) => {
     e.preventDefault();
-    if (!selectedUserId) {
-      alert("사용자를 선택해 주세요.");
+    if (!memberForm.name) {
+      alert("위원 이름을 입력해 주세요.");
       return;
     }
     // 중복 검사
-    if (members.some(m => m.user_id === selectedUserId)) {
+    if (members.some(m => m.name === memberForm.name.trim())) {
       alert("이미 위원회에 등록된 위원입니다.");
       return;
     }
@@ -302,14 +354,29 @@ export default function CommitteeManager({
         .from("committee_members")
         .insert([{
           committee_id: selectedCommittee.id,
-          user_id: selectedUserId,
-          role: memberRole
+          name: memberForm.name.trim(),
+          type: memberForm.type,
+          org: memberForm.org,
+          dept: memberForm.dept,
+          rank: memberForm.rank,
+          location: memberForm.location,
+          note: memberForm.note,
+          sort_order: Number(memberForm.sort_order)
         }]);
 
       if (error) throw error;
       alert("위원이 배정되었습니다.");
       setIsMemberModalOpen(false);
-      setSelectedUserId("");
+      setMemberForm({
+        name: "",
+        type: "위원",
+        org: "울산과학대학교",
+        dept: "",
+        rank: "",
+        location: "교내",
+        note: "",
+        sort_order: 10
+      });
       await fetchMembers(selectedCommittee.id);
       
       // 위원 수가 늘어났으므로 위원회 테이블의 재적 수(total_quorum) 자동 동기화 업데이트
@@ -349,12 +416,48 @@ export default function CommitteeManager({
     }
   };
 
+  // 💡 [안건 의결 서류 첨부 파일 핸들러] (요구사항 3 반영)
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const allowedExtensions = ["pdf", "png", "jpg", "jpeg", "md"];
+    const fileExtension = file.name.split(".").pop().toLowerCase();
+    if (!allowedExtensions.includes(fileExtension)) {
+      alert("탑재 불가능한 파일 형식입니다. (pdf, png, jpg, jpeg, md 파일만 지원)");
+      e.target.value = "";
+      return;
+    }
+
+    if (file.size > 10 * 1024 * 1024) {
+      alert("파일 크기는 최대 10MB 이하만 가능합니다.");
+      e.target.value = "";
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      setMeetingForm(prev => ({
+        ...prev,
+        attachment_name: file.name,
+        attachment_data: reader.result
+      }));
+    };
+    reader.onerror = (err) => {
+      console.error("파일 로드 에러:", err);
+      alert("파일 인코딩 에러가 발생했습니다.");
+    };
+    reader.readAsDataURL(file);
+  };
+
   const handleCreateMeeting = async (e) => {
     e.preventDefault();
     if (!meetingForm.title || !meetingForm.meeting_date || !meetingForm.agenda) {
       alert("모든 필수 항목을 기입해 주세요.");
       return;
     }
+
+    const generatedPin = meetingForm.access_pin.trim() || Math.floor(100000 + Math.random() * 900000).toString();
 
     try {
       const { data, error } = await supabase
@@ -365,14 +468,25 @@ export default function CommitteeManager({
           meeting_date: meetingForm.meeting_date,
           meeting_type: meetingForm.meeting_type,
           agenda: meetingForm.agenda,
-          status: "ACTIVE" // 개설 즉시 활성(의결중) 상태로 지정
+          attachment_name: meetingForm.attachment_name || null,
+          attachment_data: meetingForm.attachment_data || null,
+          access_pin: generatedPin,
+          status: "ACTIVE"
         }])
         .select();
 
       if (error) throw error;
-      alert("위원회 회의 일정이 등록되었으며, 의결 수집이 시작되었습니다.");
+      alert(`위원회 회의 일정이 등록되었습니다.\n[외부 위원용 보안 PIN]: ${generatedPin}`);
       setIsMeetingModalOpen(false);
-      setMeetingForm({ title: "", meeting_date: "", meeting_type: "ONLINE_WRITTEN", agenda: "" });
+      setMeetingForm({ 
+        title: "", 
+        meeting_date: "", 
+        meeting_type: "ONLINE_WRITTEN", 
+        agenda: "",
+        attachment_name: "",
+        attachment_data: "",
+        access_pin: ""
+      });
       await fetchMeetings(selectedCommittee.id);
       if (data && data.length > 0) {
         setSelectedMeeting(data[0]);
@@ -746,28 +860,7 @@ ${opinionsContext}
           </button>
         </div>
 
-        {/* Gemini 키 제어기 */}
-        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-          <button
-            className="btn btn-secondary"
-            onClick={() => setShowKeyInput(!showKeyInput)}
-            style={{ fontSize: "0.8rem", padding: "0.3rem 0.6rem", display: "flex", alignItems: "center", gap: "0.25rem" }}
-          >
-            <Cpu size={14} /> AI 분석 키 설정
-          </button>
-          {showKeyInput && (
-            <div style={{ display: "flex", gap: "0.25rem", background: "rgba(0,0,0,0.4)", padding: "0.3rem", borderRadius: "6px", border: "1px solid var(--border-color)" }}>
-              <input
-                type="password"
-                placeholder="Gemini API Key"
-                value={geminiKey}
-                onChange={(e) => setGeminiKey(e.target.value)}
-                style={{ fontSize: "0.8rem", padding: "0.25rem 0.5rem", borderRadius: "4px", border: "1px solid var(--border-color)", background: "#111", color: "#fff" }}
-              />
-              <button className="btn btn-primary" onClick={handleSaveGeminiKey} style={{ fontSize: "0.8rem", padding: "0.25rem 0.5rem" }}>저장</button>
-            </div>
-          )}
-        </div>
+
       </div>
 
       {/* ======================================================== */}
@@ -791,6 +884,33 @@ ${opinionsContext}
                   </button>
                 )}
               </div>
+
+              {/* 💡 [사업단 vs 센터별 라디오 체크 버튼 구분] (요구사항 1 반영) */}
+              <div style={{ display: "flex", gap: "1rem", marginBottom: "0.6rem", fontSize: "0.85rem" }}>
+                <label style={{ display: "flex", alignItems: "center", gap: "0.25rem", cursor: "pointer", color: "var(--text-primary)" }}>
+                  <input
+                    type="radio"
+                    name="committee_group"
+                    value="agency"
+                    checked={selectedGroup === "agency"}
+                    onChange={() => setSelectedGroup("agency")}
+                    style={{ accentColor: "var(--accent-color)" }}
+                  />
+                  <span>사업단 위원회</span>
+                </label>
+                <label style={{ display: "flex", alignItems: "center", gap: "0.25rem", cursor: "pointer", color: "var(--text-primary)" }}>
+                  <input
+                    type="radio"
+                    name="committee_group"
+                    value="center"
+                    checked={selectedGroup === "center"}
+                    onChange={() => setSelectedGroup("center")}
+                    style={{ accentColor: "var(--accent-color)" }}
+                  />
+                  <span>센터별 자문위원회</span>
+                </label>
+              </div>
+
               <select
                 value={selectedCommittee?.id || ""}
                 onChange={(e) => {
@@ -799,10 +919,10 @@ ${opinionsContext}
                 }}
                 style={{ width: "100%", padding: "0.5rem", borderRadius: "6px", background: "rgba(0,0,0,0.3)", color: "#fff", border: "1px solid var(--border-color)" }}
               >
-                {committees.length === 0 ? (
+                {filteredCommittees.length === 0 ? (
                   <option value="">등록된 위원회 없음</option>
                 ) : (
-                  committees.map(c => <option key={c.id} value={c.id}>{c.name}</option>)
+                  filteredCommittees.map(c => <option key={c.id} value={c.id}>{c.name}</option>)
                 )}
               </select>
 
@@ -837,7 +957,10 @@ ${opinionsContext}
                   members.map(m => (
                     <div key={m.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", background: "rgba(255,255,255,0.01)", padding: "0.3rem 0.5rem", borderRadius: "4px" }}>
                       <span style={{ fontSize: "0.8rem", color: "#fff" }}>
-                        {m.rise_users?.name} <small style={{ color: "var(--accent-color)" }}>({m.role === "CHAIRMAN" ? "위원장" : m.role === "SECRETARY" ? "간사" : "위원"})</small>
+                        {m.name} <small style={{ color: "var(--accent-color)", fontWeight: "bold" }}>({m.type || "위원"})</small>
+                        <span style={{ fontSize: "0.7rem", color: "var(--text-secondary)", marginLeft: "0.3rem", display: "inline-block" }}>
+                          {m.org} {m.dept}
+                        </span>
                       </span>
                       {isManager && (
                         <button
@@ -937,6 +1060,81 @@ ${opinionsContext}
                   <div style={{ marginTop: "1rem", padding: "0.75rem", background: "rgba(0,0,0,0.3)", borderRadius: "6px", border: "1px solid var(--border-color)" }}>
                     <strong style={{ fontSize: "0.85rem", color: "var(--accent-color)", display: "block", marginBottom: "0.25rem" }}>회의 안건 요지</strong>
                     <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)", whiteSpace: "pre-line", lineHeight: "1.5" }}>{selectedMeeting.agenda}</p>
+                  </div>
+
+                  {/* 💡 [회의 첨부파일 뷰어 / 다운로드 영역] (요구사항 3 반영) */}
+                  {selectedMeeting.attachment_name && (
+                    <div style={{ marginTop: "0.75rem", padding: "0.75rem", background: "rgba(99, 102, 241, 0.05)", borderRadius: "6px", border: "1px solid rgba(99, 102, 241, 0.2)" }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.5rem" }}>
+                        <span style={{ fontSize: "0.8rem", color: "#fff", fontWeight: "bold", display: "flex", alignItems: "center", gap: "0.25rem" }}>
+                          📎 심의 첨부 자료: {selectedMeeting.attachment_name}
+                        </span>
+                        <button
+                          className="btn btn-secondary"
+                          style={{ padding: "0.25rem 0.5rem", fontSize: "0.75rem" }}
+                          onClick={() => {
+                            const link = document.createElement("a");
+                            link.href = selectedMeeting.attachment_data;
+                            link.download = selectedMeeting.attachment_name;
+                            link.click();
+                          }}
+                        >
+                          다운로드
+                        </button>
+                      </div>
+
+                      {/* 이미지 파일일 경우 이미지 뷰어 즉시 노출 */}
+                      {/\.(png|jpe?g)$/i.test(selectedMeeting.attachment_name) && (
+                        <div style={{ display: "flex", justifyContent: "center", background: "#000", padding: "0.5rem", borderRadius: "4px", marginTop: "0.5rem", maxHeight: "250px", overflow: "hidden" }}>
+                          <img
+                            src={selectedMeeting.attachment_data}
+                            alt="첨부 이미지"
+                            style={{ maxWidth: "100%", maxHeight: "230px", objectFit: "contain", borderRadius: "4px" }}
+                          />
+                        </div>
+                      )}
+
+                      {/* 마크다운 파일(.md)일 경우 텍스트 영역에 간이 파싱 노출 */}
+                      {/\.md$/i.test(selectedMeeting.attachment_name) && (
+                        <div style={{ background: "#111", padding: "0.75rem", borderRadius: "4px", marginTop: "0.5rem", border: "1px solid var(--border-color)", fontSize: "0.8rem", color: "var(--text-secondary)", maxHeight: "200px", overflowY: "auto", fontFamily: "monospace", whiteSpace: "pre-wrap" }}>
+                          {(() => {
+                            try {
+                              const base64Str = selectedMeeting.attachment_data.split(",")[1];
+                              return decodeURIComponent(atob(base64Str).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
+                            } catch (e) {
+                              return "마크다운 문서 디코딩 실패 또는 데이터 형식 오류";
+                            }
+                          })()}
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* 💡 [외부 위원 전용 접속 링크 및 보안 PIN 배너] (요구사항 4 반영) */}
+                  <div style={{ marginTop: "0.75rem", padding: "0.75rem", background: "rgba(16, 185, 129, 0.05)", borderRadius: "6px", border: "1px solid rgba(16, 185, 129, 0.2)", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "0.5rem" }}>
+                    <div style={{ fontSize: "0.8rem" }}>
+                      <span style={{ color: "#10B981", fontWeight: "bold", display: "block", marginBottom: "0.15rem" }}>🔗 외부 위원 의결 채널 링크</span>
+                      <code style={{ background: "rgba(0,0,0,0.3)", padding: "0.2rem 0.4rem", borderRadius: "4px", color: "#a7f3d0", fontSize: "0.75rem" }}>
+                        {`${window.location.origin}${window.location.pathname}?mode=vote&meetingId=${selectedMeeting.id}`}
+                      </code>
+                    </div>
+                    <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
+                      <span style={{ fontSize: "0.75rem", background: "rgba(245, 158, 11, 0.15)", color: "#fbbf24", padding: "0.25rem 0.5rem", borderRadius: "4px", fontWeight: "bold" }}>
+                        보안 PIN: {selectedMeeting.access_pin || "123456"}
+                      </span>
+                      <button
+                        className="btn btn-primary"
+                        style={{ padding: "0.3rem 0.6rem", fontSize: "0.75rem" }}
+                        onClick={() => {
+                          const url = `${window.location.origin}${window.location.pathname}?mode=vote&meetingId=${selectedMeeting.id}`;
+                          const copyText = `안녕하세요, RISE 위원회 위원님.\n\n개설된 회의 심의 의결 안내 드립니다.\n\n■ 회의 안건: ${selectedMeeting.title}\n■ 접속 링크: ${url}\n■ 보안 PIN코드: ${selectedMeeting.access_pin || "123456"}\n\n위 링크로 접속하신 후 위원 성명과 보안 PIN코드를 입력하시고 의결 및 전자서명을 제출해 주시기 바랍니다.`;
+                          navigator.clipboard.writeText(copyText);
+                          alert("외부 위원 안내문 및 접속 링크가 클립보드에 복사되었습니다!");
+                        }}
+                      >
+                        안내문 복사
+                      </button>
+                    </div>
                   </div>
 
                   {/* 실시간 성원/의결 전광판 */}
@@ -1331,39 +1529,108 @@ ${opinionsContext}
       {/* ======================================================== */}
       {isMemberModalOpen && (
         <div className="modal-overlay" style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(0,0,0,0.7)", display: "flex", justifyContent: "center", alignItems: "center", zIndex: 1100 }}>
-          <div className="modal-contentcard" style={{ background: "var(--card-bg)", padding: "1.5rem", borderRadius: "12px", border: "1px solid var(--border-color)", width: "400px", maxWidth: "90%" }}>
-            <h3 style={{ color: "#fff", fontWeight: "800", fontSize: "1.1rem", marginBottom: "1rem" }}>위원회 위원 배정</h3>
+          <div className="modal-contentcard" style={{ background: "var(--card-bg)", padding: "1.5rem", borderRadius: "12px", border: "1px solid var(--border-color)", width: "450px", maxWidth: "90%" }}>
+            <h3 style={{ color: "#fff", fontWeight: "800", fontSize: "1.1rem", marginBottom: "1rem" }}>위원회 위원 추가</h3>
             <form onSubmit={handleAddMember} style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
-              <div>
-                <label style={{ fontSize: "0.85rem", color: "var(--text-primary)", display: "block", marginBottom: "0.25rem" }}>대상 사용자 선택</label>
-                <select
-                  required
-                  value={selectedUserId}
-                  onChange={(e) => setSelectedUserId(e.target.value)}
-                  style={{ width: "100%", padding: "0.5rem", borderRadius: "6px", background: "rgba(0,0,0,0.3)", color: "#fff", border: "1px solid var(--border-color)" }}
-                >
-                  <option value="">-- 배정할 사용자 선택 --</option>
-                  {allUsers.map(u => (
-                    <option key={u.id} value={u.id}>{u.name} ({u.dept_name || "소속없음"} / {u.role_name || "역할없음"})</option>
-                  ))}
-                </select>
+              <div style={{ display: "flex", gap: "0.5rem" }}>
+                <div style={{ flex: 1 }}>
+                  <label style={{ fontSize: "0.85rem", color: "var(--text-primary)", display: "block", marginBottom: "0.25rem" }}>위원 성명</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="예: 홍길동"
+                    value={memberForm.name}
+                    onChange={(e) => setMemberForm({ ...memberForm, name: e.target.value })}
+                    style={{ width: "100%", padding: "0.5rem", borderRadius: "6px", background: "rgba(0,0,0,0.3)", color: "#fff", border: "1px solid var(--border-color)" }}
+                  />
+                </div>
+                <div style={{ flex: 1 }}>
+                  <label style={{ fontSize: "0.85rem", color: "var(--text-primary)", display: "block", marginBottom: "0.25rem" }}>직책/역할</label>
+                  <select
+                    value={memberForm.type}
+                    onChange={(e) => setMemberForm({ ...memberForm, type: e.target.value })}
+                    style={{ width: "100%", padding: "0.5rem", borderRadius: "6px", background: "rgba(0,0,0,0.3)", color: "#fff", border: "1px solid var(--border-color)" }}
+                  >
+                    <option value="위원">위원</option>
+                    <option value="위원장">위원장</option>
+                    <option value="간사">간사</option>
+                    <option value="위원(자문겸직)">위원(자문겸직)</option>
+                  </select>
+                </div>
               </div>
-              <div>
-                <label style={{ fontSize: "0.85rem", color: "var(--text-primary)", display: "block", marginBottom: "0.25rem" }}>위원회 내 직책</label>
-                <select
-                  value={memberRole}
-                  onChange={(e) => setMemberRole(e.target.value)}
-                  style={{ width: "100%", padding: "0.5rem", borderRadius: "6px", background: "rgba(0,0,0,0.3)", color: "#fff", border: "1px solid var(--border-color)" }}
-                >
-                  <option value="MEMBER">위원</option>
-                  <option value="CHAIRMAN">위원장</option>
-                  <option value="SECRETARY">간사</option>
-                </select>
+
+              <div style={{ display: "flex", gap: "0.5rem" }}>
+                <div style={{ flex: 1 }}>
+                  <label style={{ fontSize: "0.85rem", color: "var(--text-primary)", display: "block", marginBottom: "0.25rem" }}>소속 기관명</label>
+                  <input
+                    type="text"
+                    placeholder="예: 울산과학대학교"
+                    value={memberForm.org}
+                    onChange={(e) => setMemberForm({ ...memberForm, org: e.target.value })}
+                    style={{ width: "100%", padding: "0.5rem", borderRadius: "6px", background: "rgba(0,0,0,0.3)", color: "#fff", border: "1px solid var(--border-color)" }}
+                  />
+                </div>
+                <div style={{ flex: 1 }}>
+                  <label style={{ fontSize: "0.85rem", color: "var(--text-primary)", display: "block", marginBottom: "0.25rem" }}>부서/학과명</label>
+                  <input
+                    type="text"
+                    placeholder="예: 기획처 / 화학공학과"
+                    value={memberForm.dept}
+                    onChange={(e) => setMemberForm({ ...memberForm, dept: e.target.value })}
+                    style={{ width: "100%", padding: "0.5rem", borderRadius: "6px", background: "rgba(0,0,0,0.3)", color: "#fff", border: "1px solid var(--border-color)" }}
+                  />
+                </div>
+              </div>
+
+              <div style={{ display: "flex", gap: "0.5rem" }}>
+                <div style={{ flex: 1 }}>
+                  <label style={{ fontSize: "0.85rem", color: "var(--text-primary)", display: "block", marginBottom: "0.25rem" }}>직위/직급</label>
+                  <input
+                    type="text"
+                    placeholder="예: 처장 / 교수"
+                    value={memberForm.rank}
+                    onChange={(e) => setMemberForm({ ...memberForm, rank: e.target.value })}
+                    style={{ width: "100%", padding: "0.5rem", borderRadius: "6px", background: "rgba(0,0,0,0.3)", color: "#fff", border: "1px solid var(--border-color)" }}
+                  />
+                </div>
+                <div style={{ flex: 1 }}>
+                  <label style={{ fontSize: "0.85rem", color: "var(--text-primary)", display: "block", marginBottom: "0.25rem" }}>구분</label>
+                  <select
+                    value={memberForm.location}
+                    onChange={(e) => setMemberForm({ ...memberForm, location: e.target.value })}
+                    style={{ width: "100%", padding: "0.5rem", borderRadius: "6px", background: "rgba(0,0,0,0.3)", color: "#fff", border: "1px solid var(--border-color)" }}
+                  >
+                    <option value="교내">교내 위원</option>
+                    <option value="교외">교외 위원</option>
+                  </select>
+                </div>
+              </div>
+
+              <div style={{ display: "flex", gap: "0.5rem" }}>
+                <div style={{ flex: 2 }}>
+                  <label style={{ fontSize: "0.85rem", color: "var(--text-primary)", display: "block", marginBottom: "0.25rem" }}>비고</label>
+                  <input
+                    type="text"
+                    placeholder="예: 신규 위촉"
+                    value={memberForm.note}
+                    onChange={(e) => setMemberForm({ ...memberForm, note: e.target.value })}
+                    style={{ width: "100%", padding: "0.5rem", borderRadius: "6px", background: "rgba(0,0,0,0.3)", color: "#fff", border: "1px solid var(--border-color)" }}
+                  />
+                </div>
+                <div style={{ flex: 1 }}>
+                  <label style={{ fontSize: "0.85rem", color: "var(--text-primary)", display: "block", marginBottom: "0.25rem" }}>정렬 순서</label>
+                  <input
+                    type="number"
+                    value={memberForm.sort_order}
+                    onChange={(e) => setMemberForm({ ...memberForm, sort_order: e.target.value })}
+                    style={{ width: "100%", padding: "0.5rem", borderRadius: "6px", background: "rgba(0,0,0,0.3)", color: "#fff", border: "1px solid var(--border-color)" }}
+                  />
+                </div>
               </div>
 
               <div style={{ display: "flex", gap: "0.5rem", marginTop: "1rem" }}>
                 <button type="button" className="btn btn-secondary" onClick={() => setIsMemberModalOpen(false)} style={{ flex: 1 }}>취소</button>
-                <button type="submit" className="btn btn-primary" style={{ flex: 1 }}>배정하기</button>
+                <button type="submit" className="btn btn-primary" style={{ flex: 1 }}>추가하기</button>
               </div>
             </form>
           </div>
@@ -1424,8 +1691,38 @@ ${opinionsContext}
                 />
               </div>
 
+              {/* 💡 [회의 안건 의결 서류 파일 탑재 필드] (요구사항 3 반영) */}
+              <div style={{ display: "flex", gap: "0.5rem" }}>
+                <div style={{ flex: 1 }}>
+                  <label style={{ fontSize: "0.85rem", color: "var(--text-primary)", display: "block", marginBottom: "0.25rem" }}>의결 심의 자료 첨부 (선택)</label>
+                  <input
+                    type="file"
+                    accept=".pdf,.png,.jpg,.jpeg,.md"
+                    onChange={handleFileChange}
+                    style={{ width: "100%", padding: "0.4rem", borderRadius: "6px", background: "rgba(0,0,0,0.3)", color: "#fff", border: "1px solid var(--border-color)", fontSize: "0.75rem" }}
+                  />
+                  <small style={{ color: "var(--text-secondary)", fontSize: "0.7rem", marginTop: "0.15rem", display: "block" }}>
+                    * pdf, png, jpg, jpeg, md 확장자 지원 (최대 10MB)
+                  </small>
+                </div>
+                <div style={{ flex: 1 }}>
+                  <label style={{ fontSize: "0.85rem", color: "var(--text-primary)", display: "block", marginBottom: "0.25rem" }}>회의 보안 PIN코드 (선택)</label>
+                  <input
+                    type="text"
+                    maxLength={10}
+                    placeholder="미지정 시 6자리 랜덤 생성"
+                    value={meetingForm.access_pin}
+                    onChange={(e) => setMeetingForm({ ...meetingForm, access_pin: e.target.value })}
+                    style={{ width: "100%", padding: "0.5rem", borderRadius: "6px", background: "rgba(0,0,0,0.3)", color: "#fff", border: "1px solid var(--border-color)" }}
+                  />
+                </div>
+              </div>
+
               <div style={{ display: "flex", gap: "0.5rem", marginTop: "1rem" }}>
-                <button type="button" className="btn btn-secondary" onClick={() => setIsMeetingModalOpen(false)} style={{ flex: 1 }}>취소</button>
+                <button type="button" className="btn btn-secondary" onClick={() => {
+                  setIsMeetingModalOpen(false);
+                  setMeetingForm({ title: "", meeting_date: "", meeting_type: "ONLINE_WRITTEN", agenda: "", attachment_name: "", attachment_data: "", access_pin: "" });
+                }} style={{ flex: 1 }}>취소</button>
                 <button type="submit" className="btn btn-primary" style={{ flex: 1 }}>회의 등록 및 의결 개시</button>
               </div>
             </form>
