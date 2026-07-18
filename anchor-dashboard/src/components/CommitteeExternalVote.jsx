@@ -27,6 +27,40 @@ export default function CommitteeExternalVote({ meetingId }) {
   const canvasRef = useRef(null);
   const [isDrawing, setIsDrawing] = useState(false);
 
+  // 이미 제출했는지 확인하는 함수
+  const checkAlreadySubmitted = async (mId, memberId) => {
+    try {
+      const { data, error } = await supabase
+        .from("meeting_responses")
+        .select("*")
+        .eq("meeting_id", mId)
+        .eq("member_id", memberId)
+        .single();
+      
+      if (data && data.submitted_at) {
+        setAttended(data.attended);
+        setVote(data.vote || "APPROVE");
+        setOpinion(data.opinion || "");
+        setHasSubmitted(true);
+      } else {
+        throw new Error("No response record");
+      }
+    } catch (e) {
+      console.warn("제출 내역 조회 실패 (로컬 스토리지 확인):", e.message);
+      const localData = localStorage.getItem(`local_meeting_responses_${mId}`);
+      if (localData) {
+        const parsed = JSON.parse(localData);
+        const myResp = parsed.find(r => r.member_id === memberId);
+        if (myResp) {
+          setAttended(myResp.attended);
+          setVote(myResp.vote || "APPROVE");
+          setOpinion(myResp.opinion || "");
+          setHasSubmitted(true);
+        }
+      }
+    }
+  };
+
   // 2. 초기 회의 데이터 조회
   useEffect(() => {
     if (!meetingId) return;
@@ -108,40 +142,6 @@ export default function CommitteeExternalVote({ meetingId }) {
     }
     fetchMeetingInfo();
   }, [meetingId]);
-
-  // 이미 제출했는지 확인하는 함수
-  const checkAlreadySubmitted = async (mId, memberId) => {
-    try {
-      const { data, error } = await supabase
-        .from("meeting_responses")
-        .select("*")
-        .eq("meeting_id", mId)
-        .eq("member_id", memberId)
-        .single();
-      
-      if (data && data.submitted_at) {
-        setAttended(data.attended);
-        setVote(data.vote || "APPROVE");
-        setOpinion(data.opinion || "");
-        setHasSubmitted(true);
-      } else {
-        throw new Error("No response record");
-      }
-    } catch (e) {
-      console.warn("제출 내역 조회 실패 (로컬 스토리지 확인):", e.message);
-      const localData = localStorage.getItem(`local_meeting_responses_${mId}`);
-      if (localData) {
-        const parsed = JSON.parse(localData);
-        const myResp = parsed.find(r => r.member_id === memberId);
-        if (myResp) {
-          setAttended(myResp.attended);
-          setVote(myResp.vote || "APPROVE");
-          setOpinion(myResp.opinion || "");
-          setHasSubmitted(true);
-        }
-      }
-    }
-  };
 
   // 3. 보안 로그인 검증 핸들러
   const handleLogin = async (e) => {
