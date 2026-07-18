@@ -339,7 +339,7 @@ export default function CommitteeManager({
     try {
       const { data, error } = await supabase
         .from("rise_users")
-        .select("id, name, dept_name, role_name")
+        .select("id, name, role_key")
         .order("name", { ascending: true });
       if (error) throw error;
       setAllUsers(data || []);
