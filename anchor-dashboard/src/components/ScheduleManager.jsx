@@ -4536,7 +4536,7 @@ Gemini 피드백: \n${geminiCritiqueText}
             <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
               {committees
                 .filter(comm => selectedCommitteeGroup === "agency"
-                  ? ["total", "planning", "budget", "eval", "advisory"].includes(comm.id)
+                  ? ["total", "planning", "budget", "evaluation", "advisory"].includes(comm.id)
                   : ["ecc_op", "icc_op", "rcc_op", "aidx_op", "neulbom_op", "newind_op"].includes(comm.id)
                 )
                 .map((comm) => {

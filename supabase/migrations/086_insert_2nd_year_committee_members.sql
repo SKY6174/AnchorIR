@@ -1,13 +1,19 @@
 -- 💡 [Supabase DB 마이그레이션 규칙 7 준수]
 -- 2차년도(year: '2') 사업단 위원회(5대 핵심 위원회) 54명의 위원 정보 벌크 적재 및 갱신
 
--- 1. 부모 테이블 committees 에 5대 핵심 위원회 정의가 없는 경우 안전하게 우선 적재 (외래키 제약조건 준수)
+-- 1. 부모 테이블 committees 에 5대 핵심 위원회 및 6대 센터 운영위원회 정의가 없는 경우 안전하게 우선 적재 (외래키 제약조건 준수)
 INSERT INTO committees (id, name, total_quorum, voting_rule) VALUES
 ('total', '앵커총괄위원회', 12, 'majority_of_attendees'),
 ('planning', '앵커기획위원회', 16, 'majority_of_attendees'),
 ('budget', '앵커사업비관리위원회', 8, 'majority_of_attendees'),
 ('evaluation', '앵커사업자체평가위원회', 10, 'majority_of_attendees'),
-('advisory', '앵커사업자문회의', 8, 'majority_of_attendees')
+('advisory', '앵커사업자문회의', 8, 'majority_of_attendees'),
+('ecc_op', '지산학교육센터 운영위원회', 4, 'majority_of_attendees'),
+('icc_op', '기업협업센터 운영위원회', 4, 'majority_of_attendees'),
+('rcc_op', '지역협업센터 운영위원회', 4, 'majority_of_attendees'),
+('aidx_op', 'AID-X지원센터 운영위원회', 4, 'majority_of_attendees'),
+('neulbom_op', '울산늘봄운영위원회', 4, 'majority_of_attendees'),
+('newind_op', '신산업특화운영위원회', 4, 'majority_of_attendees')
 ON CONFLICT (id) DO UPDATE SET 
   name = EXCLUDED.name,
   total_quorum = EXCLUDED.total_quorum;
