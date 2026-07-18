@@ -36,22 +36,26 @@ CREATE TABLE IF NOT EXISTS public.instructor_histories (
 ALTER TABLE public.instructors ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.instructor_histories ENABLE ROW LEVEL SECURITY;
 
--- 5. RLS 정책 수립 (중복 생성 에러를 방지하기 위해 DROP 후 CREATE)
+-- 5. RLS 정책 수립 (조회 SELECT는 전체 개방하여 동기화 끊김 차단, 쓰기 ALL은 로그인된 관리자 제한)
 DROP POLICY IF EXISTS "Allow authenticated full access to public.instructors" ON public.instructors;
-CREATE POLICY "Allow authenticated full access to public.instructors"
-    ON public.instructors
-    FOR ALL
-    TO authenticated
-    USING (true)
-    WITH CHECK (true);
+DROP POLICY IF EXISTS "Allow public read access to public.instructors" ON public.instructors;
+DROP POLICY IF EXISTS "Allow authenticated modifications to public.instructors" ON public.instructors;
+
+CREATE POLICY "Allow public read access to public.instructors"
+    ON public.instructors FOR SELECT USING (true);
+
+CREATE POLICY "Allow authenticated modifications to public.instructors"
+    ON public.instructors FOR ALL TO authenticated USING (true) WITH CHECK (true);
 
 DROP POLICY IF EXISTS "Allow authenticated full access to public.instructor_histories" ON public.instructor_histories;
-CREATE POLICY "Allow authenticated full access to public.instructor_histories"
-    ON public.instructor_histories
-    FOR ALL
-    TO authenticated
-    USING (true)
-    WITH CHECK (true);
+DROP POLICY IF EXISTS "Allow public read access to public.instructor_histories" ON public.instructor_histories;
+DROP POLICY IF EXISTS "Allow authenticated modifications to public.instructor_histories" ON public.instructor_histories;
+
+CREATE POLICY "Allow public read access to public.instructor_histories"
+    ON public.instructor_histories FOR SELECT USING (true);
+
+CREATE POLICY "Allow authenticated modifications to public.instructor_histories"
+    ON public.instructor_histories FOR ALL TO authenticated USING (true) WITH CHECK (true);
 
 -- 6. 테스트용 시드(Seed) 데이터 주입
 -- 관계 무결성을 위해 histories를 먼저 비우고 instructors를 초기화
