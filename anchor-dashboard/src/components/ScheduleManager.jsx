@@ -463,18 +463,39 @@ export default function ScheduleManager({
   };
 
   // 위원회 관리 상태 정의
-  const [selectedCommitteeGroup, setSelectedCommitteeGroup] = useState("agency"); // 위원회 대그룹 ("agency": 사업단 위원회, "center": 센터별 운영위원회)
-  const [selectedCommitteeId, setSelectedCommitteeId] = useState("total"); // 선택된 위원회 ID ("total", "planning" 등)
+  // 💡 [새로고침 유지 가드] 위원회 탭 및 선택된 위원회 ID 상태를 localStorage와 결합하여 새로고침 시 이탈을 차단
+  const [selectedCommitteeGroup, setSelectedCommitteeGroup] = useState(() => {
+    return localStorage.getItem("anchor_committee_selected_group") || "agency";
+  });
+  const [selectedCommitteeId, setSelectedCommitteeId] = useState(() => {
+    return localStorage.getItem("anchor_committee_selected_id") || "total";
+  });
   const [activeCommitteeDetailTab, setActiveCommitteeDetailTab] = useState("members"); // 위원회 세부 정보 탭 ("members": 명단, "purpose": 목적/기능)
 
-  // 💡 위원회 대그룹 탭 변경 시 선택된 위원회 ID를 해당 그룹의 첫 번째 항목으로 자동 초기화합니다.
+  // 💡 위원회 대그룹 탭 변경 시 선택된 위원회 ID를 해당 그룹의 첫 번째 항목으로 자동 초기화 및 로컬스토리지 보존
   useEffect(() => {
+    const savedGroup = localStorage.getItem("anchor_committee_selected_group");
+    const savedId = localStorage.getItem("anchor_committee_selected_id");
+
+    if (savedGroup === selectedCommitteeGroup && savedId) {
+      // 새로고침 직후에는 기존에 보존된 ID 상태를 유지하여 오작동 차단
+      return;
+    }
+
     if (selectedCommitteeGroup === "agency") {
       setSelectedCommitteeId("total");
+      localStorage.setItem("anchor_committee_selected_id", "total");
     } else {
       setSelectedCommitteeId("ecc_op");
+      localStorage.setItem("anchor_committee_selected_id", "ecc_op");
     }
+    localStorage.setItem("anchor_committee_selected_group", selectedCommitteeGroup);
   }, [selectedCommitteeGroup]);
+
+  // ID 직접 스위칭 시 실시간 브라우저 저장 처리
+  useEffect(() => {
+    localStorage.setItem("anchor_committee_selected_id", selectedCommitteeId);
+  }, [selectedCommitteeId]);
 
   // 위원회 및 위원 명단 상태 (초기값은 하드코딩 백업 데이터)
   const [committees, setCommittees] = useState(COMMITTEES_DATA);
