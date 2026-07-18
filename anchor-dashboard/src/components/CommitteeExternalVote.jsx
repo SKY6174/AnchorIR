@@ -102,12 +102,12 @@ export default function CommitteeExternalVote({ meetingId }) {
     if (!meetingId) return;
 
     async function fetchMeetingInfo() {
-      // 💡 [Zero Error Console Guard] 로컬 모드 회의 ID인 경우 Supabase REST DB 조회를 완전히 스킵하여 404 에러 방지
-      if (String(meetingId).startsWith("local-")) {
-        throw new Error("Local mode skip db query");
-      }
-
       try {
+        // 💡 [Zero Error Console Guard] 로컬 모드 회의 ID인 경우 Supabase REST DB 조회를 완전히 스킵하여 404 에러 방지
+        if (String(meetingId).startsWith("local-")) {
+          throw new Error("Local mode skip db query");
+        }
+
         const { data, error } = await supabase
           .from("committee_meetings")
           .select("*, committees(name, purpose)")
