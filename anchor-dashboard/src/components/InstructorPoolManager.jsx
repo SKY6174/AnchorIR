@@ -120,6 +120,13 @@ export default function InstructorPoolManager() {
   const [selectedInstructor, setSelectedInstructor] = useState(null);
   const [histories, setHistories] = useState([]); // 💡 변동 정보 이력 상태값으로 통합 관리
   
+  // 💡 서브서브탭 제어 상태 ('master': 교.강사 마스터 대장, 'history': 교.강사 활동이력)
+  const [activeSubTab, setActiveSubTab] = useState("master");
+  // 💡 활동이력 등록 전용 모달 제어 상태
+  const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
+  // 💡 좌측 교강사 검색용 텍스트 필터 상태
+  const [searchTerm, setSearchTerm] = useState("");
+  
   // 모달 제어 상태
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
@@ -432,31 +439,232 @@ export default function InstructorPoolManager() {
     }
   };
 
+  // 💡 [활동이력 엑셀 서식 다운로드]
+  const handleDownloadHistoryTemplate = () => {
+    const headers = [["성명", "생년월일(YYYY-MM-DD)", "사업연도", "교내/교외 구분(교내 또는 교외)", "소속", "직급", "단위과제(예: B2)", "참여 프로그램(예: B2-S1T1-1)", "지급비용(원)"]];
+    const sampleData = [
+      ["김철수", "1975-04-12", "2026", "교내", "컴퓨터정보과", "교수", "B2", "B2-S1T1-1", "350000"],
+      ["이영희", "1982-11-23", "2026", "교외", "간호학협회", "강사", "A1", "A1-S2T1-2", "500000"]
+    ];
+    
+    const ws = XLSX.utils.aoa_to_sheet([...headers, ...sampleData]);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "활동이력_업로드서식");
+    
+    ws["!cols"] = [
+      { wch: 15 }, { wch: 22 }, { wch: 12 }, { wch: 25 }, 
+      { wch: 18 }, { wch: 15 }, { wch: 15 }, { wch: 22 }, { wch: 18 }
+    ];
+    
+    XLSX.writeFile(wb, "UC_ANCHOR_교강사_활동이력_업로드_서식.xlsx");
+  };
+
+  // 💡 [활동이력 엑셀 다운로드 (Export)]
+  const handleHistoryExcelExport = async () => {
+    try {
+      const { data: allHistories, error: histErr } = await supabase
+        .from("instructor_histories")
+        .select("*")
+        .order("year", { ascending: false });
+        
+      if (histErr) throw histErr;
+      
+      if (!allHistories || allHistories.length === 0) {
+        alert("다운로드할 활동이력 데이터가 존재하지 않습니다.");
+        return;
+      }
+
+      const insMap = {};
+      instructors.forEach(ins => {
+        insMap[ins.id] = ins;
+      });
+
+      const dataToExport = allHistories.map(h => {
+        const ins = insMap[h.instructor_id] || {};
+        return {
+          "성명": ins.name || "알수없음",
+          "생년월일": ins.decrypted_birth || "",
+          "사업연도": h.year,
+          "교내/교외 구분": h.is_internal ? "교내" : "교외",
+          "소속": h.department,
+          "직급": h.position,
+          "단위과제": h.program_id ? h.program_id.split("-")[0] : "",
+          "참여 프로그램": h.program_id,
+          "지급비용": h.amount
+        };
+      });
+
+      const ws = XLSX.utils.json_to_sheet(dataToExport);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "교강사_활동이력_대장");
+
+      ws["!cols"] = [
+        { wch: 15 }, { wch: 20 }, { wch: 12 }, { wch: 18 }, 
+        { wch: 18 }, { wch: 15 }, { wch: 12 }, { wch: 22 }, { wch: 18 }
+      ];
+
+      XLSX.writeFile(wb, `UC_ANCHOR_교강사_활동이력_대장.xlsx`);
+    } catch (err) {
+      alert("활동이력 엑셀 다운로드 실패: " + err.message);
+    }
+  };
+
+  // 💡 [활동이력 엑셀 업로드 (Import)]
+  const handleHistoryExcelImport = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = async (evt) => {
+      try {
+        const data = evt.target.result;
+        const workbook = XLSX.read(data, { type: "binary" });
+        const sheetName = workbook.SheetNames[0];
+        const ws = workbook.Sheets[sheetName];
+        const excelRows = XLSX.utils.sheet_to_json(ws);
+
+        if (excelRows.length === 0) {
+          alert("엑셀 파일에 데이터가 존재하지 않습니다.");
+          return;
+        }
+
+        const insLookup = {};
+        instructors.forEach(ins => {
+          const key = `${ins.name.trim()}_${ins.decrypted_birth.trim()}`;
+          insLookup[key] = ins.id;
+        });
+
+        const newHistList = [];
+        let skippedCount = 0;
+        let notFoundCount = 0;
+
+        for (const row of excelRows) {
+          const rawName = row["성명"] || "";
+          const rawBirth = row["생년월일(YYYY-MM-DD)"] || row["생년월일"] || "";
+          const rawYear = row["사업연도"] || 2026;
+          const rawInternalStr = row["교내/교외 구분(교내 또는 교외)"] || row["교내/교외 구분"] || "교내";
+          const rawDept = row["소속"] || "";
+          const rawPosition = row["직급"] || "";
+          const rawProgram = row["참여 프로그램(예: B2-S1T1-1)"] || row["참여 프로그램"] || "";
+          const rawAmount = row["지급비용(원)"] || row["지급비용"] || 0;
+
+          if (!rawName || !rawBirth || !rawDept || !rawProgram) {
+            skippedCount++;
+            continue;
+          }
+
+          const name = String(rawName).trim();
+          const birth = String(rawBirth).trim();
+          const lookupKey = `${name}_${birth}`;
+          const instructorId = insLookup[lookupKey];
+
+          if (!instructorId) {
+            notFoundCount++;
+            continue;
+          }
+
+          const isInternal = String(rawInternalStr).trim() === "교내";
+
+          newHistList.push({
+            instructor_id: instructorId,
+            year: parseInt(rawYear) || 2026,
+            department: String(rawDept).trim(),
+            position: String(rawPosition).trim(),
+            is_internal: isInternal,
+            program_id: String(rawProgram).trim(),
+            amount: parseFloat(rawAmount) || 0
+          });
+        }
+
+        if (newHistList.length === 0) {
+          alert(`가져올 수 있는 신규 활동이력이 없습니다.\n- 누락 스킵: ${skippedCount}건\n- 마스터 대장 미등록 스킵: ${notFoundCount}건`);
+          return;
+        }
+
+        const { error } = await supabase.from("instructor_histories").insert(newHistList);
+        if (error) throw error;
+
+        alert(`활동이력 일괄 업로드가 성공적으로 완료되었습니다.\n- 등록 성공: ${newHistList.length}건\n- 누락/대장미등록 스킵: ${skippedCount + notFoundCount}건`);
+        
+        if (selectedInstructor) {
+          handleSelectInstructor(selectedInstructor);
+        } else {
+          fetchInstructors();
+        }
+      } catch (err) {
+        alert("활동이력 엑셀 가져오기 실패: " + err.message);
+      }
+    };
+    reader.readAsBinaryString(file);
+    e.target.value = "";
+  };
+
   // 총 지급비용 연산
   const totalPayment = histories.reduce((sum, item) => sum + parseFloat(item.amount || 0), 0);
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem", width: "100%", color: "var(--text-color)" }}>
+    <div style={{ display: "flex", flexDirection: "column", gap: "1rem", width: "100%", color: "var(--text-color)" }}>
       {/* 1. 상단 안내 카드 */}
-      <div className="glass-card" style={{ padding: "1.5rem", display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-        <h2 style={{ fontSize: "1.25rem", fontWeight: "800", color: "var(--accent-color)", display: "flex", alignItems: "center", gap: "0.5rem" }}>
-          <User size={22} />
+      <div className="glass-card" style={{ padding: "1.25rem", display: "flex", flexDirection: "column", gap: "0.4rem" }}>
+        <h2 style={{ fontSize: "1.15rem", fontWeight: "800", color: "var(--accent-color)", display: "flex", alignItems: "center", gap: "0.5rem" }}>
+          <User size={20} />
           교∙강사 Pool 관리 시스템
         </h2>
-        <p style={{ fontSize: "0.9rem", color: "var(--text-secondary)", lineHeight: "1.5" }}>
-          교∙강사의 고정 인적사항(성명, 성별, 생년월일, 계좌정보)을 안전하게 암호화 관리하고, 매년 변동되는 소속, 직급, 교내외 여부 및 프로그램별 지급 비용을 이력으로 연동합니다.
+        <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)", lineHeight: "1.4" }}>
+          교∙강사의 인적사항을 안전하게 암호화 관리하고, 매년 변동되는 소속, 직급, 교내외 여부 및 프로그램별 지급 비용을 이력으로 통합 연계합니다.
         </p>
       </div>
 
-      <div style={{ display: "flex", gap: "1.5rem", alignItems: "flex-start" }}>
-        {/* 교∙강사 리스트 테이블 (좌측) */}
-        <div className="glass-card" style={{ flex: 1.2, padding: "1.25rem" }}>
+      {/* 💡 [서브서브메뉴] 탭 버튼 바 (Premium Glassmorphism Style) */}
+      <div style={{ display: "flex", gap: "0.35rem", borderBottom: "1px solid var(--border-color)", paddingBottom: "0.4rem" }}>
+        <button
+          onClick={() => setActiveSubTab("master")}
+          style={{
+            padding: "0.5rem 1.2rem",
+            fontSize: "0.85rem",
+            fontWeight: "800",
+            border: "none",
+            background: activeSubTab === "master" ? "rgba(139, 92, 246, 0.12)" : "transparent",
+            color: activeSubTab === "master" ? "#8b5cf6" : "var(--text-secondary)",
+            borderRadius: "8px",
+            cursor: "pointer",
+            transition: "all 0.2s"
+          }}
+        >
+          🗂️ 교.강사 마스터 대장
+        </button>
+        <button
+          onClick={() => {
+            setActiveSubTab("history");
+            // 선택된 교강사가 없을 시 기본 첫 번째 교수 지정
+            if (!selectedInstructor && instructors.length > 0) {
+              handleSelectInstructor(instructors[0]);
+            }
+          }}
+          style={{
+            padding: "0.5rem 1.2rem",
+            fontSize: "0.85rem",
+            fontWeight: "800",
+            border: "none",
+            background: activeSubTab === "history" ? "rgba(59, 130, 246, 0.12)" : "transparent",
+            color: activeSubTab === "history" ? "#3b82f6" : "var(--text-secondary)",
+            borderRadius: "8px",
+            cursor: "pointer",
+            transition: "all 0.2s"
+          }}
+        >
+          📈 교.강사 활동이력
+        </button>
+      </div>
+
+      {/* 탭 1: 교.강사 마스터 대장 */}
+      {activeSubTab === "master" && (
+        <div className="glass-card" style={{ padding: "1.25rem" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.25rem", flexWrap: "wrap", gap: "0.75rem" }}>
-            <h3 style={{ fontSize: "0.95rem", fontWeight: "800" }}>
-              교∙강사 마스터 대장 (고정 정보)
+            <h3 style={{ fontSize: "0.9rem", fontWeight: "800" }}>
+              교∙강사 인적사항 현황 (고정 정보)
             </h3>
             <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-              {/* 엑셀 서식 다운로드 */}
               <button
                 onClick={handleDownloadTemplate}
                 className="action-btn"
@@ -477,8 +685,6 @@ export default function InstructorPoolManager() {
               >
                 <Download size={16} /> 엑셀 서식
               </button>
-
-              {/* 엑셀 일괄 업로드 */}
               <label
                 className="action-btn"
                 style={{
@@ -505,8 +711,6 @@ export default function InstructorPoolManager() {
                   style={{ display: "none" }}
                 />
               </label>
-
-              {/* 엑셀 대장 다운로드 */}
               <button
                 onClick={handleExcelExport}
                 className="action-btn"
@@ -527,8 +731,6 @@ export default function InstructorPoolManager() {
               >
                 <Download size={16} /> 엑셀 다운로드
               </button>
-
-              {/* 신규 등록 버튼 */}
               <button
                 onClick={() => setIsAddModalOpen(true)}
                 className="action-btn"
@@ -551,6 +753,7 @@ export default function InstructorPoolManager() {
               </button>
             </div>
           </div>
+
           {loading ? (
             <div style={{ textAlign: "center", padding: "2rem", color: "var(--text-secondary)" }}>로딩 중...</div>
           ) : instructors.length === 0 ? (
@@ -572,14 +775,21 @@ export default function InstructorPoolManager() {
                   {instructors.map((ins) => (
                     <tr 
                       key={ins.id} 
-                      onClick={() => handleSelectInstructor(ins)}
+                      onClick={() => {
+                        handleSelectInstructor(ins);
+                        setActiveSubTab("history");
+                      }}
+                      title="클릭하여 활동이력 확인 및 신규 이력 등록"
                       style={{ 
                         borderBottom: "1px solid var(--border-color)", 
                         cursor: "pointer",
-                        background: selectedInstructor?.id === ins.id ? "rgba(59,130,246,0.1)" : "transparent"
+                        background: selectedInstructor?.id === ins.id ? "rgba(59,130,246,0.06)" : "transparent",
+                        transition: "all 0.15s ease"
                       }}
+                      onMouseEnter={(e) => e.currentTarget.style.background = "var(--panel-bg)"}
+                      onMouseLeave={(e) => e.currentTarget.style.background = selectedInstructor?.id === ins.id ? "rgba(59,130,246,0.06)" : "transparent"}
                     >
-                      <td style={{ padding: "0.75rem 0.5rem", fontWeight: "700" }}>{ins.name}</td>
+                      <td style={{ padding: "0.75rem 0.5rem", fontWeight: "700", color: "var(--accent-color)" }}>{ins.name}</td>
                       <td style={{ padding: "0.75rem 0.5rem" }}>
                         <span style={{
                           padding: "0.15rem 0.4rem",
@@ -616,205 +826,405 @@ export default function InstructorPoolManager() {
             </div>
           )}
         </div>
+      )}
 
-        {/* 상세 참여 및 지급 이력 뷰 (우측 - 변동 정보) */}
-        {isDetailOpen && selectedInstructor && (
+      {/* 탭 2: 교.강사 활동이력 */}
+      {activeSubTab === "history" && (
+        <div style={{ display: "flex", gap: "1.25rem", alignItems: "flex-start", width: "100%" }}>
+          {/* 탭 2 좌측: 교강사 목록 패널 */}
+          <div className="glass-card" style={{ flex: 0.35, padding: "1rem", display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+            <h3 style={{ fontSize: "0.85rem", fontWeight: "800" }}>교∙강사 선택</h3>
+            <input
+              type="text"
+              placeholder="🔍 성명 검색..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              style={{
+                width: "100%",
+                padding: "0.4rem 0.6rem",
+                fontSize: "0.8rem",
+                borderRadius: "0.25rem",
+                background: "var(--card-bg)",
+                color: "var(--text-color)",
+                border: "1px solid var(--border-color)",
+                outline: "none"
+              }}
+            />
+            <div style={{ maxHeight: "400px", overflowY: "auto", display: "flex", flexDirection: "column", gap: "0.35rem" }}>
+              {instructors
+                .filter(ins => ins.name.toLowerCase().includes(searchTerm.toLowerCase()))
+                .map(ins => (
+                  <div
+                    key={ins.id}
+                    onClick={() => handleSelectInstructor(ins)}
+                    style={{
+                      padding: "0.5rem 0.75rem",
+                      borderRadius: "0.35rem",
+                      cursor: "pointer",
+                      border: "1px solid var(--border-color)",
+                      background: selectedInstructor?.id === ins.id ? "rgba(59, 130, 246, 0.1)" : "transparent",
+                      borderColor: selectedInstructor?.id === ins.id ? "#3b82f6" : "var(--border-color)",
+                      transition: "all 0.15s ease"
+                    }}
+                  >
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                      <span style={{ fontWeight: "700", fontSize: "0.8rem" }}>{ins.name}</span>
+                      <span style={{ fontSize: "0.65rem", color: "var(--text-secondary)" }}>{ins.bank_name}</span>
+                    </div>
+                    <div style={{ fontSize: "0.65rem", color: "var(--text-secondary)", marginTop: "0.15rem" }}>
+                      생년월일: {maskBirthDate(ins.decrypted_birth)}
+                    </div>
+                  </div>
+                ))}
+            </div>
+          </div>
+
+          {/* 탭 2 우측: 선택된 교강사 활동이력 대장 */}
           <div className="glass-card" style={{ flex: 1, padding: "1.25rem" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.25rem" }}>
-              <h3 style={{ fontSize: "0.95rem", fontWeight: "800", display: "flex", alignItems: "center", gap: "0.25rem" }}>
-                <User size={16} color="var(--accent-color)" /> {selectedInstructor.name} 교수 상세 이력 (변동 정보)
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.25rem", flexWrap: "wrap", gap: "0.75rem" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                <h3 style={{ fontSize: "0.95rem", fontWeight: "800", color: "var(--text-primary)" }}>
+                  {selectedInstructor ? `📈 ${selectedInstructor.name} 교수 활동이력` : "활동이력을 확인할 교강사를 좌측에서 선택해 주세요."}
+                </h3>
+                {selectedInstructor && (
+                  <span style={{ fontSize: "0.75rem", fontWeight: "800", color: "var(--success-color)", background: "rgba(16,185,129,0.15)", padding: "0.15rem 0.4rem", borderRadius: "0.2rem" }}>
+                    누적 지급: {totalPayment.toLocaleString()}원
+                  </span>
+                )}
+              </div>
+              
+              <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                <button
+                  onClick={handleDownloadHistoryTemplate}
+                  className="action-btn"
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "0.35rem",
+                    padding: "0.6rem 1.2rem",
+                    background: "#ffffff",
+                    color: "#8b5cf6",
+                    border: "1px solid #8b5cf6",
+                    borderRadius: "8px",
+                    fontSize: "0.9rem",
+                    fontWeight: "700",
+                    cursor: "pointer",
+                    transition: "all 0.2s ease"
+                  }}
+                >
+                  <Download size={16} /> 엑셀 서식
+                </button>
+                <label
+                  className="action-btn"
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "0.35rem",
+                    padding: "0.6rem 1.2rem",
+                    background: "#ecfdf5",
+                    color: "#10b981",
+                    border: "1px solid #10b981",
+                    borderRadius: "8px",
+                    fontSize: "0.9rem",
+                    fontWeight: "700",
+                    cursor: "pointer",
+                    margin: 0,
+                    transition: "all 0.2s ease"
+                  }}
+                >
+                  <Upload size={16} /> 엑셀 업로드
+                  <input
+                    type="file"
+                    accept=".xlsx, .xls"
+                    onChange={handleHistoryExcelImport}
+                    style={{ display: "none" }}
+                  />
+                </label>
+                <button
+                  onClick={handleHistoryExcelExport}
+                  className="action-btn"
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "0.35rem",
+                    padding: "0.6rem 1.2rem",
+                    background: "#f5f3ff",
+                    color: "#8b5cf6",
+                    border: "1px solid #8b5cf6",
+                    borderRadius: "8px",
+                    fontSize: "0.9rem",
+                    fontWeight: "700",
+                    cursor: "pointer",
+                    transition: "all 0.2s ease"
+                  }}
+                >
+                  <Download size={16} /> 엑셀 다운로드
+                </button>
+                <button
+                  onClick={() => {
+                    if (!selectedInstructor) {
+                      alert("이력을 등록할 대상 교∙강사를 먼저 선택해 주세요.");
+                      return;
+                    }
+                    setIsHistoryModalOpen(true);
+                  }}
+                  className="action-btn"
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "0.35rem",
+                    padding: "0.6rem 1.4rem",
+                    background: "#3b82f6",
+                    color: "#ffffff",
+                    border: "none",
+                    borderRadius: "9999px",
+                    fontSize: "0.9rem",
+                    fontWeight: "700",
+                    cursor: "pointer",
+                    transition: "all 0.2s ease"
+                  }}
+                >
+                  <Plus size={18} /> 신규 등록
+                </button>
+              </div>
+            </div>
+
+            {selectedInstructor ? (
+              <div>
+                {histories.length === 0 ? (
+                  <div style={{ fontSize: "0.8rem", color: "var(--text-secondary)", padding: "3rem 1rem", textAlign: "center" }}>등록된 참여 및 지급 활동이력이 존재하지 않습니다.</div>
+                ) : (
+                  <div style={{ overflowX: "auto" }}>
+                    <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.8rem" }}>
+                      <thead>
+                        <tr style={{ borderBottom: "2px solid var(--border-color)", textAlign: "left", color: "var(--text-secondary)" }}>
+                          <th style={{ padding: "0.75rem 0.5rem" }}>연도</th>
+                          <th style={{ padding: "0.75rem 0.5rem" }}>소속</th>
+                          <th style={{ padding: "0.75rem 0.5rem" }}>직급</th>
+                          <th style={{ padding: "0.75rem 0.5rem" }}>구분</th>
+                          <th style={{ padding: "0.75rem 0.5rem" }}>참여 프로그램</th>
+                          <th style={{ padding: "0.75rem 0.5rem", textAlign: "right" }}>지급비용</th>
+                          <th style={{ padding: "0.75rem 0.5rem", textAlign: "center" }}>관리</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {histories.map(item => (
+                          <tr key={item.id} style={{ borderBottom: "1px solid var(--border-color)", transition: "all 0.15s ease" }} onMouseEnter={(e) => e.currentTarget.style.background = "var(--panel-bg)"} onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}>
+                            <td style={{ padding: "0.75rem 0.5rem", fontWeight: "700" }}>{item.year}학년도</td>
+                            <td style={{ padding: "0.75rem 0.5rem" }}>{item.department}</td>
+                            <td style={{ padding: "0.75rem 0.5rem" }}>{item.position}</td>
+                            <td style={{ padding: "0.75rem 0.5rem" }}>
+                              <span style={{
+                                fontSize: "0.7rem",
+                                fontWeight: "700",
+                                padding: "0.15rem 0.4rem",
+                                borderRadius: "0.2rem",
+                                background: item.is_internal ? "rgba(16,185,129,0.15)" : "rgba(245,158,11,0.15)",
+                                color: item.is_internal ? "var(--success-color)" : "var(--warning-color)"
+                              }}>
+                                {item.is_internal ? "교내" : "교외"}
+                              </span>
+                            </td>
+                            <td style={{ padding: "0.75rem 0.5rem" }}>{item.program_id}</td>
+                            <td style={{ padding: "0.75rem 0.5rem", textAlign: "right", fontWeight: "700", color: "var(--accent-color)" }}>{parseInt(item.amount).toLocaleString()}원</td>
+                            <td style={{ padding: "0.75rem 0.5rem", textAlign: "center" }}>
+                              <button onClick={() => handleDeleteHistory(item.id)} style={{ border: "none", background: "transparent", color: "#ef4444", cursor: "pointer", padding: "0.25rem" }}>
+                                <Trash2 size={14} />
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div style={{ textAlign: "center", padding: "4rem", color: "var(--text-secondary)" }}>
+                상세 조회할 교∙강사를 왼쪽 리스트에서 선택해 주세요.
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+      {/* 활동이력 등록 모달 (변동 정보) */}
+      {isHistoryModalOpen && selectedInstructor && (
+        <div style={{
+          position: "fixed",
+          top: 0, left: 0, width: "100vw", height: "100vh",
+          background: "rgba(0,0,0,0.6)",
+          zIndex: 9999,
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          overflowY: "auto",
+          padding: "2rem 1rem"
+        }}>
+          <div style={{
+            background: "var(--modal-bg)",
+            border: "1px solid var(--border-color)",
+            borderRadius: "0.75rem",
+            width: "100%",
+            maxWidth: "500px",
+            maxHeight: "85vh",
+            display: "flex",
+            flexDirection: "column",
+            color: "var(--text-primary)",
+            boxShadow: "0 20px 25px -5px rgba(0,0,0,0.3)",
+            margin: "auto"
+          }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "0.85rem 1.25rem", borderBottom: "1px solid var(--border-color)", flexShrink: 0 }}>
+              <h3 style={{ fontSize: "1.1rem", fontWeight: "800", display: "flex", alignItems: "center", gap: "0.4rem", color: "var(--text-primary)" }}>
+                📈 {selectedInstructor.name} 교수 활동이력 추가
               </h3>
-              <button onClick={() => setIsDetailOpen(false)} style={{ border: "none", background: "transparent", cursor: "pointer", color: "var(--text-secondary)" }}>
-                <X size={16} />
+              <button type="button" onClick={() => setIsHistoryModalOpen(false)} style={{ background: "none", border: "none", color: "#a1a1aa", cursor: "pointer" }}>
+                <X size={18} />
               </button>
             </div>
 
-            {/* 1. 변동 정보 이력 등록 폼 */}
-            <div style={{ marginBottom: "1.5rem" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.5rem" }}>
-                <h4 style={{ fontSize: "0.8rem", fontWeight: "700", display: "flex", alignItems: "center", gap: "0.25rem" }}>
-                  <Award size={14} /> 참여 이력 및 지급비용 등록
-                </h4>
-                <span style={{ fontSize: "0.75rem", fontWeight: "800", color: "var(--success-color)", background: "rgba(16,185,129,0.15)", padding: "0.1rem 0.4rem", borderRadius: "0.2rem" }}>
-                  누적 지급액: {totalPayment.toLocaleString()}원
-                </span>
-              </div>
-              <div style={{ background: "rgba(0,0,0,0.03)", padding: "0.75rem", borderRadius: "0.25rem", marginBottom: "0.8rem" }}>
-                <form onSubmit={handleAddHistory} style={{ display: "flex", flexDirection: "column", gap: "0.6rem" }}>
-                  {/* 1행: 사업연도 및 교내/교외 구분 */}
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem" }}>
-                    <div>
-                      <label style={{ fontSize: "0.7rem", color: "var(--text-secondary)" }}>사업연도</label>
-                      <select
-                        value={newHistoryForm.year}
-                        onChange={(e) => setNewHistoryForm(prev => ({ ...prev, year: parseInt(e.target.value) }))}
-                        style={{ width: "100%", padding: "0.25rem", fontSize: "0.75rem", borderRadius: "0.2rem", background: "var(--card-bg)", color: "var(--text-color)", border: "1px solid var(--border-color)" }}
-                      >
-                        <option value={2024}>2024학년도</option>
-                        <option value={2025}>2025학년도</option>
-                        <option value={2026}>2026학년도</option>
-                        <option value={2027}>2027학년도</option>
-                      </select>
-                    </div>
-                    <div>
-                      <label style={{ fontSize: "0.7rem", color: "var(--text-secondary)", display: "block" }}>교내/교외 구분</label>
-                      <div style={{ display: "flex", gap: "0.8rem", marginTop: "0.3rem" }}>
-                        <label style={{ fontSize: "0.75rem", display: "flex", alignItems: "center", gap: "0.2rem", cursor: "pointer", color: "var(--text-primary)" }}>
-                          <input
-                            type="radio"
-                            checked={newHistoryForm.is_internal === true}
-                            onChange={() => setNewHistoryForm(prev => ({ ...prev, is_internal: true }))}
-                          /> 교내
-                        </label>
-                        <label style={{ fontSize: "0.75rem", display: "flex", alignItems: "center", gap: "0.2rem", cursor: "pointer", color: "var(--text-primary)" }}>
-                          <input
-                            type="radio"
-                            checked={newHistoryForm.is_internal === false}
-                            onChange={() => setNewHistoryForm(prev => ({ ...prev, is_internal: false }))}
-                          /> 교외
-                        </label>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* 2행: 소속 및 직급 */}
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem" }}>
-                    <div>
-                      <label style={{ fontSize: "0.7rem", color: "var(--text-secondary)" }}>소속</label>
-                      {newHistoryForm.is_internal ? (
-                        <select
-                          value={newHistoryForm.department}
-                          onChange={(e) => setNewHistoryForm(prev => ({ ...prev, department: e.target.value }))}
-                          style={{ width: "100%", padding: "0.25rem", fontSize: "0.75rem", borderRadius: "0.2rem", background: "var(--card-bg)", color: "var(--text-color)", border: "1px solid var(--border-color)" }}
-                        >
-                          {getDeptsByYear(newHistoryForm.year).map(dept => (
-                            <option key={dept} value={dept}>{dept}</option>
-                          ))}
-                        </select>
-                      ) : (
-                        <input
-                          type="text"
-                          placeholder="소속 기관명 직접 입력"
-                          required
-                          value={newHistoryForm.department}
-                          onChange={(e) => setNewHistoryForm(prev => ({ ...prev, department: e.target.value }))}
-                          style={{ width: "100%", padding: "0.25rem", fontSize: "0.75rem", borderRadius: "0.2rem", background: "var(--card-bg)", color: "var(--text-color)", border: "1px solid var(--border-color)" }}
-                        />
-                      )}
-                    </div>
-                    <div>
-                      <label style={{ fontSize: "0.7rem", color: "var(--text-secondary)" }}>직급</label>
-                      <input
-                        type="text"
-                        placeholder="예: 교수, 처장 등"
-                        required
-                        value={newHistoryForm.position}
-                        onChange={(e) => setNewHistoryForm(prev => ({ ...prev, position: e.target.value }))}
-                        style={{ width: "100%", padding: "0.25rem", fontSize: "0.75rem", borderRadius: "0.2rem", background: "var(--card-bg)", color: "var(--text-color)", border: "1px solid var(--border-color)" }}
-                      />
-                    </div>
-                  </div>
-
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem" }}>
-                    <div>
-                      <label style={{ fontSize: "0.7rem", color: "var(--text-secondary)" }}>단위과제</label>
-                      <select
-                        value={newHistoryForm.unit_id}
-                        onChange={(e) => {
-                          const uId = e.target.value;
-                          setNewHistoryForm(prev => ({
-                            ...prev,
-                            unit_id: uId,
-                            program_id: PROJECTS_MAP[uId]?.[0] || ""
-                          }));
-                        }}
-                        style={{ width: "100%", padding: "0.25rem", fontSize: "0.75rem", borderRadius: "0.2rem", background: "var(--card-bg)", color: "var(--text-color)", border: "1px solid var(--border-color)" }}
-                      >
-                        {Object.keys(PROJECTS_MAP).map(key => <option key={key} value={key}>{key}</option>)}
-                      </select>
-                    </div>
-                    <div>
-                      <label style={{ fontSize: "0.7rem", color: "var(--text-secondary)" }}>참여 프로그램</label>
-                      <select
-                        value={newHistoryForm.program_id}
-                        onChange={(e) => setNewHistoryForm(prev => ({ ...prev, program_id: e.target.value }))}
-                        style={{ width: "100%", padding: "0.25rem", fontSize: "0.75rem", borderRadius: "0.2rem", background: "var(--card-bg)", color: "var(--text-color)", border: "1px solid var(--border-color)" }}
-                      >
-                        {(PROJECTS_MAP[newHistoryForm.unit_id] || []).map(pId => <option key={pId} value={pId}>{pId}</option>)}
-                      </select>
-                    </div>
-                  </div>
-
-                  <div>
-                    <label style={{ fontSize: "0.7rem", color: "var(--text-secondary)" }}>지급비용 (원)</label>
-                    <div style={{ display: "flex", gap: "0.4rem" }}>
-                      <input
-                        type="number"
-                        placeholder="예: 500000"
-                        required
-                        value={newHistoryForm.amount}
-                        onChange={(e) => setNewHistoryForm(prev => ({ ...prev, amount: e.target.value }))}
-                        style={{ flex: 1, padding: "0.25rem", fontSize: "0.75rem", borderRadius: "0.2rem", background: "var(--card-bg)", color: "var(--text-color)", border: "1px solid var(--border-color)" }}
-                      />
-                      <button type="submit" style={{ padding: "0.25rem 1rem", fontSize: "0.75rem", fontWeight: "700", background: "var(--accent-color)", color: "#fff", border: "none", borderRadius: "0.2rem", cursor: "pointer" }}>
-                        추가
-                      </button>
-                    </div>
-                  </div>
-                </form>
-              </div>
-
-              {/* 2. 변동 정보 이력 테이블 */}
-              {histories.length === 0 ? (
-                <div style={{ fontSize: "0.75rem", color: "var(--text-secondary)", padding: "1rem", textAlign: "center" }}>등록된 변동 이력이 없습니다.</div>
-              ) : (
-                <div style={{ overflowX: "auto" }}>
-                  <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.75rem" }}>
-                    <thead>
-                      <tr style={{ borderBottom: "1px solid var(--border-color)", textAlign: "left", color: "var(--text-secondary)" }}>
-                        <th style={{ padding: "0.4rem 0.25rem" }}>연도</th>
-                        <th style={{ padding: "0.4rem 0.25rem" }}>소속</th>
-                        <th style={{ padding: "0.4rem 0.25rem" }}>직급</th>
-                        <th style={{ padding: "0.4rem 0.25rem" }}>구분</th>
-                        <th style={{ padding: "0.4rem 0.25rem" }}>프로그램</th>
-                        <th style={{ padding: "0.4rem 0.25rem", textAlign: "right" }}>지급비용</th>
-                        <th style={{ padding: "0.4rem 0.25rem", textAlign: "center" }}>관리</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {histories.map(item => (
-                        <tr key={item.id} style={{ borderBottom: "1px dashed var(--border-color)" }}>
-                          <td style={{ padding: "0.4rem 0.25rem" }}>{item.year}년도</td>
-                          <td style={{ padding: "0.4rem 0.25rem" }}>{item.department}</td>
-                          <td style={{ padding: "0.4rem 0.25rem" }}>{item.position}</td>
-                          <td style={{ padding: "0.4rem 0.25rem" }}>
-                            <span style={{
-                              fontSize: "0.65rem",
-                              padding: "0.1rem 0.3rem",
-                              borderRadius: "0.15rem",
-                              background: item.is_internal ? "rgba(16,185,129,0.15)" : "rgba(245,158,11,0.15)",
-                              color: item.is_internal ? "var(--success-color)" : "var(--warning-color)"
-                            }}>
-                              {item.is_internal ? "교내" : "교외"}
-                            </span>
-                          </td>
-                          <td style={{ padding: "0.4rem 0.25rem" }}>{item.program_id}</td>
-                          <td style={{ padding: "0.4rem 0.25rem", textAlign: "right", fontWeight: "700" }}>{parseInt(item.amount).toLocaleString()}원</td>
-                          <td style={{ padding: "0.4rem 0.25rem", textAlign: "center" }}>
-                            <button onClick={() => handleDeleteHistory(item.id)} style={{ border: "none", background: "transparent", color: "#ef4444", cursor: "pointer" }}>
-                              <Trash2 size={12} />
-                            </button>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+            <form onSubmit={async (e) => {
+              await handleAddHistory(e);
+              setIsHistoryModalOpen(false);
+            }} style={{ padding: "1.25rem", display: "flex", flexDirection: "column", gap: "0.8rem", flex: 1, overflowY: "auto" }}>
+              {/* 사업연도 및 교내/교외 구분 */}
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem" }}>
+                <div>
+                  <label style={{ fontSize: "0.8rem", color: "var(--text-secondary)", fontWeight: "600", display: "block", marginBottom: "0.25rem" }}>사업연도</label>
+                  <select
+                    value={newHistoryForm.year}
+                    onChange={(e) => setNewHistoryForm(prev => ({ ...prev, year: parseInt(e.target.value) }))}
+                    style={{ width: "100%", padding: "0.4rem", fontSize: "0.8rem", borderRadius: "0.375rem", background: "var(--card-bg)", color: "var(--text-color)", border: "1px solid var(--border-color)", outline: "none" }}
+                  >
+                    <option value={2024}>2024학년도</option>
+                    <option value={2025}>2025학년도</option>
+                    <option value={2026}>2026학년도</option>
+                    <option value={2027}>2027학년도</option>
+                  </select>
                 </div>
-              )}
-            </div>
+                <div>
+                  <label style={{ fontSize: "0.8rem", color: "var(--text-secondary)", fontWeight: "600", display: "block", marginBottom: "0.25rem" }}>교내/교외 구분</label>
+                  <div style={{ display: "flex", gap: "1rem", marginTop: "0.5rem" }}>
+                    <label style={{ fontSize: "0.8rem", display: "flex", alignItems: "center", gap: "0.25rem", cursor: "pointer", color: "var(--text-primary)" }}>
+                      <input
+                        type="radio"
+                        checked={newHistoryForm.is_internal === true}
+                        onChange={() => setNewHistoryForm(prev => ({ ...prev, is_internal: true }))}
+                      /> 교내
+                    </label>
+                    <label style={{ fontSize: "0.8rem", display: "flex", alignItems: "center", gap: "0.25rem", cursor: "pointer", color: "var(--text-primary)" }}>
+                      <input
+                        type="radio"
+                        checked={newHistoryForm.is_internal === false}
+                        onChange={() => setNewHistoryForm(prev => ({ ...prev, is_internal: false }))}
+                      /> 교외
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              {/* 소속 및 직급 */}
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem" }}>
+                <div>
+                  <label style={{ fontSize: "0.8rem", color: "var(--text-secondary)", fontWeight: "600", display: "block", marginBottom: "0.25rem" }}>소속</label>
+                  {newHistoryForm.is_internal ? (
+                    <select
+                      value={newHistoryForm.department}
+                      onChange={(e) => setNewHistoryForm(prev => ({ ...prev, department: e.target.value }))}
+                      style={{ width: "100%", padding: "0.4rem", fontSize: "0.8rem", borderRadius: "0.375rem", background: "var(--card-bg)", color: "var(--text-color)", border: "1px solid var(--border-color)", outline: "none" }}
+                    >
+                      {getDeptsByYear(newHistoryForm.year).map(dept => (
+                        <option key={dept} value={dept}>{dept}</option>
+                      ))}
+                    </select>
+                  ) : (
+                    <input
+                      type="text"
+                      placeholder="소속 기관명 직접 입력"
+                      required
+                      value={newHistoryForm.department}
+                      onChange={(e) => setNewHistoryForm(prev => ({ ...prev, department: e.target.value }))}
+                      style={{ width: "100%", padding: "0.4rem", fontSize: "0.8rem", borderRadius: "0.375rem", background: "var(--card-bg)", color: "var(--text-color)", border: "1px solid var(--border-color)", outline: "none" }}
+                    />
+                  )}
+                </div>
+                <div>
+                  <label style={{ fontSize: "0.8rem", color: "var(--text-secondary)", fontWeight: "600", display: "block", marginBottom: "0.25rem" }}>직급</label>
+                  <input
+                    type="text"
+                    placeholder="예: 교수, 처장 등"
+                    required
+                    value={newHistoryForm.position}
+                    onChange={(e) => setNewHistoryForm(prev => ({ ...prev, position: e.target.value }))}
+                    style={{ width: "100%", padding: "0.4rem", fontSize: "0.8rem", borderRadius: "0.375rem", background: "var(--card-bg)", color: "var(--text-color)", border: "1px solid var(--border-color)", outline: "none" }}
+                  />
+                </div>
+              </div>
+
+              {/* 단위과제 및 참여 프로그램 */}
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem" }}>
+                <div>
+                  <label style={{ fontSize: "0.8rem", color: "var(--text-secondary)", fontWeight: "600", display: "block", marginBottom: "0.25rem" }}>단위과제</label>
+                  <select
+                    value={newHistoryForm.unit_id}
+                    onChange={(e) => {
+                      const uId = e.target.value;
+                      setNewHistoryForm(prev => ({
+                        ...prev,
+                        unit_id: uId,
+                        program_id: PROJECTS_MAP[uId]?.[0] || ""
+                      }));
+                    }}
+                    style={{ width: "100%", padding: "0.4rem", fontSize: "0.8rem", borderRadius: "0.375rem", background: "var(--card-bg)", color: "var(--text-color)", border: "1px solid var(--border-color)", outline: "none" }}
+                  >
+                    {Object.keys(PROJECTS_MAP).map(key => <option key={key} value={key}>{key}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label style={{ fontSize: "0.8rem", color: "var(--text-secondary)", fontWeight: "600", display: "block", marginBottom: "0.25rem" }}>참여 프로그램</label>
+                  <select
+                    value={newHistoryForm.program_id}
+                    onChange={(e) => setNewHistoryForm(prev => ({ ...prev, program_id: e.target.value }))}
+                    style={{ width: "100%", padding: "0.4rem", fontSize: "0.8rem", borderRadius: "0.375rem", background: "var(--card-bg)", color: "var(--text-color)", border: "1px solid var(--border-color)", outline: "none" }}
+                  >
+                    {(PROJECTS_MAP[newHistoryForm.unit_id] || []).map(pId => <option key={pId} value={pId}>{pId}</option>)}
+                  </select>
+                </div>
+              </div>
+
+              {/* 지급비용 */}
+              <div>
+                <label style={{ fontSize: "0.8rem", color: "var(--text-secondary)", fontWeight: "600", display: "block", marginBottom: "0.25rem" }}>지급비용 (원)</label>
+                <input
+                  type="number"
+                  placeholder="예: 500000"
+                  required
+                  value={newHistoryForm.amount}
+                  onChange={(e) => setNewHistoryForm(prev => ({ ...prev, amount: e.target.value }))}
+                  style={{ width: "100%", padding: "0.4rem", fontSize: "0.8rem", borderRadius: "0.375rem", background: "var(--card-bg)", color: "var(--text-color)", border: "1px solid var(--border-color)", outline: "none" }}
+                />
+              </div>
+
+              <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.5rem", borderTop: "1px solid var(--border-color)", paddingTop: "0.85rem", marginTop: "0.5rem" }}>
+                <button
+                  type="button"
+                  className="btn-secondary"
+                  onClick={() => setIsHistoryModalOpen(false)}
+                  style={{ padding: "0.5rem 1rem", fontSize: "0.75rem" }}
+                >
+                  취소
+                </button>
+                <button
+                  type="submit"
+                  className="btn-primary"
+                  style={{ padding: "0.5rem 1rem", fontSize: "0.75rem" }}
+                >
+                  이력 추가 완료
+                </button>
+              </div>
+            </form>
           </div>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* 신규 교∙강사 등록 모달 (고정 정보) */}
       {isAddModalOpen && (
