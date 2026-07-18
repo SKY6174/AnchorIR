@@ -4523,8 +4523,8 @@ Gemini 피드백: \n${geminiCritiqueText}
             </button>
           </div>
 
-          {/* 메인 레이아웃: 좌측 목록 + 우측 상세 */}
-          <div style={{ display: "grid", gridTemplateColumns: "2.5fr 3.5fr", gap: "1.5rem" }}>
+          {/* 메인 레이아웃: 좌측 목록 + 우측 상세 (minmax 가드로 5개 위원회 비율 100% 일치 구현) */}
+          <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 3fr) minmax(0, 7fr)", gap: "1.5rem" }}>
 
             {/* 좌측: 위원회 카드 목록 */}
             <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
@@ -4709,9 +4709,9 @@ Gemini 피드백: \n${geminiCritiqueText}
                           )}
                         </div>
 
-                        {/* 위원 테이블 */}
+                        {/* 위원 테이블 (가로/세로 오버플로우 가드 장착) */}
                         {activeComm.members && activeComm.members.length > 0 ? (
-                          <div style={{ flex: 1, overflowY: "auto", maxHeight: "350px" }} className="custom-scrollbar">
+                          <div style={{ flex: 1, overflowY: "auto", overflowX: "auto", maxHeight: "350px" }} className="custom-scrollbar">
                             <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.78rem", textAlign: "left" }}>
                               <thead>
                                 <tr style={{ borderBottom: "1px solid var(--border-color)", color: "var(--text-secondary)" }}>
