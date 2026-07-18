@@ -2910,15 +2910,26 @@ export default function App() {
             status: m.status || "참여중"
           }));
 
-          const { error: seedError } = await supabase
-            .from("rise_members")
-            .upsert(cleanedSeed);
-
-          if (!seedError) {
+          // 💡 [RLS 보안 가드] 현재 브라우저의 JWT 토큰 세션이 있는지 검사하여, 인증된 사용자일 때만 DB 시딩 시도
+          const runSeeding = async () => {
+            try {
+              const { data: { session } } = await supabase.auth.getSession();
+              if (session) {
+                const { error: seedError } = await supabase
+                  .from("rise_members")
+                  .upsert(cleanedSeed);
+                if (seedError) {
+                  console.warn("Seeding initial members failed (RLS blocked):", seedError.message);
+                }
+              } else {
+                console.log("Skipping DB write, offline/guest local fallback applied.");
+              }
+            } catch (seedErr) {
+              console.warn("Silent seeding exception caught:", seedErr);
+            }
             setMembers(cleanedSeed);
-          } else {
-            console.error("Seeding initial members failed:", seedError);
-          }
+          };
+          runSeeding();
         }
       } catch (err) {
         console.error("Supabase rise_members table sync failed, fallback to localStorage cache:", err);
