@@ -1548,7 +1548,13 @@ ${opinionsContext}
       const formData = new FormData();
       formData.append("file", pdfBlob, `${rep.committee_meetings?.title}_결과보고서.pdf`);
 
-      const response = await fetch("/api/pdf/sign-pdf", {
+      // 💡 [Vercel 배포 우회 보안 패치] 브라우저가 로컬 호스트가 아닌 배포 서버(Vercel 등)에서 실행 중일 때, 
+      // Vercel의 Static Rewrite(405 에러)를 예방하기 위해 로컬 백엔드(http://localhost:8000)를 직접 겨냥하여 호출합니다.
+      const apiBase = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
+        ? ""
+        : "http://localhost:8000";
+
+      const response = await fetch(`${apiBase}/api/pdf/sign-pdf`, {
         method: "POST",
         body: formData
       });
