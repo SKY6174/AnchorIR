@@ -2686,13 +2686,15 @@ ${inputEvalType === "우수" ? `
                                               <div style={{ display: "flex", alignItems: "center", gap: "0.15rem" }}>
                                                 <input
                                                   type="number"
+                                                  min="0"
                                                   placeholder="목표"
                                                   value={inputKpiTargets[sub.id] !== undefined ? inputKpiTargets[sub.id] : ""}
                                                   onChange={(e) => {
-                                                    const val = e.target.value;
+                                                    // 음수 입력을 방지하기 위해 입력값을 양의 실수(float)로 변환하고 0 이하인 경우 0으로 자동 보정합니다.
+                                                    const val = parseFloat(e.target.value);
                                                     setInputKpiTargets({
                                                       ...inputKpiTargets,
-                                                      [sub.id]: val !== "" ? parseInt(val, 10) : ""
+                                                      [sub.id]: isNaN(val) ? "" : Math.max(0, val)
                                                     });
                                                   }}
                                                   style={{
@@ -2739,8 +2741,12 @@ ${inputEvalType === "우수" ? `
                                   type="number"
                                   className="user-selector"
                                   placeholder="예시) 0"
+                                  min="0"
                                   value={inputTargetParticipants}
-                                  onChange={(e) => setInputTargetParticipants(e.target.value)}
+                                  onChange={(e) => {
+                                    const val = parseFloat(e.target.value);
+                                    setInputTargetParticipants(isNaN(val) ? "" : Math.max(0, val).toString());
+                                  }}
                                   style={{ padding: "0.25rem 0.4rem", fontSize: "0.7rem", flex: 2, minWidth: 0, background: "rgba(255,255,255,0.02)", color: "var(--text-primary)", border: "1px solid var(--border-color)", borderRadius: "0.25rem" }}
                                 />
                                 <input
@@ -2770,8 +2776,12 @@ ${inputEvalType === "우수" ? `
                                   type="number"
                                   className="user-selector"
                                   placeholder="예시) 0"
+                                  min="0"
                                   value={inputTargetDevelopments}
-                                  onChange={(e) => setInputTargetDevelopments(e.target.value)}
+                                  onChange={(e) => {
+                                    const val = parseFloat(e.target.value);
+                                    setInputTargetDevelopments(isNaN(val) ? "" : Math.max(0, val).toString());
+                                  }}
                                   style={{ padding: "0.25rem 0.4rem", fontSize: "0.7rem", flex: 2, minWidth: 0, background: "rgba(255,255,255,0.02)", color: "var(--text-primary)", border: "1px solid var(--border-color)", borderRadius: "0.25rem" }}
                                 />
                                 <input
@@ -2801,8 +2811,12 @@ ${inputEvalType === "우수" ? `
                                   type="number"
                                   className="user-selector"
                                   placeholder="예시) 0"
+                                  min="0"
                                   value={inputTargetEtc}
-                                  onChange={(e) => setInputTargetEtc(e.target.value)}
+                                  onChange={(e) => {
+                                    const val = parseFloat(e.target.value);
+                                    setInputTargetEtc(isNaN(val) ? "" : Math.max(0, val).toString());
+                                  }}
                                   style={{ padding: "0.25rem 0.4rem", fontSize: "0.7rem", flex: 2, minWidth: 0, background: "rgba(255,255,255,0.02)", color: "var(--text-primary)", border: "1px solid var(--border-color)", borderRadius: "0.25rem" }}
                                 />
                                 <input
@@ -3146,13 +3160,15 @@ ${inputEvalType === "우수" ? `
                                             <div style={{ display: "flex", alignItems: "center", gap: "0.15rem" }}>
                                               <input
                                                 type="number"
+                                                min="0"
                                                 placeholder="실적"
                                                 value={inputKpiActuals[sub.id] !== undefined ? inputKpiActuals[sub.id] : ""}
                                                 onChange={(e) => {
-                                                  const val = e.target.value;
+                                                  // 음수 입력을 방지하기 위해 입력값을 양의 실수(float)로 변환하고 0 이하인 경우 0으로 자동 보정합니다.
+                                                  const val = parseFloat(e.target.value);
                                                   setInputKpiActuals({
                                                     ...inputKpiActuals,
-                                                    [sub.id]: val !== "" ? parseInt(val, 10) : ""
+                                                    [sub.id]: isNaN(val) ? "" : Math.max(0, val)
                                                   });
                                                 }}
                                                 style={{
@@ -3189,10 +3205,15 @@ ${inputEvalType === "우수" ? `
                             </span>
                             <input
                               type="number"
+                              min="0"
                               className="user-selector"
                               placeholder="실적 수치"
                               value={inputParticipants}
-                              onChange={(e) => setInputParticipants(e.target.value)}
+                              onChange={(e) => {
+                                // 참여인원 실적 값의 음수 입력을 차단하고 0 이상만 허용합니다.
+                                const val = parseFloat(e.target.value);
+                                setInputParticipants(isNaN(val) ? "" : Math.max(0, val).toString());
+                              }}
                               style={{ padding: "0.2rem 0.4rem", fontSize: "0.7rem", width: "100%" }}
                             />
                           </div>
@@ -3204,10 +3225,15 @@ ${inputEvalType === "우수" ? `
                             </span>
                             <input
                               type="number"
+                              min="0"
                               className="user-selector"
                               placeholder="실적 수치"
                               value={inputActualDevelopments}
-                              onChange={(e) => setInputActualDevelopments(e.target.value)}
+                              onChange={(e) => {
+                                // 개발수 실적 값의 음수 입력을 차단하고 0 이상만 허용합니다.
+                                const val = parseFloat(e.target.value);
+                                setInputActualDevelopments(isNaN(val) ? "" : Math.max(0, val).toString());
+                              }}
                               style={{ padding: "0.2rem 0.4rem", fontSize: "0.7rem", width: "100%" }}
                             />
                           </div>
@@ -3219,10 +3245,15 @@ ${inputEvalType === "우수" ? `
                             </span>
                             <input
                               type="number"
+                              min="0"
                               className="user-selector"
                               placeholder="실적 수치"
                               value={inputActualEtc}
-                              onChange={(e) => setInputActualEtc(e.target.value)}
+                              onChange={(e) => {
+                                // 기타 실적 값의 음수 입력을 차단하고 0 이상만 허용합니다.
+                                const val = parseFloat(e.target.value);
+                                setInputActualEtc(isNaN(val) ? "" : Math.max(0, val).toString());
+                              }}
                               style={{ padding: "0.2rem 0.4rem", fontSize: "0.7rem", width: "100%" }}
                             />
                           </div>

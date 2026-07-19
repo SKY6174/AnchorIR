@@ -11257,10 +11257,15 @@ export default function App() {
                                             className="user-selector"
                                             disabled={!canEditTarget}
                                             defaultValue={yData.target}
+                                            min="0"
                                             onBlur={(e) => {
                                               if (!canEditTarget) return;
-                                              const val = parseFloat(e.target.value);
+                                              let val = parseFloat(e.target.value);
                                               if (!isNaN(val)) {
+                                                if (val < 0) {
+                                                  val = 0;
+                                                  e.target.value = "0";
+                                                }
                                                 handleUpdateKpiValue(sub.id, "target", val);
                                               }
                                             }}
@@ -11286,9 +11291,14 @@ export default function App() {
                                             step="any"
                                             className="user-selector"
                                             defaultValue={yData.current}
+                                            min="0"
                                             onBlur={(e) => {
-                                              const val = parseFloat(e.target.value);
+                                              let val = parseFloat(e.target.value);
                                               if (!isNaN(val)) {
+                                                if (val < 0) {
+                                                  val = 0;
+                                                  e.target.value = "0";
+                                                }
                                                 handleUpdateKpiValue(sub.id, "current", val);
                                               }
                                             }}
