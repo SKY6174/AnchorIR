@@ -1491,15 +1491,7 @@ ${opinionsContext}
                 )}
               </select>
 
-              {/* 위원회 삭제 (관리자용) */}
-              {isManager && selectedCommittee && (
-                <button
-                  onClick={() => handleDeleteCommittee(selectedCommittee.id)}
-                  style={{ background: "transparent", border: "none", color: "#ef4444", fontSize: "0.75rem", cursor: "pointer", marginTop: "0.5rem", display: "flex", alignItems: "center", gap: "0.2rem" }}
-                >
-                  <Trash2 size={12} /> 위원회 완전 제거
-                </button>
-              )}
+
             </div>
 
             {/* 위원 구성 대장 */}
