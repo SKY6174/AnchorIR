@@ -5179,7 +5179,9 @@ export default function ProcurementManager({
         <div style={{
           position: "fixed",
           top: 0, left: 0, width: "100vw", height: "100vh",
-          background: "rgba(0,0,0,0.6)",
+          background: "rgba(15, 23, 42, 0.65)",
+          backdropFilter: "blur(6px)",
+          WebkitBackdropFilter: "blur(6px)",
           zIndex: 1100,
           display: "flex",
           justifyContent: "center",
