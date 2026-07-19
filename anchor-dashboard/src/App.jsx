@@ -3227,8 +3227,8 @@ export default function App() {
     return localStorage.getItem("anchor_projects_sub_tab") || "unit_system";
   }); // "unit_system" (단위과제 체계), "unit_status" (단위과제 집행현황) 또는 "program_mgmt" (프로그램 관리)
   const [committeeSubTab, setCommitteeSubTab] = useState(() => {
-    return localStorage.getItem("anchor_committee_sub_tab") || "committee_meeting";
-  }); // "committee_meeting" (회의 운영 및 의결) 또는 "committee_report" (위원회 결과보고 대장)
+    return localStorage.getItem("anchor_committee_sub_tab") || "committees";
+  }); // "committees" (위원회 명단 관리), "committee_meeting" (회의 운영 및 의결) 또는 "committee_report" (위원회 결과보고 대장)
   const [isMemberModalOpen, setIsMemberModalOpen] = useState(false);
   const [editingMember, setEditingMember] = useState(null); // 추가/수정용 임시 객체
 

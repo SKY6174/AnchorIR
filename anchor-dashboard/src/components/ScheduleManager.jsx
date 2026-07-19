@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from "react";
 import {
   Calendar as CalendarIcon, Clock, MapPin, Users,
   FileText, Award, Layers, Plus, CheckCircle, Info, ChevronLeft, ChevronRight,
-  Edit, Trash2, X
+  Edit, Trash2, X, Download, Upload
 } from "lucide-react";
 import { supabase } from "../supabaseClient";
 import { GoogleGenerativeAI } from "@google/generative-ai";
@@ -597,6 +597,114 @@ export default function ScheduleManager({
   useEffect(() => {
     loadCommitteesData();
   }, [selectedYear]);
+
+  // 엑셀 서식 양식 다운로드 함수
+  const handleDownloadExcelFormat = () => {
+    let csvContent = "\uFEFF"; // Excel 한글 깨짐 방지 BOM 주입
+    csvContent += "구분,성명,소속기관,부서/학과,직위,교내외,비고\n";
+    csvContent += "위원장,조홍래,울산과학대학교,-,총장,교내,대표\n";
+    csvContent += "위원,김성철,울산과학대학교,-,부총장,교내,\n";
+    
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `위원회_위원등록_양식.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+  };
+
+  // 위원 명단 실시간 엑셀(CSV) 다운로드 함수
+  const handleExcelDownload = () => {
+    const activeComm = committees.find(c => c.id === selectedCommitteeId) || committees[0];
+    if (!activeComm) {
+      alert("선택된 위원회가 없습니다.");
+      return;
+    }
+    const mems = activeComm.members || [];
+    if (mems.length === 0) {
+      alert("다운로드할 위원 명단이 없습니다.");
+      return;
+    }
+    
+    let csvContent = "\uFEFF"; // Excel 한글 깨짐 방지 BOM 주입
+    csvContent += "구분,성명,소속기관,부서/학과,직위,교내외,비고\n";
+    mems.forEach(m => {
+      csvContent += `"${m.type || ''}","${m.name || ''}","${m.org || ''}","${m.dept || ''}","${m.rank || ''}","${m.location || ''}","${m.note || ''}"\n`;
+    });
+    
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `${activeComm.name}_위원명단_목록.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+  };
+
+  // 엑셀(CSV) 데이터 파싱 및 벌크 DB 업로드 함수
+  const handleExcelUpload = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    
+    const reader = new FileReader();
+    reader.onload = async (evt) => {
+      try {
+        const text = evt.target.result;
+        const lines = text.split("\n").map(l => l.trim()).filter(l => l.length > 0);
+        if (lines.length <= 1) {
+          alert("업로드할 위원 데이터가 존재하지 않습니다.");
+          return;
+        }
+        
+        const activeComm = committees.find(c => c.id === selectedCommitteeId) || committees[0];
+        if (!activeComm) {
+          alert("선택된 위원회가 존재하지 않습니다.");
+          return;
+        }
+        
+        const newMembers = [];
+        const currentMembersCount = activeComm.members ? activeComm.members.length : 0;
+        
+        for (let i = 1; i < lines.length; i++) {
+          const row = lines[i].split(",").map(val => val.replace(/^["']|["']$/g, "").trim());
+          if (row.length < 2 || !row[1]) continue; // 성명 필수 가드
+          
+          newMembers.push({
+            committee_id: activeComm.id,
+            type: row[0] || "위원",
+            name: row[1],
+            org: row[2] || "울산과학대학교",
+            dept: row[3] || "-",
+            rank: row[4] || "",
+            location: row[5] || "교내",
+            year: selectedYear,
+            note: row[6] || "",
+            sort_order: currentMembersCount + i
+          });
+        }
+        
+        if (newMembers.length === 0) {
+          alert("파싱된 위원 정보가 없습니다. 서식 양식을 확인해 주세요.");
+          return;
+        }
+        
+        const { error } = await supabase
+          .from("committee_members")
+          .insert(newMembers);
+        if (error) throw error;
+        
+        alert(`총 ${newMembers.length}명의 위원이 성공적으로 일괄 등록되었습니다!`);
+        await loadCommitteesData();
+      } catch (err) {
+        console.error("CSV 파싱/업로드 중 에러:", err);
+        alert("엑셀(CSV) 일괄 업로드 실패: " + err.message);
+      } finally {
+        e.target.value = ""; // 동일 파일 선택 시 다시 이벤트 발생되도록 클리어
+      }
+    };
+    reader.readAsText(file, "utf-8");
+  };
 
   // 위원 삭제 처리 함수
   const handleDeleteMember = async (memberId) => {
@@ -4742,47 +4850,139 @@ Gemini 피드백: \n${geminiCritiqueText}
                     {activeCommitteeDetailTab === "members" ? (
                       <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem", flex: 1 }}>
                         {/* 명단 상단 제어 바 (총 위원수 + 명단 편집 추가 버튼) */}
-                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingBottom: "0.5rem", borderBottom: "1px solid rgba(255, 255, 255, 0.05)" }}>
-                          <span style={{ fontSize: "0.78rem", color: "var(--text-secondary)", fontWeight: "600" }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingBottom: "0.75rem", borderBottom: "1px solid rgba(255, 255, 255, 0.05)", flexWrap: "wrap", gap: "0.5rem" }}>
+                          <span style={{ fontSize: "0.82rem", color: "var(--text-secondary)", fontWeight: "600" }}>
                             총 {(activeComm.members || []).length}명의 위원 등록됨
                           </span>
-                          {hasCommitteeEditPermission && (
+                          <div style={{ display: "flex", alignItems: "center", gap: "0.4rem", flexWrap: "wrap" }}>
+                            {/* 엑셀 서식 다운로드 버튼 */}
                             <button
-                              onClick={() => {
-                                setEditingMember(null);
-                                setMemberFormData({
-                                  type: "위원",
-                                  name: "",
-                                  org: "울산과학대학교",
-                                  dept: "",
-                                  rank: "",
-                                  location: "교내",
-                                  term: "",
-                                  termStart: "",
-                                  termEnd: "",
-                                  note: ""
-                                });
-                                setIsMemberModalOpen(true);
-                              }}
+                              type="button"
+                              onClick={handleDownloadExcelFormat}
                               style={{
                                 display: "flex",
                                 alignItems: "center",
                                 gap: "0.3rem",
-                                padding: "0.35rem 0.75rem",
-                                borderRadius: "4px",
-                                background: "rgba(236, 72, 153, 0.1)",
-                                border: "1px solid rgba(236, 72, 153, 0.3)",
-                                color: "var(--accent-color)",
-                                fontSize: "0.72rem",
+                                padding: "0.4rem 0.85rem",
+                                borderRadius: "9999px",
+                                background: darkMode ? "rgba(139, 92, 246, 0.12)" : "rgba(139, 92, 246, 0.06)",
+                                border: "1px solid #8b5cf6",
+                                color: "#8b5cf6",
+                                fontSize: "0.78rem",
                                 fontWeight: "800",
                                 cursor: "pointer",
-                                transition: "all 0.15s ease"
+                                transition: "all 0.15s ease",
+                                outline: "none"
                               }}
+                              className="hover-opacity"
+                              title="위원 일괄 등록용 엑셀(CSV) 양식 서식을 다운로드합니다."
                             >
-                              <Plus size={12} />
-                              위원 추가
+                              <Download size={13} />
+                              엑셀 서식
                             </button>
-                          )}
+
+                            {/* 엑셀 업로드 버튼 */}
+                            <button
+                              type="button"
+                              onClick={() => document.getElementById("excel-upload-input-file").click()}
+                              style={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "0.3rem",
+                                padding: "0.4rem 0.85rem",
+                                borderRadius: "9999px",
+                                background: darkMode ? "rgba(16, 185, 129, 0.12)" : "rgba(16, 185, 129, 0.06)",
+                                border: "1px solid #10b981",
+                                color: "#10b981",
+                                fontSize: "0.78rem",
+                                fontWeight: "800",
+                                cursor: "pointer",
+                                transition: "all 0.15s ease",
+                                outline: "none"
+                              }}
+                              className="hover-opacity"
+                              title="엑셀(CSV) 서식을 선택하여 위원들을 일괄 업로드합니다."
+                            >
+                              <Upload size={13} />
+                              엑셀 업로드
+                            </button>
+                            <input
+                              id="excel-upload-input-file"
+                              type="file"
+                              accept=".csv"
+                              onChange={handleExcelUpload}
+                              style={{ display: "none" }}
+                            />
+
+                            {/* 엑셀 다운로드 버튼 */}
+                            <button
+                              type="button"
+                              onClick={handleExcelDownload}
+                              style={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "0.3rem",
+                                padding: "0.4rem 0.85rem",
+                                borderRadius: "9999px",
+                                background: darkMode ? "rgba(139, 92, 246, 0.12)" : "rgba(139, 92, 246, 0.06)",
+                                border: "1px solid #8b5cf6",
+                                color: "#8b5cf6",
+                                fontSize: "0.78rem",
+                                fontWeight: "800",
+                                cursor: "pointer",
+                                transition: "all 0.15s ease",
+                                outline: "none"
+                              }}
+                              className="hover-opacity"
+                              title="현재 위원 명단을 엑셀(CSV)로 다운로드합니다."
+                            >
+                              <Download size={13} />
+                              엑셀 다운로드
+                            </button>
+
+                            {/* 신규 등록 버튼 (위원 추가) */}
+                            {hasCommitteeEditPermission && (
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setEditingMember(null);
+                                  setMemberFormData({
+                                    type: "위원",
+                                    name: "",
+                                    org: "울산과학대학교",
+                                    dept: "",
+                                    rank: "",
+                                    location: "교내",
+                                    term: "",
+                                    termStart: "",
+                                    termEnd: "",
+                                    note: ""
+                                  });
+                                  setIsMemberModalOpen(true);
+                                }}
+                                style={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: "0.3rem",
+                                  padding: "0.42rem 1.05rem",
+                                  borderRadius: "9999px",
+                                  background: "#3b82f6",
+                                  border: "none",
+                                  color: "#fff",
+                                  fontSize: "0.78rem",
+                                  fontWeight: "800",
+                                  cursor: "pointer",
+                                  boxShadow: "0 4px 6px -1px rgba(59, 130, 246, 0.2)",
+                                  transition: "all 0.15s ease",
+                                  outline: "none"
+                                }}
+                                className="hover-opacity"
+                              >
+                                <Plus size={13} />
+                                신규 등록
+                              </button>
+                            )}
+                          </div>
                         </div>
 
                         {/* 위원 테이블 (가로/세로 오버플로우 가드 장착) */}
