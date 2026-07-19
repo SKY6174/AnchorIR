@@ -4055,21 +4055,21 @@ export default function App() {
             ${colGroupHtml}
             <thead>
               <tr style="background: #f3f4f6;">
-                <th rowspan="2" style="border: 1px solid #d1d5db; text-align: center; font-weight: bold; font-size: 11px; color: #111827; background: #f3f4f6; vertical-align: middle; height: 46px; line-height: 1.2;">단위과제</th>
+                <th rowspan="2" style="border: 1px solid #d1d5db; text-align: center; font-weight: bold; font-size: 11px; color: #111827; background: #f3f4f6; vertical-align: middle; height: 46px; line-height: 1.2; position: relative; z-index: 10;">단위과제</th>
                 <th colspan="${colSpanVal}" style="border: 1px solid #d1d5db; padding: 9px; text-align: center; font-weight: bold; color: #111827;">예산 배정 및 집행 (단위: 백만원)</th>
                 <th colspan="5" style="border: 1px solid #d1d5db; padding: 9px; text-align: center; font-weight: bold; color: #111827;">프로그램 진행</th>
               </tr>
-              <tr style="background: #f9fafb;">
-                <th style="border: 1px solid #d1d5db; padding: 9px 3px; white-space: nowrap; font-size: 10.5px; color: #111827; font-weight: bold;">본예산</th>
+              <tr style="background: transparent;">
+                <th style="border: 1px solid #d1d5db; padding: 9px 3px; white-space: nowrap; font-size: 10.5px; color: #111827; font-weight: bold; background: #f9fafb;">본예산</th>
                 ${carryHeader}
-                <th style="border: 1px solid #d1d5db; padding: 9px 3px; white-space: nowrap; font-size: 10.5px; color: #111827; font-weight: bold;">총 배정액</th>
-                <th style="border: 1px solid #d1d5db; padding: 9px 3px; white-space: nowrap; font-size: 10.5px; color: #111827; font-weight: bold;">누적 집행</th>
-                <th style="border: 1px solid #d1d5db; padding: 9px 3px; white-space: nowrap; font-size: 10.5px; color: #111827; font-weight: bold;">집행률</th>
-                <th style="border: 1px solid #d1d5db; padding: 9px 3px; white-space: nowrap; font-size: 10.5px; color: #111827; font-weight: bold;">총 개수</th>
-                <th style="border: 1px solid #d1d5db; padding: 9px 3px; white-space: nowrap; font-size: 10.5px; color: #111827; font-weight: bold;">준비</th>
-                <th style="border: 1px solid #d1d5db; padding: 9px 3px; white-space: nowrap; font-size: 10.5px; color: #111827; font-weight: bold;">진행</th>
-                <th style="border: 1px solid #d1d5db; padding: 9px 3px; white-space: nowrap; font-size: 10.5px; color: #111827; font-weight: bold;">완료</th>
-                <th style="border: 1px solid #d1d5db; padding: 9px 3px; white-space: nowrap; font-size: 10.5px; color: #111827; font-weight: bold;">진행률</th>
+                <th style="border: 1px solid #d1d5db; padding: 9px 3px; white-space: nowrap; font-size: 10.5px; color: #111827; font-weight: bold; background: #f9fafb;">총 배정액</th>
+                <th style="border: 1px solid #d1d5db; padding: 9px 3px; white-space: nowrap; font-size: 10.5px; color: #111827; font-weight: bold; background: #f9fafb;">누적 집행</th>
+                <th style="border: 1px solid #d1d5db; padding: 9px 3px; white-space: nowrap; font-size: 10.5px; color: #111827; font-weight: bold; background: #f9fafb;">집행률</th>
+                <th style="border: 1px solid #d1d5db; padding: 9px 3px; white-space: nowrap; font-size: 10.5px; color: #111827; font-weight: bold; background: #f9fafb;">총 개수</th>
+                <th style="border: 1px solid #d1d5db; padding: 9px 3px; white-space: nowrap; font-size: 10.5px; color: #111827; font-weight: bold; background: #f9fafb;">준비</th>
+                <th style="border: 1px solid #d1d5db; padding: 9px 3px; white-space: nowrap; font-size: 10.5px; color: #111827; font-weight: bold; background: #f9fafb;">진행</th>
+                <th style="border: 1px solid #d1d5db; padding: 9px 3px; white-space: nowrap; font-size: 10.5px; color: #111827; font-weight: bold; background: #f9fafb;">완료</th>
+                <th style="border: 1px solid #d1d5db; padding: 9px 3px; white-space: nowrap; font-size: 10.5px; color: #111827; font-weight: bold; background: #f9fafb;">진행률</th>
               </tr>
             </thead>
             <tbody>
