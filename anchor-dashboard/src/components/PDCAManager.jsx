@@ -1634,8 +1634,8 @@ export default function PDCAManager({
             <td style="border: 1px solid #d1d5db; padding: 7px;">${inputTargetAudience || "미정"}</td>
           </tr>
           <tr>
-            <th style="border: 1px solid #d1d5db; background: #f3f4f6; padding: 7px; text-align: left; font-weight: bold;">기획추진일정</th>
-            <td style="border: 1px solid #d1d5db; padding: 7px;">${inputTimeline || "미정"}</td>
+            <th style="border: 1px solid #d1d5db; background: #f3f4f6; padding: 7px; text-align: left; font-weight: bold;">담당연구원</th>
+            <td style="border: 1px solid #d1d5db; padding: 7px;">${formatAssignee(activeProg.assignees?.[selectedYear] !== undefined ? activeProg.assignees[selectedYear] : activeProg.assignee)}</td>
             <th style="border: 1px solid #d1d5db; background: #f3f4f6; padding: 7px; text-align: left; font-weight: bold;">총 예산 (집행률)</th>
             <td style="border: 1px solid #d1d5db; padding: 7px; font-weight: bold;">${formatToMillionWon(totalBudget)}백만원 (${totalRate}%)</td>
           </tr>
