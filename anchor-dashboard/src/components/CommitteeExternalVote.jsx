@@ -162,7 +162,7 @@ export default function CommitteeExternalVote({ meetingId }) {
 
         const { data, error } = await supabase
           .from("committee_meetings")
-          .select("*, committees(name, purpose)")
+          .select("*, committees(name)")
           .eq("id", meetingId)
           .single();
 
@@ -630,15 +630,15 @@ export default function CommitteeExternalVote({ meetingId }) {
             <div style={{ width: "50px", height: "50px", borderRadius: "50%", background: "rgba(99, 102, 241, 0.1)", display: "inline-flex", justifyContent: "center", alignItems: "center", color: "var(--accent-color)", marginBottom: "0.75rem" }}>
               <Lock size={24} />
             </div>
-            <h2 style={{ fontSize: "1.2rem", fontWeight: "800" }}>위원 인증 로그인</h2>
-            <p style={{ fontSize: "0.8rem", color: "var(--text-secondary)", marginTop: "0.25rem" }}>
-              {meeting.committees?.name} 위원 검토 및 서명용 보안 채널
+            <h2 style={{ fontSize: "1.2rem", fontWeight: "800", color: "#ffffff" }}>위원 인증 로그인</h2>
+            <p style={{ fontSize: "0.8rem", color: "#94a3b8", marginTop: "0.25rem" }}>
+              {meeting ? meeting.committees?.name : "RISE 위원회"} 위원 검토 및 서명용 보안 채널
             </p>
           </div>
 
           <form onSubmit={handleLogin} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
             <div>
-              <label style={{ fontSize: "0.85rem", color: "var(--text-primary)", display: "block", marginBottom: "0.25rem" }}>위원 성명</label>
+              <label style={{ fontSize: "0.85rem", color: "#cbd5e1", display: "block", marginBottom: "0.25rem", fontWeight: "bold" }}>위원 성명</label>
               <input
                 type="text"
                 required
@@ -649,7 +649,7 @@ export default function CommitteeExternalVote({ meetingId }) {
               />
             </div>
             <div>
-              <label style={{ fontSize: "0.85rem", color: "var(--text-primary)", display: "block", marginBottom: "0.25rem" }}>보안 PIN코드</label>
+              <label style={{ fontSize: "0.85rem", color: "#cbd5e1", display: "block", marginBottom: "0.25rem", fontWeight: "bold" }}>보안 PIN코드</label>
               <input
                 type="password"
                 required
