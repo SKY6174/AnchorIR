@@ -1387,13 +1387,17 @@ ${opinionsContext}
           )
         : "-";
 
+      // 💡 [동적 생성일자 조립] 결과보고서의 실제 발행일자(published_at)를 YYYY. M. D. 형태로 동적 포맷팅
+      const publishDate = rep.published_at ? new Date(rep.published_at) : new Date();
+      const publishDateStr = `${publishDate.getFullYear()}. ${publishDate.getMonth() + 1}. ${publishDate.getDate()}.`;
+
       const attendedCount = responses.filter(r => r.is_attended !== false).length;
       
       // 💡 [레이아웃 누락 가드] 최상위 A4 스케일 컨테이너 태그를 추가하여 문자열 자체를 html2pdf로 바로 넘기게 설정
       let htmlContent = `
         <div style="width: 100%; background: #ffffff; color: #000000; font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif; box-sizing: border-box; text-align: left; padding: 10mm 5mm;">
           <div style="border: 2px solid #000; padding: 1.5rem; margin-bottom: 2rem;">
-          <h1 style="text-align: center; font-size: 24px; font-weight: 900; letter-spacing: 2px; margin-bottom: 1rem; color: #000;">위 원 회 의 결 결 과 보 고 서</h1>
+          <h1 style="text-align: center; font-size: 24px; font-weight: 900; letter-spacing: 2px; margin-bottom: 1rem; color: #000;">위  원  회  의  결  결  과  보  고  서</h1>
           <table style="width: 100%; border-collapse: collapse; margin-top: 1rem; font-size: 13px; color: #000;">
             <tr>
               <td style="border: 1px solid #000; padding: 6px 12px; font-weight: bold; background: #f3f4f6; width: 20%;">위원회명</td>
@@ -1516,9 +1520,9 @@ ${opinionsContext}
       htmlContent += `
         </div>
 
-        <!-- 💡 [요구사항 반영] 서명 날인부 하단에 중간 정렬로 일자 및 기관명 삽입 -->
+        <!-- 💡 [요구사항 반영] 서명 날인부 하단에 중간 정렬로 동적 생성일자 및 기관명 삽입 -->
         <div style="text-align: center; margin-top: 4.5rem; margin-bottom: 3.5rem; color: #000000; font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif;">
-          <div style="font-size: 14px; font-weight: bold; margin-bottom: 1.2rem; letter-spacing: 0.5px;">2026. 7. 18.</div>
+          <div style="font-size: 14px; font-weight: bold; margin-bottom: 1.2rem; letter-spacing: 0.5px;">${publishDateStr}</div>
           <div style="font-size: 16px; font-weight: 900; letter-spacing: 1px;">울산과학대학교 앵커사업단</div>
         </div>
 
@@ -1529,11 +1533,23 @@ ${opinionsContext}
         </div>
       `;
 
+      // 💡 [파일명 명명 규칙 개편] YYYYMMDD 날짜 추출
+      const getFormattedMeetingDate = (dateVal) => {
+        if (!dateVal) return "00000000";
+        const d = new Date(dateVal);
+        const yyyy = d.getFullYear();
+        const mm = String(d.getMonth() + 1).padStart(2, '0');
+        const dd = String(d.getDate()).padStart(2, '0');
+        return `${yyyy}${mm}${dd}`;
+      };
+      const fileDateStr = getFormattedMeetingDate(rep.committee_meetings?.meeting_date);
+      const customFileName = `[${fileDateStr}]${rep.committee_meetings?.title || "회의"}-의결서(디지털봉인).pdf`;
+
       // 💡 [레이아웃 누락 가드] DOM 삽입 지연을 예방하고자 HTML 문자열(htmlContent)을 html2pdf에 직접 주입
       // 4. html2pdf를 통해 A4 사이즈 PDF Blob 생성
       const opt = {
         margin: [10, 10, 15, 10], // 상하좌우 여백
-        filename: `${rep.committee_meetings?.title}_결과보고서.pdf`,
+        filename: customFileName,
         image: { type: 'jpeg', quality: 0.98 },
         html2canvas: { scale: 2, useCORS: true, logging: false },
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
@@ -1543,7 +1559,7 @@ ${opinionsContext}
 
       // 5. FastAPI 백엔드로 서명 봉인 요청 전송
       const formData = new FormData();
-      formData.append("file", pdfBlob, `${rep.committee_meetings?.title}_결과보고서.pdf`);
+      formData.append("file", pdfBlob, customFileName);
 
       // 💡 [Vercel 배포 우회 보안 패치] 브라우저가 로컬 호스트가 아닌 배포 서버(Vercel 등)에서 실행 중일 때, 
       // Vercel의 Static Rewrite(405 에러)를 예방하기 위해 로컬 백엔드(http://localhost:8000)를 직접 겨냥하여 호출합니다.
@@ -1565,7 +1581,7 @@ ${opinionsContext}
       const downloadUrl = window.URL.createObjectURL(signedBlob);
       const link = document.createElement("a");
       link.href = downloadUrl;
-      link.download = `[디지털봉인]_${rep.committee_meetings?.title}_결과보고서.pdf`;
+      link.download = customFileName;
       document.body.appendChild(link);
       link.click();
       
