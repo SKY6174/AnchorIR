@@ -2,8 +2,10 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import os
+from app.api.pdf_signature import router as pdf_router
 
 app = FastAPI(title="ANCHOR Wiki RAG API Portal")
+app.include_router(pdf_router, prefix="/api")
 
 # React 프론트엔드 교차 출처(CORS) 요청 허용 설정
 app.add_middleware(

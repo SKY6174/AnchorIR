@@ -1316,6 +1316,261 @@ ${opinionsContext}
     alert("Gemini API Key가 안전하게 브라우저 로컬 캐시에 저장되었습니다.");
   };
 
+  // 📄 디지털 봉인 결과보고서 PDF 다운로드 핸들러 구현 (한글 주석)
+  const [isDownloadingPdf, setIsDownloadingPdf] = useState(null);
+
+  const handleDownloadSignedPDF = async (rep) => {
+    try {
+      setIsDownloadingPdf(rep.id);
+      
+      // 1. 필요한 상세 의결 데이터 실시간 쿼리
+      const [agendasRes, votesRes, responsesRes] = await Promise.all([
+        supabase
+          .from("meeting_agendas")
+          .select("*")
+          .eq("meeting_id", rep.meeting_id)
+          .order("sort_order", { ascending: true }),
+        supabase
+          .from("meeting_agenda_votes")
+          .select(`
+            id,
+            vote,
+            score,
+            opinion,
+            agenda_id,
+            member_id,
+            committee_members ( id, name, role )
+          `)
+          .eq("meeting_id", rep.meeting_id),
+        supabase
+          .from("meeting_responses")
+          .select(`
+            id,
+            member_name,
+            signature_data,
+            signed_at,
+            is_attended
+          `)
+          .eq("meeting_id", rep.meeting_id)
+      ]);
+
+      if (agendasRes.error) throw agendasRes.error;
+      if (votesRes.error) throw votesRes.error;
+      if (responsesRes.error) throw responsesRes.error;
+
+      const agendas = agendasRes.data || [];
+      const votes = votesRes.data || [];
+      const responses = responsesRes.data || [];
+
+      // 2. html2pdf.js 라이브러리 동적 로드
+      const html2pdf = await new Promise((resolve, reject) => {
+        if (window.html2pdf) {
+          resolve(window.html2pdf);
+          return;
+        }
+        const script = document.createElement("script");
+        script.src = "https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js";
+        script.onload = () => resolve(window.html2pdf);
+        script.onerror = reject;
+        document.head.appendChild(script);
+      });
+
+      // 3. 인쇄용 고해상도 HTML 서류 템플릿 마크업 빌드 (오프스크린 컨테이너 작성)
+      const printContainer = document.createElement("div");
+      printContainer.style.position = "absolute";
+      printContainer.style.left = "-9999px";
+      printContainer.style.top = "-9999px";
+      printContainer.style.width = "210mm"; // A4 가로폭 기준
+      printContainer.style.background = "#ffffff";
+      printContainer.style.color = "#000000";
+      printContainer.style.fontFamily = "'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif";
+      printContainer.style.padding = "20mm 15mm";
+      printContainer.style.boxSizing = "border-box";
+
+      const dateStr = rep.committee_meetings?.meeting_date 
+        ? new Date(rep.committee_meetings.meeting_date).toLocaleDateString("ko-KR", { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })
+        : "-";
+
+      const attendedCount = responses.filter(r => r.is_attended !== false).length;
+      
+      let htmlContent = `
+        <div style="border: 2px solid #000; padding: 1.5rem; margin-bottom: 2rem;">
+          <h1 style="text-align: center; font-size: 24px; font-weight: 900; letter-spacing: 2px; margin-bottom: 1rem; color: #000;">위 원 회 의 결 결 과 보 고 서</h1>
+          <table style="width: 100%; border-collapse: collapse; margin-top: 1rem; font-size: 13px; color: #000;">
+            <tr>
+              <td style="border: 1px solid #000; padding: 6px 12px; font-weight: bold; background: #f3f4f6; width: 20%;">위원회명</td>
+              <td style="border: 1px solid #000; padding: 6px 12px; width: 30%;">${rep.committee_meetings?.committees?.name || "-"}</td>
+              <td style="border: 1px solid #000; padding: 6px 12px; font-weight: bold; background: #f3f4f6; width: 20%;">의결 형태</td>
+              <td style="border: 1px solid #000; padding: 6px 12px; width: 30%;">${rep.committee_meetings?.meeting_type === "ONLINE_WRITTEN" ? "서면 의결 (비대면)" : "대면 회의 (현장 서명)"}</td>
+            </tr>
+            <tr>
+              <td style="border: 1px solid #000; padding: 6px 12px; font-weight: bold; background: #f3f4f6;">회의 일시</td>
+              <td style="border: 1px solid #000; padding: 6px 12px;">${dateStr}</td>
+              <td style="border: 1px solid #000; padding: 6px 12px; font-weight: bold; background: #f3f4f6;">성원 현황</td>
+              <td style="border: 1px solid #000; padding: 6px 12px;">참석 ${attendedCount}명 (의결 성원 충족)</td>
+            </tr>
+            <tr>
+              <td style="border: 1px solid #000; padding: 6px 12px; font-weight: bold; background: #f3f4f6;">회의 안건</td>
+              <td colspan="3" style="border: 1px solid #000; padding: 6px 12px;">${rep.committee_meetings?.title || "-"}</td>
+            </tr>
+          </table>
+        </div>
+
+        <h3 style="font-size: 16px; font-weight: bold; border-left: 4px solid #1e3a8a; padding-left: 8px; margin-bottom: 0.5rem; margin-top: 1.5rem; color: #000;">1. 심의 안건 목록</h3>
+        <table style="width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 1.5rem; color: #000;">
+          <thead>
+            <tr style="background: #e5e7eb;">
+              <th style="border: 1px solid #000; padding: 6px; width: 10%;">번호</th>
+              <th style="border: 1px solid #000; padding: 6px; width: 60%; text-align: left;">안건(의안)명</th>
+              <th style="border: 1px solid #000; padding: 6px; width: 30%;">의결 방식</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+
+      agendas.forEach((ag, idx) => {
+        htmlContent += `
+          <tr>
+            <td style="border: 1px solid #000; padding: 6px; text-align: center;">${idx + 1}</td>
+            <td style="border: 1px solid #000; padding: 6px; font-weight: bold;">${ag.title}</td>
+            <td style="border: 1px solid #000; padding: 6px; text-align: center;">${ag.is_evaluation ? "5점 척도 자체평가" : "찬반 표결 의결"}</td>
+          </tr>
+        `;
+      });
+
+      htmlContent += `
+          </tbody>
+        </table>
+
+        <h3 style="font-size: 16px; font-weight: bold; border-left: 4px solid #1e3a8a; padding-left: 8px; margin-bottom: 0.5rem; margin-top: 1.5rem; color: #000;">2. 안건별 의결 및 자체평가 통계</h3>
+        <table style="width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 1.5rem; color: #000;">
+          <thead>
+            <tr style="background: #e5e7eb;">
+              <th style="border: 1px solid #000; padding: 6px; width: 10%;">번호</th>
+              <th style="border: 1px solid #000; padding: 6px; width: 50%; text-align: left;">안건명</th>
+              <th style="border: 1px solid #000; padding: 6px; width: 40%;">의결/평가 결과 요약</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+
+      agendas.forEach((ag, idx) => {
+        const agendaVotes = votes.filter(v => v.agenda_id === ag.id);
+        let resultSummary = "-";
+        
+        if (ag.is_evaluation) {
+          const validScores = agendaVotes.filter(v => v.score !== null && v.score !== undefined);
+          const avgScore = validScores.length > 0
+            ? (validScores.reduce((acc, curr) => acc + curr.score, 0) / validScores.length).toFixed(2)
+            : "0.00";
+          resultSummary = `자체평가 평균 점수: <strong>${avgScore}점</strong> / 5.00점 만점 (${validScores.length}명 참여)`;
+        } else {
+          const approves = agendaVotes.filter(v => v.vote === "APPROVE").length;
+          const rejects = agendaVotes.filter(v => v.vote === "REJECT").length;
+          const abstains = agendaVotes.filter(v => v.vote === "ABSTAIN").length;
+          resultSummary = `동의: ${approves}명 | 부동의: ${rejects}명 | 기권: ${abstains}명 (최종 ${rep.decision_status === "APPROVED" ? "가결" : "부결"})`;
+        }
+
+        htmlContent += `
+          <tr>
+            <td style="border: 1px solid #000; padding: 6px; text-align: center;">${idx + 1}</td>
+            <td style="border: 1px solid #000; padding: 6px; font-weight: bold;">${ag.title}</td>
+            <td style="border: 1px solid #000; padding: 6px;">${resultSummary}</td>
+          </tr>
+        `;
+      });
+
+      htmlContent += `
+          </tbody>
+        </table>
+
+        <h3 style="font-size: 16px; font-weight: bold; border-left: 4px solid #1e3a8a; padding-left: 8px; margin-bottom: 0.5rem; margin-top: 1.5rem; color: #000;">3. 위원회 AI 심의 종합 분석의견</h3>
+        <div style="border: 1px solid #ccc; border-radius: 6px; padding: 12px; font-size: 12.5px; line-height: 1.6; background: #fafafa; margin-bottom: 1.5rem; white-space: pre-line; color: #000; text-align: left;">
+          ${rep.ai_summary || "종합 의견 분석 대기 중입니다."}
+        </div>
+
+        <h3 style="font-size: 16px; font-weight: bold; border-left: 4px solid #1e3a8a; padding-left: 8px; margin-bottom: 0.5rem; margin-top: 2rem; color: #000; page-break-before: always;">4. 위원 자필 서명 날인부 (디지털 보존)</h3>
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 1rem; border: 1px solid #000; padding: 10px; background: #fff;">
+      `;
+
+      responses.forEach((resp) => {
+        const sigImage = resp.signature_data 
+          ? `<img src="${resp.signature_data}" style="max-height: 40px; max-width: 90px; object-fit: contain; vertical-align: middle; display: inline-block; mix-blend-mode: multiply;" />`
+          : `<span style="font-size: 11px; color: #ef4444; font-style: italic;">서명 미날인</span>`;
+
+        htmlContent += `
+          <div style="border: 1px solid #ddd; padding: 8px; border-radius: 4px; display: flex; align-items: center; justify-content: space-between; background: #fff; color: #000;">
+            <div style="text-align: left;">
+              <div style="font-size: 12px; font-weight: bold;">${resp.member_name} 위원</div>
+              <div style="font-size: 10px; color: #666;">${resp.signed_at ? new Date(resp.signed_at).toLocaleDateString("ko-KR") : "의결서 보관"}</div>
+            </div>
+            <div style="text-align: right; width: 100px; height: 45px; display: flex; align-items: center; justify-content: center; border: 1px dashed #ccc; background: #fbfbfb;">
+              ${sigImage}
+            </div>
+          </div>
+        `;
+      });
+
+      htmlContent += `
+        </div>
+
+        <div style="margin-top: 3.5rem; text-align: center; font-size: 11px; color: #4b5563; border-top: 1px solid #e5e7eb; padding-top: 1rem;">
+          <div style="font-size: 13px; font-weight: bold; color: #1e3a8a; margin-bottom: 0.25rem;">울산과학대학교 앵커사업단 공동인증 디지털 서명 적용 필함</div>
+          본 문서는 울산과학대학교 앵커사업단 디지털 서명키(Ulsan College Anchor Portal CA)를 활용하여<br/>
+          암호학적으로 봉인되었으며, 파일의 변조 방지 및 의결 무결성이 완전 보장됨을 증명합니다.
+        </div>
+      `;
+
+      printContainer.innerHTML = htmlContent;
+      document.body.appendChild(printContainer);
+
+      // 4. html2pdf를 통해 A4 사이즈 PDF Blob 생성
+      const opt = {
+        margin: [15, 10, 20, 10], // top, left, bottom, right
+        filename: `${rep.committee_meetings?.title}_결과보고서.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true, logging: false },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      };
+
+      const pdfBlob = await html2pdf().from(printContainer).set(opt).output('blob');
+      
+      // 임시로 추가한 DOM 제거
+      document.body.removeChild(printContainer);
+
+      // 5. FastAPI 백엔드로 서명 봉인 요청 전송
+      const formData = new FormData();
+      formData.append("file", pdfBlob, `${rep.committee_meetings?.title}_결과보고서.pdf`);
+
+      const response = await fetch("/api/pdf/sign-pdf", {
+        method: "POST",
+        body: formData
+      });
+
+      if (!response.ok) {
+        throw new Error(`백엔드 디지털 서명 날인 실패 (상태코드: ${response.status})`);
+      }
+
+      // 6. 스트리밍 다운로드 리턴받아 로컬 세이브
+      const signedBlob = await response.blob();
+      const downloadUrl = window.URL.createObjectURL(signedBlob);
+      const link = document.createElement("a");
+      link.href = downloadUrl;
+      link.download = `[디지털봉인]_${rep.committee_meetings?.title}_결과보고서.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      
+      // 메모리 정리
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(downloadUrl);
+
+    } catch (err) {
+      alert(`의결 결과보고서 디지털 서명 및 다운로드 처리 중 오류가 발생했습니다:\n${err.message}`);
+    } finally {
+      setIsDownloadingPdf(null);
+    }
+  };
+
   // 9. 결과보고 대장 동적 로드용
   const [reports, setReports] = useState([]);
   useEffect(() => {
@@ -2146,10 +2401,47 @@ ${opinionsContext}
                     </div>
                   </div>
 
-                  {/* 공식 회의록 인증 */}
-                  <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginTop: "1rem", padding: "0.5rem 0.75rem", background: "rgba(59, 130, 246, 0.05)", borderRadius: "6px", border: "1px solid rgba(59, 130, 246, 0.2)", fontSize: "0.8rem", color: "#60a5fa" }}>
-                    <Award size={14} />
-                    <span>{rep.official_minutes}</span>
+                  {/* 공식 회의록 인증 및 다운로드 단추 */}
+                  <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", marginTop: "1rem" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", padding: "0.5rem 0.75rem", background: "rgba(59, 130, 246, 0.05)", borderRadius: "6px", border: "1px solid rgba(59, 130, 246, 0.2)", fontSize: "0.8rem", color: "#60a5fa" }}>
+                      <Award size={14} />
+                      <span>{rep.official_minutes}</span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => handleDownloadSignedPDF(rep)}
+                      disabled={isDownloadingPdf === rep.id}
+                      className="btn btn-primary"
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        gap: "0.4rem",
+                        padding: "0.5rem 1rem",
+                        fontSize: "0.82rem",
+                        borderRadius: "6px",
+                        cursor: "pointer",
+                        fontWeight: "bold",
+                        width: "fit-content",
+                        marginTop: "0.25rem",
+                        background: "linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)",
+                        border: "none",
+                        color: "#fff",
+                        boxShadow: "0 4px 6px -1px rgba(37, 99, 235, 0.2)"
+                      }}
+                    >
+                      {isDownloadingPdf === rep.id ? (
+                        <>
+                          <div className="spinner" style={{ width: "14px", height: "14px", border: "2px solid rgba(255,255,255,0.3)", borderTopColor: "#fff", borderRadius: "50%", animation: "spin 0.8s linear infinite", display: "inline-block", marginRight: "4px" }} />
+                          PDF 봉인 날인 중...
+                        </>
+                      ) : (
+                        <>
+                          <FileText size={15} />
+                          의결 결과보고서 다운로드 (디지털 봉인)
+                        </>
+                      )}
+                    </button>
                   </div>
                 </div>
               ))
