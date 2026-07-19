@@ -1509,10 +1509,107 @@ export default function PDCAManager({
     const pMonths = inputMonthlyPDCA.map((val, idx) => val ? `${idx + 3}월(${val})` : null).filter(Boolean).join(", ") || "일정 없음";
     const dMonths = inputMonthlyPDCAActual.map((val, idx) => val ? `${idx + 3}월(${val})` : null).filter(Boolean).join(", ") || "일정 없음";
 
+    // 💡 [비주얼 타임라인 렌더링 헬퍼 함수]
+    const renderTimelineCell = (val) => {
+      if (!val) {
+        return `<td style="padding: 4px 1px; border-right: 1px solid #e5e7eb; vertical-align: middle;">
+          <div style="border: 1px dashed #d1d5db; border-radius: 4px; height: 16px; line-height: 16px; color: #9ca3af; font-size: 8px; font-weight: bold; background: #ffffff;">-</div>
+        </td>`;
+      }
+      
+      let bg = "#e5e7eb";
+      let color = "#ffffff";
+      let label = val.toUpperCase();
+      
+      if (label === "P") {
+        bg = "#3b82f6";
+      } else if (label === "D") {
+        bg = "#10b981";
+      } else if (label === "C") {
+        bg = "#f59e0b";
+      } else if (label === "A") {
+        bg = "#8b5cf6";
+      } else if (label === "C/A") {
+        bg = "#a78bfa"; // 캡슐 내 가독성을 위한 단색 보라/주황 혼합형 톤 보정
+      }
+      
+      return `<td style="padding: 4px 1px; border-right: 1px solid #e5e7eb; vertical-align: middle;">
+        <div style="background: ${bg}; color: ${color}; border-radius: 4px; height: 16px; line-height: 16px; font-weight: bold; font-size: 8px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">${label}</div>
+      </td>`;
+    };
+
+    const planCellsHtml = inputMonthlyPDCA.map((val, idx) => {
+      const cellHtml = renderTimelineCell(val);
+      if (idx === 11) return cellHtml.replace('border-right: 1px solid #e5e7eb;', 'border-right: none;');
+      return cellHtml;
+    }).join("");
+
+    const actualCellsHtml = inputMonthlyPDCAActual.map((val, idx) => {
+      const cellHtml = renderTimelineCell(val);
+      if (idx === 11) return cellHtml.replace('border-right: 1px solid #e5e7eb;', 'border-right: none;');
+      return cellHtml;
+    }).join("");
+
+    const startYr = 2024 + selectedYear;
+    const endYr = 2025 + selectedYear;
+
+    const timelineTableHtml = `
+      <div style="margin-top: 5px; margin-bottom: 12px; border: 1px solid #d1d5db; border-radius: 6px; padding: 6px; background: #f9fafb; width: 100%;">
+        <div style="text-align: center; font-size: 10px; font-weight: bold; margin-bottom: 6px; color: #1e3a8a;">
+          ${selectedYear}차년도 Timeline
+        </div>
+        <table style="width: 100%; border-collapse: collapse; text-align: center; font-size: 8.5px; table-layout: fixed;">
+          <thead>
+            <tr style="color: #4b5563; font-weight: bold;">
+              <th colspan="10" style="padding: 2px; border-right: 1px solid #e5e7eb; font-size: 8px; color: #1e3a8a; border-bottom: 1px solid #e5e7eb;">${startYr}년</th>
+              <th colspan="2" style="padding: 2px; font-size: 8px; color: #1e3a8a; border-bottom: 1px solid #e5e7eb;">${endYr}년</th>
+            </tr>
+            <tr style="background: #e5e7eb; color: #374151; font-weight: bold; border-bottom: 1px solid #d1d5db;">
+              <td style="padding: 3px 1px; border-right: 1px solid #d1d5db;">3월</td>
+              <td style="padding: 3px 1px; border-right: 1px solid #d1d5db;">4월</td>
+              <td style="padding: 3px 1px; border-right: 1px solid #d1d5db;">5월</td>
+              <td style="padding: 3px 1px; border-right: 1px solid #d1d5db;">6월</td>
+              <td style="padding: 3px 1px; border-right: 1px solid #d1d5db;">7월</td>
+              <td style="padding: 3px 1px; border-right: 1px solid #d1d5db;">8월</td>
+              <td style="padding: 3px 1px; border-right: 1px solid #d1d5db;">9월</td>
+              <td style="padding: 3px 1px; border-right: 1px solid #d1d5db;">10월</td>
+              <td style="padding: 3px 1px; border-right: 1px solid #d1d5db;">11월</td>
+              <td style="padding: 3px 1px; border-right: 1px solid #d1d5db;">12월</td>
+              <td style="padding: 3px 1px; border-right: 1px solid #d1d5db;">1월</td>
+              <td style="padding: 3px 1px;">2월</td>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- 계획 (Plan) 행 -->
+            <tr>
+              ${planCellsHtml}
+            </tr>
+            <!-- 구분 행 (화살표 대응 가이드 점선) -->
+            <tr style="height: 4px;">
+              <td colspan="12" style="padding: 0; vertical-align: middle;">
+                <div style="height: 1px; border-top: 1px dashed #d1d5db; margin: 1px 0;"></div>
+              </td>
+            </tr>
+            <!-- 실행 (Do) 행 -->
+            <tr>
+              ${actualCellsHtml}
+            </tr>
+          </tbody>
+        </table>
+        
+        <div style="display: flex; justify-content: center; gap: 8px; margin-top: 5px; font-size: 7.5px; color: #6b7280; line-height: 1;">
+          <div style="display: flex; align-items: center; gap: 2px;"><span style="display:inline-block; width:6px; height:6px; background:#3b82f6; border-radius:50%;"></span> Plan</div>
+          <div style="display: flex; align-items: center; gap: 2px;"><span style="display:inline-block; width:6px; height:6px; background:#10b981; border-radius:50%;"></span> Do</div>
+          <div style="display: flex; align-items: center; gap: 2px;"><span style="display:inline-block; width:6px; height:6px; background:#f59e0b; border-radius:50%;"></span> Check</div>
+          <div style="display: flex; align-items: center; gap: 2px;"><span style="display:inline-block; width:6px; height:6px; background:#8b5cf6; border-radius:50%;"></span> Act</div>
+        </div>
+      </div>
+    `;
+
     const htmlContent = `
       <div style="padding: 0; font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif; color: #333333; background: #ffffff; width: 100%;">
         <div style="text-align: center; border-bottom: 2px solid #1e3a8a; padding-bottom: 8px; margin-bottom: 15px;">
-          <span style="font-size: 10px; color: #6b7280; text-transform: uppercase;">Ulsan College Anchor R&D Project</span>
+          <span style="font-size: 10px; color: #6b7280; text-transform: uppercase;">Ulsan College Anchor Project</span>
           <h1 style="font-size: 18px; font-weight: 800; color: #1e3a8a; margin: 4px 0 0 0;">[${activeProg.id}] ${activeProg.title}</h1>
           <p style="font-size: 11px; color: #4b5563; margin: 4px 0 0 0;">세부 프로그램 PDCA 성과환류 결과보고서 (${selectedYear}차년도)</p>
         </div>
@@ -1606,6 +1703,9 @@ export default function PDCAManager({
         <!-- 3. PDCA 단계별 세부 평가 -->
         <h3 style="font-size: 11px; font-weight: bold; color: #1e3a8a; margin: 15px 0 6px 0; border-left: 3px solid #1e3a8a; padding-left: 6px;">3. PDCA 단계별 상세 성과환류</h3>
         
+        <!-- 💡 계획 & 실행 추진일정 비주얼 타임라인 표 (100% 가용폭) -->
+        ${timelineTableHtml}
+
         <!-- P / D 테이블 -->
         <table style="width: 100%; border-collapse: collapse; margin-bottom: 12px; border: 1px solid #d1d5db; font-size: 9.5px; table-layout: fixed;">
           <colgroup>
@@ -1621,8 +1721,7 @@ export default function PDCAManager({
           <tbody>
             <tr>
               <td style="border: 1px solid #d1d5db; padding: 8px; vertical-align: top; line-height: 1.4;">
-                <div>• <strong>기획 일정:</strong> ${pMonths}</div>
-                <div style="margin-top: 5px;">• <strong>성과 목표 설정:</strong></div>
+                <div>• <strong>성과 목표 설정:</strong></div>
                 <div style="margin-left: 10px; font-size: 9px; color: #4b5563;">
                   - 운영 횟수: ${inputFrequency || "0"}회<br/>
                   - 참여 인원: ${inputTargetParticipants || "0"}${inputTargetParticipantsUnit || "명"} (${inputTargetParticipantsName || "목표명 없음"})<br/>
@@ -1635,8 +1734,7 @@ export default function PDCAManager({
                 </ul>
               </td>
               <td style="border: 1px solid #d1d5db; padding: 8px; vertical-align: top; line-height: 1.4;">
-                <div>• <strong>실제 추진 일정:</strong> ${dMonths}</div>
-                <div style="margin-top: 5px;">• <strong>실제 추진 성과 실적:</strong></div>
+                <div>• <strong>실제 추진 성과 실적:</strong></div>
                 <div style="margin-left: 10px; font-size: 9px; color: #4b5563;">
                   - 총 참여인원: ${inputParticipants || "0"}명<br/>
                   <span style="font-size: 8.5px; color: #6b7280; margin-left: 8px;">
