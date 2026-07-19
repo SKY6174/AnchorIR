@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Check, ClipboardList, PenTool, Layers, LayoutList, Info, HelpCircle } from "lucide-react";
+import { Check, ClipboardList, PenTool, Layers, LayoutList, Info, HelpCircle, FileSpreadsheet, FileText, Download } from "lucide-react";
+import * as XLSX from "xlsx";
 
 // 담당연구원이 2명일 때 정/부 표기 헬퍼 함수
 const formatAssignee = (assigneeText) => {
@@ -170,6 +171,7 @@ export default function PDCAManager({
   ];
 
   const [feedbackMsg, setFeedbackMsg] = useState("");
+  const [isDownloadingPdf, setIsDownloadingPdf] = useState(false);
 
   // 💡 [실시간 엑셀 집행 데이터 동적 연동]
   // localStorage에 적재된 집행 내역을 읽어와 프로그램 ID 및 비목별로 실시간 자동 분류/합계 연산합니다.
@@ -1364,6 +1366,456 @@ export default function PDCAManager({
     setTimeout(() => setFeedbackMsg(""), 3000);
   };
 
+  // 💡 [프로그램 ID별 Excel 내보내기 - 시스템 외형 유지형 리포트 서식 빌드]
+  const handleExportProgramExcel = () => {
+    if (!activeProg) return;
+    const py = activeProg.years?.[selectedYear] || {};
+    const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, "");
+    const fileName = `[${activeProg.id}]${activeProg.title}_PDCA_${dateStr}.xlsx`;
+
+    const wb = XLSX.utils.book_new();
+
+    const data = [
+      [`[${activeProg.id}] ${activeProg.title} - PDCA 성과환류 결과보고서 (${selectedYear}차년도)`],
+      [""],
+      ["■ 1. 프로그램 기본 정보"],
+      ["단위과제", activeProg.unitTitle || "미지정", "담당부서(협업)", `${inputCoopDept1 || "없음"}${inputCoopDept2 ? `, ${inputCoopDept2}` : ""}`],
+      ["사업대상", inputTargetAudience || "미정", "기획추진일정", inputTimeline || "미정"],
+      [""],
+      ["■ 2. 재원별 예산 및 집행 현황 (단위: 백만원)"],
+      ["재원 구분", "배정 예산액", "누적 집행액", "집행률"],
+      ["국고", parseFloat(inputBudgetNational), parseFloat(inputSpentNational), `${parseFloat(inputBudgetNational) > 0 ? (parseFloat(inputSpentNational) / parseFloat(inputBudgetNational) * 100).toFixed(1) : "0.0"}%`],
+      ["시비", parseFloat(inputBudgetCity), parseFloat(inputSpentCity), `${parseFloat(inputBudgetCity) > 0 ? (parseFloat(inputSpentCity) / parseFloat(inputBudgetCity) * 100).toFixed(1) : "0.0"}%`],
+      ["외부", parseFloat(inputBudgetExternal), parseFloat(inputSpentExternal), `${parseFloat(inputBudgetExternal) > 0 ? (parseFloat(inputSpentExternal) / parseFloat(inputBudgetExternal) * 100).toFixed(1) : "0.0"}%`],
+      ["합계", (py.budget_main || 0) + (py.budget_carry || 0) ? ((py.budget_main || 0) + (py.budget_carry || 0)) / 1000000 : 0, (py.spent_main || 0) + (py.spent_carry || 0) ? ((py.spent_main || 0) + (py.spent_carry || 0)) / 1000000 : 0, `${((py.budget_main || 0) + (py.budget_carry || 0)) > 0 ? (((py.spent_main || 0) + (py.spent_carry || 0)) / ((py.budget_main || 0) + (py.budget_carry || 0)) * 100).toFixed(1) : "0.0"}%`],
+      [""],
+      ["■ 3. 비목별 예산 기획 및 집행 실적 (단위: 원)"],
+      ["순번", "세부 비목 (카테고리)", "본예산 계획", "이월예산 계획", "본집행 실적", "이월집행 실적"]
+    ];
+
+    let seq = 1;
+    inputBudgetCategories.forEach(c => {
+      if (c.category) {
+        data.push([
+          seq++,
+          c.category,
+          c.budget ? parseFloat(c.budget) * 1000000 : 0,
+          c.budget_carry ? parseFloat(c.budget_carry) * 1000000 : 0,
+          c.spent ? parseInt(c.spent.replace(/,/g, "")) : 0,
+          c.spent_carry ? parseInt(c.spent_carry.replace(/,/g, "")) : 0
+        ]);
+      }
+    });
+
+    data.push(
+      [""],
+      ["■ 4. PDCA 단계별 세부 성과환류"],
+      ["[Plan - 기획 및 목표 수립]"],
+      [" - 기획 단계 상태", activeProg.pdca?.p || "대기"],
+      [" - 기획 추진일정", inputMonthlyPDCA.map((val, idx) => val ? `${idx + 3}월(${val})` : null).filter(Boolean).join(", ") || "일정 없음"],
+      [" - 성과 목표 설정", `운영 횟수: ${inputFrequency || "0"}회 / 참여 인원: ${inputTargetParticipants || "0"}${inputTargetParticipantsUnit || "명"}(${inputTargetParticipantsName || ""})`],
+      [" - 개발/개설 목표", `${inputTargetDevelopments || "0"}${inputTargetDevelopmentsUnit || "건"}(${inputTargetDevelopmentsName || ""}) / 기타: ${inputTargetEtc || "0"}${inputTargetEtcUnit || "건"}`],
+      [" - 연계 KPI 링크", activeProg.kpi_links?.filter(Boolean).join(", ") || "연계 없음"],
+      [""],
+      ["[Do - 추진 및 집행 실적]"],
+      [" - 추진 단계 상태", activeProg.pdca?.d || "대기"],
+      [" - 실제 추진 일정", inputMonthlyPDCAActual.map((val, idx) => val ? `${idx + 3}월(${val})` : null).filter(Boolean).join(", ") || "일정 없음"],
+      [" - 실제 성과 실적", `총 참여인원: ${inputParticipants || "0"}명 (재학생: ${inputAudienceParticipants["재학생"] || "0"}명, 성인학습자: ${inputAudienceParticipants["성인학습자"] || "0"}명, 재직자: ${inputAudienceParticipants["재직자"] || "0"}명, 기타: ${inputAudienceParticipants["기타"] || "0"}명)`],
+      [" - 개발/개설 실적", `${inputActualDevelopments || "0"}건 / 기타 실적: ${inputActualEtc || "0"}건`],
+      [""],
+      ["[Check - 성과 분석 및 만족도]"],
+      [" - 분석 단계 상태", activeProg.pdca?.c || "대기"],
+      [" - 수요자 만족도", `${inputSatisfaction || "0.0"} 점 / 5.0 점`],
+      [" - 주요 성과 요약", inputAchievements || "등록된 내용 없음"],
+      [""],
+      ["[Act - 자체평가 및 환류]"],
+      [" - 환류 단계 상태", activeProg.pdca?.a || "대기"],
+      [" - 자체 평가 등급", inputEvalType],
+      inputEvalType === "우수" 
+        ? [" - 우수 요인 및 발전방안", `[우수요인]: ${inputExcellent || "기재 없음"} \n[발전방안]: ${inputImprovePlan || "기재 없음"}`]
+        : [" - 미흡 요인 및 조치사항", `[미흡요인]: ${inputDeficiency || "기재 없음"} \n[조치사항]: ${inputActionItem || "기재 없음"}`]
+    );
+
+    const ws = XLSX.utils.aoa_to_sheet(data);
+
+    ws["!cols"] = [
+      { wch: 22 },
+      { wch: 38 },
+      { wch: 22 },
+      { wch: 38 },
+      { wch: 18 },
+      { wch: 18 }
+    ];
+
+    ws["!merges"] = [
+      { s: { r: 0, c: 0 }, e: { r: 0, c: 5 } },
+      { s: { r: 2, c: 0 }, e: { r: 2, c: 3 } },
+      { s: { r: 6, c: 0 }, e: { r: 6, c: 3 } },
+      { s: { r: 13, c: 0 }, e: { r: 13, c: 5 } }
+    ];
+
+    XLSX.utils.book_append_sheet(wb, ws, "PDCA 결과보고");
+    XLSX.writeFile(wb, fileName);
+  };
+
+  // 💡 [프로그램 ID별 PDF 내보내기 - P, D, C, A를 단일 파일 결합 및 여백 고정]
+  const handleExportProgramPDF = async () => {
+    if (!activeProg) return;
+    setIsDownloadingPdf(true);
+
+    try {
+      await new Promise((resolve, reject) => {
+        if (window.html2pdf) return resolve(window.html2pdf);
+        const script = document.createElement("script");
+        script.src = "https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js";
+        script.onload = () => resolve(window.html2pdf);
+        script.onerror = reject;
+        document.head.appendChild(script);
+      });
+    } catch (e) {
+      console.error(e);
+      setIsDownloadingPdf(false);
+      alert("PDF 변환 엔진 로드 중 오류가 발생했습니다.");
+      return;
+    }
+
+    const py = activeProg.years?.[selectedYear] || {};
+    const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, "");
+    const fileName = `[${activeProg.id}]${activeProg.title}_PDCA_${dateStr}.pdf`;
+
+    const natRate = parseFloat(inputBudgetNational) > 0 ? (parseFloat(inputSpentNational) / parseFloat(inputBudgetNational) * 100).toFixed(1) : "0.0";
+    const cityRate = parseFloat(inputBudgetCity) > 0 ? (parseFloat(inputSpentCity) / parseFloat(inputBudgetCity) * 100).toFixed(1) : "0.0";
+    const extRate = parseFloat(inputBudgetExternal) > 0 ? (parseFloat(inputSpentExternal) / parseFloat(inputBudgetExternal) * 100).toFixed(1) : "0.0";
+    const totalBudget = (py.budget_main || 0) + (py.budget_carry || 0);
+    const totalSpent = (py.spent_main || 0) + (py.spent_carry || 0);
+    const totalRate = totalBudget > 0 ? (totalSpent / totalBudget * 100).toFixed(1) : "0.0";
+
+    const kpiLinksHtml = activeProg.kpi_links?.map((kLink, idx) => {
+      const kType = activeProg.kpi_types?.[idx] || "자율";
+      return kLink ? `<li><strong>[${kType}]</strong> ${kLink}</li>` : "";
+    }).filter(Boolean).join("") || "<li>연계된 핵심성과지표(KPI)가 없습니다.</li>";
+
+    const categoryRows = inputBudgetCategories.filter(c => c.category).map((c, i) => `
+      <tr>
+        <td style="border: 1px solid #d1d5db; padding: 7px 5px; text-align: center; font-size: 9.5px;">${i + 1}</td>
+        <td style="border: 1px solid #d1d5db; padding: 7px 5px; font-size: 9.5px;">${c.category}</td>
+        <td style="border: 1px solid #d1d5db; padding: 7px 5px; text-align: right; font-size: 9.5px;">${c.budget ? (parseFloat(c.budget) * 1000000).toLocaleString() : "0"}</td>
+        <td style="border: 1px solid #d1d5db; padding: 7px 5px; text-align: right; font-size: 9.5px;">${c.budget_carry ? (parseFloat(c.budget_carry) * 1000000).toLocaleString() : "0"}</td>
+        <td style="border: 1px solid #d1d5db; padding: 7px 5px; text-align: right; font-size: 9.5px;">${c.spent ? parseInt(c.spent.replace(/,/g, "")).toLocaleString() : "0"}</td>
+        <td style="border: 1px solid #d1d5db; padding: 7px 5px; text-align: right; font-size: 9.5px;">${c.spent_carry ? parseInt(c.spent_carry.replace(/,/g, "")).toLocaleString() : "0"}</td>
+      </tr>
+    `).join("");
+
+    const pMonths = inputMonthlyPDCA.map((val, idx) => val ? `${idx + 3}월(${val})` : null).filter(Boolean).join(", ") || "일정 없음";
+    const dMonths = inputMonthlyPDCAActual.map((val, idx) => val ? `${idx + 3}월(${val})` : null).filter(Boolean).join(", ") || "일정 없음";
+
+    const htmlContent = `
+      <div style="padding: 0; font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif; color: #333333; background: #ffffff; width: 100%;">
+        <div style="text-align: center; border-bottom: 2px solid #1e3a8a; padding-bottom: 8px; margin-bottom: 15px;">
+          <span style="font-size: 10px; color: #6b7280; text-transform: uppercase;">Ulsan College Anchor R&D Project</span>
+          <h1 style="font-size: 18px; font-weight: 800; color: #1e3a8a; margin: 4px 0 0 0;">[${activeProg.id}] ${activeProg.title}</h1>
+          <p style="font-size: 11px; color: #4b5563; margin: 4px 0 0 0;">세부 프로그램 PDCA 성과환류 결과보고서 (${selectedYear}차년도)</p>
+        </div>
+
+        <!-- 1. 기본 정보 개요 -->
+        <h3 style="font-size: 11px; font-weight: bold; color: #1e3a8a; margin: 0 0 6px 0; border-left: 3px solid #1e3a8a; padding-left: 6px;">1. 세부 프로그램 개요</h3>
+        <table style="width: 100%; border-collapse: collapse; margin-bottom: 15px; border: 1px solid #d1d5db; font-size: 9.5px;">
+          <colgroup>
+            <col style="width: 20%;" />
+            <col style="width: 30%;" />
+            <col style="width: 20%;" />
+            <col style="width: 30%;" />
+          </colgroup>
+          <tr>
+            <th style="border: 1px solid #d1d5db; background: #f3f4f6; padding: 7px; text-align: left; font-weight: bold;">단위과제</th>
+            <td style="border: 1px solid #d1d5db; padding: 7px;" colspan="3">${activeProg.unitTitle || "미지정"}</td>
+          </tr>
+          <tr>
+            <th style="border: 1px solid #d1d5db; background: #f3f4f6; padding: 7px; text-align: left; font-weight: bold;">담당부서(협업)</th>
+            <td style="border: 1px solid #d1d5db; padding: 7px;">${inputCoopDept1 || "없음"}${inputCoopDept2 ? `, ${inputCoopDept2}` : ""}</td>
+            <th style="border: 1px solid #d1d5db; background: #f3f4f6; padding: 7px; text-align: left; font-weight: bold;">사업 대상</th>
+            <td style="border: 1px solid #d1d5db; padding: 7px;">${inputTargetAudience || "미정"}</td>
+          </tr>
+          <tr>
+            <th style="border: 1px solid #d1d5db; background: #f3f4f6; padding: 7px; text-align: left; font-weight: bold;">기획추진일정</th>
+            <td style="border: 1px solid #d1d5db; padding: 7px;">${inputTimeline || "미정"}</td>
+            <th style="border: 1px solid #d1d5db; background: #f3f4f6; padding: 7px; text-align: left; font-weight: bold;">총 예산 (집행률)</th>
+            <td style="border: 1px solid #d1d5db; padding: 7px; font-weight: bold;">${formatToMillionWon(totalBudget)}백만원 (${totalRate}%)</td>
+          </tr>
+        </table>
+
+        <!-- 2. 재원별/비목별 예산 계획 및 집행 실적 -->
+        <h3 style="font-size: 11px; font-weight: bold; color: #1e3a8a; margin: 15px 0 6px 0; border-left: 3px solid #1e3a8a; padding-left: 6px;">2. 예산 계획 및 집행 실적</h3>
+        <table style="width: 100%; border-collapse: collapse; margin-bottom: 10px; border: 1px solid #d1d5db; font-size: 9.5px; table-layout: fixed;">
+          <thead>
+            <tr style="background: #f3f4f6;">
+              <th style="border: 1px solid #d1d5db; padding: 7px; font-weight: bold; text-align: center; width: 25%;">재원 구분</th>
+              <th style="border: 1px solid #d1d5db; padding: 7px; font-weight: bold; text-align: center; width: 25%;">예산액 (백만원)</th>
+              <th style="border: 1px solid #d1d5db; padding: 7px; font-weight: bold; text-align: center; width: 25%;">집행액 (백만원)</th>
+              <th style="border: 1px solid #d1d5db; padding: 7px; font-weight: bold; text-align: center; width: 25%;">집행률</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="border: 1px solid #d1d5db; padding: 7px; text-align: center; font-weight: bold;">국고</td>
+              <td style="border: 1px solid #d1d5db; padding: 7px; text-align: right;">${inputBudgetNational}</td>
+              <td style="border: 1px solid #d1d5db; padding: 7px; text-align: right;">${inputSpentNational}</td>
+              <td style="border: 1px solid #d1d5db; padding: 7px; text-align: center; font-weight: bold;">${natRate}%</td>
+            </tr>
+            <tr>
+              <td style="border: 1px solid #d1d5db; padding: 7px; text-align: center; font-weight: bold;">시비</td>
+              <td style="border: 1px solid #d1d5db; padding: 7px; text-align: right;">${inputBudgetCity}</td>
+              <td style="border: 1px solid #d1d5db; padding: 7px; text-align: right;">${inputSpentCity}</td>
+              <td style="border: 1px solid #d1d5db; padding: 7px; text-align: center; font-weight: bold;">${cityRate}%</td>
+            </tr>
+            <tr>
+              <td style="border: 1px solid #d1d5db; padding: 7px; text-align: center; font-weight: bold;">외부</td>
+              <td style="border: 1px solid #d1d5db; padding: 7px; text-align: right;">${inputBudgetExternal}</td>
+              <td style="border: 1px solid #d1d5db; padding: 7px; text-align: right;">${inputSpentExternal}</td>
+              <td style="border: 1px solid #d1d5db; padding: 7px; text-align: center; font-weight: bold;">${extRate}%</td>
+            </tr>
+          </tbody>
+        </table>
+
+        ${categoryRows ? `
+        <table style="width: 100%; border-collapse: collapse; margin-bottom: 15px; border: 1px solid #d1d5db; font-size: 9px; table-layout: fixed;">
+          <colgroup>
+            <col style="width: 8%;" />
+            <col style="width: 32%;" />
+            <col style="width: 15%;" />
+            <col style="width: 15%;" />
+            <col style="width: 15%;" />
+            <col style="width: 15%;" />
+          </colgroup>
+          <thead>
+            <tr style="background: #e5e7eb;">
+              <th style="border: 1px solid #d1d5db; padding: 6px; font-weight: bold; text-align: center;">순번</th>
+              <th style="border: 1px solid #d1d5db; padding: 6px; font-weight: bold; text-align: center;">세부 비목 (카테고리)</th>
+              <th style="border: 1px solid #d1d5db; padding: 6px; font-weight: bold; text-align: center;">본예산 계획(원)</th>
+              <th style="border: 1px solid #d1d5db; padding: 6px; font-weight: bold; text-align: center;">이월예산 계획(원)</th>
+              <th style="border: 1px solid #d1d5db; padding: 6px; font-weight: bold; text-align: center;">본집행 실적(원)</th>
+              <th style="border: 1px solid #d1d5db; padding: 6px; font-weight: bold; text-align: center;">이월집행 실적(원)</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${categoryRows}
+          </tbody>
+        </table>
+        ` : ""}
+
+        <!-- 3. PDCA 단계별 세부 평가 -->
+        <h3 style="font-size: 11px; font-weight: bold; color: #1e3a8a; margin: 15px 0 6px 0; border-left: 3px solid #1e3a8a; padding-left: 6px;">3. PDCA 단계별 상세 성과환류</h3>
+        
+        <!-- P / D 테이블 -->
+        <table style="width: 100%; border-collapse: collapse; margin-bottom: 12px; border: 1px solid #d1d5db; font-size: 9.5px; table-layout: fixed;">
+          <colgroup>
+            <col style="width: 50%;" />
+            <col style="width: 50%;" />
+          </colgroup>
+          <thead>
+            <tr style="background: #f3f4f6;">
+              <th style="border: 1px solid #d1d5db; padding: 7px; font-weight: bold; text-align: center; color: #10b981;">📌 Plan (기획 및 목표수립) - [${activeProg.pdca?.p || "대기"}]</th>
+              <th style="border: 1px solid #d1d5db; padding: 7px; font-weight: bold; text-align: center; color: #3b82f6;">📌 Do (추진 및 집행실적) - [${activeProg.pdca?.d || "대기"}]</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="border: 1px solid #d1d5db; padding: 8px; vertical-align: top; line-height: 1.4;">
+                <div>• <strong>기획 일정:</strong> ${pMonths}</div>
+                <div style="margin-top: 5px;">• <strong>성과 목표 설정:</strong></div>
+                <div style="margin-left: 10px; font-size: 9px; color: #4b5563;">
+                  - 운영 횟수: ${inputFrequency || "0"}회<br/>
+                  - 참여 인원: ${inputTargetParticipants || "0"}${inputTargetParticipantsUnit || "명"} (${inputTargetParticipantsName || "목표명 없음"})<br/>
+                  - 개발/개설: ${inputTargetDevelopments || "0"}${inputTargetDevelopmentsUnit || "건"} (${inputTargetDevelopmentsName || "목표명 없음"})<br/>
+                  - 기타 성과: ${inputTargetEtc || "0"}${inputTargetEtcUnit || "건"}
+                </div>
+                <div style="margin-top: 5px;">• <strong>핵심성과지표(KPI) 링크:</strong></div>
+                <ul style="margin: 3px 0 0 10px; padding: 0 0 0 10px; font-size: 9px; color: #4b5563;">
+                  ${kpiLinksHtml}
+                </ul>
+              </td>
+              <td style="border: 1px solid #d1d5db; padding: 8px; vertical-align: top; line-height: 1.4;">
+                <div>• <strong>실제 추진 일정:</strong> ${dMonths}</div>
+                <div style="margin-top: 5px;">• <strong>실제 추진 성과 실적:</strong></div>
+                <div style="margin-left: 10px; font-size: 9px; color: #4b5563;">
+                  - 총 참여인원: ${inputParticipants || "0"}명<br/>
+                  <span style="font-size: 8.5px; color: #6b7280; margin-left: 8px;">
+                    (재학생: ${inputAudienceParticipants["재학생"] || "0"}명, 성인학습자: ${inputAudienceParticipants["성인학습자"] || "0"}명, 재직자: ${inputAudienceParticipants["재직자"] || "0"}명, 기타: ${inputAudienceParticipants["기타"] || "0"}명)
+                  </span><br/>
+                  - 실제 개발/개설: ${inputActualDevelopments || "0"}건<br/>
+                  - 실제 기타 실적: ${inputActualEtc || "0"}건
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- C / A 테이블 -->
+        <table style="width: 100%; border-collapse: collapse; margin-bottom: 10px; border: 1px solid #d1d5db; font-size: 9.5px; table-layout: fixed;">
+          <colgroup>
+            <col style="width: 40%;" />
+            <col style="width: 60%;" />
+          </colgroup>
+          <thead>
+            <tr style="background: #f3f4f6;">
+              <th style="border: 1px solid #d1d5db; padding: 7px; font-weight: bold; text-align: center; color: #6366f1;">📌 Check (성과 분석) - [${activeProg.pdca?.c || "대기"}]</th>
+              <th style="border: 1px solid #d1d5db; padding: 7px; font-weight: bold; text-align: center; color: #f59e0b;">📌 Act (자체평가 및 환류) - [${activeProg.pdca?.a || "대기"}]</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="border: 1px solid #d1d5db; padding: 8px; vertical-align: top; line-height: 1.4;">
+                <div style="font-weight: bold; color: #4f46e5; margin-bottom: 4px;">• 만족도: ${inputSatisfaction || "0.0"} / 5.0 점</div>
+                <div>• <strong>주요 성과 요약:</strong></div>
+                <div style="font-size: 9px; color: #4b5563; background: #f9fafb; border: 1px solid #e5e7eb; padding: 6px; border-radius: 4px; margin-top: 4px; white-space: pre-wrap; word-break: break-all; height: 100px; overflow: hidden;">${inputAchievements || "등록된 성과 요약이 없습니다."}</div>
+              </td>
+              <td style="border: 1px solid #d1d5db; padding: 8px; vertical-align: top; line-height: 1.4;">
+                <div style="font-weight: bold; color: #d97706; margin-bottom: 6px;">• 자체 평가 등급: <span style="background: #fef3c7; color: #d97706; padding: 2px 6px; border-radius: 4px;">${inputEvalType}</span></div>
+                
+                ${inputEvalType === "우수" ? `
+                  <div style="font-size: 9px; line-height: 1.3;">
+                    <strong>[우수요인]</strong><br/>
+                    <span style="color: #4b5563;">${inputExcellent || "기재된 우수 요인이 없습니다."}</span>
+                    <div style="margin-top: 6px;"><strong>[차년도 발전방안]</strong></div>
+                    <span style="color: #4b5563;">${inputImprovePlan || "기재된 차년도 발전방안이 없습니다."}</span>
+                  </div>
+                ` : `
+                  <div style="font-size: 9px; line-height: 1.3;">
+                    <strong>[미흡요인]</strong><br/>
+                    <span style="color: #4b5563;">${inputDeficiency || "기재된 미흡 요인이 없습니다."}</span>
+                    <div style="margin-top: 6px;"><strong>[단기조치사항]</strong></div>
+                    <span style="color: #4b5563;">${inputActionItem || "기재된 단기 조치 사항이 없습니다."}</span>
+                  </div>
+                `}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    `;
+
+    const opt = {
+      margin: [22.5, 20, 22.5, 20],
+      filename: fileName,
+      image: { type: "jpeg", quality: 0.98 },
+      html2canvas: { scale: 2, useCORS: true },
+      jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
+    };
+
+    const worker = window.html2pdf().from(htmlContent).set(opt);
+    worker.save().then(() => {
+      setIsDownloadingPdf(false);
+    }).catch((err) => {
+      console.error(err);
+      setIsDownloadingPdf(false);
+      alert("PDF 변환 중 오류가 발생했습니다.");
+    });
+  };
+
+  // 💡 [프로그램 ID별 Markdown 내보내기]
+  const handleExportProgramMarkdown = () => {
+    if (!activeProg) return;
+    const py = activeProg.years?.[selectedYear] || {};
+    const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, "");
+    const fileName = `[${activeProg.id}]${activeProg.title}_PDCA_${dateStr}.md`;
+
+    const natRate = parseFloat(inputBudgetNational) > 0 ? (parseFloat(inputSpentNational) / parseFloat(inputBudgetNational) * 100).toFixed(1) : "0.0";
+    const cityRate = parseFloat(inputBudgetCity) > 0 ? (parseFloat(inputSpentCity) / parseFloat(inputBudgetCity) * 100).toFixed(1) : "0.0";
+    const extRate = parseFloat(inputBudgetExternal) > 0 ? (parseFloat(inputSpentExternal) / parseFloat(inputBudgetExternal) * 100).toFixed(1) : "0.0";
+
+    const mdContent = `# [${activeProg.id}] ${activeProg.title} - PDCA 보고서
+
+## 1. 기본 개요
+- **단위과제**: ${activeProg.unitTitle || "미지정"}
+- **담당부서(협업)**: ${inputCoopDept1 || "없음"}${inputCoopDept2 ? `, ${inputCoopDept2}` : ""}
+- **사업 기간 (추진 일정)**: ${inputTimeline || "미정"}
+- **주요 사업 대상**: ${inputTargetAudience || "미정"}
+
+---
+
+## 2. 예산 및 집행 현황
+- **배정 본예산**: ${formatToMillionWon(py.budget_main)} 백만원
+- **이월 예산액**: ${formatToMillionWon(py.budget_carry)} 백만원
+- **본집행 실적**: ${formatToMillionWon(py.spent_main)} 백만원
+- **이월 집행액**: ${formatToMillionWon(py.spent_carry)} 백만원
+- **총 배정 예산**: ${formatToMillionWon((py.budget_main || 0) + (py.budget_carry || 0))} 백만원
+- **총 집행 실적**: ${formatToMillionWon((py.spent_main || 0) + (py.spent_carry || 0))} 백만원
+- **전체 집행률**: ${((py.budget_main || 0) + (py.budget_carry || 0)) > 0 ? (((py.spent_main || 0) + (py.spent_carry || 0)) / ((py.budget_main || 0) + (py.budget_carry || 0)) * 100).toFixed(1) : "0.0"}%
+
+### 재원별 세부 예산 및 집행 (단위: 백만원)
+| 재원구분 | 예산액 | 집행액 | 집행률 |
+| :--- | :---: | :---: | :---: |
+| **국고** | ${inputBudgetNational} | ${inputSpentNational} | ${natRate}% |
+| **시비** | ${inputBudgetCity} | ${inputSpentCity} | ${cityRate}% |
+| **외부** | ${inputBudgetExternal} | ${inputSpentExternal} | ${extRate}% |
+
+### 비목별 기획 및 실적 (단위: 원)
+| 순번 | 세부 비목 (카테고리) | 본예산 계획 | 이월예산 계획 | 본집행 실적 | 이월집행 실적 |
+| :---: | :--- | :---: | :---: | :---: | :---: |
+${inputBudgetCategories.filter(c => c.category).map((c, i) => 
+`| ${i + 1} | ${c.category} | ${c.budget ? (parseFloat(c.budget) * 1000000).toLocaleString() : "0"} | ${c.budget_carry ? (parseFloat(c.budget_carry) * 1000000).toLocaleString() : "0"} | ${c.spent ? parseInt(c.spent.replace(/,/g, "")).toLocaleString() : "0"} | ${c.spent_carry ? parseInt(c.spent_carry.replace(/,/g, "")).toLocaleString() : "0"} |`
+).join("\n")}
+
+---
+
+## 3. PDCA 단계별 세부 현황
+
+### 📌 P (Plan) - 기획 및 목표 수립
+- **단계 상태**: ${activeProg.pdca?.p || "대기"}
+- **기획 일정**: ${inputMonthlyPDCA.map((val, idx) => val ? `${idx + 3}월(${val})` : null).filter(Boolean).join(", ") || "일정 없음"}
+- **성과 목표 설정**:
+  - 운영 횟수: ${inputFrequency || "0"} 회
+  - 참여 인원: ${inputTargetParticipants || "0"} ${inputTargetParticipantsUnit || "명"} (${inputTargetParticipantsName || "목표명 없음"})
+  - 개발/개설: ${inputTargetDevelopments || "0"} ${inputTargetDevelopmentsUnit || "건"} (${inputTargetDevelopmentsName || "목표명 없음"})
+  - 기타 성과: ${inputTargetEtc || "0"} ${inputTargetEtcUnit || "건"}
+- **연계 핵심 성과 지표(KPI)**:
+  ${activeProg.kpi_links?.map((kLink, idx) => {
+    const kType = activeProg.kpi_types?.[idx] || "자율";
+    return kLink ? `- [${kType}] ${kLink}` : null;
+  }).filter(Boolean).join("\n") || "- 연계된 KPI 없음"}
+
+### 📌 D (Do) - 추진 및 집행 실적
+- **단계 상태**: ${activeProg.pdca?.d || "대기"}
+- **실제 추진 일정**: ${inputMonthlyPDCAActual.map((val, idx) => val ? `${idx + 3}월(${val})` : null).filter(Boolean).join(", ") || "일정 없음"}
+- **실제 성과 실적**:
+  - 총 참여 인원: ${inputParticipants || "0"} 명
+    - (세부 유형) 재학생: ${inputAudienceParticipants["재학생"] || "0"}명, 성인학습자: ${inputAudienceParticipants["성인학습자"] || "0"}명, 재직자: ${inputAudienceParticipants["재직자"] || "0"}명, 기타: ${inputAudienceParticipants["기타"] || "0"}명
+  - 실제 개발/개설 실적: ${inputActualDevelopments || "0"} 건
+  - 실제 기타 실적: ${inputActualEtc || "0"} 건
+
+### 📌 C (Check) - 성과 평가 및 분석
+- **단계 상태**: ${activeProg.pdca?.c || "대기"}
+- **수요자 만족도**: ${inputSatisfaction || "0.0"} 점 / 5.0 점
+- **주요 성과 요약**:
+  \`\`\`text
+  ${inputAchievements || "등록된 성과 사항이 없습니다."}
+  \`\`\`
+
+### 📌 A (Act) - 자체평가 및 환류
+- **단계 상태**: ${activeProg.pdca?.a || "대기"}
+- **자체 평가 등급**: **${inputEvalType}**
+${inputEvalType === "우수" ? `
+- **우수 요인**:
+  > ${inputExcellent || "기재 사항 없음"}
+- **차년도 발전 방안**:
+  > ${inputImprovePlan || "기재 사항 없음"}
+` : `
+- **미흡 요인**:
+  > ${inputDeficiency || "기재 사항 없음"}
+- **단기 조치 사항**:
+  > ${inputActionItem || "기재 사항 없음"}
+`}
+`;
+
+    const blob = new Blob([mdContent], { type: "text/markdown;charset=utf-8;" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.setAttribute("download", fileName);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
       {/* 상단: 단위과제별 / 전체보기 탭 버튼 */}
@@ -1478,6 +1930,113 @@ export default function PDCAManager({
                     <div>본집행 실적: <strong style={{ color: "var(--text-primary)" }}>{formatToMillionWon(activeProg.years?.[selectedYear]?.spent_main)}백만원</strong></div>
                     <div>이월 집행액: <strong style={{ color: "var(--text-primary)" }}>{formatToMillionWon(activeProg.years?.[selectedYear]?.spent_carry)}백만원</strong></div>
                   </div>
+                </div>
+
+                {/* 💡 프로그램별 개별 파일 내보내기 버튼 그룹 (글래스모피즘 3색 조합) */}
+                <div style={{ display: "flex", gap: "0.6rem", flexWrap: "wrap", borderBottom: "1px solid var(--border-color)", paddingBottom: "1rem" }}>
+                  <button
+                    type="button"
+                    onClick={handleExportProgramExcel}
+                    className="export-btn excel"
+                    style={{
+                      flex: 1,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      gap: "0.4rem",
+                      padding: "0.55rem 0.8rem",
+                      fontSize: "0.75rem",
+                      fontWeight: "700",
+                      borderRadius: "8px",
+                      cursor: "pointer",
+                      transition: "all 0.2s ease",
+                      background: "rgba(16, 185, 129, 0.08)",
+                      color: "#10b981",
+                      border: "1px solid rgba(16, 185, 129, 0.25)"
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.background = "rgba(16, 185, 129, 0.18)";
+                      e.currentTarget.style.transform = "scale(1.02)";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.background = "rgba(16, 185, 129, 0.08)";
+                      e.currentTarget.style.transform = "scale(1)";
+                    }}
+                  >
+                    <FileSpreadsheet size={14} />
+                    Excel 내보내기
+                  </button>
+
+                  <button
+                    type="button"
+                    disabled={isDownloadingPdf}
+                    onClick={handleExportProgramPDF}
+                    className="export-btn pdf"
+                    style={{
+                      flex: 1,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      gap: "0.4rem",
+                      padding: "0.55rem 0.8rem",
+                      fontSize: "0.75rem",
+                      fontWeight: "700",
+                      borderRadius: "8px",
+                      cursor: isDownloadingPdf ? "not-allowed" : "pointer",
+                      transition: "all 0.2s ease",
+                      background: "rgba(239, 68, 68, 0.08)",
+                      color: "#ef4444",
+                      border: "1px solid rgba(239, 68, 68, 0.25)"
+                    }}
+                    onMouseEnter={(e) => {
+                      if (!isDownloadingPdf) {
+                        e.currentTarget.style.background = "rgba(239, 68, 68, 0.18)";
+                        e.currentTarget.style.transform = "scale(1.02)";
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!isDownloadingPdf) {
+                        e.currentTarget.style.background = "rgba(239, 68, 68, 0.08)";
+                        e.currentTarget.style.transform = "scale(1)";
+                      }
+                    }}
+                  >
+                    <FileText size={14} />
+                    {isDownloadingPdf ? "PDF 변환 중..." : "PDF 내보내기"}
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={handleExportProgramMarkdown}
+                    className="export-btn markdown"
+                    style={{
+                      flex: 1,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      gap: "0.4rem",
+                      padding: "0.55rem 0.8rem",
+                      fontSize: "0.75rem",
+                      fontWeight: "700",
+                      borderRadius: "8px",
+                      cursor: "pointer",
+                      transition: "all 0.2s ease",
+                      background: "rgba(59, 130, 246, 0.08)",
+                      color: "#3b82f6",
+                      border: "1px solid rgba(59, 130, 246, 0.25)"
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.background = "rgba(59, 130, 246, 0.18)";
+                      e.currentTarget.style.transform = "scale(1.02)";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.background = "rgba(59, 130, 246, 0.08)";
+                      e.currentTarget.style.transform = "scale(1)";
+                    }}
+                  >
+                    <Download size={14} />
+                    MD 내보내기
+                  </button>
                 </div>
 
                 {/* PDCA 현황 제어기 */}
