@@ -831,8 +831,8 @@ export default function Sidebar({
                 onClick={() => {
                   onChangeTab("committee");
                   if (onChangeCommitteeSubTab) {
-                    const subTabs = ["committee_meeting", "committee_report", "committees"];
-                    const firstActive = subTabs.find(tab => isSongDirector || menuVisibility[tab] !== false) || "committee_meeting";
+                    const subTabs = ["committees", "committee_meeting", "committee_report"];
+                    const firstActive = subTabs.find(tab => isSongDirector || menuVisibility[tab] !== false) || "committees";
                     onChangeCommitteeSubTab(firstActive);
                   }
                 }}
