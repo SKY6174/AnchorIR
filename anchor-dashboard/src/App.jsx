@@ -3991,41 +3991,71 @@ export default function App() {
 
         const progressRate = totalPrograms > 0 ? (totalProgressSum / totalPrograms) : 0;
         const nameStr = (u.id === "Common" ? "" : `${u.id}. `) + u.title;
-        const budgetCarryCell = selectedYear >= 2 ? `<td style="border: 1px solid #d1d5db; padding: 6px 8px; text-align: right; font-family: sans-serif;">${formatToMillionWon(budgetCarryVal)}</td>` : "";
+        const budgetCarryCell = selectedYear >= 2 ? `<td style="border: 1px solid #d1d5db; padding: 6px 4px; text-align: right; font-family: sans-serif; white-space: nowrap; font-size: 10px;">${formatToMillionWon(budgetCarryVal)}</td>` : "";
 
         tableRowsHtml += `
           <tr style="background: ${u.id === "Common" || u.id === "X0" ? "#f9fafb" : "#ffffff"};">
-            <td style="border: 1px solid #d1d5db; padding: 6px 8px; font-weight: bold;">${nameStr}</td>
-            <td style="border: 1px solid #d1d5db; padding: 6px 8px; text-align: right; font-family: sans-serif;">${formatToMillionWon(yData.budget_main)}</td>
+            <td style="border: 1px solid #d1d5db; padding: 6px 4px; font-weight: bold; font-size: 10px; word-break: keep-all; vertical-align: middle;">${nameStr}</td>
+            <td style="border: 1px solid #d1d5db; padding: 6px 4px; text-align: right; font-family: sans-serif; white-space: nowrap; font-size: 10px; vertical-align: middle;">${formatToMillionWon(yData.budget_main)}</td>
             ${budgetCarryCell}
-            <td style="border: 1px solid #d1d5db; padding: 6px 8px; text-align: right; font-weight: bold; font-family: sans-serif;">${formatToMillionWon(totalBudget)}</td>
-            <td style="border: 1px solid #d1d5db; padding: 6px 8px; text-align: right; font-family: sans-serif;">${formatToMillionWon(totalSpent)}</td>
-            <td style="border: 1px solid #d1d5db; padding: 6px 8px; text-align: right; font-family: sans-serif;">${rate.toFixed(1)}%</td>
-            <td style="border: 1px solid #d1d5db; padding: 6px 8px; text-align: center;">${u.id === "Common" || u.id === "X0" ? "-" : `${totalPrograms}개`}</td>
-            <td style="border: 1px solid #d1d5db; padding: 6px 8px; text-align: center;">${u.id === "Common" || u.id === "X0" ? "-" : readyCount}</td>
-            <td style="border: 1px solid #d1d5db; padding: 6px 8px; text-align: center; color: #f59e0b;">${u.id === "Common" || u.id === "X0" ? "-" : inProgressCount}</td>
-            <td style="border: 1px solid #d1d5db; padding: 6px 8px; text-align: center; color: #10b981; font-weight: bold;">${u.id === "Common" || u.id === "X0" ? "-" : completedCount}</td>
-            <td style="border: 1px solid #d1d5db; padding: 6px 8px; text-align: right; font-weight: bold; color: #10b981; font-family: sans-serif;">${u.id === "Common" || u.id === "X0" ? "-" : `${progressRate.toFixed(1)}%`}</td>
+            <td style="border: 1px solid #d1d5db; padding: 6px 4px; text-align: right; font-weight: bold; font-family: sans-serif; white-space: nowrap; font-size: 10px; vertical-align: middle;">${formatToMillionWon(totalBudget)}</td>
+            <td style="border: 1px solid #d1d5db; padding: 6px 4px; text-align: right; font-family: sans-serif; white-space: nowrap; font-size: 10px; vertical-align: middle;">${formatToMillionWon(totalSpent)}</td>
+            <td style="border: 1px solid #d1d5db; padding: 6px 4px; text-align: right; font-family: sans-serif; white-space: nowrap; font-size: 10px; vertical-align: middle;">${rate.toFixed(1)}%</td>
+            <td style="border: 1px solid #d1d5db; padding: 6px 4px; text-align: center; white-space: nowrap; font-size: 10px; vertical-align: middle;">${u.id === "Common" || u.id === "X0" ? "-" : `${totalPrograms}개`}</td>
+            <td style="border: 1px solid #d1d5db; padding: 6px 4px; text-align: center; white-space: nowrap; font-size: 10px; vertical-align: middle;">${u.id === "Common" || u.id === "X0" ? "-" : readyCount}</td>
+            <td style="border: 1px solid #d1d5db; padding: 6px 4px; text-align: center; color: #f59e0b; white-space: nowrap; font-size: 10px; vertical-align: middle;">${u.id === "Common" || u.id === "X0" ? "-" : inProgressCount}</td>
+            <td style="border: 1px solid #d1d5db; padding: 6px 4px; text-align: center; color: #10b981; font-weight: bold; white-space: nowrap; font-size: 10px; vertical-align: middle;">${u.id === "Common" || u.id === "X0" ? "-" : completedCount}</td>
+            <td style="border: 1px solid #d1d5db; padding: 6px 4px; text-align: right; font-weight: bold; color: #10b981; font-family: sans-serif; white-space: nowrap; font-size: 10px; vertical-align: middle;">${u.id === "Common" || u.id === "X0" ? "-" : `${progressRate.toFixed(1)}%`}</td>
           </tr>
         `;
       });
 
       const sumRate = sumTotalBudget > 0 ? (sumTotalSpent / sumTotalBudget) * 100 : 0;
       const sumProgressRate = sumTotalPrograms > 0 ? (sumTotalProgressSum / sumTotalPrograms) : 0;
-      const sumBudgetCarryCell = selectedYear >= 2 ? `<td style="border: 1px solid #d1d5db; padding: 6px 8px; text-align: right; font-weight: bold; background: #e5e7eb; font-family: sans-serif;">${formatToMillionWon(sumBudgetCarry)}</td>` : "";
+      const sumBudgetCarryCell = selectedYear >= 2 ? `<td style="border: 1px solid #d1d5db; padding: 6px 4px; text-align: right; font-weight: bold; background: #e5e7eb; font-family: sans-serif; white-space: nowrap; font-size: 10px;">${formatToMillionWon(sumBudgetCarry)}</td>` : "";
 
       const carryHeader = selectedYear >= 2 ? `<th style="border: 1px solid #d1d5db; padding: 6px 3px; white-space: nowrap; font-size: 10.5px; color: #111827; font-weight: bold; background: #e5e7eb;">이월예산</th>` : "";
       const colSpanVal = selectedYear >= 2 ? 5 : 4;
+
+      const colGroupHtml = selectedYear >= 2 ? `
+        <colgroup>
+          <col style="width: 31.8%;" />
+          <col style="width: 6.8%;" />
+          <col style="width: 6.8%;" />
+          <col style="width: 7.2%;" />
+          <col style="width: 6.8%;" />
+          <col style="width: 6.4%;" />
+          <col style="width: 6.8%;" />
+          <col style="width: 5.2%;" />
+          <col style="width: 5.2%;" />
+          <col style="width: 5.2%;" />
+          <col style="width: 6.8%;" />
+        </colgroup>
+      ` : `
+        <colgroup>
+          <col style="width: 43.6%;" />
+          <col style="width: 6.8%;" />
+          <col style="width: 7.2%;" />
+          <col style="width: 6.8%;" />
+          <col style="width: 6.4%;" />
+          <col style="width: 6.8%;" />
+          <col style="width: 5.2%;" />
+          <col style="width: 5.2%;" />
+          <col style="width: 5.2%;" />
+          <col style="width: 6.8%;" />
+        </colgroup>
+      `;
 
       const htmlContent = `
         <div style="padding: 10mm 15mm; font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif; color: #333333; background: #ffffff;">
           <h1 style="text-align: center; font-size: 20px; font-weight: 800; margin-bottom: 5px; color: #111827;">울산과학대학교 앵커사업단 진행현황</h1>
           <p style="text-align: center; font-size: 12px; color: #6b7280; margin-bottom: 20px;">[${selectedYear}차년도] 단위과제별 예산 집행 및 프로그램 추진 실적</p>
           
-          <table style="width: 100%; border-collapse: collapse; font-size: 11px; color: #111827; border: 1px solid #d1d5db;">
+          <table style="width: 100%; border-collapse: collapse; font-size: 10px; color: #111827; border: 1px solid #d1d5db; table-layout: fixed;">
+            ${colGroupHtml}
             <thead>
               <tr style="background: #f3f4f6;">
-                <th rowspan="2" style="border: 1px solid #d1d5db; padding: 8px 6px; text-align: center; font-weight: bold; font-size: 12px; color: #111827; background: #f3f4f6;">단위과제</th>
+                <th rowspan="2" style="border: 1px solid #d1d5db; text-align: center; font-weight: bold; font-size: 11px; color: #111827; background: #f3f4f6; vertical-align: middle; height: 42px; line-height: 1.2;">단위과제</th>
                 <th colspan="${colSpanVal}" style="border: 1px solid #d1d5db; padding: 6px; text-align: center; font-weight: bold; color: #111827;">예산 배정 및 집행 (단위: 백만원)</th>
                 <th colspan="5" style="border: 1px solid #d1d5db; padding: 6px; text-align: center; font-weight: bold; color: #111827;">프로그램 진행</th>
               </tr>
@@ -4045,17 +4075,17 @@ export default function App() {
             <tbody>
               ${tableRowsHtml}
               <tr style="background: #e5e7eb; font-weight: bold;">
-                <td style="border: 1px solid #d1d5db; padding: 8px 6px; text-align: center;">합계</td>
-                <td style="border: 1px solid #d1d5db; padding: 6px 8px; text-align: right; font-weight: bold; background: #e5e7eb; font-family: sans-serif;">${formatToMillionWon(sumBudgetMain)}</td>
+                <td style="border: 1px solid #d1d5db; padding: 6px 4px; text-align: center; white-space: nowrap; font-size: 10px; vertical-align: middle;">합계</td>
+                <td style="border: 1px solid #d1d5db; padding: 6px 4px; text-align: right; font-weight: bold; background: #e5e7eb; font-family: sans-serif; white-space: nowrap; font-size: 10px; vertical-align: middle;">${formatToMillionWon(sumBudgetMain)}</td>
                 ${sumBudgetCarryCell}
-                <td style="border: 1px solid #d1d5db; padding: 6px 8px; text-align: right; font-weight: bold; color: #1e40af; background: #e5e7eb; font-family: sans-serif;">${formatToMillionWon(sumTotalBudget)}</td>
-                <td style="border: 1px solid #d1d5db; padding: 6px 8px; text-align: right; font-weight: bold; background: #e5e7eb; font-family: sans-serif;">${formatToMillionWon(sumTotalSpent)}</td>
-                <td style="border: 1px solid #d1d5db; padding: 6px 8px; text-align: right; font-weight: bold; background: #e5e7eb; font-family: sans-serif;">${sumRate.toFixed(1)}%</td>
-                <td style="border: 1px solid #d1d5db; padding: 6px 8px; text-align: center; font-weight: bold; background: #e5e7eb;">${sumTotalPrograms}개</td>
-                <td style="border: 1px solid #d1d5db; padding: 6px 8px; text-align: center; font-weight: bold; background: #e5e7eb;">${sumReadyCount}</td>
-                <td style="border: 1px solid #d1d5db; padding: 6px 8px; text-align: center; font-weight: bold; background: #e5e7eb;">${sumInProgressCount}</td>
-                <td style="border: 1px solid #d1d5db; padding: 6px 8px; text-align: center; font-weight: bold; color: #10b981; background: #e5e7eb;">${sumCompletedCount}</td>
-                <td style="border: 1px solid #d1d5db; padding: 6px 8px; text-align: right; font-weight: bold; color: #10b981; background: #e5e7eb; font-family: sans-serif;">${sumProgressRate.toFixed(1)}%</td>
+                <td style="border: 1px solid #d1d5db; padding: 6px 4px; text-align: right; font-weight: bold; color: #1e40af; background: #e5e7eb; font-family: sans-serif; white-space: nowrap; font-size: 10px; vertical-align: middle;">${formatToMillionWon(sumTotalBudget)}</td>
+                <td style="border: 1px solid #d1d5db; padding: 6px 4px; text-align: right; font-weight: bold; background: #e5e7eb; font-family: sans-serif; white-space: nowrap; font-size: 10px; vertical-align: middle;">${formatToMillionWon(sumTotalSpent)}</td>
+                <td style="border: 1px solid #d1d5db; padding: 6px 4px; text-align: right; font-weight: bold; background: #e5e7eb; font-family: sans-serif; white-space: nowrap; font-size: 10px; vertical-align: middle;">${sumRate.toFixed(1)}%</td>
+                <td style="border: 1px solid #d1d5db; padding: 6px 4px; text-align: center; font-weight: bold; background: #e5e7eb; white-space: nowrap; font-size: 10px; vertical-align: middle;">${sumTotalPrograms}개</td>
+                <td style="border: 1px solid #d1d5db; padding: 6px 4px; text-align: center; font-weight: bold; background: #e5e7eb; white-space: nowrap; font-size: 10px; vertical-align: middle;">${sumReadyCount}</td>
+                <td style="border: 1px solid #d1d5db; padding: 6px 4px; text-align: center; font-weight: bold; background: #e5e7eb; white-space: nowrap; font-size: 10px; vertical-align: middle;">${sumInProgressCount}</td>
+                <td style="border: 1px solid #d1d5db; padding: 6px 4px; text-align: center; font-weight: bold; color: #10b981; background: #e5e7eb; white-space: nowrap; font-size: 10px; vertical-align: middle;">${sumCompletedCount}</td>
+                <td style="border: 1px solid #d1d5db; padding: 6px 4px; text-align: right; font-weight: bold; color: #10b981; background: #e5e7eb; font-family: sans-serif; white-space: nowrap; font-size: 10px; vertical-align: middle;">${sumProgressRate.toFixed(1)}%</td>
               </tr>
             </tbody>
           </table>
