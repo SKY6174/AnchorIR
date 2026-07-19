@@ -1868,8 +1868,7 @@ ${opinionsContext}
                     )}
                   </div>
 
-                  {/* 안건 원문 */}
-                  <div style={{ marginTop: "1rem", padding: "0.75rem", background: "rgba(0,0,0,0.3)", borderRadius: "6px", border: "1px solid var(--border-color)" }}>
+                  <div style={{ marginTop: "1rem", padding: "0.75rem", background: "rgba(120, 120, 120, 0.08)", borderRadius: "6px", border: "1px solid var(--border-color)" }}>
                     <strong style={{ fontSize: "0.85rem", color: "var(--accent-color)", display: "block", marginBottom: "0.25rem" }}>회의 안건 요지</strong>
                     <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)", whiteSpace: "pre-line", lineHeight: "1.5" }}>{selectedMeeting.agenda}</p>
                   </div>
@@ -1878,7 +1877,7 @@ ${opinionsContext}
                   {selectedMeeting.attachment_name && (
                     <div style={{ marginTop: "0.75rem", padding: "0.75rem", background: "rgba(99, 102, 241, 0.05)", borderRadius: "6px", border: "1px solid rgba(99, 102, 241, 0.2)" }}>
                       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.5rem" }}>
-                        <span style={{ fontSize: "0.8rem", color: "#fff", fontWeight: "bold", display: "flex", alignItems: "center", gap: "0.25rem" }}>
+                        <span style={{ fontSize: "0.8rem", color: "var(--text-primary)", fontWeight: "bold", display: "flex", alignItems: "center", gap: "0.25rem" }}>
                           📎 심의 첨부 자료: {selectedMeeting.attachment_name}
                         </span>
                         <button
@@ -1953,7 +1952,7 @@ ${opinionsContext}
                   <div style={{ display: "flex", gap: "1rem", marginTop: "1rem", flexWrap: "wrap" }}>
                     <div style={{ flex: 1, padding: "0.75rem", background: "rgba(255,255,255,0.02)", borderRadius: "6px", border: "1px solid var(--border-color)", textAlign: "center" }}>
                       <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)", display: "block" }}>재적 위원 수</span>
-                      <strong style={{ fontSize: "1.5rem", color: "#fff" }}>{qInfo?.total}명</strong>
+                      <strong style={{ fontSize: "1.5rem", color: "var(--text-primary)" }}>{qInfo?.total}명</strong>
                     </div>
                     <div style={{ flex: 1, padding: "0.75rem", background: "rgba(255,255,255,0.02)", borderRadius: "6px", border: "1px solid var(--border-color)", textAlign: "center" }}>
                       <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)", display: "block" }}>출석(의결) 인원</span>
@@ -1982,15 +1981,15 @@ ${opinionsContext}
                   {/* 💡 [의안별 투표/평가 실시간 통계 모니터] */}
                   {selectedMeetingAgendas.length > 0 && (
                     <div style={{ marginTop: "1.25rem", padding: "1rem", background: "rgba(255,255,255,0.01)", border: "1px solid var(--border-color)", borderRadius: "8px" }}>
-                      <h4 style={{ fontSize: "0.85rem", fontWeight: "bold", color: "#fff", marginBottom: "0.75rem", display: "flex", gap: "0.3rem", alignItems: "center" }}>
+                      <h4 style={{ fontSize: "0.85rem", fontWeight: "bold", color: "var(--text-primary)", marginBottom: "0.75rem", display: "flex", gap: "0.3rem", alignItems: "center" }}>
                         📊 의안별 실시간 의결 및 평가 집계
                       </h4>
                       <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
                         {selectedMeetingAgendas.map((agenda, aIdx) => {
                           const stats = getAgendaVoteStats(agenda.id, agenda.is_evaluation);
                           return (
-                            <div key={agenda.id} style={{ background: "rgba(0,0,0,0.15)", borderRadius: "6px", padding: "0.6rem 0.75rem", border: "1px solid rgba(255,255,255,0.03)" }}>
-                              <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.8rem", color: "#fff", marginBottom: "0.4rem", fontWeight: "700" }}>
+                            <div key={agenda.id} style={{ background: "rgba(120, 120, 120, 0.08)", borderRadius: "6px", padding: "0.6rem 0.75rem", border: "1px solid var(--border-color)" }}>
+                              <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.8rem", color: "var(--text-primary)", marginBottom: "0.4rem", fontWeight: "700" }}>
                                 <span>{agenda.title}</span>
                                 {agenda.is_evaluation ? (
                                   <span style={{ color: "var(--accent-color)" }}>평균: {stats.avg}점 / 5.00</span>
@@ -2038,7 +2037,7 @@ ${opinionsContext}
                 {/* 1. 위원 의사결정서 제출 패널 */}
                 {isUserCommitteeMember && selectedMeeting.status === "ACTIVE" && (
                   <div className="card" style={{ padding: "1.25rem", border: "1px solid var(--accent-color)", background: "rgba(var(--accent-color-rgb), 0.03)" }}>
-                    <h3 style={{ fontSize: "1rem", fontWeight: "800", color: "#fff", marginBottom: "0.75rem", display: "flex", alignItems: "center", gap: "0.25rem" }}>
+                    <h3 style={{ fontSize: "1rem", fontWeight: "800", color: "var(--text-primary)", marginBottom: "0.75rem", display: "flex", alignItems: "center", gap: "0.25rem" }}>
                       <Vote size={18} style={{ color: "var(--accent-color)" }} />
                       위원 의사결정서 온라인 제출
                     </h3>
@@ -2046,7 +2045,7 @@ ${opinionsContext}
                     {hasSubmitted ? (
                       <div style={{ textAlign: "center", padding: "1rem", background: "rgba(255,255,255,0.02)", borderRadius: "6px" }}>
                         <Check size={32} style={{ color: "var(--success-color)", marginBottom: "0.25rem" }} />
-                        <p style={{ fontSize: "0.9rem", color: "#fff", fontWeight: "bold" }}>의결서 제출이 완료되었습니다.</p>
+                        <p style={{ fontSize: "0.9rem", color: "var(--text-primary)", fontWeight: "bold" }}>의결서 제출이 완료되었습니다.</p>
                         <p style={{ fontSize: "0.78rem", color: "var(--text-secondary)", marginTop: "0.25rem", whiteSpace: "pre-line", textAlign: "left", lineHeight: "1.4" }}>
                           {selectedMeetingAgendas.map((a, idx) => {
                             const detail = agendaInputs[a.id] || { vote: "", score: 0 };
@@ -2167,7 +2166,7 @@ ${opinionsContext}
                                         [agenda.id]: { ...prev[agenda.id], opinion: val }
                                       }));
                                     }}
-                                    style={{ width: "100%", padding: "0.4rem", borderRadius: "4px", background: "rgba(0,0,0,0.3)", color: "#fff", border: "1px solid var(--border-color)", fontSize: "0.78rem", resize: "none" }}
+                                    style={{ width: "100%", padding: "0.4rem", borderRadius: "4px", background: "rgba(120, 120, 120, 0.05)", color: "var(--text-primary)", border: "1px solid var(--border-color)", fontSize: "0.78rem", resize: "none" }}
                                   />
                                 </div>
                               </div>
@@ -2221,7 +2220,7 @@ ${opinionsContext}
                 {/* 2. 실시간 표결 및 위원 의견 취합 현황 판 */}
                 <div className="card" style={{ padding: "1.25rem", background: "rgba(255,255,255,0.02)", border: "1px solid var(--border-color)" }}>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.75rem" }}>
-                    <h3 style={{ fontSize: "0.95rem", fontWeight: "800", color: "#fff", display: "flex", alignItems: "center", gap: "0.25rem" }}>
+                    <h3 style={{ fontSize: "0.95rem", fontWeight: "800", color: "var(--text-primary)", display: "flex", alignItems: "center", gap: "0.25rem" }}>
                       <FileText size={16} /> 위원 심의 의견 현황 ({responses.length}명 제출)
                     </h3>
 
@@ -2241,7 +2240,7 @@ ${opinionsContext}
                   {isAnalyzing && (
                     <div style={{ textAlign: "center", padding: "1.5rem", background: "rgba(0,0,0,0.3)", borderRadius: "6px", marginBottom: "0.75rem", border: "1px dashed var(--accent-color)" }}>
                       <div className="spinner" style={{ display: "inline-block", width: "24px", height: "24px", border: "3px solid rgba(255,255,255,0.1)", borderTopColor: "var(--accent-color)", borderRadius: "50%", animation: "spin 1s linear infinite" }} />
-                      <p style={{ fontSize: "0.85rem", color: "#fff", marginTop: "0.5rem" }}>Gemini AI가 위원들의 서면 의견을 통합 분석하고 대시보드 결과 보고서를 구성하고 있습니다...</p>
+                      <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)", marginTop: "0.5rem" }}>Gemini AI가 위원들의 서면 의견을 통합 분석하고 대시보드 결과 보고서를 구성하고 있습니다...</p>
                     </div>
                   )}
 
@@ -2252,7 +2251,7 @@ ${opinionsContext}
                       </span>
                     ) : (
                       responses.map((r, idx) => (
-                        <div key={r.id} style={{ padding: "0.6rem 0.8rem", borderRadius: "6px", background: "rgba(0,0,0,0.2)", border: "1px solid var(--border-color)", display: "flex", gap: "0.75rem", alignItems: "flex-start" }}>
+                        <div key={r.id} style={{ padding: "0.6rem 0.8rem", borderRadius: "6px", background: "rgba(120, 120, 120, 0.08)", border: "1px solid var(--border-color)", display: "flex", gap: "0.75rem", alignItems: "flex-start" }}>
                           <span style={{
                             fontSize: "0.7rem",
                             padding: "0.15rem 0.4rem",
@@ -2265,7 +2264,7 @@ ${opinionsContext}
                           </span>
                           <div style={{ flex: 1 }}>
                             <div style={{ display: "flex", justifyContent: "space-between" }}>
-                              <strong style={{ fontSize: "0.8rem", color: "#fff" }}>
+                              <strong style={{ fontSize: "0.8rem", color: "var(--text-primary)" }}>
                                 {r.committee_members?.name} <small style={{ color: "var(--text-secondary)" }}>({r.committee_members?.dept || "소속 없음"})</small>
                               </strong>
                               <span style={{ fontSize: "0.7rem", color: "var(--text-secondary)" }}>
