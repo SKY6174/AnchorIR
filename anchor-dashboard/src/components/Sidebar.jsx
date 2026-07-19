@@ -849,6 +849,26 @@ export default function Sidebar({
                 </span>
               </div>
               <div className="nav-sub-menu">
+                 {(menuVisibility.committees !== false || isSongDirector) && (
+                  <div
+                    className={`nav-sub-item ${activeTab === "committee" && committeeSubTab === "committees" ? "active" : ""}`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onChangeTab("committee");
+                      if (onChangeCommitteeSubTab) {
+                        onChangeCommitteeSubTab("committees");
+                      }
+                    }}
+                    style={getHiddenStyle("committees")}
+                  >
+                    - 위원회 명단 관리
+                    {isHidden("committees") && (
+                      <span style={{ fontSize: "0.6rem", color: "#ef4444", textDecoration: "none", marginLeft: "0.2rem" }}>
+                        [숨김]
+                      </span>
+                    )}
+                  </div>
+                )}
                 {(menuVisibility.committee_meeting !== false || isSongDirector) && (
                   <div
                     className={`nav-sub-item ${activeTab === "committee" && committeeSubTab === "committee_meeting" ? "active" : ""}`}
@@ -883,26 +903,6 @@ export default function Sidebar({
                   >
                     - 위원회 결과보고 대장
                     {isHidden("committee_report") && (
-                      <span style={{ fontSize: "0.6rem", color: "#ef4444", textDecoration: "none", marginLeft: "0.2rem" }}>
-                        [숨김]
-                      </span>
-                    )}
-                  </div>
-                )}
-                {(menuVisibility.committees !== false || isSongDirector) && (
-                  <div
-                    className={`nav-sub-item ${activeTab === "committee" && committeeSubTab === "committees" ? "active" : ""}`}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onChangeTab("committee");
-                      if (onChangeCommitteeSubTab) {
-                        onChangeCommitteeSubTab("committees");
-                      }
-                    }}
-                    style={getHiddenStyle("committees")}
-                  >
-                    - 위원회 명단 관리
-                    {isHidden("committees") && (
                       <span style={{ fontSize: "0.6rem", color: "#ef4444", textDecoration: "none", marginLeft: "0.2rem" }}>
                         [숨김]
                       </span>
