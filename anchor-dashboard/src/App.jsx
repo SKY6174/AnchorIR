@@ -3994,7 +3994,7 @@ export default function App() {
         const budgetCarryCell = selectedYear >= 2 ? `<td style="border: 1px solid #d1d5db; padding: 9px 4px; text-align: right; font-family: sans-serif; white-space: nowrap; font-size: 10px;">${formatToMillionWon(budgetCarryVal)}</td>` : "";
 
         tableRowsHtml += `
-          <tr style="background: ${u.id === "Common" || u.id === "X0" ? "#f9fafb" : "#ffffff"};">
+          <tr style="background: ${u.id === "Common" || u.id === "X0" ? "#f9fafb" : "#ffffff"}; page-break-inside: avoid; break-inside: avoid;">
             <td style="border: 1px solid #d1d5db; padding: 9px 4px; font-weight: bold; font-size: 10px; word-break: keep-all; vertical-align: middle;">${nameStr}</td>
             <td style="border: 1px solid #d1d5db; padding: 9px 4px; text-align: right; font-family: sans-serif; white-space: nowrap; font-size: 10px; vertical-align: middle;">${formatToMillionWon(yData.budget_main)}</td>
             ${budgetCarryCell}
@@ -4101,7 +4101,8 @@ export default function App() {
         filename: fileName,
         image: { type: 'jpeg', quality: 0.98 },
         html2canvas: { scale: 2, useCORS: true, logging: false },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+        pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
       };
 
       await html2pdf().from(htmlContent).set(opt).save();
@@ -12852,7 +12853,7 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
         const mainSum = (totalObj.main || 0) + (totalObj.carry || 0);
         
         tableRowsHtml += `
-          <tr style="background: ${u.id === "Common" || u.id === "X0" ? "#fffbeb" : "#ffffff"}; font-weight: bold;">
+          <tr style="background: ${u.id === "Common" || u.id === "X0" ? "#fffbeb" : "#ffffff"}; font-weight: bold; page-break-inside: avoid; break-inside: avoid;">
             <td style="border: 1px solid #d1d5db; padding: 8px 6px; font-size: 10px; font-weight: bold; text-align: left;">${u.title}</td>
             <td style="border: 1px solid #d1d5db; padding: 8px 6px; text-align: right; font-size: 10px;">${formatValue(u.total[0].main + u.total[0].carry)}</td>
             <td style="border: 1px solid #d1d5db; padding: 8px 6px; text-align: right; font-size: 10px; color: #1d4ed8;">${formatValue(u.total[1].main)}</td>
@@ -12867,7 +12868,7 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
         u.categories.forEach((cat) => {
           const catSum = (cat.values[5]?.main || 0) + (cat.values[5]?.carry || 0);
           tableRowsHtml += `
-            <tr style="background: #fafafa; font-size: 9px; color: #4b5563;">
+            <tr style="background: #fafafa; font-size: 9px; color: #4b5563; page-break-inside: avoid; break-inside: avoid;">
               <td style="border: 1px solid #d1d5db; padding: 6px 6px 6px 18px; text-align: left;">&nbsp;&nbsp;└ ${cat.name}</td>
               <td style="border: 1px solid #d1d5db; padding: 6px 6px; text-align: right;">${formatValue(cat.values[0].main + cat.values[0].carry)}</td>
               <td style="border: 1px solid #d1d5db; padding: 6px 6px; text-align: right; color: #2563eb;">${formatValue(cat.values[1].main)}</td>
@@ -12890,7 +12891,7 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
         const isOnlyOp = key === "only_operation";
 
         tableRowsHtml += `
-          <tr style="background: ${isTotal ? "#e0f2fe" : isOnlyOp ? "#ecfdf5" : "#f3f4f6"}; font-weight: bold; border-top: ${isTotal || isOnlyOp ? "2px solid #3b82f6" : "1px solid #d1d5db"};">
+          <tr style="background: ${isTotal ? "#e0f2fe" : isOnlyOp ? "#ecfdf5" : "#f3f4f6"}; font-weight: bold; border-top: ${isTotal || isOnlyOp ? "2px solid #3b82f6" : "1px solid #d1d5db"}; page-break-inside: avoid; break-inside: avoid;">
             <td style="border: 1px solid #d1d5db; padding: 8px 6px; font-size: 10px; font-weight: bold; text-align: left;">${summaryLabels[sIdx]}</td>
             <td style="border: 1px solid #d1d5db; padding: 8px 6px; text-align: right; font-size: 10px;">${formatValue(rowData[0].main + rowData[0].carry)}</td>
             <td style="border: 1px solid #d1d5db; padding: 8px 6px; text-align: right; font-size: 10px; color: #1d4ed8;">${formatValue(rowData[1].main)}</td>
@@ -12952,7 +12953,8 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
         filename: fileName,
         image: { type: 'jpeg', quality: 0.98 },
         html2canvas: { scale: 2, useCORS: true, logging: false },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' },
+        pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
       };
 
       await html2pdf().from(htmlContent).set(opt).save();
@@ -13139,7 +13141,7 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
       let tableRowsHtml = "";
       ANNUAL_INVESTMENT_DATA.forEach((u) => {
         tableRowsHtml += `
-          <tr style="background: ${u.id === "Common" || u.id === "X0" ? "#fffbeb" : "#ffffff"}; font-weight: bold;">
+          <tr style="background: ${u.id === "Common" || u.id === "X0" ? "#fffbeb" : "#ffffff"}; font-weight: bold; page-break-inside: avoid; break-inside: avoid;">
             <td style="border: 1px solid #d1d5db; padding: 8px 6px; font-size: 10px; font-weight: bold; text-align: left;">${u.title}</td>
             <td style="border: 1px solid #d1d5db; padding: 8px 6px; text-align: right; font-size: 10px;">${formatValue(u.total[0])}</td>
             <td style="border: 1px solid #d1d5db; padding: 8px 6px; text-align: right; font-size: 10px;">${formatValue(u.total[1])}</td>
@@ -13151,7 +13153,7 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
 
         u.categories.forEach((cat) => {
           tableRowsHtml += `
-            <tr style="background: #fafafa; font-size: 9px; color: #4b5563;">
+            <tr style="background: #fafafa; font-size: 9px; color: #4b5563; page-break-inside: avoid; break-inside: avoid;">
               <td style="border: 1px solid #d1d5db; padding: 6px 6px 6px 18px; text-align: left;">&nbsp;&nbsp;└ ${cat.name}</td>
               <td style="border: 1px solid #d1d5db; padding: 6px 6px; text-align: right;">${formatValue(cat.values[0])}</td>
               <td style="border: 1px solid #d1d5db; padding: 6px 6px; text-align: right;">${formatValue(cat.values[1])}</td>
@@ -13176,7 +13178,7 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
         const isOnlyOp = row.label === "총사업비 중 운영비";
 
         tableRowsHtml += `
-          <tr style="background: ${isTotal ? "#e0f2fe" : isOnlyOp ? "#ecfdf5" : "#f3f4f6"}; font-weight: bold; border-top: ${isTotal || isOnlyOp ? "2px solid #3b82f6" : "1px solid #d1d5db"};">
+          <tr style="background: ${isTotal ? "#e0f2fe" : isOnlyOp ? "#ecfdf5" : "#f3f4f6"}; font-weight: bold; border-top: ${isTotal || isOnlyOp ? "2px solid #3b82f6" : "1px solid #d1d5db"}; page-break-inside: avoid; break-inside: avoid;">
             <td style="border: 1px solid #d1d5db; padding: 8px 6px; font-size: 10px; font-weight: bold; text-align: left;">${row.label}</td>
             <td style="border: 1px solid #d1d5db; padding: 8px 6px; text-align: right; font-size: 10px;">${formatValue(row.values[0])}</td>
             <td style="border: 1px solid #d1d5db; padding: 8px 6px; text-align: right; font-size: 10px;">${formatValue(row.values[1])}</td>
@@ -13230,7 +13232,8 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
         filename: fileName,
         image: { type: 'jpeg', quality: 0.98 },
         html2canvas: { scale: 2, useCORS: true, logging: false },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+        pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
       };
 
       await html2pdf().from(htmlContent).set(opt).save();
