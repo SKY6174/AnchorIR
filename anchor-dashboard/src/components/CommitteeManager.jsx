@@ -1377,9 +1377,14 @@ ${opinionsContext}
         document.head.appendChild(script);
       });
 
-      // 3. 인쇄용 고해상도 HTML 서류 템플릿 마크업 빌드 (HTML 문자열로 다이렉트 처리)
+      // 💡 [의결 형태별 포맷 분기] 서면의결 시에는 일자만 표기하며, 대면회의 시에는 시작시간 정보까지 함께 렌더링합니다.
+      const isWritten = rep.committee_meetings?.meeting_type === "ONLINE_WRITTEN";
       const dateStr = rep.committee_meetings?.meeting_date 
-        ? new Date(rep.committee_meetings.meeting_date).toLocaleDateString("ko-KR", { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })
+        ? new Date(rep.committee_meetings.meeting_date).toLocaleDateString("ko-KR", 
+            isWritten 
+              ? { year: 'numeric', month: 'long', day: 'numeric' } 
+              : { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' }
+          )
         : "-";
 
       const attendedCount = responses.filter(r => r.is_attended !== false).length;
@@ -1511,6 +1516,12 @@ ${opinionsContext}
       htmlContent += `
         </div>
 
+        <!-- 💡 [요구사항 반영] 서명 날인부 하단에 중간 정렬로 일자 및 기관명 삽입 -->
+        <div style="text-align: center; margin-top: 4.5rem; margin-bottom: 3.5rem; color: #000000; font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif;">
+          <div style="font-size: 14px; font-weight: bold; margin-bottom: 1.2rem; letter-spacing: 0.5px;">2026. 7. 18.</div>
+          <div style="font-size: 16px; font-weight: 900; letter-spacing: 1px;">울산과학대학교 앵커사업단</div>
+        </div>
+
         <div style="margin-top: 3.5rem; text-align: center; font-size: 11px; color: #4b5563; border-top: 1px solid #e5e7eb; padding-top: 1rem;">
           <div style="font-size: 13px; font-weight: bold; color: #1e3a8a; margin-bottom: 0.25rem;">울산과학대학교 앵커사업단 공동인증 디지털 서명 적용 필함</div>
           본 문서는 울산과학대학교 앵커사업단 디지털 서명키(Ulsan College Anchor Portal CA)를 활용하여<br/>
@@ -1571,6 +1582,8 @@ ${opinionsContext}
 
   // 9. 결과보고 대장 동적 로드용
   const [reports, setReports] = useState([]);
+  const [selectedReportId, setSelectedReportId] = useState(null); // 💡 [UI 개편] 선택된 결과보고서의 ID를 보관하는 상태 추가 (한글 주석)
+
   useEffect(() => {
     if (activeSubTab === "committee_report") {
       fetchReports();
@@ -1601,6 +1614,11 @@ ${opinionsContext}
         .order("published_at", { ascending: false });
       if (error) throw error;
       setReports(data || []);
+      
+      // 💡 [UI 개편] 로드된 결과보고서가 있고 아직 선택된 보고서가 없는 경우 첫 번째 보고서를 자동 선택
+      if (data && data.length > 0) {
+        setSelectedReportId(prev => prev || data[0].id);
+      }
     } catch (err) {
       console.error("보고서 조회 에러:", err.message);
     }
@@ -2326,124 +2344,191 @@ ${opinionsContext}
             </div>
           </div>
 
-          <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
-            {reports.length === 0 ? (
-              <div style={{ textAlign: "center", padding: "4.5rem", color: "var(--text-secondary)", border: "1px dashed var(--border-color)", borderRadius: "8px" }}>
-                <FileText size={48} style={{ display: "block", margin: "0 auto 1rem auto" }} />
-                <span>아직 탑재 완료(AI 종합 분석)된 위원회 결과 보고서가 없습니다.</span>
-              </div>
-            ) : (
-              reports.map(rep => (
-                <div
-                  key={rep.id}
-                  className="card"
-                  style={{
-                    padding: "1.5rem",
-                    borderRadius: "10px",
-                    border: "1px solid var(--border-color)",
-                    background: "rgba(255,255,255,0.01)"
-                  }}
-                >
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: "0.5rem", borderBottom: "1px solid rgba(255,255,255,0.05)", paddingBottom: "0.75rem", marginBottom: "1rem" }}>
-                    <div>
-                      <span style={{ fontSize: "0.75rem", color: "var(--accent-color)", fontWeight: "bold", display: "block" }}>
-                        {rep.committee_meetings?.committees?.name}
-                      </span>
-                      <h3 style={{ fontSize: "1.1rem", fontWeight: "800", color: "var(--text-primary)", marginTop: "0.15rem" }}>
-                        {rep.committee_meetings?.title}
-                      </h3>
-                      <span style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>
-                        의결 형태: {rep.committee_meetings?.meeting_type === "ONLINE_WRITTEN" ? "서면의결" : "대면의결"} | 보고서 탑재일: {rep.published_at ? new Date(rep.published_at).toLocaleString() : ""}
-                      </span>
-                    </div>
-
-                    <div style={{ display: "flex", gap: "0.5rem" }}>
-                      <span style={{
-                        fontSize: "0.8rem",
-                        fontWeight: "bold",
-                        padding: "0.3rem 0.6rem",
-                        borderRadius: "6px",
-                        background: rep.is_established ? "rgba(34, 197, 94, 0.15)" : "rgba(239, 68, 68, 0.15)",
-                        color: rep.is_established ? "#22c55e" : "#ef4444"
-                      }}>
-                        {rep.is_established ? "의결 성원" : "미성원 취소"}
-                      </span>
-                      <span style={{
-                        fontSize: "0.8rem",
-                        fontWeight: "bold",
-                        padding: "0.3rem 0.6rem",
-                        borderRadius: "6px",
-                        background: rep.decision_status === "APPROVED" ? "rgba(16, 185, 129, 0.2)" : "rgba(239, 68, 68, 0.2)",
-                        color: rep.decision_status === "APPROVED" ? "#10b981" : "#ef4444"
-                      }}>
-                        {rep.decision_status === "APPROVED" ? "안건 가결" : rep.decision_status === "REJECTED" ? "안건 부결" : "의결 취소"}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* 안건 요지 */}
-                  <div style={{ padding: "0.75rem", background: "rgba(0,0,0,0.3)", borderRadius: "6px", border: "1px solid var(--border-color)", marginBottom: "1rem" }}>
-                    <strong style={{ fontSize: "0.85rem", color: "var(--text-primary)" }}>제출 안건 요지:</strong>
-                    <p style={{ fontSize: "0.8rem", color: "var(--text-secondary)", marginTop: "0.25rem", whiteSpace: "pre-line" }}>{rep.committee_meetings?.agenda}</p>
-                  </div>
-
-                  {/* AI 종합 분석 결과 */}
-                  <div style={{ padding: "1.25rem", background: "rgba(255,255,255,0.02)", borderRadius: "8px", border: "1px solid var(--border-color)" }}>
-                    <strong style={{ fontSize: "0.9rem", color: "var(--text-primary)", display: "flex", alignItems: "center", gap: "0.3rem", marginBottom: "0.5rem" }}>
-                      <Cpu size={16} style={{ color: "var(--accent-color)" }} />
-                      RISE 사업단 AI 심의 분석서
-                    </strong>
-                    <div style={{ fontSize: "0.85rem", color: "var(--text-secondary)" }}>
-                      {renderMarkdownText(rep.ai_summary)}
-                    </div>
-                  </div>
-
-                  {/* 공식 회의록 인증 및 다운로드 단추 */}
-                  <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", marginTop: "1rem" }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", padding: "0.5rem 0.75rem", background: "rgba(59, 130, 246, 0.05)", borderRadius: "6px", border: "1px solid rgba(59, 130, 246, 0.2)", fontSize: "0.8rem", color: "#60a5fa" }}>
-                      <Award size={14} />
-                      <span>{rep.official_minutes}</span>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => handleDownloadSignedPDF(rep)}
-                      disabled={isDownloadingPdf === rep.id}
-                      className="btn btn-primary"
+          {reports.length === 0 ? (
+            <div style={{ textAlign: "center", padding: "4.5rem", color: "var(--text-secondary)", border: "1px dashed var(--border-color)", borderRadius: "8px" }}>
+              <FileText size={48} style={{ display: "block", margin: "0 auto 1rem auto" }} />
+              <span>아직 탑재 완료(AI 종합 분석)된 위원회 결과 보고서가 없습니다.</span>
+            </div>
+          ) : (
+            // 💡 [UI 개편 - Master-Detail 2열 레이아웃 적용] 좌측 리스트와 우측 상세 뷰어를 flex 구조로 분리
+            <div style={{ display: "flex", gap: "1.5rem", alignItems: "flex-start", marginTop: "0.5rem" }}>
+              
+              {/* 왼쪽 블록: 위원회 회의 결과보고 목록 리스트 */}
+              <div 
+                style={{ 
+                  width: "280px", 
+                  display: "flex", 
+                  flexDirection: "column", 
+                  gap: "0.75rem",
+                  background: "rgba(255,255,255,0.02)",
+                  border: "1px solid var(--border-color)",
+                  borderRadius: "8px",
+                  padding: "0.75rem",
+                  maxHeight: "650px",
+                  overflowY: "auto"
+                }}
+              >
+                <div style={{ fontSize: "0.8rem", fontWeight: "bold", color: "var(--text-secondary)", paddingBottom: "0.5rem", borderBottom: "1px solid rgba(255,255,255,0.05)", marginBottom: "0.25rem" }}>
+                  회의 목록 ({reports.length}건)
+                </div>
+                {reports.map((rep) => {
+                  const isSelected = selectedReportId === rep.id;
+                  return (
+                    <div
+                      key={rep.id}
+                      onClick={() => setSelectedReportId(rep.id)}
                       style={{
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        gap: "0.4rem",
-                        padding: "0.5rem 1rem",
-                        fontSize: "0.82rem",
+                        padding: "0.75rem",
                         borderRadius: "6px",
                         cursor: "pointer",
-                        fontWeight: "bold",
-                        width: "fit-content",
-                        marginTop: "0.25rem",
-                        background: "linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)",
-                        border: "none",
-                        color: "#fff",
-                        boxShadow: "0 4px 6px -1px rgba(37, 99, 235, 0.2)"
+                        border: isSelected ? "1px solid var(--accent-color)" : "1px solid rgba(255,255,255,0.05)",
+                        background: isSelected ? "rgba(37, 99, 235, 0.1)" : "rgba(255,255,255,0.01)",
+                        transition: "all 0.2s ease"
                       }}
                     >
-                      {isDownloadingPdf === rep.id ? (
-                        <>
-                          <div className="spinner" style={{ width: "14px", height: "14px", border: "2px solid rgba(255,255,255,0.3)", borderTopColor: "#fff", borderRadius: "50%", animation: "spin 0.8s linear infinite", display: "inline-block", marginRight: "4px" }} />
-                          PDF 봉인 날인 중...
-                        </>
-                      ) : (
-                        <>
-                          <FileText size={15} />
-                          의결 결과보고서 다운로드 (디지털 봉인)
-                        </>
-                      )}
-                    </button>
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
+                      <span style={{ fontSize: "0.68rem", color: "var(--accent-color)", fontWeight: "bold" }}>
+                        {rep.committee_meetings?.committees?.name}
+                      </span>
+                      <h4 style={{ fontSize: "0.85rem", fontWeight: "800", color: "var(--text-primary)", marginTop: "0.15rem", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                        {rep.committee_meetings?.title}
+                      </h4>
+                      <div style={{ fontSize: "0.75rem", color: "var(--text-secondary)", marginTop: "0.25rem" }}>
+                        {rep.committee_meetings?.meeting_type === "ONLINE_WRITTEN" ? "서면의결" : "대면의결"}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* 오른쪽 블록: 선택된 결과보고서 상세 분석 & 다운로드 영역 */}
+              <div style={{ flex: 1 }}>
+                {(() => {
+                  const activeRep = reports.find(r => r.id === selectedReportId) || reports[0];
+                  if (!activeRep) return null;
+
+                  // 💡 [의결 형태별 일시 표기 분기] 서면의결인 경우 시간 없이 일자만 표시, 대면인 경우 시작시간까지 표시
+                  const isWrittenMeeting = activeRep.committee_meetings?.meeting_type === "ONLINE_WRITTEN";
+                  const displayDate = activeRep.committee_meetings?.meeting_date
+                    ? new Date(activeRep.committee_meetings.meeting_date).toLocaleDateString("ko-KR", 
+                        isWrittenMeeting 
+                          ? { year: 'numeric', month: 'long', day: 'numeric' } 
+                          : { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' }
+                      )
+                    : "-";
+
+                  return (
+                    <div
+                      className="card"
+                      style={{
+                        padding: "1.5rem",
+                        borderRadius: "10px",
+                        border: "1px solid var(--border-color)",
+                        background: "rgba(255,255,255,0.01)"
+                      }}
+                    >
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: "0.5rem", borderBottom: "1px solid rgba(255,255,255,0.05)", paddingBottom: "0.75rem", marginBottom: "1rem" }}>
+                        <div>
+                          <span style={{ fontSize: "0.75rem", color: "var(--accent-color)", fontWeight: "bold", display: "block" }}>
+                            {activeRep.committee_meetings?.committees?.name}
+                          </span>
+                          <h3 style={{ fontSize: "1.1rem", fontWeight: "800", color: "var(--text-primary)", marginTop: "0.15rem" }}>
+                            {activeRep.committee_meetings?.title}
+                          </h3>
+                          <span style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>
+                            의결 형태: {activeRep.committee_meetings?.meeting_type === "ONLINE_WRITTEN" ? "서면의결" : "대면의결"} | 회의 일시: {displayDate} | 보고서 탑재일: {activeRep.published_at ? new Date(activeRep.published_at).toLocaleDateString("ko-KR") : ""}
+                          </span>
+                        </div>
+
+                        <div style={{ display: "flex", gap: "0.5rem" }}>
+                          <span style={{
+                            fontSize: "0.8rem",
+                            fontWeight: "bold",
+                            padding: "0.3rem 0.6rem",
+                            borderRadius: "6px",
+                            background: activeRep.is_established ? "rgba(34, 197, 94, 0.15)" : "rgba(239, 68, 68, 0.15)",
+                            color: activeRep.is_established ? "#22c55e" : "#ef4444"
+                          }}>
+                            {activeRep.is_established ? "의결 성원" : "미성원 취소"}
+                          </span>
+                          <span style={{
+                            fontSize: "0.8rem",
+                            fontWeight: "bold",
+                            padding: "0.3rem 0.6rem",
+                            borderRadius: "6px",
+                            background: activeRep.decision_status === "APPROVED" ? "rgba(16, 185, 129, 0.2)" : "rgba(239, 68, 68, 0.2)",
+                            color: activeRep.decision_status === "APPROVED" ? "#10b981" : "#ef4444"
+                          }}>
+                            {activeRep.decision_status === "APPROVED" ? "안건 가결" : activeRep.decision_status === "REJECTED" ? "안건 부결" : "의결 취소"}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* 안건 요지 */}
+                      <div style={{ padding: "0.75rem", background: "rgba(0,0,0,0.3)", borderRadius: "6px", border: "1px solid var(--border-color)", marginBottom: "1rem" }}>
+                        <strong style={{ fontSize: "0.85rem", color: "var(--text-primary)" }}>제출 안건 요지:</strong>
+                        <p style={{ fontSize: "0.8rem", color: "var(--text-secondary)", marginTop: "0.25rem", whiteSpace: "pre-line" }}>{activeRep.committee_meetings?.agenda}</p>
+                      </div>
+
+                      {/* AI 종합 분석 결과 */}
+                      <div style={{ padding: "1.25rem", background: "rgba(255,255,255,0.02)", borderRadius: "8px", border: "1px solid var(--border-color)" }}>
+                        <strong style={{ fontSize: "0.9rem", color: "var(--text-primary)", display: "flex", alignItems: "center", gap: "0.3rem", marginBottom: "0.5rem" }}>
+                          <Cpu size={16} style={{ color: "var(--accent-color)" }} />
+                          RISE 사업단 AI 심의 분석서
+                        </strong>
+                        <div style={{ fontSize: "0.85rem", color: "var(--text-secondary)" }}>
+                          {renderMarkdownText(activeRep.ai_summary)}
+                        </div>
+                      </div>
+
+                      {/* 공식 회의록 인증 및 다운로드 단추 */}
+                      <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", marginTop: "1rem" }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", padding: "0.5rem 0.75rem", background: "rgba(59, 130, 246, 0.05)", borderRadius: "6px", border: "1px solid rgba(59, 130, 246, 0.2)", fontSize: "0.8rem", color: "#60a5fa" }}>
+                          <Award size={14} />
+                          <span>{activeRep.official_minutes}</span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => handleDownloadSignedPDF(activeRep)}
+                          disabled={isDownloadingPdf === activeRep.id}
+                          className="btn btn-primary"
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            gap: "0.4rem",
+                            padding: "0.5rem 1rem",
+                            fontSize: "0.82rem",
+                            borderRadius: "6px",
+                            cursor: "pointer",
+                            fontWeight: "bold",
+                            width: "fit-content",
+                            marginTop: "0.25rem",
+                            background: "linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)",
+                            border: "none",
+                            color: "#fff",
+                            boxShadow: "0 4px 6px -1px rgba(37, 99, 235, 0.2)"
+                          }}
+                        >
+                          {isDownloadingPdf === activeRep.id ? (
+                            <>
+                              <div className="spinner" style={{ width: "14px", height: "14px", border: "2px solid rgba(255,255,255,0.3)", borderTopColor: "#fff", borderRadius: "50%", animation: "spin 0.8s linear infinite", display: "inline-block", marginRight: "4px" }} />
+                              PDF 봉인 날인 중...
+                            </>
+                          ) : (
+                            <>
+                              <FileText size={15} />
+                              의결 결과보고서 다운로드 (디지털 봉인)
+                            </>
+                          )}
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })()}
+              </div>
+
+            </div>
+          )}
         </div>
       )}
 
