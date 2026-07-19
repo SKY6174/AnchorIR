@@ -12452,6 +12452,8 @@ const normalizeCategoryName = (name) => {
 
 function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, projects, selectedYear, darkMode }) {
   const [expandedUnits, setExpandedUnits] = React.useState({});
+  // PDF 다운로드 진행 상태 제어 (어느 탭에서 다운로드 중인지 기록)
+  const [isDownloadingPdf, setIsDownloadingPdf] = React.useState(null);
 
   const toggleUnit = (id) => {
     setExpandedUnits(prev => ({ ...prev, [id]: !prev[id] }));
@@ -12755,6 +12757,365 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
 
   const targetYear = 2024 + selectedYear;
 
+  // 천 단위 콤마 포맷팅 및 소수점 1자리 표기를 위한 공통 헬퍼 함수
+  const formatValue = (val) => {
+    if (val === undefined || val === null || val === 0) return "-";
+    return val.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+  };
+
+  // 1) 5개년 총괄 PDF 다운로드 핸들러
+  const handleExportFiveYearPDF = async () => {
+    setIsDownloadingPdf("five_year");
+    try {
+      await new Promise((resolve, reject) => {
+        if (window.html2pdf) return resolve(window.html2pdf);
+        const script = document.createElement("script");
+        script.src = "https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js";
+        script.onload = () => resolve(window.html2pdf);
+        script.onerror = reject;
+        document.head.appendChild(script);
+      });
+
+      const today = new Date();
+      const yyyy = today.getFullYear();
+      const mm = String(today.getMonth() + 1).padStart(2, '0');
+      const dd = String(today.getDate()).padStart(2, '0');
+      const fileName = `RISE_5개년_총괄_투자계획_${targetYear}_${yyyy}${mm}${dd}.pdf`;
+
+      let tableRowsHtml = "";
+      TOTAL_INVESTMENT_5YEAR_DATA.forEach((u) => {
+        const totalObj = u.total[5] || { main: 0, carry: 0 };
+        const mainSum = (totalObj.main || 0) + (totalObj.carry || 0);
+        
+        tableRowsHtml += `
+          <tr style="background: ${u.id === "Common" || u.id === "X0" ? "#fffbeb" : "#ffffff"}; font-weight: bold;">
+            <td style="border: 1px solid #d1d5db; padding: 8px 6px; font-size: 10px; font-weight: bold; text-align: left;">${u.title}</td>
+            <td style="border: 1px solid #d1d5db; padding: 8px 6px; text-align: right; font-size: 10px;">${formatValue(u.total[0].main + u.total[0].carry)}</td>
+            <td style="border: 1px solid #d1d5db; padding: 8px 6px; text-align: right; font-size: 10px; color: #1d4ed8;">${formatValue(u.total[1].main)}</td>
+            <td style="border: 1px solid #d1d5db; padding: 8px 6px; text-align: right; font-size: 10px; color: #047857;">${formatValue(u.total[1].carry)}</td>
+            <td style="border: 1px solid #d1d5db; padding: 8px 6px; text-align: right; font-size: 10px;">${formatValue(u.total[2].main)}</td>
+            <td style="border: 1px solid #d1d5db; padding: 8px 6px; text-align: right; font-size: 10px;">${formatValue(u.total[3].main)}</td>
+            <td style="border: 1px solid #d1d5db; padding: 8px 6px; text-align: right; font-size: 10px;">${formatValue(u.total[4].main)}</td>
+            <td style="border: 1px solid #d1d5db; padding: 8px 6px; text-align: right; font-size: 10px; font-weight: bold; color: #10b981;">${formatValue(mainSum)}</td>
+          </tr>
+        `;
+
+        u.categories.forEach((cat) => {
+          const catSum = (cat.values[5]?.main || 0) + (cat.values[5]?.carry || 0);
+          tableRowsHtml += `
+            <tr style="background: #fafafa; font-size: 9px; color: #4b5563;">
+              <td style="border: 1px solid #d1d5db; padding: 6px 6px 6px 18px; text-align: left;">&nbsp;&nbsp;└ ${cat.name}</td>
+              <td style="border: 1px solid #d1d5db; padding: 6px 6px; text-align: right;">${formatValue(cat.values[0].main + cat.values[0].carry)}</td>
+              <td style="border: 1px solid #d1d5db; padding: 6px 6px; text-align: right; color: #2563eb;">${formatValue(cat.values[1].main)}</td>
+              <td style="border: 1px solid #d1d5db; padding: 6px 6px; text-align: right; color: #059669;">${formatValue(cat.values[1].carry)}</td>
+              <td style="border: 1px solid #d1d5db; padding: 6px 6px; text-align: right;">${formatValue(cat.values[2].main)}</td>
+              <td style="border: 1px solid #d1d5db; padding: 6px 6px; text-align: right;">${formatValue(cat.values[3].main)}</td>
+              <td style="border: 1px solid #d1d5db; padding: 6px 6px; text-align: right;">${formatValue(cat.values[4].main)}</td>
+              <td style="border: 1px solid #d1d5db; padding: 6px 6px; text-align: right; font-weight: bold;">${formatValue(catSum)}</td>
+            </tr>
+          `;
+        });
+      });
+
+      const summaryLabels = ["총 사업비", "인건비", "그 밖의 사업운영비", "간접비", "총사업비 중 운영비"];
+      const summaryKeys = ["total", "labor", "operation", "indirect", "only_operation"];
+      summaryKeys.forEach((key, sIdx) => {
+        const rowData = TOTAL_INVESTMENT_SUMMARY_DATA[key];
+        const rowSum = (rowData[5]?.main || 0) + (rowData[5]?.carry || 0);
+        const isTotal = key === "total";
+        const isOnlyOp = key === "only_operation";
+
+        tableRowsHtml += `
+          <tr style="background: ${isTotal ? "#e0f2fe" : isOnlyOp ? "#ecfdf5" : "#f3f4f6"}; font-weight: bold; border-top: ${isTotal || isOnlyOp ? "2px solid #3b82f6" : "1px solid #d1d5db"};">
+            <td style="border: 1px solid #d1d5db; padding: 8px 6px; font-size: 10px; font-weight: bold; text-align: left;">${summaryLabels[sIdx]}</td>
+            <td style="border: 1px solid #d1d5db; padding: 8px 6px; text-align: right; font-size: 10px;">${formatValue(rowData[0].main + rowData[0].carry)}</td>
+            <td style="border: 1px solid #d1d5db; padding: 8px 6px; text-align: right; font-size: 10px; color: #1d4ed8;">${formatValue(rowData[1].main)}</td>
+            <td style="border: 1px solid #d1d5db; padding: 8px 6px; text-align: right; font-size: 10px; color: #047857;">${formatValue(rowData[1].carry)}</td>
+            <td style="border: 1px solid #d1d5db; padding: 8px 6px; text-align: right; font-size: 10px;">${formatValue(rowData[2].main)}</td>
+            <td style="border: 1px solid #d1d5db; padding: 8px 6px; text-align: right; font-size: 10px;">${formatValue(rowData[3].main)}</td>
+            <td style="border: 1px solid #d1d5db; padding: 8px 6px; text-align: right; font-size: 10px;">${formatValue(rowData[4].main)}</td>
+            <td style="border: 1px solid #d1d5db; padding: 8px 6px; text-align: right; font-size: 10px; font-weight: bold; color: ${isTotal ? "#0369a1" : "#047857"};">${formatValue(rowSum)}</td>
+          </tr>
+        `;
+      });
+
+      const htmlContent = `
+        <div style="padding: 0; font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif; color: #333333; background: #ffffff; width: 100%;">
+          <h1 style="text-align: center; font-size: 18px; font-weight: 800; margin-bottom: 5px; color: #111827;">울산과학대학교 RISE 사업비 5개년 총괄 투자 계획</h1>
+          <p style="text-align: center; font-size: 11px; color: #6b7280; margin-bottom: 20px;">[${targetYear}년도 기준 조회] 5개년 총괄 투자 현황 (단위: 백만원)</p>
+          
+          <table style="width: 100%; border-collapse: collapse; font-size: 9.5px; color: #111827; border: 1px solid #d1d5db; table-layout: fixed;">
+            <colgroup>
+              <col style="width: 25%;" />
+              <col style="width: 10%;" />
+              <col style="width: 11%;" />
+              <col style="width: 11%;" />
+              <col style="width: 10%;" />
+              <col style="width: 10%;" />
+              <col style="width: 10%;" />
+              <col style="width: 13%;" />
+            </colgroup>
+            <thead>
+              <tr style="background: #f3f4f6; font-weight: bold;">
+                <th rowspan="2" style="border: 1px solid #d1d5db; text-align: center; font-size: 10.5px; vertical-align: middle; padding: 8px 4px;">구분</th>
+                <th rowspan="2" style="border: 1px solid #d1d5db; text-align: center; font-size: 10.5px; vertical-align: middle; padding: 8px 4px;">2025</th>
+                <th colspan="2" style="border: 1px solid #d1d5db; text-align: center; font-size: 10.5px; padding: 6px 4px;">2026</th>
+                <th rowspan="2" style="border: 1px solid #d1d5db; text-align: center; font-size: 10.5px; vertical-align: middle; padding: 8px 4px;">2027</th>
+                <th rowspan="2" style="border: 1px solid #d1d5db; text-align: center; font-size: 10.5px; vertical-align: middle; padding: 8px 4px;">2028</th>
+                <th rowspan="2" style="border: 1px solid #d1d5db; text-align: center; font-size: 10.5px; vertical-align: middle; padding: 8px 4px;">2029</th>
+                <th rowspan="2" style="border: 1px solid #d1d5db; text-align: center; font-size: 10.5px; vertical-align: middle; padding: 8px 4px; color: #3b82f6;">합계</th>
+              </tr>
+              <tr style="background: #f9fafb;">
+                <th style="border: 1px solid #d1d5db; text-align: center; font-size: 9px; color: #1d4ed8; padding: 5px 2px;">본사업</th>
+                <th style="border: 1px solid #d1d5db; text-align: center; font-size: 9px; color: #047857; padding: 5px 2px;">이월사업</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${tableRowsHtml}
+            </tbody>
+          </table>
+          
+          <div style="margin-top: 30px; font-size: 9px; color: #9ca3af; text-align: right;">
+            울산과학대학교 RISE사업단 | 출력 일자: ${yyyy}-${mm}-${dd}
+          </div>
+        </div>
+      `;
+
+      const opt = {
+        margin: [22.5, 20, 22.5, 20],
+        filename: fileName,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true, logging: false },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
+      };
+
+      await html2pdf().from(htmlContent).set(opt).save();
+    } catch (err) {
+      alert("PDF 다운로드 도중 에러가 발생하였습니다: " + err.message);
+    } finally {
+      setIsDownloadingPdf(null);
+    }
+  };
+
+  // 2) 5개년 총괄 Markdown 다운로드 핸들러
+  const handleExportFiveYearMarkdown = () => {
+    try {
+      const today = new Date();
+      const yyyy = today.getFullYear();
+      const mm = String(today.getMonth() + 1).padStart(2, '0');
+      const dd = String(today.getDate()).padStart(2, '0');
+
+      let md = `# 울산과학대학교 RISE 사업비 5개년 총괄 투자 계획\n\n`;
+      md += `* 조회 차년도 기준: ${targetYear}년도 (${selectedYear}차년도)\n`;
+      md += `* 생성일자: ${yyyy}-${mm}-${dd}\n\n`;
+      md += `| 구분 | 2025 | 2026 (본사업) | 2026 (이월사업) | 2027 | 2028 | 2029 | 합계 |\n`;
+      md += `| :--- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |\n`;
+
+      TOTAL_INVESTMENT_5YEAR_DATA.forEach((u) => {
+        const totalObj = u.total[5] || { main: 0, carry: 0 };
+        const mainSum = (totalObj.main || 0) + (totalObj.carry || 0);
+        md += `| **${u.title}** | ${formatValue(u.total[0].main + u.total[0].carry)} | ${formatValue(u.total[1].main)} | ${formatValue(u.total[1].carry)} | ${formatValue(u.total[2].main)} | ${formatValue(u.total[3].main)} | ${formatValue(u.total[4].main)} | **${formatValue(mainSum)}** |\n`;
+        u.categories.forEach((cat) => {
+          const catSum = (cat.values[5]?.main || 0) + (cat.values[5]?.carry || 0);
+          md += `| &nbsp;&nbsp;&nbsp;&nbsp;└ ${cat.name} | ${formatValue(cat.values[0].main + cat.values[0].carry)} | ${formatValue(cat.values[1].main)} | ${formatValue(cat.values[1].carry)} | ${formatValue(cat.values[2].main)} | ${formatValue(cat.values[3].main)} | ${formatValue(cat.values[4].main)} | ${formatValue(catSum)} |\n`;
+        });
+      });
+
+      md += `| | | | | | | | |\n`;
+      md += `| **[총괄 요약]** | | | | | | | |\n`;
+
+      const summaryLabels = ["총 사업비", "인건비", "그 밖의 사업운영비", "간접비", "총사업비 중 운영비"];
+      const summaryKeys = ["total", "labor", "operation", "indirect", "only_operation"];
+      summaryKeys.forEach((key, sIdx) => {
+        const rowData = TOTAL_INVESTMENT_SUMMARY_DATA[key];
+        const rowSum = (rowData[5]?.main || 0) + (rowData[5]?.carry || 0);
+        md += `| **${summaryLabels[sIdx]}** | ${formatValue(rowData[0].main + rowData[0].carry)} | ${formatValue(rowData[1].main)} | ${formatValue(rowData[1].carry)} | ${formatValue(rowData[2].main)} | ${formatValue(rowData[3].main)} | ${formatValue(rowData[4].main)} | **${formatValue(rowSum)}** |\n`;
+      });
+
+      const blob = new Blob([md], { type: "text/markdown;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `RISE_5개년_총괄_투자계획_${targetYear}_${yyyy}${mm}${dd}.md`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      alert("마크다운 내보내기 도중 에러가 발생하였습니다: " + err.message);
+    }
+  };
+
+  // 3) 연차별 계획 PDF 다운로드 핸들러
+  const handleExportAnnualPDF = async () => {
+    setIsDownloadingPdf("annual");
+    try {
+      await new Promise((resolve, reject) => {
+        if (window.html2pdf) return resolve(window.html2pdf);
+        const script = document.createElement("script");
+        script.src = "https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js";
+        script.onload = () => resolve(window.html2pdf);
+        script.onerror = reject;
+        document.head.appendChild(script);
+      });
+
+      const today = new Date();
+      const yyyy = today.getFullYear();
+      const mm = String(today.getMonth() + 1).padStart(2, '0');
+      const dd = String(today.getDate()).padStart(2, '0');
+      const fileName = `RISE_${targetYear}년도_재원별_투자계획_${yyyy}${mm}${dd}.pdf`;
+
+      let tableRowsHtml = "";
+      ANNUAL_INVESTMENT_DATA.forEach((u) => {
+        tableRowsHtml += `
+          <tr style="background: ${u.id === "Common" || u.id === "X0" ? "#fffbeb" : "#ffffff"}; font-weight: bold;">
+            <td style="border: 1px solid #d1d5db; padding: 8px 6px; font-size: 10px; font-weight: bold; text-align: left;">${u.title}</td>
+            <td style="border: 1px solid #d1d5db; padding: 8px 6px; text-align: right; font-size: 10px;">${formatValue(u.total[0])}</td>
+            <td style="border: 1px solid #d1d5db; padding: 8px 6px; text-align: right; font-size: 10px;">${formatValue(u.total[1])}</td>
+            <td style="border: 1px solid #d1d5db; padding: 8px 6px; text-align: right; font-size: 10px;">${formatValue(u.total[2])}</td>
+            <td style="border: 1px solid #d1d5db; padding: 8px 6px; text-align: right; font-size: 10px; font-weight: bold; color: #10b981;">${formatValue(u.total[3])}</td>
+            <td style="border: 1px solid #d1d5db; padding: 8px 6px; text-align: center; font-size: 10px;">100%</td>
+          </tr>
+        `;
+
+        u.categories.forEach((cat) => {
+          tableRowsHtml += `
+            <tr style="background: #fafafa; font-size: 9px; color: #4b5563;">
+              <td style="border: 1px solid #d1d5db; padding: 6px 6px 6px 18px; text-align: left;">&nbsp;&nbsp;└ ${cat.name}</td>
+              <td style="border: 1px solid #d1d5db; padding: 6px 6px; text-align: right;">${formatValue(cat.values[0])}</td>
+              <td style="border: 1px solid #d1d5db; padding: 6px 6px; text-align: right;">${formatValue(cat.values[1])}</td>
+              <td style="border: 1px solid #d1d5db; padding: 6px 6px; text-align: right;">${formatValue(cat.values[2])}</td>
+              <td style="border: 1px solid #d1d5db; padding: 6px 6px; text-align: right; font-weight: bold;">${formatValue(cat.values[3])}</td>
+              <td style="border: 1px solid #d1d5db; padding: 6px 6px; text-align: center;">${cat.values[4].toFixed(1)}%</td>
+            </tr>
+          `;
+        });
+      });
+
+      const summaryRows = [
+        { label: "총 사업비", values: [annualTotalNat, annualTotalCity, annualTotalExt, annualTotalSum, 100.0] },
+        { label: "인건비", values: [annualLaborNat, annualLaborCity, annualLaborExt, annualLaborSum, annualLaborRatio] },
+        { label: "그 밖의 사업운영비", values: [annualOpNat, annualOpCity, annualOpExt, annualOpSum, annualOpRatio] },
+        { label: "간접비", values: [annualIndNat, annualIndCity, annualIndExt, annualIndSum, annualIndRatio] },
+        { label: "총사업비 중 운영비", values: [annualOnlyOpNat, annualOnlyOpCity, annualOnlyOpExt, annualOnlyOpSum, annualOnlyOpRatio] }
+      ];
+
+      summaryRows.forEach((row) => {
+        const isTotal = row.label === "총 사업비";
+        const isOnlyOp = row.label === "총사업비 중 운영비";
+
+        tableRowsHtml += `
+          <tr style="background: ${isTotal ? "#e0f2fe" : isOnlyOp ? "#ecfdf5" : "#f3f4f6"}; font-weight: bold; border-top: ${isTotal || isOnlyOp ? "2px solid #3b82f6" : "1px solid #d1d5db"};">
+            <td style="border: 1px solid #d1d5db; padding: 8px 6px; font-size: 10px; font-weight: bold; text-align: left;">${row.label}</td>
+            <td style="border: 1px solid #d1d5db; padding: 8px 6px; text-align: right; font-size: 10px;">${formatValue(row.values[0])}</td>
+            <td style="border: 1px solid #d1d5db; padding: 8px 6px; text-align: right; font-size: 10px;">${formatValue(row.values[1])}</td>
+            <td style="border: 1px solid #d1d5db; padding: 8px 6px; text-align: right; font-size: 10px;">${formatValue(row.values[2])}</td>
+            <td style="border: 1px solid #d1d5db; padding: 8px 6px; text-align: right; font-size: 10px; font-weight: bold; color: ${isTotal ? "#0369a1" : "#047857"};">${formatValue(row.values[3])}</td>
+            <td style="border: 1px solid #d1d5db; padding: 8px 6px; text-align: center; font-size: 10px;">${row.values[4].toFixed(1)}%</td>
+          </tr>
+        `;
+      });
+
+      const htmlContent = `
+        <div style="padding: 0; font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif; color: #333333; background: #ffffff; width: 100%;">
+          <h1 style="text-align: center; font-size: 18px; font-weight: 800; margin-bottom: 5px; color: #111827;">울산과학대학교 RISE 사업비 ${targetYear}년도 재원별 투자 계획</h1>
+          <p style="text-align: center; font-size: 11px; color: #6b7280; margin-bottom: 20px;">연차별 재원 안분 현황 (단위: 백만원)</p>
+          
+          <table style="width: 100%; border-collapse: collapse; font-size: 9.5px; color: #111827; border: 1px solid #d1d5db; table-layout: fixed;">
+            <colgroup>
+              <col style="width: 35%;" />
+              <col style="width: 13%;" />
+              <col style="width: 13%;" />
+              <col style="width: 13%;" />
+              <col style="width: 14%;" />
+              <col style="width: 12%;" />
+            </colgroup>
+            <thead>
+              <tr style="background: #f3f4f6; font-weight: bold;">
+                <th style="border: 1px solid #d1d5db; text-align: center; font-size: 10.5px; padding: 9px 4px;">구분</th>
+                <th style="border: 1px solid #d1d5db; text-align: center; font-size: 10.5px; padding: 9px 4px;">국비</th>
+                <th style="border: 1px solid #d1d5db; text-align: center; font-size: 10.5px; padding: 9px 4px;">시비</th>
+                <th style="border: 1px solid #d1d5db; text-align: center; font-size: 10.5px; padding: 9px 4px;">외부사업비</th>
+                <th style="border: 1px solid #d1d5db; text-align: center; font-size: 10.5px; padding: 9px 4px; color: #3b82f6;">합계</th>
+                <th style="border: 1px solid #d1d5db; text-align: center; font-size: 10.5px; padding: 9px 4px;">비율 (%)</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${tableRowsHtml}
+            </tbody>
+          </table>
+          
+          <div style="margin-top: 30px; font-size: 9px; color: #9ca3af; text-align: right;">
+            울산과학대학교 RISE사업단 | 출력 일자: ${yyyy}-${mm}-${dd}
+          </div>
+        </div>
+      `;
+
+      const opt = {
+        margin: [22.5, 20, 22.5, 20],
+        filename: fileName,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true, logging: false },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      };
+
+      await html2pdf().from(htmlContent).set(opt).save();
+    } catch (err) {
+      alert("PDF 다운로드 도중 에러가 발생하였습니다: " + err.message);
+    } finally {
+      setIsDownloadingPdf(null);
+    }
+  };
+
+  // 4) 연차별 계획 Markdown 다운로드 핸들러
+  const handleExportAnnualMarkdown = () => {
+    try {
+      const today = new Date();
+      const yyyy = today.getFullYear();
+      const mm = String(today.getMonth() + 1).padStart(2, '0');
+      const dd = String(today.getDate()).padStart(2, '0');
+
+      let md = `# 울산과학대학교 RISE 사업비 ${targetYear}년도 재원별 계획\n\n`;
+      md += `* 생성일자: ${yyyy}-${mm}-${dd}\n\n`;
+      md += `| ${targetYear}년도 구분 | 국비 | 시비 | 외부사업비 | 합계 | 비율 (%) |\n`;
+      md += `| :--- | ---: | ---: | ---: | ---: | ---: |\n`;
+
+      ANNUAL_INVESTMENT_DATA.forEach((u) => {
+        md += `| **${u.title}** | ${formatValue(u.total[0])} | ${formatValue(u.total[1])} | ${formatValue(u.total[2])} | **${formatValue(u.total[3])}** | 100% |\n`;
+        u.categories.forEach((cat) => {
+          md += `| &nbsp;&nbsp;&nbsp;&nbsp;└ ${cat.name} | ${formatValue(cat.values[0])} | ${formatValue(cat.values[1])} | ${formatValue(cat.values[2])} | ${formatValue(cat.values[3])} | ${cat.values[4].toFixed(1)}% |\n`;
+        });
+      });
+
+      md += `| | | | | | |\n`;
+      md += `| **[재원별 요약]** | | | | | |\n`;
+
+      const summaryRows = [
+        { label: "총 사업비", values: [annualTotalNat, annualTotalCity, annualTotalExt, annualTotalSum, 100.0] },
+        { label: "인건비", values: [annualLaborNat, annualLaborCity, annualLaborExt, annualLaborSum, annualLaborRatio] },
+        { label: "그 밖의 사업운영비", values: [annualOpNat, annualOpCity, annualOpExt, annualOpSum, annualOpRatio] },
+        { label: "간접비", values: [annualIndNat, annualIndCity, annualIndExt, annualIndSum, annualIndRatio] },
+        { label: "총사업비 중 운영비", values: [annualOnlyOpNat, annualOnlyOpCity, annualOnlyOpExt, annualOnlyOpSum, annualOnlyOpRatio] }
+      ];
+
+      summaryRows.forEach((row) => {
+        md += `| **${row.label}** | ${formatValue(row.values[0])} | ${formatValue(row.values[1])} | ${formatValue(row.values[2])} | **${formatValue(row.values[3])}** | ${row.values[4].toFixed(1)}% |\n`;
+      });
+
+      const blob = new Blob([md], { type: "text/markdown;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `RISE_${targetYear}년도_재원별_계획_${yyyy}${mm}${dd}.md`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      alert("마크다운 내보내기 도중 에러가 발생하였습니다: " + err.message);
+    }
+  };
+
   const getNormalizedUnitId = (id) => {
     if (id === "Common" || id === "X0") return id;
     const match = id.match(/^[A-D][1-4]/);
@@ -12865,11 +13226,6 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
   };
 
   const renderFiveYear = () => {
-    const formatValue = (val) => {
-      if (val === undefined || val === null || val === 0) return "-";
-      return val.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
-    };
-
     const fiveYearUnitTotals = {};
     let totalSumVal = 0;
     TOTAL_INVESTMENT_5YEAR_DATA.forEach(u => {
@@ -12904,6 +13260,110 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
 
     return (
       <div className="table-panel">
+        {/* 💡 [요구사항 반영] 5개년 총괄 내보내기 버튼 그룹 */}
+        <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.5rem", flexWrap: "wrap", marginBottom: "0.75rem" }}>
+          <button
+            type="button"
+            onClick={() => handleDownloadUnifiedExcel("five_year")}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "0.3rem",
+              padding: "0.45rem 0.85rem",
+              fontSize: "0.8rem",
+              fontWeight: "700",
+              borderRadius: "6px",
+              background: "rgba(16, 185, 129, 0.15)",
+              border: "1px solid rgba(16, 185, 129, 0.3)",
+              color: "#10b981",
+              cursor: "pointer",
+              transition: "all 0.2s"
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = "rgba(16, 185, 129, 0.25)";
+              e.currentTarget.style.transform = "translateY(-1px)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = "rgba(16, 185, 129, 0.15)";
+              e.currentTarget.style.transform = "translateY(0)";
+            }}
+          >
+            <FileSpreadsheet size={14} />
+            Excel 다운로드
+          </button>
+
+          <button
+            type="button"
+            onClick={handleExportFiveYearPDF}
+            disabled={isDownloadingPdf === "five_year"}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "0.3rem",
+              padding: "0.45rem 0.85rem",
+              fontSize: "0.8rem",
+              fontWeight: "700",
+              borderRadius: "6px",
+              background: "rgba(239, 68, 68, 0.15)",
+              border: "1px solid rgba(239, 68, 68, 0.3)",
+              color: "#ef4444",
+              cursor: isDownloadingPdf === "five_year" ? "not-allowed" : "pointer",
+              transition: "all 0.2s"
+            }}
+            onMouseEnter={(e) => {
+              if (isDownloadingPdf !== "five_year") {
+                e.currentTarget.style.background = "rgba(239, 68, 68, 0.25)";
+                e.currentTarget.style.transform = "translateY(-1px)";
+              }
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = "rgba(239, 68, 68, 0.15)";
+              e.currentTarget.style.transform = "translateY(0)";
+            }}
+          >
+            {isDownloadingPdf === "five_year" ? (
+              <>
+                <div className="spinner" style={{ width: "12px", height: "12px", border: "2px solid rgba(239,68,68,0.3)", borderTopColor: "#ef4444", borderRadius: "50%", animation: "spin 0.8s linear infinite", display: "inline-block", marginRight: "4px" }} />
+                PDF 내보내는 중...
+              </>
+            ) : (
+              <>
+                <FileText size={14} />
+                PDF 다운로드
+              </>
+            )}
+          </button>
+
+          <button
+            type="button"
+            onClick={handleExportFiveYearMarkdown}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "0.3rem",
+              padding: "0.45rem 0.85rem",
+              fontSize: "0.8rem",
+              fontWeight: "700",
+              borderRadius: "6px",
+              background: "rgba(59, 130, 246, 0.15)",
+              border: "1px solid rgba(59, 130, 246, 0.3)",
+              color: "#3b82f6",
+              cursor: "pointer",
+              transition: "all 0.2s"
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = "rgba(59, 130, 246, 0.25)";
+              e.currentTarget.style.transform = "translateY(-1px)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = "rgba(59, 130, 246, 0.15)";
+              e.currentTarget.style.transform = "translateY(0)";
+            }}
+          >
+            <Download size={14} />
+            Markdown 다운로드
+          </button>
+        </div>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "0.75rem 1.25rem", background: "rgba(59, 130, 246, 0.05)", borderLeft: "4px solid var(--accent-color)", borderRadius: "4px", marginBottom: "1rem", fontSize: "0.8rem", color: "var(--text-secondary)", lineHeight: "1.4" }}>
           <span>💡 2차년도 사업비는 본사업비와 이월사업비로 구성되며, 타 연차는 본사업비만을 나타냄.</span>
           <span style={{ fontWeight: "700", color: "var(--accent-color)" }}>(단위: 백만원)</span>
@@ -13167,11 +13627,6 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
   };
 
   const renderAnnual = () => {
-    const formatValue = (val) => {
-      if (val === undefined || val === null || val === 0) return "-";
-      return val.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
-    };
-
     // (1) 당해년도 단위과제별 예산(국비+시비) 비율 가공
     const annualUnitTotals = {};
     let annualTotalGovSum = 0;
@@ -13213,6 +13668,110 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
 
     return (
       <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+        {/* 💡 [요구사항 반영] 연차별 계획 내보내기 버튼 그룹 */}
+        <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.5rem", flexWrap: "wrap", marginBottom: "0.25rem" }}>
+          <button
+            type="button"
+            onClick={() => handleDownloadUnifiedExcel("annual")}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "0.3rem",
+              padding: "0.45rem 0.85rem",
+              fontSize: "0.8rem",
+              fontWeight: "700",
+              borderRadius: "6px",
+              background: "rgba(16, 185, 129, 0.15)",
+              border: "1px solid rgba(16, 185, 129, 0.3)",
+              color: "#10b981",
+              cursor: "pointer",
+              transition: "all 0.2s"
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = "rgba(16, 185, 129, 0.25)";
+              e.currentTarget.style.transform = "translateY(-1px)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = "rgba(16, 185, 129, 0.15)";
+              e.currentTarget.style.transform = "translateY(0)";
+            }}
+          >
+            <FileSpreadsheet size={14} />
+            Excel 다운로드
+          </button>
+
+          <button
+            type="button"
+            onClick={handleExportAnnualPDF}
+            disabled={isDownloadingPdf === "annual"}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "0.3rem",
+              padding: "0.45rem 0.85rem",
+              fontSize: "0.8rem",
+              fontWeight: "700",
+              borderRadius: "6px",
+              background: "rgba(239, 68, 68, 0.15)",
+              border: "1px solid rgba(239, 68, 68, 0.3)",
+              color: "#ef4444",
+              cursor: isDownloadingPdf === "annual" ? "not-allowed" : "pointer",
+              transition: "all 0.2s"
+            }}
+            onMouseEnter={(e) => {
+              if (isDownloadingPdf !== "annual") {
+                e.currentTarget.style.background = "rgba(239, 68, 68, 0.25)";
+                e.currentTarget.style.transform = "translateY(-1px)";
+              }
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = "rgba(239, 68, 68, 0.15)";
+              e.currentTarget.style.transform = "translateY(0)";
+            }}
+          >
+            {isDownloadingPdf === "annual" ? (
+              <>
+                <div className="spinner" style={{ width: "12px", height: "12px", border: "2px solid rgba(239,68,68,0.3)", borderTopColor: "#ef4444", borderRadius: "50%", animation: "spin 0.8s linear infinite", display: "inline-block", marginRight: "4px" }} />
+                PDF 내보내는 중...
+              </>
+            ) : (
+              <>
+                <FileText size={14} />
+                PDF 다운로드
+              </>
+            )}
+          </button>
+
+          <button
+            type="button"
+            onClick={handleExportAnnualMarkdown}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "0.3rem",
+              padding: "0.45rem 0.85rem",
+              fontSize: "0.8rem",
+              fontWeight: "700",
+              borderRadius: "6px",
+              background: "rgba(59, 130, 246, 0.15)",
+              border: "1px solid rgba(59, 130, 246, 0.3)",
+              color: "#3b82f6",
+              cursor: "pointer",
+              transition: "all 0.2s"
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = "rgba(59, 130, 246, 0.25)";
+              e.currentTarget.style.transform = "translateY(-1px)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = "rgba(59, 130, 246, 0.15)";
+              e.currentTarget.style.transform = "translateY(0)";
+            }}
+          >
+            <Download size={14} />
+            Markdown 다운로드
+          </button>
+        </div>
         {/* 요약 연차 정보 헤더 */}
         <div style={{ padding: "0.5rem 0", display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
           <div>
