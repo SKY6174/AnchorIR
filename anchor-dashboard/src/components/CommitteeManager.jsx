@@ -1397,7 +1397,7 @@ ${opinionsContext}
       let htmlContent = `
         <div style="width: 100%; background: #ffffff; color: #000000; font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif; box-sizing: border-box; text-align: left; padding: 10mm 5mm;">
           <div style="border: 2px solid #000; padding: 1.5rem; margin-bottom: 2rem;">
-          <h1 style="text-align: center; font-size: 24px; font-weight: 900; letter-spacing: 2px; margin-bottom: 1rem; color: #000;">위  원  회  의  결  결  과  보  고  서</h1>
+          <h1 style="text-align: center; font-size: 24px; font-weight: 900; letter-spacing: 2px; margin-bottom: 1rem; color: #000;">위원회  의결  결과보고서</h1>
           <table style="width: 100%; border-collapse: collapse; margin-top: 1rem; font-size: 13px; color: #000;">
             <tr>
               <td style="border: 1px solid #000; padding: 6px 12px; font-weight: bold; background: #f3f4f6; width: 20%;">위원회명</td>
