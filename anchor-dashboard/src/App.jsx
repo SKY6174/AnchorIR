@@ -12780,7 +12780,71 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
       const yyyy = today.getFullYear();
       const mm = String(today.getMonth() + 1).padStart(2, '0');
       const dd = String(today.getDate()).padStart(2, '0');
-      const fileName = `RISE_5개년_총괄_투자계획_${targetYear}_${yyyy}${mm}${dd}.pdf`;
+      const fileName = `앵커사업비_5개년_총괄_투자계획_${targetYear}_${yyyy}${mm}${dd}.pdf`;
+
+      // 💡 [요구사항 반영] 5개년 단위과제별 예산 합산 비율 차트 데이터 가공
+      const fiveYearUnitTotals = {};
+      let totalSumVal = 0;
+      TOTAL_INVESTMENT_5YEAR_DATA.forEach(u => {
+        const normId = getNormalizedUnitId(u.id);
+        const totalObj = u.total[5] || { main: 0, carry: 0 };
+        const val = (totalObj.main || 0) + (totalObj.carry || 0);
+        if (val > 0) {
+          fiveYearUnitTotals[normId] = (fiveYearUnitTotals[normId] || 0) + val;
+          totalSumVal += val;
+        }
+      });
+
+      const fiveYearChartItems = Object.entries(fiveYearUnitTotals).map(([id, val]) => {
+        let displayName = id;
+        if (id === "Common") displayName = "공통경비";
+        else if (id === "X0") displayName = "X0(공통)";
+        return {
+          id,
+          name: displayName,
+          value: val,
+          ratio: totalSumVal > 0 ? (val / totalSumVal) * 100 : 0,
+          color: getUnitColor(id)
+        };
+      }).sort((a, b) => {
+        const order = ["A1", "A2", "A3", "B1", "B2", "B3", "B4", "C1", "C2", "C3", "D1", "D2", "D3", "D4", "Common", "X0"];
+        const idxA = order.indexOf(a.id);
+        const idxB = order.indexOf(b.id);
+        const posA = idxA === -1 ? 999 : idxA;
+        const posB = idxB === -1 ? 999 : idxB;
+        return posA - posB;
+      });
+
+      let barDivsHtml = "";
+      let legendItemsHtml = "";
+      fiveYearChartItems.forEach((item) => {
+        if (item.value > 0) {
+          barDivsHtml += `<div style="width: ${item.ratio}%; background: ${item.color}; height: 100%;"></div>`;
+          legendItemsHtml += `
+            <div style="display: flex; align-items: center; gap: 4px; font-size: 8.5px; margin-right: 12px; margin-bottom: 4px; white-space: nowrap;">
+              <span style="width: 7px; height: 7px; border-radius: 50%; background: ${item.color}; display: inline-block; flex-shrink: 0;"></span>
+              <span style="font-weight: 700; color: #111827;">${item.name}</span>
+              <span style="color: #4b5563;">${item.ratio.toFixed(1)}%</span>
+              <span style="color: #6b7280; font-size: 7.5px;">(${formatValue(item.value)})</span>
+            </div>
+          `;
+        }
+      });
+
+      const progressBarHtml = `
+        <div style="background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 6px; padding: 10px; margin-bottom: 15px; display: flex; flex-direction: column; gap: 8px; width: 100%; box-sizing: border-box;">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size: 10px; font-weight: bold; color: #111827;">📊 5개년 단위과제별 예산 합산 비율</span>
+            <span style="font-size: 9px; color: #4b5563; font-weight: bold;">총 ${formatValue(totalSumVal)}백만 원</span>
+          </div>
+          <div style="width: 100%; height: 14px; display: flex; border-radius: 7px; overflow: hidden; background: #e5e7eb;">
+            ${barDivsHtml}
+          </div>
+          <div style="display: flex; flex-wrap: wrap; margin-top: 2px;">
+            ${legendItemsHtml}
+          </div>
+        </div>
+      `;
 
       let tableRowsHtml = "";
       TOTAL_INVESTMENT_5YEAR_DATA.forEach((u) => {
@@ -12841,8 +12905,10 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
 
       const htmlContent = `
         <div style="padding: 0; font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif; color: #333333; background: #ffffff; width: 100%;">
-          <h1 style="text-align: center; font-size: 18px; font-weight: 800; margin-bottom: 5px; color: #111827;">울산과학대학교 RISE 사업비 5개년 총괄 투자 계획</h1>
+          <h1 style="text-align: center; font-size: 18px; font-weight: 800; margin-bottom: 5px; color: #111827;">울산과학대학교 앵커사업비 5개년 총괄 투자 계획</h1>
           <p style="text-align: center; font-size: 11px; color: #6b7280; margin-bottom: 20px;">[${targetYear}년도 기준 조회] 5개년 총괄 투자 현황 (단위: 백만원)</p>
+          
+          ${progressBarHtml}
           
           <table style="width: 100%; border-collapse: collapse; font-size: 9.5px; color: #111827; border: 1px solid #d1d5db; table-layout: fixed;">
             <colgroup>
@@ -12856,18 +12922,18 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
               <col style="width: 13%;" />
             </colgroup>
             <thead>
-              <tr style="background: #f3f4f6; font-weight: bold;">
-                <th rowspan="2" style="border: 1px solid #d1d5db; text-align: center; font-size: 10.5px; vertical-align: middle; padding: 8px 4px;">구분</th>
-                <th rowspan="2" style="border: 1px solid #d1d5db; text-align: center; font-size: 10.5px; vertical-align: middle; padding: 8px 4px;">2025</th>
-                <th colspan="2" style="border: 1px solid #d1d5db; text-align: center; font-size: 10.5px; padding: 6px 4px;">2026</th>
-                <th rowspan="2" style="border: 1px solid #d1d5db; text-align: center; font-size: 10.5px; vertical-align: middle; padding: 8px 4px;">2027</th>
-                <th rowspan="2" style="border: 1px solid #d1d5db; text-align: center; font-size: 10.5px; vertical-align: middle; padding: 8px 4px;">2028</th>
-                <th rowspan="2" style="border: 1px solid #d1d5db; text-align: center; font-size: 10.5px; vertical-align: middle; padding: 8px 4px;">2029</th>
-                <th rowspan="2" style="border: 1px solid #d1d5db; text-align: center; font-size: 10.5px; vertical-align: middle; padding: 8px 4px; color: #3b82f6;">합계</th>
+              <tr style="background: transparent; font-weight: bold;">
+                <th rowspan="2" style="border: 1px solid #d1d5db; text-align: center; font-size: 10.5px; vertical-align: middle; padding: 8px 4px; background: #f3f4f6;">구분</th>
+                <th rowspan="2" style="border: 1px solid #d1d5db; text-align: center; font-size: 10.5px; vertical-align: middle; padding: 8px 4px; background: #f3f4f6;">2025</th>
+                <th colspan="2" style="border: 1px solid #d1d5db; text-align: center; font-size: 10.5px; padding: 6px 4px; background: #f3f4f6;">2026</th>
+                <th rowspan="2" style="border: 1px solid #d1d5db; text-align: center; font-size: 10.5px; vertical-align: middle; padding: 8px 4px; background: #f3f4f6;">2027</th>
+                <th rowspan="2" style="border: 1px solid #d1d5db; text-align: center; font-size: 10.5px; vertical-align: middle; padding: 8px 4px; background: #f3f4f6;">2028</th>
+                <th rowspan="2" style="border: 1px solid #d1d5db; text-align: center; font-size: 10.5px; vertical-align: middle; padding: 8px 4px; background: #f3f4f6;">2029</th>
+                <th rowspan="2" style="border: 1px solid #d1d5db; text-align: center; font-size: 10.5px; vertical-align: middle; padding: 8px 4px; color: #3b82f6; background: #f3f4f6;">합계</th>
               </tr>
-              <tr style="background: #f9fafb;">
-                <th style="border: 1px solid #d1d5db; text-align: center; font-size: 9px; color: #1d4ed8; padding: 5px 2px;">본사업</th>
-                <th style="border: 1px solid #d1d5db; text-align: center; font-size: 9px; color: #047857; padding: 5px 2px;">이월사업</th>
+              <tr style="background: transparent;">
+                <th style="border: 1px solid #d1d5db; text-align: center; font-size: 9px; color: #1d4ed8; padding: 5px 2px; background: #f9fafb;">본사업</th>
+                <th style="border: 1px solid #d1d5db; text-align: center; font-size: 9px; color: #047857; padding: 5px 2px; background: #f9fafb;">이월사업</th>
               </tr>
             </thead>
             <tbody>
@@ -12876,7 +12942,7 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
           </table>
           
           <div style="margin-top: 30px; font-size: 9px; color: #9ca3af; text-align: right;">
-            울산과학대학교 RISE사업단 | 출력 일자: ${yyyy}-${mm}-${dd}
+            울산과학대학교 앵커사업단 | 출력 일자: ${yyyy}-${mm}-${dd}
           </div>
         </div>
       `;
@@ -12905,7 +12971,7 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
       const mm = String(today.getMonth() + 1).padStart(2, '0');
       const dd = String(today.getDate()).padStart(2, '0');
 
-      let md = `# 울산과학대학교 RISE 사업비 5개년 총괄 투자 계획\n\n`;
+      let md = `# 울산과학대학교 앵커사업비 5개년 총괄 투자 계획\n\n`;
       md += `* 조회 차년도 기준: ${targetYear}년도 (${selectedYear}차년도)\n`;
       md += `* 생성일자: ${yyyy}-${mm}-${dd}\n\n`;
       md += `| 구분 | 2025 | 2026 (본사업) | 2026 (이월사업) | 2027 | 2028 | 2029 | 합계 |\n`;
@@ -12936,7 +13002,7 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
-      link.download = `RISE_5개년_총괄_투자계획_${targetYear}_${yyyy}${mm}${dd}.md`;
+      link.download = `앵커사업비_5개년_총괄_투자계획_${targetYear}_${yyyy}${mm}${dd}.md`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -12963,7 +13029,112 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
       const yyyy = today.getFullYear();
       const mm = String(today.getMonth() + 1).padStart(2, '0');
       const dd = String(today.getDate()).padStart(2, '0');
-      const fileName = `RISE_${targetYear}년도_재원별_투자계획_${yyyy}${mm}${dd}.pdf`;
+      const fileName = `앵커사업비_${targetYear}년도_재원별_투자계획_${yyyy}${mm}${dd}.pdf`;
+
+      // 💡 [요구사항 반영] (1) 연차별 단위과제별 예산 비율 차트 데이터 가공
+      const annualUnitTotals = {};
+      let annualTotalGovSum = 0;
+      ANNUAL_INVESTMENT_DATA.forEach(u => {
+        const normId = getNormalizedUnitId(u.id);
+        const val = (u.total[0] || 0) + (u.total[1] || 0); // 국비 + 시비
+        if (val > 0) {
+          annualUnitTotals[normId] = (annualUnitTotals[normId] || 0) + val;
+          annualTotalGovSum += val;
+        }
+      });
+
+      const annualUnitChartItems = Object.entries(annualUnitTotals).map(([id, val]) => {
+        let displayName = id;
+        if (id === "Common") displayName = "공통경비";
+        else if (id === "X0") displayName = "X0(공통)";
+        return {
+          id,
+          name: displayName,
+          value: val,
+          ratio: annualTotalGovSum > 0 ? (val / annualTotalGovSum) * 100 : 0,
+          color: getUnitColor(id)
+        };
+      }).sort((a, b) => {
+        const order = ["A1", "A2", "A3", "B1", "B2", "B3", "B4", "C1", "C2", "C3", "D1", "D2", "D3", "D4", "Common", "X0"];
+        const idxA = order.indexOf(a.id);
+        const idxB = order.indexOf(b.id);
+        const posA = idxA === -1 ? 999 : idxA;
+        const posB = idxB === -1 ? 999 : idxB;
+        return posA - posB;
+      });
+
+      // (2) 전체사업비 재원 구성 비율 가공
+      const sourceChartItems = [
+        { name: "국비", value: annualTotalNat, color: "#3b82f6" },
+        { name: "시비", value: annualTotalCity, color: "#10b981" },
+        { name: "외부사업비", value: annualTotalExt, color: "#f59e0b" }
+      ];
+
+      // HTML ProgressBar 스트링 생성 (1번 차트)
+      let barDivs1Html = "";
+      let legendItems1Html = "";
+      annualUnitChartItems.forEach((item) => {
+        if (item.value > 0) {
+          barDivs1Html += `<div style="width: ${item.ratio}%; background: ${item.color}; height: 100%;"></div>`;
+          legendItems1Html += `
+            <div style="display: flex; align-items: center; gap: 4px; font-size: 8.5px; margin-right: 12px; margin-bottom: 4px; white-space: nowrap;">
+              <span style="width: 7px; height: 7px; border-radius: 50%; background: ${item.color}; display: inline-block; flex-shrink: 0;"></span>
+              <span style="font-weight: 700; color: #111827;">${item.name}</span>
+              <span style="color: #4b5563;">${item.ratio.toFixed(1)}%</span>
+              <span style="color: #6b7280; font-size: 7.5px;">(${formatValue(item.value)})</span>
+            </div>
+          `;
+        }
+      });
+
+      const progressBar1Html = `
+        <div style="background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 6px; padding: 10px; margin-bottom: 12px; display: flex; flex-direction: column; gap: 8px; width: 100%; box-sizing: border-box;">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size: 10px; font-weight: bold; color: #111827;">📊 ${targetYear}년도 단위과제별 예산(국비+시비) 비율</span>
+            <span style="font-size: 9px; color: #4b5563; font-weight: bold;">총 ${formatValue(annualTotalGovSum)}백만 원</span>
+          </div>
+          <div style="width: 100%; height: 14px; display: flex; border-radius: 7px; overflow: hidden; background: #e5e7eb;">
+            ${barDivs1Html}
+          </div>
+          <div style="display: flex; flex-wrap: wrap; margin-top: 2px;">
+            ${legendItems1Html}
+          </div>
+        </div>
+      `;
+
+      // HTML ProgressBar 스트링 생성 (2번 차트)
+      const sourceTotal = annualTotalNat + annualTotalCity + annualTotalExt;
+      let barDivs2Html = "";
+      let legendItems2Html = "";
+      sourceChartItems.forEach((item) => {
+        if (item.value > 0) {
+          const itemRatio = sourceTotal > 0 ? (item.value / sourceTotal) * 100 : 0;
+          barDivs2Html += `<div style="width: ${itemRatio}%; background: ${item.color}; height: 100%;"></div>`;
+          legendItems2Html += `
+            <div style="display: flex; align-items: center; gap: 4px; font-size: 8.5px; margin-right: 12px; margin-bottom: 4px; white-space: nowrap;">
+              <span style="width: 7px; height: 7px; border-radius: 50%; background: ${item.color}; display: inline-block; flex-shrink: 0;"></span>
+              <span style="font-weight: 700; color: #111827;">${item.name}</span>
+              <span style="color: #4b5563;">${itemRatio.toFixed(1)}%</span>
+              <span style="color: #6b7280; font-size: 7.5px;">(${formatValue(item.value)})</span>
+            </div>
+          `;
+        }
+      });
+
+      const progressBar2Html = `
+        <div style="background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 6px; padding: 10px; margin-bottom: 15px; display: flex; flex-direction: column; gap: 8px; width: 100%; box-sizing: border-box;">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size: 10px; font-weight: bold; color: #111827;">📊 ${targetYear}년도 전체사업비 재원 구성 비율</span>
+            <span style="font-size: 9px; color: #4b5563; font-weight: bold;">총 ${formatValue(sourceTotal)}백만 원</span>
+          </div>
+          <div style="width: 100%; height: 14px; display: flex; border-radius: 7px; overflow: hidden; background: #e5e7eb;">
+            ${barDivs2Html}
+          </div>
+          <div style="display: flex; flex-wrap: wrap; margin-top: 2px;">
+            ${legendItems2Html}
+          </div>
+        </div>
+      `;
 
       let tableRowsHtml = "";
       ANNUAL_INVESTMENT_DATA.forEach((u) => {
@@ -13018,8 +13189,11 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
 
       const htmlContent = `
         <div style="padding: 0; font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif; color: #333333; background: #ffffff; width: 100%;">
-          <h1 style="text-align: center; font-size: 18px; font-weight: 800; margin-bottom: 5px; color: #111827;">울산과학대학교 RISE 사업비 ${targetYear}년도 재원별 투자 계획</h1>
+          <h1 style="text-align: center; font-size: 18px; font-weight: 800; margin-bottom: 5px; color: #111827;">울산과학대학교 앵커사업비 ${targetYear}년도 재원별 투자 계획</h1>
           <p style="text-align: center; font-size: 11px; color: #6b7280; margin-bottom: 20px;">연차별 재원 안분 현황 (단위: 백만원)</p>
+          
+          ${progressBar1Html}
+          ${progressBar2Html}
           
           <table style="width: 100%; border-collapse: collapse; font-size: 9.5px; color: #111827; border: 1px solid #d1d5db; table-layout: fixed;">
             <colgroup>
@@ -13046,7 +13220,7 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
           </table>
           
           <div style="margin-top: 30px; font-size: 9px; color: #9ca3af; text-align: right;">
-            울산과학대학교 RISE사업단 | 출력 일자: ${yyyy}-${mm}-${dd}
+            울산과학대학교 앵커사업단 | 출력 일자: ${yyyy}-${mm}-${dd}
           </div>
         </div>
       `;
@@ -13075,7 +13249,7 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
       const mm = String(today.getMonth() + 1).padStart(2, '0');
       const dd = String(today.getDate()).padStart(2, '0');
 
-      let md = `# 울산과학대학교 RISE 사업비 ${targetYear}년도 재원별 계획\n\n`;
+      let md = `# 울산과학대학교 앵커사업비 ${targetYear}년도 재원별 계획\n\n`;
       md += `* 생성일자: ${yyyy}-${mm}-${dd}\n\n`;
       md += `| ${targetYear}년도 구분 | 국비 | 시비 | 외부사업비 | 합계 | 비율 (%) |\n`;
       md += `| :--- | ---: | ---: | ---: | ---: | ---: |\n`;
@@ -13106,7 +13280,7 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
-      link.download = `RISE_${targetYear}년도_재원별_계획_${yyyy}${mm}${dd}.md`;
+      link.download = `앵커사업비_${targetYear}년도_재원별_계획_${yyyy}${mm}${dd}.md`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -14026,10 +14200,10 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
       }
 
       const filename = type === "all"
-        ? `RISE_통합_투자계획_현황_${targetYear}.xlsx`
+        ? `앵커사업비_통합_투자계획_현황_${targetYear}.xlsx`
         : type === "five_year"
-          ? `RISE_5개년_총괄_투자계획_${targetYear}.xlsx`
-          : `RISE_${targetYear}년도_재원별_계획.xlsx`;
+          ? `앵커사업비_5개년_총괄_투자계획_${targetYear}.xlsx`
+          : `앵커사업비_${targetYear}년도_재원별_계획.xlsx`;
 
       XLSX.writeFile(wb, filename);
     };
@@ -14048,7 +14222,7 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
         </div>
         <h3 style={{ fontSize: "1.25rem", fontWeight: "800", marginBottom: "0.5rem" }}>투자 계획 엑셀 다운로드</h3>
         <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)", marginBottom: "2rem", lineHeight: "1.5" }}>
-          울산과학대학교 라이즈(RISE) 사업비 계획의 5개년 총괄 현황 및 {targetYear}년도 연차별 재원별 현황을 단 한 번에 워크북 시트로 묶어 엑셀 파일로 내려받습니다.
+          울산과학대학교 앵커사업비 계획의 5개년 총괄 현황 및 {targetYear}년도 연차별 재원별 현황을 단 한 번에 워크북 시트로 묶어 엑셀 파일로 내려받습니다.
         </p>
 
         <button
