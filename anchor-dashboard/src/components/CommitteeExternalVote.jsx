@@ -1008,7 +1008,7 @@ export default function CommitteeExternalVote({ meetingId }) {
       </div>
       
       <footer style={{ textAlign: "center", padding: "2rem 0", color: "var(--text-secondary)", fontSize: "0.75rem" }}>
-        © 2026 Ulsan College RISE Anchor RCC / ECC. All Rights Reserved. (보안 256bit 암호화)
+        © 2026 Ulsan College Anchor Project. All Rights Reserved. (보안 256bit 암호화)
       </footer>
     </div>
   );
