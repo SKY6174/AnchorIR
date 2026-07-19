@@ -2364,6 +2364,7 @@ ${opinionsContext}
                   placeholder="예: 제1차 앵커총괄위원회 회의"
                   value={meetingForm.title}
                   onChange={(e) => setMeetingForm({ ...meetingForm, title: e.target.value })}
+                  className="form-input"
                   style={{ width: "100%", padding: "0.5rem", borderRadius: "6px", background: "rgba(0,0,0,0.3)", color: "#fff", border: "1px solid var(--border-color)" }}
                 />
               </div>
@@ -2375,6 +2376,7 @@ ${opinionsContext}
                     required
                     value={meetingForm.meeting_date}
                     onChange={(e) => setMeetingForm({ ...meetingForm, meeting_date: e.target.value })}
+                    className="form-input"
                     style={{ width: "100%", padding: "0.5rem", borderRadius: "6px", background: "rgba(0,0,0,0.3)", color: "#fff", border: "1px solid var(--border-color)" }}
                   />
                 </div>
@@ -2383,6 +2385,7 @@ ${opinionsContext}
                   <select
                     value={meetingForm.meeting_type}
                     onChange={(e) => setMeetingForm({ ...meetingForm, meeting_type: e.target.value })}
+                    className="form-select"
                     style={{ width: "100%", padding: "0.5rem", borderRadius: "6px", background: "rgba(0,0,0,0.3)", color: "#fff", border: "1px solid var(--border-color)" }}
                   >
                     <option value="ONLINE_WRITTEN">서면 의결 (비대면)</option>
@@ -2450,6 +2453,7 @@ ${opinionsContext}
                               return { ...prev, agendas: updated };
                             });
                           }}
+                          className="form-input"
                           style={{ flex: 1, padding: "0.3rem 0.5rem", borderRadius: "4px", background: "rgba(0,0,0,0.3)", color: "#fff", border: "1px solid var(--border-color)", fontSize: "0.8rem" }}
                         />
                         <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)", display: "flex", alignItems: "center", gap: "0.2rem", cursor: "pointer", whiteSpace: "nowrap" }}>
@@ -2492,6 +2496,7 @@ ${opinionsContext}
                             return { ...prev, agendas: updated };
                           });
                         }}
+                        className="form-textarea"
                         style={{ width: "100%", padding: "0.3rem 0.5rem", borderRadius: "4px", background: "rgba(0,0,0,0.3)", color: "#fff", border: "1px solid var(--border-color)", fontSize: "0.78rem", resize: "none" }}
                       />
                     </div>
@@ -2512,6 +2517,7 @@ ${opinionsContext}
                     type="file"
                     accept=".pdf,.png,.jpg,.jpeg,.md"
                     onChange={handleFileChange}
+                    className="form-input"
                     style={{ width: "100%", padding: "0.4rem", borderRadius: "6px", background: "rgba(0,0,0,0.3)", color: "#fff", border: "1px solid var(--border-color)", fontSize: "0.75rem" }}
                   />
                   <small style={{ color: "var(--text-secondary)", fontSize: "0.7rem", marginTop: "0.15rem", display: "block" }}>
@@ -2526,6 +2532,7 @@ ${opinionsContext}
                     placeholder="미지정 시 6자리 랜덤 생성"
                     value={meetingForm.access_pin}
                     onChange={(e) => setMeetingForm({ ...meetingForm, access_pin: e.target.value })}
+                    className="form-input"
                     style={{ width: "100%", padding: "0.5rem", borderRadius: "6px", background: "rgba(0,0,0,0.3)", color: "#fff", border: "1px solid var(--border-color)" }}
                   />
                 </div>
