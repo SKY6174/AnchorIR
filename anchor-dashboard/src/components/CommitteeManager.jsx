@@ -2353,7 +2353,7 @@ ${opinionsContext}
       {/* ======================================================== */}
       {isMeetingModalOpen && (
         <div className="modal-overlay" style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(15, 23, 42, 0.65)", backdropFilter: "blur(6px)", WebkitBackdropFilter: "blur(6px)", display: "flex", justifyContent: "center", alignItems: "center", zIndex: 1100 }}>
-          <div className="modal-contentcard" style={{ background: "var(--card-bg)", padding: "1.5rem", borderRadius: "12px", border: "1px solid var(--border-color)", width: "500px", maxWidth: "95%", boxShadow: "0 20px 25px -5px rgba(0,0,0,0.3)", position: "relative" }}>
+          <div className="modal-contentcard" style={{ background: "var(--modal-bg)", padding: "1.5rem", borderRadius: "12px", border: "1px solid var(--border-color)", width: "500px", maxWidth: "95%", boxShadow: "0 20px 25px -5px rgba(0,0,0,0.3)", position: "relative" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
               <h3 style={{ color: "var(--text-primary)", fontWeight: "800", fontSize: "1.1rem", margin: 0 }}>신규 회의 의결 개설</h3>
               <button 
