@@ -1377,26 +1377,17 @@ ${opinionsContext}
         document.head.appendChild(script);
       });
 
-      // 3. 인쇄용 고해상도 HTML 서류 템플릿 마크업 빌드 (오프스크린 컨테이너 작성)
-      const printContainer = document.createElement("div");
-      printContainer.style.position = "absolute";
-      printContainer.style.left = "-9999px";
-      printContainer.style.top = "-9999px";
-      printContainer.style.width = "210mm"; // A4 가로폭 기준
-      printContainer.style.background = "#ffffff";
-      printContainer.style.color = "#000000";
-      printContainer.style.fontFamily = "'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif";
-      printContainer.style.padding = "20mm 15mm";
-      printContainer.style.boxSizing = "border-box";
-
+      // 3. 인쇄용 고해상도 HTML 서류 템플릿 마크업 빌드 (HTML 문자열로 다이렉트 처리)
       const dateStr = rep.committee_meetings?.meeting_date 
         ? new Date(rep.committee_meetings.meeting_date).toLocaleDateString("ko-KR", { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })
         : "-";
 
       const attendedCount = responses.filter(r => r.is_attended !== false).length;
       
+      // 💡 [레이아웃 누락 가드] 최상위 A4 스케일 컨테이너 태그를 추가하여 문자열 자체를 html2pdf로 바로 넘기게 설정
       let htmlContent = `
-        <div style="border: 2px solid #000; padding: 1.5rem; margin-bottom: 2rem;">
+        <div style="width: 100%; background: #ffffff; color: #000000; font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif; box-sizing: border-box; text-align: left; padding: 10mm 5mm;">
+          <div style="border: 2px solid #000; padding: 1.5rem; margin-bottom: 2rem;">
           <h1 style="text-align: center; font-size: 24px; font-weight: 900; letter-spacing: 2px; margin-bottom: 1rem; color: #000;">위 원 회 의 결 결 과 보 고 서</h1>
           <table style="width: 100%; border-collapse: collapse; margin-top: 1rem; font-size: 13px; color: #000;">
             <tr>
@@ -1527,22 +1518,17 @@ ${opinionsContext}
         </div>
       `;
 
-      printContainer.innerHTML = htmlContent;
-      document.body.appendChild(printContainer);
-
+      // 💡 [레이아웃 누락 가드] DOM 삽입 지연을 예방하고자 HTML 문자열(htmlContent)을 html2pdf에 직접 주입
       // 4. html2pdf를 통해 A4 사이즈 PDF Blob 생성
       const opt = {
-        margin: [15, 10, 20, 10], // top, left, bottom, right
+        margin: [10, 10, 15, 10], // 상하좌우 여백
         filename: `${rep.committee_meetings?.title}_결과보고서.pdf`,
         image: { type: 'jpeg', quality: 0.98 },
         html2canvas: { scale: 2, useCORS: true, logging: false },
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
       };
 
-      const pdfBlob = await html2pdf().from(printContainer).set(opt).output('blob');
-      
-      // 임시로 추가한 DOM 제거
-      document.body.removeChild(printContainer);
+      const pdfBlob = await html2pdf().from(htmlContent).set(opt).output('blob');
 
       // 5. FastAPI 백엔드로 서명 봉인 요청 전송
       const formData = new FormData();
