@@ -2320,7 +2320,7 @@ ${opinionsContext}
           
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <div>
-              <h2 style={{ fontSize: "1.2rem", fontWeight: "800", color: "#fff" }}>
+              <h2 style={{ fontSize: "1.2rem", fontWeight: "800", color: "var(--text-primary)" }}>
                 위원회 의결 결과보고 대장
               </h2>
               <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)" }}>
@@ -2352,7 +2352,7 @@ ${opinionsContext}
                       <span style={{ fontSize: "0.75rem", color: "var(--accent-color)", fontWeight: "bold", display: "block" }}>
                         {rep.committee_meetings?.committees?.name}
                       </span>
-                      <h3 style={{ fontSize: "1.1rem", fontWeight: "800", color: "#fff", marginTop: "0.15rem" }}>
+                      <h3 style={{ fontSize: "1.1rem", fontWeight: "800", color: "var(--text-primary)", marginTop: "0.15rem" }}>
                         {rep.committee_meetings?.title}
                       </h3>
                       <span style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>
@@ -2392,7 +2392,7 @@ ${opinionsContext}
 
                   {/* AI 종합 분석 결과 */}
                   <div style={{ padding: "1.25rem", background: "rgba(255,255,255,0.02)", borderRadius: "8px", border: "1px solid var(--border-color)" }}>
-                    <strong style={{ fontSize: "0.9rem", color: "#fff", display: "flex", alignItems: "center", gap: "0.3rem", marginBottom: "0.5rem" }}>
+                    <strong style={{ fontSize: "0.9rem", color: "var(--text-primary)", display: "flex", alignItems: "center", gap: "0.3rem", marginBottom: "0.5rem" }}>
                       <Cpu size={16} style={{ color: "var(--accent-color)" }} />
                       RISE 사업단 AI 심의 분석서
                     </strong>
