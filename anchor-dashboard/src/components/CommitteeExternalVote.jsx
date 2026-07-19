@@ -670,7 +670,7 @@ export default function CommitteeExternalVote({ meetingId }) {
 
   // B. 인증 완료 상태 - 의결 검토 및 서명 패드 제출 페이지
   return (
-    <div style={{ minHeight: "100vh", background: "#0b0f19", color: "#fff", padding: "1.5rem" }}>
+    <div style={{ minHeight: "100vh", background: "var(--background-color)", color: "var(--text-primary)", padding: "1.5rem" }}>
       <div style={{ maxWidth: "800px", margin: "0 auto" }}>
         
         {/* 상단 인증 탑 바 */}
@@ -690,11 +690,11 @@ export default function CommitteeExternalVote({ meetingId }) {
         </header>
 
         {/* 회의 개요 */}
-        <section className="card" style={{ padding: "1.5rem", marginBottom: "1.25rem", border: "1px solid var(--border-color)" }}>
+        <section className="card" style={{ padding: "1.5rem", marginBottom: "1.25rem", border: "1px solid var(--border-color)", background: "var(--card-bg)" }}>
           <span style={{ fontSize: "0.7rem", background: "rgba(99, 102, 241, 0.15)", color: "var(--accent-color)", padding: "0.2rem 0.5rem", borderRadius: "4px", fontWeight: "bold" }}>
             {meeting.committees?.name} 심의 의결
           </span>
-          <h1 style={{ fontSize: "1.3rem", fontWeight: "800", color: "#fff", marginTop: "0.5rem", marginBottom: "0.25rem" }}>
+          <h1 style={{ fontSize: "1.3rem", fontWeight: "800", color: "var(--text-primary)", marginTop: "0.5rem", marginBottom: "0.25rem" }}>
             {meeting.title}
           </h1>
           <p style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>
@@ -704,16 +704,16 @@ export default function CommitteeExternalVote({ meetingId }) {
           <hr style={{ border: "none", borderTop: "1px solid var(--border-color)", margin: "1rem 0" }} />
 
           <strong style={{ fontSize: "0.9rem", color: "var(--accent-color)", display: "block", marginBottom: "0.4rem" }}>회의 안건 요지</strong>
-          <div style={{ background: "rgba(0,0,0,0.3)", padding: "1rem", borderRadius: "6px", border: "1px solid var(--border-color)", fontSize: "0.88rem", color: "#e2e8f0", whiteSpace: "pre-line", lineHeight: "1.6" }}>
+          <div style={{ background: "rgba(120, 120, 120, 0.08)", padding: "1rem", borderRadius: "6px", border: "1px solid var(--border-color)", fontSize: "0.88rem", color: "var(--text-primary)", whiteSpace: "pre-line", lineHeight: "1.6" }}>
             {meeting.agenda}
           </div>
         </section>
 
         {/* [첨부 파일 연동 뷰어/다운로드 영역] */}
         {meeting.attachment_name && (
-          <section className="card" style={{ padding: "1.5rem", marginBottom: "1.25rem", border: "1px solid var(--border-color)" }}>
+          <section className="card" style={{ padding: "1.5rem", marginBottom: "1.25rem", border: "1px solid var(--border-color)", background: "var(--card-bg)" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.75rem" }}>
-              <span style={{ fontSize: "0.9rem", fontWeight: "bold", color: "#fff", display: "flex", alignItems: "center", gap: "0.25rem" }}>
+              <span style={{ fontSize: "0.9rem", fontWeight: "bold", color: "var(--text-primary)", display: "flex", alignItems: "center", gap: "0.25rem" }}>
                 <FileText size={18} style={{ color: "var(--accent-color)" }} /> 심의 안건 첨부 서류 검토
               </span>
               <button
@@ -779,8 +779,8 @@ export default function CommitteeExternalVote({ meetingId }) {
         )}
 
         {/* 의결/투표 폼 */}
-        <section className="card" style={{ padding: "1.5rem", border: "1px solid var(--border-color)" }}>
-          <h3 style={{ fontSize: "1rem", fontWeight: "800", color: "#fff", marginBottom: "1rem", display: "flex", alignItems: "center", gap: "0.3rem" }}>
+        <section className="card" style={{ padding: "1.5rem", border: "1px solid var(--border-color)", background: "var(--card-bg)" }}>
+          <h3 style={{ fontSize: "1rem", fontWeight: "800", color: "var(--text-primary)", marginBottom: "1rem", display: "flex", alignItems: "center", gap: "0.3rem" }}>
             <Send size={18} style={{ color: "#10B981" }} /> 심의 결과 의결서 작성
           </h3>
 
@@ -811,7 +811,6 @@ export default function CommitteeExternalVote({ meetingId }) {
           ) : (
             <form onSubmit={handleSubmitResponse} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
               
-              {/* 참석 구분 */}
               <div>
                 <label style={{ fontSize: "0.85rem", color: "var(--text-primary)", display: "block", marginBottom: "0.4rem", fontWeight: "bold" }}>회의 참석 여부</label>
                 <div style={{ display: "flex", gap: "1rem" }}>
@@ -822,7 +821,7 @@ export default function CommitteeExternalVote({ meetingId }) {
                       onChange={() => setAttended(true)}
                       style={{ accentColor: "var(--accent-color)" }}
                     />
-                    <span>참석 (안건 투표 개시)</span>
+                    <span style={{ color: "var(--text-primary)", fontSize: "0.85rem" }}>참석 (안건 투표 개시)</span>
                   </label>
                   <label style={{ display: "flex", alignItems: "center", gap: "0.3rem", cursor: "pointer" }}>
                     <input
@@ -831,7 +830,7 @@ export default function CommitteeExternalVote({ meetingId }) {
                       onChange={() => setAttended(false)}
                       style={{ accentColor: "var(--accent-color)" }}
                     />
-                    <span>불참 (미참석 의사 접수)</span>
+                    <span style={{ color: "var(--text-primary)", fontSize: "0.85rem" }}>불참 (미참석 의사 접수)</span>
                   </label>
                 </div>
               </div>
@@ -842,9 +841,9 @@ export default function CommitteeExternalVote({ meetingId }) {
                   {selectedMeetingAgendas.map((agenda, index) => {
                     const detail = agendaInputs[agenda.id] || { vote: "", score: 0, opinion: "" };
                     return (
-                      <div key={agenda.id} style={{ padding: "0.8rem", background: "rgba(255,255,255,0.01)", border: "1px solid var(--border-color)", borderRadius: "6px" }}>
+                      <div key={agenda.id} style={{ padding: "0.8rem", background: "rgba(120, 120, 120, 0.05)", border: "1px solid var(--border-color)", borderRadius: "6px" }}>
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "0.4rem" }}>
-                          <strong style={{ fontSize: "0.85rem", color: "#fff" }}>
+                          <strong style={{ fontSize: "0.85rem", color: "var(--text-primary)" }}>
                             <span style={{ color: "var(--accent-color)" }}>#{index + 1}</span> {agenda.title}
                           </strong>
                           <span style={{ fontSize: "0.65rem", color: "var(--accent-color)", background: "rgba(var(--accent-color-rgb), 0.1)", padding: "0.1rem 0.3rem", borderRadius: "4px", fontWeight: "bold" }}>
@@ -879,7 +878,7 @@ export default function CommitteeExternalVote({ meetingId }) {
                                       fontWeight: "bold",
                                       border: "1px solid",
                                       borderColor: isSelected ? "var(--accent-color)" : "var(--border-color)",
-                                      background: isSelected ? "var(--accent-color)" : "rgba(0,0,0,0.2)",
+                                      background: isSelected ? "var(--accent-color)" : "var(--card-bg)",
                                       color: isSelected ? "white" : "var(--text-primary)",
                                       borderRadius: "4px",
                                       cursor: "pointer",
@@ -917,7 +916,7 @@ export default function CommitteeExternalVote({ meetingId }) {
                                       fontWeight: "bold",
                                       border: "1px solid",
                                       borderColor: isSelected ? (item.val === "APPROVE" ? "#22c55e" : item.val === "REJECT" ? "#ef4444" : "#9ca3af") : "var(--border-color)",
-                                      background: isSelected ? (item.val === "APPROVE" ? "rgba(34,197,94,0.15)" : item.val === "REJECT" ? "rgba(239,68,68,0.15)" : "rgba(156,163,175,0.15)") : "rgba(0,0,0,0.2)",
+                                      background: isSelected ? (item.val === "APPROVE" ? "rgba(34,197,94,0.15)" : item.val === "REJECT" ? "rgba(239,68,68,0.15)" : "rgba(156,163,175,0.15)") : "rgba(120, 120, 120, 0.08)",
                                       color: isSelected ? (item.val === "APPROVE" ? "#4ade80" : item.val === "REJECT" ? "#f87171" : "#d1d5db") : "var(--text-primary)",
                                       borderRadius: "4px",
                                       cursor: "pointer",
@@ -944,7 +943,7 @@ export default function CommitteeExternalVote({ meetingId }) {
                                 [agenda.id]: { ...prev[agenda.id], opinion: val }
                               }));
                             }}
-                            style={{ width: "100%", padding: "0.4rem", borderRadius: "4px", background: "rgba(0,0,0,0.3)", color: "#fff", border: "1px solid var(--border-color)", fontSize: "0.78rem", resize: "none" }}
+                            style={{ width: "100%", padding: "0.4rem", borderRadius: "4px", background: "rgba(120, 120, 120, 0.05)", color: "var(--text-primary)", border: "1px solid var(--border-color)", fontSize: "0.78rem", resize: "none" }}
                           />
                         </div>
                       </div>
