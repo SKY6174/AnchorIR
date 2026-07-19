@@ -2223,6 +2223,8 @@ export default function App() {
     return null;
   });
 
+  const currentRole = currentUser ? currentUser.role : null;
+
   const roleKey = currentUser?.role_key || currentUser?.role?.id || "";
   const isSongDirector = currentUser && (
     (currentUser.name || "").includes("송경영") ||
@@ -8329,7 +8331,6 @@ export default function App() {
     return <AuthManager onLoginSuccess={handleLoginSuccess} members={members} />;
   }
 
-  const currentRole = currentUser.role;
   const isGuest = currentUser && (
     currentUser.id === "guest" ||
     (currentUser.name || "").includes("게스트") ||
