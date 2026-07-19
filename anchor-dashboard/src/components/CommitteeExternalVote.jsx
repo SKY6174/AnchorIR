@@ -344,23 +344,42 @@ export default function CommitteeExternalVote({ meetingId }) {
     }
   };
 
-  // 4. 전자서명 패드 그리기 로직 (Canvas)
+  // 4. 전자서명 패드 그리기 로직 (Canvas - DPR 및 바운딩 렉트 비율 스케일링 보정 적용)
+  const getCanvasCoordinates = (canvas, e) => {
+    const rect = canvas.getBoundingClientRect();
+    
+    // 모바일 터치 및 데스크톱 마우스 좌표 동시 대응
+    const clientX = e.clientX || (e.touches && e.touches[0]?.clientX);
+    const clientY = e.clientY || (e.touches && e.touches[0]?.clientY);
+    
+    if (clientX === undefined || clientY === undefined) return null;
+    
+    // 캔버스 자체 크기와 바운딩 렉트 크기의 비율을 계산하여 좌표 튐 버그 완벽 보정
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    
+    return {
+      x: (clientX - rect.left) * scaleX,
+      y: (clientY - rect.top) * scaleY
+    };
+  };
+
   const startDrawing = (e) => {
     if (hasSubmitted) return;
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
-    ctx.strokeStyle = "#fff";
-    ctx.lineWidth = 3;
-    ctx.lineCap = "round";
-
-    // 터치/마우스 위치 추출
-    const rect = canvas.getBoundingClientRect();
-    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
     
+    ctx.lineWidth = 2.5;
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+    ctx.strokeStyle = "#1e3a8a"; // 투명 배경 서명 파일 추출용 동일한 짙은 남색 만년필 잉크 지정
+    
+    const coords = getCanvasCoordinates(canvas, e);
+    if (!coords) return;
+
     ctx.beginPath();
-    ctx.moveTo(clientX - rect.left, clientY - rect.top);
+    ctx.moveTo(coords.x, coords.y);
     setIsDrawing(true);
   };
 
@@ -370,11 +389,11 @@ export default function CommitteeExternalVote({ meetingId }) {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
-    const rect = canvas.getBoundingClientRect();
-    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+    
+    const coords = getCanvasCoordinates(canvas, e);
+    if (!coords) return;
 
-    ctx.lineTo(clientX - rect.left, clientY - rect.top);
+    ctx.lineTo(coords.x, coords.y);
     ctx.stroke();
   };
 
@@ -943,7 +962,7 @@ export default function CommitteeExternalVote({ meetingId }) {
                   </button>
                 </div>
                 
-                <div style={{ background: "#05070f", borderRadius: "6px", border: "1px solid var(--border-color)", overflow: "hidden", display: "flex", justifyContent: "center" }}>
+                <div style={{ background: "#ffffff", borderRadius: "6px", border: "1px solid var(--border-color)", overflow: "hidden", display: "flex", justifyContent: "center" }}>
                   <canvas
                     ref={canvasRef}
                     width={500}
@@ -955,7 +974,7 @@ export default function CommitteeExternalVote({ meetingId }) {
                     onTouchStart={startDrawing}
                     onTouchMove={draw}
                     onTouchEnd={stopDrawing}
-                    style={{ background: "transparent", cursor: "crosshair", width: "100%", height: "150px" }}
+                    style={{ background: "#ffffff", cursor: "crosshair", width: "100%", height: "150px" }}
                   />
                 </div>
                 <small style={{ color: "var(--text-secondary)", fontSize: "0.7rem", marginTop: "0.25rem", display: "block" }}>

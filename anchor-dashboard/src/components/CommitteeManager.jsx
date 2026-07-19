@@ -1095,17 +1095,42 @@ export default function CommitteeManager({
     }
   };
 
-  // 5. 전자서명 그리기 캔버스 핸들러
+  // 5. 전자서명 그리기 캔버스 핸들러 (DPR 및 바운딩 렉트 비율 스케일링 보정 적용)
+  const getCanvasCoordinates = (canvas, e) => {
+    const rect = canvas.getBoundingClientRect();
+    
+    // 모바일 터치 및 데스크톱 마우스 좌표 동시 대응
+    const clientX = e.clientX || (e.touches && e.touches[0]?.clientX);
+    const clientY = e.clientY || (e.touches && e.touches[0]?.clientY);
+    
+    if (clientX === undefined || clientY === undefined) return null;
+    
+    // 캔버스 자체 크기와 바운딩 렉트 크기의 비율을 계산하여 좌표 튐 버그 완벽 보정
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    
+    return {
+      x: (clientX - rect.left) * scaleX,
+      y: (clientY - rect.top) * scaleY
+    };
+  };
+
   const startDrawing = (e) => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
-    const rect = canvas.getBoundingClientRect();
-    const x = (e.clientX || e.touches[0].clientX) - rect.left;
-    const y = (e.clientY || e.touches[0].clientY) - rect.top;
+    
+    // 만년필 필체 느낌을 위해 라인 두께 및 결합 둥글기 설정
+    ctx.lineWidth = 2.5;
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+    ctx.strokeStyle = "#1e3a8a"; // 투명 배경 위에서도 지적인 느낌을 풍기는 만년필용 로열 인디고 블루 잉크색
+    
+    const coords = getCanvasCoordinates(canvas, e);
+    if (!coords) return;
 
     ctx.beginPath();
-    ctx.moveTo(x, y);
+    ctx.moveTo(coords.x, coords.y);
     setIsDrawing(true);
   };
 
@@ -1114,11 +1139,11 @@ export default function CommitteeManager({
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
-    const rect = canvas.getBoundingClientRect();
-    const x = (e.clientX || (e.touches && e.touches[0].clientX)) - rect.left;
-    const y = (e.clientY || (e.touches && e.touches[0].clientY)) - rect.top;
+    
+    const coords = getCanvasCoordinates(canvas, e);
+    if (!coords) return;
 
-    ctx.lineTo(x, y);
+    ctx.lineTo(coords.x, coords.y);
     ctx.stroke();
   };
 
@@ -2015,11 +2040,10 @@ ${opinionsContext}
                                   alt="전자서명"
                                   style={{
                                     height: "28px",
-                                    background: "#fff",
-                                    borderRadius: "4px",
+                                    background: "transparent",
                                     padding: "2px",
-                                    border: "1px solid var(--border-color)",
-                                    boxShadow: "0 2px 4px rgba(0,0,0,0.1)"
+                                    objectFit: "contain",
+                                    filter: "drop-shadow(0px 1px 2px rgba(0,0,0,0.5))"
                                   }}
                                 />
                               )}
