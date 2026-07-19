@@ -26,7 +26,7 @@ import AssetManager from "./components/AssetManager";
 import CommitteeManager from "./components/CommitteeManager";
 import UnitSystemView from "./components/UnitSystemView";
 import { initialProjectsData, userRoles, YEAR_1_PROGRAMS, Y1_UNIT_META } from "./data/mockData";
-import { Sun, Moon, LogOut, HelpCircle, ArrowUpRight, Lock as LockIcon, Info, Clock, Edit2, FileText, Upload, Plus, Download, X, BookOpen } from "lucide-react";
+import { Sun, Moon, LogOut, HelpCircle, ArrowUpRight, Lock as LockIcon, Info, Clock, Edit2, FileText, Upload, Plus, Download, X, BookOpen, FileSpreadsheet } from "lucide-react";
 import { supabase } from "./supabaseClient";
 import CryptoJS from "crypto-js";
 import * as XLSX from "xlsx";
@@ -3550,6 +3550,7 @@ export default function App() {
     const saved = localStorage.getItem("anchor_selected_year");
     return saved ? parseInt(saved, 10) : 2;
   });
+  const [isDownloadingPdf, setIsDownloadingPdf] = useState(null);
 
   // 2인 공동배정 여부 로컬 상태 (프로그램 ID별 true/false)
   const [jointPrograms, setJointPrograms] = useState({});
@@ -3673,6 +3674,413 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem("anchor_pdca_view_mode", pdcaViewMode);
   }, [pdcaViewMode]);
+
+  // ==========================================
+  // 단위과제 진행현황 데이터 내보내기 핸들러 (Excel, Markdown, PDF)
+  // ==========================================
+  const handleExportExcel = () => {
+    try {
+      const excelData = [];
+      let sumBudgetMain = 0;
+      let sumBudgetCarry = 0;
+      let sumTotalBudget = 0;
+      let sumTotalSpent = 0;
+      let sumTotalPrograms = 0;
+      let sumReadyCount = 0;
+      let sumInProgressCount = 0;
+      let sumCompletedCount = 0;
+      let sumTotalProgressSum = 0;
+
+      const sortedUnits = displayProjects.flatMap((p) => p.units)
+        .sort((a, b) => {
+          if (a.id === "Common" || a.id === "X0") return 1;
+          if (b.id === "Common" || b.id === "X0") return -1;
+          return a.id.localeCompare(b.id, undefined, { numeric: true, sensitivity: 'base' });
+        });
+
+      sortedUnits.forEach((u) => {
+        const yData = u.years?.[selectedYear] || { budget_main: 0, spent_main: 0, budget_carry: 0, spent_carry: 0 };
+        const budgetCarryVal = selectedYear === 1 ? 0 : (yData.budget_carry || 0);
+        const spentCarryVal = selectedYear === 1 ? 0 : (yData.spent_carry || 0);
+        const totalBudget = (yData.budget_main || 0) + budgetCarryVal;
+        const totalSpent = (yData.spent_main || 0) + spentCarryVal;
+        const rate = totalBudget > 0 ? (totalSpent / totalBudget) * 100 : 0;
+
+        sumBudgetMain += (yData.budget_main || 0);
+        sumBudgetCarry += budgetCarryVal;
+        sumTotalBudget += totalBudget;
+        sumTotalSpent += totalSpent;
+
+        let totalPrograms = 0;
+        let readyCount = 0;
+        let inProgressCount = 0;
+        let completedCount = 0;
+        let totalProgressSum = 0;
+
+        if (u.id !== "Common" && u.id !== "X0") {
+          totalPrograms = u.programs?.length || 0;
+          sumTotalPrograms += totalPrograms;
+
+          if (totalPrograms > 0) {
+            u.programs.forEach((prog) => {
+              const pdca = prog.pdca || { p: "대기", d: "대기", c: "대기", a: "대기" };
+              const completedSteps = [pdca.p, pdca.d, pdca.c, pdca.a].filter(step => step === "완료").length;
+              const progProgress = (completedSteps / 4) * 100;
+              totalProgressSum += progProgress;
+              sumTotalProgressSum += progProgress;
+
+              if (completedSteps === 0) {
+                readyCount++;
+                sumReadyCount++;
+              } else if (completedSteps === 4) {
+                completedCount++;
+                sumCompletedCount++;
+              } else {
+                inProgressCount++;
+                sumInProgressCount++;
+              }
+            });
+          }
+        }
+
+        const progressRate = totalPrograms > 0 ? (totalProgressSum / totalPrograms) : 0;
+
+        excelData.push({
+          "단위과제": (u.id === "Common" ? "" : `${u.id}. `) + u.title,
+          "본예산 (백만원)": yData.budget_main || 0,
+          ...(selectedYear >= 2 ? { "이월예산 (백만원)": budgetCarryVal } : {}),
+          "총 배정액 (백만원)": totalBudget,
+          "누적 집행 (백만원)": totalSpent,
+          "집행률 (%)": parseFloat(rate.toFixed(1)),
+          "프로그램 총 개수": u.id === "Common" || u.id === "X0" ? "-" : `${totalPrograms}개`,
+          "준비 단계": u.id === "Common" || u.id === "X0" ? "-" : readyCount,
+          "진행 단계": u.id === "Common" || u.id === "X0" ? "-" : inProgressCount,
+          "완료 단계": u.id === "Common" || u.id === "X0" ? "-" : completedCount,
+          "프로그램 진행률 (%)": u.id === "Common" || u.id === "X0" ? "-" : parseFloat(progressRate.toFixed(1))
+        });
+      });
+
+      const sumRate = sumTotalBudget > 0 ? (sumTotalSpent / sumTotalBudget) * 100 : 0;
+      const sumProgressRate = sumTotalPrograms > 0 ? (sumTotalProgressSum / sumTotalPrograms) : 0;
+
+      excelData.push({
+        "단위과제": "합계",
+        "본예산 (백만원)": sumBudgetMain,
+        ...(selectedYear >= 2 ? { "이월예산 (백만원)": sumBudgetCarry } : {}),
+        "총 배정액 (백만원)": sumTotalBudget,
+        "누적 집행 (백만원)": sumTotalSpent,
+        "집행률 (%)": parseFloat(sumRate.toFixed(1)),
+        "프로그램 총 개수": `${sumTotalPrograms}개`,
+        "준비 단계": sumReadyCount,
+        "진행 단계": sumInProgressCount,
+        "완료 단계": sumCompletedCount,
+        "프로그램 진행률 (%)": parseFloat(sumProgressRate.toFixed(1))
+      });
+
+      const ws = XLSX.utils.json_to_sheet(excelData);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "진행현황");
+      
+      const today = new Date();
+      const yyyy = today.getFullYear();
+      const mm = String(today.getMonth() + 1).padStart(2, '0');
+      const dd = String(today.getDate()).padStart(2, '0');
+      const fileName = `[${selectedYear}차년도]단위과제_진행현황_${yyyy}${mm}${dd}.xlsx`;
+
+      XLSX.writeFile(wb, fileName);
+    } catch (err) {
+      alert("엑셀 다운로드 도중 에러가 발생하였습니다: " + err.message);
+    }
+  };
+
+  const handleExportMarkdown = () => {
+    try {
+      const today = new Date();
+      const yyyy = today.getFullYear();
+      const mm = String(today.getMonth() + 1).padStart(2, '0');
+      const dd = String(today.getDate()).padStart(2, '0');
+
+      let mdContent = `# 앵커사업 통합 IR 단위과제 진행현황 (${selectedYear}차년도)\n\n`;
+      mdContent += `* 생성일자: ${yyyy}-${mm}-${dd}\n\n`;
+
+      const sortedUnits = displayProjects.flatMap((p) => p.units)
+        .sort((a, b) => {
+          if (a.id === "Common" || a.id === "X0") return 1;
+          if (b.id === "Common" || b.id === "X0") return -1;
+          return a.id.localeCompare(b.id, undefined, { numeric: true, sensitivity: 'base' });
+        });
+
+      if (selectedYear >= 2) {
+        mdContent += `| 단위과제 | 본예산 | 이월예산 | 총 배정액 | 누적 집행 | 집행률 | 총 프로그램 | 준비 | 진행 | 완료 | 프로그램 진행률 |\n`;
+        mdContent += `| :--- | ---: | ---: | ---: | ---: | ---: | :---: | :---: | :---: | :---: | ---: |\n`;
+      } else {
+        mdContent += `| 단위과제 | 본예산 | 총 배정액 | 누적 집행 | 집행률 | 총 프로그램 | 준비 | 진행 | 완료 | 프로그램 진행률 |\n`;
+        mdContent += `| :--- | ---: | ---: | ---: | ---: | :---: | :---: | :---: | :---: | ---: |\n`;
+      }
+
+      let sumBudgetMain = 0;
+      let sumBudgetCarry = 0;
+      let sumTotalBudget = 0;
+      let sumTotalSpent = 0;
+      let sumTotalPrograms = 0;
+      let sumReadyCount = 0;
+      let sumInProgressCount = 0;
+      let sumCompletedCount = 0;
+      let sumTotalProgressSum = 0;
+
+      sortedUnits.forEach((u) => {
+        const yData = u.years?.[selectedYear] || { budget_main: 0, spent_main: 0, budget_carry: 0, spent_carry: 0 };
+        const budgetCarryVal = selectedYear === 1 ? 0 : (yData.budget_carry || 0);
+        const spentCarryVal = selectedYear === 1 ? 0 : (yData.spent_carry || 0);
+        const totalBudget = (yData.budget_main || 0) + budgetCarryVal;
+        const totalSpent = (yData.spent_main || 0) + spentCarryVal;
+        const rate = totalBudget > 0 ? (totalSpent / totalBudget) * 100 : 0;
+
+        sumBudgetMain += (yData.budget_main || 0);
+        sumBudgetCarry += budgetCarryVal;
+        sumTotalBudget += totalBudget;
+        sumTotalSpent += totalSpent;
+
+        let totalPrograms = 0;
+        let readyCount = 0;
+        let inProgressCount = 0;
+        let completedCount = 0;
+        let totalProgressSum = 0;
+
+        if (u.id !== "Common" && u.id !== "X0") {
+          totalPrograms = u.programs?.length || 0;
+          sumTotalPrograms += totalPrograms;
+
+          if (totalPrograms > 0) {
+            u.programs.forEach((prog) => {
+              const pdca = prog.pdca || { p: "대기", d: "대기", c: "대기", a: "대기" };
+              const completedSteps = [pdca.p, pdca.d, pdca.c, pdca.a].filter(step => step === "완료").length;
+              const progProgress = (completedSteps / 4) * 100;
+              totalProgressSum += progProgress;
+              sumTotalProgressSum += progProgress;
+
+              if (completedSteps === 0) {
+                readyCount++;
+                sumReadyCount++;
+              } else if (completedSteps === 4) {
+                completedCount++;
+                sumCompletedCount++;
+              } else {
+                inProgressCount++;
+                sumInProgressCount++;
+              }
+            });
+          }
+        }
+
+        const progressRate = totalPrograms > 0 ? (totalProgressSum / totalPrograms) : 0;
+        const nameStr = (u.id === "Common" ? "" : `${u.id}. `) + u.title;
+        const rateStr = `${rate.toFixed(1)}%`;
+        const progRateStr = u.id === "Common" || u.id === "X0" ? "-" : `${progressRate.toFixed(1)}%`;
+
+        if (selectedYear >= 2) {
+          mdContent += `| ${nameStr} | ${formatToMillionWon(yData.budget_main)} | ${formatToMillionWon(budgetCarryVal)} | ${formatToMillionWon(totalBudget)} | ${formatToMillionWon(totalSpent)} | ${rateStr} | ${u.id === "Common" || u.id === "X0" ? "-" : `${totalPrograms}개`} | ${u.id === "Common" || u.id === "X0" ? "-" : readyCount} | ${u.id === "Common" || u.id === "X0" ? "-" : inProgressCount} | ${u.id === "Common" || u.id === "X0" ? "-" : completedCount} | ${progRateStr} |\n`;
+        } else {
+          mdContent += `| ${nameStr} | ${formatToMillionWon(yData.budget_main)} | ${formatToMillionWon(totalBudget)} | ${formatToMillionWon(totalSpent)} | ${rateStr} | ${u.id === "Common" || u.id === "X0" ? "-" : `${totalPrograms}개`} | ${u.id === "Common" || u.id === "X0" ? "-" : readyCount} | ${u.id === "Common" || u.id === "X0" ? "-" : inProgressCount} | ${u.id === "Common" || u.id === "X0" ? "-" : completedCount} | ${progRateStr} |\n`;
+        }
+      });
+
+      const sumRate = sumTotalBudget > 0 ? (sumTotalSpent / sumTotalBudget) * 100 : 0;
+      const sumProgressRate = sumTotalPrograms > 0 ? (sumTotalProgressSum / sumTotalPrograms) : 0;
+
+      if (selectedYear >= 2) {
+        mdContent += `| **합계** | **${formatToMillionWon(sumBudgetMain)}** | **${formatToMillionWon(sumBudgetCarry)}** | **${formatToMillionWon(sumTotalBudget)}** | **${formatToMillionWon(sumTotalSpent)}** | **${sumRate.toFixed(1)}%** | **${sumTotalPrograms}개** | **${sumReadyCount}** | **${sumInProgressCount}** | **${sumCompletedCount}** | **${sumProgressRate.toFixed(1)}%** |\n`;
+      } else {
+        mdContent += `| **합계** | **${formatToMillionWon(sumBudgetMain)}** | **${formatToMillionWon(sumTotalBudget)}** | **${formatToMillionWon(sumTotalSpent)}** | **${sumRate.toFixed(1)}%** | **${sumTotalPrograms}개** | **${sumReadyCount}** | **${sumInProgressCount}** | **${sumCompletedCount}** | **${sumProgressRate.toFixed(1)}%** |\n`;
+      }
+
+      const blob = new Blob([mdContent], { type: "text/markdown;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `[${selectedYear}차년도]단위과제_진행현황_${yyyy}${mm}${dd}.md`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      alert("마크다운 내보내기 도중 에러가 발생하였습니다: " + err.message);
+    }
+  };
+
+  const handleExportPDF = async () => {
+    setIsDownloadingPdf("unit_status");
+    try {
+      await new Promise((resolve, reject) => {
+        if (window.html2pdf) return resolve(window.html2pdf);
+        const script = document.createElement("script");
+        script.src = "https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js";
+        script.onload = () => resolve(window.html2pdf);
+        script.onerror = reject;
+        document.head.appendChild(script);
+      });
+
+      const today = new Date();
+      const yyyy = today.getFullYear();
+      const mm = String(today.getMonth() + 1).padStart(2, '0');
+      const dd = String(today.getDate()).padStart(2, '0');
+      const fileName = `[${selectedYear}차년도]단위과제_진행현황_${yyyy}${mm}${dd}.pdf`;
+
+      let tableRowsHtml = "";
+      let sumBudgetMain = 0;
+      let sumBudgetCarry = 0;
+      let sumTotalBudget = 0;
+      let sumTotalSpent = 0;
+      let sumTotalPrograms = 0;
+      let sumReadyCount = 0;
+      let sumInProgressCount = 0;
+      let sumCompletedCount = 0;
+      let sumTotalProgressSum = 0;
+
+      const sortedUnits = displayProjects.flatMap((p) => p.units)
+        .sort((a, b) => {
+          if (a.id === "Common" || a.id === "X0") return 1;
+          if (b.id === "Common" || b.id === "X0") return -1;
+          return a.id.localeCompare(b.id, undefined, { numeric: true, sensitivity: 'base' });
+        });
+
+      sortedUnits.forEach((u) => {
+        const yData = u.years?.[selectedYear] || { budget_main: 0, spent_main: 0, budget_carry: 0, spent_carry: 0 };
+        const budgetCarryVal = selectedYear === 1 ? 0 : (yData.budget_carry || 0);
+        const spentCarryVal = selectedYear === 1 ? 0 : (yData.spent_carry || 0);
+        const totalBudget = (yData.budget_main || 0) + budgetCarryVal;
+        const totalSpent = (yData.spent_main || 0) + spentCarryVal;
+        const rate = totalBudget > 0 ? (totalSpent / totalBudget) * 100 : 0;
+
+        sumBudgetMain += (yData.budget_main || 0);
+        sumBudgetCarry += budgetCarryVal;
+        sumTotalBudget += totalBudget;
+        sumTotalSpent += totalSpent;
+
+        let totalPrograms = 0;
+        let readyCount = 0;
+        let inProgressCount = 0;
+        let completedCount = 0;
+        let totalProgressSum = 0;
+
+        if (u.id !== "Common" && u.id !== "X0") {
+          totalPrograms = u.programs?.length || 0;
+          sumTotalPrograms += totalPrograms;
+
+          if (totalPrograms > 0) {
+            u.programs.forEach((prog) => {
+              const pdca = prog.pdca || { p: "대기", d: "대기", c: "대기", a: "대기" };
+              const completedSteps = [pdca.p, pdca.d, pdca.c, pdca.a].filter(step => step === "완료").length;
+              const progProgress = (completedSteps / 4) * 100;
+              totalProgressSum += progProgress;
+              sumTotalProgressSum += progProgress;
+
+              if (completedSteps === 0) {
+                readyCount++;
+                sumReadyCount++;
+              } else if (completedSteps === 4) {
+                completedCount++;
+                sumCompletedCount++;
+              } else {
+                inProgressCount++;
+                sumInProgressCount++;
+              }
+            });
+          }
+        }
+
+        const progressRate = totalPrograms > 0 ? (totalProgressSum / totalPrograms) : 0;
+        const nameStr = (u.id === "Common" ? "" : `${u.id}. `) + u.title;
+        const budgetCarryCell = selectedYear >= 2 ? `<td style="border: 1px solid #d1d5db; padding: 6px 8px; text-align: right; font-family: sans-serif;">${formatToMillionWon(budgetCarryVal)}</td>` : "";
+
+        tableRowsHtml += `
+          <tr style="background: ${u.id === "Common" || u.id === "X0" ? "#f9fafb" : "#ffffff"};">
+            <td style="border: 1px solid #d1d5db; padding: 6px 8px; font-weight: bold;">${nameStr}</td>
+            <td style="border: 1px solid #d1d5db; padding: 6px 8px; text-align: right; font-family: sans-serif;">${formatToMillionWon(yData.budget_main)}</td>
+            ${budgetCarryCell}
+            <td style="border: 1px solid #d1d5db; padding: 6px 8px; text-align: right; font-weight: bold; font-family: sans-serif;">${formatToMillionWon(totalBudget)}</td>
+            <td style="border: 1px solid #d1d5db; padding: 6px 8px; text-align: right; font-family: sans-serif;">${formatToMillionWon(totalSpent)}</td>
+            <td style="border: 1px solid #d1d5db; padding: 6px 8px; text-align: right; font-family: sans-serif;">${rate.toFixed(1)}%</td>
+            <td style="border: 1px solid #d1d5db; padding: 6px 8px; text-align: center;">${u.id === "Common" || u.id === "X0" ? "-" : `${totalPrograms}개`}</td>
+            <td style="border: 1px solid #d1d5db; padding: 6px 8px; text-align: center;">${u.id === "Common" || u.id === "X0" ? "-" : readyCount}</td>
+            <td style="border: 1px solid #d1d5db; padding: 6px 8px; text-align: center; color: #f59e0b;">${u.id === "Common" || u.id === "X0" ? "-" : inProgressCount}</td>
+            <td style="border: 1px solid #d1d5db; padding: 6px 8px; text-align: center; color: #10b981; font-weight: bold;">${u.id === "Common" || u.id === "X0" ? "-" : completedCount}</td>
+            <td style="border: 1px solid #d1d5db; padding: 6px 8px; text-align: right; font-weight: bold; color: #10b981; font-family: sans-serif;">${u.id === "Common" || u.id === "X0" ? "-" : `${progressRate.toFixed(1)}%`}</td>
+          </tr>
+        `;
+      });
+
+      const sumRate = sumTotalBudget > 0 ? (sumTotalSpent / sumTotalBudget) * 100 : 0;
+      const sumProgressRate = sumTotalPrograms > 0 ? (sumTotalProgressSum / sumTotalPrograms) : 0;
+      const sumBudgetCarryCell = selectedYear >= 2 ? `<td style="border: 1px solid #d1d5db; padding: 6px 8px; text-align: right; font-weight: bold; background: #e5e7eb; font-family: sans-serif;">${formatToMillionWon(sumBudgetCarry)}</td>` : "";
+
+      const carryHeader = selectedYear >= 2 ? `<th style="border: 1px solid #d1d5db; padding: 6px 8px; background: #e5e7eb;">이월예산</th>` : "";
+      const colSpanVal = selectedYear >= 2 ? 5 : 4;
+
+      const htmlContent = `
+        <div style="padding: 10mm 15mm; font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif; color: #333333; background: #ffffff;">
+          <h1 style="text-align: center; font-size: 20px; font-weight: 800; margin-bottom: 5px; color: #111827;">울산과학대학교 앵커사업단 진행현황</h1>
+          <p style="text-align: center; font-size: 12px; color: #6b7280; margin-bottom: 20px;">[${selectedYear}차년도] 단위과제별 예산 집행 및 프로그램 추진 실적</p>
+          
+          <table style="width: 100%; border-collapse: collapse; font-size: 11px; color: #111827; border: 1px solid #d1d5db;">
+            <thead>
+              <tr style="background: #f3f4f6;">
+                <th rowspan="2" style="border: 1px solid #d1d5db; padding: 8px 6px; text-align: center; font-weight: bold; font-size: 12px;">단위과제</th>
+                <th colspan="${colSpanVal}" style="border: 1px solid #d1d5db; padding: 6px; text-align: center; font-weight: bold;">예산 배정 및 집행 (단위: 백만원)</th>
+                <th colspan="5" style="border: 1px solid #d1d5db; padding: 6px; text-align: center; font-weight: bold;">프로그램 진행</th>
+              </tr>
+              <tr style="background: #f9fafb;">
+                <th style="border: 1px solid #d1d5db; padding: 6px 8px;">본예산</th>
+                ${carryHeader}
+                <th style="border: 1px solid #d1d5db; padding: 6px 8px;">총 배정액</th>
+                <th style="border: 1px solid #d1d5db; padding: 6px 8px;">누적 집행</th>
+                <th style="border: 1px solid #d1d5db; padding: 6px 8px;">집행률</th>
+                <th style="border: 1px solid #d1d5db; padding: 6px 8px;">총 개수</th>
+                <th style="border: 1px solid #d1d5db; padding: 6px 8px;">준비</th>
+                <th style="border: 1px solid #d1d5db; padding: 6px 8px;">진행</th>
+                <th style="border: 1px solid #d1d5db; padding: 6px 8px;">완료</th>
+                <th style="border: 1px solid #d1d5db; padding: 6px 8px;">진행률</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${tableRowsHtml}
+              <tr style="background: #e5e7eb; font-weight: bold;">
+                <td style="border: 1px solid #d1d5db; padding: 8px 6px; text-align: center;">합계</td>
+                <td style="border: 1px solid #d1d5db; padding: 6px 8px; text-align: right; font-weight: bold; background: #e5e7eb; font-family: sans-serif;">${formatToMillionWon(sumBudgetMain)}</td>
+                ${sumBudgetCarryCell}
+                <td style="border: 1px solid #d1d5db; padding: 6px 8px; text-align: right; font-weight: bold; color: #1e40af; background: #e5e7eb; font-family: sans-serif;">${formatToMillionWon(sumTotalBudget)}</td>
+                <td style="border: 1px solid #d1d5db; padding: 6px 8px; text-align: right; font-weight: bold; background: #e5e7eb; font-family: sans-serif;">${formatToMillionWon(sumTotalSpent)}</td>
+                <td style="border: 1px solid #d1d5db; padding: 6px 8px; text-align: right; font-weight: bold; background: #e5e7eb; font-family: sans-serif;">${sumRate.toFixed(1)}%</td>
+                <td style="border: 1px solid #d1d5db; padding: 6px 8px; text-align: center; font-weight: bold; background: #e5e7eb;">${sumTotalPrograms}개</td>
+                <td style="border: 1px solid #d1d5db; padding: 6px 8px; text-align: center; font-weight: bold; background: #e5e7eb;">${sumReadyCount}</td>
+                <td style="border: 1px solid #d1d5db; padding: 6px 8px; text-align: center; font-weight: bold; background: #e5e7eb;">${sumInProgressCount}</td>
+                <td style="border: 1px solid #d1d5db; padding: 6px 8px; text-align: center; font-weight: bold; color: #10b981; background: #e5e7eb;">${sumCompletedCount}</td>
+                <td style="border: 1px solid #d1d5db; padding: 6px 8px; text-align: right; font-weight: bold; color: #10b981; background: #e5e7eb; font-family: sans-serif;">${sumProgressRate.toFixed(1)}%</td>
+              </tr>
+            </tbody>
+          </table>
+          
+          <div style="margin-top: 30px; font-size: 10px; color: #9ca3af; text-align: right;">
+            울산과학대학교 앵커사업단 성과 예산 관리 시스템 | 출력 일자: ${yyyy}-${mm}-${dd}
+          </div>
+        </div>
+      `;
+
+      const opt = {
+        margin: [10, 10, 15, 10],
+        filename: fileName,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true, logging: false },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      };
+
+      await html2pdf().from(htmlContent).set(opt).save();
+    } catch (err) {
+      alert("PDF 다운로드 도중 에러가 발생하였습니다: " + err.message);
+    } finally {
+      setIsDownloadingPdf(null);
+    }
+  };
 
   // ==========================================
   // Supabase DB 실시간 패칭 및 자동 동기화 훅
@@ -8624,7 +9032,113 @@ export default function App() {
               {/* 본문 콘텐츠 블록만 glass-card 로 감싸주어 서브메뉴와 분리 */}
               <div className="glass-card" style={{ padding: "1.25rem" }}>
                 {projectsSubTab === "unit_status" && (
-                <div className="table-panel">
+                  <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+                    {/* 💡 [요구사항 반영] 파일 다운로드 내보내기 버튼 그룹 신설 */}
+                    <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.5rem", flexWrap: "wrap" }}>
+                      <button
+                        type="button"
+                        onClick={handleExportExcel}
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "0.3rem",
+                          padding: "0.45rem 0.85rem",
+                          fontSize: "0.8rem",
+                          fontWeight: "700",
+                          borderRadius: "6px",
+                          background: "rgba(16, 185, 129, 0.15)",
+                          border: "1px solid rgba(16, 185, 129, 0.3)",
+                          color: "#10b981",
+                          cursor: "pointer",
+                          transition: "all 0.2s"
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.background = "rgba(16, 185, 129, 0.25)";
+                          e.currentTarget.style.transform = "translateY(-1px)";
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.background = "rgba(16, 185, 129, 0.15)";
+                          e.currentTarget.style.transform = "translateY(0)";
+                        }}
+                      >
+                        <FileSpreadsheet size={14} />
+                        Excel 다운로드
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={handleExportPDF}
+                        disabled={isDownloadingPdf === "unit_status"}
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "0.3rem",
+                          padding: "0.45rem 0.85rem",
+                          fontSize: "0.8rem",
+                          fontWeight: "700",
+                          borderRadius: "6px",
+                          background: "rgba(239, 68, 68, 0.15)",
+                          border: "1px solid rgba(239, 68, 68, 0.3)",
+                          color: "#ef4444",
+                          cursor: isDownloadingPdf === "unit_status" ? "not-allowed" : "pointer",
+                          transition: "all 0.2s"
+                        }}
+                        onMouseEnter={(e) => {
+                          if (isDownloadingPdf !== "unit_status") {
+                            e.currentTarget.style.background = "rgba(239, 68, 68, 0.25)";
+                            e.currentTarget.style.transform = "translateY(-1px)";
+                          }
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.background = "rgba(239, 68, 68, 0.15)";
+                          e.currentTarget.style.transform = "translateY(0)";
+                        }}
+                      >
+                        {isDownloadingPdf === "unit_status" ? (
+                          <>
+                            <div className="spinner" style={{ width: "12px", height: "12px", border: "2px solid rgba(239,68,68,0.3)", borderTopColor: "#ef4444", borderRadius: "50%", animation: "spin 0.8s linear infinite", display: "inline-block", marginRight: "4px" }} />
+                            PDF 내보내는 중...
+                          </>
+                        ) : (
+                          <>
+                            <FileText size={14} />
+                            PDF 다운로드
+                          </>
+                        )}
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={handleExportMarkdown}
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "0.3rem",
+                          padding: "0.45rem 0.85rem",
+                          fontSize: "0.8rem",
+                          fontWeight: "700",
+                          borderRadius: "6px",
+                          background: "rgba(59, 130, 246, 0.15)",
+                          border: "1px solid rgba(59, 130, 246, 0.3)",
+                          color: "#3b82f6",
+                          cursor: "pointer",
+                          transition: "all 0.2s"
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.background = "rgba(59, 130, 246, 0.25)";
+                          e.currentTarget.style.transform = "translateY(-1px)";
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.background = "rgba(59, 130, 246, 0.15)";
+                          e.currentTarget.style.transform = "translateY(0)";
+                        }}
+                      >
+                        <Download size={14} />
+                        Markdown 다운로드
+                      </button>
+                    </div>
+
+                    <div className="table-panel">
                     <table className="custom-table" style={{ fontSize: "0.85rem" }}>
                       <thead>
                         <tr style={{ background: "rgba(255,255,255,0.02)" }}>
@@ -8857,6 +9371,7 @@ export default function App() {
                       })()}
                     </tbody>
                   </table>
+                </div>
                 </div>
               )}
 
