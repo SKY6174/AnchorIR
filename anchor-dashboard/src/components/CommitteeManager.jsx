@@ -172,7 +172,7 @@ export default function CommitteeManager({
     if (!encSig) return null;
     if (encSig.startsWith("data:image")) return encSig;
     try {
-      const bytes = CryptoJS.AES.decrypt(encSig, SECRET_KEY);
+      const bytes = CryptoJS.AES.decrypt(encSig, SIGNATURE_SECRET_KEY);
       const decrypted = bytes.toString(CryptoJS.enc.Utf8);
       return decrypted || null;
     } catch (e) {
@@ -1339,17 +1339,19 @@ ${opinionsContext}
             opinion,
             agenda_id,
             member_id,
-            committee_members ( id, name, role )
+            committee_members ( id, name, type )
           `)
           .eq("meeting_id", rep.meeting_id),
         supabase
           .from("meeting_responses")
           .select(`
             id,
-            member_name,
-            signature_data,
-            signed_at,
-            is_attended
+            attended,
+            vote,
+            opinion,
+            encrypted_signature,
+            submitted_at,
+            committee_members ( id, name, type, org, dept )
           `)
           .eq("meeting_id", rep.meeting_id)
       ]);
@@ -1494,15 +1496,19 @@ ${opinionsContext}
       `;
 
       responses.forEach((resp) => {
-        const sigImage = resp.signature_data 
-          ? `<img src="${resp.signature_data}" style="max-height: 40px; max-width: 90px; object-fit: contain; vertical-align: middle; display: inline-block; mix-blend-mode: multiply;" />`
+        // 복호화 헬퍼 함수를 적용하여 서명 캔버스 이미지 URL 복원 (보안 암호화 해독)
+        const decryptedSig = decryptSignature(resp.encrypted_signature);
+        const sigImage = decryptedSig 
+          ? `<img src="${decryptedSig}" style="max-height: 40px; max-width: 90px; object-fit: contain; vertical-align: middle; display: inline-block; mix-blend-mode: multiply;" />`
           : `<span style="font-size: 11px; color: #ef4444; font-style: italic;">서명 미날인</span>`;
+
+        const memberName = resp.committee_members?.name || "알 수 없는 위원";
 
         htmlContent += `
           <div style="border: 1px solid #ddd; padding: 8px; border-radius: 4px; display: flex; align-items: center; justify-content: space-between; background: #fff; color: #000;">
             <div style="text-align: left;">
-              <div style="font-size: 12px; font-weight: bold;">${resp.member_name} 위원</div>
-              <div style="font-size: 10px; color: #666;">${resp.signed_at ? new Date(resp.signed_at).toLocaleDateString("ko-KR") : "의결서 보관"}</div>
+              <div style="font-size: 12px; font-weight: bold;">${memberName} 위원</div>
+              <div style="font-size: 10px; color: #666;">${resp.submitted_at ? new Date(resp.submitted_at).toLocaleDateString("ko-KR") : "의결서 보관"}</div>
             </div>
             <div style="text-align: right; width: 100px; height: 45px; display: flex; align-items: center; justify-content: center; border: 1px dashed #ccc; background: #fbfbfb;">
               ${sigImage}
@@ -2034,7 +2040,7 @@ ${opinionsContext}
                   )}
                 </div>
 
-                {/* 1. 위원 의사결정서 제출 패널 */}
+                {/* 1. 위원 의사결정서 제출 패널 (내부 위원의 직접 의결 참여 활성화) */}
                 {isUserCommitteeMember && selectedMeeting.status === "ACTIVE" && (
                   <div className="card" style={{ padding: "1.25rem", border: "1px solid var(--accent-color)", background: "rgba(var(--accent-color-rgb), 0.03)" }}>
                     <h3 style={{ fontSize: "1rem", fontWeight: "800", color: "var(--text-primary)", marginBottom: "0.75rem", display: "flex", alignItems: "center", gap: "0.25rem" }}>

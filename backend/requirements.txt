@@ -9,3 +9,5 @@ google-generativeai>=0.8.0
 python-dotenv==1.0.1
 pyhanko==0.21.0
 cryptography>=42.0.0
+python-multipart==0.0.9
+
