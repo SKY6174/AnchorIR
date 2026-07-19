@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { supabase } from "../supabaseClient";
-import { Users, Lock, FileText, Check, AlertTriangle, Send } from "lucide-react";
+import { Users, Lock, FileText, Check, AlertTriangle, Send, Vote } from "lucide-react";
 import CryptoJS from "crypto-js";
 
 // Rule 8 보안 최우선 과제 준수: 전자서명 AES 암호화 키
