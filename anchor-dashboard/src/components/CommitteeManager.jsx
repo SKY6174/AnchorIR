@@ -29,14 +29,14 @@ const GOVERNANCE_COMMITTEES_MASTER = [
   { id: "total", name: "앵커총괄위원회", purpose: "앵커 사업 총괄 / 사업계획서 심의 / 교육환경 및 기자재 구축심의 / 예산변경안 최종승인 등", badge: "최고의사결정", color: "linear-gradient(135deg, #ec4899 0%, #be123c 100%)", constitution: "내부 9인, 외부 2인 등", cycle: "반기별 1회" },
   { id: "planning", name: "앵커기획위원회", purpose: "대학/지자체 발전계획에 의거한 앵커사업계획서 작성 및 타당성 검토 / 사업계획서 및 사업결과보고서 운영 등", badge: "기획·실무조율", color: "linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)", constitution: "내부 11인, 외부 4인 등", cycle: "분기별 1회" },
   { id: "budget", name: "앵커사업비관리위원회", purpose: "사업비 집행 가이드라인에 따라 사업 예산 집행 모니터링 / 집행률 점검 및 관리 / 사업비 조정 심의 등", badge: "재정투명성", color: "linear-gradient(135deg, #f59e0b 0%, #b45309 100%)", constitution: "7인 내외", cycle: "분기별 1회" },
-  { id: "eval", name: "앵커사업자체평가위원회", purpose: "사업계획서 및 목표에 기반한 사업성과 평가 (중간평가/최종평가)", badge: "성과평가", color: "linear-gradient(135deg, #10b981 0%, #047857 100%)", constitution: "9인 내외", cycle: "연 1회 정기" },
+  { id: "evaluation", name: "앵커사업자체평가위원회", purpose: "사업계획서 및 목표에 기반한 사업성과 평가 (중간평가/최종평가)", badge: "성과평가", color: "linear-gradient(135deg, #10b981 0%, #047857 100%)", constitution: "9인 내외", cycle: "연 1회 정기" },
   { id: "advisory", name: "앵커사업자문회의", purpose: "앵커 사업 정책 방향 및 지역 정주형 인재 양성을 위한 정책 자문", badge: "외부전문가자문", color: "linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%)", constitution: "외부 7인 등", cycle: "반기별 1회" },
-  { id: "ecc_op", name: "지산학교육센터(ECC) 운영위원회", purpose: "지산학교육센터(ECC) 세부 사업계획 및 추진현황 심의/의결", badge: "센터운영", color: "linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)", constitution: "5인 내외", cycle: "분기별 1회" },
-  { id: "icc_op", name: "기업협업센터(ICC) 운영위원회", purpose: "기업협업센터(ICC) 산학연구 및 기업 지원 안건 의결", badge: "센터운영", color: "linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)", constitution: "5인 내외", cycle: "분기별 1회" },
-  { id: "rcc_op", name: "지역협업센터(RCC) 운영위원회", purpose: "지역협업센터(RCC) 지자체 매칭 및 커뮤니티 사업 자문/심의", badge: "센터운영", color: "linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)", constitution: "5인 내외", cycle: "분기별 1회" },
-  { id: "aidx_op", name: "AID-X센터 운영위원회", purpose: "디지털 융합 교육 및 AID-X 사업 기획 심의", badge: "센터운영", color: "linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)", constitution: "5인 내외", cycle: "분기별 1회" },
-  { id: "neulbom_op", name: "울산늘봄센터 운영위원회", purpose: "늘봄 교실 연계 과정 및 자치 교육 활동 심의", badge: "센터운영", color: "linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)", constitution: "5인 내외", cycle: "분기별 1회" },
-  { id: "newind_op", name: "신산업특화센터 운영위원회", purpose: "신산업 선도 기업 맞춤 교육 및 거버넌스 심의", badge: "센터운영", color: "linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)", constitution: "5인 내외", cycle: "분기별 1회" }
+  { id: "ecc_op", name: "ECC센터운영위원회", purpose: "ECC센터 세부 사업계획 및 추진현황 심의/의결", badge: "센터운영", color: "linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)", constitution: "5인 내외", cycle: "분기별 1회" },
+  { id: "icc_op", name: "ICC센터운영위원회", purpose: "ICC센터 산학연구 및 기업 지원 안건 의결", badge: "센터운영", color: "linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)", constitution: "5인 내외", cycle: "분기별 1회" },
+  { id: "rcc_op", name: "RCC센터운영위원회", purpose: "RCC센터 지자체 매칭 및 커뮤니티 사업 자문/심의", badge: "센터운영", color: "linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)", constitution: "5인 내외", cycle: "분기별 1회" },
+  { id: "aidx_op", name: "AID-X지원센터운영위원회", purpose: "디지털 융합 교육 및 AID-X 사업 기획 심의", badge: "센터운영", color: "linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)", constitution: "5인 내외", cycle: "분기별 1회" },
+  { id: "neulbom_op", name: "울산늘봄누리센터운영위원회", purpose: "늘봄 교실 연계 과정 및 자치 교육 활동 심의", badge: "센터운영", color: "linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)", constitution: "5인 내외", cycle: "분기별 1회" },
+  { id: "newind_op", name: "신산업특화센터운영위원회", purpose: "신산업 선도 기업 맞춤 교육 및 거버넌스 심의", badge: "센터운영", color: "linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)", constitution: "5인 내외", cycle: "분기별 1회" }
 ];
 
 // 💡 [거버넌스 소속 위원 명단 리스트 폴백 백업 셋] (요구사항 2 연동)
@@ -83,17 +83,17 @@ const MOCK_COMMITTEE_MEMBERS_FALLBACK = {
     { id: 307, committee_id: "budget", type: "위원", name: "강신욱", org: "인택스세무법인", dept: "세무팀", rank: "부대표", location: "교외", note: "", sort_order: 7 },
     { id: 308, committee_id: "budget", type: "간사", name: "심현미", org: "울산과학대학교", dept: "앵커사업단운영팀", rank: "팀장", location: "교내", note: "", sort_order: 8 }
   ],
-  eval: [
-    { id: 401, committee_id: "eval", type: "위원장", name: "김영근", org: "대구보건대학교", dept: "경영부총장", rank: "부총장", location: "교외", note: "", sort_order: 1 },
-    { id: 402, committee_id: "eval", type: "위원", name: "변홍석", org: "울산과학대학교", dept: "교무처", rank: "처장", location: "교내", note: "", sort_order: 2 },
-    { id: 403, committee_id: "eval", type: "위원", name: "이주영", org: "울산과학대학교", dept: "학생취업처", rank: "처장", location: "교내", note: "", sort_order: 3 },
-    { id: 404, committee_id: "eval", type: "위원", name: "서현영", org: "울산과학대학교", dept: "간호학부", rank: "학부장", location: "교내", note: "신규 추가", sort_order: 4 },
-    { id: 405, committee_id: "eval", type: "위원", name: "미지정", org: "울산과학대학교", dept: "총대의원회", rank: "의장", location: "교내", note: "", sort_order: 5 },
-    { id: 406, committee_id: "eval", type: "위원", name: "김봉재", org: "HD한국조선해양", dept: "-", rank: "부장", location: "교외", note: "", sort_order: 6 },
-    { id: 407, committee_id: "eval", type: "위원", name: "한동호", org: "석원기공", dept: "-", rank: "대표이사", location: "교외", note: "", sort_order: 7 },
-    { id: 408, committee_id: "eval", type: "위원(자문겸직)", name: "류지호", org: "아주자동차대학교", dept: "교학처", rank: "처장", location: "교외", note: "", sort_order: 8 },
-    { id: 409, committee_id: "eval", type: "위원(자문겸직)", name: "박준", org: "광주보건대학교", dept: "글로벌혁신처", rank: "처장", location: "교외", note: "", sort_order: 9 },
-    { id: 410, committee_id: "eval", type: "간사", name: "심현미", org: "울산과학대학교", dept: "앵커사업단운영팀", rank: "팀장", location: "교내", note: "", sort_order: 10 }
+  evaluation: [
+    { id: 401, committee_id: "evaluation", type: "위원장", name: "김영근", org: "대구보건대학교", dept: "경영부총장", rank: "부총장", location: "교외", note: "", sort_order: 1 },
+    { id: 402, committee_id: "evaluation", type: "위원", name: "변홍석", org: "울산과학대학교", dept: "교무처", rank: "처장", location: "교내", note: "", sort_order: 2 },
+    { id: 403, committee_id: "evaluation", type: "위원", name: "이주영", org: "울산과학대학교", dept: "학생취업처", rank: "처장", location: "교내", note: "", sort_order: 3 },
+    { id: 404, committee_id: "evaluation", type: "위원", name: "서현영", org: "울산과학대학교", dept: "간호학부", rank: "학부장", location: "교내", note: "신규 추가", sort_order: 4 },
+    { id: 405, committee_id: "evaluation", type: "위원", name: "미지정", org: "울산과학대학교", dept: "총대의원회", rank: "의장", location: "교내", note: "", sort_order: 5 },
+    { id: 406, committee_id: "evaluation", type: "위원", name: "김봉재", org: "HD한국조선해양", dept: "-", rank: "부장", location: "교외", note: "", sort_order: 6 },
+    { id: 407, committee_id: "evaluation", type: "위원", name: "한동호", org: "석원기공", dept: "-", rank: "대표이사", location: "교외", note: "", sort_order: 7 },
+    { id: 408, committee_id: "evaluation", type: "위원(자문겸직)", name: "류지호", org: "아주자동차대학교", dept: "교학처", rank: "처장", location: "교외", note: "", sort_order: 8 },
+    { id: 409, committee_id: "evaluation", type: "위원(자문겸직)", name: "박준", org: "광주보건대학교", dept: "글로벌혁신처", rank: "처장", location: "교외", note: "", sort_order: 9 },
+    { id: 410, committee_id: "evaluation", type: "간사", name: "심현미", org: "울산과학대학교", dept: "앵커사업단운영팀", rank: "팀장", location: "교내", note: "", sort_order: 10 }
   ],
   advisory: [
     { id: 501, committee_id: "advisory", type: "위원", name: "남기석", org: "영남이공대학교", dept: "물리치료학과", rank: "교수", location: "교외", note: "", sort_order: 1 },
@@ -202,7 +202,8 @@ export default function CommitteeManager({
     agenda: "",
     attachment_name: "",
     attachment_data: "",
-    access_pin: ""
+    access_pin: "",
+    agendas: [{ title: "", description: "", is_evaluation: false }] // 💡 [의안 개조] 기본 1개 안건 인풋 자동 생성
   });
 
   const [isMemberModalOpen, setIsMemberModalOpen] = useState(false);
@@ -216,6 +217,13 @@ export default function CommitteeManager({
     note: "",
     sort_order: 10
   });
+
+  // 💡 [의안 개조] 선택된 회의의 의안 리스트 및 의안별 수집된 위원 투표/평가 상태
+  const [selectedMeetingAgendas, setSelectedMeetingAgendas] = useState([]);
+  const [selectedMeetingAgendaVotes, setSelectedMeetingAgendaVotes] = useState([]);
+  
+  // 💡 [의안 개조] 위원 로그인 후 각 의안별 선택한 의결/의견 맵 상태 ({ [agendaId]: { vote, score, opinion } })
+  const [agendaInputs, setAgendaInputs] = useState({});
 
   // 위원 의사결정 제출 폼 상태
   const [userVote, setUserVote] = useState("");
@@ -250,6 +258,91 @@ export default function CommitteeManager({
     }
   }, [selectedCommittee]);
 
+  // 💡 [의안 개조] 선택된 회의(selectedMeeting)가 변경될 때마다 종속된 의안(Agendas) 및 의안별 투표(Votes) 데이터 로드
+  useEffect(() => {
+    if (selectedMeeting?.id) {
+      fetchMeetingAgendasAndVotes(selectedMeeting.id);
+    } else {
+      setSelectedMeetingAgendas([]);
+      setSelectedMeetingAgendaVotes([]);
+    }
+  }, [selectedMeeting]);
+
+  const fetchMeetingAgendasAndVotes = async (meetingId) => {
+    try {
+      // 1. 의안 목록 조회
+      const { data: agendas, error: agErr } = await supabase
+        .from("meeting_agendas")
+        .select("*")
+        .eq("meeting_id", meetingId)
+        .order("sort_order", { ascending: true });
+      if (agErr) throw agErr;
+      setSelectedMeetingAgendas(agendas || []);
+      localStorage.setItem(`local_meeting_agendas_${meetingId}`, JSON.stringify(agendas || []));
+
+      // 2. 의안별 개별 투표 목록 조회
+      const { data: votes, error: vtErr } = await supabase
+        .from("meeting_agenda_votes")
+        .select("*")
+        .eq("meeting_id", meetingId);
+      if (vtErr) throw vtErr;
+      setSelectedMeetingAgendaVotes(votes || []);
+      localStorage.setItem(`local_meeting_agenda_votes_${meetingId}`, JSON.stringify(votes || []));
+    } catch (err) {
+      console.warn("의안/투표 조회 실패, 로컬 캐시 폴백:", err.message);
+      const localAgendas = localStorage.getItem(`local_meeting_agendas_${meetingId}`);
+      setSelectedMeetingAgendas(localAgendas ? JSON.parse(localAgendas) : []);
+
+      const localVotes = localStorage.getItem(`local_meeting_agenda_votes_${meetingId}`);
+      setSelectedMeetingAgendaVotes(localVotes ? JSON.parse(localVotes) : []);
+    }
+  };
+
+  // 💡 [의안 개조] 위원 로그인 후 각 의안별 선택한 의결/의견 맵 상태 ({ [agendaId]: { vote, score, opinion } }) 초기화
+  useEffect(() => {
+    if (selectedMeeting && selectedMeetingAgendas.length > 0) {
+      const myName = currentUser?.name ? currentUser.name.split(" ")[0].split("(")[0].trim() : "";
+      const myMemberObj = members.find(m => m.name === myName);
+      
+      const newInputs = {};
+      selectedMeetingAgendas.forEach(a => {
+        // 이미 낸 투표가 있는지 찾기
+        const existingVote = selectedMeetingAgendaVotes.find(
+          v => v.agenda_id === a.id && (myMemberObj ? v.member_id === myMemberObj.id : false)
+        );
+        newInputs[a.id] = {
+          vote: existingVote?.vote || "",
+          score: existingVote?.score || 0,
+          opinion: existingVote?.opinion || ""
+        };
+      });
+      setAgendaInputs(newInputs);
+    }
+  }, [selectedMeeting, selectedMeetingAgendas, selectedMeetingAgendaVotes, members, currentUser]);
+
+  // 💡 [의안 개조] 의안별 투표/평가 통계 산출 헬퍼 함수
+  const getAgendaVoteStats = (agendaId, isEvaluation) => {
+    const votes = selectedMeetingAgendaVotes.filter(v => v.agenda_id === agendaId);
+    const totalVotes = votes.length;
+    
+    if (isEvaluation) {
+      const scores = votes.map(v => v.score).filter(s => s && s >= 1 && s <= 5);
+      const sum = scores.reduce((a, b) => a + b, 0);
+      const avg = scores.length > 0 ? (sum / scores.length).toFixed(2) : "0.00";
+      
+      const distribution = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+      scores.forEach(s => { distribution[s] = (distribution[s] || 0) + 1; });
+      
+      return { totalVotes, avg, distribution };
+    } else {
+      const approve = votes.filter(v => v.vote === "APPROVE").length;
+      const reject = votes.filter(v => v.vote === "REJECT").length;
+      const abstain = votes.filter(v => v.vote === "ABSTAIN").length;
+      
+      return { totalVotes, approve, reject, abstain };
+    }
+  };
+
   useEffect(() => {
     if (selectedMeeting) {
       fetchResponses(selectedMeeting.id);
@@ -265,6 +358,13 @@ export default function CommitteeManager({
     }
   }, [currentUser, committees]);
 
+  // 💡 [새로고침 유지 가드] selectedCommittee가 변경될 때마다 활성 ID를 로컬 스토리지에 캐시
+  useEffect(() => {
+    if (selectedCommittee?.id) {
+      localStorage.setItem("anchor_selected_committee_id", selectedCommittee.id);
+    }
+  }, [selectedCommittee]);
+
   // 3. Supabase 데이터 조회(Fetch) 함수
   const fetchCommittees = async () => {
     try {
@@ -274,19 +374,38 @@ export default function CommitteeManager({
         .order("name", { ascending: true });
       if (error) throw error;
       
+      let list = GOVERNANCE_COMMITTEES_MASTER;
       if (data && data.length > 0) {
+        list = data;
         setCommittees(data);
       } else {
         setCommittees(GOVERNANCE_COMMITTEES_MASTER);
       }
+
+      // 로컬 스토리지에 저장된 이전 활성 위원회 복원
+      const savedId = localStorage.getItem("anchor_selected_committee_id");
+      if (savedId) {
+        const found = list.find(c => c.id === savedId);
+        if (found) {
+          setSelectedCommittee(found);
+        }
+      }
     } catch (err) {
       console.error("위원회 조회 에러 (폴백 마스터 전환):", err.message);
       setCommittees(GOVERNANCE_COMMITTEES_MASTER);
+
+      const savedId = localStorage.getItem("anchor_selected_committee_id");
+      if (savedId) {
+        const found = GOVERNANCE_COMMITTEES_MASTER.find(c => c.id === savedId);
+        if (found) {
+          setSelectedCommittee(found);
+        }
+      }
     }
   };
 
   // 💡 [위원회 풀 분류 필터링] (요구사항 1 반영)
-  const agencyIds = ["total", "planning", "budget", "eval", "advisory"];
+  const agencyIds = ["total", "planning", "budget", "evaluation", "advisory"];
   const centerIds = ["ecc_op", "icc_op", "rcc_op", "aidx_op", "neulbom_op", "newind_op"];
 
   const filteredCommittees = committees.filter(c => {
@@ -705,20 +824,171 @@ export default function CommitteeManager({
     reader.readAsDataURL(file);
   };
 
+  // 💡 [의안 개조] 위원 참석 및 의안별 의결/평가(의결서) 제출 핸들러 (Rule 8 암호화 적용)
+  const handleSubmitVote = async () => {
+    if (!selectedMeeting) return;
+    
+    const myName = currentUser?.name ? currentUser.name.split(" ")[0].split("(")[0].trim() : "";
+    const myMemberObj = members.find(m => m.name === myName);
+    if (!myMemberObj) {
+      alert("귀하는 이 위원회의 위원 명단에 존재하지 않습니다.");
+      return;
+    }
+
+    if (selectedMeetingAgendas.length === 0) {
+      alert("심의할 의안이 정의되어 있지 않습니다.");
+      return;
+    }
+
+    // 1. 모든 의안의 의결/점수 기입 유무 검증
+    for (const a of selectedMeetingAgendas) {
+      const input = agendaInputs[a.id];
+      if (a.is_evaluation) {
+        if (!input || !input.score || input.score < 1 || input.score > 5) {
+          alert(`[${a.title}] 문항의 5점 척도 점수를 선택해 주세요.`);
+          return;
+        }
+      } else {
+        if (!input || !input.vote) {
+          alert(`[${a.title}] 안건에 대한 찬/반 여부를 선택해 주세요.`);
+          return;
+        }
+      }
+    }
+
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const signatureDataUrl = canvas.toDataURL("image/png");
+    
+    const blankCanvas = document.createElement("canvas");
+    blankCanvas.width = canvas.width;
+    blankCanvas.height = canvas.height;
+    if (signatureDataUrl === blankCanvas.toDataURL("image/png")) {
+      alert("전자서명 패드에 서명을 완성해 주세요.");
+      return;
+    }
+
+    // 💡 [Rule 8] 서명 이미지 Base64 데이터를 대칭키 AES로 암호화하여 보안 전송
+    const encryptedSig = CryptoJS.AES.encrypt(signatureDataUrl, SECRET_KEY).toString();
+
+    // 2. 의안별 개별 투표 레코드 리스트 생성
+    const votePayloads = selectedMeetingAgendas.map(a => ({
+      meeting_id: selectedMeeting.id,
+      agenda_id: a.id,
+      member_id: myMemberObj.id,
+      vote: a.is_evaluation ? null : agendaInputs[a.id]?.vote || null,
+      score: a.is_evaluation ? Number(agendaInputs[a.id]?.score) || null : null,
+      opinion: agendaInputs[a.id]?.opinion || ""
+    }));
+
+    // 3. 하위 호환용 종합 의견 및 대표 찬반값 셋업
+    const summaryOpinion = selectedMeetingAgendas.map((a, idx) => {
+      const detail = agendaInputs[a.id] || { vote: "", score: 0, opinion: "" };
+      const choiceStr = a.is_evaluation ? `${detail.score}점` : (detail.vote === "APPROVE" ? "찬성" : detail.vote === "REJECT" ? "반대" : "기권");
+      return `[안건 ${idx + 1}] ${choiceStr}: ${detail.opinion}`;
+    }).join("\n");
+
+    const representativeVote = selectedMeetingAgendas[0]?.is_evaluation 
+      ? "EVALUATION" 
+      : (agendaInputs[selectedMeetingAgendas[0]?.id]?.vote || "ABSTAIN");
+
+    const responsePayload = {
+      meeting_id: selectedMeeting.id,
+      member_id: myMemberObj.id,
+      attended: true,
+      vote: representativeVote,
+      opinion: summaryOpinion,
+      encrypted_signature: encryptedSig,
+      submitted_at: new Date().toISOString()
+    };
+
+    try {
+      // 3.1 의안별 개별 투표 테이블 업서트
+      const { error: vtErr } = await supabase
+        .from("meeting_agenda_votes")
+        .upsert(votePayloads, { onConflict: "agenda_id, member_id" });
+      if (vtErr) throw vtErr;
+
+      // 3.2 기존 부모 테이블 업서트
+      const { error: respErr } = await supabase
+        .from("meeting_responses")
+        .upsert([responsePayload], { onConflict: "meeting_id, member_id" });
+      if (respErr) throw respErr;
+
+      alert("의사결정서 및 안건별 서명이 안전하게 암호화되어 제출되었습니다.");
+      setHasSubmitted(true);
+      await fetchMeetingAgendasAndVotes(selectedMeeting.id);
+      await fetchResponses(selectedMeeting.id);
+    } catch (err) {
+      console.warn("DB 의결 제출 실패, 로컬 스토리지에 모의 기록합니다:", err.message);
+      
+      // 로컬 스토리지 모의 기록 연동
+      const localVotes = JSON.parse(localStorage.getItem(`local_meeting_agenda_votes_${selectedMeeting.id}`) || "[]");
+      const updatedVotes = [...localVotes];
+      votePayloads.forEach(payload => {
+        const idx = updatedVotes.findIndex(v => v.agenda_id === payload.agenda_id && v.member_id === payload.member_id);
+        if (idx > -1) {
+          updatedVotes[idx] = { ...payload, id: `local-vote-${Date.now()}-${payload.agenda_id}` };
+        } else {
+          updatedVotes.push({ ...payload, id: `local-vote-${Date.now()}-${payload.agenda_id}` });
+        }
+      });
+      localStorage.setItem(`local_meeting_agenda_votes_${selectedMeeting.id}`, JSON.stringify(updatedVotes));
+      setSelectedMeetingAgendaVotes(updatedVotes);
+
+      const localResponses = JSON.parse(localStorage.getItem(`local_meeting_responses_${selectedMeeting.id}`) || "[]");
+      const localPayload = {
+        ...responsePayload,
+        id: `local-response-${Date.now()}`,
+        committee_members: {
+          name: myMemberObj.name,
+          type: myMemberObj.type,
+          org: myMemberObj.org,
+          dept: myMemberObj.dept
+        }
+      };
+      
+      const idx = localResponses.findIndex(r => r.member_id === myMemberObj.id);
+      let updated;
+      if (idx > -1) {
+        updated = [...localResponses];
+        updated[idx] = localPayload;
+      } else {
+        updated = [...localResponses, localPayload];
+      }
+      localStorage.setItem(`local_meeting_responses_${selectedMeeting.id}`, JSON.stringify(updated));
+      setResponses(updated);
+      setHasSubmitted(true);
+      alert("의결서가 제출되었습니다. (오프라인 캐시 모드)");
+    }
+  };
+
   const handleCreateMeeting = async (e) => {
     e.preventDefault();
-    if (!meetingForm.title || !meetingForm.meeting_date || !meetingForm.agenda) {
-      alert("모든 필수 항목을 기입해 주세요.");
+    if (!meetingForm.title || !meetingForm.meeting_date) {
+      alert("회의 제목과 일시를 입력해 주세요.");
+      return;
+    }
+    if (!meetingForm.agendas || meetingForm.agendas.length === 0) {
+      alert("최소 1개 이상의 의결 안건(의안)을 추가해 주세요.");
+      return;
+    }
+    if (meetingForm.agendas.some(a => !a.title.trim())) {
+      alert("모든 의안의 제목을 올바르게 기입해 주세요.");
       return;
     }
 
     const generatedPin = meetingForm.access_pin.trim() || Math.floor(100000 + Math.random() * 900000).toString();
+    
+    // 하위 호환 및 DB non-null 제약 해소를 위해 의안 리스트 요약을 agenda 컬럼에 채움
+    const summaryAgendaText = meetingForm.agendas.map((a, idx) => `[안건 ${idx + 1}] ${a.title}`).join("\n");
+
     const payload = {
       committee_id: selectedCommittee.id,
       title: meetingForm.title,
       meeting_date: meetingForm.meeting_date,
       meeting_type: meetingForm.meeting_type,
-      agenda: meetingForm.agenda,
+      agenda: summaryAgendaText,
       attachment_name: meetingForm.attachment_name || null,
       attachment_data: meetingForm.attachment_data || null,
       access_pin: generatedPin,
@@ -726,12 +996,32 @@ export default function CommitteeManager({
     };
 
     try {
+      // 1. 회의 기본 인서트
       const { data, error } = await supabase
         .from("committee_meetings")
         .insert([payload])
         .select();
 
       if (error) throw error;
+      
+      const createdMeeting = data[0];
+      
+      // 2. 다중 의안 인서트
+      if (createdMeeting && meetingForm.agendas.length > 0) {
+        const agendaPayloads = meetingForm.agendas.map((a, idx) => ({
+          meeting_id: createdMeeting.id,
+          title: a.title.trim(),
+          description: a.description || null,
+          is_evaluation: !!a.is_evaluation,
+          sort_order: idx + 1
+        }));
+        
+        const { error: agErr } = await supabase
+          .from("meeting_agendas")
+          .insert(agendaPayloads);
+        if (agErr) throw agErr;
+      }
+
       alert(`위원회 회의 일정이 등록되었습니다.\n[외부 위원용 보안 PIN]: ${generatedPin}`);
       setIsMeetingModalOpen(false);
       setMeetingForm({ 
@@ -741,11 +1031,12 @@ export default function CommitteeManager({
         agenda: "",
         attachment_name: "",
         attachment_data: "",
-        access_pin: ""
+        access_pin: "",
+        agendas: [{ title: "", description: "", is_evaluation: false }]
       });
       await fetchMeetings(selectedCommittee.id);
-      if (data && data.length > 0) {
-        setSelectedMeeting(data[0]);
+      if (createdMeeting) {
+        setSelectedMeeting(createdMeeting);
       }
     } catch (err) {
       console.warn("DB 회의 등록 실패, 로컬 스토리지에 모의 저장합니다:", err.message);
@@ -753,6 +1044,17 @@ export default function CommitteeManager({
       const localPayload = { ...payload, id: `local-meeting-${Date.now()}`, created_at: new Date().toISOString() };
       const updated = [localPayload, ...localMeetings];
       localStorage.setItem(`local_committee_meetings_${selectedCommittee.id}`, JSON.stringify(updated));
+
+      // 로컬 스토리지용 의안 정보 모의 적재
+      const localAgendas = meetingForm.agendas.map((a, idx) => ({
+        id: `local-agenda-${Date.now()}-${idx}`,
+        meeting_id: localPayload.id,
+        title: a.title.trim(),
+        description: a.description || null,
+        is_evaluation: !!a.is_evaluation,
+        sort_order: idx + 1
+      }));
+      localStorage.setItem(`local_meeting_agendas_${localPayload.id}`, JSON.stringify(localAgendas));
       
       alert(`위원회 회의 일정이 등록되었습니다. (오프라인 캐시 모드)\n[외부 위원용 보안 PIN]: ${generatedPin}`);
       setIsMeetingModalOpen(false);
@@ -763,7 +1065,8 @@ export default function CommitteeManager({
         agenda: "",
         attachment_name: "",
         attachment_data: "",
-        access_pin: ""
+        access_pin: "",
+        agendas: [{ title: "", description: "", is_evaluation: false }]
       });
       setMeetings(updated);
       setSelectedMeeting(localPayload);
@@ -830,90 +1133,7 @@ export default function CommitteeManager({
     ctx.clearRect(0, 0, canvas.width, canvas.height);
   };
 
-  // 6. 위원 참석 및 의결(의결서) 제출 핸들러 (Rule 8 암호화 적용)
-  const handleSubmitVote = async () => {
-    if (!selectedMeeting) return;
-    if (!userVote) {
-      alert("안건에 대한 찬/반 여부를 선택해 주세요.");
-      return;
-    }
-    if (!userOpinion.trim()) {
-      alert("의견서 본문을 작성해 주세요.");
-      return;
-    }
 
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const signatureDataUrl = canvas.toDataURL("image/png");
-    
-    const blankCanvas = document.createElement("canvas");
-    blankCanvas.width = canvas.width;
-    blankCanvas.height = canvas.height;
-    if (signatureDataUrl === blankCanvas.toDataURL("image/png")) {
-      alert("전자서명 패드에 서명을 완성해 주세요.");
-      return;
-    }
-
-    // 💡 [Rule 8] 서명 이미지 Base64 데이터를 대칭키 AES로 암호화하여 보안 전송
-    const encryptedSig = CryptoJS.AES.encrypt(signatureDataUrl, SECRET_KEY).toString();
-
-    // 내가 이 위원회에서 배정된 멤버 레코드 ID 획득
-    const myMemberObj = members.find(m => m.user_id === currentUser.id);
-    if (!myMemberObj) {
-      alert("귀하는 이 위원회의 위원 명단에 존재하지 않습니다.");
-      return;
-    }
-
-    const payload = {
-      meeting_id: selectedMeeting.id,
-      member_id: myMemberObj.id,
-      attended: true,
-      vote: userVote,
-      opinion: userOpinion,
-      encrypted_signature: encryptedSig,
-      submitted_at: new Date().toISOString()
-    };
-
-    try {
-      const { error } = await supabase
-        .from("meeting_responses")
-        .upsert([payload], { onConflict: "meeting_id, member_id" });
-
-      if (error) throw error;
-      alert("의사결정서 및 서명이 안전하게 암호화되어 제출되었습니다.");
-      setHasSubmitted(true);
-      await fetchResponses(selectedMeeting.id);
-    } catch (err) {
-      console.warn("DB 의결 제출 실패, 로컬 스토리지에 모의 기록합니다:", err.message);
-      
-      const localResponses = JSON.parse(localStorage.getItem(`local_meeting_responses_${selectedMeeting.id}`) || "[]");
-      const localPayload = {
-        ...payload,
-        id: `local-response-${Date.now()}`,
-        committee_members: {
-          name: myMemberObj.name,
-          type: myMemberObj.type,
-          org: myMemberObj.org,
-          dept: myMemberObj.dept
-        }
-      };
-      
-      // 기존에 존재하면 업데이트, 없으면 추가
-      const idx = localResponses.findIndex(r => r.member_id === myMemberObj.id);
-      let updated;
-      if (idx > -1) {
-        updated = [...localResponses];
-        updated[idx] = localPayload;
-      } else {
-        updated = [...localResponses, localPayload];
-      }
-      localStorage.setItem(`local_meeting_responses_${selectedMeeting.id}`, JSON.stringify(updated));
-      
-      alert("의사결정서 및 서명이 제출되었습니다. (오프라인 캐시 모드)");
-      setHasSubmitted(true);
-      setResponses(updated);
-    }
-  };
 
   // 7. 정족수 실시간 계산 유틸리티 연동
   const calculateQuorum = () => {
@@ -972,34 +1192,51 @@ export default function CommitteeManager({
 
     setIsAnalyzing(true);
     try {
-      // 위원들의 의견 수집
-      const opinionsContext = responses
-        .map((r, idx) => `[위원 ${idx + 1} - ${r.vote === "APPROVE" ? "찬성" : r.vote === "REJECT" ? "반대" : "기권"}]: ${r.opinion}`)
-        .join("\n");
+      // 💡 [의안 개조] 각 의안별로 수집된 통계 및 위원별 의견 구조화
+      const opinionsContext = selectedMeetingAgendas.map((agenda, aIdx) => {
+        const votes = selectedMeetingAgendaVotes.filter(v => v.agenda_id === agenda.id);
+        const stats = getAgendaVoteStats(agenda.id, agenda.is_evaluation);
+        
+        let statsText = "";
+        if (agenda.is_evaluation) {
+          statsText = `평균 평점: ${stats.avg}점 / 5.00점 만점 (점수 분포: 5점 ${stats.distribution[5]}명, 4점 ${stats.distribution[4]}명, 3점 ${stats.distribution[3]}명, 2점 ${stats.distribution[2]}명, 1점 ${stats.distribution[1]}명)`;
+        } else {
+          statsText = `표결 결과: 찬성 ${stats.approve}명, 반대 ${stats.reject}명, 기권 ${stats.abstain}명`;
+        }
+
+        const opinionsText = votes.map((v, vIdx) => {
+          const name = members.find(m => m.id === v.member_id)?.name || `위원 ${vIdx + 1}`;
+          const choice = agenda.is_evaluation ? `${v.score}점` : (v.vote === "APPROVE" ? "찬성" : v.vote === "REJECT" ? "반대" : "기권");
+          return `- [${name} 위원 - 선택: ${choice}]: ${v.opinion || "의견 없음"}`;
+        }).join("\n");
+
+        return `[안건 ${aIdx + 1}] 의안명: ${agenda.title} (${agenda.is_evaluation ? "자체평가 5점 척도 문항" : "일반 찬반 의결 안건"})
+- 통계 정보: ${statsText}
+- 수집된 위원별 세부 심의 의견:
+${opinionsText}`;
+      }).join("\n\n");
 
       const prompt = `역할: 울산과학대학교 RISE 사업단 전문 AI 분석관
-작업: 아래 수집된 위원들의 회의 안건 의견들을 객관적으로 분석하여 결과 보고서 형식으로 요약해줘.
-모든 텍스트는 친절한 존댓말 한글로 작성하며 주관적인 판단 대신 위원들의 의견 분포를 정량적/정성적으로 균형있게 요약해야 함.
+작업: 아래 수집된 위원들의 회의 의안 및 평가 영역별 의견들을 정밀 분석하여 결과 보고서 형식으로 요약해줘.
+모든 텍스트는 친절한 존댓말 한글로 작성하며 주관적인 판단 대신 위원들의 안건별 의견 분포를 정량적/정성적으로 균형있게 분석해 주어야 함.
 
-[안건명]: ${selectedMeeting.title}
-[안건 세부 요지]: ${selectedMeeting.agenda}
-
-[위원회 의결 기준]: ${selectedCommittee.name} / ${qInfo?.ruleText}
+[회의명]: ${selectedMeeting.title}
+[위원회 명칭]: ${selectedCommittee.name}
+[위원회 의결 기준]: ${qInfo?.ruleText}
 [최종 성원 요건]: 재적 ${qInfo?.total}명 중 ${qInfo?.attended}명 참석하여 ${qInfo?.isEstablished ? "성원됨" : "미성원됨"}
-[최종 표결 결과]: 찬성 ${qInfo?.approveCount}표, 반대 ${qInfo?.rejectCount}표, 기권 ${qInfo?.abstainCount}표 ➡️ 최종 결과: ${qInfo?.isApproved ? "가결(Approved)" : "부결(Rejected)"}
 
-[수집된 위원별 세부 의견]:
+[안건 및 평가 영역별 수집 정보]:
 ${opinionsContext}
 
 요구 형식:
-### 1. 종합 찬반 동향 및 핵심 논지
-(찬성률과 주요 지지 근거 및 우려사항 분석 요약)
+### 1. 종합 평가 동향 및 핵심 논지
+(회의 전체에 대한 찬반 동향 및 자체평가 점수 추세의 핵심 요약을 기술)
 
-### 2. 안건별 세부 쟁점 및 보완 권고사항
-(위원들이 명시한 이견 및 보완 사항 요약 기술)
+### 2. 안건(평가영역)별 분석 보고 및 보완 권고사항
+(각 안건(의안) 단위로 평균 점수 또는 찬반 결과와 함께 위원들이 제기한 주요 논점, 이견, 보완 권고사항을 순서대로 명확히 기술)
 
 ### 3. 향후 사업단 추진 방향 및 AI 종합 제언
-(가결/부결 결과에 따른 구체적 실행 로직 제언)`;
+(회의 결과에 따른 차년도 계획 환류 방안 및 구체적 실행 제언 기술)`;
 
       const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiKey}`;
       const response = await fetch(endpoint, {
@@ -1024,7 +1261,7 @@ ${opinionsContext}
           is_established: qInfo?.isEstablished,
           decision_status: qInfo?.isEstablished ? (qInfo?.isApproved ? "APPROVED" : "REJECTED") : "CANCELLED",
           ai_summary: aiSummaryText,
-          official_minutes: `[회의록 자동 생성] 본 위원회는 재적 ${qInfo?.total}명 중 ${qInfo?.attended}명 참석으로 성원되었으며, 투표 결과 최종 ${qInfo?.isApproved ? "가결" : "부결"}되었음을 증명합니다.`,
+          official_minutes: `[회의록 자동 생성] 본 위원회는 재적 ${qInfo?.total}명 중 ${qInfo?.attended}명 참석으로 성원되었으며, 총 ${selectedMeetingAgendas.length}개 의안에 대한 심의 의결 결과 최종 ${qInfo?.isApproved ? "가결" : "부결/기타"} 처리되었음을 증명합니다.`,
           published_at: new Date().toISOString()
         }], { onConflict: "meeting_id" });
 
@@ -1469,6 +1706,61 @@ ${opinionsContext}
                   <div style={{ fontSize: "0.75rem", color: "var(--accent-color)", marginTop: "0.5rem", textStyle: "italic" }}>
                     ℹ️ 의결 정족수 기준: {qInfo?.ruleText}
                   </div>
+
+                  {/* 💡 [의안별 투표/평가 실시간 통계 모니터] */}
+                  {selectedMeetingAgendas.length > 0 && (
+                    <div style={{ marginTop: "1.25rem", padding: "1rem", background: "rgba(255,255,255,0.01)", border: "1px solid var(--border-color)", borderRadius: "8px" }}>
+                      <h4 style={{ fontSize: "0.85rem", fontWeight: "bold", color: "#fff", marginBottom: "0.75rem", display: "flex", gap: "0.3rem", alignItems: "center" }}>
+                        📊 의안별 실시간 의결 및 평가 집계
+                      </h4>
+                      <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+                        {selectedMeetingAgendas.map((agenda, aIdx) => {
+                          const stats = getAgendaVoteStats(agenda.id, agenda.is_evaluation);
+                          return (
+                            <div key={agenda.id} style={{ background: "rgba(0,0,0,0.15)", borderRadius: "6px", padding: "0.6rem 0.75rem", border: "1px solid rgba(255,255,255,0.03)" }}>
+                              <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.8rem", color: "#fff", marginBottom: "0.4rem", fontWeight: "700" }}>
+                                <span>{agenda.title}</span>
+                                {agenda.is_evaluation ? (
+                                  <span style={{ color: "var(--accent-color)" }}>평균: {stats.avg}점 / 5.00</span>
+                                ) : (
+                                  <span style={{ color: "var(--success-color)" }}>참여: {stats.totalVotes}명</span>
+                                )}
+                              </div>
+                              {agenda.is_evaluation ? (
+                                /* 5점 척도 평점 채점 시각화 (진척도 바 형태로 평균점수 시각화) */
+                                <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                                  <div style={{ flex: 1, height: "8px", background: "rgba(255,255,255,0.05)", borderRadius: "4px", overflow: "hidden" }}>
+                                    <div style={{ height: "100%", width: `${(Number(stats.avg) / 5) * 100}%`, background: "var(--accent-color)", borderRadius: "4px", transition: "width 0.3s ease" }} />
+                                  </div>
+                                  <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)", minWidth: "30px" }}>{((Number(stats.avg) / 5) * 100).toFixed(0)}%</span>
+                                </div>
+                              ) : (
+                                /* 일반 찬반 투표 비율 막대 바 시각화 (찬성, 반대, 기권 등) */
+                                <div style={{ display: "flex", gap: "0.2rem", height: "8px", background: "rgba(255,255,255,0.05)", borderRadius: "4px", overflow: "hidden", marginTop: "0.3rem" }}>
+                                  {stats.totalVotes > 0 ? (
+                                    <>
+                                      <div style={{ width: `${(stats.approve / stats.totalVotes) * 100}%`, background: "#22c55e", transition: "width 0.3s ease" }} title={`찬성: ${stats.approve}명`} />
+                                      <div style={{ width: `${(stats.reject / stats.totalVotes) * 100}%`, background: "#ef4444", transition: "width 0.3s ease" }} title={`반대: ${stats.reject}명`} />
+                                      <div style={{ width: `${(stats.abstain / stats.totalVotes) * 100}%`, background: "#9ca3af", transition: "width 0.3s ease" }} title={`기권: ${stats.abstain}명`} />
+                                    </>
+                                  ) : (
+                                    <div style={{ width: "100%", background: "rgba(255,255,255,0.05)" }} />
+                                  )}
+                                </div>
+                              )}
+                              {!agenda.is_evaluation && stats.totalVotes > 0 && (
+                                <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.7rem", color: "var(--text-secondary)", marginTop: "0.3rem" }}>
+                                  <span>찬성: {stats.approve}명 ({((stats.approve / stats.totalVotes) * 100).toFixed(0)}%)</span>
+                                  <span>반대: {stats.reject}명 ({((stats.reject / stats.totalVotes) * 100).toFixed(0)}%)</span>
+                                  <span>기권: {stats.abstain}명 ({((stats.abstain / stats.totalVotes) * 100).toFixed(0)}%)</span>
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* 1. 위원 의사결정서 제출 패널 */}
@@ -1483,48 +1775,132 @@ ${opinionsContext}
                       <div style={{ textAlign: "center", padding: "1rem", background: "rgba(255,255,255,0.02)", borderRadius: "6px" }}>
                         <Check size={32} style={{ color: "var(--success-color)", marginBottom: "0.25rem" }} />
                         <p style={{ fontSize: "0.9rem", color: "#fff", fontWeight: "bold" }}>의결서 제출이 완료되었습니다.</p>
-                        <p style={{ fontSize: "0.8rem", color: "var(--text-secondary)", marginTop: "0.25rem" }}>
-                          제출 내용: 찬반여부 - {userVote === "APPROVE" ? "찬성" : userVote === "REJECT" ? "반대" : "기권"}
+                        <p style={{ fontSize: "0.78rem", color: "var(--text-secondary)", marginTop: "0.25rem", whiteSpace: "pre-line", textAlign: "left", lineHeight: "1.4" }}>
+                          {selectedMeetingAgendas.map((a, idx) => {
+                            const detail = agendaInputs[a.id] || { vote: "", score: 0 };
+                            const choice = a.is_evaluation ? `${detail.score}점` : (detail.vote === "APPROVE" ? "찬성" : detail.vote === "REJECT" ? "반대" : "기권");
+                            return `안건 ${idx + 1}. ${a.title.substring(0, 25)}... ➡️ ${choice}`;
+                          }).join("\n")}
                         </p>
-                        <button className="btn btn-secondary" onClick={() => setHasSubmitted(false)} style={{ marginTop: "0.5rem", fontSize: "0.75rem", padding: "0.2rem 0.5rem" }}>
+                        <button className="btn btn-secondary" onClick={() => setHasSubmitted(false)} style={{ marginTop: "0.75rem", fontSize: "0.75rem", padding: "0.2rem 0.5rem" }}>
                           의결서 수정하기
                         </button>
                       </div>
                     ) : (
                       <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
-                        {/* 찬반기권 선택 */}
-                        <div>
-                          <label style={{ fontSize: "0.85rem", fontWeight: "bold", color: "var(--text-primary)", display: "block", marginBottom: "0.25rem" }}>
-                            1. 찬/반 의결 여부
-                          </label>
-                          <div style={{ display: "flex", gap: "1.5rem", marginTop: "0.25rem" }}>
-                            <label style={{ color: "#fff", fontSize: "0.85rem", display: "flex", alignItems: "center", gap: "0.25rem", cursor: "pointer" }}>
-                              <input type="radio" name="vote" value="APPROVE" checked={userVote === "APPROVE"} onChange={(e) => setUserVote(e.target.value)} />
-                              찬성
-                            </label>
-                            <label style={{ color: "#fff", fontSize: "0.85rem", display: "flex", alignItems: "center", gap: "0.25rem", cursor: "pointer" }}>
-                              <input type="radio" name="vote" value="REJECT" checked={userVote === "REJECT"} onChange={(e) => setUserVote(e.target.value)} />
-                              반대
-                            </label>
-                            <label style={{ color: "#fff", fontSize: "0.85rem", display: "flex", alignItems: "center", gap: "0.25rem", cursor: "pointer" }}>
-                              <input type="radio" name="vote" value="ABSTAIN" checked={userVote === "ABSTAIN"} onChange={(e) => setUserVote(e.target.value)} />
-                              기권
-                            </label>
-                          </div>
-                        </div>
+                        {/* 💡 [의안 개조] 의안 목록 루프 돌며 개별 투표 카드 렌더링 */}
+                        <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+                          {selectedMeetingAgendas.map((agenda, index) => {
+                            const detail = agendaInputs[agenda.id] || { vote: "", score: 0, opinion: "" };
+                            return (
+                              <div key={agenda.id} style={{ padding: "0.75rem", background: "rgba(255,255,255,0.02)", border: "1px solid var(--border-color)", borderRadius: "6px" }}>
+                                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "0.5rem" }}>
+                                  <strong style={{ fontSize: "0.85rem", color: "#fff", display: "flex", alignItems: "center", gap: "0.3rem" }}>
+                                    <span style={{ color: "var(--accent-color)" }}>#{index + 1}</span> {agenda.title}
+                                  </strong>
+                                  <span style={{ fontSize: "0.65rem", color: "var(--accent-color)", background: "rgba(var(--accent-color-rgb), 0.1)", padding: "0.1rem 0.3rem", borderRadius: "4px", fontWeight: "bold" }}>
+                                    {agenda.is_evaluation ? "5점 척도" : "일반의결"}
+                                  </span>
+                                </div>
+                                {agenda.description && (
+                                  <p style={{ fontSize: "0.75rem", color: "var(--text-secondary)", margin: "0 0 0.5rem 0", lineHeight: "1.4" }}>
+                                    {agenda.description}
+                                  </p>
+                                )}
 
-                        {/* 상세 의견 작성 */}
-                        <div>
-                          <label style={{ fontSize: "0.85rem", fontWeight: "bold", color: "var(--text-primary)", display: "block", marginBottom: "0.25rem" }}>
-                            2. 심의 검토 의견서
-                          </label>
-                          <textarea
-                            rows={3}
-                            placeholder="안건 검토 결과 및 보완의견을 1~2문장으로 상세히 기술해 주세요."
-                            value={userOpinion}
-                            onChange={(e) => setUserOpinion(e.target.value)}
-                            style={{ width: "100%", padding: "0.5rem", borderRadius: "6px", background: "rgba(0,0,0,0.3)", color: "#fff", border: "1px solid var(--border-color)", fontSize: "0.85rem", resize: "none" }}
-                          />
+                                {/* 인풋 분기 */}
+                                {agenda.is_evaluation ? (
+                                  /* 5점 척도 평점 선택 단추 그룹 */
+                                  <div style={{ marginBottom: "0.5rem" }}>
+                                    <div style={{ display: "flex", gap: "0.3rem" }}>
+                                      {[1, 2, 3, 4, 5].map(scoreVal => {
+                                        const isSelected = detail.score === scoreVal;
+                                        return (
+                                          <button
+                                            key={scoreVal}
+                                            type="button"
+                                            onClick={() => setAgendaInputs(prev => ({
+                                              ...prev,
+                                              [agenda.id]: { ...prev[agenda.id], score: scoreVal }
+                                            }))}
+                                            style={{
+                                              flex: 1,
+                                              padding: "0.3rem",
+                                              fontSize: "0.78rem",
+                                              fontWeight: "bold",
+                                              border: "1px solid",
+                                              borderColor: isSelected ? "var(--accent-color)" : "var(--border-color)",
+                                              background: isSelected ? "var(--accent-color)" : "rgba(0,0,0,0.2)",
+                                              color: isSelected ? "white" : "var(--text-primary)",
+                                              borderRadius: "4px",
+                                              cursor: "pointer",
+                                              transition: "all 0.15s ease"
+                                            }}
+                                          >
+                                            {scoreVal}점
+                                          </button>
+                                        );
+                                      })}
+                                    </div>
+                                  </div>
+                                ) : (
+                                  /* 일반 찬반기권 선택 단추 그룹 */
+                                  <div style={{ marginBottom: "0.5rem" }}>
+                                    <div style={{ display: "flex", gap: "0.4rem" }}>
+                                      {[
+                                        { val: "APPROVE", label: "찬성" },
+                                        { val: "REJECT", label: "반대" },
+                                        { val: "ABSTAIN", label: "기권" }
+                                      ].map(item => {
+                                        const isSelected = detail.vote === item.val;
+                                        return (
+                                          <button
+                                            key={item.val}
+                                            type="button"
+                                            onClick={() => setAgendaInputs(prev => ({
+                                              ...prev,
+                                              [agenda.id]: { ...prev[agenda.id], vote: item.val }
+                                            }))}
+                                            style={{
+                                              flex: 1,
+                                              padding: "0.3rem",
+                                              fontSize: "0.78rem",
+                                              fontWeight: "bold",
+                                              border: "1px solid",
+                                              borderColor: isSelected ? (item.val === "APPROVE" ? "#22c55e" : item.val === "REJECT" ? "#ef4444" : "#9ca3af") : "var(--border-color)",
+                                              background: isSelected ? (item.val === "APPROVE" ? "rgba(34,197,94,0.15)" : item.val === "REJECT" ? "rgba(239,68,68,0.15)" : "rgba(156,163,175,0.15)") : "rgba(0,0,0,0.2)",
+                                              color: isSelected ? (item.val === "APPROVE" ? "#4ade80" : item.val === "REJECT" ? "#f87171" : "#d1d5db") : "var(--text-primary)",
+                                              borderRadius: "4px",
+                                              cursor: "pointer",
+                                              transition: "all 0.15s ease"
+                                            }}
+                                          >
+                                            {item.label}
+                                          </button>
+                                        );
+                                      })}
+                                    </div>
+                                  </div>
+                                )}
+
+                                <div>
+                                  <textarea
+                                    rows={2}
+                                    placeholder={agenda.is_evaluation ? "평가 의견을 간략하게 작성해 주세요." : "의견을 1~2문장으로 기술해 주세요. (선택)"}
+                                    value={detail.opinion || ""}
+                                    onChange={(e) => {
+                                      const val = e.target.value;
+                                      setAgendaInputs(prev => ({
+                                        ...prev,
+                                        [agenda.id]: { ...prev[agenda.id], opinion: val }
+                                      }));
+                                    }}
+                                    style={{ width: "100%", padding: "0.4rem", borderRadius: "4px", background: "rgba(0,0,0,0.3)", color: "#fff", border: "1px solid var(--border-color)", fontSize: "0.78rem", resize: "none" }}
+                                  />
+                                </div>
+                              </div>
+                            );
+                          })}
                         </div>
 
                         {/* 전자 서명 패드 */}
@@ -1610,21 +1986,21 @@ ${opinionsContext}
                             padding: "0.15rem 0.4rem",
                             borderRadius: "4px",
                             fontWeight: "bold",
-                            background: r.vote === "APPROVE" ? "rgba(34, 197, 94, 0.15)" : r.vote === "REJECT" ? "rgba(239, 68, 68, 0.15)" : "rgba(156, 163, 175, 0.15)",
-                            color: r.vote === "APPROVE" ? "#22c55e" : r.vote === "REJECT" ? "#ef4444" : "#9ca3af"
+                            background: r.vote === "APPROVE" ? "rgba(34, 197, 94, 0.15)" : r.vote === "REJECT" ? "rgba(239, 68, 68, 0.15)" : r.vote === "EVALUATION" ? "rgba(99, 102, 241, 0.15)" : "rgba(156, 163, 175, 0.15)",
+                            color: r.vote === "APPROVE" ? "#22c55e" : r.vote === "REJECT" ? "#ef4444" : r.vote === "EVALUATION" ? "var(--accent-color)" : "#9ca3af"
                           }}>
-                            {r.vote === "APPROVE" ? "찬성" : r.vote === "REJECT" ? "반대" : "기권"}
+                            {r.vote === "APPROVE" ? "찬성" : r.vote === "REJECT" ? "반대" : r.vote === "EVALUATION" ? "평가완료" : "기권"}
                           </span>
                           <div style={{ flex: 1 }}>
                             <div style={{ display: "flex", justifyContent: "space-between" }}>
                               <strong style={{ fontSize: "0.8rem", color: "#fff" }}>
-                                {r.committee_members?.rise_users?.name} <small style={{ color: "var(--text-secondary)" }}>({r.committee_members?.rise_users?.dept_name})</small>
+                                {r.committee_members?.name} <small style={{ color: "var(--text-secondary)" }}>({r.committee_members?.dept || "소속 없음"})</small>
                               </strong>
                               <span style={{ fontSize: "0.7rem", color: "var(--text-secondary)" }}>
                                 {r.submitted_at ? new Date(r.submitted_at).toLocaleString() : ""}
                               </span>
                             </div>
-                            <p style={{ fontSize: "0.8rem", color: "var(--text-secondary)", marginTop: "0.2rem" }}>{r.opinion}</p>
+                            <p style={{ fontSize: "0.8rem", color: "var(--text-secondary)", marginTop: "0.2rem", whiteSpace: "pre-line", lineHeight: "1.4" }}>{r.opinion}</p>
                           </div>
                           
                           {/* 서명 완료 마크 및 복호화 이미지 시각화 */}
@@ -1998,16 +2374,118 @@ ${opinionsContext}
                   </select>
                 </div>
               </div>
-              <div>
-                <label style={{ fontSize: "0.85rem", color: "var(--text-primary)", display: "block", marginBottom: "0.25rem" }}>의결 안건 요지</label>
-                <textarea
-                  rows={4}
-                  required
-                  placeholder="의사결정을 요청할 핵심 안건 설명과 근거 자료 요약을 기술해 주세요."
-                  value={meetingForm.agenda}
-                  onChange={(e) => setMeetingForm({ ...meetingForm, agenda: e.target.value })}
-                  style={{ width: "100%", padding: "0.5rem", borderRadius: "6px", background: "rgba(0,0,0,0.3)", color: "#fff", border: "1px solid var(--border-color)", resize: "none" }}
-                />
+              
+              {/* 💡 [회의 안건 다중화 개조] 개별 의안 관리 컨트롤러 */}
+              <div style={{ border: "1px solid var(--border-color)", borderRadius: "8px", padding: "0.75rem", background: "rgba(0,0,0,0.1)", display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <label style={{ fontSize: "0.85rem", fontWeight: "bold", color: "var(--text-primary)" }}>의결 안건 / 평가 영역 설정 (최소 1개 필수)</label>
+                  <div style={{ display: "flex", gap: "0.4rem" }}>
+                    {selectedCommittee?.id === "evaluation" && (
+                      <button
+                        type="button"
+                        className="btn btn-secondary"
+                        onClick={() => {
+                          setMeetingForm(prev => ({
+                            ...prev,
+                            agendas: [
+                              { title: "평가영역 1: 사업 계획의 타당성 및 목표의 구체성", description: "RISE 사업 전체 목표 대비 세부 과제별 사업 계획이 합리적이고 타당하게 설정되었는지 검증합니다.", is_evaluation: true },
+                              { title: "평가영역 2: 예산 집행 계획의 합리성 및 집행률 제고 대책", description: "국고 및 대응 자금 예산 집행 계획이 타당하며, 예산 낭비를 막고 효율을 올릴 수 있도록 편성되었는지 심의합니다.", is_evaluation: true },
+                              { title: "평가영역 3: 세부 추진 과제(UP/PG)별 성과 지표 달성도", description: "프로그램 진행에 따른 정량/정성 성과지표와 목표치가 지역 발전에 부합하게 설계되어 적절히 추진 중인지 평가합니다.", is_evaluation: true },
+                              { title: "평가영역 4: 평가 환류 및 차년도 사업 반영 계획의 적절성", description: "성과 분석을 바탕으로 미흡 과제를 보완하고, 환류 결과를 차년도 계획에 객관적이고 공정하게 연계했는지 검증합니다.", is_evaluation: true }
+                            ]
+                          }));
+                        }}
+                        style={{ fontSize: "0.7rem", padding: "0.25rem 0.5rem", borderRadius: "4px", background: "rgba(99,102,241,0.2)", border: "1px solid rgba(99,102,241,0.4)", color: "#fff", cursor: "pointer" }}
+                      >
+                        📋 4대 평가영역 자동 설정
+                      </button>
+                    )}
+                    <button
+                      type="button"
+                      className="btn btn-secondary"
+                      onClick={() => {
+                        setMeetingForm(prev => ({
+                          ...prev,
+                          agendas: [...(prev.agendas || []), { title: "", description: "", is_evaluation: false }]
+                        }));
+                      }}
+                      style={{ fontSize: "0.7rem", padding: "0.25rem 0.5rem", borderRadius: "4px", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color)", color: "#fff", cursor: "pointer" }}
+                    >
+                      ➕ 의안 추가
+                    </button>
+                  </div>
+                </div>
+
+                <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", maxHeight: "180px", overflowY: "auto", paddingRight: "0.25rem" }}>
+                  {(meetingForm.agendas || []).map((agenda, index) => (
+                    <div key={index} style={{ border: "1px solid rgba(255,255,255,0.05)", borderRadius: "6px", padding: "0.5rem", background: "rgba(0,0,0,0.2)" }}>
+                      <div style={{ display: "flex", gap: "0.5rem", alignItems: "center", marginBottom: "0.3rem" }}>
+                        <span style={{ fontSize: "0.78rem", fontWeight: "bold", color: "var(--accent-color)" }}>#{index + 1}</span>
+                        <input
+                          type="text"
+                          required
+                          placeholder="예: 제1호 의안 - 2차년도 사업계획서 심의"
+                          value={agenda.title}
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            setMeetingForm(prev => {
+                              const updated = [...(prev.agendas || [])];
+                              updated[index].title = val;
+                              return { ...prev, agendas: updated };
+                            });
+                          }}
+                          style={{ flex: 1, padding: "0.3rem 0.5rem", borderRadius: "4px", background: "rgba(0,0,0,0.3)", color: "#fff", border: "1px solid var(--border-color)", fontSize: "0.8rem" }}
+                        />
+                        <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)", display: "flex", alignItems: "center", gap: "0.2rem", cursor: "pointer", whiteSpace: "nowrap" }}>
+                          <input
+                            type="checkbox"
+                            checked={!!agenda.is_evaluation}
+                            onChange={(e) => {
+                              const chk = e.target.checked;
+                              setMeetingForm(prev => {
+                                const updated = [...(prev.agendas || [])];
+                                updated[index].is_evaluation = chk;
+                                return { ...prev, agendas: updated };
+                              });
+                            }}
+                          />
+                          5점 척도
+                        </label>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setMeetingForm(prev => {
+                              const updated = (prev.agendas || []).filter((_, i) => i !== index);
+                              return { ...prev, agendas: updated };
+                            });
+                          }}
+                          style={{ background: "transparent", border: "none", color: "var(--danger-color)", cursor: "pointer", fontSize: "0.75rem", display: "flex", alignItems: "center" }}
+                        >
+                          <X size={14} />
+                        </button>
+                      </div>
+                      <textarea
+                        rows={2}
+                        placeholder="안건 설명 또는 세부 평가기준을 요약해 주세요. (선택)"
+                        value={agenda.description || ""}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setMeetingForm(prev => {
+                            const updated = [...(prev.agendas || [])];
+                            updated[index].description = val;
+                            return { ...prev, agendas: updated };
+                          });
+                        }}
+                        style={{ width: "100%", padding: "0.3rem 0.5rem", borderRadius: "4px", background: "rgba(0,0,0,0.3)", color: "#fff", border: "1px solid var(--border-color)", fontSize: "0.78rem", resize: "none" }}
+                      />
+                    </div>
+                  ))}
+                  {(meetingForm.agendas || []).length === 0 && (
+                    <div style={{ textAlign: "center", padding: "1.5rem", color: "var(--text-secondary)", fontSize: "0.8rem" }}>
+                      등록된 의안이 없습니다. 상단 우측 버튼을 통해 안건을 추가해 주세요.
+                    </div>
+                  )}
+                </div>
               </div>
 
               {/* 💡 [회의 안건 의결 서류 파일 탑재 필드] (요구사항 3 반영) */}

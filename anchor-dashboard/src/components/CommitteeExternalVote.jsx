@@ -37,6 +37,13 @@ export default function CommitteeExternalVote({ meetingId }) {
   const [loginForm, setLoginForm] = useState({ name: "", pin: "" });
   const [authMember, setAuthMember] = useState(null); // 검증 완료된 위원 정보
 
+  // 💡 [의안 개조] 선택된 회의의 의안 목록 및 위원들의 투표 수집 정보
+  const [selectedMeetingAgendas, setSelectedMeetingAgendas] = useState([]);
+  const [selectedMeetingAgendaVotes, setSelectedMeetingAgendaVotes] = useState([]);
+  
+  // 💡 [의안 개조] 로그인한 외부 위원이 개별 의안에 대해 채우는 폼 상태 ({ [agendaId]: { vote, score, opinion } })
+  const [agendaInputs, setAgendaInputs] = useState({});
+
   // 의결 양식 상태
   const [attended, setAttended] = useState(true);
   const [vote, setVote] = useState("APPROVE"); // 'APPROVE', 'REJECT', 'ABSTAIN'
@@ -97,6 +104,51 @@ export default function CommitteeExternalVote({ meetingId }) {
     }
   };
 
+  // 💡 [의안 개조] 개별 의안 및 위원별 투표 데이터 로드 헬퍼
+  const fetchMeetingAgendasAndVotes = async (mId) => {
+    try {
+      const { data: agendas } = await supabase
+        .from("meeting_agendas")
+        .select("*")
+        .eq("meeting_id", mId)
+        .order("sort_order", { ascending: true });
+      setSelectedMeetingAgendas(agendas || []);
+      localStorage.setItem(`local_meeting_agendas_${mId}`, JSON.stringify(agendas || []));
+
+      const { data: votes } = await supabase
+        .from("meeting_agenda_votes")
+        .select("*")
+        .eq("meeting_id", mId);
+      setSelectedMeetingAgendaVotes(votes || []);
+      localStorage.setItem(`local_meeting_agenda_votes_${mId}`, JSON.stringify(votes || []));
+    } catch (err) {
+      console.warn("의안/투표 조회 실패, 로컬 캐시 스위칭:", err.message);
+      const localAgendas = localStorage.getItem(`local_meeting_agendas_${mId}`);
+      setSelectedMeetingAgendas(localAgendas ? JSON.parse(localAgendas) : []);
+
+      const localVotes = localStorage.getItem(`local_meeting_agenda_votes_${mId}`);
+      setSelectedMeetingAgendaVotes(localVotes ? JSON.parse(localVotes) : []);
+    }
+  };
+
+  // 💡 [의안 개조] 로그인한 위원이 기존 작성했던 개별 안건 결과 바인딩
+  useEffect(() => {
+    if (isAuthorized && authMember && selectedMeetingAgendas.length > 0) {
+      const newInputs = {};
+      selectedMeetingAgendas.forEach(a => {
+        const existingVote = selectedMeetingAgendaVotes.find(
+          v => v.agenda_id === a.id && v.member_id === authMember.id
+        );
+        newInputs[a.id] = {
+          vote: existingVote?.vote || "",
+          score: existingVote?.score || 0,
+          opinion: existingVote?.opinion || ""
+        };
+      });
+      setAgendaInputs(newInputs);
+    }
+  }, [isAuthorized, authMember, selectedMeetingAgendas, selectedMeetingAgendaVotes]);
+
   // 2. 초기 회의 데이터 조회
   useEffect(() => {
     if (!meetingId) return;
@@ -124,6 +176,7 @@ export default function CommitteeExternalVote({ meetingId }) {
             const parsed = JSON.parse(cachedAuth);
             setAuthMember(parsed);
             setIsAuthorized(true);
+            await fetchMeetingAgendasAndVotes(meetingId);
             await checkAlreadySubmitted(meetingId, parsed.id);
           }
         }
@@ -281,6 +334,9 @@ export default function CommitteeExternalVote({ meetingId }) {
       setIsAuthorized(true);
       sessionStorage.setItem(`auth_member_meeting_${meetingId}`, JSON.stringify(verified));
       
+      // 💡 [의안 개조] 다중 의안 및 평가 평점 데이터 로드
+      await fetchMeetingAgendasAndVotes(meetingId);
+      
       // 기 제출 내역 검증
       await checkAlreadySubmitted(meetingId, verified.id);
     } catch (err) {
@@ -371,12 +427,33 @@ export default function CommitteeExternalVote({ meetingId }) {
     reader.readAsDataURL(file);
   };
 
-  // 5. 의결서 최종 제출
+  // 5. 의결서 최종 제출 (다중 의안 개조)
   const handleSubmitResponse = async (e) => {
     e.preventDefault();
     if (hasSubmitted) return;
 
-    // 1) 서명 추출 및 검증
+    if (selectedMeetingAgendas.length === 0) {
+      alert("심의할 의안이 정의되어 있지 않습니다.");
+      return;
+    }
+
+    // 1) 모든 의안의 의결/점수 기입 유무 검증
+    for (const a of selectedMeetingAgendas) {
+      const input = agendaInputs[a.id];
+      if (a.is_evaluation) {
+        if (!input || !input.score || input.score < 1 || input.score > 5) {
+          alert(`[${a.title}] 문항의 5점 척도 점수를 선택해 주세요.`);
+          return;
+        }
+      } else {
+        if (!input || !input.vote) {
+          alert(`[${a.title}] 안건에 대한 찬/반 여부를 선택해 주세요.`);
+          return;
+        }
+      }
+    }
+
+    // 2) 서명 추출 및 검증
     const canvas = canvasRef.current;
     if (!canvas) return;
     
@@ -396,35 +473,75 @@ export default function CommitteeExternalVote({ meetingId }) {
 
     if (!confirm("작성하신 의결 의견과 전자서명을 최종 제출하시겠습니까?")) return;
 
-    let responsePayload = null;
-    try {
-      responsePayload = {
-        meeting_id: meetingId,
-        member_id: authMember.id,
-        attended: attended,
-        vote: attended ? vote : null,
-        opinion: opinion.trim(),
-        encrypted_signature: encryptedSig,
-        submitted_at: new Date().toISOString()
-      };
+    // 3) 의안별 개별 투표 레코드 리스트 생성
+    const votePayloads = selectedMeetingAgendas.map(a => ({
+      meeting_id: meetingId,
+      agenda_id: a.id,
+      member_id: authMember.id,
+      vote: a.is_evaluation ? null : agendaInputs[a.id]?.vote || null,
+      score: a.is_evaluation ? Number(agendaInputs[a.id]?.score) || null : null,
+      opinion: agendaInputs[a.id]?.opinion || ""
+    }));
 
+    // 4) 하위 호환용 종합 의견 및 대표 찬반값 셋업
+    const summaryOpinion = selectedMeetingAgendas.map((a, idx) => {
+      const detail = agendaInputs[a.id] || { vote: "", score: 0, opinion: "" };
+      const choiceStr = a.is_evaluation ? `${detail.score}점` : (detail.vote === "APPROVE" ? "찬성" : detail.vote === "REJECT" ? "반대" : "기권");
+      return `[안건 ${idx + 1}] ${choiceStr}: ${detail.opinion}`;
+    }).join("\n");
+
+    const representativeVote = selectedMeetingAgendas[0]?.is_evaluation 
+      ? "EVALUATION" 
+      : (agendaInputs[selectedMeetingAgendas[0]?.id]?.vote || "ABSTAIN");
+
+    const responsePayload = {
+      meeting_id: meetingId,
+      member_id: authMember.id,
+      attended: attended,
+      vote: representativeVote,
+      opinion: summaryOpinion,
+      encrypted_signature: encryptedSig,
+      submitted_at: new Date().toISOString()
+    };
+
+    try {
       // 💡 [Zero Error Console Guard] 로컬 모드 회의 ID인 경우 Supabase REST DB 적재를 완전히 스킵하여 404 에러 방지
       if (String(meetingId).startsWith("local-")) {
         throw new Error("Local mode skip db upsert");
       }
 
-      // Upsert 적용
-      const { error } = await supabase
+      // 4.1 의안별 개별 투표 테이블 업서트
+      const { error: vtErr } = await supabase
+        .from("meeting_agenda_votes")
+        .upsert(votePayloads, { onConflict: "agenda_id, member_id" });
+      if (vtErr) throw vtErr;
+
+      // 4.2 기존 부모 테이블 업서트
+      const { error: respErr } = await supabase
         .from("meeting_responses")
         .upsert(responsePayload, { onConflict: "meeting_id, member_id" });
-
-      if (error) throw error;
+      if (respErr) throw respErr;
 
       alert("심의 의결 및 서명 제출이 성공적으로 처리되었습니다.");
       setHasSubmitted(true);
+      await fetchMeetingAgendasAndVotes(meetingId);
     } catch (err) {
       console.warn("DB 의결 제출 실패, 로컬 스토리지에 모의 기록합니다:", err.message);
       
+      // 로컬 스토리지 모의 기록 연동
+      const localVotes = JSON.parse(localStorage.getItem(`local_meeting_agenda_votes_${meetingId}`) || "[]");
+      const updatedVotes = [...localVotes];
+      votePayloads.forEach(payload => {
+        const idx = updatedVotes.findIndex(v => v.agenda_id === payload.agenda_id && v.member_id === payload.member_id);
+        if (idx > -1) {
+          updatedVotes[idx] = { ...payload, id: `local-vote-${Date.now()}-${payload.agenda_id}` };
+        } else {
+          updatedVotes.push({ ...payload, id: `local-vote-${Date.now()}-${payload.agenda_id}` });
+        }
+      });
+      localStorage.setItem(`local_meeting_agenda_votes_${meetingId}`, JSON.stringify(updatedVotes));
+      setSelectedMeetingAgendaVotes(updatedVotes);
+
       const localResponses = JSON.parse(localStorage.getItem(`local_meeting_responses_${meetingId}`) || "[]");
       const localPayload = {
         ...responsePayload,
@@ -658,10 +775,18 @@ export default function CommitteeExternalVote({ meetingId }) {
                 제출하신 심의 의견과 서명이 위원회 대장에 정합성 있게 보관되었습니다.
               </p>
               
-              <div style={{ display: "inline-block", background: "rgba(0,0,0,0.3)", padding: "0.75rem 1.5rem", borderRadius: "6px", border: "1px solid var(--border-color)", marginTop: "1rem", textAlign: "left", fontSize: "0.85rem" }}>
-                <div>• 참석여부: {attended ? "참석" : "불참"}</div>
-                {attended && <div>• 투표의사: {vote === "APPROVE" ? "찬성" : vote === "REJECT" ? "반대" : "기권"}</div>}
-                <div>• 검토의견: {opinion || "의견 없음"}</div>
+              <div style={{ display: "inline-block", background: "rgba(0,0,0,0.3)", padding: "0.75rem 1.5rem", borderRadius: "6px", border: "1px solid var(--border-color)", marginTop: "1rem", textAlign: "left", fontSize: "0.82rem", width: "100%", maxWidth: "450px" }}>
+                <div style={{ fontWeight: "bold", color: "#fff", marginBottom: "0.5rem" }}>[안건별 제출 내역 요약]</div>
+                {selectedMeetingAgendas.map((a, idx) => {
+                  const detail = agendaInputs[a.id] || { vote: "", score: 0, opinion: "" };
+                  const choice = a.is_evaluation ? `${detail.score}점` : (detail.vote === "APPROVE" ? "찬성" : detail.vote === "REJECT" ? "반대" : "기권");
+                  return (
+                    <div key={a.id} style={{ padding: "0.4rem 0", borderBottom: idx < selectedMeetingAgendas.length - 1 ? "1px solid rgba(255,255,255,0.05)" : "none" }}>
+                      <strong>안건 {idx + 1}. {a.title.substring(0, 20)}...</strong> ➡️ <span style={{ color: "var(--accent-color)" }}>{choice}</span>
+                      {detail.opinion && <div style={{ color: "var(--text-secondary)", fontSize: "0.75rem", marginTop: "0.15rem" }}>의견: {detail.opinion}</div>}
+                    </div>
+                  );
+                })}
               </div>
             </div>
           ) : (
@@ -692,56 +817,122 @@ export default function CommitteeExternalVote({ meetingId }) {
                 </div>
               </div>
 
-              {/* 투표 의결 (참석 시에만 활성화) */}
+              {/* 투표 의결 및 평가 (참석 시에만 활성화) */}
               {attended && (
-                <div>
-                  <label style={{ fontSize: "0.85rem", color: "var(--text-primary)", display: "block", marginBottom: "0.4rem", fontWeight: "bold" }}>안건 투표 의사</label>
-                  <div style={{ display: "flex", gap: "1.5rem" }}>
-                    <label style={{ display: "flex", alignItems: "center", gap: "0.3rem", cursor: "pointer", color: "#10B981", fontWeight: "bold" }}>
-                      <input
-                        type="radio"
-                        value="APPROVE"
-                        checked={vote === "APPROVE"}
-                        onChange={() => setVote("APPROVE")}
-                        style={{ accentColor: "#10B981" }}
-                      />
-                      <span>찬성 (Approve)</span>
-                    </label>
-                    <label style={{ display: "flex", alignItems: "center", gap: "0.3rem", cursor: "pointer", color: "#ef4444", fontWeight: "bold" }}>
-                      <input
-                        type="radio"
-                        value="REJECT"
-                        checked={vote === "REJECT"}
-                        onChange={() => setVote("REJECT")}
-                        style={{ accentColor: "#ef4444" }}
-                      />
-                      <span>반대 (Reject)</span>
-                    </label>
-                    <label style={{ display: "flex", alignItems: "center", gap: "0.3rem", cursor: "pointer", color: "var(--text-secondary)" }}>
-                      <input
-                        type="radio"
-                        value="ABSTAIN"
-                        checked={vote === "ABSTAIN"}
-                        onChange={() => setVote("ABSTAIN")}
-                        style={{ accentColor: "var(--text-secondary)" }}
-                      />
-                      <span>기권 (Abstain)</span>
-                    </label>
-                  </div>
+                <div style={{ display: "flex", flexDirection: "column", gap: "1rem", marginTop: "0.5rem" }}>
+                  {selectedMeetingAgendas.map((agenda, index) => {
+                    const detail = agendaInputs[agenda.id] || { vote: "", score: 0, opinion: "" };
+                    return (
+                      <div key={agenda.id} style={{ padding: "0.8rem", background: "rgba(255,255,255,0.01)", border: "1px solid var(--border-color)", borderRadius: "6px" }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "0.4rem" }}>
+                          <strong style={{ fontSize: "0.85rem", color: "#fff" }}>
+                            <span style={{ color: "var(--accent-color)" }}>#{index + 1}</span> {agenda.title}
+                          </strong>
+                          <span style={{ fontSize: "0.65rem", color: "var(--accent-color)", background: "rgba(var(--accent-color-rgb), 0.1)", padding: "0.1rem 0.3rem", borderRadius: "4px", fontWeight: "bold" }}>
+                            {agenda.is_evaluation ? "5점 척도" : "일반의결"}
+                          </span>
+                        </div>
+                        {agenda.description && (
+                          <p style={{ fontSize: "0.75rem", color: "var(--text-secondary)", margin: "0 0 0.5rem 0", lineHeight: "1.4" }}>
+                            {agenda.description}
+                          </p>
+                        )}
+
+                        {/* 평점 / 찬반 분기 */}
+                        {agenda.is_evaluation ? (
+                          /* 평점 피커 */
+                          <div style={{ marginBottom: "0.5rem" }}>
+                            <div style={{ display: "flex", gap: "0.25rem" }}>
+                              {[1, 2, 3, 4, 5].map(scoreVal => {
+                                const isSelected = detail.score === scoreVal;
+                                return (
+                                  <button
+                                    key={scoreVal}
+                                    type="button"
+                                    onClick={() => setAgendaInputs(prev => ({
+                                      ...prev,
+                                      [agenda.id]: { ...prev[agenda.id], score: scoreVal }
+                                    }))}
+                                    style={{
+                                      flex: 1,
+                                      padding: "0.3rem 0",
+                                      fontSize: "0.78rem",
+                                      fontWeight: "bold",
+                                      border: "1px solid",
+                                      borderColor: isSelected ? "var(--accent-color)" : "var(--border-color)",
+                                      background: isSelected ? "var(--accent-color)" : "rgba(0,0,0,0.2)",
+                                      color: isSelected ? "white" : "var(--text-primary)",
+                                      borderRadius: "4px",
+                                      cursor: "pointer",
+                                      transition: "all 0.15s ease"
+                                    }}
+                                  >
+                                    {scoreVal}점
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        ) : (
+                          /* 찬반 피커 */
+                          <div style={{ marginBottom: "0.5rem" }}>
+                            <div style={{ display: "flex", gap: "0.3rem" }}>
+                              {[
+                                { val: "APPROVE", label: "찬성" },
+                                { val: "REJECT", label: "반대" },
+                                { val: "ABSTAIN", label: "기권" }
+                              ].map(item => {
+                                const isSelected = detail.vote === item.val;
+                                return (
+                                  <button
+                                    key={item.val}
+                                    type="button"
+                                    onClick={() => setAgendaInputs(prev => ({
+                                      ...prev,
+                                      [agenda.id]: { ...prev[agenda.id], vote: item.val }
+                                    }))}
+                                    style={{
+                                      flex: 1,
+                                      padding: "0.3rem 0",
+                                      fontSize: "0.78rem",
+                                      fontWeight: "bold",
+                                      border: "1px solid",
+                                      borderColor: isSelected ? (item.val === "APPROVE" ? "#22c55e" : item.val === "REJECT" ? "#ef4444" : "#9ca3af") : "var(--border-color)",
+                                      background: isSelected ? (item.val === "APPROVE" ? "rgba(34,197,94,0.15)" : item.val === "REJECT" ? "rgba(239,68,68,0.15)" : "rgba(156,163,175,0.15)") : "rgba(0,0,0,0.2)",
+                                      color: isSelected ? (item.val === "APPROVE" ? "#4ade80" : item.val === "REJECT" ? "#f87171" : "#d1d5db") : "var(--text-primary)",
+                                      borderRadius: "4px",
+                                      cursor: "pointer",
+                                      transition: "all 0.15s ease"
+                                    }}
+                                  >
+                                    {item.label}
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        )}
+
+                        <div>
+                          <textarea
+                            rows={2}
+                            placeholder={agenda.is_evaluation ? "평가 의견을 간략히 작성해 주세요." : "심의 보완 조치 사항 등 상세의견을 작성해 주세요. (선택)"}
+                            value={detail.opinion || ""}
+                            onChange={(e) => {
+                              const val = e.target.value;
+                              setAgendaInputs(prev => ({
+                                ...prev,
+                                [agenda.id]: { ...prev[agenda.id], opinion: val }
+                              }));
+                            }}
+                            style={{ width: "100%", padding: "0.4rem", borderRadius: "4px", background: "rgba(0,0,0,0.3)", color: "#fff", border: "1px solid var(--border-color)", fontSize: "0.78rem", resize: "none" }}
+                          />
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               )}
-
-              {/* 상세 의견 */}
-              <div>
-                <label style={{ fontSize: "0.85rem", color: "var(--text-primary)", display: "block", marginBottom: "0.4rem", fontWeight: "bold" }}>의결 심의 상세 의견</label>
-                <textarea
-                  rows={3}
-                  placeholder="의안에 관한 구체적인 보완 사항이나 심의 의견을 기재해 주십시오."
-                  value={opinion}
-                  onChange={(e) => setOpinion(e.target.value)}
-                  style={{ width: "100%", padding: "0.5rem", borderRadius: "6px", background: "rgba(0,0,0,0.3)", color: "#fff", border: "1px solid var(--border-color)", resize: "none", fontSize: "0.85rem" }}
-                />
-              </div>
 
               {/* 전자 서명 Canvas 패드 */}
               <div>
