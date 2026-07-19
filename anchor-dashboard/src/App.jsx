@@ -4014,7 +4014,7 @@ export default function App() {
       const sumProgressRate = sumTotalPrograms > 0 ? (sumTotalProgressSum / sumTotalPrograms) : 0;
       const sumBudgetCarryCell = selectedYear >= 2 ? `<td style="border: 1px solid #d1d5db; padding: 6px 8px; text-align: right; font-weight: bold; background: #e5e7eb; font-family: sans-serif;">${formatToMillionWon(sumBudgetCarry)}</td>` : "";
 
-      const carryHeader = selectedYear >= 2 ? `<th style="border: 1px solid #d1d5db; padding: 6px 8px; background: #e5e7eb;">이월예산</th>` : "";
+      const carryHeader = selectedYear >= 2 ? `<th style="border: 1px solid #d1d5db; padding: 6px 3px; white-space: nowrap; font-size: 10.5px; color: #111827; font-weight: bold; background: #e5e7eb;">이월예산</th>` : "";
       const colSpanVal = selectedYear >= 2 ? 5 : 4;
 
       const htmlContent = `
@@ -4025,21 +4025,21 @@ export default function App() {
           <table style="width: 100%; border-collapse: collapse; font-size: 11px; color: #111827; border: 1px solid #d1d5db;">
             <thead>
               <tr style="background: #f3f4f6;">
-                <th rowspan="2" style="border: 1px solid #d1d5db; padding: 8px 6px; text-align: center; font-weight: bold; font-size: 12px;">단위과제</th>
-                <th colspan="${colSpanVal}" style="border: 1px solid #d1d5db; padding: 6px; text-align: center; font-weight: bold;">예산 배정 및 집행 (단위: 백만원)</th>
-                <th colspan="5" style="border: 1px solid #d1d5db; padding: 6px; text-align: center; font-weight: bold;">프로그램 진행</th>
+                <th rowspan="2" style="border: 1px solid #d1d5db; padding: 8px 6px; text-align: center; font-weight: bold; font-size: 12px; color: #111827; background: #f3f4f6;">단위과제</th>
+                <th colspan="${colSpanVal}" style="border: 1px solid #d1d5db; padding: 6px; text-align: center; font-weight: bold; color: #111827;">예산 배정 및 집행 (단위: 백만원)</th>
+                <th colspan="5" style="border: 1px solid #d1d5db; padding: 6px; text-align: center; font-weight: bold; color: #111827;">프로그램 진행</th>
               </tr>
               <tr style="background: #f9fafb;">
-                <th style="border: 1px solid #d1d5db; padding: 6px 8px;">본예산</th>
+                <th style="border: 1px solid #d1d5db; padding: 6px 3px; white-space: nowrap; font-size: 10.5px; color: #111827; font-weight: bold;">본예산</th>
                 ${carryHeader}
-                <th style="border: 1px solid #d1d5db; padding: 6px 8px;">총 배정액</th>
-                <th style="border: 1px solid #d1d5db; padding: 6px 8px;">누적 집행</th>
-                <th style="border: 1px solid #d1d5db; padding: 6px 8px;">집행률</th>
-                <th style="border: 1px solid #d1d5db; padding: 6px 8px;">총 개수</th>
-                <th style="border: 1px solid #d1d5db; padding: 6px 8px;">준비</th>
-                <th style="border: 1px solid #d1d5db; padding: 6px 8px;">진행</th>
-                <th style="border: 1px solid #d1d5db; padding: 6px 8px;">완료</th>
-                <th style="border: 1px solid #d1d5db; padding: 6px 8px;">진행률</th>
+                <th style="border: 1px solid #d1d5db; padding: 6px 3px; white-space: nowrap; font-size: 10.5px; color: #111827; font-weight: bold;">총 배정액</th>
+                <th style="border: 1px solid #d1d5db; padding: 6px 3px; white-space: nowrap; font-size: 10.5px; color: #111827; font-weight: bold;">누적 집행</th>
+                <th style="border: 1px solid #d1d5db; padding: 6px 3px; white-space: nowrap; font-size: 10.5px; color: #111827; font-weight: bold;">집행률</th>
+                <th style="border: 1px solid #d1d5db; padding: 6px 3px; white-space: nowrap; font-size: 10.5px; color: #111827; font-weight: bold;">총 개수</th>
+                <th style="border: 1px solid #d1d5db; padding: 6px 3px; white-space: nowrap; font-size: 10.5px; color: #111827; font-weight: bold;">준비</th>
+                <th style="border: 1px solid #d1d5db; padding: 6px 3px; white-space: nowrap; font-size: 10.5px; color: #111827; font-weight: bold;">진행</th>
+                <th style="border: 1px solid #d1d5db; padding: 6px 3px; white-space: nowrap; font-size: 10.5px; color: #111827; font-weight: bold;">완료</th>
+                <th style="border: 1px solid #d1d5db; padding: 6px 3px; white-space: nowrap; font-size: 10.5px; color: #111827; font-weight: bold;">진행률</th>
               </tr>
             </thead>
             <tbody>
@@ -4067,7 +4067,7 @@ export default function App() {
       `;
 
       const opt = {
-        margin: [10, 10, 15, 10],
+        margin: [22.5, 20, 22.5, 20],
         filename: fileName,
         image: { type: 'jpeg', quality: 0.98 },
         html2canvas: { scale: 2, useCORS: true, logging: false },
