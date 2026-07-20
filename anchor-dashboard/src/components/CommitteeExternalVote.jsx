@@ -57,6 +57,45 @@ export default function CommitteeExternalVote({ meetingId }) {
   const canvasRef = useRef(null);
   const viewerRef = useRef(null);
   const [isDrawing, setIsDrawing] = useState(false);
+  const [currentBlobUrl, setCurrentBlobUrl] = useState(null);
+
+  // 💡 [대용량 파일 렌더링 최적화] Chrome 브라우저의 dataURI iframe 2MB 크기 제한 극복을 위한 Blob URL 스위칭
+  const activeAgenda = selectedMeetingAgendas.find(a => a.id === activeAgendaId);
+  const isFallbackFile = !activeAgenda?.attachment_name && !!meeting.attachment_name;
+  const currentFileName = activeAgenda?.attachment_name || meeting.attachment_name || null;
+  const currentFileData = activeAttachmentData || (isFallbackFile ? meeting.attachment_data : null);
+
+  useEffect(() => {
+    if (!currentFileData) {
+      setCurrentBlobUrl(null);
+      return;
+    }
+
+    if (String(currentFileData).startsWith("data:")) {
+      try {
+        const parts = currentFileData.split(',');
+        const byteString = atob(parts[1]);
+        const mimeString = parts[0].split(':')[1].split(';')[0];
+        const ab = new ArrayBuffer(byteString.length);
+        const ia = new Uint8Array(ab);
+        for (let i = 0; i < byteString.length; i++) {
+          ia[i] = byteString.charCodeAt(i);
+        }
+        const blob = new Blob([ab], { type: mimeString });
+        const url = URL.createObjectURL(blob);
+        setCurrentBlobUrl(url);
+
+        return () => {
+          URL.revokeObjectURL(url);
+        };
+      } catch (e) {
+        console.error("❌ Blob 변환 실패:", e);
+        setCurrentBlobUrl(currentFileData);
+      }
+    } else {
+      setCurrentBlobUrl(currentFileData);
+    }
+  }, [currentFileData]);
 
   // 이미 제출했는지 확인하는 함수
   const checkAlreadySubmitted = async (mId, memberId) => {
@@ -747,10 +786,7 @@ export default function CommitteeExternalVote({ meetingId }) {
     );
   }
 
-  const activeAgenda = selectedMeetingAgendas.find(a => a.id === activeAgendaId);
-  const isFallbackFile = !activeAgenda?.attachment_name && !!meeting.attachment_name;
-  const currentFileName = activeAgenda?.attachment_name || meeting.attachment_name || null;
-  const currentFileData = activeAttachmentData || (isFallbackFile ? meeting.attachment_data : null);
+
 
   // B. 인증 완료 상태 - 의결 검토 및 서명 패드 제출 페이지
   return (
@@ -848,7 +884,7 @@ export default function CommitteeExternalVote({ meetingId }) {
                   style={{ padding: "0.3rem 0.6rem", fontSize: "0.75rem" }}
                   onClick={() => {
                     const link = document.createElement("a");
-                    link.href = currentFileData;
+                    link.href = currentBlobUrl || currentFileData;
                     link.download = currentFileName;
                     link.click();
                   }}
@@ -861,7 +897,7 @@ export default function CommitteeExternalVote({ meetingId }) {
               {/\.(png|jpe?g)$/i.test(currentFileName) && (
                 <div style={{ display: "flex", justifyContent: "center", background: "#000", padding: "0.75rem", borderRadius: "6px", border: "1px solid var(--border-color)", maxHeight: "500px", overflowY: "auto" }}>
                   <img
-                    src={currentFileData}
+                    src={currentBlobUrl || currentFileData}
                     alt="첨부 이미지"
                     style={{ maxWidth: "100%", height: "auto", objectFit: "contain", borderRadius: "4px" }}
                   />
@@ -895,7 +931,7 @@ export default function CommitteeExternalVote({ meetingId }) {
                       style={{ padding: "0.45rem 1rem", fontSize: "0.8rem", fontWeight: "bold" }}
                       onClick={() => {
                         const link = document.createElement("a");
-                        link.href = currentFileData;
+                        link.href = currentBlobUrl || currentFileData;
                         link.download = currentFileName;
                         link.click();
                       }}
@@ -907,7 +943,7 @@ export default function CommitteeExternalVote({ meetingId }) {
                   {/* 오른쪽: 임베디드 PDF 즉석 뷰어 */}
                   <div style={{ background: "rgba(0,0,0,0.15)", borderRadius: "6px", border: "1px solid var(--border-color)", overflow: "hidden", height: "500px" }}>
                     <iframe
-                      src={currentFileData}
+                      src={currentBlobUrl || currentFileData}
                       title="PDF 안건 뷰어"
                       style={{ width: "100%", height: "100%", border: "none" }}
                     />
