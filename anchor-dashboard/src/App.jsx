@@ -309,7 +309,7 @@ const INITIAL_MEMBERS = [
   { id: "m-04", name: "이동은", role: "센터장", grade: "부교수", dept: "ECC센터", phoneOffice: "052-230-0798", phoneMobile: "010-5171-7140", email: "delee@uc.ac.kr", room: "교수연구실/E2-201", hireDate: "2026-03-01" },
   { id: "m-05", name: "김기범", role: "센터장", grade: "부교수", dept: "ICC센터", phoneOffice: "052-279-3094", phoneMobile: "010-2243-9802", email: "kbkim@uc.ac.kr", room: "교수연구실/E2-301", hireDate: "2026-03-01" },
   { id: "m-06", name: "현용환", role: "센터장", grade: "조교수", dept: "RCC센터", phoneOffice: "052-230-0643", phoneMobile: "010-4299-3119", email: "yhhyun@uc.ac.kr", room: "교수연구실/E2-401", hireDate: "2026-03-01" },
-  { id: "m-07", name: "홍광표", role: "센터장", grade: "조교수", dept: "울산늘봄누리센터", phoneOffice: "052-230-0724", phoneMobile: "010-2512-1233", email: "gphong@uc.ac.kr", room: "교수연구실/E2-501", hireDate: "2026-03-01" },
+  { id: "m-07", name: "홍광표", role: "센터장", grade: "조교수", dept: "울산늘봄누리센터", phoneOffice: "052-230-0724", phoneMobile: "010-2512-1233", email: "kphong@uc.ac.kr", room: "교수연구실/E2-501", hireDate: "2026-03-01" },
   { id: "m-07b", name: "홍진숙", role: "센터장", grade: "정교수", dept: "신산업특화센터", phoneOffice: "052-279-3134", phoneMobile: "010-9120-8583", email: "cshong@uc.ac.kr", room: "센터실/N-101", hireDate: "2026-06-01" },
 
   // 팀장교수
@@ -2493,7 +2493,13 @@ export default function App() {
     if (window.location.pathname.startsWith("/sv/")) {
       return "survey_respond";
     }
-    return localStorage.getItem("anchor_active_tab") || "dashboard";
+    const cachedTab = localStorage.getItem("anchor_active_tab");
+    // 💡 [교육용 한글 주석] survey_respond 탭은 모바일 임시 설문조사 화면이므로,
+    // 일반적인 메인 페이지 진입 시에는 기본 탭인 'dashboard'로 되돌려 오류를 방지합니다.
+    if (cachedTab === "survey_respond") {
+      return "dashboard";
+    }
+    return cachedTab || "dashboard";
   });
 
   // 결재 변경 승인요청 상태 및 상세 보기 모달 제어용
@@ -2528,7 +2534,10 @@ export default function App() {
   });
 
   useEffect(() => {
-    localStorage.setItem("anchor_active_tab", activeTab);
+    // 💡 [교육용 한글 주석] survey_respond 탭은 모바일 임시 설문조사용 화면이므로 로컬 스토리지에 저장하여 탭 상태가 오염되지 않도록 제외합니다.
+    if (activeTab !== "survey_respond") {
+      localStorage.setItem("anchor_active_tab", activeTab);
+    }
   }, [activeTab]);
 
   useEffect(() => {
@@ -2613,12 +2622,26 @@ export default function App() {
           return initialList;
         }
 
-        // 로컬스토리지에 홍진숙 교수(cshong@uc.ac.kr)가 존재할 경우 위치를 홍광표 교수(gphong@uc.ac.kr) 바로 다음으로 재정렬 이동
+        // 💡 [교육용 한글 주석] 홍광표 센터장님의 이메일이 로컬스토리지 캐시에 옛날 값(gphong@uc.ac.kr)으로 남아있는 경우,
+        // 이를 신규 이메일(kphong@uc.ac.kr)로 자동 정정하여 화면 및 수정 폼에서 즉시 반영되도록 조치합니다.
+        let isLocalDataDirty = false;
+        parsed.forEach(m => {
+          if ((m.id === "m-07" || m.name === "홍광표") && m.email === "gphong@uc.ac.kr") {
+            m.email = "kphong@uc.ac.kr";
+            isLocalDataDirty = true;
+          }
+        });
+        if (isLocalDataDirty) {
+          localStorage.setItem("anchor_members", JSON.stringify(parsed));
+        }
+
+        // 💡 [교육용 한글 주석] 홍광표 교수님의 이메일(kphong@uc.ac.kr)에 맞게 정렬 이동 조건의 이메일 값을 변경합니다.
+        // 로컬스토리지에 홍진숙 교수(cshong@uc.ac.kr)가 존재할 경우 위치를 홍광표 교수(kphong@uc.ac.kr) 바로 다음으로 재정렬 이동
         const hongIdx = parsed.findIndex(m => m.email && m.email.trim().toLowerCase() === "cshong@uc.ac.kr");
         if (hongIdx !== -1) {
           const hongObj = parsed[hongIdx];
           parsed.splice(hongIdx, 1);
-          const gphongIdx = parsed.findIndex(m => m.email && m.email.trim().toLowerCase() === "gphong@uc.ac.kr");
+          const gphongIdx = parsed.findIndex(m => m.email && m.email.trim().toLowerCase() === "kphong@uc.ac.kr");
           if (gphongIdx !== -1) {
             parsed.splice(gphongIdx + 1, 0, hongObj);
           } else {
@@ -2627,7 +2650,7 @@ export default function App() {
         } else {
           const hongObj = initialList.find(m => m.email === "cshong@uc.ac.kr");
           if (hongObj) {
-            const gphongIdx = parsed.findIndex(m => m.email && m.email.trim().toLowerCase() === "gphong@uc.ac.kr");
+            const gphongIdx = parsed.findIndex(m => m.email && m.email.trim().toLowerCase() === "kphong@uc.ac.kr");
             if (gphongIdx !== -1) {
               parsed.splice(gphongIdx + 1, 0, hongObj);
             } else {
