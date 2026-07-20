@@ -454,7 +454,7 @@ export default function KPIOverview({ projects, currentRole, selectedYear = 2 })
                   <div className="kpi-value" style={{ color: "#94deb8", fontSize: "1.3rem", margin: "0.15rem 0" }}>
                     {formatToMillionWon(totalSpentMain)} 백만원
                   </div>
-                  <div className="kpi-subtext" style={{ fontSize: "0.65rem" }}>집행률: {rateMain.toFixed(1)}% (배정: {formatToMillionWon(totalBudgetMain)}백)</div>
+                  <div className="kpi-subtext" style={{ fontSize: "0.65rem" }}>집행률: {rateMain.toFixed(1)}% (배정: {formatToMillionWon(totalBudgetMain)}백만원)</div>
                 </div>
               </div>
               <div className="glass-card" style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "space-between", padding: "0.8rem 1.1rem" }}>
@@ -466,7 +466,7 @@ export default function KPIOverview({ projects, currentRole, selectedYear = 2 })
                   <div className="kpi-value" style={{ color: "#f6c97f", fontSize: "1.3rem", margin: "0.15rem 0" }}>
                     {formatToMillionWon(totalSpentCarry)} 백만원
                   </div>
-                  <div className="kpi-subtext" style={{ fontSize: "0.65rem" }}>집행률: {rateCarry.toFixed(1)}% (배정: {formatToMillionWon(totalBudgetCarry)}백)</div>
+                  <div className="kpi-subtext" style={{ fontSize: "0.65rem" }}>집행률: {rateCarry.toFixed(1)}% (배정: {formatToMillionWon(totalBudgetCarry)}백만원)</div>
                 </div>
               </div>
             </div>
