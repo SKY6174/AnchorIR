@@ -1759,7 +1759,7 @@ ${opinionsContext}
                     onChange={() => setSelectedGroup("center")}
                     style={{ accentColor: "var(--accent-color)" }}
                   />
-                  <span>센터별 자문위원회</span>
+                  <span>센터별 운영위원회</span>
                 </label>
               </div>
 
@@ -2827,7 +2827,7 @@ ${opinionsContext}
                           agendas: [...(prev.agendas || []), { title: "", description: "", is_evaluation: false }]
                         }));
                       }}
-                      style={{ fontSize: "0.7rem", padding: "0.25rem 0.5rem", borderRadius: "4px", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color)", color: "#fff", cursor: "pointer" }}
+                      style={{ fontSize: "0.7rem", padding: "0.25rem 0.5rem", borderRadius: "4px", background: "var(--input-bg)", border: "1px solid var(--border-color)", color: "var(--text-primary)", fontWeight: "bold", cursor: "pointer" }}
                     >
                       ➕ 의안 추가
                     </button>
