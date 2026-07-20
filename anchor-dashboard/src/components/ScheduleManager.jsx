@@ -833,7 +833,7 @@ export default function ScheduleManager({
   const [selectedPressType, setSelectedPressType] = useState("all");
   const [activePressId, setActivePressId] = useState(null);
 
-  // 회의 대분류 상태 ("operating": 사업단 운영회의, "center": 센터별 회의, "committee": 각종 위원회 회의)
+  // 회의 대분류 상태 ("operating": 사업운영위원회, "center": 센터별 회의, "committee": 각종 위원회 회의)
   const [activeMeetingCat, setActiveMeetingCat] = useState(() => {
     return localStorage.getItem("anchor_active_meeting_cat") || "operating";
   });
@@ -5213,7 +5213,7 @@ Gemini 피드백: \n${geminiCritiqueText}
                 borderBottom: activeMeetingCat === "operating" ? "2px solid var(--accent-color)" : "none"
               }}
             >
-              사업단 운영회의
+              사업운영위원회
             </button>
             <button
               onClick={() => setActiveMeetingCat("center")}
@@ -5596,7 +5596,7 @@ Gemini 피드백: \n${geminiCritiqueText}
 
                             if (isOperating) {
                               // ==========================================
-                              // 💡 1) 사업단 운영회의 전용 상세 요점 뷰
+                              // 💡 1) 사업운영위원회 전용 상세 요점 뷰
                               // ==========================================
                               const operatingDepts = ["사업단", "사업운영팀", "ECC", "ICC", "RCC", "AID-X", "늘봄누리센터", "신산업특화센터"];
 
@@ -5684,7 +5684,7 @@ Gemini 피드백: \n${geminiCritiqueText}
                                     color: "var(--text-secondary)",
                                     lineHeight: "1.4"
                                   }}>
-                                    💡 본 사업단 운영회의는 <strong>사업단, 사업운영팀, ECC, ICC, RCC, AID-X, 늘봄누리센터, 신산업특화센터</strong> 각 부서의 주요 업무추진 현황 및 애로사항을 공유하기 위하여 격주로 소집되는 회의입니다.
+                                    💡 본 사업운영위원회는 <strong>사업단, 사업운영팀, ECC, ICC, RCC, AID-X, 늘봄누리센터, 신산업특화센터</strong> 각 부서의 주요 업무추진 현황 및 애로사항을 공유하기 위하여 격주로 소집되는 회의입니다.
                                   </div>
 
                                   {/* 8개 부서 의제 & 결과 2열 그리드 */}
@@ -7826,7 +7826,7 @@ Gemini 피드백: \n${geminiCritiqueText}
                     <div>
                       <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>회의 대분류</label>
                       <select name="category" value={formData.category} onChange={handleInputChange} className="form-select">
-                        <option value="operating">사업단 운영회의</option>
+                        <option value="operating">사업운영위원회</option>
                         <option value="center">부서별 회의</option>
                         <option value="committee">각종 위원회</option>
                       </select>
