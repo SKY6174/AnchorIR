@@ -41,6 +41,8 @@ export default function CommitteeExternalVote({ meetingId }) {
   const [selectedMeetingAgendas, setSelectedMeetingAgendas] = useState([]);
   const [selectedMeetingAgendaVotes, setSelectedMeetingAgendaVotes] = useState([]);
   const [activeAgendaId, setActiveAgendaId] = useState(null);
+  const [activeAttachmentData, setActiveAttachmentData] = useState(null);
+  const [activeAttachmentLoading, setActiveAttachmentLoading] = useState(false);
   
   // 💡 [의안 개조] 로그인한 외부 위원이 개별 의안에 대해 채우는 폼 상태 ({ [agendaId]: { vote, score, opinion } })
   const [agendaInputs, setAgendaInputs] = useState({});
@@ -109,25 +111,30 @@ export default function CommitteeExternalVote({ meetingId }) {
   // 💡 [의안 개조] 개별 의안 및 위원별 투표 데이터 로드 헬퍼
   const fetchMeetingAgendasAndVotes = async (mId) => {
     try {
-      const { data: agendas } = await supabase
+      const { data: agendas, error: agErr } = await supabase
         .from("meeting_agendas")
-        .select("*")
+        .select("id, meeting_id, title, description, is_evaluation, sort_order, attachment_name")
         .eq("meeting_id", mId)
         .order("sort_order", { ascending: true });
+      if (agErr) throw agErr;
+
       setSelectedMeetingAgendas(agendas || []);
       if (agendas && agendas.length > 0) {
         setActiveAgendaId(agendas[0].id);
       }
       localStorage.setItem(`local_meeting_agendas_${mId}`, JSON.stringify(agendas || []));
 
-      const { data: votes } = await supabase
+      const { data: votes, error: vtErr } = await supabase
         .from("meeting_agenda_votes")
         .select("*")
         .eq("meeting_id", mId);
+      if (vtErr) throw vtErr;
+
       setSelectedMeetingAgendaVotes(votes || []);
       localStorage.setItem(`local_meeting_agenda_votes_${mId}`, JSON.stringify(votes || []));
     } catch (err) {
-      console.warn("의안/투표 조회 실패, 로컬 캐시 스위칭:", err.message);
+      console.error("❌ fetchMeetingAgendasAndVotes 에러 발생:", err.message);
+      
       const localAgendas = localStorage.getItem(`local_meeting_agendas_${mId}`);
       const parsedAgendas = localAgendas ? JSON.parse(localAgendas) : [];
       setSelectedMeetingAgendas(parsedAgendas);
@@ -139,6 +146,52 @@ export default function CommitteeExternalVote({ meetingId }) {
       setSelectedMeetingAgendaVotes(localVotes ? JSON.parse(localVotes) : []);
     }
   };
+
+  // 💡 [안건 심의자료 Lazy Loading] 대용량 base64 PDF 데이터의 네트워크 병목 현상을 해결하기 위한 지연 로딩 훅
+  useEffect(() => {
+    if (!activeAgendaId) {
+      setActiveAttachmentData(null);
+      return;
+    }
+    
+    const loadAttachment = async () => {
+      const localAgenda = selectedMeetingAgendas.find(a => a.id === activeAgendaId);
+      if (localAgenda && localAgenda.attachment_data) {
+        setActiveAttachmentData(localAgenda.attachment_data);
+        return;
+      }
+
+      if (String(activeAgendaId).startsWith("local-") || String(meetingId).startsWith("local-")) {
+        const cached = localStorage.getItem(`local_meeting_agendas_${meetingId}`);
+        if (cached) {
+          const list = JSON.parse(cached);
+          const found = list.find(a => a.id === activeAgendaId);
+          if (found) {
+            setActiveAttachmentData(found.attachment_data || null);
+          }
+        }
+        return;
+      }
+
+      setActiveAttachmentLoading(true);
+      try {
+        const { data, error } = await supabase
+          .from("meeting_agendas")
+          .select("attachment_data")
+          .eq("id", activeAgendaId)
+          .single();
+        if (error) throw error;
+        setActiveAttachmentData(data?.attachment_data || null);
+      } catch (err) {
+        console.error("❌ 안건 개별 심의자료 로딩 실패:", err.message);
+        setActiveAttachmentData(null);
+      } finally {
+        setActiveAttachmentLoading(false);
+      }
+    };
+
+    loadAttachment();
+  }, [activeAgendaId, selectedMeetingAgendas, meetingId]);
 
   // 💡 [의안 개조] 로그인한 위원이 기존 작성했던 개별 안건 결과 바인딩
   useEffect(() => {
@@ -679,7 +732,7 @@ export default function CommitteeExternalVote({ meetingId }) {
 
   const activeAgenda = selectedMeetingAgendas.find(a => a.id === activeAgendaId);
   const currentFileName = activeAgenda?.attachment_name || meeting.attachment_name || null;
-  const currentFileData = activeAgenda?.attachment_data || meeting.attachment_data || null;
+  const currentFileData = activeAttachmentData || (isFallbackFile ? meeting.attachment_data : null);
   const isFallbackFile = !activeAgenda?.attachment_name && !!meeting.attachment_name;
 
   // B. 인증 완료 상태 - 의결 검토 및 서명 패드 제출 페이지
@@ -756,8 +809,13 @@ export default function CommitteeExternalVote({ meetingId }) {
         </section>
 
         {/* [첨부 파일 연동 뷰어/다운로드 영역] (안건별 및 회의공통 지원 개편) */}
-        <section ref={viewerRef} className="card" style={{ padding: "1.5rem", marginBottom: "1.25rem", border: "1px solid var(--border-color)", background: "var(--card-bg)" }}>
-          {currentFileName ? (
+        <section ref={viewerRef} className="card" style={{ padding: "1.5rem", marginBottom: "1.25rem", border: "1px solid var(--border-color)", background: "var(--card-bg)", minHeight: "180px", display: "flex", flexDirection: "column", justifyContent: "center" }}>
+          {activeAttachmentLoading ? (
+            <div style={{ textAlign: "center", padding: "3rem 1.5rem", color: "var(--text-secondary)", fontSize: "0.85rem" }}>
+              <div style={{ display: "inline-block", width: "24px", height: "24px", border: "3px solid rgba(255,255,255,0.1)", borderTopColor: "var(--accent-color)", borderRadius: "50%", animation: "spin 1s linear infinite", marginBottom: "0.5rem" }} />
+              <div>대용량 심의 문서 자료를 안전하게 로딩 중입니다...</div>
+            </div>
+          ) : currentFileName ? (
             <>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.75rem" }}>
                 <span style={{ fontSize: "0.9rem", fontWeight: "bold", color: "var(--text-primary)", display: "flex", alignItems: "center", gap: "0.25rem" }}>
