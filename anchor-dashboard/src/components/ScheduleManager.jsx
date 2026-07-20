@@ -6046,6 +6046,54 @@ Gemini 피드백: \n${geminiCritiqueText}
                                 return matchedKey ? dataObj[matchedKey] : "";
                               };
 
+                              // 💡 [교육용 한글 주석] 의제 데이터를 심의/의결/선정 등의 [의제] 그룹과 공유/공지/보고 등의 [전달사항] 그룹으로 지능적으로 쪼갭니다.
+                              const parseAgendaIntoGroups = (val) => {
+                                if (!val) return { agendas: [], notices: [] };
+                                let lines = val.split("\n").map(l => l.trim()).filter(Boolean);
+                                if (lines.length <= 1 && val.includes(",")) {
+                                  lines = val.split(",").map(l => l.trim()).filter(Boolean);
+                                }
+                                
+                                const agendas = [];
+                                const notices = [];
+
+                                lines.forEach(line => {
+                                  const text = line.toLowerCase();
+                                  if (text.includes("심의") || text.includes("의결") || text.includes("안건") || text.includes("선정") || text.includes("제출") || text.includes("결정")) {
+                                    agendas.push(line);
+                                  } else if (text.includes("공유") || text.includes("공지") || text.includes("보고") || text.includes("안내") || text.includes("논의") || text.includes("일정") || text.includes("회의") || text.includes("전달") || text.includes("참석")) {
+                                    notices.push(line);
+                                  } else {
+                                    agendas.push(line);
+                                  }
+                                });
+
+                                return { agendas, notices };
+                              };
+
+                              // 💡 [교육용 한글 주석] 결과 데이터를 완료/개최/배포 등의 [추진상황] 그룹과 보류/지연/애로/요청 등의 [애로사항] 그룹으로 지능적으로 쪼갭니다.
+                              const parseResultIntoGroups = (val) => {
+                                if (!val) return { results: [], difficulties: [] };
+                                let lines = val.split("\n").map(l => l.trim()).filter(Boolean);
+                                if (lines.length <= 1 && val.includes(",")) {
+                                  lines = val.split(",").map(l => l.trim()).filter(Boolean);
+                                }
+
+                                const results = [];
+                                const difficulties = [];
+
+                                lines.forEach(line => {
+                                  const text = line.toLowerCase();
+                                  if (text.includes("보류") || text.includes("미정") || text.includes("애로") || text.includes("지연") || text.includes("어려움") || text.includes("요청") || text.includes("필요") || text.includes("의견수렴") || text.includes("논의 예정") || text.includes("문제")) {
+                                    difficulties.push(line);
+                                  } else {
+                                    results.push(line);
+                                  }
+                                });
+
+                                return { results, difficulties };
+                              };
+
                               return (
                                 <>
                                   {/* 헤더 영역 (부서/작성자 생략) */}
@@ -6132,30 +6180,94 @@ Gemini 피드백: \n${geminiCritiqueText}
                                             </span>
                                             
                                             {/* 의제와 결과 좌우 분할 매칭 구조 */}
-                                            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.25rem", fontSize: "0.72rem" }}>
+                                            <div style={{ display: "grid", gridTemplateColumns: "1fr 1.5fr", gap: "1.25rem", fontSize: "0.72rem" }}>
                                               {/* 왼쪽 영역: 의제 / 전달사항 */}
                                               <div style={{ 
                                                 background: darkMode ? "rgba(255,255,255,0.005)" : "rgba(0,0,0,0.005)",
-                                                padding: "0.5rem 0.6rem", 
+                                                padding: "0.6rem 0.75rem", 
                                                 borderRadius: "6px",
                                                 borderLeft: "2.5px solid #60A5FA" // 의제 파란색 포인트 데코선
                                               }}>
-                                                <div style={{ color: "var(--text-secondary)", fontWeight: "800", marginBottom: "0.25rem" }}>💡 의제 / 전달사항</div>
+                                                <div style={{ color: "var(--text-secondary)", fontWeight: "800", marginBottom: "0.4rem" }}>💡 의제 / 전달사항</div>
                                                 <div style={{ color: "var(--text-primary)", whiteSpace: "pre-wrap", lineHeight: "1.4" }}>
-                                                  {agendaVal || "논의사항 없음"}
+                                                  {(() => {
+                                                    const { agendas, notices } = parseAgendaIntoGroups(agendaVal);
+                                                    if (agendas.length === 0 && notices.length === 0) return "논의사항 없음";
+                                                    
+                                                    return (
+                                                      <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                                                        {agendas.length > 0 && (
+                                                          <div>
+                                                            <div style={{ fontSize: "0.68rem", fontWeight: "800", color: "#3B82F6", marginBottom: "0.15rem" }}>[의제]</div>
+                                                            <ul style={{ margin: 0, paddingLeft: "1rem", listStyleType: "disc" }}>
+                                                              {agendas.map((line, idx) => {
+                                                                let cleanLine = line.replace(/^[•\-\*\s]+/, "").trim();
+                                                                cleanLine = cleanLine.replace(/^\d+[\.\)\s]+/, "").trim();
+                                                                return <li key={idx} style={{ marginBottom: "0.2rem" }}>{cleanLine}</li>;
+                                                              })}
+                                                            </ul>
+                                                          </div>
+                                                        )}
+                                                        {notices.length > 0 && (
+                                                          <div>
+                                                            <div style={{ fontSize: "0.68rem", fontWeight: "800", color: "#60A5FA", marginBottom: "0.15rem" }}>[전달사항]</div>
+                                                            <ul style={{ margin: 0, paddingLeft: "1rem", listStyleType: "disc" }}>
+                                                              {notices.map((line, idx) => {
+                                                                let cleanLine = line.replace(/^[•\-\*\s]+/, "").trim();
+                                                                cleanLine = cleanLine.replace(/^\d+[\.\)\s]+/, "").trim();
+                                                                return <li key={idx} style={{ marginBottom: "0.2rem" }}>{cleanLine}</li>;
+                                                              })}
+                                                            </ul>
+                                                          </div>
+                                                        )}
+                                                      </div>
+                                                    );
+                                                  })()}
                                                 </div>
                                               </div>
 
                                               {/* 오른쪽 영역: 추진상황 / 결과 */}
                                               <div style={{ 
                                                 background: darkMode ? "rgba(255,255,255,0.005)" : "rgba(0,0,0,0.005)",
-                                                padding: "0.5rem 0.6rem", 
+                                                padding: "0.6rem 0.75rem", 
                                                 borderRadius: "6px",
                                                 borderLeft: "2.5px solid #34D399" // 결과 초록색 포인트 데코선
                                               }}>
-                                                <div style={{ color: "var(--text-secondary)", fontWeight: "800", marginBottom: "0.25rem" }}>✅ 추진상황 / 결과</div>
-                                                <div style={{ color: "var(--text-primary)", fontWeight: "700", whiteSpace: "pre-wrap", lineHeight: "1.4" }}>
-                                                  {resultVal || "추진완료 / 특이사항 없음"}
+                                                <div style={{ color: "var(--text-secondary)", fontWeight: "800", marginBottom: "0.4rem" }}>✅ 추진상황 / 결과</div>
+                                                <div style={{ color: "var(--text-primary)", whiteSpace: "pre-wrap", lineHeight: "1.4" }}>
+                                                  {(() => {
+                                                    const { results, difficulties } = parseResultIntoGroups(resultVal);
+                                                    if (results.length === 0 && difficulties.length === 0) return "추진완료 / 특이사항 없음";
+                                                    
+                                                    return (
+                                                      <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                                                        {results.length > 0 && (
+                                                          <div>
+                                                            <div style={{ fontSize: "0.68rem", fontWeight: "800", color: "#10B981", marginBottom: "0.15rem" }}>[추진상황]</div>
+                                                            <ul style={{ margin: 0, paddingLeft: "1rem", listStyleType: "disc" }}>
+                                                              {results.map((line, idx) => {
+                                                                let cleanLine = line.replace(/^[•\-\*\s]+/, "").trim();
+                                                                cleanLine = cleanLine.replace(/^\d+[\.\)\s]+/, "").trim();
+                                                                return <li key={idx} style={{ marginBottom: "0.2rem", fontWeight: "700" }}>{cleanLine}</li>;
+                                                              })}
+                                                            </ul>
+                                                          </div>
+                                                        )}
+                                                        {difficulties.length > 0 && (
+                                                          <div>
+                                                            <div style={{ fontSize: "0.68rem", fontWeight: "800", color: "#F59E0B", marginBottom: "0.15rem" }}>[애로사항]</div>
+                                                            <ul style={{ margin: 0, paddingLeft: "1rem", listStyleType: "disc" }}>
+                                                              {difficulties.map((line, idx) => {
+                                                                let cleanLine = line.replace(/^[•\-\*\s]+/, "").trim();
+                                                                cleanLine = cleanLine.replace(/^\d+[\.\)\s]+/, "").trim();
+                                                                return <li key={idx} style={{ marginBottom: "0.2rem", fontWeight: "700" }}>{cleanLine}</li>;
+                                                              })}
+                                                            </ul>
+                                                          </div>
+                                                        )}
+                                                      </div>
+                                                    );
+                                                  })()}
                                                 </div>
                                               </div>
                                             </div>
