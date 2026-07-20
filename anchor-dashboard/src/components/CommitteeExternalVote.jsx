@@ -110,6 +110,21 @@ export default function CommitteeExternalVote({ meetingId }) {
 
   // 💡 [의안 개조] 개별 의안 및 위원별 투표 데이터 로드 헬퍼
   const fetchMeetingAgendasAndVotes = async (mId) => {
+    // 💡 [Zero Error Console Guard] 로컬 모드 회의 ID인 경우 UUID 컬럼 쿼리 시의 400 Syntax Error 방지를 위해 즉시 로컬 캐시로 폴백
+    if (String(mId).startsWith("local-")) {
+      console.log("Local meeting ID detected. Skipping DB fetch for agendas/votes.");
+      const localAgendas = localStorage.getItem(`local_meeting_agendas_${mId}`);
+      const parsedAgendas = localAgendas ? JSON.parse(localAgendas) : [];
+      setSelectedMeetingAgendas(parsedAgendas);
+      if (parsedAgendas.length > 0) {
+        setActiveAgendaId(parsedAgendas[0].id);
+      }
+
+      const localVotes = localStorage.getItem(`local_meeting_agenda_votes_${mId}`);
+      setSelectedMeetingAgendaVotes(localVotes ? JSON.parse(localVotes) : []);
+      return;
+    }
+
     try {
       const { data: agendas, error: agErr } = await supabase
         .from("meeting_agendas")
@@ -731,9 +746,9 @@ export default function CommitteeExternalVote({ meetingId }) {
   }
 
   const activeAgenda = selectedMeetingAgendas.find(a => a.id === activeAgendaId);
+  const isFallbackFile = !activeAgenda?.attachment_name && !!meeting.attachment_name;
   const currentFileName = activeAgenda?.attachment_name || meeting.attachment_name || null;
   const currentFileData = activeAttachmentData || (isFallbackFile ? meeting.attachment_data : null);
-  const isFallbackFile = !activeAgenda?.attachment_name && !!meeting.attachment_name;
 
   // B. 인증 완료 상태 - 의결 검토 및 서명 패드 제출 페이지
   return (
