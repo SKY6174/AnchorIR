@@ -2029,17 +2029,57 @@ ${opinionsContext}
                       <div style={{ display: "flex", gap: "0.4rem" }}>
                         <button
                           onClick={() => handleEditMeetingStart(selectedMeeting)}
-                          className="btn btn-secondary"
-                          style={{ padding: "0.3rem 0.6rem", fontSize: "0.8rem", color: "var(--accent-color)" }}
+                          style={{
+                            display: "inline-flex",
+                            alignItems: "center",
+                            gap: "0.3rem",
+                            padding: "0.35rem 0.75rem",
+                            fontSize: "0.78rem",
+                            fontWeight: "600",
+                            color: "var(--accent-color)",
+                            background: "rgba(99, 102, 241, 0.15)",
+                            border: "1px solid rgba(99, 102, 241, 0.35)",
+                            borderRadius: "6px",
+                            cursor: "pointer",
+                            transition: "all 0.2s ease"
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.background = "rgba(99, 102, 241, 0.25)";
+                            e.currentTarget.style.borderColor = "rgba(99, 102, 241, 0.5)";
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.background = "rgba(99, 102, 241, 0.15)";
+                            e.currentTarget.style.borderColor = "rgba(99, 102, 241, 0.35)";
+                          }}
                         >
-                          <Edit size={14} /> 회의 수정
+                          <Edit size={13} /> 회의 수정
                         </button>
                         <button
                           onClick={() => handleDeleteMeeting(selectedMeeting.id)}
-                          className="btn btn-secondary"
-                          style={{ padding: "0.3rem 0.6rem", fontSize: "0.8rem", color: "#ef4444" }}
+                          style={{
+                            display: "inline-flex",
+                            alignItems: "center",
+                            gap: "0.3rem",
+                            padding: "0.35rem 0.75rem",
+                            fontSize: "0.78rem",
+                            fontWeight: "600",
+                            color: "#ff6b6b",
+                            background: "rgba(239, 68, 68, 0.12)",
+                            border: "1px solid rgba(239, 68, 68, 0.35)",
+                            borderRadius: "6px",
+                            cursor: "pointer",
+                            transition: "all 0.2s ease"
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.background = "rgba(239, 68, 68, 0.22)";
+                            e.currentTarget.style.borderColor = "rgba(239, 68, 68, 0.5)";
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.background = "rgba(239, 68, 68, 0.12)";
+                            e.currentTarget.style.borderColor = "rgba(239, 68, 68, 0.35)";
+                          }}
                         >
-                          <Trash2 size={14} /> 회의 취소
+                          <Trash2 size={13} /> 회의 취소
                         </button>
                       </div>
                     )}
