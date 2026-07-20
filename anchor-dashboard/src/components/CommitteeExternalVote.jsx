@@ -61,9 +61,9 @@ export default function CommitteeExternalVote({ meetingId }) {
 
   // 💡 [대용량 파일 렌더링 최적화] Chrome 브라우저의 dataURI iframe 2MB 크기 제한 극복을 위한 Blob URL 스위칭
   const activeAgenda = selectedMeetingAgendas.find(a => a.id === activeAgendaId);
-  const isFallbackFile = !activeAgenda?.attachment_name && !!meeting.attachment_name;
-  const currentFileName = activeAgenda?.attachment_name || meeting.attachment_name || null;
-  const currentFileData = activeAttachmentData || (isFallbackFile ? meeting.attachment_data : null);
+  const isFallbackFile = !activeAgenda?.attachment_name && !!meeting?.attachment_name;
+  const currentFileName = activeAgenda?.attachment_name || meeting?.attachment_name || null;
+  const currentFileData = activeAttachmentData || (isFallbackFile ? meeting?.attachment_data : null);
 
   useEffect(() => {
     if (!currentFileData) {
