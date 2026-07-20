@@ -1478,11 +1478,12 @@ JSON 구조:
 
 [★ 매우 중요: 사업운영위원회/회의록 특수 추론 규칙]
 - 제공된 텍스트가 결과보고서(회의록) 또는 회의 의결 사항인 경우, 본문의 개별적인 보고 내용과 애로사항을 분석하여 7개 부서("사업운영팀", "ECC센터", "ICC센터", "RCC센터", "AID-X지원센터", "울산늘봄누리센터", "신산업특화센터")에 맞게 지능적으로 유추 및 배분하여 "operatingAgendas" 및 "operatingResults" 객체에 채워 주십시오.
+- [경고] "operatingAgendas"와 "operatingResults" 객체의 key(부서 키)는 반드시 위에서 정의한 7개 부서명("사업운영팀", "ECC센터", "ICC센터", "RCC센터", "AID-X지원센터", "울산늘봄누리센터", "신산업특화센터")과 100% 동일한 문자열로만 반환해야 합니다. "사업단"이나 "늘봄센터", "AID-X" 같은 임의 축약된 키를 절대 생성하지 마십시오.
 - 회의록 원문의 모든 부서별 보고 사항과 안건을 임의로 요약하거나 생략하지 말고, 본문에 등장한 구체적인 실적, 계획, 애로사항을 최대한 누락 없이 그대로 수용하여 각 부서의 의제 및 결과 칸에 충실하게 다 적어주십시오. 중복되지 않는 한 내용을 최대한 길고 자세하게 복원해야 합니다.
 - 본문 텍스트 내에 '참석자 서명록' 또는 서명, 참석자 명단이 존재하는 경우, 이름 뒤의 서명란 등 불필요한 마크는 제거하고 참석한 모든 인원의 실명(과 직책)을 한 명도 누락하지 말고 "attendees" 문자열에 쉼표로 구분하여 기입해 주십시오. (예: "송경영 단장, 심현미 운영팀장, 조홍래 총장")
 - 본문에 각 센터(부서) 명칭이 직접 명시되지 않았더라도, 내용의 성격(예: 유학생/문화교류 -> 울산늘봄누리센터 또는 ECC센터, 장학금/지급 -> 사업운영팀 또는 ECC센터, 특화장비/실습 -> 신산업특화센터, 가족회사/공동R&BD -> ICC센터 등)과 문맥을 기반으로 가장 관련성이 높은 센터의 의제와 결과(애로사항)로 매핑하여 빈칸 없이 최대한 추론해 주어야 합니다.
 - 매핑할 부서별 내용이 존재하지 않는 부서는 빈 문자열("")로 두십시오.
-- 동시에 "agendaResultPairs" 배열에도 전체 요약된 핵심 안건 리스트(1~3개)를 구성해서 제공하십시오.
+- 동시에 "agendaResultPairs" 배열에도 전체 요약된 핵심 안건 리스트를 구성해서 제공하십시오. 이때 "agendaResultPairs" 내의 각 agenda와 result 문자열 앞에는 반드시 매핑된 부서명을 대괄호 형식으로 표기해 주십시오 (예: "agenda": "[ECC센터] 지산학 마일리지 기준 심의", "result": "[ECC센터] 원안대로 승인 및 적용").
 
 회의 기획서/회의록/결과보고서 원문 텍스트:
 ${targetText}
@@ -1592,19 +1593,46 @@ ${targetText}
           setAiResultApplied(true);
 
           // 2. 💡 [교육용 한글 주석] GPT가 직접 부서별 맵을 추출한 경우, 폼 필드 상태에 우선적으로 대입해 줍니다.
+          // AI가 축약어나 비표준 부서명(예: "ECC", "늘봄")으로 반환할 수 있으므로, 표준 7개 부서명으로 완벽하게 정규화(Normalization)하여 머지합니다.
           const hasOperatingData = cleanJson.operatingAgendas || cleanJson.operatingResults;
           if (hasOperatingData) {
-            setFormData(prev => ({
-              ...prev,
-              operatingAgendas: {
-                ...prev.operatingAgendas,
-                ...cleanJson.operatingAgendas
-              },
-              operatingResults: {
-                ...prev.operatingResults,
-                ...cleanJson.operatingResults
+            const normalizeDeptName = (key) => {
+              if (!key) return "사업운영팀";
+              const trimmed = key.trim();
+              if (trimmed.includes("ECC") || trimmed === "ecc") return "ECC센터";
+              if (trimmed.includes("ICC") || trimmed === "icc") return "ICC센터";
+              if (trimmed.includes("RCC") || trimmed === "rcc") return "RCC센터";
+              if (trimmed.includes("AID-X") || trimmed.includes("AIDX") || trimmed === "aidx") return "AID-X지원센터";
+              if (trimmed.includes("늘봄") || trimmed.includes("누리")) return "울산늘봄누리센터";
+              if (trimmed.includes("신산업")) return "신산업특화센터";
+              if (trimmed.includes("사업운영")) return "사업운영팀";
+              if (trimmed.includes("사업단")) return "사업운영팀"; // "사업단"은 "사업운영팀"으로 자동 분산
+              return "사업운영팀";
+            };
+
+            setFormData(prev => {
+              const normalizedAgendas = { ...(prev.operatingAgendas || {}) };
+              const normalizedResults = { ...(prev.operatingResults || {}) };
+
+              if (cleanJson.operatingAgendas) {
+                Object.entries(cleanJson.operatingAgendas).forEach(([k, val]) => {
+                  const normKey = normalizeDeptName(k);
+                  normalizedAgendas[normKey] = val;
+                });
               }
-            }));
+              if (cleanJson.operatingResults) {
+                Object.entries(cleanJson.operatingResults).forEach(([k, val]) => {
+                  const normKey = normalizeDeptName(k);
+                  normalizedResults[normKey] = val;
+                });
+              }
+
+              return {
+                ...prev,
+                operatingAgendas: normalizedAgendas,
+                operatingResults: normalizedResults
+              };
+            });
           }
 
           // 3. 의제-결과 쌍 테이블 설정
@@ -1839,9 +1867,10 @@ JSON 구조:
 
 [★ 매우 중요: 사업운영위원회/회의록 특수 추론 규칙]
 - 제공된 텍스트가 결과보고서(회의록) 또는 회의 의결 사항인 경우, 본문의 개별적인 보고 내용과 애로사항을 분석하여 7개 부서("사업운영팀", "ECC센터", "ICC센터", "RCC센터", "AID-X지원센터", "울산늘봄누리센터", "신산업특화센터")에 맞게 지능적으로 유추 및 배분하여 "operatingAgendas" 및 "operatingResults" 객체에 채워 주십시오.
+- [경고] "operatingAgendas"와 "operatingResults" 객체의 key(부서 키)는 반드시 위에서 정의한 7개 부서명("사업운영팀", "ECC센터", "ICC센터", "RCC센터", "AID-X지원센터", "울산늘봄누리센터", "신산업특화센터")과 100% 동일한 문자열로만 반환해야 합니다. "사업단"이나 "늘봄센터", "AID-X" 같은 임의 축약된 키를 절대 생성하지 마십시오.
 - 본문에 각 센터(부서) 명칭이 직접 명시되지 않았더라도, 내용의 성격(예: 유학생/문화교류 -> 울산늘봄누리센터 또는 ECC센터, 장학금/지급 -> 사업운영팀 또는 ECC센터, 특화장비/실습 -> 신산업특화센터, 가족회사/공동R&BD -> ICC센터 등)과 문맥을 기반으로 가장 관련성이 높은 센터의 의제와 결과(애로사항)로 매핑하여 빈칸 없이 최대한 추론해 주어야 합니다.
 - 매핑할 부서별 내용이 존재하지 않는 부서는 빈 문자열("")로 두십시오.
-- 동시에 "agendaResultPairs" 배열에도 전체 요약된 핵심 안건 리스트(1~3개)를 구성해서 제공하십시오.
+- 동시에 "agendaResultPairs" 배열에도 전체 요약된 핵심 안건 리스트를 구성해서 제공하십시오. 이때 "agendaResultPairs" 내의 각 agenda와 result 문자열 앞에는 반드시 매핑된 부서명을 대괄호 형식으로 표기해 주십시오 (예: "agenda": "[ECC센터] 지산학 마일리지 기준 심의", "result": "[ECC센터] 원안대로 승인 및 적용").
 
 본문: \n${targetText}`
             : `행사 결과보고서를 분석해 JSON형식(result: "행사 결과 요약 2-3문장")으로 정확히 반환하라. 본문: \n${targetText}`;
@@ -4056,36 +4085,52 @@ Gemini 피드백: \n${geminiCritiqueText}
         restoredResults[d] = "";
       });
 
+      // 💡 [교육용 한글 주석] 3단계 지능형 분류기를 이용해 줄바꿈 텍스트를 적합한 부서별 입력 박스로 복원합니다.
+      const getHeuristicDept = (line) => {
+        let matched = depts.find(d => line.startsWith(`[${d}]`) || line.includes(`[${d}]`) || line.includes(d));
+        if (matched) return matched;
+
+        matched = depts.find(d => {
+          const cleanD = d.replace("센터", "").replace("지원센터", "").replace("팀", "");
+          return line.includes(cleanD);
+        });
+        if (matched) return matched;
+
+        const text = line.toLowerCase();
+        if (text.includes("주문식") || text.includes("산학협력") || text.includes("가족회사") || text.includes("r&bd") || text.includes("재직자") || text.includes("간담회") || text.includes("산학공동")) {
+          return text.includes("주문식") || text.includes("재직자") ? "ECC센터" : "ICC센터";
+        }
+        if (text.includes("장학금") || text.includes("이월금") || text.includes("예산") || text.includes("공지") || text.includes("일정") || text.includes("성과관리") || text.includes("먼데이닷컴") || text.includes("기자재") || text.includes("워크숍") || text.includes("회의록")) {
+          return "사업운영팀";
+        }
+        if (text.includes("늘봄") || text.includes("누리") || text.includes("지역사회") || text.includes("리빙랩") || text.includes("로컬") || text.includes("협업")) {
+          return text.includes("늘봄") ? "울산늘봄누리센터" : "RCC센터";
+        }
+        if (text.includes("aidx") || text.includes("aid-x") || text.includes("디지털") || text.includes("자격증") || text.includes("인공지능")) {
+          return "AID-X지원센터";
+        }
+        if (text.includes("신산업") || text.includes("특화") || text.includes("융합") || text.includes("첨단")) {
+          return "신산업특화센터";
+        }
+        return "사업운영팀";
+      };
+
       agendaLines.forEach(line => {
-        let matchedDept = depts.find(d => line.startsWith(`[${d}]`) || line.includes(`[${d}]`));
-        if (!matchedDept) {
-          matchedDept = depts.find(d => {
-            const cleanD = d.replace("센터", "").replace("지원센터", "").replace("팀", "");
-            return line.includes(cleanD) || (d === "사업운영팀" && line.includes("사업단"));
-          });
-        }
-        if (matchedDept) {
-          const cleanLine = line.replace(`[${matchedDept}]`, "").trim();
-          restoredAgendas[matchedDept] = (restoredAgendas[matchedDept] ? restoredAgendas[matchedDept] + "\n" : "") + cleanLine;
-        } else {
-          restoredAgendas["사업운영팀"] = (restoredAgendas["사업운영팀"] ? restoredAgendas["사업운영팀"] + "\n" : "") + line;
-        }
+        const matchedDept = getHeuristicDept(line);
+        let cleanLine = line.trim();
+        depts.forEach(d => {
+          cleanLine = cleanLine.replace(`[${d}]`, "").trim();
+        });
+        restoredAgendas[matchedDept] = (restoredAgendas[matchedDept] ? restoredAgendas[matchedDept] + "\n" : "") + cleanLine;
       });
 
       resultLines.forEach(line => {
-        let matchedDept = depts.find(d => line.startsWith(`[${d}]`) || line.includes(`[${d}]`));
-        if (!matchedDept) {
-          matchedDept = depts.find(d => {
-            const cleanD = d.replace("센터", "").replace("지원센터", "").replace("팀", "");
-            return line.includes(cleanD) || (d === "사업운영팀" && line.includes("사업단"));
-          });
-        }
-        if (matchedDept) {
-          const cleanLine = line.replace(`[${matchedDept}]`, "").trim();
-          restoredResults[matchedDept] = (restoredResults[matchedDept] ? restoredResults[matchedDept] + "\n" : "") + cleanLine;
-        } else {
-          restoredResults["사업운영팀"] = (restoredResults["사업운영팀"] ? restoredResults["사업운영팀"] + "\n" : "") + line;
-        }
+        const matchedDept = getHeuristicDept(line);
+        let cleanLine = line.trim();
+        depts.forEach(d => {
+          cleanLine = cleanLine.replace(`[${d}]`, "").trim();
+        });
+        restoredResults[matchedDept] = (restoredResults[matchedDept] ? restoredResults[matchedDept] + "\n" : "") + cleanLine;
       });
     }
 
@@ -5937,36 +5982,61 @@ Gemini 피드백: \n${geminiCritiqueText}
                               const agendaLines = (selectedMeeting.agenda || "").split("\n").filter(Boolean);
                               const resultLines = (selectedMeeting.result || "").split("\n").filter(Boolean);
 
+                              // 💡 [교육용 한글 주석] 3단계 하이브리드 파서를 이용하여 텍스트를 각 부서별로 영리하게 분류합니다.
+                              // 1단계: 말머리 대괄호 [부서명] 또는 부서 풀 네임 포함 여부 검증
+                              // 2단계: 부서의 축약 명칭 (ECC, ICC, RCC 등) 매칭 검증
+                              // 3단계: 텍스트 내의 지산학 핵심 키워드 유추 매칭
+                              const getHeuristicDept = (line) => {
+                                // 1단계 판정
+                                let matched = operatingDepts.find(d => line.startsWith(`[${d}]`) || line.includes(`[${d}]`) || line.includes(d));
+                                if (matched) return matched;
+
+                                // 2단계 판정
+                                matched = operatingDepts.find(d => {
+                                  const cleanD = d.replace("센터", "").replace("지원센터", "").replace("팀", "");
+                                  return line.includes(cleanD);
+                                });
+                                if (matched) return matched;
+
+                                // 3단계 판정 (업무 성격 지능적 유추)
+                                const text = line.toLowerCase();
+                                if (text.includes("주문식") || text.includes("산학협력") || text.includes("가족회사") || text.includes("r&bd") || text.includes("재직자") || text.includes("간담회") || text.includes("산학공동")) {
+                                  return text.includes("주문식") || text.includes("재직자") ? "ECC센터" : "ICC센터";
+                                }
+                                if (text.includes("장학금") || text.includes("이월금") || text.includes("예산") || text.includes("공지") || text.includes("일정") || text.includes("성과관리") || text.includes("먼데이닷컴") || text.includes("기자재") || text.includes("워크숍") || text.includes("회의록")) {
+                                  return "사업운영팀";
+                                }
+                                if (text.includes("늘봄") || text.includes("누리") || text.includes("지역사회") || text.includes("리빙랩") || text.includes("로컬") || text.includes("협업")) {
+                                  return text.includes("늘봄") ? "울산늘봄누리센터" : "RCC센터";
+                                }
+                                if (text.includes("aidx") || text.includes("aid-x") || text.includes("디지털") || text.includes("자격증") || text.includes("인공지능")) {
+                                  return "AID-X지원센터";
+                                }
+                                if (text.includes("신산업") || text.includes("특화") || text.includes("융합") || text.includes("첨단")) {
+                                  return "신산업특화센터";
+                                }
+
+                                // 4단계: 매칭되지 않으면 "사업운영팀"으로 기본 배치
+                                return "사업운영팀";
+                              };
+
                               agendaLines.forEach(line => {
-                                let matchedDept = operatingDepts.find(d => line.startsWith(`[${d}]`) || line.includes(`[${d}]`));
-                                if (!matchedDept) {
-                                  matchedDept = operatingDepts.find(d => {
-                                    const cleanD = d.replace("센터", "").replace("지원센터", "").replace("팀", "");
-                                    return line.includes(cleanD) || (d === "사업운영팀" && line.includes("사업단"));
-                                  });
-                                }
-                                if (matchedDept) {
-                                  const cleanLine = line.replace(`[${matchedDept}]`, "").trim();
-                                  parsedAgendas[matchedDept] = (parsedAgendas[matchedDept] ? parsedAgendas[matchedDept] + "\n" : "") + cleanLine;
-                                } else {
-                                  parsedAgendas["사업운영팀"] = (parsedAgendas["사업운영팀"] ? parsedAgendas["사업운영팀"] + "\n" : "") + line;
-                                }
+                                const matchedDept = getHeuristicDept(line);
+                                // 말머리가 대괄호 형식으로 있을 경우만 텍스트에서 떼어내어 본문을 보기 좋게 만듭니다.
+                                let cleanLine = line.trim();
+                                operatingDepts.forEach(d => {
+                                  cleanLine = cleanLine.replace(`[${d}]`, "").trim();
+                                });
+                                parsedAgendas[matchedDept] = (parsedAgendas[matchedDept] ? parsedAgendas[matchedDept] + "\n" : "") + cleanLine;
                               });
 
                               resultLines.forEach(line => {
-                                let matchedDept = operatingDepts.find(d => line.startsWith(`[${d}]`) || line.includes(`[${d}]`));
-                                if (!matchedDept) {
-                                  matchedDept = operatingDepts.find(d => {
-                                    const cleanD = d.replace("센터", "").replace("지원센터", "").replace("팀", "");
-                                    return line.includes(cleanD) || (d === "사업운영팀" && line.includes("사업단"));
-                                  });
-                                }
-                                if (matchedDept) {
-                                  const cleanLine = line.replace(`[${matchedDept}]`, "").trim();
-                                  parsedResults[matchedDept] = (parsedResults[matchedDept] ? parsedResults[matchedDept] + "\n" : "") + cleanLine;
-                                } else {
-                                  parsedResults["사업운영팀"] = (parsedResults["사업운영팀"] ? parsedResults["사업운영팀"] + "\n" : "") + line;
-                                }
+                                const matchedDept = getHeuristicDept(line);
+                                let cleanLine = line.trim();
+                                operatingDepts.forEach(d => {
+                                  cleanLine = cleanLine.replace(`[${d}]`, "").trim();
+                                });
+                                parsedResults[matchedDept] = (parsedResults[matchedDept] ? parsedResults[matchedDept] + "\n" : "") + cleanLine;
                               });
 
                               const getDeptData = (deptName, dataObj) => {
