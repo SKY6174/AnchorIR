@@ -1142,6 +1142,54 @@ export default function ScheduleManager({
     };
   };
 
+  // 💡 [교육용 한글 주석] 회의록 분석 결과인 의제/결과 리스트를 8대 부서에 지능적으로 자동 분배하여 입력 폼에 기입합니다.
+  const distributeOperatingAgendas = (agendaResultPairs, currentCategory) => {
+    if (currentCategory !== "operating" || !agendaResultPairs || agendaResultPairs.length === 0) {
+      return {};
+    }
+
+    const depts = ["사업단", "사업운영팀", "ECC센터", "ICC센터", "RCC센터", "AID-X지원센터", "울산늘봄누리센터", "신산업특화센터"];
+    const newAgendas = {};
+    const newResults = {};
+    
+    depts.forEach(d => {
+      newAgendas[d] = "";
+      newResults[d] = "";
+    });
+
+    agendaResultPairs.forEach(pair => {
+      const text = pair.agenda || "";
+      const resultText = pair.result || "";
+
+      // 한글 명칭 매칭 검사 (가장 근접한 부서 찾기)
+      let matchedDept = depts.find(d => {
+        const cleanD = d.replace("센터", "").replace("지원센터", "").replace("팀", "");
+        return text.includes(cleanD) || resultText.includes(cleanD);
+      });
+
+      // 영어 약어 등 매칭 예외 보완
+      if (!matchedDept) {
+        if (text.toLowerCase().includes("ecc") || resultText.toLowerCase().includes("ecc")) matchedDept = "ECC센터";
+        else if (text.toLowerCase().includes("icc") || resultText.toLowerCase().includes("icc")) matchedDept = "ICC센터";
+        else if (text.toLowerCase().includes("rcc") || resultText.toLowerCase().includes("rcc")) matchedDept = "RCC센터";
+        else if (text.toLowerCase().includes("aid") || resultText.toLowerCase().includes("aid")) matchedDept = "AID-X지원센터";
+        else if (text.toLowerCase().includes("늘봄") || resultText.toLowerCase().includes("늘봄")) matchedDept = "울산늘봄누리센터";
+        else if (text.toLowerCase().includes("신산업") || resultText.toLowerCase().includes("신산업")) matchedDept = "신산업특화센터";
+        else matchedDept = "사업단"; // 매칭 실패 시 기본으로 '사업단'에 기입
+      }
+
+      if (matchedDept) {
+        newAgendas[matchedDept] = (newAgendas[matchedDept] ? newAgendas[matchedDept] + "\n" : "") + text;
+        newResults[matchedDept] = (newResults[matchedDept] ? newResults[matchedDept] + "\n" : "") + resultText;
+      }
+    });
+
+    return {
+      operatingAgendas: newAgendas,
+      operatingResults: newResults
+    };
+  };
+
   // 회의록 분석 전용 모의 폴백 함수
   const runMeetingSimulationFallback = () => {
     setIsAiLoading(true);
@@ -1198,7 +1246,11 @@ export default function ScheduleManager({
           ];
         }
 
-        setFormData(prev => applyMeetingAiDataRules(targetData, prev));
+        setFormData(prev => {
+          const updated = applyMeetingAiDataRules(targetData, prev);
+          const dist = distributeOperatingAgendas(aiAgendas, updated.category);
+          return { ...updated, ...dist };
+        });
         setAiPlanApplied(true);
         setAgendaResultPairs(aiAgendas);
 
@@ -1441,6 +1493,10 @@ ${aiRawText}
           if (cleanJson.agendaResultPairs && cleanJson.agendaResultPairs.length > 0) {
             setAgendaResultPairs(cleanJson.agendaResultPairs);
               setAiResultApplied(true);
+            setFormData(prev => {
+              const dist = distributeOperatingAgendas(cleanJson.agendaResultPairs, prev.category);
+              return { ...prev, ...dist };
+            });
           }
           setIsAiLoading(false);
           setAiProgress(100);
@@ -1544,6 +1600,10 @@ ${aiRawText}
           if (cleanJson.agendaResultPairs && cleanJson.agendaResultPairs.length > 0) {
             setAgendaResultPairs(cleanJson.agendaResultPairs);
               setAiResultApplied(true);
+            setFormData(prev => {
+              const dist = distributeOperatingAgendas(cleanJson.agendaResultPairs, prev.category);
+              return { ...prev, ...dist };
+            });
           }
           setIsAiLoading(false);
           setAiProgress(100);
@@ -1734,6 +1794,10 @@ Gemini 피드백: \n${geminiCritiqueText}
             if (cleanJson.agendaResultPairs && cleanJson.agendaResultPairs.length > 0) {
               setAgendaResultPairs(cleanJson.agendaResultPairs);
               setAiResultApplied(true);
+              setFormData(prev => {
+                const dist = distributeOperatingAgendas(cleanJson.agendaResultPairs, prev.category);
+                return { ...prev, ...dist };
+              });
             }
           }
         } else {
@@ -1842,6 +1906,10 @@ Gemini 피드백: \n${geminiCritiqueText}
                   ];
                   setAgendaResultPairs(consensusAgendas);
                   setAiResultApplied(true);
+                  setFormData(prev => {
+                    const dist = distributeOperatingAgendas(consensusAgendas, prev.category);
+                    return { ...prev, ...dist };
+                  });
                 }
               } else {
                 if (analysisType === "plan") {
