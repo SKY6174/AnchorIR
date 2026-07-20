@@ -1149,7 +1149,7 @@ export default function ScheduleManager({
       return {};
     }
 
-    const depts = ["사업단", "사업운영팀", "ECC센터", "ICC센터", "RCC센터", "AID-X지원센터", "울산늘봄누리센터", "신산업특화센터"];
+    const depts = ["사업운영팀", "ECC센터", "ICC센터", "RCC센터", "AID-X지원센터", "울산늘봄누리센터", "신산업특화센터"];
     const newAgendas = {};
     const newResults = {};
     
@@ -1165,7 +1165,8 @@ export default function ScheduleManager({
       // 한글 명칭 매칭 검사 (가장 근접한 부서 찾기)
       let matchedDept = depts.find(d => {
         const cleanD = d.replace("센터", "").replace("지원센터", "").replace("팀", "");
-        return text.includes(cleanD) || resultText.includes(cleanD);
+        return text.includes(cleanD) || resultText.includes(cleanD) ||
+               (d === "사업운영팀" && (text.includes("사업단") || resultText.includes("사업단")));
       });
 
       // 영어 약어 등 매칭 예외 보완
@@ -1176,7 +1177,7 @@ export default function ScheduleManager({
         else if (text.toLowerCase().includes("aid") || resultText.toLowerCase().includes("aid")) matchedDept = "AID-X지원센터";
         else if (text.toLowerCase().includes("늘봄") || resultText.toLowerCase().includes("늘봄")) matchedDept = "울산늘봄누리센터";
         else if (text.toLowerCase().includes("신산업") || resultText.toLowerCase().includes("신산업")) matchedDept = "신산업특화센터";
-        else matchedDept = "사업단"; // 매칭 실패 시 기본으로 '사업단'에 기입
+        else matchedDept = "사업운영팀"; // 매칭 실패 시 기본으로 '사업운영팀'에 기입
       }
 
       if (matchedDept) {
@@ -1387,7 +1388,6 @@ JSON 구조:
     }
   ],
   "operatingAgendas": {
-    "사업단": "사업단 주요 안건 및 애로사항",
     "사업운영팀": "사업운영팀 안건",
     "ECC센터": "ECC센터 안건",
     "ICC센터": "ICC센터 안건",
@@ -1397,7 +1397,6 @@ JSON 구조:
     "신산업특화센터": "신산업특화센터 안건"
   },
   "operatingResults": {
-    "사업단": "사업단 추진상황 및 결과",
     "사업운영팀": "사업운영팀 결과",
     "ECC센터": "ECC센터 결과",
     "ICC센터": "ICC센터 결과",
@@ -1409,7 +1408,7 @@ JSON 구조:
 }
 
 [★ 매우 중요: 사업운영위원회/회의록 특수 추론 규칙]
-- 제공된 텍스트가 결과보고서(회의록) 또는 회의 의결 사항인 경우, 본문의 개별적인 보고 내용과 애로사항을 분석하여 8대 부서("사업단", "사업운영팀", "ECC센터", "ICC센터", "RCC센터", "AID-X지원센터", "울산늘봄누리센터", "신산업특화센터")에 맞게 지능적으로 유추 및 배분하여 "operatingAgendas" 및 "operatingResults" 객체에 채워 주십시오.
+- 제공된 텍스트가 결과보고서(회의록) 또는 회의 의결 사항인 경우, 본문의 개별적인 보고 내용과 애로사항을 분석하여 7개 부서("사업운영팀", "ECC센터", "ICC센터", "RCC센터", "AID-X지원센터", "울산늘봄누리센터", "신산업특화센터")에 맞게 지능적으로 유추 및 배분하여 "operatingAgendas" 및 "operatingResults" 객체에 채워 주십시오.
 - 본문에 각 센터(부서) 명칭이 직접 명시되지 않았더라도, 내용의 성격(예: 유학생/문화교류 -> 울산늘봄누리센터 또는 ECC센터, 장학금/지급 -> 사업운영팀 또는 ECC센터, 특화장비/실습 -> 신산업특화센터, 가족회사/공동R&BD -> ICC센터 등)과 문맥을 기반으로 가장 관련성이 높은 센터의 의제와 결과(애로사항)로 매핑하여 빈칸 없이 최대한 추론해 주어야 합니다.
 - 매핑할 부서별 내용이 존재하지 않는 부서는 빈 문자열("")로 두십시오.
 - 동시에 "agendaResultPairs" 배열에도 전체 요약된 핵심 안건 리스트(1~3개)를 구성해서 제공하십시오.
@@ -1718,7 +1717,6 @@ JSON 구조:
 {
   "agendaResultPairs": [{ "agenda": "의제", "result": "결과" }],
   "operatingAgendas": {
-    "사업단": "사업단 주요 안건 및 애로사항",
     "사업운영팀": "사업운영팀 안건",
     "ECC센터": "ECC센터 안건",
     "ICC센터": "ICC센터 안건",
@@ -1728,7 +1726,6 @@ JSON 구조:
     "신산업특화센터": "신산업특화센터 안건"
   },
   "operatingResults": {
-    "사업단": "사업단 추진상황 및 결과",
     "사업운영팀": "사업운영팀 결과",
     "ECC센터": "ECC센터 결과",
     "ICC센터": "ICC센터 결과",
@@ -1740,7 +1737,7 @@ JSON 구조:
 }
 
 [★ 매우 중요: 사업운영위원회/회의록 특수 추론 규칙]
-- 제공된 텍스트가 결과보고서(회의록) 또는 회의 의결 사항인 경우, 본문의 개별적인 보고 내용과 애로사항을 분석하여 8대 부서("사업단", "사업운영팀", "ECC센터", "ICC센터", "RCC센터", "AID-X지원센터", "울산늘봄누리센터", "신산업특화센터")에 맞게 지능적으로 유추 및 배분하여 "operatingAgendas" 및 "operatingResults" 객체에 채워 주십시오.
+- 제공된 텍스트가 결과보고서(회의록) 또는 회의 의결 사항인 경우, 본문의 개별적인 보고 내용과 애로사항을 분석하여 7개 부서("사업운영팀", "ECC센터", "ICC센터", "RCC센터", "AID-X지원센터", "울산늘봄누리센터", "신산업특화센터")에 맞게 지능적으로 유추 및 배분하여 "operatingAgendas" 및 "operatingResults" 객체에 채워 주십시오.
 - 본문에 각 센터(부서) 명칭이 직접 명시되지 않았더라도, 내용의 성격(예: 유학생/문화교류 -> 울산늘봄누리센터 또는 ECC센터, 장학금/지급 -> 사업운영팀 또는 ECC센터, 특화장비/실습 -> 신산업특화센터, 가족회사/공동R&BD -> ICC센터 등)과 문맥을 기반으로 가장 관련성이 높은 센터의 의제와 결과(애로사항)로 매핑하여 빈칸 없이 최대한 추론해 주어야 합니다.
 - 매핑할 부서별 내용이 존재하지 않는 부서는 빈 문자열("")로 두십시오.
 - 동시에 "agendaResultPairs" 배열에도 전체 요약된 핵심 안건 리스트(1~3개)를 구성해서 제공하십시오.
@@ -5902,7 +5899,7 @@ Gemini 피드백: \n${geminiCritiqueText}
                                         const keywords = Object.values(parsedResults).filter(Boolean).slice(0, 3).join(", ");
                                         return keywords
                                           ? `본 회의에서는 각 부서의 전달사항(주요 키워드: ${keywords})에 대한 진척 상황 및 현안들을 공유했습니다. 향후 부서 간 실무 협의를 강화하여 목표 추진 계획을 차질 없이 준수할 것을 권장합니다.`
-                                          : "본 회의에서는 8대 부서별 주요 안건 공유 및 지산학 프로그램의 격주 실적 관리가 원활히 이뤄졌습니다. AI 핵심 분석 결과 각 부서의 추진 상황은 계획 대비 순조롭게 진행 중인 것으로 분석되었습니다.";
+                                          : "본 회의에서는 부서별 주요 안건 공유 및 지산학 프로그램의 격주 실적 관리가 원활히 이뤄졌습니다. AI 핵심 분석 결과 각 부서의 추진 상황은 계획 대비 순조롭게 진행 중인 것으로 분석되었습니다.";
                                       })()}
                                     </p>
                                   </div>
@@ -8208,15 +8205,14 @@ Gemini 피드백: \n${geminiCritiqueText}
                           return true;
                         });
 
-                        // 2. 부서(센터)별 그룹화 매핑
-                        const depts = ["사업단", "사업운영팀", "ECC센터", "ICC센터", "RCC센터", "AID-X지원센터", "울산늘봄누리센터", "신산업특화센터"];
+                        // 2. 부서(센터)별 그룹화 매핑 (사업단과 사업운영팀을 통합하여 사업운영팀 아래에 함께 표시)
+                        const depts = ["사업운영팀", "ECC센터", "ICC센터", "RCC센터", "AID-X지원센터", "울산늘봄누리센터", "신산업특화센터"];
                         const grouped = depts.map(d => {
                           const list = rawMembers.filter(m => {
-                            if (d === "사업단") {
-                              return m.dept === "사업단" || m.dept.includes("산학협력단") || m.dept === "앵커사업단" || m.dept === "앵커";
-                            }
                             if (d === "사업운영팀") {
-                              return m.dept === "사업운영팀" || m.dept === "운영팀" || m.dept.includes("운영팀");
+                              const isOperatingOrAgency = m.dept === "사업단" || m.dept.includes("산학협력단") || m.dept === "앵커사업단" || m.dept === "앵커" ||
+                                                           m.dept === "사업운영팀" || m.dept === "운영팀" || m.dept.includes("운영팀");
+                              return isOperatingOrAgency;
                             }
                             return m.dept === d;
                           }).map(m => ({
@@ -8564,10 +8560,10 @@ Gemini 피드백: \n${geminiCritiqueText}
                   {formData.category === "operating" ? (
                     <div style={{ marginTop: "1rem" }}>
                       <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.4rem", fontWeight: "700" }}>
-                        🏢 8대 부서별 주요 업무추진 현황 및 애로사항 입력
+                        🏢 부서별 주요 업무추진 현황 및 애로사항 입력
                       </label>
                       <div style={{ display: "flex", flexDirection: "column", gap: "0.85rem", maxHeight: "250px", overflowY: "auto", paddingRight: "0.25rem" }}>
-                        {["사업단", "사업운영팀", "ECC센터", "ICC센터", "RCC센터", "AID-X지원센터", "울산늘봄누리센터", "신산업특화센터"].map((deptName) => {
+                        {["사업운영팀", "ECC센터", "ICC센터", "RCC센터", "AID-X지원센터", "울산늘봄누리센터", "신산업특화센터"].map((deptName) => {
                           const deptAgendaVal = formData.operatingAgendas?.[deptName] || "";
                           const deptResultVal = formData.operatingResults?.[deptName] || "";
 
