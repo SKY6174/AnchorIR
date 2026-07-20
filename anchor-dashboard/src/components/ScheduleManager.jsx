@@ -8271,10 +8271,19 @@ Gemini 피드백: \n${geminiCritiqueText}
                           return true;
                         });
 
-                        // 2. 부서(센터)별 그룹화 매핑 (사업단과 사업운영팀을 통합하여 사업운영팀 아래에 함께 표시)
+                        // 2. 단장/본부장 특별 그룹 먼저 추출
+                        const leaderNames = ["송경영", "김현수"];
+                        const leadersList = rawMembers.filter(m => leaderNames.includes(m.name)).map(m => ({
+                          name: m.name,
+                          role: getFormattedMemberGrade(m),
+                          key: m.id || m.email
+                        }));
+
+                        // 3. 부서(센터)별 그룹화 매핑 (단장/본부장은 각 부서별 그룹 목록에서 제외)
                         const depts = ["사업운영팀", "ECC센터", "ICC센터", "RCC센터", "AID-X지원센터", "울산늘봄누리센터", "신산업특화센터"];
                         const grouped = depts.map(d => {
                           const list = rawMembers.filter(m => {
+                            if (leaderNames.includes(m.name)) return false; // 리더그룹에 포함된 인원은 부서 리스트에서 중복 제외
                             if (d === "사업운영팀") {
                               const isOperatingOrAgency = m.dept === "사업단" || m.dept.includes("산학협력단") || m.dept === "앵커사업단" || m.dept === "앵커" ||
                                                            m.dept === "사업운영팀" || m.dept === "운영팀" || m.dept.includes("운영팀");
@@ -8288,6 +8297,14 @@ Gemini 피드백: \n${geminiCritiqueText}
                           }));
                           return { deptName: d, list };
                         }).filter(g => g.list.length > 0);
+
+                        // 리더 목록이 존재하면 grouped 맨 처음에 "📌 단장 / 본부장" 그룹으로 삽입
+                        if (leadersList.length > 0) {
+                          grouped.unshift({
+                            deptName: "단장 / 본부장",
+                            list: leadersList
+                          });
+                        }
 
                         return (
                           <>
