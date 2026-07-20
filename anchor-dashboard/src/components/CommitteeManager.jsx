@@ -244,6 +244,36 @@ export default function CommitteeManager({
   const canvasRef = useRef(null);
   const [isDrawing, setIsDrawing] = useState(false);
 
+  // 💡 [로컬 캐시 Quota 초과 자가치유] 대용량 base64 PDF 데이터 캐시로 가득 찬 localStorage를 안전하게 정리
+  useEffect(() => {
+    try {
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && (key.startsWith("local_committee_meetings_") || key.startsWith("local_meeting_agendas_"))) {
+          try {
+            const raw = localStorage.getItem(key);
+            if (raw) {
+              const list = JSON.parse(raw);
+              if (Array.isArray(list)) {
+                const hasLargeData = list.some(item => item.attachment_data);
+                if (hasLargeData) {
+                  const cleaned = list.map(item => ({ ...item, attachment_data: null }));
+                  localStorage.setItem(key, JSON.stringify(cleaned));
+                  console.log(`[Self-Healing] Cleaned up large base64 attachments in localStorage key: ${key}`);
+                }
+              }
+            }
+          } catch (e) {
+            localStorage.removeItem(key);
+            console.log(`[Self-Healing] Removed corrupted localStorage key: ${key}`);
+          }
+        }
+      }
+    } catch (err) {
+      console.warn("[Self-Healing] LocalStorage cleanup failed:", err.message);
+    }
+  }, []);
+
   // 2. 초기 데이터 및 소속 정보 로드
   useEffect(() => {
     fetchCommittees();
@@ -281,7 +311,8 @@ export default function CommitteeManager({
         .order("sort_order", { ascending: true });
       if (agErr) throw agErr;
       setSelectedMeetingAgendas(agendas || []);
-      localStorage.setItem(`local_meeting_agendas_${meetingId}`, JSON.stringify(agendas || []));
+      const cleanAgendas = (agendas || []).map(a => ({ ...a, attachment_data: null }));
+      localStorage.setItem(`local_meeting_agendas_${meetingId}`, JSON.stringify(cleanAgendas));
 
       // 2. 의안별 개별 투표 목록 조회
       const { data: votes, error: vtErr } = await supabase
@@ -480,7 +511,8 @@ export default function CommitteeManager({
       if (error) throw error;
       
       setMeetings(data || []);
-      localStorage.setItem(`local_committee_meetings_${committeeId}`, JSON.stringify(data || []));
+      const cleanMeetings = (data || []).map(m => ({ ...m, attachment_data: null }));
+      localStorage.setItem(`local_committee_meetings_${committeeId}`, JSON.stringify(cleanMeetings));
       
       if (data && data.length > 0) {
         setSelectedMeeting(data[0]);
@@ -1135,7 +1167,8 @@ export default function CommitteeManager({
       } else {
         updatedMeetings = [localPayload, ...localMeetings];
       }
-      localStorage.setItem(`local_committee_meetings_${selectedCommittee.id}`, JSON.stringify(updatedMeetings));
+      const cleanUpdatedMeetings = (updatedMeetings || []).map(m => ({ ...m, attachment_data: null }));
+      localStorage.setItem(`local_committee_meetings_${selectedCommittee.id}`, JSON.stringify(cleanUpdatedMeetings));
 
       // 로컬 스토리지용 의안 정보 모의 적재
       const localAgendas = meetingForm.agendas.map((a, idx) => ({
@@ -1148,7 +1181,8 @@ export default function CommitteeManager({
         attachment_name: a.attachment_name || null,
         attachment_data: a.attachment_data || null
       }));
-      localStorage.setItem(`local_meeting_agendas_${targetMeetingId}`, JSON.stringify(localAgendas));
+      const cleanLocalAgendas = (localAgendas || []).map(a => ({ ...a, attachment_data: null }));
+      localStorage.setItem(`local_meeting_agendas_${targetMeetingId}`, JSON.stringify(cleanLocalAgendas));
       
       if (isEditMode) {
         alert("회의 정보 및 심의 안건이 수정되었습니다. (오프라인 캐시 모드)");
@@ -1189,7 +1223,8 @@ export default function CommitteeManager({
       console.warn("DB 회의 삭제 실패, 로컬 스토리지에서 제거합니다:", err.message);
       const localMeetings = JSON.parse(localStorage.getItem(`local_committee_meetings_${selectedCommittee.id}`) || "[]");
       const updated = localMeetings.filter(m => m.id !== meetingId);
-      localStorage.setItem(`local_committee_meetings_${selectedCommittee.id}`, JSON.stringify(updated));
+      const cleanUpdated = (updated || []).map(m => ({ ...m, attachment_data: null }));
+      localStorage.setItem(`local_committee_meetings_${selectedCommittee.id}`, JSON.stringify(cleanUpdated));
       alert("회의가 취소되었습니다. (오프라인 캐시 모드)");
       setSelectedMeeting(null);
       setMeetings(updated);

@@ -137,7 +137,8 @@ export default function CommitteeExternalVote({ meetingId }) {
       if (agendas && agendas.length > 0) {
         setActiveAgendaId(agendas[0].id);
       }
-      localStorage.setItem(`local_meeting_agendas_${mId}`, JSON.stringify(agendas || []));
+      const cleanAgendas = (agendas || []).map(a => ({ ...a, attachment_data: null }));
+      localStorage.setItem(`local_meeting_agendas_${mId}`, JSON.stringify(cleanAgendas));
 
       const { data: votes, error: vtErr } = await supabase
         .from("meeting_agenda_votes")
@@ -335,7 +336,8 @@ export default function CommitteeExternalVote({ meetingId }) {
               access_pin: dummyMeeting.access_pin,
               status: dummyMeeting.status
             });
-            localStorage.setItem(key, JSON.stringify(currentList));
+            const cleanList = (currentList || []).map(m => ({ ...m, attachment_data: null }));
+            localStorage.setItem(key, JSON.stringify(cleanList));
           }
 
           // 2) 기획위원회 위원 목록 16인도 함께 동기화 적재
