@@ -6034,12 +6034,12 @@ Gemini 피드백: \n${geminiCritiqueText}
                                     💡 본 사업운영위원회는 <strong>사업단, 사업운영팀, ECC, ICC, RCC, AID-X, 늘봄누리센터, 신산업특화센터</strong> 각 부서의 주요 업무추진 현황 및 애로사항을 공유하기 위하여 격주로 소집되는 회의입니다.
                                   </div>
 
-                                  {/* 8개 부서 의제 & 결과 2열 그리드 */}
+                                  {/* 7개 부서 의제 & 결과 1열 배치 (좌우 대조 매칭 구조) */}
                                   <div style={{ marginTop: "0.5rem" }}>
                                     <span style={{ fontSize: "0.825rem", color: "var(--text-secondary)", fontWeight: "700", display: "block", marginBottom: "0.5rem" }}>
-                                      🏢 부서별 주요 업무추진 현황 및 애로사항 (2열 그리드)
+                                      🏢 부서별 주요 업무추진 현황 및 애로사항
                                     </span>
-                                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem" }}>
+                                    <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "0.75rem" }}>
                                       {operatingDepts.map(dept => {
                                         const agendaVal = getDeptData(dept, parsedAgendas);
                                         const resultVal = getDeptData(dept, parsedResults);
@@ -6051,23 +6051,42 @@ Gemini 피드백: \n${geminiCritiqueText}
                                               background: darkMode ? "rgba(255, 255, 255, 0.01)" : "rgba(0,0,0,0.01)",
                                               border: "1px solid var(--border-color)",
                                               borderRadius: "8px",
-                                              padding: "0.7rem 0.85rem",
+                                              padding: "0.85rem 1rem",
                                               display: "flex",
                                               flexDirection: "column",
-                                              gap: "0.3rem"
+                                              gap: "0.6rem"
                                             }}
                                           >
-                                            <span style={{ fontSize: "0.75rem", fontWeight: "800", color: "var(--accent-color)", display: "flex", alignItems: "center", gap: "0.2" }}>
+                                            <span style={{ fontSize: "0.78rem", fontWeight: "800", color: "var(--accent-color)", display: "flex", alignItems: "center", gap: "0.25rem" }}>
                                               📌 {dept}
                                             </span>
-                                            <div style={{ display: "flex", flexDirection: "column", gap: "0.2rem", fontSize: "0.72rem" }}>
-                                              <div style={{ color: "var(--text-primary)", display: "flex", gap: "0.25rem", alignItems: "flex-start" }}>
-                                                <span style={{ color: "var(--text-secondary)", flexShrink: 0 }}>• 의제:</span>
-                                                <span>{agendaVal || "논의사항 없음"}</span>
+                                            
+                                            {/* 의제와 결과 좌우 분할 매칭 구조 */}
+                                            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.25rem", fontSize: "0.72rem" }}>
+                                              {/* 왼쪽 영역: 의제 / 전달사항 */}
+                                              <div style={{ 
+                                                background: darkMode ? "rgba(255,255,255,0.005)" : "rgba(0,0,0,0.005)",
+                                                padding: "0.5rem 0.6rem", 
+                                                borderRadius: "6px",
+                                                borderLeft: "2.5px solid #60A5FA" // 의제 파란색 포인트 데코선
+                                              }}>
+                                                <div style={{ color: "var(--text-secondary)", fontWeight: "800", marginBottom: "0.25rem" }}>💡 의제 / 전달사항</div>
+                                                <div style={{ color: "var(--text-primary)", whiteSpace: "pre-wrap", lineHeight: "1.4" }}>
+                                                  {agendaVal || "논의사항 없음"}
+                                                </div>
                                               </div>
-                                              <div style={{ color: "var(--text-primary)", display: "flex", gap: "0.25rem", alignItems: "flex-start" }}>
-                                                <span style={{ color: "var(--text-secondary)", flexShrink: 0 }}>• 결과:</span>
-                                                <span style={{ fontWeight: "700" }}>{resultVal || "추진완료 / 특이사항 없음"}</span>
+
+                                              {/* 오른쪽 영역: 추진상황 / 결과 */}
+                                              <div style={{ 
+                                                background: darkMode ? "rgba(255,255,255,0.005)" : "rgba(0,0,0,0.005)",
+                                                padding: "0.5rem 0.6rem", 
+                                                borderRadius: "6px",
+                                                borderLeft: "2.5px solid #34D399" // 결과 초록색 포인트 데코선
+                                              }}>
+                                                <div style={{ color: "var(--text-secondary)", fontWeight: "800", marginBottom: "0.25rem" }}>✅ 추진상황 / 결과</div>
+                                                <div style={{ color: "var(--text-primary)", fontWeight: "700", whiteSpace: "pre-wrap", lineHeight: "1.4" }}>
+                                                  {resultVal || "추진완료 / 특이사항 없음"}
+                                                </div>
                                               </div>
                                             </div>
                                           </div>
