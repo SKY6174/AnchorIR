@@ -8179,59 +8179,99 @@ Gemini 피드백: \n${geminiCritiqueText}
                     </div>
                   </div>
 
-                  {/* 4) 소속 연구원 선택 및 수기 입력창 (부서별 회의 또는 센터 위원회일 때 노출) */}
-                  {formData.category !== "operating" && (formData.category === "center" || (formData.category === "committee" && (formData.committeeType || "agency") === "center")) && (
-                    <div style={{ marginTop: "0.75rem" }}>
-                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.25rem" }}>
-                        <label style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>
-                          👥 소속 연구원 선택 (부서별 자동 연동)
-                        </label>
-                        <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)", display: "flex", alignItems: "center", gap: "0.35rem", cursor: "pointer" }}>
-                          <input
-                            type="checkbox"
-                            checked={includeProfessors}
-                            onChange={(e) => setIncludeProfessors(e.target.checked)}
-                            style={{ cursor: "pointer", width: "14px", height: "14px" }}
-                          />
-                          팀장교수 포함
-                        </label>
-                      </div>
-                      {(() => {
-                        let deptMembers = (members || []).filter(m => {
-                          const isDeptMatch = m.dept === formData.dept;
-                          if (!isDeptMatch) return false;
+                  {/* 4) 참석 대상자 선택 및 수기 입력창 (모든 회의 종류에 맞추어 자동 대응) */}
+                  {(() => {
+                    let displayMembers = [];
+                    let labelText = "👥 소속 연구원 선택 (부서별 자동 연동)";
+                    let showIncludeProfessors = false;
 
-                          const start = m.startDate || m.start_date || m.hireDate || m.hire_date || "2025-03-01";
-                          const end = m.endDate || m.end_date || "";
-                          const status = m.status || "참여중";
+                    if (formData.category === "operating") {
+                      labelText = "👥 사업단 전 구성원 선택";
+                      displayMembers = (members || []).filter(m => {
+                        const status = m.status || "참여중";
+                        return status === "참여중";
+                      }).map(m => ({
+                        name: m.name,
+                        role: getFormattedMemberGrade(m),
+                        key: m.id || m.email
+                      }));
+                    } else if (formData.category === "committee") {
+                      labelText = "👥 위원회 위원 선택";
+                      const currentDept = formData.dept || "";
+                      
+                      const targetCommittee = committees.find(c => {
+                        const nameMatch = c.name === currentDept || c.name.includes(currentDept);
+                        const keyMatch = (currentDept.startsWith("ECC") && c.id === "ecc_op") ||
+                                         (currentDept.startsWith("ICC") && c.id === "icc_op") ||
+                                         (currentDept.startsWith("RCC") && c.id === "rcc_op") ||
+                                         ((currentDept.includes("AID") || currentDept.includes("aidx")) && c.id === "aidx_op") ||
+                                         ((currentDept.includes("늘봄") || currentDept.includes("neulbom")) && c.id === "neulbom_op") ||
+                                         ((currentDept.includes("신산업") || currentDept.includes("newind")) && c.id === "newind_op");
+                        return nameMatch || keyMatch;
+                      });
 
-                          const meetingDateStr = formData.meetingDate;
-                          if (meetingDateStr) {
-                            if (start && meetingDateStr < start) return false;
-                            if (end && meetingDateStr > end) return false;
-                          }
+                      const commMembers = targetCommittee ? (targetCommittee.members || []) : [];
+                      displayMembers = commMembers.map(m => ({
+                        name: m.name,
+                        role: `${m.type}(${m.rank || m.org || ''})`,
+                        key: m.id || m.name
+                      }));
+                    } else {
+                      labelText = "👥 소속 연구원 선택 (부서별 자동 연동)";
+                      showIncludeProfessors = true;
+                      
+                      displayMembers = (members || []).filter(m => {
+                        const isDeptMatch = m.dept === formData.dept;
+                        if (!isDeptMatch) return false;
 
-                          // 팀장교수 포함 체크 해제 시 팀장교수 리스트에서 완전 숨김
-                          const displayRole = getFormattedMemberGrade(m);
-                          if (!includeProfessors && displayRole === "팀장교수") return false;
+                        const start = m.startDate || m.start_date || m.hireDate || m.hire_date || "2025-03-01";
+                        const end = m.endDate || m.end_date || "";
+                        const status = m.status || "참여중";
 
-                          return status === "참여중";
-                        });
-
-
-
-                        if (deptMembers.length === 0) {
-                          return (
-                            <div style={{ fontSize: "0.72rem", color: "var(--text-secondary)", marginBottom: "0.5rem", padding: "0.25rem", background: "rgba(255,255,255,0.02)", borderRadius: "4px" }}>
-                              소속 부서를 먼저 선택해 주세요.
-                            </div>
-                          );
+                        const meetingDateStr = formData.meetingDate;
+                        if (meetingDateStr) {
+                          if (start && meetingDateStr < start) return false;
+                          if (end && meetingDateStr > end) return false;
                         }
 
-                        return (
+                        // 팀장교수 포함 체크 해제 시 팀장교수 리스트에서 완전 숨김
+                        const displayRole = getFormattedMemberGrade(m);
+                        if (!includeProfessors && displayRole === "팀장교수") return false;
+
+                        return status === "참여중";
+                      }).map(m => ({
+                        name: m.name,
+                        role: getFormattedMemberGrade(m),
+                        key: m.id || m.email
+                      }));
+                    }
+
+                    return (
+                      <div style={{ marginTop: "0.75rem" }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.25rem" }}>
+                          <label style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>
+                            {labelText}
+                          </label>
+                          {showIncludeProfessors && (
+                            <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)", display: "flex", alignItems: "center", gap: "0.35rem", cursor: "pointer" }}>
+                              <input
+                                type="checkbox"
+                                checked={includeProfessors}
+                                onChange={(e) => setIncludeProfessors(e.target.checked)}
+                                style={{ cursor: "pointer", width: "14px", height: "14px" }}
+                              />
+                              팀장교수 포함
+                            </label>
+                          )}
+                        </div>
+                        
+                        {displayMembers.length === 0 ? (
+                          <div style={{ fontSize: "0.72rem", color: "var(--text-secondary)", marginBottom: "0.5rem", padding: "0.25rem", background: "rgba(255,255,255,0.02)", borderRadius: "4px" }}>
+                            {formData.category === "committee" ? "선택한 위원회의 구성원을 찾을 수 없습니다." : "소속 부서를 먼저 선택해 주세요."}
+                          </div>
+                        ) : (
                           <div style={{ display: "flex", gap: "0.35rem", flexWrap: "wrap", marginBottom: "0.5rem", padding: "0.5rem", background: "rgba(255,255,255,0.02)", borderRadius: "6px", border: "1px solid rgba(255,255,255,0.04)" }}>
-                            {deptMembers.map(m => {
-                              const displayRole = getFormattedMemberGrade(m, includeProfessors);
+                            {displayMembers.map(m => {
                               const isSelected = (formData.attendees || "")
                                 .split(",")
                                 .map(x => x.trim())
@@ -8239,9 +8279,9 @@ Gemini 피드백: \n${geminiCritiqueText}
 
                               return (
                                 <button
-                                  key={m.id || m.email}
+                                  key={m.key}
                                   type="button"
-                                  onClick={() => handleToggleAttendee(m.name, displayRole)}
+                                  onClick={() => handleToggleAttendee(m.name, m.role)}
                                   style={{
                                     padding: "0.25rem 0.5rem",
                                     fontSize: "0.7rem",
@@ -8254,13 +8294,15 @@ Gemini 피드백: \n${geminiCritiqueText}
                                     fontWeight: "700"
                                   }}
                                 >
-                                  {m.name} {displayRole} {isSelected ? "✓" : "+"}
+                                  {m.name} {m.role} {isSelected ? "✓" : "+"}
                                 </button>
                               );
                             })}
                           </div>
-                        );
-                      })()}
+                        )}
+                      </div>
+                    );
+                  })()}
 
                       <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>
                         참석자 (위의 버튼을 누르면 자동으로 입력되며, 타 부서 인원의 경우 수기입력 가능)
