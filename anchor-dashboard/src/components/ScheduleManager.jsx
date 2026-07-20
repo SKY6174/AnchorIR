@@ -7,6 +7,7 @@ import {
 import { supabase } from "../supabaseClient";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import * as pdfjsLib from "pdfjs-dist";
+import * as XLSX from "xlsx";
 pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdn.jsdelivr.net/npm/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.mjs`;
 
 // 💡 [디자인 가드] 위원회 ID별 고유 Lucide 아이콘 리턴 (특색있는 디스플레이 구현)
@@ -598,23 +599,22 @@ export default function ScheduleManager({
     loadCommitteesData();
   }, [selectedYear]);
 
-  // 엑셀 서식 양식 다운로드 함수
+  // 💡 [교육용 한글 주석] 기존 CSV 서식 양식 다운로드를 호환성이 높은 XLSX 규격으로 개선합니다.
   const handleDownloadExcelFormat = () => {
-    let csvContent = "\uFEFF"; // Excel 한글 깨짐 방지 BOM 주입
-    csvContent += "구분,성명,소속기관,부서/학과,직위,교내외,비고\n";
-    csvContent += "위원장,조홍래,울산과학대학교,-,총장,교내,대표\n";
-    csvContent += "위원,김성철,울산과학대학교,-,부총장,교내,\n";
+    const headers = ["구분", "성명", "소속기관", "부서/학과", "직위", "교내외", "비고"];
+    const data = [
+      ["위원장", "조홍래", "울산과학대학교", "-", "총장", "교내", "대표"],
+      ["위원", "김성철", "울산과학대학교", "-", "부총장", "교내", ""]
+    ];
     
-    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `위원회_위원등록_양식.csv`;
-    link.click();
-    URL.revokeObjectURL(url);
+    // SheetJS를 사용하여 worksheet 생성 및 workbook 빌드 후 파일 저장
+    const ws = XLSX.utils.aoa_to_sheet([headers, ...data]);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, ws, "위원회_위원등록_서식");
+    XLSX.writeFile(workbook, "위원회_위원등록_양식.xlsx");
   };
 
-  // 위원 명단 실시간 엑셀(CSV) 다운로드 함수
+  // 💡 [교육용 한글 주석] 기존 CSV 명단 조회를 XLSX 형식으로 추출하도록 업데이트합니다.
   const handleExcelDownload = () => {
     const activeComm = committees.find(c => c.id === selectedCommitteeId) || committees[0];
     if (!activeComm) {
@@ -627,22 +627,25 @@ export default function ScheduleManager({
       return;
     }
     
-    let csvContent = "\uFEFF"; // Excel 한글 깨짐 방지 BOM 주입
-    csvContent += "구분,성명,소속기관,부서/학과,직위,교내외,비고\n";
-    mems.forEach(m => {
-      csvContent += `"${m.type || ''}","${m.name || ''}","${m.org || ''}","${m.dept || ''}","${m.rank || ''}","${m.location || ''}","${m.note || ''}"\n`;
-    });
-    
-    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `${activeComm.name}_위원명단_목록.csv`;
-    link.click();
-    URL.revokeObjectURL(url);
+    const headers = ["구분", "성명", "소속기관", "부서/학과", "직위", "교내외", "비고"];
+    const dataRows = mems.map(m => [
+      m.type || "",
+      m.name || "",
+      m.org || "",
+      m.dept || "",
+      m.rank || "",
+      m.location || "",
+      m.note || ""
+    ]);
+
+    // XLSX 통합 워크시트 구성 및 파일 생성
+    const ws = XLSX.utils.aoa_to_sheet([headers, ...dataRows]);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, ws, "위원명단");
+    XLSX.writeFile(workbook, `${activeComm.name}_위원명단_목록.xlsx`);
   };
 
-  // 엑셀(CSV) 데이터 파싱 및 벌크 DB 업로드 함수
+  // 💡 [교육용 한글 주석] 업로드된 .xlsx 포맷의 파일 바이트 데이터를 로드하여 파싱하고 DB에 insert합니다.
   const handleExcelUpload = (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -650,9 +653,14 @@ export default function ScheduleManager({
     const reader = new FileReader();
     reader.onload = async (evt) => {
       try {
-        const text = evt.target.result;
-        const lines = text.split("\n").map(l => l.trim()).filter(l => l.length > 0);
-        if (lines.length <= 1) {
+        const data = new Uint8Array(evt.target.result);
+        const workbook = XLSX.read(data, { type: "array" });
+        const sheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[sheetName];
+        
+        // 2차원 배열 구조로 엑셀 데이터 변환
+        const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+        if (jsonData.length <= 1) {
           alert("업로드할 위원 데이터가 존재하지 않습니다.");
           return;
         }
@@ -666,14 +674,15 @@ export default function ScheduleManager({
         const newMembers = [];
         const currentMembersCount = activeComm.members ? activeComm.members.length : 0;
         
-        for (let i = 1; i < lines.length; i++) {
-          const row = lines[i].split(",").map(val => val.replace(/^["']|["']$/g, "").trim());
-          if (row.length < 2 || !row[1]) continue; // 성명 필수 가드
+        // 헤더 다음인 첫 번째 행부터 시작
+        for (let i = 1; i < jsonData.length; i++) {
+          const row = jsonData[i];
+          if (!row || row.length < 2 || !row[1]) continue; // 성명(두 번째 컬럼) 필수
           
           newMembers.push({
             committee_id: activeComm.id,
             type: row[0] || "위원",
-            name: row[1],
+            name: String(row[1]).trim(),
             org: row[2] || "울산과학대학교",
             dept: row[3] || "-",
             rank: row[4] || "",
@@ -697,13 +706,13 @@ export default function ScheduleManager({
         alert(`총 ${newMembers.length}명의 위원이 성공적으로 일괄 등록되었습니다!`);
         await loadCommitteesData();
       } catch (err) {
-        console.error("CSV 파싱/업로드 중 에러:", err);
-        alert("엑셀(CSV) 일괄 업로드 실패: " + err.message);
+        console.error("엑셀 파싱/업로드 중 에러:", err);
+        alert("엑셀 일괄 업로드 실패: " + err.message);
       } finally {
-        e.target.value = ""; // 동일 파일 선택 시 다시 이벤트 발생되도록 클리어
+        e.target.value = ""; // 파일 재선택 가능하게 클리어
       }
     };
-    reader.readAsText(file, "utf-8");
+    reader.readAsArrayBuffer(file);
   };
 
   // 위원 삭제 처리 함수
@@ -4901,7 +4910,7 @@ Gemini 피드백: \n${geminiCritiqueText}
                                 outline: "none"
                               }}
                               className="hover-opacity"
-                              title="엑셀(CSV) 서식을 선택하여 위원들을 일괄 업로드합니다."
+                              title="엑셀(.xlsx) 서식을 선택하여 위원들을 일괄 업로드합니다."
                             >
                               <Upload size={13} />
                               엑셀 업로드
@@ -4909,7 +4918,7 @@ Gemini 피드백: \n${geminiCritiqueText}
                             <input
                               id="excel-upload-input-file"
                               type="file"
-                              accept=".csv"
+                              accept=".xlsx, .xls"
                               onChange={handleExcelUpload}
                               style={{ display: "none" }}
                             />
