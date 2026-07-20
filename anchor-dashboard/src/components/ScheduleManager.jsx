@@ -1013,6 +1013,57 @@ export default function ScheduleManager({
     `.trim());
   };
 
+  // 💡 [교육용 한글 주석] PDF 날것의 텍스트를 요약 없이 마크다운 문서 포맷으로 가꾸어주는 GPT-4o 헬퍼 함수입니다.
+  const convertRawTextToMarkdown = async (rawText) => {
+    let apiKey = import.meta.env.VITE_OPENAI_API_KEY || "";
+    if (!apiKey || apiKey.startsWith("sk-") === false) {
+      apiKey = localStorage.getItem("user_openai_api_key") || "";
+    }
+    if (!apiKey) {
+      return rawText;
+    }
+
+    try {
+      const prompt = `
+너는 대학교 RISE 사업단의 서류 정돈 전문가이다.
+제공된 원본 텍스트는 PDF 문서에서 가공 없이 추출된 날것의 줄글 텍스트이다.
+이 텍스트의 내용을 절대로 요약하거나 임의로 축소, 생략하지 말고 모든 세부 안건, 보고사항, 수치, 애로사항 등을 그대로 온전히 수용하여 가독성 높고 구조화된 마크다운(Markdown) 문서로 변환해라.
+다른 군더더기 설명 없이 오직 마크다운 내용만을 텍스트로 즉시 반환해라.
+
+원본 텍스트:
+${rawText}
+      `.trim();
+
+      const response = await fetch("https://api.openai.com/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${apiKey}`
+        },
+        body: JSON.stringify({
+          model: "gpt-4o",
+          messages: [{ role: "user", content: prompt }],
+          temperature: 0.1
+        })
+      });
+
+      if (!response.ok) return rawText;
+
+      const resData = await response.json();
+      let mdText = resData?.choices?.[0]?.message?.content || rawText;
+
+      const mdMatch = mdText.match(/```markdown\s*([\s\S]*?)\s*```/) || mdText.match(/```\s*([\s\S]*?)\s*```/);
+      if (mdMatch && mdMatch[1]) {
+        mdText = mdMatch[1];
+      }
+
+      return mdText.trim();
+    } catch (err) {
+      console.error("Markdown 변환 실패:", err);
+      return rawText;
+    }
+  };
+
   // 실제 파일 선택 핸들러
   const handleAiFileChange = async (e, type = "plan") => {
     if (e.target.files && e.target.files[0]) {
@@ -1056,7 +1107,9 @@ export default function ScheduleManager({
           }
 
           if (fullText.trim()) {
-            updateText(fullText.trim());
+            updateText("⏳ 추출된 텍스트를 마크다운 문서로 정밀 정돈 중...");
+            const structuredMd = await convertRawTextToMarkdown(fullText.trim());
+            updateText(structuredMd);
           } else {
             updateText(`[${file.name}] 파일에서 텍스트를 추출하지 못했습니다. 스캔 이미지 형태의 PDF이거나 본문이 비어있습니다.`);
           }
@@ -1409,6 +1462,7 @@ JSON 구조:
 
 [★ 매우 중요: 사업운영위원회/회의록 특수 추론 규칙]
 - 제공된 텍스트가 결과보고서(회의록) 또는 회의 의결 사항인 경우, 본문의 개별적인 보고 내용과 애로사항을 분석하여 7개 부서("사업운영팀", "ECC센터", "ICC센터", "RCC센터", "AID-X지원센터", "울산늘봄누리센터", "신산업특화센터")에 맞게 지능적으로 유추 및 배분하여 "operatingAgendas" 및 "operatingResults" 객체에 채워 주십시오.
+- 회의록 원문의 모든 부서별 보고 사항과 안건을 임의로 요약하거나 생략하지 말고, 본문에 등장한 구체적인 실적, 계획, 애로사항을 최대한 누락 없이 그대로 수용하여 각 부서의 의제 및 결과 칸에 충실하게 다 적어주십시오. 중복되지 않는 한 내용을 최대한 길고 자세하게 복원해야 합니다.
 - 본문에 각 센터(부서) 명칭이 직접 명시되지 않았더라도, 내용의 성격(예: 유학생/문화교류 -> 울산늘봄누리센터 또는 ECC센터, 장학금/지급 -> 사업운영팀 또는 ECC센터, 특화장비/실습 -> 신산업특화센터, 가족회사/공동R&BD -> ICC센터 등)과 문맥을 기반으로 가장 관련성이 높은 센터의 의제와 결과(애로사항)로 매핑하여 빈칸 없이 최대한 추론해 주어야 합니다.
 - 매핑할 부서별 내용이 존재하지 않는 부서는 빈 문자열("")로 두십시오.
 - 동시에 "agendaResultPairs" 배열에도 전체 요약된 핵심 안건 리스트(1~3개)를 구성해서 제공하십시오.
@@ -1442,7 +1496,7 @@ ${targetText}
       `.trim();
 
     try {
-      // A. OpenAI GPT-4o-mini 엔진을 선택했을 경우
+      // A. OpenAI GPT-4o 엔진을 선택했을 경우
       if (aiEngine === "gpt") {
         setAiStatusText("OpenAI GPT API 인증 검증 및 키 로드 중...");
         let apiKey = import.meta.env.VITE_OPENAI_API_KEY || "";
@@ -1470,7 +1524,7 @@ ${targetText}
         }
 
         setAiProgress(30);
-        setAiStatusText("OpenAI GPT-4o-mini 분석 요청 전송 중...");
+        setAiStatusText("OpenAI GPT-4o 분석 요청 전송 중...");
 
         const response = await fetch("https://api.openai.com/v1/chat/completions", {
           method: "POST",
@@ -1479,7 +1533,7 @@ ${targetText}
             "Authorization": `Bearer ${apiKey}`
           },
           body: JSON.stringify({
-            model: "gpt-4o-mini",
+            model: "gpt-4o",
             messages: [
               {
                 role: "user",
@@ -1536,7 +1590,7 @@ ${targetText}
           setIsAiLoading(false);
           setAiProgress(100);
           setAiStatusText("");
-          alert("🎉 OpenAI GPT-4o-mini 모델이 회의록 문서를 분석하여 회의 정보 및 부서별 의제/결과 쌍을 완벽하게 기입하였습니다!");
+          alert("🎉 OpenAI GPT-4o 모델이 회의록 문서를 분석하여 회의 정보 및 부서별 의제/결과 쌍을 완벽하게 기입하였습니다!");
         } else {
           setFormData(prev => ({ ...prev, ...cleanJson }));
           if (analysisType === "plan") {
@@ -1547,7 +1601,7 @@ ${targetText}
           setIsAiLoading(false);
           setAiProgress(100);
           setAiStatusText("");
-          alert("🎉 OpenAI GPT-4o-mini 모델이 기획서를 분석하여 행사 등록 정보 11개 항목을 완벽하게 기입하였습니다!");
+          alert("🎉 OpenAI GPT-4o 모델이 기획서를 분석하여 행사 등록 정보 11개 항목을 완벽하게 기입하였습니다!");
         }
 
       }
@@ -7680,9 +7734,18 @@ Gemini 피드백: \n${geminiCritiqueText}
                 </>
               )}
 
-              {/* 회의 일정 입력 */}
               {modalType === "meeting" && (
                 <>
+                  {/* 회의 대분류 (최상단으로 위치 이동 완료) */}
+                  <div style={{ marginBottom: "1rem" }}>
+                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>회의 대분류</label>
+                    <select name="category" value={formData.category} onChange={handleInputChange} className="form-select">
+                      <option value="operating">사업운영위원회</option>
+                      <option value="center">부서별 회의</option>
+                      <option value="committee">각종 위원회</option>
+                    </select>
+                  </div>
+
                   {/* AI 기획서/결과서 자동 기입 위젯 */}
                   <div style={{
                     background: "rgba(30, 41, 59, 0.4)",
@@ -7761,27 +7824,9 @@ Gemini 피드백: \n${geminiCritiqueText}
                           <button
                             type="button"
                             onClick={() => triggerAiAutoFill("plan")}
-                            disabled={isAiLoading || isDebating}
+                            disabled={isAiLoading}
                             style={{
                               flex: 1,
-                              padding: "0.35rem",
-                              background: "rgba(139, 92, 246, 0.15)",
-                              border: "1px solid var(--accent-color)",
-                              color: "var(--text-primary)",
-                              borderRadius: "4px",
-                              fontSize: "0.68rem",
-                              fontWeight: "700",
-                              cursor: "pointer"
-                            }}
-                          >
-                            단독 분석
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => triggerAiDebate("plan")}
-                            disabled={isAiLoading || isDebating}
-                            style={{
-                              flex: 1.2,
                               padding: "0.35rem",
                               background: "linear-gradient(135deg, var(--accent-color) 0%, #8b5cf6 100%)",
                               border: "none",
@@ -7793,7 +7838,7 @@ Gemini 피드백: \n${geminiCritiqueText}
                               boxShadow: "0 2px 4px rgba(139, 92, 246, 0.2)"
                             }}
                           >
-                            ⚔️ 합의 토론
+                            🤖 AI 분석 실행
                           </button>
                         </div>
                       </div>
@@ -7849,27 +7894,9 @@ Gemini 피드백: \n${geminiCritiqueText}
                           <button
                             type="button"
                             onClick={() => triggerAiAutoFill("result")}
-                            disabled={isAiLoading || isDebating}
+                            disabled={isAiLoading}
                             style={{
                               flex: 1,
-                              padding: "0.35rem",
-                              background: darkMode ? "rgba(16, 185, 129, 0.15)" : "#ecfdf5",
-                              border: darkMode ? "1px solid #10b981" : "1px solid #34d399",
-                              color: darkMode ? "#34d399" : "#059669",
-                              borderRadius: "4px",
-                              fontSize: "0.68rem",
-                              fontWeight: "700",
-                              cursor: "pointer"
-                            }}
-                          >
-                            단독 분석
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => triggerAiDebate("result")}
-                            disabled={isAiLoading || isDebating}
-                            style={{
-                              flex: 1.2,
                               padding: "0.35rem",
                               background: "linear-gradient(135deg, #10B981 0%, #059669 100%)",
                               border: "none",
@@ -7881,7 +7908,7 @@ Gemini 피드백: \n${geminiCritiqueText}
                               boxShadow: darkMode ? "0 2px 4px rgba(16, 185, 129, 0.2)" : "0 2px 4px rgba(16, 185, 129, 0.1)"
                             }}
                           >
-                            ⚔️ 합의 토론
+                            🤖 AI 분석 실행
                           </button>
                         </div>
                       </div>
@@ -7913,7 +7940,7 @@ Gemini 피드백: \n${geminiCritiqueText}
                       }}>
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid rgba(255,255,255,0.08)", paddingBottom: "0.3rem", marginBottom: "0.4rem" }}>
                           <span style={{ color: "#a78bfa", fontWeight: "700", display: "flex", alignItems: "center", gap: "0.25rem" }}>
-                            ⚔️ AI Consensus Debate Room
+                            🤖 AI 분석 로그 모니터링
                           </span>
                           <button
                             type="button"
@@ -7963,16 +7990,6 @@ Gemini 피드백: \n${geminiCritiqueText}
                         </div>
                       </div>
                     )}
-                  </div>
-
-                  {/* 회의 대분류 (맨 위로 위치 이동) */}
-                  <div>
-                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>회의 대분류</label>
-                    <select name="category" value={formData.category} onChange={handleInputChange} className="form-select">
-                      <option value="operating">사업운영위원회</option>
-                      <option value="center">부서별 회의</option>
-                      <option value="committee">각종 위원회</option>
-                    </select>
                   </div>
 
                   {/* 회의 명칭 */}
