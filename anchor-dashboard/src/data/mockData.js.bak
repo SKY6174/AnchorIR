@@ -232,43 +232,7 @@ export const initialProjectsData = [
           "그 밖의 사업운영경비": { budget_2026: 0, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0 },
           "간접비": { budget_2026: 0, spent_2026: 0, budget_2025_carry: 0, spent_2025_carry: 0 }
         },
-        kpis: [
-          {
-            id: "L-1-나",
-            name: "신산업 로봇공학 실무융합지수",
-            type: "자율",
-            description: "신산업특화 로봇 장비 실습 활용도 및 기업 만족도 종합 평정치",
-            formula: "(장비 가동률 달성률 * 0.7) + (자문지도 만족도 달성률 * 0.3)",
-            cycle: "분기별 1회",
-            owner: "신산업특화센터",
-            subItems: [
-              {
-                id: "L-1-나-1",
-                name: "특화분야 전용 실습장비 가동 누적시간",
-                unit: "시간",
-                years: {
-                  1: { target: 0, current: 0 },
-                  2: { target: 800.0, current: 680.0 },
-                  3: { target: 900.0, current: 0 },
-                  4: { target: 1000.0, current: 0 },
-                  5: { target: 1100.0, current: 0 }
-                }
-              },
-              {
-                id: "L-1-나-2",
-                name: "산업체 기술애로 해소 참여 자문 건수",
-                unit: "건",
-                years: {
-                  1: { target: 0, current: 0 },
-                  2: { target: 10.0, current: 8.0 },
-                  3: { target: 12.0, current: 0 },
-                  4: { target: 14.0, current: 0 },
-                  5: { target: 15.0, current: 0 }
-                }
-              }
-            ]
-          }
-        ]
+        kpis: []
       },
       {
         id: "A2",
