@@ -6479,20 +6479,8 @@ Gemini 피드백: \n${geminiCritiqueText}
                                   </div>
                                 )}
 
-                                {/* PLAUD 음성 녹음 배너 */}
-                                <button
-                                  type="button"
-                                  onClick={() => alert("🎙️ PLAUD 음성 녹음 및 AI 회의록 자동 요약 기능 연동 데모\n\n향후 PLAUD 디바이스 및 API와 실시간 동기화하여, 회의 음성 녹음본이 업로드되면 AI가 발화자별 텍스트 변환(STT) 및 핵심 결정을 자동으로 요약하여 이 회의록에 자동으로 채워주는 스마트 기능이 활성화될 예정입니다.")}
-                                  style={{
-                                    display: "flex", alignItems: "center", justifyContent: "center", gap: "0.25rem",
-                                    padding: "0.45rem", borderRadius: "6px", background: darkMode ? "rgba(139, 92, 246, 0.15)" : "rgba(139, 92, 246, 0.1)",
-                                    border: darkMode ? "1px solid rgba(139, 92, 246, 0.3)" : "1px solid rgba(139, 92, 246, 0.25)", color: darkMode ? "#C084FC" : "#6D28D9", fontSize: "0.72rem", fontWeight: "700", cursor: "pointer",
-                                    marginTop: "auto"
-                                  }}
-                                >
-                                  🎙️ PLAUD 녹음 자동 연동 (베타 예정)
-                                </button>
-                              </>
+                                 {/* 💡 [교육용 한글 주석] 온라인 의결 시스템 사용 지침에 따라 PLAUD 연동 배너는 삭제되었습니다. */}
+                               </>
                             );
                           })()}
                         </>
@@ -6704,17 +6692,7 @@ Gemini 피드백: \n${geminiCritiqueText}
                                 </div>
                               )}
 
-                              <button
-                                type="button"
-                                onClick={() => alert("🎙️ PLAUD 음성 녹음 및 AI 회의록 자동 요약 기능 연동 데모\n\n향후 PLAUD 디바이스 및 API와 실시간 동기화하여, 회의 음성 녹음본이 업로드되면 AI가 발화자별 텍스트 변환(STT) 및 핵심 결정을 자동으로 요약하여 이 회의록에 자동으로 채워주는 스마트 기능이 활성화될 예정입니다.")}
-                                style={{
-                                  display: "flex", alignItems: "center", justifyContent: "center", gap: "0.25rem",
-                                  padding: "0.35rem", borderRadius: "6px", background: darkMode ? "rgba(139, 92, 246, 0.15)" : "rgba(139, 92, 246, 0.1)",
-                                  border: darkMode ? "1px solid rgba(139, 92, 246, 0.3)" : "1px solid rgba(139, 92, 246, 0.25)", color: darkMode ? "#C084FC" : "#6D28D9", fontSize: "0.7rem", fontWeight: "700", cursor: "pointer"
-                                }}
-                              >
-                                🎙️ PLAUD 녹음 자동 연동 (베타 예정)
-                              </button>
+                              {/* 💡 [교육용 한글 주석] 온라인 의결 시스템 사용 지침에 따라 PLAUD 연동 배너는 삭제되었습니다. */}
                             </div>
 
                           </div>

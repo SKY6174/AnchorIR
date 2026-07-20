@@ -1403,7 +1403,7 @@ ${opinionsContext}
               <td style="border: 1px solid #000; padding: 6px 12px; font-weight: bold; background: #f3f4f6; width: 20%;">위원회명</td>
               <td style="border: 1px solid #000; padding: 6px 12px; width: 30%;">${rep.committee_meetings?.committees?.name || "-"}</td>
               <td style="border: 1px solid #000; padding: 6px 12px; font-weight: bold; background: #f3f4f6; width: 20%;">의결 형태</td>
-              <td style="border: 1px solid #000; padding: 6px 12px; width: 30%;">${rep.committee_meetings?.meeting_type === "ONLINE_WRITTEN" ? "서면 의결 (비대면)" : "대면 회의 (현장 서명)"}</td>
+              <td style="border: 1px solid #000; padding: 6px 12px; width: 30%;">${rep.committee_meetings?.meeting_type === "ONLINE_WRITTEN" ? "서면 의결 (비대면)" : "대면 회의 (시스템 서명)"}</td>
             </tr>
             <tr>
               <td style="border: 1px solid #000; padding: 6px 12px; font-weight: bold; background: #f3f4f6;">회의 일시</td>
@@ -2066,8 +2066,8 @@ ${opinionsContext}
                   )}
                 </div>
 
-                {/* 1. 위원 의사결정서 제출 패널 (내부 위원의 직접 의결 참여 활성화) */}
-                {isUserCommitteeMember && selectedMeeting.status === "ACTIVE" && (
+                {/* 💡 [교육용 한글 주석] 의결서 온라인 제출은 별도 외부로그인을 통해 처리하므로 대시보드 내부 폼은 노출하지 않습니다. */}
+                {false && isUserCommitteeMember && selectedMeeting.status === "ACTIVE" && (
                   <div className="card" style={{ padding: "1.25rem", border: "1px solid var(--accent-color)", background: "rgba(var(--accent-color-rgb), 0.03)" }}>
                     <h3 style={{ fontSize: "1rem", fontWeight: "800", color: "var(--text-primary)", marginBottom: "0.75rem", display: "flex", alignItems: "center", gap: "0.25rem" }}>
                       <Vote size={18} style={{ color: "var(--accent-color)" }} />
@@ -2788,7 +2788,7 @@ ${opinionsContext}
                     className="form-select"
                   >
                     <option value="ONLINE_WRITTEN">서면 의결 (비대면)</option>
-                    <option value="OFFLINE_FACE">대면 회의 (현장 서명)</option>
+                    <option value="OFFLINE_FACE">대면 회의 (시스템 서명)</option>
                   </select>
                 </div>
               </div>
