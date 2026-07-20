@@ -4033,7 +4033,12 @@ Gemini 피드백: \n${geminiCritiqueText}
     setFormData({
       title: "",
       type: "행사",
-      dept: "사업운영팀",
+      dept: (() => {
+        const cat = type === "meeting" ? (activeMeetingCat || "operating") : "operating";
+        if (cat === "committee") return "앵커총괄위원회";
+        if (cat === "center") return "ECC센터";
+        return "사업운영팀";
+      })(),
       startDate: defaultDate,
       startTime: "10:00",
       endDate: defaultDate,
@@ -4050,7 +4055,7 @@ Gemini 피드백: \n${geminiCritiqueText}
       program: "",
       purpose: "",
       result: "",
-      category: "operating",
+      category: type === "meeting" ? (activeMeetingCat || "operating") : "operating",
       agenda: "",
       // 회의록용 추가
       meetingDate: defaultDate,
@@ -7963,30 +7968,33 @@ Gemini 피드백: \n${geminiCritiqueText}
                     )}
                   </div>
 
+                  {/* 회의 대분류 (맨 위로 위치 이동) */}
+                  <div>
+                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>회의 대분류</label>
+                    <select name="category" value={formData.category} onChange={handleInputChange} className="form-select">
+                      <option value="operating">사업운영위원회</option>
+                      <option value="center">부서별 회의</option>
+                      <option value="committee">각종 위원회</option>
+                    </select>
+                  </div>
+
+                  {/* 회의 명칭 */}
                   <div>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.25rem" }}>
-                    <label style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>회의 명칭</label>
-                    {aiPlanApplied && (
-                      <span style={{ fontSize: "0.65rem", background: "rgba(167, 139, 250, 0.15)", border: "1px solid rgba(167, 139, 250, 0.35)", color: "#a78bfa", padding: "0.1rem 0.35rem", borderRadius: "4px", fontWeight: "700" }}>
-                        ✨ AI 계획 정보 반영됨 ✓
-                      </span>
-                    )}
-                  </div>
+                      <label style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>회의 명칭</label>
+                      {aiPlanApplied && (
+                        <span style={{ fontSize: "0.65rem", background: "rgba(167, 139, 250, 0.15)", border: "1px solid rgba(167, 139, 250, 0.35)", color: "#a78bfa", padding: "0.1rem 0.35rem", borderRadius: "4px", fontWeight: "700" }}>
+                          ✨ AI 계획 정보 반영됨 ✓
+                        </span>
+                      )}
+                    </div>
                     <input type="text" name="title" value={formData.title} onChange={handleInputChange} required placeholder="예: 제2차 ICC 센터 공동 운영 회의" className="form-input" />
                   </div>
-                  <div style={{ display: "grid", gridTemplateColumns: "1.2fr 0.8fr", gap: "1rem" }}>
-                    <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>회의 대분류</label>
-                      <select name="category" value={formData.category} onChange={handleInputChange} className="form-select">
-                        <option value="operating">사업운영위원회</option>
-                        <option value="center">부서별 회의</option>
-                        <option value="committee">각종 위원회</option>
-                      </select>
-                    </div>
-                    <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>장소</label>
-                      <input type="text" name="location" value={formData.location} onChange={handleInputChange} required placeholder="예: ICC 센터장실" className="form-input" />
-                    </div>
+
+                  {/* 장소 */}
+                  <div>
+                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>장소</label>
+                    <input type="text" name="location" value={formData.location} onChange={handleInputChange} required placeholder="예: ICC 센터장실" className="form-input" />
                   </div>
 
                   {/* 1) 각종 위원회 세부 구분 버튼메뉴 (category === "committee" 일 때 노출) */}
