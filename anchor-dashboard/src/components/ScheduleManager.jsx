@@ -1144,7 +1144,8 @@ export default function ScheduleManager({
 
   // 💡 [교육용 한글 주석] 회의록 분석 결과인 의제/결과 리스트를 8대 부서에 지능적으로 자동 분배하여 입력 폼에 기입합니다.
   const distributeOperatingAgendas = (agendaResultPairs, currentCategory) => {
-    if (currentCategory !== "operating" || !agendaResultPairs || agendaResultPairs.length === 0) {
+    const isOperating = currentCategory === "operating" || formData.category === "operating";
+    if (!isOperating || !agendaResultPairs || agendaResultPairs.length === 0) {
       return {};
     }
 
@@ -1354,9 +1355,10 @@ export default function ScheduleManager({
   };
 
   // AI 폼 자동 기입 실제 연동 실행
-  const triggerAiAutoFill = async () => {
-    if (!aiRawText) {
-      alert("⚠️ 먼저 분석할 기획서/결과서 텍스트를 입력하시거나 [기획안 샘플 파일 자동 로드]를 클릭해 주세요.");
+  const triggerAiAutoFill = async (analysisType = "plan") => {
+    const targetText = analysisType === "plan" ? aiRawText : aiResultRawText;
+    if (!targetText) {
+      alert(`⚠️ 먼저 분석할 ${analysisType === "plan" ? "기획서" : "결과서(회의록)"} 텍스트를 입력하시거나 [기획안 샘플 파일 자동 로드]를 클릭해 주세요.`);
       return;
     }
 
@@ -1387,7 +1389,7 @@ JSON 구조:
 }
 
 회의 기획서/회의록/결과보고서 원문 텍스트:
-${aiRawText}
+${targetText}
       `.trim()
       : `
 너는 대학교 RISE(지역혁신중심 대학지원체계) 사업단의 행사 등록 정보 생성 전문가이다.
@@ -1411,7 +1413,7 @@ JSON 구조:
 }
 
 행사 기획서/결과보고서 원문 텍스트:
-${aiRawText}
+${targetText}
       `.trim();
 
     try {
@@ -1492,11 +1494,19 @@ ${aiRawText}
             setAiPlanApplied(true);
           if (cleanJson.agendaResultPairs && cleanJson.agendaResultPairs.length > 0) {
             setAgendaResultPairs(cleanJson.agendaResultPairs);
-              setAiResultApplied(true);
+            setAiResultApplied(true);
             setFormData(prev => {
               const dist = distributeOperatingAgendas(cleanJson.agendaResultPairs, prev.category);
               return { ...prev, ...dist };
             });
+          } else if (cleanJson.operatingAgendas || cleanJson.operatingResults) {
+            // 💡 [교육용 한글 주석] AI가 8대 부서별 맵을 직접 추출하여 반환한 경우, 직접 대입해 줍니다.
+            setAiResultApplied(true);
+            setFormData(prev => ({
+              ...prev,
+              operatingAgendas: cleanJson.operatingAgendas || prev.operatingAgendas,
+              operatingResults: cleanJson.operatingResults || prev.operatingResults
+            }));
           }
           setIsAiLoading(false);
           setAiProgress(100);
@@ -1599,11 +1609,19 @@ ${aiRawText}
             setAiPlanApplied(true);
           if (cleanJson.agendaResultPairs && cleanJson.agendaResultPairs.length > 0) {
             setAgendaResultPairs(cleanJson.agendaResultPairs);
-              setAiResultApplied(true);
+            setAiResultApplied(true);
             setFormData(prev => {
               const dist = distributeOperatingAgendas(cleanJson.agendaResultPairs, prev.category);
               return { ...prev, ...dist };
             });
+          } else if (cleanJson.operatingAgendas || cleanJson.operatingResults) {
+            // 💡 [교육용 한글 주석] AI가 8대 부서별 맵을 직접 추출하여 반환한 경우, 직접 대입해 줍니다.
+            setAiResultApplied(true);
+            setFormData(prev => ({
+              ...prev,
+              operatingAgendas: cleanJson.operatingAgendas || prev.operatingAgendas,
+              operatingResults: cleanJson.operatingResults || prev.operatingResults
+            }));
           }
           setIsAiLoading(false);
           setAiProgress(100);
@@ -1798,6 +1816,14 @@ Gemini 피드백: \n${geminiCritiqueText}
                 const dist = distributeOperatingAgendas(cleanJson.agendaResultPairs, prev.category);
                 return { ...prev, ...dist };
               });
+            } else if (cleanJson.operatingAgendas || cleanJson.operatingResults) {
+              // 💡 [교육용 한글 주석] AI가 8대 부서별 맵을 직접 추출하여 반환한 경우, 직접 대입해 줍니다.
+              setAiResultApplied(true);
+              setFormData(prev => ({
+                ...prev,
+                operatingAgendas: cleanJson.operatingAgendas || prev.operatingAgendas,
+                operatingResults: cleanJson.operatingResults || prev.operatingResults
+              }));
             }
           }
         } else {
