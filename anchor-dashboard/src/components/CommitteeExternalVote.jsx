@@ -755,24 +755,36 @@ export default function CommitteeExternalVote({ meetingId }) {
               </div>
             )}
 
-            {/* PDF 및 기타 확장자 대응 */}
+            {/* PDF 및 기타 확장자 대응 (좌우 1:2 분할 레이아웃: 다운로드 및 실시간 즉석 뷰어 탑재) */}
             {/\.pdf$/i.test(meeting.attachment_name) && (
-              <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "120px", background: "rgba(255,255,255,0.01)", borderRadius: "6px", border: "1px dashed var(--border-color)" }}>
-                <span style={{ fontSize: "0.85rem", color: "var(--text-secondary)", marginBottom: "0.5rem" }}>
-                  PDF 심의 안건 서류가 탑재되어 있습니다.
-                </span>
-                <button
-                  className="btn btn-primary"
-                  style={{ padding: "0.4rem 0.8rem", fontSize: "0.8rem" }}
-                  onClick={() => {
-                    const link = document.createElement("a");
-                    link.href = meeting.attachment_data;
-                    link.download = meeting.attachment_name;
-                    link.click();
-                  }}
-                >
-                  PDF 파일 내려받기
-                </button>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: "1.25rem", alignItems: "stretch", marginTop: "0.5rem" }}>
+                {/* 왼쪽: 다운로드 안내 영역 */}
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: "150px", background: "rgba(255,255,255,0.01)", borderRadius: "6px", border: "1px dashed var(--border-color)", padding: "1rem", textAlign: "center" }}>
+                  <span style={{ fontSize: "0.85rem", color: "var(--text-secondary)", marginBottom: "0.75rem", lineHeight: "1.4" }}>
+                    PDF 심의 안건 서류가 탑재되어 있습니다.<br/>파일을 다운로드하거나 우측 뷰어에서 직접 확인하실 수 있습니다.
+                  </span>
+                  <button
+                    className="btn btn-primary"
+                    style={{ padding: "0.45rem 1rem", fontSize: "0.8rem", fontWeight: "bold" }}
+                    onClick={() => {
+                      const link = document.createElement("a");
+                      link.href = meeting.attachment_data;
+                      link.download = meeting.attachment_name;
+                      link.click();
+                    }}
+                  >
+                    PDF 파일 내려받기
+                  </button>
+                </div>
+                
+                {/* 오른쪽: 임베디드 PDF 즉석 뷰어 */}
+                <div style={{ background: "rgba(0,0,0,0.15)", borderRadius: "6px", border: "1px solid var(--border-color)", overflow: "hidden", height: "500px" }}>
+                  <iframe
+                    src={meeting.attachment_data}
+                    title="PDF 안건 뷰어"
+                    style={{ width: "100%", height: "100%", border: "none" }}
+                  />
+                </div>
               </div>
             )}
           </section>
