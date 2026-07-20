@@ -5922,29 +5922,52 @@ Gemini 피드백: \n${geminiCritiqueText}
                               // ==========================================
                               // 💡 1) 사업운영위원회 전용 상세 요점 뷰
                               // ==========================================
-                              const operatingDepts = ["사업단", "사업운영팀", "ECC", "ICC", "RCC", "AID-X", "늘봄누리센터", "신산업특화센터"];
+                              const operatingDepts = ["사업운영팀", "ECC센터", "ICC센터", "RCC센터", "AID-X지원센터", "울산늘봄누리센터", "신산업특화센터"];
 
                               // JSON 파싱 및 폴백 매핑
                               let parsedAgendas = {};
                               let parsedResults = {};
-                              try {
-                                if (selectedMeeting.agenda && selectedMeeting.agenda.trim().startsWith("{")) {
-                                  parsedAgendas = JSON.parse(selectedMeeting.agenda);
-                                } else {
-                                  parsedAgendas = { "사업단": selectedMeeting.agenda || "" };
+
+                              operatingDepts.forEach(d => {
+                                parsedAgendas[d] = "";
+                                parsedResults[d] = "";
+                              });
+
+                              // 💡 [교육용 한글 주석] 줄바꿈으로 구성된 텍스트에서 [부서명] 말머리 또는 부서 단어를 추출하여 7개 부서별로 지능적으로 분배합니다.
+                              const agendaLines = (selectedMeeting.agenda || "").split("\n").filter(Boolean);
+                              const resultLines = (selectedMeeting.result || "").split("\n").filter(Boolean);
+
+                              agendaLines.forEach(line => {
+                                let matchedDept = operatingDepts.find(d => line.startsWith(`[${d}]`) || line.includes(`[${d}]`));
+                                if (!matchedDept) {
+                                  matchedDept = operatingDepts.find(d => {
+                                    const cleanD = d.replace("센터", "").replace("지원센터", "").replace("팀", "");
+                                    return line.includes(cleanD) || (d === "사업운영팀" && line.includes("사업단"));
+                                  });
                                 }
-                              } catch (e) {
-                                parsedAgendas = { "사업단": selectedMeeting.agenda || "" };
-                              }
-                              try {
-                                if (selectedMeeting.result && selectedMeeting.result.trim().startsWith("{")) {
-                                  parsedResults = JSON.parse(selectedMeeting.result);
+                                if (matchedDept) {
+                                  const cleanLine = line.replace(`[${matchedDept}]`, "").trim();
+                                  parsedAgendas[matchedDept] = (parsedAgendas[matchedDept] ? parsedAgendas[matchedDept] + "\n" : "") + cleanLine;
                                 } else {
-                                  parsedResults = { "사업단": selectedMeeting.result || "" };
+                                  parsedAgendas["사업운영팀"] = (parsedAgendas["사업운영팀"] ? parsedAgendas["사업운영팀"] + "\n" : "") + line;
                                 }
-                              } catch (e) {
-                                parsedResults = { "사업단": selectedMeeting.result || "" };
-                              }
+                              });
+
+                              resultLines.forEach(line => {
+                                let matchedDept = operatingDepts.find(d => line.startsWith(`[${d}]`) || line.includes(`[${d}]`));
+                                if (!matchedDept) {
+                                  matchedDept = operatingDepts.find(d => {
+                                    const cleanD = d.replace("센터", "").replace("지원센터", "").replace("팀", "");
+                                    return line.includes(cleanD) || (d === "사업운영팀" && line.includes("사업단"));
+                                  });
+                                }
+                                if (matchedDept) {
+                                  const cleanLine = line.replace(`[${matchedDept}]`, "").trim();
+                                  parsedResults[matchedDept] = (parsedResults[matchedDept] ? parsedResults[matchedDept] + "\n" : "") + cleanLine;
+                                } else {
+                                  parsedResults["사업운영팀"] = (parsedResults["사업운영팀"] ? parsedResults["사업운영팀"] + "\n" : "") + line;
+                                }
+                              });
 
                               const getDeptData = (deptName, dataObj) => {
                                 if (!dataObj) return "";
