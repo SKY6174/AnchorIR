@@ -8190,21 +8190,105 @@ Gemini 피드백: \n${geminiCritiqueText}
                   {/* 4) 참석 대상자 선택 및 수기 입력창 (모든 회의 종류에 맞추어 자동 대응) */}
                   <div style={{ marginTop: "0.75rem" }}>
                     {(() => {
-                      let displayMembers = [];
                       let labelText = "👥 소속 연구원 선택 (부서별 자동 연동)";
                       let showIncludeProfessors = false;
 
                       if (formData.category === "operating") {
                         labelText = "👥 사업단 전 구성원 선택";
-                        displayMembers = (members || []).filter(m => {
+                        showIncludeProfessors = true;
+
+                        // 1. 참여중인 전체 인원 로드 및 팀장교수 체크박스 필터링
+                        const rawMembers = (members || []).filter(m => {
                           const status = m.status || "참여중";
-                          return status === "참여중";
-                        }).map(m => ({
-                          name: m.name,
-                          role: getFormattedMemberGrade(m),
-                          key: m.id || m.email
-                        }));
-                      } else if (formData.category === "committee") {
+                          if (status !== "참여중") return false;
+
+                          const displayRole = getFormattedMemberGrade(m);
+                          if (!includeProfessors && displayRole === "팀장교수") return false;
+
+                          return true;
+                        });
+
+                        // 2. 부서(센터)별 그룹화 매핑
+                        const depts = ["사업단", "사업운영팀", "ECC센터", "ICC센터", "RCC센터", "AID-X지원센터", "울산늘봄누리센터", "신산업특화센터"];
+                        const grouped = depts.map(d => {
+                          const list = rawMembers.filter(m => {
+                            if (d === "사업단") {
+                              return m.dept === "사업단" || m.dept.includes("산학협력단") || m.dept === "앵커사업단" || m.dept === "앵커";
+                            }
+                            if (d === "사업운영팀") {
+                              return m.dept === "사업운영팀" || m.dept === "운영팀" || m.dept.includes("운영팀");
+                            }
+                            return m.dept === d;
+                          }).map(m => ({
+                            name: m.name,
+                            role: getFormattedMemberGrade(m),
+                            key: m.id || m.email
+                          }));
+                          return { deptName: d, list };
+                        }).filter(g => g.list.length > 0);
+
+                        return (
+                          <>
+                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.25rem" }}>
+                              <label style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>
+                                {labelText}
+                              </label>
+                              <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)", display: "flex", alignItems: "center", gap: "0.35rem", cursor: "pointer" }}>
+                                <input
+                                  type="checkbox"
+                                  checked={includeProfessors}
+                                  onChange={(e) => setIncludeProfessors(e.target.checked)}
+                                  style={{ cursor: "pointer", width: "14px", height: "14px" }}
+                                />
+                                팀장교수 포함
+                              </label>
+                            </div>
+
+                            {/* 부서별 그룹 카드 형태로 예쁘게 렌더링 */}
+                            <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", marginBottom: "0.5rem", maxHeight: "250px", overflowY: "auto", paddingRight: "0.25rem" }}>
+                              {grouped.map(g => (
+                                <div key={g.deptName} style={{ padding: "0.4rem 0.5rem", background: "rgba(255,255,255,0.01)", border: "1px solid rgba(255,255,255,0.03)", borderRadius: "6px" }}>
+                                  <div style={{ fontSize: "0.68rem", fontWeight: "800", color: "#a78bfa", marginBottom: "0.25rem" }}>
+                                    📌 {g.deptName}
+                                  </div>
+                                  <div style={{ display: "flex", gap: "0.3rem", flexWrap: "wrap" }}>
+                                    {g.list.map(m => {
+                                      const isSelected = (formData.attendees || "")
+                                        .split(",")
+                                        .map(x => x.trim())
+                                        .some(x => x === m.name || x.startsWith(m.name + " ") || x.startsWith(m.name + "("));
+
+                                      return (
+                                        <button
+                                          key={m.key}
+                                          type="button"
+                                          onClick={() => handleToggleAttendee(m.name, m.role)}
+                                          style={{
+                                            padding: "0.2rem 0.4rem",
+                                            fontSize: "0.65rem",
+                                            borderRadius: "4px",
+                                            border: "1px solid " + (isSelected ? "var(--accent-color)" : "rgba(255,255,255,0.08)"),
+                                            background: isSelected ? "rgba(59, 130, 246, 0.12)" : "transparent",
+                                            color: isSelected ? "#60A5FA" : "var(--text-secondary)",
+                                            cursor: "pointer",
+                                            transition: "all 0.1s ease",
+                                            fontWeight: "700"
+                                          }}
+                                        >
+                                          {m.name} {m.role} {isSelected ? "✓" : "+"}
+                                        </button>
+                                      );
+                                    })}
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </>
+                        );
+                      }
+
+                      let displayMembers = [];
+                      if (formData.category === "committee") {
                         labelText = "👥 위원회 위원 선택";
                         const currentDept = formData.dept || "";
                         
