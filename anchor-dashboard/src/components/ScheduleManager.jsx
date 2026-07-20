@@ -2901,15 +2901,39 @@ Gemini 피드백: \n${geminiCritiqueText}
         combinedAttendeesExternal = `위원회: ${cName} | 작성자: ${formData.writer || "작성자 미정"} | 부서: ${formData.dept || "부서 미정"}`;
       }
 
-      // 의제 및 결과를 1:1 매핑 데이터로부터 직렬화
-      const combinedAgenda = (agendaResultPairs || [])
-        .map(p => p.agenda.trim())
-        .filter(Boolean)
-        .join("\n");
-      const combinedResult = (agendaResultPairs || [])
-        .map(p => p.result.trim())
-        .filter(Boolean)
-        .join("\n");
+      // 💡 [교육용 한글 주석] 의제 및 결과를 1:1 매핑 또는 사업단운영회의의 부서별 폼 데이터로부터 직렬화(저장용 포맷팅)합니다.
+      let combinedAgenda = "";
+      let combinedResult = "";
+
+      if (formData.category === "operating") {
+        const depts = ["사업운영팀", "ECC센터", "ICC센터", "RCC센터", "AID-X지원센터", "울산늘봄누리센터", "신산업특화센터"];
+        combinedAgenda = depts
+          .map(d => {
+            const val = formData.operatingAgendas?.[d]?.trim();
+            if (!val) return "";
+            return val.includes(`[${d}]`) ? val : `[${d}] ${val}`;
+          })
+          .filter(Boolean)
+          .join("\n");
+
+        combinedResult = depts
+          .map(d => {
+            const val = formData.operatingResults?.[d]?.trim();
+            if (!val) return "";
+            return val.includes(`[${d}]`) ? val : `[${d}] ${val}`;
+          })
+          .filter(Boolean)
+          .join("\n");
+      } else {
+        combinedAgenda = (agendaResultPairs || [])
+          .map(p => p.agenda.trim())
+          .filter(Boolean)
+          .join("\n");
+        combinedResult = (agendaResultPairs || [])
+          .map(p => p.result.trim())
+          .filter(Boolean)
+          .join("\n");
+      }
 
       if (isEditMode) {
         setMeetingSchedules(meetingSchedules.map(m =>
@@ -4022,6 +4046,49 @@ Gemini 피드백: \n${geminiCritiqueText}
     }
     setAgendaResultPairs(initialPairs);
 
+    // 💡 [교육용 한글 주석] 사업운영위원회(operating)인 경우, 줄바꿈으로 나열된 의제/결과 텍스트를 각 부서별 데이터로 역직렬화(복원)합니다.
+    const restoredAgendas = {};
+    const restoredResults = {};
+    if (meeting.category === "operating") {
+      const depts = ["사업운영팀", "ECC센터", "ICC센터", "RCC센터", "AID-X지원센터", "울산늘봄누리센터", "신산업특화센터"];
+      depts.forEach(d => {
+        restoredAgendas[d] = "";
+        restoredResults[d] = "";
+      });
+
+      agendaLines.forEach(line => {
+        let matchedDept = depts.find(d => line.startsWith(`[${d}]`) || line.includes(`[${d}]`));
+        if (!matchedDept) {
+          matchedDept = depts.find(d => {
+            const cleanD = d.replace("센터", "").replace("지원센터", "").replace("팀", "");
+            return line.includes(cleanD) || (d === "사업운영팀" && line.includes("사업단"));
+          });
+        }
+        if (matchedDept) {
+          const cleanLine = line.replace(`[${matchedDept}]`, "").trim();
+          restoredAgendas[matchedDept] = (restoredAgendas[matchedDept] ? restoredAgendas[matchedDept] + "\n" : "") + cleanLine;
+        } else {
+          restoredAgendas["사업운영팀"] = (restoredAgendas["사업운영팀"] ? restoredAgendas["사업운영팀"] + "\n" : "") + line;
+        }
+      });
+
+      resultLines.forEach(line => {
+        let matchedDept = depts.find(d => line.startsWith(`[${d}]`) || line.includes(`[${d}]`));
+        if (!matchedDept) {
+          matchedDept = depts.find(d => {
+            const cleanD = d.replace("센터", "").replace("지원센터", "").replace("팀", "");
+            return line.includes(cleanD) || (d === "사업운영팀" && line.includes("사업단"));
+          });
+        }
+        if (matchedDept) {
+          const cleanLine = line.replace(`[${matchedDept}]`, "").trim();
+          restoredResults[matchedDept] = (restoredResults[matchedDept] ? restoredResults[matchedDept] + "\n" : "") + cleanLine;
+        } else {
+          restoredResults["사업운영팀"] = (restoredResults["사업운영팀"] ? restoredResults["사업운영팀"] + "\n" : "") + line;
+        }
+      });
+    }
+
     setFormData({
       title: meeting.title,
       type: "회의",
@@ -4031,7 +4098,7 @@ Gemini 피드백: \n${geminiCritiqueText}
       endDate: "2026-07-15",
       endTime: "11:00",
       location: meeting.location || "",
-      noTime: false,
+      noTime: noTimeVal, // 하드코딩 false 버그 수정: noTimeVal 연동
       month: meeting.month || 7,
       department: dept,
       datetime: meeting.datetime || "",
@@ -4046,6 +4113,8 @@ Gemini 피드백: \n${geminiCritiqueText}
       result: meeting.result || "",
       audioUrl: meeting.audioUrl || meeting.audio_url || "",
       pdfUrl: meeting.pdfUrl || meeting.pdf_url || "",
+      operatingAgendas: meeting.category === "operating" ? restoredAgendas : {},
+      operatingResults: meeting.category === "operating" ? restoredResults : {},
       pressDate: "2026-07-15",
       pressTime: "10:00",
       pressMedia: "",
@@ -7806,8 +7875,8 @@ Gemini 피드백: \n${geminiCritiqueText}
                     </div>
                     
                     <p style={{ fontSize: "0.68rem", color: "var(--text-secondary)", lineHeight: "1.3", marginBottom: "0.75rem" }}>
-                      💡 <strong>기획/일정안</strong>을 분석하면 회의 명칭, 장소, 일자, 시작/종료시간, 참석자 등 기본 정보가 자동 완성됩니다.<br />
-                      💡 <strong>결과보고서(회의록)</strong>를 분석하면 하단의 안건별 결과 리스트(의제 및 결과)가 자동으로 채워집니다.
+                      💡 <strong>기획/일정안</strong>을 분석하면 회의 명칭, 장소, 일자, 시작/종료시간, 참석자 등 기본 정보가 자동 완성됩니다. (다중 파일 업로드 지원)<br />
+                      💡 <strong>결과보고서(회의록)</strong>를 분석하면 하단의 안건별 결과 리스트(의제 및 결과)가 자동으로 채워집니다. (다중 파일 업로드 지원)
                     </p>
 
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem" }}>
@@ -8328,11 +8397,16 @@ Gemini 피드백: \n${geminiCritiqueText}
                             {/* 부서별 그룹 카드 형태로 예쁘게 렌더링 */}
                             <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", marginBottom: "0.5rem", maxHeight: "250px", overflowY: "auto", paddingRight: "0.25rem" }}>
                               {grouped.map(g => (
-                                <div key={g.deptName} style={{ padding: "0.4rem 0.5rem", background: "rgba(255,255,255,0.01)", border: "1px solid rgba(255,255,255,0.03)", borderRadius: "6px" }}>
+                                <div key={g.deptName} style={{ 
+                                  padding: "0.4rem 0.5rem", 
+                                  background: darkMode ? "rgba(255,255,255,0.01)" : "rgba(0,0,0,0.02)", 
+                                  border: darkMode ? "1px solid rgba(255,255,255,0.03)" : "1px solid rgba(0,0,0,0.08)", 
+                                  borderRadius: "6px" 
+                                }}>
                                   <div style={{ fontSize: "0.68rem", fontWeight: "800", color: "#a78bfa", marginBottom: "0.25rem" }}>
                                     📌 {g.deptName}
                                   </div>
-                                  <div style={{ display: "flex", gap: "0.3rem", flexWrap: "wrap" }}>
+                                  <div style={{ display: "flex", gap: "0.35rem", flexWrap: "wrap" }}>
                                     {g.list.map(m => {
                                       const isSelected = (formData.attendees || "")
                                         .split(",")
@@ -8348,9 +8422,15 @@ Gemini 피드백: \n${geminiCritiqueText}
                                             padding: "0.2rem 0.4rem",
                                             fontSize: "0.65rem",
                                             borderRadius: "4px",
-                                            border: "1px solid " + (isSelected ? "var(--accent-color)" : "rgba(255,255,255,0.08)"),
-                                            background: isSelected ? "rgba(59, 130, 246, 0.12)" : "transparent",
-                                            color: isSelected ? "#60A5FA" : "var(--text-secondary)",
+                                            border: "1px solid " + (isSelected 
+                                              ? "var(--accent-color)" 
+                                              : (darkMode ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.12)")),
+                                            background: isSelected 
+                                              ? (darkMode ? "rgba(59, 130, 246, 0.12)" : "rgba(59, 130, 246, 0.08)") 
+                                              : "transparent",
+                                            color: isSelected 
+                                              ? (darkMode ? "#60A5FA" : "#1E40AF") 
+                                              : (darkMode ? "var(--text-secondary)" : "#475569"),
                                             cursor: "pointer",
                                             transition: "all 0.1s ease",
                                             fontWeight: "700"
@@ -8443,7 +8523,16 @@ Gemini 피드백: \n${geminiCritiqueText}
                               {formData.category === "committee" ? "선택한 위원회의 구성원을 찾을 수 없습니다." : "소속 부서를 먼저 선택해 주세요."}
                             </div>
                           ) : (
-                            <div style={{ display: "flex", gap: "0.35rem", flexWrap: "wrap", marginBottom: "0.5rem", padding: "0.5rem", background: "rgba(255,255,255,0.02)", borderRadius: "6px", border: "1px solid rgba(255,255,255,0.04)" }}>
+                            <div style={{ 
+                              display: "flex", 
+                              gap: "0.35rem", 
+                              flexWrap: "wrap", 
+                              marginBottom: "0.5rem", 
+                              padding: "0.5rem", 
+                              background: darkMode ? "rgba(255,255,255,0.02)" : "rgba(0,0,0,0.02)", 
+                              borderRadius: "6px", 
+                              border: darkMode ? "1px solid rgba(255,255,255,0.04)" : "1px solid rgba(0,0,0,0.08)" 
+                            }}>
                               {displayMembers.map(m => {
                                 const isSelected = (formData.attendees || "")
                                   .split(",")
@@ -8459,9 +8548,15 @@ Gemini 피드백: \n${geminiCritiqueText}
                                       padding: "0.25rem 0.5rem",
                                       fontSize: "0.7rem",
                                       borderRadius: "4px",
-                                      border: "1px solid " + (isSelected ? "var(--accent-color)" : "rgba(255,255,255,0.1)"),
-                                      background: isSelected ? "rgba(59, 130, 246, 0.15)" : "transparent",
-                                      color: isSelected ? "#60A5FA" : "var(--text-secondary)",
+                                      border: "1px solid " + (isSelected 
+                                        ? "var(--accent-color)" 
+                                        : (darkMode ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.15)")),
+                                      background: isSelected 
+                                        ? (darkMode ? "rgba(59, 130, 246, 0.15)" : "rgba(59, 130, 246, 0.08)") 
+                                        : "transparent",
+                                      color: isSelected 
+                                        ? (darkMode ? "#60A5FA" : "#1E40AF") 
+                                        : (darkMode ? "var(--text-secondary)" : "#475569"),
                                       cursor: "pointer",
                                       transition: "all 0.1s ease",
                                       fontWeight: "700"
