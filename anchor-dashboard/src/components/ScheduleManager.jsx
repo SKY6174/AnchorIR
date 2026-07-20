@@ -8251,7 +8251,9 @@ Gemini 피드백: \n${geminiCritiqueText}
                   </div>
 
                   {/* 4) 참석 대상자 선택 및 수기 입력창 (모든 회의 종류에 맞추어 자동 대응) */}
-                  <div style={{ marginTop: "0.75rem" }}>
+                  {/* 장소(location)에 '서면'이라는 단어가 포함되는 경우(예: 서면회의, 서면 회의, 서면) 참석자 입력 영역을 노출하지 않습니다. */}
+                  {!(formData.location && formData.location.includes("서면")) && (
+                    <div style={{ marginTop: "0.75rem" }}>
                     {(() => {
                       let labelText = "👥 소속 연구원 선택 (부서별 자동 연동)";
                       let showIncludeProfessors = false;
@@ -8487,6 +8489,7 @@ Gemini 피드백: \n${geminiCritiqueText}
                       style={{ width: "100%", padding: "0.5rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }}
                     />
                   </div>
+                  )}
 
                   {/* 회의록 첨부파일 개별 분리 업로드 (2칸 설계) */}
                   <div style={{ marginTop: "1rem", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem" }}>
