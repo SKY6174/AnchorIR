@@ -1089,7 +1089,7 @@ export default function ScheduleManager({
       // 1-1) 사업단 위원회 매칭 검사 (agency)
       const agencyList = [
         "앵커총괄위원회", "앵커기획위원회", "앵커사업비관리위원회",
-        "앵커사업자체평가위원회", "앵커사업자문회의", "앵커사업운영위원회"
+        "앵커사업자체평가위원회", "앵커사업자문회의"
       ];
       // 띄어쓰기 무관하게 매칭 검사
       const titleCleaned = title.replace(/\s+/g, "");
@@ -5519,7 +5519,7 @@ Gemini 피드백: \n${geminiCritiqueText}
                       </button>
                       {[
                         "앵커총괄위원회", "앵커기획위원회", "앵커사업비관리위원회",
-                        "앵커사업자체평가위원회", "앵커사업자문회의", "앵커사업운영위원회"
+                        "앵커사업자체평가위원회", "앵커사업자문회의"
                       ].map(cName => {
                         const isSelected = selectedCommitteeFilters.includes(cName);
                         return (
@@ -5635,7 +5635,7 @@ Gemini 피드백: \n${geminiCritiqueText}
                       // 제목에서 위원회 키워드로 매칭 Fallback
                       const allCommittees = [
                         "앵커총괄위원회", "앵커기획위원회", "앵커사업비관리위원회",
-                        "앵커사업자체평가위원회", "앵커사업자문회의", "앵커사업운영위원회",
+                        "앵커사업자체평가위원회", "앵커사업자문회의",
                         "ECC센터위원회", "ICC센터위원회", "RCC센터위원회",
                         "AID-X지원센터위원회", "울산늘봄누리센터위원회", "신산업특화센터위원회"
                       ];
@@ -8051,7 +8051,7 @@ Gemini 피드백: \n${geminiCritiqueText}
                               if ((formData.committeeType || "agency") === "agency") {
                                 return [
                                   "앵커총괄위원회", "앵커기획위원회", "앵커사업비관리위원회",
-                                  "앵커사업자체평가위원회", "앵커사업자문회의", "앵커사업운영위원회"
+                                  "앵커사업자체평가위원회", "앵커사업자문회의"
                                 ].map(d => <option key={d} value={d}>{d}</option>);
                               } else {
                                 return [
