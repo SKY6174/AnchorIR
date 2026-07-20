@@ -1027,7 +1027,8 @@ export default function ScheduleManager({
       const prompt = `
 너는 대학교 RISE 사업단의 서류 정돈 전문가이다.
 제공된 원본 텍스트는 PDF 문서에서 가공 없이 추출된 날것의 줄글 텍스트이다.
-이 텍스트의 내용을 절대로 요약하거나 임의로 축소, 생략하지 말고 모든 세부 안건, 보고사항, 수치, 애로사항 등을 그대로 온전히 수용하여 가독성 높고 구조화된 마크다운(Markdown) 문서로 변환해라.
+이 텍스트의 내용을 절대로 요약하거나 임의로 축소, 생략하지 말고 모든 세부 안건, 보고사항, 수치, 애로사항, 그리고 참석자 명단 및 서명록 이름들을 그대로 온전히 수용하여 가독성 높고 구조화된 마크다운(Markdown) 문서로 변환해라.
+특히 본문에 기재된 모든 사람의 이름(참석 위원, 서명한 인원 등)은 한 명도 생략하지 말고 그대로 보존해라.
 다른 군더더기 설명 없이 오직 마크다운 내용만을 텍스트로 즉시 반환해라.
 
 원본 텍스트:
@@ -1066,12 +1067,14 @@ ${rawText}
 
   // 실제 파일 선택 핸들러
   const handleAiFileChange = async (e, type = "plan") => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
+    if (e.target.files && e.target.files.length > 0) {
+      const files = Array.from(e.target.files);
+      const fileNames = files.map(f => f.name).join(", ");
+      
       if (type === "plan") {
-        setAiFileName(file.name);
+        setAiFileName(fileNames);
       } else {
-        setAiResultFileName(file.name);
+        setAiResultFileName(fileNames);
       }
 
       const updateText = (text) => {
@@ -1082,45 +1085,58 @@ ${rawText}
         }
       };
 
-      // 1. 텍스트 파일인 경우 실시간 파일 내용 추출
-      if (file.type.match('text.*') || file.name.endsWith('.txt') || file.name.endsWith('.csv')) {
-        const reader = new FileReader();
-        reader.onload = (event) => {
-          updateText(event.target.result);
-        };
-        reader.readAsText(file);
-      }
-      // 2. PDF 파일인 경우 브라우저 단독 라이브러리로 텍스트 파싱
-      else if (file.type === "application/pdf" || file.name.endsWith('.pdf')) {
-        updateText("📄 PDF 파일 분석 중... (본문 텍스트 추출 진행 중)");
-        try {
-          const arrayBuffer = await file.arrayBuffer();
-          const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
-          const pdf = await loadingTask.promise;
-          let fullText = "";
+      updateText(`📄 총 ${files.length}개의 파일을 분석 중... (본문 텍스트 추출 중)`);
 
-          for (let i = 1; i <= pdf.numPages; i++) {
-            const page = await pdf.getPage(i);
-            const textContent = await page.getTextContent();
-            const pageText = textContent.items.map(item => item.str).join(" ");
-            fullText += `[Page ${i}]\n${pageText}\n\n`;
+      try {
+        let combinedRawText = "";
+        
+        for (let idx = 0; idx < files.length; idx++) {
+          const file = files[idx];
+          let fileText = "";
+          
+          updateText(`📄 [${idx + 1}/${files.length}] ${file.name} 텍스트 추출 중...`);
+
+          // 1. 텍스트 파일인 경우
+          if (file.type.match('text.*') || file.name.endsWith('.txt') || file.name.endsWith('.csv')) {
+            fileText = await new Promise((resolve) => {
+              const reader = new FileReader();
+              reader.onload = (event) => resolve(event.target.result);
+              reader.readAsText(file);
+            });
+          }
+          // 2. PDF 파일인 경우
+          else if (file.type === "application/pdf" || file.name.endsWith('.pdf')) {
+            const arrayBuffer = await file.arrayBuffer();
+            const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
+            const pdf = await loadingTask.promise;
+            let pdfText = "";
+
+            for (let i = 1; i <= pdf.numPages; i++) {
+              const page = await pdf.getPage(i);
+              const textContent = await page.getTextContent();
+              const pageText = textContent.items.map(item => item.str).join(" ");
+              pdfText += `[Page ${i}]\n${pageText}\n\n`;
+            }
+            fileText = pdfText;
+          }
+          // 3. 그 외 바이너리 포맷 (HWP 등)
+          else {
+            fileText = `[⚠️ ${file.name}은 직접 텍스트 추출이 불가능한 파일 포맷입니다. 본문을 복사하여 직접 입력란에 보충해 주세요.]`;
           }
 
-          if (fullText.trim()) {
-            updateText("⏳ 추출된 텍스트를 마크다운 문서로 정밀 정돈 중...");
-            const structuredMd = await convertRawTextToMarkdown(fullText.trim());
-            updateText(structuredMd);
-          } else {
-            updateText(`[${file.name}] 파일에서 텍스트를 추출하지 못했습니다. 스캔 이미지 형태의 PDF이거나 본문이 비어있습니다.`);
-          }
-        } catch (pdfErr) {
-          console.error("PDF 텍스트 추출 실패:", pdfErr);
-          updateText(`❌ PDF 텍스트 추출에 실패했습니다. 에러: ${pdfErr.message}\n본문 내용을 복사해서 직접 입력해 주세요.`);
+          combinedRawText += `--- 파일 ${idx + 1}: ${file.name} ---\n${fileText.trim()}\n\n`;
         }
-      }
-      // 3. 그 외 바이너리 포맷 (HWP 등)
-      else {
-        updateText(`[${file.name}] 파일이 감지되었습니다. 텍스트 직접 추출이 불가능한 한글(HWP) 파일 포맷이므로, 본문 내용을 복사해서 여기에 붙여넣어 주세요.`);
+
+        if (combinedRawText.trim()) {
+          updateText("⏳ 추출된 전체 텍스트를 마크다운 문서로 정밀 정돈 중...");
+          const structuredMd = await convertRawTextToMarkdown(combinedRawText.trim());
+          updateText(structuredMd);
+        } else {
+          updateText("선택한 파일들에서 텍스트를 추출하지 못했습니다. 본문이 비어있습니다.");
+        }
+      } catch (err) {
+        console.error("다중 파일 텍스트 추출 실패:", err);
+        updateText(`❌ 파일 텍스트 추출에 실패했습니다. 에러: ${err.message}\n본문 내용을 복사해서 직접 입력해 주세요.`);
       }
     }
   };
@@ -1433,7 +1449,7 @@ JSON 구조:
   "meetingDate": "회의 일자 (YYYY-MM-DD 형식)",
   "meetingStartTime": "시작 시간 (HH:MM 형식)",
   "meetingEndTime": "종료 시간 (HH:MM 형식)",
-  "attendees": "참석자 명단 (예: 심현미 팀장, 이동은 센터장, 김기범 센터장 등)",
+  "attendees": "참석자 명단 (예: 심현미 팀장, 이동은 센터장, 김기범 센터장 등. 본문 내에 '참석자 서명록'이나 서명, 참석자 명단이 존재하는 경우, 이름 뒤의 서명란 등 불필요한 마크는 제거하고 참석한 모든 인원의 실명과 직책을 한 명도 누락하지 말고 쉼표로 구분하여 기입해 주십시오.)",
   "agendaResultPairs": [
     {
       "agenda": "의제/전달사항 (예: [ECC센터] 지산학 마일리지 장학금 지급 기준 심의)",
@@ -1463,6 +1479,7 @@ JSON 구조:
 [★ 매우 중요: 사업운영위원회/회의록 특수 추론 규칙]
 - 제공된 텍스트가 결과보고서(회의록) 또는 회의 의결 사항인 경우, 본문의 개별적인 보고 내용과 애로사항을 분석하여 7개 부서("사업운영팀", "ECC센터", "ICC센터", "RCC센터", "AID-X지원센터", "울산늘봄누리센터", "신산업특화센터")에 맞게 지능적으로 유추 및 배분하여 "operatingAgendas" 및 "operatingResults" 객체에 채워 주십시오.
 - 회의록 원문의 모든 부서별 보고 사항과 안건을 임의로 요약하거나 생략하지 말고, 본문에 등장한 구체적인 실적, 계획, 애로사항을 최대한 누락 없이 그대로 수용하여 각 부서의 의제 및 결과 칸에 충실하게 다 적어주십시오. 중복되지 않는 한 내용을 최대한 길고 자세하게 복원해야 합니다.
+- 본문 텍스트 내에 '참석자 서명록' 또는 서명, 참석자 명단이 존재하는 경우, 이름 뒤의 서명란 등 불필요한 마크는 제거하고 참석한 모든 인원의 실명(과 직책)을 한 명도 누락하지 말고 "attendees" 문자열에 쉼표로 구분하여 기입해 주십시오. (예: "송경영 단장, 심현미 운영팀장, 조홍래 총장")
 - 본문에 각 센터(부서) 명칭이 직접 명시되지 않았더라도, 내용의 성격(예: 유학생/문화교류 -> 울산늘봄누리센터 또는 ECC센터, 장학금/지급 -> 사업운영팀 또는 ECC센터, 특화장비/실습 -> 신산업특화센터, 가족회사/공동R&BD -> ICC센터 등)과 문맥을 기반으로 가장 관련성이 높은 센터의 의제와 결과(애로사항)로 매핑하여 빈칸 없이 최대한 추론해 주어야 합니다.
 - 매핑할 부서별 내용이 존재하지 않는 부서는 빈 문자열("")로 두십시오.
 - 동시에 "agendaResultPairs" 배열에도 전체 요약된 핵심 안건 리스트(1~3개)를 구성해서 제공하십시오.
@@ -7356,7 +7373,7 @@ Gemini 피드백: \n${geminiCritiqueText}
                             const isSelected = (formData.attendees || "")
                               .split(",")
                               .map(x => x.trim())
-                              .some(x => x === m.name || x.startsWith(m.name + " ") || x.startsWith(m.name + "("));
+                              .some(x => x.includes(m.name));
 
                             return (
                               <button
@@ -7810,6 +7827,7 @@ Gemini 피드백: \n${geminiCritiqueText}
                           type="file"
                           id="ai-meeting-plan-file"
                           accept=".txt,.pdf"
+                          multiple
                           onChange={(e) => handleAiFileChange(e, "plan")}
                           style={{ display: "none" }}
                         />
@@ -7880,6 +7898,7 @@ Gemini 피드백: \n${geminiCritiqueText}
                           type="file"
                           id="ai-meeting-result-file"
                           accept=".txt,.pdf"
+                          multiple
                           onChange={(e) => handleAiFileChange(e, "result")}
                           style={{ display: "none" }}
                         />
@@ -8299,7 +8318,7 @@ Gemini 피드백: \n${geminiCritiqueText}
                                       const isSelected = (formData.attendees || "")
                                         .split(",")
                                         .map(x => x.trim())
-                                        .some(x => x === m.name || x.startsWith(m.name + " ") || x.startsWith(m.name + "("));
+                                        .some(x => x.includes(m.name));
 
                                       return (
                                         <button
@@ -8410,7 +8429,7 @@ Gemini 피드백: \n${geminiCritiqueText}
                                 const isSelected = (formData.attendees || "")
                                   .split(",")
                                   .map(x => x.trim())
-                                  .some(x => x === m.name || x.startsWith(m.name + " ") || x.startsWith(m.name + "("));
+                                  .some(x => x.includes(m.name));
 
                                 return (
                                   <button
