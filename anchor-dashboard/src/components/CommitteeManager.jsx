@@ -1056,7 +1056,7 @@ export default function CommitteeManager({
       }));
       localStorage.setItem(`local_meeting_agendas_${localPayload.id}`, JSON.stringify(localAgendas));
       
-      alert(`위원회 회의 일정이 등록되었습니다. (오프라인 캐시 모드)\n[외부 위원용 보안 PIN]: ${generatedPin}`);
+      alert(`⚠️ [오프라인 모드 경고]\nDB 연결 상태가 원활하지 않아 로컬 브라우저에 임시 저장되었습니다.\n새로고침 후 안정적인 네트워크 상태에서 회의를 다시 개설하셔야 외부 위원 투표가 실시간으로 집계 연동됩니다.\n[외부 위원용 임시 PIN]: ${generatedPin}`);
       setIsMeetingModalOpen(false);
       setMeetingForm({ 
         title: "", 
