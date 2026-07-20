@@ -194,6 +194,9 @@ export default function CommitteeManager({
   const [isCommitteeModalOpen, setIsCommitteeModalOpen] = useState(false);
   const [committeeForm, setCommitteeForm] = useState({ name: "", total_quorum: 5, voting_rule: "majority_of_attendees" });
   
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [editingMeetingId, setEditingMeetingId] = useState(null);
+  
   const [isMeetingModalOpen, setIsMeetingModalOpen] = useState(false);
   const [meetingForm, setMeetingForm] = useState({ 
     title: "", 
@@ -963,6 +966,39 @@ export default function CommitteeManager({
     }
   };
 
+  const handleEditMeetingStart = (meeting) => {
+    setIsEditMode(true);
+    setEditingMeetingId(meeting.id);
+    
+    // meeting_date 포맷팅 처리 (datetime-local 타입 연동을 위해 YYYY-MM-DDTHH:mm 형태로 교정)
+    let formattedDate = "";
+    if (meeting.meeting_date) {
+      const d = new Date(meeting.meeting_date);
+      const tzOffset = d.getTimezoneOffset() * 60000;
+      const localISOTime = (new Date(d.getTime() - tzOffset)).toISOString().slice(0, 16);
+      formattedDate = localISOTime;
+    }
+
+    setMeetingForm({
+      title: meeting.title || "",
+      meeting_date: formattedDate,
+      meeting_type: meeting.meeting_type || "ONLINE_WRITTEN",
+      agenda: meeting.agenda || "",
+      attachment_name: meeting.attachment_name || "",
+      attachment_data: meeting.attachment_data || "",
+      access_pin: meeting.access_pin || "",
+      agendas: selectedMeetingAgendas.map(a => ({
+        id: a.id,
+        title: a.title || "",
+        description: a.description || "",
+        is_evaluation: !!a.is_evaluation,
+        attachment_name: a.attachment_name || "",
+        attachment_data: a.attachment_data || ""
+      }))
+    });
+    setIsMeetingModalOpen(true);
+  };
+
   const handleCreateMeeting = async (e) => {
     e.preventDefault();
     if (!meetingForm.title || !meetingForm.meeting_date) {
@@ -996,34 +1032,82 @@ export default function CommitteeManager({
     };
 
     try {
-      // 1. 회의 기본 인서트
-      const { data, error } = await supabase
-        .from("committee_meetings")
-        .insert([payload])
-        .select();
+      let createdMeeting = null;
 
-      if (error) throw error;
-      
-      const createdMeeting = data[0];
-      
-      // 2. 다중 의안 인서트
-      if (createdMeeting && meetingForm.agendas.length > 0) {
+      if (isEditMode && editingMeetingId) {
+        // 1-A. 회의 정보 업데이트
+        const { data, error } = await supabase
+          .from("committee_meetings")
+          .update({
+            title: meetingForm.title,
+            meeting_date: meetingForm.meeting_date,
+            meeting_type: meetingForm.meeting_type,
+            agenda: summaryAgendaText,
+            attachment_name: meetingForm.attachment_name || null,
+            attachment_data: meetingForm.attachment_data || null,
+            access_pin: generatedPin
+          })
+          .eq("id", editingMeetingId)
+          .select();
+        if (error) throw error;
+        createdMeeting = data[0];
+
+        // 2-A. 기존 안건 데이터 삭제 후 재생성 (의안 정보 정합성 확보)
+        const { error: delErr } = await supabase
+          .from("meeting_agendas")
+          .delete()
+          .eq("meeting_id", editingMeetingId);
+        if (delErr) throw delErr;
+
         const agendaPayloads = meetingForm.agendas.map((a, idx) => ({
-          meeting_id: createdMeeting.id,
+          meeting_id: editingMeetingId,
           title: a.title.trim(),
           description: a.description || null,
           is_evaluation: !!a.is_evaluation,
-          sort_order: idx + 1
+          sort_order: idx + 1,
+          attachment_name: a.attachment_name || null,
+          attachment_data: a.attachment_data || null
         }));
-        
+
         const { error: agErr } = await supabase
           .from("meeting_agendas")
           .insert(agendaPayloads);
         if (agErr) throw agErr;
+
+        alert("회의 정보 및 심의 안건이 성공적으로 수정되었습니다.");
+      } else {
+        // 1-B. 회의 기본 신규 등록
+        const { data, error } = await supabase
+          .from("committee_meetings")
+          .insert([payload])
+          .select();
+        if (error) throw error;
+        createdMeeting = data[0];
+        
+        // 2-B. 신규 의안 데이터 적재
+        if (createdMeeting && meetingForm.agendas.length > 0) {
+          const agendaPayloads = meetingForm.agendas.map((a, idx) => ({
+            meeting_id: createdMeeting.id,
+            title: a.title.trim(),
+            description: a.description || null,
+            is_evaluation: !!a.is_evaluation,
+            sort_order: idx + 1,
+            attachment_name: a.attachment_name || null,
+            attachment_data: a.attachment_data || null
+          }));
+          
+          const { error: agErr } = await supabase
+            .from("meeting_agendas")
+            .insert(agendaPayloads);
+          if (agErr) throw agErr;
+        }
+
+        alert(`위원회 회의 일정이 등록되었습니다.\n[외부 위원용 보안 PIN]: ${generatedPin}`);
       }
 
-      alert(`위원회 회의 일정이 등록되었습니다.\n[외부 위원용 보안 PIN]: ${generatedPin}`);
       setIsMeetingModalOpen(false);
+      setIsEditMode(false);
+      setEditingMeetingId(null);
       setMeetingForm({ 
         title: "", 
         meeting_date: "", 
@@ -1039,25 +1123,42 @@ export default function CommitteeManager({
         setSelectedMeeting(createdMeeting);
       }
     } catch (err) {
-      console.warn("DB 회의 등록 실패, 로컬 스토리지에 모의 저장합니다:", err.message);
+      console.warn("DB 회의 처리 실패, 로컬 스토리지에 모의 저장합니다:", err.message);
+      
+      const targetMeetingId = isEditMode ? editingMeetingId : `local-meeting-${Date.now()}`;
       const localMeetings = JSON.parse(localStorage.getItem(`local_committee_meetings_${selectedCommittee.id}`) || "[]");
-      const localPayload = { ...payload, id: `local-meeting-${Date.now()}`, created_at: new Date().toISOString() };
-      const updated = [localPayload, ...localMeetings];
-      localStorage.setItem(`local_committee_meetings_${selectedCommittee.id}`, JSON.stringify(updated));
+      let updatedMeetings;
+      const localPayload = { ...payload, id: targetMeetingId, created_at: new Date().toISOString() };
+
+      if (isEditMode) {
+        updatedMeetings = localMeetings.map(m => m.id === targetMeetingId ? localPayload : m);
+      } else {
+        updatedMeetings = [localPayload, ...localMeetings];
+      }
+      localStorage.setItem(`local_committee_meetings_${selectedCommittee.id}`, JSON.stringify(updatedMeetings));
 
       // 로컬 스토리지용 의안 정보 모의 적재
       const localAgendas = meetingForm.agendas.map((a, idx) => ({
-        id: `local-agenda-${Date.now()}-${idx}`,
-        meeting_id: localPayload.id,
+        id: a.id || `local-agenda-${Date.now()}-${idx}`,
+        meeting_id: targetMeetingId,
         title: a.title.trim(),
         description: a.description || null,
         is_evaluation: !!a.is_evaluation,
-        sort_order: idx + 1
+        sort_order: idx + 1,
+        attachment_name: a.attachment_name || null,
+        attachment_data: a.attachment_data || null
       }));
-      localStorage.setItem(`local_meeting_agendas_${localPayload.id}`, JSON.stringify(localAgendas));
+      localStorage.setItem(`local_meeting_agendas_${targetMeetingId}`, JSON.stringify(localAgendas));
       
-      alert(`⚠️ [오프라인 모드 경고]\nDB 연결 상태가 원활하지 않아 로컬 브라우저에 임시 저장되었습니다.\n새로고침 후 안정적인 네트워크 상태에서 회의를 다시 개설하셔야 외부 위원 투표가 실시간으로 집계 연동됩니다.\n[외부 위원용 임시 PIN]: ${generatedPin}`);
+      if (isEditMode) {
+        alert("회의 정보 및 심의 안건이 수정되었습니다. (오프라인 캐시 모드)");
+      } else {
+        alert(`⚠️ [오프라인 모드 경고]\nDB 연결 상태가 원활하지 않아 로컬 브라우저에 임시 저장되었습니다.\n새로고침 후 안정적인 네트워크 상태에서 회의를 다시 개설하셔야 외부 위원 투표가 실시간으로 집계 연동됩니다.\n[외부 위원용 임시 PIN]: ${generatedPin}`);
+      }
+
       setIsMeetingModalOpen(false);
+      setIsEditMode(false);
+      setEditingMeetingId(null);
       setMeetingForm({ 
         title: "", 
         meeting_date: "", 
@@ -1068,7 +1169,7 @@ export default function CommitteeManager({
         access_pin: "",
         agendas: [{ title: "", description: "", is_evaluation: false }]
       });
-      setMeetings(updated);
+      setMeetings(updatedMeetings);
       setSelectedMeeting(localPayload);
     }
   };
@@ -1890,13 +1991,22 @@ ${opinionsContext}
                     </div>
 
                     {isManager && (
-                      <button
-                        onClick={() => handleDeleteMeeting(selectedMeeting.id)}
-                        className="btn btn-secondary"
-                        style={{ padding: "0.3rem 0.6rem", fontSize: "0.8rem", color: "#ef4444" }}
-                      >
-                        <Trash2 size={14} /> 회의 취소
-                      </button>
+                      <div style={{ display: "flex", gap: "0.4rem" }}>
+                        <button
+                          onClick={() => handleEditMeetingStart(selectedMeeting)}
+                          className="btn btn-secondary"
+                          style={{ padding: "0.3rem 0.6rem", fontSize: "0.8rem", color: "var(--accent-color)" }}
+                        >
+                          <Edit size={14} /> 회의 수정
+                        </button>
+                        <button
+                          onClick={() => handleDeleteMeeting(selectedMeeting.id)}
+                          className="btn btn-secondary"
+                          style={{ padding: "0.3rem 0.6rem", fontSize: "0.8rem", color: "#ef4444" }}
+                        >
+                          <Trash2 size={14} /> 회의 취소
+                        </button>
+                      </div>
                     )}
                   </div>
 
@@ -2745,12 +2855,14 @@ ${opinionsContext}
         <div className="modal-overlay" style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(15, 23, 42, 0.65)", backdropFilter: "blur(6px)", WebkitBackdropFilter: "blur(6px)", display: "flex", justifyContent: "center", alignItems: "center", zIndex: 1100 }}>
           <div className="modal-contentcard" style={{ background: "var(--modal-bg)", padding: "1.5rem", borderRadius: "12px", border: "1px solid var(--border-color)", width: "500px", maxWidth: "95%", boxShadow: "0 20px 25px -5px rgba(0,0,0,0.3)", position: "relative" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
-              <h3 style={{ color: "var(--text-primary)", fontWeight: "800", fontSize: "1.1rem", margin: 0 }}>신규 회의 의결 개설</h3>
+              <h3 style={{ color: "var(--text-primary)", fontWeight: "800", fontSize: "1.1rem", margin: 0 }}>{isEditMode ? "회의 정보 및 의결 안건 수정" : "신규 회의 의결 개설"}</h3>
               <button 
                 type="button" 
                 onClick={() => {
                   setIsMeetingModalOpen(false);
-                  setMeetingForm({ title: "", meeting_date: "", meeting_type: "ONLINE_WRITTEN", agenda: "", attachment_name: "", attachment_data: "", access_pin: "" });
+                  setIsEditMode(false);
+                  setEditingMeetingId(null);
+                  setMeetingForm({ title: "", meeting_date: "", meeting_type: "ONLINE_WRITTEN", agenda: "", attachment_name: "", attachment_data: "", access_pin: "", agendas: [{ title: "", description: "", is_evaluation: false }] });
                 }}
                 style={{ background: "transparent", border: "none", color: "var(--text-secondary)", cursor: "pointer", display: "flex", alignItems: "center", padding: "0.25rem", borderRadius: "50%" }}
               >
@@ -2896,8 +3008,56 @@ ${opinionsContext}
                           });
                         }}
                         className="form-textarea"
-                        style={{ width: "100%", padding: "0.3rem 0.5rem", borderRadius: "4px", fontSize: "0.78rem", resize: "none" }}
+                        style={{ width: "100%", padding: "0.3rem 0.5rem", borderRadius: "4px", fontSize: "0.78rem", resize: "none", marginBottom: "0.4rem" }}
                       />
+                      
+                      {/* 안건별 개별 자료 첨부 입력 컨트롤 */}
+                      <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+                        <label style={{ fontSize: "0.7rem", color: "var(--text-secondary)", whiteSpace: "nowrap" }}>📄 심의자료:</label>
+                        <input
+                          type="file"
+                          accept=".pdf,.png,.jpg,.jpeg,.md"
+                          onChange={async (e) => {
+                            const file = e.target.files[0];
+                            if (!file) return;
+                            if (file.size > 10 * 1024 * 1024) {
+                              alert("파일 크기는 최대 10MB까지 가능합니다.");
+                              e.target.value = "";
+                              return;
+                            }
+                            const reader = new FileReader();
+                            reader.onload = (evt) => {
+                              setMeetingForm(prev => {
+                                const updated = [...(prev.agendas || [])];
+                                updated[index].attachment_name = file.name;
+                                updated[index].attachment_data = evt.target.result;
+                                return { ...prev, agendas: updated };
+                              });
+                            };
+                            reader.readAsDataURL(file);
+                          }}
+                          style={{ flex: 1, fontSize: "0.68rem", color: "var(--text-secondary)", background: "rgba(255,255,255,0.02)", border: "1px solid var(--border-color)", padding: "0.15rem 0.3rem", borderRadius: "4px" }}
+                        />
+                        {agenda.attachment_name && (
+                          <div style={{ display: "flex", alignItems: "center", gap: "0.2rem", fontSize: "0.68rem", color: "var(--success-color)", whiteSpace: "nowrap" }}>
+                            <span>📎 {agenda.attachment_name.substring(0, 10)}...</span>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setMeetingForm(prev => {
+                                  const updated = [...(prev.agendas || [])];
+                                  updated[index].attachment_name = "";
+                                  updated[index].attachment_data = "";
+                                  return { ...prev, agendas: updated };
+                                });
+                              }}
+                              style={{ background: "transparent", border: "none", color: "#ef4444", cursor: "pointer", fontSize: "0.68rem", fontWeight: "bold" }}
+                            >
+                              삭제
+                            </button>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   ))}
                   {(meetingForm.agendas || []).length === 0 && (
@@ -2940,9 +3100,11 @@ ${opinionsContext}
               <div style={{ display: "flex", gap: "0.5rem", marginTop: "1rem" }}>
                 <button type="button" className="btn btn-secondary" onClick={() => {
                   setIsMeetingModalOpen(false);
-                  setMeetingForm({ title: "", meeting_date: "", meeting_type: "ONLINE_WRITTEN", agenda: "", attachment_name: "", attachment_data: "", access_pin: "" });
+                  setIsEditMode(false);
+                  setEditingMeetingId(null);
+                  setMeetingForm({ title: "", meeting_date: "", meeting_type: "ONLINE_WRITTEN", agenda: "", attachment_name: "", attachment_data: "", access_pin: "", agendas: [{ title: "", description: "", is_evaluation: false }] });
                 }} style={{ flex: 1 }}>취소</button>
-                <button type="submit" className="btn btn-primary" style={{ flex: 1 }}>회의 등록 및 의결 개시</button>
+                <button type="submit" className="btn btn-primary" style={{ flex: 1 }}>{isEditMode ? "수정사항 저장" : "회의 등록 및 의결 개시"}</button>
               </div>
             </form>
           </div>

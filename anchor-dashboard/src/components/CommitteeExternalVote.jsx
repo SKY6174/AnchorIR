@@ -40,6 +40,7 @@ export default function CommitteeExternalVote({ meetingId }) {
   // 💡 [의안 개조] 선택된 회의의 의안 목록 및 위원들의 투표 수집 정보
   const [selectedMeetingAgendas, setSelectedMeetingAgendas] = useState([]);
   const [selectedMeetingAgendaVotes, setSelectedMeetingAgendaVotes] = useState([]);
+  const [activeAgendaId, setActiveAgendaId] = useState(null);
   
   // 💡 [의안 개조] 로그인한 외부 위원이 개별 의안에 대해 채우는 폼 상태 ({ [agendaId]: { vote, score, opinion } })
   const [agendaInputs, setAgendaInputs] = useState({});
@@ -52,6 +53,7 @@ export default function CommitteeExternalVote({ meetingId }) {
 
   // 전자서명 캔버스 참조
   const canvasRef = useRef(null);
+  const viewerRef = useRef(null);
   const [isDrawing, setIsDrawing] = useState(false);
 
   // 이미 제출했는지 확인하는 함수
@@ -113,6 +115,9 @@ export default function CommitteeExternalVote({ meetingId }) {
         .eq("meeting_id", mId)
         .order("sort_order", { ascending: true });
       setSelectedMeetingAgendas(agendas || []);
+      if (agendas && agendas.length > 0) {
+        setActiveAgendaId(agendas[0].id);
+      }
       localStorage.setItem(`local_meeting_agendas_${mId}`, JSON.stringify(agendas || []));
 
       const { data: votes } = await supabase
@@ -124,7 +129,11 @@ export default function CommitteeExternalVote({ meetingId }) {
     } catch (err) {
       console.warn("의안/투표 조회 실패, 로컬 캐시 스위칭:", err.message);
       const localAgendas = localStorage.getItem(`local_meeting_agendas_${mId}`);
-      setSelectedMeetingAgendas(localAgendas ? JSON.parse(localAgendas) : []);
+      const parsedAgendas = localAgendas ? JSON.parse(localAgendas) : [];
+      setSelectedMeetingAgendas(parsedAgendas);
+      if (parsedAgendas.length > 0) {
+        setActiveAgendaId(parsedAgendas[0].id);
+      }
 
       const localVotes = localStorage.getItem(`local_meeting_agenda_votes_${mId}`);
       setSelectedMeetingAgendaVotes(localVotes ? JSON.parse(localVotes) : []);
@@ -668,6 +677,11 @@ export default function CommitteeExternalVote({ meetingId }) {
     );
   }
 
+  const activeAgenda = selectedMeetingAgendas.find(a => a.id === activeAgendaId);
+  const currentFileName = activeAgenda?.attachment_name || meeting.attachment_name || null;
+  const currentFileData = activeAgenda?.attachment_data || meeting.attachment_data || null;
+  const isFallbackFile = !activeAgenda?.attachment_name && !!meeting.attachment_name;
+
   // B. 인증 완료 상태 - 의결 검토 및 서명 패드 제출 페이지
   return (
     <div style={{ minHeight: "100vh", background: "var(--background-color)", color: "var(--text-primary)", padding: "1.5rem" }}>
@@ -703,92 +717,136 @@ export default function CommitteeExternalVote({ meetingId }) {
 
           <hr style={{ border: "none", borderTop: "1px solid var(--border-color)", margin: "1rem 0" }} />
 
-          <strong style={{ fontSize: "0.9rem", color: "var(--accent-color)", display: "block", marginBottom: "0.4rem" }}>회의 안건 요지</strong>
-          <div style={{ background: "rgba(120, 120, 120, 0.08)", padding: "1rem", borderRadius: "6px", border: "1px solid var(--border-color)", fontSize: "0.88rem", color: "var(--text-primary)", whiteSpace: "pre-line", lineHeight: "1.6" }}>
-            {meeting.agenda}
+          <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <strong style={{ fontSize: "0.9rem", color: "var(--accent-color)" }}>회의 안건 요지 (드롭다운으로 안건 전환)</strong>
+              <span style={{ fontSize: "0.72rem", color: "var(--text-secondary)" }}>※ 안건 선택 시 첨부 자료 뷰어도 즉시 연동됩니다.</span>
+            </div>
+            
+            <select
+              value={activeAgendaId || ""}
+              onChange={(e) => setActiveAgendaId(Number(e.target.value) || e.target.value)}
+              className="form-select"
+              style={{ width: "100%", padding: "0.5rem", borderRadius: "6px", background: "var(--input-bg)", color: "var(--text-primary)", border: "1px solid var(--border-color)", fontSize: "0.88rem", fontWeight: "bold" }}
+            >
+              {selectedMeetingAgendas.map((a, idx) => (
+                <option key={a.id} value={a.id}>
+                  [안건 {idx + 1}] {a.title}
+                </option>
+              ))}
+              {selectedMeetingAgendas.length === 0 && (
+                <option value="">등록된 심의 안건이 없습니다.</option>
+              )}
+            </select>
+
+            {/* 현재 선택된 안건의 설명(description) 노출 */}
+            {(() => {
+              const activeAg = selectedMeetingAgendas.find(a => a.id === activeAgendaId);
+              if (activeAg && activeAg.description) {
+                return (
+                  <div style={{ background: "rgba(99, 102, 241, 0.03)", padding: "0.75rem", borderRadius: "6px", border: "1px solid rgba(99, 102, 241, 0.15)", fontSize: "0.82rem", color: "var(--text-secondary)", marginTop: "0.25rem" }}>
+                    <strong style={{ display: "block", color: "var(--text-primary)", fontSize: "0.85rem", marginBottom: "0.2rem" }}>💡 안건 세부 내용 및 심의요약</strong>
+                    {activeAg.description}
+                  </div>
+                );
+              }
+              return null;
+            })()}
           </div>
         </section>
 
-        {/* [첨부 파일 연동 뷰어/다운로드 영역] */}
-        {meeting.attachment_name && (
-          <section className="card" style={{ padding: "1.5rem", marginBottom: "1.25rem", border: "1px solid var(--border-color)", background: "var(--card-bg)" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.75rem" }}>
-              <span style={{ fontSize: "0.9rem", fontWeight: "bold", color: "var(--text-primary)", display: "flex", alignItems: "center", gap: "0.25rem" }}>
-                <FileText size={18} style={{ color: "var(--accent-color)" }} /> 심의 안건 첨부 서류 검토
-              </span>
-              <button
-                className="btn btn-secondary"
-                style={{ padding: "0.3rem 0.6rem", fontSize: "0.75rem" }}
-                onClick={() => {
-                  const link = document.createElement("a");
-                  link.href = meeting.attachment_data;
-                  link.download = meeting.attachment_name;
-                  link.click();
-                }}
-              >
-                자료 다운로드
-              </button>
-            </div>
-            
-            {/* 이미지 뷰어 */}
-            {/\.(png|jpe?g)$/i.test(meeting.attachment_name) && (
-              <div style={{ display: "flex", justifyContent: "center", background: "#000", padding: "0.75rem", borderRadius: "6px", border: "1px solid var(--border-color)", maxHeight: "400px", overflowY: "auto" }}>
-                <img
-                  src={meeting.attachment_data}
-                  alt="첨부 이미지"
-                  style={{ maxWidth: "100%", height: "auto", objectFit: "contain", borderRadius: "4px" }}
-                />
+        {/* [첨부 파일 연동 뷰어/다운로드 영역] (안건별 및 회의공통 지원 개편) */}
+        <section ref={viewerRef} className="card" style={{ padding: "1.5rem", marginBottom: "1.25rem", border: "1px solid var(--border-color)", background: "var(--card-bg)" }}>
+          {currentFileName ? (
+            <>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.75rem" }}>
+                <span style={{ fontSize: "0.9rem", fontWeight: "bold", color: "var(--text-primary)", display: "flex", alignItems: "center", gap: "0.25rem" }}>
+                  <FileText size={18} style={{ color: "var(--accent-color)" }} />
+                  {isFallbackFile ? (
+                    <span style={{ color: "var(--warning-color)" }}>📎 [공통자료 뷰어] {currentFileName}</span>
+                  ) : (
+                    <span>📄 [안건별 심의자료] {currentFileName}</span>
+                  )}
+                </span>
+                <button
+                  className="btn btn-secondary"
+                  style={{ padding: "0.3rem 0.6rem", fontSize: "0.75rem" }}
+                  onClick={() => {
+                    const link = document.createElement("a");
+                    link.href = currentFileData;
+                    link.download = currentFileName;
+                    link.click();
+                  }}
+                >
+                  자료 다운로드
+                </button>
               </div>
-            )}
-
-            {/* 마크다운 뷰어 */}
-            {/\.md$/i.test(meeting.attachment_name) && (
-              <div style={{ background: "#05070f", padding: "1rem", borderRadius: "6px", border: "1px solid var(--border-color)", fontSize: "0.85rem", color: "#e2e8f0", maxHeight: "300px", overflowY: "auto", fontFamily: "monospace", whiteSpace: "pre-wrap", lineHeight: "1.6" }}>
-                {(() => {
-                  try {
-                    const base64Str = meeting.attachment_data.split(",")[1];
-                    return decodeURIComponent(atob(base64Str).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
-                  } catch (e) {
-                    return "안건 파일 디코딩 에러";
-                  }
-                })()}
-              </div>
-            )}
-
-            {/* PDF 및 기타 확장자 대응 (좌우 1:2 분할 레이아웃: 다운로드 및 실시간 즉석 뷰어 탑재) */}
-            {/\.pdf$/i.test(meeting.attachment_name) && (
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: "1.25rem", alignItems: "stretch", marginTop: "0.5rem" }}>
-                {/* 왼쪽: 다운로드 안내 영역 */}
-                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: "150px", background: "rgba(255,255,255,0.01)", borderRadius: "6px", border: "1px dashed var(--border-color)", padding: "1rem", textAlign: "center" }}>
-                  <span style={{ fontSize: "0.85rem", color: "var(--text-secondary)", marginBottom: "0.75rem", lineHeight: "1.4" }}>
-                    PDF 심의 안건 서류가 탑재되어 있습니다.<br/>파일을 다운로드하거나 우측 뷰어에서 직접 확인하실 수 있습니다.
-                  </span>
-                  <button
-                    className="btn btn-primary"
-                    style={{ padding: "0.45rem 1rem", fontSize: "0.8rem", fontWeight: "bold" }}
-                    onClick={() => {
-                      const link = document.createElement("a");
-                      link.href = meeting.attachment_data;
-                      link.download = meeting.attachment_name;
-                      link.click();
-                    }}
-                  >
-                    PDF 파일 내려받기
-                  </button>
-                </div>
-                
-                {/* 오른쪽: 임베디드 PDF 즉석 뷰어 */}
-                <div style={{ background: "rgba(0,0,0,0.15)", borderRadius: "6px", border: "1px solid var(--border-color)", overflow: "hidden", height: "500px" }}>
-                  <iframe
-                    src={meeting.attachment_data}
-                    title="PDF 안건 뷰어"
-                    style={{ width: "100%", height: "100%", border: "none" }}
+              
+              {/* 이미지 뷰어 */}
+              {/\.(png|jpe?g)$/i.test(currentFileName) && (
+                <div style={{ display: "flex", justifyContent: "center", background: "#000", padding: "0.75rem", borderRadius: "6px", border: "1px solid var(--border-color)", maxHeight: "500px", overflowY: "auto" }}>
+                  <img
+                    src={currentFileData}
+                    alt="첨부 이미지"
+                    style={{ maxWidth: "100%", height: "auto", objectFit: "contain", borderRadius: "4px" }}
                   />
                 </div>
-              </div>
-            )}
-          </section>
-        )}
+              )}
+
+              {/* 마크다운 뷰어 */}
+              {/\.md$/i.test(currentFileName) && (
+                <div style={{ background: "#05070f", padding: "1rem", borderRadius: "6px", border: "1px solid var(--border-color)", fontSize: "0.85rem", color: "#e2e8f0", maxHeight: "400px", overflowY: "auto", fontFamily: "monospace", whiteSpace: "pre-wrap", lineHeight: "1.6" }}>
+                  {(() => {
+                    try {
+                      const base64Str = currentFileData.split(",")[1];
+                      return decodeURIComponent(atob(base64Str).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
+                    } catch (e) {
+                      return "안건 파일 디코딩 에러";
+                    }
+                  })()}
+                </div>
+              )}
+
+              {/* PDF 및 기타 확장자 대응 (좌우 1:2 분할 레이아웃: 다운로드 및 실시간 즉석 뷰어 탑재) */}
+              {/\.pdf$/i.test(currentFileName) && (
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: "1.25rem", alignItems: "stretch", marginTop: "0.5rem" }}>
+                  {/* 왼쪽: 다운로드 안내 영역 */}
+                  <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: "150px", background: "rgba(255,255,255,0.01)", borderRadius: "6px", border: "1px dashed var(--border-color)", padding: "1rem", textAlign: "center" }}>
+                    <span style={{ fontSize: "0.85rem", color: "var(--text-secondary)", marginBottom: "0.75rem", lineHeight: "1.4" }}>
+                      PDF 심의 안건 서류가 탑재되어 있습니다.<br/>파일을 다운로드하거나 우측 뷰어에서 직접 확인하실 수 있습니다.
+                    </span>
+                    <button
+                      className="btn btn-primary"
+                      style={{ padding: "0.45rem 1rem", fontSize: "0.8rem", fontWeight: "bold" }}
+                      onClick={() => {
+                        const link = document.createElement("a");
+                        link.href = currentFileData;
+                        link.download = currentFileName;
+                        link.click();
+                      }}
+                    >
+                      PDF 파일 내려받기
+                    </button>
+                  </div>
+                  
+                  {/* 오른쪽: 임베디드 PDF 즉석 뷰어 */}
+                  <div style={{ background: "rgba(0,0,0,0.15)", borderRadius: "6px", border: "1px solid var(--border-color)", overflow: "hidden", height: "500px" }}>
+                    <iframe
+                      src={currentFileData}
+                      title="PDF 안건 뷰어"
+                      style={{ width: "100%", height: "100%", border: "none" }}
+                    />
+                  </div>
+                </div>
+              )}
+            </>
+          ) : (
+            <div style={{ textAlign: "center", padding: "3rem 1.5rem", color: "var(--text-secondary)", fontSize: "0.9rem" }}>
+              <FileText size={40} style={{ color: "var(--text-secondary)", marginBottom: "0.75rem", opacity: 0.5 }} />
+              <div>선택하신 안건에는 첨부파일이 없으며, 회의 수준의 공통 심의자료도 없습니다.</div>
+            </div>
+          )}
+        </section>
 
         {/* 의결/투표 폼 */}
         <section className="card" style={{ padding: "1.5rem", border: "1px solid var(--border-color)", background: "var(--card-bg)" }}>
@@ -854,13 +912,27 @@ export default function CommitteeExternalVote({ meetingId }) {
                     const detail = agendaInputs[agenda.id] || { vote: "", score: 0, opinion: "" };
                     return (
                       <div key={agenda.id} style={{ padding: "0.8rem", background: "rgba(120, 120, 120, 0.05)", border: "1px solid var(--border-color)", borderRadius: "6px" }}>
-                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "0.4rem" }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.4rem", flexWrap: "wrap", gap: "0.4rem" }}>
                           <strong style={{ fontSize: "0.85rem", color: "var(--text-primary)" }}>
                             <span style={{ color: "var(--accent-color)" }}>#{index + 1}</span> {agenda.title}
                           </strong>
-                          <span style={{ fontSize: "0.65rem", color: "var(--accent-color)", background: "rgba(var(--accent-color-rgb), 0.1)", padding: "0.1rem 0.3rem", borderRadius: "4px", fontWeight: "bold" }}>
-                            {agenda.is_evaluation ? "5점 척도" : "일반의결"}
-                          </span>
+                          <div style={{ display: "flex", gap: "0.4rem", alignItems: "center" }}>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setActiveAgendaId(agenda.id);
+                                if (viewerRef.current) {
+                                  viewerRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+                                }
+                              }}
+                              style={{ padding: "0.2rem 0.4rem", fontSize: "0.68rem", fontWeight: "bold", background: "rgba(99, 102, 241, 0.15)", border: "1px solid rgba(99, 102, 241, 0.3)", color: "var(--accent-color)", borderRadius: "4px", cursor: "pointer" }}
+                            >
+                              📄 자료 검토
+                            </button>
+                            <span style={{ fontSize: "0.65rem", color: "var(--accent-color)", background: "rgba(99, 102, 241, 0.1)", padding: "0.15rem 0.3rem", borderRadius: "4px", fontWeight: "bold" }}>
+                              {agenda.is_evaluation ? "5점 척도" : "일반의결"}
+                            </span>
+                          </div>
                         </div>
                         {agenda.description && (
                           <p style={{ fontSize: "0.75rem", color: "var(--text-secondary)", margin: "0 0 0.5rem 0", lineHeight: "1.4" }}>
