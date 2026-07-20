@@ -1569,23 +1569,38 @@ ${targetText}
         const cleanJson = JSON.parse(jsonStr.trim());
 
         if (modalType === "meeting") {
+          // 1. 기본 메타 정보(제목, 장소 등) 기입
           setFormData(prev => applyMeetingAiDataRules(cleanJson, prev));
-            setAiPlanApplied(true);
-          if (cleanJson.agendaResultPairs && cleanJson.agendaResultPairs.length > 0) {
-            setAgendaResultPairs(cleanJson.agendaResultPairs);
-            setAiResultApplied(true);
-            setFormData(prev => {
-              const dist = distributeOperatingAgendas(cleanJson.agendaResultPairs, prev.category);
-              return { ...prev, ...dist };
-            });
-          } else if (cleanJson.operatingAgendas || cleanJson.operatingResults) {
-            // 💡 [교육용 한글 주석] AI가 8대 부서별 맵을 직접 추출하여 반환한 경우, 직접 대입해 줍니다.
-            setAiResultApplied(true);
+          setAiPlanApplied(true);
+          setAiResultApplied(true);
+
+          // 2. 💡 [교육용 한글 주석] GPT가 직접 부서별 맵을 추출한 경우, 폼 필드 상태에 우선적으로 대입해 줍니다.
+          const hasOperatingData = cleanJson.operatingAgendas || cleanJson.operatingResults;
+          if (hasOperatingData) {
             setFormData(prev => ({
               ...prev,
-              operatingAgendas: cleanJson.operatingAgendas || prev.operatingAgendas,
-              operatingResults: cleanJson.operatingResults || prev.operatingResults
+              operatingAgendas: {
+                ...prev.operatingAgendas,
+                ...cleanJson.operatingAgendas
+              },
+              operatingResults: {
+                ...prev.operatingResults,
+                ...cleanJson.operatingResults
+              }
             }));
+          }
+
+          // 3. 의제-결과 쌍 테이블 설정
+          if (cleanJson.agendaResultPairs && cleanJson.agendaResultPairs.length > 0) {
+            setAgendaResultPairs(cleanJson.agendaResultPairs);
+            
+            // 만약 GPT가 직접 부서별 맵을 리턴하지 않았을 때만 요약 리스트 파싱/분배를 수행하는 폴백 처리
+            if (!hasOperatingData) {
+              setFormData(prev => {
+                const dist = distributeOperatingAgendas(cleanJson.agendaResultPairs, prev.category);
+                return { ...prev, ...dist };
+              });
+            }
           }
           setIsAiLoading(false);
           setAiProgress(100);
@@ -1684,23 +1699,38 @@ ${targetText}
         const cleanJson = JSON.parse(jsonStr.trim());
         
         if (modalType === "meeting") {
+          // 1. 기본 메타 정보(제목, 장소 등) 기입
           setFormData(prev => applyMeetingAiDataRules(cleanJson, prev));
-            setAiPlanApplied(true);
-          if (cleanJson.agendaResultPairs && cleanJson.agendaResultPairs.length > 0) {
-            setAgendaResultPairs(cleanJson.agendaResultPairs);
-            setAiResultApplied(true);
-            setFormData(prev => {
-              const dist = distributeOperatingAgendas(cleanJson.agendaResultPairs, prev.category);
-              return { ...prev, ...dist };
-            });
-          } else if (cleanJson.operatingAgendas || cleanJson.operatingResults) {
-            // 💡 [교육용 한글 주석] AI가 8대 부서별 맵을 직접 추출하여 반환한 경우, 직접 대입해 줍니다.
-            setAiResultApplied(true);
+          setAiPlanApplied(true);
+          setAiResultApplied(true);
+
+          // 2. 💡 [교육용 한글 주석] 제미나이가 직접 부서별 맵을 추출한 경우, 폼 필드 상태에 우선적으로 대입해 줍니다.
+          const hasOperatingData = cleanJson.operatingAgendas || cleanJson.operatingResults;
+          if (hasOperatingData) {
             setFormData(prev => ({
               ...prev,
-              operatingAgendas: cleanJson.operatingAgendas || prev.operatingAgendas,
-              operatingResults: cleanJson.operatingResults || prev.operatingResults
+              operatingAgendas: {
+                ...prev.operatingAgendas,
+                ...cleanJson.operatingAgendas
+              },
+              operatingResults: {
+                ...prev.operatingResults,
+                ...cleanJson.operatingResults
+              }
             }));
+          }
+
+          // 3. 의제-결과 쌍 테이블 설정
+          if (cleanJson.agendaResultPairs && cleanJson.agendaResultPairs.length > 0) {
+            setAgendaResultPairs(cleanJson.agendaResultPairs);
+            
+            // 만약 제미나이가 직접 부서별 맵을 리턴하지 않았을 때만 요약 리스트 파싱/분배를 수행하는 폴백 처리
+            if (!hasOperatingData) {
+              setFormData(prev => {
+                const dist = distributeOperatingAgendas(cleanJson.agendaResultPairs, prev.category);
+                return { ...prev, ...dist };
+              });
+            }
           }
           setIsAiLoading(false);
           setAiProgress(100);
