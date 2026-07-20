@@ -8842,7 +8842,7 @@ export default function App() {
       />
 
       {/* 메인 뷰 */}
-      <main key={`main-viewport-${darkMode}`} className="main-content" style={{ opacity: isScrollRestored ? 1 : 0, transition: "opacity 0.22s ease-in-out" }}>
+      <main className="main-content" style={{ opacity: isScrollRestored ? 1 : 0, transition: "opacity 0.22s ease-in-out" }}>
         <header className="top-nav" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "1rem" }}>
           <div className="page-title">
             <h1>앵커사업 통합 IR 대시보드</h1>
@@ -9022,7 +9022,7 @@ export default function App() {
         {activeTab === "dashboard" && (
           <div>
             {/* 메인 대시보드 탭: 사용자의 요청에 따라 엑셀 업로더 영역을 제거하고 KPI 요약 카드만 노출합니다. */}
-            <KPIOverview key={`kpi-${darkMode}-${selectedYear}`} projects={displayProjects} currentRole={currentRole} selectedYear={selectedYear} />
+            <KPIOverview key={`kpi-${selectedYear}`} projects={displayProjects} currentRole={currentRole} selectedYear={selectedYear} />
           </div>
         )}
 
@@ -9430,13 +9430,13 @@ export default function App() {
               )}
 
               {projectsSubTab === "unit_system" && (
-                <UnitSystemView key={`unit-system-${darkMode}-${selectedYear}`} selectedYear={selectedYear} />
+                <UnitSystemView key={`unit-system-${selectedYear}`} selectedYear={selectedYear} />
               )}
 
               {projectsSubTab === "program_mgmt" && (
                 <div id="pdca-manager-section">
                   <PDCAManager
-                    key={`pdca-${darkMode}-${selectedYear}`}
+                    key={`pdca-${selectedYear}`}
                     projects={displayProjects}
                     currentRole={currentRole}
                     onUpdateProgramDetails={handleUpdateProgramDetails}
