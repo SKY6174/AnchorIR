@@ -671,7 +671,7 @@ export default function CommitteeExternalVote({ meetingId }) {
   // B. 인증 완료 상태 - 의결 검토 및 서명 패드 제출 페이지
   return (
     <div style={{ minHeight: "100vh", background: "var(--background-color)", color: "var(--text-primary)", padding: "1.5rem" }}>
-      <div style={{ maxWidth: "800px", margin: "0 auto" }}>
+      <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
         
         {/* 상단 인증 탑 바 */}
         <header style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem", paddingBottom: "0.75rem", borderBottom: "1px solid var(--border-color)" }}>
