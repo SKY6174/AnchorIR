@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { supabase } from "../supabaseClient";
-import { Users, Lock, FileText, Check, AlertTriangle, Send, Vote } from "lucide-react";
+import { Users, Lock, FileText, Check, AlertTriangle, Send, Vote, Upload, RefreshCw } from "lucide-react";
 import CryptoJS from "crypto-js";
 
 /**
@@ -36,7 +36,7 @@ export interface CommitteeExternalVoteProps {
 }
 
 /**
- * 💡 CommitteeExternalVote - 위원회 외부 전자 투표 및 의결 수집 TSX 컴포넌트
+ * 💡 CommitteeExternalVote - 모바일/패드 멀티 터치 자필 서명, 서명 파일 업로드, 의안 드롭다운 및 동의/부동의/기권 표결 TSX 컴포넌트
  */
 export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVoteProps): React.JSX.Element {
   // 1. 상태 정의
@@ -56,22 +56,20 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
   const [activeAttachmentData, setActiveAttachmentData] = useState<any>(null);
   const [activeAttachmentLoading, setActiveAttachmentLoading] = useState<boolean>(false);
 
-  // 외부 위원이 개별 의안에 대해 채우는 폼 상태
+  // 외부 위원이 개별 의안에 대해 채우는 폼 상태 (기본값: APPROVE=동의)
   const [agendaInputs, setAgendaInputs] = useState<Record<string | number, { vote: string; score: number; opinion: string }>>({});
 
-  // 의결 양식 상태
-  const [attended, setAttended] = useState<boolean>(true);
-  const [vote, setVote] = useState<string>("APPROVE");
-  const [opinion, setOpinion] = useState<string>("");
+  // 전체 제출 상태
   const [hasSubmitted, setHasSubmitted] = useState<boolean>(false);
 
-  // 전자서명 캔버스 참조
+  // 전자서명 캔버스 및 파일 입력 참조
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
   const viewerRef = useRef<HTMLDivElement | null>(null);
   const [isDrawing, setIsDrawing] = useState<boolean>(false);
   const [currentBlobUrl, setCurrentBlobUrl] = useState<string | null>(null);
 
-  const activeAgenda = selectedMeetingAgendas.find(a => a.id === activeAgendaId);
+  const activeAgenda = selectedMeetingAgendas.find(a => String(a.id) === String(activeAgendaId));
   const isFallbackFile = !activeAgenda?.attachment_name && !!meeting?.attachment_name;
   const currentFileName = activeAgenda?.attachment_name || meeting?.attachment_name || null;
   const currentFileData = activeAttachmentData || (isFallbackFile ? meeting?.attachment_data : null);
@@ -114,11 +112,8 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
       const localData = localStorage.getItem(`local_meeting_responses_${mId}`);
       if (localData) {
         const parsed = JSON.parse(localData);
-        const myResp = parsed.find((r: any) => r.member_id === memberId);
+        const myResp = parsed.find((r: any) => String(r.member_id) === String(memberId));
         if (myResp) {
-          setAttended(myResp.attended);
-          setVote(myResp.vote || "APPROVE");
-          setOpinion(myResp.opinion || "");
           setHasSubmitted(true);
         }
       }
@@ -134,26 +129,10 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
         .single();
 
       if (data && data.submitted_at) {
-        setAttended(data.attended);
-        setVote(data.vote || "APPROVE");
-        setOpinion(data.opinion || "");
         setHasSubmitted(true);
-      } else {
-        throw new Error("No response record");
       }
     } catch (e: any) {
-      console.warn("제출 내역 조회 실패 (로컬 스토리지 확인):", e.message);
-      const localData = localStorage.getItem(`local_meeting_responses_${mId}`);
-      if (localData) {
-        const parsed = JSON.parse(localData);
-        const myResp = parsed.find((r: any) => r.member_id === memberId);
-        if (myResp) {
-          setAttended(myResp.attended);
-          setVote(myResp.vote || "APPROVE");
-          setOpinion(myResp.opinion || "");
-          setHasSubmitted(true);
-        }
-      }
+      console.warn("제출 내역 조회 실패:", e.message);
     }
   };
 
@@ -196,16 +175,12 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
       localStorage.setItem(`local_meeting_agenda_votes_${mId}`, JSON.stringify(votes || []));
     } catch (err: any) {
       console.error("❌ fetchMeetingAgendasAndVotes 에러 발생:", err.message);
-
       const localAgendas = localStorage.getItem(`local_meeting_agendas_${mId}`);
       const parsedAgendas = localAgendas ? JSON.parse(localAgendas) : [];
       setSelectedMeetingAgendas(parsedAgendas);
       if (parsedAgendas.length > 0) {
         setActiveAgendaId(parsedAgendas[0].id);
       }
-
-      const localVotes = localStorage.getItem(`local_meeting_agenda_votes_${mId}`);
-      setSelectedMeetingAgendaVotes(localVotes ? JSON.parse(localVotes) : []);
     }
   };
 
@@ -251,7 +226,7 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
         setMeeting(data);
         await fetchMeetingAgendasAndVotes(targetMeetingId);
       } catch (e: any) {
-        console.error("회의 조회 에러 (로컬 폴백 검사):", e);
+        console.error("회의 조회 에러:", e);
         const localMeetings = localStorage.getItem("local_committee_meetings");
         if (localMeetings) {
           const parsed = JSON.parse(localMeetings);
@@ -272,10 +247,9 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
     fetchMeeting();
   }, [meetingId]);
 
-  // 개별 첨부파일 비동기 다운로드
   useEffect(() => {
     if (!activeAgendaId || !meeting?.id) return;
-    const activeAgendaItem = selectedMeetingAgendas.find(a => a.id === activeAgendaId);
+    const activeAgendaItem = selectedMeetingAgendas.find(a => String(a.id) === String(activeAgendaId));
     if (!activeAgendaItem || !activeAgendaItem.attachment_name) {
       setActiveAttachmentData(null);
       return;
@@ -288,7 +262,7 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
           const localAgendas = localStorage.getItem(`local_meeting_agendas_${meeting.id}`);
           if (localAgendas) {
             const parsed = JSON.parse(localAgendas);
-            const found = parsed.find((a: any) => a.id === activeAgendaId);
+            const found = parsed.find((a: any) => String(a.id) === String(activeAgendaId));
             if (found && found.attachment_data) {
               setActiveAttachmentData(found.attachment_data);
               setActiveAttachmentLoading(false);
@@ -354,30 +328,50 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
     }
   };
 
-  // 캔버스 전자서명 이벤트
+  // 💡 [요구사항 3] 터치 및 마우스 반응형 좌표 계산 헬퍼 함수
+  const getCanvasCoords = (e: any) => {
+    const canvas = canvasRef.current;
+    if (!canvas) return { x: 0, y: 0 };
+    const rect = canvas.getBoundingClientRect();
+    let clientX = e.clientX;
+    let clientY = e.clientY;
+
+    if (e.touches && e.touches.length > 0) {
+      clientX = e.touches[0].clientX;
+      clientY = e.touches[0].clientY;
+    }
+
+    return {
+      x: clientX - rect.left,
+      y: clientY - rect.top
+    };
+  };
+
   const startDrawing = (e: any) => {
+    if (e.cancelable) e.preventDefault();
     setIsDrawing(true);
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
-    const rect = canvas.getBoundingClientRect();
-    const x = (e.clientX || (e.touches && e.touches[0].clientX)) - rect.left;
-    const y = (e.clientY || (e.touches && e.touches[0].clientY)) - rect.top;
+    ctx.lineWidth = 2.5;
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+    ctx.strokeStyle = "#000000";
+    const coords = getCanvasCoords(e);
     ctx.beginPath();
-    ctx.moveTo(x, y);
+    ctx.moveTo(coords.x, coords.y);
   };
 
   const draw = (e: any) => {
     if (!isDrawing) return;
+    if (e.cancelable) e.preventDefault();
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
-    const rect = canvas.getBoundingClientRect();
-    const x = (e.clientX || (e.touches && e.touches[0].clientX)) - rect.left;
-    const y = (e.clientY || (e.touches && e.touches[0].clientY)) - rect.top;
-    ctx.lineTo(x, y);
+    const coords = getCanvasCoords(e);
+    ctx.lineTo(coords.x, coords.y);
     ctx.stroke();
   };
 
@@ -393,6 +387,33 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
     ctx.clearRect(0, 0, canvas.width, canvas.height);
   };
 
+  // 💡 [요구사항 3] 서명 이미지 파일 직접 업로드 핸들러
+  const handleSignatureFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) return;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        const hRatio = canvas.width / img.width;
+        const vRatio = canvas.height / img.height;
+        const ratio = Math.min(hRatio, vRatio);
+        const centerShiftX = (canvas.width - img.width * ratio) / 2;
+        const centerShiftY = (canvas.height - img.height * ratio) / 2;
+        ctx.drawImage(img, 0, 0, img.width, img.height, centerShiftX, centerShiftY, img.width * ratio, img.height * ratio);
+      };
+      img.src = evt.target?.result as string;
+    };
+    reader.readAsDataURL(file);
+  };
+
   // 최종 전자서명 및 의결 표결 제출
   const handleSubmitVote = async () => {
     const canvas = canvasRef.current;
@@ -400,7 +421,7 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
     const signatureData = canvas.toDataURL("image/png");
 
     if (signatureData.length < 1000) {
-      alert("서명란에 자필 서명을 완성해 주세요.");
+      alert("서명란에 자필 서명을 하거나 서명 도장 이미지를 업로드해 주세요.");
       return;
     }
 
@@ -409,7 +430,7 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
 
     try {
       const memberId = authMember.id || authMember.name;
-      
+
       const votePayloads = selectedMeetingAgendas.map(a => ({
         meeting_id: meeting.id,
         agenda_id: a.id,
@@ -423,7 +444,8 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
 
       const summaryOpinion = selectedMeetingAgendas.map((a, idx) => {
         const inp = agendaInputs[a.id] || {};
-        return `[의안 ${idx + 1}: ${a.title}] ${inp.vote === "APPROVE" ? "찬성" : (inp.vote === "REJECT" ? "반대" : "기권")}${a.is_evaluation ? ` (점수: ${inp.score || 5}점)` : ""}${inp.opinion ? ` - 의견: ${inp.opinion}` : ""}`;
+        const vText = inp.vote === "REJECT" ? "부동의" : (inp.vote === "ABSTAIN" ? "기권" : "동의");
+        return `[의안 #${idx + 1}: ${a.title}] 표결: ${vText}${a.is_evaluation ? ` (점수: ${inp.score || 5}점)` : ""}${inp.opinion ? ` - 의견: ${inp.opinion}` : ""}`;
       }).join("\n");
 
       if (String(meeting.id).startsWith("local-")) {
@@ -441,7 +463,7 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
           member_id: memberId,
           member_name: authMember.name,
           attended: true,
-          vote: vote,
+          vote: agendaInputs[selectedMeetingAgendas[0]?.id]?.vote || "APPROVE",
           opinion: summaryOpinion,
           signature: encryptedSignature,
           submitted_at: new Date().toISOString()
@@ -454,7 +476,7 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
           member_id: memberId,
           member_name: authMember.name,
           attended: true,
-          vote: vote,
+          vote: agendaInputs[selectedMeetingAgendas[0]?.id]?.vote || "APPROVE",
           opinion: summaryOpinion,
           signature: encryptedSignature,
           submitted_at: new Date().toISOString()
@@ -462,7 +484,7 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
       }
 
       setHasSubmitted(true);
-      alert("전자서명 및 의결 표결이 제출되었습니다.");
+      alert("전자서명 및 의결 표결이 최종 제출되었습니다.");
     } catch (e: any) {
       console.error(e);
       alert("제출 중 오류가 발생했습니다.");
@@ -530,6 +552,8 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
     );
   }
 
+  const currentAgendaInput = agendaInputs[activeAgendaId || ""] || { vote: "APPROVE", score: 5, opinion: "" };
+
   return (
     <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "1.5rem" }}>
       {/* 상단 회의 헤더 */}
@@ -554,50 +578,70 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
 
       {/* 안건 및 의결 표결 메인 그리드 */}
       <div style={{ display: "grid", gridTemplateColumns: "1.2fr 1fr", gap: "1.5rem" }}>
-        {/* 좌측: 안건 및 열람 자료 뷰어 */}
+
+        {/* [좌측]: 상정 안건 및 열람 자료 (드롭다운 방식 지원) */}
         <div className="glass-card" style={{ padding: "1.5rem", display: "flex", flexDirection: "column", gap: "1rem" }}>
-          <h3 style={{ fontSize: "1.1rem", fontWeight: "800", display: "flex", alignItems: "center", gap: "0.5rem" }}>
-            <FileText size={20} />
-            <span>상정 안건 및 관련 자료</span>
-          </h3>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <h3 style={{ fontSize: "1.1rem", fontWeight: "800", display: "flex", alignItems: "center", gap: "0.5rem" }}>
+              <FileText size={20} />
+              <span>상정 안건 및 관련 자료</span>
+            </h3>
+          </div>
 
-          {/* 안건 탭 선택 */}
-          {selectedMeetingAgendas.length > 0 && (
-            <div style={{ display: "flex", gap: "0.5rem", borderBottom: "1px solid var(--border-color)", paddingBottom: "0.5rem", overflowX: "auto" }}>
-              {selectedMeetingAgendas.map((agenda, index) => (
-                <button
-                  key={agenda.id}
-                  onClick={() => setActiveAgendaId(agenda.id)}
-                  className={`btn-primary ${activeAgendaId === agenda.id ? "" : "inactive"}`}
-                  style={{
-                    padding: "0.4rem 0.8rem",
-                    fontSize: "0.85rem",
-                    background: activeAgendaId === agenda.id ? "var(--accent-color)" : "rgba(255,255,255,0.05)",
-                    border: "1px solid var(--border-color)",
-                    color: "var(--text-primary)"
-                  }}
-                >
-                  의안 #{index + 1}
-                </button>
-              ))}
+          {/* 💡 [요구사항 1] 상정 의안 안건 드롭다운 선택 메뉴 */}
+          {selectedMeetingAgendas.length > 0 ? (
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
+              <label style={{ fontSize: "0.8rem", fontWeight: "700", color: "var(--text-secondary)" }}>
+                📋 열람할 상정 의안 선택 ({selectedMeetingAgendas.length}건 중)
+              </label>
+              <select
+                value={activeAgendaId || ""}
+                onChange={(e) => setActiveAgendaId(e.target.value)}
+                style={{
+                  width: "100%",
+                  padding: "0.65rem 0.85rem",
+                  borderRadius: "8px",
+                  border: "1px solid var(--accent-color)",
+                  background: "var(--input-bg)",
+                  color: "var(--text-primary)",
+                  fontSize: "0.92rem",
+                  fontWeight: "800",
+                  cursor: "pointer"
+                }}
+              >
+                {selectedMeetingAgendas.map((agenda, index) => (
+                  <option key={agenda.id} value={agenda.id}>
+                    의안 #{index + 1}: {agenda.title}
+                  </option>
+                ))}
+              </select>
             </div>
-          )}
+          ) : null}
 
-          {/* 선택된 안건 내용 */}
+          {/* 선택된 안건 본문 내용 */}
           {activeAgenda ? (
-            <div style={{ display: "flex", flexDirection: "column", gap: "0.8rem" }}>
-              <h4 style={{ fontSize: "1.05rem", fontWeight: "700" }}>{activeAgenda.title}</h4>
-              <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)", lineHeight: "1.5", whiteSpace: "pre-wrap" }}>
-                {activeAgenda.description}
-              </p>
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.8rem", marginTop: "0.5rem" }}>
+              <div style={{ padding: "0.75rem", borderRadius: "6px", background: "rgba(59, 130, 246, 0.08)", borderLeft: "4px solid var(--accent-color)" }}>
+                <span style={{ fontSize: "0.75rem", fontWeight: "800", color: "var(--accent-color)", display: "block" }}>
+                  선택된 안건 상세
+                </span>
+                <h4 style={{ fontSize: "1.1rem", fontWeight: "800", margin: "0.2rem 0 0 0" }}>{activeAgenda.title}</h4>
+              </div>
+
+              {activeAgenda.description && (
+                <p style={{ fontSize: "0.88rem", color: "var(--text-secondary)", lineHeight: "1.6", whiteSpace: "pre-wrap" }}>
+                  {activeAgenda.description}
+                </p>
+              )}
 
               {/* 안건 문서 뷰어 */}
               {currentFileName && (
-                <div style={{ marginTop: "1.5rem" }}>
-                  <div style={{ fontSize: "0.85rem", fontWeight: "700", marginBottom: "0.5rem" }}>
-                    첨부 파일: {currentFileName}
+                <div style={{ marginTop: "1rem" }}>
+                  <div style={{ fontSize: "0.85rem", fontWeight: "700", marginBottom: "0.5rem", display: "flex", alignItems: "center", gap: "0.3rem" }}>
+                    <span>📎 첨부 파일:</span>
+                    <span style={{ color: "var(--accent-color)" }}>{currentFileName}</span>
                   </div>
-                  <div ref={viewerRef} style={{ width: "100%", height: "450px", border: "1px solid var(--border-color)", borderRadius: "8px", overflow: "hidden", background: "#fff" }}>
+                  <div ref={viewerRef} style={{ width: "100%", height: "480px", border: "1px solid var(--border-color)", borderRadius: "8px", overflow: "hidden", background: "#fff" }}>
                     {activeAttachmentLoading ? (
                       <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100%", color: "#000" }}>
                         문서를 불러오는 중입니다...
@@ -618,64 +662,128 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
           )}
         </div>
 
-        {/* 우측: 의결 표결 및 자필 서명 */}
-        <div className="glass-card" style={{ padding: "1.5rem", display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+        {/* [우측]: 의결 표결 및 자필 서명 / 업로드 / 최종 제출 */}
+        <div className="glass-card" style={{ padding: "1.5rem", display: "flex", flexDirection: "column", gap: "1.25rem" }}>
           <h3 style={{ fontSize: "1.1rem", fontWeight: "800", display: "flex", alignItems: "center", gap: "0.5rem" }}>
             <Vote size={20} />
             <span>의결 표결 및 서명</span>
           </h3>
 
           {hasSubmitted ? (
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "1rem", padding: "3rem 1rem", textAlign: "center", color: "var(--success-color)" }}>
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "1rem", padding: "4rem 1rem", textAlign: "center", color: "#10b981" }}>
               <Check size={56} />
-              <h4 style={{ fontSize: "1.2rem", fontWeight: "800" }}>의결 표결이 완료되었습니다.</h4>
-              <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)" }}>
-                제출해주신 의결 결과 및 자필 암호화 전자서명이 안전하게 기록되었습니다.
+              <h4 style={{ fontSize: "1.25rem", fontWeight: "800" }}>의결 표결이 완료되었습니다.</h4>
+              <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)", lineHeight: "1.5" }}>
+                제출해주신 의결 결과 및 자필 암호화 전자서명이 안전하게 처리되었습니다.
               </p>
             </div>
           ) : (
-            <div style={{ display: "flex", flexDirection: "column", gap: "1.2rem" }}>
-              {/* 개별 의안 찬반/점수 표결 */}
+            <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
+              
+              {/* 💡 [요구사항 2] 의안별 개별 표결 카드 (동의 / 부동의 / 기권 뚜렷한 버튼 표시) */}
               {selectedMeetingAgendas.map((agenda, index) => {
                 const currentInp = agendaInputs[agenda.id] || { vote: "APPROVE", score: 5, opinion: "" };
+                const isCurrentActive = String(agenda.id) === String(activeAgendaId);
+
                 return (
-                  <div key={agenda.id} style={{ border: "1px solid var(--border-color)", padding: "1rem", borderRadius: "8px", background: "rgba(255,255,255,0.02)" }}>
-                    <div style={{ fontWeight: "700", fontSize: "0.95rem", marginBottom: "0.6rem" }}>
-                      의안 #{index + 1}: {agenda.title}
+                  <div
+                    key={agenda.id}
+                    style={{
+                      border: isCurrentActive ? "2px solid var(--accent-color)" : "1px solid var(--border-color)",
+                      padding: "1.1rem",
+                      borderRadius: "10px",
+                      background: isCurrentActive ? "rgba(59, 130, 246, 0.04)" : "rgba(255,255,255,0.02)",
+                      transition: "all 0.2s"
+                    }}
+                  >
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.75rem" }}>
+                      <span style={{ fontWeight: "800", fontSize: "0.95rem", color: isCurrentActive ? "var(--accent-color)" : "var(--text-primary)" }}>
+                        의안 #{index + 1}: {agenda.title}
+                      </span>
+                      {isCurrentActive && (
+                        <span style={{ fontSize: "0.7rem", padding: "0.15rem 0.4rem", borderRadius: "4px", background: "var(--accent-color)", color: "#fff", fontWeight: "700" }}>
+                          현재 선택 안건
+                        </span>
+                      )}
                     </div>
 
-                    {/* 찬반 선택 */}
-                    <div style={{ display: "flex", gap: "0.5rem", marginBottom: "0.8rem" }}>
-                      {["APPROVE", "REJECT", "ABSTAIN"].map(vOpt => (
-                        <button
-                          key={vOpt}
-                          type="button"
-                          onClick={() => setAgendaInputs({
-                            ...agendaInputs,
-                            [agenda.id]: { ...currentInp, vote: vOpt }
-                          })}
-                          style={{
-                            flex: 1,
-                            padding: "0.4rem",
-                            fontSize: "0.8rem",
-                            borderRadius: "6px",
-                            border: "1px solid var(--border-color)",
-                            background: currentInp.vote === vOpt ? (vOpt === "APPROVE" ? "var(--success-color)" : (vOpt === "REJECT" ? "#ef4444" : "#f59e0b")) : "transparent",
-                            color: "#fff",
-                            fontWeight: "700",
-                            cursor: "pointer"
-                          }}
-                        >
-                          {vOpt === "APPROVE" ? "찬성" : (vOpt === "REJECT" ? "반대" : "기권")}
-                        </button>
-                      ))}
+                    {/* 💡 [요구사항 2] 동의 / 부동의 / 기권 뚜렷한 표결 버튼 3개 */}
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "0.5rem", marginBottom: "0.85rem" }}>
+                      {/* 동의 버튼 */}
+                      <button
+                        type="button"
+                        onClick={() => setAgendaInputs({
+                          ...agendaInputs,
+                          [agenda.id]: { ...currentInp, vote: "APPROVE" }
+                        })}
+                        style={{
+                          padding: "0.6rem 0.3rem",
+                          fontSize: "0.9rem",
+                          borderRadius: "8px",
+                          border: currentInp.vote === "APPROVE" ? "2px solid #10b981" : "1px solid var(--border-color)",
+                          background: currentInp.vote === "APPROVE" ? "#10b981" : "rgba(255,255,255,0.05)",
+                          color: currentInp.vote === "APPROVE" ? "#ffffff" : "var(--text-secondary)",
+                          fontWeight: "800",
+                          cursor: "pointer",
+                          boxShadow: currentInp.vote === "APPROVE" ? "0 4px 12px rgba(16, 185, 129, 0.3)" : "none",
+                          transition: "all 0.15s ease"
+                        }}
+                      >
+                        동의
+                      </button>
+
+                      {/* 부동의 버튼 */}
+                      <button
+                        type="button"
+                        onClick={() => setAgendaInputs({
+                          ...agendaInputs,
+                          [agenda.id]: { ...currentInp, vote: "REJECT" }
+                        })}
+                        style={{
+                          padding: "0.6rem 0.3rem",
+                          fontSize: "0.9rem",
+                          borderRadius: "8px",
+                          border: currentInp.vote === "REJECT" ? "2px solid #ef4444" : "1px solid var(--border-color)",
+                          background: currentInp.vote === "REJECT" ? "#ef4444" : "rgba(255,255,255,0.05)",
+                          color: currentInp.vote === "REJECT" ? "#ffffff" : "var(--text-secondary)",
+                          fontWeight: "800",
+                          cursor: "pointer",
+                          boxShadow: currentInp.vote === "REJECT" ? "0 4px 12px rgba(239, 68, 68, 0.3)" : "none",
+                          transition: "all 0.15s ease"
+                        }}
+                      >
+                        부동의
+                      </button>
+
+                      {/* 기권 버튼 */}
+                      <button
+                        type="button"
+                        onClick={() => setAgendaInputs({
+                          ...agendaInputs,
+                          [agenda.id]: { ...currentInp, vote: "ABSTAIN" }
+                        })}
+                        style={{
+                          padding: "0.6rem 0.3rem",
+                          fontSize: "0.9rem",
+                          borderRadius: "8px",
+                          border: currentInp.vote === "ABSTAIN" ? "2px solid #6b7280" : "1px solid var(--border-color)",
+                          background: currentInp.vote === "ABSTAIN" ? "#6b7280" : "rgba(255,255,255,0.05)",
+                          color: currentInp.vote === "ABSTAIN" ? "#ffffff" : "var(--text-secondary)",
+                          fontWeight: "800",
+                          cursor: "pointer",
+                          boxShadow: currentInp.vote === "ABSTAIN" ? "0 4px 12px rgba(107, 114, 128, 0.3)" : "none",
+                          transition: "all 0.15s ease"
+                        }}
+                      >
+                        기권
+                      </button>
                     </div>
 
-                    {/* 정량 평가인 경우 점수 선택 */}
+                    {/* 정량 평가 점수 선택 (해당하는 경우) */}
                     {agenda.is_evaluation && (
-                      <div style={{ marginBottom: "0.8rem" }}>
-                        <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)", display: "block", marginBottom: "0.3rem" }}>평가 점수 (5점 만점)</label>
-                        <div style={{ display: "flex", gap: "0.3rem" }}>
+                      <div style={{ marginBottom: "0.85rem" }}>
+                        <label style={{ fontSize: "0.78rem", fontWeight: "700", color: "var(--text-secondary)", display: "block", marginBottom: "0.3rem" }}>평가 점수 (5점 만점)</label>
+                        <div style={{ display: "flex", gap: "0.4rem" }}>
                           {[1, 2, 3, 4, 5].map(scoreVal => (
                             <button
                               key={scoreVal}
@@ -686,12 +794,14 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
                               })}
                               style={{
                                 flex: 1,
-                                padding: "0.3rem",
-                                fontSize: "0.75rem",
-                                borderRadius: "4px",
+                                padding: "0.4rem",
+                                fontSize: "0.8rem",
+                                borderRadius: "6px",
                                 border: "1px solid var(--border-color)",
                                 background: currentInp.score === scoreVal ? "var(--accent-color)" : "transparent",
-                                color: "#fff"
+                                color: currentInp.score === scoreVal ? "#fff" : "var(--text-primary)",
+                                fontWeight: "700",
+                                cursor: "pointer"
                               }}
                             >
                               {scoreVal}점
@@ -701,7 +811,7 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
                       </div>
                     )}
 
-                    {/* 심의 의견 입력 */}
+                    {/* 검토 의견 입력 */}
                     <div>
                       <input
                         type="text"
@@ -711,26 +821,57 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
                           [agenda.id]: { ...currentInp, opinion: e.target.value }
                         })}
                         placeholder="의견이나 수정을 제안할 내용을 입력하세요."
-                        style={{ width: "100%", padding: "0.5rem", fontSize: "0.8rem", borderRadius: "6px", border: "1px solid var(--border-color)", background: "var(--input-bg)", color: "var(--text-primary)" }}
+                        style={{ width: "100%", padding: "0.6rem 0.8rem", fontSize: "0.85rem", borderRadius: "6px", border: "1px solid var(--border-color)", background: "var(--input-bg)", color: "var(--text-primary)" }}
                       />
                     </div>
                   </div>
                 );
               })}
 
-              {/* 자필 전자서명 캔버스 */}
-              <div>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.4rem" }}>
-                  <label style={{ fontSize: "0.85rem", fontWeight: "700" }}>자필 서명 (AES 암호화 저장)</label>
-                  <button type="button" onClick={clearCanvas} style={{ fontSize: "0.75rem", color: "#ef4444", background: "none", border: "none", cursor: "pointer" }}>
-                    지우기
-                  </button>
+              {/* 💡 [요구사항 3] 자필 전자서명 & 서명파일 업로드 (맨 아래 이동) */}
+              <div style={{ borderTop: "1px solid var(--border-color)", paddingTop: "1.25rem", marginTop: "0.5rem" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.6rem" }}>
+                  <label style={{ fontSize: "0.9rem", fontWeight: "800", display: "flex", alignItems: "center", gap: "0.4rem" }}>
+                    <span>자필 서명 (AES 암호화 저장)</span>
+                    <span style={{ fontSize: "0.72rem", color: "var(--text-secondary)", fontWeight: "normal" }}>(모바일/패드 멀티터치 지원)</span>
+                  </label>
+
+                  <div style={{ display: "flex", gap: "0.4rem" }}>
+                    {/* 서명 파일 업로드 버튼 */}
+                    <input
+                      type="file"
+                      ref={fileInputRef}
+                      onChange={handleSignatureFileUpload}
+                      accept="image/*"
+                      style={{ display: "none" }}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      style={{ display: "flex", alignItems: "center", gap: "0.2rem", fontSize: "0.75rem", color: "var(--accent-color)", background: "rgba(59, 130, 246, 0.1)", border: "1px solid var(--accent-color)", borderRadius: "4px", padding: "0.2rem 0.5rem", cursor: "pointer", fontWeight: "700" }}
+                    >
+                      <Upload size={12} />
+                      <span>서명 파일 업로드</span>
+                    </button>
+
+                    {/* 지우기 버튼 */}
+                    <button
+                      type="button"
+                      onClick={clearCanvas}
+                      style={{ display: "flex", alignItems: "center", gap: "0.2rem", fontSize: "0.75rem", color: "#ef4444", background: "rgba(239, 68, 68, 0.1)", border: "1px solid #ef4444", borderRadius: "4px", padding: "0.2rem 0.5rem", cursor: "pointer", fontWeight: "700" }}
+                    >
+                      <RefreshCw size={12} />
+                      <span>지우기</span>
+                    </button>
+                  </div>
                 </div>
-                <div style={{ border: "1px solid var(--border-color)", borderRadius: "8px", background: "#fff", touchAction: "none" }}>
+
+                {/* 모바일/패드 터치 지원 캔버스 */}
+                <div style={{ border: "2px dashed var(--border-color)", borderRadius: "10px", background: "#ffffff", touchAction: "none" }}>
                   <canvas
                     ref={canvasRef}
-                    width={400}
-                    height={150}
+                    width={450}
+                    height={160}
                     onMouseDown={startDrawing}
                     onMouseMove={draw}
                     onMouseUp={stopDrawing}
@@ -738,20 +879,40 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
                     onTouchStart={startDrawing}
                     onTouchMove={draw}
                     onTouchEnd={stopDrawing}
-                    style={{ width: "100%", height: "150px", cursor: "crosshair" }}
+                    style={{ width: "100%", height: "160px", cursor: "crosshair", borderRadius: "8px" }}
                   />
                 </div>
+                <span style={{ fontSize: "0.72rem", color: "var(--text-secondary)", display: "block", marginTop: "0.4rem", textAlign: "right" }}>
+                  * 화면에 직접 서명하거나 이미지 파일(도장/서명)을 업로드할 수 있습니다.
+                </span>
               </div>
 
+              {/* 💡 [요구사항 3] 맨 아래에 최종 의결 표결 및 서명 제출 버튼 배치 */}
               <button
                 type="button"
                 className="btn-primary"
                 onClick={handleSubmitVote}
-                style={{ width: "100%", padding: "0.85rem", fontSize: "1rem", fontWeight: "800", marginTop: "0.5rem" }}
+                style={{
+                  width: "100%",
+                  padding: "0.95rem",
+                  fontSize: "1.05rem",
+                  fontWeight: "900",
+                  marginTop: "0.5rem",
+                  background: "var(--accent-color)",
+                  color: "#ffffff",
+                  borderRadius: "10px",
+                  boxShadow: "0 6px 20px rgba(59, 130, 246, 0.4)",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: "0.5rem"
+                }}
               >
-                <Send size={18} />
+                <Send size={20} />
                 <span>최종 의결 표결 및 서명 제출</span>
               </button>
+
             </div>
           )}
         </div>
