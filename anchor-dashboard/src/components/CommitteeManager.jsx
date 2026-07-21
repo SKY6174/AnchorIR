@@ -15,6 +15,7 @@ import {
   Cpu, 
   Trash2, 
   Edit, 
+  Edit3, 
   Lock,
   ChevronRight,
   UserCheck
