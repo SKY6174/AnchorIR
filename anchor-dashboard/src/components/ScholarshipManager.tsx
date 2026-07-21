@@ -371,13 +371,47 @@ export default function ScholarshipManager({
     XLSX.writeFile(workbook, "장학금_지급_엑셀업로드_양식.xlsx");
   };
 
+  const totalAmount = filteredItems.reduce((sum, item) => sum + Number(item.amount || 0), 0);
+  const totalStudents = filteredItems.length;
+
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+    <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
+      {/* 💡 [요약 카드 영역] 총 지급액 및 총 수혜인원 현황 */}
+      <div style={{ display: "grid", gridTemplateColumns: "3fr 2fr", gap: "1rem" }}>
+        <div className="glass-card" style={{ padding: "1.25rem 1.5rem", display: "flex", alignItems: "center", justifyContent: "space-between", background: "var(--panel-bg)", border: "1px solid var(--border-color)", borderRadius: "10px" }}>
+          <div>
+            <div style={{ fontSize: "0.82rem", color: "var(--text-secondary)", fontWeight: "600" }}>
+              {filterYear === "all" ? "전체 차년도" : `${filterYear}차년도`} 마일리지 장학금 총 지급액
+            </div>
+            <div style={{ fontSize: "1.75rem", fontWeight: "900", color: "var(--accent-color)", marginTop: "0.25rem", letterSpacing: "-0.5px" }}>
+              {totalAmount.toLocaleString()} <span style={{ fontSize: "1rem", fontWeight: "700", color: "var(--text-primary)" }}>원</span>
+            </div>
+          </div>
+          <div style={{ width: "44px", height: "44px", borderRadius: "10px", background: "rgba(59, 130, 246, 0.12)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <DollarSign size={24} style={{ color: "var(--accent-color)" }} />
+          </div>
+        </div>
+
+        <div className="glass-card" style={{ padding: "1.25rem 1.5rem", display: "flex", alignItems: "center", justifyContent: "space-between", background: "var(--panel-bg)", border: "1px solid var(--border-color)", borderRadius: "10px" }}>
+          <div>
+            <div style={{ fontSize: "0.82rem", color: "var(--text-secondary)", fontWeight: "600" }}>
+              {filterYear === "all" ? "전체" : `${filterYear}차년도`} 총 수혜 학생 수
+            </div>
+            <div style={{ fontSize: "1.75rem", fontWeight: "900", color: "var(--text-primary)", marginTop: "0.25rem", letterSpacing: "-0.5px" }}>
+              {totalStudents.toLocaleString()} <span style={{ fontSize: "1rem", fontWeight: "700", color: "var(--text-secondary)" }}>명</span>
+            </div>
+          </div>
+          <div style={{ width: "44px", height: "44px", borderRadius: "10px", background: "rgba(16, 185, 129, 0.12)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <span style={{ fontSize: "1.2rem", fontWeight: "800", color: "#10b981" }}>🎓</span>
+          </div>
+        </div>
+      </div>
+
       {/* 1. 상단 타이틀 및 툴바 영역 */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.5rem" }}>
-        <h2 style={{ fontSize: "1.25rem", fontWeight: "800", display: "flex", alignItems: "center", gap: "0.5rem" }}>
-          <DollarSign size={24} style={{ color: "var(--accent-color)" }} />
-          장학금 관리
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.25rem" }}>
+        <h2 style={{ fontSize: "1.2rem", fontWeight: "800", display: "flex", alignItems: "center", gap: "0.5rem", margin: 0 }}>
+          <DollarSign size={22} style={{ color: "var(--accent-color)" }} />
+          장학금 관리 대장
         </h2>
 
         <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
