@@ -503,6 +503,28 @@ export default function ScheduleManager({
   const [isMemberModalOpen, setIsMemberModalOpen] = useState(false);
   const [editingMember, setEditingMember] = useState(null); // 수정할 위원 정보 (null 이면 신규 추가)
 
+  // 💡 [위원 직분별 우선순위 정렬 헬퍼] 위원장 -> 위원 -> 간사 순서 출력
+  const sortMembersByRole = (membersList) => {
+    if (!Array.isArray(membersList)) return [];
+    const getRolePriority = (typeStr) => {
+      if (!typeStr) return 2;
+      if (typeStr.includes("위원장")) return 1;
+      if (typeStr.includes("간사")) return 3;
+      return 2; // 위원, 위원(자문겸직) 등
+    };
+
+    return [...membersList].sort((a, b) => {
+      const pA = getRolePriority(a.type);
+      const pB = getRolePriority(b.type);
+      if (pA !== pB) {
+        return pA - pB;
+      }
+      const sA = a.sort_order ?? 999;
+      const sB = b.sort_order ?? 999;
+      return sA - sB;
+    });
+  };
+
 
 
   // 위원회 종류 필터 상태
@@ -532,6 +554,19 @@ export default function ScheduleManager({
   // 위원회 명단 수정 권한 통제 (송경영, 김현수, 심현미 3명에게만 부여)
   const currentUserName = currentUser?.name ? currentUser.name.split(" ")[0].split("(")[0].trim() : "";
   const hasCommitteeEditPermission = ["송경영", "김현수", "심현미"].includes(currentUserName);
+
+  // 💡 [실시간 위원 명단 동기화 이벤트 수신] 회의 운영 및 의결 탭(CommitteeManager)과 위원 명단 실시간 연동
+  useEffect(() => {
+    const handleCommitteeMembersUpdated = () => {
+      console.log("[ScheduleManager] 위원 명단 동기화 이벤트 수신, 데이터 재조회");
+      loadCommitteesData();
+    };
+
+    window.addEventListener("anchor_committee_members_updated", handleCommitteeMembersUpdated);
+    return () => {
+      window.removeEventListener("anchor_committee_members_updated", handleCommitteeMembersUpdated);
+    };
+  }, [selectedYear]);
 
   // Supabase 실시간 위원회 명단 조회 함수
   const loadCommitteesData = async () => {
@@ -621,7 +656,7 @@ export default function ScheduleManager({
       alert("선택된 위원회가 없습니다.");
       return;
     }
-    const mems = activeComm.members || [];
+    const mems = sortMembersByRole(activeComm.members || []);
     if (mems.length === 0) {
       alert("다운로드할 위원 명단이 없습니다.");
       return;
@@ -5380,7 +5415,7 @@ Gemini 피드백: \n${geminiCritiqueText}
                                 </tr>
                               </thead>
                               <tbody>
-                                {activeComm.members.map((member) => (
+                                {sortMembersByRole(activeComm.members).map((member) => (
                                   <tr
                                     key={member.id}
                                     style={{

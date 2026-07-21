@@ -291,6 +291,21 @@ export default function CommitteeManager({
     }
   }, [selectedCommittee]);
 
+  // 💡 [실시간 위원 명단 동기화 이벤트 수신] 위원회 명단 관리 탭(ScheduleManager)에서 위원 변경 시 즉시 갱신
+  useEffect(() => {
+    const handleCommitteeMembersUpdated = () => {
+      if (selectedCommittee?.id) {
+        console.log(`[CommitteeManager] 위원 명단 동기화 이벤트 수신: ${selectedCommittee.id}`);
+        fetchMembers(selectedCommittee.id);
+      }
+    };
+
+    window.addEventListener("anchor_committee_members_updated", handleCommitteeMembersUpdated);
+    return () => {
+      window.removeEventListener("anchor_committee_members_updated", handleCommitteeMembersUpdated);
+    };
+  }, [selectedCommittee]);
+
   // 💡 [의안 개조] 선택된 회의(selectedMeeting)가 변경될 때마다 종속된 의안(Agendas) 및 의안별 투표(Votes) 데이터 로드
   useEffect(() => {
     if (selectedMeeting?.id) {
@@ -774,6 +789,7 @@ export default function CommitteeManager({
         .update({ total_quorum: newQuorum })
         .eq("id", selectedCommittee.id);
       await fetchCommittees();
+      window.dispatchEvent(new CustomEvent("anchor_committee_members_updated", { detail: { committeeId: selectedCommittee.id } }));
     } catch (err) {
       console.warn("DB 위원 배정 실패, 로컬 스토리지에 모의 저장합니다:", err.message);
       
@@ -795,6 +811,7 @@ export default function CommitteeManager({
         sort_order: 10
       });
       setMembers(updated);
+      window.dispatchEvent(new CustomEvent("anchor_committee_members_updated", { detail: { committeeId: selectedCommittee.id } }));
     }
   };
 
@@ -815,6 +832,7 @@ export default function CommitteeManager({
         .update({ total_quorum: newQuorum })
         .eq("id", selectedCommittee.id);
       await fetchCommittees();
+      window.dispatchEvent(new CustomEvent("anchor_committee_members_updated", { detail: { committeeId: selectedCommittee.id } }));
     } catch (err) {
       console.warn("DB 위원 삭제 실패, 로컬 스토리지에서 제거합니다:", err.message);
       const localMembers = JSON.parse(localStorage.getItem(`local_committee_members_${selectedCommittee.id}`) || "[]");
@@ -822,7 +840,30 @@ export default function CommitteeManager({
       localStorage.setItem(`local_committee_members_${selectedCommittee.id}`, JSON.stringify(updated));
       alert("위원이 제외되었습니다. (오프라인 캐시 모드)");
       setMembers(updated);
+      window.dispatchEvent(new CustomEvent("anchor_committee_members_updated", { detail: { committeeId: selectedCommittee.id } }));
     }
+  };
+
+  // 💡 [위원 직분별 우선순위 정렬 헬퍼] 위원장 -> 위원 -> 간사 순서 출력
+  const sortMembersByRole = (membersList) => {
+    if (!Array.isArray(membersList)) return [];
+    const getRolePriority = (typeStr) => {
+      if (!typeStr) return 2;
+      if (typeStr.includes("위원장")) return 1;
+      if (typeStr.includes("간사")) return 3;
+      return 2; // 위원, 위원(자문겸직) 등
+    };
+
+    return [...membersList].sort((a, b) => {
+      const pA = getRolePriority(a.type);
+      const pB = getRolePriority(b.type);
+      if (pA !== pB) {
+        return pA - pB;
+      }
+      const sA = a.sort_order ?? 999;
+      const sB = b.sort_order ?? 999;
+      return sA - sB;
+    });
   };
 
   // 💡 [PDF 첨부자료 검증 및 1MB 이하 자동 압축/최적화 헬퍼 함수]
@@ -2066,7 +2107,7 @@ ${opinionsContext}
                 {members.length === 0 ? (
                   <span style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>등록된 위원이 없습니다.</span>
                 ) : (
-                  members.map(m => (
+                  sortMembersByRole(members).map(m => (
                     <div key={m.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", background: "rgba(255,255,255,0.01)", padding: "0.3rem 0.5rem", borderRadius: "4px" }}>
                       <span style={{ fontSize: "0.8rem", color: "var(--text-primary)" }}>
                         {m.name} <small style={{ color: "var(--accent-color)", fontWeight: "bold" }}>({m.type || "위원"})</small>
