@@ -329,7 +329,7 @@ export default function ScholarshipManager({
     reader.readAsBinaryString(file);
   };
 
-  const totalAmount = filteredItems.reduce((sum, item) => sum + (item.amount || 0), 0);
+  const totalAmount = filteredItems.reduce((sum, item) => sum + Number(item.amount || 0), 0);
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
@@ -418,7 +418,7 @@ export default function ScholarshipManager({
                   <td style={{ padding: "0.75rem", fontWeight: "700" }}>{item.name}</td>
                   <td style={{ padding: "0.75rem" }}>{item.grade ? `${item.grade}학년` : "-"} / {item.enrollStatus || "재학"}</td>
                   <td style={{ padding: "0.75rem", textAlign: "right", fontWeight: "800", color: "var(--accent-color)" }}>
-                    {(item.amount || 0).toLocaleString()}
+                    {Number(item.amount || 0).toLocaleString()}
                   </td>
                   <td style={{ padding: "0.75rem" }}>{item.bankName} {item.accountNum}</td>
                   <td style={{ padding: "0.75rem" }}>{item.approvalDate || "-"}</td>
