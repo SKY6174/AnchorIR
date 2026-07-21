@@ -865,14 +865,14 @@ export default function Sidebar({
 
         {(menuVisibility.mgmt !== false || isSongDirector) && (
           <div
-            className={`mgmt-nav-wrapper ${(activeTab === "mgmt" || hoveredTab === "mgmt") ? "active" : ""}`}
+            className={`mgmt-nav-wrapper ${(activeTab === "management" || activeTab === "mgmt" || hoveredTab === "mgmt") ? "active" : ""}`}
             onMouseEnter={() => setHoveredTab("mgmt")}
             onMouseLeave={() => setHoveredTab(null)}
           >
             <div
-              className={`nav-item ${activeTab === "mgmt" ? "active" : ""}`}
+              className={`nav-item ${(activeTab === "management" || activeTab === "mgmt") ? "active" : ""}`}
               onClick={() => {
-                onChangeTab("mgmt");
+                onChangeTab("management");
                 if (onChangeMgmtSubTab) {
                   const subTabs = ["members", "org_chart", "center_org_chart", "partners", "instructor_pool", "llm_wiki", "portal_config"];
                   const schemaMapping: Record<string, string> = {
@@ -903,10 +903,10 @@ export default function Sidebar({
             <div className="nav-sub-menu">
               {(menuVisibility.members !== false || isSongDirector) && (
                 <div
-                  className={`nav-sub-item ${activeTab === "mgmt" && mgmtSubTab === "members" ? "active" : ""}`}
+                  className={`nav-sub-item ${(activeTab === "management" || activeTab === "mgmt") && mgmtSubTab === "members" ? "active" : ""}`}
                   onClick={(e) => {
                     e.stopPropagation();
-                    onChangeTab("mgmt");
+                    onChangeTab("management");
                     if (onChangeMgmtSubTab) {
                       onChangeMgmtSubTab("members");
                     }
@@ -923,10 +923,10 @@ export default function Sidebar({
               )}
               {(menuVisibility.org_chart !== false || isSongDirector) && (
                 <div
-                  className={`nav-sub-item ${activeTab === "mgmt" && mgmtSubTab === "org_chart" ? "active" : ""}`}
+                  className={`nav-sub-item ${(activeTab === "management" || activeTab === "mgmt") && mgmtSubTab === "org_chart" ? "active" : ""}`}
                   onClick={(e) => {
                     e.stopPropagation();
-                    onChangeTab("mgmt");
+                    onChangeTab("management");
                     if (onChangeMgmtSubTab) {
                       onChangeMgmtSubTab("org_chart");
                     }
@@ -943,10 +943,10 @@ export default function Sidebar({
               )}
               {(menuVisibility.center_org_chart !== false || menuVisibility.center_org !== false || isSongDirector) && (
                 <div
-                  className={`nav-sub-item ${activeTab === "mgmt" && mgmtSubTab === "center_org_chart" ? "active" : ""}`}
+                  className={`nav-sub-item ${(activeTab === "management" || activeTab === "mgmt") && mgmtSubTab === "center_org_chart" ? "active" : ""}`}
                   onClick={(e) => {
                     e.stopPropagation();
-                    onChangeTab("mgmt");
+                    onChangeTab("management");
                     if (onChangeMgmtSubTab) {
                       onChangeMgmtSubTab("center_org_chart");
                     }
@@ -963,10 +963,10 @@ export default function Sidebar({
               )}
               {(menuVisibility.partners !== false || isSongDirector) && (
                 <div
-                  className={`nav-sub-item ${activeTab === "mgmt" && mgmtSubTab === "partners" ? "active" : ""}`}
+                  className={`nav-sub-item ${(activeTab === "management" || activeTab === "mgmt") && mgmtSubTab === "partners" ? "active" : ""}`}
                   onClick={(e) => {
                     e.stopPropagation();
-                    onChangeTab("mgmt");
+                    onChangeTab("management");
                     if (onChangeMgmtSubTab) {
                       onChangeMgmtSubTab("partners");
                     }
@@ -983,10 +983,10 @@ export default function Sidebar({
               )}
               {(menuVisibility.instructor_pool !== false || menuVisibility.instructors !== false || isSongDirector) && (
                 <div
-                  className={`nav-sub-item ${activeTab === "mgmt" && mgmtSubTab === "instructor_pool" ? "active" : ""}`}
+                  className={`nav-sub-item ${(activeTab === "management" || activeTab === "mgmt") && mgmtSubTab === "instructor_pool" ? "active" : ""}`}
                   onClick={(e) => {
                     e.stopPropagation();
-                    onChangeTab("mgmt");
+                    onChangeTab("management");
                     if (onChangeMgmtSubTab) {
                       onChangeMgmtSubTab("instructor_pool");
                     }
@@ -1003,10 +1003,10 @@ export default function Sidebar({
               )}
               {(menuVisibility.llm_wiki !== false || isSongDirector) && (
                 <div
-                  className={`nav-sub-item ${activeTab === "mgmt" && mgmtSubTab === "llm_wiki" ? "active" : ""}`}
+                  className={`nav-sub-item ${(activeTab === "management" || activeTab === "mgmt") && mgmtSubTab === "llm_wiki" ? "active" : ""}`}
                   onClick={(e) => {
                     e.stopPropagation();
-                    onChangeTab("mgmt");
+                    onChangeTab("management");
                     if (onChangeMgmtSubTab) {
                       onChangeMgmtSubTab("llm_wiki");
                     }
@@ -1023,10 +1023,10 @@ export default function Sidebar({
               )}
               {(menuVisibility.portal_config !== false || menuVisibility.portal_configs !== false || isSongDirector) && (
                 <div
-                  className={`nav-sub-item ${activeTab === "mgmt" && mgmtSubTab === "portal_config" ? "active" : ""}`}
+                  className={`nav-sub-item ${(activeTab === "management" || activeTab === "mgmt") && mgmtSubTab === "portal_config" ? "active" : ""}`}
                   onClick={(e) => {
                     e.stopPropagation();
-                    onChangeTab("mgmt");
+                    onChangeTab("management");
                     if (onChangeMgmtSubTab) {
                       onChangeMgmtSubTab("portal_config");
                     }
