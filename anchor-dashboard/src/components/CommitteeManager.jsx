@@ -2039,7 +2039,7 @@ ${selectedMeetingAgendas.map((a, idx) => {
           <div style="border: 1px solid #ddd; padding: 8px; border-radius: 4px; display: flex; align-items: center; justify-content: space-between; background: #fff; color: #000; page-break-inside: avoid; break-inside: avoid;">
             <div style="text-align: left;">
               <div style="font-size: 12px; font-weight: bold;">${formattedName}</div>
-              <div style="font-size: 10px; color: #666;">${resp.submitted_at ? new Date(resp.submitted_at).toLocaleDateString("ko-KR") : "의결서 보관"}</div>
+              <div style="font-size: 10px; color: #666;">${resp.submitted_at ? new Date(resp.submitted_at).toLocaleString("ko-KR", { year: "numeric", month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit", second: "2-digit" }) : "의결서 보관"}</div>
             </div>
             <div style="text-align: right; width: 100px; height: 45px; display: flex; align-items: center; justify-content: center; border: 1px dashed #ccc; background: #fbfbfb;">
               ${sigImage}
@@ -3032,36 +3032,6 @@ ${selectedMeetingAgendas.map((a, idx) => {
                     ) : (
                       <div style={{ fontSize: "0.85rem", color: "var(--text-secondary)", marginBottom: "1rem" }}>
                         {renderMarkdownText(meetingResult.ai_summary)}
-                      </div>
-                    )}
-
-                    {!isEditingReport && (
-                      <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", marginTop: "1rem" }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", padding: "0.5rem 0.75rem", background: "rgba(59, 130, 246, 0.05)", borderRadius: "6px", border: "1px solid rgba(59, 130, 246, 0.2)", fontSize: "0.8rem", color: "#60a5fa" }}>
-                          <Award size={14} />
-                          <span>{meetingResult.official_minutes}</span>
-                        </div>
-                        <button
-                          type="button"
-                          onClick={() => handleDownloadSignedPDF(meetingResult)}
-                          disabled={isDownloadingPdf === meetingResult.id}
-                          className="btn btn-primary"
-                          style={{
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            gap: "0.4rem",
-                            padding: "0.5rem 1rem",
-                            fontSize: "0.82rem",
-                            borderRadius: "6px",
-                            fontWeight: "bold",
-                            border: "none",
-                            cursor: isDownloadingPdf === meetingResult.id ? "not-allowed" : "pointer"
-                          }}
-                        >
-                          <FileText size={16} />
-                          {isDownloadingPdf === meetingResult.id ? "PDF 문서 봉인 생성 중..." : "최종 심의 결과보고서 PDF 다운로드"}
-                        </button>
                       </div>
                     )}
                   </div>
