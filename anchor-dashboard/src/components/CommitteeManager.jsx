@@ -1755,7 +1755,7 @@ ${selectedMeetingAgendas.map((a, idx) => {
             opinion,
             encrypted_signature,
             submitted_at,
-            committee_members ( id, name, type, org, dept )
+            committee_members ( id, name, type, role, position, org, dept )
           `)
           .eq("meeting_id", rep.meeting_id)
       ]);
@@ -1763,6 +1763,36 @@ ${selectedMeetingAgendas.map((a, idx) => {
       const agendas = agendasRes.data || [];
       const votes = votesRes.data || [];
       const responses = responsesRes.data || [];
+
+      // 💡 [PDF 전용 마크다운 HTML 파서 헬퍼] ###, ####, **bold**, - list 해석
+      const convertMarkdownToPdfHtml = (text) => {
+        if (!text) return "<p>종합 의견 분석 대기 중입니다.</p>";
+        
+        return text.split("\n").map(line => {
+          let trimmed = line.trim();
+          if (!trimmed) return "";
+          
+          // **bold** 강조 파싱
+          trimmed = trimmed.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
+          
+          if (trimmed.startsWith("####")) {
+            return `<h5 style="font-size: 13px; font-weight: bold; color: #1e3a8a; margin-top: 0.8rem; margin-bottom: 0.3rem;">${trimmed.replace(/^####\s*/, "")}</h5>`;
+          }
+          if (trimmed.startsWith("###")) {
+            return `<h4 style="font-size: 14px; font-weight: bold; color: #1e3a8a; margin-top: 1rem; margin-bottom: 0.4rem; border-bottom: 1px dashed #cbd5e1; padding-bottom: 3px;">${trimmed.replace(/^###\s*/, "")}</h4>`;
+          }
+          if (trimmed.startsWith("##")) {
+            return `<h3 style="font-size: 15px; font-weight: bold; color: #111827; margin-top: 1.2rem; margin-bottom: 0.5rem;">${trimmed.replace(/^##\s*/, "")}</h3>`;
+          }
+          if (trimmed.startsWith("-") || trimmed.startsWith("*")) {
+            return `<li style="margin-left: 1.2rem; margin-bottom: 0.25rem; list-style-type: disc; color: #1f2937;">${trimmed.replace(/^[-*]\s*/, "")}</li>`;
+          }
+          if (/^\d+\.\s/.test(trimmed)) {
+            return `<div style="margin-left: 0.2rem; margin-bottom: 0.35rem; color: #1f2937;">${trimmed}</div>`;
+          }
+          return `<p style="margin-bottom: 0.4rem; line-height: 1.6; color: #1f2937;">${trimmed}</p>`;
+        }).join("\n");
+      };
 
       // 💡 [의결 형태별 포맷 분기] 서면의결 시에는 일자만 표기하며, 대면회의 시에는 시작시간 정보까지 함께 렌더링합니다.
       const isWritten = rep.committee_meetings?.meeting_type === "ONLINE_WRITTEN";
@@ -1873,20 +1903,34 @@ ${selectedMeetingAgendas.map((a, idx) => {
         </table>
 
         <h3 style="font-size: 16px; font-weight: bold; border-left: 4px solid #1e3a8a; padding-left: 8px; margin-bottom: 0.5rem; margin-top: 1.5rem; color: #000;">3. 앵커사업단 각종 위원회 심의 분석서</h3>
-        <div style="border: 1px solid #ccc; border-radius: 6px; padding: 12px; font-size: 12.5px; line-height: 1.6; background: #fafafa; margin-bottom: 1.5rem; white-space: pre-line; color: #000; text-align: left;">
-          ${rep.ai_summary || "종합 의견 분석 대기 중입니다."}
+        <div style="border: 1px solid #ccc; border-radius: 6px; padding: 12px; font-size: 12.5px; line-height: 1.6; background: #fafafa; margin-bottom: 1.5rem; color: #000; text-align: left;">
+          ${convertMarkdownToPdfHtml(rep.ai_summary)}
         </div>
 
         <h3 style="font-size: 16px; font-weight: bold; border-left: 4px solid #1e3a8a; padding-left: 8px; margin-bottom: 0.5rem; margin-top: 1.5rem; color: #000; page-break-inside: avoid; break-inside: avoid;">4. 위원 자필 서명 날인부 (디지털 보존)</h3>
         <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 1rem; border: 1px solid #000; padding: 10px; background: #fff; page-break-inside: avoid; break-inside: avoid;">
       `;
 
-      // 💡 [위원 직책 순 정렬 및 명시 연계] 위원장(1) -> 위원(2) -> 간사(3) 순 정렬
-      const roleOrder = { CHAIR: 1, CHAIRMAN: 1, MEMBER: 2, SECRETARY: 3 };
+      // 💡 [위원 직책 순 정렬 및 명시 연계 (Zero-Miss Chairman Guard)]
+      const checkRoleType = (m) => {
+        const t = String(m?.type || "").toUpperCase();
+        const r = String(m?.role || "").toUpperCase();
+        const p = String(m?.position || "").toUpperCase();
+
+        if (t.includes("CHAIR") || t.includes("위원장") || r.includes("CHAIR") || r.includes("위원장") || p.includes("CHAIR") || p.includes("위원장")) {
+          return "CHAIR";
+        }
+        if (t.includes("SECRETARY") || t.includes("간사") || r.includes("SECRETARY") || r.includes("간사") || p.includes("SECRETARY") || p.includes("간사")) {
+          return "SECRETARY";
+        }
+        return "MEMBER";
+      };
+
       const sortedResponses = [...responses].sort((a, b) => {
-        const typeA = a.committee_members?.type || "MEMBER";
-        const typeB = b.committee_members?.type || "MEMBER";
-        return (roleOrder[typeA] || 99) - (roleOrder[typeB] || 99);
+        const orderMap = { CHAIR: 1, MEMBER: 2, SECRETARY: 3 };
+        const roleA = checkRoleType(a.committee_members);
+        const roleB = checkRoleType(b.committee_members);
+        return (orderMap[roleA] || 99) - (orderMap[roleB] || 99);
       });
 
       sortedResponses.forEach((resp) => {
@@ -1896,12 +1940,12 @@ ${selectedMeetingAgendas.map((a, idx) => {
           : `<span style="font-size: 11px; color: #ef4444; font-style: italic;">서명 미날인</span>`;
 
         const memberName = resp.committee_members?.name || "알 수 없는 위원";
-        const memberType = resp.committee_members?.type;
+        const computedRole = checkRoleType(resp.committee_members);
         
         let formattedName = `${memberName} 위원`;
-        if (memberType === "CHAIR" || memberType === "CHAIRMAN") {
+        if (computedRole === "CHAIR") {
           formattedName = `${memberName} 위원장`;
-        } else if (memberType === "SECRETARY") {
+        } else if (computedRole === "SECRETARY") {
           formattedName = `${memberName} (간사)`;
         }
 
