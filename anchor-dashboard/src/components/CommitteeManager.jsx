@@ -1881,18 +1881,34 @@ ${selectedMeetingAgendas.map((a, idx) => {
         <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 1rem; border: 1px solid #000; padding: 10px; background: #fff; page-break-inside: avoid; break-inside: avoid;">
       `;
 
-      responses.forEach((resp) => {
+      // 💡 [위원 직책 순 정렬 및 명시 연계] 위원장(1) -> 위원(2) -> 간사(3) 순 정렬
+      const roleOrder = { CHAIR: 1, CHAIRMAN: 1, MEMBER: 2, SECRETARY: 3 };
+      const sortedResponses = [...responses].sort((a, b) => {
+        const typeA = a.committee_members?.type || "MEMBER";
+        const typeB = b.committee_members?.type || "MEMBER";
+        return (roleOrder[typeA] || 99) - (roleOrder[typeB] || 99);
+      });
+
+      sortedResponses.forEach((resp) => {
         const decryptedSig = decryptSignature(resp.encrypted_signature);
         const sigImage = decryptedSig 
           ? `<img src="${decryptedSig}" style="max-height: 40px; max-width: 90px; object-fit: contain; vertical-align: middle; display: inline-block; mix-blend-mode: multiply;" />`
           : `<span style="font-size: 11px; color: #ef4444; font-style: italic;">서명 미날인</span>`;
 
         const memberName = resp.committee_members?.name || "알 수 없는 위원";
+        const memberType = resp.committee_members?.type;
+        
+        let formattedName = `${memberName} 위원`;
+        if (memberType === "CHAIR" || memberType === "CHAIRMAN") {
+          formattedName = `${memberName} 위원장`;
+        } else if (memberType === "SECRETARY") {
+          formattedName = `${memberName} (간사)`;
+        }
 
         htmlContent += `
           <div style="border: 1px solid #ddd; padding: 8px; border-radius: 4px; display: flex; align-items: center; justify-content: space-between; background: #fff; color: #000; page-break-inside: avoid; break-inside: avoid;">
             <div style="text-align: left;">
-              <div style="font-size: 12px; font-weight: bold;">${memberName} 위원</div>
+              <div style="font-size: 12px; font-weight: bold;">${formattedName}</div>
               <div style="font-size: 10px; color: #666;">${resp.submitted_at ? new Date(resp.submitted_at).toLocaleDateString("ko-KR") : "의결서 보관"}</div>
             </div>
             <div style="text-align: right; width: 100px; height: 45px; display: flex; align-items: center; justify-content: center; border: 1px dashed #ccc; background: #fbfbfb;">
