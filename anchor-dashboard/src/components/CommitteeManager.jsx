@@ -1877,7 +1877,7 @@ ${selectedMeetingAgendas.map((a, idx) => {
           ${rep.ai_summary || "종합 의견 분석 대기 중입니다."}
         </div>
 
-        <h3 style="font-size: 16px; font-weight: bold; border-left: 4px solid #1e3a8a; padding-left: 8px; margin-bottom: 0.5rem; margin-top: 2rem; color: #000; page-break-before: always;">4. 위원 자필 서명 날인부 (디지털 보존)</h3>
+        <h3 style="font-size: 16px; font-weight: bold; border-left: 4px solid #1e3a8a; padding-left: 8px; margin-bottom: 0.5rem; margin-top: 1.5rem; color: #000;">4. 위원 자필 서명 날인부 (디지털 보존)</h3>
         <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 1rem; border: 1px solid #000; padding: 10px; background: #fff;">
       `;
 
