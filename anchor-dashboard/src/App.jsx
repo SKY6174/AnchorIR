@@ -8720,11 +8720,12 @@ export default function App() {
     const cleanId = currentUser.loginId || currentUser.id;
     const isDemoAccount = ["g_director", "hq_head", "manager"].includes(cleanId);
 
-    const currentMember = isDemoAccount ? null : (members.find((m) => {
+    const safeMembers = Array.isArray(members) ? members : (members && Array.isArray(members.data) ? members.data : []);
+    const currentMember = isDemoAccount ? null : (safeMembers.find((m) => {
       if (!m.email) return false;
       const mId = m.email.trim().toLowerCase().split("@")[0];
       return mId === currentUser.id;
-    }) || members.find((m) => {
+    }) || safeMembers.find((m) => {
       const cleanMName = m.name ? m.name.split(" ")[0].split("(")[0].trim() : "";
       const cleanCurrName = currentUser.name ? currentUser.name.split(" ")[0].split("(")[0].trim() : "";
       return cleanMName === cleanCurrName;

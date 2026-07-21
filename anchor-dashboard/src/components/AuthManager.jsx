@@ -44,7 +44,8 @@ export default function AuthManager({ onLoginSuccess, members = [] }) {
       }
 
       // 💡 [이메일 단일화 혁신] 주소록(members)에서 해당 아이디 파트 또는 이메일과 매칭되는 멤버를 선제 탐색합니다.
-      const matchedMember = members.find((m) => {
+      const safeMembers = Array.isArray(members) ? members : (members && Array.isArray(members.data) ? members.data : []);
+      const matchedMember = safeMembers.find((m) => {
         const mEmail = (m.email || "").trim().toLowerCase();
         if (targetId === "special_head" && mEmail === "cshong@uc.ac.kr") return true;
         return mEmail === targetId || mEmail.split("@")[0] === targetId;
