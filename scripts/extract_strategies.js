@@ -2,7 +2,8 @@ const fs = require('fs');
 const path = require('path');
 
 const rootDir = '/Users/thomas/Documents/AnchorIR';
-const files = fs.readdirSync(rootDir).filter(f => f.startsWith('anchor_2nd_year_unit_') && f.endsWith('_proposal.md'));
+const targetDir = path.join(rootDir, 'docs/2nd_year');
+const files = fs.readdirSync(targetDir).filter(f => f.startsWith('anchor_2nd_year_unit_') && f.endsWith('_proposal.md'));
 
 const result = {};
 
@@ -18,7 +19,7 @@ files.forEach(file => {
     wsId = 'A1';
   }
 
-  const content = fs.readFileSync(path.join(rootDir, file), 'utf-8');
+  const content = fs.readFileSync(path.join(targetDir, file), 'utf-8');
   const lines = content.split('\n');
   
   let strategies = [];

@@ -187,16 +187,25 @@ async function run() {
     });
   }
   
-  // B. 프로젝트 루트의 단위과제 제안서 마크다운 파일 동적 스캔
-  const rootFiles = fs.readdirSync(".").filter(f => {
-    return f.endsWith(".md") && (f.startsWith("anchor_2nd_year_unit_") || f.startsWith("rise_1st_year_unit_"));
-  });
-  
-  rootFiles.forEach(f => {
-    scanFiles.push({
-      dir: ".",
-      name: f
+  // B. docs/ 디렉터리 및 서브디렉터리 마크다운 파일 재귀 스캔
+  const getFilesRecursively = (dir) => {
+    let results = [];
+    if (!fs.existsSync(dir)) return results;
+    const list = fs.readdirSync(dir, { withFileTypes: true });
+    list.forEach(entry => {
+      const fullPath = path.join(dir, entry.name);
+      if (entry.isDirectory()) {
+        results = results.concat(getFilesRecursively(fullPath));
+      } else if (entry.isFile() && entry.name.endsWith('.md')) {
+        results.push({ dir, name: entry.name });
+      }
     });
+    return results;
+  };
+
+  const docsSubFiles = getFilesRecursively("./docs");
+  docsSubFiles.forEach(fileObj => {
+    scanFiles.push(fileObj);
   });
 
   console.log(`\n총 스캔 대상 마크다운 파일 수: ${scanFiles.length}개`);
