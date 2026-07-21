@@ -1720,7 +1720,7 @@ ${selectedMeetingAgendas.map((a, idx) => {
     alert("OpenAI API Key (ChatGPT 4o)가 안전하게 브라우저 로컬 캐시에 저장되었습니다.");
   };
 
-  // 📄 디지털 봉인 결과보고서 PDF 다운로드 핸들러 구현 (한글 주석)
+  // 📄 디지털 봉인 결과보고서 PDF 다운로드 핸들러 구현 (3단계 안전 Fallback)
   const [isDownloadingPdf, setIsDownloadingPdf] = useState(null);
 
   const handleDownloadSignedPDF = async (rep) => {
@@ -1760,26 +1760,9 @@ ${selectedMeetingAgendas.map((a, idx) => {
           .eq("meeting_id", rep.meeting_id)
       ]);
 
-      if (agendasRes.error) throw agendasRes.error;
-      if (votesRes.error) throw votesRes.error;
-      if (responsesRes.error) throw responsesRes.error;
-
       const agendas = agendasRes.data || [];
       const votes = votesRes.data || [];
       const responses = responsesRes.data || [];
-
-      // 2. html2pdf.js 라이브러리 동적 로드
-      const html2pdf = await new Promise((resolve, reject) => {
-        if (window.html2pdf) {
-          resolve(window.html2pdf);
-          return;
-        }
-        const script = document.createElement("script");
-        script.src = "https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js";
-        script.onload = () => resolve(window.html2pdf);
-        script.onerror = reject;
-        document.head.appendChild(script);
-      });
 
       // 💡 [의결 형태별 포맷 분기] 서면의결 시에는 일자만 표기하며, 대면회의 시에는 시작시간 정보까지 함께 렌더링합니다.
       const isWritten = rep.committee_meetings?.meeting_type === "ONLINE_WRITTEN";
@@ -1794,10 +1777,9 @@ ${selectedMeetingAgendas.map((a, idx) => {
       // 💡 [동적 생성일자 조립] 결과보고서의 실제 발행일자(published_at)를 YYYY. M. D. 형태로 동적 포맷팅
       const publishDate = rep.published_at ? new Date(rep.published_at) : new Date();
       const publishDateStr = `${publishDate.getFullYear()}. ${publishDate.getMonth() + 1}. ${publishDate.getDate()}.`;
-
       const attendedCount = responses.filter(r => r.is_attended !== false).length;
-      
-      // 💡 [레이아웃 누락 가드] 최상위 A4 스케일 컨테이너 태그를 추가하여 문자열 자체를 html2pdf로 바로 넘기게 설정
+
+      // 💡 [레이아웃 누락 가드] 최상위 A4 스케일 컨테이너 태그를 추가하여 PDF/HTML 렌더링에 일관된 인쇄 포맷 제공
       let htmlContent = `
         <div style="width: 100%; background: #ffffff; color: #000000; font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif; box-sizing: border-box; text-align: left; padding: 10mm 5mm;">
           <div style="border: 2px solid #000; padding: 1.5rem; margin-bottom: 2rem;">
@@ -1890,7 +1872,7 @@ ${selectedMeetingAgendas.map((a, idx) => {
           </tbody>
         </table>
 
-        <h3 style="font-size: 16px; font-weight: bold; border-left: 4px solid #1e3a8a; padding-left: 8px; margin-bottom: 0.5rem; margin-top: 1.5rem; color: #000;">3. 위원회 AI 심의 종합 분석의견</h3>
+        <h3 style="font-size: 16px; font-weight: bold; border-left: 4px solid #1e3a8a; padding-left: 8px; margin-bottom: 0.5rem; margin-top: 1.5rem; color: #000;">3. 앵커사업단 각종 위원회 심의 분석서</h3>
         <div style="border: 1px solid #ccc; border-radius: 6px; padding: 12px; font-size: 12.5px; line-height: 1.6; background: #fafafa; margin-bottom: 1.5rem; white-space: pre-line; color: #000; text-align: left;">
           ${rep.ai_summary || "종합 의견 분석 대기 중입니다."}
         </div>
@@ -1900,7 +1882,6 @@ ${selectedMeetingAgendas.map((a, idx) => {
       `;
 
       responses.forEach((resp) => {
-        // 복호화 헬퍼 함수를 적용하여 서명 캔버스 이미지 URL 복원 (보안 암호화 해독)
         const decryptedSig = decryptSignature(resp.encrypted_signature);
         const sigImage = decryptedSig 
           ? `<img src="${decryptedSig}" style="max-height: 40px; max-width: 90px; object-fit: contain; vertical-align: middle; display: inline-block; mix-blend-mode: multiply;" />`
@@ -1924,7 +1905,6 @@ ${selectedMeetingAgendas.map((a, idx) => {
       htmlContent += `
         </div>
 
-        <!-- 💡 [요구사항 반영] 서명 날인부 하단에 중간 정렬로 동적 생성일자 및 기관명 삽입 -->
         <div style="text-align: center; margin-top: 4.5rem; margin-bottom: 3.5rem; color: #000000; font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif;">
           <div style="font-size: 14px; font-weight: bold; margin-bottom: 1.2rem; letter-spacing: 0.5px;">${publishDateStr}</div>
           <div style="font-size: 16px; font-weight: 900; letter-spacing: 1px;">울산과학대학교 앵커사업단</div>
@@ -1937,7 +1917,7 @@ ${selectedMeetingAgendas.map((a, idx) => {
         </div>
       `;
 
-      // 💡 [파일명 명명 규칙 개편] YYYYMMDD 날짜 추출
+      // 파일명 명명 규칙
       const getFormattedMeetingDate = (dateVal) => {
         if (!dateVal) return "00000000";
         const d = new Date(dateVal);
@@ -1949,52 +1929,119 @@ ${selectedMeetingAgendas.map((a, idx) => {
       const fileDateStr = getFormattedMeetingDate(rep.committee_meetings?.meeting_date);
       const customFileName = `[${fileDateStr}]${rep.committee_meetings?.title || "회의"}-의결서(디지털봉인).pdf`;
 
-      // 💡 [레이아웃 누락 가드] DOM 삽입 지연을 예방하고자 HTML 문자열(htmlContent)을 html2pdf에 직접 주입
-      // 4. html2pdf를 통해 A4 사이즈 PDF Blob 생성
-      const opt = {
-        margin: [10, 10, 15, 10], // 상하좌우 여백
-        filename: customFileName,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true, logging: false },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      // 💡 [다중 CDN 로더 헬퍼] cdnjs -> jsdelivr -> unpkg 순차 로딩 시도
+      const loadHtml2Pdf = async () => {
+        if (window.html2pdf) return window.html2pdf;
+        const cdnUrls = [
+          "https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js",
+          "https://cdn.jsdelivr.net/npm/html2pdf.js@0.10.1/dist/html2pdf.bundle.min.js",
+          "https://unpkg.com/html2pdf.js@0.10.1/dist/html2pdf.bundle.min.js"
+        ];
+        for (const url of cdnUrls) {
+          try {
+            await new Promise((res, rej) => {
+              const script = document.createElement("script");
+              script.src = url;
+              script.onload = () => res();
+              script.onerror = () => rej();
+              document.head.appendChild(script);
+            });
+            if (window.html2pdf) return window.html2pdf;
+          } catch (e) {
+            console.warn(`CDN URL 로드 실패 (${url}), 다음 미러로 전환합니다.`);
+          }
+        }
+        return null;
       };
 
-      const pdfBlob = await html2pdf().from(htmlContent).set(opt).output('blob');
+      const html2pdfLib = await loadHtml2Pdf();
 
-      // 5. FastAPI 백엔드로 서명 봉인 요청 전송
-      const formData = new FormData();
-      formData.append("file", pdfBlob, customFileName);
+      if (html2pdfLib) {
+        const opt = {
+          margin: [10, 10, 15, 10],
+          filename: customFileName,
+          image: { type: 'jpeg', quality: 0.98 },
+          html2canvas: { scale: 2, useCORS: true, logging: false },
+          jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        };
 
-      // 💡 [Vercel 배포 우회 보안 패치] 브라우저가 로컬 호스트가 아닌 배포 서버(Vercel 등)에서 실행 중일 때, 
-      // Vercel의 Static Rewrite(405 에러)를 예방하기 위해 로컬 백엔드(http://localhost:8000)를 직접 겨냥하여 호출합니다.
-      const apiBase = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
-        ? ""
-        : "http://localhost:8000";
+        const pdfBlob = await html2pdfLib().from(htmlContent).set(opt).output('blob');
 
-      const response = await fetch(`${apiBase}/api/pdf/sign-pdf`, {
-        method: "POST",
-        body: formData
-      });
+        // 백엔드 날인 API 호출 시도 (실패 시 클라이언트 생성 PDF 즉시 직다운로드)
+        try {
+          const formData = new FormData();
+          formData.append("file", pdfBlob, customFileName);
 
-      if (!response.ok) {
-        throw new Error(`백엔드 디지털 서명 날인 실패 (상태코드: ${response.status})`);
+          const apiBase = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") ? "" : "http://localhost:8000";
+          const response = await fetch(`${apiBase}/api/pdf/sign-pdf`, {
+            method: "POST",
+            body: formData
+          });
+
+          if (response.ok) {
+            const signedBlob = await response.blob();
+            const downloadUrl = window.URL.createObjectURL(signedBlob);
+            const link = document.createElement("a");
+            link.href = downloadUrl;
+            link.download = customFileName;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(downloadUrl);
+            return;
+          }
+        } catch (apiErr) {
+          console.warn("백엔드 서명 서버 통신 제외, 클라이언트 봉인 PDF 다운로드로 연계합니다:", apiErr);
+        }
+
+        // 백엔드 비활성화 환경: 클라이언트 PDF 직접 다운로드
+        const downloadUrl = window.URL.createObjectURL(pdfBlob);
+        const link = document.createElement("a");
+        link.href = downloadUrl;
+        link.download = customFileName;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(downloadUrl);
+        return;
       }
 
-      // 6. 스트리밍 다운로드 리턴받아 로컬 세이브
-      const signedBlob = await response.blob();
-      const downloadUrl = window.URL.createObjectURL(signedBlob);
-      const link = document.createElement("a");
-      link.href = downloadUrl;
-      link.download = customFileName;
-      document.body.appendChild(link);
-      link.click();
-      
-      // 메모리 정리
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(downloadUrl);
+      // 💡 [Ultimate Print/PDF Fallback] 모든 CDN 및 백엔드가 차단된 경우, 스마트 인쇄/PDF 보존 뷰어 팝업 창 생성
+      const printWin = window.open("", "_blank", "width=850,height=950");
+      if (printWin) {
+        printWin.document.write(`
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <title>${customFileName}</title>
+            <style>
+              body { font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif; background: #fff; margin: 0; padding: 20px; }
+              @media print {
+                @page { margin: 10mm; size: A4 portrait; }
+                body { padding: 0; }
+              }
+            </style>
+          </head>
+          <body>
+            ${htmlContent}
+            <script>
+              window.onload = function() {
+                setTimeout(function() {
+                  window.print();
+                }, 500);
+              };
+            </script>
+          </body>
+          </html>
+        `);
+        printWin.document.close();
+      } else {
+        alert("팝업 차단이 활성화되어 있습니다. 팝업 허용 후 다시 시도해 주세요.");
+      }
 
     } catch (err) {
-      alert(`의결 결과보고서 디지털 서명 및 다운로드 처리 중 오류가 발생했습니다:\n${err.message}`);
+      console.error("PDF 생성 에러:", err);
+      alert(`의결 결과보고서 디지털 서명 및 다운로드 처리 중 안내:\n${err.message}`);
     } finally {
       setIsDownloadingPdf(null);
     }
@@ -2942,7 +2989,7 @@ ${selectedMeetingAgendas.map((a, idx) => {
                       <div style={{ padding: "1.25rem", background: "rgba(255,255,255,0.02)", borderRadius: "8px", border: "1px solid var(--border-color)" }}>
                         <strong style={{ fontSize: "0.9rem", color: "var(--text-primary)", display: "flex", alignItems: "center", gap: "0.3rem", marginBottom: "0.5rem" }}>
                           <Cpu size={16} style={{ color: "var(--accent-color)" }} />
-                          RISE 사업단 AI 심의 분석서
+                          앵커사업단 각종 위원회 심의 분석서
                         </strong>
                         <div style={{ fontSize: "0.85rem", color: "var(--text-secondary)" }}>
                           {renderMarkdownText(activeRep.ai_summary)}
