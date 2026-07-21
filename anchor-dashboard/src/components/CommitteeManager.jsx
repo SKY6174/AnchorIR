@@ -188,6 +188,26 @@ export default function CommitteeManager({
 
   // 사용자 권한 가드 상태
   const isManager = ["ADMIN", "G_DIRECTOR", "HQ_HEAD", "MANAGER"].includes(currentUser?.role_key);
+
+  // 💡 [위원장 및 간사 수정 권한 감지] 현재 선택된 위원회에서 로그인 사용자가 간사(Secretary) 또는 위원장(Chair) 직책인지 식별
+  const isMeetingManager = isManager || (currentUser && members.some(m => {
+    const cleanName = m.name ? m.name.split(" ")[0].split("(")[0].trim() : "";
+    const cleanUser = currentUser.name ? currentUser.name.split(" ")[0].split("(")[0].trim() : "";
+    if (cleanName === cleanUser) {
+      const type = String(m.type || "").toUpperCase();
+      const role = String(m.role || "").toUpperCase();
+      const pos = String(m.position || "").toUpperCase();
+      return type.includes("CHAIR") || type.includes("위원장") || type.includes("SECRETARY") || type.includes("간사") ||
+             role.includes("CHAIR") || role.includes("위원장") || role.includes("SECRETARY") || role.includes("간사") ||
+             pos.includes("CHAIR") || pos.includes("위원장") || pos.includes("SECRETARY") || pos.includes("간사");
+    }
+    return false;
+  }));
+
+  const [meetingResult, setMeetingResult] = useState(null);
+  const [isEditingReport, setIsEditingReport] = useState(false);
+  const [editedReportText, setEditedReportText] = useState("");
+
   const [myMemberships, setMyMemberships] = useState([]); // 로그인 유저가 소속된 위원회 정보
 
   // 모달 및 폼 제어 상태
@@ -395,10 +415,29 @@ export default function CommitteeManager({
   useEffect(() => {
     if (selectedMeeting) {
       fetchResponses(selectedMeeting.id);
+      fetchMeetingResult(selectedMeeting.id);
     } else {
       setResponses([]);
+      setMeetingResult(null);
+      setIsEditingReport(false);
+      setEditedReportText("");
     }
   }, [selectedMeeting]);
+
+  const fetchMeetingResult = async (meetingId) => {
+    try {
+      const { data, error } = await supabase
+        .from("meeting_results")
+        .select("*")
+        .eq("meeting_id", meetingId)
+        .maybeSingle();
+      if (error) throw error;
+      setMeetingResult(data || null);
+    } catch (err) {
+      console.warn("회의 결과 조회 실패:", err.message);
+      setMeetingResult(null);
+    }
+  };
 
   // 로그인 유저의 위원회 매핑 로드
   useEffect(() => {
@@ -1701,16 +1740,39 @@ ${selectedMeetingAgendas.map((a, idx) => {
       // 💡 [위원회 결과보고 대장 자동 등재 및 1순위 활성화 연계]
       await fetchMeetings(selectedCommittee.id);
       await fetchReports();
+      if (selectedMeeting?.id) {
+        await fetchMeetingResult(selectedMeeting.id);
+      }
       if (targetReportId) {
         setSelectedReportId(targetReportId);
       }
 
-      alert("🎉 위원회 결과보고가 마무리되어 [위원회 결과보고 대장]에 자동으로 안전 등재되었습니다!\n\n등재된 결과보고서의 'PDF 파일 내려받기' 버튼으로 서명이 봉인된 최종 결과보고서 PDF를 즉시 생성 및 내려받으실 수 있습니다.");
-      onChangeSubTab("committee_report"); // 결과보고 대장 탭으로 연계 이동
+      alert("🎉 위원회 결과보고서 초안이 AI 종합 분석을 거쳐 성공적으로 탑재되었습니다!\n\n간사나 위원장은 본 페이지 하단의 심의 분석서를 [수정]한 뒤, 최종 조율이 완료되면 '최종 심의 결과보고서 PDF 다운로드' 버튼으로 인쇄를 진행할 수 있습니다.");
     } catch (err) {
       alert("AI 요약 분석 및 탑재 실패: " + err.message);
     } finally {
       setIsAnalyzing(false);
+    }
+  };
+
+  // 💡 [심의 분석서 수정 저장 핸들러] 간사/위원장의 수정을 DB meeting_results에 업데이트
+  const handleSaveEditedReport = async (resultId) => {
+    try {
+      const { error } = await supabase
+        .from("meeting_results")
+        .update({ ai_summary: editedReportText })
+        .eq("id", resultId);
+      if (error) throw error;
+
+      alert("🎉 심의 분석서가 성공적으로 수정 및 저장되었습니다!");
+      setIsEditingReport(false);
+      // 데이터 갱신
+      if (selectedMeeting?.id) {
+        await fetchMeetingResult(selectedMeeting.id);
+      }
+      await fetchReports();
+    } catch (err) {
+      alert("분석서 저장 중 에러가 발생했습니다: " + err.message);
     }
   };
 
@@ -2915,6 +2977,94 @@ ${selectedMeetingAgendas.map((a, idx) => {
                     )}
                   </div>
                 </div>
+                
+                {/* 💡 [회의 진행 탭 상세에서도 AI 심의 분석서 상시 노출 및 실시간 편집 인터페이스 연동] */}
+                {meetingResult && (
+                  <div style={{ marginTop: "1.25rem", padding: "1.25rem", background: "rgba(255,255,255,0.02)", borderRadius: "8px", border: "1px solid var(--border-color)" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.75rem" }}>
+                      <strong style={{ fontSize: "0.9rem", color: "var(--text-primary)", display: "flex", alignItems: "center", gap: "0.3rem" }}>
+                        <Cpu size={16} style={{ color: "var(--accent-color)" }} />
+                        앵커사업단 각종 위원회 심의 분석서
+                      </strong>
+                      {isMeetingManager && !isEditingReport && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setIsEditingReport(true);
+                            setEditedReportText(meetingResult.ai_summary || "");
+                          }}
+                          className="btn"
+                          style={{ fontSize: "0.75rem", padding: "0.2rem 0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color)", color: "var(--text-secondary)", display: "flex", alignItems: "center", gap: "0.2rem" }}
+                        >
+                          <Edit3 size={12} /> 수정하기
+                        </button>
+                      )}
+                    </div>
+
+                    {isEditingReport ? (
+                      <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                        <textarea
+                          value={editedReportText}
+                          onChange={(e) => setEditedReportText(e.target.value)}
+                          style={{ width: "100%", height: "200px", background: "var(--card-bg-fallback)", color: "var(--text-primary)", border: "1px solid var(--border-color)", borderRadius: "6px", padding: "0.5rem", fontSize: "0.82rem", lineHeight: "1.5", resize: "vertical", outline: "none", fontFamily: "inherit" }}
+                          placeholder="심의 분석서 내용을 자유롭게 작성/수정해 주세요."
+                        />
+                        <div style={{ display: "flex", gap: "0.5rem", justifyContent: "flex-end" }}>
+                          <button
+                            type="button"
+                            onClick={() => handleSaveEditedReport(meetingResult.id)}
+                            className="btn btn-primary"
+                            style={{ fontSize: "0.75rem", padding: "0.3rem 0.6rem" }}
+                          >
+                            저장
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setIsEditingReport(false)}
+                            className="btn"
+                            style={{ fontSize: "0.75rem", padding: "0.3rem 0.6rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color)" }}
+                          >
+                            취소
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div style={{ fontSize: "0.85rem", color: "var(--text-secondary)", marginBottom: "1rem" }}>
+                        {renderMarkdownText(meetingResult.ai_summary)}
+                      </div>
+                    )}
+
+                    {!isEditingReport && (
+                      <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", marginTop: "1rem" }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", padding: "0.5rem 0.75rem", background: "rgba(59, 130, 246, 0.05)", borderRadius: "6px", border: "1px solid rgba(59, 130, 246, 0.2)", fontSize: "0.8rem", color: "#60a5fa" }}>
+                          <Award size={14} />
+                          <span>{meetingResult.official_minutes}</span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => handleDownloadSignedPDF(meetingResult)}
+                          disabled={isDownloadingPdf === meetingResult.id}
+                          className="btn btn-primary"
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            gap: "0.4rem",
+                            padding: "0.5rem 1rem",
+                            fontSize: "0.82rem",
+                            borderRadius: "6px",
+                            fontWeight: "bold",
+                            border: "none",
+                            cursor: isDownloadingPdf === meetingResult.id ? "not-allowed" : "pointer"
+                          }}
+                        >
+                          <FileText size={16} />
+                          {isDownloadingPdf === meetingResult.id ? "PDF 문서 봉인 생성 중..." : "최종 심의 결과보고서 PDF 다운로드"}
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )}
               </>
             ) : (
               <div style={{ textAlign: "center", padding: "4rem", color: "var(--text-secondary)", border: "1px dashed var(--border-color)", borderRadius: "8px" }}>
@@ -3070,13 +3220,58 @@ ${selectedMeetingAgendas.map((a, idx) => {
 
                       {/* AI 종합 분석 결과 */}
                       <div style={{ padding: "1.25rem", background: "rgba(255,255,255,0.02)", borderRadius: "8px", border: "1px solid var(--border-color)" }}>
-                        <strong style={{ fontSize: "0.9rem", color: "var(--text-primary)", display: "flex", alignItems: "center", gap: "0.3rem", marginBottom: "0.5rem" }}>
-                          <Cpu size={16} style={{ color: "var(--accent-color)" }} />
-                          앵커사업단 각종 위원회 심의 분석서
-                        </strong>
-                        <div style={{ fontSize: "0.85rem", color: "var(--text-secondary)" }}>
-                          {renderMarkdownText(activeRep.ai_summary)}
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.5rem" }}>
+                          <strong style={{ fontSize: "0.9rem", color: "var(--text-primary)", display: "flex", alignItems: "center", gap: "0.3rem" }}>
+                            <Cpu size={16} style={{ color: "var(--accent-color)" }} />
+                            앵커사업단 각종 위원회 심의 분석서
+                          </strong>
+                          {isMeetingManager && !isEditingReport && (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setIsEditingReport(true);
+                                setEditedReportText(activeRep.ai_summary || "");
+                              }}
+                              className="btn"
+                              style={{ fontSize: "0.75rem", padding: "0.2rem 0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color)", color: "var(--text-secondary)", display: "flex", alignItems: "center", gap: "0.2rem" }}
+                            >
+                              <Edit3 size={12} /> 수정하기
+                            </button>
+                          )}
                         </div>
+
+                        {isEditingReport ? (
+                          <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                            <textarea
+                              value={editedReportText}
+                              onChange={(e) => setEditedReportText(e.target.value)}
+                              style={{ width: "100%", height: "250px", background: "var(--card-bg-fallback)", color: "var(--text-primary)", border: "1px solid var(--border-color)", borderRadius: "6px", padding: "0.5rem", fontSize: "0.82rem", lineHeight: "1.5", resize: "vertical", outline: "none", fontFamily: "inherit" }}
+                              placeholder="심의 분석서 내용을 자유롭게 작성/수정해 주세요."
+                            />
+                            <div style={{ display: "flex", gap: "0.5rem", justifyContent: "flex-end" }}>
+                              <button
+                                type="button"
+                                onClick={() => handleSaveEditedReport(activeRep.id)}
+                                className="btn btn-primary"
+                                style={{ fontSize: "0.75rem", padding: "0.3rem 0.6rem" }}
+                              >
+                                저장
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => setIsEditingReport(false)}
+                                className="btn"
+                                style={{ fontSize: "0.75rem", padding: "0.3rem 0.6rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color)" }}
+                              >
+                                취소
+                              </button>
+                            </div>
+                          </div>
+                        ) : (
+                          <div style={{ fontSize: "0.85rem", color: "var(--text-secondary)" }}>
+                            {renderMarkdownText(activeRep.ai_summary)}
+                          </div>
+                        )}
                       </div>
 
                       {/* 공식 회의록 인증 및 다운로드 단추 */}
