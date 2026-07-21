@@ -1813,23 +1813,23 @@ ${selectedMeetingAgendas.map((a, idx) => {
       let htmlContent = `
         <div style="width: 100%; background: #ffffff; color: #000000; font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif; box-sizing: border-box; text-align: left; padding: 10mm 5mm;">
           <div style="border: 2px solid #000; padding: 1.5rem; margin-bottom: 2rem;">
-          <h1 style="text-align: center; font-size: 24px; font-weight: 900; letter-spacing: 2px; margin-bottom: 1rem; color: #000;">위원회  의결  결과보고서</h1>
+          <h1 style="text-align: center; font-size: 24px; font-weight: 900; letter-spacing: 2px; margin-bottom: 1rem; color: #000;">위원회  의결  보고서</h1>
           <table style="width: 100%; border-collapse: collapse; margin-top: 1rem; font-size: 13px; color: #000;">
             <tr>
-              <td style="border: 1px solid #000; padding: 6px 12px; font-weight: bold; background: #f3f4f6; width: 20%;">위원회명</td>
-              <td style="border: 1px solid #000; padding: 6px 12px; width: 30%;">${rep.committee_meetings?.committees?.name || "-"}</td>
-              <td style="border: 1px solid #000; padding: 6px 12px; font-weight: bold; background: #f3f4f6; width: 20%;">의결 형태</td>
-              <td style="border: 1px solid #000; padding: 6px 12px; width: 30%;">${rep.committee_meetings?.meeting_type === "ONLINE_WRITTEN" ? "서면 의결 (비대면)" : "대면 회의 (시스템 서명)"}</td>
+              <td style="border: 1px solid #000; padding: 6px 12px; font-weight: bold; background: #f3f4f6; width: 18%;">위원회 구분</td>
+              <td colspan="3" style="border: 1px solid #000; padding: 6px 12px; font-weight: bold; width: 82%;">${rep.committee_meetings?.committees?.name || "-"}</td>
             </tr>
             <tr>
-              <td style="border: 1px solid #000; padding: 6px 12px; font-weight: bold; background: #f3f4f6;">회의 일시</td>
-              <td style="border: 1px solid #000; padding: 6px 12px;">${dateStr}</td>
-              <td style="border: 1px solid #000; padding: 6px 12px; font-weight: bold; background: #f3f4f6;">성원 현황</td>
-              <td style="border: 1px solid #000; padding: 6px 12px;">참석 ${attendedCount}명 (의결 성원 충족)</td>
+              <td style="border: 1px solid #000; padding: 6px 12px; font-weight: bold; background: #f3f4f6; width: 18%;">회의명</td>
+              <td style="border: 1px solid #000; padding: 6px 12px; width: 32%;">${rep.committee_meetings?.title || "-"}</td>
+              <td style="border: 1px solid #000; padding: 6px 12px; font-weight: bold; background: #f3f4f6; width: 18%;">회의일시</td>
+              <td style="border: 1px solid #000; padding: 6px 12px; width: 32%;">${dateStr}</td>
             </tr>
             <tr>
-              <td style="border: 1px solid #000; padding: 6px 12px; font-weight: bold; background: #f3f4f6;">회의 안건</td>
-              <td colspan="3" style="border: 1px solid #000; padding: 6px 12px;">${rep.committee_meetings?.title || "-"}</td>
+              <td style="border: 1px solid #000; padding: 6px 12px; font-weight: bold; background: #f3f4f6; width: 18%;">의결형태</td>
+              <td style="border: 1px solid #000; padding: 6px 12px; width: 32%;">${rep.committee_meetings?.meeting_type === "ONLINE_WRITTEN" ? "서면 의결 (비대면)" : "대면 회의 (시스템 서명)"}</td>
+              <td style="border: 1px solid #000; padding: 6px 12px; font-weight: bold; background: #f3f4f6; width: 18%;">성원현황</td>
+              <td style="border: 1px solid #000; padding: 6px 12px; width: 32%;">참석 ${attendedCount}명 (의결 성원 충족)</td>
             </tr>
           </table>
         </div>
