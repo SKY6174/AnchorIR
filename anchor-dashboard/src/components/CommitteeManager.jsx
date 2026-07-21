@@ -783,7 +783,11 @@ export default function CommitteeManager({
       });
       await fetchMembers(selectedCommittee.id);
       
-      const newQuorum = members.length + 1;
+      // 💡 [간사 제외 정족수 규칙 적용] 간사를 제외한 순수 의결 위원 수 산정
+      const currentVotingCount = members.filter(m => !m.type?.includes("간사")).length;
+      const isAddingSecretary = payload.type?.includes("간사");
+      const newQuorum = currentVotingCount + (isAddingSecretary ? 0 : 1);
+
       await supabase
         .from("committees")
         .update({ total_quorum: newQuorum })
@@ -818,6 +822,11 @@ export default function CommitteeManager({
   const handleRemoveMember = async (memberId) => {
     if (!window.confirm("이 위원을 위원회에서 제외하시겠습니까?")) return;
     try {
+      const removedMember = members.find(m => m.id === memberId);
+      const isRemovingSecretary = removedMember?.type?.includes("간사");
+      const currentVotingCount = members.filter(m => !m.type?.includes("간사")).length;
+      const newQuorum = Math.max(0, currentVotingCount - (isRemovingSecretary ? 0 : 1));
+
       const { error } = await supabase
         .from("committee_members")
         .delete()
@@ -826,7 +835,6 @@ export default function CommitteeManager({
       alert("위원이 제외되었습니다.");
       await fetchMembers(selectedCommittee.id);
 
-      const newQuorum = Math.max(0, members.length - 1);
       await supabase
         .from("committees")
         .update({ total_quorum: newQuorum })
@@ -1469,20 +1477,30 @@ export default function CommitteeManager({
 
 
 
-  // 7. 정족수 실시간 계산 유틸리티 연동
+  // 7. 정족수 실시간 계산 유틸리티 연동 (간사는 의결정족수 및 재적 위원 수 산정에서 전면 제외)
   const calculateQuorum = () => {
     if (!selectedCommittee || !selectedMeeting) return null;
-    const total = selectedCommittee.total_quorum || members.length || 1;
-    const attended = responses.filter(r => r.attended).length;
     
-    // 의사정족수: 재적 과반
+    // 💡 [간사 의결권 제외 규칙 적용] 간사는 의결 권한이 없는 행정 실무 진행자이므로 재적 위원 수 및 의결정족수 산정에서 전면 제외합니다.
+    const votingMembers = members.filter(m => !m.type?.includes("간사"));
+    const total = votingMembers.length > 0 ? votingMembers.length : (selectedCommittee.total_quorum || 1);
+
+    // 간사를 제외한 순수 의결 참석 응답 추출
+    const votingResponses = responses.filter(r => {
+      const memberObj = members.find(m => m.id === r.member_id || m.name === r.member_name);
+      return memberObj ? !memberObj.type?.includes("간사") : true;
+    });
+
+    const attended = votingResponses.filter(r => r.attended).length;
+    
+    // 의사정족수: 재적 의결 위원 과반수
     const majorityLimit = Math.floor(total / 2) + 1;
     const isEstablished = attended >= majorityLimit;
 
     // 의결정족수: 찬성표 산출
-    const approveCount = responses.filter(r => r.vote === "APPROVE").length;
-    const rejectCount = responses.filter(r => r.vote === "REJECT").length;
-    const abstainCount = responses.filter(r => r.vote === "ABSTAIN").length;
+    const approveCount = votingResponses.filter(r => r.vote === "APPROVE").length;
+    const rejectCount = votingResponses.filter(r => r.vote === "REJECT").length;
+    const abstainCount = votingResponses.filter(r => r.vote === "ABSTAIN").length;
 
     let isApproved = false;
     let ruleText = "";

@@ -69,3 +69,9 @@ sequenceDiagram
 *   `committees.id` (TEXT) ➡️ `committee_meetings.committee_id` (TEXT)
 *   `committee_members.id` (BIGINT) ➡️ `meeting_responses.member_id` (BIGINT)
 *   `committee_meetings.id` (UUID) ➡️ `meeting_responses.meeting_id` (UUID)
+
+---
+
+## 6. 위원회 의결정족수 및 재적 산정 규정 (간사 제외)
+*   **간사 의결권 제외**: 간사(`type: "간사"`)는 위원회 의사 진행 및 서기·행정 실무 담당자로서 표결권 및 의결권이 없습니다.
+*   **정족수 산정 대상**: 재적 위원 수(`total_quorum`), 출석 정족수(`attended`), 의사성립 여부(`isEstablished`) 및 의결 가결/부결 판정(`isApproved`) 산정 시 간사는 의결 위원 수 분모/분자 집계에서 전면 제외 처리됩니다.

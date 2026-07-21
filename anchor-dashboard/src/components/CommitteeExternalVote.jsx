@@ -564,10 +564,16 @@ export default function CommitteeExternalVote({ meetingId }) {
     reader.readAsDataURL(file);
   };
 
-  // 5. 의결서 최종 제출 (다중 의안 개조)
+  // 5. 의결서 최종 제출 (다중 의안 개조 & 간사 의결권 제외 규칙)
   const handleSubmitResponse = async (e) => {
     e.preventDefault();
     if (hasSubmitted) return;
+
+    // 💡 [간사 의결권 제외 규칙 적용] 간사는 의결권이 없으므로 표결 제출을 제한합니다.
+    if (loggedInMember?.type?.includes("간사")) {
+      alert("ℹ️ 간사 직분은 위원회 행정 실무 담당자로서 의결권 및 의결정족수 대상에서 제외됩니다.");
+      return;
+    }
 
     if (selectedMeetingAgendas.length === 0) {
       alert("심의할 의안이 정의되어 있지 않습니다.");
