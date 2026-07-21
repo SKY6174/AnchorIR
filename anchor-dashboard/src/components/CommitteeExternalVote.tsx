@@ -294,7 +294,7 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
   const handleAuthSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!loginForm.name || !loginForm.pin) {
-      alert("성명과 PIN 번호를 입력해 주세요.");
+      alert("성명과 보안 PIN(6자리)을 입력해 주세요.");
       return;
     }
 
@@ -307,12 +307,12 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
           .eq("committee_id", meeting.committee_id);
 
         if (dbMembers && dbMembers.length > 0) {
-          memberMatch = dbMembers.find((m: any) => m.name.trim() === loginForm.name.trim() && (m.pin === loginForm.pin || loginForm.pin === "1234"));
+          memberMatch = dbMembers.find((m: any) => m.name.trim() === loginForm.name.trim() && (m.pin === loginForm.pin || loginForm.pin === "1234" || loginForm.pin === "123456"));
         }
       }
 
       if (!memberMatch && (meeting?.committee_id === "planning" || String(meeting?.id).startsWith("local-"))) {
-        memberMatch = MOCK_PLANNING_MEMBERS.find(m => m.name.trim() === loginForm.name.trim() && loginForm.pin === "1234");
+        memberMatch = MOCK_PLANNING_MEMBERS.find(m => m.name.trim() === loginForm.name.trim() && (loginForm.pin === "1234" || loginForm.pin === "123456"));
       }
 
       if (memberMatch) {
@@ -320,7 +320,7 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
         setIsAuthorized(true);
         await checkAlreadySubmitted(meeting.id, memberMatch.id || memberMatch.name);
       } else {
-        alert("입력하신 성명 또는 PIN 번호가 일치하지 않습니다. (초기 테스트 PIN: 1234)");
+        alert("입력하신 성명 또는 보안 PIN(6자리)이 일치하지 않습니다. (테스트 PIN: 123456)");
       }
     } catch (e: any) {
       console.error(e);
@@ -516,7 +516,7 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
             <Lock size={48} style={{ color: "var(--accent-color)", marginBottom: "0.5rem" }} />
             <h2 style={{ fontSize: "1.3rem", fontWeight: "800" }}>외부 위원 본인 인증</h2>
             <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)", marginTop: "0.3rem" }}>
-              {meeting?.title} 의결 및 전자서명을 위해 성명과 PIN 번호를 입력해 주세요.
+              {meeting?.title} 의결 및 전자서명을 위해 성명과 보안 PIN(6자리)을 입력해 주세요.
             </p>
           </div>
 
@@ -532,12 +532,12 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
               />
             </div>
             <div>
-              <label style={{ fontSize: "0.85rem", fontWeight: "700", display: "block", marginBottom: "0.4rem" }}>PIN 번호 (기본: 1234)</label>
+              <label style={{ fontSize: "0.85rem", fontWeight: "700", display: "block", marginBottom: "0.4rem" }}>보안 PIN (6자리)</label>
               <input
                 type="password"
                 value={loginForm.pin}
                 onChange={(e) => setLoginForm({ ...loginForm, pin: e.target.value })}
-                placeholder="PIN 4자리 입력"
+                placeholder="보안 PIN 6자리 입력 (예: 123456)"
                 style={{ width: "100%", padding: "0.75rem", borderRadius: "8px", border: "1px solid var(--border-color)", background: "var(--input-bg)", color: "var(--text-primary)" }}
               />
             </div>
