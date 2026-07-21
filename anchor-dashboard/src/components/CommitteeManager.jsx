@@ -1658,6 +1658,8 @@ ${selectedMeetingAgendas.map((a, idx) => {
         published_at: new Date().toISOString()
       };
 
+      let targetReportId = null;
+
       try {
         const { data: existingResults } = await supabase
           .from("meeting_results")
@@ -1666,16 +1668,21 @@ ${selectedMeetingAgendas.map((a, idx) => {
           .limit(1);
 
         if (existingResults && existingResults.length > 0) {
+          targetReportId = existingResults[0].id;
           const { error: updateErr } = await supabase
             .from("meeting_results")
             .update(resultPayload)
-            .eq("id", existingResults[0].id);
+            .eq("id", targetReportId);
           if (updateErr) throw updateErr;
         } else {
-          const { error: insertErr } = await supabase
+          const { data: inserted, error: insertErr } = await supabase
             .from("meeting_results")
-            .insert([resultPayload]);
+            .insert([resultPayload])
+            .select("id");
           if (insertErr) throw insertErr;
+          if (inserted && inserted.length > 0) {
+            targetReportId = inserted[0].id;
+          }
         }
       } catch (dbErr) {
         console.warn("DB meeting_results 적재 에러 (로컬 캐시 모드로 연계 진행):", dbErr.message);
@@ -1691,8 +1698,14 @@ ${selectedMeetingAgendas.map((a, idx) => {
         console.warn("DB 회의 상태 업데이트 실패, 로컬 처리합니다:", mErr.message);
       }
 
-      alert("🎉 ChatGPT 4o AI 의견 종합 분석 및 대시보드 탑재가 성공적으로 완료되었습니다!\n\n자동으로 [위원회 결과보고 대장] 탭으로 이동하며, 'PDF 파일 내려받기' 버튼으로 서명이 봉인된 최종 결과보고서 PDF를 즉시 생성 및 다운로드 받으실 수 있습니다.");
+      // 💡 [위원회 결과보고 대장 자동 등재 및 1순위 활성화 연계]
       await fetchMeetings(selectedCommittee.id);
+      await fetchReports();
+      if (targetReportId) {
+        setSelectedReportId(targetReportId);
+      }
+
+      alert("🎉 위원회 결과보고가 마무리되어 [위원회 결과보고 대장]에 자동으로 안전 등재되었습니다!\n\n등재된 결과보고서의 'PDF 파일 내려받기' 버튼으로 서명이 봉인된 최종 결과보고서 PDF를 즉시 생성 및 내려받으실 수 있습니다.");
       onChangeSubTab("committee_report"); // 결과보고 대장 탭으로 연계 이동
     } catch (err) {
       alert("AI 요약 분석 및 탑재 실패: " + err.message);
