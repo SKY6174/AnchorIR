@@ -63,7 +63,7 @@
 
 ---
 
-## 🗓️ 2026년 7월 22일 (개발 21일차 - TSX 전환 Phase 1 완성)
+## 🗓️ 2026년 7월 22일 (개발 21일차 - TSX 전환 Phase 1 & 2 완수 및 RLS 보안 강화)
 ### 📌 주요 작업 이벤트
 - **JSX ➔ TSX (TypeScript) 점진적 마이그레이션 Phase 1 완수**
   - **TypeScript 인프라 구축**: `typescript`, `@types/node`, `@types/crypto-js` 설치, `tsconfig.json` 및 `vite-env.d.ts` 환경 설정 완료.
@@ -74,11 +74,20 @@
   - **순수 유틸리티 모듈 TS 마이그레이션 (`src/utils/`)**:
     - `quorumEvaluator.ts`: 간사(SECRETARY) 제외 실시간 의사/의결 정족수 판정 엔진 TS 구현.
     - `crypto.ts`: AES 대칭키 기반 전자서명 및 민감 정보 암복호화 유틸 TS 구현 (규칙 8 준수).
-  - **빌드 및 100% 하위 호환성 검증**: `npm run build` 466ms 성공 (0 Error).
-- **개발일기 & 마일스톤 자동 기록 시스템 구축**
-  - 프로젝트 규칙(`AGENTS.md`)에 '매일 밤 11시 개발일기 자동 기록 규칙' 반영 및 Cron 스케줄러(`0 23 * * *`) 등록.
+- **JSX ➔ TSX (TypeScript) 점진적 마이그레이션 Phase 2 완수**
+  - **공통 UI & 독립 컴포넌트 TSX 전환 (`src/components/`)**:
+    - `YouTubePlayer.tsx`: 유튜브 플레이어 반응형 비디오 컴포넌트 TSX 마이그레이션 & `YouTubePlayerProps` 정의.
+    - `Sidebar.tsx`: 대시보드 메인 네비게이션 및 동적 탭/서브탭 전환 컴포넌트 TSX 마이그레이션 & `SidebarProps` 정의.
+    - `ExcelUploader.tsx`: 예산/성과지표 엑셀 업로드 및 샘플 엑셀 다운로드 컴포넌트 TSX 마이그레이션 & `ExcelUploaderProps` 정의.
+    - `KPIOverview.tsx`: 5대 핵심 KPI 및 예산 집행률 시각화 대시보드 컴포넌트 TSX 마이그레이션 & `KPIOverviewProps` 정의.
+  - **프로덕션 빌드 무결성 테스트**: `npm run build` 453ms 0 Error 검증 통과.
+- **Supabase Security Advisor RLS 보안 경고 조치 (규칙 7, 8 준수)**
+  - `public.budget_executions` 테이블 RLS 보안 경고 해결 전용 마이그레이션 [090_enable_rls_budget_executions.sql](file:///Users/thomas/Documents/AnchorIR/supabase/migrations/090_enable_rls_budget_executions.sql) 작성.
 
 ### 🚨 애로사항 & 해결 과정 (Troubleshooting)
 - **이슈 1: 점진적 TSX 전환 중 컴파일 오류 및 타입 미정 정의**
   - *문제*: 기존 JSX 코드에 무수히 많은 동적 객체(Supabase JSON 응답 등)가 혼재되어 일괄 전환 시 수많은 에러 발생 위험.
   - *해결*: 점진적 마이그레이션(Hybrid Approach) 방식을 채택하여 Supabase DB Schema 자동 타입 추출 후 공통 Domain Type부터 단계별로 커버리지를 확대하여 0 Error로 빌드 성공.
+- **이슈 2: Supabase Security Advisor 테이블 RLS 미활성화 경고**
+  - *문제*: `public.budget_executions` 테이블 RLS 비활성화 경고 메일 및 어드바이저 알림 수신.
+  - *해결*: RLS 활성화 및 인증 사용자 전용 접근 정책과 대시보드 조회용 익명 READ 정책을 담은 090 마이그레이션 파일 작성.

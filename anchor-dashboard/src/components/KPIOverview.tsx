@@ -11,16 +11,39 @@ import {
   PieChart,
   Pie
 } from "recharts";
-import { TrendingUp, Activity, Award, Landmark } from "lucide-react";
+import { TrendingUp, Activity, Award } from "lucide-react";
+
+/**
+ * 💡 KPIOverviewProps - KPI 요약 대시보드 컴포넌트 입력 속성 타입 정의
+ */
+export interface KPIOverviewProps {
+  /** 프로젝트 및 단위과제 전체 목록 데이터 */
+  projects: any[];
+  /** 현재 사용자 역할 키 */
+  currentRole?: string;
+  /** 차년도 선택 (기본값: 2차년도) */
+  selectedYear?: number;
+}
 
 // 백만원 단위 포맷팅 헬퍼 함수 (소수점 첫째자리까지 표현)
-const formatToMillionWon = (value) => {
+const formatToMillionWon = (value: number | undefined | null): string => {
   if (value === undefined || value === null || isNaN(value)) return "0.0";
   return (value / 1000000).toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
 };
 
+// 도넛 차트 조각 라벨 렌더러 Props 타입
+interface CustomLabelProps {
+  cx: number;
+  cy: number;
+  midAngle: number;
+  innerRadius: number;
+  outerRadius: number;
+  percent: number;
+  name: string;
+}
+
 // 도넛 차트 조각 옆에 지시선과 함께 이름(비율%) 라벨을 그리기 위한 커스텀 SVG 렌더러
-const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, name }) => {
+const renderCustomizedLabel = ({ cx, cy, midAngle, outerRadius, percent, name }: CustomLabelProps): React.JSX.Element => {
   const RADIAN = Math.PI / 180;
   const radius = outerRadius * 1.15;
   const x = cx + radius * Math.cos(-midAngle * RADIAN);
@@ -43,55 +66,58 @@ const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, per
   );
 };
 
-export default function KPIOverview({ projects, currentRole, selectedYear = 2 }) {
+/**
+ * 💡 KPIOverview - 5대 핵심 KPI 및 집행률 요약 TSX 컴포넌트
+ */
+export default function KPIOverview({ projects, currentRole, selectedYear = 2 }: KPIOverviewProps): React.JSX.Element {
   // 1차년도에는 공통경비(프로젝트 ID: E)가 존재하지 않으므로 필터링 처리
-  const activeProjects = selectedYear === 1 
-    ? projects.filter((p) => p.id !== "E") 
+  const activeProjects = selectedYear === 1
+    ? projects.filter((p) => p.id !== "E")
     : projects;
 
   // 예산 합계 및 재원 구분 계산
   const totalBudgetMain = activeProjects.reduce((sum, p) => {
     if (!p.units || !Array.isArray(p.units)) return sum;
-    return sum + p.units.reduce((s, u) => s + (u.years?.[selectedYear]?.budget_main || 0), 0);
+    return sum + p.units.reduce((s: number, u: any) => s + (u.years?.[selectedYear]?.budget_main || 0), 0);
   }, 0);
   const totalSpentMain = activeProjects.reduce((sum, p) => {
     if (!p.units || !Array.isArray(p.units)) return sum;
-    return sum + p.units.reduce((s, u) => s + (u.years?.[selectedYear]?.spent_main || 0), 0);
+    return sum + p.units.reduce((s: number, u: any) => s + (u.years?.[selectedYear]?.spent_main || 0), 0);
   }, 0);
   const rateMain = totalBudgetMain > 0 ? (totalSpentMain / totalBudgetMain) * 100 : 0;
 
   const totalBudgetCarry = selectedYear === 1 ? 0 : activeProjects.reduce((sum, p) => {
     if (!p.units || !Array.isArray(p.units)) return sum;
-    return sum + p.units.reduce((s, u) => s + (u.years?.[selectedYear]?.budget_carry || 0), 0);
+    return sum + p.units.reduce((s: number, u: any) => s + (u.years?.[selectedYear]?.budget_carry || 0), 0);
   }, 0);
   const totalSpentCarry = selectedYear === 1 ? 0 : activeProjects.reduce((sum, p) => {
     if (!p.units || !Array.isArray(p.units)) return sum;
-    return sum + p.units.reduce((s, u) => s + (u.years?.[selectedYear]?.spent_carry || 0), 0);
+    return sum + p.units.reduce((s: number, u: any) => s + (u.years?.[selectedYear]?.spent_carry || 0), 0);
   }, 0);
   const rateCarry = totalBudgetCarry > 0 ? (totalSpentCarry / totalBudgetCarry) * 100 : 0;
 
   const totalBudget = totalBudgetMain + totalBudgetCarry;
   const totalSpent = totalSpentMain + totalSpentCarry;
 
-  // 외부사업비 합산 추출 (P단계 기획 폼에서 입력된 budget_external 합산)
+  // 외부사업비 합산 추출
   const totalExternalBudget = activeProjects.reduce((sum, p) => {
     if (!p.units || !Array.isArray(p.units)) return sum;
-    return sum + p.units.reduce((s, u) => {
+    return sum + p.units.reduce((s: number, u: any) => {
       if (!u.programs || !Array.isArray(u.programs)) return s;
-      const progExternalSum = u.programs.reduce((progSum, prog) => {
+      const progExternalSum = u.programs.reduce((progSum: number, prog: any) => {
         return progSum + (prog.years?.[selectedYear]?.budget_external || 0);
       }, 0) || 0;
       return s + progExternalSum;
     }, 0);
   }, 0);
 
-  // A1나 신산업특화 예산 동적 추출 및 앵커 예산 계산 (1차년도에는 신산업이 존재하지 않음)
-  let shinSanUpBudgetMain = 0; // 신산업(본사업)
-  let shinSanUpBudgetCarry = 0; // 신산업(이월사업)
+  // A1나 신산업특화 예산 동적 추출 및 앵커 예산 계산
+  let shinSanUpBudgetMain = 0;
+  let shinSanUpBudgetCarry = 0;
   if (selectedYear >= 2) {
     activeProjects.forEach((p) => {
       if (p.units && Array.isArray(p.units)) {
-        p.units.forEach((u) => {
+        p.units.forEach((u: any) => {
           if (u.id === "A1나") {
             shinSanUpBudgetMain = u.years?.[selectedYear]?.budget_main || 0;
             shinSanUpBudgetCarry = u.years?.[selectedYear]?.budget_carry || 0;
@@ -103,7 +129,7 @@ export default function KPIOverview({ projects, currentRole, selectedYear = 2 })
   const anchorBudgetMain = Math.max(0, totalBudgetMain - shinSanUpBudgetMain);
   const anchorBudgetCarry = Math.max(0, totalBudgetCarry - shinSanUpBudgetCarry);
 
-  // KPI 달성률 유형별 계산 (교육부 공통성과지표 / 지자체 자율성과지표 / 대학 중점관리지표)
+  // KPI 달성률 유형별 계산
   let commonKpiCount = 0;
   let commonKpiTotal = 0;
   let selfKpiCount = 0;
@@ -113,107 +139,77 @@ export default function KPIOverview({ projects, currentRole, selectedYear = 2 })
 
   activeProjects.forEach((p) => {
     if (p.units && Array.isArray(p.units)) {
-      p.units.forEach((u) => {
-        (u.kpis || []).forEach((k) => {
+      p.units.forEach((u: any) => {
+        (u.kpis || []).forEach((k: any) => {
           let ach = 0;
-        if (selectedYear === 1 && k.id === "L-1") {
-          ach = 111.9;
-        } else if (selectedYear === 1 && k.id === "L-2") {
-          ach = 687.8;
-        } else if (selectedYear === 1 && k.id === "L-3") {
-          ach = 138.6;
-        } else if (selectedYear === 1 && k.id === "L-4") {
-          ach = 146.7;
-        } else if (selectedYear === 1 && k.id === "L-5") {
-          ach = 81.8;
-        } else if (selectedYear === 1 && k.id === "L-6") {
-          ach = 103.3;
-        } else if (selectedYear === 1 && k.id === "L-7") {
-          ach = 321.3;
-        } else if (selectedYear === 1 && k.id === "L-8") {
-          ach = 134.0;
-        } else if (selectedYear === 1 && k.id === "L-9") {
-          ach = 106.0;
-        } else if (selectedYear === 1 && k.id === "L-10") {
-          ach = 128.5;
-        } else if (selectedYear === 1 && k.id === "L-11") {
-          ach = 160.0;
-        } else if (selectedYear === 1 && k.id === "L-12") {
-          ach = 114.6;
-        } else if (selectedYear === 1 && k.id === "L-13") {
-          ach = 108.0;
-        } else if (selectedYear === 1 && k.id === "L-14") {
-          ach = 500.0;
-        } else if (selectedYear === 1 && k.id === "L-15") {
-          ach = 132.2;
-        } else if (selectedYear === 1 && k.id === "L-16") {
-          ach = 123.3;
-        } else if (selectedYear === 1 && k.id === "L-17") {
-          ach = 0.0;
-        } else if (selectedYear === 1 && k.id === "L-18") {
-          ach = 176.5;
-        } else if (selectedYear === 1 && k.id === "L-19") {
-          ach = 244.0;
-        } else if (selectedYear === 1 && k.id === "L-20") {
-          ach = 202.5;
-        } else if (selectedYear === 1 && k.id === "L-21") {
-          ach = 100.0;
-        } else if (selectedYear === 1 && k.id === "L-22") {
-          ach = 175.0;
-        } else if (selectedYear === 1 && k.id === "L-23") {
-          ach = 144.3;
-        } else if (selectedYear === 1 && k.id === "L-24") {
-          ach = 138.3;
-        } else if (selectedYear === 1 && k.id === "C-1") {
-          ach = 100.0;
-        } else if (selectedYear === 1 && k.id === "C-2") {
-          ach = 115.5;
-        } else if (selectedYear === 1 && k.id === "C-3") {
-          ach = 112.0;
-        } else if (selectedYear === 1 && k.id === "C-4") {
-          ach = 107.4;
-        } else if (selectedYear === 1 && k.id === "C-5") {
-          ach = 102.5;
-        } else if (selectedYear === 1 && k.id === "C-6") {
-          ach = 106.7;
-        } else if (k.subItems && k.subItems.length > 0) {
-          let sumSub = 0;
-          k.subItems.forEach((sub) => {
-            const yData = sub.years?.[selectedYear] || { target: 0, current: 0 };
-            sumSub += yData.target > 0 ? (yData.current / yData.target) * 100 : 0;
-          });
-          ach = sumSub / k.subItems.length;
-        } else {
-          ach = k.target > 0 ? (k.current / k.target) * 100 : 0;
-        }
-        const finalAch = Math.min(ach, 120); // 최대 120% 제한
-        
-        if (k.type === "공통") {
-          commonKpiCount++;
-          commonKpiTotal += finalAch;
-        } else if (k.type === "자율") {
-          selfKpiCount++;
-          selfKpiTotal += finalAch;
-        } else if (k.type === "중점") {
-          focusKpiCount++;
-          focusKpiTotal += finalAch;
-        }
+          if (selectedYear === 1 && k.id === "L-1") ach = 111.9;
+          else if (selectedYear === 1 && k.id === "L-2") ach = 687.8;
+          else if (selectedYear === 1 && k.id === "L-3") ach = 138.6;
+          else if (selectedYear === 1 && k.id === "L-4") ach = 146.7;
+          else if (selectedYear === 1 && k.id === "L-5") ach = 81.8;
+          else if (selectedYear === 1 && k.id === "L-6") ach = 103.3;
+          else if (selectedYear === 1 && k.id === "L-7") ach = 321.3;
+          else if (selectedYear === 1 && k.id === "L-8") ach = 134.0;
+          else if (selectedYear === 1 && k.id === "L-9") ach = 106.0;
+          else if (selectedYear === 1 && k.id === "L-10") ach = 128.5;
+          else if (selectedYear === 1 && k.id === "L-11") ach = 160.0;
+          else if (selectedYear === 1 && k.id === "L-12") ach = 114.6;
+          else if (selectedYear === 1 && k.id === "L-13") ach = 108.0;
+          else if (selectedYear === 1 && k.id === "L-14") ach = 500.0;
+          else if (selectedYear === 1 && k.id === "L-15") ach = 132.2;
+          else if (selectedYear === 1 && k.id === "L-16") ach = 123.3;
+          else if (selectedYear === 1 && k.id === "L-17") ach = 0.0;
+          else if (selectedYear === 1 && k.id === "L-18") ach = 176.5;
+          else if (selectedYear === 1 && k.id === "L-19") ach = 244.0;
+          else if (selectedYear === 1 && k.id === "L-20") ach = 202.5;
+          else if (selectedYear === 1 && k.id === "L-21") ach = 100.0;
+          else if (selectedYear === 1 && k.id === "L-22") ach = 175.0;
+          else if (selectedYear === 1 && k.id === "L-23") ach = 144.3;
+          else if (selectedYear === 1 && k.id === "L-24") ach = 138.3;
+          else if (selectedYear === 1 && k.id === "C-1") ach = 100.0;
+          else if (selectedYear === 1 && k.id === "C-2") ach = 115.5;
+          else if (selectedYear === 1 && k.id === "C-3") ach = 112.0;
+          else if (selectedYear === 1 && k.id === "C-4") ach = 107.4;
+          else if (selectedYear === 1 && k.id === "C-5") ach = 102.5;
+          else if (selectedYear === 1 && k.id === "C-6") ach = 106.7;
+          else if (k.subItems && k.subItems.length > 0) {
+            let sumSub = 0;
+            k.subItems.forEach((sub: any) => {
+              const yData = sub.years?.[selectedYear] || { target: 0, current: 0 };
+              sumSub += yData.target > 0 ? (yData.current / yData.target) * 100 : 0;
+            });
+            ach = sumSub / k.subItems.length;
+          } else {
+            ach = k.target > 0 ? (k.current / k.target) * 100 : 0;
+          }
+          const finalAch = Math.min(ach, 120);
+
+          if (k.type === "공통") {
+            commonKpiCount++;
+            commonKpiTotal += finalAch;
+          } else if (k.type === "자율") {
+            selfKpiCount++;
+            selfKpiTotal += finalAch;
+          } else if (k.type === "중점") {
+            focusKpiCount++;
+            focusKpiTotal += finalAch;
+          }
+        });
       });
-    });
-  }
+    }
   });
 
   const avgCommonKpi = commonKpiCount > 0 ? commonKpiTotal / commonKpiCount : 0;
   const avgSelfKpi = selfKpiCount > 0 ? selfKpiTotal / selfKpiCount : 0;
   const avgFocusKpi = focusKpiCount > 0 ? focusKpiTotal / focusKpiCount : 0;
 
-  // 차트 데이터 (프로젝트 및 공통영역 분할)
+  // 차트 데이터
   const chartData = activeProjects.map((p) => {
     const hasUnits = p.units && Array.isArray(p.units);
-    const pBudgetMain = hasUnits ? p.units.reduce((s, u) => s + (u.years?.[selectedYear]?.budget_main || 0), 0) : 0;
-    const pSpentMain = hasUnits ? p.units.reduce((s, u) => s + (u.years?.[selectedYear]?.spent_main || 0), 0) : 0;
-    const pBudgetCarry = hasUnits ? p.units.reduce((s, u) => s + (u.years?.[selectedYear]?.budget_carry || 0), 0) : 0;
-    const pSpentCarry = hasUnits ? p.units.reduce((s, u) => s + (u.years?.[selectedYear]?.spent_carry || 0), 0) : 0;
+    const pBudgetMain = hasUnits ? p.units.reduce((s: number, u: any) => s + (u.years?.[selectedYear]?.budget_main || 0), 0) : 0;
+    const pSpentMain = hasUnits ? p.units.reduce((s: number, u: any) => s + (u.years?.[selectedYear]?.spent_main || 0), 0) : 0;
+    const pBudgetCarry = hasUnits ? p.units.reduce((s: number, u: any) => s + (u.years?.[selectedYear]?.budget_carry || 0), 0) : 0;
+    const pSpentCarry = hasUnits ? p.units.reduce((s: number, u: any) => s + (u.years?.[selectedYear]?.spent_carry || 0), 0) : 0;
 
     return {
       name: p.id === "E" ? "공통운영경비" : p.title.split(":")[0],
@@ -226,8 +222,8 @@ export default function KPIOverview({ projects, currentRole, selectedYear = 2 })
 
   const pieData = activeProjects.map((p) => {
     const hasUnits = p.units && Array.isArray(p.units);
-    const pBudgetMain = hasUnits ? p.units.reduce((s, u) => s + (u.years?.[selectedYear]?.budget_main || 0), 0) : 0;
-    const pBudgetCarry = hasUnits ? p.units.reduce((s, u) => s + (u.years?.[selectedYear]?.budget_carry || 0), 0) : 0;
+    const pBudgetMain = hasUnits ? p.units.reduce((s: number, u: any) => s + (u.years?.[selectedYear]?.budget_main || 0), 0) : 0;
+    const pBudgetCarry = hasUnits ? p.units.reduce((s: number, u: any) => s + (u.years?.[selectedYear]?.budget_carry || 0), 0) : 0;
     return {
       name: p.id === "E" ? "공통운영경비" : p.title.split(":")[0],
       value: Math.round((pBudgetMain + pBudgetCarry) / 1000000)
@@ -238,14 +234,13 @@ export default function KPIOverview({ projects, currentRole, selectedYear = 2 })
 
   return (
     <div>
-      {/* 4대 핵심 요약 카드 (재원별 분리 반영) */}
+      {/* 4대 핵심 요약 카드 */}
       <div style={{
         display: "grid",
         gridTemplateColumns: "2fr 1fr 1fr",
         gap: "1.5rem",
         marginBottom: "2rem"
       }}>
-        {/* 1. ANCHOR 총 예산 카드 (2열 너비 영역을 차지하여 미니 배치 배제 방지) */}
         <div className="glass-card" style={{ display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
           <div>
             <div className="kpi-header">
@@ -261,7 +256,6 @@ export default function KPIOverview({ projects, currentRole, selectedYear = 2 })
           </div>
           <div className="kpi-subtext" style={{ display: "flex", flexDirection: "column", gap: "0.5rem", width: "100%", borderTop: "1px solid rgba(255,255,255,0.1)", paddingTop: "0.6rem", marginTop: "0.5rem" }}>
             {selectedYear === 1 ? (
-              // 1차년도 레이아웃: 신산업/이월사업이 존재하지 않는 전담 본사업 체계
               <div style={{ display: "flex", justifyContent: "space-between", gap: "0.6rem" }}>
                 <div style={{
                   flex: 1,
@@ -295,7 +289,6 @@ export default function KPIOverview({ projects, currentRole, selectedYear = 2 })
                 </div>
               </div>
             ) : (
-              // 2차년도 이상 레이아웃: 신산업 특화 및 이월사업이 유입된 다중 체계
               <>
                 <div style={{ display: "flex", justifyContent: "space-between", gap: "0.6rem" }}>
                   <div style={{
@@ -399,7 +392,6 @@ export default function KPIOverview({ projects, currentRole, selectedYear = 2 })
         </div>
 
         {selectedYear === 1 ? (
-          // 1차년도 배치: 본사업비 집행 단독(가운데) + 성과달성도 공통/자율/중점 세로 묶음(우측)
           <>
             <div className="glass-card" style={{ display: "flex", flexDirection: "column", justifyContent: "space-between", height: "100%", padding: "1.2rem 1.5rem" }}>
               <div className="kpi-header">
@@ -442,7 +434,6 @@ export default function KPIOverview({ projects, currentRole, selectedYear = 2 })
             </div>
           </>
         ) : (
-          // 2차년도 이상 배치: 본사업/이월사업 집행 세로 묶음(가운데) + 성과달성도 공통/자율/중점 세로 묶음(우측)
           <>
             <div style={{ display: "flex", flexDirection: "column", gap: "0.6rem", height: "100%" }}>
               <div className="glass-card" style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "space-between", padding: "0.8rem 1.1rem" }}>
@@ -503,7 +494,6 @@ export default function KPIOverview({ projects, currentRole, selectedYear = 2 })
 
       {/* 차트 시각화 섹션 */}
       <div className="vis-panel">
-        {/* 프로젝트별 재원 집행 2중 막대 그래프 */}
         <div className="glass-card" style={{ minHeight: "380px" }}>
           <h3 style={{ marginBottom: "1.2rem", fontSize: "1.1rem", fontWeight: "800", color: "var(--text-primary)" }}>
             프로젝트별 재원 배정 및 누적 집행 현황 (단위: 백만원)
@@ -515,7 +505,7 @@ export default function KPIOverview({ projects, currentRole, selectedYear = 2 })
                 <YAxis stroke="var(--text-secondary)" fontSize={12} tickFormatter={(value) => value.toLocaleString()} />
                 <Tooltip
                   cursor={{ fill: "rgba(229, 240, 219, 0.15)" }}
-                  formatter={(value) => `${value.toLocaleString()} 백만원`}
+                  formatter={(value: any) => `${Number(value).toLocaleString()} 백만원`}
                   contentStyle={{
                     background: "rgba(224, 235, 246, 0.95)",
                     border: "1px solid var(--border-color)",
@@ -553,7 +543,6 @@ export default function KPIOverview({ projects, currentRole, selectedYear = 2 })
           </div>
         </div>
 
-        {/* 예산 분배 비율 */}
         <div className="glass-card" style={{ minHeight: "380px" }}>
           <h3 style={{ marginBottom: "1.2rem", fontSize: "1.1rem", fontWeight: "800", color: "var(--text-primary)" }}>
             재원 배분 구조 {selectedYear === 1 ? "(공통운영경비 제외)" : "(공통운영경비 포함)"}
@@ -577,7 +566,7 @@ export default function KPIOverview({ projects, currentRole, selectedYear = 2 })
                   ))}
                 </Pie>
                 <Tooltip
-                  formatter={(value) => `${value.toLocaleString()} 백만원`}
+                  formatter={(value: any) => `${Number(value).toLocaleString()} 백만원`}
                   contentStyle={{
                     background: "var(--tooltip-bg)",
                     border: "1px solid var(--border-color)",

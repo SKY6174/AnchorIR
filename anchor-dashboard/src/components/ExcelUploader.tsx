@@ -3,25 +3,40 @@ import * as XLSX from "xlsx";
 import { Download, FileSpreadsheet, Check } from "lucide-react";
 
 /**
- * ExcelUploader Component
- * 엑셀 파일을 통해 실시간으로 데이터를 일괄 업데이트하고 양식을 내려받습니다.
- * - mode === "BUDGET": 예산 및 프로그램 전용 엑셀 업로더
- * - mode === "KPI": 성과지표(목표/실적) 전용 엑셀 업로더
+ * 💡 ExcelUploaderProps - 엑셀 업로더 컴포넌트 입력 속성 타입 정의
  */
-export default function ExcelUploader({ 
-  onUpdateData, 
-  projects, 
-  selectedYear = 2, 
+export interface ExcelUploaderProps {
+  /** 데이터 파싱 후 업데이트 콜백 함수 */
+  onUpdateData: (data: any[], updateType: "BUDGET" | "KPI") => void;
+  /** 프로젝트 및 단위과제 전체 목록 데이터 */
+  projects: any[];
+  /** 연차 선택 (기본값: 2차년도) */
+  selectedYear?: number;
+  /** 업로드 모드 ("BUDGET": 예산 양식, "KPI": 성과지표 양식) */
+  mode?: "BUDGET" | "KPI";
+  /** 조회 모드 ("all": 전체, "unit": 단위과제 전용) */
+  viewMode?: "all" | "unit";
+  /** 선택된 단위과제 ID (옵션) */
+  selectedUnitId?: string;
+}
+
+/**
+ * 💡 ExcelUploader - 엑셀 파일 실시간 일괄 업로드 및 양식 다운로드 TSX 컴포넌트
+ */
+export default function ExcelUploader({
+  onUpdateData,
+  projects,
+  selectedYear = 2,
   mode = "BUDGET",
   viewMode = "all",
   selectedUnitId
-}) {
-  const [dragActive, setDragActive] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
+}: ExcelUploaderProps): React.JSX.Element {
+  const [dragActive, setDragActive] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [success, setSuccess] = useState<boolean>(false);
 
   // 드래그 앤 드롭 상태 관리 핸들러
-  const handleDrag = (e) => {
+  const handleDrag = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
     if (e.type === "dragenter" || e.type === "dragover") {
@@ -32,20 +47,21 @@ export default function ExcelUploader({
   };
 
   // 엑셀 파싱 및 정합성 검증 로직
-  const parseExcel = (file) => {
+  const parseExcel = (file: File) => {
     setLoading(true);
     setSuccess(false);
     const reader = new FileReader();
 
     reader.onload = (e) => {
       try {
-        const data = new Uint8Array(e.target.result);
+        if (!e.target?.result) return;
+        const data = new Uint8Array(e.target.result as ArrayBuffer);
         const workbook = XLSX.read(data, { type: "array" });
-        
+
         const firstSheetName = workbook.SheetNames[0];
         const worksheet = workbook.Sheets[firstSheetName];
-        
-        const json = XLSX.utils.sheet_to_json(worksheet);
+
+        const json: Record<string, any>[] = XLSX.utils.sheet_to_json(worksheet);
 
         let isBudgetUpdate = false;
         let isKpiUpdate = false;
@@ -60,7 +76,7 @@ export default function ExcelUploader({
           }
         }
 
-        // 현재 업로더 모드와 일치하는 파일인지 엄격하게 검증 (불일치 시 업로드 차단)
+        // 현재 업로더 모드와 일치하는 파일인지 검증
         if (mode === "BUDGET" && !isBudgetUpdate) {
           alert("[업로드 실패] 이 영역은 예산 및 프로그램 전용 업로더입니다. '재원구분 예산양식' 엑셀 파일만 업로드해 주세요.");
           setLoading(false);
@@ -73,9 +89,9 @@ export default function ExcelUploader({
           return;
         }
 
-        // 공백이 제거된 컬럼 키로 JSON 데이터 키를 동기화하여 표준화
+        // 공백이 제거된 컬럼 키로 JSON 데이터 표준화
         const normalizedJson = json.map((row) => {
-          const newRow = {};
+          const newRow: Record<string, any> = {};
           Object.keys(row).forEach((k) => {
             newRow[k.trim()] = row[k];
           });
@@ -84,13 +100,10 @@ export default function ExcelUploader({
 
         let dataToUpdate = normalizedJson;
         if (mode === "BUDGET" && viewMode === "unit" && selectedUnitId) {
-          // 단위과제별 조회/등록 탭이 선택되어 있다면, 업로드된 엑셀 데이터 중 해당 단위과제에 속한 데이터만 필터링하여 반영
-          dataToUpdate = normalizedJson.filter(
-            (row) => {
-              const unitIdInRow = row["단위과제ID"] ? String(row["단위과제ID"]).trim() : "";
-              return unitIdInRow === String(selectedUnitId).trim();
-            }
-          );
+          dataToUpdate = normalizedJson.filter((row) => {
+            const unitIdInRow = row["단위과제ID"] ? String(row["단위과제ID"]).trim() : "";
+            return unitIdInRow === String(selectedUnitId).trim();
+          });
 
           if (dataToUpdate.length === 0) {
             alert(`[업로드 실패] 업로드된 파일에 현재 선택된 단위과제("${selectedUnitId}")의 예산 데이터가 존재하지 않습니다.`);
@@ -99,11 +112,9 @@ export default function ExcelUploader({
           }
         }
 
-        // App.jsx의 데이터 갱신 로직으로 파싱된 배열 데이터와 업데이트 타입 전달
         onUpdateData(dataToUpdate, isBudgetUpdate ? "BUDGET" : "KPI");
         setSuccess(true);
 
-        // 성공 안내 피드백 알럿 메시지 출력 (반응형 알림)
         if (mode === "BUDGET" && viewMode === "unit" && selectedUnitId) {
           alert(`[업로드 완료] 현재 선택된 단위과제("${selectedUnitId}")의 예산 데이터 ${dataToUpdate.length}건이 성공적으로 업데이트되었습니다.`);
         } else if (mode === "BUDGET") {
@@ -125,7 +136,7 @@ export default function ExcelUploader({
     reader.readAsArrayBuffer(file);
   };
 
-  const handleDrop = (e) => {
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
     setDragActive(false);
@@ -134,25 +145,17 @@ export default function ExcelUploader({
     }
   };
 
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
     if (e.target.files && e.target.files[0]) {
       parseExcel(e.target.files[0]);
     }
   };
 
-  // 문자열을 ArrayBuffer로 변환하는 시트 다운로드 헬퍼
-  const s2ab = (s) => {
-    const buf = new ArrayBuffer(s.length);
-    const view = new Uint8Array(buf);
-    for (let i = 0; i < s.length; i++) view[i] = s.charCodeAt(i) & 0xFF;
-    return buf;
-  };
-
   // 모드별 맞춤형 샘플 데이터 엑셀 생성 및 다운로드 실행
-  const downloadSample = (type) => {
+  const downloadSample = (type: "BUDGET" | "KPI") => {
     const wb = XLSX.utils.book_new();
-    let data = [];
+    let data: any[] = [];
     let filename = "";
 
     if (type === "BUDGET") {
@@ -162,80 +165,78 @@ export default function ExcelUploader({
       }
       projects.forEach((p) => {
         if (p.units && Array.isArray(p.units)) {
-          p.units.forEach((u) => {
-            // 단위과제별 보기 모드일 때는 선택된 단위과제 자료만 포함
+          p.units.forEach((u: any) => {
             if (viewMode === "unit" && selectedUnitId && u.id !== selectedUnitId) {
               return;
             }
             if (u.programs && Array.isArray(u.programs)) {
-              u.programs.forEach((prog) => {
-            const py = prog.years?.[selectedYear] || {};
-            
-            // 10대 표준 비목 리스트 정의
-            const standardCategories = [
-              "인건비", "장학금", "프로그램개발운영비", "환경개선비", 
-              "실험실습장비비", "지역연계협업비", "기업지원협력비", 
-              "성과활용확산비", "기타사업운영경비", "간접비"
-            ];
-            
-            const getBriefCategoryLabel = (catLabel) => {
-              if (catLabel === "교육∙연구 프로그램 개발∙운영비") return "프로그램개발운영비";
-              if (catLabel === "교육∙연구 환경개선비") return "환경개선비";
-              if (catLabel === "실험∙실습장비 및 기자재 구입∙운영비") return "실험실습장비비";
-              if (catLabel === "지역 연계∙협업 지원비") return "지역연계협업비";
-              if (catLabel === "기업 지원∙협력 활동비") return "기업지원협력비";
-              if (catLabel === "성과 활용∙확산 지원비") return "성과활용확산비";
-              if (catLabel === "그 밖의 사업운영경비") return "기타사업운영경비";
-              return catLabel;
-            };
+              u.programs.forEach((prog: any) => {
+                const py = prog.years?.[selectedYear] || {};
 
-            // 1. 본예산 행 빌드
-            const mainCatMap = {};
-            standardCategories.forEach(cat => { mainCatMap[cat] = 0; });
-            if (py.budget_categories && Array.isArray(py.budget_categories)) {
-              py.budget_categories.forEach(c => {
-                const catLabel = getBriefCategoryLabel(c.category);
-                if (standardCategories.includes(catLabel)) {
-                  mainCatMap[catLabel] = c.budget !== undefined ? c.budget / 1000000 : 0;
+                const standardCategories = [
+                  "인건비", "장학금", "프로그램개발운영비", "환경개선비",
+                  "실험실습장비비", "지역연계협업비", "기업지원협력비",
+                  "성과활용확산비", "기타사업운영경비", "간접비"
+                ];
+
+                const getBriefCategoryLabel = (catLabel: string) => {
+                  if (catLabel === "교육∙연구 프로그램 개발∙운영비") return "프로그램개발운영비";
+                  if (catLabel === "교육∙연구 환경개선비") return "환경개선비";
+                  if (catLabel === "실험∙실습장비 및 기자재 구입∙운영비") return "실험실습장비비";
+                  if (catLabel === "지역 연계∙협업 지원비") return "지역연계협업비";
+                  if (catLabel === "기업 지원∙협력 활동비") return "기업지원협력비";
+                  if (catLabel === "성과 활용∙확산 지원비") return "성과활용확산비";
+                  if (catLabel === "그 밖의 사업운영경비") return "기타사업운영경비";
+                  return catLabel;
+                };
+
+                // 본예산 행 빌드
+                const mainCatMap: Record<string, number> = {};
+                standardCategories.forEach(cat => { mainCatMap[cat] = 0; });
+                if (py.budget_categories && Array.isArray(py.budget_categories)) {
+                  py.budget_categories.forEach((c: any) => {
+                    const catLabel = getBriefCategoryLabel(c.category);
+                    if (standardCategories.includes(catLabel)) {
+                      mainCatMap[catLabel] = c.budget !== undefined ? c.budget / 1000000 : 0;
+                    }
+                  });
                 }
+
+                data.push({
+                  "단위과제ID": u.id,
+                  "프로그램ID": prog.id,
+                  "프로그램명": prog.title,
+                  "예산구분": "본예산",
+                  "국고": py.budget_national !== undefined ? py.budget_national / 1000000 : 0,
+                  "지자체시비": py.budget_city !== undefined ? py.budget_city / 1000000 : 0,
+                  "외부사업비": py.budget_external !== undefined ? py.budget_external / 1000000 : (py.external_budget !== undefined ? py.external_budget / 1000000 : 0),
+                  ...mainCatMap
+                });
+
+                // 이월예산 행 빌드
+                const carryCatMap: Record<string, number> = {};
+                standardCategories.forEach(cat => { carryCatMap[cat] = 0; });
+                if (selectedYear >= 2 && py.budget_categories && Array.isArray(py.budget_categories)) {
+                  py.budget_categories.forEach((c: any) => {
+                    const catLabel = getBriefCategoryLabel(c.category);
+                    if (standardCategories.includes(catLabel)) {
+                      carryCatMap[catLabel] = c.budget_carry !== undefined ? c.budget_carry / 1000000 : 0;
+                    }
+                  });
+                }
+
+                data.push({
+                  "단위과제ID": u.id,
+                  "프로그램ID": prog.id,
+                  "프로그램명": prog.title,
+                  "예산구분": "이월예산",
+                  "국고": selectedYear === 1 ? 0 : (py.budget_carry_national !== undefined ? py.budget_carry_national / 1000000 : 0),
+                  "지자체시비": selectedYear === 1 ? 0 : (py.budget_carry_city !== undefined ? py.budget_carry_city / 1000000 : 0),
+                  "외부사업비": selectedYear === 1 ? 0 : (py.budget_carry_external !== undefined ? py.budget_carry_external / 1000000 : 0),
+                  ...carryCatMap
+                });
               });
             }
-
-            data.push({
-              "단위과제ID": u.id,
-              "프로그램ID": prog.id,
-              "프로그램명": prog.title,
-              "예산구분": "본예산",
-              "국고": py.budget_national !== undefined ? py.budget_national / 1000000 : 0,
-              "지자체시비": py.budget_city !== undefined ? py.budget_city / 1000000 : 0,
-              "외부사업비": py.budget_external !== undefined ? py.external_budget !== undefined ? py.external_budget / 1000000 : py.budget_external / 1000000 : 0,
-              ...mainCatMap
-            });
-
-            // 2. 이월예산 행 빌드 (1차년도는 0원)
-            const carryCatMap = {};
-            standardCategories.forEach(cat => { carryCatMap[cat] = 0; });
-            if (selectedYear >= 2 && py.budget_categories && Array.isArray(py.budget_categories)) {
-              py.budget_categories.forEach(c => {
-                const catLabel = getBriefCategoryLabel(c.category);
-                if (standardCategories.includes(catLabel)) {
-                  carryCatMap[catLabel] = c.budget_carry !== undefined ? c.budget_carry / 1000000 : 0;
-                }
-              });
-            }
-
-            data.push({
-              "단위과제ID": u.id,
-              "프로그램ID": prog.id,
-              "프로그램명": prog.title,
-              "예산구분": "이월예산",
-              "국고": selectedYear === 1 ? 0 : (py.budget_carry_national !== undefined ? py.budget_carry_national / 1000000 : 0),
-              "지자체시비": selectedYear === 1 ? 0 : (py.budget_carry_city !== undefined ? py.budget_carry_city / 1000000 : 0),
-              "외부사업비": selectedYear === 1 ? 0 : (py.budget_carry_external !== undefined ? py.budget_carry_external / 1000000 : 0),
-              ...carryCatMap
-            });
-            });
-          }
           });
         }
       });
@@ -243,49 +244,47 @@ export default function ExcelUploader({
       filename = `ANCHOR_성과지표_관리양식_${selectedYear}차년도.xlsx`;
       projects.forEach((p) => {
         if (p.units && Array.isArray(p.units)) {
-          p.units.forEach((u) => {
+          p.units.forEach((u: any) => {
             if (u.kpis && Array.isArray(u.kpis)) {
-              u.kpis.forEach((k) => {
-            if (k.subItems && Array.isArray(k.subItems)) {
-              k.subItems.forEach((sub) => {
-                const yData = sub.years?.[selectedYear] || { target: 0, current: 0 };
-                data.push({
-                  "단위과제ID": u.id,
-                  "지표ID": k.id,
-                  "지표명": k.name,
-                  "세부항목ID": sub.id,
-                  "세부항목명": sub.name,
-                  "목푯값": yData.target,
-                  "실적값(현재값)": yData.current,
-                  "단위": sub.unit,
-                  "주관부서": k.owner
-                });
-              });
-            } else {
-              data.push({
-                "단위과제ID": u.id,
-                "지표ID": k.id,
-                "지표명": k.name,
-                "세부항목ID": `${k.id}-1`,
-                "세부항목명": k.name,
-                "목푯값": k.target,
-                "실적값(현재값)": k.current,
-                "단위": "%",
-                "주관부서": k.owner
+              u.kpis.forEach((k: any) => {
+                if (k.subItems && Array.isArray(k.subItems)) {
+                  k.subItems.forEach((sub: any) => {
+                    const yData = sub.years?.[selectedYear] || { target: 0, current: 0 };
+                    data.push({
+                      "단위과제ID": u.id,
+                      "지표ID": k.id,
+                      "지표명": k.name,
+                      "세부항목ID": sub.id,
+                      "세부항목명": sub.name,
+                      "목푯값": yData.target,
+                      "실적값(현재값)": yData.current,
+                      "단위": sub.unit,
+                      "주관부서": k.owner
+                    });
+                  });
+                } else {
+                  data.push({
+                    "단위과제ID": u.id,
+                    "지표ID": k.id,
+                    "지표명": k.name,
+                    "세부항목ID": `${k.id}-1`,
+                    "세부항목명": k.name,
+                    "목푯값": k.target,
+                    "실적값(현재값)": k.current,
+                    "단위": "%",
+                    "주관부서": k.owner
+                  });
+                }
               });
             }
           });
         }
-        });
-      }
       });
     }
 
     const ws = XLSX.utils.json_to_sheet(data);
     XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
-    
-    // type: "base64"를 사용하여 원시 Base64 문자열 데이터를 리턴받아 Data URL로 브라우저에 직접 전달합니다.
-    // 이는 크롬 sandbox iframe 배포 환경 등에서 Blob 다운로드 시 파일명(download 속성)이 누락되어 UUID로 다운로드되던 브라우저 규격 제약을 방지합니다.
+
     const wbout = XLSX.write(wb, { bookType: "xlsx", type: "base64" });
     const a = document.createElement("a");
     a.href = `data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,${wbout}`;
@@ -313,8 +312,8 @@ export default function ExcelUploader({
             <button className="btn-primary" style={{ background: "var(--input-bg)", border: "1px solid var(--border-color)", color: "var(--text-primary)" }} onClick={() => downloadSample("BUDGET")}>
               <Download size={16} />
               <span>
-                {viewMode === "unit" && selectedUnitId 
-                  ? `재원별 예산양식 받기 (${selectedUnitId} 전용)` 
+                {viewMode === "unit" && selectedUnitId
+                  ? `재원별 예산양식 받기 (${selectedUnitId} 전용)`
                   : "재원별 예산양식 받기 (전체 목록)"}
               </span>
             </button>
@@ -342,7 +341,7 @@ export default function ExcelUploader({
           onChange={handleChange}
           style={{ display: "none" }}
         />
-        
+
         {loading && (
           <div className="loading-overlay">
             <div className="spinner" style={{ border: "4px solid rgba(255,255,255,0.1)", borderLeftColor: "var(--accent-color)", borderRadius: "50%", width: "40px", height: "40px", animation: "spin 1s linear infinite" }}></div>
