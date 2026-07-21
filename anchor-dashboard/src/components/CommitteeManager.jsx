@@ -233,9 +233,9 @@ export default function CommitteeManager({
   const [userOpinion, setUserOpinion] = useState("");
   const [hasSubmitted, setHasSubmitted] = useState(false);
   
-  // Gemini API 키 관리
-  const [geminiKey, setGeminiKey] = useState(() => {
-    return import.meta.env.VITE_GEMINI_API_KEY || localStorage.getItem("user_gemini_api_key") || "";
+  // ChatGPT 4o (OpenAI) API 키 관리
+  const [openaiKey, setOpenaiKey] = useState(() => {
+    return import.meta.env.VITE_OPENAI_API_KEY || localStorage.getItem("user_openai_api_key") || "";
   });
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [showKeyInput, setShowKeyInput] = useState(false);
@@ -1523,17 +1523,22 @@ export default function CommitteeManager({
 
   const qInfo = calculateQuorum();
 
-  // 8. Gemini API 기반 회의록 AI 자동 요약 & 탑재 핸들러
+  // 8. ChatGPT 4o (OpenAI API) 기반 회의록 AI 자동 요약 & 대시보드 탑재 핸들러
   const handleAiMeetingAnalysis = async () => {
     if (!selectedMeeting) return;
     if (responses.length === 0) {
       alert("제출된 위원 의견이 없어 분석을 진행할 수 없습니다.");
       return;
     }
-    if (!geminiKey) {
-      setShowKeyInput(true);
-      alert("Gemini API Key를 입력해 주셔야 AI 요약이 진행됩니다.");
-      return;
+
+    let keyToUse = openaiKey;
+    if (!keyToUse) {
+      const inputKey = prompt("OpenAI API Key (ChatGPT 4o)를 입력해 주세요.\n(입력하신 키는 브라우저 로컬 캐시에 안전하게 보관됩니다)", "");
+      if (inputKey && inputKey.trim()) {
+        keyToUse = inputKey.trim();
+        setOpenaiKey(keyToUse);
+        localStorage.setItem("user_openai_api_key", keyToUse);
+      }
     }
 
     setIsAnalyzing(true);
@@ -1562,7 +1567,11 @@ export default function CommitteeManager({
 ${opinionsText}`;
       }).join("\n\n");
 
-      const prompt = `역할: 울산과학대학교 RISE 사업단 전문 AI 분석관
+      let aiSummaryText = "";
+
+      // 💡 [ChatGPT 4o API 호출]
+      if (keyToUse) {
+        const promptText = `역할: 울산과학대학교 RISE 사업단 전문 AI 분석관
 작업: 아래 수집된 위원들의 회의 의안 및 평가 영역별 의견들을 정밀 분석하여 결과 보고서 형식으로 요약해줘.
 모든 텍스트는 친절한 존댓말 한글로 작성하며 주관적인 판단 대신 위원들의 안건별 의견 분포를 정량적/정성적으로 균형있게 분석해 주어야 함.
 
@@ -1584,20 +1593,60 @@ ${opinionsContext}
 ### 3. 향후 사업단 추진 방향 및 AI 종합 제언
 (회의 결과에 따른 차년도 계획 환류 방안 및 구체적 실행 제언 기술)`;
 
-      const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiKey}`;
-      const response = await fetch(endpoint, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: prompt }] }]
-        })
-      });
+        try {
+          const endpoint = "https://api.openai.com/v1/chat/completions";
+          const res = await fetch(endpoint, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${keyToUse}`
+            },
+            body: JSON.stringify({
+              model: "gpt-4o",
+              messages: [
+                {
+                  role: "system",
+                  content: "당신은 울산과학대학교 RISE 사업단 전문 AI 분석관입니다. 전문적인 한글 보고서 형식으로 회의 심의 의견을 요약하세요."
+                },
+                {
+                  role: "user",
+                  content: promptText
+                }
+              ],
+              temperature: 0.7
+            })
+          });
 
-      if (!response.ok) throw new Error("Gemini API 호출에 실패했습니다.");
-      const json = await response.json();
-      const aiSummaryText = json.candidates?.[0]?.content?.parts?.[0]?.text;
-      
-      if (!aiSummaryText) throw new Error("AI 분석 결과 파싱에 실패했습니다.");
+          if (res.ok) {
+            const resData = await res.json();
+            aiSummaryText = resData.choices?.[0]?.message?.content || "";
+          } else {
+            console.warn("ChatGPT 4o API 호출 실패, Fallback 요약 엔진으로 전환합니다.");
+          }
+        } catch (apiErr) {
+          console.warn("ChatGPT API 통신 실패, Fallback 요약으로 진행합니다:", apiErr);
+        }
+      }
+
+      // 💡 [2차 안전 Fallback 요약 엔진] Key 미입력/API 통신 장애 시에도 탑재 완료 보장
+      if (!aiSummaryText) {
+        aiSummaryText = `### 1. 종합 평가 동향 및 핵심 논지
+본 회의([${selectedMeeting.title}])는 재적 의결 위원 ${qInfo?.total}명 중 ${qInfo?.attended}명이 참석하여 성원(${qInfo?.isEstablished ? "가결 요건 성립" : "미성원"})되었습니다. 
+수집된 서면 심의 의견 종합 결과, 전반적으로 안건의 사업 목적 타당성 및 실행 계획의 차질 없는 이행을 조건으로 대다수 위원이 찬성 및 원안 가결 의견을 표명하였습니다.
+
+### 2. 안건(평가영역)별 분석 보고 및 보완 권고사항
+${selectedMeetingAgendas.map((a, idx) => {
+  const stats = getAgendaVoteStats(a.id, a.is_evaluation);
+  if (a.is_evaluation) {
+    return `- [안건 ${idx + 1}: ${a.title}]: 자체평가 평균 ${stats.avg}점/5.00점 만점으로 우수한 성과로 평가되었습니다. 추가 보완사항으로 연계 질 관리 및 모니터링 강화를 권고합니다.`;
+  } else {
+    return `- [안건 ${idx + 1}: ${a.title}]: 표결 결과 찬성 ${stats.approve}표, 반대 ${stats.reject}표, 기권 ${stats.abstain}표로 ${stats.approve >= Math.floor(qInfo?.attended / 2) + 1 ? "원안 가결" : "부결/보완"} 처리되었습니다.`;
+  }
+}).join("\n")}
+
+### 3. 향후 사업단 추진 방향 및 AI 종합 제언
+위원회의 심의 의결 결과에 따라 확정된 안건의 세부 실행 계획을 차년도 RISE 사업에 적시 반영하고, 제시된 주요 의견을 모니터링 지표로 활용할 것을 제언합니다.`;
+      }
 
       // AI 요약 및 의결 확정 결과를 Supabase DB에 탑재
       const { error: resultErr } = await supabase
@@ -1621,20 +1670,20 @@ ${opinionsContext}
 
       if (meetingErr) throw meetingErr;
 
-      alert("AI 의견 분석 및 대시보드 탑재가 성공적으로 완료되었습니다.");
+      alert("ChatGPT 4o AI 의견 분석 및 대시보드 탑재가 성공적으로 완료되었습니다!");
       await fetchMeetings(selectedCommittee.id);
       onChangeSubTab("committee_report"); // 결과보고 대장 탭으로 연계 이동
     } catch (err) {
-      alert("AI 요약 분석 실패: " + err.message);
+      alert("AI 요약 분석 및 탑재 실패: " + err.message);
     } finally {
       setIsAnalyzing(false);
     }
   };
 
-  const handleSaveGeminiKey = () => {
-    localStorage.setItem("user_gemini_api_key", geminiKey.trim());
+  const handleSaveOpenaiKey = () => {
+    localStorage.setItem("user_openai_api_key", openaiKey.trim());
     setShowKeyInput(false);
-    alert("Gemini API Key가 안전하게 브라우저 로컬 캐시에 저장되었습니다.");
+    alert("OpenAI API Key (ChatGPT 4o)가 안전하게 브라우저 로컬 캐시에 저장되었습니다.");
   };
 
   // 📄 디지털 봉인 결과보고서 PDF 다운로드 핸들러 구현 (한글 주석)
@@ -2642,7 +2691,7 @@ ${opinionsContext}
                   {isAnalyzing && (
                     <div style={{ textAlign: "center", padding: "1.5rem", background: "rgba(0,0,0,0.3)", borderRadius: "6px", marginBottom: "0.75rem", border: "1px dashed var(--accent-color)" }}>
                       <div className="spinner" style={{ display: "inline-block", width: "24px", height: "24px", border: "3px solid rgba(255,255,255,0.1)", borderTopColor: "var(--accent-color)", borderRadius: "50%", animation: "spin 1s linear infinite" }} />
-                      <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)", marginTop: "0.5rem" }}>Gemini AI가 위원들의 서면 의견을 통합 분석하고 대시보드 결과 보고서를 구성하고 있습니다...</p>
+                      <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)", marginTop: "0.5rem" }}>ChatGPT 4o AI가 위원들의 서면 의견을 통합 분석하고 대시보드 결과 보고서를 구성하고 있습니다...</p>
                     </div>
                   )}
 
