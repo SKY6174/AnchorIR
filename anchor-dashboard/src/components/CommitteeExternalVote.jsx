@@ -564,13 +564,35 @@ export default function CommitteeExternalVote({ meetingId }) {
     reader.readAsDataURL(file);
   };
 
+  // 💡 [정밀 픽셀 서명 검증 유틸리티] 캔버스에 실제 붓자국/선/이미지가 그려졌는지 100% 감지
+  const isCanvasEmpty = (canvas) => {
+    if (!canvas) return true;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return true;
+
+    try {
+      const pixelData = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+      let drawnPixels = 0;
+      for (let i = 0; i < pixelData.length; i += 4) {
+        const alpha = pixelData[i + 3];
+        if (alpha > 10) {
+          drawnPixels++;
+          if (drawnPixels > 20) return false; // 20픽셀 이상 드로잉 감지 시 비어있지 않음으로 판정
+        }
+      }
+    } catch (e) {
+      console.warn("Canvas getImageData check failed, falling back:", e);
+    }
+    return true;
+  };
+
   // 5. 의결서 최종 제출 (다중 의안 개조 & 간사 의결권 제외 규칙)
   const handleSubmitResponse = async (e) => {
     e.preventDefault();
     if (hasSubmitted) return;
 
     // 💡 [간사 의결권 제외 규칙 적용] 간사는 의결권이 없으므로 표결 제출을 제한합니다.
-    if (loggedInMember?.type?.includes("간사")) {
+    if (authMember?.type?.includes("간사")) {
       alert("ℹ️ 간사 직분은 위원회 행정 실무 담당자로서 의결권 및 의결정족수 대상에서 제외됩니다.");
       return;
     }
@@ -596,16 +618,10 @@ export default function CommitteeExternalVote({ meetingId }) {
       }
     }
 
-    // 2) 서명 추출 및 검증
+    // 2) 서명 추출 및 정밀 픽셀 검증
     const canvas = canvasRef.current;
-    if (!canvas) return;
-    
-    // 비어있는지 대략 검사 (픽셀 비교)
-    const blank = document.createElement("canvas");
-    blank.width = canvas.width;
-    blank.height = canvas.height;
-    if (canvas.toDataURL() === blank.toDataURL()) {
-      alert("심의 의결을 승인하시기 위해 전자서명을 완성해 주세요.");
+    if (!canvas || isCanvasEmpty(canvas)) {
+      alert("심의 의결을 승인하시기 위해 전자서명(마우스/터치 드로잉 또는 서명 이미지 업로드)을 완성해 주세요.");
       return;
     }
 
