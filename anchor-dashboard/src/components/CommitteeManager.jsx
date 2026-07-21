@@ -1609,6 +1609,10 @@ export default function CommitteeManager({
   // 8. ChatGPT 4o (OpenAI API) 기반 회의록 AI 자동 요약 & 대시보드 탑재 핸들러
   const handleAiMeetingAnalysis = async () => {
     if (!selectedMeeting) return;
+    if (!qInfo?.isEstablished) {
+      alert(`⚠️ 아직 회의 성원 요건(재적 ${qInfo?.total || 0}명 중 ${qInfo?.majorityLimit || 0}명 이상 출석)을 충족하지 못하였습니다.\n\n출석 위원 수 미달로 인한 미성원 상태에서는 AI 분석 보고서를 작성할 수 없습니다.\n위원들의 추가 표결로 성원이 완료된 후 다시 시도해 주세요.`);
+      return;
+    }
     if (responses.length === 0) {
       alert("제출된 위원 의견이 없어 분석을 진행할 수 없습니다.");
       return;
@@ -3003,10 +3007,20 @@ ${selectedMeetingAgendas.map((a, idx) => {
                       <button
                         className="btn btn-primary"
                         onClick={handleAiMeetingAnalysis}
-                        disabled={isAnalyzing || responses.length === 0}
-                        style={{ fontSize: "0.8rem", padding: "0.3rem 0.6rem", display: "flex", alignItems: "center", gap: "0.25rem" }}
+                        disabled={isAnalyzing || responses.length === 0 || !qInfo?.isEstablished}
+                        title={!qInfo?.isEstablished ? "성원이 완료된 후 AI 분석을 진행할 수 있습니다." : "AI 종합 심의 분석 생성/재생성"}
+                        style={{
+                          fontSize: "0.8rem",
+                          padding: "0.35rem 0.75rem",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "0.3rem",
+                          opacity: (!qInfo?.isEstablished || responses.length === 0) ? 0.5 : 1,
+                          cursor: (!qInfo?.isEstablished || responses.length === 0) ? "not-allowed" : "pointer"
+                        }}
                       >
-                        <Cpu size={14} /> AI 의견 종합 분석 및 탑재
+                        <Cpu size={14} />
+                        <span>{meetingResult ? "🤖 AI 분석 다시 실행" : "🤖 AI 의견 종합 분석 및 탑재"}</span>
                       </button>
                     )}
                   </div>
@@ -3083,20 +3097,50 @@ ${selectedMeetingAgendas.map((a, idx) => {
                         <Cpu size={16} style={{ color: "var(--accent-color)" }} />
                         앵커사업단 각종 위원회 심의 분석서
                       </strong>
-                      {isMeetingManager && !isEditingReport && (
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setIsEditingReport(true);
-                            setEditedReportText(meetingResult.ai_summary || "");
-                          }}
-                          className="btn"
-                          style={{ fontSize: "0.75rem", padding: "0.2rem 0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color)", color: "var(--text-secondary)", display: "flex", alignItems: "center", gap: "0.2rem" }}
-                        >
-                          <Edit3 size={12} /> 수정하기
-                        </button>
-                      )}
+                      
+                      <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
+                        {isMeetingManager && (
+                          <button
+                            type="button"
+                            onClick={handleAiMeetingAnalysis}
+                            disabled={isAnalyzing || !qInfo?.isEstablished}
+                            className="btn btn-primary"
+                            style={{
+                              fontSize: "0.75rem",
+                              padding: "0.25rem 0.6rem",
+                              display: "flex",
+                              alignItems: "center",
+                              gap: "0.25rem",
+                              opacity: (!qInfo?.isEstablished || isAnalyzing) ? 0.5 : 1,
+                              cursor: (!qInfo?.isEstablished || isAnalyzing) ? "not-allowed" : "pointer"
+                            }}
+                            title="성원 완료 후 최신 위원 의결 데이터로 AI 분석을 다시 실행합니다."
+                          >
+                            <RefreshCw size={12} /> AI 분석 다시 실행
+                          </button>
+                        )}
+
+                        {isMeetingManager && !isEditingReport && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setIsEditingReport(true);
+                              setEditedReportText(meetingResult.ai_summary || "");
+                            }}
+                            className="btn"
+                            style={{ fontSize: "0.75rem", padding: "0.25rem 0.5rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color)", color: "var(--text-secondary)", display: "flex", alignItems: "center", gap: "0.2rem" }}
+                          >
+                            <Edit3 size={12} /> 수정하기
+                          </button>
+                        )}
+                      </div>
                     </div>
+
+                    {!qInfo?.isEstablished && (
+                      <div style={{ padding: "0.75rem 1rem", background: "rgba(239, 68, 68, 0.1)", border: "1px solid rgba(239, 68, 68, 0.3)", borderRadius: "6px", marginBottom: "1rem", color: "#fca5a5", fontSize: "0.82rem" }}>
+                        ⚠️ <strong>성원 미달 안내:</strong> 현재 출석 위원 미달로 회의 성원이 성립되지 않았습니다. 위원의 추가 의결 참여로 성원이 완료된 후 우측의 <strong>[AI 분석 다시 실행]</strong> 버튼을 눌러 최신 심의 분석서를 재구성하세요.
+                      </div>
+                    )}
 
                     {isEditingReport ? (
                       <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
