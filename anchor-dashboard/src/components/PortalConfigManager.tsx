@@ -112,6 +112,7 @@ const MENU_SCHEMA: MenuSchemaItem[] = [
     label: "위원회 관리",
     description: "각종 사업단위원회 회의 소집, 의결서 취합 및 AI 분석 결과보고 대장 관리",
     subMenus: [
+      { key: "committees", label: "위원회 명단 관리" },
       { key: "committee_meeting", label: "회의 운영 및 의결" },
       { key: "committee_report", label: "위원회 결과보고 대장" }
     ]

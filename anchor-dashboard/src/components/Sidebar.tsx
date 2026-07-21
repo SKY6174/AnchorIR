@@ -875,8 +875,8 @@ export default function Sidebar({
               onClick={() => {
                 onChangeTab("committee");
                 if (onChangeCommitteeSubTab) {
-                  const subTabs = ["committee_meeting", "committee_report"];
-                  const firstActive = subTabs.find(tab => isSongDirector || menuVisibility[tab] !== false) || "committee_meeting";
+                  const subTabs = ["committees", "committee_meeting", "committee_report"];
+                  const firstActive = subTabs.find(tab => isSongDirector || menuVisibility[tab] !== false) || "committees";
                   onChangeCommitteeSubTab(firstActive);
                 }
               }}
@@ -893,9 +893,29 @@ export default function Sidebar({
               </span>
             </div>
             <div className="nav-sub-menu">
+              {(menuVisibility.committees !== false || isSongDirector) && (
+                <div
+                  className={`nav-sub-item ${activeTab === "committee" && (committeeSubTab === "committees" || !committeeSubTab) ? "active" : ""}`}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onChangeTab("committee");
+                    if (onChangeCommitteeSubTab) {
+                      onChangeCommitteeSubTab("committees");
+                    }
+                  }}
+                  style={getHiddenStyle("committees")}
+                >
+                  - 위원회 명단 관리
+                  {isHidden("committees") && (
+                    <span style={{ fontSize: "0.6rem", color: "#ef4444", textDecoration: "none", marginLeft: "0.2rem" }}>
+                      [숨김]
+                    </span>
+                  )}
+                </div>
+              )}
               {(menuVisibility.committee_meeting !== false || isSongDirector) && (
                 <div
-                  className={`nav-sub-item ${activeTab === "committee" && (committeeSubTab === "committee_meeting" || !committeeSubTab) ? "active" : ""}`}
+                  className={`nav-sub-item ${activeTab === "committee" && committeeSubTab === "committee_meeting" ? "active" : ""}`}
                   onClick={(e) => {
                     e.stopPropagation();
                     onChangeTab("committee");
