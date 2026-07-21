@@ -1088,24 +1088,6 @@ export default function Sidebar({
         )}
       </nav>
 
-      {/* 하단 사용자 프로필 및 역할 선택 드롭다운 */}
-      <div className="user-profile-section" style={{ borderTop: "1px solid rgba(255,255,255,0.08)", paddingTop: "0.75rem", marginTop: "auto" }}>
-        <div style={{ fontSize: "0.75rem", color: "var(--text-secondary)", marginBottom: "0.4rem", paddingLeft: "0.25rem" }}>
-          로그인 계정 / 권한 선택
-        </div>
-        <select
-          value={currentRole}
-          onChange={(e) => onChangeRole && onChangeRole(e.target.value)}
-          className="role-select"
-          style={{ width: "100%", padding: "0.4rem 0.5rem", borderRadius: "6px", backgroundColor: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.15)", color: "#fff", fontSize: "0.8rem" }}
-        >
-          {(Array.isArray(userRoles) ? userRoles : []).map((role: any) => (
-            <option key={role.id} value={role.id} style={{ backgroundColor: "#1e1e1e", color: "#fff" }}>
-              {role.name} ({role.role})
-            </option>
-          ))}
-        </select>
-      </div>
     </aside>
   );
 }
