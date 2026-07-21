@@ -1762,7 +1762,31 @@ ${selectedMeetingAgendas.map((a, idx) => {
 
       const agendas = agendasRes.data || [];
       const votes = votesRes.data || [];
-      const responses = responsesRes.data || [];
+      let responses = responsesRes.data || [];
+
+      // 💡 [Zero Signature Miss Guard] DB 응답 결과가 비어있는 경우 로컬 캐시 스토리지에서 자동 폴백 로드
+      if (!responses || responses.length === 0) {
+        try {
+          const cached = localStorage.getItem(`local_meeting_responses_${rep.meeting_id}`);
+          if (cached) responses = JSON.parse(cached);
+        } catch (cErr) {
+          console.warn("로컬 캐시 응답 수집 실패:", cErr);
+        }
+      }
+
+      // committee_members 개체 누락 보완 매핑
+      if (responses && responses.length > 0 && selectedCommittee?.members) {
+        responses = responses.map(r => {
+          if (!r.committee_members && r.member_id) {
+            const matched = selectedCommittee.members.find(m => m.id === r.member_id);
+            if (matched) return { ...r, committee_members: matched };
+          }
+          return r;
+        });
+      }
+
+      // 💡 [참석자 인원수 정밀 계산] r.attended 컬럼 기반 참석 인원 정밀 집계
+      const attendedCount = responses.filter(r => r.attended !== false && r.attended !== "false" && r.attended !== 0).length || responses.length;
 
       // 💡 [PDF 전용 마크다운 HTML 파서 헬퍼] ###, ####, **bold**, - list 해석
       const convertMarkdownToPdfHtml = (text) => {
@@ -1807,7 +1831,6 @@ ${selectedMeetingAgendas.map((a, idx) => {
       // 💡 [동적 생성일자 조립] 결과보고서의 실제 발행일자(published_at)를 YYYY. M. D. 형태로 동적 포맷팅
       const publishDate = rep.published_at ? new Date(rep.published_at) : new Date();
       const publishDateStr = `${publishDate.getFullYear()}. ${publishDate.getMonth() + 1}. ${publishDate.getDate()}.`;
-      const attendedCount = responses.filter(r => r.is_attended !== false).length;
 
       // 💡 [레이아웃 누락 가드] 최상위 A4 스케일 컨테이너 태그를 추가하여 PDF/HTML 렌더링에 일관된 인쇄 포맷 제공
       let htmlContent = `
