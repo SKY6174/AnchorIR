@@ -18,7 +18,9 @@ import {
   Edit3, 
   Lock,
   ChevronRight,
-  UserCheck
+  UserCheck,
+  Copy,
+  Link
 } from "lucide-react";
 
 // 💡 [Rule 8] 개인정보 및 서명 데이터 암복호화용 대칭키 정의
@@ -2601,11 +2603,39 @@ ${selectedMeetingAgendas.map((a, idx) => {
 
                   {/* 💡 [외부 위원 전용 접속 링크 및 보안 PIN 배너] (요구사항 4 반영) */}
                   <div style={{ marginTop: "0.75rem", padding: "0.75rem", background: "rgba(16, 185, 129, 0.05)", borderRadius: "6px", border: "1px solid rgba(16, 185, 129, 0.2)", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "0.5rem" }}>
-                    <div style={{ fontSize: "0.8rem" }}>
-                      <span style={{ color: "#10B981", fontWeight: "bold", display: "block", marginBottom: "0.15rem" }}>🔗 외부 위원 의결 채널 링크</span>
-                      <code style={{ background: "rgba(0,0,0,0.3)", padding: "0.2rem 0.4rem", borderRadius: "4px", color: "#a7f3d0", fontSize: "0.75rem" }}>
-                        {`${window.location.origin}${window.location.pathname}?mode=vote&meetingId=${selectedMeeting.id}`}
-                      </code>
+                    <div style={{ fontSize: "0.8rem", flex: 1, minWidth: "250px" }}>
+                      <span style={{ color: "#10B981", fontWeight: "bold", display: "block", marginBottom: "0.25rem" }}>🔗 외부 위원 의결 채널 링크</span>
+                      <div style={{ display: "flex", alignItems: "center", gap: "0.4rem", flexWrap: "wrap" }}>
+                        <code style={{ background: "rgba(0,0,0,0.3)", padding: "0.25rem 0.5rem", borderRadius: "4px", color: "#a7f3d0", fontSize: "0.75rem", wordBreak: "break-all" }}>
+                          {`${window.location.origin}${window.location.pathname}?mode=vote&meetingId=${selectedMeeting.id}`}
+                        </code>
+                        <button
+                          type="button"
+                          title="주소 링크 복사"
+                          style={{
+                            display: "inline-flex",
+                            alignItems: "center",
+                            gap: "0.25rem",
+                            padding: "0.25rem 0.55rem",
+                            fontSize: "0.72rem",
+                            borderRadius: "4px",
+                            border: "1px solid #10B981",
+                            background: "rgba(16, 185, 129, 0.15)",
+                            color: "#34d399",
+                            cursor: "pointer",
+                            fontWeight: "bold",
+                            flexShrink: 0
+                          }}
+                          onClick={() => {
+                            const url = `${window.location.origin}${window.location.pathname}?mode=vote&meetingId=${selectedMeeting.id}`;
+                            navigator.clipboard.writeText(url);
+                            alert("📋 외부 위원 접속 주소 링크가 클립보드에 복사되었습니다!");
+                          }}
+                        >
+                          <Copy size={13} />
+                          <span>링크 복사</span>
+                        </button>
+                      </div>
                     </div>
                     <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
                       <span style={{ fontSize: "0.75rem", background: "rgba(245, 158, 11, 0.15)", color: "#fbbf24", padding: "0.25rem 0.5rem", borderRadius: "4px", fontWeight: "bold" }}>
@@ -2613,7 +2643,7 @@ ${selectedMeetingAgendas.map((a, idx) => {
                       </span>
                       <button
                         className="btn btn-primary"
-                        style={{ padding: "0.3rem 0.6rem", fontSize: "0.75rem" }}
+                        style={{ padding: "0.3rem 0.6rem", fontSize: "0.75rem", display: "inline-flex", alignItems: "center", gap: "0.25rem" }}
                         onClick={() => {
                           const url = `${window.location.origin}${window.location.pathname}?mode=vote&meetingId=${selectedMeeting.id}`;
                           const copyText = `안녕하세요, RISE 위원회 위원님.\n\n개설된 회의 심의 의결 안내 드립니다.\n\n■ 회의 안건: ${selectedMeeting.title}\n■ 접속 링크: ${url}\n■ 보안 PIN코드: ${selectedMeeting.access_pin || "123456"}\n\n위 링크로 접속하신 후 위원 성명과 보안 PIN코드를 입력하시고 의결 및 전자서명을 제출해 주시기 바랍니다.`;
@@ -2621,7 +2651,8 @@ ${selectedMeetingAgendas.map((a, idx) => {
                           alert("외부 위원 안내문 및 접속 링크가 클립보드에 복사되었습니다!");
                         }}
                       >
-                        안내문 복사
+                        <Copy size={13} />
+                        <span>안내문 복사</span>
                       </button>
                     </div>
                   </div>
