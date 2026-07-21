@@ -69,11 +69,14 @@ const renderCustomizedLabel = ({ cx, cy, midAngle, outerRadius, percent, name }:
 /**
  * 💡 KPIOverview - 5대 핵심 KPI 및 집행률 요약 TSX 컴포넌트
  */
-export default function KPIOverview({ projects, currentRole, selectedYear = 2 }: KPIOverviewProps): React.JSX.Element {
+export default function KPIOverview({ projects = [], currentRole, selectedYear = 2 }: KPIOverviewProps): React.JSX.Element {
+  // 안전 방어 코드: projects가 배열이 아닐 경우 빈 배열로 처리하여 TypeError 방지
+  const safeProjects = Array.isArray(projects) ? projects : [];
+
   // 1차년도에는 공통경비(프로젝트 ID: E)가 존재하지 않으므로 필터링 처리
   const activeProjects = selectedYear === 1
-    ? projects.filter((p) => p.id !== "E")
-    : projects;
+    ? safeProjects.filter((p) => p && p.id !== "E")
+    : safeProjects;
 
   // 예산 합계 및 재원 구분 계산
   const totalBudgetMain = activeProjects.reduce((sum, p) => {
