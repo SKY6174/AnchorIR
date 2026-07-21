@@ -501,6 +501,27 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
         } catch (dbErr: any) {
           console.warn("meeting_responses DB 업서트 경고:", dbErr.message);
         }
+
+        try {
+          const { data: meetingData } = await supabase
+            .from("committee_meetings")
+            .select("responses_data")
+            .eq("id", meeting.id)
+            .maybeSingle();
+
+          const existingResponsesData = meetingData?.responses_data || [];
+          const filteredResponsesData = Array.isArray(existingResponsesData)
+            ? existingResponsesData.filter((r: any) => String(r.member_name) !== String(authMember.name) && String(r.member_id) !== String(memberId))
+            : [];
+          const newResponsesData = [...filteredResponsesData, newRespItem];
+
+          await supabase
+            .from("committee_meetings")
+            .update({ responses_data: newResponsesData })
+            .eq("id", meeting.id);
+        } catch (mErr: any) {
+          console.warn("committee_meetings responses_data 업데이트 경고:", mErr.message);
+        }
       }
 
       setHasSubmitted(true);

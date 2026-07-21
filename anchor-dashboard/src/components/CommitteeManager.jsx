@@ -668,56 +668,77 @@ export default function CommitteeManager({
   };
 
   const fetchResponses = async (meetingId) => {
+    let combinedResponses = [];
+    
+    // 1. meeting_responses DB 테이블 수합
     try {
-      const { data, error } = await supabase
+      const { data } = await supabase
         .from("meeting_responses")
         .select(`
-          id, meeting_id, member_id, attended, vote, opinion, encrypted_signature, submitted_at,
+          id, meeting_id, member_id, member_name, attended, vote, opinion, encrypted_signature, signature, submitted_at,
           committee_members ( name, type, org, dept )
         `)
         .eq("meeting_id", meetingId);
-      if (error) throw error;
-      
-      setResponses(data || []);
-      localStorage.setItem(`local_meeting_responses_${meetingId}`, JSON.stringify(data || []));
-
-      // 내가 이미 제출했는지 검증
-      if (currentUser && members.length > 0) {
-        const myName = currentUser.name ? currentUser.name.split(" ")[0].split("(")[0].trim() : "";
-        const myMemberObj = members.find(m => m.name === myName);
-        if (myMemberObj) {
-          const myResp = (data || []).find(r => r.member_id === myMemberObj.id);
-          if (myResp && myResp.submitted_at) {
-            setUserVote(myResp.vote || "");
-            setUserOpinion(myResp.opinion || "");
-            setHasSubmitted(true);
-          } else {
-            setUserVote("");
-            setUserOpinion("");
-            setHasSubmitted(false);
-          }
-        }
+      if (data && data.length > 0) {
+        combinedResponses = [...data];
       }
     } catch (err) {
-      console.error("의결 목록 조회 에러 (로컬 캐시 스위칭):", err.message);
+      console.warn("meeting_responses DB 조회 스킵:", err.message);
+    }
+
+    // 2. committee_meetings 테이블의 responses_data 수합
+    try {
+      const { data: meetingObj } = await supabase
+        .from("committee_meetings")
+        .select("responses_data")
+        .eq("id", meetingId)
+        .maybeSingle();
+
+      if (meetingObj?.responses_data && Array.isArray(meetingObj.responses_data)) {
+        meetingObj.responses_data.forEach(r => {
+          const exists = combinedResponses.some(cr => String(cr.member_name || cr.member_id) === String(r.member_name || r.member_id));
+          if (!exists) {
+            combinedResponses.push(r);
+          }
+        });
+      }
+    } catch (err) {
+      console.warn("committee_meetings responses_data 조회 스킵:", err.message);
+    }
+
+    // 3. 로컬 캐시 스토리지 수합
+    try {
       const localData = localStorage.getItem(`local_meeting_responses_${meetingId}`);
       const parsed = localData ? JSON.parse(localData) : [];
-      setResponses(parsed);
-
-      if (currentUser && members.length > 0) {
-        const myName = currentUser.name ? currentUser.name.split(" ")[0].split("(")[0].trim() : "";
-        const myMemberObj = members.find(m => m.name === myName);
-        if (myMemberObj) {
-          const myResp = parsed.find(r => r.member_id === myMemberObj.id);
-          if (myResp && myResp.submitted_at) {
-            setUserVote(myResp.vote || "");
-            setUserOpinion(myResp.opinion || "");
-            setHasSubmitted(true);
-          } else {
-            setUserVote("");
-            setUserOpinion("");
-            setHasSubmitted(false);
+      if (Array.isArray(parsed)) {
+        parsed.forEach(r => {
+          const exists = combinedResponses.some(cr => String(cr.member_name || cr.member_id) === String(r.member_name || r.member_id));
+          if (!exists) {
+            combinedResponses.push(r);
           }
+        });
+      }
+    } catch (err) {
+      console.warn("로컬 캐시 수합 스킵:", err.message);
+    }
+
+    setResponses(combinedResponses);
+    localStorage.setItem(`local_meeting_responses_${meetingId}`, JSON.stringify(combinedResponses));
+
+    // 내가 이미 제출했는지 검증
+    if (currentUser && members.length > 0) {
+      const myName = currentUser.name ? currentUser.name.split(" ")[0].split("(")[0].trim() : "";
+      const myMemberObj = members.find(m => m.name === myName);
+      if (myMemberObj) {
+        const myResp = combinedResponses.find(r => String(r.member_id) === String(myMemberObj.id) || r.member_name === myMemberObj.name);
+        if (myResp && myResp.submitted_at) {
+          setUserVote(myResp.vote || "");
+          setUserOpinion(myResp.opinion || "");
+          setHasSubmitted(true);
+        } else {
+          setUserVote("");
+          setUserOpinion("");
+          setHasSubmitted(false);
         }
       }
     }
@@ -1539,11 +1560,11 @@ export default function CommitteeManager({
 
     // 간사를 제외한 순수 의결 참석 응답 추출
     const votingResponses = responses.filter(r => {
-      const memberObj = members.find(m => m.id === r.member_id || m.name === r.member_name);
+      const memberObj = members.find(m => String(m.id) === String(r.member_id) || m.name === r.member_name);
       return memberObj ? !memberObj.type?.includes("간사") : true;
     });
 
-    const attended = votingResponses.filter(r => r.attended).length;
+    const attended = votingResponses.filter(r => r.attended || r.submitted_at || r.vote).length;
     
     // 의사정족수 (성원 요건): 간사를 제외한 재적 위원 수(N명)의 과반수 (N=3이면 Math.floor(3/2) + 1 = 2명 이상 출석 시 성원 완료!)
     const majorityLimit = Math.floor(total / 2) + 1;
