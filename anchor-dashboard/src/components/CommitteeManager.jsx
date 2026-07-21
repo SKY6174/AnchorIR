@@ -150,7 +150,7 @@ const MOCK_COMMITTEE_MEMBERS_FALLBACK = {
 export default function CommitteeManager({ 
   currentRole, 
   currentUser, 
-  activeSubTab, 
+  activeSubTab = "committees", 
   onChangeSubTab, 
   darkMode, 
   selectedYear,
