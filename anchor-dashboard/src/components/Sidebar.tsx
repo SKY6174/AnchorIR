@@ -874,15 +874,15 @@ export default function Sidebar({
               onClick={() => {
                 onChangeTab("mgmt");
                 if (onChangeMgmtSubTab) {
-                  const subTabs = ["members", "org_chart", "center_org", "partners", "instructors", "llm_wiki", "portal_configs"];
+                  const subTabs = ["members", "org_chart", "center_org_chart", "partners", "instructor_pool", "llm_wiki", "portal_config"];
                   const schemaMapping: Record<string, string> = {
                     "members": "members",
                     "org_chart": "org_chart",
-                    "center_org": "center_org",
+                    "center_org_chart": "center_org_chart",
                     "partners": "partners",
-                    "instructors": "instructors",
+                    "instructor_pool": "instructor_pool",
                     "llm_wiki": "llm_wiki",
-                    "portal_configs": "portal_configs"
+                    "portal_config": "portal_config"
                   };
                   const firstActive = subTabs.find(tab => isSongDirector || menuVisibility[schemaMapping[tab]] !== false) || "members";
                   onChangeMgmtSubTab(firstActive);
@@ -941,20 +941,20 @@ export default function Sidebar({
                   )}
                 </div>
               )}
-              {(menuVisibility.center_org !== false || isSongDirector) && (
+              {(menuVisibility.center_org_chart !== false || menuVisibility.center_org !== false || isSongDirector) && (
                 <div
-                  className={`nav-sub-item ${activeTab === "mgmt" && mgmtSubTab === "center_org" ? "active" : ""}`}
+                  className={`nav-sub-item ${activeTab === "mgmt" && mgmtSubTab === "center_org_chart" ? "active" : ""}`}
                   onClick={(e) => {
                     e.stopPropagation();
                     onChangeTab("mgmt");
                     if (onChangeMgmtSubTab) {
-                      onChangeMgmtSubTab("center_org");
+                      onChangeMgmtSubTab("center_org_chart");
                     }
                   }}
-                  style={getHiddenStyle("center_org")}
+                  style={getHiddenStyle("center_org_chart")}
                 >
                   - 센터 조직도
-                  {isHidden("center_org") && (
+                  {isHidden("center_org_chart") && (
                     <span style={{ fontSize: "0.6rem", color: "#ef4444", textDecoration: "none", marginLeft: "0.2rem" }}>
                       [숨김]
                     </span>
@@ -981,20 +981,20 @@ export default function Sidebar({
                   )}
                 </div>
               )}
-              {(menuVisibility.instructors !== false || isSongDirector) && (
+              {(menuVisibility.instructor_pool !== false || menuVisibility.instructors !== false || isSongDirector) && (
                 <div
-                  className={`nav-sub-item ${activeTab === "mgmt" && mgmtSubTab === "instructors" ? "active" : ""}`}
+                  className={`nav-sub-item ${activeTab === "mgmt" && mgmtSubTab === "instructor_pool" ? "active" : ""}`}
                   onClick={(e) => {
                     e.stopPropagation();
                     onChangeTab("mgmt");
                     if (onChangeMgmtSubTab) {
-                      onChangeMgmtSubTab("instructors");
+                      onChangeMgmtSubTab("instructor_pool");
                     }
                   }}
-                  style={getHiddenStyle("instructors")}
+                  style={getHiddenStyle("instructor_pool")}
                 >
                   - 강사풀 관리
-                  {isHidden("instructors") && (
+                  {isHidden("instructor_pool") && (
                     <span style={{ fontSize: "0.6rem", color: "#ef4444", textDecoration: "none", marginLeft: "0.2rem" }}>
                       [숨김]
                     </span>
@@ -1021,20 +1021,20 @@ export default function Sidebar({
                   )}
                 </div>
               )}
-              {(menuVisibility.portal_configs !== false || isSongDirector) && (
+              {(menuVisibility.portal_config !== false || menuVisibility.portal_configs !== false || isSongDirector) && (
                 <div
-                  className={`nav-sub-item ${activeTab === "mgmt" && mgmtSubTab === "portal_configs" ? "active" : ""}`}
+                  className={`nav-sub-item ${activeTab === "mgmt" && mgmtSubTab === "portal_config" ? "active" : ""}`}
                   onClick={(e) => {
                     e.stopPropagation();
                     onChangeTab("mgmt");
                     if (onChangeMgmtSubTab) {
-                      onChangeMgmtSubTab("portal_configs");
+                      onChangeMgmtSubTab("portal_config");
                     }
                   }}
-                  style={getHiddenStyle("portal_configs")}
+                  style={getHiddenStyle("portal_config")}
                 >
                   - 포털 메뉴 관리
-                  {isHidden("portal_configs") && (
+                  {isHidden("portal_config") && (
                     <span style={{ fontSize: "0.6rem", color: "#ef4444", textDecoration: "none", marginLeft: "0.2rem" }}>
                       [숨김]
                     </span>
