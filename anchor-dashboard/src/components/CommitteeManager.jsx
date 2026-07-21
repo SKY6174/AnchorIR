@@ -1877,8 +1877,8 @@ ${selectedMeetingAgendas.map((a, idx) => {
           ${rep.ai_summary || "종합 의견 분석 대기 중입니다."}
         </div>
 
-        <h3 style="font-size: 16px; font-weight: bold; border-left: 4px solid #1e3a8a; padding-left: 8px; margin-bottom: 0.5rem; margin-top: 1.5rem; color: #000;">4. 위원 자필 서명 날인부 (디지털 보존)</h3>
-        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 1rem; border: 1px solid #000; padding: 10px; background: #fff;">
+        <h3 style="font-size: 16px; font-weight: bold; border-left: 4px solid #1e3a8a; padding-left: 8px; margin-bottom: 0.5rem; margin-top: 1.5rem; color: #000; page-break-inside: avoid; break-inside: avoid;">4. 위원 자필 서명 날인부 (디지털 보존)</h3>
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 1rem; border: 1px solid #000; padding: 10px; background: #fff; page-break-inside: avoid; break-inside: avoid;">
       `;
 
       responses.forEach((resp) => {
@@ -1890,7 +1890,7 @@ ${selectedMeetingAgendas.map((a, idx) => {
         const memberName = resp.committee_members?.name || "알 수 없는 위원";
 
         htmlContent += `
-          <div style="border: 1px solid #ddd; padding: 8px; border-radius: 4px; display: flex; align-items: center; justify-content: space-between; background: #fff; color: #000;">
+          <div style="border: 1px solid #ddd; padding: 8px; border-radius: 4px; display: flex; align-items: center; justify-content: space-between; background: #fff; color: #000; page-break-inside: avoid; break-inside: avoid;">
             <div style="text-align: left;">
               <div style="font-size: 12px; font-weight: bold;">${memberName} 위원</div>
               <div style="font-size: 10px; color: #666;">${resp.submitted_at ? new Date(resp.submitted_at).toLocaleDateString("ko-KR") : "의결서 보관"}</div>
@@ -1905,12 +1905,12 @@ ${selectedMeetingAgendas.map((a, idx) => {
       htmlContent += `
         </div>
 
-        <div style="text-align: center; margin-top: 4.5rem; margin-bottom: 3.5rem; color: #000000; font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif;">
+        <div style="text-align: center; margin-top: 4.5rem; margin-bottom: 3.5rem; color: #000000; font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif; page-break-inside: avoid; break-inside: avoid;">
           <div style="font-size: 14px; font-weight: bold; margin-bottom: 1.2rem; letter-spacing: 0.5px;">${publishDateStr}</div>
           <div style="font-size: 16px; font-weight: 900; letter-spacing: 1px;">울산과학대학교 앵커사업단</div>
         </div>
 
-        <div style="margin-top: 3.5rem; text-align: center; font-size: 11px; color: #4b5563; border-top: 1px solid #e5e7eb; padding-top: 1rem;">
+        <div style="margin-top: 3.5rem; text-align: center; font-size: 11px; color: #4b5563; border-top: 1px solid #e5e7eb; padding-top: 1rem; page-break-inside: avoid; break-inside: avoid;">
           <div style="font-size: 13px; font-weight: bold; color: #1e3a8a; margin-bottom: 0.25rem;">울산과학대학교 앵커사업단 공동인증 디지털 서명 적용 필함</div>
           본 문서는 울산과학대학교 앵커사업단 디지털 서명키(Ulsan College Anchor Portal CA)를 활용하여<br/>
           암호학적으로 봉인되었으며, 파일의 변조 방지 및 의결 무결성이 완전 보장됨을 증명합니다.
