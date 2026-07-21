@@ -20,7 +20,8 @@ import {
   ChevronRight,
   UserCheck,
   Copy,
-  Link
+  Link,
+  RefreshCw
 } from "lucide-react";
 
 // 💡 [Rule 8] 개인정보 및 서명 데이터 암복호화용 대칭키 정의
@@ -418,7 +419,15 @@ export default function CommitteeManager({
   useEffect(() => {
     if (selectedMeeting) {
       fetchResponses(selectedMeeting.id);
+      fetchMeetingAgendasAndVotes(selectedMeeting.id);
       fetchMeetingResult(selectedMeeting.id);
+
+      const interval = setInterval(() => {
+        fetchResponses(selectedMeeting.id);
+        fetchMeetingAgendasAndVotes(selectedMeeting.id);
+      }, 3000);
+
+      return () => clearInterval(interval);
     } else {
       setResponses([]);
       setMeetingResult(null);
@@ -2543,6 +2552,30 @@ ${selectedMeetingAgendas.map((a, idx) => {
                           }}
                         >
                           <Trash2 size={13} /> 회의 취소
+                        </button>
+                        <button
+                          type="button"
+                          className="btn btn-secondary"
+                          style={{
+                            padding: "0.4rem 0.8rem",
+                            fontSize: "0.78rem",
+                            display: "inline-flex",
+                            alignItems: "center",
+                            gap: "0.3rem",
+                            background: "rgba(59, 130, 246, 0.15)",
+                            border: "1px solid var(--accent-color)",
+                            color: "var(--accent-color)",
+                            borderRadius: "6px",
+                            cursor: "pointer",
+                            fontWeight: "800"
+                          }}
+                          onClick={() => {
+                            fetchResponses(selectedMeeting.id);
+                            fetchMeetingAgendasAndVotes(selectedMeeting.id);
+                            alert("🔄 외부 위원 의결 현황이 실시간 동기화 수합되었습니다.");
+                          }}
+                        >
+                          <RefreshCw size={13} /> 실시간 수합 동기화
                         </button>
                       </div>
                     )}

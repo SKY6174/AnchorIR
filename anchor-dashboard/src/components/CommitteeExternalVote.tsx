@@ -448,39 +448,59 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
         return `[의안 #${idx + 1}: ${a.title}] 표결: ${vText}${a.is_evaluation ? ` (점수: ${inp.score || 5}점)` : ""}${inp.opinion ? ` - 의견: ${inp.opinion}` : ""}`;
       }).join("\n");
 
-      if (String(meeting.id).startsWith("local-")) {
-        const localVotesKey = `local_meeting_agenda_votes_${meeting.id}`;
-        const currentVotes = JSON.parse(localStorage.getItem(localVotesKey) || "[]");
-        const filteredVotes = currentVotes.filter((v: any) => String(v.member_id) !== String(memberId));
-        const updatedVotes = [...filteredVotes, ...votePayloads];
-        localStorage.setItem(localVotesKey, JSON.stringify(updatedVotes));
+      // 💡 [듀얼 지속성 보장] 1. 로컬 스토리지에 무조건 캐시 기록
+      const localVotesKey = `local_meeting_agenda_votes_${meeting.id}`;
+      const currentVotes = JSON.parse(localStorage.getItem(localVotesKey) || "[]");
+      const filteredVotes = currentVotes.filter((v: any) => String(v.member_id) !== String(memberId));
+      const updatedVotes = [...filteredVotes, ...votePayloads];
+      localStorage.setItem(localVotesKey, JSON.stringify(updatedVotes));
 
-        const localRespKey = `local_meeting_responses_${meeting.id}`;
-        const currentResp = JSON.parse(localStorage.getItem(localRespKey) || "[]");
-        const filteredResp = currentResp.filter((r: any) => String(r.member_id) !== String(memberId));
-        const updatedResp = [...filteredResp, {
-          meeting_id: meeting.id,
-          member_id: memberId,
-          member_name: authMember.name,
-          attended: true,
-          vote: agendaInputs[selectedMeetingAgendas[0]?.id]?.vote || "APPROVE",
-          opinion: summaryOpinion,
-          signature: encryptedSignature,
-          submitted_at: new Date().toISOString()
-        }];
-        localStorage.setItem(localRespKey, JSON.stringify(updatedResp));
-      } else {
-        await supabase.from("meeting_agenda_votes").upsert(votePayloads, { onConflict: "meeting_id,agenda_id,member_id" });
-        await supabase.from("meeting_responses").upsert({
-          meeting_id: meeting.id,
-          member_id: memberId,
-          member_name: authMember.name,
-          attended: true,
-          vote: agendaInputs[selectedMeetingAgendas[0]?.id]?.vote || "APPROVE",
-          opinion: summaryOpinion,
-          signature: encryptedSignature,
-          submitted_at: new Date().toISOString()
-        }, { onConflict: "meeting_id,member_id" });
+      const localRespKey = `local_meeting_responses_${meeting.id}`;
+      const currentResp = JSON.parse(localStorage.getItem(localRespKey) || "[]");
+      const filteredResp = currentResp.filter((r: any) => String(r.member_id) !== String(memberId));
+      const newRespItem = {
+        meeting_id: meeting.id,
+        member_id: memberId,
+        member_name: authMember.name,
+        attended: true,
+        vote: agendaInputs[selectedMeetingAgendas[0]?.id]?.vote || "APPROVE",
+        opinion: summaryOpinion,
+        signature: encryptedSignature,
+        encrypted_signature: encryptedSignature,
+        submitted_at: new Date().toISOString(),
+        committee_members: {
+          name: authMember.name,
+          type: authMember.type || "위원",
+          org: authMember.org || "",
+          dept: authMember.dept || ""
+        }
+      };
+      const updatedResp = [...filteredResp, newRespItem];
+      localStorage.setItem(localRespKey, JSON.stringify(updatedResp));
+
+      // 💡 2. Supabase DB에도 안전하게 전송 시도
+      if (!String(meeting.id).startsWith("local-")) {
+        try {
+          await supabase.from("meeting_agenda_votes").upsert(votePayloads, { onConflict: "meeting_id,agenda_id,member_id" });
+        } catch (dbErr: any) {
+          console.warn("meeting_agenda_votes DB 업서트 경고:", dbErr.message);
+        }
+
+        try {
+          await supabase.from("meeting_responses").upsert([{
+            meeting_id: meeting.id,
+            member_id: memberId,
+            member_name: authMember.name,
+            attended: true,
+            vote: agendaInputs[selectedMeetingAgendas[0]?.id]?.vote || "APPROVE",
+            opinion: summaryOpinion,
+            signature: encryptedSignature,
+            encrypted_signature: encryptedSignature,
+            submitted_at: new Date().toISOString()
+          }], { onConflict: "meeting_id,member_id" });
+        } catch (dbErr: any) {
+          console.warn("meeting_responses DB 업서트 경고:", dbErr.message);
+        }
       }
 
       setHasSubmitted(true);
