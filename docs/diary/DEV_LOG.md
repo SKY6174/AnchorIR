@@ -63,7 +63,7 @@
 
 ---
 
-## 🗓️ 2026년 7월 22일 (개발 21일차 - TSX 전환 Phase 1 & 2 완수 및 RLS 보안 강화)
+## 🗓️ 2026년 7월 22일 (개발 21일차 - TSX 전환 Phase 1, 2, 3 완수 및 RLS 보안 강화)
 ### 📌 주요 작업 이벤트
 - **JSX ➔ TSX (TypeScript) 점진적 마이그레이션 Phase 1 완수**
   - **TypeScript 인프라 구축**: `typescript`, `@types/node`, `@types/crypto-js` 설치, `tsconfig.json` 및 `vite-env.d.ts` 환경 설정 완료.
@@ -76,11 +76,14 @@
     - `crypto.ts`: AES 대칭키 기반 전자서명 및 민감 정보 암복호화 유틸 TS 구현 (규칙 8 준수).
 - **JSX ➔ TSX (TypeScript) 점진적 마이그레이션 Phase 2 완수**
   - **공통 UI & 독립 컴포넌트 TSX 전환 (`src/components/`)**:
-    - `YouTubePlayer.tsx`: 유튜브 플레이어 반응형 비디오 컴포넌트 TSX 마이그레이션 & `YouTubePlayerProps` 정의.
-    - `Sidebar.tsx`: 대시보드 메인 네비게이션 및 동적 탭/서브탭 전환 컴포넌트 TSX 마이그레이션 & `SidebarProps` 정의.
-    - `ExcelUploader.tsx`: 예산/성과지표 엑셀 업로드 및 샘플 엑셀 다운로드 컴포넌트 TSX 마이그레이션 & `ExcelUploaderProps` 정의.
-    - `KPIOverview.tsx`: 5대 핵심 KPI 및 예산 집행률 시각화 대시보드 컴포넌트 TSX 마이그레이션 & `KPIOverviewProps` 정의.
-  - **프로덕션 빌드 무결성 테스트**: `npm run build` 453ms 0 Error 검증 통과.
+    - `YouTubePlayer.tsx`, `Sidebar.tsx`, `ExcelUploader.tsx`, `KPIOverview.tsx` 전환 완수 (453ms 0 Error 검증 통과).
+- **JSX ➔ TSX (TypeScript) 점진적 마이그레이션 Phase 3 완수**
+  - **서브 업무 모듈 컴포넌트 TSX 전환 (`src/components/`)**:
+    - `CommitteeExternalVote.tsx`: 위원회 모바일/웹 외부 의결 및 AES 전자서명(규칙 8) & 간사 제외 정족수 연동(규칙 2) TSX 전환.
+    - `PortalConfigManager.tsx`: 앵커 포털 메뉴 스키마 및 가시성/권한 제어 관리자 TSX 전환.
+    - `VideoDashboard.tsx`: 지산학 앵커사업 교육 및 홍보 동영상 대시보드 TSX 전환.
+    - `ScholarshipManager.tsx`: RCC/ECC 마일리지 장학금 지급 기준 검증 및 대장 관리자 TSX 전환.
+  - **프로덕션 빌드 무결성 테스트**: `npm run build` 461ms 0 Error 검증 통과.
 - **Supabase Security Advisor RLS 보안 경고 조치 (규칙 7, 8 준수)**
   - `public.budget_executions` 테이블 RLS 보안 경고 해결 전용 마이그레이션 [090_enable_rls_budget_executions.sql](file:///Users/thomas/Documents/AnchorIR/supabase/migrations/090_enable_rls_budget_executions.sql) 작성.
 

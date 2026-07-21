@@ -1,8 +1,28 @@
 import React, { useState } from "react";
-import { Settings, Save, RotateCcw, ShieldAlert } from "lucide-react";
+import { Settings, ShieldAlert } from "lucide-react";
 
-// 대시보드에 노출되는 전체 메인 메뉴(탭) 및 서브메뉴(서브탭) 트리 정보 정의 (사이드바 명칭과 100% 동기화)
-const MENU_SCHEMA = [
+/**
+ * 💡 서브메뉴 스키마 항목 인터페이스
+ */
+export interface SubMenuItem {
+  key: string;
+  label: string;
+}
+
+/**
+ * 💡 메인메뉴 스키마 항목 인터페이스
+ */
+export interface MenuSchemaItem {
+  key: string;
+  label: string;
+  description: string;
+  subMenus: SubMenuItem[];
+}
+
+/**
+ * 💡 대시보드에 노출되는 전체 메인 메뉴(탭) 및 서브메뉴(서브탭) 트리 정보 정의 (사이드바 명칭과 100% 동기화)
+ */
+const MENU_SCHEMA: MenuSchemaItem[] = [
   {
     key: "dashboard",
     label: "IR 대시보드",
@@ -120,10 +140,20 @@ const MENU_SCHEMA = [
   }
 ];
 
-export default function PortalConfigManager({ initialVisibility, onSave }) {
+export interface PortalConfigManagerProps {
+  /** 초기 가시성 설정 맵 객체 */
+  initialVisibility: Record<string, boolean>;
+  /** 저장 실행 콜백 함수 */
+  onSave: (visibility: Record<string, boolean>) => void;
+}
+
+/**
+ * 💡 PortalConfigManager - 앵커 포털 메뉴 및 서브탭 노출 가시성 관리 TSX 컴포넌트
+ */
+export default function PortalConfigManager({ initialVisibility, onSave }: PortalConfigManagerProps): React.JSX.Element {
   // 현재 설정된 메뉴 활성화 상태 (기본값: 모두 true)
-  const [visibility, setVisibility] = useState(() => {
-    const base = {};
+  const [visibility, setVisibility] = useState<Record<string, boolean>>(() => {
+    const base: Record<string, boolean> = {};
     MENU_SCHEMA.forEach(m => {
       base[m.key] = initialVisibility[m.key] !== false;
       m.subMenus.forEach(s => {
@@ -133,13 +163,11 @@ export default function PortalConfigManager({ initialVisibility, onSave }) {
     return base;
   });
 
-  // 메인 메뉴(탭) 토글 핸들러 (자식 연동 작동)
-  const handleParentToggle = (parentKey, isChecked) => {
+  // 메인 메뉴(탭) 토글 핸들러
+  const handleParentToggle = (parentKey: string, isChecked: boolean) => {
     const next = { ...visibility };
     next[parentKey] = isChecked;
 
-    // 1) 메인 메뉴가 꺼지면 하위의 모든 서브메뉴도 전부 비활성화 처리
-    // 2) 메인 메뉴가 켜지면 하위의 모든 서브메뉴도 전부 활성화 처리
     const parentMenu = MENU_SCHEMA.find(m => m.key === parentKey);
     if (parentMenu && parentMenu.subMenus) {
       parentMenu.subMenus.forEach(sub => {
@@ -149,18 +177,16 @@ export default function PortalConfigManager({ initialVisibility, onSave }) {
     setVisibility(next);
   };
 
-  // 서브메뉴(서브탭) 토글 핸들러 (부모 연동 작동)
-  const handleSubToggle = (parentKey, subKey, isChecked) => {
+  // 서브메뉴(서브탭) 토글 핸들러
+  const handleSubToggle = (parentKey: string, subKey: string, isChecked: boolean) => {
     const next = { ...visibility };
     next[subKey] = isChecked;
 
     const parentMenu = MENU_SCHEMA.find(m => m.key === parentKey);
     if (parentMenu && parentMenu.subMenus) {
       if (isChecked) {
-        // 3) 서브메뉴 중 하나라도 체크하여 활성화되면, 부모 메인 메뉴도 자동으로 켜짐
         next[parentKey] = true;
       } else {
-        // 4) 부모 아래의 모든 서브메뉴가 해제(체크아웃)되면, 부모 메인 메뉴도 자동으로 꺼짐
         const anyActive = parentMenu.subMenus.some(sub => sub.key !== subKey && next[sub.key] !== false);
         if (!anyActive) {
           next[parentKey] = false;
@@ -170,16 +196,14 @@ export default function PortalConfigManager({ initialVisibility, onSave }) {
     setVisibility(next);
   };
 
-  // 변경한 설정을 로컬 스토리지에 최종 반영하고 상위 부모 컴포넌트에 통지
   const handleSaveConfig = () => {
     onSave(visibility);
     alert("💾 포털 메뉴 및 서브탭 활성화 설정이 실시간으로 동기화되어 반영되었습니다!");
   };
 
-  // 설정을 모든 메뉴 활성화(초기화) 상태로 롤백
   const handleResetConfig = () => {
     if (confirm("정말 모든 메뉴와 서브탭을 기본 활성화 상태로 복원하시겠습니까?")) {
-      const reset = {};
+      const reset: Record<string, boolean> = {};
       MENU_SCHEMA.forEach(m => {
         reset[m.key] = true;
         m.subMenus.forEach(s => {
@@ -192,7 +216,6 @@ export default function PortalConfigManager({ initialVisibility, onSave }) {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem", width: "100%" }}>
-
       {/* 타이틀 및 안내 */}
       <div className="glass-card" style={{ padding: "1.5rem", display: "flex", flexDirection: "column", gap: "0.5rem" }}>
         <h2 style={{ fontSize: "1.25rem", fontWeight: "800", color: "var(--accent-color)", display: "flex", alignItems: "center", gap: "0.5rem" }}>
@@ -229,7 +252,6 @@ export default function PortalConfigManager({ initialVisibility, onSave }) {
 
       {/* 설정 테이블/트리 구조 */}
       <div className="glass-card" style={{ padding: "1.5rem", display: "flex", flexDirection: "column", gap: "1.5rem" }}>
-
         {/* 제어 컨트롤 툴바 */}
         <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.5rem" }}>
           <button
@@ -264,7 +286,6 @@ export default function PortalConfigManager({ initialVisibility, onSave }) {
                   transition: "opacity 0.2s ease"
                 }}
               >
-
                 {/* 메인 메뉴(부모) 헤더 행 */}
                 <div style={{
                   display: "flex",
@@ -353,14 +374,11 @@ export default function PortalConfigManager({ initialVisibility, onSave }) {
                     })}
                   </div>
                 )}
-
               </div>
             );
           })}
         </div>
-
       </div>
-
     </div>
   );
 }
