@@ -1057,7 +1057,7 @@ export default function Sidebar({
           className="role-select"
           style={{ width: "100%", padding: "0.4rem 0.5rem", borderRadius: "6px", backgroundColor: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.15)", color: "#fff", fontSize: "0.8rem" }}
         >
-          {(userRoles || []).map((role: any) => (
+          {(Array.isArray(userRoles) ? userRoles : []).map((role: any) => (
             <option key={role.id} value={role.id} style={{ backgroundColor: "#1e1e1e", color: "#fff" }}>
               {role.name} ({role.role})
             </option>

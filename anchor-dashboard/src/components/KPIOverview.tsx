@@ -207,15 +207,16 @@ export default function KPIOverview({ projects = [], currentRole, selectedYear =
   const avgFocusKpi = focusKpiCount > 0 ? focusKpiTotal / focusKpiCount : 0;
 
   // 차트 데이터
-  const chartData = activeProjects.map((p) => {
-    const hasUnits = p.units && Array.isArray(p.units);
+  const safeActiveProjects = Array.isArray(activeProjects) ? activeProjects : [];
+  const chartData = safeActiveProjects.map((p) => {
+    const hasUnits = p && p.units && Array.isArray(p.units);
     const pBudgetMain = hasUnits ? p.units.reduce((s: number, u: any) => s + (u.years?.[selectedYear]?.budget_main || 0), 0) : 0;
     const pSpentMain = hasUnits ? p.units.reduce((s: number, u: any) => s + (u.years?.[selectedYear]?.spent_main || 0), 0) : 0;
     const pBudgetCarry = hasUnits ? p.units.reduce((s: number, u: any) => s + (u.years?.[selectedYear]?.budget_carry || 0), 0) : 0;
     const pSpentCarry = hasUnits ? p.units.reduce((s: number, u: any) => s + (u.years?.[selectedYear]?.spent_carry || 0), 0) : 0;
 
     return {
-      name: p.id === "E" ? "공통운영경비" : p.title.split(":")[0],
+      name: p.id === "E" ? "공통운영경비" : (p.title ? p.title.split(":")[0] : ""),
       "본예산": Math.round(pBudgetMain / 1000000),
       "본집행": Math.round(pSpentMain / 1000000),
       "이월예산": Math.round(pBudgetCarry / 1000000),
@@ -223,12 +224,12 @@ export default function KPIOverview({ projects = [], currentRole, selectedYear =
     };
   });
 
-  const pieData = activeProjects.map((p) => {
-    const hasUnits = p.units && Array.isArray(p.units);
+  const pieData = safeActiveProjects.map((p) => {
+    const hasUnits = p && p.units && Array.isArray(p.units);
     const pBudgetMain = hasUnits ? p.units.reduce((s: number, u: any) => s + (u.years?.[selectedYear]?.budget_main || 0), 0) : 0;
     const pBudgetCarry = hasUnits ? p.units.reduce((s: number, u: any) => s + (u.years?.[selectedYear]?.budget_carry || 0), 0) : 0;
     return {
-      name: p.id === "E" ? "공통운영경비" : p.title.split(":")[0],
+      name: p.id === "E" ? "공통운영경비" : (p.title ? p.title.split(":")[0] : ""),
       value: Math.round((pBudgetMain + pBudgetCarry) / 1000000)
     };
   });
