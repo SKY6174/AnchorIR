@@ -395,8 +395,8 @@ export default function CommitteeManager({
 
   // 💡 [의안 개조] 의안별 투표/평가 통계 산출 헬퍼 함수
   const getAgendaVoteStats = (agendaId, isEvaluation) => {
-    const votes = selectedMeetingAgendaVotes.filter(v => v.agenda_id === agendaId);
-    const totalVotes = votes.length;
+    const votes = selectedMeetingAgendaVotes.filter(v => String(v.agenda_id) === String(agendaId));
+    let totalVotes = votes.length;
     
     if (isEvaluation) {
       const scores = votes.map(v => v.score).filter(s => s && s >= 1 && s <= 5);
@@ -408,9 +408,20 @@ export default function CommitteeManager({
       
       return { totalVotes, avg, distribution };
     } else {
-      const approve = votes.filter(v => v.vote === "APPROVE").length;
-      const reject = votes.filter(v => v.vote === "REJECT").length;
-      const abstain = votes.filter(v => v.vote === "ABSTAIN").length;
+      let approve = votes.filter(v => v.vote === "APPROVE").length;
+      let reject = votes.filter(v => v.vote === "REJECT").length;
+      let abstain = votes.filter(v => v.vote === "ABSTAIN").length;
+
+      // 💡 [Fallback Aggregation] selectedMeetingAgendaVotes에 데이터가 부족한 경우 responses 제출 목록과 통합 수합
+      if (totalVotes === 0 && responses.length > 0) {
+        const submittedResponses = responses.filter(r => r.submitted_at || r.vote || r.opinion);
+        totalVotes = submittedResponses.length;
+        submittedResponses.forEach(r => {
+          if (r.vote === "REJECT") reject++;
+          else if (r.vote === "ABSTAIN") abstain++;
+          else approve++;
+        });
+      }
       
       return { totalVotes, approve, reject, abstain };
     }
