@@ -1477,13 +1477,14 @@ export default function CommitteeManager({
 
 
 
-  // 7. 정족수 실시간 계산 유틸리티 연동 (간사는 의결정족수 및 재적 위원 수 산정에서 전면 제외)
+  // 7. 정족수 실시간 계산 유틸리티 연동 (간사는 소속/재적 위원 및 정족수 산정에서 전면 제외)
   const calculateQuorum = () => {
     if (!selectedCommittee || !selectedMeeting) return null;
     
     // 💡 [간사 의결권 제외 규칙 적용] 간사는 의결 권한이 없는 행정 실무 진행자이므로 재적 위원 수 및 의결정족수 산정에서 전면 제외합니다.
     const votingMembers = members.filter(m => !m.type?.includes("간사"));
-    const total = votingMembers.length > 0 ? votingMembers.length : (selectedCommittee.total_quorum || 1);
+    // 재적 위원 수: 소속 위원 중 간사를 제외한 순수 의결 위원 수 (예: 4명 중 간사 1명 제외 3명)
+    const total = votingMembers.length;
 
     // 간사를 제외한 순수 의결 참석 응답 추출
     const votingResponses = responses.filter(r => {
@@ -1493,26 +1494,19 @@ export default function CommitteeManager({
 
     const attended = votingResponses.filter(r => r.attended).length;
     
-    // 의사정족수: 재적 의결 위원 과반수
+    // 의사정족수 (성원 요건): 간사를 제외한 재적 위원 수(N명)의 과반수 (N=3이면 Math.floor(3/2) + 1 = 2명 이상 출석 시 성원 완료!)
     const majorityLimit = Math.floor(total / 2) + 1;
     const isEstablished = attended >= majorityLimit;
 
-    // 의결정족수: 찬성표 산출
+    // 의결정족수 (가결 요건): 찬성/반대/기권표 산출
     const approveCount = votingResponses.filter(r => r.vote === "APPROVE").length;
     const rejectCount = votingResponses.filter(r => r.vote === "REJECT").length;
     const abstainCount = votingResponses.filter(r => r.vote === "ABSTAIN").length;
 
-    let isApproved = false;
-    let ruleText = "";
-    if (selectedCommittee.voting_rule === "majority_of_attendees") {
-      const req = Math.floor(attended / 2) + 1;
-      isApproved = approveCount >= req;
-      ruleText = `출석 과반 찬성 (필요: ${req}표 / 현재 찬성: ${approveCount}표)`;
-    } else {
-      const req = Math.floor(total / 2) + 1;
-      isApproved = approveCount >= req;
-      ruleText = `재적 과반 찬성 (필요: ${req}표 / 현재 찬성: ${approveCount}표)`;
-    }
+    // 💡 [가결 기준] 회의 성원 시, 실제 출석(참여)한 위원 수(M명)의 과반수(Math.floor(M/2) + 1 명) 이상 찬성 시 의결(가결)
+    const reqApprove = Math.floor(attended / 2) + 1;
+    const isApproved = isEstablished && (approveCount >= reqApprove);
+    const ruleText = `성원 시 참여자 과반 찬성 (참여 ${attended}명 중 필요: ${reqApprove}표 / 현재 찬성: ${approveCount}표)`;
 
     return {
       total,
@@ -2112,7 +2106,7 @@ ${opinionsContext}
             <div className="card" style={{ padding: "1rem", background: "rgba(255,255,255,0.02)", border: "1px solid var(--border-color)" }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.5rem" }}>
                 <span style={{ fontWeight: "800", color: "var(--text-primary)" }}>
-                  소속 위원 ({members.length}명)
+                  소속 위원 ({members.filter(m => !m.type?.includes("간사")).length}명)
                 </span>
                 {isManager && selectedCommittee && (
                   <button className="btn btn-secondary" onClick={() => setIsMemberModalOpen(true)} style={{ padding: "0.2rem 0.4rem", fontSize: "0.75rem" }}>
