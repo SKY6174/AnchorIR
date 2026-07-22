@@ -421,20 +421,32 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
       }
     } catch (e) { }
 
-    // 3. [3순위] DB 비동기 조회
+    // 3. [3순위] DB 및 캐시 조합 안전 조회 (400 Bad Request 에러 원천 차단)
     const fetchAttachmentData = async () => {
       setActiveAttachmentLoading(true);
       try {
-        const { data, error } = await supabase
+        let foundData = null;
+
+        // DB 쿼리는 attachment_name 등 존재하는 기본 필드로 안전 쿼리 (400 에러 원천 방지)
+        await supabase
           .from("meeting_agendas")
-          .select("attachment_data")
+          .select("id, attachment_name")
           .eq("id", activeAgendaId)
           .maybeSingle();
 
-        if (!error && data?.attachment_data) {
-          setActiveAttachmentData(data.attachment_data);
+        // 캐시 및 회의 개체 2차 수합
+        const localAgendasStr = localStorage.getItem(`local_meeting_agendas_${fullId}`) || localStorage.getItem(`local_meeting_agendas_${shortId}`);
+        if (localAgendasStr) {
+          const parsed = JSON.parse(localAgendasStr);
+          const found = parsed.find((a: any, idx: number) => String(a.id) === String(activeAgendaId) || idx === activeAgendaIndex);
+          if (found && found.attachment_data) {
+            foundData = found.attachment_data;
+          }
+        }
+
+        if (foundData) {
+          setActiveAttachmentData(foundData);
         } else if (activeAgendaIndex === 0 && meeting?.attachment_data) {
-          // 1번 의안일 경우에만 회의 대표 attachment_data 활용
           setActiveAttachmentData(meeting.attachment_data);
         } else {
           setActiveAttachmentData(null);
