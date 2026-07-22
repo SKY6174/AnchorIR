@@ -1865,6 +1865,17 @@ export default function CommitteeManager({
     const firstAttachName = meeting.attachment_name || targetAgendas.find(a => a.attachment_name)?.attachment_name || "";
     const firstAttachData = meeting.attachment_data || targetAgendas.find(a => a.attachment_data)?.attachment_data || "";
 
+    const splitNames = String(meeting.attachment_name || "").includes("|")
+      ? String(meeting.attachment_name).split("|").map(p => p.trim())
+      : String(meeting.attachment_name || "").split(",").map(p => p.trim());
+
+    let parsedDatasArray: string[] = [];
+    if (meeting.attachment_data && String(meeting.attachment_data).startsWith("[")) {
+      try {
+        parsedDatasArray = JSON.parse(String(meeting.attachment_data));
+      } catch (e) { }
+    }
+
     setMeetingForm({
       title: meeting.title || "",
       meeting_date: formattedDate,
@@ -1873,14 +1884,31 @@ export default function CommitteeManager({
       attachment_name: firstAttachName,
       attachment_data: firstAttachData,
       access_pin: meeting.access_pin || "",
-      agendas: targetAgendas.map(a => ({
-        id: a.id,
-        title: a.title || "",
-        description: a.description || "",
-        is_evaluation: !!a.is_evaluation,
-        attachment_name: a.attachment_name || "",
-        attachment_data: a.attachment_data || ""
-      }))
+      agendas: targetAgendas.map((a: any, idx: number) => {
+        const cleanT = (a.title || "").replace(/^\[안건\s*\d+\]\s*/gi, "").replace(/^\[의안\s*\d+\]\s*/gi, "").replace(/^\[상정\s*의안\s*#?\d+\]\s*/gi, "").replace(/\(5점척도\)/gi, "").replace(/\[첨부:.*?\]/gi, "").trim();
+        const cleanD = (a.description || "").replace(/^\[안건\s*\d+\]\s*/gi, "").replace(/^\[의안\s*\d+\]\s*/gi, "").replace(/^\[상정\s*의안\s*#?\d+\]\s*/gi, "").replace(/\(5점척도\)/gi, "").replace(/\[첨부:.*?\]/gi, "").trim();
+
+        let agName = a.attachment_name;
+        if ((!agName || agName.includes("|")) && splitNames[idx] && splitNames[idx].length > 0) {
+          agName = splitNames[idx];
+        }
+
+        let agData = a.attachment_data;
+        if (!agData && parsedDatasArray[idx] && parsedDatasArray[idx].length > 0) {
+          agData = parsedDatasArray[idx];
+        } else if (!agData && idx === 0 && meeting.attachment_data && !String(meeting.attachment_data).startsWith("[")) {
+          agData = meeting.attachment_data;
+        }
+
+        return {
+          id: a.id,
+          title: cleanT || `제${idx + 1}호 안건`,
+          description: cleanD || "",
+          is_evaluation: !!a.is_evaluation,
+          attachment_name: agName || "",
+          attachment_data: agData || ""
+        };
+      })
     });
     setIsMeetingModalOpen(true);
   };
