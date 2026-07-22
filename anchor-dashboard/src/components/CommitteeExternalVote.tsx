@@ -234,9 +234,10 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
 
   useEffect(() => {
     const queryParams = new URLSearchParams(window.location.search);
-    let targetMeetingId = meetingId || queryParams.get("meetingId") || queryParams.get("meeting") || queryParams.get("id") || undefined;
+    let shortCode = queryParams.get("v");
+    let targetMeetingId = meetingId || queryParams.get("meetingId") || queryParams.get("meeting") || queryParams.get("id") || shortCode || undefined;
 
-    if (!targetMeetingId) {
+    if (!targetMeetingId && !shortCode) {
       setErrorMsg("유효한 회의 접근 링크가 아닙니다.");
       setLoading(false);
       return;
@@ -247,19 +248,37 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
         setLoading(true);
         let foundMeeting: any = null;
 
-        // 1. [1순위] Supabase DB에서 UUID/ID로 회의 정보 조회
-        try {
-          const { data, error } = await supabase
-            .from("committee_meetings")
-            .select("*")
-            .eq("id", targetMeetingId)
-            .maybeSingle();
+        // 1. [1순위] 단축코드 v(UUID 8자)로 접속 시 Supabase DB 유연 매칭
+        if (shortCode) {
+          try {
+            const { data: dbList } = await supabase
+              .from("committee_meetings")
+              .select("*");
+            if (dbList && dbList.length > 0) {
+              const match = dbList.find((m: any) => String(m.id).startsWith(shortCode!));
+              if (match) {
+                foundMeeting = match;
+                targetMeetingId = match.id;
+              }
+            }
+          } catch (e) {}
+        }
 
-          if (!error && data) {
-            foundMeeting = data;
+        // 2. [2순위] ID 단일 매칭
+        if (!foundMeeting && targetMeetingId) {
+          try {
+            const { data, error } = await supabase
+              .from("committee_meetings")
+              .select("*")
+              .eq("id", targetMeetingId)
+              .maybeSingle();
+
+            if (!error && data) {
+              foundMeeting = data;
+            }
+          } catch (dbErr) {
+            console.warn("DB 회의 조회 스킵:", dbErr);
           }
-        } catch (dbErr) {
-          console.warn("DB 회의 조회 스킵:", dbErr);
         }
 
         // 2. [2순위] 로컬 캐시 스토리지에서 수합 복원
