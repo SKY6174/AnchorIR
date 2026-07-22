@@ -115,7 +115,14 @@ const getDeptsByYear = (yearStr) => {
   return Array.from(new Set(names)).sort();
 };
 
-export default function InstructorPoolManager({ currentUser, currentRole }) {
+export interface InstructorPoolManagerProps {
+  currentUser?: any;
+  currentRole?: any;
+  darkMode?: boolean;
+  selectedYear?: number;
+}
+
+export default function InstructorPoolManager({ currentUser, currentRole }: InstructorPoolManagerProps) {
   const [instructors, setInstructors] = useState([]);
   const [selectedInstructor, setSelectedInstructor] = useState(null);
   const [histories, setHistories] = useState([]); // 💡 변동 정보 이력 상태값으로 통합 관리
