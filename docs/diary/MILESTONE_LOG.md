@@ -34,5 +34,6 @@
   - `npm run build` 검증 **465ms / 0 TS Error / 0 Warning** 컴파일 성공 및 GitHub `main` 브랜치 자동 푸시 완료 (`b94ecfe`).
 - **Phase 5 (2026-07-22)**:
   - `src/components/` 내 **전체 26개 TSX 컴포넌트**에 명확한 `interface` / `type` 및 `useState`, `useRef`, `React.ChangeEvent`, `React.FormEvent` 정적 타입 지정 완료 (`any` 사용 최소화).
+  - 파운데이션 모듈(`mockWikiData.ts`, `App.tsx`, `main.tsx`) 정적 인터페이스 선언 및 `.ts` 확장자 마이그레이션 완수.
   - 100% 동일한 UI/UX, Tailwind CSS 디자인 체계 및 JSX 노드 레이아웃 보존.
-  - `npm run build` 검증 **443ms / 0 TS Error** 최종 빌드 성공 및 원격 저장소(`main` 브랜치) 자동 Git Push 완수.
+  - `npm run build` 검증 **481ms / 0 TS Error** 최종 빌드 성공 및 원격 저장소(`main` 브랜치) 자동 Git Push 완수.

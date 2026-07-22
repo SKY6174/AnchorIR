@@ -33,7 +33,7 @@ import * as XLSX from "xlsx";
 import "./styles/dashboard.css";
 
 // 담당연구원이 2명일 때 정/부 표기 헬퍼 함수
-const formatAssignee = (assigneeText) => {
+const formatAssignee = (assigneeText?: string): string => {
   if (!assigneeText) return "미배정";
   const parts = assigneeText.split(/[,\/]/).map((p) => p.trim()).filter(Boolean);
   if (parts.length === 2) {

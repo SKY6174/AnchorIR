@@ -1,6 +1,28 @@
 // 앵커사업 지식베이스 및 RAG 시뮬레이터 데이터
 
-export const WIKI_CHUNKS = [
+export interface WikiChunk {
+  id: string;
+  unit: string;
+  category: string;
+  year?: number;
+  title: string;
+  keywords: string[];
+  content: string;
+}
+
+export interface RAGSource {
+  id: string;
+  title: string;
+  unit: string;
+  category: string;
+}
+
+export interface RAGQueryResult {
+  answer: string;
+  sources: RAGSource[];
+}
+
+export const WIKI_CHUNKS: WikiChunk[] = [
   // -------------------------------------------------------------
   // [개요 카테고리 지식 조각 - 1차년도 전용 개요 편제 (A3 없고 D4 존재, 제안계획서 실 예산 반영)]
   // -------------------------------------------------------------
@@ -423,7 +445,7 @@ export const WIKI_CHUNKS = [
 ];
 
 // 간단한 키워드 매칭 기반 RAG 시뮬레이션 알고리즘
-export function simulateRAGQuery(query, selectedYear = 2) {
+export function simulateRAGQuery(query: string, selectedYear: number = 2): RAGQueryResult {
   if (!query || query.trim() === "") {
     return {
       answer: "질문을 입력해 주시면 앵커 사업 지식베이스를 기반으로 답변해 드립니다.",
