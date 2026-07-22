@@ -116,40 +116,56 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
 
     const rawStr = String(currentFileData).trim();
 
-    // 1. http나 blob: URL이면 그대로 사용
-    if (rawStr.startsWith("http://") || rawStr.startsWith("https://") || rawStr.startsWith("blob:")) {
-      setCurrentBlobUrl(rawStr);
+    // 1. 웹 URL (http, https, blob, supabase storage, 상대 경로, .pdf 확장자)
+    if (
+      rawStr.startsWith("http://") ||
+      rawStr.startsWith("https://") ||
+      rawStr.startsWith("blob:") ||
+      rawStr.includes("supabase.co") ||
+      rawStr.includes("meeting_docs/") ||
+      rawStr.toLowerCase().endsWith(".pdf")
+    ) {
+      try {
+        const safeUrl = rawStr.startsWith("http") ? encodeURI(decodeURI(rawStr)) : rawStr;
+        setCurrentBlobUrl(safeUrl);
+      } catch (e) {
+        setCurrentBlobUrl(rawStr);
+      }
       return;
     }
 
-    // 2. data: 헤더 또는 Base64 데이터 Blob 안전 변환 (HTTP 414 URI Too Long 방지)
-    try {
-      let base64Data = rawStr;
-      let mimeType = "application/pdf";
+    // 2. data: 헤더 또는 Base64 바이너리 시 atob 안전 디코딩
+    if (rawStr.startsWith("data:") || /^[A-Za-z0-9+/=]+$/.test(rawStr.replace(/\s/g, "").slice(0, 100))) {
+      try {
+        let base64Data = rawStr;
+        let mimeType = "application/pdf";
 
-      if (rawStr.startsWith("data:")) {
-        const parts = rawStr.split(',');
-        mimeType = parts[0].split(':')[1]?.split(';')[0] || "application/pdf";
-        base64Data = parts[1] || "";
+        if (rawStr.startsWith("data:")) {
+          const parts = rawStr.split(',');
+          mimeType = parts[0].split(':')[1]?.split(';')[0] || "application/pdf";
+          base64Data = parts[1] || "";
+        }
+
+        base64Data = base64Data.replace(/\s/g, "");
+        const byteString = atob(base64Data);
+        const ab = new ArrayBuffer(byteString.length);
+        const ia = new Uint8Array(ab);
+        for (let i = 0; i < byteString.length; i++) {
+          ia[i] = byteString.charCodeAt(i);
+        }
+        const blob = new Blob([ab], { type: mimeType });
+        const url = URL.createObjectURL(blob);
+        setCurrentBlobUrl(url);
+
+        return () => {
+          URL.revokeObjectURL(url);
+        };
+      } catch (e) {
+        console.warn("❌ PDF Base64 Blob 변환 실패 (URL 폴백 적용):", e);
+        setCurrentBlobUrl(rawStr);
       }
-
-      base64Data = base64Data.replace(/\s/g, "");
-      const byteString = atob(base64Data);
-      const ab = new ArrayBuffer(byteString.length);
-      const ia = new Uint8Array(ab);
-      for (let i = 0; i < byteString.length; i++) {
-        ia[i] = byteString.charCodeAt(i);
-      }
-      const blob = new Blob([ab], { type: mimeType });
-      const url = URL.createObjectURL(blob);
-      setCurrentBlobUrl(url);
-
-      return () => {
-        URL.revokeObjectURL(url);
-      };
-    } catch (e) {
-      console.error("❌ PDF Blob 변환 예외 (414 에러 방지 가드):", e);
-      setCurrentBlobUrl(null);
+    } else {
+      setCurrentBlobUrl(rawStr);
     }
   }, [currentFileData]);
 
