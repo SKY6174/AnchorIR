@@ -427,12 +427,15 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
       try {
         let foundData = null;
 
-        // DB 쿼리는 attachment_name 등 존재하는 기본 필드로 안전 쿼리 (400 에러 원천 방지)
-        await supabase
-          .from("meeting_agendas")
-          .select("id, attachment_name")
-          .eq("id", activeAgendaId)
-          .maybeSingle();
+        // DB 쿼리는 activeAgendaId가 순수 숫자형일 때만 안전 쿼리 (문자열 ID bigint 불일치 400 에러 원천 방지)
+        const isNumericAgendaId = !isNaN(Number(activeAgendaId)) && String(activeAgendaId).trim() !== "";
+        if (isNumericAgendaId) {
+          await supabase
+            .from("meeting_agendas")
+            .select("id, attachment_name")
+            .eq("id", activeAgendaId)
+            .maybeSingle();
+        }
 
         // 캐시 및 회의 개체 2차 수합
         const localAgendasStr = localStorage.getItem(`local_meeting_agendas_${fullId}`) || localStorage.getItem(`local_meeting_agendas_${shortId}`);
