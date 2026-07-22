@@ -965,47 +965,49 @@ export default function CommitteeManager({
 
     let combinedResponses: any[] = [];
     
-    // 1. [1순위] committee_meetings 테이블의 responses_data 수합 (DB 실시간 수합 보장 메인 소스)
-    try {
-      const { data: meetingObj } = await supabase
-        .from("committee_meetings")
-        .select("responses_data")
-        .eq("id", meetingId)
-        .maybeSingle();
+    if (isNumericId) {
+      // 1. [1순위] committee_meetings 테이블의 responses_data 수합 (DB 실시간 수합 보장 메인 소스)
+      try {
+        const { data: meetingObj } = await supabase
+          .from("committee_meetings")
+          .select("responses_data")
+          .eq("id", meetingId)
+          .maybeSingle();
 
-      if (meetingObj?.responses_data && Array.isArray(meetingObj.responses_data)) {
-        combinedResponses = [...meetingObj.responses_data];
+        if (meetingObj?.responses_data && Array.isArray(meetingObj.responses_data)) {
+          combinedResponses = [...meetingObj.responses_data];
+        }
+      } catch (err: any) {
+        console.warn("committee_meetings responses_data 조회 스킵:", err.message);
       }
-    } catch (err: any) {
-      console.warn("committee_meetings responses_data 조회 스킵:", err.message);
-    }
 
-    // 2. [2순위] meeting_responses DB 하위 테이블 수합
-    try {
-      const { data } = await supabase
-        .from("meeting_responses")
-        .select(`
-          id, meeting_id, member_id, member_name, attended, vote, opinion, encrypted_signature, signature, submitted_at,
-          committee_members ( name, type, org, dept )
-        `)
-        .eq("meeting_id", meetingId);
+      // 2. [2순위] meeting_responses DB 하위 테이블 수합
+      try {
+        const { data } = await supabase
+          .from("meeting_responses")
+          .select(`
+            id, meeting_id, member_id, member_name, attended, vote, opinion, encrypted_signature, signature, submitted_at,
+            committee_members ( name, type, org, dept )
+          `)
+          .eq("meeting_id", meetingId);
 
-      if (data && data.length > 0) {
-        data.forEach(r => {
-          const rName = (r.member_name || (r.committee_members as any)?.name || "").trim();
-          const rId = String(r.member_id || "").trim();
-          const exists = combinedResponses.some(cr => {
-            const crName = (cr.member_name || cr.name || cr.committee_members?.name || "").trim();
-            const crId = String(cr.member_id || "").trim();
-            return (rId && crId && rId === crId) || (rName && crName && rName === crName);
+        if (data && data.length > 0) {
+          data.forEach(r => {
+            const rName = (r.member_name || (r.committee_members as any)?.name || "").trim();
+            const rId = String(r.member_id || "").trim();
+            const exists = combinedResponses.some(cr => {
+              const crName = (cr.member_name || cr.name || cr.committee_members?.name || "").trim();
+              const crId = String(cr.member_id || "").trim();
+              return (rId && crId && rId === crId) || (rName && crName && rName === crName);
+            });
+            if (!exists) {
+              combinedResponses.push(r);
+            }
           });
-          if (!exists) {
-            combinedResponses.push(r);
-          }
-        });
+        }
+      } catch (err: any) {
+        console.warn("meeting_responses DB 조회 스킵:", err.message);
       }
-    } catch (err: any) {
-      console.warn("meeting_responses DB 조회 스킵:", err.message);
     }
 
     // 3. 로컬 캐시 스토리지 수합
@@ -1031,11 +1033,12 @@ export default function CommitteeManager({
     }
 
     // 4. 💡 [안건별 표결 통합 수합] meeting_agenda_votes에 표결한 위원 데이터 수합하여 0명 표출 문제 원천 방지
-    try {
-      const { data: voteRows } = await supabase
-        .from("meeting_agenda_votes")
-        .select("*")
-        .eq("meeting_id", meetingId);
+    if (isNumericId) {
+      try {
+        const { data: voteRows } = await supabase
+          .from("meeting_agenda_votes")
+          .select("*")
+          .eq("meeting_id", meetingId);
 
       if (voteRows && voteRows.length > 0) {
         const memberVotesMap: Record<string, any> = {};
@@ -1090,6 +1093,7 @@ export default function CommitteeManager({
     } catch (err: any) {
       console.warn("meeting_agenda_votes 기반 위원 수합 스킵:", err.message);
     }
+  }
 
     // 💡 깜빡임 100% 방지 Guard: 이전 상태값과 데이터 비교 후 차이가 있을 때만 Re-render 유도!
     setResponses(prev => (JSON.stringify(prev) !== JSON.stringify(combinedResponses) ? combinedResponses : prev));
