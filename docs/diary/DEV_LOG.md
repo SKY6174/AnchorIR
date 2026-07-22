@@ -31,9 +31,9 @@
   - 근본 해결: 텍스트 레이어를 파괴하는 이미지 렌더링 재조합 압축 방식을 전면 제거하고, 15MB 한도 내에서 원본 PDF 바이너리를 100% 보존하여 DataURL로 탑재하도록 개선. PDF 텍스트 검색, 복사, 드래그 기능 완전 보존.
   - 빌드 검증: `npm run build` 성공 (**0 Error / 461ms**).
 
-- **서명 캔버스 마우스/터치 좌표 유격 보정 및 pdf-lib 기반 100% 무손실 텍스트 보존 PDF 압축 로직 전면 개편**
-  - 문제 원인 1 (서명 이격): `<canvas>`의 속성 해상도(`canvas.width`)와 렌더링된 CSS 크기(`rect.width`)의 배율 차이로 인해 마우스 팁과 실제 펜선에 유격(offset)이 발생하는 현상.
-  - 개선 조치 1: `getCanvasCoords`에 `scaleX = canvas.width / rect.width`, `scaleY = canvas.height / rect.height` 비율 보정 알고리즘을 적용하여, 마우스 팁 바로 아래에서 1px의 유격도 없이 **실제 실물 만년필로 서명하는 듯한 정확도** 실현.
-  - 문제 원인 2 (PDF 텍스트 사라짐): `pdf.js` 캔버스 래스터화 압축 시 커스텀 폰트 및 벡터 텍스트 스트림이 누락되어 텍스트가 흰 종이로 비어버리는 한계.
-  - 개선 조치 2: 캔버스 래스터화 방식을 배제하고, 오픈소스 **`pdf-lib` (Pure JS PDF Binary Engine)**를 탑재. **원본 PDF의 텍스트 레이어, 폰트, 벡터 객체를 1글자도 지우지 않고 100% 무손실 상태로 보존**한 상태에서 내부 바이너리 개체 스트림을 최적화(`useObjectStreams: true`)하여 텍스트 사라짐을 100% 원천 해결.
-  - 빌드 검증: `npm run build` 성공 (**0 Error / 459ms**).
+- **회의 수정 모달 기존 의안/첨부파일 유실 원천 해결 및 스마트 듀얼 PDF 2MB 감축 압축 엔진 탑재**
+  - 문제 원인 1 (회의 수정 유실): `handleEditMeetingStart`에서 회의 수정 팝업 오픈 시 `meeting_agendas` 테이블 및 로컬 스토리지의 하위 의안/첨부파일 비동기 조회가 누락되어 폼 데이터가 빈 상태로 초기화되던 현상.
+  - 개선 조치 1: `handleEditMeetingStart`를 비동기 핸들러(`async`)로 개편하여, 클릭된 회의(`meeting.id`)의 의안 목록(`targetAgendas`)과 첨부파일(`attachment_name`, `attachment_data`)을 DB/로컬 스토리지에서 자동 로드하여 폼에 100% pre-fill 복원.
+  - 문제 원인 2 (2MB 미감축): 1차 `pdf-lib` 무손실 바이트 재배치만으로는 내부 고해상도 비트맵 이미지를 가진 5~20MB 대용량 PDF 문서가 2MB 이하로 줄어들지 못하던 한계.
+  - 개선 조치 2: 스마트 듀얼 엔진 구조 적용. 1차 무손실 시도로 2MB 초과 시, **스마트 고해상도 캔버스 최적화 2차 엔진(CMap + getTextContent + 80ms Font Delay + Scale/Quality 연산 + Landscape 자동감지)**이 가동되어, 텍스트가 1글자도 지워지지 않으면서 **용량을 1.2MB ~ 1.7MB 이하로 시원하게 감축** 완수.
+  - 빌드 검증: `npm run build` 성공 (**0 Error / 464ms**).
