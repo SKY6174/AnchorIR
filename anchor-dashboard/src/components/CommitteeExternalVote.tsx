@@ -323,9 +323,8 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
         }
 
         if (!attachData) {
-          if (attachName && globalMap[attachName.trim()]) {
-            attachData = globalMap[attachName.trim()];
-          } else if (targetMtg?.attachment_data) {
+          // 💡 1순위: 최신 회의 마스터 데이터 targetMtg.attachment_data (JSON 배열/URL/바이너리) 1:1 인출
+          if (targetMtg?.attachment_data) {
             const rawDataStr = String(targetMtg.attachment_data);
             if (rawDataStr.startsWith("[")) {
               try {
@@ -340,6 +339,11 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
                 attachData = targetMtg.attachment_data;
               }
             }
+          }
+
+          // 💡 2순위: 최신 회의 레코드에 데이터가 비어있을 때만 오래된 로컬 캐시 폴백
+          if (!attachData && attachName && globalMap[attachName.trim()]) {
+            attachData = globalMap[attachName.trim()];
           }
         }
 
