@@ -559,8 +559,7 @@ export default function CommitteeManager({
       newVotes = localVotes ? JSON.parse(localVotes) : [];
     }
 
-    // 💡 깜빡임 100% 방지: 이전 상태값과 데이터 비교 후 차이가 있을 때만 Re-render 유도!
-    setSelectedMeetingAgendas(prev => (JSON.stringify(prev) !== JSON.stringify(newAgendas) ? newAgendas : prev));
+    setSelectedMeetingAgendas(newAgendas);
     setSelectedMeetingAgendaVotes(prev => (JSON.stringify(prev) !== JSON.stringify(newVotes) ? newVotes : prev));
   };
 
@@ -1988,6 +1987,7 @@ export default function CommitteeManager({
       await fetchMeetings(selectedCommittee.id);
       if (createdMeeting) {
         setSelectedMeeting(createdMeeting);
+        await fetchMeetingAgendasAndVotes(createdMeeting.id);
       }
     } catch (err) {
       console.warn("DB 회의 처리 실패, 로컬 스토리지에 모의 저장합니다:", err.message);
@@ -2048,6 +2048,7 @@ export default function CommitteeManager({
       });
       setMeetings(updatedMeetings);
       setSelectedMeeting(localPayload);
+      await fetchMeetingAgendasAndVotes(targetMeetingId);
     } finally {
       setIsSubmittingMeeting(false);
     }
