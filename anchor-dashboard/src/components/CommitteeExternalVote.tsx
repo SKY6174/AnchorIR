@@ -444,6 +444,17 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
           }
         }
 
+        // 파일명 기준 글로벌 바이너리 맵 3차 영구 복원
+        if (!foundData && activeAgendaItem?.attachment_name) {
+          try {
+            const globalMapStr = localStorage.getItem("global_attachment_map") || "{}";
+            const globalMap = JSON.parse(globalMapStr);
+            if (globalMap[activeAgendaItem.attachment_name.trim()]) {
+              foundData = globalMap[activeAgendaItem.attachment_name.trim()];
+            }
+          } catch (e) { }
+        }
+
         if (foundData) {
           setActiveAttachmentData(foundData);
         } else if (activeAgendaIndex === 0 && meeting?.attachment_data) {

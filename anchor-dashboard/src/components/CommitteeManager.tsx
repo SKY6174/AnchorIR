@@ -1969,6 +1969,18 @@ export default function CommitteeManager({
         const shortCode = String(editingMeetingId).includes("-") ? String(editingMeetingId).split("-")[0] : editingMeetingId;
         localStorage.setItem(`local_meeting_agendas_${shortCode}`, JSON.stringify(agendaPayloads));
 
+        // 💡 100% 영구 보장: 파일명을 Key로 글로벌 바이너리 맵에 백업 적재 (새로고침 후 바이너리 유실 원천 방지)
+        try {
+          const globalMapStr = localStorage.getItem("global_attachment_map") || "{}";
+          const globalMap = JSON.parse(globalMapStr);
+          agendaPayloads.forEach(a => {
+            if (a.attachment_name && a.attachment_data) {
+              globalMap[a.attachment_name.trim()] = a.attachment_data;
+            }
+          });
+          localStorage.setItem("global_attachment_map", JSON.stringify(globalMap));
+        } catch (e) { }
+
         alert("회의 정보 및 심의 안건이 성공적으로 수정되었습니다.");
       } else {
         // 1-B. 회의 기본 신규 등록
@@ -2000,6 +2012,17 @@ export default function CommitteeManager({
           localStorage.setItem(`local_meeting_agendas_${createdMeeting.id}`, JSON.stringify(agendaPayloads));
           const shortCode = String(createdMeeting.id).includes("-") ? String(createdMeeting.id).split("-")[0] : createdMeeting.id;
           localStorage.setItem(`local_meeting_agendas_${shortCode}`, JSON.stringify(agendaPayloads));
+
+          try {
+            const globalMapStr = localStorage.getItem("global_attachment_map") || "{}";
+            const globalMap = JSON.parse(globalMapStr);
+            agendaPayloads.forEach(a => {
+              if (a.attachment_name && a.attachment_data) {
+                globalMap[a.attachment_name.trim()] = a.attachment_data;
+              }
+            });
+            localStorage.setItem("global_attachment_map", JSON.stringify(globalMap));
+          } catch (e) { }
         }
 
         alert(`위원회 회의 일정이 등록되었습니다.\n[외부 위원용 보안 PIN]: ${generatedPin}`);
@@ -3455,6 +3478,17 @@ ${selectedMeetingAgendas.map((a, idx) => {
                                   if (!agName && found.attachment_name) agName = found.attachment_name;
                                   if (!agData && found.attachment_data) agData = found.attachment_data;
                                 }
+                              }
+                            } catch (e) { }
+                          }
+
+                          // 3차 영구 복원: 파일명 기준 글로벌 바이너리 맵에서 즉시 수합
+                          if (!agData && agName) {
+                            try {
+                              const globalMapStr = localStorage.getItem("global_attachment_map") || "{}";
+                              const globalMap = JSON.parse(globalMapStr);
+                              if (globalMap[agName.trim()]) {
+                                agData = globalMap[agName.trim()];
                               }
                             } catch (e) { }
                           }
