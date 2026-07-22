@@ -3474,7 +3474,17 @@ ${selectedMeetingAgendas.map((a, idx) => {
                         selectedMeetingAgendas.map((ag, idx) => {
                           const fullMId = String(selectedMeeting.id).trim();
                           const shortMId = fullMId.includes("-") ? fullMId.split("-")[0] : fullMId;
-                          let agName = ag.attachment_name || (idx === 0 ? selectedMeeting.attachment_name : null);
+
+                          // 💡 개별 안건 첨부파일명 인출 (대표 파일명이 콤마로 묶인 경우 해당 idx에 정밀 매칭)
+                          let agName = ag.attachment_name;
+                          if (!agName && selectedMeeting.attachment_name) {
+                            const parts = String(selectedMeeting.attachment_name).split(",").map(p => p.trim()).filter(Boolean);
+                            if (parts[idx]) {
+                              agName = parts[idx];
+                            } else if (idx === 0) {
+                              agName = parts[0];
+                            }
+                          }
                           let agData = ag.attachment_data || (idx === 0 ? selectedMeeting.attachment_data : null);
 
                           // 로컬 스토리지 백업에서 2차 무손실 복원

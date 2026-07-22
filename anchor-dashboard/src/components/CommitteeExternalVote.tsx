@@ -304,10 +304,17 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
           }
         }
 
-        // 4순위: 1번 안건(idx=0) 대표 파일 폴백
-        if (idx === 0) {
-          if (!attachName && targetMtg?.attachment_name) attachName = targetMtg.attachment_name;
-          if (!attachData && targetMtg?.attachment_data) attachData = targetMtg.attachment_data;
+        // 4순위: targetMtg 대표 파일 콤마 분리 idx 1:1 매칭 폴백
+        if (!attachName && targetMtg?.attachment_name) {
+          const parts = String(targetMtg.attachment_name).split(",").map(p => p.trim()).filter(Boolean);
+          if (parts[idx]) {
+            attachName = parts[idx];
+          } else if (idx === 0) {
+            attachName = parts[0];
+          }
+        }
+        if (!attachData && idx === 0 && targetMtg?.attachment_data) {
+          attachData = targetMtg.attachment_data;
         }
 
         // 5순위: 글로벌 바이너리 맵 순서(idx) 또는 파일명으로 인출
