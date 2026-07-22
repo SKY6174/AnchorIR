@@ -3,7 +3,14 @@ import { BookOpen, Send, Sparkles, AlertCircle, Bookmark, RefreshCw, MessageSqua
 import { simulateRAGQuery, WIKI_CHUNKS } from "../data/mockWikiData";
 import { supabase } from "../supabaseClient";
 
-export default function LLMWiki({ selectedYear = 2, darkMode = true }) {
+export interface LLMWikiProps {
+  selectedYear?: number | string;
+  darkMode?: boolean;
+  currentUser?: any;
+  currentRole?: any;
+}
+
+export default function LLMWiki({ selectedYear = 2, darkMode = true }: LLMWikiProps) {
   const [query, setQuery] = useState("");
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
