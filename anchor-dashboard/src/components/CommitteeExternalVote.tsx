@@ -325,11 +325,20 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
         if (!attachData) {
           if (attachName && globalMap[attachName.trim()]) {
             attachData = globalMap[attachName.trim()];
-          } else if (targetMtg?.attachment_data && idx === 0) {
-            // 💡 1번 안건이고 대표 파일명이 일치하거나 콤마로 다중 보관된 경우에만 대표 데이터 할당
-            const mName = String(targetMtg.attachment_name || "");
-            if (!attachName || mName.includes(attachName.trim())) {
-              attachData = targetMtg.attachment_data;
+          } else if (targetMtg?.attachment_data) {
+            const rawDataStr = String(targetMtg.attachment_data);
+            if (rawDataStr.startsWith("[")) {
+              try {
+                const parsedArr = JSON.parse(rawDataStr);
+                if (parsedArr[idx] && parsedArr[idx].length > 0) {
+                  attachData = parsedArr[idx];
+                }
+              } catch (e) { }
+            } else if (idx === 0) {
+              const mName = String(targetMtg.attachment_name || "");
+              if (!attachName || mName.includes(attachName.trim())) {
+                attachData = targetMtg.attachment_data;
+              }
             }
           }
         }

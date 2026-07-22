@@ -1919,6 +1919,12 @@ export default function CommitteeManager({
       ? orderedAttachmentNames.join(" | ")
       : (meetingForm.attachment_name || null);
 
+    // 💡 모든 안건의 첨부자료 바이너리/URL 목록을 인덱스 순서(0, 1, 2) 그대로 JSON 배열로 인코딩하여 영구 보존
+    const orderedAttachmentDatas = meetingForm.agendas.map(a => a.attachment_data || "");
+    const combinedAttachmentData = orderedAttachmentDatas.some(d => d.length > 0)
+      ? JSON.stringify(orderedAttachmentDatas)
+      : (meetingForm.agendas.find(a => a.attachment_data)?.attachment_data || meetingForm.attachment_data || null);
+
     const payload = {
       committee_id: selectedCommittee.id,
       title: meetingForm.title,
@@ -1926,7 +1932,7 @@ export default function CommitteeManager({
       meeting_type: meetingForm.meeting_type,
       agenda: summaryAgendaText,
       attachment_name: combinedAttachmentName,
-      attachment_data: meetingForm.attachment_data || meetingForm.agendas.find(a => a.attachment_data)?.attachment_data || null,
+      attachment_data: combinedAttachmentData,
       access_pin: generatedPin,
       status: "ACTIVE"
     };
