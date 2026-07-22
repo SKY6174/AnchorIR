@@ -3,7 +3,16 @@ import { supabase } from "../supabaseClient";
 import { Plus, Trash2, Edit2, Calendar, Clipboard, CheckCircle, AlertTriangle, Search, Home, Laptop, Check, Clock, TrendingUp, Upload, Download, X } from "lucide-react";
 import * as XLSX from "xlsx";
 
-export default function AssetManager({ currentRole, currentUser, activeSubTab, onChangeSubTab, darkMode, selectedYear }) {
+export interface AssetManagerProps {
+  currentRole?: any;
+  currentUser?: any;
+  activeSubTab?: string;
+  onChangeSubTab?: (subTab: string) => void;
+  darkMode?: boolean;
+  selectedYear?: number | string;
+}
+
+export default function AssetManager({ currentRole, currentUser, activeSubTab, onChangeSubTab, darkMode, selectedYear }: AssetManagerProps) {
   // 공통 로딩 상태
   const [loading, setLoading] = useState(false);
 
