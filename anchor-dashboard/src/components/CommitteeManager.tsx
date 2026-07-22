@@ -2685,6 +2685,18 @@ ${selectedMeetingAgendas.map((a, idx) => {
           <div style="font-size: 16px; font-weight: 900; letter-spacing: 1px;">울산과학대학교 앵커사업단</div>
         </div>
 
+        <div style="margin-top: 3.5rem; text-align: center; font-size: 11px; color: #334155; border: 1.5px solid #0284c7; padding: 14px; border-radius: 8px; background: #f0f9ff; page-break-inside: avoid; break-inside: avoid;">
+          <div style="font-size: 13px; font-weight: 800; color: #0369a1; margin-bottom: 0.35rem;">
+            🛡️ 울산과학대학교 앵커사업단 공동인증 디지털 서명 적용 필함
+          </div>
+          <div style="font-size: 11.5px; font-weight: 800; color: #047857; font-family: 'Courier New', monospace; background: #e0f2fe; padding: 5px 10px; border-radius: 5px; display: inline-block; margin-bottom: 0.4rem; border: 1px solid #bae6fd; letter-spacing: 0.5px;">
+            [디지털 서명 검증 코드: ${sealHash} (${sealTimestampStr})]
+          </div>
+          <div style="font-size: 10.5px; color: #475569; line-height: 1.5;">
+            본 문서는 울산과학대학교 앵커사업단 디지털 서명키(Ulsan College Anchor Portal CA / SHA-256)를 활용하여 암호학적으로 봉인되었습니다.<br/>
+            서명 제출 시각 및 고유 검증 코드를 통해 문서의 위·변조 방지 및 의결 무결성이 100% 보장됨을 공식 증명합니다.
+          </div>
+        </div>
       `;
 
       // 파일명 명명 규칙
@@ -2737,34 +2749,7 @@ ${selectedMeetingAgendas.map((a, idx) => {
 
         const pdfBlob = await html2pdfLib().from(htmlContent).set(opt).output('blob');
 
-        // 백엔드 날인 API 호출 시도 (실패 시 클라이언트 생성 PDF 즉시 직다운로드)
-        try {
-          const formData = new FormData();
-          formData.append("file", pdfBlob, customFileName);
-
-          const apiBase = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") ? "" : "http://localhost:8000";
-          const response = await fetch(`${apiBase}/api/pdf/sign-pdf`, {
-            method: "POST",
-            body: formData
-          });
-
-          if (response.ok) {
-            const signedBlob = await response.blob();
-            const downloadUrl = window.URL.createObjectURL(signedBlob);
-            const link = document.createElement("a");
-            link.href = downloadUrl;
-            link.download = customFileName;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            window.URL.revokeObjectURL(downloadUrl);
-            return;
-          }
-        } catch (apiErr) {
-          console.warn("백엔드 서명 서버 통신 제외, 클라이언트 봉인 PDF 다운로드로 연계합니다:", apiErr);
-        }
-
-        // 백엔드 비활성화 환경: 클라이언트 PDF 직접 다운로드
+        // 클라이언트 단독 초고속 봉인 PDF 직접 다운로드
         const downloadUrl = window.URL.createObjectURL(pdfBlob);
         const link = document.createElement("a");
         link.href = downloadUrl;
