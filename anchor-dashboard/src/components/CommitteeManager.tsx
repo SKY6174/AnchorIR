@@ -293,10 +293,104 @@ export default function CommitteeManager({
       return null;
     }
   };
-  const [meetings, setMeetings] = useState([]);
-  const [selectedMeeting, setSelectedMeeting] = useState(null);
-  const [responses, setResponses] = useState([]);
-  const [members, setMembers] = useState([]);
+  const [meetings, setMeetings] = useState<CommitteeMeeting[]>([]);
+  const [selectedMeeting, setSelectedMeeting] = useState<CommitteeMeeting | null>(null);
+  const [responses, setResponses] = useState<CommitteeResponse[]>([]);
+  const [members, setMembers] = useState<CommitteeMember[]>([]);
+  const [allUsers, setAllUsers] = useState<any[]>([]);
+
+  // 사용자 권한 가드 상태
+  const isManager = ["ADMIN", "G_DIRECTOR", "HQ_HEAD", "MANAGER"].includes(currentUser?.role_key || "");
+
+  // 💡 [위원장 및 간사 수정 권한 감지] 현재 선택된 위원회에서 로그인 사용자가 간사(Secretary) 또는 위원장(Chair) 직책인지 식별
+  const isMeetingManager = isManager || (currentUser && members.some(m => {
+    const cleanName = m.name ? m.name.split(" ")[0].split("(")[0].trim() : "";
+    const cleanUser = currentUser.name ? currentUser.name.split(" ")[0].split("(")[0].trim() : "";
+    if (cleanName === cleanUser) {
+      const type = String(m.type || "").toUpperCase();
+      const role = String(m.role || "").toUpperCase();
+      const pos = String(m.position || "").toUpperCase();
+      return type.includes("CHAIR") || type.includes("위원장") || type.includes("SECRETARY") || type.includes("간사") ||
+             role.includes("CHAIR") || role.includes("위원장") || role.includes("SECRETARY") || role.includes("간사") ||
+             pos.includes("CHAIR") || pos.includes("위원장") || pos.includes("SECRETARY") || pos.includes("간사");
+    }
+    return false;
+  }));
+
+  const [meetingResult, setMeetingResult] = useState<MeetingResult | null>(null);
+  const [isEditingReport, setIsEditingReport] = useState<boolean>(false);
+  const [editedReportText, setEditedReportText] = useState<string>("");
+
+  const [myMemberships, setMyMemberships] = useState<any[]>([]); // 로그인 유저가 소속된 위원회 정보
+
+  // 모달 및 폼 제어 상태
+  const [isCommitteeModalOpen, setIsCommitteeModalOpen] = useState<boolean>(false);
+  const [committeeForm, setCommitteeForm] = useState<{ name: string; total_quorum: number; voting_rule: string }>({ name: "", total_quorum: 5, voting_rule: "majority_of_attendees" });
+  
+  const [isEditMode, setIsEditMode] = useState<boolean>(false);
+  const [editingMeetingId, setEditingMeetingId] = useState<number | string | null>(null);
+  
+  const [isMeetingModalOpen, setIsMeetingModalOpen] = useState<boolean>(false);
+  const [meetingForm, setMeetingForm] = useState<{
+    title: string;
+    meeting_date: string;
+    meeting_type: string;
+    agenda: string;
+    attachment_name: string;
+    attachment_data: string;
+    access_pin: string;
+    agendas: { title: string; description: string; is_evaluation?: boolean }[];
+  }>({ 
+    title: "", 
+    meeting_date: "", 
+    meeting_type: "ONLINE_WRITTEN", 
+    agenda: "",
+    attachment_name: "",
+    attachment_data: "",
+    access_pin: "",
+    agendas: [{ title: "", description: "", is_evaluation: false }] // 💡 [의안 개조] 기본 1개 안건 인풋 자동 생성
+  });
+
+  const [isMemberModalOpen, setIsMemberModalOpen] = useState<boolean>(false);
+  const [memberForm, setMemberForm] = useState<{
+    name: string;
+    type: string;
+    org: string;
+    dept: string;
+    rank: string;
+    location: string;
+    note: string;
+    sort_order: number;
+  }>({
+    name: "",
+    type: "위원",
+    org: "울산과학대학교",
+    dept: "",
+    rank: "",
+    location: "교내",
+    note: "",
+    sort_order: 10
+  });
+
+  // 💡 [의안 개조] 선택된 회의의 의안 리스트 및 의안별 수집된 위원 투표/평가 상태
+  const [selectedMeetingAgendas, setSelectedMeetingAgendas] = useState<CommitteeAgenda[]>([]);
+  const [selectedMeetingAgendaVotes, setSelectedMeetingAgendaVotes] = useState<CommitteeAgendaVote[]>([]);
+  
+  // 💡 [의안 개조] 위원 로그인 후 각 의안별 선택한 의결/의견 맵 상태 ({ [agendaId]: { vote, score, opinion } })
+  const [agendaInputs, setAgendaInputs] = useState<Record<string | number, { vote?: string; score?: number; opinion?: string }>>({});
+
+  // 위원 의사결정 제출 폼 상태
+  const [userVote, setUserVote] = useState<string>("");
+  const [userOpinion, setUserOpinion] = useState<string>("");
+  const [hasSubmitted, setHasSubmitted] = useState<boolean>(false);
+  
+  // ChatGPT 4o (OpenAI) API 키 관리
+  const [openaiKey, setOpenaiKey] = useState<string>(() => {
+    return (import.meta.env.VITE_OPENAI_API_KEY as string) || localStorage.getItem("user_openai_api_key") || "";
+  });
+  const [isAnalyzing, setIsAnalyzing] = useState<boolean>(false);
+  const [showKeyInput, setShowKeyInput] = useState<boolean>(false);
+
   // 전자서명 패드 Canvas 레퍼런스
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [isDrawing, setIsDrawing] = useState<boolean>(false);
