@@ -108,80 +108,128 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
 
   // 이미 제출했는지 확인하는 함수
   const checkAlreadySubmitted = async (mId: string | number, memberId: string | number) => {
-    if (String(mId).startsWith("local-")) {
+    if (!mId) return;
+    const isNumericId = !isNaN(Number(mId)) && String(mId).trim() !== "";
+
+    try {
+      // 1. 로컬 캐시 수합
       const localData = localStorage.getItem(`local_meeting_responses_${mId}`);
       if (localData) {
         const parsed = JSON.parse(localData);
-        const myResp = parsed.find((r: any) => String(r.member_id) === String(memberId));
-        if (myResp) {
+        const myResp = parsed.find((r: any) => String(r.member_id) === String(memberId) || (r.member_name || "").trim() === String(memberId).trim());
+        if (myResp && myResp.submitted_at) {
+          setHasSubmitted(true);
+          return;
+        }
+      }
+
+      // 2. DB 수합 (숫자형 mId일 때만 DB 쿼리 실행)
+      if (isNumericId) {
+        const { data } = await supabase
+          .from("meeting_responses")
+          .select("*")
+          .eq("meeting_id", mId)
+          .eq("member_id", memberId)
+          .maybeSingle();
+
+        if (data && data.submitted_at) {
           setHasSubmitted(true);
         }
       }
-      return;
-    }
-
-    try {
-      const { data } = await supabase
-        .from("meeting_responses")
-        .select("*")
-        .eq("meeting_id", mId)
-        .eq("member_id", memberId)
-        .maybeSingle();
-
-      if (data && data.submitted_at) {
-        setHasSubmitted(true);
-      }
     } catch (e: any) {
-      console.warn("제출 내역 조회 실패:", e.message);
+      console.warn("제출 내역 조회 스킵:", e.message);
     }
   };
 
   const fetchMeetingAgendasAndVotes = async (mId: string | number) => {
-    if (String(mId).startsWith("local-")) {
-      const localAgendas = localStorage.getItem(`local_meeting_agendas_${mId}`);
-      const parsedAgendas = localAgendas ? JSON.parse(localAgendas) : [];
-      setSelectedMeetingAgendas(parsedAgendas);
-      if (parsedAgendas.length > 0) {
-        setActiveAgendaId(parsedAgendas[0].id);
-      }
+    if (!mId) return;
+    const isNumericId = !isNaN(Number(mId)) && String(mId).trim() !== "";
 
-      const localVotes = localStorage.getItem(`local_meeting_agenda_votes_${mId}`);
-      setSelectedMeetingAgendaVotes(localVotes ? JSON.parse(localVotes) : []);
-      return;
-    }
+    let finalAgendas: any[] = [];
+    let finalVotes: any[] = [];
+
+    // 💡 1. 로컬 스토리지 캐시 및 회의 개체 내 안건 복원
+    try {
+      const localAgendas = localStorage.getItem(`local_meeting_agendas_${mId}`);
+      if (localAgendas) {
+        finalAgendas = JSON.parse(localAgendas);
+      } else {
+        // 전체 로컬 회의 목록에서 안건 수합
+        const allLocal = localStorage.getItem("local_committee_meetings");
+        if (allLocal) {
+          const parsed = JSON.parse(allLocal);
+          const found = parsed.find((m: any) => String(m.id) === String(mId));
+          if (found && found.agenda) {
+            // "agenda" 요약 텍스트 파싱하여 의안 생성
+            const lines = found.agenda.split("\n").filter((l: string) => l.trim().length > 0);
+            finalAgendas = lines.map((l: string, idx: number) => ({
+              id: `ag-${idx + 1}`,
+              meeting_id: mId,
+              title: l.replace(/\[안건 \d+\]\s*/, "").trim() || `의안 ${idx + 1}`,
+              description: "",
+              is_evaluation: false,
+              sort_order: idx + 1
+            }));
+          }
+        }
+      }
+    } catch (e) {}
 
     try {
-      const { data: agendas, error: agErr } = await supabase
-        .from("meeting_agendas")
-        .select("id, meeting_id, title, description, is_evaluation, sort_order, attachment_name")
-        .eq("meeting_id", mId)
-        .order("sort_order", { ascending: true });
-      if (agErr) throw agErr;
-
-      setSelectedMeetingAgendas(agendas || []);
-      if (agendas && agendas.length > 0) {
-        setActiveAgendaId(agendas[0].id);
+      const localVotes = localStorage.getItem(`local_meeting_agenda_votes_${mId}`);
+      if (localVotes) {
+        finalVotes = JSON.parse(localVotes);
       }
-      const cleanAgendas = (agendas || []).map((a: any) => ({ ...a, attachment_data: null }));
-      localStorage.setItem(`local_meeting_agendas_${mId}`, JSON.stringify(cleanAgendas));
+    } catch (e) {}
 
-      const { data: votes, error: vtErr } = await supabase
-        .from("meeting_agenda_votes")
-        .select("*")
-        .eq("meeting_id", mId);
-      if (vtErr) throw vtErr;
+    // 💡 2. 숫자형 mId인 경우 Supabase DB 쿼리로 동기화
+    if (isNumericId) {
+      try {
+        const { data: agendas, error: agErr } = await supabase
+          .from("meeting_agendas")
+          .select("id, meeting_id, title, description, is_evaluation, sort_order, attachment_name")
+          .eq("meeting_id", mId)
+          .order("sort_order", { ascending: true });
 
-      setSelectedMeetingAgendaVotes(votes || []);
-      localStorage.setItem(`local_meeting_agenda_votes_${mId}`, JSON.stringify(votes || []));
-    } catch (err: any) {
-      console.error("❌ fetchMeetingAgendasAndVotes 에러 발생:", err.message);
-      const localAgendas = localStorage.getItem(`local_meeting_agendas_${mId}`);
-      const parsedAgendas = localAgendas ? JSON.parse(localAgendas) : [];
-      setSelectedMeetingAgendas(parsedAgendas);
-      if (parsedAgendas.length > 0) {
-        setActiveAgendaId(parsedAgendas[0].id);
+        if (!agErr && agendas && agendas.length > 0) {
+          finalAgendas = agendas;
+          const cleanAgendas = agendas.map((a: any) => ({ ...a, attachment_data: null }));
+          localStorage.setItem(`local_meeting_agendas_${mId}`, JSON.stringify(cleanAgendas));
+        }
+
+        const { data: votes, error: vtErr } = await supabase
+          .from("meeting_agenda_votes")
+          .select("*")
+          .eq("meeting_id", mId);
+
+        if (!vtErr && votes && votes.length > 0) {
+          finalVotes = votes;
+          localStorage.setItem(`local_meeting_agenda_votes_${mId}`, JSON.stringify(votes));
+        }
+      } catch (err: any) {
+        console.warn("DB 의안 조회 스킵 (로컬 폴백 사용):", err.message);
       }
     }
+
+    // 💡 3. 기본 의안마저 비어있는 경우 최소 1개 기본 의안(의안 1) 자동 생성하여 의결 표결 폼 100% 보장
+    if (finalAgendas.length === 0) {
+      finalAgendas = [
+        {
+          id: `ag-default-1`,
+          meeting_id: mId,
+          title: "제1호 상정 안건 심의 및 의결의 건",
+          description: "상정된 회의 안건에 대해 심의하고 의결을 진행합니다.",
+          is_evaluation: false,
+          sort_order: 1
+        }
+      ];
+    }
+
+    setSelectedMeetingAgendas(finalAgendas);
+    if (finalAgendas.length > 0) {
+      setActiveAgendaId(finalAgendas[0].id);
+    }
+    setSelectedMeetingAgendaVotes(finalVotes);
   };
 
   useEffect(() => {
