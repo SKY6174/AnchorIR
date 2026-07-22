@@ -2,7 +2,13 @@ import React, { useState, useEffect } from "react";
 import { supabase } from "../supabaseClient";
 import { ClipboardCheck, Check, Send, AlertCircle, Compass } from "lucide-react";
 
-export default function SurveyResponder() {
+export interface SurveyResponderProps {
+  darkMode?: boolean;
+  currentUser?: any;
+  currentRole?: any;
+}
+
+export default function SurveyResponder({}: SurveyResponderProps = {}) {
   const [surveyId, setSurveyId] = useState(null);
   const [survey, setSurvey] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
