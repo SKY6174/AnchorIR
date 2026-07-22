@@ -13,6 +13,19 @@ const CENTERS_LIST = [
   "ECC센터", "ICC센터", "RCC센터", "AID-X지원센터", "울산늘봄누리센터", "신산업특화센터", "사업운영팀"
 ];
 
+export interface AgreementManagerProps {
+  projects?: any[];
+  agreements?: any[];
+  selectedYear?: number | string;
+  onAddAgreement?: (agreement: any) => void;
+  onUpdateAgreement?: (agreement: any) => void;
+  onDeleteAgreement?: (id: any) => void;
+  setAgreements?: React.Dispatch<React.SetStateAction<any[]>>;
+  currentRole?: any;
+  darkMode?: boolean;
+  currentUser?: any;
+}
+
 export default function AgreementManager({
   projects = [],
   agreements = [],
@@ -22,7 +35,7 @@ export default function AgreementManager({
   onDeleteAgreement,
   setAgreements,
   currentRole
-}) {
+}: AgreementManagerProps) {
   // 💡 라이트/다크 테마 전환 시 모달 내부의 시인성을 완벽히 조율하기 위해 HTML 클래스 감지
   const isLight = document.documentElement.classList.contains("light-mode");
 
