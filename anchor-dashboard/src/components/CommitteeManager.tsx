@@ -4720,8 +4720,26 @@ ${selectedMeetingAgendas.map((a, idx) => {
                             let fileName = file.name;
                             let fileDataUrl = "";
 
-                            // PDF 파일인 경우 압축 시도, 그 외 파일은 즉시 FileReader로 읽기
-                            if (file.type === "application/pdf" || fileName.toLowerCase().endsWith(".pdf")) {
+                            // 💡 1순위: Supabase Storage meeting_docs 버킷에 파일 정식 업로드 (DB 용량 99% 절감 및 속도 극대화)
+                            try {
+                              const safeName = file.name.replace(/[^a-zA-Z0-9.\-_ㄱ-ㅎ가-힣]/g, "_");
+                              const storagePath = `agendas/${Date.now()}_${index}_${safeName}`;
+                              const { data: stData, error: stErr } = await supabase.storage
+                                .from("meeting_docs")
+                                .upload(storagePath, file, { upsert: true, contentType: "application/pdf" });
+
+                              if (!stErr && stData?.path) {
+                                const { data: urlData } = supabase.storage.from("meeting_docs").getPublicUrl(stData.path);
+                                if (urlData?.publicUrl) {
+                                  fileDataUrl = urlData.publicUrl;
+                                }
+                              }
+                            } catch (stEx) {
+                              console.warn("Supabase Storage 업로드 스킵 (Base64 폴백):", stEx);
+                            }
+
+                            // 💡 2순위: PDF 압축 시도 (Storage 업로드 미이행 시)
+                            if (!fileDataUrl && (file.type === "application/pdf" || fileName.toLowerCase().endsWith(".pdf"))) {
                               try {
                                 const res = await compressPdfIfNeeded(file);
                                 if (res && res.dataUrl) {
@@ -4731,7 +4749,7 @@ ${selectedMeetingAgendas.map((a, idx) => {
                               } catch (err) { }
                             }
 
-                            // PDF 압축 실패 또는 비-PDF 문서 파일의 안전 FileReader 로드
+                            // 💡 3순위: 기본 FileReader 무손실 로드
                             if (!fileDataUrl) {
                               fileDataUrl = await new Promise((resolve) => {
                                 const reader = new FileReader();
