@@ -2809,10 +2809,20 @@ ${selectedMeetingAgendas.map((a, idx) => {
       `;
 
       agendas.forEach((ag, idx) => {
+        const cleanTitleStr = String(ag.title || "")
+          .replace(/^\[안건\s*\d+\]\s*/gi, "")
+          .replace(/^\[의안\s*\d+\]\s*/gi, "")
+          .replace(/^\[상정\s*의안\s*#?\d+\]\s*/gi, "")
+          .replace(/\(5점척도\)/gi, "")
+          .replace(/\[첨부:.*?\]/gi, "")
+          .replace(/\[첨부\s*:\s*.*?\]/gi, "")
+          .replace(/\[첨부.*?\]/gi, "")
+          .trim();
+
         htmlContent += `
           <tr>
             <td style="border: 1px solid #000; padding: 6px; text-align: center;">${idx + 1}</td>
-            <td style="border: 1px solid #000; padding: 6px; font-weight: bold;">${ag.title}</td>
+            <td style="border: 1px solid #000; padding: 6px; font-weight: bold;">${cleanTitleStr}</td>
             <td style="border: 1px solid #000; padding: 6px; text-align: center;">${ag.is_evaluation ? "5점 척도 자체평가" : "찬반 표결 의결"}</td>
           </tr>
         `;
@@ -2885,10 +2895,20 @@ ${selectedMeetingAgendas.map((a, idx) => {
           resultSummary = `동의: ${approves}명 | 부동의: ${rejects}명 | 기권: ${abstains}명 (최종 ${rep.decision_status === "APPROVED" || approves > rejects ? "가결" : "부결"})`;
         }
 
+        const cleanTitleStr = String(ag.title || "")
+          .replace(/^\[안건\s*\d+\]\s*/gi, "")
+          .replace(/^\[의안\s*\d+\]\s*/gi, "")
+          .replace(/^\[상정\s*의안\s*#?\d+\]\s*/gi, "")
+          .replace(/\(5점척도\)/gi, "")
+          .replace(/\[첨부:.*?\]/gi, "")
+          .replace(/\[첨부\s*:\s*.*?\]/gi, "")
+          .replace(/\[첨부.*?\]/gi, "")
+          .trim();
+
         htmlContent += `
           <tr>
             <td style="border: 1px solid #000; padding: 6px; text-align: center;">${idx + 1}</td>
-            <td style="border: 1px solid #000; padding: 6px; font-weight: bold;">${ag.title}</td>
+            <td style="border: 1px solid #000; padding: 6px; font-weight: bold;">${cleanTitleStr}</td>
             <td style="border: 1px solid #000; padding: 6px;">${resultSummary}</td>
           </tr>
         `;
