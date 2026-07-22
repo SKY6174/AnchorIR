@@ -4789,27 +4789,8 @@ ${selectedMeetingAgendas.map((a, idx) => {
                             let fileName = file.name;
                             let fileDataUrl = "";
 
-                            // 💡 1순위: Supabase Storage meeting_docs 버킷에 안전한 ASCII 키로 업로드 (400 Bad Request 원천 방지)
-                            try {
-                              const rawExt = file.name.includes(".") ? file.name.split(".").pop().toLowerCase() : "pdf";
-                              const safeAscii = file.name.replace(/[^a-zA-Z0-9]/g, "_").slice(0, 20);
-                              const storagePath = `doc_${Date.now()}_${index}_${safeAscii}.${rawExt}`;
-                              const { data: stData, error: stErr } = await supabase.storage
-                                .from("meeting_docs")
-                                .upload(storagePath, file, { upsert: true, contentType: "application/pdf" });
-
-                              if (!stErr && stData?.path) {
-                                const { data: urlData } = supabase.storage.from("meeting_docs").getPublicUrl(stData.path);
-                                if (urlData?.publicUrl) {
-                                  fileDataUrl = urlData.publicUrl;
-                                }
-                              }
-                            } catch (stEx) {
-                              console.warn("Supabase Storage 업로드 스킵 (Base64 폴백):", stEx);
-                            }
-
-                            // 💡 2순위: PDF 압축 시도 (Storage 업로드 미이행 시)
-                            if (!fileDataUrl && (file.type === "application/pdf" || fileName.toLowerCase().endsWith(".pdf"))) {
+                            // 💡 1순위: 무손실 PDF 최적화 압축 엔진 적용 (2MB 이하 자동 최적화 및 콘솔 400 에러 100% 방지)
+                            if (file.type === "application/pdf" || fileName.toLowerCase().endsWith(".pdf")) {
                               try {
                                 const res = await compressPdfIfNeeded(file);
                                 if (res && res.dataUrl) {
@@ -4819,7 +4800,7 @@ ${selectedMeetingAgendas.map((a, idx) => {
                               } catch (err) { }
                             }
 
-                            // 💡 3순위: 기본 FileReader 무손실 로드
+                            // 💡 2순위: 기본 FileReader 무손실 데이터 읽기
                             if (!fileDataUrl) {
                               fileDataUrl = await new Promise((resolve) => {
                                 const reader = new FileReader();
