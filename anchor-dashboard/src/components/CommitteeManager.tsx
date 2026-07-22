@@ -1874,11 +1874,9 @@ export default function CommitteeManager({
 
     const generatedPin = meetingForm.access_pin.trim() || "123456";
 
-    // 하위 호환 및 DB non-null 제약 해소를 위해 의안 리스트 요약을 agenda 컬럼에 채움 (5점 척도 & 첨부파일명 메타마크 포함)
+    // 하위 호환 및 DB non-null 제약 해소를 위해 깔끔한 안건 요약 텍스트 생성
     const summaryAgendaText = meetingForm.agendas.map((a, idx) => {
-      const scaleStr = a.is_evaluation ? " (5점척도)" : "";
-      const attachStr = a.attachment_name ? ` [첨부: ${a.attachment_name}]` : "";
-      return `[안건 ${idx + 1}] ${a.title.trim()}${scaleStr}${attachStr}`;
+      return `[안건 ${idx + 1}] ${a.title.trim()}`;
     }).join("\n");
 
     const payload = {
@@ -3364,7 +3362,9 @@ ${selectedMeetingAgendas.map((a, idx) => {
 
                   <div style={{ marginTop: "1rem", padding: "0.75rem", background: "rgba(120, 120, 120, 0.08)", borderRadius: "6px", border: "1px solid var(--border-color)" }}>
                     <strong style={{ fontSize: "0.85rem", color: "var(--accent-color)", display: "block", marginBottom: "0.25rem" }}>회의 안건 요지</strong>
-                    <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)", whiteSpace: "pre-line", lineHeight: "1.5" }}>{selectedMeeting.agenda}</p>
+                    <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)", whiteSpace: "pre-line", lineHeight: "1.5" }}>
+                      {String(selectedMeeting.agenda || "").replace(/\(5점척도\)/gi, "").replace(/\[첨부:.*?\]/gi, "").trim()}
+                    </p>
                   </div>
 
                   {/* 💡 [회의 첨부파일 뷰어 / 다운로드 영역] (요구사항 3 반영) */}

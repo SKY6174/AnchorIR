@@ -200,32 +200,33 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
       if (targetMtg && targetMtg.agenda) {
         const lines = String(targetMtg.agenda).split("\n").map(l => l.trim()).filter(l => l.length > 0);
         finalAgendas = lines.map((l, idx) => {
-          const cleanTitle = l.replace(/^\[안건\s*\d+\]\s*/, "").replace(/^\[의안\s*\d+\]\s*/, "").replace(/^\d+[\.\)]\s*/, "").trim();
+          const isEval = l.includes("5점") || l.includes("성과") || l.includes("평가") || l.includes("심의");
+          const cleaned = l.replace(/^\[안건\s*\d+\]\s*/gi, "").replace(/^\[의안\s*\d+\]\s*/gi, "").replace(/\(5점척도\)/gi, "").replace(/\[첨부:.*?\]/gi, "").trim();
           return {
             id: `ag-${mId}-${idx + 1}`,
             meeting_id: mId,
-            title: cleanTitle || `제${idx + 1}호 안건`,
-            description: `[상정 의안 #${idx + 1}] ${cleanTitle || "안건 심의 및 의결"}`,
-            is_evaluation: false,
+            title: cleaned || `제${idx + 1}호 안건`,
+            description: `[상정 의안 #${idx + 1}] ${cleaned || "안건 심의 및 의결"}`,
+            is_evaluation: isEval,
             sort_order: idx + 1,
             attachment_name: idx === 0 ? (targetMtg.attachment_name || null) : null,
             attachment_data: idx === 0 ? (targetMtg.attachment_data || null) : null
           };
         });
-      } else {
-        finalAgendas = [
-          {
-            id: `ag-default-1`,
-            meeting_id: mId,
-            title: "제1호 상정 안건 심의 및 의결의 건",
-            description: "상정된 회의 안건에 대해 심의하고 의결을 진행합니다.",
-            is_evaluation: false,
-            sort_order: 1,
-            attachment_name: targetMtg?.attachment_name || null,
-            attachment_data: targetMtg?.attachment_data || null
-          }
-        ];
       }
+    }
+
+    // 💡 4. title 정제 및 attachment_name 보강
+    if (finalAgendas && finalAgendas.length > 0) {
+      finalAgendas = finalAgendas.map(ag => {
+        const isEval = ag.is_evaluation || ag.title?.includes("성과") || ag.title?.includes("평가") || ag.title?.includes("5점");
+        const cleaned = ag.title ? ag.title.replace(/^\[안건\s*\d+\]\s*/gi, "").replace(/^\[의안\s*\d+\]\s*/gi, "").replace(/\(5점척도\)/gi, "").replace(/\[첨부:.*?\]/gi, "").trim() : ag.title;
+        return {
+          ...ag,
+          title: cleaned,
+          is_evaluation: isEval
+        };
+      });
     }
 
     setSelectedMeetingAgendas(finalAgendas);
@@ -336,20 +337,21 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
     fetchMeeting();
   }, [meetingId]);
 
+  // 💡 선택된 활성 의안(activeAgendaItem)의 개별 첨부파일 비동기/동기 로더 (의안 전환 시 100% 동기화)
   useEffect(() => {
     if (!activeAgendaId || !meeting?.id) return;
     const activeAgendaItem = selectedMeetingAgendas.find(a => String(a.id) === String(activeAgendaId));
 
-    const attachName = activeAgendaItem?.attachment_name || meeting?.attachment_name;
-    const attachData = activeAgendaItem?.attachment_data || meeting?.attachment_data;
-
-    if (!attachName && !attachData) {
-      setActiveAttachmentData(null);
+    // 1. [1순위] 선택된 의안의 개별 첨부파일 데이터 최우선 로드!
+    if (activeAgendaItem && activeAgendaItem.attachment_data) {
+      setActiveAttachmentData(activeAgendaItem.attachment_data);
+      setActiveAttachmentLoading(false);
       return;
     }
 
-    if (attachData) {
-      setActiveAttachmentData(attachData);
+    // 2. [2순위] 선택된 의안에 파일 데이터가 없고 대표 회의 파일 데이터가 연결된 경우
+    if (meeting && meeting.attachment_data && (!activeAgendaItem?.attachment_name || activeAgendaItem?.attachment_name === meeting?.attachment_name)) {
+      setActiveAttachmentData(meeting.attachment_data);
       setActiveAttachmentLoading(false);
       return;
     }
@@ -357,19 +359,17 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
     const fetchAttachmentData = async () => {
       setActiveAttachmentLoading(true);
       try {
-        if (String(meeting.id).startsWith("local-") || isNaN(Number(meeting.id))) {
-          const fullId = String(meeting.id);
-          const shortId = fullId.includes("-") ? fullId.split("-")[0] : fullId;
+        const fullId = String(meeting.id);
+        const shortId = fullId.includes("-") ? fullId.split("-")[0] : fullId;
 
-          const localAgendas = localStorage.getItem(`local_meeting_agendas_${fullId}`) || localStorage.getItem(`local_meeting_agendas_${shortId}`);
-          if (localAgendas) {
-            const parsed = JSON.parse(localAgendas);
-            const found = parsed.find((a: any) => String(a.id) === String(activeAgendaId) || a.attachment_data);
-            if (found && found.attachment_data) {
-              setActiveAttachmentData(found.attachment_data);
-              setActiveAttachmentLoading(false);
-              return;
-            }
+        const localAgendas = localStorage.getItem(`local_meeting_agendas_${fullId}`) || localStorage.getItem(`local_meeting_agendas_${shortId}`);
+        if (localAgendas) {
+          const parsed = JSON.parse(localAgendas);
+          const found = parsed.find((a: any) => String(a.id) === String(activeAgendaId));
+          if (found && found.attachment_data) {
+            setActiveAttachmentData(found.attachment_data);
+            setActiveAttachmentLoading(false);
+            return;
           }
         }
 
@@ -382,18 +382,18 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
         if (!error && data?.attachment_data) {
           setActiveAttachmentData(data.attachment_data);
         } else {
-          setActiveAttachmentData(meeting?.attachment_data || null);
+          setActiveAttachmentData(null);
         }
       } catch (err: any) {
-        console.warn("개별 첨부파일 조회 스킵, 회의 첨부파일 참조:", err.message);
-        setActiveAttachmentData(meeting?.attachment_data || null);
+        console.warn("개별 첨부파일 조회 스킵:", err.message);
+        setActiveAttachmentData(null);
       } finally {
         setActiveAttachmentLoading(false);
       }
     };
 
     fetchAttachmentData();
-  }, [activeAgendaId, meeting?.id, selectedMeetingAgendas, meeting?.attachment_data]);
+  }, [activeAgendaId, meeting?.id, selectedMeetingAgendas]);
 
   // 위원 성명/PIN 인증 핸들러
   const handleAuthSubmit = async (e: React.FormEvent) => {
@@ -895,7 +895,7 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
                   >
                     {selectedMeetingAgendas.map((agenda, index) => (
                       <option key={agenda.id} value={agenda.id}>
-                        의안 #{index + 1}: {agenda.title}
+                        의안 #{index + 1}: {String(agenda.title || "").replace(/\(5점척도\)/gi, "").replace(/\[첨부:.*?\]/gi, "").trim()}
                       </option>
                     ))}
                   </select>
@@ -906,10 +906,12 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
                     <span style={{ fontSize: "0.75rem", fontWeight: "800", color: "var(--accent-color)", display: "block" }}>
                       선택된 안건 상세
                     </span>
-                    <h4 style={{ fontSize: "1.1rem", fontWeight: "800", margin: "0.3rem 0 0.5rem 0" }}>{activeAgenda.title}</h4>
+                    <h4 style={{ fontSize: "1.1rem", fontWeight: "800", margin: "0.3rem 0 0.5rem 0" }}>
+                      {String(activeAgenda.title || "").replace(/\(5점척도\)/gi, "").replace(/\[첨부:.*?\]/gi, "").trim()}
+                    </h4>
                     {activeAgenda.description ? (
                       <p style={{ fontSize: "0.88rem", color: "var(--text-secondary)", lineHeight: "1.6", whiteSpace: "pre-wrap", margin: 0 }}>
-                        {activeAgenda.description}
+                        {String(activeAgenda.description || "").replace(/\(5점척도\)/gi, "").replace(/\[첨부:.*?\]/gi, "").trim()}
                       </p>
                     ) : (
                       <p style={{ fontSize: "0.82rem", color: "var(--text-secondary)", fontStyle: "italic", margin: 0 }}>
@@ -990,7 +992,7 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
                   >
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.75rem" }}>
                       <span style={{ fontWeight: "800", fontSize: "1rem", color: isCurrentActive ? "var(--accent-color)" : "var(--text-primary)" }}>
-                        의안 #{index + 1}: {agenda.title}
+                        의안 #{index + 1}: {String(agenda.title || "").replace(/\(5점척도\)/gi, "").replace(/\[첨부:.*?\]/gi, "").trim()}
                       </span>
                       {isCurrentActive && (
                         <span style={{ fontSize: "0.7rem", padding: "0.15rem 0.4rem", borderRadius: "4px", background: "var(--accent-color)", color: "#fff", fontWeight: "700" }}>
