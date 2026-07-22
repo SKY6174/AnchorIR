@@ -116,18 +116,31 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
 
     let rawStr = String(currentFileData).trim();
 
-    // 0. 따옴표 및 대괄호 이물질 정밀 제거 및 JSON 배열 인덱스 분리
-    if (rawStr.startsWith('"') || rawStr.startsWith("'") || rawStr.startsWith('[')) {
-      try {
-        const parsed = JSON.parse(rawStr);
-        if (Array.isArray(parsed)) {
-          const targetIdx = activeAgendaIndex || 0;
-          rawStr = String(parsed[targetIdx] || parsed[0] || "").trim();
-        } else if (typeof parsed === "string") {
-          rawStr = parsed.trim();
+    // 0. 2중/3중 겹친 URL인코딩(%22, %5B) 및 JSON 배열 문자열 완전 탈피(Unwrap) 5중 디코더
+    for (let depth = 0; depth < 5; depth++) {
+      if (rawStr.includes("%22") || rawStr.includes("%5B")) {
+        try {
+          rawStr = decodeURIComponent(rawStr);
+        } catch (e) { }
+      }
+      rawStr = rawStr.trim();
+      if (rawStr.startsWith('"') || rawStr.startsWith("'") || rawStr.startsWith('[')) {
+        try {
+          const parsed = JSON.parse(rawStr);
+          if (Array.isArray(parsed)) {
+            const targetIdx = activeAgendaIndex || 0;
+            rawStr = String(parsed[targetIdx] || parsed[0] || "").trim();
+          } else if (typeof parsed === "string") {
+            rawStr = parsed.trim();
+          } else {
+            break;
+          }
+        } catch (e) {
+          rawStr = rawStr.replace(/^["'\[]+/, "").replace(/["'\]]+$/, "").trim();
+          break;
         }
-      } catch (e) {
-        rawStr = rawStr.replace(/^["'\[]+/, "").replace(/["'\]]+$/, "").trim();
+      } else {
+        break;
       }
     }
 
