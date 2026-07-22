@@ -213,8 +213,8 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
 
     // 💡 3. 기본 의안이 비어있는 경우 회의 agenda 텍스트 파싱하여 100% 무손실 복원
     if (finalAgendas.length === 0) {
-      if (mtg && mtg.agenda) {
-        const lines = String(mtg.agenda).split("\n").map(l => l.trim()).filter(l => l.length > 0);
+      if (selectedMeeting && selectedMeeting.agenda) {
+        const lines = String(selectedMeeting.agenda).split("\n").map(l => l.trim()).filter(l => l.length > 0);
         finalAgendas = lines.map((l, idx) => {
           const cleanTitle = l.replace(/^\[안건\s*\d+\]\s*/, "").replace(/^\[의안\s*\d+\]\s*/, "").replace(/^\d+[\.\)]\s*/, "").trim();
           return {
@@ -224,8 +224,8 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
             description: `[상정 의안 #${idx + 1}] ${cleanTitle || "안건 심의 및 의결"}`,
             is_evaluation: false,
             sort_order: idx + 1,
-            attachment_name: idx === 0 ? (mtg.attachment_name || null) : null,
-            attachment_data: idx === 0 ? (mtg.attachment_data || null) : null
+            attachment_name: idx === 0 ? (selectedMeeting.attachment_name || null) : null,
+            attachment_data: idx === 0 ? (selectedMeeting.attachment_data || null) : null
           };
         });
       } else {
@@ -237,8 +237,8 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
             description: "상정된 회의 안건에 대해 심의하고 의결을 진행합니다.",
             is_evaluation: false,
             sort_order: 1,
-            attachment_name: mtg?.attachment_name || null,
-            attachment_data: mtg?.attachment_data || null
+            attachment_name: selectedMeeting?.attachment_name || null,
+            attachment_data: selectedMeeting?.attachment_data || null
           }
         ];
       }

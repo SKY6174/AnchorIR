@@ -95,8 +95,8 @@ const MOCK_COMMITTEE_MEMBERS_FALLBACK = {
     { id: 405, committee_id: "evaluation", type: "위원", name: "미지정", org: "울산과학대학교", dept: "총대의원회", rank: "의장", location: "교내", note: "", sort_order: 5 },
     { id: 406, committee_id: "evaluation", type: "위원", name: "김봉재", org: "HD한국조선해양", dept: "-", rank: "부장", location: "교외", note: "", sort_order: 6 },
     { id: 407, committee_id: "evaluation", type: "위원", name: "한동호", org: "석원기공", dept: "-", rank: "대표이사", location: "교외", note: "", sort_order: 7 },
-    { id: 408, committee_id: "evaluation", type: "위원(자문겸직)", name: "류지호", org: "아주자동차대학교", dept: "교학처", rank: "처장", location: "교외", note: "", sort_order: 8 },
-    { id: 409, committee_id: "evaluation", type: "위원(자문겸직)", name: "박준", org: "광주보건대학교", dept: "글로벌혁신처", rank: "처장", location: "교외", note: "", sort_order: 9 },
+    { id: 408, committee_id: "evaluation", type: "위원", name: "류지호", org: "아주자동차대학교", dept: "교학처", rank: "처장", location: "교외", note: "", sort_order: 8 },
+    { id: 409, committee_id: "evaluation", type: "위원", name: "박준", org: "광주보건대학교", dept: "글로벌혁신처", rank: "처장", location: "교외", note: "", sort_order: 9 },
     { id: 410, committee_id: "evaluation", type: "간사", name: "심현미", org: "울산과학대학교", dept: "앵커사업단운영팀", rank: "팀장", location: "교내", note: "", sort_order: 10 }
   ],
   advisory: [
@@ -988,9 +988,9 @@ export default function CommitteeManager({
               try {
                 const arr = JSON.parse(raw);
                 if (Array.isArray(arr) && arr.length > 0) {
-                  const matched = arr.filter((r: any) => 
-                    String(r.meeting_id) === fullId || 
-                    String(r.meeting_id).startsWith(shortId) || 
+                  const matched = arr.filter((r: any) =>
+                    String(r.meeting_id) === fullId ||
+                    String(r.meeting_id).startsWith(shortId) ||
                     fullId.startsWith(String(r.meeting_id))
                   );
                   if (matched.length > 0) {
@@ -998,7 +998,7 @@ export default function CommitteeManager({
                     break;
                   }
                 }
-              } catch (e) {}
+              } catch (e) { }
             }
           }
         }
@@ -1017,9 +1017,9 @@ export default function CommitteeManager({
               try {
                 const list = JSON.parse(raw);
                 if (Array.isArray(list)) {
-                  const found = list.find((m: any) => 
-                    String(m.id) === fullId || 
-                    String(m.id).startsWith(shortId) || 
+                  const found = list.find((m: any) =>
+                    String(m.id) === fullId ||
+                    String(m.id).startsWith(shortId) ||
                     fullId.startsWith(String(m.id))
                   );
                   if (found && Array.isArray(found.responses_data) && found.responses_data.length > 0) {
@@ -1027,7 +1027,7 @@ export default function CommitteeManager({
                     break;
                   }
                 }
-              } catch (e) {}
+              } catch (e) { }
             }
           }
         }
@@ -1045,7 +1045,7 @@ export default function CommitteeManager({
                   if (Array.isArray(arr) && arr.length > 0) {
                     fallbackRespList.push(...arr);
                   }
-                } catch (e) {}
+                } catch (e) { }
               }
             }
           }
@@ -2535,7 +2535,7 @@ ${selectedMeetingAgendas.map((a, idx) => {
           try {
             const cachedAgendas = localStorage.getItem(`local_meeting_agendas_${rep.meeting_id}`);
             if (cachedAgendas) agendas = JSON.parse(cachedAgendas);
-          } catch (e) {}
+          } catch (e) { }
         }
 
         if ((!agendas || agendas.length === 0) && (selectedMeeting?.agenda || rep.committee_meetings?.agenda)) {
