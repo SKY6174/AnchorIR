@@ -927,50 +927,115 @@ export default function CommitteeManager({
     const isNumericId = !isNaN(Number(meetingId)) && String(meetingId).trim() !== "";
 
     let targetResp: any[] = [];
+    const fullId = String(meetingId).trim();
+    const shortId = fullId.includes("-") ? fullId.split("-")[0] : fullId;
 
-    // 💡 로컬 회의 또는 UUID 회의의 경우 로컬 스토리지 무손실 수합
+    // 💡 [Super-Restore Fallback] 로컬 회의/UUID 회의/단축 ID 모든 키 전수 무손실 수합
     if (String(meetingId).startsWith("local-") || !isNumericId) {
       try {
-        const fullId = String(meetingId);
-        const shortId = fullId.includes("-") ? fullId.split("-")[0] : fullId;
-
-        // 1. 전체 UUID 키 및 단축키 양쪽 캐시 수합
-        const localDataFull = localStorage.getItem(`local_meeting_responses_${fullId}`);
-        const localDataShort = localStorage.getItem(`local_meeting_responses_${shortId}`);
-        
-        let parsed: any[] = [];
-        if (localDataFull) {
-          parsed = JSON.parse(localDataFull);
-        } else if (localDataShort) {
-          parsed = JSON.parse(localDataShort);
-        }
-
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          targetResp = parsed;
-        } else if (selectedMeeting && Array.isArray(selectedMeeting.responses_data) && selectedMeeting.responses_data.length > 0) {
-          targetResp = selectedMeeting.responses_data;
-        } else {
-          // 전체 local_committee_meetings 수합 키 검색
-          const allKeys = Object.keys(localStorage).filter(k => k.startsWith("local_committee_meetings"));
-          for (const k of allKeys) {
-            const item = localStorage.getItem(k);
-            if (item) {
-              const list = JSON.parse(item);
-              if (Array.isArray(list)) {
-                const found = list.find((m: any) => String(m.id) === fullId || String(m.id).startsWith(shortId));
-                if (found && Array.isArray(found.responses_data) && found.responses_data.length > 0) {
-                  targetResp = found.responses_data;
-                  break;
-                }
-              }
+        // 1. 직접 키 탐색
+        const keysToCheck = [
+          `local_meeting_responses_${fullId}`,
+          `local_meeting_responses_${shortId}`,
+          `local_responses_${fullId}`,
+          `local_responses_${shortId}`
+        ];
+        for (const k of keysToCheck) {
+          const raw = localStorage.getItem(k);
+          if (raw) {
+            const arr = JSON.parse(raw);
+            if (Array.isArray(arr) && arr.length > 0) {
+              targetResp = arr;
+              break;
             }
           }
         }
+
+        // 2. localStorage 내 모든 meeting_responses / responses 키 전수 스캔
+        if (targetResp.length === 0) {
+          const allKeys = Object.keys(localStorage).filter(k => k.includes("responses"));
+          for (const k of allKeys) {
+            const raw = localStorage.getItem(k);
+            if (raw) {
+              try {
+                const arr = JSON.parse(raw);
+                if (Array.isArray(arr) && arr.length > 0) {
+                  const matched = arr.filter((r: any) => 
+                    String(r.meeting_id) === fullId || 
+                    String(r.meeting_id).startsWith(shortId) || 
+                    fullId.startsWith(String(r.meeting_id))
+                  );
+                  if (matched.length > 0) {
+                    targetResp = matched;
+                    break;
+                  }
+                }
+              } catch (e) {}
+            }
+          }
+        }
+
+        // 3. selectedMeeting.responses_data 필드
+        if (targetResp.length === 0 && selectedMeeting && Array.isArray(selectedMeeting.responses_data) && selectedMeeting.responses_data.length > 0) {
+          targetResp = selectedMeeting.responses_data;
+        }
+
+        // 4. local_committee_meetings 내의 모든 회의 목록 전수 스캔
+        if (targetResp.length === 0) {
+          const meetingKeys = Object.keys(localStorage).filter(k => k.includes("committee_meetings") || k.includes("meetings"));
+          for (const k of meetingKeys) {
+            const raw = localStorage.getItem(k);
+            if (raw) {
+              try {
+                const list = JSON.parse(raw);
+                if (Array.isArray(list)) {
+                  const found = list.find((m: any) => 
+                    String(m.id) === fullId || 
+                    String(m.id).startsWith(shortId) || 
+                    fullId.startsWith(String(m.id))
+                  );
+                  if (found && Array.isArray(found.responses_data) && found.responses_data.length > 0) {
+                    targetResp = found.responses_data;
+                    break;
+                  }
+                }
+              } catch (e) {}
+            }
+          }
+        }
+
+        // 5. 그래도 비어있으면 localStorage의 최신 제출 서명 response 항목들 전체 폴백 복원
+        if (targetResp.length === 0) {
+          const fallbackRespList: any[] = [];
+          const allKeys = Object.keys(localStorage);
+          for (const k of allKeys) {
+            if (k.startsWith("local_meeting_responses_")) {
+              const raw = localStorage.getItem(k);
+              if (raw) {
+                try {
+                  const arr = JSON.parse(raw);
+                  if (Array.isArray(arr) && arr.length > 0) {
+                    fallbackRespList.push(...arr);
+                  }
+                } catch (e) {}
+              }
+            }
+          }
+          if (fallbackRespList.length > 0) {
+            // 중복 member_id 제거 후 복원
+            const uniqueMap = new Map();
+            fallbackRespList.forEach(item => {
+              if (item.member_name || item.member_id) {
+                uniqueMap.set(item.member_name || item.member_id, item);
+              }
+            });
+            targetResp = Array.from(uniqueMap.values());
+          }
+        }
       } catch (err) {
-        targetResp = [];
+        console.warn("로컬 수합 스캔 예외:", err);
       }
 
-      // UUID 회의의 경우 로컬 캐시 스토리지에서만 안전 수합하여 Supabase 400 에러 원천 차단
       setResponses(targetResp);
       return;
     }
