@@ -241,29 +241,45 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
             description: `[상정 의안 #${idx + 1}] ${cleaned || "안건 심의 및 의결"}`,
             is_evaluation: isEval,
             sort_order: idx + 1,
-            attachment_name: idx === 0 ? (targetMtg.attachment_name || null) : null,
-            attachment_data: idx === 0 ? (targetMtg.attachment_data || null) : null
+            attachment_name: null,
+            attachment_data: null
           };
         });
       }
     }
 
-    // 💡 4. title 정제 및 global_attachment_map 파일 데이터 100% 무손실 합성
+    // 💡 4. title 정제 및 global_attachment_map 파일 데이터 100% 무손실 4중 매칭
     if (finalAgendas && finalAgendas.length > 0) {
       let globalMap: any = {};
+      let globalMapKeys: string[] = [];
       try {
         const globalMapStr = localStorage.getItem("global_attachment_map") || "{}";
         globalMap = JSON.parse(globalMapStr);
+        globalMapKeys = Object.keys(globalMap);
+      } catch (e) { }
+
+      let localCache: any[] = [];
+      try {
+        const localAgendasStr = localStorage.getItem(`local_meeting_agendas_${mId}`);
+        if (localAgendasStr) localCache = JSON.parse(localAgendasStr);
       } catch (e) { }
 
       finalAgendas = finalAgendas.map((ag, idx) => {
         const isEval = ag.is_evaluation || ag.title?.includes("성과") || ag.title?.includes("평가") || ag.title?.includes("5점");
         const cleaned = ag.title ? ag.title.replace(/^\[안건\s*\d+\]\s*/gi, "").replace(/^\[의안\s*\d+\]\s*/gi, "").replace(/\(5점척도\)/gi, "").replace(/\[첨부:.*?\]/gi, "").trim() : ag.title;
 
+        // 1순위: 개체 내 기존 필드
         let attachName = ag.attachment_name;
         let attachData = ag.attachment_data;
 
-        // 회의 개체 targetMtg 내 agendas 배열에서 attachment_name / attachment_data 2차 수합
+        // 2순위: localCache 내 순서/ID 일치 개체
+        const cachedItem = localCache.find((c: any, cIdx: number) => String(c.id) === String(ag.id) || cIdx === idx);
+        if (cachedItem) {
+          if (!attachName && cachedItem.attachment_name) attachName = cachedItem.attachment_name;
+          if (!attachData && cachedItem.attachment_data) attachData = cachedItem.attachment_data;
+        }
+
+        // 3순위: targetMtg 회의 개체 내 agendas 배열
         if (targetMtg && Array.isArray(targetMtg.agendas)) {
           const matchedTargetAg = targetMtg.agendas.find((ta: any, tIdx: number) => String(ta.id) === String(ag.id) || tIdx === idx);
           if (matchedTargetAg) {
@@ -272,7 +288,16 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
           }
         }
 
-        // 글로벌 바이너리 맵 3차 수합
+        // 4순위: 1번 안건(idx=0) 대표 파일 폴백
+        if (idx === 0) {
+          if (!attachName && targetMtg?.attachment_name) attachName = targetMtg.attachment_name;
+          if (!attachData && targetMtg?.attachment_data) attachData = targetMtg.attachment_data;
+        }
+
+        // 5순위: 글로벌 바이너리 맵 순서(idx) 또는 파일명으로 인출
+        if (!attachName && globalMapKeys[idx]) {
+          attachName = globalMapKeys[idx];
+        }
         if (!attachData && attachName && globalMap[attachName.trim()]) {
           attachData = globalMap[attachName.trim()];
         }
