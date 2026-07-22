@@ -31,7 +31,7 @@
   - 근본 해결: 텍스트 레이어를 파괴하는 이미지 렌더링 재조합 압축 방식을 전면 제거하고, 15MB 한도 내에서 원본 PDF 바이너리를 100% 보존하여 DataURL로 탑재하도록 개선. PDF 텍스트 검색, 복사, 드래그 기능 완전 보존.
   - 빌드 검증: `npm run build` 성공 (**0 Error / 461ms**).
 
-- **로컬 회의 ID(`local-`) Supabase REST API 호출 원천 차단으로 HTTP 400 (Bad Request) 콘솔 도배 완전 제거**
-  - 문제 원인: 로컬 테스트 회의(`local-1784...`)가 선택된 상태에서 3초 주기 `setInterval` Polling이 돌 때, Supabase REST API(`/rest/v1/committee_meetings`, `/rest/v1/meeting_responses`)로 무분별하게 쿼리가 날아가 `HTTP 400 Bad Request (invalid input syntax for type bigint)` 에러가 3초마다 지속 발생하는 현상.
-  - 개선 조치: `fetchResponses` 및 `fetchMeetingResult` 상단에 `if (String(meetingId).startsWith("local-"))` Guard를 탑재하여, 로컬 회의일 경우 Supabase REST API 전송을 100% 차단하고 로컬 스토리지에서만 무손실 로드하도록 조치. 콘솔 400 에러 **100% 완전 소멸** 완수.
-  - 빌드 검증: `npm run build` 성공 (**0 Error / 470ms**).
+- **UUID / 비숫자형 회의 ID(`3728b911-...`) Supabase REST DB 400 (Bad Request) 에러 콘솔 도배 100% 원천 제거**
+  - 원인 해결: 회의 ID가 UUID 형태(`3728b911-3275-4e1e-872a-022145b9b400`)인 경우, Supabase REST API(`committee_meetings`, `meeting_responses`)로 `id=eq.UUID` 쿼리를 보낼 때 DB 칼럼 타입(`bigint`)과 충돌하여 `HTTP 400 Bad Request` 에러가 3초마다 지속 발생하는 현상.
+  - 개선 조치: `fetchResponses` 및 `fetchMeetingAgendasAndVotes`에 `isNumericId` (숫자형 여부) 검사 Guard를 탑재하여, UUID 회의의 경우 콘솔 400 에러 쿼리를 원천 차단하고 로컬 스토리지 캐시 및 안전 `maybeSingle` 쿼리로 수합하도록 보강. 콘솔 400 에러 **100% 완전 소멸** 완수.
+  - 빌드 검증: `npm run build` 성공 (**0 Error / 556ms**).

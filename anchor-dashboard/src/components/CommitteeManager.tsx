@@ -471,13 +471,27 @@ export default function CommitteeManager({
   const fetchMeetingAgendasAndVotes = async (meetingId: number | string) => {
     if (!meetingId) return;
 
-    // 로컬 회의인 경우 로컬 스토리지에서 즉시 가져오기
-    if (String(meetingId).startsWith("local-")) {
+    const isNumericId = !isNaN(Number(meetingId)) && String(meetingId).trim() !== "";
+
+    // 💡 로컬 회의(local-로 시작하는 ID) 또는 비숫자형 UUID 회의의 경우 로컬 스토리지 무손실 조회
+    if (String(meetingId).startsWith("local-") || !isNumericId) {
       const localAgendas = localStorage.getItem(`local_meeting_agendas_${meetingId}`);
       setSelectedMeetingAgendas(localAgendas ? JSON.parse(localAgendas) : []);
 
       const localVotes = localStorage.getItem(`local_meeting_agenda_votes_${meetingId}`);
       setSelectedMeetingAgendaVotes(localVotes ? JSON.parse(localVotes) : []);
+      
+      // UUID 회의일 경우 Supabase DB도 try-catch로 안전 조회 시도
+      if (!isNumericId && !String(meetingId).startsWith("local-")) {
+        try {
+          const { data: agendas } = await supabase.from("meeting_agendas").select("*").eq("meeting_id", meetingId).order("sort_order", { ascending: true });
+          if (agendas && agendas.length > 0) setSelectedMeetingAgendas(agendas);
+          const { data: votes } = await supabase.from("meeting_agenda_votes").select("*").eq("meeting_id", meetingId);
+          if (votes && votes.length > 0) setSelectedMeetingAgendaVotes(votes);
+        } catch (e) {
+          // 콘솔 도배 방지 스킵
+        }
+      }
       return;
     }
 
@@ -851,14 +865,39 @@ export default function CommitteeManager({
   const fetchResponses = async (meetingId: number | string) => {
     if (!meetingId) return;
 
-    // 💡 로컬 회의(local-로 시작하는 ID)는 Supabase REST 400 에러를 원천 차단하고 로컬 스토리지에서만 조회
-    if (String(meetingId).startsWith("local-")) {
+    const isNumericId = !isNaN(Number(meetingId)) && String(meetingId).trim() !== "";
+
+    // 💡 로컬 회의 또는 UUID 회의의 경우 로컬 스토리지 무손실 조회
+    if (String(meetingId).startsWith("local-") || !isNumericId) {
       try {
         const localData = localStorage.getItem(`local_meeting_responses_${meetingId}`);
         const parsed = localData ? JSON.parse(localData) : [];
-        setResponses(Array.isArray(parsed) ? parsed : []);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setResponses(parsed);
+        } else {
+          // local_committee_meetings 내 responses_data 수합
+          const localMeetings = localStorage.getItem("local_committee_meetings");
+          if (localMeetings) {
+            const found = JSON.parse(localMeetings).find((m: any) => String(m.id) === String(meetingId));
+            if (found && Array.isArray(found.responses_data)) {
+              setResponses(found.responses_data);
+            }
+          }
+        }
       } catch (err) {
         setResponses([]);
+      }
+
+      // UUID 회의일 경우 Supabase DB try-catch 안전 수합
+      if (!isNumericId && !String(meetingId).startsWith("local-")) {
+        try {
+          const { data: meetingObj } = await supabase.from("committee_meetings").select("responses_data").eq("id", meetingId).maybeSingle();
+          if (meetingObj?.responses_data && Array.isArray(meetingObj.responses_data) && meetingObj.responses_data.length > 0) {
+            setResponses(meetingObj.responses_data);
+          }
+        } catch (e) {
+          // 콘솔 도배 방지 스킵
+        }
       }
       return;
     }
