@@ -295,6 +295,7 @@ export default function CommitteeManager({
   };
   const [meetings, setMeetings] = useState<CommitteeMeeting[]>([]);
   const [selectedMeeting, setSelectedMeeting] = useState<CommitteeMeeting | null>(null);
+  const [isSubmittingMeeting, setIsSubmittingMeeting] = useState<boolean>(false);
   const [responses, setResponses] = useState<CommitteeResponse[]>([]);
   const [members, setMembers] = useState<CommitteeMember[]>([]);
   const [allUsers, setAllUsers] = useState<any[]>([]);
@@ -1506,6 +1507,8 @@ export default function CommitteeManager({
 
   const handleCreateMeeting = async (e) => {
     e.preventDefault();
+    if (isSubmittingMeeting) return;
+
     if (!meetingForm.title || !meetingForm.meeting_date) {
       alert("회의 제목과 일시를 입력해 주세요.");
       return;
@@ -1518,6 +1521,8 @@ export default function CommitteeManager({
       alert("모든 의안의 제목을 올바르게 기입해 주세요.");
       return;
     }
+
+    setIsSubmittingMeeting(true);
 
     const generatedPin = meetingForm.access_pin.trim() || Math.floor(100000 + Math.random() * 900000).toString();
     
@@ -1678,6 +1683,8 @@ export default function CommitteeManager({
       });
       setMeetings(updatedMeetings);
       setSelectedMeeting(localPayload);
+    } finally {
+      setIsSubmittingMeeting(false);
     }
   };
 
@@ -4180,13 +4187,27 @@ ${selectedMeetingAgendas.map((a, idx) => {
               </div>
 
               <div style={{ display: "flex", gap: "0.5rem", marginTop: "1rem" }}>
-                <button type="button" className="btn btn-secondary" onClick={() => {
+                <button type="button" className="btn btn-secondary" disabled={isSubmittingMeeting} onClick={() => {
                   setIsMeetingModalOpen(false);
                   setIsEditMode(false);
                   setEditingMeetingId(null);
                   setMeetingForm({ title: "", meeting_date: "", meeting_type: "ONLINE_WRITTEN", agenda: "", attachment_name: "", attachment_data: "", access_pin: "", agendas: [{ title: "", description: "", is_evaluation: false }] });
-                }} style={{ flex: 1 }}>취소</button>
-                <button type="submit" className="btn btn-primary" style={{ flex: 1 }}>{isEditMode ? "수정사항 저장" : "회의 등록 및 의결 개시"}</button>
+                }} style={{ flex: 1, opacity: isSubmittingMeeting ? 0.6 : 1 }}>취소</button>
+
+                <button
+                  type="submit"
+                  className="btn btn-primary"
+                  disabled={isSubmittingMeeting}
+                  style={{
+                    flex: 1,
+                    opacity: isSubmittingMeeting ? 0.7 : 1,
+                    cursor: isSubmittingMeeting ? "not-allowed" : "pointer"
+                  }}
+                >
+                  {isSubmittingMeeting 
+                    ? (isEditMode ? "⏳ 수정사항 저장 중..." : "⏳ 회의 등록 및 의결 개시 중...") 
+                    : (isEditMode ? "수정사항 저장" : "회의 등록 및 의결 개시")}
+                </button>
               </div>
             </form>
           </div>
