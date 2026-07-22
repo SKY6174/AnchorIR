@@ -114,29 +114,42 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
       return;
     }
 
-    if (String(currentFileData).startsWith("data:")) {
-      try {
-        const parts = currentFileData.split(',');
-        const byteString = atob(parts[1]);
-        const mimeString = parts[0].split(':')[1].split(';')[0];
-        const ab = new ArrayBuffer(byteString.length);
-        const ia = new Uint8Array(ab);
-        for (let i = 0; i < byteString.length; i++) {
-          ia[i] = byteString.charCodeAt(i);
-        }
-        const blob = new Blob([ab], { type: mimeString });
-        const url = URL.createObjectURL(blob);
-        setCurrentBlobUrl(url);
+    const rawStr = String(currentFileData).trim();
 
-        return () => {
-          URL.revokeObjectURL(url);
-        };
-      } catch (e) {
-        console.error("❌ Blob 변환 실패:", e);
-        setCurrentBlobUrl(currentFileData);
+    // 1. http나 blob: URL이면 그대로 사용
+    if (rawStr.startsWith("http://") || rawStr.startsWith("https://") || rawStr.startsWith("blob:")) {
+      setCurrentBlobUrl(rawStr);
+      return;
+    }
+
+    // 2. data: 헤더 또는 Base64 데이터 Blob 안전 변환 (HTTP 414 URI Too Long 방지)
+    try {
+      let base64Data = rawStr;
+      let mimeType = "application/pdf";
+
+      if (rawStr.startsWith("data:")) {
+        const parts = rawStr.split(',');
+        mimeType = parts[0].split(':')[1]?.split(';')[0] || "application/pdf";
+        base64Data = parts[1] || "";
       }
-    } else {
-      setCurrentBlobUrl(currentFileData);
+
+      base64Data = base64Data.replace(/\s/g, "");
+      const byteString = atob(base64Data);
+      const ab = new ArrayBuffer(byteString.length);
+      const ia = new Uint8Array(ab);
+      for (let i = 0; i < byteString.length; i++) {
+        ia[i] = byteString.charCodeAt(i);
+      }
+      const blob = new Blob([ab], { type: mimeType });
+      const url = URL.createObjectURL(blob);
+      setCurrentBlobUrl(url);
+
+      return () => {
+        URL.revokeObjectURL(url);
+      };
+    } catch (e) {
+      console.error("❌ PDF Blob 변환 예외 (414 에러 방지 가드):", e);
+      setCurrentBlobUrl(null);
     }
   }, [currentFileData]);
 
@@ -1132,7 +1145,13 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
                   <>
                     <div style={{ fontSize: "0.85rem", fontWeight: "700", display: "flex", alignItems: "center", justifyContent: "space-between", background: "rgba(255,255,255,0.03)", padding: "0.4rem 0.75rem", borderRadius: "6px", border: "1px solid var(--border-color)" }}>
                       <span style={{ color: "var(--accent-color)", fontWeight: "bold", display: "flex", alignItems: "center", gap: "0.3rem" }}>
-                        📎 첨부 파일: {currentFileName}
+                        📎 첨부 파일: {
+                          currentFileName?.includes("|")
+                            ? currentFileName.split("|")[activeAgendaIndex || 0]?.trim()
+                            : currentFileName?.includes(",")
+                              ? currentFileName.split(",")[activeAgendaIndex || 0]?.trim()
+                              : currentFileName
+                        }
                       </span>
                     </div>
                     <div ref={viewerRef} style={{ width: "100%", height: "480px", border: "1px solid var(--border-color)", borderRadius: "8px", overflow: "hidden", background: "#fff" }}>
