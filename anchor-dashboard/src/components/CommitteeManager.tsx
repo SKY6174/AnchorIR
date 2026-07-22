@@ -828,23 +828,7 @@ export default function CommitteeManager({
   const fetchResponses = async (meetingId: number | string) => {
     let combinedResponses: any[] = [];
     
-    // 1. meeting_responses DB 테이블 수합
-    try {
-      const { data } = await supabase
-        .from("meeting_responses")
-        .select(`
-          id, meeting_id, member_id, member_name, attended, vote, opinion, encrypted_signature, signature, submitted_at,
-          committee_members ( name, type, org, dept )
-        `)
-        .eq("meeting_id", meetingId);
-      if (data && data.length > 0) {
-        combinedResponses = [...data];
-      }
-    } catch (err: any) {
-      console.warn("meeting_responses DB 조회 스킵:", err.message);
-    }
-
-    // 2. committee_meetings 테이블의 responses_data 수합
+    // 1. [1순위] committee_meetings 테이블의 responses_data 수합 (DB 실시간 수합 보장 메인 소스)
     try {
       const { data: meetingObj } = await supabase
         .from("committee_meetings")
@@ -853,8 +837,25 @@ export default function CommitteeManager({
         .maybeSingle();
 
       if (meetingObj?.responses_data && Array.isArray(meetingObj.responses_data)) {
-        meetingObj.responses_data.forEach(r => {
-          const rName = (r.member_name || r.name || "").trim();
+        combinedResponses = [...meetingObj.responses_data];
+      }
+    } catch (err: any) {
+      console.warn("committee_meetings responses_data 조회 스킵:", err.message);
+    }
+
+    // 2. [2순위] meeting_responses DB 하위 테이블 수합
+    try {
+      const { data } = await supabase
+        .from("meeting_responses")
+        .select(`
+          id, meeting_id, member_id, member_name, attended, vote, opinion, encrypted_signature, signature, submitted_at,
+          committee_members ( name, type, org, dept )
+        `)
+        .eq("meeting_id", meetingId);
+
+      if (data && data.length > 0) {
+        data.forEach(r => {
+          const rName = (r.member_name || (r.committee_members as any)?.name || "").trim();
           const rId = String(r.member_id || "").trim();
           const exists = combinedResponses.some(cr => {
             const crName = (cr.member_name || cr.name || cr.committee_members?.name || "").trim();
@@ -866,8 +867,8 @@ export default function CommitteeManager({
           }
         });
       }
-    } catch (err) {
-      console.warn("committee_meetings responses_data 조회 스킵:", err.message);
+    } catch (err: any) {
+      console.warn("meeting_responses DB 조회 스킵:", err.message);
     }
 
     // 3. 로컬 캐시 스토리지 수합

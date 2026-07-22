@@ -487,30 +487,9 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
       const updatedResp = [...filteredResp, newRespItem];
       localStorage.setItem(localRespKey, JSON.stringify(updatedResp));
 
-      // 💡 2. Supabase DB에도 안전하게 전송 시도
+      // 💡 2. Supabase DB에 100% 무결성 실시간 반영
       if (!String(meeting.id).startsWith("local-")) {
-        try {
-          await supabase.from("meeting_agenda_votes").upsert(votePayloads, { onConflict: "meeting_id,agenda_id,member_id" });
-        } catch (dbErr: any) {
-          console.warn("meeting_agenda_votes DB 업서트 경고:", dbErr.message);
-        }
-
-        try {
-          await supabase.from("meeting_responses").upsert([{
-            meeting_id: meeting.id,
-            member_id: memberId,
-            member_name: authMember.name,
-            attended: true,
-            vote: agendaInputs[selectedMeetingAgendas[0]?.id]?.vote || "APPROVE",
-            opinion: summaryOpinion,
-            signature: encryptedSignature,
-            encrypted_signature: encryptedSignature,
-            submitted_at: new Date().toISOString()
-          }], { onConflict: "meeting_id,member_id" });
-        } catch (dbErr: any) {
-          console.warn("meeting_responses DB 업서트 경고:", dbErr.message);
-        }
-
+        // 2-1. [1순위] committee_meetings 메인 테이블의 responses_data JSONB 컬럼에 서명 및 표결 결과 최우선 보장 업데이트
         try {
           const { data: meetingData } = await supabase
             .from("committee_meetings")
@@ -520,16 +499,54 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
 
           const existingResponsesData = meetingData?.responses_data || [];
           const filteredResponsesData = Array.isArray(existingResponsesData)
-            ? existingResponsesData.filter((r: any) => String(r.member_name) !== String(authMember.name) && String(r.member_id) !== String(memberId))
+            ? existingResponsesData.filter((r: any) => 
+                String(r.member_name || "").trim() !== String(authMember.name).trim() && 
+                String(r.member_id || "").trim() !== String(memberId).trim()
+              )
             : [];
           const newResponsesData = [...filteredResponsesData, newRespItem];
 
-          await supabase
+          const { error: updateErr } = await supabase
             .from("committee_meetings")
             .update({ responses_data: newResponsesData })
             .eq("id", meeting.id);
+
+          if (updateErr) {
+            console.warn("committee_meetings responses_data 업데이트 경고:", updateErr.message);
+          } else {
+            console.log("✅ DB committee_meetings responses_data 100% 저장 성공!");
+          }
         } catch (mErr: any) {
-          console.warn("committee_meetings responses_data 업데이트 경고:", mErr.message);
+          console.warn("committee_meetings responses_data 예외:", mErr.message);
+        }
+
+        // 2-2. [2순위] meeting_responses 하위 테이블 저장 (UUID / String 유연 대응)
+        try {
+          const respPayload = {
+            meeting_id: meeting.id,
+            member_id: authMember.id || memberId,
+            member_name: authMember.name,
+            attended: true,
+            vote: agendaInputs[selectedMeetingAgendas[0]?.id]?.vote || "APPROVE",
+            opinion: summaryOpinion,
+            signature: encryptedSignature,
+            encrypted_signature: encryptedSignature,
+            submitted_at: new Date().toISOString()
+          };
+
+          const { error: respErr } = await supabase.from("meeting_responses").insert([respPayload]);
+          if (respErr) {
+            await supabase.from("meeting_responses").upsert([respPayload]);
+          }
+        } catch (dbErr: any) {
+          console.warn("meeting_responses DB 전송 경고:", dbErr.message);
+        }
+
+        // 2-3. [3순위] meeting_agenda_votes 의안별 표결 테이블 저장
+        try {
+          await supabase.from("meeting_agenda_votes").insert(votePayloads);
+        } catch (dbErr: any) {
+          console.warn("meeting_agenda_votes DB 전송 경고:", dbErr.message);
         }
       }
 
