@@ -4789,10 +4789,11 @@ ${selectedMeetingAgendas.map((a, idx) => {
                             let fileName = file.name;
                             let fileDataUrl = "";
 
-                            // 💡 1순위: Supabase Storage meeting_docs 버킷에 파일 정식 업로드 (DB 용량 99% 절감 및 속도 극대화)
+                            // 💡 1순위: Supabase Storage meeting_docs 버킷에 안전한 ASCII 키로 업로드 (400 Bad Request 원천 방지)
                             try {
-                              const safeName = file.name.replace(/[^a-zA-Z0-9.\-_ㄱ-ㅎ가-힣]/g, "_");
-                              const storagePath = `${Date.now()}_${index}_${safeName}`;
+                              const rawExt = file.name.includes(".") ? file.name.split(".").pop().toLowerCase() : "pdf";
+                              const safeAscii = file.name.replace(/[^a-zA-Z0-9]/g, "_").slice(0, 20);
+                              const storagePath = `doc_${Date.now()}_${index}_${safeAscii}.${rawExt}`;
                               const { data: stData, error: stErr } = await supabase.storage
                                 .from("meeting_docs")
                                 .upload(storagePath, file, { upsert: true, contentType: "application/pdf" });
