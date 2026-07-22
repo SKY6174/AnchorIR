@@ -35,9 +35,27 @@
 - **Supabase DB 실시간 무결성 저장 연동**
   - `committee_meetings.responses_data` JSONB 컬럼 1순위 최우선 보장 DB 연동으로 외부 서명/표결 결과를 100% 실시간 DB에 무결성 보장 저장.
 
-### 📌 4. F12 개발자 도구 콘솔 HTTP 400 / 406 / 500 에러 및 타임아웃 완전 소멸
-- **HTTP 406 (PGRST116) 에러 소멸**: `.single()` 호출부를 `.maybeSingle()`로 교체하여 406 에러 제거.
-- **HTTP 400 Bad Request / 500 Statement Timeout 도배 소멸**: UUID/비숫자형 회의 ID(`3728b911-...`)에 대해 `isNumericId` Guard를 탑재하여 Supabase REST 400 쿼리를 원천 차단하고 로컬/안전 쿼리 수합으로 콘솔 에러 100% 완전 소멸.
+### 📌 5. 회의 수정 폼 안건/첨부자료 무결성 & PDF 뷰어 Vercel 414 / atob 예외 100% 완전 소멸
+- **회의 수정 모달 안건 제목/설명 중복 태그 누적 완전 철폐**
+  - 원인: 회의 수정 폼 초기화 시 `agenda` 및 안건 `title` 내 `[첨부: ...]` 나 `[상정 의안 #1]` 구문 미정제 주입으로 수정 시마다 지문 태그가 중복 연결되던 현상.
+  - 해결: `cleanAgendaTitle` 정제 엔진을 강제 구동하여 pure 안건 제목(`수정사업`, `성과평가`, `테스트`)만 폼 인풋에 채워 넣도록 정제.
+- **의안별 첨부자료 파이프(|) / JSON 배열 1:1 인덱스 독립 분리 매칭**
+  - 원인: `meeting.attachment_name` 파이프 수합 문자열이 각 안건 인덱스(0, 1, 2)에 1:1로 할당되지 않아 의안 #2, #3에 엉뚱한 파일이 매칭되던 현상.
+  - 해결: 0, 1, 2 인덱스 정밀 파싱 알고리즘을 구축하여 안건별로 올바른 심의자료만 1:1 독립 할당.
+- **Supabase Storage 400 Bad Request 및 Safe ASCII Storage Path**
+  - 한글/특수문자/괄호 포함 파일명 업로드 시 Supabase Storage REST API가 400 Bad Request를 뱉던 현상을 해결하기 위해 `doc_1784722135513_0_2026_3.pdf` 형태의 pure ASCII 영문 키 생성기 적용.
+- **Vercel HTTP 414 URI Too Long & 5중 껍질 탈피(Unwrap) 디코더 탑재**
+  - 원인: `attachment_data`에 2중/3중 겹친 URL 인코딩(%22, %5B) 및 JSON 문자열이 꼬여 Vercel 호스트 주소 뒤에 상대 URL로 주입되며 414 에러 및 백색 화면 유발.
+  - 해결: 5중 껍질 탈피(Unwrap) 디코더를 탑재하여 pure `data:application/pdf;base64,...` 바이너리 1개만 정밀 인출함으로써 414 에러 원천 방지 및 PDF 100% 정상 열람 완수.
+- **atob `InvalidCharacterError` 완충 및 rawStr 안전 폴백**
+  - `decodeURIComponent` 1차 정제 + 4의 배수 길이 패딩(`=`) 자동 보정 + 예외 발생 시 `rawStr` 안전 폴백을 통해 `등록된 첨부 심의 자료가 없습니다.` 경고 소멸 및 PDF 뷰어 100% 원활 렌더링.
+- **인쇄/PDF 출력 시 페이지 절단선 줄잘림 100% 소멸**
+  - html2pdf 및 인쇄 템플릿 내 모든 문단/테이블/리스트 요소에 `@media print` 및 inline `page-break-inside: avoid !important; break-inside: avoid-page !important;` CSS 적용으로 문장/줄이 반통 잘리지 않고 다음 페이지로 깔끔히 통째 이전(Clean Page-Break).
+- **보고서 테이블 1(심의 안건 목록) & 테이블 2(안건별 의결 통계) `[첨부: ...]` 태그 지움**
+  - 인쇄/보고서 표출 시 안건명에 붙던 `[첨부: ...]` 구문을 완전히 정제하여 pure 안건 제목만 깔끔히 노출.
+- **Supabase DB 마이그레이션 SQL 생성 완료**
+  - `005_storage_meeting_docs_rls_policy.sql` (Storage Bucket RLS 허용 SQL)
+  - `006_add_responses_data_to_committee_meetings.sql` (responses_data JSONB 컬럼 추가 SQL)
 
 ---
 

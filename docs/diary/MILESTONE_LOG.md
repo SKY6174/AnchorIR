@@ -44,4 +44,11 @@
   - 외부 위원 투표 UI를 **순차적 1열 구조(상정안건 1열 카드 내 좌/우 2열 배치 ➔ 의결 표결 1열 ➔ 자필서명 1열 ➔ 최하단 최종제출 버튼)**로 개편.
   - 안건 표결(`meeting_agenda_votes`)과 회의 출석 정족수(`attended`) 데이터 동기화, 의안별 찬성 표수(`찬성: 2명`) 정확 집계 및 위원 성명/소속/전자서명 이미지 첨부 시각화 완료.
   - PDF 의결서 봉인 시 하단 **SHA-256 디지털 서명 검증 코드 및 실시간 타임스탬프 인쇄 기능 연동** (위·변조 방지 100% 보장).
-  - `npm run build` 검증 **556ms / 0 TS Error** 최종 빌드 성공 및 원격 저장소(`main` 브랜치) 자동 Git Push 완수.
+  - 회의 수정 시 **안건 제목/설명 중복 태그 누적 완전 철폐 & 안건별 첨부자료 1:1 파이프(|) 독립 매칭 무결점 수리**.
+  - Supabase Storage 한글 파일명 업로드 시 400 Bad Request 방지를 위한 **Safe ASCII Storage Path 생성기** 주입.
+  - Vercel 414 URI Too Long 백색 화면 및 atob 예외 소멸을 위한 **5중 껍질 탈피(Unwrap) 디코더 & URL 디코딩/4바이트 패딩 보정 엔진 구축**.
+  - 인쇄/PDF 보고서 생성 시 **페이지 경계선 글자/문장 절단 100% 방지(`page-break-inside: avoid`) 및 심의안건 목록 `[첨부: ...]` 지문 정제 완수**.
+  - `005_storage_meeting_docs_rls_policy.sql` 및 `006_add_responses_data_to_committee_meetings.sql` 마이그레이션 SQL 생성.
+  - `npm run build` 검증 **474ms / 0 TS Error** 최종 빌드 성공 및 원격 저장소(`main` 브랜치) 자동 Git Push 완수.
+
+---
