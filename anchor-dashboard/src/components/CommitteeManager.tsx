@@ -473,25 +473,24 @@ export default function CommitteeManager({
 
     const isNumericId = !isNaN(Number(meetingId)) && String(meetingId).trim() !== "";
 
+    let newAgendas: any[] = [];
+    let newVotes: any[] = [];
+
     // 💡 로컬 회의(local-로 시작하는 ID) 또는 비숫자형 UUID 회의의 경우 로컬 스토리지 무손실 조회
     if (String(meetingId).startsWith("local-") || !isNumericId) {
-      const localAgendas = localStorage.getItem(`local_meeting_agendas_${meetingId}`);
-      setSelectedMeetingAgendas(localAgendas ? JSON.parse(localAgendas) : []);
+      try {
+        const localAgendas = localStorage.getItem(`local_meeting_agendas_${meetingId}`);
+        newAgendas = localAgendas ? JSON.parse(localAgendas) : [];
+      } catch (e) { newAgendas = []; }
 
-      const localVotes = localStorage.getItem(`local_meeting_agenda_votes_${meetingId}`);
-      setSelectedMeetingAgendaVotes(localVotes ? JSON.parse(localVotes) : []);
-      
-      // UUID 회의일 경우 Supabase DB도 try-catch로 안전 조회 시도
-      if (!isNumericId && !String(meetingId).startsWith("local-")) {
-        try {
-          const { data: agendas } = await supabase.from("meeting_agendas").select("*").eq("meeting_id", meetingId).order("sort_order", { ascending: true });
-          if (agendas && agendas.length > 0) setSelectedMeetingAgendas(agendas);
-          const { data: votes } = await supabase.from("meeting_agenda_votes").select("*").eq("meeting_id", meetingId);
-          if (votes && votes.length > 0) setSelectedMeetingAgendaVotes(votes);
-        } catch (e) {
-          // 콘솔 도배 방지 스킵
-        }
-      }
+      try {
+        const localVotes = localStorage.getItem(`local_meeting_agenda_votes_${meetingId}`);
+        newVotes = localVotes ? JSON.parse(localVotes) : [];
+      } catch (e) { newVotes = []; }
+
+      // 💡 깜빡임 방지: 기존 state와 새로 수합된 데이터의 JSON 비교 후 실제로 변경된 경우만 setState 실행
+      setSelectedMeetingAgendas(prev => (JSON.stringify(prev) !== JSON.stringify(newAgendas) ? newAgendas : prev));
+      setSelectedMeetingAgendaVotes(prev => (JSON.stringify(prev) !== JSON.stringify(newVotes) ? newVotes : prev));
       return;
     }
 
@@ -504,12 +503,12 @@ export default function CommitteeManager({
         .order("sort_order", { ascending: true });
 
       if (!agErr && agendas) {
-        setSelectedMeetingAgendas(agendas);
+        newAgendas = agendas;
         const cleanAgendas = agendas.map((a: any) => ({ ...a, attachment_data: null }));
         localStorage.setItem(`local_meeting_agendas_${meetingId}`, JSON.stringify(cleanAgendas));
       } else {
         const localAgendas = localStorage.getItem(`local_meeting_agendas_${meetingId}`);
-        setSelectedMeetingAgendas(localAgendas ? JSON.parse(localAgendas) : []);
+        newAgendas = localAgendas ? JSON.parse(localAgendas) : [];
       }
 
       // 2. 의안별 개별 투표 목록 안전 조회
@@ -519,20 +518,23 @@ export default function CommitteeManager({
         .eq("meeting_id", meetingId);
 
       if (!vtErr && votes) {
-        setSelectedMeetingAgendaVotes(votes);
+        newVotes = votes;
         localStorage.setItem(`local_meeting_agenda_votes_${meetingId}`, JSON.stringify(votes));
       } else {
         const localVotes = localStorage.getItem(`local_meeting_agenda_votes_${meetingId}`);
-        setSelectedMeetingAgendaVotes(localVotes ? JSON.parse(localVotes) : []);
+        newVotes = localVotes ? JSON.parse(localVotes) : [];
       }
     } catch (err: any) {
-      console.warn("의안/투표 DB 조회 스킵, 로컬 캐시 폴백:", err.message);
       const localAgendas = localStorage.getItem(`local_meeting_agendas_${meetingId}`);
-      setSelectedMeetingAgendas(localAgendas ? JSON.parse(localAgendas) : []);
+      newAgendas = localAgendas ? JSON.parse(localAgendas) : [];
 
       const localVotes = localStorage.getItem(`local_meeting_agenda_votes_${meetingId}`);
-      setSelectedMeetingAgendaVotes(localVotes ? JSON.parse(localVotes) : []);
+      newVotes = localVotes ? JSON.parse(localVotes) : [];
     }
+
+    // 💡 깜빡임 100% 방지: 이전 상태값과 데이터 비교 후 차이가 있을 때만 Re-render 유도!
+    setSelectedMeetingAgendas(prev => (JSON.stringify(prev) !== JSON.stringify(newAgendas) ? newAgendas : prev));
+    setSelectedMeetingAgendaVotes(prev => (JSON.stringify(prev) !== JSON.stringify(newVotes) ? newVotes : prev));
   };
 
   // 💡 [의안 개조] 위원 로그인 후 각 의안별 선택한 의결/의견 맵 상태 ({ [agendaId]: { vote, score, opinion } }) 초기화
@@ -921,25 +923,27 @@ export default function CommitteeManager({
 
     const isNumericId = !isNaN(Number(meetingId)) && String(meetingId).trim() !== "";
 
+    let targetResp: any[] = [];
+
     // 💡 로컬 회의 또는 UUID 회의의 경우 로컬 스토리지 무손실 조회
     if (String(meetingId).startsWith("local-") || !isNumericId) {
       try {
         const localData = localStorage.getItem(`local_meeting_responses_${meetingId}`);
         const parsed = localData ? JSON.parse(localData) : [];
         if (Array.isArray(parsed) && parsed.length > 0) {
-          setResponses(parsed);
+          targetResp = parsed;
         } else {
           // local_committee_meetings 내 responses_data 수합
           const localMeetings = localStorage.getItem("local_committee_meetings");
           if (localMeetings) {
             const found = JSON.parse(localMeetings).find((m: any) => String(m.id) === String(meetingId));
             if (found && Array.isArray(found.responses_data)) {
-              setResponses(found.responses_data);
+              targetResp = found.responses_data;
             }
           }
         }
       } catch (err) {
-        setResponses([]);
+        targetResp = [];
       }
 
       // UUID 회의일 경우 Supabase DB try-catch 안전 수합
@@ -947,12 +951,15 @@ export default function CommitteeManager({
         try {
           const { data: meetingObj } = await supabase.from("committee_meetings").select("responses_data").eq("id", meetingId).maybeSingle();
           if (meetingObj?.responses_data && Array.isArray(meetingObj.responses_data) && meetingObj.responses_data.length > 0) {
-            setResponses(meetingObj.responses_data);
+            targetResp = meetingObj.responses_data;
           }
         } catch (e) {
           // 콘솔 도배 방지 스킵
         }
       }
+
+      // 💡 깜빡임 100% 방지 Guard: 데이터가 실제 변경된 경우에만 setState 실행
+      setResponses(prev => (JSON.stringify(prev) !== JSON.stringify(targetResp) ? targetResp : prev));
       return;
     }
 
@@ -1084,7 +1091,8 @@ export default function CommitteeManager({
       console.warn("meeting_agenda_votes 기반 위원 수합 스킵:", err.message);
     }
 
-    setResponses(combinedResponses);
+    // 💡 깜빡임 100% 방지 Guard: 이전 상태값과 데이터 비교 후 차이가 있을 때만 Re-render 유도!
+    setResponses(prev => (JSON.stringify(prev) !== JSON.stringify(combinedResponses) ? combinedResponses : prev));
     localStorage.setItem(`local_meeting_responses_${meetingId}`, JSON.stringify(combinedResponses));
 
     // 내가 이미 제출했는지 검증
