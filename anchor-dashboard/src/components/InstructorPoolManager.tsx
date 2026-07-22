@@ -68,17 +68,37 @@ const decryptData = (ciphertext) => {
 };
 
 // 💡 [마스킹 헬퍼] 개인정보 가독성 제한 및 마스킹 처리
-const maskBirthDate = (birth) => {
-  if (!birth || birth.length < 10) return birth;
+const maskBirthDate = (birth?: string): string => {
+  if (!birth || birth.length < 10) return birth || "";
   // YYYY-MM-DD -> YYYY-MM-**
   return `${birth.substring(0, 8)}**`;
 };
 
-const maskAccountNumber = (account) => {
-  if (!account || account.length < 5) return account;
+const maskAccountNumber = (account?: string): string => {
+  if (!account || account.length < 5) return account || "";
   const len = account.length;
   // 뒤 5자리를 마스킹
   return `${account.substring(0, len - 5)}*****`;
+};
+
+// 회계연도에 해당하는 전체 학부(과) 및 전공 목록 자동 추출 헬퍼 함수
+export const getDepartmentListByYear = (yearStr: number | string = 2026): string[] => {
+  const numericYear = typeof yearStr === "number" ? yearStr : (parseInt(yearStr) || 2026);
+  const yearData = (academicYears as any)[numericYear];
+  if (!yearData || !yearData.departments) return [];
+  
+  const names: string[] = [];
+  yearData.departments.forEach((group: any) => {
+    if (group.subTeams) {
+      group.subTeams.forEach((team: any) => {
+        names.push(team.name);
+        if (team.majors) {
+          team.majors.forEach((major: any) => names.push(major.name));
+        }
+      });
+    }
+  });
+  return Array.from(new Set(names)).sort();
 };
 
 // 💡 [드롭다운 데이터 세트] 단위과제 - 프로그램 매핑 자료
@@ -123,14 +143,14 @@ export interface InstructorPoolManagerProps {
 }
 
 export default function InstructorPoolManager({ currentUser, currentRole }: InstructorPoolManagerProps) {
-  const [instructors, setInstructors] = useState([]);
-  const [selectedInstructor, setSelectedInstructor] = useState(null);
-  const [histories, setHistories] = useState([]); // 💡 변동 정보 이력 상태값으로 통합 관리
+  const [instructors, setInstructors] = useState<Instructor[]>([]);
+  const [selectedInstructor, setSelectedInstructor] = useState<Instructor | null>(null);
+  const [histories, setHistories] = useState<InstructorHistory[]>([]); // 💡 변동 정보 이력 상태값으로 통합 관리
   
   // 💡 서브서브탭 제어 상태 ('master': 교∙강사 마스터 대장, 'history': 교∙강사 활동이력)
-  const [activeSubTab, setActiveSubTab] = useState("master");
+  const [activeSubTab, setActiveSubTab] = useState<string>("master");
   // 💡 활동이력 등록 전용 모달 제어 상태
-  const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
+  const [isHistoryModalOpen, setIsHistoryModalOpen] = useState<boolean>(false);
   // 💡 좌측 교강사 검색용 텍스트 필터 상태
   const [searchTerm, setSearchTerm] = useState("");
   

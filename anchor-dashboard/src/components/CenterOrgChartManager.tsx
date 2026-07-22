@@ -15,7 +15,7 @@ export default function CenterOrgChartManager({
   currentUser
 }: CenterOrgChartManagerProps = {}) {
   // 사용자가 마우스를 올린 조직 노드의 ID를 저장하는 상태(State)입니다.
-  const [hoveredNode, setHoveredNode] = useState(null);
+  const [hoveredNode, setHoveredNode] = useState<string | null>(null);
 
   // 조직도의 각 노드(부서/기구)에 마우스를 올렸을 때 하단 정보창에 보여줄 상세 설명 데이터입니다.
   const nodeDetails = {

@@ -489,6 +489,27 @@ export const universityOrgData = {
   }
 };
 
+export interface OrgSubTeam {
+  name: string;
+  tel?: string;
+  loc?: string;
+  task?: string;
+  rise?: string;
+  isFaculty?: boolean;
+  majors?: { name: string }[];
+}
+
+export interface OrgDepartment {
+  name: string;
+  subTeams: OrgSubTeam[];
+}
+
+export interface OrgCategory {
+  title: string;
+  desc: string;
+  departments: OrgDepartment[];
+}
+
 export interface OrgChartManagerProps {
   darkMode?: boolean;
   selectedYear?: number;
@@ -502,31 +523,31 @@ export default function OrgChartManager({
   currentRole,
   currentUser
 }: OrgChartManagerProps = {}) {
-  const [selectedKey, setSelectedKey] = useState("university");
-  const [selectedYear, setSelectedYear] = useState(initialYear);
-  const [expandedDept, setExpandedDept] = useState(null);
-  const [selectedTeam, setSelectedTeam] = useState(null);
-  const [expandedFaculties, setExpandedFaculties] = useState({});
+  const [selectedKey, setSelectedKey] = useState<string>("university");
+  const [selectedYear, setSelectedYear] = useState<number>(initialYear);
+  const [expandedDept, setExpandedDept] = useState<number | null>(null);
+  const [selectedTeam, setSelectedTeam] = useState<OrgSubTeam | null>(null);
+  const [expandedFaculties, setExpandedFaculties] = useState<Record<string, boolean>>({});
 
   // 앵커수행 7대 조직 판별 헬퍼
-  const isAnchorExecutionDept = (name) => {
+  const isAnchorExecutionDept = (name: string): boolean => {
     const anchorDepts = ["사업운영팀", "ECC센터", "ICC센터", "RCC센터", "AID-X지원센터", "울산늘봄누리센터", "신산업특화센터"];
     return anchorDepts.includes(name);
   };
 
-  const currentCategory = selectedKey === "academic" 
-    ? academicYears[selectedYear] 
-    : (universityOrgData[selectedKey] || universityOrgData.university);
-  const listDepts = currentCategory?.departments || [];
+  const currentCategory: OrgCategory = selectedKey === "academic" 
+    ? (academicYears as any)[selectedYear] 
+    : ((universityOrgData as any)[selectedKey] || universityOrgData.university);
+  const listDepts: OrgDepartment[] = currentCategory?.departments || [];
 
-  const handleCategoryChange = (key) => {
+  const handleCategoryChange = (key: string) => {
     setSelectedKey(key);
     setExpandedDept(null);
     setSelectedTeam(null);
     setExpandedFaculties({});
   };
 
-  const toggleDept = (deptIndex) => {
+  const toggleDept = (deptIndex: number) => {
     if (expandedDept === deptIndex) {
       setExpandedDept(null);
     } else {
@@ -534,7 +555,7 @@ export default function OrgChartManager({
     }
   };
 
-  const toggleFaculty = (facultyName) => {
+  const toggleFaculty = (facultyName: string) => {
     setExpandedFaculties((prev) => ({
       ...prev,
       [facultyName]: !prev[facultyName]

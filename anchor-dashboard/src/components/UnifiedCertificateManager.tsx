@@ -62,7 +62,7 @@ const formatDateString = (dateStr) => {
   return "";
 };
 
-const getAcademicYear = (dateStr) => {
+const getAcademicYear = (dateStr?: any): number => {
   if (!dateStr) return new Date().getFullYear();
   const date = new Date(dateStr);
   const year = date.getFullYear();
@@ -70,21 +70,40 @@ const getAcademicYear = (dateStr) => {
   return month <= 2 ? year - 1 : year;
 };
 
-const getDynamicTeamName = (dateStr) => {
+const getDynamicTeamName = (dateStr?: any): string => {
   if (!dateStr) return "RISE사업단";
   const date = new Date(dateStr);
   const splitDate = new Date("2026-07-01");
   return date >= splitDate ? "앵커사업단" : "RISE사업단";
 };
 
+export interface CertificateItem {
+  id?: number | string;
+  doc_type: "award" | "certificate" | string;
+  issue_number: string;
+  issue_date: string;
+  recipient_name: string;
+  recipient_org?: string;
+  recipient_dept?: string;
+  recipient_birth?: string;
+  title: string;
+  award_category?: string;
+  unit_id: string;
+  program_name: string;
+  file_name?: string | null;
+  file_data?: string | null;
+  issuer_name?: string;
+  created_at?: string;
+}
+
 export interface UnifiedCertificateManagerProps {
   projects?: any[];
-  certificates?: any[];
+  certificates?: CertificateItem[];
   selectedYear?: number | string;
-  onAddCertificate?: (cert: any) => void;
-  onUpdateCertificate?: (cert: any) => void;
-  onDeleteCertificate?: (id: any) => void;
-  setCertificates?: React.Dispatch<React.SetStateAction<any[]>>;
+  onAddCertificate?: (cert: CertificateItem) => void;
+  onUpdateCertificate?: (cert: CertificateItem) => void;
+  onDeleteCertificate?: (id: number | string) => void;
+  setCertificates?: React.Dispatch<React.SetStateAction<CertificateItem[]>>;
   currentRole?: any;
   members?: any[];
   managerType?: "award" | "certificate" | "all";
@@ -104,9 +123,30 @@ export default function UnifiedCertificateManager({
   members = [],
   managerType = "all"
 }: UnifiedCertificateManagerProps) {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingId, setEditingId] = useState(null);
-  const fileInputRef = useRef(null);
+  // 1. 상태 변수 정의
+  const [activeTab, setActiveTab] = useState<string>(
+    managerType === "award" ? "award" : managerType === "certificate" ? "certificate" : "all"
+  );
+  
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [editingId, setEditingId] = useState<number | string | null>(null);
+
+  // 폼 입력 상태
+  const [inputDocType, setInputDocType] = useState<string>("certificate");
+  const [inputIssueNumber, setInputIssueNumber] = useState<string>("");
+  const [inputIssueDate, setInputIssueDate] = useState<string>("");
+  const [inputRecipientName, setInputRecipientName] = useState<string>("");
+  const [inputRecipientOrg, setInputRecipientOrg] = useState<string>("울산과학대학교");
+  const [inputRecipientDept, setInputRecipientDept] = useState<string>("");
+  const [inputRecipientBirth, setInputRecipientBirth] = useState<string>("");
+  const [inputTitle, setInputTitle] = useState<string>("");
+  const [inputAwardCategory, setInputAwardCategory] = useState<string>("-");
+  const [inputUnitId, setInputUnitId] = useState<string>("");
+  const [inputProgramName, setInputProgramName] = useState<string>("");
+  const [inputFileName, setInputFileName] = useState<string>("");
+  const [inputFileData, setInputFileData] = useState<string>("");
+  
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [filterYear, setFilterYear] = useState(() => selectedYear ? selectedYear.toString() : "all");
 
   // 💡 [연도 선택 동기화] 상단 탭에서 차년도가 변경되면 해당 차년도의 데이터만 기본 조회되도록 동기화합니다.

@@ -17,15 +17,15 @@ const STANDARD_BUDGET_CATEGORIES = [
 ];
 
 // 백만원 단위 포맷팅 헬퍼 함수 (소수점 첫째자리까지 표현)
-const formatToMillionWon = (value) => {
+const formatToMillionWon = (value?: number | null): string => {
   if (value === undefined || value === null || isNaN(value)) return "0.0";
   return (value / 1000000).toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
 };
 
 // 긴 비목명을 분리하기 위한 헬퍼 함수 (모바일에서는 축약 처리)
-const splitLabel = (val, isMobile) => {
+const splitLabel = (val: string, isMobile: boolean): string[] => {
   if (isMobile) {
-    const mobileMappings = {
+    const mobileMappings: Record<string, string[]> = {
       "교육∙연구 프로그램 개발∙운영비": ["교육프로그램"],
       "실험∙실습장비 및 기자재 구입∙운영비": ["실험실습장비"],
       "지역 연계∙협업 지원비": ["지역연계협업"],

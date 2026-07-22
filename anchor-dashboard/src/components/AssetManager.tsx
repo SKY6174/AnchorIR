@@ -3,6 +3,34 @@ import { supabase } from "../supabaseClient";
 import { Plus, Trash2, Edit2, Calendar, Clipboard, CheckCircle, AlertTriangle, Search, Home, Laptop, Check, Clock, TrendingUp, Upload, Download, X } from "lucide-react";
 import * as XLSX from "xlsx";
 
+export interface SpaceReservation {
+  id?: number | string;
+  space_name: string;
+  reserved_date: string;
+  start_time: string;
+  end_time: string;
+  dept: string;
+  reserver_name: string;
+  actual_user_name?: string;
+  purpose?: string;
+  status: string;
+  created_at?: string;
+}
+
+export interface Equipment {
+  id?: number | string;
+  name: string;
+  spec?: string;
+  dept_name?: string;
+  qty?: number;
+  status?: string;
+  price?: number;
+  acquired_date?: string;
+  location?: string;
+  mng_person?: string;
+  note?: string;
+}
+
 export interface AssetManagerProps {
   currentRole?: any;
   currentUser?: any;
@@ -17,14 +45,14 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
   const [loading, setLoading] = useState(false);
 
   // 승인권자 여부 판별 헬퍼 (심현미/김현수/송경영 등 관리자 롤 포함)
-  const isApprover = (role) => {
+  const isApprover = (role: any): boolean => {
     if (!role) return false;
-    const rid = role.id || "";
+    const rid = typeof role === "string" ? role : (role.id || role.role_key || "");
     return ["ADMIN", "G_DIRECTOR", "HQ_HEAD", "MANAGER"].includes(rid);
   };
 
   // 공간별 승인 권한 판별 헬퍼 (송경영, 김현수, 심현미 기본 포함 + 공간별 담당자)
-  const hasReservationApprovalPower = (spaceName) => {
+  const hasReservationApprovalPower = (spaceName: string): boolean => {
     if (!currentUser) return false;
     const userName = currentUser.name || "";
     

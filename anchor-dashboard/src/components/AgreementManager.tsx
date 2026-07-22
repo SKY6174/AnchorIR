@@ -13,14 +13,34 @@ const CENTERS_LIST = [
   "ECC센터", "ICC센터", "RCC센터", "AID-X지원센터", "울산늘봄누리센터", "신산업특화센터", "사업운영팀"
 ];
 
+export interface AgreementOrg {
+  name: string;
+  subject?: string;
+}
+
+export interface AgreementItem {
+  id?: number | string;
+  year?: number | string;
+  date: string;
+  center: string;
+  organizations: AgreementOrg[] | any;
+  subject_univ: string;
+  unit_id: string;
+  contents: string[];
+  file_name?: string | null;
+  file_data?: string | null;
+  agreement_type?: string | null;
+  created_at?: string;
+}
+
 export interface AgreementManagerProps {
   projects?: any[];
-  agreements?: any[];
+  agreements?: AgreementItem[];
   selectedYear?: number | string;
-  onAddAgreement?: (agreement: any) => void;
-  onUpdateAgreement?: (agreement: any) => void;
-  onDeleteAgreement?: (id: any) => void;
-  setAgreements?: React.Dispatch<React.SetStateAction<any[]>>;
+  onAddAgreement?: (agreement: AgreementItem) => void;
+  onUpdateAgreement?: (agreement: AgreementItem) => void;
+  onDeleteAgreement?: (id: number | string) => void;
+  setAgreements?: React.Dispatch<React.SetStateAction<AgreementItem[]>>;
   currentRole?: any;
   darkMode?: boolean;
   currentUser?: any;
@@ -40,34 +60,34 @@ export default function AgreementManager({
   const isLight = document.documentElement.classList.contains("light-mode");
 
   // 1. 기존 협약서 모달 및 입력 폼 상태
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingId, setEditingId] = useState(null);
-  const [inputDate, setInputDate] = useState("");
-  const [inputCenter, setInputCenter] = useState("ECC센터");
-  const [inputOrganizations, setInputOrganizations] = useState([{ name: "", subject: "" }]);
-  const [inputSubjectUniv, setInputSubjectUniv] = useState("단장");
-  const [univSubjectType, setUnivSubjectType] = useState("단장");
-  const [inputSubjectUnivDept, setInputSubjectUnivDept] = useState("");
-  const [inputSubjectUnivName, setInputSubjectUnivName] = useState("");
-  const [inputUnitId, setInputUnitId] = useState("");
-  const [inputContents, setInputContents] = useState([]);
-  const [inputFileName, setInputFileName] = useState("");
-  const [inputFileData, setInputFileData] = useState("");
-  const [inputAgreementType, setInputAgreementType] = useState("-");
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [editingId, setEditingId] = useState<number | string | null>(null);
+  const [inputDate, setInputDate] = useState<string>("");
+  const [inputCenter, setInputCenter] = useState<string>("ECC센터");
+  const [inputOrganizations, setInputOrganizations] = useState<AgreementOrg[]>([{ name: "", subject: "" }]);
+  const [inputSubjectUniv, setInputSubjectUniv] = useState<string>("단장");
+  const [univSubjectType, setUnivSubjectType] = useState<string>("단장");
+  const [inputSubjectUnivDept, setInputSubjectUnivDept] = useState<string>("");
+  const [inputSubjectUnivName, setInputSubjectUnivName] = useState<string>("");
+  const [inputUnitId, setInputUnitId] = useState<string>("");
+  const [inputContents, setInputContents] = useState<string[]>([]);
+  const [inputFileName, setInputFileName] = useState<string>("");
+  const [inputFileData, setInputFileData] = useState<string>("");
+  const [inputAgreementType, setInputAgreementType] = useState<string>("-");
 
   // 2. 사본 일괄 매핑 모달 상태 (이수증, 상장 관련 상태 삭제 후 협약서만 남김)
-  const [isAgreementBatchModalOpen, setIsAgreementBatchModalOpen] = useState(false);
-  const [batchAgreementResults, setBatchAgreementResults] = useState([]);
+  const [isAgreementBatchModalOpen, setIsAgreementBatchModalOpen] = useState<boolean>(false);
+  const [batchAgreementResults, setBatchAgreementResults] = useState<any[]>([]);
 
   // 스토리지 파일 대량 업로드 로딩 상태 관리
-  const [isUploading, setIsUploading] = useState(false);
-  const [uploadStatusText, setUploadStatusText] = useState("");
+  const [isUploading, setIsUploading] = useState<boolean>(false);
+  const [uploadStatusText, setUploadStatusText] = useState<string>("");
 
   // 단위과제 다중 선택 필터링 상태 추가
-  const [selectedUnits, setSelectedUnits] = useState([]);
+  const [selectedUnits, setSelectedUnits] = useState<string[]>([]);
 
   // 정렬 상태 관리 (협약서만 유지)
-  const [sortConfig, setSortConfig] = useState({ key: "date", direction: "asc" });
+  const [sortConfig, setSortConfig] = useState<{ key: string; direction: "asc" | "desc" }>({ key: "date", direction: "asc" });
 
   // 엑셀 다운로드 URL 상태
   const [excelDownloadUrl, setExcelDownloadUrl] = useState("");

@@ -19,6 +19,26 @@ const MONTHS_CONFIG = [
   { label: "27.2월", value: "2027-02" }
 ];
 
+export interface ExecutionRecord {
+  id?: number | string;
+  year?: number;
+  budget_type?: string;
+  month?: string;
+  unit_id?: string;
+  item_name?: string;
+  amount?: number;
+  fileName?: string;
+  uploadedAt?: string;
+  count?: number;
+  [key: string]: any;
+}
+
+export interface FileMeta {
+  fileName: string;
+  uploadedAt: string;
+  count: number;
+}
+
 export interface BudgetExecutionManagerProps {
   projects?: any[];
   currentRole?: any;
@@ -30,26 +50,26 @@ export interface BudgetExecutionManagerProps {
 
 export default function BudgetExecutionManager({ projects = [], currentRole, selectedYear: rawYear, supabase, darkMode = true }: BudgetExecutionManagerProps) {
   const selectedYear = Number(rawYear);
-  const [activeUploadTab, setActiveUploadTab] = useState("main"); // "main" (본예산 집행 등록) vs "carryover" (이월예산 집행 등록)
+  const [activeUploadTab, setActiveUploadTab] = useState<string>("main"); // "main" (본예산 집행 등록) vs "carryover" (이월예산 집행 등록)
   
   // 수집 및 저장된 실 정산 레코드 상태
-  const [executionRecords, setExecutionRecords] = useState([]);
+  const [executionRecords, setExecutionRecords] = useState<ExecutionRecord[]>([]);
   
   // 상세조회 모달 상태 관리 정의
-  const [detailModalOpen, setDetailModalOpen] = useState(false);
-  const [detailModalConfig, setDetailModalConfig] = useState({ monthLabel: "", budgetType: "", title: "" });
+  const [detailModalOpen, setDetailModalOpen] = useState<boolean>(false);
+  const [detailModalConfig, setDetailModalConfig] = useState<{ monthLabel: string; budgetType: string; title: string }>({ monthLabel: "", budgetType: "", title: "" });
   
   // 각 월별 업로드된 파일 정보 메타 데이터 (어떤 월에 어떤 파일이 몇건 올라갔는지 매핑 보관)
   // key 형태: `${year}_${budgetType}_${monthValue}`
-  const [uploadedFilesMeta, setUploadedFilesMeta] = useState({});
+  const [uploadedFilesMeta, setUploadedFilesMeta] = useState<Record<string, FileMeta>>({});
 
-  const [dragActive, setDragActive] = useState(null); // drag중인 month value 저장
-  const [toastMsg, setToastMsg] = useState("");
-  const [toastType, setToastType] = useState("success"); // "success" or "warning"
+  const [dragActive, setDragActive] = useState<string | null>(null); // drag중인 month value 저장
+  const [toastMsg, setToastMsg] = useState<string>("");
+  const [toastType, setToastType] = useState<"success" | "warning">("success"); // "success" or "warning"
   
   // 1) 조회 구분 및 단위과제 선택 상태 변수 정의
-  const [viewType, setViewType] = useState("total"); // "total" (사업전체) vs "unit" (단위과제별)
-  const [selectedUnit, setSelectedUnit] = useState("");
+  const [viewType, setViewType] = useState<string>("total"); // "total" (사업전체) vs "unit" (단위과제별)
+  const [selectedUnit, setSelectedUnit] = useState<string>("");
 
   // 2) 현재 선택된 연도에 따른 단위과제 리스트 정의
   const unitList = selectedYear === 1
