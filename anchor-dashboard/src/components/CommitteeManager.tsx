@@ -472,6 +472,8 @@ export default function CommitteeManager({
     if (!meetingId) return;
 
     const isNumericId = !isNaN(Number(meetingId)) && String(meetingId).trim() !== "";
+    const fullId = String(meetingId).trim();
+    const shortId = fullId.includes("-") ? fullId.split("-")[0] : fullId;
 
     let newAgendas: any[] = [];
     let newVotes: any[] = [];
@@ -479,17 +481,43 @@ export default function CommitteeManager({
     // 💡 로컬 회의(local-로 시작하는 ID) 또는 비숫자형 UUID 회의의 경우 로컬 스토리지 무손실 조회
     if (String(meetingId).startsWith("local-") || !isNumericId) {
       try {
-        const localAgendas = localStorage.getItem(`local_meeting_agendas_${meetingId}`);
-        newAgendas = localAgendas ? JSON.parse(localAgendas) : [];
+        const fullAgendas = localStorage.getItem(`local_meeting_agendas_${fullId}`);
+        const shortAgendas = localStorage.getItem(`local_meeting_agendas_${shortId}`);
+        newAgendas = fullAgendas ? JSON.parse(fullAgendas) : (shortAgendas ? JSON.parse(shortAgendas) : []);
       } catch (e) { newAgendas = []; }
 
+      // 💡 [Super Agenda Parser] 회의 요약 텍스트 및 selectedMeeting 개체에서 안건 무손실 자동 생성
+      if (!newAgendas || newAgendas.length === 0) {
+        if (selectedMeeting && Array.isArray(selectedMeeting.agendas) && selectedMeeting.agendas.length > 0) {
+          newAgendas = selectedMeeting.agendas;
+        } else if (selectedMeeting && selectedMeeting.agenda) {
+          const lines = String(selectedMeeting.agenda).split("\n").map(l => l.trim()).filter(l => l.length > 0);
+          newAgendas = lines.map((l, idx) => {
+            const cleanTitle = l.replace(/^\[안건\s*\d+\]\s*/, "").replace(/^\[의안\s*\d+\]\s*/, "").replace(/^\d+[\.\)]\s*/, "").trim();
+            return {
+              id: `ag-${fullId}-${idx + 1}`,
+              meeting_id: fullId,
+              title: cleanTitle || `제${idx + 1}호 안건`,
+              description: `[상정 의안 #${idx + 1}] ${cleanTitle || "안건 심의 및 의결"}`,
+              is_evaluation: false,
+              sort_order: idx + 1,
+              attachment_name: idx === 0 ? (selectedMeeting.attachment_name || null) : null,
+              attachment_data: idx === 0 ? (selectedMeeting.attachment_data || null) : null
+            };
+          });
+        }
+      }
+
       try {
-        const localVotes = localStorage.getItem(`local_meeting_agenda_votes_${meetingId}`);
-        newVotes = localVotes ? JSON.parse(localVotes) : [];
+        const fullVotes = localStorage.getItem(`local_meeting_agenda_votes_${fullId}`);
+        const shortVotes = localStorage.getItem(`local_meeting_agenda_votes_${shortId}`);
+        newVotes = fullVotes ? JSON.parse(fullVotes) : (shortVotes ? JSON.parse(shortVotes) : []);
       } catch (e) { newVotes = []; }
 
       // 💡 깜빡임 방지: 기존 state와 새로 수합된 데이터의 JSON 비교 후 실제로 변경된 경우만 setState 실행
-      setSelectedMeetingAgendas(prev => (JSON.stringify(prev) !== JSON.stringify(newAgendas) ? newAgendas : prev));
+      if (newAgendas && newAgendas.length > 0) {
+        setSelectedMeetingAgendas(newAgendas);
+      }
       setSelectedMeetingAgendaVotes(prev => (JSON.stringify(prev) !== JSON.stringify(newVotes) ? newVotes : prev));
       return;
     }

@@ -211,18 +211,37 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
       }
     }
 
-    // 💡 3. 기본 의안마저 비어있는 경우 최소 1개 기본 의안(의안 1) 자동 생성하여 의결 표결 폼 100% 보장
+    // 💡 3. 기본 의안이 비어있는 경우 회의 agenda 텍스트 파싱하여 100% 무손실 복원
     if (finalAgendas.length === 0) {
-      finalAgendas = [
-        {
-          id: `ag-default-1`,
-          meeting_id: mId,
-          title: "제1호 상정 안건 심의 및 의결의 건",
-          description: "상정된 회의 안건에 대해 심의하고 의결을 진행합니다.",
-          is_evaluation: false,
-          sort_order: 1
-        }
-      ];
+      if (mtg && mtg.agenda) {
+        const lines = String(mtg.agenda).split("\n").map(l => l.trim()).filter(l => l.length > 0);
+        finalAgendas = lines.map((l, idx) => {
+          const cleanTitle = l.replace(/^\[안건\s*\d+\]\s*/, "").replace(/^\[의안\s*\d+\]\s*/, "").replace(/^\d+[\.\)]\s*/, "").trim();
+          return {
+            id: `ag-${mId}-${idx + 1}`,
+            meeting_id: mId,
+            title: cleanTitle || `제${idx + 1}호 안건`,
+            description: `[상정 의안 #${idx + 1}] ${cleanTitle || "안건 심의 및 의결"}`,
+            is_evaluation: false,
+            sort_order: idx + 1,
+            attachment_name: idx === 0 ? (mtg.attachment_name || null) : null,
+            attachment_data: idx === 0 ? (mtg.attachment_data || null) : null
+          };
+        });
+      } else {
+        finalAgendas = [
+          {
+            id: `ag-default-1`,
+            meeting_id: mId,
+            title: "제1호 상정 안건 심의 및 의결의 건",
+            description: "상정된 회의 안건에 대해 심의하고 의결을 진행합니다.",
+            is_evaluation: false,
+            sort_order: 1,
+            attachment_name: mtg?.attachment_name || null,
+            attachment_data: mtg?.attachment_data || null
+          }
+        ];
+      }
     }
 
     setSelectedMeetingAgendas(finalAgendas);
