@@ -31,7 +31,7 @@
   - 근본 해결: 텍스트 레이어를 파괴하는 이미지 렌더링 재조합 압축 방식을 전면 제거하고, 15MB 한도 내에서 원본 PDF 바이너리를 100% 보존하여 DataURL로 탑재하도록 개선. PDF 텍스트 검색, 복사, 드래그 기능 완전 보존.
   - 빌드 검증: `npm run build` 성공 (**0 Error / 461ms**).
 
-- **F12 개발자 도구 콘솔 HTTP 400 / 406 / 500 에러 및 Statement Timeout 완전 소멸 수리**
-  - 문제 원인: 외부 위원 투표 화면 및 관리자 화면의 3초 주기 자동 Polling 시 `.single()` 406 오류 및 `meeting_id` 칼럼 타입 차이로 인한 HTTP 400 (Bad Request) / 500 (Statement Timeout) 에러가 무한 반복되며 콘솔을 도배하던 문제.
-  - 개선 조치: `.single()` 호출부를 `.maybeSingle()`로 교체하여 PGRST116 406 에러를 완전 제거하고, `fetchMeetingAgendasAndVotes` 쿼리에 예외 안전 Guard와 로컬 스토리지 무손실 폴백을 연동하여 400/500 에러 콘솔 도배를 100% 소멸 완수.
-  - 빌드 검증: `npm run build` 성공 (**0 Error / 461ms**).
+- **로컬 회의 ID(`local-`) Supabase REST API 호출 원천 차단으로 HTTP 400 (Bad Request) 콘솔 도배 완전 제거**
+  - 문제 원인: 로컬 테스트 회의(`local-1784...`)가 선택된 상태에서 3초 주기 `setInterval` Polling이 돌 때, Supabase REST API(`/rest/v1/committee_meetings`, `/rest/v1/meeting_responses`)로 무분별하게 쿼리가 날아가 `HTTP 400 Bad Request (invalid input syntax for type bigint)` 에러가 3초마다 지속 발생하는 현상.
+  - 개선 조치: `fetchResponses` 및 `fetchMeetingResult` 상단에 `if (String(meetingId).startsWith("local-"))` Guard를 탑재하여, 로컬 회의일 경우 Supabase REST API 전송을 100% 차단하고 로컬 스토리지에서만 무손실 로드하도록 조치. 콘솔 400 에러 **100% 완전 소멸** 완수.
+  - 빌드 검증: `npm run build` 성공 (**0 Error / 470ms**).

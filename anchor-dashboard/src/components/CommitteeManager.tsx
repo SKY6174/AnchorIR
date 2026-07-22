@@ -617,6 +617,7 @@ export default function CommitteeManager({
   }, [selectedMeeting]);
 
   const fetchMeetingResult = async (meetingId: number | string) => {
+    if (!meetingId || String(meetingId).startsWith("local-")) return;
     try {
       const { data, error } = await supabase
         .from("meeting_results")
@@ -848,6 +849,20 @@ export default function CommitteeManager({
   };
 
   const fetchResponses = async (meetingId: number | string) => {
+    if (!meetingId) return;
+
+    // 💡 로컬 회의(local-로 시작하는 ID)는 Supabase REST 400 에러를 원천 차단하고 로컬 스토리지에서만 조회
+    if (String(meetingId).startsWith("local-")) {
+      try {
+        const localData = localStorage.getItem(`local_meeting_responses_${meetingId}`);
+        const parsed = localData ? JSON.parse(localData) : [];
+        setResponses(Array.isArray(parsed) ? parsed : []);
+      } catch (err) {
+        setResponses([]);
+      }
+      return;
+    }
+
     let combinedResponses: any[] = [];
     
     // 1. [1순위] committee_meetings 테이블의 responses_data 수합 (DB 실시간 수합 보장 메인 소스)
