@@ -526,7 +526,7 @@ export default function CommitteeManager({
       // 1. 의안 목록 안전 조회
       const { data: agendas, error: agErr } = await supabase
         .from("meeting_agendas")
-        .select("*")
+        .select("id, meeting_id, title, description, is_evaluation, sort_order, attachment_name")
         .eq("meeting_id", meetingId)
         .order("sort_order", { ascending: true });
 
@@ -1819,7 +1819,7 @@ export default function CommitteeManager({
       } else {
         const { data: dbAgendas, error } = await supabase
           .from("meeting_agendas")
-          .select("*")
+          .select("id, meeting_id, title, description, is_evaluation, sort_order, attachment_name")
           .eq("meeting_id", meeting.id)
           .order("sort_order", { ascending: true });
 
@@ -2579,7 +2579,7 @@ ${selectedMeetingAgendas.map((a, idx) => {
           const [agendasRes, votesRes, responsesRes] = await Promise.all([
             supabase
               .from("meeting_agendas")
-              .select("*")
+              .select("id, meeting_id, title, description, is_evaluation, sort_order, attachment_name")
               .eq("meeting_id", rep.meeting_id)
               .order("sort_order", { ascending: true }),
             supabase
