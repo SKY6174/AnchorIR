@@ -1908,9 +1908,10 @@ export default function CommitteeManager({
 
     // 하위 호환 및 DB non-null 제약 해소를 위해 각 안건별 제목/평가여부/첨부파일명 보존 텍스트 생성
     const summaryAgendaText = meetingForm.agendas.map((a, idx) => {
+      const cleanT = a.title.replace(/^\[안건\s*\d+\]\s*/gi, "").replace(/^\[의안\s*\d+\]\s*/gi, "").replace(/\(5점척도\)/gi, "").replace(/\[첨부:.*?\]/gi, "").trim();
       const attachTag = a.attachment_name ? ` [첨부: ${a.attachment_name.trim()}]` : "";
       const evalTag = a.is_evaluation ? " (5점척도)" : "";
-      return `[안건 ${idx + 1}] ${a.title.trim()}${evalTag}${attachTag}`;
+      return `[안건 ${idx + 1}] ${cleanT}${evalTag}${attachTag}`;
     }).join("\n");
 
     // 💡 모든 안건의 첨부파일명 목록을 순서(0, 1, 2) 그대로 파이프( | )로 수합하여 1:1 위치 매칭 영구 기록
@@ -3484,6 +3485,14 @@ ${selectedMeetingAgendas.map((a, idx) => {
 
                           // 💡 개별 안건 첨부파일명 인출 (대표 파일명이 파이프 | 또는 콤마 , 로 묶인 경우 해당 idx에 1:1 정밀 매칭)
                           let agName = ag.attachment_name;
+                          if (agName && (agName.includes("|") || agName.includes(","))) {
+                            const parts = agName.includes("|")
+                              ? agName.split("|").map(p => p.trim())
+                              : agName.split(",").map(p => p.trim());
+                            if (parts[idx] && parts[idx].length > 0) {
+                              agName = parts[idx];
+                            }
+                          }
                           if (!agName && selectedMeeting.attachment_name) {
                             const rawStr = String(selectedMeeting.attachment_name);
                             const parts = rawStr.includes("|")
@@ -3675,10 +3684,11 @@ ${selectedMeetingAgendas.map((a, idx) => {
                       <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
                         {selectedMeetingAgendas.map((agenda, aIdx) => {
                           const stats = getAgendaVoteStats(agenda.id, agenda.is_evaluation);
+                          const cleanAgendaTitle = String(agenda.title || "").replace(/^\[안건\s*\d+\]\s*/gi, "").replace(/^\[의안\s*\d+\]\s*/gi, "").replace(/\(5점척도\)/gi, "").replace(/\[첨부:.*?\]/gi, "").trim();
                           return (
                             <div key={agenda.id} style={{ background: "rgba(120, 120, 120, 0.08)", borderRadius: "6px", padding: "0.6rem 0.75rem", border: "1px solid var(--border-color)" }}>
                               <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.8rem", color: "var(--text-primary)", marginBottom: "0.4rem", fontWeight: "700" }}>
-                                <span>{agenda.title}</span>
+                                <span>{cleanAgendaTitle}</span>
                                 {agenda.is_evaluation ? (
                                   <span style={{ color: "var(--accent-color)" }}>평균: {stats.avg}점 / 5.00</span>
                                 ) : (
