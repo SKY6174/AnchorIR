@@ -1247,8 +1247,8 @@ export default function CommitteeManager({
         role: m.type === "위원장" ? "CHAIRMAN" : m.type === "간사" ? "SECRETARY" : "MEMBER"
       }));
       setMyMemberships(mapped);
-    } catch (err) {
-      console.error("내 소속 정보 조회 에러:", err.message);
+    } catch (err: any) {
+      console.error("내 소속 정보 조회 에러:", err?.message || err);
     }
   };
 
@@ -1259,7 +1259,7 @@ export default function CommitteeManager({
   //    - 1차: pdf-lib 무손실 개체 구조 압축 시도 (2MB 이하 성공 시 원본 바이너리 반환)
   //    - 2차: 2MB 초과 시 스마트 고해상도 캔버스 최적화 엔진(CMap + getTextContent + 80ms Font Painting Delay + Landscape 자동감지)으로
   //           대용량(5~20MB) 문서를 텍스트 파괴 없이 1.2MB ~ 1.7MB 이하로 시원하게 감축 압축합니다.
-  const compressPdfIfNeeded = async (file) => {
+  const compressPdfIfNeeded = async (file: any) => {
     if (!file) return null;
 
     // 1) 확장자 검사: PDF 파일만 허용
@@ -1293,7 +1293,7 @@ export default function CommitteeManager({
 
     try {
       // 3-1. pdf-lib CDN 로드 및 1차 무손실 스트림 압축 시도
-      const PDFLib = await new Promise((resolve, reject) => {
+      const PDFLib: any = await new Promise((resolve, reject) => {
         if ((window as any).PDFLib) return resolve((window as any).PDFLib);
         const script = document.createElement("script");
         script.src = "https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js";
@@ -1321,7 +1321,7 @@ export default function CommitteeManager({
       }
 
       // 3-2. 1차 시도 후에도 2MB 초과 시: 텍스트 보존 스마트 고화질 캔버스 압축 엔진 가동
-      const pdfjsLib = await new Promise((resolve, reject) => {
+      const pdfjsLib: any = await new Promise((resolve, reject) => {
         if ((window as any).pdfjsLib) return resolve((window as any).pdfjsLib);
         const script = document.createElement("script");
         script.src = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js";
@@ -1333,7 +1333,7 @@ export default function CommitteeManager({
         document.head.appendChild(script);
       });
 
-      const html2pdf = await new Promise((resolve, reject) => {
+      const html2pdf: any = await new Promise((resolve, reject) => {
         if ((window as any).html2pdf) return resolve((window as any).html2pdf);
         const script = document.createElement("script");
         script.src = "https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js";
@@ -1435,7 +1435,7 @@ export default function CommitteeManager({
         originalSize: file.size,
         compressedSize: finalBlob.size
       };
-    } catch (err) {
+    } catch (err: any) {
       console.warn("스마트 PDF 압축 실패, 원본 바이너리로 폴백:", err);
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -1453,7 +1453,7 @@ export default function CommitteeManager({
   };
 
   // 4. 데이터 조작 C.R.U.D 핸들러
-  const handleCreateCommittee = async (e) => {
+  const handleCreateCommittee = async (e: any) => {
     e.preventDefault();
     if (!committeeForm.name) {
       alert("위원회 명칭을 입력해 주세요.");
@@ -1477,12 +1477,12 @@ export default function CommitteeManager({
       if (data && data.length > 0) {
         setSelectedCommittee(data[0]);
       }
-    } catch (err) {
-      alert("위원회 개설 실패: " + err.message);
+    } catch (err: any) {
+      alert("위원회 개설 실패: " + (err?.message || err));
     }
   };
 
-  const handleDeleteCommittee = async (id) => {
+  const handleDeleteCommittee = async (id: any) => {
     if (!window.confirm("위원회를 삭제하시겠습니까? 연결된 위원 매핑과 회의록이 영구 소실됩니다.")) return;
     try {
       const { error } = await supabase
@@ -1493,12 +1493,12 @@ export default function CommitteeManager({
       alert("위원회가 제거되었습니다.");
       setSelectedCommittee(null);
       await fetchCommittees();
-    } catch (err) {
-      alert("위원회 삭제 실패: " + err.message);
+    } catch (err: any) {
+      alert("위원회 삭제 실패: " + (err?.message || err));
     }
   };
 
-  const handleAddMember = async (e) => {
+  const handleAddMember = async (e: any) => {
     e.preventDefault();
     if (!memberForm.name) {
       alert("위원 이름을 입력해 주세요.");
@@ -4723,7 +4723,7 @@ ${selectedMeetingAgendas.map((a, idx) => {
                             // 💡 1순위: Supabase Storage meeting_docs 버킷에 파일 정식 업로드 (DB 용량 99% 절감 및 속도 극대화)
                             try {
                               const safeName = file.name.replace(/[^a-zA-Z0-9.\-_ㄱ-ㅎ가-힣]/g, "_");
-                              const storagePath = `agendas/${Date.now()}_${index}_${safeName}`;
+                              const storagePath = `${Date.now()}_${index}_${safeName}`;
                               const { data: stData, error: stErr } = await supabase.storage
                                 .from("meeting_docs")
                                 .upload(storagePath, file, { upsert: true, contentType: "application/pdf" });
