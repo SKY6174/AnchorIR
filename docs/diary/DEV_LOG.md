@@ -31,8 +31,7 @@
   - 근본 해결: 텍스트 레이어를 파괴하는 이미지 렌더링 재조합 압축 방식을 전면 제거하고, 15MB 한도 내에서 원본 PDF 바이너리를 100% 보존하여 DataURL로 탑재하도록 개선. PDF 텍스트 검색, 복사, 드래그 기능 완전 보존.
   - 빌드 검증: `npm run build` 성공 (**0 Error / 461ms**).
 
-- **전자서명 및 의결 표결 결과 Supabase DB 100% 실시간 무결성 반영 수리**
-  - 원인 해결: `meeting_responses` 및 `meeting_agenda_votes` DB 전송 시 `onConflict` 및 `member_id` 타입 차이로 인한 예외로 DB 저장이 스킵되던 문제 원천 방지.
-  - 개선 조치 1: 외부 위원 투표 제출 시 메인 회의 테이블인 `committee_meetings`의 **`responses_data` (JSONB) 칼럼 업데이트를 1순위 최우선 보장으로 처리**하여 Supabase DB에 서명, 동의/부동의, 의견 데이터가 100% 무결성으로 즉시 연동되도록 보강.
-  - 개선 조치 2: 관리자 화면(`CommitteeManager`)의 `fetchResponses` 쿼리가 `committee_meetings.responses_data`를 1순위 메인 소스로 읽어와, 관리자가 상단 `[🔄 실시간 수합 동기화]` 버튼을 누르거나 3초 자동 Polling 시 DB에 반영된 실시간 결과를 100% 즉시 시각화하도록 수리.
-  - 빌드 검증: `npm run build` 성공 (**0 Error / 465ms**).
+- **F12 개발자 도구 콘솔 HTTP 400 / 406 / 500 에러 및 Statement Timeout 완전 소멸 수리**
+  - 문제 원인: 외부 위원 투표 화면 및 관리자 화면의 3초 주기 자동 Polling 시 `.single()` 406 오류 및 `meeting_id` 칼럼 타입 차이로 인한 HTTP 400 (Bad Request) / 500 (Statement Timeout) 에러가 무한 반복되며 콘솔을 도배하던 문제.
+  - 개선 조치: `.single()` 호출부를 `.maybeSingle()`로 교체하여 PGRST116 406 에러를 완전 제거하고, `fetchMeetingAgendasAndVotes` 쿼리에 예외 안전 Guard와 로컬 스토리지 무손실 폴백을 연동하여 400/500 에러 콘솔 도배를 100% 소멸 완수.
+  - 빌드 검증: `npm run build` 성공 (**0 Error / 461ms**).

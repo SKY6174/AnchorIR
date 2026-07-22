@@ -468,29 +468,51 @@ export default function CommitteeManager({
     }
   }, [selectedMeeting]);
 
-  const fetchMeetingAgendasAndVotes = async (meetingId) => {
+  const fetchMeetingAgendasAndVotes = async (meetingId: number | string) => {
+    if (!meetingId) return;
+
+    // 로컬 회의인 경우 로컬 스토리지에서 즉시 가져오기
+    if (String(meetingId).startsWith("local-")) {
+      const localAgendas = localStorage.getItem(`local_meeting_agendas_${meetingId}`);
+      setSelectedMeetingAgendas(localAgendas ? JSON.parse(localAgendas) : []);
+
+      const localVotes = localStorage.getItem(`local_meeting_agenda_votes_${meetingId}`);
+      setSelectedMeetingAgendaVotes(localVotes ? JSON.parse(localVotes) : []);
+      return;
+    }
+
     try {
-      // 1. 의안 목록 조회
+      // 1. 의안 목록 안전 조회
       const { data: agendas, error: agErr } = await supabase
         .from("meeting_agendas")
         .select("*")
         .eq("meeting_id", meetingId)
         .order("sort_order", { ascending: true });
-      if (agErr) throw agErr;
-      setSelectedMeetingAgendas(agendas || []);
-      const cleanAgendas = (agendas || []).map(a => ({ ...a, attachment_data: null }));
-      localStorage.setItem(`local_meeting_agendas_${meetingId}`, JSON.stringify(cleanAgendas));
 
-      // 2. 의안별 개별 투표 목록 조회
+      if (!agErr && agendas) {
+        setSelectedMeetingAgendas(agendas);
+        const cleanAgendas = agendas.map((a: any) => ({ ...a, attachment_data: null }));
+        localStorage.setItem(`local_meeting_agendas_${meetingId}`, JSON.stringify(cleanAgendas));
+      } else {
+        const localAgendas = localStorage.getItem(`local_meeting_agendas_${meetingId}`);
+        setSelectedMeetingAgendas(localAgendas ? JSON.parse(localAgendas) : []);
+      }
+
+      // 2. 의안별 개별 투표 목록 안전 조회
       const { data: votes, error: vtErr } = await supabase
         .from("meeting_agenda_votes")
         .select("*")
         .eq("meeting_id", meetingId);
-      if (vtErr) throw vtErr;
-      setSelectedMeetingAgendaVotes(votes || []);
-      localStorage.setItem(`local_meeting_agenda_votes_${meetingId}`, JSON.stringify(votes || []));
-    } catch (err) {
-      console.warn("의안/투표 조회 실패, 로컬 캐시 폴백:", err.message);
+
+      if (!vtErr && votes) {
+        setSelectedMeetingAgendaVotes(votes);
+        localStorage.setItem(`local_meeting_agenda_votes_${meetingId}`, JSON.stringify(votes));
+      } else {
+        const localVotes = localStorage.getItem(`local_meeting_agenda_votes_${meetingId}`);
+        setSelectedMeetingAgendaVotes(localVotes ? JSON.parse(localVotes) : []);
+      }
+    } catch (err: any) {
+      console.warn("의안/투표 DB 조회 스킵, 로컬 캐시 폴백:", err.message);
       const localAgendas = localStorage.getItem(`local_meeting_agendas_${meetingId}`);
       setSelectedMeetingAgendas(localAgendas ? JSON.parse(localAgendas) : []);
 

@@ -126,7 +126,7 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
         .select("*")
         .eq("meeting_id", mId)
         .eq("member_id", memberId)
-        .single();
+        .maybeSingle();
 
       if (data && data.submitted_at) {
         setHasSubmitted(true);
@@ -218,7 +218,7 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
           .from("committee_meetings")
           .select("*")
           .eq("id", targetMeetingId)
-          .single();
+          .maybeSingle();
 
         if (error) throw error;
         if (!data) throw new Error("회의 정보를 찾을 수 없습니다.");
@@ -275,7 +275,7 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
           .from("meeting_agendas")
           .select("attachment_data")
           .eq("id", activeAgendaId)
-          .single();
+          .maybeSingle();
 
         if (error) throw error;
         setActiveAttachmentData(data?.attachment_data || null);
