@@ -2742,18 +2742,18 @@ ${selectedMeetingAgendas.map((a, idx) => {
             return `<h5 style="font-size: 13px; font-weight: bold; color: #1e3a8a; margin-top: 0.8rem; margin-bottom: 0.3rem;">${trimmed.replace(/^####\s*/, "")}</h5>`;
           }
           if (trimmed.startsWith("###")) {
-            return `<h4 style="font-size: 14px; font-weight: bold; color: #1e3a8a; margin-top: 1rem; margin-bottom: 0.4rem; border-bottom: 1px dashed #cbd5e1; padding-bottom: 3px;">${trimmed.replace(/^###\s*/, "")}</h4>`;
+            return `<h4 style="font-size: 14px; font-weight: bold; color: #1e3a8a; margin-top: 1rem; margin-bottom: 0.4rem; border-bottom: 1px dashed #cbd5e1; padding-bottom: 3px; page-break-inside: avoid; break-inside: avoid; page-break-after: avoid; break-after: avoid;">${trimmed.replace(/^###\s*/, "")}</h4>`;
           }
           if (trimmed.startsWith("##")) {
-            return `<h3 style="font-size: 15px; font-weight: bold; color: #111827; margin-top: 1.2rem; margin-bottom: 0.5rem;">${trimmed.replace(/^##\s*/, "")}</h3>`;
+            return `<h3 style="font-size: 15px; font-weight: bold; color: #111827; margin-top: 1.2rem; margin-bottom: 0.5rem; page-break-inside: avoid; break-inside: avoid; page-break-after: avoid; break-after: avoid;">${trimmed.replace(/^##\s*/, "")}</h3>`;
           }
           if (trimmed.startsWith("-") || trimmed.startsWith("*")) {
-            return `<li style="margin-left: 1.2rem; margin-bottom: 0.25rem; list-style-type: disc; color: #1f2937;">${trimmed.replace(/^[-*]\s*/, "")}</li>`;
+            return `<li style="margin-left: 1.2rem; margin-bottom: 0.25rem; list-style-type: disc; color: #1f2937; page-break-inside: avoid; break-inside: avoid;">${trimmed.replace(/^[-*]\s*/, "")}</li>`;
           }
           if (/^\d+\.\s/.test(trimmed)) {
-            return `<div style="margin-left: 0.2rem; margin-bottom: 0.35rem; color: #1f2937;">${trimmed}</div>`;
+            return `<div style="margin-left: 0.2rem; margin-bottom: 0.35rem; color: #1f2937; page-break-inside: avoid; break-inside: avoid;">${trimmed}</div>`;
           }
-          return `<p style="margin-bottom: 0.4rem; line-height: 1.6; color: #1f2937;">${trimmed}</p>`;
+          return `<p style="margin-bottom: 0.4rem; line-height: 1.6; color: #1f2937; page-break-inside: avoid; break-inside: avoid;">${trimmed}</p>`;
         }).join("\n");
       };
 
@@ -2771,10 +2771,26 @@ ${selectedMeetingAgendas.map((a, idx) => {
       const publishDate = rep.published_at ? new Date(rep.published_at) : new Date();
       const publishDateStr = `${publishDate.getFullYear()}. ${publishDate.getMonth() + 1}. ${publishDate.getDate()}.`;
 
-      // 💡 [레이아웃 누락 가드] 최상위 A4 스케일 컨테이너 태그를 추가하여 PDF/HTML 렌더링에 일관된 인쇄 포맷 제공
+      // 💡 [레이아웃 누락 가드] 최상위 A4 스케일 컨테이너 태그 및 인쇄 절단 방지 Global CSS 주입
       let htmlContent = `
+        <style>
+          @media print {
+            tr, td, th, p, li, h1, h2, h3, h4, div, section, article {
+              page-break-inside: avoid !important;
+              break-inside: avoid-page !important;
+            }
+            h1, h2, h3, h4 {
+              page-break-after: avoid !important;
+              break-after: avoid !important;
+            }
+          }
+          tr, td, th, p, li, h1, h2, h3, h4 {
+            page-break-inside: avoid;
+            break-inside: avoid;
+          }
+        </style>
         <div style="width: 100%; background: #ffffff; color: #000000; font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif; box-sizing: border-box; text-align: left; padding: 10mm 5mm;">
-          <div style="border: 2px solid #000; padding: 1.5rem; margin-bottom: 2rem;">
+          <div style="border: 2px solid #000; padding: 1.5rem; margin-bottom: 2rem; page-break-inside: avoid; break-inside: avoid;">
           <h1 style="text-align: center; font-size: 24px; font-weight: 900; letter-spacing: 2px; margin-bottom: 1rem; color: #000;">위원회  의결  보고서</h1>
           <table style="width: 100%; border-collapse: collapse; margin-top: 1rem; font-size: 13px; color: #000;">
             <tr>
