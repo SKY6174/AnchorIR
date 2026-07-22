@@ -3363,7 +3363,14 @@ ${selectedMeetingAgendas.map((a, idx) => {
                   <div style={{ marginTop: "1rem", padding: "0.75rem", background: "rgba(120, 120, 120, 0.08)", borderRadius: "6px", border: "1px solid var(--border-color)" }}>
                     <strong style={{ fontSize: "0.85rem", color: "var(--accent-color)", display: "block", marginBottom: "0.25rem" }}>회의 안건 요지</strong>
                     <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)", whiteSpace: "pre-line", lineHeight: "1.5" }}>
-                      {String(selectedMeeting.agenda || "").replace(/\(5점척도\)/gi, "").replace(/\[첨부:.*?\]/gi, "").trim()}
+                      {String(selectedMeeting.agenda || "")
+                        .replace(/\(5점척도\)/gi, "")
+                        .replace(/\[첨부:.*?\]/gi, "")
+                        .replace(/\[RISE사업.*?\]/gi, "")
+                        .replace(/\b[\w\-_ㄱ-ㅎ가-힣]+\.(pdf|hwp|hwpx|docx|doc)\b/gi, "")
+                        .replace(/\.pdf/gi, "")
+                        .replace(/\.hwp/gi, "")
+                        .trim()}
                     </p>
                   </div>
 

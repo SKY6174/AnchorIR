@@ -30,6 +30,29 @@ const MOCK_PLANNING_MEMBERS = [
   { committee_id: "planning", type: "위원", name: "서화지", org: "울산과학대학교", dept: "사회복지학과", rank: "교수", location: "교내", note: "", sort_order: 16 }
 ];
 
+// 💡 [안건 제목 완벽 정제 헬퍼]: 파일 확장자(.pdf, .hwp 등), [RISE사업...], (5점척도) 지문 완전 제거
+const cleanAgendaTitle = (raw: string) => {
+  if (!raw) return "";
+  let str = String(raw)
+    .replace(/^\[안건\s*\d+\]\s*/gi, "")
+    .replace(/^\[의안\s*\d+\]\s*/gi, "")
+    .replace(/\(5점척도\)/gi, "")
+    .replace(/\[첨부:.*?\]/gi, "")
+    .replace(/\[RISE사업.*?\]/gi, "")
+    .replace(/\[.*?\]/g, "")
+    .replace(/\b[\w\-_ㄱ-ㅎ가-힣]+\.(pdf|hwp|hwpx|docx|doc|xlsx|xls|pptx|ppt)\b/gi, "")
+    .replace(/20\d{6}-.*?\.pdf/gi, "")
+    .replace(/\.pdf$/gi, "")
+    .replace(/\.hwp$/gi, "")
+    .trim();
+
+  if (!str || str.length < 2) {
+    const parts = String(raw).split(/\.(pdf|hwp|hwpx|docx|doc)/i);
+    str = parts[0].replace(/^\[.*?\]/g, "").replace(/^\[안건\s*\d+\]\s*/gi, "").trim();
+  }
+  return str || raw;
+};
+
 export interface CommitteeExternalVoteProps {
   /** 회의 ID (옵션) */
   meetingId?: string;
@@ -70,9 +93,9 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
   const [currentBlobUrl, setCurrentBlobUrl] = useState<string | null>(null);
 
   const activeAgenda = selectedMeetingAgendas.find(a => String(a.id) === String(activeAgendaId));
-  const isFallbackFile = !activeAgenda?.attachment_name && !!meeting?.attachment_name;
-  const currentFileName = activeAgenda?.attachment_name || meeting?.attachment_name || null;
-  const currentFileData = activeAttachmentData || (isFallbackFile ? meeting?.attachment_data : null);
+  const isFirstAgenda = selectedMeetingAgendas.length > 0 && String(selectedMeetingAgendas[0].id) === String(activeAgendaId);
+  const currentFileName = activeAgenda?.attachment_name || (isFirstAgenda ? meeting?.attachment_name : null) || null;
+  const currentFileData = activeAttachmentData || (isFirstAgenda ? meeting?.attachment_data : null);
 
   useEffect(() => {
     if (!currentFileData) {
@@ -895,7 +918,7 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
                   >
                     {selectedMeetingAgendas.map((agenda, index) => (
                       <option key={agenda.id} value={agenda.id}>
-                        의안 #{index + 1}: {String(agenda.title || "").replace(/\(5점척도\)/gi, "").replace(/\[첨부:.*?\]/gi, "").trim()}
+                        의안 #{index + 1}: {cleanAgendaTitle(agenda.title)}
                       </option>
                     ))}
                   </select>
@@ -907,11 +930,11 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
                       선택된 안건 상세
                     </span>
                     <h4 style={{ fontSize: "1.1rem", fontWeight: "800", margin: "0.3rem 0 0.5rem 0" }}>
-                      {String(activeAgenda.title || "").replace(/\(5점척도\)/gi, "").replace(/\[첨부:.*?\]/gi, "").trim()}
+                      {cleanAgendaTitle(activeAgenda.title)}
                     </h4>
                     {activeAgenda.description ? (
                       <p style={{ fontSize: "0.88rem", color: "var(--text-secondary)", lineHeight: "1.6", whiteSpace: "pre-wrap", margin: 0 }}>
-                        {String(activeAgenda.description || "").replace(/\(5점척도\)/gi, "").replace(/\[첨부:.*?\]/gi, "").trim()}
+                        {cleanAgendaTitle(activeAgenda.description)}
                       </p>
                     ) : (
                       <p style={{ fontSize: "0.82rem", color: "var(--text-secondary)", fontStyle: "italic", margin: 0 }}>
@@ -992,7 +1015,7 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
                   >
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.75rem" }}>
                       <span style={{ fontWeight: "800", fontSize: "1rem", color: isCurrentActive ? "var(--accent-color)" : "var(--text-primary)" }}>
-                        의안 #{index + 1}: {String(agenda.title || "").replace(/\(5점척도\)/gi, "").replace(/\[첨부:.*?\]/gi, "").trim()}
+                        의안 #{index + 1}: {cleanAgendaTitle(agenda.title)}
                       </span>
                       {isCurrentActive && (
                         <span style={{ fontSize: "0.7rem", padding: "0.15rem 0.4rem", borderRadius: "4px", background: "var(--accent-color)", color: "#fff", fontWeight: "700" }}>
@@ -1104,37 +1127,6 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
                         >
                           기권
                         </button>
-                      </div>
-                    )}
-
-                    {agenda.is_evaluation && (
-                      <div style={{ marginBottom: "0.85rem" }}>
-                        <label style={{ fontSize: "0.78rem", fontWeight: "700", color: "var(--text-secondary)", display: "block", marginBottom: "0.3rem" }}>평가 점수 (5점 만점)</label>
-                        <div style={{ display: "flex", gap: "0.4rem" }}>
-                          {[1, 2, 3, 4, 5].map(scoreVal => (
-                            <button
-                              key={scoreVal}
-                              type="button"
-                              onClick={() => setAgendaInputs({
-                                ...agendaInputs,
-                                [agenda.id]: { ...currentInp, score: scoreVal }
-                              })}
-                              style={{
-                                flex: 1,
-                                padding: "0.45rem",
-                                fontSize: "0.85rem",
-                                borderRadius: "6px",
-                                border: "1px solid var(--border-color)",
-                                background: currentInp.score === scoreVal ? "var(--accent-color)" : "transparent",
-                                color: currentInp.score === scoreVal ? "#fff" : "var(--text-primary)",
-                                fontWeight: "700",
-                                cursor: "pointer"
-                              }}
-                            >
-                              {scoreVal}점
-                            </button>
-                          ))}
-                        </div>
                       </div>
                     )}
 
