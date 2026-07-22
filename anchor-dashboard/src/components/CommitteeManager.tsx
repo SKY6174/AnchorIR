@@ -2651,19 +2651,6 @@ ${selectedMeetingAgendas.map((a, idx) => {
           <div style="font-size: 16px; font-weight: 900; letter-spacing: 1px;">울산과학대학교 앵커사업단</div>
         </div>
 
-        {/* 💡 [디지털 서명 검증 코드 & 무결성 타임스탬프 봉인 하단 인쇄 필드] */}
-        <div style="margin-top: 3.5rem; text-align: center; font-size: 11px; color: #334155; border: 1.5px solid #0284c7; padding: 14px; border-radius: 8px; background: #f0f9ff; page-break-inside: avoid; break-inside: avoid;">
-          <div style="font-size: 13px; font-weight: 800; color: #0369a1; margin-bottom: 0.35rem;">
-            🛡️ 울산과학대학교 앵커사업단 공동인증 디지털 서명 적용 필함
-          </div>
-          <div style="font-size: 11.5px; font-weight: 800; color: #047857; font-family: 'Courier New', monospace; background: #e0f2fe; padding: 5px 10px; border-radius: 5px; display: inline-block; margin-bottom: 0.4rem; border: 1px solid #bae6fd; letter-spacing: 0.5px;">
-            [디지털 서명 검증 코드: ${sealHash} (${sealTimestampStr})]
-          </div>
-          <div style="font-size: 10.5px; color: #475569; line-height: 1.5;">
-            본 문서는 울산과학대학교 앵커사업단 디지털 서명키(Ulsan College Anchor Portal CA / SHA-256)를 활용하여 암호학적으로 봉인되었습니다.<br/>
-            서명 제출 시각 및 고유 검증 코드를 통해 문서의 위·변조 방지 및 의결 무결성이 100% 보장됨을 공식 증명합니다.
-          </div>
-        </div>
       `;
 
       // 파일명 명명 규칙
