@@ -182,6 +182,7 @@ export interface CommitteeAgenda {
 }
 
 export interface CommitteeAgendaVote {
+  vote: string;
   id?: number | string;
   agenda_id?: number | string;
   member_name?: string;
@@ -193,6 +194,7 @@ export interface CommitteeAgendaVote {
 }
 
 export interface CommitteeMeeting {
+  agendas: any;
   id?: number | string;
   committee_id?: string;
   title: string;
@@ -281,7 +283,7 @@ export default function CommitteeManager({
   }); // "agency"(사업단) 또는 "center"(센터별)
 
   // 💡 [전자서명 CryptoJS 복호화 헬퍼 함수] (요구사항 4 반영)
-  const decryptSignature = (encSig) => {
+  const decryptSignature = (encSig: string | CryptoJS.lib.CipherParams) => {
     if (!encSig) return null;
     if (encSig.startsWith("data:image")) return encSig;
     try {
@@ -821,7 +823,7 @@ export default function CommitteeManager({
 
       if (!error && data && data.length > 0) {
         loadedMeetings = data;
-        const cleanMeetings = data.map(m => ({ ...m, attachment_data: null }));
+        const cleanMeetings = data.map((m: any) => ({ ...m, attachment_data: null }));
         localStorage.setItem(`local_committee_meetings_${committeeId}`, JSON.stringify(cleanMeetings));
       }
     } catch (err: any) {
@@ -1883,7 +1885,7 @@ export default function CommitteeManager({
     setIsMeetingModalOpen(true);
   };
 
-  const handleCreateMeeting = async (e) => {
+  const handleCreateMeeting = async (e: { preventDefault: () => void; }) => {
     e.preventDefault();
     if (isSubmittingMeeting) return;
 
@@ -2680,7 +2682,7 @@ ${selectedMeetingAgendas.map((a, idx) => {
       if (responses && responses.length > 0 && selectedCommittee?.members) {
         responses = responses.map(r => {
           if (!r.committee_members && r.member_id) {
-            const matched = selectedCommittee.members.find(m => m.id === r.member_id);
+            const matched = selectedCommittee.members.find((m: { id: any; }) => m.id === r.member_id);
             if (matched) return { ...r, committee_members: matched };
           }
           return r;

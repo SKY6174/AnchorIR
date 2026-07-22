@@ -33,13 +33,13 @@ const BANK_FORMATS = {
 };
 
 // 💡 [암호화 헬퍼] 평문을 안전하게 AES 암호화
-const encryptData = (text) => {
+const encryptData = (text: string) => {
   if (!text) return "";
   return CryptoJS.AES.encrypt(text.trim(), SECRET_KEY).toString();
 };
 
 // 💡 [복호화 헬퍼] 암호문을 복호화하여 평문 반환
-const decryptData = (ciphertext) => {
+const decryptData = (ciphertext: string) => {
   if (!ciphertext) return "";
   const trimmed = ciphertext.trim();
   
@@ -233,7 +233,7 @@ export default function InstructorPoolManager({ currentUser, currentRole }: Inst
   }, []);
 
   // 2. 특정 교∙강사 상세 이력 조회 (변동 정보 테이블 `instructor_histories` 조회)
-  const handleSelectInstructor = async (ins) => {
+  const handleSelectInstructor = async (ins: any) => {
     setSelectedInstructor(ins);
     setIsDetailOpen(true);
     
@@ -247,8 +247,8 @@ export default function InstructorPoolManager({ currentUser, currentRole }: Inst
 
       if (historyErr) throw historyErr;
       setHistories(historyData || []);
-    } catch (err) {
-      console.error("상세 이력 조회 실패:", err.message);
+    } catch (err: any) {
+      console.error("상세 이력 조회 실패:", err?.message || err);
     }
   };
 
@@ -265,7 +265,7 @@ export default function InstructorPoolManager({ currentUser, currentRole }: Inst
     });
   };
 
-  const handleEditInstructorClick = (ins) => {
+  const handleEditInstructorClick = (ins: any) => {
     setEditingInstructor(ins);
     setNewForm({
       name: ins.name,
@@ -277,7 +277,7 @@ export default function InstructorPoolManager({ currentUser, currentRole }: Inst
     setIsAddModalOpen(true);
   };
 
-  const handleAddInstructor = async (e) => {
+  const handleAddInstructor = async (e: any) => {
     e.preventDefault();
     if (!newForm.name || !newForm.birth_date || !newForm.bank_name || !newForm.account_number) {
       alert("모든 인적사항 항목을 채워주세요.");

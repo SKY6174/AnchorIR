@@ -243,8 +243,8 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
     // 💡 3. 기본 의안이 비어있는 경우 회의 agenda 텍스트 파싱하여 100% 무손실 복원 (각 안건별 [첨부: 파일명] 100% 추출)
     if (finalAgendas.length === 0) {
       if (targetMtg && targetMtg.agenda) {
-        const lines = String(targetMtg.agenda).split("\n").map(l => l.trim()).filter(l => l.length > 0);
-        finalAgendas = lines.map((l, idx) => {
+        const lines = String(targetMtg.agenda).split("\n").map((l: string) => l.trim()).filter((l: string) => l.length > 0);
+        finalAgendas = lines.map((l: string, idx: number) => {
           const isEval = l.includes("5점") || l.includes("성과") || l.includes("평가") || l.includes("심의");
           const attachMatch = l.match(/\[첨부:\s*(.*?)\]/i);
           const parsedAttachName = attachMatch ? attachMatch[1].trim() : null;
@@ -280,7 +280,7 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
         if (localAgendasStr) localCache = JSON.parse(localAgendasStr);
       } catch (e) { }
 
-      finalAgendas = finalAgendas.map((ag, idx) => {
+      finalAgendas = finalAgendas.map((ag: any, idx: number) => {
         const isEval = ag.is_evaluation || ag.title?.includes("성과") || ag.title?.includes("평가") || ag.title?.includes("5점");
         const cleaned = ag.title ? ag.title.replace(/^\[안건\s*\d+\]\s*/gi, "").replace(/^\[의안\s*\d+\]\s*/gi, "").replace(/\(5점척도\)/gi, "").replace(/\[첨부:.*?\]/gi, "").trim() : ag.title;
 
@@ -325,8 +325,12 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
         if (!attachData) {
           if (attachName && globalMap[attachName.trim()]) {
             attachData = globalMap[attachName.trim()];
-          } else if (targetMtg?.attachment_data) {
-            attachData = targetMtg.attachment_data;
+          } else if (targetMtg?.attachment_data && idx === 0) {
+            // 💡 1번 안건이고 대표 파일명이 일치하거나 콤마로 다중 보관된 경우에만 대표 데이터 할당
+            const mName = String(targetMtg.attachment_name || "");
+            if (!attachName || mName.includes(attachName.trim())) {
+              attachData = targetMtg.attachment_data;
+            }
           }
         }
 
