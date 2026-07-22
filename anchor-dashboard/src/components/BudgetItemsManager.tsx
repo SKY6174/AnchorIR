@@ -73,7 +73,16 @@ const CustomizedAxisTick = (props) => {
   );
 };
 
-export default function BudgetItemsManager({ projects, currentRole, onUpdateBudgetDetails, selectedYear }) {
+export interface BudgetItemsManagerProps {
+  projects?: any[];
+  currentRole?: any;
+  onUpdateBudgetDetails?: (unitId: string, budgets: any) => void;
+  selectedYear?: number | string;
+  darkMode?: boolean;
+  currentUser?: any;
+}
+
+export default function BudgetItemsManager({ projects, currentRole, onUpdateBudgetDetails, selectedYear }: BudgetItemsManagerProps) {
   const [selectedUnitId, setSelectedUnitId] = useState("A1가");
   const [selectedDeptName, setSelectedDeptName] = useState("all");
   const [editedBudgets, setEditedBudgets] = useState({}); // {budgetName: {budget_main: '', budget_carry: ''}}
