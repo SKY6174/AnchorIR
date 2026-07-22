@@ -4776,8 +4776,13 @@ ${selectedMeetingAgendas.map((a, idx) => {
                           style={{ flex: 1, fontSize: "0.68rem", color: "var(--text-secondary)", background: "rgba(255,255,255,0.02)", border: "1px solid var(--border-color)", padding: "0.15rem 0.3rem", borderRadius: "4px" }}
                         />
                         {agenda.attachment_name && (
-                          <div style={{ display: "flex", alignItems: "center", gap: "0.2rem", fontSize: "0.68rem", color: "var(--success-color)", whiteSpace: "nowrap" }}>
+                          <div style={{ display: "flex", alignItems: "center", gap: "0.3rem", fontSize: "0.68rem", color: "var(--success-color)", whiteSpace: "nowrap" }}>
                             <span>📎 {agenda.attachment_name.length > 15 ? agenda.attachment_name.substring(0, 15) + "..." : agenda.attachment_name}</span>
+                            {agenda.attachment_data?.startsWith("http") && (
+                              <span style={{ fontSize: "0.62rem", background: "rgba(16, 185, 129, 0.15)", color: "#10b981", border: "1px solid rgba(16, 185, 129, 0.3)", padding: "0.05rem 0.3rem", borderRadius: "4px", fontWeight: "bold" }}>
+                                ☁️ Cloud Storage
+                              </span>
+                            )}
                             <button
                               type="button"
                               onClick={() => {
