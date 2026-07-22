@@ -9,17 +9,17 @@ export interface SurveyResponderProps {
 }
 
 export default function SurveyResponder({}: SurveyResponderProps = {}) {
-  const [surveyId, setSurveyId] = useState(null);
-  const [survey, setSurvey] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [errorMsg, setErrorMsg] = useState(null);
+  const [surveyId, setSurveyId] = useState<string | null>(null);
+  const [survey, setSurvey] = useState<any | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   // 라디오 폼 입력 상태
-  const [responderName, setResponderName] = useState("");
-  const [scores, setScores] = useState([5, 5, 5, 5, 5]);
-  const [comment, setComment] = useState("");
-  const [isSubmitted, setIsSubmitted] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
+  const [responderName, setResponderName] = useState<string>("");
+  const [scores, setScores] = useState<number[]>([5, 5, 5, 5, 5]);
+  const [comment, setComment] = useState<string>("");
+  const [isSubmitted, setIsSubmitted] = useState<boolean>(false);
+  const [submitting, setSubmitting] = useState<boolean>(false);
 
   // URL에서 만족도조사 ID (/sv/ID) 파싱 및 DB 정보 획득
   useEffect(() => {
@@ -37,7 +37,7 @@ export default function SurveyResponder({}: SurveyResponderProps = {}) {
     fetchSurveyDetails(id);
   }, []);
 
-  const fetchSurveyDetails = async (id) => {
+  const fetchSurveyDetails = async (id: string) => {
     setIsLoading(true);
     try {
       const { data, error } = await supabase

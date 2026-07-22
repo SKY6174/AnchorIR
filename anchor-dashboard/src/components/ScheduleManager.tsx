@@ -11,7 +11,7 @@ import * as XLSX from "xlsx";
 pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdn.jsdelivr.net/npm/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.mjs`;
 
 // 💡 [디자인 가드] 위원회 ID별 고유 Lucide 아이콘 리턴 (특색있는 디스플레이 구현)
-const getCommitteeIcon = (id) => {
+const getCommitteeIcon = (id: string): React.JSX.Element => {
   switch (id) {
     case "total": return <Award size={15} />;
     case "planning": return <Layers size={15} />;
@@ -23,14 +23,14 @@ const getCommitteeIcon = (id) => {
 };
 
 // 💡 [임기 날짜 가드] YYYY.MM.DD 포맷을 YYYY-MM-DD 로 변환 (캘린더 input 용)
-const dotToDashDate = (dotDate) => {
+const dotToDashDate = (dotDate?: string): string => {
   if (!dotDate) return "";
   const cleaned = dotDate.trim().replace(/\./g, "-");
   return cleaned.endsWith("-") ? cleaned.slice(0, -1) : cleaned;
 };
 
 // 💡 [임기 날짜 가드] YYYY-MM-DD 포맷을 YYYY.MM.DD. 로 변환 (DB 저장/화면 표출용)
-const dashToDotDate = (dashDate) => {
+const dashToDotDate = (dashDate?: string): string => {
   if (!dashDate) return "";
   const parts = dashDate.split("-");
   if (parts.length !== 3) return dashDate;

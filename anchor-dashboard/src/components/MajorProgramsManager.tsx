@@ -406,6 +406,18 @@ const majorProgramsData = {
   }
 };
 
+export interface MajorProgram {
+  id: string;
+  name: string;
+  desc?: string;
+  [key: string]: any;
+}
+
+export interface MajorUnitData {
+  label: string;
+  programs: MajorProgram[];
+}
+
 export interface MajorProgramsManagerProps {
   selectedYear?: number | string;
   darkMode?: boolean;
@@ -413,17 +425,17 @@ export interface MajorProgramsManagerProps {
   currentRole?: any;
 }
 
-export default function MajorProgramsManager({ selectedYear }: MajorProgramsManagerProps) {
+export default function MajorProgramsManager({ selectedYear = 2 }: MajorProgramsManagerProps) {
   // 현재 연도에 해당하는 단위과제 목록 추출
-  const yearData = majorProgramsData[selectedYear] || {};
+  const yearData: Record<string, MajorUnitData> = (majorProgramsData as any)[selectedYear] || {};
   const unitKeys = Object.keys(yearData);
 
   // 현재 선택된 단위과제 상태 (로컬스토리지 복원 지원)
-  const [selectedUnit, setSelectedUnit] = useState(() => {
+  const [selectedUnit, setSelectedUnit] = useState<string>(() => {
     return localStorage.getItem("anchor_selected_unit") || "";
   });
   // 현재 선택된 프로그램 상태 (로컬스토리지 복원 지원)
-  const [selectedProg, setSelectedProg] = useState(() => {
+  const [selectedProg, setSelectedProg] = useState<MajorProgram | null>(() => {
     const saved = localStorage.getItem("anchor_selected_prog");
     if (saved) {
       try {

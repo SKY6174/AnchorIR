@@ -5,7 +5,7 @@ import { supabase } from "../supabaseClient";
 import CryptoJS from "crypto-js";
 
 // 비밀번호 SHA-256 해시 암호화 헬퍼 함수 (단방향)
-const hashPassword = (password) => {
+const hashPassword = (password?: string): string => {
   if (!password) return "";
   return CryptoJS.SHA256(password).toString();
 };
@@ -19,13 +19,13 @@ export interface AuthManagerProps {
 }
 
 export default function AuthManager({ onLoginSuccess, members = [] }: AuthManagerProps) {
-  const [userId, setUserId] = useState("");
-  const [userPw, setUserPw] = useState("");
-  const [errorMsg, setErrorMsg] = useState("");
-  const [successMsg, setSuccessMsg] = useState("");
+  const [userId, setUserId] = useState<string>("");
+  const [userPw, setUserPw] = useState<string>("");
+  const [errorMsg, setErrorMsg] = useState<string>("");
+  const [successMsg, setSuccessMsg] = useState<string>("");
 
   // 로그인 핸들러 (Supabase Auth 연동 및 주소록 기반 자동 회원가입 설계)
-  const handleLogin = async (e) => {
+  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setErrorMsg("");
     setSuccessMsg("");

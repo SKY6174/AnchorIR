@@ -64,19 +64,43 @@ const defaultSurveys = [
   }
 ];
 
-export interface SatisfactionManagerProps {
-  selectedYear?: number | string;
-  darkMode?: boolean;
-  currentUser?: any;
-  currentRole?: any;
+export interface SurveyResponse {
+  id: number | string;
+  responder: string;
+  scores: number[];
+  comment?: string;
+  date?: string;
 }
 
-export default function SatisfactionManager({ selectedYear }: SatisfactionManagerProps) {
-  const [surveys, setSurveys] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+export interface SatisfactionSurvey {
+  id: string;
+  title: string;
+  purpose?: string;
+  startDate?: string;
+  endDate?: string;
+  target?: string;
+  department?: string;
+  status?: string;
+  googleSheetUrl?: string;
+  questions: string[];
+  responses: SurveyResponse[];
+  aiReport?: any;
+  created_at?: string;
+}
 
-  const [activeSurveyTab, setActiveSurveyTab] = useState("list"); // "list" | "create" | "detail"
-  const [selectedSurveyId, setSelectedSurveyId] = useState(null);
+export interface SatisfactionManagerProps {
+  currentRole?: any;
+  currentUser?: any;
+  selectedYear?: number | string;
+  darkMode?: boolean;
+}
+
+export default function SatisfactionManager({ currentRole, currentUser, selectedYear, darkMode }: SatisfactionManagerProps = {}) {
+  const [surveys, setSurveys] = useState<SatisfactionSurvey[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+
+  const [activeSurveyTab, setActiveSurveyTab] = useState<string>("list"); // "list" | "create" | "detail"
+  const [selectedSurveyId, setSelectedSurveyId] = useState<string | null>(null);
 
   // 새 설문조사 작성 폼용 상태
   const [newTitle, setNewTitle] = useState("");

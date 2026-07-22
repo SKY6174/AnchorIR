@@ -10,13 +10,19 @@ export interface LLMWikiProps {
   currentRole?: any;
 }
 
+export interface WikiMessage {
+  sender: "user" | "ai" | string;
+  text: string;
+  sources?: any[];
+}
+
 export default function LLMWiki({ selectedYear = 2, darkMode = true }: LLMWikiProps) {
-  const [query, setQuery] = useState("");
-  const [messages, setMessages] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState("all");
-  const [isFocused, setIsFocused] = useState(false);
-  const chatEndRef = useRef(null);
+  const [query, setQuery] = useState<string>("");
+  const [messages, setMessages] = useState<WikiMessage[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [selectedCategory, setSelectedCategory] = useState<string>("all");
+  const [isFocused, setIsFocused] = useState<boolean>(false);
+  const chatEndRef = useRef<HTMLDivElement | null>(null);
 
   // 연차가 변경되면 RAG 챗봇 환영 인사 및 대화 상태 동적 갱신
   useEffect(() => {
@@ -35,12 +41,12 @@ export default function LLMWiki({ selectedYear = 2, darkMode = true }: LLMWikiPr
   }, [messages, loading]);
 
   // 키워드 클릭 시 대화창에 질문 자동 주입 및 답변 가동
-  const handleQuickQuestion = (text) => {
+  const handleQuickQuestion = (text: string) => {
     setQuery(text);
     handleSend(null, text);
   };
 
-  const handleSend = async (e, customText = null) => {
+  const handleSend = async (e?: React.FormEvent<HTMLFormElement> | null, customText?: string | null) => {
     if (e) e.preventDefault();
     const activeText = customText || query;
     if (!activeText || activeText.trim() === "") return;

@@ -3,7 +3,7 @@ import { Check, ClipboardList, PenTool, Layers, LayoutList, Info, HelpCircle, Fi
 import * as XLSX from "xlsx";
 
 // 담당연구원이 2명일 때 정/부 표기 헬퍼 함수
-const formatAssignee = (assigneeText) => {
+const formatAssignee = (assigneeText?: string): string => {
   if (!assigneeText) return "미배정";
   const parts = assigneeText.split(/[,\/]/).map((p) => p.trim()).filter(Boolean);
   if (parts.length === 2) {
@@ -12,22 +12,21 @@ const formatAssignee = (assigneeText) => {
   return assigneeText;
 };
 
-
 // 백만원 단위 포맷팅 헬퍼 함수 (소수점 첫째자리까지 표현)
-const formatToMillionWon = (value) => {
+const formatToMillionWon = (value?: number | null): string => {
   if (value === undefined || value === null || isNaN(value)) return "0.0";
   return (value / 1000000).toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
 };
 
 // 천 단위 구분 쉼표 포맷팅 헬퍼 함수
-const formatNumberWithCommas = (value) => {
+const formatNumberWithCommas = (value?: number | string | null): string => {
   if (value === undefined || value === null) return "";
   const clean = String(value).replace(/[^0-9]/g, "");
   if (!clean) return "";
   return Number(clean).toLocaleString("ko-KR");
 };
 
-const parseNumberFromCommas = (value) => {
+const parseNumberFromCommas = (value?: number | string | null): number => {
   if (!value) return 0;
   return parseInt(String(value).replace(/,/g, ""), 10) || 0;
 };

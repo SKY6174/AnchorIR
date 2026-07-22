@@ -150,20 +150,27 @@ export default function ProgramProgressManager({ projects, selectedYear = 2, dar
     if (b.id === "Common" || b.id === "X0") return -1;
     return a.id.localeCompare(b.id, undefined, { numeric: true, sensitivity: 'base' });
   });
-  const [selectedUnitId, setSelectedUnitId] = useState(allUnits[0]?.id || "A1가");
+  const [selectedUnitId, setSelectedUnitId] = useState<string>(allUnits[0]?.id || "A1가");
 
   // 마우스 간트 드래그 편집 상태 관리
-  const [dragState, setDragState] = useState({
+  const [dragState, setDragState] = useState<{
+    isDragging: boolean;
+    progId: string | null;
+    unitId: string | null;
+    type: "plan" | "actual" | null;
+    startSlot: number | null;
+    currentSlot: number | null;
+  }>({
     isDragging: false,
     progId: null,
     unitId: null,
-    type: null, // 'plan' | 'actual'
+    type: null,
     startSlot: null,
     currentSlot: null
   });
 
   // 슬롯 인덱스(0~23)를 YYYY.MM.DD ~ YYYY.MM.DD 날짜 범위로 파싱해 주는 유틸
-  const getSlotDateRange = (startSlot, endSlot, yr) => {
+  const getSlotDateRange = (startSlot: number, endSlot: number, yr: number) => {
     const startYr = 2024 + yr;
     const getSlotDetails = (slot) => {
       const monthOffset = Math.floor(slot / 2); // 0 ~ 11

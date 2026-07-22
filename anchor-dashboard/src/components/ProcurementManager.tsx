@@ -848,20 +848,42 @@ const defaultEquipments = [
   }
 ];
 
+export interface ProcurementItem {
+  id?: number | string;
+  unit: string;
+  seq?: number;
+  deptName?: string;
+  divisionName?: string;
+  itemName: string;
+  spec?: string;
+  itemUnit?: string;
+  unitPrice?: number;
+  quantity?: number;
+  description?: string;
+  operation?: string;
+  password?: string;
+  dateP?: string;
+  dateA?: string;
+  dateB?: string;
+  datePr?: string;
+  dateI?: string;
+  [key: string]: any;
+}
+
 // 백만원 단위 포맷팅 헬퍼 함수 (소수점 첫째자리까지 표현 및 천단위 쉼표 추가)
-const formatToMillionWon = (value) => {
+const formatToMillionWon = (value?: number | null): string => {
   if (value === undefined || value === null || isNaN(value)) return "0.0";
   return (value / 1000000).toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
 };
 
 // 천원 단위 포맷팅 헬퍼 함수 (정수 표현 및 천단위 쉼표 추가)
-const formatToThousandWon = (value) => {
+const formatToThousandWon = (value?: number | null): string => {
   if (value === undefined || value === null || isNaN(value)) return "0";
   return (value / 1000).toLocaleString(undefined, { maximumFractionDigits: 0 });
 };
 
 // 백만원 문자열 예산 데이터를 천원 단위 형식으로 동적 환산해 주는 파싱 헬퍼 함수
-const convertMillionWonToThousandWon = (budgetStr) => {
+const convertMillionWonToThousandWon = (budgetStr?: string | null): string => {
   if (!budgetStr) return "0천원";
   const numOnly = parseFloat(budgetStr.replace(/,/g, "").replace(/[^0-9.]/g, ""));
   if (isNaN(numOnly)) return budgetStr;

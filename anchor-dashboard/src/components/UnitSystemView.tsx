@@ -1086,15 +1086,15 @@ export interface UnitSystemViewProps {
 }
 
 export default function UnitSystemView({ selectedYear = 2 }: UnitSystemViewProps) {
-  const [selectedProjectId, setSelectedProjectId] = useState("A");
+  const [selectedProjectId, setSelectedProjectId] = useState<string>("A");
   
   const currentProjectsData = selectedYear === 1 ? PROJECTS_DATA_Y1 : PROJECTS_DATA;
-  const currentStrategyMapping = selectedYear === 1 ? STRATEGY_TASK_MAPPING_Y1 : STRATEGY_TASK_MAPPING;
+  const currentStrategyMapping: any = selectedYear === 1 ? STRATEGY_TASK_MAPPING_Y1 : STRATEGY_TASK_MAPPING;
 
   // 선택한 프로젝트 소속 단위과제들 중 첫 번째 과제를 기본값으로 설정
   const currentProject = currentProjectsData.find(p => p.id === selectedProjectId);
   const defaultUnitId = currentProject && currentProject.units.length > 0 ? currentProject.units[0].id : "";
-  const [selectedUnitId, setSelectedUnitId] = useState(defaultUnitId);
+  const [selectedUnitId, setSelectedUnitId] = useState<string>(defaultUnitId);
 
   // 선택한 단위과제 소속 전략 정보 로드
   const selectedUnitData = currentStrategyMapping[selectedUnitId] || {
@@ -1105,7 +1105,7 @@ export default function UnitSystemView({ selectedYear = 2 }: UnitSystemViewProps
 
   // 선택한 추진전략(S)의 ID 상태
   const defaultStratId = selectedUnitData.strategies.length > 0 ? selectedUnitData.strategies[0].id : "";
-  const [selectedStratId, setSelectedStratId] = useState(defaultStratId);
+  const [selectedStratId, setSelectedStratId] = useState<string>(defaultStratId);
 
   // 선택한 전략과제(T)의 ID 상태
   const [selectedTaskId, setSelectedTaskId] = useState("");
