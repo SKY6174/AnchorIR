@@ -205,7 +205,7 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
       try {
         const { data: agendas, error: agErr } = await supabase
           .from("meeting_agendas")
-          .select("id, meeting_id, title, description, is_evaluation, sort_order, attachment_name")
+          .select("id, meeting_id, title, description, is_evaluation, sort_order, attachment_name, attachment_data")
           .eq("meeting_id", mId)
           .order("sort_order", { ascending: true });
 
@@ -218,7 +218,7 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
             return {
               ...ag,
               attachment_name: ag.attachment_name || cached?.attachment_name || null,
-              attachment_data: cached?.attachment_data || null
+              attachment_data: ag.attachment_data || cached?.attachment_data || null
             };
           });
         }
