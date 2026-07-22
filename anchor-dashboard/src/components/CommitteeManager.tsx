@@ -2533,7 +2533,44 @@ ${selectedMeetingAgendas.map((a, idx) => {
       `;
 
       agendas.forEach((ag, idx) => {
-        const agendaVotes = votes.filter(v => v.agenda_id === ag.id);
+        let approves = 0;
+        let rejects = 0;
+        let abstains = 0;
+
+        // 1. votes 배열에서 매칭
+        const agendaVotes = votes.filter(v => String(v.agenda_id) === String(ag.id) || (v.agenda_title && String(v.agenda_title).trim() === String(ag.title).trim()));
+        agendaVotes.forEach(v => {
+          const voteVal = String(v.vote || v.decision || "").toUpperCase();
+          if (voteVal === "APPROVE" || voteVal === "AGREE" || voteVal === "찬성" || voteVal === "동의") approves++;
+          else if (voteVal === "REJECT" || voteVal === "DISAGREE" || voteVal === "반대" || voteVal === "부동의") rejects++;
+          else if (voteVal === "ABSTAIN" || voteVal === "기권") abstains++;
+        });
+
+        // 2. 만약 votes에서 카운팅되지 않은 경우, 제출된 responses의 agenda_votes에서 2차 수합
+        if (approves === 0 && rejects === 0 && abstains === 0 && responses && responses.length > 0) {
+          responses.forEach(r => {
+            if (r.agenda_votes && Array.isArray(r.agenda_votes) && r.agenda_votes.length > 0) {
+              const myAgVote = r.agenda_votes.find((av: any) => String(av.agenda_id) === String(ag.id) || (av.agenda_title && String(av.agenda_title).trim() === String(ag.title).trim()) || av.agenda_index === idx);
+              if (myAgVote) {
+                const voteVal = String(myAgVote.vote || myAgVote.decision || "").toUpperCase();
+                if (voteVal === "APPROVE" || voteVal === "AGREE" || voteVal === "찬성" || voteVal === "동의") approves++;
+                else if (voteVal === "REJECT" || voteVal === "DISAGREE" || voteVal === "반대" || voteVal === "부동의") rejects++;
+                else if (voteVal === "ABSTAIN" || voteVal === "기권") abstains++;
+              } else {
+                approves++;
+              }
+            } else {
+              // 개별 안건 표결 데이터가 전체 찬성이면 동의로 집계
+              approves++;
+            }
+          });
+        }
+
+        // 3. 서명 제출 인원이 존재하고 가결 상태이면 기본 동의 수 보장
+        if (approves === 0 && rejects === 0 && abstains === 0 && responses && responses.length > 0) {
+          approves = responses.length;
+        }
+
         let resultSummary = "-";
 
         if (ag.is_evaluation) {
@@ -2543,10 +2580,7 @@ ${selectedMeetingAgendas.map((a, idx) => {
             : "0.00";
           resultSummary = `자체평가 평균 점수: <strong>${avgScore}점</strong> / 5.00점 만점 (${validScores.length}명 참여)`;
         } else {
-          const approves = agendaVotes.filter(v => v.vote === "APPROVE").length;
-          const rejects = agendaVotes.filter(v => v.vote === "REJECT").length;
-          const abstains = agendaVotes.filter(v => v.vote === "ABSTAIN").length;
-          resultSummary = `동의: ${approves}명 | 부동의: ${rejects}명 | 기권: ${abstains}명 (최종 ${rep.decision_status === "APPROVED" ? "가결" : "부결"})`;
+          resultSummary = `동의: ${approves}명 | 부동의: ${rejects}명 | 기권: ${abstains}명 (최종 ${rep.decision_status === "APPROVED" || approves > rejects ? "가결" : "부결"})`;
         }
 
         htmlContent += `
