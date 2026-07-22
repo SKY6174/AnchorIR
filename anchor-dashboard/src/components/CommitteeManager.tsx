@@ -1760,8 +1760,11 @@ export default function CommitteeManager({
     // 하위 호환 및 DB non-null 제약 해소를 위해 의안 리스트 요약을 agenda 컬럼에 채움
     const summaryAgendaText = meetingForm.agendas.map((a, idx) => `[안건 ${idx + 1}] ${a.title}`).join("\n");
 
+    const rawCommitteeId = selectedCommittee.id;
+    const numericCommitteeId = !isNaN(Number(rawCommitteeId)) && String(rawCommitteeId).trim() !== "" ? Number(rawCommitteeId) : 1;
+
     const payload = {
-      committee_id: selectedCommittee.id,
+      committee_id: numericCommitteeId,
       title: meetingForm.title,
       meeting_date: meetingForm.meeting_date,
       meeting_type: meetingForm.meeting_type,
