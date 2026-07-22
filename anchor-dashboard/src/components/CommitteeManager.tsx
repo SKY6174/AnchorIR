@@ -1155,7 +1155,7 @@ export default function CommitteeManager({
 
         if (voteRows && voteRows.length > 0) {
           const memberVotesMap: Record<string, any> = {};
-          voteRows.forEach(v => {
+          voteRows.forEach((v: any) => {
             const key = v.member_id ? String(v.member_id).trim() : (v.member_name || v.voter_name || "").trim();
             if (!key) return;
             if (!memberVotesMap[key]) {
@@ -1242,7 +1242,7 @@ export default function CommitteeManager({
         .eq("name", myName);
       if (error) throw error;
 
-      const mapped = (data || []).map(m => ({
+      const mapped = (data || []).map((m: any) => ({
         committee_id: m.committee_id,
         role: m.type === "위원장" ? "CHAIRMAN" : m.type === "간사" ? "SECRETARY" : "MEMBER"
       }));
@@ -1500,6 +1500,7 @@ export default function CommitteeManager({
 
   const handleAddMember = async (e: any) => {
     e.preventDefault();
+    if (!selectedCommittee) return;
     if (!memberForm.name) {
       alert("위원 이름을 입력해 주세요.");
       return;
@@ -1553,8 +1554,8 @@ export default function CommitteeManager({
         .eq("id", selectedCommittee.id);
       await fetchCommittees();
       window.dispatchEvent(new CustomEvent("anchor_committee_members_updated", { detail: { committeeId: selectedCommittee.id } }));
-    } catch (err) {
-      console.warn("DB 위원 배정 실패, 로컬 스토리지에 모의 저장합니다:", err.message);
+    } catch (err: any) {
+      console.warn("DB 위원 배정 실패, 로컬 스토리지에 모의 저장합니다:", err?.message || err);
 
       const localMembers = JSON.parse(localStorage.getItem(`local_committee_members_${selectedCommittee.id}`) || "[]");
       const localPayload = { ...payload, id: `local-member-${Date.now()}` };
