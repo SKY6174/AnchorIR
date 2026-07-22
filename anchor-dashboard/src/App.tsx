@@ -8773,10 +8773,11 @@ export default function App() {
   };
 
   // 💡 참여자 전용 설문조사 모바일 입력 폼 (로그인 우회)
-  // 💡 [외부 위원 전용 심의 의결 채널 라우팅 인터셉터] (요구사항 4 반영)
+  // 💡 [외부 위원 전용 심의 의결 채널 라우팅 인터셉터] (단축링크 ?v= 지원)
   const params = new URLSearchParams(window.location.search);
-  const isVoteMode = params.get("mode") === "vote";
-  const voteMeetingId = params.get("meetingId");
+  const shortVoteCode = params.get("v");
+  const isVoteMode = params.get("mode") === "vote" || !!shortVoteCode;
+  const voteMeetingId = params.get("meetingId") || shortVoteCode || undefined;
 
   if (isVoteMode && voteMeetingId) {
     return (
